@@ -1,8 +1,10 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ca">
+<translation id="2077832278056815832">Tanca qualsevol quadre d'ajuda o superposició d'altres aplicacions. Després, torna-ho a provar.</translation>
 <translation id="2359808026110333948">Continua</translation>
 <translation id="2416359993254398973">Per visitar aquest lloc web, Chrome necessita permís per accedir a la teva càmera.</translation>
+<translation id="2987449669841041897">Aquest lloc web no pot demanar el teu permís</translation>
 <translation id="557283862590186398">Per visitar aquest lloc web, Chrome necessita permís per accedir al teu micròfon.</translation>
 <translation id="5860491529813859533">Activa</translation>
 <translation id="6092062101542170135">Per continuar, activa l'NFC a la configuració d'Android</translation>

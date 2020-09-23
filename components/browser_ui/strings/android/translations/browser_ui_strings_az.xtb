@@ -51,6 +51,7 @@
 <translation id="2315043854645842844">Müştəri sayt sertifikatı seçimi əməliyyat sistemi tərəfindən dəstəklənmir.</translation>
 <translation id="2359808026110333948">Davam edin</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
+<translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> və daha <ph name="NUM_MORE" /> üçün icazə verilib}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> və daha <ph name="NUM_MORE" /> üçün icazə verilib}}</translation>
 <translation id="2434158240863470628">Endirmə tamamlandı <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2440823041667407902">Məkan girişi</translation>
 <translation id="2482878487686419369">Bildirişlər</translation>
@@ -190,6 +191,7 @@
 <translation id="6447842834002726250">Kukilər</translation>
 <translation id="6527303717912515753">Paylaşın</translation>
 <translation id="6545864417968258051">Bluetooth skanı</translation>
+<translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> və daha <ph name="NUM_MORE" /> icazə bloklanıb}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> və daha <ph name="NUM_MORE" /> icazə bloklanıb}}</translation>
 <translation id="6561560012278703671">Səssiz mesajlaşmadan istifadə edin (bildirişlər sizi narahat etməyəcək)</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Qorunan kontent</translation>
@@ -292,6 +294,7 @@
 <translation id="8959122750345127698">Naviqasiya əlçatmazdır: <ph name="URL" /></translation>
 <translation id="9019902583201351841">Valideynləriniz tərəfindən idarə olunur</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> və daha <ph name="NUM_MORE" /> icazə}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> və daha <ph name="NUM_MORE" /> icazə}}</translation>
 <translation id="913657688200966289"><ph name="APP_NAME" /> üçün icazələri <ph name="BEGIN_LINK" />Android Ayarlarında<ph name="END_LINK" /> aktiv edin.</translation>
 <translation id="945632385593298557">Mikrofonunuza giriş</translation>
 <translation id="965817943346481315">Sayt inadçı və ya aldadıcı reklamlar göstərirsə, blok edin (tövsiyə olunur)</translation>

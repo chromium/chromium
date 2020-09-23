@@ -51,6 +51,7 @@
 <translation id="2315043854645842844">La selezione del certificato lato client non è supportata dal sistema operativo.</translation>
 <translation id="2359808026110333948">Continua</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
+<translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Consentite: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e <ph name="NUM_MORE" /> altra}other{Consentite: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e altre <ph name="NUM_MORE" />}}</translation>
 <translation id="2434158240863470628">Download completato: <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2440823041667407902">Accesso alla posizione</translation>
 <translation id="2482878487686419369">Notifiche</translation>
@@ -190,6 +191,7 @@
 <translation id="6447842834002726250">Cookie</translation>
 <translation id="6527303717912515753">Condividi</translation>
 <translation id="6545864417968258051">Scansione Bluetooth</translation>
+<translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Bloccate: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e <ph name="NUM_MORE" /> altra}other{Bloccate: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e altre <ph name="NUM_MORE" />}}</translation>
 <translation id="6561560012278703671">Usa messaggi più discreti (impedisce alle notifiche di disturbarti)</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Contenuti protetti</translation>
@@ -292,6 +294,7 @@
 <translation id="8959122750345127698">Navigazione inaccessibile: <ph name="URL" /></translation>
 <translation id="9019902583201351841">Gestito dai genitori</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e <ph name="NUM_MORE" /> altra}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e altre <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289">Attiva le autorizzazioni per l'app <ph name="APP_NAME" /> nelle <ph name="BEGIN_LINK" />Impostazioni Android<ph name="END_LINK" />.</translation>
 <translation id="945632385593298557">Accesso al microfono</translation>
 <translation id="965817943346481315">Blocca se il sito mostra annunci invasivi o fuorvianti (consigliato)</translation>

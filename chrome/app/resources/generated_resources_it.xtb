@@ -1217,6 +1217,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2419706071571366386">Per sicurezza, disconnettiti quando non utilizzi il tuo computer.</translation>
 <translation id="2422125132043002186">Ripristino di Linux annullato</translation>
 <translation id="2423578206845792524">Sa&amp;lva immagine con nome...</translation>
+<translation id="2424424966051154874">{0,plural, =1{Ospite}other{Ospite (#)}}</translation>
 <translation id="2428510569851653187">Descrivi cosa stavi facendo quando la scheda si è arrestata in modo anomalo</translation>
 <translation id="2428939361789119025">Disattiva Wi-Fi</translation>
 <translation id="2431027948063157455">Impossibile caricare l'Assistente Google, controlla la connessione di rete e riprova.</translation>
@@ -4255,6 +4256,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="6077189836672154517">Suggerimenti e aggiornamenti relativi a <ph name="DEVICE_TYPE" /></translation>
 <translation id="6077476112742402730">Parlare per digitare</translation>
 <translation id="6078045608615316905">Crea codice QR per questa immagine</translation>
+<translation id="6078121669093215958">{0,plural, =1{Ospite}other{# finestre Ospite aperte}}</translation>
 <translation id="6078323886959318429">Aggiungi scorciatoia</translation>
 <translation id="6078752646384677957">Controlla i livelli audio e del microfono.</translation>
 <translation id="6078769373519310690">"<ph name="CHROME_EXTENSION_NAME" />" vuole collegarsi a un dispositivo HID</translation>
@@ -4770,6 +4772,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="6704062477274546131">Risoluzione DNS</translation>
 <translation id="6706210727756204531">Ambito</translation>
 <translation id="6707389671160270963">Certificato client SSL</translation>
+<translation id="670893696722244877">Cerca per lingue o nomi di metodi di immissione</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> e 1 altra scheda}other{<ph name="PAGE_TITLE" /> e altre # schede}}</translation>
 <translation id="6709133671862442373">Notizie</translation>
 <translation id="6709357832553498500">Connettiti utilizzando <ph name="EXTENSIONNAME" /></translation>
@@ -5625,6 +5628,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="7753735457098489144">Installazione non riuscita per spazio di archiviazione insufficiente. Per liberare spazio, elimina i file dallo spazio di archiviazione del dispositivo.</translation>
 <translation id="7754704193130578113">Chiedi dove salvare il file prima di scaricarlo</translation>
 <translation id="7755287808199759310">Il tuo genitore può sbloccarlo per te</translation>
+<translation id="7757592200364144203">Cambia nome del dispositivo</translation>
 <translation id="7757787379047923882">Testo condiviso da <ph name="DEVICE_NAME" /></translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">Regola i bordi del display</translation>
@@ -6086,6 +6090,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8264024885325823677">Questa impostazione è gestita dall'amministratore.</translation>
 <translation id="8264718194193514834">"<ph name="EXTENSION_NAME" />" ha attivato lo schermo intero.</translation>
 <translation id="826511437356419340">Modalità panoramica finestre attivata. Scorri per spostarti oppure premi Tab se usi una tastiera.</translation>
+<translation id="8266947622852630193">Tutti i metodi di immissione</translation>
 <translation id="8267539814046467575">Aggiungere una stampante</translation>
 <translation id="8267961145111171918"><ph name="BEGIN_PARAGRAPH1" />Queste sono informazioni generali sul dispositivo e sulla relativa modalità di utilizzo (ad esempio il livello della batteria, l'attività nelle app e nel sistema e gli errori). I dati vengono utilizzati per migliorare Android e alcune informazioni aggregate sono utili anche per app e partner di Google, ad esempio gli sviluppatori Android, che possono utilizzarle per migliorare i propri prodotti e le proprie app.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />La disattivazione di questa funzione non influisce sulla capacità del dispositivo di inviare le informazioni necessarie per i servizi essenziali, ad esempio gli aggiornamenti di sistema e sicurezza.<ph name="END_PARAGRAPH2" />

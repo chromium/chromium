@@ -1500,6 +1500,15 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 <translation id="3219421230122020860">Mode samaran tersedia</translation>
 <translation id="3220624000494482595">Jika aplikasi kios adalah aplikasi Android, aplikasi tersebut tidak akan memiliki kontrol terhadap versi <ph name="PRODUCT_OS_NAME" />, meski kebijakan ini disetel ke <ph name="TRUE" />.</translation>
 <translation id="322359555555487980">Menentukan ketersediaan variasi di <ph name="PRODUCT_OS_NAME" /></translation>
+<translation id="3225165352822164029">Menyetel kebijakan akan menentukan URL halaman beranda default di <ph name="PRODUCT_NAME" />. Anda membuka halaman beranda menggunakan tombol Beranda. Di desktop, kebijakan <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> mengontrol halaman yang dibuka saat browser mulai dijalankan.
+
+      Jika halaman beranda disetel ke Halaman Tab Baru, oleh pengguna atau <ph name="HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_NAME" />, kebijakan ini tidak akan berpengaruh.
+
+       URL memerlukan skema standar, seperti http://example.com atau https://example.com. Jika kebijakan ini disetel, pengguna tidak dapat mengubah URL halaman berandanya di <ph name="PRODUCT_NAME" />.
+
+      Jika <ph name="HOMEPAGE_LOCATION_POLICY_NAME" /> dan <ph name="HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_NAME" /> tidak disetel, pengguna dapat memilih halaman berandanya.
+
+      Di <ph name="MS_WIN_NAME" />, fungsi ini hanya tersedia di instance yang dihubungkan ke domain <ph name="MS_AD_NAME" />, dijalankan di Windows 10 Pro, atau didaftarkan di <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />. Di <ph name="MAC_OS_NAME" />, fungsi ini hanya tersedia di instance yang dikelola melalui MDM, atau dihubungkan ke domain melalui MCX.</translation>
 <translation id="3231837273069128027">Menyetel kebijakan akan mengonfigurasi ketersediaan dan perilaku update firmware <ph name="TPM_FIRMWARE_UPDATE_TPM" />.
 
       Tentukan setiap setelan di properti JSON:
@@ -1845,6 +1854,11 @@ Jika ditetapkan ke False, <ph name="PRODUCT_NAME" /> tidak akan menggunakan noti
       Kebijakan ini akan dihapus pada Chrome 88.
 
       Buka https://www.chromestatus.com/feature/5989473649164288.</translation>
+<translation id="3691155504326059225">Jika kebijakan disetel ke Aktif, halaman beranda pengguna akan menjadi halaman Tab Baru dan lokasi URL halaman beranda lain akan diabaikan. Jika kebijakan disetel ke Nonaktif, halaman beranda pengguna tidak akan pernah menjadi halaman Tab Baru, kecuali URL halaman beranda pengguna disetel ke chrome://newtab.
+
+      Jika Anda menyetel kebijakan, pengguna tidak dapat mengubah jenis halaman berandanya di <ph name="PRODUCT_NAME" />. Jika tidak disetel, pengguna dapat memutuskan apakah halaman Tab Baru akan menjadi halaman berandanya atau tidak.
+
+      Di <ph name="MS_WIN_NAME" />, fungsi ini hanya tersedia di instance yang dihubungkan ke domain <ph name="MS_AD_NAME" />, dijalankan di Windows 10 Pro, atau didaftarkan di <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />. Di <ph name="MAC_OS_NAME" />, fungsi ini hanya tersedia di instance yang dikelola melalui MDM, atau dihubungkan ke domain melalui MCX.</translation>
 <translation id="3701121231485832347">Mengontrol setelan khusus perangkat <ph name="PRODUCT_OS_NAME" />.yang dikelola <ph name="MS_AD_NAME" />.</translation>
 <translation id="3702518095257671450">Pengesahan jarak jauh</translation>
 <translation id="3702647575225525306"><ph name="POLICY_NAME" /> (Kolom 1 baris sudah tidak digunakan lagi dan akan dihapus di masa mendatang. Mulai gunakan kotak teks multibaris di bawah.)</translation>
@@ -3140,6 +3154,13 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
       Jika kebijakan ini ditetapkan ke 'Blokir upload dan download jenis file yang tidak didukung' (3), <ph name="PRODUCT_NAME" /> berperilaku seperti aturan yang dijelaskan di 'Blokir upload jenis file yang tidak didukung' dan 'Blokir download jenis file yang tidak didukung'.
       </translation>
 <translation id="5535973522252703021">Daftar putih server delegasi Kerberos</translation>
+<translation id="5540753481451194959">Menyetel kebijakan memungkinkan Anda menentukan perilaku sistem saat browser mulai dijalankan. Menonaktifkan setelan ini memiliki efek yang sama dengan tidak menyetelnya, karena <ph name="PRODUCT_NAME" /> harus memiliki perilaku tertentu saat browser mulai dijalankan.
+
+      Jika Anda menyetel kebijakan, pengguna tidak dapat mengubahnya di <ph name="PRODUCT_NAME" />. Jika tidak disetel, pengguna dapat mengubahnya.
+
+      Menyetel kebijakan ini ke <ph name="POLICY_ENUM_RESTOREONSTARTUP_RESTOREONSTARTUPISLASTSESSION" /> akan menonaktifkan beberapa setelan yang mengandalkan sesi atau yang melakukan tindakan saat keluar, seperti menghapus data penjelajahan saat keluar atau cookie khusus sesi.
+
+      Di <ph name="MS_WIN_NAME" />, fungsi ini hanya tersedia di instance yang dihubungkan ke domain <ph name="MS_AD_NAME" />, dijalankan di Windows 10 Pro, atau didaftarkan di <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />. Di <ph name="MAC_OS_NAME" />, fungsi ini hanya tersedia di instance yang dikelola melalui MDM, atau dihubungkan ke domain melalui MCX.</translation>
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="555022085242359084">Mengaktifkan kontras tinggi di layar login</translation>
 <translation id="555077880566103058">Izinkan semua situs menjalankan plugin <ph name="FLASH_PLUGIN_NAME" /> secara otomatis</translation>
@@ -3996,6 +4017,13 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
 
       Jika kebijakan disetel ke Nonaktif, pesan error akan ditampilkan.</translation>
 <translation id="6821268164692776674">Tujuan <ph name="CLOUD_PRINT_NAME" /> dan 'Simpan ke Google Drive'</translation>
+<translation id="6833023569065717572">Jika kebijakan disetel ke Benar (True), layar login perangkat akan menggunakan format waktu 24 jam.
+
+      Jika kebijakan disetel ke Salah (False), layar login perangkat akan menggunakan format waktu 12 jam.
+
+      Jika kebijakan tidak disetel, perangkat akan menggunakan format waktu lokal saat ini.
+
+      Sesi pengguna juga akan menggunakan format perangkat secara default, tetapi pengguna dapat mengubah format waktu akun.</translation>
 <translation id="6833064854262015312">Jika kebijakan ditetapkan ke Benar (True), Mode kontras tinggi akan diaktifkan di layar login. Jika kebijakan ditetapkan ke Salah (False), Mode kontras tinggi akan dinonaktifkan di layar login.
 
       Jika kebijakan ditetapkan, pengguna dapat mengaktifkan atau menonaktifkan Mode kontras tinggi untuk sementara. Saat dimuat ulang atau tidak ada aktivitas selama satu menit, layar login akan kembali ke keadaan semula.
@@ -4176,6 +4204,7 @@ Kebijakan ini hanya berlaku jika dukungan aplikasi Linux diaktifkan.</translatio
       Menetapkan daftar URL dalam kebijakan ini memiliki efek yang sama dengan menetapkan tanda command line --unsafely-treat-insecure-origin-as-secure ke daftar yang dipisahkan koma, yang berisi URL yang sama. Jika ditetapkan, kebijakan ini akan mengganti tanda command line dan UnsafelyTreatInsecureOriginAsSecure.
 
       Untuk informasi selengkapnya tentang konteks aman, lihat Secure Contexts (https://www.w3.org/TR/secure-contexts ).</translation>
+<translation id="7033985774616781500">Mengonfigurasi kamera, setelan browser, setelan OS, dan fitur pemindaian untuk dinonaktifkan</translation>
 <translation id="7037812781389976160">Mengontrol posisi rak <ph name="PRODUCT_OS_NAME" />.
 
       Jika kebijakan ini ditetapkan ke 'Bawah', rak akan ditempatkan di bagian bawah layar.
@@ -4661,6 +4690,11 @@ Cara yang diharapkan terkait penggunaan kebijakan ini adalah merotasi konfiguras
       Kebijakan ini hanya berlaku untuk pengguna anak.
       Jika kebijakan ini disetel, Kode Akses Orang Tua dapat diverifikasi di perangkat pengguna anak.
       Jika kebijakan ini tidak disetel, Kode Akses Orang Tua tidak dapat diverifikasi di perangkat pengguna anak.</translation>
+<translation id="7623187731914468284">Jika <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> disetel ke RestoreOnStartupIsURLs, menyetel <ph name="RESTORE_ON_STARTUP_URLS_POLICY_NAME" /> ke daftar URL akan menentukan URL mana yang akan dibuka.
+
+      Jika tidak disetel, halaman Tab Baru akan dibuka saat browser mulai dijalankan.
+
+      Di <ph name="MS_WIN_NAME" />, fungsi ini hanya tersedia di instance yang dihubungkan ke domain <ph name="MS_AD_NAME" />, dijalankan di Windows 10 Pro, atau didaftarkan di <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />. Di <ph name="MAC_OS_NAME" />, fungsi ini hanya tersedia di instance yang dikelola melalui MDM, atau dihubungkan ke domain melalui MCX.</translation>
 <translation id="7625444193696794922">Menentukan saluran rilis yang harus dikunci oleh perangkat ini.</translation>
 <translation id="7629840767216985001">Jika kebijakan ditetapkan ke Benar (True), kursor besar akan diaktifkan di layar login. Jika kebijakan ditetapkan ke Salah (False), kursor besar akan dinonaktifkan di layar login.
 
@@ -4761,6 +4795,13 @@ Cara yang diharapkan terkait penggunaan kebijakan ini adalah merotasi konfiguras
 <translation id="7754704193130578113">Tanyakan lokasi penyimpanan setiap file sebelum mendownload</translation>
 <translation id="7758378441185523981">Mengaktifkan Autentikasi Pasif untuk jenis profil.</translation>
 <translation id="7763614521440615342">Tampilkan saran konten di halaman Tab Baru</translation>
+<translation id="7765753178910647492">Memungkinkan Anda menetapkan daftar fitur <ph name="PRODUCT_OS_NAME" /> untuk dinonaktifkan.
+
+      Jika salah satu fitur ini dinonaktifkan, pengguna tidak dapat mengaksesnya dari UI dan akan melihatnya sebagai "dinonaktifkan oleh admin".
+
+      Jika kebijakan tidak disetel, semua fitur <ph name="PRODUCT_OS_NAME" /> akan diaktifkan secara default dan pengguna dapat menggunakan semua fitur tersebut.
+
+      Catatan: Fitur pemindaian saat ini dinonaktifkan secara default melalui tombol fitur. Jika pengguna mengaktifkan fitur melalui tombol fitur, fitur tersebut masih dapat dinonaktifkan dengan kebijakan ini.</translation>
 <translation id="7765879851993224640">Izinkan Smart Lock Signin digunakan.</translation>
 <translation id="7774768074957326919">Gunakan setelan proxy sistem</translation>
 <translation id="777734450201217641">Mengaktifkan pintasan fitur aksesibilitas di layar login.
@@ -4883,6 +4924,7 @@ Cara yang diharapkan terkait penggunaan kebijakan ini adalah merotasi konfiguras
           Jika kebijakan ini tidak ditetapkan, durasi waktu default akan digunakan.
 
           Nilai kebijakan harus ditentukan dalam milidetik. Nilai dikunci ke kurang dari atau sama dengan penundaan waktu tidak ada aktivitas.</translation>
+<translation id="7995610550667275367">Pemindaian (didukung sejak versi 87)</translation>
 <translation id="8001701200415781021">Batasi akun Google mana yang diizinkan untuk disetel sebagai akun utama browser di <ph name="PRODUCT_NAME" /></translation>
 <translation id="8003853057959146975">Mengirimkan file untuk pemeriksaan pelanggaran aturan perlindungan data sensitif</translation>
 <translation id="8006219716745491366">Jika <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> aktif, menyetel <ph name="DEFAULT_SEARCH_PROVIDER_ALTERNATE_URLS_POLICY_NAME" /> akan menentukan daftar URL alternatif untuk mengekstrak istilah penelusuran dari mesin telusur. URL harus menyertakan string <ph name="SEARCH_TERM_MARKER" />.
@@ -5015,6 +5057,9 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan,
           Jika tindakannya adalah penangguhan, <ph name="PRODUCT_OS_NAME" /> dapat dikonfigurasi secara terpisah untuk mengunci atau tidak mengunci layar sebelum ditangguhkan.</translation>
 <translation id="8214600119442850823">Mengonfigurasi pengelola sandi.</translation>
 <translation id="8217516105848565518">Kebijakan ini tidak digunakan lagi. Sebagai gantinya, gunakan RemoteAccessHostDomainList.</translation>
+<translation id="8219777886736887686">Menyetel kebijakan akan mengontrol perintah yang digunakan untuk membuka URL dalam browser alternatif. Kebijakan ini dapat disetel ke salah satu dari <ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" />, <ph name="FIREFOX_VALUE_PLACEHOLDER" />, <ph name="SAFARI_VALUE_PLACEHOLDER" />, <ph name="OPERA_VALUE_PLACEHOLDER" />, <ph name="EDGE_VALUE_PLACEHOLDER" />, atau jalur file. Ketika kebijakan ini disetel ke jalur file, file tersebut akan digunakan sebagai file yang dapat dieksekusi. <ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" /> dan <ph name="EDGE_VALUE_PLACEHOLDER" /> hanya tersedia di <ph name="MS_WIN_NAME" />, dan <ph name="SAFARI_VALUE_PLACEHOLDER" /> hanya tersedia di <ph name="MS_WIN_NAME" /> dan <ph name="MAC_OS_NAME" />.
+
+      Jika kebijakan tidak disetel, kebijakan default khusus platform akan digunakan: <ph name="IE_PRODUCT_NAME" /> untuk <ph name="MS_WIN_NAME" />, atau <ph name="SAFARI_PRODUCT_NAME" /> untuk <ph name="MAC_OS_NAME" />. Di <ph name="LINUX_OS_NAME" />, peluncuran browser alternatif akan gagal.</translation>
 <translation id="8220156281401380422">Mengonfigurasi daftar pesan native yang diizinkan</translation>
 <translation id="8244171102276095471">Mengaktifkan paket penyandian RC4 di TLS</translation>
 <translation id="8244525275280476362">Penundaan mengambil maksimum setelah kebijakan invalidasi</translation>
@@ -5389,6 +5434,9 @@ Kebijakan akan dihapus pada M75.</translation>
 
       Kebijakan ini tidak memengaruhi kemampuan pengguna untuk mengonfigurasi printer di tiap perangkat. Kebijakan ini ditujukan sebagai tambahan untuk konfigurasi printer yang ditentukan oleh tiap pengguna.</translation>
 <translation id="8764477907716150749">Kebijakan ini untuk penggunaan internal oleh <ph name="PRODUCT_NAME" /> sendiri.</translation>
+<translation id="8767743923206070405">Jika kebijakan disetel ke Aktif, tombol Beranda akan ditampilkan di toolbar <ph name="PRODUCT_NAME" />. Jika kebijakan disetel ke Nonaktif, tombol Beranda tidak akan muncul.
+
+      Jika Anda menyetel kebijakan, pengguna tidak dapat mengubahnya di <ph name="PRODUCT_NAME" />. Jika tidak disetel, pengguna dapat memilih untuk menampilkan tombol Beranda atau tidak.</translation>
 <translation id="877185520360032968">Menyetel kebijakan akan mengubah direktori default tempat Chrome mendownload file, tetapi pengguna dapat mengubah direktori tersebut.
 
       Jika kebijakan tidak disetel, Chrome akan menggunakan direktori default khusus platform.

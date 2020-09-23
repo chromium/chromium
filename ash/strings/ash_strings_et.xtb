@@ -308,6 +308,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Rak. puhul väljas}other{# rak. puhul väljas}}</translation>
 <translation id="4072264167173457037">Keskmine signaal</translation>
 <translation id="4112140312785995938">Keri tagasi</translation>
+<translation id="4114315158543974537">Lülita Phone Hub sisse</translation>
 <translation id="4129129681837227511">Lukustuskuval märguannete nägemiseks avage ekraan ja muutke seadet</translation>
 <translation id="4146833061457621061">Esita muusikat</translation>
 <translation id="4149156641122542261">Seadet <ph name="DEVICE_TYPE" /> haldab <ph name="DOMAIN" /></translation>
@@ -439,6 +440,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="5648021990716966815">Mikrofoni pistikupesa</translation>
 <translation id="5669267381087807207">Aktiveerimine</translation>
 <translation id="5673434351075758678">Pärast seadete sünkroonimist lokaadist „<ph name="FROM_LOCALE" />” lokaati „<ph name="TO_LOCALE" />”.</translation>
+<translation id="5679050765726761783">Ühendatud on madala toitevõimsusega adapter</translation>
 <translation id="5682642926269496722">Google'i assistent pole praeguse kasutajakonto jaoks saadaval.</translation>
 <translation id="5689633613396158040">Öövalgus muudab hämaras valguses ekraani vaatamise ja lugemise lihtsamaks. Puudutage, et muuta Öövalguse sisselülitumise aega või lülitada see täielikult välja.</translation>
 <translation id="5691772641933328258">Sõrmejälge ei tuntud ära</translation>
@@ -553,6 +555,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="6857811139397017780">Aktiveeri <ph name="NETWORKSERVICE" /></translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Üks number on jäänud}other{# numbrit on jäänud}}</translation>
 <translation id="6878400149835617132">Otsetee on välja lülitatud</translation>
+<translation id="6886172995547742638">Seadme <ph name="DEVICE_TYPE" /> jõudlus võib olla madalam. Kasutage sertifitseeritud <ph name="PREFERRED_MINIMUM_POWER" /> W või võimsamat USB-C-toiteadapterit.</translation>
 <translation id="6896758677409633944">Kopeeri</translation>
 <translation id="6910714959251846841">Värskenduse jaoks on vajalik seadme powerwash. Vaadake lisateavet operatsioonisüsteemi <ph name="SYSTEM_APP_NAME" /> uusima värskenduse kohta.</translation>
 <translation id="6919251195245069855">Teie kiipkaarti ei õnnestunud tuvastada. Proovige uuesti.</translation>

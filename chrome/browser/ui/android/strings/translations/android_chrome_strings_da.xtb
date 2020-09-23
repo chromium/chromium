@@ -125,6 +125,7 @@
 <translation id="1993768208584545658"><ph name="SITE" /> vil gerne parre</translation>
 <translation id="2000419248597011803">Sender visse cookies og søgninger fra adresselinjen og søgefeltet til din standardsøgemaskine</translation>
 <translation id="2002537628803770967">Kreditkort og adresser fra Google Pay</translation>
+<translation id="2010780124464321179">Der kan ikke oprettes et link til teksten. Del link til siden.</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# fil}one{# fil}other{# filer}}</translation>
 <translation id="2017836877785168846">Nulstiller historikken og autofuldførelser i adresselinjen.</translation>
 <translation id="2021896219286479412">Kontrolelementer på website i fuld skærm</translation>
@@ -192,6 +193,7 @@ Tryk og hold på et ord for at søge. Du kan tilpasse din søgning ved at vælge
 <translation id="2494974097748878569">Google Assistent i Chrome</translation>
 <translation id="2496180316473517155">Browserhistorik</translation>
 <translation id="2497852260688568942">Synkronisering er deaktiveret af din administrator.</translation>
+<translation id="250020030759455918">Du kan se loginstatus, browserdata og websiteoplysninger for <ph name="SITE_NAME" /> i Chrome</translation>
 <translation id="2513403576141822879">Du kan finde flere indstillinger vedrørende privatliv, sikkerhed og dataindsamling ved at gå til <ph name="BEGIN_LINK" />Synkronisering og Google-tjenester<ph name="END_LINK" /></translation>
 <translation id="2517472476991765520">Scan</translation>
 <translation id="2518590038762162553">Chrome indlæser sider hurtigere og bruger op til 60 procent mindre data i Lite-tilstand. Chrome sender din webtrafik til Google for at optimere de sider, du besøger. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
@@ -273,7 +275,9 @@ Tryk og hold på et ord for at søge. Du kan tilpasse din søgning ved at vælge
 <translation id="3207960819495026254">Gemt som bogmærke</translation>
 <translation id="3208584281581115441">Tjek nu</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> blev slettet</translation>
+<translation id="3211503082155944789"><ph name="READING_LIST_COUNT" /> ulæste sider</translation>
 <translation id="321773570071367578">Hvis du har glemt din adgangssætning eller vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille synkroniseringen<ph name="END_LINK" /></translation>
+<translation id="3223655207402797071">Log ind på dette website, din Google-konto og Chrome. Du kan aktivere synkronisering senere.</translation>
 <translation id="3232754137068452469">Webapp</translation>
 <translation id="3236059992281584593">1 minut tilbage</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -491,6 +495,7 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="4913169188695071480">Stop med at opdatere</translation>
 <translation id="4915549754973153784"><ph name="BEGIN_LINK" />Få hjælp<ph name="END_LINK" />, mens der scannes efter enheder…</translation>
 <translation id="4921180162323349895">{FILE_COUNT,plural, =1{# side}one{# side}other{# sider}}</translation>
+<translation id="4925120120285606924">Screenshot <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">Dine adgangskoder eksporteres og downloades som en tekstfil. De vil være synlige for alle brugere og enhver app med adgang til destinationsmappen.</translation>
 <translation id="4932247056774066048">Da du er ved at logge ud af en konto, der administreres af <ph name="DOMAIN_NAME" />, slettes dine Chrome-data fra denne enhed. Dataene vil stadig være at finde på din Google-konto.</translation>
 <translation id="4943703118917034429">Virtual reality</translation>
@@ -581,6 +586,7 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="5683547024293500885">Chrome kan ikke søge efter opdateringer</translation>
 <translation id="5686790454216892815">Filnavnet er for langt</translation>
 <translation id="5687809546194252819"><ph name="APP_NAME" /> anvender <ph name="LANGUAGE" /> ved genstarten.</translation>
+<translation id="5691211010013816086">Du har <ph name="READING_LIST_COUNT" /> sider</translation>
 <translation id="569536719314091526">Oversæt denne side til et hvilket som helst sprog via knappen Flere valgmuligheder</translation>
 <translation id="5696597120588531049">Chrome kan hjælpe med at beskytte dig mod brud på datasikkerheden, usikre websites og meget mere</translation>
 <translation id="5697688514913266141">Din fil gemmes i <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK2" />Rediger<ph name="END_LINK2" />.</translation>
@@ -631,6 +637,7 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="5979084224081478209">Tjek adgangskoder</translation>
 <translation id="6000066717592683814">Behold Google</translation>
 <translation id="6005538289190791541">Foreslået adgangskode</translation>
+<translation id="6014293228235665243">Ulæst</translation>
 <translation id="6036057147555329831">Ekstra ICU</translation>
 <translation id="6039379616847168523">Gå til den næste fane</translation>
 <translation id="6040143037577758943">Luk</translation>
@@ -660,6 +667,7 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="6232535412751077445">Aktivering af "Do Not Track" betyder, at en anmodning medtages i din browsertrafik. Effekten afhænger af, om et website reagerer på anmodningen, og hvordan anmodningen fortolkes.
 
 Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, som ikke er baseret på andre websites, du har besøgt. Mange websites vil fortsat indsamle og bruge browserdata til f.eks. at forbedre sikkerheden, til at levere indhold, annoncer og anbefalinger og til at generere rapporteringsstatistik.</translation>
+<translation id="6243852395147506234">Klar til offlinebrug</translation>
 <translation id="624789221780392884">Opdateringen er klar</translation>
 <translation id="6255999984061454636">Indholdsforslag</translation>
 <translation id="6277522088822131679">Der opstod et problem med udskrivning af siden. Prøv igen.</translation>
@@ -667,6 +675,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="6292420053234093573">Når du bruger Chrome, accepterer du <ph name="BEGIN_LINK1" />Googles servicevilkår<ph name="END_LINK1" /> og de <ph name="BEGIN_LINK2" />yderligere servicevilkår for Google Chrome og Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="629730747756840877">Konto</translation>
 <translation id="6297765934698848803">Den organisation, der administrerer din enhed, har deaktiveret dit kamera.</translation>
+<translation id="6301525844455696527">Hold styr på din læseliste</translation>
 <translation id="6303969859164067831">Log ud, og deaktiver synkronisering</translation>
 <translation id="6312687380483398334">Webapps (lydløs)</translation>
 <translation id="6316139424528454185">Android-versionen understøttes ikke</translation>
@@ -745,6 +754,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="671481426037969117">Din timer for <ph name="FQDN" /> udløb. Den starter igen i morgen.</translation>
 <translation id="6738867403308150051">Downloader…</translation>
 <translation id="6767294960381293877">Åben liste i halv højde over enheder, der skal deles en fane med.</translation>
+<translation id="6783942555455976443">Gem denne side til senere, og få en påmindelse</translation>
 <translation id="6811034713472274749">Siden kan nu ses</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6845325883481699275">Hjælp med at forbedre sikkerheden i Chrome</translation>
@@ -861,6 +871,9 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="766587987807204883">Her vises artikler, som du kan læse, selv når du er offline</translation>
 <translation id="7682724950699840886">Prøv følgende tips: Sørg for, at der er nok ledig plads på din enhed, og prøv at eksportere igen.</translation>
 <translation id="7698359219371678927">Opret mail i <ph name="APP_NAME" /></translation>
+<translation id="7702724591845223485">Luk alle inkognitofaner for at rydde loginoplysninger og andre data fra Chrome.
+
+I Inkognito kan din aktivitet stadig være synlig for de websites, du besøger, din arbejdsgiver, din skole og din internetudbyder.</translation>
 <translation id="7704317875155739195">Autofuldfør søgninger og webadresser</translation>
 <translation id="7725024127233776428">De sider, du føjer et bogmærke til, vises her</translation>
 <translation id="7735637452482172701">Lås op med skærmlås</translation>
@@ -980,6 +993,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="8555836665334561807">Via Wi-Fi</translation>
 <translation id="8558485628462305855">Opdater ARCore for at se augmented reality-indhold</translation>
 <translation id="8559990750235505898">Tilbyd at oversætte sider på andre sprog</translation>
+<translation id="8560602726703398413">Se din læseliste under Bogmærker</translation>
 <translation id="8561196567344536112">1. Gå til Indstillinger\n2. Tryk på "Browserapp"\n3. Vælg <ph name="APP_NAME" /></translation>
 <translation id="8562452229998620586">Dine gemte adgangskoder vises her.</translation>
 <translation id="8569404424186215731">siden den <ph name="DATE" /></translation>

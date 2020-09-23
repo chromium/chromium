@@ -376,6 +376,7 @@
 <translation id="5098629044894065541">Hebräisch</translation>
 <translation id="5123433949759960244">Basketball</translation>
 <translation id="5129662217315786329">Polnisch</translation>
+<translation id="5132435854979302863">Philippinisch</translation>
 <translation id="5144820558584035333">Hangul 3 Set (390)</translation>
 <translation id="5145331109270917438">Änderungsdatum</translation>
 <translation id="515594325917491223">Schach</translation>
@@ -422,6 +423,7 @@
 <translation id="5464696796438641524">Polnische Tastatur</translation>
 <translation id="5465122519792752163">Nepali-Tastatur (InScript)</translation>
 <translation id="5469868506864199649">Italienisch</translation>
+<translation id="5484429245813572665">Indonesisch</translation>
 <translation id="5494920125229734069">Alle auswählen</translation>
 <translation id="5500122897333236901">Isländisch</translation>
 <translation id="5508696409934741614">Punkte</translation>
@@ -609,6 +611,7 @@
 <translation id="7649070708921625228">Hilfe</translation>
 <translation id="7654209398114106148"><ph name="NUMBER_OF_ITEMS" /> Elemente werden verschoben...</translation>
 <translation id="7658239707568436148">Abbrechen</translation>
+<translation id="7693909743393669729">Durch die Formatierung eines Laufwerks werden alle darauf gespeicherten Daten gelöscht und alle vorhandenen Partitionen entfernt. Dies schließt ggf. auch Partitionen ein, die nicht sichtbar sind. Diese Aktion kann nicht rückgängig gemacht werden.</translation>
 <translation id="7695430100978772476">"<ph name="DRIVE_NAME" />" konnte nicht formatiert werden</translation>
 <translation id="770015031906360009">Griechisch</translation>
 <translation id="7706319470528945664">Portugiesische Tastatur</translation>
@@ -640,6 +643,7 @@
 <translation id="78946041517601018">Geteilte Ablagen</translation>
 <translation id="7896906914454843592">US-amerikanische erweiterte Tastatur</translation>
 <translation id="7898607018410277265">Gujarati-Tastatur (neue Phonetik)</translation>
+<translation id="7908793776359722643">Durch die Formatierung einer Partition werden alle darauf gespeicherten Daten gelöscht. Diese Aktion kann nicht rückgängig gemacht werden.</translation>
 <translation id="7917972308273378936">Litauische Tastatur</translation>
 <translation id="7925686952655276919">Keine mobilen Daten für die Synchronisierung verwenden</translation>
 <translation id="7928710562641958568">Gerät auswerfen</translation>
@@ -727,6 +731,7 @@
 <translation id="8900820606136623064">Ungarisch</translation>
 <translation id="8901822611024316615">Tschechische Qwerty-Tastatur</translation>
 <translation id="8919081441417203123">Dänisch</translation>
+<translation id="8941776146379310519">Malaiisch</translation>
 <translation id="8960999352790021682">Bengalische Tastatur (phonetisch)</translation>
 <translation id="8965697826696209160">Nicht genügend Speicherplatz.</translation>
 <translation id="9017798300203431059">Russisch – phonetisch</translation>

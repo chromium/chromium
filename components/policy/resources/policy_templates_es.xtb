@@ -1499,6 +1499,15 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 <translation id="3219421230122020860">Modo de incógnito disponible</translation>
 <translation id="3220624000494482595">Si la aplicación de kiosco es una aplicación para Android, no tendrá control sobre la versión de <ph name="PRODUCT_OS_NAME" />, incluso si se asigna el valor <ph name="TRUE" /> a esta política.</translation>
 <translation id="322359555555487980">Determinar la disponibilidad de variaciones en <ph name="PRODUCT_OS_NAME" /></translation>
+<translation id="3225165352822164029">Si se le asigna un valor a esta política, se establecerá la URL de página principal de <ph name="PRODUCT_NAME" />. La página principal se abrirá con el botón de página principal. En ordenadores, las políticas <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> controlan las páginas que se abren al iniciar el navegador.
+
+      Si el usuario o <ph name="HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_NAME" /> establecen la página Nueva pestaña como página principal, esta política no tendrá efecto.
+
+       La URL debe tener una estructura estándar, como http://example.com o https://example.com. Si se asigna un valor a esta política, los usuarios no podrán cambiar la URL de su página principal en <ph name="PRODUCT_NAME" />.
+
+      Si no se asigna ningún valor a <ph name="HOMEPAGE_LOCATION_POLICY_NAME" /> ni a <ph name="HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_NAME" />, los usuarios podrán elegir su página principal.
+
+      En <ph name="MS_WIN_NAME" />, esta función solo está disponible en instancias que estén vinculadas a un dominio de <ph name="MS_AD_NAME" />, que se ejecuten en Windows 10 Pro o que se hayan registrado en <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />. En <ph name="MAC_OS_NAME" />, esta función solo está disponible en instancias que se gestionen mediante MDM o que estén vinculadas a un dominio a través de MCX.</translation>
 <translation id="3231837273069128027">Si se define esta política, se configura la disponibilidad y el comportamiento de las actualizaciones de firmware de <ph name="TPM_FIRMWARE_UPDATE_TPM" />.
 
       Especifica ajustes individuales en las propiedades archivo JSON:
@@ -1845,6 +1854,11 @@ Si se le asigna el valor "False", <ph name="PRODUCT_NAME" /> no usará notificac
       Esta política se eliminará de la versión 88 de Chrome.
 
       Visita https://www.chromestatus.com/feature/5989473649164288.</translation>
+<translation id="3691155504326059225">Si se habilita esta política, se establecerá la página Nueva pestaña como la página principal del usuario, independientemente de la ubicación de la URL de la página principal. Si se inhabilita esta política, la página principal del usuario nunca será la página Nueva pestaña, a menos que se defina chrome://newtab como la URL de su página principal.
+
+      Si se le asigna un valor a esta política, los usuarios no podrán cambiar su tipo de página principal en <ph name="PRODUCT_NAME" />. Si no se le asigna ningún valor, los usuarios podrán elegir si quieren establecer la página Nueva pestaña como su página principal.
+
+      En <ph name="MS_WIN_NAME" />, esta función solo está disponible en instancias que estén vinculadas a un dominio de <ph name="MS_AD_NAME" />, que se ejecuten en Windows 10 Pro o que se hayan registrado en <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />. En <ph name="MAC_OS_NAME" />, esta función solo está disponible en instancias que se gestionen mediante MDM o que estén vinculadas a un dominio a través de MCX.</translation>
 <translation id="3701121231485832347">Controla la configuración específica de los dispositivos con <ph name="PRODUCT_OS_NAME" /> gestionados con <ph name="MS_AD_NAME" />.</translation>
 <translation id="3702518095257671450">Confirmación remota</translation>
 <translation id="3702647575225525306"><ph name="POLICY_NAME" /> (el campo de una línea está obsoleto y desaparecerá en el futuro; a partir de ahora, debes utilizar el campo de varias líneas que aparece más abajo).</translation>
@@ -3143,6 +3157,13 @@ Si esta política se establece en False, el usuario no podrá canjear ofertas.</
       Si se le asigna el valor "Bloquear subidas y descargas de tipos de archivo no admitidos" (3), <ph name="PRODUCT_NAME" /> seguirá las reglas descritas en "Bloquear subidas de tipos de archivo no admitidos" y "Bloquear descargas de tipos de archivo no admitidos".
       </translation>
 <translation id="5535973522252703021">Lista de admisión de servidores de delegación Kerberos</translation>
+<translation id="5540753481451194959">Si se le asigna un valor a esta política, se especificará el comportamiento del sistema al iniciar el navegador. Si se desactiva esta opción, no se le asignará ningún valor, ya que <ph name="PRODUCT_NAME" /> debe tener un comportamiento definido para iniciar el navegador.
+
+      Si se le asigna un valor a esta política, los usuarios no podrán cambiarlo en <ph name="PRODUCT_NAME" />. Si no se le asigna ningún valor, los usuarios podrán cambiarlo.
+
+      Si se asigna el valor <ph name="POLICY_ENUM_RESTOREONSTARTUP_RESTOREONSTARTUPISLASTSESSION" /> a esta política, también se desactivarán algunas opciones que se basan en sesiones o realizan acciones al salir, como borrar los datos de navegación o las cookies de una sola sesión.
+
+      En <ph name="MS_WIN_NAME" />, esta función solo está disponible en instancias que estén vinculadas a un dominio de <ph name="MS_AD_NAME" />, que se ejecuten en Windows 10 Pro o que se hayan registrado en <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />. En <ph name="MAC_OS_NAME" />, esta función solo está disponible en instancias que se gestionen mediante MDM o que estén vinculadas a un dominio a través de MCX.</translation>
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="555022085242359084">Habilitar el contraste alto en la pantalla de inicio de sesión</translation>
 <translation id="555077880566103058">Permitir que todos los sitios web ejecuten automáticamente el complemento <ph name="FLASH_PLUGIN_NAME" /></translation>
@@ -3998,6 +4019,13 @@ Si la política está establecida en False, no se informará sobre los usuarios.
 
       Si se le asigna el valor "Disabled", se mostrará un mensaje de error en lugar de la solicitud de configuración de red.</translation>
 <translation id="6821268164692776674">Destinos <ph name="CLOUD_PRINT_NAME" /> y Guardar en Google Drive</translation>
+<translation id="6833023569065717572">Si se le asigna el valor "True" a la política, se usará el formato de reloj de 24 horas en la pantalla de inicio de sesión del dispositivo.
+
+      Si se le asigna el valor "False", se utilizará el formato de reloj de 12 horas en la pantalla de inicio de sesión del dispositivo.
+
+      Si no se asigna ningún valor a esta política, el dispositivo utilizará el formato de la configuración regional actual.
+
+      Las sesiones de usuario también se inician con el formato del dispositivo de forma predeterminada, pero el usuario puede cambiar el formato del reloj de una cuenta.</translation>
 <translation id="6833064854262015312">Si se le asigna el valor "true" a esta política, el modo de contraste alto se activa en la pantalla de inicio de sesión. Si se le asigna el valor "false", el modo de contraste alto se desactiva en la pantalla de inicio de sesión.
 
       Si se configura esta política, los usuarios pueden cambiar temporalmente el modo de contraste alto activándolo o desactivándolo. Cuando la pantalla de inicio de sesión se vuelve a cargar o permanece inactiva durante un minuto, vuelve a su estado original.
@@ -4179,6 +4207,7 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
       Definir la lista de URLs de esta política tiene el mismo resultado que asignar la instrucción de línea de comandos --unsafely-treat-insecure-origin-as-secure a una lista con las mismas URL separadas por comas. Esta política anula tanto la instrucción de línea de comandos como UnsafelyTreatInsecureOriginAsSecure si está presente.
 
       Para obtener más información sobre los contextos seguros, consulta la página Secure Contexts (https://www.w3.org/TR/secure-contexts).</translation>
+<translation id="7033985774616781500">Inhabilitar la cámara, la configuración del navegador, los ajustes del sistema operativo y las funciones de análisis</translation>
 <translation id="7037812781389976160">Controlar la posición de la estantería de <ph name="PRODUCT_OS_NAME" />.
 
       Si se asigna el valor "Bottom" a esta política, la estantería se colocará en la parte inferior de la pantalla.
@@ -4668,6 +4697,11 @@ Si esta opción no está establecida o está establecida en True, los dispositiv
       Esta política solo se aplica a usuarios menores de edad.
       Cuando esta política está activada, el código de acceso parental se puede verificar en el dispositivo del menor.
       Cuando esta política está desactivada, no se puede verificar el código de acceso parental en el dispositivo del menor.</translation>
+<translation id="7623187731914468284">Si se le asigna el valor RestoreOnStartupIsURLs a <ph name="RESTORE_ON_STARTUP_POLICY_NAME" />, al establecer <ph name="RESTORE_ON_STARTUP_URLS_POLICY_NAME" /> en una lista de URLs, se especificarán las URL que se abren.
+
+      Si no se le asigna ningún valor, la página Nueva pestaña se abrirá al iniciar el navegador.
+
+      En <ph name="MS_WIN_NAME" />, esta función solo está disponible en instancias que estén vinculadas a un dominio de <ph name="MS_AD_NAME" />, que se ejecuten en Windows 10 Pro o que se hayan registrado en <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />. En <ph name="MAC_OS_NAME" />, esta función solo está disponible en instancias que se gestionen mediante MDM o que estén vinculadas a un dominio a través de MCX.</translation>
 <translation id="7625444193696794922">Permite especificar el canal de lanzamiento al que se vinculará este dispositivo.</translation>
 <translation id="7629840767216985001">Si se le asigna el valor "true" a esta política, el cursor grande se activa en la pantalla de inicio de sesión. Si se le asigna el valor "false", el cursor grande se desactiva en la pantalla de inicio de sesión.
 
@@ -4768,6 +4802,13 @@ Si esta opción no está establecida o está establecida en True, los dispositiv
 <translation id="7754704193130578113">Preguntar dónde se guardará cada archivo antes de descargarlo</translation>
 <translation id="7758378441185523981">Habilita la autenticación pasiva para tipos de perfil.</translation>
 <translation id="7763614521440615342">Mostrar sugerencias de contenido en la página Nueva pestaña</translation>
+<translation id="7765753178910647492">Te permite establecer una lista con funciones de <ph name="PRODUCT_OS_NAME" /> para inhabilitarlas.
+
+      Si se inhabilita cualquiera de estas funciones, el usuario no podrá acceder a ella desde la interfaz y la verá como inhabilitada por el administrador.
+
+      Si no se asigna ningún valor a esta política, todas las funciones de <ph name="PRODUCT_OS_NAME" /> estarán habilitadas de forma predeterminada y el usuario podrá utilizar cualquiera de ellas.
+
+      Nota: Actualmente, la función de análisis está inhabilitada mediante una marca de función. Si el usuario la habilita mediante la marca de función, la función se podrá seguir inhabilitando con esta política.</translation>
 <translation id="7765879851993224640">Permitir que se use el inicio de sesión con Smart Lock</translation>
 <translation id="7774768074957326919">Utilizar configuración de proxy del sistema</translation>
 <translation id="777734450201217641">Esta política habilita las combinaciones de teclas para las funciones de accesibilidad en la pantalla de inicio de sesión.
@@ -4895,6 +4936,7 @@ Si esta opción no está establecida o está establecida en True, los dispositiv
           Si no se establece esta política, se utiliza un valor de tiempo predeterminado.
 
           El valor de esta política debe especificarse en milisegundos. Los valores deben ser inferiores o iguales al retraso de inactividad.</translation>
+<translation id="7995610550667275367">Análisis (compatible desde la versión 87)</translation>
 <translation id="8001701200415781021">Restringir las cuentas de Google que se pueden establecer como cuentas principales de navegador en <ph name="PRODUCT_NAME" /></translation>
 <translation id="8003853057959146975">Envía archivos para inspeccionar si se han infringido las normas de protección de datos sensibles</translation>
 <translation id="8006219716745491366">Si <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> está activada y se asigna un valor a <ph name="DEFAULT_SEARCH_PROVIDER_ALTERNATE_URLS_POLICY_NAME" />, se especificará una lista con URL alternativas para extraer términos de búsqueda del buscador. Las URL deben incluir la cadena <ph name="SEARCH_TERM_MARKER" />.
@@ -5031,6 +5073,9 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
           Si la acción es la suspensión, <ph name="PRODUCT_OS_NAME" /> se puede configurar por separado para bloquear o no la pantalla antes de entrar en modo de suspensión.</translation>
 <translation id="8214600119442850823">Permite configurar el Gestor de contraseñas.</translation>
 <translation id="8217516105848565518">Esta política está obsoleta. Sustitúyela por la política RemoteAccessHostDomainList.</translation>
+<translation id="8219777886736887686">Esta política controla el comando que se utilizará para abrir URLs en un navegador alternativo. Se le puede asignar uno de estos valores: <ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" />, <ph name="FIREFOX_VALUE_PLACEHOLDER" />, <ph name="SAFARI_VALUE_PLACEHOLDER" />, <ph name="OPERA_VALUE_PLACEHOLDER" />, <ph name="EDGE_VALUE_PLACEHOLDER" /> o una ruta de archivo. Si se asigna una ruta de archivo a esta política, el archivo se usará como ejecutable. <ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" /> y <ph name="EDGE_VALUE_PLACEHOLDER" /> solo están disponibles en <ph name="MS_WIN_NAME" />, y <ph name="SAFARI_VALUE_PLACEHOLDER" /> solo está disponible en <ph name="MS_WIN_NAME" /> y <ph name="MAC_OS_NAME" />.
+
+      Si no se asigna ningún valor a esta política, se usará el navegador predeterminado según el sistema operativo: <ph name="IE_PRODUCT_NAME" /> en <ph name="MS_WIN_NAME" /> o <ph name="SAFARI_PRODUCT_NAME" /> en <ph name="MAC_OS_NAME" />. No se podrá abrir ningún navegador alternativo en <ph name="LINUX_OS_NAME" />.</translation>
 <translation id="8220156281401380422">Configurar la lista de permitidos de mensajes nativos</translation>
 <translation id="8244171102276095471">Habilita los conjuntos de cifrado de RC4 en TLS</translation>
 <translation id="8244525275280476362">Retraso de recuperación máximo después de validar una política</translation>
@@ -5409,6 +5454,9 @@ Te recomendamos que utilices GPO para configurar la política en Windows, aunque
 
       Esta política no afecta a la capacidad de los usuarios de configurar impresoras en determinados dispositivos. La política está pensada para ser complementaria a la configuración de impresoras de los usuarios.</translation>
 <translation id="8764477907716150749">Esta polí­tica solo está destinada a uso interno de <ph name="PRODUCT_NAME" />.</translation>
+<translation id="8767743923206070405">Si se habilita esta política, se mostrará el botón de página principal en la barra de herramientas de <ph name="PRODUCT_NAME" />. Si se inhabilita esta política, no se mostrará el botón de página principal.
+
+      Si se le asigna un valor a esta política, los usuarios no podrán cambiarlo en <ph name="PRODUCT_NAME" />. Si no se le asigna ningún valor, los usuarios podrán decidir si quieren que se muestre el botón de página principal.</translation>
 <translation id="877185520360032968">Si se le asigna un valor a esta política, cambia el directorio predeterminado donde Chrome descarga los archivos, pero los usuarios pueden cambiar el directorio.
 
       Si no se le asigna ningún valor, Chrome usará su directorio predeterminado específico de la plataforma.

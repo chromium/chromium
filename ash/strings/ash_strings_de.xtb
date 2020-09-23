@@ -137,6 +137,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="2341729377289034582">Vertikale Ausrichtung aktiv</translation>
 <translation id="2352467521400612932">Eingabestift-Einstellungen</translation>
 <translation id="2354174487190027830"><ph name="NAME" /> wird aktiviert</translation>
+<translation id="2356210126990741501">Ihr Smartphone ist nicht online und wir können zurzeit keine Verbindung herstellen.</translation>
 <translation id="2359808026110333948">Weiter</translation>
 <translation id="2365393535144473978">Bei Aktivierung der mobilen Daten wird auch Bluetooth aktiviert.</translation>
 <translation id="2369165858548251131">"Hallo" auf Chinesisch</translation>
@@ -169,6 +170,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="2705001408393684014">Mikrofon ein-/ausschalten. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Aufwärts</translation>
 <translation id="2718395828230677721">Nachtlicht</translation>
+<translation id="2727175239389218057">Antworten</translation>
 <translation id="2727977024730340865">Das Gerät ist an ein Schwachstrom-Ladegerät angeschlossen. Möglicherweise kann der Akku nicht zuverlässig aufgeladen werden.</translation>
 <translation id="2743387203779672305">In Zwischenablage kopieren</translation>
 <translation id="2792498699870441125">Alt+Suchtaste</translation>
@@ -177,6 +179,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="2825619548187458965">Ablage</translation>
 <translation id="2841907151129139818">Zum Tabletmodus gewechselt</translation>
 <translation id="2844169650293029770">USB-C-Gerät (Port vorne links)</translation>
+<translation id="2846247265041961677">Hoppla! Smartphone nicht gefunden</translation>
 <translation id="2865888419503095837">Netzwerkinformationen</translation>
 <translation id="2872961005593481000">Herunterfahren</translation>
 <translation id="2878884018241093801">Keine kürzlich verwendeten Elemente</translation>
@@ -304,6 +307,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Aus für 1 App}other{Aus für # Apps}}</translation>
 <translation id="4072264167173457037">Durchschnittliches Signal</translation>
 <translation id="4112140312785995938">Zurück springen</translation>
+<translation id="4114315158543974537">Phone Hub aktivieren</translation>
 <translation id="4129129681837227511">Wenn Sie Benachrichtigungen auf dem Sperrbildschirm sehen möchten, entsperren Sie das Gerät, um die Einstellung zu ändern</translation>
 <translation id="4146833061457621061">Musik abspielen</translation>
 <translation id="4149156641122542261"><ph name="DEVICE_TYPE" /> verwaltet von <ph name="DOMAIN" /></translation>
@@ -435,6 +439,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="5648021990716966815">Mikrofonanschluss</translation>
 <translation id="5669267381087807207">Wird aktiviert</translation>
 <translation id="5673434351075758678">Nach der Synchronisierung der Einstellungen von "<ph name="FROM_LOCALE" />" zu "<ph name="TO_LOCALE" />" geändert.</translation>
+<translation id="5679050765726761783">Leistungsschwacher Adapter angeschlossen</translation>
 <translation id="5682642926269496722">Google Assistant steht für das aktuelle Nutzerkonto nicht zur Verfügung.</translation>
 <translation id="5689633613396158040">Mit der Funktion "Nachtlicht" ist der Bildschirm bei schwachem Licht nicht störend hell und das Lesen fällt leichter. Wenn Sie hier tippen, können Sie einstellen, wann die Funktion eingeschaltet werden soll, oder sie ganz deaktivieren.</translation>
 <translation id="5691772641933328258">Fingerabdruck nicht erkannt</translation>
@@ -459,6 +464,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">An</translation>
 <translation id="5920710855273935292">Mikrofon ist stummgeschaltet.</translation>
+<translation id="594179686076170922">Verbindung zum Smartphone wird hergestellt…</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> ist aktiviert.</translation>
 <translation id="5947494881799873997">Rückgängig machen</translation>
 <translation id="595202126637698455">Leistungsnachverfolgung aktiviert</translation>
@@ -548,6 +554,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="6857811139397017780"><ph name="NETWORKSERVICE" /> aktivieren</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Noch eine Ziffer}other{Noch # Ziffern}}</translation>
 <translation id="6878400149835617132">Tastenkombination deaktiviert</translation>
+<translation id="6886172995547742638">Die Leistungsfähigkeit Ihres <ph name="DEVICE_TYPE" /> kann hierdurch beeinträchtigt werden. Verwenden Sie ein zugelassenes USB-C-Netzteil mit einer Leistung von mindestens <ph name="PREFERRED_MINIMUM_POWER" /> W.</translation>
 <translation id="6896758677409633944">Kopieren</translation>
 <translation id="6910714959251846841">Damit dieses Update installiert werden kann, muss auf Ihrem Gerät ein Powerwash durchgeführt werden. Informieren Sie sich über das aktuelle <ph name="SYSTEM_APP_NAME" />-Update.</translation>
 <translation id="6919251195245069855">Ihre Smartcard wurde nicht erkannt. Bitte versuchen Sie es noch einmal.</translation>

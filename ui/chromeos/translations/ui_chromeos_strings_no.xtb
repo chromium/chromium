@@ -376,6 +376,7 @@
 <translation id="5098629044894065541">Hebraisk</translation>
 <translation id="5123433949759960244">Basketball</translation>
 <translation id="5129662217315786329">Polsk</translation>
+<translation id="5132435854979302863">Filippinsk</translation>
 <translation id="5144820558584035333">Hangul 3-sett (390)</translation>
 <translation id="5145331109270917438">Dato endret</translation>
 <translation id="515594325917491223">Sjakk</translation>
@@ -422,6 +423,7 @@
 <translation id="5464696796438641524">Polsk tastatur</translation>
 <translation id="5465122519792752163">Nepali-tastatur (InScript)</translation>
 <translation id="5469868506864199649">Italiensk</translation>
+<translation id="5484429245813572665">Indonesisk</translation>
 <translation id="5494920125229734069">Velg alle</translation>
 <translation id="5500122897333236901">Islandsk</translation>
 <translation id="5508696409934741614">Prikker</translation>
@@ -609,6 +611,7 @@
 <translation id="7649070708921625228">Hjelp</translation>
 <translation id="7654209398114106148">Flytter <ph name="NUMBER_OF_ITEMS" /> elementer …</translation>
 <translation id="7658239707568436148">Avbryt</translation>
+<translation id="7693909743393669729">Når du formaterer stasjoner, slettes alle data som er lagret på dem, og alle eksisterende partisjoner fjernes, inkludert partisjoner som kanskje ikke er synlige. Denne handlingen kan ikke angres.</translation>
 <translation id="7695430100978772476">Kunne ikke formatere <ph name="DRIVE_NAME" /></translation>
 <translation id="770015031906360009">Gresk</translation>
 <translation id="7706319470528945664">Portugisisk tastatur</translation>
@@ -640,6 +643,7 @@
 <translation id="78946041517601018">Delte disker</translation>
 <translation id="7896906914454843592">USA-tastatur (utvidet)</translation>
 <translation id="7898607018410277265">Gujarati-tastatur (nytt fonetisk)</translation>
+<translation id="7908793776359722643">Formatering av partisjonen sletter alle data som er lagret på den. Denne handlingen kan ikke angres.</translation>
 <translation id="7917972308273378936">Litauisk tastatur</translation>
 <translation id="7925686952655276919">Ikke bruk mobildata ved synkronisering</translation>
 <translation id="7928710562641958568">Løs ut enhet</translation>
@@ -727,6 +731,7 @@
 <translation id="8900820606136623064">Ungarsk</translation>
 <translation id="8901822611024316615">Tsjekkisk QWERTY-tastatur</translation>
 <translation id="8919081441417203123">Dansk</translation>
+<translation id="8941776146379310519">Malayisk</translation>
 <translation id="8960999352790021682">Bengali-tastatur (fonetisk)</translation>
 <translation id="8965697826696209160">Du har ikke nok ledig plass.</translation>
 <translation id="9017798300203431059">Russisk fonetisk</translation>

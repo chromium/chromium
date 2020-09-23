@@ -307,6 +307,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{No en una app}other{No en # apps}}</translation>
 <translation id="4072264167173457037">Senyal mitjà</translation>
 <translation id="4112140312785995938">Retrocedeix</translation>
+<translation id="4114315158543974537">Activa Phone Hub</translation>
 <translation id="4129129681837227511">Per veure notificacions a la pantalla de bloqueig, desbloqueja el dispositiu per canviar aquesta opció</translation>
 <translation id="4146833061457621061">Reprodueix música</translation>
 <translation id="4149156641122542261"><ph name="DEVICE_TYPE" /> gestionat per <ph name="DOMAIN" /></translation>
@@ -438,6 +439,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="5648021990716966815">Connector per al micròfon</translation>
 <translation id="5669267381087807207">Activant</translation>
 <translation id="5673434351075758678">Després de sincronitzar la configuració, canvia <ph name="FROM_LOCALE" /> per <ph name="TO_LOCALE" />.</translation>
+<translation id="5679050765726761783">S'ha connectat un adaptador de baixa potència</translation>
 <translation id="5682642926269496722">L'Assistent de Google no està disponible per al compte d'usuari actual.</translation>
 <translation id="5689633613396158040">Amb la funció Llum nocturna, és més fàcil mirar la pantalla i llegir-hi amb poca llum. Toca per canviar l'hora en què s'activa o per desactivar-la completament.</translation>
 <translation id="5691772641933328258">L'empremta digital no s'ha reconegut</translation>
@@ -552,6 +554,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="6857811139397017780">Activa <ph name="NETWORKSERVICE" /></translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Falta un dígit}other{Falten # dígits}}</translation>
 <translation id="6878400149835617132">S'ha desactivat la drecera</translation>
+<translation id="6886172995547742638">És possible que el rendiment del teu dispositiu <ph name="DEVICE_TYPE" /> es vegi disminuït. Utilitza un adaptador de corrent USB-C certificat de <ph name="PREFERRED_MINIMUM_POWER" /> W o superior.</translation>
 <translation id="6896758677409633944">Copia</translation>
 <translation id="6910714959251846841">Aquesta actualització requereix executar la funció Powerwash al dispositiu. Obtén més informació sobre l'última actualització de <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="6919251195245069855">No s'ha reconegut la targeta intel·ligent. Torna-ho a provar.</translation>

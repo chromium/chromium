@@ -137,6 +137,7 @@
 <translation id="2341729377289034582">Зафіксаваны вертыкальны фармат</translation>
 <translation id="2352467521400612932">Налады стыла</translation>
 <translation id="2354174487190027830">Ідзе актывацыя сеткі <ph name="NAME" /></translation>
+<translation id="2356210126990741501">Здаецца, ваш тэлефон не падключаны да інтэрнэту. Мы не можам атрымаць доступ да змесціва на ім.</translation>
 <translation id="2359808026110333948">Працягнуць</translation>
 <translation id="2365393535144473978">Пры ўключэнні мабільнай перадачы даных таксама ўключыцца Bluetooth.</translation>
 <translation id="2369165858548251131">"Вітаю" па-кітайску</translation>
@@ -169,6 +170,7 @@
 <translation id="2705001408393684014">Уключыць або выключыць мікрафон. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Уверх</translation>
 <translation id="2718395828230677721">Начная падсветка</translation>
+<translation id="2727175239389218057">Адказаць</translation>
 <translation id="2727977024730340865">Падключана зарадная прылада нізкай магутнасці. Зарадка акумулятара можа быць нестабільнай.</translation>
 <translation id="2743387203779672305">Скапіраваць у буфер абмену</translation>
 <translation id="2792498699870441125">Alt+Пошук</translation>
@@ -177,6 +179,7 @@
 <translation id="2825619548187458965">Паліца</translation>
 <translation id="2841907151129139818">Уключаны рэжым планшэта</translation>
 <translation id="2844169650293029770">Прылада USB-C (пярэдні порт злева)</translation>
+<translation id="2846247265041961677">На жаль, не ўдалося знайсці тэлефон</translation>
 <translation id="2865888419503095837">Інфармацыя аб сетцы</translation>
 <translation id="2872961005593481000">Завяршыць працу</translation>
 <translation id="2878884018241093801">Няма нядаўніх элементаў</translation>
@@ -304,6 +307,7 @@
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Выключана для адной праграмы}one{Выключана для # праграмы}few{Выключана для # праграм}many{Выключана для # праграм}other{Выключана для # праграмы}}</translation>
 <translation id="4072264167173457037">Умераны сігнал</translation>
 <translation id="4112140312785995938">Перайсці назад</translation>
+<translation id="4114315158543974537">Уключэнне Phone Hub</translation>
 <translation id="4129129681837227511">Каб бачыць апавяшчэнні на экране блакіроўкі, разблакіруйце прыладу і змяніце адпаведную наладу</translation>
 <translation id="4146833061457621061">Уключыць музыку</translation>
 <translation id="4149156641122542261"><ph name="DEVICE_TYPE" /> знаходзіцца пад кіраваннем дамена <ph name="DOMAIN" /></translation>
@@ -435,6 +439,7 @@
 <translation id="5648021990716966815">Раздым для мікрафона</translation>
 <translation id="5669267381087807207">Ідзе актывацыя</translation>
 <translation id="5673434351075758678">З мовы "<ph name="FROM_LOCALE" />" на мову "<ph name="TO_LOCALE" />" пасля сінхранізацыі налад.</translation>
+<translation id="5679050765726761783">Падключаны адаптар сілкавання малой магутнасці</translation>
 <translation id="5682642926269496722">Памочнік Google недаступны для бягучага ўліковага запісу карыстальніка.</translation>
 <translation id="5689633613396158040">У рэжыме Начной падсветкі зручней глядзець на экран пры цьмяным асвятленні. Каб змяніць час уключэння начнога рэжыму або выключыць рэжым цалкам, націсніце тут.</translation>
 <translation id="5691772641933328258">Адбітак пальца не распазнаны</translation>
@@ -459,6 +464,7 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Уключана</translation>
 <translation id="5920710855273935292">Мікрафон выключаны.</translation>
+<translation id="594179686076170922">Ідзе падключэнне да тэлефона...</translation>
 <translation id="5946788582095584774">Стан функцыі "<ph name="FEATURE_NAME" />": уключана.</translation>
 <translation id="5947494881799873997">Вярнуць</translation>
 <translation id="595202126637698455">Уключана трасіроўка прадукцыйнасці</translation>
@@ -548,6 +554,7 @@
 <translation id="6857811139397017780">Уключыць <ph name="NETWORKSERVICE" /></translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Засталася адна лічба}one{Засталася # лічба}few{Засталося # лічбы}many{Засталося # лічбаў}other{Засталося # лічбы}}</translation>
 <translation id="6878400149835617132">Спалучэнне клавіш выключана</translation>
+<translation id="6886172995547742638">Прадукцыйнасць прылады <ph name="DEVICE_TYPE" /> можа знізіцца. Выкарыстоўвайце адаптар сілкавання USB-C з магутнасцю, не меншай за <ph name="PREFERRED_MINIMUM_POWER" /> Вт</translation>
 <translation id="6896758677409633944">Капіраваць</translation>
 <translation id="6910714959251846841">Для ўсталявання абнаўлення патрабуецца скід прылад з дапамогай Powerwash. Даведайцеся больш пра апошняе абнаўленне <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="6919251195245069855">Не ўдалося распазнаць вашу разумную картку. Паўтарыце спробу.</translation>

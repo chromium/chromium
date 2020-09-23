@@ -137,6 +137,7 @@
 <translation id="2341729377289034582">Заключено във вертикална ориентация</translation>
 <translation id="2352467521400612932">Настройки за писалката</translation>
 <translation id="2354174487190027830">„<ph name="NAME" />“ се активира</translation>
+<translation id="2356210126990741501">Телефонът ви не е онлайн и в момента не можем да ви покажем всичко от него.</translation>
 <translation id="2359808026110333948">Напред</translation>
 <translation id="2365393535144473978">Активирането на мобилните данни ще включи Bluetooth.</translation>
 <translation id="2369165858548251131">„Hello“ in Chinese</translation>
@@ -169,6 +170,7 @@
 <translation id="2705001408393684014">Превключване на микрофона. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Клавиш за нагоре</translation>
 <translation id="2718395828230677721">Нощно осветление</translation>
+<translation id="2727175239389218057">Отговор</translation>
 <translation id="2727977024730340865">Използва се зарядно устройство с малка мощност. Зареждането на батерията може да не е надеждно.</translation>
 <translation id="2743387203779672305">Копиране в буферната памет</translation>
 <translation id="2792498699870441125">Alt + търсене</translation>
@@ -177,6 +179,7 @@
 <translation id="2825619548187458965">Лавица</translation>
 <translation id="2841907151129139818">Превключихте към режима на таблет</translation>
 <translation id="2844169650293029770">Устройство с USB-C (предният ляв порт)</translation>
+<translation id="2846247265041961677">Ами сега! Не намираме телефона</translation>
 <translation id="2865888419503095837">Информация за мрежата</translation>
 <translation id="2872961005593481000">Изключване</translation>
 <translation id="2878884018241093801">Няма скорошни елементи</translation>
@@ -461,6 +464,7 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Включено</translation>
 <translation id="5920710855273935292">Микрофонът е заглушен.</translation>
+<translation id="594179686076170922">Установява се връзка с телефона ви…</translation>
 <translation id="5946788582095584774">„<ph name="FEATURE_NAME" />“ е включено.</translation>
 <translation id="5947494881799873997">Възстановяване</translation>
 <translation id="595202126637698455">Проследяването на ефективността е активирано</translation>

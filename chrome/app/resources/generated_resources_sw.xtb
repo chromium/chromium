@@ -1215,7 +1215,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2419706071571366386">Kwa usalama, ondoka kwenye akaunti wakati kompyuta yako haitumiki.</translation>
 <translation id="2422125132043002186">Imeghairi upakiaji Linux</translation>
 <translation id="2423578206845792524">Hifadhi picha kama...</translation>
-<translation id="2424424966051154874">{0,plural, =1{Mgeni}other{Wageni (#)}}</translation>
+<translation id="2424424966051154874">{0,plural, =1{Mgeni}other{Mgeni (#)}}</translation>
 <translation id="2428510569851653187">Eleza shughuli ulizokuwa ukifanya kichupo kilipoacha kufanya kazi</translation>
 <translation id="2428939361789119025">Zima Wi-Fi</translation>
 <translation id="2431027948063157455">Programu ya Mratibu wa Google haijapakiwa, tafadhali angalia muunganisho wako wa mtandao na ujaribu tena.</translation>
@@ -3954,7 +3954,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5722086096420375088">Kijani na nyeupe</translation>
 <translation id="5722930212736070253">Lahaula! Programu ya Zip Archiver imekumbana na hitilafu.</translation>
 <translation id="5723034813131030312">Zuia tovuti zisiunganishe kwenye vifaa vilivyo na msimbo</translation>
-<translation id="572328651809341494">Vichupo vya hivi majuzi</translation>
+<translation id="572328651809341494">Vichupo vya hivi punde</translation>
 <translation id="5723508132121499792">Hakuna programu ya maandharinyuma inayoendesha</translation>
 <translation id="5723967018671998714">Vidakuzi vya washirika wengine vimezuiwa katika Hali Fiche</translation>
 <translation id="5727728807527375859">Viendelezi, programu, na mandhari vinaweza kudhuru kompyuta yako. Je, una hakika unataka kuendelea?</translation>
@@ -4252,7 +4252,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6077189836672154517">Vidokezo na taarifa kuhusu <ph name="DEVICE_TYPE" /></translation>
 <translation id="6077476112742402730">Zungumza ili iandike</translation>
 <translation id="6078045608615316905">Tunga msimbo wa QR wa Picha hii</translation>
-<translation id="6078121669093215958">{0,plural, =1{Mgeni}other{Madirisha # ya wageni yamefunguliwa}}</translation>
+<translation id="6078121669093215958">{0,plural, =1{Mgeni}other{Madirisha # ya mgeni yamefunguliwa}}</translation>
 <translation id="6078323886959318429">Ongeza njia ya mkato</translation>
 <translation id="6078752646384677957">Tafadhali angalia maikrofoni yako na viwango vya sauti.</translation>
 <translation id="6078769373519310690">"<ph name="CHROME_EXTENSION_NAME" />" inataka kuunganisha kwenye kifaa cha HID</translation>
@@ -4768,7 +4768,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6704062477274546131">Usuluhishaji wa DNS</translation>
 <translation id="6706210727756204531">Upeo</translation>
 <translation id="6707389671160270963">Cheti cha Teja ya SSL</translation>
-<translation id="670893696722244877">Tafuta kulingana na lugha au majina ya miundo ya kibodi</translation>
+<translation id="670893696722244877">Tafuta kulingana na lugha au majina ya kibodi</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> na Kichupo Kingine Kimoja}other{<ph name="PAGE_TITLE" /> na Vichupo Vingine #}}</translation>
 <translation id="6709133671862442373">Habari</translation>
 <translation id="6709357832553498500">Unganisha ukitumia <ph name="EXTENSIONNAME" /></translation>

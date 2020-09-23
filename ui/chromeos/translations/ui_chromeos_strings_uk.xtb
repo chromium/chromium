@@ -249,7 +249,7 @@
 <translation id="3749289110408117711">Ім’я файлу</translation>
 <translation id="3780536599611287598">У вас немає дозволу переміщати файли в папку "<ph name="FOLDER_NAME" />".</translation>
 <translation id="3786301125658655746">Ви в режимі офлайн</translation>
-<translation id="3789841737615482174">Встановити</translation>
+<translation id="3789841737615482174">Установити</translation>
 <translation id="3793469551756281394">Залишилося приблизно <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /></translation>
 <translation id="3798449238516105146">Версія</translation>
 <translation id="3801082500826908679">Фарерська</translation>
@@ -376,6 +376,7 @@
 <translation id="5098629044894065541">Іврит</translation>
 <translation id="5123433949759960244">Баскетбол</translation>
 <translation id="5129662217315786329">Польська</translation>
+<translation id="5132435854979302863">Філіппінська</translation>
 <translation id="5144820558584035333">Клавіатура хангул із 3 наборами клавіш (390)</translation>
 <translation id="5145331109270917438">Дата змінення</translation>
 <translation id="515594325917491223">Шахи</translation>
@@ -422,6 +423,7 @@
 <translation id="5464696796438641524">Польська розкладка</translation>
 <translation id="5465122519792752163">Непальська клавіатура (індійські шрифти)</translation>
 <translation id="5469868506864199649">Італійська</translation>
+<translation id="5484429245813572665">Індонезійська</translation>
 <translation id="5494920125229734069">Вибрати все</translation>
 <translation id="5500122897333236901">Ісландська</translation>
 <translation id="5508696409934741614">Крапки</translation>
@@ -609,6 +611,7 @@
 <translation id="7649070708921625228">Довідка</translation>
 <translation id="7654209398114106148">Переміщення елементів (<ph name="NUMBER_OF_ITEMS" />)…</translation>
 <translation id="7658239707568436148">Скасувати</translation>
+<translation id="7693909743393669729">Якщо відформатувати диск, усі наявні на ньому дані та розділи (зокрема, невидимі) буде видалено. Цю дію не можна відмінити.</translation>
 <translation id="7695430100978772476">Не вдалося відформатувати диск "<ph name="DRIVE_NAME" />"</translation>
 <translation id="770015031906360009">Грецька</translation>
 <translation id="7706319470528945664">Португальська розкладка</translation>
@@ -640,6 +643,7 @@
 <translation id="78946041517601018">Спільні диски</translation>
 <translation id="7896906914454843592">Американська клавіатура (розширена)</translation>
 <translation id="7898607018410277265">Клавіатура гуджараті (нова фонетична)</translation>
+<translation id="7908793776359722643">Якщо відформатувати розділ, усі збережені в ньому дані буде видалено. Цю дію не можна відмінити.</translation>
 <translation id="7917972308273378936">Литовська розкладка</translation>
 <translation id="7925686952655276919">Не використовувати мобільне передавання даних для синхронізації</translation>
 <translation id="7928710562641958568">Витягнути пристрій</translation>
@@ -727,6 +731,7 @@
 <translation id="8900820606136623064">Угорська</translation>
 <translation id="8901822611024316615">Чеська клавіатура (QWERTY)</translation>
 <translation id="8919081441417203123">Данська</translation>
+<translation id="8941776146379310519">Малайська</translation>
 <translation id="8960999352790021682">Бенгальська клавіатура (фонетична)</translation>
 <translation id="8965697826696209160">Недостатньо місця.</translation>
 <translation id="9017798300203431059">Російська (фонетична)</translation>

@@ -51,6 +51,7 @@
 <translation id="2315043854645842844">Аперацыйная сістэма не падтрымлівае выбар сертыфіката кліента.</translation>
 <translation id="2359808026110333948">Працягнуць</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> МБ</translation>
+<translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Дазволены <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}one{Дазволены <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}few{Дазволены <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}many{Дазволены <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}other{Дазволены <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}}</translation>
 <translation id="2434158240863470628">Спампоўванне завершана <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2440823041667407902">Доступ да даных геалакацыі</translation>
 <translation id="2482878487686419369">Апавяшчэнні</translation>
@@ -190,6 +191,7 @@
 <translation id="6447842834002726250">Файлы cookie</translation>
 <translation id="6527303717912515753">Абагуліць</translation>
 <translation id="6545864417968258051">Пошук прылад Bluetooth</translation>
+<translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Заблакіраваны <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}one{Заблакіраваны <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}few{Заблакіраваны <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}many{Заблакіраваны <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}other{Заблакіраваны <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}}</translation>
 <translation id="6561560012278703671">Забараніць сайтам адцягваць вашу ўвагу запытамі дазволу на паказ апавяшчэнняў. Паказваць замест іх індыкатар блакіроўкі ў адрасным радку</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> ГБ</translation>
 <translation id="6612358246767739896">Абароненае змесціва</translation>
@@ -292,6 +294,7 @@
 <translation id="8959122750345127698">Пераход па наступным адрасе недаступны: <ph name="URL" /></translation>
 <translation id="9019902583201351841">Пад кіраваннем вашых бацькоў</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}few{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}many{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289">Уключыце для праграмы "<ph name="APP_NAME" />" дазволы ў <ph name="BEGIN_LINK" />Наладах Android<ph name="END_LINK" />.</translation>
 <translation id="945632385593298557">Доступ да мікрафона</translation>
 <translation id="965817943346481315">Блакіраваць, калі сайт паказвае назойлівую рэкламу або рэкламу, якая ўводзіць у зман (рэкамендуецца)</translation>

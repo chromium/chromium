@@ -376,6 +376,7 @@
 <translation id="5098629044894065541">Hebreu</translation>
 <translation id="5123433949759960244">Pilota de bàsquet</translation>
 <translation id="5129662217315786329">Polonès</translation>
+<translation id="5132435854979302863">Filipí</translation>
 <translation id="5144820558584035333">Configuració 3 de hangul (390)</translation>
 <translation id="5145331109270917438">Data de modificació</translation>
 <translation id="515594325917491223">Escacs</translation>
@@ -422,6 +423,7 @@
 <translation id="5464696796438641524">Teclat polonès</translation>
 <translation id="5465122519792752163">Teclat nepalès (InScript)</translation>
 <translation id="5469868506864199649">Italià</translation>
+<translation id="5484429245813572665">Indonesi</translation>
 <translation id="5494920125229734069">Selecciona-ho tot</translation>
 <translation id="5500122897333236901">Islandès</translation>
 <translation id="5508696409934741614">Punts</translation>
@@ -609,6 +611,7 @@
 <translation id="7649070708921625228">Ajuda</translation>
 <translation id="7654209398114106148">S'estan traslladant <ph name="NUMBER_OF_ITEMS" /> elements...</translation>
 <translation id="7658239707568436148">Cancel·la</translation>
+<translation id="7693909743393669729">En formatar una unitat, se n'esborren totes les dades que s'hi hagin emmagatzemat i se'n suprimeixen totes les particions existents, incloses algunes que potser no es veuen. Aquesta acció no es pot desfer.</translation>
 <translation id="7695430100978772476">No s'ha pogut formatar <ph name="DRIVE_NAME" /></translation>
 <translation id="770015031906360009">Grec</translation>
 <translation id="7706319470528945664">Teclat portuguès</translation>
@@ -640,6 +643,7 @@
 <translation id="78946041517601018">Unitats compartides</translation>
 <translation id="7896906914454843592">Teclat nord-americà ampliat</translation>
 <translation id="7898607018410277265">Teclat gujarati (fonètic nou)</translation>
+<translation id="7908793776359722643">En formatar una partició, se n'esborren totes les dades que s'hi hagin emmagatzemat. Aquesta acció no es pot desfer.</translation>
 <translation id="7917972308273378936">Teclat lituà</translation>
 <translation id="7925686952655276919">No utilitzis les dades mòbils per a la sincronització</translation>
 <translation id="7928710562641958568">Expulsa el dispositiu</translation>
@@ -727,6 +731,7 @@
 <translation id="8900820606136623064">Hongarès</translation>
 <translation id="8901822611024316615">Teclat QWERTY txec</translation>
 <translation id="8919081441417203123">Danès</translation>
+<translation id="8941776146379310519">Malai</translation>
 <translation id="8960999352790021682">Teclat bengalí (fonètic)</translation>
 <translation id="8965697826696209160">No hi ha prou espai.</translation>
 <translation id="9017798300203431059">Fonètic rus</translation>

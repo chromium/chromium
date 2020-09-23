@@ -1202,6 +1202,7 @@
 <translation id="2419706071571366386">لأغراض الأمان، سجّل الخروج عندما لا يتم استخدام الكمبيوتر.</translation>
 <translation id="2422125132043002186">‏تم إلغاء عملية الاسترداد من Linux</translation>
 <translation id="2423578206845792524">حف&amp;ظ الصورة باسم...</translation>
+<translation id="2424424966051154874">{0,plural, =1{نافذة ضيف}zero{(#) نافذة ضيف}two{ذافذتا ضيف}few{(#) نافذات ضيف}many{(#) نافذة ضيف}other{(#) نافذة ضيف}}</translation>
 <translation id="2428510569851653187">وصف ما كنت تفعله عندما تعطّلت علامة التبويب</translation>
 <translation id="2428939361789119025">‏إيقاف شبكة Wi-Fi</translation>
 <translation id="2431027948063157455">‏تعذّر تحميل مساعد Google، يُرجى التحقُّق من اتصال الشبكة وإعادة المحاولة.</translation>
@@ -4197,6 +4198,7 @@
 <translation id="6077189836672154517">نصائح وتحديثات حول <ph name="DEVICE_TYPE" /></translation>
 <translation id="6077476112742402730">تحويل الكلام إلى نص</translation>
 <translation id="6078045608615316905">إنشاء رمز استجابة سريعة لهذه الصورة</translation>
+<translation id="6078121669093215958">{0,plural, =1{نافذة ضيف}zero{# نافذة ضيف مفتوحة}two{نافذتا ضيف مفتوحتان}few{# نافذات ضيف مفتوحة}many{# نافذة ضيف مفتوحة}other{# نافذة ضيف مفتوحة}}</translation>
 <translation id="6078323886959318429">إضافة اختصار</translation>
 <translation id="6078752646384677957">الرجاء التحقق من الميكروفون ومستويات الصوت.</translation>
 <translation id="6078769373519310690">‏يريد "<ph name="CHROME_EXTENSION_NAME" />" الاتصال بجهاز HID</translation>
@@ -4705,6 +4707,7 @@
 <translation id="6704062477274546131">دقة نظام أسماء النطاقات</translation>
 <translation id="6706210727756204531">النطاق</translation>
 <translation id="6707389671160270963">‏شهادة عميل بروتوكول SSL (طبقة المقابس الآمنة)</translation>
+<translation id="670893696722244877">البحث حسب اللغة أو أسماء الإدخال</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> وعلامة تبويب واحدة إضافية}two{<ph name="PAGE_TITLE" /> وعلامَتا تبويب إضافيتان}few{<ph name="PAGE_TITLE" /> و# علامات تبويب إضافية}many{<ph name="PAGE_TITLE" /> و# علامة تبويب إضافية}other{<ph name="PAGE_TITLE" /> و# علامة تبويب إضافية}}</translation>
 <translation id="6709133671862442373">الأخبار</translation>
 <translation id="6709357832553498500">الاتصال باستخدام <ph name="EXTENSIONNAME" /></translation>
@@ -5542,6 +5545,7 @@
 <translation id="7753735457098489144">تعذَّر التثبيت لعدم توفُّر مساحة تخزين. لتوفير مساحة، يمكنك حذف الملفات من مساحة تخزين الجهاز.</translation>
 <translation id="7754704193130578113">السؤال عن مكان حفظ الملفّات قبل تنزيلها</translation>
 <translation id="7755287808199759310">قد يلغي والداك الحظر لك</translation>
+<translation id="7757592200364144203">تغيير اسم الجهاز</translation>
 <translation id="7757787379047923882">تمت مشاركة النص من <ph name="DEVICE_NAME" />.</translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">ضبط حدود شاشتك</translation>
@@ -5999,6 +6003,7 @@
 <translation id="8264024885325823677">يتولى مشرفك إدارة هذا الإعداد.</translation>
 <translation id="8264718194193514834">شغّلت الإضافة <ph name="EXTENSION_NAME" /> وضع ملء الشاشة.</translation>
 <translation id="826511437356419340">‏تم الدخول إلى وضع "نظرة عامة للنافذة". مرّر سريعًا للتنقُّل أو اضغط على مفتاح التبويب (Tab) في حال كنت تستخدم لوحة المفاتيح.</translation>
+<translation id="8266947622852630193">جميع أساليب الإدخال</translation>
 <translation id="8267539814046467575">إضافة طابعة</translation>
 <translation id="8267961145111171918">‏<ph name="BEGIN_PARAGRAPH1" />هذه معلومات عامة حول هذا الجهاز وكيفية استخدامه (مثل مستوى طاقة البطارية والأخطاء التي حدثت بالإضافة إلى العمليات التي تمّت داخل النظام والتطبيقات). وسيتم استخدام البيانات في تحسين Android، كما تساعد بعض المعلومات المجمّعة تطبيقات Google وشركائها، مثل مطوّري برامج Android، لتحسين أداء تطبيقاتهم ومنتجاتهم.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />لن يؤثر إيقاف هذه الميزة في قدرة هذا الجهاز على إرسال المعلومات المطلوبة للحصول على خدمات أساسية، مثل تحديثات النظام والأمان.<ph name="END_PARAGRAPH2" />

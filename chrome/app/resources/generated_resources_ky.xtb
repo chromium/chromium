@@ -1202,6 +1202,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2419706071571366386">Коопсуздук үчүн, компьютерде иштеп бүткөнүңүздө, аккаунтуңуздан чыгыңыз.</translation>
 <translation id="2422125132043002186">Linux'ту калыбына келтирүү жокко чыгарылды</translation>
 <translation id="2423578206845792524">Сү&amp;рөттү төмөнкүдөй сактоо…</translation>
+<translation id="2424424966051154874">{0,plural, =1{Конок}other{Конок (#)}}</translation>
 <translation id="2428510569851653187">Өтмөк жабылып калганда эмне кылып жаттыңыз эле?</translation>
 <translation id="2428939361789119025">Wi-Fi'ды өчүрүү</translation>
 <translation id="2431027948063157455">Google Жардамчы жүктөлбөй койду. Интернет байланышыңызды текшерип туруп, кайталап көрүңүз.</translation>
@@ -4199,6 +4200,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6077189836672154517"><ph name="DEVICE_TYPE" /> түзмөгү боюнча кеңештер жана жаңылыктар</translation>
 <translation id="6077476112742402730">Айтылган кепти терүү</translation>
 <translation id="6078045608615316905">Бул сүрөттүн QR кодун түзүү</translation>
+<translation id="6078121669093215958">{0,plural, =1{Конок}other{# конок терезеси ачык}}</translation>
 <translation id="6078323886959318429">Кыска жол кошуу</translation>
 <translation id="6078752646384677957">Микрофонуңузду жана аудионун үн деңгээлдерин текшериңиз.</translation>
 <translation id="6078769373519310690">"<ph name="CHROME_EXTENSION_NAME" />" HID түзмөгүнө туташканы жатат</translation>
@@ -4706,6 +4708,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6704062477274546131">DNS дааналыгы</translation>
 <translation id="6706210727756204531">Масштабы</translation>
 <translation id="6707389671160270963">SSL кардар тастыктамасы</translation>
+<translation id="670893696722244877">Тил же киргизүү ыкмаларын издөө</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> жана дагы башка 1 өтмөк}other{<ph name="PAGE_TITLE" /> жана дагы башка # өтмөк}}</translation>
 <translation id="6709133671862442373">Жаңылыктар</translation>
 <translation id="6709357832553498500"><ph name="EXTENSIONNAME" /> менен туташуу</translation>
@@ -5543,6 +5546,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7753735457098489144">Сактагычта орун жетишсиз болгондуктан, орнотулган жок. Орун бошотуу үчүн түзмөктүн сактагычынан файлдарды жок кылыңыз.</translation>
 <translation id="7754704193130578113">Жүктөп алаардан мурун, ар бир файлдын кайсы жерге сактала тургандыгы суралсын</translation>
 <translation id="7755287808199759310">Аны ата-энеңиз ачып бере алат</translation>
+<translation id="7757592200364144203">Түзмөктүн аталышын өзгөртүү</translation>
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" /> түзмөгүнөн көчүрүлгөн текст</translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">Дисплейиңиздин чектерин тууралап алыңыз</translation>
@@ -5999,6 +6003,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8264024885325823677">Бул жөндөөнү администраторуңуз башкарат.</translation>
 <translation id="8264718194193514834">"<ph name="EXTENSION_NAME" />" толук экранды ишке киргизди.</translation>
 <translation id="826511437356419340">Терезе үстүнөн көрүү режимине кирди. Чабыттоо үчүн экранды сүрүңүз же баскычтопту колдонуп жатсаңыз, "Tab" баскычын басыңыз.</translation>
+<translation id="8266947622852630193">Бардык киргизүү ыкмалары</translation>
 <translation id="8267539814046467575">Принтер кошуу</translation>
 <translation id="8267961145111171918"><ph name="BEGIN_PARAGRAPH1" />Түзмөгүңүздүн иштеши, тактап айтканда, батареянын кубаты, колдонмолордун пайдаланылышы жана Интернет байланышынын сапаты тууралуу маалымат алып турабыз. Дайындар Google'дун кызматтарын жакшыртуу үчүн колдонулат. Топтолгон маалыматтын айрымдарын Android иштеп чыгуучулары өз кызматтарын өркүндөтүү үчүн колдонушу мүмкүн.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Бул функциянын өчүрүлүшү түзмөктүн тутумунун жаңыртылышына жана коопсуздугуна таасирин тийгизбейт.<ph name="END_PARAGRAPH2" />

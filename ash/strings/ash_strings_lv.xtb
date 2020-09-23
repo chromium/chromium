@@ -137,6 +137,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="2341729377289034582">Bloķēts vertikāli</translation>
 <translation id="2352467521400612932">Skārienekrāna pildspalvas iestatījumi</translation>
 <translation id="2354174487190027830">Notiek <ph name="NAME" /> aktivizēšana.</translation>
+<translation id="2356210126990741501">Šķiet, ka jūsu tālrunis nav tiešsaistē, tāpēc mēs pašlaik nevaram neko no tā izgūt.</translation>
 <translation id="2359808026110333948">Turpināt</translation>
 <translation id="2365393535144473978">Iespējojot mobilos datus, tiks iespējots Bluetooth.</translation>
 <translation id="2369165858548251131">“Sveiki!” ķīniešu valodā</translation>
@@ -169,6 +170,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="2705001408393684014">Pārslēgt mikrofonu. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Augšup</translation>
 <translation id="2718395828230677721">Nakts režīms</translation>
+<translation id="2727175239389218057">Atbildēt</translation>
 <translation id="2727977024730340865">Pievienots lādētājs ar mazu strāvas padevi. Akumulatora uzlāde var nebūt uzticama.</translation>
 <translation id="2743387203779672305">Kopēt starpliktuvē</translation>
 <translation id="2792498699870441125">Alt+Meklēt</translation>
@@ -177,6 +179,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="2825619548187458965">Plaukts</translation>
 <translation id="2841907151129139818">Ieslēgts planšetdatora režīms</translation>
 <translation id="2844169650293029770">USB-C ierīce (pieslēgvieta kreisajā pusē priekšā)</translation>
+<translation id="2846247265041961677">Diemžēl nevar atrast tālruni!</translation>
 <translation id="2865888419503095837">Tīkla informācija</translation>
 <translation id="2872961005593481000">Beidzēt</translation>
 <translation id="2878884018241093801">Nav nesenu vienumu</translation>
@@ -304,6 +307,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Izsl. lietotnē}zero{Izsl. # lietotnēs}one{Izsl. # lietotnē}other{Izsl. # lietotnēs}}</translation>
 <translation id="4072264167173457037">Vidēji spēcīgs signāls</translation>
 <translation id="4112140312785995938">Pārtīt atpakaļ</translation>
+<translation id="4114315158543974537">Ieslēdziet funkciju Phone Hub</translation>
 <translation id="4129129681837227511">Lai skatītu paziņojumus bloķēšanas ekrānā, atbloķējiet, lai mainītu iestatījumu</translation>
 <translation id="4146833061457621061">Atskaņot mūziku</translation>
 <translation id="4149156641122542261"><ph name="DEVICE_TYPE" /> pārvalda domēns <ph name="DOMAIN" /></translation>
@@ -435,6 +439,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="5648021990716966815">Mikrofona ligzda</translation>
 <translation id="5669267381087807207">Notiek aktivizācija</translation>
 <translation id="5673434351075758678">Pēc iestatījumu sinhronizēšanas valoda tika mainīta no “<ph name="FROM_LOCALE" />” uz “<ph name="TO_LOCALE" />”.</translation>
+<translation id="5679050765726761783">Pievienots strāvas adapteris ar mazu strāvas padevi</translation>
 <translation id="5682642926269496722">Google asistents nav pieejams pašlaik izmantotajam lietotāja kontam.</translation>
 <translation id="5689633613396158040">Izmantojot nakts režīmu, tiek atvieglota skatīšanās ekrānā un lasīšana blāvā apgaismojumā. Pieskarieties, lai mainītu nakts režīma ieslēgšanās laiku, vai izslēdziet to pavisam.</translation>
 <translation id="5691772641933328258">Pirksta nospiedums netika atpazīts</translation>
@@ -459,6 +464,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Iesl.</translation>
 <translation id="5920710855273935292">Mikrofons ir izslēgts.</translation>
+<translation id="594179686076170922">Notiek savienojuma izveide ar tālruni…</translation>
 <translation id="5946788582095584774">Funkcija <ph name="FEATURE_NAME" /> ir ieslēgta.</translation>
 <translation id="5947494881799873997">Atjaunot</translation>
 <translation id="595202126637698455">Veiktspējas izsekošana ir iespējota</translation>
@@ -548,6 +554,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="6857811139397017780">Aktivizēt <ph name="NETWORKSERVICE" /></translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Vēl viens cipars}zero{Vēl # ciparu}one{Vēl # cipars}other{Vēl # cipari}}</translation>
 <translation id="6878400149835617132">Īsinājumtaustiņš izslēgts</translation>
+<translation id="6886172995547742638">Ierīces <ph name="DEVICE_TYPE" /> veiktspēja var pasliktināties. Izmantojiet sertificētu USB-C strāvas adapteri, kura jauda ir vismaz <ph name="PREFERRED_MINIMUM_POWER" /> vatu.</translation>
 <translation id="6896758677409633944">Kopēt</translation>
 <translation id="6910714959251846841">Lai atjauninātu sistēmu, ierīcē jāizmanto funkcija Powerwash. Uzziniet vairāk par pēdējo <ph name="SYSTEM_APP_NAME" /> atjauninājumu.</translation>
 <translation id="6919251195245069855">Nevarēja atpazīt jūsu viedkarti. Mēģiniet vēlreiz.</translation>

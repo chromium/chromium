@@ -137,6 +137,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="2341729377289034582">Şaquli formada kilidləndi</translation>
 <translation id="2352467521400612932">Staylus ayarları</translation>
 <translation id="2354174487190027830"><ph name="NAME" /> aktivləşdirilir</translation>
+<translation id="2356210126990741501">Görünür, telefonunuz onlayn deyil və hazırda lazımi məlumatları telefondan əldə edə bilmirik.</translation>
 <translation id="2359808026110333948">Davam edin</translation>
 <translation id="2365393535144473978">Mobil datanın aktiv edilməsi ilə Bluetooh da aktiv ediləcək.</translation>
 <translation id="2369165858548251131">Çin dilində "Salam"</translation>
@@ -169,6 +170,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="2705001408393684014">Mikrofonu dəyişdirin. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Yuxarı</translation>
 <translation id="2718395828230677721">Gecə İşığı</translation>
+<translation id="2727175239389218057">Cavablayın</translation>
 <translation id="2727977024730340865">Zəif şarjerə qoşulub. Ola bilər ki, enerji dolmasın.</translation>
 <translation id="2743387203779672305">Buferə kopyalayın</translation>
 <translation id="2792498699870441125">Alt+Axtarış</translation>
@@ -177,6 +179,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="2825619548187458965">Rəf</translation>
 <translation id="2841907151129139818">Planşet rejiminə keçirilib</translation>
 <translation id="2844169650293029770">USB-C cihazı (ön sol port)</translation>
+<translation id="2846247265041961677">Oy! Telefonu tapmaq olmur</translation>
 <translation id="2865888419503095837">Şəbəkə haqqında məlumat</translation>
 <translation id="2872961005593481000">Qapadın</translation>
 <translation id="2878884018241093801">Son elementlər yoxdur</translation>
@@ -459,6 +462,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Aktiv</translation>
 <translation id="5920710855273935292">Mikrofon səssiz edilib.</translation>
+<translation id="594179686076170922">Telefonunuza qoşulur...</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> aktivdir.</translation>
 <translation id="5947494881799873997">Geri dönün</translation>
 <translation id="595202126637698455">Fəaliyyət izləməsi aktiv edildi</translation>

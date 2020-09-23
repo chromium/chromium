@@ -1218,6 +1218,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2419706071571366386">Pentru securitate, deconectează-te când nu folosești computerul.</translation>
 <translation id="2422125132043002186">Restabilirea Linux a fost anulată</translation>
 <translation id="2423578206845792524">Sal&amp;vează imaginea ca...</translation>
+<translation id="2424424966051154874">{0,plural, =1{Invitat}few{Invitați (#)}other{Invitați (#)}}</translation>
 <translation id="2428510569851653187">Descrie ce făceai când s-a blocat fila</translation>
 <translation id="2428939361789119025">Dezactivează conexiunea Wi-Fi</translation>
 <translation id="2431027948063157455">Asistentul Google nu s-a putut încărca; încearcă din nou.</translation>
@@ -4256,6 +4257,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="6077189836672154517">Sfaturi și actualizări pentru <ph name="DEVICE_TYPE" /></translation>
 <translation id="6077476112742402730">Rostește pentru a introduce text</translation>
 <translation id="6078045608615316905">Creează un cod QR pentru această imagine</translation>
+<translation id="6078121669093215958">{0,plural, =1{Invitat}few{# ferestre pentru invitați deschise}other{# de ferestre pentru invitați deschise}}</translation>
 <translation id="6078323886959318429">Adaugă o comandă rapidă</translation>
 <translation id="6078752646384677957">Verifică microfonul și nivelul audio.</translation>
 <translation id="6078769373519310690">„<ph name="CHROME_EXTENSION_NAME" />” dorește să se conecteze la un dispozitiv HID</translation>
@@ -4771,6 +4773,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="6704062477274546131">Rezolvare DNS</translation>
 <translation id="6706210727756204531">Aplicabilitate</translation>
 <translation id="6707389671160270963">Certificat de client SSL</translation>
+<translation id="670893696722244877">Caută după limbă sau numele metodei de introducere a textului</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> și încă o filă}few{<ph name="PAGE_TITLE" /> și încă # file}other{<ph name="PAGE_TITLE" /> și încă # de file}}</translation>
 <translation id="6709133671862442373">Știri</translation>
 <translation id="6709357832553498500">Conectează-te folosind <ph name="EXTENSIONNAME" /></translation>
@@ -5626,6 +5629,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="7753735457098489144">Instalarea nu a reușit din cauza spațiului de stocare insuficient. Pentru a elibera spațiu, șterge fișiere din stocarea dispozitivului.</translation>
 <translation id="7754704193130578113">Întreabă-mă unde se salvează fiecare fișier înainte de a-l descărca</translation>
 <translation id="7755287808199759310">Părintele tău îl poate debloca pentru tine</translation>
+<translation id="7757592200364144203">Schimbă numele dispozitivului</translation>
 <translation id="7757787379047923882">Text trimis de pe <ph name="DEVICE_NAME" /></translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">Ajustează delimitările afișajului</translation>
@@ -6088,6 +6092,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8264024885325823677">Această setare este gestionată de administrator.</translation>
 <translation id="8264718194193514834">„<ph name="EXTENSION_NAME" />” a activat modul Ecran complet.</translation>
 <translation id="826511437356419340">S-a trecut în modul de prezentare a ferestrei. Glisează pentru a naviga sau apasă tasta Tab dacă folosești tastatura.</translation>
+<translation id="8266947622852630193">Toate metodele de introducere a textului</translation>
 <translation id="8267539814046467575">Adaugă o imprimantă</translation>
 <translation id="8267961145111171918"><ph name="BEGIN_PARAGRAPH1" />Acestea sunt informații generale despre dispozitiv și despre cum îl folosești (cum ar fi nivelul bateriei, cât de des folosești aplicațiile, activitatea sistemului și erorile). Datele vor fi folosite pentru îmbunătățirea Android și unele informații agregate vor ajuta aplicațiile Google și partenerii, cum ar fi dezvoltatorii Android, să își îmbunătățească aplicațiile și produsele.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Dezactivarea acestei funcții nu afectează abilitatea dispozitivului de a trimite informațiile necesare pentru servicii esențiale, cum ar fi actualizările de sistem și securitatea.<ph name="END_PARAGRAPH2" />

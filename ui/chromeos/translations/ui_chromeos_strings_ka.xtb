@@ -376,6 +376,7 @@
 <translation id="5098629044894065541">ებრაული</translation>
 <translation id="5123433949759960244">კალათბურთის ბურთი</translation>
 <translation id="5129662217315786329">პოლონური</translation>
+<translation id="5132435854979302863">ფილიპინური</translation>
 <translation id="5144820558584035333">ჰანგული კომპლექტი 3 (390)</translation>
 <translation id="5145331109270917438">ცვლილების თარიღი</translation>
 <translation id="515594325917491223">ჭადრაკი</translation>
@@ -421,6 +422,7 @@
 <translation id="5464696796438641524">პოლონური კლავიატურა</translation>
 <translation id="5465122519792752163">ნეპალური კლავიატურა (InScript)</translation>
 <translation id="5469868506864199649">იტალიური</translation>
+<translation id="5484429245813572665">ინდონეზიური</translation>
 <translation id="5494920125229734069">აარჩიეთ ყველა</translation>
 <translation id="5500122897333236901">ისლანდიური</translation>
 <translation id="5508696409934741614">წერტილები</translation>
@@ -608,6 +610,7 @@
 <translation id="7649070708921625228">დახმარება</translation>
 <translation id="7654209398114106148">მიმდინარეობს <ph name="NUMBER_OF_ITEMS" /> ერთეულის გადატანა…</translation>
 <translation id="7658239707568436148">გაუქმება</translation>
+<translation id="7693909743393669729">დისკის დაფორმატება ამოშლის მასში შენახულ ყველა მონაცემს, მათ შორის, დანაყოფებს, რომლებიც შეიძლება არ ჩანდეს. ამ მოქმედებას ვერ გააუქმებთ.</translation>
 <translation id="7695430100978772476"><ph name="DRIVE_NAME" /> ვერ დაფორმატდა</translation>
 <translation id="770015031906360009">ბერძნული</translation>
 <translation id="7706319470528945664">პორტუგალიური კლავიატურა</translation>
@@ -639,6 +642,7 @@
 <translation id="78946041517601018">საზიარო Drive-ები</translation>
 <translation id="7896906914454843592">აშშ-ს გაფართოებული კლავიატურა</translation>
 <translation id="7898607018410277265">გუჯარათი კლავიატურა (ახალი ფონეტიკური)</translation>
+<translation id="7908793776359722643">დანაყოფის დაფორმატება წაშლის მასში შენახულ ყველა მონაცემს. ამ მოქმედებას ვერ გააუქმებთ.</translation>
 <translation id="7917972308273378936">ლიტვური კლავიატურა</translation>
 <translation id="7925686952655276919">არ გამოიყენოთ მობილური მონაცემები სინქრონიზაციისთვის</translation>
 <translation id="7928710562641958568">ამოიღეთ მოწყობილობა</translation>
@@ -726,6 +730,7 @@
 <translation id="8900820606136623064">უნგრული</translation>
 <translation id="8901822611024316615">ჩეხური QWERTY კლავიატურა</translation>
 <translation id="8919081441417203123">დანიური</translation>
+<translation id="8941776146379310519">მალაიური</translation>
 <translation id="8960999352790021682">ბენგალური კლავიატურა (ფონეტიკური)</translation>
 <translation id="8965697826696209160">საკმარისი ადგილი არ არის.</translation>
 <translation id="9017798300203431059">რუსული ფონეტიკური</translation>

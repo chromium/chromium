@@ -137,6 +137,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2341729377289034582">Dikey olarak kilitlendi</translation>
 <translation id="2352467521400612932">Ekran kalemi ayarları</translation>
 <translation id="2354174487190027830"><ph name="NAME" /> etkinleştiriliyor</translation>
+<translation id="2356210126990741501">Telefonunuz bağlı görünmüyor. Şu anda sizin için telefonunuzdan tüm ekstraları alamıyoruz.</translation>
 <translation id="2359808026110333948">Devam et</translation>
 <translation id="2365393535144473978">Mobil veri etkinleştirildiğinde Bluetooth açılır.</translation>
 <translation id="2369165858548251131">Çince "Merhaba"</translation>
@@ -169,6 +170,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2705001408393684014">Mikrofonu aç/kapat. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Yukarı</translation>
 <translation id="2718395828230677721">Gece Işığı</translation>
+<translation id="2727175239389218057">Yanıtla</translation>
 <translation id="2727977024730340865">Düşük güçlü bir şarj cihazına takıldı. Şarj durumu güvenilir olmayabilir.</translation>
 <translation id="2743387203779672305">Panoya kopyala</translation>
 <translation id="2792498699870441125">Alt+Arama</translation>
@@ -177,6 +179,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2825619548187458965">Raf</translation>
 <translation id="2841907151129139818">Tablet moduna geçildi</translation>
 <translation id="2844169650293029770">USB-C cihaz (sol ön bağlantı noktası)</translation>
+<translation id="2846247265041961677">Hata! Telefon bulunamıyor</translation>
 <translation id="2865888419503095837">Ağ bilgisi</translation>
 <translation id="2872961005593481000">Kapat</translation>
 <translation id="2878884018241093801">Yeni öğe yok</translation>
@@ -304,6 +307,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Kapalı, 1 uygulama}other{Kapalı, # uygulama}}</translation>
 <translation id="4072264167173457037">Orta düzeyde sinyal</translation>
 <translation id="4112140312785995938">Geri Sar</translation>
+<translation id="4114315158543974537">Phone Hub'ı etkinleştirin</translation>
 <translation id="4129129681837227511">Kilit ekranınızda bildirim göstermek için cihazın kilidini açarak ayarı değiştirin</translation>
 <translation id="4146833061457621061">Müzik çal</translation>
 <translation id="4149156641122542261"><ph name="DEVICE_TYPE" />, <ph name="DOMAIN" /> tarafından yönetilmektedir</translation>
@@ -435,6 +439,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="5648021990716966815">Mikrofon jakı</translation>
 <translation id="5669267381087807207">Etkinleştiriliyor</translation>
 <translation id="5673434351075758678">Ayarlarınız senkronize edildikten sonra "<ph name="FROM_LOCALE" />" olan dil "<ph name="TO_LOCALE" />" olarak değiştirildi.</translation>
+<translation id="5679050765726761783">Düşük güçlü bir adaptör bağlandı</translation>
 <translation id="5682642926269496722">Google Asistan geçerli kullanıcı hesabı için kullanılamaz.</translation>
 <translation id="5689633613396158040">Gece Işığı, loş ışıkta ekranınızı daha iyi görmenizi ve daha kolay okumanızı sağlar. Gece Işığı'nın ne zaman açılacağını değiştirmek veya tamamen kapatmak için dokunun.</translation>
 <translation id="5691772641933328258">Parmak izi tanınmadı</translation>
@@ -459,6 +464,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Açık</translation>
 <translation id="5920710855273935292">Mikrofonun sesi kapalı.</translation>
+<translation id="594179686076170922">Telefonunuza bağlanılıyor...</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> özelliği açık.</translation>
 <translation id="5947494881799873997">Geri döndür</translation>
 <translation id="595202126637698455">Performans izleme etkin</translation>
@@ -549,6 +555,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="6857811139397017780">Şunu etkinleştir: <ph name="NETWORKSERVICE" /></translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Bir rakam kaldı}other{# rakam kaldı}}</translation>
 <translation id="6878400149835617132">Kısayol kapalı</translation>
+<translation id="6886172995547742638"><ph name="DEVICE_TYPE" /> cihazınız daha düşük performans gösterebilir. <ph name="PREFERRED_MINIMUM_POWER" /> W veya daha güçlü ve uyumlu bir USB-C güç adaptörü kullanın.</translation>
 <translation id="6896758677409633944">Kopyala</translation>
 <translation id="6910714959251846841">Bu güncelleme, cihazınızda powerwash işlemi yapılmasını gerektiriyor. En yeni <ph name="SYSTEM_APP_NAME" /> güncellemesi ile ilgili daha fazla bilgi edinin.</translation>
 <translation id="6919251195245069855">Akıllı kartınız tanınamadı. Tekrar deneyin.</translation>

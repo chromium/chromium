@@ -1,8 +1,10 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="bs">
+<translation id="2077832278056815832">Zatvorite sve oblačiće ili preklapanja iz drugih aplikacija. Nakon toga pokušajte ponovo.</translation>
 <translation id="2359808026110333948">Nastavi</translation>
 <translation id="2416359993254398973">Chrome treba odobrenje za pristup kameri za ovu web lokaciju.</translation>
+<translation id="2987449669841041897">Ova web lokacija ne može tražiti vaše odobrenje</translation>
 <translation id="557283862590186398">Chrome treba dopuštenje za pristup mikrofonu za ovu web-lokaciju.</translation>
 <translation id="5860491529813859533">Uključi</translation>
 <translation id="6092062101542170135">Da nastavite, uključite NFC u postavkama Androida</translation>

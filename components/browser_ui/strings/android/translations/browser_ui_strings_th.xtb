@@ -51,6 +51,7 @@
 <translation id="2315043854645842844">ระบบปฏิบัติการไม่สนับสนุนการเลือกใบรับรองฝั่งลูกค้า</translation>
 <translation id="2359808026110333948">ต่อไป</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
+<translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{อนุญาตให้เข้าถึง<ph name="PERMISSION_1" /> <ph name="PERMISSION_2" /> และอีก <ph name="NUM_MORE" /> รายการ}other{อนุญาตให้เข้าถึง<ph name="PERMISSION_1" /> <ph name="PERMISSION_2" /> และอีก <ph name="NUM_MORE" /> รายการ}}</translation>
 <translation id="2434158240863470628">ดาวน์โหลดเสร็จสมบูรณ์ <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2440823041667407902">การเข้าถึงตำแหน่ง</translation>
 <translation id="2482878487686419369">การแจ้งเตือน</translation>
@@ -190,6 +191,7 @@
 <translation id="6447842834002726250">คุกกี้</translation>
 <translation id="6527303717912515753">แชร์</translation>
 <translation id="6545864417968258051">การสแกนหาบลูทูธ</translation>
+<translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{บล็อกการเข้าถึง<ph name="PERMISSION_1" /> <ph name="PERMISSION_2" /> และอีก <ph name="NUM_MORE" /> รายการไว้}other{บล็อกการเข้าถึง<ph name="PERMISSION_1" /> <ph name="PERMISSION_2" /> และอีก <ph name="NUM_MORE" /> รายการไว้}}</translation>
 <translation id="6561560012278703671">ใช้การส่งข้อความแบบไม่ส่งเสียง (บล็อกข้อความแจ้งเตือนไม่ให้รบกวนคุณ)</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">เนื้อหาที่ได้รับความคุ้มครอง</translation>
@@ -292,6 +294,7 @@
 <translation id="8959122750345127698">ไม่สามารถเข้าถึงการนำทางได้: <ph name="URL" /></translation>
 <translation id="9019902583201351841">มีการจัดการโดยผู้ปกครอง</translation>
 <translation id="9074739597929991885">บลูทูธ</translation>
+<translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" /> <ph name="PERMISSION_2" /> และอีก <ph name="NUM_MORE" /> รายการ}other{<ph name="PERMISSION_1" /> <ph name="PERMISSION_2" /> และอีก <ph name="NUM_MORE" /> รายการ}}</translation>
 <translation id="913657688200966289">เปิดการใช้สิทธิ์สำหรับ <ph name="APP_NAME" /> ใน<ph name="BEGIN_LINK" />การตั้งค่า Android<ph name="END_LINK" /></translation>
 <translation id="945632385593298557">เข้าถึงไมโครโฟน</translation>
 <translation id="965817943346481315">บล็อกหากเว็บไซต์แสดงโฆษณาที่แทรกหรือทำให้เข้าใจผิด (แนะนำ)</translation>

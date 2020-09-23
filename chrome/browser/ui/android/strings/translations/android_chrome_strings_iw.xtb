@@ -125,6 +125,7 @@
 <translation id="1993768208584545658"><ph name="SITE" /> רוצה לבצע התאמה עם</translation>
 <translation id="2000419248597011803">‏שליחה של חלק מקובצי ה-Cookie והחיפושים משורת כתובת האתר ומתיבת החיפוש אל מנוע החיפוש שהוגדר כברירת מחדל</translation>
 <translation id="2002537628803770967">‏כרטיסי אשראי וכתובות דרך Google Pay</translation>
+<translation id="2010780124464321179">לא ניתן ליצור קישור לטקסט. יש לשצף קישור לדף.</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{קובץ אחד (#)}two{# קבצים}many{# קבצים}other{# קבצים}}</translation>
 <translation id="2017836877785168846">ניקוי של ההיסטוריה וההשלמות האוטומטיות בשורת כתובת האתר</translation>
 <translation id="2021896219286479412">פקדי אתר במסך מלא</translation>
@@ -192,6 +193,7 @@
 <translation id="2494974097748878569">‏Google Assistant ב-Chrome</translation>
 <translation id="2496180316473517155">היסטוריית גלישה</translation>
 <translation id="2497852260688568942">מנהל המערכת שלך השבית את הסנכרון</translation>
+<translation id="250020030759455918">‏ב-Chrome יוצגו סטטוס הכניסה שלך ל-<ph name="SITE_NAME" />, נתוני הגלישה ונתוני האתר</translation>
 <translation id="2513403576141822879">‏אפשר למצוא הגדרות נוספות בנושא פרטיות, אבטחה ואיסוף נתונים בדף <ph name="BEGIN_LINK" />סנכרון ושירותי Google<ph name="END_LINK" /></translation>
 <translation id="2517472476991765520">סריקה</translation>
 <translation id="2518590038762162553">‏במצב טעינה מהירה, Chrome טוען דפים מהר יותר ומפחית את השימוש בנתונים בשיעור של עד 60 אחוזים. כדי לבצע אופטימיזציה לדפים שהמשתמש נכנס אליהם, Chrome שולח אל Google את התנועה שלו באינטרנט. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
@@ -273,7 +275,9 @@
 <translation id="3207960819495026254">מסומן בסימניה</translation>
 <translation id="3208584281581115441">בדיקה עכשיו</translation>
 <translation id="3211426585530211793">מועד המחיקה: <ph name="ITEM_TITLE" /></translation>
+<translation id="3211503082155944789"><ph name="READING_LIST_COUNT" /> דפים שלא נקראו</translation>
 <translation id="321773570071367578">אם שכחת את ביטוי הסיסמה או אם ברצונך לשנות את ההגדרה הזו, <ph name="BEGIN_LINK" />אפס את הסינכרון<ph name="END_LINK" /></translation>
+<translation id="3223655207402797071">‏יש להיכנס לאתר זה, לחשבון Google ול-Chrome. אפשר להפעיל את הסנכרון מאוחר יותר.</translation>
 <translation id="3232754137068452469">אפליקציית אינטרנט</translation>
 <translation id="3236059992281584593">נותרה דקה אחת</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -491,6 +495,7 @@
 <translation id="4913169188695071480">הפסק לרענן</translation>
 <translation id="4915549754973153784"><ph name="BEGIN_LINK" />קבל עזרה<ph name="END_LINK" /> בזמן חיפוש התקנים…</translation>
 <translation id="4921180162323349895">{FILE_COUNT,plural, =1{דף אחד (#)}two{# דפים}many{# דפים}other{# דפים}}</translation>
+<translation id="4925120120285606924">צילום מסך <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">המערכת תייצא את הסיסמאות ותוריד אותן כקובץ טקסט. הן יהיו גלויות לכל המשתמשים והאפליקציות שיש להם גישה לתיקיית היעד.</translation>
 <translation id="4932247056774066048">‏מכיוון שבחרת לצאת מחשבון שמנוהל על ידי <ph name="DOMAIN_NAME" />, נתוני Chrome שלך יימחקו מהמכשיר הזה. הם יישמרו בחשבון Google שלך.</translation>
 <translation id="4943703118917034429">מציאות מדומה</translation>
@@ -581,6 +586,7 @@
 <translation id="5683547024293500885">‏מערכת Chrome לא יכולה לבדוק אם יש עדכונים</translation>
 <translation id="5686790454216892815">שם הקובץ ארוך מדי</translation>
 <translation id="5687809546194252819">האפליקציה <ph name="APP_NAME" /> תשתמש בשפה ה<ph name="LANGUAGE" /> בהפעלה מחדש.</translation>
+<translation id="5691211010013816086">יש לך <ph name="READING_LIST_COUNT" /> דפים</translation>
 <translation id="569536719314091526">דרך לחצן האפשרויות הנוספות אפשר לתרגם את הדף הזה לשפה כלשהי</translation>
 <translation id="5696597120588531049">‏Chrome יכול להגן עליך מפני פרצות באבטחת מידע, אתרים לא בטוחים וסכנות נוספות</translation>
 <translation id="5697688514913266141">הקובץ יישמר בספרייה <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK2" />לעריכה<ph name="END_LINK2" />.</translation>
@@ -631,6 +637,7 @@
 <translation id="5979084224081478209">בדיקת הסיסמאות</translation>
 <translation id="6000066717592683814">‏המשך להשתמש ב-Google</translation>
 <translation id="6005538289190791541">הצעה לסיסמה</translation>
+<translation id="6014293228235665243">לא נקראו</translation>
 <translation id="6036057147555329831">‏ICU נוסף</translation>
 <translation id="6039379616847168523">עבור לכרטיסייה הבאה</translation>
 <translation id="6040143037577758943">סגור</translation>
@@ -660,6 +667,7 @@
 <translation id="6232535412751077445">‏אם תופעל התכונה 'לא לעקוב (DNT), בקשה זו תיכלל בתנועת הגלישה שלך. השפעת הבקשה תלויה באופן הפעולה של כל אתר – אם הוא מגיב לבקשה או לא, וכיצד הוא מפרש אותה.
 
 לדוגמה, ייתכן שבתגובה לבקשה, אתרים מסוימים יציגו מודעות שאינן מבוססות על אתרים אחרים שבהם ביקרת. אתרים רבים ימשיכו לאסוף את נתוני הגלישה שלך ולהשתמש בהם, למשל כדי לשפר את האבטחה, כדי לספק תוכן, מודעות והמלצות וכדי ליצור נתונים סטטיסטיים לדיווח.</translation>
+<translation id="6243852395147506234">מסונכרן למצב אופליין</translation>
 <translation id="624789221780392884">העדכון מוכן</translation>
 <translation id="6255999984061454636">הצעות לתוכן</translation>
 <translation id="6277522088822131679">אירעה בעיה בעת הדפסת הדף. נסה שוב.</translation>
@@ -667,6 +675,7 @@
 <translation id="6292420053234093573">‏השימוש ב-Chrome מבטא הסכמה ל<ph name="BEGIN_LINK1" />תנאים ולהגבלות של Google<ph name="END_LINK1" /> ול<ph name="BEGIN_LINK2" />תנאים ולהגבלות הנוספים של Google Chrome ו-Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="629730747756840877">חשבון</translation>
 <translation id="6297765934698848803">המצלמה הושבתה במכשיר, בהתאם להגדרות שנקבעו על ידי הארגון שמנהל את המכשיר.</translation>
+<translation id="6301525844455696527">רוצה להתקדם ברשימת הקריאה שלך?</translation>
 <translation id="6303969859164067831">יציאה וכיבוי הסנכרון</translation>
 <translation id="6312687380483398334">אפליקציות אינטרנט (שקט)</translation>
 <translation id="6316139424528454185">‏אין תמיכה בגרסת Android</translation>
@@ -745,6 +754,7 @@
 <translation id="671481426037969117">זמן השימוש באפליקציה <ph name="FQDN" /> הסתיים. הטיימר יופעל מחדש מחר ואז אפשר יהיה להשתמש שוב באפליקציה.</translation>
 <translation id="6738867403308150051">מוריד...</translation>
 <translation id="6767294960381293877">רשימת המכשירים שאפשר לשתף איתם כרטיסייה נפתחה בחצי גובה המסך.</translation>
+<translation id="6783942555455976443">שמירת הדף לקריאה במועד מאוחר יותר והגדרת תזכורת</translation>
 <translation id="6811034713472274749">הדף מוכן להצגה</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6845325883481699275">‏עזרה בשיפור האבטחה של Chrome</translation>
@@ -778,6 +788,7 @@
 <translation id="7055152154916055070">הפניה אוטומטית נחסמה:</translation>
 <translation id="7063006564040364415">לא ניתן היה להתחבר אל שרת הסנכרון.</translation>
 <translation id="7071521146534760487">ניהול חשבון</translation>
+<translation id="707155805709242880">יש לבחור למטה מה לסנכרן</translation>
 <translation id="7077143737582773186">‏כרטיס SD</translation>
 <translation id="7080806333218412752">‏כתובות URL נשלחות לבדיקה על ידי 'גלישה בטוחה'. בנוסף, נשלחת דוגמית קטנה הכוללת דפים, הורדות, פעילות של תוספים ופרטי מערכת במטרה לאתר איומים חדשים. כדי להגן עליך בכל האפליקציות של Google, הנתונים האלה מקושרים באופן זמני לחשבון Google שלך. ההגנה הזו פעילה רק אם נכנסים לחשבון.</translation>
 <translation id="7088681679121566888">‏Chrome מעודכן</translation>
@@ -860,6 +871,9 @@
 <translation id="766587987807204883">כאן יוצגו מאמרים, ואפשר לקרוא אותם גם במצב לא מקוון</translation>
 <translation id="7682724950699840886">אפשר לנסות את הטיפים הבאים: צריך לוודא שיש מספיק מקום פנוי במכשיר ואז לנסות לייצא שוב.</translation>
 <translation id="7698359219371678927">צור הודעת אימייל ב-<ph name="APP_NAME" /></translation>
+<translation id="7702724591845223485">‏כדי לנקות את פרטי הכניסה ונתונים נוספים מ-Chrome, עליך לסגור את כל כרטיסיות המצב האנונימי.
+
+ייתכן שגם במצב אנונימי הפעילות במכשיר תהיה גלויה לאתרים שנכנסת אליהם, למעסיק או למוסד הלימודים שלך ולספק האינטרנט.</translation>
 <translation id="7704317875155739195">השלמה אוטומטית של חיפושים וכתובות אתרים</translation>
 <translation id="7725024127233776428">הדפים שהוספת לסימניות מופיעים כאן</translation>
 <translation id="7735637452482172701">ביטול נעילה באמצעות נעילת מסך</translation>
@@ -876,6 +890,7 @@
 <translation id="780301667611848630">לא תודה</translation>
 <translation id="7810647596859435254">פתח באמצעות...</translation>
 <translation id="7821588508402923572">ערכי החיסכון בנתונים יופיעו כאן</translation>
+<translation id="7844171778363018843">אין נתונים שנבחרו לסנכרון</translation>
 <translation id="7846296061357476882">‏שירותי Google</translation>
 <translation id="784934925303690534">טווח זמן</translation>
 <translation id="7851858861565204677">מכשירים אחרים</translation>
@@ -912,6 +927,7 @@
 <translation id="8058746566562539958">‏פתיחה בכרטיסייה חדשה של Chrome</translation>
 <translation id="8063895661287329888">הוספת הסימנייה נכשלה.</translation>
 <translation id="806745655614357130">שמור בנפרד את הנתונים שלי</translation>
+<translation id="8069669375923284295">יש להקיש להמשך הגדרת הסנכרון</translation>
 <translation id="8073388330009372546">פתיחת התמונה בכרטיסייה חדשה</translation>
 <translation id="8076492880354921740">כרטיסיות</translation>
 <translation id="8084114998886531721">סיסמה שמורה</translation>
@@ -977,6 +993,7 @@
 <translation id="8555836665334561807">‏ב-Wi-Fi</translation>
 <translation id="8558485628462305855">‏כדי להציג תוכן של מציאות רבודה, צריך לעדכן את ARCore</translation>
 <translation id="8559990750235505898">הצעה לתרגם דפים בשפות אחרות</translation>
+<translation id="8560602726703398413">ניתן למצוא את רשימת הקריאה בקטע 'סימניות'</translation>
 <translation id="8561196567344536112">‏1. עוברים אל 'הגדרות'\n2. מקישים על 'אפליקציית דפדפן'\n3. בוחרים ב-<ph name="APP_NAME" />.</translation>
 <translation id="8562452229998620586">הסיסמאות השמורות יופיעו כאן.</translation>
 <translation id="8569404424186215731">מאז <ph name="DATE" /></translation>

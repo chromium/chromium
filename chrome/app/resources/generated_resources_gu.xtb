@@ -1198,6 +1198,7 @@
 <translation id="2419706071571366386">સુરક્ષા માટે, તમારા કમ્પ્યુટરનો ઉપયોગ ન થતો હોય ત્યારે સાઇન આઉટ કરો.</translation>
 <translation id="2422125132043002186">Linux પાછું મેળવવાનું રદ કર્યું</translation>
 <translation id="2423578206845792524">છબીને આ રૂપે સા&amp;ચવો...</translation>
+<translation id="2424424966051154874">{0,plural, =1{અતિથિ}one{અતિથિ (#)}other{અતિથિ (#)}}</translation>
 <translation id="2428510569851653187">ટૅબ ક્રેશ થઈ ત્યારે તમે શું કરતા હતા તેનું વર્ણન કરો</translation>
 <translation id="2428939361789119025">વાઇ-ફાઇ બંધ કરો</translation>
 <translation id="2431027948063157455">Google સહાયક લોડ થવામાં અસમર્થ રહ્યું, કૃપા કરીને તમારું નેટવર્ક કનેક્શન તપાસો અને ફરી પ્રયાસ કરો.</translation>
@@ -4197,6 +4198,7 @@ USB ડિવાઇસ</translation>
 <translation id="6077189836672154517"><ph name="DEVICE_TYPE" /> વિશે ટિપ અને અપડેટ</translation>
 <translation id="6077476112742402730">લખવા માટે બોલો</translation>
 <translation id="6078045608615316905">આ છબી માટે QR કોડ બનાવો</translation>
+<translation id="6078121669093215958">{0,plural, =1{અતિથિ}one{# અતિથિ વિંડો ખુલ્લી છે}other{# અતિથિ વિંડો ખુલ્લી છે}}</translation>
 <translation id="6078323886959318429">શોર્ટકટ ઉમેરો</translation>
 <translation id="6078752646384677957">કૃપા કરીને તમારા માઇક્રોફોન અને ઑડિઓના સ્તરોને તપાસો.</translation>
 <translation id="6078769373519310690">"<ph name="CHROME_EXTENSION_NAME" />" HID ડિવાઇસ સાથે કનેક્ટ કરવા માગે છે</translation>
@@ -4704,6 +4706,7 @@ USB ડિવાઇસ</translation>
 <translation id="6704062477274546131">DNSનો ઉકેલ</translation>
 <translation id="6706210727756204531">લક્ષ્યબિંદુ</translation>
 <translation id="6707389671160270963">SSL ક્લાયંટ પ્રમાણપત્ર</translation>
+<translation id="670893696722244877">ભાષાઓ કે ઇનપુટના નામ મુજબ શોધો</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> અને અન્ય 1 ટૅબ}one{<ph name="PAGE_TITLE" /> અને અન્ય # ટૅબ}other{<ph name="PAGE_TITLE" /> અને અન્ય # ટૅબ}}</translation>
 <translation id="6709133671862442373">News</translation>
 <translation id="6709357832553498500"><ph name="EXTENSIONNAME" /> નો ઉપયોગ કરીને કનેક્ટ કરો</translation>
@@ -5541,6 +5544,7 @@ USB ડિવાઇસ</translation>
 <translation id="7753735457098489144">સ્ટોરેજ સ્પેસના અભાવના કારણે ઇન્સ્ટૉલ કરવું નિષ્ફળ થયું. સ્પેસ ખાલી કરવા માટે, ડિવાઇસ સ્ટોરેજમાંથી ફાઇલો ડિલીટ કરો.</translation>
 <translation id="7754704193130578113">ડાઉનલોડ કરતાં પહેલાં પ્રત્યેક ફાઇલને ક્યાં સાચવવી છે તે જણાવો</translation>
 <translation id="7755287808199759310">તમારા માટે તમારા માતાપિતા તેને અનાવરોધિત કરી શકે છે</translation>
+<translation id="7757592200364144203">ડિવાઇસનું નામ બદલો</translation>
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" />માંથી ટેક્સ્ટ શેર કરી</translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">તમારા ડિસ્પ્લેની સીમાઓને ગોઠવો</translation>
@@ -5992,6 +5996,7 @@ USB ડિવાઇસ</translation>
 <translation id="8264024885325823677">આ સેટિંગને તમારા વ્યવસ્થાપક દ્વારા મેનેજ કરવામાં આવે છે.</translation>
 <translation id="8264718194193514834"><ph name="EXTENSION_NAME" /> એ પૂર્ણ સ્ક્રીનને ટ્રિગર કરેલી છે.</translation>
 <translation id="826511437356419340">વિંડો ઓવરવ્યૂ મોડમાં દાખલ થયા. નૅવિગેટ કરવા માટે સ્વાઇપ કરો અથવા જો કીબોર્ડનો ઉપયોગ કરી રહ્યાં હો, તો Tab કી દબાવો.</translation>
+<translation id="8266947622852630193">તમામ ઇનપુટ પદ્ધતિઓ</translation>
 <translation id="8267539814046467575">પ્રિન્ટર ઉમેરો</translation>
 <translation id="8267961145111171918"><ph name="BEGIN_PARAGRAPH1" />આ ડિવાઇસ અને તે કેવી રીતે ઉપયોગમાં લેવાય છે (જેમ કે બૅટરીનું લેવલ, સિસ્ટમ અને ઍપ પ્રવૃત્તિ તેમજ ભૂલો) વિશેની આ સામાન્ય માહિતી છે. આ ડેટાનો ઉપયોગ Androidને બહેતર બનાવવા માટે કરવામાં આવશે અને અમુક એકીકૃત માહિતી, Google ઍપ અને ભાગીદારો, જેમ કે Android ડેવલપરને પણ તેઓની ઍપ અને પ્રોડક્ટને બહેતર બનાવવામાં સહાયરૂપ થશે.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />આ સુવિધાને બંધ કરવાથી સિસ્ટમ અપડેટ અને સુરક્ષા જેવી આવશ્યક સેવાઓ માટે આવશ્યક માહિતી મોકલવાની આ ડિવાઇસની ક્ષમતાને અસર થતી નથી.<ph name="END_PARAGRAPH2" />

@@ -1,8 +1,10 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="vi">
+<translation id="2077832278056815832">Đóng mọi cửa sổ chú giải hoặc lớp phủ của các ứng dụng khác. Sau đó, hãy thử lại.</translation>
 <translation id="2359808026110333948">Tiếp tục</translation>
 <translation id="2416359993254398973">Chrome cần có quyền truy cập máy ảnh của bạn cho trang web này.</translation>
+<translation id="2987449669841041897">Trang web này không thể yêu cầu bạn cấp quyền</translation>
 <translation id="557283862590186398">Chrome cần có quyền truy cập micrô của bạn cho trang web này.</translation>
 <translation id="5860491529813859533">Bật</translation>
 <translation id="6092062101542170135">Để tiếp tục, hãy bật NFC trong phần cài đặt Android</translation>

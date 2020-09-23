@@ -51,6 +51,7 @@
 <translation id="2315043854645842844">క్లయింట్ తరపు స‌ర్టిఫికెట్‌ ఎంపికకు ఆపరేటింగ్ సిస్టమ్ మద్దతు లేదు.</translation>
 <translation id="2359808026110333948">కొనసాగించు</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
+<translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, ఇంకా మరో <ph name="NUM_MORE" /> అనుమతించబడ్డాయి}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, ఇంకా మరో <ph name="NUM_MORE" /> అనుమతించబడ్డాయి}}</translation>
 <translation id="2434158240863470628">డౌన్‌లోడ్ పూర్తయింది <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2440823041667407902">స్థాన యాక్సెస్</translation>
 <translation id="2482878487686419369">నోటిఫికేషన్‌లు</translation>
@@ -190,6 +191,7 @@
 <translation id="6447842834002726250">కుక్కీలు</translation>
 <translation id="6527303717912515753">భాగస్వామ్యం చేయి</translation>
 <translation id="6545864417968258051">బ్లూటూత్ స్కానింగ్</translation>
+<translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, ఇంకా మరో <ph name="NUM_MORE" /> బ్లాక్ చేయబడ్డాయి}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, ఇంకా మరో <ph name="NUM_MORE" /> బ్లాక్ చేయబడ్డాయి}}</translation>
 <translation id="6561560012278703671">నిశ్శబ్ద సందేశాలను ఉపయోగించండి (మీకు అంతరాయం కలిగించకుండా నోటిఫికేషన్ ప్రాంప్ట్‌లను బ్లాక్ చేస్తుంది)</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">రక్షిత కంటెంట్</translation>
@@ -292,6 +294,7 @@
 <translation id="8959122750345127698">దీనికి నావిగేట్ చేయడం సాధ్యపడదు: <ph name="URL" /></translation>
 <translation id="9019902583201351841">మీ తల్లిదండ్రుల ద్వారా నిర్వహించబడుతోంది</translation>
 <translation id="9074739597929991885">బ్లూటూత్</translation>
+<translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, ఇంకా మరో <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, ఇంకా మరో <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289"><ph name="BEGIN_LINK" />Android సెట్టింగ్‌ల<ph name="END_LINK" />లో <ph name="APP_NAME" /> కోసం అనుమతులను ఆన్ చేయండి.</translation>
 <translation id="945632385593298557">మీ మైక్రోఫోన్ యాక్సెస్ అనుమతి</translation>
 <translation id="965817943346481315">సైట్ అనుచితమైన లేదా తప్పుదారి పట్టించే ప్రకటనలను చూపించినప్పుడు బ్లాక్ చేయి (సిఫార్సు చేయబడింది)</translation>

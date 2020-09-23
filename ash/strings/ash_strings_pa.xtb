@@ -137,6 +137,7 @@
 <translation id="2341729377289034582">ਖੜ੍ਹਵੀਂ ਸਥਿਤੀ ਵਿੱਚ ਲਾਕ ਕੀਤੀ ਗਈ</translation>
 <translation id="2352467521400612932">ਸਟਾਈਲਸ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="2354174487190027830"><ph name="NAME" /> ਨੂੰ ਐਕਟੀਵੇਟ ਕਰ ਰਿਹਾ ਹੈ</translation>
+<translation id="2356210126990741501">ਇੰਝ ਲੱਗਦਾ ਹੈ ਕਿ ਤੁਹਾਡਾ ਫ਼ੋਨ ਆਨਲਾਈਨ ਨਹੀਂ ਹੈ, ਇਸ ਲਈ ਹੁਣ ਅਸੀਂ ਇਸ ਤੋਂ ਤੁਹਾਡੇ ਲਈ ਸਾਰਾ ਡਾਟਾ ਪ੍ਰਾਪਤ ਨਹੀਂ ਕਰ ਸਕਦੇ।</translation>
 <translation id="2359808026110333948">ਜਾਰੀ ਰੱਖੋ</translation>
 <translation id="2365393535144473978">ਮੋਬਾਈਲ ਡਾਟਾ ਚਾਲੂ ਕਰਨ ਨਾਲ ਬਲੂਟੁੱਥ ਵੀ ਚਾਲੂ ਹੋ ਜਾਵੇਗਾ।</translation>
 <translation id="2369165858548251131">ਚੀਨੀ ਭਾਸ਼ਾ ਵਿੱਚ "ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ"</translation>
@@ -169,6 +170,7 @@
 <translation id="2705001408393684014">ਮਾਈਕ ਨੂੰ ਟੌਗਲ ਕਰੋ। <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">ਉੱਪਰ</translation>
 <translation id="2718395828230677721">ਰਾਤ ਦੀ ਰੋਸ਼ਨੀ</translation>
+<translation id="2727175239389218057">ਜਵਾਬ ਦਿਓ</translation>
 <translation id="2727977024730340865">ਇੱਕ ਘੱਟ-ਪਾਵਰ ਦੇ ਚਾਰਜਰ ਨਾਲ ਪਲੱਗ-ਇਨ ਕੀਤਾ ਗਿਆ। ਬੈਟਰੀ ਚਾਰਜਿੰਗ ਭਰੋਸੇਯੋਗ ਨਹੀਂ ਵੀ ਹੋ ਸਕਦੀ।</translation>
 <translation id="2743387203779672305">ਕਲਿੱਪਬੋਰਡ 'ਤੇ ਕਾਪੀ ਕਰੋ</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
@@ -177,6 +179,7 @@
 <translation id="2825619548187458965">Shelf</translation>
 <translation id="2841907151129139818">ਟੈਬਲੈੱਟ ਮੋਡ 'ਤੇ ਸਵਿੱਚ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="2844169650293029770">USB-C ਡੀਵਾਈਸ (ਖੱਬੇ ਪਾਸੇ ਅੱਗੇ ਦਾ ਪੋਰਟ)</translation>
+<translation id="2846247265041961677">ਓਹ ਹੋ! ਫ਼ੋਨ ਲੱਭਿਆ ਨਹੀਂ ਜਾ ਸਕਿਆ</translation>
 <translation id="2865888419503095837">ਨੈੱਟਵਰਕ ਜਾਣਕਾਰੀ</translation>
 <translation id="2872961005593481000">ਸ਼ਟ ਡਾਊਨ</translation>
 <translation id="2878884018241093801">ਕੋਈ ਹਾਲੀਆ ਆਈਟਮਾਂ ਨਹੀਂ</translation>
@@ -459,6 +462,7 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">ਚਾਲੂ</translation>
 <translation id="5920710855273935292">ਮਾਈਕ ਨੂੰ ਮਿਊਟ ਕੀਤਾ ਹੋਇਆ ਹੈ।</translation>
+<translation id="594179686076170922">ਤੁਹਾਡੇ ਫ਼ੋਨ ਨਾਲ ਕਨੈਕਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> ਚਾਲੂ ਹੈ।</translation>
 <translation id="5947494881799873997">ਵਾਪਸ ਲਿਆਓ</translation>
 <translation id="595202126637698455">ਪ੍ਰਦਰਸ਼ਨ ਟ੍ਰੇਸਿੰਗ ਸਮਰਥਿਤ</translation>

@@ -1476,6 +1476,15 @@ Dit beleid kan alleen worden ingesteld via de Google Beheerdersconsole.</transla
 <translation id="3219421230122020860">Incognitomodus beschikbaar</translation>
 <translation id="3220624000494482595">Als de kiosk-app een Android-app is, heeft deze geen controle over de <ph name="PRODUCT_OS_NAME" />-versie, zelfs niet als het beleid is ingesteld op <ph name="TRUE" /> (Waar).</translation>
 <translation id="322359555555487980">De beschikbaarheid van varianten in <ph name="PRODUCT_OS_NAME" /> bepalen</translation>
+<translation id="3225165352822164029">Als je het beleid instelt, wordt de standaard-URL voor de homepage ingesteld in <ph name="PRODUCT_NAME" />. Je kunt de homepage openen met de knop 'Homepage'. Op desktops bepaalt het beleid <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> welke pagina's worden geopend als de browser wordt opgestart.
+
+      Als de homepage niet is ingesteld op de pagina 'Nieuw tabblad' (door de gebruiker of <ph name="HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_NAME" />), heeft dit beleid geen effect.
+
+       De URL heeft een standaardschema nodig, zoals http://example.com of https://example.com. Als dit beleid is ingesteld, kunnen gebruikers de URL van de homepage niet wijzigen in <ph name="PRODUCT_NAME" />.
+
+      Als je <ph name="HOMEPAGE_LOCATION_POLICY_NAME" /> en <ph name="HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_NAME" /> geen van beide instelt, kunnen gebruikers hun homepage kiezen.
+
+      In <ph name="MS_WIN_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein, worden uitgevoerd in Windows 10 Pro of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />. In <ph name="MAC_OS_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die via MDM worden beheerd of via MCX aan een domein zijn gekoppeld.</translation>
 <translation id="3231837273069128027">Als je dit beleid instelt, worden de beschikbaarheid en het gedrag geconfigureerd van <ph name="TPM_FIRMWARE_UPDATE_TPM" />-firmware-updates.
 
       Afzonderlijke instellingen opgeven in JSON-eigenschappen:
@@ -1818,6 +1827,11 @@ Als dit beleid is ingesteld op False, gebruikt <ph name="PRODUCT_NAME" /> geen n
       Dit beleid wordt verwijderd in Chrome 88.
 
       Zie https://www.chromestatus.com/feature/5989473649164288.</translation>
+<translation id="3691155504326059225">Als je het beleid inschakelt, wordt de pagina 'Nieuw tabblad' gebruikt als homepage van de gebruiker en wordt de URL voor de homepage genegeerd. Als je het beleid uitschakelt, wordt de pagina 'Nieuw tabblad' nooit gebruikt als homepage van de gebruiker, tenzij de URL voor de homepage is ingesteld op chrome://newtab.
+
+      Als je het beleid instelt, kunnen gebruikers het type homepage niet wijzigen in <ph name="PRODUCT_NAME" />. Als je dit beleid niet instelt, kan de gebruiker bepalen of de pagina 'Nieuw tabblad' als homepage wordt gebruikt.
+
+      In <ph name="MS_WIN_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein, worden uitgevoerd in Windows 10 Pro of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />. In <ph name="MAC_OS_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die via MDM worden beheerd of via MCX aan een domein zijn gekoppeld.</translation>
 <translation id="3701121231485832347">Beheert instellingen die specifiek zijn voor <ph name="PRODUCT_OS_NAME" />-apparaten die via <ph name="MS_AD_NAME" /> worden beheerd.</translation>
 <translation id="3702518095257671450">Externe bevestiging</translation>
 <translation id="3702647575225525306"><ph name="POLICY_NAME" /> (Het veld met één regel is beëindigd en wordt in de toekomst verwijderd. Gebruik het tekstvak met meerdere regels hieronder.)</translation>
@@ -3109,6 +3123,13 @@ Als dit beleid wordt gebruikt, zijn alleen de printers met ID's die overeenkomen
       Als dit beleid is ingesteld op 'Uploads en downloads van niet-ondersteunde bestandstypen blokkeren' (3), gedraagt <ph name="PRODUCT_NAME" /> zich volgens de regels die worden beschreven onder 'Uploads van niet-ondersteunde bestandstypen blokkeren' en 'Downloads van niet-ondersteunde bestandstypen blokkeren'.
       </translation>
 <translation id="5535973522252703021">Witte lijst voor Kerberos-delegatieserver</translation>
+<translation id="5540753481451194959">Als je dit beleid instelt, kun je opgeven hoe het systeem moet reageren als de browser wordt opgestart. Als je deze instelling uitschakelt, heeft dit hetzelfde effect als wanneer je het beleid niet instelt, omdat het opstartgedrag van <ph name="PRODUCT_NAME" /> moet zijn opgegeven.
+
+      Als je het beleid instelt, kunnen gebruikers dit niet wijzigen in <ph name="PRODUCT_NAME" />. Als je het beleid niet instelt, kunnen gebruikers dit wijzigen.
+
+      Als je dit beleid instelt op <ph name="POLICY_ENUM_RESTOREONSTARTUP_RESTOREONSTARTUPISLASTSESSION" />, worden sommige instellingen uitgeschakeld die afhankelijk zijn van sessies of waarmee bij het afsluiten bepaalde acties worden uitgevoerd (zoals browsergegevens wissen bij afsluiten of sessiecookies).
+
+      In <ph name="MS_WIN_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein, worden uitgevoerd in Windows 10 Pro of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />. In <ph name="MAC_OS_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die via MDM worden beheerd of via MCX aan een domein zijn gekoppeld.</translation>
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="555022085242359084">Hoog contrast op het inlogscherm inschakelen</translation>
 <translation id="555077880566103058">Alle sites toestaan om de <ph name="FLASH_PLUGIN_NAME" />-plug-in automatisch uit te voeren</translation>
@@ -3959,6 +3980,13 @@ Als dit beleid wordt gebruikt, zijn alleen de printers met ID's die overeenkomen
 
       Als je het beleid uitschakelt, wordt in plaats daarvan een foutmelding weergegeven.</translation>
 <translation id="6821268164692776674">De bestemmingen <ph name="CLOUD_PRINT_NAME" /> en 'Opslaan in Google Drive'</translation>
+<translation id="6833023569065717572">Als je het beleid instelt op True, krijgt het inlogscherm van een apparaat de 24-uurs kloknotatie.
+
+      Als je het beleid instelt op False, krijgt het inlogscherm van een apparaat de 12-uurs kloknotatie.
+
+      Als je het beleid niet instelt, gebruikt een apparaat de notatie van de huidige landinstelling.
+
+      Gebruikerssessies maken ook standaard gebruik van de notatie van het apparaat, maar gebruikers kunnen de kloknotatie van een account wijzigen.</translation>
 <translation id="6833064854262015312">Als je het beleid instelt op True, wordt de modus voor hoog contrast ingeschakeld op het inlogscherm. Als je het beleid instelt op False, wordt de modus voor hoog contrast uitgeschakeld op het inlogscherm.
 
       Als je dit beleid instelt, kunnen gebruikers de modus voor hoog contrast tijdelijk wijzigen (dat wil zeggen in- of uitschakelen). Als het inlogscherm opnieuw wordt geladen of een minuut lang niet wordt gebruikt, wordt de oorspronkelijke status hersteld.
@@ -4139,6 +4167,7 @@ Als dit beleid wordt gebruikt, zijn alleen de printers met ID's die overeenkomen
       Als er een lijst met URL's wordt ingesteld in dit beleid, heeft dit hetzelfde effect als wanneer de opdrachtregelmarkering '--unsafely-treat-insecure-origin-as-secure' wordt ingesteld voor een door komma's gescheiden lijst met dezelfde URL's. Het beleid overschrijft de opdrachtregelmarkering en UnsafelyTreatInsecureOriginAsSecure, indien aanwezig.
 
       Voor meer informatie over een veilige context ga je naar https://www.w3.org/TR/secure-contexts.</translation>
+<translation id="7033985774616781500">De camera, browserinstellingen en de OS-instellingen en scanfuncties configureren die moeten worden uitgeschakeld</translation>
 <translation id="7037812781389976160">De positie van de plank van <ph name="PRODUCT_OS_NAME" /> bepalen.
 
       Als dit beleid is ingesteld op Onderaan, wordt de plank onderaan het scherm geplaatst.
@@ -4628,6 +4657,11 @@ Als dit beleid wordt gebruikt, zijn alleen de printers met ID's die overeenkomen
       Dit beleid is alleen van toepassing op gebruikers met een kinderaccount.
       Wanneer dit beleid is ingesteld, kan de toegangscode voor ouders worden geverifieerd op het apparaat van de gebruiker met een kinderaccount.
       Wanneer dit beleid niet is ingesteld, kan de toegangscode voor ouders niet worden geverifieerd op het apparaat van de gebruiker met een kinderaccount.</translation>
+<translation id="7623187731914468284">Als je <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> instelt op RestoreOnStartupIsURLs, geef je aan welke URL's moeten worden geopend door <ph name="RESTORE_ON_STARTUP_URLS_POLICY_NAME" /> in te stellen op een lijst met URL's.
+
+      Als je het beleid niet instelt, wordt de pagina 'Nieuw tabblad' geopend als de browser wordt opgestart.
+
+      In <ph name="MS_WIN_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein, worden uitgevoerd in Windows 10 Pro of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />. In <ph name="MAC_OS_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die via MDM worden beheerd of via MCX aan een domein zijn gekoppeld.</translation>
 <translation id="7625444193696794922">Hiermee wordt het releasekanaal gespecificeerd waarmee dit apparaat moet worden vergrendeld.</translation>
 <translation id="7629840767216985001">Als je het beleid instelt op True, wordt de grote cursor ingeschakeld op het inlogscherm. Als je het beleid instelt op False, wordt de grote cursor uitgeschakeld op het inlogscherm.
 
@@ -4728,6 +4762,13 @@ Als dit beleid wordt gebruikt, zijn alleen de printers met ID's die overeenkomen
 <translation id="7754704193130578113">Voorafgaand aan een download vragen waar een bestand moet worden opgeslagen</translation>
 <translation id="7758378441185523981">Ambient-verificatie inschakelen voor profieltypen.</translation>
 <translation id="7763614521440615342">Contentsuggesties weergeven op de nieuwe tabbladpagina</translation>
+<translation id="7765753178910647492">Hiermee kun je een lijst van <ph name="PRODUCT_OS_NAME" />-functies instellen die worden uitgeschakeld.
+
+      Als je een van deze functies uitschakelt, heeft de gebruiker hiertoe geen toegang meer vanuit de UI en wordt de functie weergegeven als 'uitgeschakeld door beheerder'.
+
+      Als het beleid niet wordt ingesteld, worden alle <ph name="PRODUCT_OS_NAME" />-functies standaard ingeschakeld en kan de gebruiker ze allemaal gebruiken.
+
+      Opmerking: De scanfuncties wordt momenteel standaard uitgeschakeld via een functievlag. Als de gebruiker deze functie inschakelt via de functievlag, kan de functie nog altijd worden uitgeschakeld door dit beleid.</translation>
 <translation id="7765879851993224640">Toestaan dat Smart Lock Signin wordt gebruikt</translation>
 <translation id="7774768074957326919">Proxyinstellingen van het systeem gebruiken</translation>
 <translation id="777734450201217641">Schakel snelkoppelingen voor toegankelijkheidsfuncties in op het inlogscherm.
@@ -4855,6 +4896,7 @@ Als dit beleid wordt gebruikt, zijn alleen de printers met ID's die overeenkomen
           Als dit beleid niet is ingesteld, wordt er een standaard tijdsduur gebruikt.
 
           De beleidswaarde moet worden gespecificeerd in milliseconden. De opgegeven waarden moeten kleiner dan of gelijk zijn aan de inactieve vertraging.</translation>
+<translation id="7995610550667275367">Scannen (ondersteund vanaf versie 87)</translation>
 <translation id="8001701200415781021">Beperken welke Google-accounts mogen worden ingesteld als primaire browseraccounts in <ph name="PRODUCT_NAME" /></translation>
 <translation id="8003853057959146975">Bestanden sturen voor controle op schendingen van de beveiligingsregels voor gevoelige gegevens</translation>
 <translation id="8006219716745491366">Als <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> is ingeschakeld en je <ph name="DEFAULT_SEARCH_PROVIDER_ALTERNATE_URLS_POLICY_NAME" /> instelt, wordt er een lijst met alternatieve URL's gespecificeerd om zoektermen uit de zoekmachine te extraheren. De URL's moeten de tekenreeks <ph name="SEARCH_TERM_MARKER" /> bevatten.
@@ -4991,6 +5033,9 @@ Als dit beleid niet is ingesteld, wordt het privacyscherm in eerste instantie ui
           Als de actie 'opschorten' is, kan <ph name="PRODUCT_OS_NAME" /> afzonderlijk worden geconfigureerd om het scherm wel of niet te vergrendelen voordat de opschorting wordt geactiveerd.</translation>
 <translation id="8214600119442850823">Hiermee wordt Wachtwoordmanager geconfigureerd.</translation>
 <translation id="8217516105848565518">Dit beleid is beëindigd. Gebruik in plaats daarvan RemoteAccessHostDomainList.</translation>
+<translation id="8219777886736887686">Met dit beleid bepaal je welke opdracht moet worden gebruikt om URL's te openen in een alternatieve browser. Dit beleid kan worden ingesteld op <ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" />, <ph name="FIREFOX_VALUE_PLACEHOLDER" />, <ph name="SAFARI_VALUE_PLACEHOLDER" />, <ph name="OPERA_VALUE_PLACEHOLDER" />, <ph name="EDGE_VALUE_PLACEHOLDER" /> of op een pad naar een bestand. Als je dit beleid instelt op een bestandspad, wordt dat bestand als uitvoerbaar bestand gebruikt. <ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" /> en <ph name="EDGE_VALUE_PLACEHOLDER" /> zijn alleen beschikbaar in <ph name="MS_WIN_NAME" />. <ph name="SAFARI_VALUE_PLACEHOLDER" /> is alleen beschikbaar in <ph name="MS_WIN_NAME" /> en <ph name="MAC_OS_NAME" />.
+
+      Als je het beleid niet instelt, wordt er een platformspecifieke standaard-app gebruikt: <ph name="IE_PRODUCT_NAME" /> voor <ph name="MS_WIN_NAME" /> of <ph name="SAFARI_PRODUCT_NAME" /> voor <ph name="MAC_OS_NAME" />. In <ph name="LINUX_OS_NAME" /> werkt het starten van een alternatieve browser niet.</translation>
 <translation id="8220156281401380422">Toelatingslijst voor systeemeigen berichten configureren</translation>
 <translation id="8244171102276095471">RC4-coderingssuites in TLS inschakelen</translation>
 <translation id="8244525275280476362">Maximum vertraging voor ophalen na ongeldigverklaring voor beleid</translation>
@@ -5365,6 +5410,9 @@ Dit beleid wordt verwijderd in M75.</translation>
 
       Dit beleid is niet van invloed op de mogelijkheid van gebruikers om printers op afzonderlijke apparaten in te stellen. Het is bedoeld als aanvulling op de printerinstellingen van afzonderlijke gebruikers.</translation>
 <translation id="8764477907716150749">Dit beleid is bedoeld voor intern gebruik door <ph name="PRODUCT_NAME" /> zelf.</translation>
+<translation id="8767743923206070405">Als je het beleid inschakelt, wordt de knop 'Homepage' weergegeven op de werkbalk van <ph name="PRODUCT_NAME" />. Als je het beleid uitschakelt, wordt de knop 'Homepage' niet weergegeven.
+
+      Als je het beleid instelt, kunnen gebruikers dit niet wijzigen in <ph name="PRODUCT_NAME" />. Als je het beleid niet instelt, kunnen gebruikers bepalen of ze de knop 'Homepage' wel of niet willen weergeven.</translation>
 <translation id="877185520360032968">Als je het beleid instelt, wordt de standaardmap gewijzigd waarnaar Chrome bestanden downloadt maar kunnen gebruikers deze map wijzigen.
 
       Als je het beleid niet instelt, gebruikt Chrome de platformspecifieke standaardmap.

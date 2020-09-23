@@ -51,6 +51,7 @@
 <translation id="2315043854645842844">Сертификат, выбранный клиентом, не поддерживается операционной системой.</translation>
 <translation id="2359808026110333948">Продолжить</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> МБ</translation>
+<translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Разрешено: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" />}one{Разрешено: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" />}few{Разрешено: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" />}many{Разрешено: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" />}other{Разрешено: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" />}}</translation>
 <translation id="2434158240863470628">Скачивание завершено <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2440823041667407902">Данные о местоположении</translation>
 <translation id="2482878487686419369">Уведомления</translation>
@@ -190,6 +191,7 @@
 <translation id="6447842834002726250">Файлы сookie</translation>
 <translation id="6527303717912515753">Поделиться</translation>
 <translation id="6545864417968258051">Поиск Bluetooth-устройств</translation>
+<translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Заблокировано: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" />}one{Заблокировано: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" />}few{Заблокировано: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" />}many{Заблокировано: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" />}other{Заблокировано: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" />}}</translation>
 <translation id="6561560012278703671">Не прерывать мою работу при запросе разрешения на показ уведомлений</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> ГБ</translation>
 <translation id="6612358246767739896">Защищенный контент</translation>
@@ -292,6 +294,7 @@
 <translation id="8959122750345127698">Страница не найдена: <ph name="URL" /></translation>
 <translation id="9019902583201351841">Управляется вашими родителями</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" />}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" />}few{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" />}many{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289">Предоставьте приложению "<ph name="APP_NAME" />" разрешения в <ph name="BEGIN_LINK" />настройках Android<ph name="END_LINK" />.</translation>
 <translation id="945632385593298557">Доступ к микрофону</translation>
 <translation id="965817943346481315">Блокировать, если сайт показывает навязчивую или вводящую в заблуждение рекламу (рекомендуется)</translation>

@@ -137,6 +137,7 @@
 <translation id="2341729377289034582">縦に固定</translation>
 <translation id="2352467521400612932">タッチペンの設定</translation>
 <translation id="2354174487190027830"><ph name="NAME" /> を有効にしています</translation>
+<translation id="2356210126990741501">スマートフォンがオンラインになっていないようです。現在、スマートフォンからサービスをすべて取得できません。</translation>
 <translation id="2359808026110333948">続行</translation>
 <translation id="2365393535144473978">モバイルデータ通信を有効にすると、Bluetooth も有効になります。</translation>
 <translation id="2369165858548251131">中国語で「こんにちは」ってどう言うの</translation>
@@ -169,6 +170,7 @@
 <translation id="2705001408393684014">マイクを切り替えます。<ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">上矢印キー</translation>
 <translation id="2718395828230677721">夜間モード</translation>
+<translation id="2727175239389218057">返信</translation>
 <translation id="2727977024730340865">低電力の充電器に接続しています。バッテリーが充電されない可能性があります。</translation>
 <translation id="2743387203779672305">クリップボードにコピー</translation>
 <translation id="2792498699870441125">Alt+ 検索</translation>
@@ -177,6 +179,7 @@
 <translation id="2825619548187458965">シェルフ</translation>
 <translation id="2841907151129139818">タブレット モードに切り替えました</translation>
 <translation id="2844169650293029770">USB-C デバイス（左手前のポート）</translation>
+<translation id="2846247265041961677">エラー: スマートフォンが見つかりません</translation>
 <translation id="2865888419503095837">ネットワーク情報</translation>
 <translation id="2872961005593481000">終了</translation>
 <translation id="2878884018241093801">最近使用されたアイテムはありません</translation>
@@ -459,6 +462,7 @@
 <translation id="5911909173233110115"><ph name="USERNAME" />（<ph name="MAIL" />）</translation>
 <translation id="5916664084637901428">オン</translation>
 <translation id="5920710855273935292">マイクはミュートです。</translation>
+<translation id="594179686076170922">スマートフォンに接続しています...</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> はオンになっています。</translation>
 <translation id="5947494881799873997">元に戻す</translation>
 <translation id="595202126637698455">パフォーマンス追跡機能が有効です</translation>

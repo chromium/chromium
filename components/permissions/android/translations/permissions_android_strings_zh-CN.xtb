@@ -1,8 +1,10 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-CN">
+<translation id="2077832278056815832">请关闭来自其他应用的所有气泡或叠加层，然后重试。</translation>
 <translation id="2359808026110333948">继续</translation>
 <translation id="2416359993254398973">Chrome 需要获得相应权限，才能允许此网站使用您的摄像头。</translation>
+<translation id="2987449669841041897">此网站无法请求您授权</translation>
 <translation id="557283862590186398">Chrome 需要获得相应权限，才能允许此网站使用您的麦克风。</translation>
 <translation id="5860491529813859533">启用</translation>
 <translation id="6092062101542170135">要继续，请在 Android 设置中开启 NFC</translation>

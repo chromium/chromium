@@ -1,8 +1,10 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pt-PT">
+<translation id="2077832278056815832">Feche todos os balões ou sobreposições de outras apps. Em seguida, tente novamente.</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2416359993254398973">O Chrome necessita de autorização de acesso à câmara para este site.</translation>
+<translation id="2987449669841041897">Este site não pode pedir a sua autorização</translation>
 <translation id="557283862590186398">O Chrome necessita de autorização de acesso ao microfone para este site.</translation>
 <translation id="5860491529813859533">Ativar</translation>
 <translation id="6092062101542170135">Para continuar, ative o NFC nas definições do Android.</translation>

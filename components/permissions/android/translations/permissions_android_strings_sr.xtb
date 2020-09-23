@@ -1,8 +1,10 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sr">
+<translation id="2077832278056815832">Затворите облачиће или преклопне елементе из других апликација. Затим пробајте поново.</translation>
 <translation id="2359808026110333948">Наставите</translation>
 <translation id="2416359993254398973">Chrome тражи дозволу да приступи камери за овај сајт.</translation>
+<translation id="2987449669841041897">Овај сајт не може да вам тражи дозволу</translation>
 <translation id="557283862590186398">Chrome тражи дозволу да приступи микрофону за овај сајт.</translation>
 <translation id="5860491529813859533">Укључи</translation>
 <translation id="6092062101542170135">Да бисте наставили, укључите NFC у Android подешавањима</translation>

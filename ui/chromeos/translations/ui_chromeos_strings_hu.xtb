@@ -376,6 +376,7 @@
 <translation id="5098629044894065541">héber</translation>
 <translation id="5123433949759960244">Kosárlabda</translation>
 <translation id="5129662217315786329">lengyel</translation>
+<translation id="5132435854979302863">filippinó</translation>
 <translation id="5144820558584035333">Hangul 3 készlet (390)</translation>
 <translation id="5145331109270917438">Módosítás dátuma</translation>
 <translation id="515594325917491223">Sakk</translation>
@@ -422,6 +423,7 @@
 <translation id="5464696796438641524">Lengyel billentyűzet</translation>
 <translation id="5465122519792752163">Nepáli billentyűzet (InScript)</translation>
 <translation id="5469868506864199649">olasz</translation>
+<translation id="5484429245813572665">indonéz</translation>
 <translation id="5494920125229734069">Összes kiválasztása</translation>
 <translation id="5500122897333236901">izlandi</translation>
 <translation id="5508696409934741614">Pöttyök</translation>
@@ -609,6 +611,7 @@
 <translation id="7649070708921625228">Súgó</translation>
 <translation id="7654209398114106148"><ph name="NUMBER_OF_ITEMS" /> elem áthelyezése…</translation>
 <translation id="7658239707568436148">Mégse</translation>
+<translation id="7693909743393669729">A meghajtó formázásával minden rajta tárolt adat, és ezzel együtt az összes meglévő partíció is törlődik (többek között az esetlegesen nem láthatók is). A művelet nem vonható vissza.</translation>
 <translation id="7695430100978772476">Nem sikerült a(z) <ph name="DRIVE_NAME" /> formázása</translation>
 <translation id="770015031906360009">görög</translation>
 <translation id="7706319470528945664">Portugál billentyűzet</translation>
@@ -640,6 +643,7 @@
 <translation id="78946041517601018">Megosztott meghajtók</translation>
 <translation id="7896906914454843592">Amerikai bővített billentyűzet</translation>
 <translation id="7898607018410277265">Gudzsaráti billentyűzet (új fonetikus)</translation>
+<translation id="7908793776359722643">A partíció formázásával törli a rajta lévő összes adatot. A művelet nem vonható vissza.</translation>
 <translation id="7917972308273378936">Litván billentyűzet</translation>
 <translation id="7925686952655276919">Ne használjon mobiladatokat a szinkronizáláshoz</translation>
 <translation id="7928710562641958568">Eszköz kiadása</translation>
@@ -727,6 +731,7 @@
 <translation id="8900820606136623064">magyar</translation>
 <translation id="8901822611024316615">Cseh QWERTY billentyűzet</translation>
 <translation id="8919081441417203123">dán</translation>
+<translation id="8941776146379310519">maláj</translation>
 <translation id="8960999352790021682">Bengáli billentyűzet (fonetikus)</translation>
 <translation id="8965697826696209160">Nincs elég tárhely.</translation>
 <translation id="9017798300203431059">orosz fonetikus</translation>

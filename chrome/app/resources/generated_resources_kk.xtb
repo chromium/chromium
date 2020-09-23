@@ -1199,6 +1199,7 @@
 <translation id="2419706071571366386">Қауіпсіздік үшін компьютеріңіз пайдаланылмайтын кезде есептік жазбадан шығыңыз.</translation>
 <translation id="2422125132043002186">Linux контейнерін қалпына келтіруден бас тартылды</translation>
 <translation id="2423578206845792524">Ке&amp;скінді басқаша сақтау…</translation>
+<translation id="2424424966051154874">{0,plural, =1{Қонақ}other{Қонақ (#)}}</translation>
 <translation id="2428510569851653187">Қойынды бұзылған кезде не істеп жатқаныңызды баяндаңыз</translation>
 <translation id="2428939361789119025">Wi-Fi желісін өшіру</translation>
 <translation id="2431027948063157455">Google Assistant жүктелмеді, желі байланысын тексеріп, әрекетті қайталап көріңіз.</translation>
@@ -4196,6 +4197,7 @@
 <translation id="6077189836672154517"><ph name="DEVICE_TYPE" /> құрылғысына қатысты кеңестер мен жаңартулар</translation>
 <translation id="6077476112742402730">Дауыспен енгізу</translation>
 <translation id="6078045608615316905">Осы суретке QR код жасау</translation>
+<translation id="6078121669093215958">{0,plural, =1{Қонақ}other{# қонақ терезесі ашық}}</translation>
 <translation id="6078323886959318429">Таңбашаны енгізу</translation>
 <translation id="6078752646384677957">Микрофон мен аудиомазмұн деңгейлерін тексеріңіз.</translation>
 <translation id="6078769373519310690">"<ph name="CHROME_EXTENSION_NAME" />" кеңейтімі HID құрылғысына жалғанғысы келеді.</translation>
@@ -4703,6 +4705,7 @@
 <translation id="6704062477274546131">DNS ажыратымдылығы</translation>
 <translation id="6706210727756204531">Қолданыс аясы</translation>
 <translation id="6707389671160270963">SSL клиент сертификаты</translation>
+<translation id="670893696722244877">Тіл бойынша немесе енгізілген атауы бойынша іздеу</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> және тағы 1 қойынды}other{<ph name="PAGE_TITLE" /> және тағы # қойынды}}</translation>
 <translation id="6709133671862442373">Жаңалықтар</translation>
 <translation id="6709357832553498500"><ph name="EXTENSIONNAME" /> арқылы қосылу</translation>
@@ -5540,6 +5543,7 @@
 <translation id="7753735457098489144">Жад көлемі жеткіліксіз болғандықтан, орнату мүмкін болмады. Орын босату үшін құрылғы жадынан файлдарды жойыңыз.</translation>
 <translation id="7754704193130578113">Жүктеу алдында әр файлды сақтау орнын сұрау</translation>
 <translation id="7755287808199759310">Ата-анаңыз оны сіз үшін бөгеуден шығара алады</translation>
+<translation id="7757592200364144203">Құрылғы атауын өзгерту</translation>
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" /> бөліскен мәтін</translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">Дисплей жиектерін реттеңіз</translation>
@@ -5996,6 +6000,7 @@
 <translation id="8264024885325823677">Бұл параметрді әкімшіңіз басқарады.</translation>
 <translation id="8264718194193514834">"<ph name="EXTENSION_NAME" />" толық экранды іске қосты.</translation>
 <translation id="826511437356419340">Терезе шолу режимі қосылды. Өту үшін сырғытыңыз. Пернетақтаны пайдаланып жатсаңыз, Tab түймесін басыңыз.</translation>
+<translation id="8266947622852630193">Барлық енгізу әдістері</translation>
 <translation id="8267539814046467575">Принтерді енгізу</translation>
 <translation id="8267961145111171918"><ph name="BEGIN_PARAGRAPH1" />Бұл – құрылғыңыз бен оның қалай пайдаланылатыны туралы жалпы ақпарат (мысалы, батарея зарядының деңгейі, жүйе мен қолданбаларды пайдалану тарихы, қателер). Деректер Android жүйесін жақсарту үшін пайдаланылады және кейбір жиынтық ақпараттар Google қолданбалары мен Android әзірлеушілері сияқты серіктестерге олардың қолданбалары мен өнімдерін жетілдіруге көмектеседі.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Бұл функцияны өшіріп қойсаңыз, ол құрылғыңыздың маңызды қызметтерге (жүйелік жаңарту және қауіпсіздік үшін) қажетті ақпаратты жіберу мүмкіндігіне әсер етпейді.<ph name="END_PARAGRAPH2" />

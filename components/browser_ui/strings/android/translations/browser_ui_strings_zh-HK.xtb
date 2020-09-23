@@ -51,6 +51,7 @@
 <translation id="2315043854645842844">作業系統不支援由客戶端選取憑證。</translation>
 <translation id="2359808026110333948">繼續</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
+<translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{已允許「<ph name="PERMISSION_1" />」、「<ph name="PERMISSION_2" />」和另外 <ph name="NUM_MORE" /> 項權限}other{已允許「<ph name="PERMISSION_1" />」、「<ph name="PERMISSION_2" />」和另外 <ph name="NUM_MORE" /> 項權限}}</translation>
 <translation id="2434158240863470628">下載完成 <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2440823041667407902">位置資料存取權</translation>
 <translation id="2482878487686419369">通知</translation>
@@ -190,6 +191,7 @@
 <translation id="6447842834002726250">Cookie</translation>
 <translation id="6527303717912515753">分享</translation>
 <translation id="6545864417968258051">藍牙掃瞄</translation>
+<translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{已封鎖「<ph name="PERMISSION_1" />」、「<ph name="PERMISSION_2" />」和另外 <ph name="NUM_MORE" /> 項權限}other{已封鎖「<ph name="PERMISSION_1" />」、「<ph name="PERMISSION_2" />」和另外 <ph name="NUM_MORE" /> 項權限}}</translation>
 <translation id="6561560012278703671">使用靜態訊息功能 (免受通知提示干擾)</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">受保護內容</translation>
@@ -292,6 +294,7 @@
 <translation id="8959122750345127698">無法存取瀏覽網址：<ph name="URL" /></translation>
 <translation id="9019902583201351841">由您的家長管理</translation>
 <translation id="9074739597929991885">藍牙</translation>
+<translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{「<ph name="PERMISSION_1" />」、「<ph name="PERMISSION_2" />」和另外 <ph name="NUM_MORE" /> 項權限}other{「<ph name="PERMISSION_1" />」、「<ph name="PERMISSION_2" />」和另外 <ph name="NUM_MORE" /> 項權限}}</translation>
 <translation id="913657688200966289">請在 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />中為 <ph name="APP_NAME" /> 啟用這些權限。</translation>
 <translation id="945632385593298557">存取您的麥克風</translation>
 <translation id="965817943346481315">封鎖顯示滋擾性或誤導廣告網站上的廣告 (建議)</translation>

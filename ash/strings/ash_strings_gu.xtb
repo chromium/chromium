@@ -137,6 +137,7 @@
 <translation id="2341729377289034582">ઊભી સ્થિતિ પર લૉક કરેલું છે</translation>
 <translation id="2352467521400612932">સ્ટાઇલસની સેટિંગ</translation>
 <translation id="2354174487190027830"><ph name="NAME" /> ને સક્રિય કરી રહ્યું છે</translation>
+<translation id="2356210126990741501">એવું લાગે છે કે તમારો ફોન ઑનલાઇન નથી અને અત્યારે અમે તેમાંથી તમારા માટે તમામ ગુડી મેળવી શકતા નથી.</translation>
 <translation id="2359808026110333948">આગળ વધો</translation>
 <translation id="2365393535144473978">મોબાઇલ ડેટા ચાલુ કરવાથી બ્લૂટૂથ ચાલુ થશે.</translation>
 <translation id="2369165858548251131">ચીની ભાષામાં "નમસ્કાર"</translation>
@@ -169,6 +170,7 @@
 <translation id="2705001408393684014">માઇક્રોફોનના વિકલ્પને ટૉગલ કરો. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Up</translation>
 <translation id="2718395828230677721">રાત્રિ પ્રકાશ</translation>
+<translation id="2727175239389218057">જવાબ આપો</translation>
 <translation id="2727977024730340865">નિમ્ન-પાવર ચાર્જરમાં પ્લગ કરેલું છે. બૅટરી ચાર્જિંગ વિશ્વસનીય હશે નહીં.</translation>
 <translation id="2743387203779672305">ક્લિપબોર્ડ પર કૉપિ કરો</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
@@ -177,6 +179,7 @@
 <translation id="2825619548187458965">શેલ્ફ</translation>
 <translation id="2841907151129139818">ટૅબ્લેટ મોડ પર સ્વિચ થયા</translation>
 <translation id="2844169650293029770">USB-C ઉપકરણ (ડાબી બાજુનું આગળનું પોર્ટ)</translation>
+<translation id="2846247265041961677">અહ ઓહ! ફોન શોધી શકતા નથી</translation>
 <translation id="2865888419503095837">નેટવર્ક માહિતી</translation>
 <translation id="2872961005593481000">શટ ડાઉન કરો</translation>
 <translation id="2878884018241093801">કોઈ તાજેતરની આઇટમ નથી</translation>
@@ -459,6 +462,7 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">ચાલુ</translation>
 <translation id="5920710855273935292">માઇક્રોફોન મ્યૂટ કરેલો છે.</translation>
+<translation id="594179686076170922">તમારા ફોનને કનેક્ટ કરી રહ્યાં છીએ…</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> ચાલુ છે.</translation>
 <translation id="5947494881799873997">પાછા ફરો</translation>
 <translation id="595202126637698455">ભજવણી ટ્રેસિંગ સક્ષમ</translation>

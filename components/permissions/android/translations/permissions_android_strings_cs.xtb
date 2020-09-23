@@ -1,8 +1,10 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="cs">
+<translation id="2077832278056815832">Zavřete všechny bubliny a překrytí z ostatních aplikací. Poté je zkuste znovu spárovat.</translation>
 <translation id="2359808026110333948">Pokračovat</translation>
 <translation id="2416359993254398973">Chrome pro tento web potřebuje oprávnění k přístupu k fotoaparátu.</translation>
+<translation id="2987449669841041897">Tento web nemůže žádat o oprávnění</translation>
 <translation id="557283862590186398">Chrome pro tento web potřebuje oprávnění k přístupu k mikrofonu.</translation>
 <translation id="5860491529813859533">Zapnout</translation>
 <translation id="6092062101542170135">Chcete-li pokračovat, zapněte NFC v nastavení zařízení Android</translation>

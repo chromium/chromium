@@ -137,6 +137,7 @@
 <translation id="2341729377289034582">Тік қалыпта құлыпталды</translation>
 <translation id="2352467521400612932">Стилус параметрлері</translation>
 <translation id="2354174487190027830"><ph name="NAME" /> белсендіру</translation>
+<translation id="2356210126990741501">Телефоныңыз онлайн режимде емес сияқты, сіз үшін барлық мазмұндарды ала алмаймыз.</translation>
 <translation id="2359808026110333948">Жалғастыру</translation>
 <translation id="2365393535144473978">Мобильдік деректерді қоссаңыз, Bluetooth да іске қосылады.</translation>
 <translation id="2369165858548251131">Қытай тілінде "Сәлем" қалай болады?</translation>
@@ -169,6 +170,7 @@
 <translation id="2705001408393684014">Микрофонды қосу/өшіру түймесі. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Жоғары</translation>
 <translation id="2718395828230677721">Түнгі жарық</translation>
+<translation id="2727175239389218057">Жауап беру</translation>
 <translation id="2727977024730340865">Төмен қуатты зарядтағышқа жалғанған. Батареяны зарядтау кезінде қиындықтар болуы мүмкін.</translation>
 <translation id="2743387203779672305">Буферге көшіру</translation>
 <translation id="2792498699870441125">Alt+Іздеу</translation>
@@ -177,6 +179,7 @@
 <translation id="2825619548187458965">Сөре</translation>
 <translation id="2841907151129139818">Планшет режиміне ауысты.</translation>
 <translation id="2844169650293029770">USB-C құрылғысы (сол жақ алдыңғы порты)</translation>
+<translation id="2846247265041961677">Қап! Телефонды табу мүмкін емес</translation>
 <translation id="2865888419503095837">Желі ақпараты</translation>
 <translation id="2872961005593481000">Өшіру</translation>
 <translation id="2878884018241093801">Соңғы элементтер жоқ</translation>
@@ -459,6 +462,7 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Қосулы</translation>
 <translation id="5920710855273935292">Микрофон дыбысы өшірулі.</translation>
+<translation id="594179686076170922">Телефоныңызбен байланыс орнатылып жатыр...</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> қосулы.</translation>
 <translation id="5947494881799873997">Қайтару</translation>
 <translation id="595202126637698455">Өнімділікті бақылау қосылған</translation>

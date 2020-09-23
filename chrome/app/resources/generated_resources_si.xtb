@@ -1215,6 +1215,7 @@
 <translation id="2419706071571366386">ආරක්ෂාව සඳහා, ඔබේ පරිගණකය භාවිතා නොකරන විට වරන්න.</translation>
 <translation id="2422125132043002186">ලිනක්ස් ප්‍රතිසාධනය අවලංගු කළා</translation>
 <translation id="2423578206845792524">රූපය මෙසෙල සුරකින්න...</translation>
+<translation id="2424424966051154874">{0,plural, =1{ආගන්තුක}one{ආගන්තුක (#)}other{ආගන්තුක (#)}}</translation>
 <translation id="2428510569851653187">පටිත්ත බිඳ වැටුණු විට ඔබ කළ දේ විස්තර කරන්න</translation>
 <translation id="2428939361789119025">WiFi අක්‍රිය කරන්න</translation>
 <translation id="2431027948063157455">Google සහායක පූරණය කළ නොහැකි විය, ඔබේ ජාල සබැඳුම පරීක්ෂා කර යළි උත්සාහ කරන්න.</translation>
@@ -4255,6 +4256,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6077189836672154517"><ph name="DEVICE_TYPE" /> හි ඉඟි සහ යාවත්කාලීන කිරීම්</translation>
 <translation id="6077476112742402730">ටයිප් කිරීමට කථා කරන්න</translation>
 <translation id="6078045608615316905">මෙම රූපය සඳහා QR කේතය සාදන්න</translation>
+<translation id="6078121669093215958">{0,plural, =1{ආගන්තුක}one{ආගන්තුක කවුළු #ක් විවෘත කරන්න}other{ආගන්තුක කවුළු #ක් විවෘත කරන්න}}</translation>
 <translation id="6078323886959318429">කෙටිමඟක් එක් කරන්න</translation>
 <translation id="6078752646384677957">ඔබේ මයික්‍රෆෝනය සහ ශ්‍රව්‍ය මට්ටම් පරීක්ෂා කරන්න.</translation>
 <translation id="6078769373519310690">"<ph name="CHROME_EXTENSION_NAME" />" හට HID උපාංගයකට සම්බන්ධ කිරීමට අවශ්‍යයි</translation>
@@ -4768,6 +4770,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6704062477274546131">DNS විභේදනය</translation>
 <translation id="6706210727756204531">අවකාශය</translation>
 <translation id="6707389671160270963">SSL සේවාලාභී සහතිකය</translation>
+<translation id="670893696722244877">භාෂා හෝ ආදාන නම් අනුව සොයන්න</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> සහ තව 1 පටිත්තක්}one{<ph name="PAGE_TITLE" /> සහ තව පටිති # ක්}other{<ph name="PAGE_TITLE" /> සහ තව පටිති # ක්}}</translation>
 <translation id="6709133671862442373">පුවත්</translation>
 <translation id="6709357832553498500"><ph name="EXTENSIONNAME" /> භාවිතයෙන් සම්බන්ධ වන්න</translation>
@@ -5623,6 +5626,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7753735457098489144">ආචයන ඉඩ නොමැති වීම නිසා ස්ථාපනය අසාර්ථක විය. ඉඩ හිස් කිරීමට, උපාංග ගබඩාවෙන් ගොනු මකන්න.</translation>
 <translation id="7754704193130578113">බාගැනීමට පෙර එක් එක් ගොනුව සුරකින තැන විමසන්න</translation>
 <translation id="7755287808199759310">ඔබේ දෙමව්පියන්ගෙන් අයෙකුට එය ඔබ සඳහා අනවහිර කළ හැකිය</translation>
+<translation id="7757592200364144203">උපාංග නම වෙනස් කරන්න</translation>
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" /> වෙතින් බෙදා ගත් පාඨය</translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">ඔබේ සංදර්ශකයේ මායිම් සීරුමාරු කරන්න</translation>
@@ -6083,6 +6087,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8264024885325823677">මෙම සැකසුම ඔබේ පරිපාලකයා විසින් කළමනා කෙරේ.</translation>
 <translation id="8264718194193514834">"<ph name="EXTENSION_NAME" />" පූර්ණ තිරය විමෝචනය කළේය.</translation>
 <translation id="826511437356419340">ඇතුළත් කළ කවුළු දළ විශ්ලේෂණ ප්‍රකාරය. සංචලන කිරීමට ස්වයිප් කරන්න, හෝ යතුරු පුවරුවක් භාවිත කරන්නේ නම් tab ඔබන්න.</translation>
+<translation id="8266947622852630193">සියලු ආදාන ක්‍රම</translation>
 <translation id="8267539814046467575">මුද්‍රකය එක් කරන්න</translation>
 <translation id="8267961145111171918"><ph name="BEGIN_PARAGRAPH1" />මෙය මෙම උපාංගය සහ එය භාවිත කරන ආකාරය පිළිබඳ සාමාන්‍ය තොරතුරුය (බැටරි මට්ටම, පද්ධති සහ යෙදුම් ක්‍රියාකාරකම සහ දෝෂ යනාදී). දත්ත Android වැඩි දියුණු කිරීමට භාවිත කරනු ඇති අතර, සමහර රැස් කළ තොරතුරු Google යෙදුම් සහ Android සංවර්ධකයින් වැනි හවුල්කරුවන්ට ඔවුන්ගේ යෙදුම් සහ නිෂ්පාදන වඩා හොඳින් සෑදීමටත් උදවු කරනු ඇත.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />මෙම විශේෂාංගය ක්‍රියාවිරහිත කිරීමෙන් පද්ධති යාවත්කාලීන සහ ආරක්ෂාව වැනි අත්‍යවශ්‍ය සේවා සඳහා අවශ්‍ය තොරතුරු යැවීම සඳහා මෙම උපාංගයට ඇති හැකියාවට බලනොපායි.<ph name="END_PARAGRAPH2" />

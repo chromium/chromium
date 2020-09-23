@@ -1200,6 +1200,7 @@
 <translation id="2419706071571366386">Если вы закончили работу на компьютере, рекомендуем выйти из аккаунта.</translation>
 <translation id="2422125132043002186">Восстановление контейнера Linux отменено.</translation>
 <translation id="2423578206845792524">Со&amp;хранить картинку как...</translation>
+<translation id="2424424966051154874">{0,plural, =1{Гость}one{Гость (#)}few{Гость (#)}many{Гость (#)}other{Гость (#)}}</translation>
 <translation id="2428510569851653187">Опишите, что вы делали, когда произошел сбой</translation>
 <translation id="2428939361789119025">Отключить Wi-Fi</translation>
 <translation id="2431027948063157455">Не удалось загрузить Google Ассистента. Проверьте подключение к Интернету и повторите попытку.</translation>
@@ -4197,6 +4198,7 @@
 <translation id="6077189836672154517">Обновления и полезные советы по работе с <ph name="DEVICE_TYPE" /></translation>
 <translation id="6077476112742402730">Голосовой ввод</translation>
 <translation id="6078045608615316905">Создать QR-код для этого изображения</translation>
+<translation id="6078121669093215958">{0,plural, =1{Гость}one{# открытое окно в гостевом режиме}few{# открытых окна в гостевом режиме}many{# открытых окон в гостевом режиме}other{# открытого окна в гостевом режиме}}</translation>
 <translation id="6078323886959318429">Добавить ярлык</translation>
 <translation id="6078752646384677957">Проверьте микрофон и уровни громкости.</translation>
 <translation id="6078769373519310690">Расширение "<ph name="CHROME_EXTENSION_NAME" />" запрашивает разрешение на подключение к HID-устройству</translation>
@@ -4704,6 +4706,7 @@
 <translation id="6704062477274546131">Разрешение DNS</translation>
 <translation id="6706210727756204531">Область применения</translation>
 <translation id="6707389671160270963">Клиентский сертификат SSL</translation>
+<translation id="670893696722244877">Поиск по языку или способу ввода</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{"<ph name="PAGE_TITLE" />" и ещё 1 вкладка}one{"<ph name="PAGE_TITLE" />" и ещё # вкладка}few{"<ph name="PAGE_TITLE" />" и ещё # вкладки}many{"<ph name="PAGE_TITLE" />" и ещё # вкладок}other{"<ph name="PAGE_TITLE" />" и ещё # вкладки}}</translation>
 <translation id="6709133671862442373">Новости</translation>
 <translation id="6709357832553498500">Подключиться через <ph name="EXTENSIONNAME" /></translation>
@@ -5541,6 +5544,7 @@
 <translation id="7753735457098489144">Не удалось выполнить установку, так как на устройстве недостаточно места. Удалите файлы, которые больше не нужны.</translation>
 <translation id="7754704193130578113">Всегда указывать место для скачивания</translation>
 <translation id="7755287808199759310">Для разблокировки обратитесь к родителю.</translation>
+<translation id="7757592200364144203">Переименовать устройство</translation>
 <translation id="7757787379047923882">Текст с устройства <ph name="DEVICE_NAME" /></translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">Настройте границы экрана</translation>
@@ -5997,6 +6001,7 @@
 <translation id="8264024885325823677">Этим параметром управляет администратор.</translation>
 <translation id="8264718194193514834">Расширение "<ph name="EXTENSION_NAME" />" запущено в режиме киоска.</translation>
 <translation id="826511437356419340">Включен режим обзора. Для навигации проведите по экрану. Если вы используете клавиатуру, нажмите клавишу Tab.</translation>
+<translation id="8266947622852630193">Все способы ввода</translation>
 <translation id="8267539814046467575">Добавить принтер</translation>
 <translation id="8267961145111171918"><ph name="BEGIN_PARAGRAPH1" />Мы будем получать общие сведения о работе и использовании устройства, например об ошибках, уровне заряда батареи и действиях в системе и приложениях. Они помогут нам улучшить Android и другие сервисы Google. Наши партнеры также получат доступ к некоторым обобщенным данным, чтобы совершенствовать свои продукты.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Отключение этой функции не повлияет на возможность устройства отправлять информацию, необходимую для обновления Android и системы безопасности.<ph name="END_PARAGRAPH2" />

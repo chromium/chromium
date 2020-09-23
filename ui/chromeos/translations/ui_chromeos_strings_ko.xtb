@@ -376,6 +376,7 @@
 <translation id="5098629044894065541">히브리어</translation>
 <translation id="5123433949759960244">농구공</translation>
 <translation id="5129662217315786329">폴란드어</translation>
+<translation id="5132435854979302863">필리핀어</translation>
 <translation id="5144820558584035333">한글 세벌식(390)</translation>
 <translation id="5145331109270917438">수정된 날짜</translation>
 <translation id="515594325917491223">체스</translation>
@@ -422,6 +423,7 @@
 <translation id="5464696796438641524">폴란드어 키보드</translation>
 <translation id="5465122519792752163">네팔어 키보드(InScript)</translation>
 <translation id="5469868506864199649">이탈리아어</translation>
+<translation id="5484429245813572665">인도네시아어</translation>
 <translation id="5494920125229734069">모두 선택</translation>
 <translation id="5500122897333236901">아이슬란드어</translation>
 <translation id="5508696409934741614">점</translation>
@@ -609,6 +611,7 @@
 <translation id="7649070708921625228">도움말</translation>
 <translation id="7654209398114106148">항목 <ph name="NUMBER_OF_ITEMS" />개 이동 중...</translation>
 <translation id="7658239707568436148">취소</translation>
+<translation id="7693909743393669729">드라이브를 포맷하면 저장된 모든 데이터가 삭제되고 보이지 않을 수 있는 파티션을 포함한 기존 파티션이 모두 삭제됩니다. 이 작업은 되돌릴 수 없습니다.</translation>
 <translation id="7695430100978772476"><ph name="DRIVE_NAME" />을(를) 포맷할 수 없습니다.</translation>
 <translation id="770015031906360009">그리스어</translation>
 <translation id="7706319470528945664">포르투갈어 키보드</translation>
@@ -640,6 +643,7 @@
 <translation id="78946041517601018">공유 드라이브</translation>
 <translation id="7896906914454843592">영어(미국식) 확장 키보드</translation>
 <translation id="7898607018410277265">구자라트어 키보드(새 음역 방식)</translation>
+<translation id="7908793776359722643">파티션을 포맷하면 파티션에 저장된 모든 데이터가 삭제됩니다. 이 작업은 되돌릴 수 없습니다.</translation>
 <translation id="7917972308273378936">리투아니아어 키보드</translation>
 <translation id="7925686952655276919">모바일 데이터를 동기화에 사용하지 않습니다.</translation>
 <translation id="7928710562641958568">기기 꺼내기</translation>
@@ -727,6 +731,7 @@
 <translation id="8900820606136623064">헝가리어</translation>
 <translation id="8901822611024316615">체코어 QWERTY 키보드</translation>
 <translation id="8919081441417203123">덴마크어</translation>
+<translation id="8941776146379310519">말레이어</translation>
 <translation id="8960999352790021682">벵골어 키보드(음역)</translation>
 <translation id="8965697826696209160">저장 공간이 부족합니다.</translation>
 <translation id="9017798300203431059">러시아어 표음</translation>

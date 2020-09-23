@@ -1201,6 +1201,7 @@
 <translation id="2419706071571366386">ਸੁਰੱਖਿਆ ਲਈ, ਜਦੋਂ ਤੁਹਾਡਾ ਕੰਪਿਊਟਰ ਨਾ ਵਰਤਿਆ ਜਾ ਰਿਹਾ ਹੋਵੇ ਤਾਂ ਸਾਈਨ-ਆਊਟ ਕਰੋ।</translation>
 <translation id="2422125132043002186">Linux ਮੁੜ-ਬਹਾਲੀ ਰੱਦ ਕੀਤੀ ਗਈ</translation>
 <translation id="2423578206845792524">ਦੇ ਤੌਰ 'ਤੇ ਚਿੱਤਰ ਰੱ&amp;ਖਿਅਤ ਕਰੋ...</translation>
+<translation id="2424424966051154874">{0,plural, =1{ਮਹਿਮਾਨ}one{ਮਹਿਮਾਨ (#)}other{ਮਹਿਮਾਨ (#)}}</translation>
 <translation id="2428510569851653187">ਟੈਬ ਕ੍ਰੈਸ਼ ਹੋਣ ਸਮੇਂ ਤੁਹਾਡੇ ਦੁਆਰਾ ਕੀਤੇ ਜਾ ਰਹੇ ਕੰਮਾਂ ਦਾ ਵਰਣਨ ਕਰੋ</translation>
 <translation id="2428939361789119025">ਵਾਈ-ਫਾਈ ਬੰਦ ਕਰੋ</translation>
 <translation id="2431027948063157455">'Google ਅਸਿਸਟੈਂਟ' ਨੂੰ ਲੋਡ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ, ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੇ ਨੈੱਟਵਰਕ ਕਨੈਕਸ਼ਨ ਦੀ ਜਾਂਚ ਕਰਕੇ ਮੁੜ-ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
@@ -4197,6 +4198,7 @@
 <translation id="6077189836672154517"><ph name="DEVICE_TYPE" /> ਬਾਰੇ ਨੁਕਤੇ ਅਤੇ ਨਵੀਆਂ ਜਾਣਕਾਰੀਆਂ</translation>
 <translation id="6077476112742402730">ਬੋਲ-ਕੇ-ਟਾਈਪ ਕਰਨਾ</translation>
 <translation id="6078045608615316905">ਇਸ ਚਿੱਤਰ ਲਈ QR ਕੋਡ ਬਣਾਓ</translation>
+<translation id="6078121669093215958">{0,plural, =1{ਮਹਿਮਾਨ}one{# ਖੁੱਲ੍ਹੀ ਮਹਿਮਾਨ ਵਿੰਡੋ}other{# ਖੁੱਲ੍ਹੀਆਂ ਮਹਿਮਾਨ ਵਿੰਡੋਆਂ}}</translation>
 <translation id="6078323886959318429">ਸ਼ਾਰਟਕੱਟ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="6078752646384677957">ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੇ ਮਾਇਕ੍ਰੋਫ਼ੋਨ ਅਤੇ ਆਡੀਓ ਪੱਧਰਾਂ ਦੀ ਜਾਂਚ ਕਰੋ।</translation>
 <translation id="6078769373519310690">"<ph name="CHROME_EXTENSION_NAME" />" ਐਕਸਟੈਂਸ਼ਨ ਕਿਸੇ HID ਡੀਵਾਈਸ ਨਾਲ ਕਨੈਕਟ ਹੋਣਾ ਚਾਹੁੰਦੀ ਹੈ</translation>
@@ -4704,6 +4706,7 @@
 <translation id="6704062477274546131">DNS ਰੈਜ਼ੋਲਿਊਸ਼ਨ</translation>
 <translation id="6706210727756204531">ਸਕੋਪ</translation>
 <translation id="6707389671160270963">SSL ਕਲਾਇੰਟ ਪ੍ਰਮਾਣ-ਪੱਤਰ</translation>
+<translation id="670893696722244877">ਭਾਸ਼ਾਵਾਂ ਜਾਂ ਇਨਪੁੱਟ ਨਾਮਾਂ ਰਾਹੀਂ ਖੋਜੋ</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> ਅਤੇ 1 ਹੋਰ ਟੈਬ}other{<ph name="PAGE_TITLE" /> ਅਤੇ # ਹੋਰ ਟੈਬਾਂ}}</translation>
 <translation id="6709133671862442373">ਖਬਰਾਂ</translation>
 <translation id="6709357832553498500"><ph name="EXTENSIONNAME" /> ਵਰਤਦੇ ਹੋਏ ਕਨੈਕਟ ਕਰੋ</translation>
@@ -5541,6 +5544,7 @@
 <translation id="7753735457098489144">ਸਟੋਰੇਜ ਜਗ੍ਹਾ ਘੱਟ ਹੋਣ ਕਾਰਨ ਸਥਾਪਤ ਕਰਨਾ ਅਸਫਲ ਰਿਹਾ। ਜਗ੍ਹਾ ਖਾਲੀ ਕਰਨ ਲਈ, ਡੀਵਾਈਸ ਸਟੋਰੇਜ ਵਿੱਚੋਂ ਫ਼ਾਈਲਾਂ ਮਿਟਾਓ।</translation>
 <translation id="7754704193130578113">ਪੁੱਛੋ ਕਿ ਹਰੇਕ ਫ਼ਾਈਲ ਨੂੰ ਡਾਊਨਲੋਡ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ ਕਿੱਥੇ ਰੱਖਿਅਤ ਕਰਨਾ ਹੈ</translation>
 <translation id="7755287808199759310">ਤੁਹਾਡਾ ਮਾਤਾ-ਪਿਤਾ ਇਸ ਨੂੰ ਤੁਹਾਡੇ ਲਈ ਅਣਬਲੌਕ ਕਰ ਸਕਦਾ ਹੈ</translation>
+<translation id="7757592200364144203">ਡੀਵਾਈਸ ਦਾ ਨਾਮ ਬਦਲੋ</translation>
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" /> ਤੋਂ ਸਾਂਝੀ ਕੀਤੀ ਲਿਖਤ</translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">ਆਪਣੀ ਡਿਸਪਲੇ ਦੇ ਹੱਦ-ਬੰਨਿਆਂ ਨੂੰ ਵਿਵਸਥਿਤ ਕਰੋ</translation>
@@ -5995,6 +5999,7 @@
 <translation id="8264024885325823677">ਤੁਹਾਡਾ ਪ੍ਰਸ਼ਾਸਕ ਇਸ ਸੈਟਿੰਗ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਦਾ ਹੈ।</translation>
 <translation id="8264718194193514834">"<ph name="EXTENSION_NAME" />" ਪੂਰੀ ਸਕ੍ਰੀਨ ਟ੍ਰਿਗਰ ਕੀਤੀ।</translation>
 <translation id="826511437356419340">ਵਿੰਡੋ ਰੂਪ-ਰੇਖਾ ਮੋਡ ਵਿੱਚ ਦਾਖਲ ਹੋਏ। ਨੈਵੀਗੇਟ ਕਰਨ ਲਈ ਸਵਾਈਪ ਕਰੋ ਜਾਂ ਜੇ ਕੀ-ਬੋਰਡ ਵਰਤ ਰਹੇ ਹੋ ਤਾਂ Tab ਦਬਾਓ।</translation>
+<translation id="8266947622852630193">ਸਾਰੀਆਂ ਇਨਪੁੱਟ ਵਿਧੀਆਂ</translation>
 <translation id="8267539814046467575">ਪ੍ਰਿੰਟਰ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="8267961145111171918"><ph name="BEGIN_PARAGRAPH1" />ਇਹ ਇਸ ਡੀਵਾਈਸ ਅਤੇ ਇਸਦੀ ਵਰਤੋਂ ਬਾਰੇ ਆਮ ਜਾਣਕਾਰੀ ਹੈ (ਜਿਵੇਂ ਕਿ ਬੈਟਰੀ ਪੱਧਰ, ਸਿਸਟਮ ਅਤੇ ਐਪ ਸਰਗਰਮੀ ਅਤੇ ਗੜਬੜੀਆਂ)। ਡਾਟਾ Android ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਲਈ ਵਰਤਿਆ ਜਾਵੇਗਾ ਅਤੇ ਕੁਝ ਏਕੀਕ੍ਰਿਤ ਜਾਣਕਾਰੀ Google ਐਪਾਂ ਅਤੇ ਪਾਰਟਨਰਾਂ, ਜਿਵੇਂ ਕਿ Android ਵਿਕਾਸਕਾਰਾਂ, ਦੀਆਂ ਐਪਾਂ ਅਤੇ ਉਤਪਾਦਾਂ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਵਿੱਚ ਵੀ ਉਹਨਾਂ ਦੀ ਮਦਦ ਕਰੇਗੀ।<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />ਇਹ ਵਿਸ਼ੇਸ਼ਤਾ ਬੰਦ ਕਰਨ ਨਾਲ ਸਿਸਟਮ ਅੱਪਡੇਟ ਅਤੇ ਸੁਰੱਖਿਆ ਵਰਗੀਆਂ ਜ਼ਰੂਰੀ ਸੇਵਾਵਾਂ ਲਈ ਲੋੜੀਂਦੀ ਜਾਣਕਾਰੀ ਭੇਜਣ ਸੰਬੰਧੀ ਇਸ ਡੀਵਾਈਸ ਦੀ ਸਮਰੱਥਾ ਪ੍ਰਭਾਵਿਤ ਨਹੀਂ ਹੁੰਦੀ ਹੈ।<ph name="END_PARAGRAPH2" />

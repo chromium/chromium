@@ -137,6 +137,7 @@
 <translation id="2341729377289034582">נעול במצב אנכי</translation>
 <translation id="2352467521400612932">הגדרות סטיילוס</translation>
 <translation id="2354174487190027830">מפעיל את <ph name="NAME" /></translation>
+<translation id="2356210126990741501">נראה שהטלפון שלך לא מחובר לאינטרנט ולכן אין לנו אפשרות לספק לך את כל הדברים הטובים שיש בו כרגע.</translation>
 <translation id="2359808026110333948">המשך</translation>
 <translation id="2365393535144473978">‏כשמפעילים את חבילת הגלישה, מופעלת גם תקשורת Bluetooth.</translation>
 <translation id="2369165858548251131">"שלום" בסינית</translation>
@@ -169,6 +170,7 @@
 <translation id="2705001408393684014">החלפת מצב המיקרופון. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">למעלה</translation>
 <translation id="2718395828230677721">תאורת לילה</translation>
+<translation id="2727175239389218057">מענה</translation>
 <translation id="2727977024730340865">מחובר למטען בעל מתח נמוך. ייתכן שטעינת הסוללה לא תהיה אמינה.</translation>
 <translation id="2743387203779672305">העתקה ללוח</translation>
 <translation id="2792498699870441125">‏Alt + חיפוש</translation>
@@ -177,6 +179,7 @@
 <translation id="2825619548187458965">מדף</translation>
 <translation id="2841907151129139818">עברת למצב טאבלט</translation>
 <translation id="2844169650293029770">‏מכשיר עם יציאת USB-C (יציאה שמאלית-קדמית)</translation>
+<translation id="2846247265041961677">אופס! לא ניתן למצוא את הטלפון</translation>
 <translation id="2865888419503095837">פרטי רשת</translation>
 <translation id="2872961005593481000">כיבוי</translation>
 <translation id="2878884018241093801">אין פריטים אחרונים</translation>
@@ -304,6 +307,7 @@
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{מושבת לאפליקציה אחת}two{מושבת ל-2 אפליקציות}many{מושבת ל-# אפליקציות}other{מושבת ל-# אפליקציות}}</translation>
 <translation id="4072264167173457037">אות בינוני</translation>
 <translation id="4112140312785995938">הרצה לאחור</translation>
+<translation id="4114315158543974537">הפעלת המרכז הטלפוני</translation>
 <translation id="4129129681837227511">כדי להציג הודעות במסך הנעילה, יש לבטל את הנעילה כדי לשנות את ההגדרה</translation>
 <translation id="4146833061457621061">השמעת מוזיקה</translation>
 <translation id="4149156641122542261"><ph name="DEVICE_TYPE" /> מנוהל על ידי <ph name="DOMAIN" /></translation>
@@ -435,6 +439,7 @@
 <translation id="5648021990716966815">שקע מיקרופון</translation>
 <translation id="5669267381087807207">מפעיל</translation>
 <translation id="5673434351075758678">מ"<ph name="FROM_LOCALE" />" ל"<ph name="TO_LOCALE" />" אחרי סנכרון ההגדרות.</translation>
+<translation id="5679050765726761783">מתאם מתח נמוך מחובר</translation>
 <translation id="5682642926269496722">‏Google Assistant אינו זמין לחשבון המשתמש הנוכחי.</translation>
 <translation id="5689633613396158040">עם תאורת לילה, קל יותר להסתכל על המסך או לקרוא כשהתאורה מסביב עמומה. יש להקיש כדי לשנות את השעה שבה מופעלת 'תאורת לילה' או כדי לכבות אותה לגמרי.</translation>
 <translation id="5691772641933328258">טביעת האצבע לא זוהתה</translation>
@@ -459,6 +464,7 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">פועל</translation>
 <translation id="5920710855273935292">המיקרופון מושתק.</translation>
+<translation id="594179686076170922">מתבצע חיבור לטלפון שלך...</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> פעילות.</translation>
 <translation id="5947494881799873997">חזרה לגרסה הקודמת</translation>
 <translation id="595202126637698455">מעקב אחר הביצועים מופעל</translation>
@@ -548,6 +554,7 @@
 <translation id="6857811139397017780">הפעל את <ph name="NETWORKSERVICE" /></translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{נשארה ספרה אחת}two{נשארו # ספרות}many{נשארו # ספרות}other{נשארו # ספרות}}</translation>
 <translation id="6878400149835617132">קיצור הדרך מושבת</translation>
+<translation id="6886172995547742638">‏ייתכן שהביצועים של <ph name="DEVICE_TYPE" /> ייפגעו. יש להשתמש במתאם מתח מאושר מסוג USB-C בהספק <ph name="PREFERRED_MINIMUM_POWER" /> ואט או יותר.</translation>
 <translation id="6896758677409633944">העתק</translation>
 <translation id="6910714959251846841">‏כדי להתקין את העדכון הזה צריך לבצע Powerwash של המכשיר. אפשר לקרוא מידע נוסף על העדכון האחרון של <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="6919251195245069855">לא ניתן היה לזהות את הכרטיס החכם שלך. יש לנסות שוב.</translation>

@@ -137,6 +137,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2341729377289034582">Bloccata in verticale</translation>
 <translation id="2352467521400612932">Impostazioni di stilo</translation>
 <translation id="2354174487190027830">Attivazione di <ph name="NAME" /></translation>
+<translation id="2356210126990741501">Sembra che il tuo telefono non sia online, pertanto al momento non è possibile recuperare tutti i relativi componenti aggiuntivi.</translation>
 <translation id="2359808026110333948">Continua</translation>
 <translation id="2365393535144473978">Se attivi i dati mobili verrà attivato anche il Bluetooth.</translation>
 <translation id="2369165858548251131">"Ciao" in cinese</translation>
@@ -169,6 +170,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2705001408393684014">Attiva/disattiva il microfono. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Su</translation>
 <translation id="2718395828230677721">Luce notturna</translation>
+<translation id="2727175239389218057">Rispondi</translation>
 <translation id="2727977024730340865">Collegato a un caricabatterie a basso consumo. La carica della batteria potrebbe non essere affidabile.</translation>
 <translation id="2743387203779672305">Copia negli appunti</translation>
 <translation id="2792498699870441125">Alt+tasto per la ricerca</translation>
@@ -177,6 +179,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2825619548187458965">Shelf</translation>
 <translation id="2841907151129139818">Passaggio alla modalità tablet effettuato</translation>
 <translation id="2844169650293029770">Dispositivo USB-C (porta anteriore sinistra)</translation>
+<translation id="2846247265041961677">Spiacenti. Impossibile trovare il telefono</translation>
 <translation id="2865888419503095837">Informazioni di rete</translation>
 <translation id="2872961005593481000">Spegni</translation>
 <translation id="2878884018241093801">Nessun elemento recente</translation>
@@ -462,6 +465,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">On</translation>
 <translation id="5920710855273935292">L'audio del microfono è disattivato.</translation>
+<translation id="594179686076170922">Connessione al telefono…</translation>
 <translation id="5946788582095584774">La funzionalità <ph name="FEATURE_NAME" /> è attiva.</translation>
 <translation id="5947494881799873997">Ripristina</translation>
 <translation id="595202126637698455">Rilevamento del rendimento attivo</translation>

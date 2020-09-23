@@ -1506,6 +1506,15 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 <translation id="3219421230122020860">Mode navigation privée disponible</translation>
 <translation id="3220624000494482595">Si l'application kiosque est une application Android, elle ne contrôlera pas la version <ph name="PRODUCT_OS_NAME" /> même si cette règle est définie sur "<ph name="TRUE" />".</translation>
 <translation id="322359555555487980">Déterminer la disponibilité des variantes de <ph name="PRODUCT_OS_NAME" /></translation>
+<translation id="3225165352822164029">Permet de définir l'URL de la page d'accueil par défaut de <ph name="PRODUCT_NAME" />. La page d'accueil s'ouvre lorsque l'utilisateur clique sur le bouton d'accueil. Sur ordinateur, les pages qui s'affichent au démarrage sont gérées par les règles <ph name="RESTORE_ON_STARTUP_POLICY_NAME" />.
+
+      Si la page d'accueil est définie sur la page "Nouvel onglet", par l'utilisateur ou par <ph name="HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_NAME" />, cette règle n'a aucune incidence.
+
+       Vous devez saisir une URL avec un schéma standard, comme http://example.com ou https://example.com. Si cette règle est configurée, les utilisateurs ne peuvent pas modifier l'URL de la page d'accueil dans <ph name="PRODUCT_NAME" />.
+
+      Si les règles <ph name="HOMEPAGE_LOCATION_POLICY_NAME" /> et <ph name="HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_NAME" /> ne sont pas configurées, les utilisateurs peuvent choisir leur page d'accueil.
+
+      Sous <ph name="MS_WIN_NAME" />, cette règle n'est disponible que sur les instances associées à un domaine <ph name="MS_AD_NAME" />, exécutées sous Windows 10 Pro ou qui bénéficient de la <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />. Sous <ph name="MAC_OS_NAME" />, elle n'est disponible que sur les instances gérées via MDM ou associées à un domaine via MCX.</translation>
 <translation id="3231837273069128027">Cette règle permet de configurer la disponibilité et le comportement des mises à jour du micrologiciel <ph name="TPM_FIRMWARE_UPDATE_TPM" />.
 
       Spécifiez les paramètres individuels dans les propriétés JSON :
@@ -1846,6 +1855,11 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
       Cette règle sera supprimée dans Chrome 88.
 
       Pour en savoir plus, consultez l'article https://www.chromestatus.com/feature/5989473649164288.</translation>
+<translation id="3691155504326059225">Si cette règle est activée, la page "Nouvel onglet" est définie comme page d'accueil de l'utilisateur. Toute URL de page d'accueil est ignorée. Si cette règle est désactivée, la page d'accueil de l'utilisateur ne sera jamais la page "Nouvel onglet", sauf si l'URL de la page d'accueil est définie sur "chrome://newtab".
+
+      Si cette règle est configurée, les utilisateurs ne peuvent pas modifier leur type de page d'accueil dans <ph name="PRODUCT_NAME" />. Si elle n'est pas configurée, l'utilisateur peut choisir lui-même d'utiliser la page "Nouvel onglet" comme page d'accueil.
+
+      Sous <ph name="MS_WIN_NAME" />, cette règle n'est disponible que sur les instances associées à un domaine <ph name="MS_AD_NAME" />, exécutées sous Windows 10 Pro ou qui bénéficient de la <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />. Sous <ph name="MAC_OS_NAME" />, elle n'est disponible que sur les instances gérées via MDM ou associées à un domaine via MCX.</translation>
 <translation id="3701121231485832347">Contrôle les paramètres propres aux appareils <ph name="PRODUCT_OS_NAME" /> gérés par <ph name="MS_AD_NAME" />.</translation>
 <translation id="3702518095257671450">Attestation à distance</translation>
 <translation id="3702647575225525306"><ph name="POLICY_NAME" /> (Le champ constitué d'une seule ligne est abandonné et va être supprimé prochainement. Utilisez à la place la zone de texte à plusieurs lignes ci-dessous.)</translation>
@@ -3138,6 +3152,13 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
       Si cette règle est définie sur "Bloquer l'importation et le téléchargement des types de fichiers non acceptés" (3), <ph name="PRODUCT_NAME" /> agit comme indiqué ci-dessus pour les options "Bloquer l'importation des types de fichiers non acceptés" et "Bloquer le téléchargement des types de fichiers non acceptés".
       </translation>
 <translation id="5535973522252703021">Liste blanche des serveurs de délégation Kerberos</translation>
+<translation id="5540753481451194959">Permet de définir le comportement du système au démarrage. Désactiver cette règle revient à ne pas la configurer, car le comportement de <ph name="PRODUCT_NAME" /> au démarrage doit être spécifié.
+
+      Si cette règle est configurée, les utilisateurs ne peuvent pas la modifier dans <ph name="PRODUCT_NAME" />. Si elle n'est pas configurée, les utilisateurs peuvent la modifier.
+
+      Configurer cette règle sur <ph name="POLICY_ENUM_RESTOREONSTARTUP_RESTOREONSTARTUPISLASTSESSION" /> entraîne la désactivation de certains paramètres qui sont basés sur les sessions de navigation ou qui ont pour effet d'exécuter des actions lors de la fermeture du navigateur, comme la suppression des données de navigation ou des cookies d'une session.
+
+      Sous <ph name="MS_WIN_NAME" />, cette règle n'est disponible que sur les instances associées à un domaine <ph name="MS_AD_NAME" />, exécutées sous Windows 10 Pro ou qui bénéficient de la <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />. Sous <ph name="MAC_OS_NAME" />, elle n'est disponible que sur les instances gérées via MDM ou associées à un domaine via MCX.</translation>
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="555022085242359084">Activer le contraste élevé sur l'écran de connexion</translation>
 <translation id="555077880566103058">Autoriser tous les sites à exécuter le plug-in "<ph name="FLASH_PLUGIN_NAME" />" automatiquement</translation>
@@ -3989,6 +4010,13 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
 
       Si cette règle est désactivée, un message d'erreur s'affiche à la place.</translation>
 <translation id="6821268164692776674">Destinations <ph name="CLOUD_PRINT_NAME" /> et "Enregistrer dans Google Drive"</translation>
+<translation id="6833023569065717572">Si cette règle est définie sur "True", le format 24 heures est utilisé sur l'écran de connexion de l'appareil.
+
+      Si elle est définie sur "False", c'est le format 12 heures qui est utilisé.
+
+      Si elle n'est pas définie, le format de la langue actuelle est utilisé.
+
+      Les sessions utilisateur se servent également du format par défaut de l'appareil. Toutefois, les utilisateurs peuvent modifier le format d'horloge dans leur compte.</translation>
 <translation id="6833064854262015312">Définissez cette règle sur "True" pour activer le mode Contraste élevé sur l'écran de connexion. Définissez-la sur "False" pour désactiver le mode Contraste élevé sur l'écran de connexion.
 
       Si vous définissez cette règle, les utilisateurs peuvent temporairement activer ou désactiver le mode Contraste élevé. Lorsque l'écran de connexion s'actualise ou qu'il reste inactif pendant une minute, il revient à son état d'origine.
@@ -4165,6 +4193,7 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
       La création d'une liste d'URL dans cette règle revient à définir l'option de ligne de commande "--unsafely-treat-insecure-origin-as-secure" sur une liste comportant les mêmes URL séparées par une virgule. Cette règle remplace l'option de ligne de commande et la règle UnsafelyTreatInsecureOriginAsSecure (si elles sont disponibles).
 
       Pour en savoir plus sur les contextes sécurisés, consultez la page https://www.w3.org/TR/secure-contexts.</translation>
+<translation id="7033985774616781500">Désactiver la caméra, les paramètres du navigateur et de l'OS, et la numérisation</translation>
 <translation id="7037812781389976160">Permet de contrôler la position de l'étagère pour <ph name="PRODUCT_OS_NAME" />.
 
       Si cette règle est définie sur "Bas", l'étagère est placée au bas de l'écran.
@@ -4653,6 +4682,11 @@ On attend de cette règle qu'elle soit utilisée dans le cadre de la modificatio
       Cette règle s'applique uniquement aux enfants.
       Lorsque cette règle est activée, le code d'accès parental peut être validé sur l'appareil d'un enfant.
       Lorsqu'elle est désactivée, il est impossible de valider ce code sur l'appareil d'un enfant.</translation>
+<translation id="7623187731914468284">Si la règle <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> est définie sur RestoreOnStartupIsURLs, configurer la règle <ph name="RESTORE_ON_STARTUP_URLS_POLICY_NAME" /> sur une liste d'URL permet de spécifier les URL à ouvrir.
+
+      Si elle n'est pas configurée, la page "Nouvel onglet" s'affiche au démarrage.
+
+      Sous <ph name="MS_WIN_NAME" />, cette règle n'est disponible que sur les instances associées à un domaine <ph name="MS_AD_NAME" />, exécutées sous Windows 10 Pro ou qui bénéficient de la <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />. Sous <ph name="MAC_OS_NAME" />, elle n'est disponible que sur les instances gérées via MDM ou associées à un domaine via MCX.</translation>
 <translation id="7625444193696794922">Indique le canal de distribution sur lequel cet appareil devrait être verrouillé.</translation>
 <translation id="7629840767216985001">Définissez cette règle sur "True" pour activer le grand curseur sur l'écran de connexion. Définissez-la sur "False" pour désactiver le grand curseur sur l'écran de connexion.
 
@@ -4755,6 +4789,13 @@ au maximum si un utilisateur se sert de l'appareil.
 <translation id="7754704193130578113">Toujours demander où enregistrer les fichiers</translation>
 <translation id="7758378441185523981">Activer l'authentification ambiante en fonction du type de profil.</translation>
 <translation id="7763614521440615342">Afficher des recommandations de contenus sur la page "Nouvel onglet"</translation>
+<translation id="7765753178910647492">Permet de dresser la liste des fonctionnalités <ph name="PRODUCT_OS_NAME" /> à désactiver.
+
+      Si vous désactivez l'une de ces fonctionnalités, elle est accompagnée de la mention "Désactivé par l'administrateur", et l'utilisateur ne peut pas y accéder depuis l'interface utilisateur.
+
+      Si cette règle n'est pas configurée, toutes les fonctionnalités <ph name="PRODUCT_OS_NAME" /> sont activées par défaut et accessibles à l'utilisateur.
+
+      Remarque : la fonctionnalité de numérisation est actuellement désactivée par défaut au moyen d'un commutateur de fonctionnalité. Si l'utilisateur active la fonctionnalité via le commutateur, il est possible de la désactiver à l'aide de cette règle.</translation>
 <translation id="7765879851993224640">Autorise la connexion avec Smart Lock.</translation>
 <translation id="7774768074957326919">Utiliser les paramètres proxy du système</translation>
 <translation id="777734450201217641">Activer les raccourcis des fonctionnalités d'accessibilité sur l'écran de connexion.
@@ -4882,6 +4923,7 @@ Si ce paramètre est désactivé et que les connexions UDP sortantes sont filtr�
           Si cette règle n'est pas configurée, un délai par défaut est utilisé.
 
           La valeur de la règle doit être indiquée en millisecondes. Elle doit également être inférieure ou égale au délai d'inactivité.</translation>
+<translation id="7995610550667275367">Numérisation (compatible depuis la version 87)</translation>
 <translation id="8001701200415781021">Restreindre les comptes Google autorisés à être définis comme comptes de navigation principaux dans <ph name="PRODUCT_NAME" /></translation>
 <translation id="8003853057959146975">Envoyer des fichiers pour l'analyse du respect des règles de protection des données sensibles</translation>
 <translation id="8006219716745491366">Si la règle <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> est activée, la règle <ph name="DEFAULT_SEARCH_PROVIDER_ALTERNATE_URLS_POLICY_NAME" /> vous permet d'établir la liste des URL alternatives pour extraire des termes de recherche du moteur de recherche. Ces URL doivent inclure la chaîne <ph name="SEARCH_TERM_MARKER" />.
@@ -5019,6 +5061,9 @@ Si cette règle n'est pas définie, l'écran de confidentialité est désactivé
           Dans ce cas, <ph name="PRODUCT_OS_NAME" /> peut être configuré séparément pour verrouiller ou non l'écran avant l'arrêt provisoire.</translation>
 <translation id="8214600119442850823">Configure le gestionnaire de mot de passe.</translation>
 <translation id="8217516105848565518">Cette règle est obsolète. Veuillez utiliser RemoteAccessHostDomainList.</translation>
+<translation id="8219777886736887686">Permet de spécifier la commande à utiliser pour ouvrir les URL dans un navigateur secondaire. Cette règle peut être définie sur le navigateur <ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" />, <ph name="FIREFOX_VALUE_PLACEHOLDER" />, <ph name="SAFARI_VALUE_PLACEHOLDER" />, <ph name="OPERA_VALUE_PLACEHOLDER" /> ou <ph name="EDGE_VALUE_PLACEHOLDER" />, ou sur un chemin d'accès à un fichier. Si elle est définie sur un chemin d'accès à un fichier, ce dernier est utilisé comme fichier exécutable. <ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" /> et <ph name="EDGE_VALUE_PLACEHOLDER" /> ne sont disponibles que sous <ph name="MS_WIN_NAME" />, tandis que <ph name="SAFARI_VALUE_PLACEHOLDER" /> n'est disponible que sous <ph name="MS_WIN_NAME" /> et <ph name="MAC_OS_NAME" />.
+
+      Si cette règle n'est pas configurée, l'URL s'ouvre par défaut dans un navigateur spécifique à la plate-forme : <ph name="IE_PRODUCT_NAME" /> sous <ph name="MS_WIN_NAME" /> ou <ph name="SAFARI_PRODUCT_NAME" /> sous <ph name="MAC_OS_NAME" />. Sous <ph name="LINUX_OS_NAME" />, le lancement d'un navigateur secondaire entraîne une erreur.</translation>
 <translation id="8220156281401380422">Configurer la liste d'autorisation de messagerie native</translation>
 <translation id="8244171102276095471">Activer des suites de chiffrement RC4 dans TLS</translation>
 <translation id="8244525275280476362">Délai maximal de récupération après le rejet d'une règle</translation>
@@ -5394,6 +5439,9 @@ Il est conseillé de configurer les règles sur Windows via GPO, même si la ges
 
       Elle n'a aucune incidence pour les utilisateurs en ce qui concerne la possibilité ou non de configurer des imprimantes sur différents appareils. Elle est destinée à compléter la configuration des imprimantes effectuée par les différents utilisateurs.</translation>
 <translation id="8764477907716150749">Il s'agit d'une règle utilisée en interne par <ph name="PRODUCT_NAME" />.</translation>
+<translation id="8767743923206070405">Si cette règle est activée, le bouton d'accueil s'affiche sur la barre d'outils de <ph name="PRODUCT_NAME" />. Si elle est désactivée, le bouton d'accueil ne s'affiche pas.
+
+      Si cette règle est configurée, les utilisateurs ne peuvent pas la modifier dans <ph name="PRODUCT_NAME" />. Si elle n'est pas configurée, les utilisateurs peuvent choisir d'afficher ou non le bouton d'accueil.</translation>
 <translation id="877185520360032968">Cette règle définit le répertoire par défaut utilisé par Chrome pour le téléchargement de fichiers. Les utilisateurs peuvent modifier la destination.
 
       Si cette règle n'est pas configurée, Chrome utilise le répertoire par défaut correspondant à la plate-forme.

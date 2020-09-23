@@ -51,6 +51,7 @@
 <translation id="2315043854645842844">ကလိုင်းယင့် ဘက်မှ လက်မှတ်ရွေးမှုကို လည်ပတ်သည့်စနစ်မှ မပံ့ပိုးပါ။</translation>
 <translation id="2359808026110333948">ဆက်လုပ်ရန်</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> မီဂါဘိုက်</translation>
+<translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />၊ <ph name="PERMISSION_2" /> နှင့် နောက်ထပ် <ph name="NUM_MORE" /> ခု ခွင့်ပြုထားသည်}other{<ph name="PERMISSION_1" />၊ <ph name="PERMISSION_2" /> နှင့် နောက်ထပ် <ph name="NUM_MORE" /> ခု ခွင့်ပြုထားသည်}}</translation>
 <translation id="2434158240863470628">ဒေါင်းလုဒ်လုပ်ပြီးပါပြီ <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2440823041667407902">တည်နေရာ ရယူသုံးမှု</translation>
 <translation id="2482878487686419369">အကြောင်းကြားစာ</translation>
@@ -190,6 +191,7 @@
 <translation id="6447842834002726250">ကူကီးများ</translation>
 <translation id="6527303717912515753">မျှဝေရန်</translation>
 <translation id="6545864417968258051">ဘလူးတုသ် ရှာဖွေခြင်း</translation>
+<translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />၊ <ph name="PERMISSION_2" /> နှင့် နောက်ထပ် <ph name="NUM_MORE" /> ခုကို ပိတ်ထားသည်}other{<ph name="PERMISSION_1" />၊ <ph name="PERMISSION_2" /> နှင့် နောက်ထပ် <ph name="NUM_MORE" /> ခုကို ပိတ်ထားသည်}}</translation>
 <translation id="6561560012278703671">ပိုမိုတိတ်ဆိတ်သော မက်ဆေ့ဂျ်ပို့ခြင်းကို အသုံးပြုပါ (သင့်အားမနှောင့်ယှက်စေရန် အကြောင်းကြားချက် အတည်ပြုစနစ်များကို ပိတ်ပေးသည်)</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">ကာကွယ်ထားသည့် အကြောင်းအရာ</translation>
@@ -292,6 +294,7 @@
 <translation id="8959122750345127698">သွားလာမှုပြလမ်းညွှန်ဆီသို့ မရောက်နိုင်ပါ- <ph name="URL" /></translation>
 <translation id="9019902583201351841">သင့်မိဘများမှ စီမံသည်</translation>
 <translation id="9074739597929991885">ဘလူးတုသ်</translation>
+<translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />၊ <ph name="PERMISSION_2" /> နှင့် နောက်ထပ် <ph name="NUM_MORE" /> ခု}other{<ph name="PERMISSION_1" />၊ <ph name="PERMISSION_2" /> နှင့် နောက်ထပ် <ph name="NUM_MORE" /> ခု}}</translation>
 <translation id="913657688200966289"><ph name="BEGIN_LINK" />Android ဆက်တင်များ<ph name="END_LINK" /> တွင် <ph name="APP_NAME" /> အတွက် ခွင့်ပြုချက်များကို ဖွင့်ပါ။</translation>
 <translation id="945632385593298557">သင့်မိုက်အား အသုံးပြုမည်</translation>
 <translation id="965817943346481315">စိတ်အနှောင့်အယှက်ဖြစ်စေသော (သို့) အထင်အမြင်မှားစေသော ကြော်ငြာများ ပြလျှင် ဝဘ်ဆိုက်ကို ပိတ်သည် (အကြံပြုထားသည်)</translation>

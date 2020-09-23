@@ -1,8 +1,10 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="da">
+<translation id="2077832278056815832">Luk alle bobler og overlejringer fra andre apps. Prøv derefter igen.</translation>
 <translation id="2359808026110333948">Fortsæt</translation>
 <translation id="2416359993254398973">Chrome skal have tilladelse til at bruge dit kamera på dette website.</translation>
+<translation id="2987449669841041897">Dette website kan ikke anmode om din tilladelse</translation>
 <translation id="557283862590186398">Chrome skal have tilladelse til at bruge din mikrofon på dette website.</translation>
 <translation id="5860491529813859533">Aktivér</translation>
 <translation id="6092062101542170135">Aktivér NFC i Android-indstillingerne for at fortsætte</translation>

@@ -51,6 +51,7 @@
 <translation id="2315043854645842844">Operētājsistēma neatbalsta klienta puses sertifikāta atlasi.</translation>
 <translation id="2359808026110333948">Turpināt</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
+<translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Atļautas: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> un vēl <ph name="NUM_MORE" />}zero{Atļautas: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> un vēl <ph name="NUM_MORE" />}one{Atļautas: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> un vēl <ph name="NUM_MORE" />}other{Atļautas: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> un vēl <ph name="NUM_MORE" />}}</translation>
 <translation id="2434158240863470628">Lejupielāde pabeigta: <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2440823041667407902">Piekļuve atrašanās vietai</translation>
 <translation id="2482878487686419369">Paziņojumi</translation>
@@ -190,6 +191,7 @@
 <translation id="6447842834002726250">Sīkfaili</translation>
 <translation id="6527303717912515753">Kopīgot</translation>
 <translation id="6545864417968258051">Bluetooth meklēšana</translation>
+<translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Bloķētas: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> un vēl <ph name="NUM_MORE" />}zero{Bloķētas: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> un vēl <ph name="NUM_MORE" />}one{Bloķētas: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> un vēl <ph name="NUM_MORE" />}other{Bloķētas: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> un vēl <ph name="NUM_MORE" />}}</translation>
 <translation id="6561560012278703671">Izmantot neuzkrītošāku ziņojumapmaiņu (bloķēt paziņojumu uzvednes, lai tās jūs netraucētu)</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Aizsargāts saturs</translation>
@@ -292,6 +294,7 @@
 <translation id="8959122750345127698">Navigācija nav sasniedzama: <ph name="URL" /></translation>
 <translation id="9019902583201351841">Pārvalda jūsu vecāki</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> un vēl <ph name="NUM_MORE" />}zero{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> un vēl <ph name="NUM_MORE" />}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> un vēl <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> un vēl <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289"><ph name="BEGIN_LINK" />Android iestatījumos<ph name="END_LINK" /> ieslēdziet atļaujas lietotnei <ph name="APP_NAME" />.</translation>
 <translation id="945632385593298557">Piekļuve mikrofonam</translation>
 <translation id="965817943346481315">Bloķēt, ja vietnē tiek rādītas traucējošas vai maldinošas reklāmas (ieteicams)</translation>

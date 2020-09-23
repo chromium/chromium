@@ -1,8 +1,10 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="no">
+<translation id="2077832278056815832">Lukk eventuelle bobler og overlegg fra andre apper. Prøv deretter på nytt.</translation>
 <translation id="2359808026110333948">Fortsett</translation>
 <translation id="2416359993254398973">Chrome trenger tilgang til kameraet ditt for dette nettstedet.</translation>
+<translation id="2987449669841041897">Dette nettstedet kan ikke be deg om tillatelse</translation>
 <translation id="557283862590186398">Chrome trenger tilgang til mikrofonen din for dette nettstedet.</translation>
 <translation id="5860491529813859533">Slå på</translation>
 <translation id="6092062101542170135">For å fortsette, slå på NFC i Android-innstillingene</translation>

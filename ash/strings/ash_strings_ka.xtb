@@ -307,6 +307,7 @@
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{გამორთულია აპისთვის}other{გამორთულია # აპისთვის}}</translation>
 <translation id="4072264167173457037">სიგნალი საშუალოა</translation>
 <translation id="4112140312785995938">უკან გადახვევა</translation>
+<translation id="4114315158543974537">Phone Hub-ის ჩართვა</translation>
 <translation id="4129129681837227511">ჩაკეტილ ეკრანზე შეტყობინებების სანახავად საჭიროა განბლოკვა და პარამეტრის შეცვლა</translation>
 <translation id="4146833061457621061">მუსიკის დაკვრა</translation>
 <translation id="4149156641122542261"><ph name="DEVICE_TYPE" /> იმართება <ph name="DOMAIN" />-ის მიერ</translation>
@@ -438,6 +439,7 @@
 <translation id="5648021990716966815">მიკროფონის ჯეკი</translation>
 <translation id="5669267381087807207">გააქტიურება</translation>
 <translation id="5673434351075758678">„<ph name="FROM_LOCALE" />“ გახდა „<ph name="TO_LOCALE" />“ თქვენი პარამეტრების სინქრონიზაციის შემდეგ.</translation>
+<translation id="5679050765726761783">დაკავშირებულია დაბალი სიმძლავრის ელკვების ადაპტერი</translation>
 <translation id="5682642926269496722">Google ასისტენტი მიუწვდომელია მომხმარებლის ამჟამინდელი ანგარიშისთვის.</translation>
 <translation id="5689633613396158040">ღამის განათება გაგიმარტივებთ ეკრანზე კითხვას ან მის ყურებას მკრთალი განათების პირობებში. შეეხეთ ღამის განათების ჩართვის დროის შესაცვლელად ან მის მთლიანად გამოსართავად.</translation>
 <translation id="5691772641933328258">თითის ანაბეჭდის ამოცნობა ვერ მოხერხდა</translation>
@@ -552,6 +554,7 @@
 <translation id="6857811139397017780">გაააქტიურეთ <ph name="NETWORKSERVICE" /></translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{დარჩენილია 1 ციფრი}other{დარჩენილია # ციფრი}}</translation>
 <translation id="6878400149835617132">მალსახმობი გამოირთო</translation>
+<translation id="6886172995547742638">თქვენმა <ph name="DEVICE_TYPE" />-მა შეიძლება უფრო დაბალი წარმადობით იმუშაოს. გამოიყენეთ სერტიფიცირებული <ph name="PREFERRED_MINIMUM_POWER" /> ვტ-იანი ან უფრო მაღალი სიმძლავრის USB-C ელკვების ადაპტერი.</translation>
 <translation id="6896758677409633944">კოპირება</translation>
 <translation id="6910714959251846841">ეს განახლება საჭიროებს, თქვენს მოწყობილობაზე შესრულდეს Powerwash. შეიტყვეთ მეტი <ph name="SYSTEM_APP_NAME" />-ის ბოლო განახლების შესახებ.</translation>
 <translation id="6919251195245069855">თქვენი სმარტ-ბარათის ამოცნობა ვერ მოხერხდა. ცადეთ ხელახლა.</translation>

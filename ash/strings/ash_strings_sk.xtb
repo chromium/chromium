@@ -307,6 +307,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Vyp. pre apl.}few{Vyp. pre # apl.}many{Off for # apps}other{Vyp. pre # apl.}}</translation>
 <translation id="4072264167173457037">Stredne silný signál</translation>
 <translation id="4112140312785995938">Pretočiť dozadu</translation>
+<translation id="4114315158543974537">Zapnutie centra telefónu</translation>
 <translation id="4129129681837227511">Ak chcete, aby sa na uzamknutej obrazovke zobrazovali upozornenia, odomknite zariadenie a zmeňte nastavenie</translation>
 <translation id="4146833061457621061">Prehrať hudbu</translation>
 <translation id="4149156641122542261"><ph name="DEVICE_TYPE" /> spravuje <ph name="DOMAIN" /></translation>
@@ -438,6 +439,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="5648021990716966815">Konektor mikrofónu</translation>
 <translation id="5669267381087807207">Aktivuje sa</translation>
 <translation id="5673434351075758678">Po synchronizácii nastavení bol zmenený z možnosti <ph name="FROM_LOCALE" /> na <ph name="TO_LOCALE" />.</translation>
+<translation id="5679050765726761783">Bola pripojená nabíjačka s nízkym napätím</translation>
 <translation id="5682642926269496722">Asistent Google nie je k dispozícii pre aktuálny používateľský účet.</translation>
 <translation id="5689633613396158040">Vďaka nočnému režimu bude vaša obrazovka pri tlmenom osvetlení menej rušivá a čitateľnejšia. Klepnutím môžete zmeniť čas zapnutia nočného režimu, prípadne ho môžete úplne vypnúť.</translation>
 <translation id="5691772641933328258">Odtlačok prsta nebol rozpoznaný</translation>
@@ -552,6 +554,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="6857811139397017780">Aktivovať zariadenie <ph name="NETWORKSERVICE" /></translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Zostáva jedna číslica}few{Zostávajú # číslice}many{# digits remaining}other{Zostáva # číslic}}</translation>
 <translation id="6878400149835617132">Skratka je vypnutá</translation>
+<translation id="6886172995547742638">Vaše zariadenie <ph name="DEVICE_TYPE" /> môže mať nižší výkon. Používajte nabíjačku s portom USB-C, ktorá má certifikovaný výkon minimálne <ph name="PREFERRED_MINIMUM_POWER" /> W</translation>
 <translation id="6896758677409633944">Kopírovať</translation>
 <translation id="6910714959251846841">Táto aktualizácia vyžaduje vykonať v zariadení obnovenie Powerwash. Prečítajte si ďalšie informácie o najnovšej aktualizácii aplikácie <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="6919251195245069855">Inteligentnú kartu sa nepodarilo rozpoznať. Skúste to znova.</translation>

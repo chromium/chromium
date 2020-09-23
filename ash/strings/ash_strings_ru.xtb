@@ -137,6 +137,7 @@
 <translation id="2341729377289034582">Заблокировано в вертикальном положении</translation>
 <translation id="2352467521400612932">Настройки стилуса</translation>
 <translation id="2354174487190027830">Активация <ph name="NAME" /></translation>
+<translation id="2356210126990741501">Подключите смартфон к Сети, чтобы функция стала доступна.</translation>
 <translation id="2359808026110333948">Продолжить</translation>
 <translation id="2365393535144473978">Вместе с мобильным Интернетом включится Bluetooth.</translation>
 <translation id="2369165858548251131">"Привет" по-китайски</translation>
@@ -169,6 +170,7 @@
 <translation id="2705001408393684014">Кнопка включения и отключения микрофона. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Вверх</translation>
 <translation id="2718395828230677721">Ночной свет</translation>
+<translation id="2727175239389218057">Ответить</translation>
 <translation id="2727977024730340865">Подключено маломощное зарядное устройство. Возможны проблемы при зарядке.</translation>
 <translation id="2743387203779672305">Скопировать в буфер</translation>
 <translation id="2792498699870441125">Alt + Search</translation>
@@ -177,6 +179,7 @@
 <translation id="2825619548187458965">Полка</translation>
 <translation id="2841907151129139818">Вы перешли в режим планшета.</translation>
 <translation id="2844169650293029770">Устройство USB-C (ближний порт слева)</translation>
+<translation id="2846247265041961677">Ошибка. Нет соединения со смартфоном</translation>
 <translation id="2865888419503095837">Информация о сети</translation>
 <translation id="2872961005593481000">Завершить работу</translation>
 <translation id="2878884018241093801">Недавних окон нет.</translation>
@@ -459,6 +462,7 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">ВКЛ</translation>
 <translation id="5920710855273935292">Микрофон отключен.</translation>
+<translation id="594179686076170922">Соединение со смартфоном…</translation>
 <translation id="5946788582095584774">Функция "<ph name="FEATURE_NAME" />" включена</translation>
 <translation id="5947494881799873997">Отменить</translation>
 <translation id="595202126637698455">Включено отслеживание эффективности</translation>

@@ -137,6 +137,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="2341729377289034582">Verrouillée à la verticale</translation>
 <translation id="2352467521400612932">Paramètres du stylet</translation>
 <translation id="2354174487190027830">Activation du réseau <ph name="NAME" /> en cours…</translation>
+<translation id="2356210126990741501">On dirait que votre téléphone n'est pas en ligne, alors nous ne sommes pas en mesure d'obtenir toutes les primes pour vous pour le moment.</translation>
 <translation id="2359808026110333948">Continuer</translation>
 <translation id="2365393535144473978">L'activation des données mobiles activera le Bluetooth.</translation>
 <translation id="2369165858548251131">Comment dit-on « Bonjour » en chinois?</translation>
@@ -169,6 +170,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="2705001408393684014">Activer/Désactiver le microphone. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Haut</translation>
 <translation id="2718395828230677721">Éclairage nocturne</translation>
+<translation id="2727175239389218057">Répondre</translation>
 <translation id="2727977024730340865">L'appareil est branché à un chargeur de faible puissance. Il se peut que la recharge de la batterie ne soit pas fiable.</translation>
 <translation id="2743387203779672305">Copier dans le presse-papiers</translation>
 <translation id="2792498699870441125">Alt + Recherche</translation>
@@ -177,6 +179,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="2825619548187458965">Étagère</translation>
 <translation id="2841907151129139818">Mode tablette activé</translation>
 <translation id="2844169650293029770">Appareil USB-C (port avant-gauche)</translation>
+<translation id="2846247265041961677">Oups! Impossible de trouver le téléphone</translation>
 <translation id="2865888419503095837">Information réseau</translation>
 <translation id="2872961005593481000">Arrêter</translation>
 <translation id="2878884018241093801">Aucun élément récent</translation>
@@ -459,6 +462,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Activé</translation>
 <translation id="5920710855273935292">Le microphone est désactivé.</translation>
+<translation id="594179686076170922">Connexion à votre téléphone en cours…</translation>
 <translation id="5946788582095584774">La fonctionnalité <ph name="FEATURE_NAME" /> est activée.</translation>
 <translation id="5947494881799873997">Rétablir</translation>
 <translation id="595202126637698455">Suivi des performances activé</translation>

@@ -51,6 +51,7 @@
 <translation id="2315043854645842844">Az ügyféloldali tanúsítványválasztást az operációs rendszer nem támogatja.</translation>
 <translation id="2359808026110333948">Tovább</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
+<translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> és további <ph name="NUM_MORE" /> engedélyezve}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> és további <ph name="NUM_MORE" /> engedélyezve}}</translation>
 <translation id="2434158240863470628">Letöltés befejezve <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2440823041667407902">Helyhozzáférés</translation>
 <translation id="2482878487686419369">Értesítések</translation>
@@ -190,6 +191,7 @@
 <translation id="6447842834002726250">Cookie-k</translation>
 <translation id="6527303717912515753">Megosztás</translation>
 <translation id="6545864417968258051">Bluetooth-alapú keresés</translation>
+<translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> és további <ph name="NUM_MORE" /> letiltva}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> és további <ph name="NUM_MORE" /> letiltva}}</translation>
 <translation id="6561560012278703671">Csendesebb üzenetküldés használata (letiltja az értesítéseket, hogy ne zavarják meg Önt)</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Védett tartalom</translation>
@@ -292,6 +294,7 @@
 <translation id="8959122750345127698">Nem érhető el az ide vezető navigáció: <ph name="URL" /></translation>
 <translation id="9019902583201351841">Szülők által kezelt</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> és további <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> és további <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289">A(z) <ph name="APP_NAME" /> alkalmazásra vonatkozó engedélyeket az <ph name="BEGIN_LINK" />Android-beállítások<ph name="END_LINK" /> között lehet aktiválni.</translation>
 <translation id="945632385593298557">Hozzáférés a mikrofonhoz</translation>
 <translation id="965817943346481315">Letiltás, ha a webhely tolakodó vagy félrevezető hirdetéseket jelenít meg (ajánlott)</translation>

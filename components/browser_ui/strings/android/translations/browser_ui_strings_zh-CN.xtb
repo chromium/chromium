@@ -51,6 +51,7 @@
 <translation id="2315043854645842844">操作系统不支持选择客户端证书。</translation>
 <translation id="2359808026110333948">继续</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
+<translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{已授予“<ph name="PERMISSION_1" />”权限、“<ph name="PERMISSION_2" />”权限和另外 <ph name="NUM_MORE" /> 项权限}other{已授予“<ph name="PERMISSION_1" />”权限、“<ph name="PERMISSION_2" />”权限和另外 <ph name="NUM_MORE" /> 项权限}}</translation>
 <translation id="2434158240863470628">下载完成 <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2440823041667407902">位置信息使用权</translation>
 <translation id="2482878487686419369">通知</translation>
@@ -190,6 +191,7 @@
 <translation id="6447842834002726250">Cookie</translation>
 <translation id="6527303717912515753">分享</translation>
 <translation id="6545864417968258051">蓝牙扫描</translation>
+<translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{已禁用“<ph name="PERMISSION_1" />”权限、“<ph name="PERMISSION_2" />”权限和另外 <ph name="NUM_MORE" /> 项权限}other{已禁用“<ph name="PERMISSION_1" />”权限、“<ph name="PERMISSION_2" />”权限和另外 <ph name="NUM_MORE" /> 项权限}}</translation>
 <translation id="6561560012278703671">改用静态指示方式（禁止网站发送通知，以免干扰）</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">受保护的内容</translation>
@@ -292,6 +294,7 @@
 <translation id="8959122750345127698">无法访问 <ph name="URL" /></translation>
 <translation id="9019902583201351841">由您父母管理</translation>
 <translation id="9074739597929991885">蓝牙</translation>
+<translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{“<ph name="PERMISSION_1" />”权限、“<ph name="PERMISSION_2" />”权限和另外 <ph name="NUM_MORE" /> 项权限}other{“<ph name="PERMISSION_1" />”权限、“<ph name="PERMISSION_2" />”权限和另外 <ph name="NUM_MORE" /> 项权限}}</translation>
 <translation id="913657688200966289">在 <ph name="BEGIN_LINK" />Android 设置<ph name="END_LINK" />中为 <ph name="APP_NAME" /> 开启这些权限。</translation>
 <translation id="945632385593298557">使用您的麦克风</translation>
 <translation id="965817943346481315">屏蔽会展示侵扰性或误导性广告的网站（推荐）</translation>

@@ -51,6 +51,7 @@
 <translation id="2315043854645842844">オペレーティング システムでサポートされていないため、クライアント側で証明書を選択することはできません。</translation>
 <translation id="2359808026110333948">続行</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
+<translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />、他 <ph name="NUM_MORE" /> 個の権限が許可されています}other{<ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />、他 <ph name="NUM_MORE" /> 個の権限が許可されています}}</translation>
 <translation id="2434158240863470628">ダウンロードが完了しました<ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2440823041667407902">位置情報へのアクセス</translation>
 <translation id="2482878487686419369">通知</translation>
@@ -190,6 +191,7 @@
 <translation id="6447842834002726250">Cookie</translation>
 <translation id="6527303717912515753">共有</translation>
 <translation id="6545864417968258051">Bluetooth のスキャン</translation>
+<translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />、他 <ph name="NUM_MORE" /> 個の権限がブロックされています}other{<ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />、他 <ph name="NUM_MORE" /> 個の権限がブロックされています}}</translation>
 <translation id="6561560012278703671">静かな方法で通知する（割り込み通知を行わない）</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">保護されたコンテンツ</translation>
@@ -292,6 +294,7 @@
 <translation id="8959122750345127698"><ph name="URL" /> にアクセスできません</translation>
 <translation id="9019902583201351841">保護者により管理されています</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />、他 <ph name="NUM_MORE" /> 個の権限}other{<ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />、他 <ph name="NUM_MORE" /> 個の権限}}</translation>
 <translation id="913657688200966289"><ph name="BEGIN_LINK" />Android の設定<ph name="END_LINK" />で <ph name="APP_NAME" /> の権限を有効にしてください。</translation>
 <translation id="945632385593298557">マイクへのアクセス</translation>
 <translation id="965817943346481315">煩わしい広告や誤解を招く広告が表示されるサイトの場合にブロック（推奨）</translation>

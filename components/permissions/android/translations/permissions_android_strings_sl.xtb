@@ -1,8 +1,10 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sl">
+<translation id="2077832278056815832">Zaprite morebitne oblačke ali prekrivanja drugih aplikacij. Nato poskusite znova.</translation>
 <translation id="2359808026110333948">Naprej</translation>
 <translation id="2416359993254398973">Chrome potrebuje dovoljenje za dostop do fotoaparata za to spletno mesto.</translation>
+<translation id="2987449669841041897">To spletno mesto ne more zahtevati vašega dovoljenja</translation>
 <translation id="557283862590186398">Chrome potrebuje dovoljenje za dostop do mikrofona za to spletno mesto.</translation>
 <translation id="5860491529813859533">Vklopi</translation>
 <translation id="6092062101542170135">Če želite nadaljevati, v nastavitvah za Android vklopite tehnologijo NFC</translation>

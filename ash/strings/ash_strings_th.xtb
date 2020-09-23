@@ -137,6 +137,7 @@
 <translation id="2341729377289034582">ล็อกไว้ที่แนวตั้งแล้ว</translation>
 <translation id="2352467521400612932">การตั้งค่าสไตลัส</translation>
 <translation id="2354174487190027830">กำลังเปิดใช้งาน <ph name="NAME" /></translation>
+<translation id="2356210126990741501">ดูเหมือนว่าโทรศัพท์ของคุณไม่ได้ออนไลน์และเราดาวน์โหลดแอปพลิเคชันย่อยทั้งหมดจากโทรศัพท์ให้คุณไม่ได้ในตอนนี้</translation>
 <translation id="2359808026110333948">ต่อไป</translation>
 <translation id="2365393535144473978">การเปิดใช้เน็ตมือถือจะเปิดใช้บลูทูธ</translation>
 <translation id="2369165858548251131">"สวัสดี" ในภาษาจีน</translation>
@@ -169,6 +170,7 @@
 <translation id="2705001408393684014">เปิด/ปิดไมค์ <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">ขึ้น</translation>
 <translation id="2718395828230677721">แสงตอนกลางคืน</translation>
+<translation id="2727175239389218057">ตอบ</translation>
 <translation id="2727977024730340865">เสียบอยู่กับที่ชาร์จพลังงานต่ำ การชาร์จแบตเตอรี่อาจไม่น่าเชื่อถือ</translation>
 <translation id="2743387203779672305">คัดลอกไว้ที่คลิปบอร์ด</translation>
 <translation id="2792498699870441125">Alt+ค้นหา</translation>
@@ -177,6 +179,7 @@
 <translation id="2825619548187458965">ชั้นวาง</translation>
 <translation id="2841907151129139818">เปลี่ยนเป็นโหมดแท็บเล็ตแล้ว</translation>
 <translation id="2844169650293029770">อุปกรณ์ USB-C (พอร์ตด้านหน้าซ้าย)</translation>
+<translation id="2846247265041961677">อ๊ะ! ไม่พบโทรศัพท์</translation>
 <translation id="2865888419503095837">ข้อมูลเครือข่าย</translation>
 <translation id="2872961005593481000">ปิด</translation>
 <translation id="2878884018241093801">ไม่มีรายการล่าสุด</translation>
@@ -459,6 +462,7 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">เปิด</translation>
 <translation id="5920710855273935292">ปิดเสียงไมค์อยู่</translation>
+<translation id="594179686076170922">กำลังเชื่อมต่อกับโทรศัพท์ของคุณ...</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> เปิดอยู่</translation>
 <translation id="5947494881799873997">ย้อนกลับ</translation>
 <translation id="595202126637698455">เปิดใช้งานการติดตามการปฏิบัติงานแล้ว</translation>

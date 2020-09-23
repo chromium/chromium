@@ -1,8 +1,10 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fr">
+<translation id="2077832278056815832">Fermez toutes les info-bulles et superpositions des autres applications, puis réessayez.</translation>
 <translation id="2359808026110333948">Continuer</translation>
 <translation id="2416359993254398973">Chrome a besoin de votre autorisation pour accéder à votre appareil photo pour ce site.</translation>
+<translation id="2987449669841041897">Ce site ne peut pas demander votre autorisation</translation>
 <translation id="557283862590186398">Chrome a besoin de votre autorisation pour accéder à votre micro pour ce site.</translation>
 <translation id="5860491529813859533">Activer</translation>
 <translation id="6092062101542170135">Pour continuer, activez la fonctionnalité NFC dans les paramètres Android</translation>

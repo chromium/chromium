@@ -778,6 +778,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7055152154916055070">Redirection bloquée :</translation>
 <translation id="7063006564040364415">Échec de connexion au serveur de synchronisation.</translation>
 <translation id="7071521146534760487">Gérer le compte</translation>
+<translation id="707155805709242880">Choisissez les éléments à synchroniser ci-dessous</translation>
 <translation id="7077143737582773186">Carte SD</translation>
 <translation id="7080806333218412752">Il envoie des URL à la navigation sécurisée pour les vérifier. Il transmet également un petit échantillon de pages, de téléchargements, de l'activité des extensions et de données système afin de cerner les nouvelles menaces. De même, pour vous protéger dans l'ensemble des applications Google, il associe temporairement ces données à votre compte Google lorsque vous êtes connecté.</translation>
 <translation id="7088681679121566888">Chrome est à jour</translation>
@@ -876,6 +877,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="780301667611848630">Non merci</translation>
 <translation id="7810647596859435254">Ouvrir avec…</translation>
 <translation id="7821588508402923572">Vos économies de données s'afficheront ici</translation>
+<translation id="7844171778363018843">Aucune donnée à synchroniser n'a été sélectionnée</translation>
 <translation id="7846296061357476882">Services Google</translation>
 <translation id="784934925303690534">Intervalle de temps</translation>
 <translation id="7851858861565204677">Autres appareils</translation>
@@ -912,6 +914,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="8058746566562539958">Ouvrir ds nouvel onglet Chrome</translation>
 <translation id="8063895661287329888">Échec de l'ajout du favori.</translation>
 <translation id="806745655614357130">Conserver mes données à part</translation>
+<translation id="8069669375923284295">Touchez l'écran pour continuer la configuration de la synchronisation</translation>
 <translation id="8073388330009372546">Ouvrir dans un nouvel onglet</translation>
 <translation id="8076492880354921740">Onglets</translation>
 <translation id="8084114998886531721">Mot de passe enregistré</translation>

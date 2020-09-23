@@ -307,6 +307,7 @@
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Иск. за апл.}one{Иск. за # апл.}few{Иск. за # апл.}other{Иск. за # апл.}}</translation>
 <translation id="4072264167173457037">Сигнал средње јачине</translation>
 <translation id="4112140312785995938">Премотај уназад</translation>
+<translation id="4114315158543974537">Укључите Phone Hub</translation>
 <translation id="4129129681837227511">Да бисте видели обавештења на закључаном екрану, откључајте га како бисте променили подешавање</translation>
 <translation id="4146833061457621061">Пусти музику</translation>
 <translation id="4149156641122542261">Уређајем <ph name="DEVICE_TYPE" /> управља <ph name="DOMAIN" /></translation>
@@ -438,6 +439,7 @@
 <translation id="5648021990716966815">Утикач за микрофон</translation>
 <translation id="5669267381087807207">Активирање</translation>
 <translation id="5673434351075758678">Са језика „<ph name="FROM_LOCALE" />“ на „<ph name="TO_LOCALE" />“ после синхронизације уређаја.</translation>
+<translation id="5679050765726761783">Повезан је адаптер мале снаге</translation>
 <translation id="5682642926269496722">Google није доступан за актуелни кориснички налог.</translation>
 <translation id="5689633613396158040">Ноћно светло вам олакшава да прегледате садржај екрана или да читате при пригушеном светлу. Додирните да бисте променили време када се ноћно светло укључује или га потпуно искључите.</translation>
 <translation id="5691772641933328258">Отисак прста није препознат</translation>
@@ -552,6 +554,7 @@
 <translation id="6857811139397017780">Активирај <ph name="NETWORKSERVICE" /></translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Преостала је једна цифра}one{Преостала је # цифра}few{Преостале су # цифре}other{Преостало је # цифара}}</translation>
 <translation id="6878400149835617132">Пречица је искључена</translation>
+<translation id="6886172995547742638">То може негативно да утиче на рад уређаја <ph name="DEVICE_TYPE" />. Користите сертификовани USB-C адаптер од <ph name="PREFERRED_MINIMUM_POWER" /> W или јачи.</translation>
 <translation id="6896758677409633944">Копирај</translation>
 <translation id="6910714959251846841">Ово ажурирање захтева да обавите powerwash на уређају. Сазнајте више о најновијем ажурирању за: <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="6919251195245069855">Нисмо успели да препознамо паметну картицу. Пробајте поново.</translation>

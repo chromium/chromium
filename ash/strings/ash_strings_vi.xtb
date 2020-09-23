@@ -137,6 +137,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2341729377289034582">Đã khóa theo chiều dọc</translation>
 <translation id="2352467521400612932">Cài đặt bút cảm ứng</translation>
 <translation id="2354174487190027830">Kích hoạt <ph name="NAME" /></translation>
+<translation id="2356210126990741501">Có vẻ như điện thoại của bạn không nối mạng nên chúng tôi không thể tải mọi tiện ích cho bạn ngay lúc này.</translation>
 <translation id="2359808026110333948">Tiếp tục</translation>
 <translation id="2365393535144473978">Bật dữ liệu di động sẽ bật Bluetooth.</translation>
 <translation id="2369165858548251131">"Xin chào" bằng tiếng Trung</translation>
@@ -169,6 +170,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2705001408393684014">Bật tắt micrô. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Lên</translation>
 <translation id="2718395828230677721">Ánh sáng đêm</translation>
+<translation id="2727175239389218057">Trả lời</translation>
 <translation id="2727977024730340865">Được cắm vào bộ sạc công suất thấp. Việc sạc pin có thể không được đảm bảo.</translation>
 <translation id="2743387203779672305">Sao chép vào khay nhớ tạm</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
@@ -177,6 +179,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2825619548187458965">Giá</translation>
 <translation id="2841907151129139818">Đã chuyển sang chế độ máy tính bảng</translation>
 <translation id="2844169650293029770">Thiết bị USB-C (cổng phía trước, bên trái)</translation>
+<translation id="2846247265041961677">Rất tiếc! Chúng tôi không tìm thấy điện thoại</translation>
 <translation id="2865888419503095837">Thông tin mạng</translation>
 <translation id="2872961005593481000">Tắt</translation>
 <translation id="2878884018241093801">Không có mục nào gần đây</translation>
@@ -304,6 +307,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Tắt, 1 ư.dụng}other{Tắt, # ư.dụng}}</translation>
 <translation id="4072264167173457037">Tín hiệu trung bình</translation>
 <translation id="4112140312785995938">Tua lùi</translation>
+<translation id="4114315158543974537">Bật Phone Hub</translation>
 <translation id="4129129681837227511">Để xem thông báo trên màn hình khóa, hãy mở khóa thiết bị để thay đổi tùy chọn cài đặt này</translation>
 <translation id="4146833061457621061">Phát nhạc</translation>
 <translation id="4149156641122542261"><ph name="DOMAIN" /> quản lý <ph name="DEVICE_TYPE" /></translation>
@@ -435,6 +439,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="5648021990716966815">Giắc cắm micrô</translation>
 <translation id="5669267381087807207">Đang kích hoạt</translation>
 <translation id="5673434351075758678">Từ "<ph name="FROM_LOCALE" />" sang "<ph name="TO_LOCALE" />" sau khi đồng bộ hóa cài đặt của bạn.</translation>
+<translation id="5679050765726761783">Đã kết nối bộ sạc công suất thấp</translation>
 <translation id="5682642926269496722">Tài khoản người dùng hiện tại chưa hỗ trợ Trợ lý Google.</translation>
 <translation id="5689633613396158040">Chế độ Ánh sáng đêm giúp bạn cảm thấy dễ chịu khi nhìn màn hình hoặc đọc trong điều kiện ánh sáng yếu. Hãy nhấn để thay đổi thời gian bật hoặc tắt hoàn toàn chế Ánh sáng đêm.</translation>
 <translation id="5691772641933328258">Không nhận dạng được vân tay</translation>
@@ -459,6 +464,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Bật</translation>
 <translation id="5920710855273935292">Micrô đang tắt.</translation>
+<translation id="594179686076170922">Đang kết nối với điện thoại của bạn...</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> đang bật.</translation>
 <translation id="5947494881799873997">Hoàn nguyên</translation>
 <translation id="595202126637698455">Đã bật theo dõi hoạt động</translation>
@@ -548,6 +554,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="6857811139397017780">Kích hoạt <ph name="NETWORKSERVICE" /></translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Còn lại một số}other{Còn lại # số}}</translation>
 <translation id="6878400149835617132">Đã tắt phím tắt</translation>
+<translation id="6886172995547742638"><ph name="DEVICE_TYPE" /> của bạn có thể có hiệu suất thấp hơn. Hãy dùng bộ sạc USB-C được chứng nhận có công suất <ph name="PREFERRED_MINIMUM_POWER" />W trở lên.</translation>
 <translation id="6896758677409633944">Sao chép</translation>
 <translation id="6910714959251846841">Bản cập nhật này yêu cầu phải powerwash (đặt lại toàn bộ) thiết bị của bạn. Hãy tìm hiểu thêm về bản cập nhật <ph name="SYSTEM_APP_NAME" /> mới nhất.</translation>
 <translation id="6919251195245069855">Không nhận dạng được thẻ thông minh của bạn. Vui lòng thử lại.</translation>

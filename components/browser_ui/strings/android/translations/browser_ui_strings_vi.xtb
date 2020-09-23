@@ -51,6 +51,7 @@
 <translation id="2315043854645842844">Lựa chọn chứng chỉ phía ứng dụng khách không được hệ điều hành hỗ trợ.</translation>
 <translation id="2359808026110333948">Tiếp tục</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
+<translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Đã cho phép <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> và <ph name="NUM_MORE" /> quyền khác}other{Đã cho phép <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> và <ph name="NUM_MORE" /> quyền khác}}</translation>
 <translation id="2434158240863470628">Quá trình tải xuống hoàn tất <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2440823041667407902">Quyền truy cập thông tin vị trí</translation>
 <translation id="2482878487686419369">Thông báo</translation>
@@ -190,6 +191,7 @@
 <translation id="6447842834002726250">Cookie</translation>
 <translation id="6527303717912515753">Chia sẻ</translation>
 <translation id="6545864417968258051">Quét tìm Bluetooth</translation>
+<translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Đã chặn <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> và <ph name="NUM_MORE" /> quyền khác}other{Đã chặn <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> và <ph name="NUM_MORE" /> quyền khác}}</translation>
 <translation id="6561560012278703671">Dùng thông báo nhẹ nhàng hơn (chặn thông báo bật lên làm phiền bạn)</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Nội dung được bảo vệ</translation>
@@ -292,6 +294,7 @@
 <translation id="8959122750345127698">Không thể tiếp cận điều hướng: <ph name="URL" /></translation>
 <translation id="9019902583201351841">Do cha mẹ của bạn quản lý</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> và <ph name="NUM_MORE" /> quyền khác}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> và <ph name="NUM_MORE" /> quyền khác}}</translation>
 <translation id="913657688200966289">Bật quyền cho <ph name="APP_NAME" /> trong phần <ph name="BEGIN_LINK" />Cài đặt Android<ph name="END_LINK" />.</translation>
 <translation id="945632385593298557">Truy cập micrô của bạn</translation>
 <translation id="965817943346481315">Chặn nếu trang web hiển thị quảng cáo xâm nhập hoặc quảng cáo gây hiểu nhầm (khuyên dùng)</translation>

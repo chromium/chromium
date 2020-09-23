@@ -51,6 +51,7 @@
 <translation id="2315043854645842844">La sélection du certificat client SSL n'est pas prise en charge par le système d'exploitation.</translation>
 <translation id="2359808026110333948">Continuer</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> Mo</translation>
+<translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Autorisations <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> et <ph name="NUM_MORE" /> autre accordées}one{Autorisations <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> et <ph name="NUM_MORE" /> autre accordées}other{Autorisations <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> et <ph name="NUM_MORE" /> autres accordées}}</translation>
 <translation id="2434158240863470628">Téléchargement terminé <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2440823041667407902">Accès à la position</translation>
 <translation id="2482878487686419369">Notifications</translation>
@@ -190,6 +191,7 @@
 <translation id="6447842834002726250">Témoins</translation>
 <translation id="6527303717912515753">Partager</translation>
 <translation id="6545864417968258051">Recherche d'appareils Bluetooth</translation>
+<translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> et <ph name="NUM_MORE" /> autre autorisation bloquée}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> et <ph name="NUM_MORE" /> autre autorisation bloquée}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> et <ph name="NUM_MORE" /> autres autorisations bloquées}}</translation>
 <translation id="6561560012278703671">Activer l'affichage discret des messages (permet d'empêcher les notifications de vous interrompre)</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> Go</translation>
 <translation id="6612358246767739896">Contenu protégé</translation>
@@ -292,6 +294,7 @@
 <translation id="8959122750345127698">Navigation inaccessible : <ph name="URL" /></translation>
 <translation id="9019902583201351841">Géré par tes parents</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> et <ph name="NUM_MORE" /> autre}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> et <ph name="NUM_MORE" /> autre}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> et <ph name="NUM_MORE" /> autres}}</translation>
 <translation id="913657688200966289">Vous pouvez activer les autorisations pour <ph name="APP_NAME" /> dans les <ph name="BEGIN_LINK" />paramètres d'Android<ph name="END_LINK" />.</translation>
 <translation id="945632385593298557">Accès à votre microphone</translation>
 <translation id="965817943346481315">Bloquer si le site diffuse des annonces intrusives ou trompeuses (recommandé)</translation>

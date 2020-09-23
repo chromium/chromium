@@ -1,8 +1,10 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="es">
+<translation id="2077832278056815832">Cierra todos los cuadros o superposiciones de otras aplicaciones. A continuación, inténtalo de nuevo.</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2416359993254398973">Chrome necesita permiso para acceder a la cámara en este sitio web.</translation>
+<translation id="2987449669841041897">Este sitio web no puede solicitarte permiso</translation>
 <translation id="557283862590186398">Chrome necesita permiso para acceder al micrófono en este sitio web.</translation>
 <translation id="5860491529813859533">Activar</translation>
 <translation id="6092062101542170135">Para continuar, activa el NFC en los ajustes de Android.</translation>

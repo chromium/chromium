@@ -1,8 +1,10 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="hu">
+<translation id="2077832278056815832">Zárjon be minden, más alkalmazásokból származó buborékot és fedvényt. Ezután próbálja újra.</translation>
 <translation id="2359808026110333948">Tovább</translation>
 <translation id="2416359993254398973">A Chrome számára engedély szükséges, hogy hozzáférjen a kamerához ennél a webhelynél.</translation>
+<translation id="2987449669841041897">Ez a webhely nem kérhet engedélyt Öntől</translation>
 <translation id="557283862590186398">A Chrome számára engedély szükséges, hogy hozzáférjen a mikrofonhoz ennél a webhelynél.</translation>
 <translation id="5860491529813859533">Bekapcsolás</translation>
 <translation id="6092062101542170135">A folytatáshoz kapcsolja be az NFC-t az Android beállításai között</translation>

@@ -51,6 +51,7 @@
 <translation id="2315043854645842844">لا يدعم نظام التشغيل تحديد الشهادة من جانب العميل.</translation>
 <translation id="2359808026110333948">متابعة</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> ميغابايت</translation>
+<translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{تم السماح بالوصول إلى <ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> وإذن واحد (<ph name="NUM_MORE" />) آخر.}zero{تم السماح بالوصول إلى <ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> و<ph name="NUM_MORE" /> إذن آخر.}two{تم السماح بالوصول إلى <ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> وإذنَين (<ph name="NUM_MORE" />) آخرَين.}few{تم السماح بالوصول إلى <ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> و<ph name="NUM_MORE" /> أذونات أخرى.}many{تم السماح بالوصول إلى <ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> و<ph name="NUM_MORE" /> إذنًا آخرًا.}other{تم السماح بالوصول إلى <ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> و<ph name="NUM_MORE" /> إذن آخر.}}</translation>
 <translation id="2434158240863470628">اكتمل التنزيل <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2440823041667407902">تحديد الموقع الجغرافي</translation>
 <translation id="2482878487686419369">الإشعارات</translation>
@@ -190,6 +191,7 @@
 <translation id="6447842834002726250">ملفّات تعريف الارتباط</translation>
 <translation id="6527303717912515753">مشاركة</translation>
 <translation id="6545864417968258051">البحث عن بلوتوث</translation>
+<translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{تم حظر <ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> وإذن واحد (<ph name="NUM_MORE" />) آخر.}zero{تم حظر <ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> و<ph name="NUM_MORE" /> إذن آخر.}two{تم حظر <ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> وإذنَين (<ph name="NUM_MORE" />) آخرَين.}few{تم حظر <ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> و<ph name="NUM_MORE" /> أذونات أخرى.}many{تم حظر <ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> و<ph name="NUM_MORE" /> إذنًا آخرًا.}other{تم حظر <ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> و<ph name="NUM_MORE" /> إذن آخر.}}</translation>
 <translation id="6561560012278703671">استخدام طريقة أقل بروزًا لإرسال الإشعارات (منع رسائل الإشعارات من إزعاجك)</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> غيغابايت</translation>
 <translation id="6612358246767739896">المحتوى المحمي</translation>
@@ -292,6 +294,7 @@
 <translation id="8959122750345127698">التنقل غير قابل للوصول: <ph name="URL" /></translation>
 <translation id="9019902583201351841">يديره والداك</translation>
 <translation id="9074739597929991885">بلوتوث</translation>
+<translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> وإذن واحد (<ph name="NUM_MORE" />) آخر}zero{<ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> و<ph name="NUM_MORE" /> إذن آخر}two{<ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> وإذنان (<ph name="NUM_MORE" />) آخران}few{<ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> و<ph name="NUM_MORE" /> أذونات أخرى}many{<ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> و<ph name="NUM_MORE" /> إذنًا آخرًا}other{<ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> و<ph name="NUM_MORE" /> إذن آخر}}</translation>
 <translation id="913657688200966289">‏فعِّل الأذونات لتطبيق <ph name="APP_NAME" /> في <ph name="BEGIN_LINK" />إعدادات Android<ph name="END_LINK" />.</translation>
 <translation id="945632385593298557">الدخول إلى الميكروفون</translation>
 <translation id="965817943346481315">الحظر في حال كان الموقع الإلكتروني يعرض إعلانات مضلِّلة أو غير مرغوب فيها (مُستحسَن)</translation>

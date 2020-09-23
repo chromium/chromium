@@ -137,6 +137,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="2341729377289034582">Vergrendeld in verticale stand</translation>
 <translation id="2352467521400612932">Stylusinstellingen</translation>
 <translation id="2354174487190027830"><ph name="NAME" /> activeren</translation>
+<translation id="2356210126990741501">Zo te zien is je telefoon niet online en hebben we op dit moment geen toegang tot de content erop.</translation>
 <translation id="2359808026110333948">Doorgaan</translation>
 <translation id="2365393535144473978">Als je mobiele data inschakelt, wordt Bluetooth ingeschakeld.</translation>
 <translation id="2369165858548251131">Chinees voor 'hallo'</translation>
@@ -169,6 +170,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="2705001408393684014">Microfoon in-/uitschakelen. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Omhoog</translation>
 <translation id="2718395828230677721">Nachtlicht</translation>
+<translation id="2727175239389218057">Reageren</translation>
 <translation id="2727977024730340865">Aangesloten op een laag-vermogen-lader. Opladen van de batterij mogelijk niet betrouwbaar.</translation>
 <translation id="2743387203779672305">Kopiëren naar klembord</translation>
 <translation id="2792498699870441125">Alt+Zoeken</translation>
@@ -177,6 +179,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="2825619548187458965">Plank</translation>
 <translation id="2841907151129139818">Overgeschakeld naar tabletmodus</translation>
 <translation id="2844169650293029770">USB-C-apparaat (poort links aan de voorkant)</translation>
+<translation id="2846247265041961677">Kan de telefoon niet vinden</translation>
 <translation id="2865888419503095837">Netwerkinfo</translation>
 <translation id="2872961005593481000">Afsluiten</translation>
 <translation id="2878884018241093801">Geen recente items</translation>
@@ -304,6 +307,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Uit voor een app}other{Uit voor # apps}}</translation>
 <translation id="4072264167173457037">Normaal signaal</translation>
 <translation id="4112140312785995938">Achteruit zoeken</translation>
+<translation id="4114315158543974537">Phone Hub inschakelen</translation>
 <translation id="4129129681837227511">Als je meldingen op je vergrendelscherm wilt zien, ontgrendel je het scherm om de instellingen te wijzigen</translation>
 <translation id="4146833061457621061">Speel muziek</translation>
 <translation id="4149156641122542261"><ph name="DEVICE_TYPE" /> beheerd door <ph name="DOMAIN" /></translation>
@@ -435,6 +439,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="5648021990716966815">Microfoonaansluiting</translation>
 <translation id="5669267381087807207">Activeren</translation>
 <translation id="5673434351075758678">Van '<ph name="FROM_LOCALE" />' naar '<ph name="TO_LOCALE" />' na synchronisatie van je instellingen.</translation>
+<translation id="5679050765726761783">Adapter met laag vermogen aangesloten</translation>
 <translation id="5682642926269496722">De Google Assistent is niet beschikbaar voor het huidige gebruikersaccount.</translation>
 <translation id="5689633613396158040">Met Nachtverlichting kun je je scherm beter zien en lezen bij weinig licht. Tik om te wijzigen wanneer Nachtverlichting wordt ingeschakeld of schakel de functie helemaal uit.</translation>
 <translation id="5691772641933328258">Vingerafdruk niet herkend</translation>
@@ -459,6 +464,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Aan</translation>
 <translation id="5920710855273935292">Microfoon is gedempt.</translation>
+<translation id="594179686076170922">Verbinding maken met je telefoon…</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> is ingeschakeld.</translation>
 <translation id="5947494881799873997">Terugzetten</translation>
 <translation id="595202126637698455">Bijhouden van prestaties ingeschakeld</translation>
@@ -548,6 +554,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="6857811139397017780"><ph name="NETWORKSERVICE" /> activeren</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Nog 1 cijfer nodig}other{Nog # cijfers nodig}}</translation>
 <translation id="6878400149835617132">Snelkoppeling uitgeschakeld</translation>
+<translation id="6886172995547742638">Je <ph name="DEVICE_TYPE" /> kan slechtere prestaties leveren. Gebruik een gecertificeerde USB-C-voedingsadapter van <ph name="PREFERRED_MINIMUM_POWER" /> W of hoger.</translation>
 <translation id="6896758677409633944">Kopieer</translation>
 <translation id="6910714959251846841">Deze update vereist een powerwash van je apparaat. Meer informatie over de laatste update van <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="6919251195245069855">Je smartkaart wordt niet herkend. Probeer het opnieuw.</translation>

@@ -376,6 +376,7 @@
 <translation id="5098629044894065541">Hebraico</translation>
 <translation id="5123433949759960244">Basquete</translation>
 <translation id="5129662217315786329">Polonês</translation>
+<translation id="5132435854979302863">Filipino</translation>
 <translation id="5144820558584035333">Conjunto de letras coreanas 390 (Hangul 3)</translation>
 <translation id="5145331109270917438">Data da última modificação</translation>
 <translation id="515594325917491223">Xadrez</translation>
@@ -422,6 +423,7 @@
 <translation id="5464696796438641524">Teclado polonês</translation>
 <translation id="5465122519792752163">Teclado em nepalês (InScript)</translation>
 <translation id="5469868506864199649">Italiano</translation>
+<translation id="5484429245813572665">Indonésio</translation>
 <translation id="5494920125229734069">Selecionar tudo</translation>
 <translation id="5500122897333236901">Islandês</translation>
 <translation id="5508696409934741614">Pontos</translation>
@@ -609,6 +611,7 @@
 <translation id="7649070708921625228">Ajuda</translation>
 <translation id="7654209398114106148">Movendo <ph name="NUMBER_OF_ITEMS" /> itens…</translation>
 <translation id="7658239707568436148">Cancelar</translation>
+<translation id="7693909743393669729">Formatar uma unidade excluirá todos os dados armazenados nela e todas as partições existentes, incluindo partições não visíveis. Essa ação não pode ser desfeita.</translation>
 <translation id="7695430100978772476">Não foi possível formatar <ph name="DRIVE_NAME" />.</translation>
 <translation id="770015031906360009">Grego</translation>
 <translation id="7706319470528945664">Teclado português</translation>
@@ -640,6 +643,7 @@
 <translation id="78946041517601018">Drives compartilhados</translation>
 <translation id="7896906914454843592">Teclado americano estendido</translation>
 <translation id="7898607018410277265">Teclado gujarati (fonético novo)</translation>
+<translation id="7908793776359722643">Formatar uma partição excluirá todos os dados armazenados nela. Essa ação não pode ser desfeita.</translation>
 <translation id="7917972308273378936">Teclado lituano</translation>
 <translation id="7925686952655276919">Não usar dados móveis na sincronização</translation>
 <translation id="7928710562641958568">Ejetar dispositivo</translation>
@@ -727,6 +731,7 @@
 <translation id="8900820606136623064">Húngaro</translation>
 <translation id="8901822611024316615">Teclado QWERTY tcheco</translation>
 <translation id="8919081441417203123">Dinamarquês</translation>
+<translation id="8941776146379310519">Malaio</translation>
 <translation id="8960999352790021682">Teclado bengali (fonético)</translation>
 <translation id="8965697826696209160">Não há espaço suficiente.</translation>
 <translation id="9017798300203431059">Russo fonético</translation>

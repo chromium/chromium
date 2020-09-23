@@ -1202,6 +1202,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2419706071571366386">Pour des raisons de sécurité, déconnectez-vous lorsque votre ordinateur n'est pas en cours d'utilisation.</translation>
 <translation id="2422125132043002186">Restauration Linux annulée</translation>
 <translation id="2423578206845792524">En&amp;registrer l'image sous...</translation>
+<translation id="2424424966051154874">{0,plural, =1{Fenêtre d'invité}one{Fenêtre d'invité (#)}other{Fenêtres d'invité (#)}}</translation>
 <translation id="2428510569851653187">Décrivez ce que vous faisiez lorsque l'onglet a planté</translation>
 <translation id="2428939361789119025">Désactiver le Wi-Fi</translation>
 <translation id="2431027948063157455">Impossible de charger l'Assistant Google, veuillez vérifier votre connexion réseau et réessayer.</translation>
@@ -4200,6 +4201,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6077189836672154517">Conseils et mises à jour sur <ph name="DEVICE_TYPE" /></translation>
 <translation id="6077476112742402730">Parler pour taper</translation>
 <translation id="6078045608615316905">Créer un code QR pour cette image</translation>
+<translation id="6078121669093215958">{0,plural, =1{Fenêtre d'invité}one{# fenêtre d'invité ouverte}other{# fenêtres d'invité ouvertes}}</translation>
 <translation id="6078323886959318429">Ajouter un raccourci</translation>
 <translation id="6078752646384677957">Veuillez vérifier votre microphone et vos niveaux audio.</translation>
 <translation id="6078769373519310690">« <ph name="CHROME_EXTENSION_NAME" /> » souhaite se connecter à un appareil HID</translation>
@@ -4707,6 +4709,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6704062477274546131">Résolution DNS</translation>
 <translation id="6706210727756204531">Portée</translation>
 <translation id="6707389671160270963">Certificat de client SSL</translation>
+<translation id="670893696722244877">Rechercher par langue ou par nom d'entrée</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> et 1 autre onglet}one{<ph name="PAGE_TITLE" /> et # autre onglet}other{<ph name="PAGE_TITLE" /> et # autres onglets}}</translation>
 <translation id="6709133671862442373">Actualités</translation>
 <translation id="6709357832553498500">Se connecter à l'aide de <ph name="EXTENSIONNAME" /></translation>
@@ -5544,6 +5547,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7753735457098489144">L'installation a échoué en raison d'un manque d'espace de stockage. Pour libérer de l'espace, supprimez des fichiers de l'espace de stockage de l'appareil.</translation>
 <translation id="7754704193130578113">Toujours demander où enregistrer les fichiers</translation>
 <translation id="7755287808199759310">L'un de tes parents peut le débloquer pour toi</translation>
+<translation id="7757592200364144203">Modifier le nom de l'appareil</translation>
 <translation id="7757787379047923882">Texte partagé à partir de <ph name="DEVICE_NAME" /></translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">Ajustez les limites de votre affichage</translation>
@@ -6000,6 +6004,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8264024885325823677">C'est votre administrateur qui gère ce paramètre.</translation>
 <translation id="8264718194193514834">L'extension « <ph name="EXTENSION_NAME" /> » a déclenché le mode plein écran.</translation>
 <translation id="826511437356419340">Vous avez activé le mode de vue d'ensemble des fenêtres. Balayez l'écran pour naviguer, ou appuyez sur la touche Tabulation si vous utilisez un clavier.</translation>
+<translation id="8266947622852630193">Toutes les méthodes d'entrée</translation>
 <translation id="8267539814046467575">Ajouter une imprimante</translation>
 <translation id="8267961145111171918"><ph name="BEGIN_PARAGRAPH1" />Il s'agit de données générales concernant votre appareil et l'usage que vous en faites (comme le niveau de la pile, l'activité système, l'activité des applications et les erreurs) qui seront utilisées pour améliorer Android. De plus, certaines données collectées contribueront également à améliorer les applications de Google et aideront nos partenaires, comme les concepteurs d'Android, à améliorer leurs applications et leurs produits.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />La désactivation de cette fonctionnalité n'empêche pas votre appareil d'envoyer les données nécessaires aux services essentiels, comme les mises à jour du système et la sécurité.<ph name="END_PARAGRAPH2" />

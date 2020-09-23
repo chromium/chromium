@@ -778,6 +778,7 @@
 <translation id="7055152154916055070">リダイレクトがブロックされました</translation>
 <translation id="7063006564040364415">同期サーバーに接続できませんでした。</translation>
 <translation id="7071521146534760487">アカウントを管理</translation>
+<translation id="707155805709242880">同期するデータを下で選択してください</translation>
 <translation id="7077143737582773186">SD カード</translation>
 <translation id="7080806333218412752">セーフ ブラウジングに URL を送信して安全性を確認します。また、新たな脅威を発見するため、ページ、ダウンロード、拡張機能のアクティビティ、システム情報の一部のサンプルも送信します。ログイン時には、このデータを一時的に Google アカウントにリンクして、すべての Google アプリを安全に利用できるように保護します。</translation>
 <translation id="7088681679121566888">Chrome は最新の状態です</translation>
@@ -876,6 +877,7 @@
 <translation id="780301667611848630">いいえ</translation>
 <translation id="7810647596859435254">アプリで開く…</translation>
 <translation id="7821588508402923572">データ節約量がここに表示されます</translation>
+<translation id="7844171778363018843">同期するデータが選択されていません</translation>
 <translation id="7846296061357476882">Google のサービス</translation>
 <translation id="784934925303690534">期間</translation>
 <translation id="7851858861565204677">他のデバイス</translation>
@@ -912,6 +914,7 @@
 <translation id="8058746566562539958">新しい Chrome タブで開く</translation>
 <translation id="8063895661287329888">ブックマークを追加できませんでした。</translation>
 <translation id="806745655614357130">データを別に保持する</translation>
+<translation id="8069669375923284295">同期設定を続けるにはタップしてください</translation>
 <translation id="8073388330009372546">新しいタブで画像を開く</translation>
 <translation id="8076492880354921740">タブ</translation>
 <translation id="8084114998886531721">保存したパスワード</translation>

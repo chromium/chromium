@@ -137,6 +137,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2341729377289034582">Lukittu pystysuuntaiseksi</translation>
 <translation id="2352467521400612932">Näyttökynäasetukset</translation>
 <translation id="2354174487190027830">Aktivoidaan <ph name="NAME" /></translation>
+<translation id="2356210126990741501">Näyttää siltä, että puhelimesi ei ole verkossa, eivätkä kaikki sen laajennukset ole juuri nyt saatavilla.</translation>
 <translation id="2359808026110333948">Jatka</translation>
 <translation id="2365393535144473978">Mobiilidatan käyttöönotto ottaa käyttöön Bluetoothin.</translation>
 <translation id="2369165858548251131">"Hei" kiinaksi</translation>
@@ -169,6 +170,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2705001408393684014">Mikrofoni päälle/pois. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Ylös</translation>
 <translation id="2718395828230677721">Yövalo</translation>
+<translation id="2727175239389218057">Vastaa</translation>
 <translation id="2727977024730340865">Pienitehoinen laturi kytketty. Akku ei ehkä lataudu luotettavasti.</translation>
 <translation id="2743387203779672305">Kopioi leikepöydälle</translation>
 <translation id="2792498699870441125">Alt + haku</translation>
@@ -177,6 +179,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2825619548187458965">Hylly</translation>
 <translation id="2841907151129139818">Siirrytty tablettitilaan</translation>
 <translation id="2844169650293029770">C-tyypin USB-laite (vasemman sivun etummainen portti)</translation>
+<translation id="2846247265041961677">O-ou! Puhelinta ei löydy</translation>
 <translation id="2865888419503095837">Verkon tiedot</translation>
 <translation id="2872961005593481000">Sammuta</translation>
 <translation id="2878884018241093801">Ei viimeaikaisia kohteita</translation>
@@ -304,6 +307,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Pois, 1 sovellus}other{Pois, # sovellusta}}</translation>
 <translation id="4072264167173457037">Keskitasoinen signaali</translation>
 <translation id="4112140312785995938">Kelaa taaksepäin</translation>
+<translation id="4114315158543974537">Laita Phone Hub päälle</translation>
 <translation id="4129129681837227511">Jos haluat nähdä ilmoituksia lukitusnäytöllä, avaa lukitus muuttaaksesi asetusta</translation>
 <translation id="4146833061457621061">Soita musiikkia</translation>
 <translation id="4149156641122542261"><ph name="DEVICE_TYPE" />: ylläpitäjä on <ph name="DOMAIN" /></translation>
@@ -435,6 +439,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="5648021990716966815">Mikrofoniliitäntä</translation>
 <translation id="5669267381087807207">Aktivoidaan</translation>
 <translation id="5673434351075758678">Muutos asetusten synkronoinnin yhteydessä: <ph name="FROM_LOCALE" /> – <ph name="TO_LOCALE" /></translation>
+<translation id="5679050765726761783">Pienitehoinen sovitin liitetty</translation>
 <translation id="5682642926269496722">Google Assistantia ei voi käyttää nykyisellä käyttäjätilillä.</translation>
 <translation id="5689633613396158040">Yövalo helpottaa näytön katsomista ja lukemista hämärässä. Kosketa muuttaaksesi Yövalon syttymisaikaa tai poista se kokonaan käytöstä.</translation>
 <translation id="5691772641933328258">Sormenjälkeä ei tunnistettu</translation>
@@ -459,6 +464,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Päällä</translation>
 <translation id="5920710855273935292">Mikrofoni on mykistetty.</translation>
+<translation id="594179686076170922">Yhdistetään puhelimeen…</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> on päällä.</translation>
 <translation id="5947494881799873997">Palauta</translation>
 <translation id="595202126637698455">Tehokkuuden seuranta on käytössä</translation>
@@ -550,6 +556,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="6857811139397017780">Aktivoi <ph name="NETWORKSERVICE" /></translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Vielä yksi numero}other{Vielä # numeroa}}</translation>
 <translation id="6878400149835617132">Pikanäppäin poistettu käytöstä</translation>
+<translation id="6886172995547742638"><ph name="DEVICE_TYPE" /> voi toimia huonommin. Käytä sertifioitua USB-C-virtalähdettä, jonka teho on vähintään <ph name="PREFERRED_MINIMUM_POWER" /> W.</translation>
 <translation id="6896758677409633944">Kopioi</translation>
 <translation id="6910714959251846841">Tämän päivityksen asennus edellyttää laitteen powerwashia. Lue lisää uusimmasta <ph name="SYSTEM_APP_NAME" /> ‑päivityksestä.</translation>
 <translation id="6919251195245069855">Älykorttia ei tunnistettu. Yritä uudelleen.</translation>

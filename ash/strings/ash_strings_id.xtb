@@ -137,6 +137,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="2341729377289034582">Terkunci ke vertikal</translation>
 <translation id="2352467521400612932">Setelan stilus</translation>
 <translation id="2354174487190027830">Mengaktifkan <ph name="NAME" /></translation>
+<translation id="2356210126990741501">Sepertinya ponsel Anda tidak online dan kami tidak bisa mendapatkan semua goodie dari ponsel untuk saat ini.</translation>
 <translation id="2359808026110333948">Lanjutkan</translation>
 <translation id="2365393535144473978">Mengaktifkan data seluler akan mengaktifkan Bluetooth.</translation>
 <translation id="2369165858548251131">"Halo" dalam bahasa China</translation>
@@ -169,6 +170,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="2705001408393684014">Alihkan Status Mikrofon. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Atas</translation>
 <translation id="2718395828230677721">Cahaya Malam</translation>
+<translation id="2727175239389218057">Balas</translation>
 <translation id="2727977024730340865">Dipasang ke pengisi daya rendah. Pengisian daya baterai mungkin tidak dapat diandalkan.</translation>
 <translation id="2743387203779672305">Salin ke papan klip</translation>
 <translation id="2792498699870441125">Alt+Telusuri</translation>
@@ -177,6 +179,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="2825619548187458965">Rak</translation>
 <translation id="2841907151129139818">Beralih ke mode tablet</translation>
 <translation id="2844169650293029770">Perangkat USB-C (port depan sebelah kiri)</translation>
+<translation id="2846247265041961677">Maaf. Tidak dapat menemukan ponsel</translation>
 <translation id="2865888419503095837">Info jaringan</translation>
 <translation id="2872961005593481000">Matikan</translation>
 <translation id="2878884018241093801">Tidak ada item baru-baru ini</translation>
@@ -304,6 +307,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{1 apl nonaktif}other{# apl nonaktif}}</translation>
 <translation id="4072264167173457037">Sinyal sedang</translation>
 <translation id="4112140312785995938">Cari Mundur</translation>
+<translation id="4114315158543974537">Aktifkan Phone Hub</translation>
 <translation id="4129129681837227511">Untuk melihat notifikasi di layar kunci, buka kunci untuk mengubah setelan</translation>
 <translation id="4146833061457621061">Putar musik</translation>
 <translation id="4149156641122542261"><ph name="DEVICE_TYPE" /> dikelola oleh <ph name="DOMAIN" /></translation>
@@ -435,6 +439,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="5648021990716966815">Colokan mikrofon</translation>
 <translation id="5669267381087807207">Mengaktifkan</translation>
 <translation id="5673434351075758678">Dari "<ph name="FROM_LOCALE" />" ke "<ph name="TO_LOCALE" />" setelah menyinkronkan setelan Anda.</translation>
+<translation id="5679050765726761783">Adaptor daya rendah terhubung</translation>
 <translation id="5682642926269496722">Asisten Google tidak tersedia untuk akun pengguna saat ini.</translation>
 <translation id="5689633613396158040">Cahaya Malam memudahkan Anda melihat layar atau membaca saat cahaya redup. Ketuk untuk mengubah waktu pengaktifan Cahaya Malam atau menonaktifkannya sepenuhnya.</translation>
 <translation id="5691772641933328258">Sidik jari tidak dikenali</translation>
@@ -459,6 +464,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Aktif</translation>
 <translation id="5920710855273935292">Mikrofon dibisukan.</translation>
+<translation id="594179686076170922">Menghubungkan ke ponsel Anda ...</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> aktif.</translation>
 <translation id="5947494881799873997">Kembalikan</translation>
 <translation id="595202126637698455">Kinerja pelacakan aktif</translation>
@@ -548,6 +554,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="6857811139397017780">Aktifkan <ph name="NETWORKSERVICE" /></translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Satu digit lagi}other{# digit lagi}}</translation>
 <translation id="6878400149835617132">Pintasan dinonaktifkan</translation>
+<translation id="6886172995547742638"><ph name="DEVICE_TYPE" /> Anda mungkin mengalami penurunan performa. Gunakan adaptor daya USB-C <ph name="PREFERRED_MINIMUM_POWER" /> W atau lebih tinggi yang bersertifikat.</translation>
 <translation id="6896758677409633944">Salin</translation>
 <translation id="6910714959251846841">Update ini memerlukan powerwash perangkat. Pelajari lebih lanjut update <ph name="SYSTEM_APP_NAME" /> terbaru.</translation>
 <translation id="6919251195245069855">Tidak bisa mengenali kartu smart Anda. Coba lagi.</translation>

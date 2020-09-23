@@ -137,6 +137,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2341729377289034582">U kyç vertikalisht</translation>
 <translation id="2352467521400612932">Cilësimet e stilolapsit</translation>
 <translation id="2354174487190027830">Po aktivizon <ph name="NAME" /></translation>
+<translation id="2356210126990741501">Me sa duket telefoni yt nuk është në linjë dhe nuk mund t'i marrim të gjitha gjërat e mira për ty nga ai tani.</translation>
 <translation id="2359808026110333948">Vazhdo</translation>
 <translation id="2365393535144473978">Aktivizimi i të dhënave celulare do të aktivizojë Bluetooth.</translation>
 <translation id="2369165858548251131">"Përshëndetje" në kinezisht</translation>
@@ -169,6 +170,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2705001408393684014">Aktivizo/çaktivizo mikrofonin. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Lart</translation>
 <translation id="2718395828230677721">Drita e natës</translation>
+<translation id="2727175239389218057">Përgjigju</translation>
 <translation id="2727977024730340865">E lidhur me një karikues me fuqi të ulët. Ngarkimi i baterisë mund të mos jetë i sigurt.</translation>
 <translation id="2743387203779672305">Kopjo te kujtesa e fragmenteve</translation>
 <translation id="2792498699870441125">Alt+Kërko</translation>
@@ -177,6 +179,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2825619548187458965">Rafti</translation>
 <translation id="2841907151129139818">Kaloi në modalitetin e tabletit</translation>
 <translation id="2844169650293029770">Pajisja USB-C (porta e përparme, majtas)</translation>
+<translation id="2846247265041961677">Mos! Telefoni nuk mund të gjendet</translation>
 <translation id="2865888419503095837">Informacioni i rrjetit</translation>
 <translation id="2872961005593481000">Ndërprit punën</translation>
 <translation id="2878884018241093801">Nuk ka asnjë artikull të fundit</translation>
@@ -459,6 +462,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Aktiv</translation>
 <translation id="5920710855273935292">Mikrofoni është i çaktivizuar.</translation>
+<translation id="594179686076170922">Po lidhet me telefonin tënd...</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> është aktive.</translation>
 <translation id="5947494881799873997">Riktheje</translation>
 <translation id="595202126637698455">Gjurmimi i rendimentit u aktivizua</translation>

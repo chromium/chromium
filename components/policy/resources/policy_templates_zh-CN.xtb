@@ -1469,6 +1469,15 @@
 <translation id="3219421230122020860">隐身模式已启用</translation>
 <translation id="3220624000494482595">如果自助服务终端应用是一款 Android 应用，它将无法控制 <ph name="PRODUCT_OS_NAME" />版本，即使此政策设为 <ph name="TRUE" /> 也是如此。</translation>
 <translation id="322359555555487980">确定变体在 <ph name="PRODUCT_OS_NAME" />中的可用情况</translation>
+<translation id="3225165352822164029">通过设置此政策，您可以配置 <ph name="PRODUCT_NAME" /> 中的默认主页网址。您可以使用“主页”按钮打开主页。在桌面设备上，<ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> 政策控制着哪些页面会在 Chrome 启动时打开。
+
+      如果用户或 <ph name="HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_NAME" /> 将主页设为“新标签页”页面，此政策不会产生任何效力。
+
+       此网址必须是采用标准协议的网址，例如 http://example.com 或 https://example.com。如果您设置了此政策，用户将无法在 <ph name="PRODUCT_NAME" /> 中更改主页网址。
+
+      如果 <ph name="HOMEPAGE_LOCATION_POLICY_NAME" /> 和 <ph name="HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_NAME" /> 均未设置，用户便可自行选择主页。
+
+      在 <ph name="MS_WIN_NAME" /> 上，此功能仅适用于已加入 <ph name="MS_AD_NAME" /> 网域的实例、在 Windows 10 专业版上运行的实例，或已注册 <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />的实例。在 <ph name="MAC_OS_NAME" /> 上，此功能仅适用于通过 MDM 进行管理或通过 MCX 加入网域的实例。</translation>
 <translation id="3231837273069128027">通过设置此政策，您可以配置 <ph name="TPM_FIRMWARE_UPDATE_TPM" /> 固件更新的可用性和行为。
 
       请在 JSON 属性中指定各项设置：
@@ -1809,6 +1818,11 @@
       在 Chrome 88 中，此政策将被移除。
 
       请参阅 https://www.chromestatus.com/feature/5989473649164288。</translation>
+<translation id="3691155504326059225">如果此政策已启用，系统会使用“新标签页”页面作为用户的主页，并忽略所有主页网址位置。如果此政策已停用，系统绝不会使用“新标签页”页面作为用户的主页，除非用户的主页网址设为 chrome://newtab。
+
+      如果您设置了此政策，用户将无法更改 <ph name="PRODUCT_NAME" /> 中的主页类型。如果您未设置此政策，用户便可自行决定是否使用“新标签页”页面作为主页。
+
+      在 <ph name="MS_WIN_NAME" /> 上，此功能仅适用于已加入 <ph name="MS_AD_NAME" /> 网域的实例、在 Windows 10 专业版上运行的实例，或已注册 <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />的实例。在 <ph name="MAC_OS_NAME" /> 上，此功能仅适用于通过 MDM 进行管理或通过 MCX 加入网域的实例。</translation>
 <translation id="3701121231485832347">控制由 <ph name="MS_AD_NAME" /> 管理的 <ph name="PRODUCT_OS_NAME" />设备的专用设置。</translation>
 <translation id="3702518095257671450">远程证明</translation>
 <translation id="3702647575225525306"><ph name="POLICY_NAME" />（我们已弃用并将于日后移除单行字段。请开始使用下面的多行文本框。）</translation>
@@ -3088,6 +3102,13 @@
       如果此政策设为“禁止不受支持的文件类型 - 上传内容和下载内容”(3)，<ph name="PRODUCT_NAME" /> 会根据“禁止不受支持的文件类型 - 上传内容”和“禁止不受支持的文件类型 - 下载内容”所述的规则操作。
       </translation>
 <translation id="5535973522252703021">Kerberos 授权服务器白名单</translation>
+<translation id="5540753481451194959">通过设置此政策，您可以指定 Chrome 启动时的系统行为。关闭此设置等同于未配置它，因为 <ph name="PRODUCT_NAME" /> 必须具有指定的启动行为。
+
+      如果您设置了此政策，用户将无法在 <ph name="PRODUCT_NAME" /> 中更改它。如果您未设置此政策，用户便可自行更改它。
+
+      如果此政策设为 <ph name="POLICY_ENUM_RESTOREONSTARTUP_RESTOREONSTARTUPISLASTSESSION" />，某些依赖于会话的设置或用于指定退出时应执行什么操作的设置（例如：退出时清除浏览数据，或仅在会话期间有效的 Cookie）就会被关闭。
+
+      在 <ph name="MS_WIN_NAME" /> 上，此功能仅适用于已加入 <ph name="MS_AD_NAME" /> 网域的实例、在 Windows 10 专业版上运行的实例，或已注册 <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />的实例。在 <ph name="MAC_OS_NAME" /> 上，此功能仅适用于通过 MDM 进行管理或通过 MCX 加入网域的实例。</translation>
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="555022085242359084">在登录屏幕上启用高对比度模式</translation>
 <translation id="555077880566103058">允许所有网站自动运行 <ph name="FLASH_PLUGIN_NAME" /> 插件</translation>
@@ -3938,6 +3959,13 @@
 
       如果此政策已停用，系统则会显示错误消息。</translation>
 <translation id="6821268164692776674"><ph name="CLOUD_PRINT_NAME" />和“保存到 Google 云端硬盘”目的地</translation>
+<translation id="6833023569065717572">如果此政策设为 True，设备的登录屏幕将采用 24 小时制的时钟格式。
+
+      如果此政策设为 False，设备的登录屏幕将采用 12 小时制的时钟格式。
+
+      如果此政策未设置，设备将采用当前语言区域对应的时钟格式。
+
+      用户会话也会默认使用设备的时钟格式，但用户可以更改帐号的时钟格式。</translation>
 <translation id="6833064854262015312">将此政策设为 True 时，系统会在登录屏幕上开启高对比度模式。将此政策设为 False 时，系统会在登录屏幕上关闭高对比度模式。
 
       如果您设置了此政策，用户便可暂时更改（开启或关闭）高对比度模式。当登录屏幕重新加载或闲置了 1 分钟后，高对比度模式就会还原为初始状态。
@@ -4118,6 +4146,7 @@
       在此政策中设置一系列网址的效果等同于将 --unsafely-treat-insecure-origin-as-secure 命令行标记设为包含同一系列网址的逗号分隔列表。此政策会覆盖该命令行标记和 UnsafelyTreatInsecureOriginAsSecure（若存在）。
 
       如需详细了解安全上下文，请参阅“安全上下文”( https://www.w3.org/TR/secure-contexts )。</translation>
+<translation id="7033985774616781500">配置要停用的摄像头、浏览器设置、操作系统设置和扫描功能</translation>
 <translation id="7037812781389976160">控制 <ph name="PRODUCT_OS_NAME" />工具栏的位置。
 
       如果此政策设为“底部”，工具栏将放置在屏幕底部。
@@ -4602,6 +4631,11 @@
       此政策仅适用于未成年用户。
       如果设置了此政策，则可在未成年用户的设备上验证家长访问码。
       如果未设置此政策，则无法在未成年用户的设备上验证家长访问码。</translation>
+<translation id="7623187731914468284">如果 <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> 设为 RestoreOnStartupIsURLs，那么将 <ph name="RESTORE_ON_STARTUP_URLS_POLICY_NAME" /> 设为一系列网址即可指定哪些网址会在 Chrome 启动时打开。
+
+      如果此政策未设置，“新标签页”页面会在 Chrome 启动时打开。
+
+      在 <ph name="MS_WIN_NAME" /> 上，此功能仅适用于已加入 <ph name="MS_AD_NAME" /> 网域的实例、在 Windows 10 专业版上运行的实例，或已注册 <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />的实例。在 <ph name="MAC_OS_NAME" /> 上，此功能仅适用于通过 MDM 进行管理或通过 MCX 加入网域的实例。</translation>
 <translation id="7625444193696794922">指定该设备应锁定到的发布渠道。</translation>
 <translation id="7629840767216985001">将此政策设为 True 时，系统会在登录屏幕上开启大号光标。将此政策设为 False 时，系统会在登录屏幕上关闭大号光标。
 
@@ -4702,6 +4736,13 @@
 <translation id="7754704193130578113">下载前询问每个文件的保存位置</translation>
 <translation id="7758378441185523981">为个人资料类型启用静默身份验证。</translation>
 <translation id="7763614521440615342">在“打开新的标签页”页面上显示内容建议</translation>
+<translation id="7765753178910647492">让您能够以列表形式设置要停用的 <ph name="PRODUCT_OS_NAME" />功能。
+
+      如果您停用了此列表中的任一功能，用户便无法从界面中使用该功能，而且该功能的状态会显示为“已被管理员停用”。
+
+      如果您未设置此政策，所有 <ph name="PRODUCT_OS_NAME" />功能都将默认处于启用状态，而且用户可以使用其中的任一功能。
+
+      注意：目前，扫描功能的默认状态是已通过功能标志停用。即便用户通过功能标志启用了该功能，它仍能被此政策停用。</translation>
 <translation id="7765879851993224640">允许使用 Smart Lock 登录功能。</translation>
 <translation id="7774768074957326919">使用系统代理设置</translation>
 <translation id="777734450201217641">在登录屏幕上启用无障碍功能快捷方式。
@@ -4824,6 +4865,7 @@
           如果您未设置此政策，系统将使用默认时长。
 
           指定的政策值应以毫秒为单位，且不得大于闲置延迟时间。</translation>
+<translation id="7995610550667275367">扫描（自 87 版起受支持）</translation>
 <translation id="8001701200415781021">限制哪些 Google 帐号可以设置为 <ph name="PRODUCT_NAME" /> 中的浏览器主帐号</translation>
 <translation id="8003853057959146975">发送文件以检查是否违反敏感数据保护规则</translation>
 <translation id="8006219716745491366">如果 <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> 已开启，您便可通过设置 <ph name="DEFAULT_SEARCH_PROVIDER_ALTERNATE_URLS_POLICY_NAME" /> 来指定用于从搜索引擎提取搜索字词的备用网址列表。网址应包含字符串<ph name="SEARCH_TERM_MARKER" />。
@@ -4960,6 +5002,9 @@
           如果需要执行的操作是暂停，您还可另行配置 <ph name="PRODUCT_OS_NAME" />在暂停前是否锁定屏幕。</translation>
 <translation id="8214600119442850823">配置密码管理器。</translation>
 <translation id="8217516105848565518">此政策已被弃用。请改用 RemoteAccessHostDomainList。</translation>
+<translation id="8219777886736887686">通过设置此政策，您可以控制应使用哪个命令在备用浏览器中打开网址。此政策可以设为下列任一值：<ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" />、<ph name="FIREFOX_VALUE_PLACEHOLDER" />、<ph name="SAFARI_VALUE_PLACEHOLDER" />、<ph name="OPERA_VALUE_PLACEHOLDER" />、<ph name="EDGE_VALUE_PLACEHOLDER" /> 或文件路径。如果此政策设为文件路径，系统会将相应文件用作可执行文件。<ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" /> 和 <ph name="EDGE_VALUE_PLACEHOLDER" /> 仅适用于 <ph name="MS_WIN_NAME" />，<ph name="SAFARI_VALUE_PLACEHOLDER" /> 仅适用于 <ph name="MS_WIN_NAME" /> 和 <ph name="MAC_OS_NAME" />。
+
+      如果您未设置此政策，系统会使用相应的平台专用默认浏览器：在 <ph name="MS_WIN_NAME" /> 上使用 <ph name="IE_PRODUCT_NAME" />，在 <ph name="MAC_OS_NAME" /> 上使用 <ph name="SAFARI_PRODUCT_NAME" />。在 <ph name="LINUX_OS_NAME" /> 上，无法启动备用浏览器。</translation>
 <translation id="8220156281401380422">配置本地消息传递主机许可名单</translation>
 <translation id="8244171102276095471">在 TLS 中启用 RC4 加密套件</translation>
 <translation id="8244525275280476362">政策失效后的最大提取延迟</translation>
@@ -5334,6 +5379,9 @@
 
       此政策对用户能否在各部设备上配置打印机没有影响。它旨在对各用户的打印机配置进行补充。</translation>
 <translation id="8764477907716150749">此政策仅供 <ph name="PRODUCT_NAME" /> 在内部使用。</translation>
+<translation id="8767743923206070405">如果此政策已启用，系统会在 <ph name="PRODUCT_NAME" /> 的工具栏中显示“主页”按钮。如果此政策已停用，系统不会显示“主页”按钮。
+
+      如果您设置了此政策，用户将无法在 <ph name="PRODUCT_NAME" /> 中更改它。如果您未设置此政策，用户便可自行选择是否显示“主页”按钮。</translation>
 <translation id="877185520360032968">通过设置此政策，您可以更改 Chrome 会将文件下载到的默认目录，但用户可以更改该目录。
 
       如果您不设置此政策，Chrome 会使用自己的平台专用默认目录。

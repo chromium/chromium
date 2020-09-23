@@ -125,6 +125,7 @@
 <translation id="1993768208584545658"><ph name="SITE" /> 希望与以下所选设备配对：</translation>
 <translation id="2000419248597011803">将一些 Cookie 以及地址栏和搜索框中的搜索字词发送给您的默认搜索引擎</translation>
 <translation id="2002537628803770967">Google Pay 中存储的信用卡和地址信息</translation>
+<translation id="2010780124464321179">无法为所选文本创建链接。请改为分享页面链接。</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# 个文件}other{# 个文件}}</translation>
 <translation id="2017836877785168846">清除历史记录和地址栏中的自动填充项。</translation>
 <translation id="2021896219286479412">全屏网站控件</translation>
@@ -192,6 +193,7 @@
 <translation id="2494974097748878569">Chrome 中的 Google 助理</translation>
 <translation id="2496180316473517155">浏览记录</translation>
 <translation id="2497852260688568942">您的管理员已停用同步</translation>
+<translation id="250020030759455918">您会在 Chrome 中看到自己的 <ph name="SITE_NAME" /> 登录状态、浏览数据和网站数据</translation>
 <translation id="2513403576141822879">若想了解更多与隐私、安全和数据收集相关的设置，请参阅<ph name="BEGIN_LINK" />同步功能和 Google 服务<ph name="END_LINK" /></translation>
 <translation id="2517472476991765520">扫描</translation>
 <translation id="2518590038762162553">在精简模式下，Chrome 可更快速地加载网页，并可节省多达 60% 的流量。为了优化您访问的网页，Chrome 会将您的网络流量数据发送给 Google。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
@@ -273,7 +275,9 @@
 <translation id="3207960819495026254">已加书签</translation>
 <translation id="3208584281581115441">立即检查</translation>
 <translation id="3211426585530211793">已删除“<ph name="ITEM_TITLE" />”</translation>
+<translation id="3211503082155944789"><ph name="READING_LIST_COUNT" /> 个未读页面</translation>
 <translation id="321773570071367578">如果您忘记了密码或想更改此设置，请<ph name="BEGIN_LINK" />重置同步设置<ph name="END_LINK" /></translation>
+<translation id="3223655207402797071">登录此网站、您的 Google 帐号和 Chrome。您可等到需要时再开启同步功能。</translation>
 <translation id="3232754137068452469">网络应用</translation>
 <translation id="3236059992281584593">还剩 1 分钟</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -491,6 +495,7 @@
 <translation id="4913169188695071480">停止刷新</translation>
 <translation id="4915549754973153784">正在搜寻设备…<ph name="BEGIN_LINK" />获取帮助<ph name="END_LINK" /></translation>
 <translation id="4921180162323349895">{FILE_COUNT,plural, =1{# 个网页}other{# 个网页}}</translation>
+<translation id="4925120120285606924">屏幕截图 <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">系统会导出您的密码并将其下载为一个文本文件。有权访问目标文件夹的任何人和任何应用都能看到您的密码。</translation>
 <translation id="4932247056774066048">您将要退出由 <ph name="DOMAIN_NAME" /> 管理的帐号，因此您的 Chrome 数据将会从这部设备中删除，但仍会保留在您的 Google 帐号中。</translation>
 <translation id="4943703118917034429">虚拟实境</translation>
@@ -581,6 +586,7 @@
 <translation id="5683547024293500885">Chrome 无法检查是否有更新</translation>
 <translation id="5686790454216892815">文件名过长</translation>
 <translation id="5687809546194252819"><ph name="APP_NAME" /> 将在重启时使用<ph name="LANGUAGE" />。</translation>
+<translation id="5691211010013816086">您有 <ph name="READING_LIST_COUNT" /> 个未读页面</translation>
 <translation id="569536719314091526">通过“更多选项”按钮将此页面翻译成任何语言</translation>
 <translation id="5696597120588531049">Chrome 有助于保护您免受数据泄露、不安全网站等问题的影响</translation>
 <translation id="5697688514913266141">您的文件将会保存到<ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" />。<ph name="BEGIN_LINK2" />修改<ph name="END_LINK2" />。</translation>
@@ -631,6 +637,7 @@
 <translation id="5979084224081478209">检查密码</translation>
 <translation id="6000066717592683814">继续使用 Google</translation>
 <translation id="6005538289190791541">建议的密码</translation>
+<translation id="6014293228235665243">未读</translation>
 <translation id="6036057147555329831">额外的 ICU</translation>
 <translation id="6039379616847168523">跳转到下一个标签页</translation>
 <translation id="6040143037577758943">关闭</translation>
@@ -660,6 +667,7 @@
 <translation id="6232535412751077445">如果您启用了“不跟踪”，您的浏览流量中将会包含一项请求。具体影响取决于网站是否会回应该请求以及如何解读该请求。
 
 例如：某些网站在收到该请求后，可能会向您展示相应的广告（这些广告并不是根据您访问过的其他网站而展示的）。许多网站仍会出于一些目的收集并使用您的浏览数据，例如，为了提高安全性，为了提供相关内容、广告和推荐内容，以及为了生成报告统计信息。</translation>
+<translation id="6243852395147506234">已可离线阅读</translation>
 <translation id="624789221780392884">有可用的更新</translation>
 <translation id="6255999984061454636">内容建议</translation>
 <translation id="6277522088822131679">打印该页面时出现问题，请重试。</translation>
@@ -667,6 +675,7 @@
 <translation id="6292420053234093573">使用 Chrome 即表示您同意接受 <ph name="BEGIN_LINK1" />Google 服务条款<ph name="END_LINK1" />以及 <ph name="BEGIN_LINK2" />Google Chrome 和 Chrome 操作系统附加服务条款<ph name="END_LINK2" />。</translation>
 <translation id="629730747756840877">帐号</translation>
 <translation id="6297765934698848803">负责管理您设备的组织已关闭您的摄像头。</translation>
+<translation id="6301525844455696527">请尽快补看阅读清单中的内容</translation>
 <translation id="6303969859164067831">退出帐号并关闭同步功能</translation>
 <translation id="6312687380483398334">Web 应用（安静）</translation>
 <translation id="6316139424528454185">Android 版本不受支持</translation>
@@ -745,6 +754,7 @@
 <translation id="671481426037969117">您的 <ph name="FQDN" /> 计时器已结束计时。它将于明天重新开始。</translation>
 <translation id="6738867403308150051">正在下载…</translation>
 <translation id="6767294960381293877">要与之分享标签页的设备的列表已半屏打开。</translation>
+<translation id="6783942555455976443">保存此页面以备后用并接收提醒</translation>
 <translation id="6811034713472274749">页面已可供查看</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6845325883481699275">帮助我们改善 Chrome 安全性</translation>
@@ -778,6 +788,7 @@
 <translation id="7055152154916055070">已禁止重定向：</translation>
 <translation id="7063006564040364415">无法连接到同步服务器。</translation>
 <translation id="7071521146534760487">管理帐号</translation>
+<translation id="707155805709242880">请在下方选择要同步的内容</translation>
 <translation id="7077143737582773186">SD 卡</translation>
 <translation id="7080806333218412752">会将网址发送给“安全浏览”功能进行检查。还会发送网页、下载内容、扩展程序活动和系统信息的少量样本，以帮助发现新威胁。而且，会在您登录后暂时将这些数据关联到您的 Google 帐号，以便在各个 Google 应用中为您提供保护。</translation>
 <translation id="7088681679121566888">Chrome 已是最新版本</translation>
@@ -860,6 +871,9 @@
 <translation id="766587987807204883">报道会显示在此处，即使在离线状态下也可以阅读</translation>
 <translation id="7682724950699840886">请尝试按以下提示操作：确保您的设备上有足够的空间，然后重新尝试导出。</translation>
 <translation id="7698359219371678927">在 <ph name="APP_NAME" /> 中创建电子邮件</translation>
+<translation id="7702724591845223485">若要从 Chrome 中清除您的登录信息和其他数据，请关闭所有无痕式标签页。
+
+在无痕模式下，以下各方或许仍能看到您的活动：您访问的网站、您的雇主或学校，以及您的互联网服务提供商。</translation>
 <translation id="7704317875155739195">自动填充搜索字词和网址</translation>
 <translation id="7725024127233776428">您添加书签的网页会显示在此处</translation>
 <translation id="7735637452482172701">使用“屏幕锁定”功能解锁</translation>
@@ -876,6 +890,7 @@
 <translation id="780301667611848630">不用了，谢谢</translation>
 <translation id="7810647596859435254">打开方式…</translation>
 <translation id="7821588508402923572">您的数据流量节省情况将显示在这里</translation>
+<translation id="7844171778363018843">未选择任何要同步的数据</translation>
 <translation id="7846296061357476882">Google 服务</translation>
 <translation id="784934925303690534">时间范围</translation>
 <translation id="7851858861565204677">来自其他设备的同步</translation>
@@ -912,6 +927,7 @@
 <translation id="8058746566562539958">在新的 Chrome 标签页中打开</translation>
 <translation id="8063895661287329888">无法添加书签。</translation>
 <translation id="806745655614357130">单独保存我的数据</translation>
+<translation id="8069669375923284295">点按即可继续管理同步设置</translation>
 <translation id="8073388330009372546">在新标签页中打开图片</translation>
 <translation id="8076492880354921740">标签页</translation>
 <translation id="8084114998886531721">保存的密码</translation>
@@ -977,6 +993,7 @@
 <translation id="8555836665334561807">有 Wi-Fi 可用时</translation>
 <translation id="8558485628462305855">要查看增强现实内容，请更新 ARCore</translation>
 <translation id="8559990750235505898">询问是否翻译其他语言版本的网页</translation>
+<translation id="8560602726703398413">您可在“书签”界面中找到自己的阅读清单</translation>
 <translation id="8561196567344536112">1. 转到“设置”\n2. 点按“浏览器应用”\n3. 选择 <ph name="APP_NAME" /></translation>
 <translation id="8562452229998620586">已保存的密码将显示在这里。</translation>
 <translation id="8569404424186215731">自 <ph name="DATE" />以来</translation>
@@ -1000,6 +1017,7 @@
 <translation id="8748850008226585750">内容已隐藏</translation>
 <translation id="8788265440806329501">导航历史记录已关闭</translation>
 <translation id="8788968922598763114">重新打开上次关闭的标签页</translation>
+<translation id="8798449543960971550">已读</translation>
 <translation id="8812260976093120287">在某些网站上，您可以使用自己的设备通过上述支持的付款应用付款。</translation>
 <translation id="8820817407110198400">书签</translation>
 <translation id="883806473910249246">下载此内容时出错。</translation>

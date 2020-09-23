@@ -388,6 +388,7 @@
 <translation id="5123433949759960244">Μπάλα μπάσκετ</translation>
 <translation id="5129662217315786329">Πολωνικά
 </translation>
+<translation id="5132435854979302863">Φιλιππινέζικα</translation>
 <translation id="5144820558584035333">Σύνολο Χανγκίλ 3 (390)</translation>
 <translation id="5145331109270917438">Ημερομηνία τροποποίησης</translation>
 <translation id="515594325917491223">Σκάκι</translation>
@@ -435,6 +436,7 @@
 <translation id="5464696796438641524">Πληκτρολόγιο με πολωνικούς χαρακτήρες</translation>
 <translation id="5465122519792752163">Πληκτρολόγιο Νεπάλι (InScript)</translation>
 <translation id="5469868506864199649">Ιταλικά</translation>
+<translation id="5484429245813572665">Ινδονησιακά</translation>
 <translation id="5494920125229734069">Επιλογή όλων</translation>
 <translation id="5500122897333236901">Ισλανδικά</translation>
 <translation id="5508696409934741614">Τελείες</translation>
@@ -626,6 +628,7 @@
 <translation id="7649070708921625228">Βοήθεια</translation>
 <translation id="7654209398114106148">Μετακίνηση <ph name="NUMBER_OF_ITEMS" /> στοιχείων...</translation>
 <translation id="7658239707568436148">Ακύρωση</translation>
+<translation id="7693909743393669729">Η μορφοποίηση ενός δίσκου θα διαγράψει όλα τα δεδομένα που είναι αποθηκευμένα σε αυτόν και θα καταργήσει τα υπάρχοντα διαμερίσματα, συμπεριλαμβανομένων των διαμερισμάτων που μπορεί να μην είναι ορατά. Δεν είναι δυνατή η αναίρεση αυτής της ενέργειας.</translation>
 <translation id="7695430100978772476">Δεν ήταν δυνατή η μορφοποίηση της συσκευής <ph name="DRIVE_NAME" /></translation>
 <translation id="770015031906360009">Ελληνικά</translation>
 <translation id="7706319470528945664">Πληκτρολόγιο με πορτογαλικούς χαρακτήρες</translation>
@@ -657,6 +660,7 @@
 <translation id="78946041517601018">Κοινά Drive</translation>
 <translation id="7896906914454843592">Εκτεταμένο πληκτρολόγιο ΗΠΑ</translation>
 <translation id="7898607018410277265">Πληκτρολόγιο γκουγιαράτι (Νέο φωνητικό)</translation>
+<translation id="7908793776359722643">Η μορφοποίηση ενός διαμερίσματος θα διαγράψει όλα τα δεδομένα που είναι αποθηκευμένα σε αυτό. Δεν είναι δυνατή η αναίρεση αυτής της ενέργειας.</translation>
 <translation id="7917972308273378936">Πληκτρολόγιο με λιθουανικούς χαρακτήρες</translation>
 <translation id="7925686952655276919">Μη χρησιμοποιείτε δεδομένα για κινητά για συγχρονισμό</translation>
 <translation id="7928710562641958568">Εξαγωγή συσκευής</translation>
@@ -750,6 +754,7 @@
 <translation id="8901822611024316615">Τσεχικό πληκτρολόγιο QWERTY</translation>
 <translation id="8919081441417203123">Δανικά
 </translation>
+<translation id="8941776146379310519">Μαλαισιανά</translation>
 <translation id="8960999352790021682">Πληκτρολόγιο Μπενγκάλι (Φωνητικό)</translation>
 <translation id="8965697826696209160">Δεν υπάρχει αρκετός χώρος.</translation>
 <translation id="9017798300203431059">Φωνητικό Ρωσικά</translation>

@@ -1202,6 +1202,7 @@
 <translation id="2419706071571366386">सुरक्षा के लिए, आपका कंप्यूटर इस्तेमाल में नहीं होने पर साइन आउट कर दें.</translation>
 <translation id="2422125132043002186">Linux का डेटा बहाल करने की प्रक्रिया रद्द कर दी गई है</translation>
 <translation id="2423578206845792524">इमेज को इस रूप में सेव करें...</translation>
+<translation id="2424424966051154874">{0,plural, =1{मेहमान}one{मेहमान (#)}other{मेहमान (#)}}</translation>
 <translation id="2428510569851653187">बताएं कि जब टैब क्रैश हुआ तब आप क्या कर रहे थे</translation>
 <translation id="2428939361789119025">वाई-फ़ाई बंद करें</translation>
 <translation id="2431027948063157455">Google Assistant को लोड नहीं किया जा सका, कृपया अपना नेटवर्क कनेक्शन जांच लें और फिर से कोशिश करें.</translation>
@@ -4198,6 +4199,7 @@
 <translation id="6077189836672154517"><ph name="DEVICE_TYPE" /> पर सलाह और अपडेट</translation>
 <translation id="6077476112742402730">बोलकर टाइप करें</translation>
 <translation id="6078045608615316905">इस इमेज के लिए क्यूआर कोड बनाएं</translation>
+<translation id="6078121669093215958">{0,plural, =1{1 खुली हुई मेहमान विंडो}one{# खुली हुई मेहमान विंडो}other{# खुली हुई मेहमान विंडो}}</translation>
 <translation id="6078323886959318429">शॉर्टकट जोड़ें</translation>
 <translation id="6078752646384677957">कृपया अपना माइक्रोफ़ोन और ऑडियो लेवल जाँचें.</translation>
 <translation id="6078769373519310690">"<ph name="CHROME_EXTENSION_NAME" />" किसी एचआईडी डिवाइस से कनेक्ट करना चाहता है</translation>
@@ -4705,6 +4707,7 @@
 <translation id="6704062477274546131">डीएनएस रिज़ॉल्यूशन</translation>
 <translation id="6706210727756204531">दायरा</translation>
 <translation id="6707389671160270963">SSL क्लाइंट प्रमाणपत्र</translation>
+<translation id="670893696722244877">भाषाओं या इनपुट नामों के हिसाब से खोजें</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> और 1 अन्य टैब}one{<ph name="PAGE_TITLE" /> और # अन्य टैब}other{<ph name="PAGE_TITLE" /> और # अन्य टैब}}</translation>
 <translation id="6709133671862442373">News</translation>
 <translation id="6709357832553498500"><ph name="EXTENSIONNAME" /> के उपयोग से कनेक्‍ट करें</translation>
@@ -5542,6 +5545,7 @@
 <translation id="7753735457098489144">स्टोरेज के लिए बची जगह कम होने की वजह से इंस्टॉल नहीं किया जा सका. जगह खाली करने के लिए, डिवाइस की मेमोरी से फ़ाइलें मिटाएं.</translation>
 <translation id="7754704193130578113">डाउनलोड करने से पहले, हर फ़ाइल को सेव करने की जगह के बारें में पूछें</translation>
 <translation id="7755287808199759310">आपका अभिभावक इसे आपके लिए अनवरोधित कर सकता है</translation>
+<translation id="7757592200364144203">डिवाइस का नाम बदलें</translation>
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" /> से टेक्स्ट शेयर किया गया</translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">अपने डेस्कटॉप की सीमाएं समायोजित करें</translation>
@@ -5998,6 +6002,7 @@
 <translation id="8264024885325823677">इस सेटिंग को आपका एडमिन प्रबंधित करता है.</translation>
 <translation id="8264718194193514834">"<ph name="EXTENSION_NAME" />" ने पूरी स्क्रीन ट्रिगर की है.</translation>
 <translation id="826511437356419340">विंडो की खास जानकारी वाले मोड पर पहुंच गए. एक जगह से दूसरी जगह जाने के लिए स्वाइप करें या tab बटन दबाएं (अगर कीबाेर्ड का इस्तेमाल कर रहे हैं).</translation>
+<translation id="8266947622852630193">इनपुट के सभी तरीके</translation>
 <translation id="8267539814046467575">प्रिंटर जोड़ें</translation>
 <translation id="8267961145111171918"><ph name="BEGIN_PARAGRAPH1" />यह इस डिवाइस और इसके इस्तेमाल के तरीके के बारे में सामान्य जानकारी है (जैसे कि बैटरी लेवल, सिस्टम और ऐप्लिकेशन गतिविधि और गड़बड़ियां). इस डेटा का इस्तेमाल Android को बेहतर बनाने के लिए किया जाएगा. इकट्ठी की गई कुछ जानकारी से Google ऐप्लिकेशन और 'Android डेवलपर' जैसे पार्टनर को भी मदद मिलेगी और वे अपने ऐप्लिकेशन और उत्पादों को बेहतर बना सकेंगे.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />इस सुविधा को बंद करने के बाद भी यह डिवाइस, सिस्टम अपडेट और सुरक्षा जैसी ज़रूरी सेवाएं पाने के लिए जानकारी भेज सकेगा.<ph name="END_PARAGRAPH2" />

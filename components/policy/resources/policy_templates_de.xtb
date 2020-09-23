@@ -1476,6 +1476,15 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
 <translation id="3219421230122020860">Inkognitomodus verfügbar</translation>
 <translation id="3220624000494482595">Wenn die Kiosk-App eine Android-App ist, hat sie keine Kontrolle über die <ph name="PRODUCT_OS_NAME" />-Version, auch wenn diese Richtlinie auf <ph name="TRUE" /> gesetzt ist.</translation>
 <translation id="322359555555487980">Verfügbarkeit von Variationen auf <ph name="PRODUCT_OS_NAME" /> festlegen</translation>
+<translation id="3225165352822164029">Ist die Richtlinie konfiguriert, wird die standardmäßige Startseiten-URL in <ph name="PRODUCT_NAME" /> festgelegt. Die Startseite wird über die Startbildschirmtaste geöffnet. Auf dem Desktop werden die Seiten, die beim Hochfahren geöffnet werden, über die Richtlinien <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> gesteuert.
+
+      Wenn die "Neuer Tab"-Seite durch den Nutzer oder <ph name="HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_NAME" /> als Startseite festgelegt ist, hat diese Richtlinie keine Auswirkung.
+
+       Die URL benötigt ein Standardschema wie http://example.com oder https://example.com. Wenn diese Richtlinie konfiguriert ist, können Nutzer ihre Startseiten-URL in <ph name="PRODUCT_NAME" /> nicht ändern.
+
+      Sind weder <ph name="HOMEPAGE_LOCATION_POLICY_NAME" /> noch <ph name="HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_NAME" /> konfiguriert, können Nutzer ihre Homepage auswählen.
+
+      Unter <ph name="MS_WIN_NAME" /> steht diese Funktion nur bei Instanzen zur Verfügung, die Teil einer <ph name="MS_AD_NAME" />-Domain sind, auf denen Windows 10 Pro läuft oder die über <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" /> verwaltet werden. Unter <ph name="MAC_OS_NAME" /> steht diese Funktion nur bei Instanzen zur Verfügung, die über die Mobilgeräteverwaltung verwaltet werden oder per MCX mit einer Domain verbunden sind.</translation>
 <translation id="3231837273069128027">Mit dieser Richtlinie werden Verfügbarkeit und Verhalten von <ph name="TPM_FIRMWARE_UPDATE_TPM" />-Firmwareupdates konfiguriert.
 
       Geben Sie einzelne Einstellungen in den JSON-Eigenschaften an:
@@ -1822,6 +1831,11 @@ Wird die Richtlinie auf "False" gesetzt , verwendet <ph name="PRODUCT_NAME" /> k
       Diese Richtlinie wird in Chrome 88 entfernt.
 
       Weitere Informationen unter https://www.chromestatus.com/feature/5989473649164288.</translation>
+<translation id="3691155504326059225">Wenn die Richtlinie aktiviert ist, wird die "Neuer Tab"-Seite als Startseite des Nutzers verwendet; die Startseiten-URL wird ignoriert. Ist diese Richtlinie deaktiviert, wird die "Neuer Tab"-Seite nie als Startseite verwendet, es sei denn, die Startseiten-URL des Nutzers ist chrome://newtab.
+
+      Wenn Sie diese Richtlinie konfigurieren, können Nutzer den Typ ihrer Startseite in <ph name="PRODUCT_NAME" /> nicht ändern. Wenn die Richtlinie nicht konfiguriert ist, können Nutzer auswählen, ob die "Neuer Tab"-Seite als Startseite verwendet werden soll.
+
+      Unter <ph name="MS_WIN_NAME" /> steht diese Funktion nur bei Instanzen zur Verfügung, die Teil einer <ph name="MS_AD_NAME" />-Domain sind, auf denen Windows 10 Pro läuft oder die über <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" /> verwaltet werden. Unter <ph name="MAC_OS_NAME" /> steht diese Funktion nur bei Instanzen zur Verfügung, die über die Mobilgeräteverwaltung verwaltet werden oder per MCX mit einer Domain verbunden sind.</translation>
 <translation id="3701121231485832347">Legt die Einstellungen für mit <ph name="MS_AD_NAME" /> verwaltete <ph name="PRODUCT_OS_NAME" />-Geräte fest.</translation>
 <translation id="3702518095257671450">Remote-Attestierung</translation>
 <translation id="3702647575225525306"><ph name="POLICY_NAME" /> – Das einzeilige Feld ist veraltet und wird in Zukunft entfernt. Bitte nutzen Sie das mehrzeilige Textfeld unten.</translation>
@@ -3112,6 +3126,13 @@ Wenn die in der Richtlinie <ph name="DEVICE_MINIMUM_VERSION_POLICY_NAME" /> ange
       Wenn die Richtlinie auf "Hochladen und Herunterladen von nicht unterstützten Dateitypen blockieren" (3) gesetzt ist, werden in <ph name="PRODUCT_NAME" /> die Regeln angewendet, die unter "Hochladen von nicht unterstützten Dateitypen blockieren" und "Herunterladen von nicht unterstützten Dateitypen blockieren" beschrieben sind.
       </translation>
 <translation id="5535973522252703021">Weiße Liste für Kerberos-Bevollmächtigungs-Server</translation>
+<translation id="5540753481451194959">Mit dieser Richtlinie können Sie das Systemverhalten beim Start festlegen. Wenn diese Einstellung deaktiviert ist, hat das den gleichen Effekt wie wenn sie nicht konfiguriert ist, da <ph name="PRODUCT_NAME" /> ein festgelegtes Verhalten beim Start benötigt.
+
+      Wenn Sie diese Richtlinie konfigurieren, kann sie von Nutzern in <ph name="PRODUCT_NAME" /> nicht geändert werden. Andernfalls können Nutzer sie ändern.
+
+      Ist diese Richtlinie auf <ph name="POLICY_ENUM_RESTOREONSTARTUP_RESTOREONSTARTUPISLASTSESSION" /> gesetzt, werden einige Einstellungen deaktiviert, die während oder beim Beenden einer Sitzung ausgeführt werden, wie das Löschen von Browserdaten beim Schließen oder Sitzungscookies für bestimmte Sitzungen.
+
+      Unter <ph name="MS_WIN_NAME" /> steht diese Funktion nur bei Instanzen zur Verfügung, die Teil einer <ph name="MS_AD_NAME" />-Domain sind, auf denen Windows 10 Pro läuft oder die über <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" /> verwaltet werden. Unter <ph name="MAC_OS_NAME" /> steht diese Funktion nur bei Instanzen zur Verfügung, die über die Mobilgeräteverwaltung verwaltet werden oder per MCX mit einer Domain verbunden sind.</translation>
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="555022085242359084">Hohen Kontrast auf dem Anmeldebildschirm aktivieren</translation>
 <translation id="555077880566103058">Automatische Ausführung des Plug-ins "<ph name="FLASH_PLUGIN_NAME" />" für alle Websites zulassen</translation>
@@ -3967,6 +3988,13 @@ Ist die Richtlinie deaktiviert oder nicht konfiguriert, werden Nutzer durch den 
 
       Wenn die Richtlinie deaktiviert ist, wird stattdessen eine Fehlermeldung angezeigt,</translation>
 <translation id="6821268164692776674"><ph name="CLOUD_PRINT_NAME" />- und "In Google Drive speichern"-Ziele</translation>
+<translation id="6833023569065717572">Wenn die Richtlinie auf "True" gesetzt ist, wird auf dem Gerät das 24-Stunden-Uhrzeitformat verwendet.
+
+      Wird die Richtlinie auf "False" gesetzt, dann wird auf dem Gerät das 12-Stunden-Uhrzeitformat verwendet.
+
+      Ist die Richtlinie nicht konfiguriert, wird das Uhrzeitformat der aktuellen Sprache verwendet.
+
+      Für Nutzersitzungen wird das Geräteformat standardmäßig verwendet, Nutzer haben aber die Möglichkeit, es für ihr Konto zu ändern.</translation>
 <translation id="6833064854262015312">Wenn Sie die Richtlinie auf "True" setzen, wird der Modus mit hohem Kontrast auf dem Anmeldebildschirm aktiviert. Wenn Sie die Richtlinie auf "False" setzen, wird der Modus mit hohem Kontrast auf dem Anmeldebildschirm deaktiviert.
 
       Wenn Sie diese Richtlinie konfigurieren, können Nutzer vorübergehend den Modus mit hohem Kontrast aktivieren oder deaktivieren. Wenn der Anmeldebildschirm neu geladen wird oder eine Minute lang inaktiv bleibt, wird er in den Originalzustand zurückversetzt.
@@ -4150,6 +4178,7 @@ Hinweis: Nutzer können Cookies blockieren und so auf Google-Dienste zugreifen, 
       Das Festlegen einer Liste von URLs in dieser Richtlinie hat den gleichen Effekt wie das Festlegen des Befehlszeilen-Flags "--unsafely-treat-insecure-origin-as-secure" für eine durch Kommas getrennte Liste mit denselben URLs. Die Richtlinie überschreibt das Befehlszeilen-Flag und "UnsafelyTreatInsecureOriginAsSecure", sofern vorhanden.
 
       Weitere Informationen zu sicheren Kontexten finden Sie unter https://www.w3.org/TR/secure-contexts.</translation>
+<translation id="7033985774616781500">Deaktiviert die Kamera, Browser- und Betriebssystemeinstellungen sowie Scanfunktionen</translation>
 <translation id="7037812781389976160">Hiermit kann die Position der Ablage von <ph name="PRODUCT_OS_NAME" /> bestimmt werden.
 
       Wenn diese Richtlinie auf "Unten" gesetzt ist, wird die Ablage unten auf dem Bildschirm angezeigt.
@@ -4633,6 +4662,11 @@ Die Richtlinienwerte sollten in % angegeben werden und zwischen 0 und 100 liegen
       Diese Richtlinie gilt nur für Kinder.
       Wenn diese Richtlinie festgelegt ist, kann der Elternzugriffscode auf dem Gerät des Kindes überprüft werden.
       Ist die Richtlinie nicht festgelegt, kann der Elternzugriffscode auf dem Gerät des Kindes nicht überprüft werden.</translation>
+<translation id="7623187731914468284">Ist die Richtlinie <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> auf "RestoreOnStartupIsURLs" gesetzt, wird durch das Einstellen von <ph name="RESTORE_ON_STARTUP_URLS_POLICY_NAME" /> auf eine Liste von URLs angegeben, welche URLs geöffnet werden.
+
+      Ist die Richtlinie nicht konfiguriert, öffnet sich die "Neuer Tab"-Seite beim Start.
+
+      Unter <ph name="MS_WIN_NAME" /> steht diese Funktion nur bei Instanzen zur Verfügung, die Teil einer <ph name="MS_AD_NAME" />-Domain sind, auf denen Windows 10 Pro läuft oder die über <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" /> verwaltet werden. Unter <ph name="MAC_OS_NAME" /> steht diese Funktion nur bei Instanzen zur Verfügung, die über die Mobilgeräteverwaltung verwaltet werden oder per MCX mit einer Domain verbunden sind.</translation>
 <translation id="7625444193696794922">Gibt den Release-Kanal an, an den dieses Gerät gebunden werden soll.</translation>
 <translation id="7629840767216985001">Wenn Sie die Richtlinie auf "True" setzen, wird der große Cursor auf dem Anmeldebildschirm aktiviert. Wenn Sie die Richtlinie auf "False" setzen, wird der große Cursor auf dem Anmeldebildschirm deaktiviert.
 
@@ -4733,6 +4767,13 @@ Die Richtlinienwerte sollten in % angegeben werden und zwischen 0 und 100 liegen
 <translation id="7754704193130578113">Vor dem Download von Dateien nach dem Speicherort fragen</translation>
 <translation id="7758378441185523981">Aktiviert die passive Authentifizierung für Profiltypen.</translation>
 <translation id="7763614521440615342">Inhaltsvorschläge auf der "Neuer Tab"-Seite anzeigen</translation>
+<translation id="7765753178910647492">Ermöglicht die Zusammenstellung einer Liste mit <ph name="PRODUCT_OS_NAME" />-Funktionen, die deaktiviert werden sollen.
+
+      Wenn diese Funktionen deaktiviert werden, kann der Nutzer nicht über die Benutzeroberfläche darauf zugreifen und sie erscheinen als "Vom Administrator deaktiviert".
+
+      Ist die Richtlinie nicht konfiguriert, sind alle <ph name="PRODUCT_OS_NAME" />-Funktionen standardmäßig aktiviert und können vom Nutzer verwendet werden.
+
+      Hinweis: Die Scanfunktion ist gegenwärtig über eine Funktions-Flag standardmäßig deaktiviert. Auch wenn der Nutzer die Funktion über die Funktions-Flag aktiviert, kann sie aufgrund dieser Richtlinie deaktiviert bleiben.</translation>
 <translation id="7765879851993224640">Verwendung von Smart Lock zur Anmeldung erlauben.</translation>
 <translation id="7774768074957326919">System-Proxy-Einstellungen verwenden</translation>
 <translation id="777734450201217641">Mit dieser Richtlinie aktivieren Sie auf dem Anmeldebildschirm die Tastenkombinationen für Bedienungshilfen.
@@ -4855,6 +4896,7 @@ Die Richtlinienwerte sollten in % angegeben werden und zwischen 0 und 100 liegen
           Wenn die Richtlinie nicht konfiguriert ist, wird ein Standardwert verwendet.
 
           Der Wert für die Richtlinie muss in Millisekunden angegeben werden. Werte müssen kleiner oder gleich dem Wert für die Inaktivitätsverzögerung sein.</translation>
+<translation id="7995610550667275367">Scannen (wird seit Version 87 unterstützt)</translation>
 <translation id="8001701200415781021">Einschränken, welche Google-Konten als primäre Browserkonten in <ph name="PRODUCT_NAME" /> festgelegt werden können</translation>
 <translation id="8003853057959146975">Dateien zur Überprüfung auf Verstöße gegen die Richtlinie zum Schutz von sensiblen Daten senden</translation>
 <translation id="8006219716745491366">Wenn "<ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" />" aktiviert ist, gibt "<ph name="DEFAULT_SEARCH_PROVIDER_ALTERNATE_URLS_POLICY_NAME" />" eine Liste alternativer URLs an, die verwendet werden, um Suchbegriffe aus der Suchmaschine zu extrahieren. Die URLs sollten den String <ph name="SEARCH_TERM_MARKER" /> enthalten.
@@ -4991,6 +5033,9 @@ Wenn diese Richtlinie nicht konfiguriert ist, wird das Standardverhalten angewen
           Wenn der Ruhemodus aktiviert wird, kann separat konfiguriert werden, ob <ph name="PRODUCT_OS_NAME" /> den Bildschirm vorher sperren soll oder nicht.</translation>
 <translation id="8214600119442850823">Konfiguriert den Passwortmanager.</translation>
 <translation id="8217516105848565518">Diese Richtlinie wurde eingestellt. Bitte verwenden Sie stattdessen "RemoteAccessHostDomainList".</translation>
+<translation id="8219777886736887686">Mit dieser Richtlinie wird festgelegt, welcher Befehl zum Öffnen von URLs in einem alternativen Browser verwendet werden soll. Die Richtlinie kann mit <ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" />, <ph name="FIREFOX_VALUE_PLACEHOLDER" />, <ph name="SAFARI_VALUE_PLACEHOLDER" />, <ph name="OPERA_VALUE_PLACEHOLDER" />, <ph name="EDGE_VALUE_PLACEHOLDER" /> oder einem Dateipfad konfiguriert werden. Wenn für die Richtlinie ein Dateipfad festgelegt ist, wird diese Datei als ausführbare Datei verwendet. <ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" /> und <ph name="EDGE_VALUE_PLACEHOLDER" /> sind nur unter <ph name="MS_WIN_NAME" /> verfügbar, <ph name="SAFARI_VALUE_PLACEHOLDER" /> nur unter <ph name="MS_WIN_NAME" /> und <ph name="MAC_OS_NAME" />.
+
+      Ist die Richtlinie nicht konfiguriert, wird eine plattformspezifische Standardeinstellung verwendet: <ph name="IE_PRODUCT_NAME" /> für <ph name="MS_WIN_NAME" /> oder <ph name="SAFARI_PRODUCT_NAME" /> für <ph name="MAC_OS_NAME" />. Unter <ph name="LINUX_OS_NAME" /> wird kein alternativer Browser geöffnet.</translation>
 <translation id="8220156281401380422">Zulassungsliste für natives Messaging konfigurieren</translation>
 <translation id="8244171102276095471">RC4-Verschlüsselungssammlungen in TLS aktivieren</translation>
 <translation id="8244525275280476362">Maximale Abrufverzögerung nach der Außerkraftsetzung einer Richtlinie</translation>
@@ -5365,6 +5410,9 @@ Ist die Richtlinie auf "false" gesetzt oder nicht konfiguriert, kann der Nutzer 
 
       Diese Richtlinie hat keinen Einfluss darauf, ob Nutzer auf einzelnen Geräten Drucker konfigurieren können. Sie ist als Ergänzung zu den Druckerkonfigurationen der einzelnen Nutzer gedacht.</translation>
 <translation id="8764477907716150749">Diese Richtlinie ist zur internen Nutzung in <ph name="PRODUCT_NAME" /> vorgesehen.</translation>
+<translation id="8767743923206070405">Wenn die Richtlinie aktiviert ist, wird die Startbildschirmtaste in der Symbolleiste von <ph name="PRODUCT_NAME" /> angezeigt. Ist die Richtlinie deaktiviert, erscheint die Startbildschirmtaste nicht.
+
+      Wenn Sie diese Richtlinie konfigurieren, kann sie von Nutzern in <ph name="PRODUCT_NAME" /> nicht geändert werden. Wenn die Richtlinie nicht konfiguriert ist, können Nutzer selbst entscheiden, ob die Startbildschirmtaste angezeigt werden soll.</translation>
 <translation id="877185520360032968">Wenn die Richtlinie konfiguriert ist, wird das Standardverzeichnis festgelegt, das Chrome zum Herunterladen von Dateien verwendet. Nutzer können das Verzeichnis jedoch ändern.
 
       Ist die Richtlinie nicht konfiguriert, verwendet Chrome das plattformspezifische Standardverzeichnis.

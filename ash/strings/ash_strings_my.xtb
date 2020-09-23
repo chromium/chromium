@@ -137,6 +137,7 @@
 <translation id="2341729377289034582">ထောင်လိုက်မုဒ်အဖြစ် လော့ခ်ချထားသည်</translation>
 <translation id="2352467521400612932">စတိုက်လက်စ်ခဲတံ ဆက်တင်များ</translation>
 <translation id="2354174487190027830"><ph name="NAME" />ကို ဖွင့်သုံးနေ</translation>
+<translation id="2356210126990741501">သင့်ဖုန်းသည် အွန်လိုင်းချိတ်ဆက်ထားပုံမရသဖြင့် လက်ရှိတွင် သင့်အတွက် အကောင်းဆုံးဝန်ဆောင်မှုများ မပေးနိုင်ပါ။</translation>
 <translation id="2359808026110333948">ဆက်လုပ်ရန်</translation>
 <translation id="2365393535144473978">မိုဘိုင်းဒေတာကို ဖွင့်ပါက ဘလူးတုသ်ပွင့်ပါမည်။</translation>
 <translation id="2369165858548251131">"Hello" ကို တရုတ်လို ဘယ်လိုပြောလဲ</translation>
@@ -169,6 +170,7 @@
 <translation id="2705001408393684014">မိုက်ခလုတ်ကို ပြောင်းပါ။ <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">အပေါ်သို့</translation>
 <translation id="2718395828230677721">ညအလင်းရောင်</translation>
+<translation id="2727175239389218057">စာပြန်ရန်</translation>
 <translation id="2727977024730340865">ပါဝါနည်းသည့် အားသွင်းကိရိယာသို့ ချိတ်ဆက်ထားသည်။ ဘတ်ထရီအားသွင်းခြင်း အားကိုး၍ရမည် မဟုတ်ပါ။</translation>
 <translation id="2743387203779672305">ကလစ်ဘုဒ်သို့ ကူးယူရန်</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
@@ -177,6 +179,7 @@
 <translation id="2825619548187458965">စင်</translation>
 <translation id="2841907151129139818">တက်ဘလက်မုဒ်သို့ ပြောင်းထားသည်</translation>
 <translation id="2844169650293029770">USB-C ကိရိယာ (အရှေ့ပိုင်း ဘယ် ပို့တ်)</translation>
+<translation id="2846247265041961677">သည်းခံပါ။ ဖုန်းကို ရှာမတွေ့ပါ</translation>
 <translation id="2865888419503095837">ကွန်ရက် အချက်အလက်</translation>
 <translation id="2872961005593481000">ပိတ်ရန်</translation>
 <translation id="2878884018241093801">မကြာမီကဖွင့်ထားသည်များ မရှိပါ</translation>
@@ -304,6 +307,7 @@
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{အက်ပ်တစ်ခုပိတ်}other{အက်ပ် # ခုပိတ်}}</translation>
 <translation id="4072264167173457037">လိုင်းအား အတင့်သင့်သာရှိသည်</translation>
 <translation id="4112140312785995938">နောက်သို့ ပြန်ရစ်ရန်</translation>
+<translation id="4114315158543974537">'ဖုန်းပင်မ' ဖွင့်ခြင်း</translation>
 <translation id="4129129681837227511">သင့်လော့ခ်ချမျက်နှာပြင်တွင် အကြောင်းကြားချက်များ ကြည့်ရန်အတွက် ဆင်တင်ပြောင်းရန် လော့ခ်ဖွင့်ပါ</translation>
 <translation id="4146833061457621061">တေးဂီတ ဖွင့်ပါ</translation>
 <translation id="4149156641122542261"><ph name="DEVICE_TYPE" /> ကို <ph name="DOMAIN" /> က စီမံခန့်ခွဲထားသည်</translation>
@@ -435,6 +439,7 @@
 <translation id="5648021990716966815">မိုက်ခရိုဖုန်း ဂျက်ပင်</translation>
 <translation id="5669267381087807207">အစပြုနေသည်</translation>
 <translation id="5673434351075758678">သင့်ဆက်တင်များ စင့်ခ်လုပ်ပြီးနောက် "<ph name="FROM_LOCALE" />" မှ "<ph name="TO_LOCALE" />" သို့။</translation>
+<translation id="5679050765726761783">ပါဝါနိမ့် ကြားခံကိရိယာ ချိတ်ဆက်ထားသည်</translation>
 <translation id="5682642926269496722">လက်ရှိအသုံးပြုသူ အကောင့်အတွက် Google Assistant မရနိုင်ပါ။</translation>
 <translation id="5689633613396158040">'ညအလင်းရောင်' သည် ဖန်သားပြင်ကို ကြည့်ရှုရန် သို့မဟုတ် အလင်းအားနည်းချိန် စာဖတ်ရန် လွယ်ကူစေသည်။ 'ညအလင်းရောင်' ကို ဖွင့်ရန် သို့မဟုတ် အပြီးပိတ်ရန် အချိန်ကို ပြောင်းရန် တို့ပါ။</translation>
 <translation id="5691772641933328258">လက်ဗွေကို မသိပါ</translation>
@@ -459,6 +464,7 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">ဖွင့်ရန်</translation>
 <translation id="5920710855273935292">မိုက်ပိတ်ထားသည်။</translation>
+<translation id="594179686076170922">သင်၏ဖုန်းသို့ ချိတ်ဆက်နေသည်...</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> ဖွင့်ထားသည်။</translation>
 <translation id="5947494881799873997">မူလအခြေအနေ ပြန်သွားရန်</translation>
 <translation id="595202126637698455">ဆောင်ရွက်ချက်များကို ခြေရာခံနေသည်။</translation>
@@ -548,6 +554,7 @@
 <translation id="6857811139397017780"><ph name="NETWORKSERVICE" />ကို ဖွင့်သုံးရန်</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{ဂဏန်းတစ်လုံး ကျန်သည်}other{ဂဏန်း # လုံး ကျန်သည်}}</translation>
 <translation id="6878400149835617132">ဖြတ်လမ်းလင့်ခ်ကို ပိတ်ထားသည်</translation>
+<translation id="6886172995547742638">သင့် <ph name="DEVICE_TYPE" /> သည် စွမ်းဆောင်ရည် နိမ့်နေနိုင်သည်။ အသိအမှတ်ပြုထားသော <ph name="PREFERRED_MINIMUM_POWER" />W သို့မဟုတ် ပိုမြင့်သော USB-C ပါဝါ ကြားခံကိရိယာ အသုံးပြုပါ။</translation>
 <translation id="6896758677409633944">ကူးယူရန်</translation>
 <translation id="6910714959251846841">ဤအပ်ဒိတ်ကို ထည့်သွင်းရန်အတွက် သင့်စက်ပစ္စည်းကို ရှင်းလင်းရပါမည်။ နောက်ဆုံးထွက် <ph name="SYSTEM_APP_NAME" /> အပ်ဒိတ်အကြောင်း ပိုမိုလေ့လာပါ။</translation>
 <translation id="6919251195245069855">သင့်အဆင့်မြင့်ကတ်ကို ဖတ်၍မရပါ။ ထပ်စမ်းကြည့်ပါ။</translation>

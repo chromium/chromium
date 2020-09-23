@@ -137,6 +137,7 @@
 <translation id="2341729377289034582">세로로 잠김</translation>
 <translation id="2352467521400612932">스타일러스 설정</translation>
 <translation id="2354174487190027830"><ph name="NAME" /> 활성화 중</translation>
+<translation id="2356210126990741501">휴대전화가 온라인 상태가 아니므로 콘텐츠를 가져올 수 없습니다.</translation>
 <translation id="2359808026110333948">계속</translation>
 <translation id="2365393535144473978">모바일 데이터를 사용 설정하면 블루투스가 사용 설정됩니다.</translation>
 <translation id="2369165858548251131">중국어로 '안녕'</translation>
@@ -169,6 +170,7 @@
 <translation id="2705001408393684014">마이크를 전환합니다. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">위</translation>
 <translation id="2718395828230677721">야간 조명</translation>
+<translation id="2727175239389218057">답장</translation>
 <translation id="2727977024730340865">저출력 충전기에 연결되었습니다. 배터리 충전 상태가 불안정합니다.</translation>
 <translation id="2743387203779672305">클립보드로 복사</translation>
 <translation id="2792498699870441125">Alt+검색 키</translation>
@@ -177,6 +179,7 @@
 <translation id="2825619548187458965">임시보관함</translation>
 <translation id="2841907151129139818">태블릿 모드로 전환됨</translation>
 <translation id="2844169650293029770">USB-C 기기(좌측 전면 포트)</translation>
+<translation id="2846247265041961677">죄송합니다. 휴대전화를 찾을 수 없습니다</translation>
 <translation id="2865888419503095837">네트워크 정보</translation>
 <translation id="2872961005593481000">종료</translation>
 <translation id="2878884018241093801">최근 항목이 없습니다.</translation>
@@ -304,6 +307,7 @@
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{앱 1개에서 사용 중지됨}other{앱 #개에서 사용 중지됨}}</translation>
 <translation id="4072264167173457037">신호 보통</translation>
 <translation id="4112140312785995938">뒤로 탐색</translation>
+<translation id="4114315158543974537">휴대전화 허브 사용 설정</translation>
 <translation id="4129129681837227511">잠금 화면에 알림이 표시되도록 하려면 잠금을 해제하여 설정을 변경하세요.</translation>
 <translation id="4146833061457621061">음악을 틀어 줘</translation>
 <translation id="4149156641122542261"><ph name="DOMAIN" />에서 관리하는 <ph name="DEVICE_TYPE" /></translation>
@@ -435,6 +439,7 @@
 <translation id="5648021990716966815">마이크 잭</translation>
 <translation id="5669267381087807207">활성화 중</translation>
 <translation id="5673434351075758678">설정 동기화 후 ‘<ph name="FROM_LOCALE" />’에서 ‘<ph name="TO_LOCALE" />’(으)로 변경합니다.</translation>
+<translation id="5679050765726761783">저전력 어댑터 연결됨</translation>
 <translation id="5682642926269496722">현재 사용자 계정에서 Google 어시스턴트를 사용할 수 없습니다.</translation>
 <translation id="5689633613396158040">야간 조명을 사용하면 주위가 어두울 때도 편안하게 화면을 보고 읽을 수 있습니다. 탭하여 야간 조명을 켜거나 완전히 끌 시간을 변경하세요.</translation>
 <translation id="5691772641933328258">지문을 인식할 수 없음</translation>
@@ -459,6 +464,7 @@
 <translation id="5911909173233110115"><ph name="USERNAME" />(<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">사용</translation>
 <translation id="5920710855273935292">마이크가 음소거되어 있습니다.</translation>
+<translation id="594179686076170922">스마트폰에 연결하는 중...</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> 기능이 켜져 있습니다.</translation>
 <translation id="5947494881799873997">되돌리기</translation>
 <translation id="595202126637698455">성능 추적 사용 중</translation>
@@ -548,6 +554,7 @@
 <translation id="6857811139397017780"><ph name="NETWORKSERVICE" /> 활성화</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{1자리 남음}other{#자리 남음}}</translation>
 <translation id="6878400149835617132">바로가기 사용 중지됨</translation>
+<translation id="6886172995547742638"><ph name="DEVICE_TYPE" /> 기기의 성능이 저하될 수 있습니다. 인증된 <ph name="PREFERRED_MINIMUM_POWER" />W 이상의 USB-C 전원 어댑터를 사용하세요.</translation>
 <translation id="6896758677409633944">복사</translation>
 <translation id="6910714959251846841">업데이트하려면 기기에서 파워워시를 실행해야 합니다. 최신 <ph name="SYSTEM_APP_NAME" /> 업데이트에 관해 자세히 알아보세요.</translation>
 <translation id="6919251195245069855">스마트 카드를 인식할 수 없습니다. 다시 시도해 보세요.</translation>

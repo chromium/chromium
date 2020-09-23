@@ -137,6 +137,7 @@
 <translation id="2341729377289034582">تم القفل على الوضع العمودي</translation>
 <translation id="2352467521400612932">إعدادات قلم الشاشة</translation>
 <translation id="2354174487190027830">تفعيل <ph name="NAME" /></translation>
+<translation id="2356210126990741501">يبدو أن هاتفك غير متصل بالإنترنت ولا يمكننا الآن الحصول على كل التطبيقات الترفيهية الصغيرة المتوفّرة فيه.</translation>
 <translation id="2359808026110333948">متابعة</translation>
 <translation id="2365393535144473978">سيؤدي تفعيل ميزة بيانات الجوّال إلى تفعيل البلوتوث.</translation>
 <translation id="2369165858548251131">"مرحبًا" باللغة الصينية</translation>
@@ -169,6 +170,7 @@
 <translation id="2705001408393684014">تبديل الميكروفون: <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">أعلى</translation>
 <translation id="2718395828230677721">الإضاءة الليلية</translation>
+<translation id="2727175239389218057">الرّد</translation>
 <translation id="2727977024730340865">تمّ توصيل شاحن منخفض الطاقة. لذا قد لا تكون عملية شحن البطارية جديرة بالثقة.</translation>
 <translation id="2743387203779672305">نسخ إلى الحافظة</translation>
 <translation id="2792498699870441125">‏Alt+مفتاح البحث</translation>
@@ -177,6 +179,7 @@
 <translation id="2825619548187458965">الرف</translation>
 <translation id="2841907151129139818">تمّ التبديل إلى وضع الجهاز اللوحي.</translation>
 <translation id="2844169650293029770">‏جهاز USB-C (المنفذ الأمامي الأيسر)</translation>
+<translation id="2846247265041961677">عذرًا، لا يمكن العثور على الهاتف.</translation>
 <translation id="2865888419503095837">معلومات الشبكة</translation>
 <translation id="2872961005593481000">إيقاف التشغيل</translation>
 <translation id="2878884018241093801">ليست هناك عناصر تم استخدامها مؤخرًا</translation>
@@ -459,6 +462,7 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">مفعّل</translation>
 <translation id="5920710855273935292">تم كتم صوت الميكروفون.</translation>
+<translation id="594179686076170922">جارٍ الاتصال بهاتفك…</translation>
 <translation id="5946788582095584774">ميزة <ph name="FEATURE_NAME" /> مُفعَّلة.</translation>
 <translation id="5947494881799873997">التراجع عن الإجراء</translation>
 <translation id="595202126637698455">تم تفعيل تتبع مستوى الأداء</translation>

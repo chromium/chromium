@@ -308,6 +308,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Mati, satu apl}other{Mati, # apl}}</translation>
 <translation id="4072264167173457037">Isyarat sederhana</translation>
 <translation id="4112140312785995938">Cari Ke Belakang</translation>
+<translation id="4114315158543974537">Hidupkan Hab Telefon</translation>
 <translation id="4129129681837227511">Untuk melihat pemberitahuan pada skrin kunci anda, buka kunci untuk menukar tetapan</translation>
 <translation id="4146833061457621061">Mainkan muzik</translation>
 <translation id="4149156641122542261"><ph name="DEVICE_TYPE" /> diurus oleh <ph name="DOMAIN" /></translation>
@@ -439,6 +440,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="5648021990716966815">Bicu mikrofon</translation>
 <translation id="5669267381087807207">Mengaktifkan</translation>
 <translation id="5673434351075758678">Daripada "<ph name="FROM_LOCALE" />" kepada "<ph name="TO_LOCALE" />" selepas menyegerakkan tetapan anda.</translation>
+<translation id="5679050765726761783">Penyesuai kuasa rendah disambungkan</translation>
 <translation id="5682642926269496722">Google Assistant tidak tersedia untuk akaun pengguna semasa.</translation>
 <translation id="5689633613396158040">Cahaya Malam memudahkan anda melihat skrin atau membaca dalam cahaya malap. Ketik untuk menukar masa Malam Cahaya dihidupkan atau mematikan ciri ini sepenuhnya.</translation>
 <translation id="5691772641933328258">Cap jari tidak dikenali</translation>
@@ -553,6 +555,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="6857811139397017780">Aktifkan <ph name="NETWORKSERVICE" /></translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Tinggal satu angka}other{Tinggal # angka}}</translation>
 <translation id="6878400149835617132">Pintasan dimatikan</translation>
+<translation id="6886172995547742638"><ph name="DEVICE_TYPE" /> anda mungkin menunjukkan prestasi yang lebih rendah. Gunakan penyesuai kuasa USB-C <ph name="PREFERRED_MINIMUM_POWER" />W ke atas yang diperakui.</translation>
 <translation id="6896758677409633944">Salin</translation>
 <translation id="6910714959251846841">Kemas kini ini memerlukan powerwash dijalankan pada peranti anda. Ketahui lebih lanjut tentang kemas kini <ph name="SYSTEM_APP_NAME" /> yang terbaharu.</translation>
 <translation id="6919251195245069855">Tidak dapat mengecam kad pintar anda. Cuba lagi.</translation>

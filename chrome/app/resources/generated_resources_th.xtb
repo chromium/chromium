@@ -1202,6 +1202,7 @@
 <translation id="2419706071571366386">โปรดออกจากระบบเมื่อไม่ได้ใช้คอมพิวเตอร์เพื่อความปลอดภัย</translation>
 <translation id="2422125132043002186">ยกเลิกการคืนค่า Linux แล้ว</translation>
 <translation id="2423578206845792524">&amp;บันทึกรูปภาพเป็น...</translation>
+<translation id="2424424966051154874">{0,plural, =1{ผู้มาเยือน}other{ผู้มาเยือน (#)}}</translation>
 <translation id="2428510569851653187">อธิบายว่าคุณกำลังทำอะไรเมื่อแท็บขัดข้อง</translation>
 <translation id="2428939361789119025">ปิด Wi-Fi</translation>
 <translation id="2431027948063157455">โหลด Google Assistant ไม่ได้ โปรดตรวจสอบการเชื่อมต่อเครือข่ายและลองอีกครั้ง</translation>
@@ -4199,6 +4200,7 @@
 <translation id="6077189836672154517">เคล็ดลับและข้อมูลอัปเดตเกี่ยวกับ <ph name="DEVICE_TYPE" /></translation>
 <translation id="6077476112742402730">พูดเพื่อพิมพ์</translation>
 <translation id="6078045608615316905">สร้างคิวอาร์โค้ดสำหรับรูปภาพนี้</translation>
+<translation id="6078121669093215958">{0,plural, =1{ผู้มาเยือน}other{หน้าต่างผู้มาเยือนที่เปิดอยู่ # หน้าต่าง}}</translation>
 <translation id="6078323886959318429">เพิ่มทางลัด</translation>
 <translation id="6078752646384677957">โปรดตรวจสอบไมโครโฟนและระดับเสียง</translation>
 <translation id="6078769373519310690">"<ph name="CHROME_EXTENSION_NAME" />" ต้องการเชื่อมต่อกับอุปกรณ์ HID</translation>
@@ -4706,6 +4708,7 @@
 <translation id="6704062477274546131">การแปลง DNS</translation>
 <translation id="6706210727756204531">ขอบเขต</translation>
 <translation id="6707389671160270963">ใบรับรองไคลเอ็นต์ SSL</translation>
+<translation id="670893696722244877">ค้นหาตามภาษาหรือชื่อการป้อนข้อมูล</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> และอีก 1 แท็บ}other{<ph name="PAGE_TITLE" /> และอีก # แท็บ}}</translation>
 <translation id="6709133671862442373">ข่าวสาร</translation>
 <translation id="6709357832553498500">เชื่อมต่อโดยใช้ <ph name="EXTENSIONNAME" /></translation>
@@ -5543,6 +5546,7 @@
 <translation id="7753735457098489144">ติดตั้งไม่สำเร็จเนื่องจากมีพื้นที่เก็บข้อมูลไม่เพียงพอ หากต้องการเพิ่มพื้นที่ว่าง ให้ลบไฟล์ออกจากพื้นที่เก็บข้อมูลของอุปกรณ์</translation>
 <translation id="7754704193130578113">สอบถามที่เก็บไฟล์ก่อนดาวน์โหลด</translation>
 <translation id="7755287808199759310">ผู้ปกครองสามารถเลิกบล็อกเว็บไซต์ให้คุณ</translation>
+<translation id="7757592200364144203">เปลี่ยนชื่ออุปกรณ์</translation>
 <translation id="7757787379047923882">ข้อความที่แชร์จาก <ph name="DEVICE_NAME" /></translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">ปรับขอบเขตของการแสดงผล</translation>
@@ -6000,6 +6004,7 @@
 <translation id="8264024885325823677">การตั้งค่านี้จัดการโดยผู้ดูแลระบบ</translation>
 <translation id="8264718194193514834">"<ph name="EXTENSION_NAME" />" เรียกใช้หน้าจอแบบเต็ม</translation>
 <translation id="826511437356419340">เข้าสู่โหมดภาพรวมหน้าต่างแล้ว เลื่อนเพื่อไปยังส่วนต่างๆ หรือกด Tab หากใช้แป้นพิมพ์</translation>
+<translation id="8266947622852630193">วิธีการป้อนข้อมูลทั้งหมด</translation>
 <translation id="8267539814046467575">เพิ่มเครื่องพิมพ์</translation>
 <translation id="8267961145111171918"><ph name="BEGIN_PARAGRAPH1" />นี่คือข้อมูลทั่วไปเกี่ยวกับอุปกรณ์นี้และวิธีใช้อุปกรณ์ (เช่น ระดับแบตเตอรี่ กิจกรรมในระบบและแอป และข้อผิดพลาด) ระบบจะใช้ข้อมูลดังกล่าวเพื่อปรับปรุง Android และข้อมูลแบบสรุปรวมบางอย่างจะช่วยให้แอป Google และพาร์ทเนอร์ต่างๆ เช่น นักพัฒนาซอฟต์แวร์ Android ปรับปรุงแอปและผลิตภัณฑ์ของตนให้ดีขึ้นได้อีกด้วย<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />การปิดฟีเจอร์นี้จะไม่ส่งผลต่อความสามารถของอุปกรณ์ในการส่งข้อมูลที่จำเป็นต้องใช้ในบริการสำคัญอย่างเช่น การอัปเดตระบบ และความปลอดภัย<ph name="END_PARAGRAPH2" />

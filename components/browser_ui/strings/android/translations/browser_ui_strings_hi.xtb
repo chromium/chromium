@@ -51,6 +51,7 @@
 <translation id="2315043854645842844">क्लाइंट-साइड प्रमाणपत्र चुनना ऑपरेटिंग सिस्टम से नहीं किया जा सकता है.</translation>
 <translation id="2359808026110333948">जारी रखें</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> एमबी</translation>
+<translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, और <ph name="NUM_MORE" /> अन्य सुविधा को इस्तेमाल करने की अनुमति दी गई}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, और <ph name="NUM_MORE" /> अन्य सुविधा को इस्तेमाल करने की अनुमति दी गई}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, और <ph name="NUM_MORE" /> अन्य सुविधाओं को इस्तेमाल करने की अनुमति दी गई}}</translation>
 <translation id="2434158240863470628">डाउनलोड हो गया <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2440823041667407902">जगह की जानकारी का एक्‍सेस दें</translation>
 <translation id="2482878487686419369">सूचनाएं</translation>
@@ -190,6 +191,7 @@
 <translation id="6447842834002726250">कुकी</translation>
 <translation id="6527303717912515753">शेयर करें</translation>
 <translation id="6545864417968258051">ब्लूटूथ स्कैन करना</translation>
+<translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, और <ph name="NUM_MORE" /> अन्य सुविधा को ब्लॉक किया गया}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, और <ph name="NUM_MORE" /> अन्य सुविधा को ब्लॉक किया गया}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, और <ph name="NUM_MORE" /> अन्य सुविधाओं को ब्लॉक किया गया}}</translation>
 <translation id="6561560012278703671">बिना आवाज़ के मैसेज पाएं (सूचनाओं में आवाज़ को रोकता है, ताकि आपके काम में रुकावट न आए)</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> जीबी</translation>
 <translation id="6612358246767739896">सुरक्षित सामग्री</translation>
@@ -292,6 +294,7 @@
 <translation id="8959122750345127698">मार्गदर्शक तक नहीं पहुंचा जा सकता: <ph name="URL" /></translation>
 <translation id="9019902583201351841">आपके अभिभावकों द्वारा प्रबंधित</translation>
 <translation id="9074739597929991885">ब्लूटूथ</translation>
+<translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, और <ph name="NUM_MORE" /> अन्य सुविधा}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, और <ph name="NUM_MORE" /> अन्य सुविधा}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, और <ph name="NUM_MORE" /> अन्य सुविधाएं}}</translation>
 <translation id="913657688200966289"><ph name="BEGIN_LINK" />Android की सेटिंग<ph name="END_LINK" /> में जाकर, <ph name="APP_NAME" /> के लिए अनुमतियां चालू करें.</translation>
 <translation id="945632385593298557">अपना माइक्रोफ़ोन एक्सेस करें</translation>
 <translation id="965817943346481315">अगर साइट तंग करने वाले या गुमराह करने वाले विज्ञापन दिखाई देते हैं, तो उन्हें ब्लॉक करें (सुझाव)</translation>

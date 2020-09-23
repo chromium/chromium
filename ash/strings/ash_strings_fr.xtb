@@ -137,6 +137,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2341729377289034582">Verrouillée en position verticale</translation>
 <translation id="2352467521400612932">Paramètres du stylet</translation>
 <translation id="2354174487190027830">Activation du réseau <ph name="NAME" /> en cours…</translation>
+<translation id="2356210126990741501">Il semble que votre téléphone n'est pas connecté. Nous ne pouvons pas récupérer tous les goodies de celui-ci pour le moment.</translation>
 <translation id="2359808026110333948">Continuer</translation>
 <translation id="2365393535144473978">L'activation des données mobiles active également le Bluetooth.</translation>
 <translation id="2369165858548251131">"Bonjour" en chinois</translation>
@@ -169,6 +170,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2705001408393684014"><ph name="STATE_TEXT" /> Déplacez le curseur vers la droite pour activer le son.</translation>
 <translation id="2706462751667573066">Haut</translation>
 <translation id="2718395828230677721">Écl. nocturne</translation>
+<translation id="2727175239389218057">Répondre</translation>
 <translation id="2727977024730340865">L'appareil est branché à un chargeur de faible puissance. Il se peut que la charge ne soit pas fiable.</translation>
 <translation id="2743387203779672305">Copier dans le presse-papiers</translation>
 <translation id="2792498699870441125">Alt + Recherche</translation>
@@ -177,6 +179,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2825619548187458965">Étagère</translation>
 <translation id="2841907151129139818">Mode tablette activé</translation>
 <translation id="2844169650293029770">Appareil USB de type C (port situé sur la gauche de l'appareil, à l'avant)</translation>
+<translation id="2846247265041961677">Désolé, téléphone introuvable</translation>
 <translation id="2865888419503095837">Informations réseau</translation>
 <translation id="2872961005593481000">Éteindre</translation>
 <translation id="2878884018241093801">Aucun élément récent</translation>
@@ -304,6 +307,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Notif. désactivées pour une appli}one{Notif. désactivées pour # appli}other{Notif. désactivées pour # applis}}</translation>
 <translation id="4072264167173457037">Signal de moyenne intensité</translation>
 <translation id="4112140312785995938">Retour rapide</translation>
+<translation id="4114315158543974537">Activer Phone Hub</translation>
 <translation id="4129129681837227511">Pour afficher les notifications sur l'écran de verrouillage, déverrouillez votre appareil afin de modifier ce paramètre</translation>
 <translation id="4146833061457621061">Joue de la musique</translation>
 <translation id="4149156641122542261"><ph name="DEVICE_TYPE" /> géré par <ph name="DOMAIN" /></translation>
@@ -435,6 +439,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="5648021990716966815">Connecteur micro</translation>
 <translation id="5669267381087807207">Activation</translation>
 <translation id="5673434351075758678">La langue utilisée est passée de "<ph name="FROM_LOCALE" />" à "<ph name="TO_LOCALE" />" après la synchronisation de vos paramètres.</translation>
+<translation id="5679050765726761783">Adaptateur basse consommation branché</translation>
 <translation id="5682642926269496722">L'Assistant Google n'est pas disponible pour le compte utilisateur actuel.</translation>
 <translation id="5689633613396158040">Cette fonctionnalité facilite la lecture à l'écran lorsque l'éclairage est faible. Appuyez ici pour modifier l'heure à laquelle elle doit s'activer ou désactivez-la complètement.</translation>
 <translation id="5691772641933328258">Empreinte digitale non reconnue</translation>
@@ -459,6 +464,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Activé</translation>
 <translation id="5920710855273935292">Le son du micro est coupé.</translation>
+<translation id="594179686076170922">Connexion à votre téléphone…</translation>
 <translation id="5946788582095584774">La fonctionnalité <ph name="FEATURE_NAME" /> est activée.</translation>
 <translation id="5947494881799873997">Rétablir</translation>
 <translation id="595202126637698455">Suivi des performances activé</translation>
@@ -548,6 +554,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="6857811139397017780">Activer <ph name="NETWORKSERVICE" /></translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{1 chiffre manquant}one{# chiffre manquant}other{# chiffres manquants}}</translation>
 <translation id="6878400149835617132">Raccourci désactivé</translation>
+<translation id="6886172995547742638">Cela peut dégrader les performances de votre <ph name="DEVICE_TYPE" />. Utilisez un adaptateur secteur USB-C de <ph name="PREFERRED_MINIMUM_POWER" /> W ou plus.</translation>
 <translation id="6896758677409633944">Copier</translation>
 <translation id="6910714959251846841">Cette mise à jour nécessite que vous utilisiez la fonctionnalité Powerwash sur votre appareil. Obtenez de plus amples informations sur la dernière mise à jour <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="6919251195245069855">Impossible de reconnaître votre carte à puce. Veuillez réessayer.</translation>

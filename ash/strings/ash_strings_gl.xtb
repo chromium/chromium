@@ -137,6 +137,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="2341729377289034582">Pantalla bloqueada en posición vertical</translation>
 <translation id="2352467521400612932">Configuración do lapis óptico</translation>
 <translation id="2354174487190027830">Activando <ph name="NAME" /></translation>
+<translation id="2356210126990741501">Parece que o teu teléfono non está conectado, polo que nestes intres non se puideron obter todos os extras que ofrece.</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2365393535144473978">Ao activar os datos móbiles tamén se activará o Bluetooth.</translation>
 <translation id="2369165858548251131">"Ola" en chinés</translation>
@@ -169,6 +170,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="2705001408393684014">Activar/desactivar micrófono. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Arriba</translation>
 <translation id="2718395828230677721">Luz nocturna</translation>
+<translation id="2727175239389218057">Responder</translation>
 <translation id="2727977024730340865">Conectado a un cargador de baixa potencia. É posible que a carga da batería non sexa fiable.</translation>
 <translation id="2743387203779672305">Copiar no portapapeis</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
@@ -177,6 +179,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="2825619548187458965">Estante</translation>
 <translation id="2841907151129139818">Cambiouse ao modo de tableta</translation>
 <translation id="2844169650293029770">Dispositivo USB-C (porto esquerdo frontal)</translation>
+<translation id="2846247265041961677">Vaia! Non se puido atopar o teléfono</translation>
 <translation id="2865888419503095837">Información da rede</translation>
 <translation id="2872961005593481000">Pechar</translation>
 <translation id="2878884018241093801">Non hai elementos recentes</translation>
@@ -305,6 +308,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Non para 1 app}other{Non para # apps}}</translation>
 <translation id="4072264167173457037">Sinal medio</translation>
 <translation id="4112140312785995938">Retroceder</translation>
+<translation id="4114315158543974537">Activar Phone Hub</translation>
 <translation id="4129129681837227511">Para ver notificacións na pantalla de bloqueo, desbloquea o dispositivo e cambia a opción de configuración correspondente</translation>
 <translation id="4146833061457621061">Reproducir música</translation>
 <translation id="4149156641122542261"><ph name="DEVICE_TYPE" /> (dispositivo xestionado por <ph name="DOMAIN" />)</translation>
@@ -436,6 +440,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="5648021990716966815">Conector do micrófono</translation>
 <translation id="5669267381087807207">Activando</translation>
 <translation id="5673434351075758678">De "<ph name="FROM_LOCALE" />" a "<ph name="TO_LOCALE" />" tras sincronizar a configuración.</translation>
+<translation id="5679050765726761783">Conectouse un cargador de baixa potencia</translation>
 <translation id="5682642926269496722">O Asistente de Google non está dispoñible para a conta de usuario actual.</translation>
 <translation id="5689633613396158040">Luz nocturna fai que sexa máis fácil mirar a pantalla ou ler con pouca luz. Toca para cambiar a hora á que se activa a función mencionada ou para desactivala completamente.</translation>
 <translation id="5691772641933328258">Non se recoñeceu a impresión dixital</translation>
@@ -460,6 +465,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Si</translation>
 <translation id="5920710855273935292">O micrófono está silenciado.</translation>
+<translation id="594179686076170922">Conectando co teu teléfono...</translation>
 <translation id="5946788582095584774">A función <ph name="FEATURE_NAME" /> está activada.</translation>
 <translation id="5947494881799873997">Reverter</translation>
 <translation id="595202126637698455">Seguimento do rendemento activado</translation>
@@ -549,6 +555,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="6857811139397017780">Activar <ph name="NETWORKSERVICE" /></translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Falta un díxito}other{Faltan # díxitos}}</translation>
 <translation id="6878400149835617132">Desactivouse o atallo</translation>
+<translation id="6886172995547742638">O rendemento do dispositivo (<ph name="DEVICE_TYPE" />) pode empeorar. Usa un adaptador de corrente USB-C de <ph name="PREFERRED_MINIMUM_POWER" /> W ou máis.</translation>
 <translation id="6896758677409633944">Copiar</translation>
 <translation id="6910714959251846841">Esta actualización require executar a función Powerwash do dispositivo. Consulta máis información sobre a última actualización de <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="6919251195245069855">Non se puido recoñecer a tarxeta intelixente. Téntao de novo.</translation>

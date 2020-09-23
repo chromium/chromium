@@ -1199,6 +1199,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2419706071571366386">Për siguri, dil kur kompjuteri yt nuk po përdoret.</translation>
 <translation id="2422125132043002186">U anulua restaurimi i Linux</translation>
 <translation id="2423578206845792524">Ru&amp;aje imazhin si...</translation>
+<translation id="2424424966051154874">{0,plural, =1{I ftuar}other{I ftuar (#)}}</translation>
 <translation id="2428510569851653187">Përshkruaj çfarë po bëje kur skeda pësoi një ndërprerje aksidentale</translation>
 <translation id="2428939361789119025">Çaktivizo Wi-Fi</translation>
 <translation id="2431027948063157455">"Asistenti i Google" nuk ishte në gjendje të ngarkohej, kontrollo lidhjen e rrjetit provo sërish.</translation>
@@ -4196,6 +4197,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="6077189836672154517">Këshilla dhe përditësime për <ph name="DEVICE_TYPE" /></translation>
 <translation id="6077476112742402730">Fol për të shkruar</translation>
 <translation id="6078045608615316905">Krijo kodin QR për këtë imazh</translation>
+<translation id="6078121669093215958">{0,plural, =1{I ftuar}other{# dritare të hapura të të ftuarve}}</translation>
 <translation id="6078323886959318429">Shto një shkurtore</translation>
 <translation id="6078752646384677957">Kontrollo mikrofonin dhe nivelet e audios.</translation>
 <translation id="6078769373519310690">"<ph name="CHROME_EXTENSION_NAME" />" dëshiron të lidhet me një pajisje HID</translation>
@@ -4703,6 +4705,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="6704062477274546131">Rezolucioni i DNS-së</translation>
 <translation id="6706210727756204531">Objektivi</translation>
 <translation id="6707389671160270963">Certifikata SSL e klientit</translation>
+<translation id="670893696722244877">Kërko sipas gjuhëve ose emrave të hyrjeve</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> dhe 1 skedë tjetër}other{<ph name="PAGE_TITLE" /> dhe # skeda të tjera}}</translation>
 <translation id="6709133671862442373">Lajmet</translation>
 <translation id="6709357832553498500">Lidhu duke përdorur <ph name="EXTENSIONNAME" /></translation>
@@ -5540,6 +5543,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="7753735457098489144">Instalimi dështoi për shkak të mungesës së hapësirës ruajtëse. Për të liruar hapësirë, fshi skedarë nga hapësira ruajtëse e pajisjes.</translation>
 <translation id="7754704193130578113">Pyet se ku do ta ruash çdo skedar para shkarkimit</translation>
 <translation id="7755287808199759310">Prindi yt mund ta zhbllokojë atë për ty</translation>
+<translation id="7757592200364144203">Ndrysho emrin e pajisjes</translation>
 <translation id="7757787379047923882">Teksti u nda nga <ph name="DEVICE_NAME" /></translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">Rregullo kufijtë e ekranit tënd</translation>
@@ -5995,6 +5999,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8264024885325823677">Ky cilësim menaxhohet nga administratori yt.</translation>
 <translation id="8264718194193514834">"<ph name="EXTENSION_NAME" />" aktivizoi ekranin e plotë.</translation>
 <translation id="826511437356419340">Hyre në modalitetin e përmbledhjes së dritares. Rrëshqit shpejt për të naviguar ose shtyp Tab nëse po përdor një tastierë.</translation>
+<translation id="8266947622852630193">Të gjitha metodat e hyrjes</translation>
 <translation id="8267539814046467575">Shto printer</translation>
 <translation id="8267961145111171918"><ph name="BEGIN_PARAGRAPH1" />Ky është informacion i përgjithshëm për këtë pajisje dhe se si e përdor (si p.sh. niveli i baterisë, aktiviteti i sistemit dhe i aplikacioneve dhe gabimet). Të dhënat do të përdoren për të përmirësuar Android, ndërsa disa informacione të grumbulluara do të ndihmojnë gjithashtu aplikacionet dhe partnerët e Google, si p.sh. zhvilluesit e Android, për të përmirësuar aplikacionet dhe produktet e tyre.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Çaktivizimi i këtij funksioni nuk ndikon në aftësinë e pajisjes sate për të dërguar informacionin që nevojitet për shërbime bazë si p.sh. përditësimet dhe siguria e sistemit.<ph name="END_PARAGRAPH2" />

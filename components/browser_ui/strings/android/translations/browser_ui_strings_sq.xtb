@@ -51,6 +51,7 @@
 <translation id="2315043854645842844">Përzgjedhja e certifikatës nga ana e klientit nuk mbështetet nga sistemi operativ.</translation>
 <translation id="2359808026110333948">Vazhdo</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
+<translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> dhe <ph name="NUM_MORE" /> tjetër e lejuar}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> dhe <ph name="NUM_MORE" /> të tjera të lejuara}}</translation>
 <translation id="2434158240863470628">Shkarkimi përfundoi <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2440823041667407902">Qasja e vendndodhjes</translation>
 <translation id="2482878487686419369">Njoftimet</translation>
@@ -190,6 +191,7 @@
 <translation id="6447842834002726250">Kukit</translation>
 <translation id="6527303717912515753">Ndaj</translation>
 <translation id="6545864417968258051">Skanimi për Bluetooth</translation>
+<translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> dhe <ph name="NUM_MORE" /> tjetër e bllokuar}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> dhe <ph name="NUM_MORE" /> të tjera të bllokuara}}</translation>
 <translation id="6561560012278703671">Përdor mesazhe më të qeta (bllokon kërkesat e njoftimeve që mos të të ndërpresin)</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Përmbajtje e mbrojtur</translation>
@@ -292,6 +294,7 @@
 <translation id="8959122750345127698">Lundrimi është i paarritshëm: <ph name="URL" /></translation>
 <translation id="9019902583201351841">Menaxhuar nga prindërit e tu</translation>
 <translation id="9074739597929991885">Bluetooth-i</translation>
+<translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> dhe <ph name="NUM_MORE" /> tjetër}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> dhe <ph name="NUM_MORE" /> të tjera}}</translation>
 <translation id="913657688200966289">Aktivizo lejet për <ph name="APP_NAME" /> në <ph name="BEGIN_LINK" />Cilësimet e Android<ph name="END_LINK" />.</translation>
 <translation id="945632385593298557">Qasu te mikrofoni</translation>
 <translation id="965817943346481315">Blloko nëse sajti shfaq reklama ndërhyrëse ose mashtruese (rekomandohet)</translation>

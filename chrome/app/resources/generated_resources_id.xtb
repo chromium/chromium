@@ -74,6 +74,7 @@
 <translation id="1076176485976385390">Buka halaman dengan kursor teks</translation>
 <translation id="1076698951459398590">Aktifkan Tema</translation>
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
+<translation id="1076882167394279216">Tidak dapat mendownload kamus periksa ejaan untuk bahasa <ph name="LANGUAGE" />. Coba lagi.</translation>
 <translation id="1079766198702302550">Selalu blokir akses kamera</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> ingin memulihkan setelan Chrome ke default aslinya. Tindakan ini akan menyetel ulang beranda, halaman tab baru dan mesin telusur, menonaktfikan ekstensi, dan melepas pin semua tab. Tindakan ini juga akan menghapus data sementara dan data yang tersimpan dalam cache seperti cookie, konten, dan data situs.</translation>
 <translation id="1084096383128641877">Menghapus sandi ini tidak akan menghapus akun Anda di <ph name="DOMAIN" />. Ubah sandi Anda atau hapus akun Anda di <ph name="DOMAIN_LINK" /> untuk menjaganya tetap aman dari orang lain.</translation>
@@ -286,11 +287,13 @@
 <translation id="1327074568633507428">Printer di Google Cloud Print</translation>
 <translation id="1327272175893960498">Tiket Kerberos</translation>
 <translation id="1327495825214193325">Untuk mengaktifkan proses debug ADB, Anda perlu memulai ulang <ph name="DEVICE_TYPE" /> ini. Perlu melakukan reset ke setelan pabrik untuk menonaktifkannya.</translation>
+<translation id="1327794256477341646">Fitur yang memerlukan lokasi Anda tidak akan berfungsi</translation>
 <translation id="1327977588028644528">Gerbang</translation>
 <translation id="1329584516321524826">Baru saja diupdate</translation>
 <translation id="1330145147221172764">Aktifkan keyboard di layar</translation>
 <translation id="1331977651797684645">Ini saya.</translation>
 <translation id="1333489022424033687">Beberapa fitur di <ph name="ORIGIN" /> mungkin tidak berfungsi kecuali Anda menghapus data yang telah disimpan di perangkat Anda oleh situs lain</translation>
+<translation id="1334384124770871673">Situs biasanya menggunakan sensor gerakan perangkat Anda untuk fitur seperti virtual reality atau penghitung langkah</translation>
 <translation id="133535873114485416">Preferensi masukan</translation>
 <translation id="1335929031622236846">Daftarkan perangkat Anda</translation>
 <translation id="1336902454946927954">Kunci keamanan Anda dikunci karena sidik jari Anda tidak dapat dikenali. Untuk membuka kuncinya, masukkan PIN.</translation>
@@ -300,6 +303,7 @@
 <translation id="1340527397989195812">Cadangkan media dari perangkat menggunakan aplikasi File.</translation>
 <translation id="1341988552785875222">Wallpaper saat ini disetel oleh '<ph name="APP_NAME" />'. Anda mungkin perlu meng-uninstal '<ph name="APP_NAME" />' sebelum memilih wallpaper lainnya.</translation>
 <translation id="1343865611738742294">Berikan izin aplikasi ke Linux untuk mengakses perangkat USB. Linux tidak akan mengingat perangkat USB setelah perangkat tersebut dilepas.</translation>
+<translation id="1346630054604077329">Konfirmasi dan mulai ulang</translation>
 <translation id="1347256498747320987">Instal update &amp; aplikasi. Dengan melanjutkan, artinya Anda menyetujui bahwa perangkat ini juga dapat mendownload serta menginstal update dan aplikasi secara otomatis dari Google, operator, dan produsen perangkat, yang kemungkinan menggunakan kuota. Sebagian aplikasi ini mungkin menawarkan pembelian dalam aplikasi. <ph name="BEGIN_LINK1" />Pelajari Lebih Lanjut<ph name="END_LINK1" /></translation>
 <translation id="1347975661240122359">Update akan dimulai jika baterai mencapai <ph name="BATTERY_LEVEL" />%.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
@@ -331,6 +335,7 @@
 <translation id="1387519831959169718">Untuk memisahkan penjelajahan, Anda dapat membuat profil baru untuk <ph name="NEW_USER" /></translation>
 <translation id="138784436342154190">Pulihkan halaman awal default?</translation>
 <translation id="1388728792929436380"><ph name="DEVICE_TYPE" /> akan dimulai ulang saat update selesai.</translation>
+<translation id="1389342855416376185">Blokir konten yang dilindungi</translation>
 <translation id="1390548061267426325">Buka sebagai Tab Biasa</translation>
 <translation id="1393283411312835250">Matahari dan awan</translation>
 <translation id="1395730723686586365">Updater dimulai</translation>
@@ -390,6 +395,7 @@
 <translation id="1451375123200651445">Halaman web, File Tunggal</translation>
 <translation id="1451917004835509682">Tambahkan Pengguna yang Dilindungi</translation>
 <translation id="1454223536435069390">Ambil screenshot</translation>
+<translation id="145432137617179457">Bahasa fitur periksa ejaan</translation>
 <translation id="1459693405370120464">Cuaca</translation>
 <translation id="1459967076783105826">Mesin telusur ditambahkan oleh ekstensi</translation>
 <translation id="146000042969587795">Bingkai ini diblokir karena berisi sejumlah konten tidak aman.</translation>
@@ -534,6 +540,7 @@
 <translation id="1618268899808219593">Pusat Bantuan</translation>
 <translation id="1620307519959413822">Sandi salah. Coba lagi atau klik Lupa sandi untuk mereset sandi.</translation>
 <translation id="1620510694547887537">Kamera</translation>
+<translation id="1621729191093924223">Fitur yang memerlukan mikrofon tidak akan berfungsi</translation>
 <translation id="1621831347985899379">Data <ph name="DEVICE_TYPE" /> akan dihapus</translation>
 <translation id="1622054403950683339">Lupakan jaringan Wi-Fi</translation>
 <translation id="1623132449929929218">Gambar saat ini tidak tersedia. Sambungkan kembali ke internet untuk melihat koleksi wallpaper.</translation>
@@ -631,6 +638,7 @@
 <translation id="1723824996674794290">&amp;Jendela baru</translation>
 <translation id="1725149567830788547">Tampilkan &amp;Kontrol</translation>
 <translation id="1726100011689679555">Nama server</translation>
+<translation id="1727662110063605623">Buka Setelan untuk menghubungkan <ph name="USB_DEVICE_NAME" /> ke Parallels Desktop atau Linux</translation>
 <translation id="1729533290416704613">Juga mengontrol halaman apa yang ditampilkan saat Anda menelusuri dari Omnibox.</translation>
 <translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />Untuk menghapus aplikasi, buka Setelan &gt; Google Play Store &gt; Kelola preferensi Android &gt; Aplikasi atau Pengelola aplikasi. Lalu, ketuk aplikasi yang ingin di-uninstal (Anda mungkin perlu menggeser ke kanan atau ke kiri untuk mencari aplikasi). Selanjutnya, ketuk Uninstal atau Nonaktifkan.<ph name="END_PARAGRAPH1" /></translation>
 <translation id="1731911755844941020">Mengirimkan permintaan...</translation>
@@ -787,6 +795,7 @@
 <translation id="1901303067676059328">Pilih semu&amp;a</translation>
 <translation id="1901396183631570154">Chrome tidak dapat menyimpan sandi ini di Akun Google Anda. Anda masih dapat menyimpannya di perangkat ini.</translation>
 <translation id="1905375423839394163">Nama perangkat Chromebook</translation>
+<translation id="1906181697255754968">Situs biasanya mengakses file dan folder di perangkat Anda untuk fitur seperti penyimpanan tugas otomatis</translation>
 <translation id="1906828677882361942">Jangan izinkan situs apa pun mengakses port serial</translation>
 <translation id="1909880997794698664">Yakin ingin menyimpan perangkat ini dalam mode kios secara permanen?</translation>
 <translation id="1910721550319506122">Selamat Datang!</translation>
@@ -823,6 +832,7 @@
 <translation id="1946577776959096882">Lihat akun</translation>
 <translation id="1949584741547056205">Jawaban Cepat</translation>
 <translation id="1951012854035635156">Asisten</translation>
+<translation id="1954597385941141174">Situs dapat meminta untuk terhubung ke perangkat USB</translation>
 <translation id="1954813140452229842">Error saat memasang URL berbagi. Periksa kredensial Anda dan coba lagi.</translation>
 <translation id="1956050014111002555">File berisi beberapa sertifikat, dan tidak ada satu pun di antaranya yang diimpor.</translation>
 <translation id="1956390763342388273">Tindakan ini akan mengupload semua file dari "<ph name="FOLDER_PATH" />". Hanya lakukan ini jika Anda memercayai situs.</translation>
@@ -848,6 +858,7 @@
 <translation id="197989455406964291">KDC tidak mendukung jenis enkripsi</translation>
 <translation id="1984417487208496350">Tidak ada perlindungan (tidak direkomendasikan)</translation>
 <translation id="1987317783729300807">Akun</translation>
+<translation id="1988494864246143197">Situs biasanya menggunakan Flash untuk memutar audio, video atau video game. Flash Player tidak akan didukung lagi setelah bulan Desember 2020.</translation>
 <translation id="1989112275319619282">Jelajahi</translation>
 <translation id="1990512225220753005">Jangan tampilkan pintasan di halaman ini</translation>
 <translation id="1992397118740194946">Belum disetel</translation>
@@ -874,6 +885,7 @@
 <translation id="2025115093177348061">Augmented reality</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" /> ngadat. Klik balon ini untuk memuat ulang ekstensi.</translation>
 <translation id="2025891858974379949">Konten tidak aman</translation>
+<translation id="2028449514182362831">Fitur yang memerlukan sensor gerakan tidak akan berfungsi</translation>
 <translation id="202918510990975568">Masukkan sandi Anda untuk mengonfigurasi keamanan dan login</translation>
 <translation id="2030455719695904263">Trackpad</translation>
 <translation id="2031639749079821948">Sandi disimpan di Akun Google Anda</translation>
@@ -970,6 +982,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2143778271340628265">Konfigurasi proxy manual</translation>
 <translation id="2144536955299248197">Penampil Sertifikat: <ph name="CERTIFICATE_NAME" /></translation>
 <translation id="2144557304298909478">Pengembangan aplikasi Android di Linux</translation>
+<translation id="2146263598007866206">Situs dapat otomatis mendownload file yang berkaitan sekaligus untuk menghemat waktu Anda</translation>
 <translation id="2148219725039824548">Error saat memasang URL berbagi. URL berbagi yang ditentukan tidak ditemukan di jaringan.</translation>
 <translation id="2148756636027685713">Pemformatan selesai</translation>
 <translation id="2148892889047469596">Transmisikan tab</translation>
@@ -988,6 +1001,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2157875535253991059">Sekarang halaman ini dalam mode layar penuh.</translation>
 <translation id="216169395504480358">Tambahkan Wi-Fi...</translation>
 <translation id="2162155940152307086">Sinkronisasi akan dimulai setelah Anda meninggalkan setelan sinkronisasi</translation>
+<translation id="2162838847352058695">Blokir situs agar tidak otomatis mendownload beberapa file</translation>
 <translation id="2163470535490402084">Sambungkan ke internet untuk masuk ke <ph name="DEVICE_TYPE" /> Anda.</translation>
 <translation id="2165421703844373933">Akses Asisten saat Anda mengucapkan "Ok Google". Untuk menghemat baterai, pilih "Aktifkan (Disarankan)". Asisten Anda hanya akan merespons saat perangkat dicolokkan atau diisi daya.</translation>
 <translation id="2166369534954157698">Lihat gaya font dan contoh ukurannya dengan cara yang menyenangkan</translation>
@@ -1050,6 +1064,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2230005943220647148">Celsius</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="2231238007119540260">Jika Anda menghapus sertifikat server, Anda akan mengembalikan pemeriksaan keamanan yang biasa untuk server dan mengharuskannya menggunakan sertifikat yang valid.</translation>
+<translation id="2232751457155581899">Situs dapat meminta untuk melacak posisi kamera Anda</translation>
 <translation id="2232876851878324699">File berisi satu sertifikat, yang tidak diimpor:</translation>
 <translation id="2233502537820838181">Infor&amp;masi selengkapnya</translation>
 <translation id="2234876718134438132">Sinkronisasi dan layanan Google</translation>
@@ -1110,6 +1125,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="230927227160767054">Halaman ini ingin memasang penangan layanan.</translation>
 <translation id="2309620859903500144">Situs ini telah diblokir agar tidak dapat mengakses sensor gerakan atau sensor cahaya.</translation>
 <translation id="2314165183524574721">Visibilitas saat ini disetel ke tersembunyi</translation>
+<translation id="2314774579020744484">Bahasa yang digunakan saat menerjemahkan halaman</translation>
 <translation id="2314873619957287124">Tetapkan aturan dasar penggunaan perangkat digital untuk membantu anak Anda belajar, bermain, dan menjelajah</translation>
 <translation id="2315414688463285945">Terjadi error saat mengonfigurasi file Linux. Harap coba lagi.</translation>
 <translation id="2315587498123194634">Kirim Link ke <ph name="DEVICE_NAME" /></translation>
@@ -1202,6 +1218,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2419706071571366386">Untuk keamanan, logout jika komputer tidak digunakan.</translation>
 <translation id="2422125132043002186">Pemulihan Linux dibatalkan</translation>
 <translation id="2423578206845792524">Sim&amp;pan gambar sebagai...</translation>
+<translation id="2424424966051154874">{0,plural, =1{Tamu}other{Tamu (#)}}</translation>
 <translation id="2428510569851653187">Jelaskan yang Anda lakukan saat tab error</translation>
 <translation id="2428939361789119025">Nonaktifkan Wi-Fi</translation>
 <translation id="2431027948063157455">Asisten Google tidak dapat dimuat, periksa koneksi internet dan coba lagi.</translation>
@@ -1531,6 +1548,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2791952154587244007">Terjadi kesalahan. Aplikasi kios tidak akan dapat diluncurkan secara otomatis di perangkat ini.</translation>
 <translation id="2792290659606763004">Hapus aplikasi Android?</translation>
 <translation id="2794233252405721443">Situs diblokir</translation>
+<translation id="2795716239552913152">Situs biasanya menggunakan lokasi Anda untuk fitur atau informasi yang relevan, seperti berita lokal dan toko terdekat</translation>
 <translation id="2796424461616874739">Waktu tunggu autentikasi habis saat menyambung ke "<ph name="DEVICE_NAME" />".</translation>
 <translation id="2796740370559399562">Terus izinkan cookie</translation>
 <translation id="2799223571221894425">Luncurkan Ulang</translation>
@@ -1597,6 +1615,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="287286579981869940">Menambahkan <ph name="PROVIDER_NAME" />...</translation>
 <translation id="2872961005593481000">Matikan</translation>
 <translation id="2874939134665556319">Lagu sebelumnya</translation>
+<translation id="2875140350998055906">Blokir iklan di situs yang menampilkan iklan yang mengganggu atau menyesatkan (direkomendasikan)</translation>
 <translation id="2875698561019555027">(Halaman kesalahan Chrome)</translation>
 <translation id="2876336351874743617">Jari 2</translation>
 <translation id="2876369937070532032">Mengirimkan URL beberapa halaman yang Anda kunjungi ke Google, jika keamanan Anda berisiko</translation>
@@ -1627,7 +1646,9 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2907798539022650680">Gagal tersambung ke '<ph name="NAME" />': <ph name="DETAILS" />
     Pesan server: <ph name="SERVER_MSG" /></translation>
 <translation id="2908162660801918428">Tambahkan Galeri Media menurut Direktori</translation>
+<translation id="2908942474180414627">Blokir situs agar tidak melacak posisi kamera Anda</translation>
 <translation id="2910318910161511225">Sambungkan ke jaringan dan coba lagi</translation>
+<translation id="291056154577034373">BELUM DIBACA</translation>
 <translation id="2910718431259223434">Terjadi error. Coba lagi atau hubungi pemilik atau administrator perangkat Anda. Kode error: <ph name="ERROR_CODE" />.</translation>
 <translation id="2913331724188855103">Izinkan situs untuk menyimpan dan membaca data cookie (disarankan)</translation>
 <translation id="2915102088417824677">Lihat log aktivitas</translation>
@@ -1690,6 +1711,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2993517869960930405">Info Aplikasi</translation>
 <translation id="2996286169319737844">Data dienkripsi dengan frasa sandi sinkronisasi Anda. Data ini tidak mencakup alamat dan metode pembayaran dari Google Pay.</translation>
 <translation id="2996722619877761919">Balik di sisi panjang</translation>
+<translation id="3000236644796679448">Situs dapat meminta untuk menggunakan mikrofon Anda (direkomendasikan)</translation>
 <translation id="3000461861112256445">Audio mono</translation>
 <translation id="3001144475369593262">Akun anak</translation>
 <translation id="3003144360685731741">Jaringan pilihan</translation>
@@ -1745,6 +1767,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3055590424724986000">Dengan penyedia pilihan Anda</translation>
 <translation id="3058498974290601450">Anda dapat mengaktifkan sinkronisasi kapan saja di setelan</translation>
 <translation id="3060379269883947824">Aktifkan fitur klik untuk diucapkan</translation>
+<translation id="3060952009917586498">Ubah bahasa perangkat. Bahasa saat ini adalah <ph name="LANGUAGE" />.</translation>
 <translation id="3065041951436100775">Masukan tab yang ditutup.</translation>
 <translation id="3065522099314259755">Latensi pengulangan keyboard</translation>
 <translation id="3067198179881736288">Instal aplikasi?</translation>
@@ -1819,6 +1842,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3151786313568798007">Orientasi</translation>
 <translation id="3154351730702813399">Admin perangkat dapat memantau aktivitas akses internet Anda.</translation>
 <translation id="3154429428035006212">Offline selama lebih dari satu bulan</translation>
+<translation id="3155072594963189910">Blokir situs agar tidak mengedit file dan folder di perangkat Anda</translation>
 <translation id="3156531245809797194">Untuk menggunakan Chrome, harap login</translation>
 <translation id="3157931365184549694">Pulihkan</translation>
 <translation id="3158033540161634471">Siapkan sidik jari Anda</translation>
@@ -1891,6 +1915,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3264544094376351444">Font Sans-serif</translation>
 <translation id="3264582393905923483">Konteks</translation>
 <translation id="3265459715026181080">Tutup Jendela</translation>
+<translation id="3266179261140759675">Blokir situs yang ditutup agar tidak mengirimkan dan menerima data</translation>
 <translation id="3266274118485960573">Pemeriksaan keselamatan sedang berjalan.</translation>
 <translation id="3267726687589094446">Lanjutkan mengizinkan download otomatis beberapa file</translation>
 <translation id="3268451620468152448">Tab Terbuka</translation>
@@ -2073,6 +2098,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3473241910002674503">Buka layar utama, kembali, dan alihkan aplikasi dengan tombol dalam mode tablet.</translation>
 <translation id="3473479545200714844">Kaca pembesar layar</translation>
 <translation id="347394413229268704">Baca nanti</translation>
+<translation id="3474218480460386727">Gunakan maksimal 99 huruf untuk kata baru</translation>
 <translation id="3475843873335999118">Maaf, sidik jari Anda masih tidak dapat dikenali. Masukkan sandi Anda.</translation>
 <translation id="3476303763173086583">Kirim data penggunaan dan diagnostik. Bantu sempurnakan pengalaman Android Anak Anda dengan otomatis mengirim data diagnostik, perangkat, dan penggunaan aplikasi ke Google. Data ini tidak akan digunakan untuk mengidentifikasi anak Anda serta akan membantu sistem dan stabilitas aplikasi serta penyempurnaan lainnya. Beberapa data gabungan juga akan membantu aplikasi dan partner Google, seperti developer Android. <ph name="BEGIN_LINK1" />Setelan<ph name="END_LINK1" /> ini diterapkan oleh pemilik. Pemilik dapat memilih untuk mengirim data diagnostik dan penggunaan untuk perangkat ini ke Google. Jika setelan Aktivitas Web &amp; Aplikasi tambahan diaktifkan untuk anak Anda, data ini mungkin akan disimpan ke akun Google miliknya. <ph name="BEGIN_LINK2" />Pelajari Lebih Lanjut<ph name="END_LINK2" /></translation>
 <translation id="347670947055184738">Maaf!  Sistem gagal mengambil kebijakan untuk perangkat Anda.</translation>
@@ -2088,6 +2114,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="348780365869651045">Menunggu AppCache...</translation>
 <translation id="3488065109653206955">Diaktifkan sebagian</translation>
 <translation id="3491669675709357988">Akun anak Anda belum disiapkan untuk kontrol orang tua Family Link. Anda dapat menambahkan kontrol orang tua setelah menyelesaikan penyiapan. Anda akan menemukan informasi tentang kontrol orang tua di aplikasi Jelajahi.</translation>
+<translation id="3491678231052507920">Situs biasanya menggunakan perangkat dan data virtual reality Anda untuk memungkinkan Anda memasuki sesi VR</translation>
 <translation id="3492788708641132712">Sinkronisasi tidak berjalan. Coba masuk lagi.</translation>
 <translation id="3493486281776271508">Diperlukan sambungan Internet</translation>
 <translation id="3493881266323043047">Validitas</translation>
@@ -2221,6 +2248,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3640214691812501263">Tambahkan "<ph name="EXTENSION_NAME" />" untuk <ph name="USER_NAME" />?</translation>
 <translation id="3640613767643722554">Ajari Asisten untuk mengenali suara Anda</translation>
 <translation id="3643014427358482789"><ph name="DOMAIN" /> menonaktifkan proses debug ADB, yang akan mereset <ph name="DEVICE_TYPE" /> Anda. Cadangkan file Anda sebelum memulai ulang.</translation>
+<translation id="3643637292669952403">Blokir situs agar tidak melihat lokasi Anda</translation>
 <translation id="3645372836428131288">Gerakkan jari sedikit untuk merekam bagian sidik jari yang lain.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> diterima dari <ph name="DEVICE_NAME" />}other{<ph name="ATTACHMENTS" /> diterima dari <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3648348069317717750"><ph name="USB_DEVICE_NAME" /> terdeteksi</translation>
@@ -2244,6 +2272,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3670113805793654926">Perangkat dari semua vendor</translation>
 <translation id="3670229581627177274">Aktifkan Bluetooth</translation>
 <translation id="3672681487849735243">Kesalahan pabrik terdeteksi</translation>
+<translation id="3674840410592648165">Situs dapat menginstal pengendali pembayaran (direkomendasikan)</translation>
 <translation id="367645871420407123">biarkan kosong jika Anda ingin menyetel sandi akar ke nilai gambar uji default</translation>
 <translation id="3677106374019847299">Masukkan penyedia kustom</translation>
 <translation id="3677657024345889897">Paling kecil</translation>
@@ -2418,6 +2447,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3850914401008572843"><ph name="ORIGIN" /> tidak dapat membuka folder ini karena berisi file sistem</translation>
 <translation id="3851428669031642514">Muat skrip yang tidak aman</translation>
 <translation id="3854599674806204102">Pilih salah satu opsi</translation>
+<translation id="3854967233147778866">Menawarkan penerjemahan situs ke dalam bahasa lain</translation>
 <translation id="3854976556788175030">Baki hasil cetak penuh</translation>
 <translation id="3855441664322950881">Kemas ekstensi</translation>
 <translation id="3855676282923585394">Impor Bookmark dan Setelan...</translation>
@@ -2425,6 +2455,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3856800405688283469">Pilih zona waktu</translation>
 <translation id="3857807444929313943">Angkat, kemudian sentuh lagi</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: Sinkronisasi dijeda</translation>
+<translation id="3861386850461794863">Bahasa untuk aplikasi dan situs</translation>
 <translation id="3861638017150647085">Nama pengguna "<ph name="USERNAME" />" tidak tersedia</translation>
 <translation id="3862693525629180217">Verifikasi melalui sensor bawaan</translation>
 <translation id="3862788408946266506">Aplikasi dengan atribut manifes 'kiosk_only' harus diinstal dalam mode kios Chrome OS</translation>
@@ -2455,6 +2486,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3894770151966614831">Pindahkan ke Akun Google?</translation>
 <translation id="3895090224522145010">Nama pengguna Kerberos</translation>
 <translation id="389589731200570180">Berbagi dengan tamu</translation>
+<translation id="3898233949376129212">Bahasa perangkat</translation>
 <translation id="3898327728850887246"><ph name="SITE_NAME" /> ingin: <ph name="FIRST_PERMISSION" /> dan <ph name="SECOND_PERMISSION" /></translation>
 <translation id="389901847090970821">Pilih keyboard</translation>
 <translation id="3899879303189199559">Offline selama lebih dari satu tahun</translation>
@@ -2575,6 +2607,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="4031179711345676612">Mikrofon diizinkan</translation>
 <translation id="4031527940632463547">Sensor diblokir</translation>
 <translation id="4033471457476425443">Tambahkan folder baru</translation>
+<translation id="4034280328082410379">Blokir plugin agar tidak mengakses komputer Anda</translation>
 <translation id="4034824040120875894">Printer</translation>
 <translation id="4035758313003622889">&amp;Pengelola tugas</translation>
 <translation id="4036778507053569103">Kebijakan yang didownload dari server tidak valid.</translation>
@@ -2679,6 +2712,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="4157869833395312646">Microsoft Server Gated Cryptography</translation>
 <translation id="4159681666905192102">Ini adalah akun untuk anak yang dikelola oleh <ph name="CUSTODIAN_EMAIL" /> dan <ph name="SECOND_CUSTODIAN_EMAIL" />.</translation>
 <translation id="4163560723127662357">Keyboard tidak dikenal</translation>
+<translation id="4167686856635546851">Situs biasanya menggunakan JavaScript untuk menampilkan fitur interaktif, seperti video game atau formulir web</translation>
 <translation id="4168015872538332605">Beberapa setelan milik <ph name="PRIMARY_EMAIL" /> digunakan bersama dengan Anda. Setelan ini akan memengaruhi akun Anda hanya jika memakai fitur masuk banyak akun.</translation>
 <translation id="4170256733935344210">Pindai kode QR menggunakan kamera perangkat atau masukkan kode aktivasi yang diberikan oleh operator layanan Anda</translation>
 <translation id="4170314459383239649">Hapus Saat Keluar</translation>
@@ -2754,6 +2788,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="4274667386947315930">Data login</translation>
 <translation id="4275291496240508082">Suara saat menyala</translation>
 <translation id="4275830172053184480">Mulai ulang perangkat Anda</translation>
+<translation id="4276288850178085042">Blokir situs agar tidak menggunakan kamera Anda</translation>
 <translation id="4278101229438943600">Asisten sudah siap</translation>
 <translation id="4278390842282768270">Diizinkan</translation>
 <translation id="4281844954008187215">Persyaratan Layanan</translation>
@@ -2848,6 +2883,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="4404136731284211429">Pindai lagi</translation>
 <translation id="4404843640767531781"><ph name="APP_NAME" /> diblokir oleh orang tuamu. Minta izin orang tuamu untuk menggunakan aplikasi ini.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
+<translation id="440653823335387109">HALAMAN YANG TELAH ANDA BACA</translation>
 <translation id="4406883609789734330">Teks Otomatis</translation>
 <translation id="4408599188496843485">Bantuan</translation>
 <translation id="4409697491990005945">Margin</translation>
@@ -2915,6 +2951,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="4483049906298469269">Gagal melakukan ping ke gateway jaringan non-default</translation>
 <translation id="4487489714832036847">Chromebook menggunakan aplikasi, bukan software tradisional. Dapatkan aplikasi untuk produktivitas, hiburan, dan masih banyak lagi.</translation>
 <translation id="4488502501195719518">Hapus semua data?</translation>
+<translation id="449232563137139956">Situs biasanya menampilkan gambar untuk memberikan ilustrasi, seperti foto untuk toko online atau artikel berita</translation>
 <translation id="4493468155686877504">Direkomendasikan (<ph name="INSTALL_SIZE" />)</translation>
 <translation id="4495419450179050807">Jangan tampilkan pada halaman ini</translation>
 <translation id="4496054781541092778"><ph name="PERMISSION" /> diblokir secara otomatis</translation>
@@ -2924,6 +2961,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="4502423230170890588">Hapus dari perangkat ini</translation>
 <translation id="4504374760782163539">{COUNT,plural, =0{Cookie diizinkan}=1{Cookie diizinkan, 1 pengecualian}other{Cookie diizinkan, {COUNT} pengecualian}}</translation>
 <translation id="4504940961672722399">Gunakan ekstensi ini dengan mengeklik ikon ini atau menekan <ph name="EXTENSION_SHORTCUT" />.</translation>
+<translation id="450552327874992444">Kata telah ditambahkan</translation>
 <translation id="4508051413094283164">Buka semua di jendela samaran</translation>
 <translation id="4508265954913339219">Aktivasi gagal</translation>
 <translation id="4508765956121923607">Lihat S&amp;umber</translation>
@@ -2944,8 +2982,10 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="4524832533047962394">Mode pendaftaran yang disediakan tidak didukung oleh versi sistem operasi ini. Pastikan Anda menjalankan versi terbaru.</translation>
 <translation id="4527186207340858212">Buat profil baru untuk kerja?</translation>
 <translation id="452750746583162491">Tinjau data Anda yang disinkronkan</translation>
+<translation id="4528494169189661126">Saran terjemahan</translation>
 <translation id="4530494379350999373">Asal</translation>
 <translation id="4531924570968473143">Siapa yang ingin Anda tambahkan ke <ph name="DEVICE_TYPE" /> ini?</translation>
+<translation id="4532625150642446981">"<ph name="USB_DEVICE_NAME" />" sedang digunakan. Menetapkan ulang perangkat saat sedang digunakan dapat menyebabkan error. Yakin ingin melanjutkan?</translation>
 <translation id="4532646538815530781">Situs ini menggunakan sensor gerakan.</translation>
 <translation id="4533846798469727141">Sekarang ucapkan "Hai Google"</translation>
 <translation id="4533985347672295764">Waktu CPU</translation>
@@ -2970,6 +3010,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="4551763574344810652">Tekan <ph name="MODIFIER_KEY_DESCRIPTION" /> untuk mengurungkan</translation>
 <translation id="4552089082226364758">Flash</translation>
 <translation id="4552759165874948005">Jaringan <ph name="NETWORK_TYPE" /> kekuatan sinyal <ph name="SIGNAL_STRENGTH" />%</translation>
+<translation id="4553526521109675518">Anda perlu memulai ulang Chromebook untuk mengubah bahasa perangkat. <ph name="BEGIN_LINK_LEARN_MORE" />Pelajari lebih lanjut<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4554591392113183336">Versi ekstensi eksternal sama atau lebih rendah dibandingkan yang sudah ada.</translation>
 <translation id="4555769855065597957">Bayangan</translation>
 <translation id="4555863373929230635">Untuk menyimpan sandi ke Akun Google Anda, login dan aktifkan sinkronisasi.</translation>
@@ -3002,6 +3043,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="4579453506923101210">Lupakan ponsel yang terhubung</translation>
 <translation id="4579581181964204535">Tidak dapat mentransmisi <ph name="HOST_NAME" />.</translation>
 <translation id="4581774856936278355">Terjadi error saat memulihkan Linux</translation>
+<translation id="4582297591746054421">Situs biasanya membaca papan klip Anda untuk fitur seperti mempertahankan format teks yang disalin</translation>
 <translation id="4582563038311694664">Reset semua setelan</translation>
 <translation id="4585793705637313973">Edit halaman</translation>
 <translation id="4586275095964870617"><ph name="URL" /> tidak dapat dibuka di browser alternatif. Harap hubungi administrator sistem Anda.</translation>
@@ -3077,6 +3119,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="4665446389743427678">Semua data yang disimpan oleh <ph name="SITE" /> akan dihapus.</translation>
 <translation id="4668721319092543482">Klik untuk mengaktifkan <ph name="PLUGIN_NAME" /></translation>
 <translation id="4670064810192446073">Virtual reality</translation>
+<translation id="4671265665487288124">Situs dapat meminta untuk otomatis mendownload beberapa file (direkomendasikan)</translation>
 <translation id="46733273239502219">Data offline di aplikasi terinstal juga akan dihapus</translation>
 <translation id="4673442866648850031">Buka alat stilus saat stilus dihapus</translation>
 <translation id="4677772697204437347">Memori GPU</translation>
@@ -3109,6 +3152,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="471880041731876836">Anda tidak memiliki izin untuk membuka situs ini</translation>
 <translation id="4720113199587244118">Tambahkan Perangkat</translation>
 <translation id="4720185134442950733">Jaringan data seluler</translation>
+<translation id="4722483286922621738">Situs biasanya terhubung ke perangkat serial untuk fitur transfer data, seperti penyiapan jaringan Anda</translation>
 <translation id="4722735765955348426">Sandi untuk <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> berbagi layar Anda.</translation>
 <translation id="4723140812774948886">Tukar dengan berikutnya</translation>
@@ -3176,6 +3220,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="4824037980212326045">Pencadangan dan pemulihan Linux</translation>
 <translation id="4824958205181053313">Batalkan sinkronisasi?</translation>
 <translation id="4827675678516992122">Tidak dapat tersambung</translation>
+<translation id="4827784381479890589">Fitur periksa ejaan yang disempurnakan di browser Chrome (teks dikirimkan ke Google untuk mendapatkan saran ejaan)</translation>
 <translation id="4829768588131278040">Siapkan PIN</translation>
 <translation id="4830121310592638841">Tanyakan saat situs ingin membuka dan menempatkan jendela di layar Anda</translation>
 <translation id="4830502475412647084">Menginstal update OS</translation>
@@ -3199,6 +3244,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="4849517651082200438">Jangan Dipasang</translation>
 <translation id="4850669014075537160">Gulir</translation>
 <translation id="4850886885716139402">Lihat</translation>
+<translation id="485088796993065002">Situs dapat memutar suara guna memberikan audio untuk musik, video, dan media lainnya</translation>
 <translation id="4853020600495124913">Buka di &amp;jendela baru</translation>
 <translation id="4854317507773910281">Pilih akun orang tua yang akan memberi persetujuan</translation>
 <translation id="485480310608090163">Setelan dan izin lainnya</translation>
@@ -3230,6 +3276,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="4881695831933465202">Buka</translation>
 <translation id="4882312758060467256">Memiliki akses ke situs ini</translation>
 <translation id="4882831918239250449">Kontrol cara histori browsing digunakan untuk mempersonalisasi Penelusuran, iklan, dan lainnya</translation>
+<translation id="4882919381756638075">Situs biasanya menggunakan mikrofon Anda untuk fitur komunikasi seperti video chat</translation>
 <translation id="4883436287898674711">Semua situs <ph name="WEBSITE_1" /></translation>
 <translation id="48838266408104654">Pengelola &amp;Tugas</translation>
 <translation id="4884987973312178454">6x</translation>
@@ -3280,6 +3327,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="4939805055470675027">Tidak dapat tersambung ke <ph name="CARRIER_NAME" /></translation>
 <translation id="4940364377601827259">Ada <ph name="PRINTER_COUNT" /> printer yang tersedia untuk disimpan.</translation>
 <translation id="4940845626435830013">Tetapkan ukuran disk</translation>
+<translation id="4941074198479265146">Situs biasanya terhubung ke perangkat MIDI untuk fitur pembuatan dan pengeditan musik</translation>
 <translation id="4941246025622441835">Gunakan permintaan perangkat ini saat mendaftarkan perangkat untuk pengelolaan perusahaan:</translation>
 <translation id="4941627891654116707">Ukuran font</translation>
 <translation id="494286511941020793">Bantuan Konfigurasi Proxy</translation>
@@ -3299,11 +3347,13 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="4971735654804503942">Perlindungan lebih cepat dan proaktif terhadap situs, download, dan ekstensi berbahaya. Memberi Anda peringatan terkait kebocoran sandi. Mengharuskan pengiriman data penjelajahan ke Google.</translation>
 <translation id="4972129977812092092">Edit printer</translation>
 <translation id="4972164225939028131">Sandi salah</translation>
+<translation id="4972737347717125191">Situs dapat meminta untuk menggunakan perangkat dan data virtual reality</translation>
 <translation id="4973307593867026061">Tambahkan printer</translation>
 <translation id="4973325300212422370">{NUM_TABS,plural, =1{Nonaktifkan notifikasi situs}other{Nonaktifkan notifikasi beberapa situs}}</translation>
 <translation id="4974733135013075877">Keluar dan aktifkan kunci anak</translation>
 <translation id="4976009197147810135">Pisahkan vertikal</translation>
 <translation id="4977942889532008999">Konfirmasi Akses</translation>
+<translation id="4978905460870207779">Situs dapat meminta untuk menggunakan Flash</translation>
 <translation id="4980805016576257426">Ekstensi ini berisi software perusak.</translation>
 <translation id="4981449534399733132">Untuk menghapus data browsing dari semua perangkat yang disinkronkan dan dari Akun Google, <ph name="BEGIN_LINK" />login<ph name="END_LINK" />.</translation>
 <translation id="4982236238228587209">Software perangkat</translation>
@@ -3330,6 +3380,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5017633213534173756">Ingat</translation>
 <translation id="5017643436812738274">Anda dapat membuka halaman dengan kursor teks. Tekan Ctrl+Search+7 untuk menonaktifkan.</translation>
+<translation id="5017828934289857214">Ingatkan Saya Nanti</translation>
 <translation id="5018207570537526145">Buka situs ekstensi</translation>
 <translation id="5018526990965779848">Kirimkan data penggunaan dan diagnostik. Bantu sempurnakan pengalaman penggunaan Android Anda dengan otomatis mengirim data diagnostik, perangkat, dan penggunaan aplikasi ke Google. Data ini akan membantu sistem dan stabilitas aplikasi serta penyempurnaan lainnya. Beberapa data gabungan juga akan membantu aplikasi dan partner Google, seperti developer Android. Jika setelan Aktivitas Web &amp; Aplikasi tambahan Anda diaktifkan, data ini mungkin akan disimpan ke Akun Google Anda.</translation>
 <translation id="5019392775062123007">Terlihat oleh perangkat di sekitar sebagai <ph name="DEVICE_NAME" /></translation>
@@ -3392,6 +3443,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="5097002363526479830">Gagal menyambung ke jaringan '<ph name="NAME" />': <ph name="DETAILS" /></translation>
 <translation id="5097649414558628673">Alat: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">Klik secara otomatis saat kursor berhenti</translation>
+<translation id="5099399397495049098">Situs dapat menggunakan JavaScript (direkomendasikan)</translation>
 <translation id="5101042277149003567">Buka semua bookmark</translation>
 <translation id="5101839224773798795">Klik secara otomatis saat kursor berhenti</translation>
 <translation id="5107443654503185812">Ekstensi telah menonaktifkan Safe Browsing</translation>
@@ -3687,6 +3739,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="5464632865477611176">Jalankan saat ini</translation>
 <translation id="5464660706533281090">Setelan ini tidak dapat diubah oleh pengguna turunan.</translation>
 <translation id="5466374726908360271">Tempel dan telusuri “<ph name="SEARCH_TERMS" />”</translation>
+<translation id="5468119583641912100">Situs dapat meminta untuk memutar konten yang dilindungi (direkomendasikan)</translation>
 <translation id="5468173180030470402">Mencari berbagi file</translation>
 <translation id="5469852975082458401">Anda dapat membuka halaman dengan kursor teks. Tekan F7 untuk menonaktifkan.</translation>
 <translation id="5470735824776589490">Mulai ulang diperlukan sebelum perangkat Anda dapat direset dengan Powerwash. <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
@@ -3836,6 +3889,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="5632566673632479864"><ph name="EMAIL" /> akun Anda tidak lagi diizinkan sebagai akun utama. Karena akun ini dikelola oleh <ph name="DOMAIN" />, bookmark, histori, sandi, dan setelan Anda lainnya akan dihapus dari perangkat ini.</translation>
 <translation id="5632592977009207922">Mendownload, <ph name="PERCENT_REMAINING" />% tersisa</translation>
 <translation id="563371367637259496">Seluler</translation>
+<translation id="563496044070985734">Bahasa yang tersedia untuk periksa ejaan didasarkan pada setelan bahasa Anda</translation>
 <translation id="563535393368633106">Tanyakan sebelum mengakses (disarankan)</translation>
 <translation id="5636996382092289526">Untuk menggunakan <ph name="NETWORK_ID" />, pertama Anda harus <ph name="LINK_START" />mengunjungi halaman proses masuk jaringan<ph name="LINK_END" />, yang akan otomatis terbuka dalam beberapa detik. Jika hal itu tidak terjadi, jaringan tidak akan dapat digunakan.</translation>
 <translation id="5637476008227280525">Data seluler aktif</translation>
@@ -3904,6 +3958,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="572155275267014074">Setelan Android</translation>
 <translation id="5722086096420375088">Hijau dan putih</translation>
 <translation id="5722930212736070253">Yah! Zip Archiver mengalami error.</translation>
+<translation id="5723034813131030312">Blokir situs agar tidak terhubung ke perangkat serial</translation>
 <translation id="572328651809341494">Tab terbaru</translation>
 <translation id="5723508132121499792">Tidak ada apl latar belakang yang sedang berjalan</translation>
 <translation id="5723967018671998714">Cookie pihak ketiga diblokir dalam mode Samaran</translation>
@@ -3959,6 +4014,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="5792728279623964091">Harap ketuk power Anda</translation>
 <translation id="5793339252089865437">Jika Anda mendownload update melalui jaringan seluler Anda, tindakan tersebut akan mengakibatkan tagihan berlebih.</translation>
 <translation id="5794414402486823030">Selalu buka dengan penampil sistem</translation>
+<translation id="5794476117027678724">Blokir situs agar tidak melihat teks dan gambar di papan klip Anda</translation>
 <translation id="5794700615121138172">Folder bersama Linux</translation>
 <translation id="5794786537412027208">Keluar dari semua Aplikasi Chrome</translation>
 <translation id="5797070761912323120">Google dapat menggunakan histori Anda untuk mempersonalisasi Penelusuran, iklan, dan layanan Google lainnya</translation>
@@ -4031,6 +4087,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="5869029295770560994">Oke, Mengerti</translation>
 <translation id="5869522115854928033">Sandi tersimpan</translation>
 <translation id="5870086504539785141">Close accessibility menu (Tutup menu aksesibilitas)</translation>
+<translation id="5870129979923971752">Blokir pengendali pembayaran</translation>
 <translation id="5870155679953074650">Hard fault</translation>
 <translation id="5876576639916258720">Sedang berjalan ...</translation>
 <translation id="5876851302954717356">Tab Baru di Sebelah Kanan</translation>
@@ -4068,6 +4125,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="5920835625712313205">Penulis Gambar Sistem Chrome OS</translation>
 <translation id="5921257443092182237">Layanan lokasi Google menggunakan sumber seperti Wi-Fi, jaringan seluler, dan sensor untuk membantu memperkirakan lokasi perangkat ini.</translation>
 <translation id="5924047253200400718">Dapatkan bantuan<ph name="SCANNING_STATUS" /></translation>
+<translation id="5924287525504995925">Blokir situs agar tidak menggunakan perangkat dan data virtual reality</translation>
 <translation id="5924527146239595929">Ambil foto baru atau pilih foto atau ikon yang sudah ada.
     <ph name="LINE_BREAK" />
     Gambar ini akan ditampilkan di layar login dan layar kunci Chromebook.</translation>
@@ -4199,6 +4257,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="6077189836672154517">Tips dan info terbaru tentang <ph name="DEVICE_TYPE" /></translation>
 <translation id="6077476112742402730">Ucapkan untuk mengetik</translation>
 <translation id="6078045608615316905">Buat kode QR untuk Gambar ini</translation>
+<translation id="6078121669093215958">{0,plural, =1{Tamu}other{# jendela tamu terbuka}}</translation>
 <translation id="6078323886959318429">Tambahkan pintasan</translation>
 <translation id="6078752646384677957">Harap periksa tingkat audio dan mikrofon Anda.</translation>
 <translation id="6078769373519310690">"<ph name="CHROME_EXTENSION_NAME" />" ingin terhubung ke perangkat HID</translation>
@@ -4286,11 +4345,13 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="6170470584681422115">Sandwich</translation>
 <translation id="6170498031581934115">Tidak dapat mengaktifkan proses debug ADB. Buka Setelan dan coba lagi.</translation>
 <translation id="6173623053897475761">Ketik PIN Anda lagi</translation>
+<translation id="6173870063490457111">Blokir pop-up dan pengalihan (direkomendasikan)</translation>
 <translation id="6175314957787328458">Microsoft Domain GUID</translation>
 <translation id="6176043333338857209">Bluetooth akan diaktifkan untuk sementara untuk berkomunikasi dengan kunci keamanan</translation>
 <translation id="6178664161104547336">Pilih sertifikat</translation>
 <translation id="6181431612547969857">Download diblokir</translation>
 <translation id="6185132558746749656">Lokasi Perangkat</translation>
+<translation id="6186394437969115158">Situs biasanya menampilkan iklan agar dapat menyediakan konten atau layanan secara gratis. Namun, beberapa situs dikenal menampilkan iklan yang mengganggu atau menyesatkan.</translation>
 <translation id="6191293864534840972">Format server nama salah</translation>
 <translation id="6195446518998936840">Untuk menyiapkan kontrol orang tua, anak harus memiliki Akun Google yang akan Anda kelola. Dengan aplikasi Family Link, Anda dapat menyetel batas waktu pemakaian perangkat, mengizinkan atau memblokir situs, dan lainnya.</translation>
 <translation id="6195693561221576702">Perangkat ini tidak dapat disiapkan dalam mode demo offline.</translation>
@@ -4371,6 +4432,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="6277105963844135994">Waktu tunggu jaringan habis</translation>
 <translation id="6277518330158259200">Ambil Screenshot</translation>
 <translation id="6278057325678116358">Gunakan GTK+</translation>
+<translation id="6278068827862345700">Situs yang baru saja ditutup dapat menyelesaikan pengiriman dan penerimaan data (direkomendasikan)</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6278776436938569440">Ubah lokasi</translation>
 <translation id="6279183038361895380">Tekan |<ph name="ACCELERATOR" />| untuk menampilkan kursor</translation>
@@ -4380,6 +4442,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="628352644014831790">4 detik</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> tidak biasa didownload dan mungkin berbahaya.</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Printer baru di jaringan Anda}other{Printer baru di jaringan Anda}}</translation>
+<translation id="6289626062715012577">Aplikasi dan situs yang mendukung beberapa bahasa akan menggunakan bahasa pertama yang didukung dari daftar ini. Preferensi bahasa disinkronkan ke browser Chrome. <ph name="BEGIN_LINK_LEARN_MORE" />Pelajari lebih lanjut<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370">Untuk memulai Linux, <ph name="ORGANIZATION_NAME" /> mengharuskan Anda mencadangkan data dan menyetel ulang Chromebook ini ke setelan pabrik.</translation>
 <translation id="6291949900244949761">Tanyakan saat situs ingin mengakses perangkat USB (direkomendasikan)</translation>
 <translation id="6291953229176937411">&amp;Tampilkan di Penemu</translation>
@@ -4392,6 +4455,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="630292539633944562">Saran informasi pribadi</translation>
 <translation id="6305607932814307878">Kebijakan Global:</translation>
 <translation id="6307990684951724544">Sistem sibuk</translation>
+<translation id="6308077700132376815">Blokir gambar</translation>
 <translation id="6308493641021088955">Login disediakan oleh <ph name="EXTENSION_NAME" /></translation>
 <translation id="6308937455967653460">Simpan tau&amp;tan sebagai...</translation>
 <translation id="6309510305002439352">Mikrofon dinonaktifkan</translation>
@@ -4420,8 +4484,11 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="632707535499064463"><ph name="ORGANIZATION_NAME" /> mengharuskan Anda mengupdate perangkat ini sebelum tiba batas waktu.</translation>
 <translation id="6327785803543103246">Penemuan otomatis proksi web</translation>
 <translation id="6331566915566907158">Bantu sempurnakan fitur dan performa Chrome OS</translation>
+<translation id="6331818708794917058">Situs dapat meminta untuk terhubung ke perangkat MIDI</translation>
 <translation id="6333064448949140209">File akan dikirim ke Google untuk proses debug</translation>
+<translation id="6338981933082930623">Semua situs dapat menampilkan iklan apa pun kepada Anda</translation>
 <translation id="6339668969738228384">Buat profil baru untuk <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="6339995243416022850">Situs dapat meminta untuk menggunakan plugin guna mengakses komputer Anda (direkomendasikan)</translation>
 <translation id="6340017061976355871">Tidak dapat terhubung dengan server. Harap periksa koneksi jaringan dan coba lagi. Jika masalah berlanjut, nyalakan ulang Chromebook.</translation>
 <translation id="6340071272923955280">Protokol Pencetakan Internet (IPPS)</translation>
 <translation id="6340526405444716530">Personalisasi</translation>
@@ -4706,6 +4773,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="6704062477274546131">Resolusi DNS</translation>
 <translation id="6706210727756204531">Cakupan</translation>
 <translation id="6707389671160270963">Sertifikat Klien SSL</translation>
+<translation id="670893696722244877">Telusuri berdasarkan bahasa dan nama input</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> dan 1 Tab Lainnya}other{<ph name="PAGE_TITLE" /> dan # Tab Lainnya}}</translation>
 <translation id="6709133671862442373">Berita</translation>
 <translation id="6709357832553498500">Sambungkan menggunakan <ph name="EXTENSIONNAME" /></translation>
@@ -4746,6 +4814,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="6758056191028427665">Berikan masukan Anda tentang kinerja kami.</translation>
 <translation id="6759193508432371551">Kembalikan ke setelan pabrik</translation>
 <translation id="6762833852331690540">Aktif</translation>
+<translation id="6763264843598438739">Situs dapat meminta untuk terhubung ke perangkat serial</translation>
 <translation id="676560328519657314">Metode pembayaran Anda di Google Pay</translation>
 <translation id="6767566652486411142">Pilih Bahasa Lain...</translation>
 <translation id="6767639283522617719">Tidak dapat bergabung dengan domain. Pastikan setelan sudah benar untuk unit organisasi.</translation>
@@ -4835,6 +4904,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="6856623341093082836">Siapkan dan sesuaikan akurasi layar sentuh</translation>
 <translation id="6857699260879628349">Dapatkan info konfigurasi</translation>
 <translation id="6860097299815761905">Setelan proxy...</translation>
+<translation id="686022878923628150">Blokir situs agar tidak terhubung ke perangkat MIDI</translation>
 <translation id="6860427144121307915">Buka di Tab</translation>
 <translation id="686366188661646310">Hapus sandi?</translation>
 <translation id="6865313869410766144">Data formulir isi-otomatis</translation>
@@ -4993,6 +5063,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="7052237160939977163">Mengirim data pelacakan kinerja</translation>
 <translation id="7053983685419859001">Blokir</translation>
 <translation id="7055152154916055070">Pengalihan diblokir:</translation>
+<translation id="7055451306017383754">Tidak dapat membatalkan berbagi karena ada aplikasi yang menggunakan folder ini. Berbagi folder akan dibatalkan saat berikutnya Parallels Desktop dimatikan.</translation>
 <translation id="7056526158851679338">&amp;Periksa Perangkat</translation>
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{Pemeriksaan keselamatan berjalan 1 menit lalu}other{Pemeriksaan keselamatan berjalan {NUM_MINS} menit lalu}}</translation>
 <translation id="7057767408836081338">Gagal mendapatkan data aplikasi, masih tetap mencoba menjalankan aplikasi...</translation>
@@ -5021,6 +5092,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="708060913198414444">S&amp;alin alamat audio</translation>
 <translation id="7081952801286122383">Sedang dalam mode samaran</translation>
 <translation id="708278670402572152">Putuskan hubungan untuk mengaktifkan pemindaian</translation>
+<translation id="7084321615353200053">Situs dapat meminta untuk menggunakan kamera Anda (direkomendasikan)</translation>
 <translation id="7085389578340536476">Izinkan Chrome merekam audio?</translation>
 <translation id="7086672505018440886">Sertakan file log Chrome di arsip.</translation>
 <translation id="7088434364990739311">Pengecekan pembaruan gagal dilakukan (kode kesalahan <ph name="ERROR" />).</translation>
@@ -5095,6 +5167,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="7182791023900310535">Pindahkan sandi Anda</translation>
 <translation id="7186088072322679094">Tetap sematkan di Bilah Alat</translation>
 <translation id="7187428571767585875">Entri registry yang akan dihapus atau diubah:</translation>
+<translation id="7187855807420906517">Setelah Anda keluar atau offline, situs biasanya tetap melakukan sinkronisasi untuk menyelesaikan tugas, seperti mengupload foto atau mengirim pesan chat</translation>
 <translation id="7189234443051076392">Pastikan ruang di perangkat Anda mencukupi</translation>
 <translation id="7189451821249468368">Anda tidak memiliki cukup upgrade untuk mendaftarkan perangkat ini. Hubungi pihak penjualan untuk membeli yang lainnya. Jika Anda yakin Anda tidak seharusnya mendapatkan pesan ini, hubungi dukungan.</translation>
 <translation id="7189965711416741966">Sidik jari ditambahkan.</translation>
@@ -5236,6 +5309,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="7364591875953874521">Meminta akses</translation>
 <translation id="7364796246159120393">Pilih File</translation>
 <translation id="7365076891350562061">Ukuran monitor</translation>
+<translation id="736522537010810033">Blokir situs agar tidak menggunakan mikrofon Anda</translation>
 <translation id="7366415735885268578">Tambahkan situs</translation>
 <translation id="7366909168761621528">Data browsing</translation>
 <translation id="7367714965999718019">Generator Kode QR</translation>
@@ -5243,6 +5317,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="7370592524170198497">Ethernet EAP:</translation>
 <translation id="7371006317849674875">Waktu mulai</translation>
 <translation id="7371490947952970241">Anda dapat menonaktifkan Lokasi dengan menonaktifkan setelan Lokasi utama pada perangkat ini. Anda juga dapat menonaktifkan penggunaan Wi-Fi, jaringan seluler, dan sensor untuk lokasi di setelan lokasi.</translation>
+<translation id="7374376573160927383">Kelola perangkat USB</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7375235221357833624">{0,plural, =1{Update perangkat dalam 1 jam}other{Update perangkat dalam # jam}}</translation>
 <translation id="7376553024552204454">Sorot kursor mouse saat kursor berpindah</translation>
@@ -5271,6 +5346,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="7407504355934009739">Sebagian besar orang memblokir notifikasi dari situs ini</translation>
 <translation id="740810853557944681">Tambahkan server cetak</translation>
 <translation id="7409549334477097887">Sangat besar</translation>
+<translation id="7409735910987429903">Situs dapat mengirim pop-up untuk menampilkan iklan, atau menggunakan pengalihan untuk mengarahkan Anda ke situs yang mungkin tidak ingin Anda kunjungi</translation>
 <translation id="7410344089573941623">Tanyakan jika <ph name="HOST" /> ingin mengakses kamera dan mikrofon Anda</translation>
 <translation id="741204030948306876">Ya, saya setuju</translation>
 <translation id="7412226954991670867">Memori GPU</translation>
@@ -5308,7 +5384,9 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="7454548535253569100">Portal: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="7456142309650173560">dev</translation>
 <translation id="7456847797759667638">Buka Lokasi...</translation>
+<translation id="7457384018036134905">Kelola bahasa di setelan Chrome OS</translation>
 <translation id="7458168200501453431">Menggunakan pemeriksa ejaan yang sama seperti yang digunakan di penelusuran Google. Teks yang Anda ketik di browser akan dikirim ke Google.</translation>
+<translation id="7459920164600044274">Situs biasanya menggunakan plugin untuk fitur seperti streaming video atau penginstalan aplikasi</translation>
 <translation id="7460045493116006516">Tema saat ini yang telah diinstal</translation>
 <translation id="7461729991508684543">{NUM_DAYS,plural, =1{<ph name="DOMAIN" /> mengharuskan Anda mencadangkan data dan mengembalikan <ph name="DEVICE_TYPE" /> ini hari ini. <ph name="LINK_BEGIN" />Lihat detailnya<ph name="LINK_END" />}other{<ph name="DOMAIN" /> mengharuskan Anda mencadangkan data dan mengembalikan <ph name="DEVICE_TYPE" /> ini dalam {NUM_DAYS} hari. <ph name="LINK_BEGIN" />Lihat detailnya<ph name="LINK_END" />}}</translation>
 <translation id="7461924472993315131">Pasang Pin</translation>
@@ -5368,6 +5446,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="7529411698175791732">Periksa koneksi internet Anda. Jika masalah tetap berlanjut, coba logout lalu login lagi.</translation>
 <translation id="7530016656428373557">Laju Penggunaan Daya dalam Watt</translation>
 <translation id="7531310913436731628">Lokasi dinonaktifkan di Preferensi Sistem Mac</translation>
+<translation id="7531771599742723865">Perangkat sedang digunakan</translation>
 <translation id="7531779363494549572">Buka Setelan &gt; Aplikasi &amp; notifikasi &gt; Notifikasi.</translation>
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> tidak merespons. Pilih "Tutup paksa" untuk menutup aplikasi.</translation>
 <translation id="7537451260744431038">Situs tidak dapat menggunakan cookie untuk menyempurnakan pengalaman penjelajahan Anda, misalnya untuk membuat Anda tetap login atau untuk mengingat item di keranjang belanja Anda</translation>
@@ -5399,6 +5478,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="7569983096843329377">Hitam</translation>
 <translation id="7571643774869182231">Tidak cukup ruang untuk melakukan update</translation>
 <translation id="7573172247376861652">Pengisian Daya Beterai</translation>
+<translation id="7573594921350120855">Situs biasanya menggunakan kamera video Anda untuk fitur komunikasi seperti video chat</translation>
 <translation id="7574650250151586813">Untuk mengetik teks, update aplikasi keyboard Daydream</translation>
 <translation id="7576690715254076113">Padukan</translation>
 <translation id="7576976045740938453">Terjadi masalah dengan akun mode demo.</translation>
@@ -5432,6 +5512,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="7617366389578322136">Menyambungkan ke "<ph name="DEVICE_NAME" />"</translation>
 <translation id="7621382409404463535">Sistem gagal menyimpan konfigurasi ponsel.</translation>
 <translation id="7622114377921274169">Mengisi daya.</translation>
+<translation id="7622768823216805500">Situs biasanya menginstal pengendali pembayaran untuk fitur belanja seperti pembayaran yang lebih mudah</translation>
 <translation id="7622903810087708234">Detail sandi</translation>
 <translation id="7624337243375417909">caps lock nonaktif</translation>
 <translation id="7625568159987162309">Lihat izin dan data yang disimpan di seluruh situs</translation>
@@ -5476,6 +5557,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="7665369617277396874">Tambahkan akun</translation>
 <translation id="7668002322287525834">{NUM_WEEKS,plural, =1{Kembalikan <ph name="DEVICE_TYPE" /> dalam {NUM_WEEKS} minggu}other{Kembalikan <ph name="DEVICE_TYPE" /> dalam {NUM_WEEKS} minggu}}</translation>
 <translation id="7669825497510425694">{NUM_ATTEMPTS,plural, =1{PIN salah. Anda memiliki satu kesempatan lagi.}other{PIN salah. Anda memiliki # kesempatan lagi.}}</translation>
+<translation id="7670343634869448987">Situs dapat memutar suara (direkomendasikan)</translation>
 <translation id="7671130400130574146">Gunakan bilah judul dan batas sistem</translation>
 <translation id="767127784612208024">Sentuh untuk mengonfirmasi peresetan</translation>
 <translation id="767147716926917172">Otomatis mengirimkan data diagnostik dan penggunaan ke Google</translation>
@@ -5486,6 +5568,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="7678280409648629969">Data login akan disimpan di Chrome setelah Anda keluar dari mode Samaran. Tindakan ini akan memungkinkan Anda menggunakan Touch ID dengan situs ini di lain waktu.</translation>
 <translation id="7680416688940118410">Kalibrasi layar sentuh</translation>
 <translation id="7681095912841365527">Situs dapat menggunakan bluetooth</translation>
+<translation id="7682634383739326341">Blokir situs agar tidak terhubung ke perangkat USB</translation>
 <translation id="7683373461016844951">Untuk melanjutkan, klik Oke, lalu klik Tambahkan Pengguna guna membuat profil baru untuk alamat email <ph name="DOMAIN" /> Anda.</translation>
 <translation id="7684212569183643648">Dipasang oleh Administrator Anda</translation>
 <translation id="7684559058815332124">Kunjungi halaman masuk portal tawanan</translation>
@@ -5522,11 +5605,13 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="7716648931428307506">Pilih lokasi untuk menyimpan sandi Anda</translation>
 <translation id="7716781361494605745">URL Kebijakan Otoritas Sertifikasi Netscape</translation>
 <translation id="7717014941119698257">Mendownload: <ph name="STATUS" /></translation>
+<translation id="7717134585801378441">Situs dapat meminta lokasi Anda (direkomendasikan)</translation>
 <translation id="7717845620320228976">Periksa pembaruan</translation>
 <translation id="7719367874908701697">Perkecil/perbesar halaman</translation>
 <translation id="7721179060400456005">Izinkan jendela untuk meluaskan tampilan</translation>
 <translation id="7722040605881499779">Perlu mengupdate: <ph name="NECESSARY_SPACE" /></translation>
 <translation id="7724603315864178912">Potong</translation>
+<translation id="7728465250249629478">Ubah bahasa perangkat</translation>
 <translation id="7728570244950051353">Layar kunci dari mode tidur</translation>
 <translation id="7728668285692163452">Perubahan saluran akan diterapkan nanti</translation>
 <translation id="7730449930968088409">Menangkap konten layar Anda</translation>
@@ -5535,6 +5620,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="7737115349420013392">Menyambungkan dengan "<ph name="DEVICE_NAME" />" ...</translation>
 <translation id="7737238973539693982">Hapus Linux (Beta)</translation>
 <translation id="7740996059027112821">Standar</translation>
+<translation id="7742706086992565332">Anda dapat menyetel tingkat pembesaran atau pengecilan pada situs tertentu</translation>
 <translation id="774377079771918250">Pilih lokasi untuk menyimpan</translation>
 <translation id="7744047395460924128">Lihat histori pencetakan Anda</translation>
 <translation id="7744192722284567281">Ditemukan di pelanggaran data</translation>
@@ -5543,6 +5629,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="7753735457098489144">Gagal menginstal karena ruang penyimpanan tidak cukup. Untuk mengosongkan ruang, hapus file dari penyimpanan perangkat.</translation>
 <translation id="7754704193130578113">Tanyakan lokasi penyimpanan setiap file sebelum mendownload</translation>
 <translation id="7755287808199759310">Orang tua dapat membuka blokirnya untukmu</translation>
+<translation id="7757592200364144203">Ubah nama perangkat</translation>
 <translation id="7757787379047923882">Teks dibagikan dari <ph name="DEVICE_NAME" /></translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">Sesuaikan batas tampilan Anda</translation>
@@ -5705,6 +5792,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="7918257978052780342">Daftarkan</translation>
 <translation id="7919210519031517829"><ph name="DURATION" />d</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> dapat melihat <ph name="FILENAME" /></translation>
+<translation id="7920482456679570420">Tambahkan kata yang ejaannya tidak ingin diperiksa</translation>
 <translation id="7924358170328001543">Error saat meneruskan port</translation>
 <translation id="792514962475806987">Tingkat zoom yang dipasang ke dok:</translation>
 <translation id="7925247922861151263">Pemeriksaan AAA gagal</translation>
@@ -5733,6 +5821,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="7947962633355574091">S&amp;alin Alamat Video</translation>
 <translation id="7950040156882184764">Protokol Pencetakan Internet (HTTP)</translation>
 <translation id="7951265006188088697">Untuk menambahkan atau mengelola metode pembayaran Google Pay, buka <ph name="BEGIN_LINK" />Akun Google<ph name="END_LINK" /> Anda</translation>
+<translation id="7952708427581814389">Situs dapat meminta untuk melihat teks dan gambar di papan klip Anda</translation>
 <translation id="795282463722894016">Pemulihan selesai</translation>
 <translation id="7952904276017482715">ID yang diharapkan "<ph name="EXPECTED_ID" />", namun ID-nya adalah "<ph name="NEW_ID" />"</translation>
 <translation id="7953955868932471628">Kelola pintasan</translation>
@@ -5819,6 +5908,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8049705080247101012">Google telah menandai "<ph name="EXTENSION_NAME" />" sebagai berbahaya dan penginstalannya telah dicegah</translation>
 <translation id="8049948037269924837">Scroll terbalik touchpad</translation>
 <translation id="8050038245906040378">Microsoft Commercial Code Signing</translation>
+<translation id="8051193500142930381">Fitur yang memerlukan kamera tidak akan berfungsi</translation>
 <translation id="8051390370038326517">Selalu izinkan <ph name="HOST" /> untuk memiliki kontrol penuh atas perangkat MIDI</translation>
 <translation id="8053278772142718589">PKCS #12 File</translation>
 <translation id="8053390638574070785">Muat Ulang Halaman Ini</translation>
@@ -5847,6 +5937,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8081989000209387414">Nonaktifkan proses debug ADB?</translation>
 <translation id="8082106343289440791">Sambungkan dengan "<ph name="DEVICE_NAME" />"?</translation>
 <translation id="8082390128630131497">Menonaktifkan proses debug ADB akan menyetel ulang <ph name="DEVICE_TYPE" /> ini ke setelan pabrik. Semua akun dan data lokal pengguna akan dihapus.</translation>
+<translation id="8083058154738359867">Dapatkan teks untuk media Anda dengan mengaktifkan Teks Otomatis di setelan</translation>
 <translation id="8084114998886531721">Sandi tersimpan</translation>
 <translation id="8086015605808120405">Mengonfigurasi <ph name="PRINTER_NAME" /> ...</translation>
 <translation id="8086442853986205778">Siapkan <ph name="PRINTER_NAME" /></translation>
@@ -5947,6 +6038,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8201717382574620700">Pilih album <ph name="TOPIC_SOURCE" /></translation>
 <translation id="8202160505685531999">Masukkan kembali sandi untuk memperbarui profil <ph name="DEVICE_TYPE" /> Anda.</translation>
 <translation id="8203732864715032075">Mengirim notifikasi dan secara default mengingat komputer ini untuk Message. <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
+<translation id="8205561625497621211">Blokir Flash (direkomendasikan)</translation>
 <translation id="820568752112382238">Situs yang paling sering dikunjungi</translation>
 <translation id="8206745257863499010">Jazzy</translation>
 <translation id="8206859287963243715">Seluler</translation>
@@ -6000,6 +6092,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8264024885325823677">Setelan ini dikelola oleh administrator Anda.</translation>
 <translation id="8264718194193514834">"<ph name="EXTENSION_NAME" />" memicu layar penuh.</translation>
 <translation id="826511437356419340">Masuk ke mode ringkasan jendela. Geser untuk membuka, atau tekan tab jika menggunakan keyboard.</translation>
+<translation id="8266947622852630193">Semua metode input</translation>
 <translation id="8267539814046467575">Tambahkan printer</translation>
 <translation id="8267961145111171918"><ph name="BEGIN_PARAGRAPH1" />Ini adalah informasi umum tentang perangkat ini dan cara penggunaannya (seperti tingkat daya baterai, aktivitas sistem dan aplikasi, serta error). Data ini akan digunakan untuk menyempurnakan Android. Beberapa informasi gabungan juga akan membantu aplikasi dan partner Google, seperti developer Android, membuat aplikasi dan produk mereka menjadi lebih baik.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Menonaktifkan fitur ini tidak memengaruhi kemampuan perangkat ini dalam mengirim informasi yang diperlukan untuk layanan penting seperti keamanan dan update sistem.<ph name="END_PARAGRAPH2" />
@@ -6159,6 +6252,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8470214316007448308">Orang Lain</translation>
 <translation id="8470513973197838199">Sandi yang tersimpan untuk <ph name="ORIGIN" /></translation>
 <translation id="8471256130228705232"><ph name="DOMAIN" /> menonaktifkan proses debug ADB. Ini akan mereset <ph name="DEVICE_TYPE" /> Anda setelah 24 jam. Cadangkan file yang ingin Anda simpan.</translation>
+<translation id="8471525937465764768">Situs biasanya terhubung ke perangkat USB untuk fitur seperti pencetakan dokumen atau penyimpanan ke perangkat penyimpanan</translation>
 <translation id="8472623782143987204">cadangan hardware</translation>
 <translation id="8473863474539038330">Alamat dan lain-lain</translation>
 <translation id="8475313423285172237">Program lain di komputer Anda menambahkan ekstensi yang dapat mengubah cara kerja Chrome.</translation>
@@ -6173,6 +6267,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8487678622945914333">Perbesar</translation>
 <translation id="8489156414266187072">Saran pribadi hanya ditampilkan di akun Anda</translation>
 <translation id="8490896350101740396">Aplikasi kios "<ph name="UPDATED_APPS" />" berikut telah diperbarui. Booting ulang perangkat untuk menyelesaikan proses pembaruan.</translation>
+<translation id="8492822722330266509">Situs dapat mengirimkan pop-up dan menggunakan pengalihan</translation>
 <translation id="8493236660459102203">Mikrofon:</translation>
 <translation id="8496717697661868878">Jalankan Plugin Ini</translation>
 <translation id="8497219075884839166">Windows Utilities</translation>
@@ -6329,6 +6424,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8678933587484842200">Bagaimana Anda ingin meluncurkan aplikasi ini?</translation>
 <translation id="8680251145628383637">Login untuk mendapatkan bookmark, histori, sandi, dan setelan lain di semua perangkat. Anda juga akan otomatis masuk ke layanan Google.</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> terhubung dan siap digunakan</translation>
+<translation id="8684397985879576119">Situs dapat meminta untuk mengedit file atau folder di perangkat Anda (direkomendasikan)</translation>
 <translation id="8688579245973331962">Tidak melihat nama Anda?</translation>
 <translation id="8688591111840995413">Sandi lemah</translation>
 <translation id="8688672835843460752">Tersedia</translation>
@@ -6568,6 +6664,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8945274638472141382">Ukuran ikon</translation>
 <translation id="8946359700442089734">Fitur debug belum diaktifkan sepenuhnya di perangkat <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
 <translation id="8948939328578167195"><ph name="WEBSITE" /> ingin melihat merek dan model kunci keamanan Anda</translation>
+<translation id="895054485242522631">Situs dapat menggunakan sensor gerakan</translation>
 <translation id="8951256747718668828">Tidak dapat menyelesaikan pemulihan karena terjadi error</translation>
 <translation id="8951465597020890363">Tetap keluar dari mode tamu?</translation>
 <translation id="8952831374766033534">Opsi konfigurasi tidak didukung: <ph name="ERROR_LINE" /></translation>
@@ -6627,8 +6724,10 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="901834265349196618">email</translation>
 <translation id="9019062154811256702">Membaca dan mengubah setelan IsiOtomatis</translation>
 <translation id="9019894137004772119">Gunakan lokasi. Izinkan aplikasi dan layanan yang memiliki izin akses lokasi untuk menggunakan lokasi perangkat Anda. Google dapat mengumpulkan data lokasi secara berkala dan menggunakan data ini secara anonim untuk meningkatkan akurasi lokasi dan layanan berdasarkan lokasi.</translation>
+<translation id="9019956081903586892">Tidak dapat mendownload kamus periksa ejaan</translation>
 <translation id="9020362265352758658">4x</translation>
 <translation id="9021662811137657072">Virus terdeteksi</translation>
+<translation id="902236149563113779">Situs biasanya melacak posisi kamera Anda untuk fitur AR, seperti game atau petunjuk arah</translation>
 <translation id="9022847679183471841">Akun ini sudah digunakan di komputer ini dengan nama <ph name="AVATAR_NAME" />.</translation>
 <translation id="9023009238991294202">Pengguna lain di perangkat ini dapat menggunakan jaringan ini.</translation>
 <translation id="9023015617655685412">Bookmark tab ini...</translation>
@@ -6752,6 +6851,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="9170848237812810038">&amp;Urung</translation>
 <translation id="9170884462774788842">Program lain di komputer Anda menambahkan tema yang dapat mengubah cara kerja Chrome.</translation>
 <translation id="917350715406657904">Kamu sudah mencapai batas waktu yang ditetapkan orang tuamu untuk <ph name="APP_NAME" />. Kamu bisa menggunakannya besok selama <ph name="TIME_LIMIT" />.</translation>
+<translation id="9173787391779732995">Situs dapat menampilkan gambar (direkomendasikan)</translation>
 <translation id="9173995187295789444">Memindai perangkat Bluetooth...</translation>
 <translation id="9174401638287877180">Kirimkan data penggunaan dan diagnostik. Bantu sempurnakan pengalaman penggunaan Android anak Anda dengan otomatis mengirimkan data diagnostik, perangkat, dan penggunaan aplikasi ke Google. Data ini tidak akan digunakan untuk mengidentifikasi anak Anda dan akan membantu sistem dan stabilitas aplikasi serta penyempurnaan lainnya. Beberapa data gabungan juga akan membantu aplikasi dan partner Google, seperti developer Android. Jika setelan Aktivitas Web &amp; Aplikasi tambahan diaktifkan untuk anak Anda, data ini mungkin akan disimpan ke Akun Google miliknya.</translation>
 <translation id="917510707618656279">Tanyakan saat situs ingin mengakses perangkat Bluetooth</translation>
@@ -6814,6 +6914,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="956500788634395331">Anda dilindungi dari ekstensi yang berpotensi berbahaya</translation>
 <translation id="957960681186851048">Situs ini berupaya mendownload beberapa file secara otomatis</translation>
 <translation id="9580706199804957">Tidak dapat terhubung dengan layanan Google</translation>
+<translation id="958329785990007682">Blokir JavaScript</translation>
 <translation id="960719561871045870">Kode operator</translation>
 <translation id="960987915827980018">Sekitar 1 jam lagi</translation>
 <translation id="962802172452141067">Cabang folder bookmark</translation>
@@ -6837,6 +6938,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="980731642137034229">Tombol menu tindakan</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="983511809958454316">Fitur ini tidak didukung di VR</translation>
+<translation id="984136553749462603">Saat situs memutar konten yang dilindungi oleh hak cipta, situs dapat meminta informasi tentang perangkat Anda</translation>
 <translation id="984275831282074731">Metode pembayaran</translation>
 <translation id="98515147261107953">Lanskap</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>

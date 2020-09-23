@@ -51,6 +51,7 @@
 <translation id="2315043854645842844">Selectarea certificatelor pe partea de client nu este acceptată de sistemul de operare.</translation>
 <translation id="2359808026110333948">Continuă</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
+<translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> și încă <ph name="NUM_MORE" /> sunt permise}few{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> și încă <ph name="NUM_MORE" /> sunt permise}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> și încă <ph name="NUM_MORE" /> sunt permise}}</translation>
 <translation id="2434158240863470628">Descărcare finalizată <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2440823041667407902">Accesul la locație</translation>
 <translation id="2482878487686419369">Notificări</translation>
@@ -190,6 +191,7 @@
 <translation id="6447842834002726250">Cookie-uri</translation>
 <translation id="6527303717912515753">Trimite</translation>
 <translation id="6545864417968258051">Căutare Bluetooth</translation>
+<translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> și încă <ph name="NUM_MORE" /> sunt blocate}few{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> și încă <ph name="NUM_MORE" /> sunt blocate}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> și încă <ph name="NUM_MORE" /> sunt blocate}}</translation>
 <translation id="6561560012278703671">Folosește mesaje discrete (notificările nu te vor întrerupe)</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Conținut protejat</translation>
@@ -292,6 +294,7 @@
 <translation id="8959122750345127698">Navigarea nu este accesibilă: <ph name="URL" /></translation>
 <translation id="9019902583201351841">Gestionat de părinții tăi</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> și încă <ph name="NUM_MORE" />}few{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> și încă <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> și încă <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289">Activează permisiunile pentru <ph name="APP_NAME" /> din <ph name="BEGIN_LINK" />Setări Android<ph name="END_LINK" />.</translation>
 <translation id="945632385593298557">Accesează microfonul</translation>
 <translation id="965817943346481315">Blochează dacă site-ul afișează anunțuri deranjante sau înșelătoare (recomandat)</translation>

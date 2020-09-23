@@ -51,6 +51,7 @@
 <translation id="2315043854645842844">የደንበኛ ወገን ዕውቅና ማረጋገጫ ምርጫ በስርዓተ-ክወናው አይደገፍም።</translation>
 <translation id="2359808026110333948">ቀጥል</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> ሜባ</translation>
+<translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />፣ <ph name="PERMISSION_2" />፣ እና <ph name="NUM_MORE" /> ተጨማሪ ተፈቅደዋል}one{<ph name="PERMISSION_1" />፣ <ph name="PERMISSION_2" /> እና <ph name="NUM_MORE" /> ተጨማሪ ተፈቅደዋል}other{<ph name="PERMISSION_1" />፣ <ph name="PERMISSION_2" /> እና <ph name="NUM_MORE" /> ተጨማሪ ተፈቅደዋል}}</translation>
 <translation id="2434158240863470628">ማውረድ ተጠናቅቋል <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2440823041667407902">የአካባቢ መዳረሻ</translation>
 <translation id="2482878487686419369">ማስታወቂያዎች</translation>
@@ -190,6 +191,7 @@
 <translation id="6447842834002726250">ኩኪዎች</translation>
 <translation id="6527303717912515753">አጋራ</translation>
 <translation id="6545864417968258051">የብሉቱዝ ቅኝት</translation>
+<translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />፣ <ph name="PERMISSION_2" />፣ እና <ph name="NUM_MORE" /> ተጨማሪ ታግደዋል}one{<ph name="PERMISSION_1" />፣ <ph name="PERMISSION_2" />፣ እና <ph name="NUM_MORE" /> ተጨማሪ ታግደዋል}other{<ph name="PERMISSION_1" />፣ <ph name="PERMISSION_2" /> እና <ph name="NUM_MORE" /> ተጨማሪ ታግደዋል}}</translation>
 <translation id="6561560012278703671">ይበልጥ ጸጥ ያለ መልዕክት አላላክ ይጠቀሙ (ማሳወቂያ ጥያቄዎች እርስዎን እንዳያቋርጡ ያግዳል)</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> ጊባ</translation>
 <translation id="6612358246767739896">ጥበቃ የሚደረግለት ይዘት</translation>
@@ -292,6 +294,7 @@
 <translation id="8959122750345127698">ዳሰሳ ሊደረስበት አይችልም፦ <ph name="URL" /></translation>
 <translation id="9019902583201351841">በእርስዎ ወላጆች የሚቀናበር</translation>
 <translation id="9074739597929991885">ብሉቱዝ</translation>
+<translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />፣ <ph name="PERMISSION_2" />፣ እና <ph name="NUM_MORE" /> ተጨማሪ}one{<ph name="PERMISSION_1" />፣ <ph name="PERMISSION_2" />፣ እና <ph name="NUM_MORE" /> ተጨማሪ}other{<ph name="PERMISSION_1" />፣ <ph name="PERMISSION_2" />፣ እና <ph name="NUM_MORE" /> ተጨማሪ}}</translation>
 <translation id="913657688200966289">ለ <ph name="APP_NAME" /> በ <ph name="BEGIN_LINK" />Android ቅንብሮች<ph name="END_LINK" /> ውስጥ ፈቃዶችን ያብሩ።</translation>
 <translation id="945632385593298557">የእርስዎን ማይክሮፎን ይድረሱ</translation>
 <translation id="965817943346481315">ጣቢያው ረባሽ ወይም አሳሳች ማስታወቂያዎችን የሚያሳይ ከሆነ ማገድ (የሚመከር)</translation>

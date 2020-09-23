@@ -51,6 +51,7 @@
 <translation id="2315043854645842844">Certificaatselectie aan clientzijde wordt niet ondersteund door het besturingssysteem.</translation>
 <translation id="2359808026110333948">Doorgaan</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
+<translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> en nog <ph name="NUM_MORE" /> toegestaan}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> en nog <ph name="NUM_MORE" /> toegestaan}}</translation>
 <translation id="2434158240863470628">Download voltooid <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2440823041667407902">Locatietoegang</translation>
 <translation id="2482878487686419369">Meldingen</translation>
@@ -190,6 +191,7 @@
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6527303717912515753">Delen</translation>
 <translation id="6545864417968258051">Bluetooth-scannen</translation>
+<translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> en nog <ph name="NUM_MORE" /> geblokkeerd}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> en nog <ph name="NUM_MORE" /> geblokkeerd}}</translation>
 <translation id="6561560012278703671">Stillere meldingen gebruiken (zorgt ervoor dat je niet wordt gestoord door meldingprompts)</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Beschermde content</translation>
@@ -292,6 +294,7 @@
 <translation id="8959122750345127698">Navigatie is onbereikbaar: <ph name="URL" /></translation>
 <translation id="9019902583201351841">Beheerd door je ouders</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> en nog <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> en nog <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289">Schakel rechten in voor <ph name="APP_NAME" /> via de <ph name="BEGIN_LINK" />Android-instellingen<ph name="END_LINK" />.</translation>
 <translation id="945632385593298557">Toegang tot je microfoon</translation>
 <translation id="965817943346481315">Blokkeren als site opdringerige of misleidende advertenties weergeeft (aanbevolen)</translation>

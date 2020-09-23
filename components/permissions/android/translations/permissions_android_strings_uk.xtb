@@ -1,8 +1,10 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="uk">
+<translation id="2077832278056815832">Закрийте спливаючі чати або накладання з інших додатків. Потім повторіть спробу.</translation>
 <translation id="2359808026110333948">Продовжити</translation>
 <translation id="2416359993254398973">Chrome потрібні дозволи, щоб використовувати камеру на цьому сайті.</translation>
+<translation id="2987449669841041897">Цей сайт не може запитувати у вас дозвіл</translation>
 <translation id="557283862590186398">Chrome потрібні дозволи, щоб використовувати мікрофон на цьому сайті.</translation>
 <translation id="5860491529813859533">Увімкнути</translation>
 <translation id="6092062101542170135">Щоб продовжити, увімкніть NFC в налаштуваннях Android</translation>

@@ -137,6 +137,7 @@
 <translation id="2341729377289034582">Függőleges helyzetben zárolva</translation>
 <translation id="2352467521400612932">Az érintőceruza beállításai</translation>
 <translation id="2354174487190027830"><ph name="NAME" /> aktiválása</translation>
+<translation id="2356210126990741501">Úgy tűnik, telefonja nem online. Így nem tudjuk róla az összes kiegészítőt megszerezni Önnek.</translation>
 <translation id="2359808026110333948">Tovább</translation>
 <translation id="2365393535144473978">A mobiladat-kapcsolat engedélyezésével a Bluetooth is bekapcsol.</translation>
 <translation id="2369165858548251131">„Helló” kínai nyelven</translation>
@@ -169,6 +170,7 @@
 <translation id="2705001408393684014">Mikrofon be-/kikapcsolása. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Fel</translation>
 <translation id="2718395828230677721">Éjszakai fény</translation>
+<translation id="2727175239389218057">Válasz</translation>
 <translation id="2727977024730340865">Kis teljesítményű töltőt csatlakoztatott. Az akkumulátor töltése nem megbízható.</translation>
 <translation id="2743387203779672305">Másolás a vágólapra</translation>
 <translation id="2792498699870441125">Alt + Keresés</translation>
@@ -177,6 +179,7 @@
 <translation id="2825619548187458965">Polc</translation>
 <translation id="2841907151129139818">Visszaváltott táblagép módra</translation>
 <translation id="2844169650293029770">C típusú USB-vel kompatibilis eszköz (bal első port)</translation>
+<translation id="2846247265041961677">Hűha! A telefon nem található.</translation>
 <translation id="2865888419503095837">Hálózatinformáció</translation>
 <translation id="2872961005593481000">Leállítás</translation>
 <translation id="2878884018241093801">Nincsenek mostanában használt elemek</translation>
@@ -305,6 +308,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Ki, 1 appnál}other{Ki, # appnál}}</translation>
 <translation id="4072264167173457037">Közepes jel</translation>
 <translation id="4112140312785995938">Ugrás visszafelé</translation>
+<translation id="4114315158543974537">Phone Hub bekapcsolása</translation>
 <translation id="4129129681837227511">Ha szeretné látni az értesítéseket a lezárási képernyőn, oldja fel a képernyő zárolását a beállítás módosításához</translation>
 <translation id="4146833061457621061">Zenelejátszás</translation>
 <translation id="4149156641122542261">A(z) <ph name="DEVICE_TYPE" /> kezelője: <ph name="DOMAIN" /></translation>
@@ -436,6 +440,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="5648021990716966815">Mikrofon jack csatlakozója</translation>
 <translation id="5669267381087807207">Aktiválás</translation>
 <translation id="5673434351075758678">Módosítás <ph name="FROM_LOCALE" /> nyelvről <ph name="TO_LOCALE" /> nyelvre a beállítások szinkronizálása után.</translation>
+<translation id="5679050765726761783">Alacsony energiafogyasztású csatlakozó csatlakoztatva</translation>
 <translation id="5682642926269496722">A Google Segéd nem áll rendelkezésre ennél a felhasználói fióknál.</translation>
 <translation id="5689633613396158040">Az Éjszakai fény funkció kellemesebbé teszi a képernyő nézését és az olvasást gyenge fény mellett. Koppintson, ha módosítani szeretné, hogy mikor kapcsoljon be az Éjszakai mód, vagy ha teljesen ki szeretné kapcsolni.</translation>
 <translation id="5691772641933328258">Ujjlenyomat felismerése sikertelen</translation>
@@ -460,6 +465,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Be</translation>
 <translation id="5920710855273935292">A mikrofon le van némítva.</translation>
+<translation id="594179686076170922">Kapcsolódás a telefonhoz…</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> bekapcsolva.</translation>
 <translation id="5947494881799873997">Visszavonás</translation>
 <translation id="595202126637698455">Teljesítménykövetés engedélyezve</translation>
@@ -549,6 +555,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="6857811139397017780"><ph name="NETWORKSERVICE" /> aktiválása</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{1 számjegy maradt}other{# számjegy maradt}}</translation>
 <translation id="6878400149835617132">A billentyűparancs ki van kapcsolva</translation>
+<translation id="6886172995547742638">A(z) <ph name="DEVICE_TYPE" /> eszközön a teljesítmény csökkenése észlelhető. Használjon tanúsítvánnyal rendelkező <ph name="PREFERRED_MINIMUM_POWER" /> W-os vagy nagyobb teljesítményű USB-C tápcsatlakozót.</translation>
 <translation id="6896758677409633944">Másolás</translation>
 <translation id="6910714959251846841">Eszköze frissítéséhez powerwash szükséges. További információ a legújabb <ph name="SYSTEM_APP_NAME" />-frissítésről.</translation>
 <translation id="6919251195245069855">A rendszer nem ismerte fel az intelligens kártyáját. Próbálja újra.</translation>

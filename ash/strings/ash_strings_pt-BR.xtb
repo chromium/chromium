@@ -137,6 +137,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="2341729377289034582">Bloqueado na vertical</translation>
 <translation id="2352467521400612932">Configurações da stylus</translation>
 <translation id="2354174487190027830">Ativando <ph name="NAME" /></translation>
+<translation id="2356210126990741501">Parece que o smartphone não está on-line, e não é possível acessar todos os recursos dele no momento.</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2365393535144473978">A ativação dos dados móveis também ativará o Bluetooth.</translation>
 <translation id="2369165858548251131">"Olá" em chinês</translation>
@@ -169,6 +170,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="2705001408393684014">Alternar microfone. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Para cima</translation>
 <translation id="2718395828230677721">Modo noturno</translation>
+<translation id="2727175239389218057">Responder</translation>
 <translation id="2727977024730340865">Conectado a um carregador de baixa potência. O carregamento da bateria pode não ser confiável.</translation>
 <translation id="2743387203779672305">Copiar para área de transferência</translation>
 <translation id="2792498699870441125">Alt + Pesquisar</translation>
@@ -177,6 +179,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="2825619548187458965">Estante</translation>
 <translation id="2841907151129139818">Modo tablet ativado</translation>
 <translation id="2844169650293029770">Dispositivo USB-C (porta frontal da esquerda)</translation>
+<translation id="2846247265041961677">Ops! Smartphone não encontrado</translation>
 <translation id="2865888419503095837">Informações de rede</translation>
 <translation id="2872961005593481000">Desligar</translation>
 <translation id="2878884018241093801">Nenhum item recente</translation>
@@ -304,6 +307,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Desat p/ um app}one{Desat p/ # app}other{Desat p/ # apps}}</translation>
 <translation id="4072264167173457037">Sinal médio</translation>
 <translation id="4112140312785995938">Retroceder</translation>
+<translation id="4114315158543974537">Ativar o Phone Hub</translation>
 <translation id="4129129681837227511">Para ver as notificações na sua tela de bloqueio, desbloqueie a tela e altere a configuração</translation>
 <translation id="4146833061457621061">Ouvir música</translation>
 <translation id="4149156641122542261"><ph name="DEVICE_TYPE" /> gerenciado por <ph name="DOMAIN" /></translation>
@@ -435,6 +439,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="5648021990716966815">Entrada para microfone</translation>
 <translation id="5669267381087807207">Ativando</translation>
 <translation id="5673434351075758678">De "<ph name="FROM_LOCALE" />" para "<ph name="TO_LOCALE" />" após a sincronização das suas configurações.</translation>
+<translation id="5679050765726761783">Adaptador de baixa potência conectado</translation>
 <translation id="5682642926269496722">O Google Assistente não está disponível para a conta de usuário atual.</translation>
 <translation id="5689633613396158040">O Modo noturno facilita a visualização da sua tela ou a leitura com pouca luz. Toque para mudar o horário de ativação do Modo noturno ou desative-o completamente.</translation>
 <translation id="5691772641933328258">Impressão digital não reconhecida</translation>
@@ -459,6 +464,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Ativado</translation>
 <translation id="5920710855273935292">O microfone está desativado.</translation>
+<translation id="594179686076170922">Conectando ao seu smartphone…</translation>
 <translation id="5946788582095584774">O recurso <ph name="FEATURE_NAME" /> está ativado.</translation>
 <translation id="5947494881799873997">Reverter</translation>
 <translation id="595202126637698455">Rastreamento de desempenho ativado</translation>
@@ -549,6 +555,7 @@ permanentemente excluídos assim que esse usuário for removido. Os websites vis
 <translation id="6857811139397017780">Ativar <ph name="NETWORKSERVICE" /></translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{1 dígito restante}one{# dígito restante}other{# dígitos restantes}}</translation>
 <translation id="6878400149835617132">Atalho desativado</translation>
+<translation id="6886172995547742638">Seu <ph name="DEVICE_TYPE" /> pode ter baixo desempenho. Use um adaptador de energia USB-C certificado de <ph name="PREFERRED_MINIMUM_POWER" />W ou mais.</translation>
 <translation id="6896758677409633944">Copiar</translation>
 <translation id="6910714959251846841">Esta atualização requer o powerwash do seu dispositivo. Saiba mais sobre a última atualização do <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="6919251195245069855">Não foi possível reconhecer seu cartão inteligente. Tente novamente.</translation>

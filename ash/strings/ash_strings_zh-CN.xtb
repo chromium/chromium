@@ -137,6 +137,7 @@
 <translation id="2341729377289034582">已锁定为纵向</translation>
 <translation id="2352467521400612932">触控笔设置</translation>
 <translation id="2354174487190027830">正在激活“<ph name="NAME" />”</translation>
+<translation id="2356210126990741501">您的手机好像未联网，因此我们现在无法为您获取其中的所有个性小应用。</translation>
 <translation id="2359808026110333948">继续</translation>
 <translation id="2365393535144473978">如果您启用移动数据网络，蓝牙亦会随之开启。</translation>
 <translation id="2369165858548251131">“你好”用英文怎么说</translation>
@@ -169,6 +170,7 @@
 <translation id="2705001408393684014">开启/关闭麦克风。<ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">向上箭头键</translation>
 <translation id="2718395828230677721">护眼模式</translation>
+<translation id="2727175239389218057">回复</translation>
 <translation id="2727977024730340865">已插入低功率充电器；可能无法保证充电成功。</translation>
 <translation id="2743387203779672305">复制到剪贴板</translation>
 <translation id="2792498699870441125">Alt + 搜索键</translation>
@@ -177,6 +179,7 @@
 <translation id="2825619548187458965">任务栏</translation>
 <translation id="2841907151129139818">已切换到平板电脑模式</translation>
 <translation id="2844169650293029770">USB-C 设备（左侧前端端口）</translation>
+<translation id="2846247265041961677">糟糕！找不到手机</translation>
 <translation id="2865888419503095837">网络信息</translation>
 <translation id="2872961005593481000">关机</translation>
 <translation id="2878884018241093801">近期没有任何内容</translation>
@@ -304,6 +307,7 @@
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{对 1 个应用关闭}other{对 # 个应用关闭}}</translation>
 <translation id="4072264167173457037">信号中等</translation>
 <translation id="4112140312785995938">快退</translation>
+<translation id="4114315158543974537">开启手机中心</translation>
 <translation id="4129129681837227511">要想在锁定屏幕上看到通知，请解锁设备以更改设置</translation>
 <translation id="4146833061457621061">播放音乐</translation>
 <translation id="4149156641122542261">此 <ph name="DEVICE_TYPE" /> 由 <ph name="DOMAIN" /> 管理</translation>
@@ -435,6 +439,7 @@
 <translation id="5648021990716966815">麦克风耳机插孔</translation>
 <translation id="5669267381087807207">正在激活</translation>
 <translation id="5673434351075758678">当系统同步完您的设置后，“<ph name="FROM_LOCALE" />”即会改为“<ph name="TO_LOCALE" />”。</translation>
+<translation id="5679050765726761783">已连接低功耗适配器</translation>
 <translation id="5682642926269496722">当前用户帐号无法使用 Google 助理。</translation>
 <translation id="5689633613396158040">护眼模式可让您更舒适地在黯淡的光线下查看屏幕或阅读文字。点按即可更改护眼模式的开启时间或彻底关闭护眼模式。</translation>
 <translation id="5691772641933328258">无法识别指纹</translation>
@@ -459,6 +464,7 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">启用</translation>
 <translation id="5920710855273935292">麦克风已静音。</translation>
+<translation id="594179686076170922">正在连接到您的手机…</translation>
 <translation id="5946788582095584774">“<ph name="FEATURE_NAME" />”功能已开启。</translation>
 <translation id="5947494881799873997">还原</translation>
 <translation id="595202126637698455">已启用性能跟踪</translation>
@@ -548,6 +554,7 @@
 <translation id="6857811139397017780">激活 <ph name="NETWORKSERVICE" /></translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{还差 1 位数字}other{还差 # 位数字}}</translation>
 <translation id="6878400149835617132">快捷方式已关闭</translation>
+<translation id="6886172995547742638">这可能会导致您的 <ph name="DEVICE_TYPE" /> 性能低下。请使用已获认证的不低于 <ph name="PREFERRED_MINIMUM_POWER" />W 的 USB-C 型电源适配器。</translation>
 <translation id="6896758677409633944">复制</translation>
 <translation id="6910714959251846841">必须对您的设备执行 Powerwash 才能安装这项更新。详细了解最新的 <ph name="SYSTEM_APP_NAME" />更新。</translation>
 <translation id="6919251195245069855">无法识别您的智能卡，请重试。</translation>

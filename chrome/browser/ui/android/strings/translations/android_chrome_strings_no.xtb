@@ -125,6 +125,7 @@
 <translation id="1993768208584545658"><ph name="SITE" /> vil koble til</translation>
 <translation id="2000419248597011803">Sender noen informasjonskapsler og søk fra adressefeltet og søkefeltet samt noen informasjonskapsler til standardsøkemotoren din</translation>
 <translation id="2002537628803770967">Kredittkort og adresser ved bruk av Google Pay</translation>
+<translation id="2010780124464321179">Kan ikke opprette noen link til teksten. Del en link til siden.</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# fil}other{# filer}}</translation>
 <translation id="2017836877785168846">Tømmer loggen og fjerner automatiske fullføringer fra adressefeltet.</translation>
 <translation id="2021896219286479412">Navigering i full skjerm</translation>
@@ -192,6 +193,7 @@ Trykk og hold inne på et ord for å søke. For å finstemme søket, merk flere 
 <translation id="2494974097748878569">Google-assistenten i Chrome</translation>
 <translation id="2496180316473517155">Nettleserlogg</translation>
 <translation id="2497852260688568942">Administratoren din har slått av synkronisering</translation>
+<translation id="250020030759455918">Du kommer til å se påloggingsstatus, nettlesingsdata og nettstedsdata for <ph name="SITE_NAME" /> i Chrome</translation>
 <translation id="2513403576141822879">Se <ph name="BEGIN_LINK" />Synkronisering og Google tjenester<ph name="END_LINK" /> for flere innstillinger knyttet til personvern, sikkerhet og datainnsamling.</translation>
 <translation id="2517472476991765520">Skann</translation>
 <translation id="2518590038762162553">I forenklet modus laster Chrome inn sider raskere og bruker opptil 60 prosent mindre data. For å optimalisere sidene du besøker, sender Chrome nettrafikken din til Google. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
@@ -273,7 +275,9 @@ Trykk og hold inne på et ord for å søke. For å finstemme søket, merk flere 
 <translation id="3207960819495026254">Bokmerket</translation>
 <translation id="3208584281581115441">Sjekk nå</translation>
 <translation id="3211426585530211793">Slettet <ph name="ITEM_TITLE" /></translation>
+<translation id="3211503082155944789"><ph name="READING_LIST_COUNT" /> uleste sider</translation>
 <translation id="321773570071367578">Hvis du har glemt passordfrasen din eller vil endre denne innstillingen, må du <ph name="BEGIN_LINK" />tilbakestille synkroniseringen<ph name="END_LINK" /></translation>
+<translation id="3223655207402797071">Logg på dette nettstedet, Google-kontoen din og Chrome. Du kan slå på synkronisering senere.</translation>
 <translation id="3232754137068452469">Nettprogram</translation>
 <translation id="3236059992281584593">1 minutt igjen</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -491,6 +495,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkronis
 <translation id="4913169188695071480">Slutt å laste inn på nytt</translation>
 <translation id="4915549754973153784"><ph name="BEGIN_LINK" />Få hjelp<ph name="END_LINK" /> mens du skanner etter enheter …</translation>
 <translation id="4921180162323349895">{FILE_COUNT,plural, =1{# side}other{# sider}}</translation>
+<translation id="4925120120285606924">Skjermdump <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">Passordene dine blir eksportert og lastet ned som en tekstfil. De blir synlige for alle personer og apper som har tilgang til målmappen.</translation>
 <translation id="4932247056774066048">Fordi du logger av en konto som administreres av <ph name="DOMAIN_NAME" />, slettes Chrome-dataene dine fra denne enheten. De blir værende i Google-kontoen din.</translation>
 <translation id="4943703118917034429">Virtuell virkelighet</translation>
@@ -581,6 +586,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkronis
 <translation id="5683547024293500885">Chrome kan ikke se etter oppdateringer</translation>
 <translation id="5686790454216892815">Filnavnet er for langt</translation>
 <translation id="5687809546194252819"><ph name="LANGUAGE" /> tas i bruk når <ph name="APP_NAME" /> startes på nytt.</translation>
+<translation id="5691211010013816086">Du har <ph name="READING_LIST_COUNT" /> sider</translation>
 <translation id="569536719314091526">Oversett denne siden til hvilket som helst språk via Flere alternativer-knappen</translation>
 <translation id="5696597120588531049">Chrome kan beskytte deg mot databrudd, utrygge nettsteder med mer</translation>
 <translation id="5697688514913266141">Filen blir lagret i <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK2" />Endre<ph name="END_LINK2" />.</translation>
@@ -631,6 +637,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkronis
 <translation id="5979084224081478209">Kontrollér passordene</translation>
 <translation id="6000066717592683814">Behold Google</translation>
 <translation id="6005538289190791541">Foreslått passord</translation>
+<translation id="6014293228235665243">Ulest</translation>
 <translation id="6036057147555329831">Ekstra ICU</translation>
 <translation id="6039379616847168523">Gå til den neste fanen</translation>
 <translation id="6040143037577758943">Lukk</translation>
@@ -660,6 +667,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkronis
 <translation id="6232535412751077445">Hvis du slår på «Deaktivering av sporing», blir det sendt en forespørsel sammen med nettrafikken din. Hvilke virkninger dette eventuelt får, avhenger av om det aktuelle nettstedet svarer på forespørselen eller ikke, samt hvordan forespørselen tolkes.
 
 Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg annonser som ikke er basert på andre nettsteder du har besøkt. Mange nettsteder samler likevel inn og bruker nettlesingsdataene dine – for eksempel for å forbedre sikkerheten, for å levere innhold, annonser og anbefalinger og for å generere rapporteringsstatistikk.</translation>
+<translation id="6243852395147506234">Klar til bruk uten nett</translation>
 <translation id="624789221780392884">Oppdateringen er klar</translation>
 <translation id="6255999984061454636">Innholdsforslag</translation>
 <translation id="6277522088822131679">Det oppsto et problem med å skrive ut siden. Prøv på nytt.</translation>
@@ -667,6 +675,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="6292420053234093573">Ved å bruke Chrome samtykker du i <ph name="BEGIN_LINK1" />Googles vilkår for bruk<ph name="END_LINK1" /> og <ph name="BEGIN_LINK2" />tilleggsvilkårene for bruk av Google Chrome og Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="629730747756840877">Konto</translation>
 <translation id="6297765934698848803">Organisasjonen som administrerer enheten din, har slått av kameraet.</translation>
+<translation id="6301525844455696527">Kom à jour med leselisten din</translation>
 <translation id="6303969859164067831">Logg av og slå av synkronisering</translation>
 <translation id="6312687380483398334">Nettprogrammer (stille)</translation>
 <translation id="6316139424528454185">Android-versjonen støttes ikke</translation>
@@ -745,6 +754,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="671481426037969117">Tidtakeren for <ph name="FQDN" /> gikk ut. Den starter igjen i morgen.</translation>
 <translation id="6738867403308150051">Laster ned …</translation>
 <translation id="6767294960381293877">Listen over enheter du kan dele faner med, er åpnet i halv høyde.</translation>
+<translation id="6783942555455976443">Lagre denne siden til senere, og få en påminnelse</translation>
 <translation id="6811034713472274749">Siden er klar til å vises</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6845325883481699275">Bidra til å gjøre Chrome sikrere</translation>
@@ -861,6 +871,9 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="766587987807204883">Her vises artikler, som du kan lese selv om du er uten nett</translation>
 <translation id="7682724950699840886">Prøv dette: Sørg for at det er nok plass på enheten, og prøv å eksportere på nytt.</translation>
 <translation id="7698359219371678927">Opprett en e-post i <ph name="APP_NAME" /></translation>
+<translation id="7702724591845223485">For å slette påloggingsinformasjonen din og andre data fra Chrome, lukk alle inkognitofaner.
+
+I Inkognito kan aktiviteten din fremdeles være synlig for nettstedene du besøker, internettleverandøren din og arbeidsgiveren din eller skolen din.</translation>
 <translation id="7704317875155739195">Autofullfør søk og nettadresser</translation>
 <translation id="7725024127233776428">Sider du setter som bokmerker, vises her</translation>
 <translation id="7735637452482172701">Lås opp med skjermlås</translation>
@@ -980,6 +993,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="8555836665334561807">Via Wi-Fi</translation>
 <translation id="8558485628462305855">Du må oppdatere ARCore for å se innhold med utvidet virkelighet</translation>
 <translation id="8559990750235505898">Tilby å oversette sider på andre språk</translation>
+<translation id="8560602726703398413">Finn leselisten din i Bokmerker</translation>
 <translation id="8561196567344536112">1. Gå til Innstillinger\n2. Trykk på «Nettleserapp»\n3. Velg <ph name="APP_NAME" /></translation>
 <translation id="8562452229998620586">Lagrede passord listes opp her.</translation>
 <translation id="8569404424186215731">siden <ph name="DATE" /></translation>
@@ -1003,6 +1017,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="8748850008226585750">Innholdet er skjult</translation>
 <translation id="8788265440806329501">Navigasjonsloggen er lukket</translation>
 <translation id="8788968922598763114">Åpne den sist lukkede fanen på nytt</translation>
+<translation id="8798449543960971550">Lest</translation>
 <translation id="8812260976093120287">På noen nettsteder kan du betale med de støttede betalingsappene ovenfor på enheten din.</translation>
 <translation id="8820817407110198400">Bokmerker</translation>
 <translation id="883806473910249246">Det oppsto en feil under nedlastingen av innholdet.</translation>

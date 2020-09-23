@@ -51,6 +51,7 @@
 <translation id="2315043854645842844">ਕਲਾਈਂਟ ਵੱਲੋਂ ਕੀਤੀ ਗਈ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਦੀ ਚੋਣ ਓਪਰੇਟਿੰਗ ਸਿਸਟਮ ਵੱਲੋਂ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ।</translation>
 <translation id="2359808026110333948">ਜਾਰੀ ਰੱਖੋ</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
+<translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ਅਤੇ <ph name="NUM_MORE" /> ਹੋਰ ਦੀ ਇਜਾਜ਼ਤ ਦਿੱਤੀ ਗਈ}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ਅਤੇ <ph name="NUM_MORE" /> ਹੋਰ ਦੀ ਇਜਾਜ਼ਤ ਦਿੱਤੀ ਗਈ}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ਅਤੇ <ph name="NUM_MORE" /> ਹੋਰ ਦੀ ਇਜਾਜ਼ਤ ਦਿੱਤੀ ਗਈ}}</translation>
 <translation id="2434158240863470628">ਡਾਊਨਲੋਡ ਮੁਕੰਮਲ ਹੋਇਆ <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2440823041667407902">ਨਿਰਧਾਰਿਤ ਸਥਾਨ ਪਹੁੰਚ</translation>
 <translation id="2482878487686419369">ਸੂਚਨਾਵਾਂ</translation>
@@ -190,6 +191,7 @@
 <translation id="6447842834002726250">ਕੁਕੀਜ਼</translation>
 <translation id="6527303717912515753">ਸ਼ੇਅਰ ਕਰੋ</translation>
 <translation id="6545864417968258051">ਬਲੂਟੁੱਥ ਸਕੈਨਿੰਗ</translation>
+<translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ਅਤੇ <ph name="NUM_MORE" /> ਹੋਰ ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ਅਤੇ <ph name="NUM_MORE" /> ਹੋਰ ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ਅਤੇ <ph name="NUM_MORE" /> ਹੋਰ ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ}}</translation>
 <translation id="6561560012278703671">ਵਧੇਰੇ ਸ਼ਾਂਤ ਸੁਨੇਹਾ ਸੇਵਾ ਵਰਤੋ (ਤੁਹਾਡਾ ਧਿਆਨ ਭਟਕਾਉਣ ਵਾਲੇ ਸੂਚਨਾ ਉਤਪ੍ਰੇਰਕਾਂ ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਜਾਂਦਾ ਹੈ)</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">ਸੁਰੱਖਿਅਤ ਸਮੱਗਰੀ</translation>
@@ -292,6 +294,7 @@
 <translation id="8959122750345127698">ਨੈਵੀਗੇਸ਼ਨ ਨਾਪਹੁੰਚਯੋਗ ਹੈ: <ph name="URL" /></translation>
 <translation id="9019902583201351841">ਤੁਹਾਡੇ ਮਾਪਿਆਂ ਵੱਲੋਂ ਵਿਵਸਥਿਤ</translation>
 <translation id="9074739597929991885">ਬਲੂਟੁੱਥ</translation>
+<translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ਅਤੇ <ph name="NUM_MORE" /> ਹੋਰ}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ਅਤੇ <ph name="NUM_MORE" /> ਹੋਰ}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ਅਤੇ <ph name="NUM_MORE" /> ਹੋਰ}}</translation>
 <translation id="913657688200966289"><ph name="BEGIN_LINK" />Android ਸੈਟਿੰਗਾਂ<ph name="END_LINK" /> ਵਿੱਚ <ph name="APP_NAME" /> ਲਈ ਇਜਾਜ਼ਤਾਂ ਚਾਲੂ ਕਰੋ।</translation>
 <translation id="945632385593298557">ਆਪਣੇ ਮਾਈਕ੍ਰੋਫੋਨ ਤੱਕ ਪਹੁੰਚੋ</translation>
 <translation id="965817943346481315">ਜੇਕਰ ਸਾਈਟ ਦਖਲਅੰਦਾਜ਼ੀ ਅਤੇ ਗੁਮਰਾਹ ਕਰਨ ਵਾਲੇ ਵਿਗਿਆਪਨ ਦਿਖਾਉਂਦੀ ਹੈ, ਤਾਂ ਇਸਨੂੰ ਬਲਾਕ ਕਰੋ (ਸਿਫ਼ਾਰਸ਼ੀ)</translation>

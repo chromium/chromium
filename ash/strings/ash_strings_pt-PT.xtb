@@ -307,6 +307,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Desa. p/ 1 ap.}other{Desa. p/ # ap.}}</translation>
 <translation id="4072264167173457037">Sinal médio</translation>
 <translation id="4112140312785995938">Procurar para trás</translation>
+<translation id="4114315158543974537">Ative o Centro do telemóvel</translation>
 <translation id="4129129681837227511">Para ver notificações no ecrã de bloqueio, desbloqueie o mesmo para alterar a definição</translation>
 <translation id="4146833061457621061">Tocar música</translation>
 <translation id="4149156641122542261"><ph name="DEVICE_TYPE" /> gerido por <ph name="DOMAIN" /></translation>
@@ -438,6 +439,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="5648021990716966815">Entrada para microfone</translation>
 <translation id="5669267381087807207">A activar</translation>
 <translation id="5673434351075758678">De "<ph name="FROM_LOCALE" />" para "<ph name="TO_LOCALE" />" após a sincronização das suas definições.</translation>
+<translation id="5679050765726761783">Transformador de baixo consumo ligado</translation>
 <translation id="5682642926269496722">O Assistente Google não está disponível para a conta do utilizador atual.</translation>
 <translation id="5689633613396158040">A Luz noturna torna mais fácil olhar para o ecrã ou ler com pouca luz. Toque para alterar a hora em que a Luz noturna é ativada ou desativada totalmente.</translation>
 <translation id="5691772641933328258">Impressão digital não reconhecida</translation>
@@ -552,6 +554,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="6857811139397017780">Ativar <ph name="NETWORKSERVICE" /></translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Um dígito restante}other{# dígitos restantes}}</translation>
 <translation id="6878400149835617132">Atalho desativado</translation>
+<translation id="6886172995547742638">O dispositivo <ph name="DEVICE_TYPE" /> pode ter um desempenho inferior. Utilize um transformador USB-C certificado de <ph name="PREFERRED_MINIMUM_POWER" /> W ou superior.</translation>
 <translation id="6896758677409633944">Copiar</translation>
 <translation id="6910714959251846841">Para efetuar esta atualização, é necessário efetuar o Powerwash do dispositivo. Saiba mais sobre a mais recente atualização do <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="6919251195245069855">Não foi possível reconhecer o seu cartão inteligente. Tente novamente.</translation>

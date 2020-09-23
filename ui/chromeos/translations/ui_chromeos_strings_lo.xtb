@@ -376,6 +376,7 @@
 <translation id="5098629044894065541">ພາສາຮິບຣູ</translation>
 <translation id="5123433949759960244">ບານບ້ວງ</translation>
 <translation id="5129662217315786329">ພາສາໂປໂລຍ</translation>
+<translation id="5132435854979302863">ຟິລິບປິໂນ</translation>
 <translation id="5144820558584035333">ຮາງກຸລ 3 ຊຸດ (390​)</translation>
 <translation id="5145331109270917438">ວັນ​ທີ​ດັດ​ແປງ</translation>
 <translation id="515594325917491223">ໝາກເສິກ</translation>
@@ -421,6 +422,7 @@
 <translation id="5464696796438641524">ຄີບອດພາສາໂປ​ໂລຍ</translation>
 <translation id="5465122519792752163">ຄີບອດພາສາເນປານ (InScript)</translation>
 <translation id="5469868506864199649">ພາສາອີຕາລີ</translation>
+<translation id="5484429245813572665">ອິນໂດເນຊຽນ</translation>
 <translation id="5494920125229734069">ເລືອກ​ທັງ​ຫມົດ</translation>
 <translation id="5500122897333236901">ພາສາ​ໄອ​ແລນ​ດິກ</translation>
 <translation id="5508696409934741614">ຈຸດ</translation>
@@ -608,6 +610,7 @@
 <translation id="7649070708921625228">ຊ່ວຍ​ເຫຼືອ</translation>
 <translation id="7654209398114106148">ກຳລັງຍ້າຍ <ph name="NUMBER_OF_ITEMS" /> ລາຍການ...</translation>
 <translation id="7658239707568436148">ຍົກ​ເລີກ​</translation>
+<translation id="7693909743393669729">ການຟໍແມັດໄດຣຈະລຶບຂໍ້ມູນທັງໝົດທີ່ເກັບໄວ້ໃນມັນ ແລະ ລຶບຫ້ອງຂໍ້ມູນທີ່ມີຢູ່ທັງໝົດ, ຮວມທັງຫ້ອງຂໍ້ມູນທີ່ອາດຈະເບິ່ງບໍ່ເຫັນ. ຄຳສັ່ງນີ້ບໍ່ສາມາດຍົກເລີກໄດ້.</translation>
 <translation id="7695430100978772476">ບໍ່ສາມາດຟໍແມັດ <ph name="DRIVE_NAME" /> ໄດ້</translation>
 <translation id="770015031906360009">ພາສາເກຼັກ</translation>
 <translation id="7706319470528945664">ຄີບອດພາສາປັອກ​ຕຸຍ​ການ</translation>
@@ -639,6 +642,7 @@
 <translation id="78946041517601018">drive ທີ່ແບ່ງປັນ</translation>
 <translation id="7896906914454843592">ຄີບອດສະ​ຫະ​ລັດ​​ແບບຂະ​ຫຍາຍ</translation>
 <translation id="7898607018410277265">ແປ້ນພິມພາສາກູຈາຣາຕີ (ການອອກສຽງໃໝ່)</translation>
+<translation id="7908793776359722643">ການຟໍແມັດຫ້ອງຂໍ້ມູນຈະລຶບຂໍ້ມູນທັງໝົດທີ່ເກັບໄວ້ໃນມັນ. ຄຳສັ່ງນີ້ບໍ່ສາມາດຍົກເລີກໄດ້.</translation>
 <translation id="7917972308273378936">ຄີບອດພາສາລີ​ທົວ​ເນຍ</translation>
 <translation id="7925686952655276919">ຢ່າໃຊ້ຂໍ້ມູນມືຖືສໍາລັບການຊິງຄ໌</translation>
 <translation id="7928710562641958568">ບີບອຸ​ປະ​ກອນອອກ</translation>
@@ -726,6 +730,7 @@
 <translation id="8900820606136623064">ພາສາຮັງກາຣີ</translation>
 <translation id="8901822611024316615">ຄີບອດ QWERTY ພາ​ສາ​ເຊັກ​ໂກ</translation>
 <translation id="8919081441417203123">ພາສາເດັນມາກ</translation>
+<translation id="8941776146379310519">ມາເລ</translation>
 <translation id="8960999352790021682">ຄີບອດພາສາເບັງກາລີ (ການອອກສຽງ)</translation>
 <translation id="8965697826696209160">ບໍ່ມີເນື້ອທີ່ພຽງພໍ.</translation>
 <translation id="9017798300203431059">ການ​ອອກສຽງພາ​ສາ​ລັດ​ເຊຍ</translation>

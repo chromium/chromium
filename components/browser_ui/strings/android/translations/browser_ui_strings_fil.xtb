@@ -51,6 +51,7 @@
 <translation id="2315043854645842844">Hindi sinusuportahan ng operating system ang pagpipilian ng certificate sa panig ng kliyente.</translation>
 <translation id="2359808026110333948">Magpatuloy</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
+<translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Pinapayagan ang <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, at <ph name="NUM_MORE" /> pa}one{Pinapayagan ang <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, at <ph name="NUM_MORE" /> pa}other{Pinapayagan ang <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, at <ph name="NUM_MORE" /> pa}}</translation>
 <translation id="2434158240863470628">Tapos nang mag-download <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2440823041667407902">Access sa lokasyon</translation>
 <translation id="2482878487686419369">Mga Abiso</translation>
@@ -190,6 +191,7 @@
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6527303717912515753">Ibahagi</translation>
 <translation id="6545864417968258051">Pag-scan ng Bluetooth</translation>
+<translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Naka-block ang <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, at <ph name="NUM_MORE" /> pa}one{Naka-block ang <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, at <ph name="NUM_MORE" /> pa}other{Naka-block ang <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, at <ph name="NUM_MORE" /> pa}}</translation>
 <translation id="6561560012278703671">Gamitin ang mas tahimik na pagmemensahe (bina-block ang mga prompt ng notification na gumagambala sa iyo)</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Pinoprotektahang content</translation>
@@ -292,6 +294,7 @@
 <translation id="8959122750345127698">Hindi gumagana ang navigation: <ph name="URL" /></translation>
 <translation id="9019902583201351841">Pinamamahalaan ng iyong mga magulang</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, at <ph name="NUM_MORE" /> pa}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, at <ph name="NUM_MORE" /> pa}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, at <ph name="NUM_MORE" /> pa}}</translation>
 <translation id="913657688200966289">I-on ang mga pahintulot para sa <ph name="APP_NAME" /> sa <ph name="BEGIN_LINK" />Mga Setting ng Android<ph name="END_LINK" />.</translation>
 <translation id="945632385593298557">I-access ang iyong mikropono</translation>
 <translation id="965817943346481315">I-block kung nagpapakita ang site ng mga nakakasagabal o nakakapanlinlang na ad (inirerekomenda)</translation>

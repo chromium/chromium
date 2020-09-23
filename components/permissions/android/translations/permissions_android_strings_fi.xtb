@@ -1,8 +1,10 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fi">
+<translation id="2077832278056815832">Sulje kuplat tai peittokuvat muista sovelluksista. Yritä sitten uudelleen.</translation>
 <translation id="2359808026110333948">Jatka</translation>
 <translation id="2416359993254398973">Chrome tarvitsee oikeuden käyttää kameraasi tällä sivustolla.</translation>
+<translation id="2987449669841041897">Tämä sivusto ei saa pyytää lupaasi</translation>
 <translation id="557283862590186398">Chrome tarvitsee oikeuden käyttää mikrofoniasi tällä sivustolla.</translation>
 <translation id="5860491529813859533">Ota käyttöön</translation>
 <translation id="6092062101542170135">Laita NFC päälle Android-laitteella jatkaaksesi</translation>

@@ -137,6 +137,7 @@
 <translation id="2341729377289034582">បាន​ចាក់សោ​ឱ្យ​ស្ថិត​ក្នុងទិសដៅបញ្ឈរ</translation>
 <translation id="2352467521400612932">ការកំណត់ប៊ិច</translation>
 <translation id="2354174487190027830">កំពុងធ្វើសកម្មភាព <ph name="NAME" /></translation>
+<translation id="2356210126990741501">ទូរសព្ទរបស់អ្នកហាក់ដូចជាគ្មានអ៊ីនធឺណិតទេ ហើយយើងមិនអាចយកកូនកម្មវិធីទាំងអស់ពីវាសម្រាប់អ្នកក្នុងពេលនេះបានទេ។</translation>
 <translation id="2359808026110333948">បន្ត</translation>
 <translation id="2365393535144473978">ការបើកទិន្នន័យ​ទូរសព្ទចល័ត​នឹងបើកប៊្លូធូស។</translation>
 <translation id="2369165858548251131">"សួស្ដី" ជាភាសាចិន</translation>
@@ -169,6 +170,7 @@
 <translation id="2705001408393684014">បិទ/បើកមីក្រូហ្វូន។ <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Up</translation>
 <translation id="2718395828230677721">ពន្លឺពេលយប់</translation>
+<translation id="2727175239389218057">ឆ្លើយតប</translation>
 <translation id="2727977024730340865">បានដោតទៅឆ្នាំងសាកថាមពលខ្សោយ។ ការសាកថ្មប្រហែលជាមិនអាចជឿជាក់បានទេ។</translation>
 <translation id="2743387203779672305">ចម្លងទៅផ្ទាំងឃ្លីបបត</translation>
 <translation id="2792498699870441125">Alt+ស្វែងរក</translation>
@@ -177,6 +179,7 @@
 <translation id="2825619548187458965">ធ្នើ</translation>
 <translation id="2841907151129139818">បានប្ដូរទៅ​មុខងារថេប្លេត</translation>
 <translation id="2844169650293029770">ឧបករណ៍ USB-C (រន្ធមុខផ្នែកខាងឆ្វេង)</translation>
+<translation id="2846247265041961677">អូយ! រកទូរសព្ទមិនឃើញទេ</translation>
 <translation id="2865888419503095837">ព័ត៌មាន​បណ្តាញ</translation>
 <translation id="2872961005593481000">បិទ</translation>
 <translation id="2878884018241093801">មិនមានធាតុថ្មីៗទេ</translation>
@@ -304,6 +307,7 @@
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{បិទសម្រាប់កម្មវិធីមួយ}other{បិទសម្រាប់កម្មវិធីមួយ #}}</translation>
 <translation id="4072264167173457037">សេវាមធ្យម</translation>
 <translation id="4112140312785995938">សា​ថយក្រោយ</translation>
+<translation id="4114315158543974537">បើក Phone Hub</translation>
 <translation id="4129129681837227511">ដើម្បីមើលការជូនដំណឹង​នៅលើអេក្រង់ចាក់​សោរបស់អ្នក សូមដោះសោ ដើម្បីប្ដូរការកំណត់</translation>
 <translation id="4146833061457621061">ចាក់​តន្ត្រី</translation>
 <translation id="4149156641122542261"><ph name="DEVICE_TYPE" /> គ្រប់គ្រង​ដោយ <ph name="DOMAIN" /></translation>
@@ -435,6 +439,7 @@
 <translation id="5648021990716966815">ឌុយ​មីក្រូហ្វូន</translation>
 <translation id="5669267381087807207">កំពុងធ្វើសកម្មភាព</translation>
 <translation id="5673434351075758678">ពី "<ph name="FROM_LOCALE" />" ទៅ "<ph name="TO_LOCALE" />" បន្ទាប់ពី​ធ្វើ​សមកាលកម្ម​ការកំណត់​របស់អ្នក។</translation>
+<translation id="5679050765726761783">បានភ្ជាប់ឆ្នាំងសាកដែលមានថាមពលទាប</translation>
 <translation id="5682642926269496722">មិន​អាចប្រើ Google ជំនួយការ​​សម្រាប់​គណនី​អ្នកប្រើប្រាស់​បច្ចុប្បន្ន​បានទេ។</translation>
 <translation id="5689633613396158040">ពន្លឺពេលយប់​ធ្វើឱ្យមាន​ភាពងាយស្រួល​ជាងមុន​ក្នុងការ​មើលអេក្រង់​របស់អ្នក ឬ​អាននៅពេល​មានពន្លឺតិច។ ចុចដើម្បីផ្លាស់ប្ដូរ​ពេលបើក "ពន្លឺពេលយប់" ឬបិទវាទាំងស្រុង។</translation>
 <translation id="5691772641933328258">មិន​ស្គាល់​ស្នាម​ម្រាមដៃ​ទេ</translation>
@@ -459,6 +464,7 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">បើក</translation>
 <translation id="5920710855273935292">បានបិទសំឡេងមីក្រូហ្វូន។</translation>
+<translation id="594179686076170922">កំពុងភ្ជាប់ជាមួយទូរសព្ទរបស់អ្នក...</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> បាន​បើក។</translation>
 <translation id="5947494881799873997">ត្រលប់ក្រោយ</translation>
 <translation id="595202126637698455">ការតាមដានប្រតិបត្តិការបានបើកដំណើរការ</translation>
@@ -548,6 +554,7 @@
 <translation id="6857811139397017780">ធ្វើសកម្មភាព <ph name="NETWORKSERVICE" /></translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{នៅសល់មួយខ្ទង់ទៀត}other{នៅសល់ # ខ្ទង់ទៀត}}</translation>
 <translation id="6878400149835617132">បានបិទ​ផ្លូវកាត់</translation>
+<translation id="6886172995547742638"><ph name="DEVICE_TYPE" /> របស់អ្នកអាចដំណើរការយឺតជាងមុន។ សូមប្រើឆ្នាំងសាក USB-C កម្រិត <ph name="PREFERRED_MINIMUM_POWER" />W ឬខ្ពស់ជាងនេះដែលមានការទទួលស្គាល់។</translation>
 <translation id="6896758677409633944">ចម្លង</translation>
 <translation id="6910714959251846841">កំណែ​ថ្មី​នេះ​តម្រូវឱ្យ powerwash ឧបករណ៍​របស់អ្នក។ ស្វែងយល់​បន្ថែម​អំពី​កំណែ​ <ph name="SYSTEM_APP_NAME" /> ថ្មី​បំផុត។</translation>
 <translation id="6919251195245069855">មិន​ស្គាល់​កាត​ឆ្លាតវៃរបស់អ្នកទេ។ សូមព្យាយាមម្ដងទៀត។</translation>

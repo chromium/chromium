@@ -1201,6 +1201,7 @@
 <translation id="2419706071571366386">為安全起見，當您未使用電腦時，請登出帳戶。</translation>
 <translation id="2422125132043002186">已取消 Linux 還原</translation>
 <translation id="2423578206845792524">另存圖片為(&amp;V)…</translation>
+<translation id="2424424966051154874">{0,plural, =1{訪客}other{訪客 (#)}}</translation>
 <translation id="2428510569851653187">請說明分頁當機時您正在執行的動作</translation>
 <translation id="2428939361789119025">關閉 Wi-Fi</translation>
 <translation id="2431027948063157455">無法載入「Google 助理」，請檢查您的網絡連線，然後再試一次。</translation>
@@ -4198,6 +4199,7 @@
 <translation id="6077189836672154517"><ph name="DEVICE_TYPE" /> 的使用提示和最新消息</translation>
 <translation id="6077476112742402730">朗讀即可輸入</translation>
 <translation id="6078045608615316905">為此圖片建立二維條碼</translation>
+<translation id="6078121669093215958">{0,plural, =1{訪客}other{# 個開緊嘅訪客視窗}}</translation>
 <translation id="6078323886959318429">新增捷徑</translation>
 <translation id="6078752646384677957">請檢查麥克風和音訊音量。</translation>
 <translation id="6078769373519310690">「<ph name="CHROME_EXTENSION_NAME" />」要求連接 HID 裝置</translation>
@@ -4705,6 +4707,7 @@
 <translation id="6704062477274546131">DNS 解析</translation>
 <translation id="6706210727756204531">範圍</translation>
 <translation id="6707389671160270963">SSL 用戶端憑證</translation>
+<translation id="670893696722244877">按語言或輸入名稱搜尋</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> 和另外 1 個分頁}other{<ph name="PAGE_TITLE" /> 和另外 # 個分頁}}</translation>
 <translation id="6709133671862442373">新聞內容</translation>
 <translation id="6709357832553498500">使用「<ph name="EXTENSIONNAME" />」連線</translation>
@@ -5542,6 +5545,7 @@
 <translation id="7753735457098489144">儲存空間不足，因此無法完成安裝。如要釋出空間，請刪除裝置儲存空間內的檔案。</translation>
 <translation id="7754704193130578113">下載每個檔案前先詢問儲存位置</translation>
 <translation id="7755287808199759310">您的家長可以為您解除封鎖此網站</translation>
+<translation id="7757592200364144203">變更裝置名稱</translation>
 <translation id="7757787379047923882">透過 <ph name="DEVICE_NAME" /> 分享的文字</translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">調整顯示屏的邊界</translation>
@@ -5998,6 +6002,7 @@
 <translation id="8264024885325823677">此設定由管理員管理。</translation>
 <translation id="8264718194193514834">「<ph name="EXTENSION_NAME" />」啟用了全螢幕。</translation>
 <translation id="826511437356419340">進入咗視窗概覽模式。掃一下就可以瀏覽。如果你用鍵盤，㩒一下 Tab 鍵就可以瀏覽。</translation>
+<translation id="8266947622852630193">所有輸入方法</translation>
 <translation id="8267539814046467575">新增打印機</translation>
 <translation id="8267961145111171918"><ph name="BEGIN_PARAGRAPH1" />這是裝置的一般資料和使用情况 (例如電量、系統及應用程式活動，以及發生的錯誤)。這些資料將會用來改善 Android。部分彙整資料還能協助 Google 應用程式和合作夥伴 (例如 Android 開發人員) 改良應用程式和產品。<ph name="END_PARAGRAPH1" />
 <ph name="BEGIN_PARAGRAPH2" />即使關閉此功能，您的裝置仍然可以傳送基本服務 (例如系統更新與安全性) 所需的資料。<ph name="END_PARAGRAPH2" />

@@ -137,6 +137,7 @@
 <translation id="2341729377289034582">செங்குத்து நிலையில் பூட்டப்பட்டது</translation>
 <translation id="2352467521400612932">ஸ்டைலஸ் அமைப்புகள்</translation>
 <translation id="2354174487190027830"><ph name="NAME" /> ஐச் செயல்படுத்துகிறது</translation>
+<translation id="2356210126990741501">உங்கள் ஃபோன் ஆன்லைனில் இல்லை, எனவே தற்போது உங்களுக்கான அம்சங்கள் அனைத்தையும் அதிலிருந்து பெற முடியவில்லை.</translation>
 <translation id="2359808026110333948">தொடர்க</translation>
 <translation id="2365393535144473978">மொபைல் டேட்டாவை இயக்கினால், புளூடூத் இயக்கப்படும்.</translation>
 <translation id="2369165858548251131">சீன மொழியில் "ஹலோ"</translation>
@@ -169,6 +170,7 @@
 <translation id="2705001408393684014">மைக்கை நிலைமாற்றும். <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Up</translation>
 <translation id="2718395828230677721">நைட் லைட்</translation>
+<translation id="2727175239389218057">பதிலளி</translation>
 <translation id="2727977024730340865">குறைந்த சக்தியிலான சார்ஜர் செருகப்பட்டுள்ளது. பேட்டரி சார்ஜிங் நம்பகமானதாக இல்லாமல் இருக்கலாம்.</translation>
 <translation id="2743387203779672305">கிளிப்போர்டுக்கு நகலெடு</translation>
 <translation id="2792498699870441125">Alt+தேடல்</translation>
@@ -177,6 +179,7 @@
 <translation id="2825619548187458965">அடுக்கு</translation>
 <translation id="2841907151129139818">டேப்லெட் பயன்முறைக்கு மாற்றப்பட்டது</translation>
 <translation id="2844169650293029770">USB-C சாதனம் (இடது பக்கம் முன்னே இருக்கும் போர்ட்)</translation>
+<translation id="2846247265041961677">அடடா! ஃபோனைக் கண்டறிய முடியவில்லை</translation>
 <translation id="2865888419503095837">நெட்வொர்க் தகவல்</translation>
 <translation id="2872961005593481000">நிறுத்து</translation>
 <translation id="2878884018241093801">சமீபத்திய உருப்படிகள் எதுவுமில்லை</translation>
@@ -461,6 +464,7 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">இயக்கு</translation>
 <translation id="5920710855273935292">மைக் ஒலியடக்கப்பட்டுள்ளது.</translation>
+<translation id="594179686076170922">உங்கள் ஃபோனுடன் இணைக்கிறது...</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> இயக்கப்பட்டுள்ளது.</translation>
 <translation id="5947494881799873997">மாற்றியமை</translation>
 <translation id="595202126637698455">செயல்திறனைத் தடமறிதல் இயக்கப்பட்டுள்ளது</translation>

@@ -376,6 +376,7 @@
 <translation id="5098629044894065541">Hebrejski</translation>
 <translation id="5123433949759960244">Košarka</translation>
 <translation id="5129662217315786329">Poljski</translation>
+<translation id="5132435854979302863">filipinski</translation>
 <translation id="5144820558584035333">hangul 3 set (390)</translation>
 <translation id="5145331109270917438">Datum izmjene</translation>
 <translation id="515594325917491223">Šah</translation>
@@ -422,6 +423,7 @@
 <translation id="5464696796438641524">Poljska tipkovnica</translation>
 <translation id="5465122519792752163">nepalska tipkovnica (InScript)</translation>
 <translation id="5469868506864199649">Talijanski</translation>
+<translation id="5484429245813572665">indonezijski</translation>
 <translation id="5494920125229734069">Odaberi sve</translation>
 <translation id="5500122897333236901">Islandski</translation>
 <translation id="5508696409934741614">Točke</translation>
@@ -609,6 +611,7 @@
 <translation id="7649070708921625228">Pomoć</translation>
 <translation id="7654209398114106148">Premještanje stavki (<ph name="NUMBER_OF_ITEMS" />)...</translation>
 <translation id="7658239707568436148">Odustani</translation>
+<translation id="7693909743393669729">Formatiranjem diska izbrisat će se svi podaci koji su na njemu pohranjeni i uklonit će se sve postojeće particije, uključujući particije koje možda nisu vidljive. Tu radnju nije moguće poništiti.</translation>
 <translation id="7695430100978772476">Nije uspjelo formatiranje diska <ph name="DRIVE_NAME" /></translation>
 <translation id="770015031906360009">Grčki</translation>
 <translation id="7706319470528945664">Portugalska tipkovnica</translation>
@@ -640,6 +643,7 @@
 <translation id="78946041517601018">Dijeljeni diskovi</translation>
 <translation id="7896906914454843592">američka proširena tipkovnica</translation>
 <translation id="7898607018410277265">gudžaratska tipkovnica (nova fonetska)</translation>
+<translation id="7908793776359722643">Formatiranjem particije izbrisat će se svi podaci koji su na njoj pohranjeni. Tu radnju nije moguće poništiti.</translation>
 <translation id="7917972308273378936">Litvanska tipkovnica</translation>
 <translation id="7925686952655276919">Ne upotrebljavaj mobilne podatke za sinkronizaciju</translation>
 <translation id="7928710562641958568">Izbaci uređaj</translation>
@@ -727,6 +731,7 @@
 <translation id="8900820606136623064">Mađarski</translation>
 <translation id="8901822611024316615">Češka QWERTY tipkovnica</translation>
 <translation id="8919081441417203123">Danski</translation>
+<translation id="8941776146379310519">malajski</translation>
 <translation id="8960999352790021682">bengalska tipkovnica (fonetska)</translation>
 <translation id="8965697826696209160">Nema dovoljno prostora.</translation>
 <translation id="9017798300203431059">ruska (fonetska)</translation>

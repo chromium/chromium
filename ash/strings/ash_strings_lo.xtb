@@ -137,6 +137,7 @@
 <translation id="2341729377289034582">ລັອກເປັນລວງຕັ້ງ</translation>
 <translation id="2352467521400612932">ການຕັ້ງຄ່າປາຍປາກກາ</translation>
 <translation id="2354174487190027830">ກຳລັງເປີດນຳໃຊ້ <ph name="NAME" /></translation>
+<translation id="2356210126990741501">ປາກົດວ່າໂທລະສັບຂອງທ່ານບໍ່ອອນລາຍ ແລະ ພວກເຮົາບໍ່ສາມາດດາວໂຫຼດໂປຣແກຣມຍ່ອຍທັງໝົດຈາກມັນໃຫ້ທ່ານໄດ້ໃນຕອນນີ້.</translation>
 <translation id="2359808026110333948">ສືບຕໍ່</translation>
 <translation id="2365393535144473978">ການເປີດນຳໃຊ້ຂໍ້ມູນມືຖືຈະເປີດນຳໃຊ້ Bluetooth.</translation>
 <translation id="2369165858548251131">"ສະບາຍດີ" ເປັນພາສາຈີນ</translation>
@@ -169,6 +170,7 @@
 <translation id="2705001408393684014">ເປີດໄມ. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">ຂຶ້ນ</translation>
 <translation id="2718395828230677721">ແສງກາງຄືນ</translation>
+<translation id="2727175239389218057">ຕອບກັບ</translation>
 <translation id="2727977024730340865">ສຽບໃສ່ເຄື່ອງສາກໄຟຕໍ່າແລ້ວ. ການສາກແບັດເຕີຣີອາດຈະບໍ່ເຊື່ອຖືໄດ້.</translation>
 <translation id="2743387203779672305">ກັອບປີ້ໄປໃສ່ຄລິບບອດ</translation>
 <translation id="2792498699870441125">Alt+ຊອກຫາ</translation>
@@ -177,6 +179,7 @@
 <translation id="2825619548187458965">ຖ້ານ</translation>
 <translation id="2841907151129139818">ປ່ຽນເປັນໂໝດແທັບເລັດແລ້ວ</translation>
 <translation id="2844169650293029770">ອຸ​ປະ​ກອນ USB-C (ຜອດດ້ານໜ້າ-ຊ້າຍ)</translation>
+<translation id="2846247265041961677">ຂໍອະໄພ! ຊອກໂທລະສັບບໍ່ເຫັນ</translation>
 <translation id="2865888419503095837">ຂໍ້ມູນເຄືອຂ່າຍ</translation>
 <translation id="2872961005593481000">ມອດ</translation>
 <translation id="2878884018241093801">ບໍ່ມີລາຍການຫຼ້າສຸດ</translation>
@@ -304,6 +307,7 @@
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{ປິດສຳລັບໜຶ່ງແອັບ}other{ປິດສຳລັບ # ແອັບ}}</translation>
 <translation id="4072264167173457037">ສັນຍານປານກາງ</translation>
 <translation id="4112140312785995938">ເລື່ອນກັບຫຼັງ</translation>
+<translation id="4114315158543974537">ເປີດ Phone Hub</translation>
 <translation id="4129129681837227511">ເພື່ອເບິ່ງການແຈ້ງເຕືອນໃນໜ້າຈໍລັອກຂອງທ່ານ, ກະລຸນາປົດລັອກເພື່ອປ່ຽນການຕັ້ງຄ່າ</translation>
 <translation id="4146833061457621061">ຫຼິ້ນເພງ</translation>
 <translation id="4149156641122542261"><ph name="DEVICE_TYPE" /> ທີ່ຖືກຈັດການໂດຍ <ph name="DOMAIN" /></translation>
@@ -435,6 +439,7 @@
 <translation id="5648021990716966815">ແຈັກໄມໂຄຣໂຟນ</translation>
 <translation id="5669267381087807207">ກຳລັງເປີດນຳໃຊ້</translation>
 <translation id="5673434351075758678">ຈາກ "<ph name="FROM_LOCALE" />" ເປັນ "<ph name="TO_LOCALE" />" ຫຼັງຈາກຊິ້ງຂໍ້ມູນການຕັ້ງຄ່າຂອງທ່ານ.</translation>
+<translation id="5679050765726761783">ເຊື່ອມຕໍ່ອະແດັບເຕີພະລັງງານຕໍ່າແລ້ວ</translation>
 <translation id="5682642926269496722">ຜູ້ຊ່ວຍ Google ບໍ່ສາມາດໃຊ້ໄດ້ສຳລັບບັນຊີຜູ້ໃຊ້ປັດຈຸບັນ.</translation>
 <translation id="5689633613396158040">ແສງກາງຄືນເຮັດໃຫ້ມັນງ່າຍກວ່າໃນການເບິ່ງໜ້າຈໍຂອງທ່ານ ຫຼື ອ່ານໃນແສງທີ່ມືດ. ແຕະເພື່ອປ່ຽນວ່າຈະເປີດແສງກາງຄືນເວລາໃດ ຫຼື ປິດມັນໄປເລີຍກໍໄດ້.</translation>
 <translation id="5691772641933328258">ບໍ່ຮູ້ຈັກລາຍນິ້ວມື</translation>
@@ -459,6 +464,7 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">ເປີດ</translation>
 <translation id="5920710855273935292">ໄມປິດສຽງຢູ່.</translation>
+<translation id="594179686076170922">ກຳລັງເຊື່ອມຕໍ່ກັບໂທລະສັບຂອງທ່ານ...</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> ເປີດຢູ່.</translation>
 <translation id="5947494881799873997">ກັບຄືນ</translation>
 <translation id="595202126637698455">ການຕິດຕາມການປະຕິບັດເປີດໃຊ້ງານແລ້ວ</translation>
@@ -548,6 +554,7 @@
 <translation id="6857811139397017780">ເປີດໃຊ້ງານ <ph name="NETWORKSERVICE" /></translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{ຍັງເຫຼືອໜຶ່ງຕົວເລກ}other{ຍັງເຫຼືອ # ຕົວເລກ}}</translation>
 <translation id="6878400149835617132">ປິດທາງລັດແລ້ວ</translation>
+<translation id="6886172995547742638"><ph name="DEVICE_TYPE" /> ຂອງທ່ານອາດຈະປະສົບກັບປະສິດທິພາບຕໍ່າ. ໃຊ້ອະແດັບເຕີ <ph name="PREFERRED_MINIMUM_POWER" />W ທີ່ມີການຮັບຮອງ ຫຼື ອະແດັບເຕີໄຟ USB-C ທີ່ສູງກວ່າ.</translation>
 <translation id="6896758677409633944">ກັອບປີ້</translation>
 <translation id="6910714959251846841">ການອັບເດດນີ້ຈຳເປັນຕ້ອງພາວເວີວອຊອຸປະກອນຂອງທ່ານ. ສຶກສາເພີ່ມເຕີມກ່ຽວກັບການອັບເດດ <ph name="SYSTEM_APP_NAME" /> ຫຼ້າສຸດ.</translation>
 <translation id="6919251195245069855">ບໍ່ສາມາດຮັບຮູ້ບັດອັດສະລິຍະຂອງທ່ານໄດ້. ລອງໃໝ່.</translation>

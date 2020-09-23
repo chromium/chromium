@@ -1,8 +1,10 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="et">
+<translation id="2077832278056815832">Sulgege kõik muude rakenduste mullid ja ülekatted. Seejärel proovige uuesti.</translation>
 <translation id="2359808026110333948">Jätka</translation>
 <translation id="2416359993254398973">Chrome vajab selle saidi puhul luba, et teie kaamerale juurde pääseda.</translation>
+<translation id="2987449669841041897">See sait ei saa teilt luba küsida</translation>
 <translation id="557283862590186398">Chrome vajab selle saidi puhul luba, et teie mikrofonile juurde pääseda.</translation>
 <translation id="5860491529813859533">Lülita sisse</translation>
 <translation id="6092062101542170135">Jätkamiseks lülitage NFC Androidi seadetes sisse</translation>

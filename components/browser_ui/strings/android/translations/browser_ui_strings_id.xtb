@@ -51,6 +51,7 @@
 <translation id="2315043854645842844">Pilihan sertifikat sisi klien tidak didukung oleh sistem operasi.</translation>
 <translation id="2359808026110333948">Lanjutkan</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
+<translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, dan <ph name="NUM_MORE" /> lainnya diizinkan}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, dan <ph name="NUM_MORE" /> lainnya diizinkan}}</translation>
 <translation id="2434158240863470628">Download selesai <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2440823041667407902">Akses lokasi</translation>
 <translation id="2482878487686419369">Notifikasi</translation>
@@ -190,6 +191,7 @@
 <translation id="6447842834002726250">Cookie</translation>
 <translation id="6527303717912515753">Bagikan</translation>
 <translation id="6545864417968258051">Pemindaian Bluetooth</translation>
+<translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, dan <ph name="NUM_MORE" /> lainnya diblokir}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, dan <ph name="NUM_MORE" /> lainnya diblokir}}</translation>
 <translation id="6561560012278703671">Gunakan notifikasi yang lebih tenang (memblokir pop-up notifikasi agar tidak mengganggu Anda)</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Konten dilindungi</translation>
@@ -292,6 +294,7 @@
 <translation id="8959122750345127698">Navigasi tidak dapat dijangkau: <ph name="URL" /></translation>
 <translation id="9019902583201351841">Dikelola oleh orang tua Anda</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, dan <ph name="NUM_MORE" /> lainnya}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, dan <ph name="NUM_MORE" /> lainnya}}</translation>
 <translation id="913657688200966289">Aktifkan izin untuk <ph name="APP_NAME" /> di <ph name="BEGIN_LINK" />Setelan Android<ph name="END_LINK" />.</translation>
 <translation id="945632385593298557">Akses mikrofon Anda</translation>
 <translation id="965817943346481315">Blokir jika situs menampilkan iklan yang mengganggu atau menyesatkan (direkomendasikan)</translation>

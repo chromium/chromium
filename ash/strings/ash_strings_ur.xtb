@@ -137,6 +137,7 @@
 <translation id="2341729377289034582">عمودی پر مقفل ہے</translation>
 <translation id="2352467521400612932">اسٹائلس کی ترتیبات</translation>
 <translation id="2354174487190027830"><ph name="NAME" /> کو فعال کیا جا رہا ہے</translation>
+<translation id="2356210126990741501">ایسا لگتا ہے کہ آپ کا فون آن لائن نہیں ہے اور ہم آپ کے ليے ابھی اس سے سبھی پرکشش اشیاء حاصل نہیں کر سکتے ہیں۔</translation>
 <translation id="2359808026110333948">جاری رکھیں</translation>
 <translation id="2365393535144473978">موبائل ڈیٹا فعال کرنے سے بلوٹوتھ فعال ہو جائے گا۔</translation>
 <translation id="2369165858548251131">چینی میں "ہیلو"</translation>
@@ -169,6 +170,7 @@
 <translation id="2705001408393684014">مائیک ٹوگل کریں۔ <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">اوپر</translation>
 <translation id="2718395828230677721">نائٹ لائٹ</translation>
+<translation id="2727175239389218057">جواب دیں</translation>
 <translation id="2727977024730340865">ایک کم پاور کے چارجر میں پلگ ان ہے۔ بیٹری چارجنگ ممکن ہے بھروسہ مند نہ ہو۔</translation>
 <translation id="2743387203779672305">کلپ بورڈ پر کاپی کریں</translation>
 <translation id="2792498699870441125">‏Alt+تلاش</translation>
@@ -177,6 +179,7 @@
 <translation id="2825619548187458965">شیلف</translation>
 <translation id="2841907151129139818">ٹیبلیٹ وضع میں سوئچ کیا</translation>
 <translation id="2844169650293029770">‏USB-C آلہ (بائیں طرف کا اگلا پورٹ)</translation>
+<translation id="2846247265041961677">افوہ! فون تلاش نہیں کیا جا سکتا</translation>
 <translation id="2865888419503095837">نیٹ ورک کی معلومات</translation>
 <translation id="2872961005593481000">بند کریں</translation>
 <translation id="2878884018241093801">کوئی حالیہ آئٹم نہیں</translation>
@@ -304,6 +307,7 @@
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{ایک ایپ کیلئے آف ہے}other{# ایپس کیلئے آف ہے}}</translation>
 <translation id="4072264167173457037">اوسط سگنل</translation>
 <translation id="4112140312785995938">پیچھے کریں</translation>
+<translation id="4114315158543974537">‏Phone Hub آن کریں</translation>
 <translation id="4129129681837227511">اپنی مقفل اسکرین پر اطلاعات دیکھنے کیلئے، ترتیب تبدیل کرنے کیلئے غیر مقفل کریں</translation>
 <translation id="4146833061457621061">موسیقی چلائیں</translation>
 <translation id="4149156641122542261"><ph name="DEVICE_TYPE" /> <ph name="DOMAIN" /> کے زیر انتظام ہے</translation>
@@ -435,6 +439,7 @@
 <translation id="5648021990716966815">مائیک جیک</translation>
 <translation id="5669267381087807207">فعال ہو رہا ہے</translation>
 <translation id="5673434351075758678">‏آپ کی ترتیبات کی مطابقت پذیری کے بعد '<ph name="FROM_LOCALE" />' سے '‎'‎<ph name="TO_LOCALE" />‎ میں۔</translation>
+<translation id="5679050765726761783">کم پاور ایڈاپٹر منسلک ہوگیا</translation>
 <translation id="5682642926269496722">‏Google اسسٹنٹ موجودہ صارف اکاؤنٹ کے لیے دستیاب نہیں ہے۔</translation>
 <translation id="5689633613396158040">نائٹ لائٹ سے مدھم روشنی میں اپنی اسکرین کو دیکھنا یا پڑھنا آسان ہو جاتا ہے۔ نائٹ لائٹ کے آن ہونے کے وقت کو تبدیل کرنے کے لئے تھپتھپائیں یا اسے مکمل طور پر آف کر دیں۔</translation>
 <translation id="5691772641933328258">فنگر پرنٹ کی شناخت نہیں ہو سکی</translation>
@@ -459,6 +464,7 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">آن</translation>
 <translation id="5920710855273935292">مائیک خاموش کیا ہوا ہے۔</translation>
+<translation id="594179686076170922">آپ کے فون سے رابطہ ہو رہا ہے...</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> آن ہے۔</translation>
 <translation id="5947494881799873997">واپس لوٹیں</translation>
 <translation id="595202126637698455">کارکردگی کی ٹریسنگ فعال کر دی گئی</translation>
@@ -548,6 +554,7 @@
 <translation id="6857811139397017780"><ph name="NETWORKSERVICE" /> فعال کریں</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{ایک ہندسہ باقی ہے}other{# ہندسے باقی ہیں}}</translation>
 <translation id="6878400149835617132">شارٹ کٹ آف ہے</translation>
+<translation id="6886172995547742638">‏آپ کے <ph name="DEVICE_TYPE" /> کی کارکردگی کم ہو سکتی ہے سرٹیفیکیٹ یافتہ <ph name="PREFERRED_MINIMUM_POWER" />W یا اعلی USB-C پاور ایڈاپٹر استعمال کریں۔</translation>
 <translation id="6896758677409633944">کاپی کریں</translation>
 <translation id="6910714959251846841">اس اپ ڈیٹ کیلئے آپ کے آلے کی پاور واشنگ درکار ہے۔ تازہ ترین <ph name="SYSTEM_APP_NAME" /> اپ ڈیٹ کے بارے میں مزید جانیں۔</translation>
 <translation id="6919251195245069855">آپ کے اسمارٹ کارڈ کی شناخت نہیں کی جا سکی۔ پھر آزمائيں۔</translation>

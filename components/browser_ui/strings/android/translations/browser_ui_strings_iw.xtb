@@ -51,6 +51,7 @@
 <translation id="2315043854645842844">מערכת ההפעלה אינה תומכת בבחירת אישור בצד הלקוח.</translation>
 <translation id="2359808026110333948">המשך</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
+<translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{הוענקו ההרשאות <ph name="PERMISSION_1" />,‏ <ph name="PERMISSION_2" /> ועוד הרשאה אחת (<ph name="NUM_MORE" />)}two{הוענקו ההרשאות <ph name="PERMISSION_1" />,‏ <ph name="PERMISSION_2" /> ועוד <ph name="NUM_MORE" />}many{הוענקו ההרשאות <ph name="PERMISSION_1" />,‏ <ph name="PERMISSION_2" /> ועוד <ph name="NUM_MORE" />}other{הוענקו ההרשאות <ph name="PERMISSION_1" />,‏ <ph name="PERMISSION_2" /> ועוד <ph name="NUM_MORE" />}}</translation>
 <translation id="2434158240863470628">ההורדה הושלמה <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2440823041667407902">גישה למיקום</translation>
 <translation id="2482878487686419369">התראות</translation>
@@ -190,6 +191,7 @@
 <translation id="6447842834002726250">‏קובצי Cookie</translation>
 <translation id="6527303717912515753">שיתוף</translation>
 <translation id="6545864417968258051">‏סריקת Bluetooth</translation>
+<translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{נחסמו ההרשאות <ph name="PERMISSION_1" />,‏ <ph name="PERMISSION_2" /> ועוד הרשאה אחת (<ph name="NUM_MORE" />)}two{נחסמו ההרשאות <ph name="PERMISSION_1" />,‏ <ph name="PERMISSION_2" /> ועוד <ph name="NUM_MORE" />}many{נחסמו ההרשאות <ph name="PERMISSION_1" />,‏ <ph name="PERMISSION_2" /> ועוד <ph name="NUM_MORE" />}other{נחסמו ההרשאות <ph name="PERMISSION_1" />,‏ <ph name="PERMISSION_2" /> ועוד <ph name="NUM_MORE" />}}</translation>
 <translation id="6561560012278703671">הצגת חיווי בסרגל הכתובות (מונע הקפצה של חלוניות הודעה מפריעות)</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">תוכן מוגן</translation>
@@ -292,6 +294,7 @@
 <translation id="8959122750345127698">הניווט לא אפשרי: <ph name="URL" /></translation>
 <translation id="9019902583201351841">מנוהל על-ידי ההורים שלך</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />,‏ <ph name="PERMISSION_2" /> ועוד הרשאה אחת (<ph name="NUM_MORE" />)}two{<ph name="PERMISSION_1" />,‏ <ph name="PERMISSION_2" /> ועוד <ph name="NUM_MORE" />}many{<ph name="PERMISSION_1" />,‏ <ph name="PERMISSION_2" /> ועוד <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />,‏ <ph name="PERMISSION_2" /> ועוד <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289">‏יש להעניק הרשאות עבור <ph name="APP_NAME" /> ב<ph name="BEGIN_LINK" />הגדרות Android<ph name="END_LINK" />.</translation>
 <translation id="945632385593298557">גישה למיקרופון שלך</translation>
 <translation id="965817943346481315">חסימה אם באתר מוצגות מודעות מפריעות או מטעות (מומלץ)</translation>

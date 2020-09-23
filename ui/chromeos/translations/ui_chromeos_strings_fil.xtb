@@ -376,6 +376,7 @@
 <translation id="5098629044894065541">Hebrew</translation>
 <translation id="5123433949759960244">Basketball</translation>
 <translation id="5129662217315786329">Polish</translation>
+<translation id="5132435854979302863">Filipino</translation>
 <translation id="5144820558584035333">Hangul 3 Set (390)</translation>
 <translation id="5145331109270917438">Petsa ng pagbabago</translation>
 <translation id="515594325917491223">Chess</translation>
@@ -422,6 +423,7 @@
 <translation id="5464696796438641524">Polish na keyboard</translation>
 <translation id="5465122519792752163">Nepali keyboard (InScript)</translation>
 <translation id="5469868506864199649">Italyano</translation>
+<translation id="5484429245813572665">Indonesian</translation>
 <translation id="5494920125229734069">Piliin ang lahat</translation>
 <translation id="5500122897333236901">Icelandic</translation>
 <translation id="5508696409934741614">Mga Dot</translation>
@@ -609,6 +611,7 @@
 <translation id="7649070708921625228">Tulong</translation>
 <translation id="7654209398114106148">Inililipat ang <ph name="NUMBER_OF_ITEMS" /> (na) item...</translation>
 <translation id="7658239707568436148">Kanselahin</translation>
+<translation id="7693909743393669729">Kapag nag-format ng drive, mabubura ang lahat ng data na naka-store dito at maaalis ang lahat ng kasalukuyang partition, kasama ang mga partition na posibleng hindi nakikita. Hindi maa-undo ang pagkilos na ito.</translation>
 <translation id="7695430100978772476">Hindi ma-format ang <ph name="DRIVE_NAME" /></translation>
 <translation id="770015031906360009">Greko</translation>
 <translation id="7706319470528945664">Portuguese na keyboard</translation>
@@ -640,6 +643,7 @@
 <translation id="78946041517601018">Mga shared drive</translation>
 <translation id="7896906914454843592">US Extended keyboard</translation>
 <translation id="7898607018410277265">Gujarati keyboard (New Phonetic)</translation>
+<translation id="7908793776359722643">Kapag nag-format ng partition, mabubura ang lahat ng data na naka-store dito. Hindi maa-undo ang pagkilos na ito.</translation>
 <translation id="7917972308273378936">Lithuanian na keyboard</translation>
 <translation id="7925686952655276919">Huwag gumamit ng data sa mobile para sa pag-sync</translation>
 <translation id="7928710562641958568">I-eject ang device</translation>
@@ -727,6 +731,7 @@
 <translation id="8900820606136623064">Hungarian</translation>
 <translation id="8901822611024316615">Czech na QWERTY keyboard</translation>
 <translation id="8919081441417203123">Danish</translation>
+<translation id="8941776146379310519">Malay</translation>
 <translation id="8960999352790021682">Bengali keyboard (Phonetic)</translation>
 <translation id="8965697826696209160">Walang sapat na espasyo.</translation>
 <translation id="9017798300203431059">Russian phonetic</translation>

@@ -51,6 +51,7 @@
 <translation id="2315043854645842844">ഓപ്പറേറ്റിംഗ് സിസ്റ്റം ക്ലയന്റിന്റെ സർട്ടിഫിക്കറ്റ് തിരഞ്ഞെടുക്കലിനെ പിന്തുണയ്‌ക്കുന്നില്ല.</translation>
 <translation id="2359808026110333948">തുടരുക</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
+<translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> എന്നിവയും മറ്റ് <ph name="NUM_MORE" /> എണ്ണവും അനുവദിച്ചു}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> എന്നിവയും മറ്റ് <ph name="NUM_MORE" /> എണ്ണവും അനുവദിച്ചു}}</translation>
 <translation id="2434158240863470628">ഡൗൺലോഡ് പൂർത്തിയായി <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2440823041667407902">ലൊക്കേഷൻ ആക്‌സസ്</translation>
 <translation id="2482878487686419369">അറിയിപ്പുകൾ</translation>
@@ -190,6 +191,7 @@
 <translation id="6447842834002726250">കുക്കികള്‍</translation>
 <translation id="6527303717912515753">പങ്കിടുക</translation>
 <translation id="6545864417968258051">Bluetooth സ്‌കാനിംഗ്</translation>
+<translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> എന്നിവയും മറ്റ് <ph name="NUM_MORE" /> എണ്ണവും ബ്ലോക്ക് ചെയ്‌തു}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> എന്നിവയും മറ്റ് <ph name="NUM_MORE" /> എണ്ണവും ബ്ലോക്ക് ചെയ്‌തു}}</translation>
 <translation id="6561560012278703671">നിശബ്ദമായ സന്ദേശമയയ്ക്കൽ ഉപയോഗിക്കുക (നിങ്ങളെ തടസ്സപ്പെടുത്തുന്നതിൽ നിന്ന് അറിയിപ്പ് നിർദ്ദേശങ്ങളെ ബ്ലോക്ക് ചെയ്യുന്നു)</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">പരിരക്ഷിത ഉള്ളടക്കം</translation>
@@ -292,6 +294,7 @@
 <translation id="8959122750345127698">നാവിഗേഷൻ ലഭ്യമല്ല: <ph name="URL" /></translation>
 <translation id="9019902583201351841">നിങ്ങളുടെ രക്ഷിതാക്കൾ നിയന്ത്രിക്കുന്നു</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> എന്നിവയും മറ്റ് <ph name="NUM_MORE" /> എണ്ണവും}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> എന്നിവയും മറ്റ് <ph name="NUM_MORE" /> എണ്ണവും}}</translation>
 <translation id="913657688200966289"><ph name="BEGIN_LINK" />Android ക്രമീകരണത്തിൽ<ph name="END_LINK" /> <ph name="APP_NAME" /> ആപ്പിനായി അനുമതികൾ ഓണാക്കുക.</translation>
 <translation id="945632385593298557">നിങ്ങളുടെ മൈക്രോഫോൺ ആക്‌സസ് ചെയ്യുക</translation>
 <translation id="965817943346481315">സൈറ്റ്, അനാവശ്യമോ തെറ്റിദ്ധരിപ്പിക്കുന്നതോ ആയ പരസ്യങ്ങള്‍ കാണിക്കുന്നുണ്ടെങ്കില്‍ ബ്ലോക്ക് ചെയ്യുക (ശുപാര്‍ശ ചെയ്യുന്നു)</translation>

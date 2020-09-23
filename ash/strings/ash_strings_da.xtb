@@ -307,6 +307,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Fra for én app}one{Fra for # app}other{Fra for # apps}}</translation>
 <translation id="4072264167173457037">Middel signal</translation>
 <translation id="4112140312785995938">Spol tilbage</translation>
+<translation id="4114315158543974537">Aktivér Phone Hub</translation>
 <translation id="4129129681837227511">Du kan se notifikationer på din låseskærm ved at låse skærmen op og ændre indstillingen</translation>
 <translation id="4146833061457621061">Spil musik</translation>
 <translation id="4149156641122542261"><ph name="DEVICE_TYPE" /> administreres af <ph name="DOMAIN" /></translation>
@@ -438,6 +439,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="5648021990716966815">Stik til mikrofon</translation>
 <translation id="5669267381087807207">Aktiverer</translation>
 <translation id="5673434351075758678">Fra "<ph name="FROM_LOCALE" />" til "<ph name="TO_LOCALE" />", efter at du har synkroniseret dine indstillinger.</translation>
+<translation id="5679050765726761783">En adapter med lav effekt er tilsluttet</translation>
 <translation id="5682642926269496722">Google Assistent er ikke tilgængelig for den aktuelle brugerkonto.</translation>
 <translation id="5689633613396158040">Nattelys gør det mere behageligt at kigge på din skærm eller læse på den i svag belysning. Tryk for at ændre indstillingerne for, hvornår Nattelys aktiveres, eller for at deaktivere funktionen helt.</translation>
 <translation id="5691772641933328258">Fingeraftrykket kunne ikke genkendes</translation>
@@ -553,6 +555,7 @@ slettes permanent, når den administrerede bruger fjernes. Besøgte websites og 
 <translation id="6857811139397017780">Aktivér <ph name="NETWORKSERVICE" /></translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Der skal angives ét ciffer mere}one{Der skal angives # ciffer mere}other{Der skal angives # cifre mere}}</translation>
 <translation id="6878400149835617132">Genvejen er deaktiveret</translation>
+<translation id="6886172995547742638">Din <ph name="DEVICE_TYPE" />-enhed præsterer muligvis dårligere. Brug en certificeret USB-C-strømadapter på minimum <ph name="PREFERRED_MINIMUM_POWER" /> W.</translation>
 <translation id="6896758677409633944">Kopiér</translation>
 <translation id="6910714959251846841">Denne opdatering kræver, at der udføres en powerwash på din enhed. Få flere oplysninger om den nyeste <ph name="SYSTEM_APP_NAME" />-opdatering.</translation>
 <translation id="6919251195245069855">Dit chipkort blev ikke genkendt. Prøv igen.</translation>

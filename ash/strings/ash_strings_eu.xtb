@@ -308,6 +308,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{1 apl. desakt.}other{# apl. desakt.}}</translation>
 <translation id="4072264167173457037">Tarteko seinalea</translation>
 <translation id="4112140312785995938">Atzeratu</translation>
+<translation id="4114315158543974537">Aktibatu Phone Hub</translation>
 <translation id="4129129681837227511">Pantaila blokeatuan jakinarazpenak ikusteko, desblokeatu gailua eta aldatu ezarpena</translation>
 <translation id="4146833061457621061">Erreproduzitu musika</translation>
 <translation id="4149156641122542261"><ph name="DOMAIN" /> da <ph name="DEVICE_TYPE" /> gailuaren kudeatzailea</translation>
@@ -439,6 +440,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="5648021990716966815">Mikrofonoaren konektorea</translation>
 <translation id="5669267381087807207">Aktibatzen</translation>
 <translation id="5673434351075758678">Ezarpenak sinkronizatu ondoren, "<ph name="FROM_LOCALE" />" ordez, "<ph name="TO_LOCALE" />" ezarri da hizkuntza gisa.</translation>
+<translation id="5679050765726761783">Potentzia gutxiko egokigailua konektatuta dago</translation>
 <translation id="5682642926269496722">Google-ren Laguntzailea ez dago erabilgarri uneko erabiltzaile-kontuan.</translation>
 <translation id="5689633613396158040">Gaueko argia eginbideari esker, ez zaizu egingo horren nekagarria argi gutxiko inguruetan pantailari begira egotea. Sakatu hau Gaueko argia aktibatzeko ordua aldatzeko, edo aukera hori erabat desaktibatzeko.</translation>
 <translation id="5691772641933328258">Ez da ezagutu hatz-marka</translation>
@@ -553,6 +555,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="6857811139397017780">Aktibatu <ph name="NETWORKSERVICE" /></translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{1 zenbaki geratzen da}other{# zenbaki geratzen dira}}</translation>
 <translation id="6878400149835617132">Lasterbidea desaktibatu da</translation>
+<translation id="6886172995547742638">Baliteke <ph name="DEVICE_TYPE" /> gailuaren errendimendua txikiagoa izatea. Erabili <ph name="PREFERRED_MINIMUM_POWER" /> W-ko edo gehiagoko USB-C egokigailu bat.</translation>
 <translation id="6896758677409633944">Kopiatu</translation>
 <translation id="6910714959251846841">Eguneratu ahal izateko, gailuaren fabrikako ezarpenak berrezarri behar dira. Lortu informazio gehiago <ph name="SYSTEM_APP_NAME" /> aplikazioaren azken eguneratzeari buruz.</translation>
 <translation id="6919251195245069855">Ezin izan da hauteman txartel adimenduna. Saiatu berriro.</translation>

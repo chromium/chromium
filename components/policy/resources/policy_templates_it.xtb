@@ -1479,6 +1479,15 @@ Questa norma viene rispettata soltanto se viene attivata la norma "DefaultSearch
 <translation id="3219421230122020860">Modalità di navigazione in incognito disponibile</translation>
 <translation id="3220624000494482595">Se l'app kiosk è un'app Android, non avrà controllo sulla versione di <ph name="PRODUCT_OS_NAME" />, anche se la norma viene impostata su <ph name="TRUE" />.</translation>
 <translation id="322359555555487980">Determina la disponibilità delle varianti su <ph name="PRODUCT_OS_NAME" /></translation>
+<translation id="3225165352822164029">Questo criterio consente di impostare l'URL predefinito della pagina iniziale in <ph name="PRODUCT_NAME" />. È possibile aprire la pagina iniziale usando il pulsante omonimo. Sui computer desktop, i criteri <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> consentono di stabilire le pagine da aprire all'avvio.
+
+      Se come pagina iniziale viene impostata la pagina Nuova scheda, dall'utente o in base al criterio <ph name="HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_NAME" />, questo criterio non ha effetto.
+
+       L'URL deve avere uno schema standard, ad esempio http://example.com o https://example.com. Se questo criterio viene impostato, gli utenti non possono modificare l'URL della loro pagina iniziale in <ph name="PRODUCT_NAME" />.
+
+      Se entrambi i criteri <ph name="HOMEPAGE_LOCATION_POLICY_NAME" /> e <ph name="HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_NAME" /> non vengono impostati, gli utenti possono scegliere la pagina iniziale che preferiscono.
+
+      Su <ph name="MS_WIN_NAME" />, questa funzionalità è disponibile soltanto sulle istanze che fanno parte di un dominio <ph name="MS_AD_NAME" />, sono in esecuzione su Windows 10 Pro o sono registrate in <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />. Su <ph name="MAC_OS_NAME" />, questa funzionalità è disponibile soltanto sulle istanze gestite tramite MDM o aggiunte a un dominio tramite MCX.</translation>
 <translation id="3231837273069128027">La configurazione del criterio consente di impostare disponibilità e comportamento degli aggiornamenti del firmware <ph name="TPM_FIRMWARE_UPDATE_TPM" />.
 
       Specifica le singole impostazioni nelle proprietà JSON:
@@ -1826,6 +1835,11 @@ Se questa norma viene impostata su False o non viene impostata, i ritardi di ges
       Questo criterio verrà rimosso nella versione 88 di Chrome.
 
       Visita la pagina https://www.chromestatus.com/feature/5989473649164288.</translation>
+<translation id="3691155504326059225">Se il criterio viene impostato su Attivato, la pagina Nuova scheda viene impostata come pagina iniziale dell'utente e l'eventuale URL della pagina iniziale specificato viene ignorato. Se il criterio viene impostato su Disattivato, la pagina iniziale dell'utente non sarà mai la pagina Nuova scheda, a meno che venga impostata la pagina chrome://newtab come URL della pagina iniziale dell'utente.
+
+      Se il criterio viene impostato, gli utenti non possono cambiare il tipo di pagina iniziale in <ph name="PRODUCT_NAME" />. Se non viene impostato, l'utente può decidere se impostare o meno la pagina Nuova scheda come pagina iniziale.
+
+      Su <ph name="MS_WIN_NAME" />, questa funzionalità è disponibile soltanto sulle istanze che fanno parte di un dominio <ph name="MS_AD_NAME" />, sono in esecuzione su Windows 10 Pro o sono registrate in <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />. Su <ph name="MAC_OS_NAME" />, questa funzionalità è disponibile soltanto sulle istanze gestite tramite MDM o aggiunte a un dominio tramite MCX.</translation>
 <translation id="3701121231485832347">Consente di gestire le impostazioni specifiche dei dispositivi <ph name="PRODUCT_OS_NAME" /> gestiti da <ph name="MS_AD_NAME" />.</translation>
 <translation id="3702518095257671450">Attestazione da remoto</translation>
 <translation id="3702647575225525306"><ph name="POLICY_NAME" /> (Il campo a una sola riga è obsoleto e sarà rimosso a breve. Inizia a usare la casella di testo multiriga qui sotto).</translation>
@@ -3117,6 +3131,13 @@ Se questa impostazione viene disattivata o non viene impostata, sia gli utenti l
       Se questo criterio è impostato su "Blocca caricamenti e download di tipi di file non supportati" (3), <ph name="PRODUCT_NAME" /> si comporta secondo le regole descritte nelle impostazioni "Blocca i caricamenti di tipi di file non supportati" e "Blocca i download di tipi di file non supportati".
       </translation>
 <translation id="5535973522252703021">Whitelist server di delega Kerberos</translation>
+<translation id="5540753481451194959">Questo criterio consente di specificare il comportamento del sistema all'avvio. Disattivare questa impostazione equivale a non impostarla, perché per <ph name="PRODUCT_NAME" /> è necessario specificare un comportamento da adottare all'avvio.
+
+      Se il criterio viene impostato, gli utenti non possono modificarlo in <ph name="PRODUCT_NAME" />. Se non viene impostato, gli utenti possono modificarlo.
+
+      Se questo criterio viene impostato su <ph name="POLICY_ENUM_RESTOREONSTARTUP_RESTOREONSTARTUPISLASTSESSION" />, vengono disattivate alcune impostazioni basate sulle sessioni o che compiono azioni all'uscita, ad esempio la cancellazione dei dati di navigazione alla chiusura o dei cookie della sessione.
+
+      Su <ph name="MS_WIN_NAME" />, questa funzionalità è disponibile soltanto sulle istanze che fanno parte di un dominio <ph name="MS_AD_NAME" />, sono in esecuzione su Windows 10 Pro o sono registrate in <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />. Su <ph name="MAC_OS_NAME" />, questa funzionalità è disponibile soltanto sulle istanze gestite tramite MDM o aggiunte a un dominio tramite MCX.</translation>
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="555022085242359084">Attiva l'alto contrasto nella schermata di accesso</translation>
 <translation id="555077880566103058">Consenti l'esecuzione automatica del plug-in <ph name="FLASH_PLUGIN_NAME" /> in tutti i siti</translation>
@@ -4641,6 +4662,11 @@ Se l'impostazione viene disattivata, questa funzione non sarà disponibile.</tra
       Questa norma viene applicata solo agli utenti che sono bambini o ragazzi.
       Quando questa norma è impostata, il codice di accesso genitori può essere verificato sul dispositivo dell'utente bambino o ragazzo.
       Quando questa norma non è impostata, non è possibile verificare il codice di accesso genitori sul dispositivo dell'utente bambino o ragazzo.</translation>
+<translation id="7623187731914468284">Se il criterio <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> viene impostato su RestoreOnStartupIsURLs e per il criterio <ph name="RESTORE_ON_STARTUP_URLS_POLICY_NAME" /> viene impostato un elenco di URL, è possibile specificare quali URL aprire.
+
+      Se non viene impostato, all'avvio viene aperta la pagina Nuova scheda.
+
+      Su <ph name="MS_WIN_NAME" />, questa funzionalità è disponibile soltanto sulle istanze che fanno parte di un dominio <ph name="MS_AD_NAME" />, sono in esecuzione su Windows 10 Pro o sono registrate in <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />. Su <ph name="MAC_OS_NAME" />, questa funzionalità è disponibile soltanto sulle istanze gestite tramite MDM o aggiunte a un dominio tramite MCX.</translation>
 <translation id="7625444193696794922">Consente di specificare il canale di rilascio su cui deve essere bloccato questo dispositivo.</translation>
 <translation id="7629840767216985001">Se il criterio è impostato su True, viene attivato il cursore grande nella schermata di accesso. Se il criterio è impostato su False, viene disattivato il cursore grande nella schermata di accesso.
 
@@ -5386,6 +5412,9 @@ Se l'impostazione viene impostata su true, o se non viene impostata, l'attestazi
 
       Questo criterio non influisce sulla possibilità per gli utenti di configurare le stampanti su singoli dispositivi. È supplementare alla configurazione delle stampanti da parte dei singoli utenti.</translation>
 <translation id="8764477907716150749">Questa norma è per uso interno di <ph name="PRODUCT_NAME" />.</translation>
+<translation id="8767743923206070405">Se il criterio viene impostato su Attivato, nella barra degli strumenti di <ph name="PRODUCT_NAME" /> viene mostrato il pulsante Pagina iniziale. Se il criterio viene impostato su Disattivato, il pulsante Pagina iniziale non viene mostrato.
+
+      Se il criterio viene impostato, gli utenti non possono modificarlo in <ph name="PRODUCT_NAME" />. Se non viene impostato, gli utenti possono decidere se mostrare o meno il pulsante Pagina iniziale.</translation>
 <translation id="877185520360032968">L'impostazione del criterio modificherà la directory predefinita in cui Chrome scarica i file, che però gli utenti possono modificare.
 
       Se il criterio non viene configurato, Chrome utilizzerà la directory predefinita specifica della piattaforma.

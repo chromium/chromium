@@ -137,6 +137,7 @@
 <translation id="2341729377289034582">已鎖定為垂直</translation>
 <translation id="2352467521400612932">觸控筆設定</translation>
 <translation id="2354174487190027830">正在啟用 <ph name="NAME" /></translation>
+<translation id="2356210126990741501">您的手機似乎不在線，因此我們目前無法為您取得所有精彩小工具。</translation>
 <translation id="2359808026110333948">繼續</translation>
 <translation id="2365393535144473978">如果您啟用流動數據，藍牙亦會隨之開啟。</translation>
 <translation id="2369165858548251131">「你好」嘅英文</translation>
@@ -169,6 +170,7 @@
 <translation id="2705001408393684014">切換去咪高風。<ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">向上鍵</translation>
 <translation id="2718395828230677721">夜燈模式</translation>
+<translation id="2727175239389218057">回覆</translation>
 <translation id="2727977024730340865">使用低功率充電器，可能導致充電狀態不穩定。</translation>
 <translation id="2743387203779672305">複製到剪貼簿</translation>
 <translation id="2792498699870441125">Alt + 搜尋鍵</translation>
@@ -177,6 +179,7 @@
 <translation id="2825619548187458965">檔案櫃</translation>
 <translation id="2841907151129139818">已切換至平板電腦模式</translation>
 <translation id="2844169650293029770">USB-C 裝置 (左側前方連接埠)</translation>
+<translation id="2846247265041961677">糟糕！找不到手機</translation>
 <translation id="2865888419503095837">網絡資訊</translation>
 <translation id="2872961005593481000">關閉</translation>
 <translation id="2878884018241093801">最近沒有任何項目</translation>
@@ -459,6 +462,7 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">開啟</translation>
 <translation id="5920710855273935292">咪高風校咗靜音。</translation>
+<translation id="594179686076170922">正在連接您的手機…</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" />功能已開啟。</translation>
 <translation id="5947494881799873997">還原</translation>
 <translation id="595202126637698455">效能追蹤已啟用</translation>

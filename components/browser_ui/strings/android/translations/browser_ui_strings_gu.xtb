@@ -51,6 +51,7 @@
 <translation id="2315043854645842844">ઓપરેટિંગ સિસ્ટમ દ્વારા ક્લાઇન્ટ તરફની પ્રમાણપત્ર પસંદગી સપોર્ટ કરતી નથી.</translation>
 <translation id="2359808026110333948">આગળ વધો</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
+<translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> અને વધુ <ph name="NUM_MORE" />ની મંજૂરી આપી}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> અને વધુ <ph name="NUM_MORE" />ની મંજૂરી આપી}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> અને વધુ <ph name="NUM_MORE" />ની મંજૂરી આપી}}</translation>
 <translation id="2434158240863470628">ડાઉનલોડ પૂર્ણ <ph name="SEPARATOR" /><ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2440823041667407902">સ્થાન ઍક્સેસ</translation>
 <translation id="2482878487686419369">નોટિફિકેશનો</translation>
@@ -190,6 +191,7 @@
 <translation id="6447842834002726250">કૂકીઝ</translation>
 <translation id="6527303717912515753">શેર કરો</translation>
 <translation id="6545864417968258051">બ્લૂટૂથ સ્કૅનિંગ</translation>
+<translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> અને વધુ <ph name="NUM_MORE" /> બ્લૉક કરી}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> અને વધુ <ph name="NUM_MORE" /> બ્લૉક કરી}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> અને વધુ <ph name="NUM_MORE" /> બ્લૉક કરી}}</translation>
 <translation id="6561560012278703671">ગુપચુપ મેસેજિંગનો ઉપયોગ કરો (તમને ખલેલ પહોંચાડે તેવા નોટિફિકેશન સંકેતોને બ્લૉક કરે છે)</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">સુરક્ષિત કન્ટેન્ટ</translation>
@@ -292,6 +294,7 @@
 <translation id="8959122750345127698">નેવિગેશન બિનપહોંચ યોગ્ય છે: <ph name="URL" /></translation>
 <translation id="9019902583201351841">તમારા માતાપિતા દ્વારા સંચાલિત</translation>
 <translation id="9074739597929991885">બ્લૂટૂથ</translation>
+<translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> અને વધુ <ph name="NUM_MORE" />}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> અને વધુ <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> અને વધુ <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289"><ph name="BEGIN_LINK" />Android સેટિંગ<ph name="END_LINK" />માં <ph name="APP_NAME" /> માટે પરવાનગીઓ ચાલુ કરો.</translation>
 <translation id="945632385593298557">તમારા માઇક્રોફોનની ઍક્સેસ</translation>
 <translation id="965817943346481315">જો સાઇટ ઘૃણાસ્પદ અથવા ભ્રામક જાહેરાતો બતાવતી હોય, તો બ્લૉક કરો (ભલામણ કરેલ)</translation>

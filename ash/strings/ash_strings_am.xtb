@@ -137,6 +137,7 @@
 <translation id="2341729377289034582">ወደ አቀባዊ ተቆልፏል</translation>
 <translation id="2352467521400612932">የስቲለስ ቅንብሮች</translation>
 <translation id="2354174487190027830"><ph name="NAME" />ን በማግበር ላይ</translation>
+<translation id="2356210126990741501">ስልክዎ መስመር ላይ ያልሆነ ይመስላል እና አሁን ሁሉንም ንዑስ መግብርን ከእሱ ለእርስዎ ማግኘት አንችልም።</translation>
 <translation id="2359808026110333948">ቀጥል</translation>
 <translation id="2365393535144473978">የተንቀሳቃሽ ስልክ ውሂብን ማንቃት ብሉቱዝን ያነቃል።</translation>
 <translation id="2369165858548251131">«Hello» በቻይንኛ</translation>
@@ -169,6 +170,7 @@
 <translation id="2705001408393684014">ማይክሮፎንን ቀያይር። <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">ላይ</translation>
 <translation id="2718395828230677721">የምሽት ብርሃን</translation>
+<translation id="2727175239389218057">ምላሽ ስጥ</translation>
 <translation id="2727977024730340865">አነስተኛ ኃይል ወዳለው ባትሪ መሙያ ተሰክቷል። የባትሪ መሙላት አስተማማኝ ላይሆን ይችላል።</translation>
 <translation id="2743387203779672305">ወደ ቅንጥብ ሰሌዳ ገልብጥ</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
@@ -177,6 +179,7 @@
 <translation id="2825619548187458965">መደርደሪያ</translation>
 <translation id="2841907151129139818">ወደ የጡባዊ ሁነታ ተቀይሯል</translation>
 <translation id="2844169650293029770">USB-C መሣሪያ (የግራ ጎን የፊት ወደብ)</translation>
+<translation id="2846247265041961677">ኧረ ወይኔ! ስልክ ማግኘት አልተቻለም</translation>
 <translation id="2865888419503095837">የአውታረ መረብ መረጃ</translation>
 <translation id="2872961005593481000">ዝጋ</translation>
 <translation id="2878884018241093801">ምንም የቅርብ ጊዜ ንጥሎች የሉም</translation>
@@ -304,6 +307,7 @@
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{ቅናሽ ለአንድ መተግበሪያ}one{ቅናሽ ለ# መተግበሪያዎች}other{ቅናሽ ለ# መተግበሪያዎች}}</translation>
 <translation id="4072264167173457037">መካከለኛ ሲግናል</translation>
 <translation id="4112140312785995938">ወደኋላ ፈልግ</translation>
+<translation id="4114315158543974537">የስልክ መገናኛን ያብሩ</translation>
 <translation id="4129129681837227511">በማያ ገጽ መቆለፊያዎ ላይ ማሳወቂያዎችን ለማየት ቅንብሩችን ለመቀየር ይክፈቱ</translation>
 <translation id="4146833061457621061">Play ሙዚቃ</translation>
 <translation id="4149156641122542261"><ph name="DEVICE_TYPE" /> በ<ph name="DOMAIN" /> የሚተዳደር ነው</translation>
@@ -435,6 +439,7 @@
 <translation id="5648021990716966815">የማይክሮፎን መሰኪያ</translation>
 <translation id="5669267381087807207">በማግበር ላይ</translation>
 <translation id="5673434351075758678">ከ«<ph name="FROM_LOCALE" />» ወደ «<ph name="TO_LOCALE" />» የእርስዎን ቅንብሮች ከማመሳሰል በኋላ።</translation>
+<translation id="5679050765726761783">ዝቅተኛ የኃይል አስማሚ ተገናኝቷል</translation>
 <translation id="5682642926269496722">የ Google ረዳቱ አሁን ላለው ተጠቃሚ መለያ አይገኝም።</translation>
 <translation id="5689633613396158040">የሌሊት ብርሃን በእርስዎ ማያ ገጽ ላይ መመልከትን ወይም በደብዛዛ ብርሃን ማንበብን ይበልጥ ቀላል ያደርገዋል። የምሽት ብርሃን ስንት ሰዓት ላይ እንደሚበራ ለመቀየር መታ ያድርጉ ወይም ሙሉ ለሙሉ ያጥፉት።</translation>
 <translation id="5691772641933328258">የጣት አሻራ አልታወቀም</translation>
@@ -459,6 +464,7 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">በርቷል</translation>
 <translation id="5920710855273935292">የማይክሮፎን ድምጽ ተዘግቷል።</translation>
+<translation id="594179686076170922">ወደ ስልክዎ በማገናኘት ላይ...</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> በርቷል።</translation>
 <translation id="5947494881799873997">አድህር</translation>
 <translation id="595202126637698455">አፈጻጸም መከታተያ ነቅቷል</translation>
@@ -548,6 +554,7 @@
 <translation id="6857811139397017780"><ph name="NETWORKSERVICE" />ን አግብር</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{አንድ አሃዝ ይቀራል}one{# አሃዞች ይቀራሉ}other{# አሃዞች ይቀራሉ}}</translation>
 <translation id="6878400149835617132">አቋራጭ ጠፍቷል</translation>
+<translation id="6886172995547742638">የእርስዎ <ph name="DEVICE_TYPE" /> ያነሰ አፈጻጸም ሊያጋጥመው ይችላል። የእውቅና ማረጋገጫ ያለው <ph name="PREFERRED_MINIMUM_POWER" /> ዋ ወይም ከዚያ በላይ የሆነ የUSB-C ኃይል አስማሚን ይጠቀሙ።</translation>
 <translation id="6896758677409633944">ቅዳ</translation>
 <translation id="6910714959251846841">ይህ ዝማኔ የመሣሪያዎን powerwashing ይጠይቃል። ስለቅርብ ጊዜው <ph name="SYSTEM_APP_NAME" /> ዝማኔ የበለጠ ይረዱ።</translation>
 <translation id="6919251195245069855">የእርስዎን ዘመናዊ ካርድ ለይቶ ማወቅ አልተቻለም። እንደገና ይሞክሩ።</translation>

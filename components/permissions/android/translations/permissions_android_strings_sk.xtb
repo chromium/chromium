@@ -1,8 +1,10 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sk">
+<translation id="2077832278056815832">Zatvorte všetky bubliny či prekrytia z iných aplikácií. Potom to skúste znova.</translation>
 <translation id="2359808026110333948">Pokračovať</translation>
 <translation id="2416359993254398973">Chrome potrebuje povolenie pre tento web na prístup k vášmu fotoaparátu.</translation>
+<translation id="2987449669841041897">Tento web nemôže žiadať o vaše povolenie</translation>
 <translation id="557283862590186398">Chrome potrebuje povolenie pre tento web na prístup k vášmu mikrofónu.</translation>
 <translation id="5860491529813859533">Zapnúť</translation>
 <translation id="6092062101542170135">Ak chcete pokračovať, zapnite NFC v nastaveniach Androidu</translation>

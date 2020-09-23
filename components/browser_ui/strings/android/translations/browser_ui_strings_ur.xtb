@@ -51,6 +51,7 @@
 <translation id="2315043854645842844">کلائنٹ سائڈ سرٹیفکیٹ کا انتخاب آپریٹنگ سسٹم کے ذریعہ تعاون یافتہ نہیں ہے۔</translation>
 <translation id="2359808026110333948">جاری رکھیں</translation>
 <translation id="2402980924095424747">‎<ph name="MEGABYTES" /> MB</translation>
+<translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" /> اور <ph name="NUM_MORE" /> مزید کی اجازت دی گئی}other{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" /> اور <ph name="NUM_MORE" /> مزید کی اجازت دی گئی}}</translation>
 <translation id="2434158240863470628">ڈاؤن لوڈ مکمل ہو گیا <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2440823041667407902">مقام تک رسائی</translation>
 <translation id="2482878487686419369">اطلاعات</translation>
@@ -190,6 +191,7 @@
 <translation id="6447842834002726250">کوکیز</translation>
 <translation id="6527303717912515753">اشتراک کریں</translation>
 <translation id="6545864417968258051">بلوٹوتھ اسکیننگ</translation>
+<translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" /> اور <ph name="NUM_MORE" /> مزید کو مسدود کیا گیا}other{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" /> اور <ph name="NUM_MORE" /> مزید کو مسدود کیا گیا}}</translation>
 <translation id="6561560012278703671">پر سکون پیغام رسانی کا استعمال کریں (اطلاع کی پرامپٹس کو آپ کو خلل ڈالنے سے مسدود کرتا ہے)</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">تحفظ یافتہ مواد</translation>
@@ -292,6 +294,7 @@
 <translation id="8959122750345127698">نیویگیشن ناقابل رسائی ہے: <ph name="URL" /></translation>
 <translation id="9019902583201351841">آپ کے والدین کے زیر انتظام</translation>
 <translation id="9074739597929991885">بلوٹوتھ</translation>
+<translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" /> اور <ph name="NUM_MORE" /> مزید}other{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" /> اور <ph name="NUM_MORE" /> مزید}}</translation>
 <translation id="913657688200966289">‏<ph name="BEGIN_LINK" />Android ترتیبات<ph name="END_LINK" /> میں <ph name="APP_NAME" /> کے لیے اجازتیں آن کریں۔</translation>
 <translation id="945632385593298557">اپنے مائیکروفون تک رسائی حاصل کریں</translation>
 <translation id="965817943346481315">اگر سائٹ دخل انداز یا گمراہ کن اشتہارات دکھاتی ہے تو مسدود کریں (تجویز کردہ)</translation>

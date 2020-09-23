@@ -376,6 +376,7 @@
 <translation id="5098629044894065541">хебрејски</translation>
 <translation id="5123433949759960244">Кошаркашка лопта</translation>
 <translation id="5129662217315786329">пољски</translation>
+<translation id="5132435854979302863">филипински</translation>
 <translation id="5144820558584035333">Хангул, 3 реда (390)</translation>
 <translation id="5145331109270917438">Датум измене</translation>
 <translation id="515594325917491223">Шах</translation>
@@ -422,6 +423,7 @@
 <translation id="5464696796438641524">Језик тастатуре: пољски</translation>
 <translation id="5465122519792752163">Непалска тастатура (индијско писмо)</translation>
 <translation id="5469868506864199649">италијански</translation>
+<translation id="5484429245813572665">индонежански</translation>
 <translation id="5494920125229734069">Избор свих ставки</translation>
 <translation id="5500122897333236901">исландски</translation>
 <translation id="5508696409934741614">Тачке</translation>
@@ -609,6 +611,7 @@
 <translation id="7649070708921625228">Помоћ</translation>
 <translation id="7654209398114106148">Премештају се ставке (<ph name="NUMBER_OF_ITEMS" />)...</translation>
 <translation id="7658239707568436148">Откажи</translation>
+<translation id="7693909743393669729">Ако форматирате диск, избрисаћете све податке који се на њему чувају и уклонити све постојеће партиције, укључујући и оне које можда нису видљиве. Ова радња не може да се опозове.</translation>
 <translation id="7695430100978772476">Форматирање меморијског уређаја <ph name="DRIVE_NAME" /> није успело</translation>
 <translation id="770015031906360009">грчки</translation>
 <translation id="7706319470528945664">Језик тастатуре: португалски</translation>
@@ -640,6 +643,7 @@
 <translation id="78946041517601018">Дељени дискови</translation>
 <translation id="7896906914454843592">Америчка проширена тастатура</translation>
 <translation id="7898607018410277265">Гуџарати тастатура (нова фонетска)</translation>
+<translation id="7908793776359722643">Ако форматирате партицију, бришете све податке на њој. Ова радња не може да се опозове.</translation>
 <translation id="7917972308273378936">Језик тастатуре: литвански</translation>
 <translation id="7925686952655276919">Не користи податке за мобилне уређаје за синхронизацију</translation>
 <translation id="7928710562641958568">Избаци уређај</translation>
@@ -727,6 +731,7 @@
 <translation id="8900820606136623064">мађарски</translation>
 <translation id="8901822611024316615">Чешка QWERTY тастатура</translation>
 <translation id="8919081441417203123">дански</translation>
+<translation id="8941776146379310519">малајски</translation>
 <translation id="8960999352790021682">Бенгалска тастатура (фонетска)</translation>
 <translation id="8965697826696209160">Нема довољно простора.</translation>
 <translation id="9017798300203431059">руска фонетска</translation>

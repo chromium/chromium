@@ -137,6 +137,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2341729377289034582">Naka-lock sa vertical</translation>
 <translation id="2352467521400612932">Mga setting ng stylus</translation>
 <translation id="2354174487190027830">Ina-activate ang <ph name="NAME" /></translation>
+<translation id="2356210126990741501">Mukhang hindi online ang telepono mo at hindi namin makuha sa ngayon ang lahat ng goodie mula rito para sa iyo.</translation>
 <translation id="2359808026110333948">Magpatuloy</translation>
 <translation id="2365393535144473978">Kapag na-enable ang mobile data, mae-enable din ang Bluetooth.</translation>
 <translation id="2369165858548251131">"Kumusta" sa Chinese</translation>
@@ -169,6 +170,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2705001408393684014">I-toggle ang Mikropono. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Up</translation>
 <translation id="2718395828230677721">Night Light</translation>
+<translation id="2727175239389218057">Sumagot</translation>
 <translation id="2727977024730340865">Naka-saksak sa isang low-power charger. Maaaring hindi maging tiyak ang pag-charge ng baterya.</translation>
 <translation id="2743387203779672305">Kopyahin sa clipboard</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
@@ -177,6 +179,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2825619548187458965">Shelf</translation>
 <translation id="2841907151129139818">Lumipat sa tablet mode</translation>
 <translation id="2844169650293029770">USB-C device (port sa kaliwang bahagi sa harap)</translation>
+<translation id="2846247265041961677">Naku! Hindi mahanap ang telepono</translation>
 <translation id="2865888419503095837">Impormasyon ng network</translation>
 <translation id="2872961005593481000">Shut down</translation>
 <translation id="2878884018241093801">Walang kamakailang item</translation>
@@ -304,6 +307,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Off sa isa app}one{Off sa # app}other{Off sa # na app}}</translation>
 <translation id="4072264167173457037">Katamtaman ang signal</translation>
 <translation id="4112140312785995938">Mag-seek Pabalik</translation>
+<translation id="4114315158543974537">I-on ang Phone Hub</translation>
 <translation id="4129129681837227511">Para makakita ng mga notification sa iyong screen ng lock, i-unlock para baguhin ang setting</translation>
 <translation id="4146833061457621061">Mag-play ng musika</translation>
 <translation id="4149156641122542261">Pinapamahalaan ng <ph name="DOMAIN" /> ang <ph name="DEVICE_TYPE" /></translation>
@@ -435,6 +439,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="5648021990716966815">Jack ng mikropono</translation>
 <translation id="5669267381087807207">Ina-activate</translation>
 <translation id="5673434351075758678">Gagawing "<ph name="TO_LOCALE" />" mula "<ph name="FROM_LOCALE" />" pagkatapos i-sync ang iyong mga setting.</translation>
+<translation id="5679050765726761783">Nakakonekta ang low-power adapter</translation>
 <translation id="5682642926269496722">Hindi available ang Google Assistant para sa kasalukuyang user account.</translation>
 <translation id="5689633613396158040">Mas pinapadali ng Night Light na tumingin sa iyong screen o magbasa sa dilim. I-tap para baguhin kung anong oras mao-on ang Night Light o tuluyan itong i-off.</translation>
 <translation id="5691772641933328258">Hindi nakilala ang fingerprint</translation>
@@ -459,6 +464,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Naka-on</translation>
 <translation id="5920710855273935292">Naka-mute ang mikropono.</translation>
+<translation id="594179686076170922">Kumokonekta sa iyong telepono...</translation>
 <translation id="5946788582095584774">Naka-on ang <ph name="FEATURE_NAME" />.</translation>
 <translation id="5947494881799873997">I-revert</translation>
 <translation id="595202126637698455">Naka-enable ang pagte-trace sa pagganap</translation>
@@ -548,6 +554,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="6857811139397017780">I-activate <ph name="NETWORKSERVICE" /></translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Isang digit na lang ang natitira}one{# digit na lang ang natitira}other{# na digit na lang ang natitira}}</translation>
 <translation id="6878400149835617132">Naka-off ang shortcut</translation>
+<translation id="6886172995547742638">Posibleng makaranas ang iyong <ph name="DEVICE_TYPE" /> ng hindi mahusay na performance. Gumamit ng certified na <ph name="PREFERRED_MINIMUM_POWER" />W o mas mataas na USB-C power adapter.</translation>
 <translation id="6896758677409633944">Copy</translation>
 <translation id="6910714959251846841">Kinakailangang i-powerwash ang iyong device para sa update na ito. Matuto pa tungkol sa pinakabagong update sa <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="6919251195245069855">Hindi makilala ang iyong smart card. Subukan ulit.</translation>

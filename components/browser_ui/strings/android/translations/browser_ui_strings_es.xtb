@@ -51,6 +51,7 @@
 <translation id="2315043854645842844">El sistema operativo no admite la selección de certificados de cliente.</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
+<translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> y <ph name="NUM_MORE" /> más permitidos}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> y <ph name="NUM_MORE" /> más permitidos}}</translation>
 <translation id="2434158240863470628">Descarga finalizada <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2440823041667407902">Acceso a la ubicación</translation>
 <translation id="2482878487686419369">Notificaciones</translation>
@@ -190,6 +191,7 @@
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6527303717912515753">Compartir</translation>
 <translation id="6545864417968258051">Búsqueda de dispositivos Bluetooth</translation>
+<translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> y <ph name="NUM_MORE" /> más bloqueados}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> y <ph name="NUM_MORE" /> más bloqueados}}</translation>
 <translation id="6561560012278703671">Usa un tipo de aviso más discreto (bloquea las notificaciones emergentes para evitar interrupciones)</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Contenido protegido</translation>
@@ -292,6 +294,7 @@
 <translation id="8959122750345127698">No se puede realizar la navegación: <ph name="URL" /></translation>
 <translation id="9019902583201351841">Administrado por tus padres</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> y <ph name="NUM_MORE" /> más}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> y <ph name="NUM_MORE" /> más}}</translation>
 <translation id="913657688200966289">Activa los permisos para <ph name="APP_NAME" /> en los <ph name="BEGIN_LINK" />ajustes de Android<ph name="END_LINK" />.</translation>
 <translation id="945632385593298557">Acceder al micrófono</translation>
 <translation id="965817943346481315">Bloquear si el sitio web muestra anuncios invasivos o engañosos (recomendado)</translation>

@@ -137,6 +137,7 @@
 <translation id="2341729377289034582">Тигинен бекитилген</translation>
 <translation id="2352467521400612932">Стилус жөндөөлөрү</translation>
 <translation id="2354174487190027830"><ph name="NAME" /> жандыруу</translation>
+<translation id="2356210126990741501">Телефонуңузда Интернет жок окшойт. Андыктан айрым функциялар иштебейт.</translation>
 <translation id="2359808026110333948">Улантуу</translation>
 <translation id="2365393535144473978">Мобилдик Интернет иштетилсе, Bluetooth да иштетилет.</translation>
 <translation id="2369165858548251131">Кытайча "Салам"</translation>
@@ -169,6 +170,7 @@
 <translation id="2705001408393684014">Микрофонду өчүрүү/күйгүзүү. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Өйдө</translation>
 <translation id="2718395828230677721">Түнкү режим</translation>
+<translation id="2727175239389218057">Жооп берүү</translation>
 <translation id="2727977024730340865">Кубаттуулугу төмөн кубаттагычка сайылды. Батареяны кубаттоо аракети ишенимдүү эмес.</translation>
 <translation id="2743387203779672305">Алмашуу буферине көчүрүү</translation>
 <translation id="2792498699870441125">Alt+Издөө</translation>
@@ -177,6 +179,7 @@
 <translation id="2825619548187458965">Текче</translation>
 <translation id="2841907151129139818">Планшет режимине которулду</translation>
 <translation id="2844169650293029770">USB-C түзмөгү (сол жактагы маңдайкы оюкча)</translation>
+<translation id="2846247265041961677">Ой-ой-ой! Телефон табылбай жатат</translation>
 <translation id="2865888419503095837">Тармак маалыматы</translation>
 <translation id="2872961005593481000">Жабуу</translation>
 <translation id="2878884018241093801">Акыркы терезелер жок</translation>
@@ -459,6 +462,7 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Күйүк</translation>
 <translation id="5920710855273935292">Микрофондун үнү өчүрүлдү.</translation>
+<translation id="594179686076170922">Телефонуңузга туташууда…</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> күйүк.</translation>
 <translation id="5947494881799873997">Кайтаруу</translation>
 <translation id="595202126637698455">Иштин майнаптуулугуна көз салуу аракети иштетилди</translation>

@@ -376,6 +376,7 @@
 <translation id="5098629044894065541">heprea</translation>
 <translation id="5123433949759960244">Koripallo</translation>
 <translation id="5129662217315786329">puola</translation>
+<translation id="5132435854979302863">filipino</translation>
 <translation id="5144820558584035333">Hangul 3-set (390)</translation>
 <translation id="5145331109270917438">Muokkauspäivämäärä</translation>
 <translation id="515594325917491223">Shakki</translation>
@@ -422,6 +423,7 @@
 <translation id="5464696796438641524">Näppäimistö: puola</translation>
 <translation id="5465122519792752163">Nepalinkielinen näppäimistö (InScript)</translation>
 <translation id="5469868506864199649">italia</translation>
+<translation id="5484429245813572665">indonesia</translation>
 <translation id="5494920125229734069">Valitse kaikki</translation>
 <translation id="5500122897333236901">islanti</translation>
 <translation id="5508696409934741614">Pisteet</translation>
@@ -609,6 +611,7 @@
 <translation id="7649070708921625228">Ohje</translation>
 <translation id="7654209398114106148">Siirretään <ph name="NUMBER_OF_ITEMS" /> kohdetta…</translation>
 <translation id="7658239707568436148">Peruuta</translation>
+<translation id="7693909743393669729">Aseman alustaminen poistaa kaiken sille tallennetun datan sekä kaikki osiot, myös näkymättömät sellaiset. Tätä toimintoa ei voi kumota.</translation>
 <translation id="7695430100978772476">Ei voitu alustaa: <ph name="DRIVE_NAME" /></translation>
 <translation id="770015031906360009">kreikka</translation>
 <translation id="7706319470528945664">Näppäimistö: portugali </translation>
@@ -640,6 +643,7 @@
 <translation id="78946041517601018">Jaetut Drivet</translation>
 <translation id="7896906914454843592">Yhdysvaltain laajennettu näppäimistö</translation>
 <translation id="7898607018410277265">Gudžaratinkielinen näppäimistö (foneettinen, uusi)</translation>
+<translation id="7908793776359722643">Osion alustaminen poistaa kaiken sille tallennetun datan. Tätä toimintoa ei voi kumota.</translation>
 <translation id="7917972308273378936">Näppäimistö: liettua</translation>
 <translation id="7925686952655276919">Älä käytä mobiiliyhteyttä synkronointiin</translation>
 <translation id="7928710562641958568">Poista laite</translation>
@@ -727,6 +731,7 @@
 <translation id="8900820606136623064">unkari</translation>
 <translation id="8901822611024316615">Tšekkiläinen QWERTY-näppäimistö</translation>
 <translation id="8919081441417203123">tanska</translation>
+<translation id="8941776146379310519">malaiji</translation>
 <translation id="8960999352790021682">Bengalilainen näppäimistö (foneettinen)</translation>
 <translation id="8965697826696209160">Tallennustila ei riitä.</translation>
 <translation id="9017798300203431059">venäjä, foneettinen</translation>

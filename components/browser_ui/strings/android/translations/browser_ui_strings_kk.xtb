@@ -51,6 +51,7 @@
 <translation id="2315043854645842844">Операциялық жүйе клиенттік сертификатты таңдауға қолдау көрсетпейді.</translation>
 <translation id="2359808026110333948">Жалғастыру</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> МБ</translation>
+<translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> және тағы <ph name="NUM_MORE" /> қызметті пайдалануға рұқсат етілген.}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> және тағы <ph name="NUM_MORE" /> қызметті пайдалануға рұқсат етілген.}}</translation>
 <translation id="2434158240863470628"><ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /> жүктеп алынды</translation>
 <translation id="2440823041667407902">Орналасқан жерін көру</translation>
 <translation id="2482878487686419369">Хабарландырулар</translation>
@@ -190,6 +191,7 @@
 <translation id="6447842834002726250">Cookie файлдары</translation>
 <translation id="6527303717912515753">Бөлісу</translation>
 <translation id="6545864417968258051">Bluetooth құрылғыларын іздеу</translation>
+<translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> және тағы <ph name="NUM_MORE" /> қызметті пайдалануға тыйым салынған.}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> және тағы <ph name="NUM_MORE" /> қызметті пайдалануға тыйым салынған.}}</translation>
 <translation id="6561560012278703671">Дыбысы бәсең шығатын хабарларды пайдаланыңыз (кедергі келтіретін хабарландыруларды бөгейді).</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> ГБ</translation>
 <translation id="6612358246767739896">Қорғалған мазмұн</translation>
@@ -292,6 +294,7 @@
 <translation id="8959122750345127698"><ph name="URL" /> мекенжайына өту мүмкін емес</translation>
 <translation id="9019902583201351841">Ата-аналар басқарады</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> және тағы <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> және тағы <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289"><ph name="APP_NAME" /> браузері үшін рұқсаттарды <ph name="BEGIN_LINK" />Android параметрлерінде<ph name="END_LINK" /> қосыңыз.</translation>
 <translation id="945632385593298557">Микрофонды пайдалану мүмкіндігі</translation>
 <translation id="965817943346481315">Сайт мазалайтын немесе жалған ақпаратты жарнамалар көрсеткен жағдайда бөгеу (ұсынылады)</translation>

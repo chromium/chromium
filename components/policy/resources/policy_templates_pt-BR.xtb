@@ -1483,6 +1483,15 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 <translation id="3219421230122020860">Modo de navegação anônima disponível</translation>
 <translation id="3220624000494482595">Se o aplicativo de quiosque for um app Android, ele não terá nenhum controle sobre a versão do <ph name="PRODUCT_OS_NAME" />, mesmo se esta política estiver definida como <ph name="TRUE" />.</translation>
 <translation id="322359555555487980">Determina a disponibilidade de variações no <ph name="PRODUCT_OS_NAME" /></translation>
+<translation id="3225165352822164029">Se a política for definida, o URL de página inicial padrão será definido no <ph name="PRODUCT_NAME" />. Use o botão "Início" para abrir a página inicial. No computador, as políticas <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> controlam as páginas que são abertas na inicialização.
+
+      Se a página inicial for definida como a página Nova guia, seja pelo usuário ou por <ph name="HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_NAME" />, esta política não terá efeito.
+
+       O URL precisa de um esquema padrão, como http://example.com ou https://example.com. Quando a política for definida, os usuários não poderão mudar o URL da página inicial no <ph name="PRODUCT_NAME" />.
+
+      Se <ph name="HOMEPAGE_LOCATION_POLICY_NAME" /> e <ph name="HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_NAME" /> não forem definidas, o usuário poderá escolher a página inicial.
+
+      No <ph name="MS_WIN_NAME" />, essa funcionalidade está disponível apenas em instâncias associadas a um domínio do <ph name="MS_AD_NAME" />, executadas no Windows 10 Pro ou registradas no <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />. No <ph name="MAC_OS_NAME" />, essa funcionalidade está disponível apenas em instâncias gerenciadas por MDM ou associadas a um domínio via MCX.</translation>
 <translation id="3231837273069128027">A definição da política configura a disponibilidade e o comportamento das atualizações de firmware para <ph name="TPM_FIRMWARE_UPDATE_TPM" />.
 
       Especifique configurações individuais nas propriedades JSON:
@@ -1821,6 +1830,11 @@ Se esta política for definida como falsa, o <ph name="PRODUCT_NAME" /> não usa
       Essa política será removida no Chrome 88.
 
       Consulte https://www.chromestatus.com/feature/5989473649164288 (em inglês).</translation>
+<translation id="3691155504326059225">Se a política for definida como "Ativada", a página Nova guia será a página inicial do usuário. Qualquer local de URL de página inicial será ignorado. Se a política for definida como "Desativada", a página Nova guia não será a página inicial, a não ser que o URL dela seja definido como chrome://newtab.
+
+      Se você definir a política, os usuários não poderão mudar a página inicial no <ph name="PRODUCT_NAME" />. Se a política não for definida, o usuário poderá escolher se a página Nova guia será a inicial.
+
+      No <ph name="MS_WIN_NAME" />, essa funcionalidade está disponível apenas em instâncias associadas a um domínio do <ph name="MS_AD_NAME" />, executadas no Windows 10 Pro ou registradas no <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />. No <ph name="MAC_OS_NAME" />, essa funcionalidade está disponível apenas em instâncias gerenciadas por MDM ou associadas a um domínio via MCX.</translation>
 <translation id="3701121231485832347">Controla configurações específicas de dispositivos <ph name="PRODUCT_OS_NAME" /> gerenciados pelo <ph name="MS_AD_NAME" />.</translation>
 <translation id="3702518095257671450">Atestado remoto</translation>
 <translation id="3702647575225525306"><ph name="POLICY_NAME" />: o campo de linha única é obsoleto e será removido no futuro. Comece a usar a caixa de texto de várias linhas abaixo.</translation>
@@ -3101,6 +3115,13 @@ O campo <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> permite que você especifi
 
       Se esta política for definida como "Bloquear tipos de arquivos não compatíveis: uploads e downloads" (3), o <ph name="PRODUCT_NAME" /> terá um comportamento de acordo com as regras descritas em "Bloquear tipos de arquivos não compatíveis: uploads" e " Bloquear tipos de arquivos não compatíveis: downloads".</translation>
 <translation id="5535973522252703021">Lista branca do servidor de delegação Kerberos</translation>
+<translation id="5540753481451194959">A definição desta política permite especificar o comportamento do sistema na inicialização. Desativar essa configuração é o mesmo que não defini-la, já que o <ph name="PRODUCT_NAME" /> precisa ter um comportamento de inicialização especificado.
+
+      Se você definir a política, os usuários não poderão mudá-la no <ph name="PRODUCT_NAME" />. Se não defini-la, eles poderão mudá-la.
+
+      A definição desta política como <ph name="POLICY_ENUM_RESTOREONSTARTUP_RESTOREONSTARTUPISLASTSESSION" /> desativa algumas configurações que dependem de sessões ou que realizam ações ao sair, como a limpeza dos dados de navegação ao sair ou os cookies de sessão.
+
+      No <ph name="MS_WIN_NAME" />, essa funcionalidade está disponível apenas em instâncias associadas a um domínio do <ph name="MS_AD_NAME" />, executadas no Windows 10 Pro ou registradas no <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />. No <ph name="MAC_OS_NAME" />, essa funcionalidade está disponível apenas em instâncias gerenciadas por MDM ou associadas a um domínio via MCX.</translation>
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="555022085242359084">Ativar o alto contraste na tela de login</translation>
 <translation id="555077880566103058">Permitir que todos os sites executem o plug-in <ph name="FLASH_PLUGIN_NAME" /> automaticamente</translation>
@@ -3951,6 +3972,13 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
 
       A desativação da política faz com que uma mensagem de erro seja exibida.</translation>
 <translation id="6821268164692776674">Destinos do <ph name="CLOUD_PRINT_NAME" /> e "Salvar no Google Drive"</translation>
+<translation id="6833023569065717572">Se a política for definida como verdadeira, a tela de login do dispositivo terá um relógio no formato de 24 horas.
+
+      Se a política for definida como falsa, a tela de login do dispositivo terá um relógio no formato de 12 horas.
+
+      Se a política não for definida, o dispositivo usará o formato da localidade atual.
+
+      As sessões de usuário também usarão o formato do dispositivo como padrão, mas os usuários poderão mudá-lo para as próprias contas.</translation>
 <translation id="6833064854262015312">Se esta política for definida como verdadeira, o modo de alto contraste será ativado na tela de login. Se esta política for definida como falsa, o modo de alto contraste será desativado na tela.
 
       Se você definir a política, os usuários poderão ativar ou desativar o modo de alto contraste temporariamente. Quando a tela de login for atualizada ou ficar inativa por um minuto, o modo de alto contraste retornará ao estado original.
@@ -4131,6 +4159,7 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
       A definição de uma lista de URLs nesta política tem o mesmo efeito que configurar a sinalização de linha de comando --unsafely-treat-insecure-origin-as-secure para uma lista dos mesmos URLs separados por vírgulas. A política modificará a sinalização de linha de comando e UnsafelyTreatInsecureOriginAsSecure, se estiver presente.
 
       Para ver mais informações sobre contextos seguros, consulte "Secure Contexts" (https://www.w3.org/TR/secure-contexts) (em inglês).</translation>
+<translation id="7033985774616781500">Define os recursos da câmera, das configurações do navegador, das configurações do SO e de digitalização a serem desativados</translation>
 <translation id="7037812781389976160">Controlar a posição da estante <ph name="PRODUCT_OS_NAME" />.
 
       Se esta política estiver definida como "Parte inferior", a estante será colocada na parte inferior da tela.
@@ -4617,6 +4646,11 @@ Essas políticas são ignoradas se a Área de trabalho remota do Google Chrome n
       Esta política se aplica apenas a usuários menores de idade.
       Quando esta política é definida, o código de acesso dos pais pode ser verificado no dispositivo da criança.
       Quando esta política não é definida, não é possível verificar o código de acesso dos pais no dispositivo da criança.</translation>
+<translation id="7623187731914468284">Se <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> for definida como RestoreOnStartupIsURLs, definir <ph name="RESTORE_ON_STARTUP_URLS_POLICY_NAME" /> como uma lista de URLs especifica quais serão abertos.
+
+      Se ela não for definida, a página Nova guia será aberta na inicialização.
+
+      No <ph name="MS_WIN_NAME" />, essa funcionalidade está disponível apenas em instâncias associadas a um domínio do <ph name="MS_AD_NAME" />, executadas no Windows 10 Pro ou registradas no <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />. No <ph name="MAC_OS_NAME" />, essa funcionalidade está disponível apenas em instâncias gerenciadas por MDM ou associadas a um domínio via MCX.</translation>
 <translation id="7625444193696794922">Especifica o canal de liberação ao qual este dispositivo deve ser vinculado.</translation>
 <translation id="7629840767216985001">Se esta política for definida como verdadeira, o cursor grande será ativado na tela de login. Se esta política for definida como falsa, o cursor grande será desativado na tela de login.
 
@@ -4717,6 +4751,13 @@ Se esta política não for definida, o renderizador padrão será usado para tod
 <translation id="7754704193130578113">Perguntar onde salvar cada arquivo antes de fazer download</translation>
 <translation id="7758378441185523981">Ativar a autenticação pelo SO para tipos de perfil.</translation>
 <translation id="7763614521440615342">Mostrar sugestões de conteúdo na página "Nova guia"</translation>
+<translation id="7765753178910647492">Permite que você defina uma lista de recursos do <ph name="PRODUCT_OS_NAME" /> que serão desativados.
+
+      Desativar um desses recursos significa que o usuário não poderá acessá-los pela IU, onde serão exibidos como "desativado pelo administrador".
+
+      Se a política não for definida, todos os recursos do <ph name="PRODUCT_OS_NAME" /> ficarão ativados por padrão, e o usuário poderá usar qualquer um deles.
+
+      Observação: no momento, o recurso de digitalização está desativado por padrão por uma sinalização de recurso. Se o usuário ativá-lo pela sinalização de recurso, o recurso ainda estará desativado por esta política.</translation>
 <translation id="7765879851993224640">Permitir que o login do Smart Lock seja usado.</translation>
 <translation id="7774768074957326919">Usar configurações de proxy do sistema</translation>
 <translation id="777734450201217641">Ative atalhos de recursos de acessibilidade na tela de login.
@@ -4839,6 +4880,7 @@ Se a política não for definida, a configuração ficará ativada, mas o usuár
           Quando esta política não é definida, um período padrão é usado.
 
           O valor da política precisa ser especificado em milissegundos. Os valores são ajustados para serem menores ou iguais ao intervalo de inatividade.</translation>
+<translation id="7995610550667275367">Digitalização (compatível desde a versão 87)</translation>
 <translation id="8001701200415781021">Restringir quais Contas do Google são permitidas como principais do navegador no <ph name="PRODUCT_NAME" /></translation>
 <translation id="8003853057959146975">Envia arquivos para verificar se há violações da regra de proteção de dados confidenciais</translation>
 <translation id="8006219716745491366">Se a <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> estiver ativada, definir <ph name="DEFAULT_SEARCH_PROVIDER_ALTERNATE_URLS_POLICY_NAME" /> especificará uma lista de URLs alternativos para extrair termos de pesquisa do mecanismo. Os URLs precisam incluir a string <ph name="SEARCH_TERM_MARKER" />.
@@ -4977,6 +5019,9 @@ Se a política não for definida, a tela de privacidade ficará inicialmente des
           Se a ação for de suspender, o <ph name="PRODUCT_OS_NAME" /> poderá ser configurado separadamente para bloquear ou não a tela antes da suspensão.</translation>
 <translation id="8214600119442850823">Configura o gerenciador de senhas.</translation>
 <translation id="8217516105848565518">O uso desta política foi suspenso. Use RemoteAccessHostDomainList.</translation>
+<translation id="8219777886736887686">Se a política for definida, ela controlará o comando usado para abrir URLs em um navegador alternativo. Ela pode ser definida como <ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" />, <ph name="FIREFOX_VALUE_PLACEHOLDER" />, <ph name="SAFARI_VALUE_PLACEHOLDER" />, <ph name="OPERA_VALUE_PLACEHOLDER" />, <ph name="EDGE_VALUE_PLACEHOLDER" /> ou um caminho de arquivo. Quando esta política é definida como um caminho de arquivo, o arquivo em questão é usado como um executável. <ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" /> e <ph name="EDGE_VALUE_PLACEHOLDER" /> estão disponíveis apenas no <ph name="MS_WIN_NAME" />, e <ph name="SAFARI_VALUE_PLACEHOLDER" /> está disponível apenas no <ph name="MS_WIN_NAME" /> e no <ph name="MAC_OS_NAME" />.
+
+      Se a política não for definida, o padrão usado seguirá a plataforma: <ph name="IE_PRODUCT_NAME" /> para <ph name="MS_WIN_NAME" /> ou <ph name="SAFARI_PRODUCT_NAME" /> para <ph name="MAC_OS_NAME" />. No <ph name="LINUX_OS_NAME" />, não será possível abrir um navegador alternativo.</translation>
 <translation id="8220156281401380422">Configurar a lista de permissões de mensagens nativas</translation>
 <translation id="8244171102276095471">Ativar pacotes de criptografia RC4 em TLS</translation>
 <translation id="8244525275280476362">Atraso máximo de busca após a invalidação de uma política</translation>
@@ -5355,6 +5400,9 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
 
       Esta política não afeta a possibilidade de os usuários configurarem impressoras em dispositivos individuais. Ela tem o objetivo de complementar a configuração de impressoras por usuários individuais.</translation>
 <translation id="8764477907716150749">Esta política é destinada a uso interno pelo próprio <ph name="PRODUCT_NAME" />.</translation>
+<translation id="8767743923206070405">Se a política for definida como "Ativada", o botão "Início" será exibido na barra de ferramentas do <ph name="PRODUCT_NAME" />. Se a política for definida como "Desativada", o botão "Início" não será exibido.
+
+      Se você definir a política, os usuários não poderão mudá-la no <ph name="PRODUCT_NAME" />. Se não defini-la, os usuários poderão decidir se o botão "Início" será exibido.</translation>
 <translation id="877185520360032968">Se a política for definida, o diretório padrão do Chrome para salvar arquivos de download será alterado, mas o usuário poderá mudar isso.
 
       Se a política não for definida, o Chrome usará o diretório padrão específico da plataforma.

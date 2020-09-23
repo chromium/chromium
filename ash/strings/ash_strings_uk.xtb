@@ -137,6 +137,7 @@
 <translation id="2341729377289034582">Заблоковано у вертикальному положенні</translation>
 <translation id="2352467521400612932">Налаштування стилуса</translation>
 <translation id="2354174487190027830">Активація <ph name="NAME" /></translation>
+<translation id="2356210126990741501">Схоже, ваш телефон не в мережі, тому ця функція недоступна.</translation>
 <translation id="2359808026110333948">Продовжити</translation>
 <translation id="2365393535144473978">Якщо ввімкнути мобільне передавання даних, увімкнеться Bluetooth.</translation>
 <translation id="2369165858548251131">Як сказати "привіт" китайською</translation>
@@ -169,6 +170,7 @@
 <translation id="2705001408393684014">Перемикач мікрофона. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Вгору</translation>
 <translation id="2718395828230677721">Нічний екран</translation>
+<translation id="2727175239389218057">Відповісти</translation>
 <translation id="2727977024730340865">Підключено до зарядного пристрою низької потужності. Акумулятор може заряджатися неналежним чином.</translation>
 <translation id="2743387203779672305">Копіювати в буфер</translation>
 <translation id="2792498699870441125">Alt+клавіша пошуку</translation>
@@ -177,6 +179,7 @@
 <translation id="2825619548187458965">Полиця</translation>
 <translation id="2841907151129139818">Увімкнено режим планшета</translation>
 <translation id="2844169650293029770">Пристрій, під’єднаний до порту USB-C (ліворуч на передній панелі)</translation>
+<translation id="2846247265041961677">От халепа! Не вдається знайти телефон</translation>
 <translation id="2865888419503095837">Інформація про мережу</translation>
 <translation id="2872961005593481000">Завершити роботу</translation>
 <translation id="2878884018241093801">Нічого немає</translation>
@@ -304,6 +307,7 @@
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Вимк. для додатка}one{Вимк. для # додатка}few{Вимк. для # додатків}many{Вимк. для # додатків}other{Вимк. для # додатка}}</translation>
 <translation id="4072264167173457037">середній сигнал</translation>
 <translation id="4112140312785995938">Перейти назад</translation>
+<translation id="4114315158543974537">Увімкнути Phone Hub</translation>
 <translation id="4129129681837227511">Щоб переглядати сповіщення на заблокованому екрані, розблокуйте його й змініть налаштування</translation>
 <translation id="4146833061457621061">Увімкни музику</translation>
 <translation id="4149156641122542261">Пристроєм <ph name="DEVICE_TYPE" /> керує домен <ph name="DOMAIN" /></translation>
@@ -435,6 +439,7 @@
 <translation id="5648021990716966815">Гніздо для мікрофона</translation>
 <translation id="5669267381087807207">Активація</translation>
 <translation id="5673434351075758678">Після синхронізації налаштувань мову змінено. Попередня мова: <ph name="FROM_LOCALE" />, нова: <ph name="TO_LOCALE" />.</translation>
+<translation id="5679050765726761783">Підключено енергоекономний адаптер</translation>
 <translation id="5682642926269496722">Google Асистент недоступний для поточного облікового запису користувача.</translation>
 <translation id="5689633613396158040">Нічний екран допомагає знизити напруження очей в умовах тьмяного освітлення. Торкніться, щоб змінити час увімкнення нічного екрана або вимкнути його повністю.</translation>
 <translation id="5691772641933328258">Відбиток не розпізнано</translation>
@@ -459,6 +464,7 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Увімкнено</translation>
 <translation id="5920710855273935292">Мікрофон вимкнено.</translation>
+<translation id="594179686076170922">Підключення до телефона…</translation>
 <translation id="5946788582095584774">Функцію "<ph name="FEATURE_NAME" />" увімкнено.</translation>
 <translation id="5947494881799873997">Повернути</translation>
 <translation id="595202126637698455">Відстеження ефективності ввімкнено</translation>
@@ -548,6 +554,7 @@
 <translation id="6857811139397017780">Активувати <ph name="NETWORKSERVICE" /></translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Залишилась одна цифра}one{Залишилася # цифра}few{Залишилося # цифри}many{Залишилося # цифр}other{Залишилося # цифри}}</translation>
 <translation id="6878400149835617132">Комбінацію клавіш вимкнено</translation>
+<translation id="6886172995547742638">Продуктивність пристрою <ph name="DEVICE_TYPE" /> може знизитися. Використовуйте сертифікований адаптер живлення USB-C на <ph name="PREFERRED_MINIMUM_POWER" /> Вт або більше.</translation>
 <translation id="6896758677409633944">Копіювати</translation>
 <translation id="6910714959251846841">Для цього оновлення потрібно виконати Powerwash на пристрої. Докладніше про останнє оновлення додатка <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="6919251195245069855">Не вдається розпізнати розумну картку. Повторіть спробу.</translation>

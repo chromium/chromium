@@ -376,6 +376,7 @@
 <translation id="5098629044894065541">Եբրայական</translation>
 <translation id="5123433949759960244">Բասկետբոլ</translation>
 <translation id="5129662217315786329">Լեհական</translation>
+<translation id="5132435854979302863">տագալերեն</translation>
 <translation id="5144820558584035333">Հանգուլ 3 Set (390)</translation>
 <translation id="5145331109270917438">Փոփոխման ամսաթիվ</translation>
 <translation id="515594325917491223">Շախմատ</translation>
@@ -421,6 +422,7 @@
 <translation id="5464696796438641524">Լեհերենի ստեղնաշար</translation>
 <translation id="5465122519792752163">Նեպալերենի ստեղնաշար (Ներգիր)</translation>
 <translation id="5469868506864199649">Իտալական</translation>
+<translation id="5484429245813572665">ինդոնեզերեն</translation>
 <translation id="5494920125229734069">Ընտրել բոլորը</translation>
 <translation id="5500122897333236901">Իսլանդական</translation>
 <translation id="5508696409934741614">Կետեր</translation>
@@ -608,6 +610,7 @@
 <translation id="7649070708921625228">Օգնություն</translation>
 <translation id="7654209398114106148"><ph name="NUMBER_OF_ITEMS" /> տարր տեղափոխվում է…</translation>
 <translation id="7658239707568436148">Չեղարկել</translation>
+<translation id="7693909743393669729">Եթե կրիչը ֆորմատավորեք, դրա վրա պահված բոլոր տվյալներն ու բաժինները (այդ թվում՝ անտեսանելի) կջնջվեն։ Գործողությունը հնարավոր չէ հետարկել։</translation>
 <translation id="7695430100978772476">Չհաջողվեց ձևաչափել «<ph name="DRIVE_NAME" />» կրիչը</translation>
 <translation id="770015031906360009">Հունական</translation>
 <translation id="7706319470528945664">Պորտուգալերենի ստեղնաշար</translation>
@@ -639,6 +642,7 @@
 <translation id="78946041517601018">Ընդհանուր պանակներ</translation>
 <translation id="7896906914454843592">ԱՄՆ ընդլայնված ստեղնաշար</translation>
 <translation id="7898607018410277265">գուջարաթի ստեղնաշար (հնչյունային)</translation>
+<translation id="7908793776359722643">Եթե բաժինը ֆորմատավորեք, դրա մեջ պահված բոլոր տվյալները կջնջվեն։ Գործողությունը հնարավոր չէ հետարկել։</translation>
 <translation id="7917972308273378936">Լիտվերենի ստեղնաշար</translation>
 <translation id="7925686952655276919">Չօգտագործել բջջային սարքերի տվյալները համաժամացման համար</translation>
 <translation id="7928710562641958568">Անջատել սարքը</translation>
@@ -726,6 +730,7 @@
 <translation id="8900820606136623064">Հունգարական</translation>
 <translation id="8901822611024316615">Չեխերենի QWERTY ստեղնաշար</translation>
 <translation id="8919081441417203123">Դանիական</translation>
+<translation id="8941776146379310519">մալայերեն</translation>
 <translation id="8960999352790021682">Բենգալերենի ստեղնաշար (հնչյունային)</translation>
 <translation id="8965697826696209160">Բավարար տարածք չկա:</translation>
 <translation id="9017798300203431059">Ռուսական հնչյունային</translation>

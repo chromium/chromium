@@ -137,6 +137,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2341729377289034582">Blocată pe verticală</translation>
 <translation id="2352467521400612932">Setările creionului</translation>
 <translation id="2354174487190027830">Se activează <ph name="NAME" /></translation>
+<translation id="2356210126990741501">Se pare că telefonul tău nu este online și momentan nu poate fi descărcat conținutul de pe acesta.</translation>
 <translation id="2359808026110333948">Continuă</translation>
 <translation id="2365393535144473978">Activând datele mobile, se va activa Bluetooth.</translation>
 <translation id="2369165858548251131">„Bună” în chineză</translation>
@@ -169,6 +170,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2705001408393684014">Comută microfonul. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">În sus</translation>
 <translation id="2718395828230677721">Lum. de noapte</translation>
+<translation id="2727175239389218057">Răspunde</translation>
 <translation id="2727977024730340865">V-ați conectat la un încărcător de putere joasă. Încărcarea bateriei poate fi nesigură.</translation>
 <translation id="2743387203779672305">Copiați în clipboard</translation>
 <translation id="2792498699870441125">Alt+Căutare</translation>
@@ -177,6 +179,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2825619548187458965">Raft</translation>
 <translation id="2841907151129139818">S-a comutat la modul tabletă</translation>
 <translation id="2844169650293029770">Dispozitiv USB-C (portul din stânga față)</translation>
+<translation id="2846247265041961677">Hopa! Telefonul nu a fost găsit</translation>
 <translation id="2865888419503095837">Informații despre rețea</translation>
 <translation id="2872961005593481000">Închide</translation>
 <translation id="2878884018241093801">Niciun element recent</translation>
@@ -461,6 +464,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Activat</translation>
 <translation id="5920710855273935292">Microfonul este dezactivat.</translation>
+<translation id="594179686076170922">Se conectează la telefon…</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> este activat.</translation>
 <translation id="5947494881799873997">Reveniți</translation>
 <translation id="595202126637698455">Urmărirea performanței este activată</translation>

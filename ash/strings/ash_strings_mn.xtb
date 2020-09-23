@@ -137,6 +137,7 @@
 <translation id="2341729377289034582">Босоо чиглэлээр түгжсэн</translation>
 <translation id="2352467521400612932">Мэдрэгч үзэгний тохиргоо</translation>
 <translation id="2354174487190027830"><ph name="NAME" /> идэвхжүүлж байна</translation>
+<translation id="2356210126990741501">Таны утас онлайн биш байгаа бололтой, тиймээс бид одоо танд үүнээс бүх goodie-г авч өгөх боломжгүй байна.</translation>
 <translation id="2359808026110333948">Цааш</translation>
 <translation id="2365393535144473978">Мобайл датаг идэвхжүүлснээр Bluetooth мөн идэвхжинэ.</translation>
 <translation id="2369165858548251131">"Сайн байна уу?"-г хятад хэлээр</translation>
@@ -169,6 +170,7 @@
 <translation id="2705001408393684014">Микрофоныг унтраах/асаах. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Дээш</translation>
 <translation id="2718395828230677721">Шөнийн гэрэл</translation>
+<translation id="2727175239389218057">Хариулах</translation>
 <translation id="2727977024730340865">Бага энергитэй цэнэглэгч залгасан байна. Тэжээлийг цэнэглэхгүй байж болох юм.</translation>
 <translation id="2743387203779672305">Завсрын түр санах самбар луу хуулах</translation>
 <translation id="2792498699870441125">Alt+ Хайлт</translation>
@@ -177,6 +179,7 @@
 <translation id="2825619548187458965">Шельф</translation>
 <translation id="2841907151129139818">Таблетын горим руу сэлгэсэн</translation>
 <translation id="2844169650293029770">USB-C төхөөрөмж (урд талын портын зүүн тал)</translation>
+<translation id="2846247265041961677">Алдаа гарлаа! Утсыг олж чадсангүй</translation>
 <translation id="2865888419503095837">Сүлжээний мэдээлэл</translation>
 <translation id="2872961005593481000">Унтраах</translation>
 <translation id="2878884018241093801">Сүүлийн үеийн зүйл байхгүй</translation>
@@ -305,6 +308,7 @@
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Аппад идэвхгүй}other{# аппад ид.гүй}}</translation>
 <translation id="4072264167173457037">Дундаж дохио</translation>
 <translation id="4112140312785995938">Ухраах</translation>
+<translation id="4114315158543974537">Phone Hub-г асаах</translation>
 <translation id="4129129681837227511">Мэдэгдлийг түгжигдсэн дэлгэц дээрээ харахын тулд төхөөрөмжийн түгжээг тайлж, тохиргоог өөрчилнө үү</translation>
 <translation id="4146833061457621061">Хөгжим тоглуулах</translation>
 <translation id="4149156641122542261"><ph name="DEVICE_TYPE" />-г <ph name="DOMAIN" />-с удирддаг</translation>
@@ -436,6 +440,7 @@
 <translation id="5648021990716966815">Микрофоны чихэвчний оролт</translation>
 <translation id="5669267381087807207">Идэвхжиж байна</translation>
 <translation id="5673434351075758678">Тохиргоогоо синк хийсний дараа "<ph name="FROM_LOCALE" />"-с "<ph name="TO_LOCALE" />" руу шилжүүлнэ.</translation>
+<translation id="5679050765726761783">Бага тэжээлийн адаптерыг холбосон</translation>
 <translation id="5682642926269496722">Одоогийн хэрэглэгчийн бүртгэл дээр Google Туслах боломжгүй байна.</translation>
 <translation id="5689633613396158040">Шөнийн гэрэл нь бүдэг гэрэлтэй үед дэлгэцээ харах эсвэл уншихад илүү хялбар болгодог. Аль цагт Шөнийн гэрлийг бүрмөсөн асааж эсвэл унтраахыг өөрчлөхийн тулд товшино уу.</translation>
 <translation id="5691772641933328258">Хурууны хээг таньсангүй</translation>
@@ -460,6 +465,7 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Асаах</translation>
 <translation id="5920710855273935292">Микрофоны дууг хаасан.</translation>
+<translation id="594179686076170922">Таны утастай холбогдож байна...</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> асаалттай байна.</translation>
 <translation id="5947494881799873997">Буцаах</translation>
 <translation id="595202126637698455">Гүйцэтгэлийн ажиглалтыг идэвхжүүлсэн</translation>
@@ -549,6 +555,7 @@
 <translation id="6857811139397017780"><ph name="NETWORKSERVICE" />-ийг идэвхжүүл</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Нэг цифр үлдсэн}other{# цифр үлдсэн}}</translation>
 <translation id="6878400149835617132">Товчлол унтраалттай байна</translation>
+<translation id="6886172995547742638">Таны <ph name="DEVICE_TYPE" />-н гүйцэтгэл буурч болзошгүй. Баталгаажсан <ph name="PREFERRED_MINIMUM_POWER" />В эсвэл түүнээс дээш USB-C тэжээлийн адаптерыг ашиглана уу.</translation>
 <translation id="6896758677409633944">Хуулах</translation>
 <translation id="6910714959251846841">Тус шинэчлэлт нь таны төхөөрөмжийг үйлдвэрийн тохиргоонд буцааж оруулахыг шаарддаг. Хамгийн сүүлийн үеийн <ph name="SYSTEM_APP_NAME" /> шинэчлэлтийн талаар нэмэлт мэдээлэл авна уу.</translation>
 <translation id="6919251195245069855">Таны ухаалаг картыг таньж чадсангүй. Дахин оролдоно уу.</translation>

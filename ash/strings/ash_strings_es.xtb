@@ -137,6 +137,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="2341729377289034582">Bloqueada en vertical</translation>
 <translation id="2352467521400612932">Configuración del lápiz óptico</translation>
 <translation id="2354174487190027830">Activación de <ph name="NAME" /></translation>
+<translation id="2356210126990741501">Parece que tu teléfono no tiene conexión a Internet, y no podemos descargar todos los accesorios que tienes disponibles en este momento.</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2365393535144473978">La conexión Bluetooth se activará al habilitar los datos móviles.</translation>
 <translation id="2369165858548251131">"Hola" en chino</translation>
@@ -169,6 +170,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="2705001408393684014">Activar o desactivar micrófono. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Flecha hacia arriba</translation>
 <translation id="2718395828230677721">Luz nocturna</translation>
+<translation id="2727175239389218057">Responder</translation>
 <translation id="2727977024730340865">Conectado a un cargador de baja potencia. Es posible que la carga de la batería no sea fiable.</translation>
 <translation id="2743387203779672305">Copiar en el portapapeles</translation>
 <translation id="2792498699870441125">Alt+tecla de búsqueda</translation>
@@ -177,6 +179,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="2825619548187458965">Estantería</translation>
 <translation id="2841907151129139818">Se ha cambiado al modo tablet</translation>
 <translation id="2844169650293029770">Dispositivo USB tipo C (puerto frontal izquierdo)</translation>
+<translation id="2846247265041961677">¡Vaya! No se ha podido encontrar el teléfono</translation>
 <translation id="2865888419503095837">Información de red</translation>
 <translation id="2872961005593481000">Apagar</translation>
 <translation id="2878884018241093801">No hay nada reciente</translation>
@@ -305,6 +308,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{No para 1 app}other{No para # apps}}</translation>
 <translation id="4072264167173457037">Señal media</translation>
 <translation id="4112140312785995938">Ir hacia atrás</translation>
+<translation id="4114315158543974537">Activar Phone Hub</translation>
 <translation id="4129129681837227511">Para poder ver las notificaciones desde la pantalla de bloqueo, desbloquea el dispositivo para cambiar este ajuste</translation>
 <translation id="4146833061457621061">Pon música</translation>
 <translation id="4149156641122542261"><ph name="DEVICE_TYPE" /> gestionado por <ph name="DOMAIN" /></translation>
@@ -436,6 +440,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="5648021990716966815">Clavija para micrófono</translation>
 <translation id="5669267381087807207">Activando</translation>
 <translation id="5673434351075758678">De "<ph name="FROM_LOCALE" />" a "<ph name="TO_LOCALE" />" después de sincronizar tu configuración.</translation>
+<translation id="5679050765726761783">Adaptador de corriente de baja potencia conectado</translation>
 <translation id="5682642926269496722">El Asistente de Google no está disponible para la cuenta de usuario actual.</translation>
 <translation id="5689633613396158040">Con la luz nocturna, resulta más fácil mirar la pantalla o leer con poca luz. Toca para elegir a qué hora debe activarse la luz nocturna o para desactivarla por completo.</translation>
 <translation id="5691772641933328258">Huella digital no reconocida</translation>
@@ -460,6 +465,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Activado</translation>
 <translation id="5920710855273935292">El micrófono está silenciado.</translation>
+<translation id="594179686076170922">Conectando con tu teléfono…</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> está activado.</translation>
 <translation id="5947494881799873997">Deshacer</translation>
 <translation id="595202126637698455">Se ha habilitado el control del rendimiento</translation>
@@ -549,6 +555,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="6857811139397017780">Activar <ph name="NETWORKSERVICE" /></translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Falta 1 dígito}other{Faltan # dígitos}}</translation>
 <translation id="6878400149835617132">Combinación de teclas desactivada</translation>
+<translation id="6886172995547742638">Es posible que se reduzca el rendimiento de tu <ph name="DEVICE_TYPE" />. Usa un adaptador de corriente USB‑C certificado de <ph name="PREFERRED_MINIMUM_POWER" /> W o más.</translation>
 <translation id="6896758677409633944">Copiar</translation>
 <translation id="6910714959251846841">Esta actualización le hará un Powerwash a tu dispositivo. Consulta más información sobre la última actualización de <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="6919251195245069855">No se ha podido reconocer la tarjeta inteligente. Vuelve a intentarlo.</translation>
