@@ -526,6 +526,7 @@ NSString* kDevViewSourceKey = @"DevViewSource";
       [[TableViewTextItem alloc] initWithType:ItemTypeDefaultBrowser];
   defaultBrowser.text =
       l10n_util::GetNSString(IDS_IOS_SETTINGS_SET_DEFAULT_BROWSER);
+  defaultBrowser.accessibilityTraits |= UIAccessibilityTraitButton;
   defaultBrowser.textColor = [UIColor colorNamed:kBlueColor];
 
   return defaultBrowser;
