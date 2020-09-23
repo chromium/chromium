@@ -155,12 +155,12 @@ void ResourceLoadObserverForFrame::DidReceiveResponse(
 
     if (RuntimeEnabledFeatures::SignedExchangeSubresourcePrefetchEnabled(
             document_->GetExecutionContext()) &&
-        resource->LastResourceResponse()) {
+        resource->RedirectChainSize() > 0) {
       // See if the outer response (which must be the last response in
       // the redirect chain) had provided alternate links for the prefetch.
       alternate_resource_info =
           AlternateSignedExchangeResourceInfo::CreateIfValid(
-              resource->LastResourceResponse()->HttpHeaderField(
+              resource->LastResourceResponse().HttpHeaderField(
                   http_names::kLink),
               response.HttpHeaderField(http_names::kLink));
     }

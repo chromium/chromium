@@ -477,10 +477,14 @@ const ResourceRequestHead& Resource::LastResourceRequest() const {
   return redirect_chain_.back().request_;
 }
 
-const ResourceResponse* Resource::LastResourceResponse() const {
+const ResourceResponse& Resource::LastResourceResponse() const {
   if (!redirect_chain_.size())
-    return nullptr;
-  return &redirect_chain_.back().redirect_response_;
+    return GetResponse();
+  return redirect_chain_.back().redirect_response_;
+}
+
+size_t Resource::RedirectChainSize() const {
+  return redirect_chain_.size();
 }
 
 void Resource::SetRevalidatingRequest(const ResourceRequestHead& request) {

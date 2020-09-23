@@ -169,7 +169,9 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
     return resource_request_;
   }
   const ResourceRequestHead& LastResourceRequest() const;
-  const ResourceResponse* LastResourceResponse() const;
+  const ResourceResponse& LastResourceResponse() const;
+  // Returns zero if there are no redirects.
+  size_t RedirectChainSize() const;
 
   virtual void SetRevalidatingRequest(const ResourceRequestHead&);
 
