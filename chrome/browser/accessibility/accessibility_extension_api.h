@@ -101,12 +101,12 @@ class AccessibilityPrivateSendSyntheticMouseEventFunction
 };
 
 // API function that is called when the Select-to-Speak extension state changes.
-class AccessibilityPrivateOnSelectToSpeakStateChangedFunction
+class AccessibilityPrivateSetSelectToSpeakStateFunction
     : public ExtensionFunction {
-  ~AccessibilityPrivateOnSelectToSpeakStateChangedFunction() override {}
+  ~AccessibilityPrivateSetSelectToSpeakStateFunction() override {}
   ResponseAction Run() override;
-  DECLARE_EXTENSION_FUNCTION("accessibilityPrivate.onSelectToSpeakStateChanged",
-                             ACCESSIBILITY_PRIVATE_ONSELECTTOSPEAKSTATECHANGED)
+  DECLARE_EXTENSION_FUNCTION("accessibilityPrivate.setSelectToSpeakState",
+                             ACCESSIBILITY_PRIVATE_SETSELECTTOSPEAKSTATE)
 };
 
 // API function that is called when the Accessibility Common extension finds

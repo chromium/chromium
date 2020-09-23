@@ -182,7 +182,7 @@ STS runs in the extension process, but needs to communicate its three states
 (Inactive, Selecting, and Speaking) to the STS button in the status tray.
 It also needs to listen for users requesting state change using the
 SelectToSpeakTray button. The STS extension uses the AccessibitilityPrivate
-method onSelectToSpeakStateChanged to inform the SelectToSpeakTray of a
+method setSelectToSpeakState to inform the SelectToSpeakTray of a
 status change, and listens to onSelectToSpeakStateChangeRequested to know 
 when a user wants to change state. The STS extension is the source of truth
 for STS state.

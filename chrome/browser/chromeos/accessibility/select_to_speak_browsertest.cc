@@ -47,7 +47,7 @@ class SelectToSpeakTest : public InProcessBrowserTest {
     }
   }
 
-  void OnSelectToSpeakStateChanged() {
+  void SetSelectToSpeakState() {
     if (tray_loop_runner_) {
       tray_loop_runner_->Quit();
     }
@@ -181,7 +181,7 @@ IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, SpeakStatusTray) {
 
 IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, ActivatesWithTapOnSelectToSpeakTray) {
   base::RepeatingCallback<void()> callback = base::BindRepeating(
-      &SelectToSpeakTest::OnSelectToSpeakStateChanged, GetWeakPtr());
+      &SelectToSpeakTest::SetSelectToSpeakState, GetWeakPtr());
   chromeos::AccessibilityManager::Get()->SetSelectToSpeakStateObserverForTest(
       callback);
   // Click in the tray bounds to start 'selection' mode.
@@ -204,7 +204,7 @@ IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, ActivatesWithTapOnSelectToSpeakTray) {
 
 IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, SelectToSpeakTrayNotSpoken) {
   base::RepeatingCallback<void()> callback = base::BindRepeating(
-      &SelectToSpeakTest::OnSelectToSpeakStateChanged, GetWeakPtr());
+      &SelectToSpeakTest::SetSelectToSpeakState, GetWeakPtr());
   chromeos::AccessibilityManager::Get()->SetSelectToSpeakStateObserverForTest(
       callback);
 

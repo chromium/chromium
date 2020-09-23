@@ -322,7 +322,7 @@
         "platforms": ["chromeos"]
       },
       {
-        "name": "onSelectToSpeakStateChanged",
+        "name": "setSelectToSpeakState",
         "type": "function",
         "description": "Called by the Select-to-Speak extension when Select-to-Speak has changed states, between selecting with the mouse, speaking, and inactive.",
         "parameters": [

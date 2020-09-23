@@ -303,7 +303,7 @@ chrome.accessibilityPrivate.sendSyntheticMouseEvent = function(mouseEvent) {};
  * states, between selecting with the mouse, speaking, and inactive.
  * @param {!chrome.accessibilityPrivate.SelectToSpeakState} state
  */
-chrome.accessibilityPrivate.onSelectToSpeakStateChanged = function(state) {};
+chrome.accessibilityPrivate.setSelectToSpeakState = function(state) {};
 
 /**
  * Called by the Accessibility Common extension when

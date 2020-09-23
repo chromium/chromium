@@ -208,7 +208,7 @@ class AccessibilityManager
   void RequestSelectToSpeakStateChange();
 
   // Called when the Select-to-Speak extension state has changed.
-  void OnSelectToSpeakStateChanged(ash::SelectToSpeakState state);
+  void SetSelectToSpeakState(ash::SelectToSpeakState state);
 
   // Invoked to enable or disable Switch Access.
   void SetSwitchAccessEnabled(bool enabled);

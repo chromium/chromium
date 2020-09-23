@@ -843,7 +843,7 @@ void AccessibilityManager::RequestSelectToSpeakStateChange() {
       extension_misc::kSelectToSpeakExtensionId, std::move(event));
 }
 
-void AccessibilityManager::OnSelectToSpeakStateChanged(
+void AccessibilityManager::SetSelectToSpeakState(
     ash::SelectToSpeakState state) {
   ash::AccessibilityController::Get()->SetSelectToSpeakState(state);
 

@@ -516,7 +516,7 @@ class SelectToSpeak {
     chrome.accessibilityPrivate.onSelectToSpeakStateChangeRequested.addListener(
         this.onStateChangeRequested_.bind(this));
     // Initialize the state to SelectToSpeakState.INACTIVE.
-    chrome.accessibilityPrivate.onSelectToSpeakStateChanged(this.state_);
+    chrome.accessibilityPrivate.setSelectToSpeakState(this.state_);
   }
 
   /**
@@ -526,7 +526,7 @@ class SelectToSpeak {
     // Switch Select-to-Speak states on request.
     // We will need to track the current state and toggle from one state to
     // the next when this function is called, and then call
-    // accessibilityPrivate.onSelectToSpeakStateChanged with the new state.
+    // accessibilityPrivate.setSelectToSpeakState with the new state.
     switch (this.state_) {
       case SelectToSpeakState.INACTIVE:
         // Start selection.
@@ -824,7 +824,7 @@ class SelectToSpeak {
         this.clearFocusRingAndNode_();
       }
       // Send state change event to Chrome.
-      chrome.accessibilityPrivate.onSelectToSpeakStateChanged(state);
+      chrome.accessibilityPrivate.setSelectToSpeakState(state);
       this.state_ = state;
     }
   }

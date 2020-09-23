@@ -368,11 +368,9 @@ AccessibilityPrivateSendSyntheticMouseEventFunction::Run() {
 }
 
 ExtensionFunction::ResponseAction
-AccessibilityPrivateOnSelectToSpeakStateChangedFunction::Run() {
-  std::unique_ptr<accessibility_private::OnSelectToSpeakStateChanged::Params>
-      params =
-          accessibility_private::OnSelectToSpeakStateChanged::Params::Create(
-              *args_);
+AccessibilityPrivateSetSelectToSpeakStateFunction::Run() {
+  std::unique_ptr<accessibility_private::SetSelectToSpeakState::Params> params =
+      accessibility_private::SetSelectToSpeakState::Params::Create(*args_);
   EXTENSION_FUNCTION_VALIDATE(params);
   accessibility_private::SelectToSpeakState params_state = params->state;
   ash::SelectToSpeakState state;
@@ -392,7 +390,7 @@ AccessibilityPrivateOnSelectToSpeakStateChangedFunction::Run() {
   }
 
   auto* accessibility_manager = chromeos::AccessibilityManager::Get();
-  accessibility_manager->OnSelectToSpeakStateChanged(state);
+  accessibility_manager->SetSelectToSpeakState(state);
 
   return RespondNow(NoArguments());
 }
