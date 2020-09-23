@@ -1,0 +1,7 @@
+include_rules = [
+  "+components/content_settings/core",
+  "+components/permissions",
+  "+content/public/browser",
+  "+content/public/test",
+  "+third_party/blink/public/mojom",
+]

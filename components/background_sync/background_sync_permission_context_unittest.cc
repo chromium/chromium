@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/background_sync/background_sync_permission_context.h"
+#include "components/background_sync/background_sync_permission_context.h"
 
 #include <string>
 
@@ -10,25 +10,24 @@
 #include "base/callback_helpers.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
-#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_request_id.h"
+#include "components/permissions/permissions_client.h"
+#include "components/permissions/test/test_permissions_client.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/mock_render_process_host.h"
+#include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 class BackgroundSyncPermissionContextTest
-    : public ChromeRenderViewHostTestHarness {
+    : public content::RenderViewHostTestHarness {
  protected:
   BackgroundSyncPermissionContextTest() = default;
-
   ~BackgroundSyncPermissionContextTest() override = default;
 
   void NavigateAndRequestPermission(
@@ -58,6 +57,9 @@ class BackgroundSyncPermissionContextTest
 
   bool permission_granted() const { return permission_granted_; }
 
+ protected:
+  permissions::TestPermissionsClient client_;
+
  private:
   bool permission_granted_;
 
@@ -67,7 +69,7 @@ class BackgroundSyncPermissionContextTest
 // Background sync permission should be allowed by default for a secure origin.
 TEST_F(BackgroundSyncPermissionContextTest, TestSecureRequestingUrl) {
   GURL url("https://www.example.com");
-  BackgroundSyncPermissionContext permission_context(profile());
+  BackgroundSyncPermissionContext permission_context(browser_context());
 
   NavigateAndRequestPermission(url, &permission_context);
 
@@ -77,7 +79,7 @@ TEST_F(BackgroundSyncPermissionContextTest, TestSecureRequestingUrl) {
 // Background sync permission should be denied for an insecure origin.
 TEST_F(BackgroundSyncPermissionContextTest, TestInsecureRequestingUrl) {
   GURL url("http://example.com");
-  BackgroundSyncPermissionContext permission_context(profile());
+  BackgroundSyncPermissionContext permission_context(browser_context());
 
   NavigateAndRequestPermission(url, &permission_context);
 
@@ -88,8 +90,9 @@ TEST_F(BackgroundSyncPermissionContextTest, TestInsecureRequestingUrl) {
 TEST_F(BackgroundSyncPermissionContextTest, TestBlockOrigin) {
   GURL url1("https://www.example1.com");
   GURL url2("https://www.example2.com");
-  BackgroundSyncPermissionContext permission_context(profile());
-  HostContentSettingsMapFactory::GetForProfile(profile())
+  BackgroundSyncPermissionContext permission_context(browser_context());
+  permissions::PermissionsClient::Get()
+      ->GetSettingsMap(browser_context())
       ->SetContentSettingDefaultScope(url1, GURL(),
                                       ContentSettingsType::BACKGROUND_SYNC,
                                       std::string(), CONTENT_SETTING_BLOCK);

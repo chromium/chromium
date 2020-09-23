@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/background_sync/background_sync_permission_context.h"
+#include "components/background_sync/background_sync_permission_context.h"
 
 #include "base/notreached.h"
 #include "components/content_settings/core/common/content_settings_types.h"

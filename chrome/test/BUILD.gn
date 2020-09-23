@@ -3315,7 +3315,6 @@ test("unit_tests") {
     "../browser/background_fetch/background_fetch_delegate_impl_unittest.cc",
     "../browser/background_fetch/background_fetch_permission_context_unittest.cc",
     "../browser/background_sync/background_sync_controller_impl_unittest.cc",
-    "../browser/background_sync/background_sync_permission_context_unittest.cc",
     "../browser/background_sync/periodic_background_sync_permission_context_unittest.cc",
     "../browser/banners/app_banner_settings_helper_unittest.cc",
     "../browser/bitmap_fetcher/bitmap_fetcher_service_unittest.cc",

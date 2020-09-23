@@ -1,0 +1,10 @@
+iclelland@chromium.org
+jkarlin@chromium.org
+nator@chromium.org
+peter@chromium.org
+rayankans@chromium.org
+
+per-file *permission_context*=file://components/permissions/PERMISSIONS_OWNERS
+
+# COMPONENT: Blink>BackgroundSync
+# TEAM: platform-capabilities@chromium.org

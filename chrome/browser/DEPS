@@ -46,6 +46,7 @@ include_rules = [
   "+components/autofill/core/browser",
   "+components/autofill/core/common",
   "+components/background_task_scheduler",
+  "+components/background_sync",
   "+components/base32",
   "+components/blocked_content",
   "+components/blocklist/opt_out_blocklist",
