@@ -7,7 +7,6 @@
 
 #include <bitset>
 #include <cstdint>
-#include <deque>
 #include <map>
 #include <memory>
 #include <string>
@@ -93,8 +92,6 @@ class COMPONENT_EXPORT(EVDEV) NeuralStylusPalmDetectionFilter
   int tracking_ids_[kNumTouchEvdevSlots];
   const PalmFilterDeviceInfo palm_filter_dev_info_;
   std::unique_ptr<NeuralStylusPalmDetectionFilterModel> model_;
-
-  static const std::vector<int> kRequiredAbsMtCodes;
 
   DISALLOW_COPY_AND_ASSIGN(NeuralStylusPalmDetectionFilter);
 };
