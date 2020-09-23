@@ -102,6 +102,11 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   void DocumentFocusChanged(bool document_has_focus) override;
 
   // BlinkUrlLoader::Client:
+  bool IsValid() const override;
+  blink::WebURL CompleteURL(const blink::WebString& partial_url) const override;
+  net::SiteForCookies SiteForCookies() const override;
+  void SetReferrerForRequest(blink::WebURLRequest& request,
+                             const blink::WebURL& referrer_url) override;
   std::unique_ptr<blink::WebAssociatedURLLoader> CreateAssociatedURLLoader(
       const blink::WebAssociatedURLLoaderOptions& options) override;
 

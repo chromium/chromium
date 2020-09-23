@@ -20,11 +20,14 @@
 #include "base/strings/string_util.h"
 #include "base/test/mock_callback.h"
 #include "net/base/net_errors.h"
+#include "net/cookies/site_for_cookies.h"
 #include "pdf/ppapi_migration/callback.h"
 #include "ppapi/c/pp_errors.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-shared.h"
+#include "third_party/blink/public/platform/web_data.h"
+#include "third_party/blink/public/platform/web_http_body.h"
 #include "third_party/blink/public/platform/web_http_header_visitor.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
@@ -44,10 +47,13 @@ using ::testing::Each;
 using ::testing::ElementsAreArray;
 using ::testing::Invoke;
 using ::testing::NiceMock;
+using ::testing::Return;
 using ::testing::ReturnNull;
 using ::testing::SaveArg;
 using ::testing::UnorderedElementsAreArray;
 
+constexpr char kOriginUrl[] = "http://example.com/";
+constexpr char kDocumentUrl[] = "http://example.com/embedder/index.html";
 constexpr base::span<const char> kFakeData = "fake data";
 
 size_t GetRequestHeaderCount(const blink::WebURLRequest& request) {
@@ -84,41 +90,68 @@ class MockWebAssociatedURLLoader : public blink::WebAssociatedURLLoader {
               (override));
 };
 
-class MockBlinkUrlLoaderClient : public BlinkUrlLoader::Client {
+class FakeBlinkUrlLoaderClient : public BlinkUrlLoader::Client {
  public:
-  base::WeakPtr<MockBlinkUrlLoaderClient> GetWeakPtr() {
+  base::WeakPtr<FakeBlinkUrlLoaderClient> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();
   }
 
   void InvalidateWeakPtrs() { weak_factory_.InvalidateWeakPtrs(); }
 
+  void Invalidate() { valid_ = false; }
+
+  MockWebAssociatedURLLoader& mock_url_loader() { return *mock_url_loader_; }
+
+  const blink::WebAssociatedURLLoaderOptions& saved_options() const {
+    return saved_options_;
+  }
+
   // BlinkUrlLoader::Client:
-  MOCK_METHOD(std::unique_ptr<blink::WebAssociatedURLLoader>,
-              CreateAssociatedURLLoader,
-              (const blink::WebAssociatedURLLoaderOptions&),
-              (override));
+  bool IsValid() const override { return valid_; }
+
+  blink::WebURL CompleteURL(
+      const blink::WebString& partial_url) const override {
+    EXPECT_TRUE(IsValid());
+    return GURL(kDocumentUrl).Resolve(partial_url.Utf8());
+  }
+
+  net::SiteForCookies SiteForCookies() const override {
+    EXPECT_TRUE(IsValid());
+    return net::SiteForCookies::FromUrl(GURL(kOriginUrl));
+  }
+
+  void SetReferrerForRequest(blink::WebURLRequest& request,
+                             const blink::WebURL& referrer_url) override {
+    EXPECT_FALSE(referrer_url.IsEmpty());
+    EXPECT_TRUE(IsValid());
+    request.SetReferrerString(referrer_url.GetString());
+  }
+
+  std::unique_ptr<blink::WebAssociatedURLLoader> CreateAssociatedURLLoader(
+      const blink::WebAssociatedURLLoaderOptions& options) override {
+    EXPECT_TRUE(IsValid());
+    EXPECT_TRUE(mock_url_loader_);
+    saved_options_ = options;
+    return std::move(mock_url_loader_);
+  }
 
  private:
-  base::WeakPtrFactory<MockBlinkUrlLoaderClient> weak_factory_{this};
+  bool valid_ = true;
+
+  std::unique_ptr<NiceMock<MockWebAssociatedURLLoader>> mock_url_loader_ =
+      std::make_unique<NiceMock<MockWebAssociatedURLLoader>>();
+  blink::WebAssociatedURLLoaderOptions saved_options_;
+
+  base::WeakPtrFactory<FakeBlinkUrlLoaderClient> weak_factory_{this};
 };
 
 class BlinkUrlLoaderTest : public testing::Test {
  protected:
   BlinkUrlLoaderTest() {
-    ON_CALL(mock_client_, CreateAssociatedURLLoader(_))
-        .WillByDefault(
-            Invoke(this, &BlinkUrlLoaderTest::FakeCreateAssociatedURLLoader));
-    ON_CALL(*mock_url_loader_, LoadAsynchronously(_, _))
+    ON_CALL(fake_client_.mock_url_loader(), LoadAsynchronously(_, _))
         .WillByDefault(
             Invoke(this, &BlinkUrlLoaderTest::FakeLoadAsynchronously));
-    loader_ = std::make_unique<BlinkUrlLoader>(mock_client_.GetWeakPtr());
-  }
-
-  std::unique_ptr<blink::WebAssociatedURLLoader> FakeCreateAssociatedURLLoader(
-      const blink::WebAssociatedURLLoaderOptions& options) {
-    EXPECT_TRUE(mock_url_loader_);
-    saved_options_ = options;
-    return std::move(mock_url_loader_);
+    loader_ = std::make_unique<BlinkUrlLoader>(fake_client_.GetWeakPtr());
   }
 
   void FakeLoadAsynchronously(const blink::WebURLRequest& request,
@@ -136,25 +169,21 @@ class BlinkUrlLoaderTest : public testing::Test {
     return result;
   }
 
-  NiceMock<MockBlinkUrlLoaderClient> mock_client_;
+  FakeBlinkUrlLoaderClient fake_client_;
   NiceMock<base::MockCallback<ResultCallback>> mock_callback_;
   std::unique_ptr<BlinkUrlLoader> loader_;
 
-  std::unique_ptr<NiceMock<MockWebAssociatedURLLoader>> mock_url_loader_ =
-      std::make_unique<NiceMock<MockWebAssociatedURLLoader>>();
-  blink::WebAssociatedURLLoaderOptions saved_options_;
   blink::WebURLRequest saved_request_;
 };
 
 TEST_F(BlinkUrlLoaderTest, GrantUniversalAccess) {
   loader_->GrantUniversalAccess();
   loader_->Open(UrlRequest(), mock_callback_.Get());
-  EXPECT_TRUE(saved_options_.grant_universal_access);
+  EXPECT_TRUE(fake_client_.saved_options().grant_universal_access);
 }
 
 TEST_F(BlinkUrlLoaderTest, Open) {
-  EXPECT_CALL(mock_client_, CreateAssociatedURLLoader(_));
-  EXPECT_CALL(*mock_url_loader_, LoadAsynchronously(_, _));
+  EXPECT_CALL(fake_client_.mock_url_loader(), LoadAsynchronously(_, _));
   EXPECT_CALL(mock_callback_, Run(_)).Times(0);
 
   UrlRequest request;
@@ -162,9 +191,12 @@ TEST_F(BlinkUrlLoaderTest, Open) {
   request.method = "FAKE";
   loader_->Open(request, mock_callback_.Get());
 
-  EXPECT_FALSE(saved_options_.grant_universal_access);
+  EXPECT_FALSE(fake_client_.saved_options().grant_universal_access);
   EXPECT_EQ(GURL("http://example.com/fake.pdf"), GURL(saved_request_.Url()));
   EXPECT_EQ("FAKE", saved_request_.HttpMethod().Ascii());
+  EXPECT_EQ(GURL(kOriginUrl),
+            saved_request_.SiteForCookies().RepresentativeUrl());
+  EXPECT_TRUE(saved_request_.GetSkipServiceWorker());
   EXPECT_EQ(0u, GetRequestHeaderCount(saved_request_));
   EXPECT_EQ(blink::mojom::RequestContextType::PLUGIN,
             saved_request_.GetRequestContext());
@@ -172,22 +204,31 @@ TEST_F(BlinkUrlLoaderTest, Open) {
             saved_request_.GetRequestDestination());
 }
 
-TEST_F(BlinkUrlLoaderTest, OpenWithInvalidatedClient) {
-  EXPECT_CALL(mock_client_, CreateAssociatedURLLoader(_)).Times(0);
-  EXPECT_CALL(*mock_url_loader_, LoadAsynchronously(_, _)).Times(0);
+TEST_F(BlinkUrlLoaderTest, OpenWithInvalidatedClientWeakPtr) {
+  EXPECT_CALL(fake_client_.mock_url_loader(), LoadAsynchronously(_, _))
+      .Times(0);
   EXPECT_CALL(mock_callback_, Run(PP_ERROR_FAILED));
 
-  mock_client_.InvalidateWeakPtrs();
+  fake_client_.InvalidateWeakPtrs();
   loader_->Open(UrlRequest(), mock_callback_.Get());
 }
 
-TEST_F(BlinkUrlLoaderTest, OpenWithFailingCreateAssociatedURLLoader) {
-  EXPECT_CALL(mock_client_, CreateAssociatedURLLoader(_))
-      .WillOnce(ReturnNull());
-  EXPECT_CALL(*mock_url_loader_, LoadAsynchronously(_, _)).Times(0);
+TEST_F(BlinkUrlLoaderTest, OpenWithInvalidatedClient) {
+  EXPECT_CALL(fake_client_.mock_url_loader(), LoadAsynchronously(_, _))
+      .Times(0);
   EXPECT_CALL(mock_callback_, Run(PP_ERROR_FAILED));
 
+  fake_client_.Invalidate();
   loader_->Open(UrlRequest(), mock_callback_.Get());
+}
+
+TEST_F(BlinkUrlLoaderTest, OpenWithRelativeUrl) {
+  UrlRequest request;
+  request.url = "relative.pdf";
+  loader_->Open(request, mock_callback_.Get());
+
+  EXPECT_EQ(GURL(kDocumentUrl).Resolve("relative.pdf"),
+            GURL(saved_request_.Url()));
 }
 
 TEST_F(BlinkUrlLoaderTest, OpenWithHeaders) {
@@ -206,6 +247,52 @@ TEST_F(BlinkUrlLoaderTest, OpenWithHeaders) {
   EXPECT_EQ("application/pdf",
             saved_request_.HttpHeaderField("Content-Type").Utf8());
   EXPECT_EQ("🙃", saved_request_.HttpHeaderField("Non-ASCII-Value").Utf8());
+}
+
+TEST_F(BlinkUrlLoaderTest, OpenWithBody) {
+  UrlRequest request;
+  request.body = "fake body";
+  loader_->Open(request, mock_callback_.Get());
+
+  blink::WebHTTPBody request_body = saved_request_.HttpBody();
+  EXPECT_EQ(1u, request_body.ElementCount());
+
+  blink::WebHTTPBody::Element element;
+  EXPECT_TRUE(request_body.ElementAt(0, element));
+  EXPECT_EQ(blink::WebHTTPBody::Element::kTypeData, element.type);
+
+  std::string data;
+  element.data.ForEachSegment(
+      [&](const char* segment, size_t length, size_t pos) {
+        data.append(segment, length);
+        return true;
+      });
+  EXPECT_EQ("fake body", data);
+}
+
+TEST_F(BlinkUrlLoaderTest, OpenWithCustomReferrerUrl) {
+  UrlRequest request;
+  request.custom_referrer_url = "http://example.com/referrer";
+  loader_->Open(request, mock_callback_.Get());
+
+  EXPECT_EQ("http://example.com/referrer",
+            saved_request_.ReferrerString().Utf8());
+}
+
+TEST_F(BlinkUrlLoaderTest, WillFollowRedirect) {
+  loader_->Open(UrlRequest(), mock_callback_.Get());
+
+  EXPECT_TRUE(loader_->WillFollowRedirect(GURL("http://example.com/login"),
+                                          blink::WebURLResponse()));
+}
+
+TEST_F(BlinkUrlLoaderTest, WillFollowRedirectWhileIgnoringRedirects) {
+  UrlRequest request;
+  request.ignore_redirects = true;
+  loader_->Open(request, mock_callback_.Get());
+
+  EXPECT_FALSE(loader_->WillFollowRedirect(GURL("http://example.com/login"),
+                                           blink::WebURLResponse()));
 }
 
 TEST_F(BlinkUrlLoaderTest, DidReceiveResponse) {

@@ -17,6 +17,7 @@
 #include "base/thread_annotations.h"
 #include "base/threading/thread_checker.h"
 #include "cc/paint/paint_canvas.h"
+#include "net/cookies/site_for_cookies.h"
 #include "pdf/pdf_engine.h"
 #include "pdf/pdf_init.h"
 #include "pdf/pdfium/pdfium_engine.h"
@@ -28,7 +29,9 @@
 #include "third_party/blink/public/platform/web_input_event_result.h"
 #include "third_party/blink/public/platform/web_rect.h"
 #include "third_party/blink/public/platform/web_string.h"
+#include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_url_error.h"
+#include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/public/platform/web_url_response.h"
 #include "third_party/blink/public/web/web_associated_url_loader.h"
 #include "third_party/blink/public/web/web_associated_url_loader_options.h"
@@ -282,19 +285,37 @@ float PdfViewWebPlugin::GetToolbarHeightInScreenCoords() {
 
 void PdfViewWebPlugin::DocumentFocusChanged(bool document_has_focus) {}
 
+bool PdfViewWebPlugin::IsValid() const {
+  return container_ && container_->GetDocument().GetFrame();
+}
+
+blink::WebURL PdfViewWebPlugin::CompleteURL(
+    const blink::WebString& partial_url) const {
+  DCHECK(IsValid());
+  return container_->GetDocument().CompleteURL(partial_url);
+}
+
+net::SiteForCookies PdfViewWebPlugin::SiteForCookies() const {
+  DCHECK(IsValid());
+  return container_->GetDocument().SiteForCookies();
+}
+
+void PdfViewWebPlugin::SetReferrerForRequest(
+    blink::WebURLRequest& request,
+    const blink::WebURL& referrer_url) {
+  DCHECK(IsValid());
+  container_->GetDocument().GetFrame()->SetReferrerForRequest(request,
+                                                              referrer_url);
+}
+
 std::unique_ptr<blink::WebAssociatedURLLoader>
 PdfViewWebPlugin::CreateAssociatedURLLoader(
     const blink::WebAssociatedURLLoaderOptions& options) {
-  if (!container_)
-    return nullptr;
-
-  blink::WebLocalFrame* frame = container_->GetDocument().GetFrame();
-  if (!frame)
-    return nullptr;
-
   // TODO(crbug.com/1127146): blink::WebLocalFrame::CreateAssociatedURLLoader()
   // really should return a std::unique_ptr instead.
-  return base::WrapUnique(frame->CreateAssociatedURLLoader(options));
+  DCHECK(IsValid());
+  return base::WrapUnique(
+      container_->GetDocument().GetFrame()->CreateAssociatedURLLoader(options));
 }
 
 base::WeakPtr<PdfViewPluginBase> PdfViewWebPlugin::GetWeakPtr() {

@@ -21,8 +21,15 @@
 
 namespace blink {
 class WebAssociatedURLLoader;
+class WebString;
+class WebURL;
+class WebURLRequest;
 struct WebAssociatedURLLoaderOptions;
 }  // namespace blink
+
+namespace net {
+class SiteForCookies;
+}  // namespace net
 
 namespace chrome_pdf {
 
@@ -115,8 +122,24 @@ class BlinkUrlLoader final : public UrlLoader,
   // client.
   class Client {
    public:
-    // Returns a new `blink::WebAssociatedURLLoader` from the current local
-    // frame. May return `nullptr` if the local frame no longer exists.
+    // Returns `true` if the client is still usable. The client may require
+    // resources that can become unavailable, such as a local frame. Rather than
+    // handling missing resources separately for each method, callers can just
+    // verify validity once, before making any other calls.
+    virtual bool IsValid() const = 0;
+
+    // Completes `partial_url` using the current document.
+    virtual blink::WebURL CompleteURL(
+        const blink::WebString& partial_url) const = 0;
+
+    // Gets the site-for-cookies for the current document.
+    virtual net::SiteForCookies SiteForCookies() const = 0;
+
+    // Sets the referrer on `request` to `referrer_url` using the current frame.
+    virtual void SetReferrerForRequest(blink::WebURLRequest& request,
+                                       const blink::WebURL& referrer_url) = 0;
+
+    // Returns a new `blink::WebAssociatedURLLoader` from the current frame.
     virtual std::unique_ptr<blink::WebAssociatedURLLoader>
     CreateAssociatedURLLoader(
         const blink::WebAssociatedURLLoaderOptions& options) = 0;
@@ -185,6 +208,7 @@ class BlinkUrlLoader final : public UrlLoader,
 
   std::unique_ptr<blink::WebAssociatedURLLoader> blink_loader_;
 
+  bool ignore_redirects_ = false;
   ResultCallback open_callback_;
 
   base::circular_deque<char> buffer_;

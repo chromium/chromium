@@ -17,6 +17,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "net/base/net_errors.h"
+#include "net/cookies/site_for_cookies.h"
 #include "net/http/http_util.h"
 #include "pdf/ppapi_migration/callback.h"
 #include "ppapi/c/pp_errors.h"
@@ -29,6 +30,8 @@
 #include "ppapi/cpp/url_response_info.h"
 #include "ppapi/cpp/var.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-shared.h"
+#include "third_party/blink/public/platform/web_data.h"
+#include "third_party/blink/public/platform/web_http_body.h"
 #include "third_party/blink/public/platform/web_http_header_visitor.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
@@ -99,16 +102,23 @@ void BlinkUrlLoader::Open(const UrlRequest& request, ResultCallback callback) {
   state_ = LoadingState::kOpening;
   open_callback_ = std::move(callback);
 
-  if (!client_) {
+  if (!client_ || !client_->IsValid()) {
     AbortLoad(PP_ERROR_FAILED);
     return;
   }
 
   // Modeled on `content::CreateWebURLRequest()`.
+  // TODO(crbug.com/1129291): The original code performs additional validations
+  // that we probably don't need in the new process model.
   blink::WebURLRequest blink_request;
-  blink_request.SetUrl(GURL(request.url));
+  blink_request.SetUrl(
+      client_->CompleteURL(blink::WebString::FromUTF8(request.url)));
   blink_request.SetHttpMethod(blink::WebString::FromASCII(request.method));
 
+  blink_request.SetSiteForCookies(client_->SiteForCookies());
+  blink_request.SetSkipServiceWorker(true);
+
+  // Note: The PDF plugin doesn't set the `X-Requested-With` header.
   if (!request.headers.empty()) {
     net::HttpUtil::HeadersIterator it(request.headers.begin(),
                                       request.headers.end(), "\n\r");
@@ -118,18 +128,27 @@ void BlinkUrlLoader::Open(const UrlRequest& request, ResultCallback callback) {
     }
   }
 
+  if (!request.body.empty()) {
+    blink::WebHTTPBody body;
+    body.Initialize();
+    body.AppendData(request.body);
+    blink_request.SetHttpBody(body);
+  }
+
+  if (!request.custom_referrer_url.empty()) {
+    client_->SetReferrerForRequest(blink_request,
+                                   GURL(request.custom_referrer_url));
+  }
+
   blink_request.SetRequestContext(blink::mojom::RequestContextType::PLUGIN);
   blink_request.SetRequestDestination(
       network::mojom::RequestDestination::kEmbed);
 
+  // TODO(crbug.com/822081): Revisit whether we need universal access.
   blink::WebAssociatedURLLoaderOptions options;
   options.grant_universal_access = grant_universal_access_;
+  ignore_redirects_ = request.ignore_redirects;
   blink_loader_ = client_->CreateAssociatedURLLoader(options);
-  if (!blink_loader_) {
-    AbortLoad(PP_ERROR_FAILED);
-    return;
-  }
-
   blink_loader_->LoadAsynchronously(blink_request, this);
 }
 
@@ -168,11 +187,18 @@ void BlinkUrlLoader::Close() {
     AbortLoad(PP_ERROR_ABORTED);
 }
 
+// Modeled on `content::PepperURLLoaderHost::WillFollowRedirect()`.
 bool BlinkUrlLoader::WillFollowRedirect(
     const blink::WebURL& new_url,
     const blink::WebURLResponse& redirect_response) {
-  NOTIMPLEMENTED();
-  return false;
+  DCHECK_EQ(state_, LoadingState::kOpening);
+
+  // TODO(crbug.com/1129291): The original code performs additional validations
+  // that we probably don't need in the new process model.
+
+  // Note that `pp::URLLoader::FollowRedirect()` is not supported, so the
+  // redirect can be canceled immediately by returning `false` here.
+  return !ignore_redirects_;
 }
 
 void BlinkUrlLoader::DidSendData(uint64_t bytes_sent,
