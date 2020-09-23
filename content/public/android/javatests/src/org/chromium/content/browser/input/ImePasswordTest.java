@@ -8,12 +8,14 @@ import android.text.InputType;
 
 import androidx.test.filters.MediumTest;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
@@ -24,6 +26,7 @@ import org.chromium.content_public.browser.test.util.JavaScriptUtils;
  */
 @RunWith(ContentJUnit4ClassRunner.class)
 @CommandLineFlags.Add({"expose-internals-for-testing"})
+@Batch(ImeTest.IME_BATCH)
 public class ImePasswordTest {
     @Rule
     public ImeActivityTestRule mRule = new ImeActivityTestRule();
@@ -31,6 +34,11 @@ public class ImePasswordTest {
     @Before
     public void setUp() throws Exception {
         mRule.setUpForUrl(ImeActivityTestRule.PASSWORD_FORM_HTML);
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        mRule.getActivity().finish();
     }
 
     @Test

@@ -15,6 +15,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content.browser.picker.InputDialogContainer;
 import org.chromium.ui.base.ime.TextInputType;
@@ -23,6 +24,7 @@ import org.chromium.ui.base.ime.TextInputType;
  * Unittests for the {@link org.chromium.content.browser.picker.InputDialogContainer} class.
  */
 @RunWith(BaseJUnit4ClassRunner.class)
+@Batch(Batch.UNIT_TESTS)
 public class InputDialogContainerTest {
     // Defined in third_party/WebKit/Source/platform/DateComponents.h
     private static final double DATE_DIALOG_DEFAULT_MIN = -62135596800000.0;

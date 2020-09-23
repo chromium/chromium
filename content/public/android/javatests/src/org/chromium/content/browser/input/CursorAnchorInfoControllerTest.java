@@ -16,6 +16,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.TestInputMethodManagerWrapper;
@@ -24,6 +25,7 @@ import org.chromium.content_public.browser.test.util.TestInputMethodManagerWrapp
  * Test for {@link CursorAnchorInfoController}.
  */
 @RunWith(ContentJUnit4ClassRunner.class)
+@Batch(Batch.UNIT_TESTS)
 public class CursorAnchorInfoControllerTest {
     private static final class TestViewDelegate implements CursorAnchorInfoController.ViewDelegate {
         public int locationX;

@@ -22,6 +22,7 @@ import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matchers;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -29,6 +30,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.UrlUtils;
@@ -51,7 +53,12 @@ import java.util.concurrent.TimeoutException;
  */
 @RunWith(ContentJUnit4ClassRunner.class)
 @CommandLineFlags.Add({"expose-internals-for-testing"})
+@Batch(ImeTest.IME_BATCH)
 public class ImeTest {
+    /* package */ static final String IME_BATCH = "ImeTestBatch";
+
+    // TODO(https://crbug.com/989569): Find a way to re-use the content shell
+    // across tests?
     @Rule
     public ImeActivityTestRule mRule = new ImeActivityTestRule();
     @Rule
@@ -60,6 +67,11 @@ public class ImeTest {
     @Before
     public void setUp() throws Exception {
         mRule.setUpForUrl(ImeActivityTestRule.INPUT_FORM_HTML);
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        mRule.getActivity().finish();
     }
 
     @Test

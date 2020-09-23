@@ -9,12 +9,14 @@ import android.view.inputmethod.EditorInfo;
 
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.blink_public.web.WebTextInputMode;
 import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
@@ -24,6 +26,7 @@ import org.chromium.ui.base.ime.TextInputType;
  * IME (input method editor) and text input tests for input-mode attribute.
  */
 @RunWith(ContentJUnit4ClassRunner.class)
+@Batch(ImeTest.IME_BATCH)
 public class ImeInputModeTest {
     @Rule
     public ImeActivityTestRule mRule = new ImeActivityTestRule();
@@ -31,6 +34,11 @@ public class ImeInputModeTest {
     @Before
     public void setUp() throws Exception {
         mRule.setUpForUrl(ImeActivityTestRule.INPUT_MODE_HTML);
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        mRule.getActivity().finish();
     }
 
     @Test

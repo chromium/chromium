@@ -14,12 +14,14 @@ import android.widget.TextView;
 import androidx.test.filters.LargeTest;
 
 import org.hamcrest.Matchers;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.content.R;
 import org.chromium.content_public.browser.WebContents;
@@ -39,6 +41,7 @@ import java.util.concurrent.TimeoutException;
  */
 @RunWith(ContentJUnit4ClassRunner.class)
 @CommandLineFlags.Add({"expose-internals-for-testing"})
+@Batch(ImeTest.IME_BATCH)
 public class TextSuggestionMenuTest {
     private static final String URL =
             "data:text/html, <div contenteditable id=\"div\" /><span id=\"span\" />";
@@ -50,6 +53,11 @@ public class TextSuggestionMenuTest {
     public void setUp() throws Throwable {
         mRule.setUpForUrl(ImeActivityTestRule.INPUT_FORM_HTML);
         mRule.fullyLoadUrl(URL);
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        mRule.getActivity().finish();
     }
 
     @Test
