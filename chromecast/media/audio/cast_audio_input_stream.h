@@ -10,6 +10,7 @@
 
 #include "base/threading/thread_checker.h"
 #include "chromecast/media/audio/capture_service/capture_service_receiver.h"
+#include "chromecast/media/audio/capture_service/constants.h"
 #include "media/audio/audio_io.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_parameters.h"
@@ -58,6 +59,7 @@ class CastAudioInputStream : public ::media::AudioInputStream,
   // may be null, if |this| is not created by audio manager, e.g., in unit test.
   ::media::AudioManagerBase* const audio_manager_;
   const ::media::AudioParameters audio_params_;
+  capture_service::StreamInfo stream_info_;
   std::unique_ptr<CaptureServiceReceiver> capture_service_receiver_;
   AudioInputCallback* input_callback_ = nullptr;
   std::unique_ptr<::media::AudioBus> audio_bus_;

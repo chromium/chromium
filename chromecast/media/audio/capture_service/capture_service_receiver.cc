@@ -91,10 +91,8 @@ CaptureServiceReceiver::Socket::~Socket() = default;
 
 bool CaptureServiceReceiver::Socket::SendRequest() {
   DCHECK_EQ(state_, State::kInit);
-  auto request_buffer = capture_service::MakeMessage(
-      capture_service::PacketInfo{capture_service::MessageType::kHandshake,
-                                  request_stream_info_, 0 /* timestamp_us */},
-      nullptr /* data */, 0 /* data_size */);
+  auto request_buffer =
+      capture_service::MakeHandshakeMessage(request_stream_info_);
   if (!request_buffer) {
     return false;
   }
@@ -157,9 +155,9 @@ bool CaptureServiceReceiver::Socket::OnMessage(char* data, size_t size) {
 
 bool CaptureServiceReceiver::Socket::HandleAck(char* data, size_t size) {
   DCHECK_EQ(state_, State::kWaitForAck);
-  capture_service::PacketInfo info;
-  if (!capture_service::ReadHeader(data, size, &info) ||
-      !delegate_->OnInitialStreamInfo(info.stream_info)) {
+  capture_service::StreamInfo info;
+  if (!capture_service::ReadHandshakeMessage(data, size, &info) ||
+      !delegate_->OnInitialStreamInfo(info)) {
     ReportErrorAndStop();
     return false;
   }

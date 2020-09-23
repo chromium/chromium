@@ -16,7 +16,6 @@ namespace media {
 namespace capture_service {
 namespace {
 
-constexpr size_t kTotalHeaderBytes = 16;
 constexpr size_t kFrames = 10;
 constexpr size_t kChannels = 2;
 constexpr StreamInfo kStreamInfo =
@@ -26,37 +25,72 @@ constexpr StreamInfo kStreamInfo =
                SampleFormat::PLANAR_FLOAT,
                16000,
                kFrames};
-constexpr PacketInfo kHandshakePacketInfo = {MessageType::kHandshake,
-                                             kStreamInfo, 0};
-constexpr PacketInfo kPcmAudioPacketInfo = {MessageType::kPcmAudio, kStreamInfo,
-                                            0};
+
+class PacketHeaderTest
+    : public testing::TestWithParam<
+          std::tuple<StreamType, AudioCodec, int, SampleFormat, int, int>> {
+ protected:
+  StreamInfo GetStreamInfo() {
+    StreamInfo info;
+    info.stream_type = std::get<0>(GetParam());
+    info.audio_codec = std::get<1>(GetParam());
+    info.num_channels = std::get<2>(GetParam());
+    info.sample_format = std::get<3>(GetParam());
+    info.sample_rate = std::get<4>(GetParam());
+    info.frames_per_buffer = std::get<5>(GetParam());
+    return info;
+  }
+};
+
+TEST_P(PacketHeaderTest, HandshakeMessage) {
+  std::vector<char> data(sizeof(HandshakePacket), 0);
+  StreamInfo stream_info = GetStreamInfo();
+  PopulateHandshakeMessage(data.data(), data.size(), stream_info);
+
+  StreamInfo info_out;
+  bool success =
+      ReadHandshakeMessage(data.data() + sizeof(uint16_t),
+                           data.size() - sizeof(uint16_t), &info_out);
+  EXPECT_TRUE(success);
+  EXPECT_EQ(info_out.stream_type, stream_info.stream_type);
+  EXPECT_EQ(info_out.audio_codec, stream_info.audio_codec);
+  EXPECT_EQ(info_out.sample_format, stream_info.sample_format);
+  EXPECT_EQ(info_out.num_channels, stream_info.num_channels);
+  EXPECT_EQ(info_out.sample_rate, stream_info.sample_rate);
+  EXPECT_EQ(info_out.frames_per_buffer, stream_info.frames_per_buffer);
+}
+
+TEST(MessageParsingUtilsTest, PcmAudioMessage) {
+  size_t data_size = sizeof(PcmPacketHeader) / sizeof(float);
+  std::vector<float> data(data_size, 1.0f);
+  int64_t timestamp_us = 100;
+  PopulatePcmAudioHeader(reinterpret_cast<char*>(data.data()),
+                         data.size() * sizeof(float), kStreamInfo.stream_type,
+                         timestamp_us);
+
+  int64_t timestamp_out = 0;
+  bool success = ReadPcmAudioHeader(
+      reinterpret_cast<char*>(data.data()) + sizeof(uint16_t),
+      data_size * sizeof(float) - sizeof(uint16_t), kStreamInfo,
+      &timestamp_out);
+  EXPECT_TRUE(success);
+  EXPECT_EQ(timestamp_out, timestamp_us);
+}
 
 TEST(MessageParsingUtilsTest, ValidPlanarFloat) {
-  size_t data_size = kTotalHeaderBytes / sizeof(float) + kFrames * kChannels;
+  size_t data_size =
+      sizeof(PcmPacketHeader) / sizeof(float) + kFrames * kChannels;
   std::vector<float> data(data_size, .0f);
-  PopulateHeader(reinterpret_cast<char*>(data.data()),
-                 data.size() * sizeof(float), kPcmAudioPacketInfo);
+  PopulatePcmAudioHeader(reinterpret_cast<char*>(data.data()),
+                         data.size() * sizeof(float), kStreamInfo.stream_type,
+                         0);
   // Fill the last k frames, i.e., the second channel, with 0.5f.
   for (size_t i = data_size - kFrames; i < data_size; i++) {
     data[i] = .5f;
   }
 
-  // Audio header.
-  PacketInfo info;
-  bool success =
-      ReadHeader(reinterpret_cast<char*>(data.data()) + sizeof(uint16_t),
-                 data_size * sizeof(float) - sizeof(uint16_t), &info);
-  EXPECT_TRUE(success);
-  EXPECT_EQ(info.message_type, kPcmAudioPacketInfo.message_type);
-  EXPECT_EQ(info.stream_info.stream_type, kStreamInfo.stream_type);
-  EXPECT_EQ(info.stream_info.num_channels, kStreamInfo.num_channels);
-  EXPECT_EQ(info.stream_info.sample_format, kStreamInfo.sample_format);
-  EXPECT_EQ(info.stream_info.sample_rate, kStreamInfo.sample_rate);
-  EXPECT_EQ(info.timestamp_us, kPcmAudioPacketInfo.timestamp_us);
-
-  // Audio data.
   auto audio_bus = ::media::AudioBus::Create(kChannels, kFrames);
-  success = ReadDataToAudioBus(
+  bool success = ReadDataToAudioBus(
       kStreamInfo, reinterpret_cast<char*>(data.data()) + sizeof(uint16_t),
       data_size * sizeof(float) - sizeof(uint16_t), audio_bus.get());
   EXPECT_TRUE(success);
@@ -67,22 +101,23 @@ TEST(MessageParsingUtilsTest, ValidPlanarFloat) {
 }
 
 TEST(MessageParsingUtilsTest, ValidInterleavedInt16) {
-  size_t data_size = kTotalHeaderBytes / sizeof(int16_t) + kFrames * kChannels;
+  size_t data_size =
+      sizeof(PcmPacketHeader) / sizeof(int16_t) + kFrames * kChannels;
   std::vector<int16_t> data(data_size, std::numeric_limits<int16_t>::max());
-  PacketInfo packet_info = kPcmAudioPacketInfo;
-  packet_info.stream_info.sample_format = SampleFormat::INTERLEAVED_INT16;
-  PopulateHeader(reinterpret_cast<char*>(data.data()),
-                 data.size() * sizeof(int16_t), packet_info);
+  PopulatePcmAudioHeader(reinterpret_cast<char*>(data.data()),
+                         data.size() * sizeof(int16_t), kStreamInfo.stream_type,
+                         0);
   // Fill the second channel with min().
-  for (size_t i = kTotalHeaderBytes / sizeof(int16_t) + 1; i < data_size;
+  for (size_t i = sizeof(PcmPacketHeader) / sizeof(int16_t) + 1; i < data_size;
        i += 2) {
     data[i] = std::numeric_limits<int16_t>::min();
   }
 
   auto audio_bus = ::media::AudioBus::Create(kChannels, kFrames);
+  StreamInfo stream_info = kStreamInfo;
+  stream_info.sample_format = SampleFormat::INTERLEAVED_INT16;
   bool success = ReadDataToAudioBus(
-      packet_info.stream_info,
-      reinterpret_cast<char*>(data.data()) + sizeof(uint16_t),
+      stream_info, reinterpret_cast<char*>(data.data()) + sizeof(uint16_t),
       data_size * sizeof(int16_t) - sizeof(uint16_t), audio_bus.get());
   EXPECT_TRUE(success);
   for (size_t f = 0; f < kFrames; f++) {
@@ -92,22 +127,23 @@ TEST(MessageParsingUtilsTest, ValidInterleavedInt16) {
 }
 
 TEST(MessageParsingUtilsTest, ValidInterleavedInt32) {
-  size_t data_size = kTotalHeaderBytes / sizeof(int32_t) + kFrames * kChannels;
+  size_t data_size =
+      sizeof(PcmPacketHeader) / sizeof(int32_t) + kFrames * kChannels;
   std::vector<int32_t> data(data_size, std::numeric_limits<int32_t>::min());
-  PacketInfo packet_info = kPcmAudioPacketInfo;
-  packet_info.stream_info.sample_format = SampleFormat::INTERLEAVED_INT32;
-  PopulateHeader(reinterpret_cast<char*>(data.data()),
-                 data.size() * sizeof(int32_t), packet_info);
+  PopulatePcmAudioHeader(reinterpret_cast<char*>(data.data()),
+                         data.size() * sizeof(int32_t), kStreamInfo.stream_type,
+                         0);
   // Fill the second channel with max().
-  for (size_t i = kTotalHeaderBytes / sizeof(int32_t) + 1; i < data_size;
+  for (size_t i = sizeof(PcmPacketHeader) / sizeof(int32_t) + 1; i < data_size;
        i += 2) {
     data[i] = std::numeric_limits<int32_t>::max();
   }
 
   auto audio_bus = ::media::AudioBus::Create(kChannels, kFrames);
+  StreamInfo stream_info = kStreamInfo;
+  stream_info.sample_format = SampleFormat::INTERLEAVED_INT32;
   bool success = ReadDataToAudioBus(
-      packet_info.stream_info,
-      reinterpret_cast<char*>(data.data()) + sizeof(uint16_t),
+      stream_info, reinterpret_cast<char*>(data.data()) + sizeof(uint16_t),
       data_size * sizeof(int32_t) - sizeof(uint16_t), audio_bus.get());
   EXPECT_TRUE(success);
   for (size_t f = 0; f < kFrames; f++) {
@@ -116,92 +152,68 @@ TEST(MessageParsingUtilsTest, ValidInterleavedInt32) {
   }
 }
 
-TEST(MessageParsingUtilsTest, InvalidType) {
-  size_t data_size = kTotalHeaderBytes / sizeof(float);
-  std::vector<float> data(data_size, 1.0f);
-  // Request packet
-  PacketInfo request_packet_info = kHandshakePacketInfo;
-  PopulateHeader(reinterpret_cast<char*>(data.data()),
-                 data.size() * sizeof(float), request_packet_info);
+TEST(MessageParsingUtilsTest, InvalidTypeHandshake) {
+  std::vector<char> data(sizeof(HandshakePacket), 0);
+  StreamInfo stream_info = kStreamInfo;
+  PopulateHandshakeMessage(data.data(), data.size(), stream_info);
   *(reinterpret_cast<uint8_t*>(data.data()) +
-    offsetof(struct PacketHeader, stream_type)) =
+    offsetof(struct HandshakePacket, stream_type)) =
       static_cast<uint8_t>(StreamType::kLastType) + 1;
-  bool success = ReadHeader(
-      reinterpret_cast<char*>(data.data()) + sizeof(uint16_t),
-      data_size * sizeof(float) - sizeof(uint16_t), &request_packet_info);
+  bool success =
+      ReadHandshakeMessage(data.data() + sizeof(uint16_t),
+                           data.size() - sizeof(uint16_t), &stream_info);
   EXPECT_FALSE(success);
+}
 
-  // PCM audio packet
-  PacketInfo pcm_audio_packet_info = kPcmAudioPacketInfo;
-  PopulateHeader(reinterpret_cast<char*>(data.data()),
-                 data.size() * sizeof(float), pcm_audio_packet_info);
+TEST(MessageParsingUtilsTest, InvalidTypePcmAudio) {
+  size_t data_size = sizeof(PcmPacketHeader) / sizeof(float);
+  std::vector<float> data(data_size, 1.0f);
+  PopulatePcmAudioHeader(reinterpret_cast<char*>(data.data()),
+                         data.size() * sizeof(float), kStreamInfo.stream_type,
+                         0);
   *(reinterpret_cast<uint8_t*>(data.data()) +
-    offsetof(struct PacketHeader, stream_type)) =
+    offsetof(struct PcmPacketHeader, stream_type)) =
       static_cast<uint8_t>(StreamType::kLastType) + 1;
-  success = ReadHeader(reinterpret_cast<char*>(data.data()) + sizeof(uint16_t),
-                       data_size * sizeof(float) - sizeof(uint16_t),
-                       &pcm_audio_packet_info);
+  int64_t timestamp_us;
+  bool success = ReadPcmAudioHeader(
+      reinterpret_cast<char*>(data.data()) + sizeof(uint16_t),
+      data_size * sizeof(float) - sizeof(uint16_t), kStreamInfo, &timestamp_us);
   EXPECT_FALSE(success);
 }
 
 TEST(MessageParsingUtilsTest, InvalidCodec) {
-  size_t data_size = kTotalHeaderBytes / sizeof(float);
-  std::vector<float> data(data_size, 1.0f);
-  PacketInfo packet_info = kHandshakePacketInfo;
-  PopulateHeader(reinterpret_cast<char*>(data.data()),
-                 data.size() * sizeof(float), packet_info);
+  std::vector<char> data(sizeof(HandshakePacket), 0);
+  StreamInfo stream_info = kStreamInfo;
+  PopulateHandshakeMessage(data.data(), data.size(), stream_info);
   *(reinterpret_cast<uint8_t*>(data.data()) +
-    offsetof(struct PacketHeader, codec_or_sample_format)) =
+    offsetof(struct HandshakePacket, audio_codec)) =
       static_cast<uint8_t>(AudioCodec::kLastCodec) + 1;
-
   bool success =
-      ReadHeader(reinterpret_cast<char*>(data.data()) + sizeof(uint16_t),
-                 data_size * sizeof(float) - sizeof(uint16_t), &packet_info);
+      ReadHandshakeMessage(data.data() + sizeof(uint16_t),
+                           data.size() - sizeof(uint16_t), &stream_info);
   EXPECT_FALSE(success);
 }
 
 TEST(MessageParsingUtilsTest, InvalidFormat) {
-  size_t data_size = kTotalHeaderBytes / sizeof(float);
-  std::vector<float> data(data_size, 1.0f);
-  PacketInfo packet_info = kPcmAudioPacketInfo;
-  PopulateHeader(reinterpret_cast<char*>(data.data()),
-                 data.size() * sizeof(float), packet_info);
+  std::vector<char> data(sizeof(HandshakePacket), 0);
+  StreamInfo stream_info = kStreamInfo;
+  PopulateHandshakeMessage(data.data(), data.size(), stream_info);
   *(reinterpret_cast<uint8_t*>(data.data()) +
-    offsetof(struct PacketHeader, codec_or_sample_format)) =
+    offsetof(struct HandshakePacket, sample_format)) =
       static_cast<uint8_t>(SampleFormat::LAST_FORMAT) + 1;
-
   bool success =
-      ReadHeader(reinterpret_cast<char*>(data.data()) + sizeof(uint16_t),
-                 data_size * sizeof(float) - sizeof(uint16_t), &packet_info);
+      ReadHandshakeMessage(data.data() + sizeof(uint16_t),
+                           data.size() - sizeof(uint16_t), &stream_info);
   EXPECT_FALSE(success);
-}
-
-TEST(MessageParsingUtilsTest, RequestMessage) {
-  size_t data_size = kTotalHeaderBytes / sizeof(float);
-  std::vector<float> data(data_size, 1.0f);
-  PacketInfo packet_info = kHandshakePacketInfo;
-  PopulateHeader(reinterpret_cast<char*>(data.data()),
-                 data.size() * sizeof(float), packet_info);
-
-  PacketInfo info;
-  bool success =
-      ReadHeader(reinterpret_cast<char*>(data.data()) + sizeof(uint16_t),
-                 data_size * sizeof(float) - sizeof(uint16_t), &info);
-  EXPECT_TRUE(success);
-  EXPECT_EQ(info.message_type, kHandshakePacketInfo.message_type);
-  EXPECT_EQ(info.stream_info.stream_type, kStreamInfo.stream_type);
-  EXPECT_EQ(info.stream_info.audio_codec, kStreamInfo.audio_codec);
-  EXPECT_EQ(info.stream_info.num_channels, kStreamInfo.num_channels);
-  EXPECT_EQ(info.stream_info.sample_rate, kStreamInfo.sample_rate);
-  EXPECT_EQ(info.stream_info.frames_per_buffer, kStreamInfo.frames_per_buffer);
 }
 
 TEST(MessageParsingUtilsTest, InvalidDataLength) {
   size_t data_size =
-      kTotalHeaderBytes / sizeof(float) + kFrames * kChannels + 1;
+      sizeof(PcmPacketHeader) / sizeof(float) + kFrames * kChannels + 1;
   std::vector<float> data(data_size, 1.0f);
-  PopulateHeader(reinterpret_cast<char*>(data.data()),
-                 data.size() * sizeof(float), kPcmAudioPacketInfo);
+  PopulatePcmAudioHeader(reinterpret_cast<char*>(data.data()),
+                         data.size() * sizeof(float), kStreamInfo.stream_type,
+                         0);
 
   auto audio_bus = ::media::AudioBus::Create(kChannels, kFrames);
   bool success = ReadDataToAudioBus(
@@ -212,10 +224,11 @@ TEST(MessageParsingUtilsTest, InvalidDataLength) {
 
 TEST(MessageParsingUtilsTest, NotAlignedData) {
   size_t data_size =
-      kTotalHeaderBytes / sizeof(float) + kFrames * kChannels + 1;
+      sizeof(PcmPacketHeader) / sizeof(float) + kFrames * kChannels + 1;
   std::vector<float> data(data_size, 1.0f);
-  PopulateHeader(reinterpret_cast<char*>(data.data()) + 1,
-                 data.size() * sizeof(float) - 1, kPcmAudioPacketInfo);
+  PopulatePcmAudioHeader(reinterpret_cast<char*>(data.data()) + 1,
+                         data.size() * sizeof(float) - 1,
+                         kStreamInfo.stream_type, 0);
 
   auto audio_bus = ::media::AudioBus::Create(kChannels, kFrames);
   bool success = ReadDataToAudioBus(
@@ -223,6 +236,18 @@ TEST(MessageParsingUtilsTest, NotAlignedData) {
       data_size * sizeof(float) - 1 - sizeof(uint16_t), audio_bus.get());
   EXPECT_FALSE(success);
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    MessageParsingUtilsTest,
+    PacketHeaderTest,
+    testing::Combine(testing::Values(StreamType::kMicRaw,
+                                     StreamType::kHardwareEchoRescaled),
+                     testing::Values(AudioCodec::kPcm, AudioCodec::kOpus),
+                     testing::Values(1, 8),
+                     testing::Values(SampleFormat::INTERLEAVED_INT16,
+                                     SampleFormat::PLANAR_FLOAT),
+                     testing::Values(16000, 96000),
+                     testing::Values(0, 32761)));
 
 }  // namespace
 }  // namespace capture_service

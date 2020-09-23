@@ -14,8 +14,8 @@ struct Environment {
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   static Environment env;
-  PacketInfo info;
-  chromecast::media::capture_service::ReadHeader(
+  StreamInfo info;
+  chromecast::media::capture_service::ReadHandshakeMessage(
       reinterpret_cast<const char*>(data), size, &info);
   return 0;
 }

@@ -48,14 +48,14 @@ bool CastAudioInputStream::Open() {
 
   audio_bus_ = ::media::AudioBus::Create(audio_params_.channels(),
                                          audio_params_.frames_per_buffer());
-  capture_service_receiver_ = std::make_unique<CaptureServiceReceiver>(
-      capture_service::StreamInfo{
-          capture_service::StreamType::kSoftwareEchoCancelled,
-          capture_service::AudioCodec::kPcm, audio_params_.channels(),
-          // Format doesn't matter in the request.
-          capture_service::SampleFormat::LAST_FORMAT,
-          audio_params_.sample_rate(), audio_params_.frames_per_buffer()},
-      this);
+  stream_info_ = capture_service::StreamInfo{
+      capture_service::StreamType::kSoftwareEchoCancelled,
+      capture_service::AudioCodec::kPcm, audio_params_.channels(),
+      // Format doesn't matter in the request.
+      capture_service::SampleFormat::LAST_FORMAT, audio_params_.sample_rate(),
+      audio_params_.frames_per_buffer()};
+  capture_service_receiver_ =
+      std::make_unique<CaptureServiceReceiver>(stream_info_, this);
   return true;
 }
 
@@ -117,33 +117,40 @@ void CastAudioInputStream::SetOutputDeviceForAec(
 bool CastAudioInputStream::OnInitialStreamInfo(
     const capture_service::StreamInfo& stream_info) {
   const bool is_params_match =
-      stream_info.stream_type ==
-          capture_service::StreamType::kSoftwareEchoCancelled &&
-      stream_info.audio_codec == capture_service::AudioCodec::kPcm &&
-      stream_info.num_channels == audio_params_.channels() &&
-      stream_info.sample_rate == audio_params_.sample_rate() &&
-      stream_info.frames_per_buffer == audio_params_.frames_per_buffer();
+      stream_info.stream_type == stream_info_.stream_type &&
+      stream_info.audio_codec == stream_info_.audio_codec &&
+      stream_info.num_channels == stream_info_.num_channels &&
+      stream_info.sample_rate == stream_info_.sample_rate &&
+      stream_info.frames_per_buffer == stream_info_.frames_per_buffer;
   LOG_IF(ERROR, !is_params_match)
-      << "Got different parameters from sender, sample_rate: "
-      << audio_params_.sample_rate() << " Hz -> " << stream_info.sample_rate
-      << " Hz, num_channels: " << audio_params_.channels() << " -> "
+      << "Got different parameters from sender, stream_type: "
+      << static_cast<int>(stream_info_.stream_type) << " -> "
+      << static_cast<int>(stream_info.stream_type)
+      << ", audio_codec: " << static_cast<int>(stream_info_.audio_codec)
+      << " -> " << static_cast<int>(stream_info.audio_codec)
+      << ", sample_rate: " << stream_info_.sample_rate << " Hz -> "
+      << stream_info.sample_rate
+      << " Hz, num_channels: " << stream_info_.num_channels << " -> "
       << stream_info.num_channels
-      << ", frames_per_buffer: " << audio_params_.frames_per_buffer() << " -> "
+      << ", frames_per_buffer: " << stream_info_.frames_per_buffer << " -> "
       << stream_info.frames_per_buffer << ".";
+  stream_info_.sample_format = stream_info.sample_format;
+  LOG(INFO) << "Set sample_format: "
+            << static_cast<int>(stream_info.sample_format);
   return is_params_match;
 }
 
 bool CastAudioInputStream::OnCaptureData(const char* data, size_t size) {
-  capture_service::PacketInfo info;
-  if (!capture_service::ReadPcmAudioMessage(data, size, &info,
-                                            audio_bus_.get())) {
+  int64_t timestamp_us;
+  if (!capture_service::ReadPcmAudioMessage(data, size, stream_info_,
+                                            &timestamp_us, audio_bus_.get())) {
     return false;
   }
 
   DCHECK(input_callback_);
   input_callback_->OnData(
       audio_bus_.get(),
-      base::TimeTicks() + base::TimeDelta::FromMicroseconds(info.timestamp_us),
+      base::TimeTicks() + base::TimeDelta::FromMicroseconds(timestamp_us),
       /* volume */ 1.0);
   return true;
 }

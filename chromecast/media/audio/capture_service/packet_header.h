@@ -11,19 +11,29 @@ namespace chromecast {
 namespace media {
 namespace capture_service {
 
-// Memory block of a packet header. Changes to it need to make sure about the
-// memory alignment to avoid extra paddings being inserted. It reflects real
-// packet header structure, however, the |size| bits are in big-endian order,
-// and thus is only for padding purpose in this struct, when all bytes after it
-// represent a message header.
-struct __attribute__((__packed__)) PacketHeader {
+// Memory block of a PCM audio packet header. Changes to it need to ensure the
+// size is a multiple of 4 bytes. It reflects real packet header structure,
+// however, the |size| bits are in big-endian order, and thus is only for
+// padding purpose in this struct, when all bytes after it represent a message
+// header.
+struct __attribute__((__packed__)) PcmPacketHeader {
   uint16_t size;
   uint8_t message_type;
   uint8_t stream_type;
-  uint8_t codec_or_sample_format;
+  int64_t timestamp_us;
+};
+
+// Memory block of a handshake packet. There is no size restriction for this
+// structure.
+struct __attribute__((__packed__)) HandshakePacket {
+  uint16_t size;
+  uint8_t message_type;
+  uint8_t stream_type;
+  uint8_t audio_codec;
+  uint8_t sample_format;
   uint8_t num_channels;
-  uint16_t sample_rate;
-  int64_t timestamp_or_frames;
+  uint16_t num_frames;
+  uint32_t sample_rate;
 };
 
 }  // namespace capture_service

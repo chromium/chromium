@@ -108,6 +108,7 @@ cast_source_set("audio") {
     "//chromecast/base",
     "//chromecast/common/mojom",
     "//chromecast/media/api",
+    "//chromecast/media/audio/capture_service:common",
     "//chromecast/media/audio/capture_service:receiver",
     "//chromecast/media/audio/capture_service:utils",
     "//chromecast/media/audio/mixer_service:common",
