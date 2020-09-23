@@ -143,7 +143,14 @@ SBOX_TESTS_COMMAND int RestrictedTokenTest_IsRestricted(int argc,
   return token_groups->GroupCount > 0 ? SBOX_TEST_SUCCEEDED : SBOX_TEST_FAILED;
 }
 
-TEST(RestrictedTokenTest, OpenLowPrivilegedProcess) {
+#if defined(ADDRESS_SANITIZER)
+// Flaky under asan: https://crbug.com/1012356
+#define MAYBE_OpenLowPrivilegedProcess DISABLED_OpenLowPrivilegedProcess
+#else
+#define MAYBE_OpenLowPrivilegedProcess OpenLowPrivilegedProcess
+#endif
+
+TEST(RestrictedTokenTest, MAYBE_OpenLowPrivilegedProcess) {
   // Test limited privilege to renderer open.
   ASSERT_EQ(SBOX_TEST_SUCCEEDED,
             RunOpenProcessTest(false, false, GENERIC_READ | GENERIC_WRITE));
