@@ -24,6 +24,10 @@ import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 
+const METADATA_STORED_INDEFINITELY = -1;
+const METADATA_STORED_FOR_ONE_DAY = 1;
+const METADATA_NOT_STORED = 0;
+
 /**
  * @typedef {Array<!chromeos.printing.printingManager.mojom.PrintJobInfo>}
  */
@@ -81,6 +85,24 @@ Polymer({
     printJobs_: {
       type: Array,
       value: () => [],
+    },
+
+    /** @private */
+    printJobHistoryExpirationPeriod_: {
+      type: String,
+      value: '',
+    },
+
+    /** @private */
+    activeHistoryInfoIcon_: {
+      type: String,
+      value: '',
+    },
+
+    /** @private */
+    isPolicyControlled_: {
+      type: Boolean,
+      value: false,
     },
 
     /**
@@ -150,6 +172,7 @@ Polymer({
 
   /** @override */
   attached() {
+    this.getPrintJobHistoryExpirationPeriod_();
     this.startObservingPrintJobs_();
     this.fetchDeletePrintJobHistoryPolicy_();
   },
@@ -259,7 +282,51 @@ Polymer({
   /** @private */
   getPrintJobs_() {
     this.mojoInterfaceProvider_.getPrintJobs()
-        .then(this.onPrintJobsReceived_.bind(this));
+      .then(this.onPrintJobsReceived_.bind(this));
+  },
+
+  /**
+   * @param {!{
+   *     expirationPeriodInDays: number,
+   *     isFromPolicy: boolean
+   * }}  printJobPolicyInfo
+   * @private
+   */
+  onPrintJobHistoryExpirationPeriodReceived_(printJobPolicyInfo) {
+    const expirationPeriod = printJobPolicyInfo.expirationPeriodInDays;
+    // If print jobs are not persisted, we can return early since the tooltip
+    // section won't be shown.
+    if (expirationPeriod === METADATA_NOT_STORED) {
+      return;
+    }
+
+    this.isPolicyControlled_ = printJobPolicyInfo.isFromPolicy;
+    this.activeHistoryInfoIcon_ = this.isPolicyControlled_
+      ? 'enterpriseIcon'
+      : 'infoIcon';
+
+    switch (expirationPeriod) {
+      case METADATA_STORED_INDEFINITELY:
+        this.printJobHistoryExpirationPeriod_ =
+          loadTimeData.getString('printJobHistoryIndefinitePeriod');
+        break;
+      case METADATA_STORED_FOR_ONE_DAY:
+        this.printJobHistoryExpirationPeriod_ =
+          loadTimeData.getString('printJobHistorySingleDay');
+        break;
+      default:
+        this.printJobHistoryExpirationPeriod_ =
+          loadTimeData.getStringF(
+          'printJobHistoryExpirationPeriod',
+          expirationPeriod
+        );
+    }
+  },
+
+  /** @private */
+  getPrintJobHistoryExpirationPeriod_() {
+    this.mojoInterfaceProvider_.getPrintJobHistoryExpirationPeriod()
+      .then(this.onPrintJobHistoryExpirationPeriodReceived_.bind(this));
   },
 
   /**
@@ -281,14 +348,6 @@ Polymer({
   /** @private */
   onClearHistoryDialogClosed_() {
     this.showClearAllDialog_ = false;
-  },
-
-  /**
-   * @return {string}
-   * @private
-   */
-  getHistoryLabel_() {
-    return loadTimeData.getString('historyToolTip');
   },
 
   /**

@@ -36,6 +36,14 @@
     margin-inline-end: 4px;
   }
 
+  #enterpriseIcon {
+    --iron-icon-fill-color: var(--google-grey-refresh-700);
+    --iron-icon-stroke-color: var(--google-grey-refresh-700);
+    --iron-icon-height: 13px;
+    --iron-icon-width: 13px;
+    margin-inline-start: 8px;
+  }
+
   #headerContainer {
     border-bottom: 1px solid rgba(0,0,0,0.14); /* 14% black */
     display: flex;
@@ -140,13 +148,18 @@
 
   <template is="dom-if" if="[[printJobs_.length]]" restamp>
     <div id="historyHeaderContainer" class="column-headers flex-center">
-      <div aria-label$="[[i18n('historyToolTip')]]">
+      <div aria-label$="[[printJobHistoryExpirationPeriod_]]">
         [[i18n('historyHeader')]]
       </div>
-      <iron-icon id="infoIcon" icon="cr:info-outline" aria-hidden="true">
+      <iron-icon id="infoIcon" icon="cr:info-outline" aria-hidden="true"
+          hidden="[[isPolicyControlled_]]">
       </iron-icon>
-      <paper-tooltip for="infoIcon" fit-to-visible-bounds aria-hidden="true">
-        [[i18n('historyToolTip')]]
+      <iron-icon id="enterpriseIcon" icon="print-management:enterprise-icon"
+          aria-hidden="true" hidden="[[!isPolicyControlled_]]">
+      </iron-icon>
+      <paper-tooltip for="[[activeHistoryInfoIcon_]]" fit-to-visible-bounds
+          aria-hidden="true">
+        [[printJobHistoryExpirationPeriod_]]
       </paper-tooltip>
     </div>
 

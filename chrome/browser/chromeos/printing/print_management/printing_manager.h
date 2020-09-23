@@ -43,6 +43,8 @@ class PrintingManager
 
   // printing_manager::mojom::PrintingMetadataProvider:
   void GetPrintJobs(GetPrintJobsCallback callback) override;
+  void GetPrintJobHistoryExpirationPeriod(
+      GetPrintJobHistoryExpirationPeriodCallback callback) override;
   void DeleteAllPrintJobs(DeleteAllPrintJobsCallback callback) override;
   void ObservePrintJobs(
       mojo::PendingRemote<printing_manager::mojom::PrintJobsObserver> observer,
@@ -125,6 +127,8 @@ class PrintingManager
   // Not owned, this provides the necessary observers to observe when an
   // ongoing print job has been updated.
   CupsPrintJobManager* cups_print_job_manager_;
+
+  IntegerPrefMember print_job_history_expiration_period_;
 
   base::WeakPtrFactory<PrintingManager> weak_ptr_factory_{this};
 };

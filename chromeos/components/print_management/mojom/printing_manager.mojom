@@ -135,4 +135,9 @@ interface PrintingMetadataProvider {
   // Returns true if the user is allowed to delete their own print job history
   // (default value is true for non-managed users).
   GetDeletePrintJobHistoryAllowedByPolicy() => (bool is_allowed_by_policy);
+
+  // Returns the database expiration period of the print job metadata in days.
+  GetPrintJobHistoryExpirationPeriod() => (
+      int16 expiration_period_in_days,
+      bool is_from_policy);
 };

@@ -44,6 +44,8 @@ PrintingManager::PrintingManager(
 
   delete_print_job_history_allowed_.Init(prefs::kDeletePrintJobHistoryAllowed,
                                          pref_service);
+  print_job_history_expiration_period_.Init(
+      prefs::kPrintJobHistoryExpirationPeriod, pref_service);
 }
 
 PrintingManager::~PrintingManager() {
@@ -57,6 +59,11 @@ void PrintingManager::GetPrintJobs(GetPrintJobsCallback callback) {
   print_job_history_service_->GetPrintJobs(
       base::BindOnce(&PrintingManager::OnPrintJobsRetrieved,
                      base::Unretained(this), std::move(callback)));
+}
+void PrintingManager::GetPrintJobHistoryExpirationPeriod(
+    GetPrintJobHistoryExpirationPeriodCallback callback) {
+  std::move(callback).Run(print_job_history_expiration_period_.GetValue(),
+                          print_job_history_expiration_period_.IsManaged());
 }
 
 void PrintingManager::DeleteAllPrintJobs(DeleteAllPrintJobsCallback callback) {

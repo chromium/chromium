@@ -365,8 +365,14 @@ Try tapping the mic to ask me anything.
       <message name="IDS_PRINT_MANAGEMENT_HISTORY_HEADER_LABEL" desc="The header label that indicates that print jobs below this header are the user's print history.">
         History
       </message>
-      <message name="IDS_PRINT_MANAGEMENT_HISTORY_TOOL_TIP" desc="The tooltip that states that the user's print jobs are automatically deleted after 90 days.">
-        Print jobs older than 90 days will be removed
+      <message name="IDS_PRINT_MANAGEMENT_HISTORY_TOOL_TIP_INDEFINITE" desc="The tooltip that states that the user's print jobs are stored indefinitely.">
+        Print jobs will appear in history unless they are removed manually
+      </message>
+      <message name="IDS_PRINT_MANAGEMENT_HISTORY_TOOL_TIP_MULTIPLE_DAYS_EXPIRATION" desc="The tooltip that states that the user's print jobs are automatically deleted after a variable amount of days.">
+        Print jobs older than <ph name="NUMBER_OF_DAYS">$1<ex>45</ex></ph> days will be removed
+      </message>
+      <message name="IDS_PRINT_MANAGEMENT_HISTORY_TOOL_TIP_SINGLE_DAY_EXPIRATION" desc="The tooltip that states that the user's print jobs are automatically deleted after one day.">
+        Print jobs older than 1 day will be removed
       </message>
       <message name="IDS_PRINT_MANAGEMENT_PRINTED_PAGES_ARIA_LABEL" desc="The aria label that describes the current page printed printed versus the total number of pages.">
         Printed page <ph name="PRINTED_PAGES">$1<ex>1</ex></ph> out of <ph name="TOTAL_PAGES">$2<ex>2</ex></ph>.

@@ -208,6 +208,9 @@ class FakePrintingMetadataProvider {
      */
     this.printJobsObserverRemote_;
 
+    /** @private {number} */
+    this.expirationPeriod_ = 90;
+
     this.resetForTest();
   }
 
@@ -225,6 +228,8 @@ class FakePrintingMetadataProvider {
     this.resolverMap_.set('cancelPrintJob', new PromiseResolver());
     this.resolverMap_.set(
         'getDeletePrintJobHistoryAllowedByPolicy', new PromiseResolver());
+    this.resolverMap_.set(
+        'getPrintJobHistoryExpirationPeriod', new PromiseResolver());
   }
 
   /**
@@ -271,6 +276,11 @@ class FakePrintingMetadataProvider {
    */
   setPrintJobs(printJobs) {
     this.printJobs_ = printJobs;
+  }
+
+  /** @param {number} expirationPeriod */
+  setExpirationPeriod(expirationPeriod) {
+    this.expirationPeriod_ = expirationPeriod;
   }
 
   /**
@@ -347,6 +357,17 @@ class FakePrintingMetadataProvider {
     return new Promise(resolve => {
       this.methodCalled('getDeletePrintJobHistoryAllowedByPolicy');
       resolve({isAllowedByPolicy: this.isAllowedByPolicy_});
+    });
+  }
+
+  /** @return {!Promise<{expirationPeriod: number}>} */
+  getPrintJobHistoryExpirationPeriod() {
+    return new Promise(resolve => {
+      this.methodCalled('getPrintJobHistoryExpirationPeriod');
+      resolve({
+        expirationPeriodInDays: this.expirationPeriod_,
+        isFromPolicy: true,
+      });
     });
   }
 
@@ -443,6 +464,111 @@ suite('PrintManagementTest', () => {
       return mojoApi.whenCalled('getPrintJobs');
     });
   }
+  test('PrintJobHistoryExpirationPeriodOneDay', () => {
+    const completedInfo = createCompletedPrintJobInfo(CompletionStatus.PRINTED);
+    const expectedText = 'Print jobs older than 1 day will be removed';
+    const expectedArr = [
+      createJobEntry(
+          'newest', 'titleA',
+          convertToMojoTime(new Date(Date.UTC(2020, 3, 1, 1, 1, 1))),
+          PrinterErrorCode.NO_ERROR, completedInfo, /*activeInfo=*/ null),
+    ];
+    // Print job metadata will be stored for 1 day.
+    mojoApi_.setExpirationPeriod(1);
+    return initializePrintManagementApp(expectedArr.slice().reverse())
+        .then(() => {
+          return mojoApi_.whenCalled('getPrintJobs');
+        })
+        .then(() => {
+          flush();
+          return mojoApi_.whenCalled('getPrintJobHistoryExpirationPeriod');
+        })
+        .then(() => {
+          const historyInfoTooltip = page.$$('paper-tooltip');
+          assertEquals(expectedText, historyInfoTooltip.textContent.trim());
+        });
+  });
+
+  test('PrintJobHistoryExpirationPeriodDefault', () => {
+    const completedInfo = createCompletedPrintJobInfo(CompletionStatus.PRINTED);
+    const expectedText = 'Print jobs older than 90 days will be removed';
+    const expectedArr = [
+      createJobEntry(
+          'newest', 'titleA',
+          convertToMojoTime(new Date(Date.UTC(2020, 3, 1, 1, 1, 1))),
+          PrinterErrorCode.NO_ERROR, completedInfo, /*activeInfo=*/ null),
+    ];
+
+    // Print job metadata will be stored for 90 days which is the default
+    // period when the policy is not controlled.
+    mojoApi_.setExpirationPeriod(90);
+    return initializePrintManagementApp(expectedArr.slice().reverse())
+        .then(() => {
+          return mojoApi_.whenCalled('getPrintJobs');
+        })
+        .then(() => {
+          flush();
+          return mojoApi_.whenCalled('getPrintJobHistoryExpirationPeriod');
+        })
+        .then(() => {
+          const historyInfoTooltip = page.$$('paper-tooltip');
+          assertEquals(expectedText, historyInfoTooltip.textContent.trim());
+        });
+  });
+
+  test('PrintJobHistoryExpirationPeriodIndefinte', () => {
+    const completedInfo = createCompletedPrintJobInfo(CompletionStatus.PRINTED);
+    const expectedText = 'Print jobs will appear in history unless they are ' +
+        'removed manually';
+    const expectedArr = [
+      createJobEntry(
+          'newest', 'titleA',
+          convertToMojoTime(new Date(Date.UTC(2020, 3, 1, 1, 1, 1))),
+          PrinterErrorCode.NO_ERROR, completedInfo, /*activeInfo=*/ null),
+    ];
+
+    // When this policy is set to a value of -1, the print jobs metadata is
+    // stored indefinitely.
+    mojoApi_.setExpirationPeriod(-1);
+    return initializePrintManagementApp(expectedArr.slice().reverse())
+        .then(() => {
+          return mojoApi_.whenCalled('getPrintJobs');
+        })
+        .then(() => {
+          flush();
+          return mojoApi_.whenCalled('getPrintJobHistoryExpirationPeriod');
+        })
+        .then(() => {
+          const historyInfoTooltip = page.$$('paper-tooltip');
+          assertEquals(expectedText, historyInfoTooltip.textContent.trim());
+        });
+  });
+
+  test('PrintJobHistoryExpirationPeriodNDays', () => {
+    const completedInfo = createCompletedPrintJobInfo(CompletionStatus.PRINTED);
+    const expectedText = 'Print jobs older than 4 days will be removed';
+    const expectedArr = [
+      createJobEntry(
+          'newest', 'titleA',
+          convertToMojoTime(new Date(Date.UTC(2020, 3, 1, 1, 1, 1))),
+          PrinterErrorCode.NO_ERROR, completedInfo, /*activeInfo=*/ null),
+    ];
+
+    // Print job metadata will be stored for 4 days.
+    mojoApi_.setExpirationPeriod(4);
+    return initializePrintManagementApp(expectedArr.slice().reverse())
+        .then(() => {
+          return mojoApi_.whenCalled('getPrintJobs');
+        })
+        .then(() => {
+          flush();
+          return mojoApi_.whenCalled('getPrintJobHistoryExpirationPeriod');
+        })
+        .then(() => {
+          const historyInfoTooltip = page.$$('paper-tooltip');
+          assertEquals(expectedText, historyInfoTooltip.textContent.trim());
+        });
+  });
 
   test('PrintHistoryListIsSortedReverseChronologically', () => {
     const completedInfo = createCompletedPrintJobInfo(CompletionStatus.PRINTED);
