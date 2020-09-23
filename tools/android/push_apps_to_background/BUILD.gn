@@ -21,5 +21,4 @@ android_resources("push_apps_to_background_apk_resources") {
     "res/layout/activity_push_apps_to_background.xml",
     "res/values/strings.xml",
   ]
-  create_srcjar = false
 }

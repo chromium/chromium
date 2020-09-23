@@ -538,7 +538,6 @@ if (is_android) {
     sources = [
       "//components/test/android/browsertests_apk/res/layout/test_activity.xml",
     ]
-    create_srcjar = false
   }
 }
 

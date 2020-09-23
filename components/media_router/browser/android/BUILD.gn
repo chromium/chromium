@@ -162,7 +162,6 @@ android_resources("java_resources") {
     ":java_strings_grd",
     "//third_party/android_media:android_media_resources",
   ]
-  create_srcjar = false
 }
 
 java_strings_grd("java_strings_grd") {

@@ -61,7 +61,6 @@ android_resources("java_resources") {
     "java/res/values/styles.xml",
     "java/res/xml/page_info_cookie_preference.xml",
   ]
-  create_srcjar = false
   deps = [
     "//components/browser_ui/strings/android:browser_ui_strings_grd",
     "//components/permissions/android:java_resources",

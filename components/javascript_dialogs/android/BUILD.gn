@@ -29,7 +29,6 @@ android_library("java") {
 }
 
 android_resources("java_resources") {
-  create_srcjar = false
   sources = [ "java/res/layout/js_modal_dialog.xml" ]
 
   deps = [

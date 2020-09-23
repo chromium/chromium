@@ -12,5 +12,4 @@ android_resources("java_resources") {
     "res/drawable-xxhdpi/infobar_blocked_popups.png",
     "res/drawable-xxxhdpi/infobar_blocked_popups.png",
   ]
-  create_srcjar = false
 }

@@ -81,7 +81,6 @@ android_resources("java_resources") {
     ":java_strings_grd",
     "//chrome/android:chrome_app_java_resources",
   ]
-  create_srcjar = false
 }
 
 android_library("java") {

@@ -90,7 +90,6 @@ android_resources("java_resources") {
     "res/drawable/permission_idle_detection.xml",
     "res/layout/update_permissions_dialog.xml",
   ]
-  create_srcjar = false
   deps = [
     ":permissions_strings_grd",
     "//components/browser_ui/modaldialog/android:java_resources",

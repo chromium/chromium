@@ -101,7 +101,6 @@ android_resources("webview_instrumentation_apk_resources") {
     "shell/res/raw/resource_icon.png",
     "shell/res/values/config.xml",
   ]
-  create_srcjar = false
 }
 
 android_assets("webview_instrumentation_apk_assets") {

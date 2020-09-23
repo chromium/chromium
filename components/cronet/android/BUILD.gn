@@ -848,7 +848,6 @@ if (!is_component_build) {
 
   android_resources("cronet_test_apk_resources") {
     testonly = true
-    create_srcjar = false
     sources = [
       "test/res/values/strings.xml",
       "test/res/xml/network_security_config.xml",
@@ -1075,7 +1074,6 @@ if (!is_component_build) {
 
   android_resources("cronet_smoketests_platform_only_apk_resources") {
     testonly = true
-    create_srcjar = false
     sources = [
       "test/smoketests/res/platform_only/values/strings.xml",
       "test/smoketests/res/platform_only/xml/network_security_config.xml",

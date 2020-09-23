@@ -26,7 +26,6 @@ android_resources("content_java_resources") {
     ":content_strings_grd",
     "//ui/android:ui_java_resources",
   ]
-  create_srcjar = false
   sources = [
     "java/res/drawable-hdpi/ic_menu_share_holo_light.png",
     "java/res/drawable-hdpi/ic_search.png",

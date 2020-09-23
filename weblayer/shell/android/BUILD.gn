@@ -30,7 +30,6 @@ android_resources("weblayer_shell_resources") {
     "shell_apk/res/values/strings.xml",
     "shell_apk/res/values/styles.xml",
   ]
-  create_srcjar = false
 }
 
 android_library("weblayer_shell_java") {

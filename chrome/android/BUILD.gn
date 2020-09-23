@@ -229,7 +229,6 @@ android_resources("chrome_app_java_resources") {
     "//third_party/android_deps:androidx_recyclerview_recyclerview_java",
     "//third_party/android_deps:material_design_java",
   ]
-  create_srcjar = false
 }
 
 if (enable_vr) {
@@ -1446,7 +1445,6 @@ process_version("version_xml") {
 android_resources("product_version_resources") {
   sources = [ version_resource_file ]
   deps = [ ":version_xml" ]
-  create_srcjar = false
 }
 
 java_group("chrome_public_non_pak_assets") {
@@ -2233,7 +2231,6 @@ if (android_64bit_target_cpu) {
 # generate APK stubs.
 android_resources("trichrome_dummy_resources") {
   sources = [ "trichrome/res_dummy/values/strings.xml" ]
-  create_srcjar = false
 }
 
 chrome_public_test_apk_manifest =

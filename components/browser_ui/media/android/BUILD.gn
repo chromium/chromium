@@ -35,7 +35,6 @@ android_library("java") {
 }
 
 android_resources("java_resources") {
-  create_srcjar = false
   sources = [
     "java/res/drawable-hdpi/audio_playing.png",
     "java/res/drawable-hdpi/audio_playing_square.png",

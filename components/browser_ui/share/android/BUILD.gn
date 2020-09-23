@@ -26,7 +26,6 @@ android_library("java") {
 }
 
 android_resources("java_resources") {
-  create_srcjar = false
   sources = [ "java/res/layout/share_dialog_item.xml" ]
   deps = [
     "//components/browser_ui/strings/android:browser_ui_strings_grd",

@@ -55,7 +55,6 @@ android_resources("java_resources") {
     "java/res/layout/touch_to_fill_sheet.xml",
     "java/res/values/dimens.xml",
   ]
-  create_srcjar = false
 }
 
 java_strings_grd("java_strings_grd") {

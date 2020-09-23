@@ -66,7 +66,6 @@ android_aidl("photo_picker_aidl") {
 }
 
 android_resources("java_resources") {
-  create_srcjar = false
   sources = [
     "java/res/drawable/fast_forward_message_gradient.xml",
     "java/res/drawable/file_picker_scrim.xml",

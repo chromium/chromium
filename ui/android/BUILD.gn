@@ -125,7 +125,6 @@ java_strings_grd("ui_strings_grd") {
 }
 
 android_resources("ui_java_resources") {
-  create_srcjar = false
   sources = [
     "java/res/color/blue_when_enabled.xml",
     "java/res/color/chip_background_color.xml",
@@ -406,7 +405,6 @@ android_library("ui_java_test_support") {
 
 android_resources("ui_javatest_resources") {
   testonly = true
-  create_srcjar = false
   sources = [
     "junit/res/layout/inflated_view.xml",
     "junit/res/layout/layout_view_builder_test.xml",

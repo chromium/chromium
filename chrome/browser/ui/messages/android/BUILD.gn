@@ -4,7 +4,6 @@
 import("//build/config/android/rules.gni")
 
 android_resources("java_resources") {
-  create_srcjar = false
   sources = [
     "java/res/drawable/snackbar_background_tablet.xml",
     "java/res/layout/snackbar.xml",

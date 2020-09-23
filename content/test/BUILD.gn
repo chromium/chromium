@@ -882,7 +882,6 @@ if (is_android) {
       "//content/shell/android/browsertests_apk/res/layout/test_activity.xml",
       "//content/shell/android/browsertests_apk/res/xml/file_paths.xml",
     ]
-    create_srcjar = false
   }
 }
 

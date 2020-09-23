@@ -128,7 +128,6 @@ android_resources("icon_resources") {
     "java/res_icon/drawable-xhdpi/icon_webview.png",
     "java/res_icon/drawable-xxhdpi/icon_webview.png",
   ]
-  create_srcjar = false
 }
 
 android_resources("devui_resources") {
@@ -160,19 +159,16 @@ android_resources("devui_resources") {
     "java/res_devui/values/strings.xml",
     "java/res_devui/values/styles.xml",
   ]
-  create_srcjar = false
 }
 
 android_resources("devui_launcher_icon_resources") {
   sources = []
-  create_srcjar = false
   android_manifest = "java/DeveloperUiLauncherManifest.xml"
 }
 
 android_resources("monochrome_devui_launcher_icon_resources") {
   sources = []
   android_manifest = "java/MonochromeDeveloperUiLauncherManifest.xml"
-  create_srcjar = false
 }
 
 _webview_jinja_variables = [ "manifest_package=$system_webview_package_name" ] +

@@ -131,7 +131,6 @@ android_resources("java_resources") {
     "//components/browser_ui/settings/android:java_resources",
     "//components/browser_ui/styles/android:java_resources",
   ]
-  create_srcjar = false
 }
 
 java_cpp_enum("safety_check_enums") {

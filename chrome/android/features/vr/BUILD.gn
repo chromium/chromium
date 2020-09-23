@@ -28,8 +28,6 @@ android_resources("java_resources") {
   ]
 
   deps = [ ":java_strings_grd" ]
-
-  create_srcjar = false
 }
 
 android_library("java") {

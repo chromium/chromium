@@ -9,7 +9,6 @@ import("//tools/grit/grit_rule.gni")
 
 android_resources("java_resources") {
   sources = [ "android/java/res/raw/dummy_resource" ]
-  create_srcjar = false
 }
 
 android_library("java") {

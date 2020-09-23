@@ -42,5 +42,4 @@ android_resources("java_resources") {
     "//components/browser_ui/styles/android:java_resources",
     "//ui/android:ui_java_resources",
   ]
-  create_srcjar = false
 }

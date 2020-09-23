@@ -26,7 +26,6 @@ android_resources("java_resources") {
     "res/values/dimens.xml",
     "res/values/ids.xml",
   ]
-  create_srcjar = false
   deps = [
     "//components/browser_ui/strings/android:browser_ui_strings_grd",
     "//components/browser_ui/widget/android:java_resources",

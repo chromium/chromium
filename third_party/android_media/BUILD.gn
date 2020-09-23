@@ -7,7 +7,6 @@ import("//build/config/android/rules.gni")
 assert(is_android)
 
 android_resources("android_media_resources") {
-  create_srcjar = false
   sources = [
     "java/res/layout/media_controller.xml",
     "java/res/values/colors.xml",

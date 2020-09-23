@@ -70,7 +70,6 @@ generate_jni("jni_headers") {
 }
 
 android_resources("java_resources") {
-  create_srcjar = false
   sources = payments_java_resources
 }
 

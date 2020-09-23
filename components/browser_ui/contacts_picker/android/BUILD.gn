@@ -58,7 +58,6 @@ generate_jni("contacts_picker_jni_headers") {
 }
 
 android_resources("java_resources") {
-  create_srcjar = false
   sources = [
     "java/res/drawable/address.xml",
     "java/res/drawable/email.xml",

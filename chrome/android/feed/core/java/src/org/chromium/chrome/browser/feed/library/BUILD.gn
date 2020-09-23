@@ -11,5 +11,4 @@ android_resources("piet_resources") {
     "piet/res/drawable-v21/piet_clickable_ripple.xml",
     "piet/res/values/styles.xml",
   ]
-  create_srcjar = false
 }

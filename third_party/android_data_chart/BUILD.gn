@@ -7,7 +7,6 @@ import("//build/config/android/rules.gni")
 assert(is_android)
 
 android_resources("android_data_chart_java_resources") {
-  create_srcjar = false
   sources = [
     "java/res/values/attrs.xml",
     "java/res/values/values.xml",

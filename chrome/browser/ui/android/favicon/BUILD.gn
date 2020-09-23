@@ -57,8 +57,6 @@ android_resources("java_resources") {
     "java/res/values/dimens.xml",
   ]
 
-  create_srcjar = false
-
   deps = [
     "//components/browser_ui/styles/android:java_resources",
     "//ui/android:ui_java_resources",

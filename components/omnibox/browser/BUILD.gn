@@ -342,7 +342,6 @@ if (is_android) {
       "//components/browser_ui/strings/android:browser_ui_strings_grd",
       "//ui/android:ui_java_resources",
     ]
-    create_srcjar = false
   }
 
   android_library("browser_java") {

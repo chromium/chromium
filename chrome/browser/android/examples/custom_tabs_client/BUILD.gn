@@ -47,7 +47,6 @@ android_resources("chrome_tabs_client_example_apk_resources") {
     "src/res/values/strings.xml",
   ]
   android_manifest = "src/AndroidManifest.xml"
-  create_srcjar = false
   deps = [ "//third_party/android_deps:android_support_v7_appcompat_java" ]
 }
 

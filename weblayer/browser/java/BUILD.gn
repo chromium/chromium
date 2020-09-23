@@ -26,7 +26,6 @@ android_resources("weblayer_resources") {
     "res/values/dimens.xml",
     "res/values/styles.xml",
   ]
-  create_srcjar = false
   deps = [
     ":weblayer_strings_grd",
     "//components/blocked_content/android:java_resources",
@@ -254,7 +253,6 @@ android_resources("weblayer_test_resources") {
     "res_test/layout/test_layout.xml",
     "res_test/values/values.xml",
   ]
-  create_srcjar = false
 }
 
 android_library("test_java") {

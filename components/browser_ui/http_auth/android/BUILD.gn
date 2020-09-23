@@ -22,7 +22,6 @@ android_library("java") {
 }
 
 android_resources("java_resources") {
-  create_srcjar = false
   sources = [ "java/res/layout/http_auth_dialog.xml" ]
 
   deps = [

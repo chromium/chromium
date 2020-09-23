@@ -37,7 +37,6 @@ android_resources("webview_ui_test_app_apk_resources") {
     "java/res/layout/fullscreen_webview.xml",
     "java/res/values/strings.xml",
   ]
-  create_srcjar = false
 }
 
 instrumentation_test_apk("webview_ui_test_app_test_apk") {

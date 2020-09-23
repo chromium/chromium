@@ -73,7 +73,6 @@ android_resources("content_shell_java_resources") {
     "java/res/mipmap-xxxhdpi/app_icon.png",
     "java/res/values/strings.xml",
   ]
-  create_srcjar = false
 }
 
 android_library("content_shell_java") {
@@ -127,7 +126,6 @@ android_resources("content_shell_apk_resources") {
     "shell_apk/res/values/strings.xml",
   ]
   deps = [ ":content_shell_java_resources" ]
-  create_srcjar = false
 }
 
 android_library("content_shell_apk_java") {

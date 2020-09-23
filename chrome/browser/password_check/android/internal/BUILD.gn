@@ -118,7 +118,6 @@ android_resources("java_resources") {
     "java/res/layout/password_check_view_credential_dialog.xml",
     "java/res/values/dimens.xml",
   ]
-  create_srcjar = false
 }
 
 java_strings_grd("java_strings_grd") {

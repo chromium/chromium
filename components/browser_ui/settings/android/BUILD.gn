@@ -61,6 +61,4 @@ android_resources("java_resources") {
     "java/res/values/ids.xml",
     "java/res/values/styles.xml",
   ]
-
-  create_srcjar = false
 }

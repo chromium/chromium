@@ -32,7 +32,6 @@ android_resources("splash_resources") {
     "res_splash/values/common_colors.xml",
     "res_splash/values/common_dimens.xml",
   ]
-  create_srcjar = false
 }
 
 android_aidl("identity_service_aidl") {

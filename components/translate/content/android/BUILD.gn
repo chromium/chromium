@@ -17,7 +17,6 @@ android_resources("java_resources") {
     "java/res/layout/translate_menu_item_checked.xml",
     "java/res/values/dimens.xml",
   ]
-  create_srcjar = false
   deps = [
     "//components/browser_ui/widget/android:java_resources",
     "//components/strings:components_strings_grd",

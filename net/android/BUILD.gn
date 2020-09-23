@@ -164,7 +164,6 @@ android_resources("net_unittests_apk_resources") {
     "unittest_support/res/xml/dummy_spnego_account_preferences.xml",
     "unittest_support/res/xml/dummy_spnego_authenticator.xml",
   ]
-  create_srcjar = false
 }
 
 android_library("net_javatests") {

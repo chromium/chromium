@@ -157,7 +157,6 @@ static_library("web_contents_delegate") {
 }
 
 android_resources("web_contents_delegate_java_resources") {
-  create_srcjar = false
   sources = [
     "java/res/drawable-hdpi/color_picker_advanced_select_handle.png",
     "java/res/drawable-mdpi/color_picker_advanced_select_handle.png",

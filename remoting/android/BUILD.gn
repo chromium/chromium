@@ -40,7 +40,6 @@ remoting_localize("remoting_apk_manifest") {
 }
 
 android_resources("remoting_android_client_java_resources") {
-  create_srcjar = false
   sources = [
     "java/res/drawable-hdpi/empty_host_list.png",
     "java/res/drawable-hdpi/ic_action_full_screen.png",

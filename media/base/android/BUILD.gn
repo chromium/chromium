@@ -154,7 +154,6 @@ if (is_android) {
   }
 
   android_resources("media_java_resources") {
-    create_srcjar = false
     sources = [ "java/res/raw/empty.wav" ]
   }
 

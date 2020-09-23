@@ -26,7 +26,6 @@ android_library("animated_poodle_java") {
 
 android_resources("animated_poodle_resources") {
   sources = [ "java/res_poodle/drawable/ic_autofill_assistant_24dp.xml" ]
-  create_srcjar = false
 }
 
 android_library("java") {
@@ -392,7 +391,6 @@ android_resources("java_resources") {
     ":java_strings_grd",
     "//chrome/android:chrome_app_java_resources",
   ]
-  create_srcjar = false
 }
 
 java_strings_grd("java_strings_grd") {

@@ -117,7 +117,6 @@ android_library("java") {
 }
 
 android_resources("java_resources") {
-  create_srcjar = false
   sources = [
     "java/res/anim/chip_in.xml",
     "java/res/anim/chip_out.xml",
@@ -273,7 +272,6 @@ android_library("javatests") {
 android_resources("java_test_resources") {
   testonly = true
 
-  create_srcjar = false
   sources = [
     "test/java/res/drawable-hdpi/promo_dialog_test_drawable.png",
     "test/java/res/drawable-mdpi/promo_dialog_test_drawable.png",

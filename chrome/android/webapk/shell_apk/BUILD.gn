@@ -140,7 +140,6 @@ template("webapk_tmpl") {
   }
 
   android_resources(_app_icon_resources_target_name) {
-    create_srcjar = false
     sources = [
       "res_app_icon/mipmap-hdpi/app_icon.xml",
       "res_app_icon/mipmap-mdpi/app_icon.xml",
@@ -151,7 +150,6 @@ template("webapk_tmpl") {
   }
 
   android_resources(_resources_target_name) {
-    create_srcjar = false
     sources = [
       "res/drawable-hdpi/ic_site_settings.png",
       "res/drawable-hdpi/last_resort_runtime_host_logo.png",

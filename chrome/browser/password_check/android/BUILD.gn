@@ -165,5 +165,4 @@ android_resources("java_resources") {
     "//chrome/browser/ui/android/strings:ui_strings_grd",
     "//components/strings:components_strings_grd",
   ]
-  create_srcjar = false
 }

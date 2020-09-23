@@ -18,7 +18,6 @@ jinja_template("weblayer_client_manifest") {
 }
 
 android_resources("client_resources") {
-  create_srcjar = false
   sources = [
     "res/values-night/colors.xml",
     "res/values-night/values.xml",

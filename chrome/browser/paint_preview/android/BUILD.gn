@@ -51,5 +51,4 @@ android_library("java") {
 
 android_resources("java_resources") {
   deps = [ "//chrome/browser/ui/android/strings:ui_strings_grd" ]
-  create_srcjar = false
 }

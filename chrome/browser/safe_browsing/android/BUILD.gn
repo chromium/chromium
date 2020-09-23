@@ -99,7 +99,6 @@ android_resources("java_resources") {
     "//chrome/browser/ui/android/strings:ui_strings_grd",
     "//components/browser_ui/settings/android:java_resources",
   ]
-  create_srcjar = false
 }
 
 java_cpp_enum("safe_browsing_enums") {

@@ -33,7 +33,6 @@ android_resources("java_resources") {
   ]
 
   deps = [ "//ui/android:ui_java_resources" ]
-  create_srcjar = false
 }
 
 generate_jni("jni_headers") {

@@ -213,5 +213,4 @@ android_resources("java_resources") {
     "//components/permissions/android:java_resources",
     "//third_party/android_deps:android_support_v7_appcompat_java",
   ]
-  create_srcjar = false
 }

@@ -54,7 +54,6 @@ android_resources("java_resources") {
     "//chrome/browser/ui/android/appmenu:java_resources",
     "//components/browser_ui/widget/android:java_resources",
   ]
-  create_srcjar = false
 }
 
 android_library("javatests") {
@@ -97,7 +96,6 @@ android_library("javatests") {
 android_resources("test_java_resources") {
   testonly = true
 
-  create_srcjar = false
   sources = [
     "test/java/res/drawable/test_ic_arrow_downward_black_24dp.xml",
     "test/java/res/drawable/test_ic_arrow_forward_black_24dp.xml",
