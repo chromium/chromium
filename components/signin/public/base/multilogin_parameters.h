@@ -14,13 +14,14 @@
 namespace signin {
 
 struct MultiloginParameters {
+  // Parameters with UPDATE mode and empty accounts.
+  MultiloginParameters();
   MultiloginParameters(gaia::MultiloginMode mode,
                        const std::vector<CoreAccountId>& accounts_to_send);
   MultiloginParameters(const MultiloginParameters& other);
   MultiloginParameters& operator=(const MultiloginParameters& other);
   ~MultiloginParameters();
 
-  // Needed for testing.
   bool operator==(const MultiloginParameters& other) const {
     return mode == other.mode && accounts_to_send == other.accounts_to_send;
   }

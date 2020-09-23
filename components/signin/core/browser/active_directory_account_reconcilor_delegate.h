@@ -34,6 +34,8 @@ class ActiveDirectoryAccountReconcilorDelegate
       const std::vector<CoreAccountId>& chrome_accounts,
       const CoreAccountId& primary_account,
       const std::vector<gaia::ListedAccount>& gaia_accounts,
+      bool first_execution,
+      bool primary_has_error,
       const gaia::MultiloginMode mode) const override;
   bool ShouldAbortReconcileIfPrimaryHasError() const override;
   bool ShouldRevokeTokensIfNoPrimaryAccount() const override;

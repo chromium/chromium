@@ -16,7 +16,7 @@ namespace signin {
 struct AccountReconcilorDelegateTestParam {
   const char* chrome_accounts;
   const char* gaia_accounts;
-  char first_account;
+  const char* first_account;
   const char* expected_order;
 };
 
@@ -25,64 +25,77 @@ static const AccountReconcilorDelegateTestParam kReorderParams[] = {
 // | Tokens          | Cookies       | First Acc. | Expected cookies |
 // |------------ Basic cases ----------------------------------------|
    // Nothing to do.
-   { "A",              "A",            'A',         "A"              },
-   { "ABCD",           "ABCD",         'A',         "ABCD"           },
+   { "A",              "A",            "A",         "A"              },
+   { "ABCD",           "ABCD",         "A",         "ABCD"           },
    // Token ordering does not matter.
-   { "DBCA",           "ABCD",         'A',         "ABCD"           },
+   { "DBCA",           "ABCD",         "A",         "ABCD"           },
    // Simple reordering of cookies.
-   { "AB",             "BA",           'A',         "AB"             },
+   { "AB",             "BA",           "A",         "AB"             },
 // |------------ Extra accounts in cookie ---------------------------|
    // Extra secondary account.
-   { "A",              "AB",           'A',         "A"              },
+   { "A",              "AB",           "A",         "A"              },
    // Extra primary account.
-   { "A",              "BA",           'A',         "A"              },
+   { "A",              "BA",           "A",         "A"              },
    // Multiple extra accounts.
-   { "AE",             "ABCDEF",       'A',         "AE"             },
-   { "AE",             "GABCDEF",      'A',         "AE"             },
+   { "AE",             "ABCDEF",       "A",         "AE"             },
+   { "AE",             "GABCDEF",      "A",         "AE"             },
    // C is kept in place.
-   { "ACF",            "ABCDEF",       'A',         "AFC"            },
+   { "ACF",            "ABCDEF",       "A",         "AFC"            },
 // |------------ Missing accounts in cookie -------------------------|
    // Cookie was lost.
-   { "A",              "",             'A',         "A"              },
-   { "ABCD",           "",             'A',         "ABCD"           },
+   { "A",              "",             "A",         "A"              },
+   { "ABCD",           "",             "A",         "ABCD"           },
    // B kept in place.
-   { "ADB",            "CB",           'A',         "ABD"            },
+   { "ADB",            "CB",           "A",         "ABD"            },
    // ACEG kept in place.
-   { "ABCDEFGH",       "ACEG",         'A',         "ACEGBDFH"       },
+   { "ABCDEFGH",       "ACEG",         "A",         "ACEGBDFH"       },
    // C kept in place, but not B.
-   { "ABCD",           "BC",           'A',         "ACBD"           },
+   { "ABCD",           "BC",           "A",         "ACBD"           },
    // D not kept in place.
-   { "AD",             "ABCD",         'A',         "AD"             },
+   { "AD",             "ABCD",         "A",         "AD"             },
 // |------------ Both extra accounts and missing accounts -----------|
    // Simple account mismatch.
-   { "A",              "B",            'A',         "A"              },
+   { "A",              "B",            "A",         "A"              },
    // ADE kept in place, BG removed.
-   { "ADEH",           "ABDEG",        'A',         "AHDE"           },
+   { "ADEH",           "ABDEG",        "A",         "AHDE"           },
    // E kept in place, BG removed, AD swapped.
-   { "ADEH",           "ABDEG",        'D',         "DHAE"           },
+   { "ADEH",           "ABDEG",        "D",         "DHAE"           },
    // Missing first account.
-   { "ADE",            "BCDE",         'A',         "AED"            },
+   { "ADE",            "BCDE",         "A",         "AED"            },
    // Three-ways swap A-B-D.
-   { "ABCE",           "BCDE",         'A',         "ACBE"           },
+   { "ABCE",           "BCDE",         "A",         "ACBE"           },
    // Extreme example.
-   { "ACJKL",          "ABCDEFGHIJ",   'A',         "AKCLJ"          },
+   { "ACJKL",          "ABCDEFGHIJ",   "A",         "AKCLJ"          },
 // |------------ More than 10 accounts in chrome --------------------|
    // Trim extra accounts.
-   { "ABCDEFGHIJKLM",  "ABCDEFGHIJ",   'A',         "ABCDEFGHIJ"     },
+   { "ABCDEFGHIJKLM",  "ABCDEFGHIJ",   "A",         "ABCDEFGHIJ"     },
    // D missing.
-   { "ABCEFGHIJKLMN",  "ABCDEFGHIJ",   'A',         "ABCKEFGHIJ"     },
+   { "ABCEFGHIJKLMN",  "ABCDEFGHIJ",   "A",         "ABCKEFGHIJ"     },
    // DG missing.
-   { "ABCEFHIJKLMOP",  "ABCDEFGHIJ",   'A',         "ABCKEFLHIJ"     },
+   { "ABCEFHIJKLMOP",  "ABCDEFGHIJ",   "A",         "ABCKEFLHIJ"     },
    // Primary swapped in.
-   { "ABCDEFGHIJKLM",  "ABCDEFGHIJ",   'K',         "KBCDEFGHIJ"     },
+   { "ABCDEFGHIJKLM",  "ABCDEFGHIJ",   "K",         "KBCDEFGHIJ"     },
 // |------------ More than 10 accounts in cookie --------------------|
    // Trim extra account.
-   { "ABCDEFGHIJK",    "ABCDEFGHIJK",  'A',         "ABCDEFGHIJ"     },
+   { "ABCDEFGHIJK",    "ABCDEFGHIJK",  "A",         "ABCDEFGHIJ"     },
    // Other edge cases.
-   { "BE",             "ABCDEFGHIJK",  'B',         "BE"             },
-   { "AE",             "ABCDEFGHIJK",  'A',         "AE"             },
-   { "AK",             "ABCDEFGHIJK",  'A',         "AK"             },
-   { "K",              "ABCDEFGHIJK",  'K',         "K"              },
+   { "BE",             "ABCDEFGHIJK",  "B",         "BE"             },
+   { "AE",             "ABCDEFGHIJK",  "A",         "AE"             },
+   { "AK",             "ABCDEFGHIJK",  "A",         "AK"             },
+   { "K",              "ABCDEFGHIJK",  "K",         "K"              },
+// |------------ Missing first account ------------------------------|
+   // B kept in place.
+   { "AB",             "B",            "",          "BA"             },
+   // BC kept in place, E removed, AD added.
+   { "ABCD",           "BCE",          "",          "BCAD"           },
+   // C kept in place, first account D replaced.
+   { "ABC",            "DC",           "",          "ACB"            },
+   // First accounts match
+   { "ABC",            "AC",           "",          "ACB"            },
+   // Extreme example.
+   { "ACJKH",          "JBCDEFGHIR",   "",          "JACKH"          },
+   // Empty chrome accounts.
+   { "",               "ABC",          "",          ""               },
 };
 // clang-format on
 
@@ -117,13 +130,14 @@ class AccountReconcilorDelegateTest
 TEST_P(AccountReconcilorDelegateTest, ReorderChromeAccountsForReconcile) {
   // Decode test parameters.
   CoreAccountId first_account =
-      CoreAccountId(std::string(1, GetParam().first_account));
+      CoreAccountId(std::string(GetParam().first_account));
   std::vector<CoreAccountId> chrome_accounts;
   for (int i = 0; GetParam().chrome_accounts[i] != '\0'; ++i) {
     chrome_accounts.push_back(
         CoreAccountId(std::string(1, GetParam().chrome_accounts[i])));
   }
-  ASSERT_TRUE(base::Contains(chrome_accounts, first_account))
+  ASSERT_TRUE(first_account.empty() ||
+              base::Contains(chrome_accounts, first_account))
       << "Invalid test parameter.";
   std::vector<gaia::ListedAccount> gaia_accounts =
       GaiaAccountsFromString(GetParam().gaia_accounts);

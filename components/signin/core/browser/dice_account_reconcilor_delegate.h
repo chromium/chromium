@@ -45,6 +45,12 @@ class DiceAccountReconcilorDelegate : public AccountReconcilorDelegate {
       RevokeTokenAction revoke_token_action) override;
   void OnReconcileFinished(const CoreAccountId& first_account) override;
   bool ShouldRevokeTokensOnCookieDeleted() override;
+  bool ShouldRevokeTokensBeforeMultilogin(
+      const std::vector<CoreAccountId>& chrome_accounts,
+      const CoreAccountId& primary_account,
+      const std::vector<gaia::ListedAccount>& gaia_accounts,
+      bool first_execution,
+      bool primary_has_error) const override;
 
  private:
   // Possible inconsistency reasons between tokens and gaia cookies.
@@ -71,17 +77,47 @@ class DiceAccountReconcilorDelegate : public AccountReconcilorDelegate {
       const std::vector<gaia::ListedAccount>& gaia_accounts,
       bool first_execution) const;
 
+  // AccountReconcilorDelegate:
   std::vector<CoreAccountId> GetChromeAccountsForReconcile(
       const std::vector<CoreAccountId>& chrome_accounts,
       const CoreAccountId& primary_account,
       const std::vector<gaia::ListedAccount>& gaia_accounts,
+      bool first_execution,
+      bool primary_has_error,
       const gaia::MultiloginMode mode) const override;
-
   gaia::MultiloginMode CalculateModeForReconcile(
+      const std::vector<CoreAccountId>& chrome_accounts,
       const std::vector<gaia::ListedAccount>& gaia_accounts,
       const CoreAccountId& primary_account,
       bool first_execution,
       bool primary_has_error) const override;
+
+  // Checks if Preserve mode is possible. Preserve mode fails if there is a
+  // valid cookie and no matching valid token. If first_account is not empty,
+  // then this account must be first in the cookie after the Preserve mode is
+  // performed.
+  bool IsPreserveModePossible(
+      const std::vector<CoreAccountId>& chrome_accounts,
+      const std::vector<gaia::ListedAccount>& gaia_accounts,
+      CoreAccountId first_account) const;
+
+  // Checks if there are valid cookies that should be deleted. That's happening
+  // if there is a valid cookie that doesn't have a valid token.
+  bool ShouldDeleteAccountsFromGaia(
+      const std::vector<CoreAccountId>& chrome_accounts,
+      const std::vector<gaia::ListedAccount>& gaia_accounts) const;
+
+  // Returns the first account to add in the Gaia cookie for multilogin.
+  // If this returns an empty account, it means any account can come first.
+  // The order for other accounts will be selected outside of this function
+  // using ReorderChromeAccountsForReconcile function to minimize account
+  // re-numbering.
+  CoreAccountId GetFirstGaiaAccountForMultilogin(
+      const std::vector<CoreAccountId>& chrome_accounts,
+      const CoreAccountId& primary_account,
+      const std::vector<gaia::ListedAccount>& gaia_accounts,
+      bool first_execution,
+      bool primary_has_error) const;
 
   SigninClient* signin_client_;
   bool migration_completed_;

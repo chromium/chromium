@@ -68,6 +68,8 @@ MirrorAccountReconcilorDelegate::GetChromeAccountsForReconcile(
     const std::vector<CoreAccountId>& chrome_accounts,
     const CoreAccountId& primary_account,
     const std::vector<gaia::ListedAccount>& gaia_accounts,
+    bool first_execution,
+    bool primary_has_error,
     const gaia::MultiloginMode mode) const {
   DCHECK_EQ(mode,
             gaia::MultiloginMode::MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER);

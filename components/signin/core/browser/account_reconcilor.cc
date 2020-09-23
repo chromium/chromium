@@ -533,16 +533,33 @@ void AccountReconcilor::FinishReconcileWithMultiloginEndpoint(
       identity_manager_->HasAccountWithRefreshTokenInPersistentErrorState(
           primary_account);
 
-  const signin::MultiloginParameters parameters_for_multilogin =
-      delegate_->CalculateParametersForMultilogin(
+  const signin::MultiloginParameters kLogoutParameters(
+      gaia::MultiloginMode::MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER,
+      std::vector<CoreAccountId>());
+
+  const bool should_revoke_tokens =
+      delegate_->ShouldRevokeTokensBeforeMultilogin(
           chrome_accounts, primary_account, gaia_accounts, first_execution_,
           primary_has_error);
 
   DCHECK(is_reconcile_started_);
+  signin::MultiloginParameters parameters_for_multilogin;
+  if (should_revoke_tokens) {
+    // Set parameters for logout for deleting cookies.
+    parameters_for_multilogin = kLogoutParameters;
+    RevokeAllSecondaryTokens(
+        identity_manager_,
+        AccountReconcilorDelegate::RevokeTokenOption::kRevoke, primary_account,
+        /*is_account_consistency_enforced=*/true,
+        signin_metrics::SourceForRefreshTokenOperation::
+            kAccountReconcilor_Reconcile);
+  } else {
+    parameters_for_multilogin = delegate_->CalculateParametersForMultilogin(
+        chrome_accounts, primary_account, gaia_accounts, first_execution_,
+        primary_has_error);
+  }
   if (CookieNeedsUpdate(parameters_for_multilogin, gaia_accounts)) {
-    if (parameters_for_multilogin.mode ==
-            gaia::MultiloginMode::MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER &&
-        parameters_for_multilogin.accounts_to_send.empty()) {
+    if (parameters_for_multilogin == kLogoutParameters) {
       // UPDATE mode does not support empty list of accounts, call logout
       // instead.
       PerformLogoutAllAccountsAction();
