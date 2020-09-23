@@ -178,7 +178,7 @@ public class AutocompleteController {
         // process does not impact the Omnibox initialization. Note that there's a small chance the
         // renderer will be started after the next navigation if the delay is too long, but the
         // spare renderer will probably get used anyways by a later navigation.
-        if (!NewTabPage.isNTPUrl(url)
+        if (!profile.isOffTheRecord() && !NewTabPage.isNTPUrl(url)
                 && ChromeFeatureList.isEnabled(ChromeFeatureList.OMNIBOX_SPARE_RENDERER)) {
             PostTask.postDelayedTask(UiThreadTaskTraits.BEST_EFFORT,
                     ()
