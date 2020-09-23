@@ -81,6 +81,7 @@ void FakeAmbientBackendControllerImpl::FetchScreenUpdateInfo(
   ash::AmbientModeTopic topic;
   topic.url = kFakeUrl;
   topic.details = kFakeDetails;
+  topic.related_image_url = kFakeUrl;
 
   ash::WeatherInfo weather_info;
   weather_info.temp_f = .0f;

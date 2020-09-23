@@ -35,7 +35,6 @@ class ASH_EXPORT PhotoView : public views::View,
 
   // views::View:
   const char* GetClassName() const override;
-  void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
 
   // AmbientBackendModelObserver:
   void OnImagesChanged() override;
@@ -47,7 +46,9 @@ class ASH_EXPORT PhotoView : public views::View,
   friend class AmbientAshTestBase;
 
   void Init();
+
   void UpdateImages();
+
   void StartTransitionAnimation();
 
   // Return if can start transition animation.
@@ -61,9 +62,6 @@ class ASH_EXPORT PhotoView : public views::View,
 
   // Image containers used for animation. Owned by view hierarchy.
   AmbientBackgroundImageView* image_views_[2]{nullptr, nullptr};
-
-  // The unscaled images used for scaling and displaying in different bounds.
-  gfx::ImageSkia images_unscaled_[2];
 
   // The index of |image_views_| to update the next image.
   int image_index_ = 0;

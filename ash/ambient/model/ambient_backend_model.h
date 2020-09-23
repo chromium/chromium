@@ -34,6 +34,7 @@ struct ASH_EXPORT PhotoWithDetails {
   bool IsNull() const;
 
   gfx::ImageSkia photo;
+  gfx::ImageSkia related_photo;
   std::string details;
 };
 

@@ -27,9 +27,6 @@ struct ASH_PUBLIC_EXPORT AmbientModeTopic {
   AmbientModeTopic& operator=(const AmbientModeTopic&);
   ~AmbientModeTopic();
 
-  // Returns a non-empty url to load the landscape or portrait image.
-  std::string GetUrl() const;
-
   // Details, i.e. the attribution, to be displayed for the current photo on
   // ambient.
   std::string details;
@@ -37,9 +34,8 @@ struct ASH_PUBLIC_EXPORT AmbientModeTopic {
   // Image url.
   std::string url;
 
-  // Optional for non-cropped portrait style images. The same image as in
-  // |url| but it is not cropped and is better for portrait displaying.
-  base::Optional<std::string> portrait_image_url;
+  // Only support portrait image tiling in landscape orientation.
+  base::Optional<std::string> related_image_url;
 };
 
 // WeatherInfo contains the weather information we need for rendering a

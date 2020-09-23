@@ -21,7 +21,6 @@
 #include "ui/compositor/animation_throughput_reporter.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
-#include "ui/gfx/image/image_skia_operations.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/fill_layout.h"
 
@@ -36,32 +35,6 @@ void ReportSmoothness(int value) {
   base::UmaHistogramPercentage(kPhotoTransitionSmoothness, value);
 }
 
-gfx::ImageSkia ResizeImage(const gfx::ImageSkia& image,
-                           const gfx::Size& view_size) {
-  if (image.isNull())
-    return gfx::ImageSkia();
-
-  const double image_width = image.width();
-  const double image_height = image.height();
-  const double view_width = view_size.width();
-  const double view_height = view_size.height();
-  const double horizontal_ratio = view_width / image_width;
-  const double vertical_ratio = view_height / image_height;
-  const double image_ratio = image_height / image_width;
-  const double view_ratio = view_height / view_width;
-
-  // If the image and the container view has the same orientation, e.g. both
-  // portrait, the |scale| will make the image filled the whole view with
-  // possible cropping on one direction. If they are in different orientation,
-  // the |scale| will display the image in the view without any cropping, but
-  // with empty background.
-  const double scale = (image_ratio - 1) * (view_ratio - 1) > 0
-                           ? std::max(horizontal_ratio, vertical_ratio)
-                           : std::min(horizontal_ratio, vertical_ratio);
-  const gfx::Size& resized = gfx::ScaleToCeiledSize(image.size(), scale);
-  return gfx::ImageSkiaOperations::CreateResizedImage(
-      image, skia::ImageOperations::RESIZE_BEST, resized);
-}
 
 }  // namespace
 
@@ -78,14 +51,6 @@ PhotoView::~PhotoView() {
 
 const char* PhotoView::GetClassName() const {
   return "PhotoView";
-}
-
-void PhotoView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
-  for (const int index : {0, 1}) {
-    auto image = images_unscaled_[index];
-    auto image_resized = ResizeImage(image, size());
-    image_views_[index]->UpdateImage(image_resized);
-  }
 }
 
 void PhotoView::OnImagesChanged() {
@@ -123,12 +88,11 @@ void PhotoView::Init() {
 void PhotoView::UpdateImages() {
   auto* model = delegate_->GetAmbientBackendModel();
   auto& next_image = model->GetNextImage();
-  images_unscaled_[image_index_] = next_image.photo;
-  if (images_unscaled_[image_index_].isNull())
+  if (next_image.photo.isNull())
     return;
 
-  auto next_resized = ResizeImage(images_unscaled_[image_index_], size());
-  image_views_[image_index_]->UpdateImage(next_resized);
+  image_views_[image_index_]->UpdateImage(next_image.photo,
+                                          next_image.related_photo);
   image_views_[image_index_]->UpdateImageDetails(
       base::UTF8ToUTF16(next_image.details));
   image_index_ = 1 - image_index_;
@@ -178,7 +142,7 @@ void PhotoView::OnImplicitAnimationsCompleted() {
 bool PhotoView::NeedToAnimateTransition() const {
   // Can do transition animation if both two images in |images_unscaled_| are
   // not nullptr. Check the image index 1 is enough.
-  return !images_unscaled_[1].isNull();
+  return !image_views_[1]->GetCurrentImage().isNull();
 }
 
 const gfx::ImageSkia& PhotoView::GetCurrentImagesForTesting() {

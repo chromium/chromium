@@ -127,9 +127,22 @@ ScreenUpdate ToScreenUpdate(
     for (auto& backdrop_topic : backdrop_screen_update.next_topics()) {
       AmbientModeTopic ambient_topic;
       DCHECK(backdrop_topic.has_url());
-      ambient_topic.url = backdrop_topic.url();
+
       if (backdrop_topic.has_portrait_image_url())
-        ambient_topic.portrait_image_url = backdrop_topic.portrait_image_url();
+        ambient_topic.url = backdrop_topic.portrait_image_url();
+      else
+        ambient_topic.url = backdrop_topic.url();
+
+      if (backdrop_topic.has_related_topic()) {
+        if (backdrop_topic.related_topic().has_portrait_image_url()) {
+          ambient_topic.related_image_url =
+              backdrop_topic.related_topic().portrait_image_url();
+        } else {
+          ambient_topic.related_image_url =
+              backdrop_topic.related_topic().url();
+        }
+      }
+
       BuildBackdropTopicDetails(backdrop_topic, ambient_topic);
       screen_update.next_topics.emplace_back(ambient_topic);
     }

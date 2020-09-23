@@ -118,6 +118,9 @@ class ASH_EXPORT AmbientPhotoController : public AmbientBackendModelObserver {
 
   void OnScreenUpdateInfoFetched(const ash::ScreenUpdate& screen_update);
 
+  // Clear temporary image data to prepare next photos.
+  void ResetImageData();
+
   // Fetch photo raw data by downloading or reading from cache.
   void FetchPhotoRawData();
 
@@ -125,16 +128,24 @@ class ASH_EXPORT AmbientPhotoController : public AmbientBackendModelObserver {
   void TryReadPhotoRawData();
 
   void OnPhotoRawDataAvailable(bool from_downloading,
+                               bool is_related_image,
+                               base::RepeatingClosure on_done,
                                std::unique_ptr<std::string> details,
                                std::unique_ptr<std::string> data);
 
+  void OnAllPhotoRawDataAvailable(bool from_downloading);
+
   void DecodePhotoRawData(bool from_downloading,
-                          std::unique_ptr<std::string> details,
+                          bool is_related_image,
+                          base::RepeatingClosure on_done,
                           std::unique_ptr<std::string> data);
 
   void OnPhotoDecoded(bool from_downloading,
-                      std::unique_ptr<std::string> details,
+                      bool is_related_image,
+                      base::RepeatingClosure on_done,
                       const gfx::ImageSkia& image);
+
+  void OnAllPhotoDecoded(bool from_downloading);
 
   void StartDownloadingWeatherConditionIcon(
       const base::Optional<WeatherInfo>& weather_info);
@@ -208,6 +219,13 @@ class ASH_EXPORT AmbientPhotoController : public AmbientBackendModelObserver {
   std::unique_ptr<AmbientImageDecoder> image_decoder_;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
+
+  // Temporary data store when fetching images and details.
+  std::unique_ptr<std::string> image_data_;
+  std::unique_ptr<std::string> related_image_data_;
+  std::unique_ptr<std::string> image_details_;
+  gfx::ImageSkia image_;
+  gfx::ImageSkia related_image_;
 
   base::WeakPtrFactory<AmbientPhotoController> weak_factory_{this};
 

@@ -48,6 +48,10 @@ constexpr char kAmbientModeDirectoryName[] = "ambient-mode";
 constexpr base::TimeDelta kTokenUsageTimeBuffer =
     base::TimeDelta::FromMinutes(10);
 
+// PhotoView related constants.
+// Spacing between two portrait images.
+constexpr int kMarginLeftOfRelatedImageDip = 8;
+
 }  // namespace ash
 
 #endif  // ASH_AMBIENT_AMBIENT_CONSTANTS_H_
