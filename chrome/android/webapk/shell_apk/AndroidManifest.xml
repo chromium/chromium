@@ -59,6 +59,10 @@
             {{{raw_intent_filters}}}
          </activity>
 
+        <activity android:name="org.chromium.webapk.shell_apk.ManageDataLauncherActivity"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar">
+        </activity>
+
         <activity android:name="org.chromium.webapk.shell_apk.h2o.H2OOpaqueMainActivity"
                   android:theme="@style/SplashTheme"
                   android:relinquishTaskIdentity="true"

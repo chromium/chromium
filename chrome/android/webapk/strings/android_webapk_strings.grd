@@ -167,6 +167,15 @@
   </translations>
   <release allow_pseudo="false" seq="1">
     <messages fallback_to_english="true">
+      <message name="IDS_SITE_SETTINGS_LONG_LABEL" desc="Site settings Android app shortcut title to display on devices with larger screens. (ideally less than 25 characters)">
+        Manage website settings
+      </message>
+      <message name="IDS_SITE_SETTINGS_SHORT_LABEL" desc="Site settings Android app shortcut title. (ideally less than 10 characters)">
+        Site settings
+      </message>
+      <message name="IDS_NO_SUPPORT_FOR_MANAGE_SPACE" desc="Text to show in a toast when a user clicks on a site settings shortcut but managing space is not suported by the browser.">
+        Managing space not supported by: <ph name="BROWSER_PACKAGE">%1$s<ex>org.chromium.chrome</ex></ph>.
+      </message>
       <!-- Select host browser dialog -->
       <message name="IDS_CHOOSE_HOST_BROWSER_DIALOG_TITLE" desc="Title for the host browser picker dialog, which is used to ask users to pick a browser to launch the installed WebAPK.">
         <ph name="APP_NAME">%1$s<ex>Progressive Web Apps</ex></ph> requires a web browser
