@@ -280,12 +280,7 @@ void MirroringActivity::OnInternalMessage(
   DVLOG(2) << "Relaying internal message from receiver: " << message.message;
   mirroring::mojom::CastMessagePtr ptr = mirroring::mojom::CastMessage::New();
   ptr->message_namespace = message.message_namespace;
-
-  // TODO(jrw): This line re-serializes a JSON string that was parsed by the
-  // caller of this method.  Yuck!  This is probably a necessary evil as long as
-  // the extension needs to communicate with the mirroring service.
   CHECK(base::JSONWriter::Write(message.message, &ptr->json_format_data));
-
   channel_to_service_->Send(std::move(ptr));
 }
 
@@ -308,8 +303,6 @@ void MirroringActivity::HandleParseJsonResult(
 
   const std::string message_namespace = GetMirroringNamespace(*result.value);
 
-  // TODO(jrw): Can some of this logic be shared with
-  // AppActivity::SendAppMessageToReceiver?
   cast::channel::CastMessage cast_message = cast_channel::CreateCastMessage(
       message_namespace, std::move(*result.value),
       message_handler_->sender_id(), session->transport_id());

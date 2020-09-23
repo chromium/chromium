@@ -81,9 +81,6 @@ class CastActivity {
   virtual void SendStopSessionMessageToClients(const std::string& hash_token);
 
   // Sends |message| to the client given by |client_id|.
-  //
-  // TODO(jrw): This method's functionality overlaps that of OnAppMessage().
-  // Can the methods be combined?
   virtual void SendMessageToClient(
       const std::string& client_id,
       blink::mojom::PresentationConnectionMessagePtr message);
