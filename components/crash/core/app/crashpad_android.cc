@@ -521,6 +521,11 @@ class HandlerStarter {
       process_annotations["ptype"] = browser_ptype;
     }
 
+    // Don't handle SIGQUIT in the browser process on Android; the system masks
+    // this and uses it for generating ART stack traces, and if it gets unmasked
+    // (e.g. by a WebView app) we don't want to treat this as a crash.
+    GetCrashpadClient().SetUnhandledSignals({SIGQUIT});
+
     if (!base::PathExists(handler_path)) {
       use_java_handler_ =
           !GetHandlerTrampoline(&handler_trampoline_, &handler_library_);
