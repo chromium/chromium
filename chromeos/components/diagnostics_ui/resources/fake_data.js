@@ -2,7 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BatteryHealth, CpuUsage, SystemInfo} from './diagnostics_types.js'
+import {BatteryChargeStatus, BatteryHealth, CpuUsage, ExternalPowerSource, SystemInfo} from './diagnostics_types.js'
+
+/* @type {!Array<!BatteryChargeStatus>} */
+export const fakeBatteryChargeStatus = [{
+  charge_full_now_milliamp_hours: 6000,
+  charge_now_milliamp_hours: 4200,
+  current_now_milliamps: 1123,
+  power_adapter_status: ExternalPowerSource.kAc,
+  power_time: '3h 15m',
+}];
 
 /* @type {!Array<!BatteryHealth>} */
 export const fakeBatteryHealth = [{

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BatteryHealth, BatteryInfo, CpuUsage, CpuUsageObserver, SystemInfo} from './diagnostics_types.js';
+import {BatteryChargeStatus, BatteryHealth, BatteryInfo, CpuUsage, CpuUsageObserver, ExternalPowerSource, SystemInfo} from './diagnostics_types.js';
 import {FakeMethodResolver} from './fake_method_resolver.js';
 import {FakeObservables} from './fake_observables.js';
 
@@ -24,6 +24,8 @@ export class FakeSystemDataProvider {
     this.methods_.register('getBatteryInfo');
 
     // Setup observables.
+    this.observables_.register(
+        'BatteryChargeStatusObserver_onBatteryChargeStatusUpdated');
     this.observables_.register('BatteryHealthObserver_onBatteryHealthUpdated');
     this.observables_.register('CpuUsageObserver_onCpuUsageUpdated');
   }
@@ -57,6 +59,36 @@ export class FakeSystemDataProvider {
    */
   setFakeBatteryInfo(batteryInfo) {
     this.methods_.setResult('getBatteryInfo', batteryInfo);
+  }
+
+  /*
+   * Implements SystemDataProviderInterface.ObserveBatteryChargeStatus.
+   * @param {!BatteryChargeStatusObserver} remote
+   * @return {!Promise}
+   */
+  observeBatteryChargeStatus(remote) {
+    return new Promise((resolve) => {
+      this.observables_.observe(
+          'BatteryChargeStatusObserver_onBatteryChargeStatusUpdated',
+          (batteryChargeStatus) => {
+            remote.onBatteryChargeStatusUpdated(
+                /** @type {!BatteryChargeStatus} */ (batteryChargeStatus));
+          });
+
+      this.observables_.trigger(
+          'BatteryChargeStatusObserver_onBatteryChargeStatusUpdated');
+      resolve();
+    });
+  }
+
+  /**
+   * Sets the values that will observed from observeBatteryChargeStatus.
+   * @param {!Array<!BatteryChargeStatus>} batteryChargeStatusList
+   */
+  setFakeBatteryChargeStatus(batteryChargeStatusList) {
+    this.observables_.setObservableData(
+        'BatteryChargeStatusObserver_onBatteryChargeStatusUpdated',
+        batteryChargeStatusList);
   }
 
   /*

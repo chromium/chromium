@@ -11,6 +11,12 @@
  */
 
 /**
+ * Type of SystemDataProviderInterface.ObserveBatteryChargeStatus function.
+ * @typedef {!function(!BatteryChargeStatusObserver): !Promise}
+ */
+export let ObserveBatteryChargeStatusFunction;
+
+/**
  * Type of SystemDataProviderInterface.ObserveBatteryHealth function.
  * @typedef {!function(!BatteryHealthObserver): !Promise}
  */
@@ -28,6 +34,7 @@ export let ObserveCpuUsageFunction;
  * @typedef {{
  *   getBatteryInfo: !function(): !Promise<!BatteryInfo>,
  *   getSystemInfo: !function(): !Promise<!SystemInfo>,
+ *   observeBatteryChargeStatus: !ObserveBatteryChargeStatusFunction,
  *   observeBatteryHealth: !ObserveBatteryHealthFunction,
  *   observeCpuUsage: !ObserveCpuUsageFunction,
  * }}
@@ -89,6 +96,36 @@ export let CpuUsageObserver;
  * }}
  */
 export let CpuUsage;
+
+/**
+ * Type alias for BatteryChargeStatusObserver.
+ * @typedef {{
+ *   onBatteryChargeStatusUpdated: !function(!BatteryChargeStatus)
+ * }}
+ */
+export let BatteryChargeStatusObserver;
+
+/**
+ * External power source enumeration.
+ * @enum {number}
+ */
+export let ExternalPowerSource = {
+  kAc: 0,
+  kUsb: 1,
+  kDisconnected: 2,
+};
+
+/**
+ * Type alias for BatteryChargeStatus.
+ * @typedef {{
+ *   charge_full_now_milliamp_hours: number,
+ *   charge_now_milliamp_hours: number,
+ *   current_now_milliamps: number,
+ *   power_adapter_status: ExternalPowerSource,
+ *   power_time: string,
+ * }}
+ */
+export let BatteryChargeStatus;
 
 /**
  * Type alias for BatteryHealthObserver.
