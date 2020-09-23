@@ -219,7 +219,7 @@ LayoutUnit LayoutFlexibleBox::BaselinePosition(FontBaseline,
                                                LinePositionMode mode) const {
   CheckIsNotDestroyed();
   DCHECK_EQ(mode, kPositionOnContainingLine);
-  // TODO(crbug.com/1040826): input[type=range] should not use
+  // TODO(crbug.com/1131352): input[type=range] should not use
   // LayoutFlexibleBox. We should move out this code.
   if (const auto* input = DynamicTo<HTMLInputElement>(GetNode())) {
     if (input->type() == input_type_names::kRange) {

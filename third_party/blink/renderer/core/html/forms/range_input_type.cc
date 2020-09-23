@@ -263,7 +263,7 @@ LayoutObject* RangeInputType::CreateLayoutObject(const ComputedStyle& style,
                                                  LegacyLayout legacy) const {
   UseCounter::Count(GetElement().GetDocument(),
                     WebFeature::kLegacyLayoutBySlider);
-  // TODO(crbug.com/1040826): input[type=range] should not use
+  // TODO(crbug.com/1131352): input[type=range] should not use
   // LayoutFlexibleBox.
   return LayoutObjectFactory::CreateFlexibleBox(GetElement(), style, legacy);
 }

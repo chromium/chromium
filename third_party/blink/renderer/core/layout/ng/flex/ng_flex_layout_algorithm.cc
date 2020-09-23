@@ -1205,8 +1205,13 @@ bool NGFlexLayoutAlgorithm::GiveLinesAndItemsFinalPositionAndSize() {
   if (!container_builder_.Baseline() && fallback_baseline)
     container_builder_.SetBaseline(*fallback_baseline);
 
-  if (Node().IsButton())
+  // TODO(crbug.com/1131352): Avoid control-specific handling.
+  if (Node().IsButton()) {
     AdjustButtonBaseline(final_content_cross_size);
+  } else if (Node().IsSlider()) {
+    container_builder_.SetBaseline(BorderScrollbarPadding().BlockSum() +
+                                   final_content_cross_size);
+  }
 
   // Signal if we need to relayout with new child scrollbar information.
   return success;

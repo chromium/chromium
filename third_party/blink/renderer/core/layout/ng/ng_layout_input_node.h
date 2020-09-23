@@ -135,6 +135,8 @@ class CORE_EXPORT NGLayoutInputNode {
   bool IsRenderedLegend() const {
     return IsBlock() && box_->IsRenderedLegend();
   }
+  // Return true if this node is for <input type=range>.
+  bool IsSlider() const;
   bool IsTable() const { return IsBlock() && box_->IsTable(); }
 
   bool IsTableCaption() const { return IsBlock() && box_->IsTableCaption(); }
