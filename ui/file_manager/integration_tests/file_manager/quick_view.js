@@ -528,6 +528,10 @@
 
     // Open a DocumentsProvider file in Quick View.
     await openQuickView(appId, ENTRIES.hello.nameText);
+
+    // crbug.com/1131298 The text file content is not displayed. The <webview>
+    // instead shows a "site cannot be reached" error.
+    return IGNORE_APP_ERRORS;
   };
 
   /**
