@@ -5578,21 +5578,6 @@
             ]
         }
     ],
-    "PlayStoreAppSearch": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "PlayStoreAppSearch",
-                    "enable_features": [
-                        "EnablePlayStoreAppSearch"
-                    ]
-                }
-            ]
-        }
-    ],
     "PreconnectOnDidFinishNavigation": [
         {
             "platforms": [

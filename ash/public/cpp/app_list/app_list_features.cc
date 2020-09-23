@@ -13,8 +13,6 @@ namespace app_list_features {
 
 const base::Feature kEnableAnswerCard{"EnableAnswerCard",
                                       base::FEATURE_ENABLED_BY_DEFAULT};
-const base::Feature kEnablePlayStoreAppSearch{"EnablePlayStoreAppSearch",
-                                              base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kEnableAppDataSearch{"EnableAppDataSearch",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kEnableSettingsShortcutSearch{
@@ -66,11 +64,6 @@ bool IsAnswerCardEnabled() {
   // Do not show answer card if Assistant search is enabled.
   return base::FeatureList::IsEnabled(kEnableAnswerCard) &&
          !IsAssistantSearchEnabled();
-}
-
-bool IsPlayStoreAppSearchEnabled() {
-  // Not using local static variable to allow tests to change this value.
-  return base::FeatureList::IsEnabled(kEnablePlayStoreAppSearch);
 }
 
 bool IsAppDataSearchEnabled() {

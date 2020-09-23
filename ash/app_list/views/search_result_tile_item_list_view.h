@@ -73,7 +73,6 @@ class APP_LIST_EXPORT SearchResultTileItemListView
   base::string16 recent_playstore_query_;
 
   base::OneShotTimer playstore_impression_timer_;
-  const bool is_play_store_app_search_enabled_;
 
   const bool is_app_reinstall_recommendation_enabled_;
 

@@ -123,8 +123,6 @@ class APP_LIST_EXPORT SearchResultTileItemView
   // suggestion window: Installed apps, play store apps, play store reinstalled
   // app.
   int group_index_in_container_view_;
-
-  const bool is_play_store_app_search_enabled_;
   const bool is_app_reinstall_recommendation_enabled_;
   const bool show_in_apps_page_;  // True if shown in app list's apps page.
 

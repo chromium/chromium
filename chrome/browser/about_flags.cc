@@ -4593,10 +4593,6 @@ const FeatureEntry kFeatureEntries[] = {
          lookalikes::features::kDetectTargetEmbeddingLookalikes)},
 
 #if defined(OS_CHROMEOS)
-    {"enable-play-store-search", flag_descriptions::kEnablePlayStoreSearchName,
-     flag_descriptions::kEnablePlayStoreSearchDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(app_list_features::kEnablePlayStoreAppSearch)},
-
     {"enable-app-data-search", flag_descriptions::kEnableAppDataSearchName,
      flag_descriptions::kEnableAppDataSearchDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(app_list_features::kEnableAppDataSearch)},

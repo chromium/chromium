@@ -21,9 +21,6 @@ namespace app_list_features {
 // Enables the answer card in the app list.
 ASH_PUBLIC_EXPORT extern const base::Feature kEnableAnswerCard;
 
-// Enables the Play Store app search.
-ASH_PUBLIC_EXPORT extern const base::Feature kEnablePlayStoreAppSearch;
-
 // Enables in-app data search.
 ASH_PUBLIC_EXPORT extern const base::Feature kEnableAppDataSearch;
 
@@ -92,7 +89,6 @@ ASH_PUBLIC_EXPORT extern const base::Feature kNewDragSpecInLauncher;
 ASH_PUBLIC_EXPORT extern const base::Feature kEnableOmniboxRichEntities;
 
 bool ASH_PUBLIC_EXPORT IsAnswerCardEnabled();
-bool ASH_PUBLIC_EXPORT IsPlayStoreAppSearchEnabled();
 bool ASH_PUBLIC_EXPORT IsAppDataSearchEnabled();
 bool ASH_PUBLIC_EXPORT IsSettingsShortcutSearchEnabled();
 bool ASH_PUBLIC_EXPORT IsZeroStateSuggestionsEnabled();

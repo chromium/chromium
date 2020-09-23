@@ -73,8 +73,6 @@ SearchResultTileItemView::SearchResultTileItemView(
     AppListViewDelegate* view_delegate,
     bool show_in_apps_page)
     : view_delegate_(view_delegate),
-      is_play_store_app_search_enabled_(
-          app_list_features::IsPlayStoreAppSearchEnabled()),
       is_app_reinstall_recommendation_enabled_(
           app_list_features::IsAppReinstallZeroStateEnabled()),
       show_in_apps_page_(show_in_apps_page) {
@@ -107,33 +105,30 @@ SearchResultTileItemView::SearchResultTileItemView(
   title_->SetAllowCharacterBreak(true);
   AddChildView(title_);
 
-  if (is_play_store_app_search_enabled_ ||
-      is_app_reinstall_recommendation_enabled_) {
-    rating_ = new views::Label;
-    rating_->SetEnabledColor(
-        AppListColorProvider::Get()->GetSearchBoxSecondaryTextColor());
-    rating_->SetLineHeight(kTileTextLineHeight);
-    rating_->SetHorizontalAlignment(gfx::ALIGN_RIGHT);
-    rating_->SetVisible(false);
-    AddChildView(rating_);
+  rating_ = new views::Label;
+  rating_->SetEnabledColor(
+      AppListColorProvider::Get()->GetSearchBoxSecondaryTextColor());
+  rating_->SetLineHeight(kTileTextLineHeight);
+  rating_->SetHorizontalAlignment(gfx::ALIGN_RIGHT);
+  rating_->SetVisible(false);
+  AddChildView(rating_);
 
-    rating_star_ = new views::ImageView;
-    rating_star_->set_can_process_events_within_subtree(false);
-    rating_star_->SetVerticalAlignment(views::ImageView::Alignment::kLeading);
-    rating_star_->SetImage(gfx::CreateVectorIcon(
-        kBadgeRatingIcon, kSearchRatingStarSize,
-        AppListColorProvider::Get()->GetSearchBoxSecondaryTextColor()));
-    rating_star_->SetVisible(false);
-    AddChildView(rating_star_);
+  rating_star_ = new views::ImageView;
+  rating_star_->set_can_process_events_within_subtree(false);
+  rating_star_->SetVerticalAlignment(views::ImageView::Alignment::kLeading);
+  rating_star_->SetImage(gfx::CreateVectorIcon(
+      kBadgeRatingIcon, kSearchRatingStarSize,
+      AppListColorProvider::Get()->GetSearchBoxSecondaryTextColor()));
+  rating_star_->SetVisible(false);
+  AddChildView(rating_star_);
 
-    price_ = new views::Label;
-    price_->SetEnabledColor(
-        AppListColorProvider::Get()->GetSearchBoxSecondaryTextColor());
-    price_->SetLineHeight(kTileTextLineHeight);
-    price_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    price_->SetVisible(false);
-    AddChildView(price_);
-  }
+  price_ = new views::Label;
+  price_->SetEnabledColor(
+      AppListColorProvider::Get()->GetSearchBoxSecondaryTextColor());
+  price_->SetLineHeight(kTileTextLineHeight);
+  price_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  price_->SetVisible(false);
+  AddChildView(price_);
 
   set_context_menu_controller(this);
 }

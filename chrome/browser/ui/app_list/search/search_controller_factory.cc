@@ -160,15 +160,12 @@ std::unique_ptr<SearchController> CreateSearchController(
                                 profile, kMaxAppReinstallSearchResults));
   }
 
-  if (app_list_features::IsPlayStoreAppSearchEnabled()) {
-    // Set same boost as apps group since Play store results are placed
-    // with apps.
-    size_t playstore_api_group_id = controller->AddGroup(kMaxPlayStoreResults);
-    controller->AddProvider(
-        playstore_api_group_id,
-        std::make_unique<ArcPlayStoreSearchProvider>(kMaxPlayStoreResults,
-                                                     profile, list_controller));
-  }
+  // Set same boost as apps group since Play store results are placed
+  // with apps.
+  size_t playstore_api_group_id = controller->AddGroup(kMaxPlayStoreResults);
+  controller->AddProvider(playstore_api_group_id,
+                          std::make_unique<ArcPlayStoreSearchProvider>(
+                              kMaxPlayStoreResults, profile, list_controller));
 
   if (app_list_features::IsAppDataSearchEnabled()) {
     size_t app_data_api_group_id = controller->AddGroup(kMaxAppDataResults);
