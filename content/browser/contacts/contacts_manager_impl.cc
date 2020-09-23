@@ -12,7 +12,6 @@
 #include "build/build_config.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/contacts_picker_properties_requested.h"
-#include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -65,14 +64,8 @@ void ContactsManagerImpl::Create(
 }
 
 ContactsManagerImpl::ContactsManagerImpl(RenderFrameHostImpl* render_frame_host)
-    : contacts_provider_(CreateProvider(render_frame_host)) {
-  WebContents* web_contents =
-      WebContents::FromRenderFrameHost(render_frame_host);
-  if (!web_contents || !web_contents->GetTopLevelNativeWindow())
-    return;
-
-  source_id_ = render_frame_host->GetPageUkmSourceId();
-}
+    : contacts_provider_(CreateProvider(render_frame_host)),
+      source_id_(render_frame_host->GetPageUkmSourceId()) {}
 
 ContactsManagerImpl::~ContactsManagerImpl() = default;
 
