@@ -94,7 +94,8 @@ webrtc::DtlsTransportInterface* RTCDtlsTransport::native_transport() {
 }
 
 void RTCDtlsTransport::ChangeState(webrtc::DtlsTransportInformation info) {
-  DCHECK(current_state_.state() != webrtc::DtlsTransportState::kClosed);
+  DCHECK(info.state() == webrtc::DtlsTransportState::kClosed ||
+         current_state_.state() != webrtc::DtlsTransportState::kClosed);
   current_state_ = info;
 }
 
