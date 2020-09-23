@@ -5583,7 +5583,6 @@ crbug.com/945774 external/wpt/content-security-policy/frame-ancestors/frame-ance
 # Tests using testRunner.useUnfortunateSynchronousResizeMode occasionally timeout,
 # but the test coverage is still good.
 crbug.com/919789 css3/viewport-percentage-lengths/viewport-percentage-lengths-resize.html [ Pass Timeout ]
-crbug.com/919789 compositing/transitions/transform-on-large-layer.html [ Pass Timeout ]
 crbug.com/919789 compositing/transitions/transform-on-large-layer-expected.html [ Pass Timeout ]
 crbug.com/919789 fast/autoresize/turn-off-autoresize.html [ Pass Timeout ]
 crbug.com/919789 fast/autoresize/basic.html [ Pass Timeout ]
@@ -6749,3 +6748,6 @@ crbug.com/1130533 [ Mac ] external/wpt/xhr/xhr-timeout-longtask.any.html [ Pass 
 
 # Sheriff 2020-09-22
 crbug.com/1130533 [ Mac ] external/wpt/xhr/xhr-timeout-longtask.any.worker.html [ Pass Failure ]
+
+# Sheriff 2020-09-23
+crbug.com/1131551 compositing/transitions/transform-on-large-layer.html [ Pass Failure Timeout ]
