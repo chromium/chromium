@@ -1868,7 +1868,7 @@ bool AXObject::IsARIAControlledByTextboxWithActiveDescendant() const {
     return false;
 
   const AXObject* focused_object = AXObjectCache().GetOrCreate(focused_element);
-  if (!focused_object->IsTextControl())
+  if (!focused_object || !focused_object->IsTextControl())
     return false;
 
   if (!focused_object->GetAOMPropertyOrARIAAttribute(
