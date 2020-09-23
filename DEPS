@@ -1380,6 +1380,16 @@ deps = {
       'dep_type': 'cipd',
   },
 
+  'src/third_party/shaka-player/dist': {
+      'packages': [
+          {
+              'package': 'chromium/third_party/shaka-player',
+              'version': '82FcUTdHazqTIVQG-bKn_oXNI5880G2k_rL0bICTeDgC',
+          },
+      ],
+      'dep_type': 'cipd',
+  },
+
   'src/third_party/skia':
     Var('skia_git') + '/skia.git' + '@' +  Var('skia_revision'),
 

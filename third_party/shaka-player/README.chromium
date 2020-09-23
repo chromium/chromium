@@ -1,0 +1,14 @@
+Name: Shaka Player
+Short Name: shaka-player
+URL: https://github.com/google/shaka-player
+Version: 3.0.4
+License: Apache 2.0
+License File: LICENSE
+Security Critical: Yes
+Description:
+Shaka Player is an open-source JavaScript library for adaptive media. It is used
+by Chrome Kaleidoscope to play video content in the UI that uses DASH.
+
+Local Modifications:
+None. Take the most recent version from the official releases page:
+https://github.com/google/shaka-player/releases

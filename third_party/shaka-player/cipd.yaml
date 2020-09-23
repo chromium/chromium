@@ -1,0 +1,12 @@
+# To create CIPD package run the following command.
+# cipd create --pkg-def cipd.yaml
+package: chromium/third_party/shaka-player
+description: Shaka Player
+root: ./dist
+install_mode: copy
+data:
+  - file: package.json
+  - file: shaka-player.ui.externs.js
+  - file: shaka-player.ui.js
+  - file: shaka-player.ui.map
+  - file: wrapper.js
