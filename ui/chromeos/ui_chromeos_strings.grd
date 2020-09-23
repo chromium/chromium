@@ -713,8 +713,14 @@
       <message name="IDS_IME_NAME_KEYBOARD_BELARUSIAN" desc="The input method name shows in system tray menu, this shows [Belarusian keyboard].">
         Belarusian keyboard
       </message>
-      <message name="IDS_IME_NAME_KEYBOARD_BELGIAN" desc="The input method name shows in system tray menu, this shows [Belgian keyboard].">
-        Belgian keyboard
+      <message name="IDS_IME_NAME_KEYBOARD_BELGIAN_DUTCH" desc="The input method name shows in system tray menu and settings page.">
+        Dutch (Belgium)
+      </message>
+      <message name="IDS_IME_NAME_KEYBOARD_BELGIAN_FRENCH" desc="The input method name shows in system tray menu and settings page.">
+        French (Belgium)
+      </message>
+      <message name="IDS_IME_NAME_KEYBOARD_BELGIAN_GERMAN" desc="The input method name shows in system tray menu and settings page.">
+        German (Belgium)
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_BRAZILIAN" desc="The input method name shows in system tray menu, this shows [Brazilian keyboard].">
         Brazilian keyboard
@@ -827,6 +833,9 @@
       <message name="IDS_IME_NAME_KEYBOARD_MONGOLIAN" desc="The input method name shows in system tray menu, this shows [Mongolian keyboard].">
         Mongolian keyboard
       </message>
+      <message name="IDS_IME_NAME_KEYBOARD_NETHERLANDS_US_INTERNATIONAL_PC" desc="The input method name shows in system tray menu and settings page.">
+        Dutch (Netherlands) with US International PC keyboard
+      </message>
       <message name="IDS_IME_NAME_KEYBOARD_NETHERLANDS" desc="The input method name shows in system tray menu, this shows [Netherlands keyboard].">
         Netherlands keyboard
       </message>
@@ -838,6 +847,12 @@
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_PORTUGUESE" desc="The input method name shows in system tray menu, this shows [Portuguese keyboard].">
         Portuguese keyboard
+      </message>
+      <message name="IDS_IME_NAME_KEYBOARD_PORTUGUESE_US_INTERNATIONAL" desc="The input method name shows in system tray menu and settings page.">
+        Portuguese with US International keyboard
+      </message>
+      <message name="IDS_IME_NAME_KEYBOARD_PORTUGUESE_US_INTERNATIONAL_PC" desc="The input method name shows in system tray menu and settings page.">
+        Portuguese with US International PC keyboard
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_ROMANIAN" desc="The input method name shows in system tray menu, this shows [Romanian keyboard].">
         Romanian keyboard

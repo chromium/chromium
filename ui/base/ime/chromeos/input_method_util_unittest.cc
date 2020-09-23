@@ -205,8 +205,7 @@ TEST_F(InputMethodUtilTest, GetInputMethodMediumNameTest) {
 }
 
 TEST_F(InputMethodUtilTest, GetInputMethodLongNameTest) {
-  // For most languages input method or keyboard layout name is returned.
-  // See below for exceptions.
+  // Input method or keyboard layout name is returned.
   {
     InputMethodDescriptor desc = GetDesc("xkb:jp::jpn", "jp", "ja", "");
     EXPECT_EQ(ASCIIToUTF16("Japanese"), util_.GetInputMethodLongName(desc));
@@ -221,35 +220,6 @@ TEST_F(InputMethodUtilTest, GetInputMethodLongNameTest) {
         GetDesc("xkb:gb:dvorak:eng", "gb(dvorak)", "en-US", "");
     EXPECT_EQ(ASCIIToUTF16("UK Dvorak"), util_.GetInputMethodLongName(desc));
   }
-
-  // For Dutch, French, German and Hindi,
-  // "language - keyboard layout" pair is returned.
-  {
-    InputMethodDescriptor desc = GetDesc("xkb:be::nld", "be", "nl", "");
-    EXPECT_EQ(ASCIIToUTF16("Dutch - Belgian"),
-              util_.GetInputMethodLongName(desc));
-  }
-  {
-    InputMethodDescriptor desc = GetDesc("xkb:fr::fra", "fr", "fr", "");
-    EXPECT_EQ(ASCIIToUTF16("French - French"),
-              util_.GetInputMethodLongName(desc));
-  }
-  {
-    InputMethodDescriptor desc = GetDesc("xkb:be::fra", "be", "fr", "");
-    EXPECT_EQ(ASCIIToUTF16("French - Belgian"),
-              util_.GetInputMethodLongName(desc));
-  }
-  {
-    InputMethodDescriptor desc = GetDesc("xkb:de::ger", "de", "de", "");
-    EXPECT_EQ(ASCIIToUTF16("German - German"),
-              util_.GetInputMethodLongName(desc));
-  }
-  {
-    InputMethodDescriptor desc = GetDesc("xkb:be::ger", "be", "de", "");
-    EXPECT_EQ(ASCIIToUTF16("German - Belgian"),
-              util_.GetInputMethodLongName(desc));
-  }
-
   {
     InputMethodDescriptor desc = GetDesc("invalid-id", "us", "xx", "");
     // You can safely ignore the "Resouce ID is not found for: invalid-id"
