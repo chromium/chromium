@@ -25,6 +25,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="119944043368869598">Barchasini tozalash</translation>
 <translation id="1199716647557067911">Switch Access funksiyasi faolsizlantirilsinmi?</translation>
 <translation id="121097972571826261">Bitta soʻz oldinga</translation>
+<translation id="1225748608451425081">Chromebook qurilmangiz tanish xatolik tufayli qulflanib qoldi. Hisobingizga vaqtincha kira olmaysiz: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Matnni tanlashni toʻxtatish</translation>
 <translation id="1247372569136754018">Mikrofon (ichki)</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> orqali quvvat olmoqda</translation>
@@ -136,6 +137,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="2341729377289034582">Vertikal holatda qulflangan</translation>
 <translation id="2352467521400612932">Stilus sozlamalari</translation>
 <translation id="2354174487190027830"><ph name="NAME" /> faollashtirilmoqda</translation>
+<translation id="2356210126990741501">Telefoningiz onlayn emas shekilli, shu sababli hozircha sizga atalganlar olinmadi.</translation>
 <translation id="2359808026110333948">Davom etish</translation>
 <translation id="2365393535144473978">Mobil internet yoqilsa, Bluetooth ham birga yonadi</translation>
 <translation id="2369165858548251131">Xitoy tilida “Salom”</translation>
@@ -168,6 +170,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="2705001408393684014">Mikrofon: <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Yuqoriga</translation>
 <translation id="2718395828230677721">Tungi rejim</translation>
+<translation id="2727175239389218057">Javob berish</translation>
 <translation id="2727977024730340865">Kam quvvatli zaryadlash vositasi ulanildi. Quvvatlantirishda muammolar bo‘lishi mumkin.</translation>
 <translation id="2743387203779672305">Vaqtincha xotiraga nusxalash</translation>
 <translation id="2792498699870441125">Alt + Search</translation>
@@ -176,6 +179,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="2825619548187458965">Javon</translation>
 <translation id="2841907151129139818">Planshet rejimiga almashildi</translation>
 <translation id="2844169650293029770">USB-C qurilma (chap tomondagi old port)</translation>
+<translation id="2846247265041961677">Xato! Telefon topilmadi.</translation>
 <translation id="2865888419503095837">Tarmoq ma’lumoti</translation>
 <translation id="2872961005593481000">Ishni tamomlash</translation>
 <translation id="2878884018241093801">Hozircha hech narsa yo‘q</translation>
@@ -458,6 +462,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Yoniq</translation>
 <translation id="5920710855273935292">Ovozsiz.</translation>
+<translation id="594179686076170922">Telefonga ulanilmoqda...</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> yoniq.</translation>
 <translation id="5947494881799873997">Bekor qilish</translation>
 <translation id="595202126637698455">Unumdorlik kuzatuvi yoniq</translation>
@@ -670,6 +675,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="8196787716797768628">Chromebook qurilmangizdagi ilovalarni tez va qulay almashtirish uchun planshet rejimi ishoralaridan foydalaning.</translation>
 <translation id="8200772114523450471">Davom ettirish</translation>
 <translation id="8203795194971602413">Oʻng klik</translation>
+<translation id="8219451629189078428">Bu vaqt orasida Chromebook yoniq va quvvat manbasiga ulangan boʻlishi kerak. Quvvatlagich va kabel adapterlari Chromebook va rozetkaga ulanganini tekshiring. Chromebook qurilmasini oʻchirmang.</translation>
 <translation id="8236042855478648955">Tanaffus qilish vaqti keldi</translation>
 <translation id="8247060538831475781">Ulanish: <ph name="CONNECTION_STATUS" />, Signal darajasi: <ph name="SIGNAL_STRENGTH" />, Telefon quvvati: <ph name="BATTERY_STATUS" /></translation>
 <translation id="826107067893790409">Qurilmani <ph name="USER_EMAIL_ADDRESS" /> uchun qulfdan chiqarish uchun Enter tugmasini bosing</translation>

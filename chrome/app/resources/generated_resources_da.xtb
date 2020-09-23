@@ -19,7 +19,6 @@
 <translation id="1013707859758800957">Et plugin, der ikke er gemt i sandbox, kunne køre på denne side.</translation>
 <translation id="1015318665228971643">Rediger mappenavnet</translation>
 <translation id="1015578595646638936">{NUM_DAYS,plural, =1{Sidste dag til at opdatere <ph name="DEVICE_TYPE" />}one{Opdater <ph name="DEVICE_TYPE" /> inden for {NUM_DAYS} dag}other{Opdater <ph name="DEVICE_TYPE" /> inden for {NUM_DAYS} dage}}</translation>
-<translation id="1016437870506746108">{COUNT,plural, =0{Åbn alle i &amp;nyt vindue}=1{Åbn i &amp;nyt vindue}one{Åbn (#) i &amp;nyt vindue}other{Åbn alle (#) i &amp;nyt vindue}}</translation>
 <translation id="1016566241875885511">Yderligere oplysninger (valgfrit)</translation>
 <translation id="1017280919048282932">&amp;Tilføj til ordbog</translation>
 <translation id="1018656279737460067">Annulleret</translation>
@@ -1087,7 +1086,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2274840746523584236">Oplad din Chromebook</translation>
 <translation id="2276503375879033601">Tilføj flere apps</translation>
 <translation id="2277255602909579701">Alle cookies og websitedata</translation>
-<translation id="2277769717710009150">{COUNT,plural, =1{1 element er kopieret}one{# element er kopieret}other{# elementer er kopieret}}</translation>
 <translation id="2278562042389100163">Åbn browservindue</translation>
 <translation id="2280486287150724112">Højremargen</translation>
 <translation id="2282146716419988068">GPU-proces</translation>
@@ -2368,7 +2366,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3797900183766075808">&amp;Søg på <ph name="SEARCH_ENGINE" /> efter "<ph name="SEARCH_TERMS" />"</translation>
 <translation id="3798449238516105146">Version</translation>
 <translation id="3799128412641261490">Indstillinger for kontaktadgang</translation>
-<translation id="3799201711591988491">{COUNT,plural, =0{&amp;Åbn alle}=1{&amp;Åbn bogmærke}one{&amp;Åbn (#)}other{&amp;Åbn alle (#)}}</translation>
 <translation id="3800806661949714323">Vis alle (anbefales)</translation>
 <translation id="380408572480438692">Aktiverer registrering af ydelsesdata, der hjælper Google med at forbedre systemet med tiden. Der sendes ingen data, før du indgiver en feedbackrapport (Alt-Shift-I) og medtager ydelsesdata. Du kan altid vende tilbage til dette skærmbillede for at deaktivere registreringen.</translation>
 <translation id="3807249107536149332"><ph name="EXTENSION_NAME" /> (udvidelses-id "<ph name="EXTENSION_ID" />") er ikke tilladt på en loginskærm.</translation>
@@ -3207,7 +3204,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4854317507773910281">Vælg en forældrekonto, der skal godkende</translation>
 <translation id="485480310608090163">Flere indstillinger og tilladelser</translation>
 <translation id="4856478137399998590">Din mobildatatjeneste er aktiveret og klar til brug</translation>
-<translation id="4857506433977877623">{COUNT,plural, =0{Åbn alle i &amp;inkognitovindue}=1{Åbn i &amp;inkognitovindue}one{Åbn (#) i &amp;inkognitovindue}other{Åbn alle (#) i &amp;inkognitovindue}}</translation>
 <translation id="4858792381671956233">Du har spurgt dine forældre, om det er i orden at besøge dette website.</translation>
 <translation id="4858913220355269194">Laudrup</translation>
 <translation id="4862642413395066333">Signering af OCSP-svar</translation>
@@ -5295,7 +5291,6 @@ slettes permanent, når den administrerede bruger fjernes. Besøgte websites og 
 <translation id="7427348830195639090">Baggrundsside: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129">Ring fra <ph name="DEVICE_NAME" /></translation>
 <translation id="7431719494109538750">Der blev ikke fundet nogen HID-enheder</translation>
-<translation id="7433692219247014412">{COUNT,plural, =0{Åbn alle i &amp;nyt vindue}=1{Åbn i &amp;nyt vindue}one{Åbn (#) i &amp;nyt vindue}other{Åbn alle (#) i &amp;nyt vindue}}</translation>
 <translation id="7433957986129316853">Behold den</translation>
 <translation id="7434509671034404296">Udvikler</translation>
 <translation id="7434635829372401939">Synkroniser dine indstillinger</translation>
@@ -5343,7 +5338,6 @@ slettes permanent, når den administrerede bruger fjernes. Besøgte websites og 
 <translation id="7487141338393529395">Aktivér forbedret stavekontrol</translation>
 <translation id="7487969577036436319">Der er ikke installeret nogen komponenter</translation>
 <translation id="7488682689406685343">Dette website forsøger muligvis at narre dig til at tillade påtrængende notifikationer.</translation>
-<translation id="7489355918927585587">{COUNT,plural, =0{&amp;Åbn alle}=1{&amp;Åbn bogmærke}one{&amp;Åbn (#)}other{&amp;Åbn alle (#)}}</translation>
 <translation id="7489761397368794366">Ring fra din enhed</translation>
 <translation id="749028671485790643">Person <ph name="VALUE" /></translation>
 <translation id="7490813197707563893">MAC-adresse</translation>
@@ -5511,7 +5505,6 @@ slettes permanent, når den administrerede bruger fjernes. Besøgte websites og 
 <translation id="7691077781194517083">Denne sikkerhedsnøgle kan ikke nulstilles. Fejl <ph name="ERROR_CODE" />.</translation>
 <translation id="7691698019618282776">Crostini-opgradering</translation>
 <translation id="7696063401938172191">På din "<ph name="PHONE_NAME" />":</translation>
-<translation id="7698408911093959127">{COUNT,plural, =1{1 element på listen over bogmærker}one{# element på listen over bogmærker}other{# elementer på listen over bogmærker}}</translation>
 <translation id="7699968112832915395">Kontoen kan ikke tilføjes</translation>
 <translation id="7701040980221191251">Ingen</translation>
 <translation id="7701869757853594372">BRUGER-håndtag</translation>
@@ -5816,7 +5809,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8030852056903932865">Godkend</translation>
 <translation id="8032244173881942855">Fanen kunne ikke castes.</translation>
 <translation id="8033827949643255796">valgt</translation>
-<translation id="803435727213847625">{COUNT,plural, =0{Åbn alle i &amp;inkognitovindue}=1{Åbn i &amp;inkognitovindue}one{Åbn (#) i &amp;inkognitovindue}other{Åbn alle (#) i &amp;inkognitovindue}}</translation>
 <translation id="8037117027592400564">Læs hele teksten højt ved hjælp af talesyntese</translation>
 <translation id="8037357227543935929">Spørg (standardindstilling)</translation>
 <translation id="803771048473350947">Fil</translation>
@@ -6021,7 +6013,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="826905130698769948">Ugyldigt klientcertifikat</translation>
 <translation id="8270242299912238708">PDF-dokumenter</translation>
 <translation id="827097179112817503">Vis knappen Startside</translation>
-<translation id="8271246892936492311">{COUNT,plural, =1{1 bogmærke er slettet}one{# bogmærke er slettet}other{# bogmærker er slettet}}</translation>
 <translation id="8272443605911821513">Administrer dine udvidelser ved at klikke på Udvidelser i menuen "Flere værktøjer".</translation>
 <translation id="8274332263553132018">Cast fil</translation>
 <translation id="8274924778568117936">Undgå at slukke eller lukke din <ph name="DEVICE_TYPE" />, før opdateringen er færdig. Din <ph name="DEVICE_TYPE" /> genstarter, når installationen er fuldført.</translation>

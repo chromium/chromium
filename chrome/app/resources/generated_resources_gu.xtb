@@ -19,7 +19,6 @@
 <translation id="1013707859758800957">એક અનસેન્ડબૉક્સ્ડ પ્લગિનને આ પૃષ્ઠ પર ચાલવાની મંજૂરી આપવામાં આવી હતી.</translation>
 <translation id="1015318665228971643">ફોલ્ડરના નામમાં ફેરફાર કરો</translation>
 <translation id="1015578595646638936">{NUM_DAYS,plural, =1{<ph name="DEVICE_TYPE" /> અપડેટ કરવાનો છેલ્લો દિવસ}one{<ph name="DEVICE_TYPE" /> {NUM_DAYS} દિવસની અંદર અપડેટ કરો}other{<ph name="DEVICE_TYPE" /> {NUM_DAYS} દિવસની અંદર અપડેટ કરો}}</translation>
-<translation id="1016437870506746108">{COUNT,plural, =0{તમામ URLને &amp;નવી વિંડોમાં ખોલો}=1{URLને &amp;નવી વિંડોમાં ખોલો}one{તમામ (#) URLને &amp;નવી વિંડોમાં ખોલો}other{તમામ (#) URLને &amp;નવી વિંડોમાં ખોલો}}</translation>
 <translation id="1016566241875885511">અતિરિક્ત માહિતી (વૈકલ્પિક)</translation>
 <translation id="1017280919048282932">&amp;શબ્દકોષમાં ઉમેરો</translation>
 <translation id="1018656279737460067">રદ કરેલા</translation>
@@ -1083,7 +1082,6 @@
 <translation id="2274840746523584236">તમારું Chromebook ચાર્જ કરો</translation>
 <translation id="2276503375879033601">વધુ એપ્લિકેશંસ ઉમેરો</translation>
 <translation id="2277255602909579701">તમામ કુકીઝ અને સાઇટ ડેટા</translation>
-<translation id="2277769717710009150">{COUNT,plural, =1{1 આઇટમ કૉપિ કરી}one{# આઇટમ કૉપિ કરી}other{# આઇટમ કૉપિ કરી}}</translation>
 <translation id="2278562042389100163">બ્રાઉઝર વિંડો ખોલો</translation>
 <translation id="2280486287150724112">જમણો હાસિયો</translation>
 <translation id="2282146716419988068">GPU પ્રક્રિયા</translation>
@@ -2363,7 +2361,6 @@
 <translation id="3797900183766075808">“<ph name="SEARCH_TERMS" />” માટે <ph name="SEARCH_ENGINE" /> માં &amp;શોધ કરો</translation>
 <translation id="3798449238516105146">વર્ઝન</translation>
 <translation id="3799128412641261490">સ્વિચ ઍક્સેસનાં સેટિંગ</translation>
-<translation id="3799201711591988491">{COUNT,plural, =0{&amp;તમામ URLને ખોલો}=1{&amp;બુકમાર્ક ખોલો}one{&amp;તમામ (#) URLને ખોલો}other{&amp;તમામ (#) URLને ખોલો}}</translation>
 <translation id="3800806661949714323">તમામ બતાવો (ભલામણ કરેલ)</translation>
 <translation id="380408572480438692">પ્રદર્શન ડેટાના સંગ્રહને ચાલુ કરવું Googleને સમય જતા સિસ્ટમને બહેતર બનાવવામાં મદદ કરશે. જ્યાં સુધી તમે પ્રતિસાદ રિપોર્ટ (Alt-Shift-I) ફાઇલ નહીંં કરો અને પ્રદર્શન ડેટાને સામેલ નહીંં કરો ત્યાં સુધી કોઈ ડેટા મોકલવામાં આવશે નહીંં. તમે કોઈપણ સમયે સંગ્રહને બંધ કરવા માટે આ સ્ક્રીન પર પાછા આવી શકો છો.</translation>
 <translation id="3807249107536149332"><ph name="EXTENSION_NAME" /> (એક્સ્ટેન્શન ID "<ph name="EXTENSION_ID" />") ને લોગિન સ્ક્રીન પર મંજૂરી નથી.</translation>
@@ -3202,7 +3199,6 @@
 <translation id="4854317507773910281">મંજૂરી માટે માતાપિતાનું એકાઉન્ટ પસંદ કરો</translation>
 <translation id="485480310608090163">વધુ સેટિંગ અને પરવાનગીઓ</translation>
 <translation id="4856478137399998590">તમારી મોબાઇલ ડેટા સેવા સક્રિય થઈ છે અને ઉપયોગ માટે તૈયાર છે</translation>
-<translation id="4857506433977877623">{COUNT,plural, =0{તમામ URLને &amp;છુપી વિંડોમાં ખોલો}=1{&amp;છુપી વિંડોમાં ખોલો}one{તમામ (#) URLને &amp;છુપી વિંડોમાં ખોલો}other{તમામ (#) URLને &amp;છુપી વિંડોમાં ખોલો}}</translation>
 <translation id="4858792381671956233">તમે આ સાઇટની મુલાકાત લો છો તે ઠીક છે કે કેમ તેવું તમે તમારા માતાપિતાને પૂછ્યું</translation>
 <translation id="4858913220355269194">Fritz</translation>
 <translation id="4862642413395066333">OCSP પ્રતિસાદોને સાઇન ઇન કરે છે</translation>
@@ -5289,7 +5285,6 @@ USB ડિવાઇસ</translation>
 <translation id="7427348830195639090">પૃષ્ઠભૂમિ પૃષ્ઠ: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129"><ph name="DEVICE_NAME" /> તરફથી કૉલ</translation>
 <translation id="7431719494109538750">કોઈ HID ડિવાઇસ મળ્યું નથી</translation>
-<translation id="7433692219247014412">{COUNT,plural, =0{તમામ URLને &amp;નવી વિંડોમાં ખોલો}=1{URLને &amp;નવી વિંડોમાં ખોલો}one{તમામ (#) URLને &amp;નવી વિંડોમાં ખોલો}other{તમામ (#) URLને &amp;નવી વિંડોમાં ખોલો}}</translation>
 <translation id="7433957986129316853">આ જ રાખો</translation>
 <translation id="7434509671034404296">વિકાસકર્તા</translation>
 <translation id="7434635829372401939">તમારા સેટિંગને સિંક કરો</translation>
@@ -5337,7 +5332,6 @@ USB ડિવાઇસ</translation>
 <translation id="7487141338393529395">વધુ સારી બનાવાયેલી જોડણીની તપાસ ચાલુ કરો</translation>
 <translation id="7487969577036436319">કોઈ ઘટકો ઇન્સ્ટોલ કરેલા નથી</translation>
 <translation id="7488682689406685343">આ સાઇટ તમારી પાસેથી ઘૂસણખોરીવાળાં નોટિફિકેશન માટે મંજૂરી મેળવવાનો છળપૂર્વક પ્રયાસ કરતી હોઈ શકે છે.</translation>
-<translation id="7489355918927585587">{COUNT,plural, =0{&amp;તમામ URL ખોલો}=1{&amp;બુકમાર્ક ખોલો}one{&amp;તમામ (#) URLને ખોલો}other{&amp;તમામ (#) URLને ખોલો}}</translation>
 <translation id="7489761397368794366">તમારા ડિવાઇસ પરથી કૉલ</translation>
 <translation id="749028671485790643">વ્યક્તિ <ph name="VALUE" /></translation>
 <translation id="7490813197707563893">MAC ઍડ્રેસ</translation>
@@ -5505,7 +5499,6 @@ USB ડિવાઇસ</translation>
 <translation id="7691077781194517083">સુરક્ષા કોડ રીસેટ કરી શકાતો નથી. ભૂલ <ph name="ERROR_CODE" />.</translation>
 <translation id="7691698019618282776">Crostini અપગ્રેડ કરો</translation>
 <translation id="7696063401938172191">તમારા '<ph name="PHONE_NAME" />' પર:</translation>
-<translation id="7698408911093959127">{COUNT,plural, =1{બુકમાર્ક સૂચિમાં 1 આઇટમ}one{બુકમાર્ક સૂચિમાં # આઇટમ}other{બુકમાર્ક સૂચિમાં # આઇટમ}}</translation>
 <translation id="7699968112832915395">એકાઉન્ટ ઉમેરી શકાતું નથી</translation>
 <translation id="7701040980221191251">કોઈ નથી</translation>
 <translation id="7701869757853594372">વપરાશકર્તા હેન્ડલ્સ</translation>
@@ -5804,7 +5797,6 @@ USB ડિવાઇસ</translation>
 <translation id="8030852056903932865">મંજૂર કરો</translation>
 <translation id="8032244173881942855">ટૅબને કાસ્ટ કરવામાં અસમર્થ.</translation>
 <translation id="8033827949643255796">પસંદ કરેલ</translation>
-<translation id="803435727213847625">{COUNT,plural, =0{તમામ URLને &amp;છુપી વિંડોમાં ખોલો}=1{URLને &amp;છુપી વિંડોમાં ખોલો}one{તમામ (#) URLને છુપી વિંડોમાં ખોલો}other{તમામ (#) URLને છુપી વિંડોમાં ખોલો}}</translation>
 <translation id="8037117027592400564">સિન્થેસાઇઝ કરેલ વાણીનો ઉપયોગ કરીને બધી બોલાયેલ ટેક્સ્ટને વાંચો</translation>
 <translation id="8037357227543935929">પૂછો (ડિફૉલ્ટ)</translation>
 <translation id="803771048473350947">ફાઇલ</translation>
@@ -6008,7 +6000,6 @@ USB ડિવાઇસ</translation>
 <translation id="826905130698769948">અમાન્ય ક્લાયન્ટ પ્રમાણપત્ર</translation>
 <translation id="8270242299912238708">PDF દસ્તાવેજો</translation>
 <translation id="827097179112817503">હોમ બટન દર્શાવો</translation>
-<translation id="8271246892936492311">{COUNT,plural, =1{1 બુકમાર્ક કાઢી નાખ્યું}one{# બુકમાર્ક કાઢી નાખ્યા}other{# બુકમાર્ક કાઢી નાખ્યા}}</translation>
 <translation id="8272443605911821513">"વધુ સાધનો" મેનૂમાં એક્સટેન્શન્સને ક્લિક કરીને તમારા એક્સટેન્શન્સનું સંચાલન કરો.</translation>
 <translation id="8274332263553132018">ફાઇલ કાસ્ટ કરો</translation>
 <translation id="8274924778568117936">અપડેટ પૂર્ણ ન થાય ત્યાં સુધી તમારું <ph name="DEVICE_TYPE" /> બંધ કરતા નહીં. ઇન્સ્ટૉલેશન પૂર્ણ થયા બાદ તમારું <ph name="DEVICE_TYPE" /> ફરી શરૂ થશે.</translation>

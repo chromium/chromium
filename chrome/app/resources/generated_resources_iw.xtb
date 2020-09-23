@@ -19,7 +19,6 @@
 <translation id="1013707859758800957">בדף הזה הותרה הפעלה של פלאגין ללא ארגז חול.</translation>
 <translation id="1015318665228971643">עריכת שם התיקייה</translation>
 <translation id="1015578595646638936">{NUM_DAYS,plural, =1{היום האחרון לעדכון של <ph name="DEVICE_TYPE" />}two{יש לעדכן את <ph name="DEVICE_TYPE" /> בתוך יומיים ({NUM_DAYS})}many{יש לעדכן את <ph name="DEVICE_TYPE" /> בתוך {NUM_DAYS} ימים}other{יש לעדכן את <ph name="DEVICE_TYPE" /> בתוך {NUM_DAYS} ימים}}</translation>
-<translation id="1016437870506746108">{COUNT,plural, =0{פתח הכל ב&amp;חלון חדש}=1{פתח ב&amp;חלון חדש}two{פתח הכל (2) ב&amp;חלון חדש}many{פתח הכל (#) ב&amp;חלון חדש}other{פתח הכל (#) ב&amp;חלון חדש}}</translation>
 <translation id="1016566241875885511">מידע נוסף (אופציונלי)</translation>
 <translation id="1017280919048282932">&amp;הוסף למילון</translation>
 <translation id="1018656279737460067">בוטל</translation>
@@ -1084,7 +1083,6 @@
 <translation id="2274840746523584236">‏יש לטעון את Chromebook</translation>
 <translation id="2276503375879033601">הוסף יישומים נוספים</translation>
 <translation id="2277255602909579701">‏כל קובצי ה-Cookie ונתוני האתר</translation>
-<translation id="2277769717710009150">{COUNT,plural, =1{פריט אחד הועתק}two{# פריטים הועתקו}many{# פריטים הועתקו}other{# פריטים הועתקו}}</translation>
 <translation id="2278562042389100163">פתח חלון דפדפן</translation>
 <translation id="2280486287150724112">שוליים ימניים</translation>
 <translation id="2282146716419988068">‏תהליך GPU</translation>
@@ -2365,7 +2363,6 @@
 <translation id="3797900183766075808">&amp;חפש ב-<ph name="SEARCH_ENGINE" /> אחר '<ph name="SEARCH_TERMS" />'</translation>
 <translation id="3798449238516105146">גרסה</translation>
 <translation id="3799128412641261490">הגדרות גישה באמצעות מתג</translation>
-<translation id="3799201711591988491">{COUNT,plural, =0{&amp;פתח הכל}=1{&amp;פתח סימניה}two{&amp;פתח הכל (2)}many{&amp;פתח הכל (#)}other{&amp;פתח הכל (#)}}</translation>
 <translation id="3800806661949714323">הצג הכל (מומלץ)</translation>
 <translation id="380408572480438692">‏הפעלת האפשרות לאיסוף נתוני ביצועים תסייע ל-Google לשפר את המערכת עם הזמן. הנתונים נשלחים רק לאחר שאתה מגיש דוח משוב (Alt-Shift-I) וכולל את נתוני הביצועים. תוכל לחזור למסך זה כדי להשבית את איסוף הנתונים בכל עת.</translation>
 <translation id="3807249107536149332">לא ניתן להשתמש ב-<ph name="EXTENSION_NAME" /> (מזהה תוסף "<ph name="EXTENSION_ID" />") במסך התחברות.</translation>
@@ -3204,7 +3201,6 @@
 <translation id="4854317507773910281">בחירת חשבון הורה לשליחת בקשת אישור</translation>
 <translation id="485480310608090163">עוד הגדרות והרשאות</translation>
 <translation id="4856478137399998590">שירות הנתונים הסלולריים פועל ומוכן לשימוש</translation>
-<translation id="4857506433977877623">{COUNT,plural, =0{פתח הכל בחלון &amp;גלישה בסתר}=1{פתח בחלון &amp;גלישה בסתר}two{פתח הכל (2) בחלון &amp;גלישה בסתר}many{פתח הכל (#) בחלון &amp;גלישה בסתר}other{פתח הכל (#) בחלון &amp;גלישה בסתר}}</translation>
 <translation id="4858792381671956233">שאלת את ההורים שלך אם אתה יכול לגשת לאתר הזה</translation>
 <translation id="4858913220355269194">מסי</translation>
 <translation id="4862642413395066333">‏חתימה על תגובות OCSP</translation>
@@ -5289,7 +5285,6 @@
 <translation id="7427348830195639090">דף רקע: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129">שיחה מ-<ph name="DEVICE_NAME" /></translation>
 <translation id="7431719494109538750">‏לא נמצאו התקני HID</translation>
-<translation id="7433692219247014412">{COUNT,plural, =0{פתח הכל ב&amp;חלון חדש}=1{פתח ב&amp;חלון חדש}two{פתח הכל (2) ב&amp;חלון חדש}many{פתח הכל (#) ב&amp;חלון חדש}other{פתח הכל (#) ב&amp;חלון חדש}}</translation>
 <translation id="7433957986129316853">שמירת השינוי</translation>
 <translation id="7434509671034404296">למפתחים</translation>
 <translation id="7434635829372401939">סנכרון ההגדרות שלך</translation>
@@ -5337,7 +5332,6 @@
 <translation id="7487141338393529395">הפעלה של בדיקת איות משופרת</translation>
 <translation id="7487969577036436319">לא מותקנים רכיבים</translation>
 <translation id="7488682689406685343">ייתכן שהאתר הזה מנסה להטעות אותך ולגרום לך להפעיל התראות מפריעות.</translation>
-<translation id="7489355918927585587">{COUNT,plural, =0{&amp;פתח הכל}=1{&amp;פתח סימניה}two{&amp;פתח הכל (2)}many{&amp;פתח הכל (#)}other{&amp;פתח הכל (#)}}</translation>
 <translation id="7489761397368794366">שיחה מהמכשיר שלך</translation>
 <translation id="749028671485790643">משתמש <ph name="VALUE" /></translation>
 <translation id="7490813197707563893">‏כתובת MAC</translation>
@@ -5505,7 +5499,6 @@
 <translation id="7691077781194517083">לא ניתן לאפס את מפתח האבטחה הזה. שגיאה <ph name="ERROR_CODE" />.</translation>
 <translation id="7691698019618282776">‏שדרוג של Crostini</translation>
 <translation id="7696063401938172191">ב-'<ph name="PHONE_NAME" />' שלך:</translation>
-<translation id="7698408911093959127">{COUNT,plural, =1{פריט אחד ברשימת הסימניות}two{# פריטים ברשימת הסימניות}many{# פריטים ברשימת הסימניות}other{# פריטים ברשימת הסימניות}}</translation>
 <translation id="7699968112832915395">לא ניתן להוסיף חשבון</translation>
 <translation id="7701040980221191251">אין</translation>
 <translation id="7701869757853594372">מזהים ייחודיים של משתמשים</translation>
@@ -5809,7 +5802,6 @@
 <translation id="8030852056903932865">אישור</translation>
 <translation id="8032244173881942855">לא ניתן להעביר את הכרטיסייה.</translation>
 <translation id="8033827949643255796">מסומן</translation>
-<translation id="803435727213847625">{COUNT,plural, =0{פתח הכל בחלון &amp;גלישה בסתר}=1{פתח בחלון &amp;גלישה בסתר}two{פתח הכל (2) בחלון &amp;גלישה בסתר}many{פתח הכל (#) בחלון &amp;גלישה בסתר}other{פתח הכל (#) בחלון &amp;גלישה בסתר}}</translation>
 <translation id="8037117027592400564">קריאת כל הטקסט הנאמר באמצעות דיבור מסונתז</translation>
 <translation id="8037357227543935929">שאל (ברירת מחדל)</translation>
 <translation id="803771048473350947">קובץ</translation>
@@ -6015,7 +6007,6 @@
 <translation id="826905130698769948">אישור לקוח לא חוקי</translation>
 <translation id="8270242299912238708">‏מסמכי PDF</translation>
 <translation id="827097179112817503">הצג את לחצן 'דף הבית'</translation>
-<translation id="8271246892936492311">{COUNT,plural, =1{סימניה אחת נמחקה}two{# סימניות נמחקו}many{# סימניות נמחקו}other{# סימניות נמחקו}}</translation>
 <translation id="8272443605911821513">נהל את התוספים שלך על ידי לחיצה על 'תוספים' בתפריט 'כלים נוספים'.</translation>
 <translation id="8274332263553132018">העברת קובץ</translation>
 <translation id="8274924778568117936">אל תכבה או תסגור את ה-<ph name="DEVICE_TYPE" /> לפני סיום העדכון. ה-<ph name="DEVICE_TYPE" /> יופעל מחדש באופן אוטומטי בסיום ההתקנה.</translation>

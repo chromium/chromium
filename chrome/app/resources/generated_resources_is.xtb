@@ -19,7 +19,6 @@
 <translation id="1013707859758800957">Keyrsla óafmarkaðrar viðbótar var leyfð á þessari síðu.</translation>
 <translation id="1015318665228971643">Breyta heiti möppu</translation>
 <translation id="1015578595646638936">{NUM_DAYS,plural, =1{Síðasti dagur til að uppfæra <ph name="DEVICE_TYPE" /> tækið}one{Uppfærðu <ph name="DEVICE_TYPE" /> tækið innan {NUM_DAYS} dags}other{Uppfærðu <ph name="DEVICE_TYPE" /> tækið innan {NUM_DAYS} daga}}</translation>
-<translation id="1016437870506746108">{COUNT,plural, =0{Opna allt í &amp;nýjum glugga}=1{Opna í &amp;nýjum glugga}one{Opna allt (#) í &amp;nýjum glugga}other{Opna allt (#) í &amp;nýjum glugga}}</translation>
 <translation id="1016566241875885511">Viðbótarupplýsingar (valfrjálst)</translation>
 <translation id="1017280919048282932">Bæt&amp;a við orðabók</translation>
 <translation id="1018656279737460067">Hætt við</translation>
@@ -1087,7 +1086,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2274840746523584236">Settu Chromebook í hleðslu</translation>
 <translation id="2276503375879033601">Bæta fleiri forritum við</translation>
 <translation id="2277255602909579701">Öll fótspor og gögn vefsvæðis</translation>
-<translation id="2277769717710009150">{COUNT,plural, =1{1 atriði afritað}one{# atriði afritað}other{# atriði afrituð}}</translation>
 <translation id="2278562042389100163">Opna vafraglugga</translation>
 <translation id="2280486287150724112">Hægri spássía</translation>
 <translation id="2282146716419988068">Skjákortsvinnsla</translation>
@@ -2368,7 +2366,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3797900183766075808">Leita á <ph name="SEARCH_ENGINE" /> að „<ph name="SEARCH_TERMS" />“</translation>
 <translation id="3798449238516105146">Útgáfa</translation>
 <translation id="3799128412641261490">Stillingar rofaaðgangs</translation>
-<translation id="3799201711591988491">{COUNT,plural, =0{&amp;Opna allt}=1{&amp;Opna bókamerki}one{&amp;Opna allt (#)}other{&amp;Opna allt (#)}}</translation>
 <translation id="3800806661949714323">Sýna allt (ráðlagt)</translation>
 <translation id="380408572480438692">Ef söfnun afkastagagna er gerð virk hjálpar það Google að bæta kerfið með tímanum. Engin gögn eru send nema þú sendir inn skýrslu með ábendingum þínum (Alt-Shift-I) og látir gögn um afköst fylgja með. Þú getur komið aftur hingað hvenær sem er til að slökkva á gagnasöfnuninni.</translation>
 <translation id="3807249107536149332"><ph name="EXTENSION_NAME" /> (auðkenni viðbótar „<ph name="EXTENSION_ID" />“) er ekki leyfð á innskráningarskjá.</translation>
@@ -3207,7 +3204,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4854317507773910281">Veldu reikning foreldris sem á að samþykkja</translation>
 <translation id="485480310608090163">Fleiri stillingar og heimildir</translation>
 <translation id="4856478137399998590">Farsímagagnaþjónustan þín hefur verið virkjuð og er tilbúin til notkunar</translation>
-<translation id="4857506433977877623">{COUNT,plural, =0{Opna allt í &amp;huliðsglugga}=1{Opna í &amp;huliðsglugga}one{Opna allt (#) í &amp;huliðsglugga}other{Opna allt (#) í &amp;huliðsglugga}}</translation>
 <translation id="4858792381671956233">Þú baðst foreldra þína um leyfi til að fara á þetta vefsvæði</translation>
 <translation id="4858913220355269194">Falur</translation>
 <translation id="4862642413395066333">Undirritar OCSP-svör</translation>
@@ -5294,7 +5290,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="7427348830195639090">Bakgrunnssíða: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129">Símtal frá <ph name="DEVICE_NAME" /></translation>
 <translation id="7431719494109538750">Engin HID-tæki fundust</translation>
-<translation id="7433692219247014412">{COUNT,plural, =0{Opna allt í &amp;nýjum glugga}=1{Opna í &amp;nýjum glugga}one{Opna allt (#) í &amp;nýjum glugga}other{Opna allt (#) í &amp;nýjum glugga}}</translation>
 <translation id="7433957986129316853">Halda henni</translation>
 <translation id="7434509671034404296">Forritarar</translation>
 <translation id="7434635829372401939">Samstilla stillingar</translation>
@@ -5342,7 +5337,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="7487141338393529395">Kveikja á endurbættri ritvilluleit</translation>
 <translation id="7487969577036436319">Engar íhlutir eru uppsettir</translation>
 <translation id="7488682689406685343">Þetta vefsvæði gæti verið að reyna að plata þig til að leyfa ágengar tilkynningar.</translation>
-<translation id="7489355918927585587">{COUNT,plural, =0{&amp;Opna allt}=1{&amp;Opna bókamerki}one{&amp;Opna allt (#)}other{&amp;Opna allt (#)}}</translation>
 <translation id="7489761397368794366">Hringja úr tæki</translation>
 <translation id="749028671485790643">Aðili <ph name="VALUE" /></translation>
 <translation id="7490813197707563893">MAC-vistfang</translation>
@@ -5510,7 +5504,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="7691077781194517083">Ekki er hægt að endurstilla þennan öryggislykil. Villa <ph name="ERROR_CODE" />.</translation>
 <translation id="7691698019618282776">Uppfærsla á Crostini</translation>
 <translation id="7696063401938172191">Í „<ph name="PHONE_NAME" />“:</translation>
-<translation id="7698408911093959127">{COUNT,plural, =1{1 atriði á bókamerkjalista}one{# atriði á bókamerkjalista}other{# atriði á bókamerkjalista}}</translation>
 <translation id="7699968112832915395">Ekki tókst að bæta reikningi við</translation>
 <translation id="7701040980221191251">Ekkert</translation>
 <translation id="7701869757853594372">Notendanöfn</translation>
@@ -5815,7 +5808,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8030852056903932865">Samþykkja</translation>
 <translation id="8032244173881942855">Ekki er hægt að senda út flipann.</translation>
 <translation id="8033827949643255796">valið</translation>
-<translation id="803435727213847625">{COUNT,plural, =0{Opna allt í &amp;huliðsglugga}=1{Opna í &amp;huliðsglugga}one{Opna allt (#) í &amp;huliðsglugga}other{Opna allt (#) í &amp;huliðsglugga}}</translation>
 <translation id="8037117027592400564">Lesa allan talaðan texta með talgervli</translation>
 <translation id="8037357227543935929">Spyrja (sjálfgefið)</translation>
 <translation id="803771048473350947">Skrá</translation>
@@ -6020,7 +6012,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="826905130698769948">Ógilt biðlaravottorð</translation>
 <translation id="8270242299912238708">PDF-skjöl</translation>
 <translation id="827097179112817503">Sýna heimahnapp</translation>
-<translation id="8271246892936492311">{COUNT,plural, =1{1 bókamerki eytt}one{# bókamerki eytt}other{# bókamerkjum eytt}}</translation>
 <translation id="8272443605911821513">Stjórnaðu viðbótunum þínum með því að smella á Viðbætur í valmyndinni „Fleiri verkfæri“.</translation>
 <translation id="8274332263553132018">Senda út skrá</translation>
 <translation id="8274924778568117936">Ekki slökkva eða loka <ph name="DEVICE_TYPE" /> tækinu þínu þar til uppfærslunni lýkur. <ph name="DEVICE_TYPE" /> mun endurræsa sig eftir að uppsetningu lýkur.</translation>

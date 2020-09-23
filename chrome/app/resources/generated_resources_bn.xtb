@@ -19,7 +19,6 @@
 <translation id="1013707859758800957">এই পৃষ্ঠায় একটি আনস্যান্ডবক্সড প্লাগ-ইন চালানোর জন্য অনুমতি দেওয়া হয়েছে৷</translation>
 <translation id="1015318665228971643">ফোল্ডারের নাম সম্পাদনা করুন</translation>
 <translation id="1015578595646638936">{NUM_DAYS,plural, =1{<ph name="DEVICE_TYPE" /> আপডেট করার সর্বশেষ দিন}one{{NUM_DAYS} দিনের মধ্যে <ph name="DEVICE_TYPE" /> আপডেট করুন}other{{NUM_DAYS} দিনের মধ্যে <ph name="DEVICE_TYPE" /> আপডেট করুন}}</translation>
-<translation id="1016437870506746108">{COUNT,plural, =0{সবগুলি &amp;নতুন উইন্ডোতে খুলুন}=1{&amp;নতুন উইন্ডোতে খুলুন}one{সবগুলি (#টি) &amp;নতুন উইন্ডোতে খুলুন}other{সবগুলি (#টি) &amp;নতুন উইন্ডোতে খুলুন}}</translation>
 <translation id="1016566241875885511">অতিরিক্ত তথ্য (ঐচ্ছিক)</translation>
 <translation id="1017280919048282932">অভিধানে &amp;যুক্ত করুন</translation>
 <translation id="1018656279737460067">বাতিল হয়েছে</translation>
@@ -1102,7 +1101,6 @@
 <translation id="2274840746523584236">আপনার Chromebook চার্জ করুন</translation>
 <translation id="2276503375879033601">আরও অ্যাপ্লিকেশন জুডুন</translation>
 <translation id="2277255602909579701">সমস্ত কুকি এবং সাইট ডেটা</translation>
-<translation id="2277769717710009150">{COUNT,plural, =1{১টি আইটেম কপি করা হয়েছে}one{#টি আইটেম কপি করা হয়েছে}other{#টি আইটেম কপি করা হয়েছে}}</translation>
 <translation id="2278562042389100163">ব্রাউজার উইন্ডো খুলুন</translation>
 <translation id="2280486287150724112">ডান মার্জিন</translation>
 <translation id="2282146716419988068">GPU প্রক্রিয়া</translation>
@@ -2394,7 +2392,6 @@
 <translation id="3797900183766075808"><ph name="SEARCH_ENGINE" /> এ “<ph name="SEARCH_TERMS" />” এর &amp;অনুসন্ধান করুন</translation>
 <translation id="3798449238516105146">ভার্সন</translation>
 <translation id="3799128412641261490">অ্যাক্সেস সেটিংস পাল্টান</translation>
-<translation id="3799201711591988491">{COUNT,plural, =0{সবগুলি &amp;খুলুন}=1{বুকমার্ক &amp;খুলুন}one{সবগুলি (#টি) &amp;খুলুন}other{সবগুলি (#টি) &amp;খুলুন}}</translation>
 <translation id="3800806661949714323">সব দেখান (প্রস্তাবিত)</translation>
 <translation id="380408572480438692">কার্য-সম্পাদনা ডেটার সংগ্রহ চালু করলে দিনে দিনে এটি Google কে তার সিস্টেম উন্নত করতে সাহায্য করবে৷ আপনি যতক্ষণ না কোনও প্রতিবার্তা রিপোর্ট (Alt-Shift-I) এবং কার্য-সম্পাদনার ডেটা অন্তর্ভুক্ত করবেন ততক্ষণ কোনও ডেটা পাঠানো হয় না৷ সংগ্রহ বন্ধ করতে আপনি যেকোনও সময়ে এই স্ক্রিনে ফিরে আসতে পারেন৷</translation>
 <translation id="3807249107536149332"><ph name="EXTENSION_NAME" /> (extension ID "<ph name="EXTENSION_ID" />") is not allowed on a login screen.</translation>
@@ -3249,7 +3246,6 @@
 <translation id="4854317507773910281">অনুমোদন করানোর জন্য অভিভাবকের অ্যাকাউন্ট বেছে নিন</translation>
 <translation id="485480310608090163">আরও সেটিংস এবং অনুমতি</translation>
 <translation id="4856478137399998590">আপনার মোবাইল ডেটা পরিষেবা সক্রিয় করা হয়েছে এবং তা ব্যবহারের জন্য তৈরি আছে</translation>
-<translation id="4857506433977877623">{COUNT,plural, =0{সবগুলি &amp;ছদ্মবেশী উইন্ডোতে খুলুন}=1{&amp;ছদ্মবেশী উইন্ডোতে খুলুন}one{সবগুলি (#টি) &amp;ছদ্মবেশী উইন্ডোতে খুলুন}other{সবগুলি (#টি) &amp;ছদ্মবেশী উইন্ডোতে খুলুন}}</translation>
 <translation id="4858792381671956233">এই পৃষ্ঠাটি দেখার জন্য উপযুক্ত কিনা তা আপনি আপনার অভিভাবককে জিজ্ঞাসা করেছেন</translation>
 <translation id="4858913220355269194">ফ্রিটজ</translation>
 <translation id="4862642413395066333">OCSP টি প্রতিক্রিয়া স্বাক্ষরিত হচ্ছে</translation>
@@ -5364,7 +5360,6 @@
 <translation id="7427348830195639090">ব্যাকগ্রাউন্ড পৃষ্ঠা:<ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129"><ph name="DEVICE_NAME" /> থেকে কল করুন</translation>
 <translation id="7431719494109538750">কোনও HID ডিভাইস খুঁজে পাওয়া যায়নি</translation>
-<translation id="7433692219247014412">{COUNT,plural, =0{সবগুলি &amp;নতুন উইন্ডোতে খুলুন}=1{&amp;নতুন উইন্ডোতে খুলুন}one{সবগুলি (#টি) &amp;নতুন উইন্ডোতে খুলুন}other{সবগুলি (#টি) &amp;নতুন উইন্ডোতে খুলুন}}</translation>
 <translation id="7433957986129316853">এটি রাখতে চাই</translation>
 <translation id="7434509671034404296">ডেভেলপার</translation>
 <translation id="7434635829372401939">আপনার সেটিংস সিঙ্ক করুন</translation>
@@ -5414,7 +5409,6 @@
 <translation id="7487141338393529395">উন্নত বানান পরীক্ষা চালু করুন</translation>
 <translation id="7487969577036436319">কোন উপাদান ইনস্টল ইনস্টল নেই</translation>
 <translation id="7488682689406685343">এই সাইট সম্ভবত আপনাকে প্রতারিত করে ক্ষতিকর বিজ্ঞপ্তির জন্য অনুমতি নিয়ে নিচ্ছে।</translation>
-<translation id="7489355918927585587">{COUNT,plural, =0{সবগুলি &amp;খুলুন}=1{বুকমার্ক &amp;খুলুন}one{সবগুলি (#টি) &amp;খুলুন}other{সবগুলি (#টি) &amp;খুলুন}}</translation>
 <translation id="7489761397368794366">আপনার ডিভাইস থেকে কল করুন</translation>
 <translation id="749028671485790643">ব্যক্তি <ph name="VALUE" /></translation>
 <translation id="7490813197707563893">MAC ঠিকানা</translation>
@@ -5587,7 +5581,6 @@
 <translation id="7691077781194517083">এই নিরাপত্তা কী রিসেট করা যাবে না। সমস্যা <ph name="ERROR_CODE" />।</translation>
 <translation id="7691698019618282776">Crostini আপগ্রেড করা</translation>
 <translation id="7696063401938172191">আপনার '<ph name="PHONE_NAME" />' এ:</translation>
-<translation id="7698408911093959127">{COUNT,plural, =1{বুকমার্ক তালিকাতে ১টি আইটেম আছে}one{বুকমার্ক তালিকাতে #টি আইটেম আছে}other{বুকমার্ক তালিকাতে #টি আইটেম আছে}}</translation>
 <translation id="7699968112832915395">অ্যাকাউন্ট যোগ করা যাচ্ছে না</translation>
 <translation id="7701040980221191251">কিছু নেই</translation>
 <translation id="7701869757853594372">ব্যবহারকারীর হ্যান্ডলগুলি</translation>
@@ -5896,7 +5889,6 @@
 <translation id="8030852056903932865">অনুমতি দিন</translation>
 <translation id="8032244173881942855">ট্যাব কাস্ট করতে অক্ষম৷</translation>
 <translation id="8033827949643255796">নির্বাচিত</translation>
-<translation id="803435727213847625">{COUNT,plural, =0{সবগুলি &amp;ছদ্মবেশী উইন্ডোতে খুলুন}=1{&amp;ছদ্মবেশী উইন্ডোতে খুলুন}one{সবগুলিকে (#টি) &amp;ছদ্মবেশী উইন্ডোতে খুলুন}other{সবগুলিকে (#টি) &amp;ছদ্মবেশী উইন্ডোতে খুলুন}}</translation>
 <translation id="8037117027592400564">সিন্থেসাইজড স্পিচ ব্যবহার করে কথিত সব পাঠ্য পড়ুন</translation>
 <translation id="8037357227543935929">জিজ্ঞাসা করুন (ডিফল্ট)</translation>
 <translation id="803771048473350947">ফাইল</translation>
@@ -6102,7 +6094,6 @@
 <translation id="826905130698769948">ক্লায়েন্ট সার্টিফিকেটটি সঠিক নয়</translation>
 <translation id="8270242299912238708">পিডিএফ দস্তাবেজগুলি</translation>
 <translation id="827097179112817503">হোম বোতাম দেখান</translation>
-<translation id="8271246892936492311">{COUNT,plural, =1{১টি বুকমার্ক মোছা হয়েছে}one{#টি বুকমার্ক মোছা হয়েছে}other{#টি বুকমার্ক মোছা হয়েছে}}</translation>
 <translation id="8272443605911821513">"আরও টুলগুলির মেনুতে" এক্সটেনশনগুলি ক্লিক করে আপনার এক্সটেনশনগুলি পরিচালনা করুন৷</translation>
 <translation id="8274332263553132018">ফাইল কাস্ট করুন</translation>
 <translation id="8274924778568117936">আপডেটটি সম্পূর্ণ না হওয়া পর্যন্ত <ph name="DEVICE_TYPE" />টি বন্ধ করবেন না। ইনস্টলেশন হয়ে গেলে <ph name="DEVICE_TYPE" />টি নিজে থেকেই রিস্টার্ট হবে।</translation>

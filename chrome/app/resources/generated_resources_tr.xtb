@@ -19,7 +19,6 @@
 <translation id="1013707859758800957">Korumalı alanda olmayan bir eklentinin bu sayfada çalışmasına izin verildi.</translation>
 <translation id="1015318665228971643">Klasör Adını Düzenle</translation>
 <translation id="1015578595646638936">{NUM_DAYS,plural, =1{<ph name="DEVICE_TYPE" /> cihazı güncellemek için son gün}other{<ph name="DEVICE_TYPE" /> cihazı {NUM_DAYS} gün içinde güncelleyin}}</translation>
-<translation id="1016437870506746108">{COUNT,plural, =0{Tümünü &amp;yeni pencerede aç}=1{&amp;Yeni pencerede aç}other{Tümünü (#) &amp;yeni pencerede aç}}</translation>
 <translation id="1016566241875885511">Ek bilgi (isteğe bağlı)</translation>
 <translation id="1017280919048282932">&amp;Sözlüğe ekle</translation>
 <translation id="1018656279737460067">İptal Edildi</translation>
@@ -1087,7 +1086,6 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2274840746523584236">Chromebook'unuzu şarj edin</translation>
 <translation id="2276503375879033601">Daha fazla uygulama ekle</translation>
 <translation id="2277255602909579701">Tüm çerezler ve site verileri</translation>
-<translation id="2277769717710009150">{COUNT,plural, =1{1 öğe kopyalandı}other{# öğe kopyalandı}}</translation>
 <translation id="2278562042389100163">Tarayıcı penceresini aç</translation>
 <translation id="2280486287150724112">Sağ kenar boşluğu</translation>
 <translation id="2282146716419988068">GPU İşlemi</translation>
@@ -2367,7 +2365,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3797900183766075808">"<ph name="SEARCH_TERMS" />" İçin <ph name="SEARCH_ENGINE" /> &amp;Üzerinde Arama Yap</translation>
 <translation id="3798449238516105146">Sürüm</translation>
 <translation id="3799128412641261490">Anahtar erişimi ayarları</translation>
-<translation id="3799201711591988491">{COUNT,plural, =0{Tümünü &amp;Aç}=1{Yer İşaretini &amp;Aç}other{Tümünü &amp;Aç (#)}}</translation>
 <translation id="3800806661949714323">Tümünü göster (önerilen)</translation>
 <translation id="380408572480438692">Performans verilerinin toplanmasını etkinleştirmek, Google'ın zaman içinde sistemi iyileştirmesine yardımcı olur. Siz bir geri bildirim raporu oluşturup (Alt-ÜstKrktr-I) performans verilerini ekleyene kadar hiçbir veri gönderilmez. Veri toplamayı devre dışı bırakmak için istediğiniz zaman bu ekrana dönebilirsiniz.</translation>
 <translation id="3807249107536149332"><ph name="EXTENSION_NAME" /> adlı uzantıya (uzantı kimliği: "<ph name="EXTENSION_ID" />") giriş ekranında izin verilmiyor.</translation>
@@ -3206,7 +3203,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4854317507773910281">Onay için ebeveyn hesabı seçin</translation>
 <translation id="485480310608090163">Diğer ayarlar ve izinler</translation>
 <translation id="4856478137399998590">Mobil veri hizmetiniz etkinleştirildi ve kullanıma hazır</translation>
-<translation id="4857506433977877623">{COUNT,plural, =0{Tümünü &amp;Gizli Pencerede Aç}=1{&amp;Gizli Pencerede Aç}other{Tümünü (#) &amp;Gizli Pencerede Aç}}</translation>
 <translation id="4858792381671956233">Ebeveynlerinize bu siteyi ziyaret etmenizin uygun olup olmadığını sordunuz</translation>
 <translation id="4858913220355269194">Futbolcu</translation>
 <translation id="4862642413395066333">İmza OCSP Yanıtları</translation>
@@ -5292,7 +5288,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="7427348830195639090">Arka Plan Sayfası: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129"><ph name="DEVICE_NAME" /> adlı cihazdan çağrı</translation>
 <translation id="7431719494109538750">HID cihaz bulunamadı</translation>
-<translation id="7433692219247014412">{COUNT,plural, =0{Tümünü &amp;Yeni Pencerede Aç}=1{&amp;Yeni Pencerede Aç}other{Tümünü (#) &amp;Yeni Pencerede Aç}}</translation>
 <translation id="7433957986129316853">Değişiklikleri koru</translation>
 <translation id="7434509671034404296">Geliştirici</translation>
 <translation id="7434635829372401939">Ayarlarınızı senkronize edin</translation>
@@ -5340,7 +5335,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="7487141338393529395">Gelişmiş Yazım Denetimini Etkinleştirin</translation>
 <translation id="7487969577036436319">Yüklü hiç bileşen yok</translation>
 <translation id="7488682689406685343">Bu site, rahatsız edici bildirimlere izin vermeniz için sizi kandırmaya çalışıyor olabilir.</translation>
-<translation id="7489355918927585587">{COUNT,plural, =0{Tümünü &amp;aç}=1{Yer işaretini &amp;aç}other{Tümünü (#) &amp;aç}}</translation>
 <translation id="7489761397368794366">Cihazımdan ara</translation>
 <translation id="749028671485790643">Kişi <ph name="VALUE" /></translation>
 <translation id="7490813197707563893">MAC adresi</translation>
@@ -5508,7 +5502,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="7691077781194517083">Bu güvenlik anahtarı sıfırlanamıyor <ph name="ERROR_CODE" /> Hatası.</translation>
 <translation id="7691698019618282776">Crostini'yi yeni sürüme geçir</translation>
 <translation id="7696063401938172191">"<ph name="PHONE_NAME" />" telefonunuzda:</translation>
-<translation id="7698408911093959127">{COUNT,plural, =1{Yer işareti listesinde 1 öğe var}other{Yer işareti listesinde # öğe var}}</translation>
 <translation id="7699968112832915395">Hesap eklenemiyor</translation>
 <translation id="7701040980221191251">Yok</translation>
 <translation id="7701869757853594372">KULLANICI İşleyicileri</translation>
@@ -5812,7 +5805,6 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8030852056903932865">Onayla</translation>
 <translation id="8032244173881942855">Sekme yayınlanamıyor.</translation>
 <translation id="8033827949643255796">seçildi</translation>
-<translation id="803435727213847625">{COUNT,plural, =0{Tümünü &amp;gizli pencerede aç}=1{&amp;Gizli pencerede aç}other{Tümünü (#) &amp;gizli pencerede aç}}</translation>
 <translation id="8037117027592400564">Sentezlenmiş konuşma özelliği kullanılarak söylenen tüm metni okuma</translation>
 <translation id="8037357227543935929">Sor (varsayılan)</translation>
 <translation id="803771048473350947">Dosya</translation>
@@ -6016,7 +6008,6 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="826905130698769948">Geçersiz istemci sertifikası</translation>
 <translation id="8270242299912238708">PDF dokümanları</translation>
 <translation id="827097179112817503">Ana Sayfa düğmesini göster</translation>
-<translation id="8271246892936492311">{COUNT,plural, =1{1 yer işareti silindi}other{# yer işareti silindi}}</translation>
 <translation id="8272443605911821513">"Diğer araçlar" menüsündeki Uzantılar'ı tıklayarak uzantılarınızı yönetin.</translation>
 <translation id="8274332263553132018">Dosya yayınlayın</translation>
 <translation id="8274924778568117936">Güncelleme bitene kadar <ph name="DEVICE_TYPE" /> cihazınızı kapatmayın. Yükleme işlemi tamamlandıktan sonra <ph name="DEVICE_TYPE" /> cihazınız yeniden başlatılacaktır.</translation>

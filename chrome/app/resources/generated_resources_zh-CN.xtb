@@ -19,7 +19,6 @@
 <translation id="1013707859758800957">某个未经过沙盒屏蔽的插件已获准在此页上运行。</translation>
 <translation id="1015318665228971643">修改文件夹名称</translation>
 <translation id="1015578595646638936">{NUM_DAYS,plural, =1{今天是 <ph name="DEVICE_TYPE" /> 更新期限的最后一天}other{请在 {NUM_DAYS} 天内更新 <ph name="DEVICE_TYPE" />}}</translation>
-<translation id="1016437870506746108">{COUNT,plural, =0{在新窗口中打开全部网址(&amp;N)}=1{在新窗口中打开 1 个网址(&amp;N)}other{在新窗口中打开全部（# 个）网址(&amp;N)}}</translation>
 <translation id="1016566241875885511">其他信息（选填）</translation>
 <translation id="1017280919048282932">添加到字典中(&amp;A)</translation>
 <translation id="1018656279737460067">已取消</translation>
@@ -1084,7 +1083,6 @@
 <translation id="2274840746523584236">您的 Chromebook 需要充电</translation>
 <translation id="2276503375879033601">添加更多应用</translation>
 <translation id="2277255602909579701">所有 Cookie 和网站数据</translation>
-<translation id="2277769717710009150">{COUNT,plural, =1{已复制 1 项}other{已复制 # 项}}</translation>
 <translation id="2278562042389100163">打开浏览器窗口</translation>
 <translation id="2280486287150724112">右侧页边距</translation>
 <translation id="2282146716419988068">GPU 进程</translation>
@@ -2363,7 +2361,6 @@
 <translation id="3797900183766075808">使用<ph name="SEARCH_ENGINE" />搜索“<ph name="SEARCH_TERMS" />”(&amp;S)</translation>
 <translation id="3798449238516105146">版本</translation>
 <translation id="3799128412641261490">开关控制设置</translation>
-<translation id="3799201711591988491">{COUNT,plural, =0{全部打开(&amp;O)}=1{打开 1 个网址(&amp;O)}other{打开全部（# 个）网址(&amp;O)}}</translation>
 <translation id="3800806661949714323">显示全部（推荐）</translation>
 <translation id="380408572480438692">启用性能数据收集功能有助于 Google 逐步改进系统。除非您提交反馈报告 (Alt-Shift-I) 并在其中包含性能数据，否则，系统不会发送任何数据。您随时可以返回此页停用性能数据收集功能。</translation>
 <translation id="3807249107536149332">登录屏幕中不允许使用“<ph name="EXTENSION_NAME" />”（扩展程序 ID 为“<ph name="EXTENSION_ID" />”）。</translation>
@@ -3201,7 +3198,6 @@
 <translation id="4854317507773910281">请选择家长帐号以寻求批准</translation>
 <translation id="485480310608090163">更多设置和权限</translation>
 <translation id="4856478137399998590">您的移动数据服务已激活，可以立即使用</translation>
-<translation id="4857506433977877623">{COUNT,plural, =0{在无痕式窗口中打开全部网址(&amp;I)}=1{在无痕式窗口中打开 1 个网址(&amp;I)}other{在无痕式窗口中打开全部（# 个）网址(&amp;I)}}</translation>
 <translation id="4858792381671956233">您已向父母发送请求，询问他们是否允许您访问此网站</translation>
 <translation id="4858913220355269194">足球</translation>
 <translation id="4862642413395066333">签名 OCSP 响应</translation>
@@ -5286,7 +5282,6 @@
 <translation id="7427348830195639090">后台网页：<ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129">通过<ph name="DEVICE_NAME" />拨打电话</translation>
 <translation id="7431719494109538750">找不到任何 HID 设备</translation>
-<translation id="7433692219247014412">{COUNT,plural, =0{在新窗口中打开全部网址(&amp;N)}=1{在新窗口中打开 1 个网址(&amp;N)}other{在新窗口中打开全部（# 个）网址(&amp;N)}}</translation>
 <translation id="7433957986129316853">保持现状</translation>
 <translation id="7434509671034404296">开发者</translation>
 <translation id="7434635829372401939">同步您的设置</translation>
@@ -5334,7 +5329,6 @@
 <translation id="7487141338393529395">开启增强的“拼写检查”功能</translation>
 <translation id="7487969577036436319">没有安装任何组件</translation>
 <translation id="7488682689406685343">此网站可能正试图诱骗您允许显示侵扰性通知。</translation>
-<translation id="7489355918927585587">{COUNT,plural, =0{全部打开(&amp;O)}=1{打开 1 个书签(&amp;O)}other{打开全部（# 个）书签(&amp;O)}}</translation>
 <translation id="7489761397368794366">通过您的设备拨打电话</translation>
 <translation id="749028671485790643">用户<ph name="VALUE" /></translation>
 <translation id="7490813197707563893">MAC 地址</translation>
@@ -5502,7 +5496,6 @@
 <translation id="7691077781194517083">无法重置此安全密钥。错误代码为 <ph name="ERROR_CODE" />。</translation>
 <translation id="7691698019618282776">Crostini 升级</translation>
 <translation id="7696063401938172191">在您的“<ph name="PHONE_NAME" />”上：</translation>
-<translation id="7698408911093959127">{COUNT,plural, =1{书签列表中现有 1 个条目}other{书签列表中现有 # 个条目}}</translation>
 <translation id="7699968112832915395">无法添加帐号</translation>
 <translation id="7701040980221191251">无</translation>
 <translation id="7701869757853594372">用户句柄</translation>
@@ -5807,7 +5800,6 @@
 <translation id="8030852056903932865">批准</translation>
 <translation id="8032244173881942855">无法投射标签页。</translation>
 <translation id="8033827949643255796">已选中</translation>
-<translation id="803435727213847625">{COUNT,plural, =0{在隐身窗口中打开全部网址(&amp;I)}=1{在隐身窗口中打开 1 个网址(&amp;I)}other{在隐身窗口中打开全部（# 个）网址(&amp;I)}}</translation>
 <translation id="8037117027592400564">读取使用合成语音说出的所有文字</translation>
 <translation id="8037357227543935929">询问（默认）</translation>
 <translation id="803771048473350947">文件</translation>
@@ -6010,7 +6002,6 @@
 <translation id="826905130698769948">客户端证书无效</translation>
 <translation id="8270242299912238708">PDF 文档</translation>
 <translation id="827097179112817503">显示“主页”按钮</translation>
-<translation id="8271246892936492311">{COUNT,plural, =1{已删除 1 个书签}other{已删除 # 个书签}}</translation>
 <translation id="8272443605911821513">点击“更多工具”菜单中的“扩展程序”，可以管理您的扩展程序。</translation>
 <translation id="8274332263553132018">投射文件</translation>
 <translation id="8274924778568117936">在完成更新之前，请勿关闭您的 <ph name="DEVICE_TYPE" />。您的 <ph name="DEVICE_TYPE" /> 将会于安装完毕后重启。</translation>

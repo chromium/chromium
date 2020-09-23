@@ -19,7 +19,6 @@
 <translation id="1013707859758800957">Ein Plug-in ohne Sandbox wird auf dieser Seite ausgeführt.</translation>
 <translation id="1015318665228971643">Ordnernamen bearbeiten</translation>
 <translation id="1015578595646638936">{NUM_DAYS,plural, =1{Letzter Tag für die Aktualisierung von <ph name="DEVICE_TYPE" />}other{<ph name="DEVICE_TYPE" /> innerhalb von {NUM_DAYS} Tagen aktualisieren}}</translation>
-<translation id="1016437870506746108">{COUNT,plural, =0{Alle in &amp;neuem Fenster öffnen}=1{In &amp;neuem Fenster öffnen}other{Alle (#) in &amp;neuem Fenster öffnen}}</translation>
 <translation id="1016566241875885511">Zusätzliche Informationen (optional)</translation>
 <translation id="1017280919048282932">&amp;Zum Wörterbuch hinzufügen</translation>
 <translation id="1018656279737460067">Abgebrochen</translation>
@@ -1084,7 +1083,6 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="2274840746523584236">Chromebook laden</translation>
 <translation id="2276503375879033601">Weitere Apps hinzufügen</translation>
 <translation id="2277255602909579701">Alle Cookies und Websitedaten</translation>
-<translation id="2277769717710009150">{COUNT,plural, =1{1 Element kopiert}other{# Elemente kopiert}}</translation>
 <translation id="2278562042389100163">Browserfenster öffnen</translation>
 <translation id="2280486287150724112">Rechter Rand</translation>
 <translation id="2282146716419988068">GPU-Verarbeitung</translation>
@@ -2363,7 +2361,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3797900183766075808"><ph name="SEARCH_ENGINE" /> nach "<ph name="SEARCH_TERMS" />" durchsuchen</translation>
 <translation id="3798449238516105146">Version</translation>
 <translation id="3799128412641261490">Einstellungen für Schalterzugriff</translation>
-<translation id="3799201711591988491">{COUNT,plural, =0{Alle &amp;öffnen}=1{Lesezeichen &amp;öffnen}other{Alle (#) &amp;öffnen}}</translation>
 <translation id="3800806661949714323">Alle anzeigen (empfohlen)</translation>
 <translation id="380408572480438692">Bei Aktivierung der Erfassung von Leistungsdaten kann Google das System mit der Zeit verbessern. Daten werden erst gesendet, wenn Sie mittels Alt+Umschalttaste+I einen Feedback-Bericht mit Leistungsdaten einreichen. Sie können jederzeit zu diesem Bildschirm zurückkehren, um die Datenerfassung zu deaktivieren.</translation>
 <translation id="3807249107536149332"><ph name="EXTENSION_NAME" /> (Erweiterungs-ID "<ph name="EXTENSION_ID" />") ist auf Anmeldeseiten nicht zulässig.</translation>
@@ -3202,7 +3199,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4854317507773910281">Elternkonto für die Genehmigung auswählen</translation>
 <translation id="485480310608090163">Weitere Einstellungen und Berechtigungen</translation>
 <translation id="4856478137399998590">Ihr mobiler Datendienst ist aktiviert und einsatzbereit.</translation>
-<translation id="4857506433977877623">{COUNT,plural, =0{Alle in &amp;Inkognitofenster öffnen}=1{In &amp;Inkognitofenster öffnen}other{Alle (#) in &amp;Inkognitofenster öffnen}}</translation>
 <translation id="4858792381671956233">Du hast deine Eltern gefragt, ob du diese Website besuchen darfst</translation>
 <translation id="4858913220355269194">Fußball</translation>
 <translation id="4862642413395066333">Signatur von OCSP-Antworten</translation>
@@ -5287,7 +5283,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="7427348830195639090">Hintergrundseite: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129">Anruf von <ph name="DEVICE_NAME" /></translation>
 <translation id="7431719494109538750">Keine HID-Geräte gefunden</translation>
-<translation id="7433692219247014412">{COUNT,plural, =0{Alle in &amp;neuem Fenster öffnen}=1{In &amp;neuem Fenster öffnen}other{Alle (#) in &amp;neuem Fenster öffnen}}</translation>
 <translation id="7433957986129316853">Beibehalten</translation>
 <translation id="7434509671034404296">Entwickler</translation>
 <translation id="7434635829372401939">Einstellungen synchronisieren</translation>
@@ -5335,7 +5330,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="7487141338393529395">Erweiterte Rechtschreibprüfung aktivieren</translation>
 <translation id="7487969577036436319">Es sind keine Komponenten installiert.</translation>
 <translation id="7488682689406685343">Diese Website verleitet Sie möglicherweise dazu, aufdringliche Benachrichtigungen zuzulassen.</translation>
-<translation id="7489355918927585587">{COUNT,plural, =0{Alle &amp;öffnen}=1{Lesezeichen &amp;öffnen}other{Alle (#) &amp;öffnen}}</translation>
 <translation id="7489761397368794366">Über mein Gerät anrufen</translation>
 <translation id="749028671485790643">Profil <ph name="VALUE" /></translation>
 <translation id="7490813197707563893">MAC-Adresse</translation>
@@ -5503,7 +5497,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="7691077781194517083">Dieser Sicherheitsschlüssel kann nicht zurückgesetzt werden. Fehlercode: <ph name="ERROR_CODE" />.</translation>
 <translation id="7691698019618282776">Crostini-Upgrade</translation>
 <translation id="7696063401938172191">Auf Ihrem <ph name="PHONE_NAME" />:</translation>
-<translation id="7698408911093959127">{COUNT,plural, =1{1 Element in der Lesezeichenliste}other{# Elemente in der Lesezeichenliste}}</translation>
 <translation id="7699968112832915395">Konto kann nicht hinzugefügt werden</translation>
 <translation id="7701040980221191251">Keine Besuche</translation>
 <translation id="7701869757853594372">NUTZER-Handles</translation>
@@ -5808,7 +5801,6 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="8030852056903932865">Genehmigen</translation>
 <translation id="8032244173881942855">Tab kann nicht gestreamt werden.</translation>
 <translation id="8033827949643255796">Ausgewählt</translation>
-<translation id="803435727213847625">{COUNT,plural, =0{Alle in &amp;Inkognitofenster öffnen}=1{In &amp;Inkognitofenster öffnen}other{Alle (#) in &amp;Inkognitofenster öffnen}}</translation>
 <translation id="8037117027592400564">Alle mit künstlicher Sprachausgabe gesprochenen Texte lesen</translation>
 <translation id="8037357227543935929">Nachfragen (Standard)</translation>
 <translation id="803771048473350947">Datei</translation>
@@ -6011,7 +6003,6 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="826905130698769948">Ungültiges Clientzertifikat</translation>
 <translation id="8270242299912238708">PDF-Dokumente</translation>
 <translation id="827097179112817503">Schaltfläche "Startseite" anzeigen</translation>
-<translation id="8271246892936492311">{COUNT,plural, =1{1 Lesezeichen gelöscht}other{# Lesezeichen gelöscht}}</translation>
 <translation id="8272443605911821513">Zum Verwalten Ihrer Erweiterungen klicken Sie im Menü "Mehr Tools" auf "Erweiterungen".</translation>
 <translation id="8274332263553132018">Datei streamen</translation>
 <translation id="8274924778568117936">Schalten Sie Ihr <ph name="DEVICE_TYPE" /> nicht aus bzw. schließen Sie es nicht, bis das Update abgeschlossen ist. Nach Abschluss der Installation wird Ihr <ph name="DEVICE_TYPE" /> neu gestartet.</translation>

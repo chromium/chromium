@@ -19,7 +19,6 @@
 <translation id="1013707859758800957">Proben eremuan sartu gabeko plugin bat orri honetan abiaraztea baimendu da.</translation>
 <translation id="1015318665228971643">Editatu karpetaren izena</translation>
 <translation id="1015578595646638936">{NUM_DAYS,plural, =1{<ph name="DEVICE_TYPE" /> gailua eguneratzeko azken eguna}other{Eguneratu <ph name="DEVICE_TYPE" /> gailua {NUM_DAYS} eguneko epean}}</translation>
-<translation id="1016437870506746108">{COUNT,plural, =0{Ireki guztiak &amp;beste leiho batean}=1{Ireki &amp;beste leiho batean}other{Ireki guztiak (#) &amp;beste leiho batean}}</translation>
 <translation id="1016566241875885511">Informazio gehigarria (aukerakoa)</translation>
 <translation id="1017280919048282932">&amp;Gehitu hiztegian</translation>
 <translation id="1018656279737460067">Bertan behera utzi da</translation>
@@ -1087,7 +1086,6 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2274840746523584236">Kargatu Chromebook-a</translation>
 <translation id="2276503375879033601">Gehitu aplikazio gehiago</translation>
 <translation id="2277255602909579701">webguneko datu eta cookie guztiak</translation>
-<translation id="2277769717710009150">{COUNT,plural, =1{1 elementu kopiatu da}other{# elementu kopiatu dira}}</translation>
 <translation id="2278562042389100163">Ireki leihoa arakatzailean</translation>
 <translation id="2280486287150724112">Eskuineko marjina</translation>
 <translation id="2282146716419988068">GPU prozesua</translation>
@@ -2368,7 +2366,6 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="3797900183766075808">&amp;Bilatu "<ph name="SEARCH_TERMS" />" <ph name="SEARCH_ENGINE" /> bilatzailean</translation>
 <translation id="3798449238516105146">Bertsioa</translation>
 <translation id="3799128412641261490">Erabilerraztasun-osagarriaren ezarpenak</translation>
-<translation id="3799201711591988491">{COUNT,plural, =0{&amp;Ireki guztiak}=1{&amp;Ireki laster-marka}other{&amp;Ireki guztiak (#)}}</translation>
 <translation id="3800806661949714323">Erakutsi guztiak (gomendatua)</translation>
 <translation id="380408572480438692">Errendimendu-datuak biltzeko aukera gaitzen baduzu, Google-k sistema hobetuko du denbora pasa ahala. Ez da daturik bidaliko errendimendu-datuak dituen informazio-txosten bat aurkezten duzun (Alt-Maius-I). Pantaila honetara itzul zaitezke datuen bilketa edonoiz desgaitzeko.</translation>
 <translation id="3807249107536149332"><ph name="EXTENSION_NAME" /> (luzapenaren IDa: "<ph name="EXTENSION_ID" />") ezin da erabili saioa hasteko pantailan.</translation>
@@ -3207,7 +3204,6 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="4854317507773910281">Aukeratu gurasoaren zer kontu erabili nahi duzun onartzeko</translation>
 <translation id="485480310608090163">Ezarpen eta baimen gehiago</translation>
 <translation id="4856478137399998590">Mugikorreko datuen zerbitzua aktibatu egin da eta erabiltzeko prest dago</translation>
-<translation id="4857506433977877623">{COUNT,plural, =0{Ireki guztiak &amp;ezkutuko moduko leiho batean}=1{Ireki &amp;ezkutuko moduko leiho batean}other{Ireki guztiak (#) &amp;ezkutuko moduko leiho batean}}</translation>
 <translation id="4858792381671956233">Webgunean sar zaitezkeen galdetu diezu gurasoei</translation>
 <translation id="4858913220355269194">Mikel</translation>
 <translation id="4862642413395066333">OCSP erantzunak sinatzen</translation>
@@ -5294,7 +5290,6 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="7427348830195639090">Atzeko planoko orria: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129">Deitu <ph name="DEVICE_NAME" /> gailutik</translation>
 <translation id="7431719494109538750">Ez da aurkitu HID gailurik</translation>
-<translation id="7433692219247014412">{COUNT,plural, =0{Ireki guztiak &amp;beste leiho batean}=1{Ireki &amp;beste leiho batean}other{Ireki guztiak (#) &amp;beste leiho batean}}</translation>
 <translation id="7433957986129316853">Mantendu</translation>
 <translation id="7434509671034404296">Garatzailea</translation>
 <translation id="7434635829372401939">Sinkronizatu ezarpenak</translation>
@@ -5342,7 +5337,6 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="7487141338393529395">Aktibatu ortografia-zuzentzaile hobetua</translation>
 <translation id="7487969577036436319">Ez dago osagairik instalatuta</translation>
 <translation id="7488682689406685343">Webgune hau zu iruzurtzen saiatzen ari da jakinarazpen oztopatzaileak baimen ditzazun.</translation>
-<translation id="7489355918927585587">{COUNT,plural, =0{&amp;Ireki guztiak}=1{&amp;Ireki laster-marka}other{&amp;Ireki guztiak (#)}}</translation>
 <translation id="7489761397368794366">Deitu zure gailutik</translation>
 <translation id="749028671485790643">Pertsona: <ph name="VALUE" /></translation>
 <translation id="7490813197707563893">MAC helbidea</translation>
@@ -5510,7 +5504,6 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="7691077781194517083">Ezin da berrezarri segurtasun-giltza. <ph name="ERROR_CODE" /> errorea.</translation>
 <translation id="7691698019618282776">Crostini-ren bertsio-berritzea</translation>
 <translation id="7696063401938172191">"<ph name="PHONE_NAME" />" telefonoan:</translation>
-<translation id="7698408911093959127">{COUNT,plural, =1{1 elementu dago laster-marken zerrendan}other{# elementu daude laster-marken zerrendan}}</translation>
 <translation id="7699968112832915395">Ezin da gehitu kontua</translation>
 <translation id="7701040980221191251">Bat ere ez</translation>
 <translation id="7701869757853594372">Erabiltzailearen heldulekuak</translation>
@@ -5815,7 +5808,6 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8030852056903932865">Onartu</translation>
 <translation id="8032244173881942855">Ezin da igorri fitxa.</translation>
 <translation id="8033827949643255796">hautatuta</translation>
-<translation id="803435727213847625">{COUNT,plural, =0{Ireki guztiak &amp;ezkutuko moduko leiho batean}=1{Ireki &amp;ezkutuko moduko leiho batean}other{Ireki guztiak (#) &amp;ezkutuko moduko leiho batean}}</translation>
 <translation id="8037117027592400564">Irakurri testu idatzi guztiak ahots sintetizatua erabilita</translation>
 <translation id="8037357227543935929">Galdetu (lehenetsia)</translation>
 <translation id="803771048473350947">Fitxategia</translation>
@@ -6020,7 +6012,6 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="826905130698769948">Bezero-ziurtagiriak ez du balio</translation>
 <translation id="8270242299912238708">PDF dokumentuak</translation>
 <translation id="827097179112817503">Erakutsi Hasiera botoia</translation>
-<translation id="8271246892936492311">{COUNT,plural, =1{1 laster-marka ezabatu da}other{# laster-marka ezabatu dira}}</translation>
 <translation id="8272443605911821513">Luzapenak kudeatzeko, sakatu "Tresna gehiago" menuaren Luzapenak aukera.</translation>
 <translation id="8274332263553132018">Igorri fitxategia</translation>
 <translation id="8274924778568117936">Eguneratzen amaitu arte, ez itzali edo itxi <ph name="DEVICE_TYPE" /> gailua. Instalatzen amaitutakoan, berrabiarazi egingo da <ph name="DEVICE_TYPE" />-a.</translation>

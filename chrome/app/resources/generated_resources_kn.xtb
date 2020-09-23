@@ -19,7 +19,6 @@
 <translation id="1013707859758800957">ಸ್ಯಾಂಡ್‌ಬಾಕ್ಸ್ ರದ್ದುಗೊಳಿಸಲಾಗಿರುವ ಪ್ಲಗ್-ಇನ್ ಅನ್ನು ಈ ಪುಟದಲ್ಲಿ ರನ್ ಮಾಡಲು ಅನುಮತಿಸಲಾಗಿದೆ.</translation>
 <translation id="1015318665228971643">ಫೋಲ್ಡರ್ ಹೆಸರು ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="1015578595646638936">{NUM_DAYS,plural, =1{<ph name="DEVICE_TYPE" /> ಅನ್ನು ಅಪ್‌ಡೇಟ್‌ ಮಾಡಲು ಕೊನೆಯ ದಿನ}one{{NUM_DAYS} ದಿನಗಳ ಒಳಗಾಗಿ <ph name="DEVICE_TYPE" /> ಅನ್ನು ಅಪ್‌ಡೇಟ್‌ ಮಾಡಿ}other{{NUM_DAYS} ದಿನಗಳ ಒಳಗಾಗಿ <ph name="DEVICE_TYPE" /> ಅನ್ನು ಅಪ್‌ಡೇಟ್‌ ಮಾಡಿ}}</translation>
-<translation id="1016437870506746108">{COUNT,plural, =0{&amp;ಹೊಸ ವಿಂಡೋದಲ್ಲಿ ಎಲ್ಲವನ್ನೂ ತೆರೆಯಿರಿ}=1{&amp;ಹೊಸ ವಿಂಡೋದಲ್ಲಿ ತೆರೆಯಿರಿ}one{&amp;ಹೊಸ ವಿಂಡೋದಲ್ಲಿ ಎಲ್ಲಾ (#) ಗಳನ್ನು ತೆರೆಯಿರಿ}other{&amp;ಹೊಸ ವಿಂಡೋದಲ್ಲಿ ಎಲ್ಲಾ (#) ಗಳನ್ನು ತೆರೆಯಿರಿ}}</translation>
 <translation id="1016566241875885511">ಹೆಚ್ಚುವರಿ ಮಾಹಿತಿ (ಐಚ್ಛಿಕ)</translation>
 <translation id="1017280919048282932">ನಿಘಂಟಿಗೆ &amp;ಸೇರಿಸಿ</translation>
 <translation id="1018656279737460067">ರದ್ದುಗೊಳಿಸಲಾಗಿದೆ</translation>
@@ -1103,7 +1102,6 @@
 <translation id="2274840746523584236">ನಿಮ್ಮ Chromebook ಅನ್ನು ಚಾರ್ಜ್ ಮಾಡಿ</translation>
 <translation id="2276503375879033601">ಇನ್ನಷ್ಟು ಅಪ್ಲಿಕೇಶನ್‌ಗಳನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="2277255602909579701">ಎಲ್ಲ ಕುಕೀಗಳು ಮತ್ತು ಸೈಟ್ ಡೇಟಾ</translation>
-<translation id="2277769717710009150">{COUNT,plural, =1{1 ಐಟಂ ನಕಲಿಸಲಾಗಿದೆ}one{# ಐಟಂಗಳನ್ನು ನಕಲಿಸಲಾಗಿದೆ}other{# ಐಟಂಗಳನ್ನು ನಕಲಿಸಲಾಗಿದೆ}}</translation>
 <translation id="2278562042389100163">ಬ್ರೌಸರ್ ವಿಂಡೋವನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="2280486287150724112">ಬಲ ಅಂಚು</translation>
 <translation id="2282146716419988068">GPU ಪ್ರಕ್ರಿಯೆ</translation>
@@ -2396,7 +2394,6 @@
 <translation id="3797900183766075808"><ph name="SEARCH_ENGINE" /> ಗಾಗಿ '<ph name="SEARCH_TERMS" />' &amp;ಹುಡುಕಿ</translation>
 <translation id="3798449238516105146">ಆವೃತ್ತಿ</translation>
 <translation id="3799128412641261490">ಪ್ರವೇಶದ ವಿಧಾನವನ್ನು ಬದಲಿಸುವ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
-<translation id="3799201711591988491">{COUNT,plural, =0{&amp;ಎಲ್ಲವನ್ನೂ ತೆರೆಯಿರಿ}=1{&amp;ಬುಕ್‌ಮಾರ್ಕ್ ತರೆಯಿರಿ}one{&amp;ಎಲ್ಲಾ (#) ಅನ್ನು ತೆರೆಯಿರಿ}other{&amp;ಎಲ್ಲಾ (#) ಅನ್ನು ತೆರೆಯಿರಿ}}</translation>
 <translation id="3800806661949714323">ಎಲ್ಲಾ ತೋರಿಸು (ಶಿಫಾರಸು ಮಾಡಲಾಗಿದೆ)</translation>
 <translation id="380408572480438692">ಕಾರ್ಯಕ್ಷಮತೆಯ ಸಂಗ್ರಹ ಸಕ್ರಿಯಗೊಳಿಸುವುದರಿಂದ ಕಾಲಕ್ರಮೇಣ ಸಿಸ್ಟಂ‌ ಸುಧಾರಿಸಲು Google ಗೆ ಡೇಟಾ ನೆರವಾಗುತ್ತದೆ. ನೀವು ಪ್ರತಿಕ್ರಿಯೆ ವರದಿ ಫೈಲ್‌ ಮಾಡುವವರೆಗೂ (Alt-Shift-I) ಮತ್ತು ಕಾರ್ಯಕ್ಷಮತೆ ಡೇಟಾ ಸೇರಿಸುವವರೆಗೂ ಯಾವುದೇ ಡೇಟಾವನ್ನು ಕಳುಹಿಸುವುದಿಲ್ಲ. ಸಂಗ್ರಹ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲು ನೀವು ಈ ಸೆಷನ್‌ಗೆ ಯಾವ ಸಮಯದಲ್ಲಾದರೂ ಹಿಂತಿರುಗಬಹುದು.</translation>
 <translation id="3807249107536149332"><ph name="EXTENSION_NAME" /> (ವಿಸ್ತರಣೆ ID"<ph name="EXTENSION_ID" />") ಲಾಗಿನ್ ಪರದೆಯಲ್ಲಿ ಅನುಮತಿಸಲಾಗುವುದಿಲ್ಲ.</translation>
@@ -3253,7 +3250,6 @@
 <translation id="4854317507773910281">ಅನುಮೋದನೆ ಪಡೆಯಲು, ಪೋಷಕರ ಖಾತೆಯನ್ನು ಆಯ್ಕೆ ಮಾಡಿ</translation>
 <translation id="485480310608090163">ಇನ್ನಷ್ಟು ಸೆಟ್ಟಿಂಗ್‌ಗಳು ಹಾಗೂ ಅನುಮತಿಗಳು</translation>
 <translation id="4856478137399998590">ನಿಮ್ಮ ಮೊಬೈಲ್ ಡೇಟಾ ಸೇವೆಯನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ ಮತ್ತು ಬಳಕೆಗೆ ಸಿದ್ಧವಾಗಿದೆ</translation>
-<translation id="4857506433977877623">{COUNT,plural, =0{&amp;ಅಜ್ಞಾತ ವಿಂಡೋದಲ್ಲಿ ಎಲ್ಲವನ್ನೂ ತೆರೆಯಿರಿ}=1{&amp;ಅಜ್ಞಾತ ವಿಂಡೋದಲ್ಲಿ ತೆರೆಯಿರಿ}one{&amp;ಅಜ್ಞಾತ ವಿಂಡೋದಲ್ಲಿ ಎಲ್ಲಾ (#) ಅನ್ನು ತೆರೆಯಿರಿ}other{&amp;ಅಜ್ಞಾತ ವಿಂಡೋದಲ್ಲಿ ಎಲ್ಲಾ (#) ಅನ್ನು ತೆರೆಯಿರಿ}}</translation>
 <translation id="4858792381671956233">ಈ ಸೈಟ್ ಅನ್ನು ಭೇಟಿ ಮಾಡಬಹುದು ಎಂದು ನಿಮ್ಮ ಪೋಷಕರಿಗೆ ನೀವು ಕೇಳಿರುವಿರಿ.</translation>
 <translation id="4858913220355269194">ಫ್ರಿಟ್ಜ್</translation>
 <translation id="4862642413395066333">OCSP ಪ್ರತಿಕ್ರಿಯೆಗಳಿಗೆ ಸೈನ್ ಇನ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
@@ -5370,7 +5366,6 @@
 <translation id="7427348830195639090">ಹಿನ್ನೆಲೆ ಪುಟ: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129"><ph name="DEVICE_NAME" /> ನಿಂದ ಕರೆ ಮಾಡಿ</translation>
 <translation id="7431719494109538750">ಯಾವುದೇ HID ಸಾಧನಗಳು ಕಂಡುಬಂದಿಲ್ಲ</translation>
-<translation id="7433692219247014412">{COUNT,plural, =0{&amp;ಹೊಸ ವಿಂಡೋದಲ್ಲಿ ಎಲ್ಲವನ್ನೂ ತೆರೆಯಿರಿ}=1{&amp;ಹೊಸ ವಿಂಡೋದಲ್ಲಿ ತೆರೆಯಿರಿ}one{&amp;ಹೊಸ ವಿಂಡೋದಲ್ಲಿ ಎಲ್ಲಾ (#) ಅನ್ನು ತೆರೆಯಿರಿ}other{&amp;ಹೊಸ ವಿಂಡೋದಲ್ಲಿ ಎಲ್ಲಾ (#) ಅನ್ನು ತೆರೆಯಿರಿ}}</translation>
 <translation id="7433957986129316853">ಇರಲಿ ಬಿಡಿ</translation>
 <translation id="7434509671034404296">ಡೆವಲಪರ್</translation>
 <translation id="7434635829372401939">ನಿಮ್ಮ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಸಿಂಕ್ ಮಾಡಿ</translation>
@@ -5420,7 +5415,6 @@
 <translation id="7487141338393529395">ವರ್ಧಿತ ಕಾಗುಣಿತ ಪರೀಕ್ಷೆಯನ್ನು ಆನ್ ಮಾಡಿ</translation>
 <translation id="7487969577036436319">ಯಾವುದೇ ಕಾಂಪೊನೆಂಟ್‌ಗಳನ್ನು ಸ್ಥಾಪಿಸಿಲ್ಲ</translation>
 <translation id="7488682689406685343">ಅತಿಕ್ರಮಣದ ಅಧಿಸೂಚನೆಗಳನ್ನು ಅನುಮತಿಸುವುದಕ್ಕಾಗಿ ಈ ಸೈಟ್ ನಿಮ್ಮ ದಾರಿ ತಪ್ಪಿಸಲು ಪ್ರಯತ್ನಿಸುತ್ತಿರಬಹುದು.</translation>
-<translation id="7489355918927585587">{COUNT,plural, =0{&amp;ಎಲ್ಲವನ್ನೂ ತೆರೆಯಿರಿ}=1{&amp;ಬುಕ್‌ಮಾರ್ಕ್ ತರೆಯಿರಿ}one{&amp;ಎಲ್ಲಾ (#) ಅನ್ನು ತೆರೆಯಿರಿ}other{&amp;ಎಲ್ಲಾ (#) ಅನ್ನು ತೆರೆಯಿರಿ}}</translation>
 <translation id="7489761397368794366">ನಿಮ್ಮ ಸಾಧನದಿಂದ ಕರೆ ಮಾಡಿ</translation>
 <translation id="749028671485790643">ವ್ಯಕ್ತಿ <ph name="VALUE" /></translation>
 <translation id="7490813197707563893">MAC ವಿಳಾಸ</translation>
@@ -5593,7 +5587,6 @@
 <translation id="7691077781194517083">ಈ ಭದ್ರತೆ ಕೀ ಅನ್ನು ಮರುಹೊಂದಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ. ದೋಷ <ph name="ERROR_CODE" />.</translation>
 <translation id="7691698019618282776">Crostini ಅನ್ನು ಅಪ್‌ಗ್ರೇಡ್ ಮಾಡಿ</translation>
 <translation id="7696063401938172191">ನಿಮ್ಮ'<ph name="PHONE_NAME" />' ನಲ್ಲಿ:</translation>
-<translation id="7698408911093959127">{COUNT,plural, =1{ಬುಕ್‌ಮಾರ್ಕ್ ಪಟ್ಟಿಯಲ್ಲಿ 1 ಐಟಂ}one{ಬುಕ್‌ಮಾರ್ಕ್ ಪಟ್ಟಿಯಲ್ಲಿ # ಐಟಂಗಳು}other{ಬುಕ್‌ಮಾರ್ಕ್ ಪಟ್ಟಿಯಲ್ಲಿ # ಐಟಂಗಳು}}</translation>
 <translation id="7699968112832915395">ಖಾತೆಯನ್ನು ಸೇರಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="7701040980221191251">ಯಾವುದೂ ಇಲ್ಲ</translation>
 <translation id="7701869757853594372">ಬಳಕೆದಾರರು ನಿರ್ವಹಿಸುತ್ತಾರೆ</translation>
@@ -5900,7 +5893,6 @@
 <translation id="8030852056903932865">ಅನುಮೋದಿಸಿ</translation>
 <translation id="8032244173881942855">ಟ್ಯಾಬ್‌‌ಗೆ ಬಿತ್ತರಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ.</translation>
 <translation id="8033827949643255796">ಆಯ್ಕೆ ಮಾಡಲಾಗಿದೆ</translation>
-<translation id="803435727213847625">{COUNT,plural, =0{&amp;ಅಜ್ಞಾತ ವಿಂಡೋದಲ್ಲಿ ಎಲ್ಲವನ್ನು ತೆರೆಯಿರಿ}=1{&amp;ಅಜ್ಞಾತ ವಿಂಡೋದಲ್ಲಿ ತೆರೆಯಿರಿ}one{&amp;ಅಜ್ಞಾತ ವಿಂಡೋದಲ್ಲಿ ಎಲ್ಲಾ (#) ಅನ್ನು ತೆರೆಯಿರಿ}other{&amp;ಅಜ್ಞಾತ ವಿಂಡೋದಲ್ಲಿ ಎಲ್ಲಾ (#) ಅನ್ನು ತೆರೆಯಿರಿ}}</translation>
 <translation id="8037117027592400564">ಸಂಯೋಜನೆ ಗೊಳಿಸಿದ ಧ್ವನಿಯನ್ನು ಬಳಸಿಕೊಂಡು ಮಾತನಾಡುವ ಎಲ್ಲಾ ಪಠ್ಯವನ್ನು ಓದಿ</translation>
 <translation id="8037357227543935929">ಕೇಳು (ಡಿಫಾಲ್ಟ್)</translation>
 <translation id="803771048473350947">ಫೈಲ್</translation>
@@ -6108,7 +6100,6 @@
 <translation id="826905130698769948">ಅಮಾನ್ಯ ಕ್ಲೈಂಟ್ ಪ್ರಮಾಣಪತ್ರ</translation>
 <translation id="8270242299912238708">PDF ಡಾಕ್ಯುಮೆಂಟ್‌‌ಗಳು</translation>
 <translation id="827097179112817503">ಹೋಮ್ ಬಟನ್‌ ತೋರಿಸು</translation>
-<translation id="8271246892936492311">{COUNT,plural, =1{1 ಬುಕ್‌ಮಾರ್ಕ್ ಅಳಿಸಲಾಗಿದೆ}one{# ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ಅಳಿಸಲಾಗಿದೆ}other{# ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ಅಳಿಸಲಾಗಿದೆ}}</translation>
 <translation id="8272443605911821513">"ಹೆಚ್ಚಿನ ಪರಿಕರಗಳು" ಮೆನುನಲ್ಲಿರುವ ‘ವಿಸ್ತರಣೆಗಳು’ಕ್ಲಿಕ್ ಮಾಡುವ ಮೂಲಕ ನಿಮ್ಮ ವಿಸ್ತರಣೆಗಳನ್ನು ನಿರ್ವಹಿಸಿ.</translation>
 <translation id="8274332263553132018">ಫೈಲ್‌ ಅನ್ನು ಬಿತ್ತರಿಸಿ</translation>
 <translation id="8274924778568117936">ಅಪ್‌ಡೇಟ್ ಮುಕ್ತಾಯಗೊಳ್ಳುವವರೆಗೆ <ph name="DEVICE_TYPE" /> ಅನ್ನು ಆಫ್ ಮಾಡಬೇಡಿ. ಇನ್‌ಸ್ಟಾಲೇಶನ್ ಪ್ರಕ್ರಿಯೆ ಪೂರ್ಣಗೊಂಡ ನಂತರ ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಮರುಪ್ರಾರಂಭವಾಗುತ್ತದೆ.</translation>

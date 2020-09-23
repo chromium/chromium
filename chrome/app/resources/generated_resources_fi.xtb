@@ -19,7 +19,6 @@
 <translation id="1013707859758800957">Hiekkalaatikossa toimimattoman laajennuksen annettiin käynnistyä tällä sivulla.</translation>
 <translation id="1015318665228971643">Muokkaa kansion nimeä</translation>
 <translation id="1015578595646638936">{NUM_DAYS,plural, =1{Päivitä <ph name="DEVICE_TYPE" /> tänään}other{Päivitä <ph name="DEVICE_TYPE" /> {NUM_DAYS} päivän sisällä}}</translation>
-<translation id="1016437870506746108">{COUNT,plural, =0{Avaa kaikki uudessa ikkunassa}=1{Avaa uudessa ikkunassa}other{Avaa kaikki # uudessa ikkunassa}}</translation>
 <translation id="1016566241875885511">Lisätietoja (valinnainen)</translation>
 <translation id="1017280919048282932">&amp;Lisää sanakirjaan</translation>
 <translation id="1018656279737460067">Peruutettu</translation>
@@ -1087,7 +1086,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2274840746523584236">Lataa Chromebook</translation>
 <translation id="2276503375879033601">Lisää sovelluksia</translation>
 <translation id="2277255602909579701">Kaikki evästeet ja sivuston tiedot</translation>
-<translation id="2277769717710009150">{COUNT,plural, =1{1 kohde kopioitu}other{# kohdetta kopioitu}}</translation>
 <translation id="2278562042389100163">Avaa selainikkuna</translation>
 <translation id="2280486287150724112">Oikea reuna</translation>
 <translation id="2282146716419988068">GPU-prosessi</translation>
@@ -2367,7 +2365,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3797900183766075808"><ph name="SEARCH_ENGINE" />-haku termillä <ph name="SEARCH_TERMS" /></translation>
 <translation id="3798449238516105146">Versio</translation>
 <translation id="3799128412641261490">Kytkimen käytön asetukset</translation>
-<translation id="3799201711591988491">{COUNT,plural, =0{Avaa kaikki}=1{Avaa kirjanmerkki}other{Avaa kaikki #}}</translation>
 <translation id="3800806661949714323">Näytä kaikki (suositus)</translation>
 <translation id="380408572480438692">Ottamalla tehokkuustietojen keräämisen käyttöön autat Googlea parantamaan järjestelmää ajan myötä. Tietoja lähetetään vasta luodessasi palauteraportin (Alt-Shift-I) ja lisätessäsi siihen tehokkuustiedot. Voit poistaa tietojen keräämisen käytöstä milloin tahansa palaamalla tähän ruutuun.</translation>
 <translation id="3807249107536149332">Laajennusta <ph name="EXTENSION_NAME" /> (<ph name="EXTENSION_ID" />) ei sallita kirjautumisnäytöllä.</translation>
@@ -3203,7 +3200,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="4854317507773910281">Valitse vanhemman tili hyväksymistä varten</translation>
 <translation id="485480310608090163">Lisää asetuksia ja käyttöoikeuksia</translation>
 <translation id="4856478137399998590">Tiedonsiirtopalvelu on aktivoitu ja valmis käyttöön</translation>
-<translation id="4857506433977877623">{COUNT,plural, =0{Avaa kaikki incognito-ikkunassa}=1{Avaa incognito-ikkunassa}other{Avaa kaikki # incognito-ikkunassa}}</translation>
 <translation id="4858792381671956233">Pyysit vanhemmiltasi lupaa käydä tällä sivustolla.</translation>
 <translation id="4858913220355269194">Litti</translation>
 <translation id="4862642413395066333">OCSP-vastauksien allekirjoittaminen</translation>
@@ -5290,7 +5286,6 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="7427348830195639090">Taustasivu: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129">Puhelu laitteesta <ph name="DEVICE_NAME" /></translation>
 <translation id="7431719494109538750">HID-laitteita ei löytynyt</translation>
-<translation id="7433692219247014412">{COUNT,plural, =0{Avaa kaikki uudessa ikkunassa}=1{Avaa kaikki uudessa ikkunassa}other{Avaa kaikki # uudessa ikkunassa}}</translation>
 <translation id="7433957986129316853">Pidä tämä</translation>
 <translation id="7434509671034404296">Kehittäjille</translation>
 <translation id="7434635829372401939">Synkronoi asetuksesi</translation>
@@ -5338,7 +5333,6 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="7487141338393529395">Ota käyttöön parannettu oikeinkirjoituksen tarkistus</translation>
 <translation id="7487969577036436319">Ei asennettuja osia</translation>
 <translation id="7488682689406685343">Tämä sivusto saattaa yrittää huijata sinua sallimaan häiritseviä ilmoituksia.</translation>
-<translation id="7489355918927585587">{COUNT,plural, =0{Avaa kaikki}=1{Avaa kirjanmerkki}other{Avaa kaikki #}}</translation>
 <translation id="7489761397368794366">Soita laitteelta</translation>
 <translation id="749028671485790643">Henkilö <ph name="VALUE" /></translation>
 <translation id="7490813197707563893">MAC-osoite</translation>
@@ -5506,7 +5500,6 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="7691077781194517083">Tätä suojausavainta ei voi nollata. Virhe: <ph name="ERROR_CODE" /></translation>
 <translation id="7691698019618282776">Crostini-päivitys</translation>
 <translation id="7696063401938172191"><ph name="PHONE_NAME" />:</translation>
-<translation id="7698408911093959127">{COUNT,plural, =1{1 kohde kirjanmerkkiluettelossa}other{# kohdetta kirjanmerkkiluettelossa}}</translation>
 <translation id="7699968112832915395">Tiliä ei voi lisätä</translation>
 <translation id="7701040980221191251">Ei mitään</translation>
 <translation id="7701869757853594372">KÄYTTÄJÄ-tunnukset</translation>
@@ -5810,7 +5803,6 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8030852056903932865">Hyväksy</translation>
 <translation id="8032244173881942855">Välilehden suoratoisto ei onnistu</translation>
 <translation id="8033827949643255796">valittu</translation>
-<translation id="803435727213847625">{COUNT,plural, =0{Avaa kaikki incognito-ikkunassa}=1{Avaa incognito-ikkunassa}other{Avaa kaikki # incognito-ikkunassa}}</translation>
 <translation id="8037117027592400564">Käyttää kaikkea puhesynteesin avulla luettua tekstiä</translation>
 <translation id="8037357227543935929">Kysy (oletus)</translation>
 <translation id="803771048473350947">Tiedosto</translation>
@@ -6014,7 +6006,6 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="826905130698769948">Virheellinen käyttöoikeusvarmenne</translation>
 <translation id="8270242299912238708">PDF-dokumentit</translation>
 <translation id="827097179112817503">Näytä Etusivu-painike</translation>
-<translation id="8271246892936492311">{COUNT,plural, =1{1 kirjanmerkki poistettiin}other{# kirjanmerkkiä poistettiin}}</translation>
 <translation id="8272443605911821513">Hallinnoi laajennuksiasi valitsemalla Lisätyökalut-valikossa Laajennukset.</translation>
 <translation id="8274332263553132018">Suoratoista tiedosto</translation>
 <translation id="8274924778568117936">Pidä <ph name="DEVICE_TYPE" /> päällä, kunnes päivitys on valmis. <ph name="DEVICE_TYPE" /> käynnistyy uudelleen, kun asennus on valmis.</translation>

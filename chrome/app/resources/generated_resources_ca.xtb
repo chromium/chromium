@@ -19,7 +19,6 @@
 <translation id="1013707859758800957">S'ha pogut executar un connector de fora de la zona de proves en aquesta pàgina.</translation>
 <translation id="1015318665228971643">Edita el nom de la carpeta</translation>
 <translation id="1015578595646638936">{NUM_DAYS,plural, =1{Darrer dia per actualitzar el dispositiu <ph name="DEVICE_TYPE" />}other{Actualitza el dispositiu <ph name="DEVICE_TYPE" /> en {NUM_DAYS} dies}}</translation>
-<translation id="1016437870506746108">{COUNT,plural, =0{Obre-les totes en una &amp;finestra nova}=1{Obre en una &amp;finestra nova}other{Obre-les totes (#) en una &amp;finestra nova}}</translation>
 <translation id="1016566241875885511">Informació addicional (opcional)</translation>
 <translation id="1017280919048282932">&amp;Afegeix al diccionari</translation>
 <translation id="1018656279737460067">S'ha cancel·lat</translation>
@@ -1087,7 +1086,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2274840746523584236">Carrega el Chromebook</translation>
 <translation id="2276503375879033601">Afegeix més aplicacions</translation>
 <translation id="2277255602909579701">Totes les galetes i les dades del lloc web</translation>
-<translation id="2277769717710009150">{COUNT,plural, =1{1 element copiat}other{# elements copiats}}</translation>
 <translation id="2278562042389100163">Obre una finestra del navegador</translation>
 <translation id="2280486287150724112">Marge dret</translation>
 <translation id="2282146716419988068">Procés de GPU</translation>
@@ -2367,7 +2365,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3797900183766075808">&amp;Cerca "<ph name="SEARCH_TERMS" />" a <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3798449238516105146">Versió</translation>
 <translation id="3799128412641261490">Configuració d'accés amb interruptors</translation>
-<translation id="3799201711591988491">{COUNT,plural, =0{&amp;Obre-les totes}=1{&amp;Obre l'adreça d'interès}other{&amp;Obre-les totes (#)}}</translation>
 <translation id="3800806661949714323">Mostra-ho tot (opció recomanada)</translation>
 <translation id="380408572480438692">L'activació de la recollida de dades de rendiment ajudarà Google a millorar el sistema amb el temps. No s'enviarà cap dada fins que no empleneu un informe de suggeriments (Alt-Maj-I) i les dades de rendiment. Podeu tornar a aquesta pantalla per desactivar la recopilació en qualsevol moment.</translation>
 <translation id="3807249107536149332"><ph name="EXTENSION_NAME" /> (amb identificador d'extensió "<ph name="EXTENSION_ID" />") no es permet a les pantalles d'inici de sessió.</translation>
@@ -3205,7 +3202,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4854317507773910281">Tria un compte parental per a l'aprovació</translation>
 <translation id="485480310608090163">Més opcions de configuració i permisos</translation>
 <translation id="4856478137399998590">El servei de dades mòbils està activat i a punt per fer servir</translation>
-<translation id="4857506433977877623">{COUNT,plural, =0{Obre-les totes en una &amp;finestra d'incògnit}=1{Obre en una &amp;finestra d'incògnit}other{Obre-les totes (#) en una &amp;finestra d'incògnit}}</translation>
 <translation id="4858792381671956233">Has demanat permís als teus pares per visitar aquest lloc web</translation>
 <translation id="4858913220355269194">Pilota</translation>
 <translation id="4862642413395066333">Signatura de respostes OCSP</translation>
@@ -5294,7 +5290,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="7427348830195639090">Pàgina en segon pla: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129">Truca des de: <ph name="DEVICE_NAME" /></translation>
 <translation id="7431719494109538750">No s'ha trobat cap dispositiu d'interfície humana</translation>
-<translation id="7433692219247014412">{COUNT,plural, =0{Obre-les totes en una &amp;finestra nova}=1{Obre en una &amp;finestra nova}other{Obre-les totes (#) en una &amp;finestra nova}}</translation>
 <translation id="7433957986129316853">Mantén els canvis</translation>
 <translation id="7434509671034404296">Desenvolupador</translation>
 <translation id="7434635829372401939">Sincronitza la configuració</translation>
@@ -5342,7 +5337,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="7487141338393529395">Activa el corrector ortogràfic millorat</translation>
 <translation id="7487969577036436319">No hi ha cap component instal·lat</translation>
 <translation id="7488682689406685343">Pot ser que aquest lloc web estigui provant d'enganyar-te perquè permetis les notificacions intrusives.</translation>
-<translation id="7489355918927585587">{COUNT,plural, =0{&amp;Obre-les totes}=1{&amp;Obre una adreça d'interès}other{&amp;Obre-les totes (#)}}</translation>
 <translation id="7489761397368794366">Truca des del teu dispositiu</translation>
 <translation id="749028671485790643">Persona <ph name="VALUE" /></translation>
 <translation id="7490813197707563893">Adreça MAC</translation>
@@ -5510,7 +5504,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="7691077781194517083">Aquesta clau de seguretat no es pot restablir. Error <ph name="ERROR_CODE" />.</translation>
 <translation id="7691698019618282776">Actualització de Crostini</translation>
 <translation id="7696063401938172191">A <ph name="PHONE_NAME" />:</translation>
-<translation id="7698408911093959127">{COUNT,plural, =1{1 element a la llista d'adreces d'interès}other{# elements a la llista d'adreces d'interès}}</translation>
 <translation id="7699968112832915395">No es pot afegir el compte</translation>
 <translation id="7701040980221191251">Cap</translation>
 <translation id="7701869757853594372">Controls d'USUARI</translation>
@@ -5816,7 +5809,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8030852056903932865">Aprova</translation>
 <translation id="8032244173881942855">No es pot emetre la pestanya.</translation>
 <translation id="8033827949643255796">seleccionats</translation>
-<translation id="803435727213847625">{COUNT,plural, =0{Obre-les totes en una &amp;finestra d'incògnit}=1{Obre en una &amp;finestra d'incògnit}other{Obre-les totes (#) en una &amp;finestra d'incògnit}}</translation>
 <translation id="8037117027592400564">Llegeix tot el text en veu alta mitjançant una síntesi de veu</translation>
 <translation id="8037357227543935929">Pregunta (opció predeterminada)</translation>
 <translation id="803771048473350947">Fitxer</translation>
@@ -6020,7 +6012,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="826905130698769948">Certificat de client no vàlid</translation>
 <translation id="8270242299912238708">Documents PDF</translation>
 <translation id="827097179112817503">Mostra el botó Pàgina d'inici</translation>
-<translation id="8271246892936492311">{COUNT,plural, =1{S'ha suprimit 1 adreça d'interès}other{S'han suprimit # adreces d'interès}}</translation>
 <translation id="8272443605911821513">Per gestionar les extensions, feu clic a Extensions al menú Més eines.</translation>
 <translation id="8274332263553132018">Emet el fitxer</translation>
 <translation id="8274924778568117936">No apaguis ni tanquis el dispositiu <ph name="DEVICE_TYPE" /> fins que l'actualització no hagi finalitzat. <ph name="DEVICE_TYPE" /> es reiniciarà un cop finalitzi la instal·lació.</translation>

@@ -19,7 +19,6 @@
 <translation id="1013707859758800957">Այս էջում թույլատրվել է չպաշտպանված միջավայրից դուրս փլագինի գործարկում:</translation>
 <translation id="1015318665228971643">Պանակի անվան փոփոխում</translation>
 <translation id="1015578595646638936">{NUM_DAYS,plural, =1{Այսօր <ph name="DEVICE_TYPE" /> սարքի թարմացման վերջին օրն է}one{Թարմացրեք <ph name="DEVICE_TYPE" /> սարքը {NUM_DAYS} օրվա ընթացքում}other{Թարմացրեք <ph name="DEVICE_TYPE" /> սարքը {NUM_DAYS} օրվա ընթացքում}}</translation>
-<translation id="1016437870506746108">{COUNT,plural, =0{Բացել բոլորը &amp;նոր պատուհանում}=1{Բացել &amp;նոր պատուհանում}one{Open all (#) in &amp;new window}other{Բացել բոլորը (#) &amp;նոր պատուհանում}}</translation>
 <translation id="1016566241875885511">Լրացուցիչ տեղեկություններ (պարտադիր չէ)</translation>
 <translation id="1017280919048282932">&amp;User Agent</translation>
 <translation id="1018656279737460067">Չեղյալ են հայտարարվել</translation>
@@ -1087,7 +1086,6 @@
 <translation id="2274840746523584236">Լիցքավորեք ձեր Chromebook-ը</translation>
 <translation id="2276503375879033601">Ավելացնել հավելվածներ</translation>
 <translation id="2277255602909579701">Բոլոր քուքիները և կայքերի տվյալները</translation>
-<translation id="2277769717710009150">{COUNT,plural, =1{Պատճենվել է 1 տարր}one{# items copied}other{Պատճենվել է # տարր}}</translation>
 <translation id="2278562042389100163">Բացել դիտարկիչի պատուհանը</translation>
 <translation id="2280486287150724112">Աջ լուսանցք</translation>
 <translation id="2282146716419988068">GPU գործընթացը</translation>
@@ -1204,6 +1202,7 @@
 <translation id="2419706071571366386">Անվտանգության համար դուրս գրվեք հաշվից, երբ չեք օգտվում համակարգչից։</translation>
 <translation id="2422125132043002186">Լինուքսի վերականգնումը չեղարկվել է</translation>
 <translation id="2423578206845792524">Պա&amp;հել պատկերը որպես…</translation>
+<translation id="2424424966051154874">{0,plural, =1{Հյուր}one{Հյուր (#)}other{Հյուր (#)}}</translation>
 <translation id="2428510569851653187">Նկարագրեք ձեր գործողությունները նախքան ներդիրի աշխատանքի խափանվելը</translation>
 <translation id="2428939361789119025">Անջատել Wi-Fi-ը</translation>
 <translation id="2431027948063157455">Չհաջողվեց բեռնել Google Օգնականը։ Ստուգեք կապն ու նորից փորձեք։</translation>
@@ -2367,7 +2366,6 @@
 <translation id="3797900183766075808">&amp;Որոնել «<ph name="SEARCH_TERMS" />»-ը <ph name="SEARCH_ENGINE" />-ում</translation>
 <translation id="3798449238516105146">Տարբերակ</translation>
 <translation id="3799128412641261490">Switch Access-ի կարգավորումներ</translation>
-<translation id="3799201711591988491">{COUNT,plural, =0{&amp;Բացել բոլորը}=1{&amp;Բացել էջանիշը}one{&amp;Open All (#)}other{&amp;Բացել բոլորը (#)}}</translation>
 <translation id="3800806661949714323">Ցույց տալ բոլորը (հանձնարարելի)</translation>
 <translation id="380408572480438692">Միացնելով կատարողականության տվյալների հավաքումը՝ Google-ին կօգնեք ժամանակի ընթացքում բարելավել համակարգը: Ոչ մի տվյալ չի ուղարկվի, մինչև դուք չուղարկեք արձագանքը (Alt-Shift-I) և չներառեք կատարողականության տվյալները: Ցանկացած պահի կարող եք վերադառնալ այս էկրանին և անջատել տվյալների հավաքումը:</translation>
 <translation id="3807249107536149332"><ph name="EXTENSION_NAME" /> ընդլայնումը (ID-ն՝ «<ph name="EXTENSION_ID" />») չի թույլատրվում մուտքի էկրանին։</translation>
@@ -3206,7 +3204,6 @@
 <translation id="4854317507773910281">Հաստատման համար ընտրեք ծնողի հաշիվը</translation>
 <translation id="485480310608090163">Այլ կարգավորումներ և թույլտվություններ</translation>
 <translation id="4856478137399998590">Բջջային ցանցերում տվյալների փոխանցման ծառայությունն ակտիվացված է և պատրաստ օգտագործման</translation>
-<translation id="4857506433977877623">{COUNT,plural, =0{Բացել բոլորը &amp;ինկոգնիտո պատուհանում}=1{Բացել &amp;ինկոգնիտո պատուհանում}one{Open All (#) in &amp;Incognito Window}other{Բացել բոլորը (#) &amp;ինկոգնիտո պատուհանում}}</translation>
 <translation id="4858792381671956233">Դուք խնդրել եք ձեր ծնողին հաստատել, որ այս կայք կարելի է մտնել։</translation>
 <translation id="4858913220355269194">Ֆուտբոլ</translation>
 <translation id="4862642413395066333">OCSP պատասխանների ստորագրում</translation>
@@ -4206,6 +4203,7 @@
 <translation id="6077189836672154517">Խորհուրդներ և ծանուցումներ <ph name="DEVICE_TYPE" /> սարքի վերաբերյալ</translation>
 <translation id="6077476112742402730">Ձայնային ներածում</translation>
 <translation id="6078045608615316905">Ստեղծել QR կոդ այս պատկերի համար</translation>
+<translation id="6078121669093215958">{0,plural, =1{Հյուր}one{Հյուրի # բաց պատուհան}other{Հյուրի # բաց պատուհան}}</translation>
 <translation id="6078323886959318429">Ավելացնել դյուրանցում</translation>
 <translation id="6078752646384677957">Ստուգեք խոսափողն ու ձայնային կարգավորումները:</translation>
 <translation id="6078769373519310690">«<ph name="CHROME_EXTENSION_NAME" />» ընդլայնումն ուզում է միանալ HID սարքին</translation>
@@ -4713,6 +4711,7 @@
 <translation id="6704062477274546131">DNS-ի լուծաչափ</translation>
 <translation id="6706210727756204531">Ընդգրկույթ</translation>
 <translation id="6707389671160270963">SSL սպասառուի վկայագիր</translation>
+<translation id="670893696722244877">Որոնեք ըստ լեզուների կամ ներածման մեթոդների</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> ու ևս 1 ներդիր}one{<ph name="PAGE_TITLE" /> ու ևս # ներդիր}other{<ph name="PAGE_TITLE" /> ու ևս # ներդիր}}</translation>
 <translation id="6709133671862442373">Նորություններ</translation>
 <translation id="6709357832553498500">Միանալ՝ օգտագործելով <ph name="EXTENSIONNAME" />-ը</translation>
@@ -5294,7 +5293,6 @@
 <translation id="7427348830195639090">Հետնաշերտի էջ՝ <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129">Զանգել <ph name="DEVICE_NAME" />-ից</translation>
 <translation id="7431719494109538750">HID սարքեր չեն գտնվել</translation>
-<translation id="7433692219247014412">{COUNT,plural, =0{Բացել բոլորը &amp;նոր պատուհանում}=1{Բացել &amp;նոր պատուհանում}one{Open All (#) in &amp;New Window}other{Բացել բոլորը (#) &amp;նոր պատուհանում}}</translation>
 <translation id="7433957986129316853">Պահպանել</translation>
 <translation id="7434509671034404296">Մշակողների համար</translation>
 <translation id="7434635829372401939">Կարգավորումների համաժամացում</translation>
@@ -5342,7 +5340,6 @@
 <translation id="7487141338393529395">Միացվեց ընդլայնված ուղղագրիչը</translation>
 <translation id="7487969577036436319">Բաղադրիչներ տեղադրված չեն</translation>
 <translation id="7488682689406685343">Այս կայքը կարող է խաբեությամբ համոզել ձեզ, որ թույլատրեք ձանձրացնող ծանուցումների ուղարկումը։</translation>
-<translation id="7489355918927585587">{COUNT,plural, =0{&amp;Բացել բոլորը}=1{&amp;Բացել էջանիշը}one{&amp;Open all (#)}other{&amp;Բացել բոլորը (#)}}</translation>
 <translation id="7489761397368794366">Զանգել սարքից</translation>
 <translation id="749028671485790643">Օգտատեր <ph name="VALUE" /></translation>
 <translation id="7490813197707563893">MAC հասցե</translation>
@@ -5510,7 +5507,6 @@
 <translation id="7691077781194517083">Չհաջողվեց զրոյացնել անվտանգության բանալու կարգավորումները։ Սխալի կոդը՝ <ph name="ERROR_CODE" />:</translation>
 <translation id="7691698019618282776">Crostini-ի նորացում</translation>
 <translation id="7696063401938172191">Ձեր «<ph name="PHONE_NAME" />» հեռախոսում՝</translation>
-<translation id="7698408911093959127">{COUNT,plural, =1{1 տարր էջանիշների ցանկում}one{# տարր էջանիշների ցանկում}other{# տարր էջանիշների ցանկում}}</translation>
 <translation id="7699968112832915395">Չհաջողվեց ավելացնել հաշիվը</translation>
 <translation id="7701040980221191251">Չկա</translation>
 <translation id="7701869757853594372">USER նկարագրիչներ</translation>
@@ -5553,6 +5549,7 @@
 <translation id="7753735457098489144">Չհաջողվեց տեղադրել։ Հիշողությունը բավարար չէ։ Տարածք ազատելու համար սարքի հիշողությունից ֆայլեր ջնջեք։</translation>
 <translation id="7754704193130578113">Յուրաքանչյուր ֆայլ ներբեռնելուց առաջ հարցնել որտեղ պահել</translation>
 <translation id="7755287808199759310">Այն կարող է արգելահանել ձեր ծնողը</translation>
+<translation id="7757592200364144203">Փոխել սարքի անունը</translation>
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" /> սարքից ուղարկված հաղորդագրություն</translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">Կարգավորեք ձեր էկրանի սահմանագծերը</translation>
@@ -5813,7 +5810,6 @@
 <translation id="8030852056903932865">Հաստատել</translation>
 <translation id="8032244173881942855">Չհաջողվեց հեռարձակել ներդիրը:</translation>
 <translation id="8033827949643255796">ընտրվեց</translation>
-<translation id="803435727213847625">{COUNT,plural, =0{Բացել բոլորը &amp;ինկոգնիտո պատուհանում}=1{Բացել &amp;ինկոգնիտո պատուհանում}one{Open all (#) in &amp;incognito window}other{Բացել բոլորը (#) &amp;ինկոգնիտո պատուհանում}}</translation>
 <translation id="8037117027592400564">Տեքստի ընթերցում սինթեզված խոսքի միջոցով</translation>
 <translation id="8037357227543935929">Հարցնել (կանխադրված)</translation>
 <translation id="803771048473350947">Ֆայլ</translation>
@@ -6009,6 +6005,7 @@
 <translation id="8264024885325823677">Այս կարգավորումը կառավարվում է ձեր ադմինիստրատորի կողմից։</translation>
 <translation id="8264718194193514834">«<ph name="EXTENSION_NAME" />» ընդլայնումը գործարկվել է լիաէկրան ռեժիմում:</translation>
 <translation id="826511437356419340">Միացվել է համատեսքի ռեժիմը։ Նավարկելու համար սահեցրեք մատը կամ սեղմեք Tab (եթե օգտագործում եք ստեղնաշար)։</translation>
+<translation id="8266947622852630193">Ներածման բոլոր մեթոդները</translation>
 <translation id="8267539814046467575">Ավելացնել տպիչ</translation>
 <translation id="8267961145111171918"><ph name="BEGIN_PARAGRAPH1" />Սրանք ընդհանուր տեղեկություններ են ձեր սարքի և դրա օգտագործման (օրինակ՝ մարտկոցի լիցքի, համակարգի ու հավելվածների օգտագործման և սխալների) մասին: Տեղեկություններն օգտագործվելու են Android-ի ծառայությունների աշխատանքը բարելավելու համար: Տվյալների մի մասը օգտակար կլինի մեր գործընկերների, օրինակ, Android ծրագրավորողների համար և կօգնի բարելավել նաև նրանց հավելվածներն ու արտադրանքները:<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Այս գործառույթն անջատելու դեպքում ձեր սարքը նախկինի պես կուղարկի տվյալներ, որոնք անհրաժեշտ են հիմնական ծառայություններին (օրինակ՝ համակարգային թարմացումներին ու անվտանգությանը):<ph name="END_PARAGRAPH2" />
@@ -6017,7 +6014,6 @@
 <translation id="826905130698769948">Սպասառուի սխալ վկայագիր</translation>
 <translation id="8270242299912238708">PDF փաստաթղթեր</translation>
 <translation id="827097179112817503">Ցույց տալ Սկիզբ կոճակը</translation>
-<translation id="8271246892936492311">{COUNT,plural, =1{1 էջանիշ ջնջվեց}one{# bookmarks deleted}other{# էջանիշ ջնջվեց}}</translation>
 <translation id="8272443605911821513">Կառավարեք ձեր ընդլայնումները՝ «Լրացուցիչ գործիքներում» սեղմելով Ընդլայնումներ:</translation>
 <translation id="8274332263553132018">Հեռարձակել ֆայլը</translation>
 <translation id="8274924778568117936">Տեղադրման ժամանակ <ph name="DEVICE_TYPE" /> սարքը չանջատեք և չփակեք: Թարմացումից հետո <ph name="DEVICE_TYPE" />-ն ավտոմատ կվերագործարկվի:</translation>

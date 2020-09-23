@@ -51,6 +51,7 @@
 <translation id="2315043854645842844">انتخاب گواهی سمت کلاینت توسط سیستم‌عامل پشتیبانی نمی‌شود.</translation>
 <translation id="2359808026110333948">ادامه</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> مگابایت</translation>
+<translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" />، و <ph name="NUM_MORE" /> اجازه دیگر مجاز هستند}one{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" />، و <ph name="NUM_MORE" /> اجازه دیگر مجاز هستند}other{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" />، و <ph name="NUM_MORE" /> اجازه دیگر مجاز هستند}}</translation>
 <translation id="2434158240863470628">بارگیری کامل شد <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2440823041667407902">دسترسی به موقعیت مکانی</translation>
 <translation id="2482878487686419369">اعلان‌ها</translation>
@@ -190,6 +191,7 @@
 <translation id="6447842834002726250">کوکی‌ها</translation>
 <translation id="6527303717912515753">اشتراک‌گذاری</translation>
 <translation id="6545864417968258051">اسکن کردن بلوتوث</translation>
+<translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" />، و <ph name="NUM_MORE" /> اجازه دیگر مسدود هستند}one{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" />، و <ph name="NUM_MORE" /> اجازه دیگر مسدود هستند}other{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" />، و <ph name="NUM_MORE" /> اجازه دیگر مسدود هستند}}</translation>
 <translation id="6561560012278703671">استفاده از پیام‌رسانی کم‌صداتر (درخواست‌های اعلان را مسدود می‌کند تا مزاحمتان نشود)</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> گیگابایت</translation>
 <translation id="6612358246767739896">محتوای محافظت‌شده</translation>
@@ -292,6 +294,7 @@
 <translation id="8959122750345127698">پیمایش غیرقابل دسترسی است: <ph name="URL" /></translation>
 <translation id="9019902583201351841">مدیریت شده توسط والدین شما</translation>
 <translation id="9074739597929991885">بلوتوث</translation>
+<translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" />، و <ph name="NUM_MORE" /> اجازه دیگر}one{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" />، و <ph name="NUM_MORE" /> اجازه دیگر}other{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" />، و <ph name="NUM_MORE" /> اجازه دیگر}}</translation>
 <translation id="913657688200966289">‏اجازه‌های <ph name="APP_NAME" /> را در <ph name="BEGIN_LINK" />تنظیمات Android<ph name="END_LINK" /> روشن کنید.</translation>
 <translation id="945632385593298557">دسترسی به میکروفن</translation>
 <translation id="965817943346481315">اگر سایتْ آگهی‌های مزاحم یا گمراه‌کننده نشان می‌دهد مسدود شود (توصیه می‌شود)</translation>

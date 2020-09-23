@@ -25,6 +25,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="119944043368869598">Vymazať všetko</translation>
 <translation id="1199716647557067911">Naozaj chcete vypnúť ovládanie prepínačmi?</translation>
 <translation id="121097972571826261">Dopredu o slovo</translation>
+<translation id="1225748608451425081">Váš Chromebook je uzamknutý pre známy problém. Prihlásiť sa budete môcť po uplynutí tohto času: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Ukončiť výber</translation>
 <translation id="1247372569136754018">Mikrofón (vnútorný)</translation>
 <translation id="1252999807265626933">Nabíja sa zo <ph name="POWER_SOURCE" /></translation>
@@ -136,6 +137,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="2341729377289034582">Uzamknuté zvisle</translation>
 <translation id="2352467521400612932">Nastavenia dotykového pera</translation>
 <translation id="2354174487190027830">Aktivujte sa sieť <ph name="NAME" /></translation>
+<translation id="2356210126990741501">Zdá sa, že váš telefón nie je online a my z neho pre vás nemôžeme získať všetky doplnky.</translation>
 <translation id="2359808026110333948">Pokračovať</translation>
 <translation id="2365393535144473978">Zapnutím mobilných dát aktivujete Bluetooth.</translation>
 <translation id="2369165858548251131">„Dobrý deň“ po čínsky</translation>
@@ -168,6 +170,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="2705001408393684014">Prepnúť mikrofón. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Hore</translation>
 <translation id="2718395828230677721">Nočný režim</translation>
+<translation id="2727175239389218057">Odpovedať</translation>
 <translation id="2727977024730340865">Batéria je zapojená do nabíjačky s nízkym výkonom. Nabíjanie batérie nemusí byť spoľahlivé.</translation>
 <translation id="2743387203779672305">Kopírovať do schránky</translation>
 <translation id="2792498699870441125">Alt + Hľadať</translation>
@@ -176,6 +179,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="2825619548187458965">Polička</translation>
 <translation id="2841907151129139818">Prepnuté na režim tabletu</translation>
 <translation id="2844169650293029770">Zariadenie USB-C (port vľavo vpredu)</translation>
+<translation id="2846247265041961677">Ojoj! Telefón sa nedá nájsť.</translation>
 <translation id="2865888419503095837">Informácie o sieti</translation>
 <translation id="2872961005593481000">Vypnúť</translation>
 <translation id="2878884018241093801">Žiadne nedávne položky</translation>
@@ -458,6 +462,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Zapnuté</translation>
 <translation id="5920710855273935292">Mikrofón je vypnutý.</translation>
+<translation id="594179686076170922">Pripája sa k vášmu telefónu…</translation>
 <translation id="5946788582095584774">Funkcia <ph name="FEATURE_NAME" /> je zapnutá.</translation>
 <translation id="5947494881799873997">Vrátiť</translation>
 <translation id="595202126637698455">Sledovanie výkonnosti je povolené</translation>
@@ -670,6 +675,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="8196787716797768628">Gestami môžete rýchlo prepínať medzi aplikáciami a používať Chromebook v režime tabletu.</translation>
 <translation id="8200772114523450471">Pokračovať</translation>
 <translation id="8203795194971602413">Kliknutie pravým tlačidlom myši</translation>
+<translation id="8219451629189078428">Chromebook musíte mať v tomto období zapnutý a pripojený k zásuvke. Uistite sa, či je kábel nabíjačky alebo adaptéra riadne pripojený do Chromebooku aj elektrickej zásuvky. Chromebook nevypínajte.</translation>
 <translation id="8236042855478648955">Čas na prestávku</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, sila signálu <ph name="SIGNAL_STRENGTH" />, batéria telefónu <ph name="BATTERY_STATUS" /></translation>
 <translation id="826107067893790409">Stlačením tlačidla Enter odomknite pre účet <ph name="USER_EMAIL_ADDRESS" /></translation>

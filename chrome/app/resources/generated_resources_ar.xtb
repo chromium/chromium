@@ -19,7 +19,6 @@
 <translation id="1013707859758800957">تم السماح بتشغيل مكون إضافي غير محمي على هذه الصفحة.</translation>
 <translation id="1015318665228971643">تعديل اسم المجلد</translation>
 <translation id="1015578595646638936">{NUM_DAYS,plural, =1{آخر يوم لتحديث جهاز <ph name="DEVICE_TYPE" />}zero{يجب تحديث جهاز <ph name="DEVICE_TYPE" /> خلال {NUM_DAYS} يوم}two{يجب تحديث جهاز <ph name="DEVICE_TYPE" /> خلال يومَين ({NUM_DAYS})}few{يجب تحديث جهاز <ph name="DEVICE_TYPE" /> خلال {NUM_DAYS} أيام}many{يجب تحديث جهاز <ph name="DEVICE_TYPE" /> خلال {NUM_DAYS} يومًا}other{يجب تحديث جهاز <ph name="DEVICE_TYPE" /> خلال {NUM_DAYS} يوم}}</translation>
-<translation id="1016437870506746108">{COUNT,plural, =0{فتح الكل في &amp;نافذة جديدة}=1{فتح في &amp;نافذة جديدة}two{فتح كلا العنوانين (#) في &amp;نافذة جديدة}few{فتح كل الـ (#) عناوين في &amp;نافذة جديدة}many{فتح كل الـ (#) عنوانًا في &amp;نافذة جديدة}other{فتح كل الـ (#) عنوان في &amp;نافذة جديدة}}</translation>
 <translation id="1016566241875885511">معلومات إضافية (اختياري)</translation>
 <translation id="1017280919048282932">إ&amp;ضافة التعبير إلى القاموس</translation>
 <translation id="1018656279737460067">تم الإلغاء</translation>
@@ -1087,7 +1086,6 @@
 <translation id="2274840746523584236">‏شحن جهاز Chromebook</translation>
 <translation id="2276503375879033601">إضافة المزيد من التطبيقات</translation>
 <translation id="2277255602909579701">جميع ملفات تعريف الارتباط وبيانات الموقع</translation>
-<translation id="2277769717710009150">{COUNT,plural, =1{تم نسخ عنصر واحد}zero{تم نسخ # عنصر}two{تم نسخ عنصرين (#)}few{تم نسخ # عناصر}many{تم نسخ # عنصرًا}other{تم نسخ # عنصر}}</translation>
 <translation id="2278562042389100163">فتح نافذة المتصفح</translation>
 <translation id="2280486287150724112">الهامش الأيمن</translation>
 <translation id="2282146716419988068">‏معالجة وحدة معالجة الرسومات (GPU)</translation>
@@ -2367,7 +2365,6 @@
 <translation id="3797900183766075808">&amp;بحث <ph name="SEARCH_ENGINE" /> عن "<ph name="SEARCH_TERMS" />"</translation>
 <translation id="3798449238516105146">الإصدار</translation>
 <translation id="3799128412641261490">إعدادات "الوصول عبر مفتاح التحويل"</translation>
-<translation id="3799201711591988491">{COUNT,plural, =0{&amp;فتح الكل}=1{&amp;فتح الإشارة المرجعية}two{&amp;فتح الكل (#)}few{&amp;فتح الكل (#)}many{&amp;فتح الكل (#)}other{&amp;فتح الكل (#)}}</translation>
 <translation id="3800806661949714323">عرض الكل (مستحسن)</translation>
 <translation id="380408572480438692">‏يساعد تفعيل جمع بيانات مستوى الأداء Google في تحسين النظام بمرور الوقت. وتجدر الإشارة إلى أنه لا يتم إرسال أي بيانات حتى ترسل تقريرًا بتعليقاتك (Alt-Shift-I) مع تضمين بيانات مستوى الأداء. ويمكنك الرجوع إلى هذه الشاشة لإيقاف جمع البيانات متى شئت.</translation>
 <translation id="3807249107536149332"><ph name="EXTENSION_NAME" /> (معرف الإضافة "<ph name="EXTENSION_ID" />") غير مسموح به على شاشة تسجيل الدخول.</translation>
@@ -3203,7 +3200,6 @@
 <translation id="4854317507773910281">اختَر حساب أحد الوالدَين للحصول على موافقة.</translation>
 <translation id="485480310608090163">المزيد من الإعدادات والأذونات</translation>
 <translation id="4856478137399998590">تم تفعيل خدمة بيانات الجوال وهي جاهزة للاستخدام.</translation>
-<translation id="4857506433977877623">{COUNT,plural, =0{فتح الكل في &amp;نافذة التصفح المتخفي}=1{فتح في &amp;نافذة التصفح المتخفي}two{فتح كلا العنوانين (#) في &amp;نافذة التصفح المتخفي}few{فتح كل الـ (#) عناوين في &amp;نافذة التصفح المتخفي}many{فتح كل الـ (#) عنوانًا في &amp;نافذة التصفح المتخفي}other{فتح كل الـ (#) عنوان في &amp;نافذة التصفح المتخفي}}</translation>
 <translation id="4858792381671956233">لقد سألت والديك ما إذا كانت زيارة هذا الموقع مناسبةً لك</translation>
 <translation id="4858913220355269194">فريتز</translation>
 <translation id="4862642413395066333">‏توقيع استجابات OCSP</translation>
@@ -5290,7 +5286,6 @@
 <translation id="7427348830195639090">صفحة الخلفية: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129">الاتصال من <ph name="DEVICE_NAME" /></translation>
 <translation id="7431719494109538750">‏لم يتم العثور على أجهزة HID</translation>
-<translation id="7433692219247014412">{COUNT,plural, =0{فتح الكل في &amp;نافذة جديدة}=1{فتح في &amp;نافذة جديدة}two{فتح كلا العنوانين (#) في &amp;نافذة جديدة}few{فتح كل الـ (#) عناوين في &amp;نافذة جديدة}many{فتح كل الـ (#) عنوانًا في &amp;نافذة جديدة}other{فتح كل الـ (#) عنوان في &amp;نافذة جديدة}}</translation>
 <translation id="7433957986129316853">تجاهل</translation>
 <translation id="7434509671034404296">المطوِّر</translation>
 <translation id="7434635829372401939">مزامنة إعداداتك</translation>
@@ -5338,7 +5333,6 @@
 <translation id="7487141338393529395">تفعيل التدقيق الإملائي المُحسَّن</translation>
 <translation id="7487969577036436319">لم يتم تثبيت أي مكونات</translation>
 <translation id="7488682689406685343">قد يحاول هذا الموقع خداعك للسماح بإشعارات غير مرغوب فيها.</translation>
-<translation id="7489355918927585587">{COUNT,plural, =0{&amp;فتح الكل}=1{&amp;فتح الإشارة المرجعية}two{&amp;فتح كلا العنوانين (#)}few{&amp;فتح كل الـ (#) عناوين}many{&amp;فتح كل الـ (#) عنوانًا}other{&amp;فتح كل الـ (#) عنوان}}</translation>
 <translation id="7489761397368794366">الاتصال من جهازك</translation>
 <translation id="749028671485790643">الشخص <ph name="VALUE" /></translation>
 <translation id="7490813197707563893">‏عنوان MAC</translation>
@@ -5506,7 +5500,6 @@
 <translation id="7691077781194517083">تعذّرت إعادة ضبط مفتاح الأمان هذا. الخطأ <ph name="ERROR_CODE" />.</translation>
 <translation id="7691698019618282776">‏ترقية نظام التشغيل Crostini</translation>
 <translation id="7696063401938172191">على '<ph name="PHONE_NAME" />':</translation>
-<translation id="7698408911093959127">{COUNT,plural, =1{يوجد عنصر (واحد) في قائمة الإشارات المرجعية}zero{يوجد # عنصر في قائمة الإشارات المرجعية}two{يوجد عنصران (#) في قائمة الإشارات المرجعية}few{يوجد # عناصر في قائمة الإشارات المرجعية}many{يوجد # عنصرًا في قائمة الإشارات المرجعية}other{يوجد # عنصر في قائمة الإشارات المرجعية}}</translation>
 <translation id="7699968112832915395">تعذُّر إضافة الحساب</translation>
 <translation id="7701040980221191251">لا يوجد</translation>
 <translation id="7701869757853594372">معالجات المستخدم</translation>
@@ -5811,7 +5804,6 @@
 <translation id="8030852056903932865">أوافق</translation>
 <translation id="8032244173881942855">يتعذّر إرسال علامة التبويب.</translation>
 <translation id="8033827949643255796">تم التحديد</translation>
-<translation id="803435727213847625">{COUNT,plural, =0{فتح الكل في &amp;نافذة التصفح المتخفي}=1{فتح في &amp;نافذة التصفح المتخفي}two{فتح كلا العنوانين (#) في &amp;نافذة التصفح المتخفي}few{فتح كل الـ (#) عناوين في &amp;نافذة التصفح المتخفي}many{فتح كل الـ (#) عنوانًا في &amp;نافذة التصفح المتخفي}other{فتح كل الـ (#) عنوان في &amp;نافذة التصفح المتخفي}}</translation>
 <translation id="8037117027592400564">قراءة جميع النصوص المنطوقة باستخدام الكلام المركب</translation>
 <translation id="8037357227543935929">الطلب (تلقائي)</translation>
 <translation id="803771048473350947">ملف</translation>
@@ -6015,7 +6007,6 @@
 <translation id="826905130698769948">شهادة العميل غير صالحة</translation>
 <translation id="8270242299912238708">‏مستندات PDF</translation>
 <translation id="827097179112817503">عرض زر الصفحة الرئيسية</translation>
-<translation id="8271246892936492311">{COUNT,plural, =1{تم حذف إشارة مرجعية واحدة}zero{تم حذف # إشارة مرجعية}two{تم حذف إشارتين مرجعيتين (#)}few{تم حذف # إشارات مرجعية}many{تم حذف # إشارةً مرجعيةً}other{تم حذف # إشارة مرجعية}}</translation>
 <translation id="8272443605911821513">يمكنك إدارة الإضافات من خلال النقر على "الإضافات" في قائمة "المزيد من الأدوات".</translation>
 <translation id="8274332263553132018">إرسال الملف</translation>
 <translation id="8274924778568117936">لا توقف تشغيل جهاز <ph name="DEVICE_TYPE" /> أو تُغلقه لحين الانتهاء من التحديث. ستتم إعادة تشغيل جهاز <ph name="DEVICE_TYPE" /> بعد اكتمال التثبيت.</translation>

@@ -19,7 +19,6 @@
 <translation id="1013707859758800957">Дозвољено је покретање додатне компоненте која је изван заштићеног окружења на овој страници.</translation>
 <translation id="1015318665228971643">Измените назив директоријума</translation>
 <translation id="1015578595646638936">{NUM_DAYS,plural, =1{Последњи дан за ажурирање уређаја <ph name="DEVICE_TYPE" />}one{Ажурирајте <ph name="DEVICE_TYPE" /> у року од {NUM_DAYS} дана}few{Ажурирајте <ph name="DEVICE_TYPE" /> у року од {NUM_DAYS} дана}other{Ажурирајте <ph name="DEVICE_TYPE" /> у року од {NUM_DAYS} дана}}</translation>
-<translation id="1016437870506746108">{COUNT,plural, =0{Отвори све у &amp;новом прозору}=1{Отвори у &amp;новом прозору}one{Отвори све (#) у &amp;новом прозору}few{Отвори све (#) у &amp;новом прозору}other{Отвори све (#) у &amp;новом прозору}}</translation>
 <translation id="1016566241875885511">Додатне информације (опционално)</translation>
 <translation id="1017280919048282932">&amp;Додај у речник</translation>
 <translation id="1018656279737460067">Отказано</translation>
@@ -1084,7 +1083,6 @@
 <translation id="2274840746523584236">Напуните Chromebook</translation>
 <translation id="2276503375879033601">Додај још апликација</translation>
 <translation id="2277255602909579701">Сви колачићи и подаци о сајтовима</translation>
-<translation id="2277769717710009150">{COUNT,plural, =1{1 ставка је копирана}one{# ставка је копирана}few{# ставке су копиране}other{# ставки је копирано}}</translation>
 <translation id="2278562042389100163">Отварање прозора прегледача</translation>
 <translation id="2280486287150724112">Десна маргина</translation>
 <translation id="2282146716419988068">GPU процес</translation>
@@ -2365,7 +2363,6 @@
 <translation id="3797900183766075808">&amp;Претражи „<ph name="SEARCH_TERMS" />“ на претраживачу <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3798449238516105146">Верзија</translation>
 <translation id="3799128412641261490">Подешавања приступа помоћу прекидача</translation>
-<translation id="3799201711591988491">{COUNT,plural, =0{&amp;Отвори све}=1{&amp;Отвори обележивач}one{&amp;Отвори све (#)}few{&amp;Отвори све (#)}other{&amp;Отвори све (#)}}</translation>
 <translation id="3800806661949714323">Прикажи све (препоручено)</translation>
 <translation id="380408572480438692">Ако омогућите прикупљање података о учинку, помоћи ћете Google-у да временом побољшава систем. Никакви подаци се не шаљу док не пошаљете извештај са повратним информацијама (Alt-Shift-I) и уврстите податке о учинку. У било ком тренутку можете да се вратите на овај екран и онемогућите прикупљање.</translation>
 <translation id="3807249107536149332"><ph name="EXTENSION_NAME" /> (ИД додатка „<ph name="EXTENSION_ID" />“) није дозвољен на екрану за пријављивање.</translation>
@@ -3204,7 +3201,6 @@
 <translation id="4854317507773910281">Одабери налог родитеља за одобрење</translation>
 <translation id="485480310608090163">Још подешавања и дозвола</translation>
 <translation id="4856478137399998590">Услуга мобилног преноса података је активирана и спремна за употребу</translation>
-<translation id="4857506433977877623">{COUNT,plural, =0{Отвори све у &amp;прозору Без архивирања}=1{Отвори у &amp;прозору Без архивирања}one{Отвори све (#) у &amp;прозору Без архивирања}few{Отвори све (#) у &amp;прозору Без архивирања}other{Отвори све (#) у &amp;прозору Без архивирања}}</translation>
 <translation id="4858792381671956233">Питао/ла си родитеље да ли смеш да посетиш овај сајт</translation>
 <translation id="4858913220355269194">Фриц</translation>
 <translation id="4862642413395066333">Потписивање OCSP одговора</translation>
@@ -5292,7 +5288,6 @@
 <translation id="7427348830195639090">Страница у позадини: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129">Позив са уређаја <ph name="DEVICE_NAME" /></translation>
 <translation id="7431719494109538750">Није пронађен ниједан уређај са интерфејсом</translation>
-<translation id="7433692219247014412">{COUNT,plural, =0{Отвори све у &amp;новом прозору}=1{Отвори у &amp;новом прозору}one{Отвори све (#) у &amp;новом прозору}few{Отвори све (#) у &amp;новом прозору}other{Отвори све (#) у &amp;новом прозору}}</translation>
 <translation id="7433957986129316853">Задржи</translation>
 <translation id="7434509671034404296">Програмер</translation>
 <translation id="7434635829372401939">Синхронизујте подешавања</translation>
@@ -5340,7 +5335,6 @@
 <translation id="7487141338393529395">Укључите побољшану проверу правописа</translation>
 <translation id="7487969577036436319">Није инсталирана ниједна компонента</translation>
 <translation id="7488682689406685343">Овај сајт можда покушава да вас превари да дозволите ометајућа обавештења.</translation>
-<translation id="7489355918927585587">{COUNT,plural, =0{&amp;Отвори све}=1{&amp;Отвори обележивач}one{&amp;Отвори све (#)}few{&amp;Отвори све (#)}other{&amp;Отвори све (#)}}</translation>
 <translation id="7489761397368794366">Позовите са свог уређаја</translation>
 <translation id="749028671485790643">Особа <ph name="VALUE" /></translation>
 <translation id="7490813197707563893">MAC адреса</translation>
@@ -5508,7 +5502,6 @@
 <translation id="7691077781194517083">Ресетовање овог безбедносног кључа није успело. Грешка <ph name="ERROR_CODE" />.</translation>
 <translation id="7691698019618282776">Надоградња Crostini-ја</translation>
 <translation id="7696063401938172191">На телефону „<ph name="PHONE_NAME" />“:</translation>
-<translation id="7698408911093959127">{COUNT,plural, =1{1 ставка на листи обележивача}one{# ставка на листи обележивача}few{# ставке на листи обележивача}other{# ставки на листи обележивача}}</translation>
 <translation id="7699968112832915395">Додавање налога није успело</translation>
 <translation id="7701040980221191251">Ништа</translation>
 <translation id="7701869757853594372">КОРИСНИЧКИ надимци</translation>
@@ -5814,7 +5807,6 @@
 <translation id="8030852056903932865">Одобри</translation>
 <translation id="8032244173881942855">Није успело пребацивање картице.</translation>
 <translation id="8033827949643255796">изабрано</translation>
-<translation id="803435727213847625">{COUNT,plural, =0{Отвори све у &amp;прозору Без архивирања}=1{Отвори у &amp;прозору Без архивирања}one{Отвори све (#) у &amp;прозору Без архивирања}few{Отвори све (#) у &amp;прозору Без архивирања}other{Отвори све (#) у &amp;прозору Без архивирања}}</translation>
 <translation id="8037117027592400564">Читање свог текста изговореног помоћу синтетизованог говора</translation>
 <translation id="8037357227543935929">Питај (подразумевано)</translation>
 <translation id="803771048473350947">Датотека</translation>
@@ -6019,7 +6011,6 @@
 <translation id="826905130698769948">Неважећи сертификат клијента</translation>
 <translation id="8270242299912238708">PDF документи</translation>
 <translation id="827097179112817503">Прикажи дугме за почетну страницу</translation>
-<translation id="8271246892936492311">{COUNT,plural, =1{1 обележивач је избрисан}one{# обележивач је избрисан}few{# обележивача су избрисана}other{# обележивача је избрисано}}</translation>
 <translation id="8272443605911821513">Управљајте додацима кликом на Додаци у менију „Још алатки“.</translation>
 <translation id="8274332263553132018">Пребаците датотеку</translation>
 <translation id="8274924778568117936">Не искључујте и не затварајте <ph name="DEVICE_TYPE" /> док се ажурирање не заврши. <ph name="DEVICE_TYPE" /> ће се поново покренути када се инсталација заврши.</translation>

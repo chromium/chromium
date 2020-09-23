@@ -19,7 +19,6 @@
 <translation id="1013707859758800957">சாண்ட்பாக்ஸ் செய்யப்படாத செருகுநிரல், இந்தப் பக்கத்தில் இயங்க அனுமதிக்கப்பட்டது.</translation>
 <translation id="1015318665228971643">கோப்புறையின் பெயரை மாற்று</translation>
 <translation id="1015578595646638936">{NUM_DAYS,plural, =1{<ph name="DEVICE_TYPE" /> சாதனத்தைப் புதுப்பிப்பதற்கான கடைசி நாள்}other{{NUM_DAYS} நாட்களுக்குள் <ph name="DEVICE_TYPE" /> சாதனத்தைப் புதுப்பிக்க வேண்டும்}}</translation>
-<translation id="1016437870506746108">{COUNT,plural, =0{எல்லாவற்றையும் &amp;புதிய சாளரத்தில் திற}=1{&amp;புதிய சாளரத்தில் திற}other{எல்லாவற்றையும் (#) &amp;புதிய சாளரத்தில் திற}}</translation>
 <translation id="1016566241875885511">கூடுதல் தகவல் (விரும்பினால்)</translation>
 <translation id="1017280919048282932">&amp;அகராதியுடன் சேர்</translation>
 <translation id="1018656279737460067">ரத்து செய்யப்பட்டது</translation>
@@ -1102,7 +1101,6 @@
 <translation id="2274840746523584236">உங்கள் Chromebookகைச் சார்ஜ் செய்யுங்கள்</translation>
 <translation id="2276503375879033601">மேலும் பயன்பாடுகளைச் சேர்க்கவும்</translation>
 <translation id="2277255602909579701">எல்லா குக்கீகளும் தளத்தின் தரவும்</translation>
-<translation id="2277769717710009150">{COUNT,plural, =1{ஒரு புத்தகக்குறி நகலெடுக்கப்பட்டது}other{# புக்மார்க்குகள் நகலெடுக்கப்பட்டன}}</translation>
 <translation id="2278562042389100163">உலாவி சாளரத்தைத் திற</translation>
 <translation id="2280486287150724112">வலது ஓரஇடம்</translation>
 <translation id="2282146716419988068">GPU செயல்முறை</translation>
@@ -2395,7 +2393,6 @@
 <translation id="3797900183766075808"><ph name="SEARCH_ENGINE" /> இல் “<ph name="SEARCH_TERMS" />” எனத் &amp;தேடு</translation>
 <translation id="3798449238516105146">பதிப்பு</translation>
 <translation id="3799128412641261490">ஸ்விட்ச் அணுகலுக்கான அமைப்புகள்</translation>
-<translation id="3799201711591988491">{COUNT,plural, =0{&amp;எல்லாம் திற}=1{&amp;புத்தகக்குறியைத் திற}other{&amp;எல்லாப் புத்தகக்குறிகளையும் (#) திற}}</translation>
 <translation id="3800806661949714323">எல்லாம் காட்டு (பரிந்துரைக்கப்படுவது)</translation>
 <translation id="380408572480438692">செயல்திறன் தரவின் சேகரிப்பை இயக்குவது, குறிப்பிட்ட காலத்தில் அமைப்பை மேம்படுத்த Googleளுக்கு உதவும். நீங்கள் செயல்திறன் தரவுடன் கருத்து அறிக்கையை (Alt-Shift-I) பதிவுசெய்யும் வரை தரவு எதுவும் அனுப்பப்படாது. சேகரிப்பை முடக்க நீங்கள் எப்போது வேண்டுமானாலும் இந்தத் திரைக்கு திரும்ப வரலாம்.</translation>
 <translation id="3807249107536149332">உள்நுழைவுத் திரையில் <ph name="EXTENSION_NAME" /> (நீட்டிப்பு ஐடி "<ph name="EXTENSION_ID" />") அனுமதிக்கப்படாது.</translation>
@@ -3251,7 +3248,6 @@
 <translation id="4854317507773910281">அனுமதி பெற பெற்றோர் கணக்கைத் தேர்வுசெய்யவும்</translation>
 <translation id="485480310608090163">கூடுதல் அமைப்புகளும் அனுமதிகளும்</translation>
 <translation id="4856478137399998590">உங்கள் மொபைல் டேட்டா சேவை செயல்படுத்தப்பட்டது மற்றும் பயன்படுத்தத் தயாராக உள்ளது</translation>
-<translation id="4857506433977877623">{COUNT,plural, =0{எல்லாவற்றையும் &amp;மறைநிலைச் சாளரத்தில் திற}=1{&amp;மறைநிலைச் சாளரத்தில் திற}other{எல்லாவற்றையும் (#) &amp;மறைநிலைச் சாளரத்தில் திற}}</translation>
 <translation id="4858792381671956233">இந்தத் தளத்தைப் பார்வையிடலாமா என, நீங்கள் பெற்றோரிடம் கேட்டுள்ளீர்கள்</translation>
 <translation id="4858913220355269194">ஃபிரிட்ஸ்</translation>
 <translation id="4862642413395066333">OCSP மறுமொழிகளை கையொப்பமிடல்</translation>
@@ -5365,7 +5361,6 @@
 <translation id="7427348830195639090">பின்புல பக்கம்: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129"><ph name="DEVICE_NAME" /> சாதனத்திலிருந்து அழை</translation>
 <translation id="7431719494109538750">HID சாதனங்கள் இல்லை</translation>
-<translation id="7433692219247014412">{COUNT,plural, =0{எல்லாவற்றையும் &amp;புதிய சாளரத்தில் திற}=1{&amp;புதிய சாளரத்தில் திற}other{எல்லாவற்றையும் (#) &amp;புதிய சாளரத்தில் திற}}</translation>
 <translation id="7433957986129316853">ரத்துசெய்ய வேண்டாம்</translation>
 <translation id="7434509671034404296">டெவலப்பர்</translation>
 <translation id="7434635829372401939">உங்கள் அமைப்புகளை ஒத்திசைத்தல்</translation>
@@ -5415,7 +5410,6 @@
 <translation id="7487141338393529395">'மேம்பட்ட எழுத்துப் பிழை சரிபார்க்கும்' அம்சத்தை இயக்கு</translation>
 <translation id="7487969577036436319">கூறுகள் எதுவும் நிறுவப்படவில்லை</translation>
 <translation id="7488682689406685343">குறுக்கிடும் அறிவிப்புகளை அனுமதிக்குமாறு இந்தத் தளம் உங்களை ஏமாற்ற முயலக்கூடும்.</translation>
-<translation id="7489355918927585587">{COUNT,plural, =0{&amp;எல்லாம் திற}=1{&amp;புத்தகக்குறியைத் திற}other{&amp;எல்லாவற்றையும் (#) திற}}</translation>
 <translation id="7489761397368794366">உங்கள் சாதனத்திலிருந்து அழையுங்கள்</translation>
 <translation id="749028671485790643">நபர் <ph name="VALUE" /></translation>
 <translation id="7490813197707563893">MAC முகவரி</translation>
@@ -5588,7 +5582,6 @@
 <translation id="7691077781194517083">இந்தப் பாதுகாப்பு விசையை மீட்டமைக்க முடியவில்லை. பிழை <ph name="ERROR_CODE" />.</translation>
 <translation id="7691698019618282776">Crostini மேம்பாடு</translation>
 <translation id="7696063401938172191">உங்கள் '<ph name="PHONE_NAME" />' இல்:</translation>
-<translation id="7698408911093959127">{COUNT,plural, =1{புத்தகக்குறிப் பட்டியலில் 1 புத்தகக்குறி உள்ளது}other{புத்தகக்குறிப் பட்டியலில் # புக்மார்க்குகள் உள்ளன}}</translation>
 <translation id="7699968112832915395">கணக்கைச் சேர்க்க முடியவில்லை</translation>
 <translation id="7701040980221191251">எதுவுமில்லை</translation>
 <translation id="7701869757853594372">USER ஹேண்டில்ஸ்</translation>
@@ -5898,7 +5891,6 @@
 <translation id="8030852056903932865">அனுமதி</translation>
 <translation id="8032244173881942855">தாவலை அலைபரப்ப முடியவில்லை.</translation>
 <translation id="8033827949643255796">தேர்ந்தெடுக்கப்பட்டன</translation>
-<translation id="803435727213847625">{COUNT,plural, =0{எல்லாவற்றையும் &amp;மறைநிலைச் சாளரத்தில் திற}=1{&amp;மறைநிலைச் சாளரத்தில் திற}other{எல்லாவற்றையும் (#) &amp;மறைநிலைச் சாளரத்தில் திற}}</translation>
 <translation id="8037117027592400564">தொகுக்கப்பட்ட பேச்சைப் பயன்படுத்திப் பேசப்படும் எல்லா உரையையும் படிக்கலாம்</translation>
 <translation id="8037357227543935929">கேள் (இயல்பு)</translation>
 <translation id="803771048473350947">கோப்பு</translation>
@@ -6105,7 +6097,6 @@
 <translation id="826905130698769948">தவறான கிளையண்ட் சான்றிதழ்</translation>
 <translation id="8270242299912238708">PDF ஆவணங்கள்</translation>
 <translation id="827097179112817503">முகப்பு பொத்தானைக் காட்டு</translation>
-<translation id="8271246892936492311">{COUNT,plural, =1{ஒரு புத்தகக்குறி நீக்கப்பட்டது}other{# புக்மார்க்குகள் நீக்கப்பட்டன}}</translation>
 <translation id="8272443605911821513">"கூடுதல் கருவிகள்" மெனுவில் நீட்டிப்புகள் என்பதைக் கிளிக் செய்து நீட்டிப்புகளை நிர்வகிக்கவும்.</translation>
 <translation id="8274332263553132018">கோப்பை அலைபரப்பு</translation>
 <translation id="8274924778568117936">புதுப்பிப்பு முடியும் வரை <ph name="DEVICE_TYPE" /> சாதனத்தை முடக்கவோ அல்லது மூடவோ வேண்டாம். நிறுவியதும், <ph name="DEVICE_TYPE" /> மீண்டும் தொடங்கும்.</translation>

@@ -25,6 +25,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="119944043368869598">Ondoa vyote</translation>
 <translation id="1199716647557067911">Je, una uhakika kuwa ungependa kuzima kipengele cha Kufikia Kupitia Swichi?</translation>
 <translation id="121097972571826261">Sogeza mbele kwa neno moja</translation>
+<translation id="1225748608451425081">Tumefunga Chromebook yako kwa sababu ya tatizo linalojulikana. Utaweza kuingia katika akaunti baada ya: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Acha kuchagua</translation>
 <translation id="1247372569136754018">Maikrofoni (ya ndani)</translation>
 <translation id="1252999807265626933">Inachaji kwenye <ph name="POWER_SOURCE" /></translation>
@@ -136,6 +137,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="2341729377289034582">Inatumia skrini wima pekee</translation>
 <translation id="2352467521400612932">Mipangilio ya stylus</translation>
 <translation id="2354174487190027830">Inaanza kutumia <ph name="NAME" /></translation>
+<translation id="2356210126990741501">Inaonekana simu yako haipo mtandaoni na tumeshindwa kukuletea mazuri yake yote kwa sasa.</translation>
 <translation id="2359808026110333948">Endelea</translation>
 <translation id="2365393535144473978">Kuwasha data ya mtandao wa simu kutawasha Bluetooth.</translation>
 <translation id="2369165858548251131">"Hujambo" kwa Kichina</translation>
@@ -168,6 +170,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="2705001408393684014">Washa Maikrofoni. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Juu</translation>
 <translation id="2718395828230677721">Mwanga wa Usiku</translation>
+<translation id="2727175239389218057">Jibu</translation>
 <translation id="2727977024730340865">Imechomekwa katika chaja ya kawi ya chini. Huenda kuchaji kwa betri hakutakuwa kuzuri.</translation>
 <translation id="2743387203779672305">Nakili kwenye ubao wa kunakili</translation>
 <translation id="2792498699870441125">Alt + Utafutaji</translation>
@@ -176,6 +179,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="2825619548187458965">Rafu</translation>
 <translation id="2841907151129139818">Inatumia hali ya kompyuta kibao</translation>
 <translation id="2844169650293029770">Kifaa cha USB-C (mlango wa upande wa kushoto mbele)</translation>
+<translation id="2846247265041961677">Samahani! Haikuweza kupata simu</translation>
 <translation id="2865888419503095837">Maelezo ya mtandao</translation>
 <translation id="2872961005593481000">Zima</translation>
 <translation id="2878884018241093801">Hakuna vipengee vya hivi karibuni</translation>
@@ -303,6 +307,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Imezimwa - moja}other{Imezimwa - #}}</translation>
 <translation id="4072264167173457037">Mtandao ni thabiti kiasi</translation>
 <translation id="4112140312785995938">Sogeza Nyuma</translation>
+<translation id="4114315158543974537">Washa Phone Hub</translation>
 <translation id="4129129681837227511">Ili uone arifa kwenye skrini iliyofungwa, ifungue ili ubadilishe mipangilio hii</translation>
 <translation id="4146833061457621061">Cheza muziki</translation>
 <translation id="4149156641122542261"><ph name="DEVICE_TYPE" /> inadhibitiwa na <ph name="DOMAIN" /></translation>
@@ -434,6 +439,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="5648021990716966815">Pini ya maikrofoni</translation>
 <translation id="5669267381087807207">Inawashwa</translation>
 <translation id="5673434351075758678">Imebadalisha lugha kutoka "<ph name="FROM_LOCALE" />" kuwa "<ph name="TO_LOCALE" />" baada ya kusawazisha mipangilio yako.</translation>
+<translation id="5679050765726761783">Umeunganisha adapta inayotumia kiwango cha chini cha nguvu za umeme</translation>
 <translation id="5682642926269496722">Programu ya Mratibu wa Google haipatikani katika akaunti ya mtumiaji wa sasa.</translation>
 <translation id="5689633613396158040">Mwanga wa Usiku hufanya uangalie skrini yako au usome katika mwangaza hafifu kwa urahisi. Gusa ili ubadilishe saa ambapo Mwanga wa Usiku huwashwa au uuzime kabisa.</translation>
 <translation id="5691772641933328258">Haikutambua alama ya kidole</translation>
@@ -458,6 +464,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Imewashwa</translation>
 <translation id="5920710855273935292">Umezima maikrofoni.</translation>
+<translation id="594179686076170922">Inaunganisha simu yako...</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> kimewashwa.</translation>
 <translation id="5947494881799873997">Rejesha</translation>
 <translation id="595202126637698455">Ufuatiliaji wa utendaji umewashwa</translation>
@@ -547,6 +554,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="6857811139397017780">Amilisha <ph name="NETWORKSERVICE" /></translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Imesalia tarakimu moja}other{Zimesalia tarakimu #}}</translation>
 <translation id="6878400149835617132">Njia ya mkato imezimwa</translation>
+<translation id="6886172995547742638">Huenda <ph name="DEVICE_TYPE" /> yako ikafanya kazi polepole. Tumia adapta ya nishati ya USB-C ya Wati <ph name="PREFERRED_MINIMUM_POWER" /> au zaidi.</translation>
 <translation id="6896758677409633944">Nakili</translation>
 <translation id="6910714959251846841">Sasisho hili linahitaji powerwash kwenye kifaa chako. Pata maelezo zaidi kuhusu sasisho jipya la <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="6919251195245069855">Imeshindwa kutambua kadi yako mahiri. Jaribu tena.</translation>
@@ -671,6 +679,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="8196787716797768628">Tumia ishara kubadili haraka kati ya programu na utumie Chromebook katika hali ya kompyuta kibao.</translation>
 <translation id="8200772114523450471">Endelea</translation>
 <translation id="8203795194971602413">Mbofyo wa kulia</translation>
+<translation id="8219451629189078428">Chromebook yako inahitaji kubaki ikiwa imewashwa na kuunganishwa kwenye chaja wakati huu. Hakikisha kuwa kebo za adapta au chaja zimechomekwa kabisa kwenye Chromebook yako na soketi ya umeme. Usizime Chromebook yako.</translation>
 <translation id="8236042855478648955">Ni wakati wa kupumzika</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, Uthabiti wa Mtandao <ph name="SIGNAL_STRENGTH" />, Betri ya Simu <ph name="BATTERY_STATUS" /></translation>
 <translation id="826107067893790409">Bonyeza Enter ili ufungue ukitumia <ph name="USER_EMAIL_ADDRESS" /></translation>

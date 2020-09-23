@@ -19,7 +19,6 @@
 <translation id="1013707859758800957">На гэтай старонцы дазволена не змешчаная ў пясочніку ўбудова.</translation>
 <translation id="1015318665228971643">Змяніць назву папкі</translation>
 <translation id="1015578595646638936">{NUM_DAYS,plural, =1{Апошні дзень для абнаўлення прылады "<ph name="DEVICE_TYPE" />"}one{Абнавіце прыладу "<ph name="DEVICE_TYPE" />" на працягу {NUM_DAYS} дня}few{Абнавіце прыладу "<ph name="DEVICE_TYPE" />" на працягу {NUM_DAYS} дзён}many{Абнавіце прыладу "<ph name="DEVICE_TYPE" />" на працягу {NUM_DAYS} дзён}other{Абнавіце прыладу "<ph name="DEVICE_TYPE" />" на працягу {NUM_DAYS} дня}}</translation>
-<translation id="1016437870506746108">{COUNT,plural, =0{Адкрыць усе ў &amp;новым акне}=1{Адкрыць у &amp;новым акне}one{Адкрыць усе (#) у &amp;новым акне}few{Адкрыць усе (#) у &amp;новым акне}many{Адкрыць усе (#) у &amp;новым акне}other{Адкрыць усе (#) у &amp;новым акне}}</translation>
 <translation id="1016566241875885511">Дадатковыя звесткі (неабавязкова)</translation>
 <translation id="1017280919048282932">&amp;Дадаць у слоўнік</translation>
 <translation id="1018656279737460067">Скасавана</translation>
@@ -1087,7 +1086,6 @@
 <translation id="2274840746523584236">Зарадзіце Chromebook</translation>
 <translation id="2276503375879033601">Дадаць іншыя праграмы</translation>
 <translation id="2277255602909579701">Усе файлы cookie і даныя сайтаў</translation>
-<translation id="2277769717710009150">{COUNT,plural, =1{1 элемент скапіраваны}one{# элемент скапіраваны}few{# элементы скапіравана}many{# элементаў скапіравана}other{# элемента скапіравана}}</translation>
 <translation id="2278562042389100163">Адкрыць акно браўзера</translation>
 <translation id="2280486287150724112">Правае поле</translation>
 <translation id="2282146716419988068">Працэс GPU</translation>
@@ -2367,7 +2365,6 @@
 <translation id="3797900183766075808">&amp;Шукаць у <ph name="SEARCH_ENGINE" /> "<ph name="SEARCH_TERMS" />"</translation>
 <translation id="3798449238516105146">Версія</translation>
 <translation id="3799128412641261490">Налады доступу праз пераключальнікі</translation>
-<translation id="3799201711591988491">{COUNT,plural, =0{&amp;Адкрыць усе}=1{&amp;Адкрыць закладку}one{&amp;Адкрыць усе (#)}few{&amp;Адкрыць усе (#)}many{&amp;Адкрыць усе (#)}other{&amp;Адкрыць усе (#)}}</translation>
 <translation id="3800806661949714323">Паказваць усе (рэкамендуецца)</translation>
 <translation id="380408572480438692">Збор даных аб прадукцыйнасці дапаможа Google з цягам часу палепшыць сістэму. Даныя адпраўляюцца толькі пры адпраўцы справаздачы з водгукам (Alt-Shift-I), калі вы ўключаеце ў яе даныя аб прадукцыйнасці. У любы момант можна вярнуцца да гэтага экрана і выключыць збор даных.</translation>
 <translation id="3807249107536149332">Пашырэнне <ph name="EXTENSION_NAME" /> (ідэнтыфікатар "<ph name="EXTENSION_ID" />") не дазволена размяшчаць на экране ўваходу ў сістэму.</translation>
@@ -3206,7 +3203,6 @@
 <translation id="4854317507773910281">Для ўхвалення выберыце бацькоўскі ўліковы запіс</translation>
 <translation id="485480310608090163">Іншыя налады і дазволы</translation>
 <translation id="4856478137399998590">Сэрвіс мабільнай перадачы даных уключаны і гатовы для выкарыстання</translation>
-<translation id="4857506433977877623">{COUNT,plural, =0{Адкрыць усе ў &amp;акне ў рэжыме інкогніта}=1{Адкрыць у &amp;акне ў рэжыме інкогніта}one{Адкрыць усе (#) у &amp;акне ў рэжыме інкогніта}few{Адкрыць усе (#) у &amp;акне ў рэжыме інкогніта}many{Адкрыць усе (#) у &amp;акне ў рэжыме інкогніта}other{Адкрыць усе (#) у &amp;акне ў рэжыме інкогніта}}</translation>
 <translation id="4858792381671956233">Вы спыталі сваіх бацькоў, ці можна наведваць гэты сайт</translation>
 <translation id="4858913220355269194">Бац</translation>
 <translation id="4862642413395066333">Падпісванне адказаў OCSP</translation>
@@ -5290,7 +5286,6 @@
 <translation id="7427348830195639090">Фонавая старонка: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129">Выклік з прылады <ph name="DEVICE_NAME" /></translation>
 <translation id="7431719494109538750">Прылады HID не знойдзены</translation>
-<translation id="7433692219247014412">{COUNT,plural, =0{Адкрыць усе ў &amp;новым акне}=1{Адкрыць у &amp;новым акне}one{Адкрыць усе (#) у &amp;новым акне}few{Адкрыць усе (#) у &amp;новым акне}many{Адкрыць усе (#) у &amp;новым акне}other{Адкрыць усе (#) у &amp;новым акне}}</translation>
 <translation id="7433957986129316853">Пакінуць</translation>
 <translation id="7434509671034404296">Для распрацоўшчыкаў</translation>
 <translation id="7434635829372401939">Сінхранізацыя налад</translation>
@@ -5338,7 +5333,6 @@
 <translation id="7487141338393529395">Уключэнне палепшанай праверкі правапісу</translation>
 <translation id="7487969577036436319">Кампаненты не ўсталяваны</translation>
 <translation id="7488682689406685343">Гэты сайт можа спрабаваць падмануць вас і прымусіць даць дазвол на паказ назойлівых апавяшчэнняў.</translation>
-<translation id="7489355918927585587">{COUNT,plural, =0{&amp;Адкрыць усе}=1{&amp;Адкрыць закладку}one{&amp;Адкрыць усе (#)}few{&amp;Адкрыць усе (#)}many{&amp;Адкрыць усе (#)}other{&amp;Адкрыць усе (#)}}</translation>
 <translation id="7489761397368794366">Выклікаць з прылады</translation>
 <translation id="749028671485790643">Карыстальнік <ph name="VALUE" /></translation>
 <translation id="7490813197707563893">MAC-адрас</translation>
@@ -5506,7 +5500,6 @@
 <translation id="7691077781194517083">Не ўдалося скінуць гэты ключ бяспекі. Памылка: <ph name="ERROR_CODE" />.</translation>
 <translation id="7691698019618282776">Абнаўленне Crostini</translation>
 <translation id="7696063401938172191">На тэлефоне "<ph name="PHONE_NAME" />":</translation>
-<translation id="7698408911093959127">{COUNT,plural, =1{1 пункт у спісе закладак}one{# пункт у спісе закладак}few{# пункты ў спісе закладак}many{# пунктаў у спісе закладак}other{# пункта ў спісе закладак}}</translation>
 <translation id="7699968112832915395">Дадаць уліковы запіс нельга</translation>
 <translation id="7701040980221191251">Няма</translation>
 <translation id="7701869757853594372">Маркеры КАРЫСТАЛЬНІКА</translation>
@@ -5810,7 +5803,6 @@
 <translation id="8030852056903932865">Ухваліць</translation>
 <translation id="8032244173881942855">Не ўдалося трансліраваць укладку.</translation>
 <translation id="8033827949643255796">вылучана</translation>
-<translation id="803435727213847625">{COUNT,plural, =0{Адкрыць усе ў &amp;акне ў рэжыме інкогніта}=1{Адкрыць у &amp;акне ў рэжыме інкогніта}one{Адкрыць усе (#) у &amp;акне ў рэжыме інкогніта}few{Адкрыць усе (#) у &amp;акне ў рэжыме інкогніта}many{Адкрыць усе (#) у &amp;акне ў рэжыме інкогніта}other{Адкрыць усе (#) у &amp;акне ў рэжыме інкогніта}}</translation>
 <translation id="8037117027592400564">Чытаць увесь тэкст, выкарыстоўваючы сінтэзатар маўлення</translation>
 <translation id="8037357227543935929">Запытаць (стандартна)</translation>
 <translation id="803771048473350947">Файл</translation>
@@ -6014,7 +6006,6 @@
 <translation id="826905130698769948">Несапраўдны кліенцкі сертыфікат</translation>
 <translation id="8270242299912238708">Дакументы PDF</translation>
 <translation id="827097179112817503">Паказаць кнопку галоўнага экрана</translation>
-<translation id="8271246892936492311">{COUNT,plural, =1{Выдалена 1 закладка}one{Выдалена # закладка}few{Выдалена # закладкі}many{Выдалена # закладак}other{Выдалена # закладкі}}</translation>
 <translation id="8272443605911821513">Каб кіраваць пашырэннямі, націсніце кнопку "Пашырэнні" ў меню "Іншыя інструменты".</translation>
 <translation id="8274332263553132018">Трансліраваць файл</translation>
 <translation id="8274924778568117936">Не выключайце і не закрывайце <ph name="DEVICE_TYPE" />, пакуль не скончыцца абнаўленне. <ph name="DEVICE_TYPE" /> перазапусціцца па заканчэнні ўсталявання.</translation>

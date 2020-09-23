@@ -19,7 +19,6 @@
 <translation id="1013707859758800957">Pe această pagină a fost permisă rularea unui plugin scos din mediul de testare.</translation>
 <translation id="1015318665228971643">Editează numele dosarului</translation>
 <translation id="1015578595646638936">{NUM_DAYS,plural, =1{Ultima zi în care poți actualiza acest <ph name="DEVICE_TYPE" />}few{Actualizează acest <ph name="DEVICE_TYPE" /> în cel mult {NUM_DAYS} zile}other{Actualizează acest <ph name="DEVICE_TYPE" /> în cel mult {NUM_DAYS} de zile}}</translation>
-<translation id="1016437870506746108">{COUNT,plural, =0{Deschide-le pe toate într-o fereastră &amp;nouă}=1{Deschide într-o fereastră &amp;nouă}few{Deschide-le pe toate (#) într-o fereastră &amp;nouă}other{Deschide-le pe toate (#) într-o fereastră &amp;nouă}}</translation>
 <translation id="1016566241875885511">Informații suplimentare (opțional)</translation>
 <translation id="1017280919048282932">&amp;Adaugă la dicționar</translation>
 <translation id="1018656279737460067">Anulat</translation>
@@ -1102,7 +1101,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2274840746523584236">Încarcă-ți Chromebookul</translation>
 <translation id="2276503375879033601">Adăugați mai multe aplicații</translation>
 <translation id="2277255602909579701">Toate cookie-urile și toate datele privind site-urile</translation>
-<translation id="2277769717710009150">{COUNT,plural, =1{1 element copiat}few{# elemente copiate}other{# de elemente copiate}}</translation>
 <translation id="2278562042389100163">Deschide fereastra de browser</translation>
 <translation id="2280486287150724112">Margine la dreapta</translation>
 <translation id="2282146716419988068">Proces GPU</translation>
@@ -2395,7 +2393,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3797900183766075808">&amp;Caută „<ph name="SEARCH_TERMS" />” pe <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3798449238516105146">Versiune</translation>
 <translation id="3799128412641261490">Setările pentru accesul prin comutare</translation>
-<translation id="3799201711591988491">{COUNT,plural, =0{&amp;Deschide-le pe toate}=1{&amp;Deschide marcajul}few{&amp;Deschide-le pe toate (#)}other{&amp;Deschide-le pe toate (#)}}</translation>
 <translation id="3800806661949714323">Afișează-le pe toate (recomandat)</translation>
 <translation id="380408572480438692">Activarea culegerii datelor privind performanța va permite Google să îmbunătățească sistemul în timp. Nu sunt trimise date decât după ce completați un raport de feedback (Alt-Shift-I) și includeți date privind performanța. Puteți să reveniți oricând la acest ecran pentru a dezactiva culegerea datelor.</translation>
 <translation id="3807249107536149332">Extensia <ph name="EXTENSION_NAME" /> (cu ID-ul „<ph name="EXTENSION_ID" />”) nu este permisă într-un ecran de conectare.</translation>
@@ -3251,7 +3248,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4854317507773910281">Alege contul de părinte pentru aprobare</translation>
 <translation id="485480310608090163">Mai multe setări și permisiuni</translation>
 <translation id="4856478137399998590">Serviciul de date mobile este activat și gata de utilizare</translation>
-<translation id="4857506433977877623">{COUNT,plural, =0{Deschide-le pe toate într-o fereastră &amp;incognito}=1{Deschide într-o fereastră &amp;incognito}few{Deschide-le pe toate (#) într-o fereastră &amp;incognito}other{Deschide-le pe toate (#) într-o fereastră &amp;incognito}}</translation>
 <translation id="4858792381671956233">Ți-ai întrebat părinții dacă poți accesa acest site</translation>
 <translation id="4858913220355269194">Jucător</translation>
 <translation id="4862642413395066333">Semnarea răspunsurilor OCSP</translation>
@@ -5364,7 +5360,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="7427348830195639090">Pagină de fundal: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129">Apel de la <ph name="DEVICE_NAME" /></translation>
 <translation id="7431719494109538750">Nu a fost găsit niciun dispozitiv HID</translation>
-<translation id="7433692219247014412">{COUNT,plural, =0{Deschide-le pe toate într-o fereastră &amp;nouă}=1{Deschide într-o fereastră &amp;nouă}few{Deschide-le pe toate (#) într-o fereastră &amp;nouă}other{Deschide-le pe toate (#) într-o fereastră &amp;nouă}}</translation>
 <translation id="7433957986129316853">Păstreaz-o</translation>
 <translation id="7434509671034404296">Dezvoltator</translation>
 <translation id="7434635829372401939">Sincronizează setările</translation>
@@ -5414,7 +5409,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="7487141338393529395">Activează verificarea îmbunătățită a ortografiei</translation>
 <translation id="7487969577036436319">Nu există componente instalate</translation>
 <translation id="7488682689406685343">Acest site ar putea încerca să te păcălească, astfel încât să permiți notificările deranjante.</translation>
-<translation id="7489355918927585587">{COUNT,plural, =0{&amp;Deschide-le pe toate}=1{&amp;Deschide marcajul}few{&amp;Deschide-le pe toate (#)}other{&amp;Deschide-le pe toate (#)}}</translation>
 <translation id="7489761397368794366">Apelează de pe dispozitivul tău</translation>
 <translation id="749028671485790643">Persoana <ph name="VALUE" /></translation>
 <translation id="7490813197707563893">Adresă MAC</translation>
@@ -5587,7 +5581,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="7691077781194517083">Această cheie de securitate nu poate fi resetată. Eroare <ph name="ERROR_CODE" />.</translation>
 <translation id="7691698019618282776">Upgrade la Crostini</translation>
 <translation id="7696063401938172191">Pe „<ph name="PHONE_NAME" />”:</translation>
-<translation id="7698408911093959127">{COUNT,plural, =1{1 element în lista de marcaje}few{# elemente în lista de marcaje}other{# de elemente în lista de marcaje}}</translation>
 <translation id="7699968112832915395">Nu se poate adăuga contul</translation>
 <translation id="7701040980221191251">Niciuna</translation>
 <translation id="7701869757853594372">Ghidaje UTILIZATOR</translation>
@@ -5897,7 +5890,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8030852056903932865">Aprobă</translation>
 <translation id="8032244173881942855">Nu se poate proiecta fila.</translation>
 <translation id="8033827949643255796">selectate</translation>
-<translation id="803435727213847625">{COUNT,plural, =0{Deschide-le pe toate într-o fereastră &amp;incognito}=1{Deschide într-o fereastră &amp;incognito}few{Deschide-le pe toate (#) într-o fereastră &amp;incognito}other{Deschide-le pe toate (#) într-o fereastră &amp;incognito}}</translation>
 <translation id="8037117027592400564">Citește tot textul rostit folosind vorbirea sintetizată</translation>
 <translation id="8037357227543935929">Solicită (în mod prestabilit)</translation>
 <translation id="803771048473350947">Fișier</translation>
@@ -6104,7 +6096,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="826905130698769948">Certificat de client nevalid</translation>
 <translation id="8270242299912238708">Documente PDF</translation>
 <translation id="827097179112817503">Afișează butonul Pagina principală</translation>
-<translation id="8271246892936492311">{COUNT,plural, =1{1 marcaj șters}few{# marcaje șterse}other{# de marcaje șterse}}</translation>
 <translation id="8272443605911821513">Gestionați extensiile dând clic pe Extensii în meniul „Mai multe instrumente”.</translation>
 <translation id="8274332263553132018">Proiectează fișierul</translation>
 <translation id="8274924778568117936">Nu închide și nu opri dispozitivul <ph name="DEVICE_TYPE" /> înainte să se finalizeze actualizarea. Dispozitivul <ph name="DEVICE_TYPE" /> va reporni după ce se finalizează instalarea.</translation>

@@ -19,7 +19,6 @@
 <translation id="1013707859758800957">На цій сторінці дозволено запуск плагіна з неізольованим програмним середовищем.</translation>
 <translation id="1015318665228971643">Редагувати назву папки</translation>
 <translation id="1015578595646638936">{NUM_DAYS,plural, =1{Останній день, щоб оновити пристрій <ph name="DEVICE_TYPE" />}one{Оновіть пристрій <ph name="DEVICE_TYPE" /> упродовж {NUM_DAYS} дня}few{Оновіть пристрій <ph name="DEVICE_TYPE" /> упродовж {NUM_DAYS} днів}many{Оновіть пристрій <ph name="DEVICE_TYPE" /> упродовж {NUM_DAYS} днів}other{Оновіть пристрій <ph name="DEVICE_TYPE" /> упродовж {NUM_DAYS} дня}}</translation>
-<translation id="1016437870506746108">{COUNT,plural, =0{Відкрити всі в &amp;новому вікні}=1{Відкрити в &amp;новому вікні}one{Відкрити всі (#) у &amp;новому вікні}few{Відкрити всі (#) у &amp;новому вікні}many{Відкрити всі (#) у &amp;новому вікні}other{Відкрити всі (#) у &amp;новому вікні}}</translation>
 <translation id="1016566241875885511">Додаткова інформація (необов’язково)</translation>
 <translation id="1017280919048282932">&amp;Додати до словника</translation>
 <translation id="1018656279737460067">Скасовано</translation>
@@ -1087,7 +1086,6 @@
 <translation id="2274840746523584236">Зарядіть Chromebook</translation>
 <translation id="2276503375879033601">Додати інші програми</translation>
 <translation id="2277255602909579701">Усі файли сookie та дані із сайтів</translation>
-<translation id="2277769717710009150">{COUNT,plural, =1{1 елемент скопійовано}one{# елемент скопійовано}few{# елементи скопійовано}many{# елементів скопійовано}other{# елемента скопійовано}}</translation>
 <translation id="2278562042389100163">Відкрити вікно переглядача</translation>
 <translation id="2280486287150724112">Праве поле</translation>
 <translation id="2282146716419988068">Процес GPU</translation>
@@ -2367,7 +2365,6 @@
 <translation id="3797900183766075808">&amp;Шукати "<ph name="SEARCH_TERMS" />" у <ph name="SEARCH_ENGINE" />.</translation>
 <translation id="3798449238516105146">Версія</translation>
 <translation id="3799128412641261490">Налаштування кнопкового доступу</translation>
-<translation id="3799201711591988491">{COUNT,plural, =0{&amp;Відкрити всі}=1{&amp;Відкрити закладку}one{&amp;Відкрити всі (#)}few{&amp;Відкрити всі (#)}many{&amp;Відкрити всі (#)}other{&amp;Відкрити всі (#)}}</translation>
 <translation id="3800806661949714323">Показати всі (рекомендовано)</translation>
 <translation id="380408572480438692">Увімкнення збору даних про ефективність допоможе Google із часом покращити систему. Дані не надсилаються, доки ви не напишете відгук (Alt-Shift-I) і не включите дані про ефективність. Можна будь-коли повернутися на цей екран і вимкнути збір даних.</translation>
 <translation id="3807249107536149332"><ph name="EXTENSION_NAME" /> (ідентифікатор "<ph name="EXTENSION_ID" />") не можна використовувати на екрані входу.</translation>
@@ -3206,7 +3203,6 @@
 <translation id="4854317507773910281">Вибери батьківський обліковий запис, який має надати дозвіл</translation>
 <translation id="485480310608090163">Додаткові налаштування та дозволи</translation>
 <translation id="4856478137399998590">Службу пересилання мобільних даних активовано. Нею можна користуватися</translation>
-<translation id="4857506433977877623">{COUNT,plural, =0{Відкрити всі в &amp;анонімному вікні}=1{Відкрити в &amp;анонімному вікні}one{Відкрити всі (#) в &amp;анонімному вікні}few{Відкрити всі (#) в &amp;анонімному вікні}many{Відкрити всі (#) в &amp;анонімному вікні}other{Відкрити всі (#) в &amp;анонімному вікні}}</translation>
 <translation id="4858792381671956233">Ви надіслали батькам запит на перегляд цього сайту</translation>
 <translation id="4858913220355269194">Футбол</translation>
 <translation id="4862642413395066333">Підписування відповідей OCSP</translation>
@@ -5291,7 +5287,6 @@
 <translation id="7427348830195639090">Фонова сторінка: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129">Телефонувати з пристрою <ph name="DEVICE_NAME" /></translation>
 <translation id="7431719494109538750">Пристроїв HID не знайдено</translation>
-<translation id="7433692219247014412">{COUNT,plural, =0{Відкрити всі у &amp;новому вікні}=1{Відкрити в &amp;новому вікні}one{Відкрити всі (#) у &amp;новому вікні}few{Відкрити всі (#) у &amp;новому вікні}many{Відкрити всі (#) у &amp;новому вікні}other{Відкрити всі (#) у &amp;новому вікні}}</translation>
 <translation id="7433957986129316853">Залишити</translation>
 <translation id="7434509671034404296">Для розробників</translation>
 <translation id="7434635829372401939">Синхронізація налаштувань</translation>
@@ -5339,7 +5334,6 @@
 <translation id="7487141338393529395">Увімкнути покращену перевірку орфографії</translation>
 <translation id="7487969577036436319">Немає встановлених компонентів</translation>
 <translation id="7488682689406685343">Цей сайт може оманливим шляхом змусити вас дозволити нав'язливі сповіщення.</translation>
-<translation id="7489355918927585587">{COUNT,plural, =0{&amp;Відкрити всі}=1{&amp;Відкрити закладку}one{&amp;Відкрити всі (#)}few{&amp;Відкрити всі (#)}many{&amp;Відкрити всі (#)}other{&amp;Відкрити всі (#)}}</translation>
 <translation id="7489761397368794366">Зателефонувати з пристрою</translation>
 <translation id="749028671485790643">Особа <ph name="VALUE" /></translation>
 <translation id="7490813197707563893">MAC-адреса</translation>
@@ -5507,7 +5501,6 @@
 <translation id="7691077781194517083">Не вдається скинути цей ключ безпеки. Помилка: <ph name="ERROR_CODE" />.</translation>
 <translation id="7691698019618282776">Оновлення Crostini</translation>
 <translation id="7696063401938172191">На телефоні <ph name="PHONE_NAME" />:</translation>
-<translation id="7698408911093959127">{COUNT,plural, =1{1 елемент у списку закладок}one{# елемент у списку закладок}few{# елементи в списку закладок}many{# елементів у списку закладок}other{# елемента в списку закладок}}</translation>
 <translation id="7699968112832915395">Не вдається додати обліковий запис</translation>
 <translation id="7701040980221191251">Немає</translation>
 <translation id="7701869757853594372">Обробка КОРИСТУВАЧА</translation>
@@ -5812,7 +5805,6 @@
 <translation id="8030852056903932865">Дозволити</translation>
 <translation id="8032244173881942855">Не вдається транслювати вкладку.</translation>
 <translation id="8033827949643255796">виділено</translation>
-<translation id="803435727213847625">{COUNT,plural, =0{Відкрити всі в &amp;анонімному вікні}=1{Відкрити в &amp;анонімному вікні}one{Відкрити всі (#) в &amp;анонімному вікні}few{Відкрити всі (#) в &amp;анонімному вікні}many{Відкрити всі (#) в &amp;анонімному вікні}other{Відкрити всі (#) в &amp;анонімному вікні}}</translation>
 <translation id="8037117027592400564">Читати весь текст, відтворений за допомогою синтезованого мовлення</translation>
 <translation id="8037357227543935929">Запитувати (за умовчанням)</translation>
 <translation id="803771048473350947">Файл</translation>
@@ -6016,7 +6008,6 @@
 <translation id="826905130698769948">Недійсний сертифікат клієнта</translation>
 <translation id="8270242299912238708">Документи PDF</translation>
 <translation id="827097179112817503">Показати кнопку "Домашня сторінка"</translation>
-<translation id="8271246892936492311">{COUNT,plural, =1{1 закладку видалено}one{# закладку видалено}few{# закладки видалено}many{# закладок видалено}other{# закладки видалено}}</translation>
 <translation id="8272443605911821513">Керуйте своїми розширеннями, натиснувши "Розширення" в меню "Інші інструменти".</translation>
 <translation id="8274332263553132018">Транслювати файл</translation>
 <translation id="8274924778568117936">Не вимикайте та не закривайте пристрій <ph name="DEVICE_TYPE" />, поки не завершиться оновлення. Коли встановляться оновлення, пристрій <ph name="DEVICE_TYPE" /> перезавантажиться.</translation>

@@ -19,7 +19,6 @@
 <translation id="1013707859758800957">Et programtillegg uten prosessisolering fikk tillatelse til å kjøre på denne siden.</translation>
 <translation id="1015318665228971643">Endre mappenavnet</translation>
 <translation id="1015578595646638936">{NUM_DAYS,plural, =1{Siste dag for oppdatering av <ph name="DEVICE_TYPE" />}other{Oppdater <ph name="DEVICE_TYPE" /> innen {NUM_DAYS} dager}}</translation>
-<translation id="1016437870506746108">{COUNT,plural, =0{Åpne alle i &amp;nye vinduer}=1{Åpne i et &amp;nytt vindu}other{Åpne alle (#) i &amp;nye vinduer}}</translation>
 <translation id="1016566241875885511">Tilleggsinformasjon (valgfritt)</translation>
 <translation id="1017280919048282932">&amp;Legg til i ordliste</translation>
 <translation id="1018656279737460067">Avbrutt</translation>
@@ -1084,7 +1083,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2274840746523584236">Lad Chromebooken</translation>
 <translation id="2276503375879033601">Legg til flere programmer</translation>
 <translation id="2277255602909579701">Alle informasjonskapsler og nettstedsdata</translation>
-<translation id="2277769717710009150">{COUNT,plural, =1{1 element er kopiert}other{# elementer er kopiert}}</translation>
 <translation id="2278562042389100163">Åpne nettleservindu</translation>
 <translation id="2280486287150724112">Høyremarg</translation>
 <translation id="2282146716419988068">GPU-prosess</translation>
@@ -2365,7 +2363,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3797900183766075808">&amp;Søk etter «<ph name="SEARCH_TERMS" />» på <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3798449238516105146">Versjon</translation>
 <translation id="3799128412641261490">Innstillinger for brytertilgang</translation>
-<translation id="3799201711591988491">{COUNT,plural, =0{&amp;Åpne alle}=1{&amp;Åpne bokmerket}other{&amp;Åpne alle (#)}}</translation>
 <translation id="3800806661949714323">Vis alle (anbefales)</translation>
 <translation id="380408572480438692">Aktivering av innsamling av ytelsesdata hjelper Google med å bekrefte systemet over tid, Data sendes ikke inn før du fyller ut en tilbakemeldingsrapport (Alt-Shift-I) og legger ved ytelsesdata. Du kan deaktivere innsamlingen når som helst via denne skjermen.</translation>
 <translation id="3807249107536149332"><ph name="EXTENSION_NAME" /> (utvidelses-ID «<ph name="EXTENSION_ID" />») tillates ikke på påloggingsskjermer.</translation>
@@ -3202,7 +3199,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4854317507773910281">Velg foreldrekonto for godkjenning</translation>
 <translation id="485480310608090163">Flere innstillinger og tillatelser</translation>
 <translation id="4856478137399998590">Mobildatatjenesten er aktivert og klar til bruk</translation>
-<translation id="4857506433977877623">{COUNT,plural, =0{Åpne alle i &amp;inkognitovinduer}=1{Åpne i et &amp;inkognitovindu}other{Åpne alle (#) i &amp;inkognitovinduer}}</translation>
 <translation id="4858792381671956233">Du har spurt foreldrene dine om det er greit å besøke dette nettstedet</translation>
 <translation id="4858913220355269194">Drible</translation>
 <translation id="4862642413395066333">Signering av OCSP-svar</translation>
@@ -5289,7 +5285,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="7427348830195639090">Bakgrunnsside: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129">Ring fra <ph name="DEVICE_NAME" /></translation>
 <translation id="7431719494109538750">Fant ingen HID-enheter</translation>
-<translation id="7433692219247014412">{COUNT,plural, =0{Åpne alle i &amp;nye vinduer}=1{Åpne i et &amp;nytt vindu}other{Åpne alle (#) i &amp;nye vinduer}}</translation>
 <translation id="7433957986129316853">Nei</translation>
 <translation id="7434509671034404296">Utvikler</translation>
 <translation id="7434635829372401939">Synkroniser innstillingene dine</translation>
@@ -5337,7 +5332,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="7487141338393529395">Slå på forbedret stavekontroll</translation>
 <translation id="7487969577036436319">Ingen komponenter er installert</translation>
 <translation id="7488682689406685343">Det kan hende at dette nettstedet prøver å lure deg til å tillate påtrengende varsler.</translation>
-<translation id="7489355918927585587">{COUNT,plural, =0{&amp;Åpne alle}=1{&amp;Åpne bokmerket}other{&amp;Åpne alle (#)}}</translation>
 <translation id="7489761397368794366">Ring fra enheten din</translation>
 <translation id="749028671485790643">Person <ph name="VALUE" /></translation>
 <translation id="7490813197707563893">MAC-adresse</translation>
@@ -5505,7 +5499,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="7691077781194517083">Kan ikke tilbakestille denne sikkerhetsnøkkelen. Feil <ph name="ERROR_CODE" />.</translation>
 <translation id="7691698019618282776">Crostini-oppgradering</translation>
 <translation id="7696063401938172191">På «<ph name="PHONE_NAME" />»:</translation>
-<translation id="7698408911093959127">{COUNT,plural, =1{1 element i bokmerkelisten}other{# elementer i bokmerkelisten}}</translation>
 <translation id="7699968112832915395">Kan ikke legge til kontoen</translation>
 <translation id="7701040980221191251">Ingen</translation>
 <translation id="7701869757853594372">BRUKEREN håndterer</translation>
@@ -5811,7 +5804,6 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8030852056903932865">Godkjenn</translation>
 <translation id="8032244173881942855">Fanen kunne ikke castes.</translation>
 <translation id="8033827949643255796">valgt</translation>
-<translation id="803435727213847625">{COUNT,plural, =0{Åpne alle i &amp;inkognitovinduer}=1{Åpne i et &amp;inkognitovindu}other{Åpne alle (#) i &amp;inkognitovinduer}}</translation>
 <translation id="8037117027592400564">lese hele teksten med syntetisert tale</translation>
 <translation id="8037357227543935929">Spør (standard)</translation>
 <translation id="803771048473350947">Fil</translation>
@@ -6016,7 +6008,6 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="826905130698769948">Ugyldig klientsertifikat</translation>
 <translation id="8270242299912238708">PDF-dokumenter</translation>
 <translation id="827097179112817503">Vis startsideknapp</translation>
-<translation id="8271246892936492311">{COUNT,plural, =1{1 bokmerke er slettet}other{# bokmerker er slettet}}</translation>
 <translation id="8272443605911821513">Administrer utvidelsene dine ved å klikke på Utvidelser i Flere verktøy-menyen.</translation>
 <translation id="8274332263553132018">Cast en fil</translation>
 <translation id="8274924778568117936">Du må ikke slå av eller lukke <ph name="DEVICE_TYPE" />-enheten din før oppdateringen er ferdig. <ph name="DEVICE_TYPE" />-enheten starter på nytt når installasjonen er ferdig.</translation>

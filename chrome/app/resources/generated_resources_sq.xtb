@@ -19,7 +19,6 @@
 <translation id="1013707859758800957">Një përbërës shtesë i pakufizuar u lejua të ekzekutohet në këtë faqe.</translation>
 <translation id="1015318665228971643">Redakto emrin e dosjes</translation>
 <translation id="1015578595646638936">{NUM_DAYS,plural, =1{Dita e fundit për të përditësuar pajisjen <ph name="DEVICE_TYPE" />}other{Përditësoje pajisjen <ph name="DEVICE_TYPE" /> brenda {NUM_DAYS} ditësh}}</translation>
-<translation id="1016437870506746108">{COUNT,plural, =0{Hapi të gjitha në &amp;dritare të re}=1{Hape në &amp;dritare të re}other{Hapi të gjitha (#) në &amp;dritare të re}}</translation>
 <translation id="1016566241875885511">Informacione shtesë (opsionale)</translation>
 <translation id="1017280919048282932">&amp;Shto në fjalor</translation>
 <translation id="1018656279737460067">Anuluar</translation>
@@ -1084,7 +1083,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2274840746523584236">Kariko pajisjen Chromebook</translation>
 <translation id="2276503375879033601">Shto më shumë aplikacione</translation>
 <translation id="2277255602909579701">Të gjitha kukit dhe të dhënat e faqes</translation>
-<translation id="2277769717710009150">{COUNT,plural, =1{1 artikull i kopjuar}other{# artikuj të kopjuar}}</translation>
 <translation id="2278562042389100163">Hap dritaren e shfletuesit</translation>
 <translation id="2280486287150724112">Kufiri i djathtë</translation>
 <translation id="2282146716419988068">Procesi GPU</translation>
@@ -2364,7 +2362,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="3797900183766075808">&amp;Kërko në <ph name="SEARCH_ENGINE" /> për "<ph name="SEARCH_TERMS" />"</translation>
 <translation id="3798449238516105146">Versioni</translation>
 <translation id="3799128412641261490">Cilësimet e qasjes me çelës</translation>
-<translation id="3799201711591988491">{COUNT,plural, =0{&amp;Hap të gjitha}=1{&amp;Hap faqeshënuesin}other{&amp;Hap të gjitha (#)}}</translation>
 <translation id="3800806661949714323">Shfaq të gjitha (e rekomanduar)</translation>
 <translation id="380408572480438692">Aktivizimi i të dhënave të cilësisë së funksionimit do ta ndihmojë Google që të përmirësojë sistemin me kalimin e kohës. Nuk dërgohen të dhëna deri sa të paraqesësh një raport me komente (Alt-Shift-I) dhe të përfshish të dhënat e cilësisë së funksionimit. Mund të kthehesh te ky ekran në çdo kohë për ta çaktivizuar mbledhjen.</translation>
 <translation id="3807249107536149332"><ph name="EXTENSION_NAME" /> (ID-ja e shtesës "<ph name="EXTENSION_ID" />") nuk lejohet në një ekran identifikimi.</translation>
@@ -3203,7 +3200,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="4854317507773910281">Zgjidh llogarinë e prindit për miratimin</translation>
 <translation id="485480310608090163">Cilësime dhe leje të tjera</translation>
 <translation id="4856478137399998590">Shërbimi yt i të dhënave celulare është i aktivizuar dhe gati për t'u përdorur.</translation>
-<translation id="4857506433977877623">{COUNT,plural, =0{Hap të gjitha në &amp;dritare "të fshehtë"}=1{Hap në &amp;dritare "të fshehtë"}other{Hap të gjitha (#) në &amp;dritare "të fshehtë"}}</translation>
 <translation id="4858792381671956233">I pyete prindërit e tu nëse nuk ka problem të vizitosh këtë sajt</translation>
 <translation id="4858913220355269194">Maradona</translation>
 <translation id="4862642413395066333">Po nënshkruan përgjigjet OCSP</translation>
@@ -5288,7 +5284,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="7427348830195639090">Faqja në sfond: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129">Telefonatë nga <ph name="DEVICE_NAME" /></translation>
 <translation id="7431719494109538750">Nuk u gjetën pajisje HID</translation>
-<translation id="7433692219247014412">{COUNT,plural, =0{Hapi të gjitha në &amp;dritare të re}=1{Hape në dritare &amp;të re}other{Hapi të gjitha (#) në &amp;dritare të re}}</translation>
 <translation id="7433957986129316853">Mbaje</translation>
 <translation id="7434509671034404296">Zhvilluesi</translation>
 <translation id="7434635829372401939">Sinkronizo cilësimet e tua</translation>
@@ -5336,7 +5331,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="7487141338393529395">Aktivizo kontrolluesin drejtshkrimor të përmirësuar</translation>
 <translation id="7487969577036436319">Nuk është instaluar asnjë komponent</translation>
 <translation id="7488682689406685343">Ky sajt mund të jetë duke u përpjekur të të mashtrojë që të lejosh njoftime të bezdisshme.</translation>
-<translation id="7489355918927585587">{COUNT,plural, =0{&amp;Hap të gjitha}=1{&amp;Hap shfletuesin}other{&amp;Hap të gjitha (#)}}</translation>
 <translation id="7489761397368794366">Telefono nga pajisja jote</translation>
 <translation id="749028671485790643">Personi <ph name="VALUE" /></translation>
 <translation id="7490813197707563893">Adresa MAC</translation>
@@ -5504,7 +5498,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="7691077781194517083">Ky çelës sigurie nuk mund të rivendoset. Gabim <ph name="ERROR_CODE" />.</translation>
 <translation id="7691698019618282776">Përmirësimi i Crostini</translation>
 <translation id="7696063401938172191">Në telefonin tënd "<ph name="PHONE_NAME" />":</translation>
-<translation id="7698408911093959127">{COUNT,plural, =1{1 artikull në listën e faqeshënuesve}other{# artikuj në listën e faqeshënuesve}}</translation>
 <translation id="7699968112832915395">Llogaria nuk mund të shtohet</translation>
 <translation id="7701040980221191251">Asnjë</translation>
 <translation id="7701869757853594372">Profilet e PËRDORUESIT</translation>
@@ -5807,7 +5800,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8030852056903932865">Mirato</translation>
 <translation id="8032244173881942855">Skeda nuk mund të transmetohet.</translation>
 <translation id="8033827949643255796">u zgjodh</translation>
-<translation id="803435727213847625">{COUNT,plural, =0{Hap të gjitha në &amp;dritare "të fshehtë"}=1{Hap në &amp;dritare "të fshehtë"}other{Hap të gjitha (#) në &amp;dritare "të fshehtë"}}</translation>
 <translation id="8037117027592400564">Lexo të gjithë tekstin e folur duke përdorur ligjërimin e sintetizuar</translation>
 <translation id="8037357227543935929">Pyet (parazgjedhja)</translation>
 <translation id="803771048473350947">Skedar</translation>
@@ -6011,7 +6003,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="826905130698769948">Certifikatë e pavlefshme e klientit</translation>
 <translation id="8270242299912238708">Dokumentet PDF</translation>
 <translation id="827097179112817503">Shfaq butonin "kreu"</translation>
-<translation id="8271246892936492311">{COUNT,plural, =1{1 faqëshënues u fshi}other{# faqëshënues u fshinë}}</translation>
 <translation id="8272443605911821513">Menaxho shtesat duke klikuar "Shtesat" në menynë "Më shumë vegla".</translation>
 <translation id="8274332263553132018">Transmeto skedarin</translation>
 <translation id="8274924778568117936">Mos e fik dhe mos e mbyll pajisjen tënde <ph name="DEVICE_TYPE" /> deri sa të përfundojë përditësimi. Pajisja <ph name="DEVICE_TYPE" /> do të riniset pas përfundimit të instalimit.</translation>

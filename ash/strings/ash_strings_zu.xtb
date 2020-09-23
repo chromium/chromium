@@ -25,6 +25,7 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="119944043368869598">Sula konke</translation>
 <translation id="1199716647557067911">Uqinisekile ukuthi ufuna ukuvala Ukushintsha ukufinyelela?</translation>
 <translation id="121097972571826261">Phambili ngegama</translation>
+<translation id="1225748608451425081">I-Chromebook ikhiyiwe ngenxa yenkinga engaziwa. Uzokwazi ukungena ngemvume ngemva: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Yeka ukuhlela</translation>
 <translation id="1247372569136754018">Imakrofoni (okwangaphakathi)</translation>
 <translation id="1252999807265626933">Ishaja kusuka ku-<ph name="POWER_SOURCE" /></translation>
@@ -136,6 +137,7 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="2341729377289034582">Kukhiywe ngokuvundlile</translation>
 <translation id="2352467521400612932">Izilungiselelo ze-stylus</translation>
 <translation id="2354174487190027830">Yenza kusebenze i-<ph name="NAME" /></translation>
+<translation id="2356210126990741501">Kubonakala sengathi ifoni yakho ayixhumekile ku-inthanethi futhi asikwazanga ukuthola wonke ama-goodie kusuka kuyo okwamanje.</translation>
 <translation id="2359808026110333948">Qhubeka</translation>
 <translation id="2365393535144473978">Ukunika amandla idatha yeselula kuzonika amandla i-Bluetooth.</translation>
 <translation id="2369165858548251131">"Sawubona" ngesi-Chinese</translation>
@@ -168,6 +170,7 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="2705001408393684014">Guqula i-Mic. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Phezulu</translation>
 <translation id="2718395828230677721">Ukukhanya</translation>
+<translation id="2727175239389218057">Phendula</translation>
 <translation id="2727977024730340865">Ixhunye kushaja yamandla aphansi. Ukushaja ibhethri kungenzeka kungathembeki.</translation>
 <translation id="2743387203779672305">Kopisha kubhodi lokunamathisela</translation>
 <translation id="2792498699870441125">I-Alt+Search</translation>
@@ -176,6 +179,7 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="2825619548187458965">Ishelufu</translation>
 <translation id="2841907151129139818">Ishintshele kumodi yethebulethi</translation>
 <translation id="2844169650293029770">Idivayisi ye-USB-C (imbobo ephambili yohlangothi lwesinxele)</translation>
+<translation id="2846247265041961677">Eshu! Ayikwazi ukuthola ifoni</translation>
 <translation id="2865888419503095837">Ulwazi lwenethiwekhi</translation>
 <translation id="2872961005593481000">Cisha</translation>
 <translation id="2878884018241093801">Azikho izinto zakamuva</translation>
@@ -458,6 +462,7 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Vuliwe</translation>
 <translation id="5920710855273935292">I-mic ithulisiwe.</translation>
+<translation id="594179686076170922">Ixhuma efonini yakho...</translation>
 <translation id="5946788582095584774">I-<ph name="FEATURE_NAME" /> ivuliwe.</translation>
 <translation id="5947494881799873997">Buyela</translation>
 <translation id="595202126637698455">Ukulandelela ukusebenza kunikwe amandla</translation>
@@ -670,6 +675,7 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="8196787716797768628">Sebenzisa ukuthinta ukushintsha ngokushesha phakathi kwezinhlelo zokusebenza futhi usebenzisane ne-Chromebook yakho kwimodi yethebulethi.</translation>
 <translation id="8200772114523450471">Qala futhi</translation>
 <translation id="8203795194971602413">Ukuchofoza kwesokudla</translation>
+<translation id="8219451629189078428">I-Chromebook kudingeka ihlale ivuliwe futhi ixhunywe emandleni phakathi nalesi sikhathi. Qiniseka ukuthi amakhebuli weshaja noma we-adaptha axhunywe ngokuphelele, kokubili ku-Chromebook yakho nalapho kuphuma khona amandla. Ungayivali i-Chromebook yakho.</translation>
 <translation id="8236042855478648955">Isikhathi sekhefu</translation>
 <translation id="8247060538831475781">I-<ph name="CONNECTION_STATUS" />, Amandla esignali angu-<ph name="SIGNAL_STRENGTH" />, iphethwe umlawuli wakho <ph name="BATTERY_STATUS" /></translation>
 <translation id="826107067893790409">Cindezela ku-Enter ukuze uvulele i-<ph name="USER_EMAIL_ADDRESS" /></translation>

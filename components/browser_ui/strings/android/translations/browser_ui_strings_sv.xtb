@@ -51,6 +51,7 @@
 <translation id="2315043854645842844">Val av certifikat på klienten stöds inte av operativsystemet.</translation>
 <translation id="2359808026110333948">Fortsätt</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
+<translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> och <ph name="NUM_MORE" /> till tillåts}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> och <ph name="NUM_MORE" /> till tillåts}}</translation>
 <translation id="2434158240863470628">Nedladdningen är klar<ph name="SEPARATOR" /><ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2440823041667407902">Platsåtkomst</translation>
 <translation id="2482878487686419369">Aviseringar</translation>
@@ -190,6 +191,7 @@
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6527303717912515753">Dela</translation>
 <translation id="6545864417968258051">Bluetooth-sökning</translation>
+<translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> och <ph name="NUM_MORE" /> till blockeras}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> och <ph name="NUM_MORE" /> till blockeras}}</translation>
 <translation id="6561560012278703671">Få mer diskreta meddelanden (blockera störande aviseringar)</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Skyddat innehåll</translation>
@@ -292,6 +294,7 @@
 <translation id="8959122750345127698">Det går inte att nå webbadressen: <ph name="URL" /></translation>
 <translation id="9019902583201351841">Hanteras av dina föräldrar</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> och <ph name="NUM_MORE" /> till}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> och <ph name="NUM_MORE" /> till}}</translation>
 <translation id="913657688200966289">Aktivera behörigheter för <ph name="APP_NAME" /> i <ph name="BEGIN_LINK" />Android-inställningarna<ph name="END_LINK" />.</translation>
 <translation id="945632385593298557">Tillgång till din mikrofon</translation>
 <translation id="965817943346481315">Blockera om påträngande eller vilseledande annonser visas på webbplatsen (rekommenderas)</translation>

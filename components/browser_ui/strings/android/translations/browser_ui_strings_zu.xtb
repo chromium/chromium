@@ -51,6 +51,7 @@
 <translation id="2315043854645842844">Ukukhethwa kwesitifiketi sohlangothi lweklayenti akusekelwe yisistimu yokusebenza.</translation>
 <translation id="2359808026110333948">Qhubeka</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
+<translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{I-<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, nezinye ezingu-<ph name="NUM_MORE" /> zivunyelwe}one{I-<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, nezinye ezingu-<ph name="NUM_MORE" /> zivunyelwe}other{I-<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, nezinye ezingu-<ph name="NUM_MORE" /> zivunyelwe}}</translation>
 <translation id="2434158240863470628">Ukulanda kuqedile <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2440823041667407902">Ukufinyelela kundawo</translation>
 <translation id="2482878487686419369">Izaziso</translation>
@@ -190,6 +191,7 @@
 <translation id="6447842834002726250">Amakhukhi</translation>
 <translation id="6527303717912515753">Yabelana</translation>
 <translation id="6545864417968258051">Ukuskena kwe-Bluetooth</translation>
+<translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{I-<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, nezinye ezingu-<ph name="NUM_MORE" /> zivinjelwe}one{I-<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, nezinye ezingu-<ph name="NUM_MORE" /> zivinjelwe}other{I-<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, nezinye ezingu-<ph name="NUM_MORE" /> zivinjelwe}}</translation>
 <translation id="6561560012278703671">Sebenzisa umlayezo wokushiya (ivimbela isaziso esiyalela kusuka ekukuphazamiseni)</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Okuqukethwe okuvikelekile</translation>
@@ -292,6 +294,7 @@
 <translation id="8959122750345127698">Ukuzulazula akufinyeleleki: <ph name="URL" /></translation>
 <translation id="9019902583201351841">Kuphethwa abazali bakho</translation>
 <translation id="9074739597929991885">I-Bluetooth</translation>
+<translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, nokungu-<ph name="NUM_MORE" /> ngaphezulu}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, nokungu-<ph name="NUM_MORE" /> ngaphezulu}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, nokungu-<ph name="NUM_MORE" /> ngaphezulu}}</translation>
 <translation id="913657688200966289">Vula izimvume ze-<ph name="APP_NAME" /> <ph name="BEGIN_LINK" />Kumasethingi e-Android<ph name="END_LINK" />.</translation>
 <translation id="945632385593298557">Finyelela imakrofoni yakho</translation>
 <translation id="965817943346481315">Vimba uma isayithi libonisa izikhangiso ezingathandeki noma ezidukisayo (kunconyiwe)</translation>

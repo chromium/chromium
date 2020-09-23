@@ -19,7 +19,6 @@
 <translation id="1013707859758800957">A execução de um plug-in sem isolamento de processos foi permitida nesta página.</translation>
 <translation id="1015318665228971643">Editar nome da pasta</translation>
 <translation id="1015578595646638936">{NUM_DAYS,plural, =1{Último dia para atualizar o <ph name="DEVICE_TYPE" />}other{Atualize o <ph name="DEVICE_TYPE" /> dentro de {NUM_DAYS} dias}}</translation>
-<translation id="1016437870506746108">{COUNT,plural, =0{Abrir todos numa &amp;nova janela}=1{Abrir numa &amp;nova janela}other{Abrir todos (#) numa &amp;nova janela}}</translation>
 <translation id="1016566241875885511">Informações adicionais (opcional)</translation>
 <translation id="1017280919048282932">&amp;Adicionar ao dicionário</translation>
 <translation id="1018656279737460067">Cancelado</translation>
@@ -1087,7 +1086,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2274840746523584236">Carregue o seu Chromebook</translation>
 <translation id="2276503375879033601">Adicionar mais aplicações</translation>
 <translation id="2277255602909579701">Todos os cookies e dados do site</translation>
-<translation id="2277769717710009150">{COUNT,plural, =1{1 item copiado}other{# itens copiados}}</translation>
 <translation id="2278562042389100163">Abrir janela do browser</translation>
 <translation id="2280486287150724112">Margem direita</translation>
 <translation id="2282146716419988068">Processo GPU</translation>
@@ -2368,7 +2366,6 @@ Pretende pará-lo?</translation>
 <translation id="3797900183766075808">Pe&amp;squisar no <ph name="SEARCH_ENGINE" /> por "<ph name="SEARCH_TERMS" />"</translation>
 <translation id="3798449238516105146">Versão</translation>
 <translation id="3799128412641261490">Definições do acesso por comutador</translation>
-<translation id="3799201711591988491">{COUNT,plural, =0{&amp;Abrir todos}=1{&amp;Abrir marcador}other{&amp;Abrir todos (#)}}</translation>
 <translation id="3800806661949714323">Mostrar tudo (recomendado)</translation>
 <translation id="380408572480438692">A ativação da recolha de dados de desempenho ajudará a Google a melhorar o sistema ao longo do tempo. Não serão enviados quaisquer dados enquanto não apresentar um relatório de comentários (Alt-Shift-I) e incluir os dados de desempenho. É possível regressar a este ecrã para desativar a recolha em qualquer altura.</translation>
 <translation id="3807249107536149332">O <ph name="EXTENSION_NAME" /> (ID de extensão "<ph name="EXTENSION_ID" />") não é permitido num ecrã de início de sessão.</translation>
@@ -3207,7 +3204,6 @@ Pretende pará-lo?</translation>
 <translation id="4854317507773910281">Escolhe a conta parental para aprovação</translation>
 <translation id="485480310608090163">Mais definições e autorizações</translation>
 <translation id="4856478137399998590">O seu serviço de dados móveis está ativado e pronto a utilizar</translation>
-<translation id="4857506433977877623">{COUNT,plural, =0{Abrir todos numa janela de &amp;navegação anónima}=1{Abrir numa janela de &amp;navegação anónima}other{Abrir todos (#) numa janela de &amp;navegação anónima}}</translation>
 <translation id="4858792381671956233">Perguntaste aos teus pais se podes aceder a este site.</translation>
 <translation id="4858913220355269194">Fritz</translation>
 <translation id="4862642413395066333">Respostas OCSP de assinatura</translation>
@@ -5295,7 +5291,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="7427348830195639090">Página de fundo: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129">Chamada de <ph name="DEVICE_NAME" /></translation>
 <translation id="7431719494109538750">Nenhum dispositivo HID encontrado.</translation>
-<translation id="7433692219247014412">{COUNT,plural, =0{Abrir todos numa &amp;nova janela}=1{Abrir numa &amp;nova janela}other{Abrir todos (#) numa &amp;nova janela}}</translation>
 <translation id="7433957986129316853">Manter</translation>
 <translation id="7434509671034404296">Programador</translation>
 <translation id="7434635829372401939">Sincronize as suas definições</translation>
@@ -5343,7 +5338,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="7487141338393529395">Ative a verificação ortográfica avançada</translation>
 <translation id="7487969577036436319">Não existem componentes instalados</translation>
 <translation id="7488682689406685343">Este site pode estar a tentar enganar o utilizador para que permita notificações intrusivas.</translation>
-<translation id="7489355918927585587">{COUNT,plural, =0{&amp;Abrir todos}=1{&amp;Abrir marcador}other{&amp;Abrir todos (#)}}</translation>
 <translation id="7489761397368794366">Ligar a partir do seu dispositivo</translation>
 <translation id="749028671485790643">Pessoa <ph name="VALUE" /></translation>
 <translation id="7490813197707563893">Endereço MAC</translation>
@@ -5511,7 +5505,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="7691077781194517083">Não é possível repor esta chave de segurança. Erro <ph name="ERROR_CODE" />.</translation>
 <translation id="7691698019618282776">Atualização do Crostini</translation>
 <translation id="7696063401938172191">No seu "<ph name="PHONE_NAME" />":</translation>
-<translation id="7698408911093959127">{COUNT,plural, =1{1 item na lista de marcadores}other{# itens na lista de marcadores}}</translation>
 <translation id="7699968112832915395">Não é possível adicionar a conta</translation>
 <translation id="7701040980221191251">Nenhuma</translation>
 <translation id="7701869757853594372">Identificadores de UTILIZADOR</translation>
@@ -5817,7 +5810,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8030852056903932865">Aprovar</translation>
 <translation id="8032244173881942855">Não é possível transmitir o separador.</translation>
 <translation id="8033827949643255796">selecionado</translation>
-<translation id="803435727213847625">{COUNT,plural, =0{Abrir todos numa &amp;janela de navegação anónima}=1{Abrir numa &amp;janela de navegação anónima}other{Abrir todos (#) numa &amp;janela de navegação anónima}}</translation>
 <translation id="8037117027592400564">Ler todo o texto falado através da voz sintetizada</translation>
 <translation id="8037357227543935929">Pedir (predefinição)</translation>
 <translation id="803771048473350947">Ficheiro</translation>
@@ -6021,7 +6013,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="826905130698769948">Certificado de cliente inválido.</translation>
 <translation id="8270242299912238708">Docs PDF</translation>
 <translation id="827097179112817503">Mostrar botão Página inicial</translation>
-<translation id="8271246892936492311">{COUNT,plural, =1{1 marcador eliminado}other{# marcadores eliminados}}</translation>
 <translation id="8272443605911821513">Faça a gestão das suas extensões clicando em Extensões no menu "Mais ferramentas".</translation>
 <translation id="8274332263553132018">Transmitir ficheiro</translation>
 <translation id="8274924778568117936">Não desligue ou feche o <ph name="DEVICE_TYPE" /> até a atualização terminar. O <ph name="DEVICE_TYPE" /> será reiniciado quando a instalação estiver concluída.</translation>

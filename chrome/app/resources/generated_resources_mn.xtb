@@ -19,7 +19,6 @@
 <translation id="1013707859758800957">Хамгаалалтгүй нэмэлт өргөтгөлийг энэ хуудсан дээр ажиллуулахыг зөвшөөрсөн байна.</translation>
 <translation id="1015318665228971643">Фолдерын нэрийг засах</translation>
 <translation id="1015578595646638936">{NUM_DAYS,plural, =1{<ph name="DEVICE_TYPE" />-г шинэчлэх сүүлийн өдөр}other{<ph name="DEVICE_TYPE" />-г {NUM_DAYS} хоногийн дотор шинэчлэх}}</translation>
-<translation id="1016437870506746108">{COUNT,plural, =0{Бүгдийг &amp;шинэ цонхонд нээх}=1{&amp;Шинэ цонхонд нээх}other{Бүх (#)-г &amp;шинэ цонхонд нээх}}</translation>
 <translation id="1016566241875885511">Нэмэлт мэдээлэл (заавал биш)</translation>
 <translation id="1017280919048282932">&amp;Толь бичигт нэмэх</translation>
 <translation id="1018656279737460067">Цуцлагдсан байна</translation>
@@ -1083,7 +1082,6 @@
 <translation id="2274840746523584236">Chromebook-ээ цэнэглэнэ үү</translation>
 <translation id="2276503375879033601">Илүү их апп нэмэх</translation>
 <translation id="2277255602909579701">Бүх күүки, сайтын өгөгдөл</translation>
-<translation id="2277769717710009150">{COUNT,plural, =1{1 зүйл хуулсан}other{# зүйл хуулсан}}</translation>
 <translation id="2278562042389100163">Интернет хөтчийн цонхыг нээ</translation>
 <translation id="2280486287150724112">Right margin</translation>
 <translation id="2282146716419988068">GPU үйл явц</translation>
@@ -2362,7 +2360,6 @@
 <translation id="3797900183766075808">&amp;“<ph name="SEARCH_TERMS" />”-д зориулсан <ph name="SEARCH_ENGINE" />-ыг хайх</translation>
 <translation id="3798449238516105146">Хувилбар</translation>
 <translation id="3799128412641261490">Сэлгүүрийн тохиргоо</translation>
-<translation id="3799201711591988491">{COUNT,plural, =0{&amp;Бүгдийг нээх}=1{&amp;Хавчуургыг нээх}other{&amp;Бүх (#)-г нээх}}</translation>
 <translation id="3800806661949714323">Бүгдийг харуулах (санал болгосон)</translation>
 <translation id="380408572480438692">Гүйцэтгэлийн мэдээлэл цуглуулах ажиллагааг идэвхжүүлэх нь Google-д цаг тутам ситемээ сайжруулахад туслах болно. Та санал хүсэлтийн тайланг илгээж (Alt-Shift-I), гүйцэтгэлийн мэдээллийг оруулах хүртэл ямар нэг өгөгдөл илгээгдэхгүй. Та энэ дэлгэц дээр буцаж ямар ч үед мэдээлэл цуглуулах ажиллагааг идэвхгүй болгож болно.</translation>
 <translation id="3807249107536149332"><ph name="EXTENSION_NAME" />-г (өргөтгөх ID "<ph name="EXTENSION_ID" />") нэвтрэх хэсэгт зөвшөөрөөгүй байна.</translation>
@@ -3200,7 +3197,6 @@
 <translation id="4854317507773910281">Зөвшөөрөл хүсэх эцэг эхийн бүртгэлийг сонгоно уу</translation>
 <translation id="485480310608090163">Бусад тохиргоо болон зөвшөөрөл</translation>
 <translation id="4856478137399998590">Таны хөдөлгөөнт өгөгдлийн үйлчилгээ идэвхжсэн бөгөөд ашиглахад бэлэн болсон байна</translation>
-<translation id="4857506433977877623">{COUNT,plural, =0{Бүгдийг &amp;Нууцлалтай цонхонд нээх}=1{&amp;Нууцлалтай цонхонд нээх}other{Бүх (#)-г &amp;Нууцлалтай цонхонд нээх}}</translation>
 <translation id="4858792381671956233">Та эцэг эхээсээ энэ сайтад нэвтрэх зөвшөөрөл хүссэн байна</translation>
 <translation id="4858913220355269194">Fritz</translation>
 <translation id="4862642413395066333">OCSP хариултууд руу нэвтэрч байна</translation>
@@ -5285,7 +5281,6 @@
 <translation id="7427348830195639090">Дэвсгэр хуудас: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129"><ph name="DEVICE_NAME" />-c дуудлага хийх</translation>
 <translation id="7431719494109538750">Ямар ч HID төхөөрөмж олдсонгүй</translation>
-<translation id="7433692219247014412">{COUNT,plural, =0{Бүгдийг &amp;Шинэ цонхонд нээх}=1{&amp;Шинэ цонхонд нээх}other{Бүх (#)-г &amp;Шинэ цонхонд нээх}}</translation>
 <translation id="7433957986129316853">Үүнийг хадгалах</translation>
 <translation id="7434509671034404296">Хөгжүүлэгч</translation>
 <translation id="7434635829372401939">Тохиргоогоо синк хийх</translation>
@@ -5333,7 +5328,6 @@
 <translation id="7487141338393529395">Зөв бичгийн алдаа шалгах сайжруулсан онцлогийг асаах</translation>
 <translation id="7487969577036436319">Ямар ч бүрэлдэхүүн хэсэг суугдаагүй байна.</translation>
 <translation id="7488682689406685343">Энэ сайт таныг төвөгтэй мэдэгдлүүдэд зөвшөөрөл өгүүлэхээр хуурч байж болзошгүй.</translation>
-<translation id="7489355918927585587">{COUNT,plural, =0{&amp;Бүгдийг нээх}=1{&amp;Хавчуургыг нээх}other{&amp;Бүх (#)-г нээх}}</translation>
 <translation id="7489761397368794366">Төхөөрөмжөөсөө дуудлага хийх</translation>
 <translation id="749028671485790643">Хувь хүн <ph name="VALUE" /></translation>
 <translation id="7490813197707563893">MAC хаяг</translation>
@@ -5501,7 +5495,6 @@
 <translation id="7691077781194517083">Энэ аюулгүй байдлын түлхүүрийг шинэчлэх боломжгүй байна. Алдаа <ph name="ERROR_CODE" />.</translation>
 <translation id="7691698019618282776">Crostini-н сайжруулалт</translation>
 <translation id="7696063401938172191">Tаны '<ph name="PHONE_NAME" />'-д:</translation>
-<translation id="7698408911093959127">{COUNT,plural, =1{Хавчуургын жагсаалтад 1 зүйл байна}other{Хавчуургын жагсаалтад #зүйл байна}}</translation>
 <translation id="7699968112832915395">Бүртгэл нэмэх боломжгүй байна</translation>
 <translation id="7701040980221191251">Тодорхойгүй</translation>
 <translation id="7701869757853594372">USER-ээс зохицуулдаг</translation>
@@ -5803,7 +5796,6 @@
 <translation id="8030852056903932865">Зөвшөөрөх</translation>
 <translation id="8032244173881942855">Чихтэй хуудсыг дамжуулах боломжгүй.</translation>
 <translation id="8033827949643255796">Сонгогдсон</translation>
-<translation id="803435727213847625">{COUNT,plural, =0{Бүгдийг &amp;нууцлалтай цонхонд нээх}=1{&amp;Нууцлалтай цонхонд нээх}other{Бүх (#)-г &amp;нууцлалтай цонхонд нээх}}</translation>
 <translation id="8037117027592400564">Нэгтгэсэн яриаг ашиглан яригдсан бүх текстийг унш</translation>
 <translation id="8037357227543935929">Асуух (өгөгдмөл)</translation>
 <translation id="803771048473350947">Файл</translation>
@@ -6006,7 +5998,6 @@
 <translation id="826905130698769948">Хүчингүй клиентийн гэрчилгээ</translation>
 <translation id="8270242299912238708">PDF документ</translation>
 <translation id="827097179112817503">Нүүр хуудас хэсгийн товчлуурыг харуулах</translation>
-<translation id="8271246892936492311">{COUNT,plural, =1{1 хавчуурга устгасан}other{# хавчуурга устгасан}}</translation>
 <translation id="8272443605911821513">"More tools" цэсэн дэх өргөтгөл дээр дарж өргөтгөлүүдээ удирдаарай.</translation>
 <translation id="8274332263553132018">Файл дамжуулах</translation>
 <translation id="8274924778568117936">Шинэчилж дуустал <ph name="DEVICE_TYPE" />-г унтрааж эсвэл хааж болохгүй. Суулгаж дууссан үед <ph name="DEVICE_TYPE" />-г дахин эхлүүлнэ.</translation>

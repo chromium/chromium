@@ -19,7 +19,6 @@
 <translation id="1013707859758800957">या पेजवर चालण्यासाठी सॅन्डबॉक्स न केलेल्या प्लग-इनला अनुमती देण्यात आली.</translation>
 <translation id="1015318665228971643">फोल्डर नाव एडिट करा</translation>
 <translation id="1015578595646638936">{NUM_DAYS,plural, =1{<ph name="DEVICE_TYPE" /> अपडेट करण्याचा शेवटचा दिवस}other{{NUM_DAYS} दिवसांच्‍या आत <ph name="DEVICE_TYPE" />अपडेट करा}}</translation>
-<translation id="1016437870506746108">{COUNT,plural, =0{सर्व नवीन विंडोमध्ये उघडा}=1{नवीन विंडोमध्ये उघडा}other{सर्व (#) नवीन विंडोमध्ये उघडा}}</translation>
 <translation id="1016566241875885511">अतिरिक्त माहिती (पर्यायी)</translation>
 <translation id="1017280919048282932">शब्दकोशात &amp;जोडा</translation>
 <translation id="1018656279737460067">रद्द झाले</translation>
@@ -1086,7 +1085,6 @@
 <translation id="2274840746523584236">तुमचे Chromebook चार्ज करा</translation>
 <translation id="2276503375879033601">अधिक ॲप्लिकेशन जोडा</translation>
 <translation id="2277255602909579701">सर्व कुकीज आणि साइट डेटा</translation>
-<translation id="2277769717710009150">{COUNT,plural, =1{1 आयटम कॉपी केला}other{# आयटम कॉपी केले}}</translation>
 <translation id="2278562042389100163">ब्राउझर विंडो उघडा</translation>
 <translation id="2280486287150724112">उजवा समास</translation>
 <translation id="2282146716419988068">GPU प्रक्रिया</translation>
@@ -2366,7 +2364,6 @@
 <translation id="3797900183766075808">“<ph name="SEARCH_TERMS" />” साठी <ph name="SEARCH_ENGINE" /> &amp;शोधा</translation>
 <translation id="3798449238516105146">आवृत्ती</translation>
 <translation id="3799128412641261490">स्विच अ‍ॅक्सेस सेटिंग्ज</translation>
-<translation id="3799201711591988491">{COUNT,plural, =0{आणि सर्व उघडा}=1{आणि बुकमार्क उघडा}other{आणि सर्व (#) उघडा}}</translation>
 <translation id="3800806661949714323">सर्व दर्शवा (शिफारस केलेले)</translation>
 <translation id="380408572480438692">कार्यडिस्प्ले डेटाचे संकलन सक्षम केल्याने वेळोवेळी सिस्टम सुधारण्यात Google ला मदत होईल. तुम्ही एक फीडबॅक अहवाल दाखल करेपर्यंत (Alt-Shift-I) आणि कार्यडिस्प्ले डेटा समाविष्ट करेपर्यंत कोणताही डेटा पाठविला जात नाही. तुम्ही संकलन अक्षम करण्यासाठी या स्क्रीनवर कधीही परत येऊ शकता.</translation>
 <translation id="3807249107536149332"><ph name="EXTENSION_NAME" /> लॉगिन स्क्रीनवर (एक्स्टेंशन ID "<ph name="EXTENSION_ID" />") ची अनुमती नाही.</translation>
@@ -3203,7 +3200,6 @@
 <translation id="4854317507773910281">मंजुरीसाठी पालक खाते निवडा</translation>
 <translation id="485480310608090163">आणखी सेटिंग्ज आणि परवानग्या</translation>
 <translation id="4856478137399998590">तुमची मोबाइल सेवा सक्रिय झाली आणि वापरण्यासाठी तयार आहे</translation>
-<translation id="4857506433977877623">{COUNT,plural, =0{सर्व गुप्त विंडोमध्ये उघडा}=1{गुप्त विंडोमध्ये उघडा}other{सर्व (#) गुप्त विंडोमध्ये उघडा}}</translation>
 <translation id="4858792381671956233">या साइटला भेट देणे ठीक आहे का ते तुम्ही तुमच्या पालकांना विचारले</translation>
 <translation id="4858913220355269194">फ्रिटझ</translation>
 <translation id="4862642413395066333">OCSP प्रतिसाद साइन करत आहे</translation>
@@ -5289,7 +5285,6 @@
 <translation id="7427348830195639090">पार्श्वभूमी पृष्ठ: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129"><ph name="DEVICE_NAME" /> चा कॉल</translation>
 <translation id="7431719494109538750">HID डिव्हाइस आढळली नाहीत</translation>
-<translation id="7433692219247014412">{COUNT,plural, =0{सर्व नवीन विंडोमध्ये उघडा}=1{ नवीन विंडोमध्ये उघडा}other{सर्व (#) नवीन विंडोमध्ये उघडा}}</translation>
 <translation id="7433957986129316853">ठेवा</translation>
 <translation id="7434509671034404296">डेव्हलपर</translation>
 <translation id="7434635829372401939">तुमच्या सेटिंग्ज सिंक करा</translation>
@@ -5337,7 +5332,6 @@
 <translation id="7487141338393529395">वर्धित केलेले स्पेल चेक सुरू करा</translation>
 <translation id="7487969577036436319">कोणतेही घटक इंस्टॉल केलेले नाहीत</translation>
 <translation id="7488682689406685343">ही साइट कदाचित तुम्हाला फसवून अनाहूत सूचनांना अनुमती द्यायला लावण्याचा प्रयत्न करत आहे.</translation>
-<translation id="7489355918927585587">{COUNT,plural, =0{आणि सर्व उघडा}=1{आणि बुकमार्क उघडा}other{आणि सर्व (#) उघडा}}</translation>
 <translation id="7489761397368794366">तुमच्या डिव्हाइसवरून कॉल करा</translation>
 <translation id="749028671485790643">व्यक्ती <ph name="VALUE" /></translation>
 <translation id="7490813197707563893">MAC पत्ता</translation>
@@ -5505,7 +5499,6 @@
 <translation id="7691077781194517083">ही सिक्युरिटी की रीसेट करू शकत नाही. एरर <ph name="ERROR_CODE" />.</translation>
 <translation id="7691698019618282776">Crostini अपग्रेड करा</translation>
 <translation id="7696063401938172191">तुमच्या '<ph name="PHONE_NAME" />' वर:</translation>
-<translation id="7698408911093959127">{COUNT,plural, =1{बुकमार्क सूचीमध्ये 1 आयटम}other{बुकमार्क सूचीमध्ये # आयटम}}</translation>
 <translation id="7699968112832915395">खाते जोडू शकत नाही</translation>
 <translation id="7701040980221191251">काहीही नाही</translation>
 <translation id="7701869757853594372">वापरकर्ता हँडल</translation>
@@ -5808,7 +5801,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8030852056903932865">मंजूर करा</translation>
 <translation id="8032244173881942855">टॅब कास्ट करण्यात अक्षम.</translation>
 <translation id="8033827949643255796">निवडलेले</translation>
-<translation id="803435727213847625">{COUNT,plural, =0{सर्व गुप्त विंडोमध्ये उघडा}=1{सर्व गुप्त विंडोमध्ये उघडा}other{सर्व (#) गुप्त विंडोमध्ये उघडा}}</translation>
 <translation id="8037117027592400564">संकालित भाषण वापरून बोललेला सर्व मजकूर वाचा</translation>
 <translation id="8037357227543935929">विचारा (डीफॉल्ट)</translation>
 <translation id="803771048473350947">फाइल</translation>
@@ -6012,7 +6004,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="826905130698769948">चुकीचे क्लायंट सर्टिफिकेट</translation>
 <translation id="8270242299912238708">पीडीएफ दस्तऐवज</translation>
 <translation id="827097179112817503">होम बटण दर्शवा</translation>
-<translation id="8271246892936492311">{COUNT,plural, =1{1 बुकमार्क हटवला}other{# बुकमार्क हटवले}}</translation>
 <translation id="8272443605911821513">"अधिक साधने" मेनूमधील विस्तार क्लिक करून तुमचे विस्तार व्यवस्थापित करा.</translation>
 <translation id="8274332263553132018">फाइल कास्ट करा</translation>
 <translation id="8274924778568117936">अपडेट पूर्ण होईपर्यंत तुमचे <ph name="DEVICE_TYPE" /> बंद करू नका. इंस्‍टॉलेशन पूर्ण झाल्‍यानंतर तुमचे <ph name="DEVICE_TYPE" /> पुन्‍हा सुरू हाेईल .</translation>

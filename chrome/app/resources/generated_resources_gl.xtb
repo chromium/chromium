@@ -19,7 +19,6 @@
 <translation id="1013707859758800957">Permitiuse que un complemento non sometido a illamento de procesos se executase nesta páxina.</translation>
 <translation id="1015318665228971643">Editar o nome do cartafol</translation>
 <translation id="1015578595646638936">{NUM_DAYS,plural, =1{Último día para actualizar o <ph name="DEVICE_TYPE" />}other{Actualiza o <ph name="DEVICE_TYPE" /> no prazo de {NUM_DAYS} días}}</translation>
-<translation id="1016437870506746108">{COUNT,plural, =0{Abrir todos os marcadores nunha ventá &amp;nova}=1{Abrir nunha ventá &amp;nova}other{Abrir todos os marcadores (#) nunha ventá &amp;nova}}</translation>
 <translation id="1016566241875885511">Información adicional (opcional)</translation>
 <translation id="1017280919048282932">E&amp;ngadir ao dicionario</translation>
 <translation id="1018656279737460067">Cancelados</translation>
@@ -1086,7 +1085,6 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="2274840746523584236">Carga o Chromebook</translation>
 <translation id="2276503375879033601">Engadir máis aplicacións</translation>
 <translation id="2277255602909579701">Todas as cookies e datos do sitio</translation>
-<translation id="2277769717710009150">{COUNT,plural, =1{1 elemento copiado}other{# elementos copiados}}</translation>
 <translation id="2278562042389100163">Abrir ventá do navegador</translation>
 <translation id="2280486287150724112">Marxe dereita</translation>
 <translation id="2282146716419988068">Proceso de GPU</translation>
@@ -2366,7 +2364,6 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="3797900183766075808">&amp;Buscar "<ph name="SEARCH_TERMS" />" en <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3798449238516105146">Versión</translation>
 <translation id="3799128412641261490">Configuración do acceso con interruptores</translation>
-<translation id="3799201711591988491">{COUNT,plural, =0{&amp;Abrir todos os marcadores}=1{&amp;Abrir marcador}other{&amp;Abrir todos os marcadores (#)}}</translation>
 <translation id="3800806661949714323">Mostrar todo (recomendado)</translation>
 <translation id="380408572480438692">Activar a recompilación de datos de rendemento axudará a Google a mellorar o sistema co tempo. Non se enviarán datos ata que presentes un informe de comentarios (Alt-Maiús-I) e inclúas datos sobre o rendemento. Podes volver a esta pantalla para desactivar a recompilación cando queiras.</translation>
 <translation id="3807249107536149332">Non se permite o uso de <ph name="EXTENSION_NAME" /> (ID da extensión "<ph name="EXTENSION_ID" />") nunha pantalla de inicio de sesión.</translation>
@@ -3205,7 +3202,6 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="4854317507773910281">Escolle a conta parental para a aprobación</translation>
 <translation id="485480310608090163">Máis opcións de configuración e permisos</translation>
 <translation id="4856478137399998590">O teu servizo de datos móbiles está activado e listo para utilizarse</translation>
-<translation id="4857506433977877623">{COUNT,plural, =0{Abrir todos os marcadores nunha ventá do modo de &amp;incógnito}=1{Abrir nunha ventá do modo de &amp;incógnito}other{Abrir todos os marcadores (#) nunha ventá do modo de &amp;incógnito}}</translation>
 <translation id="4858792381671956233">Preguntaches aos teus pais se podes visitar este sitio</translation>
 <translation id="4858913220355269194">Balón de fútbol</translation>
 <translation id="4862642413395066333">Sinatura de respostas de OCSP</translation>
@@ -5290,7 +5286,6 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="7427348830195639090">Páxina en segundo plano: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129">Chamada de <ph name="DEVICE_NAME" /></translation>
 <translation id="7431719494109538750">Non se encontraron dispositivos de interface humana</translation>
-<translation id="7433692219247014412">{COUNT,plural, =0{Abrir todos os marcadores nunha ventá &amp;nova}=1{Abrir nunha ventá &amp;nova}other{Abrir todos os marcadores (#) nunha ventá &amp;nova}}</translation>
 <translation id="7433957986129316853">Conservar cambios</translation>
 <translation id="7434509671034404296">Programador</translation>
 <translation id="7434635829372401939">Sincronizar a túa configuración</translation>
@@ -5338,7 +5333,6 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="7487141338393529395">Activar corrector ortográfico mellorado</translation>
 <translation id="7487969577036436319">Non se instalou ningún compoñente</translation>
 <translation id="7488682689406685343">É posible que este sitio estea tentando enganarte para que permitas notificacións intrusivas.</translation>
-<translation id="7489355918927585587">{COUNT,plural, =0{&amp;Abrir todos os marcadores}=1{&amp;Abrir marcador}other{&amp;Abrir todos os marcadores (#)}}</translation>
 <translation id="7489761397368794366">Chamar desde o teu dispositivo</translation>
 <translation id="749028671485790643">Usuario <ph name="VALUE" /></translation>
 <translation id="7490813197707563893">Enderezo MAC</translation>
@@ -5506,7 +5500,6 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="7691077781194517083">Non se puido restablecer esta chave de seguranza. Código de erro: <ph name="ERROR_CODE" />.</translation>
 <translation id="7691698019618282776">Actualización de Crostini</translation>
 <translation id="7696063401938172191">No teu teléfono <ph name="PHONE_NAME" />:</translation>
-<translation id="7698408911093959127">{COUNT,plural, =1{1 elemento na lista de marcadores}other{# elementos na lista de marcadores}}</translation>
 <translation id="7699968112832915395">Non se puido engadir a conta</translation>
 <translation id="7701040980221191251">Ningunha</translation>
 <translation id="7701869757853594372">Controladores de USUARIO</translation>
@@ -5810,7 +5803,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8030852056903932865">Aprobar</translation>
 <translation id="8032244173881942855">Non se puido emitir a pestana.</translation>
 <translation id="8033827949643255796">seleccionados</translation>
-<translation id="803435727213847625">{COUNT,plural, =0{Abrir todos os marcadores nunha ventá do modo de &amp;incógnito}=1{Abrir nunha ventá do modo de &amp;incógnito}other{Abrir todos marcadores (#) nunha ventá do modo de &amp;incógnito}}</translation>
 <translation id="8037117027592400564">Ler o texto falado coa síntese de voz</translation>
 <translation id="8037357227543935929">Preguntar (predeterminado)</translation>
 <translation id="803771048473350947">Ficheiro</translation>
@@ -6014,7 +6006,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="826905130698769948">O certificado de cliente non é válido</translation>
 <translation id="8270242299912238708">Documentos PDF</translation>
 <translation id="827097179112817503">Mostrar botón de inicio</translation>
-<translation id="8271246892936492311">{COUNT,plural, =1{1 marcador eliminado}other{# marcadores eliminados}}</translation>
 <translation id="8272443605911821513">Fai clic en Extensións no menú Máis ferramentas para xestionar as túas extensións.</translation>
 <translation id="8274332263553132018">Emitir ficheiro</translation>
 <translation id="8274924778568117936">Non apagues nin peches o dispositivo <ph name="DEVICE_TYPE" /> ata que a actualización finalice. O <ph name="DEVICE_TYPE" /> reiniciarase tras finalizar a instalación.</translation>

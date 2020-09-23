@@ -19,7 +19,6 @@
 <translation id="1013707859758800957">È stata consentita l'esecuzione di un plug-in senza sandbox in questa pagina.</translation>
 <translation id="1015318665228971643">Modifica nome cartella</translation>
 <translation id="1015578595646638936">{NUM_DAYS,plural, =1{Ultimo giorno per aggiornare questo <ph name="DEVICE_TYPE" />}other{Aggiorna questo <ph name="DEVICE_TYPE" /> entro {NUM_DAYS} giorni}}</translation>
-<translation id="1016437870506746108">{COUNT,plural, =0{Apri tutti in &amp;un'altra finestra}=1{Apri in &amp;un'altra finestra}other{Apri tutti (#) in &amp;un'altra finestra}}</translation>
 <translation id="1016566241875885511">Informazioni aggiuntive (facoltativo)</translation>
 <translation id="1017280919048282932">&amp;Aggiungi al dizionario</translation>
 <translation id="1018656279737460067">Operazione annullata</translation>
@@ -1102,7 +1101,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2274840746523584236">Ricarica il Chromebook</translation>
 <translation id="2276503375879033601">Aggiungi altre applicazioni</translation>
 <translation id="2277255602909579701">Tutti i cookie e i dati dei siti</translation>
-<translation id="2277769717710009150">{COUNT,plural, =1{1 elemento copiato}other{# elementi copiati}}</translation>
 <translation id="2278562042389100163">Apri finestra browser</translation>
 <translation id="2280486287150724112">Margine destro</translation>
 <translation id="2282146716419988068">Processo GPU</translation>
@@ -2394,7 +2392,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3797900183766075808">&amp;Cerca "<ph name="SEARCH_TERMS" />" su <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3798449238516105146">Versione</translation>
 <translation id="3799128412641261490">Impostazioni Switch Access</translation>
-<translation id="3799201711591988491">{COUNT,plural, =0{&amp;Apri tutti}=1{&amp;Apri preferito}other{&amp;Apri tutti (#)}}</translation>
 <translation id="3800806661949714323">Mostra tutto (opzione consigliata)</translation>
 <translation id="380408572480438692">Se attivi la raccolta dei dati sul rendimento, consenti a Google di migliorare il sistema nel tempo. I dati vengono inviati soltanto quando presenti un rapporto di feedback (Alt+Maiusc+I) e includi dati sul rendimento. Puoi tornare in qualsiasi momento in questa schermata per disattivare la raccolta.</translation>
 <translation id="3807249107536149332">L'estensione <ph name="EXTENSION_NAME" /> (ID estensione "<ph name="EXTENSION_ID" />") non è consentita in una schermata di accesso.</translation>
@@ -3250,7 +3247,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4854317507773910281">Scegli un account genitore per l'approvazione</translation>
 <translation id="485480310608090163">Altre impostazioni e autorizzazioni</translation>
 <translation id="4856478137399998590">Il servizio dati mobile è attivo e pronto all'uso</translation>
-<translation id="4857506433977877623">{COUNT,plural, =0{Apri tutti in finestra di navigazione in &amp;incognito}=1{Apri in finestra di navigazione in &amp;incognito}other{Apri tutti (#) in finestra di navigazione in &amp;incognito}}</translation>
 <translation id="4858792381671956233">Hai chiesto ai tuoi genitori se puoi visitare questo sito</translation>
 <translation id="4858913220355269194">Holly</translation>
 <translation id="4862642413395066333">Firma risposte OCSP</translation>
@@ -5363,7 +5359,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="7427348830195639090">Pagina di sfondo: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129">Chiamata da <ph name="DEVICE_NAME" /></translation>
 <translation id="7431719494109538750">Nessun dispositivo HID trovato</translation>
-<translation id="7433692219247014412">{COUNT,plural, =0{Apri tutti in &amp;un'altra finestra}=1{Apri in &amp;un'altra finestra}other{Apri tutti (#) in &amp;un'altra finestra}}</translation>
 <translation id="7433957986129316853">Mantieni</translation>
 <translation id="7434509671034404296">Opzioni per sviluppatori</translation>
 <translation id="7434635829372401939">Sincronizza le impostazioni</translation>
@@ -5413,7 +5408,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="7487141338393529395">Attiva il controllo ortografico avanzato</translation>
 <translation id="7487969577036436319">Nessun componente installato</translation>
 <translation id="7488682689406685343">Il sito potrebbe tentare di ingannarti per indurti a consentire notifiche invasive.</translation>
-<translation id="7489355918927585587">{COUNT,plural, =0{&amp;Apri tutti}=1{&amp;Apri preferito}other{&amp;Apri tutti (#)}}</translation>
 <translation id="7489761397368794366">Chiama dal tuo dispositivo</translation>
 <translation id="749028671485790643">Persona <ph name="VALUE" /></translation>
 <translation id="7490813197707563893">Indirizzo MAC</translation>
@@ -5586,7 +5580,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="7691077781194517083">Impossibile reimpostare questo token di sicurezza. Errore <ph name="ERROR_CODE" />.</translation>
 <translation id="7691698019618282776">Upgrade di Crostini</translation>
 <translation id="7696063401938172191">Sul tuo telefono "<ph name="PHONE_NAME" />":</translation>
-<translation id="7698408911093959127">{COUNT,plural, =1{1 elemento nell'elenco dei preferiti}other{# elementi nell'elenco dei preferiti}}</translation>
 <translation id="7699968112832915395">Impossibile aggiungere l'account</translation>
 <translation id="7701040980221191251">Nulla</translation>
 <translation id="7701869757853594372">Handle UTENTE</translation>
@@ -5896,7 +5889,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8030852056903932865">Approva</translation>
 <translation id="8032244173881942855">Impossibile trasmettere la scheda.</translation>
 <translation id="8033827949643255796">selezionati</translation>
-<translation id="803435727213847625">{COUNT,plural, =0{Apri tutti in finestra di navigazione in &amp;incognito}=1{Apri in finestra di navigazione in &amp;incognito}other{Apri tutti (#) in finestra di navigazione in &amp;incognito}}</translation>
 <translation id="8037117027592400564">Lettura di tutto il testo pronunciato utilizzando la sintesi vocale</translation>
 <translation id="8037357227543935929">Chiedi (predefinita)</translation>
 <translation id="803771048473350947">Archivio</translation>
@@ -6102,7 +6094,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="826905130698769948">Certificato client non valido</translation>
 <translation id="8270242299912238708">Documenti PDF</translation>
 <translation id="827097179112817503">Mostra pulsante Home</translation>
-<translation id="8271246892936492311">{COUNT,plural, =1{1 preferito eliminato}other{# preferiti eliminati}}</translation>
 <translation id="8272443605911821513">Gestisci le tue estensioni facendo clic su Estensioni nel menu "Altri strumenti".</translation>
 <translation id="8274332263553132018">Trasmetti file</translation>
 <translation id="8274924778568117936">Non spegnere o chiudere il tuo dispositivo <ph name="DEVICE_TYPE" /> fino al termine dell'aggiornamento. Il dispositivo <ph name="DEVICE_TYPE" /> si riavvierà al termine dell'installazione.</translation>

@@ -19,7 +19,6 @@
 <translation id="1013707859758800957">Pemalam tanpa kotak pasir telah dibenarkan untuk dijalankan di halaman ini.</translation>
 <translation id="1015318665228971643">Edit Nama Folder</translation>
 <translation id="1015578595646638936">{NUM_DAYS,plural, =1{Hari terakhir untuk mengemas kini <ph name="DEVICE_TYPE" />}other{Kemas kini <ph name="DEVICE_TYPE" /> dalam masa {NUM_DAYS} hari}}</translation>
-<translation id="1016437870506746108">{COUNT,plural, =0{Buka semua dalam tetingkap &amp;baharu}=1{Buka dalam tetingkap &amp;baharu}other{Buka semua (#) dalam tetingkap &amp;baharu}}</translation>
 <translation id="1016566241875885511">Maklumat tambahan (pilihan)</translation>
 <translation id="1017280919048282932">&amp;Tambah ke kamus</translation>
 <translation id="1018656279737460067">Dibatalkan</translation>
@@ -1087,7 +1086,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2274840746523584236">Cas Chromebook anda</translation>
 <translation id="2276503375879033601">Tambah lagi apl</translation>
 <translation id="2277255602909579701">Semua kuki dan data tapak</translation>
-<translation id="2277769717710009150">{COUNT,plural, =1{1 item disalin}other{# item disalin}}</translation>
 <translation id="2278562042389100163">Buka tetingkap penyemak imbas</translation>
 <translation id="2280486287150724112">Jidar kanan</translation>
 <translation id="2282146716419988068">Proses GPU</translation>
@@ -2368,7 +2366,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3797900183766075808">&amp;Cari “<ph name="SEARCH_TERMS" />” di <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3798449238516105146">Versi</translation>
 <translation id="3799128412641261490">Tetapan akses suis</translation>
-<translation id="3799201711591988491">{COUNT,plural, =0{&amp;Buka Semua}=1{&amp;Buka Penanda Halaman}other{&amp;Buka Semua (#)}}</translation>
 <translation id="3800806661949714323">Tunjukkan semua (disyorkan)</translation>
 <translation id="380408572480438692">Tindakan mendayakan pengumpulan data prestasi akan membantu Google menambah baik sistem dengan berlalunya masa. Tiada data dihantar sehingga anda memfailkan laporan maklum balas (Alt-Shift-I) dan menyertakan data prestasi. Anda boleh kembali ke skrin ini untuk melumpuhkan pengumpulan pada bila-bila masa.</translation>
 <translation id="3807249107536149332"><ph name="EXTENSION_NAME" /> (ID sambungan "<ph name="EXTENSION_ID" />") tidak dibenarkan pada skrin log masuk.</translation>
@@ -3207,7 +3204,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="4854317507773910281">Pilih akaun ibu/bapa untuk kelulusan</translation>
 <translation id="485480310608090163">Lagi tetapan dan kebenaran</translation>
 <translation id="4856478137399998590">Perkhidmatan data mudah alih anda diaktifkan dan sedia untuk digunakan</translation>
-<translation id="4857506433977877623">{COUNT,plural, =0{Buka Semua dalam Tetingkap &amp;Inkognito}=1{Buka dalam Tetingkap &amp;Inkognito}other{Buka Semua (#) dalam Tetingkap &amp;Inkognito}}</translation>
 <translation id="4858792381671956233">Anda telah bertanya kepada ibu bapa anda sama ada OK untuk melawat tapak ini</translation>
 <translation id="4858913220355269194">Fritz</translation>
 <translation id="4862642413395066333">Menandatangan Respons OCSP</translation>
@@ -5294,7 +5290,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="7427348830195639090">Halaman Latar Belakang: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129">Panggilan daripada <ph name="DEVICE_NAME" /></translation>
 <translation id="7431719494109538750">Tiada peranti HID ditemui</translation>
-<translation id="7433692219247014412">{COUNT,plural, =0{Buka Semua dalam Tetingkap &amp;Baharu}=1{Buka dalam Tetingkap &amp;Baharu}other{Buka Semua (#) dalam Tetingkap &amp;Baharu}}</translation>
 <translation id="7433957986129316853">Kekalkan</translation>
 <translation id="7434509671034404296">Pembangun</translation>
 <translation id="7434635829372401939">Segerakkan tetapan anda</translation>
@@ -5342,7 +5337,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="7487141338393529395">Hidupkan Semak Ejaan yang Dipertingkatkan</translation>
 <translation id="7487969577036436319">Tiada komponen dipasang</translation>
 <translation id="7488682689406685343">Tapak ini mungkin cuba memperdaya anda agar membenarkan pemberitahuan yang mengganggu.</translation>
-<translation id="7489355918927585587">{COUNT,plural, =0{&amp;Buka semua}=1{&amp;Buka penanda halaman}other{&amp;Buka semua (#)}}</translation>
 <translation id="7489761397368794366">Panggilan daripada peranti anda</translation>
 <translation id="749028671485790643"><ph name="VALUE" /> orang</translation>
 <translation id="7490813197707563893">Alamat MAC</translation>
@@ -5510,7 +5504,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="7691077781194517083">Tidak dapat menetapkan semula kunci keselamatan ini. Ralat <ph name="ERROR_CODE" />.</translation>
 <translation id="7691698019618282776">Peningkatan Crostini</translation>
 <translation id="7696063401938172191">Pada '<ph name="PHONE_NAME" />' anda:</translation>
-<translation id="7698408911093959127">{COUNT,plural, =1{1 item dalam senarai penanda halaman}other{# item dalam senarai penanda halaman}}</translation>
 <translation id="7699968112832915395">Tidak dapat menambahkan akaun</translation>
 <translation id="7701040980221191251">Tiada</translation>
 <translation id="7701869757853594372">Pemegang USER</translation>
@@ -5816,7 +5809,6 @@ Simpan fail kunci anda di tempat selamat. Anda akan memerlukannya untuk mencipta
 <translation id="8030852056903932865">Luluskan</translation>
 <translation id="8032244173881942855">Tidak dapat menghantar tab.</translation>
 <translation id="8033827949643255796">dipilih</translation>
-<translation id="803435727213847625">{COUNT,plural, =0{Buka semua dalam tetingkap &amp;inkognito}=1{Buka dalam tetingkap &amp;inkognito}other{Buka semua (#) dalam tetingkap &amp;inkognito}}</translation>
 <translation id="8037117027592400564">Baca semua teks yang dituturkan menggunakan pertuturan disintesiskan</translation>
 <translation id="8037357227543935929">Tanya (lalai)</translation>
 <translation id="803771048473350947">Fail</translation>
@@ -6021,7 +6013,6 @@ Simpan fail kunci anda di tempat selamat. Anda akan memerlukannya untuk mencipta
 <translation id="826905130698769948">Sijil pelanggan tidak sah</translation>
 <translation id="8270242299912238708">Dokumen PDF</translation>
 <translation id="827097179112817503">Paparkan butang laman utama</translation>
-<translation id="8271246892936492311">{COUNT,plural, =1{1 penanda halaman dipadam}other{# penanda halaman dipadam}}</translation>
 <translation id="8272443605911821513">Urus sambungan anda dengan mengklik Sambungan dalam menu "Lagi alat".</translation>
 <translation id="8274332263553132018">Hantar fail</translation>
 <translation id="8274924778568117936">Jangan matikan atau menutup <ph name="DEVICE_TYPE" /> anda sehingga kemas kini selesai. <ph name="DEVICE_TYPE" /> anda akan dimulakan semula selepas pemasangan selesai.</translation>

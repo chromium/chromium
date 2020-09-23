@@ -19,7 +19,6 @@
 <translation id="1013707859758800957">Бұл бетте сына ортасынан тыс плагинді іске қосуға рұқсат етілді.</translation>
 <translation id="1015318665228971643">Қалта атауын өзгерту</translation>
 <translation id="1015578595646638936">{NUM_DAYS,plural, =1{<ph name="DEVICE_TYPE" /> құрылғысын жаңартудың соңғы күні}other{<ph name="DEVICE_TYPE" /> құрылғысын {NUM_DAYS} күн ішінде жаңарту}}</translation>
-<translation id="1016437870506746108">{COUNT,plural, =0{Барлығын жаңа терезеде ашу}=1{Жаңа терезеде ашу}other{Барлығын (#) жаңа терезеде ашу}}</translation>
 <translation id="1016566241875885511">Қосымша ақпарат (міндетті емес)</translation>
 <translation id="1017280919048282932">&amp;Сөздікке қосу</translation>
 <translation id="1018656279737460067">Бас тартылды</translation>
@@ -1084,7 +1083,6 @@
 <translation id="2274840746523584236">Chromebook құрылғыңызды зарядтаңыз</translation>
 <translation id="2276503375879033601">Басқа қолданбалар қосу</translation>
 <translation id="2277255602909579701">Барлық cookie файлдары және сайт деректері</translation>
-<translation id="2277769717710009150">{COUNT,plural, =1{1 элемент көшірілді}other{# элемент көшірілді}}</translation>
 <translation id="2278562042389100163">Браузер терезесін ашу</translation>
 <translation id="2280486287150724112">Оң жақ шеті</translation>
 <translation id="2282146716419988068">GPU процесі</translation>
@@ -2364,7 +2362,6 @@
 <translation id="3797900183766075808">"<ph name="SEARCH_TERMS" />" сөзін <ph name="SEARCH_ENGINE" /> бойынша &amp;іздеу</translation>
 <translation id="3798449238516105146">Нұсқа</translation>
 <translation id="3799128412641261490">Switch Access параметрлері</translation>
-<translation id="3799201711591988491">{COUNT,plural, =0{&amp;Барлығын ашу}=1{&amp;Бетбелгіні ашу}other{&amp;Барлығын ашу (#)}}</translation>
 <translation id="3800806661949714323">Барлығын көрсету (ұсынылады)</translation>
 <translation id="380408572480438692">Өнімділік деректерін жинау мүмкіндігі Google компаниясына уақыт өте келе жүйені жақсартуға көмектеседі. Пікір есебін жасап (Alt-Shift-I), оған өнімділік деректерін енгізбейінше, деректер жіберілмейді. Кез келген уақытта осы экранға оралып, дерек жинау функциясын өшіруіңізге болады.</translation>
 <translation id="3807249107536149332"><ph name="EXTENSION_NAME" /> ("<ph name="EXTENSION_ID" />" кеңейтім идентификаторы) кеңейтіміне жүйеге кіру экранында рұқсат берілмеген.</translation>
@@ -3203,7 +3200,6 @@
 <translation id="4854317507773910281">Мақұлдау үшін ата-атаның есептік жазбасын таңдаңыз</translation>
 <translation id="485480310608090163">Басқа параметрлер мен рұқсаттар</translation>
 <translation id="4856478137399998590">Мобильді деректеріңіз қызметі белсендірілді және пайдалануға дайын</translation>
-<translation id="4857506433977877623">{COUNT,plural, =0{Барлығын &amp;инкогнито терезесінде ашу}=1{&amp;Инкогнито терезесінде ашу}other{Барлығын (#) &amp;инкогнито терезесінде ашу}}</translation>
 <translation id="4858792381671956233">Ата-анаңыздан осы сайтқа кіру рұқсатын сұрадыңыз</translation>
 <translation id="4858913220355269194">Fritz</translation>
 <translation id="4862642413395066333">OCSP жауаптарына қол қою</translation>
@@ -5288,7 +5284,6 @@
 <translation id="7427348830195639090">Фондық бет: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129"><ph name="DEVICE_NAME" /> шалған қоңырау</translation>
 <translation id="7431719494109538750">HID құрылғылары табылмады.</translation>
-<translation id="7433692219247014412">{COUNT,plural, =0{Барлығын &amp;жаңа терезеде ашу}=1{&amp;Жаңа терезеде ашу}other{Барлығын (#) &amp;жаңа терезеде ашу}}</translation>
 <translation id="7433957986129316853">Сақтау</translation>
 <translation id="7434509671034404296">Әзірлеуші</translation>
 <translation id="7434635829372401939">Параметрлерді синхрондау</translation>
@@ -5336,7 +5331,6 @@
 <translation id="7487141338393529395">Жетілдірілген емле тексеру құралын іске қосу</translation>
 <translation id="7487969577036436319">Құрамдастар орнатылмаған</translation>
 <translation id="7488682689406685343">Бұл сайт мазалайтын хабарландыруларға рұқсат етуіңіз үшін, сізді алдап жатқан болуы мүмкін.</translation>
-<translation id="7489355918927585587">{COUNT,plural, =0{&amp;Барлығын ашу}=1{&amp;Бетбелгіні ашу}other{&amp;Барлығын ашу (#)}}</translation>
 <translation id="7489761397368794366">Құрылғыңыздан қоңырау шалу</translation>
 <translation id="749028671485790643">Адам <ph name="VALUE" /></translation>
 <translation id="7490813197707563893">MAC мекенжайы</translation>
@@ -5504,7 +5498,6 @@
 <translation id="7691077781194517083">Қауіпсіздік кілтін бастапқы күйіне қайтару мүмкін емес. Қате: <ph name="ERROR_CODE" />.</translation>
 <translation id="7691698019618282776">Crostini жүйесін жаңарту</translation>
 <translation id="7696063401938172191">"<ph name="PHONE_NAME" />" телефонында:</translation>
-<translation id="7698408911093959127">{COUNT,plural, =1{Бетбелгілер тізімінде 1 элемент бар}other{Бетбелгілер тізімінде # элемент бар}}</translation>
 <translation id="7699968112832915395">Есептік жазба енгізілмейді</translation>
 <translation id="7701040980221191251">Жоқ</translation>
 <translation id="7701869757853594372">USER өңдегіштері</translation>
@@ -5808,7 +5801,6 @@
 <translation id="8030852056903932865">Растау</translation>
 <translation id="8032244173881942855">Қойындыны трансляциялау мүмкін емес.</translation>
 <translation id="8033827949643255796">таңдалды</translation>
-<translation id="803435727213847625">{COUNT,plural, =0{Барлығын &amp;инкогнито терезесінде ашу}=1{Барлығын &amp;инкогнито терезесінде ашу}other{Барлығын (#) &amp;инкогнито терезесінде ашу}}</translation>
 <translation id="8037117027592400564">Синтезделген сөйлеу арқылы айтылған барлық мәтінді оқу</translation>
 <translation id="8037357227543935929">Сұрау (әдепкі)</translation>
 <translation id="803771048473350947">Файл</translation>
@@ -6012,7 +6004,6 @@
 <translation id="826905130698769948">Клиент сертификаты дұрыс емес.</translation>
 <translation id="8270242299912238708">PDF форматындағы құжаттар</translation>
 <translation id="827097179112817503">Басты түймесін көрсету</translation>
-<translation id="8271246892936492311">{COUNT,plural, =1{1 бетбелгі жойылды}other{# бетбелгі жойылды}}</translation>
 <translation id="8272443605911821513">"Қосымша құралдар" мәзіріндегі кеңейтімдерді басу арқылы кеңейтімдерді басқарыңыз.</translation>
 <translation id="8274332263553132018">Файлды трансляциялау</translation>
 <translation id="8274924778568117936">Жаңарту аяқталмайынша <ph name="DEVICE_TYPE" /> құрылғыңызды өшірмеңіз немесе жаппаңыз. <ph name="DEVICE_TYPE" /> құрылғыңыз орнату аяқталғаннан кейін қайта қосылады.</translation>

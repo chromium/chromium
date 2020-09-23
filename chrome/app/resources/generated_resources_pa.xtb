@@ -19,7 +19,6 @@
 <translation id="1013707859758800957">ਸੈਂਡਬਾਕਸ ਰਹਿਤ ਪਲੱਗਇਨ ਨੂੰ ਇਸ ਪੰਨੇ 'ਤੇ ਚਲਾਉਣ ਦੀ ਇਜਾਜ਼ਤ ਦਿੱਤੀ ਗਈ।</translation>
 <translation id="1015318665228971643">ਫੋਲਡਰ ਨਾਮ ਸੰਪਾਦਿਤ ਕਰੋ</translation>
 <translation id="1015578595646638936">{NUM_DAYS,plural, =1{<ph name="DEVICE_TYPE" /> ਨੂੰ ਅੱਪਡੇਟ ਕਰਨ ਲਈ ਆਖਰੀ ਦਿਨ}one{<ph name="DEVICE_TYPE" /> ਨੂੰ {NUM_DAYS} ਦਿਨ ਦੇ ਅੰਦਰ ਅੱਪਡੇਟ ਕਰੋ}other{<ph name="DEVICE_TYPE" /> ਨੂੰ {NUM_DAYS} ਦਿਨਾਂ ਦੇ ਅੰਦਰ ਅੱਪਡੇਟ ਕਰੋ}}</translation>
-<translation id="1016437870506746108">{COUNT,plural, =0{ਸਭ &amp;ਨਵੀਂ ਵਿੰਡੋ ਵਿੱਚ ਖੋਲ੍ਹੋ}=1{ਸਭ &amp;ਨਵੀਂ ਵਿੰਡੋ ਵਿੱਚ ਖੋਲ੍ਹੋ}other{ਸਭ (#) &amp;ਨਵੀਂ ਵਿੰਡੋ ਵਿੱਚ ਖੋਲ੍ਹੋ}}</translation>
 <translation id="1016566241875885511">ਵਧੀਕ ਜਾਣਕਾਰੀ (ਵਿਕਲਪਿਕ)</translation>
 <translation id="1017280919048282932">&amp;ਸ਼ਬਦਕੋਸ਼ ਵਿੱਚ ਜੋੜੋ</translation>
 <translation id="1018656279737460067">ਰੱਦ ਕੀਤਾ</translation>
@@ -1087,7 +1086,6 @@
 <translation id="2274840746523584236">ਆਪਣੀ Chromebook ਨੂੰ ਚਾਰਜ ਕਰੋ</translation>
 <translation id="2276503375879033601">ਹੋਰ ਐਪਸ ਜੋੜੋ</translation>
 <translation id="2277255602909579701">ਸਾਰੀਆਂ ਕੁਕੀਜ਼ ਅਤੇ ਸਾਈਟ ਡਾਟਾ</translation>
-<translation id="2277769717710009150">{COUNT,plural, =1{1 ਆਈਟਮ ਕਾਪੀ ਕੀਤੀ ਗਈ}one{# ਆਈਟਮ ਕਾਪੀ ਕੀਤੀ ਗਈ}other{# ਆਈਟਮਾਂ ਕਾਪੀ ਕੀਤੀਆਂ ਗਈਆਂ}}</translation>
 <translation id="2278562042389100163">ਬ੍ਰਾਊਜ਼ਰ window ਖੋਲ੍ਹੋ</translation>
 <translation id="2280486287150724112">ਸੱਜਾ ਹਾਸ਼ੀਆ</translation>
 <translation id="2282146716419988068">GPU ਪ੍ਰਕਿਰਿਆ</translation>
@@ -2365,7 +2363,6 @@
 <translation id="3797900183766075808">&amp;“<ph name="SEARCH_TERMS" />” ਲਈ <ph name="SEARCH_ENGINE" /> ਖੋਜੋ</translation>
 <translation id="3798449238516105146">ਵਰਜਨ:</translation>
 <translation id="3799128412641261490">ਸਵਿੱਚ ਪਹੁੰਚ ਸੈਟਿੰਗਾਂ</translation>
-<translation id="3799201711591988491">{COUNT,plural, =0{&amp;ਸਭ ਖੋਲ੍ਹੋ}=1{&amp;ਬੁੱਕਮਾਰਕ ਖੋਲ੍ਹੋ}other{&amp;ਸਭ ਖੋਲ੍ਹੋ (#)}}</translation>
 <translation id="3800806661949714323">ਸਭ ਦਿਖਾਓ (ਸਿਫ਼ਾਰਸ਼ ਕੀਤੀ ਗਈ)</translation>
 <translation id="380408572480438692">ਦਰਸ਼ਨ ਡਾਟਾ ਦੇ ਇਕੱਤਰੀਕਰਨ ਨੂੰ ਸਮਰੱਥ ਬਣਾਉਣ ਨਾਲ ਇਹ ਸਮਾਂ ਬੀਤਣ ਤੇ Google ਸਿਸਟਮ ਨੂੰ ਸੁਧਾਰਨ ਵਿੱਚ ਸਹਾਇਤਾ ਕਰੇਗਾ। ਉਦੋਂ ਤੱਕ ਕੋਈ ਡਾਟਾ ਨਹੀਂ ਭੇਜਿਆ ਜਾਂਦਾ ਜਦੋਂ ਤੱਕ ਤੁਸੀਂ ਇੱਕ ਫੀਡਬੈਕ ਰਿਪੋਰਟ ਦਾਖ਼ਲ ਨਹੀਂ ਕਰਦੇ (Alt-Shift-I) ਅਤੇ ਪ੍ਰਦਰਸ਼ਨ ਡਾਟਾ ਸ਼ਾਮਲ ਨਹੀਂ ਕਰਦੇ। ਤੁਸੀਂ ਕਿਸੇ ਵੀ ਸਮੇਂ ਇਕੱਤਰੀਕਰਨ ਨੂੰ ਅਸਮਰੱਥ ਬਣਾਉਣ ਲਈ ਇਸ ਸਕ੍ਰੀਨ ਤੇ ਵਾਪਸ ਜਾ ਸਕਦੇ ਹੋ।</translation>
 <translation id="3807249107536149332">ਲੌਗ-ਇਨ ਸਕ੍ਰੀਨ ਵਿੱਚ <ph name="EXTENSION_NAME" /> (ਐਕਸਟੈਂਸ਼ਨ ਆਈ.ਡੀ. "<ph name="EXTENSION_ID" />") ਦੀ ਇਜਾਜ਼ਤ ਨਹੀਂ ਹੈ।</translation>
@@ -3204,7 +3201,6 @@
 <translation id="4854317507773910281">ਮਨਜ਼ੂਰੀ ਲਈ ਮਾਂ-ਪਿਓ ਦਾ ਖਾਤਾ ਚੁਣੋ</translation>
 <translation id="485480310608090163">ਹੋਰ ਸੈਟਿੰਗਾਂ ਅਤੇ ਇਜਾਜ਼ਤਾਂ</translation>
 <translation id="4856478137399998590">ਤੁਹਾਡੀ ਮੋਬਾਈਲ ਡਾਟਾ ਸੇਵਾ ਕਿਰਿਆਸ਼ੀਲ ਕੀਤੀ ਗਈ ਹੈ ਅਤੇ ਵਰਤਣ ਲਈ ਤਿਆਰ ਹੈ</translation>
-<translation id="4857506433977877623">{COUNT,plural, =0{ਸਭ &amp;ਇਨਕੋਗਨਿਟੋ ਵਿੰਡੋ ਵਿੱਚ ਖੋਲ੍ਹੋ}=1{&amp;ਇਨਕੋਗਨਿਟੋ ਵਿੰਡੋ ਵਿੱਚ ਖੋਲ੍ਹੋ}other{ਸਭ (#) &amp;ਇਨਕੋਗਨਿਟੋ ਵਿੰਡੋ ਵਿੱਚ ਖੋਲ੍ਹੋ}}</translation>
 <translation id="4858792381671956233">ਤੁਸੀਂ ਆਪਣੇ ਮਾਪਿਆਂ ਤੋਂ ਪੁੱਛਿਆ ਕਿ ਕੀ ਇਸ ਸਾਈਟ 'ਤੇ ਜਾਣਾ ਠੀਕ ਹੈ</translation>
 <translation id="4858913220355269194">Fritz</translation>
 <translation id="4862642413395066333">OCSP ਜਵਾਬ ਸਾਈਨ ਇਨ ਕਰ ਰਿਹਾ ਹੈ</translation>
@@ -5289,7 +5285,6 @@
 <translation id="7427348830195639090">ਪਿਛੋਕੜ ਸਫ਼ਾ: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129"><ph name="DEVICE_NAME" /> ਵੱਲੋਂ ਕਾਲ</translation>
 <translation id="7431719494109538750">ਕੋਈ HID ਡੀਵਾਈਸ ਨਹੀਂ ਮਿਲਿਆ</translation>
-<translation id="7433692219247014412">{COUNT,plural, =0{ਸਭ &amp;ਨਵੀਂ ਵਿੰਡੋ ਵਿੱਚ ਖੋਲ੍ਹੋ}=1{&amp;ਨਵੀਂ ਵਿੰਡੋ ਵਿੱਚ ਖੋਲ੍ਹੋ}other{ਸਭ (#) &amp;ਨਵੀਂ ਵਿੰਡੋ ਵਿੱਚ ਖੋਲ੍ਹੋ}}</translation>
 <translation id="7433957986129316853">ਇਹੋ ਰੱਖੋ</translation>
 <translation id="7434509671034404296">ਵਿਕਾਸਕਾਰ</translation>
 <translation id="7434635829372401939">ਆਪਣੀਆਂ ਸੈਟਿੰਗਾਂ ਦਾ ਸਮਕਾਲੀਕਰਨ ਕਰੋ</translation>
@@ -5337,7 +5332,6 @@
 <translation id="7487141338393529395">ਵਿਸਤ੍ਰਿਤ ਸ਼ਬਦ-ਜੋੜ ਜਾਂਚ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="7487969577036436319">ਕੋਈ ਕੰਪੋਨੈਂਟ ਇੰਸਟੌਲ ਨਹੀਂ ਕੀਤੇ ਗਏ ਹਨ</translation>
 <translation id="7488682689406685343">ਇਹ ਸਾਈਟ ਸ਼ਾਇਦ ਦਖਲਅੰਦਾਜ਼ੀ ਵਾਲੀਆਂ ਸੂਚਨਾਵਾਂ ਦੀ ਇਜਾਜ਼ਤ ਲਈ ਤੁਹਾਨੂੰ ਧੋਖਾ ਦੇਣ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰ ਰਹੀ ਹੈ।</translation>
-<translation id="7489355918927585587">{COUNT,plural, =0{&amp;ਸਭ ਖੋਲ੍ਹੋ}=1{&amp;ਬੁੱਕਮਾਰਕ ਖੋਲ੍ਹੋ}other{&amp;ਸਭ ਖੋਲ੍ਹੋ (#)}}</translation>
 <translation id="7489761397368794366">ਆਪਣੇ ਡੀਵਾਈਸ ਤੋਂ ਕਾਲ ਕਰੋ</translation>
 <translation id="749028671485790643">ਵਿਅਕਤੀ <ph name="VALUE" /></translation>
 <translation id="7490813197707563893">MAC ਪਤਾ</translation>
@@ -5505,7 +5499,6 @@
 <translation id="7691077781194517083">ਇਸ ਸੁਰੱਖਿਆ ਕੁੰਜੀ ਨੂੰ ਰੀਸੈੱਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ। ਗੜਬੜ <ph name="ERROR_CODE" />.</translation>
 <translation id="7691698019618282776">Crostini ਅੱਪਗ੍ਰੇਡ</translation>
 <translation id="7696063401938172191">ਆਪਣੇ '<ph name="PHONE_NAME" />' 'ਤੇ:</translation>
-<translation id="7698408911093959127">{COUNT,plural, =1{ਬੁੱਕਮਾਰਕ ਸੂਚੀ ਵਿੱਚ 1 ਆਈਟਮ}one{ਬੁੱਕਮਾਰਕ ਸੂਚੀ ਵਿੱਚ # ਆਈਟਮ}other{ਬੁੱਕਮਾਰਕ ਸੂਚੀ ਵਿੱਚ # ਆਈਟਮਾਂ}}</translation>
 <translation id="7699968112832915395">ਖਾਤਾ ਸ਼ਾਮਲ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
 <translation id="7701040980221191251">ਕੋਈ ਨਹੀਂ</translation>
 <translation id="7701869757853594372">ਵਰਤੋਂਕਾਰ ਹੈਂਡਲ</translation>
@@ -5808,7 +5801,6 @@
 <translation id="8030852056903932865">ਮਨਜ਼ੂਰ ਕਰੋ</translation>
 <translation id="8032244173881942855">ਟੈਬ ਕਾਸਟ ਕਰਨ ਵਿੱਚ ਅਸਮਰੱਥ।</translation>
 <translation id="8033827949643255796">ਚੁਣਿਆ</translation>
-<translation id="803435727213847625">{COUNT,plural, =0{ਸਭ &amp;ਇਨਕੋਗਨਿਟੋ ਵਿੰਡੋ ਵਿੱਚ ਖੋਲ੍ਹੋ}=1{&amp;ਇਨਕੋਗਨਿਟੋ ਵਿੰਡੋ ਵਿੱਚ ਖੋਲ੍ਹੋ}other{ਸਭ (#) &amp;ਇਨਕੋਗਨਿਟੋ ਵਿੰਡੋ ਵਿੱਚ ਖੋਲ੍ਹੋ}}</translation>
 <translation id="8037117027592400564">ਸਿੰਥੇਸਾਈਜ਼ਡ ਸਪੀਚ ਵਰਤਦੇ ਹੋਏ ਬੋਲਿਆ ਗਿਆ ਸਾਰਾ ਟੈਕਸਟ ਪੜ੍ਹੋ</translation>
 <translation id="8037357227543935929">ਪੁੱਛੋ (ਪੂਰਵ-ਨਿਰਧਾਰਤ)</translation>
 <translation id="803771048473350947">ਫਾਈਲ</translation>
@@ -6011,7 +6003,6 @@
 <translation id="826905130698769948">ਅਵੈਧ ਕਲਾਇੰਟ ਪ੍ਰਮਾਣ-ਪੱਤਰ</translation>
 <translation id="8270242299912238708">PDF ਦਸਤਾਵੇਜ਼</translation>
 <translation id="827097179112817503">ਹੋਮ ਬਟਨ ਦਿਖਾਓ</translation>
-<translation id="8271246892936492311">{COUNT,plural, =1{1 ਬੁੱਕਮਾਰਕ ਮਿਟਾਇਆ ਗਿਆ}one{# ਬੁੱਕਮਾਰਕ ਮਿਟਾਏ ਗਏ}other{# ਬੁੱਕਮਾਰਕ ਮਿਟਾਏ ਗਏ}}</translation>
 <translation id="8272443605911821513">"ਹੋਰ ਟੂਲ" ਮੀਨੂ ਵਿੱਚ ਐਕਸਟੈਂਸ਼ਨਾਂ 'ਤੇ ਕਲਿੱਕ ਕਰਕੇ ਆਪਣੇ ਐਕਸਟੈਂਸ਼ਨ ਪ੍ਰਬੰਧਿਤ ਕਰੋ।</translation>
 <translation id="8274332263553132018">ਫ਼ਾਈਲ ਨੂੰ ਕਾਸਟ ਕਰੋ</translation>
 <translation id="8274924778568117936">ਅੱਪਡੇਟ ਖਤਮ ਹੋਣ ਤੱਕ ਆਪਣੀ <ph name="DEVICE_TYPE" /> ਦੇ ਸਿਸਟਮ ਨੂੰ ਜਾਂ Chromebook ਨੂੰ ਬੰਦ ਨਾ ਕਰੋ। ਸਥਾਪਨਾ ਪੂਰੀ ਹੋਣ 'ਤੇ ਤੁਹਾਡੀ <ph name="DEVICE_TYPE" /> ਨੂੰ ਮੁੜ-ਚਾਲੂ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>

@@ -25,6 +25,7 @@
 <translation id="119944043368869598">پاک کردن همه</translation>
 <translation id="1199716647557067911">مطمئنید می‌خواهید «دسترسی کلیدی» را خاموش کنید؟</translation>
 <translation id="121097972571826261">جلو رفتن کلمه‌به‌کلمه</translation>
+<translation id="1225748608451425081">‏Chromebook شما به‌دلیل مشکل شناخته‌شده‌ای قفل شده است. پس از <ph name="TIME_LEFT" /> می‌توانید به سیستم وارد شوید.</translation>
 <translation id="1229194443904279055">توقف انتخاب</translation>
 <translation id="1247372569136754018">میکروفون (داخلی)</translation>
 <translation id="1252999807265626933">در حال شارژ شدن از <ph name="POWER_SOURCE" /></translation>
@@ -136,6 +137,7 @@
 <translation id="2341729377289034582">قفل درحالت عمودی</translation>
 <translation id="2352467521400612932">تنظیمات قلم</translation>
 <translation id="2354174487190027830">فعال‌سازی <ph name="NAME" /></translation>
+<translation id="2356210126990741501">به‌نظر می‌رسد تلفن شما آنلاین نیست و درحال‌حاضر نمی‌توانیم برایتان همه ریزنرم‌افزارها را از آن دریافت کنیم.</translation>
 <translation id="2359808026110333948">ادامه</translation>
 <translation id="2365393535144473978">فعال کردن داده تلفن همراه، بلوتوث را فعال می‌کند.</translation>
 <translation id="2369165858548251131">‏‎«Hello»‎ in Chinese (سلام به زبان چینی)</translation>
@@ -168,6 +170,7 @@
 <translation id="2705001408393684014">روشن/خاموش کردن میکروفون. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">پیکان بالا</translation>
 <translation id="2718395828230677721">نور شب</translation>
+<translation id="2727175239389218057">پاسخ دادن</translation>
 <translation id="2727977024730340865">باتری به شارژر برق ضعیف متصل است. شارژ باتری ممکن است قابل اطمینان نباشد.</translation>
 <translation id="2743387203779672305">کپی در بریده‌دان</translation>
 <translation id="2792498699870441125">‏Alt+جستجو</translation>
@@ -176,6 +179,7 @@
 <translation id="2825619548187458965">قفسه</translation>
 <translation id="2841907151129139818">به حالت رایانه لوحی رفته‌اید</translation>
 <translation id="2844169650293029770">‏دستگاه USB-C (درگاه جلوی سمت چپ)</translation>
+<translation id="2846247265041961677">نه! تلفن پیدا نشد</translation>
 <translation id="2865888419503095837">اطلاعات شبکه</translation>
 <translation id="2872961005593481000">خاموش کردن</translation>
 <translation id="2878884018241093801">بدون موارد اخیر</translation>
@@ -460,6 +464,7 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">روشن</translation>
 <translation id="5920710855273935292">میکروفون صامت است.</translation>
+<translation id="594179686076170922">درحال اتصال به تلفنتان…</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> روشن است.</translation>
 <translation id="5947494881799873997">برگرداندن</translation>
 <translation id="595202126637698455">ردیابی عملکرد فعال شد</translation>
@@ -673,6 +678,7 @@
 <translation id="8196787716797768628">‏از اشاره‌ها برای جابه‌جایی سریع بین برنامه‌ها و تعامل با Chromebook خود در حالت رایانه لوحی استفاده کنید.</translation>
 <translation id="8200772114523450471">ازسرگیری</translation>
 <translation id="8203795194971602413">کلیک راست</translation>
+<translation id="8219451629189078428">‏Chromebook باید در این مدت روشن بماند و به برق متصل باشد. مطمئن شوید سیم شارژر یا آداپتور کاملاً متصل باشد، هم به Chromebook و هم به پریز برق. Chromebook را خاموش نکنید.</translation>
 <translation id="8236042855478648955">وقت استراحت</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />، قدرت سیگنال <ph name="SIGNAL_STRENGTH" />، باتری تلفن<ph name="BATTERY_STATUS" /></translation>
 <translation id="826107067893790409">‏برای باز کردن قفل <ph name="USER_EMAIL_ADDRESS" />، Enter را فشار دهید</translation>

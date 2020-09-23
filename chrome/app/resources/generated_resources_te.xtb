@@ -19,7 +19,6 @@
 <translation id="1013707859758800957">ఈ పేజీలో అమలు కావడానికి శాండ్‌బాక్స్ చేయని ప్లగ్ఇన్‌ అనుమతించబడింది.</translation>
 <translation id="1015318665228971643">ఫోల్డర్ పేరును సవరించండి</translation>
 <translation id="1015578595646638936">{NUM_DAYS,plural, =1{<ph name="DEVICE_TYPE" />ని అప్‌డేట్ చేయడానికి చివరి రోజు}other{<ph name="DEVICE_TYPE" />ని {NUM_DAYS} రోజులలోపు అప్‌డేట్ చేయండి}}</translation>
-<translation id="1016437870506746108">{COUNT,plural, =0{అన్నింటినీ &amp;కొత్త విండోలో తెరవండి}=1{&amp;కొత్త విండోలో తెరవండి}other{అన్నింటినీ (#) &amp;కొత్త విండోలో తెరవండి}}</translation>
 <translation id="1016566241875885511">అదనపు సమాచారం (ఐచ్ఛికం)</translation>
 <translation id="1017280919048282932">నిఘంటువులో &amp;జోడించు</translation>
 <translation id="1018656279737460067">రద్దయింది</translation>
@@ -1087,7 +1086,6 @@
 <translation id="2274840746523584236">మీ Chromebookను ఛార్జ్ చేయండి</translation>
 <translation id="2276503375879033601">మరిన్ని యాప్‌లను జోడించండి</translation>
 <translation id="2277255602909579701">అన్ని కుక్కీలు మరియు సైట్ డేటా</translation>
-<translation id="2277769717710009150">{COUNT,plural, =1{1 అంశం కాపీ చేయబడింది}other{# అంశాలు కాపీ చేయబడ్డాయి}}</translation>
 <translation id="2278562042389100163">బ్రౌజర్ విండోను తెరువు</translation>
 <translation id="2280486287150724112">కుడి అంచు</translation>
 <translation id="2282146716419988068">GPU ప్రాసెస్</translation>
@@ -2367,7 +2365,6 @@
 <translation id="3797900183766075808">“<ph name="SEARCH_TERMS" />” కోసం <ph name="SEARCH_ENGINE" />లో &amp;శోధించండి</translation>
 <translation id="3798449238516105146">వెర్షన్</translation>
 <translation id="3799128412641261490">స్విచ్ యాక్సెస్ సెట్టింగ్‌లు</translation>
-<translation id="3799201711591988491">{COUNT,plural, =0{అన్నింటినీ &amp;తెరవండి}=1{బుక్‌మార్క్‌ని &amp;తెరవండి}other{అన్నింటినీ (#) &amp;తెరవండి}}</translation>
 <translation id="3800806661949714323">అన్నీ చూపు (సిఫార్సు చేయబడింది)</translation>
 <translation id="380408572480438692">పనితీరు డేటా సేకరణను ప్రారంభించడం అనేది, సమయానుగుణంగా సిస్టమ్‌ను మెరుగుపరచడంలో Googleకు సహాయపడుతుంది. మీరు అభిప్రాయ నివేదిక (Alt-Shift-I)ను ఫైల్ చేసి, పనితీరు డేటాను చేర్చే వరకు డేటా పంపబడదు. మీరు ఎప్పుడైనా సేకరణను నిలిపివేయడానికి ఈ స్క్రీన్‌కు తిరిగి రావచ్చు.</translation>
 <translation id="3807249107536149332"><ph name="EXTENSION_NAME" /> (ఎక్స్‌టెన్షన్‌ ID "<ph name="EXTENSION_ID" />") లాగిన్ స్క్రీన్‌లో అనుమతించబడదు.</translation>
@@ -3206,7 +3203,6 @@
 <translation id="4854317507773910281">ఆమోదం కోసం తల్లి/తండ్రి ఖాతాను ఎంచుకోండి</translation>
 <translation id="485480310608090163">మరిన్ని సెట్టింగ్‌లు మరియు అనుమతులు</translation>
 <translation id="4856478137399998590">మీ మొబైల్ డేటా సేవ యాక్టివేట్ చేయబడింది, ఉపయోగించడానికి సిద్ధంగా ఉంది</translation>
-<translation id="4857506433977877623">{COUNT,plural, =0{అన్నింటినీ &amp;అజ్ఞాత విండోలో తెరవండి}=1{&amp;అజ్ఞాత విండోలో తెరవండి}other{అన్నింటినీ (#) &amp;అజ్ఞాత విండోలో తెరవండి}}</translation>
 <translation id="4858792381671956233">ఈ సైట్‌ను సందర్శించడానికి అనుమతించమని కోరుతూ మీ తల్లిదండ్రులకు అభ్యర్థన పంపారు</translation>
 <translation id="4858913220355269194">ఫ్రిట్జ్</translation>
 <translation id="4862642413395066333">OCSP ప్రతిస్పందనలను సైన్ చేస్తోంది</translation>
@@ -5291,7 +5287,6 @@
 <translation id="7427348830195639090">నేపథ్య పేజీ: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129"><ph name="DEVICE_NAME" /> నుండి కాల్ చేయండి</translation>
 <translation id="7431719494109538750">HID పరికరాలు ఏవీ కనుగొనబడలేదు</translation>
-<translation id="7433692219247014412">{COUNT,plural, =0{అన్నింటినీ &amp;కొత్త విండోలో తెరవండి}=1{&amp;కొత్త విండోలో తెరవండి}other{అన్నింటినీ (#) &amp;కొత్త విండోలో తెరవండి}}</translation>
 <translation id="7433957986129316853">అలాగే ఉంచండి</translation>
 <translation id="7434509671034404296">డెవలపర్</translation>
 <translation id="7434635829372401939">మీ సెట్టింగ్‌లను సింక్ చేయండి</translation>
@@ -5339,7 +5334,6 @@
 <translation id="7487141338393529395">మెరుగైన స్పెల్ చెక్‌ను ఆన్ చేయండి</translation>
 <translation id="7487969577036436319">భాగాలు ఇన్‌స్టాల్ చేయబడలేదు</translation>
 <translation id="7488682689406685343">అనుచితమైన నోటిఫికేషన్‌లను అనుమతించడంలో ఈ సైట్ మిమ్మల్ని మోసగించడానికి ట్రై చేస్తూ ఉండవచ్చు.</translation>
-<translation id="7489355918927585587">{COUNT,plural, =0{&amp;అన్నింటినీ తెరువండి}=1{&amp;బుక్‌మార్క్‌ని తెరవండి}other{&amp;అన్నింటినీ (#) తెరవండి}}</translation>
 <translation id="7489761397368794366">మీ పరికరం నుండి కాల్ చేయండి</translation>
 <translation id="749028671485790643">వ్యక్తి <ph name="VALUE" /></translation>
 <translation id="7490813197707563893">MAC చిరునామా</translation>
@@ -5507,7 +5501,6 @@
 <translation id="7691077781194517083">ఈ సెక్యూరిటీ కీని రీసెట్ చేయలేకపోయింది. ఎర్రర్ <ph name="ERROR_CODE" />.</translation>
 <translation id="7691698019618282776">Crostini అప్‌గ్రేడ్</translation>
 <translation id="7696063401938172191">మీ '<ph name="PHONE_NAME" />'లో:</translation>
-<translation id="7698408911093959127">{COUNT,plural, =1{బుక్‌మార్క్ జాబితాలోని 1 అంశం}other{బుక్‌మార్క్ జాబితాలోని # అంశాలు}}</translation>
 <translation id="7699968112832915395">ఖాతాను యాడ్ చేయడం సాధ్యం కాదు</translation>
 <translation id="7701040980221191251">ఏదీ లేదు</translation>
 <translation id="7701869757853594372">వినియోగదారు నిర్వహించేవి</translation>
@@ -5808,7 +5801,6 @@
 <translation id="8030852056903932865">ఆమోదించు</translation>
 <translation id="8032244173881942855">ట్యాబ్‌ను ప్రసారం చేయడం సాధ్యపడలేదు.</translation>
 <translation id="8033827949643255796">ఎంచుకోబడ్డాయి</translation>
-<translation id="803435727213847625">{COUNT,plural, =0{అన్నింటినీ &amp;అజ్ఞాత విండోలో తెరవండి}=1{&amp;అజ్ఞాత విండోలో తెరవండి}other{అన్నింటినీ (#) &amp;అజ్ఞాత విండోలో తెరవండి}}</translation>
 <translation id="8037117027592400564">సంశ్లేషణ ప్రసంగాన్ని ఉపయోగించి మాట్లాడిన మొత్తం వచనాన్ని చదవడం</translation>
 <translation id="8037357227543935929">అడగాలి (డిఫాల్ట్)</translation>
 <translation id="803771048473350947">ఫైల్</translation>
@@ -6012,7 +6004,6 @@
 <translation id="826905130698769948">చెల్లని క్లయింట్ సర్టిఫికెట్</translation>
 <translation id="8270242299912238708">PDF పత్రాలు</translation>
 <translation id="827097179112817503">హోమ్ బటన్‌ను చూపు</translation>
-<translation id="8271246892936492311">{COUNT,plural, =1{1 బుక్‌మార్క్ తొలగించబడింది}other{# బుక్‌మార్క్‌లు తొలగించబడ్డాయి}}</translation>
 <translation id="8272443605911821513">"మరిన్ని సాధనాలు" మెనూలోని ఎక్స్‌టెన్షన్‌లను క్లిక్ చేయడం ద్వారా మీ ఎక్స్‌టెన్షన్‌లను నిర్వహించండి.</translation>
 <translation id="8274332263553132018">ఫైల్‌ను ప్రసారం చేయండి</translation>
 <translation id="8274924778568117936">అప్‌డేట్ పూర్తయ్యే వరకు మీ <ph name="DEVICE_TYPE" />ని ఆఫ్ చేయవద్దు లేదా మూసివేయవద్దు. ఇన‌స్ట‌లేష‌న్‌ పూర్తయిన తర్వాత మీ <ph name="DEVICE_TYPE" /> పునఃప్రారంభమవుతుంది.</translation>

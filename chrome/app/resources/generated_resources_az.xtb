@@ -19,7 +19,6 @@
 <translation id="1013707859758800957">Sandbox'dan çıxarılmış plaqinə bu səhifədə işləməyə icazə verilib.</translation>
 <translation id="1015318665228971643">Qovluq Adına Düzəliş edin</translation>
 <translation id="1015578595646638936">{NUM_DAYS,plural, =1{<ph name="DEVICE_TYPE" /> cihazını güncəlləmək üçün son gün}other{<ph name="DEVICE_TYPE" /> cihazını {NUM_DAYS} gün ərzində güncəlləyin}}</translation>
-<translation id="1016437870506746108">{COUNT,plural, =0{Hamısını &amp;yeni pəncərədə açın}=1{ &amp;Yeni pəncərədə açın}other{Hamısını (#) &amp;yeni pəncərədə açın}}</translation>
 <translation id="1016566241875885511">Əlavə məlumat (istəyə bağlı)</translation>
 <translation id="1017280919048282932">Lüğətə əlavə edin</translation>
 <translation id="1018656279737460067">Ləğv edilib</translation>
@@ -1083,7 +1082,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2274840746523584236">Chromebook'unuzu şarj edin</translation>
 <translation id="2276503375879033601">Daha çox tətbiq əlavə edin</translation>
 <translation id="2277255602909579701">Bütün kuki və sayt datası</translation>
-<translation id="2277769717710009150">{COUNT,plural, =1{1 element kopyalandı}other{# element kopyalandı}}</translation>
 <translation id="2278562042389100163">Brauzer pəncərəsini açın</translation>
 <translation id="2280486287150724112">Sağ kənar boşluq</translation>
 <translation id="2282146716419988068">GPU Prosesi</translation>
@@ -2362,7 +2360,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3797900183766075808">“<ph name="SEARCH_TERMS" />” üçün <ph name="SEARCH_ENGINE" /> axtarın</translation>
 <translation id="3798449238516105146">Versiya</translation>
 <translation id="3799128412641261490">Düymə ilə giriş ayarları</translation>
-<translation id="3799201711591988491">{COUNT,plural, =0{&amp;Hamısını Açın}=1{&amp;Əlfəcini Açın}other{&amp;Hamısını Açın (#)}}</translation>
 <translation id="3800806661949714323">Hamısını göstərin (tövsiyə olunur)</translation>
 <translation id="380408572480438692">Performans datasının toplanmasına icazə vermək Google'a sistemi gəlişdirmək imkanı verir. Geri əlaqə raportu hazırlayana (Alt-Shift-I) və performans datası təqdim edənə qədər heç bir data göndərilmir. Toplamaya qadağa qoymaq üçün buraya istədiyiniz vaxt qayıda bilərsiniz.</translation>
 <translation id="3807249107536149332"><ph name="EXTENSION_NAME" /> (artırma ID'si "<ph name="EXTENSION_ID" />") giriş ekranında icazə verilmir.</translation>
@@ -3199,7 +3196,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4854317507773910281">Təsdiq üçün valideyn hesabı seçin</translation>
 <translation id="485480310608090163">Daha çox ayar və icazələr</translation>
 <translation id="4856478137399998590">Mobil datanız aktivləşdi və istifadəyə hazırdır</translation>
-<translation id="4857506433977877623">{COUNT,plural, =0{Hamısını &amp;Gizli Pəncərədə Açın}=1{&amp;Gizli Pəncərədə Açın}other{Hamısını (#) &amp;Gizli Pəncərədə Açın}}</translation>
 <translation id="4858792381671956233">Bu sayta daxil olmaq üçün valideynlərinizdən icazə aldınız</translation>
 <translation id="4858913220355269194">Fritz</translation>
 <translation id="4862642413395066333">OCSP Cavabları imzalanır</translation>
@@ -5282,7 +5278,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="7427348830195639090">Arxa Fon Səhifəsi: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129"><ph name="DEVICE_NAME" /> cihazından zəng</translation>
 <translation id="7431719494109538750">HID cihazları tapılmadı</translation>
-<translation id="7433692219247014412">{COUNT,plural, =0{Hamısını &amp;Yeni Pəncərədə Açın}=1{&amp;Yeni Pəncərədə Açın}other{Hamısını (#) &amp;Yeni Pəncərədə Açın}}</translation>
 <translation id="7433957986129316853">Saxlayın</translation>
 <translation id="7434509671034404296">Developer</translation>
 <translation id="7434635829372401939">Ayarları sinxronlaşdırın</translation>
@@ -5330,7 +5325,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="7487141338393529395">Təkmilləşdirilmiş Orfoqrafik Yoxlanışı Aktiv Edin</translation>
 <translation id="7487969577036436319">Heç bir komponent quraşdırılmadı</translation>
 <translation id="7488682689406685343">Bu sayt təhlükəli bildirişlərə icazə verməniz üçün sizi cəlb etmiş ola bilər.</translation>
-<translation id="7489355918927585587">{COUNT,plural, =0{&amp;Hamısını açın}=1{&amp;Əlfəcini açın}other{&amp;Hamısını açın (#)}}</translation>
 <translation id="7489761397368794366">Cihazınızdan zəng</translation>
 <translation id="749028671485790643">Şəxs <ph name="VALUE" /></translation>
 <translation id="7490813197707563893">MAC ünvanı</translation>
@@ -5498,7 +5492,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="7691077781194517083">Bu güvənlik açarını sıfırlamaq mümkün deyil. Xəta <ph name="ERROR_CODE" />.</translation>
 <translation id="7691698019618282776">Crostini'nin güncəllənməsi</translation>
 <translation id="7696063401938172191">"<ph name="PHONE_NAME" />" telefonunuzda:</translation>
-<translation id="7698408911093959127">{COUNT,plural, =1{əlfəcin siyahısındakı 1 element}other{əlfəcin siyahısındakı # element}}</translation>
 <translation id="7699968112832915395">Hesab əlavə etmək olmur</translation>
 <translation id="7701040980221191251">Heç bir</translation>
 <translation id="7701869757853594372">USER tutacaqları</translation>
@@ -5802,7 +5795,6 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8030852056903932865">Təsdiq edin</translation>
 <translation id="8032244173881942855">Tabeli yayımlamaq mümkün olmadı.</translation>
 <translation id="8033827949643255796">seçilib</translation>
-<translation id="803435727213847625">{COUNT,plural, =0{Hamısını &amp;gizli pəncərədə açın}=1{&amp;Gizli pəncərədə açın}other{Hamısını (#) &amp;gizli pəncərədə açın}}</translation>
 <translation id="8037117027592400564">Sintetik nitq işlədərək bütün mətni oxuyun</translation>
 <translation id="8037357227543935929">Soruşun (defolt)</translation>
 <translation id="803771048473350947">Fayl</translation>
@@ -6005,7 +5997,6 @@ Bu saytın blok edilməsini düşünmürəm!</translation>
 <translation id="826905130698769948">Yanlış klient sertifikatı</translation>
 <translation id="8270242299912238708">PDF sənədləri</translation>
 <translation id="827097179112817503">Əsas səhifə düyməsini göstərin</translation>
-<translation id="8271246892936492311">{COUNT,plural, =1{1 əlfəcin silindi}other{# əlfəcin silindi}}</translation>
 <translation id="8272443605911821513">"Digər alətlər" menyusunda Artırmalara klikləməklə artırmalarınızı idarə edin.</translation>
 <translation id="8274332263553132018">Faylı yayımlayın</translation>
 <translation id="8274924778568117936">Yeniləmə tamamlanana qədər <ph name="DEVICE_TYPE" /> cihazını deaktiv etməyin və ya bağlamayın. <ph name="DEVICE_TYPE" /> quraşdırmadan sonra yenidən başlayacaq.</translation>

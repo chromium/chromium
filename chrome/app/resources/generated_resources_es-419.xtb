@@ -19,7 +19,6 @@
 <translation id="1013707859758800957">Se permitió que un complemento no incluido en la zona de pruebas se ejecutara en la página.</translation>
 <translation id="1015318665228971643">Editar nombre de carpeta</translation>
 <translation id="1015578595646638936">{NUM_DAYS,plural, =1{Último día para actualizar el dispositivo <ph name="DEVICE_TYPE" />}other{Actualiza el dispositivo <ph name="DEVICE_TYPE" /> en el transcurso de {NUM_DAYS} días}}</translation>
-<translation id="1016437870506746108">{COUNT,plural, =0{Abrir todo en una ventana &amp;nueva}=1{Abrir en una ventana &amp;nueva}other{Abrir todo (#) en una ventana &amp;nueva}}</translation>
 <translation id="1016566241875885511">Información adicional (opcional)</translation>
 <translation id="1017280919048282932">&amp;Añadir al diccionario</translation>
 <translation id="1018656279737460067">Cancelado</translation>
@@ -1084,7 +1083,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2274840746523584236">Carga la Chromebook</translation>
 <translation id="2276503375879033601">Agregar más aplicaciones</translation>
 <translation id="2277255602909579701">Todas las cookies y todos los datos de sitios</translation>
-<translation id="2277769717710009150">{COUNT,plural, =1{1 elemento copiado}other{# elementos copiados}}</translation>
 <translation id="2278562042389100163">Abrir ventana del navegador</translation>
 <translation id="2280486287150724112">Margen derecho</translation>
 <translation id="2282146716419988068">Proceso de GPU</translation>
@@ -2364,7 +2362,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3797900183766075808">&amp;Buscar "<ph name="SEARCH_TERMS" />" en <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3798449238516105146">Versión</translation>
 <translation id="3799128412641261490">Configuración de accesibilidad mejorada</translation>
-<translation id="3799201711591988491">{COUNT,plural, =0{&amp;Abrir todo}=1{&amp;Abrir favorito}other{&amp;Abrir todo (#)}}</translation>
 <translation id="3800806661949714323">Mostrar todo (recomendado)</translation>
 <translation id="380408572480438692">Si habilitas la recopilación de datos de rendimiento, ayudarás a Google a mejorar el sistema con el tiempo. Para que se envíen los datos, debes presentar un informe de comentarios (Alt+Mayúscula+I) e incluir datos de rendimiento. Puedes volver a esta pantalla para inhabilitar la recopilación en cualquier momento.</translation>
 <translation id="3807249107536149332">No se permite <ph name="EXTENSION_NAME" /> (ID de la extensión "<ph name="EXTENSION_ID" />") en una pantalla de acceso.</translation>
@@ -3203,7 +3200,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4854317507773910281">Elige la cuenta parental para la aprobación</translation>
 <translation id="485480310608090163">Más opciones de configuración y permisos</translation>
 <translation id="4856478137399998590">Tu servicio de datos para celulares está activado y listo para ser utilizado</translation>
-<translation id="4857506433977877623">{COUNT,plural, =0{Abrir todo en una ventana de &amp;incógnito}=1{Abrir en una ventana de &amp;incógnito}other{Abrir todo (#) en una ventana de &amp;incógnito}}</translation>
 <translation id="4858792381671956233">Les preguntaste a tus padres si puedes visitar este sitio</translation>
 <translation id="4858913220355269194">Balón</translation>
 <translation id="4862642413395066333">Firma de respuestas de OCSP</translation>
@@ -5288,7 +5284,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="7427348830195639090">Página de fondo: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129">Llamada de <ph name="DEVICE_NAME" /></translation>
 <translation id="7431719494109538750">No se encontraron dispositivos HID</translation>
-<translation id="7433692219247014412">{COUNT,plural, =0{Abrir todo en una ventana &amp;nueva}=1{Abrir en una ventana &amp;nueva}other{Abrir todo (#) en una ventana &amp;nueva}}</translation>
 <translation id="7433957986129316853">Conservar el cambio</translation>
 <translation id="7434509671034404296">Opciones para desarrolladores</translation>
 <translation id="7434635829372401939">Sincroniza tu configuración</translation>
@@ -5336,7 +5331,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="7487141338393529395">Activa el corrector ortográfico mejorado</translation>
 <translation id="7487969577036436319">No hay componentes instalados.</translation>
 <translation id="7488682689406685343">Es posible que este sitio esté intentando engañarte para que permitas notificaciones intrusivas.</translation>
-<translation id="7489355918927585587">{COUNT,plural, =0{&amp;Abrir todo}=1{&amp;Abrir favorito}other{&amp;Abrir todo (#)}}</translation>
 <translation id="7489761397368794366">Llamar desde tu dispositivo</translation>
 <translation id="749028671485790643">Persona <ph name="VALUE" /></translation>
 <translation id="7490813197707563893">Dirección MAC</translation>
@@ -5504,7 +5498,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="7691077781194517083">No se puede restablecer esta llave de seguridad. Error <ph name="ERROR_CODE" />.</translation>
 <translation id="7691698019618282776">Actualización de Crostini</translation>
 <translation id="7696063401938172191">En tu "<ph name="PHONE_NAME" />"</translation>
-<translation id="7698408911093959127">{COUNT,plural, =1{1 elemento en la lista de favoritos}other{# elementos en la lista de favoritos}}</translation>
 <translation id="7699968112832915395">No se puede agregar la cuenta</translation>
 <translation id="7701040980221191251">Ninguna</translation>
 <translation id="7701869757853594372">A cargo del USUARIO</translation>
@@ -5809,7 +5802,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8030852056903932865">Aprobar</translation>
 <translation id="8032244173881942855">No se puede transmitir la pestaña</translation>
 <translation id="8033827949643255796">seleccionados</translation>
-<translation id="803435727213847625">{COUNT,plural, =0{Abrir todo en una ventana de &amp;incógnito}=1{Abrir en una ventana de &amp;incógnito}other{Abrir todo (#) en una ventana de &amp;incógnito}}</translation>
 <translation id="8037117027592400564">Leer todo el texto hablado con la síntesis de voz</translation>
 <translation id="8037357227543935929">Preguntar (predeterminado)</translation>
 <translation id="803771048473350947">Archivo</translation>
@@ -6013,7 +6005,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="826905130698769948">El Certificado de cliente no es válido</translation>
 <translation id="8270242299912238708">Documentos PDF</translation>
 <translation id="827097179112817503">Mostrar el botón de la Página principal</translation>
-<translation id="8271246892936492311">{COUNT,plural, =1{1 favorito borrado}other{# favoritos borrados}}</translation>
 <translation id="8272443605911821513">Para administrar tus extensiones, haz clic en Extensiones en el menú "Más herramientas".</translation>
 <translation id="8274332263553132018">Transmitir archivo</translation>
 <translation id="8274924778568117936">No apagues ni cierres el dispositivo <ph name="DEVICE_TYPE" /> hasta que finalice la actualización. Cuando el proceso termine, el dispositivo <ph name="DEVICE_TYPE" /> se reiniciará.</translation>

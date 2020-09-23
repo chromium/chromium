@@ -19,7 +19,6 @@
 <translation id="1013707859758800957">Pinahintulutang tumakbo sa page na ito ang isang hindi naka-sandbox na plugin.</translation>
 <translation id="1015318665228971643">I-edit ang Pangalan ng Folder</translation>
 <translation id="1015578595646638936">{NUM_DAYS,plural, =1{Huling araw para i-update ang <ph name="DEVICE_TYPE" />}one{I-update ang <ph name="DEVICE_TYPE" /> sa loob ng {NUM_DAYS} araw}other{I-update ang <ph name="DEVICE_TYPE" /> sa loob ng {NUM_DAYS} na araw}}</translation>
-<translation id="1016437870506746108">{COUNT,plural, =0{Buksan lahat sa &amp;bagong window}=1{Buksan sa &amp;bagong window}one{Buksan lahat (#) sa &amp;bagong window}other{Buksan lahat (#) sa &amp;bagong window}}</translation>
 <translation id="1016566241875885511">Karagdagang impormasyon (opsyonal)</translation>
 <translation id="1017280919048282932">&amp;Idagdag sa talahulugan</translation>
 <translation id="1018656279737460067">Nakansela</translation>
@@ -1087,7 +1086,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2274840746523584236">I-charge ang iyong Chromebook</translation>
 <translation id="2276503375879033601">Magdagdag ng higit pang apps</translation>
 <translation id="2277255602909579701">Lahat ng data ng cookies at site</translation>
-<translation id="2277769717710009150">{COUNT,plural, =1{Nakopya ang 1 item}one{Nakopya ang # item}other{Nakopya ang # na item}}</translation>
 <translation id="2278562042389100163">Magbukas ng browser window</translation>
 <translation id="2280486287150724112">Kanang margin</translation>
 <translation id="2282146716419988068">Proseso ng GPU</translation>
@@ -2367,7 +2365,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="3797900183766075808">&amp;Maghanap sa <ph name="SEARCH_ENGINE" /> ng “<ph name="SEARCH_TERMS" />”</translation>
 <translation id="3798449238516105146">Bersyon</translation>
 <translation id="3799128412641261490">Mga setting ng switch access</translation>
-<translation id="3799201711591988491">{COUNT,plural, =0{&amp;Buksan Lahat}=1{&amp;Buksan ang Bookmark}one{&amp;Buksan Lahat (#)}other{&amp;Buksan Lahat (#)}}</translation>
 <translation id="3800806661949714323">Ipakita lahat (inirerekomenda)</translation>
 <translation id="380408572480438692">Makakatulong sa Google ang pag-e-enable sa pagkolekta ng data ng pagganap na pahusayin ang system sa paglipas ng panahon. Walang ipinapadalang data hanggang sa maghain ka ng ulat ng feedback (Alt-Shift-I) at magsama ng data ng pagganap. Makakabalik ka sa screen na ito upang i-disable ang pagkolekta anumang oras.</translation>
 <translation id="3807249107536149332">Ang <ph name="EXTENSION_NAME" /> (extension ID "<ph name="EXTENSION_ID" />") ay hindi pinapayagan sa screen sa pag-login.</translation>
@@ -3206,7 +3203,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="4854317507773910281">Pumili ng account ng magulang para sa pag-apruba</translation>
 <translation id="485480310608090163">Higit pang setting at pahintulot</translation>
 <translation id="4856478137399998590">Na-activate na ang iyong serbisyo ng data ng mobile at handa nang magamit</translation>
-<translation id="4857506433977877623">{COUNT,plural, =0{Buksan Lahat sa &amp;Incognito Window}=1{Buksan sa &amp;Incognito Window}one{Buksan Lahat (#) sa &amp;Incognito Window}other{Buksan Lahat (#) sa &amp;Incognito Window}}</translation>
 <translation id="4858792381671956233">Tinanong mo sa iyong mga magulang kung maaari mong bisitahin ang site na ito</translation>
 <translation id="4858913220355269194">Azkals</translation>
 <translation id="4862642413395066333">Paglagda sa Mga Pagtugon sa OCSP</translation>
@@ -5291,7 +5287,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="7427348830195639090">Pahina ng Background: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129">Tawag mula sa <ph name="DEVICE_NAME" /></translation>
 <translation id="7431719494109538750">Walang nakitang HID device</translation>
-<translation id="7433692219247014412">{COUNT,plural, =0{Buksan Lahat sa &amp;Bagong Window}=1{Buksan sa &amp;Bagong Window}one{Buksan Lahat (#) sa &amp;Bagong Window}other{Buksan Lahat (#) sa &amp;Bagong Window}}</translation>
 <translation id="7433957986129316853">Panatilihin ito</translation>
 <translation id="7434509671034404296">Bumubuo</translation>
 <translation id="7434635829372401939">I-sync ang iyong mga setting</translation>
@@ -5339,7 +5334,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="7487141338393529395">I-on ang Pinahusay na Pang-check ng Pagbabaybay</translation>
 <translation id="7487969577036436319">Walang naka-install na mga bahagi</translation>
 <translation id="7488682689406685343">Posibleng sinusubukan kang linlangin ng site na ito para payagan ang mga nakakasagabal na notification.</translation>
-<translation id="7489355918927585587">{COUNT,plural, =0{&amp;Buksan lahat}=1{&amp;Buksan ang bookmark}one{&amp;Buksan lahat (#)}other{&amp;Buksan lahat (#)}}</translation>
 <translation id="7489761397368794366">Tumawag mula sa iyong device</translation>
 <translation id="749028671485790643">Tao <ph name="VALUE" /></translation>
 <translation id="7490813197707563893">MAC address</translation>
@@ -5507,7 +5501,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="7691077781194517083">Hindi puwedeng i-reset ang security key na ito. Error <ph name="ERROR_CODE" />.</translation>
 <translation id="7691698019618282776">Pag-upgrade ng Crostini</translation>
 <translation id="7696063401938172191">Sa iyong '<ph name="PHONE_NAME" />':</translation>
-<translation id="7698408911093959127">{COUNT,plural, =1{1 item sa listahan ng bookmark}one{# item sa listahan ng bookmark}other{# na item sa listahan ng bookmark}}</translation>
 <translation id="7699968112832915395">Hindi maidagdag ang account</translation>
 <translation id="7701040980221191251">Wala</translation>
 <translation id="7701869757853594372">Mga USER Handle</translation>
@@ -5812,7 +5805,6 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8030852056903932865">Aprubahan</translation>
 <translation id="8032244173881942855">Hindi ma-cast ang tab.</translation>
 <translation id="8033827949643255796">pinili</translation>
-<translation id="803435727213847625">{COUNT,plural, =0{Buksan lahat sa &amp;incognito window}=1{Buksan lahat sa &amp;incognito window}one{Buksan lahat (#) sa &amp;incognito window}other{Buksan lahat (#) sa &amp;incognito window}}</translation>
 <translation id="8037117027592400564">Basahin ang lahat ng binigkas na text gamit ang naka-synthesize na pagsasalita</translation>
 <translation id="8037357227543935929">Magtanong (default)</translation>
 <translation id="803771048473350947">File</translation>
@@ -6016,7 +6008,6 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="826905130698769948">Di-wasto ang certificate ng client</translation>
 <translation id="8270242299912238708">Mga dokumentong PDF</translation>
 <translation id="827097179112817503">Ipakita ang button ng home</translation>
-<translation id="8271246892936492311">{COUNT,plural, =1{Na-delete ang 1 bookmark}one{Na-delete ang # bookmark}other{Na-delete ang # na bookmark}}</translation>
 <translation id="8272443605911821513">Pamahalaan ang iyong mga extension sa pamamagitan ng pag-click sa Mga Extension sa menu ng "Higit pang mga tool."</translation>
 <translation id="8274332263553132018">I-cast ang file</translation>
 <translation id="8274924778568117936">Huwag i-off o isara ang iyong <ph name="DEVICE_TYPE" /> hanggang sa matapos ang pag-update. Magre-restart ang <ph name="DEVICE_TYPE" /> mo pagkatapos ng pag-install.</translation>

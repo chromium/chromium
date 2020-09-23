@@ -19,7 +19,6 @@
 <translation id="1013707859758800957">Vtičniku brez varnostnih omejitev je bilo dovoljeno izvajanje na tej strani.</translation>
 <translation id="1015318665228971643">Urejanje imena mape</translation>
 <translation id="1015578595646638936">{NUM_DAYS,plural, =1{Zadnji dan za posodobitev naprave <ph name="DEVICE_TYPE" />}one{Napravo <ph name="DEVICE_TYPE" /> posodobite v {NUM_DAYS} dnevu}two{Napravo <ph name="DEVICE_TYPE" /> posodobite v {NUM_DAYS} dnevih}few{Napravo <ph name="DEVICE_TYPE" /> posodobite v {NUM_DAYS} dnevih}other{Napravo <ph name="DEVICE_TYPE" /> posodobite v {NUM_DAYS} dnevih}}</translation>
-<translation id="1016437870506746108">{COUNT,plural, =0{Odpiranje vseh v &amp;novem oknu}=1{Odpiranje v &amp;novem oknu}one{Odpiranje vseh (#) v &amp;novem oknu}two{Odpiranje vseh (#) v &amp;novem oknu}few{Odpiranje vseh (#) v &amp;novem oknu}other{Odpiranje vseh (#) v &amp;novem oknu}}</translation>
 <translation id="1016566241875885511">Dodatni podatki (izbirno)</translation>
 <translation id="1017280919048282932">&amp;Dodaj v slovar</translation>
 <translation id="1018656279737460067">Preklicano</translation>
@@ -1087,7 +1086,6 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2274840746523584236">Polnjenje baterije Chromebooka</translation>
 <translation id="2276503375879033601">Dodajte več aplikacij</translation>
 <translation id="2277255602909579701">Vsi piškotki in podatki spletnih mest</translation>
-<translation id="2277769717710009150">{COUNT,plural, =1{1 kopiran element}one{# kopiran element}two{# kopirana elementa}few{# kopirani elementi}other{# kopiranih elementov}}</translation>
 <translation id="2278562042389100163">Odpri okno brskalnika</translation>
 <translation id="2280486287150724112">Desni rob</translation>
 <translation id="2282146716419988068">Proces GPU</translation>
@@ -2368,7 +2366,6 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="3797900183766075808">&amp;V iskalniku <ph name="SEARCH_ENGINE" /> poišči »<ph name="SEARCH_TERMS" />«</translation>
 <translation id="3798449238516105146">Različica</translation>
 <translation id="3799128412641261490">Nastavitve stikalnega dostopa</translation>
-<translation id="3799201711591988491">{COUNT,plural, =0{&amp;Odpiranje vseh}=1{&amp;Odpiranje zaznamka}one{&amp;Odpiranje vseh (#)}two{&amp;Odpiranje vseh (#)}few{&amp;Odpiranje vseh (#)}other{&amp;Odpiranje vseh (#)}}</translation>
 <translation id="3800806661949714323">Pokaži vse (priporočeno)</translation>
 <translation id="380408572480438692">Če omogočite zbiranje podatkov o učinkovitosti delovanja, boste Googlu pomagali sčasoma izboljšati sistem. Nobeni podatki se ne pošljejo, dokler ne pošljete poročila (Alt–Shift–I), v katerega vključite podatke o učinkovitosti delovanja. Na to stran se lahko kadar koli vrnete in onemogočite zbiranje podatkov.</translation>
 <translation id="3807249107536149332">Razširitev <ph name="EXTENSION_NAME" /> (ID razširitve »<ph name="EXTENSION_ID" />«) ni dovoljena na zaslonu za prijavo.</translation>
@@ -3207,7 +3204,6 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="4854317507773910281">Izbira starševskega računa za odobritev</translation>
 <translation id="485480310608090163">Več nastavitev in dovoljenj</translation>
 <translation id="4856478137399998590">Mobilna podatkovna storitev je aktivirana in pripravljena za uporabo</translation>
-<translation id="4857506433977877623">{COUNT,plural, =0{Odpiranje vseh v &amp;oknu brez beleženja zgodovine}=1{Odpiranje v &amp;oknu brez beleženja zgodovine}one{Odpiranje vseh (#) v &amp;oknu brez beleženja zgodovine}two{Odpiranje vseh (#) v &amp;oknu brez beleženja zgodovine}few{Odpiranje vseh (#) v &amp;oknu brez beleženja zgodovine}other{Odpiranje vseh (#) v &amp;oknu brez beleženja zgodovine}}</translation>
 <translation id="4858792381671956233">Starše si vprašal(-a), ali smeš obiskati to spletno mesto</translation>
 <translation id="4858913220355269194">Fritz</translation>
 <translation id="4862642413395066333">Podpisovanje odgovorov OCSP</translation>
@@ -5296,7 +5292,6 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="7427348830195639090">Stran v ozadju: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129">Klic osebe <ph name="DEVICE_NAME" /></translation>
 <translation id="7431719494109538750">Ni naprav HID</translation>
-<translation id="7433692219247014412">{COUNT,plural, =0{Odpiranje vseh v &amp;novem oknu}=1{Odpiranje v &amp;novem oknu}one{Odpiranje vseh (#) v &amp;novem oknu}two{Odpiranje vseh (#) v &amp;novem oknu}few{Odpiranje vseh (#) v &amp;novem oknu}other{Odpiranje vseh (#) v &amp;novem oknu}}</translation>
 <translation id="7433957986129316853">Ohrani</translation>
 <translation id="7434509671034404296">Razvijalec</translation>
 <translation id="7434635829372401939">Sinhroniziranje nastavitev</translation>
@@ -5344,7 +5339,6 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="7487141338393529395">Vklop izboljšanega preverjanja črkovanja</translation>
 <translation id="7487969577036436319">Ni nameščenih komponent</translation>
 <translation id="7488682689406685343">To spletno mesto vas bo morda poskušalo zavesti, da omogočite vsiljiva obvestila.</translation>
-<translation id="7489355918927585587">{COUNT,plural, =0{&amp;Odpiranje vseh}=1{&amp;Odpiranje zaznamka}one{&amp;Odpiranje vseh (#)}two{&amp;Odpiranje vseh (#)}few{&amp;Odpiranje vseh (#)}other{&amp;Odpiranje vseh (#)}}</translation>
 <translation id="7489761397368794366">Klic iz vaše naprave</translation>
 <translation id="749028671485790643">Oseba <ph name="VALUE" /></translation>
 <translation id="7490813197707563893">Naslov MAC</translation>
@@ -5512,7 +5506,6 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="7691077781194517083">Tega varnostnega ključa ni mogoče ponastaviti. Napaka <ph name="ERROR_CODE" />.</translation>
 <translation id="7691698019618282776">Nadgradnja Crostinija</translation>
 <translation id="7696063401938172191">V telefonu »<ph name="PHONE_NAME" />«:</translation>
-<translation id="7698408911093959127">{COUNT,plural, =1{1 element na seznamu zaznamkov}one{# element na seznamu zaznamkov}two{# elementa na seznamu zaznamkov}few{# elementi na seznamu zaznamkov}other{# elementov na seznamu zaznamkov}}</translation>
 <translation id="7699968112832915395">Računa ni mogoče dodati</translation>
 <translation id="7701040980221191251">Nič</translation>
 <translation id="7701869757853594372">Kode za dostop USER</translation>
@@ -5818,7 +5811,6 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8030852056903932865">Odobri</translation>
 <translation id="8032244173881942855">Zavihka ni mogoče predvajati.</translation>
 <translation id="8033827949643255796">izbrani</translation>
-<translation id="803435727213847625">{COUNT,plural, =0{Odpiranje vseh v &amp;oknu brez beleženja zgodovine}=1{Odpiranje v &amp;oknu brez beleženja zgodovine}one{Odpiranje vseh (#) v &amp;oknu brez beleženja zgodovine}two{Odpiranje vseh (#) v &amp;oknu brez beleženja zgodovine}few{Odpiranje vseh (#) v &amp;oknu brez beleženja zgodovine}other{Odpiranje vseh (#) v &amp;oknu brez beleženja zgodovine}}</translation>
 <translation id="8037117027592400564">Branje in izgovarjava vsega besedila z uporabo sintetiziranega govora</translation>
 <translation id="8037357227543935929">Zahteva (privzeto)</translation>
 <translation id="803771048473350947">Datoteka</translation>
@@ -6023,7 +6015,6 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="826905130698769948">Neveljavno potrdilo odjemalca</translation>
 <translation id="8270242299912238708">Dokumenti PDF</translation>
 <translation id="827097179112817503">Pokaži gumb za domačo stran</translation>
-<translation id="8271246892936492311">{COUNT,plural, =1{1 zaznamek izbrisan}one{# zaznamek izbrisan}two{# zaznamka izbrisana}few{# zaznamki izbrisani}other{# zaznamkov izbrisanih}}</translation>
 <translation id="8272443605911821513">Razširitve lahko upravljate tako, da v meniju »Več orodij« kliknete »Razširitve«.</translation>
 <translation id="8274332263553132018">Predvajanje datoteke</translation>
 <translation id="8274924778568117936">Ne izklopite ali zaprite naprave <ph name="DEVICE_TYPE" />, dokler se posodobitev ne konča. Naprava <ph name="DEVICE_TYPE" /> se bo po končani namestitvi znova zagnala.</translation>

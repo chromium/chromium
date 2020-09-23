@@ -19,7 +19,6 @@
 <translation id="1013707859758800957">एउटा स्यान्डबक्स हटाइएको प्लगइन यस पृष्ठमा सञ्चालन गर्न अनुमति दिइएको थियो।</translation>
 <translation id="1015318665228971643">फोल्डरको नाम सम्पादन गर्नुहोस्</translation>
 <translation id="1015578595646638936">{NUM_DAYS,plural, =1{<ph name="DEVICE_TYPE" /> अपडेट गर्ने अन्तिम दिन}other{{NUM_DAYS} दिनभित्र <ph name="DEVICE_TYPE" /> अपडेट गर्नुहोस्}}</translation>
-<translation id="1016437870506746108">{COUNT,plural, =0{सबैलाई &amp;नयाँ विन्डोमा खोल्नुहोस्}=1{&amp;नयाँ विन्डोमा खोल्नुहोस्}other{सबैलाई (#) &amp;नयाँ विन्डोमा खोल्नुहोस्}}</translation>
 <translation id="1016566241875885511">थप जानकारी (ऐच्छिक)</translation>
 <translation id="1017280919048282932">शब्दकोशमा &amp;थप्नुहोस</translation>
 <translation id="1018656279737460067">रद्द गरियो</translation>
@@ -1083,7 +1082,6 @@
 <translation id="2274840746523584236">आफ्नो Chromebook चार्ज गर्नुहोस्</translation>
 <translation id="2276503375879033601">थप एपहरू थप्नुहोस्</translation>
 <translation id="2277255602909579701">सबै कुकी र साइटको डेटा</translation>
-<translation id="2277769717710009150">{COUNT,plural, =1{१ वस्तुको प्रतिलिपि बनाइयो}other{# वस्तुहरूको प्रतिलिपि बनाइयो}}</translation>
 <translation id="2278562042389100163">ब्राउजर विन्डो खोल्नुहोस्</translation>
 <translation id="2280486287150724112">दायाँ सीमा</translation>
 <translation id="2282146716419988068">GPU प्रक्रिया</translation>
@@ -2364,7 +2362,6 @@
 <translation id="3797900183766075808">'<ph name="SEARCH_TERMS" />' का लागि <ph name="SEARCH_ENGINE" /> खोज्नुहोस्</translation>
 <translation id="3798449238516105146">संस्करण</translation>
 <translation id="3799128412641261490">स्विचमार्फत पहुँच राख्ने सुविधासम्बन्धी सेटिङ</translation>
-<translation id="3799201711591988491">{COUNT,plural, =0{सबै &amp;खोल्नुहोस्}=1{पुस्तक चिन्ह &amp;खोल्नुहोस्}other{सबै (#) &amp;खोल्नुहोस्}}</translation>
 <translation id="3800806661949714323">सबै देखाउनुहोस् (सिफारिस गरिएको)</translation>
 <translation id="380408572480438692">प्रस्तुतीकरण लगतको सङ्कलन सक्षम गर्नाले Google लाई समय बित्दै जाँदा प्रणाली सुधार्न मद्दत गर्छ। तपाइँले एक पृष्ठपोषण प्रतिवेदन (Alt-Shift-I) फाइल र प्रस्तुीकरण लगत समावेश नगरेसम्म कुनै पनि लगत पठाइनेछैन। तपाइँले कुनै समयमा पनि सङ्कलन असक्षम गर्न यस स्क्रिनमा फिर्ता आउन सक्नुहुन्छ।</translation>
 <translation id="3807249107536149332">लगइनको स्क्रिनमा <ph name="EXTENSION_NAME" /> (विस्तारको ID "<ph name="EXTENSION_ID" />") लाई अनुमति छैन।</translation>
@@ -3202,7 +3199,6 @@
 <translation id="4854317507773910281">अनुमोदनका लागि अभिभावकको खाता चयन गर्नुहोस्</translation>
 <translation id="485480310608090163">थप सेटिङ तथा अनुमति</translation>
 <translation id="4856478137399998590">तपाइँको मोबाइल सेवा सक्रिय गरिएको छ र प्रयोगको लागि तैयार छ</translation>
-<translation id="4857506433977877623">{COUNT,plural, =0{सबैलाई &amp;इन्कोग्निटो विन्डोमा खोल्नुहोस्}=1{&amp;इन्कोग्निटो विन्डोमा खोल्नुहोस्}other{सबै (#) लाई &amp;इन्कोग्निटो विन्डोमा खोल्नुहोस्}}</translation>
 <translation id="4858792381671956233">तपाईंले यो पृष्ठमा जानु ठिक हुन्छ वा हुँदैन भनेर आफ्ना अभिभावकहरूलाई सोध्नुभएको थियो</translation>
 <translation id="4858913220355269194">फ्रिट्ज</translation>
 <translation id="4862642413395066333">OCSP प्रतिक्रियाहरू साइन गर्दै</translation>
@@ -5286,7 +5282,6 @@
 <translation id="7427348830195639090">पृष्ठभूमि पाना: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129"><ph name="DEVICE_NAME" /> बाट आएको कल</translation>
 <translation id="7431719494109538750">कुनै पनि HID यन्त्र फेला परेन</translation>
-<translation id="7433692219247014412">{COUNT,plural, =0{सबैलाई &amp;नयाँ विन्डोमा खोल्नुहोस्}=1{]&amp;नयाँ विन्डोमा खोल्नुहोस्}other{सबै (#) लाई &amp;नयाँ विन्डोमा खोल्नुहोस्}}</translation>
 <translation id="7433957986129316853">यसलाई लागु गर्नुहोस्</translation>
 <translation id="7434509671034404296">विकासकर्ता</translation>
 <translation id="7434635829372401939">आफ्ना सेटिङ सिंक गर्नुहोस्</translation>
@@ -5334,7 +5329,6 @@
 <translation id="7487141338393529395">हिज्जे जाँचसम्बन्धी परिष्कृत सुविधा सक्रिय गर्नुहोस्</translation>
 <translation id="7487969577036436319">अवयवहरू स्थापित छैैनन्</translation>
 <translation id="7488682689406685343">यो साइटले तपाईंलाई झुक्याएर हस्तक्षेपकारी सूचना देखाउने अनुमति प्राप्त गर्न खोजिरहेको हुन सक्छ।</translation>
-<translation id="7489355918927585587">{COUNT,plural, =0{सबै &amp;खोल्नुहोस्}=1{पुस्तक चिन्हहरू &amp;खोल्नुहोस्}other{सबै (#) &amp;खोल्नुहोस्}}</translation>
 <translation id="7489761397368794366">तपाईंको यन्त्रबाट कल गर्नुहोस्</translation>
 <translation id="749028671485790643">मानिस <ph name="VALUE" /></translation>
 <translation id="7490813197707563893">MAC ठेगाना</translation>
@@ -5502,7 +5496,6 @@
 <translation id="7691077781194517083">यो सुरक्षा साँचो रिसेट गर्न सकिएन। त्रुटि <ph name="ERROR_CODE" />।</translation>
 <translation id="7691698019618282776">Crostini अपग्रेड गर्नुहोस्</translation>
 <translation id="7696063401938172191">तपाईंको <ph name="PHONE_NAME" /> मा:</translation>
-<translation id="7698408911093959127">{COUNT,plural, =1{पुस्तक चिन्हको सूचीमा १ वस्तु छ}other{पुस्तक चिन्हको सूचीमा # वस्तुहरू छन्}}</translation>
 <translation id="7699968112832915395">खाता थप्न सकिएन</translation>
 <translation id="7701040980221191251">कुनै पनि होइन</translation>
 <translation id="7701869757853594372">प्रयोगकर्ताले सम्हाल्नेहरू</translation>
@@ -5806,7 +5799,6 @@
 <translation id="8030852056903932865">अनुमोदन गर्नुहोस्</translation>
 <translation id="8032244173881942855">ट्याब लाई cast गर्न असमर्थ।</translation>
 <translation id="8033827949643255796">चयन गरिएको</translation>
-<translation id="803435727213847625">{COUNT,plural, =0{सबैलाई &amp;इन्कोग्निटो विन्डोमा खोल्नुहोस्}=1{&amp;इन्कोग्निटो विन्डोमा खोल्नुहोस्}other{सबै (#) लाई &amp;इन्कोग्निटो विन्डोमा खोल्नुहोस्}}</translation>
 <translation id="8037117027592400564">बोलिएका सबै पाठहरूलाई संश्लेषण गरिएको बोली प्रयोग गरेर पढ्नुहोस्</translation>
 <translation id="8037357227543935929">सोध्नुहोस् (पूर्वनिर्धारित मान)</translation>
 <translation id="803771048473350947">फाइल</translation>
@@ -6010,7 +6002,6 @@
 <translation id="826905130698769948">क्लाइन्टको अमान्य प्रमाणपत्र</translation>
 <translation id="8270242299912238708">PDF कागजातहरू</translation>
 <translation id="827097179112817503">गृह बटन देखाउनुहोस्</translation>
-<translation id="8271246892936492311">{COUNT,plural, =1{१ पुस्तक चिन्ह मेटियो}other{# पुस्तक चिन्हहरू मेटिए}}</translation>
 <translation id="8272443605911821513">"थप उपकरण" मेनुमा एक्सटेन्सन क्लिक गरेर तपाईंको एक्सटेन्सनहरूको प्रबन्ध मिलाउनुहोस्।</translation>
 <translation id="8274332263553132018">फाइललाई Cast गर्नुहोस्</translation>
 <translation id="8274924778568117936">अद्यावधिक पूरा नहुन्जेल आफ्नो <ph name="DEVICE_TYPE" /> लाई निष्क्रिय नपार्नुहोस् वा बन्द नगर्नुहोस्‌। स्थापना सम्पन्न भएपछि तपाईंको <ph name="DEVICE_TYPE" /> पुनः सुरु हुनेछ।</translation>

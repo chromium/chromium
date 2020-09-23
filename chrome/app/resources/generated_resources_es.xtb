@@ -19,7 +19,6 @@
 <translation id="1013707859758800957">Se ha permitido la ejecución de un complemento no incluido en la zona de pruebas en esta página.</translation>
 <translation id="1015318665228971643">Editar el nombre de la carpeta</translation>
 <translation id="1015578595646638936">{NUM_DAYS,plural, =1{Último día para actualizar el <ph name="DEVICE_TYPE" />}other{Actualiza el <ph name="DEVICE_TYPE" /> en el plazo de {NUM_DAYS} días}}</translation>
-<translation id="1016437870506746108">{COUNT,plural, =0{Abrir todas en una &amp;nueva ventana}=1{Abrir en una &amp;nueva ventana}other{Abrir (#) en una &amp;nueva ventana}}</translation>
 <translation id="1016566241875885511">Información adicional (opcional)</translation>
 <translation id="1017280919048282932">&amp;Añadir al diccionario</translation>
 <translation id="1018656279737460067">Cancelado</translation>
@@ -1087,7 +1086,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2274840746523584236">Carga tu Chromebook</translation>
 <translation id="2276503375879033601">Añadir más aplicaciones</translation>
 <translation id="2277255602909579701">Todas las cookies y los datos de sitios web</translation>
-<translation id="2277769717710009150">{COUNT,plural, =1{Se ha copiado 1 elemento}other{Se han copiado # elementos}}</translation>
 <translation id="2278562042389100163">Abrir ventana del navegador</translation>
 <translation id="2280486287150724112">Margen derecho</translation>
 <translation id="2282146716419988068">Proceso de GPU</translation>
@@ -2367,7 +2365,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3797900183766075808">&amp;Buscar <ph name="SEARCH_TERMS" /> en <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3798449238516105146">Versión</translation>
 <translation id="3799128412641261490">Ajustes de accesibilidad mediante interruptores</translation>
-<translation id="3799201711591988491">{COUNT,plural, =0{&amp;Abrir todas}=1{&amp;Abrir marcador}other{&amp;Abrir (#)}}</translation>
 <translation id="3800806661949714323">Mostrar todo (recomendado)</translation>
 <translation id="380408572480438692">Habilitar la recogida de datos de rendimiento ayudará a Google a mejorar el sistema en el futuro. No se enviará ningún dato hasta que no envíes un informe de comentarios (Alt-Mayús-I) e incluyas datos de rendimiento. Puedes volver a esta pantalla para inhabilitar la recogida de datos en cualquier momento.</translation>
 <translation id="3807249107536149332"><ph name="EXTENSION_NAME" /> (ID de extensión "<ph name="EXTENSION_ID" />") no se puede utilizar en una pantalla de inicio de sesión.</translation>
@@ -3205,7 +3202,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4854317507773910281">Elige una cuenta parental para la aprobación</translation>
 <translation id="485480310608090163">Más ajustes y permisos</translation>
 <translation id="4856478137399998590">Tu servicio de datos móviles se ha activado y está listo para utilizarse.</translation>
-<translation id="4857506433977877623">{COUNT,plural, =0{Abrir todas en una &amp;ventana de incógnito}=1{Abrir en una &amp;ventana de incógnito}other{Abrir (#) en una &amp;ventana de incógnito}}</translation>
 <translation id="4858792381671956233">Has solicitado permiso a tus padres para poder acceder a este sitio web</translation>
 <translation id="4858913220355269194">Balón</translation>
 <translation id="4862642413395066333">Firma de respuestas de OCSP</translation>
@@ -5290,7 +5286,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="7427348830195639090">Página en segundo plano: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129">Llamar desde <ph name="DEVICE_NAME" /></translation>
 <translation id="7431719494109538750">No se ha encontrado ningún dispositivo HID</translation>
-<translation id="7433692219247014412">{COUNT,plural, =0{Abrir todas en una &amp;nueva ventana}=1{Abrir en una &amp;nueva ventana}other{Abrir (#) en una &amp;nueva ventana}}</translation>
 <translation id="7433957986129316853">Conservar</translation>
 <translation id="7434509671034404296">Opciones para desarrolladores</translation>
 <translation id="7434635829372401939">Sincronizar tus ajustes</translation>
@@ -5338,7 +5333,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="7487141338393529395">Activa la revisión ortográfica mejorada</translation>
 <translation id="7487969577036436319">No hay componentes instalados</translation>
 <translation id="7488682689406685343">Es posible que este sitio web esté intentando engañarte para que permitas notificaciones invasivas.</translation>
-<translation id="7489355918927585587">{COUNT,plural, =0{&amp;Abrir todas}=1{&amp;Abrir marcador}other{&amp;Abrir (#)}}</translation>
 <translation id="7489761397368794366">Llamar desde tu dispositivo</translation>
 <translation id="749028671485790643">Persona <ph name="VALUE" /></translation>
 <translation id="7490813197707563893">Dirección MAC</translation>
@@ -5506,7 +5500,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="7691077781194517083">No se puede restablecer esta llave de seguridad. Error <ph name="ERROR_CODE" />.</translation>
 <translation id="7691698019618282776">Actualización de Crostini</translation>
 <translation id="7696063401938172191">En tu "<ph name="PHONE_NAME" />":</translation>
-<translation id="7698408911093959127">{COUNT,plural, =1{1 elemento en la lista de marcadores}other{# elementos en la lista de marcadores}}</translation>
 <translation id="7699968112832915395">No se puede añadir la cuenta</translation>
 <translation id="7701040980221191251">No hay</translation>
 <translation id="7701869757853594372">EL USUARIO administra</translation>
@@ -5811,7 +5804,6 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8030852056903932865">Aprobar</translation>
 <translation id="8032244173881942855">No se puede enviar la pestaña.</translation>
 <translation id="8033827949643255796">seleccionados</translation>
-<translation id="803435727213847625">{COUNT,plural, =0{Abrir todas en una &amp;ventana de incógnito}=1{Abrir en una &amp;ventana de incógnito}other{Abrir (#) en una &amp;ventana de incógnito}}</translation>
 <translation id="8037117027592400564">Leer todo el texto hablado con la síntesis de voz</translation>
 <translation id="8037357227543935929">Preguntar (predeterminado)</translation>
 <translation id="803771048473350947">Archivo</translation>
@@ -6015,7 +6007,6 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="826905130698769948">Certificado de cliente no válido</translation>
 <translation id="8270242299912238708">Documentos PDF</translation>
 <translation id="827097179112817503">Mostrar el botón de página principal</translation>
-<translation id="8271246892936492311">{COUNT,plural, =1{Se ha eliminado 1 marcador}other{Se han eliminado # marcadores}}</translation>
 <translation id="8272443605911821513">Para administrar tus extensiones, haz clic en la opción Extensiones del menú Más herramientas.</translation>
 <translation id="8274332263553132018">Enviar archivo</translation>
 <translation id="8274924778568117936">No apagues ni cierres tu <ph name="DEVICE_TYPE" /> hasta que termine de actualizarse. Tu <ph name="DEVICE_TYPE" /> se reiniciará cuando se complete la instalación.</translation>

@@ -25,6 +25,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="119944043368869598">Ta bort alla</translation>
 <translation id="1199716647557067911">Vill du inaktivera brytarstyrning?</translation>
 <translation id="121097972571826261">Framåt ord för ord</translation>
+<translation id="1225748608451425081">Chromebook har låsts på grund av ett känt problem. Du kan logga in om <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Sluta markera</translation>
 <translation id="1247372569136754018">Mikrofon (inbyggd)</translation>
 <translation id="1252999807265626933">Laddar från <ph name="POWER_SOURCE" /></translation>
@@ -136,6 +137,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2341729377289034582">Låst i stående läge</translation>
 <translation id="2352467521400612932">Inställningar för e-penna</translation>
 <translation id="2354174487190027830">Aktiverar <ph name="NAME" /></translation>
+<translation id="2356210126990741501">Telefonen verkar inte vara online så vi kan inte hämta något från den just nu.</translation>
 <translation id="2359808026110333948">Fortsätt</translation>
 <translation id="2365393535144473978">Om du aktiverar mobildata aktiveras Bluetooth.</translation>
 <translation id="2369165858548251131">”Hej” på kinesiska</translation>
@@ -168,6 +170,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2705001408393684014">Aktivera eller inaktivera mikrofonen. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Upp</translation>
 <translation id="2718395828230677721">Nattljus</translation>
+<translation id="2727175239389218057">Svara</translation>
 <translation id="2727977024730340865">Ansluten till en laddare med låg effekt. Batteriet kanske inte laddas ordentligt.</translation>
 <translation id="2743387203779672305">Kopiera till Urklipp</translation>
 <translation id="2792498699870441125">Alt + Sök</translation>
@@ -176,6 +179,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2825619548187458965">Hylla</translation>
 <translation id="2841907151129139818">Bytte till surfplatteläge</translation>
 <translation id="2844169650293029770">USB-C-enhet (främre porten på vänster sida)</translation>
+<translation id="2846247265041961677">Hoppsan! Det går inte att hitta telefonen</translation>
 <translation id="2865888419503095837">Nätverksinformation</translation>
 <translation id="2872961005593481000">Stäng av</translation>
 <translation id="2878884018241093801">Listan med de senaste åtgärderna är tom</translation>
@@ -458,6 +462,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">På</translation>
 <translation id="5920710855273935292">Mikrofonen är av.</translation>
+<translation id="594179686076170922">Ansluter till telefonen …</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> är på.</translation>
 <translation id="5947494881799873997">Återgå</translation>
 <translation id="595202126637698455">Resultatspårning aktiverat</translation>
@@ -670,6 +675,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="8196787716797768628">Använd rörelser för att snabbt växla mellan appar och interagera med Chromebook i surfplatteläge.</translation>
 <translation id="8200772114523450471">Återuppta</translation>
 <translation id="8203795194971602413">Högerklicka</translation>
+<translation id="8219451629189078428">Chromebook måste vara på och ansluten till en strömkälla under den tiden. Se till att kabeln på laddaren eller adaptern är ordentligt ansluten till Chromebook och eluttaget. Stäng inte av Chromebook.</translation>
 <translation id="8236042855478648955">Dags för en paus</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, signalstyrka <ph name="SIGNAL_STRENGTH" />, telefonens batterinivå <ph name="BATTERY_STATUS" /></translation>
 <translation id="826107067893790409">Tryck på Retur för att låsa upp för <ph name="USER_EMAIL_ADDRESS" /></translation>

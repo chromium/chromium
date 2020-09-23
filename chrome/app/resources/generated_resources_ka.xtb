@@ -19,7 +19,6 @@
 <translation id="1013707859758800957">დაცულ გარემოში არმყოფ დანამატს ამ გვერდზე გაშვების უფლება მიეცა.</translation>
 <translation id="1015318665228971643">საქაღალდის სახელის რედაქტირება</translation>
 <translation id="1015578595646638936">{NUM_DAYS,plural, =1{დღეს <ph name="DEVICE_TYPE" />-ის განახლების ბოლო დღეა}other{განაახლეთ <ph name="DEVICE_TYPE" /> {NUM_DAYS} დღის განმავლობაში}}</translation>
-<translation id="1016437870506746108">{COUNT,plural, =0{ყველას ა&amp;ხალ ფანჯარაში გახსნა}=1{ა&amp;ხალ ფანჯარაში გახსნა}other{#-ვეს ა&amp;ხალ ფანჯარაში გახსნა}}</translation>
 <translation id="1016566241875885511">დამატებითი ინფორმაცია (არასავალდებულო)</translation>
 <translation id="1017280919048282932">&amp;ლექსიკონში დამატება</translation>
 <translation id="1018656279737460067">გაუქმდა</translation>
@@ -1087,7 +1086,6 @@
 <translation id="2274840746523584236">დატენეთ თქვენი Chromebook</translation>
 <translation id="2276503375879033601">მეტი აპის დამატება</translation>
 <translation id="2277255602909579701">ყველა ქუქი-ჩანაწერისა და საიტის მონაცემები</translation>
-<translation id="2277769717710009150">{COUNT,plural, =1{1 ერთეული დაკოპირდა}other{# ერთეული დაკოპირდა}}</translation>
 <translation id="2278562042389100163">ბრაუზერის ფანჯარის გახსნა</translation>
 <translation id="2280486287150724112">მარჯვენა ზღვარი</translation>
 <translation id="2282146716419988068">GPU პროცესი</translation>
@@ -2367,7 +2365,6 @@
 <translation id="3797900183766075808"><ph name="SEARCH_ENGINE" />-ში „<ph name="SEARCH_TERMS" />“-ის &amp;მოძიება</translation>
 <translation id="3798449238516105146">ვერსია</translation>
 <translation id="3799128412641261490">გადამრთველით წვდომის პარამეტრები</translation>
-<translation id="3799201711591988491">{COUNT,plural, =0{ყველას &amp;გახსნა}=1{სანიშნეს &amp;გახსნა}other{#-ვეს &amp;გახსნა}}</translation>
 <translation id="3800806661949714323">ყველას ჩვენება (რეკომენდებულია)</translation>
 <translation id="380408572480438692">ეფექტურობის მონაცემების შეგროვების ჩართვის შემთხვევაში თქვენ დაეხმარებით Google-ს სისტემის გაუმჯობესებაში. მონაცემები არ გაიგზავნება, სანამ არ გაგზავნით შეფასების მოხსენებას (Alt-Shift-I) ეფექტურობის მონაცემებით. შეგიძლიათ ნებისმიერ დროს გამორთოთ შეგროვების ფუნქცია ამ ფანჯარაში.</translation>
 <translation id="3807249107536149332"><ph name="EXTENSION_NAME" /> (გაფართოების ID „<ph name="EXTENSION_ID" />“) არ არის ნებადართული შესვლის ეკრანზე.</translation>
@@ -3206,7 +3203,6 @@
 <translation id="4854317507773910281">აირჩიეთ მშობლის ანგარიში დასადასტურებლად</translation>
 <translation id="485480310608090163">სხვა პარამეტრები და ნებართვები</translation>
 <translation id="4856478137399998590">თქვენი მობილური მონაცემების სერვისი გააქტიურებულია და მზად არის გამოყენებისთვის</translation>
-<translation id="4857506433977877623">{COUNT,plural, =0{ყველას &amp;ინკოგნიტო ფანჯარაში გახსნა}=1{&amp;ინკოგნიტო ფანჯარაში გახსნა}other{#-ვეს &amp;ინკოგნიტო ფანჯარაში გახსნა}}</translation>
 <translation id="4858792381671956233">ამ საიტზე წვდომის მოთხოვნა გაეგზავნა თქვენს მშობლებს</translation>
 <translation id="4858913220355269194">ფრიცი</translation>
 <translation id="4862642413395066333">ხელმოწერის OCSP პასუხები</translation>
@@ -5293,7 +5289,6 @@
 <translation id="7427348830195639090">ფონის გვერდი: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129">ზარი <ph name="DEVICE_NAME" />-ისგან</translation>
 <translation id="7431719494109538750">HID მოწყობილობები ვერ მოიძებნა</translation>
-<translation id="7433692219247014412">{COUNT,plural, =0{ყველას ა&amp;ხალ ფანჯარაში გახსნა}=1{ა&amp;ხალ ფანჯარაში გახსნა}other{#-ვეს ა&amp;ხალ ფანჯარაში გახსნა}}</translation>
 <translation id="7433957986129316853">შენარჩუნება</translation>
 <translation id="7434509671034404296">შემმუშავებელი</translation>
 <translation id="7434635829372401939">თქვენი პარამეტრების სინქრონიზაცია</translation>
@@ -5341,7 +5336,6 @@
 <translation id="7487141338393529395">მართლწერის გაძლიერებული შემოწმების ჩართვა</translation>
 <translation id="7487969577036436319">კომპონენტები არ არის დაინსტალირებული</translation>
 <translation id="7488682689406685343">შესაძლოა, ეს საიტი ცდილობდეს თქვენს შეცდომაში შეყვანას, რომ მომაბეზრებელი შეტყობინებების მიღება დაუშვათ.</translation>
-<translation id="7489355918927585587">{COUNT,plural, =0{ყველას &amp;გახსნა}=1{სანიშნეს &amp;გახსნა}other{#-ვეს &amp;გახსნა}}</translation>
 <translation id="7489761397368794366">თქვენი მოწყობილობიდან დარეკვა</translation>
 <translation id="749028671485790643">ადამიანი <ph name="VALUE" /></translation>
 <translation id="7490813197707563893">MAC მისამართი</translation>
@@ -5509,7 +5503,6 @@
 <translation id="7691077781194517083">უსაფრთხოების ამ გასაღების გადაყენება ვერ მოხერხდა. შეცდომა: <ph name="ERROR_CODE" />.</translation>
 <translation id="7691698019618282776">Crostini-ს ვერსიის განახლება</translation>
 <translation id="7696063401938172191">თქვენს „<ph name="PHONE_NAME" />“-ზე:</translation>
-<translation id="7698408911093959127">{COUNT,plural, =1{1 ერთეული სანიშნეების სიაში}other{# ერთეული სანიშნეების სიაში}}</translation>
 <translation id="7699968112832915395">ანგარიშის დამატება ვერ მოხერხდა</translation>
 <translation id="7701040980221191251">არცერთი</translation>
 <translation id="7701869757853594372">მომხმარებლის მარკერები</translation>
@@ -5814,7 +5807,6 @@
 <translation id="8030852056903932865">დადასტურება</translation>
 <translation id="8032244173881942855">ჩანართის ტრანსლირება შეუძლებელია.</translation>
 <translation id="8033827949643255796">არჩეულია</translation>
-<translation id="803435727213847625">{COUNT,plural, =0{ყველას &amp;ინკოგნიტო ფანჯარაში გახსნა}=1{&amp;ინკოგნიტო ფანჯარაში გახსნა}other{#-ვეს &amp;ინკოგნიტო ფანჯარაში გახსნა}}</translation>
 <translation id="8037117027592400564">წარმოთქმული ტექსტის წაკითხვა სინთეზირებული მეტყველების გამოყენებით</translation>
 <translation id="8037357227543935929">შეკითხვა (ნაგულისხმევი)</translation>
 <translation id="803771048473350947">ფაილი</translation>
@@ -6018,7 +6010,6 @@
 <translation id="826905130698769948">კლიენტის სერტიფიკატი არასწორია</translation>
 <translation id="8270242299912238708">PDF დოკუმენტები</translation>
 <translation id="827097179112817503">მთავარი გვერდის ღილაკის ჩვენება</translation>
-<translation id="8271246892936492311">{COUNT,plural, =1{1 სანიშნე წაიშალა}other{# სანიშნე წაიშალა}}</translation>
 <translation id="8272443605911821513">მართეთ თქვენი გაფართოებები ღილაკზე „გაფართოებები“ დაწკაპუნებით მენიუში „სხვა ხელსაწყოები“.</translation>
 <translation id="8274332263553132018">ფაილის ტრანსლირება</translation>
 <translation id="8274924778568117936">არ გამორთოთ და არ დახუროთ თქვენი <ph name="DEVICE_TYPE" /> განახლების დასრულებამდე. ინსტალაციის დასრულების შემდეგ <ph name="DEVICE_TYPE" /> გადაიტვირთება.</translation>

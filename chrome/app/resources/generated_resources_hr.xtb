@@ -19,7 +19,6 @@
 <translation id="1013707859758800957">Na toj je stranici dopušteno pokretanje dodatka izvan testnog okruženja.</translation>
 <translation id="1015318665228971643">Uređivanje naziva mape</translation>
 <translation id="1015578595646638936">{NUM_DAYS,plural, =1{Zadnji dan za ažuriranje uređaja <ph name="DEVICE_TYPE" />}one{Ažurirajte uređaj <ph name="DEVICE_TYPE" /> u roku od {NUM_DAYS} dana}few{Ažurirajte uređaj <ph name="DEVICE_TYPE" /> u roku od {NUM_DAYS} dana}other{Ažurirajte uređaj <ph name="DEVICE_TYPE" /> u roku od {NUM_DAYS} dana}}</translation>
-<translation id="1016437870506746108">{COUNT,plural, =0{Otvori sve u &amp;novom prozoru}=1{Otvori u &amp;novom prozoru}one{Otvori sve (#) u &amp;novom prozoru}few{Otvori sve (#) u &amp;novom prozoru}other{Otvori sve (#) u &amp;novom prozoru}}</translation>
 <translation id="1016566241875885511">Dodatne informacije (nije obavezno)</translation>
 <translation id="1017280919048282932">&amp;Dodaj u rječnik</translation>
 <translation id="1018656279737460067">Otkazano</translation>
@@ -1087,7 +1086,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2274840746523584236">Punjenje Chromebooka</translation>
 <translation id="2276503375879033601">Dodajte još aplikacija</translation>
 <translation id="2277255602909579701">Svi kolačići i podaci web-lokacije</translation>
-<translation id="2277769717710009150">{COUNT,plural, =1{Kopirana je 1 stavka}one{Kopirana je # stavka}few{Kopirane su # stavke}other{Kopirano je # stavki}}</translation>
 <translation id="2278562042389100163">Otvori prozor preglednika</translation>
 <translation id="2280486287150724112">Desna margina</translation>
 <translation id="2282146716419988068">GPU proces</translation>
@@ -2368,7 +2366,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3797900183766075808">&amp;Traži pojam "<ph name="SEARCH_TERMS" />" na tražilici <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3798449238516105146">Verzija</translation>
 <translation id="3799128412641261490">Postavke prekidača za pristup</translation>
-<translation id="3799201711591988491">{COUNT,plural, =0{&amp;Otvori sve}=1{&amp;Otvori oznaku}one{&amp;Otvori sve (#)}few{&amp;Otvori sve (#)}other{&amp;Otvori sve (#)}}</translation>
 <translation id="3800806661949714323">Prikaži sve (preporučeno)</translation>
 <translation id="380408572480438692">Omogućavanje prikupljanja podatka o izvedbi pomoći će Googleu da vremenom poboljša sustav. Podaci se ne šalju dok ne podnesete izvješće o povratnim informacijama (Alt+Shift+I) i uključite podatke o izvedbi. Uvijek se možete vratiti na taj zaslon i onemogućiti prikupljanje.</translation>
 <translation id="3807249107536149332">Proširenje <ph name="EXTENSION_NAME" /> (ID proširenja "<ph name="EXTENSION_ID" />") nije dopušteno na zaslonu za prijavu.</translation>
@@ -3207,7 +3204,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="4854317507773910281">Odaberi roditeljski račun za odobrenje</translation>
 <translation id="485480310608090163">Više postavki i dopuštenja</translation>
 <translation id="4856478137399998590">Vaša mobilna podatkovna usluga aktivirana je i spremna za upotrebu</translation>
-<translation id="4857506433977877623">{COUNT,plural, =0{Otvori sve u &amp;anonimnom prozoru}=1{Otvori sve u &amp;anonimnom prozoru}one{Otvori sve (#) u &amp;anonimnom prozoru}few{Otvori sve (#) u &amp;anonimnom prozoru}other{Otvori sve (#) u &amp;anonimnom prozoru}}</translation>
 <translation id="4858792381671956233">Pitao si roditelje smiješ li otvoriti tu web-lokaciju</translation>
 <translation id="4858913220355269194">Zvone</translation>
 <translation id="4862642413395066333">Potpisivanje OCSP odgovora</translation>
@@ -5294,7 +5290,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="7427348830195639090">Pozadinska stranica: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129">Nazovite s uređaja <ph name="DEVICE_NAME" /></translation>
 <translation id="7431719494109538750">Nije pronađen nijedan HID uređaj</translation>
-<translation id="7433692219247014412">{COUNT,plural, =0{Otvori sve u &amp;novom prozoru}=1{Otvori u &amp;novom prozoru}one{Otvori sve (#) u &amp;novom prozoru}few{Otvori sve (#) u &amp;novom prozoru}other{Otvori sve (#) u &amp;novom prozoru}}</translation>
 <translation id="7433957986129316853">Zadrži</translation>
 <translation id="7434509671034404296">Razvojni programer</translation>
 <translation id="7434635829372401939">Sinkronizirajte svoje postavke</translation>
@@ -5342,7 +5337,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="7487141338393529395">Uključivanje poboljšane provjere pravopisa</translation>
 <translation id="7487969577036436319">Nema instaliranih komponenti</translation>
 <translation id="7488682689406685343">Ova vas web-lokacija možda pokušava prevariti kako biste dopustili ometajuće obavijesti.</translation>
-<translation id="7489355918927585587">{COUNT,plural, =0{&amp;Otvori sve}=1{&amp;Otvori oznaku}one{&amp;Otvori sve (#)}few{&amp;Otvori sve (#)}other{&amp;Otvori sve (#)}}</translation>
 <translation id="7489761397368794366">Nazovi sa svojeg uređaja</translation>
 <translation id="749028671485790643">Osoba <ph name="VALUE" /></translation>
 <translation id="7490813197707563893">MAC adresa</translation>
@@ -5510,7 +5504,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="7691077781194517083">Taj se sigurnosni ključ ne može vratiti na zadano. Pogreška <ph name="ERROR_CODE" />.</translation>
 <translation id="7691698019618282776">Nadogradnja Crostinija</translation>
 <translation id="7696063401938172191">Na telefonu <ph name="PHONE_NAME" />:</translation>
-<translation id="7698408911093959127">{COUNT,plural, =1{1 stavka na popisu oznaka}one{# stavka na popisu oznaka}few{# stavke na popisu oznaka}other{# stavki na popisu oznaka}}</translation>
 <translation id="7699968112832915395">Nije moguće dodati račun</translation>
 <translation id="7701040980221191251">Nema ih</translation>
 <translation id="7701869757853594372">Rukuje KORISNIK</translation>
@@ -5816,7 +5809,6 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="8030852056903932865">Odobri</translation>
 <translation id="8032244173881942855">Emitiranje kartice nije moguće.</translation>
 <translation id="8033827949643255796">odabrano</translation>
-<translation id="803435727213847625">{COUNT,plural, =0{Otvori sve u &amp;anonimnom prozoru}=1{Otvori u &amp;anonimnom prozoru}one{Otvori sve (#) u &amp;anonimnom prozoru}few{Otvori sve (#) u &amp;anonimnom prozoru}other{Otvori sve (#) u &amp;anonimnom prozoru}}</translation>
 <translation id="8037117027592400564">čitati sve tekstove izgovorene sintetiziranim govorom</translation>
 <translation id="8037357227543935929">Pitaj (zadano)</translation>
 <translation id="803771048473350947">Datoteka</translation>
@@ -6021,7 +6013,6 @@ Mislim da ta web-lokacija ne bi trebala biti blokirana!</translation>
 <translation id="826905130698769948">Nevažeći certifikat klijenta</translation>
 <translation id="8270242299912238708">PDF dokumenti</translation>
 <translation id="827097179112817503">Prikaži gumb početne stranice</translation>
-<translation id="8271246892936492311">{COUNT,plural, =1{Izbrisana je 1 oznaka}one{Izbrisana je # oznaka}few{Izbrisane su # oznake}other{Izbrisano je # oznaka}}</translation>
 <translation id="8272443605911821513">Upravljajte proširenjima klikom na Proširenja u izborniku "Više alata".</translation>
 <translation id="8274332263553132018">Emitiraj datoteku</translation>
 <translation id="8274924778568117936">Ne isključujte i ne zatvarajte uređaj <ph name="DEVICE_TYPE" /> dok ažuriranje ne završi. Uređaj <ph name="DEVICE_TYPE" /> ponovo će se pokrenuti kada instaliranje završi.</translation>

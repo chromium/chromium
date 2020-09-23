@@ -19,7 +19,6 @@
 <translation id="1013707859758800957">Unsandboxed ပလက်ဂင်တစ်ခုအား ဤစာမျက်နှာတွင် ဖွင့်ရန် ခွင့်ပြုထား၏။</translation>
 <translation id="1015318665228971643">ဖိုင်တွဲအမည်ကို တည်းဖြတ်ခြင်း</translation>
 <translation id="1015578595646638936">{NUM_DAYS,plural, =1{<ph name="DEVICE_TYPE" /> ကို အပ်ဒိတ်လုပ်ရန် နောက်ဆုံးရက်}other{<ph name="DEVICE_TYPE" /> ကို {NUM_DAYS} ရက်အတွင်း အပ်ဒိတ်လုပ်ပါ}}</translation>
-<translation id="1016437870506746108">{COUNT,plural, =0{အားလုံးကို ဝင်းဒိုးအသစ်တွင် ဖွင့်ရန်}=1{ဝင်းဒိုးအသစ်တွင် ဖွင့်ရန်}other{(#) ခုလုံးကို ဝင်းဒိုးအသစ်တွင် ဖွင့်ရန်}}</translation>
 <translation id="1016566241875885511">ထပ်ဆောင်းအချက်အလက်များ (မဖြည့်လည်းရ)</translation>
 <translation id="1017280919048282932">အဘိဓါန်သို့ ပေါင်းထည့်ရန်</translation>
 <translation id="1018656279737460067">ဖျက်သိမ်းခဲ့သည်</translation>
@@ -1088,7 +1087,6 @@
 <translation id="2274840746523584236">သင့် Chromebook ကို အားသွင်းပါ</translation>
 <translation id="2276503375879033601">နောက်ထပ် အက်ပ်များ ပေါင်းထည့်ရန်</translation>
 <translation id="2277255602909579701">ကွတ်ကီးနှင့် ဆိုက်ဒေတာများအားလုံး</translation>
-<translation id="2277769717710009150">{COUNT,plural, =1{1 ခုကို မိတ္ထူကူးယူထားသည်}other{# ခုကို မိတ္ထူကူးယူထားသည်}}</translation>
 <translation id="2278562042389100163">ဘရောင်ဇာ ဝင်းဒိုး ဖွင့်ရန်</translation>
 <translation id="2280486287150724112">ညာအနားသတ်</translation>
 <translation id="2282146716419988068">GPU လုပ်ငန်းစဉ်</translation>
@@ -2368,7 +2366,6 @@
 <translation id="3797900183766075808">“<ph name="SEARCH_TERMS" />”အတွက် <ph name="SEARCH_ENGINE" /> ကို ရှာဖွေပါ</translation>
 <translation id="3798449238516105146">ဗားရှင်း</translation>
 <translation id="3799128412641261490">ခလုတ်သုံးခြင်း ဆက်တင်များ</translation>
-<translation id="3799201711591988491">{COUNT,plural, =0{အားလုံးကို ဖွင့်ရန်}=1{စာညှပ်ကို ဖွင့်ရန်}other{(#) ခုလုံးကို ဖွင့်ရန်}}</translation>
 <translation id="3800806661949714323">အားလုံးပြရန် (အကြံပြုထားသည်)</translation>
 <translation id="380408572480438692">စွမ်းဆောင်ရည် ဒေတာ စုစည်းမှုကိုဖွင့်ခြင်းသည် အချိန်အရ Google အား စနစ်တိုးတက်စေရန် ကူညီပါသည်။ တုံပြန်မှု အစီရင်ခံစာနှင့် (Alt-Shift-I) နှင့်စွမ်းဆောင်ရည် ဒေတာအား သင်ဖိုင်ပြုလုပ်သေးသ၍ မည်သည့်ဒေတာမျှ ပို့မည်မဟုတ်ပါ။ စုစည်းမှုကိုပိတ်ရန် ဤမျက်နှာပြင်သို့ သင်အချိန်မရွေး ပြန်လာနိုင်ပါသည်။</translation>
 <translation id="3807249107536149332">ဝင်ရောက်မှု မျက်နှာပြင်တွင် <ph name="EXTENSION_NAME" /> (နောက်ဆက်တွဲ အိုင်ဒီ "<ph name="EXTENSION_ID" />") ကို ခွင့်ပြုမထားပါ။</translation>
@@ -3206,7 +3203,6 @@
 <translation id="4854317507773910281">အတည်ပြုရန်အတွက် မိဘအကောင့်ကို ရွေးပါ</translation>
 <translation id="485480310608090163">နောက်ထပ် ဆက်တင်များနှင့် ခွင့်ပြုချက်များ</translation>
 <translation id="4856478137399998590">သင်၏ မိုဘိုင်း ဒေတာ ဝန်ဆောင်မှုကို ဖွင့်ထားလျက် သုံးရန် အသင့် ဖြစ်နေပြီ</translation>
-<translation id="4857506433977877623">{COUNT,plural, =0{အားလုံးကို ရုပ်ဖျက်ဝင်းဒိုးတွင် ဖွင့်ရန်}=1{ရုပ်ဖျက်ဝင်းဒိုးတွင် ဖွင့်ရန်}other{(#) ခုလုံးကို ရုပ်ဖျက်ဝင်းဒိုးတွင် ဖွင့်ရန်}}</translation>
 <translation id="4858792381671956233">ဤဆိုက်အား ကြည့်ခွင့်ရှိမရှိ သင့်မိဘများကို သင်မေးမြန်းခဲ့ပါသည်</translation>
 <translation id="4858913220355269194">ဖရစ်ဇ်</translation>
 <translation id="4862642413395066333">OCSP တုံ့ပြန်မှုများကို လက်မှတ်ထိုးနေ</translation>
@@ -5289,7 +5285,6 @@
 <translation id="7427348830195639090">နောက်ခံ စာမျက်နှာ: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129"><ph name="DEVICE_NAME" /> ထံမှ ဖုန်းခေါ်ဆိုမှု</translation>
 <translation id="7431719494109538750">HID စက်များ မရှိပါ</translation>
-<translation id="7433692219247014412">{COUNT,plural, =0{အားလုံးကို ဝင်းဒိုးအသစ်တွင် ဖွင့်ရန်}=1{ဝင်းဒိုးအသစ်တွင် ဖွင့်ရန်}other{(#) ခုလုံးကို ဝင်းဒိုးအသစ်တွင် ဖွင့်ရန်}}</translation>
 <translation id="7433957986129316853">ဆက်ထားရန်</translation>
 <translation id="7434509671034404296">ပြုစုသူ</translation>
 <translation id="7434635829372401939">သင့်ဆက်တင်များ စင့်ခ်လုပ်ခြင်း</translation>
@@ -5337,7 +5332,6 @@
 <translation id="7487141338393529395">အဆင့်မြင့် စာလုံးပေါင်းစစ်ဆေးခြင်းကို ဖွင့်ပါ</translation>
 <translation id="7487969577036436319">တပ်ဆင်ထားသည့် အစိတ်အပိုင်းများ မရှိ</translation>
 <translation id="7488682689406685343">အနှောင့်အယှက်ပေးသော အကြောင်းကြားချက်များ ခွင့်ပြုရန် ဤဝဘ်ဆိုက်က သင့်ကို လှည့်စားနေခြင်း ဖြစ်နိုင်သည်။</translation>
-<translation id="7489355918927585587">{COUNT,plural, =0{အားလုံးကို ဖွင့်ရန်}=1{စာညှပ်ကို ဖွင့်ရန်}other{(#) ခုလုံးကို ဖွင့်ရန်}}</translation>
 <translation id="7489761397368794366">သင့်စက်မှ ခေါ်ဆိုရန်</translation>
 <translation id="749028671485790643">ပုဂ္ဂိုလ် <ph name="VALUE" /></translation>
 <translation id="7490813197707563893">MAC လိပ်စာ</translation>
@@ -5505,7 +5499,6 @@
 <translation id="7691077781194517083">ဤလုံခြုံရေးကီးကို ပြင်ဆင်သတ်မှတ်၍ မရပါ။ အမှား <ph name="ERROR_CODE" />။</translation>
 <translation id="7691698019618282776">Crostini အဆင့်မြှင့်ရန်</translation>
 <translation id="7696063401938172191">သင့် '<ph name="PHONE_NAME" />' ပေါ်တွင်−</translation>
-<translation id="7698408911093959127">{COUNT,plural, =1{လိပ်စာစာရင်းထဲတွင် ၁ ခုရှိသည်}other{လိပ်စာစာရင်းထဲတွင် # ခုရှိသည်}}</translation>
 <translation id="7699968112832915395">အကောင့် ထည့်၍မရခြင်း</translation>
 <translation id="7701040980221191251">မရှိ</translation>
 <translation id="7701869757853594372">အသုံးပြုသူ ကိုင်တွယ်</translation>
@@ -5809,7 +5802,6 @@
 <translation id="8030852056903932865">အတည်ပြုရန်</translation>
 <translation id="8032244173881942855">တဘ်ကို ကာစ်တ်မလုပ်နိုင်ပါ။</translation>
 <translation id="8033827949643255796">ရွေးထား</translation>
-<translation id="803435727213847625">{COUNT,plural, =0{အားလုံးကို ရုပ်ဖျက်ဝင်းဒိုးတွင် ဖွင့်ရန်}=1{ရုပ်ဖျက်ဝင်းဒိုးတွင် ဖွင့်ရန်}other{(#) ခုလုံးကို ရုပ်ဖျက်ဝင်းဒိုးတွင် ဖွင့်ရန်}}</translation>
 <translation id="8037117027592400564">ဖန်တီး နှုတ်စကားကို အသုံးပြုပြီး ပြောကြားခဲ့သည့် စာသား အားလုံးကို ဖတ်ရန်</translation>
 <translation id="8037357227543935929">မေးရန် (မူရင်း)</translation>
 <translation id="803771048473350947">ဖိုင်</translation>
@@ -6013,7 +6005,6 @@
 <translation id="826905130698769948">ကလိုင်းယင့် အသိအမှတ်ပြုလက်မှတ် မမှန်ကန်ပါ</translation>
 <translation id="8270242299912238708">PDF ဖိုင်များ</translation>
 <translation id="827097179112817503">မူလစာမျက်နှာ ခလုတ် ပြရန်</translation>
-<translation id="8271246892936492311">{COUNT,plural, =1{လိပ်စာ ၁ ခုကို ဖျက်လိုက်သည်}other{လိပ်စာ # ခုကို ဖျက်လိုက်သည်}}</translation>
 <translation id="8272443605911821513">"နောက်ထပ် ကိရိယာများ" မီနူးထဲမှာ တိုးချဲ့မှုများကို ကလစ်လျက် သင်၏ တိုးချဲ့မှုများကို စီမံကွပ်ကဲပါ။</translation>
 <translation id="8274332263553132018">ဖိုင်ကို ကာစ်လုပ်ရန်</translation>
 <translation id="8274924778568117936">အပ်ဒိတ်မပြီးဘဲနှင့် သင်၏ <ph name="DEVICE_TYPE" /> ကို မပိတ်ပါနှင့်။ ထည့်သွင်းမှုပြီးစီးသည့်အခါ <ph name="DEVICE_TYPE" /> သည် ပြန်လည်စတင်ပါလိမ့်မည်။</translation>

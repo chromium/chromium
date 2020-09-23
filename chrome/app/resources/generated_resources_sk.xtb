@@ -19,7 +19,6 @@
 <translation id="1013707859758800957">Na tejto stránke bolo povolené spustenie doplnku, ktorý nie je v karanténe</translation>
 <translation id="1015318665228971643">Úprava názvu priečinka</translation>
 <translation id="1015578595646638936">{NUM_DAYS,plural, =1{Posledný deň na aktualizáciu zariadenia <ph name="DEVICE_TYPE" />}few{Aktualizujte <ph name="DEVICE_TYPE" /> do {NUM_DAYS} dní}many{Aktualizujte <ph name="DEVICE_TYPE" /> do {NUM_DAYS} dňa}other{Aktualizujte <ph name="DEVICE_TYPE" /> do {NUM_DAYS} dní}}</translation>
-<translation id="1016437870506746108">{COUNT,plural, =0{Otvoriť všetky v novom okne}=1{Otvoriť všetky v novom okne}few{Otvoriť všetky (#) v novom okne}many{Otvoriť všetky (#) v novom okne}other{Otvoriť všetky (#) v novom okne}}</translation>
 <translation id="1016566241875885511">Ďalšie informácie (nepovinné)</translation>
 <translation id="1017280919048282932">Prid&amp;ať do slovníka</translation>
 <translation id="1018656279737460067">Zrušené</translation>
@@ -1087,7 +1086,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2274840746523584236">Dobite Chromebook</translation>
 <translation id="2276503375879033601">Pridať ďalšie aplikácie</translation>
 <translation id="2277255602909579701">Všetky súbory cookie a údaje webu</translation>
-<translation id="2277769717710009150">{COUNT,plural, =1{Bola skopírovaná 1 položka}few{Boli skopírované # položky}many{Bolo skopírovanej # položky}other{Bolo skopírovaných # položiek}}</translation>
 <translation id="2278562042389100163">Otvoriť okno prehliadača</translation>
 <translation id="2280486287150724112">Pravý okraj</translation>
 <translation id="2282146716419988068">Proces GPU</translation>
@@ -1203,6 +1201,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2419706071571366386">Keď počítač nepoužívate, z bezpečnostných dôvodov sa odhláste.</translation>
 <translation id="2422125132043002186">Obnovenie systému Linux bolo zrušené</translation>
 <translation id="2423578206845792524">Uložiť &amp;obrázok ako...</translation>
+<translation id="2424424966051154874">{0,plural, =1{Hosť}few{Hostia (#)}many{Guest (#)}other{Hostia (#)}}</translation>
 <translation id="2428510569851653187">Opíšte, čo ste robili, keď karta zlyhala</translation>
 <translation id="2428939361789119025">Vypnúť Wi-Fi</translation>
 <translation id="2431027948063157455">Asistent Google sa nenačítal. Skontrolujte sieťové pripojenie a skúste to znova.</translation>
@@ -2366,7 +2365,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3797900183766075808">Pomocou &amp;služby <ph name="SEARCH_ENGINE" /> vyhľadať text „<ph name="SEARCH_TERMS" />“</translation>
 <translation id="3798449238516105146">Verzia</translation>
 <translation id="3799128412641261490">Nastavenia ovládania prepínačmi</translation>
-<translation id="3799201711591988491">{COUNT,plural, =0{&amp;Otvoriť všetky}=1{&amp;Otvoriť záložku}few{&amp;Otvoriť všetky (#)}many{&amp;Otvoriť všetky (#)}other{&amp;Otvoriť všetky (#)}}</translation>
 <translation id="3800806661949714323">Zobraziť všetko (odporúčané)</translation>
 <translation id="380408572480438692">Povolením zhromažďovania údajov o výkonnosti pomôžete spoločnosti Google postupom času zlepšovať systém. Kým neodošlete správu so spätnou väzbou (Alt-Shift-I) a nezahrniete údaje o výkonnosti, neodošlú sa žiadne údaje. Zhromažďovanie údajov môžete po prejdení späť na túto stránku kedykoľvek zakázať.</translation>
 <translation id="3807249107536149332">Rozšírenie <ph name="EXTENSION_NAME" /> (ID rozšírenia – <ph name="EXTENSION_ID" />) nie je povolené na prihlasovacej obrazovke.</translation>
@@ -3205,7 +3203,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="4854317507773910281">Vyberte účet rodiča na schválenie</translation>
 <translation id="485480310608090163">Ďalšie nastavenia a povolenia</translation>
 <translation id="4856478137399998590">Vaša mobilná dátová služba je aktivovaná a pripravená na použitie</translation>
-<translation id="4857506433977877623">{COUNT,plural, =0{Otvoriť všetky v okne inkognito}=1{Otvoriť v okne inkognito}few{Otvoriť všetky (#) v okne inkognito}many{Otvoriť všetky (#) v okne inkognito}other{Otvoriť všetky (#) v okne inkognito}}</translation>
 <translation id="4858792381671956233">Požiadali ste rodičov o povolenie návštevy tohto webu.</translation>
 <translation id="4858913220355269194">Fritz</translation>
 <translation id="4862642413395066333">Podpisovanie odpovedí protokolu OCSP</translation>
@@ -4202,6 +4199,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="6077189836672154517">Tipy a aktuálne informácie týkajúce sa zariadenia <ph name="DEVICE_TYPE" /></translation>
 <translation id="6077476112742402730">Diktovať</translation>
 <translation id="6078045608615316905">Vytvoriť QR kód pre tento obrázok</translation>
+<translation id="6078121669093215958">{0,plural, =1{Hosť}few{# otvorené okná režimu pre hostí}many{# open guest windows}other{# otvorených okien režimu pre hostí}}</translation>
 <translation id="6078323886959318429">Pridať odkaz</translation>
 <translation id="6078752646384677957">Skontrolujte mikrofón a úrovne zvuku.</translation>
 <translation id="6078769373519310690"><ph name="CHROME_EXTENSION_NAME" /> sa chce pripojiť k zariadeniu HID</translation>
@@ -4709,6 +4707,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="6704062477274546131">Prevod adresy IP na názov domény systémom DNS</translation>
 <translation id="6706210727756204531">Rozsah</translation>
 <translation id="6707389671160270963">Klientsky certifikát SSL</translation>
+<translation id="670893696722244877">Vyhľadávanie podľa jazykov alebo zadávaním názvov</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> a 1 ďalšia karta}few{<ph name="PAGE_TITLE" /> a # ďalšie karty}many{<ph name="PAGE_TITLE" /> and # Other Tabs}other{<ph name="PAGE_TITLE" /> a # ďalších kariet}}</translation>
 <translation id="6709133671862442373">News</translation>
 <translation id="6709357832553498500">Pripojiť sa pomocou rozšírenia <ph name="EXTENSIONNAME" /></translation>
@@ -5290,7 +5289,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="7427348830195639090">Stránka na pozadí: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129">Volať zo zariadenia <ph name="DEVICE_NAME" /></translation>
 <translation id="7431719494109538750">Neboli nájdené žiadne zariadenia HID</translation>
-<translation id="7433692219247014412">{COUNT,plural, =0{Otvoriť všetky v novom okne}=1{Otvoriť v novom okne}few{Otvoriť všetky (#) v novom okne}many{Otvoriť všetky (#) v novom okne}other{Otvoriť všetky (#) v novom okne}}</translation>
 <translation id="7433957986129316853">Ponechať</translation>
 <translation id="7434509671034404296">Vývojár</translation>
 <translation id="7434635829372401939">Synchronizácia vašich nastavení</translation>
@@ -5338,7 +5336,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="7487141338393529395">Zapnutie rozšírenej kontroly pravopisu</translation>
 <translation id="7487969577036436319">Nie sú nainštalované žiadne komponenty</translation>
 <translation id="7488682689406685343">Tento web sa vás môže pokúsiť naviesť, aby ste povolili obťažujúce upozornenia.</translation>
-<translation id="7489355918927585587">{COUNT,plural, =0{&amp;Otvoriť všetky}=1{&amp;Otvoriť záložku}few{&amp;Otvoriť všetky (#)}many{&amp;Otvoriť všetky (#)}other{&amp;Otvoriť všetky (#)}}</translation>
 <translation id="7489761397368794366">Zavolať z vášho zariadenia</translation>
 <translation id="749028671485790643">Osoba <ph name="VALUE" /></translation>
 <translation id="7490813197707563893">Adresa MAC</translation>
@@ -5506,7 +5503,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="7691077781194517083">Tento bezpečnostný kľúč sa nedá resetovať. Chyba <ph name="ERROR_CODE" />.</translation>
 <translation id="7691698019618282776">Inovácia systému Crostini</translation>
 <translation id="7696063401938172191">V telefóne <ph name="PHONE_NAME" />:</translation>
-<translation id="7698408911093959127">{COUNT,plural, =1{1 položka v zozname záložiek}few{# položky v zozname záložiek}many{# položky v zozname záložiek}other{# položiek v zozname záložiek}}</translation>
 <translation id="7699968112832915395">Účet sa nedá pridať</translation>
 <translation id="7701040980221191251">Žiadne</translation>
 <translation id="7701869757853594372">POUŽÍVATEĽ – popisovače</translation>
@@ -5549,6 +5545,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="7753735457098489144">Nepodarilo sa nainštalovať pre nedostatok priestoru. Uvoľníte ho odstránením súborov z úložiska zariadenia.</translation>
 <translation id="7754704193130578113">Pred každým sťahovaním sa spýtať, kam uložiť súbor</translation>
 <translation id="7755287808199759310">Váš rodič ho môže pre vás odblokovať</translation>
+<translation id="7757592200364144203">Zmeniť názov zariadenia</translation>
 <translation id="7757787379047923882">Text zdieľaný zo zariadenia <ph name="DEVICE_NAME" /></translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">Úprava ohraničenia zobrazenia</translation>
@@ -5811,7 +5808,6 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8030852056903932865">Schváliť</translation>
 <translation id="8032244173881942855">Kartu nie je možné prenášať.</translation>
 <translation id="8033827949643255796">vybrané</translation>
-<translation id="803435727213847625">{COUNT,plural, =0{Otvoriť všetky v okne inkognito}=1{Otvoriť v okne inkognito}few{Otvoriť všetky (#) v okne inkognito}many{Otvoriť všetky (#) v okne inkognito}other{Otvoriť všetky (#) v okne inkognito}}</translation>
 <translation id="8037117027592400564">Čítať akýkoľvek hovorený text prenesený pomocou hlasového syntetizátora</translation>
 <translation id="8037357227543935929">Opýtať sa (predvolené)</translation>
 <translation id="803771048473350947">Súbor</translation>
@@ -6006,6 +6002,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8264024885325823677">Toto nastavenie ovláda váš správca.</translation>
 <translation id="8264718194193514834">Rozšírenie <ph name="EXTENSION_NAME" /> spustilo režim celej obrazovky.</translation>
 <translation id="826511437356419340">Vstúpili ste do režimu prehľadu okien. Prechádzajte potiahnutím alebo ak používate klávesnicu, stlačte kláves Tab.</translation>
+<translation id="8266947622852630193">Všetky metódy vstupu</translation>
 <translation id="8267539814046467575">Pridať tlačiareň</translation>
 <translation id="8267961145111171918"><ph name="BEGIN_PARAGRAPH1" />Ide o všeobecné informácie o vašom zariadení a o tom, ako ho používate (napríklad stav batérie, aktivita systému, aktivita v aplikáciách a chyby). Tieto údaje sa použijú na zlepšenie Androidu a niektoré súhrnné informácie tiež pomôžu aplikáciám Google a partnerom, ako sú vývojári systému Android, zlepšovať svoje aplikácie a produkty.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Vypnutím tejto funkcie neovplyvníte schopnosť zariadenia odosielať informácie potrebné na zaistenie základných služieb, ako sú aktualizácie systému a zabezpečenie.<ph name="END_PARAGRAPH2" />
@@ -6014,7 +6011,6 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="826905130698769948">Neplatný certifikát klienta</translation>
 <translation id="8270242299912238708">Dokumenty PDF</translation>
 <translation id="827097179112817503">Zobrazovať tlačidlo domovskej stránky</translation>
-<translation id="8271246892936492311">{COUNT,plural, =1{Bola odstránená 1 záložka}few{Boli odstránené # záložky}many{Bolo odstránenej # záložky}other{Bolo odstránených # záložiek}}</translation>
 <translation id="8272443605911821513">Ak chcete spravovať rozšírenia, kliknite v ponuke Ďalšie nástroje na možnosť Rozšírenia.</translation>
 <translation id="8274332263553132018">Prenášať súbor</translation>
 <translation id="8274924778568117936">V priebehu aktualizácie zariadenie <ph name="DEVICE_TYPE" /> nevypínajte ani nezatvárajte. Po dokončení inštalácie sa <ph name="DEVICE_TYPE" /> reštartuje.</translation>

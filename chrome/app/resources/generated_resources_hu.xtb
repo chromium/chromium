@@ -19,7 +19,6 @@
 <translation id="1013707859758800957">A rendszer engedélyezte egy nem sandbox-technológiát alkalmazó beépülő modul futását az oldalon.</translation>
 <translation id="1015318665228971643">Mappa nevének szerkesztése</translation>
 <translation id="1015578595646638936">{NUM_DAYS,plural, =1{Az eszköz (<ph name="DEVICE_TYPE" />) frissítésére rendelkezésre álló utolsó nap}other{Az eszköz (<ph name="DEVICE_TYPE" />) frissítésére {NUM_DAYS} nap áll rendelkezésre}}</translation>
-<translation id="1016437870506746108">{COUNT,plural, =0{Összes meg&amp;nyitása új ablakban}=1{Meg&amp;nyitás új ablakban}other{Összes (#) meg&amp;nyitása új ablakban}}</translation>
 <translation id="1016566241875885511">További információk (nem kötelező)</translation>
 <translation id="1017280919048282932">&amp;Hozzáadás a szótárhoz</translation>
 <translation id="1018656279737460067">Megszakítva</translation>
@@ -1087,7 +1086,6 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2274840746523584236">Töltse fel a Chromebookot</translation>
 <translation id="2276503375879033601">További alkalmazások hozzáadása</translation>
 <translation id="2277255602909579701">Összes cookie és webhelyadat</translation>
-<translation id="2277769717710009150">{COUNT,plural, =1{1 elem másolva}other{# elem másolva}}</translation>
 <translation id="2278562042389100163">Böngészőablak megnyitása</translation>
 <translation id="2280486287150724112">Jobb margó</translation>
 <translation id="2282146716419988068">GPU-folyamat</translation>
@@ -2367,7 +2365,6 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="3797900183766075808">&amp;Keresés a(z) <ph name="SEARCH_ENGINE" /> keresőmotorral a következőre: <ph name="SEARCH_TERMS" /></translation>
 <translation id="3798449238516105146">Verzió</translation>
 <translation id="3799128412641261490">A kapcsolóalapú hozzáférés beállításai</translation>
-<translation id="3799201711591988491">{COUNT,plural, =0{Összes &amp;megnyitása}=1{Könyvjelző &amp;megnyitása}other{Összes (#) &amp;megnyitása}}</translation>
 <translation id="3800806661949714323">Összes megjelenítése (ajánlott)</translation>
 <translation id="380408572480438692">A teljesítményadatok gyűjtésének engedélyezésével hozzásegíti a Google-t a rendszer továbbfejlesztéséhez. A rendszer nem küld adatokat, amíg Ön nem nyújt be visszajelzést (Alt-Shift-I), illetve nem mellékeli a teljesítményadatokat. Bármikor visszatérhet erre a képernyőre a gyűjtés letiltásához.</translation>
 <translation id="3807249107536149332">A(z) <ph name="EXTENSION_NAME" /> (bővítményazonosító: „<ph name="EXTENSION_ID" />”) használata nem engedélyezett a bejelentkezési képernyőn.</translation>
@@ -3205,7 +3202,6 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4854317507773910281">Szülői fiók kiválasztása a jóváhagyáshoz</translation>
 <translation id="485480310608090163">További beállítások és engedélyek</translation>
 <translation id="4856478137399998590">Adatszolgáltatását aktiválta, és az használatra kész</translation>
-<translation id="4857506433977877623">{COUNT,plural, =0{Összes megnyitása &amp;inkognitóablakban}=1{Megnyitás &amp;inkognitóablakban}other{Összes (#) megnyitása &amp;inkognitóablakban}}</translation>
 <translation id="4858792381671956233">Megkérdezted a szüleidet, hogy meg szabad-e látogatnod ezt a webhelyet</translation>
 <translation id="4858913220355269194">Foci</translation>
 <translation id="4862642413395066333">OCSP (valós idejű tanúsítványlekérdezés) válaszok aláírása</translation>
@@ -5292,7 +5288,6 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="7427348830195639090">Háttéroldal: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129">Hívás a következőtől: <ph name="DEVICE_NAME" /></translation>
 <translation id="7431719494109538750">Nem találhatók HID-eszközök</translation>
-<translation id="7433692219247014412">{COUNT,plural, =0{Összes meg&amp;nyitása új ablakban}=1{Meg&amp;nyitás új ablakban}other{Összes (#) meg&amp;nyitása új ablakban}}</translation>
 <translation id="7433957986129316853">Megtartom</translation>
 <translation id="7434509671034404296">Fejlesztőknek</translation>
 <translation id="7434635829372401939">Beállítások szinkronizálása</translation>
@@ -5340,7 +5335,6 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="7487141338393529395">A továbbfejlesztett helyesírás-ellenőrzés bekapcsolása</translation>
 <translation id="7487969577036436319">Nincsenek összetevők telepítve</translation>
 <translation id="7488682689406685343">Előfordulhat, hogy ez a webhely arra próbálja megtévesztő módon rávenni Önt, hogy engedélyezze a tolakodó értesítéseket.</translation>
-<translation id="7489355918927585587">{COUNT,plural, =0{Összes &amp;megnyitása}=1{Könyvjelző &amp;megnyitása}other{Összes (#) &amp;megnyitása}}</translation>
 <translation id="7489761397368794366">Hívás az eszközéről</translation>
 <translation id="749028671485790643">Személy: <ph name="VALUE" /></translation>
 <translation id="7490813197707563893">MAC-cím</translation>
@@ -5508,7 +5502,6 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="7691077781194517083">Nem lehetséges a biztonsági hardverkulcs visszaállítása. Hibakód: <ph name="ERROR_CODE" />.</translation>
 <translation id="7691698019618282776">A Crostini frissítése</translation>
 <translation id="7696063401938172191">„<ph name="PHONE_NAME" />” telefonján:</translation>
-<translation id="7698408911093959127">{COUNT,plural, =1{1 elem a könyvjelzőlistában}other{# elem a könyvjelzőlistában}}</translation>
 <translation id="7699968112832915395">Nem lehet hozzáadni a fiókot</translation>
 <translation id="7701040980221191251">Nincs</translation>
 <translation id="7701869757853594372">FELHASZNÁLÓI azonosítók</translation>
@@ -5813,7 +5806,6 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8030852056903932865">Jóváhagyás</translation>
 <translation id="8032244173881942855">Nem lehet átküldeni a lapot.</translation>
 <translation id="8033827949643255796">kijelölve</translation>
-<translation id="803435727213847625">{COUNT,plural, =0{Összes megnyitása &amp;inkognitóablakban}=1{Megnyitás &amp;inkognitóablakban}other{Összes (#) megnyitása &amp;inkognitóablakban}}</translation>
 <translation id="8037117027592400564">Az összes szöveg felolvasása szintetizált beszéddel kimondva</translation>
 <translation id="8037357227543935929">Kérdezzen rá (alapértelmezés szerint)</translation>
 <translation id="803771048473350947">Fájl</translation>
@@ -6017,7 +6009,6 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="826905130698769948">Érvénytelen ügyféltanúsítvány</translation>
 <translation id="8270242299912238708">PDF-dokumentumok</translation>
 <translation id="827097179112817503">A Kezdőlap gomb megjelenítése</translation>
-<translation id="8271246892936492311">{COUNT,plural, =1{1 könyvjelző törölve}other{# könyvjelző törölve}}</translation>
 <translation id="8272443605911821513">Bővítményeit a „További eszközök” menü Bővítmények elemére kattintva kezelheti.</translation>
 <translation id="8274332263553132018">Fájl átküldése</translation>
 <translation id="8274924778568117936">A frissítés befejezéséig ne kapcsolja ki vagy csukja le <ph name="DEVICE_TYPE" /> eszközét. <ph name="DEVICE_TYPE" /> eszköze a telepítést követően újraindul.</translation>

@@ -19,7 +19,6 @@
 <translation id="1013707859758800957">Wtyczka spoza piaskownicy otrzymała zezwolenie na uruchomienie na tej stronie.</translation>
 <translation id="1015318665228971643">Edytuj nazwę folderu</translation>
 <translation id="1015578595646638936">{NUM_DAYS,plural, =1{Ostatni dzień na zaktualizowanie urządzenia <ph name="DEVICE_TYPE" />}few{Zaktualizuj urządzenie <ph name="DEVICE_TYPE" /> w ciągu {NUM_DAYS} dni}many{Zaktualizuj urządzenie <ph name="DEVICE_TYPE" /> w ciągu {NUM_DAYS} dni}other{Zaktualizuj urządzenie <ph name="DEVICE_TYPE" /> w ciągu {NUM_DAYS} dnia}}</translation>
-<translation id="1016437870506746108">{COUNT,plural, =0{Otwórz wszystkie w &amp;nowym oknie}=1{Otwórz w &amp;nowym oknie}few{Otwórz wszystkie (#) w &amp;nowym oknie}many{Otwórz wszystkie (#) w &amp;nowym oknie}other{Otwórz wszystkie (#) w &amp;nowym oknie}}</translation>
 <translation id="1016566241875885511">Dodatkowe informacje (opcjonalnie)</translation>
 <translation id="1017280919048282932">&amp;Dodaj do słownika</translation>
 <translation id="1018656279737460067">Anulowano</translation>
@@ -1098,7 +1097,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2274840746523584236">Naładuj Chromebooka</translation>
 <translation id="2276503375879033601">Dodaj więcej aplikacji</translation>
 <translation id="2277255602909579701">Wszystkie pliki cookie i dane witryn</translation>
-<translation id="2277769717710009150">{COUNT,plural, =1{Skopiowano 1 element}few{Skopiowano # elementy}many{Skopiowano # elementów}other{Skopiowano # elementu}}</translation>
 <translation id="2278562042389100163">Otwórz okno przeglądarki</translation>
 <translation id="2280486287150724112">Prawy margines</translation>
 <translation id="2282146716419988068">Proces GPU</translation>
@@ -2392,7 +2390,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="3797900183766075808">Wy&amp;szukaj „<ph name="SEARCH_TERMS" />” w <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3798449238516105146">Wersja</translation>
 <translation id="3799128412641261490">Ustawienia funkcji Switch Access</translation>
-<translation id="3799201711591988491">{COUNT,plural, =0{&amp;Otwórz wszystkie}=1{&amp;Otwórz zakładkę}few{&amp;Otwórz wszystkie (#)}many{&amp;Otwórz wszystkie (#)}other{&amp;Otwórz wszystkie (#)}}</translation>
 <translation id="3800806661949714323">Pokaż wszystkie (zalecane)</translation>
 <translation id="380408572480438692">Włączenie zbierania danych o wydajności pomaga Google udoskonalać system. Dane nie są wysyłane, póki nie sporządzisz raportu z opinią (Alt-Shift-I) i nie załączysz danych o wydajności. Możesz w dowolnym momencie wrócić do tego ekranu, by wyłączyć zbieranie danych.</translation>
 <translation id="3807249107536149332">Rozszerzenie <ph name="EXTENSION_NAME" /> (identyfikator rozszerzenia „<ph name="EXTENSION_ID" />”) jest niedozwolone na ekranie logowania.</translation>
@@ -3248,7 +3245,6 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="4854317507773910281">Wybierz konto rodzica na potrzeby zatwierdzenia</translation>
 <translation id="485480310608090163">Więcej ustawień i uprawnień</translation>
 <translation id="4856478137399998590">Komórkowa usługa transmisji danych została aktywowana i jest gotowa do użycia</translation>
-<translation id="4857506433977877623">{COUNT,plural, =0{Otwórz wszystkie w oknie &amp;incognito}=1{Otwórz w oknie &amp;incognito}few{Otwórz wszystkie (#) w oknie &amp;incognito}many{Otwórz wszystkie (#) w oknie &amp;incognito}other{Otwórz wszystkie (#) w oknie &amp;incognito}}</translation>
 <translation id="4858792381671956233">Zapytałeś rodziców, czy możesz wejść na tę stronę</translation>
 <translation id="4858913220355269194">Fritz</translation>
 <translation id="4862642413395066333">Podpisywanie odpowiedzi protokołu OCSP</translation>
@@ -5363,7 +5359,6 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="7427348830195639090">Strona w tle: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129">Zadzwoń z urządzenia <ph name="DEVICE_NAME" /></translation>
 <translation id="7431719494109538750">Nie znaleziono urządzeń HID</translation>
-<translation id="7433692219247014412">{COUNT,plural, =0{Otwórz wszystkie w &amp;nowym oknie}=1{Otwórz w &amp;nowym oknie}few{Otwórz wszystkie (#) w &amp;nowym oknie}many{Otwórz wszystkie (#) w &amp;nowym oknie}other{Otwórz wszystkie (#) w &amp;nowym oknie}}</translation>
 <translation id="7433957986129316853">Zachowaj</translation>
 <translation id="7434509671034404296">Deweloper</translation>
 <translation id="7434635829372401939">Synchronizacja ustawień</translation>
@@ -5413,7 +5408,6 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="7487141338393529395">Włączanie ulepszonego sprawdzania pisowni</translation>
 <translation id="7487969577036436319">Nie zainstalowano żadnych komponentów</translation>
 <translation id="7488682689406685343">Ta strona może próbować przekonać Cię do zaakceptowania uciążliwych powiadomień.</translation>
-<translation id="7489355918927585587">{COUNT,plural, =0{&amp;Otwórz wszystkie}=1{&amp;Otwórz zakładkę}few{&amp;Otwórz wszystkie (#)}many{&amp;Otwórz wszystkie (#)}other{&amp;Otwórz wszystkie (#)}}</translation>
 <translation id="7489761397368794366">Zadzwoń ze swojego urządzenia</translation>
 <translation id="749028671485790643">Osoba <ph name="VALUE" /></translation>
 <translation id="7490813197707563893">Adres MAC</translation>
@@ -5586,7 +5580,6 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="7691077781194517083">Nie udało się zresetować tego klucza bezpieczeństwa. Błąd <ph name="ERROR_CODE" />.</translation>
 <translation id="7691698019618282776">Uaktualnienie Crostini</translation>
 <translation id="7696063401938172191">Na telefonie <ph name="PHONE_NAME" />:</translation>
-<translation id="7698408911093959127">{COUNT,plural, =1{1 element na liście zakładek}few{# elementy na liście zakładek}many{# elementów na liście zakładek}other{# elementu na liście zakładek}}</translation>
 <translation id="7699968112832915395">Nie można dodać konta</translation>
 <translation id="7701040980221191251">Brak</translation>
 <translation id="7701869757853594372">Uchwyty USER</translation>
@@ -5897,7 +5890,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8030852056903932865">Zatwierdź</translation>
 <translation id="8032244173881942855">Nie udało się przesłać karty.</translation>
 <translation id="8033827949643255796">wybrano</translation>
-<translation id="803435727213847625">{COUNT,plural, =0{Otwórz wszystkie w oknie &amp;incognito}=1{Otwórz w oknie &amp;incognito}few{Otwórz wszystkie (#) w oknie &amp;incognito}many{Otwórz wszystkie (#) w oknie &amp;incognito}other{Otwórz wszystkie (#) w oknie &amp;incognito}}</translation>
 <translation id="8037117027592400564">Odczyt całego tekstu mówionego przez syntezator mowy</translation>
 <translation id="8037357227543935929">Pytaj (domyślnie)</translation>
 <translation id="803771048473350947">Plik</translation>
@@ -6105,7 +6097,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="826905130698769948">Nieprawidłowy certyfikat klienta</translation>
 <translation id="8270242299912238708">Dokumenty PDF</translation>
 <translation id="827097179112817503">Pokaż przycisk strony głównej</translation>
-<translation id="8271246892936492311">{COUNT,plural, =1{Usunięto 1 zakładkę}few{Usunięto # zakładki}many{Usunięto # zakładek}other{Usunięto # zakładki}}</translation>
 <translation id="8272443605911821513">Aby zarządzać zainstalowanymi rozszerzeniami, kliknij Rozszerzenia w menu Więcej narzędzi.</translation>
 <translation id="8274332263553132018">Prześlij plik</translation>
 <translation id="8274924778568117936">Nie wyłączaj ani nie zamykaj urządzenia <ph name="DEVICE_TYPE" /> do momentu ukończenia aktualizacji. Po zakończeniu instalacji <ph name="DEVICE_TYPE" /> uruchomi się ponownie.</translation>

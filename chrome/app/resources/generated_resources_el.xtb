@@ -19,7 +19,6 @@
 <translation id="1013707859758800957">Επιτράπηκε η εκτέλεση μιας προσθήκης εκτός περιβάλλοντος δοκιμών σε αυτήν τη σελίδα.</translation>
 <translation id="1015318665228971643">Επεξεργασία ονόματος φακέλου</translation>
 <translation id="1015578595646638936">{NUM_DAYS,plural, =1{Τελευταία ημέρα για την ενημέρωση της συσκευής (<ph name="DEVICE_TYPE" />)}other{Ενημέρωση της συσκευής (<ph name="DEVICE_TYPE" />) εντός {NUM_DAYS} ημερών}}</translation>
-<translation id="1016437870506746108">{COUNT,plural, =0{Άνοιγμα όλων σε &amp;νέο παράθυρο}=1{Άνοιγμα σε &amp;νέο παράθυρο}other{Άνοιγμα όλων (#) σε &amp;νέο παράθυρο}}</translation>
 <translation id="1016566241875885511">Πρόσθετες πληροφορίες (προαιρετικό)</translation>
 <translation id="1017280919048282932">&amp;Προσθήκη στο λεξικό</translation>
 <translation id="1018656279737460067">Ακυρώθηκε</translation>
@@ -1087,7 +1086,6 @@
 <translation id="2274840746523584236">Φόρτιση του Chromebook</translation>
 <translation id="2276503375879033601">Προσθήκη περισσότερων εφαρμογών</translation>
 <translation id="2277255602909579701">Όλα τα cookie και τα δεδομένα ιστοτόπων</translation>
-<translation id="2277769717710009150">{COUNT,plural, =1{1 στοιχείο αντιγράφηκε}other{# στοιχεία αντιγράφηκαν}}</translation>
 <translation id="2278562042389100163">Άνοιγμα παραθύρου προγράμματος περιήγησης</translation>
 <translation id="2280486287150724112">Δεξιό περιθώριο</translation>
 <translation id="2282146716419988068">Διαδικασία GPU</translation>
@@ -2368,7 +2366,6 @@
 <translation id="3797900183766075808">&amp;Αναζήτηση <ph name="SEARCH_ENGINE" /> για "<ph name="SEARCH_TERMS" />"</translation>
 <translation id="3798449238516105146">Έκδοση</translation>
 <translation id="3799128412641261490">Ρυθμίσεις Πρόσβασης με διακόπτη</translation>
-<translation id="3799201711591988491">{COUNT,plural, =0{&amp;Άνοιγμα όλων}=1{&amp;Άνοιγμα σελιδοδείκτη}other{&amp;Άνοιγμα όλων (#)}}</translation>
 <translation id="3800806661949714323">Εμφάνιση όλων (συνιστάται)</translation>
 <translation id="380408572480438692">Η ενεργοποίηση της συλλογής δεδομένων απόδοσης θα διευκολύνει την Google να βελτιώσει το σύστημα με την πάροδο του χρόνου. Δεν αποστέλλονται δεδομένα χωρίς να καταθέσετε πρώτα αναφορά σχολίων (Alt-Shift-I) και να συμπεριλάβετε τα δεδομένα απόδοσης. Μπορείτε να επιστρέψετε σε αυτήν την οθόνη για να απενεργοποιήσετε τη συλλογή ανά πάσα στιγμή.</translation>
 <translation id="3807249107536149332">Η επέκταση <ph name="EXTENSION_NAME" /> (αναγνωριστικό επέκτασης "<ph name="EXTENSION_ID" />") δεν επιτρέπεται σε μια οθόνη σύνδεσης.</translation>
@@ -3207,7 +3204,6 @@
 <translation id="4854317507773910281">Επιλογή λογαριασμού γονέα για έγκριση</translation>
 <translation id="485480310608090163">Περισσότερες ρυθμίσεις και άδειες</translation>
 <translation id="4856478137399998590">Η υπηρεσία δεδομένων κινητής συσκευής είναι ενεργοποιημένη και έτοιμη προς χρήση</translation>
-<translation id="4857506433977877623">{COUNT,plural, =0{Άνοιγμα όλων σε παράθυρο για &amp;ανώνυμη περιήγηση}=1{Άνοιγμα σε παράθυρο για &amp;ανώνυμη περιήγηση}other{Άνοιγμα όλων (#) σε παράθυρο για &amp;ανώνυμη περιήγηση}}</translation>
 <translation id="4858792381671956233">Ρώτησες τους γονείς σου εάν σου επιτρέπουν να επισκεφτείς αυτόν τον ιστότοπο</translation>
 <translation id="4858913220355269194">Fritz</translation>
 <translation id="4862642413395066333">Υπογραφή αποκρίσεων OCSP</translation>
@@ -5295,7 +5291,6 @@
 <translation id="7427348830195639090"> σελίδα: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129">Κλήση από <ph name="DEVICE_NAME" /></translation>
 <translation id="7431719494109538750">Δεν βρέθηκαν συσκευές HID</translation>
-<translation id="7433692219247014412">{COUNT,plural, =0{Άνοιγμα όλων σε &amp;νέο παράθυρο}=1{Άνοιγμα σε &amp;νέο παράθυρο}other{Άνοιγμα όλων (#) σε &amp;νέο παράθυρο}}</translation>
 <translation id="7433957986129316853">Διατήρηση</translation>
 <translation id="7434509671034404296">Για Προγραμματιστές</translation>
 <translation id="7434635829372401939">Συγχρονισμός των ρυθμίσεών σας</translation>
@@ -5343,7 +5338,6 @@
 <translation id="7487141338393529395">Ενεργοποίηση βελτιωμένου ορθογραφικού ελέγχου</translation>
 <translation id="7487969577036436319">Δεν έχουν εγκατασταθεί στοιχεία</translation>
 <translation id="7488682689406685343">Αυτός ο ιστότοπος ενδέχεται να προσπαθεί να σας εξαπατήσει ώστε να επιτρέψετε ενοχλητικές ειδοποιήσεις.</translation>
-<translation id="7489355918927585587">{COUNT,plural, =0{&amp;Άνοιγμα όλων}=1{&amp;Άνοιγμα σελιδοδείκτη}other{&amp;Άνοιγμα όλων (#)}}</translation>
 <translation id="7489761397368794366">Κλήση από τη συσκευή σας</translation>
 <translation id="749028671485790643">Άτομο <ph name="VALUE" /></translation>
 <translation id="7490813197707563893">Διεύθυνση MAC</translation>
@@ -5511,7 +5505,6 @@
 <translation id="7691077781194517083">Δεν είναι δυνατή η επαναφορά αυτού του κλειδιού ασφαλείας. Σφάλμα <ph name="ERROR_CODE" />.</translation>
 <translation id="7691698019618282776">Αναβάθμιση Crostini</translation>
 <translation id="7696063401938172191">Στο τηλέφωνο "<ph name="PHONE_NAME" />":</translation>
-<translation id="7698408911093959127">{COUNT,plural, =1{1 στοιχείο στη λίστα σελιδοδεικτών}other{# στοιχεία στη λίστα σελιδοδεικτών}}</translation>
 <translation id="7699968112832915395">Δεν είναι δυνατή η προσθήκη λογαριασμού.</translation>
 <translation id="7701040980221191251">Καμία</translation>
 <translation id="7701869757853594372">Χειρισμοί ΧΡΗΣΤΗ</translation>
@@ -5817,7 +5810,6 @@
 <translation id="8030852056903932865">Έγκριση</translation>
 <translation id="8032244173881942855">Δεν είναι δυνατή η μετάδοση της καρτέλας.</translation>
 <translation id="8033827949643255796">επιλεγμένο</translation>
-<translation id="803435727213847625">{COUNT,plural, =0{Άνοιγμα όλων σε παράθυρο για &amp;ανώνυμη περιήγηση}=1{Άνοιγμα σε παράθυρο για &amp;ανώνυμη περιήγηση}other{Άνοιγμα όλων (#) σε παράθυρο για &amp;ανώνυμη περιήγηση}}</translation>
 <translation id="8037117027592400564">Ανάγνωση όλου του κειμένου που εκφωνείται με χρήση ομιλίας σύνθεσης</translation>
 <translation id="8037357227543935929">Να γίνεται ερώτηση (προεπιλογή)</translation>
 <translation id="803771048473350947">Αρχείο</translation>
@@ -6022,7 +6014,6 @@
 <translation id="826905130698769948">Μη έγκυρο πιστοποιητικό πελάτη</translation>
 <translation id="8270242299912238708">Έγγραφα PDF</translation>
 <translation id="827097179112817503">Εμφάνιση κουμπιού Αρχικής σελίδας</translation>
-<translation id="8271246892936492311">{COUNT,plural, =1{1 σελιδοδείκτης διαγράφηκε}other{# σελιδοδείκτες διαγράφηκαν}}</translation>
 <translation id="8272443605911821513">Διαχειριστείτε τις επεκτάσεις σας κάνοντας κλικ στο στοιχείο "Επεκτάσεις" στο μενού "Περισσότερα εργαλεία".</translation>
 <translation id="8274332263553132018">Μετάδοση αρχείου</translation>
 <translation id="8274924778568117936">Μην απενεργοποιήσετε ή κλείσετε τη συσκευή <ph name="DEVICE_TYPE" /> μέχρι να ολοκληρωθεί η ενημέρωση. Θα γίνει επανεκκίνηση της συσκευής <ph name="DEVICE_TYPE" /> μόλις ολοκληρωθεί η εγκατάσταση.</translation>

@@ -19,7 +19,6 @@
 <translation id="1013707859758800957">Het uitvoeren van een plug-in zonder sandbox is toegestaan op deze pagina.</translation>
 <translation id="1015318665228971643">Mapnaam bewerken</translation>
 <translation id="1015578595646638936">{NUM_DAYS,plural, =1{Laatste dag om <ph name="DEVICE_TYPE" /> te updaten}other{Update <ph name="DEVICE_TYPE" /> binnen {NUM_DAYS} dagen}}</translation>
-<translation id="1016437870506746108">{COUNT,plural, =0{Alles openen in &amp;nieuw venster}=1{Openen in &amp;nieuw venster}other{Alles (#) openen in &amp;nieuw venster}}</translation>
 <translation id="1016566241875885511">Aanvullende informatie (optioneel)</translation>
 <translation id="1017280919048282932">Toevoegen &amp;aan woordenboek</translation>
 <translation id="1018656279737460067">Geannuleerd</translation>
@@ -1087,7 +1086,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2274840746523584236">Laad je Chromebook op</translation>
 <translation id="2276503375879033601">Meer apps toevoegen</translation>
 <translation id="2277255602909579701">Alle cookies en sitegegevens</translation>
-<translation id="2277769717710009150">{COUNT,plural, =1{1 item gekopieerd}other{# items gekopieerd}}</translation>
 <translation id="2278562042389100163">Browservenster openen</translation>
 <translation id="2280486287150724112">Marge rechts</translation>
 <translation id="2282146716419988068">GPU-proces</translation>
@@ -2367,7 +2365,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="3797900183766075808"><ph name="SEARCH_ENGINE" /> door&amp;zoeken op '<ph name="SEARCH_TERMS" />'</translation>
 <translation id="3798449238516105146">Versie</translation>
 <translation id="3799128412641261490">Instellingen voor 'Toegang via schakelaar'</translation>
-<translation id="3799201711591988491">{COUNT,plural, =0{Alles &amp;openen}=1{Bladwijzer &amp;openen}other{Alles (#) &amp;openen}}</translation>
 <translation id="3800806661949714323">Alles weergeven (aanbevolen)</translation>
 <translation id="380408572480438692">Als je het verzamelen van prestatiegegevens inschakelt, help je Google het systeem steeds verder te verbeteren. Er worden geen gegevens verzonden totdat je een feedbackrapport (Alt-Shift-I) indient en prestatiegegevens opneemt. Je kunt op elk gewenst moment teruggaan naar dit scherm om het verzamelen uit te schakelen.</translation>
 <translation id="3807249107536149332"><ph name="EXTENSION_NAME" /> (extensie-ID <ph name="EXTENSION_ID" />) is niet toegestaan op een inlogscherm.</translation>
@@ -3206,7 +3203,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="4854317507773910281">Kies een ouderaccount voor goedkeuring</translation>
 <translation id="485480310608090163">Meer instellingen en rechten</translation>
 <translation id="4856478137399998590">Je mobiele netwerk is actief en klaar voor gebruik</translation>
-<translation id="4857506433977877623">{COUNT,plural, =0{Alles openen in &amp;incognitovenster}=1{Openen in &amp;incognitovenster}other{Alles (#) openen in &amp;incognitovenster}}</translation>
 <translation id="4858792381671956233">Je hebt je ouders gevraagd of je deze site mag bezoeken</translation>
 <translation id="4858913220355269194">Fritz</translation>
 <translation id="4862642413395066333">OCSP-antwoorden ondertekenen</translation>
@@ -5291,7 +5287,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="7427348830195639090">Achtergrondpagina: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129">Gesprek van <ph name="DEVICE_NAME" /></translation>
 <translation id="7431719494109538750">Geen HID-apparaten gevonden</translation>
-<translation id="7433692219247014412">{COUNT,plural, =0{Alles openen in &amp;nieuw venster}=1{Openen in &amp;nieuw venster}other{Alles (#) openen in &amp;nieuw venster}}</translation>
 <translation id="7433957986129316853">Behouden</translation>
 <translation id="7434509671034404296">Ontwikkelaar</translation>
 <translation id="7434635829372401939">Je instellingen synchroniseren</translation>
@@ -5339,7 +5334,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="7487141338393529395">Verbeterde spellingcontrole inschakelen</translation>
 <translation id="7487969577036436319">Er zijn geen componenten geïnstalleerd</translation>
 <translation id="7488682689406685343">Deze site probeert je mogelijk zover te krijgen dat je opdringerige meldingen toestaat.</translation>
-<translation id="7489355918927585587">{COUNT,plural, =0{Alles &amp;openen}=1{Bladwijzer &amp;openen}other{Alles (#) &amp;openen}}</translation>
 <translation id="7489761397368794366">Bellen vanaf je apparaat</translation>
 <translation id="749028671485790643">Persoon <ph name="VALUE" /></translation>
 <translation id="7490813197707563893">MAC-adres</translation>
@@ -5507,7 +5501,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="7691077781194517083">Kan deze beveiligingssleutel niet resetten. Fout <ph name="ERROR_CODE" />.</translation>
 <translation id="7691698019618282776">Crostini upgraden</translation>
 <translation id="7696063401938172191">Op je '<ph name="PHONE_NAME" />':</translation>
-<translation id="7698408911093959127">{COUNT,plural, =1{Eén item in bookmarklijst}other{# items in bookmarklijst}}</translation>
 <translation id="7699968112832915395">Account kan niet worden toegevoegd</translation>
 <translation id="7701040980221191251">Geen</translation>
 <translation id="7701869757853594372">USER-handles</translation>
@@ -5811,7 +5804,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8030852056903932865">Goedkeuren</translation>
 <translation id="8032244173881942855">Kan tabblad niet casten.</translation>
 <translation id="8033827949643255796">geselecteerd</translation>
-<translation id="803435727213847625">{COUNT,plural, =0{Alles openen in &amp;incognitovenster}=1{Openen in &amp;incognitovenster}other{Alles (#) openen in &amp;incognitovenster}}</translation>
 <translation id="8037117027592400564">Alle tekst lezen die wordt gesproken met gesynthetiseerde spraak</translation>
 <translation id="8037357227543935929">Vragen (standaard)</translation>
 <translation id="803771048473350947">Archief</translation>
@@ -6015,7 +6007,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="826905130698769948">Ongeldig clientcertificaat</translation>
 <translation id="8270242299912238708">Pdf-documenten</translation>
 <translation id="827097179112817503">Knop 'Homepage' weergeven</translation>
-<translation id="8271246892936492311">{COUNT,plural, =1{1 bookmark verwijderd}other{# bookmarks verwijderd}}</translation>
 <translation id="8272443605911821513">Beheer je extensies door op 'Extensies' te klikken in het menu 'Meer tools'.</translation>
 <translation id="8274332263553132018">Bestand casten</translation>
 <translation id="8274924778568117936">Je moet je <ph name="DEVICE_TYPE" /> niet uitschakelen of sluiten totdat de update is voltooid. Je <ph name="DEVICE_TYPE" /> wordt opnieuw opgestart nadat de installatie is voltooid.</translation>

@@ -19,7 +19,6 @@
 <translation id="1013707859758800957">ປ​ລັກ​ອິນ​ທີ່​ບໍ່​ແມ່ນ​ແຊນບັອກໄດ້​ຮັບ​ອະ​ນຸ​ຍາດ​ໃຫ້​ແລ່ນ​ຢູ່​ເທິງ​ໜ້າ​ນີ້.</translation>
 <translation id="1015318665228971643">ແກ້ໄຂຊື່ໂຟນເດີ</translation>
 <translation id="1015578595646638936">{NUM_DAYS,plural, =1{ມື້ສຸດທ້າຍໃນການອັບເດດ <ph name="DEVICE_TYPE" />}other{ອັບເດດ <ph name="DEVICE_TYPE" /> ພາຍໃນ {NUM_DAYS} ມື້}}</translation>
-<translation id="1016437870506746108">{COUNT,plural, =0{ເປີດທັງໝົດໃນ&amp;ໜ້າຈໍໃໝ່}=1{ເປີດໃນ&amp;ໜ້າຈໍໃໝ່}other{ເປີດທັງໝົດ (#) ໃນ&amp;ໜ້າຈໍໃໝ່}}</translation>
 <translation id="1016566241875885511">ຂໍ້ມູນເພີ່ມເຕີມ (ເລືອກໄດ້)</translation>
 <translation id="1017280919048282932">ເພີ່ມໃສ່ພົດຈະນານຸກົມ</translation>
 <translation id="1018656279737460067">ຍົກ​ເລີກ​ແລ້ວ</translation>
@@ -1085,7 +1084,6 @@
 <translation id="2274840746523584236">ສາກ Chromebook ຂອງທ່ານ</translation>
 <translation id="2276503375879033601">ເພີ່ມແອັບເພີ່ມເຕີມ</translation>
 <translation id="2277255602909579701">ທຸກຂໍ້ມູນຄຸກກີ້ ແລະ ເວັບໄຊ</translation>
-<translation id="2277769717710009150">{COUNT,plural, =1{ສຳເນົາ 1 ລາຍການແລ້ວ}other{ສຳເນົາ # ລາຍການແລ້ວ}}</translation>
 <translation id="2278562042389100163">ເປີດໜ້າ​ຕ່າງ​ບຣາວເຊີ</translation>
 <translation id="2280486287150724112">ຂອບ​ເບື້ອງຂວາ</translation>
 <translation id="2282146716419988068">ປະມວນຜົນ GPU</translation>
@@ -2365,7 +2363,6 @@
 <translation id="3797900183766075808">&amp;ຊອກ <ph name="SEARCH_ENGINE" /> ຫາ “<ph name="SEARCH_TERMS" />”</translation>
 <translation id="3798449238516105146">ລຸ້ນ</translation>
 <translation id="3799128412641261490">ການຕັ້ງຄ່າການເຂົ້າເຖິງດ້ວຍປຸ່ມກົດ</translation>
-<translation id="3799201711591988491">{COUNT,plural, =0{&amp;ເປີດທັງໝົດ}=1{&amp;ເປີດບຸກມາກ}other{&amp;ເປີດທັງໝົດ (#)}}</translation>
 <translation id="3800806661949714323">ສະແດງທັງໝົດ (ແນະນໍາ)</translation>
 <translation id="380408572480438692">ການເປີດໃຊ້ງງານການເກັບກໍາຂໍ້ມູນປະຕິບັດຈະຊ່ວຍໃຫ້ Google ປັບປຸງລະບົບໄດ້ຕະຫຼອດເວລາ. ຈະບໍ່ມີການສົ່ງຂໍ້ມູນໃດໃຫ້ຈົນກ່ວາທ່ານຍື່ນບົດລາຍງານຄວາມຄິດເຫັນ (Alt-Shift-I) ແລະລວມເອົາຂໍ້ມູນປະຕິບັດ. ທ່ານສາມາດກັບຄືນໄປຫາໜ້າຈໍນີ້ໄດ້ ເພື່ອປິດໃຊ້ງານການເກັບກໍາໄດ້ທຸກເວລາ.</translation>
 <translation id="3807249107536149332">ບໍ່ອະນຸຍາດ <ph name="EXTENSION_NAME" /> (ID ສ່ວນຂະຫຍາຍ "<ph name="EXTENSION_ID" />") ຢູ່ໃນໜ້າຈໍເຂົ້າສູ່ລະບົບ.</translation>
@@ -3204,7 +3201,6 @@
 <translation id="4854317507773910281">ເລືອກບັນຊີພໍ່ແມ່ສຳລັບການອະນຸມັດ</translation>
 <translation id="485480310608090163">ການຕັ້ງຄ່າ ແລະ ການອະນຸຍາດເພີ່ມເຕີມ</translation>
 <translation id="4856478137399998590">ຂໍ້ມູນມືຖືຂອງທ່ານເປີດໃຊ້ງານ ແລະພ້ອມໃຊ້ແລ້ວ</translation>
-<translation id="4857506433977877623">{COUNT,plural, =0{ເປີດທັງໝົດໃນ&amp;ໜ້າຈໍທີ່ບໍ່ເຜີຍຕົວຕົນ}=1{ເປີດໃນ&amp;ໜ້າຈໍທີ່ບໍ່ເຜີຍຕົວຕົນ}other{ເປີດທັງໝົດ (#) ໃນໜ້າຈໍ&amp;ທີ່ບໍ່ເຜີຍຕົວຕົນ}}</translation>
 <translation id="4858792381671956233">ທ່ານໄດ້ຖາມພໍ່ແມ່ຂອງທ່ານວ່າທ່ານເຂົ້າເບິ່ງເວັບໄຊນີ້ໄດ້ຫຼືບໍ່</translation>
 <translation id="4858913220355269194">ຖືກທໍາລາຍ</translation>
 <translation id="4862642413395066333">ການເຊັນການຕອບຮັບ OCSP</translation>
@@ -5289,7 +5285,6 @@
 <translation id="7427348830195639090">ໜ້າພື້ນຫຼັງ: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129">ການໂທຈາກ <ph name="DEVICE_NAME" /></translation>
 <translation id="7431719494109538750">ບໍ່ພົບອຸປະກອນ HID ໃດ</translation>
-<translation id="7433692219247014412">{COUNT,plural, =0{ເປີດທັງໝົດໃນ&amp;ໜ້າຈໍໃໝ່}=1{ເປີດໃນ&amp;ໜ້າຈໍໃໝ່}other{ເປີດທັງໝົດ (#) ໃນ&amp;ໜ້າຈໍໃໝ່}}</translation>
 <translation id="7433957986129316853">ເກັບໄວ້</translation>
 <translation id="7434509671034404296">ຜູ້ພັດ​ທະ​ນາ</translation>
 <translation id="7434635829372401939">ຊິ້ງຂໍ້ມູນການຕັ້ງຄ່າຂອງທ່ານ</translation>
@@ -5337,7 +5332,6 @@
 <translation id="7487141338393529395">ເປີດການກວດການສະກົດຄຳທີ່ປັບປຸງດີຂຶ້ນແລ້ວ</translation>
 <translation id="7487969577036436319">ບໍ່ມີອົງປະກອບ​ຕິດ​ຕັ້ງໄວ້</translation>
 <translation id="7488682689406685343">ເວັບໄຊນີ້ອາດຈະກຳລັງພະຍາຍາມຫຼອກໃຫ້ທ່ານອະນຸຍາດການແຈ້ງເຕືອນທີ່ລ່ວງລໍ້າ.</translation>
-<translation id="7489355918927585587">{COUNT,plural, =0{&amp;ເປີດທັງໝົດ}=1{&amp;ເປີດບຸກມາກ}other{&amp;ເປີດທັງໝົດ (#)}}</translation>
 <translation id="7489761397368794366">ໂທຈາກອຸປະກອນຂອງທ່ານ</translation>
 <translation id="749028671485790643">ຄົນ <ph name="VALUE" /></translation>
 <translation id="7490813197707563893">ທີ່ຢູ່ MAC</translation>
@@ -5505,7 +5499,6 @@
 <translation id="7691077781194517083">ບໍ່ສາມາດຣີເຊັດກະແຈຄວາມປອດໄພນີ້ໄດ້. ຂໍ້ຜິດພາດ <ph name="ERROR_CODE" />.</translation>
 <translation id="7691698019618282776">ການອັບເກຣດ Crostini</translation>
 <translation id="7696063401938172191">ໃນ '<ph name="PHONE_NAME" />' ຂອງທ່ານ:</translation>
-<translation id="7698408911093959127">{COUNT,plural, =1{1 ລາຍການໃນລາຍຊື່ບຸກມາກ}other{# ລາຍການໃນລາຍຊື່ບຸກມາກ}}</translation>
 <translation id="7699968112832915395">ບໍ່ສາມາດເພີ່ມບັນຊີໄດ້</translation>
 <translation id="7701040980221191251">ບໍ່​ມີ​</translation>
 <translation id="7701869757853594372">ດ້າມຈັບ​ຜູ້​ໃຊ້</translation>
@@ -5808,7 +5801,6 @@
 <translation id="8030852056903932865">ອະນຸມັດ</translation>
 <translation id="8032244173881942855">ບໍ່ສາມາດສົ່ງສັນຍານແຖບໄດ້.</translation>
 <translation id="8033827949643255796">ເລືອກແລ້ວ</translation>
-<translation id="803435727213847625">{COUNT,plural, =0{ເປີດທັງໝົດໃນ&amp;ໜ້າຈໍທີ່ບໍ່ເຜີຍຕົວຕົນ}=1{ເປີດໃນ&amp;ໜ້າຈໍທີ່ບໍ່ເຜີຍຕົວຕົນ}other{ເປີດທັງໝົດ (#) ໃນ&amp;ໜ້າຈໍທີ່ບໍ່ເຜີຍຕົວຕົນ}}</translation>
 <translation id="8037117027592400564">ອ່ານຂໍ້ຄວາມທັງໝົດທີ່ໄດ້ເວົ້າໃນລະຫວ່າງການໃຊ້ຄໍາເວົ້າທີ່ຊິງໂຄຣໄນແລ້ວ</translation>
 <translation id="8037357227543935929">ຖາມ (ຄ່າເລີ່ມຕົ້ນ)</translation>
 <translation id="803771048473350947">ໄຟລ໌</translation>
@@ -6012,7 +6004,6 @@
 <translation id="826905130698769948">ໃບຮັບຮອງລູກຂ່າຍບໍ່ຖືກຕ້ອງ</translation>
 <translation id="8270242299912238708">ເອກະສານ PDF</translation>
 <translation id="827097179112817503">ສະແດງປຸ່ມໜ້າ​ຫຼັກ</translation>
-<translation id="8271246892936492311">{COUNT,plural, =1{ລຶບ 1 ບຸກມາກແລ້ວ}other{ລຶບ # ບຸກມາກແລ້ວ}}</translation>
 <translation id="8272443605911821513">ຈັດການສ່ວນຂະຫຍາຍຂອງທ່ານໂດຍການຄລິກສ່ວນຂະຫຍາຍຢູ່ໃນເມນູ "ເຄື່ອງມືເພີ່ມເຕີມ".</translation>
 <translation id="8274332263553132018">ສົ່ງສັນຍານໄຟລ໌</translation>
 <translation id="8274924778568117936">ຢ່າປິດ <ph name="DEVICE_TYPE" /> ຂອງທ່ານຈົນກວ່າວ່າການອັບເດດຈະສຳເລັດ. <ph name="DEVICE_TYPE" /> ຂອງທ່ານຈະປິດເປີດໃໝ່ຫຼັງຈາກການຕິດຕັ້ງສຳເລັດແລ້ວ.</translation>

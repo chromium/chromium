@@ -19,7 +19,6 @@
 <translation id="1013707859758800957">ଏକ unsandboxed ପ୍ଲଗଇନ୍‍କୁ ଏହି ପୃଷ୍ଠାରେ ଚଲାଇବାକୁ ଅନୁମତି ଦିଆଯାଇଛି।</translation>
 <translation id="1015318665228971643">ଫୋଲ୍ଡର ନାମ ଏଡିଟ୍ କରନ୍ତୁ</translation>
 <translation id="1015578595646638936">{NUM_DAYS,plural, =1{<ph name="DEVICE_TYPE" />କୁ ଅପଡେଟ୍ କରିବାର ଶେଷ ଦିନ}other{{NUM_DAYS} ଦିନ ଭିତରେ <ph name="DEVICE_TYPE" />କୁ ଅପଡେଟ୍ କରନ୍ତୁ}}</translation>
-<translation id="1016437870506746108">{COUNT,plural, =0{ସବୁ &amp;ନୂଆ ୱିଣ୍ଡୋରେ ଖୋଲନ୍ତୁ}=1{ସବୁ &amp;ନୂଆ ୱିଣ୍ଡୋରେ ଖୋଲନ୍ତୁ}other{ସବୁ (#) &amp;ନୂଆ ୱିଣ୍ଡୋରେ ଖୋଲନ୍ତୁ}}</translation>
 <translation id="1016566241875885511">ଅତିରିକ୍ତ ସୂଚନା (ଇଚ୍ଛାଧୀନ)</translation>
 <translation id="1017280919048282932">&amp;ଅଭିଧାନ ସହ ଯୋଡନ୍ତୁ</translation>
 <translation id="1018656279737460067">ବାତିଲ୍‌ କରାଗଲା</translation>
@@ -1096,7 +1095,6 @@
 <translation id="2274840746523584236">ଆପଣଙ୍କ Chromebook ଚାର୍ଜ କରନ୍ତୁ</translation>
 <translation id="2276503375879033601">ଅଧିକ ଆପ୍ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="2277255602909579701">ସମସ୍ତ ଏବଂ ସାଇଟ୍ ଡାଟା</translation>
-<translation id="2277769717710009150">{COUNT,plural, =1{1ଟି ଆଇଟମ୍‌ କପି ହୋ‍ଇଛି}other{#ଟି ଆଇଟମ୍‌ କପି ହୋ‍ଇଛି}}</translation>
 <translation id="2278562042389100163">ବ୍ରାଉଜର ୱିଣ୍ଡୋ ଖୋଲନ୍ତୁ</translation>
 <translation id="2280486287150724112">ଡାହାଣପଟ ମାର୍ଜିନ୍</translation>
 <translation id="2282146716419988068">GPU ପ୍ରକ୍ରିୟା</translation>
@@ -2388,7 +2386,6 @@
 <translation id="3797900183766075808">“<ph name="SEARCH_TERMS" />” ପାଇଁ <ph name="SEARCH_ENGINE" /> &amp;ଖୋଜନ୍ତୁ</translation>
 <translation id="3798449238516105146">ସଂସ୍କରଣ</translation>
 <translation id="3799128412641261490">ସ୍ୱିଚ୍ ଆକ୍ସେସ୍ ସେଟିଂସ୍</translation>
-<translation id="3799201711591988491">{COUNT,plural, =0{&amp;ସମସ୍ତ ଖୋଲନ୍ତୁ}=1{&amp;ବୁକ୍‍ମାର୍କ ଖୋଲନ୍ତୁ}other{&amp;ସମସ୍ତ (#) ଖୋଲନ୍ତୁ}}</translation>
 <translation id="3800806661949714323">ସବୁ ଦେଖାନ୍ତୁ (ସୁପାରିଶ୍ କରାଯାଇଛି)</translation>
 <translation id="380408572480438692">କାର୍ଯ୍ୟଦକ୍ଷତା ଡାଟା ସଂଗ୍ରହ ସକ୍ଷମ କରିବା ଦ୍ୱାରା ସମୟାନୁଯାୟୀ Googleକୁ ସିଷ୍ଟମ୍‌ ଉନ୍ନତ କରିବାରେ ସାହାଯ୍ୟ କରିବ। ଯେପର୍ଯ୍ୟନ୍ତ ଆପଣ କୌଣସି ମତାମତ ରିପୋର୍ଟ (Alt-Shift-I) ଦାଖଲ କରିନାହିଁନ୍ତି ଏବଂ କାର୍ଯ୍ୟଦକ୍ଷତା ଡାଟା ଅନ୍ତର୍ଭୁକ୍ତ କରିନାହିଁନ୍ତି, ସେପର୍ଯ୍ୟନ୍ତ କୌଣସି ଡାଟା ପଠାଯାଏ ନାହିଁ। ଯେକୌଣସି ସମୟରେ ସଂଗ୍ରହଗୁଡ଼ିକୁ ଅକ୍ଷମ କରିବାକୁ ଆପଣ ଏହି ସ୍କ୍ରିନ୍‌କୁ ଫେରିପାରିବେ।</translation>
 <translation id="3807249107536149332">ଏକ ଲଗ୍‌ଇନ୍ ସ୍କ୍ରିନ୍‌ରେ <ph name="EXTENSION_NAME" /> (ଏକ୍ସଟେନ୍‌ସନ୍ ID "<ph name="EXTENSION_ID" />") ପାଇଁ ଅନୁମତି ନାହିଁ।</translation>
@@ -3243,7 +3240,6 @@
 <translation id="4854317507773910281">ଅନୁମୋଦନ କରିବା ପାଇଁ ବାପାମାଙ୍କ ଆକାଉଣ୍ଟ ବାଛନ୍ତୁ</translation>
 <translation id="485480310608090163">ଅଧିକ ସେଟିଂସ୍ ଏବଂ ଅନୁମତିଗୁଡ଼ିକ</translation>
 <translation id="4856478137399998590">ଆପଣଙ୍କର ମୋବାଇଲ୍ ଡାଟା ସର୍ଭିସ୍ ସକ୍ରିୟ ଅଛି ଏବଂ ବ୍ୟବହାର ପାଇଁ ପ୍ରସ୍ତୁତ</translation>
-<translation id="4857506433977877623">{COUNT,plural, =0{ସବୁ &amp;ଇନ୍‌କଗ୍ନିଟୋ ୱିଣ୍ଡୋରେ ଖୋଲନ୍ତୁ}=1{&amp;ଇନ୍‌କଗ୍ନିଟୋ ୱିଣ୍ଡୋରେ ଖୋଲନ୍ତୁ}other{ସବୁ (#) &amp;ଇନ୍‌କଗ୍ନିଟୋ ୱିଣ୍ଡୋରେ ଖୋଲନ୍ତୁ}}</translation>
 <translation id="4858792381671956233">ଆପଣ ନିଜର ମାତାପିତାଙ୍କୁ ଏହି ସାଇଟ୍‌କୁ ଯିବା ଠିକ୍ କି ବୋଲି ପଚାରିଛନ୍ତି</translation>
 <translation id="4858913220355269194">Fritz</translation>
 <translation id="4862642413395066333">OCSP ପ୍ରତିକ୍ରିୟା ସାଇନ୍ କରୁଛି</translation>
@@ -5357,7 +5353,6 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="7427348830195639090">ପୃଷ୍ଠପଟ ପୃଷ୍ଠା: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129"><ph name="DEVICE_NAME" />ରୁ କଲ୍ କରନ୍ତୁ</translation>
 <translation id="7431719494109538750">କୌଣସି HID ଡିଭାଇସ୍ ମିଳିଲା ନାହିଁ</translation>
-<translation id="7433692219247014412">{COUNT,plural, =0{ସମସ୍ତ &amp;ନୂଆ ୱିଣ୍ଡୋରେ ଖୋଲନ୍ତୁ}=1{&amp;ନୂଆ ୱିଣ୍ଡୋରେ ଖୋଲନ୍ତୁ}other{ସମସ୍ତ (#)ଟି &amp;ନୂଆ ୱିଣ୍ଡୋରେ ଖୋଲନ୍ତୁ}}</translation>
 <translation id="7433957986129316853">ଏହାକୁ ରଖନ୍ତୁ</translation>
 <translation id="7434509671034404296">ଡେଭେଲପର୍</translation>
 <translation id="7434635829372401939">ଆପଣଙ୍କର ସେଟିଂସ୍ ସିଙ୍କ୍ କରନ୍ତୁ</translation>
@@ -5407,7 +5402,6 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="7487141338393529395">ଉନ୍ନତ ବନାନ ଯାଞ୍ଚ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="7487969577036436319">କୌଣସି ଉପାଦାନ ଇନ୍‍ଷ୍ଟଲ୍ କରାଯାଇନାହିଁ</translation>
 <translation id="7488682689406685343">ଅନାଧିକୃତ ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକ ପାଇଁ ଆପଣ ଅନୁମତି ଦେବାକୁ କୌଶଳରେ ଏହି ସାଇଟ୍ ଚେଷ୍ଟା କରିପାରେ।</translation>
-<translation id="7489355918927585587">{COUNT,plural, =0{&amp;ସମସ୍ତ ଖୋଲନ୍ତୁ}=1{&amp;ବୁକ୍‍ମାର୍କ ଖୋଲନ୍ତୁ}other{&amp;ସମସ୍ତ (#) ଖୋଲନ୍ତୁ}}</translation>
 <translation id="7489761397368794366">ଆପଣଙ୍କର ଡିଭାଇସ୍‍ରୁ କଲ୍ କରନ୍ତୁ</translation>
 <translation id="749028671485790643">ବ୍ୟକ୍ତି <ph name="VALUE" /></translation>
 <translation id="7490813197707563893">MAC ଠିକଣା</translation>
@@ -5580,7 +5574,6 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="7691077781194517083">ଏହି ସୁରକ୍ଷା କୀ ରିସେଟ୍ କରିପାରିବ ନାହିଁ। ତ୍ରୁଟି: <ph name="ERROR_CODE" />।</translation>
 <translation id="7691698019618282776">Crostini ଅପଗ୍ରେଡ୍</translation>
 <translation id="7696063401938172191">କେବଳ ଆପଣଙ୍କର '<ph name="PHONE_NAME" />'ରେ:</translation>
-<translation id="7698408911093959127">{COUNT,plural, =1{ବୁକ୍‍ମାର୍କ ତାଲିକାରେ 1ଟି ଆଇଟମ୍}other{ବୁକ୍‍ମାର୍କ ତାଲିକାରେ #ଟି ଆଇଟମ୍}}</translation>
 <translation id="7699968112832915395">ଆକାଉଣ୍ଟ ଯୋଗ କରିପାରିବେ ନାହିଁ</translation>
 <translation id="7701040980221191251">କିଛି ନାହିଁ</translation>
 <translation id="7701869757853594372">ଉପଯୋଗକର୍ତ୍ତା ହ୍ୟାଣ୍ଡେଲ୍‌</translation>
@@ -5888,7 +5881,6 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="8030852056903932865">ଅନୁମୋଦନ କରନ୍ତୁ</translation>
 <translation id="8032244173881942855">ଟାବ୍‌ କାଷ୍ଟ କରିବାରେ ଅକ୍ଷମ।</translation>
 <translation id="8033827949643255796">ଚୟନ କରାଯାଇଛି</translation>
-<translation id="803435727213847625">{COUNT,plural, =0{ଇନ୍‌କଗ୍ନିଟୋ ୱିଣ୍ଡୋରେ ସବୁ ଖୋଲନ୍ତୁ}=1{ଇନ୍‌କଗ୍ନିଟୋ ୱିଣ୍ଡୋରେ ଖୋଲନ୍ତୁ}other{ଇନ୍‌କଗ୍ନିଟୋ ୱିଣ୍ଡୋରେ ସବୁ (#) ଖୋଲନ୍ତୁ}}</translation>
 <translation id="8037117027592400564">ସ୍ପୀଚ୍‍ର ସମ୍ମିଶ୍ରଣ ବ୍ୟବହାର କରି ସମସ୍ତ କୁହାଯାଇଥିବା ଟେକ୍ସଟ୍‍ ପଢ଼ନ୍ତୁ</translation>
 <translation id="8037357227543935929">ପଚାରନ୍ତୁ (ଡିଫଲ୍ଟ)</translation>
 <translation id="803771048473350947">ଫାଇଲ୍</translation>
@@ -6094,7 +6086,6 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="826905130698769948">ଅବୈଧ କ୍ଲାଏଣ୍ଟ ସାର୍ଟିଫିକେଟ୍</translation>
 <translation id="8270242299912238708">PDF ଡକ୍ୟୁମେଣ୍ଟ</translation>
 <translation id="827097179112817503">ହୋମ୍‌ ବଟନ୍ ଦେଖାନ୍ତୁ</translation>
-<translation id="8271246892936492311">{COUNT,plural, =1{1ଟି ବୁକ୍‌ମାର୍କ ଡିଲିଟ୍‌ କରାଗଲା}other{#ଟି ବୁକ୍‌ମାର୍କ ଡିଲିଟ୍‌ କରାଗଲା}}</translation>
 <translation id="8272443605911821513">"ଅଧିକ ଟୁଲ୍ସ" ମେନୁରେ ଥିବା ଏକ୍ସଟେନ୍‍ସନ୍‍‍ରେ କ୍ଲିକ୍ କରି ଆପଣଙ୍କର ଏକ୍ସଟେନସନ୍‌ଗୁଡ଼ିକ ପରିଚାଳନା କରନ୍ତୁ।</translation>
 <translation id="8274332263553132018">କାଷ୍ଟ ଫାଇଲ୍</translation>
 <translation id="8274924778568117936">ଅପ୍‍‍ଡେଟ୍ ଶେଷ ନହେବା ପର୍ଯ୍ୟନ୍ତ ଆପଣଙ୍କର <ph name="DEVICE_TYPE" />ବନ୍ଦ କରନ୍ତୁ ନାହିଁ। ଇନ୍‌ଷ୍ଟଲେସନ୍ ସମ୍ପୂର୍ଣ୍ଣ ହେବା <ph name="DEVICE_TYPE" /> ପରେ ରିଷ୍ଟାର୍ଟ ହେବ।</translation>

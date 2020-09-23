@@ -51,6 +51,7 @@
 <translation id="2315043854645842844">Uchaguzi wa cheti cha sehemu ya seva teja hautumiwi na mfumo wa uendeshaji.</translation>
 <translation id="2359808026110333948">Endelea</translation>
 <translation id="2402980924095424747">MB <ph name="MEGABYTES" /></translation>
+<translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Umeruhusu <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> na nyingine<ph name="NUM_MORE" />}other{Umeruhusu <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> na nyingine<ph name="NUM_MORE" />}}</translation>
 <translation id="2434158240863470628">Upakuaji umekamilika <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2440823041667407902">Ufikiaji wa eneo</translation>
 <translation id="2482878487686419369">Arifa</translation>
@@ -190,6 +191,7 @@
 <translation id="6447842834002726250">Vidakuzi</translation>
 <translation id="6527303717912515753">Shiriki</translation>
 <translation id="6545864417968258051">Kutafuta Bluetooth</translation>
+<translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Umezuia <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> na nyingine <ph name="NUM_MORE" />}other{Umezuia <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> na nyingine <ph name="NUM_MORE" />}}</translation>
 <translation id="6561560012278703671">Tumia kipengele cha kutuma na kupokea ujumbe bila sauti (huzuia vidokezo vya arifa visikusumbue)</translation>
 <translation id="6608650720463149374">GB <ph name="GIGABYTES" /></translation>
 <translation id="6612358246767739896">Maudhui yanayolindwa</translation>
@@ -292,6 +294,7 @@
 <translation id="8959122750345127698">Kudurusu hakufikiki: <ph name="URL" /></translation>
 <translation id="9019902583201351841">Inadhibitiwa na wazazi wako</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> na nyingine <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> na nyingine <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289">Washa ruhusa za <ph name="APP_NAME" /> katika <ph name="BEGIN_LINK" />Mipangilio ya Android<ph name="END_LINK" />.</translation>
 <translation id="945632385593298557">Kufikia maikrofoni yako</translation>
 <translation id="965817943346481315">Zuia ikiwa tovuti inaonyesha matangazo yanayopotosha au yanayokatiza huduma (inapendekezwa)</translation>

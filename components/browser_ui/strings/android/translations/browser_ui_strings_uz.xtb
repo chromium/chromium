@@ -51,6 +51,7 @@
 <translation id="2315043854645842844">Tanlangan mijoz sertifikati eskirgan va operatsion tizim tomonidan qo‘llab-quvvatlanmaydi.</translation>
 <translation id="2359808026110333948">Davom etish</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
+<translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Ruxsat berildi: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> va yana <ph name="NUM_MORE" /> ta}other{Ruxsat berildi: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> va yana <ph name="NUM_MORE" /> ta}}</translation>
 <translation id="2434158240863470628">Yuklab olindi: <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2440823041667407902">Joylashuv ma’lumotidan foyd-sh</translation>
 <translation id="2482878487686419369">Bildirishnomalar</translation>
@@ -190,6 +191,7 @@
 <translation id="6447842834002726250">Cookie fayllari</translation>
 <translation id="6527303717912515753">Ulashish</translation>
 <translation id="6545864417968258051">Bluetooth qurilmalarni qidirish</translation>
+<translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Bloklandi: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> va yana <ph name="NUM_MORE" /> ta}other{Bloklandi: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> va yana <ph name="NUM_MORE" /> ta}}</translation>
 <translation id="6561560012278703671">Xabarlar tinchroq kelsin (bezovta qiluvchi bildirishnomalar bloklanadi)</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Himoyalangan kontent</translation>
@@ -292,6 +294,7 @@
 <translation id="8959122750345127698">Sahifa topilmadi: <ph name="URL" /></translation>
 <translation id="9019902583201351841">Ota-onangiz tomonidan boshqariladi</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> va yana <ph name="NUM_MORE" /> ta}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> va yana <ph name="NUM_MORE" /> ta}}</translation>
 <translation id="913657688200966289"><ph name="BEGIN_LINK" />Android sozlamalari<ph name="END_LINK" /> orqali <ph name="APP_NAME" /> uchun ruxsatnomalarni yoqing.</translation>
 <translation id="945632385593298557">Mikrofonga ruxsat</translation>
 <translation id="965817943346481315">Saytlarda chiquvchi yoqimsiz yoki befoyda reklamalar bloklansin (tavsiya etiladi)</translation>

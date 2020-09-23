@@ -19,7 +19,6 @@
 <translation id="1013707859758800957">ปลั๊กอินที่ไม่ได้อยู่ในแซนด์บ็อกซ์ได้รับอนุญาตให้ทำงานในหน้าเว็บนี้</translation>
 <translation id="1015318665228971643">แก้ไขชื่อโฟลเดอร์</translation>
 <translation id="1015578595646638936">{NUM_DAYS,plural, =1{วันสุดท้ายของการอัปเดต <ph name="DEVICE_TYPE" />}other{อัปเดต <ph name="DEVICE_TYPE" /> ภายใน {NUM_DAYS} วัน}}</translation>
-<translation id="1016437870506746108">{COUNT,plural, =0{เปิดทั้งหมดใน&amp;หน้าต่างใหม่}=1{เปิดใน&amp;หน้าต่างใหม่}other{เปิดทั้งหมด (#) ใน&amp;หน้าต่างใหม่}}</translation>
 <translation id="1016566241875885511">ข้อมูลเพิ่มเติม (ไม่บังคับ)</translation>
 <translation id="1017280919048282932">&amp;เพิ่มลงในพจนานุกรม</translation>
 <translation id="1018656279737460067">ยกเลิกแล้ว</translation>
@@ -1087,7 +1086,6 @@
 <translation id="2274840746523584236">ชาร์จ Chromebook ของคุณ</translation>
 <translation id="2276503375879033601">เพิ่มแอปพลิเคชันอื่นๆ</translation>
 <translation id="2277255602909579701">คุกกี้และข้อมูลเว็บไซต์ทั้งหมด</translation>
-<translation id="2277769717710009150">{COUNT,plural, =1{คัดลอกแล้ว 1 รายการ}other{คัดลอกแล้ว # รายการ}}</translation>
 <translation id="2278562042389100163">เปิดหน้าต่างเบราว์เซอร์</translation>
 <translation id="2280486287150724112">ขอบขวา</translation>
 <translation id="2282146716419988068">การประมวลผลของ GPU</translation>
@@ -2367,7 +2365,6 @@
 <translation id="3797900183766075808">&amp;ค้นหา “<ph name="SEARCH_TERMS" />” ด้วย <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3798449238516105146">รุ่น</translation>
 <translation id="3799128412641261490">การตั้งค่าการเข้าถึงด้วยสวิตช์</translation>
-<translation id="3799201711591988491">{COUNT,plural, =0{&amp;เปิดทั้งหมด}=1{&amp;เปิดบุ๊กมาร์ก}other{&amp;เปิดทั้งหมด (#)}}</translation>
 <translation id="3800806661949714323">แสดงทั้งหมด (แนะนำ)</translation>
 <translation id="380408572480438692">การเปิดใช้งานการเก็บรวบรวมข้อมูลผลการปฏิบัติงานจะช่วยให้ Google สามารถปรับปรุงระบบตามกาลเวลา จะไม่มีข้อมูลถูกส่งไปจนกว่าคุณจะยื่นรายงานข้อเสนอแนะ (Alt + Shift-I) และใส่ข้อมูลผลการปฏิบัติงาน คุณสามารถกลับสู่หน้าจอนี้เพื่อปิดใช้งานการเก็บรวบรวมในเวลาใดก็ได้</translation>
 <translation id="3807249107536149332"><ph name="EXTENSION_NAME" /> (รหัสส่วนขยาย "<ph name="EXTENSION_ID" />") ไม่ได้รับอนุญาตในหน้าจอการเข้าสู่ระบบ</translation>
@@ -3206,7 +3203,6 @@
 <translation id="4854317507773910281">เลือกบัญชีผู้ปกครองที่จะเป็นผู้อนุมัติ</translation>
 <translation id="485480310608090163">การตั้งค่าและสิทธิ์อื่นๆ</translation>
 <translation id="4856478137399998590">บริการดาต้าบนมือถือของคุณเปิดใช้งานและพร้อมทำงานแล้ว</translation>
-<translation id="4857506433977877623">{COUNT,plural, =0{เปิดทั้งหมดใน&amp;หน้าต่างที่ไม่ระบุตัวตน}=1{เปิดใน&amp;หน้าต่างที่ไม่ระบุตัวตน}other{เปิดทั้งหมด (#) ใน&amp;หน้าต่างที่ไม่ระบุตัวตน}}</translation>
 <translation id="4858792381671956233">คุณถามผู้ปกครองแล้วว่าสามารถเข้าชมเว็บไซต์นี้ได้ไหม</translation>
 <translation id="4858913220355269194">ฟริทซ์</translation>
 <translation id="4862642413395066333">การเซ็นชื่อในการตอบสนอง OCSP</translation>
@@ -5291,7 +5287,6 @@
 <translation id="7427348830195639090">หน้าเว็บพื้นหลัง: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129">โทรจาก <ph name="DEVICE_NAME" /></translation>
 <translation id="7431719494109538750">ไม่พบอุปกรณ์ HID</translation>
-<translation id="7433692219247014412">{COUNT,plural, =0{เปิดทั้งหมดใน&amp;หน้าต่างใหม่}=1{เปิดใน&amp;หน้าต่างใหม่}other{เปิดทั้งหมด (#) ใน&amp;หน้าต่างใหม่}}</translation>
 <translation id="7433957986129316853">เก็บไว้</translation>
 <translation id="7434509671034404296">นักพัฒนา</translation>
 <translation id="7434635829372401939">ซิงค์การตั้งค่า</translation>
@@ -5339,7 +5334,6 @@
 <translation id="7487141338393529395">เปิดฟีเจอร์ตรวจตัวสะกดที่ได้รับการปรับปรุง</translation>
 <translation id="7487969577036436319">ไม่มีคอมโพเนนต์ที่ได้รับการติดตั้ง</translation>
 <translation id="7488682689406685343">เว็บไซต์นี้อาจกำลังพยายามหลอกล่อคุณให้อนุญาตการแจ้งเตือนที่ล่วงล้ำ</translation>
-<translation id="7489355918927585587">{COUNT,plural, =0{&amp;เปิดทั้งหมด}=1{&amp;เปิดบุ๊กมาร์ก}other{&amp;เปิดทั้งหมด (#)}}</translation>
 <translation id="7489761397368794366">โทรจากอุปกรณ์ของคุณ</translation>
 <translation id="749028671485790643">คนที่ <ph name="VALUE" /></translation>
 <translation id="7490813197707563893">ที่อยู่ MAC</translation>
@@ -5507,7 +5501,6 @@
 <translation id="7691077781194517083">รีเซ็ตคีย์ความปลอดภัยนี้ไม่ได้ ข้อผิดพลาด <ph name="ERROR_CODE" /></translation>
 <translation id="7691698019618282776">อัปเกรด Crostini</translation>
 <translation id="7696063401938172191">บนโทรศัพท์ "<ph name="PHONE_NAME" />" ของคุณ:</translation>
-<translation id="7698408911093959127">{COUNT,plural, =1{1 รายการในรายการบุ๊กมาร์ก}other{# รายการในรายการบุ๊กมาร์ก}}</translation>
 <translation id="7699968112832915395">เพิ่มบัญชีไม่ได้</translation>
 <translation id="7701040980221191251">ไม่มี</translation>
 <translation id="7701869757853594372">ผู้ใช้จัดการ</translation>
@@ -5812,7 +5805,6 @@
 <translation id="8030852056903932865">อนุญาต</translation>
 <translation id="8032244173881942855">ไม่สามารถแคสต์แท็บ</translation>
 <translation id="8033827949643255796">เลือกแล้ว</translation>
-<translation id="803435727213847625">{COUNT,plural, =0{เปิดทั้งหมดใน&amp;หน้าต่างที่ไม่ระบุตัวตน}=1{เปิดใน&amp;หน้าต่างที่ไม่ระบุตัวตน}other{เปิดทั้งหมด (#) ใน&amp;หน้าต่างที่ไม่ระบุตัวตน}}</translation>
 <translation id="8037117027592400564">อ่านข้อความทั้งหมดที่พูดโดยใช้เสียงสังเคราะห์</translation>
 <translation id="8037357227543935929">ขอ (ค่าเริ่มต้น)</translation>
 <translation id="803771048473350947">ไฟล์</translation>
@@ -6016,7 +6008,6 @@
 <translation id="826905130698769948">ใบรับรองไคลเอ็นต์ไม่ถูกต้อง</translation>
 <translation id="8270242299912238708">เอกสาร PDF</translation>
 <translation id="827097179112817503">แสดงปุ่มหน้าแรก</translation>
-<translation id="8271246892936492311">{COUNT,plural, =1{ลบบุ๊กมาร์ก 1 รายการแล้ว}other{ลบบุ๊กมาร์ก # รายการแล้ว}}</translation>
 <translation id="8272443605911821513">จัดการส่วนขยายของคุณโดยคลิกที่ "ส่วนขยาย" ในเมนู "เครื่องมือเพิ่มเติม"</translation>
 <translation id="8274332263553132018">แคสต์ไฟล์</translation>
 <translation id="8274924778568117936">อย่าปิดเครื่องหรือปิดฝา <ph name="DEVICE_TYPE" /> จนกว่าการอัปเดตจะเสร็จสิ้น <ph name="DEVICE_TYPE" /> จะรีสตาร์ทหลังติดตั้งเสร็จแล้ว</translation>

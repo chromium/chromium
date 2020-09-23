@@ -19,7 +19,6 @@
 <translation id="1013707859758800957">एक सैंडबॉक्‍स नहीं किए गए प्‍लग इन को इस पृष्‍ठ पर चलने दिया गया था.</translation>
 <translation id="1015318665228971643">फ़ोल्डर के नाम में बदलाव करें</translation>
 <translation id="1015578595646638936">{NUM_DAYS,plural, =1{<ph name="DEVICE_TYPE" /> को अपडेट करने का आखिरी दिन}one{<ph name="DEVICE_TYPE" /> को {NUM_DAYS} दिन में अपडेट करें}other{<ph name="DEVICE_TYPE" /> को {NUM_DAYS} दिनों में अपडेट करें}}</translation>
-<translation id="1016437870506746108">{COUNT,plural, =0{सभी को &amp;नई विंडो में खोलें}=1{&amp;नई विंडो में खोलें}one{सभी (#) को &amp;नई विंडो में खोलें}other{सभी (#) को &amp;नई विंडो में खोलें}}</translation>
 <translation id="1016566241875885511">अतिरिक्त जानकारी (वैकल्पिक)</translation>
 <translation id="1017280919048282932">शब्दकोश में &amp;जोड़ें</translation>
 <translation id="1018656279737460067">रद्द</translation>
@@ -1087,7 +1086,6 @@
 <translation id="2274840746523584236">अपना Chromebook चार्ज करें</translation>
 <translation id="2276503375879033601">ज़्यादा ऐप्स  जोड़ें</translation>
 <translation id="2277255602909579701">सभी कुकी और साइट डेटा</translation>
-<translation id="2277769717710009150">{COUNT,plural, =1{1 आइटम कॉपी किया गया}one{# आइटम कॉपी किए गए}other{# आइटम कॉपी किए गए}}</translation>
 <translation id="2278562042389100163">ब्राउज़र विंडो खोलें</translation>
 <translation id="2280486287150724112">दायां हाशिया</translation>
 <translation id="2282146716419988068">GPU प्रक्रिया</translation>
@@ -2367,7 +2365,6 @@
 <translation id="3797900183766075808">“<ph name="SEARCH_TERMS" />” को खोजने के लिए <ph name="SEARCH_ENGINE" /> पर &amp;खोजें</translation>
 <translation id="3798449238516105146">वर्शन</translation>
 <translation id="3799128412641261490">ऐक्सेस करने का तरीका बदलने की सेटिंग</translation>
-<translation id="3799201711591988491">{COUNT,plural, =0{&amp;सभी खोलें}=1{&amp;बुकमार्क खोलें}one{&amp;सभी (#) खोलें}other{&amp;सभी (#) खोलें}}</translation>
 <translation id="3800806661949714323">सभी दिखाएं (अनुशंंसित)</translation>
 <translation id="380408572480438692">परफ़ॉर्मेंस डेटा इकट्ठा करने की प्रक्रिया चालू करने से, Google को समय के साथ सिस्टम बेहतर बनाने में सहायता मिलेगी. जब तक आप फ़ीडबैक रिपोर्ट (Alt-Shift-I) फ़ाइल नहीं कर देते और परफ़ॉर्मेंस डेटा शामिल नहीं कर लेते, तब तक कोई डेटा नहीं भेजा जाता. डेटा इकट्ठा करने यह प्रक्रिया बंद करने के लिए आप किसी भी समय इस स्क्रीन पर वापस आ सकते हैं.</translation>
 <translation id="3807249107536149332">लॉगिन स्क्रीन पर <ph name="EXTENSION_NAME" /> (एक्‍सटेंशन आईडी  "<ph name="EXTENSION_ID" />") की अनुमति नहीं है.</translation>
@@ -3205,7 +3202,6 @@
 <translation id="4854317507773910281">मंज़ूरी के लिए माता-पिता का खाता चुनें</translation>
 <translation id="485480310608090163">ज़्यादा सेटिंग और अनुमतियां</translation>
 <translation id="4856478137399998590">आपकी मोबाइल डेटा सेवा सक्रिय कर दी गई है और उपयोग के लिए तैयार है</translation>
-<translation id="4857506433977877623">{COUNT,plural, =0{सभी को &amp;गुप्त विंडो में खोलें}=1{&amp;गुप्त विंडों में खोलें}one{सभी (#) को &amp;गुप्त विंडो में खोलें}other{सभी (#) को &amp;गुप्त विंडो में खोलें}}</translation>
 <translation id="4858792381671956233">आपने अपने अभिभावकों से पूछा है कि इस साइट पर जाना ठीक है या नहीं</translation>
 <translation id="4858913220355269194">फ्रिट्ज़</translation>
 <translation id="4862642413395066333">OCSP प्रतिसाद हस्ताक्षरित करना</translation>
@@ -5290,7 +5286,6 @@
 <translation id="7427348830195639090">पेजभूमि पेज: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129"><ph name="DEVICE_NAME" /> से कॉल करें</translation>
 <translation id="7431719494109538750">कोई भी एचआईडी डिवाइस नहीं मिला</translation>
-<translation id="7433692219247014412">{COUNT,plural, =0{सभी को &amp;नई विंडो में खोलें}=1{&amp;नई विंडो में खोलें}one{सभी (#) को &amp;नई विंडो में खोलें}other{सभी (#) को &amp;नई विंडो में खोलें}}</translation>
 <translation id="7433957986129316853">इसे बनाए रखें</translation>
 <translation id="7434509671034404296">डेवलपर</translation>
 <translation id="7434635829372401939">अपनी सेटिंग सिंक करें</translation>
@@ -5338,7 +5333,6 @@
 <translation id="7487141338393529395">'बेहतर वर्तनी जाँच' चालू करें</translation>
 <translation id="7487969577036436319">कोई घटक इंस्टॉल नहीं हैं</translation>
 <translation id="7488682689406685343">हो सकता है कि यह साइट आपको गुमराह कर रही हो, ताकि आप धोखे से परेशान करने वाली सूचनाओं के लिए अनुमति दें.</translation>
-<translation id="7489355918927585587">{COUNT,plural, =0{&amp;सभी खोलें}=1{&amp;बुकमार्क खोलें}one{&amp;सभी (#) खोलें}other{&amp;सभी (#) खोलें}}</translation>
 <translation id="7489761397368794366">अपने डिवाइस से कॉल करें</translation>
 <translation id="749028671485790643">व्यक्ति <ph name="VALUE" /></translation>
 <translation id="7490813197707563893">MAC पता</translation>
@@ -5506,7 +5500,6 @@
 <translation id="7691077781194517083">यह सुरक्षा कुंजी रीसेट नहीं हो पा रही है. गड़बड़ी <ph name="ERROR_CODE" />.</translation>
 <translation id="7691698019618282776">Crostini को अपग्रेड करें</translation>
 <translation id="7696063401938172191">आपके '<ph name="PHONE_NAME" />' पर:</translation>
-<translation id="7698408911093959127">{COUNT,plural, =1{बुकमार्क सूची में 1 आइटम है}one{बुकमार्क सूची में # आइटम हैं}other{बुकमार्क सूची में # आइटम हैं}}</translation>
 <translation id="7699968112832915395">खाता नहीं जोड़ा जा सकता</translation>
 <translation id="7701040980221191251">कुछ भी नहीं</translation>
 <translation id="7701869757853594372">उपयोगकर्ता हैंडल</translation>
@@ -5810,7 +5803,6 @@
 <translation id="8030852056903932865">अनुमति दें</translation>
 <translation id="8032244173881942855">टैब कास्ट करने में असमर्थ.</translation>
 <translation id="8033827949643255796">चयनित</translation>
-<translation id="803435727213847625">{COUNT,plural, =0{सभी को &amp;गुप्त विंडो में खोलें}=1{&amp;गुप्त विंडों में खोलें}one{सभी (#) को &amp;गुप्त विंडो में खोलें}other{सभी (#) को &amp;गुप्त विंडो में खोलें}}</translation>
 <translation id="8037117027592400564">संश्लेषित बोली का उपयोग करके बोला गया सभी लेख पढ़ें</translation>
 <translation id="8037357227543935929">पूछें (डिफ़ॉल्ट)</translation>
 <translation id="803771048473350947">फ़ाइल</translation>
@@ -6014,7 +6006,6 @@
 <translation id="826905130698769948">अमान्य क्लाइंट प्रमाणपत्र</translation>
 <translation id="8270242299912238708">PDF दस्तावेज़</translation>
 <translation id="827097179112817503">होम बटन दिखाएं</translation>
-<translation id="8271246892936492311">{COUNT,plural, =1{1 बुकमार्क हटाया गया}one{# बुकमार्क हटाए गए}other{# बुकमार्क हटाए गए}}</translation>
 <translation id="8272443605911821513">मेन्यू में "ज़्यादा टूल" एक्सटेंशन पर क्लिक करके अपने एक्सटेंशन प्रबंधित करें.</translation>
 <translation id="8274332263553132018">फ़ाइल कास्ट करें</translation>
 <translation id="8274924778568117936">अपडेट पूरा होने तक अपना <ph name="DEVICE_TYPE" /> बंद न करें. इंस्टॉल हो जाने के बाद आपका <ph name="DEVICE_TYPE" /> रीस्टार्ट होगा.</translation>
