@@ -926,7 +926,9 @@ ScriptPromise PaymentRequest::hasEnrolledInstrument(
 }
 
 bool PaymentRequest::HasPendingActivity() const {
-  return GetPendingAcceptPromiseResolver() || complete_resolver_;
+  return accept_resolver_ || retry_resolver_ || complete_resolver_ ||
+         has_enrolled_instrument_resolver_ || can_make_payment_resolver_ ||
+         abort_resolver_;
 }
 
 const AtomicString& PaymentRequest::InterfaceName() const {

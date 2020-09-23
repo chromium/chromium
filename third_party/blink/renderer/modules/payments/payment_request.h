@@ -168,7 +168,8 @@ class MODULES_EXPORT PaymentRequest final
   String shipping_option_;
   String shipping_type_;
   HashSet<String> method_names_;
-  Member<ScriptPromiseResolver> accept_resolver_;
+  Member<ScriptPromiseResolver>
+      accept_resolver_;  // the resolver for the show() promise.
   Member<ScriptPromiseResolver> complete_resolver_;
   Member<ScriptPromiseResolver> retry_resolver_;
   Member<ScriptPromiseResolver> abort_resolver_;
