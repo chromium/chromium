@@ -64,12 +64,12 @@ class Blocklist : public KeyedService, public base::SupportsWeakPtr<Blocklist> {
   using BlocklistStateMap = std::map<std::string, BlocklistState>;
 
   using GetBlocklistedIDsCallback =
-      base::Callback<void(const BlocklistStateMap&)>;
+      base::OnceCallback<void(const BlocklistStateMap&)>;
 
   using GetMalwareIDsCallback =
-      base::Callback<void(const std::set<std::string>&)>;
+      base::OnceCallback<void(const std::set<std::string>&)>;
 
-  using IsBlocklistedCallback = base::Callback<void(BlocklistState)>;
+  using IsBlocklistedCallback = base::OnceCallback<void(BlocklistState)>;
 
   explicit Blocklist(ExtensionPrefs* prefs);
 
@@ -86,18 +86,18 @@ class Blocklist : public KeyedService, public base::SupportsWeakPtr<Blocklist> {
   // For a synchronous version which ONLY CHECKS CURRENTLY INSTALLED EXTENSIONS
   // see ExtensionPrefs::IsExtensionBlocklisted.
   void GetBlocklistedIDs(const std::set<std::string>& ids,
-                         const GetBlocklistedIDsCallback& callback);
+                         GetBlocklistedIDsCallback callback);
 
   // From the subset of extension IDs passed in via |ids|, select the ones
   // marked in the blocklist as BLOCKLISTED_MALWARE and asynchronously pass
   // to |callback|. Basically, will call GetBlocklistedIDs and filter its
   // results.
   void GetMalwareIDs(const std::set<std::string>& ids,
-                     const GetMalwareIDsCallback& callback);
+                     GetMalwareIDsCallback callback);
 
   // More convenient form of GetBlocklistedIDs for checking a single extension.
   void IsBlocklisted(const std::string& extension_id,
-                     const IsBlocklistedCallback& callback);
+                     IsBlocklistedCallback callback);
 
   // Used to mock BlocklistStateFetcher in unit tests. Blocklist owns the
   // |fetcher|.
@@ -126,7 +126,7 @@ class Blocklist : public KeyedService, public base::SupportsWeakPtr<Blocklist> {
 
   void NotifyObservers();
 
-  void GetBlocklistStateForIDs(const GetBlocklistedIDsCallback& callback,
+  void GetBlocklistStateForIDs(GetBlocklistedIDsCallback callback,
                                const std::set<std::string>& blocklisted_ids);
 
   void RequestExtensionsBlocklistState(const std::set<std::string>& ids,
@@ -134,7 +134,7 @@ class Blocklist : public KeyedService, public base::SupportsWeakPtr<Blocklist> {
 
   void OnBlocklistStateReceived(const std::string& id, BlocklistState state);
 
-  void ReturnBlocklistStateMap(const GetBlocklistedIDsCallback& callback,
+  void ReturnBlocklistStateMap(GetBlocklistedIDsCallback callback,
                                const std::set<std::string>& blocklisted_ids);
 
   base::ObserverList<Observer>::Unchecked observers_;
