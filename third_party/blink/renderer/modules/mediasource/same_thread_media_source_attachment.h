@@ -7,9 +7,11 @@
 
 #include <memory>
 
+#include "base/util/type_safety/pass_key.h"
 #include "third_party/blink/public/platform/web_time_range.h"
 #include "third_party/blink/renderer/modules/mediasource/media_source.h"
 #include "third_party/blink/renderer/modules/mediasource/media_source_attachment_supplement.h"
+#include "third_party/blink/renderer/modules/mediasource/url_media_source.h"
 
 namespace blink {
 
@@ -18,9 +20,11 @@ class SameThreadMediaSourceAttachment final
     : public MediaSourceAttachmentSupplement {
  public:
   // The only intended caller of this constructor is
-  // URLMediaSource::createObjectUrl. The raw pointer is then adopted into a
-  // scoped_refptr in SameThreadMediaSourceRegistry::RegisterURL.
-  explicit SameThreadMediaSourceAttachment(MediaSource* media_source);
+  // URLMediaSource::createObjectUrl, made more clear by using the PassKey. The
+  // raw pointer is then adopted into a scoped_refptr in
+  // SameThreadMediaSourceRegistry::RegisterURL.
+  SameThreadMediaSourceAttachment(MediaSource* media_source,
+                                  util::PassKey<URLMediaSource>);
 
   // MediaSourceAttachmentSupplement
   void NotifyDurationChanged(MediaSourceTracer* tracer, double duration) final;

@@ -60,11 +60,12 @@ String URLMediaSource::createObjectURL(ScriptState* script_state,
   // immediately. It will be adopted into a scoped_refptr in
   // MediaSourceRegistryImpl::RegisterURL. See also MediaSourceAttachment (and
   // usage in HTMLMediaElement, MediaSourceRegistry{Impl}, and MediaSource) for
-  // further detail.
+  // further detail. Passkey usage statically ensures that only we can call the
+  // attachment constructor.
   // TODO(https://crbug.com/878133): Support creation of a cross-thread
   // attachment.
   MediaSourceAttachment* attachment =
-      new SameThreadMediaSourceAttachment(source);
+      new SameThreadMediaSourceAttachment(source, PassKey());
   DCHECK(attachment->HasOneRef());
 
   String url = DOMURL::CreatePublicURL(execution_context, attachment);

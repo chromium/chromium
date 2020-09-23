@@ -32,7 +32,8 @@ blink::HTMLMediaElement* GetMediaElement(blink::MediaSourceTracer* tracer) {
 namespace blink {
 
 SameThreadMediaSourceAttachment::SameThreadMediaSourceAttachment(
-    MediaSource* media_source)
+    MediaSource* media_source,
+    util::PassKey<URLMediaSource> /* passkey */)
     : MediaSourceAttachmentSupplement(media_source),
       recent_element_time_(0.0),
       element_has_error_(false),
