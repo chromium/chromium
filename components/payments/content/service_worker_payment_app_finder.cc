@@ -95,7 +95,7 @@ class SelfDeletingServiceWorkerPaymentAppFinder
     : public base::SupportsUserData::Data {
  public:
   static base::WeakPtr<SelfDeletingServiceWorkerPaymentAppFinder>
-  CreateAndSetOwnedBy(base::SupportsUserData* owner) {
+  CreateAndSetOwnedBy(content::WebContents* owner) {
     auto owned =
         std::make_unique<SelfDeletingServiceWorkerPaymentAppFinder>(owner);
     auto* pointer = owned.get();
@@ -104,7 +104,7 @@ class SelfDeletingServiceWorkerPaymentAppFinder
   }
 
   explicit SelfDeletingServiceWorkerPaymentAppFinder(
-      base::SupportsUserData* owner)
+      content::WebContents* owner)
       : owner_(owner) {}
 
   SelfDeletingServiceWorkerPaymentAppFinder(
@@ -314,14 +314,13 @@ class SelfDeletingServiceWorkerPaymentAppFinder
         base::StringPiece(raw_data->front_as<char>(), raw_data->size()),
         &string_encoded_icon);
 
-    auto* browser_context =
-        static_cast<content::WebContents*>(owner_)->GetBrowserContext();
-    content::PaymentAppProvider::GetInstance()->UpdatePaymentAppIcon(
-        browser_context, app->registration_id, app->scope.spec(), app->name,
-        string_encoded_icon, method_name, app->supported_delegations,
-        base::BindOnce(
-            &SelfDeletingServiceWorkerPaymentAppFinder::OnUpdatePaymentAppIcon,
-            weak_ptr_factory_.GetWeakPtr()));
+    content::PaymentAppProvider::GetOrCreateForWebContents(owner_)
+        ->UpdatePaymentAppIcon(
+            app->registration_id, app->scope.spec(), app->name,
+            string_encoded_icon, method_name, app->supported_delegations,
+            base::BindOnce(&SelfDeletingServiceWorkerPaymentAppFinder::
+                               OnUpdatePaymentAppIcon,
+                           weak_ptr_factory_.GetWeakPtr()));
   }
 
   void OnUpdatePaymentAppIcon(payments::mojom::PaymentHandlerStatus status) {
@@ -365,7 +364,7 @@ class SelfDeletingServiceWorkerPaymentAppFinder
 
   // |owner_| owns this SelfDeletingServiceWorkerPaymentAppFinder, so it is
   // always valid.
-  base::SupportsUserData* owner_;
+  content::WebContents* owner_;
 
   std::unique_ptr<PaymentManifestDownloader> downloader_;
   std::unique_ptr<PaymentManifestParser> parser_;

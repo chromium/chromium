@@ -23,8 +23,7 @@ class WebContents;
 class PaymentAppInstaller {
  public:
   using InstallPaymentAppCallback =
-      base::OnceCallback<void(WebContents* web_contents,
-                              int64_t registration_id)>;
+      base::OnceCallback<void(int64_t registration_id)>;
 
   // Installs the payment app.
   // |app_name| is the name of the payment app.

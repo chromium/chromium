@@ -29,7 +29,7 @@ class UkmRecorderInterface;
 }  // namespace metrics
 
 namespace content {
-class PaymentAppProviderImpl;
+class PaymentAppProviderUtil;
 }  // namespace content
 
 namespace web_app {
@@ -94,7 +94,7 @@ class METRICS_EXPORT UkmRecorder {
 
   // Gets new source Id for PAYMENT_APP_ID type and updates the source url to
   // the scope of the app. This method should only be called by
-  // PaymentAppProviderImpl class when the payment app window is opened.
+  // PaymentAppProviderUtil class when the payment app window is opened.
   static SourceId GetSourceIdForPaymentAppFromScope(
       const GURL& service_worker_scope);
 
@@ -105,7 +105,7 @@ class METRICS_EXPORT UkmRecorder {
   friend blink::Document;
   friend metrics::UkmRecorderInterface;
   friend PermissionUmaUtil;
-  friend content::PaymentAppProviderImpl;
+  friend content::PaymentAppProviderUtil;
 
   // WebApkUkmRecorder and DesktopWebAppUkmRecorder record metrics about
   // installed web apps. Instead of using

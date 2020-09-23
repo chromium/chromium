@@ -213,7 +213,8 @@ void DidOpenURLOnUI(WindowType type,
   if (type == WindowType::PAYMENT_HANDLER_WINDOW) {
     // Set the opened web_contents to payment app provider to manage its life
     // cycle.
-    PaymentAppProvider::GetInstance()->SetOpenedWindow(web_contents);
+    PaymentAppProvider::GetOrCreateForWebContents(web_contents)
+        ->SetOpenedWindow();
   }
 }
 

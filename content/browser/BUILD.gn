@@ -1281,6 +1281,7 @@ source_set("browser") {
     "payments/payment_app_installer.h",
     "payments/payment_app_provider_impl.cc",
     "payments/payment_app_provider_impl.h",
+    "payments/payment_app_provider_util.cc",
     "payments/payment_instrument_icon_fetcher.cc",
     "payments/payment_instrument_icon_fetcher.h",
     "payments/payment_manager.cc",

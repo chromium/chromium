@@ -11,7 +11,7 @@
 #include "base/run_loop.h"
 #include "content/browser/payments/installed_payment_apps_finder_impl.h"
 #include "content/browser/payments/payment_app_content_unittest_base.h"
-#include "content/browser/payments/payment_app_provider_impl.h"
+#include "content/public/browser/payment_app_provider.h"
 #include "content/public/browser/permission_type.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/mock_permission_manager.h"
@@ -107,9 +107,9 @@ class PaymentAppProviderTest : public PaymentAppContentUnitTestBase {
                         const url::Origin& sw_origin,
                         payments::mojom::PaymentRequestEventDataPtr event_data,
                         PaymentAppProvider::InvokePaymentAppCallback callback) {
-    PaymentAppProviderImpl::GetInstance()->InvokePaymentApp(
-        web_contents_, registration_id, sw_origin, std::move(event_data),
-        std::move(callback));
+    PaymentAppProvider::GetOrCreateForWebContents(web_contents_)
+        ->InvokePaymentApp(registration_id, sw_origin, std::move(event_data),
+                           std::move(callback));
     base::RunLoop().RunUntilIdle();
   }
 
@@ -118,24 +118,24 @@ class PaymentAppProviderTest : public PaymentAppContentUnitTestBase {
                       const std::string& payment_request_id,
                       payments::mojom::CanMakePaymentEventDataPtr event_data,
                       PaymentAppProvider::CanMakePaymentCallback callback) {
-    PaymentAppProviderImpl::GetInstance()->CanMakePayment(
-        web_contents_, registration_id, sw_origin, payment_request_id,
-        std::move(event_data), std::move(callback));
+    PaymentAppProvider::GetOrCreateForWebContents(web_contents_)
+        ->CanMakePayment(registration_id, sw_origin, payment_request_id,
+                         std::move(event_data), std::move(callback));
   }
 
   void AbortPayment(int64_t registration_id,
                     const url::Origin& sw_origin,
                     const std::string& payment_request_id,
                     PaymentAppProvider::AbortCallback callback) {
-    PaymentAppProviderImpl::GetInstance()->AbortPayment(
-        web_contents_, registration_id, sw_origin, payment_request_id,
-        std::move(callback));
+    PaymentAppProvider::GetOrCreateForWebContents(web_contents_)
+        ->AbortPayment(registration_id, sw_origin, payment_request_id,
+                       std::move(callback));
   }
 
   void OnClosingOpenedWindow() {
-    PaymentAppProviderImpl::GetInstance()->OnClosingOpenedWindow(
-        web_contents_, payments::mojom::PaymentEventResponseType::
-                           PAYMENT_HANDLER_WINDOW_CLOSING);
+    PaymentAppProvider::GetOrCreateForWebContents(web_contents_)
+        ->OnClosingOpenedWindow(payments::mojom::PaymentEventResponseType::
+                                    PAYMENT_HANDLER_WINDOW_CLOSING);
     base::RunLoop().RunUntilIdle();
   }
 

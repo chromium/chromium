@@ -132,10 +132,11 @@ class PaymentAppBrowserTest : public ContentBrowserTest {
                     const std::string& payment_request_id) {
     base::RunLoop run_loop;
     bool payment_aborted = false;
-    PaymentAppProvider::GetInstance()->AbortPayment(
-        shell()->web_contents(), registration_id, sw_origin, payment_request_id,
-        base::BindOnce(&CaptureAbortResult, run_loop.QuitClosure(),
-                       &payment_aborted));
+    PaymentAppProvider::GetOrCreateForWebContents(shell()->web_contents())
+        ->AbortPayment(
+            registration_id, sw_origin, payment_request_id,
+            base::BindOnce(&CaptureAbortResult, run_loop.QuitClosure(),
+                           &payment_aborted));
     run_loop.Run();
 
     return payment_aborted;
@@ -150,11 +151,12 @@ class PaymentAppBrowserTest : public ContentBrowserTest {
 
     base::RunLoop run_loop;
     bool can_make_payment = false;
-    PaymentAppProvider::GetInstance()->CanMakePayment(
-        shell()->web_contents(), registration_id, sw_origin, payment_request_id,
-        std::move(event_data),
-        base::BindOnce(&CaptureCanMakePaymentResult, run_loop.QuitClosure(),
-                       &can_make_payment));
+    PaymentAppProvider::GetOrCreateForWebContents(shell()->web_contents())
+        ->CanMakePayment(
+            registration_id, sw_origin, payment_request_id,
+            std::move(event_data),
+            base::BindOnce(&CaptureCanMakePaymentResult, run_loop.QuitClosure(),
+                           &can_make_payment));
     run_loop.Run();
 
     return can_make_payment;
@@ -167,11 +169,12 @@ class PaymentAppBrowserTest : public ContentBrowserTest {
       const std::string& instrument_key) {
     base::RunLoop run_loop;
     PaymentHandlerResponsePtr response;
-    PaymentAppProvider::GetInstance()->InvokePaymentApp(
-        shell()->web_contents(), registration_id, sw_origin,
-        CreatePaymentRequestEventData(supported_method, instrument_key),
-        base::BindOnce(&InvokePaymentAppCallback, run_loop.QuitClosure(),
-                       &response));
+    PaymentAppProvider::GetOrCreateForWebContents(shell()->web_contents())
+        ->InvokePaymentApp(
+            registration_id, sw_origin,
+            CreatePaymentRequestEventData(supported_method, instrument_key),
+            base::BindOnce(&InvokePaymentAppCallback, run_loop.QuitClosure(),
+                           &response));
     run_loop.Run();
 
     return response;

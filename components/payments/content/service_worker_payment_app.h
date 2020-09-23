@@ -20,6 +20,7 @@
 #include "third_party/blink/public/mojom/payments/payment_request.mojom.h"
 
 namespace content {
+class PaymentAppProvider;
 class WebContents;
 }  // namespace content
 
@@ -128,6 +129,8 @@ class ServiceWorkerPaymentApp : public PaymentApp,
   // 2) From this class when an already installed payment handler is about to be
   //    invoked.
   void OnPaymentAppIdentity(const url::Origin& origin, int64_t registration_id);
+
+  content::PaymentAppProvider* GetPaymentAppProvider();
 
   GURL top_origin_;
   GURL frame_origin_;

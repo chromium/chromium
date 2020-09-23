@@ -26,6 +26,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/installed_payment_apps_finder.h"
 #include "content/public/browser/payment_app_provider.h"
+#include "content/public/browser/payment_app_provider_util.h"
 #include "content/public/browser/web_contents.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/blink/public/mojom/payments/payment_app.mojom.h"
@@ -125,9 +126,9 @@ static void JNI_ServiceWorkerPaymentAppBridge_OnClosingPaymentAppWindow(
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(jweb_contents);
   DCHECK(web_contents);  // Verified in Java before invoking this function.
-  content::PaymentAppProvider::GetInstance()->OnClosingOpenedWindow(
-      web_contents,
-      static_cast<payments::mojom::PaymentEventResponseType>(reason));
+  content::PaymentAppProvider::GetOrCreateForWebContents(web_contents)
+      ->OnClosingOpenedWindow(
+          static_cast<payments::mojom::PaymentEventResponseType>(reason));
 }
 
 static jlong
@@ -138,7 +139,6 @@ JNI_ServiceWorkerPaymentAppBridge_GetSourceIdForPaymentAppFromScope(
   // payment app associated with this scope. Since this getter is called inside
   // PaymentApp::getUkmSourceId() function which in turn gets called for the
   // invoked app inside PaymentRequestImpl::openPaymentHandlerWindowInternal.
-  return content::PaymentAppProvider::GetInstance()
-      ->GetSourceIdForPaymentAppFromScope(
-          url::GURLAndroid::ToNativeGURL(env, jscope).get()->GetOrigin());
+  return content::PaymentAppProviderUtil::GetSourceIdForPaymentAppFromScope(
+      url::GURLAndroid::ToNativeGURL(env, jscope).get()->GetOrigin());
 }

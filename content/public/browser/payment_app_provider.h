@@ -7,7 +7,6 @@
 
 #include "base/callback_forward.h"
 #include "content/common/content_export.h"
-#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/blink/public/mojom/payments/payment_app.mojom.h"
 
 class SkBitmap;
@@ -18,7 +17,6 @@ class Origin;
 
 namespace content {
 
-class BrowserContext;
 class WebContents;
 struct SupportedDelegations;
 
@@ -33,7 +31,8 @@ class CONTENT_EXPORT PaymentAppProvider {
  public:
   // This static function is actually implemented in PaymentAppProviderImpl.cc.
   // Please see: content/browser/payments/payment_app_provider_impl.cc
-  static PaymentAppProvider* GetInstance();
+  static PaymentAppProvider* GetOrCreateForWebContents(
+      WebContents* web_contents);
 
   using RegistrationIdCallback =
       base::OnceCallback<void(int64_t registration_id)>;
@@ -47,13 +46,11 @@ class CONTENT_EXPORT PaymentAppProvider {
 
   // Should be accessed only on the UI thread.
   virtual void InvokePaymentApp(
-      WebContents* web_contents,
       int64_t registration_id,
       const url::Origin& sw_origin,
       payments::mojom::PaymentRequestEventDataPtr event_data,
       InvokePaymentAppCallback callback) = 0;
   virtual void InstallAndInvokePaymentApp(
-      WebContents* web_contents,
       payments::mojom::PaymentRequestEventDataPtr event_data,
       const std::string& app_name,
       const SkBitmap& app_icon,
@@ -65,7 +62,6 @@ class CONTENT_EXPORT PaymentAppProvider {
       RegistrationIdCallback registration_id_callback,
       InvokePaymentAppCallback callback) = 0;
   virtual void UpdatePaymentAppIcon(
-      BrowserContext* browser_context,
       int64_t registration_id,
       const std::string& instrument_key,
       const std::string& name,
@@ -74,14 +70,12 @@ class CONTENT_EXPORT PaymentAppProvider {
       const SupportedDelegations& supported_delegations,
       UpdatePaymentAppIconCallback callback) = 0;
   virtual void CanMakePayment(
-      WebContents* web_contents,
       int64_t registration_id,
       const url::Origin& sw_origin,
       const std::string& payment_request_id,
       payments::mojom::CanMakePaymentEventDataPtr event_data,
       CanMakePaymentCallback callback) = 0;
-  virtual void AbortPayment(WebContents* web_contents,
-                            int64_t registration_id,
+  virtual void AbortPayment(int64_t registration_id,
                             const url::Origin& sw_origin,
                             const std::string& payment_request_id,
                             AbortCallback callback) = 0;
@@ -90,26 +84,13 @@ class CONTENT_EXPORT PaymentAppProvider {
   // opened window for payment handler at any moment in a browser context. The
   // previously opened window in the same browser context will be closed after
   // calling this interface.
-  virtual void SetOpenedWindow(WebContents* web_contents) = 0;
+  virtual void SetOpenedWindow() = 0;
   virtual void CloseOpenedWindow() = 0;
 
   // Notify the opened payment handler window is closing or closed by user so as
   // to abort payment request.
   virtual void OnClosingOpenedWindow(
-      WebContents* web_contents,
       payments::mojom::PaymentEventResponseType reason) = 0;
-
-  // Check whether given |sw_js_url| from |manifest_url| is allowed to register
-  // with |sw_scope|.
-  virtual bool IsValidInstallablePaymentApp(const GURL& manifest_url,
-                                            const GURL& sw_js_url,
-                                            const GURL& sw_scope,
-                                            std::string* error_message) = 0;
-
-  // Gets the ukm source id for a payment app with |sw_scope|.
-  // This must ONLY be called when payment app window has been opened.
-  virtual ukm::SourceId GetSourceIdForPaymentAppFromScope(
-      const GURL& sw_scope) = 0;
 
  protected:
   virtual ~PaymentAppProvider() = default;

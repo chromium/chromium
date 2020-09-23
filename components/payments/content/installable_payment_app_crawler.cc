@@ -18,7 +18,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/manifest_icon_downloader.h"
-#include "content/public/browser/payment_app_provider.h"
+#include "content/public/browser/payment_app_provider_util.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_type.h"
 #include "content/public/browser/render_frame_host.h"
@@ -337,7 +337,7 @@ bool InstallablePaymentAppCrawler::CompleteAndStorePaymentWebAppInfoIfValid(
   }
 
   std::string error_message;
-  if (!content::PaymentAppProvider::GetInstance()->IsValidInstallablePaymentApp(
+  if (!content::PaymentAppProviderUtil::IsValidInstallablePaymentApp(
           web_app_manifest_url, GURL(app_info->sw_js_url),
           GURL(app_info->sw_scope), &error_message)) {
     SetFirstError(error_message);
