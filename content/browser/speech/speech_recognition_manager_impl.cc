@@ -449,6 +449,17 @@ void SpeechRecognitionManagerImpl::StopAudioCaptureForSession(int session_id) {
   if (iter == sessions_.end())
     return;
 
+  // The deletion observer is owned by this class, so it's safe to use
+  // Unretained.
+  GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&SpeechRecognitionManagerImpl::FrameDeletionObserver::
+                         RemoveObserverForSession,
+                     base::Unretained(frame_deletion_observer_.get()),
+                     iter->second->config.initial_context.render_process_id,
+                     iter->second->config.initial_context.render_frame_id,
+                     session_id));
+
   iter->second->ui.reset();
 
   base::ThreadTaskRunnerHandle::Get()->PostTask(
