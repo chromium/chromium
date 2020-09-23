@@ -524,7 +524,9 @@ void WebViewFrameWidget::ApplyVisualPropertiesSizing(
   gfx::Rect new_compositor_viewport_pixel_rect =
       visual_properties.compositor_viewport_pixel_rect;
   if (AutoResizeMode()) {
-    new_compositor_viewport_pixel_rect = gfx::Rect(size_);
+    new_compositor_viewport_pixel_rect = gfx::Rect(gfx::ScaleToCeiledSize(
+        widget_base_->BlinkSpaceToDIPs(size_),
+        visual_properties.screen_info.device_scale_factor));
   }
 
   widget_base_->UpdateSurfaceAndScreenInfo(
