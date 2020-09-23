@@ -47,21 +47,6 @@ TEST_P(VideoCaptureDeviceFactoryMacTest, ListDevicesAVFoundation) {
   }));
 }
 
-TEST_P(VideoCaptureDeviceFactoryMacTest, ListDevicesWithNoPanTiltZoomSupport) {
-  RunTestCase(base::BindOnce([]() {
-    VideoCaptureDeviceFactoryMac video_capture_device_factory;
-
-    std::vector<VideoCaptureDeviceInfo> devices_info =
-        GetDevicesInfo(&video_capture_device_factory);
-    if (devices_info.empty()) {
-      DVLOG(1) << "No camera available. Exiting test.";
-      return;
-    }
-    for (const auto& device : devices_info)
-      EXPECT_FALSE(device.descriptor.pan_tilt_zoom_supported());
-  }));
-}
-
 INSTANTIATE_TEST_SUITE_P(,
                          VideoCaptureDeviceFactoryMacTest,
                          ::testing::Values(AVFoundationCaptureV2::kEnabled,
