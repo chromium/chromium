@@ -141,7 +141,7 @@ class NGInlineNodeTest : public NGLayoutTest {
     return end_offsets;
   }
 
-  void TestAnyItrermsAreDirty(LayoutBlockFlow* block_flow, bool expected) {
+  void TestAnyItemsAreDirty(LayoutBlockFlow* block_flow, bool expected) {
     const NGFragmentItems* items = block_flow->FragmentItems();
     items->DirtyLinesFromNeedsLayout(block_flow);
     // Check |NGFragmentItem::IsDirty| directly without using
@@ -599,11 +599,14 @@ struct StyleChangeData {
   unsigned needs_collect_inlines;
   base::Optional<bool> is_line_dirty;
 } style_change_data[] = {
-    // Changing color, etc. should not re-run
+    // Changing color, text-decoration, outline, etc. should not re-run
     // |CollectInlines()|.
     {"#parent.after { color: red; }", StyleChangeData::kNone, false},
-    {"#parent.after { text-decoration-color: red; }", StyleChangeData::kNone,
-     false},
+    // TODO(crbug.com/1128199): text-decorations, outline, etc. should not
+    // require layout, only ink overflow, but they currently do.
+    {"#parent.after { text-decoration-line: underline; }",
+     StyleChangeData::kNone, true},
+    {"#parent.after { outline: auto; }", StyleChangeData::kNone, true},
     // Changing fonts should re-run |CollectInlines()|.
     {"#parent.after { font-size: 200%; }", StyleChangeData::kAll, true},
     // Changing from/to out-of-flow should re-rerun |CollectInlines()|.
@@ -682,8 +685,8 @@ TEST_P(StyleChangeTest, NeedsCollectInlinesOnStyle) {
 
   if (data.is_line_dirty &&
       RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled()) {
-    TestAnyItrermsAreDirty(To<LayoutBlockFlow>(container->GetLayoutObject()),
-                           *data.is_line_dirty);
+    TestAnyItemsAreDirty(To<LayoutBlockFlow>(container->GetLayoutObject()),
+                         *data.is_line_dirty);
   }
 
   ForceLayout();  // Ensure running layout does not crash.

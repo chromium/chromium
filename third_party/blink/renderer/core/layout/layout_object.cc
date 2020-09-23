@@ -2319,11 +2319,11 @@ void LayoutObject::SetStyle(scoped_refptr<const ComputedStyle> style,
 
   if (diff.NeedsRecomputeVisualOverflow()) {
     if (!IsLayoutNGObject() && !IsLayoutBlock() && !NeedsLayout()) {
-      // TODO(rego): This is still needed because RecalcVisualOverflow() does
-      // not actually compute the visual overflow for inline elements (legacy
-      // layout). However in LayoutNG RecalcInlineChildrenInkOverflow() is
-      // called and visual overflow is recomputed properly so we don't need this
-      // (see crbug.com/1043927).
+      // TODO(crbug.com/1128199): This is still needed because
+      // RecalcVisualOverflow() does not actually compute the visual overflow
+      // for inline elements (legacy layout). However in LayoutNG
+      // RecalcInlineChildrenInkOverflow() is called and visual overflow is
+      // recomputed properly so we don't need this (see crbug.com/1043927).
       SetNeedsLayoutAndIntrinsicWidthsRecalc(
           layout_invalidation_reason::kStyleChange);
     } else {
