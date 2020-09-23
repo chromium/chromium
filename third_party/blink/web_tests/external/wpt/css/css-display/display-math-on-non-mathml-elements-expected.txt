@@ -1,8 +1,8 @@
 This is a testharness.js-based test.
-PASS computed display on <DIV style="display: math;">
-PASS computed display on <DIV style="display: inline-math;">
-FAIL computed display on <DIV style="display: inline math;"> assert_equals: expected "inline" but got "block"
-PASS computed display on <DIV style="display: block math;">
+PASS computed display on <div style="display: math;">
+PASS computed display on <div style="display: inline-math;">
+FAIL computed display on <div style="display: inline math;"> assert_equals: expected "inline" but got "block"
+PASS computed display on <div style="display: block math;">
 PASS computed display on <svg style="display: math;">
 PASS computed display on <svg style="display: inline-math;">
 PASS computed display on <svg style="display: inline math;">

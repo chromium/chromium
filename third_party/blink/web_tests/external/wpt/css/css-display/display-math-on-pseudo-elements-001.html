@@ -5,26 +5,26 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <style>
-  [data-expected="inline"]::before { content: 'math'; display: math; }
-  [data-expected="inline"]::after { content: 'math'; display: math; }
-  [data-expected="block"]::before { content: 'math'; display: block math; }
-  [data-expected="block"]::after { content: 'math'; display: block math; }
+  .inline::before { content: 'math'; display: math; }
+  .inline::after { content: 'math'; display: math; }
+  .block::before { content: 'math'; display: block math; }
+  .block::after { content: 'math'; display: block math; }
 </style>
 <div>
-  <div data-expected="block"></div>
-  <math data-expected="block"></math>
-  <math><mrow data-expected="block"></mrow></math>
-  <div data-expected="inline"></div>
-  <math data-expected="inline"></math>
-  <math><mrow data-expected="inline"></mrow></math>
+  <div class="block"></div>
+  <math class="block"></math>
+  <math><mrow class="block"></mrow></math>
+  <div class="inline"></div>
+  <math class="inline"></math>
+  <math><mrow class="inline"></mrow></math>
 </div>
 <script>
-  Array.from(document.querySelectorAll('[data-expected]')).forEach(element => {
+  Array.from(document.querySelectorAll('[class]')).forEach(element => {
       test(function() {
           assert_equals(window.getComputedStyle(element, "::before").display,
-                        element.getAttribute('data-expected'));
+                        element.getAttribute('class'));
           assert_equals(window.getComputedStyle(element, "::after").display,
-                        element.getAttribute('data-expected'));
-      }, `computed display on ::before and ::after for <${element.tagName} class="${element.getAttribute('class')}">`);
+                        element.getAttribute('class'));
+      }, `computed display on ::before and ::after for <${element.localName} class="${element.className}">`);
   });
 </script>

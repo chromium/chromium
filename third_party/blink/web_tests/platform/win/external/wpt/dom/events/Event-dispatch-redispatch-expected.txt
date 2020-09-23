@@ -1,6 +1,6 @@
 This is a testharness.js-based test.
 PASS Redispatching DOMContentLoaded event after being dispatched
-FAIL Redispatching mouseup event whose default action dispatches a click event assert_true: mouseup and click events should've been fired expected true got false
+FAIL Redispatching mouseup event whose default action dispatches a click event assert_not_equals: mouseup and click events should've been fired got disallowed value undefined
 PASS Redispatching event which is being dispatched
 PASS Synthesizing click on button...
 Harness: the test ran to completion.
