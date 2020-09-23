@@ -18,3 +18,10 @@ as well as updates and enhancements from the following Internet Drafts:
    draft-stewart-prsctp-00.txt
    draft-stewart-tsvwg-sctpipv6-00.txt
    draft-iyengar-sctp-cacc-00.txt
+
+Local Modifications:
+The following commits have been cherry picked on top of the base revision
+listed above:
+858d2f73019f73bd2c1691bab75c2022640b82e7
+e1dd9bea4f438abf4d4c3b658f1db8f013157184
+ffed0925f27d404173c1e3e750d818f432d2c019
