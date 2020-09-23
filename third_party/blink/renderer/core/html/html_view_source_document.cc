@@ -45,9 +45,7 @@ namespace blink {
 HTMLViewSourceDocument::HTMLViewSourceDocument(const DocumentInit& initializer)
     : HTMLDocument(initializer), type_(initializer.GetMimeType()) {
   SetIsViewSource(true);
-
-  // FIXME: Why do view-source pages need to load in quirks mode?
-  SetCompatibilityMode(kQuirksMode);
+  SetCompatibilityMode(kNoQuirksMode);
   LockCompatibilityMode();
 }
 
