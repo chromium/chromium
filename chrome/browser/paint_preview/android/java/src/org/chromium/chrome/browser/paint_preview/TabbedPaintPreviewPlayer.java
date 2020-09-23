@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.paint_preview;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.content.res.Resources;
 import android.graphics.Point;
 import android.os.Handler;
@@ -42,6 +44,7 @@ public class TabbedPaintPreviewPlayer implements TabViewProvider, UserData {
             TabbedPaintPreviewPlayer.class;
 
     private static final int SNACKBAR_DURATION_MS = 8 * 1000;
+    private static final int CROSS_FADE_DURATION_MS = 500;
     private static final int DEFAULT_INITIAL_REMOVE_DELAY_MS = 0;
     private static final String INITIAL_REMOVE_DELAY_PARAM = "initial_remove_delay_ms";
 
@@ -55,6 +58,7 @@ public class TabbedPaintPreviewPlayer implements TabViewProvider, UserData {
     private TabbedPaintPreviewObserver mObserver;
     private long mLastShownSnackBarTime;
     private boolean mDidStartRestore;
+    private boolean mFadingOut;
     private int mSnackbarShownCount;
     private TabbedPaintPreviewMetricsHelper mMetricsHelper;
 
@@ -205,16 +209,30 @@ public class TabbedPaintPreviewPlayer implements TabViewProvider, UserData {
         PaintPreviewCompositorUtils.stopWarmCompositor();
         mOnDismissed = null;
         mInitializing = false;
-        if (mTab == null || mPlayerManager == null) return;
+        if (mTab == null || mPlayerManager == null || mFadingOut) return;
 
+        mFadingOut = true;
         Point scrollPosition = mPlayerManager.getScrollPosition();
         if (mTab.getWebContents() != null && scrollPosition != null) {
             mTab.getWebContents().getEventForwarder().scrollTo(scrollPosition.x, scrollPosition.y);
         }
-
-        mTab.getTabViewManager().removeTabViewProvider(this);
-        mPlayerManager.destroy();
-        mPlayerManager = null;
+        boolean needsAnimation = exitCause == ExitCause.TAB_FINISHED_LOADING
+                || exitCause == ExitCause.SNACK_BAR_ACTION
+                || exitCause == ExitCause.PULL_TO_REFRESH;
+        getView()
+                .animate()
+                .alpha(0f)
+                .setDuration(needsAnimation ? CROSS_FADE_DURATION_MS : 0)
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        mTab.getTabViewManager().removeTabViewProvider(
+                                TabbedPaintPreviewPlayer.this);
+                        mPlayerManager.destroy();
+                        mPlayerManager = null;
+                        mFadingOut = false;
+                    }
+                });
         mMetricsHelper.recordExitMetrics(exitCause, mSnackbarShownCount);
     }
 
