@@ -5,54 +5,39 @@
 package org.chromium.chrome.browser.toolbar.menu_button;
 
 import android.app.Activity;
-import android.content.res.ColorStateList;
 import android.view.View.OnKeyListener;
+
 import androidx.annotation.IdRes;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
-import org.chromium.base.ApiCompatibilityUtils;
-import org.chromium.base.metrics.RecordUserAction;
+
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ThemeColorProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
-import org.chromium.chrome.browser.omaha.UpdateMenuItemHelper;
-import org.chromium.chrome.browser.omnibox.LocationBar;
+import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonProperties.ShowBadgeProperty;
+import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonProperties.ThemeProperty;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuButtonHelper;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
-import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
-import org.chromium.chrome.browser.ui.appmenu.AppMenuObserver;
-import org.chromium.chrome.browser.ui.appmenu.AppMenuPropertiesDelegate;
 import org.chromium.ui.UiUtils;
-import org.chromium.ui.util.TokenHolder;
+import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /**
  * Root component for the app menu button on the toolbar. Owns the MenuButton view and handles
  * changes to its visual state, e.g. showing/hiding the app update badge.
  */
-public class MenuButtonCoordinator implements AppMenuObserver {
+public class MenuButtonCoordinator {
     public interface SetFocusFunction {
         void setFocus(boolean focus, int reason);
     }
 
-    private @Nullable AppMenuPropertiesDelegate mAppMenuPropertiesDelegate;
-    private AppMenuButtonHelper mAppMenuButtonHelper;
-    private ObservableSupplierImpl<AppMenuButtonHelper> mAppMenuButtonHelperSupplier;
-    private AppMenuHandler mAppMenuHandler;
-    private final BrowserStateBrowserControlsVisibilityDelegate mControlsVisibilityDelegate;
     private final Activity mActivity;
-    private int mFullscreenMenuToken = TokenHolder.INVALID_TOKEN;
-    private int mFullscreenHighlightToken = TokenHolder.INVALID_TOKEN;
-    private final SetFocusFunction mSetUrlBarFocusFunction;
-    private Runnable mRequestRenderRunnable;
-    private Runnable mUpdateStateChangedListener;
-    private final boolean mShouldShowAppUpdateBadge;
-    private Supplier<Boolean> mIsInOverviewModeSupplier;
-    private ThemeColorProvider mThemeColorProvider;
+    private final PropertyModel mPropertyModel;
+    private MenuButtonMediator mMediator;
+    private AppMenuButtonHelper mAppMenuButtonHelper;
     private MenuButton mMenuButton;
+    private PropertyModelChangeProcessor mChangeProcessor;
 
     /**
      *  @param appMenuCoordinatorSupplier Supplier for the AppMenuCoordinator, which owns all other
@@ -75,18 +60,27 @@ public class MenuButtonCoordinator implements AppMenuObserver {
             Runnable requestRenderRunnable, boolean shouldShowAppUpdateBadge,
             Supplier<Boolean> isInOverviewModeSupplier, ThemeColorProvider themeColorProvider,
             @IdRes int menuButtonId) {
-        mControlsVisibilityDelegate = controlsVisibilityDelegate;
         mActivity = activity;
-        mSetUrlBarFocusFunction = setUrlBarFocusFunction;
-        appMenuCoordinatorSupplier.onAvailable(this::onAppMenuInitialized);
-        mRequestRenderRunnable = requestRenderRunnable;
-        mShouldShowAppUpdateBadge = shouldShowAppUpdateBadge;
-        mIsInOverviewModeSupplier = isInOverviewModeSupplier;
         mMenuButton = mActivity.findViewById(menuButtonId);
-        mAppMenuButtonHelperSupplier = new ObservableSupplierImpl<>();
-        mThemeColorProvider = themeColorProvider;
+        mPropertyModel = new PropertyModel.Builder(MenuButtonProperties.ALL_KEYS)
+                                 .with(MenuButtonProperties.SHOW_UPDATE_BADGE,
+                                         new ShowBadgeProperty(false, false))
+                                 .with(MenuButtonProperties.THEME,
+                                         new ThemeProperty(themeColorProvider.getTint(),
+                                                 themeColorProvider.useLight()))
+                                 .with(MenuButtonProperties.IS_VISIBLE, true)
+                                 .build();
+        mMediator = new MenuButtonMediator(mPropertyModel, shouldShowAppUpdateBadge,
+                ()
+                        -> mActivity.isFinishing() || mActivity.isDestroyed(),
+                requestRenderRunnable, themeColorProvider, isInOverviewModeSupplier,
+                controlsVisibilityDelegate, setUrlBarFocusFunction, appMenuCoordinatorSupplier,
+                mActivity.getResources());
+        mMediator.getMenuButtonHelperSupplier().addObserver(
+                (helper) -> mAppMenuButtonHelper = helper);
         if (mMenuButton != null) {
-            mMenuButton.setThemeColorProvider(themeColorProvider);
+            mChangeProcessor = PropertyModelChangeProcessor.create(
+                    mPropertyModel, mMenuButton, new MenuButtonViewBinder());
         }
     }
 
@@ -96,11 +90,8 @@ public class MenuButtonCoordinator implements AppMenuObserver {
      * @param isLoading Whether the current page is loading.
      */
     public void updateReloadingState(boolean isLoading) {
-        if (mMenuButton == null || mAppMenuPropertiesDelegate == null || mAppMenuHandler == null) {
-            return;
-        }
-        mAppMenuPropertiesDelegate.loadingStateChanged(isLoading);
-        mAppMenuHandler.menuItemContentChanged(R.id.icon_row_menu_id);
+        if (mMediator == null) return;
+        mMediator.updateReloadingState(isLoading);
     }
 
     /**
@@ -122,10 +113,8 @@ public class MenuButtonCoordinator implements AppMenuObserver {
         assert mMenuButton == null;
         assert menuButton != null;
         mMenuButton = menuButton;
-        if (mAppMenuButtonHelper != null) {
-            mMenuButton.setAppMenuButtonHelper(mAppMenuButtonHelper);
-        }
-        mMenuButton.setThemeColorProvider(mThemeColorProvider);
+        mChangeProcessor = PropertyModelChangeProcessor.create(
+                mPropertyModel, menuButton, new MenuButtonViewBinder());
     }
 
     /**
@@ -153,23 +142,11 @@ public class MenuButtonCoordinator implements AppMenuObserver {
     }
 
     /**
-     * Set the tint list on the underlying MenuButton view. Present for legacy reasons only; don't
-     * add new usages.
-     */
-    @Deprecated
-    public void setImageTintList(ColorStateList colorStateList) {
-        // TODO(https://crbug.com/1086676): Remove the need for these null checks and replace with
-        // an assert that the MenuButtonCoordinator isn't destroyed.
-        if (mMenuButton == null) return;
-        ApiCompatibilityUtils.setImageTintList(mMenuButton.getImageButton(), colorStateList);
-    }
-
-    /**
      * @param isClickable Whether the underlying MenuButton view should be clickable.
      */
     public void setClickable(boolean isClickable) {
-        if (mMenuButton == null) return;
-        mMenuButton.setClickable(isClickable);
+        if (mMediator == null) return;
+        mMediator.setClickable(isClickable);
     }
 
     /**
@@ -182,20 +159,18 @@ public class MenuButtonCoordinator implements AppMenuObserver {
     }
 
     public void destroy() {
-        if (mAppMenuButtonHelper != null) {
-            mAppMenuHandler.removeObserver(this);
-            mAppMenuButtonHelper = null;
+        if (mMediator != null) {
+            mMediator.destroy();
+            mMediator = null;
         }
 
-        if (mUpdateStateChangedListener != null) {
-            UpdateMenuItemHelper.getInstance().unregisterObserver(mUpdateStateChangedListener);
-            mUpdateStateChangedListener = null;
+        if (mChangeProcessor != null) {
+            mChangeProcessor.destroy();
+            mChangeProcessor = null;
         }
 
-        if (mMenuButton != null) {
-            mMenuButton.destroy();
-            mMenuButton = null;
-        }
+        mMenuButton = null;
+        mAppMenuButtonHelper = null;
     }
 
     /**
@@ -203,15 +178,14 @@ public class MenuButtonCoordinator implements AppMenuObserver {
      * dependencies that require native, e.g. the UpdateMenuItemHelper.
      */
     public void onNativeInitialized() {
-        if (mShouldShowAppUpdateBadge) {
-            mUpdateStateChangedListener = this::updateStateChanged;
-            UpdateMenuItemHelper.getInstance().registerObserver(mUpdateStateChangedListener);
-        }
+        if (mMediator == null) return;
+        mMediator.onNativeInitialized();
     }
 
     @Nullable
     public ObservableSupplier<AppMenuButtonHelper> getMenuButtonHelperSupplier() {
-        return mAppMenuButtonHelperSupplier;
+        if (mMediator == null) return null;
+        return mMediator.getMenuButtonHelperSupplier();
     }
 
     /**
@@ -219,110 +193,17 @@ public class MenuButtonCoordinator implements AppMenuObserver {
      * @param isSuppressed
      */
     public void setAppMenuUpdateBadgeSuppressed(boolean isSuppressed) {
-        if (mMenuButton == null) return;
-        mMenuButton.setAppMenuUpdateBadgeSuppressed(isSuppressed);
+        if (mMediator == null) return;
+        mMediator.setAppMenuUpdateBadgeSuppressed(isSuppressed);
     }
 
     /**
      * Set the visibility of the MenuButton controlled by this coordinator.
-     * @param visibility Visibility state flag, e.g. GONE or VISIBLE.
+     * @param visible Visibility state, true for visible and false for hidden.
      */
-    public void setVisibility(int visibility) {
-        if (mMenuButton == null) return;
-        mMenuButton.setVisibility(visibility);
-    }
 
-    /**
-     * @see MenuButton#setMenuButtonHighlightDrawable().
-     */
-    public void setMenuButtonHighlightDrawable() {
-        if (mMenuButton == null) return;
-        mMenuButton.setMenuButtonHighlightDrawable();
-    }
-
-    @Override
-    public void onMenuVisibilityChanged(boolean isVisible) {
-        if (isVisible) {
-            // Defocus here to avoid handling focus in multiple places, e.g., when the
-            // forward button is pressed. (see crbug.com/414219)
-            mSetUrlBarFocusFunction.setFocus(false, LocationBar.OmniboxFocusReason.UNFOCUS);
-
-            if (!mIsInOverviewModeSupplier.get() && isShowingAppMenuUpdateBadge()) {
-                // The app menu badge should be removed the first time the menu is opened.
-                mMenuButton.removeAppMenuUpdateBadge(true);
-                mRequestRenderRunnable.run();
-            }
-
-            mFullscreenMenuToken =
-                    mControlsVisibilityDelegate.showControlsPersistentAndClearOldToken(
-                            mFullscreenMenuToken);
-        } else {
-            mControlsVisibilityDelegate.releasePersistentShowingToken(mFullscreenMenuToken);
-        }
-
-        if (isVisible && mMenuButton != null && mMenuButton.isShowingAppMenuUpdateBadge()) {
-            UpdateMenuItemHelper.getInstance().onMenuButtonClicked();
-        }
-    }
-
-    @Override
-    public void onMenuHighlightChanged(boolean isHighlighting) {
-        if (mMenuButton != null) {
-            mMenuButton.setMenuButtonHighlight(isHighlighting);
-        }
-
-        if (isHighlighting) {
-            mFullscreenHighlightToken =
-                    mControlsVisibilityDelegate.showControlsPersistentAndClearOldToken(
-                            mFullscreenHighlightToken);
-        } else {
-            mControlsVisibilityDelegate.releasePersistentShowingToken(mFullscreenHighlightToken);
-        }
-    }
-
-    /**
-     * Called when the app menu and related properties delegate are available.
-     *
-     * @param appMenuCoordinator The coordinator for interacting with the menu.
-     */
-    private void onAppMenuInitialized(AppMenuCoordinator appMenuCoordinator) {
-        assert mAppMenuHandler == null;
-        AppMenuHandler appMenuHandler = appMenuCoordinator.getAppMenuHandler();
-
-        mAppMenuHandler = appMenuHandler;
-        mAppMenuHandler.addObserver(this);
-        mAppMenuButtonHelper = mAppMenuHandler.createAppMenuButtonHelper();
-        mAppMenuButtonHelper.setOnAppMenuShownListener(
-                () -> { RecordUserAction.record("MobileToolbarShowMenu"); });
-        if (mMenuButton != null) {
-            mMenuButton.setAppMenuButtonHelper(mAppMenuButtonHelper);
-        }
-
-        mAppMenuButtonHelperSupplier.set(mAppMenuButtonHelper);
-        mAppMenuPropertiesDelegate = appMenuCoordinator.getAppMenuPropertiesDelegate();
-    }
-
-    /**
-     * @return Whether the badge is showing (either in the toolbar).
-     */
-    private boolean isShowingAppMenuUpdateBadge() {
-        return mMenuButton != null && mMenuButton.isShowingAppMenuUpdateBadge();
-    }
-
-    @VisibleForTesting
-    void updateStateChanged() {
-        if (mMenuButton == null || mActivity.isFinishing() || mActivity.isDestroyed()
-                || !mShouldShowAppUpdateBadge) {
-            return;
-        }
-
-        UpdateMenuItemHelper.MenuButtonState buttonState =
-                UpdateMenuItemHelper.getInstance().getUiState().buttonState;
-        if (buttonState != null) {
-            mMenuButton.showAppMenuUpdateBadgeIfAvailable(true);
-            mRequestRenderRunnable.run();
-        } else {
-            mMenuButton.removeAppMenuUpdateBadge(false);
-        }
+    public void setVisibility(boolean visible) {
+        if (mMediator == null) return;
+        mMediator.setVisibility(visible);
     }
 }

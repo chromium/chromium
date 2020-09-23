@@ -227,8 +227,7 @@ public class StartSurfaceToolbarCoordinator {
         mView = (StartSurfaceToolbarView) mStub.inflate();
         mMenuButtonCoordinator.setMenuButton(mView.findViewById(R.id.menu_button_wrapper));
         mMenuButtonCoordinator.setVisibility(
-                mPropertyModel.get(StartSurfaceToolbarProperties.MENU_IS_VISIBLE) ? View.VISIBLE
-                                                                                  : View.GONE);
+                mPropertyModel.get(StartSurfaceToolbarProperties.MENU_IS_VISIBLE));
         mPropertyModelChangeProcessor = PropertyModelChangeProcessor.create(
                 mPropertyModel, mView, StartSurfaceToolbarViewBinder::bind);
         if (LibraryLoader.getInstance().isInitialized()) {

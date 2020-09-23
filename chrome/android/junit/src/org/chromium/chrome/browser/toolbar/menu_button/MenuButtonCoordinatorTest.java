@@ -4,13 +4,12 @@
 
 package org.chromium.chrome.browser.toolbar.menu_button;
 
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
+import android.widget.ImageButton;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -23,12 +22,10 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ThemeColorProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.omaha.UpdateMenuItemHelper;
-import org.chromium.chrome.browser.omnibox.LocationBar;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuButtonHelper;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuPropertiesDelegate;
-import org.chromium.ui.util.TokenHolder;
 
 /**
  * Unit tests for ToolbarAppMenuManager.
@@ -49,6 +46,8 @@ public class MenuButtonCoordinatorTest {
     private AppMenuButtonHelper mAppMenuButtonHelper;
     @Mock
     MenuButton mMenuButton;
+    @Mock
+    ImageButton mImageButton;
     @Mock
     private AppMenuPropertiesDelegate mAppMenuPropertiesDelegate;
     @Mock
@@ -77,6 +76,7 @@ public class MenuButtonCoordinatorTest {
         doReturn(mMenuButton)
                 .when(mActivity)
                 .findViewById(org.chromium.chrome.R.id.menu_button_wrapper);
+        doReturn(mImageButton).when(mMenuButton).getImageButton();
 
         mMenuButtonCoordinator = new MenuButtonCoordinator(mAppMenuSupplier,
                 mControlsVisibilityDelegate, mActivity, mFocusFunction, mRequestRenderRunnable,
@@ -85,129 +85,14 @@ public class MenuButtonCoordinatorTest {
     }
 
     @Test
-    public void testInitialization() {
-        mAppMenuSupplier.set(mAppMenuCoordinator);
-        verify(mAppMenuHandler).addObserver(mMenuButtonCoordinator);
-        verify(mAppMenuHandler).createAppMenuButtonHelper();
-    }
-
-    @Test
-    public void testSetMenuButton() {
-        mMenuButtonCoordinator = new MenuButtonCoordinator(mAppMenuSupplier,
-                mControlsVisibilityDelegate, mActivity, mFocusFunction, mRequestRenderRunnable,
-                true, () -> false, mThemeColorProvider, org.chromium.chrome.R.id.none);
-
-        mAppMenuSupplier.set(mAppMenuCoordinator);
-        mMenuButtonCoordinator.setMenuButton(mMenuButton);
-
-        verify(mMenuButton, times(2)).setAppMenuButtonHelper(mAppMenuButtonHelper);
-        verify(mMenuButton, times(2)).setThemeColorProvider(mThemeColorProvider);
-    }
-
-    @Test
-    public void testAppMenuVisiblityChange_badgeShowing() {
-        mAppMenuSupplier.set(mAppMenuCoordinator);
-        doReturn(42)
-                .when(mControlsVisibilityDelegate)
-                .showControlsPersistentAndClearOldToken(TokenHolder.INVALID_TOKEN);
-        doReturn(true).when(mMenuButton).isShowingAppMenuUpdateBadge();
-        mMenuButtonCoordinator.onMenuVisibilityChanged(true);
-
-        verify(mFocusFunction).setFocus(false, LocationBar.OmniboxFocusReason.UNFOCUS);
-        verify(mMenuButton).removeAppMenuUpdateBadge(true);
-        verify(mUpdateMenuItemHelper).onMenuButtonClicked();
-
-        mMenuButtonCoordinator.onMenuVisibilityChanged(false);
-        verify(mControlsVisibilityDelegate).releasePersistentShowingToken(42);
-    }
-
-    @Test
-    public void testAppMenuHighlightChange() {
+    public void testEnterKeyPress() {
         mAppMenuSupplier.set(mAppMenuCoordinator);
 
-        doReturn(42)
-                .when(mControlsVisibilityDelegate)
-                .showControlsPersistentAndClearOldToken(TokenHolder.INVALID_TOKEN);
+        mMenuButtonCoordinator.onEnterKeyPress();
+        verify(mAppMenuButtonHelper).onEnterKeyPress(mImageButton);
 
-        mMenuButtonCoordinator.onMenuHighlightChanged(true);
-        verify(mMenuButton).setMenuButtonHighlight(true);
-
-        mMenuButtonCoordinator.onMenuHighlightChanged(false);
-        verify(mMenuButton).setMenuButtonHighlight(false);
-        verify(mControlsVisibilityDelegate).releasePersistentShowingToken(42);
-    }
-
-    @Test
-    public void testAppMenuUpdateBadge() {
-        mAppMenuSupplier.set(mAppMenuCoordinator);
-
-        doReturn(true).when(mActivity).isDestroyed();
-        mMenuButtonCoordinator.updateStateChanged();
-
-        verify(mMenuButton, never()).showAppMenuUpdateBadgeIfAvailable(anyBoolean());
-        verify(mRequestRenderRunnable, never()).run();
-        verify(mMenuButton, never()).removeAppMenuUpdateBadge(false);
-
-        doReturn(false).when(mActivity).isDestroyed();
-        mMenuButtonCoordinator.updateStateChanged();
-
-        verify(mMenuButton, never()).showAppMenuUpdateBadgeIfAvailable(anyBoolean());
-        verify(mRequestRenderRunnable, never()).run();
-        verify(mMenuButton, times(1)).removeAppMenuUpdateBadge(false);
-
-        mMenuUiState.buttonState = new UpdateMenuItemHelper.MenuButtonState();
-        mMenuButtonCoordinator.updateStateChanged();
-
-        verify(mMenuButton).showAppMenuUpdateBadgeIfAvailable(true);
-        verify(mRequestRenderRunnable).run();
-        verify(mMenuButton, times(1)).removeAppMenuUpdateBadge(false);
-    }
-
-    @Test
-    public void testAppMenuUpdateBadge_activityShouldNotShow() {
-        MenuButtonCoordinator newCoordinator = new MenuButtonCoordinator(mAppMenuSupplier,
-                mControlsVisibilityDelegate, mActivity, mFocusFunction, mRequestRenderRunnable,
-                false,
-                () -> false, mThemeColorProvider, org.chromium.chrome.R.id.menu_button_wrapper);
-
-        doReturn(true).when(mActivity).isDestroyed();
-        newCoordinator.updateStateChanged();
-
-        verify(mMenuButton, never()).showAppMenuUpdateBadgeIfAvailable(anyBoolean());
-        verify(mRequestRenderRunnable, never()).run();
-        verify(mMenuButton, never()).removeAppMenuUpdateBadge(false);
-
-        doReturn(false).when(mActivity).isDestroyed();
-        newCoordinator.updateStateChanged();
-
-        verify(mMenuButton, never()).showAppMenuUpdateBadgeIfAvailable(anyBoolean());
-        verify(mRequestRenderRunnable, never()).run();
-        verify(mMenuButton, never()).removeAppMenuUpdateBadge(false);
-
-        mMenuUiState.buttonState = new UpdateMenuItemHelper.MenuButtonState();
-        newCoordinator.updateStateChanged();
-
-        verify(mMenuButton, never()).showAppMenuUpdateBadgeIfAvailable(anyBoolean());
-        verify(mRequestRenderRunnable, never()).run();
-        verify(mMenuButton, never()).removeAppMenuUpdateBadge(false);
-    }
-
-    @Test
-    public void testDestroyIsSafe() {
         mMenuButtonCoordinator.destroy();
-        // It should be crash-safe to call public methods, but the results aren't meaningful.
-        mMenuButtonCoordinator.getMenuButtonHelperSupplier();
-        mMenuButtonCoordinator.onMenuHighlightChanged(true);
-        mMenuButtonCoordinator.onMenuVisibilityChanged(false);
-        mMenuButtonCoordinator.onNativeInitialized();
-        mMenuButtonCoordinator.setAppMenuUpdateBadgeSuppressed(true);
-        mMenuButtonCoordinator.updateReloadingState(true);
-        mMenuButtonCoordinator.updateStateChanged();
-    }
-
-    @Test
-    public void testDisableDestroysButton() {
-        mMenuButtonCoordinator.disableMenuButton();
-        verify(mMenuButton).destroy();
+        mMenuButtonCoordinator.onEnterKeyPress();
+        verify(mAppMenuButtonHelper, times(1)).onEnterKeyPress(mImageButton);
     }
 }

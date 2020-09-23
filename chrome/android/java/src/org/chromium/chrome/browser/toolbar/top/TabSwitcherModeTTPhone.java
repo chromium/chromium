@@ -118,7 +118,6 @@ public class TabSwitcherModeTTPhone extends OptimizedFrameLayout
             mIncognitoToggleTabLayout = null;
         }
         if (mMenuButton != null) {
-            mMenuButton.destroy();
             mMenuButton = null;
         }
     }

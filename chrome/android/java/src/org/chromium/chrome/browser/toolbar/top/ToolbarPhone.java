@@ -365,7 +365,7 @@ public class ToolbarPhone extends ToolbarLayout implements Invalidator.Client, O
             setLayoutTransition(null);
 
             if (getMenuButtonCoordinator() != null) {
-                getMenuButtonCoordinator().setVisibility(View.VISIBLE);
+                getMenuButtonCoordinator().setVisibility(true);
             }
 
             inflateTabSwitchingResources();
@@ -1881,7 +1881,7 @@ public class ToolbarPhone extends ToolbarLayout implements Invalidator.Client, O
             mToggleTabStackButton.setVisibility(isGone ? GONE : VISIBLE);
         }
 
-        getMenuButtonCoordinator().setVisibility(inTabSwitcherMode ? GONE : VISIBLE);
+        getMenuButtonCoordinator().setVisibility(!inTabSwitcherMode);
 
         triggerUrlFocusAnimation(inTabSwitcherMode && !urlHasFocus());
 
@@ -2509,8 +2509,7 @@ public class ToolbarPhone extends ToolbarLayout implements Invalidator.Client, O
             updateNtpTransitionAnimation();
         }
 
-        getMenuButtonCoordinator().setMenuButtonHighlightDrawable();
-        getMenuButtonCoordinator().setVisibility(View.VISIBLE);
+        getMenuButtonCoordinator().setVisibility(true);
 
         DrawableCompat.setTint(mLocationBarBackground,
                 isIncognito() ? Color.WHITE

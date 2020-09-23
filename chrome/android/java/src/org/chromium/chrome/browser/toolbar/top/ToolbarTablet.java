@@ -499,7 +499,7 @@ public class ToolbarTablet extends ToolbarLayout
     void initialize(ToolbarDataProvider toolbarDataProvider, ToolbarTabController tabController,
         MenuButtonCoordinator menuButtonCoordinator) {
         super.initialize(toolbarDataProvider, tabController, menuButtonCoordinator);
-        menuButtonCoordinator.setVisibility(View.VISIBLE);
+        menuButtonCoordinator.setVisibility(true);
     }
 
     @Override

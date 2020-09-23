@@ -92,7 +92,7 @@ public class MenuButtonTest {
         ShadowDrawable darkDrawable = shadowOf(ApiCompatibilityUtils.getDrawable(
                 mActivity.getResources(), mMenuUiState.buttonState.darkBadgeIcon));
 
-        mMenuButton.showAppMenuUpdateBadgeIfAvailable(false);
+        mMenuButton.showAppMenuUpdateBadge(false);
         ShadowDrawable drawnDrawable = shadowOf(mMenuButton.getTabSwitcherAnimationDrawable());
         assertEquals(drawnDrawable.getCreatedFromResId(), darkDrawable.getCreatedFromResId());
         assertNotEquals(drawnDrawable.getCreatedFromResId(), lightDrawable.getCreatedFromResId());
@@ -105,8 +105,7 @@ public class MenuButtonTest {
 
     @Test
     public void testDrawTabSwitcherAnimationOverlay_updateBadgeNotAvailable() {
-        mMenuUiState.buttonState = null;
-        mMenuButton.showAppMenuUpdateBadgeIfAvailable(false);
+        mMenuButton.removeAppMenuUpdateBadge(false);
 
         Bitmap drawnBitmap =
                 ((BitmapDrawable) mMenuButton.getTabSwitcherAnimationDrawable()).getBitmap();
@@ -117,8 +116,7 @@ public class MenuButtonTest {
 
     @Test
     public void testDrawTabSwitcherAnimationOverlay_correctBoundsAfterThemeChange() {
-        mMenuUiState.buttonState = null;
-        mMenuButton.showAppMenuUpdateBadgeIfAvailable(false);
+        mMenuButton.removeAppMenuUpdateBadge(false);
         mMenuButton.onTintChanged(mColorStateList, true);
 
         // Run a manual layout pass so that mMenuButton's children get assigned sizes.
