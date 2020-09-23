@@ -131,7 +131,8 @@ def _ValidateDelta(root, delta):
           'renamed, please add a [RenamedFrom] attribute to the new type. This '
           'can be deleted by a subsequent change.' % qualified_name)
 
-    if not new_types[new_name].IsBackwardCompatible(kind):
+    checker = module.BackwardCompatibilityChecker()
+    if not checker.IsBackwardCompatible(new_types[new_name], kind):
       raise Exception('Stable type %s appears to have changed in a way which '
                       'breaks backward-compatibility. Please fix!\n\nIf you '
                       'believe this assessment to be incorrect, please file a '
