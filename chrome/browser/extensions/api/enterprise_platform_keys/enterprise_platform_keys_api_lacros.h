@@ -63,9 +63,13 @@ class EnterprisePlatformKeysChallengeMachineKeyFunction
 };
 
 class EnterprisePlatformKeysChallengeUserKeyFunction
-    : public LacrosNotImplementedExtensionFunction {
+    : public ExtensionFunction {
  private:
   ~EnterprisePlatformKeysChallengeUserKeyFunction() override = default;
+  ResponseAction Run() override;
+
+  using ResultPtr = crosapi::mojom::ChallengeAttestationOnlyKeystoreResultPtr;
+  void OnChallengeAttestationOnlyKeystore(ResultPtr result);
   DECLARE_EXTENSION_FUNCTION("enterprise.platformKeys.challengeUserKey",
                              ENTERPRISE_PLATFORMKEYS_CHALLENGEUSERKEY)
 };
