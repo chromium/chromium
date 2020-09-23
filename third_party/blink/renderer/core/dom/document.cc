@@ -2468,6 +2468,9 @@ void Document::UpdateStyleAndLayoutTree() {
   unsigned element_count =
       GetStyleEngine().StyleForElementCount() - start_element_count;
 
+  // Make sure that document.fonts.ready fires, if appropriate.
+  FontFaceSetDocument::DidLayout(*this);
+
   TRACE_EVENT_END1("blink,devtools.timeline", "UpdateLayoutTree",
                    "elementCount", element_count);
 
@@ -3844,6 +3847,7 @@ void Document::ImplicitClose() {
       else
         cache->HandleLayoutComplete(this);
     }
+    FontFaceSetDocument::DidLayout(*this);
   }
 
   if (SvgExtensions())

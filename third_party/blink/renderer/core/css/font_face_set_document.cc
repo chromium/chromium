@@ -227,6 +227,12 @@ FontFaceSetDocument* FontFaceSetDocument::From(Document& document) {
 }
 
 void FontFaceSetDocument::DidLayout(Document& document) {
+  if (!document.LoadEventFinished()) {
+    // https://www.w3.org/TR/2014/WD-css-font-loading-3-20140522/#font-face-set-ready
+    // doesn't say when document.fonts.ready should actually fire, but the
+    // existing tests depend on it firing after onload.
+    return;
+  }
   if (FontFaceSetDocument* fonts =
           Supplement<Document>::From<FontFaceSetDocument>(document))
     fonts->DidLayout();

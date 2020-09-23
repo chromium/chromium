@@ -62,9 +62,6 @@ crbug.com/901056 virtual/gpu/fast/canvas/canvas-drawImage-live-video.html [ Time
 ### external/wpt/preload/
 crbug.com/901056 external/wpt/preload/link-header-preload-imagesrcset.html [ Failure ]
 
-### fast/css/
-crbug.com/901056 fast/css/font-face-unicode-range-ligatures.html [ Failure ]
-
 ### http/tests/htmlimports/
 # Known failure, but won't fix because HTML imports are going away fairly soon
 crbug.com/901056 crbug.com/240592 http/tests/htmlimports/import-async-grandchild.html [ Failure ]
@@ -97,16 +94,6 @@ crbug.com/901056 fast/hidpi/image-srcset-png-canvas.html [ Failure ]
 #
 ### fast/block/float
 crbug.com/901056 fast/block/float/4145535Crash.html [ Failure Pass ]
-
-### fast/css/
-# Issue seems to affect relative events involving fonts (investigation needed).
-crbug.com/901056 fast/css/focus-display-block-inline.html [ Failure ]
-crbug.com/901056 fast/css/font-face-unicode-range-overlap-load.html [ Failure ]
-crbug.com/901056 fast/css/fontfaceset-events.html [ Failure ]
-crbug.com/901056 fast/css/fontfaceset-loadingdone.html [ Failure ]
-crbug.com/901056 fast/css/fontfaceset-multiple-faces-download-error.html [ Failure ]
-crbug.com/901056 fast/css/fontfaceset-multiple-faces.html [ Failure ]
-crbug.com/901056 fast/css/fontfaceset-multiple-families.html [ Failure ]
 
 ### fast/preloader/
 # Two new subtests fail (investigation required)
