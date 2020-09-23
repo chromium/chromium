@@ -92,7 +92,7 @@ ChromeVoxTutorialTest = class extends ChromeVoxNextE2ETest {
 
   get simpleDoc() {
     return `
-      <p>Simple</p>
+      <p>Some web content</p>
     `;
   }
 };
@@ -263,6 +263,46 @@ TEST_F('ChromeVoxTutorialTest', 'PracticeAreaNudgesTest', function() {
             'directly above the shift key')
         .call(giveNudge)
         .expectSpeech('Press Search + Space to activate the current item.')
+        .replay();
+  });
+});
+
+// Tests that the tutorial closes when the 'Exit tutorial' button is clicked.
+TEST_F('ChromeVoxTutorialTest', 'ExitButtonTest', function() {
+  const mockFeedback = this.createMockFeedback();
+  this.runWithLoadedTree(this.simpleDoc, async function(root) {
+    const Panel = this.getPanel();
+    assertTrue(Panel.iTutorialEnabled_);
+    new PanelCommand(PanelCommandType.TUTORIAL).send();
+    await this.waitForTutorial();
+    mockFeedback.expectSpeech('Choose your tutorial experience')
+        .call(doCmd('previousButton'))
+        .expectSpeech('Exit tutorial')
+        .call(doCmd('forceClickOnCurrentItem'))
+        .expectSpeech('Some web content')
+        .replay();
+  });
+});
+
+// Tests that the tutorial closes when Escape is pressed.
+TEST_F('ChromeVoxTutorialTest', 'EscapeTest', function() {
+  const mockFeedback = this.createMockFeedback();
+  this.runWithLoadedTree(this.simpleDoc, async function(root) {
+    const Panel = this.getPanel();
+    assertTrue(Panel.iTutorialEnabled_);
+    new PanelCommand(PanelCommandType.TUTORIAL).send();
+    await this.waitForTutorial();
+    const tutorial = Panel.iTutorial;
+    mockFeedback.expectSpeech('Choose your tutorial experience')
+        .call(() => {
+          // Press Escape.
+          tutorial.onKeyDown({
+            key: 'Escape',
+            preventDefault: () => {},
+            stopPropagation: () => {}
+          });
+        })
+        .expectSpeech('Some web content')
         .replay();
   });
 });
