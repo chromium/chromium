@@ -77,7 +77,8 @@ bool WindowCycleController::CanCycle() {
   return !Shell::Get()->session_controller()->IsScreenLocked() &&
          !Shell::IsSystemModalWindowOpen() &&
          !Shell::Get()->screen_pinning_controller()->IsPinned() &&
-         !window_util::IsAnyWindowDragged();
+         !window_util::IsAnyWindowDragged() &&
+         !Shell::Get()->desks_controller()->AreDesksBeingModified();
 }
 
 void WindowCycleController::HandleCycleWindow(Direction direction) {

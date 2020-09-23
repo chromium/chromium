@@ -1137,4 +1137,35 @@ TEST_F(WindowCycleControllerTest, FrameThrottling) {
   frame_throttling_controller->RemoveObserver(&observer);
 }
 
+// Tests that pressing Alt+Tab while there is an on-going desk animation
+// prevents a new window cycle from starting.
+TEST_F(WindowCycleControllerTest, DoubleAltTabWithDeskSwitch) {
+  WindowCycleController* cycle_controller =
+      Shell::Get()->window_cycle_controller();
+
+  auto win0 = CreateAppWindow(gfx::Rect(250, 100));
+  auto* desks_controller = DesksController::Get();
+  desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
+  ASSERT_EQ(2u, desks_controller->desks().size());
+  const Desk* desk_0 = desks_controller->desks()[0].get();
+  const Desk* desk_1 = desks_controller->desks()[1].get();
+  ActivateDesk(desk_1);
+  EXPECT_EQ(desk_1, desks_controller->active_desk());
+  auto win1 = CreateAppWindow(gfx::Rect(300, 200));
+  ASSERT_EQ(win1.get(), window_util::GetActiveWindow());
+  auto desk_1_windows = desk_1->windows();
+  EXPECT_EQ(1u, desk_1_windows.size());
+  EXPECT_TRUE(base::Contains(desk_1_windows, win1.get()));
+
+  DeskSwitchAnimationWaiter waiter;
+  cycle_controller->HandleCycleWindow(WindowCycleController::FORWARD);
+  cycle_controller->CompleteCycling();
+  EXPECT_FALSE(cycle_controller->CanCycle());
+  cycle_controller->HandleCycleWindow(WindowCycleController::FORWARD);
+  EXPECT_FALSE(cycle_controller->IsCycling());
+  waiter.Wait();
+  EXPECT_EQ(desk_0, desks_controller->active_desk());
+  EXPECT_EQ(win0.get(), window_util::GetActiveWindow());
+}
+
 }  // namespace ash
