@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "ash/ash_export.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/compositor/layer_animation_observer.h"
 
@@ -157,7 +158,8 @@ namespace ash {
 // slightly more to accommodate the continuous desk animations feature. The base
 // algorithm is still valid, but once the features are near completion these
 // need to be updated.
-class RootWindowDeskSwitchAnimator : public ui::ImplicitAnimationObserver {
+class ASH_EXPORT RootWindowDeskSwitchAnimator
+    : public ui::ImplicitAnimationObserver {
  public:
   class Delegate {
    public:
@@ -178,6 +180,15 @@ class RootWindowDeskSwitchAnimator : public ui::ImplicitAnimationObserver {
    protected:
     virtual ~Delegate() = default;
   };
+
+  // The space between the starting and ending desks screenshots in dips.
+  static constexpr int kDesksSpacing = 50;
+
+  // The animation layer has extra padding at its two edges. The width in dips
+  // is a ratio of the root window width. This padding is to notify users there
+  // are no more desks on that side by showing a black region as we swipe
+  // continuously.
+  static constexpr float kEdgePaddingRatio = 0.15f;
 
   RootWindowDeskSwitchAnimator(aura::Window* root,
                                int starting_desk_index,
@@ -235,6 +246,8 @@ class RootWindowDeskSwitchAnimator : public ui::ImplicitAnimationObserver {
   void OnImplicitAnimationsCompleted() override;
 
  private:
+  friend class RootWindowDeskSwitchAnimatorTestApi;
+
   // Completes the first phase of the animation using the given |layer| as the
   // screenshot layer of the starting desk. This layer will be parented to the
   // animation layer, which will be setup with its initial transform according
