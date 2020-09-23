@@ -121955,7 +121955,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="PageLoad.Experimental.PaintTiming.ParseStartToFirstMeaningfulPaint"
-    units="ms" expires_after="2020-09-27">
+    units="ms" expires_after="2021-03-27">
   <owner>ksakamoto@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
