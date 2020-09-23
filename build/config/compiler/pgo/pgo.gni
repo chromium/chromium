@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
+
 declare_args() {
   # Specify the current PGO phase.
   # Here's the different values that can be used:
@@ -9,7 +11,8 @@ declare_args() {
   #     1 : Used during the PGI (instrumentation) phase.
   #     2 : Used during the PGO (optimization) phase.
   chrome_pgo_phase = 0
-  if (is_official_build && (is_win || is_mac)) {
+  if (is_official_build &&
+      (is_win || is_mac || (is_desktop_linux && !chromeos_is_browser_only))) {
     chrome_pgo_phase = 2
   }
 
