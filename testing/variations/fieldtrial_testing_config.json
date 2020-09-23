@@ -1164,31 +1164,6 @@
             ]
         }
     ],
-    "BookmarkInProductHelp": [
-        {
-            "platforms": [
-                "linux",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_1",
-                    "params": {
-                        "availability": "any",
-                        "event_bookmark_added": "name:bookmark_added;comparator:==0;window:3650;storage:3650",
-                        "event_bookmark_session_time_met": "name:bookmark_session_time_met;comparator:>=1;window:3650;storage:3650",
-                        "event_trigger": "name:bookmark_trigger;comparator:==0;window:3650;storage:3650",
-                        "event_used": "name:bookmark_clicked;comparator:any;window:3650;storage:3650",
-                        "session_rate": "<=3",
-                        "x_promo_string": "IDS_BOOKMARK_PROMO_1"
-                    },
-                    "enable_features": [
-                        "IPH_Bookmark"
-                    ]
-                }
-            ]
-        }
-    ],
     "BrowserJankinessProfiling": [
         {
             "platforms": [
