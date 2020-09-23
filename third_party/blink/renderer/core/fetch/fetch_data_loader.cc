@@ -104,8 +104,12 @@ class FetchDataLoaderAsBlobHandle final : public FetchDataLoader,
  private:
   void FinishedCreatingFromDataPipe(
       const scoped_refptr<BlobDataHandle>& blob_handle) {
+    if (!blob_handle) {
+      DidFetchDataLoadFailed();
+      return;
+    }
     if (!load_complete_) {
-      blob_handle_ = std::move(blob_handle);
+      blob_handle_ = blob_handle;
       return;
     }
     client_->DidFetchDataLoadedBlobHandle(blob_handle);
