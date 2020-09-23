@@ -29307,29 +29307,35 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3540" label="IdentifiabilityStudyReserved3540"/>
   <int value="3541" label="V8WheelEvent_DeltaMode_AttributeGetter"/>
   <int value="3542" label="IdentifiabilityStudyReserved3542"/>
-  <int value="3543" label="IdentifiabilityStudyReserved3543"/>
-  <int value="3544" label="IdentifiabilityStudyReserved3544"/>
-  <int value="3545" label="IdentifiabilityStudyReserved3545"/>
+  <int value="3543" label="V8HIDDevice_ProductId_AttributeGetter"/>
+  <int value="3544" label="V8HIDDevice_ProductName_AttributeGetter"/>
+  <int value="3545" label="V8HIDDevice_VendorId_AttributeGetter"/>
   <int value="3546" label="IdentifiabilityStudyReserved3546"/>
-  <int value="3547" label="IdentifiabilityStudyReserved3547"/>
-  <int value="3548" label="IdentifiabilityStudyReserved3548"/>
-  <int value="3549" label="IdentifiabilityStudyReserved3549"/>
-  <int value="3550" label="IdentifiabilityStudyReserved3550"/>
-  <int value="3551" label="IdentifiabilityStudyReserved3551"/>
-  <int value="3552" label="IdentifiabilityStudyReserved3552"/>
-  <int value="3553" label="IdentifiabilityStudyReserved3553"/>
-  <int value="3554" label="IdentifiabilityStudyReserved3554"/>
-  <int value="3555" label="IdentifiabilityStudyReserved3555"/>
-  <int value="3556" label="IdentifiabilityStudyReserved3556"/>
-  <int value="3557" label="IdentifiabilityStudyReserved3557"/>
-  <int value="3558" label="IdentifiabilityStudyReserved3558"/>
-  <int value="3559" label="IdentifiabilityStudyReserved3559"/>
-  <int value="3560" label="IdentifiabilityStudyReserved3560"/>
-  <int value="3561" label="IdentifiabilityStudyReserved3561"/>
-  <int value="3562" label="IdentifiabilityStudyReserved3562"/>
-  <int value="3563" label="IdentifiabilityStudyReserved3563"/>
-  <int value="3564" label="IdentifiabilityStudyReserved3564"/>
-  <int value="3565" label="IdentifiabilityStudyReserved3565"/>
+  <int value="3547" label="V8HIDReportItem_HasNull_AttributeGetter"/>
+  <int value="3548" label="V8HIDReportItem_IsAbsolute_AttributeGetter"/>
+  <int value="3549" label="V8HIDReportItem_IsArray_AttributeGetter"/>
+  <int value="3550" label="V8HIDReportItem_IsRange_AttributeGetter"/>
+  <int value="3551" label="V8HIDReportItem_LogicalMaximum_AttributeGetter"/>
+  <int value="3552" label="V8HIDReportItem_LogicalMinimum_AttributeGetter"/>
+  <int value="3553" label="V8HIDReportItem_PhysicalMaximum_AttributeGetter"/>
+  <int value="3554" label="V8HIDReportItem_PhysicalMinimum_AttributeGetter"/>
+  <int value="3555" label="V8HIDReportItem_ReportCount_AttributeGetter"/>
+  <int value="3556" label="V8HIDReportItem_ReportSize_AttributeGetter"/>
+  <int value="3557" label="V8HIDReportItem_UnitExponent_AttributeGetter"/>
+  <int value="3558"
+      label="V8HIDReportItem_UnitFactorCurrentExponent_AttributeGetter"/>
+  <int value="3559"
+      label="V8HIDReportItem_UnitFactorLengthExponent_AttributeGetter"/>
+  <int value="3560"
+      label="V8HIDReportItem_UnitFactorLuminousIntensityExponent_AttributeGetter"/>
+  <int value="3561"
+      label="V8HIDReportItem_UnitFactorMassExponent_AttributeGetter"/>
+  <int value="3562"
+      label="V8HIDReportItem_UnitFactorTemperatureExponent_AttributeGetter"/>
+  <int value="3563"
+      label="V8HIDReportItem_UnitFactorTimeExponent_AttributeGetter"/>
+  <int value="3564" label="V8HIDReportItem_UsageMaximum_AttributeGetter"/>
+  <int value="3565" label="V8HIDReportItem_UsageMinimum_AttributeGetter"/>
   <int value="3566" label="IdentifiabilityStudyReserved3566"/>
   <int value="3567" label="IdentifiabilityStudyReserved3567"/>
   <int value="3568" label="IdentifiabilityStudyReserved3568"/>
