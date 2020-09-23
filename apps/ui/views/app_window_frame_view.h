@@ -22,10 +22,6 @@ class Canvas;
 class Point;
 }
 
-namespace ui {
-class Event;
-}
-
 namespace views {
 class ImageButton;
 class Widget;
@@ -34,8 +30,7 @@ class Widget;
 namespace apps {
 
 // A frameless or non-Ash, non-panel NonClientFrameView for app windows.
-class AppWindowFrameView : public views::NonClientFrameView,
-                           public views::ButtonListener {
+class AppWindowFrameView : public views::NonClientFrameView {
  public:
   static const char kViewClassName[];
 
@@ -80,9 +75,6 @@ class AppWindowFrameView : public views::NonClientFrameView,
   void OnPaint(gfx::Canvas* canvas) override;
   gfx::Size GetMinimumSize() const override;
   gfx::Size GetMaximumSize() const override;
-
-  // views::ButtonListener implementation.
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
 
   // Some button images we use depend on the color of the frame. This
   // will set these images based on the color of the frame.
