@@ -5288,6 +5288,16 @@ void RenderFrameHostImpl::BeginNavigation(
         GetStoragePartition(), validated_params->url);
   }
 
+  if (NavigationTypeUtils::IsSameDocument(validated_params->navigation_type)) {
+    // TODO(crbug.com/1125106): A same document navigation can not be done
+    // with a provisional frame, and yet it is happening inside a provisional
+    // frame somehow. This path appears to only allow cross-document
+    // navigation as the renderer never constructs a SAME document request to
+    // send to BeginNavigation(). This DumpWithoutCrashing() is to verify that
+    // fact.
+    base::debug::DumpWithoutCrashing();
+  }
+
   if (waiting_for_init_) {
     pending_navigate_ = std::make_unique<PendingNavigation>(
         std::move(validated_params), std::move(begin_params),
@@ -6266,6 +6276,30 @@ void RenderFrameHostImpl::CommitNavigation(
          subresource_loader_factories);
 
   if (is_same_document) {
+    if (frame_tree_node()->current_frame_host() != this) {
+      // TODO(crbug.com/1125106): A same document navigation can not be done
+      // with a provisional frame, and yet it is happening inside a provisional
+      // frame somehow.
+      DEBUG_ALIAS_FOR_GURL(to_url, common_params->url);
+      bool browser_initiated = navigation_request->browser_initiated();
+      base::debug::Alias(&browser_initiated);
+      int64_t to_item_sequence_number =
+          navigation_request->ItemSequenceNumberForDebugging();
+      base::debug::Alias(&to_item_sequence_number);
+      int64_t to_document_sequence_number =
+          navigation_request->DocumentSequenceNumberForDebugging();
+      base::debug::Alias(&to_document_sequence_number);
+
+      DEBUG_ALIAS_FOR_GURL(from_url, last_committed_url_);
+      int64_t from_item_sequence_number = -1;
+      int64_t from_document_sequence_number = -1;
+      delegate_->GetFrameSequenceNumbersForDebugging(
+          this, from_item_sequence_number, from_document_sequence_number);
+      base::debug::Alias(&from_item_sequence_number);
+      base::debug::Alias(&from_document_sequence_number);
+
+      base::debug::DumpWithoutCrashing();
+    }
     bool should_replace_current_entry =
         common_params->should_replace_current_entry;
     DCHECK(same_document_navigation_request_);

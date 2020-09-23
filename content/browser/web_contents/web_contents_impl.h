@@ -765,12 +765,14 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
       blink::mojom::ReferrerPtr referrer,
       const std::vector<blink::mojom::SavableSubframePtr>& subframes) override;
   void SavableResourceLinksError(RenderFrameHostImpl* source) override;
-
-  // Called when the |RenderFrameHostImpl::lifecycle_state()| changes.
   void RenderFrameHostStateChanged(
       RenderFrameHost* render_frame_host,
       RenderFrameHostImpl::LifecycleState old_state,
       RenderFrameHostImpl::LifecycleState new_state) override;
+  void GetFrameSequenceNumbersForDebugging(
+      RenderFrameHostImpl* render_frame_host,
+      int64_t& item_sequence_number,
+      int64_t& document_sequence_number) override;
 
   // RenderViewHostDelegate ----------------------------------------------------
   RenderViewHostDelegateView* GetDelegateView() override;
