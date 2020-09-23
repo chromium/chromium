@@ -26,7 +26,6 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.PackageUtils;
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.params.ParameterAnnotations.UseMethodParameter;
 import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.params.ParameterProvider;
@@ -72,7 +71,6 @@ import java.util.List;
         ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1",
         "enable-experimental-web-platform-features", "enable-features=WebAuthentication",
         "ignore-certificate-errors"})
-@DisabledTest(message = "https://crbug.com/1130845")
 public class Fido2CredentialRequestTest {
     @Rule
     public ChromeActivityTestRule<ChromeActivity> mActivityTestRule =
@@ -397,14 +395,19 @@ public class Fido2CredentialRequestTest {
         mAuthenticatorImpl = AuthenticatorImpl.create(0, mFrameHost);
         mCreationOptions = Fido2ApiTestHelper.createDefaultMakeCredentialOptions();
         mRequestOptions = Fido2ApiTestHelper.createDefaultGetAssertionOptions();
-        ThreadUtils.runOnUiThreadBlocking(()
-                                                  -> mWindowAndroid = new MockActivityWindowAndroid(
-                                                             mActivityTestRule.getActivity()));
+        TestThreadUtils.runOnUiThreadBlocking(
+                ()
+                        -> mWindowAndroid =
+                                   new MockActivityWindowAndroid(mActivityTestRule.getActivity()));
         mStartTimeMs = SystemClock.elapsedRealtime();
     }
 
     @After
-    public void tearDown() {}
+    public void tearDown() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            if (mWindowAndroid != null) mWindowAndroid.destroy();
+        });
+    }
 
     /**
      * Used to enable early exit of tests on bots that don't support GmsCore v16.1+
@@ -433,7 +436,7 @@ public class Fido2CredentialRequestTest {
     @SmallTest
     public void testMakeCredential_success() {
         mWindowAndroid.setResponseIntent(Fido2ApiTestHelper.createSuccessfulMakeCredentialIntent());
-        ThreadUtils.runOnUiThreadBlocking(
+        TestThreadUtils.runOnUiThreadBlocking(
                 () -> mRequest.setActivityWindowForTesting(mWindowAndroid));
 
         mRequest.handleMakeCredentialRequest(mCreationOptions, mFrameHost, mOrigin, mCallback);
@@ -447,7 +450,7 @@ public class Fido2CredentialRequestTest {
     @SmallTest
     public void testMakeCredential_unsuccessfulAttemptToShowCancelableIntent() {
         mWindowAndroid.setCancelableIntentSuccess(false);
-        ThreadUtils.runOnUiThreadBlocking(
+        TestThreadUtils.runOnUiThreadBlocking(
                 () -> mRequest.setActivityWindowForTesting(mWindowAndroid));
 
         mRequest.handleMakeCredentialRequest(mCreationOptions, mFrameHost, mOrigin, mCallback);
@@ -462,7 +465,7 @@ public class Fido2CredentialRequestTest {
     public void testMakeCredential_missingExtra() {
         // An intent missing FIDO2_KEY_RESPONSE_EXTRA.
         mWindowAndroid.setResponseIntent(new Intent());
-        ThreadUtils.runOnUiThreadBlocking(
+        TestThreadUtils.runOnUiThreadBlocking(
                 () -> mRequest.setActivityWindowForTesting(mWindowAndroid));
 
         mRequest.handleMakeCredentialRequest(mCreationOptions, mFrameHost, mOrigin, mCallback);
@@ -476,7 +479,7 @@ public class Fido2CredentialRequestTest {
     @SmallTest
     public void testMakeCredential_nullIntent() {
         // Don't set an intent to be returned at all.
-        ThreadUtils.runOnUiThreadBlocking(
+        TestThreadUtils.runOnUiThreadBlocking(
                 () -> mRequest.setActivityWindowForTesting(mWindowAndroid));
 
         mRequest.handleMakeCredentialRequest(mCreationOptions, mFrameHost, mOrigin, mCallback);
@@ -490,7 +493,7 @@ public class Fido2CredentialRequestTest {
     @SmallTest
     public void testMakeCredential_resultCanceled() {
         mWindowAndroid.setResultCode(Activity.RESULT_CANCELED);
-        ThreadUtils.runOnUiThreadBlocking(
+        TestThreadUtils.runOnUiThreadBlocking(
                 () -> mRequest.setActivityWindowForTesting(mWindowAndroid));
 
         mRequest.handleMakeCredentialRequest(mCreationOptions, mFrameHost, mOrigin, mCallback);
@@ -505,7 +508,7 @@ public class Fido2CredentialRequestTest {
     public void testMakeCredential_resultUnknown() {
         mWindowAndroid.setResponseIntent(Fido2ApiTestHelper.createSuccessfulMakeCredentialIntent());
         mWindowAndroid.setResultCode(Activity.RESULT_FIRST_USER);
-        ThreadUtils.runOnUiThreadBlocking(
+        TestThreadUtils.runOnUiThreadBlocking(
                 () -> mRequest.setActivityWindowForTesting(mWindowAndroid));
 
         mRequest.handleMakeCredentialRequest(mCreationOptions, mFrameHost, mOrigin, mCallback);
@@ -521,7 +524,7 @@ public class Fido2CredentialRequestTest {
         PublicKeyCredentialCreationOptions customOptions = mCreationOptions;
         customOptions.relyingParty.icon = null;
         mWindowAndroid.setResponseIntent(Fido2ApiTestHelper.createSuccessfulMakeCredentialIntent());
-        ThreadUtils.runOnUiThreadBlocking(
+        TestThreadUtils.runOnUiThreadBlocking(
                 () -> mRequest.setActivityWindowForTesting(mWindowAndroid));
 
         mRequest.handleMakeCredentialRequest(customOptions, mFrameHost, mOrigin, mCallback);
@@ -537,7 +540,7 @@ public class Fido2CredentialRequestTest {
         PublicKeyCredentialCreationOptions customOptions = mCreationOptions;
         customOptions.user.icon = null;
         mWindowAndroid.setResponseIntent(Fido2ApiTestHelper.createSuccessfulMakeCredentialIntent());
-        ThreadUtils.runOnUiThreadBlocking(
+        TestThreadUtils.runOnUiThreadBlocking(
                 () -> mRequest.setActivityWindowForTesting(mWindowAndroid));
 
         mRequest.handleMakeCredentialRequest(customOptions, mFrameHost, mOrigin, mCallback);
@@ -589,7 +592,7 @@ public class Fido2CredentialRequestTest {
                 customOptions.publicKeyParameters[0], parameters};
         customOptions.publicKeyParameters = multiParams;
         mWindowAndroid.setResponseIntent(Fido2ApiTestHelper.createSuccessfulMakeCredentialIntent());
-        ThreadUtils.runOnUiThreadBlocking(
+        TestThreadUtils.runOnUiThreadBlocking(
                 () -> mRequest.setActivityWindowForTesting(mWindowAndroid));
 
         mRequest.handleMakeCredentialRequest(customOptions, mFrameHost, mOrigin, mCallback);
@@ -603,7 +606,7 @@ public class Fido2CredentialRequestTest {
     @SmallTest
     public void testMakeCredential_noExcludeCredentials() {
         mWindowAndroid.setResponseIntent(Fido2ApiTestHelper.createSuccessfulMakeCredentialIntent());
-        ThreadUtils.runOnUiThreadBlocking(
+        TestThreadUtils.runOnUiThreadBlocking(
                 () -> mRequest.setActivityWindowForTesting(mWindowAndroid));
 
         PublicKeyCredentialCreationOptions customOptions = mCreationOptions;
@@ -681,7 +684,7 @@ public class Fido2CredentialRequestTest {
     @SmallTest
     public void testGetAssertionWithoutUvmRequested_success() {
         mWindowAndroid.setResponseIntent(Fido2ApiTestHelper.createSuccessfulGetAssertionIntent());
-        ThreadUtils.runOnUiThreadBlocking(
+        TestThreadUtils.runOnUiThreadBlocking(
                 () -> mRequest.setActivityWindowForTesting(mWindowAndroid));
 
         mRequest.handleGetAssertionRequest(mRequestOptions, mFrameHost, mOrigin, mCallback);
@@ -694,7 +697,7 @@ public class Fido2CredentialRequestTest {
     @SmallTest
     public void testGetAssertionWithUvmRequestedWithoutUvmResponded_success() {
         mWindowAndroid.setResponseIntent(Fido2ApiTestHelper.createSuccessfulGetAssertionIntent());
-        ThreadUtils.runOnUiThreadBlocking(
+        TestThreadUtils.runOnUiThreadBlocking(
                 () -> mRequest.setActivityWindowForTesting(mWindowAndroid));
 
         mRequestOptions.userVerificationMethods = true;
@@ -710,7 +713,7 @@ public class Fido2CredentialRequestTest {
     public void testGetAssertionWithUvmRequestedWithUvmResponded_success() {
         mWindowAndroid.setResponseIntent(
                 Fido2ApiTestHelper.createSuccessfulGetAssertionIntentWithUvm());
-        ThreadUtils.runOnUiThreadBlocking(
+        TestThreadUtils.runOnUiThreadBlocking(
                 () -> mRequest.setActivityWindowForTesting(mWindowAndroid));
 
         mRequestOptions.userVerificationMethods = true;
@@ -725,7 +728,7 @@ public class Fido2CredentialRequestTest {
     @SmallTest
     public void testGetAssertion_unsuccessfulAttemptToShowCancelableIntent() {
         mWindowAndroid.setCancelableIntentSuccess(false);
-        ThreadUtils.runOnUiThreadBlocking(
+        TestThreadUtils.runOnUiThreadBlocking(
                 () -> mRequest.setActivityWindowForTesting(mWindowAndroid));
 
         mRequest.handleGetAssertionRequest(mRequestOptions, mFrameHost, mOrigin, mCallback);
@@ -740,7 +743,7 @@ public class Fido2CredentialRequestTest {
     public void testGetAssertion_missingExtra() {
         // An intent missing FIDO2_KEY_RESPONSE_EXTRA.
         mWindowAndroid.setResponseIntent(new Intent());
-        ThreadUtils.runOnUiThreadBlocking(
+        TestThreadUtils.runOnUiThreadBlocking(
                 () -> mRequest.setActivityWindowForTesting(mWindowAndroid));
 
         mRequest.handleGetAssertionRequest(mRequestOptions, mFrameHost, mOrigin, mCallback);
@@ -754,7 +757,7 @@ public class Fido2CredentialRequestTest {
     @SmallTest
     public void testGetAssertion_nullIntent() {
         // Don't set an intent to be returned at all.
-        ThreadUtils.runOnUiThreadBlocking(
+        TestThreadUtils.runOnUiThreadBlocking(
                 () -> mRequest.setActivityWindowForTesting(mWindowAndroid));
 
         mRequest.handleGetAssertionRequest(mRequestOptions, mFrameHost, mOrigin, mCallback);
@@ -768,7 +771,7 @@ public class Fido2CredentialRequestTest {
     @SmallTest
     public void testGetAssertion_resultCanceled() {
         mWindowAndroid.setResultCode(Activity.RESULT_CANCELED);
-        ThreadUtils.runOnUiThreadBlocking(
+        TestThreadUtils.runOnUiThreadBlocking(
                 () -> mRequest.setActivityWindowForTesting(mWindowAndroid));
 
         mRequest.handleGetAssertionRequest(mRequestOptions, mFrameHost, mOrigin, mCallback);
@@ -783,7 +786,7 @@ public class Fido2CredentialRequestTest {
     public void testGetAssertion_resultUnknown() {
         mWindowAndroid.setResponseIntent(Fido2ApiTestHelper.createSuccessfulGetAssertionIntent());
         mWindowAndroid.setResultCode(Activity.RESULT_FIRST_USER);
-        ThreadUtils.runOnUiThreadBlocking(
+        TestThreadUtils.runOnUiThreadBlocking(
                 () -> mRequest.setActivityWindowForTesting(mWindowAndroid));
 
         mRequest.handleGetAssertionRequest(mRequestOptions, mFrameHost, mOrigin, mCallback);
@@ -798,7 +801,7 @@ public class Fido2CredentialRequestTest {
     public void testGetAssertion_unknownErrorCredentialNotRecognized() {
         mWindowAndroid.setResponseIntent(Fido2ApiTestHelper.createErrorIntent(
                 ErrorCode.UNKNOWN_ERR, "Low level error 0x6a80"));
-        ThreadUtils.runOnUiThreadBlocking(
+        TestThreadUtils.runOnUiThreadBlocking(
                 () -> mRequest.setActivityWindowForTesting(mWindowAndroid));
 
         mRequest.handleGetAssertionRequest(mRequestOptions, mFrameHost, mOrigin, mCallback);
@@ -814,7 +817,7 @@ public class Fido2CredentialRequestTest {
         PublicKeyCredentialRequestOptions customOptions = mRequestOptions;
         customOptions.appid = "www.example.com";
         mWindowAndroid.setResponseIntent(Fido2ApiTestHelper.createSuccessfulGetAssertionIntent());
-        ThreadUtils.runOnUiThreadBlocking(
+        TestThreadUtils.runOnUiThreadBlocking(
                 () -> mRequest.setActivityWindowForTesting(mWindowAndroid));
 
         mRequest.handleGetAssertionRequest(mRequestOptions, mFrameHost, mOrigin, mCallback);
@@ -896,7 +899,7 @@ public class Fido2CredentialRequestTest {
     @SmallTest
     public void testMakeCredential_attestationNone() {
         mWindowAndroid.setResponseIntent(Fido2ApiTestHelper.createSuccessfulMakeCredentialIntent());
-        ThreadUtils.runOnUiThreadBlocking(
+        TestThreadUtils.runOnUiThreadBlocking(
                 () -> mRequest.setActivityWindowForTesting(mWindowAndroid));
 
         PublicKeyCredentialCreationOptions customOptions = mCreationOptions;
@@ -912,7 +915,7 @@ public class Fido2CredentialRequestTest {
     @SmallTest
     public void testMakeCredential_attestationIndirect() {
         mWindowAndroid.setResponseIntent(Fido2ApiTestHelper.createSuccessfulMakeCredentialIntent());
-        ThreadUtils.runOnUiThreadBlocking(
+        TestThreadUtils.runOnUiThreadBlocking(
                 () -> mRequest.setActivityWindowForTesting(mWindowAndroid));
 
         PublicKeyCredentialCreationOptions customOptions = mCreationOptions;
@@ -929,7 +932,7 @@ public class Fido2CredentialRequestTest {
     @SmallTest
     public void testMakeCredential_attestationDirect() {
         mWindowAndroid.setResponseIntent(Fido2ApiTestHelper.createSuccessfulMakeCredentialIntent());
-        ThreadUtils.runOnUiThreadBlocking(
+        TestThreadUtils.runOnUiThreadBlocking(
                 () -> mRequest.setActivityWindowForTesting(mWindowAndroid));
 
         PublicKeyCredentialCreationOptions customOptions = mCreationOptions;
@@ -945,7 +948,7 @@ public class Fido2CredentialRequestTest {
     @SmallTest
     public void testMakeCredential_attestationEnterprise() {
         mWindowAndroid.setResponseIntent(Fido2ApiTestHelper.createSuccessfulMakeCredentialIntent());
-        ThreadUtils.runOnUiThreadBlocking(
+        TestThreadUtils.runOnUiThreadBlocking(
                 () -> mRequest.setActivityWindowForTesting(mWindowAndroid));
 
         PublicKeyCredentialCreationOptions customOptions = mCreationOptions;
@@ -964,7 +967,7 @@ public class Fido2CredentialRequestTest {
         mWindowAndroid.setResponseIntent(
                 Fido2ApiTestHelper.createErrorIntent(ErrorCode.INVALID_STATE_ERR,
                         "One of the excluded credentials exists on the local device"));
-        ThreadUtils.runOnUiThreadBlocking(
+        TestThreadUtils.runOnUiThreadBlocking(
                 () -> mRequest.setActivityWindowForTesting(mWindowAndroid));
         mRequest.handleMakeCredentialRequest(mCreationOptions, mFrameHost, mOrigin, mCallback);
         mCallback.blockUntilCalled();
@@ -982,7 +985,7 @@ public class Fido2CredentialRequestTest {
         // Passes conversion and gets rejected by GmsCore
         mWindowAndroid.setResponseIntent(Fido2ApiTestHelper.createErrorIntent(
                 ErrorCode.NOT_ALLOWED_ERR, "Authentication request must have non-empty allowList"));
-        ThreadUtils.runOnUiThreadBlocking(
+        TestThreadUtils.runOnUiThreadBlocking(
                 () -> mRequest.setActivityWindowForTesting(mWindowAndroid));
         mRequest.handleGetAssertionRequest(mRequestOptions, mFrameHost, mOrigin, mCallback);
         mCallback.blockUntilCalled();
@@ -1002,7 +1005,7 @@ public class Fido2CredentialRequestTest {
         mWindowAndroid.setResponseIntent(
                 Fido2ApiTestHelper.createErrorIntent(ErrorCode.NOT_ALLOWED_ERR,
                         "Request doesn't have a valid list of allowed credentials."));
-        ThreadUtils.runOnUiThreadBlocking(
+        TestThreadUtils.runOnUiThreadBlocking(
                 () -> mRequest.setActivityWindowForTesting(mWindowAndroid));
         mRequest.handleGetAssertionRequest(mRequestOptions, mFrameHost, mOrigin, mCallback);
         mCallback.blockUntilCalled();
@@ -1017,7 +1020,7 @@ public class Fido2CredentialRequestTest {
     public void testMakeCredential_constraintErrorNoScreenlock() {
         mWindowAndroid.setResponseIntent(Fido2ApiTestHelper.createErrorIntent(
                 ErrorCode.CONSTRAINT_ERR, "The device is not secured with any screen lock"));
-        ThreadUtils.runOnUiThreadBlocking(
+        TestThreadUtils.runOnUiThreadBlocking(
                 () -> mRequest.setActivityWindowForTesting(mWindowAndroid));
         mRequest.handleMakeCredentialRequest(mCreationOptions, mFrameHost, mOrigin, mCallback);
         mCallback.blockUntilCalled();
@@ -1031,7 +1034,7 @@ public class Fido2CredentialRequestTest {
     public void testGetAssertion_constraintErrorNoScreenlock() {
         mWindowAndroid.setResponseIntent(Fido2ApiTestHelper.createErrorIntent(
                 ErrorCode.CONSTRAINT_ERR, "The device is not secured with any screen lock"));
-        ThreadUtils.runOnUiThreadBlocking(
+        TestThreadUtils.runOnUiThreadBlocking(
                 () -> mRequest.setActivityWindowForTesting(mWindowAndroid));
         mRequest.handleGetAssertionRequest(mRequestOptions, mFrameHost, mOrigin, mCallback);
         mCallback.blockUntilCalled();
@@ -1047,7 +1050,7 @@ public class Fido2CredentialRequestTest {
             String errorCodeName, String errorMsg, Integer status) {
         mWindowAndroid.setResponseIntent(
                 Fido2ApiTestHelper.createErrorIntent(ErrorCode.valueOf(errorCodeName), errorMsg));
-        ThreadUtils.runOnUiThreadBlocking(
+        TestThreadUtils.runOnUiThreadBlocking(
                 () -> mRequest.setActivityWindowForTesting(mWindowAndroid));
         mRequest.handleMakeCredentialRequest(mCreationOptions, mFrameHost, mOrigin, mCallback);
         mCallback.blockUntilCalled();
@@ -1061,7 +1064,7 @@ public class Fido2CredentialRequestTest {
     public void testGetAssertion_with_param(String errorCodeName, String errorMsg, Integer status) {
         mWindowAndroid.setResponseIntent(
                 Fido2ApiTestHelper.createErrorIntent(ErrorCode.valueOf(errorCodeName), errorMsg));
-        ThreadUtils.runOnUiThreadBlocking(
+        TestThreadUtils.runOnUiThreadBlocking(
                 () -> mRequest.setActivityWindowForTesting(mWindowAndroid));
         mRequest.handleGetAssertionRequest(mRequestOptions, mFrameHost, mOrigin, mCallback);
         mCallback.blockUntilCalled();
@@ -1076,7 +1079,7 @@ public class Fido2CredentialRequestTest {
             String errorCodeName, String errorMsg, Integer status) {
         mWindowAndroid.setResponseIntent(
                 Fido2ApiTestHelper.createErrorIntent(ErrorCode.valueOf(errorCodeName), null));
-        ThreadUtils.runOnUiThreadBlocking(
+        TestThreadUtils.runOnUiThreadBlocking(
                 () -> mRequest.setActivityWindowForTesting(mWindowAndroid));
         mRequest.handleMakeCredentialRequest(mCreationOptions, mFrameHost, mOrigin, mCallback);
         mCallback.blockUntilCalled();
@@ -1091,7 +1094,7 @@ public class Fido2CredentialRequestTest {
             String errorCodeName, String errorMsg, Integer status) {
         mWindowAndroid.setResponseIntent(
                 Fido2ApiTestHelper.createErrorIntent(ErrorCode.valueOf(errorCodeName), null));
-        ThreadUtils.runOnUiThreadBlocking(
+        TestThreadUtils.runOnUiThreadBlocking(
                 () -> mRequest.setActivityWindowForTesting(mWindowAndroid));
         mRequest.handleGetAssertionRequest(mRequestOptions, mFrameHost, mOrigin, mCallback);
         mCallback.blockUntilCalled();
