@@ -917,6 +917,13 @@ try_.chromium_linux_builder(
 )
 
 try_.chromium_linux_builder(
+    name = "linux-rel-builderful",
+    builderless = False,
+    goma_jobs = goma.jobs.J150,
+    use_clang_coverage = True,
+)
+
+try_.chromium_linux_builder(
     name = "linux-trusty-rel",
     goma_jobs = goma.jobs.J150,
     os = os.LINUX_TRUSTY,
