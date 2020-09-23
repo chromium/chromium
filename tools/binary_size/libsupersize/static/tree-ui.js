@@ -445,7 +445,9 @@ const newTreeElement = (() => {
         dom.replace(_symbolTree, rootElement);
         if (!_doneLoad && percent === 1) {
           _doneLoad = true;
-          console.log('Pro Tip: await worker.openNode("$FILE_PATH")')
+          console.log(
+              '%cPro Tip: %cawait supersize.worker.openNode("$FILE_PATH")',
+              'font-weight:bold; color: red;', '')
         }
       })
     );
