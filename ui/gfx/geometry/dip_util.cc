@@ -6,7 +6,6 @@
 
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point.h"
-#include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -23,6 +22,16 @@ PointF ConvertPointToDips(const Point& point_in_pixels,
 PointF ConvertPointToDips(const PointF& point_in_pixels,
                           float device_scale_factor) {
   return ScalePoint(point_in_pixels, 1.f / device_scale_factor);
+}
+
+PointF ConvertPointToPixels(const Point& point_in_dips,
+                            float device_scale_factor) {
+  return ScalePoint(PointF(point_in_dips), device_scale_factor);
+}
+
+PointF ConvertPointToPixels(const PointF& point_in_dips,
+                            float device_scale_factor) {
+  return ScalePoint(point_in_dips, device_scale_factor);
 }
 
 Insets ConvertInsetsToDIP(float scale_factor,
@@ -50,18 +59,6 @@ Insets ConvertInsetsToPixel(float scale_factor,
   if (scale_factor == 1.f)
     return insets_in_dip;
   return insets_in_dip.Scale(scale_factor);
-}
-
-Point ConvertPointToPixel(float scale_factor, const Point& point_in_dip) {
-  if (scale_factor == 1.f)
-    return point_in_dip;
-  return ScaleToFlooredPoint(point_in_dip, scale_factor);
-}
-
-PointF ConvertPointToPixel(float scale_factor, const PointF& point_in_dip) {
-  if (scale_factor == 1.f)
-    return point_in_dip;
-  return ScalePoint(point_in_dip, scale_factor);
 }
 
 Size ConvertSizeToPixel(float scale_factor, const Size& size_in_dip) {

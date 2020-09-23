@@ -556,7 +556,7 @@ RenderWidgetTargetResult RenderWidgetHostInputEventRouter::FindViewAtLocation(
   float device_scale_factor = root_view->GetDeviceScaleFactor();
   DCHECK_GT(device_scale_factor, 0.0f);
   gfx::PointF point_in_pixels =
-      gfx::ConvertPointToPixel(device_scale_factor, point);
+      gfx::ConvertPointToPixels(point, device_scale_factor);
   viz::Target target = query->FindTargetForLocationStartingFrom(
       source, point_in_pixels, root_view->GetFrameSinkId());
   frame_sink_id = target.frame_sink_id;

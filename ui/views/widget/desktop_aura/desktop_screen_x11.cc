@@ -69,8 +69,11 @@ bool DesktopScreenX11::IsWindowUnderCursor(gfx::NativeWindow window) {
 
 gfx::NativeWindow DesktopScreenX11::GetWindowAtScreenPoint(
     const gfx::Point& point) {
+  // TODO(danakj): Should this be rounded?
+  gfx::Point point_in_pixels = gfx::ToFlooredPoint(
+      gfx::ConvertPointToPixels(point, GetXDisplayScaleFactor()));
   auto window = ui::X11TopmostWindowFinder().FindLocalProcessWindowAt(
-      gfx::ConvertPointToPixel(GetXDisplayScaleFactor(), point), {});
+      point_in_pixels, {});
   return window != x11::Window::None
              ? views::DesktopWindowTreeHostPlatform::GetContentWindowForWidget(
                    static_cast<gfx::AcceleratedWidget>(window))
@@ -83,9 +86,11 @@ gfx::NativeWindow DesktopScreenX11::GetLocalProcessWindowAtPoint(
   std::set<gfx::AcceleratedWidget> ignore_widgets;
   for (auto* const window : ignore)
     ignore_widgets.emplace(window->GetHost()->GetAcceleratedWidget());
+  // TODO(danakj): Should this be rounded?
+  gfx::Point point_in_pixels = gfx::ToFlooredPoint(
+      gfx::ConvertPointToPixels(point, GetXDisplayScaleFactor()));
   auto window = ui::X11TopmostWindowFinder().FindLocalProcessWindowAt(
-      gfx::ConvertPointToPixel(GetXDisplayScaleFactor(), point),
-      ignore_widgets);
+      point_in_pixels, ignore_widgets);
   return window != x11::Window::None
              ? views::DesktopWindowTreeHostPlatform::GetContentWindowForWidget(
                    static_cast<gfx::AcceleratedWidget>(window))

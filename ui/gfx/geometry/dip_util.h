@@ -26,11 +26,19 @@ class Size;
 // point values, which can itself be a lossy operation for large integers. The
 // intention of these methods is to be used for UI values which are relatively
 // small.
+
 GEOMETRY_EXPORT gfx::PointF ConvertPointToDips(
     const gfx::Point& point_in_pixels,
     float device_scale_factor);
 GEOMETRY_EXPORT gfx::PointF ConvertPointToDips(
     const gfx::PointF& point_in_pixels,
+    float device_scale_factor);
+
+GEOMETRY_EXPORT gfx::PointF ConvertPointToPixels(
+    const gfx::Point& point_in_dips,
+    float device_scale_factor);
+GEOMETRY_EXPORT gfx::PointF ConvertPointToPixels(
+    const gfx::PointF& point_in_dips,
     float device_scale_factor);
 
 GEOMETRY_EXPORT gfx::Insets ConvertInsetsToDIP(
@@ -44,11 +52,6 @@ GEOMETRY_EXPORT gfx::Rect ConvertRectToDIP(float scale_factor,
 GEOMETRY_EXPORT gfx::Insets ConvertInsetsToPixel(
     float scale_factor,
     const gfx::Insets& insets_in_dip);
-GEOMETRY_EXPORT gfx::Point ConvertPointToPixel(float scale_factor,
-                                               const gfx::Point& point_in_dip);
-GEOMETRY_EXPORT gfx::PointF ConvertPointToPixel(
-    float scale_factor,
-    const gfx::PointF& point_in_dip);
 GEOMETRY_EXPORT gfx::Size ConvertSizeToPixel(float scale_factor,
                                              const gfx::Size& size_in_dip);
 GEOMETRY_EXPORT gfx::Rect ConvertRectToPixel(float scale_factor,

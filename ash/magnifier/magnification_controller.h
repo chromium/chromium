@@ -172,9 +172,7 @@ class ASH_EXPORT MagnificationController : public ui::EventHandler,
   // given scale. Returns true if the window is changed; otherwise, false.
   // These methods should be called internally just after the scale and/or
   // the position are changed to redraw the window.
-  bool Redraw(const gfx::PointF& position_in_physical_pixels,
-              float scale,
-              bool animate);
+  bool Redraw(const gfx::PointF& position_in_pixels, float scale, bool animate);
 
   // Redraws the magnification window with the given origin position in dip and
   // the given scale. Returns true if the window is changed; otherwise, false.
