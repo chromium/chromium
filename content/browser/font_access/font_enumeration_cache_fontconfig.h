@@ -24,6 +24,12 @@ class CONTENT_EXPORT FontEnumerationCacheFontconfig
   FontEnumerationCacheFontconfig();
   ~FontEnumerationCacheFontconfig();
 
+  // Disallow copy and assign.
+  FontEnumerationCacheFontconfig(const FontEnumerationCacheFontconfig&) =
+      delete;
+  FontEnumerationCacheFontconfig operator=(
+      const FontEnumerationCacheFontconfig&) = delete;
+
   static FontEnumerationCacheFontconfig* GetInstance();
 
  protected:
@@ -37,8 +43,6 @@ class CONTENT_EXPORT FontEnumerationCacheFontconfig
   friend class FontEnumerationCache;
 
   void PrepareFontEnumerationCache();
-
-  DISALLOW_COPY_AND_ASSIGN(FontEnumerationCacheFontconfig);
 };
 
 }  // namespace content

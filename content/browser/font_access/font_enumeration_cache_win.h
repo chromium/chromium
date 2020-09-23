@@ -34,6 +34,10 @@ class CONTENT_EXPORT FontEnumerationCacheWin : public FontEnumerationCache {
   FontEnumerationCacheWin();
   ~FontEnumerationCacheWin();
 
+  // Disallow copy and assign.
+  FontEnumerationCacheWin(const FontEnumerationCacheWin&) = delete;
+  FontEnumerationCacheWin operator=(const FontEnumerationCacheWin&) = delete;
+
   // A data structure to hold font family results from DirectWrite.
   struct FamilyDataResult {
     std::vector<blink::FontEnumerationTable_FontMetadata> fonts;
@@ -70,8 +74,6 @@ class CONTENT_EXPORT FontEnumerationCacheWin : public FontEnumerationCache {
 
   std::map<HRESULT, unsigned> enumeration_errors_;
   std::unique_ptr<base::ElapsedTimer> enumeration_timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(FontEnumerationCacheWin);
 };
 
 }  // namespace content

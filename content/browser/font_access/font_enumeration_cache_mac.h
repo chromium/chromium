@@ -25,7 +25,7 @@ class CONTENT_EXPORT FontEnumerationCacheMac : public FontEnumerationCache {
   FontEnumerationCacheMac();
   ~FontEnumerationCacheMac();
 
-  // Disallow Copy and Assign
+  // Disallow copy and assign.
   FontEnumerationCacheMac(const FontEnumerationCacheMac&) = delete;
   FontEnumerationCacheMac operator=(const FontEnumerationCacheMac&) = delete;
 

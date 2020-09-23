@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_FONT_ACCESS_FONT_ACCESS_MANAGER_IMPL_H_
 #define CONTENT_BROWSER_FONT_ACCESS_FONT_ACCESS_MANAGER_IMPL_H_
 
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
@@ -20,6 +19,10 @@ class CONTENT_EXPORT FontAccessManagerImpl
  public:
   FontAccessManagerImpl();
   ~FontAccessManagerImpl() override;
+
+  // Disallow copy and assign.
+  FontAccessManagerImpl(const FontAccessManagerImpl&) = delete;
+  FontAccessManagerImpl operator=(const FontAccessManagerImpl&) = delete;
 
   struct BindingContext {
     BindingContext(const url::Origin& origin, GlobalFrameRoutingId frame_id)
@@ -45,7 +48,6 @@ class CONTENT_EXPORT FontAccessManagerImpl
   scoped_refptr<base::TaskRunner> results_task_runner_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-  DISALLOW_COPY_AND_ASSIGN(FontAccessManagerImpl);
 };
 
 }  // namespace content
