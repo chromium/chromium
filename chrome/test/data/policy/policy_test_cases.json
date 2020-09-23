@@ -3048,7 +3048,7 @@
 
   "URLBlacklist": {
     "note": "This policy is deprecated, see http://crbug.com/1095230.",
-    "os": ["win", "linux", "mac", "chromeos"],
+    "os": ["win", "linux", "mac", "chromeos", "android"],
     "policy_pref_mapping_test": [
       {
         "policies": {"URLBlacklist": ["google.com"]},
@@ -3058,7 +3058,7 @@
   },
 
   "URLBlocklist": {
-    "os": ["win", "linux", "mac", "chromeos"],
+    "os": ["win", "linux", "mac", "chromeos", "android"],
     "policy_pref_mapping_test": [
       {
         "policies": {"URLBlocklist": ["google.com"]},
@@ -3069,7 +3069,7 @@
 
   "URLWhitelist": {
     "note": "This policy is deprecated, see http://crbug.com/1095230.",
-    "os": ["win", "linux", "mac", "chromeos"],
+    "os": ["win", "linux", "mac", "chromeos", "android"],
     "policy_pref_mapping_test": [
       {
         "policies": {"URLWhitelist": ["google.com"]},
@@ -3079,7 +3079,7 @@
   },
 
   "URLAllowlist": {
-    "os": ["win", "linux", "mac", "chromeos"],
+    "os": ["win", "linux", "mac", "chromeos", "android"],
     "policy_pref_mapping_test": [
       {
         "policies": {"URLAllowlist": ["google.com"]},
