@@ -13,6 +13,8 @@ static_library("diagnostics_ui") {
   ]
 
   deps = [
+    "//chromeos/components/diagnostics_ui/backend",
+    "//chromeos/components/diagnostics_ui/mojom",
     "//chromeos/constants",
     "//chromeos/resources:diagnostics_app_resources",
     "//content/public/browser",

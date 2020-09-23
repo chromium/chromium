@@ -1,0 +1,36 @@
+# Copyright 2020 The Chromium Authors.All rights reserved.
+# Use of this source code is governed by a BSD - style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos")
+
+static_library("backend") {
+  sources = [
+    "cros_healthd_helpers.cc",
+    "cros_healthd_helpers.h",
+    "system_data_provider.cc",
+    "system_data_provider.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chromeos/components/diagnostics_ui/mojom",
+    "//chromeos/services/cros_healthd/public/cpp",
+    "//chromeos/services/cros_healthd/public/mojom",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "system_data_provider_unittest.cc" ]
+
+  deps = [
+    ":backend",
+    "//base/test:test_support",
+    "//chromeos/dbus/cros_healthd",
+    "//chromeos/services/cros_healthd/public/cpp",
+    "//chromeos/services/cros_healthd/public/mojom",
+    "//testing/gtest",
+  ]
+}

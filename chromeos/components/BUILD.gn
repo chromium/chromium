@@ -18,6 +18,7 @@ test("chromeos_components_unittests") {
     "//chromeos/components/account_manager:unit_tests",
     "//chromeos/components/bloom:unit_tests",
     "//chromeos/components/cdm_factory_daemon:unit_tests",
+    "//chromeos/components/diagnostics_ui/backend:unit_tests",
     "//chromeos/components/drivefs:unit_tests",
     "//chromeos/components/local_search_service:unit_tests",
     "//chromeos/components/local_search_service/mojom:unit_tests",
