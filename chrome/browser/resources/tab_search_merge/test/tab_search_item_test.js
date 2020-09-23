@@ -24,7 +24,7 @@ suite('TabSearchItemTest', () => {
       pinned: false,
       showIcon: true,
       tabId: 0,
-      url: '',
+      url: 'https://example.com',
       title: text,
       titleHighlightRanges: highlightRanges,
       hostname: text,

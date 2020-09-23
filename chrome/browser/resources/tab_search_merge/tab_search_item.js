@@ -29,7 +29,7 @@ export class TabSearchItem extends PolymerElement {
       /** @type {!tabSearch.mojom.Tab} */
       data: {
         type: Object,
-        observer: 'setHighlights_',
+        observer: 'dataChanged_',
       },
     };
   }
@@ -61,13 +61,19 @@ export class TabSearchItem extends PolymerElement {
    * original mojom.tabSearch.Tab definition
    * @private
    */
-  setHighlights_() {
+  dataChanged_() {
     this.highlightText_(
         /** @type {!HTMLElement} */ (this.$.primaryText), this.data.title,
         this.data.titleHighlightRanges);
     this.highlightText_(
         /** @type {!HTMLElement} */ (this.$.secondaryText), this.data.hostname,
         this.data.hostnameHighlightRanges);
+
+    // Show chrome:// if it's a chrome internal url
+    if (new URL(this.data.url).protocol === 'chrome:') {
+      /** @type {!HTMLElement} */ (this.$.secondaryText)
+          .prepend(document.createTextNode('chrome://'));
+    }
   }
 
   /**
