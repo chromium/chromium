@@ -68,9 +68,6 @@ class PrintMockRenderThread : public content::MockRenderThread {
   bool OnMessageReceived(const IPC::Message& msg) override;
 
 #if BUILDFLAG(ENABLE_PRINTING)
-  // PrintRenderFrameHelper expects default print settings.
-  void OnGetDefaultPrintSettings(printing::mojom::PrintParams* setting);
-
   // PrintRenderFrameHelper expects final print settings from the user.
   void OnScriptedPrint(const printing::mojom::ScriptedPrintParams& params,
                        IPC::Message* reply_msg);

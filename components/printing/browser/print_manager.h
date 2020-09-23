@@ -107,9 +107,6 @@ class PrintManager : public content::WebContentsObserver,
       content::RenderFrameHost* render_frame_host,
       const mojom::DidPrintDocumentParams& params,
       std::unique_ptr<DelayedFrameDispatchHelper> helper) = 0;
-  virtual void OnGetDefaultPrintSettings(
-      content::RenderFrameHost* render_frame_host,
-      IPC::Message* reply_msg) = 0;
   virtual void OnScriptedPrint(content::RenderFrameHost* render_frame_host,
                                const mojom::ScriptedPrintParams& params,
                                IPC::Message* reply_msg) = 0;

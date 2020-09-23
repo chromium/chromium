@@ -79,16 +79,14 @@ bool AwPrintManager::PrintNow() {
   return true;
 }
 
-void AwPrintManager::OnGetDefaultPrintSettings(
-    content::RenderFrameHost* render_frame_host,
-    IPC::Message* reply_msg) {
-  // Unlike the printing_message_filter, we do process this in UI thread.
+void AwPrintManager::GetDefaultPrintSettings(
+    GetDefaultPrintSettingsCallback callback) {
+  // Unlike PrintViewManagerBase, we do process this in UI thread.
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  printing::mojom::PrintParams params;
-  printing::RenderParamsFromPrintSettings(*settings_, &params);
-  params.document_cookie = cookie_;
-  PrintHostMsg_GetDefaultPrintSettings::WriteReplyParams(reply_msg, params);
-  render_frame_host->Send(reply_msg);
+  auto params = printing::mojom::PrintParams::New();
+  printing::RenderParamsFromPrintSettings(*settings_, params.get());
+  params->document_cookie = cookie_;
+  std::move(callback).Run(std::move(params));
 }
 
 void AwPrintManager::OnScriptedPrint(

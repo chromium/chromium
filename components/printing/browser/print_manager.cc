@@ -18,10 +18,6 @@ struct PrintManager::FrameDispatchHelper {
 
   bool Send(IPC::Message* msg) { return render_frame_host->Send(msg); }
 
-  void OnGetDefaultPrintSettings(IPC::Message* reply_msg) {
-    manager->OnGetDefaultPrintSettings(render_frame_host, reply_msg);
-  }
-
   void OnScriptedPrint(const mojom::ScriptedPrintParams& scripted_params,
                        IPC::Message* reply_msg) {
     manager->OnScriptedPrint(render_frame_host, scripted_params, reply_msg);
@@ -85,9 +81,6 @@ bool PrintManager::OnMessageReceived(
   FrameDispatchHelper helper = {this, render_frame_host};
   bool handled = true;
   IPC_BEGIN_MESSAGE_MAP(PrintManager, message)
-    IPC_MESSAGE_FORWARD_DELAY_REPLY(
-        PrintHostMsg_GetDefaultPrintSettings, &helper,
-        FrameDispatchHelper::OnGetDefaultPrintSettings)
     IPC_MESSAGE_FORWARD_DELAY_REPLY(PrintHostMsg_ScriptedPrint, &helper,
                                     FrameDispatchHelper::OnScriptedPrint)
     IPC_MESSAGE_FORWARD_DELAY_REPLY(PrintHostMsg_DidPrintDocument, &helper,

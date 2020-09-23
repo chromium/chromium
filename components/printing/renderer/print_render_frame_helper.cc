@@ -2133,8 +2133,8 @@ void PrintRenderFrameHelper::IPCProcessed() {
 bool PrintRenderFrameHelper::InitPrintSettings(bool fit_to_paper_size) {
   mojom::PrintPagesParams settings;
   settings.params = mojom::PrintParams::New();
-  Send(new PrintHostMsg_GetDefaultPrintSettings(routing_id(),
-                                                settings.params.get()));
+  GetPrintManagerHost()->GetDefaultPrintSettings(&settings.params);
+
   // Check if the printer returned any settings, if the settings is empty, we
   // can safely assume there are no printer drivers configured. So we safely
   // terminate.

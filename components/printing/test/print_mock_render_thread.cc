@@ -53,8 +53,6 @@ bool PrintMockRenderThread::OnMessageReceived(const IPC::Message& msg) {
   bool handled = true;
   IPC_BEGIN_MESSAGE_MAP(PrintMockRenderThread, msg)
 #if BUILDFLAG(ENABLE_PRINTING)
-    IPC_MESSAGE_HANDLER(PrintHostMsg_GetDefaultPrintSettings,
-                        OnGetDefaultPrintSettings)
     IPC_MESSAGE_HANDLER_DELAY_REPLY(PrintHostMsg_ScriptedPrint, OnScriptedPrint)
     IPC_MESSAGE_HANDLER_DELAY_REPLY(PrintHostMsg_UpdatePrintSettings,
                                     OnUpdatePrintSettings)
@@ -72,11 +70,6 @@ bool PrintMockRenderThread::OnMessageReceived(const IPC::Message& msg) {
 }
 
 #if BUILDFLAG(ENABLE_PRINTING)
-
-void PrintMockRenderThread::OnGetDefaultPrintSettings(
-    printing::mojom::PrintParams* params) {
-  printer_->GetDefaultPrintSettings(params);
-}
 
 void PrintMockRenderThread::OnScriptedPrint(
     const printing::mojom::ScriptedPrintParams& params,

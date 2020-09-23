@@ -82,6 +82,8 @@ class PrintViewManagerBase : public content::NotificationObserver,
       int32_t cookie,
       const ui::AXTreeUpdate& accessibility_tree) override;
 #endif
+  void GetDefaultPrintSettings(
+      GetDefaultPrintSettingsCallback callback) override;
   void ShowInvalidPrinterSettingsError() override;
   void PrintingFailed(int32_t cookie) override;
 
@@ -130,8 +132,6 @@ class PrintViewManagerBase : public content::NotificationObserver,
       content::RenderFrameHost* render_frame_host,
       const mojom::DidPrintDocumentParams& params,
       std::unique_ptr<DelayedFrameDispatchHelper> helper) override;
-  void OnGetDefaultPrintSettings(content::RenderFrameHost* render_frame_host,
-                                 IPC::Message* reply_msg) override;
   void OnScriptedPrint(content::RenderFrameHost* render_frame_host,
                        const mojom::ScriptedPrintParams& params,
                        IPC::Message* reply_msg) override;

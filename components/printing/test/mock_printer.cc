@@ -103,16 +103,16 @@ void MockPrinter::ResetPrinter() {
   document_cookie_ = -1;
 }
 
-void MockPrinter::GetDefaultPrintSettings(
-    printing::mojom::PrintParams* params) {
+printing::mojom::PrintParamsPtr MockPrinter::GetDefaultPrintSettings() {
   // Verify this printer is not processing a job.
   // Sorry, this mock printer is very fragile.
   EXPECT_EQ(-1, document_cookie_);
 
   // Assign a unit document cookie and set the print settings.
   document_cookie_ = CreateDocumentCookie();
-  *params = printing::mojom::PrintParams();
-  SetPrintParams(params);
+  auto params = printing::mojom::PrintParams::New();
+  SetPrintParams(params.get());
+  return params;
 }
 
 void MockPrinter::SetDefaultPrintSettings(

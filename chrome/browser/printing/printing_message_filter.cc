@@ -123,8 +123,6 @@ void PrintingMessageFilter::OnDestruct() const {
 bool PrintingMessageFilter::OnMessageReceived(const IPC::Message& message) {
   bool handled = true;
   IPC_BEGIN_MESSAGE_MAP(PrintingMessageFilter, message)
-    IPC_MESSAGE_HANDLER_DELAY_REPLY(PrintHostMsg_GetDefaultPrintSettings,
-                                    OnGetDefaultPrintSettings)
     IPC_MESSAGE_HANDLER_DELAY_REPLY(PrintHostMsg_ScriptedPrint, OnScriptedPrint)
     IPC_MESSAGE_HANDLER_DELAY_REPLY(PrintHostMsg_UpdatePrintSettings,
                                     OnUpdatePrintSettings)
@@ -134,50 +132,6 @@ bool PrintingMessageFilter::OnMessageReceived(const IPC::Message& message) {
     IPC_MESSAGE_UNHANDLED(handled = false)
   IPC_END_MESSAGE_MAP()
   return handled;
-}
-
-void PrintingMessageFilter::OnGetDefaultPrintSettings(IPC::Message* reply_msg) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  if (!is_printing_enabled_.GetValue()) {
-    // Reply with null query.
-    OnGetDefaultPrintSettingsReply(nullptr, reply_msg);
-    return;
-  }
-  std::unique_ptr<PrinterQuery> printer_query = queue_->PopPrinterQuery(0);
-  if (!printer_query) {
-    printer_query =
-        queue_->CreatePrinterQuery(render_process_id_, reply_msg->routing_id());
-  }
-
-  // Loads default settings. This is asynchronous, only the IPC message sender
-  // will hang until the settings are retrieved.
-  auto* printer_query_ptr = printer_query.get();
-  printer_query_ptr->GetSettings(
-      PrinterQuery::GetSettingsAskParam::DEFAULTS, 0, false,
-      printing::mojom::MarginType::kDefaultMargins, false, false,
-      base::BindOnce(&PrintingMessageFilter::OnGetDefaultPrintSettingsReply,
-                     this, std::move(printer_query), reply_msg));
-}
-
-void PrintingMessageFilter::OnGetDefaultPrintSettingsReply(
-    std::unique_ptr<PrinterQuery> printer_query,
-    IPC::Message* reply_msg) {
-  mojom::PrintParams params;
-  if (printer_query && printer_query->last_status() == PrintingContext::OK) {
-    RenderParamsFromPrintSettings(printer_query->settings(), &params);
-    params.document_cookie = printer_query->cookie();
-  }
-  PrintHostMsg_GetDefaultPrintSettings::WriteReplyParams(reply_msg, params);
-  Send(reply_msg);
-  // If printing was enabled.
-  if (printer_query) {
-    // If user hasn't cancelled.
-    if (printer_query->cookie() && printer_query->settings().dpi()) {
-      queue_->QueuePrinterQuery(std::move(printer_query));
-    } else {
-      printer_query->StopWorker();
-    }
-  }
 }
 
 void PrintingMessageFilter::OnScriptedPrint(

@@ -74,8 +74,11 @@ class MockPrinter {
   void UseInvalidPageSize();
   void UseInvalidContentSize();
 
+  // Functions that handle mojo messages.
+  printing::mojom::PrintParamsPtr GetDefaultPrintSettings();
+  void SetPrintedPagesCount(int cookie, uint32_t number_pages);
+
   // Functions that handles IPC events.
-  void GetDefaultPrintSettings(printing::mojom::PrintParams* params);
   void ScriptedPrint(int cookie,
                      uint32_t expected_pages_count,
                      bool has_selection,
@@ -86,7 +89,6 @@ class MockPrinter {
                       int margins_type,
                       const gfx::Size& page_size,
                       int scale_factor);
-  void SetPrintedPagesCount(int cookie, uint32_t number_pages);
   void PrintPage(const printing::mojom::DidPrintDocumentParams& params);
 
   // Functions that retrieve the output pages.

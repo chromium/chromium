@@ -51,6 +51,7 @@
 #include "mojo/public/cpp/system/buffer.h"
 #include "printing/buildflags/buildflags.h"
 #include "printing/metafile_skia.h"
+#include "printing/mojom/print.mojom.h"
 #include "printing/print_settings.h"
 #include "printing/printed_document.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -108,6 +109,62 @@ void CreateQueryWithSettings(base::Value job_settings,
       base::BindOnce(std::move(callback_wrapper), std::move(printer_query)));
 }
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
+
+// Runs |callback| with |params| to reply to
+// mojom::PrintManagerHost::GetDefaultPrintSettings.
+void GetDefaultPrintSettingsReply(
+    mojom::PrintManagerHost::GetDefaultPrintSettingsCallback callback,
+    mojom::PrintParamsPtr params) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  std::move(callback).Run(std::move(params));
+}
+
+void GetDefaultPrintSettingsReplyOnIO(
+    scoped_refptr<PrintQueriesQueue> queue,
+    std::unique_ptr<PrinterQuery> printer_query,
+    mojom::PrintManagerHost::GetDefaultPrintSettingsCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  mojom::PrintParamsPtr params = mojom::PrintParams::New();
+  if (printer_query && printer_query->last_status() == PrintingContext::OK) {
+    RenderParamsFromPrintSettings(printer_query->settings(), params.get());
+    params->document_cookie = printer_query->cookie();
+  }
+
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&GetDefaultPrintSettingsReply,
+                                std::move(callback), std::move(params)));
+
+  // If printing was enabled.
+  if (printer_query) {
+    // If user hasn't cancelled.
+    if (printer_query->cookie() && printer_query->settings().dpi()) {
+      queue->QueuePrinterQuery(std::move(printer_query));
+    } else {
+      printer_query->StopWorker();
+    }
+  }
+}
+
+void GetDefaultPrintSettingsOnIO(
+    mojom::PrintManagerHost::GetDefaultPrintSettingsCallback callback,
+    scoped_refptr<PrintQueriesQueue> queue,
+    int process_id,
+    int routing_id) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+
+  std::unique_ptr<PrinterQuery> printer_query = queue->PopPrinterQuery(0);
+  if (!printer_query)
+    printer_query = queue->CreatePrinterQuery(process_id, routing_id);
+
+  // Loads default settings. This is asynchronous, only the mojo message sender
+  // will hang until the settings are retrieved.
+  auto* printer_query_ptr = printer_query.get();
+  printer_query_ptr->GetSettings(
+      PrinterQuery::GetSettingsAskParam::DEFAULTS, 0, false,
+      printing::mojom::MarginType::kDefaultMargins, false, false,
+      base::BindOnce(&GetDefaultPrintSettingsReplyOnIO, queue,
+                     std::move(printer_query), std::move(callback)));
+}
 
 }  // namespace
 
@@ -361,10 +418,23 @@ void PrintViewManagerBase::OnDidPrintDocument(
   helper->SendCompleted();
 }
 
-void PrintViewManagerBase::OnGetDefaultPrintSettings(
-    content::RenderFrameHost* render_frame_host,
-    IPC::Message* reply_msg) {
-  NOTREACHED() << "should be handled by printing::PrintingMessageFilter";
+void PrintViewManagerBase::GetDefaultPrintSettings(
+    GetDefaultPrintSettingsCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!printing_enabled_.GetValue()) {
+    auto params = mojom::PrintParams::New();
+    GetDefaultPrintSettingsReply(std::move(callback), std::move(params));
+    return;
+  }
+
+  content::RenderFrameHost* render_frame_host =
+      print_manager_host_receivers_.GetCurrentTargetFrame();
+
+  content::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&GetDefaultPrintSettingsOnIO, std::move(callback), queue_,
+                     render_frame_host->GetProcess()->GetID(),
+                     render_frame_host->GetRoutingID()));
 }
 
 void PrintViewManagerBase::PrintingFailed(int32_t cookie) {

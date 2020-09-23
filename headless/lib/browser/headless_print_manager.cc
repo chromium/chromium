@@ -189,14 +189,9 @@ HeadlessPrintManager::GetPrintParamsFromSettings(
 bool HeadlessPrintManager::OnMessageReceived(
     const IPC::Message& message,
     content::RenderFrameHost* render_frame_host) {
-  if (!printing_rfh_ &&
-      (message.type() == PrintHostMsg_GetDefaultPrintSettings::ID ||
-       message.type() == PrintHostMsg_ScriptedPrint::ID)) {
+  if (!printing_rfh_ && message.type() == PrintHostMsg_ScriptedPrint::ID) {
     std::string type;
     switch (message.type()) {
-      case PrintHostMsg_GetDefaultPrintSettings::ID:
-        type = "GetDefaultPrintSettings";
-        break;
       case PrintHostMsg_ScriptedPrint::ID:
         type = "ScriptedPrint";
         break;
@@ -217,14 +212,15 @@ bool HeadlessPrintManager::OnMessageReceived(
   return PrintManager::OnMessageReceived(message, render_frame_host);
 }
 
-void HeadlessPrintManager::OnGetDefaultPrintSettings(
-    content::RenderFrameHost* render_frame_host,
-    IPC::Message* reply_msg) {
-  PrintHostMsg_GetDefaultPrintSettings::WriteReplyParams(
-      reply_msg, *print_params_->params);
-  // Intentionally using |printing_rfh_| instead of |render_frame_host|
-  // parameter.
-  printing_rfh_->Send(reply_msg);
+void HeadlessPrintManager::GetDefaultPrintSettings(
+    GetDefaultPrintSettingsCallback callback) {
+  if (!printing_rfh_) {
+    DLOG(ERROR) << "Unexpected message received before GetPDFContents is "
+                   "called: GetDefaultPrintSettings";
+    std::move(callback).Run(printing::mojom::PrintParams::New());
+    return;
+  }
+  std::move(callback).Run(print_params_->params->Clone());
 }
 
 void HeadlessPrintManager::OnScriptedPrint(

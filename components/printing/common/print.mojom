@@ -288,6 +288,10 @@ interface PrintManagerHost {
   [EnableIf=enable_tagged_pdf]
   SetAccessibilityTree(int32 cookie, ax.mojom.AXTreeUpdate accessibility_tree);
 
+  // Request the default print settings.
+  [Sync]
+  GetDefaultPrintSettings() => (PrintParams default_settings);
+
   // Tells the browser that the print dialog has been shown.
   DidShowPrintDialog();
 

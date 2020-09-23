@@ -277,10 +277,6 @@ IPC_SYNC_MESSAGE_ROUTED1_1(PrintHostMsg_DidPrintDocument,
                            /* page content */,
                            bool /* completed */)
 
-// The renderer wants to know the default print settings.
-IPC_SYNC_MESSAGE_ROUTED0_1(PrintHostMsg_GetDefaultPrintSettings,
-                           printing::mojom::PrintParams /* default_settings */)
-
 // The renderer wants to update the current print settings with new
 // |job_settings|.
 IPC_SYNC_MESSAGE_ROUTED2_2(

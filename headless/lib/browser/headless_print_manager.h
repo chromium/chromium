@@ -68,10 +68,6 @@ class HeadlessPrintManager
 
   ~HeadlessPrintManager() override;
 
-  // printing::mojom::PrintManagerHost:
-  void ShowInvalidPrinterSettingsError() override;
-  void PrintingFailed(int32_t cookie) override;
-
   static std::string PrintResultToString(PrintResult result);
   // Exported for tests.
   HEADLESS_EXPORT static PageRangeStatus PageRangeTextToPages(
@@ -103,12 +99,15 @@ class HeadlessPrintManager
       content::RenderFrameHost* render_frame_host,
       const printing::mojom::DidPrintDocumentParams& params,
       std::unique_ptr<DelayedFrameDispatchHelper> helper) override;
-  void OnGetDefaultPrintSettings(content::RenderFrameHost* render_frame_host,
-                                 IPC::Message* reply_msg) override;
   void OnScriptedPrint(content::RenderFrameHost* render_frame_host,
                        const printing::mojom::ScriptedPrintParams& params,
                        IPC::Message* reply_msg) override;
 
+  // printing::mojom::PrintManagerHost:
+  void GetDefaultPrintSettings(
+      GetDefaultPrintSettingsCallback callback) override;
+  void ShowInvalidPrinterSettingsError() override;
+  void PrintingFailed(int32_t cookie) override;
 
   void Reset();
   void ReleaseJob(PrintResult result);
