@@ -10,6 +10,15 @@
   width: 100%;
   padding-right: 100%;
 }
+
+.c19 {
+  width: 400px;
+}
+
+.c19:after {
+  content: 'a';
+  margin-left: 2000000000%;
+}
 </style>
 <input type="file">
 <script>
@@ -19,4 +28,11 @@ test(() => {
   fileInput.offsetWidth;
   // Ok if no crash.
 }, ':after with large padding should not cause a crash.');
+
+test(() => {
+  const fileInput = document.querySelector('input');
+  fileInput.classList.add('c19');
+  fileInput.offsetWidth;
+  // Ok if no crash.
+}, ':after with huge margin should not cause a crash.');
 </script>
