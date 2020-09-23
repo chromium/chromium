@@ -13,7 +13,6 @@
 #include "cc/paint/paint_flags.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_utils.h"
-#include "ui/native_theme/native_theme_color_id.h"
 #include "ui/views/painter.h"
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
@@ -60,6 +59,33 @@ class RoundedRectBackground : public Background {
   float radius_;
 
   DISALLOW_COPY_AND_ASSIGN(RoundedRectBackground);
+};
+
+// ThemedVectorIconBackground is an image drawn on the view's background using
+// ThemedVectorIcon to react to theme changes.
+class ThemedVectorIconBackground : public Background, public ViewObserver {
+ public:
+  explicit ThemedVectorIconBackground(View* view,
+                                      const ui::ThemedVectorIcon& icon)
+      : icon_(icon), observer_(this) {
+    DCHECK(!icon_.empty());
+    observer_.Add(view);
+    OnViewThemeChanged(view);
+  }
+
+  // ViewObserver:
+  void OnViewThemeChanged(View* view) override { view->SchedulePaint(); }
+  void OnViewIsDeleting(View* view) override { observer_.Remove(view); }
+
+  void Paint(gfx::Canvas* canvas, View* view) const override {
+    canvas->DrawImageInt(icon_.GetImageSkia(view->GetNativeTheme()), 0, 0);
+  }
+
+ private:
+  const ui::ThemedVectorIcon icon_;
+  ScopedObserver<View, ViewObserver> observer_;
+
+  DISALLOW_COPY_AND_ASSIGN(ThemedVectorIconBackground);
 };
 
 // ThemedSolidBackground is a solid background that stays in sync with a view's
@@ -123,6 +149,12 @@ std::unique_ptr<Background> CreateSolidBackground(SkColor color) {
 std::unique_ptr<Background> CreateRoundedRectBackground(SkColor color,
                                                         float radius) {
   return std::make_unique<RoundedRectBackground>(color, radius);
+}
+
+std::unique_ptr<Background> CreateThemedVectorIconBackground(
+    View* view,
+    const ui::ThemedVectorIcon& icon) {
+  return std::make_unique<ThemedVectorIconBackground>(view, icon);
 }
 
 std::unique_ptr<Background> CreateThemedSolidBackground(

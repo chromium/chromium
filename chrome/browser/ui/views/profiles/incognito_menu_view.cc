@@ -52,7 +52,10 @@ void IncognitoMenuView::BuildMenu() {
   int incognito_window_count =
       BrowserList::GetOffTheRecordBrowsersActiveForProfile(
           browser()->profile());
-
+  // TODO(crbug.com/1105763): Add asset colors to native theme and update icon
+  // temporary color placeholder to align with the design deck colors.
+  ui::ThemedVectorIcon header_art_icon(&kIncognitoMenuArtIcon,
+                                       ui::NativeTheme::kColorId_MenuIconColor);
   SetProfileIdentityInfo(
       /*profile_name=*/base::string16(),
       /*background_color=*/SK_ColorTRANSPARENT,
@@ -63,7 +66,8 @@ void IncognitoMenuView::BuildMenu() {
       incognito_window_count > 1
           ? l10n_util::GetPluralStringFUTF16(IDS_INCOGNITO_WINDOW_COUNT_MESSAGE,
                                              incognito_window_count)
-          : base::string16());
+          : base::string16(),
+      header_art_icon);
 
 #if defined(OS_WIN)
   if (ProfileShortcutManager::IsFeatureEnabled() &&

@@ -128,7 +128,8 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
       base::Optional<EditButtonParams> edit_button_params,
       const ui::ImageModel& image_model,
       const base::string16& title,
-      const base::string16& subtitle = base::string16());
+      const base::string16& subtitle = base::string16(),
+      const ui::ThemedVectorIcon& avatar_header_art = ui::ThemedVectorIcon());
   void SetSyncInfo(const SyncInfo& sync_info,
                    const base::RepeatingClosure& action,
                    bool show_badge);

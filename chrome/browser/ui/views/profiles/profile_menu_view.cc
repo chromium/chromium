@@ -491,11 +491,16 @@ void ProfileMenuView::BuildGuestIdentity() {
                                                 guest_window_count);
   }
 
+  // TODO(crbug.com/1105763): Add asset colors to native theme and update icon
+  // temporary color placeholder to align with the design deck colors.
+  ui::ThemedVectorIcon header_art_icon(&kGuestMenuArtIcon,
+                                       ui::NativeTheme::kColorId_MenuIconColor);
   SetProfileIdentityInfo(
       /*profile_name=*/base::string16(),
       /*background_color=*/SK_ColorTRANSPARENT,
       /*edit_button=*/base::nullopt, profiles::GetGuestAvatar(),
-      l10n_util::GetStringUTF16(IDS_GUEST_PROFILE_NAME), subtitle);
+      l10n_util::GetStringUTF16(IDS_GUEST_PROFILE_NAME), subtitle,
+      header_art_icon);
 }
 
 void ProfileMenuView::BuildAutofillButtons() {

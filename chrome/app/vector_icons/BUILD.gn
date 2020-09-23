@@ -10,6 +10,7 @@ import("//ui/webui/webui_features.gni")
 aggregate_vector_icons("chrome_vector_icons") {
   icon_directory = "."
 
+  # Keep sorted alphabetically.
   icons = [
     "account_box.icon",
     "account_child.icon",
@@ -18,24 +19,21 @@ aggregate_vector_icons("chrome_vector_icons") {
     "apps.icon",
     "autofill/webauthn_dialog_header.icon",
     "autofill/webauthn_dialog_header_dark.icon",
+    "back_arrow_touch.icon",
     "blocked_redirect.icon",
+    "bookmarkbar_touch_overflow.icon",
     "browser_tools.icon",
     "browser_tools_error.icon",
+    "browser_tools_error_touch.icon",
+    "browser_tools_touch.icon",
     "browser_tools_update.icon",
+    "browser_tools_update_touch.icon",
     "caret_down.icon",
     "caret_up.icon",
+    "cast_for_education.icon",
     "click_to_call_illustration.icon",
     "click_to_call_illustration_dark.icon",
     "close_all.icon",
-
-    # Alternative squarer content_paste icon optimised for display at 18x18dip.
-    # Currently only used in the Page Info bubble.
-    "back_arrow_touch.icon",
-    "bookmarkbar_touch_overflow.icon",
-    "browser_tools_error_touch.icon",
-    "browser_tools_touch.icon",
-    "browser_tools_update_touch.icon",
-    "cast_for_education.icon",
     "computer_with_circle_background.icon",
     "copy.icon",
     "crashed_tab.icon",
@@ -50,10 +48,12 @@ aggregate_vector_icons("chrome_vector_icons") {
     "fullscreen.icon",
     "generic_stop.icon",
     "globe.icon",
+    "guest_menu_art.icon",
     "hardware_computer.icon",
     "hardware_smartphone.icon",
     "horizontal_menu.icon",
     "incognito.icon",
+    "incognito_menu_art.icon",
     "incognito_profile.icon",
     "input.icon",
     "key.icon",
