@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/containers/ring_buffer.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/task/post_task.h"
@@ -45,8 +46,16 @@ class ProxyManagerImpl : public ProxyManager {
                    std::unique_ptr<CupsProxyServiceDelegate> delegate,
                    std::unique_ptr<IppValidator> ipp_validator,
                    std::unique_ptr<PrinterInstaller> printer_installer,
-                   std::unique_ptr<SocketManager> socket_manager);
-  ~ProxyManagerImpl() override;
+                   std::unique_ptr<SocketManager> socket_manager)
+      : delegate_(std::move(delegate)),
+        ipp_validator_(std::move(ipp_validator)),
+        printer_installer_(std::move(printer_installer)),
+        socket_manager_(std::move(socket_manager)),
+        receiver_(this, std::move(request)) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  }
+
+  ~ProxyManagerImpl() override = default;
 
   void ProxyRequest(const std::string& method,
                     const std::string& url,
@@ -84,6 +93,9 @@ class ProxyManagerImpl : public ProxyManager {
 
   // Current in-flight request.
   std::unique_ptr<InFlightRequest> in_flight_;
+
+  // Timestamp ring buffer.
+  base::RingBuffer<base::TimeTicks, kRateLimit> timestamp_;
 
   // CupsIppParser Service handle.
   mojo::Remote<ipp_parser::mojom::IppParser> ipp_parser_;
@@ -125,22 +137,6 @@ base::Optional<std::vector<uint8_t>> RebuildIppRequest(
   return ret;
 }
 
-ProxyManagerImpl::ProxyManagerImpl(
-    mojo::PendingReceiver<CupsProxier> receiver,
-    std::unique_ptr<CupsProxyServiceDelegate> delegate,
-    std::unique_ptr<IppValidator> ipp_validator,
-    std::unique_ptr<PrinterInstaller> printer_installer,
-    std::unique_ptr<SocketManager> socket_manager)
-    : delegate_(std::move(delegate)),
-      ipp_validator_(std::move(ipp_validator)),
-      printer_installer_(std::move(printer_installer)),
-      socket_manager_(std::move(socket_manager)),
-      receiver_(this, std::move(receiver)) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-}
-
-ProxyManagerImpl::~ProxyManagerImpl() = default;
-
 void ProxyManagerImpl::ProxyRequest(
     const std::string& method,
     const std::string& url,
@@ -149,6 +145,23 @@ void ProxyManagerImpl::ProxyRequest(
     const std::vector<uint8_t>& body,
     ProxyRequestCallback cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Limit the rate of requests to kRateLimit per second.
+  // The way the algorithm works is if the number of times this method was
+  // called between a second ago and now, including the current call, exceeds
+  // kRateLimit, the request is blocked and the HTTP 429 Too Many Requests
+  // response status code is returned.
+  base::TimeTicks time = base::TimeTicks::Now();
+  bool block_request =
+      timestamp_.CurrentIndex() >= timestamp_.BufferSize() &&
+      time - timestamp_.ReadBuffer(0) < base::TimeDelta::FromSeconds(1);
+  timestamp_.SaveToBuffer(time);
+  if (block_request) {
+    DVLOG(1) << "CupsPrintService Error: Rate limit (" << kRateLimit
+             << ") exceeded";
+    std::move(cb).Run({}, {}, 429);  // HTTP_STATUS_TOO_MANY_REQUESTS
+    return;
+  }
 
   if (!delegate_->IsPrinterAccessAllowed()) {
     DVLOG(1) << "Printer access not allowed";
@@ -343,14 +356,12 @@ void ProxyManagerImpl::Fail(const std::string& error_message,
 std::unique_ptr<ProxyManager> ProxyManager::Create(
     mojo::PendingReceiver<mojom::CupsProxier> request,
     std::unique_ptr<CupsProxyServiceDelegate> delegate) {
-  // Setting up injected managers.
-  auto ipp_validator = std::make_unique<IppValidator>(delegate.get());
-  auto printer_installer = std::make_unique<PrinterInstaller>(delegate.get());
-  auto socket_manager = SocketManager::Create(delegate.get());
-
+  auto* delegate_ptr = delegate.get();
   return std::make_unique<ProxyManagerImpl>(
-      std::move(request), std::move(delegate), std::move(ipp_validator),
-      std::move(printer_installer), std::move(socket_manager));
+      std::move(request), std::move(delegate),
+      std::make_unique<IppValidator>(delegate_ptr),
+      std::make_unique<PrinterInstaller>(delegate_ptr),
+      SocketManager::Create(delegate_ptr));
 }
 
 std::unique_ptr<ProxyManager> ProxyManager::CreateForTesting(

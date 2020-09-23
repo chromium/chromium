@@ -56,6 +56,7 @@ test("libcups_unittests") {
   sources = [
     "ipp_validator_unittest.cc",
     "printer_installer_unittest.cc",
+    "proxy_manager_unittest.cc",
     "socket_manager_unittest.cc",
   ]
 
@@ -71,6 +72,7 @@ test("libcups_unittests") {
     "//chrome/services/cups_proxy/public/cpp:unit_tests",
     "//chrome/services/cups_proxy/test:test_support",
     "//chromeos",
+    "//content/public/browser",
     "//testing/gmock",
     "//testing/gtest",
   ]

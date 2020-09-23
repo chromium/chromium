@@ -25,12 +25,15 @@ class SocketManager;
 // This handler's job is vetting incoming arbitrary CUPS IPP requests before
 // they reach the CUPS Daemon. Requests are parsed out-of-process, by the
 // CupsIppParser Service, and validated/rebuilt in-process before being proxied.
-// This handler must be created/accessed from a seqeunced context.
+// This handler must be created/accessed from a sequenced context.
 //
 // Note: This handler only supports processing one request at a time; any
 // concurrent requests will immediately fail with an empty response.
 class ProxyManager : public mojom::CupsProxier {
  public:
+  // Request rate limit per second.
+  static constexpr int kRateLimit = 10;
+
   // Factory function.
   static std::unique_ptr<ProxyManager> Create(
       mojo::PendingReceiver<mojom::CupsProxier> request,
