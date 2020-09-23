@@ -20,6 +20,13 @@ suite('ConfirmatonPageTest', function() {
   /** @type {!FakeTransferUpdateListenerPendingReceiver} */
   let transferUpdateListener;
 
+  /**
+   * @param {string} button button selector (i.e. #actionButton)
+   */
+  function getButton(button) {
+    return confirmationPageElement.$$('nearby-page-template').$$(button);
+  }
+
   setup(function() {
     confirmationManager = new FakeConfirmationManagerRemote();
     transferUpdateListener = new FakeTransferUpdateListenerPendingReceiver();
@@ -44,7 +51,7 @@ suite('ConfirmatonPageTest', function() {
         /*token=*/ null);
     await transferUpdateListener.remote_.$.flushForTesting();
 
-    confirmationPageElement.$$('#accept-button').click();
+    getButton('#actionButton').click();
     await confirmationManager.whenCalled('accept');
   });
 
@@ -54,7 +61,7 @@ suite('ConfirmatonPageTest', function() {
         /*token=*/ null);
     await transferUpdateListener.remote_.$.flushForTesting();
 
-    confirmationPageElement.$$('#reject-button').click();
+    getButton('#cancelButton').click();
     await confirmationManager.whenCalled('reject');
   });
 
@@ -64,7 +71,7 @@ suite('ConfirmatonPageTest', function() {
         /*token=*/ null);
     await transferUpdateListener.remote_.$.flushForTesting();
 
-    confirmationPageElement.$$('#cancel-button').click();
+    getButton('#cancelButton').click();
     await confirmationManager.whenCalled('cancel');
   });
 
@@ -75,7 +82,7 @@ suite('ConfirmatonPageTest', function() {
     await transferUpdateListener.remote_.$.flushForTesting();
 
     const renderedToken =
-        confirmationPageElement.$$('#confirmation-token').textContent;
+        confirmationPageElement.$$('#confirmationToken').textContent;
     assertTrue(renderedToken.includes(token));
   });
 

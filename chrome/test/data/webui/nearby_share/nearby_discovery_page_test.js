@@ -92,6 +92,13 @@ suite('DiscoveryPageTest', function() {
   }
 
   /**
+   * @param {string} button button selector (i.e. #actionButton)
+   */
+  function getButton(button) {
+    return discoveryPageElement.$$('nearby-page-template').$$(button);
+  }
+
+  /**
    * Starts discovery and returns the ShareTargetListenerRemote.
    * @return {!Promise<nearbyShare.mojom.ShareTargetListenerRemote>}
    */
@@ -136,7 +143,7 @@ suite('DiscoveryPageTest', function() {
   test('selects share target with success', async function() {
     const created = await setupShareTarget();
     discoveryPageElement.selectedShareTarget = created;
-    discoveryPageElement.$$('#next-button').click();
+    getButton('#actionButton').click();
     const selectedId = await discoveryManager.whenCalled('selectShareTarget');
     assertTokensEqual(created.id, selectedId);
   });
@@ -146,7 +153,7 @@ suite('DiscoveryPageTest', function() {
     discoveryManager.selectShareTargetResult.result =
         nearbyShare.mojom.SelectShareTargetResult.kError;
 
-    discoveryPageElement.$$('#next-button').click();
+    getButton('#actionButton').click();
     await discoveryManager.whenCalled('selectShareTarget');
   });
 
@@ -161,7 +168,7 @@ suite('DiscoveryPageTest', function() {
       eventDetail = event.detail;
     });
 
-    discoveryPageElement.$$('#next-button').click();
+    getButton('#actionButton').click();
 
     await discoveryManager.whenCalled('selectShareTarget');
     assertEquals('confirmation', eventDetail.page);
@@ -274,7 +281,7 @@ suite('DiscoveryPageTest', function() {
     await listener.$.flushForTesting();
 
     assertTrue(clickOnDevice(1));
-    assertFalse(discoveryPageElement.$$('#next-button').disabled);
+    assertFalse(getButton('#actionButton').disabled);
 
     // Loose the second device.
     listener.onShareTargetLost(targets[1]);
@@ -283,7 +290,7 @@ suite('DiscoveryPageTest', function() {
     // Loosing the selected device should clear the selected device and disable
     // the next button.
     assertEquals(null, discoveryPageElement.selectedShareTarget);
-    assertTrue(discoveryPageElement.$$('#next-button').disabled);
+    assertTrue(getButton('#actionButton').disabled);
   });
 
 });

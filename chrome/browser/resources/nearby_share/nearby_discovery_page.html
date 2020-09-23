@@ -5,15 +5,7 @@
     --nearby-page-space-large-inline: 42px;
   }
 
-  #actions {
-    margin-block-end: var(--nearby-page-space-block);
-    margin-block-start: 17px;
-    margin-inline-end:  var(--nearby-page-space-inline);
-    margin-inline-start: var(--nearby-page-space-inline);
-    text-align: end;
-  }
-
-  #center-content {
+  #centerContent {
     background: radial-gradient(160% 50% at 0 100%, rgba(138, 180, 248, 0.25),
         rgba(255, 255, 255, 0));
     box-sizing: border-box;
@@ -45,12 +37,6 @@
     margin-inline-start: var(--nearby-page-space-inline);
   }
 
-  #page-content {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-  }
-
   #process-row {
     display: flex;
     flex-grow: 1;
@@ -58,37 +44,16 @@
     margin-block-start: 48px;
     overflow: hidden;
   }
-
-  #subtitle {
-    color: rgb(32, 33, 36);
-    font-size: 100%;
-    font-weight: normal;
-    line-height: 154%;
-    margin-block-end: 0;
-    margin-block-start: 0;
-    margin-inline-end:  var(--nearby-page-space-inline);
-    margin-inline-start: var(--nearby-page-space-inline);
-  }
-
-  #title {
-    color: rgb(32, 33, 36);
-    font-size: 123%;
-    font-weight: normal;
-    letter-spacing: 0.27px;
-    line-height: 150%;
-    margin-block-end: 0;
-    margin-block-start: var(--nearby-page-space-block);
-    margin-inline-end:  var(--nearby-page-space-inline);
-    margin-inline-start: var(--nearby-page-space-inline);
-  }
 </style>
 
-<div id="page-content">
-  <h1 id="title">[[i18n('nearbyShareDiscoveryPageTitle')]]</h1>
-  <h2 id="subtitle">[[i18n('nearbyShareDiscoveryPageSubtitle')]]</h2>
-
-  <div id="center-content">
-
+<nearby-page-template title="$i18n{nearbyShareDiscoveryPageTitle}"
+        sub-title="$i18n{nearbyShareDiscoveryPageSubtitle}"
+        action-button-label="$i18n{nearbyShareActionsNext}"
+        action-button-event-name="next"
+        action-disabled="[[!selectedShareTarget]]"
+        cancel-button-label="$i18n{nearbyShareActionsCancel}"
+        cancel-button-event-name="close">
+  <div id="centerContent" slot="content">
     <div id="process-row">
       <nearby-preview title="[[attachmentsDescription]]"></nearby-preview>
       <iron-list items="[[shareTargets_]]" id="deviceList"
@@ -104,18 +69,6 @@
         </template>
       </iron-list>
     </div>
-
     <div id="help">[[i18n('nearbyShareDiscoveryPageInfo')]]</div>
-
   </div>
-
-  <div id="actions">
-    <cr-button class="cancel-button" on-click="onCancelTap_">
-      [[i18n('nearbyShareActionsCancel')]]
-    </cr-button>
-    <cr-button id="next-button" class="action-button" on-click="onNextTap_"
-        disabled="[[!selectedShareTarget]]">
-      [[i18n('nearbyShareActionsNext')]]
-    </cr-button>
-  </div>
-</div>
+</nearby-page-template>

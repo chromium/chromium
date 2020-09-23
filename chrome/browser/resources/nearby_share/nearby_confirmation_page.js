@@ -16,6 +16,7 @@ import './nearby_preview.js';
 import './nearby_progress.js';
 import './nearby_share_target_types.mojom-lite.js';
 import './nearby_share.mojom-lite.js';
+import './shared/nearby_page_template.m.js';
 import './strings.m.js';
 
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
@@ -100,13 +101,20 @@ Polymer({
     },
 
     /**
-     * Whether the user needs to confirm this transfer on the local device.
+     * Whether the user needs to confirm this transfer on the local device. This
+     * affects which buttons are displayed to the user.
      * @private
      * */
     needsConfirmation_: {
       type: Boolean,
       value: false,
     },
+  },
+
+  listeners: {
+    'accept': 'onAccept_',
+    'reject': 'onReject_',
+    'cancel': 'onCancel_',
   },
 
   /** @private {?TransferUpdateListener} */
@@ -162,7 +170,7 @@ Polymer({
   },
 
   /** @private */
-  onAcceptTap_() {
+  onAccept_() {
     this.confirmationManager.accept().then(
         result => {
             // TODO(crbug.com/1123934): Show error if !result.success
@@ -170,17 +178,44 @@ Polymer({
   },
 
   /** @private */
-  onRejectTap_() {
+  onReject_() {
     this.confirmationManager.reject().then(result => {
       this.fire('close');
     });
   },
 
   /** @private */
-  onCancelTap_() {
+  onCancel_() {
     this.confirmationManager.cancel().then(result => {
       this.fire('close');
     });
+  },
+
+  /**
+   * @param {boolean} needsConfirmation
+   * @return {?string} Localized string or null if the button should be hidden.
+   */
+  getActionButtonLabel_(needsConfirmation) {
+    return needsConfirmation ? this.i18n('nearbyShareActionsConfirm') : null;
+  },
+
+  /**
+   * @param {boolean} needsConfirmation
+   * @return {string} Localized string to show on the cancel button.
+   * @private
+   */
+  getCancelButtonLabel_(needsConfirmation) {
+    return needsConfirmation ? this.i18n('nearbyShareActionsReject') :
+                               this.i18n('nearbyShareActionsCancel');
+  },
+
+  /**
+   * @param {boolean} needsConfirmation
+   * @return {string} The event name fire when the cancel button is clicked.
+   * @private
+   */
+  getCancelEventName_(needsConfirmation) {
+    return needsConfirmation ? 'reject' : 'cancel';
   },
 
   /**

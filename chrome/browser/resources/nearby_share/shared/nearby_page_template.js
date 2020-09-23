@@ -32,6 +32,11 @@ Polymer({
       value: 'action'
     },
 
+    actionDisabled: {
+      type: Boolean,
+      value: false,
+    },
+
     /** @type {?string} */
     cancelButtonLabel: {
       type: String,

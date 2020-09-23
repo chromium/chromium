@@ -1,24 +1,19 @@
 <style>
-  #actions {
-    margin-inline-start: auto;
-    margin-top: auto;
-  }
-
-  #add-contacts {
+  #addContacts {
     margin-top: 32px;
   }
 
-  #add-contacts-label {
+  #addContactsLabel {
     color: rgb(32, 33, 36);
     line-height: 138%;
   }
 
-  #add-contacts-label-secondary {
+  #addContactsLabelSecondary {
     color: rgb(95, 99, 104);
     line-height: 138%;
   }
 
-  #confirmation-token {
+  #confirmationToken {
     border-top: 1px dashed rgba(151, 151, 151, 0.74);
     color: rgba(0, 0, 0, 0.4);
     flex-grow: 1;
@@ -28,6 +23,7 @@
     margin-top: 55px;
     padding-top: 6px;
     text-align: center;
+    width: 200px;
   }
 
   nearby-preview {
@@ -40,7 +36,7 @@
     width: 126px;
   }
 
-  #page-content {
+  #centerContent {
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
@@ -48,61 +44,37 @@
     padding: 27px 32px 25px 37px;
   }
 
-  #process-row {
+  #processRow {
     display: flex;
     margin-top: 48px;
   }
-
-  #title {
-    color: rgb(32, 33, 36);
-    font-size: 123%;
-    font-weight: normal;
-    letter-spacing: 0.27px;
-    line-height: 150%;
-    margin: 0;
-  }
 </style>
 
-<div id="page-content">
-  <h1 id="title">[[i18n('nearbyShareConfirmationPageTitle')]]</h1>
-
-  <div id="process-row">
-    <nearby-preview title="[[attachmentTitle_()]]"></nearby-preview>
-    <div id="confirmation-token">
-      <template is="dom-if" if="[[confirmationToken_]]">
-        [[i18n('nearbyShareSecureConnectionId', confirmationToken_)]]
-      </template>
+<nearby-page-template title="$i18n{nearbyShareConfirmationPageTitle}"
+        action-button-label="[[getActionButtonLabel_(needsConfirmation_)]]"
+        action-button-event-name="accept"
+        cancel-button-label="[[getCancelButtonLabel_(needsConfirmation_)]]"
+        cancel-button-event-name="[[getCancelEventName_(needsConfirmation_)]]">
+  <div id="centerContent" slot="content">
+    <div id="processRow">
+      <nearby-preview title="[[attachmentTitle_()]]"></nearby-preview>
+      <div id="confirmationToken">
+        <template is="dom-if" if="[[confirmationToken_]]">
+          [[i18n('nearbyShareSecureConnectionId', confirmationToken_)]]
+        </template>
+      </div>
+      <nearby-progress share-target="[[shareTarget]]"></nearby-progress>
     </div>
-    <nearby-progress share-target="[[shareTarget]]"></nearby-progress>
-  </div>
 
-  <template is="dom-if" if="[[contactName_(shareTarget)]]">
-    <cr-checkbox id="add-contacts">
-      <div id="add-contacts-label">
-        [[contactName_(shareTarget)]]
-      </div>
-      <div id="add-contacts-label-secondary">
-        [[i18n('nearbyShareConfirmationPageAddContactSubtitle')]]
-      </div>
-    </cr-checkbox>
-  </template>
-
-  <div id="actions">
-    <template is="dom-if" if="[[needsConfirmation_]]">
-      <cr-button id="reject-button" class="cancel-button"
-          on-click="onRejectTap_">
-        [[i18n('nearbyShareActionsReject')]]
-      </cr-button>
-      <cr-button id="accept-button" class="action-button"
-          on-click="onAcceptTap_">
-        [[i18n('nearbyShareActionsConfirm')]]
-      </cr-button>
-    </template>
-    <template is="dom-if" if="[[!needsConfirmation_]]">
-      <cr-button id="cancel-button" class="action-button"
-          on-click="onCancelTap_">
-        [[i18n('nearbyShareActionsCancel')]]
-      </cr-button>
+    <template is="dom-if" if="[[contactName_(shareTarget)]]">
+      <cr-checkbox id="addContacts">
+        <div id="addContactsLabel">
+          [[contactName_(shareTarget)]]
+        </div>
+        <div id="addContactsLabelSecondary">
+          [[i18n('nearbyShareConfirmationPageAddContactSubtitle')]]
+        </div>
+      </cr-checkbox>
     </template>
   </div>
-</div>
+</nearby-page-template>

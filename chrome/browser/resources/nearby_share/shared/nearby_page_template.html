@@ -74,7 +74,7 @@
         </template>
         <template is="dom-if" if="[[actionButtonLabel]]">
           <cr-button id="actionButton" class="action-button"
-              on-click="onActionClick_">
+              on-click="onActionClick_" disabled="[[actionDisabled]]">
             [[actionButtonLabel]]
           </cr-button>
         </template>

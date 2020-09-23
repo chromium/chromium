@@ -15,6 +15,7 @@ import './nearby_device.js';
 import './nearby_preview.js';
 import './nearby_share_target_types.mojom-lite.js';
 import './nearby_share.mojom-lite.js';
+import './shared/nearby_page_template.m.js';
 import './strings.m.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
@@ -99,6 +100,7 @@ Polymer({
   },
 
   listeners: {
+    'next': 'onNext_',
     'view-enter-start': 'onViewEnterStart_',
     'view-exit-finish': 'onViewExitFinish_',
   },
@@ -242,7 +244,7 @@ Polymer({
   },
 
   /** @private */
-  onNextTap_() {
+  onNext_() {
     if (!this.selectedShareTarget) {
       return;
     }
@@ -283,7 +285,7 @@ Polymer({
   },
 
   /**
-   * Updates the selected share tagrget to |shareTarget| if its id matches |id|.
+   * Updates the selected share target to |shareTarget| if its id matches |id|.
    * @param {!mojoBase.mojom.UnguessableToken} id
    * @param {?nearbyShare.mojom.ShareTarget} shareTarget
    * @private
@@ -294,10 +296,5 @@ Polymer({
       this.lastSelectedShareTarget_ = shareTarget;
       this.selectedShareTarget = shareTarget;
     }
-  },
-
-  /** @private */
-  onCancelTap_() {
-    this.fire('close');
   },
 });
