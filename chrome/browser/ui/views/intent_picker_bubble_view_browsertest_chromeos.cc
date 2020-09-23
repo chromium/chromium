@@ -63,11 +63,16 @@ class IntentPickerBubbleViewBrowserTestChromeOS : public InProcessBrowserTest {
 
   apps::AppServiceTest& app_service_test() { return app_service_test_; }
 
+  IntentPickerBubbleView* intent_picker_bubble() {
+    return IntentPickerBubbleView::intent_picker_bubble();
+  }
+
  private:
   apps::AppServiceProxy* app_service_proxy_ = nullptr;
   apps::AppServiceTest app_service_test_;
 };
 
+// Test that the intent picker bubble will pop out for ARC apps.
 IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
                        BubblePopOut) {
   GURL test_url("https://www.google.com/");
@@ -87,12 +92,128 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
   ui_test_utils::NavigateToURL(&params);
   app_service_test().WaitForAppService();
   EXPECT_TRUE(intent_picker_view->GetVisible());
-  EXPECT_TRUE(IntentPickerBubbleView::intent_picker_bubble_);
-  EXPECT_EQ(1U,
-            IntentPickerBubbleView::intent_picker_bubble_->GetScrollViewSize());
-  auto& app_info =
-      IntentPickerBubbleView::intent_picker_bubble_->app_info_for_testing();
+  EXPECT_TRUE(intent_picker_bubble());
+  EXPECT_TRUE(intent_picker_bubble()->GetVisible());
+  EXPECT_EQ(1U, intent_picker_bubble()->GetScrollViewSize());
+  auto& app_info = intent_picker_bubble()->app_info_for_testing();
   ASSERT_EQ(1U, app_info.size());
   EXPECT_EQ(kAppId1, app_info[0].launch_name);
   EXPECT_EQ(app_name, app_info[0].display_name);
+}
+
+// Test that navigate outside url scope will not show the intent picker icon or
+// bubble.
+IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
+                       OutOfScopeDoesNotShowBubble) {
+  GURL test_url("https://www.google.com/");
+  GURL out_of_scope_url("https://www.example.com/");
+  std::string app_name = "test_name";
+  AddFakeAppWithIntentFilter(kAppId1, app_name, test_url,
+                             apps::mojom::AppType::kArc);
+  PageActionIconView* intent_picker_view = GetIntentPickerIcon();
+
+  chrome::NewTab(browser());
+  ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+
+  // Navigate from a link.
+  NavigateParams params(browser(), out_of_scope_url,
+                        ui::PageTransition::PAGE_TRANSITION_LINK);
+
+  // Navigates and waits for loading to finish.
+  ui_test_utils::NavigateToURL(&params);
+  app_service_test().WaitForAppService();
+  EXPECT_FALSE(intent_picker_view->GetVisible());
+  EXPECT_FALSE(intent_picker_bubble());
+}
+
+// Test that intent picker bubble will not pop up for only PWA apps.
+IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
+                       PWAOnlyDoesNotShowBubble) {
+  GURL test_url("https://www.google.com/");
+  std::string app_name = "test_name";
+  AddFakeAppWithIntentFilter(kAppId1, app_name, test_url,
+                             apps::mojom::AppType::kWeb);
+  PageActionIconView* intent_picker_view = GetIntentPickerIcon();
+
+  chrome::NewTab(browser());
+  ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+
+  // Navigate from a link.
+  NavigateParams params(browser(), test_url,
+                        ui::PageTransition::PAGE_TRANSITION_LINK);
+
+  // Navigates and waits for loading to finish.
+  ui_test_utils::NavigateToURL(&params);
+  app_service_test().WaitForAppService();
+  EXPECT_TRUE(intent_picker_view->GetVisible());
+  EXPECT_FALSE(intent_picker_bubble());
+}
+
+// Test that intent picker bubble will not pop up for non-link navigation.
+IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
+                       NotLinkDoesNotShowBubble) {
+  GURL test_url("https://www.google.com/");
+  std::string app_name = "test_name";
+  AddFakeAppWithIntentFilter(kAppId1, app_name, test_url,
+                             apps::mojom::AppType::kArc);
+  PageActionIconView* intent_picker_view = GetIntentPickerIcon();
+
+  chrome::NewTab(browser());
+  ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+
+  // Navigate from a link.
+  NavigateParams params(browser(), test_url,
+                        ui::PageTransition::PAGE_TRANSITION_FROM_ADDRESS_BAR);
+
+  // Navigates and waits for loading to finish.
+  ui_test_utils::NavigateToURL(&params);
+  app_service_test().WaitForAppService();
+  EXPECT_TRUE(intent_picker_view->GetVisible());
+  EXPECT_FALSE(intent_picker_bubble());
+}
+
+// Test that dismiss the bubble for 2 times for the same origin will not show
+// the bubble again. Test that the intent picker bubble will pop out for ARC
+// apps.
+IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
+                       DismissBubble) {
+  GURL test_url("https://www.google.com/");
+  std::string app_name = "test_name";
+  AddFakeAppWithIntentFilter(kAppId1, app_name, test_url,
+                             apps::mojom::AppType::kArc);
+  PageActionIconView* intent_picker_view = GetIntentPickerIcon();
+
+  chrome::NewTab(browser());
+  ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+
+  // Navigate from a link.
+  NavigateParams params(browser(), test_url,
+                        ui::PageTransition::PAGE_TRANSITION_LINK);
+
+  // Navigates and waits for loading to finish.
+  ui_test_utils::NavigateToURL(&params);
+  app_service_test().WaitForAppService();
+  EXPECT_TRUE(intent_picker_view->GetVisible());
+  EXPECT_TRUE(intent_picker_bubble());
+  EXPECT_TRUE(intent_picker_bubble()->GetVisible());
+  EXPECT_EQ(1U, intent_picker_bubble()->GetScrollViewSize());
+  auto& app_info = intent_picker_bubble()->app_info_for_testing();
+  ASSERT_EQ(1U, app_info.size());
+  EXPECT_EQ(kAppId1, app_info[0].launch_name);
+  EXPECT_EQ(app_name, app_info[0].display_name);
+  EXPECT_TRUE(intent_picker_bubble()->Close());
+
+  ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+  ui_test_utils::NavigateToURL(&params);
+  app_service_test().WaitForAppService();
+  EXPECT_TRUE(intent_picker_view->GetVisible());
+  EXPECT_TRUE(intent_picker_bubble());
+  EXPECT_TRUE(intent_picker_bubble()->GetVisible());
+  EXPECT_TRUE(intent_picker_bubble()->Close());
+
+  ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+  ui_test_utils::NavigateToURL(&params);
+  app_service_test().WaitForAppService();
+  EXPECT_TRUE(intent_picker_view->GetVisible());
+  EXPECT_FALSE(intent_picker_bubble());
 }
