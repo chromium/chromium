@@ -374,13 +374,22 @@
     Import bookmarks
   </message>
   <message name="IDS_BOOKMARK_MANAGER_MENU_OPEN_ALL" desc="Menu title for opening all urls in a bookmark folder">
-    Open all bookmarks
+    Open all
+  </message>
+  <message name="IDS_BOOKMARK_MANAGER_MENU_OPEN_ALL_WITH_COUNT" desc="Menu title for opening all urls in a bookmark folder, which includes a count of urls">
+    Open all (<ph name="URL_COUNT">$1<ex>5</ex></ph>)
   </message>
   <message name="IDS_BOOKMARK_MANAGER_MENU_OPEN_ALL_NEW_WINDOW" desc="Menu title for opening all urls in a bookmark folder in a new window">
     Open all in new window
   </message>
+  <message name="IDS_BOOKMARK_MANAGER_MENU_OPEN_ALL_NEW_WINDOW_WITH_COUNT" desc="Menu title for opening all urls in a bookmark folder in a new window, which includes a count of urls">
+    Open all (<ph name="URL_COUNT">$1<ex>5</ex></ph>) in new window
+  </message>
   <message name="IDS_BOOKMARK_MANAGER_MENU_OPEN_ALL_INCOGNITO" desc="Menu description for opening all urls in a bookmark folder in an incognito window">
     Open all in incognito window
+  </message>
+  <message name="IDS_BOOKMARK_MANAGER_MENU_OPEN_ALL_INCOGNITO_WITH_COUNT" desc="Menu description for opening all urls in a bookmark folder in an incognito window, which includes a count of urls">
+    Open all (<ph name="URL_COUNT">$1<ex>5</ex></ph>) in incognito window
   </message>
   <message name="IDS_BOOKMARK_MANAGER_MENU_OPEN_IN_NEW_TAB" desc="Menu description for opening a bookmark in a new tab">
     Open in new tab

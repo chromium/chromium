@@ -1,19 +1,4 @@
-<style include="shared-style">
-  .label {
-    flex: 1;
-  }
-
-  .sublabel {
-    color: var(--cr-secondary-text-color);
-    margin-inline-start: 8px;
-    text-align: end;
-    width: 3ch;
-  }
-
-  :host(:not([has-any-sublabel_])) .sublabel {
-    display: none;
-  }
-</style>
+<style include="shared-style"></style>
 <cr-lazy-render id="dropdown">
   <template>
     <cr-action-menu on-mousedown="onMenuMousedown_"
@@ -24,12 +9,7 @@
             hidden$="[[!isCommandVisible_(command, menuIds_)]]"
             disabled$="[[!isCommandEnabled_(command, menuIds_, canPaste_)]]"
             on-click="onCommandClick_">
-          <span class="label">
-            [[getCommandLabel_(command, menuIds_)]]
-          </span>
-          <span class="sublabel">
-            [[getCommandSublabel_(command, menuIds_)]]
-          </span>
+          [[getCommandLabel_(command, menuIds_)]]
         </button>
         <hr hidden$="[[!showDividerAfter_(command, menuIds_)]]"
             aria-hidden="true">
