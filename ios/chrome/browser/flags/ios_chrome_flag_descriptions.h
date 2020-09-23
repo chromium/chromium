@@ -473,6 +473,9 @@ extern const char kWebPageTextAccessibilityDescription[];
 extern const char kWellKnownChangePasswordName[];
 extern const char kWellKnownChangePasswordDescription[];
 
+extern const char kRestoreGaiaCookiesIfDeletedName[];
+extern const char kRestoreGaiaCookiesIfDeletedDescription[];
+
 // Please add names and descriptions above in alphabetical order.
 
 }  // namespace flag_descriptions

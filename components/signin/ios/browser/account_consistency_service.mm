@@ -19,6 +19,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/signin/core/browser/account_reconcilor.h"
 #include "components/signin/core/browser/signin_header_helper.h"
+#include "components/signin/ios/browser/features.h"
 #include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/identity_manager/accounts_cookie_mutator.h"
 #include "google_apis/gaia/gaia_urls.h"
@@ -77,9 +78,6 @@ class AccountConsistencyHandler : public web::WebStatePolicyDecider {
   __weak id<ManageAccountsDelegate> delegate_;
 };
 }  // namespace
-
-const base::Feature kRestoreGAIACookiesIfDeleted{
-    "RestoreGAIACookiesIfDeleted", base::FEATURE_DISABLED_BY_DEFAULT};
 
 AccountConsistencyHandler::AccountConsistencyHandler(
     web::WebState* web_state,
@@ -222,10 +220,11 @@ void AccountConsistencyService::RemoveWebStateHandler(
 
 void AccountConsistencyService::SetGaiaCookiesIfDeleted() {
   // We currently enforce a time threshold to update the Gaia cookie
-  // to prevent calling the expensive call to the cookie manager's
-  // |GetAllCookies|.
+  // for signed-in users to prevent calling the expensive method
+  // |GetAllCookies| in the cookie manager.
   if (base::Time::Now() - last_gaia_cookie_verification_time_ <
-      kDelayThresholdToUpdateGaiaCookie) {
+          kDelayThresholdToUpdateGaiaCookie ||
+      !identity_manager_->HasPrimaryAccount()) {
     return;
   }
   network::mojom::CookieManager* cookie_manager =
@@ -253,7 +252,7 @@ void AccountConsistencyService::TriggerGaiaCookieChangeIfDeleted(
   // ITP restrictions marking Google domains as potential trackers.
   LogIOSGaiaCookiesPresentOnNavigation(false);
 
-  if (!base::FeatureList::IsEnabled(kRestoreGAIACookiesIfDeleted)) {
+  if (!base::FeatureList::IsEnabled(signin::kRestoreGaiaCookiesIfDeleted)) {
     return;
   }
   // Re-generate cookie to ensure that the user is properly signed in.

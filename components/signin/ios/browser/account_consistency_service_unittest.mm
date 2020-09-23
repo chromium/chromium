@@ -577,6 +577,7 @@ TEST_F(AccountConsistencyServiceTest, SetChromeConnectedCookieAtUpdateTime) {
 }
 
 TEST_F(AccountConsistencyServiceTest, SetGaiaCookieUpdateNotUpdateTime) {
+  SignIn();
   SimulateUpdateGaiaCookie();
 
   // Advance clock, but stay within the one-hour Gaia update time.
@@ -588,6 +589,7 @@ TEST_F(AccountConsistencyServiceTest, SetGaiaCookieUpdateNotUpdateTime) {
 }
 
 TEST_F(AccountConsistencyServiceTest, SetGaiaCookieUpdateAtUpdateTime) {
+  SignIn();
   SimulateUpdateGaiaCookie();
 
   // Advance clock past one-hour Gaia update time.
@@ -602,10 +604,12 @@ TEST_F(AccountConsistencyServiceTest, SetGaiaCookieUpdateAtUpdateTime) {
 // |kRestoreGAIACookiesIfDeleted| experiment is disabled.
 TEST_F(AccountConsistencyServiceTest, GAIACookieStatusLoggedProperly) {
   base::HistogramTester histogram_tester;
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kRestoreGAIACookiesIfDeleted);
 
   histogram_tester.ExpectTotalCount(kGAIACookiePresentHistogram, 0);
+  SimulateUpdateGaiaCookie();
+  base::RunLoop().RunUntilIdle();
+  histogram_tester.ExpectTotalCount(kGAIACookiePresentHistogram, 0);
+  SignIn();
   SimulateUpdateGaiaCookie();
   base::RunLoop().RunUntilIdle();
   histogram_tester.ExpectTotalCount(kGAIACookiePresentHistogram, 1);

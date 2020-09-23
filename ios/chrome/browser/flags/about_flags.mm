@@ -694,6 +694,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillUseRendererIDsDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillUseUniqueRendererIDsOnIOS)},
+    {"restore-gaia-cookies-if-deleted",
+     flag_descriptions::kRestoreGaiaCookiesIfDeletedName,
+     flag_descriptions::kRestoreGaiaCookiesIfDeletedDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(signin::kRestoreGaiaCookiesIfDeleted)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

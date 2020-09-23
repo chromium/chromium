@@ -424,6 +424,12 @@ const char kReloadSadTabDescription[] =
     "When enabled, the first time the renderer crashes, the page is reloaded "
     "instead of showing the SadTab";
 
+const char kRestoreGaiaCookiesIfDeletedName[] =
+    "Restore GAIA cookies if deleted";
+const char kRestoreGaiaCookiesIfDeletedDescription[] =
+    "When enabled, will restore GAIA cookies for signed-in Chrome users if "
+    "they are deleted.";
+
 const char kSafeBrowsingAvailableName[] = "Make Safe Browsing available";
 const char kSafeBrowsingAvailableDescription[] =
     "When enabled, navigation URLs are compared to Safe Browsing blocklists, "
