@@ -281,12 +281,6 @@ Polymer({
       this.$$('#receiveDialog').showConfirmPage();
     }
 
-    if (queryParams.has('onboarding')) {
-      this.showReceiveDialog_ = true;
-      Polymer.dom.flush();
-      this.$$('#receiveDialog').showOnboarding();
-    }
-
     this.attemptDeepLink();
   },
 

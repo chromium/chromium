@@ -286,6 +286,8 @@ Polymer({
    * @private
    */
   genFakeContacts_(numContacts) {
+    this.contactsPending = false;
+    this.contactsFailed = false;
     clearTimeout(this.downloadTimeoutId_);
     const fakeContacts = [];
     for (let i = 0; i < numContacts; i++) {
@@ -297,7 +299,6 @@ Polymer({
       });
     }
     this.contacts = fakeContacts;
-    this.contactsState = ContactsState.HAS_CONTACTS;
   },
 
   /**

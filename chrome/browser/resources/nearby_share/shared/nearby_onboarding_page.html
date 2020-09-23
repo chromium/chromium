@@ -4,19 +4,43 @@
 <link rel="import" href="chrome://resources/cr_elements/cr_input/cr_input.html">
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
-<link rel="import" href="./nearby_page_template.html">
 <link rel="import" href="./nearby_share_settings_behavior.html">
 
 <dom-module id="nearby-onboarding-page">
   <template>
     <style include="cr-icons cr-shared-style"></style>
     <style>
+      :host {
+        --nearby-page-space-block: 26px;
+        --nearby-page-space-inline: 32px;
+        --nearby-page-space-large-inline: 42px;
+      }
+
+      #page-container {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+      }
+
+      #header {
+        padding: 30px;
+      }
+
       #center-content {
         box-sizing: border-box;
         display: flex;
         flex-grow: 1;
         justify-content: center;
         overflow: hidden;
+      }
+
+      #page-title {
+        font-size: 125%;
+        font-weight: normal;
+      }
+
+      #page-sub-title {
+        font-weight: normal;
       }
 
       #splash-image-column {
@@ -42,14 +66,22 @@
         padding-inline-end: 10px;
         padding-inline-start: 10px;
       }
+
+      #actions {
+        margin-block-end: var(--nearby-page-space-block);
+        margin-block-start: 17px;
+        margin-inline-end:  var(--nearby-page-space-inline);
+        margin-inline-start: var(--nearby-page-space-inline);
+        text-align: end;
+      }
     </style>
-    <nearby-page-template title="$i18n{nearbyShareOnboardingPageTitle}"
-        sub-title="$i18n{nearbyShareOnboardingPageSubtitle}"
-        action-button-label="$i18n{nearbyShareActionsNext}"
-        action-button-event-name="next"
-        cancel-button-label="$i18n{nearbyShareActionsCancel}"
-        cancel-button-event-name="close">
-      <div id=center-content slot="content">
+    <div id="page-container">
+      <div id="header">
+        <h1 id="page-title">$i18n{nearbyShareOnboardingPageTitle}</h1>
+        <h4 id="page-sub-title">$i18n{nearbyShareOnboardingPageSubtitle}</h4>
+      </div>
+
+      <div id=center-content>
         <iron-icon id="splash-image-column"
             icon="nearby-images:nearby-onboarding-splash">
         </iron-icon>
@@ -59,7 +91,16 @@
           </cr-input>
         </div>
       </div>
-    </nearby-page-template>
+
+      <div id="actions">
+        <cr-button class="cancel-button" on-click="onCloseTap_">
+          $i18n{nearbyShareActionsCancel}
+        </cr-button>
+        <cr-button id="next-button" class="action-button" on-click="onNextTap_">
+          $i18n{nearbyShareActionsNext}
+        </cr-button>
+      </div>
+    </div>
   </template>
   <script src="nearby_onboarding_page.js"></script>
 </dom-module>

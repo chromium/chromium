@@ -24,21 +24,18 @@ Polymer({
     }
   },
 
-  listeners: {
-    'next': 'onNext_',
-    'manage-contacts': 'onManageContacts_'
-  },
-
-  /** @private */
-  onNext_() {
+  onNextTap_() {
     this.set('settings.enabled', true);
-    this.fire('onboarding-complete');
+    this.fire('change-page', {page: 'discovery'});
   },
 
-  /** @private */
-  onManageContacts_() {
+  onCloseTap_() {
+    this.fire('close');
+  },
+
+  onManageContactsTap_() {
     // TODO(vecore): this is not a final link
-    window.open('https://contacts.google.com', '_blank');
+    window.open('https://contacts.google.com');
   },
 
 });

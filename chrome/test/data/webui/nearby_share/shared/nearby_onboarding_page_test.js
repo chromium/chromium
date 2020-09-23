@@ -16,13 +16,9 @@ suite('nearby-onboarding-page', function() {
   let element;
   /** @type {!string} */
   const deviceName = 'Test\'s Device';
-  /** @type {!nearby_share.FakeContactManager} */
-  const fakeContactManager = new nearby_share.FakeContactManager();
 
   setup(function() {
     document.body.innerHTML = '';
-
-    nearby_share.setContactManagerForTesting(fakeContactManager);
 
     element = /** @type {!NearbyOnboardingPageElement} */ (
         document.createElement('nearby-onboarding-page'));

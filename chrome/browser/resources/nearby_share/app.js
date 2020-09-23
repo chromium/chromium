@@ -76,7 +76,6 @@ Polymer({
   listeners: {
     'change-page': 'onChangePage_',
     'close': 'onClose_',
-    'onboarding-complete': 'onOnboardingComplete_',
   },
 
   /**
@@ -114,14 +113,5 @@ Polymer({
    */
   onClose_(event) {
     chrome.send('close');
-  },
-
-  /**
-   * Handler for when onboarding is completed.
-   * @param {!Event} event
-   * @private
-   */
-  onOnboardingComplete_(event) {
-    this.getViewManager_().switchView(Page.DISCOVERY);
   },
 });
