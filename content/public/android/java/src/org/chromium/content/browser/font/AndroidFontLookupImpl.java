@@ -252,6 +252,7 @@ public class AndroidFontLookupImpl implements AndroidFontLookup {
         Map<String, String> map = new HashMap<>();
         map.put("google sans regular", createFontQuery("Google Sans", 400));
         map.put("google sans medium", createFontQuery("Google Sans", 500));
+        map.put("google sans bold", createFontQuery("Google Sans", 700));
         return map;
     }
 

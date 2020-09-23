@@ -8,5 +8,6 @@
     <array name="preloaded_google_sans_fonts">
         <item>@font/google_sans</item>
         <item>@font/google_sans_medium</item>
+        <item>@font/google_sans_bold</item>
     </array>
 </resources>

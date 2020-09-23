@@ -767,6 +767,7 @@ chrome_java_resources = [
   "java/res/drawable/trending_up_black_24dp.xml",
   "java/res/drawable/visa_card.xml",
   "java/res/font/google_sans.xml",
+  "java/res/font/google_sans_bold.xml",
   "java/res/font/google_sans_medium.xml",
   "java/res/layout-sw360dp/preference_spinner_single_line.xml",
   "java/res/layout-sw600dp/find_toolbar.xml",
