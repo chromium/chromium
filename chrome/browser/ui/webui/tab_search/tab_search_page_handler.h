@@ -36,6 +36,7 @@ class TabSearchPageHandler : public tab_search::mojom::PageHandler,
   class Delegate {
    public:
     virtual void ShowUI() = 0;
+    virtual void CloseUI() = 0;
   };
 
   TabSearchPageHandler(
@@ -54,6 +55,7 @@ class TabSearchPageHandler : public tab_search::mojom::PageHandler,
   void SwitchToTab(
       tab_search::mojom::SwitchToTabInfoPtr switch_to_tab_info) override;
   void ShowUI() override;
+  void CloseUI() override;
 
   // TabStripModelObserver:
   void OnTabStripModelChanged(

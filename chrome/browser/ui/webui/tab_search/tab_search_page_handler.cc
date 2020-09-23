@@ -155,6 +155,10 @@ void TabSearchPageHandler::ShowUI() {
   delegate_->ShowUI();
 }
 
+void TabSearchPageHandler::CloseUI() {
+  delegate_->CloseUI();
+}
+
 tab_search::mojom::TabPtr TabSearchPageHandler::GetTabData(
     TabStripModel* tab_strip_model,
     content::WebContents* contents,

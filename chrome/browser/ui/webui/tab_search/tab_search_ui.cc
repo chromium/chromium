@@ -7,7 +7,6 @@
 #include "build/branding_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
-#include "chrome/browser/ui/webui/tab_search/tab_search_page_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -80,13 +79,20 @@ void TabSearchUI::BindInterface(
   page_factory_receiver_.Bind(std::move(receiver));
 }
 
-void TabSearchUI::AddShowUICallback(base::OnceClosure callback) {
-  show_ui_callback_ = std::move(callback);
+void TabSearchUI::SetEmbedder(TabSearchUIEmbedder* embedder) {
+  // Setting the embedder must be done before the page handler is created.
+  DCHECK(!embedder || !page_handler_);
+  embedder_ = embedder;
 }
 
 void TabSearchUI::ShowUI() {
-  if (show_ui_callback_)
-    std::move(show_ui_callback_).Run();
+  if (embedder_)
+    embedder_->ShowBubble();
+}
+
+void TabSearchUI::CloseUI() {
+  if (embedder_)
+    embedder_->CloseBubble();
 }
 
 void TabSearchUI::CreatePageHandler(

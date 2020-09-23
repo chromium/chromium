@@ -101,6 +101,7 @@ class MockTabSearchPageHandlerDelegate : public TabSearchPageHandler::Delegate {
   virtual ~MockTabSearchPageHandlerDelegate() = default;
 
   MOCK_METHOD(void, ShowUI, (), (override));
+  MOCK_METHOD(void, CloseUI, (), (override));
 };
 
 class TabSearchPageHandlerTest : public BrowserWithTestWindowTest {
@@ -348,6 +349,12 @@ TEST_F(TabSearchPageHandlerTest, ShowFeedbackPage) {
 TEST_F(TabSearchPageHandlerTest, ShowUITest) {
   EXPECT_CALL(*handler_delegate(), ShowUI()).Times(1);
   handler()->ShowUI();
+}
+
+// Make sure the delegate receives the closeUI() call.
+TEST_F(TabSearchPageHandlerTest, CloseUITest) {
+  EXPECT_CALL(*handler_delegate(), CloseUI()).Times(1);
+  handler()->CloseUI();
 }
 
 }  // namespace

@@ -64,8 +64,9 @@ TabSearchBubbleView::TabSearchBubbleView(
 
   TabSearchUI* const tab_search_ui = static_cast<TabSearchUI*>(
       web_view_->GetWebContents()->GetWebUI()->GetController());
-  tab_search_ui->AddShowUICallback(
-      base::BindOnce(&TabSearchBubbleView::ShowBubble, base::Unretained(this)));
+  // Depends on the TabSearchUI object being constructed synchronously when the
+  // navigation is started in LoadInitialURL().
+  tab_search_ui->SetEmbedder(this);
 }
 
 TabSearchBubbleView::~TabSearchBubbleView() {
@@ -85,11 +86,8 @@ gfx::Size TabSearchBubbleView::CalculatePreferredSize() const {
 
 void TabSearchBubbleView::AddedToWidget() {
   BubbleDialogDelegateView::AddedToWidget();
+  observed_bubble_widget_.Add(GetWidget());
   web_view_->holder()->SetCornerRadii(gfx::RoundedCornersF(GetCornerRadius()));
-}
-
-void TabSearchBubbleView::OnWebViewSizeChanged() {
-  SizeToContents();
 }
 
 void TabSearchBubbleView::ShowBubble() {
@@ -97,4 +95,21 @@ void TabSearchBubbleView::ShowBubble() {
   GetWidget()->Show();
   web_view_->GetWebContents()->Focus();
   timer_ = base::ElapsedTimer();
+}
+
+void TabSearchBubbleView::CloseBubble() {
+  DCHECK(GetWidget());
+  GetWidget()->CloseWithReason(views::Widget::ClosedReason::kEscKeyPressed);
+}
+
+void TabSearchBubbleView::OnWidgetClosing(views::Widget* widget) {
+  if (widget == GetWidget()) {
+    TabSearchUI* const tab_search_ui = static_cast<TabSearchUI*>(
+        web_view_->GetWebContents()->GetWebUI()->GetController());
+    tab_search_ui->SetEmbedder(nullptr);
+  }
+}
+
+void TabSearchBubbleView::OnWebViewSizeChanged() {
+  SizeToContents();
 }

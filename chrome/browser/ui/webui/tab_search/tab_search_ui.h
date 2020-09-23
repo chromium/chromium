@@ -11,6 +11,7 @@
 #include "base/macros.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search.mojom.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search_page_handler.h"
+#include "chrome/browser/ui/webui/tab_search/tab_search_ui_embedder.h"
 #include "chrome/browser/ui/webui/webui_load_timer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -30,11 +31,11 @@ class TabSearchUI : public ui::MojoWebUIController,
   // interface passing the pending receiver that will be internally bound.
   void BindInterface(
       mojo::PendingReceiver<tab_search::mojom::PageHandlerFactory> receiver);
-
-  void AddShowUICallback(base::OnceClosure callback);
+  void SetEmbedder(TabSearchUIEmbedder* embedder);
 
   // TabSearchPageHandler::Delegate:
   void ShowUI() override;
+  void CloseUI() override;
 
  private:
   // tab_search::mojom::PageHandlerFactory
@@ -49,9 +50,7 @@ class TabSearchUI : public ui::MojoWebUIController,
 
   WebuiLoadTimer webui_load_timer_;
 
-  // This is called when the renderer process indicates that the UI is ready to
-  // be shown.
-  base::OnceClosure show_ui_callback_;
+  TabSearchUIEmbedder* embedder_ = nullptr;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };
