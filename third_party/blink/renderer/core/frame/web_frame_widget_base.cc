@@ -754,10 +754,12 @@ void WebFrameWidgetBase::UpdateVisualProperties(
     }
   }
 
-  gfx::Size old_visible_viewport_size = widget_base_->VisibleViewportSize();
+  gfx::Size old_visible_viewport_size_in_dips =
+      widget_base_->VisibleViewportSizeInDIPs();
   ApplyVisualPropertiesSizing(visual_properties);
 
-  if (old_visible_viewport_size != widget_base_->VisibleViewportSize()) {
+  if (old_visible_viewport_size_in_dips !=
+      widget_base_->VisibleViewportSizeInDIPs()) {
     ForEachLocalFrameControlledByWidget(
         local_root_->GetFrame(),
         WTF::BindRepeating([](WebLocalFrame* local_frame) {
@@ -771,7 +773,7 @@ void WebFrameWidgetBase::UpdateVisualProperties(
           remote_frame->Client()->DidChangeVisibleViewportSize(
               visible_viewport_size);
         },
-        widget_base_->BlinkSpaceToDIPs(widget_base_->VisibleViewportSize())));
+        widget_base_->VisibleViewportSizeInDIPs()));
   }
 
   // All non-top-level Widgets (child local-root frames, Portals, GuestViews,
@@ -1228,7 +1230,7 @@ void WebFrameWidgetBase::SetScreenRects(const gfx::Rect& widget_screen_rect,
 }
 
 gfx::Size WebFrameWidgetBase::VisibleViewportSizeInDIPs() {
-  return widget_base_->BlinkSpaceToDIPs(widget_base_->VisibleViewportSize());
+  return widget_base_->VisibleViewportSizeInDIPs();
 }
 
 void WebFrameWidgetBase::SetPendingWindowRect(

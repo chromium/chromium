@@ -222,7 +222,7 @@ void WebViewFrameWidget::EnableDeviceEmulation(
 
     device_emulator_ = MakeGarbageCollected<ScreenMetricsEmulator>(
         this, widget_base_->GetScreenInfo(), size_in_dips,
-        widget_base_->BlinkSpaceToDIPs(widget_base_->VisibleViewportSize()),
+        widget_base_->VisibleViewportSizeInDIPs(),
         widget_base_->WidgetScreenRect(), widget_base_->WindowScreenRect());
   }
   device_emulator_->ChangeEmulationParams(parameters);
@@ -443,8 +443,7 @@ void WebViewFrameWidget::SetScreenInfoAndSize(
   DCHECK(!web_view_->AutoResizeMode());
 
   UpdateScreenInfo(screen_info);
-  widget_base_->SetVisibleViewportSize(
-      widget_base_->DIPsToBlinkSpace(visible_viewport_size_in_dips));
+  widget_base_->SetVisibleViewportSizeInDIPs(visible_viewport_size_in_dips);
   Resize(WebSize(widget_base_->DIPsToBlinkSpace(widget_size_in_dips)));
 }
 
@@ -537,14 +536,16 @@ void WebViewFrameWidget::ApplyVisualPropertiesSizing(
   // Store this even when auto-resizing, it is the size of the full viewport
   // used for clipping, and this value is propagated down the Widget
   // hierarchy via the VisualProperties waterfall.
-  widget_base_->SetVisibleViewportSize(
-      widget_base_->DIPsToBlinkSpace(visual_properties.visible_viewport_size));
+  widget_base_->SetVisibleViewportSizeInDIPs(
+      visual_properties.visible_viewport_size);
 
   if (!AutoResizeMode()) {
     size_ = widget_base_->DIPsToBlinkSpace(visual_properties.new_size);
 
     View()->ResizeWithBrowserControls(
-        WebSize(size_), WebSize(widget_base_->VisibleViewportSize()),
+        WebSize(size_),
+        WebSize(widget_base_->DIPsToBlinkSpace(
+            widget_base_->VisibleViewportSizeInDIPs())),
         visual_properties.browser_controls_params);
   }
 }

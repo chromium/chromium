@@ -502,7 +502,7 @@ void WebPagePopupImpl::SetScreenRects(const gfx::Rect& widget_screen_rect,
 }
 
 gfx::Size WebPagePopupImpl::VisibleViewportSizeInDIPs() {
-  return widget_base_->BlinkSpaceToDIPs(widget_base_->VisibleViewportSize());
+  return widget_base_->VisibleViewportSizeInDIPs();
 }
 
 void WebPagePopupImpl::SetPendingWindowRect(
@@ -813,8 +813,8 @@ void WebPagePopupImpl::UpdateVisualProperties(
           viz::LocalSurfaceIdAllocation()),
       visual_properties.compositor_viewport_pixel_rect,
       visual_properties.screen_info);
-  widget_base_->SetVisibleViewportSize(
-      widget_base_->DIPsToBlinkSpace(visual_properties.visible_viewport_size));
+  widget_base_->SetVisibleViewportSizeInDIPs(
+      visual_properties.visible_viewport_size);
 
   Resize(WebSize(widget_base_->DIPsToBlinkSpace(visual_properties.new_size)));
 }

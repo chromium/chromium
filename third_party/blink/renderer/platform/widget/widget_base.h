@@ -257,14 +257,14 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
   void SetScreenRects(const gfx::Rect& widget_screen_rect,
                       const gfx::Rect& window_screen_rect);
 
-  // Returns the visible viewport size (blink coordinate space).
-  const gfx::Size& VisibleViewportSize() const {
-    return visible_viewport_size_;
+  // Returns the visible viewport size.
+  const gfx::Size& VisibleViewportSizeInDIPs() const {
+    return visible_viewport_size_in_dips_;
   }
 
-  // Set the visible viewport size (blink coordinate space).
-  void SetVisibleViewportSize(const gfx::Size& size) {
-    visible_viewport_size_ = size;
+  // Set the visible viewport size.
+  void SetVisibleViewportSizeInDIPs(const gfx::Size& size) {
+    visible_viewport_size_in_dips_ = size;
   }
 
   // Converts from DIPs to Blink coordinate space (ie. Viewport/Physical
@@ -419,8 +419,10 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
   gfx::Rect window_screen_rect_;
   base::Optional<gfx::Rect> pending_window_rect_;
 
-  // The size of the visible viewport (blink coordinate space).
-  gfx::Size visible_viewport_size_;
+  // The size of the visible viewport (in DIPs).
+  // TODO(dtapuska): Figure out if we can change this to Blink Space.
+  // See https://crbug.com/1131389
+  gfx::Size visible_viewport_size_in_dips_;
 
   const bool use_zoom_for_dsf_;
 

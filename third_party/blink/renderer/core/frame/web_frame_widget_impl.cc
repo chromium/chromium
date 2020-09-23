@@ -1188,8 +1188,8 @@ void WebFrameWidgetImpl::ApplyVisualPropertiesSizing(
   // Store this even when auto-resizing, it is the size of the full viewport
   // used for clipping, and this value is propagated down the Widget
   // hierarchy via the VisualProperties waterfall.
-  widget_base_->SetVisibleViewportSize(
-      widget_base_->DIPsToBlinkSpace(visual_properties.visible_viewport_size));
+  widget_base_->SetVisibleViewportSizeInDIPs(
+      visual_properties.visible_viewport_size);
 
   // Widgets in a WebView's frame tree without a local main frame
   // set the size of the WebView to be the |visible_viewport_size|, in order
@@ -1199,7 +1199,8 @@ void WebFrameWidgetImpl::ApplyVisualPropertiesSizing(
   // main frame do not do this in order to not clobber the source of truth in
   // the main frame.
   if (!View()->MainFrameImpl()) {
-    View()->Resize(WebSize(widget_base_->VisibleViewportSize()));
+    View()->Resize(WebSize(widget_base_->DIPsToBlinkSpace(
+        widget_base_->VisibleViewportSizeInDIPs())));
   }
 
   Resize(WebSize(widget_base_->DIPsToBlinkSpace(visual_properties.new_size)));
