@@ -190109,7 +190109,10 @@ regressions. -->
 </histogram>
 
 <histogram name="WebController.EmptyNavigationManagerCausedByStopLoading"
-    enum="Boolean" expires_after="M85">
+    enum="Boolean" expires_after="2019-07-15">
+  <obsolete>
+    Removed on 07/2019.
+  </obsolete>
   <owner>eugenebut@chromium.org</owner>
   <summary>
     [iOS] Chrome for iOS crashes because NavigationManager does not have any
