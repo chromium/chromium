@@ -5,7 +5,9 @@
 #include "chrome/browser/ui/views/sharesheet/sharesheet_expand_button.h"
 
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/grit/generated_resources.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/layout/box_layout.h"
@@ -45,14 +47,13 @@ SharesheetExpandButton::SharesheetExpandButton(views::ButtonListener* listener)
 void SharesheetExpandButton::SetDefaultView() {
   icon_->SetImage(
       gfx::CreateVectorIcon(kCaretDownIcon, kCaretIconSize, kLabelColor));
-  // TODO(crbug.com/1130409) Add translation for this and below strings.
-  label_->SetText(base::UTF8ToUTF16(base::StringPiece("More apps")));
+  label_->SetText(l10n_util::GetStringUTF16(IDS_SHARESHEET_MORE_APPS_LABEL));
 }
 
 void SharesheetExpandButton::SetExpandedView() {
   icon_->SetImage(
       gfx::CreateVectorIcon(kCaretUpIcon, kCaretIconSize, kLabelColor));
-  label_->SetText(base::UTF8ToUTF16(base::StringPiece("Fewer apps")));
+  label_->SetText(l10n_util::GetStringUTF16(IDS_SHARESHEET_FEWER_APPS_LABEL));
 }
 
 gfx::Size SharesheetExpandButton::CalculatePreferredSize() const {

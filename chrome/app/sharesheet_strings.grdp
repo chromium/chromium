@@ -5,4 +5,13 @@
   <message name="IDS_SHARESHEET_TITLE_LABEL" desc="The label to be shown as the title of the sharesheet bubble when a user clicks on the share button.">
     Share
   </message>
+  <message name="IDS_SHARESHEET_APPS_LIST_LABEL" desc="The label to be shown before the list of apps.">
+    Apps list
+  </message>
+  <message name="IDS_SHARESHEET_MORE_APPS_LABEL" desc="The label for the button at the bottom of the sharesheet which clicks into the expanded sharesheet.">
+    More apps
+  </message>
+  <message name="IDS_SHARESHEET_FEWER_APPS_LABEL" desc="The label for the button at the bottom of the sharesheet which clicks into the default sharesheet.">
+    Fewer apps
+  </message>
 </grit-part>

@@ -189,10 +189,9 @@ std::unique_ptr<views::View> SharesheetBubbleView::MakeScrollableTargetView() {
                                  kExpandViewPadding);
   expanded_layout->StartRow(views::GridLayout::kFixedSize, COLUMN_SET_ID_TITLE,
                             kExpandViewTitleLabelHeight);
-  // TODO(crbug.com/1130409) Add translation for this string.
   auto* app_list_label =
       expanded_layout->AddView(std::make_unique<views::Label>(
-          base::UTF8ToUTF16(base::StringPiece("Apps list"))));
+          l10n_util::GetStringUTF16(IDS_SHARESHEET_APPS_LIST_LABEL)));
   app_list_label->SetFontList(gfx::FontList(kExpandViewTitleFont));
   app_list_label->SetLineHeight(kExpandViewTitleLabelHeight);
   app_list_label->SetEnabledColor(kShareTargetTitleColor);
