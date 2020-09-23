@@ -555,13 +555,14 @@ struct Employee {
 };
 ```
 
-and you would like to add a birthday field. You can do:
+and you would like to add birthday and nickname fields. You can do:
 
 ``` cpp
 struct Employee {
   uint64 employee_id;
   string name;
   [MinVersion=1] Date? birthday;
+  [MinVersion=1] string? nickname;
 };
 ```
 
@@ -570,10 +571,14 @@ struct definition (*i.e*., existing fields must not change **ordinal value**)
 with the `MinVersion` attribute set to a number greater than any previous
 existing versions.
 
+The value of `MinVersion` is unrelated to ordinals. The choice of a particular
+version number is arbitrary. All its usage means is that a field isn't present
+before the numbered version.
+
 *** note
 **NOTE:** do not change existing fields in versioned structs, as this is
 not backwards-compatible. Instead, rename the old field to make its
-deprecation clear and add a new field with the new version number.
+deprecation clear and add a new field with a new `MinVersion` number.
 ***
 
 **Ordinal value** refers to the relative positional layout of a struct's fields
@@ -602,6 +607,7 @@ struct Employee {
   uint64 employee_id@0;
   [MinVersion=1] Date? birthday@2;
   string name@1;
+  [MinVersion=1] string? nickname@3;
 };
 ```
 
