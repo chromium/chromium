@@ -326,16 +326,6 @@ class MEDIA_GPU_EXPORT VaapiWrapper
   };
   bool SubmitBuffers(const std::vector<VABufferDescriptor>& va_buffers);
 
-  // Submit a VAEncMiscParameterBuffer of given |misc_param_type|, copying its
-  // data from |buffer| of size |size|, into HW codec. The data in |buffer| is
-  // no longer needed and can be freed after this method returns.
-  // Data submitted via this method awaits in the HW codec until
-  // ExecuteAndDestroyPendingBuffers() is called to execute or
-  // DestroyPendingBuffers() is used to cancel a pending job.
-  bool SubmitVAEncMiscParamBuffer(VAEncMiscParameterType misc_param_type,
-                                  size_t size,
-                                  const void* buffer);
-
   // Destroys all |pending_va_buffers_| sent via SubmitBuffer*(). Useful when a
   // pending job is to be cancelled (on reset or error).
   void DestroyPendingBuffers();

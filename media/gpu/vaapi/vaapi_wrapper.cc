@@ -1830,32 +1830,6 @@ bool VaapiWrapper::SubmitBuffers(
   return true;
 }
 
-bool VaapiWrapper::SubmitVAEncMiscParamBuffer(
-    VAEncMiscParameterType misc_param_type,
-    size_t size,
-    const void* buffer) {
-  base::AutoLock auto_lock(*va_lock_);
-
-  VABufferID buffer_id;
-  VAStatus va_res = vaCreateBuffer(
-      va_display_, va_context_id_, VAEncMiscParameterBufferType,
-      sizeof(VAEncMiscParameterBuffer) + size, 1, NULL, &buffer_id);
-  VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVACreateBuffer, false);
-
-  ScopedVABufferMapping mapping(
-      va_lock_, va_display_, buffer_id,
-      base::BindOnce(base::IgnoreResult(&vaDestroyBuffer), va_display_));
-  if (!mapping.IsValid())
-    return false;
-
-  auto* params = reinterpret_cast<VAEncMiscParameterBuffer*>(mapping.data());
-  params->type = misc_param_type;
-  memcpy(params->data, buffer, size);
-
-  pending_va_buffers_.push_back(buffer_id);
-  return true;
-}
-
 void VaapiWrapper::DestroyPendingBuffers() {
   TRACE_EVENT0("media,gpu", "VaapiWrapper::DestroyPendingBuffers");
   base::AutoLock auto_lock(*va_lock_);

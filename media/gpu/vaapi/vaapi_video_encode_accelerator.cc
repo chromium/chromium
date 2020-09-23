@@ -535,9 +535,17 @@ void VaapiVideoEncodeAccelerator::SubmitVAEncMiscParamBuffer(
     scoped_refptr<base::RefCountedBytes> buffer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
 
-  if (!vaapi_wrapper_->SubmitVAEncMiscParamBuffer(type, buffer->size(),
-                                                  buffer->front())) {
-    NOTIFY_ERROR(kPlatformFailureError, "Failed submitting a parameter buffer");
+  const size_t temp_size = sizeof(VAEncMiscParameterBuffer) + buffer->size();
+  std::vector<uint8_t> temp(temp_size);
+
+  auto* const va_buffer =
+      reinterpret_cast<VAEncMiscParameterBuffer*>(temp.data());
+  va_buffer->type = type;
+  memcpy(va_buffer->data, buffer->front(), buffer->size());
+
+  if (!vaapi_wrapper_->SubmitBuffer(VAEncMiscParameterBufferType, temp_size,
+                                    temp.data())) {
+    NOTIFY_ERROR(kPlatformFailureError, "Failed submitting a buffer");
   }
 }
 
