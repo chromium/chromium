@@ -16,11 +16,13 @@
 #include "base/optional.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/apps/app_shim/app_shim_host_bootstrap_mac.h"
 #include "chrome/browser/apps/app_shim/app_shim_host_mac.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/profiles/avatar_menu.h"
 #include "chrome/browser/web_applications/components/app_shim_registry_mac.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/mac/app_shim.mojom.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/testing_pref_service.h"
@@ -520,6 +522,8 @@ class AppShimManagerTest : public testing::Test {
   base::WeakPtr<TestHost> host_ba_;
   base::WeakPtr<TestHost> host_bb_;
 
+  base::test::ScopedFeatureList scoped_feature_list_;
+
  private:
   std::unique_ptr<TestingPrefServiceSimple> local_state_;
   DISALLOW_COPY_AND_ASSIGN(AppShimManagerTest);
@@ -614,6 +618,62 @@ TEST_F(AppShimManagerTest, LaunchAndCloseShim) {
 }
 
 TEST_F(AppShimManagerTest, AppLifetime) {
+  scoped_feature_list_.InitWithFeatures({features::kAppShimNewCloseBehavior},
+                                        {});
+
+  // When the app activates, a host is created. If there is no shim, one is
+  // launched.
+  manager_->SetHostForCreate(std::move(host_aa_unique_));
+  EXPECT_CALL(*delegate_, DoLaunchShim(&profile_a_, kTestAppIdA, false));
+  manager_->OnAppActivated(&profile_a_, kTestAppIdA);
+  EXPECT_EQ(host_aa_.get(), manager_->FindHost(&profile_a_, kTestAppIdA));
+
+  // Normal shim launch adds an entry in the map.
+  // App should not be launched here, but return success to the shim.
+  EXPECT_CALL(*delegate_, LaunchApp(&profile_a_, kTestAppIdA, _)).Times(0);
+  RegisterOnlyLaunch(bootstrap_aa_, nullptr);
+  EXPECT_EQ(chrome::mojom::AppShimLaunchResult::kSuccess,
+            *bootstrap_aa_result_);
+  EXPECT_EQ(host_aa_.get(), manager_->FindHost(&profile_a_, kTestAppIdA));
+
+  // Return no app windows for OnShimFocus. This will do nothing.
+  EXPECT_CALL(*delegate_, ShowAppWindows(&profile_a_, kTestAppIdA))
+      .WillRepeatedly(Return(false));
+  EXPECT_CALL(*delegate_, LaunchApp(&profile_a_, kTestAppIdA, _)).Times(0);
+  ShimNormalFocus(host_aa_.get());
+
+  // Return no app windows for OnShimReopen. This will result in a launch call.
+  EXPECT_CALL(*delegate_, ShowAppWindows(&profile_a_, kTestAppIdA))
+      .WillRepeatedly(Return(false));
+  EXPECT_CALL(*delegate_, LaunchApp(&profile_a_, kTestAppIdA, _)).Times(1);
+  host_aa_->ReopenApp();
+
+  // Return one window. This should do nothing.
+  EXPECT_CALL(*delegate_, ShowAppWindows(&profile_a_, kTestAppIdA))
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(*delegate_, LaunchApp(&profile_a_, kTestAppIdA, _)).Times(0);
+  host_aa_->ReopenApp();
+
+  // Open files should trigger a launch with those files.
+  std::vector<base::FilePath> some_file(1, base::FilePath("some_file"));
+  EXPECT_CALL(*delegate_, LaunchApp(&profile_a_, kTestAppIdA, some_file));
+  host_aa_->FilesOpened(some_file);
+
+  // OnAppDeactivated should not close the shim.
+  EXPECT_CALL(*manager_, MaybeTerminate()).Times(0);
+  manager_->OnAppDeactivated(&profile_a_, kTestAppIdA);
+  EXPECT_NE(nullptr, host_aa_.get());
+
+  // Process disconnect will cause the shim to close.
+  EXPECT_CALL(*manager_, MaybeTerminate()).WillOnce(Return());
+  manager_->OnShimProcessDisconnected(host_aa_.get());
+  EXPECT_EQ(nullptr, host_aa_.get());
+}
+
+TEST_F(AppShimManagerTest, AppLifetimeOld) {
+  scoped_feature_list_.InitWithFeatures({},
+                                        {features::kAppShimNewCloseBehavior});
+
   // When the app activates, a host is created. If there is no shim, one is
   // launched.
   manager_->SetHostForCreate(std::move(host_aa_unique_));
@@ -758,6 +818,33 @@ TEST_F(AppShimManagerTest, FailCodeSignature) {
 }
 
 TEST_F(AppShimManagerTest, MaybeTerminate) {
+  scoped_feature_list_.InitWithFeatures({features::kAppShimNewCloseBehavior},
+                                        {});
+
+  // Launch shims, adding entries in the map.
+  RegisterOnlyLaunch(bootstrap_aa_, std::move(host_aa_unique_));
+  EXPECT_EQ(chrome::mojom::AppShimLaunchResult::kSuccess,
+            *bootstrap_aa_result_);
+  EXPECT_EQ(host_aa_.get(), manager_->FindHost(&profile_a_, kTestAppIdA));
+
+  RegisterOnlyLaunch(bootstrap_ab_, std::move(host_ab_unique_));
+  EXPECT_EQ(chrome::mojom::AppShimLaunchResult::kSuccess,
+            *bootstrap_ab_result_);
+  EXPECT_EQ(host_ab_.get(), manager_->FindHost(&profile_a_, kTestAppIdB));
+
+  // Quitting when there's another shim should not terminate.
+  EXPECT_CALL(*manager_, MaybeTerminate()).Times(0);
+  manager_->OnAppDeactivated(&profile_a_, kTestAppIdA);
+
+  // Quitting when it's the last shim should terminate.
+  EXPECT_CALL(*manager_, MaybeTerminate()).Times(0);
+  manager_->OnAppDeactivated(&profile_a_, kTestAppIdB);
+}
+
+TEST_F(AppShimManagerTest, MaybeTerminateOld) {
+  scoped_feature_list_.InitWithFeatures({},
+                                        {features::kAppShimNewCloseBehavior});
+
   // Launch shims, adding entries in the map.
   RegisterOnlyLaunch(bootstrap_aa_, std::move(host_aa_unique_));
   EXPECT_EQ(chrome::mojom::AppShimLaunchResult::kSuccess,

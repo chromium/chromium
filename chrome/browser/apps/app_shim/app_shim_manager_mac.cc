@@ -42,6 +42,7 @@
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/components/web_app_shortcut_mac.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/common/chrome_features.h"
 #include "components/crx_file/id_util.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/notification_details.h"
@@ -174,6 +175,10 @@ struct AppShimManager::AppState {
 
   bool IsMultiProfile() const;
 
+  // Return true if the app state should be deleted (e.g, because all profiles
+  // have closed).
+  bool ShouldDeleteAppState() const;
+
   // Mark the last-active profiles in AppShimRegistry, so that they will re-open
   // when the app is started next.
   void SaveLastActiveProfiles() const;
@@ -208,6 +213,22 @@ AppShimHost* AppShimManager::ProfileState::GetHost() const {
 
 bool AppShimManager::AppState::IsMultiProfile() const {
   return multi_profile_host.get();
+}
+
+bool AppShimManager::AppState::ShouldDeleteAppState() const {
+  // The new behavior for multi-profile apps is to not close the app based on
+  // which windows are open. Rather, the app must be explicitly closed via
+  // the Quit menu, which will terminate the app (and the browser will be
+  // notified of the closed mojo pipe).
+  // https://crbug.com/1080729
+  if (IsMultiProfile() &&
+      base::FeatureList::IsEnabled(features::kAppShimNewCloseBehavior)) {
+    return false;
+  }
+
+  // The old behavior, and the behavior for single-profile apps, is to close
+  // only when all profiles are closed.
+  return profiles.empty();
 }
 
 void AppShimManager::AppState::SaveLastActiveProfiles() const {
@@ -609,27 +630,11 @@ void AppShimManager::CloseShimsForProfile(Profile* profile) {
   for (auto iter_app = apps_.begin(); iter_app != apps_.end();) {
     AppState* app_state = iter_app->second.get();
     app_state->profiles.erase(profile);
-    if (app_state->profiles.empty())
+
+    if (app_state->ShouldDeleteAppState())
       iter_app = apps_.erase(iter_app);
     else
       ++iter_app;
-  }
-}
-
-void AppShimManager::CloseShimForApp(Profile* profile,
-                                     const web_app::AppId& app_id) {
-  auto found_app = apps_.find(app_id);
-  if (found_app == apps_.end())
-    return;
-  AppState* app_state = found_app->second.get();
-  auto found_profile = app_state->profiles.find(profile);
-  if (found_profile == app_state->profiles.end())
-    return;
-  if (app_state->profiles.size() == 1) {
-    app_state->SaveLastActiveProfiles();
-    apps_.erase(found_app);
-  } else {
-    app_state->profiles.erase(found_profile);
   }
 }
 
@@ -785,6 +790,8 @@ void AppShimManager::OnShimProcessDisconnected(AppShimHost* host) {
     app_state->SaveLastActiveProfiles();
     DCHECK_EQ(host, app_state->multi_profile_host.get());
     apps_.erase(found_app);
+    if (apps_.empty())
+      MaybeTerminate();
     return;
   }
 
@@ -895,7 +902,20 @@ void AppShimManager::OnAppActivated(content::BrowserContext* context,
 
 void AppShimManager::OnAppDeactivated(content::BrowserContext* context,
                                       const std::string& app_id) {
-  CloseShimForApp(static_cast<Profile*>(context), app_id);
+  Profile* profile = static_cast<Profile*>(context);
+  auto found_app = apps_.find(app_id);
+  if (found_app != apps_.end()) {
+    AppState* app_state = found_app->second.get();
+    auto found_profile = app_state->profiles.find(profile);
+    if (found_profile != app_state->profiles.end()) {
+      if (app_state->profiles.size() == 1)
+        app_state->SaveLastActiveProfiles();
+      app_state->profiles.erase(found_profile);
+      if (app_state->ShouldDeleteAppState())
+        apps_.erase(found_app);
+    }
+  }
+
   if (apps_.empty())
     MaybeTerminate();
 }

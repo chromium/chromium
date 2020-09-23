@@ -76,6 +76,8 @@ extern const base::Feature kAppServiceIntentHandling;
 #if defined(OS_MAC)
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kAppShimRemoteCocoa;
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kAppShimNewCloseBehavior;
 #endif  // defined(OS_MAC)
 
 COMPONENT_EXPORT(CHROME_FEATURES) extern const base::Feature kAsyncDns;

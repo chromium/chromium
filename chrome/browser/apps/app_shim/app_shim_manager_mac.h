@@ -234,9 +234,6 @@ class AppShimManager : public AppShimHostBootstrap::Client,
   // Close all app shims associated with the specified profile.
   void CloseShimsForProfile(Profile* profile);
 
-  // Close one specified app.
-  void CloseShimForApp(Profile* profile, const web_app::AppId& app_id);
-
   // This is called by OnShimProcessConnected if the app shim was launched by
   // Chrome, and should connect to an already-existing AppShimHost.
   void OnShimProcessConnectedForRegisterOnly(

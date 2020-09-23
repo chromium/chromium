@@ -78,6 +78,12 @@ const base::Feature kAppServiceIntentHandling{"AppServiceIntentHandling",
 // process). For debugging purposes only.
 const base::Feature kAppShimRemoteCocoa{"AppShimRemoteCocoa",
                                         base::FEATURE_ENABLED_BY_DEFAULT};
+
+// This is used to control the new app close behavior on macOS wherein closing
+// all windows for an app leaves the app running.
+// https://crbug.com/1080729
+const base::Feature kAppShimNewCloseBehavior{"AppShimNewCloseBehavior",
+                                             base::FEATURE_ENABLED_BY_DEFAULT};
 #endif  // defined(OS_MAC)
 
 // Enables the built-in DNS resolver.
