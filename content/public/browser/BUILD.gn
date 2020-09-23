@@ -341,7 +341,6 @@ source_set("browser_sources") {
     "shared_worker_instance.h",
     "shared_worker_service.h",
     "site_instance.h",
-    "site_instance_process_assignment.h",
     "site_isolation_policy.cc",
     "site_isolation_policy.h",
     "sms_fetcher.h",

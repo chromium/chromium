@@ -236,13 +236,6 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance,
   bool RequiresDedicatedProcess() override;
   bool IsSameSiteWithURL(const GURL& url) override;
   bool IsGuest() override;
-  SiteInstanceProcessAssignment GetLastProcessAssignmentOutcome() override;
-
-  // This is called every time a renderer process is assigned to a SiteInstance
-  // and is used by the content embedder for collecting metrics.
-  void set_process_assignment(SiteInstanceProcessAssignment assignment) {
-    process_assignment_ = assignment;
-  }
 
   // The policy to apply when selecting a RenderProcessHost for the
   // SiteInstance. If no suitable RenderProcessHost for the SiteInstance exists
@@ -458,7 +451,8 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance,
   // hosts.
   // Only public so that we can make a consistent process swap decision in
   // RenderFrameHostManager.
-  static GURL GetEffectiveURL(BrowserContext* browser_context, const GURL& url);
+  static GURL GetEffectiveURL(BrowserContext* browser_context,
+                              const GURL& url);
 
   // Returns true if pages loaded from |site_info| ought to be handled only by a
   // renderer process isolated from other sites. If --site-per-process is used,
@@ -692,9 +686,6 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance,
   // Whether the SiteInstance was created for a <webview> guest.
   // TODO(734722): Move this into the SecurityPrincipal once it is available.
   bool is_guest_;
-
-  // How |this| was last assigned to a renderer process.
-  SiteInstanceProcessAssignment process_assignment_;
 
   base::ObserverList<Observer, true>::Unchecked observers_;
 
