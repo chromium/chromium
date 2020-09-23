@@ -9568,6 +9568,9 @@ histogram as enum -->
   <int value="8" label="Data collection failure">
     Failure while collecting data.
   </int>
+  <int value="9" label="Session has zero samples">
+    The profile session has zero samples.
+  </int>
 </enum>
 
 <enum name="ChromeOSRecoveryReason">

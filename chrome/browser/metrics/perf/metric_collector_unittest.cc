@@ -15,6 +15,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/task/post_task.h"
 #include "base/test/bind_test_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -78,9 +79,9 @@ class TestMetricCollector : public MetricCollector {
  public:
   TestMetricCollector() : TestMetricCollector(CollectionParams()) {}
   explicit TestMetricCollector(const CollectionParams& collection_params)
-      : MetricCollector("UMA.CWP.TestData", collection_params) {}
+      : MetricCollector("Test", collection_params) {}
 
-  const char* ToolName() const override { return "test"; }
+  const char* ToolName() const override { return "Test"; }
   base::WeakPtr<MetricCollector> GetWeakPtr() override {
     return weak_factory_.GetWeakPtr();
   }
@@ -93,6 +94,7 @@ class TestMetricCollector : public MetricCollector {
   }
 
   using MetricCollector::collection_params;
+  using MetricCollector::CollectionAttemptStatus;
   using MetricCollector::CurrentTimerDelay;
   using MetricCollector::Init;
   using MetricCollector::IsRunning;
@@ -179,22 +181,50 @@ TEST_F(MetricCollectorTest, CheckSetup) {
 TEST_F(MetricCollectorTest, EmptyProtosAreNotSaved) {
   auto sampled_profile = std::make_unique<SampledProfile>();
   sampled_profile->set_trigger_event(SampledProfile::PERIODIC_COLLECTION);
+  base::HistogramTester histogram_tester;
 
   metric_collector_->SaveSerializedPerfProto(std::move(sampled_profile),
                                              std::string());
   task_environment_.RunUntilIdle();
 
   EXPECT_TRUE(cached_profile_data_.empty());
+  histogram_tester.ExpectUniqueSample(
+      "ChromeOS.CWP.CollectTest",
+      TestMetricCollector::CollectionAttemptStatus::ILLEGAL_DATA_RETURNED, 1);
+}
+
+TEST_F(MetricCollectorTest, ProtosWithNoSamplesAreNotSaved) {
+  auto sampled_profile = std::make_unique<SampledProfile>();
+  sampled_profile->set_trigger_event(SampledProfile::PERIODIC_COLLECTION);
+  base::HistogramTester histogram_tester;
+
+  PerfDataProto proto = GetExamplePerfDataProto();
+  PerfDataProto_PerfEventStats* stats = proto.mutable_stats();
+  stats->set_num_sample_events(0);
+
+  metric_collector_->SaveSerializedPerfProto(std::move(sampled_profile),
+                                             proto.SerializeAsString());
+  task_environment_.RunUntilIdle();
+
+  EXPECT_TRUE(cached_profile_data_.empty());
+  histogram_tester.ExpectUniqueSample(
+      "ChromeOS.CWP.CollectTest",
+      TestMetricCollector::CollectionAttemptStatus::SESSION_HAS_ZERO_SAMPLES,
+      1);
 }
 
 TEST_F(MetricCollectorTest, PerfDataProto) {
   auto sampled_profile = std::make_unique<SampledProfile>();
   sampled_profile->set_trigger_event(SampledProfile::PERIODIC_COLLECTION);
+  base::HistogramTester histogram_tester;
 
   metric_collector_->SaveSerializedPerfProto(
       std::move(sampled_profile), perf_data_proto_.SerializeAsString());
   task_environment_.RunUntilIdle();
   ASSERT_EQ(1U, cached_profile_data_.size());
+  histogram_tester.ExpectUniqueSample(
+      "ChromeOS.CWP.CollectTest",
+      TestMetricCollector::CollectionAttemptStatus::SUCCESS, 1);
 
   const SampledProfile& profile = cached_profile_data_[0];
   EXPECT_EQ(SampledProfile::PERIODIC_COLLECTION, profile.trigger_event());

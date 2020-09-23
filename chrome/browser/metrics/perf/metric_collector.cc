@@ -282,6 +282,11 @@ void MetricCollector::SaveSerializedPerfProto(
     AddToUmaHistogram(CollectionAttemptStatus::PROTOBUF_NOT_PARSED);
     return;
   }
+  // Don't save the profile if there are no samples.
+  if (perf_data_proto.stats().num_sample_events() == 0) {
+    AddToUmaHistogram(CollectionAttemptStatus::SESSION_HAS_ZERO_SAMPLES);
+    return;
+  }
   RemoveUnknownFieldsFromMessagesWithStrings(&perf_data_proto);
   sampled_profile->mutable_perf_data()->Swap(&perf_data_proto);
 
