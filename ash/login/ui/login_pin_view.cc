@@ -209,20 +209,19 @@ class DigitPinButton : public BasePinButton {
     label->SetEnabledColor(palette.button_enabled_color);
     label->SetAutoColorReadabilityEnabled(false);
     label->SetSubpixelRenderingEnabled(false);
-    label->SetFontList(base_font_list.Derive(8, gfx::Font::FontStyle::NORMAL,
-                                             gfx::Font::Weight::LIGHT));
+    label->SetFontList(base_font_list.Derive(8 /*size_delta*/, gfx::Font::FontStyle::NORMAL,
+                                             gfx::Font::Weight::NORMAL));
     AddChildView(label);
 
     if (show_sub_label) {
       views::Label* sub_label = new views::Label(
           GetButtonSubLabelForNumber(value), views::style::CONTEXT_BUTTON,
-          views::style::STYLE_PRIMARY);
-      sub_label->SetEnabledColor(SkColorSetA(
-          palette.button_enabled_color, login_constants::kButtonDisabledAlpha));
+          views::style::STYLE_SECONDARY);
+      sub_label->SetEnabledColor(palette.button_annotation_color);
       sub_label->SetAutoColorReadabilityEnabled(false);
       sub_label->SetSubpixelRenderingEnabled(false);
-      sub_label->SetFontList(base_font_list.Derive(
-          -3, gfx::Font::FontStyle::NORMAL, gfx::Font::Weight::NORMAL));
+      sub_label->SetFontList(base_font_list.Derive(-1 /*size_delta*/, gfx::Font::FontStyle::NORMAL,
+                                                   gfx::Font::Weight::NORMAL));
       AddChildView(sub_label);
     }
   }
@@ -249,7 +248,7 @@ class LoginPinView::BackspacePinButton : public BasePinButton {
         palette_(palette) {
     image_ = new views::ImageView();
     image_->SetImage(gfx::CreateVectorIcon(kLockScreenBackspaceIcon,
-                                           palette_.pin_backspace_icon_color));
+                                           palette_.button_enabled_color));
     AddChildView(image_);
     SetEnabled(false);
   }
@@ -263,7 +262,7 @@ class LoginPinView::BackspacePinButton : public BasePinButton {
   }
 
   void OnEnabledChanged() {
-    SkColor color = palette_.pin_backspace_icon_color;
+    SkColor color = palette_.button_enabled_color;
     if (!GetEnabled()) {
       AnimateInkDrop(views::InkDropState::DEACTIVATED, nullptr);
       color = SkColorSetA(color, login_constants::kButtonDisabledAlpha);

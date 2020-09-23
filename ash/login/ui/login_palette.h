@@ -19,9 +19,9 @@ struct LoginPalette {
   SkColor password_placeholder_text_color;
   SkColor password_background_color;
   SkColor button_enabled_color;
+  SkColor button_annotation_color;
   SkColor pin_ink_drop_highlight_color;
   SkColor pin_ink_drop_ripple_color;
-  SkColor pin_backspace_icon_color;
 };
 
 // For login screen and lock screen.

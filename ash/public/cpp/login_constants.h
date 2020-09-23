@@ -54,9 +54,6 @@ constexpr float kClearBlurSigma = 0.0f;
 // show/hide animation.
 constexpr int kChangeUserAnimationDurationMs = 300;
 
-// Color of enabled buttons.
-constexpr SkColor kButtonEnabledColor = SK_ColorWHITE;
-
 // An alpha value for disabled buttons.
 // In specs this is listed as 34% = 0x57 / 0xFF.
 constexpr SkAlpha kButtonDisabledAlpha = 0x57;
