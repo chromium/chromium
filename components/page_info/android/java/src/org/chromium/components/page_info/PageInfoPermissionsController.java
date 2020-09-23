@@ -53,7 +53,7 @@ public class PageInfoPermissionsController implements PageInfoSubpageController 
                 mRowView.getContext(), SingleWebsiteSettings.class.getName(), fragmentArgs);
         mSubpageFragment.setSiteSettingsClient(mDelegate.getSiteSettingsClient());
         mSubpageFragment.setHideNonPermissionPreferences(true);
-        mSubpageFragment.setRefreshAfterReset(true);
+        mSubpageFragment.setWebsiteResetCallback(mMainController::exitSubpage);
         AppCompatActivity host = (AppCompatActivity) mRowView.getContext();
         host.getSupportFragmentManager().beginTransaction().add(mSubpageFragment, null).commitNow();
         return mSubpageFragment.requireView();

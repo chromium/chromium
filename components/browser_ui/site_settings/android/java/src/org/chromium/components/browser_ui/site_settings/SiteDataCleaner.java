@@ -22,7 +22,13 @@ public class SiteDataCleaner {
         WebsitePreferenceBridgeJni.get().clearCookieData(browserContextHandle, origin);
         WebsitePreferenceBridgeJni.get().clearBannerData(browserContextHandle, origin);
         WebsitePreferenceBridgeJni.get().clearMediaLicenses(browserContextHandle, origin);
+        site.clearAllStoredData(browserContextHandle, finishCallback::run);
+    }
 
+    /**
+     * Resets the permissions of the specified site.
+     */
+    public void resetPermissions(BrowserContextHandle browserContextHandle, Website site) {
         // Clear the permissions.
         for (ContentSettingException exception : site.getContentSettingExceptions()) {
             site.setContentSettingPermission(browserContextHandle,
@@ -36,7 +42,5 @@ public class SiteDataCleaner {
         for (ChosenObjectInfo info : site.getChosenObjectInfo()) {
             info.revoke(browserContextHandle);
         }
-
-        site.clearAllStoredData(browserContextHandle, finishCallback::run);
     }
 }

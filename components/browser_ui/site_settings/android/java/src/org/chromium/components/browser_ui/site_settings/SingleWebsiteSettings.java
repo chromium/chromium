@@ -8,7 +8,6 @@ import static org.chromium.components.browser_ui.site_settings.WebsitePreference
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
@@ -131,9 +130,8 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
             PREF_CLEAR_DATA,
     };
 
-    // Determines if this page will refresh its permissions display after clear and reset is
-    // clicked.
-    private boolean mRefreshAfterReset;
+    // The callback to be run after this site is reset.
+    private Runnable mWebsiteResetCallback;
 
     private static final int REQUEST_CODE_NOTIFICATION_CHANNEL_SETTINGS = 1;
 
@@ -262,8 +260,8 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
         mHideNonPermissionPreferences = hide;
     }
 
-    public void setRefreshAfterReset(boolean refresh) {
-        mRefreshAfterReset = refresh;
+    public void setWebsiteResetCallback(Runnable callback) {
+        mWebsiteResetCallback = callback;
     }
 
     /**
@@ -989,8 +987,7 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
     }
 
     private void popBackIfNoSettings() {
-        if (!hasPermissionsPreferences() && !hasUsagePreferences() && getActivity() != null
-                && !mRefreshAfterReset) {
+        if (!hasPermissionsPreferences() && !hasUsagePreferences() && getActivity() != null) {
             getActivity().finish();
         }
     }
@@ -1022,10 +1019,15 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
                 .setTitle(R.string.website_reset)
                 .setMessage(R.string.website_reset_confirmation)
                 .setPositiveButton(R.string.website_reset,
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
+                        (dialog, which) -> {
+                            if (mHideNonPermissionPreferences) {
+                                mSiteDataCleaner.resetPermissions(
+                                        getSiteSettingsClient().getBrowserContextHandle(), mSite);
+                            } else {
                                 resetSite();
+                            }
+                            if (mWebsiteResetCallback != null) {
+                                mWebsiteResetCallback.run();
                             }
                         })
                 .setNegativeButton(R.string.cancel, null)
@@ -1057,6 +1059,7 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
         boolean finishActivityImmediately =
                 mSite.getTotalUsage() == 0 && mObjectPolicyPermissionCount == 0;
 
+        mSiteDataCleaner.resetPermissions(getSiteSettingsClient().getBrowserContextHandle(), mSite);
         mSiteDataCleaner.clearData(
                 getSiteSettingsClient().getBrowserContextHandle(), mSite, mDataClearedCallback);
 
@@ -1065,9 +1068,7 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
         RecordHistogram.recordEnumeratedHistogram("SingleWebsitePreferences.NavigatedFromToReset",
                 navigationSource, SettingsNavigationSource.NUM_ENTRIES);
 
-        if (mRefreshAfterReset) {
-            init();
-        } else if (finishActivityImmediately) {
+        if (finishActivityImmediately) {
             getActivity().finish();
         }
     }
