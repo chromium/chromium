@@ -225,7 +225,8 @@ class node_hash_map
   //
   // size_type erase(const key_type& key):
   //
-  //   Erases the element with the matching key, if it exists.
+  //   Erases the element with the matching key, if it exists, returning the
+  //   number of elements erased (0 or 1).
   using Base::erase;
 
   // node_hash_map::insert()

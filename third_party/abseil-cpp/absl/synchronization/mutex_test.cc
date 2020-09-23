@@ -1102,7 +1102,7 @@ TEST(Mutex, DeadlockDetectorBazelWarning) {
 // annotation-based static thread-safety analysis is not currently
 // predicate-aware and cannot tell if the two for-loops that acquire and
 // release the locks have the same predicates.
-TEST(Mutex, DeadlockDetectorStessTest) ABSL_NO_THREAD_SAFETY_ANALYSIS {
+TEST(Mutex, DeadlockDetectorStressTest) ABSL_NO_THREAD_SAFETY_ANALYSIS {
   // Stress test: Here we create a large number of locks and use all of them.
   // If a deadlock detector keeps a full graph of lock acquisition order,
   // it will likely be too slow for this test to pass.

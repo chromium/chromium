@@ -365,8 +365,8 @@ class ABSL_MUST_USE_RESULT Status final {
   // Constructors
 
   // This default constructor creates an OK status with no message or payload.
-  // Avoid this constructor and pefer explicit construction of an OK status with
-  // `absl::OkStatus()`.
+  // Avoid this constructor and prefer explicit construction of an OK status
+  // with `absl::OkStatus()`.
   Status();
 
   // Creates a status in the canonical error space with the specified

@@ -183,7 +183,7 @@ class btree_set
   // template <typename K> size_type erase(const K& key):
   //
   //   Erases the element with the matching key, if it exists, returning the
-  //   number of elements erased.
+  //   number of elements erased (0 or 1).
   using Base::erase;
 
   // btree_set::insert()

@@ -75,7 +75,7 @@ for std in ${STD}; do
         ${DOCKER_CONTAINER} \
         /bin/sh -c "
           cp -r /abseil-cpp-ro/* /abseil-cpp/
-          if [[ -n \"${ALTERNATE_OPTIONS:-}\" ]]; then
+          if [ -n \"${ALTERNATE_OPTIONS:-}\" ]; then
             cp ${ALTERNATE_OPTIONS:-} absl/base/options.h || exit 1
           fi
           /usr/local/bin/bazel test ... \

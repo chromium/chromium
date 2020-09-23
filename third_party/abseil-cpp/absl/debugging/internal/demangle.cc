@@ -1936,7 +1936,8 @@ static bool Overflowed(const State *state) {
 bool Demangle(const char *mangled, char *out, int out_size) {
   State state;
   InitState(&state, mangled, out, out_size);
-  return ParseTopLevelMangledName(&state) && !Overflowed(&state);
+  return ParseTopLevelMangledName(&state) && !Overflowed(&state) &&
+         state.parse_state.out_cur_idx > 0;
 }
 
 }  // namespace debugging_internal
