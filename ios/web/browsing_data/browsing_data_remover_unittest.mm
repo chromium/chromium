@@ -110,7 +110,39 @@ class BrowsingDataRemoverTest : public PlatformTest {
  public:
   void SetUp() override {
     PlatformTest::SetUp();
+    original_root_view_controller_ =
+        UIApplication.sharedApplication.keyWindow.rootViewController;
+
+    UIViewController* controller = [[UIViewController alloc] init];
+    UIApplication.sharedApplication.keyWindow.rootViewController = controller;
+    WKWebViewConfiguration* config = [[WKWebViewConfiguration alloc] init];
+    WKWebView* web_view = [[WKWebView alloc] initWithFrame:CGRectZero
+                                             configuration:config];
+    [controller.view addSubview:web_view];
+
     ASSERT_TRUE(FetchCookieStore());
+    __block bool clear_done = false;
+    bool clear_success = false;
+    // Clear store from cookies.
+    [[WKWebsiteDataStore defaultDataStore]
+        removeDataOfTypes:[NSSet setWithObject:WKWebsiteDataTypeCookies]
+            modifiedSince:[NSDate distantPast]
+        completionHandler:^{
+          clear_done = true;
+        }];
+    clear_success = WaitUntilConditionOrTimeout(kWaitForCookiesTimeout, ^bool {
+      return clear_done;
+    });
+    ASSERT_TRUE(clear_success);
+  }
+
+  void TearDown() override {
+    if (original_root_view_controller_) {
+      UIApplication.sharedApplication.keyWindow.rootViewController =
+          original_root_view_controller_;
+      original_root_view_controller_ = nil;
+    }
+    PlatformTest::TearDown();
   }
 
  protected:
@@ -120,6 +152,9 @@ class BrowsingDataRemoverTest : public PlatformTest {
 
   base::test::TaskEnvironment task_environment_;
   TestBrowserState browser_state_;
+  // The key window's original root view controller, to be  restored at the end
+  // of the test.
+  UIViewController* original_root_view_controller_;
 };
 
 TEST_F(BrowsingDataRemoverTest, DifferentRemoverForDifferentBrowserState) {
@@ -140,10 +175,6 @@ TEST_F(BrowsingDataRemoverTest, DifferentRemoverForDifferentBrowserState) {
 
 // Tests that removing the cookies remove them from the cookie store.
 TEST_F(BrowsingDataRemoverTest, RemoveCookie) {
-  // TODO(crbug.com/1121425): Currently failing on iOS14.
-  if (@available(iOS 14, *)) {
-    return;
-  }
   ASSERT_TRUE(AddCookie());
   ASSERT_TRUE(HasCookies(true));
 
