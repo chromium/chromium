@@ -101,9 +101,18 @@ class FamilyLinkNoticeScreenTest : public OobeBaseTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
+#if defined(MEMORY_SANITIZER)
+// This entire suite is slow enough under MSan that it flakily times out:
+// https://crbug.com/1131570
+#define DISABLE_UNDER_MSAN(name) DISABLED_##name
+#else
+#define DISABLE_UNDER_MSAN(name) name
+#endif
+
 // Verify that regular account user should not see family link notice screen
 // after log in.
-IN_PROC_BROWSER_TEST_F(FamilyLinkNoticeScreenTest, RegularAccount) {
+IN_PROC_BROWSER_TEST_F(FamilyLinkNoticeScreenTest,
+                       DISABLE_UNDER_MSAN(RegularAccount)) {
   WizardController::default_controller()
       ->get_wizard_context_for_testing()
       ->sign_in_as_child = false;
@@ -115,7 +124,8 @@ IN_PROC_BROWSER_TEST_F(FamilyLinkNoticeScreenTest, RegularAccount) {
 
 // Verify user should see family link notice screen when selecting to sign in
 // as a child account but log in as a regular account.
-IN_PROC_BROWSER_TEST_F(FamilyLinkNoticeScreenTest, NonSupervisedChildAccount) {
+IN_PROC_BROWSER_TEST_F(FamilyLinkNoticeScreenTest,
+                       DISABLE_UNDER_MSAN(NonSupervisedChildAccount)) {
   WizardController::default_controller()
       ->get_wizard_context_for_testing()
       ->sign_in_as_child = true;
@@ -151,7 +161,8 @@ class FamilyLinkNoticeScreenChildTest : public FamilyLinkNoticeScreenTest {
 
 // Verify child account user should not see family link notice screen after log
 // in.
-IN_PROC_BROWSER_TEST_F(FamilyLinkNoticeScreenChildTest, ChildAccount) {
+IN_PROC_BROWSER_TEST_F(FamilyLinkNoticeScreenChildTest,
+                       DISABLE_UNDER_MSAN(ChildAccount)) {
   WizardController::default_controller()
       ->get_wizard_context_for_testing()
       ->sign_in_as_child = true;
@@ -164,7 +175,7 @@ IN_PROC_BROWSER_TEST_F(FamilyLinkNoticeScreenChildTest, ChildAccount) {
 // Verify child account user should not see family link notice screen after log
 // in if not selecting sign in as child.
 IN_PROC_BROWSER_TEST_F(FamilyLinkNoticeScreenChildTest,
-                       ChildAccountSignInAsRegular) {
+                       DISABLE_UNDER_MSAN(ChildAccountSignInAsRegular)) {
   WizardController::default_controller()
       ->get_wizard_context_for_testing()
       ->sign_in_as_child = false;
@@ -188,7 +199,8 @@ class FamilyLinkNoticeScreenManagedTest : public FamilyLinkNoticeScreenTest {
   UserPolicyMixin user_policy_mixin_{&mixin_host_, test_user_.account_id};
 };
 
-IN_PROC_BROWSER_TEST_F(FamilyLinkNoticeScreenManagedTest, ManagedAccount) {
+IN_PROC_BROWSER_TEST_F(FamilyLinkNoticeScreenManagedTest,
+                       DISABLE_UNDER_MSAN(ManagedAccount)) {
   WizardController::default_controller()
       ->get_wizard_context_for_testing()
       ->sign_in_as_child = true;
