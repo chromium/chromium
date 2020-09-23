@@ -35,48 +35,9 @@ constexpr gfx::Insets kContentsInsets(/*vertical=*/4, /*horizontal=*/16);
 // The size of the `DeleteButton`.
 constexpr int kDeleteButtonSizeDip = 16;
 
-// The view responding to mouse click or gesture tap events.
-class MainButton : public views::Button {
- public:
-  explicit MainButton(ash::ClipboardHistoryItemView* container)
-      : Button(container), container_(container) {
-    SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
-    SetAccessibleName(base::ASCIIToUTF16(std::string(GetClassName())));
-  }
-  MainButton(const MainButton& rhs) = delete;
-  MainButton& operator=(const MainButton& rhs) = delete;
-  ~MainButton() override = default;
-
- private:
-  // views::Button:
-  const char* GetClassName() const override { return "MainButton"; }
-
-  void PaintButtonContents(gfx::Canvas* canvas) override {
-    if (!container_->IsSelected())
-      return;
-
-    // Highlight the background when the menu item is selected or pressed.
-    cc::PaintFlags flags;
-    flags.setAntiAlias(true);
-
-    const ui::NativeTheme::ColorId color_id =
-        ui::NativeTheme::kColorId_FocusedMenuItemBackgroundColor;
-    flags.setColor(GetNativeTheme()->GetSystemColor(color_id));
-
-    flags.setStyle(cc::PaintFlags::kFill_Style);
-    canvas->DrawRect(GetLocalBounds(), flags);
-  }
-
-  // The parent view.
-  ash::ClipboardHistoryItemView* const container_;
-};
-
 }  // namespace
 
 namespace ash {
-
-////////////////////////////////////////////////////////////////////////////////
-// ClipboardHistoryItemView::ContentsView
 
 ClipboardHistoryItemView::ContentsView::ContentsView(
     ClipboardHistoryItemView* container)
@@ -111,12 +72,48 @@ bool ClipboardHistoryItemView::ContentsView::DoesIntersectRect(
       gfx::ToEnclosedRect(rect_in_delete_button));
 }
 
-////////////////////////////////////////////////////////////////////////////////
-// ClipboardHistoryItemView::DeleteButton
+// The view responding to mouse click or gesture tap events.
+class ash::ClipboardHistoryItemView::MainButton : public views::Button {
+ public:
+  explicit MainButton(ClipboardHistoryItemView* container)
+      : Button(), container_(container) {
+    SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
+    SetAccessibleName(base::ASCIIToUTF16(std::string(GetClassName())));
+  }
+  MainButton(const MainButton& rhs) = delete;
+  MainButton& operator=(const MainButton& rhs) = delete;
+  ~MainButton() override = default;
+
+ private:
+  // views::Button:
+  const char* GetClassName() const override { return "MainButton"; }
+
+  void PaintButtonContents(gfx::Canvas* canvas) override {
+    if (!container_->IsSelected())
+      return;
+
+    // Highlight the background when the menu item is selected or pressed.
+    cc::PaintFlags flags;
+    flags.setAntiAlias(true);
+
+    const ui::NativeTheme::ColorId color_id =
+        ui::NativeTheme::kColorId_FocusedMenuItemBackgroundColor;
+    flags.setColor(GetNativeTheme()->GetSystemColor(color_id));
+
+    flags.setStyle(cc::PaintFlags::kFill_Style);
+    canvas->DrawRect(GetLocalBounds(), flags);
+  }
+
+  // The parent view.
+  ash::ClipboardHistoryItemView* const container_;
+};
 
 ClipboardHistoryItemView::DeleteButton::DeleteButton(
-    views::ButtonListener* listener)
-    : views::ImageButton(listener) {
+    ClipboardHistoryItemView* listener)
+    : views::ImageButton() {
+  set_callback(base::BindRepeating(&ClipboardHistoryItemView::ExecuteCommand,
+                                   base::Unretained(listener),
+                                   ClipboardHistoryUtil::kDeleteCommandId));
   SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
   SetAccessibleName(base::ASCIIToUTF16(std::string(GetClassName())));
   SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
@@ -133,9 +130,6 @@ ClipboardHistoryItemView::DeleteButton::~DeleteButton() = default;
 const char* ClipboardHistoryItemView::DeleteButton::GetClassName() const {
   return "DeleteButton";
 }
-
-////////////////////////////////////////////////////////////////////////////////
-// ClipboardHistoryItemView
 
 // static
 std::unique_ptr<ClipboardHistoryItemView>
@@ -169,6 +163,12 @@ void ClipboardHistoryItemView::Init() {
 
   // Ensures that MainButton is below any other child views.
   main_button_ = AddChildView(std::make_unique<MainButton>(this));
+  main_button_->set_callback(base::BindRepeating(
+      [](ClipboardHistoryItemView* item, views::MenuItemView* container,
+         const ui::Event& event) {
+        item->ExecuteCommand(container->GetCommand(), event);
+      },
+      base::Unretained(this), container_));
 
   contents_view_ = AddChildView(CreateContentsView());
 
@@ -195,15 +195,11 @@ gfx::Size ClipboardHistoryItemView::CalculatePreferredSize() const {
   return gfx::Size(preferred_width, GetHeightForWidth(preferred_width));
 }
 
-void ClipboardHistoryItemView::ButtonPressed(views::Button* sender,
-                                             const ui::Event& event) {
-  DCHECK(sender == contents_view_->delete_button() || sender == main_button_);
-  const int command_id = sender == contents_view_->delete_button()
-                             ? ClipboardHistoryUtil::kDeleteCommandId
-                             : container_->GetCommand();
+void ClipboardHistoryItemView::ExecuteCommand(int command_id,
+                                              const ui::Event& event) {
   views::MenuDelegate* delegate = container_->GetDelegate();
   DCHECK(delegate->IsCommandEnabled(command_id));
-  delegate->ExecuteCommand(command_id, event.flags());
+  container_->GetDelegate()->ExecuteCommand(command_id, event.flags());
 }
 
 }  // namespace ash

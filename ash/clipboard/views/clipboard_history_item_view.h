@@ -17,8 +17,7 @@ class ClipboardHistoryItem;
 class ClipboardHistoryResourceManager;
 
 // The base class for menu items of the clipboard history menu.
-class ClipboardHistoryItemView : public views::View,
-                                 public views::ButtonListener {
+class ClipboardHistoryItemView : public views::View {
  public:
   static std::unique_ptr<ClipboardHistoryItemView>
   CreateFromClipboardHistoryItem(
@@ -41,10 +40,12 @@ class ClipboardHistoryItemView : public views::View,
   void OnSelectionChanged();
 
  protected:
+  class MainButton;
+
   // The button to delete the menu item and its corresponding clipboard data.
   class DeleteButton : public views::ImageButton {
    public:
-    explicit DeleteButton(views::ButtonListener* listener);
+    explicit DeleteButton(ClipboardHistoryItemView* listener);
     DeleteButton(const DeleteButton& rhs) = delete;
     DeleteButton& operator=(const DeleteButton& rhs) = delete;
     ~DeleteButton() override;
@@ -98,14 +99,14 @@ class ClipboardHistoryItemView : public views::View,
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
 
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
+  // Executes |command_id| on the delegate.
+  void ExecuteCommand(int command_id, const ui::Event& event);
 
   views::MenuItemView* const container_;
 
   ContentsView* contents_view_ = nullptr;
 
-  views::View* main_button_ = nullptr;
+  MainButton* main_button_ = nullptr;
 
   views::PropertyChangedSubscription subscription_;
 };
