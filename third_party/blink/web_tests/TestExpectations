@@ -2997,6 +2997,8 @@ crbug.com/367760 external/wpt/svg/pservers/reftests/meshgradient-basic-001.svg [
 # Tests pass under virtual/webrtc-wpt-plan-b
 virtual/webrtc-wpt-plan-b/external/wpt/webrtc/RTCPeerConnection-operations.https.html [ Pass ]
 
+crbug.com/1131471 external/wpt/web-locks/clientids.tentative.https.html [ Failure ]
+
 # See also crbug.com/920100 (sheriff 2019-01-09).
 crbug.com/626703 external/wpt/referrer-policy/css-integration/svg/external-stylesheet.html [ Timeout Failure ]
 crbug.com/626703 external/wpt/referrer-policy/css-integration/svg/inline-style.html [ Timeout Failure ]
