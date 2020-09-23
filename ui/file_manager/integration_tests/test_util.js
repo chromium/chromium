@@ -724,6 +724,17 @@ const ENTRIES = {
     typeText: 'Plain text',
   }),
 
+  utf8Text: new TestEntryInfo({
+    type: EntryType.FILE,
+    sourceFileName: 'utf8.txt',
+    targetPath: 'utf8.txt',
+    mimeType: 'text/plain',
+    lastModifiedTime: 'Sep 4, 1998, 12:34 PM',
+    nameText: 'utf8.txt',
+    sizeText: '191 bytes',
+    typeText: 'Plain text',
+  }),
+
   mHtml: new TestEntryInfo({
     type: EntryType.FILE,
     sourceFileName: 'page.mhtml',
