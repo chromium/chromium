@@ -105,7 +105,7 @@ PermissionRequest::IconId PermissionRequestImpl::GetIconId() const {
     case ContentSettingsType::FONT_ACCESS:
       return vector_icons::kFontDownloadIcon;
     case ContentSettingsType::IDLE_DETECTION:
-      return vector_icons::kIdleDetectionIcon;
+      return vector_icons::kPersonIcon;
     default:
       NOTREACHED();
       return vector_icons::kExtensionIcon;

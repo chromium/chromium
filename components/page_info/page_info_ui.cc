@@ -639,7 +639,7 @@ const gfx::ImageSkia PageInfoUI::GetPermissionIcon(
       icon = &vector_icons::kVideogameAssetIcon;
       break;
     case ContentSettingsType::IDLE_DETECTION:
-      icon = &vector_icons::kIdleDetectionIcon;
+      icon = &vector_icons::kPersonIcon;
       break;
     default:
       // All other |ContentSettingsType|s do not have icons on desktop or are

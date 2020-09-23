@@ -143,7 +143,7 @@ function getCategoryItemMap() {
       route: routes.SITE_SETTINGS_IDLE_DETECTION,
       id: Id.IDLE_DETECTION,
       label: 'siteSettingsIdleDetection',
-      icon: 'settings:idle-detection',
+      icon: 'settings:person',
       enabledLabel: 'siteSettingsIdleDetectionAsk',
       disabledLabel: 'siteSettingsIdleDetectionBlock',
     },
