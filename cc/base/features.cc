@@ -14,8 +14,13 @@ const base::Feature kImpulseScrollAnimations = {
 
 // Whether the compositor should attempt to sync with the scroll handlers before
 // submitting a frame.
-const base::Feature kSynchronizedScrolling = {"SynchronizedScrolling",
-                                              base::FEATURE_ENABLED_BY_DEFAULT};
+const base::Feature kSynchronizedScrolling = {
+    "SynchronizedScrolling",
+#if defined(OS_ANDROID)
+    base::FEATURE_DISABLED_BY_DEFAULT};
+#else
+    base::FEATURE_ENABLED_BY_DEFAULT};
+#endif
 
 #if !defined(OS_ANDROID)
 // Enables latency recovery on the impl thread.
