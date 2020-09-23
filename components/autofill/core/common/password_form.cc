@@ -84,6 +84,16 @@ std::string ToString(const T& obj) {
   return ostream.str();
 }
 
+base::string16 ValueElementVectorToString(
+    const ValueElementVector& value_element_pairs) {
+  std::vector<base::string16> pairs(value_element_pairs.size());
+  std::transform(value_element_pairs.begin(), value_element_pairs.end(),
+                 pairs.begin(), [](const ValueElementPair& p) {
+                   return p.first + base::ASCIIToUTF16("+") + p.second;
+                 });
+  return base::JoinString(pairs, base::ASCIIToUTF16(", "));
+}
+
 // Serializes a PasswordForm to a JSON object. Used only for logging in tests.
 void PasswordFormToJSON(const PasswordForm& form,
                         base::DictionaryValue* target) {
@@ -254,16 +264,6 @@ bool ArePasswordFormUniqueKeysEqual(const PasswordForm& left,
           left.username_element == right.username_element &&
           left.username_value == right.username_value &&
           left.password_element == right.password_element);
-}
-
-base::string16 ValueElementVectorToString(
-    const ValueElementVector& value_element_pairs) {
-  std::vector<base::string16> pairs(value_element_pairs.size());
-  std::transform(value_element_pairs.begin(), value_element_pairs.end(),
-                 pairs.begin(), [](const ValueElementPair& p) {
-                   return p.first + base::ASCIIToUTF16("+") + p.second;
-                 });
-  return base::JoinString(pairs, base::ASCIIToUTF16(", "));
 }
 
 std::ostream& operator<<(std::ostream& os, PasswordForm::Scheme scheme) {

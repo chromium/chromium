@@ -48,7 +48,8 @@ using ValueElementVector = std::vector<ValueElementPair>;
 // The field descriptions in the struct specification below are intended to
 // describe which fields are not strictly required when adding a saved password
 // entry to the database and how they can affect the matching process.
-
+//
+// TODO(crbug.com/1067347): Move complete class to password_manager namespace.
 struct PasswordForm {
   // Enum to differentiate between HTML form based authentication, and dialogs
   // using basic or digest schemes. Default is kHtml. Only PasswordForms of the
@@ -376,10 +377,6 @@ struct PasswordForm {
 // (origin, username_element, username_value, password_element, signon_realm).
 bool ArePasswordFormUniqueKeysEqual(const PasswordForm& left,
                                     const PasswordForm& right);
-
-// Converts a vector of ValueElementPair to string.
-base::string16 ValueElementVectorToString(
-    const ValueElementVector& value_element_pairs);
 
 // For testing.
 std::ostream& operator<<(std::ostream& os, PasswordForm::Scheme scheme);

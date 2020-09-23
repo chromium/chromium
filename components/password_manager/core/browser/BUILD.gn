@@ -148,6 +148,7 @@ static_library("browser") {
     "password_feature_manager.h",
     "password_feature_manager_impl.cc",
     "password_feature_manager_impl.h",
+    "password_form.h",
     "password_form_filling.cc",
     "password_form_filling.h",
     "password_form_manager.cc",

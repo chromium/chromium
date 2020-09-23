@@ -239,13 +239,6 @@ void ExpectPasswordGenerationUIData(
   std::move(closure).Run();
 }
 
-void ExpectPasswordForm(const PasswordForm& expected,
-                        base::OnceClosure closure,
-                        const PasswordForm& passed) {
-  EXPECT_EQ(expected, passed);
-  std::move(closure).Run();
-}
-
 TEST_F(AutofillTypeTraitsTestImpl, PassFormFieldData) {
   FormFieldData input;
   test::CreateTestSelectField("TestLabel", "TestName", "TestValue", kOptions,

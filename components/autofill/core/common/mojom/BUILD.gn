@@ -57,10 +57,6 @@ mojom("mojo_types") {
           cpp = "::autofill::PasswordAndMetadata"
         },
         {
-          mojom = "autofill.mojom.PasswordForm"
-          cpp = "::autofill::PasswordForm"
-        },
-        {
           mojom = "autofill.mojom.PasswordFormFieldPredictionMap"
           cpp = "::autofill::PasswordFormFieldPredictionMap"
         },
