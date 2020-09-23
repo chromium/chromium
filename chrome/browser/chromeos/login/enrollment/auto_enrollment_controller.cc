@@ -32,6 +32,18 @@
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
+// This is used for logs that may not be strictly necessary but are of great use
+// because they will log whether determinations are needed or not, along with
+// some context. The information used to be logged using VLOG(1), and therefore
+// was not available in customer logs. Because the only other logs have some
+// ambiguity (e.g. there will not be a log if the device decides it does not
+// need to make a determination), troubleshooting is difficult. If this changes,
+// this can be made VLOG(1) again.
+//
+// We use LOG(WARNING) to guarantee that the messages will be into feedback
+// reports.
+#define LOG_DETERMINATION() LOG(WARNING)
+
 namespace chromeos {
 
 namespace {
@@ -571,7 +583,7 @@ AutoEnrollmentController::GetInitialStateDeterminationRequirement() {
   }
   if (embargo_state == system::FactoryPingEmbargoState::kNotPassed) {
     LOG(WARNING) << "Skip Initial State Determination because the device is in "
-                    "the embargo period  ("
+                    "the embargo period ("
                  << system_clock_log_info << ").";
     RecordInitialEnrollmentRequirement(
         InitialEnrollmentRequirementHistogramValue::kNotRequiredInEmbargoPeriod,
@@ -583,14 +595,13 @@ AutoEnrollmentController::GetInitialStateDeterminationRequirement() {
       InitialEnrollmentRequirementHistogramValue::kRequired,
       system_clock_sync_state_);
 
-  VLOG(1) << "Initial State Determination required.";
   return InitialStateDeterminationRequirement::kRequired;
 }
 
 void AutoEnrollmentController::DetermineAutoEnrollmentCheckType() {
   // Skip everything if neither FRE nor Initial Enrollment are enabled.
   if (!IsEnabled()) {
-    LOGIN_LOG(EVENT) << "Auto-enrollment disabled.";
+    LOG(WARNING) << "Auto-enrollment disabled.";
     auto_enrollment_check_type_ = AutoEnrollmentCheckType::kNone;
     return;
   }
@@ -598,7 +609,7 @@ void AutoEnrollmentController::DetermineAutoEnrollmentCheckType() {
   // Skip everything if GAIA is disabled.
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(switches::kDisableGaiaServices)) {
-    LOGIN_LOG(EVENT) << "Auto-enrollment disabled: command line (gaia).";
+    LOG(WARNING) << "Auto-enrollment disabled: command line (gaia).";
     auto_enrollment_check_type_ = AutoEnrollmentCheckType::kNone;
     return;
   }
@@ -606,11 +617,11 @@ void AutoEnrollmentController::DetermineAutoEnrollmentCheckType() {
   // Determine whether to do an FRE check or an initial state determination.
   // FRE has precedence since managed devices must go through an FRE check.
   fre_requirement_ = GetFRERequirement();
-  VLOG(1) << FRERequirementToString(fre_requirement_);
+  LOG_DETERMINATION() << FRERequirementToString(fre_requirement_);
 
   if (ShouldDoFRECheck(command_line, fre_requirement_)) {
     // FRE has precedence over Initial Enrollment.
-    LOGIN_LOG(EVENT) << "Proceeding with FRE check.";
+    LOG(WARNING) << "Proceeding with FRE check.";
     auto_enrollment_check_type_ = AutoEnrollmentCheckType::kForcedReEnrollment;
     return;
   }
@@ -618,7 +629,7 @@ void AutoEnrollmentController::DetermineAutoEnrollmentCheckType() {
   // The device is in consumer mode, check whether an initial state
   // determination is in order.
   if (ShouldDoInitialEnrollmentCheck()) {
-    LOGIN_LOG(EVENT) << "Proceeding with Initial State Determination.";
+    LOG(WARNING) << "Proceeding with Initial State Determination.";
     auto_enrollment_check_type_ =
         AutoEnrollmentCheckType::kInitialStateDetermination;
     return;
@@ -635,19 +646,19 @@ bool AutoEnrollmentController::ShouldDoFRECheck(
   // Skip FRE check if modulus configuration is not present.
   if (!command_line->HasSwitch(switches::kEnterpriseEnrollmentInitialModulus) &&
       !command_line->HasSwitch(switches::kEnterpriseEnrollmentModulusLimit)) {
-    LOGIN_LOG(EVENT) << "FRE disabled through command line (config).";
+    LOG(WARNING) << "FRE disabled through command line (config).";
     return false;
   }
 
   // Skip FRE check if it is not enabled by command-line switches.
   if (!IsFREEnabled()) {
-    LOGIN_LOG(EVENT) << "FRE disabled.";
+    LOG(WARNING) << "FRE disabled.";
     return false;
   }
 
   // Skip FRE check if explicitly not required to check.
   if (fre_requirement == FRERequirement::kExplicitlyNotRequired) {
-    LOGIN_LOG(EVENT) << "FRE disabled for device in consumer mode.";
+    LOG(WARNING) << "FRE disabled for device in consumer mode.";
     return false;
   }
 
@@ -663,7 +674,7 @@ bool AutoEnrollmentController::ShouldDoInitialEnrollmentCheck() {
   // Skip Initial State Determination if it is not enabled according to
   // command-line flags.
   if (!IsInitialEnrollmentEnabled()) {
-    VLOG(1) << "Initial Enrollment is disabled.";
+    LOG(WARNING) << "Initial Enrollment is disabled.";
     return false;
   }
 
@@ -671,10 +682,13 @@ bool AutoEnrollmentController::ShouldDoInitialEnrollmentCheck() {
   // device state.
   if (GetInitialStateDeterminationRequirement() ==
       InitialStateDeterminationRequirement::kNotRequired) {
-    VLOG(1) << "Initial State Determination is not required.";
+    // Warnings have been logged for all the reasons not to do the check.
+    LOG_DETERMINATION() << "Initial State Determination is not required.";
     return false;
   }
 
+  // Nothing has been logged, but the caller will log so this can stay as VLOG.
+  LOG_DETERMINATION() << "Initial State Determination required.";
   return true;
 }
 
@@ -705,8 +719,7 @@ void AutoEnrollmentController::OnOwnershipStatusCheckDone(
       }
       return;
     case DeviceSettingsService::OWNERSHIP_TAKEN:
-      LOGIN_LOG(EVENT)
-          << "Device already owned, skipping auto-enrollment check.";
+      LOG(WARNING) << "Device already owned, skipping auto-enrollment check.";
       UpdateState(policy::AUTO_ENROLLMENT_STATE_NO_ENROLLMENT);
       return;
     case DeviceSettingsService::OWNERSHIP_UNKNOWN:
@@ -763,7 +776,7 @@ void AutoEnrollmentController::StartClientForFRE(
           ->GetSharedURLLoaderFactory(),
       state_keys.front(), power_initial, power_limit);
 
-  LOGIN_LOG(EVENT) << "Starting auto-enrollment client for FRE.";
+  LOG(WARNING) << "Starting auto-enrollment client for FRE.";
   client_->Start();
 }
 
@@ -804,14 +817,14 @@ void AutoEnrollmentController::StartClientForInitialEnrollment() {
       serial_number, rlz_brand_code, power_initial, power_limit,
       kInitialEnrollmentModulusPowerOutdatedServer);
 
-  LOGIN_LOG(EVENT) << "Starting auto-enrollment client for Initial Enrollment.";
+  LOG(WARNING) << "Starting auto-enrollment client for Initial Enrollment.";
   client_->Start();
 }
 
 void AutoEnrollmentController::UpdateState(
     policy::AutoEnrollmentState new_state) {
-  LOGIN_LOG(EVENT) << "New auto-enrollment state: "
-                   << AutoEnrollmentStateToString(new_state);
+  LOG(WARNING) << "New auto-enrollment state: "
+               << AutoEnrollmentStateToString(new_state);
   state_ = new_state;
 
   // Stop the safeguard timer once a result comes in.
