@@ -89665,8 +89665,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="NativeSmbFileShare.AuthenticationMethod"
-    enum="NativeSmbFileShare_AuthMethod" expires_after="M85">
-  <owner>zentaro@chromium.org</owner>
+    enum="NativeSmbFileShare_AuthMethod" expires_after="M94">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/chrome/browser/chromeos/smb_client/OWNERS</owner>
   <summary>
     The method used to authenticate to a share. This is called on each attempted
     mount.
