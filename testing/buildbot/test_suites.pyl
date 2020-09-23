@@ -142,19 +142,26 @@
     # android_pie_rel_non_skia_renderer_gtests if/when android Pie capacity
     # is fully restored.
     'android_pie_rel_reduced_capacity_gtests': {
-      'chrome_public_test_apk': {
-        'swarming': {
-          'shards': 20,
-        },
-        'mixins': [
-          'chrome-gold-service-account',
-          'skia_gold_test',
-        ],
-      },
+      'android_browsertests': {},
+      'blink_platform_unittests': {},
+      'chrome_java_test_pagecontroller_tests': {},
       'monochrome_public_bundle_fake_modules_smoke_test': {},
       'monochrome_public_bundle_smoke_test': {},
       'monochrome_public_smoke_test': {},
+      'weblayer_browsertests': {},
       'weblayer_instrumentation_test_apk': {},
+      'webview_cts_tests': {
+        'swarming': {
+          'shards': 2,
+          'cipd_packages': [
+            {
+              "cipd_package": 'chromium/android_webview/tools/cts_archive',
+              'location': 'android_webview/tools/cts_archive',
+              'revision': 'ai8Ig4HlO0vG6aP_JP2uhyruE2yPzze8PFP1g8Z4_hgC',
+            }
+          ]
+        },
+      },
       'webview_instrumentation_test_apk': {
         'swarming': {
           'shards': 7,

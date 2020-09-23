@@ -29,6 +29,15 @@
         'args': [
           '--gtest_filter=-ImportantSitesUtilBrowserTest.DSENotConsideredImportantInRegularMode', # https://crbug.com/1034001
         ],
+        # TODO(crbug.com/1111436): Move this back to walleye if/when additional
+        # capacity has been deployed.
+        'swarming': {
+          'dimension_sets': [
+            {
+              'device_type': 'sailfish',
+            },
+          ],
+        },
       },
       'android-pie-x86-rel': {
         'args': [
@@ -114,6 +123,17 @@
         'args': [
           '--gtest_filter=-HarfBuzzShaperTest.ShapeHorizontalWithoutSubpixelPositionWithKerningIsRounded',
         ],
+      },
+      'android-pie-arm64-rel': {
+        # TODO(crbug.com/1111436): Move this back to walleye if/when additional
+        # capacity has been deployed.
+        'swarming': {
+          'dimension_sets': [
+            {
+              'device_type': 'sailfish',
+            },
+          ],
+        },
       },
     },
   },
@@ -671,9 +691,19 @@
     ],
   },
   'chrome_java_test_pagecontroller_tests': {
-    'remove_from': [
-      'android-pie-arm64-rel',  # https://crbug.com/924194
-    ],
+    'modifications': {
+      'android-pie-arm64-rel': {
+        # TODO(crbug.com/1111436): Move this back to walleye if/when additional
+        # capacity has been deployed.
+        'swarming': {
+          'dimension_sets': [
+            {
+              'device_type': 'sailfish',
+            },
+          ],
+        },
+      },
+    },
   },
   'chrome_public_smoke_test': {
     'remove_from': [
@@ -738,15 +768,6 @@
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.pie_arm64_rel.chrome_public_test_apk.filter', # https://crbug.com/1010211
         ],
-        # TODO(crbug.com/1111436): Move this back to walleye if/when additional
-        # capacity has been deployed.
-        'swarming': {
-          'dimension_sets': [
-            {
-              'device_type': 'sailfish',
-            },
-          ],
-        }
       },
       'android-pie-x86-rel': {
         'args': [
@@ -2914,6 +2935,21 @@
       },
     },
   },
+  'weblayer_browsertests': {
+    'modifications': {
+      'android-pie-arm64-rel': {
+        # TODO(crbug.com/1111436): Move this back to walleye if/when additional
+        # capacity has been deployed.
+        'swarming': {
+          'dimension_sets': [
+            {
+              'device_type': 'sailfish',
+            },
+          ],
+        },
+      },
+    },
+  },
   'weblayer_bundle_test': {
     'remove_from': [
       'android-marshmallow-x86-rel-non-cq', # crbug.com/1088013
@@ -2923,6 +2959,21 @@
     'remove_from': [
       'android-marshmallow-x86-rel-non-cq', # crbug.com/1088013
     ],
+  },
+  'webview_cts_tests': {
+    'modifications': {
+      'android-pie-arm64-rel': {
+        # TODO(crbug.com/1111436): Move this back to walleye if/when additional
+        # capacity has been deployed.
+        'swarming': {
+          'dimension_sets': [
+            {
+              'device_type': 'sailfish',
+            },
+          ],
+        },
+      },
+    },
   },
   'webview_instrumentation_test_apk': {
     'remove_from': [
