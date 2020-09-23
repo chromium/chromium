@@ -1,0 +1,5 @@
+# crbug.com/1131181
+-MediaRouterAndroidTest.DetachRoute
+-MediaRouterAndroidTest.OnRouteClosed
+-MediaRouterAndroidTest.OnRouteClosedWithError
+-MediaRouterAndroidTest.OnRouteTerminated
