@@ -30,8 +30,10 @@ def main(argv):
     if filename in ('common.py',
                     'get_compile_targets.py',
                     'gpu_integration_test_adapter.py',
+                    'PRESUBMIT.py',
                     'sizes_common.py',
-                    'wpt_common.py'):
+                    'wpt_common.py',
+                    'wpt_common_unittest.py'):
       continue
 
     with common.temporary_file() as tempfile_path:

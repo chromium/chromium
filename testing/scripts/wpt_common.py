@@ -26,12 +26,16 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
     as integrating output with the results viewer. Subclasses contain other
     (usually platform-specific) logic."""
 
-    def __init__(self):
+    def __init__(self, host=None):
         super(BaseWptScriptAdapter, self).__init__()
-        self.fs = FileSystem()
-        host = Host()
+        if not host:
+            host = Host()
+        self.fs = host.filesystem
         self.port = host.port_factory.get()
         self.wpt_manifest = self.port.wpt_manifest("external/wpt")
+        # Path to the output of the test run. Comes from the args passed to the
+        # run, parsed after this constructor. Can be overwritten by tests.
+        self.wpt_output = None
 
     def generate_test_output_args(self, output):
         return ['--log-chromium', output]
@@ -47,24 +51,27 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
                 '--chunk-type=hash']
 
     def do_post_test_run_tasks(self):
+        if not self.wpt_output and self.options:
+            self.wpt_output = self.options.isolated_script_test_output
+
         # Move json results into layout-test-results directory
-        results_dir = os.path.dirname(self.options.isolated_script_test_output)
+        results_dir = os.path.dirname(self.wpt_output)
         layout_test_results = os.path.join(results_dir, 'layout-test-results')
-        if os.path.exists(layout_test_results):
+        if self.fs.exists(layout_test_results):
             self.fs.rmtree(layout_test_results)
         self.fs.maybe_make_directory(layout_test_results)
 
         # Perform post-processing of wptrunner output
         self.process_wptrunner_output()
 
-        self.fs.copyfile(self.options.isolated_script_test_output,
+        self.fs.copyfile(self.wpt_output,
                         os.path.join(layout_test_results, 'full_results.json'))
         # create full_results_jsonp.js file which is used to
         # load results into the results viewer
         self.fs.write_text_file(
             os.path.join(layout_test_results, 'full_results_jsonp.js'),
             'ADD_FULL_RESULTS(%s);' % self.fs.read_text_file(
-                self.options.isolated_script_test_output))
+                self.wpt_output))
 
         # copy layout test results viewer to layout-test-results directory
         self.fs.copyfile(
@@ -78,13 +85,13 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
         or artifacts which need to be extracted into their own files and removed
         from the json file (to avoid duplication)."""
         output_json = json.loads(
-            self.fs.read_text_file(self.options.isolated_script_test_output))
+            self.fs.read_text_file(self.wpt_output))
         test_json = output_json["tests"]
-        results_dir = os.path.dirname(self.options.isolated_script_test_output)
+        results_dir = os.path.dirname(self.wpt_output)
         self._process_test_leaves(results_dir, output_json["path_delimiter"],
                                   test_json, "")
         # Write output_json back to the same file after modifying it in memory
-        self.fs.write_text_file(self.options.isolated_script_test_output,
+        self.fs.write_text_file(self.wpt_output,
                                 json.dumps(output_json))
 
     def _process_test_leaves(self, results_dir, delim, root_node, path_so_far):
@@ -131,6 +138,8 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
                 artifact_subpath = self._write_log_artifact(
                     test_failures.FILENAME_SUFFIX_CRASH_LOG,
                     results_dir, path_so_far, crashlog_artifact)
+                if artifact_subpath:
+                    root_node["artifacts"]["crash_log"] = [artifact_subpath]
 
             return
 
@@ -169,7 +178,7 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
 
         test_file_path = os.path.join(EXTERNAL_WPT_TESTS_DIR, test_file_subpath)
         expected_ini_path = test_file_path + ".ini"
-        if not os.path.exists(expected_ini_path):
+        if not self.fs.exists(expected_ini_path):
             return None
 
         # This test has checked-in expected output. It needs to be copied to the
@@ -206,7 +215,7 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
         )
         log_artifact_full_path = os.path.join(results_dir,
                                               log_artifact_sub_path)
-        if not os.path.exists(os.path.dirname(log_artifact_full_path)):
+        if not self.fs.exists(os.path.dirname(log_artifact_full_path)):
             self.fs.maybe_make_directory(
                 os.path.dirname(log_artifact_full_path))
         self.fs.write_text_file(log_artifact_full_path,
@@ -257,7 +266,7 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
             result[screenshot_key] = screenshot_sub_path
 
             screenshot_full_path = os.path.join(results_dir,screenshot_sub_path)
-            if not os.path.exists(os.path.dirname(screenshot_full_path)):
+            if not self.fs.exists(os.path.dirname(screenshot_full_path)):
                 self.fs.maybe_make_directory(
                     os.path.dirname(screenshot_full_path))
             # Note: we are writing raw bytes to this file
