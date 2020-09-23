@@ -17414,6 +17414,7 @@ Called by update_document_policy_enum.py.-->
   <int value="5" label="QUAD9_SECURE"/>
   <int value="6" label="DNS_SB"/>
   <int value="7" label="CZ_NIC"/>
+  <int value="8" label="NEXT_DNS"/>
 </enum>
 
 <enum name="DomainBoundCerts.DBLoadStatus">

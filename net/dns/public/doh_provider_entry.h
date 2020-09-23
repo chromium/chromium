@@ -27,7 +27,8 @@ enum class DohProviderIdForHistogram {
   kQuad9Secure = 5,
   kDnsSb = 6,
   kCznic = 7,
-  kMaxValue = kCznic,
+  kNextDns = 8,
+  kMaxValue = kNextDns,
 };
 
 // Represents insecure DNS, DoT, and DoH services run by the same provider.

@@ -128,6 +128,12 @@ const DohProviderEntry::List& DohProviderEntry::GetList() {
                            false /* display_globally */,
                            {"JP"} /* display_countries */),
       new DohProviderEntry(
+          "NextDns", DohProviderIdForHistogram::kNextDns, {} /* ip_strs */,
+          {} /* dns_over_tls_hostnames */, "https://chromium.dns.nextdns.io",
+          "NextDNS" /* ui_name */,
+          "https://nextdns.io/privacy" /* privacy_policy */,
+          false /* display_globally */, {"US"} /* display_countries */),
+      new DohProviderEntry(
           "OpenDNS", base::nullopt /* provider_id_for_histogram */,
           {"208.67.222.222", "208.67.220.220", "2620:119:35::35",
            "2620:119:53::53"},
