@@ -36,7 +36,7 @@ class WebTestContentSettingsClient : public blink::WebContentSettingsClient {
   bool AllowScript(bool enabled_per_settings) override;
   bool AllowScriptFromSource(bool enabled_per_settings,
                              const blink::WebURL& script_url) override;
-  bool AllowStorage(bool local) override;
+  bool AllowStorageAccessSync(StorageType storage_type) override;
   bool AllowRunningInsecureContent(bool enabled_per_settings,
                                    const blink::WebURL& url) override;
 

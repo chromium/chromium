@@ -263,21 +263,20 @@ void ContentSettingsAgentImpl::OnContentSettingsAgentRequest(
 mojom::ContentSettingsManager::StorageType
 ContentSettingsAgentImpl::ConvertToMojoStorageType(StorageType storage_type) {
   switch (storage_type) {
-    case StorageType::kDatabase: {
+    case StorageType::kDatabase:
       return mojom::ContentSettingsManager::StorageType::DATABASE;
-    }
-    case StorageType::kIndexedDB: {
+    case StorageType::kIndexedDB:
       return mojom::ContentSettingsManager::StorageType::INDEXED_DB;
-    }
-    case StorageType::kCacheStorage: {
+    case StorageType::kCacheStorage:
       return mojom::ContentSettingsManager::StorageType::CACHE;
-    }
-    case StorageType::kWebLocks: {
+    case StorageType::kWebLocks:
       return mojom::ContentSettingsManager::StorageType::WEB_LOCKS;
-    }
-    case StorageType::kFileSystem: {
+    case StorageType::kFileSystem:
       return mojom::ContentSettingsManager::StorageType::FILE_SYSTEM;
-    }
+    case StorageType::kLocalStorage:
+      return mojom::ContentSettingsManager::StorageType::LOCAL_STORAGE;
+    case StorageType::kSessionStorage:
+      return mojom::ContentSettingsManager::StorageType::SESSION_STORAGE;
   }
 }
 
@@ -290,11 +289,30 @@ void ContentSettingsAgentImpl::AllowStorageAccess(
     return;
   }
 
+  StoragePermissionsKey key(url::Origin(frame->GetSecurityOrigin()),
+                            storage_type);
+  const auto permissions = cached_storage_permissions_.find(key);
+  if (permissions != cached_storage_permissions_.end()) {
+    std::move(callback).Run(permissions->second);
+    return;
+  }
+
+  // Passing the |cache_storage_permissions_| ref to the callback is safe here
+  // as the mojo::Remote is owned by |this| and won't invoke the callback if
+  // |this| (and in turn |cache_storage_permissions_|) is destroyed.
+  base::OnceCallback<void(bool)> new_cb = base::BindOnce(
+      [](base::OnceCallback<void(bool)> original_cb, StoragePermissionsKey key,
+         base::flat_map<StoragePermissionsKey, bool>& cache_map, bool result) {
+        cache_map[key] = result;
+        std::move(original_cb).Run(result);
+      },
+      std::move(callback), key, std::ref(cached_storage_permissions_));
+
   GetContentSettingsManager().AllowStorageAccess(
       routing_id(), ConvertToMojoStorageType(storage_type),
       frame->GetSecurityOrigin(),
       frame->GetDocument().SiteForCookies().RepresentativeUrl(),
-      frame->GetDocument().TopFrameOrigin(), std::move(callback));
+      frame->GetDocument().TopFrameOrigin(), std::move(new_cb));
 }
 
 bool ContentSettingsAgentImpl::AllowStorageAccessSync(
@@ -303,12 +321,19 @@ bool ContentSettingsAgentImpl::AllowStorageAccessSync(
   if (IsFrameWithOpaqueOrigin(frame))
     return false;
 
+  StoragePermissionsKey key(url::Origin(frame->GetSecurityOrigin()),
+                            storage_type);
+  const auto permissions = cached_storage_permissions_.find(key);
+  if (permissions != cached_storage_permissions_.end())
+    return permissions->second;
+
   bool result = false;
   GetContentSettingsManager().AllowStorageAccess(
       routing_id(), ConvertToMojoStorageType(storage_type),
       frame->GetSecurityOrigin(),
       frame->GetDocument().SiteForCookies().RepresentativeUrl(),
       frame->GetDocument().TopFrameOrigin(), &result);
+  cached_storage_permissions_[key] = result;
   return result;
 }
 
@@ -380,29 +405,6 @@ bool ContentSettingsAgentImpl::AllowScriptFromSource(
     allow = setting != CONTENT_SETTING_BLOCK;
   }
   return allow || IsWhitelistedForContentSettings();
-}
-
-bool ContentSettingsAgentImpl::AllowStorage(bool local) {
-  WebLocalFrame* frame = render_frame()->GetWebFrame();
-  if (IsFrameWithOpaqueOrigin(frame))
-    return false;
-
-  StoragePermissionsKey key(
-      url::Origin(frame->GetDocument().GetSecurityOrigin()).GetURL(), local);
-  const auto permissions = cached_storage_permissions_.find(key);
-  if (permissions != cached_storage_permissions_.end())
-    return permissions->second;
-
-  bool result = false;
-  GetContentSettingsManager().AllowStorageAccess(
-      routing_id(),
-      local ? mojom::ContentSettingsManager::StorageType::LOCAL_STORAGE
-            : mojom::ContentSettingsManager::StorageType::SESSION_STORAGE,
-      frame->GetSecurityOrigin(),
-      frame->GetDocument().SiteForCookies().RepresentativeUrl(),
-      frame->GetDocument().TopFrameOrigin(), &result);
-  cached_storage_permissions_[key] = result;
-  return result;
 }
 
 bool ContentSettingsAgentImpl::AllowReadFromClipboard(bool default_value) {

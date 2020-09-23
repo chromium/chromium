@@ -53,7 +53,8 @@ bool WebTestContentSettingsClient::AllowScriptFromSource(
   return allowed;
 }
 
-bool WebTestContentSettingsClient::AllowStorage(bool enabled_per_settings) {
+bool WebTestContentSettingsClient::AllowStorageAccessSync(
+    StorageType storage_type) {
   return flags_->storage_allowed();
 }
 

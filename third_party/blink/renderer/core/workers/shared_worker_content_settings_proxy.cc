@@ -35,7 +35,7 @@ bool SharedWorkerContentSettingsProxy::AllowStorageAccessSync(
       GetService()->RequestFileSystemAccessSync(&result);
       break;
     }
-    case StorageType::kDatabase: {
+    default: {
       // TODO(shuagga@microsoft.com): Revisit this default in the future.
       return true;
     }

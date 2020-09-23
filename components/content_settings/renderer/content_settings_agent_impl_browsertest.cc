@@ -223,18 +223,41 @@ TEST_F(ContentSettingsAgentImplBrowserTest, DidBlockContentType) {
   EXPECT_EQ(1, mock_agent.on_content_blocked_count());
 }
 
-// Tests that multiple invokations of AllowDOMStorage result in a single IPC.
-TEST_F(ContentSettingsAgentImplBrowserTest, AllowDOMStorage) {
+// Tests that multiple invocations of AllowStorageAccessSync result in a single
+// IPC.
+TEST_F(ContentSettingsAgentImplBrowserTest, AllowStorageAccessSync) {
   // Load some HTML, so we have a valid security origin.
   LoadHTMLWithUrlOverride("<html></html>", "https://example.com/");
   MockContentSettingsAgentImpl mock_agent(view_->GetMainRenderFrame());
-  mock_agent.AllowStorage(true);
+  mock_agent.AllowStorageAccessSync(
+      blink::WebContentSettingsClient::StorageType::kLocalStorage);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1, mock_agent.allow_storage_access_count());
 
   // Accessing localStorage from the same origin again shouldn't result in a
   // new IPC.
-  mock_agent.AllowStorage(true);
+  mock_agent.AllowStorageAccessSync(
+      blink::WebContentSettingsClient::StorageType::kLocalStorage);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(1, mock_agent.allow_storage_access_count());
+}
+
+// Tests that multiple invocations of AllowStorageAccess result in a single IPC.
+TEST_F(ContentSettingsAgentImplBrowserTest, AllowStorageAccess) {
+  // Load some HTML, so we have a valid security origin.
+  LoadHTMLWithUrlOverride("<html></html>", "https://example.com/");
+  MockContentSettingsAgentImpl mock_agent(view_->GetMainRenderFrame());
+  mock_agent.AllowStorageAccess(
+      blink::WebContentSettingsClient::StorageType::kLocalStorage,
+      base::DoNothing());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(1, mock_agent.allow_storage_access_count());
+
+  // Accessing localStorage from the same origin again shouldn't result in a
+  // new IPC.
+  mock_agent.AllowStorageAccess(
+      blink::WebContentSettingsClient::StorageType::kLocalStorage,
+      base::DoNothing());
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1, mock_agent.allow_storage_access_count());
 }

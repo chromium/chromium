@@ -268,7 +268,7 @@ ScriptPromise IDBFactory::GetDatabaseInfo(ScriptState* script_state,
     return resolver->Promise();
   }
 
-  if (!CachedAllowIndexedDB(script_state)) {
+  if (!AllowIndexedDB(script_state)) {
     exception_state.ThrowDOMException(DOMExceptionCode::kUnknownError,
                                       kPermissionDeniedErrorMessage);
     resolver->Reject();
@@ -304,7 +304,7 @@ IDBRequest* IDBFactory::GetDatabaseNames(ScriptState* script_state,
                       WebFeature::kFileAccessedDatabase);
   }
 
-  if (!CachedAllowIndexedDB(script_state)) {
+  if (!AllowIndexedDB(script_state)) {
     request->HandleResponse(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kUnknownError, kPermissionDeniedErrorMessage));
     return request;
@@ -365,7 +365,7 @@ IDBOpenDBRequest* IDBFactory::OpenInternal(ScriptState* script_state,
       script_state, database_callbacks, std::move(transaction_backend),
       transaction_id, version, std::move(metrics), GetObservedFeature());
 
-  if (!CachedAllowIndexedDB(script_state)) {
+  if (!AllowIndexedDB(script_state)) {
     request->HandleResponse(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kUnknownError, kPermissionDeniedErrorMessage));
     return request;
@@ -436,7 +436,7 @@ IDBOpenDBRequest* IDBFactory::DeleteDatabaseInternal(
       IDBDatabaseMetadata::kDefaultVersion, std::move(metrics),
       GetObservedFeature());
 
-  if (!CachedAllowIndexedDB(script_state)) {
+  if (!AllowIndexedDB(script_state)) {
     request->HandleResponse(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kUnknownError, kPermissionDeniedErrorMessage));
     return request;
@@ -504,14 +504,6 @@ bool IDBFactory::AllowIndexedDB(ScriptState* script_state) {
   // This triggers a sync IPC.
   return content_settings_client->AllowStorageAccessSync(
       WebContentSettingsClient::StorageType::kIndexedDB);
-}
-
-bool IDBFactory::CachedAllowIndexedDB(ScriptState* script_state) {
-  if (!cached_allowed_.has_value()) {
-    // Cache the AllowIndexedDB() call because it triggers a sync IPC.
-    cached_allowed_.emplace(AllowIndexedDB(script_state));
-  }
-  return cached_allowed_.value();
 }
 
 mojo::PendingAssociatedRemote<mojom::blink::IDBCallbacks>

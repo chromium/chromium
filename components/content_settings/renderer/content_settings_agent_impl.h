@@ -24,6 +24,7 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace blink {
 class WebFrame;
@@ -91,7 +92,6 @@ class ContentSettingsAgentImpl
   bool AllowScript(bool enabled_per_settings) override;
   bool AllowScriptFromSource(bool enabled_per_settings,
                              const blink::WebURL& script_url) override;
-  bool AllowStorage(bool local) override;
   bool AllowReadFromClipboard(bool default_value) override;
   bool AllowWriteToClipboard(bool default_value) override;
   bool AllowMutationEvents(bool default_value) override;
@@ -166,8 +166,8 @@ class ContentSettingsAgentImpl
   // Stores if images, scripts, and plugins have actually been blocked.
   base::flat_set<ContentSettingsType> content_blocked_;
 
-  // Caches the result of AllowStorage.
-  using StoragePermissionsKey = std::pair<GURL, bool>;
+  // Caches the result of AllowStorageAccess.
+  using StoragePermissionsKey = std::pair<url::Origin, StorageType>;
   base::flat_map<StoragePermissionsKey, bool> cached_storage_permissions_;
 
   // Caches the result of AllowScript.

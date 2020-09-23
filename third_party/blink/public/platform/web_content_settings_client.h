@@ -29,7 +29,9 @@ class WebContentSettingsClient {
     kCacheStorage,
     kIndexedDB,
     kFileSystem,
-    kWebLocks
+    kWebLocks,
+    kLocalStorage,
+    kSessionStorage
   };
 
   // Controls whether access to the given StorageType is allowed for this frame.
@@ -65,11 +67,6 @@ class WebContentSettingsClient {
                                            const WebURL&) {
     return enabled_per_settings;
   }
-
-  // Controls whether HTML5 Web Storage is allowed for this frame.
-  // If local is true, then this is for local storage, otherwise it's for
-  // session storage.
-  virtual bool AllowStorage(bool local) { return true; }
 
   // Controls whether access to read the clipboard is allowed for this frame.
   virtual bool AllowReadFromClipboard(bool default_value) {

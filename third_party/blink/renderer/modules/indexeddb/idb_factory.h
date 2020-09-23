@@ -95,7 +95,6 @@ class MODULES_EXPORT IDBFactory final : public ScriptWrappable {
                                            bool);
 
   bool AllowIndexedDB(ScriptState* script_state);
-  bool CachedAllowIndexedDB(ScriptState* script_state);
 
   mojo::PendingAssociatedRemote<mojom::blink::IDBCallbacks> GetCallbacksProxy(
       std::unique_ptr<WebIDBCallbacks> callbacks);
@@ -107,8 +106,6 @@ class MODULES_EXPORT IDBFactory final : public ScriptWrappable {
   mojo::Remote<mojom::blink::IDBFactory> factory_;
   mojo::Remote<mojom::blink::FeatureObserver> feature_observer_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-
-  base::Optional<bool> cached_allowed_;
 };
 
 }  // namespace blink
