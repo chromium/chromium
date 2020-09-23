@@ -6,7 +6,7 @@ import './diagnostics_card.js';
 import './diagnostics_shared_css.js';
 
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {SystemDataProviderInterface} from './diagnostics_types.js'
+import {CpuUsage, SystemDataProviderInterface} from './diagnostics_types.js'
 import {getSystemDataProvider} from './mojo_interface_provider.js';
 
 /**
@@ -23,9 +23,30 @@ Polymer({
    */
   systemDataProvider_: null,
 
+  properties: {
+    /** @private {!CpuUsage} */
+    cpuUsage_: {
+      type: Object,
+    },
+  },
+
   /** @override */
   created() {
     this.systemDataProvider_ = getSystemDataProvider();
+    this.observeCpuUsage_();
+  },
+
+  /** @private */
+  observeCpuUsage_() {
+    this.systemDataProvider_.observeCpuUsage(this);
+  },
+
+  /**
+   * Implements CpuUsageObserver.onCpuUsageUpdated.
+   * @param {!CpuUsage} cpuUsage
+   */
+  onCpuUsageUpdated(cpuUsage) {
+    this.cpuUsage_ = cpuUsage;
   },
 
 });

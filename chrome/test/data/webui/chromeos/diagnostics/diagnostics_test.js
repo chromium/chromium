@@ -171,8 +171,15 @@ suite('CpuCardTest', () => {
     provider = null;
   });
 
-  function initializeCpuCard() {
+  /**
+   * @param {!CpuUsage} cpuUsage
+   * @return {!Promise}
+   */
+  function initializeCpuCard(cpuUsage) {
     assertFalse(!!cpuElement);
+
+    // Initialize the fake data.
+    provider.setFakeCpuUsage(cpuUsage);
 
     // Add the CPU card to the DOM.
     cpuElement = document.createElement('cpu-card');
@@ -183,9 +190,19 @@ suite('CpuCardTest', () => {
   }
 
   test('CpuCardPopulated', () => {
-    return initializeCpuCard().then(() => {
+    return initializeCpuCard(fakeCpuUsage).then(() => {
       // TODO(zentaro): Update when strings are finalized.
       assertEquals('CPU', cpuElement.$$('#cardTitle').textContent);
+
+      assertEquals(
+          fakeCpuUsage[0].cpu_temp_degrees_celcius.toString(),
+          cpuElement.$$('#cpuTemp').textContent);
+      assertEquals(
+          fakeCpuUsage[0].percent_usage_user.toString(),
+          cpuElement.$$('#cpuUsageUser').textContent);
+      assertEquals(
+          fakeCpuUsage[0].percent_usage_system.toString(),
+          cpuElement.$$('#cpuUsageSystem').textContent);
     });
   });
 });
