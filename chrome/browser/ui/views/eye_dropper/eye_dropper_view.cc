@@ -186,10 +186,17 @@ void EyeDropperView::OnPaint(gfx::Canvas* view_canvas) {
         flags);
   }
 
-  // Paint central pixel in red.
+  // Paint central pixel.
   gfx::RectF pixel((size().width() - kPixelSize) / 2,
                    (size().height() - kPixelSize) / 2, kPixelSize, kPixelSize);
-  flags.setColor(SK_ColorRED);
+  flags.setAntiAlias(true);
+  flags.setColor(SK_ColorWHITE);
+  flags.setStrokeWidth(2);
+  pixel.Inset(-0.5f, -0.5f);
+  view_canvas->DrawRect(pixel, flags);
+  flags.setColor(SK_ColorBLACK);
+  flags.setStrokeWidth(1);
+  pixel.Inset(0.5f, 0.5f);
   view_canvas->DrawRect(pixel, flags);
 
   // Paint outline.

@@ -94,11 +94,11 @@ void EyeDropperView::ShowCursor() {
 }
 
 gfx::Size EyeDropperView::GetSize() const {
-  return gfx::Size(70, 70);
+  return gfx::Size(90, 90);
 }
 
 float EyeDropperView::GetDiameter() const {
-  return 70;
+  return 90;
 }
 
 std::unique_ptr<content::EyeDropper> ShowEyeDropper(
