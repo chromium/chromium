@@ -1238,12 +1238,13 @@ public class AwAutofillTest {
     }
 
     /**
-     * This test is verifying the session is still alive after navigation.
+     * This test is verifying that a navigation occurring while there is a probably-submitted
+     * form will trigger commit of the current autofill session.
      */
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    public void testSessionAliveAfterNavigation() throws Throwable {
+    public void testNavigationAfterProbableSubmitResultsInSessionCommit() throws Throwable {
         int cnt = 0;
         final String data = "<!DOCTYPE html>"
                 + "<html>"

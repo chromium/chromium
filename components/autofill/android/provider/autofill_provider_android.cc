@@ -337,25 +337,7 @@ void AutofillProviderAndroid::OnDidFillAutofillFormData(
 
 void AutofillProviderAndroid::OnFormsSeen(AutofillHandlerProxy* handler,
                                           const std::vector<FormData>& forms,
-                                          const base::TimeTicks) {
-  handler_for_testing_ = handler->GetWeakPtr();
-  if (!check_submission_)
-    return;
-
-  if (handler != handler_.get())
-    return;
-
-  if (form_.get() == nullptr)
-    return;
-
-  for (auto const& form : forms) {
-    if (form_->SimilarFormAs(form))
-      return;
-  }
-  // The form_ disappeared after it was submitted, we consider the submission
-  // succeeded.
-  FireSuccessfulSubmission(pending_submission_source_);
-}
+                                          const base::TimeTicks timestamp) {}
 
 void AutofillProviderAndroid::OnHidePopup(AutofillHandlerProxy* handler) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -372,6 +354,12 @@ void AutofillProviderAndroid::OnHidePopup(AutofillHandlerProxy* handler) {
 void AutofillProviderAndroid::Reset(AutofillHandlerProxy* handler) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (handler == handler_.get()) {
+    // If we previously received a notification from the renderer that the form
+    // was likely submitted and no event caused a reset of state in the interim,
+    // we consider this navigation to be resulting from the submission.
+    if (check_submission_ && form_.get())
+      FireSuccessfulSubmission(pending_submission_source_);
+
     JNIEnv* env = AttachCurrentThread();
     ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
     if (obj.is_null())

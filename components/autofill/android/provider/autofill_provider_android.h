@@ -118,8 +118,6 @@ class AutofillProviderAndroid : public AutofillProvider {
   // Valid only if check_submission_ is true.
   mojom::SubmissionSource pending_submission_source_;
 
-  base::WeakPtr<AutofillHandlerProxy> handler_for_testing_;
-
   DISALLOW_COPY_AND_ASSIGN(AutofillProviderAndroid);
 };
 }  // namespace autofill
