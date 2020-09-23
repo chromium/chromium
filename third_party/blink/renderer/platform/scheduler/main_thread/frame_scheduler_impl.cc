@@ -375,7 +375,8 @@ QueueTraits FrameSchedulerImpl::CreateQueueTraitsForTaskType(TaskType type) {
     case TaskType::kInternalContentCapture:
       return ThrottleableTaskQueueTraits().SetPrioritisationType(
           QueueTraits::PrioritisationType::kBestEffort);
-    case TaskType::kJavascriptTimerDelayed:
+    case TaskType::kJavascriptTimerDelayedLowNesting:
+    case TaskType::kJavascriptTimerDelayedHighNesting:
       return ThrottleableTaskQueueTraits().SetPrioritisationType(
           QueueTraits::PrioritisationType::kJavaScriptTimer);
     case TaskType::kJavascriptTimerImmediate: {

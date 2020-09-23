@@ -3917,7 +3917,7 @@ TEST_F(DisableNonMainTimerQueuesUntilFMPTest, DisablesOnlyNonMainTimerQueue) {
                            FrameScheduler::FrameType::kSubframe);
 
   scoped_refptr<TaskQueue> throttleable_tq = QueueForTaskType(
-      frame_scheduler.get(), TaskType::kJavascriptTimerDelayed);
+      frame_scheduler.get(), TaskType::kJavascriptTimerDelayedLowNesting);
   ForceUpdatePolicyAndGetCurrentUseCase();
 
   EXPECT_FALSE(throttleable_tq->IsQueueEnabled());
@@ -3940,7 +3940,7 @@ TEST_F(DisableNonMainTimerQueuesUntilFMPTest,
                            FrameScheduler::FrameType::kSubframe);
 
   scoped_refptr<TaskQueue> timer_tq = QueueForTaskType(
-      frame_scheduler.get(), TaskType::kJavascriptTimerDelayed);
+      frame_scheduler.get(), TaskType::kJavascriptTimerDelayedLowNesting);
 
   FakeInputEvent mouse_move_event{WebInputEvent::Type::kMouseMove,
                                   blink::WebInputEvent::kLeftButtonDown};

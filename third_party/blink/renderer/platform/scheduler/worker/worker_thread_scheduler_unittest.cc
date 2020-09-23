@@ -539,7 +539,7 @@ TEST_F(WorkerThreadSchedulerWithProxyTest, UkmTaskRecording) {
   scheduler_->SetUkmRecorderForTest(std::move(owned_ukm_recorder));
 
   base::sequence_manager::FakeTask task(
-      static_cast<int>(TaskType::kJavascriptTimerDelayed));
+      static_cast<int>(TaskType::kJavascriptTimerDelayedLowNesting));
   base::sequence_manager::FakeTaskTiming task_timing(
       base::TimeTicks() + base::TimeDelta::FromMilliseconds(200),
       base::TimeTicks() + base::TimeDelta::FromMilliseconds(700),
@@ -558,7 +558,7 @@ TEST_F(WorkerThreadSchedulerWithProxyTest, UkmTaskRecording) {
                                           true);
   ukm::TestUkmRecorder::ExpectEntryMetric(
       entries[0], "TaskType",
-      static_cast<int>(TaskType::kJavascriptTimerDelayed));
+      static_cast<int>(TaskType::kJavascriptTimerDelayedLowNesting));
   ukm::TestUkmRecorder::ExpectEntryMetric(
       entries[0], "FrameStatus",
       static_cast<int>(FrameStatus::kCrossOriginBackground));

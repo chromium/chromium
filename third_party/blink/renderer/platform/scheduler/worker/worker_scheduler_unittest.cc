@@ -286,7 +286,7 @@ TEST_F(WorkerSchedulerTest, MAYBE_PausableTasks) {
   // Tests interlacing pausable, throttable and unpausable tasks and
   // ensures that the pausable & throttable tasks don't run when paused.
   // Throttable
-  PostTestTask(&run_order, "T1", TaskType::kJavascriptTimerDelayed);
+  PostTestTask(&run_order, "T1", TaskType::kJavascriptTimerDelayedLowNesting);
   // Pausable
   PostTestTask(&run_order, "T2", TaskType::kNetworking);
   // Unpausable
@@ -304,7 +304,7 @@ TEST_F(WorkerSchedulerTest, MAYBE_NestedPauseHandlesTasks) {
   auto pause_handle = worker_scheduler_->Pause();
   {
     auto pause_handle2 = worker_scheduler_->Pause();
-    PostTestTask(&run_order, "T1", TaskType::kJavascriptTimerDelayed);
+    PostTestTask(&run_order, "T1", TaskType::kJavascriptTimerDelayedLowNesting);
     PostTestTask(&run_order, "T2", TaskType::kNetworking);
   }
   RunUntilIdle();

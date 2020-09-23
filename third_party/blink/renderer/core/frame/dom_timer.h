@@ -79,6 +79,11 @@ class CORE_EXPORT DOMTimer final : public GarbageCollected<DOMTimer>,
  private:
   void Fired() override;
 
+  // Increments the nesting level, clamping at the maximum value that can be
+  // represented by |int|. Since the value is only used to compare with
+  // |kMaxTimerNestingLevel|, the clamping doesn't affect behavior.
+  void IncrementNestingLevel();
+
   int timeout_id_;
   int nesting_level_;
   probe::AsyncTaskId async_task_id_;

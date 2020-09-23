@@ -73,14 +73,17 @@ enum class TaskType : unsigned char {
   kMicrotask = 9,
 
   // https://html.spec.whatwg.org/multipage/webappapis.html#timers
-  // For tasks queued by setInterval() and similar APIs. A different type is
-  // used depending on whether the timeout is zero or non-zero. Tasks with
-  // a zero timeout and a nesting level <= 5 will be associated with task
-  // queues that are not throttlable. This complies with the spec since it
-  // does not reduce the timeout to less than zero or bypass the timeout
-  // extension triggered on nesting level >= 5.
-  kJavascriptTimerDelayed = 10,
+  // For tasks queued by setTimeout() or setInterval().
+  //
+  // Task nesting level is < 5 and timeout is zero.
   kJavascriptTimerImmediate = 72,
+  // Task nesting level is < 5 and timeout is > 0.
+  kJavascriptTimerDelayedLowNesting = 73,
+  // Task nesting level is >= 5.
+  kJavascriptTimerDelayedHighNesting = 10,
+  // Note: The timeout is increased to be at least 4ms when the task nesting
+  // level is >= 5. Therefore, the timeout is necessarily > 0 for
+  // kJavascriptTimerDelayedHighNesting.
 
   // https://html.spec.whatwg.org/multipage/comms.html#sse-processing-model
   // This task source is used for any tasks that are queued by EventSource
@@ -271,7 +274,7 @@ enum class TaskType : unsigned char {
   kWorkerThreadTaskQueueV8 = 47,
   kWorkerThreadTaskQueueCompositor = 48,
 
-  kCount = 73,
+  kCount = 74,
 };
 
 }  // namespace blink

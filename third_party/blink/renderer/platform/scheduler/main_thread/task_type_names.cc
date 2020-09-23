@@ -35,10 +35,12 @@ const char* TaskTypeNames::TaskTypeToString(TaskType task_type) {
       return "CanvasBlobSerialization";
     case TaskType::kMicrotask:
       return "Microtask";
-    case TaskType::kJavascriptTimerDelayed:
-      return "JavascriptTimerDelayed";
     case TaskType::kJavascriptTimerImmediate:
       return "JavascriptTimerImmediate";
+    case TaskType::kJavascriptTimerDelayedLowNesting:
+      return "JavascriptTimerDelayedLowNesting";
+    case TaskType::kJavascriptTimerDelayedHighNesting:
+      return "JavascriptTimerDelayedHighNesting";
     case TaskType::kRemoteEvent:
       return "RemoteEvent";
     case TaskType::kWebSocket:
