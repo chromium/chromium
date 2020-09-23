@@ -15,11 +15,9 @@
 
 + (void)setUpMockAuthentication {
   chrome_test_util::SetUpMockAuthentication();
-  chrome_test_util::SetUpMockAccountReconcilor();
 }
 
 + (void)tearDownMockAuthentication {
-  chrome_test_util::TearDownMockAccountReconcilor();
   chrome_test_util::TearDownMockAuthentication();
 }
 

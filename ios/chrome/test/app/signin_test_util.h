@@ -14,13 +14,6 @@ void SetUpMockAuthentication();
 // Tears down the fake ChromeIdentityService and restores the real one.
 void TearDownMockAuthentication();
 
-// Sets up a mock AccountReconcilor that will always succeed and won't use the
-// network.
-void SetUpMockAccountReconcilor();
-
-// Tears down the mock AccountReconcilor if it was previously set up.
-void TearDownMockAccountReconcilor();
-
 // Signs the user out and starts clearing all identities from the
 // ChromeIdentityService.
 void SignOutAndClearIdentities();

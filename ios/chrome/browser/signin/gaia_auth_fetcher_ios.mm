@@ -16,13 +16,6 @@
 #error "This file requires ARC support."
 #endif
 
-namespace {
-
-// Whether the iOS specialization of the GaiaAuthFetcher should be used.
-bool g_should_use_gaia_auth_fetcher_ios = true;
-
-}  // namespace
-
 GaiaAuthFetcherIOS::GaiaAuthFetcherIOS(
     GaiaAuthConsumer* consumer,
     gaia::GaiaSource source,
@@ -45,7 +38,7 @@ void GaiaAuthFetcherIOS::CreateAndStartGaiaFetcher(
 
   bool cookies_required =
       credentials_mode != network::mojom::CredentialsMode::kOmit;
-  if (!ShouldUseGaiaAuthFetcherIOS() || !cookies_required) {
+  if (!cookies_required) {
     GaiaAuthFetcher::CreateAndStartGaiaFetcher(body, body_content_type, headers,
                                                gaia_gurl, credentials_mode,
                                                traffic_annotation);
@@ -80,13 +73,4 @@ void GaiaAuthFetcherIOS::OnFetchComplete(const GURL& url,
   VLOG(2) << "data: " << data << "\n";
   SetPendingFetch(false);
   DispatchFetchedRequest(url, data, net_error, response_code);
-}
-
-void GaiaAuthFetcherIOS::SetShouldUseGaiaAuthFetcherIOSForTesting(
-    bool use_gaia_fetcher_ios) {
-  g_should_use_gaia_auth_fetcher_ios = use_gaia_fetcher_ios;
-}
-
-bool GaiaAuthFetcherIOS::ShouldUseGaiaAuthFetcherIOS() {
-  return g_should_use_gaia_auth_fetcher_ios;
 }
