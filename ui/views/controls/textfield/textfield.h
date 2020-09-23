@@ -571,6 +571,10 @@ class VIEWS_EXPORT Textfield : public View,
   // placed at the point new text will be inserted).
   bool ShouldShowCursor() const;
 
+  // Converts a textfield width in "average characters" to the required number
+  // of DIPs, accounting for insets and cursor.
+  int CharsToDips(int width_in_chars) const;
+
   // Returns true if an insertion cursor should be visible and blinking.
   bool ShouldBlinkCursor() const;
 

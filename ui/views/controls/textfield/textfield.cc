@@ -709,8 +709,7 @@ int Textfield::GetBaseline() const {
 gfx::Size Textfield::CalculatePreferredSize() const {
   DCHECK_GE(default_width_in_chars_, minimum_width_in_chars_);
   return gfx::Size(
-      GetFontList().GetExpectedTextWidth(default_width_in_chars_) +
-          GetInsets().width(),
+      CharsToDips(default_width_in_chars_),
       LayoutProvider::GetControlHeightForFont(style::CONTEXT_TEXTFIELD,
                                               GetTextStyle(), GetFontList()));
 }
@@ -719,9 +718,7 @@ gfx::Size Textfield::GetMinimumSize() const {
   DCHECK_LE(minimum_width_in_chars_, default_width_in_chars_);
   gfx::Size minimum_size = View::GetMinimumSize();
   if (minimum_width_in_chars_ >= 0)
-    minimum_size.set_width(
-        GetFontList().GetExpectedTextWidth(minimum_width_in_chars_) +
-        GetInsets().width());
+    minimum_size.set_width(CharsToDips(minimum_width_in_chars_));
   return minimum_size;
 }
 
@@ -2504,6 +2501,16 @@ bool Textfield::ShouldShowCursor() const {
   // selections do not affect cursor visibility.
   return HasFocus() && !HasSelection(true) && GetEnabled() && !GetReadOnly() &&
          !drop_cursor_visible_ && GetRenderText()->cursor_enabled();
+}
+
+int Textfield::CharsToDips(int width_in_chars) const {
+  // Use a subset of the conditions in ShouldShowCursor() that are unlikely to
+  // change dynamically.  Dynamic changes can result in glitchy-looking visual
+  // effects like find boxes on different tabs being 1 DIP different width.
+  const int cursor_width =
+      (!GetReadOnly() && GetRenderText()->cursor_enabled()) ? 1 : 0;
+  return GetFontList().GetExpectedTextWidth(default_width_in_chars_) +
+         cursor_width + GetInsets().width();
 }
 
 bool Textfield::ShouldBlinkCursor() const {
