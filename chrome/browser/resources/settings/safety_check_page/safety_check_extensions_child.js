@@ -63,6 +63,7 @@ Polymer({
       value: () => new Set([
         SafetyCheckExtensionsStatus.NO_BLOCKLISTED_EXTENSIONS,
         SafetyCheckExtensionsStatus.ERROR,
+        SafetyCheckExtensionsStatus.BLOCKLISTED_ALL_DISABLED,
       ]),
     },
   },
@@ -117,26 +118,11 @@ Polymer({
    */
   getButtonLabel_: function() {
     switch (this.status_) {
-      case SafetyCheckExtensionsStatus.BLOCKLISTED_ALL_DISABLED:
       case SafetyCheckExtensionsStatus.BLOCKLISTED_REENABLED_ALL_BY_USER:
       case SafetyCheckExtensionsStatus.BLOCKLISTED_REENABLED_SOME_BY_USER:
         return this.i18n('safetyCheckReview');
       default:
         return null;
-    }
-  },
-
-  /**
-   * @private
-   * @return {string}
-   */
-  getButtonClass_: function() {
-    switch (this.status_) {
-      case SafetyCheckExtensionsStatus.BLOCKLISTED_REENABLED_ALL_BY_USER:
-      case SafetyCheckExtensionsStatus.BLOCKLISTED_REENABLED_SOME_BY_USER:
-        return 'action-button';
-      default:
-        return '';
     }
   },
 

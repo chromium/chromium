@@ -853,7 +853,7 @@ suite('SafetyCheckExtensionsChildUiTests', function() {
     assertEquals('chrome://extensions', url);
   });
 
-  test('extensionsBlocklistedOffUiTest', function() {
+  test('extensionsBlocklistedOffUiTest', async function() {
     fireSafetyCheckExtensionsEvent(
         SafetyCheckExtensionsStatus.BLOCKLISTED_ALL_DISABLED);
     flush();
@@ -861,10 +861,14 @@ suite('SafetyCheckExtensionsChildUiTests', function() {
       page: page,
       iconStatus: SafetyCheckIconStatus.SAFE,
       label: 'Extensions',
-      buttonLabel: 'Review',
-      buttonAriaLabel: 'Review extensions',
+      rowClickable: true,
     });
-    return expectExtensionsButtonClickActions();
+
+    // User clicks the row.
+    page.$$('#safetyCheckChild').click();
+    // Ensure the browser proxy call is done.
+    const url = await openWindowProxy.whenCalled('openURL');
+    assertEquals('chrome://extensions', url);
   });
 
   test('extensionsBlocklistedOnAllUserUiTest', function() {
