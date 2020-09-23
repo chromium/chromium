@@ -23,6 +23,7 @@ class SystemDataProvider : public mojom::SystemDataProvider {
 
   // mojom::SystemDataProvider:
   void GetSystemInfo(GetSystemInfoCallback callback) override;
+  void GetBatteryInfo(GetBatteryInfoCallback callback) override;
 
  private:
   void BindCrosHealthdProbeServiceIfNeccessary();
@@ -31,6 +32,10 @@ class SystemDataProvider : public mojom::SystemDataProvider {
 
   void OnSystemInfoProbeResponse(
       GetSystemInfoCallback callback,
+      cros_healthd::mojom::TelemetryInfoPtr info_ptr);
+
+  void OnBatteryInfoProbeResponse(
+      GetBatteryInfoCallback callback,
       cros_healthd::mojom::TelemetryInfoPtr info_ptr);
 
   mojo::Remote<cros_healthd::mojom::CrosHealthdProbeService> probe_service_;

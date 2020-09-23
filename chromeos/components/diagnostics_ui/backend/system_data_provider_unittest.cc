@@ -22,6 +22,33 @@ namespace chromeos {
 namespace diagnostics {
 namespace {
 
+void SetProbeTelemetryInfoResponse(
+    cros_healthd::mojom::BatteryInfoPtr battery_info,
+    cros_healthd::mojom::CpuInfoPtr cpu_info,
+    cros_healthd::mojom::MemoryInfoPtr memory_info,
+    cros_healthd::mojom::SystemInfoPtr system_info) {
+  auto info = cros_healthd::mojom::TelemetryInfo::New();
+  if (system_info) {
+    info->system_result = cros_healthd::mojom::SystemResult::NewSystemInfo(
+        std::move(system_info));
+  }
+  if (battery_info) {
+    info->battery_result = cros_healthd::mojom::BatteryResult::NewBatteryInfo(
+        std::move(battery_info));
+  }
+  if (memory_info) {
+    info->memory_result = cros_healthd::mojom::MemoryResult::NewMemoryInfo(
+        std::move(memory_info));
+  }
+  if (cpu_info) {
+    info->cpu_result =
+        cros_healthd::mojom::CpuResult::NewCpuInfo(std::move(cpu_info));
+  }
+
+  cros_healthd::FakeCrosHealthdClient::Get()
+      ->SetProbeTelemetryInfoResponseForTesting(info);
+}
+
 void SetCrosHealthdSystemInfoResponse(const std::string& board_name,
                                       const std::string& cpu_model,
                                       uint32_t total_memory_kib,
@@ -50,17 +77,66 @@ void SetCrosHealthdSystemInfoResponse(const std::string& board_name,
   cpu_info->num_total_threads = cpu_threads_count;
   cpu_info->physical_cpus.emplace_back(std::move(physical_cpu_info));
 
-  auto info = cros_healthd::mojom::TelemetryInfo::New();
-  info->system_result =
-      cros_healthd::mojom::SystemResult::NewSystemInfo(std::move(system_info));
-  info->battery_result = cros_healthd::mojom::BatteryResult::NewBatteryInfo(
-      std::move(battery_info));
-  info->memory_result =
-      cros_healthd::mojom::MemoryResult::NewMemoryInfo(std::move(memory_info));
-  info->cpu_result =
-      cros_healthd::mojom::CpuResult::NewCpuInfo(std::move(cpu_info));
-  cros_healthd::FakeCrosHealthdClient::Get()
-      ->SetProbeTelemetryInfoResponseForTesting(info);
+  SetProbeTelemetryInfoResponse(std::move(battery_info), std::move(cpu_info),
+                                std::move(memory_info), std::move(system_info));
+}
+
+// Constructs a BatteryInfoPtr. If |temperature| = 0, it will be omitted from
+// the response to simulate an empty temperature field.
+cros_healthd::mojom::BatteryInfoPtr CreateCrosHealthdBatteryInfoResponse(
+    int64_t cycle_count,
+    double voltage_now,
+    const std::string& vendor,
+    const std::string& serial_number,
+    double charge_full_design,
+    double charge_full,
+    double voltage_min_design,
+    const std::string& model_name,
+    double charge_now,
+    double current_now,
+    const std::string& technology,
+    const std::string& status,
+    const base::Optional<std::string>& manufacture_date,
+    uint64_t temperature) {
+  cros_healthd::mojom::UInt64ValuePtr temp_value_ptr(
+      cros_healthd::mojom::UInt64Value::New());
+  if (temperature != 0) {
+    temp_value_ptr->value = temperature;
+  }
+  auto battery_info = cros_healthd::mojom::BatteryInfo::New(
+      cycle_count, voltage_now, vendor, serial_number, charge_full_design,
+      charge_full, voltage_min_design, model_name, charge_now, current_now,
+      technology, status, manufacture_date, std::move(temp_value_ptr));
+  return battery_info;
+}
+
+cros_healthd::mojom::BatteryInfoPtr CreateCrosHealthdBatteryInfoResponse(
+    const std::string& vendor,
+    double charge_full_design) {
+  return CreateCrosHealthdBatteryInfoResponse(
+      /*cycle_count=*/0,
+      /*voltage_now=*/0,
+      /*vendor=*/vendor,
+      /*serial_number=*/"",
+      /*charge_full_design=*/charge_full_design,
+      /*charge_full=*/0,
+      /*voltage_min_design=*/0,
+      /*model_name=*/"",
+      /*charge_now=*/0,
+      /*current_now=*/0,
+      /*technology=*/"",
+      /*status=*/"",
+      /*manufacture_date=*/base::nullopt,
+      /*temperature=*/0);
+}
+
+void SetCrosHealthdBatteryInfoResponse(const std::string& vendor,
+                                       double charge_full_design) {
+  cros_healthd::mojom::BatteryInfoPtr battery_info =
+      CreateCrosHealthdBatteryInfoResponse(vendor, charge_full_design);
+  SetProbeTelemetryInfoResponse(std::move(battery_info), /*cpu_info=*/nullptr,
+                                /*memory_info=*/nullptr,
+                                /*memory_info=*/nullptr);
 }
 
 }  // namespace
@@ -138,6 +214,29 @@ TEST_F(SystemDataProviderTest, NoBattery) {
         EXPECT_EQ(expected_milestone_version,
                   ptr->version_info->milestone_version);
         EXPECT_EQ(expected_has_battery, ptr->device_capabilities->has_battery);
+
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+TEST_F(SystemDataProviderTest, BatteryInfo) {
+  const std::string expected_manufacturer = "manufacturer";
+  const double charge_full_amp_hours = 25;
+
+  SetCrosHealthdBatteryInfoResponse(expected_manufacturer,
+                                    charge_full_amp_hours);
+
+  const uint32_t expected_charge_full_design_milliamp_hours =
+      charge_full_amp_hours * 1000;
+
+  base::RunLoop run_loop;
+  system_data_provider_->GetBatteryInfo(
+      base::BindLambdaForTesting([&](mojom::BatteryInfoPtr ptr) {
+        ASSERT_TRUE(ptr);
+        EXPECT_EQ(expected_manufacturer, ptr->manufacturer);
+        EXPECT_EQ(expected_charge_full_design_milliamp_hours,
+                  ptr->charge_full_design_milliamp_hours);
 
         run_loop.Quit();
       }));

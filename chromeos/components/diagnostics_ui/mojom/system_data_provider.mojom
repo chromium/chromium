@@ -24,10 +24,21 @@ struct SystemInfo {
   DeviceCapabilities device_capabilities;
 };
 
+// Contains information about the battery.
+struct BatteryInfo {
+  string manufacturer;
+  uint32 charge_full_design_milliamp_hours;
+};
+
 // Provides telemetric information about the system. This API is exposed to the
 // Diagnostics SWA.
 interface SystemDataProvider {
   // Returns a snapshot of system information. |system_info| is static
   // information that does not change during the lifetime of the service.
   GetSystemInfo() => (SystemInfo system_info);
+
+  // Returns information about the battery. |battery_info| is static
+  // information that does not change during the lifetime fo the service.
+  // If the device does not have a battery, returns an empty BatteryInfo.
+  GetBatteryInfo() => (BatteryInfo battery_info);
 };

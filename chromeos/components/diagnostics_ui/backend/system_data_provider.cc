@@ -65,6 +65,14 @@ void PopulateDeviceCapabilities(const healthd::TelemetryInfo& telemetry_info,
   out_system_info.device_capabilities = std::move(capabilities);
 }
 
+void PopulateBatteryInfo(const healthd::BatteryInfo& battery_info,
+                         mojom::BatteryInfo& out_battery_info) {
+  out_battery_info.manufacturer = battery_info.vendor;
+  // Multiply by 1000 to convert amps to milliamps.
+  out_battery_info.charge_full_design_milliamp_hours =
+      battery_info.charge_full_design * 1000;
+}
+
 }  // namespace
 
 SystemDataProvider::SystemDataProvider() = default;
@@ -77,6 +85,15 @@ void SystemDataProvider::GetSystemInfo(GetSystemInfoCallback callback) {
       {ProbeCategories::kBattery, ProbeCategories::kCpu,
        ProbeCategories::kMemory, ProbeCategories::kSystem},
       base::BindOnce(&SystemDataProvider::OnSystemInfoProbeResponse,
+                     base::Unretained(this), std::move(callback)));
+}
+
+void SystemDataProvider::GetBatteryInfo(GetBatteryInfoCallback callback) {
+  BindCrosHealthdProbeServiceIfNeccessary();
+
+  probe_service_->ProbeTelemetryInfo(
+      {ProbeCategories::kBattery},
+      base::BindOnce(&SystemDataProvider::OnBatteryInfoProbeResponse,
                      base::Unretained(this), std::move(callback)));
 }
 
@@ -122,6 +139,29 @@ void SystemDataProvider::OnSystemInfoProbeResponse(
   PopulateDeviceCapabilities(*info_ptr, *system_info.get());
 
   std::move(callback).Run(std::move(system_info));
+}
+
+void SystemDataProvider::OnBatteryInfoProbeResponse(
+    GetBatteryInfoCallback callback,
+    healthd::TelemetryInfoPtr info_ptr) {
+  mojom::BatteryInfoPtr battery_info = mojom::BatteryInfo::New();
+
+  if (info_ptr.is_null()) {
+    LOG(ERROR) << "Null response from croshealthd::ProbeTelemetryInfo.";
+    std::move(callback).Run(std::move(battery_info));
+    return;
+  }
+
+  const healthd::BatteryInfo* battery_info_ptr =
+      diagnostics::GetBatteryInfo(*info_ptr);
+  if (!battery_info_ptr) {
+    LOG(ERROR) << "BatteryInfo requested by device does not have a battery.";
+    std::move(callback).Run(std::move(battery_info));
+    return;
+  }
+
+  PopulateBatteryInfo(*battery_info_ptr, *battery_info.get());
+  std::move(callback).Run(std::move(battery_info));
 }
 
 void SystemDataProvider::BindCrosHealthdProbeServiceIfNeccessary() {
