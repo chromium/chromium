@@ -949,14 +949,14 @@ const char kPerAppTimeLimitsPolicy[] = "child_user.per_app_time_limits.policy";
 const char kPerAppTimeLimitsAllowlistPolicy[] =
     "child_user.per_app_time_limits.whitelist";
 
-// Time pref to record the user engagement session start time for family user
-// metrics.
-const char kFamilyUserMetricsSessionEngagementStartTime[] =
-    "family_user.metrics.session_engagement_start_time";
-
 // Integer pref to record the day id (number of days since origin of time) when
 // family user metrics were last recorded.
 const char kFamilyUserMetricsDayId[] = "family_user.metrics.day_id";
+
+// TimeDelta pref to record the accumulated user session duration for family
+// user metrics.
+const char kFamilyUserMetricsSessionEngagementDuration[] =
+    "family_user.metrics.session_engagement_duration";
 
 // List of preconfigured network file shares.
 const char kNetworkFileSharesPreconfiguredShares[] =

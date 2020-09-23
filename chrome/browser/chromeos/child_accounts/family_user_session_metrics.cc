@@ -10,7 +10,6 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
-#include "base/time/time.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -21,6 +20,9 @@ namespace {
 
 constexpr int kEngagementHourBuckets = base::Time::kHoursPerDay;
 constexpr base::TimeDelta kOneHour = base::TimeDelta::FromHours(1);
+constexpr base::TimeDelta kMinSessionDuration = base::TimeDelta::FromSeconds(1);
+constexpr base::TimeDelta kMaxSessionDuration = base::TimeDelta::FromDays(1);
+constexpr int kSessionDurationBuckets = 100;
 
 // Returns the hour (0-23) within the day for given local time.
 int HourOfDay(base::Time time) {
@@ -81,12 +83,14 @@ const char FamilyUserSessionMetrics::kSessionEngagementWeekendHistogramName[] =
     "FamilyUser.SessionEngagement.Weekend";
 const char FamilyUserSessionMetrics::kSessionEngagementTotalHistogramName[] =
     "FamilyUser.SessionEngagement.Total";
+const char FamilyUserSessionMetrics::kSessionEngagementDurationHistogramName[] =
+    "FamilyUser.SessionEngagement.Duration";
 
 // static
 void FamilyUserSessionMetrics::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
-  registry->RegisterTimePref(
-      prefs::kFamilyUserMetricsSessionEngagementStartTime, base::Time());
+  registry->RegisterTimeDeltaPref(
+      prefs::kFamilyUserMetricsSessionEngagementDuration, base::TimeDelta());
 }
 
 FamilyUserSessionMetrics::FamilyUserSessionMetrics(PrefService* pref_service)
@@ -96,34 +100,57 @@ FamilyUserSessionMetrics::FamilyUserSessionMetrics(PrefService* pref_service)
 }
 
 FamilyUserSessionMetrics::~FamilyUserSessionMetrics() {
-  if (is_user_active_) {
-    is_user_active_ = false;
-    UpdateUserEngagement();
+  // |active_session_start_| will be reset in UpdateUserEngagement() after user
+  // becomes inactive. |active_session_start_| equals to base::Time() indicates
+  // that UpdateUserEngagement(false) has already been called.
+  if (active_session_start_ != base::Time()) {
+    UpdateUserEngagement(/*is_user_active=*/false);
   }
 
   UsageTimeStateNotifier::GetInstance()->RemoveObserver(this);
 }
 
-void FamilyUserSessionMetrics::OnUsageTimeStateChange(
-    UsageTimeStateNotifier::UsageTimeState state) {
-  is_user_active_ = state == UsageTimeStateNotifier::UsageTimeState::ACTIVE;
-
-  UpdateUserEngagement();
+void FamilyUserSessionMetrics::OnNewDay() {
+  base::TimeDelta unreported_duration = pref_service_->GetTimeDelta(
+      prefs::kFamilyUserMetricsSessionEngagementDuration);
+  if (unreported_duration <= base::TimeDelta())
+    return;
+  base::UmaHistogramCustomTimes(kSessionEngagementDurationHistogramName,
+                                unreported_duration, kMinSessionDuration,
+                                kMaxSessionDuration, kSessionDurationBuckets);
+  pref_service_->ClearPref(prefs::kFamilyUserMetricsSessionEngagementDuration);
 }
 
-void FamilyUserSessionMetrics::UpdateUserEngagement() {
-  if (is_user_active_) {
+void FamilyUserSessionMetrics::SetActiveSessionStartForTesting(
+    base::Time time) {
+  active_session_start_ = time;
+}
+
+void FamilyUserSessionMetrics::OnUsageTimeStateChange(
+    UsageTimeStateNotifier::UsageTimeState state) {
+  UpdateUserEngagement(/*is_user_active=*/state ==
+                       UsageTimeStateNotifier::UsageTimeState::ACTIVE);
+}
+
+void FamilyUserSessionMetrics::UpdateUserEngagement(bool is_user_active) {
+  base::Time now = base::Time::Now();
+  if (is_user_active) {
     base::RecordAction(
         base::UserMetricsAction(kSessionEngagementStartActionName));
-    pref_service_->SetTime(prefs::kFamilyUserMetricsSessionEngagementStartTime,
-                           base::Time::Now());
+    active_session_start_ = now;
   } else {
-    base::Time start = pref_service_->GetTime(
-        prefs::kFamilyUserMetricsSessionEngagementStartTime);
-
     ReportUserEngagementHourToUma(
-        /*start=*/start,
-        /*end=*/base::Time::Now());
+        /*start=*/active_session_start_,
+        /*end=*/now);
+    if (now > active_session_start_) {
+      base::TimeDelta unreported_duration = pref_service_->GetTimeDelta(
+          prefs::kFamilyUserMetricsSessionEngagementDuration);
+      pref_service_->SetTimeDelta(
+          prefs::kFamilyUserMetricsSessionEngagementDuration,
+          unreported_duration + now - active_session_start_);
+    }
+
+    active_session_start_ = base::Time();
   }
 }
 

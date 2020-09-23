@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_CHROMEOS_CHILD_ACCOUNTS_FAMILY_USER_SESSION_METRICS_H_
 #define CHROME_BROWSER_CHROMEOS_CHILD_ACCOUNTS_FAMILY_USER_SESSION_METRICS_H_
 
+#include "base/time/time.h"
 #include "chrome/browser/chromeos/child_accounts/family_user_metrics_service.h"
 #include "chrome/browser/chromeos/child_accounts/usage_time_state_notifier.h"
 
@@ -21,6 +22,9 @@ namespace chromeos {
 // day when the user is active split by weekday/weekend and total of
 // weekday/weekend. Recorded when UsageTimeNotifier::UsageTimeState changes to
 // INACTIVE. Covers the time between ACTIVE and INACTIVE.
+// - FamilyUser.SessionEngagement.Duration: Daily sum of user's active time in
+// milliseconds. Recorded at the beginning of the first active session on a
+// subsequent day.
 class FamilyUserSessionMetrics : public FamilyUserMetricsService::Observer,
                                  public UsageTimeStateNotifier::Observer {
  public:
@@ -28,6 +32,7 @@ class FamilyUserSessionMetrics : public FamilyUserMetricsService::Observer,
   static const char kSessionEngagementWeekdayHistogramName[];
   static const char kSessionEngagementWeekendHistogramName[];
   static const char kSessionEngagementTotalHistogramName[];
+  static const char kSessionEngagementDurationHistogramName[];
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
@@ -36,21 +41,28 @@ class FamilyUserSessionMetrics : public FamilyUserMetricsService::Observer,
   FamilyUserSessionMetrics& operator=(const FamilyUserSessionMetrics&) = delete;
   ~FamilyUserSessionMetrics() override;
 
+  // FamilyUserMetricsService::Observer:
+  void OnNewDay() override;
+
+  void SetActiveSessionStartForTesting(base::Time time);
+
  private:
   // UsageTimeStateNotifier::Observer:
   // When the user signs out, this function doesn't get called and
-  // |is_user_active_| doesn't change to false. Destructor will be called
-  // instead.
+  // UsageTimeStateNotifier::UsageTimeState doesn't change to inactive.
+  // Destructor will be called instead.
   void OnUsageTimeStateChange(
       UsageTimeStateNotifier::UsageTimeState state) override;
 
-  // Called when user engagement changes, save engagement data to pref
-  // or report to UMA.
-  void UpdateUserEngagement();
+  // Called when user engagement changes.Saves engagement hour and session
+  // duration data to prefs or report to UMA.
+  void UpdateUserEngagement(bool is_user_active);
 
   PrefService* const pref_service_;
 
-  bool is_user_active_ = false;
+  // The time when the user becomes active. It will be reset to base::Time()
+  // when the user becomes inactive.
+  base::Time active_session_start_;
 };
 }  // namespace chromeos
 

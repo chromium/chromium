@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/logging.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/task_environment.h"
@@ -22,6 +23,10 @@
 namespace chromeos {
 
 namespace {
+
+constexpr base::TimeDelta kTenMinutes = base::TimeDelta::FromMinutes(10);
+constexpr base::TimeDelta kOneHour = base::TimeDelta::FromHours(1);
+constexpr base::TimeDelta kOneDay = base::TimeDelta::FromDays(1);
 
 void SetScreenOff(bool is_screen_off) {
   power_manager::ScreenIdleState screen_idle_state;
@@ -73,18 +78,21 @@ class FamilyUserSessionMetricsTest : public testing::Test {
     task_environment_.FastForwardBy(forward_by);
   }
 
-  void SetSessionEngagementStartPref(base::Time start) {
-    pref_service_.SetTime(prefs::kFamilyUserMetricsSessionEngagementStartTime,
-                          start);
-  }
-
   void SetSessionState(session_manager::SessionState state) {
     session_manager_.SetSessionState(state);
+  }
+
+  void SetActiveSessionStartTime(base::Time time) {
+    family_user_session_metrics_->SetActiveSessionStartForTesting(time);
   }
 
   session_manager::SessionState GetSessionState() {
     return session_manager_.session_state();
   }
+
+  void OnNewDay() { family_user_session_metrics_->OnNewDay(); }
+
+  PrefService* pref_service() { return &pref_service_; }
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -104,67 +112,150 @@ TEST_F(FamilyUserSessionMetricsTest, SessionStateChange) {
             user_action_tester.GetActionCount(
                 FamilyUserSessionMetrics::kSessionEngagementStartActionName));
 
-  SetupTaskRunnerWithTime("1 Jan 2020 10:00");
+  SetupTaskRunnerWithTime("1 Jan 2020 23:00");
 
   SetSessionState(session_manager::SessionState::ACTIVE);
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(10));
 
-  // Session locked at 10:10:00.
+  task_environment_.FastForwardBy(kTenMinutes);
+  // Session locked at 23:10:00.
   SetSessionState(session_manager::SessionState::LOCKED);
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(10));
 
-  // Session activated at 10:20:00.
+  task_environment_.FastForwardBy(kOneHour);
+  // Session activated at 00:10:00 on 2 Jan 2020.
   SetSessionState(session_manager::SessionState::ACTIVE);
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromDays(1));
+  OnNewDay();
 
-  // Session locked at 10:20:00 on the second day.
+  task_environment_.FastForwardBy(kOneHour);
+  // Session locked at 01:10:00 on 2 Jan 2020.
   SetSessionState(session_manager::SessionState::LOCKED);
 
+  // Engagement start metric result:
   EXPECT_EQ(2,
             user_action_tester.GetActionCount(
                 FamilyUserSessionMetrics::kSessionEngagementStartActionName));
 
-  histogram_tester.ExpectBucketCount(
-      FamilyUserSessionMetrics::kSessionEngagementWeekdayHistogramName, 10, 3);
+  for (int i = 0; i <= 23; i++) {
+    if (i == 0 || i == 1 || i == 23) {
+      histogram_tester.ExpectBucketCount(
+          FamilyUserSessionMetrics::kSessionEngagementWeekdayHistogramName, i,
+          1);
+      histogram_tester.ExpectBucketCount(
+          FamilyUserSessionMetrics::kSessionEngagementTotalHistogramName, i, 1);
+    } else {
+      histogram_tester.ExpectBucketCount(
+          FamilyUserSessionMetrics::kSessionEngagementWeekdayHistogramName, i,
+          0);
+      histogram_tester.ExpectBucketCount(
+          FamilyUserSessionMetrics::kSessionEngagementTotalHistogramName, i, 0);
+    }
+  }
 
   histogram_tester.ExpectTotalCount(
-      FamilyUserSessionMetrics::kSessionEngagementWeekdayHistogramName, 26);
-  histogram_tester.ExpectTotalCount(
-      FamilyUserSessionMetrics::kSessionEngagementTotalHistogramName, 26);
+      FamilyUserSessionMetrics::kSessionEngagementTotalHistogramName, 3);
+
+  // Duration metric result:
+  histogram_tester.ExpectUniqueTimeSample(
+      FamilyUserSessionMetrics::kSessionEngagementDurationHistogramName,
+      kTenMinutes, 1);
+  EXPECT_EQ(kOneHour, pref_service()->GetTimeDelta(
+                          prefs::kFamilyUserMetricsSessionEngagementDuration));
 }
 
 TEST_F(FamilyUserSessionMetricsTest, ScreenStateChange) {
   base::HistogramTester histogram_tester;
   base::UserActionTester user_action_tester;
 
-  SetupTaskRunnerWithTime("3 Jan 2020 23:00");
+  SetupTaskRunnerWithTime("3 Jan 2020 23:10");
 
   SetSessionState(session_manager::SessionState::ACTIVE);
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(60));
+  task_environment_.FastForwardBy(kOneHour);
 
-  // Test screen off at 0:00:00.
+  // Test screen off after midnight at 0:10:00 on 4 Jan 2020.
   SetScreenOff(true);
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(10));
 
-  // Test screen on at 0:10:00.
+  OnNewDay();
+
+  // Engagement start metric result:
+  EXPECT_EQ(1,
+            user_action_tester.GetActionCount(
+                FamilyUserSessionMetrics::kSessionEngagementStartActionName));
+
+  // Engagement Hour metric result:
+  histogram_tester.ExpectUniqueSample(
+      FamilyUserSessionMetrics::kSessionEngagementWeekdayHistogramName, 23, 1);
+  histogram_tester.ExpectUniqueSample(
+      FamilyUserSessionMetrics::kSessionEngagementWeekendHistogramName, 0, 1);
+  histogram_tester.ExpectTotalCount(
+      FamilyUserSessionMetrics::kSessionEngagementTotalHistogramName, 2);
+
+  // Duration metric result:
+  histogram_tester.ExpectUniqueTimeSample(
+      FamilyUserSessionMetrics::kSessionEngagementDurationHistogramName,
+      kOneHour, 1);
+  EXPECT_EQ(base::TimeDelta(),
+            pref_service()->GetTimeDelta(
+                prefs::kFamilyUserMetricsSessionEngagementDuration));
+
+  // Test screen on on 4 Jan 2020 0:10:00.
   SetScreenOff(false);
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(10));
 
-  // Session locked at 0:20:00.
-  SetSessionState(session_manager::SessionState::LOCKED);
+  task_environment_.FastForwardBy(base::TimeDelta::FromHours(25));
+  // Test screen off on 5 Jan 2020 1:10:00.
+  SetScreenOff(true);
 
+  OnNewDay();
+
+  // Engagement start metric result:
   EXPECT_EQ(2,
             user_action_tester.GetActionCount(
                 FamilyUserSessionMetrics::kSessionEngagementStartActionName));
 
+  // Engagement Hour metric result:
   histogram_tester.ExpectUniqueSample(
       FamilyUserSessionMetrics::kSessionEngagementWeekdayHistogramName, 23, 1);
-  histogram_tester.ExpectUniqueSample(
-      FamilyUserSessionMetrics::kSessionEngagementWeekendHistogramName, 0, 2);
+  for (int i = 0; i <= 23; i++) {
+    if (i == 0) {
+      histogram_tester.ExpectBucketCount(
+          FamilyUserSessionMetrics::kSessionEngagementWeekendHistogramName, i,
+          3);
+      histogram_tester.ExpectBucketCount(
+          FamilyUserSessionMetrics::kSessionEngagementTotalHistogramName, i, 3);
+    } else if (i == 1) {
+      histogram_tester.ExpectBucketCount(
+          FamilyUserSessionMetrics::kSessionEngagementWeekendHistogramName, i,
+          2);
+      histogram_tester.ExpectBucketCount(
+          FamilyUserSessionMetrics::kSessionEngagementTotalHistogramName, i, 2);
+    } else if (i == 23) {
+      histogram_tester.ExpectBucketCount(
+          FamilyUserSessionMetrics::kSessionEngagementWeekendHistogramName, i,
+          1);
+      histogram_tester.ExpectBucketCount(
+          FamilyUserSessionMetrics::kSessionEngagementTotalHistogramName, i, 2);
+
+    } else {
+      histogram_tester.ExpectBucketCount(
+          FamilyUserSessionMetrics::kSessionEngagementWeekendHistogramName, i,
+          1);
+    }
+  }
 
   histogram_tester.ExpectTotalCount(
-      FamilyUserSessionMetrics::kSessionEngagementTotalHistogramName, 3);
+      FamilyUserSessionMetrics::kSessionEngagementTotalHistogramName, 28);
+
+  // Duration metric result:
+  histogram_tester.ExpectTimeBucketCount(
+      FamilyUserSessionMetrics::kSessionEngagementDurationHistogramName,
+      kOneHour, 1);
+  histogram_tester.ExpectTimeBucketCount(
+      FamilyUserSessionMetrics::kSessionEngagementDurationHistogramName,
+      kOneDay, 1);
+  histogram_tester.ExpectTotalCount(
+      FamilyUserSessionMetrics::kSessionEngagementDurationHistogramName, 2);
+  EXPECT_EQ(base::TimeDelta(),
+            pref_service()->GetTimeDelta(
+                prefs::kFamilyUserMetricsSessionEngagementDuration));
 }
 
 TEST_F(FamilyUserSessionMetricsTest, SuspendStateChange) {
@@ -174,32 +265,41 @@ TEST_F(FamilyUserSessionMetricsTest, SuspendStateChange) {
   SetupTaskRunnerWithTime("4 Jan 2020 6:00");
 
   SetSessionState(session_manager::SessionState::ACTIVE);
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(10));
+  task_environment_.FastForwardBy(kTenMinutes);
 
   // Test suspend at 6:10:00.
   SetSuspendImminent();
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(10));
+  task_environment_.FastForwardBy(kTenMinutes);
 
   // Test cancel at 6:20:00.
   CancelSuspend();
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(10));
+  task_environment_.FastForwardBy(kTenMinutes);
 
   // Test suspend at 6:30:00.
   SetSuspendImminent();
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(10));
+  task_environment_.FastForwardBy(kTenMinutes);
 
   // Session locked at 6:40:00.
   SetSessionState(session_manager::SessionState::LOCKED);
 
+  // Engagement start metric result:
   EXPECT_EQ(2,
             user_action_tester.GetActionCount(
                 FamilyUserSessionMetrics::kSessionEngagementStartActionName));
 
+  // Engagement Hour metric result:
   histogram_tester.ExpectUniqueSample(
       FamilyUserSessionMetrics::kSessionEngagementWeekendHistogramName, 6, 2);
   histogram_tester.ExpectTotalCount(
       FamilyUserSessionMetrics::kSessionEngagementTotalHistogramName, 2);
+
+  // Duration metric result:
+  histogram_tester.ExpectTotalCount(
+      FamilyUserSessionMetrics::kSessionEngagementDurationHistogramName, 0);
+  EXPECT_EQ(base::TimeDelta::FromMinutes(20),
+            pref_service()->GetTimeDelta(
+                prefs::kFamilyUserMetricsSessionEngagementDuration));
 }
 
 TEST_F(FamilyUserSessionMetricsTest, ClockBackward) {
@@ -215,20 +315,29 @@ TEST_F(FamilyUserSessionMetricsTest, ClockBackward) {
 
   // Set session start prefs to 11:00:00. Mock a state that start time > end
   // time.
-  SetSessionEngagementStartPref(mock_session_start);
+  SetActiveSessionStartTime(mock_session_start);
 
   // Session locked at 10:00:00.
   SetSessionState(session_manager::SessionState::LOCKED);
 
+  // Engagement start metric result:
   EXPECT_EQ(1,
             user_action_tester.GetActionCount(
                 FamilyUserSessionMetrics::kSessionEngagementStartActionName));
 
-  // Engagement hour data will be ignored if start time > end time.
+  // Engagement Hour metric result:
+  // Engagement hour and duration data will be ignored if start time > end time.
   histogram_tester.ExpectTotalCount(
       FamilyUserSessionMetrics::kSessionEngagementWeekdayHistogramName, 0);
   histogram_tester.ExpectTotalCount(
       FamilyUserSessionMetrics::kSessionEngagementTotalHistogramName, 0);
+
+  // Duration metric result:
+  histogram_tester.ExpectTotalCount(
+      FamilyUserSessionMetrics::kSessionEngagementDurationHistogramName, 0);
+  EXPECT_EQ(base::TimeDelta(),
+            pref_service()->GetTimeDelta(
+                prefs::kFamilyUserMetricsSessionEngagementDuration));
 }
 
 // Tests destroying FamilyUserSessionMetrics without invoking
@@ -242,33 +351,52 @@ TEST_F(FamilyUserSessionMetricsTest,
 
   SetSessionState(session_manager::SessionState::ACTIVE);
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(1));
+  task_environment_.FastForwardBy(kTenMinutes);
 
   DestructFamilyUserSessionMetrics();
   SetSessionState(session_manager::SessionState::UNKNOWN);
 
+  // Engagement start metric result:
   EXPECT_EQ(1,
             user_action_tester.GetActionCount(
                 FamilyUserSessionMetrics::kSessionEngagementStartActionName));
+
+  // Engagement Hour metric result:
   histogram_tester.ExpectUniqueSample(
       FamilyUserSessionMetrics::kSessionEngagementWeekdayHistogramName, 10, 1);
+
+  // Duration metric result:
+  histogram_tester.ExpectTotalCount(
+      prefs::kFamilyUserMetricsSessionEngagementDuration, 0);
+  EXPECT_EQ(kTenMinutes,
+            pref_service()->GetTimeDelta(
+                prefs::kFamilyUserMetricsSessionEngagementDuration));
 
   // Test restart.
   InitiateFamilyUserSessionMetrics();
   EXPECT_NE(session_manager::SessionState::ACTIVE, GetSessionState());
   SetSessionState(session_manager::SessionState::ACTIVE);
 
+  // Engagement start metric result:
   EXPECT_EQ(2,
             user_action_tester.GetActionCount(
                 FamilyUserSessionMetrics::kSessionEngagementStartActionName));
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(1));
+  task_environment_.FastForwardBy(kTenMinutes);
   SetSessionState(session_manager::SessionState::LOCKED);
 
+  // Engagement Hour metric result:
   histogram_tester.ExpectUniqueSample(
       FamilyUserSessionMetrics::kSessionEngagementWeekdayHistogramName, 10, 2);
   histogram_tester.ExpectTotalCount(
       FamilyUserSessionMetrics::kSessionEngagementTotalHistogramName, 2);
+
+  // Duration metric result:
+  histogram_tester.ExpectTotalCount(
+      prefs::kFamilyUserMetricsSessionEngagementDuration, 0);
+  EXPECT_EQ(base::TimeDelta::FromMinutes(20),
+            pref_service()->GetTimeDelta(
+                prefs::kFamilyUserMetricsSessionEngagementDuration));
 }
 
 }  // namespace chromeos
