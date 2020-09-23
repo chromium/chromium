@@ -6,18 +6,25 @@
 #define CHROME_BROWSER_UI_WEBUI_SIGNIN_PROFILE_PICKER_HANDLER_H_
 
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_statistics_common.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
 // The handler for Javascript messages related to the profile picker main view.
 class ProfilePickerHandler : public content::WebUIMessageHandler,
+                             public content::WebContentsObserver,
                              public ProfileAttributesStorage::Observer {
  public:
   ProfilePickerHandler();
   ~ProfilePickerHandler() override;
+
+  // Enables the startup performance metrics. Should only be called when the
+  // profile picker is shown on startup.
+  void EnableStartupMetrics();
 
   // content::WebUIMessageHandler:
   void RegisterMessages() override;
@@ -66,6 +73,15 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
       const base::FilePath& profile_path) override;
   void OnProfileNameChanged(const base::FilePath& profile_path,
                             const base::string16& old_profile_name) override;
+
+  // content::WebContentsObserver:
+  void DidFirstVisuallyNonEmptyPaint() override;
+  void OnVisibilityChanged(content::Visibility visibility) override;
+
+  // Creation time of the handler, to measure performance on startup. Only set
+  // when the picker is shown on startup.
+  base::TimeTicks creation_time_on_startup_;
+  bool main_view_initialized_ = false;
 
   base::WeakPtrFactory<ProfilePickerHandler> weak_factory_{this};
 

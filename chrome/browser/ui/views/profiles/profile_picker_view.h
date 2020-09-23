@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_VIEW_H_
 
+#include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/profile_picker.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
@@ -71,6 +72,10 @@ class ProfilePickerView : public views::DialogDelegateView,
 
   // Not null iff switching to sign-in is in progress.
   base::OnceClosure switch_failure_callback_;
+
+  // Creation time of the picker, to measure performance on startup. Only set
+  // when the picker is shown on startup.
+  base::TimeTicks creation_time_on_startup_;
 
   base::WeakPtrFactory<ProfilePickerView> weak_ptr_factory_{this};
 

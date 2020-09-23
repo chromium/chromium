@@ -297,6 +297,7 @@ extern const char kChromeUIHatsHost[];
 extern const char kChromeUIHatsURL[];
 extern const char kChromeUIProfilePickerHost[];
 extern const char kChromeUIProfilePickerUrl[];
+extern const char kChromeUIProfilePickerStartupQuery[];
 #endif
 
 #if !defined(OS_ANDROID)

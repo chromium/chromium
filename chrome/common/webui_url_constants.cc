@@ -344,6 +344,7 @@ const char kChromeUIHatsURL[] = "chrome://hats/";
 #if !defined(OS_CHROMEOS)
 const char kChromeUIProfilePickerHost[] = "profile-picker";
 const char kChromeUIProfilePickerUrl[] = "chrome://profile-picker/";
+const char kChromeUIProfilePickerStartupQuery[] = "startup";
 #endif
 #endif
 

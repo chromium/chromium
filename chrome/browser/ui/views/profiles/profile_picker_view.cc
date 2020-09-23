@@ -23,6 +23,7 @@
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/google_chrome_strings.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
+#include "components/startup_metric_utils/browser/startup_metric_utils.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -48,7 +49,11 @@ constexpr float kMaxRatioOfWorkArea = 0.9;
 GURL CreateURLForEntryPoint(ProfilePicker::EntryPoint entry_point) {
   GURL base_url = GURL(chrome::kChromeUIProfilePickerUrl);
   switch (entry_point) {
-    case ProfilePicker::EntryPoint::kOnStartup:
+    case ProfilePicker::EntryPoint::kOnStartup: {
+      GURL::Replacements replacements;
+      replacements.SetQueryStr(chrome::kChromeUIProfilePickerStartupQuery);
+      return base_url.ReplaceComponents(replacements);
+    }
     case ProfilePicker::EntryPoint::kProfileMenuManageProfiles:
     case ProfilePicker::EntryPoint::kOpenNewWindowAfterProfileDeletion:
       return base_url;
@@ -64,7 +69,6 @@ void ProfilePicker::Show(EntryPoint entry_point) {
   if (!g_profile_picker_view)
     g_profile_picker_view = new ProfilePickerView();
 
-  base::UmaHistogramEnumeration("ProfilePicker.Shown", entry_point);
   g_profile_picker_view->Display(entry_point);
 }
 
@@ -101,6 +105,17 @@ ProfilePickerView::ProfilePickerView()
 ProfilePickerView::~ProfilePickerView() = default;
 
 void ProfilePickerView::Display(ProfilePicker::EntryPoint entry_point) {
+  // Record creation metrics.
+  base::UmaHistogramEnumeration("ProfilePicker.Shown", entry_point);
+  if (entry_point == ProfilePicker::EntryPoint::kOnStartup) {
+    DCHECK(creation_time_on_startup_.is_null());
+    // Display() is called right after the creation of this object.
+    creation_time_on_startup_ = base::TimeTicks::Now();
+    base::UmaHistogramTimes("ProfilePicker.StartupTime.BeforeCreation",
+                            creation_time_on_startup_ -
+                                startup_metric_utils::MainEntryPointTicks());
+  }
+
   if (initialized_ == kNotInitialized) {
     initialized_ = kInProgress;
     g_browser_process->profile_manager()->CreateProfileAsync(
@@ -140,6 +155,7 @@ void ProfilePickerView::OnSystemProfileCreated(
 
 void ProfilePickerView::Init(ProfilePicker::EntryPoint entry_point,
                              Profile* system_profile) {
+  DCHECK_EQ(initialized_, kInProgress);
   web_view_ = new views::WebView(system_profile);
   web_view_->GetWebContents()->SetDelegate(this);
   // To record metrics using javascript, extensions are needed.
@@ -162,6 +178,12 @@ void ProfilePickerView::Init(ProfilePicker::EntryPoint entry_point,
   GetWidget()->Show();
   web_view_->RequestFocus();
   initialized_ = InitState::kDone;
+
+  if (entry_point == ProfilePicker::EntryPoint::kOnStartup) {
+    DCHECK(!creation_time_on_startup_.is_null());
+    base::UmaHistogramTimes("ProfilePicker.StartupTime.WebViewCreated",
+                            base::TimeTicks::Now() - creation_time_on_startup_);
+  }
 }
 
 void ProfilePickerView::SwitchToSignIn(

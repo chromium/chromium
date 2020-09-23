@@ -153,6 +153,16 @@ ProfilePickerHandler::~ProfilePickerHandler() {
   OnJavascriptDisallowed();
 }
 
+void ProfilePickerHandler::EnableStartupMetrics() {
+  DCHECK(creation_time_on_startup_.is_null());
+  content::WebContents* contents = web_ui()->GetWebContents();
+  if (contents->GetVisibility() == content::Visibility::VISIBLE) {
+    // Only record paint event if the window is visible.
+    creation_time_on_startup_ = base::TimeTicks::Now();
+    Observe(web_ui()->GetWebContents());
+  }
+}
+
 void ProfilePickerHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "mainViewInitialize",
@@ -215,6 +225,14 @@ void ProfilePickerHandler::OnJavascriptDisallowed() {
 
 void ProfilePickerHandler::HandleMainViewInitialize(
     const base::ListValue* args) {
+  if (!creation_time_on_startup_.is_null() && !main_view_initialized_) {
+    // This function can be called multiple times if the page is reloaded. The
+    // histogram is only recorded once.
+    main_view_initialized_ = true;
+    base::UmaHistogramTimes("ProfilePicker.StartupTime.MainViewInitialized",
+                            base::TimeTicks::Now() - creation_time_on_startup_);
+  }
+
   AllowJavascript();
   PushProfilesList();
 }
@@ -582,4 +600,20 @@ void ProfilePickerHandler::OnProfileNameChanged(
     const base::FilePath& profile_path,
     const base::string16& old_profile_name) {
   PushProfilesList();
+}
+
+void ProfilePickerHandler::DidFirstVisuallyNonEmptyPaint() {
+  DCHECK(!creation_time_on_startup_.is_null());
+  base::UmaHistogramTimes("ProfilePicker.StartupTime.FirstPaint",
+                          base::TimeTicks::Now() - creation_time_on_startup_);
+  // Stop observing so that the histogram is only recorded once.
+  Observe(nullptr);
+}
+
+void ProfilePickerHandler::OnVisibilityChanged(content::Visibility visibility) {
+  // If the profile picker is hidden, the first paint will be delayed until the
+  // picker is visible again. Stop monitoring the first paint to avoid polluting
+  // the metrics.
+  if (visibility != content::Visibility::VISIBLE)
+    Observe(nullptr);
 }

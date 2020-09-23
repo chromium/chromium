@@ -22,9 +22,11 @@
 #include "chrome/grit/profile_picker_resources_map.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/webui/mojo_web_ui_controller.h"
+#include "url/gurl.h"
 
 namespace {
 
@@ -122,7 +124,15 @@ ProfilePickerUI::ProfilePickerUI(content::WebUI* web_ui)
   content::WebUIDataSource* html_source =
       content::WebUIDataSource::Create(chrome::kChromeUIProfilePickerHost);
 
-  web_ui->AddMessageHandler(std::make_unique<ProfilePickerHandler>());
+  std::unique_ptr<ProfilePickerHandler> handler =
+      std::make_unique<ProfilePickerHandler>();
+  ProfilePickerHandler* raw_handler = handler.get();
+  web_ui->AddMessageHandler(std::move(handler));
+
+  if (web_ui->GetWebContents()->GetURL().query() ==
+      chrome::kChromeUIProfilePickerStartupQuery) {
+    raw_handler->EnableStartupMetrics();
+  }
 
   std::string generated_path =
       "@out_folder@/gen/chrome/browser/resources/signin/profile_picker/";
