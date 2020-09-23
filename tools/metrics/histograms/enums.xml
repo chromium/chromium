@@ -29297,11 +29297,12 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3530" label="IdentifiabilityStudyReserved3530"/>
   <int value="3531" label="IdentifiabilityStudyReserved3531"/>
   <int value="3532" label="IdentifiabilityStudyReserved3532"/>
-  <int value="3533" label="IdentifiabilityStudyReserved3533"/>
-  <int value="3534" label="IdentifiabilityStudyReserved3534"/>
-  <int value="3535" label="IdentifiabilityStudyReserved3535"/>
-  <int value="3536" label="IdentifiabilityStudyReserved3536"/>
-  <int value="3537" label="IdentifiabilityStudyReserved3537"/>
+  <int value="3533" label="V8SpeechSynthesisVoice_Default_AttributeGetter"/>
+  <int value="3534" label="V8SpeechSynthesisVoice_Lang_AttributeGetter"/>
+  <int value="3535"
+      label="V8SpeechSynthesisVoice_LocalService_AttributeGetter"/>
+  <int value="3536" label="V8SpeechSynthesisVoice_Name_AttributeGetter"/>
+  <int value="3537" label="V8SpeechSynthesisVoice_VoiceURI_AttributeGetter"/>
   <int value="3538" label="IdentifiabilityStudyReserved3538"/>
   <int value="3539" label="IdentifiabilityStudyReserved3539"/>
   <int value="3540" label="IdentifiabilityStudyReserved3540"/>

@@ -28,9 +28,9 @@
 [
     LegacyNoInterfaceObject
 ] interface SpeechSynthesisVoice {
-    readonly attribute DOMString voiceURI;
-    readonly attribute DOMString name;
-    readonly attribute DOMString lang;
-    readonly attribute boolean localService;
-    [ImplementedAs=isDefault] readonly attribute boolean default;
+    [HighEntropy=Direct, Measure] readonly attribute DOMString voiceURI;
+    [HighEntropy=Direct, Measure] readonly attribute DOMString name;
+    [HighEntropy=Direct, Measure] readonly attribute DOMString lang;
+    [HighEntropy=Direct, Measure] readonly attribute boolean localService;
+    [HighEntropy=Direct, Measure, ImplementedAs=isDefault] readonly attribute boolean default;
 };
