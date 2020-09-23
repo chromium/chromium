@@ -100,6 +100,23 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceClientImplTest, CopyImageToClipboard) {
   }
 }
 
+// Verifies that `HoldingSpaceClient::OpenDownloads()` works as intended.
+IN_PROC_BROWSER_TEST_F(HoldingSpaceClientImplTest, OpenDownloads) {
+  ASSERT_TRUE(HoldingSpaceController::Get());
+
+  auto* holding_space_client = HoldingSpaceController::Get()->client();
+  ASSERT_TRUE(holding_space_client);
+
+  // We expect `HoldingSpaceClient::OpenDownloads()` to succeed.
+  base::RunLoop run_loop;
+  holding_space_client->OpenDownloads(
+      base::BindLambdaForTesting([&run_loop](bool success) {
+        EXPECT_TRUE(success);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
 // Verifies that `HoldingSpaceClient::OpenItem()` works as intended when
 // attempting to open holding space items backed by both non-existing and
 // existing files.

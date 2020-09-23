@@ -31,6 +31,10 @@ class ASH_PUBLIC_EXPORT HoldingSpaceClient {
   virtual void CopyImageToClipboard(const HoldingSpaceItem& item,
                                     SuccessCallback callback) = 0;
 
+  // Attempts to open the Downloads folder.
+  // Success is returned via the supplied `callback`.
+  virtual void OpenDownloads(SuccessCallback callback) = 0;
+
   // Attempts to open the specified holding space `item`.
   // Success is returned via the supplied `callback`.
   virtual void OpenItem(const HoldingSpaceItem& item,

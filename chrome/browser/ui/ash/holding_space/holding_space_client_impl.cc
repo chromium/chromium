@@ -13,6 +13,7 @@
 #include "chrome/browser/chromeos/file_manager/app_id.h"
 #include "chrome/browser/chromeos/file_manager/fileapi_util.h"
 #include "chrome/browser/chromeos/file_manager/open_util.h"
+#include "chrome/browser/chromeos/file_manager/path_util.h"
 #include "chrome/browser/ui/ash/clipboard_util.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
@@ -65,6 +66,23 @@ void HoldingSpaceClientImpl::CopyImageToClipboard(const HoldingSpaceItem& item,
             // decoding was successful or not. For the time being, assume
             // success when the task runs until proven otherwise.
             std::move(callback).Run(/*success=*/true);
+          },
+          std::move(callback)));
+}
+
+void HoldingSpaceClientImpl::OpenDownloads(SuccessCallback callback) {
+  auto file_path = file_manager::util::GetDownloadsFolderForProfile(profile_);
+  if (file_path.empty()) {
+    std::move(callback).Run(/*success=*/false);
+    return;
+  }
+  file_manager::util::OpenItem(
+      profile_, file_path, platform_util::OPEN_FOLDER,
+      base::BindOnce(
+          [](SuccessCallback callback,
+             platform_util::OpenOperationResult result) {
+            const bool success = result == platform_util::OPEN_SUCCEEDED;
+            std::move(callback).Run(success);
           },
           std::move(callback)));
 }

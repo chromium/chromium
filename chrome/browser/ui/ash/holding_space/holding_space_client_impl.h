@@ -24,6 +24,7 @@ class HoldingSpaceClientImpl : public HoldingSpaceClient {
   // HoldingSpaceClient:
   void AddScreenshot(const base::FilePath& file_path) override;
   void CopyImageToClipboard(const HoldingSpaceItem&, SuccessCallback) override;
+  void OpenDownloads(SuccessCallback callback) override;
   void OpenItem(const HoldingSpaceItem&, SuccessCallback) override;
   void ShowItemInFolder(const HoldingSpaceItem&, SuccessCallback) override;
   void PinItem(const HoldingSpaceItem& item) override;
