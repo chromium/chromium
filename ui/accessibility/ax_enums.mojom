@@ -847,28 +847,81 @@ enum MarkerType {
 // forward movement will always move to the next node in depth-first pre-order
 // traversal.
 enum MoveDirection {
-  kForward,
+  kNone,
   kBackward,
-  kNone = kForward
+  kForward
 };
 
-// Describes the edit or selection command that resulted in a selection or a
-// text changed event.
+// Describes the edit or selection command that resulted in a selection, a text
+// changed or a text attributes changed event.
+//
+// An edit command, such as "kInsert" or "kDelete" is further described by its
+// "InputEvent" - see the relevant enum in this file.
+// A selection command may be further described by its "TextBoundary" and
+// "MoveDirection" - see the relevant enums in this file.
 enum Command {
+  kNone,
   kClearSelection,
-  kCut,
   kDelete,
   kDictate,
   kExtendSelection,  // The existing selection has been extended or shrunk.
-  kFormat,  // The text attributes, such as font size, have changed.
+  kFormat,  // Some text attributes, such as font weight, have changed.
+  kHistory,  // An undo or a redo operation has been performed.
   kInsert,
-  kMarker,  // A document marker has been added or removed.
+  kMarker,  // Document markers have been added or removed.
   kMoveSelection,  // The selection has been moved by a specific granularity.
-  kPaste,
-  kReplace,
-  kSetSelection,  // A completely new selection has been set.
-  kType,
-  kNone = kType
+  kSetSelection  // A completely new selection has been set.
+};
+
+// Describes an edit command in more detail.
+//
+// Please keep in sync with the following specification and file:
+// https://w3c.github.io/input-events/#h-interface-inputevent-attributes
+// //third_party/blink/renderer/core/events/input_event.h
+enum InputEventType {
+  kNone,
+  // Insertion.
+  kInsertText,
+  kInsertLineBreak,
+  kInsertParagraph,
+  kInsertOrderedList,
+  kInsertUnorderedList,
+  kInsertHorizontalRule,
+  kInsertFromPaste,
+  kInsertFromDrop,
+  kInsertFromYank,
+  kInsertTranspose,
+  kInsertReplacementText,
+  kInsertCompositionText,
+  // Deletion.
+  kDeleteWordBackward,
+  kDeleteWordForward,
+  kDeleteSoftLineBackward,
+  kDeleteSoftLineForward,
+  kDeleteHardLineBackward,
+  kDeleteHardLineForward,
+  kDeleteContentBackward,
+  kDeleteContentForward,
+  kDeleteByCut,
+  kDeleteByDrag,
+  // History.
+  kHistoryUndo,
+  kHistoryRedo,
+  // Formatting.
+  kFormatBold,
+  kFormatItalic,
+  kFormatUnderline,
+  kFormatStrikeThrough,
+  kFormatSuperscript,
+  kFormatSubscript,
+  kFormatJustifyCenter,
+  kFormatJustifyFull,
+  kFormatJustifyRight,
+  kFormatJustifyLeft,
+  kFormatIndent,
+  kFormatOutdent,
+  kFormatRemove,
+  kFormatSetBlockTextDirection
 };
 
 // Defines a set of text boundaries in the accessibility tree.
@@ -883,6 +936,7 @@ enum Command {
 //
 // TODO(nektar): Split TextBoundary into TextUnit and TextBoundary.
 enum TextBoundary {
+  kNone,
   kCharacter,
   kFormat,
   kLineEnd,
@@ -901,8 +955,7 @@ enum TextBoundary {
   kWebPage,
   kWordEnd,
   kWordStart,
-  kWordStartOrEnd,
-  kNone = kObject
+  kWordStartOrEnd
 };
 
 // Types of text alignment according to the IAccessible2 Object Attributes spec.

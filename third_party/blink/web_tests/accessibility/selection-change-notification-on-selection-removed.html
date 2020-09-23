@@ -27,7 +27,7 @@ async_test_after_layout_and_paint((t) => {
   axRoot.setNotificationListener(t.step_func((notification, intents) => {
     if (notification == 'DocumentSelectionChanged') {
       assert_array_equals(intents,
-                          ['AXEventIntent(clearSelection,character,forward)']);
+                          ['AXEventIntent(clearSelection,none,none,none)']);
       axRoot.unsetNotificationListener();
       assert_equals(axRoot.selectionAnchorObject, null, 'selectionAnchorObject');
       assert_equals(axRoot.selectionAnchorOffset, -1, 'selectionAnchorOffset');

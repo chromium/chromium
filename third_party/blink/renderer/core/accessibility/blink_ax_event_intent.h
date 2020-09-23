@@ -45,7 +45,21 @@ class CORE_EXPORT BlinkAXEventIntent final {
       bool is_base_first,
       const SetSelectionBy set_selection_by);
 
+  // Creates an empty (uninitialized) instance.
   BlinkAXEventIntent();
+
+  // Constructs an event intent which contains only a command without any other
+  // arguments. This is used e.g. by the selection changed event when the
+  // current selection is cleared.
+  explicit BlinkAXEventIntent(ax::mojom::blink::Command command);
+
+  // Constructs an editing event intent; which is primarily attached to a text
+  // changed or a text attributes changed event.
+  BlinkAXEventIntent(ax::mojom::blink::Command command,
+                     ax::mojom::blink::InputEventType input_event_type);
+
+  // Constructs a selection event intent; which is attached to a selection
+  // changed event.
   BlinkAXEventIntent(ax::mojom::blink::Command command,
                      ax::mojom::blink::TextBoundary text_boundary,
                      ax::mojom::blink::MoveDirection move_direction);

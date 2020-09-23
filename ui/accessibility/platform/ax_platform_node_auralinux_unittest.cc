@@ -1815,7 +1815,7 @@ TEST_F(AXPlatformNodeAuraLinuxTest, TestFocusTriggersAtkWindowActive) {
   g_object_unref(root_atk_object);
 }
 
-TEST_F(AXPlatformNodeAuraLinuxTest, TestAtkPopupWindowActive) {
+TEST_F(AXPlatformNodeAuraLinuxTest, DISABLED_TestAtkPopupWindowActive) {
   AXNodeData root;
   root.id = 1;
   root.role = ax::mojom::Role::kApplication;

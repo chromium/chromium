@@ -1015,6 +1015,7 @@ AXPlatformNodeTextRangeProviderWin::GetNextTextBoundaryPosition(
     AXBoundaryBehavior boundary_behavior,
     ax::mojom::MoveDirection boundary_direction) {
   // Override At[Start|End]OfLinePredicate for behavior specific to UIA.
+  DCHECK_NE(boundary_type, ax::mojom::TextBoundary::kNone);
   switch (boundary_type) {
     case ax::mojom::TextBoundary::kLineStart:
       return position->CreateBoundaryStartPosition(

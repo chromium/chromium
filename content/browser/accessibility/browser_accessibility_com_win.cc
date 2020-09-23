@@ -1602,6 +1602,9 @@ LONG BrowserAccessibilityComWin::FindStartOfStyle(
   DCHECK_LE(start_offset, text_length);
 
   switch (direction) {
+    case ax::mojom::MoveDirection::kNone:
+      NOTREACHED();
+      return start_offset;
     case ax::mojom::MoveDirection::kBackward: {
       if (offset_to_text_attributes().empty())
         return 0;

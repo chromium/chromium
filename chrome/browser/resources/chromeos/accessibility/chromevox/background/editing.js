@@ -943,13 +943,13 @@ const AutomationRichEditableText = class extends AutomationEditableText {
 
     // Only consider selection moves.
     const intent = intents.find(
-        i => i.command == chrome.automation.EventCommandType.MOVE_SELECTION);
+        i => i.command == chrome.automation.IntentCommandType.MOVE_SELECTION);
     if (!intent) {
       return false;
     }
 
     if (intent.textBoundary ==
-        chrome.automation.EventTextBoundaryType.CHARACTER) {
+        chrome.automation.IntentTextBoundaryType.CHARACTER) {
       this.updateIntraLineState_(cur);
 
       // Read character to the right of the cursor. It is assumed to be a new
@@ -962,9 +962,9 @@ const AutomationRichEditableText = class extends AutomationEditableText {
     }
 
     if (intent.textBoundary ==
-            chrome.automation.EventTextBoundaryType.LINE_START ||
+            chrome.automation.IntentTextBoundaryType.LINE_START ||
         intent.textBoundary ==
-            chrome.automation.EventTextBoundaryType.LINE_END) {
+            chrome.automation.IntentTextBoundaryType.LINE_END) {
       this.updateIntraLineState_(cur);
       this.speakCurrentRichLine_(prev);
       return true;
