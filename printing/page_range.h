@@ -5,6 +5,8 @@
 #ifndef PRINTING_PAGE_RANGE_H_
 #define PRINTING_PAGE_RANGE_H_
 
+#include <stdint.h>
+
 #include <vector>
 
 #include "printing/printing_export.h"
