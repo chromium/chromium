@@ -2465,6 +2465,9 @@ extern const char kReduceDisplayNotificationsDescription[];
 extern const char kReleaseNotesNotificationName[];
 extern const char kReleaseNotesNotificationDescription[];
 
+extern const char kReleaseNotesNotificationAllChannelsName[];
+extern const char kReleaseNotesNotificationAllChannelsDescription[];
+
 extern const char kScanningUIName[];
 extern const char kScanningUIDescription[];
 

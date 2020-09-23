@@ -203,6 +203,8 @@ extern const base::Feature kQuickUnlockPinAutosubmitBackfill;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kReleaseNotesNotification;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+extern const base::Feature kReleaseNotesNotificationAllChannels;
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kFiltersInRecents;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) extern const base::Feature kScanningUI;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)

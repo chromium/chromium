@@ -5884,6 +5884,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kReleaseNotesNotificationName,
      flag_descriptions::kReleaseNotesNotificationDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kReleaseNotesNotification)},
+    {"release-notes-notification-all-channels",
+     flag_descriptions::kReleaseNotesNotificationAllChannelsName,
+     flag_descriptions::kReleaseNotesNotificationAllChannelsDescription,
+     kOsCrOS,
+     FEATURE_VALUE_TYPE(
+         chromeos::features::kReleaseNotesNotificationAllChannels)},
     {"use-wallpaper-staging-url",
      flag_descriptions::kUseWallpaperStagingUrlName,
      flag_descriptions::kUseWallpaperStagingUrlDescription, kOsCrOS,

@@ -17,17 +17,33 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
+#include "components/version_info/channel.h"
 #include "components/version_info/version_info.h"
 #include "content/public/common/content_switches.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 
 namespace {
 
+constexpr int kTimesToShowSuggestionChip = 3;
+
 int GetMilestone() {
   return version_info::GetVersion().components()[0];
 }
 
-constexpr int kTimesToShowSuggestionChip = 3;
+bool IsEligibleProfile(Profile* profile) {
+  std::string user_email = profile->GetProfileUserName();
+  return gaia::IsGoogleInternalAccountEmail(user_email) ||
+         (chromeos::ProfileHelper::Get()
+              ->GetUserByProfile(profile)
+              ->HasGaiaAccount() &&
+          !profile->GetProfilePolicyConnector()->IsManaged());
+}
+
+bool ShouldShowForCurrentChannel() {
+  return chrome::GetChannel() == version_info::Channel::STABLE ||
+         base::FeatureList::IsEnabled(
+             chromeos::features::kReleaseNotesNotificationAllChannels);
+}
 
 }  // namespace
 
@@ -50,25 +66,28 @@ bool ReleaseNotesStorage::ShouldNotify() {
           chromeos::features::kReleaseNotesNotification))
     return false;
 
-  std::string user_email = profile_->GetProfileUserName();
-  if (gaia::IsGoogleInternalAccountEmail(user_email) ||
-      (ProfileHelper::Get()->GetUserByProfile(profile_)->HasGaiaAccount() &&
-       !profile_->GetProfilePolicyConnector()->IsManaged())) {
-    const int last_milestone = profile_->GetPrefs()->GetInteger(
-        prefs::kReleaseNotesLastShownMilestone);
-    if (last_milestone < GetMilestone()) {
-      profile_->GetPrefs()->SetInteger(
-          prefs::kReleaseNotesSuggestionChipTimesLeftToShow,
-          kTimesToShowSuggestionChip);
-      return true;
-    }
+  if (!ShouldShowForCurrentChannel())
+    return false;
+
+  if (!IsEligibleProfile(profile_))
+    return false;
+
+  const int last_milestone =
+      profile_->GetPrefs()->GetInteger(prefs::kReleaseNotesLastShownMilestone);
+  if (last_milestone >= GetMilestone()) {
+    return false;
   }
-  return false;
+  return true;
 }
 
 void ReleaseNotesStorage::MarkNotificationShown() {
   profile_->GetPrefs()->SetInteger(prefs::kReleaseNotesLastShownMilestone,
                                    GetMilestone());
+  // When the notification is shown we should also show the suggestion chip a
+  // number of times.
+  profile_->GetPrefs()->SetInteger(
+      prefs::kReleaseNotesSuggestionChipTimesLeftToShow,
+      kTimesToShowSuggestionChip);
 }
 
 bool ReleaseNotesStorage::ShouldShowSuggestionChip() {

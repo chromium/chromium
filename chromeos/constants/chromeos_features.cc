@@ -454,6 +454,11 @@ const base::Feature kQuickUnlockPinAutosubmitBackfill{
 const base::Feature kReleaseNotesNotification{"ReleaseNotesNotification",
                                               base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enables or disables Release Notes notifications on non-stable Chrome OS
+// channels. Used for testing.
+const base::Feature kReleaseNotesNotificationAllChannels{
+    "ReleaseNotesNotificationAllChannels", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables or disables an experimental scanning UI on Chrome OS.
 const base::Feature kScanningUI{"ScanningUI",
                                 base::FEATURE_DISABLED_BY_DEFAULT};
