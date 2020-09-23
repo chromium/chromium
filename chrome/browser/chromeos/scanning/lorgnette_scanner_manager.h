@@ -26,7 +26,7 @@ class LorgnetteScannerManager : public KeyedService {
   using GetScannerNamesCallback =
       base::OnceCallback<void(std::vector<std::string> scanner_names)>;
   using GetScannerCapabilitiesCallback = base::OnceCallback<void(
-      base::Optional<lorgnette::ScannerCapabilities> capabilities)>;
+      const base::Optional<lorgnette::ScannerCapabilities>& capabilities)>;
   using PageCallback = base::RepeatingCallback<void(std::string scan_data)>;
   using ScanCallback = base::OnceCallback<void(bool success)>;
 

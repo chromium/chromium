@@ -202,7 +202,8 @@ class LorgnetteScannerManagerTest : public testing::Test {
   }
 
   void GetScannerCapabilitiesCallback(
-      base::Optional<lorgnette::ScannerCapabilities> scanner_capabilities) {
+      const base::Optional<lorgnette::ScannerCapabilities>&
+          scanner_capabilities) {
     scanner_capabilities_ = scanner_capabilities;
     run_loop_->Quit();
   }

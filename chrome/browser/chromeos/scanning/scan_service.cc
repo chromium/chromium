@@ -78,7 +78,7 @@ void ScanService::OnScannerNamesReceived(
 
 void ScanService::OnScannerCapabilitiesReceived(
     GetScannerCapabilitiesCallback callback,
-    base::Optional<lorgnette::ScannerCapabilities> capabilities) {
+    const base::Optional<lorgnette::ScannerCapabilities>& capabilities) {
   if (!capabilities) {
     LOG(ERROR) << "Failed to get scanner capabilities.";
     std::move(callback).Run(mojo_ipc::ScannerCapabilities::New());

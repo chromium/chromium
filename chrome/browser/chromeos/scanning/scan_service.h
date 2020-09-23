@@ -54,7 +54,7 @@ class ScanService : public scanning::mojom::ScanService, public KeyedService {
   // LorgnetteScannerManager::GetScannerCapabilities().
   void OnScannerCapabilitiesReceived(
       GetScannerCapabilitiesCallback callback,
-      base::Optional<lorgnette::ScannerCapabilities> capabilities);
+      const base::Optional<lorgnette::ScannerCapabilities>& capabilities);
 
   // Map of scanner IDs to display names. Used to pass the correct display name
   // to LorgnetteScannerManager when clients provide an ID.
