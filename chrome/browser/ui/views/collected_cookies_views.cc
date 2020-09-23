@@ -425,6 +425,8 @@ std::unique_ptr<views::View> CollectedCookiesViews::CreateAllowedPane() {
       content_settings::PageSpecificContentSettings::GetForFrame(
           web_contents_->GetMainFrame());
 
+  ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
+
   // Create the controls that go into the pane.
   auto allowed_label = std::make_unique<views::Label>(
       l10n_util::GetStringUTF16(IDS_COLLECTED_COOKIES_ALLOWED_COOKIES_LABEL),
@@ -451,10 +453,9 @@ std::unique_ptr<views::View> CollectedCookiesViews::CreateAllowedPane() {
   views::GridLayout* layout =
       pane->SetLayoutManager(std::make_unique<views::GridLayout>());
 
-  pane->SetBorder(
-      views::CreateEmptyBorder(ChromeLayoutProvider::Get()->GetInsetsMetric(
-          views::INSETS_DIALOG_SUBSECTION)));
-  const int vertical_distance = ChromeLayoutProvider::Get()->GetDistanceMetric(
+  pane->SetBorder(views::CreateEmptyBorder(
+      layout_provider->GetInsetsMetric(views::INSETS_DIALOG_SUBSECTION)));
+  const int vertical_distance = layout_provider->GetDistanceMetric(
       views::DISTANCE_UNRELATED_CONTROL_VERTICAL);
 
   const int single_column_layout_id = 0;
