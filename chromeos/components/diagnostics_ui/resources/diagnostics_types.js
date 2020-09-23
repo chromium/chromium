@@ -11,6 +11,12 @@
  */
 
 /**
+ * Type of SystemDataProviderInterface.ObserveBatteryHealth function.
+ * @typedef {!function(!BatteryHealthObserver): !Promise}
+ */
+export let ObserveBatteryHealthFunction;
+
+/**
  * Type of SystemDataProviderInterface.ObserveCpuUsage function.
  * @typedef {!function(!CpuUsageObserver): !Promise}
  */
@@ -22,6 +28,7 @@ export let ObserveCpuUsageFunction;
  * @typedef {{
  *   getBatteryInfo: !function(): !Promise<!BatteryInfo>,
  *   getSystemInfo: !function(): !Promise<!SystemInfo>,
+ *   observeBatteryHealth: !ObserveBatteryHealthFunction,
  *   observeCpuUsage: !ObserveCpuUsageFunction,
  * }}
  */
@@ -82,3 +89,22 @@ export let CpuUsageObserver;
  * }}
  */
 export let CpuUsage;
+
+/**
+ * Type alias for BatteryHealthObserver.
+ * @typedef {{
+ *   onBatteryHealthUpdated: !function(!BatteryHealth)
+ * }}
+ */
+export let BatteryHealthObserver;
+
+/**
+ * Type alias for BatteryHealth.
+ * @typedef {{
+ *   battery_wear_percentage: number,
+ *   charge_full_design_milliamp_hours: number,
+ *   charge_full_now_milliamp_hours: number,
+ *   cycle_count: number,
+ * }}
+ */
+export let BatteryHealth;

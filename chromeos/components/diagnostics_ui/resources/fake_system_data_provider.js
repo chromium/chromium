@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BatteryInfo, CpuUsage, CpuUsageObserver, SystemInfo} from './diagnostics_types.js';
+import {BatteryHealth, BatteryInfo, CpuUsage, CpuUsageObserver, SystemInfo} from './diagnostics_types.js';
 import {FakeMethodResolver} from './fake_method_resolver.js';
 import {FakeObservables} from './fake_observables.js';
 
@@ -24,6 +24,7 @@ export class FakeSystemDataProvider {
     this.methods_.register('getBatteryInfo');
 
     // Setup observables.
+    this.observables_.register('BatteryHealthObserver_onBatteryHealthUpdated');
     this.observables_.register('CpuUsageObserver_onCpuUsageUpdated');
   }
 
@@ -56,6 +57,33 @@ export class FakeSystemDataProvider {
    */
   setFakeBatteryInfo(batteryInfo) {
     this.methods_.setResult('getBatteryInfo', batteryInfo);
+  }
+
+  /*
+   * Implements SystemDataProviderInterface.ObserveBatteryHealth.
+   * @param {!BatteryHealthObserver} remote
+   * @return {!Promise}
+   */
+  observeBatteryHealth(remote) {
+    return new Promise((resolve) => {
+      this.observables_.observe(
+          'BatteryHealthObserver_onBatteryHealthUpdated', (batteryHealth) => {
+            remote.onBatteryHealthUpdated(
+                /** @type {!BatteryHealth} */ (batteryHealth));
+          });
+
+      this.observables_.trigger('BatteryHealthObserver_onBatteryHealthUpdated');
+      resolve();
+    });
+  }
+
+  /**
+   * Sets the values that will observed from observeBatteryHealth.
+   * @param {!Array<!BatteryHealth>} batteryHealthList
+   */
+  setFakeBatteryHealth(batteryHealthList) {
+    this.observables_.setObservableData(
+        'BatteryHealthObserver_onBatteryHealthUpdated', batteryHealthList);
   }
 
   /*
