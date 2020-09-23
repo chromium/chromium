@@ -326,6 +326,12 @@ interface MyInterface : EventTarget {
 There's no hard rule about this, but the `UseCounter` name is an implementation
 detail that doesn't belong in the IDL. It also adds unnecessary noise.
 
+*** note
+**IMPORTANT** Make sure that each API has its own `UseCounter` name. Otherwise
+multiple APIs will have their samples accumulate within the same bucket. This
+alters the observed characteristics of the API from what it really is.
+***
+
 <!-- Sort (case insensitive), but don't line-wrap -->
 [`blink::Document`]: ../third_party/blink/renderer/core/dom/document.h
 [`blink::ExecutionContext`]: ../third_party/blink/renderer/core/execution_context/execution_context.h
