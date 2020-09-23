@@ -23,6 +23,7 @@
 #include "cc/test/pixel_test.h"
 #include "cc/test/render_pass_test_utils.h"
 #include "cc/test/resource_provider_test_utils.h"
+#include "cc/test/test_types.h"
 #include "components/viz/client/client_resource_provider.h"
 #include "components/viz/common/quads/picture_draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
@@ -1783,7 +1784,8 @@ INSTANTIATE_TEST_SUITE_P(
     ,
     VideoRendererPixelHiLoTest,
     testing::Combine(testing::Values(RendererType::kGL, RendererType::kSkiaGL),
-                     testing::Bool()));
+                     testing::Bool()),
+    cc::PrintTupleToStringParamName());
 
 TEST_P(VideoRendererPixelHiLoTest, SimpleYUVRect) {
   gfx::Rect rect(this->device_viewport_size_);
@@ -3242,7 +3244,8 @@ class ExternalStencilPixelTest : public VizPixelTestWithParam {
 // TODO(crbug.com/939442): Enable these tests for SkiaRenderer.
 INSTANTIATE_TEST_SUITE_P(,
                          ExternalStencilPixelTest,
-                         testing::Values(RendererType::kGL));
+                         testing::Values(RendererType::kGL),
+                         testing::PrintToStringParamName());
 
 TEST_P(ExternalStencilPixelTest, StencilTestEnabled) {
   this->ClearBackgroundToGreen();
