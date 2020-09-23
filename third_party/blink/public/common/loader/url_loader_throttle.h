@@ -140,7 +140,8 @@ class BLINK_COMMON_EXPORT URLLoaderThrottle {
   // Will* methods below and may only be called once.
   virtual void DetachFromCurrentSequence();
 
-  // Called before the resource request is started.
+  // Called exactly once before the resource request is started.
+  //
   // |request| needs to be modified before the callback returns (i.e.
   // asynchronously touching the pointer in defer case is not valid)
   // When |request->url| is modified it will make an internal redirect, which

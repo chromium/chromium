@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "components/variations/variations.mojom.h"
 #include "content/common/renderer_variations_configuration.mojom.h"
 #include "content/public/renderer/render_thread_observer.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -43,7 +44,8 @@ class VariationsRenderThreadObserver
       blink::AssociatedInterfaceRegistry* associated_interfaces) override;
 
   // content::mojom::RendererConfiguration:
-  void SetVariationsHeader(const std::string& variation_ids_header) override;
+  void SetVariationsHeaders(
+      variations::mojom::VariationsHeadersPtr variations_headers) override;
   void SetFieldTrialGroup(const std::string& trial_name,
                           const std::string& group_name) override;
 

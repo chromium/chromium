@@ -663,6 +663,7 @@ mojom("mojo_bindings") {
 
   public_deps = [
     "//cc/mojom",
+    "//components/variations:variations_mojom",
     "//content/public/common:interfaces",
     "//content/public/common:web_preferences_mojom",
     "//ipc:mojom",

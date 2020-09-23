@@ -18,6 +18,7 @@
 #include "base/synchronization/lock.h"
 #include "components/variations/proto/study.pb.h"
 #include "components/variations/synthetic_trials.h"
+#include "components/variations/variations.mojom.h"
 #include "components/variations/variations_associated_data.h"
 
 namespace base {
@@ -60,15 +61,16 @@ class VariationsIdsProvider : public base::FieldTrialList::Observer,
 
   static VariationsIdsProvider* GetInstance();
 
-  // Returns the value of the X-Client-Data header corresponding to
-  // |is_signed_in| and |web_visibility|, computing and caching the header if
-  // necessary. If |is_signed_in| is false, VariationIDs that should be sent for
-  // only signed in users (i.e. GOOGLE_WEB_PROPERTIES_SIGNED_IN entries) are not
-  // included. Considering |web_visibility| allows fewer VariationIDs to be sent
-  // in third-party contexts. See IsFirstPartyContext() in
-  // variations_http_headers.cc for more details.
-  std::string GetClientDataHeader(bool is_signed_in,
-                                  Study_GoogleWebVisibility web_visibility);
+  // Returns the X-Client-Data headers corresponding to |is_signed_in|: a header
+  // that may be sent in first-party requests and a header that may be sent in
+  // third-party requests. For more details, see IsFirstPartyContext() in
+  // variations_http_headers.cc.
+  //
+  // If |is_signed_in| is false, VariationIDs that should be sent for only
+  // signed in users (i.e. GOOGLE_WEB_PROPERTIES_SIGNED_IN entries) are not
+  // included. Also, computes and caches the header if necessary.
+  variations::mojom::VariationsHeadersPtr GetClientDataHeaders(
+      bool is_signed_in);
 
   // Returns a space-separated string containing the list of current active
   // variations (as would be reported in the |variation_id| repeated field of
@@ -197,6 +199,13 @@ class VariationsIdsProvider : public base::FieldTrialList::Observer,
       const std::string& command_line_variation_ids,
       std::set<VariationIDEntry>* target_set);
 
+  // Returns the value of the X-Client-Data header corresponding to
+  // |is_signed_in| and |web_visibility|. Considering |web_visibility| may allow
+  // fewer VariationIDs to be sent in third-party contexts.
+  std::string GetClientDataHeaderWhileLocked(
+      bool is_signed_in,
+      Study_GoogleWebVisibility web_visibility);
+
   // Returns the currently active set of variation ids, which includes any
   // default values, synthetic variations and actual field trial variations.
   std::set<VariationIDEntry> GetAllVariationIds();
@@ -232,7 +241,8 @@ class VariationsIdsProvider : public base::FieldTrialList::Observer,
   //
   // The key for each header describes the VariationIDs included in its
   // associated header. See VariationsHeaderKey's comments for more information.
-  std::map<VariationsHeaderKey, std::string> variations_headers_map_;
+  std::map<VariationsHeaderKey, std::string> variations_headers_map_
+      GUARDED_BY(lock_);
 
   // List of observers to notify on variation ids header update.
   // NOTE this should really check observers are unregistered but due to

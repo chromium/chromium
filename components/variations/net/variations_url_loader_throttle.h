@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "components/variations/variations.mojom.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "url/origin.h"
 
@@ -32,11 +33,13 @@ class VariationsURLLoaderThrottle
   //
   // TODO(crbug.com/1094303): Consider removing this once we've confirmed that
   // non-render-thread-initiated requests have TrustedParams when needed.
-  explicit VariationsURLLoaderThrottle(const std::string& variation_ids_header);
+  explicit VariationsURLLoaderThrottle(
+      variations::mojom::VariationsHeadersPtr variations_headers);
   // Constructor for throttles created in the render thread, i.e. via
   // VariationsRenderThreadObserver.
-  VariationsURLLoaderThrottle(const std::string& variation_ids_header,
-                              const url::Origin& top_frame_origin);
+  VariationsURLLoaderThrottle(
+      variations::mojom::VariationsHeadersPtr variations_headers,
+      const url::Origin& top_frame_origin);
   ~VariationsURLLoaderThrottle() override;
 
   VariationsURLLoaderThrottle(VariationsURLLoaderThrottle&&) = delete;
@@ -66,7 +69,9 @@ class VariationsURLLoaderThrottle
       net::HttpRequestHeaders* modified_headers,
       net::HttpRequestHeaders* modified_cors_exempt_headers) override;
 
-  const std::string variation_ids_header_;
+  // Stores multiple appropriate variations headers. See GetClientDataHeaders()
+  // in variations_ids_provider.h for more details.
+  variations::mojom::VariationsHeadersPtr variations_headers_;
 
   // Denotes whether the top frame of the request-initiating frame is a Google-
   // owned web property, e.g. YouTube.

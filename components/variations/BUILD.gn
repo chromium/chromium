@@ -4,7 +4,12 @@
 
 import("//build/buildflag_header.gni")
 import("//build/config/chromecast_build.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
 import("//testing/test.gni")
+
+mojom("variations_mojom") {
+  sources = [ "variations.mojom" ]
+}
 
 if (is_android) {
   import("//build/config/android/rules.gni")
@@ -103,6 +108,7 @@ static_library("variations") {
 
   deps = [
     ":buildflags",
+    ":variations_mojom",
     "proto",
     "//base",
     "//components/crash/core/common:crash_key",
@@ -145,7 +151,10 @@ static_library("test_support") {
     "variations_params_manager.h",
   ]
 
-  public_deps = [ ":variations" ]
+  public_deps = [
+    ":variations",
+    ":variations_mojom",
+  ]
 
   deps = [
     "field_trial_config:field_trial_config",
@@ -183,6 +192,7 @@ source_set("unit_tests") {
 
   deps = [
     ":variations",
+    ":variations_mojom",
     "net",
     "proto",
     "//base/test:test_support",

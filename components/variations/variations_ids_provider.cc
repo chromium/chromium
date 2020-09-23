@@ -42,22 +42,31 @@ VariationsIdsProvider* VariationsIdsProvider::GetInstance() {
   return base::Singleton<VariationsIdsProvider>::get();
 }
 
-std::string VariationsIdsProvider::GetClientDataHeader(
-    bool is_signed_in,
-    Study_GoogleWebVisibility web_visibility) {
+variations::mojom::VariationsHeadersPtr
+VariationsIdsProvider::GetClientDataHeaders(bool is_signed_in) {
   // Lazily initialize the header, if not already done, before attempting to
   // transmit it.
   InitVariationIDsCacheIfNeeded();
 
-  std::string variation_ids_header_copy;
+  std::string first_party_header_copy;
+  std::string any_context_header_copy;
   {
-    auto it = variations_headers_map_.find(
-        VariationsHeaderKey{is_signed_in, web_visibility});
-    if (it == variations_headers_map_.end())
-      return "";
-    variation_ids_header_copy = it->second;
+    base::AutoLock lock(lock_);
+    first_party_header_copy = GetClientDataHeaderWhileLocked(
+        is_signed_in, Study_GoogleWebVisibility_FIRST_PARTY);
+    any_context_header_copy = GetClientDataHeaderWhileLocked(
+        is_signed_in, Study_GoogleWebVisibility_ANY);
   }
-  return variation_ids_header_copy;
+
+  if (first_party_header_copy.empty() && any_context_header_copy.empty())
+    return nullptr;
+
+  base::flat_map<variations::mojom::GoogleWebVisibility, std::string> headers =
+      {{variations::mojom::GoogleWebVisibility::FIRST_PARTY,
+        first_party_header_copy},
+       {variations::mojom::GoogleWebVisibility::ANY, any_context_header_copy}};
+
+  return variations::mojom::VariationsHeaders::New(headers);
 }
 
 std::string VariationsIdsProvider::GetVariationsString(
@@ -377,6 +386,20 @@ bool VariationsIdsProvider::ParseVariationIdsParameter(
       base::SplitString(command_line_variation_ids, ",", base::TRIM_WHITESPACE,
                         base::SPLIT_WANT_ALL);
   return AddVariationIdsToSet(variation_ids_from_command_line, target_set);
+}
+
+std::string VariationsIdsProvider::GetClientDataHeaderWhileLocked(
+    bool is_signed_in,
+    Study_GoogleWebVisibility web_visibility) {
+  lock_.AssertAcquired();
+
+  auto it = variations_headers_map_.find(
+      VariationsHeaderKey{is_signed_in, web_visibility});
+
+  if (it == variations_headers_map_.end())
+    return "";
+  // Deliberately return a copy.
+  return it->second;
 }
 
 std::set<VariationsIdsProvider::VariationIDEntry>

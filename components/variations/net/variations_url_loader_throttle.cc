@@ -29,13 +29,14 @@ Owner GetOwner(const url::Origin& top_frame_origin) {
 }  // namespace
 
 VariationsURLLoaderThrottle::VariationsURLLoaderThrottle(
-    const std::string& variation_ids_header)
-    : variation_ids_header_(variation_ids_header), owner_(Owner::kUnknown) {}
+    variations::mojom::VariationsHeadersPtr variations_headers)
+    : variations_headers_(std::move(variations_headers)),
+      owner_(Owner::kUnknown) {}
 
 VariationsURLLoaderThrottle::VariationsURLLoaderThrottle(
-    const std::string& variation_ids_header,
+    variations::mojom::VariationsHeadersPtr variations_headers,
     const url::Origin& top_frame_origin)
-    : variation_ids_header_(variation_ids_header),
+    : variations_headers_(std::move(variations_headers)),
       owner_(GetOwner(top_frame_origin)) {}
 
 VariationsURLLoaderThrottle::~VariationsURLLoaderThrottle() = default;
@@ -47,10 +48,8 @@ void VariationsURLLoaderThrottle::AppendThrottleIfNeeded(
   if (!variations_client || variations_client->IsOffTheRecord())
     return;
 
-  // TODO(crbug/1094303): Consider both variations::Study_GoogleWebVisibility
-  // values.
   throttles->push_back(std::make_unique<VariationsURLLoaderThrottle>(
-      variations_client->GetVariationsHeader()));
+      variations_client->GetVariationsHeaders()));
 }
 
 void VariationsURLLoaderThrottle::DetachFromCurrentSequence() {}
@@ -58,10 +57,17 @@ void VariationsURLLoaderThrottle::DetachFromCurrentSequence() {}
 void VariationsURLLoaderThrottle::WillStartRequest(
     network::ResourceRequest* request,
     bool* defer) {
-  // This throttle is never created when incognito so we pass in
-  // variations::InIncognito::kNo.
+  if (variations_headers_.is_null())
+    return;
+
+  // InIncognito::kNo is passed because this throttle is never created in
+  // incognito mode.
+  //
+  // |variations_headers_| is moved rather than cloned because a
+  // VariationsURLLoaderThrottle is created for each request and
+  // WillStartRequest() is called only once—from ThrottlingURLLoader::Start().
   variations::AppendVariationsHeaderWithCustomValue(
-      request->url, variations::InIncognito::kNo, variation_ids_header_, owner_,
+      request->url, InIncognito::kNo, std::move(variations_headers_), owner_,
       request);
 }
 

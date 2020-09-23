@@ -295,6 +295,7 @@ target(link_target_type, "renderer") {
     "//components/metrics",
     "//components/metrics:single_sample_metrics",
     "//components/url_formatter",
+    "//components/variations:variations_mojom",
     "//components/variations/net",
     "//components/viz/client",
     "//components/viz/common",

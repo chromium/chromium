@@ -6,10 +6,10 @@
 #define COMPONENTS_VARIATIONS_NET_VARIATIONS_HTTP_HEADERS_H_
 
 #include <memory>
-#include <set>
 #include <string>
 #include <vector>
 
+#include "components/variations/variations.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 
@@ -66,16 +66,17 @@ bool AppendVariationsHeader(const GURL& url,
                             SignedIn signed_in,
                             network::ResourceRequest* request);
 
-// Similar to AppendVariationsHeader, but uses specified |variations_header| as
-// the custom header value. It also uses |owner|, which indicates whether
+// Similar to AppendVariationsHeader, but takes multiple appropriate headers,
+// one of which may be appended. It also uses |owner|, which indicates whether
 // the request-initiating frame's top frame is a Google-owned web property.
 //
 // You should not generally need to use this.
-bool AppendVariationsHeaderWithCustomValue(const GURL& url,
-                                           InIncognito incognito,
-                                           const std::string& variations_header,
-                                           Owner owner,
-                                           network::ResourceRequest* request);
+bool AppendVariationsHeaderWithCustomValue(
+    const GURL& url,
+    InIncognito incognito,
+    variations::mojom::VariationsHeadersPtr variations_headers,
+    Owner owner,
+    network::ResourceRequest* request);
 
 // Adds Chrome experiment and metrics state as a custom header to |request|
 // when the signed-in state is not known to the caller; See above for details.

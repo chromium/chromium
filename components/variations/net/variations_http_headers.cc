@@ -5,7 +5,6 @@
 #include "components/variations/net/variations_http_headers.h"
 
 #include <utility>
-#include <vector>
 
 #include "base/bind.h"
 #include "base/feature_list.h"
@@ -16,7 +15,7 @@
 #include "base/strings/string_util.h"
 #include "components/google/core/common/google_util.h"
 #include "components/variations/net/omnibox_http_headers.h"
-#include "components/variations/proto/study.pb.h"
+#include "components/variations/variations_features.h"
 #include "components/variations/variations_ids_provider.h"
 #include "net/base/isolation_info.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -111,11 +110,11 @@ bool ShouldAppendVariationsHeader(const GURL& url, const std::string& suffix) {
 // Returns true if the request is sent from a Google web property, i.e. from a
 // first-party context.
 //
-// The context is determined using |resource_request| and |owner|. The latter is
+// The context is determined using |owner| and |resource_request|. |owner| is
 // used for subframe-initiated subresource requests from the renderer. Note that
 // for these kinds of requests, ResourceRequest::TrustedParams is not populated.
-bool IsFirstPartyContext(const network::ResourceRequest& resource_request,
-                         Owner owner) {
+bool IsFirstPartyContext(Owner owner,
+                         const network::ResourceRequest& resource_request) {
   if (!resource_request.request_initiator) {
     // The absence of |request_initiator| means that the request was initiated
     // by the browser, e.g. a request from the browser to Autofill upon form
@@ -189,23 +188,54 @@ bool IsFirstPartyContext(const network::ResourceRequest& resource_request,
   return false;
 }
 
+// Returns GoogleWebVisibility::FIRST_PARTY if kRestrictGoogleWebVisibility is
+// enabled and the request is from a first-party context; otherwise, returns
+// GoogleWebVisibility::ANY.
+variations::mojom::GoogleWebVisibility GetVisibilityKey(
+    Owner owner,
+    const network::ResourceRequest& resource_request) {
+  bool use_first_party_visibility =
+      IsFirstPartyContext(owner, resource_request) &&
+      base::FeatureList::IsEnabled(internal::kRestrictGoogleWebVisibility);
+
+  return use_first_party_visibility
+             ? variations::mojom::GoogleWebVisibility::FIRST_PARTY
+             : variations::mojom::GoogleWebVisibility::ANY;
+}
+
+// Returns a variations header from |variations_headers|. When
+// kRestrictGoogleWebVisibility is enabled, the request context is considered
+// and may be used to select a header with a more limited set of IDs.
+std::string SelectVariationsHeader(
+    variations::mojom::VariationsHeadersPtr variations_headers,
+    Owner owner,
+    const network::ResourceRequest& resource_request) {
+  return variations_headers->headers_map.at(
+      GetVisibilityKey(owner, resource_request));
+}
+
 class VariationsHeaderHelper {
  public:
-  // Note: It's OK to pass SignedIn::kNo if it's unknown, as it does not affect
-  // transmission of experiments coming from the variations server.
-  VariationsHeaderHelper(network::ResourceRequest* request,
-                         SignedIn signed_in = SignedIn::kNo)
-      : VariationsHeaderHelper(request, CreateVariationsHeader(signed_in)) {}
-  VariationsHeaderHelper(network::ResourceRequest* resource_request,
-                         std::string variations_header)
+  // Constructor for browser-initiated requests.
+  //
+  // If the signed-in status is unknown, SignedIn::kNo can be passed as it does
+  // not affect transmission of experiments from the variations server.
+  VariationsHeaderHelper(SignedIn signed_in,
+                         network::ResourceRequest* resource_request)
+      : VariationsHeaderHelper(CreateVariationsHeader(signed_in,
+                                                      Owner::kUnknown,
+                                                      *resource_request),
+                               resource_request) {}
+
+  // Constructor for when the appropriate header has been determined.
+  VariationsHeaderHelper(std::string variations_header,
+                         network::ResourceRequest* resource_request)
       : resource_request_(resource_request) {
     DCHECK(resource_request_);
     variations_header_ = std::move(variations_header);
   }
 
-  bool AppendHeaderIfNeeded(const GURL& url,
-                            InIncognito incognito,
-                            Owner owner) {
+  bool AppendHeaderIfNeeded(const GURL& url, InIncognito incognito) {
     AppendOmniboxOnDeviceSuggestionsHeaderIfNeeded(url, resource_request_);
 
     // Note the criteria for attaching client experiment headers:
@@ -221,9 +251,6 @@ class VariationsHeaderHelper {
         !ShouldAppendVariationsHeader(url, "Append"))
       return false;
 
-    // TODO(crbug/1094303): Use the result to determine which IDs to include.
-    IsFirstPartyContext(*resource_request_, owner);
-
     if (variations_header_.empty())
       return false;
 
@@ -235,12 +262,25 @@ class VariationsHeaderHelper {
   }
 
  private:
-  // TODO(crbug/1094303): Update the signature to accept a
-  // Study_GoogleWebVisibility and pass the given value to
-  // GetClientDataHeader().
-  static std::string CreateVariationsHeader(SignedIn signed_in) {
-    return VariationsIdsProvider::GetInstance()->GetClientDataHeader(
-        signed_in == SignedIn::kYes, Study_GoogleWebVisibility_ANY);
+  // Returns a variations header containing IDs appropriate for |signed_in|.
+  // When kRestrictGoogleWebVisibility is enabled, the request context is
+  // considered and may be used to select a header with a more limited set of
+  // IDs.
+  //
+  // Can be used only by code running in the browser process, which is where
+  // the populated VariationsIdsProvider exists.
+  static std::string CreateVariationsHeader(
+      SignedIn signed_in,
+      Owner owner,
+      const network::ResourceRequest& resource_request) {
+    variations::mojom::VariationsHeadersPtr variations_headers =
+        VariationsIdsProvider::GetInstance()->GetClientDataHeaders(
+            signed_in == SignedIn::kYes);
+
+    if (variations_headers.is_null())
+      return "";
+    return variations_headers->headers_map.at(
+        GetVisibilityKey(owner, resource_request));
   }
 
   network::ResourceRequest* resource_request_;
@@ -258,17 +298,20 @@ bool AppendVariationsHeader(const GURL& url,
   // TODO(crbug.com/1094303): Consider passing the Owner if we can get it.
   // However, we really only care about having the owner for requests initiated
   // on the renderer side.
-  return VariationsHeaderHelper(request, signed_in)
-      .AppendHeaderIfNeeded(url, incognito, Owner::kUnknown);
+  return VariationsHeaderHelper(signed_in, request)
+      .AppendHeaderIfNeeded(url, incognito);
 }
 
-bool AppendVariationsHeaderWithCustomValue(const GURL& url,
-                                           InIncognito incognito,
-                                           const std::string& variations_header,
-                                           Owner owner,
-                                           network::ResourceRequest* request) {
-  return VariationsHeaderHelper(request, variations_header)
-      .AppendHeaderIfNeeded(url, incognito, owner);
+bool AppendVariationsHeaderWithCustomValue(
+    const GURL& url,
+    InIncognito incognito,
+    variations::mojom::VariationsHeadersPtr variations_headers,
+    Owner owner,
+    network::ResourceRequest* request) {
+  const std::string& header =
+      SelectVariationsHeader(std::move(variations_headers), owner, *request);
+  return VariationsHeaderHelper(header, request)
+      .AppendHeaderIfNeeded(url, incognito);
 }
 
 bool AppendVariationsHeaderUnknownSignedIn(const GURL& url,
@@ -277,8 +320,8 @@ bool AppendVariationsHeaderUnknownSignedIn(const GURL& url,
   // TODO(crbug.com/1094303): Consider passing the Owner if we can get it.
   // However, we really only care about having the owner for requests initiated
   // on the renderer side.
-  return VariationsHeaderHelper(request).AppendHeaderIfNeeded(url, incognito,
-                                                              Owner::kUnknown);
+  return VariationsHeaderHelper(SignedIn::kNo, request)
+      .AppendHeaderIfNeeded(url, incognito);
 }
 
 void RemoveVariationsHeaderIfNeeded(
@@ -295,11 +338,11 @@ CreateSimpleURLLoaderWithVariationsHeader(
     InIncognito incognito,
     SignedIn signed_in,
     const net::NetworkTrafficAnnotationTag& annotation_tag) {
-  bool variation_headers_added =
+  bool variations_headers_added =
       AppendVariationsHeader(request->url, incognito, signed_in, request.get());
   std::unique_ptr<network::SimpleURLLoader> simple_url_loader =
       network::SimpleURLLoader::Create(std::move(request), annotation_tag);
-  if (variation_headers_added) {
+  if (variations_headers_added) {
     simple_url_loader->SetOnRedirectCallback(
         base::BindRepeating(&RemoveVariationsHeaderIfNeeded));
   }

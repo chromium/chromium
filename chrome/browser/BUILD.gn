@@ -2151,6 +2151,7 @@ static_library("browser") {
     "//components/user_manager",
     "//components/user_prefs",
     "//components/variations",
+    "//components/variations:variations_mojom",
     "//components/variations/field_trial_config",
     "//components/variations/net",
     "//components/variations/proto",

@@ -428,6 +428,7 @@ source_set("weblayer_lib_base") {
     "//components/unified_consent:unified_consent",
     "//components/user_prefs",
     "//components/variations",
+    "//components/variations:variations_mojom",
     "//components/variations/net",
     "//components/variations/proto",
     "//components/variations/service",

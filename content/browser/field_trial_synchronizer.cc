@@ -116,11 +116,8 @@ void FieldTrialSynchronizer::UpdateRendererVariationsHeader(
   mojo::AssociatedRemote<mojom::RendererVariationsConfiguration>
       renderer_variations_configuration;
   channel->GetRemoteAssociatedInterface(&renderer_variations_configuration);
-
-  // TODO(crbug/1094303): Consider both variations::Study_GoogleWebVisibility
-  // values.
-  renderer_variations_configuration->SetVariationsHeader(
-      client->GetVariationsHeader());
+  renderer_variations_configuration->SetVariationsHeaders(
+      client->GetVariationsHeaders());
 }
 
 void FieldTrialSynchronizer::VariationIdsHeaderUpdated() {

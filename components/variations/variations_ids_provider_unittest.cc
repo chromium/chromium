@@ -13,6 +13,7 @@
 #include "components/variations/entropy_provider.h"
 #include "components/variations/proto/client_variations.pb.h"
 #include "components/variations/proto/study.pb.h"
+#include "components/variations/variations.mojom.h"
 #include "components/variations/variations_associated_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -76,9 +77,12 @@ TEST_F(VariationsIdsProviderTest, ForceVariationIds_Valid) {
   EXPECT_EQ(VariationsIdsProvider::ForceIdsResult::SUCCESS,
             provider.ForceVariationIds({"12", "456", "t789"}, ""));
   provider.InitVariationIDsCacheIfNeeded();
-  std::string variations = provider.GetClientDataHeader(
-      /*is_signed_in=*/false, Study_GoogleWebVisibility_ANY);
-  EXPECT_FALSE(variations.empty());
+  variations::mojom::VariationsHeadersPtr headers =
+      provider.GetClientDataHeaders(/*is_signed_in=*/false);
+  EXPECT_FALSE(headers->headers_map.empty());
+  const std::string variations =
+      headers->headers_map.at(variations::mojom::GoogleWebVisibility::ANY);
+
   std::set<VariationID> variation_ids;
   std::set<VariationID> trigger_ids;
   ASSERT_TRUE(ExtractVariationIds(variations, &variation_ids, &trigger_ids));
@@ -95,9 +99,12 @@ TEST_F(VariationsIdsProviderTest, ForceVariationIds_ValidCommandLine) {
   EXPECT_EQ(VariationsIdsProvider::ForceIdsResult::SUCCESS,
             provider.ForceVariationIds({"12"}, "456,t789"));
   provider.InitVariationIDsCacheIfNeeded();
-  std::string variations = provider.GetClientDataHeader(
-      /*is_signed_in=*/false, Study_GoogleWebVisibility_ANY);
-  EXPECT_FALSE(variations.empty());
+  variations::mojom::VariationsHeadersPtr headers =
+      provider.GetClientDataHeaders(/*is_signed_in=*/false);
+  EXPECT_FALSE(headers->headers_map.empty());
+  const std::string variations =
+      headers->headers_map.at(variations::mojom::GoogleWebVisibility::ANY);
+
   std::set<VariationID> variation_ids;
   std::set<VariationID> trigger_ids;
   ASSERT_TRUE(ExtractVariationIds(variations, &variation_ids, &trigger_ids));
@@ -114,28 +121,19 @@ TEST_F(VariationsIdsProviderTest, ForceVariationIds_Invalid) {
   EXPECT_EQ(VariationsIdsProvider::ForceIdsResult::INVALID_VECTOR_ENTRY,
             provider.ForceVariationIds({"abcd12", "456"}, ""));
   provider.InitVariationIDsCacheIfNeeded();
-  EXPECT_TRUE(provider
-                  .GetClientDataHeader(/*is_signed_in=*/false,
-                                       Study_GoogleWebVisibility_ANY)
-                  .empty());
+  EXPECT_TRUE(provider.GetClientDataHeaders(/*is_signed_in=*/false).is_null());
 
   // Invalid trigger experiment id
   EXPECT_EQ(VariationsIdsProvider::ForceIdsResult::INVALID_VECTOR_ENTRY,
             provider.ForceVariationIds({"12", "tabc456"}, ""));
   provider.InitVariationIDsCacheIfNeeded();
-  EXPECT_TRUE(provider
-                  .GetClientDataHeader(/*is_signed_in=*/false,
-                                       Study_GoogleWebVisibility_ANY)
-                  .empty());
+  EXPECT_TRUE(provider.GetClientDataHeaders(/*is_signed_in=*/false).is_null());
 
   // Invalid command-line ids.
   EXPECT_EQ(VariationsIdsProvider::ForceIdsResult::INVALID_SWITCH_ENTRY,
             provider.ForceVariationIds({"12", "50"}, "tabc456"));
   provider.InitVariationIDsCacheIfNeeded();
-  EXPECT_TRUE(provider
-                  .GetClientDataHeader(/*is_signed_in=*/false,
-                                       Study_GoogleWebVisibility_ANY)
-                  .empty());
+  EXPECT_TRUE(provider.GetClientDataHeaders(/*is_signed_in=*/false).is_null());
 }
 
 TEST_F(VariationsIdsProviderTest, ForceDisableVariationIds_ValidCommandLine) {
@@ -146,9 +144,12 @@ TEST_F(VariationsIdsProviderTest, ForceDisableVariationIds_ValidCommandLine) {
             provider.ForceVariationIds({"1", "2", "t3", "t4"}, "5,6,t7,t8"));
   EXPECT_TRUE(provider.ForceDisableVariationIds("2,t4,6,t8"));
   provider.InitVariationIDsCacheIfNeeded();
-  std::string variations = provider.GetClientDataHeader(
-      /*is_signed_in=*/false, Study_GoogleWebVisibility_ANY);
-  EXPECT_FALSE(variations.empty());
+  variations::mojom::VariationsHeadersPtr headers =
+      provider.GetClientDataHeaders(/*is_signed_in=*/false);
+  EXPECT_FALSE(headers->headers_map.empty());
+  const std::string variations =
+      headers->headers_map.at(variations::mojom::GoogleWebVisibility::ANY);
+
   std::set<VariationID> variation_ids;
   std::set<VariationID> trigger_ids;
   ASSERT_TRUE(ExtractVariationIds(variations, &variation_ids, &trigger_ids));
@@ -169,10 +170,7 @@ TEST_F(VariationsIdsProviderTest, ForceDisableVariationIds_Invalid) {
   EXPECT_FALSE(provider.ForceDisableVariationIds("abc"));
   EXPECT_FALSE(provider.ForceDisableVariationIds("tabc456"));
   provider.InitVariationIDsCacheIfNeeded();
-  EXPECT_TRUE(provider
-                  .GetClientDataHeader(/*is_signed_in=*/false,
-                                       Study_GoogleWebVisibility_ANY)
-                  .empty());
+  EXPECT_TRUE(provider.GetClientDataHeaders(/*is_signed_in=*/false).is_null());
 }
 
 TEST_F(VariationsIdsProviderTest, OnFieldTrialGroupFinalized) {
@@ -206,8 +204,11 @@ TEST_F(VariationsIdsProviderTest, OnFieldTrialGroupFinalized) {
 
   // Get non-signed in ids.
   {
-    std::string variations = provider.GetClientDataHeader(
-        /*is_signed_in=*/false, Study_GoogleWebVisibility_ANY);
+    variations::mojom::VariationsHeadersPtr headers =
+        provider.GetClientDataHeaders(/*is_signed_in=*/false);
+    const std::string variations =
+        headers->headers_map.at(variations::mojom::GoogleWebVisibility::ANY);
+
     std::set<VariationID> variation_ids;
     std::set<VariationID> trigger_ids;
     ASSERT_TRUE(ExtractVariationIds(variations, &variation_ids, &trigger_ids));
@@ -221,8 +222,11 @@ TEST_F(VariationsIdsProviderTest, OnFieldTrialGroupFinalized) {
 
   // Now, get signed-in ids.
   {
-    std::string variations = provider.GetClientDataHeader(
-        /*is_signed_in=*/true, Study_GoogleWebVisibility_ANY);
+    variations::mojom::VariationsHeadersPtr headers =
+        provider.GetClientDataHeaders(/*is_signed_in=*/true);
+    const std::string variations =
+        headers->headers_map.at(variations::mojom::GoogleWebVisibility::ANY);
+
     std::set<VariationID> variation_ids;
     std::set<VariationID> trigger_ids;
     ASSERT_TRUE(ExtractVariationIds(variations, &variation_ids, &trigger_ids));

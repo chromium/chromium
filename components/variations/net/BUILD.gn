@@ -23,6 +23,7 @@ static_library("net") {
     "//base",
     "//components/google/core/common",
     "//components/metrics",
+    "//components/variations:variations_mojom",
     "//components/variations/field_trial_config",
     "//components/variations/proto",
   ]
@@ -33,7 +34,10 @@ static_library("net") {
       "variations_url_loader_throttle.cc",
       "variations_url_loader_throttle.h",
     ]
-    deps += [ "//third_party/blink/public/common" ]
+    deps += [
+      "//components/variations:variations_mojom",
+      "//third_party/blink/public/common",
+    ]
   }
 }
 

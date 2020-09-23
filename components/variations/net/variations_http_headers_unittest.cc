@@ -6,10 +6,12 @@
 
 #include <string>
 
+#include "base/containers/flat_map.h"
 #include "base/macros.h"
 #include "base/stl_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "components/variations/variations.mojom.h"
 #include "net/base/isolation_info.h"
 #include "net/cookies/site_for_cookies.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -53,8 +55,13 @@ network::ResourceRequest CreateResourceRequest(
 void AppendVariationsHeader(const GURL& destination,
                             Owner owner,
                             network::ResourceRequest* request) {
-  AppendVariationsHeaderWithCustomValue(destination, InIncognito::kNo,
-                                        "Header contents.", owner, request);
+  base::flat_map<variations::mojom::GoogleWebVisibility, std::string> headers =
+      {{variations::mojom::GoogleWebVisibility::FIRST_PARTY, "abc123"},
+       {variations::mojom::GoogleWebVisibility::ANY, "xyz456"}};
+
+  AppendVariationsHeaderWithCustomValue(
+      destination, InIncognito::kNo,
+      variations::mojom::VariationsHeaders::New(headers), owner, request);
 }
 
 }  // namespace
@@ -327,9 +334,8 @@ TEST_P(PopulateRequestContextHistogramTest, PopulateRequestContextHistogram) {
       data.isolation_info_frame_origin_url);
 
   base::HistogramTester tester;
-  AppendVariationsHeaderWithCustomValue(
-      GURL("https://foo.google.com"), variations::InIncognito::kNo,
-      "Header contents.",
+  AppendVariationsHeader(
+      GURL("https://foo.google.com"),
       data.is_top_level_google_owned ? Owner::kGoogle : Owner::kNotGoogle,
       &request);
 
