@@ -714,17 +714,6 @@ viz::FrameSinkId RenderWidget::GetFrameSinkId() {
   return viz::FrameSinkId(RenderThread::Get()->GetClientId(), routing_id());
 }
 
-gfx::PointF RenderWidget::ConvertWindowPointToViewport(
-    const gfx::PointF& point) {
-  blink::WebFloatRect point_in_viewport(point.x(), point.y(), 0, 0);
-  ConvertWindowToViewport(&point_in_viewport);
-  return gfx::PointF(point_in_viewport.x, point_in_viewport.y);
-}
-
-gfx::Point RenderWidget::ConvertWindowPointToViewport(const gfx::Point& point) {
-  return gfx::ToRoundedPoint(ConvertWindowPointToViewport(gfx::PointF(point)));
-}
-
 bool RenderWidget::RequestPointerLock(
     WebLocalFrame* requester_frame,
     blink::WebWidgetClient::PointerLockCallback callback,
