@@ -152,8 +152,8 @@ id<GREYMatcher> TitleOfTestPage() {
                                                   IDS_HISTORY_TITLE)),
                                           grey_accessibilityTrait(
                                               UIAccessibilityTraitHeader),
-                                          nil)]
-      assertWithMatcher:grey_sufficientlyVisible()];
+                                          grey_sufficientlyVisible(), nil)]
+      assertWithMatcher:grey_notNil()];
 
   // Close History.
   id<GREYMatcher> exitMatcher =
@@ -167,6 +167,15 @@ id<GREYMatcher> TitleOfTestPage() {
 // Tests that the sign-in promo can be reloaded correctly.
 - (void)testRecentTabSigninPromoReloaded {
   OpenRecentTabsPanel();
+
+  // Scroll to sign-in promo, if applicable.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_allOf(grey_accessibilityID(
+                         kRecentTabsTableViewControllerAccessibilityIdentifier),
+                     grey_sufficientlyVisible(), nil)]
+      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
+
   // Sign-in promo should be visible with cold state.
   [SigninEarlGreyUI
       verifySigninPromoVisibleWithMode:SigninPromoViewModeColdState
@@ -185,6 +194,15 @@ id<GREYMatcher> TitleOfTestPage() {
 // crbug.com/776939
 - (void)testRecentTabSigninPromoReloadedWhileHidden {
   OpenRecentTabsPanel();
+
+  // Scroll to sign-in promo, if applicable
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_allOf(grey_accessibilityID(
+                         kRecentTabsTableViewControllerAccessibilityIdentifier),
+                     grey_sufficientlyVisible(), nil)]
+      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
+
   [SigninEarlGreyUI
       verifySigninPromoVisibleWithMode:SigninPromoViewModeColdState
                            closeButton:NO];
@@ -206,6 +224,13 @@ id<GREYMatcher> TitleOfTestPage() {
   // Tap on "Other Devices", to show the sign-in promo.
   [[EarlGrey selectElementWithMatcher:otherDevicesMatcher]
       performAction:grey_tap()];
+  // Scroll to sign-in promo, if applicable
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_allOf(grey_accessibilityID(
+                         kRecentTabsTableViewControllerAccessibilityIdentifier),
+                     grey_sufficientlyVisible(), nil)]
+      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
   [SigninEarlGreyUI
       verifySigninPromoVisibleWithMode:SigninPromoViewModeWarmState
                            closeButton:NO];
@@ -289,6 +314,14 @@ id<GREYMatcher> TitleOfTestPage() {
   } else {
     [illustratedCell assertWithMatcher:grey_nil()];
   }
+
+  // Scroll to sign-in promo, if applicable
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_allOf(grey_accessibilityID(
+                         kRecentTabsTableViewControllerAccessibilityIdentifier),
+                     grey_sufficientlyVisible(), nil)]
+      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
 
   [SigninEarlGreyUI
       verifySigninPromoVisibleWithMode:SigninPromoViewModeColdState

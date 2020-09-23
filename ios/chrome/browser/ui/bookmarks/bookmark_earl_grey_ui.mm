@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey_ui.h"
 
+#include "base/ios/ios_util.h"
 #include "base/mac/foundation_util.h"
 #import "base/test/ios/wait_util.h"
 #include "build/build_config.h"
@@ -439,12 +440,19 @@ id<GREYMatcher> SearchIconButton() {
 }
 
 - (void)verifyEmptyBackgroundAppears {
-  id<GREYMatcher> emptyBackground =
-      grey_accessibilityID([ChromeEarlGrey isIllustratedEmptyStatesEnabled]
-                               ? kTableViewIllustratedEmptyViewID
-                               : kBookmarkEmptyStateExplanatoryLabelIdentifier);
-  [[EarlGrey selectElementWithMatcher:emptyBackground]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  if ([ChromeEarlGrey isIllustratedEmptyStatesEnabled]) {
+    [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                            kTableViewIllustratedEmptyViewID)]
+        assertWithMatcher:grey_notNil()];
+    [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
+                                            IDS_IOS_BOOKMARK_EMPTY_MESSAGE))]
+        assertWithMatcher:grey_sufficientlyVisible()];
+  } else {
+    [[EarlGrey
+        selectElementWithMatcher:
+            grey_accessibilityID(kBookmarkEmptyStateExplanatoryLabelIdentifier)]
+        assertWithMatcher:grey_sufficientlyVisible()];
+  }
 }
 
 - (void)verifyEmptyState {
@@ -453,10 +461,10 @@ id<GREYMatcher> SearchIconButton() {
   id<GREYInteraction> searchBar =
       [EarlGrey selectElementWithMatcher:grey_accessibilityTrait(
                                              UIAccessibilityTraitSearchField)];
-  if ([ChromeEarlGrey isIllustratedEmptyStatesEnabled]) {
-    // With the illustrated empty state, the search bar should be hidden.
-    [searchBar assertWithMatcher:grey_nil()];
-  } else {
+  // TODO(crbug.com/1126982): Fix the search bar issue on iOS 12.4.
+  // The search bar should not be visible when the illustrated empty state is
+  // shown.
+  if (![ChromeEarlGrey isIllustratedEmptyStatesEnabled]) {
     [searchBar assertWithMatcher:grey_notNil()];
   }
 }

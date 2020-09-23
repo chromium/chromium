@@ -167,10 +167,7 @@ void SearchBookmarksForText(NSString* search_text) {
 - (void)testEmptyManagedBookmarks {
   [BookmarkEarlGreyUI openBookmarks];
 
-  // Mobile bookmarks exists.
-  [[EarlGrey selectElementWithMatcher:TappableBookmarkNodeWithLabel(
-                                          @"Mobile Bookmarks")]
-      assertWithMatcher:grey_notNil()];
+  [BookmarkEarlGreyUI verifyEmptyState];
 
   // Managed bookmarks folder does not exist.
   [[EarlGrey selectElementWithMatcher:TappableBookmarkNodeWithLabel(

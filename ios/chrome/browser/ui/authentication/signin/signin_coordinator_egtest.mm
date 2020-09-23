@@ -53,18 +53,35 @@ namespace {
 // Taps on the primary sign-in button in recent tabs, and scroll first, if
 // necessary.
 void TapOnPrimarySignInButtonInRecentTabs() {
-  id<GREYMatcher> matcher =
-      grey_allOf(PrimarySignInButton(), grey_sufficientlyVisible(), nil);
-  const CGFloat kPixelsToScroll = 300;
-  id<GREYAction> searchAction =
-      grey_scrollInDirection(kGREYDirectionDown, kPixelsToScroll);
-  GREYElementInteraction* interaction =
-      [[EarlGrey selectElementWithMatcher:matcher]
-             usingSearchAction:searchAction
-          onElementWithMatcher:
-              grey_accessibilityID(
-                  kRecentTabsTableViewControllerAccessibilityIdentifier)];
-  [interaction performAction:grey_tap()];
+  [[[EarlGrey
+      selectElementWithMatcher:grey_allOf(PrimarySignInButton(),
+                                          grey_sufficientlyVisible(), nil)]
+         usingSearchAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)
+      onElementWithMatcher:
+          grey_allOf(grey_accessibilityID(
+                         kRecentTabsTableViewControllerAccessibilityIdentifier),
+                     grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+}
+
+// Collapses the recently closed tabs section if the sign in promo is
+// inaccessible otherwise.
+void CollapseRecentlyClosedTabsSectionIfNecessary() {
+  NSError* error = nil;
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kRecentTabsTableViewControllerAccessibilityIdentifier)]
+      assertWithMatcher:chrome_test_util::ContentViewSmallerThanScrollView()
+                  error:&error];
+
+  if (error) {
+    [[EarlGrey selectElementWithMatcher:
+                   grey_allOf(chrome_test_util::ButtonWithAccessibilityLabel(
+                                  l10n_util::GetNSString(
+                                      IDS_IOS_RECENT_TABS_RECENTLY_CLOSED)),
+                              grey_sufficientlyVisible(), nil)]
+        performAction:grey_tap()];
+  }
 }
 
 // Returns a matcher for |userEmail| in IdentityChooserViewController.
@@ -448,6 +465,10 @@ void ChooseImportOrKeepDataSepareteDialog(id<GREYMatcher> choiceButtonMatcher) {
       [[EarlGrey selectElementWithMatcher:chrome_test_util::
                                               TabGridOtherDevicesPanelButton()]
           performAction:grey_tap()];
+
+      // TODO(crbug.com/1131479): Find a way to scroll the view instead.
+      CollapseRecentlyClosedTabsSectionIfNecessary();
+
       TapOnPrimarySignInButtonInRecentTabs();
       break;
   }
