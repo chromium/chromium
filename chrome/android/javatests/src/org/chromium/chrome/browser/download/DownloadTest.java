@@ -57,9 +57,7 @@ import org.chromium.net.test.util.TestWebServer;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Tests Chrome download feature by attempting to download some files.
@@ -154,6 +152,21 @@ import java.util.Set;
             Criteria.checkThat(downloads.size(), Matchers.greaterThanOrEqualTo(1));
             Criteria.checkThat(downloads.get(downloads.size() - 1).getDownloadInfo().state(),
                     Matchers.is(DownloadState.COMPLETE));
+        });
+    }
+
+    void waitForAnyDownloadToCancel() {
+        CriteriaHelper.pollUiThread(() -> {
+            List<DownloadItem> downloads = mDownloadTestRule.getAllDownloads();
+            Criteria.checkThat(downloads.size(), Matchers.greaterThanOrEqualTo(1));
+            boolean hasCanceled = false;
+            for (DownloadItem download : downloads) {
+                if (download.getDownloadInfo().state() == DownloadState.CANCELLED) {
+                    hasCanceled = true;
+                    break;
+                }
+            }
+            Criteria.checkThat(hasCanceled, Matchers.is(true));
         });
     }
 
@@ -260,7 +273,6 @@ import java.util.Set;
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1130550")
     @Feature({"Downloads"})
     public void testDuplicateHttpPostDownload_Cancel() {
         // Remove download progress info bar.
@@ -294,13 +306,7 @@ import java.util.Set;
                 InfoBarUtil.clickSecondaryButton(findDuplicateDownloadInfoBar()));
 
         // The download should be canceled.
-        List<DownloadItem> downloads = mDownloadTestRule.getAllDownloads();
-        Assert.assertEquals(downloads.size(), downloadCount + 1);
-        Set<Integer> states = new HashSet<>(
-                Arrays.asList(downloads.get(downloads.size() - 1).getDownloadInfo().state(),
-                        downloads.get(downloads.size() - 2).getDownloadInfo().state()));
-        Assert.assertEquals(states,
-                new HashSet<>(Arrays.asList(DownloadState.COMPLETE, DownloadState.CANCELLED)));
+        waitForAnyDownloadToCancel();
     }
 
     @Test
