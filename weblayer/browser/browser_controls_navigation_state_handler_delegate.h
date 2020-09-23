@@ -9,11 +9,14 @@
 
 namespace weblayer {
 
+enum class ControlsVisibilityReason;
+
 // Called to propagate changse to BrowserControlsState.
 class BrowserControlsNavigationStateHandlerDelegate {
  public:
   // Called when the state changes.
   virtual void OnBrowserControlsStateStateChanged(
+      ControlsVisibilityReason reason,
       content::BrowserControlsState state) = 0;
 
   // Called when UpdateBrowserControlsState() should be called because a new
@@ -21,11 +24,6 @@ class BrowserControlsNavigationStateHandlerDelegate {
   // specific to a renderer, and each navigation may trigger a new renderer.
   virtual void OnUpdateBrowserControlsStateBecauseOfProcessSwitch(
       bool did_commit) = 0;
-
-  // Called if the browser controls need to be shown and the renderer is in a
-  // hung/crashed state. This needs to be handled specially as the renderer
-  // normally drives the offsets, but in this situation it won't.
-  virtual void OnForceBrowserControlsShown() = 0;
 
  protected:
   virtual ~BrowserControlsNavigationStateHandlerDelegate() = default;

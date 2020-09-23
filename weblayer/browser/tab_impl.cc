@@ -1172,9 +1172,9 @@ void TabImpl::OnFindResultAvailable(content::WebContents* web_contents) {
 
 #if defined(OS_ANDROID)
 void TabImpl::OnBrowserControlsStateStateChanged(
+    ControlsVisibilityReason reason,
     content::BrowserControlsState state) {
-  SetBrowserControlsConstraint(ControlsVisibilityReason::kPostNavigation,
-                               state);
+  SetBrowserControlsConstraint(reason, state);
 }
 
 void TabImpl::OnUpdateBrowserControlsStateBecauseOfProcessSwitch(
@@ -1195,10 +1195,6 @@ void TabImpl::OnUpdateBrowserControlsStateBecauseOfProcessSwitch(
         current_browser_controls_visibility_constraint_ !=
             content::BROWSER_CONTROLS_STATE_HIDDEN);
   }
-}
-
-void TabImpl::OnForceBrowserControlsShown() {
-  Java_TabImpl_onForceBrowserControlsShown(AttachCurrentThread(), java_impl_);
 }
 
 #endif

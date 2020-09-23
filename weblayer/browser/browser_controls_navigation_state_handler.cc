@@ -18,6 +18,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "weblayer/browser/browser_controls_navigation_state_handler_delegate.h"
+#include "weblayer/browser/controls_visibility_reason.h"
 #include "weblayer/browser/weblayer_features.h"
 
 namespace weblayer {
@@ -101,14 +102,11 @@ void BrowserControlsNavigationStateHandler::RenderProcessGone(
     base::TerminationStatus status) {
   is_crashed_ = true;
   UpdateState();
-  delegate_->OnForceBrowserControlsShown();
 }
 
 void BrowserControlsNavigationStateHandler::OnRendererUnresponsive(
     content::RenderProcessHost* render_process_host) {
   UpdateState();
-  if (IsRendererHungOrCrashed())
-    delegate_->OnForceBrowserControlsShown();
 }
 
 void BrowserControlsNavigationStateHandler::OnRendererResponsive(
@@ -133,24 +131,41 @@ void BrowserControlsNavigationStateHandler::ScheduleStopDelayedForceShow() {
 }
 
 void BrowserControlsNavigationStateHandler::UpdateState() {
-  const content::BrowserControlsState current_state = CalculateCurrentState();
-  if (current_state == last_state_)
-    return;
-  last_state_ = current_state;
-  delegate_->OnBrowserControlsStateStateChanged(*last_state_);
+  const content::BrowserControlsState renderer_availability_state =
+      CalculateStateForReasonRendererAvailability();
+  if (renderer_availability_state != last_renderer_availability_state_) {
+    last_renderer_availability_state_ = renderer_availability_state;
+    delegate_->OnBrowserControlsStateStateChanged(
+        ControlsVisibilityReason::kRendererUnavailable,
+        last_renderer_availability_state_);
+  }
+
+  const content::BrowserControlsState other_state =
+      CalculateStateForReasonOther();
+  if (other_state != last_other_state_) {
+    last_other_state_ = other_state;
+    delegate_->OnBrowserControlsStateStateChanged(
+        ControlsVisibilityReason::kOther, last_other_state_);
+  }
+}
+
+content::BrowserControlsState BrowserControlsNavigationStateHandler::
+    CalculateStateForReasonRendererAvailability() {
+  if (!IsRendererControllingOffsets() || web_contents()->IsBeingDestroyed() ||
+      web_contents()->IsCrashed()) {
+    return content::BROWSER_CONTROLS_STATE_SHOWN;
+  }
+
+  return content::BROWSER_CONTROLS_STATE_BOTH;
 }
 
 content::BrowserControlsState
-BrowserControlsNavigationStateHandler::CalculateCurrentState() {
+BrowserControlsNavigationStateHandler::CalculateStateForReasonOther() {
   // TODO(sky): this needs to force SHOWN if a11y enabled, see
   // AccessibilityUtil.isAccessibilityEnabled().
 
-  if (!IsRendererControllingOffsets())
-    return content::BROWSER_CONTROLS_STATE_SHOWN;
-
   if (force_show_during_load_ || web_contents()->IsFullscreen() ||
-      web_contents()->IsFocusedElementEditable() ||
-      web_contents()->IsBeingDestroyed() || web_contents()->IsCrashed()) {
+      web_contents()->IsFocusedElementEditable()) {
     return content::BROWSER_CONTROLS_STATE_SHOWN;
   }
 

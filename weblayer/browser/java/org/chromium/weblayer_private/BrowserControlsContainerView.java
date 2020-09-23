@@ -315,6 +315,10 @@ class BrowserControlsContainerView extends FrameLayout {
         mOnlyExpandControlsAtPageTop = onlyExpandControlsAtPageTop;
     }
 
+    public boolean getOnlyExpandControlsAtPageTop() {
+        return mOnlyExpandControlsAtPageTop;
+    }
+
     /**
      * Called from ViewAndroidDelegate, see it for details.
      */

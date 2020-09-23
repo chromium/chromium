@@ -115,7 +115,12 @@ public final class TabImpl extends ITab.Stub implements LoginPrompt.Observer {
     // A list of browser control visibility constraints, indexed by ImplControlsVisibilityReason.
     private List<BrowserControlsVisibilityDelegate> mBrowserControlsDelegates;
     // Computes a net browser control visibility constraint from constituent constraints.
-    private ComposedBrowserControlsVisibilityDelegate mBrowserControlsVisibility;
+    private ComposedBrowserControlsVisibilityDelegate mComposedBrowserControlsVisibility;
+    // Which BrowserControlsVisibilityDelegate is currently controlling the visibility. The active
+    // delegate changes from mComposedBrowserControlsVisibility to the delegate for visibility
+    // reason RENDERER_UNAVAILABLE if onlyExpandControlsAtPageTop is enabled, in which case we don't
+    // want to ever force the controls to be visible unless the renderer isn't responsive.
+    private BrowserControlsVisibilityDelegate mActiveBrowserControlsVisibilityDelegate;
     // Invoked when the computed visibility constraint changes.
     private Callback<Integer> mConstraintsUpdatedCallback;
 
@@ -270,16 +275,17 @@ public final class TabImpl extends ITab.Stub implements LoginPrompt.Observer {
         mMediaStreamManager = new MediaStreamManager(this);
 
         mBrowserControlsDelegates = new ArrayList<BrowserControlsVisibilityDelegate>();
-        mBrowserControlsVisibility = new ComposedBrowserControlsVisibilityDelegate();
+        mComposedBrowserControlsVisibility = new ComposedBrowserControlsVisibilityDelegate();
         for (int i = 0; i < ImplControlsVisibilityReason.REASON_COUNT; ++i) {
             BrowserControlsVisibilityDelegate delegate =
                     new BrowserControlsVisibilityDelegate(BrowserControlsState.BOTH);
             mBrowserControlsDelegates.add(delegate);
-            mBrowserControlsVisibility.addDelegate(delegate);
+            mComposedBrowserControlsVisibility.addDelegate(delegate);
         }
         mConstraintsUpdatedCallback =
                 (constraint) -> onBrowserControlsConstraintUpdated(constraint);
-        mBrowserControlsVisibility.addObserver(mConstraintsUpdatedCallback);
+        mActiveBrowserControlsVisibilityDelegate = mComposedBrowserControlsVisibility;
+        mActiveBrowserControlsVisibilityDelegate.addObserver(mConstraintsUpdatedCallback);
 
         mInterceptNavigationDelegateClient = new InterceptNavigationDelegateClientImpl(this);
         mInterceptNavigationDelegate =
@@ -636,7 +642,9 @@ public final class TabImpl extends ITab.Stub implements LoginPrompt.Observer {
         if (controller == null) return false;
 
         // Refuse to start a find session when the browser controls are forced hidden.
-        if (mBrowserControlsVisibility.get() == BrowserControlsState.HIDDEN) return false;
+        if (mActiveBrowserControlsVisibilityDelegate.get() == BrowserControlsState.HIDDEN) {
+            return false;
+        }
 
         setBrowserControlsVisibilityConstraint(
                 ImplControlsVisibilityReason.FIND_IN_PAGE, BrowserControlsState.SHOWN);
@@ -950,7 +958,7 @@ public final class TabImpl extends ITab.Stub implements LoginPrompt.Observer {
         // ObservableSupplierImpl.addObserver() posts a task to notify the observer, ensure the
         // callback isn't run after destroy() is called (otherwise we'll get crashes as the native
         // tab has been deleted).
-        mBrowserControlsVisibility.removeObserver(mConstraintsUpdatedCallback);
+        mActiveBrowserControlsVisibilityDelegate.removeObserver(mConstraintsUpdatedCallback);
         hideFindInPageUiAndNotifyClient();
         mFindInPageCallbackClient = null;
         mNavigationController = null;
@@ -979,6 +987,17 @@ public final class TabImpl extends ITab.Stub implements LoginPrompt.Observer {
         return mBrowserControlsDelegates.get(reason).get();
     }
 
+    public void setOnlyExpandTopControlsAtPageTop(boolean onlyExpandControlsAtPageTop) {
+        BrowserControlsVisibilityDelegate activeDelegate = onlyExpandControlsAtPageTop
+                ? mBrowserControlsDelegates.get(ImplControlsVisibilityReason.RENDERER_UNAVAILABLE)
+                : mComposedBrowserControlsVisibility;
+        if (activeDelegate == mActiveBrowserControlsVisibilityDelegate) return;
+
+        mActiveBrowserControlsVisibilityDelegate.removeObserver(mConstraintsUpdatedCallback);
+        mActiveBrowserControlsVisibilityDelegate = activeDelegate;
+        mActiveBrowserControlsVisibilityDelegate.addObserver(mConstraintsUpdatedCallback);
+    }
+
     @CalledByNative
     public void showRepostFormWarningDialog() {
         BrowserViewController viewController = getViewController();
@@ -1003,20 +1022,9 @@ public final class TabImpl extends ITab.Stub implements LoginPrompt.Observer {
                 ObjectWrapper.wrap(nonEmptyOrNull(params.getSrcUrl())));
     }
 
-    @CalledByNative
-    private void onForceBrowserControlsShown() {
-        // At this time, the only place HIDDEN is used is fullscreen, in which case we don't show
-        // the controls.
-        if (mBrowserControlsVisibility.get() == BrowserControlsState.HIDDEN) return;
-
-        if (mBrowser.getActiveTab() != this) return;
-
-        onBrowserControlsConstraintUpdated(mBrowserControlsVisibility.get());
-    }
-
     @VisibleForTesting
     public boolean canBrowserControlsScrollForTesting() {
-        return mBrowserControlsVisibility.get() == BrowserControlsState.BOTH;
+        return mActiveBrowserControlsVisibilityDelegate.get() == BrowserControlsState.BOTH;
     }
 
     @VisibleForTesting
@@ -1032,9 +1040,9 @@ public final class TabImpl extends ITab.Stub implements LoginPrompt.Observer {
             hideFindInPageUiAndNotifyClient();
         }
 
-        BrowserViewController viewController = getViewController();
         // Don't animate when hiding the controls unless an animation was requested by
         // BrowserControlsContainerView.
+        BrowserViewController viewController = getViewController();
         boolean animate = constraint != BrowserControlsState.HIDDEN
                 || (viewController != null
                         && viewController.shouldAnimateBrowserControlsHeightChanges());

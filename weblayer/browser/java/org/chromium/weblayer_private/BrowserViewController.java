@@ -215,6 +215,8 @@ public final class BrowserViewController
         if (mTab != null) {
             mTab.setBrowserControlsVisibilityConstraint(
                     ImplControlsVisibilityReason.ANIMATION, mBrowserControlsConstraint);
+            mTab.setOnlyExpandTopControlsAtPageTop(
+                    mTopControlsContainerView.getOnlyExpandControlsAtPageTop());
             mTab.onAttachedToViewController(mTopControlsContainerView.getNativeHandle(),
                     mBottomControlsContainerView.getNativeHandle());
             mContentView.requestFocus();
@@ -234,7 +236,13 @@ public final class BrowserViewController
     }
 
     public void setOnlyExpandTopControlsAtPageTop(boolean onlyExpandControlsAtPageTop) {
+        if (onlyExpandControlsAtPageTop
+                == mTopControlsContainerView.getOnlyExpandControlsAtPageTop()) {
+            return;
+        }
         mTopControlsContainerView.setOnlyExpandControlsAtPageTop(onlyExpandControlsAtPageTop);
+        if (mTab == null) return;
+        mTab.setOnlyExpandTopControlsAtPageTop(onlyExpandControlsAtPageTop);
     }
 
     public void setTopControlsAnimationsEnabled(boolean animationsEnabled) {

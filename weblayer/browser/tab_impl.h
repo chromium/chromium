@@ -338,10 +338,10 @@ class TabImpl : public Tab,
 #if defined(OS_ANDROID)
   // BrowserControlsNavigationStateHandlerDelegate:
   void OnBrowserControlsStateStateChanged(
+      ControlsVisibilityReason reason,
       content::BrowserControlsState state) override;
   void OnUpdateBrowserControlsStateBecauseOfProcessSwitch(
       bool did_commit) override;
-  void OnForceBrowserControlsShown() override;
 #endif
 
   // Called from closure supplied to delegate to exit fullscreen.

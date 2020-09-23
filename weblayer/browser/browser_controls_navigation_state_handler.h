@@ -65,8 +65,12 @@ class BrowserControlsNavigationStateHandler
   // Checks the current state, and if it has changed notifies the delegate.
   void UpdateState();
 
-  // Calcultes the current browser controls state.
-  content::BrowserControlsState CalculateCurrentState();
+  // Calculates whether the renderer is available to control the browser
+  // controls.
+  content::BrowserControlsState CalculateStateForReasonRendererAvailability();
+
+  // Calculates the value of the ControlsVisibilityReason::kOther state.
+  content::BrowserControlsState CalculateStateForReasonOther();
 
   bool IsRendererHungOrCrashed();
 
@@ -79,8 +83,11 @@ class BrowserControlsNavigationStateHandler
   // Timer used to set |force_show_during_load_| to false.
   base::OneShotTimer forced_show_during_load_timer_;
 
-  // Last value supplied to the delegate.
-  base::Optional<content::BrowserControlsState> last_state_;
+  // Last values supplied to the delegate.
+  content::BrowserControlsState last_renderer_availability_state_ =
+      content::BROWSER_CONTROLS_STATE_BOTH;
+  content::BrowserControlsState last_other_state_ =
+      content::BROWSER_CONTROLS_STATE_BOTH;
 
   // This is cached as WebContents::IsCrashed() does not always return the
   // right thing.

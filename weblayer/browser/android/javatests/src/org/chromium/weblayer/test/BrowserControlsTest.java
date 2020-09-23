@@ -4,6 +4,11 @@
 
 package org.chromium.weblayer.test;
 
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
+
 import android.os.Build;
 import android.os.RemoteException;
 import android.view.View;
@@ -317,6 +322,41 @@ public class BrowserControlsTest {
             Criteria.checkThat(
                     activity.getTopContentsContainer().getVisibility(), Matchers.is(View.VISIBLE));
             Criteria.checkThat(topContents.getTranslationY(), Matchers.is(0.f));
+        });
+    }
+
+    // Makes sure that the top controls are not shown when a js dialog is shown when
+    // onlyExpandTopControlsAtPageTop is true and the page is scrolled down.
+    //
+    // Disabled on L bots due to unexplained flakes. See crbug.com/1035894.
+    @MinAndroidSdkLevel(Build.VERSION_CODES.M)
+    @Test
+    @SmallTest
+    public void testAlertDoesntShowTopControlsIfOnlyExpandTopControlsAtPageTop() throws Exception {
+        InstrumentationActivity activity = mActivityTestRule.getActivity();
+        View topContents = activity.getTopContentsContainer();
+        TestThreadUtils.runOnUiThreadBlocking(
+                ()
+                        -> activity.getBrowser().setTopView(
+                                topContents, 0, /*onlyExpandControlsAtPageTop=*/true, false));
+
+        // Scroll past the top-controls and wait until they're not visible.
+        EventUtils.simulateDragFromCenterOfView(
+                activity.getWindow().getDecorView(), 0, -2 * mTopViewHeight);
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(activity.getTopContentsContainer().getVisibility(),
+                    Matchers.is(View.INVISIBLE));
+        });
+
+        // Trigger an alert dialog.
+        mActivityTestRule.executeScriptSync(
+                "window.setTimeout(function() { alert('alert dialog'); }, 1);", false);
+        onView(withText("alert dialog")).check(matches(isDisplayed()));
+
+        // Top controls shouldn't be shown.
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(activity.getTopContentsContainer().getVisibility(),
+                    Matchers.is(View.INVISIBLE));
         });
     }
 
