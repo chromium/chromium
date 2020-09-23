@@ -118,12 +118,14 @@ class SwapChainPresenter : public base::PowerObserver {
   // optional, and is used to lock the resource for reading.  |content_rect| is
   // subrectangle of the input texture that should be blitted to swap chain, and
   // |src_color_space| is the color space of the video.
-  bool VideoProcessorBlt(Microsoft::WRL::ComPtr<ID3D11Texture2D> input_texture,
-                         UINT input_level,
-                         Microsoft::WRL::ComPtr<IDXGIKeyedMutex> keyed_mutex,
-                         const gfx::Rect& content_rect,
-                         const gfx::ColorSpace& src_color_space,
-                         bool content_is_hdr);
+  bool VideoProcessorBlt(
+      Microsoft::WRL::ComPtr<ID3D11Texture2D> input_texture,
+      UINT input_level,
+      Microsoft::WRL::ComPtr<IDXGIKeyedMutex> keyed_mutex,
+      const gfx::Rect& content_rect,
+      const gfx::ColorSpace& src_color_space,
+      bool content_is_hdr,
+      base::Optional<DXGI_HDR_METADATA_HDR10> stream_hdr_metadata);
 
   // Returns optimal swap chain size for given layer.
   gfx::Size CalculateSwapChainSize(const ui::DCRendererLayerParams& params);

@@ -15,6 +15,7 @@
 #include "ui/gfx/transform.h"
 #include "ui/gfx/video_types.h"
 #include "ui/gl/gl_export.h"
+#include "ui/gl/hdr_metadata.h"
 
 namespace gl {
 class GLImage;
@@ -54,6 +55,8 @@ struct GL_EXPORT DCRendererLayerParams {
 
   gfx::ProtectedVideoType protected_video_type =
       gfx::ProtectedVideoType::kClear;
+
+  gl::HDRMetadata hdr_metadata;
 };
 
 }  // namespace ui

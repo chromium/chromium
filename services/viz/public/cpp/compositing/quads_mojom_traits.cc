@@ -200,7 +200,8 @@ bool StructTraits<viz::mojom::YUVVideoQuadStateDataView, viz::DrawQuad>::Read(
       !data.ReadYaTexSize(&quad->ya_tex_size) ||
       !data.ReadUvTexSize(&quad->uv_tex_size) ||
       !data.ReadVideoColorSpace(&quad->video_color_space) ||
-      !data.ReadProtectedVideoType(&quad->protected_video_type)) {
+      !data.ReadProtectedVideoType(&quad->protected_video_type) ||
+      !data.ReadHdrMetadata(&quad->hdr_metadata)) {
     return false;
   }
   quad->resources.ids[viz::YUVVideoDrawQuad::kYPlaneResourceIdIndex] =

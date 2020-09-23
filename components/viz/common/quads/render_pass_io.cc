@@ -26,6 +26,10 @@
 #include "components/viz/common/quads/video_hole_draw_quad.h"
 #include "components/viz/common/quads/yuv_video_draw_quad.h"
 
+namespace gl {
+struct HDRMetadata;
+}
+
 namespace viz {
 
 namespace {
@@ -1463,7 +1467,8 @@ bool YUVVideoDrawQuadFromDict(const base::Value& dict,
       static_cast<float>(resource_offset.value()),
       static_cast<float>(resource_multiplier.value()),
       static_cast<uint32_t>(bits_per_channel.value()),
-      static_cast<gfx::ProtectedVideoType>(protected_video_type_index));
+      static_cast<gfx::ProtectedVideoType>(protected_video_type_index),
+      gl::HDRMetadata());
   return true;
 }
 

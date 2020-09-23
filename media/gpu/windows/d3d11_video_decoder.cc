@@ -849,6 +849,7 @@ bool D3D11VideoDecoder::OutputResult(const CodecPicture* picture,
   frame->metadata()->allow_overlay = allow_overlay;
 
   frame->set_color_space(output_color_space);
+  frame->set_hdr_metadata(config_.hdr_metadata());
   output_cb_.Run(frame);
   return true;
 }

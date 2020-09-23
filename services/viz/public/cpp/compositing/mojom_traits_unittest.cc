@@ -62,6 +62,7 @@
 #include "ui/gfx/mojom/color_space_mojom_traits.h"
 #include "ui/gfx/mojom/selection_bound_mojom_traits.h"
 #include "ui/gfx/mojom/transform_mojom_traits.h"
+#include "ui/gl/hdr_metadata.h"
 #include "ui/latency/mojom/latency_info_mojom_traits.h"
 
 namespace viz {
@@ -1144,6 +1145,9 @@ TEST_F(StructTraitsTest, YUVDrawQuad) {
   const uint32_t bits_per_channel = 13;
   const gfx::ProtectedVideoType protected_video_type =
       gfx::ProtectedVideoType::kSoftwareProtected;
+  gl::HDRMetadata hdr_metadata = gl::HDRMetadata();
+  hdr_metadata.max_content_light_level = 1000;
+  hdr_metadata.max_frame_average_light_level = 100;
 
   SharedQuadState* sqs = render_pass->CreateAndAppendSharedQuadState();
   YUVVideoDrawQuad* quad =
@@ -1152,7 +1156,7 @@ TEST_F(StructTraitsTest, YUVDrawQuad) {
                uv_tex_coord_rect, ya_tex_size, uv_tex_size, y_plane_resource_id,
                u_plane_resource_id, v_plane_resource_id, a_plane_resource_id,
                video_color_space, resource_offset, resource_multiplier,
-               bits_per_channel, protected_video_type);
+               bits_per_channel, protected_video_type, hdr_metadata);
 
   std::unique_ptr<CompositorRenderPass> output;
   mojo::test::SerializeAndDeserialize<mojom::CompositorRenderPass>(&render_pass,
@@ -1178,6 +1182,7 @@ TEST_F(StructTraitsTest, YUVDrawQuad) {
   EXPECT_EQ(resource_multiplier, out_quad->resource_multiplier);
   EXPECT_EQ(bits_per_channel, out_quad->bits_per_channel);
   EXPECT_EQ(protected_video_type, out_quad->protected_video_type);
+  EXPECT_EQ(hdr_metadata, out_quad->hdr_metadata);
 }
 
 TEST_F(StructTraitsTest, CopyOutputResult_EmptyBitmap) {

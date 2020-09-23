@@ -395,6 +395,7 @@ bool VpxVideoDecoder::VpxDecode(const DecoderBuffer* buffer,
     (*video_frame)
         ->set_color_space(gfx::ColorSpace(primaries, transfer, matrix, range));
   }
+  (*video_frame)->set_hdr_metadata(config_.hdr_metadata());
 
   return true;
 }

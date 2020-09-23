@@ -44,6 +44,12 @@ struct GL_EXPORT HDRMetadata {
   HDRMetadata();
   HDRMetadata(const HDRMetadata& rhs);
 
+  bool IsValid() const {
+    return !((max_content_light_level == 0) &&
+             (max_frame_average_light_level == 0) &&
+             (mastering_metadata == MasteringMetadata()));
+  }
+
   bool operator==(const HDRMetadata& rhs) const {
     return (
         (max_content_light_level == rhs.max_content_light_level) &&

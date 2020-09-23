@@ -34,6 +34,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/effects/SkBlurImageFilter.h"
 #include "ui/gfx/transform.h"
+#include "ui/gl/hdr_metadata.h"
 
 namespace viz {
 namespace {
@@ -420,6 +421,10 @@ TEST(DrawQuadTest, CopyYUVVideoDrawQuad) {
   gfx::ProtectedVideoType protected_video_type =
       gfx::ProtectedVideoType::kHardwareProtected;
   gfx::ColorSpace video_color_space = gfx::ColorSpace::CreateJpeg();
+  gl::HDRMetadata hdr_metadata = gl::HDRMetadata();
+  hdr_metadata.max_content_light_level = 1000;
+  hdr_metadata.max_frame_average_light_level = 100;
+
   CREATE_SHARED_STATE();
 
   CREATE_QUAD_NEW(YUVVideoDrawQuad, visible_rect, needs_blending,
@@ -442,12 +447,13 @@ TEST(DrawQuadTest, CopyYUVVideoDrawQuad) {
   EXPECT_EQ(resource_multiplier, copy_quad->resource_multiplier);
   EXPECT_EQ(bits_per_channel, copy_quad->bits_per_channel);
   EXPECT_EQ(gfx::ProtectedVideoType::kClear, copy_quad->protected_video_type);
+  EXPECT_EQ(gl::HDRMetadata(), copy_quad->hdr_metadata);
 
   CREATE_QUAD_ALL(YUVVideoDrawQuad, ya_tex_coord_rect, uv_tex_coord_rect,
                   ya_tex_size, uv_tex_size, y_plane_resource_id,
                   u_plane_resource_id, v_plane_resource_id, a_plane_resource_id,
                   video_color_space, resource_offset, resource_multiplier,
-                  bits_per_channel, protected_video_type);
+                  bits_per_channel, protected_video_type, hdr_metadata);
   EXPECT_EQ(DrawQuad::Material::kYuvVideoContent, copy_quad->material);
   EXPECT_EQ(ya_tex_coord_rect, copy_quad->ya_tex_coord_rect);
   EXPECT_EQ(uv_tex_coord_rect, copy_quad->uv_tex_coord_rect);
@@ -461,6 +467,7 @@ TEST(DrawQuadTest, CopyYUVVideoDrawQuad) {
   EXPECT_EQ(resource_multiplier, copy_quad->resource_multiplier);
   EXPECT_EQ(bits_per_channel, copy_quad->bits_per_channel);
   EXPECT_EQ(protected_video_type, copy_quad->protected_video_type);
+  EXPECT_EQ(hdr_metadata, copy_quad->hdr_metadata);
 }
 
 TEST(DrawQuadTest, CopyPictureDrawQuad) {

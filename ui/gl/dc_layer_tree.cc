@@ -60,6 +60,8 @@ bool DCLayerTree::Initialize(
   dcomp_root_visual_->SetBitmapInterpolationMode(
       DCOMPOSITION_BITMAP_INTERPOLATION_MODE_LINEAR);
 
+  hdr_metadata_helper_ = std::make_unique<HDRMetadataHelperWin>(d3d11_device_);
+
   return true;
 }
 

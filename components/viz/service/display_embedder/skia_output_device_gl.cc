@@ -342,6 +342,7 @@ void SkiaOutputDeviceGL::ScheduleOverlays(
     params.is_clipped = dc_layer.is_clipped;
     params.clip_rect = dc_layer.clip_rect;
     params.protected_video_type = dc_layer.protected_video_type;
+    params.hdr_metadata = dc_layer.hdr_metadata;
 
     // Schedule DC layer overlay to be presented at next SwapBuffers().
     if (!gl_surface_->ScheduleDCLayer(params))

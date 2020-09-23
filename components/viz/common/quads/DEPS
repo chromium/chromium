@@ -20,4 +20,7 @@ specific_include_rules = {
   ".*_unittest\.cc": [
     "+cc/test",
   ],
+  "yuv_video_draw_quad.*": [
+    "+ui/gl/hdr_metadata.h",
+  ],
 }

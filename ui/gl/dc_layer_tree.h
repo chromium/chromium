@@ -15,6 +15,7 @@
 #include "ui/gfx/color_space_win.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gl/dc_renderer_layer_params.h"
+#include "ui/gl/hdr_metadata_helper_win.h"
 
 namespace gl {
 
@@ -95,6 +96,10 @@ class DCLayerTree {
 
   void SetFrameRate(float frame_rate);
 
+  const std::unique_ptr<HDRMetadataHelperWin>& GetHDRMetadataHelper() {
+    return hdr_metadata_helper_;
+  }
+
  private:
   const bool disable_nv12_dynamic_textures_;
   const bool disable_larger_than_screen_overlays_;
@@ -148,6 +153,9 @@ class DCLayerTree {
 
   // Number of frames per second.
   float frame_rate_ = 0.f;
+
+  // dealing with hdr metadata
+  std::unique_ptr<HDRMetadataHelperWin> hdr_metadata_helper_;
 
   DISALLOW_COPY_AND_ASSIGN(DCLayerTree);
 };

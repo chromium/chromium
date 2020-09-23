@@ -20,6 +20,10 @@
 #include "components/viz/test/paths.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace gl {
+struct HDRMetadata;
+}
+
 namespace viz {
 namespace {
 
@@ -236,13 +240,13 @@ TEST(RenderPassIOTest, QuadList) {
                                          {0.0081f, 0.0659f, 0.7965f}}};
       skcms_TransferFunction transfer_func = {
           0.9495f, 0.0495f, 0.6587f, 0.3206f, 0.0003f, 0.f, 2.3955f};
-      quad->SetAll(render_pass0->shared_quad_state_list.ElementAt(sqs_index),
-                   gfx::Rect(0, 0, 800, 600), gfx::Rect(10, 15, 780, 570),
-                   false, gfx::RectF(0.f, 0.f, 0.5f, 0.6f),
-                   gfx::RectF(0.1f, 0.2f, 0.7f, 0.8f), gfx::Size(400, 200),
-                   gfx::Size(800, 400), 1u, 2u, 3u, 4u,
-                   gfx::ColorSpace::CreateCustom(primary_matrix, transfer_func),
-                   3.f, 1.1f, 12u, gfx::ProtectedVideoType::kClear);
+      quad->SetAll(
+          render_pass0->shared_quad_state_list.ElementAt(sqs_index),
+          gfx::Rect(0, 0, 800, 600), gfx::Rect(10, 15, 780, 570), false,
+          gfx::RectF(0.f, 0.f, 0.5f, 0.6f), gfx::RectF(0.1f, 0.2f, 0.7f, 0.8f),
+          gfx::Size(400, 200), gfx::Size(800, 400), 1u, 2u, 3u, 4u,
+          gfx::ColorSpace::CreateCustom(primary_matrix, transfer_func), 3.f,
+          1.1f, 12u, gfx::ProtectedVideoType::kClear, gl::HDRMetadata());
       ++sqs_index;
       ++quad_count;
     }

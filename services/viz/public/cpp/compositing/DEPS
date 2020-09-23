@@ -6,5 +6,6 @@ include_rules = [
   "+third_party/skia/include",
   "+ui/gfx",
   "+ui/latency/mojom",
+  "+ui/gl",
   "+gpu/ipc/common/vulkan_ycbcr_info.h"
 ]

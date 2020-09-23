@@ -609,6 +609,8 @@ void VideoResourceUpdater::AppendQuads(viz::CompositorRenderPass* render_pass,
           frame_resources_.size() > 3 ? frame_resources_[3].id : 0,
           frame->ColorSpace(), frame_resource_offset_,
           frame_resource_multiplier_, frame_bits_per_channel_);
+      if (frame->hdr_metadata().has_value())
+        yuv_video_quad->hdr_metadata = frame->hdr_metadata().value();
       if (frame->metadata()->protected_video) {
         if (frame->metadata()->hw_protected) {
           yuv_video_quad->protected_video_type =

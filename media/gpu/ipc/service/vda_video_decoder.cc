@@ -631,6 +631,7 @@ void VdaVideoDecoder::PictureReadyOnParentThread(Picture picture) {
     EnterErrorState();
     return;
   }
+  frame->set_hdr_metadata(config_.hdr_metadata());
 
   output_cb_.Run(std::move(frame));
 }

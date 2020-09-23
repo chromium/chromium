@@ -5,6 +5,7 @@
 #include "ui/gl/swap_chain_presenter.h"
 
 #include <d3d11_1.h>
+#include <d3d11_4.h>
 
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
@@ -20,6 +21,7 @@
 #include "ui/gl/gl_image_memory.h"
 #include "ui/gl/gl_switches.h"
 #include "ui/gl/gl_utils.h"
+#include "ui/gl/hdr_metadata_helper_win.h"
 
 namespace gl {
 namespace {
@@ -842,9 +844,15 @@ bool SwapChainPresenter::PresentToSwapChain(
   if (image_dxgi && image_dxgi->color_space().IsValid())
     src_color_space = image_dxgi->color_space();
 
+  base::Optional<DXGI_HDR_METADATA_HDR10> stream_metadata;
+  if (params.hdr_metadata.IsValid()) {
+    stream_metadata =
+        gl::HDRMetadataHelperWin::HDRMetadataToDXGI(params.hdr_metadata);
+  }
+
   if (!VideoProcessorBlt(input_texture, input_level, keyed_mutex,
-                         params.content_rect, src_color_space,
-                         content_is_hdr)) {
+                         params.content_rect, src_color_space, content_is_hdr,
+                         stream_metadata)) {
     return false;
   }
 
@@ -969,7 +977,8 @@ bool SwapChainPresenter::VideoProcessorBlt(
     Microsoft::WRL::ComPtr<IDXGIKeyedMutex> keyed_mutex,
     const gfx::Rect& content_rect,
     const gfx::ColorSpace& src_color_space,
-    bool content_is_hdr) {
+    bool content_is_hdr,
+    base::Optional<DXGI_HDR_METADATA_HDR10> stream_hdr_metadata) {
   TRACE_EVENT2("gpu", "SwapChainPresenter::VideoProcessorBlt", "content_rect",
                content_rect.ToString(), "swap_chain_size",
                swap_chain_size_.ToString());
@@ -992,6 +1001,25 @@ bool SwapChainPresenter::VideoProcessorBlt(
   layer_tree_->SetColorspaceForVideoProcessor(
       src_color_space, output_color_space, swap_chain_,
       IsYUVSwapChainFormat(swap_chain_format_));
+
+  Microsoft::WRL::ComPtr<ID3D11VideoContext> video_context =
+      layer_tree_->video_context();
+  Microsoft::WRL::ComPtr<ID3D11VideoProcessor> video_processor =
+      layer_tree_->video_processor();
+  Microsoft::WRL::ComPtr<ID3D11VideoContext2> context2;
+  base::Optional<DXGI_HDR_METADATA_HDR10> display_metadata =
+      layer_tree_->GetHDRMetadataHelper()->GetDisplayMetadata();
+  if (display_metadata.has_value() && SUCCEEDED(video_context.As(&context2))) {
+    if (stream_hdr_metadata.has_value()) {
+      context2->VideoProcessorSetStreamHDRMetaData(
+          video_processor.Get(), 0, DXGI_HDR_METADATA_TYPE_HDR10,
+          sizeof(DXGI_HDR_METADATA_HDR10), &(*stream_hdr_metadata));
+    }
+
+    context2->VideoProcessorSetOutputHDRMetaData(
+        video_processor.Get(), DXGI_HDR_METADATA_TYPE_HDR10,
+        sizeof(DXGI_HDR_METADATA_HDR10), &(*display_metadata));
+  }
 
   {
     base::Optional<ScopedReleaseKeyedMutex> release_keyed_mutex;
@@ -1029,10 +1057,6 @@ bool SwapChainPresenter::VideoProcessorBlt(
       return false;
     }
 
-    Microsoft::WRL::ComPtr<ID3D11VideoContext> video_context =
-        layer_tree_->video_context();
-    Microsoft::WRL::ComPtr<ID3D11VideoProcessor> video_processor =
-        layer_tree_->video_processor();
     D3D11_VIDEO_PROCESSOR_STREAM stream = {};
     stream.Enable = true;
     stream.OutputIndex = 0;

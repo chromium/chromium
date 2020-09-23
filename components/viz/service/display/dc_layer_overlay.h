@@ -18,6 +18,7 @@
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/video_types.h"
 #include "ui/gl/gpu_switching_observer.h"
+#include "ui/gl/hdr_metadata.h"
 
 namespace viz {
 struct DebugRendererSettings;
@@ -67,6 +68,8 @@ class VIZ_SERVICE_EXPORT DCLayerOverlay {
 
   gfx::ProtectedVideoType protected_video_type =
       gfx::ProtectedVideoType::kClear;
+
+  gl::HDRMetadata hdr_metadata;
 };
 
 typedef std::vector<DCLayerOverlay> DCLayerOverlayList;
