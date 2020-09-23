@@ -13,6 +13,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "chromeos/printing/printer_configuration.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
@@ -29,12 +30,6 @@ const std::vector<SearchConcept>& GetPrintingSearchConcepts() {
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kAddPrinter}},
-      {IDS_OS_SETTINGS_TAG_PRINTING_SAVED_PRINTERS,
-       mojom::kPrintingDetailsSubpagePath,
-       mojom::SearchResultIcon::kPrinter,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSetting,
-       {.setting = mojom::Setting::kSavedPrinters}},
       {IDS_OS_SETTINGS_TAG_PRINTING,
        mojom::kPrintingDetailsSubpagePath,
        mojom::SearchResultIcon::kPrinter,
@@ -43,6 +38,18 @@ const std::vector<SearchConcept>& GetPrintingSearchConcepts() {
        {.subpage = mojom::Subpage::kPrintingDetails},
        {IDS_OS_SETTINGS_TAG_PRINTING_ALT1, IDS_OS_SETTINGS_TAG_PRINTING_ALT2,
         SearchConcept::kAltTagEnd}},
+  });
+  return *tags;
+}
+
+const std::vector<SearchConcept>& GetSavedPrintersSearchConcepts() {
+  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+      {IDS_OS_SETTINGS_TAG_PRINTING_SAVED_PRINTERS,
+       mojom::kPrintingDetailsSubpagePath,
+       mojom::SearchResultIcon::kPrinter,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kSavedPrinters}},
   });
   return *tags;
 }
@@ -77,9 +84,19 @@ PrintingSection::PrintingSection(Profile* profile,
   updater.AddSearchTags(GetPrintingSearchConcepts());
   if (IsPrintManagementEnabled())
     updater.AddSearchTags(GetPrintingManagementSearchConcepts());
+
+  // Saved Printers search tags are added/removed dynamically.
+  if (printers_manager_) {
+    printers_manager_->AddObserver(this);
+    UpdateSavedPrintersSearchTags();
+  }
 }
 
-PrintingSection::~PrintingSection() = default;
+PrintingSection::~PrintingSection() {
+  if (printers_manager_) {
+    printers_manager_->RemoveObserver(this);
+  }
+}
 
 void PrintingSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
@@ -272,6 +289,23 @@ void PrintingSection::RegisterHierarchy(HierarchyGenerator* generator) const {
   };
   RegisterNestedSettingBulk(mojom::Subpage::kPrintingDetails,
                             kPrintingDetailsSettings, generator);
+}
+
+void PrintingSection::OnPrintersChanged(PrinterClass printer_class,
+                                        const std::vector<Printer>& printers) {
+  UpdateSavedPrintersSearchTags();
+}
+
+void PrintingSection::UpdateSavedPrintersSearchTags() {
+  // Start with no saved printers search tags.
+  SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
+  updater.RemoveSearchTags(GetSavedPrintersSearchConcepts());
+
+  std::vector<Printer> saved_printers =
+      printers_manager_->GetPrinters(PrinterClass::kSaved);
+  if (!saved_printers.empty()) {
+    updater.AddSearchTags(GetSavedPrintersSearchConcepts());
+  }
 }
 
 }  // namespace settings

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROMEOS_PRINTING_SECTION_H_
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROMEOS_PRINTING_SECTION_H_
 
+#include "chrome/browser/chromeos/printing/cups_printers_manager.h"
 #include "chrome/browser/ui/webui/settings/chromeos/os_settings_section.h"
 
 namespace content {
@@ -20,7 +21,8 @@ namespace settings {
 class SearchTagRegistry;
 
 // Provides UI strings and search tags for Printing settings.
-class PrintingSection : public OsSettingsSection {
+class PrintingSection : public OsSettingsSection,
+                        public CupsPrintersManager::Observer {
  public:
   PrintingSection(Profile* profile,
                   SearchTagRegistry* search_tag_registry,
@@ -36,6 +38,12 @@ class PrintingSection : public OsSettingsSection {
   mojom::SearchResultIcon GetSectionIcon() const override;
   std::string GetSectionPath() const override;
   void RegisterHierarchy(HierarchyGenerator* generator) const override;
+
+  // CupsPrintersManager::Observer
+  void OnPrintersChanged(PrinterClass printer_class,
+                         const std::vector<Printer>& printers) override;
+
+  void UpdateSavedPrintersSearchTags();
 
   CupsPrintersManager* printers_manager_;
 };
