@@ -13,7 +13,6 @@ import android.os.Bundle;
 import android.os.UserManager;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.fragment.app.DialogFragment;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
@@ -309,11 +308,12 @@ public class AccountManagementFragment extends PreferenceFragmentCompat
     private ChromeBasePreference createAddAccountPreference() {
         ChromeBasePreference addAccountPreference = new ChromeBasePreference(getStyledContext());
         addAccountPreference.setLayoutResource(R.layout.account_management_account_row);
-        addAccountPreference.setIcon(
-                AppCompatResources.getDrawable(requireContext(), R.drawable.ic_add_circle_40dp));
+
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)) {
+            addAccountPreference.setIcon(R.drawable.ic_person_add_40dp);
             addAccountPreference.setTitle(R.string.signin_add_account_to_device);
         } else {
+            addAccountPreference.setIcon(R.drawable.ic_add_circle_40dp);
             addAccountPreference.setTitle(R.string.account_management_add_account_title);
         }
         addAccountPreference.setOnPreferenceClickListener(preference -> {

@@ -14,13 +14,14 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.browser.sync.settings.AccountManagementFragment;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
+import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -45,14 +46,24 @@ public class AccountManagementFragmentTest {
     public void setUp() {
         mActivityTestRule.startMainActivityOnBlankPage();
         mAccountManagerTestRule.addAndSignInTestAccount();
+        mSettingsActivityTestRule.startSettingsActivity();
     }
 
     @Test
     @MediumTest
     @Feature("RenderTest")
+    @Features.DisableFeatures(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
     public void testAccountManagementFragmentViewLegacy() throws Exception {
-        SettingsActivity settingsActivity = mSettingsActivityTestRule.startSettingsActivity();
-        mRenderTestRule.render(settingsActivity.getMainFragment().getView(),
+        mRenderTestRule.render(mSettingsActivityTestRule.getFragment().getView(),
                 "account_management_fragment_view_legacy");
+    }
+
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
+    @Features.EnableFeatures(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
+    public void testAccountManagementFragmentView() throws Exception {
+        mRenderTestRule.render(mSettingsActivityTestRule.getFragment().getView(),
+                "account_management_fragment_view");
     }
 }
