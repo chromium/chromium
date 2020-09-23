@@ -122,8 +122,7 @@ TEST_F(PluginVmFilesTest, LaunchPluginVmApp) {
   LaunchPluginVmApp(&profile_,
                     crostini::CrostiniTestHelper::GenerateAppId(app_id, vm_name,
                                                                 container_name),
-                    std::vector<storage::FileSystemURL>{},
-                    app_launched_callback.Get());
+                    {}, app_launched_callback.Get());
   ASSERT_FALSE(launch_plugin_vm_callback.is_null());
 
   // Add app to app_list.

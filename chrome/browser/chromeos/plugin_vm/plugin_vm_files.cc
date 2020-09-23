@@ -147,7 +147,7 @@ void EnsureDefaultSharedDirExists(
 
 void LaunchPluginVmApp(Profile* profile,
                        std::string app_id,
-                       const std::vector<storage::FileSystemURL>& files,
+                       const std::vector<LaunchArg>& args,
                        LaunchPluginVmAppCallback callback) {
   if (!plugin_vm::PluginVmFeatures::Get()->IsEnabled(profile)) {
     return std::move(callback).Run(LaunchPluginVmAppResult::FAILED,
@@ -164,31 +164,35 @@ void LaunchPluginVmApp(Profile* profile,
   // Forward slashes are converted to backslash during path conversion.
   base::FilePath vm_mount("//ChromeOS");
 
-  std::vector<std::string> file_paths;
-  file_paths.reserve(files.size());
-  for (const auto& file : files) {
+  std::vector<std::string> launch_args;
+  launch_args.reserve(args.size());
+  for (const auto& arg : args) {
+    if (absl::holds_alternative<std::string>(arg)) {
+      launch_args.push_back(absl::get<std::string>(arg));
+      continue;
+    }
+    const storage::FileSystemURL& url = absl::get<storage::FileSystemURL>(arg);
     base::FilePath file_path;
     // Validate paths are already shared, and convert file paths.
-    if (!share_path->IsPathShared(kPluginVmName, file.path()) ||
+    if (!share_path->IsPathShared(kPluginVmName, url.path()) ||
         !file_manager::util::ConvertFileSystemURLToPathInsideVM(
-            profile, file, vm_mount, &file_path)) {
+            profile, url, vm_mount, &file_path)) {
       return std::move(callback).Run(
           file_manager::util::GetMyFilesFolderForProfile(profile).IsParent(
-              file.path())
+              url.path())
               ? LaunchPluginVmAppResult::FAILED_DIRECTORY_NOT_SHARED
               : LaunchPluginVmAppResult::FAILED_FILE_ON_EXTERNAL_DRIVE,
-          "Only files in shared dirs are supported. Got: " +
-              file.DebugString());
+          "Only files in shared dirs are supported. Got: " + url.DebugString());
     }
     // Convert slashes: '/' => '\'.
     std::string result;
     base::ReplaceChars(file_path.value(), "/", "\\", &result);
-    file_paths.push_back(std::move(result));
+    launch_args.push_back(std::move(result));
   }
 
   manager->LaunchPluginVm(
       base::BindOnce(&LaunchPluginVmAppImpl, profile, std::move(app_id),
-                     std::move(file_paths), std::move(callback)));
+                     std::move(launch_args), std::move(callback)));
 }
 
 }  // namespace plugin_vm

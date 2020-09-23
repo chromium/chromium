@@ -282,13 +282,19 @@ void ExecuteGuestOsTask(
     return;
   }
 
+  using LaunchArg = absl::variant<storage::FileSystemURL, std::string>;
+  std::vector<LaunchArg> args;
+  args.reserve(file_system_urls.size());
+  for (const auto& url : file_system_urls) {
+    args.emplace_back(url);
+  }
   guest_os::GuestOsRegistryService::VmType vm_type = registration->VmType();
   switch (vm_type) {
     case guest_os::GuestOsRegistryService::VmType::
         ApplicationList_VmType_TERMINA:
       DCHECK(crostini::CrostiniFeatures::Get()->IsUIAllowed(profile));
       crostini::LaunchCrostiniApp(
-          profile, task.app_id, display::kInvalidDisplayId, file_system_urls,
+          profile, task.app_id, display::kInvalidDisplayId, args,
           base::BindOnce(
               [](FileTaskFinishedCallback done, bool success,
                  const std::string& failure_reason) {
@@ -310,7 +316,7 @@ void ExecuteGuestOsTask(
         ApplicationList_VmType_PLUGIN_VM:
       DCHECK(plugin_vm::PluginVmFeatures::Get()->IsEnabled(profile));
       plugin_vm::LaunchPluginVmApp(
-          profile, task.app_id, file_system_urls,
+          profile, task.app_id, args,
           base::BindOnce(
               [](FileTaskFinishedCallback done,
                  plugin_vm::LaunchPluginVmAppResult result,

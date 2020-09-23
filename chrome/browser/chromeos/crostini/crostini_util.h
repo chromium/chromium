@@ -16,6 +16,7 @@
 #include "base/values.h"
 #include "chrome/browser/chromeos/crostini/crostini_simple_types.h"
 #include "storage/browser/file_system/file_system_url.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace base {
 class FilePath;
@@ -89,13 +90,15 @@ bool ShouldConfigureDefaultContainer(Profile* profile);
 bool MaybeShowCrostiniDialogBeforeLaunch(Profile* profile,
                                          CrostiniResult result);
 
+using LaunchArg = absl::variant<storage::FileSystemURL, std::string>;
+
 // Launch a Crostini App with a given set of files, given as absolute paths in
 // the container. For apps which can only be launched with a single file,
 // launch multiple instances.
 void LaunchCrostiniApp(Profile* profile,
                        const std::string& app_id,
                        int64_t display_id,
-                       const std::vector<storage::FileSystemURL>& files = {},
+                       const std::vector<LaunchArg>& args = {},
                        CrostiniSuccessCallback callback = base::DoNothing());
 
 // Retrieves cryptohome_id from profile.
@@ -172,7 +175,7 @@ void ShowCrostiniRecoveryView(Profile* profile,
                               CrostiniUISurface ui_surface,
                               const std::string& app_id,
                               int64_t display_id,
-                              const std::vector<storage::FileSystemURL>& files,
+                              const std::vector<LaunchArg>& args,
                               CrostiniSuccessCallback callback);
 
 // Add a newly created LXD container to the kCrostiniContainers pref
