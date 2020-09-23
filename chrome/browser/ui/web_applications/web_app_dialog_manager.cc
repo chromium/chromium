@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -51,17 +52,29 @@ void WebAppDialogManager::UninstallWebApp(const AppId& app_id,
       app_id,
       base::BindOnce(&WebAppDialogManager::OnWebAppUninstallDialogClosed,
                      base::Unretained(this), uninstall_dialog.get(),
-                     std::move(callback)));
+                     uninstall_source, std::move(callback)));
 
   dialogs_.insert(std::move(uninstall_dialog));
 }
 
 void WebAppDialogManager::OnWebAppUninstallDialogClosed(
     WebAppUninstallDialog* dialog,
+    UninstallSource uninstall_source,
     Callback callback,
     bool uninstalled) {
   DCHECK(dialogs_.contains(dialog));
   dialogs_.erase(dialog);
+
+  switch (uninstall_source) {
+    case UninstallSource::kAppMenu:
+      base::UmaHistogramBoolean(
+          "WebApp.UninstallDialog.AppMenuUninstallSuccess", uninstalled);
+      break;
+    case UninstallSource::kAppsPage:
+      base::UmaHistogramBoolean(
+          "WebApp.UninstallDialog.AppsPageUninstallSuccess", uninstalled);
+      break;
+  }
 
   std::move(callback).Run(/*success=*/uninstalled);
 }

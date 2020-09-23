@@ -192,8 +192,9 @@ class AppLauncherHandler
   extensions::ExtensionUninstallDialog* CreateExtensionUninstallDialog();
 
   // Continuation for installing a bookmark app after favicon lookup.
-  void OnFaviconForApp(std::unique_ptr<AppInstallInfo> install_info,
-                       const favicon_base::FaviconImageResult& image_result);
+  void OnFaviconForAppInstallFromLink(
+      std::unique_ptr<AppInstallInfo> install_info,
+      const favicon_base::FaviconImageResult& image_result);
 
   // Sends |highlight_app_id_| to the js.
   void SetAppToBeHighlighted();

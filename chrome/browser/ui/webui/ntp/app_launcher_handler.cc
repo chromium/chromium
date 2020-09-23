@@ -16,6 +16,7 @@
 #include "base/feature_list.h"
 #include "base/i18n/rtl.h"
 #include "base/metrics/field_trial.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/optional.h"
 #include "base/stl_util.h"
@@ -863,7 +864,6 @@ void AppLauncherHandler::HandleUninstallApp(const base::ListValue* args) {
     auto uninstall_success_callback = base::BindOnce(
         [](base::WeakPtr<AppLauncherHandler> app_launcher_handler,
            bool success) {
-          LOCAL_HISTOGRAM_BOOLEAN("Apps.Launcher.UninstallSuccess", success);
           if (app_launcher_handler)
             app_launcher_handler->CleanupAfterUninstall();
         },
@@ -932,7 +932,7 @@ void AppLauncherHandler::HandleCreateAppShortcut(const base::ListValue* args) {
     chrome::ShowCreateChromeAppShortcutsDialog(
         browser->window()->GetNativeWindow(), browser->profile(), app_id,
         base::BindRepeating([](bool success) {
-          LOCAL_HISTOGRAM_BOOLEAN(
+          base::UmaHistogramBoolean(
               "Apps.AppInfoDialog.CreateWebAppShortcutSuccess", success);
         }));
     return;
@@ -953,7 +953,7 @@ void AppLauncherHandler::HandleCreateAppShortcut(const base::ListValue* args) {
   chrome::ShowCreateChromeAppShortcutsDialog(
       browser->window()->GetNativeWindow(), browser->profile(), extension,
       base::BindRepeating([](bool success) {
-        LOCAL_HISTOGRAM_BOOLEAN(
+        base::UmaHistogramBoolean(
             "Apps.AppInfoDialog.CreateExtensionShortcutSuccess", success);
       }));
 }
@@ -1116,7 +1116,7 @@ void AppLauncherHandler::HandleGenerateAppForLink(const base::ListValue* args) {
 
   favicon_service->GetFaviconImageForPageURL(
       launch_url,
-      base::BindOnce(&AppLauncherHandler::OnFaviconForApp,
+      base::BindOnce(&AppLauncherHandler::OnFaviconForAppInstallFromLink,
                      base::Unretained(this), base::Passed(&install_info)),
       &cancelable_task_tracker_);
 }
@@ -1130,7 +1130,7 @@ void AppLauncherHandler::HandlePageSelected(const base::ListValue* args) {
   prefs->SetInteger(prefs::kNtpShownPage, APPS_PAGE_ID | index);
 }
 
-void AppLauncherHandler::OnFaviconForApp(
+void AppLauncherHandler::OnFaviconForAppInstallFromLink(
     std::unique_ptr<AppInstallInfo> install_info,
     const favicon_base::FaviconImageResult& image_result) {
   auto web_app = std::make_unique<WebApplicationInfo>();
@@ -1149,9 +1149,10 @@ void AppLauncherHandler::OnFaviconForApp(
           [](base::WeakPtr<AppLauncherHandler> app_launcher_handler,
              const web_app::AppId& app_id,
              web_app::InstallResultCode install_result) {
-            LOCAL_HISTOGRAM_ENUMERATION(
-                "Apps.AppInfoDialog.InstallAppLocallyInstallResult",
-                install_result);
+            // Note: this installation path only happens when the user drags a
+            // link to chrome://apps, hence the specific metric name.
+            base::UmaHistogramEnumeration(
+                "Apps.Launcher.InstallAppFromLinkResult", install_result);
             if (!app_launcher_handler)
               return;
             if (install_result !=
@@ -1206,8 +1207,11 @@ void AppLauncherHandler::PromptToEnableApp(const std::string& extension_id) {
 void AppLauncherHandler::OnOsHooksInstalled(
     const web_app::AppId& app_id,
     const web_app::OsHooksResults os_hooks_results) {
-  LOCAL_HISTOGRAM_BOOLEAN("Apps.Launcher.InstallLocallyShortcutsCreated",
-                          os_hooks_results[web_app::OsHookType::kShortcuts]);
+  // TODO(dmurph): Once installation takes the OSHookResults bitfield, then
+  // use that to compare with the results, and record if they all were
+  // successful, instead of just shortcuts.
+  base::UmaHistogramBoolean("Apps.Launcher.InstallLocallyShortcutsCreated",
+                            os_hooks_results[web_app::OsHookType::kShortcuts]);
 }
 
 void AppLauncherHandler::OnExtensionUninstallDialogClosed(

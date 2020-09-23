@@ -48,6 +48,7 @@ class WebAppDialogManager {
 
  private:
   void OnWebAppUninstallDialogClosed(WebAppUninstallDialog* dialog,
+                                     UninstallSource uninstall_source,
                                      Callback callback,
                                      bool uninstalled);
 
