@@ -2367,8 +2367,8 @@ TEST_F(StyleEngineTest, GetComputedStyleOutsideFlatTree) {
   EXPECT_FALSE(innermost->GetComputedStyle());
 
   inner->EnsureComputedStyle();
-  auto* outer_style = outer->GetComputedStyle();
-  auto* inner_style = inner->GetComputedStyle();
+  scoped_refptr<const ComputedStyle> outer_style = outer->GetComputedStyle();
+  scoped_refptr<const ComputedStyle> inner_style = inner->GetComputedStyle();
 
   ASSERT_TRUE(outer_style);
   ASSERT_TRUE(inner_style);

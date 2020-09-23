@@ -2000,13 +2000,21 @@ void StyleEngine::RecalcStyle() {
   PropagateWritingModeAndDirectionToHTMLRoot();
 }
 
-void StyleEngine::ClearEnsuredDescendantStyles(Element& element) {
-  GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kInStyleRecalc);
-  SelectorFilterRootScope filter_scope(&element);
-  element.ClearNeedsStyleRecalc();
-  element.RecalcDescendantStyles(StyleRecalcChange::kClearEnsured);
-  element.ClearChildNeedsStyleRecalc();
-  GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kStyleClean);
+void StyleEngine::ClearEnsuredDescendantStyles(Element& root) {
+  Node* current = &root;
+  while (current) {
+    if (auto* element = DynamicTo<Element>(current)) {
+      if (const auto* style = element->GetComputedStyle()) {
+        DCHECK(style->IsEnsuredOutsideFlatTree());
+        element->SetComputedStyle(nullptr);
+        element->ClearNeedsStyleRecalc();
+        element->ClearChildNeedsStyleRecalc();
+        current = FlatTreeTraversal::Next(*current, &root);
+        continue;
+      }
+    }
+    current = FlatTreeTraversal::NextSkippingChildren(*current, &root);
+  }
 }
 
 void StyleEngine::RebuildLayoutTree() {
