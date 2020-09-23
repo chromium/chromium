@@ -626,6 +626,21 @@ void PopulateInputMethodListFromDescriptors(
 
   const std::unordered_set<std::string> active_ids(GetEnabledIMEs(ime_state));
   const std::unordered_set<std::string> allowed_ids(GetAllowedIMEs(ime_state));
+
+  // Collator used to sort display names in the given locale.
+  UErrorCode error = U_ZERO_ERROR;
+  const std::string app_locale = g_browser_process->GetApplicationLocale();
+  std::unique_ptr<icu::Collator> collator(
+      icu::Collator::createInstance(icu::Locale(app_locale.c_str()), error));
+  if (U_FAILURE(error)) {
+    collator.reset();
+  }
+
+  // Map of sorted [display name -> input methods].
+  std::map<base::string16, language_settings_private::InputMethod,
+           l10n_util::StringComparator<base::string16>>
+      input_map(l10n_util::StringComparator<base::string16>(collator.get()));
+
   for (const auto& descriptor : descriptors) {
     language_settings_private::InputMethod input_method;
     input_method.id = descriptor.id();
@@ -642,7 +657,12 @@ void PopulateInputMethodListFromDescriptors(
         allowed_ids.count(input_method.id) == 0) {
       input_method.is_prohibited_by_policy.reset(new bool(true));
     }
-    input_methods->push_back(std::move(input_method));
+    input_map[base::UTF8ToUTF16(util->GetLocalizedDisplayName(descriptor))] =
+        std::move(input_method);
+  }
+
+  for (auto& entry : input_map) {
+    input_methods->push_back(std::move(entry.second));
   }
 }
 #endif
