@@ -232,8 +232,18 @@ IN_PROC_BROWSER_TEST_F(MediaRouterUIBrowserTest,
   EXPECT_TRUE(ToolbarIconExists());
 }
 
+// TODO(https://crbug.com/1124982): Fix flake on linux-lacros-rel and re-enable
+// this test.
+#if defined(OS_LINUX)
+#define MAYBE_OpenDialogWithMediaRouterAction \
+  DISABLED_OpenDialogWithMediaRouterAction
+#else
+#define MAYBE_OpenDialogWithMediaRouterAction \
+  OpenDialogWithMediaRouterAction
+#endif
+
 IN_PROC_BROWSER_TEST_F(MediaRouterUIBrowserTest,
-                       OpenDialogWithMediaRouterAction) {
+                       MAYBE_OpenDialogWithMediaRouterAction) {
   MediaRouterDialogController* dialog_controller = GetDialogController();
   // We start off at about:blank page.
   // Make sure there is 1 tab and media router is enabled.
