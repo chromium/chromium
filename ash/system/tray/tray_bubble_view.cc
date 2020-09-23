@@ -250,8 +250,7 @@ TrayBubbleView::TrayBubbleView(const InitParams& init_params)
     layer()->SetColor(UnifiedSystemTrayView::GetBackgroundColor());
     layer()->SetFillsBoundsOpaquely(false);
     layer()->SetIsFastRoundedCorner(true);
-    if (features::IsBackgroundBlurEnabled())
-      layer()->SetBackgroundBlur(kUnifiedMenuBackgroundBlur);
+    layer()->SetBackgroundBlur(kUnifiedMenuBackgroundBlur);
   } else {
     // Create a layer so that the layer for FocusRing stays in this view's
     // layer. Without it, the layer for FocusRing goes above the

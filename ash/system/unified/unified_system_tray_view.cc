@@ -7,9 +7,8 @@
 #include <numeric>
 
 #include "ash/public/cpp/ash_features.h"
+#include "ash/public/cpp/shelf_config.h"
 #include "ash/session/session_controller_impl.h"
-#include "ash/shelf/shelf.h"
-#include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/media/unified_media_controls_container.h"
@@ -175,17 +174,8 @@ class UnifiedSystemTrayView::SystemTrayContainer : public views::View {
 
 // static
 SkColor UnifiedSystemTrayView::GetBackgroundColor() {
-  auto background_type = Shelf::ForWindow(Shell::GetPrimaryRootWindow())
-                             ->shelf_widget()
-                             ->GetBackgroundType();
-  AshColorProvider::BaseLayerType layer_type =
-      (background_type == ShelfBackgroundType::kMaximized ||
-       background_type == ShelfBackgroundType::kInApp) ||
-       !features::IsBackgroundBlurEnabled()
-          ? AshColorProvider::BaseLayerType::kTransparent90
-          : AshColorProvider::BaseLayerType::kTransparent80;
-
-  return AshColorProvider::Get()->GetBaseLayerColor(layer_type);
+  return AshColorProvider::Get()->GetBaseLayerColor(
+      AshColorProvider::BaseLayerType::kTransparent80);
 }
 
 // static
