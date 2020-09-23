@@ -295,8 +295,9 @@ IN_PROC_BROWSER_TEST_F(PaymentAppBrowserTest, MAYBE_AbortPayment) {
   ClearStoragePartitionData();
 }
 
-// TODO(crbug.com/869790) Flakes on linux-chromeos-dbg
-#if defined(OS_CHROMEOS) && !defined(NDEBUG)
+// TODO(https://crbug.com/1129411) Fix flake on all desktop platforms.
+#if defined(OS_CHROMEOS) || defined(OS_LINUX) || defined(OS_MAC) || \
+    defined(OS_WIN)
 #define MAYBE_CanMakePayment DISABLED_CanMakePayment
 #else
 #define MAYBE_CanMakePayment CanMakePayment
@@ -351,8 +352,9 @@ IN_PROC_BROWSER_TEST_F(PaymentAppBrowserTest,
   ClearStoragePartitionData();
 }
 
-// TODO(crbug.com/869790) Flakes on linux-chromeos-dbg
-#if defined(OS_CHROMEOS) && !defined(NDEBUG)
+// TODO(https://crbug.com/1129411) Fix flake on all desktop platforms.
+#if defined(OS_CHROMEOS) || defined(OS_LINUX) || defined(OS_MAC) || \
+    defined(OS_WIN)
 #define MAYBE_PaymentAppInvocation DISABLED_PaymentAppInvocation
 #else
 #define MAYBE_PaymentAppInvocation PaymentAppInvocation
@@ -393,8 +395,9 @@ IN_PROC_BROWSER_TEST_F(PaymentAppBrowserTest, MAYBE_PaymentAppInvocation) {
             PopConsoleString() /* instrumentKey */);
 }
 
-// TODO(crbug.com/869790) Flakes on linux-chromeos-dbg
-#if defined(OS_CHROMEOS) && !defined(NDEBUG)
+// TODO(https://crbug.com/1129411) Fix flake on all desktop platforms.
+#if defined(OS_CHROMEOS) || defined(OS_LINUX) || defined(OS_MAC) || \
+    defined(OS_WIN)
 #define MAYBE_PaymentAppOpenWindowFailed DISABLED_PaymentAppOpenWindowFailed
 #else
 #define MAYBE_PaymentAppOpenWindowFailed PaymentAppOpenWindowFailed
