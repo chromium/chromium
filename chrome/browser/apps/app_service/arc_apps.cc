@@ -756,7 +756,6 @@ void ArcApps::LaunchAppWithIntent(const std::string& app_id,
   if (app_info->ready) {
     arc::mojom::ActivityNamePtr activity = arc::mojom::ActivityName::New();
     activity->package_name = app_info->package_name;
-    activity->activity_name = app_info->activity;
     if (intent->activity_name.has_value() &&
         !intent->activity_name.value().empty()) {
       activity->activity_name = intent->activity_name.value();
