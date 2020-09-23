@@ -19,7 +19,7 @@ using testing::_;
 
 namespace media {
 
-TEST(VideoCaptureDeviceAVFoundationMacTest, TakePhoto) {
+TEST(VideoCaptureDeviceAVFoundationMacTest, DISABLED_TakePhoto) {
   RunTestCase(base::BindOnce([] {
     NSString* deviceId = GetFirstDeviceId();
     if (!deviceId) {
@@ -46,7 +46,8 @@ TEST(VideoCaptureDeviceAVFoundationMacTest, TakePhoto) {
   }));
 }
 
-TEST(VideoCaptureDeviceAVFoundationMacTest, StopCaptureWhileTakingPhoto) {
+TEST(VideoCaptureDeviceAVFoundationMacTest,
+     DISABLED_StopCaptureWhileTakingPhoto) {
   RunTestCase(base::BindOnce([] {
     NSString* deviceId = GetFirstDeviceId();
     if (!deviceId) {
@@ -77,7 +78,8 @@ TEST(VideoCaptureDeviceAVFoundationMacTest, StopCaptureWhileTakingPhoto) {
   }));
 }
 
-TEST(VideoCaptureDeviceAVFoundationMacTest, MultiplePendingTakePhotos) {
+TEST(VideoCaptureDeviceAVFoundationMacTest,
+     DISABLED_MultiplePendingTakePhotos) {
   RunTestCase(base::BindOnce([] {
     NSString* deviceId = GetFirstDeviceId();
     if (!deviceId) {
@@ -113,7 +115,7 @@ TEST(VideoCaptureDeviceAVFoundationMacTest, MultiplePendingTakePhotos) {
 }
 
 TEST(VideoCaptureDeviceAVFoundationMacTest,
-     StopCaptureWhileMultiplePendingTakePhotos) {
+     DISABLED_StopCaptureWhileMultiplePendingTakePhotos) {
   RunTestCase(base::BindOnce([] {
     NSString* deviceId = GetFirstDeviceId();
     if (!deviceId) {
@@ -153,7 +155,7 @@ TEST(VideoCaptureDeviceAVFoundationMacTest,
 }
 
 TEST(VideoCaptureDeviceAVFoundationMacTest,
-     StopStillImageOutputWhenNoLongerTakingPhotos) {
+     DISABLED_StopStillImageOutputWhenNoLongerTakingPhotos) {
   RunTestCase(base::BindOnce([] {
     NSString* deviceId = GetFirstDeviceId();
     if (!deviceId) {
@@ -190,7 +192,7 @@ TEST(VideoCaptureDeviceAVFoundationMacTest,
 
 // This test ensures we don't crash even if we leave operations pending.
 TEST(VideoCaptureDeviceAVFoundationMacTest,
-     TakePhotoAndShutDownWithoutWaiting) {
+     DISABLED_TakePhotoAndShutDownWithoutWaiting) {
   RunTestCase(base::BindOnce([] {
     NSString* deviceId = GetFirstDeviceId();
     if (!deviceId) {
