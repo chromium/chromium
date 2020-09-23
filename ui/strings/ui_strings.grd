@@ -895,6 +895,9 @@ need to be translated for each locale.-->
       <message name="IDS_ALL_APPS_INDICATOR" desc="Indicator text in the launcher on top of all apps.">
         ALL APPS
       </message>
+      <message name="IDS_APP_LIST_APP_FOCUS_NOTIFICATION_BADGE" desc="The spoken feedback text for when an app icon is focused and has a notification badge shown on the icon.">
+        <ph name="FOCUSED_APP_NAME">$1<ex>App Name</ex></ph> has new updates.
+      </message>
       <message name="IDS_APP_LIST_APP_DRAG_LOCATION_ACCESSIBILE_NAME" desc="The spoken feedback which tells the location that a dragged app has dropped to.">
         Moved to Page <ph name="PAGE_NUMBER">$1<ex>1</ex></ph>, row <ph name="ROW_NUMBER">$2<ex>4</ex></ph>, column <ph name="COLUMN_NUMBER">$3<ex>2</ex></ph>.
       </message>

@@ -708,6 +708,10 @@ class APP_LIST_EXPORT AppsGridView : public views::View,
   // folder or creating a folder with two apps.
   void MaybeCreateFolderDroppingAccessibilityEvent();
 
+  // Modifies the announcement view to verbalize that the focused view has new
+  // updates, based on the item having a notification badge.
+  void AnnounceItemNotificationBadge(const base::string16& selected_view_title);
+
   // Modifies the announcement view to verbalize that the current drag will move
   // |moving_view_title| and create a folder or move it into an existing folder
   // with |target_view_title|.

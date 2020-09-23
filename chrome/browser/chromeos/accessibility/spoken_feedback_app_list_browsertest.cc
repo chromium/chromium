@@ -12,6 +12,7 @@
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/shell.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/chromeos/accessibility/spoken_feedback_browsertest.h"
 #include "chrome/browser/ui/app_list/app_list_client_impl.h"
 #include "chrome/browser/ui/browser.h"
@@ -24,6 +25,7 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/display/display.h"
 #include "ui/display/manager/display_manager.h"
 
@@ -136,6 +138,65 @@ INSTANTIATE_TEST_SUITE_P(TestAsNormalAndGuestUser,
                          TabletModeSpokenFeedbackAppListTest,
                          ::testing::Values(kTestAsNormalUser,
                                            kTestAsGuestUser));
+
+class NotificationSpokenFeedbackAppListTest : public SpokenFeedbackAppListTest {
+ protected:
+  NotificationSpokenFeedbackAppListTest() {
+    scoped_features_.InitWithFeatures({::features::kNotificationIndicator}, {});
+  }
+  ~NotificationSpokenFeedbackAppListTest() = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    SpokenFeedbackAppListTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(ash::switches::kAshEnableTabletMode);
+  }
+
+  void SetNotificationBadgeForApp(const std::string& id, bool has_badge) {
+    auto* model = ash::Shell::Get()->app_list_controller()->GetModel();
+    auto* item = model->FindItem(id);
+
+    item->UpdateBadgeForTesting(has_badge);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_features_;
+};
+
+INSTANTIATE_TEST_SUITE_P(TestAsNormalAndGuestUser,
+                         NotificationSpokenFeedbackAppListTest,
+                         ::testing::Values(kTestAsNormalUser,
+                                           kTestAsGuestUser));
+
+// Checks that when an app list item with a notification badge is focused, an
+// announcement is made that the item has new updates.
+IN_PROC_BROWSER_TEST_P(NotificationSpokenFeedbackAppListTest,
+                       AppListItemNotificationBadgeAnnounced) {
+  PopulateApps(1);
+  SetNotificationBadgeForApp("Item 0", true);
+
+  EnableChromeVox();
+
+  sm_.Call(
+      [this]() { EXPECT_TRUE(PerformAcceleratorAction(ash::FOCUS_SHELF)); });
+  sm_.ExpectSpeech("Shelf");
+  // Press space on the launcher button in shelf, this opens peeking
+  // launcher.
+  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_SPACE); });
+  sm_.ExpectSpeech("Launcher, partial view");
+  // Move focus to expand all apps button.
+  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_UP); });
+  sm_.ExpectSpeech("Expand to all apps");
+  // Press space on expand arrow to go to fullscreen launcher.
+  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_SPACE); });
+  sm_.ExpectSpeech("Launcher, all apps");
+
+  // Move focus to 1st app;
+  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
+
+  // Check that the announcmenet for items with a notification badge occurs.
+  sm_.ExpectSpeech("Item 0 has new updates.");
+  sm_.Replay();
+}
 
 // Checks that entering and exiting tablet mode with a browser window open does
 // not generate an accessibility event.

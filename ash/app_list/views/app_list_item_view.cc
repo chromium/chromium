@@ -973,6 +973,10 @@ void AppListItemView::EnsureLayer() {
   layer()->SetFillsBoundsOpaquely(false);
 }
 
+bool AppListItemView::HasNotificationBadge() {
+  return item_weak_->has_notification_badge();
+}
+
 void AppListItemView::FireMouseDragTimerForTest() {
   mouse_drag_timer_.FireNow();
 }

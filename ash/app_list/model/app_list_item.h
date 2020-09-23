@@ -19,8 +19,6 @@
 #include "components/sync/model/string_ordinal.h"
 #include "ui/gfx/image/image_skia.h"
 
-class FastShowPickler;
-
 namespace ash {
 enum class AppListConfigType;
 class AppListControllerImpl;
@@ -88,11 +86,12 @@ class APP_LIST_MODEL_EXPORT AppListItem {
 
   bool has_notification_badge() const { return has_notification_badge_; }
 
+  void UpdateBadgeForTesting(bool has_badge) { UpdateBadge(has_badge); }
+
  protected:
   // Subclasses also have mutable access to the metadata ptr.
   AppListItemMetadata* metadata() { return metadata_.get(); }
 
-  friend class ::FastShowPickler;
   friend class AppListControllerImpl;
   friend class AppListItemList;
   friend class AppListItemListTest;

@@ -1432,6 +1432,8 @@ void AppsGridView::SetSelectedItemByIndex(const GridIndex& index) {
   selected_view_ = new_selection;
   selected_view_->SchedulePaint();
   selected_view_->NotifyAccessibilityEvent(ax::mojom::Event::kFocus, true);
+  if (selected_view_->HasNotificationBadge())
+    AnnounceItemNotificationBadge(selected_view_->title()->GetText());
 }
 
 GridIndex AppsGridView::GetIndexOfView(const AppListItemView* view) const {
@@ -3792,6 +3794,17 @@ void AppsGridView::MaybeCreateFolderDroppingAccessibilityEvent() {
 
   AnnounceFolderDrop(drag_view_->title()->GetText(),
                      drop_view->title()->GetText(), drop_view->is_folder());
+}
+
+void AppsGridView::AnnounceItemNotificationBadge(
+    const base::string16& selected_view_title) {
+  // Set a11y name to announce the notification badge for the focused item.
+  auto* announcement_view =
+      contents_view_->app_list_view()->announcement_view();
+  announcement_view->GetViewAccessibility().OverrideName(
+      l10n_util::GetStringFUTF16(IDS_APP_LIST_APP_FOCUS_NOTIFICATION_BADGE,
+                                 selected_view_title));
+  announcement_view->NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
 }
 
 void AppsGridView::AnnounceFolderDrop(const base::string16& moving_view_title,

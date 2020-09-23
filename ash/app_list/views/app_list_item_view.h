@@ -141,6 +141,8 @@ class APP_LIST_EXPORT AppListItemView : public views::Button,
   // Ensures this item view has its own layer.
   void EnsureLayer();
 
+  bool HasNotificationBadge();
+
   void FireMouseDragTimerForTest();
 
   bool FireTouchDragTimerForTest();
