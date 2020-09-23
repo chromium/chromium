@@ -72569,14 +72569,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Launch.FlagsAtStartup" enum="LoginCustomFlags"
-    expires_after="2021-01-31">
+    expires_after="never">
+<!-- expires-never: monitors use of all flags. -->
+
   <owner>asvitkine@chromium.org</owner>
   <owner>ntfschr@chromium.org</owner>
   <summary>
-    Logs which Chrome flags from about:flags were active on start up. Note that
-    this flag is not really used on Chrome OS; on that platform, look at
-    Login.CustomFlags instead. Android WebView supports flags differently than
-    most platforms, see
+    Logs which Chrome flags from about:flags were active on start up. Android
+    WebView supports flags differently than most platforms, see
     https://chromium.googlesource.com/chromium/src/+/HEAD/android_webview/docs/developer-ui.md
     for details.
   </summary>
@@ -73944,11 +73944,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Login.CustomFlags" enum="LoginCustomFlags" expires_after="M85">
+<histogram name="Login.CustomFlags" enum="LoginCustomFlags"
+    expires_after="never">
+<!-- expires-never: monitors 'black screen on login' user experience. -->
+
   <owner>alemate@chromium.org</owner>
+  <owner>rsorokin@chromium.org</owner>
   <summary>
-    A set of chrome flags that required browser restart on Chrome OS user sign
-    in.
+    A set of chrome flags that triggered browser restart on Chrome OS after user
+    sign in. Chrome needs to be restarted if the device owner set of flags is
+    different from the user flags. Which means that there is a flag difference
+    which led to this restart. This difference is reported by this metric.
   </summary>
 </histogram>
 
