@@ -9,17 +9,15 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/optional.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
-#include "third_party/blink/renderer/platform/graphics/paint/paint_image.h"
-#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/blink/renderer/platform/graphics/dark_mode_types.h"
+#include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/skia/include/core/SkPixmap.h"
 #include "third_party/skia/include/core/SkRect.h"
-#include "ui/gfx/geometry/rect.h"
 
 namespace blink {
 
+FORWARD_DECLARE_TEST(DarkModeImageClassifierTest, BlockSamples);
 FORWARD_DECLARE_TEST(DarkModeImageClassifierTest, FeaturesAndClassification);
-FORWARD_DECLARE_TEST(DarkModeImageClassifierTest, Caching);
 
 // This class is not threadsafe as the cache used for storing classification
 // results is not threadsafe. So it can be used only in blink main thread.
@@ -43,38 +41,27 @@ class PLATFORM_EXPORT DarkModeImageClassifier {
     float background_ratio;
   };
 
-  // Performance warning: |paint_image| will be synchronously decoded if this
-  // function is called in blink main thread.
-  DarkModeClassification Classify(const PaintImage& paint_image,
-                                  const SkRect& src,
-                                  const SkRect& dst);
-
-  // Removes cache identified by given |image_id|.
-  static void RemoveCache(PaintImage::Id image_id);
+  DarkModeResult Classify(const SkPixmap& pixmap, const SkRect& src);
 
  private:
-  DarkModeClassification ClassifyWithFeatures(const Features& features);
-  DarkModeClassification ClassifyUsingDecisionTree(const Features& features);
-  bool GetBitmap(const PaintImage& paint_image,
-                 const SkRect& src,
-                 SkBitmap* bitmap);
-  base::Optional<Features> GetFeatures(const PaintImage& paint_image,
-                                       const SkRect& src);
+  DarkModeResult ClassifyWithFeatures(const Features& features);
+  DarkModeResult ClassifyUsingDecisionTree(const Features& features);
 
   enum class ColorMode { kColor = 0, kGrayscale = 1 };
 
+  base::Optional<Features> GetFeatures(const SkPixmap& pixmap,
+                                       const SkRect& src);
   // Extracts a sample set of pixels (|sampled_pixels|), |transparency_ratio|,
   // and |background_ratio|.
-  void GetSamples(const PaintImage& paint_image,
+  void GetSamples(const SkPixmap& pixmap,
                   const SkRect& src,
                   std::vector<SkColor>* sampled_pixels,
                   float* transparency_ratio,
                   float* background_ratio);
-
   // Gets the |required_samples_count| for a specific |block| of the given
-  // SkBitmap, and returns |sampled_pixels| and |transparent_pixels_count|.
-  void GetBlockSamples(const SkBitmap& bitmap,
-                       const gfx::Rect& block,
+  // pixmap, and returns |sampled_pixels| and |transparent_pixels_count|.
+  void GetBlockSamples(const SkPixmap& pixmap,
+                       const SkIRect& block,
                        const int required_samples_count,
                        std::vector<SkColor>* sampled_pixels,
                        int* transparent_pixels_count);
@@ -92,19 +79,9 @@ class PLATFORM_EXPORT DarkModeImageClassifier {
   float ComputeColorBucketsRatio(const std::vector<SkColor>& sampled_pixels,
                                  const ColorMode color_mode);
 
-  // Gets cached value from the given |image_id| cache.
-  DarkModeClassification GetCacheValue(PaintImage::Id image_id,
-                                       const SkRect& src);
-  // Adds cache value |result| to the given |image_id| cache.
-  void AddCacheValue(PaintImage::Id image_id,
-                     const SkRect& src,
-                     DarkModeClassification result);
-  // Returns the cache size for the given |image_id|.
-  size_t GetCacheSize(PaintImage::Id image_id);
-
+  FRIEND_TEST_ALL_PREFIXES(DarkModeImageClassifierTest, BlockSamples);
   FRIEND_TEST_ALL_PREFIXES(DarkModeImageClassifierTest,
                            FeaturesAndClassification);
-  FRIEND_TEST_ALL_PREFIXES(DarkModeImageClassifierTest, Caching);
 };
 
 }  // namespace blink

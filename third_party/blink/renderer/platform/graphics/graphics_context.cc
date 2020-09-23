@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/platform/geometry/float_rounded_rect.h"
 #include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/graphics/dark_mode_filter.h"
+#include "third_party/blink/renderer/platform/graphics/dark_mode_filter_helper.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context_state_saver.h"
 #include "third_party/blink/renderer/platform/graphics/interpolation_space.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
@@ -877,10 +878,9 @@ void GraphicsContext::DrawImage(
   image_flags.setFilterQuality(ComputeFilterQuality(image, dest, src));
 
   // Do not classify the image if the element has any CSS filters.
-  if (!has_filter_property && dark_mode_filter_.IsDarkModeActive() &&
-      dark_mode_filter_.AnalyzeShouldApplyToImage(src, dest)) {
-    dark_mode_filter_.ApplyToImageFlagsIfNeeded(
-        src, dest, image->PaintImageForCurrentFrame(), &image_flags);
+  if (!has_filter_property && dark_mode_filter_.IsDarkModeActive()) {
+    DarkModeFilterHelper::ApplyToImageIfNeeded(&dark_mode_filter_, image,
+                                               &image_flags, src, dest);
   }
 
   image->Draw(canvas_, image_flags, dest, src, should_respect_image_orientation,
@@ -918,11 +918,9 @@ void GraphicsContext::DrawImageRRect(
   image_flags.setFilterQuality(
       ComputeFilterQuality(image, dest.Rect(), src_rect));
 
-  if (dark_mode_filter_.IsDarkModeActive() &&
-      dark_mode_filter_.AnalyzeShouldApplyToImage(src_rect, dest.Rect())) {
-    dark_mode_filter_.ApplyToImageFlagsIfNeeded(
-        src_rect, dest.Rect(), image->PaintImageForCurrentFrame(),
-        &image_flags);
+  if (dark_mode_filter_.IsDarkModeActive()) {
+    DarkModeFilterHelper::ApplyToImageIfNeeded(
+        &dark_mode_filter_, image, &image_flags, src_rect, dest.Rect());
   }
 
   bool use_shader = (visible_src == src_rect) &&

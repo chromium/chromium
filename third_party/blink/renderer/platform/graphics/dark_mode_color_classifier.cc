@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/platform/graphics/dark_mode_color_classifier.h"
 
 #include "base/check_op.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 
 namespace blink {
 namespace {
@@ -14,36 +13,34 @@ class SimpleColorClassifier : public DarkModeColorClassifier {
  public:
   static std::unique_ptr<SimpleColorClassifier> NeverInvert() {
     return std::unique_ptr<SimpleColorClassifier>(
-        new SimpleColorClassifier(DarkModeClassification::kDoNotApplyFilter));
+        new SimpleColorClassifier(DarkModeResult::kDoNotApplyFilter));
   }
 
   static std::unique_ptr<SimpleColorClassifier> AlwaysInvert() {
     return std::unique_ptr<SimpleColorClassifier>(
-        new SimpleColorClassifier(DarkModeClassification::kApplyFilter));
+        new SimpleColorClassifier(DarkModeResult::kApplyFilter));
   }
 
-  DarkModeClassification ShouldInvertColor(SkColor color) override {
-    return value_;
-  }
+  DarkModeResult ShouldInvertColor(SkColor color) override { return value_; }
 
  private:
-  SimpleColorClassifier(DarkModeClassification value) : value_(value) {}
+  explicit SimpleColorClassifier(DarkModeResult value) : value_(value) {}
 
-  DarkModeClassification value_;
+  DarkModeResult value_;
 };
 
 class InvertLowBrightnessColorsClassifier : public DarkModeColorClassifier {
  public:
-  InvertLowBrightnessColorsClassifier(int brightness_threshold)
+  explicit InvertLowBrightnessColorsClassifier(int brightness_threshold)
       : brightness_threshold_(brightness_threshold) {
     DCHECK_GT(brightness_threshold_, 0);
     DCHECK_LT(brightness_threshold_, 256);
   }
 
-  DarkModeClassification ShouldInvertColor(SkColor color) override {
+  DarkModeResult ShouldInvertColor(SkColor color) override {
     if (CalculateColorBrightness(color) < brightness_threshold_)
-      return DarkModeClassification::kApplyFilter;
-    return DarkModeClassification::kDoNotApplyFilter;
+      return DarkModeResult::kApplyFilter;
+    return DarkModeResult::kDoNotApplyFilter;
   }
 
  private:
@@ -52,16 +49,16 @@ class InvertLowBrightnessColorsClassifier : public DarkModeColorClassifier {
 
 class InvertHighBrightnessColorsClassifier : public DarkModeColorClassifier {
  public:
-  InvertHighBrightnessColorsClassifier(int brightness_threshold)
+  explicit InvertHighBrightnessColorsClassifier(int brightness_threshold)
       : brightness_threshold_(brightness_threshold) {
     DCHECK_GT(brightness_threshold_, 0);
     DCHECK_LT(brightness_threshold_, 256);
   }
 
-  DarkModeClassification ShouldInvertColor(SkColor color) override {
+  DarkModeResult ShouldInvertColor(SkColor color) override {
     if (CalculateColorBrightness(color) > brightness_threshold_)
-      return DarkModeClassification::kApplyFilter;
-    return DarkModeClassification::kDoNotApplyFilter;
+      return DarkModeResult::kApplyFilter;
+    return DarkModeResult::kDoNotApplyFilter;
   }
 
  private:

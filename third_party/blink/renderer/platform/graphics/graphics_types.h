@@ -134,12 +134,6 @@ enum MailboxSyncMode {
   kOrderingBarrier,
 };
 
-enum class DarkModeClassification {
-  kNotClassified,
-  kApplyFilter,
-  kDoNotApplyFilter,
-};
-
 // TODO(junov): crbug.com/453113 Relocate ShadowMode to
 // CanvasRenderingContext2DState.h once GraphicsContext no longer uses it.
 enum ShadowMode {

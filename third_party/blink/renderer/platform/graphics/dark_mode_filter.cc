@@ -13,7 +13,6 @@
 #include "third_party/blink/renderer/platform/graphics/dark_mode_color_filter.h"
 #include "third_party/blink/renderer/platform/graphics/dark_mode_image_classifier.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/wtf/hash_functions.h"
 #include "third_party/blink/renderer/platform/wtf/lru_cache.h"
 #include "third_party/skia/include/core/SkColorFilter.h"
@@ -148,42 +147,47 @@ SkColor DarkModeFilter::InvertColorIfNeeded(SkColor color, ElementRole role) {
   return color;
 }
 
-bool DarkModeFilter::AnalyzeShouldApplyToImage(const SkRect& src,
-                                               const SkRect& dst) {
+DarkModeResult DarkModeFilter::AnalyzeShouldApplyToImage(
+    const SkRect& src,
+    const SkRect& dst) const {
   if (settings().image_policy == DarkModeImagePolicy::kFilterNone)
-    return false;
+    return DarkModeResult::kDoNotApplyFilter;
 
   if (settings().image_policy == DarkModeImagePolicy::kFilterAll)
-    return true;
+    return DarkModeResult::kApplyFilter;
 
   // Images being drawn from very smaller |src| rect, i.e. one of the dimensions
   // is very small, can be used for the border around the content or showing
   // separator. Consider these images irrespective of size of the rect being
   // drawn to. Classifying them will not be too costly.
   if (src.width() <= kMinImageLength || src.height() <= kMinImageLength)
-    return true;
+    return DarkModeResult::kNotClassified;
 
   // Do not consider images being drawn into bigger rect as these images are not
   // meant for icons or representing smaller widgets. These images are
   // considered as photos which should be untouched.
-  return (dst.width() <= kMaxImageLength && dst.height() <= kMaxImageLength);
+  return (dst.width() <= kMaxImageLength && dst.height() <= kMaxImageLength)
+             ? DarkModeResult::kNotClassified
+             : DarkModeResult::kDoNotApplyFilter;
 }
 
-void DarkModeFilter::ApplyToImageFlagsIfNeeded(const SkRect& src,
-                                               const SkRect& dst,
-                                               const PaintImage& paint_image,
-                                               cc::PaintFlags* flags) {
-  // The construction of |paint_image| is expensive, so ensure
-  // IsDarkModeActive() is checked prior to calling this function.
-  // See: https://crbug.com/1094781.
-  DCHECK(IsDarkModeActive());
+sk_sp<SkColorFilter> DarkModeFilter::ApplyToImage(const SkPixmap& pixmap,
+                                                  const SkRect& src,
+                                                  const SkRect& dst) {
+  DCHECK(AnalyzeShouldApplyToImage(src, dst) == DarkModeResult::kNotClassified);
+  DCHECK(settings().image_policy == DarkModeImagePolicy::kFilterSmart);
+  DCHECK(image_filter_);
 
-  if (!image_filter_ || !AnalyzeShouldApplyToImage(src, dst))
-    return;
+  return (image_classifier_->Classify(pixmap, src) ==
+          DarkModeResult::kApplyFilter)
+             ? image_filter_
+             : nullptr;
+}
 
-  if (ClassifyImage(settings(), src, dst, paint_image) ==
-      DarkModeClassification::kApplyFilter)
-    flags->setColorFilter(image_filter_);
+sk_sp<SkColorFilter> DarkModeFilter::GetImageFilter() {
+  DCHECK(settings().image_policy == DarkModeImagePolicy::kFilterAll);
+  DCHECK(image_filter_);
+  return image_filter_;
 }
 
 base::Optional<cc::PaintFlags> DarkModeFilter::ApplyToFlagsIfNeeded(
@@ -219,18 +223,18 @@ bool DarkModeFilter::ShouldApplyToColor(SkColor color, ElementRole role) {
     case ElementRole::kText:
       DCHECK(text_classifier_);
       return text_classifier_->ShouldInvertColor(color) ==
-             DarkModeClassification::kApplyFilter;
+             DarkModeResult::kApplyFilter;
     case ElementRole::kListSymbol:
       // TODO(prashant.n): Rename text_classifier_ to foreground_classifier_,
       // so that same classifier can be used for all roles which are supposed
       // to be at foreground.
       DCHECK(text_classifier_);
       return text_classifier_->ShouldInvertColor(color) ==
-             DarkModeClassification::kApplyFilter;
+             DarkModeResult::kApplyFilter;
     case ElementRole::kBackground:
       DCHECK(background_classifier_);
       return background_classifier_->ShouldInvertColor(color) ==
-             DarkModeClassification::kApplyFilter;
+             DarkModeResult::kApplyFilter;
     case ElementRole::kSVG:
       // 1) Inline SVG images are considered as individual shapes and do not
       // have an Image object associated with them. So they do not go through
@@ -249,23 +253,6 @@ bool DarkModeFilter::ShouldApplyToColor(SkColor color, ElementRole role) {
 
 size_t DarkModeFilter::GetInvertedColorCacheSizeForTesting() {
   return inverted_color_cache_->size();
-}
-
-DarkModeClassification DarkModeFilter::ClassifyImage(
-    const DarkModeSettings& settings,
-    const SkRect& src,
-    const SkRect& dst,
-    const PaintImage& paint_image) {
-  switch (settings.image_policy) {
-    case DarkModeImagePolicy::kFilterSmart:
-      return image_classifier_->Classify(paint_image, src, dst);
-    case DarkModeImagePolicy::kFilterNone:
-      return DarkModeClassification::kDoNotApplyFilter;
-    case DarkModeImagePolicy::kFilterAll:
-      return DarkModeClassification::kApplyFilter;
-  }
-
-  NOTREACHED();
 }
 
 ScopedDarkModeElementRoleOverride::ScopedDarkModeElementRoleOverride(

@@ -7,7 +7,6 @@
 #include "base/check_op.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/graphics/dark_mode_settings.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 namespace blink {
@@ -33,18 +32,18 @@ TEST(DarkModeColorClassifierTest, ApplyFilterToDarkTextOnly) {
   //   * white text
   //   * text brighter than the text brightness threshold
   //   * text at the brightness threshold
-  EXPECT_EQ(DarkModeClassification::kApplyFilter,
+  EXPECT_EQ(DarkModeResult::kApplyFilter,
             classifier->ShouldInvertColor(GetColorWithBrightness(
                 settings.text_brightness_threshold - 5)));
-  EXPECT_EQ(DarkModeClassification::kApplyFilter,
+  EXPECT_EQ(DarkModeResult::kApplyFilter,
             classifier->ShouldInvertColor(SK_ColorBLACK));
 
-  EXPECT_EQ(DarkModeClassification::kDoNotApplyFilter,
+  EXPECT_EQ(DarkModeResult::kDoNotApplyFilter,
             classifier->ShouldInvertColor(SK_ColorWHITE));
-  EXPECT_EQ(DarkModeClassification::kDoNotApplyFilter,
+  EXPECT_EQ(DarkModeResult::kDoNotApplyFilter,
             classifier->ShouldInvertColor(GetColorWithBrightness(
                 settings.text_brightness_threshold + 5)));
-  EXPECT_EQ(DarkModeClassification::kDoNotApplyFilter,
+  EXPECT_EQ(DarkModeResult::kDoNotApplyFilter,
             classifier->ShouldInvertColor(
                 GetColorWithBrightness(settings.text_brightness_threshold)));
 }
@@ -56,18 +55,18 @@ TEST(DarkModeColorClassifierTest, ApplyFilterToLightBackgroundElementsOnly) {
   auto classifier =
       DarkModeColorClassifier::MakeBackgroundColorClassifier(settings);
 
-  EXPECT_EQ(DarkModeClassification::kApplyFilter,
+  EXPECT_EQ(DarkModeResult::kApplyFilter,
             classifier->ShouldInvertColor(SK_ColorWHITE));
-  EXPECT_EQ(DarkModeClassification::kDoNotApplyFilter,
+  EXPECT_EQ(DarkModeResult::kDoNotApplyFilter,
             classifier->ShouldInvertColor(SK_ColorBLACK));
 
-  EXPECT_EQ(DarkModeClassification::kApplyFilter,
+  EXPECT_EQ(DarkModeResult::kApplyFilter,
             classifier->ShouldInvertColor(GetColorWithBrightness(
                 settings.background_brightness_threshold + 5)));
-  EXPECT_EQ(DarkModeClassification::kDoNotApplyFilter,
+  EXPECT_EQ(DarkModeResult::kDoNotApplyFilter,
             classifier->ShouldInvertColor(GetColorWithBrightness(
                 settings.background_brightness_threshold)));
-  EXPECT_EQ(DarkModeClassification::kDoNotApplyFilter,
+  EXPECT_EQ(DarkModeResult::kDoNotApplyFilter,
             classifier->ShouldInvertColor(GetColorWithBrightness(
                 settings.background_brightness_threshold - 5)));
 }

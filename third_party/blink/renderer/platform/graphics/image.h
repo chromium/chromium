@@ -61,6 +61,7 @@ class GraphicsContext;
 class Image;
 class WebGraphicsContext3DProvider;
 class WebGraphicsContext3DProviderWrapper;
+class DarkModeImageCache;
 
 class PLATFORM_EXPORT Image : public ThreadSafeRefCounted<Image> {
   friend class GeneratedImage;
@@ -252,6 +253,8 @@ class PLATFORM_EXPORT Image : public ThreadSafeRefCounted<Image> {
   // Returns an SkBitmap that is a copy of the image's current frame.
   SkBitmap AsSkBitmapForCurrentFrame(RespectImageOrientationEnum);
 
+  DarkModeImageCache* GetDarkModeImageCache();
+
  protected:
   Image(ImageObserver* = nullptr, bool is_multipart = false);
 
@@ -284,6 +287,7 @@ class PLATFORM_EXPORT Image : public ThreadSafeRefCounted<Image> {
   WeakPersistent<ImageObserver> image_observer_;
   PaintImage::Id stable_image_id_;
   const bool is_multipart_;
+  std::unique_ptr<DarkModeImageCache> dark_mode_image_cache_;
   DISALLOW_COPY_AND_ASSIGN(Image);
 };
 

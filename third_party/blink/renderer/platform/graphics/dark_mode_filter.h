@@ -8,12 +8,9 @@
 #include <memory>
 
 #include "cc/paint/paint_flags.h"
-#include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/dark_mode_settings.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
-#include "third_party/blink/renderer/platform/graphics/paint/paint_image.h"
+#include "third_party/blink/renderer/platform/graphics/dark_mode_types.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/skia/include/core/SkRefCnt.h"
 
 class SkColorFilter;
 
@@ -48,19 +45,31 @@ class PLATFORM_EXPORT DarkModeFilter {
       const cc::PaintFlags& flags,
       ElementRole element_role);
 
-  // Decides whether to apply dark mode or not based on |src| and |dst|. True
-  // means dark mode should be applied. For applying the dark mode color filter
-  // to the image call ApplyToImageFlagsIfNeeded().
-  bool AnalyzeShouldApplyToImage(const SkRect& src, const SkRect& dst);
+  // Decides whether to apply dark mode or not based on |src| and |dst|.
+  // DarkModeResult::kDoNotApplyFilter - Dark mode filter should not be applied.
+  // DarkModeResult::kApplyFilter - Dark mode filter should be applied and to
+  // get the color filter GetImageFilter() should be called.
+  // DarkModeResult::kNotClassified - Dark mode filter should be applied and to
+  // get the color filter ApplyToImage() should be called.
+  DarkModeResult AnalyzeShouldApplyToImage(const SkRect& src,
+                                           const SkRect& dst) const;
 
-  // Sets dark mode color filter on the flags based on the classification done
-  // on |paint_image|. |flags| must not be null.
-  void ApplyToImageFlagsIfNeeded(const SkRect& src,
-                                 const SkRect& dst,
-                                 const PaintImage& paint_image,
-                                 cc::PaintFlags* flags);
+  // Returns dark mode color filter based on the classification done on
+  // |pixmap|. The image cannot be classified if pixmap is empty or |src| is
+  // empty or |src| is larger than pixmap bounds. Before calling this function
+  // AnalyzeShouldApplyToImage() must be called for early out or deciding
+  // appropriate function call. This function should be called only if image
+  // policy is set to DarkModeImagePolicy::kFilterSmart.
+  sk_sp<SkColorFilter> ApplyToImage(const SkPixmap& pixmap,
+                                    const SkRect& src,
+                                    const SkRect& dst);
 
-  SkColorFilter* GetImageFilterForTesting() { return image_filter_.get(); }
+  // Returns dark mode color filter for images. Before calling this function
+  // AnalyzeShouldApplyToImage() must be called for early out or deciding
+  // appropriate function call. This function should be called only if image
+  // policy is set to DarkModeImagePolicy::kFilterAll.
+  sk_sp<SkColorFilter> GetImageFilter();
+
   size_t GetInvertedColorCacheSizeForTesting();
 
  private:
@@ -69,10 +78,6 @@ class PLATFORM_EXPORT DarkModeFilter {
   DarkModeSettings settings_;
 
   bool ShouldApplyToColor(SkColor color, ElementRole role);
-  DarkModeClassification ClassifyImage(const DarkModeSettings& settings,
-                                       const SkRect& src,
-                                       const SkRect& dst,
-                                       const PaintImage& paint_image);
 
   std::unique_ptr<DarkModeColorClassifier> text_classifier_;
   std::unique_ptr<DarkModeColorClassifier> background_classifier_;

@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/platform/geometry/float_size.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/graphics/bitmap_image.h"
+#include "third_party/blink/renderer/platform/graphics/dark_mode_image_cache.h"
 #include "third_party/blink/renderer/platform/graphics/dark_mode_image_classifier.h"
 #include "third_party/blink/renderer/platform/graphics/deferred_image_decoder.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
@@ -65,12 +66,7 @@ Image::Image(ImageObserver* observer, bool is_multipart)
       stable_image_id_(PaintImage::GetNextId()),
       is_multipart_(is_multipart) {}
 
-Image::~Image() {
-  // TODO(prashant.n): This logic is needed to purge cache for the same origin
-  // page navigations. Redesign this once dark mode filter module gets moved to
-  // compositor side.
-  DarkModeImageClassifier::RemoveCache(stable_image_id_);
-}
+Image::~Image() = default;
 
 Image* Image::NullImage() {
   DCHECK(IsMainThread());
@@ -363,6 +359,13 @@ SkBitmap Image::AsSkBitmapForCurrentFrame(
   SkBitmap bitmap;
   sk_image->asLegacyBitmap(&bitmap);
   return bitmap;
+}
+
+DarkModeImageCache* Image::GetDarkModeImageCache() {
+  if (!dark_mode_image_cache_)
+    dark_mode_image_cache_ = std::make_unique<DarkModeImageCache>();
+
+  return dark_mode_image_cache_.get();
 }
 
 FloatRect Image::CorrectSrcRectForImageOrientation(FloatSize image_size,
