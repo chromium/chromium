@@ -186,6 +186,11 @@ void BubbleDialogModelHost::Close() {
   // Widget::Close)
   model_->OnWindowClosing(GetPassKey());
 
+  // TODO(pbos): Note that this is in place because GridLayout doesn't handle
+  // View removal correctly (keeps stale pointers). This is in place to prevent
+  // UAFs between Widget::Close() and destroying |this|.
+  SetLayoutManager(nullptr);
+
   // TODO(pbos): Consider turning this into for-each-field remove field.
   RemoveAllChildViews(true);
   field_to_view_.clear();
