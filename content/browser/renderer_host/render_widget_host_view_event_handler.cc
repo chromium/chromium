@@ -994,8 +994,10 @@ bool RenderWidgetHostViewEventHandler::ShouldMoveToCenter(
     gfx::PointF mouse_screen_position) {
   // Do not need to move to center in unadjusted movement mode as
   // the movement value are directly from OS.
+#if defined(OS_WIN)
   if (mouse_locked_unadjusted_movement_)
     return false;
+#endif
 
   gfx::Rect rect = window_->bounds();
   rect = delegate_->ConvertRectToScreen(rect);
