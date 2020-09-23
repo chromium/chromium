@@ -117,9 +117,6 @@ class Keyboard : public ui::EventHandler,
   // details.
   base::flat_map<ui::DomCode, ui::DomCode> pressed_keys_;
 
-  // Current set of modifier flags.
-  int modifier_flags_ = 0;
-
   // Key state changes that are expected to be acknowledged.
   using KeyStateChange = std::pair<ui::KeyEvent, base::TimeTicks>;
   base::flat_map<uint32_t, KeyStateChange> pending_key_acks_;

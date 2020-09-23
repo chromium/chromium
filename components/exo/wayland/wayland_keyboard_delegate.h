@@ -10,7 +10,7 @@
 #include "base/time/time.h"
 #include "build/buildflag.h"
 #include "components/exo/keyboard_delegate.h"
-#include "components/exo/keyboard_observer.h"
+#include "components/exo/keyboard_modifiers.h"
 #include "components/exo/wayland/server_util.h"
 #include "components/exo/wayland/wayland_input_delegate.h"
 #include "ui/base/buildflags.h"
@@ -78,6 +78,9 @@ class WaylandKeyboardDelegate : public WaylandInputDelegate,
   // TODO(hidehiko): Move this to the server in order to share it with
   // zwp_text_input.
   std::unique_ptr<XkbTracker> xkb_tracker_;
+
+  // Tracks the latest modifiers.
+  KeyboardModifiers current_modifiers_{};
 
   DISALLOW_COPY_AND_ASSIGN(WaylandKeyboardDelegate);
 #endif

@@ -90,6 +90,12 @@ uint32_t WaylandKeyboardDelegate::OnKeyboardKey(base::TimeTicks time_stamp,
 
 void WaylandKeyboardDelegate::OnKeyboardModifiers(int modifier_flags) {
   xkb_tracker_->UpdateKeyboardModifiers(modifier_flags);
+
+  // Send the update only when they're different.
+  const KeyboardModifiers modifiers = xkb_tracker_->GetModifiers();
+  if (current_modifiers_ == modifiers)
+    return;
+  current_modifiers_ = modifiers;
   SendKeyboardModifiers();
 }
 
@@ -110,12 +116,11 @@ uint32_t WaylandKeyboardDelegate::DomCodeToKey(ui::DomCode code) const {
 }
 
 void WaylandKeyboardDelegate::SendKeyboardModifiers() {
-  const KeyboardModifiers modifiers = xkb_tracker_->GetModifiers();
   wl_keyboard_send_modifiers(
       keyboard_resource_,
       serial_tracker_->GetNextSerial(SerialTracker::EventType::OTHER_EVENT),
-      modifiers.depressed, modifiers.locked, modifiers.latched,
-      modifiers.group);
+      current_modifiers_.depressed, current_modifiers_.locked,
+      current_modifiers_.latched, current_modifiers_.group);
   wl_client_flush(client());
 }
 
