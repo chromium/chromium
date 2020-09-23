@@ -15,10 +15,10 @@
       <if expr="is_official_build == false">
         <!-- Privileged app host contents. -->
         <include name="IDR_FILE_MANAGER_BROWSER_PROXY_JS" file="browser_proxy.js" type="BINDATA" />
-        <include name="IDR_FILE_MANAGER_FILE_MANAGER_HTML" file="file_manager.html" type="BINDATA" />
-        <include name="IDR_FILE_MANAGER_FILE_MANAGER_CSS" file="file_manager.css" type="BINDATA" />
-        <include name="IDR_FILE_MANAGER_FILE_MANAGER_JS" file="file_manager.js" type="BINDATA" />
-        <include name="IDR_FILE_MANAGER_ICON_192" file="icon192.png" type="BINDATA" />
+        <include name="IDR_FILE_MANAGER_MAIN_HTML" file="main.html" type="BINDATA" />
+        <include name="IDR_FILE_MANAGER_MAIN_CSS" file="main.css" type="BINDATA" />
+        <include name="IDR_FILE_MANAGER_MAIN_JS" file="main.js" type="BINDATA" />
+        <include name="IDR_FILE_MANAGER_ICON_192" file="images/icon192.png" type="BINDATA" />
 
         <!-- Mojo resources -->
         <include name="IDR_FILE_MANAGER_MOJO_LITE_JS"

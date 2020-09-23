@@ -20,12 +20,11 @@ FileManagerUI::FileManagerUI(content::WebUI* web_ui)
   auto source = base::WrapUnique(content::WebUIDataSource::Create(
       chromeos::file_manager::kChromeUIFileManagerHost));
   // The HTML content loaded on chrome://file-manager.
-  source->AddResourcePath("", IDR_FILE_MANAGER_FILE_MANAGER_HTML);
+  source->AddResourcePath("", IDR_FILE_MANAGER_MAIN_HTML);
 
   // The resources requested by chrome://file-manager HTML.
-  source->AddResourcePath("file_manager.css",
-                          IDR_FILE_MANAGER_FILE_MANAGER_CSS);
-  source->AddResourcePath("file_manager.js", IDR_FILE_MANAGER_FILE_MANAGER_JS);
+  source->AddResourcePath("main.css", IDR_FILE_MANAGER_MAIN_CSS);
+  source->AddResourcePath("main.js", IDR_FILE_MANAGER_MAIN_JS);
   source->AddResourcePath("file_manager.mojom-lite.js",
                           IDR_FILE_MANAGER_MOJO_LITE_JS);
   source->AddResourcePath("browser_proxy.js",
@@ -36,7 +35,7 @@ FileManagerUI::FileManagerUI(content::WebUI* web_ui)
   // is set, serve a default page so the user sees your default page instead
   // of an unexpected error. But if DCHECK is set, the user will be a
   // developer and be able to identify an error occurred.
-  source->SetDefaultResource(IDR_FILE_MANAGER_FILE_MANAGER_HTML);
+  source->SetDefaultResource(IDR_FILE_MANAGER_MAIN_HTML);
 #endif  // !DCHECK_IS_ON()
 
   auto* browser_context = web_ui->GetWebContents()->GetBrowserContext();
