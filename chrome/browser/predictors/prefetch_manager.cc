@@ -30,8 +30,6 @@ namespace predictors {
 
 namespace {
 
-// TODO(crbug.com/1095842): Update the annotation once URL allowlist/blocklist
-// are observed to limit the scope of the requests.
 const net::NetworkTrafficAnnotationTag kPrefetchTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("predictive_prefetch",
                                         R"(
@@ -59,11 +57,21 @@ const net::NetworkTrafficAnnotationTag kPrefetchTrafficAnnotation =
         "B) Disable Lite Mode under Settings > Advanced > Lite mode, or "
         "C) Disable 'Make searches and browsing better' under Settings > "
         "   Sync and Google services > Make searches and browsing better"
-      policy_exception_justification: "To be implemented"
+      chrome_policy {
+        URLBlacklist {
+          URLBlacklist: { entries: '*' }
+        }
+      }
+      chrome_policy {
+        URLWhitelist {
+          URLWhitelist { }
+        }
+      }
     }
     comments:
       "This feature can be safely disabled, but enabling it may result in "
-      "faster page loads."
+      "faster page loads. Using either URLBlacklist or URLWhitelist policies "
+      "(or a combination of both) limits the scope of these requests."
 )");
 
 }  // namespace
