@@ -83,6 +83,12 @@ void NearbyShareSettings::GetEnabled(base::OnceCallback<void(bool)> callback) {
 
 void NearbyShareSettings::SetEnabled(bool enabled) {
   pref_service_->SetBoolean(prefs::kNearbySharingEnabledPrefName, enabled);
+  if (enabled) {
+    // We rely on the the UI to enforce that if the feature was enabled for the
+    // first time, that onboarding was run.
+    pref_service_->SetBoolean(prefs::kNearbySharingOnboardingCompletePrefName,
+                              true);
+  }
 }
 
 void NearbyShareSettings::GetDeviceName(

@@ -467,12 +467,25 @@ Polymer({
    * @private
    */
   nearbyShareClick_(event) {
-    if (!this.getPref('nearby_sharing.enabled').value) {
-      this.setPrefValue('nearby_sharing.enabled', true);
-    } else {
-      // Navigate to Nearby Share subpage.
-      settings.Router.getInstance().navigateTo(settings.routes.NEARBY_SHARE);
+    const nearbyEnabled = this.getPref('nearby_sharing.enabled').value;
+    const onboardingComplete =
+        this.getPref('nearby_sharing.onboarding_complete').value;
+    let params = undefined;
+    if (!nearbyEnabled) {
+      if (onboardingComplete) {
+
+        // If we have already run onboarding at least once, we don't need to do
+        // it again, just enabled the feature in place.
+        this.setPrefValue('nearby_sharing.enabled', true);
+        return;
+      }
+      // Otherwise we need to go into the subpage and trigger the onboarding
+      // dialog.
+      params = new URLSearchParams();
+      params.set('onboarding', '');
     }
+    settings.Router.getInstance().navigateTo(
+        settings.routes.NEARBY_SHARE, params);
   },
 
   /** @private */
