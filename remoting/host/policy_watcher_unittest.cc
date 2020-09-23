@@ -530,6 +530,7 @@ INSTANTIATE_TEST_SUITE_P(
                       "RemoteAccessHostdomain",
                       "RemoteAccessHostPolicyForFutureVersion"));
 
+#if !defined(OS_CHROMEOS)
 TEST_F(PolicyWatcherTest, PairingFalseThenTrue) {
   testing::InSequence sequence;
   EXPECT_CALL(mock_policy_callback_,
@@ -559,6 +560,7 @@ TEST_F(PolicyWatcherTest, GnubbyAuth) {
   SetPolicies(gnubby_auth_false_);
   SetPolicies(gnubby_auth_true_);
 }
+#endif  // !defined(OS_CHROMEOS)
 
 TEST_F(PolicyWatcherTest, RemoteAssistanceUiAccess) {
   testing::InSequence sequence;
@@ -595,6 +597,7 @@ TEST_F(PolicyWatcherTest, Relay) {
   SetPolicies(relay_true_);
 }
 
+#if !defined(OS_CHROMEOS)
 TEST_F(PolicyWatcherTest, Curtain) {
   testing::InSequence sequence;
   EXPECT_CALL(mock_policy_callback_,
@@ -661,6 +664,7 @@ TEST_F(PolicyWatcherTest, ThirdPartyAuthPartialToFull) {
   SetPolicies(third_party_auth_partial_);
   SetPolicies(third_party_auth_full_);
 }
+#endif  // !defined(OS_CHROMEOS)
 
 TEST_F(PolicyWatcherTest, UdpPortRange) {
   testing::InSequence sequence;
@@ -693,6 +697,16 @@ TEST_F(PolicyWatcherTest, PolicySchemaAndPolicyWatcherShouldBeInSync) {
   // RemoteAccessHostMatchUsername is marked in policy_templates.json as not
   // supported on Windows and therefore is (by design) excluded from the schema.
   expected_schema.erase(key::kRemoteAccessHostMatchUsername);
+#elif defined(OS_CHROMEOS)
+  // Me2Me Policies are not supported on ChromeOS.
+  expected_schema.erase(key::kRemoteAccessHostAllowGnubbyAuth);
+  expected_schema.erase(key::kRemoteAccessHostAllowClientPairing);
+  expected_schema.erase(key::kRemoteAccessHostMatchUsername);
+  expected_schema.erase(key::kRemoteAccessHostRequireCurtain);
+  expected_schema.erase(key::kRemoteAccessHostTokenUrl);
+  expected_schema.erase(key::kRemoteAccessHostTokenValidationUrl);
+  expected_schema.erase(key::kRemoteAccessHostTokenValidationCertificateIssuer);
+  expected_schema.erase(key::kRemoteAccessHostAllowUiAccessForRemoteAssistance);
 #else  // !defined(OS_WIN)
   // RemoteAssistanceHostAllowUiAccess does not exist on non-Windows platforms.
   expected_schema.erase(key::kRemoteAccessHostAllowUiAccessForRemoteAssistance);
@@ -726,14 +740,14 @@ TEST_F(PolicyWatcherTest, SchemaTypeCheck) {
   // Check one, random "string" policy to see if the type propagated correctly
   // from policy_templates.json file.
   const policy::Schema string_schema =
-      schema->GetKnownProperty("RemoteAccessHostDomain");
+      schema->GetKnownProperty("RemoteAccessHostUdpPortRange");
   EXPECT_TRUE(string_schema.valid());
   EXPECT_EQ(string_schema.type(), base::Value::Type::STRING);
 
   // And check one, random "boolean" policy to see if the type propagated
   // correctly from policy_templates.json file.
   const policy::Schema boolean_schema =
-      schema->GetKnownProperty("RemoteAccessHostRequireCurtain");
+      schema->GetKnownProperty("RemoteAccessHostAllowRelayedConnection");
   EXPECT_TRUE(boolean_schema.valid());
   EXPECT_EQ(boolean_schema.type(), base::Value::Type::BOOLEAN);
 }

@@ -1950,7 +1950,7 @@
       'owners': ['jamiewalch@chromium.org', 'rkjnsn@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
-      'supported_on': ['chrome.*:23-', 'chrome_os:41-'],
+      'supported_on': ['chrome.*:23-'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
@@ -1970,7 +1970,7 @@
       'owners': ['jamiewalch@chromium.org', 'rkjnsn@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
-      'supported_on': ['chrome.*:30-', 'chrome_os:41-'],
+      'supported_on': ['chrome.*:30-'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
@@ -1988,7 +1988,7 @@
       'owners': ['jamiewalch@chromium.org', 'rkjnsn@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
-      'supported_on': ['chrome.*:35-', 'chrome_os:41-'],
+      'supported_on': ['chrome.*:35-'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
@@ -2046,7 +2046,7 @@
       'owners': ['jamiewalch@chromium.org', 'rkjnsn@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
-      'supported_on': ['chrome.linux:25-', 'chrome.mac:25-', 'chrome_os:42-'],
+      'supported_on': ['chrome.linux:25-', 'chrome.mac:25-'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
@@ -2064,7 +2064,7 @@
       'owners': ['jamiewalch@chromium.org', 'rkjnsn@chromium.org'],
       'type': 'string',
       'schema': { 'type': 'string' },
-      'supported_on': ['chrome.*:28-','chrome_os:42-'],
+      'supported_on': ['chrome.*:28-'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
@@ -2075,14 +2075,14 @@
       'tags': ['website-sharing'],
       'desc': '''If this policy is set, the remote access host will require authenticating clients to obtain an authentication token from this URL in order to connect. Must be used in conjunction with RemoteAccessHostTokenValidationUrl.
 
-          This feature is currently disabled server-side.''',
+          This feature is disabled if empty or not set.''',
     },
     {
       'name': 'RemoteAccessHostTokenValidationUrl',
       'owners': ['jamiewalch@chromium.org', 'rkjnsn@chromium.org'],
       'type': 'string',
       'schema': { 'type': 'string' },
-      'supported_on': ['chrome.*:28-','chrome_os:42-'],
+      'supported_on': ['chrome.*:28-'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
@@ -2093,14 +2093,14 @@
       'tags': ['website-sharing'],
       'desc': '''If this policy is set, the remote access host will use this URL to validate authentication tokens from remote access clients, in order to accept connections. Must be used in conjunction with RemoteAccessHostTokenUrl.
 
-          This feature is currently disabled server-side.''',
+          This feature is disabled if empty or not set.''',
     },
     {
       'name': 'RemoteAccessHostTokenValidationCertificateIssuer',
       'owners': ['jamiewalch@chromium.org', 'rkjnsn@chromium.org'],
       'type': 'string',
       'schema': { 'type': 'string' },
-      'supported_on': ['chrome.*:28-','chrome_os:42-'],
+      'supported_on': ['chrome.*:28-'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
@@ -2111,7 +2111,7 @@
       'tags': [],
       'desc': '''If this policy is set, the host will use a client certificate with the given issuer CN to authenticate to RemoteAccessHostTokenValidationUrl. Set it to "*" to use any available client certificate.
 
-          This feature is currently disabled server-side.''',
+          This feature is disabled if empty or not set.''',
     },
     {
       'name': 'RemoteAccessHostDebugOverridePolicies',
