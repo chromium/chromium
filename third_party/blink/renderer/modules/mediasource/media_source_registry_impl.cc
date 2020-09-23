@@ -30,7 +30,10 @@
 
 #include "third_party/blink/renderer/modules/mediasource/media_source_registry_impl.h"
 
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace blink {
 
@@ -44,24 +47,28 @@ void MediaSourceRegistryImpl::Init() {
 void MediaSourceRegistryImpl::RegisterURL(SecurityOrigin*,
                                           const KURL& url,
                                           URLRegistrable* registrable) {
-  // TODO(https://crbug.com/878133): Allow dedicated workers to register
-  // MediaSource objectUrls, too.
-  DCHECK(IsMainThread());
+  MutexLocker lock(map_mutex_);
+
+  DCHECK(IsMainThread() ||
+         RuntimeEnabledFeatures::MediaSourceInWorkersEnabled());
+
   DCHECK_EQ(&registrable->Registry(), this);
   DCHECK(!url.IsEmpty());  // Caller of interface should already enforce this.
 
-  DVLOG(1) << __func__ << " url=" << url;
+  DVLOG(1) << __func__ << " url=" << url << ", IsMainThread=" << IsMainThread();
 
   scoped_refptr<MediaSourceAttachment> attachment =
       base::AdoptRef(static_cast<MediaSourceAttachment*>(registrable));
+
   media_sources_.Set(url.GetString(), std::move(attachment));
 }
 
 void MediaSourceRegistryImpl::UnregisterURL(const KURL& url) {
-  DVLOG(1) << __func__ << " url=" << url;
-  // TODO(https://crbug.com/878133): Allow dedicated workers to unregister
-  // MediaSource objectUrls, too.
-  DCHECK(IsMainThread());
+  MutexLocker lock(map_mutex_);
+
+  DVLOG(1) << __func__ << " url=" << url << ", IsMainThread=" << IsMainThread();
+  DCHECK(IsMainThread() ||
+         RuntimeEnabledFeatures::MediaSourceInWorkersEnabled());
   DCHECK(!url.IsEmpty());  // Caller of interface should already enforce this.
 
   auto iter = media_sources_.find(url.GetString());
@@ -75,6 +82,8 @@ void MediaSourceRegistryImpl::UnregisterURL(const KURL& url) {
 
 scoped_refptr<MediaSourceAttachment> MediaSourceRegistryImpl::LookupMediaSource(
     const String& url) {
+  MutexLocker lock(map_mutex_);
+
   DCHECK(IsMainThread());
   DCHECK(!url.IsEmpty());
   return media_sources_.at(url);

@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/modules/mediasource/media_source.h"
 #include "third_party/blink/renderer/modules/mediasource/media_source_attachment_supplement.h"
 #include "third_party/blink/renderer/modules/mediasource/url_media_source.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 
 namespace blink {
 
@@ -22,7 +23,7 @@ class SameThreadMediaSourceAttachment final
   // The only intended caller of this constructor is
   // URLMediaSource::createObjectUrl, made more clear by using the PassKey. The
   // raw pointer is then adopted into a scoped_refptr in
-  // SameThreadMediaSourceRegistry::RegisterURL.
+  // MediaSourceRegistryImpl::RegisterURL.
   SameThreadMediaSourceAttachment(MediaSource* media_source,
                                   util::PassKey<URLMediaSource>);
 
@@ -33,16 +34,16 @@ class SameThreadMediaSourceAttachment final
   void OnMediaSourceContextDestroyed() final;
 
   // MediaSourceAttachment
+  void Unregister() final;
   MediaSourceTracer* StartAttachingToMediaElement(HTMLMediaElement*,
-                                                  bool* success) override;
-  void CompleteAttachingToMediaElement(
-      MediaSourceTracer* tracer,
-      std::unique_ptr<WebMediaSource>) override;
+                                                  bool* success) final;
+  void CompleteAttachingToMediaElement(MediaSourceTracer* tracer,
+                                       std::unique_ptr<WebMediaSource>) final;
 
-  void Close(MediaSourceTracer* tracer) override;
-  WebTimeRanges BufferedInternal(MediaSourceTracer* tracer) const override;
-  WebTimeRanges SeekableInternal(MediaSourceTracer* tracer) const override;
-  void OnTrackChanged(MediaSourceTracer* tracer, TrackBase*) override;
+  void Close(MediaSourceTracer* tracer) final;
+  WebTimeRanges BufferedInternal(MediaSourceTracer* tracer) const final;
+  WebTimeRanges SeekableInternal(MediaSourceTracer* tracer) const final;
+  void OnTrackChanged(MediaSourceTracer* tracer, TrackBase*) final;
 
   void OnElementTimeUpdate(double time) final;
   void OnElementError() final;
@@ -55,6 +56,10 @@ class SameThreadMediaSourceAttachment final
   // destroyed, then so should be the Media Source's context. This method
   // this precondition in debug mode.
   void VerifyCalledWhileContextsAliveForDebugging() const;
+
+  // Cache of the registered MediaSource. Retains strong reference from
+  // construction of this object until Unregister() is called.
+  Persistent<MediaSource> registered_media_source_;
 
   // These are mostly used to verify correct behavior of the media element and
   // media source state pumping in debug builds. In a cross-thread attachment

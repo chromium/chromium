@@ -6,6 +6,8 @@ import("//third_party/blink/renderer/modules/modules.gni")
 
 blink_modules_sources("mediasource") {
   sources = [
+    "cross_thread_media_source_attachment.cc",
+    "cross_thread_media_source_attachment.h",
     "html_video_element_media_source.cc",
     "html_video_element_media_source.h",
     "media_source.cc",

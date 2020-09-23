@@ -9,7 +9,6 @@
 #include "third_party/blink/renderer/core/html/media/media_source_tracer.h"
 #include "third_party/blink/renderer/modules/mediasource/media_source.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
@@ -48,16 +47,9 @@ class MediaSourceAttachmentSupplement : public MediaSourceAttachment {
 
   virtual void OnMediaSourceContextDestroyed() = 0;
 
-  // MediaSourceAttachment
-  void Unregister() final;
-
  protected:
-  explicit MediaSourceAttachmentSupplement(MediaSource* media_source);
+  MediaSourceAttachmentSupplement();
   ~MediaSourceAttachmentSupplement() override;
-
-  // Cache of the registered MediaSource. Retains strong reference from
-  // construction of this object until Unregister() is called.
-  Persistent<MediaSource> registered_media_source_;
 
   DISALLOW_COPY_AND_ASSIGN(MediaSourceAttachmentSupplement);
 };

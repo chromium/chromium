@@ -34,7 +34,7 @@ namespace blink {
 SameThreadMediaSourceAttachment::SameThreadMediaSourceAttachment(
     MediaSource* media_source,
     util::PassKey<URLMediaSource> /* passkey */)
-    : MediaSourceAttachmentSupplement(media_source),
+    : registered_media_source_(media_source),
       recent_element_time_(0.0),
       element_has_error_(false),
       element_context_destroyed_(false),
@@ -93,6 +93,20 @@ bool SameThreadMediaSourceAttachment::GetElementError(
   DCHECK_EQ(current_element_error_state, element_has_error_);
 
   return current_element_error_state;
+}
+
+void SameThreadMediaSourceAttachment::Unregister() {
+  DVLOG(1) << __func__ << " this=" << this;
+
+  // The only expected caller is a MediaSourceRegistryImpl on the main thread.
+  DCHECK(IsMainThread());
+
+  // Release our strong reference to the MediaSource. Note that revokeObjectURL
+  // of the url associated with this attachment could commonly follow this path
+  // while the MediaSource (and any attachment to an HTMLMediaElement) may still
+  // be alive/active.
+  DCHECK(registered_media_source_);
+  registered_media_source_ = nullptr;
 }
 
 MediaSourceTracer*

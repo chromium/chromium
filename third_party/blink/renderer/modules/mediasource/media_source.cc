@@ -43,12 +43,10 @@ namespace {
 enum class MseExecutionContext {
   kWindow = 0,
 
-  // TODO(wolenetz): Support MSE usage in dedicated workers. See
-  // https://crbug.com/878133.
   kDedicatedWorker = 1,
 
-  // TODO(wolenetz): Consider supporting MSE usage in SharedWorkers. See
-  // https://crbug.com/1054566.
+  // TODO(https://crbug.com/1054566): Consider supporting MSE usage in
+  // SharedWorkers.
   kSharedWorker = 2,
   kMaxValue = kSharedWorker
 };
@@ -134,12 +132,11 @@ MediaSource::MediaSource(ExecutionContext* context)
   }
   base::UmaHistogramEnumeration("Media.MSE.ExecutionContext", type);
 
-  // TODO(wolenetz): Actually enable experimental usage of MediaSource API from
-  // dedicated worker contexts. See https://crbug.com/878133.
-  // TODO(wolenetz): Also consider supporting experimental usage of MediaSource
-  // API from shared worker contexts. See https://crbug.com/1054566.
-  CHECK(type == MseExecutionContext::kWindow)
-      << "MSE is not yet supported from workers";
+  // TODO(https://crbug.com/1054566): Also consider supporting experimental
+  // usage of MediaSource API from shared worker contexts. Meanwhile, IDL limits
+  // constructor exposure to not include shared worker.
+  CHECK_NE(type, MseExecutionContext::kSharedWorker)
+      << "MSE is not supported from SharedWorkers";
 }
 
 MediaSource::~MediaSource() {
@@ -888,6 +885,7 @@ bool MediaSource::HasPendingActivity() const {
 }
 
 void MediaSource::ContextDestroyed() {
+  DVLOG(1) << __func__ << " this=" << this;
   if (media_source_attachment_)
     media_source_attachment_->OnMediaSourceContextDestroyed();
   if (!IsClosed())
