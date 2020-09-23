@@ -48403,6 +48403,37 @@
       }
     ]
   },
+  "linux-wpt-payments-fyi-rel": {
+    "isolated_scripts": [
+      {
+        "args": [
+          "payment-handler/",
+          "payment-method-basic-card/",
+          "payment-method-id/",
+          "payment-request/"
+        ],
+        "isolate_name": "wpt_tests_isolate",
+        "merge": {
+          "args": [
+            "--verbose"
+          ],
+          "script": "//third_party/blink/tools/merge_web_test_results.py"
+        },
+        "name": "wpt_tests_suite",
+        "results_handler": "layout tests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "os": "Ubuntu-16.04"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test_id_prefix": "ninja://:wpt_tests_isolate/"
+      }
+    ]
+  },
   "mac-arm64-rel-tests": {
     "gtest_tests": [
       {
