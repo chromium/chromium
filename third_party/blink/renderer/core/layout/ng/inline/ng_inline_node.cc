@@ -677,11 +677,11 @@ class NGInlineNodeDataEditor final {
                              unsigned start_offset) const {
     DCHECK_LE(item.start_offset_, start_offset);
     DCHECK_LT(start_offset, item.end_offset_);
+    const unsigned end_offset = item.end_offset_;
+    if (!item.shape_result_ || item.shape_result_->IsAppliedSpacing())
+      return NGInlineItem(item, start_offset, end_offset, nullptr);
     if (item.start_offset_ == start_offset)
       return item;
-    const unsigned end_offset = item.end_offset_;
-    if (!item.shape_result_)
-      return NGInlineItem(item, start_offset, end_offset, nullptr);
     // TODO(yosin): We should handle |shape_result| doesn't have safe-to-break
     // at start and end, because of |ShapeText()| splits |ShapeResult| ignoring
     // safe-to-break offset.
@@ -701,11 +701,11 @@ class NGInlineNodeDataEditor final {
     DCHECK_LT(item.start_offset_, end_offset);
     DCHECK_LE(end_offset, item.end_offset_);
     DCHECK_EQ(item.layout_object_, layout_text_);
+    const unsigned start_offset = item.start_offset_;
+    if (!item.shape_result_ || item.shape_result_->IsAppliedSpacing())
+      return NGInlineItem(item, start_offset, end_offset, nullptr);
     if (item.end_offset_ == end_offset)
       return item;
-    const unsigned start_offset = item.start_offset_;
-    if (!item.shape_result_)
-      return NGInlineItem(item, start_offset, end_offset, nullptr);
     // TODO(yosin): We should handle |shape_result| doesn't have safe-to-break
     // at start and end, because of |ShapeText()| splits |ShapeResult| ignoring
     // safe-to-break offset.
