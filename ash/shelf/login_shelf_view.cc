@@ -84,6 +84,15 @@ SkColor GetButtonIconColor() {
       AshColorProvider::ContentLayerType::kButtonIconColor);
 }
 
+SkColor GetButtonBackgroundColor() {
+  if (Shell::Get()->session_controller()->GetSessionState() ==
+      session_manager::SessionState::OOBE) {
+    return SkColorSetA(SK_ColorBLACK, 16);  // 6% opacity
+  }
+  return AshColorProvider::Get()->GetControlsLayerColor(
+      AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive);
+}
+
 LoginMetricsRecorder::ShelfButtonClickTarget GetUserClickTarget(int button_id) {
   switch (button_id) {
     case LoginShelfView::kShutdown:
@@ -215,8 +224,7 @@ class LoginShelfButton : public views::LabelButton {
   void PaintButtonContents(gfx::Canvas* canvas) override {
     cc::PaintFlags flags;
     flags.setAntiAlias(true);
-    flags.setColor(AshColorProvider::Get()->GetControlsLayerColor(
-        AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive));
+    flags.setColor(GetButtonBackgroundColor());
     flags.setStyle(cc::PaintFlags::kFill_Style);
     canvas->DrawPath(GetButtonHighlightPath(this), flags);
   }
