@@ -80,6 +80,9 @@ export class TabSearchAppElement extends PolymerElement {
   /** @override */
   ready() {
     super.ready();
+    this.addEventListener(
+        'keydown',
+        (e) => {this.onKeyDown_(/** @type {!KeyboardEvent} **/ (e))});
 
     // TODO(tluk): The listener should provide the data needed to update the
     // WebUI without having to make another round trip request to the Browser.
@@ -267,8 +270,6 @@ export class TabSearchAppElement extends PolymerElement {
       return;
     }
 
-    e.stopPropagation();
-
     if (this.getSelectedIndex() === -1) {
       // No tabs matching the search text criteria.
       return;
@@ -279,11 +280,13 @@ export class TabSearchAppElement extends PolymerElement {
       /** @type {!HTMLElement} */ (this.$.selector.selectedItem).focus({
         preventScroll: true
       });
+      e.stopPropagation();
       e.preventDefault();
     } else if (e.key === 'Enter' || e.key === ' ') {
       const selectedItem = this.filteredOpenTabs_[this.getSelectedIndex()];
       this.apiProxy_.switchToTab(
           {tabId: selectedItem.tabId}, !!this.searchText_);
+      e.stopPropagation();
     }
   }
 
@@ -292,6 +295,18 @@ export class TabSearchAppElement extends PolymerElement {
     if (this.$.selector.selected === undefined &&
         this.filteredOpenTabs_.length > 0) {
       this.$.selector.selectIndex(0);
+    }
+  }
+
+  /**
+   * @param {!KeyboardEvent} e
+   * @private
+   */
+  onKeyDown_(e) {
+    if (e.key === 'Escape') {
+      e.stopPropagation();
+      e.preventDefault();
+      this.apiProxy_.closeUI();
     }
   }
 
@@ -306,8 +321,6 @@ export class TabSearchAppElement extends PolymerElement {
       return;
     }
 
-    e.stopPropagation();
-
     if (this.getSelectedIndex() === -1) {
       // No tabs matching the search text criteria.
       return;
@@ -316,6 +329,7 @@ export class TabSearchAppElement extends PolymerElement {
     if (selectorNavigationKeys.includes(e.key)) {
       this.selectorNavigate_(e.key);
       this.updateScrollView_();
+      e.stopPropagation();
       e.preventDefault();
 
       // For some reasons setting combobox/aria-activedescendant on tab-search-search-field
@@ -326,6 +340,7 @@ export class TabSearchAppElement extends PolymerElement {
       const selectedItem = this.filteredOpenTabs_[this.getSelectedIndex()];
       this.apiProxy_.switchToTab(
           {tabId: selectedItem.tabId}, !!this.searchText_);
+      e.stopPropagation();
     }
   }
 

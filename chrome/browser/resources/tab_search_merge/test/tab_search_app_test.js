@@ -355,4 +355,21 @@ suite('TabSearchAppTest', () => {
     await setupTest({windows: [{active: true, tabs}]});
     verifyTabIds(queryRows(), [2, 3, 1]);
   });
+
+  test('Escape key triggers close UI API', async () => {
+    await setupTest(sampleData());
+
+    const elements = [
+      tabSearchApp.shadowRoot.querySelector('#searchField'),
+      tabSearchApp.shadowRoot.querySelector('#tabs'),
+      tabSearchApp.shadowRoot.querySelector('tab-search-item'),
+      tabSearchApp.shadowRoot.querySelector('#feedback-footer'),
+    ];
+
+    for (const element of elements) {
+      keyDownOn(element, 0, [], 'Escape');
+    }
+
+    assertEquals(4, testProxy.getCallCount('closeUI'));
+  });
 });
