@@ -417,7 +417,7 @@
     "label": "//chromeos:chrome_all_tast_tests",
     "type": "generated_script",
     "args": [
-      "--vm-logs-dir=${ISOLATED_OUTDIR}",
+      "--logs-dir=${ISOLATED_OUTDIR}",
     ],
   },
   "chrome_app_unittests": {
@@ -750,7 +750,7 @@
     "label": "//chromeos:cros_browser_sanity_test",
     "type": "generated_script",
     "args": [
-      "--vm-logs-dir=${ISOLATED_OUTDIR}",
+      "--logs-dir=${ISOLATED_OUTDIR}",
       "cros_browser_sanity_test",
     ],
   },
@@ -794,7 +794,7 @@
     "label": "//chromeos:disk_usage_tast_test",
     "type": "generated_script",
     "args": [
-      "--vm-logs-dir=${ISOLATED_OUTDIR}",
+      "--logs-dir=${ISOLATED_OUTDIR}",
     ],
   },
   "display_unittests": {

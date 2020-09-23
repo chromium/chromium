@@ -1467,6 +1467,7 @@ class MetaBuildWrapper(object):
           '../../testing/test_env.py',
           os.path.join('bin', 'run_%s' % target),
           '--flash',
+          '--logs-dir=${ISOLATED_OUTDIR}',
       ]
     elif use_xvfb and test_type == 'windowed_test_launcher':
       extra_files.append('../../testing/xvfb.py')
