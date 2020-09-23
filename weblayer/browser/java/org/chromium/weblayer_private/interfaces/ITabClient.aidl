@@ -43,4 +43,7 @@ interface ITabClient {
   // Added in M85
   void onScrollNotification(
           in int notificationType, in float currentScrollRatio) = 10;
+
+  // Added in M87
+  void onVerticalScrollOffsetChanged(in int offset) = 11;
 }

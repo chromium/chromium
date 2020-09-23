@@ -41,6 +41,8 @@ import org.chromium.components.find_in_page.FindMatchRectsDetails;
 import org.chromium.components.find_in_page.FindResultBar;
 import org.chromium.components.infobars.InfoBar;
 import org.chromium.components.url_formatter.UrlFormatter;
+import org.chromium.content_public.browser.GestureListenerManager;
+import org.chromium.content_public.browser.GestureStateListenerWithScroll;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.SelectionClient;
@@ -133,6 +135,9 @@ public final class TabImpl extends ITab.Stub implements LoginPrompt.Observer {
     private WebLayerAccessibilityUtil.Observer mAccessibilityObserver;
 
     private Set<FaviconCallbackProxy> mFaviconCallbackProxies = new HashSet<>();
+
+    // Only non-null if scroll offsets have been requested.
+    private @Nullable GestureStateListenerWithScroll mGestureStateListenerWithScroll;
 
     private static class InternalAccessDelegateImpl
             implements ViewEventSink.InternalAccessDelegate {
@@ -570,6 +575,31 @@ public final class TabImpl extends ITab.Stub implements LoginPrompt.Observer {
         TabImplJni.get().setTranslateTargetLanguage(mNativeTab, targetLanguage);
     }
 
+    @Override
+    public void setScrollOffsetsEnabled(boolean enabled) {
+        if (enabled) {
+            if (mGestureStateListenerWithScroll == null) {
+                mGestureStateListenerWithScroll = new GestureStateListenerWithScroll() {
+                    @Override
+                    public void onScrollOffsetOrExtentChanged(
+                            int scrollOffsetY, int scrollExtentY) {
+                        try {
+                            mClient.onVerticalScrollOffsetChanged(scrollOffsetY);
+                        } catch (RemoteException e) {
+                            throw new APICallException(e);
+                        }
+                    }
+                };
+                GestureListenerManager.fromWebContents(mWebContents)
+                        .addListener(mGestureStateListenerWithScroll);
+            }
+        } else if (mGestureStateListenerWithScroll != null) {
+            GestureListenerManager.fromWebContents(mWebContents)
+                    .removeListener(mGestureStateListenerWithScroll);
+            mGestureStateListenerWithScroll = null;
+        }
+    }
+
     public void removeFaviconCallbackProxy(FaviconCallbackProxy proxy) {
         mFaviconCallbackProxies.remove(proxy);
     }
@@ -872,6 +902,9 @@ public final class TabImpl extends ITab.Stub implements LoginPrompt.Observer {
                 throw new APICallException(e);
             }
         }
+
+        // This is called to ensure a listener is removed from the WebContents.
+        setScrollOffsetsEnabled(false);
 
         if (mTabCallbackProxy != null) {
             mTabCallbackProxy.destroy();

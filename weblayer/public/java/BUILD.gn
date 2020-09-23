@@ -79,6 +79,7 @@ android_library("java") {
     "org/chromium/weblayer/Profile.java",
     "org/chromium/weblayer/RemoteFragment.java",
     "org/chromium/weblayer/ScrollNotificationType.java",
+    "org/chromium/weblayer/ScrollOffsetCallback.java",
     "org/chromium/weblayer/SettingType.java",
     "org/chromium/weblayer/SiteSettingsActivity.java",
     "org/chromium/weblayer/SiteSettingsFragment.java",
