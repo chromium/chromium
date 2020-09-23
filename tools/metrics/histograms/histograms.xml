@@ -67942,7 +67942,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="InertialSensor.AccelerometerAndroidAvailable"
-    enum="BooleanAvailable" expires_after="M85">
+    enum="BooleanAvailable" expires_after="M95">
   <owner>timvolodine@chromium.org</owner>
   <summary>
     Whether the Sensor.TYPE_LINEAR_ACCELERATION was available at the start of
@@ -67951,7 +67951,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="InertialSensor.AccelerometerIncGravityAndroidAvailable"
-    enum="BooleanAvailable" expires_after="M85">
+    enum="BooleanAvailable" expires_after="M95">
   <owner>timvolodine@chromium.org</owner>
   <summary>
     Whether the Sensor.TYPE_ACCELEROMETER was available at the start of Device
@@ -67960,7 +67960,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="InertialSensor.AccelerometerWindowsAvailable"
-    enum="BooleanAvailable" expires_after="M85">
+    enum="BooleanAvailable" expires_after="M95">
   <owner>timvolodine@chromium.org</owner>
   <summary>
     Whether the SENSOR_TYPE_ACCELEROMETER_3D was available at the start of
@@ -67969,7 +67969,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="InertialSensor.DeviceOrientationSensorAndroid"
-    enum="DeviceOrientationSensorTypeAndroid" expires_after="M85">
+    enum="DeviceOrientationSensorTypeAndroid" expires_after="M95">
   <owner>timvolodine@chromium.org</owner>
   <summary>
     Provides a histogram of the base sensors (if any) that are used at the start
@@ -67981,7 +67981,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="InertialSensor.GyrometerWindowsAvailable"
-    enum="BooleanAvailable" expires_after="M85">
+    enum="BooleanAvailable" expires_after="M95">
   <owner>timvolodine@chromium.org</owner>
   <summary>
     Whether the SENSOR_TYPE_GYROMETER_3D was available at the start of Device
@@ -67990,7 +67990,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="InertialSensor.GyroscopeAndroidAvailable"
-    enum="BooleanAvailable" expires_after="M85">
+    enum="BooleanAvailable" expires_after="M95">
   <owner>timvolodine@chromium.org</owner>
   <summary>
     Whether the Sensor.TYPE_GYROSCOPE was available at the start of Device
@@ -67999,7 +67999,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="InertialSensor.InclinometerWindowsAvailable"
-    enum="BooleanAvailable" expires_after="M85">
+    enum="BooleanAvailable" expires_after="M95">
   <owner>timvolodine@chromium.org</owner>
   <summary>
     Whether the SENSOR_TYPE_INCLINOMETER_3D was available at the start of Device
@@ -68008,7 +68008,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="InertialSensor.MotionDefaultAvailable" enum="BooleanAvailable"
-    expires_after="M85">
+    expires_after="M95">
   <owner>timvolodine@chromium.org</owner>
   <summary>
     This histogram counts the number of Device Motion API invocations in the
@@ -68018,7 +68018,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="InertialSensor.MotionMacAvailable" enum="BooleanAvailable"
-    expires_after="M85">
+    expires_after="M95">
   <owner>timvolodine@chromium.org</owner>
   <summary>
     Whether the sudden motion sensor was available at the start of Device Motion
@@ -68027,7 +68027,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="InertialSensor.OrientationDefaultAvailable"
-    enum="BooleanAvailable" expires_after="M85">
+    enum="BooleanAvailable" expires_after="M95">
   <owner>timvolodine@chromium.org</owner>
   <summary>
     This histogram counts the number of Device Orientation API invocations in
@@ -68037,7 +68037,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="InertialSensor.OrientationMacAvailable"
-    enum="BooleanAvailable" expires_after="M85">
+    enum="BooleanAvailable" expires_after="M95">
   <owner>timvolodine@chromium.org</owner>
   <summary>
     Whether the sudden motion sensor was available at the start of Device
