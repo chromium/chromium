@@ -25,10 +25,9 @@ namespace internal {
 namespace {
 
 template <bool thread_safe>
-ALWAYS_INLINE PartitionPage<thread_safe>* PartitionDirectMap(
-    PartitionRoot<thread_safe>* root,
-    int flags,
-    size_t raw_size) {
+ALWAYS_INLINE PartitionPage<thread_safe>*
+PartitionDirectMap(PartitionRoot<thread_safe>* root, int flags, size_t raw_size)
+    EXCLUSIVE_LOCKS_REQUIRED(root->lock_) {
   size_t size = PartitionBucket<thread_safe>::get_direct_map_size(raw_size);
 
   // Because we need to fake looking like a super page, we need to allocate

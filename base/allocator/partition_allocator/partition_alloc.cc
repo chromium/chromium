@@ -28,8 +28,13 @@ NOINLINE void PartitionRoot<thread_safe>::OutOfMemory(size_t size) {
 #if !defined(ARCH_CPU_64_BITS)
   // Check whether this OOM is due to a lot of super pages that are allocated
   // but not committed, probably due to http://crbug.com/421387.
-  if (total_size_of_super_pages + total_size_of_direct_mapped_pages -
-          total_size_of_committed_pages >
+  //
+  // Reading values without locking is fine here, we are going to crash anyway,
+  // this is used for reporting only, and concurrent successful allocations are
+  // unlikely.
+  if (TS_UNCHECKED_READ(total_size_of_super_pages) +
+          TS_UNCHECKED_READ(total_size_of_direct_mapped_pages) -
+          TS_UNCHECKED_READ(total_size_of_committed_pages) >
       kReasonableSizeOfUnusedPages) {
     internal::PartitionOutOfMemoryWithLotsOfUncommitedPages(size);
   }

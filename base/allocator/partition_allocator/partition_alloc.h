@@ -384,9 +384,9 @@ struct BASE_EXPORT PartitionRoot {
   // Invariant: total_size_of_committed_pages <=
   //                total_size_of_super_pages +
   //                total_size_of_direct_mapped_pages.
-  size_t total_size_of_committed_pages = 0;
-  size_t total_size_of_super_pages = 0;
-  size_t total_size_of_direct_mapped_pages = 0;
+  size_t total_size_of_committed_pages GUARDED_BY(lock_) = 0;
+  size_t total_size_of_super_pages GUARDED_BY(lock_) = 0;
+  size_t total_size_of_direct_mapped_pages GUARDED_BY(lock_) = 0;
   bool is_thread_safe = thread_safe;
   // TODO(bartekn): Consider size of added extras (cookies and/or tag, or
   // nothing) instead of true|false, so that we can just add or subtract the
@@ -440,8 +440,10 @@ struct BASE_EXPORT PartitionRoot {
   ALWAYS_INLINE static bool IsValidPage(Page* page);
   ALWAYS_INLINE static PartitionRoot* FromPage(Page* page);
 
-  ALWAYS_INLINE void IncreaseCommittedPages(size_t len);
-  ALWAYS_INLINE void DecreaseCommittedPages(size_t len);
+  ALWAYS_INLINE void IncreaseCommittedPages(size_t len)
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  ALWAYS_INLINE void DecreaseCommittedPages(size_t len)
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
   ALWAYS_INLINE void DecommitSystemPages(void* address, size_t length)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
   ALWAYS_INLINE void RecommitSystemPages(void* address, size_t length)
@@ -507,6 +509,10 @@ struct BASE_EXPORT PartitionRoot {
 
   internal::ThreadCache* thread_cache_for_testing() const {
     return with_thread_cache ? internal::ThreadCache::Get() : nullptr;
+  }
+  size_t total_size_of_committed_pages_for_testing() {
+    ScopedGuard guard{lock_};
+    return total_size_of_committed_pages;
   }
 
  private:

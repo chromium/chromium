@@ -23,6 +23,7 @@ include_rules = [
     "+base/third_party/double_conversion",
     "+base/template_util.h",
     "+base/test/metrics/histogram_tester.h",
+    "+base/thread_annotations.h",
     "+base/threading",
     "+base/time/time.h",
     "+base/tuple.h",

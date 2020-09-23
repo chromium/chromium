@@ -35,6 +35,7 @@
 #include "base/allocator/partition_allocator/page_allocator.h"
 #include "base/debug/alias.h"
 #include "base/strings/safe_sprintf.h"
+#include "base/thread_annotations.h"
 #include "components/crash/core/common/crash_key.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partition_allocator.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
@@ -145,10 +146,15 @@ class LightPartitionStatsDumperImpl : public base::PartitionStatsDumper {
 size_t Partitions::TotalSizeOfCommittedPages() {
   DCHECK(initialized_);
   size_t total_size = 0;
-  total_size += FastMallocPartition()->total_size_of_committed_pages;
-  total_size += ArrayBufferPartition()->total_size_of_committed_pages;
-  total_size += BufferPartition()->total_size_of_committed_pages;
-  total_size += LayoutPartition()->total_size_of_committed_pages;
+  // Racy reads below: this is fine to collect statistics.
+  total_size +=
+      TS_UNCHECKED_READ(FastMallocPartition()->total_size_of_committed_pages);
+  total_size +=
+      TS_UNCHECKED_READ(ArrayBufferPartition()->total_size_of_committed_pages);
+  total_size +=
+      TS_UNCHECKED_READ(BufferPartition()->total_size_of_committed_pages);
+  total_size +=
+      TS_UNCHECKED_READ(LayoutPartition()->total_size_of_committed_pages);
   return total_size;
 }
 

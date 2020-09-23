@@ -24,6 +24,7 @@ template <bool thread_safe>
 ALWAYS_INLINE DeferredUnmap
 PartitionDirectUnmap(PartitionPage<thread_safe>* page) {
   PartitionRoot<thread_safe>* root = PartitionRoot<thread_safe>::FromPage(page);
+  root->lock_.AssertAcquired();
   const PartitionDirectMapExtent<thread_safe>* extent =
       PartitionDirectMapExtent<thread_safe>::FromPage(page);
   size_t unmap_size = extent->map_size;
@@ -109,6 +110,10 @@ PartitionPage<thread_safe>* PartitionPage<thread_safe>::get_sentinel_page() {
 
 template <bool thread_safe>
 DeferredUnmap PartitionPage<thread_safe>::FreeSlowPath() {
+#if DCHECK_IS_ON()
+  auto* root = PartitionRoot<thread_safe>::FromPage(this);
+  root->lock_.AssertAcquired();
+#endif
   PA_DCHECK(this != get_sentinel_page());
   if (LIKELY(num_allocated_slots == 0)) {
     // Page became fully unused.
