@@ -99,7 +99,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
         // Requests an immersive session with environment integration.
 
         let options = {
-          requiredFeatures: ['depth'],
+          requiredFeatures: ['depth-sensing'],
         };
 
         navigator.xr.requestSession('immersive-ar', options).then((session) => {

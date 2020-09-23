@@ -138,7 +138,7 @@ base::Optional<device::mojom::XRSessionFeature> StringToXRSessionFeature(
              feature_string == "plane-detection") {
     return device::mojom::XRSessionFeature::PLANE_DETECTION;
   } else if (RuntimeEnabledFeatures::WebXRDepthEnabled(context) &&
-             feature_string == "depth") {
+             feature_string == "depth-sensing") {
     return device::mojom::XRSessionFeature::DEPTH;
   }
 
