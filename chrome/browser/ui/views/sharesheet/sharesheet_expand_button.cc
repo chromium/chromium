@@ -47,13 +47,18 @@ SharesheetExpandButton::SharesheetExpandButton(views::ButtonListener* listener)
 void SharesheetExpandButton::SetDefaultView() {
   icon_->SetImage(
       gfx::CreateVectorIcon(kCaretDownIcon, kCaretIconSize, kLabelColor));
-  label_->SetText(l10n_util::GetStringUTF16(IDS_SHARESHEET_MORE_APPS_LABEL));
+  auto display_name = l10n_util::GetStringUTF16(IDS_SHARESHEET_MORE_APPS_LABEL);
+  label_->SetText(display_name);
+  SetAccessibleName(display_name);
 }
 
 void SharesheetExpandButton::SetExpandedView() {
   icon_->SetImage(
       gfx::CreateVectorIcon(kCaretUpIcon, kCaretIconSize, kLabelColor));
-  label_->SetText(l10n_util::GetStringUTF16(IDS_SHARESHEET_FEWER_APPS_LABEL));
+  auto display_name =
+      l10n_util::GetStringUTF16(IDS_SHARESHEET_FEWER_APPS_LABEL);
+  label_->SetText(display_name);
+  SetAccessibleName(display_name);
 }
 
 gfx::Size SharesheetExpandButton::CalculatePreferredSize() const {

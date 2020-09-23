@@ -79,6 +79,7 @@ SharesheetTargetButton::SharesheetTargetButton(
   }
 
   AddChildView(std::move(label_view));
+  SetAccessibleName(display_name);
 
   SetFocusForPlatform();
 }
