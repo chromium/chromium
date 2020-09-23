@@ -2168,7 +2168,7 @@
     ],
 
     'official_goma_mac': [
-      'official', 'goma', 'no_widevine_cdm_host_verification',
+      'official', 'goma', 'no_widevine_cdm_host_verification', 'disable_widevine_signing'
     ],
 
     'official_goma_perf': [
@@ -2683,6 +2683,10 @@
 
     'disable_seed_corpus': {
       'gn_args': 'archive_seed_corpus=false',
+    },
+
+    'disable_widevine_signing': {
+      'gn_args': 'enable_widevine_cdm_host_verification = false'
     },
 
     'dx12vk': {
