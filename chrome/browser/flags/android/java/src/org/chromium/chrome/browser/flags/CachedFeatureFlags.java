@@ -52,7 +52,7 @@ public class CachedFeatureFlags {
             put(ChromeFeatureList.CONDITIONAL_TAB_STRIP_ANDROID, false);
             put(ChromeFeatureList.HOMEPAGE_LOCATION_POLICY, false);
             put(ChromeFeatureList.SERVICE_MANAGER_FOR_DOWNLOAD, false);
-            put(ChromeFeatureList.SERVICE_MANAGER_FOR_BACKGROUND_PREFETCH, false);
+            put(ChromeFeatureList.SERVICE_MANAGER_FOR_BACKGROUND_PREFETCH, true);
             put(ChromeFeatureList.INTEREST_FEED_CONTENT_SUGGESTIONS, true);
             put(ChromeFeatureList.COMMAND_LINE_ON_NON_ROOTED, false);
             put(ChromeFeatureList.DOWNLOADS_AUTO_RESUMPTION_NATIVE, true);

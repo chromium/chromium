@@ -539,7 +539,7 @@ const base::Feature kRelatedSearches{"RelatedSearches",
                                      base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kServiceManagerForBackgroundPrefetch{
-    "ServiceManagerForBackgroundPrefetch", base::FEATURE_DISABLED_BY_DEFAULT};
+    "ServiceManagerForBackgroundPrefetch", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kServiceManagerForDownload{
     "ServiceManagerForDownload", base::FEATURE_ENABLED_BY_DEFAULT};
