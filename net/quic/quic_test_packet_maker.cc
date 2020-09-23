@@ -1384,7 +1384,8 @@ quic::QuicStreamId QuicTestPacketMaker::GetHeadersStreamId() const {
 
 std::string QuicTestPacketMaker::GenerateHttp3SettingsData() {
   quic::SettingsFrame settings;
-  settings.values[quic::SETTINGS_MAX_HEADER_LIST_SIZE] = kQuicMaxHeaderListSize;
+  settings.values[quic::SETTINGS_MAX_FIELD_SECTION_SIZE] =
+      kQuicMaxHeaderListSize;
   settings.values[quic::SETTINGS_QPACK_MAX_TABLE_CAPACITY] =
       quic::kDefaultQpackMaxDynamicTableCapacity;
   settings.values[quic::SETTINGS_QPACK_BLOCKED_STREAMS] =

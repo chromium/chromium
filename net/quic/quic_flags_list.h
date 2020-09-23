@@ -121,12 +121,6 @@ QUIC_FLAG(bool,
           FLAGS_quic_restart_flag_dont_fetch_quic_private_keys_from_leto,
           false)
 
-// In v44 and above, where STOP_WAITING is never sent, close the connection if
-// it's received.
-QUIC_FLAG(bool,
-          FLAGS_quic_reloadable_flag_quic_do_not_accept_stop_waiting,
-          false)
-
 // If true, set burst token to 2 in cwnd bootstrapping experiment.
 QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_conservative_bursts, false)
 
@@ -255,9 +249,6 @@ QUIC_FLAG(bool,
           FLAGS_quic_reloadable_flag_quic_bbr2_fewer_startup_round_trips,
           false)
 
-// If true, enables support for TLS resumption in QUIC.
-QUIC_FLAG(bool, FLAGS_quic_restart_flag_quic_enable_tls_resumption_v4, true)
-
 // If true, support for IETF QUIC 0-rtt is enabled.
 QUIC_FLAG(bool, FLAGS_quic_restart_flag_quic_enable_zero_rtt_for_tls_v2, true)
 
@@ -338,7 +329,7 @@ QUIC_FLAG(
 // If true, convert bytes_left_for_batch_write_ to unsigned int.
 QUIC_FLAG(bool,
           FLAGS_quic_reloadable_flag_quic_fix_bytes_left_for_batch_write,
-          false)
+          true)
 
 // If true, add missing connected checks.
 QUIC_FLAG(bool,
@@ -435,7 +426,7 @@ QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_fix_out_of_order_sending, true)
 // If true, remove processed undecryptable packets.
 QUIC_FLAG(bool,
           FLAGS_quic_reloadable_flag_quic_fix_undecryptable_packets2,
-          false)
+          true)
 
 // If true, QUIC BBRv2 will use inflight byte after congestion event to detect
 // queuing during PROBE_UP.
@@ -443,3 +434,26 @@ QUIC_FLAG(
     bool,
     FLAGS_quic_reloadable_flag_quic_bbr2_use_post_inflight_to_detect_queuing,
     false)
+
+// If true, QUIC BBRv2 will use 15% inflight_hi headroom, which is the default
+// for TCP.
+QUIC_FLAG(bool,
+          FLAGS_quic_reloadable_flag_quic_bbr2_use_tcp_inflight_hi_headroom,
+          false)
+
+// If true, HTTP/3 will treat HTTP/2 specific SETTINGS as error.
+QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_reject_spdy_settings, false)
+
+// If true, discard 0-RTT keys after installing 1-RTT keys on the client side.
+QUIC_FLAG(bool,
+          FLAGS_quic_reloadable_flag_quic_postpone_discarding_zero_rtt_keys,
+          true)
+
+// If true, for IETF QUIC, uses 2 * RTTVAR when calculating PTO delay.
+QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_default_to_2_rttvar, true)
+
+// Deallocate data in QuicMessageFrame right after the corresponding packet is
+// sent.
+QUIC_FLAG(bool,
+          FLAGS_quic_reloadable_flag_quic_deallocate_message_right_after_sent,
+          false)

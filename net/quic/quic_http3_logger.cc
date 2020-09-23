@@ -165,7 +165,7 @@ void QuicHttp3Logger::OnSettingsFrameReceived(
     if (value.first == quic::SETTINGS_QPACK_MAX_TABLE_CAPACITY) {
       UMA_HISTOGRAM_COUNTS_1M(
           "Net.QuicSession.ReceivedSettings.MaxTableCapacity2", value.second);
-    } else if (value.first == quic::SETTINGS_MAX_HEADER_LIST_SIZE) {
+    } else if (value.first == quic::SETTINGS_MAX_FIELD_SECTION_SIZE) {
       UMA_HISTOGRAM_COUNTS_1M(
           "Net.QuicSession.ReceivedSettings.MaxHeaderListSize2", value.second);
     } else if (value.first == quic::SETTINGS_QPACK_BLOCKED_STREAMS) {
