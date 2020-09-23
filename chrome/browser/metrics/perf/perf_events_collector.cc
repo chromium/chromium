@@ -87,6 +87,12 @@ void ExtractVersionNumbers(const std::string& version,
          bugfix_version);
 }
 
+// Returns if a micro-architecture supports the cycles:ppp event.
+bool MicroarchitectureHasCyclesPPPEvent(const std::string& uarch) {
+  return uarch == "Goldmont" || uarch == "GoldmontPlus" ||
+         uarch == "Broadwell" || uarch == "Kabylake" || uarch == "Tigerlake";
+}
+
 // Returns if a micro-architecture supports LBR callgraph profiling.
 bool MicroarchitectureHasLBRCallgraph(const std::string& uarch) {
   return uarch == "Haswell" || uarch == "Broadwell" || uarch == "Skylake" ||
@@ -103,6 +109,16 @@ bool KernelReleaseHasLBRCallgraph(const std::string& release) {
 // Hopefully we never need a space in a command argument.
 const char kPerfCommandDelimiter[] = " ";
 
+// Collect precise=3 (:ppp) cycle events on microarchitectures that support it.
+const char kPerfCyclesPPPCmd[] = "perf record -a -e cycles:ppp -c 1000003";
+
+const char kPerfFPCallgraphPPPCmd[] =
+    "perf record -a -e cycles:ppp -g -c 4000037";
+
+const char kPerfLBRCallgraphPPPCmd[] =
+    "perf record -a -e cycles:ppp -c 4000037 --call-graph lbr";
+
+// Collect default (imprecise) cycle events everywhere else.
 const char kPerfCyclesCmd[] = "perf record -a -e cycles -c 1000003";
 
 const char kPerfFPCallgraphCmd[] = "perf record -a -e cycles -g -c 4000037";
@@ -156,6 +172,9 @@ const std::vector<RandomSelector::WeightAndValue> GetDefaultCommands_x86_64(
   const char* itlb_miss_cycles_cmd = kPerfITLBMissCyclesCmdIvyBridge;
   const char* dtlb_miss_cycles_cmd = kPerfDTLBMissCyclesCmdIvyBridge;
   const char* lbr_cmd = kPerfLBRCmd;
+  const char* cycles_cmd = kPerfCyclesCmd;
+  const char* fp_callgraph_cmd = kPerfFPCallgraphCmd;
+  const char* lbr_callgraph_cmd = kPerfLBRCallgraphCmd;
 
   if (cpu_uarch == "Skylake" || cpu_uarch == "Kabylake" ||
       cpu_uarch == "Tigerlake" || cpu_uarch == "GoldmontPlus") {
@@ -171,6 +190,28 @@ const std::vector<RandomSelector::WeightAndValue> GetDefaultCommands_x86_64(
       cpu_uarch == "Goldmont" || cpu_uarch == "GoldmontPlus") {
     lbr_cmd = kPerfLBRCmdAtom;
   }
+  if (MicroarchitectureHasCyclesPPPEvent(cpu_uarch)) {
+    cycles_cmd = kPerfCyclesPPPCmd;
+    fp_callgraph_cmd = kPerfFPCallgraphPPPCmd;
+    lbr_callgraph_cmd = kPerfLBRCallgraphPPPCmd;
+  }
+
+  cmds.emplace_back(WeightAndValue(50.0, cycles_cmd));
+
+  // Haswell and newer big Intel cores support LBR callstack profiling. This
+  // requires kernel support, which was added in kernel 4.4, and it was
+  // backported to kernel 3.18. Collect LBR callstack profiling where
+  // supported in addition to FP callchains. The former works with binaries
+  // compiled with frame pointers disabled, but it only captures callchains
+  // after profiling is enabled, so it's likely missing the lower frames of
+  // the callstack.
+  if (MicroarchitectureHasLBRCallgraph(cpu_uarch) &&
+      KernelReleaseHasLBRCallgraph(cpuid.release)) {
+    cmds.emplace_back(WeightAndValue(10.0, fp_callgraph_cmd));
+    cmds.emplace_back(WeightAndValue(10.0, lbr_callgraph_cmd));
+  } else {
+    cmds.emplace_back(WeightAndValue(20.0, fp_callgraph_cmd));
+  }
 
   if (cpu_uarch == "IvyBridge" || cpu_uarch == "Haswell" ||
       cpu_uarch == "Broadwell" || cpu_uarch == "SandyBridge" ||
@@ -178,30 +219,15 @@ const std::vector<RandomSelector::WeightAndValue> GetDefaultCommands_x86_64(
       cpu_uarch == "Tigerlake" || cpu_uarch == "Silvermont" ||
       cpu_uarch == "Airmont" || cpu_uarch == "Goldmont" ||
       cpu_uarch == "GoldmontPlus") {
-    cmds.push_back(WeightAndValue(50.0, kPerfCyclesCmd));
-    // Haswell and newer big Intel cores support LBR callstack profiling. This
-    // requires kernel support, which was added in kernel 4.4, and it was
-    // backported to kernel 3.18. Collect LBR callstack profiling where
-    // supported in addition to FP callchains. The former works with binaries
-    // compiled with frame pointers disabled, but it only captures callchains
-    // after profiling is enabled, so it's likely missing the lower frames of
-    // the callstack.
-    if (MicroarchitectureHasLBRCallgraph(cpu_uarch) &&
-        KernelReleaseHasLBRCallgraph(cpuid.release)) {
-      cmds.push_back(WeightAndValue(10.0, kPerfFPCallgraphCmd));
-      cmds.push_back(WeightAndValue(10.0, kPerfLBRCallgraphCmd));
-    } else {
-      cmds.push_back(WeightAndValue(20.0, kPerfFPCallgraphCmd));
-    }
-    cmds.push_back(WeightAndValue(15.0, lbr_cmd));
-    cmds.push_back(WeightAndValue(5.0, itlb_miss_cycles_cmd));
-    cmds.push_back(WeightAndValue(5.0, dtlb_miss_cycles_cmd));
+    cmds.emplace_back(WeightAndValue(15.0, lbr_cmd));
+    cmds.emplace_back(WeightAndValue(5.0, itlb_miss_cycles_cmd));
+    cmds.emplace_back(WeightAndValue(5.0, dtlb_miss_cycles_cmd));
     // Only Goldmont and GoldmontPlus support precise events on last level cache
     // misses.
     if (cpu_uarch == "Goldmont" || cpu_uarch == "GoldmontPlus") {
-      cmds.push_back(WeightAndValue(5.0, kPerfLLCMissesPreciseCmd));
+      cmds.emplace_back(WeightAndValue(5.0, kPerfLLCMissesPreciseCmd));
     } else {
-      cmds.push_back(WeightAndValue(5.0, kPerfLLCMissesCmd));
+      cmds.emplace_back(WeightAndValue(5.0, kPerfLLCMissesCmd));
     }
     return cmds;
   }
@@ -209,12 +235,11 @@ const std::vector<RandomSelector::WeightAndValue> GetDefaultCommands_x86_64(
   // non-Intel CPUs such as AMD, since the event code provided for LLC is
   // Intel specific.
   if (cpuid.vendor=="GenuineIntel"){
-    cmds.push_back(WeightAndValue(75.0, kPerfCyclesCmd));
-    cmds.push_back(WeightAndValue(5.0, kPerfLLCMissesCmd));
+    cmds.emplace_back(WeightAndValue(25.0, cycles_cmd));
+    cmds.emplace_back(WeightAndValue(5.0, kPerfLLCMissesCmd));
   } else {
-    cmds.push_back(WeightAndValue(80.0, kPerfCyclesCmd));
+    cmds.emplace_back(WeightAndValue(30.0, cycles_cmd));
   }
-  cmds.push_back(WeightAndValue(20.0, kPerfFPCallgraphCmd));
   return cmds;
 }
 
@@ -246,13 +271,13 @@ std::vector<RandomSelector::WeightAndValue> GetDefaultCommandsForCpu(
   if (cpuid.arch == "x86" ||      // 32-bit x86, or...
       cpuid.arch == "armv7l" ||   // ARM32
       cpuid.arch == "aarch64") {  // ARM64
-    cmds.push_back(WeightAndValue(80.0, kPerfCyclesCmd));
-    cmds.push_back(WeightAndValue(20.0, kPerfFPCallgraphCmd));
+    cmds.emplace_back(WeightAndValue(80.0, kPerfCyclesCmd));
+    cmds.emplace_back(WeightAndValue(20.0, kPerfFPCallgraphCmd));
     return cmds;
   }
 
   // Unknown CPUs
-  cmds.push_back(WeightAndValue(1.0, kPerfCyclesCmd));
+  cmds.emplace_back(WeightAndValue(1.0, kPerfCyclesCmd));
   return cmds;
 }
 
