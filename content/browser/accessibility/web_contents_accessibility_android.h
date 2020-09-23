@@ -39,6 +39,10 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
       WebContents* web_contents);
   ~WebContentsAccessibilityAndroid() override;
 
+  // Notify the root BrowserAccessibilityManager that this is the
+  // WebContentsAccessibilityAndroid it should talk to.
+  void UpdateBrowserAccessibilityManager();
+
   // --------------------------------------------------------------------------
   // Methods called from Java via JNI
   // --------------------------------------------------------------------------
@@ -297,7 +301,7 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   // receives accessibility events.
   // Owns itself, and destroyed upon WebContentsObserver::WebContentsDestroyed.
   class Connector;
-  Connector* connector_;
+  Connector* connector_ = nullptr;
 
   base::WeakPtrFactory<WebContentsAccessibilityAndroid> weak_ptr_factory_{this};
 

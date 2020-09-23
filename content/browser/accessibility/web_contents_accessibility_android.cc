@@ -346,6 +346,7 @@ void WebContentsAccessibilityAndroid::Connector::UpdateRenderProcessConnection(
     old_rwhva->SetWebContentsAccessibility(nullptr);
   if (new_rwhva)
     new_rwhva->SetWebContentsAccessibility(accessibility_.get());
+  accessibility_->UpdateBrowserAccessibilityManager();
 }
 
 WebContentsAccessibilityAndroid::WebContentsAccessibilityAndroid(
@@ -355,8 +356,12 @@ WebContentsAccessibilityAndroid::WebContentsAccessibilityAndroid(
     : java_ref_(env, obj),
       web_contents_(static_cast<WebContentsImpl*>(web_contents)),
       frame_info_initialized_(false),
-      use_zoom_for_dsf_enabled_(IsUseZoomForDSFEnabled()),
-      connector_(new Connector(web_contents, this)) {
+      use_zoom_for_dsf_enabled_(IsUseZoomForDSFEnabled()) {
+  // We must initialize this after weak_ptr_factory_ because it can result in
+  // calling UpdateBrowserAccessibilityManager() which accesses
+  // weak_ptr_factory_.
+  connector_ = new Connector(web_contents, this);
+
   CollectStats();
 }
 
@@ -370,6 +375,12 @@ WebContentsAccessibilityAndroid::~WebContentsAccessibilityAndroid() {
   DeleteAutofillPopupProxy();
 
   Java_WebContentsAccessibilityImpl_onNativeObjectDestroyed(env, obj);
+}
+
+void WebContentsAccessibilityAndroid::UpdateBrowserAccessibilityManager() {
+  auto* manager = GetRootBrowserAccessibilityManager();
+  if (manager)
+    manager->set_web_contents_accessibility(GetWeakPtr());
 }
 
 void WebContentsAccessibilityAndroid::DeleteEarly(JNIEnv* env) {
