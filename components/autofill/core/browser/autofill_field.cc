@@ -129,20 +129,14 @@ AutofillType AutofillField::ComputedType() const {
     // decision to prefer the heuristics in these cases, but it looks like
     // it might be better to fix this server-side.
     // See http://crbug.com/429236 for background.
-    bool believe_server;
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillPreferServerNamePredictions)) {
-      believe_server = true;
-    } else {
-      believe_server = !(server_type_ == NAME_FULL &&
-                         heuristic_type_ == CREDIT_CARD_NAME_FULL) &&
-                       !(server_type_ == CREDIT_CARD_NAME_FULL &&
-                         heuristic_type_ == NAME_FULL) &&
-                       !(server_type_ == NAME_FIRST &&
-                         heuristic_type_ == CREDIT_CARD_NAME_FIRST) &&
-                       !(server_type_ == NAME_LAST &&
-                         heuristic_type_ == CREDIT_CARD_NAME_LAST);
-    }
+    bool believe_server = !(server_type_ == NAME_FULL &&
+                            heuristic_type_ == CREDIT_CARD_NAME_FULL) &&
+                          !(server_type_ == CREDIT_CARD_NAME_FULL &&
+                            heuristic_type_ == NAME_FULL) &&
+                          !(server_type_ == NAME_FIRST &&
+                            heuristic_type_ == CREDIT_CARD_NAME_FIRST) &&
+                          !(server_type_ == NAME_LAST &&
+                            heuristic_type_ == CREDIT_CARD_NAME_LAST);
 
     // Either way, retain a preference for the the CVC heuristic over the
     // server's password predictions (http://crbug.com/469007)

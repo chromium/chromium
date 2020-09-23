@@ -54,7 +54,6 @@ extern const base::Feature kAutofillPruneSuggestions;
 extern const base::Feature kAutofillMetadataUploads;
 extern const base::Feature kAutofillOffNoServerData;
 extern const base::Feature kAutofillOverrideWithRaterConsensus;
-extern const base::Feature kAutofillPreferServerNamePredictions;
 extern const base::Feature kAutofillPreventMixedFormsFilling;
 extern const base::Feature kAutofillProbableFormSubmissionInBrowser;
 extern const base::Feature kAutofillProfileClientValidation;

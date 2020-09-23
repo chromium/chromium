@@ -191,9 +191,6 @@ const base::Feature kAutofillOffNoServerData{"AutofillOffNoServerData",
 const base::Feature kAutofillOverrideWithRaterConsensus{
     "AutofillOverrideWithRaterConsensus", base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kAutofillPreferServerNamePredictions{
-    "AutofillPreferServerNamePredictions", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // If feature is enabled, autofill will be disabled for mixed forms (forms on
 // HTTPS sites that submit over HTTP).
 const base::Feature kAutofillPreventMixedFormsFilling{
