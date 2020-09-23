@@ -11,6 +11,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_util.h"
+#include "base/test/task_environment.h"
 #include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/chromeos/policy/device_policy_builder.h"
 #include "chrome/browser/chromeos/settings/device_settings_service.h"
@@ -25,7 +26,6 @@ class TestingProfile;
 namespace chromeos {
 
 class DBusThreadManagerSetter;
-class FakePowerManagerClient;
 
 // Wraps the singleton device settings and initializes it to the point where it
 // reports OWNERSHIP_NONE for the ownership status.
@@ -46,6 +46,7 @@ class ScopedDeviceSettingsTestHelper {
 class DeviceSettingsTestBase : public testing::Test {
  protected:
   DeviceSettingsTestBase();
+  explicit DeviceSettingsTestBase(base::test::TaskEnvironment::TimeSource time);
   ~DeviceSettingsTestBase() override;
 
   // testing::Test:
@@ -63,8 +64,6 @@ class DeviceSettingsTestBase : public testing::Test {
   void ReloadDeviceSettings();
 
   void InitOwner(const AccountId& account_id, bool tpm_is_ready);
-
-  FakePowerManagerClient* power_manager_client();
 
   content::BrowserTaskEnvironment task_environment_;
 

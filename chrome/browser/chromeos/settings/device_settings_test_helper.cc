@@ -38,6 +38,10 @@ ScopedDeviceSettingsTestHelper::~ScopedDeviceSettingsTestHelper() {
 DeviceSettingsTestBase::DeviceSettingsTestBase()
     : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP) {}
 
+DeviceSettingsTestBase::DeviceSettingsTestBase(
+    base::test::TaskEnvironment::TimeSource time)
+    : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP, time) {}
+
 DeviceSettingsTestBase::~DeviceSettingsTestBase() {
   CHECK(teardown_called_);
 }
@@ -114,10 +118,6 @@ void DeviceSettingsTestBase::InitOwner(const AccountId& account_id,
   CHECK(service);
   if (tpm_is_ready)
     service->OnTPMTokenReady(true /* token is enabled */);
-}
-
-FakePowerManagerClient* DeviceSettingsTestBase::power_manager_client() {
-  return FakePowerManagerClient::Get();
 }
 
 }  // namespace chromeos

@@ -9,13 +9,14 @@
 
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/power_monitor/test/fake_power_monitor_source.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/simple_test_tick_clock.h"
+#include "base/test/task_environment.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/chromeos/settings/device_settings_test_helper.h"
-#include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/system_clock/system_clock_client.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 
@@ -102,7 +103,9 @@ void SetOffHoursPolicyToProto(em::ChromeDeviceSettingsProto* proto,
 class DeviceOffHoursControllerSimpleTest
     : public chromeos::DeviceSettingsTestBase {
  protected:
-  DeviceOffHoursControllerSimpleTest() = default;
+  DeviceOffHoursControllerSimpleTest()
+      : chromeos::DeviceSettingsTestBase(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   ~DeviceOffHoursControllerSimpleTest() override = default;
 
   void SetUp() override {
@@ -323,21 +326,34 @@ class DeviceOffHoursControllerFakeClockTest
     system_clock_client()->NotifyObserversSystemClockUpdated();
     // Clocks are set to 1970-01-01 00:00:00 UTC, Thursday.
     test_clock_.SetNow(base::Time::UnixEpoch());
-    test_tick_clock_.SetNowTicks(base::TimeTicks::UnixEpoch());
-    device_off_hours_controller()->SetClockForTesting(&test_clock_,
-                                                      &test_tick_clock_);
+    device_off_hours_controller()->SetClockForTesting(
+        &test_clock_, task_environment_.GetMockTickClock());
   }
 
   void AdvanceTestClock(TimeDelta duration) {
     test_clock_.Advance(duration);
-    test_tick_clock_.Advance(duration);
+    task_environment_.FastForwardBy(duration);
+
+    task_environment_.RunUntilIdle();
+    base::RunLoop().RunUntilIdle();
+  }
+
+  void SuspendFor(TimeDelta duration) {
+    fake_power_monitor_source_.Suspend();
+
+    test_clock_.Advance(duration);
+
+    fake_power_monitor_source_.Resume();
+
+    task_environment_.RunUntilIdle();
+    base::RunLoop().RunUntilIdle();
   }
 
   base::Clock* clock() { return &test_clock_; }
 
  private:
   base::SimpleTestClock test_clock_;
-  base::SimpleTestTickClock test_tick_clock_;
+  base::test::ScopedFakePowerMonitorSource fake_power_monitor_source_;
 
   DISALLOW_COPY_AND_ASSIGN(DeviceOffHoursControllerFakeClockTest);
 };
@@ -364,7 +380,7 @@ TEST_F(DeviceOffHoursControllerFakeClockTest, FakeClock) {
   EXPECT_FALSE(device_off_hours_controller()->is_off_hours_mode());
 }
 
-TEST_F(DeviceOffHoursControllerFakeClockTest, CheckSendSuspendDone) {
+TEST_F(DeviceOffHoursControllerFakeClockTest, CheckUnderSuspend) {
   system_clock_client()->SetServiceIsAvailable(true);
   int current_day_of_week = ExtractDayOfWeek(clock()->Now());
   LOG(ERROR) << "day " << current_day_of_week;
@@ -379,12 +395,10 @@ TEST_F(DeviceOffHoursControllerFakeClockTest, CheckSendSuspendDone) {
   UpdateDeviceSettings();
   EXPECT_FALSE(device_off_hours_controller()->is_off_hours_mode());
 
-  AdvanceTestClock(kDay);
-  power_manager_client()->SendSuspendDone();
+  SuspendFor(kDay);
   EXPECT_TRUE(device_off_hours_controller()->is_off_hours_mode());
 
   AdvanceTestClock(kHour);
-  power_manager_client()->SendSuspendDone();
   EXPECT_FALSE(device_off_hours_controller()->is_off_hours_mode());
 }
 
