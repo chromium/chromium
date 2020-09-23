@@ -28,6 +28,10 @@ class MockMediaNotificationProvider : public MediaNotificationProvider {
             [](auto, auto) { return std::make_unique<views::View>(); });
   }
 
+  ~MockMediaNotificationProvider() override {
+    MediaNotificationProvider::Set(nullptr);
+  }
+
   // Medianotificationprovider implementations.
   MOCK_METHOD2(GetMediaNotificationListView,
                std::unique_ptr<views::View>(SkColor, int));
@@ -110,6 +114,15 @@ TEST_F(MediaTrayTest, MediaTrayVisibilityTest) {
   // Media tray should be visible when there is frozen notification.
   provider()->SetHasFrozenNotifications(true);
   SimulateNotificationListChanged();
+  EXPECT_TRUE(media_tray()->GetVisible());
+
+  // Media tray should be hidden when screen is locked.
+  GetSessionControllerClient()->LockScreen();
+  GetSessionControllerClient()->FlushForTest();
+  EXPECT_FALSE(media_tray()->GetVisible());
+
+  // Media tray should be visible again when we unlock the screen.
+  GetSessionControllerClient()->UnlockScreen();
   EXPECT_TRUE(media_tray()->GetVisible());
 }
 

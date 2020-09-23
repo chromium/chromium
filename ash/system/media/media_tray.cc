@@ -65,6 +65,8 @@ MediaTray::MediaTray(Shelf* shelf) : TrayBackgroundView(shelf) {
   if (MediaNotificationProvider::Get())
     MediaNotificationProvider::Get()->AddObserver(this);
 
+  Shell::Get()->session_controller()->AddObserver(this);
+
   auto icon = std::make_unique<views::ImageView>();
   icon->SetTooltipText(l10n_util::GetStringUTF16(
       IDS_ASH_GLOBAL_MEDIA_CONTROLS_BUTTON_TOOLTIP_TEXT));
@@ -82,6 +84,8 @@ MediaTray::~MediaTray() {
 
   if (MediaNotificationProvider::Get())
     MediaNotificationProvider::Get()->RemoveObserver(this);
+
+  Shell::Get()->session_controller()->RemoveObserver(this);
 }
 
 void MediaTray::OnNotificationListChanged() {
@@ -171,13 +175,18 @@ void MediaTray::ClickedOutsideBubble() {
   CloseBubble();
 }
 
+void MediaTray::OnLockStateChanged(bool locked) {
+  UpdateDisplayState();
+}
+
 void MediaTray::UpdateDisplayState() {
   if (!MediaNotificationProvider::Get())
     return;
 
   bool should_show =
-      MediaNotificationProvider::Get()->HasActiveNotifications() ||
-      MediaNotificationProvider::Get()->HasFrozenNotifications();
+      (MediaNotificationProvider::Get()->HasActiveNotifications() ||
+       MediaNotificationProvider::Get()->HasFrozenNotifications()) &&
+      !Shell::Get()->session_controller()->IsScreenLocked();
 
   if (!should_show && bubble_)
     CloseBubble();

@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_MEDIA_MEDIA_TRAY_H_
 
 #include "ash/public/cpp/media_notification_provider_observer.h"
+#include "ash/public/cpp/session/session_observer.h"
 #include "ash/system/tray/tray_background_view.h"
 
 namespace views {
@@ -18,7 +19,8 @@ class Shelf;
 class TrayBubbleWrapper;
 
 class MediaTray : public MediaNotificationProviderObserver,
-                  public TrayBackgroundView {
+                  public TrayBackgroundView,
+                  public SessionObserver {
  public:
   explicit MediaTray(Shelf* shelf);
   ~MediaTray() override;
@@ -36,6 +38,9 @@ class MediaTray : public MediaNotificationProviderObserver,
   void CloseBubble() override;
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override;
   void ClickedOutsideBubble() override;
+
+  // SessionObserver implementation.
+  void OnLockStateChanged(bool locked) override;
 
   TrayBubbleWrapper* tray_bubble_wrapper_for_testing() { return bubble_.get(); }
 

@@ -133,7 +133,8 @@ UnifiedSystemTrayView* UnifiedSystemTrayController::CreateView() {
   unified_view_ = new UnifiedSystemTrayView(this, model_->IsExpandedOnOpen());
   InitFeaturePods();
 
-  if (base::FeatureList::IsEnabled(media::kGlobalMediaControlsForChromeOS)) {
+  if (base::FeatureList::IsEnabled(media::kGlobalMediaControlsForChromeOS) &&
+      !Shell::Get()->session_controller()->IsScreenLocked()) {
     media_controls_controller_ =
         std::make_unique<UnifiedMediaControlsController>(this);
     unified_view_->AddMediaControlsView(
