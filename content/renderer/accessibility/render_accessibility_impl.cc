@@ -137,9 +137,12 @@ void AXTreeSnapshotterImpl::Snapshot(ui::AXMode ax_mode,
 void AXTreeSnapshotterImpl::SnapshotContentTree(ui::AXMode ax_mode,
                                                 size_t max_node_count,
                                                 ui::AXTreeUpdate* response) {
-  WebAXObject root = context_->Root();
-  if (!root.MaybeUpdateLayoutAndCheckValidity())
+  if (!render_frame_->GetWebFrame())
     return;
+  if (!WebAXObject::MaybeUpdateLayoutAndCheckValidity(
+          render_frame_->GetWebFrame()->GetDocument()))
+    return;
+  WebAXObject root = context_->Root();
 
   BlinkAXTreeSource tree_source(render_frame_, ax_mode);
   tree_source.SetRoot(root);
