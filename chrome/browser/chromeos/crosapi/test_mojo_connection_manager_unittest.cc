@@ -20,6 +20,8 @@
 #include "base/test/multiprocess_test.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
+#include "chrome/test/base/scoped_testing_local_state.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
@@ -70,20 +72,22 @@ class TestLacrosChromeService : public crosapi::mojom::LacrosChromeService {
   mojo::Remote<crosapi::mojom::AshChromeService> ash_chrome_service_;
 };
 
-class TestMojoConnectionManagerTest : public testing::Test {
- public:
-  TestMojoConnectionManagerTest() = default;
-  ~TestMojoConnectionManagerTest() override = default;
-};
+using TestMojoConnectionManagerTest = testing::Test;
 
 TEST_F(TestMojoConnectionManagerTest, ConnectWithLacrosChrome) {
+  // Constructing LacrosInitParams requires local state prefs.
+  ScopedTestingLocalState local_state(TestingBrowserProcess::GetGlobal());
+
+  // Create temp dir before task environment, just in case lingering tasks need
+  // to access it.
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
   // Use IO type to support the FileDescriptorWatcher API on POSIX.
   base::test::TaskEnvironment task_environment{
       base::test::TaskEnvironment::MainThreadType::IO};
 
   // Ash-chrome queues an invitation, drop a socket and wait for connection.
-  base::ScopedTempDir temp_dir;
-  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   std::string socket_path =
       temp_dir.GetPath().MaybeAsASCII() + "/lacros.socket";
 

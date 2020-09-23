@@ -12,10 +12,14 @@
 #include "base/process/process_handle.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_paths.h"
+#include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "components/exo/shell_surface_util.h"
+#include "components/metrics/metrics_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_type.h"
@@ -47,6 +51,16 @@ bool IsUserTypeAllowed(const User* user) {
     case user_manager::NUM_USER_TYPES:
       return false;
   }
+}
+
+mojom::LacrosInitParamsPtr GetLacrosInitParams() {
+  auto params = mojom::LacrosInitParams::New();
+  params->ash_chrome_service_version =
+      crosapi::mojom::AshChromeService::Version_;
+  params->ash_metrics_enabled_has_value = true;
+  params->ash_metrics_enabled = g_browser_process->local_state()->GetBoolean(
+      metrics::prefs::kMetricsReportingEnabled);
+  return params;
 }
 
 }  // namespace
@@ -120,10 +134,7 @@ SendMojoInvitationToLacrosChrome(
           invitation.AttachMessagePipe(0 /* token */), /*version=*/0));
   lacros_chrome_service.set_disconnect_handler(
       std::move(mojo_disconnected_callback));
-  auto params = crosapi::mojom::LacrosInitParams::New();
-  params->ash_chrome_service_version =
-      crosapi::mojom::AshChromeService::Version_;
-  lacros_chrome_service->Init(std::move(params));
+  lacros_chrome_service->Init(GetLacrosInitParams());
   lacros_chrome_service->RequestAshChromeServiceReceiver(
       std::move(ash_chrome_service_callback));
   mojo::OutgoingInvitation::Send(std::move(invitation),

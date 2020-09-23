@@ -61,6 +61,17 @@ struct LacrosInitParams {
   // call.
   [MinVersion=1]
   uint32 ash_chrome_service_version@0;
+
+  // Whether |ash_metrics_enabled| has a value. See struct comment.
+  [MinVersion=2]
+  bool ash_metrics_enabled_has_value@1;
+
+  // Whether metrics are enabled in ash-chrome. On lacros first run we inherit
+  // metrics consent from ash, because on Chrome OS metrics consent is chosen
+  // during the out-of-box experience. After first run lacros handles metrics
+  // consent via settings.
+  [MinVersion=2]
+  bool ash_metrics_enabled@2;
 };
 
 // LacrosChromeService defines the APIs that live in lacros-chrome and

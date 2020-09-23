@@ -55,8 +55,6 @@ bool IsLacrosWindow(const aura::Window* window);
 // Invite the lacros-chrome to the mojo universe.
 // Queue messages to establish the mojo connection, so that the passed IPC is
 // available already when lacros-chrome accepts the invitation.
-// TODO(crbug.com/1115092): Pass the initialization parameter over mojo
-// connection.
 mojo::Remote<crosapi::mojom::LacrosChromeService>
 SendMojoInvitationToLacrosChrome(
     mojo::PlatformChannelEndpoint local_endpoint,
