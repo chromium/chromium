@@ -17,6 +17,7 @@
 #include "base/sequenced_task_runner.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
+#include "media/base/media_switches.h"
 #include "media/base/timestamp_constants.h"
 #include "media/base/video_types.h"
 #import "media/capture/video/mac/video_capture_device_avfoundation_utils_mac.h"
@@ -654,9 +655,8 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
     DCHECK_EQ(pixelBufferPixelFormat, sampleBufferPixelFormat);
 
     // First preference is to use an NV12 IOSurface as a GpuMemoryBuffer.
-    // TODO(https://crbug.com/1125879): This path cannot be used in software
-    // mode yet, and so it cannot be enabled yet.
-    constexpr bool kEnableGpuMemoryBuffers = false;
+    static const bool kEnableGpuMemoryBuffers =
+        base::FeatureList::IsEnabled(media::kAVFoundationCaptureV2ZeroCopy);
     if (kEnableGpuMemoryBuffers) {
       IOSurfaceRef ioSurface = CVPixelBufferGetIOSurface(pixelBuffer);
       if (ioSurface && videoPixelFormat == media::PIXEL_FORMAT_NV12) {
