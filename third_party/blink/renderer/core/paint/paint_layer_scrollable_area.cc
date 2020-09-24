@@ -169,6 +169,11 @@ PaintLayerScrollableArea::~PaintLayerScrollableArea() {
   CHECK(HasBeenDisposed());
 }
 
+PaintLayerScrollableArea* PaintLayerScrollableArea::FromNode(const Node& node) {
+  const LayoutBox* box = node.GetLayoutBox();
+  return box ? box->GetScrollableArea() : nullptr;
+}
+
 void PaintLayerScrollableArea::DidScroll(const FloatPoint& position) {
   ScrollableArea::DidScroll(position);
   // This should be alive if it receives composited scroll callbacks.
@@ -1154,6 +1159,18 @@ void PaintLayerScrollableArea::ClampScrollOffsetAfterOverflowChange() {
   if (DelayScrollOffsetClampScope::ClampingIsDelayed()) {
     DelayScrollOffsetClampScope::SetNeedsClamp(this);
     return;
+  }
+
+  const Document& document = GetLayoutBox()->GetDocument();
+  if (document.IsCapturingLayout()) {
+    // Scrollable elements may change size when generating layout for printing,
+    // which may require them to change the scroll position in order to keep the
+    // same content within view. In vertical-rl writing-mode, even the root
+    // frame may be attempted scrolled, because a viewport size change may
+    // affect scroll origin. Save all scroll offsets before clamping, so that
+    // everything can be restored the way it was after printing.
+    if (Node* node = EventTargetNode())
+      document.GetFrame()->EnsureSaveScrollOffset(*node);
   }
 
   UpdateScrollDimensions();

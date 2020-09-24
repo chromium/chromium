@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<style>
+  #iframe {
+      display: block;
+      width: 100%;
+      height: 100px;
+  }
+  #scrollable {
+      position: relative;
+      overflow: auto;
+      height: 100px;
+  }
+  #shapeshifter {
+      position: relative;
+      overflow: auto;
+      height: 100px;
+  }
+  @media print {
+      #shapeshifter {
+          display: flex;
+          overflow: visible;
+      }
+
+      #shapeshifter * {
+          display: none;
+      }
+  }
+</style>
+<iframe id="iframe" src="iframe-with-square.html"></iframe>
+<div id="scrollable">
+  <script>
+    for (var i = 0; i < 200; i++)
+        document.write("filler ");
+  </script>
+  <div id="scrollabletarget" style="width:100px; height:100px; background:green;"></div>
+  <script>
+    for (var i = 0; i < 200; i++)
+        document.write("filler ");
+  </script>
+</div>
+<div id="shapeshifter">
+  <script>
+    for (var i = 0; i < 200; i++)
+        document.write("filler ");
+  </script>
+  <div id="shapeshiftertarget" style="width:100px; height:100px; background:green;"></div>
+  <script>
+    for (var i = 0; i < 200; i++)
+        document.write("filler ");
+  </script>
+</div>
+
+<script>
+  onload = function() {
+      var scroll = iframe.contentWindow.document.getElementById("target").offsetTop;
+      iframe.contentWindow.scrollTo(0, scroll);
+      scrollable.scrollTop = scrollabletarget.offsetTop;
+      shapeshifter.scrollTop = shapeshiftertarget.offsetTop;
+  }
+</script>

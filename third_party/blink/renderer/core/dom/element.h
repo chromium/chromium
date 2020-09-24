@@ -323,10 +323,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   void scrollBy(const ScrollToOptions*);
   void scrollTo(double x, double y);
   void scrollTo(const ScrollToOptions*);
-  // This is similar to GetLayoutBox(), but returns nullptr if it's not
-  // scrollable. Some elements override this to delegate scroll operations to
-  // a descendant LayoutBox.
-  virtual LayoutBox* GetLayoutBoxForScrolling() const;
+  LayoutBox* GetLayoutBoxForScrolling() const override;
 
   IntRect BoundsInViewport() const;
   // Returns an intersection rectangle of the bounds rectangle and the visual

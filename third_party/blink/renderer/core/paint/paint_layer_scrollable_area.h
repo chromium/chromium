@@ -252,6 +252,9 @@ class CORE_EXPORT PaintLayerScrollableArea final
   explicit PaintLayerScrollableArea(PaintLayer&);
   ~PaintLayerScrollableArea() override;
 
+  // Return the PaintLayerScrollableArea (if any) associated with the Node.
+  static PaintLayerScrollableArea* FromNode(const Node&);
+
   void ForceVerticalScrollbarForFirstLayout() { SetHasVerticalScrollbar(true); }
   bool HasHorizontalScrollbar() const { return HorizontalScrollbar(); }
   bool HasVerticalScrollbar() const { return VerticalScrollbar(); }

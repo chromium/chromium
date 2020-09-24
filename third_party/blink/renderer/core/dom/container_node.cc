@@ -658,6 +658,10 @@ void ContainerNode::WillRemoveChildren() {
       ChildFrameDisconnector::kDescendantsOnly);
 }
 
+LayoutBox* ContainerNode::GetLayoutBoxForScrolling() const {
+  return GetLayoutBox();
+}
+
 void ContainerNode::Trace(Visitor* visitor) const {
   visitor->Trace(first_child_);
   visitor->Trace(last_child_);

@@ -155,6 +155,7 @@
 #include "third_party/blink/renderer/core/page/scrolling/text_fragment_selector_generator.h"
 #include "third_party/blink/renderer/core/paint/compositing/paint_layer_compositor.h"
 #include "third_party/blink/renderer/core/paint/object_painter.h"
+#include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/paint/paint_timing.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/scroll/smooth_scroll_sequencer.h"
@@ -464,6 +465,7 @@ void LocalFrame::Trace(Visitor* visitor) const {
   visitor->Trace(main_frame_receiver_);
   visitor->Trace(high_priority_frame_receiver_);
   visitor->Trace(text_fragment_selector_generator_);
+  visitor->Trace(saved_scroll_offsets_);
   Frame::Trace(visitor);
   Supplementable<LocalFrame>::Trace(visitor);
 }
@@ -969,10 +971,12 @@ scoped_refptr<InspectorTaskRunner> LocalFrame::GetInspectorTaskRunner() {
 void LocalFrame::StartPrinting(const FloatSize& page_size,
                                const FloatSize& original_page_size,
                                float maximum_shrink_ratio) {
+  DCHECK(!saved_scroll_offsets_);
   SetPrinting(true, page_size, original_page_size, maximum_shrink_ratio);
 }
 
 void LocalFrame::EndPrinting() {
+  RestoreScrollOffsets();
   SetPrinting(false, FloatSize(), FloatSize(), 0);
 }
 
@@ -1044,6 +1048,33 @@ bool LocalFrame::ShouldUsePrintingLayout() const {
   auto* local_parent = DynamicTo<LocalFrame>(parent);
   return local_parent ? !local_parent->GetDocument()->Printing()
                       : Client()->UsePrintingLayout();
+}
+
+void LocalFrame::EnsureSaveScrollOffset(Node& node) {
+  const auto* scrollable_area = PaintLayerScrollableArea::FromNode(node);
+  if (!scrollable_area)
+    return;
+  if (!saved_scroll_offsets_)
+    saved_scroll_offsets_ = MakeGarbageCollected<SavedScrollOffsets>();
+  // Retain the first scroll offset saved for each scrollable area.
+  if (!saved_scroll_offsets_->Contains(&node))
+    saved_scroll_offsets_->Set(&node, scrollable_area->GetScrollOffset());
+}
+
+void LocalFrame::RestoreScrollOffsets() {
+  if (!saved_scroll_offsets_)
+    return;
+
+  // Restore scroll offsets unconditionally (i.e. without clamping) in case
+  // layout or view sizes haven't been updated yet.
+  for (auto& entry : *saved_scroll_offsets_) {
+    auto* scrollable_area = PaintLayerScrollableArea::FromNode(*entry.key);
+    if (!scrollable_area)
+      continue;
+    scrollable_area->SetScrollOffsetUnconditionally(
+        entry.value, mojom::blink::ScrollType::kProgrammatic);
+  }
+  saved_scroll_offsets_ = nullptr;
 }
 
 FloatSize LocalFrame::ResizePageRectsKeepingRatio(

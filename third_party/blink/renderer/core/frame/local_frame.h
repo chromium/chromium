@@ -297,6 +297,14 @@ class CORE_EXPORT LocalFrame final
 
   void EndPrinting();
   bool ShouldUsePrintingLayout() const;
+
+  // Save the current scroll offset of the scrollable area associated with the
+  // given node (if not already saved). All saved scroll offsets can be restored
+  // via RestoreScrollOffsets() (this will also clear all entries for saved
+  // scroll offsets).
+  void EnsureSaveScrollOffset(Node&);
+  void RestoreScrollOffsets();
+
   FloatSize ResizePageRectsKeepingRatio(const FloatSize& original_size,
                                         const FloatSize& expected_size) const;
 
@@ -905,6 +913,9 @@ class CORE_EXPORT LocalFrame final
   Member<SystemClipboard> system_clipboard_;
   // Access to the global raw/unsanitized system clipboard
   Member<RawSystemClipboard> raw_system_clipboard_;
+
+  using SavedScrollOffsets = HeapHashMap<Member<Node>, ScrollOffset>;
+  Member<SavedScrollOffsets> saved_scroll_offsets_;
 
   mojom::blink::BlinkOptimizationGuideHintsPtr optimization_guide_hints_;
 

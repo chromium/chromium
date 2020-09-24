@@ -825,7 +825,6 @@ class PrepareFrameAndViewForPrint : public blink::WebViewClient,
   bool owns_web_view_ = false;
   blink::WebPrintParams web_print_params_;
   gfx::Size prev_view_size_;
-  gfx::Size prev_scroll_offset_;
   uint32_t expected_pages_count_ = 0;
   base::OnceClosure on_ready_;
   const bool should_print_backgrounds_;
@@ -894,15 +893,6 @@ void PrepareFrameAndViewForPrint::ResizeForPrinting() {
   // flicker in the top left corner behind the preview. See crbug.com/739973.
   if (IsPrintingNodeOrPdfFrame(frame(), node_to_print_))
     return;
-
-  // Backup size and offset if it's a local frame.
-  blink::WebView* web_view = frame_.view();
-  if (blink::WebFrame* web_frame = web_view->MainFrame()) {
-    // TODO(lukasza, weili): Support restoring scroll offset of a remote main
-    // frame - https://crbug.com/734815.
-    if (web_frame->IsWebLocalFrame())
-      prev_scroll_offset_ = web_frame->ToWebLocalFrame()->GetScrollOffset();
-  }
 
   prev_view_size_ = frame()->LocalRoot()->FrameWidget()->Size();
   frame()->LocalRoot()->FrameWidget()->Resize(print_layout_size);
@@ -1036,13 +1026,6 @@ void PrepareFrameAndViewForPrint::RestoreSize() {
     return;
 
   frame()->LocalRoot()->FrameWidget()->Resize(prev_view_size_);
-  blink::WebView* web_view = frame_.GetFrame()->View();
-  if (blink::WebFrame* web_frame = web_view->MainFrame()) {
-    // TODO(lukasza, weili): Support restoring scroll offset of a remote main
-    // frame - https://crbug.com/734815.
-    if (web_frame->IsWebLocalFrame())
-      web_frame->ToWebLocalFrame()->SetScrollOffset(prev_scroll_offset_);
-  }
 }
 
 void PrepareFrameAndViewForPrint::FinishPrinting() {
