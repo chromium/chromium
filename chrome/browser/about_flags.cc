@@ -5920,13 +5920,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(paint_preview::kPaintPreviewShowOnStartup)},
 #endif  // ENABLE_PAINT_PREVIEW && defined(OS_ANDROID)
 
-#if !defined(OS_ANDROID)
-    {"sync-setup-friendly-settings",
-     flag_descriptions::kSyncSetupFriendlySettingsName,
-     flag_descriptions::kSyncSetupFriendlySettingsDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kSyncSetupFriendlySettings)},
-#endif  // !defined(OS_ANDROID)
-
 #if defined(OS_ANDROID)
     {"block-external-form-redirects-no-gesture",
      flag_descriptions::kIntentBlockExternalFormRedirectsNoGestureName,

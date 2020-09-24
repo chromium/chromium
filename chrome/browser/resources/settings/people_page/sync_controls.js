@@ -65,17 +65,6 @@ Polymer({
       type: Object,
       observer: 'syncStatusChanged_',
     },
-
-    /**
-     * If sync page friendly settings is enabled.
-     * @private
-     */
-    syncSetupFriendlySettings_: {
-      type: Boolean,
-      value: function() {
-        return loadTimeData.getBoolean('syncSetupFriendlySettings');
-      }
-    },
   },
 
   /** @private {?settings.SyncBrowserProxy} */

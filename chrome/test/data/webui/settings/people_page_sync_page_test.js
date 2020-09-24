@@ -55,8 +55,7 @@ suite('SyncSettingsTests', function() {
   }
 
   suiteSetup(function() {
-    loadTimeData.overrideValues(
-        {syncSetupFriendlySettings: true, signinAllowed: true});
+    loadTimeData.overrideValues({signinAllowed: true});
   });
 
   setup(function() {

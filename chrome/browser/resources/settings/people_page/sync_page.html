@@ -172,54 +172,30 @@
               on-click="onSyncDashboardLinkClick_"
               hidden="[[syncStatus.supervisedUser]]" external></cr-link-row>
 
-          <template is="dom-if" if="[[!syncSetupFriendlySettings_]]">
-            <div id="encryptionDescription"
-                hidden="[[syncPrefs.passphraseRequired]]"
-                class="hr cr-padded-text">
-              $i18n{encryptionOptionsTitle}
-              <div class="secondary">
-                $i18n{syncDataEncryptedText}
-                <div hidden="[[!syncPrefs.encryptAllData]]">
-                  <iron-icon icon="cr:info-outline"
-                      class="passphrase-reset-icon">
-                  </iron-icon>
-                  $i18nRaw{passphraseResetHintEncryption}
-                </div>
+          <cr-expand-button id="encryptionDescription"
+              hidden="[[syncPrefs.passphraseRequired]]"
+              expanded="{{encryptionExpanded_}}"
+              class="hr">
+            $i18n{encryptionOptionsTitle}
+            <div class="secondary">
+              $i18n{syncDataEncryptedText}
+              <div on-click="onResetSyncClick_"
+                  hidden="[[!syncPrefs.encryptAllData]]">
+                <iron-icon icon="cr:info-outline"
+                    class="passphrase-reset-icon">
+                </iron-icon>
+                $i18nRaw{passphraseResetHintEncryption}
               </div>
             </div>
+          </cr-expand-button>
 
+          <iron-collapse id="encryptionCollapse"
+              opened="[[encryptionExpanded_]]">
             <settings-sync-encryption-options
                 sync-status="[[syncStatus]]" sync-prefs="{{syncPrefs}}"
                 on-passphrase-changed="onPassphraseChanged_">
             </settings-sync-encryption-options>
-          </template>
-
-          <template is="dom-if" if="[[syncSetupFriendlySettings_]]">
-            <cr-expand-button id="encryptionDescription"
-                hidden="[[syncPrefs.passphraseRequired]]"
-                expanded="{{encryptionExpanded_}}"
-                class="hr">
-              $i18n{encryptionOptionsTitle}
-              <div class="secondary">
-                $i18n{syncDataEncryptedText}
-                <div on-click="onResetSyncClick_"
-                    hidden="[[!syncPrefs.encryptAllData]]">
-                  <iron-icon icon="cr:info-outline"
-                      class="passphrase-reset-icon">
-                  </iron-icon>
-                  $i18nRaw{passphraseResetHintEncryption}
-                </div>
-              </div>
-            </cr-expand-button>
-
-            <iron-collapse id="encryptionCollapse"
-                opened="[[encryptionExpanded_]]">
-              <settings-sync-encryption-options
-                  sync-status="[[syncStatus]]" sync-prefs="{{syncPrefs}}"
-                  on-passphrase-changed="onPassphraseChanged_">
-              </settings-sync-encryption-options>
-            </iron-collapse>
-          </template>
+          </iron-collapse>
 
         </div>
       </div>

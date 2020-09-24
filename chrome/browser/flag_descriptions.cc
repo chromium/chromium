@@ -3358,10 +3358,6 @@ const char kTabFreezeDescription[] =
     "Enables freezing eligible tabs when they have been backgrounded for 5 "
     "minutes.";
 
-const char kSyncSetupFriendlySettingsName[] = "Sync setup friendly settings";
-const char kSyncSetupFriendlySettingsDescription[] =
-    "Enable the new sync setup friendly settings";
-
 #endif  // !defined(OS_ANDROID)
 
 // Windows ---------------------------------------------------------------------

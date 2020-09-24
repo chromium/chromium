@@ -1921,9 +1921,6 @@ extern const char kPasswordsWeaknessCheckDescription[];
 extern const char kTabFreezeName[];
 extern const char kTabFreezeDescription[];
 
-extern const char kSyncSetupFriendlySettingsName[];
-extern const char kSyncSetupFriendlySettingsDescription[];
-
 #endif  // defined(OS_ANDROID)
 
 // Windows --------------------------------------------------------------------

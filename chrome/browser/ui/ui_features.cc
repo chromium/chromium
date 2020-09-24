@@ -126,11 +126,6 @@ const base::Feature kWebFooterExperiment{"WebFooterExperiment",
 const base::Feature kWebUITabStrip{"WebUITabStrip",
                                    base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables friendly settings for the |chrome://settings/syncSetup| page.
-// https://crbug.com/1035421.
-const base::Feature kSyncSetupFriendlySettings{
-    "SyncSetupFriendlySettings", base::FEATURE_ENABLED_BY_DEFAULT};
-
 #if defined(OS_CHROMEOS)
 // Enables a warning about connecting to hidden WiFi networks.
 // https://crbug.com/903908

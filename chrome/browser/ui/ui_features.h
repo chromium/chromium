@@ -71,8 +71,6 @@ extern const base::Feature kWebFooterExperiment;
 
 extern const base::Feature kWebUITabStrip;
 
-extern const base::Feature kSyncSetupFriendlySettings;
-
 #if defined(OS_CHROMEOS)
 extern const base::Feature kHiddenNetworkWarning;
 extern const base::Feature kSeparatePointingStickSettings;

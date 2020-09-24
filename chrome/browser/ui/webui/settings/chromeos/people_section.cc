@@ -616,9 +616,6 @@ void AddSyncControlsStrings(content::WebUIDataSource* html_source) {
                           chromeos::features::IsSplitSettingsSyncEnabled());
   html_source->AddBoolean("useBrowserSyncConsent",
                           chromeos::features::ShouldUseBrowserSyncConsent());
-  html_source->AddBoolean(
-      "syncSetupFriendlySettings",
-      base::FeatureList::IsEnabled(::features::kSyncSetupFriendlySettings));
   html_source->AddString(
       "browserSettingsSyncSetupUrl",
       base::StrCat({chrome::kChromeUISettingsURL, chrome::kSyncSetupSubPage}));

@@ -144,16 +144,9 @@ void AddSyncAccountControlStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_PEOPLE_SYNC_PASSWORDS_NOT_WORKING},
       {"peopleSignOut", IDS_SETTINGS_PEOPLE_SIGN_OUT},
       {"useAnotherAccount", IDS_SETTINGS_PEOPLE_SYNC_ANOTHER_ACCOUNT},
+      {"syncAdvancedPageTitle", IDS_SETTINGS_NEW_SYNC_ADVANCED_PAGE_TITLE},
   };
   AddLocalizedStringsBulk(html_source, kLocalizedStrings);
-  if (base::FeatureList::IsEnabled(features::kSyncSetupFriendlySettings)) {
-    html_source->AddLocalizedString("syncAdvancedPageTitle",
-                                    IDS_SETTINGS_NEW_SYNC_ADVANCED_PAGE_TITLE);
-
-  } else {
-    html_source->AddLocalizedString("syncAdvancedPageTitle",
-                                    IDS_SETTINGS_SYNC_ADVANCED_PAGE_TITLE);
-  }
 }
 
 #if defined(OS_CHROMEOS)
@@ -202,6 +195,8 @@ void AddSyncPageStrings(content::WebUIDataSource* html_source) {
       {"syncSetupCancelDialogBody", IDS_SETTINGS_SYNC_SETUP_CANCEL_DIALOG_BODY},
       {"personalizeGoogleServicesTitle",
        IDS_SETTINGS_PERSONALIZE_GOOGLE_SERVICES_TITLE},
+      {"manageSyncedDataTitle",
+       IDS_SETTINGS_NEW_MANAGE_SYNCED_DATA_TITLE_UNIFIED_CONSENT},
   };
   AddLocalizedStringsBulk(html_source, kLocalizedStrings);
 
@@ -235,15 +230,6 @@ void AddSyncPageStrings(content::WebUIDataSource* html_source) {
 #else
           base::ASCIIToUTF16(chrome::kSyncEncryptionHelpURL)));
 #endif
-  if (base::FeatureList::IsEnabled(features::kSyncSetupFriendlySettings)) {
-    html_source->AddLocalizedString(
-        "manageSyncedDataTitle",
-        IDS_SETTINGS_NEW_MANAGE_SYNCED_DATA_TITLE_UNIFIED_CONSENT);
-  } else {
-    html_source->AddLocalizedString(
-        "manageSyncedDataTitle",
-        IDS_SETTINGS_MANAGE_SYNCED_DATA_TITLE_UNIFIED_CONSENT);
-  }
 }
 
 void AddNearbyShareData(content::WebUIDataSource* html_source) {
