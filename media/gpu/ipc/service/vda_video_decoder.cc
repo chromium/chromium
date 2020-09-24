@@ -75,6 +75,7 @@ std::unique_ptr<VideoDecodeAccelerator> CreateAndInitializeVda(
   gl_client.make_context_current = base::BindRepeating(
       &CommandBufferHelper::MakeContextCurrent, command_buffer_helper);
   gl_client.bind_image = base::BindRepeating(&BindImage, command_buffer_helper);
+  gl_client.is_passthrough = command_buffer_helper->IsPassthrough();
 
   std::unique_ptr<GpuVideoDecodeAcceleratorFactory> factory =
       GpuVideoDecodeAcceleratorFactory::Create(gl_client);

@@ -109,6 +109,9 @@ struct MEDIA_GPU_EXPORT GpuVideoDecodeGLClient {
 
   // Callback to return a DecoderContext*.
   CreateAbstractTextureCallback create_abstract_texture;
+
+  // Whether or not the command buffer is passthrough.
+  bool is_passthrough = false;
 };
 
 // Convert vector of VDA::SupportedProfile to vector of

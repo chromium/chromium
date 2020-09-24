@@ -189,6 +189,8 @@ GpuVideoDecodeAccelerator::GpuVideoDecodeAccelerator(
       base::BindRepeating(&GetContextGroup, stub_->AsWeakPtr());
   gl_client_.create_abstract_texture =
       base::BindRepeating(&CreateAbstractTexture, stub_->AsWeakPtr());
+  gl_client_.is_passthrough =
+      stub_->decoder_context()->GetFeatureInfo()->is_passthrough_cmd_decoder();
 }
 
 GpuVideoDecodeAccelerator::~GpuVideoDecodeAccelerator() {

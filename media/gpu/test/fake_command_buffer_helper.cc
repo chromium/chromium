@@ -164,4 +164,8 @@ void FakeCommandBufferHelper::SetWillDestroyStubCB(
   will_destroy_stub_cb_ = std::move(will_destroy_stub_cb);
 }
 
+bool FakeCommandBufferHelper::IsPassthrough() const {
+  return false;
+}
+
 }  // namespace media

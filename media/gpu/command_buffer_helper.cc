@@ -191,6 +191,14 @@ class CommandBufferHelperImpl
     will_destroy_stub_cb_ = std::move(will_destroy_stub_cb);
   }
 
+  bool IsPassthrough() const override {
+    if (!stub_)
+      return false;
+    return stub_->decoder_context()
+        ->GetFeatureInfo()
+        ->is_passthrough_cmd_decoder();
+  }
+
  private:
   ~CommandBufferHelperImpl() override {
     DVLOG(1) << __func__;

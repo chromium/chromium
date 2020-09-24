@@ -1540,13 +1540,10 @@ bool VTVideoDecodeAccelerator::SendFrame(const Frame& frame) {
     gl_params.is_cleared = true;
     gpu::SharedImageBackingGLCommon::UnpackStateAttribs gl_attribs;
 
-    // TODO(https://crbug.com/1108909): Plumb the correct value of
-    // |is_passthrough|, or deprecate the non-passthrough path.
-    const bool is_passthrough = true;
     auto shared_image = std::make_unique<gpu::SharedImageBackingGLImage>(
         gl_image, mailbox, viz_resource_format, frame.image_size, color_space,
         kTopLeft_GrSurfaceOrigin, kOpaque_SkAlphaType, shared_image_usage,
-        gl_params, gl_attribs, is_passthrough);
+        gl_params, gl_attribs, gl_client_.is_passthrough);
 
     const bool success = shared_image_stub->factory()->RegisterBacking(
         std::move(shared_image), /* legacy_mailbox */ true);

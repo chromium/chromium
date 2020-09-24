@@ -134,6 +134,9 @@ class MEDIA_GPU_EXPORT CommandBufferHelper
   // may not change the current context.
   virtual void SetWillDestroyStubCB(WillDestroyStubCB will_destroy_stub_cb) = 0;
 
+  // Is the backing command buffer passthrough (versus validating).
+  virtual bool IsPassthrough() const = 0;
+
  protected:
   explicit CommandBufferHelper(
       scoped_refptr<base::SequencedTaskRunner> task_runner);
