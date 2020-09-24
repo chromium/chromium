@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+FAIL Checking document metadata for text file assert_equals: expected "BackCompat" but got "CSS1Compat"
+PASS Checking DOM for text file
+PASS Checking contents for text file
+Harness: the test ran to completion.
+
