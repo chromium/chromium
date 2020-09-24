@@ -122,6 +122,8 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
                 case ConnectivityManager.TYPE_BLUETOOTH:
                     return ConnectionSubtype.SUBTYPE_UNKNOWN;
                 case ConnectivityManager.TYPE_MOBILE:
+                case ConnectivityManager.TYPE_MOBILE_DUN:
+                case ConnectivityManager.TYPE_MOBILE_HIPRI:
                     // Use information from TelephonyManager to classify the connection.
                     switch (getNetworkSubType()) {
                         case TelephonyManager.NETWORK_TYPE_GPRS:
@@ -1099,6 +1101,8 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
             case ConnectivityManager.TYPE_BLUETOOTH:
                 return ConnectionType.CONNECTION_BLUETOOTH;
             case ConnectivityManager.TYPE_MOBILE:
+            case ConnectivityManager.TYPE_MOBILE_DUN:
+            case ConnectivityManager.TYPE_MOBILE_HIPRI:
                 // Use information from TelephonyManager to classify the connection.
                 switch (subtype) {
                     case TelephonyManager.NETWORK_TYPE_GPRS:
@@ -1119,6 +1123,8 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
                         return ConnectionType.CONNECTION_3G;
                     case TelephonyManager.NETWORK_TYPE_LTE:
                         return ConnectionType.CONNECTION_4G;
+                    case TelephonyManager.NETWORK_TYPE_NR:
+                        return ConnectionType.CONNECTION_5G;
                     default:
                         return ConnectionType.CONNECTION_UNKNOWN;
                 }
