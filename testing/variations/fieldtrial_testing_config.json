@@ -5663,7 +5663,8 @@
                     "params": {
                         "connection_options": "5RTO",
                         "enable_quic": "true",
-                        "quic_version": "h3-Q050"
+                        "quic_version": "h3-Q050",
+                        "retransmittable_on_wire_timeout_milliseconds": "200"
                     },
                     "enable_features": [
                         "QuicDoesNotUseFeatures"
