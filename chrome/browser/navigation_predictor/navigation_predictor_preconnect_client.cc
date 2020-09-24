@@ -155,7 +155,10 @@ void NavigationPredictorPreconnectClient::MaybePreconnectNow(
 
   // The delay beyond the idle socket timeout that net uses when
   // re-preconnecting. If negative, no retries occur.
-  constexpr int retry_delay_ms = 50;
+  const base::TimeDelta retry_delay =
+      base::TimeDelta::FromMilliseconds(base::GetFieldTrialParamByFeatureAsInt(
+          features::kNavigationPredictorPreconnectSocketCompletionTime,
+          "preconnect_socket_completion_time_msec", 50));
 
   // Set/Reset the timer to fire after the preconnect times out. Add an extra
   // delay to make sure the preconnect has expired if it wasn't used.
@@ -164,7 +167,7 @@ void NavigationPredictorPreconnectClient::MaybePreconnectNow(
       base::TimeDelta::FromSeconds(base::GetFieldTrialParamByFeatureAsInt(
           net::features::kNetUnusedIdleSocketTimeout,
           "unused_idle_socket_timeout_seconds", 60)) +
-          base::TimeDelta::FromMilliseconds(retry_delay_ms),
+          retry_delay,
       base::BindOnce(&NavigationPredictorPreconnectClient::MaybePreconnectNow,
                      base::Unretained(this), preconnects_attempted + 1));
 }

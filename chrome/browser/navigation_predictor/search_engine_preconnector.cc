@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
+#include "chrome/browser/navigation_predictor/navigation_predictor_features.h"
 #include "chrome/browser/predictors/loading_predictor.h"
 #include "chrome/browser/predictors/loading_predictor_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -98,7 +99,10 @@ void SearchEnginePreconnector::PreconnectDSE() {
 
   // The delay beyond the idle socket timeout that net uses when
   // re-preconnecting. If negative, no retries occur.
-  constexpr base::TimeDelta kRelayDelay = base::TimeDelta::FromMilliseconds(50);
+  const base::TimeDelta retry_delay =
+      base::TimeDelta::FromMilliseconds(base::GetFieldTrialParamByFeatureAsInt(
+          features::kNavigationPredictorPreconnectSocketCompletionTime,
+          "preconnect_socket_completion_time_msec", 50));
 
   // Set/Reset the timer to fire after the preconnect times out. Add an extra
   // delay to make sure the preconnect has expired if it wasn't used.
@@ -107,7 +111,7 @@ void SearchEnginePreconnector::PreconnectDSE() {
       base::TimeDelta::FromSeconds(base::GetFieldTrialParamByFeatureAsInt(
           net::features::kNetUnusedIdleSocketTimeout,
           "unused_idle_socket_timeout_seconds", 60)) +
-          kRelayDelay,
+          retry_delay,
       base::BindOnce(&SearchEnginePreconnector::PreconnectDSE,
                      base::Unretained(this)));
 }
