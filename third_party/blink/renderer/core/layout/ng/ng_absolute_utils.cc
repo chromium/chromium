@@ -439,6 +439,15 @@ void ComputeOutOfFlowInlineDimensions(
       space, style, border_padding, min_max_sizes, style.LogicalMaxWidth(),
       LengthResolvePhase::kLayout);
 
+  // This implements the transferred min/max sizes per
+  // https://drafts.csswg.org/css-sizing-4/#aspect-ratio
+  if (style.AspectRatio() && dimensions->size.block_size == kIndefiniteSize) {
+    MinMaxSizes sizes = ComputeMinMaxInlineSizesFromAspectRatio(
+        space, style, border_padding, LengthResolvePhase::kLayout);
+    min_inline_size = std::max(sizes.min_size, min_inline_size);
+    max_inline_size = std::min(sizes.max_size, max_inline_size);
+  }
+
   bool is_table = style.IsDisplayTableBox();
   base::Optional<LayoutUnit> inline_size;
   if (!style.LogicalWidth().IsAuto()) {

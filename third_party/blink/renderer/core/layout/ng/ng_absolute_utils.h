@@ -21,7 +21,7 @@ struct NGLogicalStaticPosition;
 
 struct CORE_EXPORT NGLogicalOutOfFlowDimensions {
   NGBoxStrut inset;
-  LogicalSize size;
+  LogicalSize size = {kIndefiniteSize, kIndefiniteSize};
   NGBoxStrut margins;
 };
 
