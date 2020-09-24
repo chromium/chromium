@@ -1664,20 +1664,22 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Blink.Sms.Receive.DestroyedReason"
-    enum="SmsReceiverDestroyedReason" expires_after="M88">
+    enum="SmsReceiverDestroyedReason" expires_after="M92">
   <owner>goto@chromium.org</owner>
   <owner>reillyg@chromium.org</owner>
-  <owner>ayui@chromium.org</owner>
+  <owner>yigu@chromium.org</owner>
+  <owner>web-identity@google.com</owner>
   <summary>
     Records the reason an SMS Service is destroyed before request completion.
   </summary>
 </histogram>
 
 <histogram name="Blink.Sms.Receive.Infobar" enum="SMSReceiverInfobarAction"
-    expires_after="M88">
+    expires_after="M92">
   <owner>goto@chromium.org</owner>
   <owner>reillyg@chromium.org</owner>
-  <owner>ayui@chromium.org</owner>
+  <owner>yigu@chromium.org</owner>
+  <owner>web-identity@google.com</owner>
   <summary>
     Records how many times the infobar was called and how many times the infobar
     replaced a keyboard.
@@ -1685,17 +1687,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Blink.Sms.Receive.Outcome" enum="SMSReceiverOutcome"
-    expires_after="M88">
+    expires_after="M92">
   <owner>goto@chromium.org</owner>
   <owner>reillyg@chromium.org</owner>
-  <owner>ayui@chromium.org</owner>
+  <owner>yigu@chromium.org</owner>
+  <owner>web-identity@google.com</owner>
   <summary>Records the result of a call to the SmsReceiver API.</summary>
 </histogram>
 
-<histogram name="Blink.Sms.Receive.TimeCancel" units="ms" expires_after="M88">
+<histogram name="Blink.Sms.Receive.TimeCancel" units="ms" expires_after="M92">
   <owner>goto@chromium.org</owner>
   <owner>reillyg@chromium.org</owner>
-  <owner>ayui@chromium.org</owner>
+  <owner>yigu@chromium.org</owner>
+  <owner>web-identity@google.com</owner>
   <summary>
     Records the duration from when the API is called to when the user presses
     the cancel button to abort SMS retrieval.
@@ -1703,11 +1707,12 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Blink.Sms.Receive.TimeCancelOnKeyboardDismissal" units="ms"
-    expires_after="M88">
+    expires_after="M92">
   <owner>goto@chromium.org</owner>
   <owner>reillyg@chromium.org</owner>
   <owner>juncai@chromium.org</owner>
-  <owner>ayui@chromium.org</owner>
+  <owner>yigu@chromium.org</owner>
+  <owner>web-identity@google.com</owner>
   <summary>
     Records the duration from when the keyboard was replaced with an infobar
     until when the user clicked the cancel button.
@@ -1715,10 +1720,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Blink.Sms.Receive.TimeCancelOnSuccess" units="ms"
-    expires_after="M88">
+    expires_after="M92">
   <owner>goto@chromium.org</owner>
   <owner>reillyg@chromium.org</owner>
-  <owner>ayui@chromium.org</owner>
+  <owner>yigu@chromium.org</owner>
+  <owner>web-identity@google.com</owner>
   <summary>
     Records the time from when a successful SMS was retrieved to when the user
     presses the Cancel button.
@@ -1726,10 +1732,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Blink.Sms.Receive.TimeContinueOnSuccess" units="ms"
-    expires_after="M88">
+    expires_after="M92">
   <owner>goto@chromium.org</owner>
   <owner>reillyg@chromium.org</owner>
-  <owner>ayui@chromium.org</owner>
+  <owner>yigu@chromium.org</owner>
+  <owner>web-identity@google.com</owner>
   <summary>
     Records the time from when a successful SMS was retrieved to when the user
     presses the Continue button.
@@ -1737,20 +1744,22 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Blink.Sms.Receive.TimeSmsReceive" units="ms"
-    expires_after="M88">
+    expires_after="M92">
   <owner>goto@chromium.org</owner>
   <owner>reillyg@chromium.org</owner>
-  <owner>ayui@chromium.org</owner>
+  <owner>yigu@chromium.org</owner>
+  <owner>web-identity@google.com</owner>
   <summary>
     Records the duration from when the API is called to when an SMS has been
     successfully received.
   </summary>
 </histogram>
 
-<histogram name="Blink.Sms.Receive.TimeSuccess" units="ms" expires_after="M88">
+<histogram name="Blink.Sms.Receive.TimeSuccess" units="ms" expires_after="M92">
   <owner>goto@chromium.org</owner>
   <owner>reillyg@chromium.org</owner>
-  <owner>ayui@chromium.org</owner>
+  <owner>yigu@chromium.org</owner>
+  <owner>web-identity@google.com</owner>
   <summary>
     Records the duration from when the API is called to when the user
     successfully receives the SMS and presses continue to pass the incoming SMS
