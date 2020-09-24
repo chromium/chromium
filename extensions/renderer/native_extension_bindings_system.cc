@@ -28,7 +28,6 @@
 #include "extensions/renderer/console.h"
 #include "extensions/renderer/content_setting.h"
 #include "extensions/renderer/declarative_content_hooks_delegate.h"
-#include "extensions/renderer/dom_hooks_delegate.h"
 #include "extensions/renderer/extension_frame_helper.h"
 #include "extensions/renderer/extension_interaction_provider.h"
 #include "extensions/renderer/extension_js_runner.h"
@@ -471,8 +470,6 @@ NativeExtensionBindingsSystem::NativeExtensionBindingsSystem(
       ->SetDelegate(std::make_unique<WebRequestHooks>());
   api_system_.GetHooksForAPI("declarativeContent")
       ->SetDelegate(std::make_unique<DeclarativeContentHooksDelegate>());
-  api_system_.GetHooksForAPI("dom")->SetDelegate(
-      std::make_unique<DOMHooksDelegate>());
   api_system_.GetHooksForAPI("i18n")->SetDelegate(
       std::make_unique<I18nHooksDelegate>());
   api_system_.GetHooksForAPI("runtime")->SetDelegate(
