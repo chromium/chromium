@@ -23,7 +23,7 @@ using Iter = std::string::const_iterator;
 class Uri::Pim {
  public:
   // The map with pairs scheme -> default_port.
-  static const std::map<std::string, int> kDefaultPorts;
+  static const std::map<std::string, int>& GetDefaultPorts();
 
   Pim();
   Pim(const Pim&);

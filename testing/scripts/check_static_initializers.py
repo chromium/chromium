@@ -45,7 +45,6 @@ _CROS_SI_FILE_ALLOWLIST = {
         'protobuf_http_status.cc',  # TODO(crbug.com/537099): Remove.
         'rpc.pb.cc',  # TODO(crbug.com/537099): Remove.
         'switch_access_menu_view.cc',  # TODO(crbug.com/537099): Remove.
-        'uri_impl.cc',  # TODO(crbug.com/537099): Remove.
     ],
     'nacl_helper_bootstrap': [],
 }

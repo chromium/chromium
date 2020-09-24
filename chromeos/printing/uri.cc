@@ -9,7 +9,6 @@
 #include "base/check_op.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-
 #include "chromeos/printing/uri_impl.h"
 
 namespace chromeos {
@@ -126,8 +125,8 @@ Uri::Uri(const std::string& uri) : pim_(std::make_unique<Pim>()) {
 }
 
 int Uri::GetDefaultPort(const std::string& scheme) {
-  auto it = Pim::kDefaultPorts.find(scheme);
-  if (it == Pim::kDefaultPorts.end())
+  auto it = Pim::GetDefaultPorts().find(scheme);
+  if (it == Pim::GetDefaultPorts().end())
     return -1;
   return it->second;
 }
@@ -164,8 +163,8 @@ std::string Uri::GetNormalized(bool always_print_port) const {
   // Calculates a string representation of the Port number.
   std::string port;
   if (pim_->port() >= 0 &&
-      (always_print_port || Pim::kDefaultPorts.count(pim_->scheme()) == 0 ||
-       Pim::kDefaultPorts.at(pim_->scheme()) != pim_->port()))
+      (always_print_port || Pim::GetDefaultPorts().count(pim_->scheme()) == 0 ||
+       Pim::GetDefaultPorts().at(pim_->scheme()) != pim_->port()))
     port = base::NumberToString(pim_->port());
 
   // Output string. Adds Scheme.
