@@ -43813,6 +43813,7 @@ from previous Chrome versions.
   <int value="964613807" label="ContextualSearchTranslationModel:disabled"/>
   <int value="965037619"
       label="HappinessTrackingSurveysForDesktopSettingsPrivacy:disabled"/>
+  <int value="966134219" label="CrostiniEnableDlc:disabled"/>
   <int value="966415988" label="SyncPseudoUSSPasswords:enabled"/>
   <int value="968355926" label="ExportTaggedPDF:enabled"/>
   <int value="968715406"
@@ -44381,6 +44382,7 @@ from previous Chrome versions.
   <int value="1530182188" label="PdfHonorJsContentSettings:enabled"/>
   <int value="1531164533" label="SyncPseudoUSSFavicons:disabled"/>
   <int value="1531741496" label="DragFromShelfToHomeOrOverview:disabled"/>
+  <int value="1533004890" label="CrostiniEnableDlc:enabled"/>
   <int value="1534222388" label="EnableEphemeralFlashPermission:enabled"/>
   <int value="1534386287" label="SendTabToSelfWhenSignedIn:enabled"/>
   <int value="1534561775" label="HeavyAdPrivacyMitigations:disabled"/>

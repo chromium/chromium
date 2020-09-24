@@ -96,6 +96,8 @@ extern const base::Feature kCrostiniGpuSupport;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kCrostiniUseDlc;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+extern const base::Feature kCrostiniEnableDlc;
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kDiagnosticsApp;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kDisableCryptAuthV1DeviceSync;

@@ -3672,6 +3672,10 @@ const char kCrostiniUseDlcDescription[] =
     "Download the termina VM using the new DLC service instead of the old "
     "component updater.";
 
+const char kCrostiniEnableDlcName[] = "Crostini Enable DLC";
+const char kCrostiniEnableDlcDescription[] =
+    "Signal to Crostini that the DLC service is available for use.";
+
 const char kCryptAuthV2DeviceActivityStatusName[] =
     "CryptAuth Device Activity Status";
 const char kCryptAuthV2DeviceActivityStatusDescription[] =

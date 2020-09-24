@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/crostini/termina_installer.h"
 
+#include <algorithm>
 #include <memory>
 
 #include "base/barrier_closure.h"
@@ -251,6 +252,12 @@ void TerminaInstaller::RemoveComponentIfPresent(
 
 void TerminaInstaller::RemoveDlcIfPresent(base::OnceCallback<void()> callback,
                                           UninstallResult* result) {
+  if (!base::FeatureList::IsEnabled(chromeos::features::kCrostiniEnableDlc)) {
+    // No DLC service, so be a no-op.
+    *result = true;
+    std::move(callback).Run();
+    return;
+  }
   chromeos::DlcserviceClient::Get()->GetExistingDlcs(base::BindOnce(
       [](base::WeakPtr<TerminaInstaller> weak_this,
          base::OnceCallback<void()> callback, UninstallResult* result,
@@ -301,10 +308,9 @@ void TerminaInstaller::RemoveDlc(base::OnceCallback<void()> callback,
 void TerminaInstaller::OnUninstallFinished(
     base::OnceCallback<void(bool)> callback,
     std::vector<UninstallResult> partial_results) {
-  // TODO(crbug/1121463): dlc_result is always false on platforms without DLC
-  // support. Since we aren't using DLC yet ignore DLC failures until we can
-  // distinguish unsupported vs error.
-  std::move(callback).Run(partial_results[0]);
+  bool result = std::all_of(partial_results.begin(), partial_results.end(),
+                            [](bool b) { return b; });
+  std::move(callback).Run(result);
 }
 
 base::FilePath TerminaInstaller::GetInstallLocation() {
