@@ -13,6 +13,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/url_formatter/url_formatter.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/app/application_delegate/startup_information.h"
 #include "ios/chrome/app/application_delegate/tab_opening.h"
 #import "ios/chrome/app/application_delegate/url_opener.h"
 #import "ios/chrome/app/application_delegate/url_opener_params.h"
@@ -33,6 +34,7 @@
 #include "ios/chrome/browser/crash_report/breadcrumbs/features.h"
 #include "ios/chrome/browser/crash_report/crash_keys_helper.h"
 #include "ios/chrome/browser/crash_report/crash_report_helper.h"
+#import "ios/chrome/browser/crash_report/crash_restore_helper.h"
 #import "ios/chrome/browser/first_run/first_run.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/main/browser_list.h"
@@ -50,6 +52,7 @@
 #import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller.h"
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
+#import "ios/chrome/browser/ui/commands/browsing_data_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/omnibox_commands.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
@@ -245,13 +248,18 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 
 #pragma mark - Setters and getters
 
+- (id<BrowsingDataCommands>)browsingDataCommandsHandler {
+  return HandlerForProtocol(self.sceneState.appState.appCommandDispatcher,
+                            BrowsingDataCommands);
+}
+
 - (TabGridCoordinator*)mainCoordinator {
   if (!_mainCoordinator) {
     // Lazily create the main coordinator.
     TabGridCoordinator* tabGridCoordinator = [[TabGridCoordinator alloc]
                      initWithWindow:self.sceneState.window
          applicationCommandEndpoint:self
-        browsingDataCommandEndpoint:self.mainController
+        browsingDataCommandEndpoint:self.browsingDataCommandsHandler
                      regularBrowser:self.mainInterface.browser
                    incognitoBrowser:self.incognitoInterface.browser];
     _mainCoordinator = tabGridCoordinator;
@@ -542,7 +550,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
              initWithBrowserState:self.sceneState.appState.mainBrowserState
                        sceneState:self.sceneState
        applicationCommandEndpoint:self
-      browsingDataCommandEndpoint:self.mainController];
+      browsingDataCommandEndpoint:self.browsingDataCommandsHandler];
 
   // Ensure the main browser is created. This also creates the BVC.
   [self.browserViewWrangler createMainBrowser];
@@ -2117,7 +2125,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   ChromeBrowserState* otrBrowserState =
       self.sceneState.appState.mainBrowserState
           ->GetOffTheRecordChromeBrowserState();
-  [self.mainController
+  [self.browsingDataCommandsHandler
       removeBrowsingDataForBrowserState:otrBrowserState
                              timePeriod:browsing_data::TimePeriod::ALL_TIME
                              removeMask:BrowsingDataRemoveMask::REMOVE_ALL

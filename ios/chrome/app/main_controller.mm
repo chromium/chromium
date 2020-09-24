@@ -29,6 +29,7 @@
 #import "ios/chrome/app/deferred_initialization_runner.h"
 #import "ios/chrome/app/memory_monitor.h"
 #import "ios/chrome/app/spotlight/spotlight_manager.h"
+#include "ios/chrome/app/startup/chrome_app_startup_parameters.h"
 #include "ios/chrome/app/startup/chrome_main_starter.h"
 #include "ios/chrome/app/startup/client_registration.h"
 #include "ios/chrome/app/startup/ios_chrome_main.h"
@@ -53,6 +54,7 @@
 #include "ios/chrome/browser/crash_report/crash_keys_helper.h"
 #include "ios/chrome/browser/crash_report/crash_loop_detection_util.h"
 #include "ios/chrome/browser/crash_report/crash_report_helper.h"
+#import "ios/chrome/browser/crash_report/crash_restore_helper.h"
 #include "ios/chrome/browser/credential_provider/credential_provider_service_factory.h"
 #include "ios/chrome/browser/credential_provider/credential_provider_support.h"
 #include "ios/chrome/browser/download/download_directory_util.h"
@@ -388,6 +390,9 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   [self.appState.appCommandDispatcher
       startDispatchingToTarget:self
                    forProtocol:@protocol(BlockingSceneCommands)];
+  [self.appState.appCommandDispatcher
+      startDispatchingToTarget:self
+                   forProtocol:@protocol(BrowsingDataCommands)];
 
   if (@available(iOS 13, *)) {
     if (IsSceneStartupSupported()) {
