@@ -55,11 +55,11 @@ class ClientDelegate : public ImeClientDelegate {
   mojo::Remote<mojom::InputChannel> client_remote_;
 };
 
-std::vector<uint8_t> SerializeRequest(const ime::Request& request) {
+std::vector<uint8_t> SerializeMessage(ime::PublicMessage message) {
   ime::Wrapper wrapper;
-  *wrapper.mutable_request() = request;
+  *wrapper.mutable_public_message() = std::move(message);
   std::vector<uint8_t> output;
-  wrapper.SerializeToArray(output.data(), output.size());
+  wrapper.SerializeToArray(output.data(), wrapper.ByteSizeLong());
   return output;
 }
 
@@ -136,11 +136,11 @@ bool DecoderEngine::IsImeSupportedByDecoder(const std::string& ime_spec) {
 }
 
 void DecoderEngine::OnFocus() {
-  ime::Request request;
-  request.set_seq_id(current_seq_id_++);
-  *request.mutable_on_focus() = ime::OnFocus();
+  ime::PublicMessage message;
+  message.set_seq_id(current_seq_id_++);
+  *message.mutable_on_focus() = ime::OnFocus();
 
-  ProcessMessage(SerializeRequest(request), base::DoNothing());
+  ProcessMessage(SerializeMessage(std::move(message)), base::DoNothing());
 }
 
 void DecoderEngine::ProcessMessage(const std::vector<uint8_t>& message,

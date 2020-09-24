@@ -1,31 +1,34 @@
+// Messages sent between the IME service and the shared library.
+// Although Chrome communicates with the IME service using Mojo, the shared
+// library is built in google3, which doesn't support Mojo yet. Hence, when the
+// IME service sends or receives messages via Mojo, it needs to convert the Mojo
+// calls into protos before forwarding to and from the shared library:
+//
+//      [Chrome] <---Mojo---> [IME Service] <---Proto---> [Shared Library]
+
 syntax = "proto2";
 
 option optimize_for = LITE_RUNTIME;
 
 package chromeos.ime;
 
-// Wrapper message to contain either internal messages or public messages.
+// The base message type for all communication between the IME service and the
+// shared library. The IME service and the shared library uses both a public and
+// private protocol, so Wrapper has fields for both. For the private messages,
+// Wrapper stores it as a serialized proto to keep the message private.
 message Wrapper {
   oneof param {
-    bytes internal_request = 1;
-    bytes internal_reply = 2;
-    Request request = 3;
-    Reply reply = 4;
+    PublicMessage public_message = 1;
+    bytes private_message = 2;
   }
 }
 
-// Message from Chrome to the shared library.
-message Request {
-  // The sequence id of the request.
+// Public messages between IME service and the shared library.
+// Each 'oneof' submessage represents a Mojo call / response.
+message PublicMessage {
   optional int32 seq_id = 1;
 
   oneof param { OnFocus on_focus = 2; }
-}
-
-// Message from the shared library to Chrome.
-message Reply {
-  // The sequence id of the reply.
-  optional int32 seq_id = 1;
 }
 
 // Protobuf version of InputEngine::OnFocus in
