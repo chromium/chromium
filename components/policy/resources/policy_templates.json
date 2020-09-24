@@ -1768,7 +1768,7 @@
     },
     {
       'name': 'RemoteAccessClientFirewallTraversal',
-      'owners': ['jamiewalch@chromium.org', 'rkjnsn@chromium.org'],
+      'owners': ['file://remoting/OWNERS'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:14-16', 'chrome_os:14-16'],
@@ -1790,7 +1790,7 @@
     },
     {
       'name': 'RemoteAccessHostClientDomain',
-      'owners': ['jamiewalch@chromium.org', 'rkjnsn@chromium.org'],
+      'owners': ['file://remoting/OWNERS'],
       'type': 'string',
       'schema': { 'type': 'string' },
       'supported_on': ['chrome.*:22-', 'chrome_os:41-'],
@@ -1807,7 +1807,7 @@
     },
     {
       'name': 'RemoteAccessHostClientDomainList',
-      'owners': ['jamiewalch@chromium.org', 'rkjnsn@chromium.org'],
+      'owners': ['file://remoting/OWNERS'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -1834,7 +1834,7 @@
     },
     {
       'name': 'RemoteAccessHostFirewallTraversal',
-      'owners': ['jamiewalch@chromium.org', 'rkjnsn@chromium.org'],
+      'owners': ['file://remoting/OWNERS'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:14-', 'chrome_os:41-'],
@@ -1856,7 +1856,7 @@
     },
     {
       'name': 'RemoteAccessHostDomain',
-      'owners': ['jamiewalch@chromium.org', 'rkjnsn@chromium.org'],
+      'owners': ['file://remoting/OWNERS'],
       'type': 'string',
       'schema': { 'type': 'string' },
       'supported_on': ['chrome.*:22-', 'chrome_os:41-'],
@@ -1873,7 +1873,7 @@
     },
     {
       'name': 'RemoteAccessHostDomainList',
-      'owners': ['jamiewalch@chromium.org', 'rkjnsn@chromium.org'],
+      'owners': ['file://remoting/OWNERS'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -1900,7 +1900,7 @@
     },
     {
       'name': 'RemoteAccessHostRequireTwoFactor',
-      'owners': ['jamiewalch@chromium.org', 'rkjnsn@chromium.org'],
+      'owners': ['file://remoting/OWNERS'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:22-22'],
@@ -1922,7 +1922,7 @@
     },
     {
       'name': 'RemoteAccessHostTalkGadgetPrefix',
-      'owners': ['jamiewalch@chromium.org', 'rkjnsn@chromium.org'],
+      'owners': ['file://remoting/OWNERS'],
       'type': 'string',
       'schema': { 'type': 'string' },
       'supported_on': ['chrome.*:22-75', 'chrome_os:41-75'],
@@ -1947,7 +1947,7 @@
     },
     {
       'name': 'RemoteAccessHostRequireCurtain',
-      'owners': ['jamiewalch@chromium.org', 'rkjnsn@chromium.org'],
+      'owners': ['file://remoting/OWNERS'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:23-'],
@@ -1967,7 +1967,7 @@
     },
     {
       'name': 'RemoteAccessHostAllowClientPairing',
-      'owners': ['jamiewalch@chromium.org', 'rkjnsn@chromium.org'],
+      'owners': ['file://remoting/OWNERS'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:30-'],
@@ -1985,7 +1985,7 @@
     },
     {
       'name': 'RemoteAccessHostAllowGnubbyAuth',
-      'owners': ['jamiewalch@chromium.org', 'rkjnsn@chromium.org'],
+      'owners': ['file://remoting/OWNERS'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:35-'],
@@ -2003,7 +2003,7 @@
     },
     {
       'name': 'RemoteAccessHostAllowRelayedConnection',
-      'owners': ['jamiewalch@chromium.org', 'rkjnsn@chromium.org'],
+      'owners': ['file://remoting/OWNERS'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:36-', 'chrome_os:86-'],
@@ -2025,7 +2025,7 @@
     },
     {
       'name': 'RemoteAccessHostUdpPortRange',
-      'owners': ['jamiewalch@chromium.org', 'rkjnsn@chromium.org'],
+      'owners': ['file://remoting/OWNERS'],
       'type': 'string',
       'schema': { 'type': 'string' },
       'supported_on': ['chrome.*:36-', 'chrome_os:41-'],
@@ -2043,7 +2043,7 @@
     },
     {
       'name': 'RemoteAccessHostMatchUsername',
-      'owners': ['jamiewalch@chromium.org', 'rkjnsn@chromium.org'],
+      'owners': ['file://remoting/OWNERS'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.linux:25-', 'chrome.mac:25-'],
@@ -2061,7 +2061,7 @@
     },
     {
       'name': 'RemoteAccessHostTokenUrl',
-      'owners': ['jamiewalch@chromium.org', 'rkjnsn@chromium.org'],
+      'owners': ['file://remoting/OWNERS'],
       'type': 'string',
       'schema': { 'type': 'string' },
       'supported_on': ['chrome.*:28-'],
@@ -2079,7 +2079,7 @@
     },
     {
       'name': 'RemoteAccessHostTokenValidationUrl',
-      'owners': ['jamiewalch@chromium.org', 'rkjnsn@chromium.org'],
+      'owners': ['file://remoting/OWNERS'],
       'type': 'string',
       'schema': { 'type': 'string' },
       'supported_on': ['chrome.*:28-'],
@@ -2097,7 +2097,7 @@
     },
     {
       'name': 'RemoteAccessHostTokenValidationCertificateIssuer',
-      'owners': ['jamiewalch@chromium.org', 'rkjnsn@chromium.org'],
+      'owners': ['file://remoting/OWNERS'],
       'type': 'string',
       'schema': { 'type': 'string' },
       'supported_on': ['chrome.*:28-'],
@@ -2115,7 +2115,7 @@
     },
     {
       'name': 'RemoteAccessHostDebugOverridePolicies',
-      'owners': ['jamiewalch@chromium.org', 'rkjnsn@chromium.org'],
+      'owners': ['file://remoting/OWNERS'],
       'type': 'string',
       'schema': { 'type': 'string' },
       'supported_on': ['chrome.*:25-47','chrome_os:42-47'],
@@ -2134,7 +2134,7 @@
     },
     {
       'name': 'RemoteAccessHostAllowUiAccessForRemoteAssistance',
-      'owners': ['jamiewalch@chromium.org', 'rkjnsn@chromium.org'],
+      'owners': ['file://remoting/OWNERS'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.win:55-'],
@@ -2152,7 +2152,7 @@
     },
     {
       'name': 'RemoteAccessHostAllowFileTransfer',
-      'owners': ['jamiewalch@chromium.org', 'rkjnsn@chromium.org'],
+      'owners': ['file://remoting/OWNERS'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:74-'],
