@@ -317,7 +317,7 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
 #else   // defined(OS_CHROMEOS)
   html_source->AddBoolean(
       "profileThemeSelectorEnabled",
-      base::FeatureList::IsEnabled(features::kProfileThemeSelectorInSettings));
+      base::FeatureList::IsEnabled(features::kProfilesUIRevamp));
 #endif  // !defined(OS_CHROMEOS)
 
   AddSettingsPageUIHandler(std::make_unique<AboutHandler>(profile));

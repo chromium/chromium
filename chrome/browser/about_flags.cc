@@ -4774,11 +4774,10 @@ const FeatureEntry kFeatureEntries[] = {
      kOsMac | kOsWin | kOsLinux,
      FEATURE_VALUE_TYPE(features::kNewProfilePicker)},
 
-    {"enable-sign-in-profile-creation-flow",
-     flag_descriptions::kSignInProfileCreationFlowName,
-     flag_descriptions::kSignInProfileCreationFlowDescription,
+    {"enable-profiles-ui-revamp", flag_descriptions::kProfilesUIRevampName,
+     flag_descriptions::kProfilesUIRevampDescription,
      kOsMac | kOsWin | kOsLinux,
-     FEATURE_VALUE_TYPE(features::kSignInProfileCreationFlow)},
+     FEATURE_VALUE_TYPE(features::kProfilesUIRevamp)},
 #endif
 
 #if defined(OS_CHROMEOS)

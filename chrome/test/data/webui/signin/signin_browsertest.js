@@ -95,7 +95,7 @@ var ProfileCreationFlowTest = class extends SigninBrowserTest {
   get featureList() {
     return {
       enabled: [
-        'features::kSignInProfileCreationFlow',
+        'features::kProfilesUIRevamp',
         'features::kNewProfilePicker',
       ]
     };
@@ -122,7 +122,7 @@ var ProfilePickerAppTest = class extends SigninBrowserTest {
   get featureList() {
     return {
       enabled: [
-        'features::kSignInProfileCreationFlow',
+        'features::kProfilesUIRevamp',
         'features::kNewProfilePicker',
       ]
     };

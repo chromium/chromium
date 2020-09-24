@@ -9,11 +9,13 @@
 #include "base/bind.h"
 #include "base/bind_helpers.h"
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/signin/dice_web_signin_interceptor_delegate.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
@@ -162,6 +164,19 @@ void DiceWebSigninInterceptorDelegate::ShowSigninInterceptionBubbleInternal(
         bubble_parameters,
     base::OnceCallback<void(bool)> callback) {
   DCHECK(browser);
+
+  if (bubble_parameters.interception_type ==
+          DiceWebSigninInterceptor::SigninInterceptionType::kProfileSwitch &&
+      !base::FeatureList::IsEnabled(features::kProfilesUIRevamp)) {
+    // The bubble for profile switch is not enabled.
+    DiceWebSigninInterceptionBubbleView::RecordInterceptionResult(
+        bubble_parameters, browser->profile(),
+        DiceWebSigninInterceptionBubbleView::SigninInterceptionResult::
+            kNotDisplayed);
+    std::move(callback).Run(false);
+    return;
+  }
+
   views::View* anchor_view = BrowserView::GetBrowserViewForBrowser(browser)
                                  ->toolbar_button_provider()
                                  ->GetAvatarToolbarButton();

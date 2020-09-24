@@ -1963,6 +1963,11 @@
     "expiry_milestone": 80
   },
   {
+    "name": "enable-profiles-ui-revamp",
+    "owners": [ "droger", "my-chrome-everywhere@google.com" ],
+    "expiry_milestone": 90
+  },
+  {
     "name": "enable-quic",
     "owners": [ "//net/quic/OWNERS" ],
     "expiry_milestone": 88
@@ -2051,11 +2056,6 @@
     "owners": [ "kolos" ],
     // Used for debugging and QA by the autofill team for the indefinite future.
     "expiry_milestone": -1
-  },
-  {
-    "name": "enable-sign-in-profile-creation-flow",
-    "owners": [ "dizg", "droger", "msalama" ],
-    "expiry_milestone": 90
   },
   {
     "name": "enable-site-isolation-for-password-sites",

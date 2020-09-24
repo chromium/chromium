@@ -1439,10 +1439,10 @@ const char kNewProfilePickerName[] = "New profile picker";
 const char kNewProfilePickerDescription[] =
     "Enables new profile picker implementation.";
 
-const char kSignInProfileCreationFlowName[] = "Signin profile creation flow";
-const char kSignInProfileCreationFlowDescription[] =
-    "Enables signin promo page for the new profile creation flow in the "
-    "profile picker.";
+const char kProfilesUIRevampName[] = "Revamp of profiles UI";
+const char kProfilesUIRevampDescription[] =
+    "Enables several profile-related features including a new signin flow, "
+    "profile promo bubbles and a color picker in settings";
 
 const char kNewUsbBackendName[] = "Enable new USB backend";
 const char kNewUsbBackendDescription[] =

@@ -99,7 +99,7 @@ void AddStrings(content::WebUIDataSource* html_source) {
                               prefs::kBrowserShowProfilePickerOnStartup));
   html_source->AddBoolean(
       "signInProfileCreationFlowSupported",
-      base::FeatureList::IsEnabled(features::kSignInProfileCreationFlow));
+      base::FeatureList::IsEnabled(features::kProfilesUIRevamp));
 
   html_source->AddString("minimumPickerSize",
                          base::StringPrintf("%ipx", kMinimumPickerSizePx));
