@@ -144,4 +144,12 @@
         android:layout_gravity="bottom|center"
         android:text="@string/fre_browser_managed_by_organization"
         android:visibility="gone"/>
+
+    <!-- Empty TextView to preload fonts for following pages. See https://crbug.com/1119990#c20 -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/TextAppearance.Headline.Primary"
+        android:visibility="gone"/>
+
 </org.chromium.chrome.browser.firstrun.TosAndUmaFragmentView>
