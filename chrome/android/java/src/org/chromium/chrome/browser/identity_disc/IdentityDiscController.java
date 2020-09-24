@@ -169,7 +169,7 @@ public class IdentityDiscController implements NativeInitObserver, ProfileDataCa
             return;
         }
 
-        String email = CoreAccountInfo.getEmailFrom(getSyncAccountInfo());
+        String email = CoreAccountInfo.getEmailFrom(getSignedInAccountInfo());
         mState = email == null ? IdentityDiscState.NONE : IdentityDiscState.SMALL;
         ensureProfileDataCache(email, mState);
 
@@ -235,7 +235,7 @@ public class IdentityDiscController implements NativeInitObserver, ProfileDataCa
         if (mState == IdentityDiscState.NONE) return;
         assert mProfileDataCache[mState] != null;
 
-        if (accountEmail.equals(CoreAccountInfo.getEmailFrom(getSyncAccountInfo()))) {
+        if (accountEmail.equals(CoreAccountInfo.getEmailFrom(getSignedInAccountInfo()))) {
             notifyObservers(true);
         }
     }
@@ -295,8 +295,13 @@ public class IdentityDiscController implements NativeInitObserver, ProfileDataCa
      * null for off-the-record ones.
      * @return account info for the current profile. Returns null for OTR profile.
      */
-    private CoreAccountInfo getSyncAccountInfo() {
-        return mIdentityManager != null ? mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SYNC)
+    private CoreAccountInfo getSignedInAccountInfo() {
+        @ConsentLevel
+        int consentLevel =
+                ChromeFeatureList.isEnabled(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
+                ? ConsentLevel.NOT_REQUIRED
+                : ConsentLevel.SYNC;
+        return mIdentityManager != null ? mIdentityManager.getPrimaryAccountInfo(consentLevel)
                                         : null;
     }
 
