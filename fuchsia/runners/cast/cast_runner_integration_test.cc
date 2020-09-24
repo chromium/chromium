@@ -56,8 +56,7 @@ constexpr char kSecondTestAppId[] = "FFFFFFFF";
 constexpr char kBlankAppUrl[] = "/defaultresponse";
 constexpr char kEchoHeaderPath[] = "/echoheader?Test";
 
-constexpr char kTestServerRoot[] =
-    FILE_PATH_LITERAL("fuchsia/runners/cast/testdata");
+constexpr char kTestServerRoot[] = "fuchsia/runners/cast/testdata";
 
 constexpr char kDummyAgentUrl[] =
     "fuchsia-pkg://fuchsia.com/dummy_agent#meta/dummy_agent.cmx";

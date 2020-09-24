@@ -25,7 +25,7 @@
 
 namespace {
 
-const char kTestServerRoot[] = FILE_PATH_LITERAL("fuchsia/engine/test/data");
+const char kTestServerRoot[] = "fuchsia/engine/test/data";
 
 }  // namespace
 

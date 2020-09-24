@@ -19,8 +19,7 @@ namespace oldhttp = ::fuchsia::net::oldhttp;
 
 namespace {
 
-const base::FilePath::CharType kTestFilePath[] =
-    FILE_PATH_LITERAL("fuchsia/http/testdata");
+const base::FilePath::CharType kTestFilePath[] = "fuchsia/http/testdata";
 
 // Capacity, in bytes, for buffers used to read data off the URLResponse.
 const size_t kBufferCapacity = 1024;
@@ -33,8 +32,7 @@ class HttpServiceTest : public ::testing::Test {
       : task_environment_(base::test::TaskEnvironment::MainThreadType::IO),
         binding_(&http_service_server_) {
     // Initialize the test server.
-    test_server_.AddDefaultHandlers(
-        base::FilePath(FILE_PATH_LITERAL(kTestFilePath)));
+    test_server_.AddDefaultHandlers(base::FilePath(kTestFilePath));
     net::test_server::RegisterDefaultHandlers(&test_server_);
   }
 
