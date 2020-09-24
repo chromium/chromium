@@ -86,6 +86,12 @@ various important responsibilities:
   * When triaging an email to be handled off of the list, make sure to bcc: the
     list that it arrived on, so that other people including future marshals can
     see that it has been handled.
+  * Some of these emails are requests for inclusion of third party code.
+    By the time you hand over to the next Marshal, please
+    ensure these are either completed or have been acknowledged by some other
+    owner. If not, you may need to do them yourself. Please see
+    [How to do Chrome Third-Party Security Reviews](https://goto.google.com/how-to-do-chrome-third-party-security-reviews)
+    for hints.
 * Change bugs status to **Fixed** for those that the developer forgets to close.
   Make sure to read bug comments where developer might point out that it needs
   more CLs, et c. Wait 24 hours before closing ClusterFuzz bugs, to give
