@@ -52,6 +52,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabImpl;
 import org.chromium.chrome.browser.tabmodel.AsyncTabCreationParams;
 import org.chromium.chrome.browser.tabmodel.AsyncTabParamsManager;
+import org.chromium.chrome.browser.tabmodel.AsyncTabParamsManagerFactory;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
@@ -97,7 +98,8 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
     @Mock public StartupTabPreloader startupTabPreloader;
     @Mock public CustomTabIncognitoManager customTabIncognitoManager;
     // clang-format on
-    public AsyncTabParamsManager realAsyncTabParamsManager = AsyncTabParamsManager.getInstance();
+    public AsyncTabParamsManager realAsyncTabParamsManager =
+            AsyncTabParamsManagerFactory.createAsyncTabParamsManager();
 
     public final CustomTabActivityTabProvider tabProvider = new CustomTabActivityTabProvider();
 

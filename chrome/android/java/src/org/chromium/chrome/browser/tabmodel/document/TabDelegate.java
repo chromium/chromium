@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.ServiceTabLauncher;
 import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
@@ -28,7 +29,6 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tabmodel.AsyncTabCreationParams;
 import org.chromium.chrome.browser.tabmodel.AsyncTabCreator;
-import org.chromium.chrome.browser.tabmodel.AsyncTabParamsManager;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.PageTransition;
@@ -138,7 +138,7 @@ public class TabDelegate extends AsyncTabCreator {
     private Intent createNewTabIntent(
             AsyncTabCreationParams asyncParams, int parentId, boolean isChromeUI) {
         int assignedTabId = TabIdManager.getInstance().generateValidId(Tab.INVALID_TAB_ID);
-        AsyncTabParamsManager.getInstance().add(assignedTabId, asyncParams);
+        AsyncTabParamsManagerSingleton.getInstance().add(assignedTabId, asyncParams);
 
         Intent intent = new Intent(
                 Intent.ACTION_VIEW, Uri.parse(asyncParams.getLoadUrlParams().getUrl()));

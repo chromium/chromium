@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.AsyncTabParams;
 import org.chromium.chrome.browser.tabmodel.AsyncTabParamsManager;
+import org.chromium.chrome.browser.tabmodel.AsyncTabParamsManagerFactory;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabReparentingParams;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
@@ -95,7 +96,7 @@ public class NightModeReparentingControllerTest {
         mIncognitoTabModel = new MockTabModel(true, null);
 
         mFakeDelegate = new FakeNightModeReparentingDelegate();
-        mRealAsyncTabParamsManager = AsyncTabParamsManager.getInstance();
+        mRealAsyncTabParamsManager = AsyncTabParamsManagerFactory.createAsyncTabParamsManager();
         mController = new NightModeReparentingController(mFakeDelegate, mRealAsyncTabParamsManager);
     }
 

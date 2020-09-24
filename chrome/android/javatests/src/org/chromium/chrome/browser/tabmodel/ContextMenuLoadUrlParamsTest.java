@@ -19,6 +19,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
 import org.chromium.chrome.browser.app.tabmodel.ChromeTabModelFilterFactory;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -70,7 +71,7 @@ public class ContextMenuLoadUrlParamsTest {
                     new TabbedModeTabPersistencePolicy(selectorIndex, false), tabModelFilterFactory,
                     ()
                             -> NextTabPolicy.HIERARCHICAL,
-                    AsyncTabParamsManager.getInstance(), false, false, false);
+                    AsyncTabParamsManagerSingleton.getInstance(), false, false, false);
         }
     }
 

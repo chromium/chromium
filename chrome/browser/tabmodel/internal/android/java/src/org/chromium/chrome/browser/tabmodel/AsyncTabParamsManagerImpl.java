@@ -12,25 +12,13 @@ import org.chromium.chrome.browser.tab.Tab;
  * Data that will be used later when a tab is opened via an intent. Often only the necessary
  * subset of the data will be set. All data is removed once the tab finishes initializing.
  */
-public class AsyncTabParamsManager {
-    /** Singleton instance. */
-    private static final AsyncTabParamsManager INSTANCE = new AsyncTabParamsManager();
-
+public class AsyncTabParamsManagerImpl implements AsyncTabParamsManager {
     /** A map of tab IDs to AsyncTabParams consumed by Activities started asynchronously. */
     private final SparseArray<AsyncTabParams> mAsyncTabParams = new SparseArray<>();
 
     private boolean mAddedToIncognitoTabHostRegistry;
 
-    /** Get the singleton instance of {@link AsyncTabParamsManager}. */
-    public static AsyncTabParamsManager getInstance() {
-        return INSTANCE;
-    }
-
-    /**
-     * Stores AsyncTabParams used when the tab with the given ID is launched via intent.
-     * @param tabId The ID of the tab that will be launched via intent.
-     * @param params The AsyncTabParams to use when creating the Tab.
-     */
+    @Override
     public void add(int tabId, AsyncTabParams params) {
         mAsyncTabParams.put(tabId, params);
 
@@ -42,18 +30,12 @@ public class AsyncTabParamsManager {
         }
     }
 
-    /**
-     * @return Whether there is already an {@link AsyncTabParams} added for the given ID.
-     */
+    @Override
     public boolean hasParamsForTabId(int tabId) {
         return mAsyncTabParams.get(tabId) != null;
     }
 
-    /**
-     * @return Whether there are any saved {@link AsyncTabParams} with a tab to reparent. All
-     *         implementations of this are keyed off of a user gesture so the likelihood of having
-     *         more than one is zero.
-     */
+    @Override
     public boolean hasParamsWithTabToReparent() {
         for (int i = 0; i < mAsyncTabParams.size(); i++) {
             if (mAsyncTabParams.get(mAsyncTabParams.keyAt(i)).getTabToReparent() == null) continue;
@@ -62,24 +44,19 @@ public class AsyncTabParamsManager {
         return false;
     }
 
-    /**
-     * @return A map of tab IDs to AsyncTabParams containing data that will be used later when a tab
-     *         is opened via an intent.
-     */
+    @Override
     public SparseArray<AsyncTabParams> getAsyncTabParams() {
         return mAsyncTabParams;
     }
 
-    /**
-     * @return Retrieves and removes AsyncTabCreationParams for a particular tab id.
-     */
+    @Override
     public AsyncTabParams remove(int tabId) {
         AsyncTabParams data = mAsyncTabParams.get(tabId);
         mAsyncTabParams.remove(tabId);
         return data;
     }
 
-    private AsyncTabParamsManager() {}
+    AsyncTabParamsManagerImpl() {}
 
     private static class AsyncTabsIncognitoTabHost implements IncognitoTabHost {
         private final AsyncTabParamsManager mAsyncTabParamsManager;

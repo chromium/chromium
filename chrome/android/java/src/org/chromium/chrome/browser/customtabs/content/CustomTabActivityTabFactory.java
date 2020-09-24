@@ -13,6 +13,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.IntentUtils;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
 import org.chromium.chrome.browser.app.tabmodel.ChromeTabModelFilterFactory;
 import org.chromium.chrome.browser.browserservices.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.CustomTabDelegateFactory;
@@ -101,7 +102,7 @@ public class CustomTabActivityTabFactory {
     private ChromeTabCreator createTabCreator(boolean incognito) {
         return new ChromeTabCreator(mActivity, mActivityWindowAndroid.get(), mStartupTabPreloader,
                 mCustomTabDelegateFactory::get, incognito, null,
-                AsyncTabParamsManager.getInstance());
+                AsyncTabParamsManagerSingleton.getInstance());
     }
 
     /** Creates a new tab for a Custom Tab activity */

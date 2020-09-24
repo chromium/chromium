@@ -68,6 +68,7 @@ import org.chromium.chrome.browser.accessibility.FontSizePrefs;
 import org.chromium.chrome.browser.app.appmenu.AppMenuPropertiesDelegateImpl;
 import org.chromium.chrome.browser.app.flags.ChromeCachedFlags;
 import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingDelegateFactory;
+import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
@@ -144,7 +145,6 @@ import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.TabState;
-import org.chromium.chrome.browser.tabmodel.AsyncTabParamsManager;
 import org.chromium.chrome.browser.tabmodel.EmptyTabModel;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
@@ -1107,7 +1107,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     @Override
     public void onStart() {
         // Sometimes mCompositorViewHolder is null, see crbug.com/1057613.
-        if (AsyncTabParamsManager.getInstance().hasParamsWithTabToReparent()
+        if (AsyncTabParamsManagerSingleton.getInstance().hasParamsWithTabToReparent()
                 && mCompositorViewHolder != null) {
             mCompositorViewHolder.prepareForTabReparenting();
         }
@@ -1365,7 +1365,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             mNightModeReparentingController = new NightModeReparentingController(
                     ReparentingDelegateFactory.createNightModeReparentingControllerDelegate(
                             getActivityTabProvider(), getTabModelSelector()),
-                    AsyncTabParamsManager.getInstance());
+                    AsyncTabParamsManagerSingleton.getInstance());
         }
     }
 

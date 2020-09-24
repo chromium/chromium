@@ -65,9 +65,11 @@ public class TabModelSelectorImplTest {
                 .when(mMockTabModelFilterFactory)
                 .createTabModelFilter(any());
         mTabCreatorManager = new MockTabCreatorManager();
+        AsyncTabParamsManager realAsyncTabParamsManager =
+                AsyncTabParamsManagerFactory.createAsyncTabParamsManager();
         mTabModelSelector = new TabModelSelectorImpl(mActivity, null, mTabCreatorManager,
                 mMockTabPersistencePolicy, mMockTabModelFilterFactory, mNextTabPolicySupplier,
-                AsyncTabParamsManager.getInstance(), /*supportUndo=*/false,
+                realAsyncTabParamsManager, /*supportUndo=*/false,
                 /*isTabbedActivity=*/false, /*startIncognito=*/false);
         mTabCreatorManager.initialize(mTabModelSelector);
         mTabModelSelector.onNativeLibraryReadyInternal(mMockTabContentManager,

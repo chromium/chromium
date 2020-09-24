@@ -53,6 +53,7 @@ import org.chromium.chrome.browser.IntentHandler.IntentHandlerDelegate;
 import org.chromium.chrome.browser.IntentHandler.TabOpenType;
 import org.chromium.chrome.browser.accessibility_tab_switcher.OverviewListLayout;
 import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
 import org.chromium.chrome.browser.app.tabmodel.ChromeNextTabPolicySupplier;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
@@ -122,7 +123,6 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tabbed_mode.TabbedAppMenuPropertiesDelegate;
 import org.chromium.chrome.browser.tabbed_mode.TabbedRootUiCoordinator;
-import org.chromium.chrome.browser.tabmodel.AsyncTabParamsManager;
 import org.chromium.chrome.browser.tabmodel.ChromeTabCreator;
 import org.chromium.chrome.browser.tabmodel.EmptyTabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabHost;
@@ -371,7 +371,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         // TODO(crbug.com/1065491): Unlock this codepath for all incoming intents once it's
         // confirmed working and stable.
         if (savedInstanceState != null
-                && AsyncTabParamsManager.getInstance().hasParamsWithTabToReparent()) {
+                && AsyncTabParamsManagerSingleton.getInstance().hasParamsWithTabToReparent()) {
             return LaunchIntentDispatcher.Action.CONTINUE;
         }
 
@@ -1066,7 +1066,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             // synchronously along with tab restoration so there are no tabs waiting for
             // reparenting like there are for other tab reparenting operations.
             boolean hasTabWaitingForReparenting =
-                    AsyncTabParamsManager.getInstance().hasParamsWithTabToReparent()
+                    AsyncTabParamsManagerSingleton.getInstance().hasParamsWithTabToReparent()
                     && getSavedInstanceState() == null;
             mCreatedTabOnStartup = getCurrentTabModel().getCount() > 0
                     || mTabModelSelectorImpl.getRestoredTabCount() > 0 || mIntentWithEffect
@@ -1603,10 +1603,10 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         }
         return Pair.create(new ChromeTabCreator(this, getWindowAndroid(), getStartupTabPreloader(),
                                    tabDelegateFactorySupplier, false, overviewNTPCreator,
-                                   AsyncTabParamsManager.getInstance()),
+                                   AsyncTabParamsManagerSingleton.getInstance()),
                 new ChromeTabCreator(this, getWindowAndroid(), getStartupTabPreloader(),
                         tabDelegateFactorySupplier, true, overviewNTPCreator,
-                        AsyncTabParamsManager.getInstance()));
+                        AsyncTabParamsManagerSingleton.getInstance()));
     }
 
     @Override

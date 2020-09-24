@@ -18,6 +18,7 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
@@ -294,7 +295,7 @@ public class TabWindowManagerTest {
         Assert.assertTrue(manager.tabExistsInAnySelector(tab2.getId()));
         Assert.assertFalse(manager.tabExistsInAnySelector(tab2.getId() + 1));
 
-        AsyncTabParamsManager asyncTabParamsManager = AsyncTabParamsManager.getInstance();
+        AsyncTabParamsManager asyncTabParamsManager = AsyncTabParamsManagerSingleton.getInstance();
         asyncTabParamsManager.getAsyncTabParams().clear();
         final int asyncTabId = 123;
         final TabReparentingParams dummyParams =
@@ -330,7 +331,7 @@ public class TabWindowManagerTest {
         Assert.assertNotNull(manager.getTabById(tab2.getId()));
         Assert.assertNull(manager.getTabById(tab2.getId() + 1));
 
-        AsyncTabParamsManager asyncTabParamsManager = AsyncTabParamsManager.getInstance();
+        AsyncTabParamsManager asyncTabParamsManager = AsyncTabParamsManagerSingleton.getInstance();
         asyncTabParamsManager.getAsyncTabParams().clear();
         final int asyncTabId = 123;
         final TabReparentingParams dummyParams =

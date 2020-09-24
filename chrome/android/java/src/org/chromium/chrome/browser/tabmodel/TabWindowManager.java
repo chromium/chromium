@@ -15,6 +15,7 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.VerifiesOnN;
+import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
 import org.chromium.chrome.browser.app.tabmodel.ChromeTabModelFilterFactory;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
@@ -73,7 +74,7 @@ public class TabWindowManager implements ActivityStateListener {
     public static TabWindowManager getInstance() {
         ThreadUtils.assertOnUiThread();
         if (sInstance == null) {
-            sInstance = new TabWindowManager(AsyncTabParamsManager.getInstance());
+            sInstance = new TabWindowManager(AsyncTabParamsManagerSingleton.getInstance());
         }
         return sInstance;
     }
@@ -263,7 +264,8 @@ public class TabWindowManager implements ActivityStateListener {
             TabModelFilterFactory tabModelFilterFactory = new ChromeTabModelFilterFactory();
             return new TabModelSelectorImpl(activity, /*windowAndroidSupplier=*/null,
                     tabCreatorManager, persistencePolicy, tabModelFilterFactory,
-                    nextTabPolicySupplier, AsyncTabParamsManager.getInstance(), true, true, false);
+                    nextTabPolicySupplier, AsyncTabParamsManagerSingleton.getInstance(), true, true,
+                    false);
         }
     }
 }

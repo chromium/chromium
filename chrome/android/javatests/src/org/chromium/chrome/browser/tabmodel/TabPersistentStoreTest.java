@@ -28,6 +28,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.browser.accessibility_tab_switcher.OverviewListLayout;
 import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
 import org.chromium.chrome.browser.app.tabmodel.ChromeTabModelFilterFactory;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelper;
 import org.chromium.chrome.browser.flags.ActivityType;
@@ -120,7 +121,7 @@ public class TabPersistentStoreTest {
                             getTabCreatorManager().getTabCreator(false),
                             getTabCreatorManager().getTabCreator(true), null,
                             mTabModelOrderController, null, mTabPersistentStore,
-                            nextTabPolicySupplier, AsyncTabParamsManager.getInstance(),
+                            nextTabPolicySupplier, AsyncTabParamsManagerSingleton.getInstance(),
                             TestTabModelSelector.this, true);
                 }
             };
@@ -130,7 +131,8 @@ public class TabPersistentStoreTest {
                             getTabCreatorManager().getTabCreator(false),
                             getTabCreatorManager().getTabCreator(true), null,
                             mTabModelOrderController, null, mTabPersistentStore,
-                            nextTabPolicySupplier, AsyncTabParamsManager.getInstance(), this));
+                            nextTabPolicySupplier, AsyncTabParamsManagerSingleton.getInstance(),
+                            this));
             initialize(regularTabModel, incognitoTabModel);
         }
 

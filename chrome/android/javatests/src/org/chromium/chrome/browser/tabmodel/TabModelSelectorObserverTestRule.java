@@ -10,6 +10,7 @@ import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
 import org.chromium.base.CommandLine;
+import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -76,7 +77,7 @@ public class TabModelSelectorObserverTestRule extends ChromeBrowserTestRule {
         TabPersistentStore tabPersistentStore =
                 new TabPersistentStore(persistencePolicy, mSelector, null, null);
         NextTabPolicySupplier nextTabPolicySupplier = () -> NextTabPolicy.HIERARCHICAL;
-        AsyncTabParamsManager asyncTabParamsManager = AsyncTabParamsManager.getInstance();
+        AsyncTabParamsManager asyncTabParamsManager = AsyncTabParamsManagerSingleton.getInstance();
 
         TabModelDelegate delegate = new TabModelDelegate() {
             @Override
