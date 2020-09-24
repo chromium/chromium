@@ -89,6 +89,9 @@ class WaylandBufferManagerHost : public ozone::mojom::WaylandBufferManagerHost,
   void OnSubsurfaceRemoved(WaylandWindow* window,
                            WaylandSubsurface* subsurface) override;
 
+  // Start allowing attaching buffers to |surface|, same as
+  // OnWindowConfigured(), but for WaylandSurface.
+  void SetSurfaceConfigured(WaylandSurface* surface);
   void SetTerminateGpuCallback(
       base::OnceCallback<void(std::string)> terminate_gpu_cb);
 

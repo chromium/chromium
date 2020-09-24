@@ -12,6 +12,7 @@
 #include "base/files/scoped_file.h"
 #include "base/macros.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/overlay_transform.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/platform_window/platform_window_init_properties.h"
 
@@ -57,6 +58,21 @@ gfx::Rect TranslateBoundsToParentCoordinates(const gfx::Rect& child_bounds,
 // Translates bounds relative to parent window to top level window.
 gfx::Rect TranslateBoundsToTopLevelCoordinates(const gfx::Rect& child_bounds,
                                                const gfx::Rect& parent_bounds);
+
+// Returns wl_output_transform corresponding |transform|. |transform| is an
+// enumeration of a fixed selection of transformations.
+wl_output_transform ToWaylandTransform(gfx::OverlayTransform transform);
+
+// |bounds| contains |rect|. ApplyWaylandTransform() returns the resulted
+// |rect| after transformation is applied to |bounds| containing |rect| as a
+// whole.
+gfx::Rect ApplyWaylandTransform(const gfx::Rect& rect,
+                                const gfx::Size& bounds,
+                                wl_output_transform transform);
+
+// Applies transformation to |size|.
+gfx::Size ApplyWaylandTransform(const gfx::Size& size,
+                                wl_output_transform transform);
 
 // Says if the type is kPopup or kMenu.
 bool IsMenuType(ui::PlatformWindowType type);

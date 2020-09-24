@@ -4,7 +4,11 @@
 
 #include "ui/ozone/platform/wayland/host/wayland_surface.h"
 
+#include <viewporter-client-protocol.h>
+
+#include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 
@@ -38,6 +42,15 @@ bool WaylandSurface::Initialize() {
   };
   wl_surface_add_listener(surface_.get(), &surface_listener, this);
 
+  if (connection_->viewporter()) {
+    viewport_.reset(
+        wp_viewporter_get_viewport(connection_->viewporter(), surface()));
+    if (!viewport_) {
+      LOG(ERROR) << "Failed to create wp_viewport";
+      return false;
+    }
+  }
+
   return true;
 }
 
@@ -54,7 +67,39 @@ void WaylandSurface::AttachBuffer(wl_buffer* buffer) {
   connection_->ScheduleFlush();
 }
 
-void WaylandSurface::Damage(const gfx::Rect& pending_damage_region) {
+void WaylandSurface::UpdateBufferDamageRegion(
+    const gfx::Rect& pending_damage_region,
+    const gfx::Size& buffer_size) {
+  // Buffer-local coordinates are in pixels, surface coordinates are in DIP.
+  // The coordinate transformations from buffer pixel coordinates up to
+  // the surface-local coordinates happen in the following order:
+  //   1. buffer_transform (wl_surface.set_buffer_transform)
+  //   2. buffer_scale (wl_surface.set_buffer_scale)
+  //   3. crop and scale (wp_viewport.set*)
+  // Apply buffer_transform (wl_surface.set_buffer_transform).
+  gfx::Size bounds = wl::ApplyWaylandTransform(
+      buffer_size, wl::ToWaylandTransform(buffer_transform_));
+  // Apply buffer_scale (wl_surface.set_buffer_scale).
+  bounds = gfx::ScaleToCeiledSize(bounds, 1.f / buffer_scale_);
+  // Apply crop (wp_viewport.set_source).
+  gfx::Rect viewport_src = gfx::Rect(bounds);
+  if (!crop_rect_.IsEmpty()) {
+    viewport_src = gfx::ToEnclosedRect(
+        gfx::ScaleRect(crop_rect_, bounds.width(), bounds.height()));
+    wp_viewport_set_source(viewport(), wl_fixed_from_int(viewport_src.x()),
+                           wl_fixed_from_int(viewport_src.y()),
+                           wl_fixed_from_int(viewport_src.width()),
+                           wl_fixed_from_int(viewport_src.height()));
+  }
+  // Apply viewport scale (wp_viewport.set_destination).
+  gfx::Size viewport_dst = bounds;
+  if (!display_size_px_.IsEmpty()) {
+    viewport_dst =
+        gfx::ScaleToCeiledSize(display_size_px_, 1.f / buffer_scale_);
+    wp_viewport_set_destination(viewport(), viewport_dst.width(),
+                                viewport_dst.height());
+  }
+
   if (connection_->compositor_version() >=
       WL_SURFACE_DAMAGE_BUFFER_SINCE_VERSION) {
     // wl_surface_damage_buffer relies on compositor API version 4. See
@@ -65,26 +110,45 @@ void WaylandSurface::Damage(const gfx::Rect& pending_damage_region) {
         surface_.get(), pending_damage_region.x(), pending_damage_region.y(),
         pending_damage_region.width(), pending_damage_region.height());
   } else {
-    // The calculation for damage region relies on two assumptions:
-    // 1) The buffer is always attached at surface location (0, 0)
-    // 2) The API wl_surface::set_buffer_transform is not used.
-    // It's possible to write logic that accounts for both cases above, but
-    // it's currently unnecessary.
-    //
-    // Note: The damage region may not be an integer multiple of scale. To
-    // keep the implementation simple, the x() and y() coordinates round down,
-    // and the width() and height() calculations always add an extra pixel.
-    wl_surface_damage(surface_.get(), pending_damage_region.x() / buffer_scale_,
-                      pending_damage_region.y() / buffer_scale_,
-                      pending_damage_region.width() / buffer_scale_ + 1,
-                      pending_damage_region.height() / buffer_scale_ + 1);
+    // Calculate the damage region in surface coordinates.
+    // The calculation for damage region relies on the assumption: The buffer is
+    // always attached at surface location (0, 0).
+    // It's possible to write logic that accounts for attaching buffer at other
+    // locations, but it's currently unnecessary.
+
+    // Apply buffer_transform (wl_surface.set_buffer_transform).
+    gfx::Rect damage =
+        wl::ApplyWaylandTransform(pending_damage_region, buffer_size,
+                                  wl::ToWaylandTransform(buffer_transform_));
+    // Apply buffer_scale (wl_surface.set_buffer_scale).
+    damage = gfx::ScaleToEnclosingRect(damage, 1.f / buffer_scale_);
+    // Adjust coordinates to |viewport_src| (wp_viewport.set_source).
+    damage = wl::TranslateBoundsToParentCoordinates(damage, viewport_src);
+    // Apply viewport scale (wp_viewport.set_destination).
+    damage = gfx::ScaleToEnclosingRect(
+        damage, static_cast<float>(viewport_dst.width()) / viewport_src.width(),
+        static_cast<float>(viewport_dst.height()) / viewport_src.height());
+
+    wl_surface_damage(surface_.get(), damage.x(), damage.y(), damage.width(),
+                      damage.height());
   }
+
   connection_->ScheduleFlush();
 }
 
 void WaylandSurface::Commit() {
   wl_surface_commit(surface_.get());
   connection_->ScheduleFlush();
+}
+
+void WaylandSurface::SetBufferTransform(gfx::OverlayTransform transform) {
+  DCHECK(transform != gfx::OVERLAY_TRANSFORM_INVALID);
+  if (buffer_transform_ == transform)
+    return;
+
+  buffer_transform_ = transform;
+  wl_output_transform wl_transform = wl::ToWaylandTransform(buffer_transform_);
+  wl_surface_set_buffer_transform(surface_.get(), wl_transform);
 }
 
 void WaylandSurface::SetBufferScale(int32_t new_scale, bool update_bounds) {
@@ -98,7 +162,7 @@ void WaylandSurface::SetBufferScale(int32_t new_scale, bool update_bounds) {
   connection_->ScheduleFlush();
 }
 
-void WaylandSurface::SetBounds(const gfx::Rect& bounds_px) {
+void WaylandSurface::SetOpaqueRegion(const gfx::Rect& region_px) {
   // It's important to set opaque region for opaque windows (provides
   // optimization hint for the Wayland compositor).
   if (!root_window_ || !root_window_->IsOpaqueWindow())
@@ -106,11 +170,36 @@ void WaylandSurface::SetBounds(const gfx::Rect& bounds_px) {
 
   wl::Object<wl_region> region(
       wl_compositor_create_region(connection_->compositor()));
-  wl_region_add(region.get(), 0, 0, bounds_px.width(), bounds_px.height());
+  gfx::Rect region_dip =
+      gfx::ScaleToEnclosingRect(region_px, 1.f / buffer_scale_);
+  wl_region_add(region.get(), region_dip.x(), region_dip.y(),
+                region_dip.width(), region_dip.height());
 
   wl_surface_set_opaque_region(surface_.get(), region.get());
 
   connection_->ScheduleFlush();
+}
+
+void WaylandSurface::SetViewportSource(const gfx::RectF& src_rect) {
+  if (src_rect == crop_rect_) {
+    return;
+  } else if (src_rect.IsEmpty() || src_rect == gfx::RectF{0.f, 0.f, 1.f, 1.f}) {
+    wp_viewport_set_source(viewport(), wl_fixed_from_int(-1),
+                           wl_fixed_from_int(-1), wl_fixed_from_int(-1),
+                           wl_fixed_from_int(-1));
+    return;
+  }
+
+  crop_rect_ = src_rect;
+}
+
+void WaylandSurface::SetViewportDestination(const gfx::Size& dest_size_px) {
+  if (dest_size_px == display_size_px_) {
+    return;
+  } else if (dest_size_px.IsEmpty()) {
+    wp_viewport_set_destination(viewport(), -1, -1);
+  }
+  display_size_px_ = dest_size_px;
 }
 
 wl::Object<wl_subsurface> WaylandSurface::CreateSubsurface(

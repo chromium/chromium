@@ -2128,8 +2128,9 @@ TEST_P(WaylandWindowTest, OneWaylandSubsurface) {
   auto* mock_surface_subsurface = server_.GetObject<wl::MockSurface>(
       wayland_subsurface->wayland_surface()->GetSurfaceId());
   EXPECT_TRUE(mock_surface_subsurface);
-  wayland_subsurface->ConfigureAndShowSurface(
-      gfx::OVERLAY_TRANSFORM_NONE, subsurface_bounds, true, nullptr, nullptr);
+  wayland_subsurface->ConfigureAndShowSurface(gfx::OVERLAY_TRANSFORM_NONE,
+                                              gfx::RectF(), subsurface_bounds,
+                                              true, nullptr, nullptr);
   connection_->ScheduleFlush();
 
   Sync();

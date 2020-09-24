@@ -58,6 +58,8 @@ bool TestWaylandServerThread::Start(uint32_t shell_version) {
     return false;
   if (!sub_compositor_.Initialize(display_.get()))
     return false;
+  if (!viewporter_.Initialize(display_.get()))
+    return false;
   if (!output_.Initialize(display_.get()))
     return false;
   SetupOutputs();

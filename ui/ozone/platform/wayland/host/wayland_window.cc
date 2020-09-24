@@ -134,7 +134,7 @@ void WaylandWindow::SetBounds(const gfx::Rect& bounds_px) {
     return;
   bounds_px_ = bounds_px;
 
-  root_surface_->SetBounds(bounds_px);
+  root_surface_->SetOpaqueRegion(bounds_px);
   delegate_->OnBoundsChanged(bounds_px_);
 }
 
@@ -358,7 +358,7 @@ bool WaylandWindow::Initialize(PlatformWindowInitProperties properties) {
 
   // Will do nothing for menus because they have got their scale above.
   UpdateBufferScale(false);
-  root_surface_->SetBounds(bounds_px_);
+  root_surface_->SetOpaqueRegion(bounds_px_);
 
   return true;
 }
@@ -568,8 +568,9 @@ bool WaylandWindow::CommitOverlays(
           reference_above = (*std::next(iter))->wayland_surface();
         }
         (*iter)->ConfigureAndShowSurface(
-            (*overlay_iter)->transform, (*overlay_iter)->bounds_rect,
-            (*overlay_iter)->enable_blend, nullptr, reference_above);
+            (*overlay_iter)->transform, (*overlay_iter)->crop_rect,
+            (*overlay_iter)->bounds_rect, (*overlay_iter)->enable_blend,
+            nullptr, reference_above);
         connection_->buffer_manager_host()->CommitBufferInternal(
             (*iter)->wayland_surface(), (*overlay_iter)->buffer_id,
             gfx::Rect());
@@ -596,8 +597,9 @@ bool WaylandWindow::CommitOverlays(
           reference_below = (*std::prev(iter))->wayland_surface();
         }
         (*iter)->ConfigureAndShowSurface(
-            (*overlay_iter)->transform, (*overlay_iter)->bounds_rect,
-            (*overlay_iter)->enable_blend, reference_below, nullptr);
+            (*overlay_iter)->transform, (*overlay_iter)->crop_rect,
+            (*overlay_iter)->bounds_rect, (*overlay_iter)->enable_blend,
+            reference_below, nullptr);
         connection_->buffer_manager_host()->CommitBufferInternal(
             (*iter)->wayland_surface(), (*overlay_iter)->buffer_id,
             gfx::Rect());

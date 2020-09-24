@@ -34,7 +34,23 @@ class WaylandSubsurface {
 
   // Sets up wl_surface and wl_subsurface. Allows an overlay to be shown
   // correctly once a wl_buffer is attached.
+  //   |transform|: specifies the wl_surface buffer_transform.
+  //   |src_rect|: specifies the displayable content (wp_viewport.src) of
+  //     upcoming attached buffers.
+  //   |bounds_rect|: The contents of the source rectangle are scaled to the
+  //     destination size (wp_viewport.dst).
+  //   |enable_blend|: whether the wl_surface will be transluscent.
+  //   |reference_below| & |reference_above|: this subsurface is taken from the
+  //     subsurface stack and inserted back to be immediately below/above the
+  //     reference subsurface.
+  //
+  // The coordinate transformations from buffer pixel coordinates up to the
+  // surface-local coordinates happen in the following order:
+  //   1. buffer_transform
+  //   2. buffer_scale
+  //   3. crop and scale of viewport
   void ConfigureAndShowSurface(gfx::OverlayTransform transform,
+                               const gfx::RectF& src_rect,
                                const gfx::Rect& bounds_rect,
                                bool enable_blend,
                                const WaylandSurface* reference_below,

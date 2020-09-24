@@ -11,6 +11,7 @@
 #include <linux-explicit-synchronization-unstable-v1-client-protocol.h>
 #include <presentation-time-client-protocol.h>
 #include <text-input-unstable-v1-client-protocol.h>
+#include <viewporter-client-protocol.h>
 #include <wayland-drm-client-protocol.h>
 #include <xdg-decoration-unstable-v1-client-protocol.h>
 #include <xdg-foreign-unstable-v1-client-protocol.h>
@@ -181,6 +182,15 @@ const wl_interface* ObjectTraits<struct wp_presentation_feedback>::interface =
     &wp_presentation_feedback_interface;
 void (*ObjectTraits<struct wp_presentation_feedback>::deleter)(
     struct wp_presentation_feedback*) = &wp_presentation_feedback_destroy;
+
+const wl_interface* ObjectTraits<wp_viewport>::interface =
+    &wp_viewport_interface;
+void (*ObjectTraits<wp_viewport>::deleter)(wp_viewport*) = &wp_viewport_destroy;
+
+const wl_interface* ObjectTraits<wp_viewporter>::interface =
+    &wp_viewporter_interface;
+void (*ObjectTraits<wp_viewporter>::deleter)(wp_viewporter*) =
+    &wp_viewporter_destroy;
 
 const wl_interface* ObjectTraits<xdg_wm_base>::interface =
     &xdg_wm_base_interface;

@@ -43,6 +43,7 @@ WaylandSubsurface::WaylandSubsurface(WaylandConnection* connection,
     LOG(ERROR) << "Failed to create wl_surface";
     return;
   }
+  wayland_surface_.Initialize();
 }
 
 WaylandSubsurface::~WaylandSubsurface() = default;
@@ -69,11 +70,9 @@ bool WaylandSubsurface::IsVisible() const {
 }
 
 void WaylandSubsurface::UpdateOpaqueRegion() {
-  gfx::Size region_size = enable_blend_ ? gfx::Size() : bounds_px_.size();
-  wl::Object<wl_region> region(
-      wl_compositor_create_region(connection_->compositor()));
-  wl_region_add(region.get(), 0, 0, region_size.width(), region_size.height());
-  wl_surface_set_opaque_region(surface(), region.get());
+  gfx::Rect region_px =
+      enable_blend_ ? gfx::Rect() : gfx::Rect(bounds_px_.size());
+  wayland_surface()->SetOpaqueRegion(region_px);
 }
 
 void WaylandSubsurface::SetBounds(const gfx::Rect& bounds) {
@@ -115,21 +114,22 @@ void WaylandSubsurface::CreateSubsurface() {
       wl_compositor_create_region(connection_->compositor()));
   wl_region_add(region.get(), 0, 0, 0, 0);
   wl_surface_set_input_region(surface(), region.get());
+
+  connection_->buffer_manager_host()->SetSurfaceConfigured(wayland_surface());
 }
 
 void WaylandSubsurface::ConfigureAndShowSurface(
     gfx::OverlayTransform transform,
+    const gfx::RectF& src_rect,
     const gfx::Rect& bounds_rect,
     bool enable_blend,
     const WaylandSurface* reference_below,
     const WaylandSurface* reference_above) {
+  wayland_surface()->SetBufferTransform(transform);
   wayland_surface()->SetBufferScale(parent_->buffer_scale(), false);
 
-  gfx::Rect bounds_px{
-      bounds_rect.origin() + parent_->GetBounds().origin().OffsetFromOrigin(),
-      bounds_rect.size()};
   auto old_bounds = bounds_px_;
-  SetBounds(bounds_px);
+  SetBounds(bounds_rect);
 
   if (old_bounds != bounds_px_ || enable_blend_ != enable_blend) {
     enable_blend_ = enable_blend;
@@ -144,6 +144,9 @@ void WaylandSubsurface::ConfigureAndShowSurface(
   } else if (reference_above) {
     wl_subsurface_place_below(subsurface_.get(), reference_above->surface());
   }
+
+  wayland_surface()->SetViewportSource(src_rect);
+  wayland_surface()->SetViewportDestination(bounds_rect.size());
 }
 
 }  // namespace ui

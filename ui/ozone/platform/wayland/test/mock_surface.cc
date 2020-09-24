@@ -89,6 +89,8 @@ MockSurface::~MockSurface() {
     wl_resource_destroy(xdg_surface_->resource());
   if (sub_surface_ && sub_surface_->resource())
     wl_resource_destroy(sub_surface_->resource());
+  if (viewport_ && viewport_->resource())
+    wl_resource_destroy(viewport_->resource());
 }
 
 MockSurface* MockSurface::FromResource(wl_resource* resource) {

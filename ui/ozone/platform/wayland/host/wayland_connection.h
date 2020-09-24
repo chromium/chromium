@@ -64,6 +64,7 @@ class WaylandConnection {
   wl_compositor* compositor() const { return compositor_.get(); }
   uint32_t compositor_version() const { return compositor_version_; }
   wl_subcompositor* subcompositor() const { return subcompositor_.get(); }
+  wp_viewporter* viewporter() const { return viewporter_.get(); }
   xdg_wm_base* shell() const { return shell_.get(); }
   zxdg_shell_v6* shell_v6() const { return shell_v6_.get(); }
   zaura_shell* aura_shell() const { return aura_shell_.get(); }
@@ -188,6 +189,7 @@ class WaylandConnection {
   wl::Object<xdg_wm_base> shell_;
   wl::Object<zxdg_shell_v6> shell_v6_;
   wl::Object<wp_presentation> presentation_;
+  wl::Object<wp_viewporter> viewporter_;
   wl::Object<zcr_keyboard_extension_v1> keyboard_extension_v1_;
   wl::Object<zwp_text_input_manager_v1> text_input_manager_v1_;
   wl::Object<zaura_shell> aura_shell_;

@@ -35,6 +35,8 @@ struct wl_surface;
 struct wl_touch;
 struct wp_presentation;
 struct wp_presentation_feedback;
+struct wp_viewport;
+struct wp_viewporter;
 struct xdg_wm_base;
 struct xdg_surface;
 struct xdg_toplevel;
@@ -237,6 +239,18 @@ template <>
 struct ObjectTraits<wp_presentation_feedback> {
   static const wl_interface* interface;
   static void (*deleter)(wp_presentation_feedback*);
+};
+
+template <>
+struct ObjectTraits<wp_viewport> {
+  static const wl_interface* interface;
+  static void (*deleter)(wp_viewport*);
+};
+
+template <>
+struct ObjectTraits<wp_viewporter> {
+  static const wl_interface* interface;
+  static void (*deleter)(wp_viewporter*);
 };
 
 template <>

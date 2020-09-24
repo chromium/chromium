@@ -52,6 +52,7 @@ constexpr uint32_t kMaxShmVersion = 1;
 constexpr uint32_t kMaxXdgShellVersion = 1;
 constexpr uint32_t kMaxDeviceManagerVersion = 3;
 constexpr uint32_t kMaxWpPresentationVersion = 1;
+constexpr uint32_t kMaxWpViewporterVersion = 1;
 constexpr uint32_t kMaxTextInputManagerVersion = 1;
 constexpr uint32_t kMaxExplicitSyncVersion = 2;
 constexpr uint32_t kMinAuraShellVersion = 10;
@@ -354,6 +355,10 @@ void WaylandConnection::Global(void* data,
              (strcmp(interface, "wp_presentation") == 0)) {
     connection->presentation_ =
         wl::Bind<wp_presentation>(registry, name, kMaxWpPresentationVersion);
+  } else if (!connection->viewporter_ &&
+             (strcmp(interface, "wp_viewporter") == 0)) {
+    connection->viewporter_ =
+        wl::Bind<wp_viewporter>(registry, name, kMaxWpViewporterVersion);
   } else if (!connection->keyboard_extension_v1_ &&
              strcmp(interface, "zcr_keyboard_extension_v1") == 0) {
     connection->keyboard_extension_v1_ = wl::Bind<zcr_keyboard_extension_v1>(

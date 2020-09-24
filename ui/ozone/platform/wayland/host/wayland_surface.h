@@ -8,7 +8,9 @@
 #include <cstdint>
 
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/overlay_transform.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 
 namespace ui {
@@ -26,6 +28,7 @@ class WaylandSurface {
 
   WaylandWindow* root_window() const { return root_window_; }
   wl_surface* surface() const { return surface_.get(); }
+  wp_viewport* viewport() const { return viewport_.get(); }
   int32_t buffer_scale() const { return buffer_scale_; }
   void set_buffer_scale(int32_t scale) { buffer_scale_ = scale; }
 
@@ -47,19 +50,35 @@ class WaylandSurface {
   // Attaches the given wl_buffer to the underlying wl_surface at (0, 0).
   void AttachBuffer(wl_buffer* buffer);
 
-  // Damages the surface according to |pending_damage_region|, which should be
-  // in surface coordinates (dp).
-  void Damage(const gfx::Rect& pending_damage_region);
+  // Describes where the surface needs to be repainted according to
+  // |buffer_pending_damage_region|, which should be in buffer coordinates (px).
+  void UpdateBufferDamageRegion(const gfx::Rect& buffer_pending_damage_region,
+                                const gfx::Size& buffer_size);
 
   // Commits the underlying wl_surface.
   void Commit();
 
+  // Sets an optional transformation for how the Wayland compositor interprets
+  // the contents of the buffer attached to this surface.
+  void SetBufferTransform(gfx::OverlayTransform transform);
+
   // Sets the buffer scale for this surface.
   void SetBufferScale(int32_t scale, bool update_bounds);
 
-  // Sets the bounds on this surface. This is used for determining the opaque
-  // region.
-  void SetBounds(const gfx::Rect& bounds_px);
+  // Sets the region that is opaque on this surface in physical pixels. This is
+  // expected to be called whenever the region that the surface span changes or
+  // the opacity changes.
+  void SetOpaqueRegion(const gfx::Rect& bounds_px);
+
+  // Set the source rectangle of the associated wl_surface.
+  // See:
+  // https://cgit.freedesktop.org/wayland/wayland-protocols/tree/stable/viewporter/viewporter.xml
+  // If |src_rect| is empty, the source rectangle is unset.
+  void SetViewportSource(const gfx::RectF& src_rect);
+
+  // Set the destination size of the associated wl_surface according to
+  // |dest_size_px|, which should be in physical pixels.
+  void SetViewportDestination(const gfx::Size& dest_size_px);
 
   // Creates a wl_subsurface relating this surface and a parent surface,
   // |parent|. Callers take ownership of the wl_subsurface.
@@ -69,10 +88,27 @@ class WaylandSurface {
   WaylandConnection* const connection_;
   WaylandWindow* root_window_ = nullptr;
   wl::Object<wl_surface> surface_;
+  wl::Object<wp_viewport> viewport_;
 
-  // Wayland's scale factor for the output that this window currently belongs
+  // Transformation for how the compositor interprets the contents of the
+  // buffer.
+  gfx::OverlayTransform buffer_transform_ = gfx::OVERLAY_TRANSFORM_NONE;
+
+  // Wayland's scale factor for the output that this surface currently belongs
   // to.
   int32_t buffer_scale_ = 1;
+
+  // Following fields are used to help determine the damage_region in
+  // surface-local coordinates if wl_surface_damage_buffer() is not available.
+  // Normalized bounds of the buffer to be displayed in |display_size_px_|.
+  // If empty, no cropping is applied.
+  gfx::RectF crop_rect_ = gfx::RectF();
+
+  // Current size of the destination of the viewport in physical pixels. Wayland
+  // compositor will scale the (cropped) buffer content to fit the
+  // |display_size_px_|.
+  // If empty, no scaling is applied.
+  gfx::Size display_size_px_ = gfx::Size();
 
   // wl_surface_listener
   static void Enter(void* data,

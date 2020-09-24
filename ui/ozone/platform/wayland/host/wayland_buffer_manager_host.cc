@@ -246,7 +246,8 @@ class WaylandBufferManagerHost::Surface {
       pending_damage_region.set_size(buffer->size);
     DCHECK(!pending_damage_region.size().IsEmpty());
 
-    wayland_surface_->Damage(pending_damage_region);
+    wayland_surface_->UpdateBufferDamageRegion(pending_damage_region,
+                                               buffer->size);
   }
 
   void AttachBuffer(WaylandBuffer* buffer) {
@@ -631,6 +632,13 @@ void WaylandBufferManagerHost::OnSubsurfaceRemoved(
     surface_graveyard_.emplace_back(std::move(it->second));
   }
   surfaces_.erase(it);
+}
+
+void WaylandBufferManagerHost::SetSurfaceConfigured(WaylandSurface* surface) {
+  DCHECK(surface);
+  auto it = surfaces_.find(surface);
+  DCHECK(it != surfaces_.end());
+  it->second->OnSurfaceConfigured();
 }
 
 void WaylandBufferManagerHost::SetTerminateGpuCallback(

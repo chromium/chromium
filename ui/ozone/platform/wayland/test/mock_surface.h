@@ -15,6 +15,7 @@
 #include "ui/ozone/platform/wayland/test/mock_xdg_surface.h"
 #include "ui/ozone/platform/wayland/test/server_object.h"
 #include "ui/ozone/platform/wayland/test/test_subsurface.h"
+#include "ui/ozone/platform/wayland/test/test_viewport.h"
 #include "ui/ozone/platform/wayland/test/test_xdg_popup.h"
 
 struct wl_resource;
@@ -52,6 +53,9 @@ class MockSurface : public ServerObject {
   }
   TestSubSurface* sub_surface() const { return sub_surface_; }
 
+  void set_viewport(TestViewport* viewport) { viewport_ = viewport; }
+  TestViewport* viewport() { return viewport_; }
+
   void set_frame_callback(wl_resource* callback_resource) {
     DCHECK(!frame_callback_);
     frame_callback_ = callback_resource;
@@ -70,6 +74,7 @@ class MockSurface : public ServerObject {
  private:
   MockXdgSurface* xdg_surface_ = nullptr;
   TestSubSurface* sub_surface_ = nullptr;
+  TestViewport* viewport_ = nullptr;
 
   wl_resource* frame_callback_ = nullptr;
 
