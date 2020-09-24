@@ -12,7 +12,6 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observer.h"
-#include "chrome/browser/command_observer.h"
 #include "chrome/browser/ui/views/frame/browser_frame_header_ash.h"
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
@@ -31,17 +30,12 @@ namespace ash {
 class FrameCaptionButtonContainerView;
 }  // namespace ash
 
-namespace views {
-class FrameCaptionButton;
-}  // namespace views
-
 // Provides the BrowserNonClientFrameView for Chrome OS.
 class BrowserNonClientFrameViewAsh
     : public BrowserNonClientFrameView,
       public BrowserFrameHeaderAsh::AppearanceProvider,
       public ash::TabletModeObserver,
       public TabIconViewModel,
-      public CommandObserver,
       public aura::WindowObserver,
       public ImmersiveModeController::Observer {
  public:
@@ -97,9 +91,6 @@ class BrowserNonClientFrameViewAsh
   bool ShouldTabIconViewAnimate() const override;
   gfx::ImageSkia GetFaviconForTabIconView() override;
 
-  // CommandObserver:
-  void EnabledStateChangedForCommand(int id, bool enabled) override;
-
   // aura::WindowObserver:
   void OnWindowDestroying(aura::Window* window) override;
   void OnWindowPropertyChanged(aura::Window* window,
@@ -133,8 +124,6 @@ class BrowserNonClientFrameViewAsh
                            AppHeaderVisibilityInTabletModeTest);
   FRIEND_TEST_ALL_PREFIXES(BrowserNonClientFrameViewAshTest,
                            ImmersiveModeTopViewInset);
-  FRIEND_TEST_ALL_PREFIXES(BrowserNonClientFrameViewAshBackButtonTest,
-                           V1BackButton);
   FRIEND_TEST_ALL_PREFIXES(BrowserNonClientFrameViewAshTest,
                            ToggleTabletModeOnMinimizedWindow);
   FRIEND_TEST_ALL_PREFIXES(WebAppNonClientFrameViewAshTest,
@@ -214,8 +203,6 @@ class BrowserNonClientFrameViewAsh
 
   // View which contains the window controls.
   ash::FrameCaptionButtonContainerView* caption_button_container_ = nullptr;
-
-  views::FrameCaptionButton* back_button_ = nullptr;
 
   // For popups, the window icon.
   TabIconView* window_icon_ = nullptr;

@@ -1272,61 +1272,6 @@ IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewAshTest, PopupHasNoToolbar) {
   EXPECT_FALSE(frame_view->web_app_frame_toolbar_for_testing());
 }
 
-namespace {
-
-class BrowserNonClientFrameViewAshBackButtonTest
-    : public TopChromeMdParamTest<InProcessBrowserTest> {
- public:
-  BrowserNonClientFrameViewAshBackButtonTest() = default;
-  ~BrowserNonClientFrameViewAshBackButtonTest() override = default;
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitch(ash::switches::kAshEnableV1AppBackButton);
-  }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BrowserNonClientFrameViewAshBackButtonTest);
-};
-
-}  // namespace
-
-// Test if the V1 apps' frame has a back button.
-IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewAshBackButtonTest,
-                       V1BackButton) {
-  // Normal browser windows don't have a frame back button.
-  BrowserNonClientFrameViewAsh* frame_view =
-      GetFrameViewAsh(BrowserView::GetBrowserViewForBrowser(browser()));
-  EXPECT_FALSE(frame_view->back_button_);
-
-  browser()->window()->Close();
-
-  // Open a new app window.
-  Browser::CreateParams params = Browser::CreateParams::CreateForApp(
-      "test_browser_app", true /* trusted_source */, gfx::Rect(),
-      browser()->profile(), true);
-  params.initial_show_state = ui::SHOW_STATE_DEFAULT;
-  Browser* app_browser = new Browser(params);
-  AddBlankTabAndShow(app_browser);
-
-  BrowserNonClientFrameViewAsh* app_frame_view =
-      GetFrameViewAsh(BrowserView::GetBrowserViewForBrowser(app_browser));
-  ASSERT_TRUE(app_frame_view->back_button_);
-  EXPECT_TRUE(app_frame_view->back_button_->GetVisible());
-  // The back button should be disabled initially.
-  EXPECT_FALSE(app_frame_view->back_button_->GetEnabled());
-
-  // Nagivate to a page. The back button should now be enabled.
-  const GURL kAppStartURL("http://example.org/");
-  NavigateParams nav_params(app_browser, kAppStartURL,
-                            ui::PAGE_TRANSITION_LINK);
-  ui_test_utils::NavigateToURL(&nav_params);
-  EXPECT_TRUE(app_frame_view->back_button_->GetEnabled());
-
-  // Go back to the blank. The back button should be disabled again.
-  chrome::GoBack(app_browser, WindowOpenDisposition::CURRENT_TAB);
-  EXPECT_FALSE(app_frame_view->back_button_->GetEnabled());
-}
-
 // Test the normal type browser's kTopViewInset is always 0.
 IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewAshTest, TopViewInset) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
@@ -1586,5 +1531,4 @@ INSTANTIATE_TEST_SUITE(BrowserNonClientFrameViewAshTestWithWebUiTabStrip);
 INSTANTIATE_TEST_SUITE(ImmersiveModeBrowserViewTest);
 INSTANTIATE_TEST_SUITE(ImmersiveModeBrowserViewTestNoWebUiTabStrip);
 INSTANTIATE_TEST_SUITE(WebAppNonClientFrameViewAshTest);
-INSTANTIATE_TEST_SUITE(BrowserNonClientFrameViewAshBackButtonTest);
 INSTANTIATE_TEST_SUITE(HomeLauncherBrowserNonClientFrameViewAshTest);

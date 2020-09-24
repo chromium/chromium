@@ -8,8 +8,6 @@
 
 #include "ash/public/cpp/app_types.h"
 #include "ash/public/cpp/ash_constants.h"
-#include "ash/public/cpp/ash_switches.h"
-#include "ash/public/cpp/caption_buttons/frame_back_button.h"
 #include "ash/public/cpp/caption_buttons/frame_caption_button_container_view.h"
 #include "ash/public/cpp/default_frame_header.h"
 #include "ash/public/cpp/frame_utils.h"
@@ -17,18 +15,15 @@
 #include "ash/public/cpp/window_properties.h"
 #include "ash/public/cpp/window_state_type.h"
 #include "ash/wm/window_util.h"
-#include "base/command_line.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
 #include "chrome/browser/ui/ash/session_util.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_frame.h"
@@ -77,11 +72,6 @@ constexpr SkColor kIncognitoWindowTitleTextColor = SK_ColorWHITE;
 // The indicator for teleported windows has 8 DIPs before and below it.
 constexpr int kProfileIndicatorPadding = 8;
 
-bool IsV1AppBackButtonEnabled() {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      ash::switches::kAshEnableV1AppBackButton);
-}
-
 // Returns true if the header should be painted so that it looks the same as
 // the header used for packaged apps.
 bool UsePackagedAppHeaderStyle(const Browser* browser) {
@@ -104,12 +94,6 @@ BrowserNonClientFrameViewAsh::BrowserNonClientFrameViewAsh(
 }
 
 BrowserNonClientFrameViewAsh::~BrowserNonClientFrameViewAsh() {
-  if (browser_view()->browser()->deprecated_is_app() &&
-      IsV1AppBackButtonEnabled()) {
-    browser_view()->browser()->command_controller()->RemoveCommandObserver(
-        IDC_BACK, this);
-  }
-
   ash::TabletMode::Get()->RemoveObserver(this);
 
   ImmersiveModeController* immersive_controller =
@@ -149,13 +133,6 @@ void BrowserNonClientFrameViewAsh::Init() {
     window->SetProperty(ash::kBlockedForAssistantSnapshotKey, true);
 
   ash::TabletMode::Get()->AddObserver(this);
-
-  if (browser->deprecated_is_app() && IsV1AppBackButtonEnabled()) {
-    browser->command_controller()->AddCommandObserver(IDC_BACK, this);
-    back_button_ = new ash::FrameBackButton();
-    AddChildView(back_button_);
-    // TODO(oshima): Add Tooltip, accessibility name.
-  }
 
   if (frame()->ShouldDrawFrameHeader())
     frame_header_ = CreateFrameHeader();
@@ -503,15 +480,6 @@ gfx::ImageSkia BrowserNonClientFrameViewAsh::GetFaviconForTabIconView() {
   return delegate ? delegate->GetWindowIcon() : gfx::ImageSkia();
 }
 
-void BrowserNonClientFrameViewAsh::EnabledStateChangedForCommand(int id,
-                                                                 bool enabled) {
-  DCHECK_EQ(IDC_BACK, id);
-  DCHECK(browser_view()->browser()->deprecated_is_app());
-
-  if (back_button_)
-    back_button_->SetEnabled(enabled);
-}
-
 void BrowserNonClientFrameViewAsh::OnWindowDestroying(aura::Window* window) {
   window_observer_.RemoveAll();
 }
@@ -552,8 +520,6 @@ void BrowserNonClientFrameViewAsh::OnImmersiveRevealStarted() {
   container->AddChildViewAt(caption_button_container_, 0);
   if (web_app_frame_toolbar())
     container->AddChildViewAt(web_app_frame_toolbar(), 0);
-  if (back_button_)
-    container->AddChildViewAt(back_button_, 0);
 
   container->Layout();
 }
@@ -562,8 +528,6 @@ void BrowserNonClientFrameViewAsh::OnImmersiveRevealEnded() {
   AddChildViewAt(caption_button_container_, 0);
   if (web_app_frame_toolbar())
     AddChildViewAt(web_app_frame_toolbar(), 0);
-  if (back_button_)
-    AddChildViewAt(back_button_, 0);
   Layout();
 }
 
@@ -660,7 +624,6 @@ BrowserNonClientFrameViewAsh::CreateFrameHeader() {
         frame(), this, caption_button_container_);
   }
 
-  header->SetBackButton(back_button_);
   header->SetLeftHeaderView(window_icon_);
   return header;
 }
