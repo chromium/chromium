@@ -143,12 +143,13 @@ chrome.passwordsPrivate.recordPasswordsPageAccessInSettings = function() {};
  * password for accountId and deviceId. Invokes |callback| or raises an error
  * depending on whether the operation succeeded.
  * @param {!Array<number>} ids The ids for the password entry being updated.
+ * @param {string} new_username The new username.
  * @param {string} new_password The new password.
  * @param {function(): void=} callback The callback that gets invoked in the
  *     end.
  */
 chrome.passwordsPrivate.changeSavedPassword = function(
-    ids, new_password, callback) {};
+    ids, new_username, new_password, callback) {};
 
 /**
  * Removes the saved password corresponding to |id|. If no saved password for

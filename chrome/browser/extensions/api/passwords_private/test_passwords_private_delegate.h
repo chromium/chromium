@@ -27,7 +27,8 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
   // list of entries has each of the ids, vector of ids isn't empty and if the
   // new password isn't empty.
   bool ChangeSavedPassword(const std::vector<int>& ids,
-                           base::string16 new_password) override;
+                           const base::string16& new_username,
+                           const base::string16& new_password) override;
   void RemoveSavedPasswords(const std::vector<int>& id) override;
   void RemovePasswordExceptions(const std::vector<int>& ids) override;
   // Simplified version of undo logic, only use for testing.

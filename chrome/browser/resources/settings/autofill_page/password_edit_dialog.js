@@ -189,7 +189,9 @@ Polymer({
       }
 
       PasswordManagerImpl.getInstance()
-          .changeSavedPassword(idsToChange, this.$.passwordInput.value)
+          .changeSavedPassword(
+              idsToChange, this.$.usernameInput.value,
+              this.$.passwordInput.value)
           .finally(() => {
             this.close();
           });

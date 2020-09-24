@@ -16,6 +16,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
@@ -323,7 +324,8 @@ const autofill::PasswordForm* PasswordManagerPresenter::GetPasswordException(
 
 bool PasswordManagerPresenter::ChangeSavedPassword(
     const std::vector<std::string>& sort_keys,
-    base::string16 new_password) {
+    const base::string16& new_username,
+    const base::string16& new_password) {
   // Make sure new_password is not empty.
   if (new_password.empty()) {
     DLOG(ERROR) << "The password is empty.";
@@ -332,20 +334,38 @@ bool PasswordManagerPresenter::ChangeSavedPassword(
   DCHECK(!sort_keys.empty());
 
   std::vector<base::span<const FormVector::value_type>> old_forms_for_sort_keys;
+
   for (const auto& sort_key : sort_keys) {
     // Find the equivalence class that needs to be updated.
     auto it = password_map_.find(sort_key);
-    if (it == password_map_.end()) {
+    if (it == password_map_.end())
       return false;
-    } else {
-      DCHECK(!it->second.empty());
-      old_forms_for_sort_keys.push_back(it->second);
+
+    const FormVector& old_forms = it->second;
+    DCHECK(!old_forms.empty());
+
+    // In case the username changed, make sure that there exists no other
+    // credential with the same signon_realm and username.
+    auto has_conflicting_username = [&old_forms,
+                                     &new_username](const auto& form) {
+      return base::ranges::any_of(
+          old_forms, [&form, &new_username](const auto& old_form) {
+            return form->signon_realm == old_form->signon_realm &&
+                   form->username_value == new_username;
+          });
+    };
+
+    const base::string16& old_username = old_forms[0]->username_value;
+
+    if (old_username != new_username &&
+        base::ranges::any_of(GetAllPasswords(), has_conflicting_username)) {
+      return false;
     }
+    old_forms_for_sort_keys.push_back(old_forms);
   }
 
   for (const auto& old_forms : old_forms_for_sort_keys) {
-    const base::string16& username = old_forms[0]->username_value;
-    EditSavedPasswords(password_view_->GetProfile(), old_forms, username,
+    EditSavedPasswords(password_view_->GetProfile(), old_forms, new_username,
                        new_password);
   }
 

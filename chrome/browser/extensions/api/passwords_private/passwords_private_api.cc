@@ -64,6 +64,7 @@ ResponseAction PasswordsPrivateChangeSavedPasswordFunction::Run() {
 
   if (!GetDelegate(browser_context())
            ->ChangeSavedPassword(parameters->ids,
+                                 base::UTF8ToUTF16(parameters->new_username),
                                  base::UTF8ToUTF16(parameters->new_password))) {
     return RespondNow(Error(
         "Could not change the password. Either the password is empty, the user "

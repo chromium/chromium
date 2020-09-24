@@ -316,8 +316,8 @@ export class TestPasswordManagerProxy extends TestBrowserProxy {
   }
 
   /** override */
-  changeSavedPassword(ids, newPassword) {
-    this.methodCalled('changeSavedPassword', {ids, newPassword});
+  changeSavedPassword(ids, newUsername, newPassword) {
+    this.methodCalled('changeSavedPassword', {ids, newUsername, newPassword});
     return Promise.resolve();
   }
 
