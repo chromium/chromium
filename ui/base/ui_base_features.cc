@@ -15,7 +15,7 @@ namespace features {
 #if defined(OS_WIN)
 // If enabled, calculate native window occlusion - Windows-only.
 const base::Feature kCalculateNativeWinOcclusion{
-    "CalculateNativeWinOcclusion", base::FEATURE_DISABLED_BY_DEFAULT};
+    "CalculateNativeWinOcclusion", base::FEATURE_ENABLED_BY_DEFAULT};
 #endif  // OW_WIN
 
 // Whether or not to delegate color queries to the color provider.
