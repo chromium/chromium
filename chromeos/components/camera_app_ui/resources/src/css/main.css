@@ -1203,7 +1203,6 @@ body:not(.recording-ui-paused) #record-time [i18n-content=record_video_paused_ms
   font-size: 13px;
   height: 64px;
   justify-content: flex-start;
-  padding: 0 20px 0 24px;
   text-align: left;
 }
 
@@ -1255,23 +1254,24 @@ label.menu-item.animate::before {
   }
 }
 
-.menu-item.resol-item {
-  padding-left: 60px;
+.menu-item {
+  padding-left: 32px;
 }
 
 .menu-header {
   color: white;
   font-size: 20px;
   height: 72px;
+  padding-left: 16px;
 }
 
-.menu-header .icon,
-.menu-item .icon {
-  margin-right: 6px;
+.menu-item.resol-item {
+  padding-left: 64px;
 }
 
-.menu-item .end {
+.menu-item .icon.end {
   margin-left: auto;
+  margin-right: 16px;
 }
 
 .menu-item .description {
