@@ -49,7 +49,16 @@ public final class TestWebLayer {
         return mITestWebLayer.isNetworkChangeAutoDetectOn();
     }
 
+    /**
+     * Gets the processed context which is returned by ContextUtils.getApplicationContext() on the
+     * remote side.
+     */
     public static Context getRemoteContext(@NonNull Context appContext) {
+        return WebLayer.getApplicationContextForTesting(appContext);
+    }
+
+    /** Gets the context for the WebLayer implementation package. */
+    public static Context getWebLayerContext(@NonNull Context appContext) {
         try {
             return WebLayer.getOrCreateRemoteContext(appContext);
         } catch (PackageManager.NameNotFoundException | ReflectiveOperationException e) {

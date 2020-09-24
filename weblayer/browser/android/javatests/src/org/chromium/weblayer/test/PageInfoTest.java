@@ -44,7 +44,9 @@ public class PageInfoTest {
                 mActivityTestRule.getTestDataURL("simple_page.html"), extras);
 
         Context remoteContext = TestWebLayer.getRemoteContext(activity.getApplicationContext());
-        int buttonId = ResourceUtil.getIdentifier(remoteContext, "id/security_button");
+        String packageName =
+                TestWebLayer.getWebLayerContext(activity.getApplicationContext()).getPackageName();
+        int buttonId = ResourceUtil.getIdentifier(remoteContext, "id/security_button", packageName);
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             StrictModeContext ignored = StrictModeContext.allowDiskReads();

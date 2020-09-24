@@ -418,6 +418,11 @@ public final class WebLayerImpl extends IWebLayer.Stub {
         WebLayerImplJni.get().registerExternalExperimentIDs(trialName, experimentIDs);
     }
 
+    @Override
+    public IObjectWrapper getApplicationContext() {
+        return ObjectWrapper.wrap(ContextUtils.getApplicationContext());
+    }
+
     public static Intent createIntent() {
         if (sClient == null) {
             throw new IllegalStateException("WebLayer should have been initialized already.");
@@ -525,10 +530,6 @@ public final class WebLayerImpl extends IWebLayer.Stub {
         }
 
         assert remoteContext != null;
-        // TODO: This is only needed for tests. Remove once BundleLanguageTests can call through to
-        // TestWebLayerImpl.
-        forceCorrectPackageId(remoteContext);
-
         Context lightContext = createContextForMode(remoteContext, Configuration.UI_MODE_NIGHT_NO);
         Context darkContext = createContextForMode(remoteContext, Configuration.UI_MODE_NIGHT_YES);
         ClassLoaderContextWrapperFactory.setLightDarkResourceOverrideContext(

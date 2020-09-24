@@ -52,7 +52,9 @@ public final class PopupTest {
         mActivityTestRule.executeScriptSync("window.open('about:blank')", true);
 
         // Make sure the infobar shows up and the popup has not been opened.
-        int buttonId = ResourceUtil.getIdentifier(mRemoteContext, "id/button_primary");
+        String packageName =
+                TestWebLayer.getWebLayerContext(mActivity.getApplicationContext()).getPackageName();
+        int buttonId = ResourceUtil.getIdentifier(mRemoteContext, "id/button_primary", packageName);
         CriteriaHelper.pollInstrumentationThread(() -> {
             Criteria.checkThat(mActivity.findViewById(buttonId), Matchers.notNullValue());
         });

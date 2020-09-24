@@ -34,11 +34,14 @@ public class TranslateTest {
 
     private InstrumentationActivity mActivity;
     private Context mRemoteContext;
+    private String mPackageName;
 
     @Before
     public void setUp() throws Exception {
         mActivity = mActivityTestRule.launchShellWithUrl("about:blank");
         mRemoteContext = TestWebLayer.getRemoteContext(mActivity.getApplicationContext());
+        mPackageName =
+                TestWebLayer.getWebLayerContext(mActivity.getApplicationContext()).getPackageName();
         TestWebLayer testWebLayer = TestWebLayer.getTestWebLayer(mActivity.getApplicationContext());
         testWebLayer.setIgnoreMissingKeyForTranslateManager(true);
         testWebLayer.forceNetworkConnectivityState(true);
@@ -114,7 +117,7 @@ public class TranslateTest {
     }
 
     private View findViewByStringId(String id) {
-        return mActivity.findViewById(ResourceUtil.getIdentifier(mRemoteContext, id));
+        return mActivity.findViewById(ResourceUtil.getIdentifier(mRemoteContext, id, mPackageName));
     }
 
     private void waitForInfoBarToShow() {

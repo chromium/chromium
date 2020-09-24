@@ -15,8 +15,8 @@ public class ResourceUtil {
     private ResourceUtil() {}
 
     /** Gets the ID of a resource in a remote context. */
-    public static int getIdentifier(Context context, String name) {
-        int id = context.getResources().getIdentifier(name, null, context.getPackageName());
+    public static int getIdentifier(Context context, String name, String packageName) {
+        int id = context.getResources().getIdentifier(name, null, packageName);
         // This was build with app_as_shared_lib, no need to modify package ID.
         if ((id & 0xff000000) == 0x7f000000) {
             return id;

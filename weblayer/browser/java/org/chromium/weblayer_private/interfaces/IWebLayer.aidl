@@ -98,4 +98,7 @@ interface IWebLayer {
   // Added in Version 86.
   IBinder initializeImageDecoder(in IObjectWrapper appContext,
                                  in IObjectWrapper remoteContext) = 19;
+
+  // Added in Version 87.
+  IObjectWrapper getApplicationContext() = 20;
 }

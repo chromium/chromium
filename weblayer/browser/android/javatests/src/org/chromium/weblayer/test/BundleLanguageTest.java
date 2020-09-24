@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.res.AssetManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.os.Build.VERSION_CODES;
 import android.util.SparseArray;
 
 import androidx.test.filters.SmallTest;
@@ -19,7 +18,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.weblayer.TestWebLayer;
 import org.chromium.weblayer.shell.InstrumentationActivity;
 
@@ -39,17 +37,17 @@ public class BundleLanguageTest {
             new InstrumentationActivityTestRule();
 
     private Context mRemoteContext;
+    private Context mWebLayerContext;
 
     @Before
-    public void setUp() {
+    public void setUp() throws Exception {
         InstrumentationActivity activity = mActivityTestRule.launchShellWithUrl("about:blank");
         mRemoteContext = TestWebLayer.getRemoteContext(activity.getApplicationContext());
+        mWebLayerContext = TestWebLayer.getWebLayerContext(activity.getApplicationContext());
     }
 
     @Test
     @SmallTest
-    @DisableIf.
-    Build(sdk_is_greater_than = VERSION_CODES.O_MR1, message = "https://crbug.com/1130660")
     public void testWebLayerString() throws Exception {
         // The bundle tests have both "es" and "fr" splits installed, so each of these should have a
         // separate translation.
@@ -66,8 +64,6 @@ public class BundleLanguageTest {
 
     @Test
     @SmallTest
-    @DisableIf.
-    Build(sdk_is_greater_than = VERSION_CODES.O_MR1, message = "https://crbug.com/1130660")
     public void testSharedString() throws Exception {
         // This string is shared with WebView, so should have a separate translation for all
         // locales, even locales without splits installed.
@@ -86,11 +82,11 @@ public class BundleLanguageTest {
     @SmallTest
     public void testBasePackageIdCorrect() throws Exception {
         AssetManager assetManager = createEmptyAssetManager();
-        addAssetPath(assetManager, mRemoteContext.getApplicationInfo().sourceDir);
+        addAssetPath(assetManager, mWebLayerContext.getApplicationInfo().sourceDir);
         SparseArray<String> packageIds = getPackageIds(assetManager);
         Assert.assertEquals(2, packageIds.size());
         Assert.assertEquals(packageIds.get(1), "android");
-        Assert.assertEquals(packageIds.get(2), mRemoteContext.getPackageName());
+        Assert.assertEquals(packageIds.get(2), mWebLayerContext.getPackageName());
     }
 
     /** Tests that locale splits only have resources from the hardcoded locale package ID. */
@@ -98,14 +94,14 @@ public class BundleLanguageTest {
     @SmallTest
     public void testLocalePackageIdCorrect() throws Exception {
         AssetManager assetManager = createEmptyAssetManager();
-        for (String path : mRemoteContext.getApplicationInfo().splitSourceDirs) {
+        for (String path : mWebLayerContext.getApplicationInfo().splitSourceDirs) {
             addAssetPath(assetManager, path);
         }
         SparseArray<String> packageIds = getPackageIds(assetManager);
         Assert.assertEquals(2, packageIds.size());
         Assert.assertEquals(packageIds.get(1), "android");
         Assert.assertEquals(packageIds.get(ResourceUtil.REQUIRED_PACKAGE_IDENTIFIER),
-                mRemoteContext.getPackageName() + "_translations");
+                mWebLayerContext.getPackageName() + "_translations");
     }
 
     private String getStringForLocale(String name, String locale) {
@@ -113,7 +109,8 @@ public class BundleLanguageTest {
         Configuration config = resources.getConfiguration();
         config.setLocale(new Locale(locale));
         resources.updateConfiguration(config, resources.getDisplayMetrics());
-        return resources.getString(ResourceUtil.getIdentifier(mRemoteContext, name));
+        return resources.getString(ResourceUtil.getIdentifier(
+                mRemoteContext, name, mWebLayerContext.getPackageName()));
     }
 
     private static AssetManager createEmptyAssetManager() throws ReflectiveOperationException {

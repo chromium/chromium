@@ -20,6 +20,7 @@ import android.webkit.ValueCallback;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.Fragment;
 
 import org.chromium.weblayer_private.interfaces.APICallException;
@@ -560,6 +561,16 @@ public class WebLayer {
 
     /* package */ static IWebLayer getIWebLayer(Context context) {
         return getWebLayerLoader(context).getIWebLayer();
+    }
+
+    @VisibleForTesting
+    /* package */ static Context getApplicationContextForTesting(Context appContext) {
+        try {
+            return (Context) ObjectWrapper.unwrap(
+                    getIWebLayer(appContext).getApplicationContext(), Context.class);
+        } catch (RemoteException e) {
+            throw new APICallException(e);
+        }
     }
 
     /**

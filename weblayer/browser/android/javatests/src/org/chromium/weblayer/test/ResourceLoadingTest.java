@@ -30,11 +30,14 @@ public final class ResourceLoadingTest {
             new InstrumentationActivityTestRule();
 
     private Context mRemoteContext;
+    private String mPackageName;
 
     @Before
     public void setUp() throws Exception {
         InstrumentationActivity activity = mActivityTestRule.launchShellWithUrl("about:blank");
-        mRemoteContext = TestWebLayer.getRemoteContext(activity);
+        mRemoteContext = TestWebLayer.getRemoteContext(activity.getApplicationContext());
+        mPackageName =
+                TestWebLayer.getWebLayerContext(activity.getApplicationContext()).getPackageName();
     }
 
     @Test
@@ -60,6 +63,6 @@ public final class ResourceLoadingTest {
     }
 
     private int getIdentifier(String name) {
-        return ResourceUtil.getIdentifier(mRemoteContext, name);
+        return ResourceUtil.getIdentifier(mRemoteContext, name, mPackageName);
     }
 }
