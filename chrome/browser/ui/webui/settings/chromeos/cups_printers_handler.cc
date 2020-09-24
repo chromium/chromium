@@ -147,10 +147,13 @@ std::unique_ptr<chromeos::Printer> DictToPrinter(
   }
 
   std::string printer_queue;
-  printer_dict.GetString("printerQueue", &printer_queue);
-  // Path must start from '/' character.
-  if (!printer_queue.empty() && printer_queue.front() != '/')
-    printer_queue = "/" + printer_queue;
+  // The protocol "socket" does not allow path.
+  if (printer_protocol != "socket") {
+    printer_dict.GetString("printerQueue", &printer_queue);
+    // Path must start from '/' character.
+    if (!printer_queue.empty() && printer_queue.front() != '/')
+      printer_queue.insert(0, "/");
+  }
 
   auto printer = std::make_unique<chromeos::Printer>(printer_id);
   printer->set_display_name(printer_name);
