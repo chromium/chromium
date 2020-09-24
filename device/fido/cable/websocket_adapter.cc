@@ -20,7 +20,9 @@ static constexpr size_t kMaxIncomingMessageSize = 1 << 20;
 WebSocketAdapter::WebSocketAdapter(TunnelReadyCallback on_tunnel_ready,
                                    TunnelDataCallback on_tunnel_data)
     : on_tunnel_ready_(std::move(on_tunnel_ready)),
-      on_tunnel_data_(std::move(on_tunnel_data)) {}
+      on_tunnel_data_(std::move(on_tunnel_data)),
+      read_pipe_watcher_(FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::MANUAL) {
+}
 
 WebSocketAdapter::~WebSocketAdapter() = default;
 
@@ -68,61 +70,72 @@ void WebSocketAdapter::OnConnectionEstablished(
     return;
   }
 
-  base::Optional<uint8_t> shard_id;
+  base::Optional<std::array<uint8_t, kRoutingIdSize>> routing_id;
   for (const auto& header : response->headers) {
     if (base::EqualsCaseInsensitiveASCII(header->name.c_str(),
-                                         kCableShardIdHeader)) {
-      unsigned u;
-      if (!base::StringToUint(header->value, &u) || shard_id > 63) {
-        FIDO_LOG(ERROR) << "Invalid shard ID from tunnel server";
+                                         kCableRoutingIdHeader)) {
+      if (routing_id.has_value() ||
+          !base::HexStringToSpan(header->value, routing_id.emplace())) {
+        FIDO_LOG(ERROR) << "Invalid routing ID from tunnel server: "
+                        << header->value;
         return;
       }
-      shard_id = u;
-      break;
     }
   }
 
   socket_remote_.Bind(std::move(socket));
   read_pipe_ = std::move(readable);
+  read_pipe_watcher_.Watch(
+      read_pipe_.get(), MOJO_HANDLE_SIGNAL_READABLE,
+      MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED,
+      base::BindRepeating(&WebSocketAdapter::OnDataPipeReady,
+                          base::Unretained(this)));
   write_pipe_ = std::move(writable);
   client_receiver_.Bind(std::move(client_receiver));
+
   socket_remote_->StartReceiving();
 
-  std::move(on_tunnel_ready_).Run(true, shard_id);
+  std::move(on_tunnel_ready_).Run(true, routing_id);
 }
 
 void WebSocketAdapter::OnDataFrame(bool finish,
                                    network::mojom::WebSocketMessageType type,
                                    uint64_t data_len) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_EQ(pending_message_i_, pending_message_.size());
+  DCHECK(!pending_message_finished_);
+
+  if (data_len == 0) {
+    if (finish) {
+      FlushPendingMessage();
+    }
+    return;
+  }
 
   const size_t old_size = pending_message_.size();
   const size_t new_size = old_size + data_len;
   if (type != network::mojom::WebSocketMessageType::BINARY ||
       data_len > std::numeric_limits<uint32_t>::max() || new_size < old_size ||
       new_size > kMaxIncomingMessageSize) {
-    FIDO_LOG(ERROR) << "invalid WebSocket frame";
+    FIDO_LOG(ERROR) << "invalid WebSocket frame (type: "
+                    << static_cast<int>(type) << ", len: " << data_len << ")";
     Close();
     return;
   }
 
-  if (data_len > 0) {
-    pending_message_.resize(new_size);
-    uint32_t data_len_32 = data_len;
-    if (read_pipe_->ReadData(&pending_message_.data()[old_size], &data_len_32,
-                             MOJO_READ_DATA_FLAG_ALL_OR_NONE) !=
-        MOJO_RESULT_OK) {
-      FIDO_LOG(ERROR) << "reading WebSocket frame failed";
-      Close();
-      return;
-    }
-    DCHECK_EQ(static_cast<size_t>(data_len_32), data_len);
-  }
+  // The network process sends the |OnDataFrame| message before writing to
+  // |read_pipe_|. Therefore we cannot depend on the message bytes being
+  // immediately available in |read_pipe_| without a race. Thus
+  // |read_pipe_watcher_| is used to wait for the data if needed.
 
-  if (finish) {
-    on_tunnel_data_.Run(pending_message_);
-    pending_message_.resize(0);
-  }
+  pending_message_.resize(new_size);
+  pending_message_finished_ = finish;
+  // Suspend more |OnDataFrame| callbacks until frame's data has been read. The
+  // network service has successfully read |data_len| bytes before calling this
+  // function so there's no I/O errors to worry about while reading; we know
+  // that the bytes are coming.
+  client_receiver_.Pause();
+  OnDataPipeReady(MOJO_RESULT_OK, mojo::HandleSignalsState());
 }
 
 void WebSocketAdapter::OnDropChannel(bool was_clean,
@@ -135,6 +148,41 @@ void WebSocketAdapter::OnDropChannel(bool was_clean,
 
 void WebSocketAdapter::OnClosingHandshake() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+
+void WebSocketAdapter::OnDataPipeReady(MojoResult,
+                                       const mojo::HandleSignalsState&) {
+  const size_t todo = pending_message_.size() - pending_message_i_;
+  DCHECK_GT(todo, 0u);
+
+  // Truncation to 32-bits cannot overflow because |pending_message_.size()| is
+  // bound by |kMaxIncomingMessageSize| when it is resized in |OnDataFrame|.
+  uint32_t todo_32 = static_cast<uint32_t>(todo);
+  static_assert(
+      kMaxIncomingMessageSize <= std::numeric_limits<decltype(todo_32)>::max(),
+      "");
+  const MojoResult result =
+      read_pipe_->ReadData(&pending_message_.data()[pending_message_i_],
+                           &todo_32, MOJO_READ_DATA_FLAG_NONE);
+  if (result == MOJO_RESULT_OK) {
+    pending_message_i_ += todo_32;
+    DCHECK_LE(pending_message_i_, pending_message_.size());
+
+    if (pending_message_i_ < pending_message_.size()) {
+      read_pipe_watcher_.Arm();
+    } else {
+      client_receiver_.Resume();
+      if (pending_message_finished_) {
+        FlushPendingMessage();
+      }
+    }
+  } else if (result == MOJO_RESULT_SHOULD_WAIT) {
+    read_pipe_watcher_.Arm();
+  } else {
+    FIDO_LOG(ERROR) << "reading WebSocket frame failed: "
+                    << static_cast<int>(result);
+    Close();
+  }
 }
 
 void WebSocketAdapter::OnMojoPipeDisconnect() {
@@ -158,6 +206,15 @@ void WebSocketAdapter::Close() {
   closed_ = true;
   client_receiver_.reset();
   on_tunnel_data_.Run(base::nullopt);
+}
+
+void WebSocketAdapter::FlushPendingMessage() {
+  std::vector<uint8_t> message;
+  message.swap(pending_message_);
+  pending_message_i_ = 0;
+  pending_message_finished_ = false;
+
+  on_tunnel_data_.Run(message);
 }
 
 }  // namespace cablev2

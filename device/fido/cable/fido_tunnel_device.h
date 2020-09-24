@@ -9,7 +9,7 @@
 
 #include "base/callback_forward.h"
 #include "base/sequence_checker.h"
-#include "device/fido/cable/v2_handshake.h"
+#include "device/fido/cable/v2_constants.h"
 #include "device/fido/cable/websocket_adapter.h"
 #include "device/fido/fido_device.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -95,10 +95,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoTunnelDevice : public FidoDevice {
     base::Optional<std::vector<uint8_t>> handshake_message;
   };
 
-  // This is a dummy function to allow things to compile at each step of a
-  // multi-CL sequence.
-  void OnTunnelReady(bool ok, base::Optional<uint8_t> routing_id);
-  void OnTunnelReady_Future(
+  void OnTunnelReady(
       bool ok,
       base::Optional<std::array<uint8_t, kRoutingIdSize>> routing_id);
   void OnTunnelData(base::Optional<base::span<const uint8_t>> data);

@@ -236,12 +236,7 @@ base::WeakPtr<FidoDevice> FidoTunnelDevice::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
-// This is a dummy function to allow things to compile at each step of a
-// multi-CL sequence.
-void FidoTunnelDevice::OnTunnelReady(bool ok,
-                                     base::Optional<uint8_t> routing_id) {}
-
-void FidoTunnelDevice::OnTunnelReady_Future(
+void FidoTunnelDevice::OnTunnelReady(
     bool ok,
     base::Optional<std::array<uint8_t, kRoutingIdSize>> routing_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

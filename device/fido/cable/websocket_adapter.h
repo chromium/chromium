@@ -12,6 +12,7 @@
 #include "base/containers/span.h"
 #include "base/optional.h"
 #include "base/sequence_checker.h"
+#include "device/fido/cable/v2_handshake.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
 namespace device {
@@ -24,14 +25,13 @@ class COMPONENT_EXPORT(DEVICE_FIDO) WebSocketAdapter
     : public network::mojom::WebSocketHandshakeClient,
       network::mojom::WebSocketClient {
  public:
-  using TunnelReadyCallback =
-      base::OnceCallback<void(bool, base::Optional<uint8_t>)>;
+  using TunnelReadyCallback = base::OnceCallback<
+      void(bool, base::Optional<std::array<uint8_t, kRoutingIdSize>>)>;
   using TunnelDataCallback =
       base::RepeatingCallback<void(base::Optional<base::span<const uint8_t>>)>;
   WebSocketAdapter(
       // on_tunnel_ready is called once with a boolean that indicates whether
-      // the WebSocket successfully connected and an optional shard ID taken
-      // from the X-caBLE-Shard header in the HTTP response, if any.
+      // the WebSocket successfully connected and an optional routing ID.
       TunnelReadyCallback on_tunnel_ready,
       // on_tunnel_ready is called repeatedly, after successful connection, with
       // the contents of WebSocket messages. Framing is preserved so a single
@@ -72,11 +72,22 @@ class COMPONENT_EXPORT(DEVICE_FIDO) WebSocketAdapter
 
  private:
   void OnMojoPipeDisconnect();
+  void OnDataPipeReady(MojoResult result,
+                       const mojo::HandleSignalsState& state);
   void Close();
+  void FlushPendingMessage();
 
   bool closed_ = false;
+
   // pending_message_ contains a partial message that is being reassembled.
   std::vector<uint8_t> pending_message_;
+  // pending_message_i_ contains the number of valid bytes of
+  // |pending_message_|.
+  size_t pending_message_i_ = 0;
+  // pending_message_finished_ is true if |pending_message_| is the full size of
+  // an application frame and thus should be passed up once filled with bytes.
+  bool pending_message_finished_ = false;
+
   TunnelReadyCallback on_tunnel_ready_;
   const TunnelDataCallback on_tunnel_data_;
   mojo::Receiver<network::mojom::WebSocketHandshakeClient> handshake_receiver_{
@@ -84,6 +95,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) WebSocketAdapter
   mojo::Receiver<network::mojom::WebSocketClient> client_receiver_{this};
   mojo::Remote<network::mojom::WebSocket> socket_remote_;
   mojo::ScopedDataPipeConsumerHandle read_pipe_;
+  mojo::SimpleWatcher read_pipe_watcher_;
   mojo::ScopedDataPipeProducerHandle write_pipe_;
   SEQUENCE_CHECKER(sequence_checker_);
 };

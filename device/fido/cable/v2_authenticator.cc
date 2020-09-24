@@ -332,11 +332,7 @@ class TunnelTransport : public Transport {
     kReady,
   };
 
-  // This is a dummy function to allow things to compile at each step of a
-  // multi-CL sequence.
-  void OnTunnelReady(bool ok, base::Optional<uint8_t> routing_id) {}
-
-  void OnTunnelReady_Future(
+  void OnTunnelReady(
       bool ok,
       base::Optional<std::array<uint8_t, device::cablev2::kRoutingIdSize>>
           routing_id) {
