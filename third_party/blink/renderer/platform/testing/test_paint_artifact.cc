@@ -131,14 +131,8 @@ TestPaintArtifact& TestPaintArtifact::Uncacheable() {
 }
 
 scoped_refptr<PaintArtifact> TestPaintArtifact::Build() {
-  auto artifact = base::AdoptRef(new PaintArtifact());
-  if (paint_chunks_.IsEmpty()) {
-    DCHECK(display_item_list_.IsEmpty());
-  } else {
-    artifact->AddSegment(std::move(paint_chunks_),
-                         std::move(display_item_list_));
-  }
-  return artifact;
+  return PaintArtifact::Create(std::move(display_item_list_),
+                               std::move(paint_chunks_));
 }
 
 FakeDisplayItemClient& TestPaintArtifact::NewClient() {

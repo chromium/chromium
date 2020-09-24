@@ -123,10 +123,8 @@ void PaintController::DisplayItemListAsJSON::AppendChunksAsJSON(
       json_object->SetString("chunkData", chunk.ToString());
 
     json_object->SetArray(
-        "displayItems", DisplayItemList::DisplayItemsAsJSON(
-                            DisplayItemRange(list_.begin() + chunk.begin_index,
-                                             list_.begin() + chunk.end_index),
-                            flags_));
+        "displayItems",
+        list_.DisplayItemsAsJSON(chunk.begin_index, chunk.end_index, flags_));
 
     json_array.PushObject(std::move(json_object));
   }
@@ -147,8 +145,7 @@ void PaintController::ShowDebugDataInternal(
             << DisplayItemListAsJSON(
                    current_paint_artifact_->GetDisplayItemList(),
                    current_cached_subsequences_,
-                   current_paint_artifact_->DeprecatedChunks(),
-                   current_list_flags)
+                   current_paint_artifact_->PaintChunks(), current_list_flags)
                    .ToString()
                    .Utf8();
 

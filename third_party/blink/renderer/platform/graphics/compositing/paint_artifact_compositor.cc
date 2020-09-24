@@ -15,7 +15,6 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/geometry/geometry_as_json.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/content_layer_client_impl.h"
-#include "third_party/blink/renderer/platform/graphics/compositing/paint_chunks_to_cc_layer.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_layer.h"
 #include "third_party/blink/renderer/platform/graphics/paint/clip_paint_property_node.h"
@@ -125,9 +124,10 @@ std::unique_ptr<JSONObject> PaintArtifactCompositor::GetLayersAsJSON(
 }
 
 static void UpdateLayerProperties(const GraphicsLayer& graphics_layer) {
-  PaintChunksToCcLayer::UpdateBackgroundColor(
-      graphics_layer.CcLayer(),
-      graphics_layer.GetPaintController().PaintChunks());
+  cc::PictureLayer& cc_layer = graphics_layer.CcLayer();
+  const PaintArtifact& paint_artifact =
+      graphics_layer.GetPaintController().GetPaintArtifact();
+  paint_artifact.UpdateBackgroundColor(&cc_layer, paint_artifact.PaintChunks());
 }
 
 scoped_refptr<cc::Layer> PaintArtifactCompositor::WrappedCcLayerForPendingLayer(
@@ -289,10 +289,10 @@ PaintArtifactCompositor::CompositedLayerForPendingLayer(
     Vector<scoped_refptr<cc::Layer>>& new_scroll_hit_test_layers,
     Vector<scoped_refptr<cc::ScrollbarLayerBase>>& new_scrollbar_layers,
     const HashSet<const GraphicsLayer*>& repainted_layers) {
-  PaintChunkSubset paint_chunks(pending_layer.paint_artifact,
-                                pending_layer.paint_chunk_indices);
-  DCHECK(!paint_chunks.IsEmpty());
-  const PaintChunk& first_paint_chunk = *paint_chunks.begin();
+  auto paint_chunks = pending_layer.paint_artifact->GetPaintChunkSubset(
+      pending_layer.paint_chunk_indices);
+  DCHECK(paint_chunks.size());
+  const PaintChunk& first_paint_chunk = paint_chunks[0];
 
   // If the paint chunk is a foreign layer or placeholder for a GraphicsLayer,
   // just return its cc::Layer.
@@ -318,7 +318,8 @@ PaintArtifactCompositor::CompositedLayerForPendingLayer(
 
   IntRect cc_combined_bounds = EnclosingIntRect(pending_layer.bounds);
   auto cc_layer = content_layer_client->UpdateCcPictureLayer(
-      paint_chunks, cc_combined_bounds, pending_layer.property_tree_state);
+      pending_layer.paint_artifact, paint_chunks, cc_combined_bounds,
+      pending_layer.property_tree_state);
 
   new_content_layer_clients.push_back(std::move(content_layer_client));
 
@@ -428,19 +429,19 @@ bool PaintArtifactCompositor::PropertyTreeStateChanged(
 }
 
 PaintArtifactCompositor::PendingLayer::PendingLayer(
-    const PaintChunkSubset& chunks,
-    PaintChunkIndex first_chunk_index,
+    scoped_refptr<const PaintArtifact> paint_artifact,
+    const PaintChunk& first_paint_chunk,
+    wtf_size_t chunk_index,
     CompositingType compositing_type)
-    : bounds(chunks[first_chunk_index].bounds),
+    : bounds(first_paint_chunk.bounds),
       rect_known_to_be_opaque(
-          chunks[first_chunk_index].known_to_be_opaque ? bounds : FloatRect()),
-      paint_artifact(&chunks.GetPaintArtifact()),
-      property_tree_state(chunks[first_chunk_index]
-                              .properties.GetPropertyTreeState()
-                              .Unalias()),
+          first_paint_chunk.known_to_be_opaque ? bounds : FloatRect()),
+      paint_artifact(std::move(paint_artifact)),
+      property_tree_state(
+          first_paint_chunk.properties.GetPropertyTreeState().Unalias()),
       compositing_type(compositing_type) {
-  DCHECK(!RequiresOwnLayer() || chunks[first_chunk_index].size() <= 1u);
-  paint_chunk_indices.push_back(first_chunk_index);
+  DCHECK(!RequiresOwnLayer() || first_paint_chunk.size() <= 1u);
+  paint_chunk_indices.push_back(chunk_index);
 }
 
 FloatRect PaintArtifactCompositor::PendingLayer::UniteRectsKnownToBeOpaque(
@@ -498,16 +499,14 @@ std::unique_ptr<JSONObject> PaintArtifactCompositor::PendingLayer::ToJSON()
   result->SetArray("offset_of_decomposited_transforms",
                    PointAsJSONArray(offset_of_decomposited_transforms));
   std::unique_ptr<JSONArray> chunks = std::make_unique<JSONArray>();
-  for (auto chunk_index : paint_chunk_indices) {
+  for (wtf_size_t chunk_index : paint_chunk_indices) {
     if (paint_artifact) {
       StringBuilder sb;
-      sb.Append("index=");
-      sb.Append(chunk_index.ToString());
-      sb.Append(" ");
-      sb.Append(paint_artifact->GetChunk(chunk_index).ToString());
+      sb.AppendFormat("index=%i ", chunk_index);
+      sb.Append(paint_artifact->PaintChunks()[chunk_index].ToString());
       chunks->PushString(sb.ToString());
     } else {
-      chunks->PushString(chunk_index.ToString());
+      chunks->PushInteger(chunk_index);
     }
   }
   result->SetArray("paint_chunks", std::move(chunks));
@@ -555,7 +554,7 @@ void PaintArtifactCompositor::PendingLayer::Upcast(
 const PaintChunk& PaintArtifactCompositor::PendingLayer::FirstPaintChunk()
     const {
   DCHECK(!RequiresOwnLayer() || paint_chunk_indices.size() == 1);
-  return paint_artifact->GetChunk(paint_chunk_indices[0]);
+  return paint_artifact->PaintChunks()[paint_chunk_indices[0]];
 }
 
 const DisplayItem& PaintArtifactCompositor::PendingLayer::FirstDisplayItem()
@@ -782,9 +781,9 @@ static bool EffectGroupContainsChunk(
 }
 
 static bool SkipGroupIfEffectivelyInvisible(
-    const PaintChunkSubset& chunks,
+    const PaintArtifact& paint_artifact,
     const EffectPaintPropertyNode& group,
-    PaintChunkIterator& chunk_cursor) {
+    Vector<PaintChunk>::const_iterator& chunk_it) {
   // In pre-CompositeAfterPaint, existence of composited layers is decided
   // during compositing update before paint. Each chunk contains a foreign
   // layer corresponding a composited layer. We should not skip any of them to
@@ -808,9 +807,9 @@ static bool SkipGroupIfEffectivelyInvisible(
 
   // Fast-forward to just past the end of the chunk sequence within this
   // effect group.
-  DCHECK(EffectGroupContainsChunk(group, *chunk_cursor));
-  while (++chunk_cursor != chunks.end()) {
-    if (!EffectGroupContainsChunk(group, *chunk_cursor))
+  DCHECK(EffectGroupContainsChunk(group, *chunk_it));
+  while (++chunk_it != paint_artifact.PaintChunks().end()) {
+    if (!EffectGroupContainsChunk(group, *chunk_it))
       break;
   }
   return true;
@@ -834,12 +833,12 @@ static bool IsCompositedScrollbar(const DisplayItem& item) {
 }
 
 void PaintArtifactCompositor::LayerizeGroup(
-    const PaintChunkSubset& chunks,
+    scoped_refptr<const PaintArtifact> paint_artifact,
     const EffectPaintPropertyNode& current_group,
-    PaintChunkIterator& chunk_cursor) {
+    Vector<PaintChunk>::const_iterator& chunk_it) {
   // Skip paint chunks that are effectively invisible due to opacity and don't
   // have a direct compositing reason.
-  if (SkipGroupIfEffectivelyInvisible(chunks, current_group, chunk_cursor))
+  if (SkipGroupIfEffectivelyInvisible(*paint_artifact, current_group, chunk_it))
     return;
 
   wtf_size_t first_layer_in_current_group = pending_layers_.size();
@@ -861,19 +860,20 @@ void PaintArtifactCompositor::LayerizeGroup(
   // previous layer. Again finding the host costs O(qd). Merging would cost
   // O(p) due to copying the chunk list. Subtotal: O((qd + p)d) = O(qd^2 + pd)
   // Assuming p > d, the total complexity would be O(pqd + qd^2 + pd) = O(pqd)
-  while (chunk_cursor != chunks.end()) {
+  while (chunk_it != paint_artifact->PaintChunks().end()) {
     // Look at the effect node of the next chunk. There are 3 possible cases:
     // A. The next chunk belongs to the current group but no subgroup.
     // B. The next chunk does not belong to the current group.
     // C. The next chunk belongs to some subgroup of the current group.
-    const auto& chunk_effect = chunk_cursor->properties.Effect().Unalias();
+    const auto& chunk_effect = chunk_it->properties.Effect().Unalias();
     if (&chunk_effect == &current_group) {
       // Case A: The next chunk belongs to the current group but no subgroup.
       PendingLayer::CompositingType compositing_type = PendingLayer::kOther;
-      if (IsCompositedScrollHitTest(*chunk_cursor)) {
+      if (IsCompositedScrollHitTest(*chunk_it)) {
         compositing_type = PendingLayer::kScrollHitTestLayer;
-      } else if (chunk_cursor->size()) {
-        const auto& first_display_item = *chunk_cursor.DisplayItems().begin();
+      } else if (chunk_it->size()) {
+        const auto& first_display_item =
+            paint_artifact->GetDisplayItemList()[chunk_it->begin_index];
         if (first_display_item.IsForeignLayer()) {
           compositing_type = PendingLayer::kForeignLayer;
         } else if (IsCompositedScrollbar(first_display_item)) {
@@ -884,24 +884,27 @@ void PaintArtifactCompositor::LayerizeGroup(
                   .GetGraphicsLayer();
           if (graphics_layer.ShouldCreateLayersAfterPaint()) {
             DCHECK(RuntimeEnabledFeatures::CompositeSVGEnabled());
-            auto sub_chunks = graphics_layer.GetPaintController().PaintChunks();
-            auto cursor = sub_chunks.begin();
+            scoped_refptr<const PaintArtifact> sub_paint_artifact =
+                graphics_layer.GetPaintController().GetPaintArtifactShared();
+            Vector<PaintChunk>::const_iterator cursor =
+                sub_paint_artifact->PaintChunks().begin();
             LayerizeGroup(
-                sub_chunks,
+                sub_paint_artifact,
                 graphics_layer.GetPropertyTreeState().Unalias().Effect(),
                 cursor);
-            DCHECK_EQ(sub_chunks.end(), cursor);
+            DCHECK_EQ(sub_paint_artifact->PaintChunks().end(), cursor);
 
-            ++chunk_cursor;
+            chunk_it++;
             continue;
           }
           compositing_type = PendingLayer::kGraphicsLayerWrapper;
         }
       }
 
-      pending_layers_.emplace_back(chunks, chunk_cursor.Index(),
-                                   compositing_type);
-      ++chunk_cursor;
+      pending_layers_.emplace_back(
+          paint_artifact, *chunk_it,
+          chunk_it - paint_artifact->PaintChunks().begin(), compositing_type);
+      chunk_it++;
       if (pending_layers_.back().RequiresOwnLayer())
         continue;
     } else {
@@ -914,7 +917,7 @@ void PaintArtifactCompositor::LayerizeGroup(
       // Case C: The following chunks belong to a subgroup. Process them by
       //         a recursion call.
       wtf_size_t first_layer_in_subgroup = pending_layers_.size();
-      LayerizeGroup(chunks, *subgroup, chunk_cursor);
+      LayerizeGroup(paint_artifact, *subgroup, chunk_it);
       // The above LayerizeGroup generated new layers in pending_layers_
       // [first_layer_in_subgroup .. pending_layers.size() - 1]. If it
       // generated 2 or more layer that we already know can't be merged
@@ -952,12 +955,12 @@ void PaintArtifactCompositor::LayerizeGroup(
 
 void PaintArtifactCompositor::CollectPendingLayers(
     scoped_refptr<const PaintArtifact> paint_artifact) {
-  auto chunks = paint_artifact->Chunks();
-  auto cursor = chunks.begin();
+  Vector<PaintChunk>::const_iterator cursor =
+      paint_artifact->PaintChunks().begin();
   // Shrink, but do not release the backing. Re-use it from the last frame.
   pending_layers_.Shrink(0);
-  LayerizeGroup(chunks, EffectPaintPropertyNode::Root(), cursor);
-  DCHECK_EQ(chunks.end(), cursor);
+  LayerizeGroup(paint_artifact, EffectPaintPropertyNode::Root(), cursor);
+  DCHECK_EQ(paint_artifact->PaintChunks().end(), cursor);
   pending_layers_.ShrinkToReasonableCapacity();
 }
 
@@ -1297,8 +1300,8 @@ void PaintArtifactCompositor::Update(
     // In Pre-CompositeAfterPaint, touch action rects and non-fast scrollable
     // regions are updated through ScrollingCoordinator.
     if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-      PaintChunkSubset paint_chunks(paint_artifact,
-                                    pending_layer.paint_chunk_indices);
+      auto paint_chunks = paint_artifact->GetPaintChunkSubset(
+          pending_layer.paint_chunk_indices);
       UpdateTouchActionRects(*layer, layer->offset_to_transform_parent(),
                              property_state, paint_chunks);
       UpdateNonFastScrollableRegions(

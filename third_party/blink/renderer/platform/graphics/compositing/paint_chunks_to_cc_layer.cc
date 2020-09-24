@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_chunks_to_cc_layer.h"
 
 #include "base/numerics/safe_conversions.h"
-#include "cc/layers/layer.h"
 #include "cc/paint/display_item_list.h"
 #include "cc/paint/paint_op_buffer.h"
 #include "cc/paint/render_surface_filters.h"
@@ -87,7 +86,7 @@ class ConversionContext {
   // At last, close all pushed states to balance pairs (this happens when the
   // context object is destructed):
   //   Output: End_C4 End_C3 End_C2 End_C1
-  void Convert(const PaintChunkSubset&);
+  void Convert(const PaintChunkSubset&, const DisplayItemList&);
 
  private:
   // Adjust the translation of the whole display list relative to layer offset.
@@ -703,13 +702,13 @@ void ConversionContext::EndTransform() {
   previous_transform_ = nullptr;
 }
 
-void ConversionContext::Convert(const PaintChunkSubset& chunks) {
-  for (auto it = chunks.begin(); it != chunks.end(); ++it) {
-    const auto& chunk = *it;
+void ConversionContext::Convert(const PaintChunkSubset& paint_chunks,
+                                const DisplayItemList& display_items) {
+  for (const auto& chunk : paint_chunks) {
     const auto& chunk_state = chunk.properties;
     bool switched_to_chunk_state = false;
 
-    for (const auto& item : it.DisplayItems()) {
+    for (const auto& item : display_items.ItemsInPaintChunk(chunk)) {
       sk_sp<const PaintRecord> record;
       if (item.IsScrollbar())
         record = static_cast<const ScrollbarDisplayItem&>(item).Paint();
@@ -756,21 +755,25 @@ void ConversionContext::Convert(const PaintChunkSubset& chunks) {
 
 }  // unnamed namespace
 
-void PaintChunksToCcLayer::ConvertInto(const PaintChunkSubset& chunks,
-                                       const PropertyTreeState& layer_state,
-                                       const gfx::Vector2dF& layer_offset,
-                                       cc::DisplayItemList& cc_list) {
-  ConversionContext(layer_state, layer_offset, cc_list).Convert(chunks);
+void PaintChunksToCcLayer::ConvertInto(
+    const PaintChunkSubset& paint_chunks,
+    const PropertyTreeState& layer_state,
+    const gfx::Vector2dF& layer_offset,
+    const DisplayItemList& display_items,
+    cc::DisplayItemList& cc_list) {
+  ConversionContext(layer_state, layer_offset, cc_list)
+      .Convert(paint_chunks, display_items);
 }
 
 scoped_refptr<cc::DisplayItemList> PaintChunksToCcLayer::Convert(
     const PaintChunkSubset& paint_chunks,
     const PropertyTreeState& layer_state,
     const gfx::Vector2dF& layer_offset,
+    const DisplayItemList& display_items,
     cc::DisplayItemList::UsageHint hint,
     RasterUnderInvalidationCheckingParams* under_invalidation_checking_params) {
   auto cc_list = base::MakeRefCounted<cc::DisplayItemList>(hint);
-  ConvertInto(paint_chunks, layer_state, layer_offset, *cc_list);
+  ConvertInto(paint_chunks, layer_state, layer_offset, display_items, *cc_list);
 
   if (under_invalidation_checking_params) {
     auto& params = *under_invalidation_checking_params;
@@ -780,7 +783,8 @@ scoped_refptr<cc::DisplayItemList> PaintChunksToCcLayer::Convert(
     // use cc_list because it is not finalized yet.
     auto list_clone = base::MakeRefCounted<cc::DisplayItemList>(
         cc::DisplayItemList::kToBeReleasedAsPaintOpBuffer);
-    ConvertInto(paint_chunks, layer_state, layer_offset, *list_clone);
+    ConvertInto(paint_chunks, layer_state, layer_offset, display_items,
+                *list_clone);
     recorder.getRecordingCanvas()->drawPicture(list_clone->ReleaseAsRecord());
     params.tracking.CheckUnderInvalidations(params.debug_name,
                                             recorder.finishRecordingAsPicture(),
@@ -794,41 +798,6 @@ scoped_refptr<cc::DisplayItemList> PaintChunksToCcLayer::Convert(
 
   cc_list->Finalize();
   return cc_list;
-}
-
-// The heuristic for picking a checkerboarding color works as follows:
-//   - During paint, PaintChunker will look for background color display items,
-//     and annotates the chunk with the index of the display item that paints
-//     the largest area background color (ties are broken by selecting the
-//     display item that paints last).
-//   - After layer allocation, the paint chunks assigned to a layer are
-//     examined for a background color annotation. The chunk with the largest
-//     background color annotation is selected.
-//   - If the area of the selected background color is at least half the size
-//     of the layer, then it is set as the layer's background color.
-//   - The same color is used for the layer's safe opaque background color, but
-//     without the size requirement, as safe opaque background color should
-//     always get a value if possible.
-void PaintChunksToCcLayer::UpdateBackgroundColor(
-    cc::Layer& layer,
-    const PaintChunkSubset& paint_chunks) {
-  SkColor color = SK_ColorTRANSPARENT;
-  uint64_t area = 0;
-  for (const auto& chunk : paint_chunks) {
-    if (chunk.background_color != Color::kTransparent &&
-        chunk.background_color_area >= area) {
-      color = chunk.background_color.Rgb();
-      area = chunk.background_color_area;
-    }
-  }
-
-  layer.SetSafeOpaqueBackgroundColor(color);
-
-  uint64_t layer_area =
-      static_cast<uint64_t>(layer.bounds().width()) * layer.bounds().height();
-  if (area < layer_area / 2)
-    color = SK_ColorTRANSPARENT;
-  layer.SetBackgroundColor(color);
 }
 
 }  // namespace blink

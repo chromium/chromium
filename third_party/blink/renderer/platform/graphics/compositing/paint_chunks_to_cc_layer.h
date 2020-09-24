@@ -15,7 +15,6 @@
 
 namespace cc {
 class DisplayItemList;
-class Layer;
 }  // namespace cc
 
 namespace gfx {
@@ -24,6 +23,7 @@ class Vector2dF;
 
 namespace blink {
 
+class DisplayItemList;
 class PaintChunkSubset;
 class PropertyTreeState;
 class RasterInvalidationTracking;
@@ -60,6 +60,7 @@ class PLATFORM_EXPORT PaintChunksToCcLayer {
   static void ConvertInto(const PaintChunkSubset&,
                           const PropertyTreeState& layer_state,
                           const gfx::Vector2dF& layer_offset,
+                          const DisplayItemList&,
                           cc::DisplayItemList&);
 
   // Similar to ConvertInto(), but returns a finalized new list instead of
@@ -68,11 +69,9 @@ class PLATFORM_EXPORT PaintChunksToCcLayer {
       const PaintChunkSubset&,
       const PropertyTreeState& layer_state,
       const gfx::Vector2dF& layer_offset,
+      const DisplayItemList&,
       cc::DisplayItemList::UsageHint,
       RasterUnderInvalidationCheckingParams* = nullptr);
-
-  static void UpdateBackgroundColor(cc::Layer& layer,
-                                    const PaintChunkSubset& paint_chunks);
 };
 
 }  // namespace blink

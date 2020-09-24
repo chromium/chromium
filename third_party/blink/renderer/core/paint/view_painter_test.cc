@@ -203,8 +203,7 @@ TEST_P(ViewPainterTest, FrameScrollHitTestProperties) {
                        view_contents_properties)));
 
   // The scroll hit test should not be scrolled and should not be clipped.
-  const auto& scroll_hit_test_chunk =
-      RootPaintController().PaintChunks()[{0, 0}];
+  const auto& scroll_hit_test_chunk = RootPaintController().PaintChunks()[0];
   const auto& scroll_hit_test_transform =
       ToUnaliased(scroll_hit_test_chunk.properties.Transform());
   EXPECT_EQ(nullptr, scroll_hit_test_transform.ScrollNode());
@@ -214,7 +213,7 @@ TEST_P(ViewPainterTest, FrameScrollHitTestProperties) {
             scroll_hit_test_clip.UnsnappedClipRect().Rect());
 
   // The scrolled contents should be scrolled and clipped.
-  const auto& contents_chunk = RootPaintController().PaintChunks()[{0, 1}];
+  const auto& contents_chunk = RootPaintController().PaintChunks()[1];
   const auto& contents_transform =
       ToUnaliased(contents_chunk.properties.Transform());
   const auto* contents_scroll = contents_transform.ScrollNode();

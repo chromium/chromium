@@ -102,9 +102,6 @@ class ContiguousContainer : public ContiguousContainerBase {
     bool operator!=(const IteratorWrapper& other) const {
       return it_ != other.it_;
     }
-    bool operator<(const IteratorWrapper& other) const {
-      return it_ < other.it_;
-    }
     ValueType& operator*() const { return *static_cast<ValueType*>(*it_); }
     ValueType* operator->() const { return &operator*(); }
     IteratorWrapper operator+(std::ptrdiff_t n) const {

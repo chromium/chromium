@@ -12,7 +12,6 @@
 #include "third_party/blink/renderer/platform/testing/paint_property_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
-using testing::_;
 using testing::ElementsAre;
 using testing::UnorderedElementsAre;
 
@@ -476,8 +475,8 @@ TEST_P(PaintLayerPainterTest, CachedSubsequenceRetainsPreviousPaintResult) {
                             IsSameId(content1, kBackgroundType)));
     // |target| created subsequence.
     EXPECT_SUBSEQUENCE(*target_layer, 2, 4);
-    EXPECT_THAT(RootPaintController().PaintChunks(),
-                ElementsAre(_, _, IsPaintChunk(1, 1), IsPaintChunk(1, 2)));
+    EXPECT_EQ(0u, RootPaintController().PaintChunks()[2].size());
+    EXPECT_EQ(1u, RootPaintController().PaintChunks()[3].size());
   } else {
     EXPECT_EQ(CullRect(IntRect(0, 0, 800, 4600)),
               target_layer->PreviousCullRect());
@@ -487,8 +486,7 @@ TEST_P(PaintLayerPainterTest, CachedSubsequenceRetainsPreviousPaintResult) {
                             IsSameId(content1, kBackgroundType)));
     // |target| created subsequence.
     EXPECT_SUBSEQUENCE(*target_layer, 1, 2);
-    EXPECT_THAT(RootPaintController().PaintChunks(),
-                ElementsAre(_, IsPaintChunk(1, 2)));
+    EXPECT_EQ(1u, RootPaintController().PaintChunks()[1].size());
   }
 
   // Change something that triggers a repaint but |target| should use cached
@@ -514,8 +512,8 @@ TEST_P(PaintLayerPainterTest, CachedSubsequenceRetainsPreviousPaintResult) {
                             IsSameId(content1, kBackgroundType)));
     // |target| still created subsequence (cached).
     EXPECT_SUBSEQUENCE(*target_layer, 2, 4);
-    EXPECT_THAT(RootPaintController().PaintChunks(),
-                ElementsAre(_, _, IsPaintChunk(1, 1), IsPaintChunk(1, 2)));
+    EXPECT_EQ(0u, RootPaintController().PaintChunks()[2].size());
+    EXPECT_EQ(1u, RootPaintController().PaintChunks()[3].size());
   } else {
     EXPECT_EQ(CullRect(IntRect(0, 0, 800, 4600)),
               target_layer->PreviousCullRect());
@@ -524,8 +522,7 @@ TEST_P(PaintLayerPainterTest, CachedSubsequenceRetainsPreviousPaintResult) {
                             IsSameId(content1, kBackgroundType)));
     // |target| still created subsequence (cached).
     EXPECT_SUBSEQUENCE(*target_layer, 1, 2);
-    EXPECT_THAT(RootPaintController().PaintChunks(),
-                ElementsAre(_, IsPaintChunk(1, 2)));
+    EXPECT_EQ(1u, RootPaintController().PaintChunks()[1].size());
   }
 
   // Scroll the view so that both |content1| and |content2| are in the interest
@@ -555,8 +552,8 @@ TEST_P(PaintLayerPainterTest, CachedSubsequenceRetainsPreviousPaintResult) {
                             IsSameId(content2, kBackgroundType)));
     // |target| still created subsequence (repainted).
     EXPECT_SUBSEQUENCE(*target_layer, 2, 4);
-    EXPECT_THAT(RootPaintController().PaintChunks(),
-                ElementsAre(_, _, IsPaintChunk(1, 1), IsPaintChunk(1, 3)));
+    EXPECT_EQ(0u, RootPaintController().PaintChunks()[2].size());
+    EXPECT_EQ(2u, RootPaintController().PaintChunks()[3].size());
   } else {
     EXPECT_EQ(CullRect(IntRect(0, 0, 800, 7600)),
               target_layer->PreviousCullRect());
@@ -567,8 +564,7 @@ TEST_P(PaintLayerPainterTest, CachedSubsequenceRetainsPreviousPaintResult) {
                             IsSameId(content2, kBackgroundType)));
     // |target| still created subsequence (repainted).
     EXPECT_SUBSEQUENCE(*target_layer, 1, 2);
-    EXPECT_THAT(RootPaintController().PaintChunks(),
-                ElementsAre(_, IsPaintChunk(1, 3)));
+    EXPECT_EQ(2u, RootPaintController().PaintChunks()[1].size());
   }
 }
 

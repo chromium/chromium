@@ -310,8 +310,9 @@ bool GraphicsLayer::Paint() {
   if (!ShouldCreateLayersAfterPaint()) {
     IntRect layer_bounds(layer_state_->offset, IntSize(Size()));
     EnsureRasterInvalidator().Generate(
-        raster_invalidation_function_, GetPaintController().PaintChunks(),
-        layer_bounds, layer_state_->state.Unalias(), this);
+        raster_invalidation_function_,
+        GetPaintController().GetPaintArtifactShared(), layer_bounds,
+        layer_state_->state.Unalias(), this);
   }
 
   needs_check_raster_invalidation_ = false;
@@ -328,7 +329,9 @@ void GraphicsLayer::UpdateShouldCreateLayersAfterPaint() {
   // has a GraphicsLayer.
   if (!client_.IsSVGRoot())
     return;
-  for (const auto& paint_chunk : GetPaintController().PaintChunks()) {
+  const PaintChunkSubset paint_chunks =
+      PaintChunkSubset(GetPaintController().PaintChunks());
+  for (const auto& paint_chunk : paint_chunks) {
     const auto& chunk_state = paint_chunk.properties;
     if (chunk_state.GetPropertyTreeState() == GetPropertyTreeState())
       continue;
@@ -730,6 +733,7 @@ scoped_refptr<cc::DisplayItemList> GraphicsLayer::PaintContentsToDisplayList(
   return PaintChunksToCcLayer::Convert(
       GetPaintController().PaintChunks(), layer_state_->state.Unalias(),
       gfx::Vector2dF(layer_state_->offset.X(), layer_state_->offset.Y()),
+      paint_controller.GetPaintArtifact().GetDisplayItemList(),
       cc::DisplayItemList::kTopLevelDisplayItemList,
       base::OptionalOrNullptr(raster_under_invalidation_params));
 }
