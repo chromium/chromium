@@ -46,6 +46,12 @@ constexpr int kHoldingSpaceRecentFilesContainerId = 2;
 // Note that this is not enforced for pinned items.
 constexpr base::TimeDelta kMaxFileAge = base::TimeDelta::FromDays(1);
 
+// The maximum allowed number of downloads to display in holding space UI.
+constexpr size_t kMaxDownloads = 2u;
+
+// The maximum allowed number of screenshots to display in holding space UI.
+constexpr size_t kMaxScreenshots = 3u;
+
 // Mime type with wildcard which matches all image types.
 constexpr char kMimeTypeImage[] = "image/*";
 

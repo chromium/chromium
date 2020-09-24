@@ -28,6 +28,11 @@ class RecentFilesContainer : public HoldingSpaceItemViewsContainer {
   void RemoveHoldingSpaceItemView(const HoldingSpaceItem* item) override;
 
  private:
+  void AddHoldingSpaceScreenshotView(const HoldingSpaceItem* item);
+  void RemoveHoldingSpaceScreenshotView(const HoldingSpaceItem* item);
+  void AddHoldingSpaceDownloadView(const HoldingSpaceItem* item);
+  void RemoveHoldingSpaceDownloadView(const HoldingSpaceItem* item);
+
   HoldingSpaceItemViewDelegate* const delegate_;
   views::View* screenshots_container_ = nullptr;
   HoldingSpaceItemChipsContainer* recent_downloads_container_ = nullptr;
