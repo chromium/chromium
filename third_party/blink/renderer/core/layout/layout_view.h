@@ -101,7 +101,7 @@ class CORE_EXPORT LayoutView final : public LayoutBlockFlow {
 
   // Based on LocalFrameView::LayoutSize, but:
   // - checks for null LocalFrameView
-  // - returns 0x0 if using printing layout
+  // - Replaces logical height with PageLogicalHeight() if using printing layout
   // - scrollbar exclusion is compatible with root layer scrolling
   IntSize GetLayoutSize(IncludeScrollbarsInRect = kExcludeScrollbars) const;
 

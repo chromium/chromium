@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<script>
+  if (window.testRunner)
+      testRunner.setPrinting();
+  if (window.internals)
+      internals.settings.setShouldPrintBackgrounds(true);
+</script>
+<style>
+  html { writing-mode: vertical-lr; }
+  body { margin:20px; }
+</style>
+<!-- Note: This test assumes that the page width is more than 600px and less
+     than 1200px. There's currently no way of specifying the page size for
+     tests.  -->
+<p style="writing-mode:horizontal-tb; position:absolute; right:0; top:0; width:200px;">
+  There should be a right-aligned blue box on the first page, and a
+  right-aligned hotpink box on the second page.
+</p>
+<div style="width:600px; height:100px; break-inside:avoid; background:blue;"></div>
+<div style="width:600px; height:100px; break-inside:avoid; background:hotpink;"></div>

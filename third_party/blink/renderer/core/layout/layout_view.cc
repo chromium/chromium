@@ -753,8 +753,14 @@ PhysicalRect LayoutView::DocumentRect() const {
 
 IntSize LayoutView::GetLayoutSize(
     IncludeScrollbarsInRect scrollbar_inclusion) const {
-  if (ShouldUsePrintingLayout())
-    return IntSize(Size().Width().ToInt(), PageLogicalHeight().ToInt());
+  if (ShouldUsePrintingLayout()) {
+    LayoutSize size = Size();
+    if (StyleRef().IsHorizontalWritingMode())
+      size.SetHeight(PageLogicalHeight());
+    else
+      size.SetWidth(PageLogicalHeight());
+    return FlooredIntSize(size);
+  }
 
   if (!frame_view_)
     return IntSize();
