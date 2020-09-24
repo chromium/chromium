@@ -28808,7 +28808,6 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3047" label="PluginElementLoadedImage"/>
   <int value="3048" label="PluginElementLoadedExternal"/>
   <int value="3049" label="RenderSubtreeAttribute"/>
-  <int value="3050" label="ARIAAnnotations"/>
   <int value="3051" label="IntersectionObserverV2"/>
   <int value="3052" label="HeavyAdIntervention"/>
   <int value="3053" label="UserTimingL3"/>
@@ -42312,7 +42311,6 @@ from previous Chrome versions.
   <int value="-630946893" label="TabSearchFixedEntrypoint:enabled"/>
   <int value="-626329144" label="SyncSupportTrustedVaultPassphrase:enabled"/>
   <int value="-626211146" label="DesktopMinimalUI:disabled"/>
-  <int value="-625695291" label="AccessibilityExposeARIAAnnotations:enabled"/>
   <int value="-624221121" label="CommandLineOnNonRooted:enabled"/>
   <int value="-623364791" label="ClickToCallReceiver:disabled"/>
   <int value="-622685174" label="enable-pdf-material-ui"/>
@@ -43553,7 +43551,6 @@ from previous Chrome versions.
   <int value="673588373" label="OmniboxPedalSuggestions:disabled"/>
   <int value="674788251" label="EnableNewBadgeOnMenuItems:enabled"/>
   <int value="677866592" label="ClickToCallUI:disabled"/>
-  <int value="679251577" label="AccessibilityExposeARIAAnnotations:disabled"/>
   <int value="679931272" label="DcheckIsFatal:enabled"/>
   <int value="680070635"
       label="enable-fullscreen-handwriting-virtual-keyboard:disabled"/>

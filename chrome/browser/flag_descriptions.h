@@ -52,9 +52,6 @@ extern const char kAcceleratedVideoDecodeDescription[];
 extern const char kAcceleratedVideoEncodeName[];
 extern const char kAcceleratedVideoEncodeDescription[];
 
-extern const char kAccessibilityExposeARIAAnnotationsName[];
-extern const char kAccessibilityExposeARIAAnnotationsDescription[];
-
 #if BUILDFLAG(ENABLE_PLUGINS)
 extern const char kAccessiblePDFFormName[];
 extern const char kAccessiblePDFFormDescription[];

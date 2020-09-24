@@ -12,12 +12,6 @@
 
 namespace features {
 
-AX_BASE_EXPORT extern const base::Feature
-    kEnableAccessibilityExposeARIAAnnotations;
-
-// Returns true if ARIA annotations should be exposed to the browser AX Tree.
-AX_BASE_EXPORT bool IsAccessibilityExposeARIAAnnotationsEnabled();
-
 AX_BASE_EXPORT extern const base::Feature kEnableAccessibilityExposeDisplayNone;
 
 // Returns true if "display: none" nodes should be exposed to the

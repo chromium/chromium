@@ -9,15 +9,6 @@
 
 namespace features {
 
-// Allow use of ARIA roles from https://github.com/w3c/annotation-aria draft.
-const base::Feature kEnableAccessibilityExposeARIAAnnotations{
-    "AccessibilityExposeARIAAnnotations", base::FEATURE_DISABLED_BY_DEFAULT};
-
-bool IsAccessibilityExposeARIAAnnotationsEnabled() {
-  return base::FeatureList::IsEnabled(
-      ::features::kEnableAccessibilityExposeARIAAnnotations);
-}
-
 // Enable exposing "display: none" nodes to the browser process AXTree
 const base::Feature kEnableAccessibilityExposeDisplayNone{
     "AccessibilityExposeDisplayNone", base::FEATURE_DISABLED_BY_DEFAULT};

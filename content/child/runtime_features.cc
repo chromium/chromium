@@ -253,8 +253,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
     {wf::EnableExperimentalProductivityFeatures,
      features::kExperimentalProductivityFeatures},
     {wf::EnableFeaturePolicyForSandbox, features::kFeaturePolicyForSandbox},
-    {wf::EnableAccessibilityExposeARIAAnnotations,
-     features::kEnableAccessibilityExposeARIAAnnotations},
     {wf::EnableAccessibilityExposeDisplayNone,
      features::kEnableAccessibilityExposeDisplayNone},
     {wf::EnableAccessibilityExposeHTMLElement,

@@ -4599,11 +4599,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(app_list_features::kEnableAppGridGhost)},
 #endif  // OS_CHROMEOS
 
-    {"enable-accessibility-expose-aria-annotations",
-     flag_descriptions::kAccessibilityExposeARIAAnnotationsName,
-     flag_descriptions::kAccessibilityExposeARIAAnnotationsDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kEnableAccessibilityExposeARIAAnnotations)},
-
 #if !defined(OS_ANDROID)
     {"enable-accessibility-live-captions",
      flag_descriptions::kEnableAccessibilityLiveCaptionsName,

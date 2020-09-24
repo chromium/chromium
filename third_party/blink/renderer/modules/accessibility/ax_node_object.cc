@@ -4544,19 +4544,16 @@ String AXNodeObject::Description(
 
   // aria-description overrides any HTML-based accessible description,
   // but not aria-describedby.
-  if (RuntimeEnabledFeatures::AccessibilityExposeARIAAnnotationsEnabled(
-          element->GetExecutionContext())) {
-    const AtomicString& aria_desc =
-        GetAOMPropertyOrARIAAttribute(AOMStringProperty::kDescription);
-    if (!aria_desc.IsNull()) {
-      description_from = ax::mojom::blink::DescriptionFrom::kAttribute;
-      description = aria_desc;
-      if (description_sources) {
-        found_description = true;
-        description_sources->back().text = description;
-      } else {
-        return description;
-      }
+  const AtomicString& aria_desc =
+      GetAOMPropertyOrARIAAttribute(AOMStringProperty::kDescription);
+  if (!aria_desc.IsNull()) {
+    description_from = ax::mojom::blink::DescriptionFrom::kAttribute;
+    description = aria_desc;
+    if (description_sources) {
+      found_description = true;
+      description_sources->back().text = description;
+    } else {
+      return description;
     }
   }
 
