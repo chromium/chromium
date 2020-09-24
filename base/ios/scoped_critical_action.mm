@@ -14,53 +14,6 @@
 #include "base/metrics/user_metrics.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/synchronization/lock.h"
-#import "build/branding_buildflags.h"
-
-#if BUILDFLAG(CHROMIUM_BRANDING)
-#include <dlfcn.h>
-#endif  // BUILDFLAG(CHROMIUM_BRANDING)
-
-namespace {
-
-// |backgroundTimeRemaining| is thread-safe, but as of Xcode 11.4 this method
-// is still incorrectly marked as not thread-safe, so checking the value of
-// |backgroundTimeRemaining| will trigger libMainThreadChecker (if enabled).
-// Instead, for Chromium builds only, disable libMainThreadChecker for just
-// this call.  This logic is only useful for developer builds, and should not
-// be included in official builds.  These blocks should be removed if future
-// versions of the library whitelists |backgroundTimeRemaining|.
-NSTimeInterval GetBackgroundTimeRemaining(UIApplication* application) {
-#if BUILDFLAG(CHROMIUM_BRANDING)
-  if (!base::ios::IsRunningOnIOS13OrLater()) {
-    // On developer iOS12 builds there's no way to suppress the main thread
-    // checker assert.  Since it's a developer build, simply return 0.
-    return 0;
-  }
-  static char const* const lib_main_thread_checker_bundle_path =
-#if TARGET_IPHONE_SIMULATOR
-      "/usr/lib/libMainThreadChecker.dylib";
-#else
-      "/Developer/usr/lib/libMainThreadChecker.dylib";
-#endif
-  static void* handle =
-      dlopen(lib_main_thread_checker_bundle_path, RTLD_NOLOAD | RTLD_LAZY);
-  static void (*main_thread_checker_suppression_begin)() =
-      (void (*)())dlsym(handle, "__main_thread_checker_suppression_begin");
-  if (main_thread_checker_suppression_begin)
-    main_thread_checker_suppression_begin();
-#endif  // BUILDFLAG(CHROMIUM_BRANDING)
-  NSTimeInterval time = application.backgroundTimeRemaining;
-#if BUILDFLAG(CHROMIUM_BRANDING)
-  static void (*main_thread_checker_suppression_end)() =
-      (void (*)())dlsym(handle, "__main_thread_checker_suppression_end");
-  if (main_thread_checker_suppression_end)
-    main_thread_checker_suppression_end();
-  dlclose(handle);
-#endif  // BUILDFLAG(CHROMIUM_BRANDING)
-  return time;
-}
-
-}  // namespace
 
 namespace base {
 namespace ios {
@@ -93,7 +46,7 @@ void ScopedCriticalAction::Core::StartBackgroundTask(scoped_refptr<Core> core,
     return;
   }
 
-  NSTimeInterval time = GetBackgroundTimeRemaining(application);
+  NSTimeInterval time = application.backgroundTimeRemaining;
   if (time != DBL_MAX && time > 0) {
     UMA_HISTOGRAM_MEDIUM_TIMES("IOS.CriticalActionBackgroundTimeRemaining",
                                base::TimeDelta::FromSeconds(time));
