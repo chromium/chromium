@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ash/ambient/ambient_controller.h"
+#include "ash/ambient/util/ambient_util.h"
 #include "ash/public/cpp/ambient/ambient_backend_controller.h"
 #include "ash/public/cpp/ambient/ambient_client.h"
 #include "ash/public/cpp/ambient/ambient_metrics.h"
@@ -116,6 +117,31 @@ void BuildBackdropTopicDetails(
   }
 }
 
+AmbientModeTopicType ToAmbientModeTopicType(
+    const backdrop::ScreenUpdate_Topic& topic) {
+  if (!topic.has_topic_type())
+    return AmbientModeTopicType::kOther;
+
+  switch (topic.topic_type()) {
+    case backdrop::CURATED:
+      return AmbientModeTopicType::kCurated;
+    case backdrop::PERSONAL_PHOTO:
+      return AmbientModeTopicType::kPersonal;
+    case backdrop::FEATURED_PHOTO:
+      return AmbientModeTopicType::kFeatured;
+    case backdrop::GEO_PHOTO:
+      return AmbientModeTopicType::kGeo;
+    case backdrop::CULTURAL_INSTITUTE:
+      return AmbientModeTopicType::kCulturalInstitute;
+    case backdrop::RSS_TOPIC:
+      return AmbientModeTopicType::kRss;
+    case backdrop::CAPTURED_ON_PIXEL:
+      return AmbientModeTopicType::kCapturedOnPixel;
+    default:
+      return AmbientModeTopicType::kOther;
+  }
+}
+
 // Helper function to save the information we got from the backdrop server to a
 // public struct so that they can be accessed by public codes.
 ScreenUpdate ToScreenUpdate(
@@ -125,9 +151,14 @@ ScreenUpdate ToScreenUpdate(
   int topics_size = backdrop_screen_update.next_topics_size();
   if (topics_size > 0) {
     for (auto& backdrop_topic : backdrop_screen_update.next_topics()) {
-      AmbientModeTopic ambient_topic;
       DCHECK(backdrop_topic.has_url());
 
+      auto topic_type = ToAmbientModeTopicType(backdrop_topic);
+      if (!ambient::util::IsAmbientModeTopicTypeAllowed(topic_type))
+        continue;
+
+      AmbientModeTopic ambient_topic;
+      ambient_topic.topic_type = topic_type;
       if (backdrop_topic.has_portrait_image_url())
         ambient_topic.url = backdrop_topic.portrait_image_url();
       else

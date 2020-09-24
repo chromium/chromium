@@ -49,7 +49,7 @@ namespace {
 // TODO(b/161357364): refactor utility functions and constants
 
 constexpr net::BackoffEntry::Policy kFetchTopicRetryBackoffPolicy = {
-    0,              // Number of initial errors to ignore.
+    10,             // Number of initial errors to ignore.
     500,            // Initial delay in ms.
     2.0,            // Factor by which the waiting time will be multiplied.
     0.2,            // Fuzzing percentage.
@@ -234,7 +234,6 @@ void AmbientPhotoController::StartScreenUpdate() {
 void AmbientPhotoController::StopScreenUpdate() {
   photo_refresh_timer_.Stop();
   topic_index_ = 0;
-  topics_batch_fetched_ = 0;
   image_refresh_started_ = false;
   retries_to_read_from_cache_ = kMaxNumberOfCachedImages;
   fetch_topic_retry_backoff_.Reset();
@@ -244,8 +243,7 @@ void AmbientPhotoController::StopScreenUpdate() {
 }
 
 void AmbientPhotoController::OnTopicsChanged() {
-  ++topics_batch_fetched_;
-  if (topics_batch_fetched_ < kNumberOfRequests)
+  if (ambient_backend_model_.topics().size() < kMaxNumberOfCachedImages)
     ScheduleFetchTopics(/*backoff=*/false);
 
   if (!image_refresh_started_) {
@@ -307,9 +305,8 @@ void AmbientPhotoController::OnScreenUpdateInfoFetched(
     const ash::ScreenUpdate& screen_update) {
   // It is possible that |screen_update| is an empty instance if fatal errors
   // happened during the fetch.
-  if (screen_update.next_topics.empty() &&
-      !screen_update.weather_info.has_value()) {
-    LOG(ERROR) << "The screen update info fetch has failed.";
+  if (screen_update.next_topics.empty()) {
+    LOG(WARNING) << "The screen update has no topics.";
 
     fetch_topic_retry_backoff_.InformOfRequest(/*succeeded=*/false);
     ScheduleFetchTopics(/*backoff=*/true);

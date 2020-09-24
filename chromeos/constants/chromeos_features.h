@@ -31,6 +31,21 @@ extern const base::FeatureParam<bool> kAmbientModeEarthAndSpaceAlbumEnabled;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::FeatureParam<bool> kAmbientModeStreetArtAlbumEnabled;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+extern const base::FeatureParam<bool> kAmbientModeDefaultFeedEnabled;
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+extern const base::FeatureParam<bool> kAmbientModePersonalPhotosEnabled;
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+extern const base::FeatureParam<bool> kAmbientModeFeaturedPhotosEnabled;
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+extern const base::FeatureParam<bool> kAmbientModeGeoPhotosEnabled;
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+extern const base::FeatureParam<bool>
+    kAmbientModeCulturalInstitutePhotosEnabled;
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+extern const base::FeatureParam<bool> kAmbientModeRssPhotosEnabled;
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+extern const base::FeatureParam<bool> kAmbientModeCapturedOnPixelPhotosEnabled;
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kAmbientModePhotoPreviewFeature;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kAmbientModeDevUseProdFeature;

@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/public/cpp/ambient/ambient_backend_controller.h"
 #include "ash/public/cpp/ambient/common/ambient_settings.h"
 #include "base/callback.h"
 #include "base/optional.h"
@@ -82,6 +83,7 @@ void FakeAmbientBackendControllerImpl::FetchScreenUpdateInfo(
   topic.url = kFakeUrl;
   topic.details = kFakeDetails;
   topic.related_image_url = kFakeUrl;
+  topic.topic_type = AmbientModeTopicType::kCulturalInstitute;
 
   ash::WeatherInfo weather_info;
   weather_info.temp_f = .0f;

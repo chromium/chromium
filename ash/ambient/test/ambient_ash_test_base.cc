@@ -101,8 +101,10 @@ AmbientAshTestBase::AmbientAshTestBase()
 AmbientAshTestBase::~AmbientAshTestBase() = default;
 
 void AmbientAshTestBase::SetUp() {
-  scoped_feature_list_.InitAndEnableFeature(
-      chromeos::features::kAmbientModeFeature);
+  scoped_feature_list_.InitAndEnableFeatureWithParameters(
+      chromeos::features::kAmbientModeFeature,
+      {{"GeoPhotosEnabled", "true"},
+       {"CapturedOnPixelPhotosEnabled", "false"}});
   image_downloader_ = std::make_unique<TestImageDownloader>();
   ambient_client_ = std::make_unique<TestAmbientClient>(&wake_lock_provider_);
   chromeos::PowerManagerClient::InitializeFake();

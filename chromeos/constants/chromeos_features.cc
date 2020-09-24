@@ -42,6 +42,27 @@ constexpr base::FeatureParam<bool> kAmbientModeEarthAndSpaceAlbumEnabled{
 constexpr base::FeatureParam<bool> kAmbientModeStreetArtAlbumEnabled{
     &kAmbientModeFeature, "StreetArtAlbumEnabled", false};
 
+constexpr base::FeatureParam<bool> kAmbientModeDefaultFeedEnabled{
+    &kAmbientModeFeature, "DefaultFeedEnabled", false};
+
+constexpr base::FeatureParam<bool> kAmbientModePersonalPhotosEnabled{
+    &kAmbientModeFeature, "PersonalPhotosEnabled", false};
+
+constexpr base::FeatureParam<bool> kAmbientModeFeaturedPhotosEnabled{
+    &kAmbientModeFeature, "FeaturedPhotosEnabled", false};
+
+constexpr base::FeatureParam<bool> kAmbientModeGeoPhotosEnabled{
+    &kAmbientModeFeature, "GeoPhotosEnabled", false};
+
+constexpr base::FeatureParam<bool> kAmbientModeCulturalInstitutePhotosEnabled{
+    &kAmbientModeFeature, "CulturalInstitutePhotosEnabled", false};
+
+constexpr base::FeatureParam<bool> kAmbientModeRssPhotosEnabled{
+    &kAmbientModeFeature, "RssPhotosEnabled", false};
+
+constexpr base::FeatureParam<bool> kAmbientModeCapturedOnPixelPhotosEnabled{
+    &kAmbientModeFeature, "CapturedOnPixelPhotosEnabled", false};
+
 // Controls whether to enable Ambient mode album selection with photo previews.
 const base::Feature kAmbientModePhotoPreviewFeature{
     "ChromeOSAmbientModePhotoPreview", base::FEATURE_ENABLED_BY_DEFAULT};

@@ -19,6 +19,17 @@ class TimeDelta;
 
 namespace ash {
 
+enum class AmbientModeTopicType {
+  kCurated,
+  kPersonal,
+  kFeatured,
+  kGeo,
+  kCulturalInstitute,
+  kRss,
+  kCapturedOnPixel,
+  kOther,
+};
+
 // AmbientModeTopic contains the information we need for rendering photo frame
 // for Ambient Mode. Corresponding to the |backdrop::ScreenUpdate::Topic| proto.
 struct ASH_PUBLIC_EXPORT AmbientModeTopic {
@@ -36,6 +47,8 @@ struct ASH_PUBLIC_EXPORT AmbientModeTopic {
 
   // Only support portrait image tiling in landscape orientation.
   base::Optional<std::string> related_image_url;
+
+  AmbientModeTopicType topic_type = AmbientModeTopicType::kOther;
 };
 
 // WeatherInfo contains the weather information we need for rendering a

@@ -184,9 +184,6 @@ class ASH_EXPORT AmbientPhotoController : public AmbientBackendModelObserver {
   // The index of a topic to download.
   size_t topic_index_ = 0;
 
-  // Tracking how many batches of topics have been fetched.
-  int topics_batch_fetched_ = 0;
-
   // Current index of cached image to read and display when failure happens.
   // The image file of this index may not exist or may not be valid. It will try
   // to read from the next cached file by increasing this index by 1.
