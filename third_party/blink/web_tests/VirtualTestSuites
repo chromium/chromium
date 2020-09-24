@@ -4,6 +4,11 @@
     "bases": [
       "external/wpt/html/webappapis/dynamic-markup-insertion/document-write",
       "external/wpt/html/semantics/scripting-1/the-script-element/module",
+      "external/wpt/service-workers/service-worker/registration-script-module.https.html",
+      "external/wpt/service-workers/service-worker/update-registration-with-type.https.html",
+      "external/wpt/workers/Worker-terminate-forever-during-evaluation.html",
+      "external/wpt/workers/modules",
+      "external/wpt/worklets",
       "fast/dom/HTMLScriptElement/module-script.html",
       "fast/dom/script-module-with-export-leak.html",
       "fast/loader/invalid-module-specifier.html",
