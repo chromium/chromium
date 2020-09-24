@@ -315,8 +315,13 @@ def _DoApkAnalysis(apk_filename, apks_path, tool_prefix, out_dir, report_func):
 
   with zipfile.ZipFile(apk_filename, 'r') as apk:
     apk_contents = apk.infolist()
+    # Account for zipalign overhead that exists in local file header.
     zipalign_overhead = sum(
         _ReadZipInfoExtraFieldLength(apk, i) for i in apk_contents)
+    # Account for zipalign overhead that exists in central directory header.
+    # Happens when python aligns entries in apkbuilder.py, but does not
+    # exist when using Android's zipalign. E.g. for bundle .apks files.
+    zipalign_overhead += sum(len(i.extra) for i in apk_contents)
 
   sdk_version, skip_extract_lib = _ParseManifestAttributes(apk_filename)
 
