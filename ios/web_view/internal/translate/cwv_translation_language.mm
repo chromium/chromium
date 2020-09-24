@@ -29,6 +29,22 @@
   return self;
 }
 
+- (BOOL)isEqual:(id)object {
+  if (self == object) {
+    return YES;
+  }
+  if (![object isKindOfClass:[CWVTranslationLanguage class]]) {
+    return NO;
+  }
+
+  CWVTranslationLanguage* otherLanguage = (CWVTranslationLanguage*)object;
+  return [_languageCode isEqualToString:otherLanguage.languageCode];
+}
+
+- (NSUInteger)hash {
+  return [_languageCode hash];
+}
+
 - (NSString*)description {
   return
       [NSString stringWithFormat:@"%@ name:%@(%@) code:%@", [super description],
