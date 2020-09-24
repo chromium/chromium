@@ -374,7 +374,7 @@ void MediaGalleriesEventRouter::OnGalleryWatchDropped(
     MediaGalleryPrefId gallery_id) {
   MediaGalleries::GalleryChangeDetails details;
   details.type = MediaGalleries::GALLERY_CHANGE_TYPE_WATCH_DROPPED;
-  details.gallery_id = gallery_id;
+  details.gallery_id = base::NumberToString(gallery_id);
   DispatchEventToExtension(
       extension_id, extensions::events::MEDIA_GALLERIES_ON_GALLERY_CHANGED,
       MediaGalleries::OnGalleryChanged::kEventName,
