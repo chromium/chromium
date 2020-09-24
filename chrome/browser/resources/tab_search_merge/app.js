@@ -64,6 +64,31 @@ export class TabSearchAppElement extends PolymerElement {
         readOnly: true,
         value: 10,
       },
+
+      /**
+       * Options for fuzzy search.
+       * @private {!Object}
+       */
+      fuzzySearchOptions_: {
+        type: Object,
+        value: {
+          includeScore: true,
+          includeMatches: true,
+          ignoreLocation: true,
+          threshold: 0.0,
+          distance: 200,
+          keys: [
+            {
+              name: 'title',
+              weight: 2,
+            },
+            {
+              name: 'hostname',
+              weight: 1,
+            }
+          ],
+        },
+      },
     };
   }
 
@@ -83,6 +108,23 @@ export class TabSearchAppElement extends PolymerElement {
     this.addEventListener(
         'keydown',
         (e) => {this.onKeyDown_(/** @type {!KeyboardEvent} **/ (e))});
+
+    // Update option values for fuzzy search from feature params.
+    this.fuzzySearchOptions_ = Object.assign({}, this.fuzzySearchOptions_, {
+      ignoreLocation: loadTimeData.getBoolean('searchIgnoreLocation'),
+      threshold: loadTimeData.getValue('searchThreshold'),
+      distance: loadTimeData.getInteger('searchDistance'),
+      keys: [
+        {
+          name: 'title',
+          weight: loadTimeData.getValue('searchTitleToHostnameWeightRatio'),
+        },
+        {
+          name: 'hostname',
+          weight: 1,
+        }
+      ],
+    });
 
     // TODO(tluk): The listener should provide the data needed to update the
     // WebUI without having to make another round trip request to the Browser.
@@ -382,7 +424,8 @@ export class TabSearchAppElement extends PolymerElement {
     result.sort((a, b) => (b.lastActiveTimeTicks && a.lastActiveTimeTicks) ?
         b.lastActiveTimeTicks.internalValue - a.lastActiveTimeTicks.internalValue :
         0);
-    this.filteredOpenTabs_ = fuzzySearch(this.searchText_, result);
+    this.filteredOpenTabs_ =
+        fuzzySearch(this.searchText_, result, this.fuzzySearchOptions_);
 
     // Update the item count in css so that the css rule can calculate the final
     // height of the tabsContainer. This prevents the scrolling height from

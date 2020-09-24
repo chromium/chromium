@@ -4,32 +4,17 @@
 
 import Fuse from './fuse.js';
 
-const OPTIONS = {
-  includeScore: true,
-  ignoreLocation: true,
-  includeMatches: true,
-  keys: [
-    {
-      name: 'title',
-      weight: 2,
-    },
-    {
-      name: 'hostname',
-      weight: 1,
-    }
-  ]
-};
-
 /**
  * @param {string} input
  * @param {!Array<!tabSearch.mojom.Tab>} records
+ * @param {!Object} options
  * @return {!Array<!tabSearch.mojom.Tab>}
  */
-export function fuzzySearch(input, records) {
+export function fuzzySearch(input, records, options) {
   if (input.length === 0) {
     return records;
   }
-  return new Fuse(records, OPTIONS).search(input).map(result => {
+  return new Fuse(records, options).search(input).map(result => {
     const titleMatch = result.matches.find(e => e.key === 'title');
     const hostnameMatch = result.matches.find(e => e.key === 'hostname');
     const item = Object.assign({}, result.item);

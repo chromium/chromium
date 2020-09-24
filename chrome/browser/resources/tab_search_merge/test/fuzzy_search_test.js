@@ -34,9 +34,26 @@ suite('FuzzySearchTest', () => {
           {start: 6, length: 1}, {start: 8, length: 2}, {start: 13, length: 1}
         ],
       },
-    ]
-    assertDeepEquals(matchedRecords, fuzzySearch('gle', records));
-    assertDeepEquals(records, fuzzySearch('', records));
-    assertDeepEquals([], fuzzySearch('z', records));
+    ];
+
+    const options = {
+      includeScore: true,
+      ignoreLocation: true,
+      includeMatches: true,
+      keys: [
+        {
+          name: 'title',
+          weight: 2,
+        },
+        {
+          name: 'hostname',
+          weight: 1,
+        }
+      ]
+    };
+
+    assertDeepEquals(matchedRecords, fuzzySearch('gle', records, options));
+    assertDeepEquals(records, fuzzySearch('', records, options));
+    assertDeepEquals([], fuzzySearch('z', records, options));
   });
 });
