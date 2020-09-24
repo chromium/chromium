@@ -20,6 +20,7 @@
 #include "components/payments/core/native_error_strings.h"
 #include "components/payments/core/url_util.h"
 #include "net/base/load_flags.h"
+#include "net/base/net_errors.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/url_util.h"
 #include "net/http/http_response_headers.h"
@@ -33,6 +34,11 @@
 
 namespace payments {
 namespace {
+
+static constexpr size_t kMaxManifestSize = 1024 * 1024;
+static_assert(kMaxManifestSize <=
+                  network::SimpleURLLoader::kMaxBoundedStringDownloadSize,
+              "Max manifest size bigger than largest allowed download size");
 
 // Invokes |callback| with |error_format|.
 void RespondWithError(const base::StringPiece& error_format,
@@ -207,6 +213,12 @@ void PaymentManifestDownloader::OnURLLoaderCompleteInternal(
   std::unique_ptr<Download> download = std::move(download_it->second);
   downloads_.erase(download_it);
 
+  if (net_error != net::OK) {
+    RespondWithError(errors::kPaymentManifestDownloadFailed, final_url, *log_,
+                     std::move(download->callback));
+    return;
+  }
+
   std::string error_message;
   if (download->type == Download::Type::RESPONSE_BODY) {
     if (!headers || headers->response_code() != net::HTTP_OK) {
@@ -346,10 +358,12 @@ void PaymentManifestDownloader::InitiateDownload(
   loader->SetOnRedirectCallback(
       base::BindRepeating(&PaymentManifestDownloader::OnURLLoaderRedirect,
                           weak_ptr_factory_.GetWeakPtr(), loader.get()));
-  loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
+
+  loader->DownloadToString(
       url_loader_factory_.get(),
       base::BindOnce(&PaymentManifestDownloader::OnURLLoaderComplete,
-                     weak_ptr_factory_.GetWeakPtr(), loader.get()));
+                     weak_ptr_factory_.GetWeakPtr(), loader.get()),
+      kMaxManifestSize);
 
   auto download = std::make_unique<Download>();
   download->request_initiator = request_initiator;
