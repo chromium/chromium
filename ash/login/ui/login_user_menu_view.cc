@@ -63,16 +63,16 @@ class RemoveUserButton : public SystemLabelButton {
       return;
     }
 
-    if (event->key_code() != ui::VKEY_RETURN) {
-      // The remove-user button should handle bubble dismissal and stop
-      // propagation, otherwise the event will propagate to the bubble widget,
-      // which will close itself and invalidate the bubble pointer in
-      // LoginUserMenuView.
-      event->StopPropagation();
+    if (event->key_code() == ui::VKEY_ESCAPE ||
+        event->key_code() == ui::VKEY_TAB) {
       bubble_->Hide();
-    } else {
-      views::Button::OnKeyEvent(event);
+      // We explicitly move focus back to the dropdown button so the Tab
+      // traversal works correctly.
+      bubble_->GetBubbleOpener()->RequestFocus();
     }
+
+    if (event->key_code() == ui::VKEY_RETURN)
+      views::Button::OnKeyEvent(event);
   }
 
   LoginUserMenuView* bubble_;
