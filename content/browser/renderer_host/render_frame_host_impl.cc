@@ -8765,7 +8765,7 @@ void RenderFrameHostImpl::SendCommitFailedNavigation(
 // Called when the renderer navigates. For every frame loaded, we'll get this
 // notification containing parameters identifying the navigation.
 void RenderFrameHostImpl::DidCommitNavigation(
-    std::unique_ptr<NavigationRequest> committing_navigation_request,
+    std::unique_ptr<NavigationRequest> request,
     std::unique_ptr<FrameHostMsg_DidCommitProvisionalLoad_Params> params,
     mojom::DidCommitProvisionalLoadInterfaceParamsPtr interface_params) {
   // BackForwardCacheImpl::CanStoreRenderFrameHost prevents placing the pages
@@ -8776,13 +8776,6 @@ void RenderFrameHostImpl::DidCommitNavigation(
   // isn't possible to get a DidCommitNavigation IPC from the renderer in
   // kInBackForwardCache state.
   DCHECK(!IsInBackForwardCache());
-
-  NavigationRequest* request;
-  if (committing_navigation_request) {
-    request = committing_navigation_request.get();
-  } else {
-    request = navigation_request();
-  }
 
   if (request && request->IsNavigationStarted()) {
     main_frame_request_ids_ = {params->request_id,
@@ -8876,8 +8869,7 @@ void RenderFrameHostImpl::DidCommitNavigation(
     // therefore the global object is not replaced.
   }
 
-  if (!DidCommitNavigationInternal(std::move(committing_navigation_request),
-                                   std::move(params),
+  if (!DidCommitNavigationInternal(std::move(request), std::move(params),
                                    false /* is_same_document_navigation */)) {
     return;
   }
