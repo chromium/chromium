@@ -60631,15 +60631,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="FirstUserAction.BackgroundTime" units="minutes"
-    expires_after="M85">
+    expires_after="M90">
 <!-- Name completed by histogram_suffixes name="FirstUserActionType" and name="FirstUserActionTypeDevice" -->
 
-  <owner>pkl@chromium.org</owner>
+  <owner>eugenebut@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
   <summary>
     WARNING: The list of actions used to identify new tasks hasn't been
     attentively updated for several years (as of 2017). Some actions that should
     likely be considered new tasks are probably missing. Take this histogram
-    with a grain of salt.
+    with a grain of salt. Was expired for M85, M86.
 
     The amount of time (in seconds) that the app was in the background before
     the user started it
@@ -60662,13 +60663,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="FirstUserAction.HandsetUserActionType"
-    enum="FirstUserActionType" expires_after="M77">
-  <owner>pkl@chromium.org</owner>
+    enum="FirstUserActionType" expires_after="M90">
+  <owner>eugenebut@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
   <summary>
     WARNING: The list of actions used to identify new tasks hasn't been
     attentively updated for several years (as of 2017). Some actions that should
     likely be considered new tasks are probably missing. Take this histogram
-    with a grain of salt.
+    with a grain of salt. Was expired for M77-M86.
 
     On handsets, the type of the first user action performed after the app was
     started or unbackgrounded.
@@ -60676,13 +60678,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="FirstUserAction.TabletUserActionType"
-    enum="FirstUserActionType" expires_after="M82">
-  <owner>pkl@chromium.org</owner>
+    enum="FirstUserActionType" expires_after="M90">
+  <owner>eugenebut@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
   <summary>
     WARNING: The list of actions used to identify new tasks hasn't been
     attentively updated for several years (as of 2017). Some actions that should
     likely be considered new tasks are probably missing. Take this histogram
-    with a grain of salt.
+    with a grain of salt. Was expired for M77-M86.
 
     On tablets, the type of the first user action performed after the app was
     started or unbackgrounded.
