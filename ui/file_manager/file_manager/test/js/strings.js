@@ -13,7 +13,7 @@ loadTimeData.overrideValues({
   'DRIVE_BIDIRECTIONAL_NATIVE_MESSAGING_ENABLED': false,
   'FILES_NG_ENABLED': true,
   'FILES_SINGLE_PARTITION_FORMAT_ENABLED': false,
-  'FILES_TRANSFER_DETAILS_ENABLED': false,
+  'FILES_TRANSFER_DETAILS_ENABLED': true,
   'FILTERS_IN_RECENTS_ENABLED': false,
   'FEEDBACK_PANEL_ENABLED': false,
   'GOOGLE_DRIVE_REDEEM_URL': 'http://www.google.com/intl/en/chrome/devices' +
