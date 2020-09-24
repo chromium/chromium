@@ -145,8 +145,6 @@ class VPNListProviderEntry : public views::ButtonListener, public views::View {
 
     SystemMenuButton* add_vpn_button = new SystemMenuButton(
         this, enabled_icon, disabled_icon, button_accessible_name_id);
-    add_vpn_button->SetInkDropColor(
-        UnifiedSystemTrayView::GetBackgroundColor());
 
     // 'Add VPN' is disabled in the login screen since user configured
     // device-wide VPNs are unsupported.

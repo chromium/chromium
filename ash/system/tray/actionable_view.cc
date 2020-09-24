@@ -5,6 +5,7 @@
 #include "ash/system/tray/actionable_view.h"
 
 #include "ash/system/tray/tray_popup_utils.h"
+#include "ash/system/unified/unified_system_tray_view.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -70,18 +71,15 @@ std::unique_ptr<views::InkDrop> ActionableView::CreateInkDrop() {
 
 std::unique_ptr<views::InkDropRipple> ActionableView::CreateInkDropRipple()
     const {
-  // TODO(minch): Do not hard code the background color. Add it as a constructor
-  // argument to ActionableView.
   return TrayPopupUtils::CreateInkDropRipple(
-      ink_drop_style_, this, GetInkDropCenterBasedOnLastEvent(), SK_ColorWHITE);
+      ink_drop_style_, this, GetInkDropCenterBasedOnLastEvent(),
+      UnifiedSystemTrayView::GetBackgroundColor());
 }
 
 std::unique_ptr<views::InkDropHighlight>
 ActionableView::CreateInkDropHighlight() const {
-  // TODO(minch): Do not hard code the background color. Add it as a constructor
-  // argument to ActionableView.
-  return TrayPopupUtils::CreateInkDropHighlight(ink_drop_style_, this,
-                                                SK_ColorWHITE);
+  return TrayPopupUtils::CreateInkDropHighlight(
+      ink_drop_style_, this, UnifiedSystemTrayView::GetBackgroundColor());
 }
 
 void ActionableView::ButtonPressed(Button* sender, const ui::Event& event) {

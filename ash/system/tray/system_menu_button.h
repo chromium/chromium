@@ -39,11 +39,6 @@ class SystemMenuButton : public views::ImageButton {
   // colors.
   void SetVectorIcon(const gfx::VectorIcon& icon);
 
-  // Explicity sets the ink drop color. Otherwise the default value will be used
-  // by TrayPopupUtils::CreateInkDropRipple() and
-  // TrayPopupUtils::CreateInkDropHighlight().
-  void SetInkDropColor(SkColor color);
-
   // views::ImageButton:
   std::unique_ptr<views::InkDrop> CreateInkDrop() override;
   std::unique_ptr<views::InkDropRipple> CreateInkDropRipple() const override;
@@ -54,11 +49,6 @@ class SystemMenuButton : public views::ImageButton {
  private:
   // Returns the size that the ink drop should be constructed with.
   gfx::Size GetInkDropSize() const;
-
-  // The color to use when creating the ink drop. If null the default color is
-  // used as defined by TrayPopupUtils::CreateInkDropRipple() and
-  // TrayPopupUtils::CreateInkDropHighlight().
-  base::Optional<SkColor> ink_drop_color_;
 
   DISALLOW_COPY_AND_ASSIGN(SystemMenuButton);
 };

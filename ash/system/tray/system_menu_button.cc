@@ -9,6 +9,7 @@
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_popup_ink_drop_style.h"
 #include "ash/system/tray/tray_popup_utils.h"
+#include "ash/system/unified/unified_system_tray_view.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/animation/flood_fill_ink_drop_ripple.h"
@@ -62,30 +63,23 @@ void SystemMenuButton::SetVectorIcon(const gfx::VectorIcon& icon) {
 
 SystemMenuButton::~SystemMenuButton() = default;
 
-void SystemMenuButton::SetInkDropColor(SkColor color) {
-  ink_drop_color_ = color;
-}
-
 std::unique_ptr<views::InkDrop> SystemMenuButton::CreateInkDrop() {
   return TrayPopupUtils::CreateInkDrop(this);
 }
 
-// TODO(minch): Do not hard code the background color for InkDropRipple and
-// InkDropHighlight. Add it as a constructor argument to SystemMenuButton.
-// Then, |ink_drop_color_| related logic can be removed.
 std::unique_ptr<views::InkDropRipple> SystemMenuButton::CreateInkDropRipple()
     const {
   return TrayPopupUtils::CreateInkDropRipple(
       TrayPopupInkDropStyle::HOST_CENTERED, this,
       GetInkDropCenterBasedOnLastEvent(),
-      ink_drop_color_.value_or(SK_ColorWHITE));
+      UnifiedSystemTrayView::GetBackgroundColor());
 }
 
 std::unique_ptr<views::InkDropHighlight>
 SystemMenuButton::CreateInkDropHighlight() const {
   return TrayPopupUtils::CreateInkDropHighlight(
       TrayPopupInkDropStyle::HOST_CENTERED, this,
-      ink_drop_color_.value_or(SK_ColorWHITE));
+      UnifiedSystemTrayView::GetBackgroundColor());
 }
 
 const char* SystemMenuButton::GetClassName() const {
