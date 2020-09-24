@@ -13,7 +13,12 @@ namespace chromeos {
 namespace machine_learning {
 namespace {
 
-using chromeos::machine_learning::mojom::LoadHandwritingModelResult;
+using ::chromeos::machine_learning::mojom::HandwritingRecognizerSpecPtr;
+using ::chromeos::machine_learning::mojom::LoadHandwritingModelResult;
+using HandwritingRecognizer =
+    mojo::PendingReceiver<mojom::HandwritingRecognizer>;
+using LoadHandwritingModelCallback = ::chromeos::machine_learning::mojom::
+    MachineLearningService::LoadHandwritingModelCallback;
 
 // Records CrOSActionRecorder event.
 void RecordLoadHandwritingModelResult(const LoadHandwritingModelResult val) {
@@ -22,6 +27,8 @@ void RecordLoadHandwritingModelResult(const LoadHandwritingModelResult val) {
       LoadHandwritingModelResult::LOAD_MODEL_FILES_ERROR);
 }
 
+constexpr char kOndeviceHandwritingSwitch[] = "ondevice_handwriting";
+constexpr char kLibHandwritingDlcId[] = "libhandwriting";
 // A list of supported language code.
 constexpr char kLanguageCodeEn[] = "en";
 constexpr char kLanguageCodeGesture[] = "gesture_in_context";
@@ -30,10 +37,8 @@ constexpr char kLanguageCodeGesture[] = "gesture_in_context";
 // kOndeviceHandwritingSwitch.
 bool HandwritingSwitchHasValue(const std::string& value) {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  return command_line->HasSwitch(
-             HandwritingModelLoader::kOndeviceHandwritingSwitch) &&
-         command_line->GetSwitchValueASCII(
-             HandwritingModelLoader::kOndeviceHandwritingSwitch) == value;
+  return command_line->HasSwitch(kOndeviceHandwritingSwitch) &&
+         command_line->GetSwitchValueASCII(kOndeviceHandwritingSwitch) == value;
 }
 
 // Returns true if switch kOndeviceHandwritingSwitch is set to use_rootfs.
@@ -46,69 +51,45 @@ bool IsLibHandwritingDlcEnabled() {
   return HandwritingSwitchHasValue("use_dlc");
 }
 
-}  // namespace
-
-constexpr char HandwritingModelLoader::kOndeviceHandwritingSwitch[];
-constexpr char HandwritingModelLoader::kLibHandwritingDlcId[];
-
-HandwritingModelLoader::HandwritingModelLoader(
-    mojom::HandwritingRecognizerSpecPtr spec,
-    mojo::PendingReceiver<mojom::HandwritingRecognizer> receiver,
-    mojom::MachineLearningService::LoadHandwritingModelCallback callback)
-    : dlc_client_(chromeos::DlcserviceClient::Get()),
-      spec_(std::move(spec)),
-      receiver_(std::move(receiver)),
-      callback_(std::move(callback)),
-      weak_ptr_factory_(this) {}
-
-HandwritingModelLoader::~HandwritingModelLoader() = default;
-
-void HandwritingModelLoader::Load() {
-  // Returns FEATURE_NOT_SUPPORTED_ERROR if both rootfs and dlc are not enabled.
-  if (!IsLibHandwritingRootfsEnabled() && !IsLibHandwritingDlcEnabled()) {
-    RecordLoadHandwritingModelResult(
-        LoadHandwritingModelResult::FEATURE_NOT_SUPPORTED_ERROR);
-    std::move(callback_).Run(
-        LoadHandwritingModelResult::FEATURE_NOT_SUPPORTED_ERROR);
-    return;
-  }
-
-  // Returns LANGUAGE_NOT_SUPPORTED_ERROR if the language is not supported yet.
-  if (spec_->language != kLanguageCodeEn &&
-      spec_->language != kLanguageCodeGesture) {
-    RecordLoadHandwritingModelResult(
-        LoadHandwritingModelResult::LANGUAGE_NOT_SUPPORTED_ERROR);
-    std::move(callback_).Run(
-        LoadHandwritingModelResult::LANGUAGE_NOT_SUPPORTED_ERROR);
-    return;
-  }
-
-  // Load from rootfs if enabled.
-  if (IsLibHandwritingRootfsEnabled()) {
+// Called when InstallDlc completes.
+// Returns an error if the `result.error` is not dlcservice::kErrorNone.
+// Calls mlservice to LoadHandwritingModel otherwise.
+void OnInstallDlcComplete(
+    HandwritingRecognizerSpecPtr spec,
+    HandwritingRecognizer receiver,
+    LoadHandwritingModelCallback callback,
+    const chromeos::DlcserviceClient::InstallResult& result) {
+  // Call LoadHandwritingModelWithSpec if no error was found.
+  if (result.error == dlcservice::kErrorNone) {
     ServiceConnection::GetInstance()->LoadHandwritingModel(
-        std::move(spec_), std::move(receiver_), std::move(callback_));
+        std::move(spec), std::move(receiver), std::move(callback));
     return;
   }
 
-  // Gets existing dlc list and based on the presence of libhandwriting
-  // either returns an error or installs the libhandwriting dlc.
-  dlc_client_->GetExistingDlcs(
-      base::BindOnce(&HandwritingModelLoader::OnGetExistingDlcsComplete,
-                     weak_ptr_factory_.GetWeakPtr()));
+  RecordLoadHandwritingModelResult(
+      LoadHandwritingModelResult::DLC_INSTALL_ERROR);
+  std::move(callback).Run(LoadHandwritingModelResult::DLC_INSTALL_ERROR);
 }
 
-void HandwritingModelLoader::OnGetExistingDlcsComplete(
+// Called when the existing-dlc-list is returned.
+// Returns an error if libhandwriting is not in the existing-dlc-list.
+// Calls InstallDlc otherwise.
+void OnGetExistingDlcsComplete(
+    HandwritingRecognizerSpecPtr spec,
+    HandwritingRecognizer receiver,
+    LoadHandwritingModelCallback callback,
+    DlcserviceClient* const dlc_client,
     const std::string& err,
     const dlcservice::DlcsWithContent& dlcs_with_content) {
   // Loop over dlcs_with_content, and installs libhandwriting if already exists.
   // Since we don't want to trigger downloading here, we only install(mount)
   // the handwriting dlc if it is already on device.
   for (const auto& dlc_info : dlcs_with_content.dlc_infos()) {
-    if (dlc_info.id() == HandwritingModelLoader::kLibHandwritingDlcId) {
-      dlc_client_->Install(
+    if (dlc_info.id() == kLibHandwritingDlcId) {
+      dlc_client->Install(
           kLibHandwritingDlcId,
-          base::BindOnce(&HandwritingModelLoader::OnInstallDlcComplete,
-                         weak_ptr_factory_.GetWeakPtr()),
+          base::BindOnce(&OnInstallDlcComplete, std::move(spec),
+                         std::move(receiver), std::move(callback)),
           chromeos::DlcserviceClient::IgnoreProgress);
       return;
     }
@@ -117,21 +98,46 @@ void HandwritingModelLoader::OnGetExistingDlcsComplete(
   // Returns error if the handwriting dlc is not on the device.
   RecordLoadHandwritingModelResult(
       LoadHandwritingModelResult::DLC_DOES_NOT_EXIST);
-  std::move(callback_).Run(LoadHandwritingModelResult::DLC_DOES_NOT_EXIST);
+  std::move(callback).Run(LoadHandwritingModelResult::DLC_DOES_NOT_EXIST);
 }
 
-void HandwritingModelLoader::OnInstallDlcComplete(
-    const chromeos::DlcserviceClient::InstallResult& result) {
-  // Call LoadHandwritingModelWithSpec if no error was found.
-  if (result.error == dlcservice::kErrorNone) {
-    ServiceConnection::GetInstance()->LoadHandwritingModel(
-        std::move(spec_), std::move(receiver_), std::move(callback_));
+}  // namespace
+
+void LoadHandwritingModelFromRootfsOrDlc(HandwritingRecognizerSpecPtr spec,
+                                         HandwritingRecognizer receiver,
+                                         LoadHandwritingModelCallback callback,
+                                         DlcserviceClient* const dlc_client) {
+  // Returns FEATURE_NOT_SUPPORTED_ERROR if both rootfs and dlc are not enabled.
+  if (!IsLibHandwritingRootfsEnabled() && !IsLibHandwritingDlcEnabled()) {
+    RecordLoadHandwritingModelResult(
+        LoadHandwritingModelResult::FEATURE_NOT_SUPPORTED_ERROR);
+    std::move(callback).Run(
+        LoadHandwritingModelResult::FEATURE_NOT_SUPPORTED_ERROR);
     return;
   }
 
-  RecordLoadHandwritingModelResult(
-      LoadHandwritingModelResult::DLC_INSTALL_ERROR);
-  std::move(callback_).Run(LoadHandwritingModelResult::DLC_INSTALL_ERROR);
+  // Returns LANGUAGE_NOT_SUPPORTED_ERROR if the language is not supported yet.
+  if (spec->language != kLanguageCodeEn &&
+      spec->language != kLanguageCodeGesture) {
+    RecordLoadHandwritingModelResult(
+        LoadHandwritingModelResult::LANGUAGE_NOT_SUPPORTED_ERROR);
+    std::move(callback).Run(
+        LoadHandwritingModelResult::LANGUAGE_NOT_SUPPORTED_ERROR);
+    return;
+  }
+
+  // Load from rootfs if enabled.
+  if (IsLibHandwritingRootfsEnabled()) {
+    ServiceConnection::GetInstance()->LoadHandwritingModel(
+        std::move(spec), std::move(receiver), std::move(callback));
+    return;
+  }
+
+  // Gets existing dlc list and based on the presence of libhandwriting
+  // either returns an error or installs the libhandwriting dlc.
+  dlc_client->GetExistingDlcs(
+      base::BindOnce(&OnGetExistingDlcsComplete, std::move(spec),
+                     std::move(receiver), std::move(callback), dlc_client));
 }
 
 }  // namespace machine_learning

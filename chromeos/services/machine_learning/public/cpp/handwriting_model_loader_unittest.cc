@@ -18,20 +18,16 @@ namespace chromeos {
 namespace machine_learning {
 using chromeos::machine_learning::mojom::LoadHandwritingModelResult;
 
+constexpr char kOndeviceHandwritingSwitch[] = "ondevice_handwriting";
+constexpr char kLibHandwritingDlcId[] = "libhandwriting";
+
 class HandwritingModelLoaderTest : public testing::Test {
  protected:
   void SetUp() override {
     ServiceConnection::UseFakeServiceConnectionForTesting(
         &fake_service_connection_);
     result_ = LoadHandwritingModelResult::DEPRECATED_MODEL_SPEC_ERROR;
-
-    loader_ = std::make_unique<HandwritingModelLoader>(
-        mojom::HandwritingRecognizerSpec::New("en"),
-        recognizer_.BindNewPipeAndPassReceiver(),
-        base::BindOnce(
-            &HandwritingModelLoaderTest::OnHandwritingModelLoaderComplete,
-            base::Unretained(this)));
-    loader_->dlc_client_ = &fake_client_;
+    language_ = "en";
   }
 
   // Callback that called when loader_->Load() is over to save the returned
@@ -44,14 +40,19 @@ class HandwritingModelLoaderTest : public testing::Test {
   // Runs loader_->Load() and check the returned result as expected.
   void ExpectLoadHandwritingModelResult(
       const LoadHandwritingModelResult expected_result) {
-    loader_->Load();
+    LoadHandwritingModelFromRootfsOrDlc(
+        mojom::HandwritingRecognizerSpec::New(language_),
+        recognizer_.BindNewPipeAndPassReceiver(),
+        base::BindOnce(
+            &HandwritingModelLoaderTest::OnHandwritingModelLoaderComplete,
+            base::Unretained(this)),
+        &fake_client_);
+
     base::RunLoop().RunUntilIdle();
     EXPECT_EQ(result_, expected_result);
   }
 
-  void SetLanguage(const std::string& language) {
-    loader_->spec_->language = language;
-  }
+  void SetLanguage(const std::string& language) { language_ = language; }
 
   // Creates a dlc list with one dlc inside.
   void AddDlcsWithContent(const std::string& dlc_id) {
@@ -69,7 +70,7 @@ class HandwritingModelLoaderTest : public testing::Test {
   // Sets "ondevice_handwriting" value.
   void SetSwitchValue(const std::string& switch_value) {
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-        HandwritingModelLoader::kOndeviceHandwritingSwitch, switch_value);
+        kOndeviceHandwritingSwitch, switch_value);
   }
 
  private:
@@ -80,8 +81,8 @@ class HandwritingModelLoaderTest : public testing::Test {
   FakeDlcserviceClient fake_client_;
   FakeServiceConnectionImpl fake_service_connection_;
   LoadHandwritingModelResult result_;
+  std::string language_;
   mojo::Remote<mojom::HandwritingRecognizer> recognizer_;
-  std::unique_ptr<HandwritingModelLoader> loader_;
 };
 
 TEST_F(HandwritingModelLoaderTest, HandwritingNotEnabled) {
@@ -122,7 +123,7 @@ TEST_F(HandwritingModelLoaderTest, LoadingWithoutDlcOnDevice) {
 TEST_F(HandwritingModelLoaderTest, DlcInstalledWithError) {
   SetSwitchValue("use_dlc");
 
-  AddDlcsWithContent(HandwritingModelLoader::kLibHandwritingDlcId);
+  AddDlcsWithContent(kLibHandwritingDlcId);
   SetInstallError("random error");
 
   // InstallDlc error should return DLC_INSTALL_ERROR.
@@ -133,7 +134,7 @@ TEST_F(HandwritingModelLoaderTest, DlcInstalledWithError) {
 TEST_F(HandwritingModelLoaderTest, DlcInstalledWithoutError) {
   SetSwitchValue("use_dlc");
 
-  AddDlcsWithContent(HandwritingModelLoader::kLibHandwritingDlcId);
+  AddDlcsWithContent(kLibHandwritingDlcId);
   SetInstallError(dlcservice::kErrorNone);
 
   // InstallDlc without an error should return success.
