@@ -13,14 +13,14 @@
       #pageContainer {
         display: flex;
         flex-direction: column;
-        height: 385px;
-        padding-block-end: var(--nearby-page-space-block);
-        padding-block-start: var(--nearby-page-space-block);
+        height: 100%;
       }
 
       #header {
         margin-inline-end:  var(--nearby-page-space-inline);
         margin-inline-start: var(--nearby-page-space-inline);
+        padding-block-end: var(--nearby-page-space-block);
+        padding-block-start: var(--nearby-page-space-block);
       }
 
       #contentContainer {
@@ -37,10 +37,12 @@
       }
 
       #actions {
+        display: flex;
+        justify-content: flex-end;
+        padding-block-end: var(--nearby-page-space-block);
         padding-block-start: var(--nearby-page-space-block);
         padding-inline-end:  var(--nearby-page-space-inline);
         padding-inline-start: var(--nearby-page-space-inline);
-        text-align: end;
       }
 
       #utilityButton {

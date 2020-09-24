@@ -4,7 +4,9 @@
 <link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_view_manager/cr_view_manager.html">
 <link rel="import" href="chrome://resources/html/assert.html">
+<link rel="import" href="../../shared/nearby_onboarding_page.html">
 <link rel="import" href="../../shared/nearby_share_settings_behavior.html">
+<link rel="import" href="../../shared/nearby_visibility_page.html">
 <link rel="import" href="nearby_share_confirm_page.html">
 <link rel="import" href="nearby_share_high_visibility_page.html">
 <link rel="import" href="nearby_share_receive_manager.html">
@@ -12,8 +14,9 @@
 <dom-module id="nearby-share-receive-dialog">
   <template>
     <style>
-      #content {
-        height: 400px;
+      cr-dialog::part(dialog) {
+        height: 600px;
+        width: 512px;
       }
     </style>
     <cr-dialog id="dialog" show-on-attach>
@@ -26,6 +29,12 @@
               share-target="[[shareTarget]]"
               connection-token="[[connectionToken]]">
           </nearby-share-confirm-page>
+          <nearby-onboarding-page id="[[Page.ONBOARDING]]" slot="view"
+              settings="{{settings}}">
+          </nearby-onboarding-page>
+          <nearby-visibility-page id="[[Page.VISIBILITY]]" slot="view"
+              settings="{{settings}}">
+          </nearby-visibility-page>
         </cr-view-manager>
       </div>
     </cr-dialog>
