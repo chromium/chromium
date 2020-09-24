@@ -42,6 +42,8 @@ enum class ExternalFilesLoadedInWebStateFeature {
 @synthesize isPresentingFirstRunUI = _isPresentingFirstRunUI;
 @synthesize isColdStart = _isColdStart;
 @synthesize appLaunchTime = _appLaunchTime;
+@synthesize restoreHelper = _restoreHelper;
+
 - (FirstUserActionRecorder*)firstUserActionRecorder {
   return nil;
 }
@@ -60,6 +62,14 @@ enum class ExternalFilesLoadedInWebStateFeature {
 }
 
 - (void)stopChromeMain {
+}
+
+- (BOOL)canLaunchInIncognito {
+  return NO;
+}
+
+- (NSDictionary*)launchOptions {
+  return @{};
 }
 
 @end

@@ -350,7 +350,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 }
 
 - (void)handleExternalIntents {
-  if (self.mainController.isPresentingFirstRunUI ||
+  if (self.sceneState.appState.startupInformation.isPresentingFirstRunUI ||
       self.sceneState.presentingModalOverlay) {
     return;
   }
@@ -363,7 +363,8 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
         URLOpenerParams* params =
             [[URLOpenerParams alloc] initWithUIOpenURLContext:context];
         [self openTabFromLaunchWithParams:params
-                       startupInformation:self.mainController
+                       startupInformation:self.sceneState.appState
+                                              .startupInformation
                                  appState:self.sceneState.appState];
       }
       if (self.sceneState.connectionOptions.shortcutItem) {
@@ -373,7 +374,8 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
                        completionHandler:nil
                                tabOpener:self
                    connectionInformation:self
-                      startupInformation:self.mainController
+                      startupInformation:self.sceneState.appState
+                                             .startupInformation
                        interfaceProvider:self.interfaceProvider];
       }
 
@@ -411,7 +413,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
               applicationIsActive:NO
                         tabOpener:self
             connectionInformation:self
-               startupInformation:self.mainController
+               startupInformation:self.sceneState.appState.startupInformation
                      browserState:self.currentInterface.browserState];
       }
       self.sceneState.connectionOptions = nil;
@@ -421,18 +423,21 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
       [UserActivityHandler
           handleStartupParametersWithTabOpener:self
                          connectionInformation:self
-                            startupInformation:self.mainController
+                            startupInformation:self.sceneState.appState
+                                                   .startupInformation
                                   browserState:self.currentInterface
                                                    .browserState];
     }
 
   } else {
-    NSDictionary* launchOptions = self.mainController.launchOptions;
+    NSDictionary* launchOptions =
+        self.sceneState.appState.startupInformation.launchOptions;
     URLOpenerParams* params =
         [[URLOpenerParams alloc] initWithLaunchOptions:launchOptions];
-    [self openTabFromLaunchWithParams:params
-                   startupInformation:self.mainController
-                             appState:self.sceneState.appState];
+    [self
+        openTabFromLaunchWithParams:params
+                 startupInformation:self.sceneState.appState.startupInformation
+                           appState:self.sceneState.appState];
   }
 }
 
@@ -463,12 +468,13 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 - (void)performActionForShortcutItem:(UIApplicationShortcutItem*)shortcutItem
                    completionHandler:(void (^)(BOOL succeeded))completionHandler
     API_AVAILABLE(ios(13)) {
-  [UserActivityHandler performActionForShortcutItem:shortcutItem
-                                  completionHandler:completionHandler
-                                          tabOpener:self
-                              connectionInformation:self
-                                 startupInformation:self.mainController
-                                  interfaceProvider:self.interfaceProvider];
+  [UserActivityHandler
+      performActionForShortcutItem:shortcutItem
+                 completionHandler:completionHandler
+                         tabOpener:self
+             connectionInformation:self
+                startupInformation:self.sceneState.appState.startupInformation
+                 interfaceProvider:self.interfaceProvider];
 }
 
 - (void)sceneState:(SceneState*)sceneState
@@ -478,22 +484,25 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   }
   BOOL sceneIsActive =
       self.sceneState.activationLevel >= SceneActivationLevelForegroundActive;
-  if (self.mainController.isPresentingFirstRunUI ||
+  if (self.sceneState.appState.startupInformation.isPresentingFirstRunUI ||
       self.sceneState.presentingModalOverlay) {
     sceneIsActive = NO;
   }
-  [UserActivityHandler continueUserActivity:userActivity
-                        applicationIsActive:sceneIsActive
-                                  tabOpener:self
-                      connectionInformation:self
-                         startupInformation:self.mainController
-                               browserState:self.currentInterface.browserState];
-  // It is necessary to reset the pendingUserActivity after handling it.
-  // Handle the reset asynchronously to avoid interfering with other
-  // observers.
-  dispatch_async(dispatch_get_main_queue(), ^{
-    self.sceneState.pendingUserActivity = nil;
-  });
+  [UserActivityHandler
+       continueUserActivity:userActivity
+        applicationIsActive:sceneIsActive
+                  tabOpener:self
+      connectionInformation:self
+         startupInformation:self.sceneState.appState.startupInformation
+               browserState:self.currentInterface.browserState];
+  if (sceneIsActive) {
+    // It is necessary to reset the pendingUserActivity after handling it.
+    // Handle the reset asynchronously to avoid interfering with other
+    // observers.
+    dispatch_async(dispatch_get_main_queue(), ^{
+      self.sceneState.pendingUserActivity = nil;
+    });
+  }
 }
 
 - (void)sceneStateDidHideModalOverlay:(SceneState*)sceneState {
@@ -557,7 +566,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   // Only create the restoration helper if the browser state was backed up
   // successfully.
   if (self.sceneState.appState.sessionRestorationRequired) {
-    self.mainController.restoreHelper =
+    self.sceneState.appState.startupInformation.restoreHelper =
         [[CrashRestoreHelper alloc] initWithBrowser:self.mainInterface.browser];
   }
 
@@ -566,7 +575,8 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   BOOL startInIncognito =
       [[NSUserDefaults standardUserDefaults] boolForKey:kIncognitoCurrentKey];
   BOOL switchFromIncognito =
-      startInIncognito && ![self.mainController canLaunchInIncognito];
+      startInIncognito &&
+      !self.sceneState.appState.startupInformation.canLaunchInIncognito;
 
   if (self.sceneState.appState.postCrashLaunch || switchFromIncognito) {
     [self clearIOSSpecificIncognitoData];
@@ -584,8 +594,9 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
     // The startup parameters may create new tabs or navigations. If the restore
     // infobar is displayed now, it may be dismissed immediately and the user
     // will never be able to restore the session.
-    [self.mainController.restoreHelper showRestorePrompt];
-    self.mainController.restoreHelper = nil;
+    [self.sceneState.appState.startupInformation
+            .restoreHelper showRestorePrompt];
+    self.sceneState.appState.startupInformation.restoreHelper = nil;
   }
 }
 
@@ -653,11 +664,11 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   // If this is first run, show the first run UI on top of the new tab.
   // If this isn't first run, check if the sign-in promo needs to display.
   if (firstRun && launchMode != ApplicationMode::INCOGNITO &&
-      !self.mainController.isPresentingFirstRunUI) {
+      !self.sceneState.appState.startupInformation.isPresentingFirstRunUI) {
     [self.mainController prepareForFirstRunUI:self.sceneState];
     [self showFirstRunUI];
     // Do not ever show the 'restore' infobar during first run.
-    self.mainController.restoreHelper = nil;
+    self.sceneState.appState.startupInformation.restoreHelper = nil;
   }
 
   // If skipping first run and not in Safe Mode, consider showing the default
@@ -1811,12 +1822,13 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
            tabOpenedCompletion:tabOpenedCompletion];
   }
 
-  if (self.mainController.restoreHelper) {
+  if (self.sceneState.appState.startupInformation.restoreHelper) {
     // Now that all the operations on the tabs have been done, display the
     // restore infobar if needed.
     dispatch_async(dispatch_get_main_queue(), ^{
-      [self.mainController.restoreHelper showRestorePrompt];
-      self.mainController.restoreHelper = nil;
+      [self.sceneState.appState.startupInformation
+              .restoreHelper showRestorePrompt];
+      self.sceneState.appState.startupInformation.restoreHelper = nil;
     });
   }
 }
@@ -2160,7 +2172,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   DCHECK(URLsToOpen.count == URLContexts.count || URLContexts.count == 1);
   BOOL active =
       _sceneState.activationLevel >= SceneActivationLevelForegroundActive;
-  if (self.mainController.isPresentingFirstRunUI ||
+  if (self.sceneState.appState.startupInformation.isPresentingFirstRunUI ||
       self.sceneState.presentingModalOverlay) {
     active = NO;
   }
@@ -2170,7 +2182,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
             applicationActive:active
                     tabOpener:self
         connectionInformation:self
-           startupInformation:self.mainController];
+           startupInformation:self.sceneState.appState.startupInformation];
   }
 }
 

@@ -21,23 +21,11 @@ class ChromeBrowserState;
 // TODO(crbug.com/1012697): Remove this protocol when SceneController is
 // operational. Move the private internals back into MainController, and pass
 // ownership of Scene-related objects to SceneController.
-@protocol MainControllerGuts <StartupInformation, BrowsingDataCommands>
+@protocol MainControllerGuts <BrowsingDataCommands>
 
-// Keeps track of the restore state during startup.
-@property(nonatomic, strong) CrashRestoreHelper* restoreHelper;
-
-// Only for iOS 12 compat.
-- (NSDictionary*)launchOptions;
-
-- (void)removeBrowsingDataForBrowserState:(ChromeBrowserState*)browserState
-                               timePeriod:(browsing_data::TimePeriod)timePeriod
-                               removeMask:(BrowsingDataRemoveMask)removeMask
-                          completionBlock:(ProceduralBlock)completionBlock;
 // MainController tracks EULA acceptance and performs delayed tasks when the
 // first run UI is dismissed.
 - (void)prepareForFirstRunUI:(SceneState*)presentingScene;
-// Returns whether or not the app can launch in incognito mode.
-- (BOOL)canLaunchInIncognito;
 
 @end
 

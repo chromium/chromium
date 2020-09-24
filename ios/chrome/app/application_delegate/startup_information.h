@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_APP_APPLICATION_DELEGATE_STARTUP_INFORMATION_H_
 #define IOS_CHROME_APP_APPLICATION_DELEGATE_STARTUP_INFORMATION_H_
 
+@class CrashRestoreHelper;
 class FirstUserActionRecorder;
 
 namespace base {
@@ -24,6 +25,14 @@ class TimeTicks;
 @property(nonatomic, assign) base::TimeTicks appLaunchTime;
 // An object to record metrics related to the user's first action.
 @property(nonatomic, readonly) FirstUserActionRecorder* firstUserActionRecorder;
+
+// Keeps track of the restore state during startup.
+@property(nonatomic, strong) CrashRestoreHelper* restoreHelper;
+
+- (BOOL)canLaunchInIncognito;
+
+// Only for iOS 12 compat.
+- (NSDictionary*)launchOptions;
 
 // Disables the FirstUserActionRecorder.
 - (void)resetFirstUserActionRecorder;
