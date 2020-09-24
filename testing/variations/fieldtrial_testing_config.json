@@ -4547,31 +4547,6 @@
             ]
         }
     ],
-    "NewTabInProductHelp": [
-        {
-            "platforms": [
-                "linux",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_1",
-                    "params": {
-                        "availability": "any",
-                        "event_new_tab_session_time_met": "name:new_tab_session_time_met;comparator:>=1;window:3650;storage:3650",
-                        "event_omnibox_used": "name:omnibox_used;comparator:>=1;window:3650;storage:3650",
-                        "event_trigger": "name:new_tab_trigger;comparator:==0;window:3650;storage:3650",
-                        "event_used": "name:new_tab_opened;comparator:==0;window:3650;storage:3650",
-                        "session_rate": "<0",
-                        "x_promo_string": "0"
-                    },
-                    "enable_features": [
-                        "IPH_NewTab"
-                    ]
-                }
-            ]
-        }
-    ],
     "NewUsbBackend": [
         {
             "platforms": [
