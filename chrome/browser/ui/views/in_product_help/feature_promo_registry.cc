@@ -11,13 +11,8 @@
 #include "chrome/browser/ui/views/in_product_help/feature_promo_bubble_params.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
-#include "chrome/common/buildflags.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
-
-#if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
-#include "chrome/browser/ui/views/frame/webui_tab_strip_container_view.h"
-#endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 
 namespace {
 
@@ -34,17 +29,6 @@ views::View* GetTabGroupsAnchorView(BrowserView* browser_view) {
 views::View* GetMediaButton(BrowserView* browser_view) {
   return browser_view->toolbar()->media_button();
 }
-
-#if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
-// kIPHWebUITabStripFeature:
-views::View* GetWebUITabStripAnchorView(BrowserView* browser_view) {
-  WebUITabStripContainerView* const webui_tab_strip =
-      browser_view->webui_tab_strip();
-  if (!webui_tab_strip)
-    return nullptr;
-  return webui_tab_strip->tab_counter();
-}
-#endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 
 }  // namespace
 
@@ -124,18 +108,6 @@ void FeaturePromoRegistry::RegisterKnownFeatures() {
     RegisterFeature(feature_engagement::kIPHLiveCaptionFeature, params,
                     base::BindRepeating(GetMediaButton));
   }
-
-#if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
-  {
-    // kIPHWebUITabStripFeature:
-    FeaturePromoBubbleParams params;
-    params.body_string_specifier = IDS_WEBUI_TAB_STRIP_PROMO;
-    params.arrow = views::BubbleBorder::TOP_RIGHT;
-
-    RegisterFeature(feature_engagement::kIPHWebUITabStripFeature, params,
-                    base::BindRepeating(GetWebUITabStripAnchorView));
-  }
-#endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 }
 
 FeaturePromoRegistry::FeaturePromoData::FeaturePromoData() = default;

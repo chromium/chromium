@@ -37,7 +37,6 @@
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/browser_extension_window_controller.h"
 #include "chrome/browser/extensions/extension_util.h"
-#include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/native_window_notification_source.h"
 #include "chrome/browser/platform_util.h"
@@ -145,8 +144,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
-#include "components/feature_engagement/public/feature_constants.h"
-#include "components/feature_engagement/public/tracker.h"
 #include "components/javascript_dialogs/app_modal_dialog_controller.h"
 #include "components/javascript_dialogs/app_modal_dialog_queue.h"
 #include "components/javascript_dialogs/app_modal_dialog_view.h"
@@ -1583,25 +1580,6 @@ void BrowserView::TryNotifyWindowBoundsChanged(const gfx::Rect& widget_bounds) {
   browser()->extension_window_controller()->NotifyWindowBoundsChanged();
 }
 
-void BrowserView::TouchModeChanged() {
-  MaybeInitializeWebUITabStrip();
-  MaybeShowWebUITabStripIPH();
-}
-
-void BrowserView::OnFeatureEngagementTrackerInitialized(bool initialized) {
-  if (!initialized)
-    return;
-  MaybeShowWebUITabStripIPH();
-}
-
-void BrowserView::MaybeShowWebUITabStripIPH() {
-  if (!webui_tab_strip_)
-    return;
-
-  feature_promo_controller_->MaybeShowPromo(
-      feature_engagement::kIPHWebUITabStripFeature);
-}
-
 void BrowserView::DestroyBrowser() {
   // After this returns other parts of Chrome are going to be shutdown. Close
   // the window now so that we are deleted immediately and aren't left holding
@@ -2875,11 +2853,6 @@ void BrowserView::AddedToWidget() {
   using_native_frame_ = frame_->ShouldUseNativeFrame();
 
   MaybeInitializeWebUITabStrip();
-
-  feature_promo_controller_->feature_engagement_tracker()
-      ->AddOnInitializedCallback(
-          base::BindOnce(&BrowserView::OnFeatureEngagementTrackerInitialized,
-                         weak_ptr_factory_.GetWeakPtr()));
 
   initialized_ = true;
 }

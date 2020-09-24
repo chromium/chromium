@@ -57,9 +57,6 @@ class FeaturePromoControllerViews : public FeaturePromoController,
   void OnWidgetClosing(views::Widget* widget) override;
   void OnWidgetDestroying(views::Widget* widget) override;
 
-  // Gets the IPH backend. Provided for convenience.
-  feature_engagement::Tracker* feature_engagement_tracker() { return tracker_; }
-
   FeaturePromoBubbleView* promo_bubble_for_testing() { return promo_bubble_; }
   const FeaturePromoBubbleView* promo_bubble_for_testing() const {
     return promo_bubble_;

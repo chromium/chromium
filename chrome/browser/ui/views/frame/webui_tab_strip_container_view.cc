@@ -38,6 +38,8 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
+#include "chrome/browser/ui/views/in_product_help/feature_promo_bubble_params.h"
+#include "chrome/browser/ui/views/in_product_help/feature_promo_bubble_view.h"
 #include "chrome/browser/ui/views/in_product_help/feature_promo_colors.h"
 #include "chrome/browser/ui/views/in_product_help/feature_promo_controller_views.h"
 #include "chrome/browser/ui/views/tabs/tab_group_editor_bubble_view.h"
@@ -438,6 +440,75 @@ class WebUITabStripContainerView::DragToOpenHandler : public ui::EventHandler {
   bool drag_in_progress_ = false;
 };
 
+class WebUITabStripContainerView::IPHController : public TabStripModelObserver {
+ public:
+  explicit IPHController(Browser* browser,
+                         FeaturePromoControllerViews* promo_controller)
+      : browser_(browser),
+        promo_controller_(promo_controller),
+        iph_tracker_(feature_engagement::TrackerFactory::GetForBrowserContext(
+            browser_->profile())) {
+    browser_->tab_strip_model()->AddObserver(this);
+  }
+
+  ~IPHController() override {
+    browser_->tab_strip_model()->RemoveObserver(this);
+  }
+
+  void SetAnchorView(views::View* anchor_view) {
+    DCHECK(!anchor_.view());
+    anchor_.SetView(anchor_view);
+  }
+
+  void NotifyOpened() {
+    iph_tracker_->NotifyEvent(feature_engagement::events::kWebUITabStripOpened);
+  }
+
+  void NotifyClosed() {
+    iph_tracker_->NotifyEvent(feature_engagement::events::kWebUITabStripClosed);
+  }
+
+  // Ends the promo if it's showing.
+  void AbortPromo() {
+    if (!promo_controller_->BubbleIsShowing(
+            feature_engagement::kIPHWebUITabStripFeature))
+      return;
+    promo_controller_->CloseBubble(
+        feature_engagement::kIPHWebUITabStripFeature);
+  }
+
+  // TabStripModelObserver:
+  void OnTabStripModelChanged(
+      TabStripModel* tab_strip_model,
+      const TabStripModelChange& change,
+      const TabStripSelectionChange& selection) override {
+    // We want to show the IPH to let the user know where their new tabs
+    // are. So, ignore changes other than insertions.
+    if (change.type() != TabStripModelChange::kInserted)
+      return;
+
+    views::View* const anchor_view = anchor_.view();
+
+    // In the off chance this is called while the browser is being destroyed,
+    // return.
+    if (!anchor_view)
+      return;
+
+    FeaturePromoBubbleParams bubble_params;
+    bubble_params.body_string_specifier = IDS_WEBUI_TAB_STRIP_PROMO;
+    bubble_params.anchor_view = anchor_view;
+    bubble_params.arrow = views::BubbleBorder::TOP_RIGHT;
+    promo_controller_->MaybeShowPromoWithParams(
+        feature_engagement::kIPHWebUITabStripFeature, bubble_params);
+  }
+
+ private:
+  Browser* const browser_;
+  FeaturePromoControllerViews* const promo_controller_;
+  feature_engagement::Tracker* const iph_tracker_;
+  views::ViewTracker anchor_;
+};
+
 WebUITabStripContainerView::WebUITabStripContainerView(
     BrowserView* browser_view,
     views::View* tab_contents_container,
@@ -455,7 +526,10 @@ WebUITabStripContainerView::WebUITabStripContainerView(
           tab_contents_container,
           omnibox)),
       drag_to_open_handler_(
-          std::make_unique<DragToOpenHandler>(this, top_container)) {
+          std::make_unique<DragToOpenHandler>(this, top_container)),
+      iph_controller_(std::make_unique<IPHController>(
+          browser_view->browser(),
+          browser_view->feature_promo_controller())) {
   TRACE_EVENT0("ui", "WebUITabStripContainerView.Init");
   DCHECK(UseTouchableTabStrip(browser_view_->browser()));
 
@@ -565,6 +639,8 @@ std::unique_ptr<views::View> WebUITabStripContainerView::CreateTabCounter() {
   tab_counter_ = tab_counter.get();
   view_observer_.Add(tab_counter_);
 
+  iph_controller_->SetAnchorView(tab_counter_);
+
   return tab_counter;
 }
 
@@ -589,9 +665,7 @@ WebUITabStripContainerView::GetAcceleratorProvider() const {
 
 void WebUITabStripContainerView::CloseContainer() {
   SetContainerTargetVisibility(false, WebUITabStripOpenCloseReason::kOther);
-  browser_view_->feature_promo_controller()
-      ->feature_engagement_tracker()
-      ->NotifyEvent(feature_engagement::events::kWebUITabStripClosed);
+  iph_controller_->NotifyClosed();
 }
 
 bool WebUITabStripContainerView::CanStartDragToOpen(
@@ -641,13 +715,7 @@ void WebUITabStripContainerView::EndDragToOpen(
 
   if (opening) {
     RecordTabStripUIOpenHistogram(TabStripUIOpenAction::kToolbarDrag);
-    browser_view_->feature_promo_controller()
-        ->feature_engagement_tracker()
-        ->NotifyEvent(feature_engagement::events::kWebUITabStripOpened);
-  } else {
-    browser_view_->feature_promo_controller()
-        ->feature_engagement_tracker()
-        ->NotifyEvent(feature_engagement::events::kWebUITabStripClosed);
+    iph_controller_->NotifyOpened();
   }
 
   animation_.Reset(open_proportion);
@@ -684,11 +752,8 @@ void WebUITabStripContainerView::SetContainerTargetVisibility(
 
     time_at_open_ = base::TimeTicks::Now();
 
-    if (browser_view_->feature_promo_controller()->BubbleIsShowing(
-            feature_engagement::kIPHWebUITabStripFeature)) {
-      browser_view_->feature_promo_controller()->CloseBubble(
-          feature_engagement::kIPHWebUITabStripFeature);
-    }
+    // If we're opening, end IPH if it's showing.
+    iph_controller_->AbortPromo();
   } else {
     if (time_at_open_) {
       RecordTabStripUIOpenDurationHistogram(base::TimeTicks::Now() -
@@ -718,6 +783,7 @@ void WebUITabStripContainerView::SetContainerTargetVisibility(
 void WebUITabStripContainerView::CloseForEventOutsideTabStrip(
     TabStripUICloseAction reason) {
   RecordTabStripUICloseHistogram(reason);
+  iph_controller_->NotifyClosed();
   SetContainerTargetVisibility(false, WebUITabStripOpenCloseReason::kOther);
 }
 
@@ -801,14 +867,10 @@ void WebUITabStripContainerView::ButtonPressed(views::Button* sender,
   const bool new_visibility = !GetVisible();
   if (new_visibility) {
     RecordTabStripUIOpenHistogram(TabStripUIOpenAction::kTapOnTabCounter);
-    browser_view_->feature_promo_controller()
-        ->feature_engagement_tracker()
-        ->NotifyEvent(feature_engagement::events::kWebUITabStripOpened);
+    iph_controller_->NotifyOpened();
   } else {
     RecordTabStripUICloseHistogram(TabStripUICloseAction::kTapOnTabCounter);
-    browser_view_->feature_promo_controller()
-        ->feature_engagement_tracker()
-        ->NotifyEvent(feature_engagement::events::kWebUITabStripClosed);
+    iph_controller_->NotifyClosed();
   }
 
   SetContainerTargetVisibility(new_visibility,
