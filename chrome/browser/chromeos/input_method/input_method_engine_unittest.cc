@@ -170,12 +170,12 @@ class InputMethodEngineTest : public testing::Test {
   }
 
  protected:
-  void CreateEngine(bool whitelisted) {
+  void CreateEngine(bool allowlisted) {
     engine_.reset(new InputMethodEngine());
     observer_ = new TestObserver();
     std::unique_ptr<InputMethodEngineBase::Observer> observer_ptr(observer_);
     engine_->Initialize(std::move(observer_ptr),
-                        whitelisted ? kTestExtensionId : kTestExtensionId2,
+                        allowlisted ? kTestExtensionId : kTestExtensionId2,
                         nullptr);
   }
 
@@ -268,7 +268,7 @@ TEST_F(InputMethodEngineTest, TestSwitching_Password_3rd_Party) {
   EXPECT_EQ(kTestImeComponentId, observer_->GetEngineIdAndReset());
 }
 
-TEST_F(InputMethodEngineTest, TestSwitching_Password_Whitelisted) {
+TEST_F(InputMethodEngineTest, TestSwitching_Password_Allowlisted) {
   CreateEngine(true);
   // Enable/disable with focus.
   FocusIn(ui::TEXT_INPUT_TYPE_PASSWORD);

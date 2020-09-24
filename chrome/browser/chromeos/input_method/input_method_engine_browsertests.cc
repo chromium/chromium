@@ -104,7 +104,7 @@ class InputMethodEngineBrowserTest
     // extension IME.
     // Note: Even extension is loaded by LoadExtensionAsComponent as above, the
     // IME does not managed by ComponentExtensionIMEManager or it's id won't
-    // start with __comp__. The component extension IME is whitelisted and
+    // start with __comp__. The component extension IME is allowlisted and
     // managed by ComponentExtensionIMEManager, but its framework is same as
     // normal extension IME.
     EXPECT_EQ(3U, extension_imes.size());

@@ -37,10 +37,10 @@ namespace chromeos {
 
 namespace {
 
-struct WhitelistedComponentExtensionIME {
+struct AllowlistedComponentExtensionIME {
   const char* id;
   int manifest_resource_id;
-} whitelisted_component_extensions[] = {
+} allowlisted_component_extensions[] = {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     {
         // Official Google XKB Input.
@@ -212,7 +212,7 @@ ComponentExtensionIMEManagerImpl::GetManifest(
 
 // static
 bool ComponentExtensionIMEManagerImpl::IsIMEExtensionID(const std::string& id) {
-  for (auto& extension : whitelisted_component_extensions) {
+  for (auto& extension : allowlisted_component_extensions) {
     if (base::LowerCaseEqualsASCII(id, extension.id))
       return true;
   }
@@ -336,7 +336,7 @@ bool ComponentExtensionIMEManagerImpl::ReadExtensionInfo(
 void ComponentExtensionIMEManagerImpl::ReadComponentExtensionsInfo(
     std::vector<ComponentExtensionIME>* out_imes) {
   DCHECK(out_imes);
-  for (auto& extension : whitelisted_component_extensions) {
+  for (auto& extension : allowlisted_component_extensions) {
     ComponentExtensionIME component_ime;
     ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
     component_ime.manifest =
