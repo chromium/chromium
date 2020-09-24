@@ -111,6 +111,15 @@ void PopulateResourceResponse(net::URLRequest* request,
       !(request->load_flags() & net::LOAD_PREFETCH) &&
       response_info.unused_since_prefetch;
 
+  response->was_cookie_in_request = false;
+  for (const auto& cookie_with_access_result : request->maybe_sent_cookies()) {
+    if (cookie_with_access_result.access_result.status.IsInclude()) {
+      // IsInclude() true means the cookie was sent.
+      response->was_cookie_in_request = true;
+      break;
+    }
+  }
+
   if (is_load_timing_enabled)
     request->GetLoadTimingInfo(&response->load_timing);
 

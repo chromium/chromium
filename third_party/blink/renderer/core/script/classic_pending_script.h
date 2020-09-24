@@ -101,6 +101,7 @@ class CORE_EXPORT ClassicPendingScript final : public PendingScript,
       ScriptSchedulingType type,
       bool can_use_streamer,
       ScriptStreamer::NotStreamingReason reason);
+  void RecordThirdPartyRequestWithCookieIfNeeded(const ResourceResponse&) const;
 
   // MemoryPressureListener
   void OnPurgeMemory() override;

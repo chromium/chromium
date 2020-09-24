@@ -450,6 +450,10 @@ void WebURLResponse::SetWasInPrefetchCache(bool was_in_prefetch_cache) {
   resource_response_->SetWasInPrefetchCache(was_in_prefetch_cache);
 }
 
+void WebURLResponse::SetWasCookieInRequest(bool was_cookie_in_request) {
+  resource_response_->SetWasCookieInRequest(was_cookie_in_request);
+}
+
 void WebURLResponse::SetRecursivePrefetchToken(
     const base::Optional<base::UnguessableToken>& token) {
   resource_response_->SetRecursivePrefetchToken(token);

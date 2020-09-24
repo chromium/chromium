@@ -482,6 +482,12 @@ class PLATFORM_EXPORT ResourceResponse final {
     was_in_prefetch_cache_ = was_in_prefetch_cache;
   }
 
+  bool WasCookieInRequest() const { return was_cookie_in_request_; }
+
+  void SetWasCookieInRequest(bool was_cookie_in_request) {
+    was_cookie_in_request_ = was_cookie_in_request;
+  }
+
   network::mojom::CrossOriginEmbedderPolicyValue GetCrossOriginEmbedderPolicy()
       const;
 
@@ -564,6 +570,9 @@ class PLATFORM_EXPORT ResourceResponse final {
 
   // True if this resource is served from the prefetch cache.
   bool was_in_prefetch_cache_ = false;
+
+  // True if a cookie was sent in the request for this resource.
+  bool was_cookie_in_request_ = false;
 
   // True if this resource was loaded from the network.
   bool network_accessed_ = false;

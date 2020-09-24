@@ -192,6 +192,50 @@ void RecordNotStreamingReasonHistogram(
 
 }  // namespace
 
+void ClassicPendingScript::RecordThirdPartyRequestWithCookieIfNeeded(
+    const ResourceResponse& response) const {
+  // Can be null in some cases where loading failed.
+  if (response.IsNull())
+    return;
+
+  scoped_refptr<SecurityOrigin> script_origin =
+      SecurityOrigin::Create(response.ResponseUrl());
+  const SecurityOrigin* doc_origin =
+      GetElement()->GetExecutionContext()->GetSecurityOrigin();
+  scoped_refptr<const SecurityOrigin> top_frame_origin =
+      GetElement()->GetDocument().TopFrameOrigin();
+
+  // The use counter is meant to gather data for prerendering: how often do
+  // pages make credentialed requests to third parties from first-party frames,
+  // that cannot be delayed during prerendering until the page is navigated to.
+  // Therefore...
+
+  // Ignore third-party frames.
+  if (!top_frame_origin || top_frame_origin->RegistrableDomain() !=
+                               doc_origin->RegistrableDomain()) {
+    return;
+  }
+
+  // Ignore first-party requests.
+  if (doc_origin->RegistrableDomain() == script_origin->RegistrableDomain())
+    return;
+
+  // Ignore cookie-less requests.
+  if (!response.WasCookieInRequest())
+    return;
+
+  // Ignore scripts that can be delayed. This is only async scripts currently.
+  // kDefer and kForceDefer don't count as delayable since delaying them
+  // artificially further while prerendering would prevent the page from making
+  // progress.
+  if (GetSchedulingType() == ScriptSchedulingType::kAsync)
+    return;
+
+  GetElement()->GetExecutionContext()->CountUse(
+      mojom::blink::WebFeature::
+          kUndeferrableThirdPartySubresourceRequestWithCookie);
+}
+
 void ClassicPendingScript::RecordStreamingHistogram(
     ScriptSchedulingType type,
     bool can_use_streamer,
@@ -342,6 +386,7 @@ ClassicScript* ClassicPendingScript::GetSource(const KURL& document_url) const {
 
   DCHECK(GetResource()->IsLoaded());
   ScriptResource* resource = ToScriptResource(GetResource());
+  RecordThirdPartyRequestWithCookieIfNeeded(resource->GetResponse());
 
   auto* fetcher = GetElement()->GetExecutionContext()->Fetcher();
   // If the MIME check fails, which is considered as load failure.

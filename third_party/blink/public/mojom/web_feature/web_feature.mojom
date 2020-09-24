@@ -3009,6 +3009,7 @@ enum WebFeature {
   kIdentifiabilityStudyReserved3679 = 3679,
   kIdentifiabilityStudyReserved3680 = 3680,
   kIdentifiabilityStudyReserved3681 = 3681,
+  kUndeferrableThirdPartySubresourceRequestWithCookie = 3682,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

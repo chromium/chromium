@@ -152,6 +152,8 @@ class CORE_EXPORT PendingScript : public GarbageCollected<PendingScript>,
       base::TimeTicks parser_blocking_load_start_time,
       bool is_controlled_by_script_runner);
 
+  void RecordThirdPartyRequestWithCookieIfNeeded();
+
   // |m_element| must points to the corresponding ScriptLoader's
   // ScriptElementBase and thus must be non-null before dispose() is called
   // (except for unit tests).

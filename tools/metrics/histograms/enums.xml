@@ -29457,6 +29457,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3679" label="IdentifiabilityStudyReserved3679"/>
   <int value="3680" label="IdentifiabilityStudyReserved3680"/>
   <int value="3681" label="IdentifiabilityStudyReserved3681"/>
+  <int value="3682" label="UndeferrableThirdPartySubresourceRequestWithCookie"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
