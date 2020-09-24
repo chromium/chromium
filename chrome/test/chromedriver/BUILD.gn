@@ -215,6 +215,7 @@ source_set("lib") {
     "command_listener_proxy.h",
     "commands.cc",
     "commands.h",
+    "connection_session_map.h",
     "constants/version.h",
     "devtools_events_logger.cc",
     "devtools_events_logger.h",

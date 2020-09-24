@@ -45,6 +45,7 @@ sys.path.remove(_PARENT_DIR)
 
 sys.path.insert(1, _CLIENT_DIR)
 import chromedriver
+import websocket_connection
 import webelement
 sys.path.remove(_CLIENT_DIR)
 
@@ -513,10 +514,14 @@ class ChromeDriverWebSocketTest(ChromeDriverBaseTestWithWebServer):
   def testDefaultSession(self):
     driver = self.CreateDriver()
     self.assertFalse(driver.capabilities.has_key('webSocketUrl'))
+    self.assertRaises(Exception, websocket_connection.WebSocketConnection,
+                      _CHROMEDRIVER_SERVER_URL, driver.GetSessionId())
 
   def testWebSocketUrlFalse(self):
     driver = self.CreateDriver(web_socket_url=False)
     self.assertFalse(driver.capabilities.has_key('webSocketUrl'))
+    self.assertRaises(Exception, websocket_connection.WebSocketConnection,
+                      _CHROMEDRIVER_SERVER_URL, driver.GetSessionId())
 
   def testWebSocketUrlTrue(self):
     driver = self.CreateDriver(web_socket_url=True)
@@ -525,10 +530,36 @@ class ChromeDriverWebSocketTest(ChromeDriverBaseTestWithWebServer):
     self.assertEquals(driver.capabilities['webSocketUrl'],
         self.composeWebSocketUrl(_CHROMEDRIVER_SERVER_URL,
                                  driver.GetSessionId()))
+    websocket = websocket_connection.WebSocketConnection(
+        _CHROMEDRIVER_SERVER_URL, driver.GetSessionId())
+    self.assertNotEqual(None, websocket)
 
   def testWebSocketUrlInvalid(self):
     self.assertRaises(chromedriver.InvalidArgument,
         self.CreateDriver, web_socket_url='Invalid')
+
+  def testWebSocketOneConnectionPerSession(self):
+    driver = self.CreateDriver(web_socket_url=True)
+    websocket = websocket_connection.WebSocketConnection(
+        _CHROMEDRIVER_SERVER_URL, driver.GetSessionId())
+    self.assertNotEqual(None, websocket)
+    self.assertRaises(Exception, websocket_connection.WebSocketConnection,
+                      _CHROMEDRIVER_SERVER_URL, driver.GetSessionId())
+
+  def testWebSocketInvalidSessionId(self):
+    driver = self.CreateDriver(web_socket_url=True)
+    self.assertRaises(Exception, websocket_connection.WebSocketConnection,
+                      _CHROMEDRIVER_SERVER_URL, "random_session_id_123")
+
+  def testWebSocketClosedCanReconnect(self):
+    driver = self.CreateDriver(web_socket_url=True)
+    websocket = websocket_connection.WebSocketConnection(
+        _CHROMEDRIVER_SERVER_URL, driver.GetSessionId())
+    self.assertNotEqual(None, websocket)
+    websocket.Close()
+    websocket2 = websocket_connection.WebSocketConnection(
+        _CHROMEDRIVER_SERVER_URL, driver.GetSessionId())
+    self.assertNotEqual(None, websocket2)
 
 class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
   """End to end tests for ChromeDriver."""

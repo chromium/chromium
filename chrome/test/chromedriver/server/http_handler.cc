@@ -66,6 +66,13 @@ bool w3cMode(const std::string& session_id,
   return kW3CDefault;
 }
 
+net::HttpServerResponseInfo createWebSocketRejectResponse(
+    net::HttpStatusCode code,
+    const std::string& msg) {
+  net::HttpServerResponseInfo response(code);
+  response.AddHeader("X-WebSocket-Reject-Reason", msg);
+  return response;
+}
 }  // namespace
 
 // WrapperURLLoaderFactory subclasses mojom::URLLoaderFactory as non-mojo, cross
@@ -143,14 +150,17 @@ HttpHandler::HttpHandler(
     const scoped_refptr<base::SingleThreadTaskRunner> cmd_task_runner,
     const std::string& url_base,
     int adb_port)
-    : quit_func_(quit_func), url_base_(url_base), received_shutdown_(false) {
+    : quit_func_(quit_func),
+      io_task_runner_(io_task_runner),
+      url_base_(url_base),
+      received_shutdown_(false) {
 #if defined(OS_MAC)
   base::mac::ScopedNSAutoreleasePool autorelease_pool;
 #endif
-  context_getter_ = new URLRequestContextGetter(io_task_runner);
+  context_getter_ = new URLRequestContextGetter(io_task_runner_);
   socket_factory_ = CreateSyncWebSocketFactory(context_getter_.get());
-  adb_.reset(new AdbImpl(io_task_runner, adb_port));
-  device_manager_.reset(new DeviceManager(adb_.get()));
+  adb_ = std::make_unique<AdbImpl>(io_task_runner_, adb_port);
+  device_manager_ = std::make_unique<DeviceManager>(adb_.get());
   url_loader_factory_owner_ =
       std::make_unique<network::TransitionalURLLoaderFactoryOwner>(
           context_getter_.get());
@@ -1296,10 +1306,67 @@ HttpHandler::PrepareStandardResponse(
   return response;
 }
 
-void HttpHandler::OnWebSocketRequest(int connection_id,
-                                     const net::HttpServerRequestInfo& info) {}
+void HttpHandler::OnWebSocketRequest(HttpServer* http_server,
+                                     int connection_id,
+                                     const net::HttpServerRequestInfo& info) {
+  std::string path = info.path;
 
-void HttpHandler::OnClose(int connection_id) {}
+  std::vector<std::string> path_parts = base::SplitString(
+      path, "/", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+
+  if (path_parts.size() != 2 || path_parts[0] != "session") {
+    std::string err_msg = "bad request received path " + path;
+    VLOG(0) << "HttpHandler WebSocketRequest error " << err_msg;
+    SendWebSocketRejectResponse(http_server, connection_id,
+                                net::HTTP_BAD_REQUEST, err_msg);
+    return;
+  }
+
+  std::string session_id = path_parts[1];
+  auto it = session_connection_map_.find(session_id);
+  if (it == session_connection_map_.end()) {
+    std::string err_msg = "bad request invalid session id " + session_id;
+    VLOG(0) << "HttpHandler WebSocketRequest error " << err_msg;
+    SendWebSocketRejectResponse(http_server, connection_id,
+                                net::HTTP_BAD_REQUEST, err_msg);
+    return;
+  } else if (it->second != -1) {
+    std::string err_msg = "bad request only one connection for session id " +
+                          session_id + " is allowed";
+    VLOG(0) << "HttpHandler WebSocketRequest error " << err_msg;
+    SendWebSocketRejectResponse(http_server, connection_id,
+                                net::HTTP_BAD_REQUEST, err_msg);
+    return;
+  } else {
+    session_connection_map_[session_id] = connection_id;
+    connection_session_map_[connection_id] = session_id;
+    io_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&HttpServer::AcceptWebSocket,
+                       base::Unretained(http_server), connection_id, info));
+  }
+}
+
+void HttpHandler::OnClose(HttpServer* http_server, int connection_id) {
+  auto it = connection_session_map_.find(connection_id);
+  if (it == connection_session_map_.end()) {
+    return;
+  }
+  session_connection_map_[it->second] = -1;
+  connection_session_map_.erase(it);
+}
+
+void HttpHandler::SendWebSocketRejectResponse(HttpServer* http_server,
+                                              int connection_id,
+                                              net::HttpStatusCode code,
+                                              const std::string& msg) {
+  io_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&HttpServer::SendResponse, base::Unretained(http_server),
+                     connection_id,
+                     createWebSocketRejectResponse(net::HTTP_BAD_REQUEST, msg),
+                     TRAFFIC_ANNOTATION_FOR_TESTS));
+}
 
 namespace internal {
 

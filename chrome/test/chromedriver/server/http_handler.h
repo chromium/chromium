@@ -18,12 +18,14 @@
 #include "base/threading/thread_checker.h"
 #include "chrome/test/chromedriver/command.h"
 #include "chrome/test/chromedriver/commands.h"
+#include "chrome/test/chromedriver/connection_session_map.h"
 #include "chrome/test/chromedriver/element_commands.h"
 #include "chrome/test/chromedriver/net/sync_websocket_factory.h"
 #include "chrome/test/chromedriver/session_commands.h"
 #include "chrome/test/chromedriver/session_connection_map.h"
 #include "chrome/test/chromedriver/session_thread_map.h"
 #include "chrome/test/chromedriver/window_commands.h"
+#include "net/http/http_status_code.h"
 
 namespace base {
 class DictionaryValue;
@@ -127,13 +129,20 @@ class HttpHandler {
       std::unique_ptr<base::Value> value,
       const std::string& session_id);
 
-  void OnWebSocketRequest(int connection_id,
+  void OnWebSocketRequest(HttpServer* http_server,
+                          int connection_id,
                           const net::HttpServerRequestInfo& info);
 
-  void OnClose(int connection_id);
+  void OnClose(HttpServer* http_server, int connection_id);
+
+  void SendWebSocketRejectResponse(HttpServer* http_server,
+                                   int connection_id,
+                                   net::HttpStatusCode code,
+                                   const std::string& msg);
 
   base::ThreadChecker thread_checker_;
   base::RepeatingClosure quit_func_;
+  scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
   std::string url_base_;
   bool received_shutdown_;
   scoped_refptr<URLRequestContextGetter> context_getter_;
@@ -143,6 +152,7 @@ class HttpHandler {
   SyncWebSocketFactory socket_factory_;
   SessionThreadMap session_thread_map_;
   SessionConnectionMap session_connection_map_;
+  ConnectionSessionMap connection_session_map_;
   std::unique_ptr<CommandMap> command_map_;
   std::unique_ptr<Adb> adb_;
   std::unique_ptr<DeviceManager> device_manager_;

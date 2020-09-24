@@ -43,6 +43,13 @@ class HttpServer : public net::HttpServer::Delegate {
 
   void OnClose(int connection_id) override;
 
+  void AcceptWebSocket(int connection_id,
+                       const net::HttpServerRequestInfo& request);
+
+  void SendResponse(int connection_id,
+                    const net::HttpServerResponseInfo& response,
+                    const net::NetworkTrafficAnnotationTag& traffic_annotation);
+
  private:
   void OnResponse(int connection_id,
                   bool keep_alive,

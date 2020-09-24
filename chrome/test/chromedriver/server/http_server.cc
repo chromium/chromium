@@ -133,69 +133,31 @@ void HttpServer::OnWebSocketRequest(int connection_id,
                                     const net::HttpServerRequestInfo& info) {
   cmd_runner_->PostTask(
       FROM_HERE, base::BindOnce(&HttpHandler::OnWebSocketRequest, handler_,
-                                connection_id, info));
-
-  std::string path = info.path;
-  std::string session_id;
-
-  if (!base::StartsWith(path, url_base_, base::CompareCase::SENSITIVE)) {
-    net::HttpServerResponseInfo response(net::HTTP_BAD_REQUEST);
-    response.SetBody("invalid websocket request url path", "text/plain");
-    server_->SendResponse(connection_id, response,
-                          TRAFFIC_ANNOTATION_FOR_TESTS);
-    return;
-  }
-  path.erase(0, url_base_.length());
-
-  std::vector<std::string> path_parts =
-      base::SplitString(path, "/", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-  std::vector<std::string> command_path_parts = base::SplitString(
-      kCreateWebSocketPath, "/", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-
-  if (path_parts.size() != command_path_parts.size()) {
-    net::HttpServerResponseInfo response(net::HTTP_BAD_REQUEST);
-    response.SetBody("invalid websocket request url path", "text/plain");
-    server_->SendResponse(connection_id, response,
-                          TRAFFIC_ANNOTATION_FOR_TESTS);
-    return;
-  }
-
-  for (size_t i = 0; i < path_parts.size(); ++i) {
-    if (command_path_parts[i][0] == ':') {
-      std::string name = command_path_parts[i];
-      name.erase(0, 1);
-      CHECK(name.length());
-      if (name == "sessionId")
-        session_id = path_parts[i];
-    } else if (command_path_parts[i] != path_parts[i]) {
-      net::HttpServerResponseInfo response(net::HTTP_BAD_REQUEST);
-      response.SetBody("invalid websocket request url path", "text/plain");
-      server_->SendResponse(connection_id, response,
-                            TRAFFIC_ANNOTATION_FOR_TESTS);
-      return;
-    }
-  }
-
-  server_->AcceptWebSocket(connection_id, info, TRAFFIC_ANNOTATION_FOR_TESTS);
-  connection_to_session_map[connection_id] = session_id;
+                                this, connection_id, info));
 }
 
 void HttpServer::OnWebSocketMessage(int connection_id, std::string data) {
-  base::Optional<base::Value> parsed_data = base::JSONReader::Read(data);
-  std::string path = url_base_ + kSendCommandFromWebSocket;
-  base::ReplaceFirstSubstringAfterOffset(
-      &path, 0, ":sessionId", connection_to_session_map[connection_id]);
-
-  net::HttpServerRequestInfo request;
-  request.method = "post";
-  request.path = path;
-  request.data = data;
-  OnHttpRequest(connection_id, request);
+  // TODO: Make use of WebSocket data
+  VLOG(0) << "HttpServer::OnWebSocketMessage received: " << data;
 }
 
 void HttpServer::OnClose(int connection_id) {
-  cmd_runner_->PostTask(FROM_HERE, base::BindOnce(&HttpHandler::OnClose,
-                                                  handler_, connection_id));
+  cmd_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&HttpHandler::OnClose, handler_, this, connection_id));
+}
+
+void HttpServer::AcceptWebSocket(int connection_id,
+                                 const net::HttpServerRequestInfo& request) {
+  server_->AcceptWebSocket(connection_id, request,
+                           TRAFFIC_ANNOTATION_FOR_TESTS);
+}
+
+void HttpServer::SendResponse(
+    int connection_id,
+    const net::HttpServerResponseInfo& response,
+    const net::NetworkTrafficAnnotationTag& traffic_annotation) {
+  server_->SendResponse(connection_id, response, traffic_annotation);
 }
 
 void HttpServer::OnResponse(
