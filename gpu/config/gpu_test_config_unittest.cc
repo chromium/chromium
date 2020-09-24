@@ -66,8 +66,13 @@ TEST_F(GPUTestConfigTest, IsValid) {
     config.AddGPUVendor(0x10de);
     EXPECT_TRUE(config.IsValid());
 
+    // Device ID of 0 is valid only on macOS.
     config.set_gpu_device_id(0);
+    config.set_os(GPUTestConfig::kOsMacBigSur);
+    EXPECT_TRUE(config.IsValid());
+    config.set_os(GPUTestConfig::kOsWin7);
     EXPECT_FALSE(config.IsValid());
+
     config.set_gpu_device_id(0x0640);
     EXPECT_TRUE(config.IsValid());
 

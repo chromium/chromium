@@ -239,8 +239,12 @@ bool GPUTestBotConfig::IsValid() const {
   }
   if (gpu_vendor().size() != 1 || gpu_vendor()[0] == 0)
     return false;
-  if (gpu_device_id() == 0)
-    return false;
+  if (!(os() & gpu::GPUTestConfig::kOsMac)) {
+    // ARM-based Mac GPUs do not have valid PCI device IDs.
+    // https://crbug.com/1110421
+    if (gpu_device_id() == 0)
+      return false;
+  }
   switch (build_type()) {
     case kBuildTypeRelease:
     case kBuildTypeDebug:
