@@ -28,7 +28,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
-#include "services/network/public/mojom/url_loader_factory.mojom.h"
+#include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/appcache/appcache.mojom.h"
 #include "third_party/blink/public/mojom/devtools/devtools_agent.mojom.h"
@@ -151,6 +151,10 @@ class CONTENT_EXPORT SharedWorkerHost : public blink::mojom::SharedWorkerHost,
   base::WeakPtr<SharedWorkerHost> AsWeakPtr();
 
   void ReportNoBinderForInterface(const std::string& error);
+
+  // Creates a network factory params for subresource requests from this worker.
+  network::mojom::URLLoaderFactoryParamsPtr
+  CreateNetworkFactoryParamsForSubresources();
 
  private:
   friend class SharedWorkerHostTest;

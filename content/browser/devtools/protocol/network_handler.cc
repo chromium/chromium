@@ -24,18 +24,22 @@
 #include "content/browser/background_sync/background_sync_manager.h"
 #include "content/browser/devtools/devtools_agent_host_impl.h"
 #include "content/browser/devtools/devtools_io_context.h"
+#include "content/browser/devtools/devtools_stream_file.h"
 #include "content/browser/devtools/devtools_stream_pipe.h"
 #include "content/browser/devtools/devtools_url_loader_interceptor.h"
+#include "content/browser/devtools/protocol/devtools_network_resource_loader.h"
 #include "content/browser/devtools/protocol/handler_helpers.h"
 #include "content/browser/devtools/protocol/network.h"
 #include "content/browser/devtools/protocol/page.h"
 #include "content/browser/devtools/protocol/security.h"
+#include "content/browser/devtools/render_frame_devtools_agent_host.h"
 #include "content/browser/devtools/service_worker_devtools_agent_host.h"
 #include "content/browser/devtools/service_worker_devtools_manager.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/storage_partition_impl.h"
+#include "content/browser/url_loader_factory_params_helper.h"
 #include "content/browser/web_package/signed_exchange_envelope.h"
 #include "content/browser/web_package/signed_exchange_error.h"
 #include "content/common/navigation_params.h"
@@ -56,6 +60,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
@@ -2272,6 +2277,165 @@ void NetworkHandler::OnResponseReceivedExtraInfo(
       GetRawHeaders(response_headers),
       response_headers_text.has_value() ? response_headers_text.value()
                                         : Maybe<String>());
+}
+
+void NetworkHandler::OnLoadNetworkResourceFinished(
+    DevToolsNetworkResourceLoader* loader,
+    const net::HttpResponseHeaders* rh,
+    bool success,
+    int net_error,
+    std::string content) {
+  auto it = loaders_.find(loader);
+  CHECK(it != loaders_.end());
+  auto callback = std::move(it->second);
+  auto result = Network::LoadNetworkResourcePageResult::Create()
+                    .SetSuccess(success)
+                    .Build();
+
+  if (net_error != net::OK) {
+    result->SetNetError(net_error);
+    result->SetNetErrorName(net::ErrorToString(net_error));
+  }
+
+  if (success) {
+    bool is_binary = true;
+    std::string mime_type;
+    if (rh && rh->GetMimeType(&mime_type)) {
+      is_binary = !DevToolsIOContext::IsTextMimeType(mime_type);
+    }
+    // TODO(sigurds): Use the data-pipe from the network loader.
+    scoped_refptr<DevToolsStreamFile> stream =
+        DevToolsStreamFile::Create(io_context_, is_binary);
+    stream->Append(std::make_unique<std::string>(std::move(content)));
+    result->SetStream(stream->handle());
+  }
+
+  if (rh) {
+    result->SetHttpStatusCode(rh->response_code());
+    std::unique_ptr<protocol::DictionaryValue> headers_object =
+        protocol::DictionaryValue::create();
+    size_t iterator = 0;
+    std::string name;
+    std::string value;
+    // TODO(chromium:1069378): This probably needs to handle duplicate header
+    // names correctly by folding them.
+    while (rh->EnumerateHeaderLines(&iterator, &name, &value)) {
+      headers_object->setString(name, value);
+    }
+    protocol::ErrorSupport errors;
+    result->SetHeaders(
+        protocol::Network::Headers::fromValue(headers_object.get(), &errors));
+  }
+
+  callback->sendSuccess(std::move(result));
+  loaders_.erase(it);
+}
+
+namespace {
+
+mojo::PendingRemote<network::mojom::URLLoaderFactory>
+CreateNetworkFactoryForDevTools(
+    RenderProcessHost* host,
+    network::mojom::URLLoaderFactoryParamsPtr params) {
+  if (!host || !params) {
+    // Return an invalid remote by default.
+    return {};
+  }
+
+  // Don't allow trust token redemption.
+  params->trust_token_redemption_policy =
+      network::mojom::TrustTokenRedemptionPolicy::kForbid;
+  // Let DevTools fetch resources without CORS and CORB. Source maps are valid
+  // JSON and would otherwise require a CORS fetch + correct response headers.
+  // See BUG(chromium:1076435) for more context.
+  params->is_corb_enabled = false;
+
+  mojo::PendingRemote<network::mojom::URLLoaderFactory> remote;
+  host->CreateURLLoaderFactory(remote.InitWithNewPipeAndPassReceiver(),
+                               std::move(params));
+  return remote;
+}
+}  // namespace
+
+void NetworkHandler::LoadNetworkResource(
+    const String& frame_id,
+    const String& url,
+    std::unique_ptr<protocol::Network::LoadNetworkResourceOptions> options,
+    std::unique_ptr<LoadNetworkResourceCallback> callback) {
+  GURL gurl(url);
+  const bool is_gurl_valid = gurl.is_valid() && gurl.SchemeIsHTTPOrHTTPS();
+  if (!is_gurl_valid) {
+    callback->sendFailure(Response::InvalidParams(
+        "The url must be valid and have scheme http or https"));
+    return;
+  }
+
+  const DevToolsNetworkResourceLoader::Caching caching =
+      options->GetDisableCache()
+          ? DevToolsNetworkResourceLoader::Caching::kBypass
+          : DevToolsNetworkResourceLoader::Caching::kDefault;
+  const DevToolsNetworkResourceLoader::Credentials include_credentials =
+      options->GetIncludeCredentials()
+          ? DevToolsNetworkResourceLoader::Credentials::kInclude
+          : DevToolsNetworkResourceLoader::Credentials::kSameSite;
+  DevToolsNetworkResourceLoader::CompletionCallback complete_callback =
+      base::BindOnce(&NetworkHandler::OnLoadNetworkResourceFinished,
+                     base::Unretained(this));
+
+  mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory;
+  if (host_) {
+    FrameTreeNode* node =
+        FrameTreeNodeFromDevToolsFrameToken(host_->frame_tree_node(), frame_id);
+    RenderFrameHostImpl* frame = node ? node->current_frame_host() : nullptr;
+    if (!frame) {
+      callback->sendFailure(Response::InvalidParams("Frame not found"));
+      return;
+    }
+    // Don't allow fetching resources for frames goverened by different
+    // DevToolsAgentHosts.
+    if (GetFrameTreeNodeAncestor(node) !=
+        GetFrameTreeNodeAncestor(host_->frame_tree_node())) {
+      callback->sendFailure(
+          Response::InvalidParams("Frame not under control of agent host"));
+      return;
+    }
+
+    auto params = URLLoaderFactoryParamsHelper::CreateForFrame(
+        frame, frame->GetLastCommittedOrigin(),
+        mojo::Clone(frame->last_committed_client_security_state()),
+        /**coep_reporter=*/mojo::NullRemote(), frame->GetProcess(),
+        network::mojom::TrustTokenRedemptionPolicy::kForbid,
+        "NetworkHandler::LoadNetworkResource");
+
+    auto factory =
+        CreateNetworkFactoryForDevTools(frame->GetProcess(), std::move(params));
+    url_loader_factory.Bind(std::move(factory));
+    auto loader = DevToolsNetworkResourceLoader::Create(
+        std::move(url_loader_factory), std::move(gurl),
+        frame->GetLastCommittedOrigin(), frame->ComputeSiteForCookies(),
+        caching, include_credentials, frame->GetRoutingID(),
+        std::move(complete_callback));
+    loaders_.emplace(std::move(loader), std::move(callback));
+    return;
+  }
+  scoped_refptr<DevToolsAgentHostImpl> host =
+      DevToolsAgentHostImpl::GetForId(host_id_);
+  if (host) {
+    // TODO(sigurds): Support dedicated workers.
+    auto info = host->CreateNetworkFactoryParamsForDevTools();
+    auto factory = CreateNetworkFactoryForDevTools(
+        host->GetProcessHost(), std::move(info.factory_params));
+    if (factory.is_valid()) {
+      url_loader_factory.Bind(std::move(factory));
+      auto loader = DevToolsNetworkResourceLoader::Create(
+          std::move(url_loader_factory), std::move(gurl),
+          std::move(info.origin), std::move(info.site_for_cookies), caching,
+          include_credentials, MSG_ROUTING_NONE, std::move(complete_callback));
+      loaders_.emplace(std::move(loader), std::move(callback));
+      return;
+    }
+  }
+  callback->sendFailure(Response::ServerError("Target not supported"));
 }
 
 }  // namespace protocol

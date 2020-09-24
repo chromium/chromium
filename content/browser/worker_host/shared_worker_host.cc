@@ -270,19 +270,11 @@ SharedWorkerHost::CreateNetworkFactoryForSubresources(
       default_factory_receiver =
           pending_default_factory.InitWithNewPipeAndPassReceiver();
 
-  url::Origin origin = url::Origin::Create(instance_.url());
-
   // TODO(https://crbug.com/1060832): Implement COEP reporter for shared
   // workers.
   network::mojom::URLLoaderFactoryParamsPtr factory_params =
-      URLLoaderFactoryParamsHelper::CreateForWorker(
-          worker_process_host_, instance_.constructor_origin(),
-          net::IsolationInfo::Create(
-              net::IsolationInfo::RedirectMode::kUpdateNothing, origin, origin,
-              net::SiteForCookies::FromOrigin(origin)),
-          /*coep_reporter=*/mojo::NullRemote(),
-          /*debug_tag=*/
-          "SharedWorkerHost::CreateNetworkFactoryForSubresources");
+      CreateNetworkFactoryParamsForSubresources();
+  url::Origin origin = url::Origin::Create(instance_.url());
   GetContentClient()->browser()->WillCreateURLLoaderFactory(
       worker_process_host_->GetBrowserContext(),
       /*frame=*/nullptr, worker_process_host_->GetID(),
@@ -300,6 +292,23 @@ SharedWorkerHost::CreateNetworkFactoryForSubresources(
       std::move(default_factory_receiver), std::move(factory_params));
 
   return pending_default_factory;
+}
+
+network::mojom::URLLoaderFactoryParamsPtr
+SharedWorkerHost::CreateNetworkFactoryParamsForSubresources() {
+  url::Origin origin = url::Origin::Create(instance_.url());
+
+  // TODO(https://crbug.com/1060832): Implement COEP reporter for shared
+  // workers.
+  network::mojom::URLLoaderFactoryParamsPtr factory_params =
+      URLLoaderFactoryParamsHelper::CreateForWorker(
+          worker_process_host_, instance_.constructor_origin(),
+          net::IsolationInfo::Create(
+              net::IsolationInfo::RedirectMode::kUpdateNothing, origin, origin,
+              net::SiteForCookies::FromOrigin(origin)),
+          /*coep_reporter=*/mojo::NullRemote(), /*debug_tag=*/
+          "SharedWorkerHost::CreateNetworkFactoryForSubresources");
+  return factory_params;
 }
 
 void SharedWorkerHost::AllowFileSystem(

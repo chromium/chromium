@@ -1,0 +1,39 @@
+Tests Page.loadNetworkResource for different frames with cookies
+Number of frames in page: 3
+Response for fetch: {
+    id : <number>
+    result : {
+        resource : {
+            headers : <object>
+            httpStatusCode : 200
+            stream : <string>
+            success : true
+        }
+    }
+    sessionId : <string>
+}
+Response for fetch: {
+    id : <number>
+    result : {
+        resource : {
+            headers : <object>
+            httpStatusCode : 200
+            stream : <string>
+            success : true
+        }
+    }
+    sessionId : <string>
+}
+Response for fetch: {
+    id : <number>
+    result : {
+        resource : {
+            headers : <object>
+            httpStatusCode : 200
+            stream : <string>
+            success : true
+        }
+    }
+    sessionId : <string>
+}
+

@@ -20,9 +20,13 @@
 #include "content/browser/devtools/service_worker_devtools_manager.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_version.h"
+#include "content/browser/url_loader_factory_params_helper.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "net/cookies/site_for_cookies.h"
+#include "services/network/public/mojom/network_context.mojom-forward.h"
 
 namespace content {
 
@@ -250,6 +254,25 @@ void ServiceWorkerDevToolsAgentHost::UpdateLoaderFactories(
                        std::move(subresource_bundle)),
         std::move(callback));
   }
+}
+
+DevToolsAgentHostImpl::NetworkLoaderFactoryParamsAndInfo
+ServiceWorkerDevToolsAgentHost::CreateNetworkFactoryParamsForDevTools() {
+  RenderProcessHost* rph = RenderProcessHost::FromID(worker_process_id_);
+  const url::Origin origin = url::Origin::Create(url_);
+  auto factory = URLLoaderFactoryParamsHelper::CreateForWorker(
+      rph, origin,
+      net::IsolationInfo::Create(
+          net::IsolationInfo::RedirectMode::kUpdateNothing, origin, origin,
+          net::SiteForCookies::FromOrigin(origin)),
+      /*coep_reporter=*/mojo::NullRemote(), /*debug_tag=*/
+      "ServiceWorkerDevToolsAgentHost::CreateNetworkFactoryParamsForDevTools");
+  return {url::Origin::Create(GetURL()), net::SiteForCookies::FromUrl(GetURL()),
+          std::move(factory)};
+}
+
+RenderProcessHost* ServiceWorkerDevToolsAgentHost::GetProcessHost() {
+  return RenderProcessHost::FromID(worker_process_id_);
 }
 
 }  // namespace content

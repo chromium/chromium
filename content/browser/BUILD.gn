@@ -788,6 +788,8 @@ source_set("browser") {
     "devtools/protocol/devtools_download_manager_delegate.h",
     "devtools/protocol/devtools_mhtml_helper.cc",
     "devtools/protocol/devtools_mhtml_helper.h",
+    "devtools/protocol/devtools_network_resource_loader.cc",
+    "devtools/protocol/devtools_network_resource_loader.h",
     "devtools/protocol/dom_handler.cc",
     "devtools/protocol/dom_handler.h",
     "devtools/protocol/emulation_handler.cc",

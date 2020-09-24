@@ -1,0 +1,45 @@
+Tests for Network.loadNetworkResource on the same origin
+Response for fetch with existing resource with text content type: {
+    resource : {
+        headers : <object>
+        httpStatusCode : 200
+        stream : <string>
+        success : true
+    }
+}
+{
+    id : <number>
+    result : {
+        base64Encoded : false
+        data : {"version":3,"file":"source.js","sourceRoot":"","sources":["source.ts"],"names":[],"mappings":"AAAA,OAAO,CAAC,GAAG,CAAC,OAAO,CAAC,CAAA"}
+        eof : false
+    }
+    sessionId : <string>
+}
+Response for fetch with existing resource without content type: {
+    resource : {
+        headers : <object>
+        httpStatusCode : 200
+        stream : <string>
+        success : true
+    }
+}
+{
+    id : <number>
+    result : {
+        base64Encoded : true
+        data : eyJ2ZXJzaW9uIjozLCJmaWxlIjoic291cmNlLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsic291cmNlLnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBLE9BQU8sQ0FBQyxHQUFHLENBQUMsT0FBTyxDQUFDLENBQUEifQo=
+        eof : false
+    }
+    sessionId : <string>
+}
+Response for fetch with non-existing resource: {
+    resource : {
+        headers : <object>
+        httpStatusCode : 404
+        netError : -379
+        netErrorName : net::ERR_HTTP_RESPONSE_CODE_FAILURE
+        success : false
+    }
+}
+

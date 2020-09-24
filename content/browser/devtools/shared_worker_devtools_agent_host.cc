@@ -20,6 +20,7 @@
 #include "content/browser/worker_host/shared_worker_service_impl.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
+#include "net/cookies/site_for_cookies.h"
 #include "third_party/blink/public/mojom/devtools/devtools_agent.mojom.h"
 
 namespace content {
@@ -55,6 +56,10 @@ std::string SharedWorkerDevToolsAgentHost::GetTitle() {
 
 GURL SharedWorkerDevToolsAgentHost::GetURL() {
   return instance_.url();
+}
+
+url::Origin SharedWorkerDevToolsAgentHost::GetConstructorOrigin() {
+  return instance_.constructor_origin();
 }
 
 bool SharedWorkerDevToolsAgentHost::Activate() {
@@ -125,6 +130,18 @@ void SharedWorkerDevToolsAgentHost::WorkerDestroyed() {
   worker_host_ = nullptr;
   GetRendererChannel()->SetRenderer(mojo::NullRemote(), mojo::NullReceiver(),
                                     ChildProcessHost::kInvalidUniqueID);
+}
+
+DevToolsAgentHostImpl::NetworkLoaderFactoryParamsAndInfo
+SharedWorkerDevToolsAgentHost::CreateNetworkFactoryParamsForDevTools() {
+  DCHECK(worker_host_);
+  return {GetConstructorOrigin(), net::SiteForCookies::FromUrl(GetURL()),
+          worker_host_->CreateNetworkFactoryParamsForSubresources()};
+}
+
+RenderProcessHost* SharedWorkerDevToolsAgentHost::GetProcessHost() {
+  DCHECK(worker_host_);
+  return worker_host_->GetProcessHost();
 }
 
 }  // namespace content

@@ -38,6 +38,7 @@ hidden="true" so that these annotations don't show up in the document.
       <traffic_annotation unique_id="browser_switcher_ieem_sitelist"/>
       <traffic_annotation unique_id="adb_client_socket"/>
       <traffic_annotation unique_id="devtools_network_resource"/>
+      <traffic_annotation unique_id="devtools_cdp_network_resource"/>
       <traffic_annotation unique_id="downloads_api_run_async"/>
       <traffic_annotation unique_id="media_feeds_checker"/>
       <traffic_annotation unique_id="isolated_prerender_loader"/>

@@ -28,7 +28,8 @@ WorkerDevToolsAgentHost::WorkerDevToolsAgentHost(
       url_(url),
       name_(name),
       parent_id_(parent_id),
-      destroyed_callback_(std::move(destroyed_callback)) {
+      destroyed_callback_(std::move(destroyed_callback)),
+      devtools_worker_token_(devtools_worker_token) {
   DCHECK(agent_remote);
   DCHECK(!devtools_worker_token.is_empty());
   AddRef();  // Self keep-alive while the worker agent is alive.
@@ -87,6 +88,8 @@ bool WorkerDevToolsAgentHost::AttachSession(DevToolsSession* session,
   session->AddHandler(std::make_unique<protocol::TargetHandler>(
       protocol::TargetHandler::AccessMode::kAutoAttachOnly, GetId(),
       GetRendererChannel(), session->GetRootSession()));
+  session->AddHandler(std::make_unique<protocol::NetworkHandler>(
+      GetId(), devtools_worker_token_, GetIOContext(), base::DoNothing()));
   return true;
 }
 

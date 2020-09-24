@@ -10,6 +10,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/unique_ptr_adapters.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
@@ -52,6 +53,7 @@ struct SignedExchangeError;
 
 namespace protocol {
 class BackgroundSyncRestorer;
+class DevToolsNetworkResourceLoader;
 
 class NetworkHandler : public DevToolsDomainHandler,
                        public Network::Backend {
@@ -220,7 +222,18 @@ class NetworkHandler : public DevToolsDomainHandler,
       const network::ResourceRequest& request,
       const std::string& cookie_line);
 
+  void LoadNetworkResource(
+      const String& frameId,
+      const String& url,
+      std::unique_ptr<protocol::Network::LoadNetworkResourceOptions> options,
+      std::unique_ptr<LoadNetworkResourceCallback> callback) override;
+
  private:
+  void OnLoadNetworkResourceFinished(DevToolsNetworkResourceLoader* loader,
+                                     const net::HttpResponseHeaders* rh,
+                                     bool success,
+                                     int net_error,
+                                     std::string content);
   void RequestIntercepted(std::unique_ptr<InterceptedRequestInfo> request_info);
   void SetNetworkConditions(network::mojom::NetworkConditionsPtr conditions);
 
@@ -247,6 +260,10 @@ class NetworkHandler : public DevToolsDomainHandler,
   bool cache_disabled_;
   std::unique_ptr<BackgroundSyncRestorer> background_sync_restorer_;
   base::RepeatingClosure update_loader_factories_callback_;
+  std::map<std::unique_ptr<DevToolsNetworkResourceLoader>,
+           std::unique_ptr<LoadNetworkResourceCallback>,
+           base::UniquePtrComparator>
+      loaders_;
   base::WeakPtrFactory<NetworkHandler> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(NetworkHandler);

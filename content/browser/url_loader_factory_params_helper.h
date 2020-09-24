@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_URL_LOADER_FACTORY_PARAMS_HELPER_H_
 
 #include "base/strings/string_piece.h"
+#include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/cross_origin_embedder_policy.mojom-forward.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -42,7 +43,8 @@ class URLLoaderFactoryParamsHelper {
   // |process| is exposed as a separate parameter, to accommodate creating
   // factories for dedicated workers (where the |process| hosting the worker
   // might be different from the process hosting the |frame|).
-  static network::mojom::URLLoaderFactoryParamsPtr CreateForFrame(
+  CONTENT_EXPORT static network::mojom::URLLoaderFactoryParamsPtr
+  CreateForFrame(
       RenderFrameHostImpl* frame,
       const url::Origin& origin,
       network::mojom::ClientSecurityStatePtr client_security_state,

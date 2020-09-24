@@ -1,0 +1,54 @@
+Tests Network.loadNetworkResource for different frames
+Number of frames in page: 3
+Response for fetch: {
+    resource : {
+        headers : <object>
+        httpStatusCode : 200
+        stream : <string>
+        success : true
+    }
+}
+{
+    id : <number>
+    result : {
+        base64Encoded : false
+        data : {"version":3,"file":"source.js","sourceRoot":"","sources":["source.ts"],"names":[],"mappings":"AAAA,OAAO,CAAC,GAAG,CAAC,OAAO,CAAC,CAAA"}
+        eof : false
+    }
+    sessionId : <string>
+}
+Response for fetch: {
+    resource : {
+        headers : <object>
+        httpStatusCode : 200
+        stream : <string>
+        success : true
+    }
+}
+{
+    id : <number>
+    result : {
+        base64Encoded : false
+        data : {"version":3,"file":"source.js","sourceRoot":"","sources":["source.ts"],"names":[],"mappings":"AAAA,OAAO,CAAC,GAAG,CAAC,OAAO,CAAC,CAAA"}
+        eof : false
+    }
+    sessionId : <string>
+}
+Response for fetch: {
+    resource : {
+        headers : <object>
+        httpStatusCode : 200
+        stream : <string>
+        success : true
+    }
+}
+{
+    id : <number>
+    result : {
+        base64Encoded : false
+        data : {"version":3,"file":"source.js","sourceRoot":"","sources":["source.ts"],"names":[],"mappings":"AAAA,OAAO,CAAC,GAAG,CAAC,OAAO,CAAC,CAAA"}
+        eof : false
+    }
+    sessionId : <string>
+}
+

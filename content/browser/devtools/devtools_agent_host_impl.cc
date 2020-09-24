@@ -390,4 +390,29 @@ void DevToolsAgentHostImpl::NotifyDestroyed() {
   g_devtools_instances.Get().erase(id_);
 }
 
+DevToolsAgentHostImpl::NetworkLoaderFactoryParamsAndInfo::
+    NetworkLoaderFactoryParamsAndInfo() = default;
+DevToolsAgentHostImpl::NetworkLoaderFactoryParamsAndInfo::
+    NetworkLoaderFactoryParamsAndInfo(
+        url::Origin origin,
+        net::SiteForCookies site_for_cookies,
+        network::mojom::URLLoaderFactoryParamsPtr factory_params)
+    : origin(std::move(origin)),
+      site_for_cookies(std::move(site_for_cookies)),
+      factory_params(std::move(factory_params)) {}
+DevToolsAgentHostImpl::NetworkLoaderFactoryParamsAndInfo::
+    NetworkLoaderFactoryParamsAndInfo(
+        DevToolsAgentHostImpl::NetworkLoaderFactoryParamsAndInfo&&) = default;
+DevToolsAgentHostImpl::NetworkLoaderFactoryParamsAndInfo::
+    ~NetworkLoaderFactoryParamsAndInfo() = default;
+
+DevToolsAgentHostImpl::NetworkLoaderFactoryParamsAndInfo
+DevToolsAgentHostImpl::CreateNetworkFactoryParamsForDevTools() {
+  return {};
+}
+
+RenderProcessHost* DevToolsAgentHostImpl::GetProcessHost() {
+  return nullptr;
+}
+
 }  // namespace content

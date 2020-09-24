@@ -1,0 +1,132 @@
+Tests Page.loadNetworkResource for different frames with cookies
+Number of frames in page: 3
+Response for fetch: {
+    resource : {
+        headers : <object>
+        httpStatusCode : 200
+        stream : <string>
+        success : true
+    }
+}
+Steam content:
+{"version":3,"file":"source.js","sourceRoot":"","sources":["source.ts"],"names":[],"mappings":"AAAA,OAAO,CAAC,GAAG,CAAC,OAAO,CAAC,CAAA"}
+
+Response for fetch: {
+    resource : {
+        headers : <object>
+        httpStatusCode : 200
+        stream : <string>
+        success : true
+    }
+}
+Steam content:
+{"version":3,"file":"source.js","sourceRoot":"","sources":["source.ts"],"names":[],"mappings":"AAAA,OAAO,CAAC,GAAG,CAAC,OAAO,CAAC,CAAA"}
+
+Response for fetch: {
+    resource : {
+        headers : <object>
+        httpStatusCode : 200
+        stream : <string>
+        success : true
+    }
+}
+Steam content:
+{"version":3,"file":"source.js","sourceRoot":"","sources":["source.ts"],"names":[],"mappings":"AAAA,OAAO,CAAC,GAAG,CAAC,OAAO,CAAC,CAAA"}
+
+Response for fetching
+https://127.0.0.1:8443/inspector-protocol/network/resources/echo-headers.php?headers=HTTP_COOKIE
+ from
+https://127.0.0.1:8443
+after setting cookie including credentials: {
+    resource : {
+        headers : <object>
+        httpStatusCode : 200
+        stream : <string>
+        success : true
+    }
+}
+Steam content:
+HTTP_COOKIE: <not set>
+
+
+Response for fetching
+https://127.0.0.1:8443/inspector-protocol/network/resources/echo-headers.php?headers=HTTP_COOKIE
+ from
+https://127.0.0.1:8443
+after setting cookie including only samesite credentials: {
+    resource : {
+        headers : <object>
+        httpStatusCode : 200
+        stream : <string>
+        success : true
+    }
+}
+Steam content:
+HTTP_COOKIE: <not set>
+
+
+Response for fetching
+https://devtools.oopif-a.test:8443/inspector-protocol/network/resources/echo-headers.php?headers=HTTP_COOKIE
+ from
+https://devtools.oopif-a.test:8443
+after setting cookie including credentials: {
+    resource : {
+        headers : <object>
+        httpStatusCode : 200
+        stream : <string>
+        success : true
+    }
+}
+Steam content:
+HTTP_COOKIE: name=value
+
+
+Response for fetching
+https://devtools.oopif-a.test:8443/inspector-protocol/network/resources/echo-headers.php?headers=HTTP_COOKIE
+ from
+https://devtools.oopif-a.test:8443
+after setting cookie including only samesite credentials: {
+    resource : {
+        headers : <object>
+        httpStatusCode : 200
+        stream : <string>
+        success : true
+    }
+}
+Steam content:
+HTTP_COOKIE: name=value
+
+
+Response for fetching
+https://devtools.oopif-b.test:8443/inspector-protocol/network/resources/echo-headers.php?headers=HTTP_COOKIE
+ from
+https://devtools.oopif-b.test:8443
+after setting cookie including credentials: {
+    resource : {
+        headers : <object>
+        httpStatusCode : 200
+        stream : <string>
+        success : true
+    }
+}
+Steam content:
+HTTP_COOKIE: <not set>
+
+
+Response for fetching
+https://devtools.oopif-b.test:8443/inspector-protocol/network/resources/echo-headers.php?headers=HTTP_COOKIE
+ from
+https://devtools.oopif-b.test:8443
+after setting cookie including only samesite credentials: {
+    resource : {
+        headers : <object>
+        httpStatusCode : 200
+        stream : <string>
+        success : true
+    }
+}
+Steam content:
+HTTP_COOKIE: <not set>
+
+
+
