@@ -246,6 +246,9 @@ const char kSafeBrowsingHelpCenterURL[] =
 const char kSafetyTipHelpCenterURL[] =
     "https://support.google.com/chrome/?p=safety_tip";
 
+const char kSeeMoreSecurityTipsURL[] =
+    "https://support.google.com/accounts/answer/32040";
+
 const char kSettingsSearchHelpURL[] =
     "https://support.google.com/chrome/?p=settings_search_help";
 

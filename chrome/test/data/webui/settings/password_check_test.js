@@ -89,34 +89,77 @@ function shuffleArray(array) {
 }
 
 /**
+ * Helper method to convert |CompromiseType| to string.
+ * @param {!chrome.passwordsPrivate.CompromiseType} compromiseType
+ * @return {string}
+ * @private
+ */
+function getCompromiseType(compromiseType) {
+  switch (compromiseType) {
+    case chrome.passwordsPrivate.CompromiseType.PHISHED:
+      return loadTimeData.getString('phishedPassword');
+    case chrome.passwordsPrivate.CompromiseType.LEAKED:
+      return loadTimeData.getString('leakedPassword');
+    case chrome.passwordsPrivate.CompromiseType.PHISHED_AND_LEAKED:
+      return loadTimeData.getString('phishedAndLeakedPassword');
+  }
+}
+
+/**
+ * Helper method that validates a that elements in the insecure credentials list
+ * match the expected data.
+ * @param {!Element} checkPasswordSection The section element that will be
+ *     checked.
+ * @param {!Array<!chrome.passwordsPrivate.InsecureCredential>} passwordList The
+ *     expected data.
+ * @param {boolean} isCompromised If true, check compromised info for each
+ *     insecure credential.
+ * @private
+ */
+function validateInsecurePasswordsList(
+    checkPasswordSection, insecureCredentials, isCompromised) {
+  const listElements = isCompromised ?
+      checkPasswordSection.$.leakedPasswordList :
+      checkPasswordSection.$.weakPasswordList;
+  assertEquals(listElements.items.length, insecureCredentials.length);
+  const nodes = checkPasswordSection.shadowRoot.querySelectorAll(
+      'password-check-list-item');
+  for (let index = 0; index < insecureCredentials.length; ++index) {
+    const node = nodes[index];
+    assertTrue(!!node);
+    assertEquals(
+        node.$.insecureUsername.textContent.trim(),
+        insecureCredentials[index].username);
+    assertEquals(
+        node.$.insecureOrigin.textContent.trim(),
+        insecureCredentials[index].formattedOrigin);
+
+    if (isCompromised) {
+      assertEquals(
+          node.shadowRoot.querySelector('#elapsedTime').textContent.trim(),
+          insecureCredentials[index]
+              .compromisedInfo.elapsedTimeSinceCompromise);
+      assertEquals(
+          node.shadowRoot.querySelector('#leakType').textContent.trim(),
+          getCompromiseType(
+              insecureCredentials[index].compromisedInfo.compromiseType));
+    }
+  }
+}
+
+/**
  * Helper method that validates a that elements in the compromised credentials
  * list match the expected data.
  * @param {!Element} checkPasswordSection The section element that will be
  *     checked.
- * @param {!Array<!chrome.passwordsPrivate.InsecureCredential>}
- * passwordList The expected data.
+ * @param {!Array<!chrome.passwordsPrivate.InsecureCredential>} passwordList The
+ *     expected data.
  * @private
  */
 function validateLeakedPasswordsList(
     checkPasswordSection, compromisedCredentials) {
-  const listElements = checkPasswordSection.$.leakedPasswordList;
-  assertEquals(listElements.items.length, compromisedCredentials.length);
-  const nodes = checkPasswordSection.shadowRoot.querySelectorAll(
-      'password-check-list-item');
-  for (let index = 0; index < compromisedCredentials.length; ++index) {
-    const node = nodes[index];
-    assertTrue(!!node);
-    assertEquals(
-        node.$.elapsedTime.textContent.trim(),
-        compromisedCredentials[index]
-            .compromisedInfo.elapsedTimeSinceCompromise);
-    assertEquals(
-        node.$.leakUsername.textContent.trim(),
-        compromisedCredentials[index].username);
-    assertEquals(
-        node.$.leakOrigin.textContent.trim(),
-        compromisedCredentials[index].formattedOrigin);
-  }
+  validateInsecurePasswordsList(
+      checkPasswordSection, compromisedCredentials, true);
 }
 
 suite('PasswordsCheckSection', function() {
@@ -349,7 +392,7 @@ suite('PasswordsCheckSection', function() {
 
     await passwordManager.whenCalled('getPasswordCheckStatus');
     flush();
-    assertFalse(isElementVisible(section.$.passwordCheckBody));
+    assertFalse(isElementVisible(section.$.compromisedCredentialsBody));
     assertTrue(isElementVisible(section.$.noCompromisedCredentials));
   });
 
@@ -363,7 +406,7 @@ suite('PasswordsCheckSection', function() {
     const checkPasswordSection = createCheckPasswordSection();
     await passwordManager.whenCalled('getCompromisedCredentials');
     flush();
-    assertFalse(checkPasswordSection.$.passwordCheckBody.hidden);
+    assertFalse(checkPasswordSection.$.compromisedCredentialsBody.hidden);
     assertTrue(checkPasswordSection.$.noCompromisedCredentials.hidden);
     validateLeakedPasswordsList(checkPasswordSection, leakedPasswords);
   });
@@ -407,7 +450,7 @@ suite('PasswordsCheckSection', function() {
 
     await passwordManager.whenCalled('getCompromisedCredentials');
     flush();
-    assertFalse(checkPasswordSection.$.passwordCheckBody.hidden);
+    assertFalse(checkPasswordSection.$.compromisedCredentialsBody.hidden);
     const listElement = checkPasswordSection.$$('password-check-list-item');
     const menu = checkPasswordSection.$.moreActionsMenu;
 
@@ -666,6 +709,48 @@ suite('PasswordsCheckSection', function() {
         .then(count => {
           expectEquals(count, subtitle.textContent.trim());
         });
+  });
+
+  // Verify that weak passwords section is shown, if |passwordsWeaknessCheck|
+  // flag is enabled.
+  test('showWeakPasswords', async function() {
+    loadTimeData.overrideValues({passwordsWeaknessCheck: true});
+    const weakCredentials = [
+      makeInsecureCredential('one.com', 'test1'),
+      makeInsecureCredential('two.com', 'test2'),
+    ];
+    passwordManager.data.weakCredentials = weakCredentials;
+
+    const section = createCheckPasswordSection();
+    await passwordManager.whenCalled('getPasswordCheckStatus');
+    flush();
+
+    assertTrue(isElementVisible(section.$.weakCredentialsBody));
+    validateInsecurePasswordsList(section, weakCredentials, false);
+  });
+
+  // Verify that weak passwords section is hidden, if no weak credentials were
+  // found.
+  test('noWeakPasswords', async function() {
+    loadTimeData.overrideValues({passwordsWeaknessCheck: true});
+    const section = createCheckPasswordSection();
+    await passwordManager.whenCalled('getPasswordCheckStatus');
+    flush();
+
+    assertFalse(isElementVisible(section.$.weakCredentialsBody));
+  });
+
+  // Verify that weak passwords section is hidden, if |passwordsWeaknessCheck|
+  // flag is disabled.
+  test('hideWeakPasswords', async function() {
+    loadTimeData.overrideValues({passwordsWeaknessCheck: false});
+    passwordManager.data.weakCredentials =
+        [makeInsecureCredential('one.com', 'test1')];
+    const section = createCheckPasswordSection();
+    await passwordManager.whenCalled('getPasswordCheckStatus');
+    flush();
+
+    assertFalse(isElementVisible(section.$.weakCredentialsBody));
   });
 
   // When canceled, show string explaining that and already found leak
@@ -1146,8 +1231,8 @@ suite('PasswordsCheckSection', function() {
     flush();
     const listElements = checkPasswordSection.$.leakedPasswordList;
     const node = listElements.children[1];
-    assertEquals('password', node.$.leakedPassword.type);
-    assertNotEquals('test4', node.$.leakedPassword.value);
+    assertEquals('password', node.$.insecurePassword.type);
+    assertNotEquals('test4', node.$.insecurePassword.value);
 
     // Open the more actions menu and click 'Show Password'.
     node.$.more.click();
@@ -1162,15 +1247,15 @@ suite('PasswordsCheckSection', function() {
     const {reason} =
         await passwordManager.whenCalled('getPlaintextInsecurePassword');
     expectEquals(chrome.passwordsPrivate.PlaintextReason.VIEW, reason);
-    assertEquals('text', node.$.leakedPassword.type);
-    assertEquals('test4', node.$.leakedPassword.value);
+    assertEquals('text', node.$.insecurePassword.type);
+    assertEquals('test4', node.$.insecurePassword.value);
 
     // Open the more actions menu and click 'Hide Password'.
     node.$.more.click();
     checkPasswordSection.$.menuShowPassword.click();
 
-    assertEquals('password', node.$.leakedPassword.type);
-    assertNotEquals('test4', node.$.leakedPassword.value);
+    assertEquals('password', node.$.insecurePassword.type);
+    assertNotEquals('test4', node.$.insecurePassword.value);
   });
 
   // Verify if getPlaintext fails password will not be shown
@@ -1183,16 +1268,16 @@ suite('PasswordsCheckSection', function() {
     flush();
     const listElements = checkPasswordSection.$.leakedPasswordList;
     const node = listElements.children[1];
-    assertEquals('password', node.$.leakedPassword.type);
-    assertNotEquals('test4', node.$.leakedPassword.value);
+    assertEquals('password', node.$.insecurePassword.type);
+    assertNotEquals('test4', node.$.insecurePassword.value);
 
     // Open the more actions menu and click 'Show Password'.
     node.$.more.click();
     checkPasswordSection.$.menuShowPassword.click();
     await passwordManager.whenCalled('getPlaintextInsecurePassword');
     // Verify that password field didn't change
-    assertEquals('password', node.$.leakedPassword.type);
-    assertNotEquals('test4', node.$.leakedPassword.value);
+    assertEquals('password', node.$.insecurePassword.type);
+    assertNotEquals('test4', node.$.insecurePassword.value);
   });
 
   // Verify that clicking "Change password" reveals "Already changed password"
@@ -1260,15 +1345,15 @@ suite('PasswordsCheckSection', function() {
       await eventToPromise('close', checkPasswordSection.$.moreActionsMenu);
 
       // Verify that password field didn't change
-      assertEquals('password', node.$.leakedPassword.type);
-      assertNotEquals('test4', node.$.leakedPassword.value);
+      assertEquals('password', node.$.insecurePassword.type);
+      assertNotEquals('test4', node.$.insecurePassword.value);
 
       passwordManager.plaintextPassword_ = 'test4';
       node.tokenRequestManager.resolve();
       await passwordManager.whenCalled('getPlaintextInsecurePassword');
 
-      assertEquals('text', node.$.leakedPassword.type);
-      assertEquals('test4', node.$.leakedPassword.value);
+      assertEquals('text', node.$.insecurePassword.type);
+      assertEquals('test4', node.$.insecurePassword.value);
     });
   }
 

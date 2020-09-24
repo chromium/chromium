@@ -280,7 +280,7 @@ Polymer({
    * @private
    */
   hasWeakCredentials_() {
-    return !!this.weakPasswords.length;
+    return this.passwordsWeaknessCheckEnabled && !!this.weakPasswords.length;
   },
 
   /**
@@ -289,7 +289,7 @@ Polymer({
    * @private
    */
   hasInsecureCredentials_() {
-    return !!this.leakedPasswords.length || !!this.weakPasswords.length;
+    return !!this.leakedPasswords.length || this.hasWeakCredentials_();
   },
 
   /**

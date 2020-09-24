@@ -74,6 +74,15 @@ Polymer({
   },
 
   /**
+   * Returns true if |item| is compromised credential, otherwise returns false.
+   * @return {boolean}
+   * @private
+   */
+  isCompromisedItem_() {
+    return !!this.item.compromisedInfo;
+  },
+
+  /**
    * @return {string}
    * @private
    */

@@ -340,7 +340,7 @@
   <message name="IDS_SETTINGS_CHECK_PASSWORDS_CANCELED" desc="Message for when the password check was canceled by the user.">
     Canceled
   </message>
-  <message name="IDS_SETTINGS_CHECKED_PASSWORDS" desc="Title above amount of found compromised passwords after password bulk check.">
+  <message name="IDS_SETTINGS_CHECKED_PASSWORDS" desc="Title above amount of found insecure passwords after password bulk check.">
     Checked passwords
   </message>
   <message name="IDS_SETTINGS_CHECK_PASSWORDS_DESCRIPTION" desc="Explanation of the passwords bulk check feature found within the password settings.">
@@ -378,6 +378,13 @@
   </message>
   <message name="IDS_SETTINGS_COMPROMISED_PASSWORDS_ADVICE" desc="Description of what user should do after compromised passwords are found.">
     Change these passwords immediately to keep your account safe:
+  </message>
+  <message name="IDS_SETTINGS_WEAK_PASSWORDS" desc="Title for list of weak credentials after passwords bulk check.">
+    Weak passwords
+  </message>
+  <message name="IDS_SETTINGS_WEAK_PASSWORDS_DESCRIPTION" desc="Information about why weak passwords are a security issue and what user should do to fix the problem. Has a link.">
+    Weak passwords are easy to guess. Make sure you're creating strong passwords.
+    <ph name="BEGIN_LINK">&lt;br/&gt;&lt;a target='_blank' href='$1'&gt;</ph>See more security tips.<ph name="END_LINK">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_SETTINGS_CHANGE_PASSWORD_BUTTON" desc="Button inside password check section which opens url for changing leaked password.">
     Change password

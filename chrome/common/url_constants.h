@@ -215,6 +215,10 @@ extern const char kSafeBrowsingHelpCenterURL[];
 // "Learn more" URL for safety tip bubble.
 extern const char kSafetyTipHelpCenterURL[];
 
+// The URL for the "See more security tips" with advices how to create a strong
+// password.
+extern const char kSeeMoreSecurityTipsURL[];
+
 // Help URL for the settings page's search feature.
 extern const char kSettingsSearchHelpURL[];
 

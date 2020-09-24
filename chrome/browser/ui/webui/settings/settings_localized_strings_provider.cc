@@ -831,6 +831,7 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
       {"compromisedPasswords", IDS_SETTINGS_COMPROMISED_PASSWORDS},
       {"compromisedPasswordsDescription",
        IDS_SETTINGS_COMPROMISED_PASSWORDS_ADVICE},
+      {"weakPasswords", IDS_SETTINGS_WEAK_PASSWORDS},
       {"changePasswordButton", IDS_SETTINGS_CHANGE_PASSWORD_BUTTON},
       {"changePasswordInApp", IDS_SETTINGS_CHANGE_PASSWORD_IN_APP_LABEL},
       {"leakedPassword", IDS_SETTINGS_COMPROMISED_PASSWORD_REASON_LEAKED},
@@ -1036,6 +1037,11 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
                          autofill::payments::GetManageInstrumentsUrl().spec());
   html_source->AddString("paymentMethodsLearnMoreURL",
                          chrome::kPaymentMethodsLearnMoreURL);
+  html_source->AddString(
+      "weakPasswordsDescription",
+      l10n_util::GetStringFUTF16(
+          IDS_SETTINGS_WEAK_PASSWORDS_DESCRIPTION,
+          base::ASCIIToUTF16(chrome::kSeeMoreSecurityTipsURL)));
   // The warning message that will be shown if there is a content setting
   // pattern with a wildcard in it. The check for wildcards is done on the js
   // side.
