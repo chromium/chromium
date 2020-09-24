@@ -542,12 +542,13 @@ void OpenURLBlockUntilNavigationComplete(Shell* shell, const GURL& url) {
 // (Equivalent to the declared policy "feature *")
 blink::ParsedFeaturePolicyDeclaration CreateParsedFeaturePolicyDeclaration(
     blink::mojom::FeaturePolicyFeature feature,
-    const std::vector<GURL>& origins) {
+    const std::vector<GURL>& origins,
+    bool match_all_origins = false) {
   blink::ParsedFeaturePolicyDeclaration declaration;
 
   declaration.feature = feature;
-  declaration.matches_all_origins = origins.empty();
-  declaration.matches_opaque_src = declaration.matches_all_origins;
+  declaration.matches_all_origins = match_all_origins;
+  declaration.matches_opaque_src = match_all_origins;
 
   for (const auto& origin : origins)
     declaration.allowed_origins.push_back(url::Origin::Create(origin));
@@ -560,15 +561,22 @@ blink::ParsedFeaturePolicyDeclaration CreateParsedFeaturePolicyDeclaration(
 
 blink::ParsedFeaturePolicy CreateParsedFeaturePolicy(
     const std::vector<blink::mojom::FeaturePolicyFeature>& features,
-    const std::vector<GURL>& origins) {
+    const std::vector<GURL>& origins,
+    bool match_all_origins = false) {
   blink::ParsedFeaturePolicy result;
   result.reserve(features.size());
   for (const auto& feature : features)
-    result.push_back(CreateParsedFeaturePolicyDeclaration(feature, origins));
+    result.push_back(CreateParsedFeaturePolicyDeclaration(feature, origins,
+                                                          match_all_origins));
   return result;
 }
 
 blink::ParsedFeaturePolicy CreateParsedFeaturePolicyMatchesAll(
+    const std::vector<blink::mojom::FeaturePolicyFeature>& features) {
+  return CreateParsedFeaturePolicy(features, {}, true);
+}
+
+blink::ParsedFeaturePolicy CreateParsedFeaturePolicyMatchesNone(
     const std::vector<blink::mojom::FeaturePolicyFeature>& features) {
   return CreateParsedFeaturePolicy(features, {});
 }
@@ -8995,7 +9003,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessFeaturePolicyBrowserTest,
   // exists.)
   NavigateFrameToURL(root->child_at(1), first_nav_url);
   EXPECT_EQ(
-      CreateParsedFeaturePolicyMatchesAll(
+      CreateParsedFeaturePolicyMatchesNone(
           {blink::mojom::FeaturePolicyFeature::kGeolocation,
            blink::mojom::FeaturePolicyFeature::kPayment}),
       root->child_at(1)->current_replication_state().feature_policy_header);
@@ -9004,15 +9012,16 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessFeaturePolicyBrowserTest,
 
   // Ask the deepest iframe to report the enabled state of the geolocation
   // feature. If its parent frame's policy was replicated correctly to the
-  // proxy, then this will be enabled. Otherwise, it will be disabled, as
-  // geolocation is disabled by default in cross-origin frames.
-  EXPECT_EQ(true,
+  // proxy, then this will be disabled. Otherwise, it will be enabled by the
+  // "allow" attribute on the parent frame.
+  EXPECT_EQ(false,
             EvalJs(root->child_at(1)->child_at(0),
                    "document.featurePolicy.allowsFeature('geolocation')"));
-  // TODO(loonybear): Add JS test for parameterized features.
 
-  // Now navigate the iframe to a page with no policy, and the same nested
-  // cross-site iframe. The policy should be cleared in the proxy.
+  // Now navigate the iframe to a page with no header policy, and the same
+  // nested cross-site iframe. The header policy should be cleared in the proxy.
+  // In this case, the frame policy from the parent will allow geolocation to be
+  // delegated.
   NavigateFrameToURL(root->child_at(1), second_nav_url);
   EXPECT_TRUE(root->child_at(1)
                   ->current_replication_state()
@@ -9021,8 +9030,8 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessFeaturePolicyBrowserTest,
 
   // Ask the deepest iframe to report the enabled state of the geolocation
   // feature. If its parent frame's policy was replicated correctly to the
-  // proxy, then this will now be disabled.
-  EXPECT_EQ(false,
+  // proxy, then this will now be allowed.
+  EXPECT_EQ(true,
             EvalJs(root->child_at(1)->child_at(0),
                    "document.featurePolicy.allowsFeature('geolocation')"));
 }
