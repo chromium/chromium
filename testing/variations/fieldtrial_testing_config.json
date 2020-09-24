@@ -6482,21 +6482,6 @@
             ]
         }
     ],
-    "Show109ObsoleteInfobar": [
-        {
-            "platforms": [
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "Show109ObsoleteInfobar"
-                    ]
-                }
-            ]
-        }
-    ],
     "SimplifiedUrlDisplay": [
         {
             "platforms": [
