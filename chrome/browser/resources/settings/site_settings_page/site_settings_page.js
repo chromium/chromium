@@ -185,8 +185,6 @@ function getCategoryItemMap() {
       label: 'siteSettingsInsecureContent',
       icon: 'settings:insecure-content',
       disabledLabel: 'siteSettingsInsecureContentBlock',
-      shouldShow: () =>
-          loadTimeData.getBoolean('enableInsecureContentContentSetting'),
     },
     {
       route: routes.SITE_SETTINGS_FILE_SYSTEM_WRITE,

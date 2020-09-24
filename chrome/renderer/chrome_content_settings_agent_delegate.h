@@ -38,9 +38,6 @@ class ChromeContentSettingsAgentDelegate
   base::Optional<bool> AllowReadFromClipboard() override;
   base::Optional<bool> AllowWriteToClipboard() override;
   base::Optional<bool> AllowMutationEvents() override;
-  base::Optional<bool> AllowRunningInsecureContent(
-      bool allowed_per_settings,
-      const blink::WebURL& resource_url) override;
   void PassiveInsecureContentFound(const blink::WebURL&) override;
 
  private:

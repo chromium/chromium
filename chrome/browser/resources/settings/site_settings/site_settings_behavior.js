@@ -226,9 +226,6 @@ const SiteSettingsBehaviorImpl = {
         ContentSettingsTypes.FILE_SYSTEM_WRITE,
         'enableFileSystemWriteContentSetting');
     addOrRemoveSettingWithFlag(
-        ContentSettingsTypes.MIXEDSCRIPT,
-        'enableInsecureContentContentSetting');
-    addOrRemoveSettingWithFlag(
         ContentSettingsTypes.BLUETOOTH_DEVICES,
         'enableWebBluetoothNewPermissionsBackend');
     addOrRemoveSettingWithFlag(

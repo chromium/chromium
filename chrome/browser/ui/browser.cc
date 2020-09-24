@@ -1447,34 +1447,14 @@ bool Browser::ShouldAllowRunningInsecureContent(
   if (allowed_per_prefs)
     return true;
 
-  if (base::FeatureList::IsEnabled(features::kMixedContentSiteSetting)) {
-    Profile* profile =
-        Profile::FromBrowserContext(web_contents->GetBrowserContext());
-    HostContentSettingsMap* content_settings =
-        HostContentSettingsMapFactory::GetForProfile(profile);
-    return content_settings->GetContentSetting(
-               web_contents->GetLastCommittedURL(), GURL(),
-               ContentSettingsType::MIXEDSCRIPT,
-               std::string()) == CONTENT_SETTING_ALLOW;
-  }
-  MixedContentSettingsTabHelper* mixed_content_settings =
-      MixedContentSettingsTabHelper::FromWebContents(web_contents);
-  DCHECK(mixed_content_settings);
-  bool allowed = mixed_content_settings->IsRunningInsecureContentAllowed();
-  if (!allowed && !origin.host().empty()) {
-    // Note: this is a browser-side-translation of the call to
-    // DidBlockContentType from inside
-    // ContentSettingsObserver::allowRunningInsecureContent.
-    // TODO(https://crbug.com/1103176): Plumb the actual frame reference here
-    // (MixedContentNavigationThrottle::ShouldBlockNavigation has
-    // |mixed_content_frame| reference)
-    content_settings::PageSpecificContentSettings* page_settings =
-        content_settings::PageSpecificContentSettings::GetForFrame(
-            web_contents->GetMainFrame());
-    DCHECK(page_settings);
-    page_settings->OnContentBlocked(ContentSettingsType::MIXEDSCRIPT);
-  }
-  return allowed;
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  HostContentSettingsMap* content_settings =
+      HostContentSettingsMapFactory::GetForProfile(profile);
+  return content_settings->GetContentSetting(
+             web_contents->GetLastCommittedURL(), GURL(),
+             ContentSettingsType::MIXEDSCRIPT,
+             std::string()) == CONTENT_SETTING_ALLOW;
 }
 
 void Browser::OnDidBlockNavigation(

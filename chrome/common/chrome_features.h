@@ -340,9 +340,6 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kMeteredShowToggle;
 #endif
 
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::Feature kMixedContentSiteSetting;
-
 #if BUILDFLAG(ENABLE_NATIVE_NOTIFICATIONS)
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kNativeNotifications;

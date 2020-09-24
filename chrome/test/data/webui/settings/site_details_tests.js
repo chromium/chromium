@@ -219,8 +219,6 @@ suite('SiteDetails', function() {
     optionalSiteDetailsContentSettingsTypes[ContentSettingsTypes
                                                 .WINDOW_PLACEMENT] =
         'enableExperimentalWebPlatformFeatures';
-    optionalSiteDetailsContentSettingsTypes[ContentSettingsTypes.MIXEDSCRIPT] =
-        'enableInsecureContentContentSetting';
     optionalSiteDetailsContentSettingsTypes[ContentSettingsTypes
                                                 .FILE_SYSTEM_WRITE] =
         'enableFileSystemWriteContentSetting';
@@ -238,7 +236,6 @@ suite('SiteDetails', function() {
     const controlledSettingsCount = /** @type{string : int } */ ({});
 
     controlledSettingsCount['enableExperimentalWebPlatformFeatures'] = 2;
-    controlledSettingsCount['enableInsecureContentContentSetting'] = 1;
     controlledSettingsCount['enableFileSystemWriteContentSetting'] = 1;
     controlledSettingsCount['enableFontAccessContentSetting'] = 1;
     controlledSettingsCount['enablePaymentHandlerContentSetting'] = 1;
@@ -370,7 +367,6 @@ suite('SiteDetails', function() {
     // Make sure all the possible content settings are shown for this test.
     loadTimeData.overrideValues({
       enableExperimentalWebPlatformFeatures: true,
-      enableInsecureContentContentSetting: true,
       enableFileSystemWriteContentSetting: true,
       enableFontAccessContentSetting: true,
       enablePaymentHandlerContentSetting: true,

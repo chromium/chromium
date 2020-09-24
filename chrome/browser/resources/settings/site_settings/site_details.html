@@ -217,13 +217,11 @@
             label="$i18n{siteSettingsBluetoothScanning}">
         </site-details-permission>
       </template>
-      <template is="dom-if" if="[[enableInsecureContentContentSetting_]]">
-        <site-details-permission
-            category="[[ContentSettingsTypes.MIXEDSCRIPT]]"
-            icon="settings:insecure-content"
-            label="$i18n{siteSettingsInsecureContent}">
-        </site-details-permission>
-      </template>
+      <site-details-permission
+          category="[[ContentSettingsTypes.MIXEDSCRIPT]]"
+          icon="settings:insecure-content"
+          label="$i18n{siteSettingsInsecureContent}">
+      </site-details-permission>
       <site-details-permission category="[[ContentSettingsTypes.AR]]"
           icon="settings:vr-headset" label="$i18n{siteSettingsAr}">
       </site-details-permission>

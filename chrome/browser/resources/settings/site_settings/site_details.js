@@ -111,14 +111,6 @@ Polymer({
     },
 
     /** @private */
-    enableInsecureContentContentSetting_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('enableInsecureContentContentSetting');
-      }
-    },
-
-    /** @private */
     storagePressureFlagEnabled_: {
       type: Boolean,
       value: () => loadTimeData.getBoolean('enableStoragePressureUI'),

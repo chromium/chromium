@@ -95,13 +95,6 @@ base::Optional<bool> ContentSettingsAgentImpl::Delegate::AllowMutationEvents() {
   return base::nullopt;
 }
 
-base::Optional<bool>
-ContentSettingsAgentImpl::Delegate::AllowRunningInsecureContent(
-    bool allowed_per_settings,
-    const blink::WebURL& resource_url) {
-  return base::nullopt;
-}
-
 void ContentSettingsAgentImpl::Delegate::PassiveInsecureContentFound(
     const blink::WebURL&) {}
 
@@ -422,16 +415,18 @@ bool ContentSettingsAgentImpl::AllowMutationEvents(bool default_value) {
 bool ContentSettingsAgentImpl::AllowRunningInsecureContent(
     bool allowed_per_settings,
     const blink::WebURL& resource_url) {
-  base::Optional<bool> result = delegate_->AllowRunningInsecureContent(
-      allowed_per_settings, resource_url);
-  if (result.has_value())
-    return result.value();
+  if (allowed_per_settings || allow_running_insecure_content_)
+    return true;
 
-  bool allow = allowed_per_settings || allow_running_insecure_content_;
-  if (!allow) {
-    DidBlockContentType(ContentSettingsType::MIXEDSCRIPT);
+  if (content_setting_rules_) {
+    blink::WebLocalFrame* frame = render_frame()->GetWebFrame();
+    ContentSetting setting = GetContentSettingFromRules(
+        content_setting_rules_->mixed_content_rules, frame, GURL());
+    if (setting == CONTENT_SETTING_ALLOW)
+      return true;
   }
-  return allow;
+
+  return false;
 }
 
 bool ContentSettingsAgentImpl::AllowPopupsAndRedirects(bool default_value) {

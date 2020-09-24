@@ -520,13 +520,6 @@ const base::Feature kMeteredShowToggle{"MeteredShowToggle",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
-// Enables showing an entry for mixed content in site settings, which controls
-// allowing blockable mixed content. When enabled, the mixed content shield is
-// not shown on the omnibox, since its functionality is replaced by the
-// setting.
-const base::Feature kMixedContentSiteSetting{"MixedContentSiteSetting",
-                                             base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enables the use of native notification centers instead of using the Message
 // Center for displaying the toasts. The feature is hardcoded to enabled for
 // Chrome OS.

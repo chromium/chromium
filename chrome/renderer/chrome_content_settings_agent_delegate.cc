@@ -107,32 +107,6 @@ base::Optional<bool> ChromeContentSettingsAgentDelegate::AllowMutationEvents() {
   return base::nullopt;
 }
 
-base::Optional<bool>
-ChromeContentSettingsAgentDelegate::AllowRunningInsecureContent(
-    bool allowed_per_settings,
-    const blink::WebURL& resource_url) {
-  // Note: this implementation is a mirror of
-  // Browser::ShouldAllowRunningInsecureContent.
-  FilteredReportInsecureContentRan(GURL(resource_url));
-
-  // TODO(crbug.com/987294): We may want to move this logic into
-  // ContentSettingsAgentImpl once this feature is launched.
-  if (base::FeatureList::IsEnabled(features::kMixedContentSiteSetting)) {
-    bool allow = allowed_per_settings;
-    auto* agent =
-        content_settings::ContentSettingsAgentImpl::Get(render_frame_);
-    if (agent->GetContentSettingRules()) {
-      auto setting = agent->GetContentSettingFromRules(
-          agent->GetContentSettingRules()->mixed_content_rules,
-          render_frame_->GetWebFrame(), GURL());
-      allow |= (setting == CONTENT_SETTING_ALLOW);
-    }
-    return allow;
-  }
-
-  return base::nullopt;
-}
-
 void ChromeContentSettingsAgentDelegate::PassiveInsecureContentFound(
     const blink::WebURL& resource_url) {
   // Note: this implementation is a mirror of

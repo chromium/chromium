@@ -2177,10 +2177,6 @@ void AddSiteSettingsStrings(content::WebUIDataSource* html_source,
           browsing_data::features::kEnableRemovingAllThirdPartyCookies));
 
   html_source->AddBoolean(
-      "enableInsecureContentContentSetting",
-      base::FeatureList::IsEnabled(features::kMixedContentSiteSetting));
-
-  html_source->AddBoolean(
       "enableStoragePressureUI",
       base::FeatureList::IsEnabled(features::kStoragePressureUI));
 

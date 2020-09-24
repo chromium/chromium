@@ -56,9 +56,6 @@ class ContentSettingsAgentImpl
     virtual base::Optional<bool> AllowReadFromClipboard();
     virtual base::Optional<bool> AllowWriteToClipboard();
     virtual base::Optional<bool> AllowMutationEvents();
-    virtual base::Optional<bool> AllowRunningInsecureContent(
-        bool allowed_per_settings,
-        const blink::WebURL& resource_url);
     virtual void PassiveInsecureContentFound(const blink::WebURL& resource_url);
   };
 
