@@ -37,6 +37,7 @@ include_rules = [
   "+components/gcm_driver/android/java/src/org/chromium/components/gcm_driver",
   "+components/language",
   "+components/location/android/java",
+  "+components/messages/android",
   "+components/minidump_uploader",
   "+components/module_installer",
   "+components/navigation_interception",

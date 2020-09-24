@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/android/rules.gni")
+import("//chrome/android/features/android_library_factory_tmpl.gni")
 
 android_library("java") {
   sources = [
@@ -10,6 +11,7 @@ android_library("java") {
     "java/src/org/chromium/components/messages/MessageBannerView.java",
     "java/src/org/chromium/components/messages/MessageBannerViewBinder.java",
     "java/src/org/chromium/components/messages/MessageContainer.java",
+    "java/src/org/chromium/components/messages/MessageQueueManager.java",
     "java/src/org/chromium/components/messages/MessageStateHandler.java",
     "java/src/org/chromium/components/messages/SingleActionMessage.java",
   ]
@@ -67,5 +69,16 @@ android_library("javatests") {
     "//third_party/junit",
     "//ui/android:ui_java",
     "//ui/android:ui_java_test_support",
+  ]
+}
+
+android_library_factory("factory_java") {
+  sources = [
+    "internal/java/src/org/chromium/components/messages/MessagesFactory.java",
+  ]
+
+  deps = [
+    ":java",
+    "//ui/android:ui_full_java",
   ]
 }

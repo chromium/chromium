@@ -408,6 +408,7 @@ android_library("chrome_java") {
     "//components/location/android:location_java",
     "//components/location/android:settings_java",
     "//components/media_router/browser/android:java",
+    "//components/messages/android:factory_java",
     "//components/messages/android:java",
     "//components/minidump_uploader:minidump_uploader_java",
     "//components/module_installer/android:module_installer_java",
@@ -629,6 +630,7 @@ java_group("chrome_all_java") {
     "//chrome/browser/ui/android/appmenu/internal:java",
     "//chrome/browser/video_tutorials/internal:java",
     "//components/browser_ui/android/bottomsheet/internal:java",
+    "//components/messages/android/internal:java",
   ]
 
   if (disable_autofill_assistant_dfm) {
