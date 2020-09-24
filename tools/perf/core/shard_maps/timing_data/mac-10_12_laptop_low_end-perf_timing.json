@@ -3404,10 +3404,6 @@
         "name": "system_health.common_desktop/browse:social:tumblr_infinite_scroll:2018"
     },
     {
-        "duration": "53.0",
-        "name": "system_health.common_desktop/browse:social:twitter:2018"
-    },
-    {
         "duration": "71.0",
         "name": "system_health.common_desktop/browse:social:twitter_infinite_scroll:2018"
     },
@@ -3718,10 +3714,6 @@
     {
         "duration": "60.0",
         "name": "system_health.memory_desktop/browse:social:tumblr_infinite_scroll:2018"
-    },
-    {
-        "duration": "47.0",
-        "name": "system_health.memory_desktop/browse:social:twitter:2018"
     },
     {
         "duration": "64.0",
@@ -4076,10 +4068,6 @@
         "name": "v8.browsing_desktop-future/browse:social:tumblr_infinite_scroll:2018"
     },
     {
-        "duration": "58.0",
-        "name": "v8.browsing_desktop-future/browse:social:twitter:2018"
-    },
-    {
         "duration": "75.0",
         "name": "v8.browsing_desktop-future/browse:social:twitter_infinite_scroll:2018"
     },
@@ -4182,10 +4170,6 @@
     {
         "duration": "81.0",
         "name": "v8.browsing_desktop/browse:social:tumblr_infinite_scroll:2018"
-    },
-    {
-        "duration": "61.0",
-        "name": "v8.browsing_desktop/browse:social:twitter:2018"
     },
     {
         "duration": "78.0",
