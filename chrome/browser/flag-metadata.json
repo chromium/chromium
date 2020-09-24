@@ -3853,7 +3853,7 @@
   {
     "name": "related-searches",
     "owners": [ "ayman", "donnd" ],
-    "expiry_milestone": 85
+    "expiry_milestone": 89
   },
   {
     "name": "release-notes-notification",
