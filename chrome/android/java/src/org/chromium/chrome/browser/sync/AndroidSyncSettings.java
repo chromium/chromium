@@ -56,6 +56,8 @@ public class AndroidSyncSettings {
 
     private boolean mMasterSyncEnabled;
 
+    private boolean mShouldDecoupleSyncFromMasterSync;
+
     private final ObserverList<AndroidSyncSettingsObserver> mObservers = new ObserverList<>();
 
     /**
@@ -87,14 +89,16 @@ public class AndroidSyncSettings {
         sInstance = instance;
     }
 
-    /**
-     * @param account The sync account if sync is enabled, null otherwise.
-     */
     // TODO(crbug.com/1125622): Exposing these testing constructors that don't register the
     // singleton instance can be dangerous when there's code that explicitly calls |get()|
     // (in that case, a new object would be returned, not the one constructed by the test).
     // Consider exposing them as static methods that also register a singleton instance.
+    /**
+     * WARNING: Consider using |overrideForTests()| to inject a mock instead.
+     * @param account The sync account if sync is enabled, null otherwise.
+     */
     @VisibleForTesting
+    @Deprecated
     public AndroidSyncSettings(@Nullable Account account) {
         ThreadUtils.assertOnUiThread();
         mContractAuthority = getContractAuthority();
@@ -103,6 +107,14 @@ public class AndroidSyncSettings {
         mAccount = account;
         updateCachedSettings();
         updateSyncability();
+
+        ProfileSyncService syncService = ProfileSyncService.get();
+        if (syncService != null
+                && ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.DECOUPLE_SYNC_FROM_ANDROID_MASTER_SYNC)) {
+            // Read initial persisted value.
+            mShouldDecoupleSyncFromMasterSync = syncService.getDecoupledFromAndroidMasterSync();
+        }
 
         SyncStatusObserver androidOsListener = new SyncStatusObserver() {
             @Override
@@ -153,9 +165,7 @@ public class AndroidSyncSettings {
      */
     public boolean doesMasterSyncSettingAllowChromeSync() {
         ThreadUtils.assertOnUiThread();
-        return mMasterSyncEnabled
-                || ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.DECOUPLE_SYNC_FROM_ANDROID_MASTER_SYNC);
+        return mMasterSyncEnabled || mShouldDecoupleSyncFromMasterSync;
     }
 
     /**
@@ -200,6 +210,7 @@ public class AndroidSyncSettings {
      * Add a new AndroidSyncSettingsObserver.
      */
     public void registerObserver(AndroidSyncSettingsObserver observer) {
+        ThreadUtils.assertOnUiThread();
         mObservers.addObserver(observer);
     }
 
@@ -207,6 +218,7 @@ public class AndroidSyncSettings {
      * Remove an AndroidSyncSettingsObserver that was previously added.
      */
     public void unregisterObserver(AndroidSyncSettingsObserver observer) {
+        ThreadUtils.assertOnUiThread();
         mObservers.removeObserver(observer);
     }
 
@@ -262,7 +274,8 @@ public class AndroidSyncSettings {
     }
 
     /**
-     * Update the three cached settings from the content resolver.
+     * Update the three cached settings from the content resolver and the
+     * master sync decoupling setting.
      *
      * @return Whether either chromeSyncEnabled or masterSyncEnabled changed.
      */
@@ -282,6 +295,17 @@ public class AndroidSyncSettings {
                 mChromeSyncEnabled = false;
             }
             mMasterSyncEnabled = mSyncContentResolverDelegate.getMasterSyncAutomatically();
+        }
+
+        if (mAccount != null && ProfileSyncService.get() != null
+                && ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.DECOUPLE_SYNC_FROM_ANDROID_MASTER_SYNC)
+                && mMasterSyncEnabled && !mShouldDecoupleSyncFromMasterSync) {
+            // Re-enabling master sync at least once should cause Sync to no longer care whether
+            // the former is enabled or not. This fact should be persisted via ProfileSyncService
+            // so it's known on the next startup.
+            mShouldDecoupleSyncFromMasterSync = true;
+            ProfileSyncService.get().setDecoupledFromAndroidMasterSync();
         }
 
         return oldChromeSyncEnabled != mChromeSyncEnabled

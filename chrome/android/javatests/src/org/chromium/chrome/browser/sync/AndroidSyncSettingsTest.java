@@ -4,6 +4,10 @@
 
 package org.chromium.chrome.browser.sync;
 
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import static org.chromium.chrome.browser.sync.AndroidSyncSettingsTestUtils.getDoesMasterSyncAllowSyncOnUiThread;
 import static org.chromium.chrome.browser.sync.AndroidSyncSettingsTestUtils.getIsChromeSyncEnabledOnUiThread;
 import static org.chromium.chrome.browser.sync.AndroidSyncSettingsTestUtils.getIsSyncEnabledOnUiThread;
@@ -20,8 +24,10 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -116,21 +122,25 @@ public class AndroidSyncSettingsTest {
     @Rule
     public TestRule mChromeBrowserRule = new ChromeBrowserTestRule();
     @Rule
-    public TestRule mProcessorRule = new Features.JUnitProcessor();
+    public TestRule mProcessorRule = new Features.InstrumentationProcessor();
+    @Rule
+    public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private AndroidSyncSettings mAndroidSyncSettings;
     private CountingMockSyncContentResolverDelegate mSyncContentResolverDelegate;
+    @Mock
+    private ProfileSyncService mProfileSyncService;
     private Account mAccount;
     private Account mAlternateAccount;
     private String mAuthority = AndroidSyncSettings.getContractAuthority();
 
     @Before
     public void setUp() {
-        FeatureList.setTestCanUseDefaultsForTesting();
-
         mSyncContentResolverDelegate = new CountingMockSyncContentResolverDelegate();
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> SyncContentResolverDelegate.overrideForTests(mSyncContentResolverDelegate));
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            SyncContentResolverDelegate.overrideForTests(mSyncContentResolverDelegate);
+            ProfileSyncService.overrideForTests(mProfileSyncService);
+        });
 
         FakeAccountManagerFacade fakeAccountManagerFacade = new FakeAccountManagerFacade(null);
         AccountManagerFacadeProvider.setInstanceForTests(fakeAccountManagerFacade);
@@ -156,16 +166,6 @@ public class AndroidSyncSettingsTest {
         }
     }
 
-    private void setMasterSyncAllowsChromeSync() {
-        if (!ChromeFeatureList.isEnabled(
-                    ChromeFeatureList.DECOUPLE_SYNC_FROM_ANDROID_MASTER_SYNC)) {
-            mSyncContentResolverDelegate.setMasterSyncAutomatically(true);
-            Assert.assertTrue(getDoesMasterSyncAllowSyncOnUiThread());
-        }
-        // If DecoupleSyncFromAndroidMasterSync is enabled, no need for any
-        // setup since master sync doesn't influence sync.
-    }
-
     @After
     public void tearDown() {
         AccountManagerFacadeProvider.resetInstanceForTests();
@@ -174,6 +174,7 @@ public class AndroidSyncSettingsTest {
     @Test
     @SmallTest
     @Feature({"Sync"})
+    @Features.DisableFeatures(ChromeFeatureList.DECOUPLE_SYNC_FROM_ANDROID_MASTER_SYNC)
     public void testAccountInitialization() {
         createAndroidSyncSettings();
 
@@ -250,9 +251,9 @@ public class AndroidSyncSettingsTest {
     @SmallTest
     @Feature({"Sync"})
     public void testToggleAccountSyncFromApplication() {
-        createAndroidSyncSettings();
+        mSyncContentResolverDelegate.setMasterSyncAutomatically(true);
 
-        setMasterSyncAllowsChromeSync();
+        createAndroidSyncSettings();
 
         TestThreadUtils.runOnUiThreadBlocking(() -> mAndroidSyncSettings.enableChromeSync());
         Assert.assertTrue(getIsSyncEnabledOnUiThread());
@@ -265,9 +266,9 @@ public class AndroidSyncSettingsTest {
     @SmallTest
     @Feature({"Sync"})
     public void testToggleSyncabilityForMultipleAccounts() {
-        createAndroidSyncSettings();
+        mSyncContentResolverDelegate.setMasterSyncAutomatically(true);
 
-        setMasterSyncAllowsChromeSync();
+        createAndroidSyncSettings();
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mAndroidSyncSettings.enableChromeSync();
@@ -292,9 +293,9 @@ public class AndroidSyncSettingsTest {
     @SmallTest
     @Feature({"Sync"})
     public void testSyncSettingsCaching() {
-        createAndroidSyncSettings();
+        mSyncContentResolverDelegate.setMasterSyncAutomatically(true);
 
-        setMasterSyncAllowsChromeSync();
+        createAndroidSyncSettings();
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mAndroidSyncSettings.enableChromeSync();
@@ -418,20 +419,71 @@ public class AndroidSyncSettingsTest {
     @SmallTest
     @Feature({"Sync"})
     @Features.EnableFeatures(ChromeFeatureList.DECOUPLE_SYNC_FROM_ANDROID_MASTER_SYNC)
-    // TODO(crbug.com/1105795): Remove this test after DecoupleSyncFromAndroidMasterSync has
-    // launched, since testToggleChromeSyncFromSettings() covers the same functionality.
-    public void testSyncStateDoesNotDependOnMasterSync() {
+    public void testMasterSyncAllowsSyncIfReEnabledOnce() {
+        // Master sync is disabled on startup and the user hasn't gone through the decoupling flow
+        // in the past.
         mSyncContentResolverDelegate.setMasterSyncAutomatically(false);
-        createAndroidSyncSettings();
-
         mSyncContentResolverDelegate.setSyncAutomatically(mAccount, mAuthority, true);
-        Assert.assertTrue(getIsChromeSyncEnabledOnUiThread());
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            when(mProfileSyncService.getDecoupledFromAndroidMasterSync()).thenReturn(false);
+        });
+
+        // Sync must remain disabled as long as master sync is not re-enabled.
+        createAndroidSyncSettings();
+        Assert.assertFalse(getDoesMasterSyncAllowSyncOnUiThread());
+        Assert.assertFalse(getIsSyncEnabledOnUiThread());
+
+        // Re-enable master sync at least once. Sync is now re-enabled and decoupled from master
+        // sync.
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> doNothing().when(mProfileSyncService).setDecoupledFromAndroidMasterSync());
+        mSyncContentResolverDelegate.setMasterSyncAutomatically(true);
         Assert.assertTrue(getDoesMasterSyncAllowSyncOnUiThread());
         Assert.assertTrue(getIsSyncEnabledOnUiThread());
-
-        mSyncContentResolverDelegate.setSyncAutomatically(mAccount, mAuthority, false);
-        Assert.assertFalse(getIsChromeSyncEnabledOnUiThread());
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> verify(mProfileSyncService).setDecoupledFromAndroidMasterSync());
+        mSyncContentResolverDelegate.setMasterSyncAutomatically(false);
         Assert.assertTrue(getDoesMasterSyncAllowSyncOnUiThread());
+        Assert.assertTrue(getIsSyncEnabledOnUiThread());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Sync"})
+    @Features.EnableFeatures(ChromeFeatureList.DECOUPLE_SYNC_FROM_ANDROID_MASTER_SYNC)
+    public void testSyncStateRespectsPersistedDecouplingStateIfFeatureEnabled() {
+        // Master sync is disabled on startup, but the user has gone through the decoupling flow in
+        // the past and has the DecoupleSyncFromAndroidMasterSync feature enabled.
+        mSyncContentResolverDelegate.setMasterSyncAutomatically(false);
+        mSyncContentResolverDelegate.setSyncAutomatically(mAccount, mAuthority, true);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            when(mProfileSyncService.getDecoupledFromAndroidMasterSync()).thenReturn(true);
+        });
+
+        // Chrome becomes aware of the previous decoupling, so Sync can be enabled despite master
+        // sync being disabled.
+        createAndroidSyncSettings();
+        Assert.assertTrue(getDoesMasterSyncAllowSyncOnUiThread());
+        Assert.assertTrue(getIsSyncEnabledOnUiThread());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Sync"})
+    @Features.DisableFeatures(ChromeFeatureList.DECOUPLE_SYNC_FROM_ANDROID_MASTER_SYNC)
+    public void testSyncStateDoesNotRespectPersistedDecouplingStateIfFeatureDisabled() {
+        // The user went through the master sync decoupling flow in the past, but has the
+        // DecoupleSyncFromAndroidMasterSync feature disabled.
+        mSyncContentResolverDelegate.setMasterSyncAutomatically(false);
+        mSyncContentResolverDelegate.setSyncAutomatically(mAccount, mAuthority, true);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            when(mProfileSyncService.getDecoupledFromAndroidMasterSync()).thenReturn(true);
+        });
+
+        // Chrome should ignore that a previous decoupling happened. Sync should again respect
+        // master sync and stay disabled.
+        createAndroidSyncSettings();
+        Assert.assertFalse(getDoesMasterSyncAllowSyncOnUiThread());
         Assert.assertFalse(getIsSyncEnabledOnUiThread());
     }
 }

@@ -88,6 +88,7 @@ public class ProfileSyncService {
      */
     @VisibleForTesting
     public static void overrideForTests(ProfileSyncService profileSyncService) {
+        ThreadUtils.assertOnUiThread();
         sProfileSyncService = profileSyncService;
         sInitialized = true;
     }
