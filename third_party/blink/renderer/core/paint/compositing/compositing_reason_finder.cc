@@ -186,7 +186,7 @@ CompositingReasons
 CompositingReasonFinder::DirectReasonsForSVGChildPaintProperties(
     const LayoutObject& object) {
   DCHECK(object.IsSVGChild());
-  if (RuntimeEnabledFeatures::CompositeSVGEnabled()) {
+  if (RuntimeEnabledFeatures::CompositeSVGEnabled() && !object.IsText()) {
     const ComputedStyle& style = object.StyleRef();
     auto reasons = CompositingReasonsForAnimation(object) |
                    CompositingReasonsForWillChange(style);

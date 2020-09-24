@@ -366,4 +366,21 @@ TEST_F(CompositingReasonFinderTest, CompositeWithBackfaceVisibility) {
   EXPECT_EQ(kPaintsIntoOwnBacking, target_layer->GetCompositingState());
 }
 
+TEST_F(CompositingReasonFinderTest, CompositedSVGText) {
+  SetBodyInnerHTML(R"HTML(
+    <svg>
+      <text id="text" style="will-change: opacity">Text</text>
+    </svg>
+  )HTML");
+
+  auto* svg_text = GetLayoutObjectByElementId("text");
+  EXPECT_EQ(
+      CompositingReason::kWillChangeOpacity,
+      CompositingReasonFinder::DirectReasonsForPaintProperties(*svg_text));
+  auto* text = svg_text->SlowFirstChild();
+  ASSERT_TRUE(text->IsText());
+  EXPECT_EQ(CompositingReason::kNone,
+            CompositingReasonFinder::DirectReasonsForPaintProperties(*text));
+}
+
 }  // namespace blink
