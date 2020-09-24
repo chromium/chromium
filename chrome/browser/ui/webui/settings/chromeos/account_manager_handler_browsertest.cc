@@ -226,8 +226,9 @@ class AccountManagerUIHandlerTest
   std::unique_ptr<TestingAccountManagerUIHandler> handler_;
 };
 
+// TODO(https://crbug.com/1131834): Re-enable flaky test.
 IN_PROC_BROWSER_TEST_P(AccountManagerUIHandlerTest,
-                       OnGetAccountsNoSecondaryAccounts) {
+                       DISABLED_OnGetAccountsNoSecondaryAccounts) {
   const std::vector<AccountManager::Account> account_manager_accounts =
       GetAccountsFromAccountManager();
   // Only Primary account.
@@ -270,8 +271,9 @@ IN_PROC_BROWSER_TEST_P(AccountManagerUIHandlerTest,
   }
 }
 
+// TODO(https://crbug.com/1131819): Re-enable flaky test.
 IN_PROC_BROWSER_TEST_P(AccountManagerUIHandlerTest,
-                       OnGetAccountsWithSecondaryAccounts) {
+                       DISABLED_OnGetAccountsWithSecondaryAccounts) {
   UpsertAccount("secondary1@example.com");
   UpsertAccount("secondary2@example.com");
   const std::vector<AccountManager::Account> account_manager_accounts =
