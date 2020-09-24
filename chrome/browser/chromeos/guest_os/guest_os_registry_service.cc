@@ -563,6 +563,38 @@ GuestOsRegistryService::GetAllRegisteredApps() const {
 }
 
 std::map<std::string, GuestOsRegistryService::Registration>
+GuestOsRegistryService::GetEnabledApps() const {
+  bool crostini_enabled =
+      crostini::CrostiniFeatures::Get()->IsEnabled(profile_);
+  bool plugin_vm_enabled =
+      plugin_vm::PluginVmFeatures::Get()->IsEnabled(profile_);
+  if (!crostini_enabled && !plugin_vm_enabled)
+    return {};
+
+  auto apps = GetAllRegisteredApps();
+  for (auto it = apps.cbegin(); it != apps.cend();) {
+    bool enabled = false;
+    switch (it->second.VmType()) {
+      case VmType::ApplicationList_VmType_TERMINA:
+        enabled = crostini_enabled;
+        break;
+      case VmType::ApplicationList_VmType_PLUGIN_VM:
+        enabled = plugin_vm_enabled;
+        break;
+      default:
+        LOG(ERROR) << "Unsupported VmType: "
+                   << static_cast<int>(it->second.VmType());
+    }
+    if (enabled) {
+      ++it;
+    } else {
+      it = apps.erase(it);
+    }
+  }
+  return apps;
+}
+
+std::map<std::string, GuestOsRegistryService::Registration>
 GuestOsRegistryService::GetRegisteredApps(VmType vm_type) const {
   auto apps = GetAllRegisteredApps();
   for (auto it = apps.cbegin(); it != apps.cend();) {

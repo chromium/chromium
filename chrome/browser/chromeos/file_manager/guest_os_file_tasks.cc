@@ -148,8 +148,6 @@ auto ConvertLaunchPluginVmAppResultToTaskResult(
 
 void FindGuestOsApps(
     Profile* profile,
-    bool crostini_enabled,
-    bool plugin_vm_enabled,
     const std::vector<extensions::EntryInfo>& entries,
     const std::vector<GURL>& file_urls,
     std::vector<std::string>* app_ids,
@@ -172,7 +170,7 @@ void FindGuestOsApps(
       guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile);
   crostini::CrostiniMimeTypesService* mime_types_service =
       crostini::CrostiniMimeTypesServiceFactory::GetForProfile(profile);
-  for (const auto& pair : registry_service->GetAllRegisteredApps()) {
+  for (const auto& pair : registry_service->GetEnabledApps()) {
     const std::string& app_id = pair.first;
     const auto& registration = pair.second;
 
@@ -180,8 +178,7 @@ void FindGuestOsApps(
     switch (vm_type) {
       case guest_os::GuestOsRegistryService::VmType::
           ApplicationList_VmType_TERMINA:
-        if (!crostini_enabled ||
-            !AppSupportsMimeTypeOfAllEntries(*mime_types_service, entries,
+        if (!AppSupportsMimeTypeOfAllEntries(*mime_types_service, entries,
                                              registration)) {
           continue;
         }
@@ -190,8 +187,7 @@ void FindGuestOsApps(
 
       case guest_os::GuestOsRegistryService::VmType::
           ApplicationList_VmType_PLUGIN_VM:
-        if (!plugin_vm_enabled ||
-            !AppSupportsExtensionOfAllEntries(entries, registration)) {
+        if (!AppSupportsExtensionOfAllEntries(entries, registration)) {
           continue;
         }
         app_names->push_back(registration.Name() + kPluginVmAppNameSuffix);
@@ -224,9 +220,8 @@ void FindGuestOsTasks(Profile* profile,
   std::vector<std::string> result_app_ids;
   std::vector<std::string> result_app_names;
   std::vector<guest_os::GuestOsRegistryService::VmType> result_vm_types;
-  FindGuestOsApps(profile, crostini_enabled, plugin_vm_enabled, entries,
-                  file_urls, &result_app_ids, &result_app_names,
-                  &result_vm_types);
+  FindGuestOsApps(profile, entries, file_urls, &result_app_ids,
+                  &result_app_names, &result_vm_types);
 
   if (result_app_ids.empty()) {
     std::move(completion_closure).Run();

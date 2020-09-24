@@ -136,6 +136,10 @@ class GuestOsRegistryService : public KeyedService {
   std::map<std::string, GuestOsRegistryService::Registration>
   GetAllRegisteredApps() const;
 
+  // Return all installed apps where the VM is enabled.
+  std::map<std::string, GuestOsRegistryService::Registration> GetEnabledApps()
+      const;
+
   // Return all installed apps for a given vm.
   // If |vm_type == TERMINA_VM| then this includes the Terminal app.
   std::map<std::string, GuestOsRegistryService::Registration> GetRegisteredApps(

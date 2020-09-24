@@ -32,8 +32,6 @@ extern const char kGuestOsAppActionID[];
 // VisibleForTesting.  Called by |FindGuestOsTasks|.
 void FindGuestOsApps(
     Profile* profile,
-    bool crostini_enabled,
-    bool plugin_vm_enabled,
     const std::vector<extensions::EntryInfo>& entries,
     const std::vector<GURL>& file_urls,
     std::vector<std::string>* app_ids,
