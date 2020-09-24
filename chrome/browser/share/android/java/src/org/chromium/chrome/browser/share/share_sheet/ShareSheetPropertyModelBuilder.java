@@ -119,8 +119,7 @@ public class ShareSheetPropertyModelBuilder {
                 contentTypes.add(ContentType.LINK_PAGE_NOT_VISIBLE);
             }
         }
-        if (!TextUtils.isEmpty(params.getText())
-                && !TextUtils.equals(params.getUrl(), params.getText())) {
+        if (!TextUtils.isEmpty(params.getText())) {
             if (chromeShareExtras.isUserHighlightedText()) {
                 contentTypes.add(ContentType.HIGHLIGHTED_TEXT);
             } else {

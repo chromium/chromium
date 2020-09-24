@@ -202,7 +202,7 @@ public class OfflinePageUtilsTest {
 
         @Override
         public void onResult(ShareParams shareParams) {
-            mText = shareParams.getText();
+            mText = shareParams.getTextAndUrl();
             mSemaphore.release();
         }
 

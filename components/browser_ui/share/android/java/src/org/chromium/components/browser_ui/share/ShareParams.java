@@ -26,10 +26,7 @@ public class ShareParams {
     /** The title of the page to be shared. */
     private final String mTitle;
 
-    /**
-     * The text to be shared. If both |text| and |url| are supplied, they are concatenated with a
-     * space.
-     */
+    /** The text to be shared. */
     private final String mText;
 
     /** The URL of the page to be shared. */
@@ -80,6 +77,20 @@ public class ShareParams {
      */
     public String getTitle() {
         return mTitle;
+    }
+
+    /**
+     * @return The text concatenated with the url.
+     */
+    public String getTextAndUrl() {
+        if (TextUtils.isEmpty(mUrl)) {
+            return mText;
+        }
+        if (TextUtils.isEmpty(mText)) {
+            return mUrl;
+        }
+        // Concatenate text and URL with a space.
+        return mText + " " + mUrl;
     }
 
     /**
@@ -213,12 +224,6 @@ public class ShareParams {
         public ShareParams build() {
             if (!TextUtils.isEmpty(mUrl)) {
                 mUrl = DomDistillerUrlUtils.getOriginalUrlFromDistillerUrl(mUrl);
-                if (!TextUtils.isEmpty(mText)) {
-                    // Concatenate text and URL with a space.
-                    mText = mText + " " + mUrl;
-                } else {
-                    mText = mUrl;
-                }
             }
             return new ShareParams(mWindow, mTitle, mText, mUrl, mFileContentType, mFileUris,
                     mOfflineUri, mScreenshotUri, mCallback);

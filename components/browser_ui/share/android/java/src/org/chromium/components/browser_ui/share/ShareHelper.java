@@ -338,10 +338,10 @@ public class ShareHelper {
             intent.addCategory(Intent.CATEGORY_DEFAULT);
             intent.setType("multipart/related");
         } else {
-            if (!TextUtils.equals(params.getText(), params.getTitle())) {
+            if (!TextUtils.equals(params.getTextAndUrl(), params.getTitle())) {
                 intent.putExtra(Intent.EXTRA_SUBJECT, params.getTitle());
             }
-            intent.putExtra(Intent.EXTRA_TEXT, params.getText());
+            intent.putExtra(Intent.EXTRA_TEXT, params.getTextAndUrl());
 
             if (isFileShare) {
                 intent.setType(params.getFileContentType());
