@@ -131,6 +131,17 @@ sk_sp<SkTypeface> FontUniqueNameLookupAndroid::MatchUniqueNameFromFirmwareFonts(
                                   match_result->ttc_index);
 }
 
+bool FontUniqueNameLookupAndroid::RequestedNameInQueryableFonts(
+    const String& font_unique_name) {
+  if (!queryable_fonts_) {
+    Vector<String> retrieved_fonts;
+    android_font_lookup_service_->GetUniqueNameLookupTable(&retrieved_fonts);
+    queryable_fonts_ = std::move(retrieved_fonts);
+  }
+  return queryable_fonts_ && queryable_fonts_->Contains(String::FromUTF8(
+                                 IcuFoldCase(font_unique_name.Utf8()).c_str()));
+}
+
 sk_sp<SkTypeface>
 FontUniqueNameLookupAndroid::MatchUniqueNameFromDownloadableFonts(
     const String& font_unique_name) {
@@ -138,6 +149,9 @@ FontUniqueNameLookupAndroid::MatchUniqueNameFromDownloadableFonts(
     LOG(ERROR) << "Service not connected.";
     return nullptr;
   }
+
+  if (!RequestedNameInQueryableFonts(font_unique_name))
+    return nullptr;
 
   DEFINE_STATIC_LOCAL_IMPL(
       CustomCountHistogram, lookup_latency_histogram_success,

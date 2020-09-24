@@ -42,6 +42,8 @@ class FontUniqueNameLookupAndroid : public FontUniqueNameLookup {
 
   sk_sp<SkTypeface> MatchUniqueNameFromFirmwareFonts(
       const String& font_unique_name);
+
+  bool RequestedNameInQueryableFonts(const String& font_unique_name);
   sk_sp<SkTypeface> MatchUniqueNameFromDownloadableFonts(
       const String& font_unique_name);
 
@@ -50,6 +52,7 @@ class FontUniqueNameLookupAndroid : public FontUniqueNameLookup {
   mojo::Remote<mojom::blink::AndroidFontLookup> android_font_lookup_service_;
   WTF::Deque<NotifyFontUniqueNameLookupReady> pending_callbacks_;
   base::Optional<bool> sync_available_;
+  base::Optional<Vector<String>> queryable_fonts_;
 
   DISALLOW_COPY_AND_ASSIGN(FontUniqueNameLookupAndroid);
 };
