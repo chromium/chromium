@@ -710,6 +710,9 @@ NGConstraintSpace CreateConstraintSpaceForColumns(
     space_builder.SetDiscardingMarginStrut();
   }
 
+  space_builder.SetNeedsBaseline(parent_space.NeedsBaseline());
+  space_builder.SetBaselineAlgorithmType(parent_space.BaselineAlgorithmType());
+
   return space_builder.ToConstraintSpace();
 }
 

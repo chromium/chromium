@@ -52,6 +52,10 @@ class CORE_EXPORT NGColumnLayoutAlgorithm
                               const NGBlockBreakToken* break_token,
                               NGMarginStrut*);
 
+  // Propagate the baseline from the given |child| if needed.
+  void PropagateBaselineFromChild(const NGPhysicalBoxFragment& child,
+                                  LayoutUnit block_offset);
+
   LayoutUnit CalculateBalancedColumnBlockSize(
       const LogicalSize& column_size,
       const NGBlockBreakToken* child_break_token);
@@ -102,6 +106,8 @@ class CORE_EXPORT NGColumnLayoutAlgorithm
   // the first piece of content of the multicol container. It is used to check
   // if we're at a valid class A  breakpoint (between block-level siblings).
   bool has_processed_first_child_ = false;
+
+  bool has_processed_first_column_ = false;
 };
 
 }  // namespace blink

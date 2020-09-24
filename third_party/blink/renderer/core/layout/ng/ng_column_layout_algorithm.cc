@@ -282,8 +282,6 @@ scoped_refptr<const NGLayoutResult> NGColumnLayoutAlgorithm::Layout() {
   if (const auto* token = BreakToken())
     previously_consumed_block_size = token->ConsumedBlockSize();
 
-  // TODO(mstensho): Propagate baselines.
-
   // Save the unconstrained intrinsic size on the builder before clamping it.
   container_builder_.SetOverflowBlockSize(intrinsic_block_size_);
 
@@ -710,8 +708,6 @@ scoped_refptr<const NGLayoutResult> NGColumnLayoutAlgorithm::LayoutRow(
     column_size.block_size = new_column_block_size;
   } while (true);
 
-  intrinsic_block_size_ += column_size.block_size;
-
   // If we just have one empty fragmentainer, we need to keep the trailing
   // margin from any previous column spanner, and also make sure that we don't
   // incorrectly consider this to be a class A breakpoint. A fragmentainer may
@@ -723,7 +719,19 @@ scoped_refptr<const NGLayoutResult> NGColumnLayoutAlgorithm::LayoutRow(
   if (!is_empty) {
     has_processed_first_child_ = true;
     container_builder_.SetPreviousBreakAfter(EBreakBetween::kAuto);
+
+    if (!has_processed_first_column_) {
+      has_processed_first_column_ = true;
+
+      // According to the spec, we should only look for a baseline in the first
+      // column.
+      const auto& first_column =
+          To<NGPhysicalBoxFragment>(new_columns[0].Fragment());
+      PropagateBaselineFromChild(first_column, intrinsic_block_size_);
+    }
   }
+
+  intrinsic_block_size_ += column_size.block_size;
 
   // Commit all column fragments to the fragment builder.
   const NGBlockBreakToken* incoming_column_token = next_column_token;
@@ -788,21 +796,28 @@ NGBreakStatus NGColumnLayoutAlgorithm::LayoutSpanner(
     }
   }
 
-  NGFragment fragment(ConstraintSpace().GetWritingMode(),
-                      result->PhysicalFragment());
+  const auto& spanner_fragment =
+      To<NGPhysicalBoxFragment>(result->PhysicalFragment());
+  NGFragment logical_fragment(ConstraintSpace().GetWritingMode(),
+                              spanner_fragment);
 
   ResolveInlineMargins(spanner_style, Style(), ChildAvailableSize().inline_size,
-                       fragment.InlineSize(), &margins);
+                       logical_fragment.InlineSize(), &margins);
 
   LogicalOffset offset(
       BorderScrollbarPadding().inline_start + margins.inline_start,
       block_offset);
   container_builder_.AddResult(*result, offset);
 
+  // According to the spec, the first spanner that has a baseline contributes
+  // with its baseline to the multicol container. This is in contrast to column
+  // content, where only the first column may contribute with a baseline.
+  PropagateBaselineFromChild(spanner_fragment, offset.block_offset);
+
   *margin_strut = NGMarginStrut();
   margin_strut->Append(margins.block_end, /* is_quirky */ false);
 
-  intrinsic_block_size_ = offset.block_offset + fragment.BlockSize();
+  intrinsic_block_size_ = offset.block_offset + logical_fragment.BlockSize();
   has_processed_first_child_ = true;
 
   EBreakBetween break_after = JoinFragmentainerBreakValues(
@@ -810,6 +825,26 @@ NGBreakStatus NGColumnLayoutAlgorithm::LayoutSpanner(
   container_builder_.SetPreviousBreakAfter(break_after);
 
   return NGBreakStatus::kContinue;
+}
+
+void NGColumnLayoutAlgorithm::PropagateBaselineFromChild(
+    const NGPhysicalBoxFragment& child,
+    LayoutUnit block_offset) {
+  // Bail if a baseline was already found.
+  if (container_builder_.Baseline())
+    return;
+
+  // According to the spec, multicol containers have no "last baseline set", so,
+  // unless we're looking for a "first baseline set", we have no work to do.
+  if (ConstraintSpace().BaselineAlgorithmType() !=
+      NGBaselineAlgorithmType::kFirstLine)
+    return;
+
+  NGBoxFragment logical_fragment(ConstraintSpace().GetWritingMode(),
+                                 ConstraintSpace().Direction(), child);
+
+  if (auto baseline = logical_fragment.FirstBaseline())
+    container_builder_.SetBaseline(block_offset + *baseline);
 }
 
 LayoutUnit NGColumnLayoutAlgorithm::CalculateBalancedColumnBlockSize(
@@ -1029,6 +1064,10 @@ NGConstraintSpace NGColumnLayoutAlgorithm::CreateConstraintSpaceForSpanner(
       ConstraintSpace(), Style().GetWritingMode(), /* is_new_fc */ true);
   space_builder.SetAvailableSize(ChildAvailableSize());
   space_builder.SetPercentageResolutionSize(ChildAvailableSize());
+
+  space_builder.SetNeedsBaseline(ConstraintSpace().NeedsBaseline());
+  space_builder.SetBaselineAlgorithmType(
+      ConstraintSpace().BaselineAlgorithmType());
 
   if (ConstraintSpace().HasBlockFragmentation()) {
     SetupSpaceBuilderForFragmentation(ConstraintSpace(), spanner, block_offset,
