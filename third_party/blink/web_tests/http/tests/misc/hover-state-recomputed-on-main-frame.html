@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+
+<style>
+  .oop-iframe {
+    width: 300px;
+    height: 300px;
+  }
+</style>
+<iframe id="target-iframe" class="oop-iframe"
+  src="http://localhost:8080/misc/resources/cross-origin-iframe-for-hover-state-refresh.html">
+</iframe>
+<script>
+// Check that cursor hover state is updated after changes to layout or scroll
+// in OOPIFs.
+
+var hover_test = async_test("Verify that cursor/hover updates after"
+      + "  scroll/layout changes in OOPIF");
+var iframe = document.getElementById("target-iframe");
+iframe.onload = startTest;
+let state = 0;
+function startTest() {
+  if (!internals.isSiteIsolated(iframe)) {
+      hover_test.name = "No site isolation - test skipped"
+      hover_test.done();
+      return;
+  }
+  else {
+    window.addEventListener("message", handleMessage);
+    iframe.contentWindow.postMessage("clickiframe", "*");
+  }
+}
+function handleMessage(event) {
+  if (state == 0) {
+    assert_equals("mouseover", event.data);
+    state++;
+  } else if (state == 1) {
+    assert_equals("mouseout", event.data);
+    hover_test.done();
+  }
+}
+</script>

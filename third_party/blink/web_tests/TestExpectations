@@ -6369,6 +6369,7 @@ crbug.com/1053861 http/tests/devtools/network/network-initiator-chain.js [ Pass 
 
 crbug.com/1057822 http/tests/misc/synthetic-gesture-initiated-in-cross-origin-frame.html [ Pass Failure Crash ]
 crbug.com/1057807 http/tests/misc/destroy-middle-click-locked-target-crash.html [ Pass Timeout ]
+crbug.com/1131977 [ Mac ] http/tests/misc/hover-state-recomputed-on-main-frame.html [ Timeout ]
 crbug.com/1057351 virtual/threaded-no-composited-antialiasing/animations/responsive/interpolation/offset-rotate-responsive.html [ Pass Failure ]
 crbug.com/1057351 virtual/threaded-no-composited-antialiasing/animations/stability/empty-keyframes.html [ Pass Failure ]
 

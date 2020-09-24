@@ -300,8 +300,16 @@ void WebFrameWidgetImpl::BeginMainFrame(base::TimeTicks last_frame_time) {
   if (!LocalRootImpl())
     return;
 
+  // Dirty bit on MouseEventManager is not cleared in OOPIFs after scroll
+  // or layout changes. Ensure the hover state is recomputed if necessary.
+  LocalRootImpl()
+      ->GetFrame()
+      ->GetEventHandler()
+      .RecomputeMouseHoverStateIfNeeded();
+
   DocumentLifecycle::AllowThrottlingScope throttling_scope(
       LocalRootImpl()->GetFrame()->GetDocument()->Lifecycle());
+
   if (WidgetBase::ShouldRecordBeginMainFrameMetrics()) {
     SCOPED_UMA_AND_UKM_TIMER(
         LocalRootImpl()->GetFrame()->View()->EnsureUkmAggregator(),
