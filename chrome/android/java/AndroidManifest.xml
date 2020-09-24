@@ -207,6 +207,10 @@ by a child template that "extends" this file.
             "com.google.android.gms.cast.framework.OPTIONS_PROVIDER_CLASS_NAME"
             android:value="org.chromium.components.media_router.caf.CastOptionsProvider"/>
 
+        <!-- Downloads Google Sans from GMS Core -->
+        <meta-data android:name="preloaded_fonts"
+            android:resource="@array/preloaded_google_sans_fonts" />
+
         <!-- Note: All activities directly or indirectly derived from ChromeActivity
              must specify android:hardwareAccelerated="false".
 
@@ -1215,11 +1219,6 @@ by a child template that "extends" this file.
              controllers with its own list. -->
         <meta-data android:name="org.chromium.content.browser.REMOTE_MEDIA_PLAYERS"
             android:value="org.chromium.chrome.browser.media.remote.DefaultMediaRouteController"/>
-
-        <!-- Downloads Google Sans from GMS Core -->
-        <meta-data android:name="preloaded_fonts"
-            android:resource="@array/preloaded_google_sans_fonts" />
-
         {% endblock %}
       {% endmacro %}
       {% if skip_definitions is not defined or skip_definitions != 'true' %}
