@@ -311,6 +311,9 @@ void XRRuntimeManagerImpl::SupportsSession(
 
 void XRRuntimeManagerImpl::MakeXrCompatible() {
   auto* runtime = GetImmersiveVrRuntime();
+  if (!runtime)
+    runtime = GetImmersiveArRuntime();
+
   if (!runtime) {
     for (VRServiceImpl* service : services_)
       service->OnMakeXrCompatibleComplete(

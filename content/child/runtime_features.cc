@@ -377,6 +377,7 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {"UserAgentClientHint", features::kUserAgentClientHint},
           {"WebAppManifestDisplayOverride",
            features::kWebAppManifestDisplayOverride},
+          {"WebXRMultiGpu", blink::features::kWebXrMultiGpu},
       };
   for (const auto& mapping : runtimeFeatureNameToChromiumFeatureMapping) {
     SetRuntimeFeatureFromChromiumFeature(

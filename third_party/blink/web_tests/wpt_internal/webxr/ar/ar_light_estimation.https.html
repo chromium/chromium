@@ -40,37 +40,39 @@ function verifyXRLightEstimate(lightEstimate) {
 function verifyReflectionCubeMap(session, lightProbe) {
   // Currently reflection cube maps only work on WebGL 2.
   const gl2Canvas = document.createElement('canvas');
-  const gl = gl2Canvas.getContext('webgl2', { xrCompatible: true });
+  const gl = gl2Canvas.getContext('webgl2');
   if (!gl) {
     return;
   }
 
-  const glBinding = new XRWebGLBinding(session, gl);
+  return gl.makeXRCompatible().then(() => {
+    const glBinding = new XRWebGLBinding(session, gl);
 
-  assert_true(glBinding instanceof XRWebGLBinding);
+    assert_true(glBinding instanceof XRWebGLBinding);
 
-  assert_defined(glBinding.getReflectionCubeMap, "getReflectionCubeMap was not defined on XRWebGLBinding");
+    assert_defined(glBinding.getReflectionCubeMap, "getReflectionCubeMap was not defined on XRWebGLBinding");
 
-  // Bind a different cube map prior to fetching the reflection cube map so we
-  // can ensure the binding is preserved.
-  const tmpCubeMap = gl.createTexture();
-  gl.bindTexture(gl.TEXTURE_CUBE_MAP, tmpCubeMap);
+    // Bind a different cube map prior to fetching the reflection cube map so we
+    // can ensure the binding is preserved.
+    const tmpCubeMap = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_CUBE_MAP, tmpCubeMap);
 
-  // Make sure we get back a valid cube map
-  const cubeMap = glBinding.getReflectionCubeMap(lightProbe);
-  assert_true(cubeMap instanceof WebGLTexture);
+    // Make sure we get back a valid cube map
+    const cubeMap = glBinding.getReflectionCubeMap(lightProbe);
+    assert_true(cubeMap instanceof WebGLTexture);
 
-  const boundCubeMap = gl.getParameter(gl.TEXTURE_BINDING_CUBE_MAP);
-  assert_equals(boundCubeMap, tmpCubeMap);
+    const boundCubeMap = gl.getParameter(gl.TEXTURE_BINDING_CUBE_MAP);
+    assert_equals(boundCubeMap, tmpCubeMap);
 
-  // Ensure that we can't bind the returned cube map to the TEXTURE_2D bind
-  // target but can bind it to the TEXTURE_CUBE_MAP bind point. This effectively
-  // tests that the texture was created as a cube map.
-  gl.bindTexture(gl.TEXTURE_2D, cubeMap);
-  assert_equals(gl.getError(), gl.INVALID_OPERATION);
+    // Ensure that we can't bind the returned cube map to the TEXTURE_2D bind
+    // target but can bind it to the TEXTURE_CUBE_MAP bind point. This effectively
+    // tests that the texture was created as a cube map.
+    gl.bindTexture(gl.TEXTURE_2D, cubeMap);
+    assert_equals(gl.getError(), gl.INVALID_OPERATION);
 
-  gl.bindTexture(gl.TEXTURE_CUBE_MAP, cubeMap);
-  assert_equals(gl.getError(), gl.NO_ERROR);
+    gl.bindTexture(gl.TEXTURE_CUBE_MAP, cubeMap);
+    assert_equals(gl.getError(), gl.NO_ERROR);
+  });
 }
 
 // Verifies the structure of |XRFrame| (as it relates to light estimation)
@@ -94,14 +96,18 @@ function verifyXRLightEstimateExists(t, resolve, count, session, frame, lightPro
 
       // Reflection cube maps may be enabled separately from the other lighting values.
       if ('XRWebGLBinding' in window) {
-        verifyReflectionCubeMap(session, lightProbe);
+        verifyReflectionCubeMap(session, lightProbe).then(() => {
+          // If the light probe is providing valid results it should also have a
+          // valid space.
+          assert_not_equals(lightProbePose, null);
+          resolve();
+        });
+      } else {
+        // If the light probe is providing valid results it should also have a
+        // valid space.
+        assert_not_equals(lightProbePose, null);
+        resolve();
       }
-
-      // If the light probe is providing valid results it should also have a
-      // valid space.
-      assert_not_equals(lightProbePose, null);
-
-      resolve();
     }
   });
 }

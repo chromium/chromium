@@ -819,7 +819,7 @@ ScriptPromise WebGLRenderingContextBase::makeXRCompatible(
   if (xr_compatible_)
     return ScriptPromise::CastUndefined(script_state);
 
-  if (!base::FeatureList::IsEnabled(features::kWebXrMultiGpu)) {
+  if (!RuntimeEnabledFeatures::WebXRMultiGpuEnabled()) {
     xr_compatible_ = true;
     return ScriptPromise::CastUndefined(script_state);
   }
@@ -859,7 +859,7 @@ bool WebGLRenderingContextBase::DidGpuRestart(
 
 bool WebGLRenderingContextBase::MakeXrCompatibleSync(
     CanvasRenderingContextHost* host) {
-  if (!base::FeatureList::IsEnabled(features::kWebXrMultiGpu))
+  if (!RuntimeEnabledFeatures::WebXRMultiGpuEnabled())
     return true;
 
   device::mojom::blink::XrCompatibleResult xr_compatible_result =
