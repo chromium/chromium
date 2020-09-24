@@ -41,7 +41,6 @@ schema_sources_ = [
   "image_writer_private.idl",
   "instance_id.json",
   "language_settings_private.idl",
-  "manifest_types.json",
   "notifications.idl",
   "omnibox.json",
   "page_capture.json",
@@ -156,6 +155,9 @@ if (is_chromeos) {
 }
 
 chrome_extensions_api_schema_sources = get_path_info(schema_sources_, "abspath")
+
+chrome_extensions_manifest_only_schema_sources =
+    get_path_info([ "manifest_types.json" ], "abspath")
 
 chrome_extensions_api_uncompiled_sources =
     get_path_info(uncompiled_sources_, "abspath")

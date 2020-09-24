@@ -210,9 +210,6 @@ bool ChromeExtensionsRendererClient::AllowPopup() {
       return true;
     case extensions::Feature::BLESSED_WEB_PAGE_CONTEXT:
       return !current_context->web_frame()->Parent();
-    default:
-      NOTREACHED();
-      return false;
   }
 }
 

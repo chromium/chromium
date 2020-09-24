@@ -22,7 +22,6 @@ extensions_api_schema_files_ = [
   "display_source.idl",
   "dns.idl",
   "events.json",
-  "extensions_manifest_types.json",
   "extension_options_internal.idl",
   "extension_types.json",
   "feedback_private.idl",
@@ -31,7 +30,6 @@ extensions_api_schema_files_ = [
   "management.json",
   "hid.idl",
   "idle.json",
-  "incognito.json",
   "metrics_private.json",
   "mime_handler_private.idl",
   "mime_handler_view_guest_internal.json",
@@ -61,6 +59,11 @@ extensions_api_schema_files_ = [
   "web_view_internal.json",
 ]
 
+extensions_manifest_only_schema_files_ = [
+  "extensions_manifest_types.json",
+  "incognito.json",
+]
+
 if (is_chromeos) {
   extensions_api_schema_files_ += [
     "crash_report_private.idl",
@@ -75,6 +78,9 @@ if (is_chromeos) {
 
 extensions_api_schema_files =
     get_path_info(extensions_api_schema_files_, "abspath")
+
+extensions_manifest_only_schema_files =
+    get_path_info(extensions_manifest_only_schema_files_, "abspath")
 
 extensions_api_uncompiled_sources =
     get_path_info([ "web_request_internal.json" ], "abspath")

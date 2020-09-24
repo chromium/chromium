@@ -163,7 +163,8 @@ FEATURE_GRAMMAR = ({
                 'webui_untrusted': 'Feature::WEBUI_UNTRUSTED_CONTEXT',
                 'unblessed_extension': 'Feature::UNBLESSED_EXTENSION_CONTEXT',
             },
-            'allow_all': True
+            'allow_all': True,
+            'allow_empty': True
         },
     },
     'default_parent': {
@@ -286,6 +287,28 @@ def DoesNotHaveAllProperties(property_names, value):
 def DoesNotHaveProperty(property_name, value):
   return property_name not in value
 
+def IsEmptyContextsAllowed(feature, all_features):
+  # An alias feature wouldn't have the 'contexts' feature value.
+  if feature.GetValue('source'):
+    return True
+
+  if type(feature) is ComplexFeature:
+    for child_feature in feature.feature_list:
+      if not IsEmptyContextsAllowed(child_feature, all_features):
+        return False
+    return True
+
+  contexts = feature.GetValue('contexts')
+  assert contexts, 'contexts must have been specified for the APIFeature'
+
+  allowlisted_empty_context_namespaces = [
+    'manifestTypes',
+    'extensionsManifestTypes',
+    'empty_contexts' # Only added for testing.
+  ]
+  return (contexts != '{}' or
+          feature.name in allowlisted_empty_context_namespaces)
+
 def IsFeatureCrossReference(property_name, reverse_property_name, feature,
                             all_features):
   """ Verifies that |property_name| on |feature| references a feature that
@@ -386,7 +409,7 @@ VALIDATION = ({
   ],
   'APIFeature': [
     (partial(HasProperty, 'contexts'),
-     'APIFeatures must specify at least one context'),
+     'APIFeatures must specify the contexts property'),
     (partial(DoesNotHaveAllProperties, ['alias', 'source']),
      'Features cannot specify both alias and source.')
   ],
@@ -426,8 +449,9 @@ FINAL_VALIDATION = ({
      'property references it back.'),
     (partial(IsFeatureCrossReference, 'source', 'alias'),
      'A feature source property should reference a feature whose alias '
-     'property references it back.')
-
+     'property references it back.'),
+    (IsEmptyContextsAllowed,
+    'An empty contexts list is not allowed for this feature.')
   ],
   'ManifestFeature': [],
   'BehaviorFeature': [],
@@ -596,8 +620,7 @@ class Feature(object):
                                               sub_value)
         if cpp_sub_value:
           cpp_value.append(cpp_sub_value)
-      if cpp_value:
-        cpp_value = '{' + ','.join(cpp_value) + '}'
+      cpp_value = '{' + ','.join(cpp_value) + '}'
     else:
       cpp_value = self._GetCheckedValue(key, expected_type, expected_values,
                                         enum_map, v)

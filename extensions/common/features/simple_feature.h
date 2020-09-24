@@ -136,7 +136,9 @@ class SimpleFeature : public Feature {
     return extension_types_;
   }
   const std::vector<Platform>& platforms() const { return platforms_; }
-  const std::vector<Context>& contexts() const { return contexts_; }
+  const base::Optional<std::vector<Context>>& contexts() const {
+    return contexts_;
+  }
   const std::vector<std::string>& dependencies() const { return dependencies_; }
   const base::Optional<version_info::Channel> channel() const {
     return channel_;
@@ -230,7 +232,7 @@ class SimpleFeature : public Feature {
   std::vector<std::string> dependencies_;
   std::vector<Manifest::Type> extension_types_;
   std::vector<FeatureSessionType> session_types_;
-  std::vector<Context> contexts_;
+  base::Optional<std::vector<Context>> contexts_;
   std::vector<Platform> platforms_;
   URLPatternSet matches_;
 

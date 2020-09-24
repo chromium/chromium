@@ -310,11 +310,12 @@ std::string SimpleFeature::GetAvailabilityMessage(
               extension_types_.begin(), extension_types_.end())).c_str(),
           GetDisplayName(type).c_str());
     case INVALID_CONTEXT:
+      DCHECK(contexts_);
       return base::StringPrintf(
-          "'%s' is only allowed to run in %s, but this is a %s",
-          name().c_str(),
-          ListDisplayNames(std::vector<Context>(
-              contexts_.begin(), contexts_.end())).c_str(),
+          "'%s' is only allowed to run in %s, but this is a %s", name().c_str(),
+          ListDisplayNames(
+              std::vector<Context>(contexts_->begin(), contexts_->end()))
+              .c_str(),
           GetDisplayName(context).c_str());
     case INVALID_LOCATION:
       return base::StringPrintf(
@@ -653,7 +654,7 @@ Feature::Availability SimpleFeature::GetContextAvailability(
   // extension API calls, since there's no guarantee that the extension is
   // "active" in current renderer process when the API permission check is
   // done.
-  if (!contexts_.empty() && !base::Contains(contexts_, context))
+  if (contexts_ && !base::Contains(*contexts_, context))
     return CreateAvailability(INVALID_CONTEXT, context);
 
   // TODO(kalman): Consider checking |matches_| regardless of context type.

@@ -150,5 +150,9 @@
     "channel": "beta",
     "contexts": ["blessed_extension"],
     "alias": "alias_parent.child"
+  },
+  "empty_contexts": {
+    "channel": "beta",
+    "contexts": []
   }
 }

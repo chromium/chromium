@@ -432,7 +432,7 @@
   "extensionsManifestTypes": {
     "internal": true,
     "channel": "stable",
-    "contexts": ["blessed_extension"]
+    "contexts": []
   },
   "fileBrowserHandler": {
     "dependencies": ["permission:fileBrowserHandler"],
@@ -569,7 +569,7 @@
   "manifestTypes": {
     "internal": true,
     "channel": "stable",
-    "contexts": ["blessed_extension"]
+    "contexts": []
   },
   "mediaPlayerPrivate": {
     "dependencies": ["permission:mediaPlayerPrivate"],
