@@ -117,10 +117,10 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceClientImplTest, OpenDownloads) {
   run_loop.Run();
 }
 
-// Verifies that `HoldingSpaceClient::OpenItem()` works as intended when
+// Verifies that `HoldingSpaceClient::OpenItems()` works as intended when
 // attempting to open holding space items backed by both non-existing and
 // existing files.
-IN_PROC_BROWSER_TEST_F(HoldingSpaceClientImplTest, OpenItem) {
+IN_PROC_BROWSER_TEST_F(HoldingSpaceClientImplTest, OpenItems) {
   ASSERT_TRUE(HoldingSpaceController::Get());
 
   auto* holding_space_client = HoldingSpaceController::Get()->client();
@@ -134,11 +134,11 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceClientImplTest, OpenItem) {
             /*placeholder=*/gfx::ImageSkia(),
             /*async_bitmap_resolver=*/base::DoNothing()));
 
-    // We expect `HoldingSpaceClient::OpenItem()` to fail when the backing file
+    // We expect `HoldingSpaceClient::OpenItems()` to fail when the backing file
     // for `holding_space_item` does not exist.
     base::RunLoop run_loop;
-    holding_space_client->OpenItem(
-        *holding_space_item,
+    holding_space_client->OpenItems(
+        {holding_space_item.get()},
         base::BindLambdaForTesting([&run_loop](bool success) {
           EXPECT_FALSE(success);
           run_loop.Quit();
@@ -150,11 +150,11 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceClientImplTest, OpenItem) {
     // Create a holding space item backed by a newly created txt file.
     HoldingSpaceItem* holding_space_item = AddPinnedFile();
 
-    // We expect `HoldingSpaceClient::OpenItem()` to succeed when the backing
+    // We expect `HoldingSpaceClient::OpenItems()` to succeed when the backing
     // file for `holding_space_item` exists.
     base::RunLoop run_loop;
-    holding_space_client->OpenItem(
-        *holding_space_item,
+    holding_space_client->OpenItems(
+        {holding_space_item},
         base::BindLambdaForTesting([&run_loop](bool success) {
           EXPECT_TRUE(success);
           run_loop.Quit();
@@ -215,8 +215,8 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceClientImplTest, MAYBE_ShowItemInFolder) {
   }
 }
 
-// Verifies that `HoldingSpaceClient::PinItem()` works as intended.
-IN_PROC_BROWSER_TEST_F(HoldingSpaceClientImplTest, PinItem) {
+// Verifies that `HoldingSpaceClient::PinItems()` works as intended.
+IN_PROC_BROWSER_TEST_F(HoldingSpaceClientImplTest, PinItems) {
   ASSERT_TRUE(HoldingSpaceController::Get());
 
   auto* holding_space_client = HoldingSpaceController::Get()->client();
@@ -228,7 +228,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceClientImplTest, PinItem) {
   ASSERT_EQ(1u, holding_space_model->items().size());
 
   // Attempt to pin the download holding space item.
-  holding_space_client->PinItem(*download_item);
+  holding_space_client->PinItems({download_item});
   ASSERT_EQ(2u, holding_space_model->items().size());
 
   // The pinned holding space item should have type `kPinnedFile` but share the
@@ -239,8 +239,8 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceClientImplTest, PinItem) {
   EXPECT_EQ(download_item->file_path(), pinned_file_item->file_path());
 }
 
-// Verifies that `HoldingSpaceClient::UnpinItem()` works as intended.
-IN_PROC_BROWSER_TEST_F(HoldingSpaceClientImplTest, UnpinItem) {
+// Verifies that `HoldingSpaceClient::UnpinItems()` works as intended.
+IN_PROC_BROWSER_TEST_F(HoldingSpaceClientImplTest, UnpinItems) {
   ASSERT_TRUE(HoldingSpaceController::Get());
 
   auto* holding_space_client = HoldingSpaceController::Get()->client();
@@ -252,7 +252,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceClientImplTest, UnpinItem) {
   ASSERT_EQ(1u, holding_space_model->items().size());
 
   // Attempt to unpin the pinned file holding space item.
-  holding_space_client->UnpinItem(*pinned_file_item);
+  holding_space_client->UnpinItems({pinned_file_item});
   ASSERT_EQ(0u, holding_space_model->items().size());
 }
 

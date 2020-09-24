@@ -33,8 +33,8 @@ HoldingSpaceItemViewDelegate* instance = nullptr;
 // Helpers ---------------------------------------------------------------------
 
 // Attempts to open the specified holding space `item`.
-void OpenItem(const HoldingSpaceItem& item) {
-  HoldingSpaceController::Get()->client()->OpenItem(item, base::DoNothing());
+void OpenItem(const HoldingSpaceItem* item) {
+  HoldingSpaceController::Get()->client()->OpenItems({item}, base::DoNothing());
 }
 
 }  // namespace
@@ -56,7 +56,7 @@ void HoldingSpaceItemViewDelegate::OnHoldingSpaceItemViewGestureEvent(
     HoldingSpaceItemView* view,
     const ui::GestureEvent& event) {
   if (event.type() == ui::ET_GESTURE_TAP)
-    OpenItem(*view->item());
+    OpenItem(view->item());
 }
 
 // TODO(dmblack): Handle multiple selection.
@@ -64,7 +64,7 @@ bool HoldingSpaceItemViewDelegate::OnHoldingSpaceItemViewKeyPressed(
     HoldingSpaceItemView* view,
     const ui::KeyEvent& event) {
   if (event.key_code() == ui::KeyboardCode::VKEY_RETURN) {
-    OpenItem(*view->item());
+    OpenItem(view->item());
     return true;
   }
   return false;
@@ -75,7 +75,7 @@ bool HoldingSpaceItemViewDelegate::OnHoldingSpaceItemViewMousePressed(
     HoldingSpaceItemView* view,
     const ui::MouseEvent& event) {
   if (event.flags() & ui::EF_IS_DOUBLE_CLICK) {
-    OpenItem(*view->item());
+    OpenItem(view->item());
     return true;
   }
   return false;
@@ -150,15 +150,16 @@ void HoldingSpaceItemViewDelegate::ExecuteCommand(int command_id,
           *selected_view->item(), base::DoNothing());
       break;
     case HoldingSpaceCommandId::kPinItem:
-      HoldingSpaceController::Get()->client()->PinItem(*selected_view->item());
+      HoldingSpaceController::Get()->client()->PinItems(
+          {selected_view->item()});
       break;
     case HoldingSpaceCommandId::kShowInFolder:
       HoldingSpaceController::Get()->client()->ShowItemInFolder(
           *selected_view->item(), base::DoNothing());
       break;
     case HoldingSpaceCommandId::kUnpinItem:
-      HoldingSpaceController::Get()->client()->UnpinItem(
-          *selected_view->item());
+      HoldingSpaceController::Get()->client()->UnpinItems(
+          {selected_view->item()});
       break;
   }
 }

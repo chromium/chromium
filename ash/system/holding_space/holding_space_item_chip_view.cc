@@ -94,9 +94,9 @@ void HoldingSpaceItemChipView::ButtonPressed(views::Button* sender,
   // Unpinning `item()` may result in the destruction of this view.
   auto weak_ptr = weak_factory_.GetWeakPtr();
   if (is_item_pinned)
-    HoldingSpaceController::Get()->client()->UnpinItem(*item());
+    HoldingSpaceController::Get()->client()->UnpinItems({item()});
   else
-    HoldingSpaceController::Get()->client()->PinItem(*item());
+    HoldingSpaceController::Get()->client()->PinItems({item()});
 
   if (weak_ptr)
     UpdatePin();

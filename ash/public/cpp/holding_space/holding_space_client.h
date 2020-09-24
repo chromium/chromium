@@ -5,6 +5,8 @@
 #ifndef ASH_PUBLIC_CPP_HOLDING_SPACE_HOLDING_SPACE_CLIENT_H_
 #define ASH_PUBLIC_CPP_HOLDING_SPACE_HOLDING_SPACE_CLIENT_H_
 
+#include <vector>
+
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/callback_forward.h"
 
@@ -35,21 +37,22 @@ class ASH_PUBLIC_EXPORT HoldingSpaceClient {
   // Success is returned via the supplied `callback`.
   virtual void OpenDownloads(SuccessCallback callback) = 0;
 
-  // Attempts to open the specified holding space `item`.
+  // Attempts to open the specified holding space `items`.
   // Success is returned via the supplied `callback`.
-  virtual void OpenItem(const HoldingSpaceItem& item,
-                        SuccessCallback callback) = 0;
+  virtual void OpenItems(const std::vector<const HoldingSpaceItem*>& items,
+                         SuccessCallback callback) = 0;
 
   // Attempts to show the specified holding space `item` in its folder.
   // Success is returned via the supplied `callback`.
   virtual void ShowItemInFolder(const HoldingSpaceItem& item,
                                 SuccessCallback callback) = 0;
 
-  // Pins the specified `item`.
-  virtual void PinItem(const HoldingSpaceItem& item) = 0;
+  // Pins the specified holding space `items`.
+  virtual void PinItems(const std::vector<const HoldingSpaceItem*>& items) = 0;
 
-  // Unpins the specified `item`.
-  virtual void UnpinItem(const HoldingSpaceItem& item) = 0;
+  // Unpins the specified holding space `items`.
+  virtual void UnpinItems(
+      const std::vector<const HoldingSpaceItem*>& items) = 0;
 
  protected:
   HoldingSpaceClient() = default;

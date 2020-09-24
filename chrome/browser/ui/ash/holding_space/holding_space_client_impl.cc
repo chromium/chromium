@@ -4,8 +4,11 @@
 
 #include "chrome/browser/ui/ash/holding_space/holding_space_client_impl.h"
 
+#include <memory>
+
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
+#include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/notreached.h"
 #include "base/task/task_traits.h"
@@ -87,21 +90,42 @@ void HoldingSpaceClientImpl::OpenDownloads(SuccessCallback callback) {
           std::move(callback)));
 }
 
-void HoldingSpaceClientImpl::OpenItem(const HoldingSpaceItem& item,
-                                      SuccessCallback callback) {
-  if (item.file_path().empty()) {
+void HoldingSpaceClientImpl::OpenItems(
+    const std::vector<const HoldingSpaceItem*>& items,
+    SuccessCallback callback) {
+  if (items.empty()) {
     std::move(callback).Run(/*success=*/false);
     return;
   }
-  file_manager::util::OpenItem(
-      profile_, item.file_path(), platform_util::OPEN_FILE,
+
+  auto complete_success = std::make_unique<bool>(true);
+  auto* complete_success_ptr = complete_success.get();
+
+  base::RepeatingClosure barrier_closure = base::BarrierClosure(
+      items.size(),
       base::BindOnce(
-          [](SuccessCallback callback,
-             platform_util::OpenOperationResult result) {
-            const bool success = result == platform_util::OPEN_SUCCEEDED;
-            std::move(callback).Run(success);
+          [](std::unique_ptr<bool> complete_success, SuccessCallback callback) {
+            std::move(callback).Run(*complete_success);
           },
-          std::move(callback)));
+          std::move(complete_success), std::move(callback)));
+
+  for (const HoldingSpaceItem* item : items) {
+    if (item->file_path().empty()) {
+      *complete_success_ptr = false;
+      barrier_closure.Run();
+      return;
+    }
+    file_manager::util::OpenItem(
+        profile_, item->file_path(), platform_util::OPEN_FILE,
+        base::BindOnce(
+            [](base::RepeatingClosure barrier_closure, bool* complete_success,
+               platform_util::OpenOperationResult result) {
+              const bool success = result == platform_util::OPEN_SUCCEEDED;
+              *complete_success &= success;
+              barrier_closure.Run();
+            },
+            barrier_closure, complete_success_ptr));
+  }
 }
 
 void HoldingSpaceClientImpl::ShowItemInFolder(const HoldingSpaceItem& item,
@@ -121,23 +145,30 @@ void HoldingSpaceClientImpl::ShowItemInFolder(const HoldingSpaceItem& item,
           std::move(callback)));
 }
 
-void HoldingSpaceClientImpl::PinItem(const HoldingSpaceItem& item) {
-  DCHECK_NE(item.type(), HoldingSpaceItem::Type::kPinnedFile);
-  const storage::FileSystemURL& file_system_url =
-      file_manager::util::GetFileSystemContextForExtensionId(
-          profile_, file_manager::kFileManagerAppId)
-          ->CrackURL(item.file_system_url());
-  GetHoldingSpaceKeyedService(profile_)->AddPinnedFile(file_system_url);
+void HoldingSpaceClientImpl::PinItems(
+    const std::vector<const HoldingSpaceItem*>& items) {
+  HoldingSpaceKeyedService* service = GetHoldingSpaceKeyedService(profile_);
+  for (const HoldingSpaceItem* item : items) {
+    const storage::FileSystemURL& file_system_url =
+        file_manager::util::GetFileSystemContextForExtensionId(
+            profile_, file_manager::kFileManagerAppId)
+            ->CrackURL(item->file_system_url());
+    if (!service->ContainsPinnedFile(file_system_url))
+      service->AddPinnedFile(file_system_url);
+  }
 }
 
-void HoldingSpaceClientImpl::UnpinItem(const HoldingSpaceItem& item) {
-  const storage::FileSystemURL& file_system_url =
-      file_manager::util::GetFileSystemContextForExtensionId(
-          profile_, file_manager::kFileManagerAppId)
-          ->CrackURL(item.file_system_url());
-  DCHECK(GetHoldingSpaceKeyedService(profile_)->ContainsPinnedFile(
-      file_system_url));
-  GetHoldingSpaceKeyedService(profile_)->RemovePinnedFile(file_system_url);
+void HoldingSpaceClientImpl::UnpinItems(
+    const std::vector<const HoldingSpaceItem*>& items) {
+  HoldingSpaceKeyedService* service = GetHoldingSpaceKeyedService(profile_);
+  for (const HoldingSpaceItem* item : items) {
+    const storage::FileSystemURL& file_system_url =
+        file_manager::util::GetFileSystemContextForExtensionId(
+            profile_, file_manager::kFileManagerAppId)
+            ->CrackURL(item->file_system_url());
+    if (service->ContainsPinnedFile(file_system_url))
+      service->RemovePinnedFile(file_system_url);
+  }
 }
 
 }  // namespace ash
