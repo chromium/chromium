@@ -1,0 +1,10 @@
+This is a testharness.js-based test.
+PASS Registering invalid chunked encoding script
+PASS Registering invalid chunked encoding script with flush
+FAIL Registering script including parse error assert_unreached: Should have rejected: Registration of script including parse error should fail. Reached unreachable code
+FAIL Registering script including undefined error assert_unreached: Should have rejected: Registration of script including undefined error should fail. Reached unreachable code
+FAIL Registering script including uncaught exception assert_unreached: Should have rejected: Registration of script including uncaught exception should fail. Reached unreachable code
+PASS Registering non-existent script
+PASS Registering script including caught exception
+Harness: the test ran to completion.
+
