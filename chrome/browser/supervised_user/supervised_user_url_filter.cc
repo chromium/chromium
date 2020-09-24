@@ -477,11 +477,18 @@ bool SupervisedUserURLFilter::GetFilteringBehaviorForURLWithAsyncChecks(
     const GURL& url,
     FilteringBehaviorCallback callback,
     bool skip_manual_parent_filter) const {
+  supervised_user_error_page::FilteringBehaviorReason reason =
+      supervised_user_error_page::DEFAULT;
+  FilteringBehavior behavior = GetFilteringBehaviorForURL(url, false, &reason);
+
+  if (behavior == ALLOW && reason != supervised_user_error_page::DEFAULT) {
+    std::move(callback).Run(behavior, reason, false);
+    for (Observer& observer : observers_)
+      observer.OnURLChecked(url, behavior, reason, false);
+    return true;
+  }
+
   if (!skip_manual_parent_filter) {
-    supervised_user_error_page::FilteringBehaviorReason reason =
-        supervised_user_error_page::DEFAULT;
-    FilteringBehavior behavior =
-        GetFilteringBehaviorForURL(url, false, &reason);
     // Any non-default reason trumps the async checker.
     // Also, if we're blocking anyway, then there's no need to check it.
     if (reason != supervised_user_error_page::DEFAULT || behavior == BLOCK ||
