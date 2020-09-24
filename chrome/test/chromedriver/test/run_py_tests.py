@@ -98,6 +98,7 @@ _OS_SPECIFIC_FILTER['win'] = [
     'ChromeDownloadDirTest.testFileDownloadAfterTabHeadless',
     'ChromeDownloadDirTest.testFileDownloadWithClickHeadless',
     'ChromeDownloadDirTest.testFileDownloadWithGetHeadless',
+    'RemoteBrowserTest.testConnectToRemoteBrowserLiteralAddressHeadless',
     # HeadlessInvalidCertificateTest is sometimes flaky.
     'HeadlessInvalidCertificateTest.*',
     # Similar issues with HeadlessChromeDriverTest.
@@ -4282,6 +4283,50 @@ class RemoteBrowserTest(ChromeDriverBaseTest):
       break
     else:  # Else clause gets invoked if "break" never happens.
       raise  # This re-raises the most recent exception.
+
+  def testConnectToRemoteBrowserLiteralAddressHeadless(self):
+    debug_addrs = ['127.0.0.1', '::1']
+    debug_url_addrs = ['127.0.0.1', '[::1]']
+
+    for (debug_addr, debug_url_addr) in zip(debug_addrs, debug_url_addrs):
+      # Must use retries since there is an inherent race condition in port
+      # selection.
+      ports_generator = util.FindProbableFreePorts()
+      for _ in range(3):
+        port = ports_generator.next()
+        temp_dir = util.MakeTempDir()
+        print 'temp dir is ' + temp_dir
+        cmd = [_CHROME_BINARY,
+              '--headless',
+              '--remote-debugging-address=%s' % debug_addr,
+              '--remote-debugging-port=%d' % port,
+              '--user-data-dir=%s' % temp_dir,
+              '--use-mock-keychain']
+        process = subprocess.Popen(cmd)
+        try:
+          driver = self.CreateDriver(
+            debugger_address='%s:%d' % (debug_url_addr, port))
+          driver.ExecuteScript(
+            'console.info("%s")' % 'connecting at %d!' % port)
+          driver.Quit()
+        except:
+          continue
+        finally:
+          if process.poll() is None:
+            process.terminate()
+            # Wait for Chrome to exit here to prevent a race with Chrome to
+            # delete/modify the temporary user-data-dir.
+            # Maximum wait ~1 second.
+            for _ in range(20):
+              if process.poll() is not None:
+                break
+              print 'continuing to wait for Chrome to exit'
+              time.sleep(.05)
+            else:
+              process.kill()
+        break
+      else:  # Else clause gets invoked if "break" never happens.
+        raise  # This re-raises the most recent exception.
 
 
 class LaunchDesktopTest(ChromeDriverBaseTest):

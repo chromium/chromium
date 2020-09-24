@@ -715,7 +715,7 @@ int HeadlessShellMain(int argc, const char** argv) {
       address =
           command_line.GetSwitchValueASCII(switches::kRemoteDebuggingAddress);
       net::IPAddress parsed_address;
-      if (!net::ParseURLHostnameToAddress(address, &parsed_address)) {
+      if (!parsed_address.AssignFromIPLiteral(address)) {
         LOG(ERROR) << "Invalid devtools server address";
         return EXIT_FAILURE;
       }
