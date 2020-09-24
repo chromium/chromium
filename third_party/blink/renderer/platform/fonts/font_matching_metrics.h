@@ -7,6 +7,7 @@
 
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
+#include "third_party/blink/public/common/privacy_budget/identifiable_token_builder.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/fonts/font_fallback_priority.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
@@ -172,6 +173,26 @@ class PLATFORM_EXPORT FontMatchingMetrics {
  private:
   void IdentifiabilityMetricsTimerFired(TimerBase*);
 
+  // This HashMap generically stores details of font lookups, i.e. what was used
+  // to search for the font, and what the resulting font was. The key is an
+  // IdentifiableTokenKey representing a wrapper around a digest of the lookup
+  // parameters. The value is an IdentifiableToken representing either a digest
+  // of the returned typeface or 0, if no valid typeface was found.
+  using TokenToTokenHashMap = HashMap<IdentifiableTokenKey,
+                                      IdentifiableToken,
+                                      IdentifiableTokenKeyHash,
+                                      IdentifiableTokenKeyHashTraits>;
+
+  // Adds a digest of the |font_data|'s typeface to |hash_map| using the key
+  // |input_key|, unless that key is already present.
+  void InsertFontHashIntoMap(IdentifiableTokenKey input_key,
+                             SimpleFontData* font_data,
+                             TokenToTokenHashMap hash_map);
+
+  // Constructs a builder with a hash of the FontSelectionRequest already added.
+  IdentifiableTokenBuilder GetTokenBuilderWithFontSelectionRequest(
+      const FontDescription& font_description);
+
   // Get a hash that uniquely represents the font data. Returns 0 if |font_data|
   // is nullptr.
   int64_t GetHashForFontData(SimpleFontData* font_data);
@@ -198,15 +219,6 @@ class PLATFORM_EXPORT FontMatchingMetrics {
   // otherwise.
   const bool top_level_ = false;
 
-  // This HashMap generically stores details of font lookups, i.e. what was used
-  // to search for the font, and what the resulting font was. The key is an
-  // IdentifiableTokenKey representing a wrapper around a digest of the lookup
-  // parameters. The value is an IdentifiableToken representing either a digest
-  // of the returned typeface or 0, if no valid typeface was found.
-  using TokenToTokenHashMap = HashMap<IdentifiableTokenKey,
-                                      IdentifiableToken,
-                                      IdentifiableTokenKeyHash,
-                                      IdentifiableTokenKeyHashTraits>;
   TokenToTokenHashMap font_lookups_by_unique_or_family_name_;
   TokenToTokenHashMap font_lookups_by_unique_name_only_;
   TokenToTokenHashMap font_lookups_by_fallback_character_;
