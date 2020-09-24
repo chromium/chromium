@@ -4,6 +4,8 @@
 
 #include "chrome/browser/signin/dice_web_signin_interceptor.h"
 
+#include <map>
+
 #include "base/run_loop.h"
 #include "base/scoped_observer.h"
 #include "base/strings/utf_string_conversions.h"
@@ -48,8 +50,25 @@ class FakeDiceWebSigninInterceptorDelegate
       content::WebContents* web_contents,
       const BubbleParameters& bubble_parameters,
       base::OnceCallback<void(bool)> callback) override {
+    EXPECT_EQ(bubble_parameters.interception_type, expected_interception_type_);
     std::move(callback).Run(true);
   }
+  void ShowProfileCustomizationBubble(Browser* browser) override {
+    EXPECT_FALSE(customized_browser_)
+        << "Customization must be shown only once.";
+    customized_browser_ = browser;
+  }
+
+  Browser* customized_browser() { return customized_browser_; }
+  void set_expected_interception_type(
+      DiceWebSigninInterceptor::SigninInterceptionType type) {
+    expected_interception_type_ = type;
+  }
+
+ private:
+  Browser* customized_browser_ = nullptr;
+  DiceWebSigninInterceptor::SigninInterceptionType expected_interception_type_ =
+      DiceWebSigninInterceptor::SigninInterceptionType::kMultiUser;
 };
 
 // Waits until a new profile is created.
@@ -80,14 +99,6 @@ class ProfileWaiter : public ProfileManagerObserver {
   base::RunLoop run_loop_;
 };
 
-// Builds a DiceWebSigninInterceptor with a fake delegate. To be used as a
-// testing factory.
-std::unique_ptr<KeyedService> BuildDiceWebSigninInterceptorWithFakeDelegate(
-    content::BrowserContext* context) {
-  return std::make_unique<DiceWebSigninInterceptor>(
-      Profile::FromBrowserContext(context),
-      std::make_unique<FakeDiceWebSigninInterceptorDelegate>());
-}
 
 // Runs the interception and returns the new profile that was created.
 Profile* InterceptAndWaitProfileCreation(content::WebContents* contents,
@@ -150,6 +161,15 @@ class DiceWebSigninInterceptorBrowserTest : public InProcessBrowserTest {
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
+  FakeDiceWebSigninInterceptorDelegate* GetInterceptorDelegate(
+      Profile* profile) {
+    // Make sure the interceptor has been created.
+    DiceWebSigninInterceptorFactory::GetForProfile(profile);
+    FakeDiceWebSigninInterceptorDelegate* interceptor_delegate =
+        interceptor_delegates_[profile];
+    return interceptor_delegate;
+  }
+
  private:
   void SetUpOnMainThread() override {
     ASSERT_TRUE(embedded_test_server()->Start());
@@ -180,7 +200,20 @@ class DiceWebSigninInterceptorBrowserTest : public InProcessBrowserTest {
                                      &test_url_loader_factory_));
     DiceWebSigninInterceptorFactory::GetInstance()->SetTestingFactory(
         context,
-        base::BindRepeating(&BuildDiceWebSigninInterceptorWithFakeDelegate));
+        base::BindRepeating(&DiceWebSigninInterceptorBrowserTest::
+                                BuildDiceWebSigninInterceptorWithFakeDelegate,
+                            base::Unretained(this)));
+  }
+
+  // Builds a DiceWebSigninInterceptor with a fake delegate. To be used as a
+  // testing factory.
+  std::unique_ptr<KeyedService> BuildDiceWebSigninInterceptorWithFakeDelegate(
+      content::BrowserContext* context) {
+    std::unique_ptr<FakeDiceWebSigninInterceptorDelegate> fake_delegate =
+        std::make_unique<FakeDiceWebSigninInterceptorDelegate>();
+    interceptor_delegates_[context] = fake_delegate.get();
+    return std::make_unique<DiceWebSigninInterceptor>(
+        Profile::FromBrowserContext(context), std::move(fake_delegate));
   }
 
   base::test::ScopedFeatureList feature_list_;
@@ -190,6 +223,8 @@ class DiceWebSigninInterceptorBrowserTest : public InProcessBrowserTest {
   std::unique_ptr<
       BrowserContextDependencyManager::CreateServicesCallbackList::Subscription>
       create_services_subscription_;
+  std::map<content::BrowserContext*, FakeDiceWebSigninInterceptorDelegate*>
+      interceptor_delegates_;
 };
 
 // Tests the complete interception flow including profile and browser creation.
@@ -251,6 +286,10 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest, InterceptionTest) {
 
   CheckHistograms(histogram_tester,
                   SigninInterceptionHeuristicOutcome::kInterceptMultiUser);
+  // Profile customization UI was shown exactly once in the new profile.
+  EXPECT_EQ(GetInterceptorDelegate(new_profile)->customized_browser(),
+            added_browser);
+  EXPECT_EQ(GetInterceptorDelegate(profile())->customized_browser(), nullptr);
 }
 
 // Tests the complete profile switch flow when the profile is not loaded.
@@ -281,6 +320,8 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest, SwitchAndLoad) {
   int original_tab_count = browser()->tab_strip_model()->count();
 
   // Do the signin interception.
+  GetInterceptorDelegate(profile())->set_expected_interception_type(
+      DiceWebSigninInterceptor::SigninInterceptionType::kProfileSwitch);
   Profile* new_profile =
       InterceptAndWaitProfileCreation(web_contents, account_info.account_id);
   ASSERT_TRUE(new_profile);
@@ -308,6 +349,9 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest, SwitchAndLoad) {
 
   CheckHistograms(histogram_tester,
                   SigninInterceptionHeuristicOutcome::kInterceptProfileSwitch);
+  // Profile customization was not shown.
+  EXPECT_EQ(GetInterceptorDelegate(new_profile)->customized_browser(), nullptr);
+  EXPECT_EQ(GetInterceptorDelegate(profile())->customized_browser(), nullptr);
 }
 
 // Tests the complete profile switch flow when the profile is already loaded.
@@ -352,6 +396,8 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest, SwitchAlreadyOpen) {
   int other_original_tab_count = other_browser->tab_strip_model()->count();
 
   // Start the interception.
+  GetInterceptorDelegate(profile())->set_expected_interception_type(
+      DiceWebSigninInterceptor::SigninInterceptionType::kProfileSwitch);
   DiceWebSigninInterceptor* interceptor =
       DiceWebSigninInterceptorFactory::GetForProfile(profile());
   interceptor->MaybeInterceptWebSignin(web_contents, account_info.account_id,
@@ -372,4 +418,8 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest, SwitchAlreadyOpen) {
 
   CheckHistograms(histogram_tester,
                   SigninInterceptionHeuristicOutcome::kInterceptProfileSwitch);
+  // Profile customization was not shown.
+  EXPECT_EQ(GetInterceptorDelegate(other_profile)->customized_browser(),
+            nullptr);
+  EXPECT_EQ(GetInterceptorDelegate(profile())->customized_browser(), nullptr);
 }

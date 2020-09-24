@@ -46,6 +46,7 @@ class TestDiceWebSigninInterceptorDelegate
       base::OnceCallback<void(bool)> callback) override {
     std::move(callback).Run(false);
   }
+  void ShowProfileCustomizationBubble(Browser* browser) override {}
 };
 
 class MockDiceWebSigninInterceptor : public DiceWebSigninInterceptor {

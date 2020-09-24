@@ -25,3 +25,9 @@ void DiceWebSigninInterceptorDelegate::ShowSigninInterceptionBubble(
       chrome::FindBrowserWithWebContents(web_contents), bubble_parameters,
       std::move(callback));
 }
+
+void DiceWebSigninInterceptorDelegate::ShowProfileCustomizationBubble(
+    Browser* browser) {
+  // TODO(https://crbug.com/1130945): implement the customization bubble.
+  NOTIMPLEMENTED();
+}
