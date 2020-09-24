@@ -699,7 +699,7 @@
   {
     "name": "crostini-use-buster-image",
     "owners": [ "davidmunro@google.com", "benwells" ],
-    "expiry_milestone": 86
+    "expiry_milestone": 90
   },
   {
     "name": "crostini-use-dlc",
