@@ -3627,29 +3627,6 @@
             ]
         }
     ],
-    "IncognitoWindowInProductHelp": [
-        {
-            "platforms": [
-                "linux",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "availability": "any",
-                        "event_incognito_window_session_time_met": "name:incognito_window_session_time_met;comparator:>=1;window:3650;storage:3650",
-                        "event_trigger": "name:incognito_window_trigger;comparator:==0;window:3650;storage:3650",
-                        "event_used": "name:incognito_window_opened;comparator:==0;window:3650;storage:3650",
-                        "session_rate": "<0"
-                    },
-                    "enable_features": [
-                        "IPH_IncognitoWindow"
-                    ]
-                }
-            ]
-        }
-    ],
     "IncompatibleApplicationsWarning": [
         {
             "platforms": [
