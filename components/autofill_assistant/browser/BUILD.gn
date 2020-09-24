@@ -206,6 +206,7 @@ static_library("browser") {
     "//components/autofill/core/common",
     "//components/autofill_assistant/browser/devtools",
     "//components/google/core/common:common",
+    "//components/password_manager/content/browser:browser",
     "//components/password_manager/core/browser:browser",
     "//components/password_manager/core/browser/form_parsing:form_parsing",
     "//components/signin/public/identity_manager",

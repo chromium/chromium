@@ -9,10 +9,10 @@
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/common/password_form.h"
 #include "components/autofill_assistant/browser/website_login_manager.h"
+#include "content/public/browser/web_contents.h"
 
 namespace password_manager {
 class PasswordManagerClient;
-class PasswordManagerDriver;
 }  // namespace password_manager
 
 namespace autofill_assistant {
@@ -22,7 +22,7 @@ namespace autofill_assistant {
 class WebsiteLoginManagerImpl : public WebsiteLoginManager {
  public:
   WebsiteLoginManagerImpl(password_manager::PasswordManagerClient* client,
-                          password_manager::PasswordManagerDriver* driver);
+                          content::WebContents* web_contents);
   ~WebsiteLoginManagerImpl() override;
 
   // From WebsiteLoginManager:
@@ -55,7 +55,7 @@ class WebsiteLoginManagerImpl : public WebsiteLoginManager {
 
   password_manager::PasswordManagerClient* const client_;
 
-  password_manager::PasswordManagerDriver* const driver_;
+  content::WebContents* const web_contents_;
 
   // Update password request will be created in PresaveGeneratedPassword and
   // released in CommitGeneratedPassword after committing presaved password to
@@ -74,4 +74,4 @@ class WebsiteLoginManagerImpl : public WebsiteLoginManager {
 
 }  // namespace autofill_assistant
 
-#endif  // COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_website_login_manager_IMPL_H_
+#endif  // COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_WEBSITE_LOGIN_MANAGER_IMPL_H_

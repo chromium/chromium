@@ -6,12 +6,13 @@
 
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/password_manager/content/browser/content_password_manager_driver.h"
+#include "components/password_manager/content/browser/content_password_manager_driver_factory.h"
 #include "components/password_manager/core/browser/form_fetcher_impl.h"
 #include "components/password_manager/core/browser/form_parsing/form_parser.h"
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
 #include "components/password_manager/core/browser/password_generation_frame_helper.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
-#include "components/password_manager/core/browser/password_manager_driver.h"
 #include "components/password_manager/core/browser/password_save_manager_impl.h"
 #include "components/password_manager/core/browser/votes_uploader.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -231,8 +232,8 @@ class WebsiteLoginManagerImpl::UpdatePasswordRequest
 
 WebsiteLoginManagerImpl::WebsiteLoginManagerImpl(
     password_manager::PasswordManagerClient* client,
-    password_manager::PasswordManagerDriver* driver)
-    : client_(client), driver_(driver), weak_ptr_factory_(this) {}
+    content::WebContents* web_contents)
+    : client_(client), web_contents_(web_contents), weak_ptr_factory_(this) {}
 
 WebsiteLoginManagerImpl::~WebsiteLoginManagerImpl() = default;
 
@@ -266,9 +267,19 @@ std::string WebsiteLoginManagerImpl::GeneratePassword(
     autofill::FormSignature form_signature,
     autofill::FieldSignature field_signature,
     uint64_t max_length) {
+  auto* factory =
+      password_manager::ContentPasswordManagerDriverFactory::FromWebContents(
+          web_contents_);
+  DCHECK(factory);
+  // TODO(crbug.com/1043132): Add support for non-main frames. If another
+  // frame has a different origin than the main frame, passwords-related
+  // features may not work.
+  auto* driver = factory->GetDriverForFrame(web_contents_->GetMainFrame());
+  DCHECK(driver);
+
   return base::UTF16ToUTF8(
-      driver_->GetPasswordGenerationHelper()->GeneratePassword(
-          driver_->GetLastCommittedURL(), form_signature, field_signature,
+      driver->GetPasswordGenerationHelper()->GeneratePassword(
+          driver->GetLastCommittedURL(), form_signature, field_signature,
           max_length));
 }
 

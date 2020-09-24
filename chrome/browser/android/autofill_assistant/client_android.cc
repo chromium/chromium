@@ -31,8 +31,6 @@
 #include "components/autofill_assistant/browser/features.h"
 #include "components/autofill_assistant/browser/switches.h"
 #include "components/autofill_assistant/browser/website_login_manager_impl.h"
-#include "components/password_manager/content/browser/content_password_manager_driver.h"
-#include "components/password_manager/content/browser/content_password_manager_driver_factory.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -485,15 +483,8 @@ ClientAndroid::GetPasswordManagerClient() const {
 WebsiteLoginManager* ClientAndroid::GetWebsiteLoginManager() const {
   if (!website_login_manager_) {
     auto* client = GetPasswordManagerClient();
-    auto* factory =
-        password_manager::ContentPasswordManagerDriverFactory::FromWebContents(
-            web_contents_);
-    // TODO(crbug.com/1043132): Add support for non-main frames. If another
-    // frame has a different origin than the main frame, passwords-related
-    // features may not work.
-    auto* driver = factory->GetDriverForFrame(web_contents_->GetMainFrame());
     website_login_manager_ =
-        std::make_unique<WebsiteLoginManagerImpl>(client, driver);
+        std::make_unique<WebsiteLoginManagerImpl>(client, web_contents_);
   }
   return website_login_manager_.get();
 }
