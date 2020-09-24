@@ -1531,6 +1531,11 @@ void TapEdit() {
 
 // Test search and delete all passwords and blocked items.
 - (void)testSearchAndDeleteAllPasswords {
+  // TODO(crbug.com/1129441): This is failing regularly downstream on iOS14.
+  if (@available(iOS 14, *)) {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS14.");
+  }
+
   SaveExamplePasswordForms();
   SaveExampleBlockedForms();
 
