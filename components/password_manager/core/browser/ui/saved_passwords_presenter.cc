@@ -12,7 +12,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
 #include "base/strings/string16.h"
-#include "components/autofill/core/common/password_form.h"
+#include "components/password_manager/core/browser/password_form.h"
 
 namespace password_manager {
 
@@ -39,7 +39,7 @@ void SavedPasswordsPresenter::Init() {
     account_store_->GetAllLoginsWithAffiliationAndBrandingInformation(this);
 }
 
-bool SavedPasswordsPresenter::EditPassword(const autofill::PasswordForm& form,
+bool SavedPasswordsPresenter::EditPassword(const PasswordForm& form,
                                            base::string16 new_password) {
   auto found = base::ranges::find(passwords_, form);
   if (found == passwords_.end())
@@ -66,8 +66,7 @@ void SavedPasswordsPresenter::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void SavedPasswordsPresenter::NotifyEdited(
-    const autofill::PasswordForm& password) {
+void SavedPasswordsPresenter::NotifyEdited(const PasswordForm& password) {
   for (auto& observer : observers_)
     observer.OnEdited(password);
 }
@@ -92,7 +91,7 @@ void SavedPasswordsPresenter::OnLoginsChangedIn(
 }
 
 void SavedPasswordsPresenter::OnGetPasswordStoreResults(
-    std::vector<std::unique_ptr<autofill::PasswordForm>> results) {
+    std::vector<std::unique_ptr<PasswordForm>> results) {
   // This class overrides OnGetPasswordStoreResultsFrom() (the version of this
   // method that also receives the originating store), so the store-less version
   // never gets called.
@@ -101,7 +100,7 @@ void SavedPasswordsPresenter::OnGetPasswordStoreResults(
 
 void SavedPasswordsPresenter::OnGetPasswordStoreResultsFrom(
     PasswordStore* store,
-    std::vector<std::unique_ptr<autofill::PasswordForm>> results) {
+    std::vector<std::unique_ptr<PasswordForm>> results) {
   // Ignore blocked or federated credentials.
   base::EraseIf(results, [](const auto& form) {
     return form->blocked_by_user || form->IsFederatedCredential();
@@ -114,7 +113,7 @@ void SavedPasswordsPresenter::OnGetPasswordStoreResultsFrom(
   if (store == profile_store_) {
     // Old profile store passwords are in front. Create a temporary buffer for
     // the new passwords and replace existing passwords.
-    std::vector<autofill::PasswordForm> new_passwords;
+    std::vector<PasswordForm> new_passwords;
     new_passwords.reserve(results.size() + passwords_.end() -
                           account_passwords_it);
     auto new_passwords_back_inserter = std::back_inserter(new_passwords);

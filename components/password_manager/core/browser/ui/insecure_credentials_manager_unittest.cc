@@ -8,8 +8,8 @@
 #include "base/strings/string_piece_forward.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
-#include "components/autofill/core/common/password_form.h"
 #include "components/password_manager/core/browser/compromised_credentials_table.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/test_password_store.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -34,7 +34,6 @@ constexpr char kWeakPassword2[] = "abcdabcdabcdabcdabcdabcdabcdabcdabcdabcda";
 constexpr char kStrongPassword1[] = "fnlsr4@cm^mdls@fkspnsg3d";
 constexpr char kStrongPassword2[] = "pmsFlsnoab4nsl#losb@skpfnsbkjb^klsnbs!cns";
 
-using autofill::PasswordForm;
 using ::testing::ElementsAre;
 using ::testing::ElementsAreArray;
 using ::testing::IsEmpty;

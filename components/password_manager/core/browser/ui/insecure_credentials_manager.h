@@ -86,8 +86,8 @@ struct CredentialView {
                  GURL url,
                  base::string16 username,
                  base::string16 password);
-  // Enable explicit construction from autofill::PasswordForm for convenience.
-  explicit CredentialView(const autofill::PasswordForm& form);
+  // Enable explicit construction from PasswordForm for convenience.
+  explicit CredentialView(const PasswordForm& form);
   CredentialView(const CredentialView& credential);
   CredentialView(CredentialView&& credential);
   CredentialView& operator=(const CredentialView& credential);
@@ -218,7 +218,7 @@ class InsecureCredentialsManager
 
   // Returns the `profile_store_` or `account_store_` if `form` is stored in the
   // profile store of the account store accordingly.
-  PasswordStore& GetStoreFor(const autofill::PasswordForm& form);
+  PasswordStore& GetStoreFor(const PasswordForm& form);
 
   // A weak handle to the presenter used to join the list of insecure
   // credentials with saved passwords. Needs to outlive this instance.

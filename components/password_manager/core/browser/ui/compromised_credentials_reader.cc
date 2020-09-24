@@ -8,7 +8,7 @@
 
 #include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
-#include "components/autofill/core/common/password_form.h"
+#include "components/password_manager/core/browser/password_form.h"
 
 namespace password_manager {
 CompromisedCredentialsReader::CompromisedCredentialsReader(
@@ -62,9 +62,9 @@ void CompromisedCredentialsReader::OnGetCompromisedCredentialsFrom(
   account_store_responded_ |= store == account_store_;
   // Remove all previously cached credentials from `store` and then insert
   // the just received `compromised_credentials`.
-  autofill::PasswordForm::Store to_remove =
-      store == profile_store_ ? autofill::PasswordForm::Store::kProfileStore
-                              : autofill::PasswordForm::Store::kAccountStore;
+  PasswordForm::Store to_remove = store == profile_store_
+                                      ? PasswordForm::Store::kProfileStore
+                                      : PasswordForm::Store::kAccountStore;
 
   base::EraseIf(compromised_credentials_, [to_remove](const auto& credential) {
     return credential.in_store == to_remove;

@@ -8,6 +8,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "components/password_manager/core/browser/mock_password_store.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -18,7 +19,6 @@ namespace password_manager {
 namespace {
 
 using BubbleType = PostSaveCompromisedHelper::BubbleType;
-using autofill::PasswordForm;
 using prefs::kLastTimePasswordCheckCompleted;
 using testing::Return;
 

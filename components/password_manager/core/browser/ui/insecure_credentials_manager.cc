@@ -14,8 +14,8 @@
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
-#include "components/autofill/core/common/password_form.h"
 #include "components/password_manager/core/browser/compromised_credentials_table.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_list_sorter.h"
 #include "components/password_manager/core/browser/ui/credential_utils.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
@@ -26,7 +26,7 @@ namespace password_manager {
 
 // Extra information about InsecureCredentials which is required by UI.
 struct CredentialMetadata {
-  std::vector<autofill::PasswordForm> forms;
+  std::vector<PasswordForm> forms;
   InsecureCredentialTypeFlags type = InsecureCredentialTypeFlags::kSecure;
   base::Time latest_time;
 };
@@ -37,7 +37,7 @@ using CredentialPasswordsMap =
     std::map<CredentialView, CredentialMetadata, PasswordCredentialLess>;
 
 // Transparent comparator that can compare CompromisedCredentials and
-// autofill::PasswordForm.
+// PasswordForm.
 struct CredentialWithoutPasswordLess {
   template <typename T, typename U>
   bool operator()(const T& lhs, const U& rhs) const {
@@ -48,8 +48,7 @@ struct CredentialWithoutPasswordLess {
   using is_transparent = void;
 
  private:
-  static auto CredentialOriginAndUsernameAndStore(
-      const autofill::PasswordForm& form) {
+  static auto CredentialOriginAndUsernameAndStore(const PasswordForm& form) {
     return std::tie(form.signon_realm, form.username_value, form.in_store);
   }
 
@@ -71,8 +70,8 @@ InsecureCredentialTypeFlags ConvertCompromiseType(CompromiseType type) {
 
 // This function takes three lists of compromised credentials, weak passwords
 // and saved passwords and joins them, producing a map that contains
-// CredentialWithPassword as keys and vector<autofill::PasswordForm> as values
-// with InsecureCredentialTypeFlags as values.
+// CredentialWithPassword as keys and vector<PasswordForm> as values with
+// InsecureCredentialTypeFlags as values.
 CredentialPasswordsMap JoinInsecureCredentialsWithSavedPasswords(
     const std::vector<CompromisedCredentials>& compromised_credentials,
     const base::flat_set<base::string16>& weak_passwords,
@@ -100,13 +99,13 @@ CredentialPasswordsMap JoinInsecureCredentialsWithSavedPasswords(
   // corresponding entries in saved_passwords, we are using a multiset and doing
   // look-up via equal_range. In most cases the resulting |range| should have a
   // size of 1, however.
-  std::multiset<autofill::PasswordForm, CredentialWithoutPasswordLess>
-      password_forms(saved_passwords.begin(), saved_passwords.end());
+  std::multiset<PasswordForm, CredentialWithoutPasswordLess> password_forms(
+      saved_passwords.begin(), saved_passwords.end());
   for (const auto& credential : compromised_credentials) {
     auto range = password_forms.equal_range(credential);
     // Make use of a set to only filter out repeated passwords, if any.
     std::for_each(
-        range.first, range.second, [&](const autofill::PasswordForm& form) {
+        range.first, range.second, [&](const PasswordForm& form) {
           CredentialView compromised_credential(form);
           auto& credential_to_form =
               credentials_to_forms[compromised_credential];
@@ -181,7 +180,7 @@ CredentialView::CredentialView(std::string signon_realm,
       username(std::move(username)),
       password(std::move(password)) {}
 
-CredentialView::CredentialView(const autofill::PasswordForm& form)
+CredentialView::CredentialView(const PasswordForm& form)
     : signon_realm(form.signon_realm),
       url(form.url),
       username(form.username_value),
@@ -252,8 +251,7 @@ void InsecureCredentialsManager::SaveCompromisedCredential(
   // that have the same canonicalized username and password.
   const base::string16 canonicalized_username =
       CanonicalizeUsername(credential.username());
-  for (const autofill::PasswordForm& saved_password :
-       presenter_->GetSavedPasswords()) {
+  for (const PasswordForm& saved_password : presenter_->GetSavedPasswords()) {
     if (saved_password.password_value == credential.password() &&
         CanonicalizeUsername(saved_password.username_value) ==
             canonicalized_username) {
@@ -298,7 +296,7 @@ bool InsecureCredentialsManager::RemoveCredential(
   // Erase all matching credentials from the store. Return whether any
   // credentials were deleted.
   const auto& saved_passwords = it->second.forms;
-  for (const autofill::PasswordForm& saved_password : saved_passwords)
+  for (const PasswordForm& saved_password : saved_passwords)
     GetStoreFor(saved_password).RemoveLogin(saved_password);
 
   return !saved_passwords.empty();
@@ -386,7 +384,7 @@ void InsecureCredentialsManager::NotifyWeakCredentialsChanged() {
 }
 
 PasswordStore& InsecureCredentialsManager::GetStoreFor(
-    const autofill::PasswordForm& form) {
+    const PasswordForm& form) {
   return form.IsUsingAccountStore() ? *account_store_ : *profile_store_;
 }
 

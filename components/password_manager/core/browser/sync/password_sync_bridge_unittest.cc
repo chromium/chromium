@@ -15,6 +15,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "build/build_config.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store_sync.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/model/data_batch.h"
@@ -88,8 +89,8 @@ sync_pb::PasswordSpecifics CreateSpecificsWithSignonRealm(
                          "username_value", "password_element", signon_realm);
 }
 
-autofill::PasswordForm MakePasswordForm(const std::string& signon_realm) {
-  autofill::PasswordForm form;
+PasswordForm MakePasswordForm(const std::string& signon_realm) {
+  PasswordForm form;
   form.url = GURL("http://www.origin.com");
   form.username_element = base::UTF8ToUTF16("username_element");
   form.username_value = base::UTF8ToUTF16("username_value");
@@ -98,8 +99,8 @@ autofill::PasswordForm MakePasswordForm(const std::string& signon_realm) {
   return form;
 }
 
-autofill::PasswordForm MakeBlacklistedForm(const std::string& signon_realm) {
-  autofill::PasswordForm form;
+PasswordForm MakeBlacklistedForm(const std::string& signon_realm) {
+  PasswordForm form;
   form.url = GURL("http://www.origin.com");
   form.signon_realm = signon_realm;
   form.blocked_by_user = true;
@@ -118,47 +119,45 @@ class FakeDatabase {
   FormRetrievalResult ReadAllLogins(PrimaryKeyToFormMap* map) {
     map->clear();
     for (const auto& pair : data_) {
-      map->emplace(pair.first,
-                   std::make_unique<autofill::PasswordForm>(*pair.second));
+      map->emplace(pair.first, std::make_unique<PasswordForm>(*pair.second));
     }
     return FormRetrievalResult::kSuccess;
   }
 
-  PasswordStoreChangeList AddLogin(const autofill::PasswordForm& form,
+  PasswordStoreChangeList AddLogin(const PasswordForm& form,
                                    AddLoginError* error) {
     if (error) {
       *error = error_;
     }
     if (error_ == AddLoginError::kNone) {
-      data_[primary_key_] = std::make_unique<autofill::PasswordForm>(form);
+      data_[primary_key_] = std::make_unique<PasswordForm>(form);
       return {
           PasswordStoreChange(PasswordStoreChange::ADD, form, primary_key_++)};
     }
     return PasswordStoreChangeList();
   }
 
-  PasswordStoreChangeList AddLoginForPrimaryKey(
-      int primary_key,
-      const autofill::PasswordForm& form) {
+  PasswordStoreChangeList AddLoginForPrimaryKey(int primary_key,
+                                                const PasswordForm& form) {
     DCHECK_EQ(0U, data_.count(primary_key));
-    data_[primary_key] = std::make_unique<autofill::PasswordForm>(form);
+    data_[primary_key] = std::make_unique<PasswordForm>(form);
     return {PasswordStoreChange(PasswordStoreChange::ADD, form, primary_key)};
   }
 
-  PasswordStoreChangeList UpdateLogin(const autofill::PasswordForm& form,
+  PasswordStoreChangeList UpdateLogin(const PasswordForm& form,
                                       UpdateLoginError* error) {
     if (error) {
       *error = UpdateLoginError::kNone;
     }
     int key = GetPrimaryKey(form);
     DCHECK_NE(-1, key);
-    data_[key] = std::make_unique<autofill::PasswordForm>(form);
+    data_[key] = std::make_unique<PasswordForm>(form);
     return {PasswordStoreChange(PasswordStoreChange::UPDATE, form, key)};
   }
 
   PasswordStoreChangeList RemoveLogin(int key) {
     DCHECK_NE(0U, data_.count(key));
-    autofill::PasswordForm form = *data_[key];
+    PasswordForm form = *data_[key];
     data_.erase(key);
     return {PasswordStoreChange(PasswordStoreChange::REMOVE, form, key)};
   }
@@ -166,7 +165,7 @@ class FakeDatabase {
   void SetAddLoginError(AddLoginError error) { error_ = error; }
 
  private:
-  int GetPrimaryKey(const autofill::PasswordForm& form) const {
+  int GetPrimaryKey(const PasswordForm& form) const {
     for (const auto& pair : data_) {
       if (ArePasswordFormUniqueKeysEqual(*pair.second, form)) {
         return pair.first;
@@ -205,18 +204,15 @@ class MockPasswordStoreSync : public PasswordStoreSync {
   MOCK_METHOD1(RemoveLoginByPrimaryKeySync, PasswordStoreChangeList(int));
   MOCK_METHOD0(DeleteUndecryptableLogins, DatabaseCleanupResult());
   MOCK_METHOD2(AddLoginSync,
-               PasswordStoreChangeList(const autofill::PasswordForm&,
-                                       AddLoginError*));
+               PasswordStoreChangeList(const PasswordForm&, AddLoginError*));
   MOCK_METHOD2(UpdateLoginSync,
-               PasswordStoreChangeList(const autofill::PasswordForm&,
-                                       UpdateLoginError*));
-  MOCK_METHOD1(RemoveLoginSync,
-               PasswordStoreChangeList(const autofill::PasswordForm&));
+               PasswordStoreChangeList(const PasswordForm&, UpdateLoginError*));
+  MOCK_METHOD1(RemoveLoginSync, PasswordStoreChangeList(const PasswordForm&));
   MOCK_METHOD1(NotifyLoginsChanged, void(const PasswordStoreChangeList&));
   MOCK_METHOD1(NotifyDeletionsHaveSynced, void(bool));
 
   MOCK_METHOD1(NotifyUnsyncedCredentialsWillBeDeleted,
-               void(std::vector<autofill::PasswordForm> unsynced_credentials));
+               void(std::vector<PasswordForm> unsynced_credentials));
   MOCK_METHOD0(BeginTransaction, bool());
   MOCK_METHOD0(CommitTransaction, bool());
   MOCK_METHOD0(RollbackTransaction, void());
@@ -514,8 +510,8 @@ TEST_F(PasswordSyncBridgeTest, ShouldGetDataForStorageKey) {
   const int kPrimaryKey2 = 1001;
   const std::string kPrimaryKeyStr1 = "1000";
   const std::string kPrimaryKeyStr2 = "1001";
-  autofill::PasswordForm form1 = MakePasswordForm(kSignonRealm1);
-  autofill::PasswordForm form2 = MakePasswordForm(kSignonRealm2);
+  PasswordForm form1 = MakePasswordForm(kSignonRealm1);
+  PasswordForm form2 = MakePasswordForm(kSignonRealm2);
 
   fake_db()->AddLoginForPrimaryKey(kPrimaryKey1, form1);
   fake_db()->AddLoginForPrimaryKey(kPrimaryKey2, form2);
@@ -553,9 +549,9 @@ TEST_F(PasswordSyncBridgeTest, ShouldMergeSyncRemoteAndLocalPasswords) {
   const std::string kPrimaryKeyStr1 = "1000";
   const std::string kPrimaryKeyStr2 = "1001";
   const std::string kExpectedPrimaryKeyStr3 = "1";
-  autofill::PasswordForm form1 = MakePasswordForm(kSignonRealm1);
-  autofill::PasswordForm form2 = MakePasswordForm(kSignonRealm2);
-  autofill::PasswordForm form3 = MakePasswordForm(kSignonRealm3);
+  PasswordForm form1 = MakePasswordForm(kSignonRealm1);
+  PasswordForm form2 = MakePasswordForm(kSignonRealm2);
+  PasswordForm form3 = MakePasswordForm(kSignonRealm3);
   sync_pb::PasswordSpecifics specifics1 =
       CreateSpecificsWithSignonRealm(kSignonRealm1);
   sync_pb::PasswordSpecifics specifics2 =
@@ -638,7 +634,7 @@ TEST_F(PasswordSyncBridgeTest,
   const std::string kPrimaryKeyStr2 = "1001";
 
   // Local form 1 is more recent than the remote.
-  autofill::PasswordForm form1 = MakePasswordForm(kSignonRealm1);
+  PasswordForm form1 = MakePasswordForm(kSignonRealm1);
   form1.date_created = now;
   sync_pb::PasswordSpecifics specifics1 =
       CreateSpecificsWithSignonRealm(kSignonRealm1);
@@ -646,7 +642,7 @@ TEST_F(PasswordSyncBridgeTest,
       yesterday.ToDeltaSinceWindowsEpoch().InMicroseconds());
 
   // Remote form 2 is more recent than the local.
-  autofill::PasswordForm form2 = MakePasswordForm(kSignonRealm2);
+  PasswordForm form2 = MakePasswordForm(kSignonRealm2);
   form2.date_created = yesterday;
   sync_pb::PasswordSpecifics specifics2 =
       CreateSpecificsWithSignonRealm(kSignonRealm2);
@@ -769,8 +765,8 @@ TEST_F(PasswordSyncBridgeTest,
 TEST_F(PasswordSyncBridgeTest, ShouldGetAllDataForDebuggingWithHiddenPassword) {
   const int kPrimaryKey1 = 1000;
   const int kPrimaryKey2 = 1001;
-  autofill::PasswordForm form1 = MakePasswordForm(kSignonRealm1);
-  autofill::PasswordForm form2 = MakePasswordForm(kSignonRealm2);
+  PasswordForm form1 = MakePasswordForm(kSignonRealm1);
+  PasswordForm form2 = MakePasswordForm(kSignonRealm2);
 
   fake_db()->AddLoginForPrimaryKey(kPrimaryKey1, form1);
   fake_db()->AddLoginForPrimaryKey(kPrimaryKey2, form2);
@@ -944,10 +940,9 @@ TEST_F(PasswordSyncBridgeTest, ShouldNotifyUnsyncedCredentialsIfAccountStore) {
   const int kPrimaryKeyUnsyncedCredential = 1000;
   const int kPrimaryKeySyncedCredential = 1001;
   const int kPrimaryKeyUnsyncedBlacklist = 1003;
-  autofill::PasswordForm unsynced_credential = MakePasswordForm(kSignonRealm1);
-  autofill::PasswordForm synced_credential = MakePasswordForm(kSignonRealm2);
-  autofill::PasswordForm unsynced_blacklist =
-      MakeBlacklistedForm(kSignonRealm3);
+  PasswordForm unsynced_credential = MakePasswordForm(kSignonRealm1);
+  PasswordForm synced_credential = MakePasswordForm(kSignonRealm2);
+  PasswordForm unsynced_blacklist = MakeBlacklistedForm(kSignonRealm3);
   fake_db()->AddLoginForPrimaryKey(kPrimaryKeyUnsyncedCredential,
                                    unsynced_credential);
   fake_db()->AddLoginForPrimaryKey(kPrimaryKeySyncedCredential,
@@ -991,7 +986,7 @@ TEST_F(PasswordSyncBridgeTest,
         return batch;
       });
 
-  autofill::PasswordForm unsynced_deletion = MakePasswordForm(kSignonRealm3);
+  PasswordForm unsynced_deletion = MakePasswordForm(kSignonRealm3);
   fake_db()->AddLoginForPrimaryKey(kPrimaryKeyUnsyncedCredential,
                                    MakePasswordForm(kSignonRealm1));
 

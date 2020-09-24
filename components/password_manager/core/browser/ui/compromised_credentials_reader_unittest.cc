@@ -9,7 +9,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
-#include "components/autofill/core/common/password_form.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/test_password_store.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -18,7 +18,6 @@ namespace password_manager {
 
 namespace {
 
-using autofill::PasswordForm;
 using ::testing::UnorderedElementsAre;
 
 constexpr const char kTestWebRealm[] = "https://one.example.com/";

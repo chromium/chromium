@@ -8,7 +8,7 @@
 #include "base/scoped_observer.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
-#include "components/autofill/core/common/password_form.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/test_password_store.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -17,7 +17,6 @@ namespace password_manager {
 
 namespace {
 
-using autofill::PasswordForm;
 using ::testing::ElementsAre;
 using ::testing::ElementsAreArray;
 using ::testing::IsEmpty;
@@ -25,7 +24,7 @@ using ::testing::Pair;
 using ::testing::UnorderedElementsAre;
 
 struct MockSavedPasswordsPresenterObserver : SavedPasswordsPresenter::Observer {
-  MOCK_METHOD(void, OnEdited, (const autofill::PasswordForm&), (override));
+  MOCK_METHOD(void, OnEdited, (const PasswordForm&), (override));
   MOCK_METHOD(void,
               OnSavedPasswordsChanged,
               (SavedPasswordsPresenter::SavedPasswordsView),

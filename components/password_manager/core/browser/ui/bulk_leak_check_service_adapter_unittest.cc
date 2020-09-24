@@ -14,11 +14,11 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/task_environment.h"
-#include "components/autofill/core/common/password_form.h"
 #include "components/password_manager/core/browser/bulk_leak_check_service.h"
 #include "components/password_manager/core/browser/leak_detection/bulk_leak_check.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_check_factory.h"
 #include "components/password_manager/core/browser/leak_detection/mock_leak_detection_check_factory.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/test_password_store.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -42,7 +42,6 @@ constexpr char kUsername2[] = "bob";
 constexpr char kPassword1[] = "f00b4r";
 constexpr char kPassword2[] = "s3cr3t";
 
-using autofill::PasswordForm;
 using ::testing::ByMove;
 using ::testing::NiceMock;
 using ::testing::Return;

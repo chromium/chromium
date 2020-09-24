@@ -8,9 +8,7 @@
 #include <memory>
 #include <vector>
 
-namespace autofill {
-struct PasswordForm;
-}
+#include "components/password_manager/core/browser/password_form_forward.h"
 
 namespace password_manager {
 
@@ -20,8 +18,7 @@ namespace password_manager {
 class CredentialProviderInterface {
  public:
   // Gets all password entries.
-  virtual std::vector<std::unique_ptr<autofill::PasswordForm>>
-  GetAllPasswords() = 0;
+  virtual std::vector<std::unique_ptr<PasswordForm>> GetAllPasswords() = 0;
 
  protected:
   virtual ~CredentialProviderInterface() {}

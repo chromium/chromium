@@ -7,11 +7,8 @@
 
 #include "components/password_manager/core/browser/bulk_leak_check_service_interface.h"
 #include "components/password_manager/core/browser/leak_detection/bulk_leak_check.h"
+#include "components/password_manager/core/browser/password_form_forward.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
-
-namespace autofill {
-struct PasswordForm;
-}
 
 class PrefService;
 
@@ -46,7 +43,7 @@ class BulkLeakCheckServiceAdapter : public SavedPasswordsPresenter::Observer {
 
  private:
   // SavedPasswordsPresenter::Observer:
-  void OnEdited(const autofill::PasswordForm& form) override;
+  void OnEdited(const PasswordForm& form) override;
 
   // Weak handles to a presenter and service, respectively. These must be not
   // null and must outlive the adapter.

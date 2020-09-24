@@ -9,10 +9,10 @@
 
 #include "base/check.h"
 #include "base/containers/flat_set.h"
-#include "components/autofill/core/common/password_form.h"
 #include "components/password_manager/core/browser/leak_detection/bulk_leak_check.h"
 #include "components/password_manager/core/browser/leak_detection/encryption_utils.h"
 #include "components/password_manager/core/browser/leak_detection_delegate.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/ui/credential_utils.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #include "components/prefs/pref_service.h"
@@ -78,7 +78,7 @@ size_t BulkLeakCheckServiceAdapter::GetPendingChecksCount() const {
   return service_->GetPendingChecksCount();
 }
 
-void BulkLeakCheckServiceAdapter::OnEdited(const autofill::PasswordForm& form) {
+void BulkLeakCheckServiceAdapter::OnEdited(const PasswordForm& form) {
   if (CanStartLeakCheck(*prefs_)) {
     // Here no extra canonicalization is needed, as there are no other forms we
     // could de-dupe before we pass it on to the service.

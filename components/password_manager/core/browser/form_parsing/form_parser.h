@@ -12,11 +12,11 @@
 #include "base/macros.h"
 #include "base/optional.h"
 #include "components/password_manager/core/browser/form_parsing/password_field_prediction.h"
+#include "components/password_manager/core/browser/password_form_forward.h"
 #include "url/gurl.h"
 
 namespace autofill {
 struct FormData;
-struct PasswordForm;
 }  // namespace autofill
 
 namespace password_manager {
@@ -129,9 +129,8 @@ class FormDataParser {
 
   // Parse DOM information |form_data| into Password Manager's form
   // representation PasswordForm. Return nullptr when parsing is unsuccessful.
-  std::unique_ptr<autofill::PasswordForm> Parse(
-      const autofill::FormData& form_data,
-      Mode mode);
+  std::unique_ptr<PasswordForm> Parse(const autofill::FormData& form_data,
+                                      Mode mode);
 
  private:
   // Predictions are an optional source of server-side information about field
