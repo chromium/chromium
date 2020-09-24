@@ -106,18 +106,12 @@ FormPredictions ConvertToFormPredictions(int driver_id,
       }
     }
 
-    bool may_use_prefilled_placeholder = false;
-    for (const auto& predictions : field->server_predictions()) {
-      may_use_prefilled_placeholder |=
-          predictions.may_use_prefilled_placeholder();
-    }
-
     field_predictions.emplace_back();
     field_predictions.back().renderer_id = field->unique_renderer_id;
     field_predictions.back().signature = field->GetFieldSignature();
     field_predictions.back().type = server_type;
     field_predictions.back().may_use_prefilled_placeholder =
-        may_use_prefilled_placeholder;
+        field->may_use_prefilled_placeholder();
 #if defined(OS_IOS)
     field_predictions.back().unique_id = field->unique_id;
 #endif

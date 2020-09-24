@@ -32,8 +32,8 @@ using autofill::USERNAME;
 using autofill::USERNAME_AND_EMAIL_ADDRESS;
 using base::ASCIIToUTF16;
 
-using FieldPrediction =
-    autofill::AutofillQueryResponseContents::Field::FieldPrediction;
+using FieldPrediction = autofill::AutofillQueryResponse::FormSuggestion::
+    FieldSuggestion::FieldPrediction;
 
 namespace password_manager {
 
@@ -84,8 +84,6 @@ TEST(FormPredictionsTest, ConvertToFormPredictions) {
     field->set_server_type(test_fields[i].input_type);
 
     std::vector<FieldPrediction> predictions(1);
-    predictions[0].set_may_use_prefilled_placeholder(
-        test_fields[i].may_use_prefilled_placeholder);
 
     for (ServerFieldType type : test_fields[i].additional_types) {
       FieldPrediction additional_prediction;
@@ -93,6 +91,8 @@ TEST(FormPredictionsTest, ConvertToFormPredictions) {
       predictions.push_back(additional_prediction);
     }
     field->set_server_predictions(predictions);
+    field->set_may_use_prefilled_placeholder(
+        test_fields[i].may_use_prefilled_placeholder);
   }
 
   constexpr int driver_id = 1000;

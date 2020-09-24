@@ -18,8 +18,8 @@
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/proto/api_v1.pb.h"
 #include "components/autofill/core/browser/proto/password_requirements.pb.h"
-#include "components/autofill/core/browser/proto/server.pb.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/signatures.h"
 
@@ -53,9 +53,13 @@ class AutofillField : public FormFieldData {
 
   ServerFieldType heuristic_type() const { return heuristic_type_; }
   ServerFieldType server_type() const { return server_type_; }
-  const std::vector<AutofillQueryResponseContents::Field::FieldPrediction>&
+  const std::vector<
+      AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction>&
   server_predictions() const {
     return server_predictions_;
+  }
+  bool may_use_prefilled_placeholder() const {
+    return may_use_prefilled_placeholder_;
   }
   HtmlFieldType html_type() const { return html_type_; }
   HtmlFieldMode html_mode() const { return html_mode_; }
@@ -74,9 +78,12 @@ class AutofillField : public FormFieldData {
   void add_possible_types_validities(
       const ServerFieldTypeValidityStateMap& possible_types_validities);
   void set_server_predictions(
-      const std::vector<AutofillQueryResponseContents::Field::FieldPrediction>
-          predictions) {
+      std::vector<AutofillQueryResponse::FormSuggestion::FieldSuggestion::
+                      FieldPrediction> predictions) {
     server_predictions_ = std::move(predictions);
+  }
+  void set_may_use_prefilled_placeholder(bool may_use_prefilled_placeholder) {
+    may_use_prefilled_placeholder_ = may_use_prefilled_placeholder;
   }
   void set_possible_types(const ServerFieldTypeSet& possible_types) {
     possible_types_ = possible_types;
@@ -199,8 +206,13 @@ class AutofillField : public FormFieldData {
 
   // The possible types of the field, as determined by the Autofill server,
   // including |server_type_| as the first item.
-  std::vector<AutofillQueryResponseContents::Field::FieldPrediction>
+  std::vector<
+      AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction>
       server_predictions_;
+
+  // Whether the server-side classification believes that the field
+  // may be pre-filled with a placeholder in the value attribute.
+  bool may_use_prefilled_placeholder_ = false;
 
   // Requirements the site imposes to passwords (for password generation).
   // Corresponds to the requirements determined by the Autofill server.
