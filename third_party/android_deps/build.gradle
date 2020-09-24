@@ -82,7 +82,8 @@ dependencies {
     compile "androidx.window:window:1.0.0-alpha01"
     compile "androidx.exifinterface:exifinterface:${androidXSupportLibVersion}"
 
-    // Those are for use by doubledown material design
+    // Those are for use by doubledown libraries.
+    compile "androidx.arch.core:core-common:2.1.0"
     compile "androidx.annotation:annotation-experimental:${androidXSupportLibVersion}"
     compile "androidx.annotation:annotation:${androidXSupportLibVersion}"
     compile "androidx.lifecycle:lifecycle-runtime:${androidXSupportLibVersion}"

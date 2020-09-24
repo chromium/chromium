@@ -192,6 +192,14 @@ android_aar_prebuilt("androidx_appcompat_appcompat_resources_java") {
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+java_prebuilt("androidx_arch_core_core_common_java") {
+  jar_path = "libs/androidx_arch_core_core_common/core-common-2.1.0.jar"
+  output_name = "androidx_arch_core_core_common"
+  supports_android = true
+  deps = [ ":androidx_annotation_annotation_java" ]
+}
+
+# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 android_aar_prebuilt("androidx_asynclayoutinflater_asynclayoutinflater_java") {
   aar_path = "libs/androidx_asynclayoutinflater_asynclayoutinflater/asynclayoutinflater-1.0.0.aar"
   info_path = "libs/androidx_asynclayoutinflater_asynclayoutinflater/androidx_asynclayoutinflater_asynclayoutinflater.info"
@@ -1861,18 +1869,6 @@ android_aar_prebuilt("android_arch_lifecycle_livedata_core_java") {
     ":android_arch_core_runtime_java",
     ":android_arch_lifecycle_common_java",
   ]
-}
-
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-java_prebuilt("androidx_arch_core_core_common_java") {
-  jar_path = "libs/androidx_arch_core_core_common/core-common-2.1.0.jar"
-  output_name = "androidx_arch_core_core_common"
-  supports_android = true
-
-  # To remove visibility constraint, add this dependency to
-  # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
-  deps = [ ":androidx_annotation_annotation_java" ]
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
