@@ -57,8 +57,8 @@ PartitionDirectMap(PartitionRoot<thread_safe>* root, int flags, size_t raw_size)
     NOTREACHED();
 #endif  // defined(PA_HAS_64_BITS_POINTERS)
   } else {
-    ptr = reinterpret_cast<char*>(AllocPages(nullptr, map_size, kSuperPageSize,
-                                             PageReadWrite,
+    ptr = reinterpret_cast<char*>(AllocPages(nullptr, map_size,
+                                             kSuperPageAlignment, PageReadWrite,
                                              PageTag::kPartitionAlloc));
   }
   if (UNLIKELY(!ptr))
@@ -274,7 +274,7 @@ ALWAYS_INLINE void* PartitionBucket<thread_safe>::AllocNewSlotSpan(
 #endif
   } else {
     super_page = reinterpret_cast<char*>(
-        AllocPages(requested_address, kSuperPageSize, kSuperPageSize,
+        AllocPages(requested_address, kSuperPageSize, kSuperPageAlignment,
                    PageReadWrite, PageTag::kPartitionAlloc));
   }
   if (UNLIKELY(!super_page))

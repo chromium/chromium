@@ -175,7 +175,8 @@ MaxSystemPagesPerSlotSpan() {
 
 static const size_t kSuperPageShift = 21;  // 2 MiB
 static const size_t kSuperPageSize = 1 << kSuperPageShift;
-static const size_t kSuperPageOffsetMask = kSuperPageSize - 1;
+static const size_t kSuperPageAlignment = kSuperPageSize;
+static const size_t kSuperPageOffsetMask = kSuperPageAlignment - 1;
 static const size_t kSuperPageBaseMask = ~kSuperPageOffsetMask;
 PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE size_t
 NumPartitionPagesPerSuperPage() {
