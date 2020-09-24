@@ -396,14 +396,6 @@ config("compiler") {
         "-Wl,--as-needed",
       ]
     }
-    if (use_lld && !is_chromeos_device) {
-      # TODO(thakis): Fix dump_syms to not need this and then remove it,
-      # https://crbug.com/1105559
-      ldflags += [
-        "-Wl,-z,dead-reloc-in-nonalloc=*=0",
-        "-Wl,-z,dead-reloc-in-nonalloc=.debug_ranges=1",
-      ]
-    }
   }
 
   # Linux-specific compiler flags setup.
