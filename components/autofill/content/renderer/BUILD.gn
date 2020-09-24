@@ -85,7 +85,6 @@ static_library("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "form_cache_unittest.cc",
     "prefilled_values_detector_unittest.cc",
     "renderer_save_password_progress_logger_unittest.cc",
   ]

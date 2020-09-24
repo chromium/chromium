@@ -247,12 +247,6 @@ const base::Feature kAutofillSectionUponRedundantNameInfo{
 const base::Feature kAutofillServerCommunication{
     "AutofillServerCommunication", base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Controls whether we show warnings in the Dev console for misused autocomplete
-// types.
-const base::Feature kAutofillShowAutocompleteConsoleWarnings{
-    "AutofillShowAutocompleteConsoleWarnings",
-    base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Controls attaching the autofill type predictions to their respective
 // element in the DOM.
 const base::Feature kAutofillShowTypePredictions{
