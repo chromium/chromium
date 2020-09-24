@@ -295,64 +295,13 @@ class TwitterMobileStory2019(_ArticleBrowsingStory):
     action_runner.WaitForElement(selector=('[class="css-901oao css-16my406 '
         'r-1qd0xha r-ad9z0x r-bcqeeo r-qvutc0"]'))
 
-
-class TwitterDesktopStory2020(_ArticleBrowsingStory):
-  NAME = 'browse:social:twitter:2020'
+class TwitterDesktopStory2018(_ArticleBrowsingStory):
+  NAME = 'browse:social:twitter:2018'
   URL = 'https://www.twitter.com/nasa'
   IS_SINGLE_PAGE_APP = True
-  ITEM_SELECTOR = '[data-testid="tweet"]'
+  ITEM_SELECTOR = '.tweet-text'
   SUPPORTED_PLATFORMS = platforms.DESKTOP_ONLY
-  TAGS = [story_tags.YEAR_2020]
-
-  # This map translates page-specific event names to event names needed for
-  # the reported_by_page:* metric.
-  EVENTS_REPORTED_BY_PAGE = '''
-    window.__telemetry_reported_page_events = {
-      'ttft':
-          'telemetry:reported_by_page:viewable',
-      'tti':
-          'telemetry:reported_by_page:interactive'
-    };
-  '''
-
-  # Patch performance.mark to get notified about page events.
-  PERFORMANCE_MARK_PATCH = '''
-    window.__telemetry_observed_page_events = new Set();
-    (function () {
-      let reported = window.__telemetry_reported_page_events;
-      let observed = window.__telemetry_observed_page_events;
-      let performance_mark = window.performance.mark;
-      window.performance.mark = function (label) {
-        performance_mark.call(window.performance, label);
-        if (reported.hasOwnProperty(label)) {
-          performance_mark.call(
-              window.performance, reported[label]);
-          observed.add(reported[label]);
-        }
-      }
-    })();
-  '''
-
-  # Page event queries.
-  INTERACTIVE_EVENT = '''
-    (window.__telemetry_observed_page_events.has(
-        "telemetry:reported_by_page:interactive"))
-  '''
-
-  def __init__(self, story_set, take_memory_measurement):
-    super(TwitterDesktopStory2020, self).__init__(story_set,
-                                                  take_memory_measurement)
-    self.script_to_evaluate_on_commit = js_template.Render(
-        '''{{@events_reported_by_page}}
-        {{@performance_mark}}''',
-        events_reported_by_page=self.EVENTS_REPORTED_BY_PAGE,
-        performance_mark=self.PERFORMANCE_MARK_PATCH)
-
-  def _DidLoadDocument(self, action_runner):
-    # 1. Wait until the page load.
-    action_runner.WaitForJavaScriptCondition(self.INTERACTIVE_EVENT)
-
-    super(TwitterDesktopStory2020, self)._DidLoadDocument(action_runner)
+  TAGS = [story_tags.YEAR_2018]
 
 
 class WashingtonPostMobileStory2019(_ArticleBrowsingStory):

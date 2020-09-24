@@ -44,8 +44,8 @@ browse:social:facebook_infinite_scroll:2018,,"desktop,mobile","2018,infinite_scr
 browse:social:instagram:2019,,mobile,"2019,emerging_market"
 browse:social:pinterest_infinite_scroll:2019,,mobile,"2019,health_check,infinite_scroll"
 browse:social:tumblr_infinite_scroll:2018,,"desktop,mobile","2018,health_check,infinite_scroll,javascript_heavy"
+browse:social:twitter:2018,,desktop,2018
 browse:social:twitter:2019,,mobile,"2019,health_check"
-browse:social:twitter:2020,,desktop,2020
 browse:social:twitter_infinite_scroll:2018,,desktop,"2018,infinite_scroll"
 browse:tech:discourse_infinite_scroll:2018,,"desktop,mobile","2018,infinite_scroll"
 browse:tools:docs_scrolling,Google Docs scrolling story:,desktop,"2020,javascript_heavy"
