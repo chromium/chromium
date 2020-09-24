@@ -12,6 +12,7 @@
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_input_event_attribution.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
+#include "third_party/blink/renderer/platform/scheduler/public/agent_group_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/page_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -114,6 +115,10 @@ class PLATFORM_EXPORT ThreadScheduler {
   // associated WebThread.
   virtual std::unique_ptr<PageScheduler> CreatePageScheduler(
       PageScheduler::Delegate*) = 0;
+
+  // Return the current active AgentGroupScheduler.
+  // If there is no active AgentGroupScheduler, it returns nullptr.
+  virtual AgentGroupScheduler* GetCurrentAgentGroupScheduler() = 0;
 
   // Pauses the scheduler. See WebThreadScheduler::PauseRenderer for
   // details. May only be called from the main thread.

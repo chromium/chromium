@@ -78,6 +78,12 @@ NonMainThreadSchedulerImpl::CreatePageScheduler(
   return nullptr;
 }
 
+AgentGroupScheduler*
+NonMainThreadSchedulerImpl::GetCurrentAgentGroupScheduler() {
+  NOTREACHED();
+  return nullptr;
+}
+
 std::unique_ptr<NonMainThreadSchedulerImpl::RendererPauseHandle>
 NonMainThreadSchedulerImpl::PauseScheduler() {
   return nullptr;

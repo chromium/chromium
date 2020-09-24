@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/scheduler/public/dummy_schedulers.h"
 
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_scheduler_impl.h"
+#include "third_party/blink/renderer/platform/scheduler/public/agent_group_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/page_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
@@ -182,6 +183,9 @@ class DummyThreadScheduler : public ThreadScheduler {
   std::unique_ptr<PageScheduler> CreatePageScheduler(
       PageScheduler::Delegate*) override {
     return std::make_unique<DummyPageScheduler>();
+  }
+  AgentGroupScheduler* GetCurrentAgentGroupScheduler() override {
+    return nullptr;
   }
 
   // ThreadScheduler implementation:

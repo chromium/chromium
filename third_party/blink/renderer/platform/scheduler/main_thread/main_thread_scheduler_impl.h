@@ -224,6 +224,9 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   AgentGroupSchedulerImpl* EnsureAgentGroupScheduler();
   std::unique_ptr<PageScheduler> CreatePageScheduler(
       PageScheduler::Delegate*) override;
+  AgentGroupScheduler* GetCurrentAgentGroupScheduler() override;
+  void SetCurrentAgentGroupScheduler(
+      AgentGroupSchedulerImpl* agent_group_scheduler_impl);
   std::unique_ptr<ThreadScheduler::RendererPauseHandle> PauseScheduler()
       override;
   base::TimeTicks MonotonicallyIncreasingVirtualTime() override;
@@ -1014,6 +1017,7 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   PollableThreadSafeFlag policy_may_need_update_;
   PollableThreadSafeFlag notify_agent_strategy_task_posted_;
   WTF::HashSet<AgentGroupSchedulerImpl*> agent_group_schedulers_;
+  AgentGroupSchedulerImpl* current_agent_group_scheduler_{nullptr};
   // TODO(crbug/1113102): tentatively, we hold AgentGroupSchedulerImpl here.
   std::unique_ptr<AgentGroupSchedulerImpl> agent_group_scheduler_;
 

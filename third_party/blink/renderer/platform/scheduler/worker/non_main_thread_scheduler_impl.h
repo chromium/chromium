@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/platform/scheduler/worker/non_main_thread_task_queue.h"
 
 namespace blink {
+class AgentGroupScheduler;
 namespace scheduler {
 
 class WorkerSchedulerProxy;
@@ -72,6 +73,7 @@ class PLATFORM_EXPORT NonMainThreadSchedulerImpl : public ThreadSchedulerImpl {
 
   std::unique_ptr<PageScheduler> CreatePageScheduler(
       PageScheduler::Delegate*) override;
+  AgentGroupScheduler* GetCurrentAgentGroupScheduler() override;
   std::unique_ptr<RendererPauseHandle> PauseScheduler() override
       WARN_UNUSED_RESULT;
 

@@ -2340,6 +2340,25 @@ std::unique_ptr<PageScheduler> MainThreadSchedulerImpl::CreatePageScheduler(
   return page_scheduler;
 }
 
+AgentGroupScheduler* MainThreadSchedulerImpl::GetCurrentAgentGroupScheduler() {
+  helper_.CheckOnValidThread();
+  return current_agent_group_scheduler_;
+}
+
+void MainThreadSchedulerImpl::SetCurrentAgentGroupScheduler(
+    AgentGroupSchedulerImpl* agent_group_scheduler_impl) {
+  helper_.CheckOnValidThread();
+  current_agent_group_scheduler_ = agent_group_scheduler_impl;
+  if (agent_group_scheduler_impl) {
+    sequence_manager_->SetDefaultTaskRunner(
+        agent_group_scheduler_impl->DefaultTaskRunner());
+  } else {
+    // If there is no proper AgentGroupScheduler, it means that the
+    // current scheduler is MainThreadScheduler.
+    sequence_manager_->SetDefaultTaskRunner(helper_.DefaultTaskRunner());
+  }
+}
+
 std::unique_ptr<ThreadScheduler::RendererPauseHandle>
 MainThreadSchedulerImpl::PauseScheduler() {
   return PauseRenderer();
@@ -2447,20 +2466,8 @@ void MainThreadSchedulerImpl::OnTaskStarted(
     MainThreadTaskQueue* queue,
     const base::sequence_manager::Task& task,
     const TaskQueue::TaskTiming& task_timing) {
-  // Switch current active scheduler
-  {
-    AgentGroupSchedulerImpl* agent_group_scheduler =
-        queue ? queue->GetAgentGroupScheduler() : nullptr;
-    AgentGroupSchedulerImpl::SetCurrent(agent_group_scheduler);
-    if (agent_group_scheduler) {
-      sequence_manager_->SetDefaultTaskRunner(
-          agent_group_scheduler->DefaultTaskRunner());
-    } else {
-      // If there is no proper AgentGroupScheduler, it means that the
-      // current scheduler is MainThreadScheduler.
-      sequence_manager_->SetDefaultTaskRunner(helper_.DefaultTaskRunner());
-    }
-  }
+  SetCurrentAgentGroupScheduler(queue ? queue->GetAgentGroupScheduler()
+                                      : nullptr);
 
   main_thread_only().running_queues.push(queue);
   if (main_thread_only().nested_runloop)
@@ -2522,10 +2529,9 @@ void MainThreadSchedulerImpl::OnTaskCompleted(
   find_in_page_budget_pool_controller_->OnTaskCompleted(queue.get(),
                                                         task_timing);
 
-  // AgentGroupSchedulerImpl::GetCurrent() should return nullptr when
+  // GetCurrentAgentGroupScheduler() should return nullptr when
   // it's running thread global task runners.
-  AgentGroupSchedulerImpl::SetCurrent(nullptr);
-  sequence_manager_->SetDefaultTaskRunner(helper_.DefaultTaskRunner());
+  SetCurrentAgentGroupScheduler(nullptr);
 }
 
 void MainThreadSchedulerImpl::RecordTaskUkm(

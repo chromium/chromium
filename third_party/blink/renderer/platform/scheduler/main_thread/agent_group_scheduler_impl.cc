@@ -18,21 +18,6 @@ MainThreadTaskQueue::QueueCreationParams DefaultTaskQueueCreationParams(
       .SetAgentGroupScheduler(agent_group_scheduler_impl);
 }
 
-static AgentGroupSchedulerImpl* g_current_agent_group_scheduler_impl;
-
-// static
-AgentGroupSchedulerImpl* AgentGroupSchedulerImpl::GetCurrent() {
-  DCHECK(WTF::IsMainThread());
-  return g_current_agent_group_scheduler_impl;
-}
-
-// static
-void AgentGroupSchedulerImpl::SetCurrent(
-    AgentGroupSchedulerImpl* agent_group_scheduler_impl) {
-  DCHECK(WTF::IsMainThread());
-  g_current_agent_group_scheduler_impl = agent_group_scheduler_impl;
-}
-
 AgentGroupSchedulerImpl::AgentGroupSchedulerImpl(
     MainThreadSchedulerImpl* main_thread_scheduler)
     : default_task_queue_(main_thread_scheduler->NewTaskQueue(
