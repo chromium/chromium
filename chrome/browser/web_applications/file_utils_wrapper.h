@@ -34,7 +34,7 @@ class FileUtilsWrapper {
   virtual ~FileUtilsWrapper() = default;
 
   // Create a copy to use in IO task.
-  virtual std::unique_ptr<FileUtilsWrapper> Clone() const;
+  virtual std::unique_ptr<FileUtilsWrapper> Clone();
 
   bool PathExists(const base::FilePath& path);
 

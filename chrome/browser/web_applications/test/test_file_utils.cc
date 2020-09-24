@@ -23,7 +23,7 @@ TestFileUtils::TestFileUtils(const TestFileUtils&) = default;
 
 TestFileUtils::~TestFileUtils() = default;
 
-std::unique_ptr<FileUtilsWrapper> TestFileUtils::Clone() const {
+std::unique_ptr<FileUtilsWrapper> TestFileUtils::Clone() {
   return std::make_unique<TestFileUtils>(*this);
 }
 
