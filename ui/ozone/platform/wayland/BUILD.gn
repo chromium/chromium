@@ -4,6 +4,7 @@
 
 visibility = [ "//ui/ozone/*" ]
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/linux/gtk/gtk.gni")
 import("//build/config/linux/pkg_config.gni")
 import("//gpu/vulkan/features.gni")
@@ -210,6 +211,11 @@ source_set("wayland") {
       "//build/config/linux/gtk",
       "//ui/gtk:gtk_ui_delegate",
     ]
+  }
+
+  # TODO(crbug.com/1052397): Rename chromeos_is_browser_only to is_lacros.
+  if (chromeos_is_browser_only) {
+    deps += [ "//chromeos/crosapi/cpp" ]
   }
 
   defines = [ "OZONE_IMPLEMENTATION" ]

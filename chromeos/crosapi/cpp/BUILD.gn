@@ -14,6 +14,8 @@ component("cpp") {
     "bitmap.h",
     "bitmap_util.cc",
     "bitmap_util.h",
+    "crosapi_constants.cc",
+    "crosapi_constants.h",
   ]
   configs += [ ":crosapi_implementation" ]
   deps = [

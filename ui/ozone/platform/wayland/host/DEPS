@@ -1,0 +1,4 @@
+include_rules = [
+  # For Lacros.
+  "+chromeos/crosapi/cpp/crosapi_constants.h",
+]
