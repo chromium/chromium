@@ -5,6 +5,7 @@
 #include "chrome/browser/web_applications/external_web_app_manager.h"
 
 #include "base/files/file_path.h"
+#include "base/json/json_reader.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind_test_util.h"
@@ -41,33 +42,47 @@ class ExternalWebAppManagerBrowserTest
   // Mocks "icon.png" as available in the config's directory.
   InstallResultCode SyncDefaultAppConfig(const GURL& install_url,
                                          std::string app_config_string) {
+    base::FilePath test_config_dir(FILE_PATH_LITERAL("test_dir"));
+    ExternalWebAppManager::SetConfigDirForTesting(&test_config_dir);
+
     base::FilePath source_root_dir;
     CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &source_root_dir));
     base::FilePath test_icon_path =
         source_root_dir.Append(GetChromeTestDataDir())
             .AppendASCII("web_apps/blue-192.png");
+    TestFileUtils file_utils(
+        {{base::FilePath(FILE_PATH_LITERAL("test_dir/icon.png")),
+          test_icon_path}});
+    ExternalWebAppManager::SetFileUtilsForTesting(&file_utils);
+
+    std::vector<base::Value> app_configs;
+    app_configs.push_back(*base::JSONReader::Read(app_config_string));
+    ExternalWebAppManager::SetConfigsForTesting(&app_configs);
 
     base::Optional<InstallResultCode> code;
     base::RunLoop sync_run_loop;
     WebAppProvider::Get(browser()->profile())
         ->external_web_app_manager_for_testing()
-        .SynchronizeAppsForTesting(
-            TestFileUtils::Create(
-                {{base::FilePath(FILE_PATH_LITERAL("test_dir/icon.png")),
-                  test_icon_path}}),
-            {app_config_string},
-            base::BindLambdaForTesting(
-                [&](std::map<GURL, InstallResultCode> install_results,
-                    std::map<GURL, bool> uninstall_results) {
-                  code = install_results.at(install_url);
-                  sync_run_loop.Quit();
-                }));
+        .LoadAndSynchronizeForTesting(base::BindLambdaForTesting(
+            [&](std::map<GURL, InstallResultCode> install_results,
+                std::map<GURL, bool> uninstall_results) {
+              code = install_results.at(install_url);
+              sync_run_loop.Quit();
+            }));
     sync_run_loop.Run();
+
+    ExternalWebAppManager::SetConfigDirForTesting(nullptr);
+    ExternalWebAppManager::SetFileUtilsForTesting(nullptr);
+    ExternalWebAppManager::SetConfigsForTesting(nullptr);
+
     return *code;
   }
 
   ~ExternalWebAppManagerBrowserTest() override = default;
 };
+
+// This JSON config functionality is only available on Chrome OS.
+#if defined(OS_CHROMEOS)
 
 IN_PROC_BROWSER_TEST_F(ExternalWebAppManagerBrowserTest, UninstallAndReplace) {
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -101,10 +116,6 @@ IN_PROC_BROWSER_TEST_F(ExternalWebAppManagerBrowserTest, UninstallAndReplace) {
       uninstall_observer.WaitForExtensionUninstalled();
   EXPECT_EQ(app, uninstalled_app.get());
 }
-
-// TODO(crbug.com/1119710): Loading icon.png fails on Windows.
-// This JSON config functionality is only used on Chrome OS.
-#if !defined(OS_WIN)
 
 // Check that offline fallback installs work offline.
 IN_PROC_BROWSER_TEST_F(ExternalWebAppManagerBrowserTest,
@@ -286,6 +297,6 @@ IN_PROC_BROWSER_TEST_F(ExternalWebAppManagerBrowserTest,
             SK_ColorBLUE);
 }
 
-#endif  // !defined(OS_WIN)
+#endif  // defined(OS_CHROMEOS)
 
 }  // namespace web_app

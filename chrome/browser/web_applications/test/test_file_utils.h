@@ -28,7 +28,7 @@ class TestFileUtils : public FileUtilsWrapper {
   ~TestFileUtils() override;
 
   // FileUtilsWrapper:
-  std::unique_ptr<FileUtilsWrapper> Clone() override;
+  std::unique_ptr<FileUtilsWrapper> Clone() const override;
   int WriteFile(const base::FilePath& filename,
                 const char* data,
                 int size) override;

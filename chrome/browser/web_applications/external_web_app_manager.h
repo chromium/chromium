@@ -10,6 +10,7 @@
 #include "base/callback_forward.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/values.h"
 #include "chrome/browser/web_applications/components/external_install_options.h"
 #include "chrome/browser/web_applications/components/pending_app_manager.h"
 #include "chrome/browser/web_applications/file_utils_wrapper.h"
@@ -22,47 +23,65 @@ class Profile;
 
 namespace web_app {
 
+namespace {
+struct LoadedConfigs;
+struct ParsedConfigs;
+}  // namespace
+
 class PendingAppManager;
 
+// Installs web apps to be preinstalled on the device (AKA default apps) during
+// start up. Will keep the apps installed on the device in sync with the set of
+// apps configured for preinstall, adding or removing as necessary. Works very
+// similar to WebAppPolicyManager.
 class ExternalWebAppManager {
  public:
+  using ConsumeLoadedConfigs = base::OnceCallback<void(LoadedConfigs)>;
+  using ConsumeParsedConfigs = base::OnceCallback<void(ParsedConfigs)>;
+  using ConsumeInstallOptions =
+      base::OnceCallback<void(std::vector<ExternalInstallOptions>)>;
+  using SynchronizeCallback = PendingAppManager::SynchronizeCallback;
+
   static const char* kHistogramEnabledCount;
   static const char* kHistogramDisabledCount;
   static const char* kHistogramConfigErrorCount;
+
+  static void SkipStartupForTesting();
+  static void SetConfigDirForTesting(const base::FilePath* config_dir);
+  static void SetConfigsForTesting(const std::vector<base::Value>* configs);
+  static void SetFileUtilsForTesting(const FileUtilsWrapper* file_utils);
 
   explicit ExternalWebAppManager(Profile* profile);
   ~ExternalWebAppManager();
 
   void SetSubsystems(PendingAppManager* pending_app_manager);
 
+  // Loads the preinstalled app configs and synchronizes them with the device's
+  // installed apps.
   void Start();
 
-  // Scans the given directory (non-recursively) for *.json files that define
-  // "external web apps", the Web App analogs of "external extensions",
-  // described at https://developer.chrome.com/apps/external_extensions
-  //
-  // This function performs file I/O, and must not be scheduled on UI threads.
-  static std::vector<ExternalInstallOptions> ReloadInstallOptionsForTesting(
-      std::unique_ptr<FileUtilsWrapper> file_utils,
-      const base::FilePath& dir,
-      Profile* profile);
+  void LoadAndSynchronizeForTesting(SynchronizeCallback callback);
 
-  using LoadCallback =
-      base::OnceCallback<void(std::vector<ExternalInstallOptions>)>;
-
-  void LoadInstallOptions(LoadCallback callback);
-
-  static void SkipStartupForTesting();
-
-  void SynchronizeAppsForTesting(
-      std::unique_ptr<FileUtilsWrapper> file_utils,
-      std::vector<std::string> app_configs,
-      PendingAppManager::SynchronizeCallback callback);
+  void LoadForTesting(ConsumeInstallOptions callback);
 
  private:
-  void SynchronizeExternalInstallOptions(
+  void LoadAndSynchronize(SynchronizeCallback callback);
+
+  void Load(ConsumeInstallOptions callback);
+  void LoadConfigs(ConsumeLoadedConfigs callback);
+  void ParseConfigs(ConsumeParsedConfigs callback,
+                    LoadedConfigs loaded_configs);
+  void PostProcessConfigs(ConsumeInstallOptions callback,
+                          ParsedConfigs parsed_configs);
+
+  void Synchronize(SynchronizeCallback callback,
+                   std::vector<ExternalInstallOptions>);
+  void OnExternalWebAppsSynchronized(
       PendingAppManager::SynchronizeCallback callback,
-      std::vector<ExternalInstallOptions>);
+      std::map<GURL, InstallResultCode> install_results,
+      std::map<GURL, bool> uninstall_results);
+
+  base::FilePath GetConfigDir();
 
   PendingAppManager* pending_app_manager_ = nullptr;
   Profile* const profile_;
