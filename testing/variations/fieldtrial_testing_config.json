@@ -4512,21 +4512,6 @@
             ]
         }
     ],
-    "NativeNotifications": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "NativeNotifications"
-                    ]
-                }
-            ]
-        }
-    ],
     "NativeWindowOcclusionTrackerWin": [
         {
             "platforms": [
@@ -4593,21 +4578,6 @@
                     },
                     "enable_features": [
                         "NavigationPredictorMultiplePrerenders"
-                    ]
-                }
-            ]
-        }
-    ],
-    "NetworkServiceSandbox": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "NetworkServiceSandbox"
                     ]
                 }
             ]
@@ -5492,23 +5462,6 @@
             ]
         }
     ],
-    "PermissionPromptUIViews": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "BlockPromptsEnabled",
-                    "enable_features": [
-                        "BlockPromptsIfDismissedOften"
-                    ]
-                }
-            ]
-        }
-    ],
     "PersistentHistograms": [
         {
             "platforms": [
@@ -5621,26 +5574,6 @@
                     "name": "Enabled_threshold_1_holdback_20190521",
                     "enable_features": [
                         "GWSPrefetchHoldback"
-                    ]
-                }
-            ]
-        }
-    ],
-    "PreloadMetadataLazyLoad": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PreloadMetadataLazyLoad"
                     ]
                 }
             ]
