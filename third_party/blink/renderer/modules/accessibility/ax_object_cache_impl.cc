@@ -1707,6 +1707,9 @@ void AXObjectCacheImpl::HandleNodeLostFocusWithCleanLayout(Node* node) {
   if (!obj)
     return;
 
+  TRACE_EVENT1("accessibility",
+               "AXObjectCacheImpl::HandleNodeLostFocusWithCleanLayout", "id",
+               obj->AXObjectID());
   PostNotification(obj, ax::mojom::Event::kBlur);
 }
 
@@ -1730,6 +1733,9 @@ void AXObjectCacheImpl::HandleNodeGainedFocusWithCleanLayout(Node* node) {
   if (!obj)
     return;
 
+  TRACE_EVENT1("accessibility",
+               "AXObjectCacheImpl::HandleNodeGainedFocusWithCleanLayout", "id",
+               obj->AXObjectID());
   PostNotification(obj, ax::mojom::Event::kFocus);
 }
 
@@ -2139,6 +2145,8 @@ void AXObjectCacheImpl::MarkElementDirty(const Node* element, bool subtree) {
 void AXObjectCacheImpl::HandleFocusedUIElementChanged(
     Element* old_focused_element,
     Element* new_focused_element) {
+  TRACE_EVENT0("accessibility",
+               "AXObjectCacheImpl::HandleFocusedUIElementChanged");
 #if DCHECK_IS_ON()
   // The focus can be in a different document when a popup is open.
   Document& focused_doc =

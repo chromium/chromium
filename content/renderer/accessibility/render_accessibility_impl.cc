@@ -781,6 +781,11 @@ void RenderAccessibilityImpl::SendPendingAccessibilityEvents() {
   if (pending_events_.empty() && dirty_objects_.empty())
     return;
 
+  // Update layout before snapshotting the events so that live state read from
+  // the DOM during freezing (e.g. which node currently has focus) is consistent
+  // with the events and node data we're about to send up.
+  WebAXObject::UpdateLayout(document);
+
   // Make a copy of the events, because it's possible that
   // actions inside this loop will cause more events to be
   // queued up.
@@ -805,7 +810,6 @@ void RenderAccessibilityImpl::SendPendingAccessibilityEvents() {
 
   ScopedFreezeBlinkAXTreeSource freeze(tree_source_.get());
 
-  WebAXObject::UpdateLayout(document);
   WebAXObject root = tree_source_->GetRoot();
 #if DCHECK_IS_ON()
   // Never causes a document lifecycle change during serialization,

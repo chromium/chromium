@@ -191,6 +191,10 @@ class RenderAccessibilityHostInterceptor
     return handled_updates_.back();
   }
 
+  const std::vector<ui::AXTreeUpdate>& handled_updates() const {
+    return handled_updates_;
+  }
+
   std::vector<mojom::LocationChangesPtr>& location_changes() {
     return location_changes_;
   }
@@ -234,6 +238,10 @@ class RenderAccessibilityTestRenderFrame : public TestRenderFrame {
 
   ui::AXTreeUpdate& LastUpdate() {
     return render_accessibility_host_->last_update();
+  }
+
+  const std::vector<ui::AXTreeUpdate>& HandledUpdates() {
+    return render_accessibility_host_->handled_updates();
   }
 
   void ClearHandledUpdates() {
@@ -367,6 +375,11 @@ class RenderAccessibilityImplTest : public RenderViewTest {
   ui::AXTreeUpdate GetLastAccUpdate() {
     return static_cast<RenderAccessibilityTestRenderFrame*>(frame())
         ->LastUpdate();
+  }
+
+  const std::vector<ui::AXTreeUpdate>& GetHandledAccUpdates() {
+    return static_cast<RenderAccessibilityTestRenderFrame*>(frame())
+        ->HandledUpdates();
   }
 
   void ClearHandledUpdates() {
@@ -738,6 +751,69 @@ TEST_F(RenderAccessibilityImplTest, TestBoundsForMultipleFixedNodeAfterScroll) {
     EXPECT_NE(search, expected.end());
     EXPECT_EQ(search->second, change->new_location);
   }
+}
+
+TEST_F(RenderAccessibilityImplTest, TestFocusConsistency) {
+  constexpr char html[] = R"HTML(
+      <body>
+        <a id="link" tabindex=0>link</a>
+        <button id="button" style="visibility:hidden" tabindex=0>button</button>
+        <script>
+          link.addEventListener("click", () => {
+            button.style.visibility = "visible";
+            button.focus();
+          });
+        </script>
+      </body>
+      )HTML";
+  LoadHTMLAndRefreshAccessibilityTree(html);
+
+  WebDocument document = GetMainFrame()->GetDocument();
+  WebAXObject root_obj = WebAXObject::FromWebDocument(document);
+  WebAXObject body = root_obj.ChildAt(0);
+  WebAXObject link = body.ChildAt(0);
+  WebAXObject button = body.ChildAt(1);
+
+  // Set focus to the <a>, this will queue up an initial set of deferred
+  // accessibility events to be queued up on AXObjectCacheImpl.
+  ui::AXActionData action;
+  action.target_node_id = link.AxID();
+  action.action = ax::mojom::Action::kFocus;
+  GetRenderAccessibilityImpl()->PerformAction(action);
+
+  // Update layout so that the AXEvents themselves are queued up to
+  // RenderAccessibilityImpl.
+  ASSERT_TRUE(root_obj.MaybeUpdateLayoutAndCheckValidity());
+
+  // Now perform the default action on the link, which will bounce focus to
+  // the button element.
+  action.target_node_id = link.AxID();
+  action.action = ax::mojom::Action::kDoDefault;
+  GetRenderAccessibilityImpl()->PerformAction(action);
+
+  // The events and updates from the previous operation would normally be
+  // processed in the next frame, but the initial focus operation caused a
+  // ScheduleSendPendingAccessibilityEvents.
+  SendPendingAccessibilityEvents();
+
+  // The pattern up DOM/style updates above result in multiple AXTreeUpdates
+  // sent over mojo. Search the updates to ensure that the button
+  const std::vector<ui::AXTreeUpdate>& updates = GetHandledAccUpdates();
+  ui::AXNode::AXID focused_node = ui::AXNode::kInvalidAXID;
+  bool found_button_update = false;
+  for (const auto& update : updates) {
+    if (update.has_tree_data)
+      focused_node = update.tree_data.focus_id;
+
+    for (const auto& node_data : update.nodes) {
+      if (node_data.id == button.AxID() &&
+          !node_data.HasState(ax::mojom::State::kIgnored))
+        found_button_update = true;
+    }
+  }
+
+  EXPECT_EQ(focused_node, button.AxID());
+  EXPECT_TRUE(found_button_update);
 }
 
 class MockPluginAccessibilityTreeSource : public content::PluginAXTreeSource {

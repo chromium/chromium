@@ -614,8 +614,8 @@ void BlinkAXTreeSource::SerializeNode(WebAXObject src,
   dst->role = src.Role();
   dst->id = src.AxID();
 
-  TRACE_EVENT1("accessibility", "BlinkAXTreeSource::SerializeNode", "role",
-               ui::ToString(dst->role));
+  TRACE_EVENT2("accessibility", "BlinkAXTreeSource::SerializeNode", "role",
+               ui::ToString(dst->role), "id", dst->id);
 
   SerializeNameAndDescriptionAttributes(src, dst);
 
