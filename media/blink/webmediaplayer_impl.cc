@@ -817,6 +817,8 @@ void WebMediaPlayerImpl::DoLoad(LoadType load_type,
         base::BindRepeating(&WebMediaPlayerImpl::NotifyDownloading,
                             weak_this_));
     data_source_.reset(mb_data_source_);
+    mb_data_source_->OnRedirect(base::BindRepeating(
+        &WebMediaPlayerImpl::OnDataSourceRedirected, weak_this_));
     mb_data_source_->SetPreload(preload_);
     mb_data_source_->SetIsClientAudioElement(client_->IsAudioElement());
     mb_data_source_->Initialize(
@@ -2680,6 +2682,16 @@ void WebMediaPlayerImpl::DataSourceInitialized(bool success) {
   }
 
   StartPipeline();
+}
+
+void WebMediaPlayerImpl::OnDataSourceRedirected() {
+  DVLOG(1) << __func__;
+  DCHECK(main_task_runner_->BelongsToCurrentThread());
+  DCHECK(mb_data_source_);
+
+  if (WouldTaintOrigin()) {
+    audio_source_provider_->TaintOrigin();
+  }
 }
 
 void WebMediaPlayerImpl::NotifyDownloading(bool is_downloading) {

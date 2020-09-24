@@ -39,6 +39,7 @@ class MultiBufferReader;
 class MEDIA_BLINK_EXPORT MultibufferDataSource : public DataSource {
  public:
   using DownloadingCB = base::RepeatingCallback<void(bool)>;
+  using RedirectCB = base::RepeatingCallback<void()>;
 
   // Used to specify video preload states. They are "hints" to the browser about
   // how aggressively the browser should load and buffer data.
@@ -82,6 +83,9 @@ class MEDIA_BLINK_EXPORT MultibufferDataSource : public DataSource {
   // https://html.spec.whatwg.org/#cors-cross-origin
   // This must be called after the response arrives.
   bool IsCorsCrossOrigin() const;
+
+  // Provides a callback to be run when the underlying url is redirected.
+  void OnRedirect(RedirectCB callback);
 
   // Returns true if the response includes an Access-Control-Allow-Origin
   // header (that is not "null").
@@ -129,7 +133,7 @@ class MEDIA_BLINK_EXPORT MultibufferDataSource : public DataSource {
   bool cancel_on_defer_for_testing() const { return cancel_on_defer_; }
 
  protected:
-  void OnRedirect(const scoped_refptr<UrlData>& destination);
+  void OnRedirected(const scoped_refptr<UrlData>& new_destination);
 
   // A factory method to create a BufferedResourceLoader based on the read
   // parameters.
@@ -243,6 +247,9 @@ class MEDIA_BLINK_EXPORT MultibufferDataSource : public DataSource {
   // As we follow redirects, we set this variable to false if redirects
   // go between different origins.
   bool single_origin_;
+
+  // Callback used when a redirect occurs.
+  RedirectCB redirect_cb_;
 
   // Close the connection when we have enough data.
   bool cancel_on_defer_;
