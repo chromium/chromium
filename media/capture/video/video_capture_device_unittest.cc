@@ -466,7 +466,8 @@ class VideoCaptureDeviceTest
 
 // Causes a flaky crash on Chrome OS. https://crbug.com/1069608
 // Cause hangs on Windows Debug. http://crbug.com/417824
-#if defined(OS_CHROMEOS) || (defined(OS_WIN) && !defined(NDEBUG))
+#if defined(OS_CHROMEOS) || (defined(OS_WIN) && !defined(NDEBUG)) || \
+    defined(OS_MAC)
 #define MAYBE_OpenInvalidDevice DISABLED_OpenInvalidDevice
 #else
 #define MAYBE_OpenInvalidDevice OpenInvalidDevice
