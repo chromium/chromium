@@ -49,7 +49,6 @@ LayoutSVGResourceContainer::LayoutSVGResourceContainer(SVGElement* node)
 LayoutSVGResourceContainer::~LayoutSVGResourceContainer() = default;
 
 void LayoutSVGResourceContainer::UpdateLayout() {
-  CheckIsNotDestroyed();
   // FIXME: Investigate a way to detect and break resource layout dependency
   // cycles early. Then we can remove this method altogether, and fall back onto
   // LayoutSVGHiddenContainer::layout().
@@ -65,7 +64,6 @@ void LayoutSVGResourceContainer::UpdateLayout() {
 }
 
 void LayoutSVGResourceContainer::WillBeDestroyed() {
-  CheckIsNotDestroyed();
   LayoutSVGHiddenContainer::WillBeDestroyed();
   // The resource is being torn down.
   // TODO(fs): Remove this when SVGResources is gone.
@@ -76,7 +74,6 @@ void LayoutSVGResourceContainer::WillBeDestroyed() {
 void LayoutSVGResourceContainer::StyleDidChange(
     StyleDifference diff,
     const ComputedStyle* old_style) {
-  CheckIsNotDestroyed();
   LayoutSVGHiddenContainer::StyleDidChange(diff, old_style);
   // The resource has been attached. Notify any pending clients that
   // they can now try to add themselves as clients to the resource.
@@ -89,7 +86,6 @@ void LayoutSVGResourceContainer::StyleDidChange(
 
 bool LayoutSVGResourceContainer::FindCycle(
     SVGResourcesCycleSolver& solver) const {
-  CheckIsNotDestroyed();
   if (solver.IsKnownAcyclic(this))
     return false;
   SVGResourcesCycleSolver::Scope scope(solver);
@@ -120,7 +116,6 @@ bool LayoutSVGResourceContainer::FindCycleInResources(
 
 bool LayoutSVGResourceContainer::FindCycleFromSelf(
     SVGResourcesCycleSolver& solver) const {
-  CheckIsNotDestroyed();
   return FindCycleInSubtree(solver, *this);
 }
 
@@ -152,7 +147,6 @@ bool LayoutSVGResourceContainer::FindCycleInSubtree(
 
 void LayoutSVGResourceContainer::MarkAllClientsForInvalidation(
     InvalidationModeMask invalidation_mask) {
-  CheckIsNotDestroyed();
   if (is_invalidating_)
     return;
   LocalSVGResource* resource = ResourceForContainer(*this);
@@ -196,7 +190,6 @@ void LayoutSVGResourceContainer::MarkClientForInvalidation(
 void LayoutSVGResourceContainer::InvalidateCacheAndMarkForLayout(
     LayoutInvalidationReasonForTracing reason,
     SubtreeLayoutScope* layout_scope) {
-  CheckIsNotDestroyed();
   if (SelfNeedsLayout())
     return;
 
@@ -209,7 +202,6 @@ void LayoutSVGResourceContainer::InvalidateCacheAndMarkForLayout(
 
 void LayoutSVGResourceContainer::InvalidateCacheAndMarkForLayout(
     SubtreeLayoutScope* layout_scope) {
-  CheckIsNotDestroyed();
   InvalidateCacheAndMarkForLayout(
       layout_invalidation_reason::kSvgResourceInvalidated, layout_scope);
 }

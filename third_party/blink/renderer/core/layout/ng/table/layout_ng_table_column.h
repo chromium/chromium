@@ -20,19 +20,14 @@ class CORE_EXPORT LayoutNGTableColumn : public LayoutBox {
   LayoutNGTable* Table() const;
 
   bool IsColumn() const {
-    CheckIsNotDestroyed();
     return StyleRef().Display() == EDisplay::kTableColumn;
   }
 
   bool IsColumnGroup() const {
-    CheckIsNotDestroyed();
     return StyleRef().Display() == EDisplay::kTableColumnGroup;
   }
 
-  unsigned Span() const {
-    CheckIsNotDestroyed();
-    return span_;
-  }
+  unsigned Span() const { return span_; }
 
   // Clears needs-layout for child columns too.
   void ClearNeedsLayoutForChildren() const;
@@ -40,17 +35,13 @@ class CORE_EXPORT LayoutNGTableColumn : public LayoutBox {
   // LayoutObject methods start.
 
   const char* GetName() const override {
-    CheckIsNotDestroyed();
     if (IsColumn())
       return "LayoutNGTableCol";
     else
       return "LayoutNGTableColGroup";
   }
 
-  bool IsLayoutNGObject() const final {
-    CheckIsNotDestroyed();
-    return true;
-  }
+  bool IsLayoutNGObject() const final { return true; }
 
   void StyleDidChange(StyleDifference diff,
                       const ComputedStyle* old_style) final;
@@ -60,13 +51,11 @@ class CORE_EXPORT LayoutNGTableColumn : public LayoutBox {
  protected:
   // Required by LayoutBox, but not used.
   MinMaxSizes ComputeIntrinsicLogicalWidths() const override {
-    CheckIsNotDestroyed();
     NOTIMPLEMENTED();
     return MinMaxSizes();
   }
 
   bool IsOfType(LayoutObjectType type) const override {
-    CheckIsNotDestroyed();
     return type == kLayoutObjectLayoutTableCol || LayoutBox::IsOfType(type);
   }
 
@@ -77,18 +66,11 @@ class CORE_EXPORT LayoutNGTableColumn : public LayoutBox {
 
   void UpdateFromElement() override;
 
-  PaintLayerType LayerTypeRequired() const override {
-    CheckIsNotDestroyed();
-    return kNoPaintLayer;
-  }
+  PaintLayerType LayerTypeRequired() const override { return kNoPaintLayer; }
 
-  LayoutObjectChildList* VirtualChildren() override {
-    CheckIsNotDestroyed();
-    return &children_;
-  }
+  LayoutObjectChildList* VirtualChildren() override { return &children_; }
 
   const LayoutObjectChildList* VirtualChildren() const override {
-    CheckIsNotDestroyed();
     return &children_;
   }
 

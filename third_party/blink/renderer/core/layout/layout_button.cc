@@ -31,7 +31,6 @@ LayoutButton::~LayoutButton() = default;
 
 void LayoutButton::AddChild(LayoutObject* new_child,
                             LayoutObject* before_child) {
-  CheckIsNotDestroyed();
   if (!inner_) {
     // Create an anonymous block.
     DCHECK(!FirstChild());
@@ -43,7 +42,6 @@ void LayoutButton::AddChild(LayoutObject* new_child,
 }
 
 void LayoutButton::RemoveChild(LayoutObject* old_child) {
-  CheckIsNotDestroyed();
   if (old_child == inner_ || !inner_) {
     LayoutFlexibleBox::RemoveChild(old_child);
     inner_ = nullptr;
@@ -88,14 +86,12 @@ LayoutUnit LayoutButton::BaselinePosition(
     bool first_line,
     LineDirectionMode direction,
     LinePositionMode line_position_mode) const {
-  CheckIsNotDestroyed();
   DCHECK_EQ(line_position_mode, kPositionOnContainingLine);
   // We want to call the LayoutBlock version of firstLineBoxBaseline to
   // avoid LayoutFlexibleBox synthesizing a baseline that we don't want.
   // We use this check as a proxy for "are there any line boxes in this button"
   if (!HasLineIfEmpty() && !ShouldApplyLayoutContainment() &&
       LayoutBlock::FirstLineBoxBaseline() == -1) {
-    CheckIsNotDestroyed();
     // To ensure that we have a consistent baseline when we have no children,
     // even when we have the anonymous LayoutBlock child, we calculate the
     // baseline for the empty case manually here.

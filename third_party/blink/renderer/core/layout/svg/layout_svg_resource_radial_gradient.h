@@ -34,23 +34,17 @@ class LayoutSVGResourceRadialGradient final : public LayoutSVGResourceGradient {
   ~LayoutSVGResourceRadialGradient() override;
 
   const char* GetName() const override {
-    CheckIsNotDestroyed();
     return "LayoutSVGResourceRadialGradient";
   }
 
   static const LayoutSVGResourceType kResourceType =
       kRadialGradientResourceType;
-  LayoutSVGResourceType ResourceType() const override {
-    CheckIsNotDestroyed();
-    return kResourceType;
-  }
+  LayoutSVGResourceType ResourceType() const override { return kResourceType; }
 
   SVGUnitTypes::SVGUnitType GradientUnits() const override {
-    CheckIsNotDestroyed();
     return Attributes().GradientUnits();
   }
   AffineTransform CalculateGradientTransform() const override {
-    CheckIsNotDestroyed();
     return Attributes().GradientTransform();
   }
   void CollectGradientAttributes() override;
@@ -65,11 +59,9 @@ class LayoutSVGResourceRadialGradient final : public LayoutSVGResourceGradient {
   Persistent<RadialGradientAttributesWrapper> attributes_wrapper_;
 
   RadialGradientAttributes& MutableAttributes() {
-    CheckIsNotDestroyed();
     return attributes_wrapper_->Attributes();
   }
   const RadialGradientAttributes& Attributes() const {
-    CheckIsNotDestroyed();
     return attributes_wrapper_->Attributes();
   }
 };

@@ -44,17 +44,13 @@ class LayoutQuote final : public LayoutInline {
   ~LayoutQuote() override;
   void AttachQuote();
 
-  const char* GetName() const override {
-    CheckIsNotDestroyed();
-    return "LayoutQuote";
-  }
+  const char* GetName() const override { return "LayoutQuote"; }
 
  private:
   void DetachQuote();
 
   void WillBeDestroyed() override;
   bool IsOfType(LayoutObjectType type) const override {
-    CheckIsNotDestroyed();
     return type == kLayoutObjectQuote || LayoutInline::IsOfType(type);
   }
   void StyleDidChange(StyleDifference, const ComputedStyle*) override;
@@ -64,10 +60,7 @@ class LayoutQuote final : public LayoutInline {
   void UpdateText();
   const QuotesData* GetQuotesData() const;
   void UpdateDepth();
-  bool IsAttached() {
-    CheckIsNotDestroyed();
-    return attached_;
-  }
+  bool IsAttached() { return attached_; }
 
   LayoutTextFragment* FindFragmentChild() const;
 

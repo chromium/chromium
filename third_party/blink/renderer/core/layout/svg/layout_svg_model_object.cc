@@ -45,7 +45,6 @@ LayoutSVGModelObject::LayoutSVGModelObject(SVGElement* node)
 
 bool LayoutSVGModelObject::IsChildAllowed(LayoutObject* child,
                                           const ComputedStyle&) const {
-  CheckIsNotDestroyed();
   return child->IsSVG() && !(child->IsSVGInline() || child->IsSVGInlineText());
 }
 
@@ -53,13 +52,11 @@ void LayoutSVGModelObject::MapLocalToAncestor(
     const LayoutBoxModelObject* ancestor,
     TransformState& transform_state,
     MapCoordinatesFlags flags) const {
-  CheckIsNotDestroyed();
   SVGLayoutSupport::MapLocalToAncestor(this, ancestor, transform_state, flags);
 }
 
 PhysicalRect LayoutSVGModelObject::VisualRectInDocument(
     VisualRectFlags flags) const {
-  CheckIsNotDestroyed();
   return SVGLayoutSupport::VisualRectInAncestorSpace(*this, *View(), flags);
 }
 
@@ -67,21 +64,18 @@ void LayoutSVGModelObject::MapAncestorToLocal(
     const LayoutBoxModelObject* ancestor,
     TransformState& transform_state,
     MapCoordinatesFlags flags) const {
-  CheckIsNotDestroyed();
   SVGLayoutSupport::MapAncestorToLocal(*this, ancestor, transform_state, flags);
 }
 
 const LayoutObject* LayoutSVGModelObject::PushMappingToContainer(
     const LayoutBoxModelObject* ancestor_to_stop_at,
     LayoutGeometryMap& geometry_map) const {
-  CheckIsNotDestroyed();
   return SVGLayoutSupport::PushMappingToContainer(this, ancestor_to_stop_at,
                                                   geometry_map);
 }
 
 void LayoutSVGModelObject::AbsoluteQuads(Vector<FloatQuad>& quads,
                                          MapCoordinatesFlags mode) const {
-  CheckIsNotDestroyed();
   quads.push_back(LocalToAbsoluteQuad(StrokeBoundingBox(), mode));
 }
 
@@ -90,25 +84,21 @@ void LayoutSVGModelObject::AbsoluteQuads(Vector<FloatQuad>& quads,
 void LayoutSVGModelObject::AddOutlineRects(Vector<PhysicalRect>& rects,
                                            const PhysicalOffset&,
                                            NGOutlineType) const {
-  CheckIsNotDestroyed();
   rects.push_back(
       PhysicalRect::EnclosingRect(VisualRectInLocalSVGCoordinates()));
 }
 
 FloatRect LayoutSVGModelObject::LocalBoundingBoxRectForAccessibility() const {
-  CheckIsNotDestroyed();
   return StrokeBoundingBox();
 }
 
 void LayoutSVGModelObject::WillBeDestroyed() {
-  CheckIsNotDestroyed();
   SVGResourcesCache::ClientDestroyed(*this);
   SVGResources::ClearClipPathFilterMask(*GetElement(), Style());
   LayoutObject::WillBeDestroyed();
 }
 
 AffineTransform LayoutSVGModelObject::CalculateLocalTransform() const {
-  CheckIsNotDestroyed();
   auto* element = GetElement();
   if (element->HasTransform(SVGElement::kIncludeMotionTransform))
     return element->CalculateTransform(SVGElement::kIncludeMotionTransform);
@@ -117,7 +107,6 @@ AffineTransform LayoutSVGModelObject::CalculateLocalTransform() const {
 
 bool LayoutSVGModelObject::CheckForImplicitTransformChange(
     bool bbox_changed) const {
-  CheckIsNotDestroyed();
   // If the transform is relative to the reference box, check relevant
   // conditions to see if we need to recompute the transform.
   switch (StyleRef().TransformBox()) {
@@ -132,7 +121,6 @@ bool LayoutSVGModelObject::CheckForImplicitTransformChange(
 
 void LayoutSVGModelObject::StyleDidChange(StyleDifference diff,
                                           const ComputedStyle* old_style) {
-  CheckIsNotDestroyed();
   // Since layout depends on the bounds of the filter, we need to force layout
   // when the filter changes. We also need to make sure paint will be
   // performed, since if the filter changed we will not have cached result from
@@ -170,7 +158,6 @@ void LayoutSVGModelObject::StyleDidChange(StyleDifference diff,
 }
 
 void LayoutSVGModelObject::InsertedIntoTree() {
-  CheckIsNotDestroyed();
   LayoutObject::InsertedIntoTree();
   if (CompositingReasonFinder::DirectReasonsForSVGChildPaintProperties(*this) !=
       CompositingReason::kNone) {
@@ -179,7 +166,6 @@ void LayoutSVGModelObject::InsertedIntoTree() {
 }
 
 void LayoutSVGModelObject::WillBeRemovedFromTree() {
-  CheckIsNotDestroyed();
   LayoutObject::WillBeRemovedFromTree();
   if (CompositingReasonFinder::DirectReasonsForSVGChildPaintProperties(*this) !=
       CompositingReason::kNone) {

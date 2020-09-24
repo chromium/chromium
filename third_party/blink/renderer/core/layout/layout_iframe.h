@@ -34,10 +34,7 @@ class LayoutIFrame final : public LayoutEmbeddedContent {
  public:
   explicit LayoutIFrame(HTMLFrameOwnerElement*);
 
-  const char* GetName() const override {
-    CheckIsNotDestroyed();
-    return "LayoutIFrame";
-  }
+  const char* GetName() const override { return "LayoutIFrame"; }
 
  private:
   bool ShouldComputeSizeAsReplaced() const override;
@@ -46,7 +43,6 @@ class LayoutIFrame final : public LayoutEmbeddedContent {
   void UpdateLayout() override;
 
   bool IsOfType(LayoutObjectType type) const override {
-    CheckIsNotDestroyed();
     return type == kLayoutObjectLayoutIFrame ||
            LayoutEmbeddedContent::IsOfType(type);
   }

@@ -54,7 +54,6 @@ LayoutSVGTextPath::LayoutSVGTextPath(Element* element)
 
 bool LayoutSVGTextPath::IsChildAllowed(LayoutObject* child,
                                        const ComputedStyle&) const {
-  CheckIsNotDestroyed();
   if (child->IsText())
     return SVGLayoutSupport::IsLayoutableTextNode(child);
 
@@ -62,7 +61,6 @@ bool LayoutSVGTextPath::IsChildAllowed(LayoutObject* child,
 }
 
 std::unique_ptr<PathPositionMapper> LayoutSVGTextPath::LayoutPath() const {
-  CheckIsNotDestroyed();
   const auto& text_path_element = To<SVGTextPathElement>(*GetNode());
   Element* target_element = SVGURIReference::TargetElementFromIRIString(
       text_path_element.HrefString(), text_path_element.OriginatingTreeScope());

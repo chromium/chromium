@@ -34,22 +34,13 @@ class LayoutDeprecatedFlexibleBox final : public LayoutBlock {
   LayoutDeprecatedFlexibleBox(Element* element);
   ~LayoutDeprecatedFlexibleBox() override;
 
-  const char* GetName() const override {
-    CheckIsNotDestroyed();
-    return "LayoutDeprecatedFlexibleBox";
-  }
+  const char* GetName() const override { return "LayoutDeprecatedFlexibleBox"; }
 
   void UpdateBlockLayout(bool relayout_children) override;
   void LayoutVerticalBox(bool relayout_children);
 
-  bool IsDeprecatedFlexibleBox() const override {
-    CheckIsNotDestroyed();
-    return true;
-  }
-  bool IsFlexibleBoxIncludingDeprecatedAndNG() const override {
-    CheckIsNotDestroyed();
-    return true;
-  }
+  bool IsDeprecatedFlexibleBox() const override { return true; }
+  bool IsFlexibleBoxIncludingDeprecatedAndNG() const override { return true; }
 
  private:
   MinMaxSizes ComputeIntrinsicLogicalWidths() const override;

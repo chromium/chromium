@@ -36,10 +36,7 @@ class LayoutSVGResourceMasker final : public LayoutSVGResourceContainer {
   explicit LayoutSVGResourceMasker(SVGMaskElement*);
   ~LayoutSVGResourceMasker() override;
 
-  const char* GetName() const override {
-    CheckIsNotDestroyed();
-    return "LayoutSVGResourceMasker";
-  }
+  const char* GetName() const override { return "LayoutSVGResourceMasker"; }
 
   void RemoveAllClientsFromCache() override;
 
@@ -50,10 +47,7 @@ class LayoutSVGResourceMasker final : public LayoutSVGResourceContainer {
   SVGUnitTypes::SVGUnitType MaskContentUnits() const;
 
   static const LayoutSVGResourceType kResourceType = kMaskerResourceType;
-  LayoutSVGResourceType ResourceType() const override {
-    CheckIsNotDestroyed();
-    return kResourceType;
-  }
+  LayoutSVGResourceType ResourceType() const override { return kResourceType; }
 
   sk_sp<const PaintRecord> CreatePaintRecord(const AffineTransform&,
                                              GraphicsContext&);

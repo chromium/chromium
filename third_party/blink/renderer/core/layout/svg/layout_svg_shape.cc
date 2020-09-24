@@ -65,7 +65,6 @@ LayoutSVGShape::~LayoutSVGShape() = default;
 
 void LayoutSVGShape::StyleDidChange(StyleDifference diff,
                                     const ComputedStyle* old_style) {
-  CheckIsNotDestroyed();
   transform_uses_reference_box_ =
       TransformHelper::DependsOnReferenceBox(StyleRef());
   LayoutSVGModelObject::StyleDidChange(diff, old_style);
@@ -86,19 +85,16 @@ void LayoutSVGShape::StyleDidChange(StyleDifference diff,
 }
 
 void LayoutSVGShape::WillBeDestroyed() {
-  CheckIsNotDestroyed();
   SVGResources::ClearPaints(*GetElement(), Style());
   LayoutSVGModelObject::WillBeDestroyed();
 }
 
 void LayoutSVGShape::ClearPath() {
-  CheckIsNotDestroyed();
   path_.reset();
   stroke_path_cache_.reset();
 }
 
 void LayoutSVGShape::CreatePath() {
-  CheckIsNotDestroyed();
   if (!path_)
     path_ = std::make_unique<Path>();
   *path_ = To<SVGGeometryElement>(GetElement())->AsPath();
@@ -110,14 +106,12 @@ void LayoutSVGShape::CreatePath() {
 }
 
 float LayoutSVGShape::DashScaleFactor() const {
-  CheckIsNotDestroyed();
   if (StyleRef().SvgStyle().StrokeDashArray()->data.IsEmpty())
     return 1;
   return To<SVGGeometryElement>(*GetElement()).PathLengthScaleFactor();
 }
 
 void LayoutSVGShape::UpdateShapeFromElement() {
-  CheckIsNotDestroyed();
   CreatePath();
   fill_bounding_box_ = GetPath().BoundingRect();
 
@@ -144,7 +138,6 @@ bool HasSquareCapStyle(const SVGComputedStyle& svg_style) {
 
 FloatRect LayoutSVGShape::ApproximateStrokeBoundingBox(
     const FloatRect& shape_bounds) const {
-  CheckIsNotDestroyed();
   FloatRect stroke_box = shape_bounds;
 
   // Implementation of
@@ -173,7 +166,6 @@ FloatRect LayoutSVGShape::ApproximateStrokeBoundingBox(
 }
 
 FloatRect LayoutSVGShape::HitTestStrokeBoundingBox() const {
-  CheckIsNotDestroyed();
   if (StyleRef().SvgStyle().HasStroke())
     return stroke_bounding_box_;
   return ApproximateStrokeBoundingBox(fill_bounding_box_);
@@ -181,7 +173,6 @@ FloatRect LayoutSVGShape::HitTestStrokeBoundingBox() const {
 
 bool LayoutSVGShape::ShapeDependentStrokeContains(
     const HitTestLocation& location) {
-  CheckIsNotDestroyed();
   if (!stroke_path_cache_) {
     // In case the subclass didn't create path during UpdateShapeFromElement()
     // for optimization but still calls this method.
@@ -221,14 +212,12 @@ bool LayoutSVGShape::ShapeDependentStrokeContains(
 bool LayoutSVGShape::ShapeDependentFillContains(
     const HitTestLocation& location,
     const WindRule fill_rule) const {
-  CheckIsNotDestroyed();
   return GetPath().Contains(location.TransformedPoint(), fill_rule);
 }
 
 bool LayoutSVGShape::FillContains(const HitTestLocation& location,
                                   bool requires_fill,
                                   const WindRule fill_rule) {
-  CheckIsNotDestroyed();
   if (!fill_bounding_box_.Contains(location.TransformedPoint()))
     return false;
 
@@ -241,7 +230,6 @@ bool LayoutSVGShape::FillContains(const HitTestLocation& location,
 
 bool LayoutSVGShape::StrokeContains(const HitTestLocation& location,
                                     bool requires_stroke) {
-  CheckIsNotDestroyed();
   // "A zero value causes no stroke to be painted."
   if (StyleRef().SvgStyle().StrokeWidth().IsZero())
     return false;
@@ -262,7 +250,6 @@ bool LayoutSVGShape::StrokeContains(const HitTestLocation& location,
 }
 
 void LayoutSVGShape::UpdateLayout() {
-  CheckIsNotDestroyed();
   LayoutAnalyzer::Scope analyzer(*this);
 
   // Invalidate all resources of this client if our layout changed.
@@ -321,7 +308,6 @@ void LayoutSVGShape::UpdateLayout() {
 }
 
 AffineTransform LayoutSVGShape::ComputeRootTransform() const {
-  CheckIsNotDestroyed();
   const LayoutObject* root = this;
   while (root && !root->IsSVGRoot())
     root = root->Parent();
@@ -329,7 +315,6 @@ AffineTransform LayoutSVGShape::ComputeRootTransform() const {
 }
 
 AffineTransform LayoutSVGShape::ComputeNonScalingStrokeTransform() const {
-  CheckIsNotDestroyed();
   // Compute the CTM to the SVG root. This should probably be the CTM all the
   // way to the "canvas" of the page ("host" coordinate system), but with our
   // current approach of applying/painting non-scaling-stroke, that can break in
@@ -347,7 +332,6 @@ AffineTransform LayoutSVGShape::ComputeNonScalingStrokeTransform() const {
 }
 
 void LayoutSVGShape::UpdateNonScalingStrokeData() {
-  CheckIsNotDestroyed();
   DCHECK(HasNonScalingStroke());
 
   const AffineTransform transform = ComputeNonScalingStrokeTransform();
@@ -362,7 +346,6 @@ void LayoutSVGShape::UpdateNonScalingStrokeData() {
 }
 
 void LayoutSVGShape::Paint(const PaintInfo& paint_info) const {
-  CheckIsNotDestroyed();
   SVGShapePainter(*this).Paint(paint_info);
 }
 
@@ -370,7 +353,6 @@ bool LayoutSVGShape::NodeAtPoint(HitTestResult& result,
                                  const HitTestLocation& hit_test_location,
                                  const PhysicalOffset& accumulated_offset,
                                  HitTestAction hit_test_action) {
-  CheckIsNotDestroyed();
   DCHECK_EQ(accumulated_offset, PhysicalOffset());
   // We only draw in the foreground phase, so we only hit-test then.
   if (hit_test_action != kHitTestForeground)
@@ -406,7 +388,6 @@ bool LayoutSVGShape::NodeAtPoint(HitTestResult& result,
 bool LayoutSVGShape::HitTestShape(const HitTestRequest& request,
                                   const HitTestLocation& local_location,
                                   PointerEventsHitRules hit_rules) {
-  CheckIsNotDestroyed();
   if (hit_rules.can_hit_bounding_box &&
       local_location.Intersects(ObjectBoundingBox()))
     return true;
@@ -428,7 +409,6 @@ bool LayoutSVGShape::HitTestShape(const HitTestRequest& request,
 }
 
 FloatRect LayoutSVGShape::CalculateStrokeBoundingBox() const {
-  CheckIsNotDestroyed();
   if (!StyleRef().SvgStyle().HasStroke() || IsShapeEmpty())
     return fill_bounding_box_;
   if (HasNonScalingStroke())
@@ -437,7 +417,6 @@ FloatRect LayoutSVGShape::CalculateStrokeBoundingBox() const {
 }
 
 FloatRect LayoutSVGShape::CalculateNonScalingStrokeBoundingBox() const {
-  CheckIsNotDestroyed();
   DCHECK(path_);
   DCHECK(StyleRef().SvgStyle().HasStroke());
   DCHECK(HasNonScalingStroke());
@@ -456,13 +435,11 @@ FloatRect LayoutSVGShape::CalculateNonScalingStrokeBoundingBox() const {
 }
 
 float LayoutSVGShape::StrokeWidth() const {
-  CheckIsNotDestroyed();
   SVGLengthContext length_context(GetElement());
   return length_context.ValueForLength(StyleRef().SvgStyle().StrokeWidth());
 }
 
 float LayoutSVGShape::StrokeWidthForMarkerUnits() const {
-  CheckIsNotDestroyed();
   float stroke_width = StrokeWidth();
   if (HasNonScalingStroke()) {
     const auto& non_scaling_transform = NonScalingStrokeTransform();
@@ -478,14 +455,12 @@ float LayoutSVGShape::StrokeWidthForMarkerUnits() const {
 }
 
 LayoutSVGShapeRareData& LayoutSVGShape::EnsureRareData() const {
-  CheckIsNotDestroyed();
   if (!rare_data_)
     rare_data_ = std::make_unique<LayoutSVGShapeRareData>();
   return *rare_data_.get();
 }
 
 RasterEffectOutset LayoutSVGShape::VisualRectOutsetForRasterEffects() const {
-  CheckIsNotDestroyed();
   // Account for raster expansions due to SVG stroke hairline raster effects.
   if (StyleRef().SvgStyle().HasVisibleStroke()) {
     if (StyleRef().SvgStyle().CapStyle() != kButtCap)

@@ -34,20 +34,14 @@ class LayoutSVGResourceClipper final : public LayoutSVGResourceContainer {
   explicit LayoutSVGResourceClipper(SVGClipPathElement*);
   ~LayoutSVGResourceClipper() override;
 
-  const char* GetName() const override {
-    CheckIsNotDestroyed();
-    return "LayoutSVGResourceClipper";
-  }
+  const char* GetName() const override { return "LayoutSVGResourceClipper"; }
 
   void RemoveAllClientsFromCache() override;
 
   FloatRect ResourceBoundingBox(const FloatRect& reference_box);
 
   static const LayoutSVGResourceType kResourceType = kClipperResourceType;
-  LayoutSVGResourceType ResourceType() const override {
-    CheckIsNotDestroyed();
-    return kResourceType;
-  }
+  LayoutSVGResourceType ResourceType() const override { return kResourceType; }
 
   bool HitTestClipContent(const FloatRect&, const HitTestLocation&) const;
 

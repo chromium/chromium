@@ -36,7 +36,6 @@ LayoutSVGResourceMarker::LayoutSVGResourceMarker(SVGMarkerElement* node)
 LayoutSVGResourceMarker::~LayoutSVGResourceMarker() = default;
 
 void LayoutSVGResourceMarker::UpdateLayout() {
-  CheckIsNotDestroyed();
   DCHECK(NeedsLayout());
   if (is_in_layout_)
     return;
@@ -52,14 +51,12 @@ void LayoutSVGResourceMarker::UpdateLayout() {
 }
 
 void LayoutSVGResourceMarker::RemoveAllClientsFromCache() {
-  CheckIsNotDestroyed();
   MarkAllClientsForInvalidation(SVGResourceClient::kLayoutInvalidation |
                                 SVGResourceClient::kBoundariesInvalidation);
 }
 
 FloatRect LayoutSVGResourceMarker::MarkerBoundaries(
     const AffineTransform& marker_transformation) const {
-  CheckIsNotDestroyed();
   FloatRect coordinates = LayoutSVGContainer::VisualRectInLocalSVGCoordinates();
 
   // Map visual rect into parent coordinate space, in which the marker
@@ -70,7 +67,6 @@ FloatRect LayoutSVGResourceMarker::MarkerBoundaries(
 }
 
 FloatPoint LayoutSVGResourceMarker::ReferencePoint() const {
-  CheckIsNotDestroyed();
   auto* marker = To<SVGMarkerElement>(GetElement());
   DCHECK(marker);
 
@@ -80,7 +76,6 @@ FloatPoint LayoutSVGResourceMarker::ReferencePoint() const {
 }
 
 float LayoutSVGResourceMarker::Angle() const {
-  CheckIsNotDestroyed();
   return To<SVGMarkerElement>(GetElement())
       ->orientAngle()
       ->CurrentValue()
@@ -88,19 +83,16 @@ float LayoutSVGResourceMarker::Angle() const {
 }
 
 SVGMarkerUnitsType LayoutSVGResourceMarker::MarkerUnits() const {
-  CheckIsNotDestroyed();
   return To<SVGMarkerElement>(GetElement())->markerUnits()->CurrentEnumValue();
 }
 
 SVGMarkerOrientType LayoutSVGResourceMarker::OrientType() const {
-  CheckIsNotDestroyed();
   return To<SVGMarkerElement>(GetElement())->orientType()->CurrentEnumValue();
 }
 
 AffineTransform LayoutSVGResourceMarker::MarkerTransformation(
     const MarkerPosition& position,
     float stroke_width) const {
-  CheckIsNotDestroyed();
   // Apply scaling according to markerUnits ('strokeWidth' or 'userSpaceOnUse'.)
   float marker_scale =
       MarkerUnits() == kSVGMarkerUnitsStrokeWidth ? stroke_width : 1;
@@ -128,7 +120,6 @@ AffineTransform LayoutSVGResourceMarker::MarkerTransformation(
 }
 
 bool LayoutSVGResourceMarker::ShouldPaint() const {
-  CheckIsNotDestroyed();
   // An empty viewBox disables rendering.
   auto* marker = To<SVGMarkerElement>(GetElement());
   DCHECK(marker);
@@ -138,7 +129,6 @@ bool LayoutSVGResourceMarker::ShouldPaint() const {
 }
 
 void LayoutSVGResourceMarker::SetNeedsTransformUpdate() {
-  CheckIsNotDestroyed();
   // The transform paint property relies on the SVG transform being up-to-date
   // (see: PaintPropertyTreeBuilder::updateTransformForNonRootSVG).
   SetNeedsPaintPropertyUpdate();
@@ -147,7 +137,6 @@ void LayoutSVGResourceMarker::SetNeedsTransformUpdate() {
 
 SVGTransformChange LayoutSVGResourceMarker::CalculateLocalTransform(
     bool bounds_changed) {
-  CheckIsNotDestroyed();
   if (!needs_transform_update_)
     return SVGTransformChange::kNone;
 

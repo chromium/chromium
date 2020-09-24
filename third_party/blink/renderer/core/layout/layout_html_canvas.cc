@@ -40,18 +40,15 @@ LayoutHTMLCanvas::LayoutHTMLCanvas(HTMLCanvasElement* element)
 }
 
 PaintLayerType LayoutHTMLCanvas::LayerTypeRequired() const {
-  CheckIsNotDestroyed();
   return kNormalPaintLayer;
 }
 
 void LayoutHTMLCanvas::PaintReplaced(const PaintInfo& paint_info,
                                      const PhysicalOffset& paint_offset) const {
-  CheckIsNotDestroyed();
   HTMLCanvasPainter(*this).PaintReplaced(paint_info, paint_offset);
 }
 
 void LayoutHTMLCanvas::CanvasSizeChanged() {
-  CheckIsNotDestroyed();
   IntSize canvas_size = To<HTMLCanvasElement>(GetNode())->Size();
   LayoutSize zoomed_size(canvas_size.Width() * StyleRef().EffectiveZoom(),
                          canvas_size.Height() * StyleRef().EffectiveZoom());
@@ -70,7 +67,6 @@ void LayoutHTMLCanvas::CanvasSizeChanged() {
 
 void LayoutHTMLCanvas::InvalidatePaint(
     const PaintInvalidatorContext& context) const {
-  CheckIsNotDestroyed();
   auto* element = To<HTMLCanvasElement>(GetNode());
   if (element->IsDirty())
     element->DoDeferredPaintInvalidation();
@@ -79,7 +75,6 @@ void LayoutHTMLCanvas::InvalidatePaint(
 }
 
 CompositingReasons LayoutHTMLCanvas::AdditionalCompositingReasons() const {
-  CheckIsNotDestroyed();
   if (To<HTMLCanvasElement>(GetNode())->ShouldBeDirectComposited())
     return CompositingReason::kCanvas;
   return CompositingReason::kNone;
@@ -87,13 +82,11 @@ CompositingReasons LayoutHTMLCanvas::AdditionalCompositingReasons() const {
 
 void LayoutHTMLCanvas::StyleDidChange(StyleDifference diff,
                                       const ComputedStyle* old_style) {
-  CheckIsNotDestroyed();
   LayoutReplaced::StyleDidChange(diff, old_style);
   To<HTMLCanvasElement>(GetNode())->StyleDidChange(old_style, StyleRef());
 }
 
 void LayoutHTMLCanvas::WillBeDestroyed() {
-  CheckIsNotDestroyed();
   LayoutReplaced::WillBeDestroyed();
   To<HTMLCanvasElement>(GetNode())->LayoutObjectDestroyed();
 }

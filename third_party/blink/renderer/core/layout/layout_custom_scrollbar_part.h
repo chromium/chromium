@@ -41,15 +41,9 @@ class CORE_EXPORT LayoutCustomScrollbarPart final : public LayoutReplaced {
                                                     CustomScrollbar* = nullptr,
                                                     ScrollbarPart = kNoPart);
 
-  const char* GetName() const override {
-    CheckIsNotDestroyed();
-    return "LayoutCustomScrollbarPart";
-  }
+  const char* GetName() const override { return "LayoutCustomScrollbarPart"; }
 
-  PaintLayerType LayerTypeRequired() const override {
-    CheckIsNotDestroyed();
-    return kNoPaintLayer;
-  }
+  PaintLayerType LayerTypeRequired() const override { return kNoPaintLayer; }
 
   // Computes thickness of the scrollbar (which defines thickness of all parts).
   // For kScrollbarBGPart only. This can be called during style update.
@@ -70,14 +64,10 @@ class CORE_EXPORT LayoutCustomScrollbarPart final : public LayoutReplaced {
   LayoutUnit MarginRight() const override;
 
   bool IsOfType(LayoutObjectType type) const override {
-    CheckIsNotDestroyed();
     return type == kLayoutObjectLayoutCustomScrollbarPart ||
            LayoutReplaced::IsOfType(type);
   }
-  ScrollableArea* GetScrollableArea() const {
-    CheckIsNotDestroyed();
-    return scrollable_area_;
-  }
+  ScrollableArea* GetScrollableArea() const { return scrollable_area_; }
 
  private:
   LayoutCustomScrollbarPart(ScrollableArea*, CustomScrollbar*, ScrollbarPart);
@@ -89,40 +79,22 @@ class CORE_EXPORT LayoutCustomScrollbarPart final : public LayoutReplaced {
   // A scrollbar part's Location() and PhysicalLocation() are relative to the
   // scrollbar (instead of relative to any LayoutBox ancestor), and both are
   // in physical coordinates.
-  LayoutBox* LocationContainer() const override {
-    CheckIsNotDestroyed();
-    return nullptr;
-  }
+  LayoutBox* LocationContainer() const override { return nullptr; }
 
   // A scrollbar part is not in the layout tree and is not laid out like other
   // layout objects. CustomScrollbar will call scrollbar parts' SetFrameRect()
   // from its SetFrameRect() when needed.
-  void UpdateLayout() override {
-    CheckIsNotDestroyed();
-    NOTREACHED();
-  }
+  void UpdateLayout() override { NOTREACHED(); }
 
   // Have all padding getters return 0. The important point here is to avoid
   // resolving percents against the containing block, since scroll bar corners
   // don't always have one (so it would crash). Scroll bar corners are not
   // actually laid out, and they don't have child content, so what we return
   // here doesn't really matter.
-  LayoutUnit PaddingTop() const override {
-    CheckIsNotDestroyed();
-    return LayoutUnit();
-  }
-  LayoutUnit PaddingBottom() const override {
-    CheckIsNotDestroyed();
-    return LayoutUnit();
-  }
-  LayoutUnit PaddingLeft() const override {
-    CheckIsNotDestroyed();
-    return LayoutUnit();
-  }
-  LayoutUnit PaddingRight() const override {
-    CheckIsNotDestroyed();
-    return LayoutUnit();
-  }
+  LayoutUnit PaddingTop() const override { return LayoutUnit(); }
+  LayoutUnit PaddingBottom() const override { return LayoutUnit(); }
+  LayoutUnit PaddingLeft() const override { return LayoutUnit(); }
+  LayoutUnit PaddingRight() const override { return LayoutUnit(); }
 
   void SetNeedsPaintInvalidation();
 

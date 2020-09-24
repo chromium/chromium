@@ -18,7 +18,6 @@ namespace blink {
 class LayoutMultiColumnSpannerPlaceholder final : public LayoutBox {
  public:
   bool IsOfType(LayoutObjectType type) const override {
-    CheckIsNotDestroyed();
     return type == kLayoutObjectLayoutMultiColumnSpannerPlaceholder ||
            LayoutBox::IsOfType(type);
   }
@@ -28,21 +27,17 @@ class LayoutMultiColumnSpannerPlaceholder final : public LayoutBox {
       LayoutBox&);
 
   LayoutBlockFlow* MultiColumnBlockFlow() const {
-    CheckIsNotDestroyed();
     return To<LayoutBlockFlow>(Parent());
   }
 
   LayoutMultiColumnFlowThread* FlowThread() const {
-    CheckIsNotDestroyed();
     return To<LayoutBlockFlow>(Parent())->MultiColumnFlowThread();
   }
 
   LayoutBox* LayoutObjectInFlowThread() const {
-    CheckIsNotDestroyed();
     return layout_object_in_flow_thread_;
   }
   void MarkForLayoutIfObjectInFlowThreadNeedsLayout() {
-    CheckIsNotDestroyed();
     if (!layout_object_in_flow_thread_->NeedsLayout())
       return;
     // The containing block of a spanner is the multicol container (our parent
@@ -51,16 +46,12 @@ class LayoutMultiColumnSpannerPlaceholder final : public LayoutBox {
     SetChildNeedsLayout(kMarkOnlyThis);
   }
 
-  bool AnonymousHasStylePropagationOverride() final {
-    CheckIsNotDestroyed();
-    return true;
-  }
+  bool AnonymousHasStylePropagationOverride() final { return true; }
 
   void LayoutObjectInFlowThreadStyleDidChange(const ComputedStyle* old_style);
   void UpdateProperties(const ComputedStyle& parent_style);
 
   const char* GetName() const override {
-    CheckIsNotDestroyed();
     return "LayoutMultiColumnSpannerPlaceholder";
   }
 
@@ -84,7 +75,6 @@ class LayoutMultiColumnSpannerPlaceholder final : public LayoutBox {
   LayoutMultiColumnSpannerPlaceholder(LayoutBox*);
 
   MinMaxSizes ComputeIntrinsicLogicalWidths() const final {
-    CheckIsNotDestroyed();
     NOTREACHED();
     return MinMaxSizes();
   }

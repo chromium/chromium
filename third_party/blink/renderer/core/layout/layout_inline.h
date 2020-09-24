@@ -122,12 +122,10 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
   static LayoutInline* CreateAnonymous(Document*);
 
   LayoutObject* FirstChild() const {
-    CheckIsNotDestroyed();
     DCHECK_EQ(Children(), VirtualChildren());
     return Children()->FirstChild();
   }
   LayoutObject* LastChild() const {
-    CheckIsNotDestroyed();
     DCHECK_EQ(Children(), VirtualChildren());
     return Children()->LastChild();
   }
@@ -140,7 +138,6 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
                 LayoutObject* before_child = nullptr) override;
 
   Element* GetNode() const {
-    CheckIsNotDestroyed();
     return To<Element>(LayoutBoxModelObject::GetNode());
   }
 
@@ -162,27 +159,18 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
   // LineBoxes() and FirstInlineFragment() are mutually exclusive,
   // depends on IsInLayoutNGInlineFormattingContext().
   const LineBoxList* LineBoxes() const {
-    CheckIsNotDestroyed();
     return IsInLayoutNGInlineFormattingContext() ? &LineBoxList::Empty()
                                                  : &line_boxes_;
   }
   LineBoxList* MutableLineBoxes();
 
-  InlineFlowBox* FirstLineBox() const {
-    CheckIsNotDestroyed();
-    return LineBoxes()->First();
-  }
-  InlineFlowBox* LastLineBox() const {
-    CheckIsNotDestroyed();
-    return LineBoxes()->Last();
-  }
+  InlineFlowBox* FirstLineBox() const { return LineBoxes()->First(); }
+  InlineFlowBox* LastLineBox() const { return LineBoxes()->Last(); }
   InlineBox* FirstLineBoxIncludingCulling() const {
-    CheckIsNotDestroyed();
     return AlwaysCreateLineBoxes() ? FirstLineBox()
                                    : CulledInlineFirstLineBox();
   }
   InlineBox* LastLineBoxIncludingCulling() const {
-    CheckIsNotDestroyed();
     return AlwaysCreateLineBoxes() ? LastLineBox() : CulledInlineLastLineBox();
   }
 
@@ -194,7 +182,6 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
   void SetFirstInlineFragmentItemIndex(wtf_size_t) final;
 
   LayoutBoxModelObject* VirtualContinuation() const final {
-    CheckIsNotDestroyed();
     return Continuation();
   }
   LayoutInline* InlineElementContinuation() const;
@@ -218,12 +205,10 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
   using LayoutBoxModelObject::SetContinuation;
 
   bool AlwaysCreateLineBoxes() const {
-    CheckIsNotDestroyed();
     return AlwaysCreateLineBoxesForLayoutInline() &&
            !IsInLayoutNGInlineFormattingContext();
   }
   void SetAlwaysCreateLineBoxes(bool always_create_line_boxes = true) {
-    CheckIsNotDestroyed();
     DCHECK(!IsInLayoutNGInlineFormattingContext());
     SetAlwaysCreateLineBoxesForLayoutInline(always_create_line_boxes);
   }
@@ -231,12 +216,10 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
 
   // True if this inline box should force creation of NGPhysicalBoxFragment.
   bool ShouldCreateBoxFragment() const {
-    CheckIsNotDestroyed();
     return AlwaysCreateLineBoxesForLayoutInline() &&
            IsInLayoutNGInlineFormattingContext();
   }
   void SetShouldCreateBoxFragment(bool value = true) {
-    CheckIsNotDestroyed();
     DCHECK(IsInLayoutNGInlineFormattingContext());
     SetAlwaysCreateLineBoxesForLayoutInline(value);
   }
@@ -257,7 +240,6 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
                            const NGInlineCursor* parent_cursor = nullptr);
 
   PhysicalOffset FirstLineBoxTopLeft() const {
-    CheckIsNotDestroyed();
     return FirstLineBoxTopLeftInternal().value_or(PhysicalOffset());
   }
 
@@ -270,10 +252,7 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
   PhysicalRect VisualRectInDocument(
       VisualRectFlags = kDefaultVisualRectFlags) const override;
 
-  const char* GetName() const override {
-    CheckIsNotDestroyed();
-    return "LayoutInline";
-  }
+  const char* GetName() const override { return "LayoutInline"; }
 
   PhysicalRect DebugRect() const override;
 
@@ -296,27 +275,14 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
       bool ignore_scroll_offset) const final;
 
  private:
-  LayoutObjectChildList* VirtualChildren() final {
-    CheckIsNotDestroyed();
-    return Children();
-  }
+  LayoutObjectChildList* VirtualChildren() final { return Children(); }
   const LayoutObjectChildList* VirtualChildren() const final {
-    CheckIsNotDestroyed();
     return Children();
   }
-  const LayoutObjectChildList* Children() const {
-    CheckIsNotDestroyed();
-    return &children_;
-  }
-  LayoutObjectChildList* Children() {
-    CheckIsNotDestroyed();
-    return &children_;
-  }
+  const LayoutObjectChildList* Children() const { return &children_; }
+  LayoutObjectChildList* Children() { return &children_; }
 
-  bool IsLayoutInline() const final {
-    CheckIsNotDestroyed();
-    return true;
-  }
+  bool IsLayoutInline() const final { return true; }
 
   // Compute the initial value of |ShouldCreateBoxFragment()| for this
   // LayoutInline. It maybe flipped to true later for other conditions.
@@ -366,10 +332,7 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
   // Create an anoymous block for block children of this inline.
   LayoutBlockFlow* CreateAnonymousContainerForBlockChildren();
 
-  void UpdateLayout() final {
-    CheckIsNotDestroyed();
-    NOTREACHED();
-  }  // Do nothing for layout()
+  void UpdateLayout() final { NOTREACHED(); }  // Do nothing for layout()
 
   void Paint(const PaintInfo&) const final;
 
@@ -383,11 +346,9 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
   LayoutUnit OffsetLeft(const Element*) const final;
   LayoutUnit OffsetTop(const Element*) const final;
   LayoutUnit OffsetWidth() const final {
-    CheckIsNotDestroyed();
     return PhysicalLinesBoundingBox().Width();
   }
   LayoutUnit OffsetHeight() const final {
-    CheckIsNotDestroyed();
     return PhysicalLinesBoundingBox().Height();
   }
 
@@ -405,7 +366,6 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
   PositionWithAffinity PositionForPoint(const PhysicalOffset&) const override;
 
   IntRect BorderBoundingBox() const final {
-    CheckIsNotDestroyed();
     IntRect bounding_box = EnclosingIntRect(PhysicalLinesBoundingBox());
     return IntRect(0, 0, bounding_box.Width(), bounding_box.Height());
   }
@@ -435,10 +395,7 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
   void AddAnnotatedRegions(Vector<AnnotatedRegionValue>&) final;
 
   void UpdateFromStyle() final;
-  bool AnonymousHasStylePropagationOverride() final {
-    CheckIsNotDestroyed();
-    return true;
-  }
+  bool AnonymousHasStylePropagationOverride() final { return true; }
 
   LayoutInline* Clone() const;
 

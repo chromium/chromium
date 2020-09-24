@@ -12,12 +12,10 @@ LayoutOutsideListMarker::LayoutOutsideListMarker(Element* element)
 LayoutOutsideListMarker::~LayoutOutsideListMarker() = default;
 
 bool LayoutOutsideListMarker::IsMarkerImage() const {
-  CheckIsNotDestroyed();
   return list_marker_.IsMarkerImage(*this);
 }
 
 void LayoutOutsideListMarker::UpdateLayout() {
-  CheckIsNotDestroyed();
   LayoutBlockFlow::UpdateLayout();
 
   LayoutUnit block_offset = LogicalTop();
@@ -36,7 +34,6 @@ void LayoutOutsideListMarker::UpdateLayout() {
 }
 
 void LayoutOutsideListMarker::UpdateMargins() {
-  CheckIsNotDestroyed();
   LayoutUnit margin_start;
   LayoutUnit margin_end;
   std::tie(margin_start, margin_end) = ListMarker::InlineMarginsForOutside(
@@ -50,7 +47,6 @@ LayoutUnit LayoutOutsideListMarker::LineHeight(
     bool first_line,
     LineDirectionMode direction,
     LinePositionMode line_position_mode) const {
-  CheckIsNotDestroyed();
   if (line_position_mode == kPositionOfInteriorLineBoxes) {
     return list_marker_.ListItemBlockFlow(*this)->LineHeight(
         first_line, direction, line_position_mode);
@@ -63,7 +59,6 @@ LayoutUnit LayoutOutsideListMarker::BaselinePosition(
     bool first_line,
     LineDirectionMode direction,
     LinePositionMode line_position_mode) const {
-  CheckIsNotDestroyed();
   if (line_position_mode == kPositionOfInteriorLineBoxes) {
     return list_marker_.ListItemBlockFlow(*this)->BaselinePosition(
         baseline_type, first_line, direction, line_position_mode);

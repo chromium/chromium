@@ -35,7 +35,6 @@ LayoutSVGResourceRadialGradient::LayoutSVGResourceRadialGradient(
 LayoutSVGResourceRadialGradient::~LayoutSVGResourceRadialGradient() = default;
 
 void LayoutSVGResourceRadialGradient::CollectGradientAttributes() {
-  CheckIsNotDestroyed();
   DCHECK(GetElement());
   attributes_wrapper_->Set(RadialGradientAttributes());
   To<SVGRadialGradientElement>(GetElement())
@@ -44,7 +43,6 @@ void LayoutSVGResourceRadialGradient::CollectGradientAttributes() {
 
 FloatPoint LayoutSVGResourceRadialGradient::CenterPoint(
     const RadialGradientAttributes& attributes) const {
-  CheckIsNotDestroyed();
   return SVGLengthContext::ResolvePoint(GetElement(),
                                         attributes.GradientUnits(),
                                         *attributes.Cx(), *attributes.Cy());
@@ -52,7 +50,6 @@ FloatPoint LayoutSVGResourceRadialGradient::CenterPoint(
 
 FloatPoint LayoutSVGResourceRadialGradient::FocalPoint(
     const RadialGradientAttributes& attributes) const {
-  CheckIsNotDestroyed();
   return SVGLengthContext::ResolvePoint(GetElement(),
                                         attributes.GradientUnits(),
                                         *attributes.Fx(), *attributes.Fy());
@@ -60,20 +57,17 @@ FloatPoint LayoutSVGResourceRadialGradient::FocalPoint(
 
 float LayoutSVGResourceRadialGradient::Radius(
     const RadialGradientAttributes& attributes) const {
-  CheckIsNotDestroyed();
   return SVGLengthContext::ResolveLength(
       GetElement(), attributes.GradientUnits(), *attributes.R());
 }
 
 float LayoutSVGResourceRadialGradient::FocalRadius(
     const RadialGradientAttributes& attributes) const {
-  CheckIsNotDestroyed();
   return SVGLengthContext::ResolveLength(
       GetElement(), attributes.GradientUnits(), *attributes.Fr());
 }
 
 scoped_refptr<Gradient> LayoutSVGResourceRadialGradient::BuildGradient() const {
-  CheckIsNotDestroyed();
   const RadialGradientAttributes& attributes = Attributes();
   scoped_refptr<Gradient> gradient = Gradient::CreateRadial(
       FocalPoint(attributes), FocalRadius(attributes), CenterPoint(attributes),

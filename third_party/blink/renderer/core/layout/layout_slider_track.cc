@@ -41,7 +41,6 @@ LayoutSliderTrack::LayoutSliderTrack(Element* element)
     : LayoutBlockFlow(element) {}
 
 void LayoutSliderTrack::UpdateLayout() {
-  CheckIsNotDestroyed();
   auto* input = To<HTMLInputElement>(GetNode()->OwnerShadowHost());
   const bool is_vertical = !StyleRef().IsHorizontalWritingMode();
 

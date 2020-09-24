@@ -39,13 +39,11 @@ LayoutRubyText::~LayoutRubyText() = default;
 
 bool LayoutRubyText::IsChildAllowed(LayoutObject* child,
                                     const ComputedStyle&) const {
-  CheckIsNotDestroyed();
   return child->IsInline();
 }
 
 void LayoutRubyText::StyleDidChange(StyleDifference diff,
                                     const ComputedStyle* old_style) {
-  CheckIsNotDestroyed();
   if (StyleRef().GetTextAlign() !=
       ComputedStyleInitialValues::InitialTextAlign()) {
     UseCounter::Count(GetDocument(),
@@ -56,7 +54,6 @@ void LayoutRubyText::StyleDidChange(StyleDifference diff,
 
 ETextAlign LayoutRubyText::TextAlignmentForLine(
     bool ends_with_soft_break) const {
-  CheckIsNotDestroyed();
   ETextAlign text_align = StyleRef().GetTextAlign();
   // FIXME: This check is bogus since user can set the initial value.
   if (text_align != ComputedStyleInitialValues::InitialTextAlign())
@@ -71,7 +68,6 @@ void LayoutRubyText::AdjustInlineDirectionLineBounds(
     unsigned expansion_opportunity_count,
     LayoutUnit& logical_left,
     LayoutUnit& logical_width) const {
-  CheckIsNotDestroyed();
   ETextAlign text_align = StyleRef().GetTextAlign();
   // FIXME: This check is bogus since user can set the initial value.
   if (text_align != ComputedStyleInitialValues::InitialTextAlign()) {

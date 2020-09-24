@@ -37,13 +37,9 @@ class CORE_EXPORT LayoutTextControl : public LayoutBlockFlow {
   ~LayoutTextControl() override;
 
   TextControlElement* GetTextControlElement() const;
-  const char* GetName() const override {
-    CheckIsNotDestroyed();
-    return "LayoutTextControl";
-  }
+  const char* GetName() const override { return "LayoutTextControl"; }
 
   bool CreatesNewFormattingContext() const final {
-    CheckIsNotDestroyed();
     // INPUT and other replaced elements rendered by Blink itself should be
     // completely contained.
     return true;
@@ -81,24 +77,18 @@ class CORE_EXPORT LayoutTextControl : public LayoutBlockFlow {
   LayoutUnit FirstLineBoxBaseline() const override;
 
   bool IsOfType(LayoutObjectType type) const override {
-    CheckIsNotDestroyed();
     return type == kLayoutObjectTextControl || LayoutBlockFlow::IsOfType(type);
   }
 
  private:
   MinMaxSizes ComputeIntrinsicLogicalWidths() const final;
-  void RemoveLeftoverAnonymousBlock(LayoutBlock*) final {
-    CheckIsNotDestroyed();
-  }
+  void RemoveLeftoverAnonymousBlock(LayoutBlock*) final {}
 
   void AddOutlineRects(Vector<PhysicalRect>&,
                        const PhysicalOffset& additional_offset,
                        NGOutlineType) const final;
 
-  bool CanBeProgramaticallyScrolled() const final {
-    CheckIsNotDestroyed();
-    return true;
-  }
+  bool CanBeProgramaticallyScrolled() const final { return true; }
 };
 
 template <>

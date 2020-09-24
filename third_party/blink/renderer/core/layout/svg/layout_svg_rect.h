@@ -38,19 +38,14 @@ class LayoutSVGRect final : public LayoutSVGShape {
   ~LayoutSVGRect() override;
 
   ShapeGeometryCodePath GeometryCodePath() const override {
-    CheckIsNotDestroyed();
     return use_path_fallback_ ? kPathGeometry : kRectGeometryFastPath;
   }
 
-  const char* GetName() const override {
-    CheckIsNotDestroyed();
-    return "LayoutSVGRect";
-  }
+  const char* GetName() const override { return "LayoutSVGRect"; }
 
  private:
   void UpdateShapeFromElement() override;
   bool IsShapeEmpty() const override {
-    CheckIsNotDestroyed();
     return use_path_fallback_ ? LayoutSVGShape::IsShapeEmpty()
                               : fill_bounding_box_.IsEmpty();
   }

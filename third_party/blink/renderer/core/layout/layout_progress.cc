@@ -49,7 +49,6 @@ LayoutProgress::LayoutProgress(Element* element)
 LayoutProgress::~LayoutProgress() = default;
 
 void LayoutProgress::WillBeDestroyed() {
-  CheckIsNotDestroyed();
   if (animating_) {
     animation_timer_.Stop();
     animating_ = false;
@@ -58,7 +57,6 @@ void LayoutProgress::WillBeDestroyed() {
 }
 
 void LayoutProgress::UpdateFromElement() {
-  CheckIsNotDestroyed();
   HTMLProgressElement* element = ProgressElement();
   if (position_ == element->position())
     return;
@@ -70,7 +68,6 @@ void LayoutProgress::UpdateFromElement() {
 }
 
 double LayoutProgress::AnimationProgress() const {
-  CheckIsNotDestroyed();
   if (!animating_)
     return 0;
   const base::TimeDelta elapsed =
@@ -79,30 +76,25 @@ double LayoutProgress::AnimationProgress() const {
 }
 
 bool LayoutProgress::IsDeterminate() const {
-  CheckIsNotDestroyed();
   return (HTMLProgressElement::kIndeterminatePosition != GetPosition() &&
           HTMLProgressElement::kInvalidPosition != GetPosition());
 }
 
 bool LayoutProgress::IsAnimationTimerActive() const {
-  CheckIsNotDestroyed();
   return animation_timer_.IsActive();
 }
 
 bool LayoutProgress::IsAnimating() const {
-  CheckIsNotDestroyed();
   return animating_;
 }
 
 void LayoutProgress::AnimationTimerFired(TimerBase*) {
-  CheckIsNotDestroyed();
   SetShouldDoFullPaintInvalidation();
   if (!animation_timer_.IsActive() && animating_)
     animation_timer_.StartOneShot(kAnimationInterval, FROM_HERE);
 }
 
 void LayoutProgress::UpdateAnimationState() {
-  CheckIsNotDestroyed();
   bool animating = !IsDeterminate() && StyleRef().HasEffectiveAppearance();
   if (animating == animating_)
     return;
@@ -117,7 +109,6 @@ void LayoutProgress::UpdateAnimationState() {
 }
 
 HTMLProgressElement* LayoutProgress::ProgressElement() const {
-  CheckIsNotDestroyed();
   return To<HTMLProgressElement>(GetNode());
 }
 

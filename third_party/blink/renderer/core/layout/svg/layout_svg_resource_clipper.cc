@@ -111,7 +111,6 @@ LayoutSVGResourceClipper::LayoutSVGResourceClipper(SVGClipPathElement* node)
 LayoutSVGResourceClipper::~LayoutSVGResourceClipper() = default;
 
 void LayoutSVGResourceClipper::RemoveAllClientsFromCache() {
-  CheckIsNotDestroyed();
   clip_content_path_validity_ = kClipContentPathUnknown;
   clip_content_path_.Clear();
   cached_paint_record_.reset();
@@ -121,7 +120,6 @@ void LayoutSVGResourceClipper::RemoveAllClientsFromCache() {
 }
 
 base::Optional<Path> LayoutSVGResourceClipper::AsPath() {
-  CheckIsNotDestroyed();
   if (clip_content_path_validity_ == kClipContentPathValid)
     return base::Optional<Path>(clip_content_path_);
   if (clip_content_path_validity_ == kClipContentPathInvalid)
@@ -172,7 +170,6 @@ base::Optional<Path> LayoutSVGResourceClipper::AsPath() {
 }
 
 sk_sp<const PaintRecord> LayoutSVGResourceClipper::CreatePaintRecord() {
-  CheckIsNotDestroyed();
   DCHECK(GetFrame());
   if (cached_paint_record_)
     return cached_paint_record_;
@@ -204,7 +201,6 @@ sk_sp<const PaintRecord> LayoutSVGResourceClipper::CreatePaintRecord() {
 }
 
 void LayoutSVGResourceClipper::CalculateLocalClipBounds() {
-  CheckIsNotDestroyed();
   // This is a rough heuristic to appraise the clip size and doesn't consider
   // clip on clip.
   for (const SVGElement& child_element :
@@ -218,7 +214,6 @@ void LayoutSVGResourceClipper::CalculateLocalClipBounds() {
 }
 
 SVGUnitTypes::SVGUnitType LayoutSVGResourceClipper::ClipPathUnits() const {
-  CheckIsNotDestroyed();
   return To<SVGClipPathElement>(GetElement())
       ->clipPathUnits()
       ->CurrentEnumValue();
@@ -226,7 +221,6 @@ SVGUnitTypes::SVGUnitType LayoutSVGResourceClipper::ClipPathUnits() const {
 
 AffineTransform LayoutSVGResourceClipper::CalculateClipTransform(
     const FloatRect& reference_box) const {
-  CheckIsNotDestroyed();
   AffineTransform transform =
       To<SVGClipPathElement>(GetElement())
           ->CalculateTransform(SVGElement::kIncludeMotionTransform);
@@ -240,7 +234,6 @@ AffineTransform LayoutSVGResourceClipper::CalculateClipTransform(
 bool LayoutSVGResourceClipper::HitTestClipContent(
     const FloatRect& object_bounding_box,
     const HitTestLocation& location) const {
-  CheckIsNotDestroyed();
   if (!SVGLayoutSupport::IntersectsClipPath(*this, object_bounding_box,
                                             location))
     return false;
@@ -269,7 +262,6 @@ bool LayoutSVGResourceClipper::HitTestClipContent(
 
 FloatRect LayoutSVGResourceClipper::ResourceBoundingBox(
     const FloatRect& reference_box) {
-  CheckIsNotDestroyed();
   // The resource has not been layouted yet. Return the reference box.
   if (SelfNeedsLayout())
     return reference_box;
@@ -282,7 +274,6 @@ FloatRect LayoutSVGResourceClipper::ResourceBoundingBox(
 
 void LayoutSVGResourceClipper::StyleDidChange(StyleDifference diff,
                                               const ComputedStyle* old_style) {
-  CheckIsNotDestroyed();
   LayoutSVGResourceContainer::StyleDidChange(diff, old_style);
   if (diff.TransformChanged()) {
     MarkAllClientsForInvalidation(SVGResourceClient::kBoundariesInvalidation |
@@ -291,7 +282,6 @@ void LayoutSVGResourceClipper::StyleDidChange(StyleDifference diff,
 }
 
 void LayoutSVGResourceClipper::WillBeDestroyed() {
-  CheckIsNotDestroyed();
   MarkAllClientsForInvalidation(SVGResourceClient::kBoundariesInvalidation |
                                 SVGResourceClient::kPaintInvalidation);
   LayoutSVGResourceContainer::WillBeDestroyed();

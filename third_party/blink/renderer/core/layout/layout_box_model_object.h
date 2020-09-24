@@ -135,7 +135,6 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
 
   PhysicalOffset RelativePositionOffset() const;
   LayoutSize RelativePositionLogicalOffset() const {
-    CheckIsNotDestroyed();
     // TODO(layout-dev): This seems incorrect in flipped blocks writing mode,
     // but seems for legacy layout only.
     auto offset = RelativePositionOffset().ToLayoutSize();
@@ -162,21 +161,16 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
   virtual LayoutUnit OffsetHeight() const = 0;
 
   int PixelSnappedOffsetLeft(const Element* parent) const {
-    CheckIsNotDestroyed();
     return RoundToInt(OffsetLeft(parent));
   }
   int PixelSnappedOffsetTop(const Element* parent) const {
-    CheckIsNotDestroyed();
     return RoundToInt(OffsetTop(parent));
   }
   virtual int PixelSnappedOffsetWidth(const Element*) const;
   virtual int PixelSnappedOffsetHeight(const Element*) const;
 
   bool HasSelfPaintingLayer() const;
-  PaintLayer* Layer() const {
-    CheckIsNotDestroyed();
-    return FirstFragment().Layer();
-  }
+  PaintLayer* Layer() const { return FirstFragment().Layer(); }
   // The type of PaintLayer to instantiate. Any value returned from this
   // function other than NoPaintLayer will lead to a PaintLayer being created.
   virtual PaintLayerType LayerTypeRequired() const = 0;
@@ -198,43 +192,33 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
 
   // These return the CSS computed padding values.
   LayoutUnit ComputedCSSPaddingTop() const {
-    CheckIsNotDestroyed();
     return ComputedCSSPadding(StyleRef().PaddingTop());
   }
   LayoutUnit ComputedCSSPaddingBottom() const {
-    CheckIsNotDestroyed();
     return ComputedCSSPadding(StyleRef().PaddingBottom());
   }
   LayoutUnit ComputedCSSPaddingLeft() const {
-    CheckIsNotDestroyed();
     return ComputedCSSPadding(StyleRef().PaddingLeft());
   }
   LayoutUnit ComputedCSSPaddingRight() const {
-    CheckIsNotDestroyed();
     return ComputedCSSPadding(StyleRef().PaddingRight());
   }
   LayoutUnit ComputedCSSPaddingBefore() const {
-    CheckIsNotDestroyed();
     return ComputedCSSPadding(StyleRef().PaddingBefore());
   }
   LayoutUnit ComputedCSSPaddingAfter() const {
-    CheckIsNotDestroyed();
     return ComputedCSSPadding(StyleRef().PaddingAfter());
   }
   LayoutUnit ComputedCSSPaddingStart() const {
-    CheckIsNotDestroyed();
     return ComputedCSSPadding(StyleRef().PaddingStart());
   }
   LayoutUnit ComputedCSSPaddingEnd() const {
-    CheckIsNotDestroyed();
     return ComputedCSSPadding(StyleRef().PaddingEnd());
   }
   LayoutUnit ComputedCSSPaddingOver() const {
-    CheckIsNotDestroyed();
     return ComputedCSSPadding(StyleRef().PaddingOver());
   }
   LayoutUnit ComputedCSSPaddingUnder() const {
-    CheckIsNotDestroyed();
     return ComputedCSSPadding(StyleRef().PaddingUnder());
   }
 
@@ -242,190 +226,117 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
   // - Table cells override them to include the intrinsic padding (see
   //   explanations in LayoutTableCell).
   // - Table override them to exclude padding with collapsing borders.
-  virtual LayoutUnit PaddingTop() const {
-    CheckIsNotDestroyed();
-    return ComputedCSSPaddingTop();
-  }
+  virtual LayoutUnit PaddingTop() const { return ComputedCSSPaddingTop(); }
   virtual LayoutUnit PaddingBottom() const {
-    CheckIsNotDestroyed();
     return ComputedCSSPaddingBottom();
   }
-  virtual LayoutUnit PaddingLeft() const {
-    CheckIsNotDestroyed();
-    return ComputedCSSPaddingLeft();
-  }
-  virtual LayoutUnit PaddingRight() const {
-    CheckIsNotDestroyed();
-    return ComputedCSSPaddingRight();
-  }
+  virtual LayoutUnit PaddingLeft() const { return ComputedCSSPaddingLeft(); }
+  virtual LayoutUnit PaddingRight() const { return ComputedCSSPaddingRight(); }
 
   LayoutUnit PaddingBefore() const {
-    CheckIsNotDestroyed();
     return PhysicalPaddingToLogical().Before();
   }
-  LayoutUnit PaddingAfter() const {
-    CheckIsNotDestroyed();
-    return PhysicalPaddingToLogical().After();
-  }
-  LayoutUnit PaddingStart() const {
-    CheckIsNotDestroyed();
-    return PhysicalPaddingToLogical().Start();
-  }
-  LayoutUnit PaddingEnd() const {
-    CheckIsNotDestroyed();
-    return PhysicalPaddingToLogical().End();
-  }
-  LayoutUnit PaddingOver() const {
-    CheckIsNotDestroyed();
-    return PhysicalPaddingToLogical().Over();
-  }
-  LayoutUnit PaddingUnder() const {
-    CheckIsNotDestroyed();
-    return PhysicalPaddingToLogical().Under();
-  }
+  LayoutUnit PaddingAfter() const { return PhysicalPaddingToLogical().After(); }
+  LayoutUnit PaddingStart() const { return PhysicalPaddingToLogical().Start(); }
+  LayoutUnit PaddingEnd() const { return PhysicalPaddingToLogical().End(); }
+  LayoutUnit PaddingOver() const { return PhysicalPaddingToLogical().Over(); }
+  LayoutUnit PaddingUnder() const { return PhysicalPaddingToLogical().Under(); }
 
   virtual LayoutUnit BorderTop() const {
-    CheckIsNotDestroyed();
     return LayoutUnit(StyleRef().BorderTopWidth());
   }
   virtual LayoutUnit BorderBottom() const {
-    CheckIsNotDestroyed();
     return LayoutUnit(StyleRef().BorderBottomWidth());
   }
   virtual LayoutUnit BorderLeft() const {
-    CheckIsNotDestroyed();
     return LayoutUnit(StyleRef().BorderLeftWidth());
   }
   virtual LayoutUnit BorderRight() const {
-    CheckIsNotDestroyed();
     return LayoutUnit(StyleRef().BorderRightWidth());
   }
 
-  LayoutUnit BorderBefore() const {
-    CheckIsNotDestroyed();
-    return PhysicalBorderToLogical().Before();
-  }
-  LayoutUnit BorderAfter() const {
-    CheckIsNotDestroyed();
-    return PhysicalBorderToLogical().After();
-  }
-  LayoutUnit BorderStart() const {
-    CheckIsNotDestroyed();
-    return PhysicalBorderToLogical().Start();
-  }
-  LayoutUnit BorderEnd() const {
-    CheckIsNotDestroyed();
-    return PhysicalBorderToLogical().End();
-  }
-  LayoutUnit BorderOver() const {
-    CheckIsNotDestroyed();
-    return PhysicalBorderToLogical().Over();
-  }
-  LayoutUnit BorderUnder() const {
-    CheckIsNotDestroyed();
-    return PhysicalBorderToLogical().Under();
-  }
+  LayoutUnit BorderBefore() const { return PhysicalBorderToLogical().Before(); }
+  LayoutUnit BorderAfter() const { return PhysicalBorderToLogical().After(); }
+  LayoutUnit BorderStart() const { return PhysicalBorderToLogical().Start(); }
+  LayoutUnit BorderEnd() const { return PhysicalBorderToLogical().End(); }
+  LayoutUnit BorderOver() const { return PhysicalBorderToLogical().Over(); }
+  LayoutUnit BorderUnder() const { return PhysicalBorderToLogical().Under(); }
 
-  LayoutUnit BorderWidth() const {
-    CheckIsNotDestroyed();
-    return BorderLeft() + BorderRight();
-  }
-  LayoutUnit BorderHeight() const {
-    CheckIsNotDestroyed();
-    return BorderTop() + BorderBottom();
-  }
+  LayoutUnit BorderWidth() const { return BorderLeft() + BorderRight(); }
+  LayoutUnit BorderHeight() const { return BorderTop() + BorderBottom(); }
 
   LayoutRectOutsets BorderBoxOutsets() const {
-    CheckIsNotDestroyed();
     return LayoutRectOutsets(BorderTop(), BorderRight(), BorderBottom(),
                              BorderLeft());
   }
 
   LayoutRectOutsets PaddingOutsets() const {
-    CheckIsNotDestroyed();
     return LayoutRectOutsets(PaddingTop(), PaddingRight(), PaddingBottom(),
                              PaddingLeft());
   }
 
   // Insets from the border box to the inside of the border.
   LayoutRectOutsets BorderInsets() const {
-    CheckIsNotDestroyed();
     return LayoutRectOutsets(-BorderTop(), -BorderRight(), -BorderBottom(),
                              -BorderLeft());
   }
 
   LayoutUnit BorderAndPaddingStart() const {
-    CheckIsNotDestroyed();
     return BorderStart() + PaddingStart();
   }
   DISABLE_CFI_PERF LayoutUnit BorderAndPaddingBefore() const {
-    CheckIsNotDestroyed();
     return BorderBefore() + PaddingBefore();
   }
   DISABLE_CFI_PERF LayoutUnit BorderAndPaddingAfter() const {
-    CheckIsNotDestroyed();
     return BorderAfter() + PaddingAfter();
   }
   LayoutUnit BorderAndPaddingOver() const {
-    CheckIsNotDestroyed();
     return BorderOver() + PaddingOver();
   }
   LayoutUnit BorderAndPaddingUnder() const {
-    CheckIsNotDestroyed();
     return BorderUnder() + PaddingUnder();
   }
 
   DISABLE_CFI_PERF LayoutUnit BorderAndPaddingHeight() const {
-    CheckIsNotDestroyed();
     return BorderTop() + BorderBottom() + PaddingTop() + PaddingBottom();
   }
   DISABLE_CFI_PERF LayoutUnit BorderAndPaddingWidth() const {
-    CheckIsNotDestroyed();
     return BorderLeft() + BorderRight() + PaddingLeft() + PaddingRight();
   }
   DISABLE_CFI_PERF LayoutUnit BorderAndPaddingLogicalHeight() const {
-    CheckIsNotDestroyed();
     return (StyleRef().HasBorder() || StyleRef().MayHavePadding())
                ? BorderAndPaddingBefore() + BorderAndPaddingAfter()
                : LayoutUnit();
   }
   DISABLE_CFI_PERF LayoutUnit BorderAndPaddingLogicalWidth() const {
-    CheckIsNotDestroyed();
     return BorderStart() + BorderEnd() + PaddingStart() + PaddingEnd();
   }
   DISABLE_CFI_PERF LayoutUnit BorderAndPaddingLogicalLeft() const {
-    CheckIsNotDestroyed();
     return StyleRef().IsHorizontalWritingMode() ? BorderLeft() + PaddingLeft()
                                                 : BorderTop() + PaddingTop();
   }
 
   LayoutUnit BorderLogicalLeft() const {
-    CheckIsNotDestroyed();
     return LayoutUnit(StyleRef().IsHorizontalWritingMode() ? BorderLeft()
                                                            : BorderTop());
   }
   LayoutUnit BorderLogicalRight() const {
-    CheckIsNotDestroyed();
     return LayoutUnit(StyleRef().IsHorizontalWritingMode() ? BorderRight()
                                                            : BorderBottom());
   }
 
   LayoutUnit PaddingLogicalWidth() const {
-    CheckIsNotDestroyed();
     return PaddingStart() + PaddingEnd();
   }
   LayoutUnit PaddingLogicalHeight() const {
-    CheckIsNotDestroyed();
     return PaddingBefore() + PaddingAfter();
   }
 
   LayoutUnit CollapsedBorderAndCSSPaddingLogicalWidth() const {
-    CheckIsNotDestroyed();
     return ComputedCSSPaddingStart() + ComputedCSSPaddingEnd() + BorderStart() +
            BorderEnd();
   }
   LayoutUnit CollapsedBorderAndCSSPaddingLogicalHeight() const {
-    CheckIsNotDestroyed();
     return ComputedCSSPaddingBefore() + ComputedCSSPaddingAfter() +
            BorderBefore() + BorderAfter();
   }
@@ -436,69 +347,53 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
   virtual LayoutUnit MarginRight() const = 0;
 
   LayoutUnit MarginBefore(const ComputedStyle* other_style = nullptr) const {
-    CheckIsNotDestroyed();
     return PhysicalMarginToLogical(other_style).Before();
   }
   LayoutUnit MarginAfter(const ComputedStyle* other_style = nullptr) const {
-    CheckIsNotDestroyed();
     return PhysicalMarginToLogical(other_style).After();
   }
   LayoutUnit MarginStart(const ComputedStyle* other_style = nullptr) const {
-    CheckIsNotDestroyed();
     return PhysicalMarginToLogical(other_style).Start();
   }
   LayoutUnit MarginEnd(const ComputedStyle* other_style = nullptr) const {
-    CheckIsNotDestroyed();
     return PhysicalMarginToLogical(other_style).End();
   }
   LayoutUnit MarginLineLeft() const {
-    CheckIsNotDestroyed();
     return PhysicalMarginToLogical(nullptr).LineLeft();
   }
   LayoutUnit MarginLineRight() const {
-    CheckIsNotDestroyed();
     return PhysicalMarginToLogical(nullptr).LineRight();
   }
   LayoutUnit MarginOver() const {
-    CheckIsNotDestroyed();
     return PhysicalMarginToLogical(nullptr).Over();
   }
   LayoutUnit MarginUnder() const {
-    CheckIsNotDestroyed();
     return PhysicalMarginToLogical(nullptr).Under();
   }
 
   DISABLE_CFI_PERF LayoutUnit MarginHeight() const {
-    CheckIsNotDestroyed();
     return MarginTop() + MarginBottom();
   }
   DISABLE_CFI_PERF LayoutUnit MarginWidth() const {
-    CheckIsNotDestroyed();
     return MarginLeft() + MarginRight();
   }
   DISABLE_CFI_PERF LayoutUnit MarginLogicalHeight() const {
-    CheckIsNotDestroyed();
     return MarginBefore() + MarginAfter();
   }
   DISABLE_CFI_PERF LayoutUnit MarginLogicalWidth() const {
-    CheckIsNotDestroyed();
     return MarginStart() + MarginEnd();
   }
 
   bool HasInlineDirectionBordersPaddingOrMargin() const {
-    CheckIsNotDestroyed();
     return HasInlineDirectionBordersOrPadding() || MarginStart() || MarginEnd();
   }
   bool HasInlineDirectionBordersOrPadding() const {
-    CheckIsNotDestroyed();
     return BorderStart() || BorderEnd() || PaddingStart() || PaddingEnd();
   }
 
   virtual LayoutUnit ContainingBlockLogicalWidthForContent() const;
 
-  virtual void ChildBecameNonInline(LayoutObject* /*child*/) {
-    CheckIsNotDestroyed();
-  }
+  virtual void ChildBecameNonInline(LayoutObject* /*child*/) {}
 
   // Overridden by subclasses to determine line height and baseline position.
   virtual LayoutUnit LineHeight(
@@ -520,15 +415,11 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
   // Returns true if the background is painted opaque in the given rect.
   // The query rect is given in local coordinate system.
   virtual bool BackgroundIsKnownToBeOpaqueInRect(const PhysicalRect&) const {
-    CheckIsNotDestroyed();
     return false;
   }
   // Returns true if all text in the paint-order subtree will be painted on
   // opaque background.
-  virtual bool TextIsKnownToBeOnOpaqueBackground() const {
-    CheckIsNotDestroyed();
-    return false;
-  }
+  virtual bool TextIsKnownToBeOnOpaqueBackground() const { return false; }
 
   // This object's background is transferred to its LayoutView if:
   // 1. it's the document element, or
@@ -545,23 +436,15 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
                      MapCoordinatesFlags mode = 0) const override;
 
   virtual LayoutUnit OverrideContainingBlockContentWidth() const {
-    CheckIsNotDestroyed();
     NOTREACHED();
     return LayoutUnit(-1);
   }
   virtual LayoutUnit OverrideContainingBlockContentHeight() const {
-    CheckIsNotDestroyed();
     NOTREACHED();
     return LayoutUnit(-1);
   }
-  virtual bool HasOverrideContainingBlockContentWidth() const {
-    CheckIsNotDestroyed();
-    return false;
-  }
-  virtual bool HasOverrideContainingBlockContentHeight() const {
-    CheckIsNotDestroyed();
-    return false;
-  }
+  virtual bool HasOverrideContainingBlockContentWidth() const { return false; }
+  virtual bool HasOverrideContainingBlockContentHeight() const { return false; }
 
   // Returns the continuation associated with |this|.
   // Returns nullptr if no continuation is associated with |this|.
@@ -592,7 +475,6 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
   void SetContinuation(LayoutBoxModelObject*);
 
   virtual PhysicalOffset AccumulateRelativePositionOffsets() const {
-    CheckIsNotDestroyed();
     return PhysicalOffset();
   }
 
@@ -635,18 +517,15 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
   void MoveChildTo(LayoutBoxModelObject* to_box_model_object,
                    LayoutObject* child,
                    bool full_remove_insert = false) {
-    CheckIsNotDestroyed();
     MoveChildTo(to_box_model_object, child, nullptr, full_remove_insert);
   }
   void MoveAllChildrenTo(LayoutBoxModelObject* to_box_model_object,
                          bool full_remove_insert = false) {
-    CheckIsNotDestroyed();
     MoveAllChildrenTo(to_box_model_object, nullptr, full_remove_insert);
   }
   void MoveAllChildrenTo(LayoutBoxModelObject* to_box_model_object,
                          LayoutObject* before_child,
                          bool full_remove_insert = false) {
-    CheckIsNotDestroyed();
     MoveChildrenTo(to_box_model_object, SlowFirstChild(), nullptr, before_child,
                    full_remove_insert);
   }
@@ -657,7 +536,6 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
                       LayoutObject* start_child,
                       LayoutObject* end_child,
                       bool full_remove_insert = false) {
-    CheckIsNotDestroyed();
     MoveChildrenTo(to_box_model_object, start_child, end_child, nullptr,
                    full_remove_insert);
   }
@@ -671,14 +549,10 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
   void CreateLayerAfterStyleChange();
 
   LayoutUnit ComputedCSSPadding(const Length&) const;
-  bool IsBoxModelObject() const final {
-    CheckIsNotDestroyed();
-    return true;
-  }
+  bool IsBoxModelObject() const final { return true; }
 
   PhysicalToLogicalGetter<LayoutUnit, LayoutBoxModelObject>
   PhysicalPaddingToLogical() const {
-    CheckIsNotDestroyed();
     return PhysicalToLogicalGetter<LayoutUnit, LayoutBoxModelObject>(
         StyleRef().GetWritingMode(), StyleRef().Direction(), *this,
         &LayoutBoxModelObject::PaddingTop, &LayoutBoxModelObject::PaddingRight,
@@ -688,7 +562,6 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
 
   PhysicalToLogicalGetter<LayoutUnit, LayoutBoxModelObject>
   PhysicalMarginToLogical(const ComputedStyle* other_style) const {
-    CheckIsNotDestroyed();
     const auto& style = other_style ? *other_style : StyleRef();
     return PhysicalToLogicalGetter<LayoutUnit, LayoutBoxModelObject>(
         style.GetWritingMode(), style.Direction(), *this,
@@ -698,7 +571,6 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
 
   PhysicalToLogicalGetter<LayoutUnit, LayoutBoxModelObject>
   PhysicalBorderToLogical() const {
-    CheckIsNotDestroyed();
     return PhysicalToLogicalGetter<LayoutUnit, LayoutBoxModelObject>(
         StyleRef().GetWritingMode(), StyleRef().Direction(), *this,
         &LayoutBoxModelObject::BorderTop, &LayoutBoxModelObject::BorderRight,

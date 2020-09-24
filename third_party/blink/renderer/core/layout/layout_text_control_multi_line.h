@@ -36,7 +36,6 @@ class LayoutTextControlMultiLine final : public LayoutTextControl {
 
  private:
   bool IsOfType(LayoutObjectType type) const override {
-    CheckIsNotDestroyed();
     return type == kLayoutObjectTextArea || LayoutTextControl::IsOfType(type);
   }
 
@@ -57,7 +56,6 @@ class LayoutTextControlMultiLine final : public LayoutTextControl {
       LineDirectionMode,
       LinePositionMode = kPositionOnContainingLine) const override;
   LayoutUnit InlineBlockBaseline(LineDirectionMode) const override {
-    CheckIsNotDestroyed();
     return LayoutUnit(-1);
   }
 

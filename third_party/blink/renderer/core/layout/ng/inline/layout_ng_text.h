@@ -15,28 +15,18 @@ namespace blink {
 class CORE_EXPORT LayoutNGText : public LayoutText {
  public:
   LayoutNGText(Node* node, scoped_refptr<StringImpl> text)
-      : LayoutText(node, text) {
-    CheckIsNotDestroyed();
-  }
+      : LayoutText(node, text) {}
 
   bool IsOfType(LayoutObjectType type) const override {
-    CheckIsNotDestroyed();
     return type == kLayoutObjectNGText || LayoutText::IsOfType(type);
   }
-  bool IsLayoutNGObject() const override {
-    CheckIsNotDestroyed();
-    return true;
-  }
+  bool IsLayoutNGObject() const override { return true; }
 
  private:
   const base::span<NGInlineItem>* GetNGInlineItems() const final {
-    CheckIsNotDestroyed();
     return &inline_items_;
   }
-  base::span<NGInlineItem>* GetNGInlineItems() final {
-    CheckIsNotDestroyed();
-    return &inline_items_;
-  }
+  base::span<NGInlineItem>* GetNGInlineItems() final { return &inline_items_; }
 
   base::span<NGInlineItem> inline_items_;
 };

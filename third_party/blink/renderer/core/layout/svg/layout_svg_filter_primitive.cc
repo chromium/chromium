@@ -57,7 +57,6 @@ static void CheckForColorChange(SVGFilterPrimitiveStandardAttributes& element,
 
 void LayoutSVGFilterPrimitive::StyleDidChange(StyleDifference diff,
                                               const ComputedStyle* old_style) {
-  CheckIsNotDestroyed();
   if (!old_style)
     return;
   auto& element = To<SVGFilterPrimitiveStandardAttributes>(*GetNode());
@@ -82,7 +81,6 @@ void LayoutSVGFilterPrimitive::StyleDidChange(StyleDifference diff,
 }
 
 void LayoutSVGFilterPrimitive::UpdateLayout() {
-  CheckIsNotDestroyed();
   ClearNeedsLayout();
 }
 

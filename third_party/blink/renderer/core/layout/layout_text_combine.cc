@@ -36,7 +36,6 @@ LayoutTextCombine::LayoutTextCombine(Node* node,
 
 void LayoutTextCombine::StyleDidChange(StyleDifference diff,
                                        const ComputedStyle* old_style) {
-  CheckIsNotDestroyed();
   LayoutText::StyleDidChange(diff, old_style);
   UpdateIsCombined();
   if (!IsCombined())
@@ -48,7 +47,6 @@ void LayoutTextCombine::StyleDidChange(StyleDifference diff,
 }
 
 void LayoutTextCombine::TextDidChange() {
-  CheckIsNotDestroyed();
   LayoutText::TextDidChange();
 
   bool was_combined = IsCombined();
@@ -82,7 +80,6 @@ float LayoutTextCombine::Width(unsigned from,
                                HashSet<const SimpleFontData*>* fallback_fonts,
                                FloatRect* glyph_bounds,
                                float) const {
-  CheckIsNotDestroyed();
   if (!length)
     return 0;
 
@@ -110,7 +107,6 @@ void LayoutTextCombine::TransformToInlineCoordinates(
     GraphicsContext& context,
     const PhysicalRect& box_rect,
     bool clip) const {
-  CheckIsNotDestroyed();
   DCHECK(is_combined_);
 
   // No transform needed if we don't have a font.
@@ -154,7 +150,6 @@ void LayoutTextCombine::TransformToInlineCoordinates(
 }
 
 void LayoutTextCombine::UpdateIsCombined() {
-  CheckIsNotDestroyed();
   // CSS3 spec says text-combine works only in vertical writing mode.
   is_combined_ = !StyleRef().IsHorizontalWritingMode()
                  // Nothing to combine.
@@ -162,7 +157,6 @@ void LayoutTextCombine::UpdateIsCombined() {
 }
 
 void LayoutTextCombine::UpdateFontStyleForCombinedText() {
-  CheckIsNotDestroyed();
   DCHECK(is_combined_);
 
   scoped_refptr<ComputedStyle> style = ComputedStyle::Clone(StyleRef());

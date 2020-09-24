@@ -34,7 +34,6 @@ LayoutSVGResourceLinearGradient::LayoutSVGResourceLinearGradient(
 LayoutSVGResourceLinearGradient::~LayoutSVGResourceLinearGradient() = default;
 
 void LayoutSVGResourceLinearGradient::CollectGradientAttributes() {
-  CheckIsNotDestroyed();
   DCHECK(GetElement());
   attributes_wrapper_->Set(LinearGradientAttributes());
   To<SVGLinearGradientElement>(GetElement())
@@ -43,7 +42,6 @@ void LayoutSVGResourceLinearGradient::CollectGradientAttributes() {
 
 FloatPoint LayoutSVGResourceLinearGradient::StartPoint(
     const LinearGradientAttributes& attributes) const {
-  CheckIsNotDestroyed();
   return SVGLengthContext::ResolvePoint(GetElement(),
                                         attributes.GradientUnits(),
                                         *attributes.X1(), *attributes.Y1());
@@ -51,14 +49,12 @@ FloatPoint LayoutSVGResourceLinearGradient::StartPoint(
 
 FloatPoint LayoutSVGResourceLinearGradient::EndPoint(
     const LinearGradientAttributes& attributes) const {
-  CheckIsNotDestroyed();
   return SVGLengthContext::ResolvePoint(GetElement(),
                                         attributes.GradientUnits(),
                                         *attributes.X2(), *attributes.Y2());
 }
 
 scoped_refptr<Gradient> LayoutSVGResourceLinearGradient::BuildGradient() const {
-  CheckIsNotDestroyed();
   const LinearGradientAttributes& attributes = Attributes();
   scoped_refptr<Gradient> gradient = Gradient::CreateLinear(
       StartPoint(attributes), EndPoint(attributes),

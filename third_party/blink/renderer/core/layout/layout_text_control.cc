@@ -40,18 +40,15 @@ LayoutTextControl::LayoutTextControl(TextControlElement* element)
 LayoutTextControl::~LayoutTextControl() = default;
 
 TextControlElement* LayoutTextControl::GetTextControlElement() const {
-  CheckIsNotDestroyed();
   return ToTextControl(GetNode());
 }
 
 TextControlInnerEditorElement* LayoutTextControl::InnerEditorElement() const {
-  CheckIsNotDestroyed();
   return GetTextControlElement()->InnerEditorElement();
 }
 
 void LayoutTextControl::StyleDidChange(StyleDifference diff,
                                        const ComputedStyle* old_style) {
-  CheckIsNotDestroyed();
   LayoutBlockFlow::StyleDidChange(diff, old_style);
   TextControlInnerEditorElement* inner_editor = InnerEditorElement();
   if (!inner_editor)
@@ -82,7 +79,6 @@ void LayoutTextControl::StyleDidChange(StyleDifference diff,
 }
 
 int LayoutTextControl::ScrollbarThickness() const {
-  CheckIsNotDestroyed();
   return GetDocument().GetPage()->GetScrollbarTheme().ScrollbarThickness(
       GetDocument().GetPage()->GetChromeClient().WindowToViewportScalar(
           GetFrame(), 1.0f));
@@ -92,7 +88,6 @@ void LayoutTextControl::ComputeLogicalHeight(
     LayoutUnit logical_height,
     LayoutUnit logical_top,
     LogicalExtentComputedValues& computed_values) const {
-  CheckIsNotDestroyed();
   HTMLElement* inner_editor = InnerEditorElement();
   DCHECK(inner_editor);
   if (LayoutBox* inner_editor_box = inner_editor->GetLayoutBox()) {
@@ -125,7 +120,6 @@ void LayoutTextControl::HitInnerEditorElement(
     HitTestResult& result,
     const HitTestLocation& hit_test_location,
     const PhysicalOffset& accumulated_offset) {
-  CheckIsNotDestroyed();
   HTMLElement* inner_editor = InnerEditorElement();
   if (!inner_editor->GetLayoutObject())
     return;
@@ -209,7 +203,6 @@ bool LayoutTextControl::HasValidAvgCharWidth(const SimpleFontData* font_data,
 }
 
 float LayoutTextControl::GetAvgCharWidth(const AtomicString& family) const {
-  CheckIsNotDestroyed();
   const Font& font = StyleRef().GetFont();
 
   const SimpleFontData* primary_font = font.PrimaryFont();
@@ -224,7 +217,6 @@ float LayoutTextControl::GetAvgCharWidth(const AtomicString& family) const {
 }
 
 MinMaxSizes LayoutTextControl::ComputeIntrinsicLogicalWidths() const {
-  CheckIsNotDestroyed();
   MinMaxSizes sizes;
   sizes += BorderAndPaddingLogicalWidth();
 
@@ -248,14 +240,12 @@ MinMaxSizes LayoutTextControl::ComputeIntrinsicLogicalWidths() const {
 void LayoutTextControl::AddOutlineRects(Vector<PhysicalRect>& rects,
                                         const PhysicalOffset& additional_offset,
                                         NGOutlineType) const {
-  CheckIsNotDestroyed();
   rects.emplace_back(additional_offset, Size());
 }
 
 LayoutObject* LayoutTextControl::LayoutSpecialExcludedChild(
     bool relayout_children,
     SubtreeLayoutScope& layout_scope) {
-  CheckIsNotDestroyed();
   HTMLElement* placeholder = ToTextControl(GetNode())->PlaceholderElement();
   LayoutObject* placeholder_layout_object =
       placeholder ? placeholder->GetLayoutObject() : nullptr;
@@ -267,7 +257,6 @@ LayoutObject* LayoutTextControl::LayoutSpecialExcludedChild(
 }
 
 LayoutUnit LayoutTextControl::FirstLineBoxBaseline() const {
-  CheckIsNotDestroyed();
   if (ShouldApplyLayoutContainment())
     return LayoutUnit(-1);
 

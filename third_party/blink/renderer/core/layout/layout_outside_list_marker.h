@@ -18,30 +18,19 @@ class CORE_EXPORT LayoutOutsideListMarker final : public LayoutBlockFlow {
   explicit LayoutOutsideListMarker(Element*);
   ~LayoutOutsideListMarker() override;
 
-  const char* GetName() const override {
-    CheckIsNotDestroyed();
-    return "LayoutOutsideListMarker";
-  }
+  const char* GetName() const override { return "LayoutOutsideListMarker"; }
 
   bool IsMarkerImage() const;
   LayoutUnit ListItemInlineStartOffset() const {
-    CheckIsNotDestroyed();
     return list_item_inline_start_offset_;
   }
   void UpdateMargins();
 
-  const ListMarker& Marker() const {
-    CheckIsNotDestroyed();
-    return list_marker_;
-  }
-  ListMarker& Marker() {
-    CheckIsNotDestroyed();
-    return list_marker_;
-  }
+  const ListMarker& Marker() const { return list_marker_; }
+  ListMarker& Marker() { return list_marker_; }
 
  private:
   bool IsOfType(LayoutObjectType type) const override {
-    CheckIsNotDestroyed();
     return type == kLayoutObjectOutsideListMarker ||
            LayoutBlockFlow::IsOfType(type);
   }

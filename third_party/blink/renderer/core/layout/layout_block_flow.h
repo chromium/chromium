@@ -105,10 +105,7 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
                                           scoped_refptr<ComputedStyle>,
                                           LegacyLayout);
 
-  bool IsLayoutBlockFlow() const final {
-    CheckIsNotDestroyed();
-    return true;
-  }
+  bool IsLayoutBlockFlow() const final { return true; }
 
   void UpdateBlockLayout(bool relayout_children) override;
 
@@ -124,7 +121,6 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
       LayoutUnit position,
       IndentTextOrNot indent_text,
       LayoutUnit logical_height = LayoutUnit()) const {
-    CheckIsNotDestroyed();
     return (LogicalRightOffsetForLine(position, indent_text, logical_height) -
             LogicalLeftOffsetForLine(position, indent_text, logical_height))
         .ClampNegativeToZero();
@@ -133,7 +129,6 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
       LayoutUnit position,
       IndentTextOrNot indent_text,
       LayoutUnit logical_height = LayoutUnit()) const {
-    CheckIsNotDestroyed();
     return LogicalRightOffsetForLine(position, LogicalRightOffsetForContent(),
                                      indent_text, logical_height);
   }
@@ -141,7 +136,6 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
       LayoutUnit position,
       IndentTextOrNot indent_text,
       LayoutUnit logical_height = LayoutUnit()) const {
-    CheckIsNotDestroyed();
     return LogicalLeftOffsetForLine(position, LogicalLeftOffsetForContent(),
                                     indent_text, logical_height);
   }
@@ -149,7 +143,6 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
       LayoutUnit position,
       IndentTextOrNot indent_text,
       LayoutUnit logical_height = LayoutUnit()) const {
-    CheckIsNotDestroyed();
     return StyleRef().IsLeftToRightDirection()
                ? LogicalLeftOffsetForLine(position, indent_text, logical_height)
                : LogicalWidth() - LogicalRightOffsetForLine(
@@ -159,7 +152,6 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
   LayoutUnit AvailableLogicalWidthForAvoidingFloats(
       LayoutUnit position,
       LayoutUnit logical_height = LayoutUnit()) const {
-    CheckIsNotDestroyed();
     return (LogicalRightOffsetForAvoidingFloats(position, logical_height) -
             LogicalLeftOffsetForAvoidingFloats(position, logical_height))
         .ClampNegativeToZero();
@@ -167,21 +159,18 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
   LayoutUnit LogicalLeftOffsetForAvoidingFloats(
       LayoutUnit position,
       LayoutUnit logical_height = LayoutUnit()) const {
-    CheckIsNotDestroyed();
     return LogicalLeftFloatOffsetForAvoidingFloats(
         position, LogicalLeftOffsetForContent(), logical_height);
   }
   LayoutUnit LogicalRightOffsetForAvoidingFloats(
       LayoutUnit position,
       LayoutUnit logical_height = LayoutUnit()) const {
-    CheckIsNotDestroyed();
     return LogicalRightFloatOffsetForAvoidingFloats(
         position, LogicalRightOffsetForContent(), logical_height);
   }
   LayoutUnit StartOffsetForAvoidingFloats(
       LayoutUnit position,
       LayoutUnit logical_height = LayoutUnit()) const {
-    CheckIsNotDestroyed();
     return StyleRef().IsLeftToRightDirection()
                ? LogicalLeftOffsetForAvoidingFloats(position, logical_height)
                : LogicalWidth() - LogicalRightOffsetForAvoidingFloats(
@@ -190,35 +179,20 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
   LayoutUnit EndOffsetForAvoidingFloats(
       LayoutUnit position,
       LayoutUnit logical_height = LayoutUnit()) const {
-    CheckIsNotDestroyed();
     return !StyleRef().IsLeftToRightDirection()
                ? LogicalLeftOffsetForAvoidingFloats(position, logical_height)
                : LogicalWidth() - LogicalRightOffsetForAvoidingFloats(
                                       position, logical_height);
   }
 
-  const LineBoxList& LineBoxes() const {
-    CheckIsNotDestroyed();
-    return line_boxes_;
-  }
-  LineBoxList* LineBoxes() {
-    CheckIsNotDestroyed();
-    return &line_boxes_;
-  }
-  InlineFlowBox* FirstLineBox() const {
-    CheckIsNotDestroyed();
-    return line_boxes_.First();
-  }
-  InlineFlowBox* LastLineBox() const {
-    CheckIsNotDestroyed();
-    return line_boxes_.Last();
-  }
+  const LineBoxList& LineBoxes() const { return line_boxes_; }
+  LineBoxList* LineBoxes() { return &line_boxes_; }
+  InlineFlowBox* FirstLineBox() const { return line_boxes_.First(); }
+  InlineFlowBox* LastLineBox() const { return line_boxes_.Last(); }
   RootInlineBox* FirstRootBox() const {
-    CheckIsNotDestroyed();
     return static_cast<RootInlineBox*>(FirstLineBox());
   }
   RootInlineBox* LastRootBox() const {
-    CheckIsNotDestroyed();
     return static_cast<RootInlineBox*>(LastLineBox());
   }
 
@@ -241,7 +215,6 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
   void MarkSiblingsWithFloatsForLayout(LayoutBox* float_to_remove = nullptr);
 
   bool ContainsFloats() const {
-    CheckIsNotDestroyed();
     return floating_objects_ && !floating_objects_->Set().IsEmpty();
   }
   bool ContainsFloat(LayoutBox*) const;
@@ -249,11 +222,9 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
   void RemoveFloatingObjects();
 
   LayoutBoxModelObject* VirtualContinuation() const final {
-    CheckIsNotDestroyed();
     return Continuation();
   }
   bool IsAnonymousBlockContinuation() const {
-    CheckIsNotDestroyed();
     return Continuation() && IsAnonymousBlock();
   }
 
@@ -275,35 +246,29 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
   bool GeneratesLineBoxesForInlineChild(LayoutObject*);
 
   LayoutUnit LogicalTopForFloat(const FloatingObject& floating_object) const {
-    CheckIsNotDestroyed();
     return IsHorizontalWritingMode() ? floating_object.Y()
                                      : floating_object.X();
   }
   LayoutUnit LogicalBottomForFloat(
       const FloatingObject& floating_object) const {
-    CheckIsNotDestroyed();
     return IsHorizontalWritingMode() ? floating_object.MaxY()
                                      : floating_object.MaxX();
   }
   LayoutUnit LogicalLeftForFloat(const FloatingObject& floating_object) const {
-    CheckIsNotDestroyed();
     return IsHorizontalWritingMode() ? floating_object.X()
                                      : floating_object.Y();
   }
   LayoutUnit LogicalRightForFloat(const FloatingObject& floating_object) const {
-    CheckIsNotDestroyed();
     return IsHorizontalWritingMode() ? floating_object.MaxX()
                                      : floating_object.MaxY();
   }
   LayoutUnit LogicalWidthForFloat(const FloatingObject& floating_object) const {
-    CheckIsNotDestroyed();
     return IsHorizontalWritingMode() ? floating_object.Width()
                                      : floating_object.Height();
   }
 
   void SetLogicalTopForFloat(FloatingObject& floating_object,
                              LayoutUnit logical_top) {
-    CheckIsNotDestroyed();
     if (IsHorizontalWritingMode())
       floating_object.SetY(logical_top);
     else
@@ -311,7 +276,6 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
   }
   void SetLogicalLeftForFloat(FloatingObject& floating_object,
                               LayoutUnit logical_left) {
-    CheckIsNotDestroyed();
     if (IsHorizontalWritingMode())
       floating_object.SetX(logical_left);
     else
@@ -319,7 +283,6 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
   }
   void SetLogicalHeightForFloat(FloatingObject& floating_object,
                                 LayoutUnit logical_height) {
-    CheckIsNotDestroyed();
     if (IsHorizontalWritingMode())
       floating_object.SetHeight(logical_height);
     else
@@ -327,7 +290,6 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
   }
   void SetLogicalWidthForFloat(FloatingObject& floating_object,
                                LayoutUnit logical_width) {
-    CheckIsNotDestroyed();
     if (IsHorizontalWritingMode())
       floating_object.SetWidth(logical_width);
     else
@@ -348,11 +310,9 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
   }
 
   LayoutMultiColumnFlowThread* MultiColumnFlowThread() const {
-    CheckIsNotDestroyed();
     return rare_data_ ? rare_data_->multi_column_flow_thread_ : nullptr;
   }
   void ResetMultiColumnFlowThread() {
-    CheckIsNotDestroyed();
     if (rare_data_)
       rare_data_->multi_column_flow_thread_ = nullptr;
   }
@@ -383,14 +343,12 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
   // between the content logical top of an object and its first child or line
   // (only *between* blocks or lines).
   LayoutUnit PaginationStrutPropagatedFromChild() const {
-    CheckIsNotDestroyed();
     return rare_data_ ? rare_data_->pagination_strut_propagated_from_child_
                       : LayoutUnit();
   }
   void SetPaginationStrutPropagatedFromChild(LayoutUnit);
 
   LayoutUnit FirstForcedBreakOffset() const {
-    CheckIsNotDestroyed();
     if (!rare_data_)
       return LayoutUnit();
     return rare_data_->first_forced_break_offset_;
@@ -413,7 +371,6 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
 
   LayoutUnit XPositionForFloatIncludingMargin(
       const FloatingObject& child) const {
-    CheckIsNotDestroyed();
     LayoutUnit scrollbar_adjustment(OriginAdjustmentForScrollbars().Width());
     if (IsHorizontalWritingMode()) {
       return child.X() + child.GetLayoutObject()->MarginLeft() +
@@ -425,7 +382,6 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
   DISABLE_CFI_PERF
   LayoutUnit YPositionForFloatIncludingMargin(
       const FloatingObject& child) const {
-    CheckIsNotDestroyed();
     if (IsHorizontalWritingMode())
       return child.Y() + MarginBeforeForChild(*child.GetLayoutObject());
 
@@ -435,10 +391,7 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
   LayoutPoint FlipFloatForWritingModeForChild(const FloatingObject&,
                                               const LayoutPoint&) const;
 
-  const char* GetName() const override {
-    CheckIsNotDestroyed();
-    return "LayoutBlockFlow";
-  }
+  const char* GetName() const override { return "LayoutBlockFlow"; }
 
   FloatingObject* InsertFloatingObject(LayoutBox&);
 
@@ -470,7 +423,6 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
   LayoutUnit NextFloatLogicalBottomBelowForBlock(LayoutUnit) const;
 
   FloatingObject* LastFloatFromPreviousLine() const {
-    CheckIsNotDestroyed();
     return ContainsFloats() ? floating_objects_->Set().back().get() : nullptr;
   }
 
@@ -488,19 +440,16 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
   LayoutUnit LowestFloatLogicalBottom(EClear = EClear::kBoth) const;
 
   bool HasOverhangingFloats() const {
-    CheckIsNotDestroyed();
     return Parent() && ContainsFloats() &&
            LowestFloatLogicalBottom() > LogicalHeight();
   }
   bool IsOverhangingFloat(const FloatingObject& float_object) const {
-    CheckIsNotDestroyed();
     return LogicalBottomForFloat(float_object) > LogicalHeight();
   }
 
   LayoutUnit LogicalHeightWithVisibleOverflow() const final;
 
   void SetIsSelfCollapsingFromNG(bool is_self_collapsing) {
-    CheckIsNotDestroyed();
     is_self_collapsing_ = is_self_collapsing;
   }
 
@@ -510,21 +459,12 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
   void AddVisualOverflowFromFloats(const NGPhysicalContainerFragment& fragment);
   void AddLayoutOverflowFromFloats();
 
-  virtual NGInlineNodeData* TakeNGInlineNodeData() {
-    CheckIsNotDestroyed();
-    return nullptr;
-  }
-  virtual NGInlineNodeData* GetNGInlineNodeData() const {
-    CheckIsNotDestroyed();
-    return nullptr;
-  }
-  virtual void ResetNGInlineNodeData() { CheckIsNotDestroyed(); }
-  virtual void ClearNGInlineNodeData() { CheckIsNotDestroyed(); }
-  virtual bool HasNGInlineNodeData() const {
-    CheckIsNotDestroyed();
-    return false;
-  }
-  virtual void WillCollectInlines() { CheckIsNotDestroyed(); }
+  virtual NGInlineNodeData* TakeNGInlineNodeData() { return nullptr; }
+  virtual NGInlineNodeData* GetNGInlineNodeData() const { return nullptr; }
+  virtual void ResetNGInlineNodeData() {}
+  virtual void ClearNGInlineNodeData() {}
+  virtual bool HasNGInlineNodeData() const { return false; }
+  virtual void WillCollectInlines() {}
   virtual void SetPaintFragment(const NGBlockBreakToken*,
                                 scoped_refptr<const NGPhysicalFragment>);
   const NGFragmentItems* FragmentItems() const;
@@ -562,7 +502,6 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
       LayoutUnit fixed_offset,
       IndentTextOrNot apply_text_indent,
       LayoutUnit logical_height = LayoutUnit()) const {
-    CheckIsNotDestroyed();
     return AdjustLogicalRightOffsetForLine(
         LogicalRightFloatOffsetForLine(logical_top, fixed_offset,
                                        logical_height),
@@ -573,7 +512,6 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
       LayoutUnit fixed_offset,
       IndentTextOrNot apply_text_indent,
       LayoutUnit logical_height = LayoutUnit()) const {
-    CheckIsNotDestroyed();
     return AdjustLogicalLeftOffsetForLine(
         LogicalLeftFloatOffsetForLine(logical_top, fixed_offset,
                                       logical_height),
@@ -687,7 +625,6 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
   void DirtyLinesFromChangedChild(
       LayoutObject* child,
       MarkingBehavior marking_behaviour = kMarkContainerChain) override {
-    CheckIsNotDestroyed();
     line_boxes_.DirtyLinesFromChangedChild(
         LineLayoutItem(this), LineLayoutItem(child),
         marking_behaviour == kMarkContainerChain);
@@ -722,19 +659,16 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
                                       unsigned expansion_opportunity_count);
 
   bool ShouldBreakAtLineToAvoidWidow() const {
-    CheckIsNotDestroyed();
     return rare_data_ && rare_data_->line_break_to_avoid_widow_ >= 0;
   }
   void ClearShouldBreakAtLineToAvoidWidow() const;
   int LineBreakToAvoidWidow() const {
-    CheckIsNotDestroyed();
     return rare_data_ ? rare_data_->line_break_to_avoid_widow_ : -1;
   }
   void SetBreakAtLineToAvoidWidow(int);
   void ClearDidBreakAtLineToAvoidWidow();
   void SetDidBreakAtLineToAvoidWidow();
   bool DidBreakAtLineToAvoidWidow() const {
-    CheckIsNotDestroyed();
     return rare_data_ && rare_data_->did_break_at_line_to_avoid_widow_;
   }
 
@@ -868,7 +802,6 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
   void SetOffsetMapping(std::unique_ptr<NGOffsetMapping>);
 
   const FloatingObjects* GetFloatingObjects() const {
-    CheckIsNotDestroyed();
     return floating_objects_.get();
   }
 
@@ -884,25 +817,21 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
 
  protected:
   LayoutUnit MaxPositiveMarginBefore() const {
-    CheckIsNotDestroyed();
     return rare_data_
                ? rare_data_->margins_.PositiveMarginBefore()
                : LayoutBlockFlowRareData::PositiveMarginBeforeDefault(this);
   }
   LayoutUnit MaxNegativeMarginBefore() const {
-    CheckIsNotDestroyed();
     return rare_data_
                ? rare_data_->margins_.NegativeMarginBefore()
                : LayoutBlockFlowRareData::NegativeMarginBeforeDefault(this);
   }
   LayoutUnit MaxPositiveMarginAfter() const {
-    CheckIsNotDestroyed();
     return rare_data_
                ? rare_data_->margins_.PositiveMarginAfter()
                : LayoutBlockFlowRareData::PositiveMarginAfterDefault(this);
   }
   LayoutUnit MaxNegativeMarginAfter() const {
-    CheckIsNotDestroyed();
     return rare_data_
                ? rare_data_->margins_.NegativeMarginAfter()
                : LayoutBlockFlowRareData::NegativeMarginAfterDefault(this);
@@ -912,7 +841,6 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
   void SetMaxMarginAfterValues(LayoutUnit pos, LayoutUnit neg);
 
   void InitMaxMarginValues() {
-    CheckIsNotDestroyed();
     if (rare_data_) {
       rare_data_->margins_ = MarginValues(
           LayoutBlockFlowRareData::PositiveMarginBeforeDefault(this),
@@ -926,11 +854,9 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
 
  private:
   LayoutUnit CollapsedMarginBefore() const final {
-    CheckIsNotDestroyed();
     return MaxPositiveMarginBefore() - MaxNegativeMarginBefore();
   }
   LayoutUnit CollapsedMarginAfter() const final {
-    CheckIsNotDestroyed();
     return MaxPositiveMarginAfter() - MaxNegativeMarginAfter();
   }
 

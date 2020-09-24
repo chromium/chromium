@@ -55,16 +55,11 @@ class CORE_EXPORT LayoutImage : public LayoutReplaced {
 
   void SetImageResource(LayoutImageResource*);
 
-  LayoutImageResource* ImageResource() {
-    CheckIsNotDestroyed();
-    return image_resource_.Get();
-  }
+  LayoutImageResource* ImageResource() { return image_resource_.Get(); }
   const LayoutImageResource* ImageResource() const {
-    CheckIsNotDestroyed();
     return image_resource_.Get();
   }
   ImageResourceContent* CachedImage() const {
-    CheckIsNotDestroyed();
     return image_resource_ ? image_resource_->CachedImage() : nullptr;
   }
 
@@ -72,26 +67,17 @@ class CORE_EXPORT LayoutImage : public LayoutReplaced {
   void AreaElementFocusChanged(HTMLAreaElement*);
 
   void SetIsGeneratedContent(bool generated = true) {
-    CheckIsNotDestroyed();
     is_generated_content_ = generated;
   }
 
-  bool IsGeneratedContent() const {
-    CheckIsNotDestroyed();
-    return is_generated_content_;
-  }
+  bool IsGeneratedContent() const { return is_generated_content_; }
 
   inline void SetImageDevicePixelRatio(float factor) {
-    CheckIsNotDestroyed();
     image_device_pixel_ratio_ = factor;
   }
-  float ImageDevicePixelRatio() const {
-    CheckIsNotDestroyed();
-    return image_device_pixel_ratio_;
-  }
+  float ImageDevicePixelRatio() const { return image_device_pixel_ratio_; }
 
   void IntrinsicSizeChanged() override {
-    CheckIsNotDestroyed();
     // The replaced content transform depends on the intrinsic size (see:
     // FragmentPaintPropertyTreeBuilder::UpdateReplacedContentTransform).
     SetNeedsPaintPropertyUpdate();
@@ -99,10 +85,7 @@ class CORE_EXPORT LayoutImage : public LayoutReplaced {
       ImageChanged(image_resource_->ImagePtr(), CanDeferInvalidation::kNo);
   }
 
-  const char* GetName() const override {
-    CheckIsNotDestroyed();
-    return "LayoutImage";
-  }
+  const char* GetName() const override { return "LayoutImage"; }
 
   void UpdateAfterLayout() override;
 
@@ -116,7 +99,6 @@ class CORE_EXPORT LayoutImage : public LayoutReplaced {
   void Paint(const PaintInfo&) const final;
 
   bool IsOfType(LayoutObjectType type) const override {
-    CheckIsNotDestroyed();
     return type == kLayoutObjectLayoutImage || LayoutReplaced::IsOfType(type);
   }
 
@@ -124,16 +106,10 @@ class CORE_EXPORT LayoutImage : public LayoutReplaced {
 
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
 
-  bool CanBeSelectionLeafInternal() const final {
-    CheckIsNotDestroyed();
-    return true;
-  }
+  bool CanBeSelectionLeafInternal() const final { return true; }
 
  private:
-  bool IsImage() const override {
-    CheckIsNotDestroyed();
-    return true;
-  }
+  bool IsImage() const override { return true; }
 
   void PaintReplaced(const PaintInfo&,
                      const PhysicalOffset& paint_offset) const override;
@@ -143,10 +119,7 @@ class CORE_EXPORT LayoutImage : public LayoutReplaced {
       unsigned max_depth_to_test) const final;
   bool ComputeBackgroundIsKnownToBeObscured() const final;
 
-  bool BackgroundShouldAlwaysBeClipped() const override {
-    CheckIsNotDestroyed();
-    return true;
-  }
+  bool BackgroundShouldAlwaysBeClipped() const override { return true; }
 
   LayoutUnit MinimumReplacedHeight() const override;
 

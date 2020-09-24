@@ -18,7 +18,6 @@ class CORE_EXPORT LayoutListMarkerImage final : public LayoutImage {
   static LayoutListMarkerImage* CreateAnonymous(Document*);
 
   bool IsLayoutNGObject() const override {
-    CheckIsNotDestroyed();
     return IsLayoutNGObjectForListMarkerImage();
   }
   LayoutSize DefaultSize() const;

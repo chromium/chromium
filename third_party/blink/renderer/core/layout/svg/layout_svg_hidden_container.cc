@@ -28,7 +28,6 @@ LayoutSVGHiddenContainer::LayoutSVGHiddenContainer(SVGElement* element)
     : LayoutSVGContainer(element) {}
 
 void LayoutSVGHiddenContainer::UpdateLayout() {
-  CheckIsNotDestroyed();
   DCHECK(NeedsLayout());
   LayoutAnalyzer::Scope analyzer(*this);
 
@@ -48,7 +47,6 @@ bool LayoutSVGHiddenContainer::NodeAtPoint(HitTestResult&,
                                            const HitTestLocation&,
                                            const PhysicalOffset&,
                                            HitTestAction) {
-  CheckIsNotDestroyed();
   return false;
 }
 

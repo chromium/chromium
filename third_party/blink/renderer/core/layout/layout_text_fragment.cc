@@ -81,7 +81,6 @@ LayoutTextFragment* LayoutTextFragment::CreateAnonymous(PseudoElement& pseudo,
 }
 
 void LayoutTextFragment::WillBeDestroyed() {
-  CheckIsNotDestroyed();
   if (is_remaining_text_layout_object_ && first_letter_pseudo_element_)
     first_letter_pseudo_element_->ClearRemainingTextLayoutObject();
   first_letter_pseudo_element_ = nullptr;
@@ -89,19 +88,16 @@ void LayoutTextFragment::WillBeDestroyed() {
 }
 
 scoped_refptr<StringImpl> LayoutTextFragment::CompleteText() const {
-  CheckIsNotDestroyed();
   Text* text = AssociatedTextNode();
   return text ? text->DataImpl() : ContentString();
 }
 
 void LayoutTextFragment::SetContentString(StringImpl* str) {
-  CheckIsNotDestroyed();
   content_string_ = str;
   SetTextIfNeeded(str);
 }
 
 scoped_refptr<StringImpl> LayoutTextFragment::OriginalText() const {
-  CheckIsNotDestroyed();
   scoped_refptr<StringImpl> result = CompleteText();
   if (!result)
     return nullptr;
@@ -109,7 +105,6 @@ scoped_refptr<StringImpl> LayoutTextFragment::OriginalText() const {
 }
 
 void LayoutTextFragment::TextDidChange() {
-  CheckIsNotDestroyed();
   LayoutText::TextDidChange();
 
   start_ = 0;
@@ -129,7 +124,6 @@ void LayoutTextFragment::TextDidChange() {
 void LayoutTextFragment::SetTextFragment(scoped_refptr<StringImpl> text,
                                          unsigned start,
                                          unsigned length) {
-  CheckIsNotDestroyed();
   // Note, we have to call |LayoutText::TextDidChange()| here because, if we
   // use our version we will, potentially, screw up the first-letter settings
   // where we only use portions of the string.
@@ -143,7 +137,6 @@ void LayoutTextFragment::SetTextFragment(scoped_refptr<StringImpl> text,
 }
 
 void LayoutTextFragment::TransformText() {
-  CheckIsNotDestroyed();
   // Note, we have to call LayoutText::TextDidChange()| here because, if we use
   // our version we will, potentially, screw up the first-letter settings where
   // we only use portions of the string.
@@ -154,7 +147,6 @@ void LayoutTextFragment::TransformText() {
 }
 
 UChar LayoutTextFragment::PreviousCharacter() const {
-  CheckIsNotDestroyed();
   if (Start()) {
     StringImpl* original = CompleteText().get();
     if (original && Start() <= original->length())
@@ -167,7 +159,6 @@ UChar LayoutTextFragment::PreviousCharacter() const {
 // If this is the layoutObject for a first-letter pseudoNode then we have to
 // look at the node for the remaining text to find our content.
 Text* LayoutTextFragment::AssociatedTextNode() const {
-  CheckIsNotDestroyed();
   Node* node = GetFirstLetterPseudoElement();
   if (is_remaining_text_layout_object_ || !node) {
     // If we don't have a node, then we aren't part of a first-letter pseudo
@@ -191,7 +182,6 @@ Text* LayoutTextFragment::AssociatedTextNode() const {
 }
 
 LayoutText* LayoutTextFragment::GetFirstLetterPart() const {
-  CheckIsNotDestroyed();
   if (!is_remaining_text_layout_object_)
     return nullptr;
   // Node: We assume first letter pseudo element has only one child and it
@@ -207,7 +197,6 @@ LayoutText* LayoutTextFragment::GetFirstLetterPart() const {
 void LayoutTextFragment::UpdateHitTestResult(
     HitTestResult& result,
     const PhysicalOffset& point) const {
-  CheckIsNotDestroyed();
   if (result.InnerNode())
     return;
 
@@ -221,7 +210,6 @@ void LayoutTextFragment::UpdateHitTestResult(
 }
 
 Position LayoutTextFragment::PositionForCaretOffset(unsigned offset) const {
-  CheckIsNotDestroyed();
   // TODO(layout-dev): Make the following DCHECK always enabled after we
   // properly support 'text-transform' changing text length.
 #if DCHECK_IS_ON()
@@ -238,7 +226,6 @@ Position LayoutTextFragment::PositionForCaretOffset(unsigned offset) const {
 
 base::Optional<unsigned> LayoutTextFragment::CaretOffsetForPosition(
     const Position& position) const {
-  CheckIsNotDestroyed();
   if (position.IsNull() || position.AnchorNode() != AssociatedTextNode())
     return base::nullopt;
   unsigned dom_offset;

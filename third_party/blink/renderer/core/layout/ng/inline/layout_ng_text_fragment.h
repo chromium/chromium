@@ -18,27 +18,17 @@ class CORE_EXPORT LayoutNGTextFragment final : public LayoutTextFragment {
                        StringImpl* text,
                        int start_offset,
                        int length)
-      : LayoutTextFragment(node, text, start_offset, length) {
-    CheckIsNotDestroyed();
-  }
+      : LayoutTextFragment(node, text, start_offset, length) {}
 
-  bool IsLayoutNGObject() const final {
-    CheckIsNotDestroyed();
-    return true;
-  }
+  bool IsLayoutNGObject() const final { return true; }
 
  private:
   const base::span<NGInlineItem>* GetNGInlineItems() const final {
-    CheckIsNotDestroyed();
     return &inline_items_;
   }
-  base::span<NGInlineItem>* GetNGInlineItems() final {
-    CheckIsNotDestroyed();
-    return &inline_items_;
-  }
+  base::span<NGInlineItem>* GetNGInlineItems() final { return &inline_items_; }
 
   void InsertedIntoTree() final {
-    CheckIsNotDestroyed();
     valid_ng_items_ = false;
     LayoutText::InsertedIntoTree();
   }

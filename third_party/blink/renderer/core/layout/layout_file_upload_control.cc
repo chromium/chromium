@@ -44,7 +44,6 @@ LayoutFileUploadControl::~LayoutFileUploadControl() = default;
 
 bool LayoutFileUploadControl::IsChildAllowed(LayoutObject* child,
                                              const ComputedStyle& style) const {
-  CheckIsNotDestroyed();
   const Node* child_node = child->GetNode();
   // Reject shadow nodes other than UploadButton.
   if (child_node && child_node->OwnerShadowHost() == GetNode() &&
@@ -54,7 +53,6 @@ bool LayoutFileUploadControl::IsChildAllowed(LayoutObject* child,
 }
 
 int LayoutFileUploadControl::MaxFilenameWidth() const {
-  CheckIsNotDestroyed();
   int upload_button_width =
       (UploadButton() && UploadButton()->GetLayoutBox())
           ? UploadButton()->GetLayoutBox()->PixelSnappedWidth()
@@ -66,17 +64,14 @@ int LayoutFileUploadControl::MaxFilenameWidth() const {
 void LayoutFileUploadControl::PaintObject(
     const PaintInfo& paint_info,
     const PhysicalOffset& paint_offset) const {
-  CheckIsNotDestroyed();
   FileUploadControlPainter(*this).PaintObject(paint_info, paint_offset);
 }
 
 HTMLInputElement* LayoutFileUploadControl::UploadButton() const {
-  CheckIsNotDestroyed();
   return To<HTMLInputElement>(GetNode())->UploadButton();
 }
 
 String LayoutFileUploadControl::FileTextValue() const {
-  CheckIsNotDestroyed();
   int width = MaxFilenameWidth();
   if (width <= 0)
     return String();
@@ -93,7 +88,6 @@ String LayoutFileUploadControl::FileTextValue() const {
 PhysicalRect LayoutFileUploadControl::OverflowClipRect(
     const PhysicalOffset& additional_offset,
     OverlayScrollbarClipBehavior) const {
-  CheckIsNotDestroyed();
   PhysicalRect rect(additional_offset, Size());
   rect.Expand(BorderInsets());
   rect.offset.top -= LayoutUnit(kButtonShadowHeight);

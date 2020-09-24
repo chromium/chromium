@@ -59,28 +59,15 @@ class LayoutSVGShape : public LayoutSVGModelObject {
  public:
   ~LayoutSVGShape() override;
 
-  void SetNeedsShapeUpdate() {
-    CheckIsNotDestroyed();
-    needs_shape_update_ = true;
-  }
-  void SetNeedsBoundariesUpdate() final {
-    CheckIsNotDestroyed();
-    needs_boundaries_update_ = true;
-  }
-  void SetNeedsTransformUpdate() final {
-    CheckIsNotDestroyed();
-    needs_transform_update_ = true;
-  }
+  void SetNeedsShapeUpdate() { needs_shape_update_ = true; }
+  void SetNeedsBoundariesUpdate() final { needs_boundaries_update_ = true; }
+  void SetNeedsTransformUpdate() final { needs_transform_update_ = true; }
 
   Path& GetPath() const {
-    CheckIsNotDestroyed();
     DCHECK(path_);
     return *path_;
   }
-  bool HasPath() const {
-    CheckIsNotDestroyed();
-    return path_.get();
-  }
+  bool HasPath() const { return path_.get(); }
   float DashScaleFactor() const;
 
   // This method is sometimes (rarely) called with a null path and crashes. The
@@ -88,23 +75,19 @@ class LayoutSVGShape : public LayoutSVGModelObject {
   // path but somehow that fails. The assert and check for hasPath() are
   // intended to detect and prevent crashes.
   virtual bool IsShapeEmpty() const {
-    CheckIsNotDestroyed();
     DCHECK(path_);
     return !HasPath() || GetPath().IsEmpty();
   }
 
   bool HasNonScalingStroke() const {
-    CheckIsNotDestroyed();
     return StyleRef().SvgStyle().VectorEffect() == VE_NON_SCALING_STROKE;
   }
   const Path& NonScalingStrokePath() const {
-    CheckIsNotDestroyed();
     DCHECK(HasNonScalingStroke());
     DCHECK(rare_data_);
     return rare_data_->non_scaling_stroke_path_;
   }
   const AffineTransform& NonScalingStrokeTransform() const {
-    CheckIsNotDestroyed();
     DCHECK(HasNonScalingStroke());
     DCHECK(rare_data_);
     return rare_data_->non_scaling_stroke_transform_;
@@ -112,13 +95,9 @@ class LayoutSVGShape : public LayoutSVGModelObject {
 
   AffineTransform ComputeRootTransform() const;
   AffineTransform ComputeNonScalingStrokeTransform() const;
-  AffineTransform LocalSVGTransform() const final {
-    CheckIsNotDestroyed();
-    return local_transform_;
-  }
+  AffineTransform LocalSVGTransform() const final { return local_transform_; }
 
   virtual const Vector<MarkerPosition>* MarkerPositions() const {
-    CheckIsNotDestroyed();
     return nullptr;
   }
 
@@ -126,19 +105,12 @@ class LayoutSVGShape : public LayoutSVGModelObject {
   float StrokeWidthForMarkerUnits() const;
 
   virtual ShapeGeometryCodePath GeometryCodePath() const {
-    CheckIsNotDestroyed();
     return kPathGeometry;
   }
 
-  FloatRect ObjectBoundingBox() const final {
-    CheckIsNotDestroyed();
-    return fill_bounding_box_;
-  }
+  FloatRect ObjectBoundingBox() const final { return fill_bounding_box_; }
 
-  const char* GetName() const override {
-    CheckIsNotDestroyed();
-    return "LayoutSVGShape";
-  }
+  const char* GetName() const override { return "LayoutSVGShape"; }
 
  protected:
   // Description of the geometry of the shape for stroking.
@@ -183,7 +155,6 @@ class LayoutSVGShape : public LayoutSVGModelObject {
   bool StrokeContains(const HitTestLocation&, bool requires_stroke = true);
 
   bool IsOfType(LayoutObjectType type) const override {
-    CheckIsNotDestroyed();
     return type == kLayoutObjectSVGShape ||
            LayoutSVGModelObject::IsOfType(type);
   }
@@ -198,10 +169,7 @@ class LayoutSVGShape : public LayoutSVGModelObject {
                     const HitTestLocation&,
                     PointerEventsHitRules);
 
-  FloatRect StrokeBoundingBox() const final {
-    CheckIsNotDestroyed();
-    return stroke_bounding_box_;
-  }
+  FloatRect StrokeBoundingBox() const final { return stroke_bounding_box_; }
 
   // Calculates an inclusive bounding box of this shape as if this shape has a
   // stroke. If this shape has a stroke, then |stroke_bounding_box_| is

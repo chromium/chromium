@@ -48,7 +48,6 @@ static bool HasValidPredecessor(const Node* node) {
 bool LayoutSVGTransformableContainer::IsChildAllowed(
     LayoutObject* child,
     const ComputedStyle& style) const {
-  CheckIsNotDestroyed();
   DCHECK(GetElement());
   Node* child_node = child->GetNode();
   if (IsA<SVGSwitchElement>(*GetElement())) {
@@ -73,7 +72,6 @@ bool LayoutSVGTransformableContainer::IsChildAllowed(
 }
 
 void LayoutSVGTransformableContainer::SetNeedsTransformUpdate() {
-  CheckIsNotDestroyed();
   // The transform paint property relies on the SVG transform being up-to-date
   // (see: PaintPropertyTreeBuilder::updateTransformForNonRootSVG).
   SetNeedsPaintPropertyUpdate();
@@ -81,7 +79,6 @@ void LayoutSVGTransformableContainer::SetNeedsTransformUpdate() {
 }
 
 bool LayoutSVGTransformableContainer::IsUseElement() const {
-  CheckIsNotDestroyed();
   const SVGElement& element = *GetElement();
   if (IsA<SVGUseElement>(element))
     return true;
@@ -93,7 +90,6 @@ bool LayoutSVGTransformableContainer::IsUseElement() const {
 
 SVGTransformChange LayoutSVGTransformableContainer::CalculateLocalTransform(
     bool bounds_changed) {
-  CheckIsNotDestroyed();
   SVGElement* element = GetElement();
   DCHECK(element);
 
@@ -133,7 +129,6 @@ SVGTransformChange LayoutSVGTransformableContainer::CalculateLocalTransform(
 void LayoutSVGTransformableContainer::StyleDidChange(
     StyleDifference diff,
     const ComputedStyle* old_style) {
-  CheckIsNotDestroyed();
   transform_uses_reference_box_ =
       TransformHelper::DependsOnReferenceBox(StyleRef());
   LayoutSVGContainer::StyleDidChange(diff, old_style);

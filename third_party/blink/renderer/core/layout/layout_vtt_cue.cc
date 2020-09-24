@@ -280,7 +280,6 @@ LayoutVTTCue::LayoutVTTCue(ContainerNode* node, float snap_to_lines_position)
     : LayoutBlockFlow(node), snap_to_lines_position_(snap_to_lines_position) {}
 
 void LayoutVTTCue::RepositionCueSnapToLinesNotSet() {
-  CheckIsNotDestroyed();
   // FIXME: Implement overlapping detection when snap-to-lines is not set.
   // http://wkb.ug/84296
 
@@ -325,7 +324,6 @@ void LayoutVTTCue::RepositionCueSnapToLinesNotSet() {
 }
 
 IntRect LayoutVTTCue::ComputeControlsRect() const {
-  CheckIsNotDestroyed();
   // Determine the area covered by the media controls, if any. For this, the
   // LayoutVTTCue will walk the tree up to the HTMLMediaElement, then ask for
   // the MediaControls.
@@ -361,7 +359,6 @@ IntRect LayoutVTTCue::ComputeControlsRect() const {
 }
 
 void LayoutVTTCue::UpdateLayout() {
-  CheckIsNotDestroyed();
   LayoutBlockFlow::UpdateLayout();
 
   DCHECK(FirstChild());

@@ -49,14 +49,12 @@ LayoutSize LayoutVideo::DefaultSize() {
 }
 
 void LayoutVideo::IntrinsicSizeChanged() {
-  CheckIsNotDestroyed();
   if (VideoElement()->IsShowPosterFlagSet())
     LayoutMedia::IntrinsicSizeChanged();
   UpdateIntrinsicSize(/* is_in_layout */ false);
 }
 
 void LayoutVideo::UpdateIntrinsicSize(bool is_in_layout) {
-  CheckIsNotDestroyed();
   LayoutSize size = CalculateIntrinsicSize(StyleRef().EffectiveZoom());
 
   // Never set the element size to zero when in a media document.
@@ -76,7 +74,6 @@ void LayoutVideo::UpdateIntrinsicSize(bool is_in_layout) {
 }
 
 LayoutSize LayoutVideo::CalculateIntrinsicSize(float scale) {
-  CheckIsNotDestroyed();
   HTMLVideoElement* video = VideoElement();
   DCHECK(video);
 
@@ -121,7 +118,6 @@ LayoutSize LayoutVideo::CalculateIntrinsicSize(float scale) {
 
 void LayoutVideo::ImageChanged(WrappedImagePtr new_image,
                                CanDeferInvalidation defer) {
-  CheckIsNotDestroyed();
   LayoutMedia::ImageChanged(new_image, defer);
 
   // Cache the image intrinsic size so we can continue to use it to draw the
@@ -138,7 +134,6 @@ void LayoutVideo::ImageChanged(WrappedImagePtr new_image,
 }
 
 LayoutVideo::DisplayMode LayoutVideo::GetDisplayMode() const {
-  CheckIsNotDestroyed();
   if (!VideoElement()->IsShowPosterFlagSet() ||
       VideoElement()->PosterImageURL().IsEmpty()) {
     return kVideo;
@@ -149,23 +144,19 @@ LayoutVideo::DisplayMode LayoutVideo::GetDisplayMode() const {
 
 void LayoutVideo::PaintReplaced(const PaintInfo& paint_info,
                                 const PhysicalOffset& paint_offset) const {
-  CheckIsNotDestroyed();
   VideoPainter(*this).PaintReplaced(paint_info, paint_offset);
 }
 
 void LayoutVideo::UpdateLayout() {
-  CheckIsNotDestroyed();
   UpdatePlayer(/* is_in_layout */ true);
   LayoutMedia::UpdateLayout();
 }
 
 HTMLVideoElement* LayoutVideo::VideoElement() const {
-  CheckIsNotDestroyed();
   return To<HTMLVideoElement>(GetNode());
 }
 
 void LayoutVideo::UpdateFromElement() {
-  CheckIsNotDestroyed();
   LayoutMedia::UpdateFromElement();
   UpdatePlayer(/* is_in_layout */ false);
 
@@ -173,7 +164,6 @@ void LayoutVideo::UpdateFromElement() {
 }
 
 void LayoutVideo::UpdatePlayer(bool is_in_layout) {
-  CheckIsNotDestroyed();
   UpdateIntrinsicSize(is_in_layout);
 
   WebMediaPlayer* media_player = MediaElement()->GetWebMediaPlayer();
@@ -188,23 +178,19 @@ void LayoutVideo::UpdatePlayer(bool is_in_layout) {
 
 LayoutUnit LayoutVideo::ComputeReplacedLogicalWidth(
     ShouldComputePreferred should_compute_preferred) const {
-  CheckIsNotDestroyed();
   return LayoutReplaced::ComputeReplacedLogicalWidth(should_compute_preferred);
 }
 
 LayoutUnit LayoutVideo::ComputeReplacedLogicalHeight(
     LayoutUnit estimated_used_width) const {
-  CheckIsNotDestroyed();
   return LayoutReplaced::ComputeReplacedLogicalHeight(estimated_used_width);
 }
 
 LayoutUnit LayoutVideo::MinimumReplacedHeight() const {
-  CheckIsNotDestroyed();
   return LayoutReplaced::MinimumReplacedHeight();
 }
 
 PhysicalRect LayoutVideo::ReplacedContentRect() const {
-  CheckIsNotDestroyed();
   if (GetDisplayMode() == kVideo) {
     // Video codecs may need to restart from an I-frame when the output is
     // resized. Round size in advance to avoid 1px snap difference.
@@ -216,12 +202,10 @@ PhysicalRect LayoutVideo::ReplacedContentRect() const {
 }
 
 bool LayoutVideo::SupportsAcceleratedRendering() const {
-  CheckIsNotDestroyed();
   return !!MediaElement()->CcLayer();
 }
 
 CompositingReasons LayoutVideo::AdditionalCompositingReasons() const {
-  CheckIsNotDestroyed();
   auto* element = To<HTMLMediaElement>(GetNode());
   if (element->IsFullscreen() && element->UsesOverlayFullscreenVideo())
     return CompositingReason::kVideo;

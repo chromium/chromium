@@ -39,33 +39,23 @@ class LayoutSVGFilterPrimitive final : public LayoutObject {
 
  private:
   bool IsChildAllowed(LayoutObject*, const ComputedStyle&) const override {
-    CheckIsNotDestroyed();
     return false;
   }
 
   void StyleDidChange(StyleDifference, const ComputedStyle*) override;
   void UpdateLayout() override;
 
-  const char* GetName() const override {
-    CheckIsNotDestroyed();
-    return "LayoutSVGFilterPrimitive";
-  }
+  const char* GetName() const override { return "LayoutSVGFilterPrimitive"; }
   bool IsOfType(LayoutObjectType type) const override {
-    CheckIsNotDestroyed();
     return type == kLayoutObjectSVG ||
            type == kLayoutObjectSVGFilterPrimitive ||
            LayoutObject::IsOfType(type);
   }
-  FloatRect ObjectBoundingBox() const override {
-    CheckIsNotDestroyed();
-    return FloatRect();
-  }
+  FloatRect ObjectBoundingBox() const override { return FloatRect(); }
   FloatRect VisualRectInLocalSVGCoordinates() const override {
-    CheckIsNotDestroyed();
     return FloatRect();
   }
   FloatRect LocalBoundingBoxRectForAccessibility() const override {
-    CheckIsNotDestroyed();
     return FloatRect();
   }
 };

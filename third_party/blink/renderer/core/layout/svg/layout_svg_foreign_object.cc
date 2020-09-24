@@ -39,19 +39,16 @@ LayoutSVGForeignObject::~LayoutSVGForeignObject() = default;
 
 bool LayoutSVGForeignObject::IsChildAllowed(LayoutObject* child,
                                             const ComputedStyle& style) const {
-  CheckIsNotDestroyed();
   // Disallow arbitary SVG content. Only allow proper <svg xmlns="svgNS">
   // subdocuments.
   return !child->IsSVGChild();
 }
 
 void LayoutSVGForeignObject::Paint(const PaintInfo& paint_info) const {
-  CheckIsNotDestroyed();
   SVGForeignObjectPainter(*this).Paint(paint_info);
 }
 
 void LayoutSVGForeignObject::UpdateLogicalWidth() {
-  CheckIsNotDestroyed();
   const ComputedStyle& style = StyleRef();
   float logical_width =
       style.IsHorizontalWritingMode() ? viewport_.Width() : viewport_.Height();
@@ -63,7 +60,6 @@ void LayoutSVGForeignObject::ComputeLogicalHeight(
     LayoutUnit,
     LayoutUnit logical_top,
     LogicalExtentComputedValues& computed_values) const {
-  CheckIsNotDestroyed();
   const ComputedStyle& style = StyleRef();
   float logical_height =
       style.IsHorizontalWritingMode() ? viewport_.Height() : viewport_.Width();
@@ -73,7 +69,6 @@ void LayoutSVGForeignObject::ComputeLogicalHeight(
 }
 
 AffineTransform LayoutSVGForeignObject::LocalToSVGParentTransform() const {
-  CheckIsNotDestroyed();
   // Include a zoom inverse in the local-to-parent transform since descendants
   // of the <foreignObject> will have regular zoom applied, and thus need to
   // have that removed when moving into the <fO> ancestors chain (the SVG root
@@ -84,7 +79,6 @@ AffineTransform LayoutSVGForeignObject::LocalToSVGParentTransform() const {
 }
 
 void LayoutSVGForeignObject::UpdateLayout() {
-  CheckIsNotDestroyed();
   DCHECK(NeedsLayout());
 
   auto* foreign = To<SVGForeignObjectElement>(GetElement());
@@ -150,7 +144,6 @@ bool LayoutSVGForeignObject::NodeAtPointFromSVG(
     const HitTestLocation& hit_test_location,
     const PhysicalOffset& accumulated_offset,
     HitTestAction) {
-  CheckIsNotDestroyed();
   DCHECK_EQ(accumulated_offset, PhysicalOffset());
   TransformedHitTestLocation local_location(hit_test_location,
                                             LocalToSVGParentTransform());
@@ -186,21 +179,18 @@ bool LayoutSVGForeignObject::NodeAtPoint(
     const HitTestLocation& hit_test_location,
     const PhysicalOffset& accumulated_offset,
     HitTestAction hit_test_action) {
-  CheckIsNotDestroyed();
   // Skip LayoutSVGBlock's override.
   return LayoutBlockFlow::NodeAtPoint(result, hit_test_location,
                                       accumulated_offset, hit_test_action);
 }
 
 PaintLayerType LayoutSVGForeignObject::LayerTypeRequired() const {
-  CheckIsNotDestroyed();
   // Skip LayoutSVGBlock's override.
   return LayoutBlockFlow::LayerTypeRequired();
 }
 
 void LayoutSVGForeignObject::StyleDidChange(StyleDifference diff,
                                             const ComputedStyle* old_style) {
-  CheckIsNotDestroyed();
   LayoutSVGBlock::StyleDidChange(diff, old_style);
 
   if (old_style && (SVGLayoutSupport::IsOverflowHidden(*old_style) !=

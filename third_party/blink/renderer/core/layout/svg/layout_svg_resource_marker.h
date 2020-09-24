@@ -33,10 +33,7 @@ class LayoutSVGResourceMarker final : public LayoutSVGResourceContainer {
   explicit LayoutSVGResourceMarker(SVGMarkerElement*);
   ~LayoutSVGResourceMarker() override;
 
-  const char* GetName() const override {
-    CheckIsNotDestroyed();
-    return "LayoutSVGResourceMarker";
-  }
+  const char* GetName() const override { return "LayoutSVGResourceMarker"; }
 
   void RemoveAllClientsFromCache() override;
 
@@ -48,17 +45,13 @@ class LayoutSVGResourceMarker final : public LayoutSVGResourceContainer {
                                        float stroke_width) const;
 
   AffineTransform LocalToSVGParentTransform() const final {
-    CheckIsNotDestroyed();
     return local_to_parent_transform_;
   }
   void SetNeedsTransformUpdate() final;
 
   // The viewport origin is (0,0) and not the reference point because each
   // marker instance includes the reference in markerTransformation().
-  FloatRect Viewport() const {
-    CheckIsNotDestroyed();
-    return FloatRect(FloatPoint(), viewport_size_);
-  }
+  FloatRect Viewport() const { return FloatRect(FloatPoint(), viewport_size_); }
 
   bool ShouldPaint() const;
 
@@ -68,10 +61,7 @@ class LayoutSVGResourceMarker final : public LayoutSVGResourceContainer {
   SVGMarkerOrientType OrientType() const;
 
   static const LayoutSVGResourceType kResourceType = kMarkerResourceType;
-  LayoutSVGResourceType ResourceType() const override {
-    CheckIsNotDestroyed();
-    return kResourceType;
-  }
+  LayoutSVGResourceType ResourceType() const override { return kResourceType; }
 
  private:
   void UpdateLayout() override;

@@ -54,13 +54,11 @@ LayoutEmbeddedContent::LayoutEmbeddedContent(HTMLFrameOwnerElement* element)
 }
 
 void LayoutEmbeddedContent::Release() {
-  CheckIsNotDestroyed();
   if (--ref_count_ <= 0)
     delete this;
 }
 
 void LayoutEmbeddedContent::WillBeDestroyed() {
-  CheckIsNotDestroyed();
   if (AXObjectCache* cache = GetDocument().ExistingAXObjectCache()) {
     cache->ChildrenChanged(Parent());
     cache->Remove(this);
@@ -73,7 +71,6 @@ void LayoutEmbeddedContent::WillBeDestroyed() {
 }
 
 void LayoutEmbeddedContent::DeleteThis() {
-  CheckIsNotDestroyed();
   // We call clearNode here because LayoutEmbeddedContent is ref counted. This
   // call to destroy may not actually destroy the layout object. We can keep it
   // around because of references from the LocalFrameView class. (The actual
@@ -93,12 +90,10 @@ LayoutEmbeddedContent::~LayoutEmbeddedContent() {
 }
 
 FrameView* LayoutEmbeddedContent::ChildFrameView() const {
-  CheckIsNotDestroyed();
   return DynamicTo<FrameView>(GetEmbeddedContentView());
 }
 
 LayoutView* LayoutEmbeddedContent::ChildLayoutView() const {
-  CheckIsNotDestroyed();
   if (HTMLFrameOwnerElement* owner_element = GetFrameOwnerElement()) {
     if (Document* content_document = owner_element->contentDocument())
       return content_document->GetLayoutView();
@@ -107,7 +102,6 @@ LayoutView* LayoutEmbeddedContent::ChildLayoutView() const {
 }
 
 WebPluginContainerImpl* LayoutEmbeddedContent::Plugin() const {
-  CheckIsNotDestroyed();
   EmbeddedContentView* embedded_content_view = GetEmbeddedContentView();
   if (embedded_content_view && embedded_content_view->IsPluginView())
     return To<WebPluginContainerImpl>(embedded_content_view);
@@ -115,14 +109,12 @@ WebPluginContainerImpl* LayoutEmbeddedContent::Plugin() const {
 }
 
 EmbeddedContentView* LayoutEmbeddedContent::GetEmbeddedContentView() const {
-  CheckIsNotDestroyed();
   if (auto* frame_owner = GetFrameOwnerElement())
     return frame_owner->OwnedEmbeddedContentView();
   return nullptr;
 }
 
 PaintLayerType LayoutEmbeddedContent::LayerTypeRequired() const {
-  CheckIsNotDestroyed();
   if (AdditionalCompositingReasons())
     return kNormalPaintLayer;
 
@@ -143,7 +135,6 @@ PaintLayerType LayoutEmbeddedContent::LayerTypeRequired() const {
 }
 
 bool LayoutEmbeddedContent::ContentDocumentIsCompositing() const {
-  CheckIsNotDestroyed();
   if (PaintLayerCompositor* inner_compositor =
           PaintLayerCompositor::FrameContentsCompositor(*this)) {
     return inner_compositor->StaleInCompositingMode();
@@ -156,7 +147,6 @@ bool LayoutEmbeddedContent::NodeAtPointOverEmbeddedContentView(
     const HitTestLocation& hit_test_location,
     const PhysicalOffset& accumulated_offset,
     HitTestAction action) {
-  CheckIsNotDestroyed();
   bool had_result = result.InnerNode();
   bool inside = LayoutReplaced::NodeAtPoint(result, hit_test_location,
                                             accumulated_offset, action);
@@ -176,7 +166,6 @@ bool LayoutEmbeddedContent::NodeAtPoint(
     const HitTestLocation& hit_test_location,
     const PhysicalOffset& accumulated_offset,
     HitTestAction action) {
-  CheckIsNotDestroyed();
   auto* local_frame_view = DynamicTo<LocalFrameView>(ChildFrameView());
   bool skip_contents = (result.GetHitTestRequest().GetStopNode() == this ||
                         !result.GetHitTestRequest().AllowsChildFrameContent());
@@ -259,7 +248,6 @@ bool LayoutEmbeddedContent::NodeAtPoint(
 }
 
 CompositingReasons LayoutEmbeddedContent::AdditionalCompositingReasons() const {
-  CheckIsNotDestroyed();
   WebPluginContainerImpl* plugin_view = Plugin();
   if (plugin_view && plugin_view->CcLayer())
     return CompositingReason::kPlugin;
@@ -274,7 +262,6 @@ CompositingReasons LayoutEmbeddedContent::AdditionalCompositingReasons() const {
 
 void LayoutEmbeddedContent::StyleDidChange(StyleDifference diff,
                                            const ComputedStyle* old_style) {
-  CheckIsNotDestroyed();
   LayoutReplaced::StyleDidChange(diff, old_style);
 
   if (EmbeddedContentView* embedded_content_view = GetEmbeddedContentView()) {
@@ -302,7 +289,6 @@ void LayoutEmbeddedContent::StyleDidChange(StyleDifference diff,
 }
 
 void LayoutEmbeddedContent::UpdateLayout() {
-  CheckIsNotDestroyed();
   DCHECK(NeedsLayout());
   LayoutAnalyzer::Scope analyzer(*this);
   UpdateAfterLayout();
@@ -312,7 +298,6 @@ void LayoutEmbeddedContent::UpdateLayout() {
 void LayoutEmbeddedContent::PaintReplaced(
     const PaintInfo& paint_info,
     const PhysicalOffset& paint_offset) const {
-  CheckIsNotDestroyed();
   if (ChildPaintBlockedByDisplayLock())
     return;
   EmbeddedContentPainter(*this).PaintReplaced(paint_info, paint_offset);
@@ -320,7 +305,6 @@ void LayoutEmbeddedContent::PaintReplaced(
 
 void LayoutEmbeddedContent::InvalidatePaint(
     const PaintInvalidatorContext& context) const {
-  CheckIsNotDestroyed();
   LayoutReplaced::InvalidatePaint(context);
   if (auto* plugin = Plugin())
     plugin->InvalidatePaint();
@@ -328,7 +312,6 @@ void LayoutEmbeddedContent::InvalidatePaint(
 
 CursorDirective LayoutEmbeddedContent::GetCursor(const PhysicalOffset& point,
                                                  ui::Cursor& cursor) const {
-  CheckIsNotDestroyed();
   if (Plugin()) {
     // A plugin is responsible for setting the cursor when the pointer is over
     // it.
@@ -338,7 +321,6 @@ CursorDirective LayoutEmbeddedContent::GetCursor(const PhysicalOffset& point,
 }
 
 PhysicalRect LayoutEmbeddedContent::ReplacedContentRect() const {
-  CheckIsNotDestroyed();
   PhysicalRect content_rect = PhysicalContentBoxRect();
   // IFrames set as the root scroller should get their size from their parent.
   if (ChildFrameView() && View() && IsEffectiveRootScroller()) {
@@ -354,7 +336,6 @@ PhysicalRect LayoutEmbeddedContent::ReplacedContentRect() const {
 }
 
 void LayoutEmbeddedContent::UpdateOnEmbeddedContentViewChange() {
-  CheckIsNotDestroyed();
   if (!Style())
     return;
 
@@ -384,7 +365,6 @@ void LayoutEmbeddedContent::UpdateOnEmbeddedContentViewChange() {
 
 void LayoutEmbeddedContent::UpdateGeometry(
     EmbeddedContentView& embedded_content_view) {
-  CheckIsNotDestroyed();
   // TODO(wangxianzhu): We reset subpixel accumulation at some boundaries, so
   // the following code is incorrect when some ancestors are such boundaries.
   // What about multicol? Need a LayoutBox function to query sub-pixel
@@ -435,7 +415,6 @@ void LayoutEmbeddedContent::UpdateGeometry(
 }
 
 bool LayoutEmbeddedContent::IsThrottledFrameView() const {
-  CheckIsNotDestroyed();
   if (auto* local_frame_view = DynamicTo<LocalFrameView>(ChildFrameView()))
     return local_frame_view->ShouldThrottleRendering();
   return false;

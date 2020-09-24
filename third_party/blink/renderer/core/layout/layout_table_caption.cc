@@ -29,27 +29,23 @@ LayoutTableCaption::LayoutTableCaption(Element* element)
 LayoutTableCaption::~LayoutTableCaption() = default;
 
 LayoutUnit LayoutTableCaption::ContainingBlockLogicalWidthForContent() const {
-  CheckIsNotDestroyed();
   LayoutBlock* cb = ContainingBlock();
   return cb->LogicalWidth();
 }
 
 void LayoutTableCaption::InsertedIntoTree() {
-  CheckIsNotDestroyed();
   LayoutBlockFlow::InsertedIntoTree();
 
   Table()->AddCaption(this);
 }
 
 void LayoutTableCaption::WillBeRemovedFromTree() {
-  CheckIsNotDestroyed();
   LayoutBlockFlow::WillBeRemovedFromTree();
 
   Table()->RemoveCaption(this);
 }
 
 LayoutTable* LayoutTableCaption::Table() const {
-  CheckIsNotDestroyed();
   return To<LayoutTable>(Parent());
 }
 

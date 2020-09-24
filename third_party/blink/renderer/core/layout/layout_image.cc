@@ -67,7 +67,6 @@ LayoutImage* LayoutImage::CreateAnonymous(PseudoElement& pseudo) {
 LayoutImage::~LayoutImage() = default;
 
 void LayoutImage::WillBeDestroyed() {
-  CheckIsNotDestroyed();
   DCHECK(image_resource_);
   image_resource_->Shutdown();
 
@@ -76,7 +75,6 @@ void LayoutImage::WillBeDestroyed() {
 
 void LayoutImage::StyleDidChange(StyleDifference diff,
                                  const ComputedStyle* old_style) {
-  CheckIsNotDestroyed();
   LayoutReplaced::StyleDidChange(diff, old_style);
 
   bool old_orientation =
@@ -87,7 +85,6 @@ void LayoutImage::StyleDidChange(StyleDifference diff,
 }
 
 void LayoutImage::SetImageResource(LayoutImageResource* image_resource) {
-  CheckIsNotDestroyed();
   DCHECK(!image_resource_);
   image_resource_ = image_resource;
   image_resource_->Initialize(this);
@@ -95,7 +92,6 @@ void LayoutImage::SetImageResource(LayoutImageResource* image_resource) {
 
 void LayoutImage::ImageChanged(WrappedImagePtr new_image,
                                CanDeferInvalidation defer) {
-  CheckIsNotDestroyed();
   DCHECK(View());
   DCHECK(View()->GetFrameView());
   if (DocumentBeingDestroyed())
@@ -147,14 +143,12 @@ void LayoutImage::ImageChanged(WrappedImagePtr new_image,
 }
 
 void LayoutImage::UpdateIntrinsicSizeIfNeeded(const LayoutSize& new_size) {
-  CheckIsNotDestroyed();
   if (image_resource_->ErrorOccurred())
     return;
   SetIntrinsicSize(new_size);
 }
 
 bool LayoutImage::NeedsLayoutOnIntrinsicSizeChange() const {
-  CheckIsNotDestroyed();
   // If the actual area occupied by the image has changed and it is not
   // constrained by style then a layout is required.
   bool image_size_is_constrained =
@@ -177,7 +171,6 @@ bool LayoutImage::NeedsLayoutOnIntrinsicSizeChange() const {
 
 void LayoutImage::InvalidatePaintAndMarkForLayoutIfNeeded(
     CanDeferInvalidation defer) {
-  CheckIsNotDestroyed();
   LayoutSize old_intrinsic_size = IntrinsicSize();
 
   LayoutSize new_intrinsic_size = RoundedLayoutSize(
@@ -213,7 +206,6 @@ void LayoutImage::InvalidatePaintAndMarkForLayoutIfNeeded(
 }
 
 void LayoutImage::ImageNotifyFinished(ImageResourceContent* new_image) {
-  CheckIsNotDestroyed();
   LayoutObject::ImageNotifyFinished(new_image);
   if (!image_resource_)
     return;
@@ -230,19 +222,16 @@ void LayoutImage::ImageNotifyFinished(ImageResourceContent* new_image) {
 
 void LayoutImage::PaintReplaced(const PaintInfo& paint_info,
                                 const PhysicalOffset& paint_offset) const {
-  CheckIsNotDestroyed();
   if (ChildPaintBlockedByDisplayLock())
     return;
   ImagePainter(*this).PaintReplaced(paint_info, paint_offset);
 }
 
 void LayoutImage::Paint(const PaintInfo& paint_info) const {
-  CheckIsNotDestroyed();
   ImagePainter(*this).Paint(paint_info);
 }
 
 void LayoutImage::AreaElementFocusChanged(HTMLAreaElement* area_element) {
-  CheckIsNotDestroyed();
   DCHECK_EQ(area_element->ImageElement(), GetNode());
 
   if (area_element->GetPath(this).IsEmpty())
@@ -254,7 +243,6 @@ void LayoutImage::AreaElementFocusChanged(HTMLAreaElement* area_element) {
 bool LayoutImage::ForegroundIsKnownToBeOpaqueInRect(
     const PhysicalRect& local_rect,
     unsigned) const {
-  CheckIsNotDestroyed();
   if (!image_resource_->HasImage() || image_resource_->ErrorOccurred())
     return false;
   ImageResourceContent* image_content = image_resource_->CachedImage();
@@ -288,7 +276,6 @@ bool LayoutImage::ForegroundIsKnownToBeOpaqueInRect(
 }
 
 bool LayoutImage::ComputeBackgroundIsKnownToBeObscured() const {
-  CheckIsNotDestroyed();
   if (!StyleRef().HasBackground())
     return false;
 
@@ -299,13 +286,11 @@ bool LayoutImage::ComputeBackgroundIsKnownToBeObscured() const {
 }
 
 LayoutUnit LayoutImage::MinimumReplacedHeight() const {
-  CheckIsNotDestroyed();
   return image_resource_->ErrorOccurred() ? IntrinsicSize().Height()
                                           : LayoutUnit();
 }
 
 HTMLMapElement* LayoutImage::ImageMap() const {
-  CheckIsNotDestroyed();
   auto* i = DynamicTo<HTMLImageElement>(GetNode());
   return i ? i->GetTreeScope().GetImageMap(
                  i->FastGetAttribute(html_names::kUsemapAttr))
@@ -316,7 +301,6 @@ bool LayoutImage::NodeAtPoint(HitTestResult& result,
                               const HitTestLocation& hit_test_location,
                               const PhysicalOffset& accumulated_offset,
                               HitTestAction hit_test_action) {
-  CheckIsNotDestroyed();
   HitTestResult temp_result(result);
   bool inside = LayoutReplaced::NodeAtPoint(
       temp_result, hit_test_location, accumulated_offset, hit_test_action);
@@ -329,7 +313,6 @@ bool LayoutImage::NodeAtPoint(HitTestResult& result,
 }
 
 bool LayoutImage::HasOverriddenIntrinsicSize() const {
-  CheckIsNotDestroyed();
   if (!RuntimeEnabledFeatures::ExperimentalProductivityFeaturesEnabled())
     return false;
   auto* image_element = DynamicTo<HTMLImageElement>(GetNode());
@@ -338,7 +321,6 @@ bool LayoutImage::HasOverriddenIntrinsicSize() const {
 
 FloatSize LayoutImage::ImageSizeOverriddenByIntrinsicSize(
     float multiplier) const {
-  CheckIsNotDestroyed();
   if (!HasOverriddenIntrinsicSize())
     return image_resource_->ImageSize(multiplier);
 
@@ -356,7 +338,6 @@ FloatSize LayoutImage::ImageSizeOverriddenByIntrinsicSize(
 
 bool LayoutImage::OverrideIntrinsicSizingInfo(
     IntrinsicSizingInfo& intrinsic_sizing_info) const {
-  CheckIsNotDestroyed();
   if (!HasOverriddenIntrinsicSize())
     return false;
 
@@ -371,7 +352,6 @@ bool LayoutImage::OverrideIntrinsicSizingInfo(
 
 void LayoutImage::ComputeIntrinsicSizingInfo(
     IntrinsicSizingInfo& intrinsic_sizing_info) const {
-  CheckIsNotDestroyed();
   DCHECK(!ShouldApplySizeContainment());
   if (!OverrideIntrinsicSizingInfo(intrinsic_sizing_info)) {
     if (SVGImage* svg_image = EmbeddedSVGImage()) {
@@ -433,7 +413,6 @@ void LayoutImage::ComputeIntrinsicSizingInfo(
 }
 
 bool LayoutImage::NeedsPreferredWidthsRecalculation() const {
-  CheckIsNotDestroyed();
   if (LayoutReplaced::NeedsPreferredWidthsRecalculation())
     return true;
   SVGImage* svg_image = EmbeddedSVGImage();
@@ -441,7 +420,6 @@ bool LayoutImage::NeedsPreferredWidthsRecalculation() const {
 }
 
 SVGImage* LayoutImage::EmbeddedSVGImage() const {
-  CheckIsNotDestroyed();
   if (!image_resource_)
     return nullptr;
   ImageResourceContent* cached_image = image_resource_->CachedImage();
@@ -453,7 +431,6 @@ SVGImage* LayoutImage::EmbeddedSVGImage() const {
 }
 
 void LayoutImage::UpdateAfterLayout() {
-  CheckIsNotDestroyed();
   LayoutBox::UpdateAfterLayout();
   Node* node = GetNode();
   if (auto* image_element = DynamicTo<HTMLImageElement>(node)) {

@@ -36,53 +36,32 @@ class LayoutSVGImage final : public LayoutSVGModelObject {
   explicit LayoutSVGImage(SVGImageElement*);
   ~LayoutSVGImage() override;
 
-  void SetNeedsBoundariesUpdate() override {
-    CheckIsNotDestroyed();
-    needs_boundaries_update_ = true;
-  }
-  void SetNeedsTransformUpdate() override {
-    CheckIsNotDestroyed();
-    needs_transform_update_ = true;
-  }
+  void SetNeedsBoundariesUpdate() override { needs_boundaries_update_ = true; }
+  void SetNeedsTransformUpdate() override { needs_transform_update_ = true; }
 
-  LayoutImageResource* ImageResource() {
-    CheckIsNotDestroyed();
-    return image_resource_.Get();
-  }
+  LayoutImageResource* ImageResource() { return image_resource_.Get(); }
   const LayoutImageResource* ImageResource() const {
-    CheckIsNotDestroyed();
     return image_resource_.Get();
   }
 
-  FloatRect ObjectBoundingBox() const override {
-    CheckIsNotDestroyed();
-    return object_bounding_box_;
-  }
+  FloatRect ObjectBoundingBox() const override { return object_bounding_box_; }
   bool IsObjectBoundingBoxValid() const {
-    CheckIsNotDestroyed();
     return !object_bounding_box_.IsEmpty();
   }
 
   bool IsOfType(LayoutObjectType type) const override {
-    CheckIsNotDestroyed();
     return type == kLayoutObjectSVGImage ||
            LayoutSVGModelObject::IsOfType(type);
   }
 
-  const char* GetName() const override {
-    CheckIsNotDestroyed();
-    return "LayoutSVGImage";
-  }
+  const char* GetName() const override { return "LayoutSVGImage"; }
 
  protected:
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
   void WillBeDestroyed() override;
 
  private:
-  FloatRect StrokeBoundingBox() const override {
-    CheckIsNotDestroyed();
-    return object_bounding_box_;
-  }
+  FloatRect StrokeBoundingBox() const override { return object_bounding_box_; }
 
   void ImageChanged(WrappedImagePtr, CanDeferInvalidation) override;
 
@@ -97,7 +76,6 @@ class LayoutSVGImage final : public LayoutSVGModelObject {
                    HitTestAction) override;
 
   AffineTransform LocalSVGTransform() const override {
-    CheckIsNotDestroyed();
     return local_transform_;
   }
 

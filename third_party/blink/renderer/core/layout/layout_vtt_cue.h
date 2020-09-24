@@ -38,10 +38,7 @@ class LayoutVTTCue final : public LayoutBlockFlow {
 
   // The computed line position for snap-to-lines layout, and NaN for
   // non-snap-to-lines layout where no adjustment should take place.
-  float SnapToLinesPosition() {
-    CheckIsNotDestroyed();
-    return snap_to_lines_position_;
-  }
+  float SnapToLinesPosition() { return snap_to_lines_position_; }
 
  private:
   void UpdateLayout() override;

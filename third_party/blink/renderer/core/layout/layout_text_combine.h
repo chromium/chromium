@@ -35,33 +35,20 @@ class LayoutTextCombine final : public LayoutText {
  public:
   LayoutTextCombine(Node*, scoped_refptr<StringImpl>);
 
-  bool IsCombined() const {
-    CheckIsNotDestroyed();
-    return is_combined_;
-  }
+  bool IsCombined() const { return is_combined_; }
   float CombinedTextWidth(const Font& font) const {
-    CheckIsNotDestroyed();
     return font.GetFontDescription().ComputedSize();
   }
-  const Font& OriginalFont() const {
-    CheckIsNotDestroyed();
-    return Parent()->StyleRef().GetFont();
-  }
+  const Font& OriginalFont() const { return Parent()->StyleRef().GetFont(); }
   void TransformToInlineCoordinates(GraphicsContext&,
                                     const PhysicalRect& box_rect,
                                     bool clip = false) const;
   LayoutUnit InlineWidthForLayout() const;
 
-  const char* GetName() const override {
-    CheckIsNotDestroyed();
-    return "LayoutTextCombine";
-  }
+  const char* GetName() const override { return "LayoutTextCombine"; }
 
  private:
-  bool IsCombineText() const override {
-    CheckIsNotDestroyed();
-    return true;
-  }
+  bool IsCombineText() const override { return true; }
   float Width(unsigned from,
               unsigned length,
               const Font&,

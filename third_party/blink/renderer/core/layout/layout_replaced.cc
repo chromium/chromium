@@ -66,7 +66,6 @@ LayoutReplaced::LayoutReplaced(Element* element,
 LayoutReplaced::~LayoutReplaced() = default;
 
 void LayoutReplaced::WillBeDestroyed() {
-  CheckIsNotDestroyed();
   if (!DocumentBeingDestroyed() && Parent())
     Parent()->DirtyLinesFromChangedChild(this);
 
@@ -75,7 +74,6 @@ void LayoutReplaced::WillBeDestroyed() {
 
 void LayoutReplaced::StyleDidChange(StyleDifference diff,
                                     const ComputedStyle* old_style) {
-  CheckIsNotDestroyed();
   LayoutBox::StyleDidChange(diff, old_style);
 
   // Replaced elements can have border-radius clips without clipping overflow;
@@ -94,7 +92,6 @@ void LayoutReplaced::StyleDidChange(StyleDifference diff,
 }
 
 void LayoutReplaced::UpdateLayout() {
-  CheckIsNotDestroyed();
   DCHECK(NeedsLayout());
   LayoutAnalyzer::Scope analyzer(*this);
 
@@ -115,7 +112,6 @@ void LayoutReplaced::UpdateLayout() {
 }
 
 void LayoutReplaced::IntrinsicSizeChanged() {
-  CheckIsNotDestroyed();
   int scaled_width =
       static_cast<int>(kDefaultWidth * StyleRef().EffectiveZoom());
   int scaled_height =
@@ -126,12 +122,10 @@ void LayoutReplaced::IntrinsicSizeChanged() {
 }
 
 void LayoutReplaced::Paint(const PaintInfo& paint_info) const {
-  CheckIsNotDestroyed();
   ReplacedPainter(*this).Paint(paint_info);
 }
 
 bool LayoutReplaced::HasReplacedLogicalHeight() const {
-  CheckIsNotDestroyed();
   if (StyleRef().LogicalHeight().IsAuto())
     return false;
 
@@ -148,7 +142,6 @@ bool LayoutReplaced::HasReplacedLogicalHeight() const {
 }
 
 bool LayoutReplaced::NeedsPreferredWidthsRecalculation() const {
-  CheckIsNotDestroyed();
   // If the height is a percentage and the width is auto, then the
   // containingBlocks's height changing can cause this node to change it's
   // preferred width because it maintains aspect ratio.
@@ -163,7 +156,6 @@ static inline bool LayoutObjectHasIntrinsicAspectRatio(
 }
 
 void LayoutReplaced::RecalcVisualOverflow() {
-  CheckIsNotDestroyed();
   ClearVisualOverflow();
   LayoutObject::RecalcVisualOverflow();
   AddVisualEffectOverflow();
@@ -171,7 +163,6 @@ void LayoutReplaced::RecalcVisualOverflow() {
 
 void LayoutReplaced::ComputeIntrinsicSizingInfoForReplacedContent(
     IntrinsicSizingInfo& intrinsic_sizing_info) const {
-  CheckIsNotDestroyed();
   // In cases where we apply size containment we don't need to compute sizing
   // information, since the final result does not depend on it.
   if (ShouldApplySizeContainment()) {
@@ -211,7 +202,6 @@ void LayoutReplaced::ComputeIntrinsicSizingInfoForReplacedContent(
 
 FloatSize LayoutReplaced::ConstrainIntrinsicSizeToMinMax(
     const IntrinsicSizingInfo& intrinsic_sizing_info) const {
-  CheckIsNotDestroyed();
   // Constrain the intrinsic size along each axis according to minimum and
   // maximum width/heights along the opposite axis. So for example a maximum
   // width that shrinks our width will result in the height we compute here
@@ -240,7 +230,6 @@ FloatSize LayoutReplaced::ConstrainIntrinsicSizeToMinMax(
 
 void LayoutReplaced::ComputePositionedLogicalWidth(
     LogicalExtentComputedValues& computed_values) const {
-  CheckIsNotDestroyed();
   // The following is based off of the W3C Working Draft from April 11, 2006 of
   // CSS 2.1: Section 10.3.8 "Absolutely positioned, replaced elements"
   // <http://www.w3.org/TR/2005/WD-CSS21-20050613/visudet.html#abs-replaced-width>
@@ -460,7 +449,6 @@ void LayoutReplaced::ComputePositionedLogicalWidth(
 
 void LayoutReplaced::ComputePositionedLogicalHeight(
     LogicalExtentComputedValues& computed_values) const {
-  CheckIsNotDestroyed();
   // The following is based off of the W3C Working Draft from April 11, 2006 of
   // CSS 2.1: Section 10.6.5 "Absolutely positioned, replaced elements"
   // <http://www.w3.org/TR/2005/WD-CSS21-20050613/visudet.html#abs-replaced-height>
@@ -619,7 +607,6 @@ void LayoutReplaced::ComputePositionedLogicalHeight(
 
 PhysicalRect LayoutReplaced::ComputeObjectFit(
     const LayoutSize* overridden_intrinsic_size) const {
-  CheckIsNotDestroyed();
   PhysicalRect content_rect = PhysicalContentBoxRect();
   EObjectFit object_fit = StyleRef().GetObjectFit();
 
@@ -682,7 +669,6 @@ PhysicalRect LayoutReplaced::ComputeObjectFit(
 }
 
 PhysicalRect LayoutReplaced::ReplacedContentRect() const {
-  CheckIsNotDestroyed();
   return ComputeObjectFit();
 }
 
@@ -693,7 +679,6 @@ PhysicalRect LayoutReplaced::PreSnappedRectForPersistentSizing(
 
 void LayoutReplaced::ComputeIntrinsicSizingInfo(
     IntrinsicSizingInfo& intrinsic_sizing_info) const {
-  CheckIsNotDestroyed();
   DCHECK(!ShouldApplySizeContainment());
   intrinsic_sizing_info.size = FloatSize(IntrinsicLogicalWidth().ToFloat(),
                                          IntrinsicLogicalHeight().ToFloat());
@@ -744,7 +729,6 @@ static inline LayoutUnit ResolveHeightForRatio(LayoutUnit width,
 
 LayoutUnit LayoutReplaced::ComputeConstrainedLogicalWidth(
     ShouldComputePreferred should_compute_preferred) const {
-  CheckIsNotDestroyed();
   if (should_compute_preferred == kComputePreferred)
     return ComputeReplacedLogicalWidthRespectingMinMaxWidth(LayoutUnit(),
                                                             kComputePreferred);
@@ -769,7 +753,6 @@ LayoutUnit LayoutReplaced::ComputeConstrainedLogicalWidth(
 
 LayoutUnit LayoutReplaced::ComputeReplacedLogicalWidth(
     ShouldComputePreferred should_compute_preferred) const {
-  CheckIsNotDestroyed();
   if (StyleRef().LogicalWidth().IsSpecified() ||
       StyleRef().LogicalWidth().IsIntrinsic())
     return ComputeReplacedLogicalWidthRespectingMinMaxWidth(
@@ -855,7 +838,6 @@ LayoutUnit LayoutReplaced::ComputeReplacedLogicalWidth(
 
 LayoutUnit LayoutReplaced::ComputeReplacedLogicalHeight(
     LayoutUnit estimated_used_width) const {
-  CheckIsNotDestroyed();
   // 10.5 Content height: the 'height' property:
   // http://www.w3.org/TR/CSS21/visudet.html#propdef-height
   if (HasReplacedLogicalHeight()) {
@@ -907,14 +889,12 @@ LayoutUnit LayoutReplaced::ComputeReplacedLogicalHeight(
 }
 
 MinMaxSizes LayoutReplaced::ComputeIntrinsicLogicalWidths() const {
-  CheckIsNotDestroyed();
   MinMaxSizes sizes;
   sizes += BorderAndPaddingLogicalWidth() + IntrinsicLogicalWidth();
   return sizes;
 }
 
 MinMaxSizes LayoutReplaced::PreferredLogicalWidths() const {
-  CheckIsNotDestroyed();
   MinMaxSizes sizes;
 
   // We cannot resolve some logical width here (i.e. percent, fill-available or
@@ -1000,7 +980,6 @@ static std::pair<LayoutUnit, LayoutUnit> SelectionTopAndBottom(
 
 PositionWithAffinity LayoutReplaced::PositionForPoint(
     const PhysicalOffset& point) const {
-  CheckIsNotDestroyed();
   LayoutUnit top;
   LayoutUnit bottom;
   std::tie(top, bottom) = SelectionTopAndBottom(*this);
@@ -1035,7 +1014,6 @@ PositionWithAffinity LayoutReplaced::PositionForPoint(
 }
 
 PhysicalRect LayoutReplaced::LocalSelectionVisualRect() const {
-  CheckIsNotDestroyed();
   if (GetSelectionState() == SelectionState::kNone ||
       GetSelectionState() == SelectionState::kContain) {
     return PhysicalRect();

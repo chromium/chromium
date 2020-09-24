@@ -34,28 +34,15 @@ class LayoutSVGInlineText final : public LayoutText {
   LayoutSVGInlineText(Node*, scoped_refptr<StringImpl>);
 
   bool CharacterStartsNewTextChunk(int position) const;
-  SVGCharacterDataMap& CharacterDataMap() {
-    CheckIsNotDestroyed();
-    return character_data_map_;
-  }
+  SVGCharacterDataMap& CharacterDataMap() { return character_data_map_; }
   const SVGCharacterDataMap& CharacterDataMap() const {
-    CheckIsNotDestroyed();
     return character_data_map_;
   }
 
-  const Vector<SVGTextMetrics>& MetricsList() const {
-    CheckIsNotDestroyed();
-    return metrics_;
-  }
+  const Vector<SVGTextMetrics>& MetricsList() const { return metrics_; }
 
-  float ScalingFactor() const {
-    CheckIsNotDestroyed();
-    return scaling_factor_;
-  }
-  const Font& ScaledFont() const {
-    CheckIsNotDestroyed();
-    return scaled_font_;
-  }
+  float ScalingFactor() const { return scaling_factor_; }
+  const Font& ScaledFont() const { return scaled_font_; }
   void UpdateScaledFont();
   void UpdateMetricsList(bool& last_character_was_white_space);
   static void ComputeNewScaledFontForStyle(const LayoutObject&,
@@ -66,10 +53,7 @@ class LayoutSVGInlineText final : public LayoutText {
   // round and does a better job than enclosingIntRect.
   FloatRect FloatLinesBoundingBox() const;
 
-  const char* GetName() const override {
-    CheckIsNotDestroyed();
-    return "LayoutSVGInlineText";
-  }
+  const char* GetName() const override { return "LayoutSVGInlineText"; }
 
  private:
   void TextDidChange() override;
@@ -78,12 +62,10 @@ class LayoutSVGInlineText final : public LayoutText {
   void AddMetricsFromRun(const TextRun&, bool& last_character_was_white_space);
 
   FloatRect ObjectBoundingBox() const override {
-    CheckIsNotDestroyed();
     return FloatLinesBoundingBox();
   }
 
   bool IsOfType(LayoutObjectType type) const override {
-    CheckIsNotDestroyed();
     return type == kLayoutObjectSVG || type == kLayoutObjectSVGInlineText ||
            LayoutText::IsOfType(type);
   }

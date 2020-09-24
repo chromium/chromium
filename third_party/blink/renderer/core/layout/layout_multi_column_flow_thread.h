@@ -151,13 +151,9 @@ class CORE_EXPORT LayoutMultiColumnFlowThread final
       const ComputedStyle& parent_style,
       bool needs_paint_layer);
 
-  bool IsLayoutMultiColumnFlowThread() const final {
-    CheckIsNotDestroyed();
-    return true;
-  }
+  bool IsLayoutMultiColumnFlowThread() const final { return true; }
 
   LayoutBlockFlow* MultiColumnBlockFlow() const {
-    CheckIsNotDestroyed();
     return To<LayoutBlockFlow>(Parent());
   }
 
@@ -165,13 +161,9 @@ class CORE_EXPORT LayoutMultiColumnFlowThread final
   LayoutMultiColumnSet* LastMultiColumnSet() const;
 
   // Return the first column set or spanner placeholder.
-  LayoutBox* FirstMultiColumnBox() const {
-    CheckIsNotDestroyed();
-    return NextSiblingBox();
-  }
+  LayoutBox* FirstMultiColumnBox() const { return NextSiblingBox(); }
   // Return the last column set or spanner placeholder.
   LayoutBox* LastMultiColumnBox() const {
-    CheckIsNotDestroyed();
     LayoutBox* last_sibling_box = MultiColumnBlockFlow()->LastChildBox();
     // The flow thread is the first child of the multicol container. If the flow
     // thread is also the last child, it means that there are no siblings; i.e.
@@ -198,19 +190,12 @@ class CORE_EXPORT LayoutMultiColumnFlowThread final
   // a multicol container becomes a regular block.
   void EvacuateAndDestroy();
 
-  unsigned ColumnCount() const {
-    CheckIsNotDestroyed();
-    return column_count_;
-  }
+  unsigned ColumnCount() const { return column_count_; }
 
   // Total height available to columns and spanners. This is the multicol
   // container's content box logical height, or 0 if auto.
-  LayoutUnit ColumnHeightAvailable() const {
-    CheckIsNotDestroyed();
-    return column_height_available_;
-  }
+  LayoutUnit ColumnHeightAvailable() const { return column_height_available_; }
   void SetColumnHeightAvailable(LayoutUnit available) {
-    CheckIsNotDestroyed();
     column_height_available_ = available;
   }
 
@@ -265,14 +250,8 @@ class CORE_EXPORT LayoutMultiColumnFlowThread final
   // again twice or even just once will suffice. Sometimes we need more passes
   // than that, though, but the number of retries should not exceed the number
   // of columns, unless we have a bug.
-  bool ColumnHeightsChanged() const {
-    CheckIsNotDestroyed();
-    return column_heights_changed_;
-  }
-  void SetColumnHeightsChanged() {
-    CheckIsNotDestroyed();
-    column_heights_changed_ = true;
-  }
+  bool ColumnHeightsChanged() const { return column_heights_changed_; }
+  void SetColumnHeightsChanged() { column_heights_changed_ = true; }
 
   // Finish multicol layout. Returns true if we're really done, or false if we
   // need another layout pass (typically because columns got new heights in the
@@ -291,7 +270,6 @@ class CORE_EXPORT LayoutMultiColumnFlowThread final
   FragmentationContext* EnclosingFragmentationContext(
       AncestorSearchConstraint = kIsolateUnbreakableContainers) const;
   LayoutUnit BlockOffsetInEnclosingFragmentationContext() const {
-    CheckIsNotDestroyed();
     DCHECK(EnclosingFragmentationContext(kAnyAncestor));
     return block_offset_in_enclosing_fragmentation_context_;
   }
@@ -309,15 +287,9 @@ class CORE_EXPORT LayoutMultiColumnFlowThread final
   bool IsFragmentainerLogicalHeightKnown() final;
   LayoutUnit FragmentainerLogicalHeightAt(LayoutUnit block_offset) final;
   LayoutUnit RemainingLogicalHeightAt(LayoutUnit block_offset) final;
-  LayoutMultiColumnFlowThread* AssociatedFlowThread() final {
-    CheckIsNotDestroyed();
-    return this;
-  }
+  LayoutMultiColumnFlowThread* AssociatedFlowThread() final { return this; }
 
-  const char* GetName() const override {
-    CheckIsNotDestroyed();
-    return "LayoutMultiColumnFlowThread";
-  }
+  const char* GetName() const override { return "LayoutMultiColumnFlowThread"; }
 
  private:
   explicit LayoutMultiColumnFlowThread(bool needs_paint_layer);

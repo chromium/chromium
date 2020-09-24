@@ -50,20 +50,17 @@ LayoutQuote::~LayoutQuote() {
 }
 
 void LayoutQuote::WillBeDestroyed() {
-  CheckIsNotDestroyed();
   DetachQuote();
   LayoutInline::WillBeDestroyed();
 }
 
 void LayoutQuote::WillBeRemovedFromTree() {
-  CheckIsNotDestroyed();
   LayoutInline::WillBeRemovedFromTree();
   DetachQuote();
 }
 
 void LayoutQuote::StyleDidChange(StyleDifference diff,
                                  const ComputedStyle* old_style) {
-  CheckIsNotDestroyed();
   LayoutInline::StyleDidChange(diff, old_style);
   UpdateText();
 }
@@ -278,7 +275,6 @@ static const QuotesData* BasicQuotesData() {
 }
 
 void LayoutQuote::UpdateText() {
-  CheckIsNotDestroyed();
   String text = ComputeText();
   if (text_ == text)
     return;
@@ -300,7 +296,6 @@ void LayoutQuote::UpdateText() {
 }
 
 LayoutTextFragment* LayoutQuote::FindFragmentChild() const {
-  CheckIsNotDestroyed();
   // We walk from the end of the child list because, if we've had a first-letter
   // LayoutObject inserted then the remaining text will be at the end.
   while (LayoutObject* child = LastChild()) {
@@ -312,7 +307,6 @@ LayoutTextFragment* LayoutQuote::FindFragmentChild() const {
 }
 
 String LayoutQuote::ComputeText() const {
-  CheckIsNotDestroyed();
   switch (type_) {
     case QuoteType::kNoOpen:
     case QuoteType::kNoClose:
@@ -327,7 +321,6 @@ String LayoutQuote::ComputeText() const {
 }
 
 const QuotesData* LayoutQuote::GetQuotesData() const {
-  CheckIsNotDestroyed();
   if (const QuotesData* custom_quotes = StyleRef().Quotes())
     return custom_quotes;
 
@@ -338,7 +331,6 @@ const QuotesData* LayoutQuote::GetQuotesData() const {
 }
 
 void LayoutQuote::AttachQuote() {
-  CheckIsNotDestroyed();
   DCHECK(View());
   DCHECK(!attached_);
   DCHECK(!next_);
@@ -383,7 +375,6 @@ void LayoutQuote::AttachQuote() {
 }
 
 void LayoutQuote::DetachQuote() {
-  CheckIsNotDestroyed();
   DCHECK(!next_ || next_->attached_);
   DCHECK(!previous_ || previous_->attached_);
   if (!attached_)
@@ -410,7 +401,6 @@ void LayoutQuote::DetachQuote() {
 }
 
 void LayoutQuote::UpdateDepth() {
-  CheckIsNotDestroyed();
   DCHECK(attached_);
   int old_depth = depth_;
   depth_ = 0;

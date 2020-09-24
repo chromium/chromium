@@ -38,14 +38,10 @@ class LayoutFrame final : public LayoutEmbeddedContent {
 
   void ImageChanged(WrappedImagePtr, CanDeferInvalidation) override;
 
-  const char* GetName() const override {
-    CheckIsNotDestroyed();
-    return "LayoutFrame";
-  }
+  const char* GetName() const override { return "LayoutFrame"; }
 
  private:
   bool IsOfType(LayoutObjectType type) const override {
-    CheckIsNotDestroyed();
     return type == kLayoutObjectFrame || LayoutEmbeddedContent::IsOfType(type);
   }
 

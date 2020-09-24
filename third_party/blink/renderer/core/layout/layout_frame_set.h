@@ -69,12 +69,10 @@ class LayoutFrameSet final : public LayoutBox {
   ~LayoutFrameSet() override;
 
   LayoutObject* FirstChild() const {
-    CheckIsNotDestroyed();
     DCHECK_EQ(Children(), VirtualChildren());
     return Children()->FirstChild();
   }
   LayoutObject* LastChild() const {
-    CheckIsNotDestroyed();
     DCHECK_EQ(Children(), VirtualChildren());
     return Children()->LastChild();
   }
@@ -83,14 +81,8 @@ class LayoutFrameSet final : public LayoutBox {
   void SlowFirstChild() const = delete;
   void SlowLastChild() const = delete;
 
-  const LayoutObjectChildList* Children() const {
-    CheckIsNotDestroyed();
-    return &children_;
-  }
-  LayoutObjectChildList* Children() {
-    CheckIsNotDestroyed();
-    return &children_;
-  }
+  const LayoutObjectChildList* Children() const { return &children_; }
+  LayoutObjectChildList* Children() { return &children_; }
 
   FrameEdgeInfo EdgeInfo() const;
 
@@ -119,46 +111,28 @@ class LayoutFrameSet final : public LayoutBox {
     int split_resize_offset_;
   };
 
-  const GridAxis& Rows() const {
-    CheckIsNotDestroyed();
-    return rows_;
-  }
-  const GridAxis& Columns() const {
-    CheckIsNotDestroyed();
-    return cols_;
-  }
+  const GridAxis& Rows() const { return rows_; }
+  const GridAxis& Columns() const { return cols_; }
 
-  const char* GetName() const override {
-    CheckIsNotDestroyed();
-    return "LayoutFrameSet";
-  }
+  const char* GetName() const override { return "LayoutFrameSet"; }
 
  private:
   static const int kNoSplit = -1;
 
-  LayoutObjectChildList* VirtualChildren() override {
-    CheckIsNotDestroyed();
-    return Children();
-  }
+  LayoutObjectChildList* VirtualChildren() override { return Children(); }
   const LayoutObjectChildList* VirtualChildren() const override {
-    CheckIsNotDestroyed();
     return Children();
   }
 
   bool IsOfType(LayoutObjectType type) const override {
-    CheckIsNotDestroyed();
     return type == kLayoutObjectFrameSet || LayoutBox::IsOfType(type);
   }
 
   void UpdateLayout() override;
   void Paint(const PaintInfo&) const override;
 
-  MinMaxSizes PreferredLogicalWidths() const override {
-    CheckIsNotDestroyed();
-    return MinMaxSizes();
-  }
+  MinMaxSizes PreferredLogicalWidths() const override { return MinMaxSizes(); }
   MinMaxSizes ComputeIntrinsicLogicalWidths() const final {
-    CheckIsNotDestroyed();
     return MinMaxSizes();
   }
 

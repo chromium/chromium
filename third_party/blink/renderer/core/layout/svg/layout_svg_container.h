@@ -41,57 +41,37 @@ class LayoutSVGContainer : public LayoutSVGModelObject {
   void SlowLastChild() const = delete;
 
   LayoutObject* FirstChild() const {
-    CheckIsNotDestroyed();
     DCHECK_EQ(Children(), VirtualChildren());
     return Children()->FirstChild();
   }
   LayoutObject* LastChild() const {
-    CheckIsNotDestroyed();
     DCHECK_EQ(Children(), VirtualChildren());
     return Children()->LastChild();
   }
 
   void Paint(const PaintInfo&) const override;
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
-  void SetNeedsBoundariesUpdate() final {
-    CheckIsNotDestroyed();
-    needs_boundaries_update_ = true;
-  }
+  void SetNeedsBoundariesUpdate() final { needs_boundaries_update_ = true; }
   bool DidScreenScaleFactorChange() const {
-    CheckIsNotDestroyed();
     return did_screen_scale_factor_change_;
   }
-  bool IsObjectBoundingBoxValid() const {
-    CheckIsNotDestroyed();
-    return object_bounding_box_valid_;
-  }
+  bool IsObjectBoundingBoxValid() const { return object_bounding_box_valid_; }
 
   bool SelfWillPaint() const;
 
   bool HasNonIsolatedBlendingDescendants() const final;
 
-  const char* GetName() const override {
-    CheckIsNotDestroyed();
-    return "LayoutSVGContainer";
-  }
+  const char* GetName() const override { return "LayoutSVGContainer"; }
 
-  FloatRect ObjectBoundingBox() const final {
-    CheckIsNotDestroyed();
-    return object_bounding_box_;
-  }
+  FloatRect ObjectBoundingBox() const final { return object_bounding_box_; }
 
  protected:
-  LayoutObjectChildList* VirtualChildren() final {
-    CheckIsNotDestroyed();
-    return Children();
-  }
+  LayoutObjectChildList* VirtualChildren() final { return Children(); }
   const LayoutObjectChildList* VirtualChildren() const final {
-    CheckIsNotDestroyed();
     return Children();
   }
 
   bool IsOfType(LayoutObjectType type) const override {
-    CheckIsNotDestroyed();
     return type == kLayoutObjectSVGContainer ||
            LayoutSVGModelObject::IsOfType(type);
   }
@@ -101,10 +81,7 @@ class LayoutSVGContainer : public LayoutSVGModelObject {
                 LayoutObject* before_child = nullptr) final;
   void RemoveChild(LayoutObject*) final;
 
-  FloatRect StrokeBoundingBox() const final {
-    CheckIsNotDestroyed();
-    return stroke_bounding_box_;
-  }
+  FloatRect StrokeBoundingBox() const final { return stroke_bounding_box_; }
 
   bool NodeAtPoint(HitTestResult&,
                    const HitTestLocation&,
@@ -119,14 +96,8 @@ class LayoutSVGContainer : public LayoutSVGModelObject {
   void DescendantIsolationRequirementsChanged(DescendantIsolationState) final;
 
  private:
-  const LayoutObjectChildList* Children() const {
-    CheckIsNotDestroyed();
-    return &children_;
-  }
-  LayoutObjectChildList* Children() {
-    CheckIsNotDestroyed();
-    return &children_;
-  }
+  const LayoutObjectChildList* Children() const { return &children_; }
+  LayoutObjectChildList* Children() { return &children_; }
 
   LayoutObjectChildList children_;
   FloatRect object_bounding_box_;

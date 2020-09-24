@@ -51,10 +51,7 @@ class CORE_EXPORT LayoutEmbeddedContent : public LayoutReplaced {
                    const PhysicalOffset& accumulated_offset,
                    HitTestAction) override;
 
-  void AddRef() {
-    CheckIsNotDestroyed();
-    ++ref_count_;
-  }
+  void AddRef() { ++ref_count_; }
   void Release();
 
   // LayoutEmbeddedContent::ChildFrameView returns the LocalFrameView associated
@@ -71,10 +68,7 @@ class CORE_EXPORT LayoutEmbeddedContent : public LayoutReplaced {
   void UpdateOnEmbeddedContentViewChange();
   void UpdateGeometry(EmbeddedContentView&);
 
-  bool IsLayoutEmbeddedContent() const final {
-    CheckIsNotDestroyed();
-    return true;
-  }
+  bool IsLayoutEmbeddedContent() const final { return true; }
 
   bool IsThrottledFrameView() const;
 
@@ -88,21 +82,14 @@ class CORE_EXPORT LayoutEmbeddedContent : public LayoutReplaced {
   void InvalidatePaint(const PaintInvalidatorContext&) const final;
   CursorDirective GetCursor(const PhysicalOffset&, ui::Cursor&) const final;
 
-  bool CanBeSelectionLeafInternal() const final {
-    CheckIsNotDestroyed();
-    return true;
-  }
+  bool CanBeSelectionLeafInternal() const final { return true; }
 
   HTMLFrameOwnerElement* GetFrameOwnerElement() const {
-    CheckIsNotDestroyed();
     return To<HTMLFrameOwnerElement>(GetNode());
   }
 
  private:
-  bool CanHaveAdditionalCompositingReasons() const override {
-    CheckIsNotDestroyed();
-    return true;
-  }
+  bool CanHaveAdditionalCompositingReasons() const override { return true; }
   CompositingReasons AdditionalCompositingReasons() const override;
 
   void WillBeDestroyed() final;

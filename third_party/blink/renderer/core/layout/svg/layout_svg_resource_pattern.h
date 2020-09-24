@@ -39,10 +39,7 @@ class LayoutSVGResourcePattern final : public LayoutSVGResourcePaintServer {
  public:
   explicit LayoutSVGResourcePattern(SVGPatternElement*);
 
-  const char* GetName() const override {
-    CheckIsNotDestroyed();
-    return "LayoutSVGResourcePattern";
-  }
+  const char* GetName() const override { return "LayoutSVGResourcePattern"; }
 
   void RemoveAllClientsFromCache() override;
   bool RemoveClientFromCache(SVGResourceClient&) override;
@@ -52,10 +49,7 @@ class LayoutSVGResourcePattern final : public LayoutSVGResourcePaintServer {
       const FloatRect& object_bounding_box) override;
 
   static const LayoutSVGResourceType kResourceType = kPatternResourceType;
-  LayoutSVGResourceType ResourceType() const override {
-    CheckIsNotDestroyed();
-    return kResourceType;
-  }
+  LayoutSVGResourceType ResourceType() const override { return kResourceType; }
 
  private:
   std::unique_ptr<PatternData> BuildPatternData(
@@ -69,11 +63,9 @@ class LayoutSVGResourcePattern final : public LayoutSVGResourcePaintServer {
   Persistent<PatternAttributesWrapper> attributes_wrapper_;
 
   PatternAttributes& MutableAttributes() {
-    CheckIsNotDestroyed();
     return attributes_wrapper_->Attributes();
   }
   const PatternAttributes& Attributes() const {
-    CheckIsNotDestroyed();
     return attributes_wrapper_->Attributes();
   }
 

@@ -181,7 +181,6 @@ static bool ParentIsConstructedOrHaveNext(InlineFlowBox* parent_box) {
 InlineFlowBox* LayoutBlockFlow::CreateLineBoxes(LineLayoutItem line_layout_item,
                                                 const LineInfo& line_info,
                                                 InlineBox* child_box) {
-  CheckIsNotDestroyed();
   // See if we have an unconstructed line box for this object that is also
   // the last item on the line.
   unsigned line_depth = 1;
@@ -288,7 +287,6 @@ static bool ReachedEndOfTextRun(const BidiRunList<BidiRun>& bidi_runs) {
 
 RootInlineBox* LayoutBlockFlow::ConstructLine(BidiRunList<BidiRun>& bidi_runs,
                                               const LineInfo& line_info) {
-  CheckIsNotDestroyed();
   DCHECK(bidi_runs.FirstRun());
 
   InlineFlowBox* parent_box = nullptr;
@@ -368,7 +366,6 @@ RootInlineBox* LayoutBlockFlow::ConstructLine(BidiRunList<BidiRun>& bidi_runs,
 
 ETextAlign LayoutBlockFlow::TextAlignmentForLine(
     bool ends_with_soft_break) const {
-  CheckIsNotDestroyed();
   return StyleRef().GetTextAlign(!ends_with_soft_break);
 }
 
@@ -477,7 +474,6 @@ void LayoutBlockFlow::SetMarginsForRubyRun(BidiRun* run,
                                            LayoutRubyRun* layout_ruby_run,
                                            LayoutObject* previous_object,
                                            const LineInfo& line_info) {
-  CheckIsNotDestroyed();
   int start_overhang;
   int end_overhang;
   LayoutObject* next_object = nullptr;
@@ -665,7 +661,6 @@ void LayoutBlockFlow::UpdateLogicalWidthForAlignment(
     LayoutUnit& total_logical_width,
     LayoutUnit& available_logical_width,
     unsigned expansion_opportunity_count) {
-  CheckIsNotDestroyed();
   TextDirection direction;
   if (root_inline_box &&
       root_inline_box->GetLineLayoutItem().StyleRef().GetUnicodeBidi() ==
@@ -734,7 +729,6 @@ void LayoutBlockFlow::UpdateLogicalWidthForAlignment(
 }
 
 bool LayoutBlockFlow::CanContainFirstFormattedLine() const {
-  CheckIsNotDestroyed();
   // The 'text-indent' only affects a line if it is the first formatted
   // line of an element. For example, the first line of an anonymous block
   // box is only affected if it is the first child of its parent element.
@@ -767,7 +761,6 @@ void LayoutBlockFlow::ComputeInlineDirectionPositionsForLine(
     GlyphOverflowAndFallbackFontsMap& text_box_data_map,
     VerticalPositionCache& vertical_position_cache,
     const WordMeasurements& word_measurements) {
-  CheckIsNotDestroyed();
   bool is_first_line =
       line_info.IsFirstLine() && CanContainFirstFormattedLine();
   bool is_after_hard_line_break =
@@ -809,7 +802,6 @@ BidiRun* LayoutBlockFlow::ComputeInlineDirectionPositionsForSegment(
     GlyphOverflowAndFallbackFontsMap& text_box_data_map,
     VerticalPositionCache& vertical_position_cache,
     const WordMeasurements& word_measurements) {
-  CheckIsNotDestroyed();
   bool needs_word_spacing = true;
   LayoutUnit total_logical_width = line_box->GetFlowSpacingLogicalWidth();
   bool is_after_expansion = true;
@@ -888,7 +880,6 @@ void LayoutBlockFlow::ComputeBlockDirectionPositionsForLine(
     BidiRun* first_run,
     GlyphOverflowAndFallbackFontsMap& text_box_data_map,
     VerticalPositionCache& vertical_position_cache) {
-  CheckIsNotDestroyed();
   SetLogicalHeight(line_box->AlignBoxesInBlockDirection(
       LogicalHeight(), text_box_data_map, vertical_position_cache));
 
@@ -916,7 +907,6 @@ void LayoutBlockFlow::ComputeBlockDirectionPositionsForLine(
 
 void LayoutBlockFlow::AppendFloatingObjectToLastLine(
     FloatingObject& floating_object) {
-  CheckIsNotDestroyed();
   DCHECK(!floating_object.OriginatingLine());
   floating_object.SetOriginatingLine(LastRootBox());
   LastRootBox()->AppendFloat(floating_object.GetLayoutObject());
@@ -932,7 +922,6 @@ RootInlineBox* LayoutBlockFlow::CreateLineBoxesFromBidiRuns(
     VerticalPositionCache& vertical_position_cache,
     BidiRun* trailing_space_run,
     const WordMeasurements& word_measurements) {
-  CheckIsNotDestroyed();
   if (!bidi_runs.RunCount())
     return nullptr;
 
@@ -994,7 +983,6 @@ static void DeleteLineRange(LineLayoutState& layout_state,
 }
 
 void LayoutBlockFlow::LayoutRunsAndFloats(LineLayoutState& layout_state) {
-  CheckIsNotDestroyed();
   // We want to skip ahead to the first dirty line
   InlineBidiResolver resolver;
   RootInlineBox* start_line = DetermineStartPosition(layout_state, resolver);
@@ -1028,7 +1016,6 @@ inline const InlineIterator& LayoutBlockFlow::RestartLayoutRunsAndFloatsInRange(
     FloatingObject* last_float_from_previous_line,
     InlineBidiResolver& resolver,
     const InlineIterator& old_end) {
-  CheckIsNotDestroyed();
   RemoveFloatingObjectsBelow(last_float_from_previous_line, old_logical_height);
   SetLogicalHeight(new_logical_height);
   resolver.SetPositionIgnoringNestedIsolates(old_end);
@@ -1040,7 +1027,6 @@ void LayoutBlockFlow::AppendFloatsToLastLine(
     const InlineIterator& clean_line_start,
     const InlineBidiResolver& resolver,
     const BidiStatus& clean_line_bidi_status) {
-  CheckIsNotDestroyed();
   const FloatingObjectSet& floating_object_set = floating_objects_->Set();
   FloatingObjectSetIterator it = floating_object_set.begin();
   FloatingObjectSetIterator end = floating_object_set.end();
@@ -1089,7 +1075,6 @@ void LayoutBlockFlow::LayoutRunsAndFloatsInRange(
     InlineBidiResolver& resolver,
     const InlineIterator& clean_line_start,
     const BidiStatus& clean_line_bidi_status) {
-  CheckIsNotDestroyed();
   const ComputedStyle& style_to_use = StyleRef();
   bool paginated =
       View()->GetLayoutState() && View()->GetLayoutState()->IsPaginated();
@@ -1402,7 +1387,6 @@ void LayoutBlockFlow::LayoutRunsAndFloatsInRange(
 }
 
 void LayoutBlockFlow::LinkToEndLineIfNeeded(LineLayoutState& layout_state) {
-  CheckIsNotDestroyed();
   if (layout_state.EndLine()) {
     if (layout_state.EndLineMatched()) {
       bool recalculate_struts =
@@ -1448,7 +1432,6 @@ void LayoutBlockFlow::LinkToEndLineIfNeeded(LineLayoutState& layout_state) {
 
 void LayoutBlockFlow::MarkDirtyFloatsForPaintInvalidation(
     Vector<FloatWithRect>& floats) {
-  CheckIsNotDestroyed();
   size_t float_count = floats.size();
   // Floats that did not have layout did not paint invalidations when we laid
   // them out. They would have painted by now if they had moved, but if they
@@ -1631,7 +1614,6 @@ DISABLE_CFI_PERF
 void LayoutBlockFlow::ComputeInlinePreferredLogicalWidths(
     LayoutUnit& min_logical_width,
     LayoutUnit& max_logical_width) {
-  CheckIsNotDestroyed();
   LayoutUnit inline_max;
   LayoutUnit inline_min;
 
@@ -1958,7 +1940,6 @@ static bool IsInlineWithOutlineAndContinuation(const LayoutObject& o) {
 }
 
 bool LayoutBlockFlow::ShouldTruncateOverflowingText() const {
-  CheckIsNotDestroyed();
   const LayoutObject* object_to_check = this;
   if (IsAnonymousBlock()) {
     const LayoutObject* parent = Parent();
@@ -1973,7 +1954,6 @@ bool LayoutBlockFlow::ShouldTruncateOverflowingText() const {
 DISABLE_CFI_PERF
 void LayoutBlockFlow::LayoutInlineChildren(bool relayout_children,
                                            LayoutUnit after_edge) {
-  CheckIsNotDestroyed();
   // Figure out if we should clear out our line boxes.
   // FIXME: Handle resize eventually!
   bool is_full_layout =
@@ -2120,7 +2100,6 @@ void LayoutBlockFlow::LayoutInlineChildren(bool relayout_children,
 RootInlineBox* LayoutBlockFlow::DetermineStartPosition(
     LineLayoutState& layout_state,
     InlineBidiResolver& resolver) {
-  CheckIsNotDestroyed();
   RootInlineBox* curr = nullptr;
   RootInlineBox* last = nullptr;
   RootInlineBox* first_line_box_with_break_and_clearance = nullptr;
@@ -2249,7 +2228,6 @@ RootInlineBox* LayoutBlockFlow::DetermineStartPosition(
 }
 
 bool LayoutBlockFlow::LineBoxHasBRWithClearance(RootInlineBox* curr) {
-  CheckIsNotDestroyed();
   // If the linebox breaks cleanly and with clearance then dirty from at least
   // this point onwards so that we can clear the correct floats without
   // difficulty.
@@ -2266,7 +2244,6 @@ void LayoutBlockFlow::DetermineEndPosition(LineLayoutState& layout_state,
                                            RootInlineBox* start_line,
                                            InlineIterator& clean_line_start,
                                            BidiStatus& clean_line_bidi_status) {
-  CheckIsNotDestroyed();
   DCHECK(!layout_state.EndLine());
   RootInlineBox* last = nullptr;
   bool previous_was_clean = false;
@@ -2312,7 +2289,6 @@ void LayoutBlockFlow::DetermineEndPosition(LineLayoutState& layout_state,
 
 bool LayoutBlockFlow::CheckPaginationAndFloatsAtEndLine(
     LineLayoutState& layout_state) {
-  CheckIsNotDestroyed();
   if (!floating_objects_ || !layout_state.EndLine())
     return true;
 
@@ -2364,7 +2340,6 @@ bool LayoutBlockFlow::MatchedEndLine(LineLayoutState& layout_state,
                                      const InlineBidiResolver& resolver,
                                      const InlineIterator& end_line_start,
                                      const BidiStatus& end_line_status) {
-  CheckIsNotDestroyed();
   if (resolver.GetPosition() == end_line_start) {
     if (resolver.Status() != end_line_status)
       return false;
@@ -2405,7 +2380,6 @@ bool LayoutBlockFlow::MatchedEndLine(LineLayoutState& layout_state,
 bool LayoutBlockFlow::GeneratesLineBoxesForInlineChild(LayoutObject* inline_obj)
 
 {
-  CheckIsNotDestroyed();
   DCHECK_EQ(inline_obj->Parent(), this);
 
   InlineIterator it(LineLayoutBlockFlow(this), LineLayoutItem(inline_obj), 0);
@@ -2417,7 +2391,6 @@ bool LayoutBlockFlow::GeneratesLineBoxesForInlineChild(LayoutObject* inline_obj)
 }
 
 void LayoutBlockFlow::AddVisualOverflowFromInlineChildren() {
-  CheckIsNotDestroyed();
   DCHECK(!NeedsLayout());
   DCHECK(!ChildPrePaintBlockedByDisplayLock());
 
@@ -2483,7 +2456,6 @@ void LayoutBlockFlow::AddVisualOverflowFromInlineChildren() {
 }
 
 void LayoutBlockFlow::AddLayoutOverflowFromInlineChildren() {
-  CheckIsNotDestroyed();
   DCHECK(!ChildLayoutBlockedByDisplayLock());
 
   LayoutUnit end_padding =
@@ -2530,7 +2502,6 @@ void LayoutBlockFlow::AddLayoutOverflowFromInlineChildren() {
 }
 
 void LayoutBlockFlow::DeleteEllipsisLineBoxes() {
-  CheckIsNotDestroyed();
   ETextAlign text_align = StyleRef().GetTextAlign();
   IndentTextOrNot indent_text = kIndentText;
   for (RootInlineBox* curr = FirstRootBox(); curr; curr = curr->NextRootBox()) {
@@ -2557,7 +2528,6 @@ void LayoutBlockFlow::DeleteEllipsisLineBoxes() {
 }
 
 void LayoutBlockFlow::ClearTruncationOnAtomicInlines(RootInlineBox* root) {
-  CheckIsNotDestroyed();
   bool ltr = StyleRef().IsLeftToRightDirection();
   InlineBox* first_child = ltr ? root->LastChild() : root->FirstChild();
   for (InlineBox* box = first_child; box;
@@ -2574,7 +2544,6 @@ void LayoutBlockFlow::ClearTruncationOnAtomicInlines(RootInlineBox* root) {
 }
 
 void LayoutBlockFlow::CheckLinesForTextOverflow() {
-  CheckIsNotDestroyed();
   // Determine the width of the ellipsis using the current font.
   const Font& font = StyleRef().GetFont();
 
@@ -2683,7 +2652,6 @@ void LayoutBlockFlow::TryPlacingEllipsisOnAtomicInlines(
     LayoutUnit ellipsis_width,
     const AtomicString& selected_ellipsis_str,
     InlineBox* box_truncation_starts_at) {
-  CheckIsNotDestroyed();
   bool found_box = box_truncation_starts_at ? true : false;
   bool ltr = StyleRef().IsLeftToRightDirection();
   LayoutUnit logical_left_offset = block_left_edge;
@@ -2762,7 +2730,6 @@ void LayoutBlockFlow::TryPlacingEllipsisOnAtomicInlines(
 void LayoutBlockFlow::MarkLinesDirtyInBlockRange(LayoutUnit logical_top,
                                                  LayoutUnit logical_bottom,
                                                  RootInlineBox* highest) {
-  CheckIsNotDestroyed();
   if (logical_top >= logical_bottom)
     return;
 
@@ -2786,7 +2753,6 @@ void LayoutBlockFlow::MarkLinesDirtyInBlockRange(LayoutUnit logical_top,
 LayoutUnit LayoutBlockFlow::StartAlignedOffsetForLine(
     LayoutUnit position,
     IndentTextOrNot indent_text) {
-  CheckIsNotDestroyed();
   ETextAlign text_align = StyleRef().GetTextAlign();
 
   bool apply_indent_text;
@@ -2827,7 +2793,6 @@ LayoutUnit LayoutBlockFlow::StartAlignedOffsetForLine(
 }
 
 void LayoutBlockFlow::SetShouldDoFullPaintInvalidationForFirstLine() {
-  CheckIsNotDestroyed();
   DCHECK(ChildrenInline());
 
   if (const NGPaintFragment* paint_fragment = PaintFragment()) {

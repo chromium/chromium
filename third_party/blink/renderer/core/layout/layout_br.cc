@@ -38,7 +38,6 @@ LayoutBR::LayoutBR(Node* node) : LayoutText(node, NewlineString()) {}
 LayoutBR::~LayoutBR() = default;
 
 int LayoutBR::LineHeight(bool first_line) const {
-  CheckIsNotDestroyed();
   const ComputedStyle& style = StyleRef(
       first_line && GetDocument().GetStyleEngine().UsesFirstLineRules());
   return style.ComputedLineHeight();
@@ -46,27 +45,22 @@ int LayoutBR::LineHeight(bool first_line) const {
 
 void LayoutBR::StyleDidChange(StyleDifference diff,
                               const ComputedStyle* old_style) {
-  CheckIsNotDestroyed();
   LayoutText::StyleDidChange(diff, old_style);
 }
 
 int LayoutBR::CaretMinOffset() const {
-  CheckIsNotDestroyed();
   return 0;
 }
 
 int LayoutBR::CaretMaxOffset() const {
-  CheckIsNotDestroyed();
   return 1;
 }
 
 PositionWithAffinity LayoutBR::PositionForPoint(const PhysicalOffset&) const {
-  CheckIsNotDestroyed();
   return CreatePositionWithAffinity(0);
 }
 
 Position LayoutBR::PositionForCaretOffset(unsigned offset) const {
-  CheckIsNotDestroyed();
   DCHECK_LE(offset, 1u);
   DCHECK(GetNode());
   return offset ? Position::AfterNode(*GetNode())
@@ -75,7 +69,6 @@ Position LayoutBR::PositionForCaretOffset(unsigned offset) const {
 
 base::Optional<unsigned> LayoutBR::CaretOffsetForPosition(
     const Position& position) const {
-  CheckIsNotDestroyed();
   if (position.IsNull() || position.AnchorNode() != GetNode())
     return base::nullopt;
   DCHECK(position.IsBeforeAnchor() || position.IsAfterAnchor()) << position;

@@ -46,7 +46,6 @@ LayoutRubyRun::LayoutRubyRun(Element* element) : LayoutBlockFlow(nullptr) {
 LayoutRubyRun::~LayoutRubyRun() = default;
 
 bool LayoutRubyRun::HasRubyText() const {
-  CheckIsNotDestroyed();
   // The only place where a ruby text can be is in the first position
   // Note: As anonymous blocks, ruby runs do not have ':before' or ':after'
   // content themselves.
@@ -54,7 +53,6 @@ bool LayoutRubyRun::HasRubyText() const {
 }
 
 bool LayoutRubyRun::HasRubyBase() const {
-  CheckIsNotDestroyed();
   // The only place where a ruby base can be is in the last position
   // Note: As anonymous blocks, ruby runs do not have ':before' or ':after'
   // content themselves.
@@ -62,7 +60,6 @@ bool LayoutRubyRun::HasRubyBase() const {
 }
 
 LayoutRubyText* LayoutRubyRun::RubyText() const {
-  CheckIsNotDestroyed();
   LayoutObject* child = FirstChild();
   // If in future it becomes necessary to support floating or positioned ruby
   // text, layout will have to be changed to handle them properly.
@@ -73,14 +70,12 @@ LayoutRubyText* LayoutRubyRun::RubyText() const {
 }
 
 LayoutRubyBase* LayoutRubyRun::RubyBase() const {
-  CheckIsNotDestroyed();
   LayoutObject* child = LastChild();
   return child && child->IsRubyBase() ? static_cast<LayoutRubyBase*>(child)
                                       : nullptr;
 }
 
 LayoutRubyBase* LayoutRubyRun::RubyBaseSafe() {
-  CheckIsNotDestroyed();
   LayoutRubyBase* base = RubyBase();
   if (!base) {
     base = CreateRubyBase();
@@ -91,12 +86,10 @@ LayoutRubyBase* LayoutRubyRun::RubyBaseSafe() {
 
 bool LayoutRubyRun::IsChildAllowed(LayoutObject* child,
                                    const ComputedStyle&) const {
-  CheckIsNotDestroyed();
   return child->IsRubyText() || child->IsInline();
 }
 
 void LayoutRubyRun::AddChild(LayoutObject* child, LayoutObject* before_child) {
-  CheckIsNotDestroyed();
   DCHECK(child);
 
   if (child->IsRubyText()) {
@@ -150,7 +143,6 @@ void LayoutRubyRun::AddChild(LayoutObject* child, LayoutObject* before_child) {
 }
 
 void LayoutRubyRun::RemoveChild(LayoutObject* child) {
-  CheckIsNotDestroyed();
   // If the child is a ruby text, then merge the ruby base with the base of
   // the right sibling run, if possible.
   if (!BeingDestroyed() && !DocumentBeingDestroyed() && child->IsRubyText()) {
@@ -191,7 +183,6 @@ void LayoutRubyRun::RemoveChild(LayoutObject* child) {
 }
 
 LayoutRubyBase* LayoutRubyRun::CreateRubyBase() const {
-  CheckIsNotDestroyed();
   LayoutRubyBase* layout_object =
       LayoutRubyBase::CreateAnonymous(&GetDocument(), *this);
   scoped_refptr<ComputedStyle> new_style =
@@ -225,7 +216,6 @@ LayoutRubyRun* LayoutRubyRun::StaticCreateRubyRun(
 LayoutObject* LayoutRubyRun::LayoutSpecialExcludedChild(
     bool relayout_children,
     SubtreeLayoutScope& layout_scope) {
-  CheckIsNotDestroyed();
   // Don't bother positioning the LayoutRubyRun yet.
   LayoutRubyText* rt = RubyText();
   if (!rt)
@@ -237,7 +227,6 @@ LayoutObject* LayoutRubyRun::LayoutSpecialExcludedChild(
 }
 
 void LayoutRubyRun::UpdateLayout() {
-  CheckIsNotDestroyed();
   LayoutBlockFlow::UpdateLayout();
 
   LayoutRubyText* rt = RubyText();
@@ -291,7 +280,6 @@ void LayoutRubyRun::GetOverhang(bool first_line,
                                 LayoutObject* end_layout_object,
                                 int& start_overhang,
                                 int& end_overhang) const {
-  CheckIsNotDestroyed();
   DCHECK(!NeedsLayout());
 
   start_overhang = 0;
@@ -351,7 +339,6 @@ void LayoutRubyRun::GetOverhang(bool first_line,
 
 bool LayoutRubyRun::CanBreakBefore(
     const LazyLineBreakIterator& iterator) const {
-  CheckIsNotDestroyed();
   // TODO(kojii): It would be nice to improve this so that it isn't just
   // hard-coded, but lookahead in this case is particularly problematic.
   // See crbug.com/522826.

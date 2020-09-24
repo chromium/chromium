@@ -42,7 +42,6 @@ LayoutSVGResourceGradient::LayoutSVGResourceGradient(SVGGradientElement* node)
       gradient_map_(MakeGarbageCollected<GradientMap>()) {}
 
 void LayoutSVGResourceGradient::RemoveAllClientsFromCache() {
-  CheckIsNotDestroyed();
   gradient_map_->clear();
   should_collect_gradient_attributes_ = true;
   To<SVGGradientElement>(*GetElement()).InvalidateDependentGradients();
@@ -51,7 +50,6 @@ void LayoutSVGResourceGradient::RemoveAllClientsFromCache() {
 
 bool LayoutSVGResourceGradient::RemoveClientFromCache(
     SVGResourceClient& client) {
-  CheckIsNotDestroyed();
   auto entry = gradient_map_->find(&client);
   if (entry == gradient_map_->end())
     return false;
@@ -61,7 +59,6 @@ bool LayoutSVGResourceGradient::RemoveClientFromCache(
 
 std::unique_ptr<GradientData> LayoutSVGResourceGradient::BuildGradientData(
     const FloatRect& object_bounding_box) {
-  CheckIsNotDestroyed();
   // Create gradient object
   auto gradient_data = std::make_unique<GradientData>();
 
@@ -100,7 +97,6 @@ std::unique_ptr<GradientData> LayoutSVGResourceGradient::BuildGradientData(
 SVGPaintServer LayoutSVGResourceGradient::PreparePaintServer(
     const SVGResourceClient& client,
     const FloatRect& object_bounding_box) {
-  CheckIsNotDestroyed();
   ClearInvalidationMask();
 
   std::unique_ptr<GradientData>& gradient_data =
@@ -117,7 +113,6 @@ SVGPaintServer LayoutSVGResourceGradient::PreparePaintServer(
 
 bool LayoutSVGResourceGradient::IsChildAllowed(LayoutObject* child,
                                                const ComputedStyle&) const {
-  CheckIsNotDestroyed();
   if (!child->IsSVGResourceContainer())
     return false;
 
