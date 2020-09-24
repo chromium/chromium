@@ -27,16 +27,20 @@ void DarkModeFilterHelper::ApplyToImageIfNeeded(
   // this function. See: https://crbug.com/1094781.
   DCHECK(dark_mode_filter->IsDarkModeActive());
 
+  SkIRect rounded_src = src.roundOut();
+  SkIRect rounded_dst = dst.roundOut();
+
   sk_sp<SkColorFilter> filter;
-  DarkModeResult result = dark_mode_filter->AnalyzeShouldApplyToImage(src, dst);
+  DarkModeResult result =
+      dark_mode_filter->AnalyzeShouldApplyToImage(rounded_src, rounded_dst);
 
   if (result == DarkModeResult::kApplyFilter) {
     filter = dark_mode_filter->GetImageFilter();
   } else if (result == DarkModeResult::kNotClassified) {
     DarkModeImageCache* cache = image->GetDarkModeImageCache();
     DCHECK(cache);
-    if (cache->Exists(src)) {
-      filter = cache->Get(src);
+    if (cache->Exists(rounded_src)) {
+      filter = cache->Get(rounded_src);
     } else {
       // Performance warning: Calling this function will synchronously decode
       // image.
@@ -44,8 +48,8 @@ void DarkModeFilterHelper::ApplyToImageIfNeeded(
           image->AsSkBitmapForCurrentFrame(kDoNotRespectImageOrientation);
       SkPixmap pixmap;
       bitmap.peekPixels(&pixmap);
-      filter = dark_mode_filter->ApplyToImage(pixmap, src, dst);
-      cache->Add(src, filter);
+      filter = dark_mode_filter->ApplyToImage(pixmap, rounded_src, rounded_dst);
+      cache->Add(rounded_src, filter);
     }
   }
 

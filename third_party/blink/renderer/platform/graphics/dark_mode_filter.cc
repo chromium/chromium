@@ -148,8 +148,8 @@ SkColor DarkModeFilter::InvertColorIfNeeded(SkColor color, ElementRole role) {
 }
 
 DarkModeResult DarkModeFilter::AnalyzeShouldApplyToImage(
-    const SkRect& src,
-    const SkRect& dst) const {
+    const SkIRect& src,
+    const SkIRect& dst) const {
   if (settings().image_policy == DarkModeImagePolicy::kFilterNone)
     return DarkModeResult::kDoNotApplyFilter;
 
@@ -172,8 +172,8 @@ DarkModeResult DarkModeFilter::AnalyzeShouldApplyToImage(
 }
 
 sk_sp<SkColorFilter> DarkModeFilter::ApplyToImage(const SkPixmap& pixmap,
-                                                  const SkRect& src,
-                                                  const SkRect& dst) {
+                                                  const SkIRect& src,
+                                                  const SkIRect& dst) {
   DCHECK(AnalyzeShouldApplyToImage(src, dst) == DarkModeResult::kNotClassified);
   DCHECK(settings().image_policy == DarkModeImagePolicy::kFilterSmart);
   DCHECK(image_filter_);

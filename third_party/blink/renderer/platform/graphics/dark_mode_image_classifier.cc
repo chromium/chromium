@@ -41,7 +41,7 @@ DarkModeImageClassifier::DarkModeImageClassifier() = default;
 DarkModeImageClassifier::~DarkModeImageClassifier() = default;
 
 DarkModeResult DarkModeImageClassifier::Classify(const SkPixmap& pixmap,
-                                                 const SkRect& src) {
+                                                 const SkIRect& src) {
   // Empty pixmap or |src| out of bounds cannot be classified.
   SkIRect bounds = pixmap.bounds();
   if (src.isEmpty() || bounds.isEmpty() || !bounds.contains(src) ||
@@ -57,7 +57,7 @@ DarkModeResult DarkModeImageClassifier::Classify(const SkPixmap& pixmap,
 
 base::Optional<DarkModeImageClassifier::Features>
 DarkModeImageClassifier::GetFeatures(const SkPixmap& pixmap,
-                                     const SkRect& src) {
+                                     const SkIRect& src) {
   DCHECK(!pixmap.bounds().isEmpty());
   float transparency_ratio;
   float background_ratio;
@@ -77,31 +77,17 @@ DarkModeImageClassifier::GetFeatures(const SkPixmap& pixmap,
 // distributed blocks through its width and height, each block is sampled, and
 // checked to see if it seems to be background or foreground.
 void DarkModeImageClassifier::GetSamples(const SkPixmap& pixmap,
-                                         const SkRect& src,
+                                         const SkIRect& src,
                                          std::vector<SkColor>* sampled_pixels,
                                          float* transparency_ratio,
                                          float* background_ratio) {
-  int num_sampled_pixels = kMaxSampledPixels;
-  int num_blocks_x = kMaxBlocks;
-  int num_blocks_y = kMaxBlocks;
+  DCHECK(!src.isEmpty());
 
-  // TODO(prashant.n): Make src as SkIRect for removing flooring and rounding.
-  // Let caller control the rounding.
-  // Crash reports indicate that the src can be less than 1, so make
-  // sure it goes to 1. We know it is not 0 because GetBitmap above
-  // will return false for zero-sized src.
-  IntSize rounded_src(ceil(src.width()), ceil(src.height()));
-
-  if (num_sampled_pixels > rounded_src.Width() * rounded_src.Height())
-    num_sampled_pixels = rounded_src.Width() * rounded_src.Height();
-
-  if (num_blocks_x > rounded_src.Width())
-    num_blocks_x = rounded_src.Width();
-  if (num_blocks_y > rounded_src.Height())
-    num_blocks_y = rounded_src.Height();
-
+  int num_sampled_pixels =
+      std::min(kMaxSampledPixels, src.width() * src.height());
+  int num_blocks_x = std::min(kMaxBlocks, src.width());
+  int num_blocks_y = std::min(kMaxBlocks, src.height());
   int pixels_per_block = num_sampled_pixels / (num_blocks_x * num_blocks_y);
-
   int transparent_pixels = 0;
   int opaque_pixels = 0;
   int blocks_count = 0;
@@ -109,15 +95,16 @@ void DarkModeImageClassifier::GetSamples(const SkPixmap& pixmap,
   std::vector<int> horizontal_grid(num_blocks_x + 1);
   std::vector<int> vertical_grid(num_blocks_y + 1);
 
+  float block_width = static_cast<float>(src.width()) / num_blocks_x;
+  float block_height = static_cast<float>(src.height()) / num_blocks_y;
+
   for (int block = 0; block <= num_blocks_x; block++) {
     horizontal_grid[block] =
-        src.x() + static_cast<int>(round(block * src.width() /
-                                         static_cast<float>(num_blocks_x)));
+        src.x() + static_cast<int>(round(block_width * block));
   }
   for (int block = 0; block <= num_blocks_y; block++) {
     vertical_grid[block] =
-        src.y() + static_cast<int>(round(block * src.height() /
-                                         static_cast<float>(num_blocks_y)));
+        src.y() + static_cast<int>(round(block_height * block));
   }
 
   sampled_pixels->clear();

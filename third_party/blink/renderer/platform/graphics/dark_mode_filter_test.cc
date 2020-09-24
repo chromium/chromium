@@ -118,38 +118,38 @@ TEST(DarkModeFilterTest, AnalyzeShouldApplyToImage) {
   filter.UpdateSettings(settings);
 
   // |dst| is smaller than threshold size.
-  EXPECT_EQ(filter.AnalyzeShouldApplyToImage(SkRect::MakeWH(100, 100),
-                                             SkRect::MakeWH(100, 100)),
+  EXPECT_EQ(filter.AnalyzeShouldApplyToImage(SkIRect::MakeWH(100, 100),
+                                             SkIRect::MakeWH(100, 100)),
             DarkModeResult::kNotClassified);
 
   // |dst| is smaller than threshold size, even |src| is larger.
-  EXPECT_EQ(filter.AnalyzeShouldApplyToImage(SkRect::MakeWH(200, 200),
-                                             SkRect::MakeWH(100, 100)),
+  EXPECT_EQ(filter.AnalyzeShouldApplyToImage(SkIRect::MakeWH(200, 200),
+                                             SkIRect::MakeWH(100, 100)),
             DarkModeResult::kNotClassified);
 
   // |dst| is smaller than threshold size, |src| is smaller.
-  EXPECT_EQ(filter.AnalyzeShouldApplyToImage(SkRect::MakeWH(20, 20),
-                                             SkRect::MakeWH(100, 100)),
+  EXPECT_EQ(filter.AnalyzeShouldApplyToImage(SkIRect::MakeWH(20, 20),
+                                             SkIRect::MakeWH(100, 100)),
             DarkModeResult::kNotClassified);
 
   // |src| having very smaller width, even |dst| is larger than threshold size.
-  EXPECT_EQ(filter.AnalyzeShouldApplyToImage(SkRect::MakeWH(5, 200),
-                                             SkRect::MakeWH(5, 200)),
+  EXPECT_EQ(filter.AnalyzeShouldApplyToImage(SkIRect::MakeWH(5, 200),
+                                             SkIRect::MakeWH(5, 200)),
             DarkModeResult::kNotClassified);
 
   // |src| having very smaller height, even |dst| is larger than threshold size.
-  EXPECT_EQ(filter.AnalyzeShouldApplyToImage(SkRect::MakeWH(200, 5),
-                                             SkRect::MakeWH(200, 5)),
+  EXPECT_EQ(filter.AnalyzeShouldApplyToImage(SkIRect::MakeWH(200, 5),
+                                             SkIRect::MakeWH(200, 5)),
             DarkModeResult::kNotClassified);
 
   // |dst| is larger than threshold size.
-  EXPECT_EQ(filter.AnalyzeShouldApplyToImage(SkRect::MakeWH(20, 20),
-                                             SkRect::MakeWH(200, 200)),
+  EXPECT_EQ(filter.AnalyzeShouldApplyToImage(SkIRect::MakeWH(20, 20),
+                                             SkIRect::MakeWH(200, 200)),
             DarkModeResult::kDoNotApplyFilter);
 
   // |dst| is larger than threshold size.
-  EXPECT_EQ(filter.AnalyzeShouldApplyToImage(SkRect::MakeWH(20, 200),
-                                             SkRect::MakeWH(20, 200)),
+  EXPECT_EQ(filter.AnalyzeShouldApplyToImage(SkIRect::MakeWH(20, 200),
+                                             SkIRect::MakeWH(20, 200)),
             DarkModeResult::kDoNotApplyFilter);
 }
 

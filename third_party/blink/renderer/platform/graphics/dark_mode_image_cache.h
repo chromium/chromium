@@ -20,16 +20,16 @@ class PLATFORM_EXPORT DarkModeImageCache {
   DarkModeImageCache() = default;
   ~DarkModeImageCache() = default;
 
-  bool Exists(const SkRect& src) {
+  bool Exists(const SkIRect& src) {
     return cache_.find(DarkModeKey(src)) != cache_.end();
   }
 
-  sk_sp<SkColorFilter> Get(const SkRect& src) {
+  sk_sp<SkColorFilter> Get(const SkIRect& src) {
     auto result = cache_.find(DarkModeKey(src));
     return (result != cache_.end()) ? result->second : nullptr;
   }
 
-  void Add(const SkRect& src, sk_sp<SkColorFilter> dark_mode_color_filter) {
+  void Add(const SkIRect& src, sk_sp<SkColorFilter> dark_mode_color_filter) {
     DCHECK(!Exists(src));
 
     cache_.emplace(DarkModeKey(src), std::move(dark_mode_color_filter));
@@ -42,14 +42,14 @@ class PLATFORM_EXPORT DarkModeImageCache {
  private:
   struct DarkModeKeyHash;
   struct DarkModeKey {
-    explicit DarkModeKey(SkRect src) : src_(src) {}
+    explicit DarkModeKey(SkIRect src) : src_(src) {}
 
     bool operator==(const DarkModeKey& other) const {
       return src_ == other.src_;
     }
 
    private:
-    SkRect src_;
+    SkIRect src_;
 
     friend struct DarkModeImageCache::DarkModeKeyHash;
   };

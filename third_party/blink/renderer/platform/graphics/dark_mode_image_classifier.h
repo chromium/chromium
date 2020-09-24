@@ -41,7 +41,7 @@ class PLATFORM_EXPORT DarkModeImageClassifier {
     float background_ratio;
   };
 
-  DarkModeResult Classify(const SkPixmap& pixmap, const SkRect& src);
+  DarkModeResult Classify(const SkPixmap& pixmap, const SkIRect& src);
 
  private:
   DarkModeResult ClassifyWithFeatures(const Features& features);
@@ -50,11 +50,11 @@ class PLATFORM_EXPORT DarkModeImageClassifier {
   enum class ColorMode { kColor = 0, kGrayscale = 1 };
 
   base::Optional<Features> GetFeatures(const SkPixmap& pixmap,
-                                       const SkRect& src);
+                                       const SkIRect& src);
   // Extracts a sample set of pixels (|sampled_pixels|), |transparency_ratio|,
   // and |background_ratio|.
   void GetSamples(const SkPixmap& pixmap,
-                  const SkRect& src,
+                  const SkIRect& src,
                   std::vector<SkColor>* sampled_pixels,
                   float* transparency_ratio,
                   float* background_ratio);

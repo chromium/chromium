@@ -18,9 +18,9 @@ TEST_F(DarkModeImageCacheTest, Caching) {
   config.fInvertStyle = SkHighContrastConfig::InvertStyle::kInvertLightness;
   sk_sp<SkColorFilter> filter = SkHighContrastFilter::Make(config);
 
-  SkRect src1 = SkRect::MakeXYWH(0, 0, 50, 50);
-  SkRect src2 = SkRect::MakeXYWH(5, 20, 100, 100);
-  SkRect src3 = SkRect::MakeXYWH(6, -9, 50, 50);
+  SkIRect src1 = SkIRect::MakeXYWH(0, 0, 50, 50);
+  SkIRect src2 = SkIRect::MakeXYWH(5, 20, 100, 100);
+  SkIRect src3 = SkIRect::MakeXYWH(6, -9, 50, 50);
 
   EXPECT_FALSE(cache.Exists(src1));
   EXPECT_EQ(cache.Get(src1), nullptr);

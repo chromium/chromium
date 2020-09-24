@@ -57,7 +57,7 @@ TEST_F(DarkModeImageClassifierTest, ValidImage) {
   bitmap = image->AsSkBitmapForCurrentFrame(kDoNotRespectImageOrientation);
   bitmap.peekPixels(&pixmap);
   EXPECT_EQ(image_classifier()->Classify(
-                pixmap, SkRect::MakeWH(image->width(), image->height())),
+                pixmap, SkIRect::MakeWH(image->width(), image->height())),
             DarkModeResult::kApplyFilter);
 }
 
@@ -67,7 +67,7 @@ TEST_F(DarkModeImageClassifierTest, InvalidImage) {
   SkPixmap pixmap;
 
   // Empty pixmap.
-  SkRect src = SkRect::MakeWH(50, 50);
+  SkIRect src = SkIRect::MakeWH(50, 50);
   EXPECT_EQ(image_classifier()->Classify(pixmap, src),
             DarkModeResult::kDoNotApplyFilter);
 
@@ -77,11 +77,11 @@ TEST_F(DarkModeImageClassifierTest, InvalidImage) {
   bitmap.peekPixels(&pixmap);
   EXPECT_EQ(
       image_classifier()->Classify(
-          pixmap, SkRect::MakeWH(image->width() + 10, image->height() + 10)),
+          pixmap, SkIRect::MakeWH(image->width() + 10, image->height() + 10)),
       DarkModeResult::kDoNotApplyFilter);
 
   // Empty src rect.
-  EXPECT_EQ(image_classifier()->Classify(pixmap, SkRect()),
+  EXPECT_EQ(image_classifier()->Classify(pixmap, SkIRect()),
             DarkModeResult::kDoNotApplyFilter);
 }
 
@@ -94,27 +94,27 @@ TEST_F(DarkModeImageClassifierTest, ImageSpriteAllFragmentsSame) {
   bitmap.peekPixels(&pixmap);
 
   EXPECT_EQ(
-      image_classifier()->Classify(pixmap, SkRect::MakeXYWH(0, 0, 95, 36)),
+      image_classifier()->Classify(pixmap, SkIRect::MakeXYWH(0, 0, 95, 36)),
       DarkModeResult::kApplyFilter);
 
   EXPECT_EQ(
-      image_classifier()->Classify(pixmap, SkRect::MakeXYWH(0, 36, 95, 36)),
+      image_classifier()->Classify(pixmap, SkIRect::MakeXYWH(0, 36, 95, 36)),
       DarkModeResult::kApplyFilter);
 
   EXPECT_EQ(
-      image_classifier()->Classify(pixmap, SkRect::MakeXYWH(0, 72, 95, 36)),
+      image_classifier()->Classify(pixmap, SkIRect::MakeXYWH(0, 72, 95, 36)),
       DarkModeResult::kApplyFilter);
 
   EXPECT_EQ(
-      image_classifier()->Classify(pixmap, SkRect::MakeXYWH(0, 108, 95, 36)),
+      image_classifier()->Classify(pixmap, SkIRect::MakeXYWH(0, 108, 95, 36)),
       DarkModeResult::kApplyFilter);
 
   EXPECT_EQ(
-      image_classifier()->Classify(pixmap, SkRect::MakeXYWH(0, 144, 95, 36)),
+      image_classifier()->Classify(pixmap, SkIRect::MakeXYWH(0, 144, 95, 36)),
       DarkModeResult::kApplyFilter);
 
   EXPECT_EQ(
-      image_classifier()->Classify(pixmap, SkRect::MakeXYWH(0, 180, 95, 36)),
+      image_classifier()->Classify(pixmap, SkIRect::MakeXYWH(0, 180, 95, 36)),
       DarkModeResult::kApplyFilter);
 }
 
@@ -127,27 +127,27 @@ TEST_F(DarkModeImageClassifierTest, ImageSpriteAlternateFragmentsSame) {
   bitmap.peekPixels(&pixmap);
 
   EXPECT_EQ(
-      image_classifier()->Classify(pixmap, SkRect::MakeXYWH(0, 0, 95, 36)),
+      image_classifier()->Classify(pixmap, SkIRect::MakeXYWH(0, 0, 95, 36)),
       DarkModeResult::kApplyFilter);
 
   EXPECT_EQ(
-      image_classifier()->Classify(pixmap, SkRect::MakeXYWH(0, 36, 95, 36)),
+      image_classifier()->Classify(pixmap, SkIRect::MakeXYWH(0, 36, 95, 36)),
       DarkModeResult::kDoNotApplyFilter);
 
   EXPECT_EQ(
-      image_classifier()->Classify(pixmap, SkRect::MakeXYWH(0, 72, 95, 36)),
+      image_classifier()->Classify(pixmap, SkIRect::MakeXYWH(0, 72, 95, 36)),
       DarkModeResult::kApplyFilter);
 
   EXPECT_EQ(
-      image_classifier()->Classify(pixmap, SkRect::MakeXYWH(0, 108, 95, 36)),
+      image_classifier()->Classify(pixmap, SkIRect::MakeXYWH(0, 108, 95, 36)),
       DarkModeResult::kDoNotApplyFilter);
 
   EXPECT_EQ(
-      image_classifier()->Classify(pixmap, SkRect::MakeXYWH(0, 144, 95, 36)),
+      image_classifier()->Classify(pixmap, SkIRect::MakeXYWH(0, 144, 95, 36)),
       DarkModeResult::kApplyFilter);
 
   EXPECT_EQ(
-      image_classifier()->Classify(pixmap, SkRect::MakeXYWH(0, 180, 95, 36)),
+      image_classifier()->Classify(pixmap, SkIRect::MakeXYWH(0, 180, 95, 36)),
       DarkModeResult::kDoNotApplyFilter);
 }
 
@@ -265,10 +265,10 @@ TEST_F(DarkModeImageClassifierTest, FeaturesAndClassification) {
   image = GetImage("/images/resources/grid-large.png");
   bitmap = image->AsSkBitmapForCurrentFrame(kDoNotRespectImageOrientation);
   bitmap.peekPixels(&pixmap);
-  features =
-      image_classifier()
-          ->GetFeatures(pixmap, SkRect::MakeWH(image->width(), image->height()))
-          .value();
+  features = image_classifier()
+                 ->GetFeatures(pixmap,
+                               SkIRect::MakeWH(image->width(), image->height()))
+                 .value();
   EXPECT_EQ(image_classifier()->ClassifyWithFeatures(features),
             DarkModeResult::kApplyFilter);
   EXPECT_EQ(image_classifier()->ClassifyUsingDecisionTree(features),
@@ -286,10 +286,10 @@ TEST_F(DarkModeImageClassifierTest, FeaturesAndClassification) {
   image = GetImage("/images/resources/apng08-ref.png");
   bitmap = image->AsSkBitmapForCurrentFrame(kDoNotRespectImageOrientation);
   bitmap.peekPixels(&pixmap);
-  features =
-      image_classifier()
-          ->GetFeatures(pixmap, SkRect::MakeWH(image->width(), image->height()))
-          .value();
+  features = image_classifier()
+                 ->GetFeatures(pixmap,
+                               SkIRect::MakeWH(image->width(), image->height()))
+                 .value();
   EXPECT_EQ(image_classifier()->ClassifyWithFeatures(features),
             DarkModeResult::kDoNotApplyFilter);
   EXPECT_EQ(image_classifier()->ClassifyUsingDecisionTree(features),
@@ -307,10 +307,10 @@ TEST_F(DarkModeImageClassifierTest, FeaturesAndClassification) {
   image = GetImage("/images/resources/twitter_favicon.ico");
   bitmap = image->AsSkBitmapForCurrentFrame(kDoNotRespectImageOrientation);
   bitmap.peekPixels(&pixmap);
-  features =
-      image_classifier()
-          ->GetFeatures(pixmap, SkRect::MakeWH(image->width(), image->height()))
-          .value();
+  features = image_classifier()
+                 ->GetFeatures(pixmap,
+                               SkIRect::MakeWH(image->width(), image->height()))
+                 .value();
   EXPECT_EQ(image_classifier()->ClassifyWithFeatures(features),
             DarkModeResult::kApplyFilter);
   EXPECT_EQ(image_classifier()->ClassifyUsingDecisionTree(features),
@@ -328,10 +328,10 @@ TEST_F(DarkModeImageClassifierTest, FeaturesAndClassification) {
   image = GetImage("/images/resources/blue-wheel-srgb-color-profile.png");
   bitmap = image->AsSkBitmapForCurrentFrame(kDoNotRespectImageOrientation);
   bitmap.peekPixels(&pixmap);
-  features =
-      image_classifier()
-          ->GetFeatures(pixmap, SkRect::MakeWH(image->width(), image->height()))
-          .value();
+  features = image_classifier()
+                 ->GetFeatures(pixmap,
+                               SkIRect::MakeWH(image->width(), image->height()))
+                 .value();
   EXPECT_EQ(image_classifier()->ClassifyWithFeatures(features),
             DarkModeResult::kDoNotApplyFilter);
   EXPECT_EQ(image_classifier()->ClassifyUsingDecisionTree(features),
@@ -349,10 +349,10 @@ TEST_F(DarkModeImageClassifierTest, FeaturesAndClassification) {
   image = GetImage("/images/resources/ycbcr-444-float.jpg");
   bitmap = image->AsSkBitmapForCurrentFrame(kDoNotRespectImageOrientation);
   bitmap.peekPixels(&pixmap);
-  features =
-      image_classifier()
-          ->GetFeatures(pixmap, SkRect::MakeWH(image->width(), image->height()))
-          .value();
+  features = image_classifier()
+                 ->GetFeatures(pixmap,
+                               SkIRect::MakeWH(image->width(), image->height()))
+                 .value();
   EXPECT_EQ(image_classifier()->ClassifyWithFeatures(features),
             DarkModeResult::kApplyFilter);
   EXPECT_EQ(image_classifier()->ClassifyUsingDecisionTree(features),

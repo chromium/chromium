@@ -51,8 +51,8 @@ class PLATFORM_EXPORT DarkModeFilter {
   // get the color filter GetImageFilter() should be called.
   // DarkModeResult::kNotClassified - Dark mode filter should be applied and to
   // get the color filter ApplyToImage() should be called.
-  DarkModeResult AnalyzeShouldApplyToImage(const SkRect& src,
-                                           const SkRect& dst) const;
+  DarkModeResult AnalyzeShouldApplyToImage(const SkIRect& src,
+                                           const SkIRect& dst) const;
 
   // Returns dark mode color filter based on the classification done on
   // |pixmap|. The image cannot be classified if pixmap is empty or |src| is
@@ -61,8 +61,8 @@ class PLATFORM_EXPORT DarkModeFilter {
   // appropriate function call. This function should be called only if image
   // policy is set to DarkModeImagePolicy::kFilterSmart.
   sk_sp<SkColorFilter> ApplyToImage(const SkPixmap& pixmap,
-                                    const SkRect& src,
-                                    const SkRect& dst);
+                                    const SkIRect& src,
+                                    const SkIRect& dst);
 
   // Returns dark mode color filter for images. Before calling this function
   // AnalyzeShouldApplyToImage() must be called for early out or deciding
