@@ -4,12 +4,15 @@
 
 #include "ash/system/phonehub/phone_hub_tray.h"
 
+#include <memory>
+
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/system/phonehub/notification_opt_in_view.h"
 #include "ash/system/phonehub/phone_status_view.h"
 #include "ash/system/phonehub/quick_actions_view.h"
 #include "ash/system/phonehub/task_continuation_view.h"
@@ -21,6 +24,7 @@
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/tray/tray_utils.h"
 #include "base/bind.h"
+#include "chromeos/components/phonehub/notification_access_manager.h"
 #include "chromeos/components/phonehub/phone_hub_manager.h"
 #include "chromeos/components/phonehub/phone_model.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -65,6 +69,14 @@ class PhoneHubView : public views ::View {
     }
 
     AddSeparator();
+
+    // TODO(meilinw): handle the case when the user has dismissed this opt in
+    // view once, we shouldn't show it again.
+    if (!phone_hub_manager->GetNotificationAccessManager()
+             ->HasAccessBeenGranted()) {
+      bubble_view_->AddChildView(
+          std::make_unique<NotificationOptInView>(bubble_view_));
+    }
 
     setup_layered_view(
         bubble_view_->AddChildView(std::make_unique<QuickActionsView>()));

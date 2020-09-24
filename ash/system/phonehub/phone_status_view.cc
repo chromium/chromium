@@ -9,6 +9,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/system/phonehub/phone_hub_view_ids.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_popup_item_style.h"
 #include "base/i18n/number_formatting.h"
@@ -57,6 +58,8 @@ PhoneStatusView::PhoneStatusView(chromeos::phonehub::PhoneModel* phone_model)
       mobile_provider_label_(new views::Label),
       battery_icon_(new views::ImageView),
       battery_label_(new views::Label) {
+  SetID(PhoneHubViewID::kPhoneStatusView);
+
   ConfigureTriViewContainer(TriView::Container::START);
   ConfigureTriViewContainer(TriView::Container::CENTER);
   ConfigureTriViewContainer(TriView::Container::END);

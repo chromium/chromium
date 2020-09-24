@@ -7,6 +7,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/phonehub/continue_browsing_chip.h"
+#include "ash/system/phonehub/phone_hub_view_ids.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/controls/label.h"
@@ -52,6 +53,8 @@ class HeaderView : public views::View {
 TaskContinuationView::TaskContinuationView(
     chromeos::phonehub::PhoneModel* phone_model)
     : phone_model_(phone_model) {
+  SetID(PhoneHubViewID::kTaskContinuationView);
+
   phone_model_->AddObserver(this);
 
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
