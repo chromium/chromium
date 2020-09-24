@@ -120,13 +120,16 @@ declare_args() {
   # Initialize all local variables with a pattern. This flag will fill
   # uninitialized floating-point types (and 32-bit pointers) with 0xFF and the
   # rest with 0xAA. This makes behavior of uninitialized memory bugs consistent,
-  # recognizeble in debugger, and crashes memory accesses by uninitialized
-  # pointers.
-  # TODO(vitalybuka):
-  # 'is_android' breaks content_shell_test_apk on android-kitkat-arm-rel.
-  # 'use_xcode_clang' may call old clang.
-  init_stack_vars = !is_android && !use_xcode_clang &&
-                    (!is_official_build || is_linux || is_chromeos)
+  # recognizable in the debugger, and crashes on memory accesses through
+  # uninitialized pointers.
+  #
+  # TODO(crbug.com/977230): Enabling this when 'is_android' is true breaks
+  # content_shell_test_apk on android-kitkat-arm-rel. Enabling this when
+  # 'use_xcode_clang' is true may call an old clang that doesn't support
+  # auto-init.
+  init_stack_vars =
+      !(is_android && (target_cpu == "arm" || target_cpu == "arm64")) &&
+      !use_xcode_clang
 
   # This argument is to control whether enabling text section splitting in the
   # final binary. When enabled, the separated text sections with prefix
