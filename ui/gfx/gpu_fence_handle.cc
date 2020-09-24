@@ -22,24 +22,25 @@ GpuFenceHandle& GpuFenceHandle::operator=(GpuFenceHandle&& other) = default;
 
 GpuFenceHandle::~GpuFenceHandle() = default;
 
-GpuFenceHandle GpuFenceHandle::Clone() const {
-  switch (type) {
-    case GpuFenceHandleType::kEmpty:
-      break;
-    case GpuFenceHandleType::kAndroidNativeFenceSync: {
-      gfx::GpuFenceHandle handle;
+bool GpuFenceHandle::is_null() const {
 #if defined(OS_POSIX)
-      handle.type = GpuFenceHandleType::kAndroidNativeFenceSync;
-      const int duped_handle = HANDLE_EINTR(dup(owned_fd.get()));
-      if (duped_handle < 0)
-        return GpuFenceHandle();
-      handle.owned_fd = base::ScopedFD(duped_handle);
+  return !owned_fd.is_valid();
+#else
+  return true;
 #endif
-      return handle;
-    }
-  }
+}
+
+GpuFenceHandle GpuFenceHandle::Clone() const {
+  gfx::GpuFenceHandle handle;
+#if defined(OS_POSIX)
+  const int duped_handle = HANDLE_EINTR(dup(owned_fd.get()));
+  if (duped_handle < 0)
+    return GpuFenceHandle();
+  handle.owned_fd = base::ScopedFD(duped_handle);
+#else
   NOTREACHED();
-  return gfx::GpuFenceHandle();
+#endif
+  return handle;
 }
 
 }  // namespace gfx

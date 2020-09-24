@@ -5,12 +5,6 @@
 module gfx.mojom;
 
 // See ui/gfx/ipc/gpu_fence_handle.h
-enum GpuFenceHandleType {
-  kEmpty,
-  kAndroidNativeFenceSync,
-};
-
 struct GpuFenceHandle {
-  GpuFenceHandleType type;
   handle<platform>? native_fd;
 };

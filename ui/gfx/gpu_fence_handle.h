@@ -15,18 +15,6 @@
 
 namespace gfx {
 
-enum class GpuFenceHandleType {
-  // A null handle for transport. It cannot be used for making a waitable fence
-  // object.
-  kEmpty,
-
-  // A file descriptor for a native fence object as used by the
-  // EGL_ANDROID_native_fence_sync extension.
-  kAndroidNativeFenceSync,
-
-  kLast = kAndroidNativeFenceSync
-};
-
 struct GFX_EXPORT GpuFenceHandle {
   GpuFenceHandle(const GpuFenceHandle&) = delete;
   GpuFenceHandle& operator=(const GpuFenceHandle&) = delete;
@@ -36,14 +24,16 @@ struct GFX_EXPORT GpuFenceHandle {
   GpuFenceHandle& operator=(GpuFenceHandle&& other);
   ~GpuFenceHandle();
 
-  bool is_null() const { return type == GpuFenceHandleType::kEmpty; }
+  bool is_null() const;
 
   // Returns an instance of |handle| which can be sent over IPC. This duplicates
   // the handle so that IPC code can take ownership of it without invalidating
   // |handle| itself.
   GpuFenceHandle Clone() const;
 
-  GpuFenceHandleType type = GpuFenceHandleType::kEmpty;
+  // owned_fd is defined here for both OS_FUCHSIA and OS_POSIX but all
+  // of the handling for owned_fd is only for POSIX. Consider adjusting the
+  // defines in the future.
 #if defined(OS_POSIX) || defined(OS_FUCHSIA)
   base::ScopedFD owned_fd;
 #endif

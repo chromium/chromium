@@ -174,7 +174,6 @@ TEST_F(GpuFenceManagerTest, GetGpuFence) {
   EXPECT_TRUE(gpu_fence);
   const gfx::GpuFenceHandle& handle = gpu_fence->GetGpuFenceHandle();
 
-  EXPECT_EQ(handle.type, gfx::GpuFenceHandleType::kAndroidNativeFenceSync);
   EXPECT_EQ(handle.owned_fd.get(), kFenceFD);
 
   // Removing the fence marks it invalid.
@@ -194,7 +193,6 @@ TEST_F(GpuFenceManagerTest, Duplication) {
 
   // Create a handle.
   gfx::GpuFenceHandle handle;
-  handle.type = gfx::GpuFenceHandleType::kAndroidNativeFenceSync;
   handle.owned_fd = base::ScopedFD(kFenceFD);
 
   // Create a duplicate fence object from it.

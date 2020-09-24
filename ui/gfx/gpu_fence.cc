@@ -33,22 +33,19 @@ GpuFence* GpuFence::FromClientGpuFence(ClientGpuFence gpu_fence) {
 }
 
 void GpuFence::Wait() {
-  switch (fence_handle_.type) {
-    case GpuFenceHandleType::kEmpty:
-      break;
-    case GpuFenceHandleType::kAndroidNativeFenceSync:
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
-      static const int kInfiniteSyncWaitTimeout = -1;
-      DCHECK_GE(fence_handle_.owned_fd.get(), 0);
-      if (sync_wait(fence_handle_.owned_fd.get(), kInfiniteSyncWaitTimeout) <
-          0) {
-        LOG(FATAL) << "Failed while waiting for gpu fence fd";
-      }
-#else
-      NOTREACHED();
-#endif
-      break;
+  if (fence_handle_.is_null()) {
+    return;
   }
+
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+  static const int kInfiniteSyncWaitTimeout = -1;
+  DCHECK_GE(fence_handle_.owned_fd.get(), 0);
+  if (sync_wait(fence_handle_.owned_fd.get(), kInfiniteSyncWaitTimeout) < 0) {
+    LOG(FATAL) << "Failed while waiting for gpu fence fd";
+  }
+#else
+  NOTREACHED();
+#endif
 }
 
 // static

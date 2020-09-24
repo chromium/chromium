@@ -64,7 +64,6 @@ std::unique_ptr<gfx::GpuFence> GLFenceAndroidNativeFenceSync::GetGpuFence() {
     return nullptr;
 
   gfx::GpuFenceHandle handle;
-  handle.type = gfx::GpuFenceHandleType::kAndroidNativeFenceSync;
   handle.owned_fd = base::ScopedFD(sync_fd);
 
   return std::make_unique<gfx::GpuFence>(std::move(handle));

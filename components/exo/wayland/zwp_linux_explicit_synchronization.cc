@@ -96,7 +96,6 @@ void linux_surface_synchronization_set_acquire_fence(wl_client* client,
   }
 
   gfx::GpuFenceHandle handle;
-  handle.type = gfx::GpuFenceHandleType::kAndroidNativeFenceSync;
   handle.owned_fd = std::move(fence_fd);
 
   surface->SetAcquireFence(std::make_unique<gfx::GpuFence>(std::move(handle)));

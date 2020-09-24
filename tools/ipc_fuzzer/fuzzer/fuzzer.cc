@@ -966,18 +966,6 @@ struct FuzzTraits<gfx::ColorSpace::TransferID> {
 template <>
 struct FuzzTraits<gfx::GpuFenceHandle> {
   static bool Fuzz(gfx::GpuFenceHandle* p, Fuzzer* fuzzer) {
-    if (!FuzzParam(&p->type, fuzzer))
-      return false;
-    return true;
-  }
-};
-
-template <>
-struct FuzzTraits<gfx::GpuFenceHandleType> {
-  static bool Fuzz(gfx::GpuFenceHandleType* p, Fuzzer* fuzzer) {
-    int type =
-        RandInRange(static_cast<int>(gfx::GpuFenceHandleType::kLast) + 1);
-    *p = static_cast<gfx::GpuFenceHandleType>(type);
     return true;
   }
 };

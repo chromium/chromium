@@ -104,18 +104,12 @@ bool GLFence::IsGpuFenceSupported() {
 std::unique_ptr<GLFence> GLFence::CreateFromGpuFence(
     const gfx::GpuFence& gpu_fence) {
   DCHECK(IsGpuFenceSupported());
-  switch (gpu_fence.GetGpuFenceHandle().type) {
-    case gfx::GpuFenceHandleType::kAndroidNativeFenceSync:
 #if defined(USE_GL_FENCE_ANDROID_NATIVE_FENCE_SYNC)
-      return GLFenceAndroidNativeFenceSync::CreateFromGpuFence(gpu_fence);
+  return GLFenceAndroidNativeFenceSync::CreateFromGpuFence(gpu_fence);
 #else
-      NOTREACHED();
-      return nullptr;
+  NOTREACHED();
+  return nullptr;
 #endif
-    default:
-      NOTREACHED();
-      return nullptr;
-  }
 }
 
 // static
