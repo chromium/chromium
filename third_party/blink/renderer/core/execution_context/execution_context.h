@@ -61,7 +61,7 @@
 namespace base {
 class SingleThreadTaskRunner;
 class UnguessableToken;
-}
+}  // namespace base
 
 namespace ukm {
 class UkmRecorder;
@@ -374,7 +374,8 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
   unsigned ContextLifecycleStateObserverCountForTesting() const;
 
   // Implementation of WindowOrWorkerGlobalScope.crossOriginIsolated.
-  bool IsCrossOriginIsolated() const;
+  // https://html.spec.whatwg.org/C/webappapis.html#concept-settings-object-cross-origin-isolated-capability
+  virtual bool CrossOriginIsolatedCapability() const = 0;
 
   virtual ukm::UkmRecorder* UkmRecorder() { return nullptr; }
   virtual ukm::SourceId UkmSourceID() const { return ukm::kInvalidSourceId; }

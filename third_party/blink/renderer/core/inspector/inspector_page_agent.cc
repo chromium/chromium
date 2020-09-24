@@ -1077,7 +1077,7 @@ protocol::Page::SecureContextType CreateProtocolSecureContextType(
 }
 protocol::Page::CrossOriginIsolatedContextType
 CreateProtocolCrossOriginIsolatedContextType(ExecutionContext* context) {
-  if (context->IsCrossOriginIsolated()) {
+  if (context->CrossOriginIsolatedCapability()) {
     return protocol::Page::CrossOriginIsolatedContextTypeEnum::Isolated;
   } else if (context->IsFeatureEnabled(
                  mojom::blink::FeaturePolicyFeature::kCrossOriginIsolated)) {

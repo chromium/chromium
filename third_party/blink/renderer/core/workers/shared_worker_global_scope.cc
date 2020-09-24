@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/source_location.h"
 #include "third_party/blink/renderer/bindings/core/v8/worker_or_worklet_script_controller.h"
 #include "third_party/blink/renderer/core/events/message_event.h"
+#include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/inspector/worker_thread_debugger.h"
@@ -284,4 +285,10 @@ void SharedWorkerGlobalScope::Trace(Visitor* visitor) const {
   visitor->Trace(appcache_host_);
   WorkerGlobalScope::Trace(visitor);
 }
+
+bool SharedWorkerGlobalScope::CrossOriginIsolatedCapability() const {
+  // TODO(crbug.com/1131403): Return Agent::IsCrossOriginIsolated().
+  return false;
+}
+
 }  // namespace blink

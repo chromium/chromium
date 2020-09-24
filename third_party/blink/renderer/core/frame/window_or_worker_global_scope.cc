@@ -248,7 +248,7 @@ ScriptPromise WindowOrWorkerGlobalScope::createImageBitmap(
 
 bool WindowOrWorkerGlobalScope::crossOriginIsolated(
     const ExecutionContext& execution_context) {
-  return execution_context.IsCrossOriginIsolated();
+  return execution_context.CrossOriginIsolatedCapability();
 }
 
 }  // namespace blink

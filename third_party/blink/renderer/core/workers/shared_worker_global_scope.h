@@ -101,6 +101,7 @@ class CORE_EXPORT SharedWorkerGlobalScope final : public WorkerGlobalScope {
   // Returns the token that uniquely identifies this worker.
   const SharedWorkerToken& GetSharedWorkerToken() const { return token_; }
   WorkerToken GetWorkerToken() const final { return token_; }
+  bool CrossOriginIsolatedCapability() const final;
   ExecutionContextToken GetExecutionContextToken() const final {
     return token_;
   }

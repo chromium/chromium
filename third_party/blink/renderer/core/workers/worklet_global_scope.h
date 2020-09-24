@@ -64,6 +64,7 @@ class CORE_EXPORT WorkletGlobalScope
   CoreProbeSink* GetProbeSink() final;
   scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner(TaskType) final;
   FrameOrWorkerScheduler* GetScheduler() final;
+  bool CrossOriginIsolatedCapability() const final { return false; }
   ukm::UkmRecorder* UkmRecorder() final;
 
   // WorkerOrWorkletGlobalScope

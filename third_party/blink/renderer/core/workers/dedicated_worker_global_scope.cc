@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_post_message_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/worker_or_worklet_script_controller.h"
+#include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/inspector/worker_thread_debugger.h"
@@ -75,11 +76,13 @@ DedicatedWorkerGlobalScope* DedicatedWorkerGlobalScope::Create(
       creation_params->referrer_policy;
   base::Optional<network::mojom::IPAddressSpace> response_address_space =
       creation_params->response_address_space;
+  const bool parent_cross_origin_isolated_capability =
+      creation_params->parent_cross_origin_isolated_capability;
 
   auto* global_scope = MakeGarbageCollected<DedicatedWorkerGlobalScope>(
       std::move(creation_params), thread, time_origin,
       std::move(outside_origin_trial_tokens), begin_frame_provider_params,
-      ukm_source_id);
+      ukm_source_id, parent_cross_origin_isolated_capability);
 
   if (global_scope->IsOffMainThreadScriptFetchDisabled()) {
     // Legacy on-the-main-thread worker script fetch (to be removed):
@@ -123,14 +126,16 @@ DedicatedWorkerGlobalScope::DedicatedWorkerGlobalScope(
     base::TimeTicks time_origin,
     std::unique_ptr<Vector<String>> outside_origin_trial_tokens,
     const BeginFrameProviderParams& begin_frame_provider_params,
-    ukm::SourceId ukm_source_id)
+    ukm::SourceId ukm_source_id,
+    bool parent_cross_origin_isolated_capability)
     : DedicatedWorkerGlobalScope(
           ParseCreationParams(std::move(creation_params)),
           thread,
           time_origin,
           std::move(outside_origin_trial_tokens),
           begin_frame_provider_params,
-          ukm_source_id) {}
+          ukm_source_id,
+          parent_cross_origin_isolated_capability) {}
 
 DedicatedWorkerGlobalScope::DedicatedWorkerGlobalScope(
     ParsedCreationParams parsed_creation_params,
@@ -138,17 +143,26 @@ DedicatedWorkerGlobalScope::DedicatedWorkerGlobalScope(
     base::TimeTicks time_origin,
     std::unique_ptr<Vector<String>> outside_origin_trial_tokens,
     const BeginFrameProviderParams& begin_frame_provider_params,
-    ukm::SourceId ukm_source_id)
+    ukm::SourceId ukm_source_id,
+    bool parent_cross_origin_isolated_capability)
     : WorkerGlobalScope(std::move(parsed_creation_params.creation_params),
                         thread,
                         time_origin,
                         ukm_source_id),
       token_(thread->WorkerObjectProxy().token()),
       parent_token_(parsed_creation_params.parent_context_token),
+      cross_origin_isolated_capability_(Agent::IsCrossOriginIsolated()),
       animation_frame_provider_(
           MakeGarbageCollected<WorkerAnimationFrameProvider>(
               this,
               begin_frame_provider_params)) {
+  // https://html.spec.whatwg.org/C/#run-a-worker
+  // Step 14.10 "If shared is false and owner's cross-origin isolated
+  // capability is false, then set worker global scope's cross-origin isolated
+  // capability to false."
+  if (!parent_cross_origin_isolated_capability) {
+    cross_origin_isolated_capability_ = false;
+  }
   // Dedicated workers don't need to pause after script fetch.
   ReadyToRunWorkerScript();
   // Inherit the outside's origin trial tokens.
@@ -169,21 +183,21 @@ void DedicatedWorkerGlobalScope::Initialize(
     const Vector<CSPHeaderAndType>& /* response_csp_headers */,
     const Vector<String>* /* response_origin_trial_tokens */,
     int64_t appcache_id) {
-  // Step 12.3. "Set worker global scope's url to response's url."
+  // Step 14.3. "Set worker global scope's url to response's url."
   InitializeURL(response_url);
 
-  // Step 12.4. "Set worker global scope's HTTPS state to response's HTTPS
+  // Step 14.4. "Set worker global scope's HTTPS state to response's HTTPS
   // state."
   // This is done in the constructor of WorkerGlobalScope.
 
-  // Step 12.5. "Set worker global scope's referrer policy to the result of
+  // Step 14.5. "Set worker global scope's referrer policy to the result of
   // parsing the `Referrer-Policy` header of response."
   SetReferrerPolicy(response_referrer_policy);
 
   // https://wicg.github.io/cors-rfc1918/#integration-html
   SetAddressSpace(response_address_space);
 
-  // Step 12.6. "Execute the Initialize a global object's CSP list algorithm
+  // Step 14.6. "Execute the Initialize a global object's CSP list algorithm
   // on worker global scope and response. [CSP]"
   // DedicatedWorkerGlobalScope inherits the outside's CSP instead of the
   // response CSP headers. These should be called after SetAddressSpace() to
@@ -200,6 +214,12 @@ void DedicatedWorkerGlobalScope::Initialize(
 
   // TODO(https://crbug.com/945673): Notify an application cache host of
   // |appcache_id| here to support AppCache with PlzDedicatedWorker.
+
+  // Step 14.11. "If is shared is false and response's url's scheme is "data",
+  // then set worker global scope's cross-origin isolated capability to false."
+  if (response_url.ProtocolIsData()) {
+    cross_origin_isolated_capability_ = false;
+  }
 }
 
 // https://html.spec.whatwg.org/C/#worker-processing-model

@@ -450,7 +450,8 @@ DedicatedWorker::CreateGlobalScopeCreationParams(
       std::move(browser_interface_broker_), CreateBeginFrameProviderParams(),
       GetExecutionContext()->GetSecurityContext().GetFeaturePolicy(),
       GetExecutionContext()->GetAgentClusterID(),
-      GetExecutionContext()->GetExecutionContextToken());
+      GetExecutionContext()->GetExecutionContextToken(),
+      GetExecutionContext()->CrossOriginIsolatedCapability());
 }
 
 scoped_refptr<WebWorkerFetchContext>

@@ -46,7 +46,7 @@ class NullExecutionContext : public GarbageCollected<NullExecutionContext>,
   void SetUpSecurityContextForTesting();
 
   ResourceFetcher* Fetcher() const override { return nullptr; }
-
+  bool CrossOriginIsolatedCapability() const override { return false; }
   FrameOrWorkerScheduler* GetScheduler() override;
   scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner(TaskType) override;
 

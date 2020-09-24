@@ -317,6 +317,7 @@ class MODULES_EXPORT ServiceWorkerGlobalScope final
   // Returns the token that uniquely identifies this worker.
   const ServiceWorkerToken& GetServiceWorkerToken() const { return token_; }
   WorkerToken GetWorkerToken() const final { return token_; }
+  bool CrossOriginIsolatedCapability() const final;
   ExecutionContextToken GetExecutionContextToken() const final {
     return token_;
   }

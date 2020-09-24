@@ -62,6 +62,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_notification_event_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_payment_request_event_init.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/fetch/global_fetch.h"
 #include "third_party/blink/renderer/core/frame/reporting_context.h"
@@ -824,6 +825,11 @@ bool ServiceWorkerGlobalScope::HasRelatedFetchEvent(
 
 int ServiceWorkerGlobalScope::GetOutstandingThrottledLimit() const {
   return features::kInstallingServiceWorkerOutstandingThrottledLimit.Get();
+}
+
+bool ServiceWorkerGlobalScope::CrossOriginIsolatedCapability() const {
+  // TODO(crbug.com/1131404): Return Agent::IsCrossOriginIsolated().
+  return false;
 }
 
 void ServiceWorkerGlobalScope::importScripts(const Vector<String>& urls) {
@@ -2450,9 +2456,8 @@ void ServiceWorkerGlobalScope::NoteRespondedToFetchEvent(
 }
 
 void ServiceWorkerGlobalScope::RecordQueuingTime(base::TimeTicks created_time) {
-  base::UmaHistogramMediumTimes(
-      "ServiceWorker.FetchEvent.QueuingTime",
-      base::TimeTicks::Now() - created_time);
+  base::UmaHistogramMediumTimes("ServiceWorker.FetchEvent.QueuingTime",
+                                base::TimeTicks::Now() - created_time);
 }
 
 }  // namespace blink

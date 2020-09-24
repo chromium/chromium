@@ -51,7 +51,8 @@ PaintWorkletGlobalScopeProxy::PaintWorkletGlobalScopeProxy(
       mojom::blink::V8CacheOptions::kDefault, module_responses_map,
       mojo::NullRemote() /* browser_interface_broker */,
       BeginFrameProviderParams(), nullptr /* parent_feature_policy */,
-      window->GetAgentClusterID(), window->GetExecutionContextToken());
+      window->GetAgentClusterID(), window->GetExecutionContextToken(),
+      window->CrossOriginIsolatedCapability());
   global_scope_ = PaintWorkletGlobalScope::Create(
       frame, std::move(creation_params), *reporting_proxy_);
 }

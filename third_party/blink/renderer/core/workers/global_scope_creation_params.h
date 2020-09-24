@@ -66,7 +66,8 @@ struct CORE_EXPORT GlobalScopeCreationParams final {
       const FeaturePolicy* parent_feature_policy = nullptr,
       base::UnguessableToken agent_cluster_id = {},
       const base::Optional<ExecutionContextToken>& parent_context_token =
-          base::nullopt);
+          base::nullopt,
+      bool parent_cross_origin_isolated_capability = false);
 
   ~GlobalScopeCreationParams() = default;
 
@@ -167,6 +168,10 @@ struct CORE_EXPORT GlobalScopeCreationParams final {
   // worker or worklet, which caused it to be created, and to whose lifetime
   // this worker/worklet is bound. This is used for resource usage attribution.
   base::Optional<ExecutionContextToken> parent_context_token;
+
+  // https://html.spec.whatwg.org/C/#concept-settings-object-cross-origin-isolated-capability
+  // Used by dedicated workers, and set to false when there is no parent.
+  const bool parent_cross_origin_isolated_capability;
 
   DISALLOW_COPY_AND_ASSIGN(GlobalScopeCreationParams);
 };

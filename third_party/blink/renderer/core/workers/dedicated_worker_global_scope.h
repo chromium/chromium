@@ -69,7 +69,8 @@ class CORE_EXPORT DedicatedWorkerGlobalScope final : public WorkerGlobalScope {
       base::TimeTicks time_origin,
       std::unique_ptr<Vector<String>> outside_origin_trial_tokens,
       const BeginFrameProviderParams& begin_frame_provider_params,
-      ukm::SourceId ukm_source_id);
+      ukm::SourceId ukm_source_id,
+      bool parent_cross_origin_isolated_capability);
 
   ~DedicatedWorkerGlobalScope() override;
 
@@ -135,6 +136,9 @@ class CORE_EXPORT DedicatedWorkerGlobalScope final : public WorkerGlobalScope {
   // Returns the token that uniquely identifies this worker.
   const DedicatedWorkerToken& GetDedicatedWorkerToken() const { return token_; }
   WorkerToken GetWorkerToken() const final { return token_; }
+  bool CrossOriginIsolatedCapability() const final {
+    return cross_origin_isolated_capability_;
+  }
   ExecutionContextToken GetExecutionContextToken() const final {
     return token_;
   }
@@ -166,7 +170,8 @@ class CORE_EXPORT DedicatedWorkerGlobalScope final : public WorkerGlobalScope {
       base::TimeTicks time_origin,
       std::unique_ptr<Vector<String>> outside_origin_trial_tokens,
       const BeginFrameProviderParams& begin_frame_provider_params,
-      ukm::SourceId ukm_source_id);
+      ukm::SourceId ukm_source_id,
+      bool parent_cross_origin_isolated_capability);
 
   void DidReceiveResponseForClassicScript(
       WorkerClassicScriptLoader* classic_script_loader);
@@ -179,6 +184,7 @@ class CORE_EXPORT DedicatedWorkerGlobalScope final : public WorkerGlobalScope {
   const DedicatedWorkerToken token_;
   // The ID of the parent context that owns this worker.
   const ExecutionContextToken parent_token_;
+  bool cross_origin_isolated_capability_;
   Member<WorkerAnimationFrameProvider> animation_frame_provider_;
   RejectCoepUnsafeNone reject_coep_unsafe_none_ = RejectCoepUnsafeNone(false);
 };

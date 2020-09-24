@@ -2050,6 +2050,12 @@ void LocalDOMWindow::Trace(Visitor* visitor) const {
   Supplementable<LocalDOMWindow>::Trace(visitor);
 }
 
+bool LocalDOMWindow::CrossOriginIsolatedCapability() const {
+  return Agent::IsCrossOriginIsolated() &&
+         IsFeatureEnabled(
+             mojom::blink::FeaturePolicyFeature::kCrossOriginIsolated);
+}
+
 ukm::UkmRecorder* LocalDOMWindow::UkmRecorder() {
   DCHECK(document_);
   return document_->UkmRecorder();
