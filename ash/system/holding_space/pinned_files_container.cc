@@ -22,7 +22,9 @@
 
 namespace ash {
 
-PinnedFilesContainer::PinnedFilesContainer() {
+PinnedFilesContainer::PinnedFilesContainer(
+    HoldingSpaceItemViewDelegate* delegate)
+    : delegate_(delegate) {
   SetID(kHoldingSpacePinnedFilesContainerId);
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -52,7 +54,8 @@ void PinnedFilesContainer::AddHoldingSpaceItemView(
 
   if (item->type() == HoldingSpaceItem::Type::kPinnedFile) {
     views_by_item_id_[item->id()] = item_chips_container_->AddChildViewAt(
-        std::make_unique<HoldingSpaceItemChipView>(item), 0 /*index*/);
+        std::make_unique<HoldingSpaceItemChipView>(delegate_, item),
+        /*index=*/0);
   }
 }
 

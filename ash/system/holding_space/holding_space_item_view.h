@@ -5,35 +5,34 @@
 #ifndef ASH_SYSTEM_HOLDING_SPACE_HOLDING_SPACE_ITEM_VIEW_H_
 #define ASH_SYSTEM_HOLDING_SPACE_HOLDING_SPACE_ITEM_VIEW_H_
 
-#include <memory>
-
 #include "ash/ash_export.h"
-#include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/views/animation/ink_drop_host_view.h"
 #include "ui/views/metadata/metadata_header_macros.h"
 
 namespace ash {
 
 class HoldingSpaceItem;
-class HoldingSpaceItemContextMenu;
+class HoldingSpaceItemViewDelegate;
 
 // Base class for HoldingSpaceItemChipView and HoldingSpaceItemScreenshotView.
 class ASH_EXPORT HoldingSpaceItemView : public views::InkDropHostView {
  public:
   METADATA_HEADER(HoldingSpaceItemView);
 
-  explicit HoldingSpaceItemView(const HoldingSpaceItem* item);
+  HoldingSpaceItemView(HoldingSpaceItemViewDelegate*, const HoldingSpaceItem*);
   HoldingSpaceItemView(const HoldingSpaceItemView&) = delete;
   HoldingSpaceItemView& operator=(const HoldingSpaceItemView&) = delete;
   ~HoldingSpaceItemView() override;
 
+  // Returns `view` cast as a `HoldingSpaceItemView`. Note that this performs a
+  // DCHECK to assert that `view` is in fact a `HoldingSpaceItemView` instance.
+  static HoldingSpaceItemView* Cast(views::View* view);
+
   // views::InkDropHostView:
-  int GetDragOperations(const gfx::Point& point) override;
   SkColor GetInkDropBaseColor() const override;
   void OnGestureEvent(ui::GestureEvent* event) override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
-  void WriteDragData(const gfx::Point& point, ui::OSExchangeData*) override;
 
   const HoldingSpaceItem* item() const { return item_; }
 
@@ -41,8 +40,8 @@ class ASH_EXPORT HoldingSpaceItemView : public views::InkDropHostView {
   bool selected() const { return selected_; }
 
  private:
+  HoldingSpaceItemViewDelegate* delegate_;
   const HoldingSpaceItem* const item_;
-  std::unique_ptr<HoldingSpaceItemContextMenu> const context_menu_;
 
   // Whether or not this view is selected.
   bool selected_ = false;

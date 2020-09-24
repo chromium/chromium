@@ -16,8 +16,9 @@
 namespace ash {
 
 HoldingSpaceItemScreenshotView::HoldingSpaceItemScreenshotView(
+    HoldingSpaceItemViewDelegate* delegate,
     const HoldingSpaceItem* item)
-    : HoldingSpaceItemView(item) {
+    : HoldingSpaceItemView(delegate, item) {
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
   image_ = AddChildView(
