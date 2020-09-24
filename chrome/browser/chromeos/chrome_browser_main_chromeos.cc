@@ -166,6 +166,7 @@
 #include "chromeos/network/network_cert_loader.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/portal_detector/network_portal_detector_stub.h"
+#include "chromeos/services/cfm/public/buildflags/buildflags.h"  // PLATFORM_CFM
 #include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
 #include "chromeos/system/statistics_provider.h"
 #include "chromeos/tpm/install_attributes.h"
@@ -209,6 +210,10 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/chromeos/events/pref_names.h"
 #include "ui/events/event_utils.h"
+
+#if BUILDFLAG(PLATFORM_CFM)
+#include "chrome/browser/chromeos/cfm/cfm_chrome_services.h"
+#endif
 
 #if BUILDFLAG(ENABLE_RLZ)
 #include "components/rlz/rlz_tracker.h"
@@ -629,6 +634,10 @@ void ChromeBrowserMainPartsChromeos::PreMainMessageLoopRun() {
     breakpad_consent_watcher_ =
         system::BreakpadConsentWatcher::Initialize(stats_controller);
   }
+
+#if BUILDFLAG(PLATFORM_CFM)
+  chromeos::cfm::InitializeCfmServices();
+#endif  // BUILDFLAG(PLATFORM_CFM)
 
   ChromeBrowserMainPartsLinux::PreMainMessageLoopRun();
 }

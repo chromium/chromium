@@ -23,6 +23,7 @@ component("cfm") {
   sources = [
     "cfm_hotline_client.cc",
     "cfm_hotline_client.h",
+    "cfm_observer.h",
     "fake_cfm_hotline_client.cc",
     "fake_cfm_hotline_client.h",
   ]

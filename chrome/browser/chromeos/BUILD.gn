@@ -375,7 +375,10 @@ source_set("chromeos") {
     "//url",
   ]
   if (is_cfm) {
-    deps += [ "//chromeos/dbus/cfm" ]
+    deps += [
+      "//chrome/browser/chromeos/cfm",
+      "//chromeos/dbus/cfm",
+    ]
   }
   data_deps = [ ":dbus_service_files" ]
 

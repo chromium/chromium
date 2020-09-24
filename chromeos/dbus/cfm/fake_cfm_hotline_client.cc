@@ -28,4 +28,12 @@ void FakeCfmHotlineClient::BootstrapMojoConnection(
       FROM_HERE, base::BindOnce(std::move(result_callback), true));
 }
 
+void FakeCfmHotlineClient::AddObserver(cfm::CfmObserver* observer) {
+  observer_list_.AddObserver(observer);
+}
+
+void FakeCfmHotlineClient::RemoveObserver(cfm::CfmObserver* observer) {
+  observer_list_.RemoveObserver(observer);
+}
+
 }  // namespace chromeos

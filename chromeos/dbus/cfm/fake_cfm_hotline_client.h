@@ -27,6 +27,12 @@ class FakeCfmHotlineClient : public CfmHotlineClient {
   void BootstrapMojoConnection(
       base::ScopedFD fd,
       BootstrapMojoConnectionCallback result_callback) override;
+  void AddObserver(cfm::CfmObserver* observer) override;
+  void RemoveObserver(cfm::CfmObserver* observer) override;
+
+ private:
+  // A list of observers that are listening on state changes, etc.
+  cfm::CfmObserverList observer_list_;
 };
 
 }  // namespace chromeos

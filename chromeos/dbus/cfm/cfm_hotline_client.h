@@ -12,6 +12,8 @@
 #include "base/files/scoped_file.h"
 #include "dbus/object_proxy.h"
 
+#include "chromeos/dbus/cfm/cfm_observer.h"
+
 namespace dbus {
 class Bus;
 }
@@ -63,6 +65,13 @@ class COMPONENT_EXPORT(CFM_HOTLINE_CLIENT) CfmHotlineClient {
   virtual void BootstrapMojoConnection(
       base::ScopedFD fd,
       BootstrapMojoConnectionCallback result_callback) = 0;
+
+  // Adds an observer instance to the observers list to listen on changes like
+  // DLC state change, etc.
+  virtual void AddObserver(cfm::CfmObserver* observer) = 0;
+
+  // Removes an observer from observers list.
+  virtual void RemoveObserver(cfm::CfmObserver* observer) = 0;
 
  protected:
   // Initialize/Shutdown should be used instead.

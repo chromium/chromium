@@ -1,5 +1,5 @@
 include_rules = [
-  # Do not add chrome here (use a delegate instead).
+  "+chromeos/dbus/cfm",
   "+chromeos/services/cfm/public/buildflags",
   "+chromeos/services/cfm/public/features",
 ]

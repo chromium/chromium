@@ -11,6 +11,8 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
+#include "chromeos/dbus/cfm/cfm_observer.h"
 #include "chromeos/dbus/cfm/fake_cfm_hotline_client.h"
 #include "chromeos/services/cfm/public/features/features.h"
 #include "dbus/bus.h"
@@ -34,6 +36,15 @@ class CfmHotlineClientImpl : public CfmHotlineClient {
     dbus_proxy_ =
         bus->GetObjectProxy(::cfm::broker::kServiceName,
                             dbus::ObjectPath(::cfm::broker::kServicePath));
+
+    dbus_proxy_->ConnectToSignal(
+        ::cfm::broker::kServiceInterfaceName,
+        ::cfm::broker::kMojoServiceRequestedSignal,
+        base::BindRepeating(
+            &CfmHotlineClientImpl::OnServiceRequestedSignalReceived,
+            weak_ptr_factory_.GetWeakPtr()),
+        base::BindRepeating(&CfmHotlineClientImpl::OnSignalConnected,
+                            weak_ptr_factory_.GetWeakPtr()));
   }
 
   void WaitForServiceToBeAvailable(
@@ -57,8 +68,39 @@ class CfmHotlineClientImpl : public CfmHotlineClient {
                        std::move(result_callback)));
   }
 
+  void AddObserver(cfm::CfmObserver* observer) override {
+    observer_list_.AddObserver(observer);
+  }
+
+  void RemoveObserver(cfm::CfmObserver* observer) override {
+    observer_list_.RemoveObserver(observer);
+  }
+
  private:
-  dbus::ObjectProxy* dbus_proxy_ = nullptr;
+  void OnServiceRequestedSignalReceived(dbus::Signal* signal) {
+    dbus::MessageReader reader(signal);
+    std::string service_id;
+
+    if (!reader.PopString(&service_id)) {
+      LOG(ERROR) << "Invalid detection signal: " << signal->ToString();
+      return;
+    }
+
+    for (auto& observer : observer_list_) {
+      if (observer.ServiceRequestReceived(service_id)) {
+        // A service has been found that can fulfill the request
+        // Note: Only one service will match the requested service_id.
+        break;
+      }
+    }
+  }
+
+  void OnSignalConnected(const std::string& interface,
+                         const std::string& signal,
+                         bool succeeded) {
+    LOG_IF(ERROR, !succeeded)
+        << "Connection to " << interface << " " << signal << " failed.";
+  }
 
   // Passes the invitation token of |dbus_response| on to |result_callback|.
   void OnBootstrapMojoConnectionResponse(
@@ -67,7 +109,11 @@ class CfmHotlineClientImpl : public CfmHotlineClient {
     std::move(result_callback).Run(response != nullptr);
   }
 
-  // Must be last class member.
+  dbus::ObjectProxy* dbus_proxy_ = nullptr;
+  cfm::CfmObserverList observer_list_;
+
+  // Note: This should remain the last member so it'll be destroyed and
+  // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<CfmHotlineClientImpl> weak_ptr_factory_{this};
 };
 

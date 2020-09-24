@@ -14,7 +14,7 @@ namespace {
 constexpr char const* kInternalHotrodAppIds[] = {
     "moklfjoegmpoolceggbebbmgbddlhdgp",  // Stable
     "ldmpofkllgeicjiihkimgeccbhghhmfj",  // Beta
-    "denipklgekfpcdmbahmbpnmokgajnhma"   // Alpha
+    "denipklgekfpcdmbahmbpnmokgajnhma",  // Alpha
     "kjfhgcncjdebkoofmbjoiemiboifnpbo",  // Dev
     // Keep in sync with app_info.ts (go/googlehotrodappids).
 };

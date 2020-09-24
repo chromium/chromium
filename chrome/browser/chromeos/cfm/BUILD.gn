@@ -1,0 +1,21 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chromeos/services/cfm/public/buildflags/buildflags.gni")
+
+assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos")
+assert(is_cfm, "Non-CfM builds cannot depend on this library")
+
+source_set("cfm") {
+  sources = [
+    "cfm_chrome_services.cc",
+    "cfm_chrome_services.h",
+  ]
+  deps = [
+    "//chromeos/dbus/cfm",
+    "//chromeos/services/cfm/public/features",
+    "//chromeos/services/cfm/public/mojom",
+  ]
+  public_deps = [ "//base" ]
+}
