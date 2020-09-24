@@ -61,6 +61,8 @@ extern const base::Feature kTabOutlinesInLowContrastThemes;
 
 extern const base::Feature kTabSearch;
 
+extern const base::Feature kTabSearchFeedback;
+
 extern const base::Feature kTabSearchFixedEntrypoint;
 
 extern const base::Feature kUseTextForUpdateButton;

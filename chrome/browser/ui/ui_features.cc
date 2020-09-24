@@ -101,6 +101,10 @@ const base::Feature kTabOutlinesInLowContrastThemes{
 // Enables searching tabs across multiple windows.
 const base::Feature kTabSearch{"TabSearch", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables the tab search submit feedback button.
+const base::Feature kTabSearchFeedback{"TabSearchFeedback",
+                                       base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables the tab search bubble having a fixed tab strip position.
 const base::Feature kTabSearchFixedEntrypoint{
     "TabSearchFixedEntrypoint", base::FEATURE_DISABLED_BY_DEFAULT};

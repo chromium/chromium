@@ -6,6 +6,7 @@
 
 #include "build/branding_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
@@ -51,6 +52,10 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
       {"a11yFoundTabsFor", IDS_TAB_SEARCH_A11Y_FOUND_TABS_FOR},
   };
   AddLocalizedStringsBulk(source, kStrings);
+
+  source->AddBoolean(
+      "submitFeedbackEnabled",
+      base::FeatureList::IsEnabled(features::kTabSearchFeedback));
 
   source->AddLocalizedString("close", IDS_CLOSE);
   source->AddResourcePath("tab_search.mojom-lite.js",
