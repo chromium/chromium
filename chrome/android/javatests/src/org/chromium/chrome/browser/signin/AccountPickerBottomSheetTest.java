@@ -438,6 +438,24 @@ public class AccountPickerBottomSheetTest {
         checkIncognitoInterstitialSheet();
     }
 
+    @Test
+    @MediumTest
+    public void testLearnMoreButtonOnIncognitoInterstitial() {
+        buildAndShowExpandedBottomSheet();
+        onView(withText(R.string.signin_go_incognito)).perform(click());
+        onView(withId(R.id.incognito_interstitial_learn_more)).perform(click());
+        verify(mIncognitoInterstitialDelegateMock).openLearnMorePage();
+    }
+
+    @Test
+    @MediumTest
+    public void testContinueButtonOnIncognitoInterstitial() {
+        buildAndShowExpandedBottomSheet();
+        onView(withText(R.string.signin_go_incognito)).perform(click());
+        onView(withId(R.id.incognito_interstitial_continue_button)).perform(click());
+        verify(mIncognitoInterstitialDelegateMock).openCurrentUrlInIncognitoTab();
+    }
+
     private void checkIncognitoInterstitialSheet() {
         onView(withId(R.id.account_picker_bottom_sheet_logo)).check(matches(isDisplayed()));
         onView(withId(R.id.account_picker_bottom_sheet_title))
@@ -448,6 +466,9 @@ public class AccountPickerBottomSheetTest {
         onView(withId(R.id.account_picker_horizontal_divider)).check(matches(not(isDisplayed())));
         onView(withId(R.id.account_picker_account_list)).check(matches(not(isDisplayed())));
         onView(withId(R.id.incognito_interstitial_bottom_sheet_view)).check(matches(isDisplayed()));
+        onView(withText(R.string.incognito_interstitial_message)).check(matches(isDisplayed()));
+        onView(withId(R.id.incognito_interstitial_learn_more)).check(matches(isDisplayed()));
+        onView(withId(R.id.incognito_interstitial_continue_button)).check(matches(isDisplayed()));
     }
 
     private void clickContinueButtonAndWaitForErrorSheet() {

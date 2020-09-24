@@ -22,7 +22,8 @@ import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 
 /**
  * This class is responsible for the providing the functionality to the "Learn More" and "Continue"
- * button in the Incognito interstitial.
+ * button in the Incognito interstitial. This should be used in conjunction with the incognito
+ * interstitial MVC.
  */
 public class IncognitoInterstitialDelegate {
     private final Activity mActivity;
@@ -53,7 +54,7 @@ public class IncognitoInterstitialDelegate {
      * Open the help centre article regarding Incognito usage.
      */
     @MainThread
-    void openLearnMorePage() {
+    public void openLearnMorePage() {
         ThreadUtils.assertOnUiThread();
         mHelpAndFeedbackLauncher.show(mActivity,
                 mActivity.getString(R.string.help_context_incognito_learn_more),
@@ -65,7 +66,7 @@ public class IncognitoInterstitialDelegate {
      * the current regular tab.
      */
     @MainThread
-    void openCurrentUrlInIncognitoTab() {
+    public void openCurrentUrlInIncognitoTab() {
         ThreadUtils.assertOnUiThread();
         AccountPickerDelegate.recordAccountConsistencyPromoAction(
                 AccountConsistencyPromoAction.STARTED_INCOGNITO_SESSION);
