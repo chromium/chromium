@@ -112,10 +112,6 @@ class TSFBridgeImpl : public TSFBridge {
   // An ITfThreadMgr object to be used in focus and document management.
   Microsoft::WRL::ComPtr<ITfThreadMgr> thread_manager_;
 
-  // An ITfInputProcessorProfiles object to be used to get current language
-  // locale profile.
-  Microsoft::WRL::ComPtr<ITfInputProcessorProfiles> input_processor_profiles_;
-
   // A map from TextInputType to an editable document for TSF. We use multiple
   // TSF documents that have different InputScopes and TSF attributes based on
   // the TextInputType associated with the target document. For a TextInputType
@@ -133,14 +129,14 @@ class TSFBridgeImpl : public TSFBridge {
   // Current focused text input client. Do not free |client_|.
   TextInputClient* client_ = nullptr;
 
+  // Input Type of current focused text input client.
+  TextInputType input_type_ = TEXT_INPUT_TYPE_NONE;
+
   // Represents the window that is currently owns text input focus.
   HWND attached_window_handle_ = nullptr;
 
   // Handle to ITfKeyTraceEventSink.
   DWORD key_trace_sink_cookie_ = 0;
-
-  // Handle to ITfLanguageProfileNotifySink
-  DWORD language_profile_cookie_ = 0;
 
   DISALLOW_COPY_AND_ASSIGN(TSFBridgeImpl);
 };
@@ -156,11 +152,6 @@ TSFBridgeImpl::~TSFBridgeImpl() {
     Microsoft::WRL::ComPtr<ITfSource> source;
     if (SUCCEEDED(thread_manager_->QueryInterface(IID_PPV_ARGS(&source)))) {
       source->UnadviseSink(key_trace_sink_cookie_);
-    }
-    Microsoft::WRL::ComPtr<ITfSource> language_source;
-    if (SUCCEEDED(input_processor_profiles_->QueryInterface(
-            IID_PPV_ARGS(&language_source)))) {
-      language_source->UnadviseSink(language_profile_cookie_);
     }
   }
 
@@ -186,16 +177,8 @@ HRESULT TSFBridgeImpl::Initialize() {
     return S_OK;  // shouldn't return error code in this case.
   }
 
-  HRESULT hr =
-      ::CoCreateInstance(CLSID_TF_InputProcessorProfiles, nullptr, CLSCTX_ALL,
-                         IID_PPV_ARGS(&input_processor_profiles_));
-  if (FAILED(hr)) {
-    DVLOG(1) << "Failed to create InputProcessorProfiles instance.";
-    return hr;
-  }
-
-  hr = ::CoCreateInstance(CLSID_TF_ThreadMgr, nullptr, CLSCTX_ALL,
-                          IID_PPV_ARGS(&thread_manager_));
+  HRESULT hr = ::CoCreateInstance(CLSID_TF_ThreadMgr, nullptr, CLSCTX_ALL,
+                                  IID_PPV_ARGS(&thread_manager_));
   if (FAILED(hr)) {
     DVLOG(1) << "Failed to create ThreadManager instance.";
     return hr;
@@ -250,6 +233,10 @@ void TSFBridgeImpl::OnTextInputTypeChanged(const TextInputClient* client) {
     return;
   }
 
+  TextInputType new_input_type = client_->GetTextInputType();
+  if (new_input_type == input_type_)
+    return;
+  input_type_ = new_input_type;
   TSFDocument* document = GetAssociatedDocument();
   if (!document)
     return;
@@ -258,7 +245,7 @@ void TSFBridgeImpl::OnTextInputTypeChanged(const TextInputClient* client) {
   // focus notifications for the same text input type so we don't
   // call AssociateFocus and SetFocus together. Just calling SetFocus
   // should be sufficient for setting focus on a textstore.
-  if (client_->GetTextInputType() != TEXT_INPUT_TYPE_NONE)
+  if (new_input_type != TEXT_INPUT_TYPE_NONE)
     thread_manager_->SetFocus(document->document_manager.Get());
   else
     UpdateAssociateFocus();
@@ -450,22 +437,6 @@ HRESULT TSFBridgeImpl::CreateDocumentManager(TSFTextStore* text_store,
     return hr;
   }
 
-  Microsoft::WRL::ComPtr<ITfSource> language_source;
-  hr =
-      input_processor_profiles_->QueryInterface(IID_PPV_ARGS(&language_source));
-  if (FAILED(hr)) {
-    DVLOG(1) << "Failed to get source_ITfInputProcessorProfiles.";
-    return hr;
-  }
-
-  hr = language_source->AdviseSink(IID_ITfLanguageProfileNotifySink,
-                                   static_cast<ITfTextEditSink*>(text_store),
-                                   &language_profile_cookie_);
-  if (FAILED(hr)) {
-    DVLOG(1) << "AdviseSink for language profile notify sink failed.";
-    return hr;
-  }
-
   if (*source_cookie == TF_INVALID_COOKIE) {
     DVLOG(1) << "The result of cookie is invalid.";
     return E_FAIL;
@@ -609,8 +580,7 @@ void TSFBridgeImpl::ClearAssociateFocus() {
 TSFBridgeImpl::TSFDocument* TSFBridgeImpl::GetAssociatedDocument() {
   if (!client_)
     return nullptr;
-  TSFDocumentMap::iterator it =
-      tsf_document_map_.find(client_->GetTextInputType());
+  TSFDocumentMap::iterator it = tsf_document_map_.find(input_type_);
   if (it == tsf_document_map_.end()) {
     it = tsf_document_map_.find(TEXT_INPUT_TYPE_TEXT);
     // This check is necessary because it's possible that we failed to

@@ -102,7 +102,6 @@ class TextInputClient;
 class COMPONENT_EXPORT(UI_BASE_IME_WIN) TSFTextStore
     : public ITextStoreACP,
       public ITfContextOwnerCompositionSink,
-      public ITfLanguageProfileNotifySink,
       public ITfKeyTraceEventSink,
       public ITfTextEditSink {
  public:
@@ -217,10 +216,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_WIN) TSFTextStore
                                      ITfRange* range) override;
   IFACEMETHODIMP OnEndComposition(
       ITfCompositionView* composition_view) override;
-
-  // ITfLanguageProfileNotifySink:
-  IFACEMETHODIMP OnLanguageChange(LANGID langid, BOOL* pfAccept) override;
-  IFACEMETHODIMP OnLanguageChanged() override;
 
   // ITfTextEditSink:
   IFACEMETHODIMP OnEndEdit(ITfContext* context,
