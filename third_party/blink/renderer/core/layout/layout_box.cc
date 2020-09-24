@@ -299,7 +299,7 @@ PaintLayerType LayoutBox::LayerTypeRequired() const {
   if (HasNonVisibleOverflow())
     return kOverflowClipPaintLayer;
 
-  if (StyleRef().ScrollbarGutterIsForce())
+  if (StyleRef().IsScrollbarGutterForce())
     return kNormalPaintLayer;
 
   return kNoPaintLayer;
@@ -838,7 +838,7 @@ int LayoutBox::PixelSnappedOffsetHeight(const Element*) const {
 }
 
 LayoutUnit LayoutBox::ScrollWidth() const {
-  if (IsScrollContainer() || StyleRef().ScrollbarGutterIsForce())
+  if (IsScrollContainer() || StyleRef().IsScrollbarGutterForce())
     return GetScrollableArea()->ScrollWidth();
   // For objects with visible overflow, this matches IE.
   // FIXME: Need to work right with writing modes.
@@ -849,7 +849,7 @@ LayoutUnit LayoutBox::ScrollWidth() const {
 }
 
 LayoutUnit LayoutBox::ScrollHeight() const {
-  if (IsScrollContainer() || StyleRef().ScrollbarGutterIsForce())
+  if (IsScrollContainer() || StyleRef().IsScrollbarGutterForce())
     return GetScrollableArea()->ScrollHeight();
   // For objects with visible overflow, this matches IE.
   // FIXME: Need to work right with writing modes.
@@ -1344,24 +1344,24 @@ MinMaxSizes LayoutBox::ComputeMinMaxLogicalWidthFromAspectRatio() const {
 }
 
 bool LayoutBox::HasScrollbarGutters(ScrollbarOrientation orientation) const {
-  if (StyleRef().ScrollbarGutterIsAuto())
+  if (StyleRef().IsScrollbarGutterAuto())
     return false;
 
-  bool is_stable = StyleRef().ScrollbarGutterIsStable();
-  bool is_always = StyleRef().ScrollbarGutterIsAlways();
+  bool is_stable = StyleRef().IsScrollbarGutterStable();
+  bool is_always = StyleRef().IsScrollbarGutterAlways();
 
   if (!is_stable && !is_always)
     return false;
 
   if (orientation == kVerticalScrollbar) {
     EOverflow overflow = StyleRef().OverflowY();
-    return (StyleRef().ScrollbarGutterIsForce() ||
+    return (StyleRef().IsScrollbarGutterForce() ||
             overflow == EOverflow::kAuto || overflow == EOverflow::kScroll) &&
            StyleRef().IsHorizontalWritingMode() &&
            !(is_stable && UsesOverlayScrollbars());
   } else {
     EOverflow overflow = StyleRef().OverflowX();
-    return (StyleRef().ScrollbarGutterIsForce() ||
+    return (StyleRef().IsScrollbarGutterForce() ||
             overflow == EOverflow::kAuto || overflow == EOverflow::kScroll) &&
            !StyleRef().IsHorizontalWritingMode() &&
            !(is_stable && UsesOverlayScrollbars());
@@ -1382,11 +1382,11 @@ NGPhysicalBoxStrut LayoutBox::ComputeScrollbarsInternal(
             kVerticalScrollbar, /* should_include_overlay_thickness */ true));
     if (ShouldPlaceVerticalScrollbarOnLeft()) {
       scrollbars.left = gutter_size;
-      if (StyleRef().ScrollbarGutterIsBoth())
+      if (StyleRef().IsScrollbarGutterBoth())
         scrollbars.right = gutter_size;
     } else {
       scrollbars.right = gutter_size;
-      if (StyleRef().ScrollbarGutterIsBoth())
+      if (StyleRef().IsScrollbarGutterBoth())
         scrollbars.left = gutter_size;
     }
   } else if (ShouldPlaceVerticalScrollbarOnLeft()) {
@@ -1402,7 +1402,7 @@ NGPhysicalBoxStrut LayoutBox::ComputeScrollbarsInternal(
         LayoutUnit(scrollable_area->HypotheticalScrollbarThickness(
             kHorizontalScrollbar, /* should_include_overlay_thickness */ true));
     scrollbars.bottom = gutter_size;
-    if (StyleRef().ScrollbarGutterIsBoth())
+    if (StyleRef().IsScrollbarGutterBoth())
       scrollbars.top = gutter_size;
   } else {
     scrollbars.bottom = LayoutUnit(scrollable_area->HorizontalScrollbarHeight(

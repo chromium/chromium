@@ -2003,7 +2003,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
             (GetScrollableArea() &&
              !GetScrollableArea()->HasHorizontalScrollbar() &&
              !GetScrollableArea()->HasVerticalScrollbar())) &&
-           StyleRef().ScrollbarGutterIsAuto();
+           StyleRef().IsScrollbarGutterAuto();
   }
 
   bool HasScrollbarGutters(ScrollbarOrientation orientation) const;

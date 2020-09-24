@@ -1001,7 +1001,7 @@ NGBoxStrut ComputePadding(const NGConstraintSpace& constraint_space,
 
 NGBoxStrut ComputeScrollbarsForNonAnonymous(const NGBlockNode& node) {
   const ComputedStyle& style = node.Style();
-  if (!style.IsScrollContainer() && style.ScrollbarGutterIsAuto())
+  if (!style.IsScrollContainer() && style.IsScrollbarGutterAuto())
     return NGBoxStrut();
   const LayoutBox* layout_box = node.GetLayoutBox();
   return layout_box->ComputeLogicalScrollbars();

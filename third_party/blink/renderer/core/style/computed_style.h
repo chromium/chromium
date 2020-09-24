@@ -826,19 +826,19 @@ class ComputedStyle : public ComputedStyleBase,
   }
 
   // scrollbar-gutter
-  inline bool ScrollbarGutterIsAuto() const {
+  inline bool IsScrollbarGutterAuto() const {
     return ScrollbarGutter() == kScrollbarGutterAuto;
   }
-  inline bool ScrollbarGutterIsStable() const {
+  inline bool IsScrollbarGutterStable() const {
     return ScrollbarGutter() & kScrollbarGutterStable;
   }
-  inline bool ScrollbarGutterIsAlways() const {
+  inline bool IsScrollbarGutterAlways() const {
     return ScrollbarGutter() & kScrollbarGutterAlways;
   }
-  inline bool ScrollbarGutterIsBoth() const {
+  inline bool IsScrollbarGutterBoth() const {
     return ScrollbarGutter() & kScrollbarGutterBoth;
   }
-  inline bool ScrollbarGutterIsForce() const {
+  inline bool IsScrollbarGutterForce() const {
     return ScrollbarGutter() & kScrollbarGutterForce;
   }
 
