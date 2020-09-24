@@ -13,10 +13,6 @@ GEN('#include "content/public/test/browser_test.h"');
 
 const HOST_ORIGIN = 'chrome://help-app';
 
-// Test driver initialised in setUp and used in tests to interact with the
-// untrusted context.
-let driver = null;
-
 var HelpAppUIBrowserTest = class extends testing.Test {
   /** @override */
   get browsePreload() {
@@ -46,18 +42,6 @@ var HelpAppUIBrowserTest = class extends testing.Test {
   get runAccessibilityChecks() {
     return false;
   }
-
-  /** @override */
-  setUp() {
-    super.setUp();
-    driver = new GuestDriver(GUEST_ORIGIN);
-  }
-
-  /** @override */
-  tearDown() {
-    driver.tearDown();
-    super.tearDown();
-  }
 };
 
 const toString16 = s => ({data: Array.from(s, c => c.charCodeAt())});
@@ -78,25 +62,6 @@ TEST_F('HelpAppUIBrowserTest', 'HasTitleAndLang', () => {
   testDone();
 });
 
-// Tests that trusted context can successfully send a request to open the
-// feedback dialog and receive a response.
-TEST_F('HelpAppUIBrowserTest', 'CanOpenFeedbackDialog', async () => {
-  const result = await help_app.handler.openFeedbackDialog();
-
-  assertEquals(result.errorMessage, '');
-  testDone();
-});
-
-// Tests that untrusted context can successfully send a request to open the
-// feedback dialog and receive a response.
-TEST_F('HelpAppUIBrowserTest', 'GuestCanOpenFeedbackDialog', async () => {
-  const result = await driver.sendPostMessageRequest('feedback');
-
-  // No error message from opening feedback dialog.
-  assertEquals(result.errorMessage, '');
-  testDone();
-});
-
 // Tests that we can make calls to the LSS to search.
 TEST_F('HelpAppUIBrowserTest', 'CanSearchViaLSSIndex', async () => {
   const result = await indexRemote.find(toString16('search string!'), 100);
@@ -112,6 +77,6 @@ TEST_F('HelpAppUIBrowserTest', 'CanSearchViaLSSIndex', async () => {
 // See implementations in help_app_guest_ui_browsertest.js.
 
 TEST_F('HelpAppUIBrowserTest', 'GuestHasLang', async () => {
-  await driver.runTestInGuest('GuestHasLang');
+  await runTestInGuest('GuestHasLang');
   testDone();
 });

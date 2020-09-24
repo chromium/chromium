@@ -300,6 +300,28 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2DirectNavigation) {
                 web_contents, "window.location.href"));
 }
 
+// Test that the Help App can open the feedback dialog.
+IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2OpenFeedbackDialog) {
+  WaitForTestSystemAppInstall();
+  content::WebContents* web_contents = LaunchApp(web_app::SystemAppType::HELP);
+
+  // Script that tells the Help App to open the feedback dialog.
+  constexpr char kScript[] = R"(
+    (async () => {
+      const app = document.querySelector('showoff-app');
+      const res = await app.getDelegate().openFeedbackDialog();
+      window.domAutomationController.send(res);
+    })();
+  )";
+  std::string result;
+  // Use ExecuteScript instead of EvalJsInAppFrame because the script needs to
+  // run in the same world as the page's code.
+  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
+      SandboxedWebUiAppTestBase::GetAppFrame(web_contents), kScript, &result));
+  // A result of empty string means no error in opening feedback.
+  EXPECT_EQ(result, "");
+}
+
 // Test that the Help App opens the OS Settings family link page.
 IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2ShowParentalControls) {
   WaitForTestSystemAppInstall();
@@ -315,11 +337,16 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2ShowParentalControls) {
 
   // Script that tells the Help App to show parental controls.
   constexpr char kScript[] = R"(
-    window.parent.postMessage('show-parental-controls', '*');
+    (async () => {
+      const app = document.querySelector('showoff-app');
+      await app.getDelegate().showParentalControls();
+    })();
   )";
-  // Trigger the postMessage, then wait for settings to open.
-  EXPECT_EQ(nullptr,
-            SandboxedWebUiAppTestBase::EvalJsInAppFrame(web_contents, kScript));
+  // Trigger the script, then wait for settings to open. Use ExecuteScript
+  // instead of EvalJsInAppFrame because the script needs to run in the same
+  // world as the page's code.
+  EXPECT_TRUE(content::ExecuteScript(
+      SandboxedWebUiAppTestBase::GetAppFrame(web_contents), kScript));
   navigation_observer.Wait();
 
   // Settings should be active in a new window.

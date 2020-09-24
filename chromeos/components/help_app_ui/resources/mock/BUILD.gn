@@ -1,0 +1,18 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chromeos/components/web_applications/system_apps.gni")
+import("//third_party/closure_compiler/compile_js.gni")
+
+assert(is_chromeos, "Help App is Chrome OS only")
+
+js_type_check("closure_compile") {
+  closure_flags = system_app_closure_flags_strict
+  deps = [ ":app_bin" ]
+}
+
+js_library("app_bin") {
+  externs_list =
+      [ "//chromeos/components/help_app_ui/resources/help_app.externs.js" ]
+}

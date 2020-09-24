@@ -35,7 +35,8 @@ content::WebUIDataSource* CreateHostDataSource() {
   source->AddResourcePath("pwa.html", IDR_HELP_APP_PWA_HTML);
   source->AddResourcePath("app_icon_192.png", IDR_HELP_APP_ICON_192);
   source->AddResourcePath("app_icon_512.png", IDR_HELP_APP_ICON_512);
-  source->AddResourcePath("browser_proxy.js", IDR_HELP_APP_BROWSER_PROXY_JS);
+  source->AddResourcePath("help_app_index_scripts.js",
+                          IDR_HELP_APP_INDEX_SCRIPTS_JS);
   source->AddResourcePath("help_app.mojom-lite.js",
                           IDR_HELP_APP_HELP_APP_MOJOM_JS);
   source->AddResourcePath("local_search_service_types.mojom-lite.js",

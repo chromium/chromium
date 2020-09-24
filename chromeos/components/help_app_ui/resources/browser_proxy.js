@@ -16,30 +16,26 @@ helpAppUi.mojom.PageHandlerFactory.getRemote().createPageHandler(
 const indexRemote = chromeos.localSearchService.mojom.IndexProxy.getRemote();
 
 const GUEST_ORIGIN = 'chrome-untrusted://help-app';
-const guestFrame = /** @type{HTMLIFrameElement} */ (
+const guestFrame = /** @type {!HTMLIFrameElement} */ (
     document.createElement('iframe'));
 guestFrame.src = `${GUEST_ORIGIN}${location.pathname}`;
 document.body.appendChild(guestFrame);
 
 /**
- * Handles messages from the untrusted context.
- * @param {Event} event
+ * A pipe through which we can send messages to the guest frame.
+ * Use an undefined `target` to find the <iframe> automatically.
+ * Do not rethrow errors, since handlers installed here are expected to
+ * throw exceptions that are handled on the other side of the pipe (in the guest
+ * frame), not on this side.
  */
-function receiveMessage(event) {
-  const msgEvent = /** @type{MessageEvent<string>} */ (event);
-  if (msgEvent.origin !== GUEST_ORIGIN) {
-    return;
-  }
+const guestMessagePipe =
+    new MessagePipe('chrome-untrusted://help-app', /*target=*/ undefined,
+        /*rethrowErrors=*/ false);
 
-  switch (msgEvent.data) {
-    case 'feedback':
-      help_app.handler.openFeedbackDialog().then(response => {
-        guestFrame.contentWindow.postMessage(response, GUEST_ORIGIN);
-      });
-      break;
-    case 'show-parental-controls':
-      help_app.handler.showParentalControls();
-      break;
-  }
-}
-window.addEventListener('message', receiveMessage, false);
+guestMessagePipe.registerHandler(Message.OPEN_FEEDBACK_DIALOG, () => {
+  return help_app.handler.openFeedbackDialog();
+});
+
+guestMessagePipe.registerHandler(Message.SHOW_PARENTAL_CONTROLS, () => {
+  help_app.handler.showParentalControls();
+});

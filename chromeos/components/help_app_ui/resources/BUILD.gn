@@ -2,29 +2,49 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chromeos/components/web_applications/system_apps.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 
 assert(is_chromeos, "Help App is Chrome OS only")
 
-# Note we compile with reportUnknownTypes while it works, but if dependencies
-# get more complex, we should remove it and only enable in developer builds.
-js_type_check("closure_compile") {
-  closure_flags = default_closure_args + [
-                    "jscomp_error=strictCheckTypes",
-                    "jscomp_error=reportUnknownTypes",
-                    "language_in=ECMASCRIPT_2018",
+group("closure_compile") {
+  deps = [
+    ":closure_compile_app",
+    ":closure_compile_index",
+  ]
+}
 
-                    # TODO(crbug/1048973): Remove these when the mojo bindings
-                    # js is updated to pass a closure compile check.
-                    "hide_warnings_for=mojo/public/js/",
-                    "hide_warnings_for=chromeos/components/help_app_ui/help_app_ui.mojom-lite-for-compile.js",
-                  ]
+js_type_check("closure_compile_index") {
+  closure_flags = system_app_closure_flags_strict
   deps = [ ":browser_proxy" ]
 }
 
+js_type_check("closure_compile_app") {
+  closure_flags = system_app_closure_flags_strict
+  deps = [ ":receiver" ]
+}
+
 js_library("browser_proxy") {
+  externs_list = [
+    # The privileged context can't access the app, but shares struct definitions
+    # passed over postMessage.
+    "help_app.externs.js",
+  ]
   deps = [
+    ":message_types",
     "//chromeos/components/help_app_ui:mojo_bindings_js_library_for_compile",
     "//chromeos/components/local_search_service/mojom:mojom_js_library_for_compile",
+    "//chromeos/components/system_apps/public/js:message_pipe",
+  ]
+}
+
+js_library("message_types") {
+}
+
+js_library("receiver") {
+  externs_list = [ "help_app.externs.js" ]
+  deps = [
+    ":message_types",
+    "//chromeos/components/system_apps/public/js:message_pipe",
   ]
 }
