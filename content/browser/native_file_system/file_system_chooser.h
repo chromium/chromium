@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/task_runner.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/native_file_system_entry_factory.h"
 #include "storage/browser/file_system/isolated_context.h"
 #include "third_party/blink/public/mojom/native_file_system/native_file_system_manager.mojom.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
@@ -25,9 +26,15 @@ class WebContents;
 // All of this class has to be called on the UI thread.
 class CONTENT_EXPORT FileSystemChooser : public ui::SelectFileDialog::Listener {
  public:
+  using PathType = NativeFileSystemEntryFactory::PathType;
+  struct ResultEntry {
+    PathType type;
+    base::FilePath path;
+  };
+
   using ResultCallback =
       base::OnceCallback<void(blink::mojom::NativeFileSystemErrorPtr,
-                              std::vector<base::FilePath>)>;
+                              std::vector<ResultEntry>)>;
 
   class CONTENT_EXPORT Options {
    public:
@@ -68,6 +75,12 @@ class CONTENT_EXPORT FileSystemChooser : public ui::SelectFileDialog::Listener {
                     void* params) override;
   void MultiFilesSelected(const std::vector<base::FilePath>& files,
                           void* params) override;
+  void FileSelectedWithExtraInfo(const ui::SelectedFileInfo& file,
+                                 int index,
+                                 void* params) override;
+  void MultiFilesSelectedWithExtraInfo(
+      const std::vector<ui::SelectedFileInfo>& files,
+      void* params) override;
   void FileSelectionCanceled(void* params) override;
 
   ResultCallback callback_;

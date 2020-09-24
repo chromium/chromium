@@ -48,10 +48,24 @@ class CONTENT_EXPORT NativeFileSystemEntryFactory
     int process_id() const { return frame_id.child_id; }
   };
 
+  enum class PathType {
+    // A path on the local file system. Files with these paths can be operated
+    // on by base::File.
+    kLocal,
+
+    // A path on an "external" file system. These paths can only be accessed via
+    // the filesystem abstraction in //storage/browser/file_system, and a
+    // storage::kFileSystemTypeExternal storage::FileSystemURL.
+    // This path type should be used for paths retrieved via the `virtual_path`
+    // member of a ui::SelectedFileInfo struct.
+    kExternal
+  };
+
   // Creates a new NativeFileSystemEntryPtr from the path to a file. Assumes the
   // passed in path is valid and represents a file.
   virtual blink::mojom::NativeFileSystemEntryPtr CreateFileEntryFromPath(
       const BindingContext& binding_context,
+      PathType path_type,
       const base::FilePath& file_path,
       UserAction user_action) = 0;
 
@@ -59,6 +73,7 @@ class CONTENT_EXPORT NativeFileSystemEntryFactory
   // Assumes the passed in path is valid and represents a directory.
   virtual blink::mojom::NativeFileSystemEntryPtr CreateDirectoryEntryFromPath(
       const BindingContext& binding_context,
+      PathType path_type,
       const base::FilePath& directory_path,
       UserAction user_action) = 0;
 

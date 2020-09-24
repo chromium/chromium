@@ -9,7 +9,6 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/browser_task_traits.h"
-#include "content/public/common/url_utils.h"
 #include "storage/common/file_system/file_system_types.h"
 
 namespace content {
@@ -28,22 +27,19 @@ NativeFileSystemHandleBase::NativeFileSystemHandleBase(
             handle_state_.file_system.is_valid())
       << url_.mount_type();
 
-  bool chromeos_webui = false;
-#if defined(OS_CHROMEOS)
-  // WebUIs on ChromeOS support a range of file system types.
-  chromeos_webui = HasWebUIScheme(context_.origin.GetURL());
-#endif
-
   // We support sandboxed file system and native file systems on all platforms.
-  DCHECK(chromeos_webui || url_.type() == storage::kFileSystemTypeNativeLocal ||
+  DCHECK(url_.type() == storage::kFileSystemTypeNativeLocal ||
          url_.type() == storage::kFileSystemTypeTemporary ||
+         url_.mount_type() == storage::kFileSystemTypeExternal ||
          url_.type() == storage::kFileSystemTypeTest)
       << url_.type();
 
   if (ShouldTrackUsage()) {
-    DCHECK(chromeos_webui || url_.type() == storage::kFileSystemTypeNativeLocal)
-        << url.type();
-    DCHECK_EQ(url_.mount_type(), storage::kFileSystemTypeIsolated);
+    DCHECK(url_.mount_type() == storage::kFileSystemTypeIsolated ||
+           url_.mount_type() == storage::kFileSystemTypeExternal)
+        << url_.mount_type();
+    if (url_.mount_type() == storage::kFileSystemTypeIsolated)
+      DCHECK_EQ(url_.type(), storage::kFileSystemTypeNativeLocal);
 
     Observe(WebContentsImpl::FromRenderFrameHostID(context_.frame_id));
 

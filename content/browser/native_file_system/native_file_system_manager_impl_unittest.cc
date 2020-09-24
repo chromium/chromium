@@ -30,6 +30,7 @@
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "mojo/public/mojom/base/file_info.mojom.h"
 #include "storage/browser/blob/blob_storage_context.h"
+#include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/test/async_file_test_helper.h"
 #include "storage/browser/test/test_file_system_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -103,6 +104,9 @@ std::string ReadStringFromFileRemote(
 
   return ReadDataPipe(std::move(consumer_handle));
 }
+
+constexpr char kTestMountPoint[] = "testfs";
+
 }  // namespace
 
 using base::test::RunOnceCallback;
@@ -123,6 +127,14 @@ class NativeFileSystemManagerImplTest : public testing::Test {
     file_system_context_ = storage::CreateFileSystemContextForTesting(
         /*quota_manager_proxy=*/nullptr, dir_.GetPath());
 
+    // Register an external mount point to test support for virtual paths.
+    // This maps the virtual path a native local path to make sure an external
+    // path round trips as an external path, even if the path resolves to a
+    // local path.
+    storage::ExternalMountPoints::GetSystemInstance()->RegisterFileSystem(
+        kTestMountPoint, storage::kFileSystemTypeNativeLocal,
+        storage::FileSystemMountOption(), dir_.GetPath());
+
     chrome_blob_context_ = base::MakeRefCounted<ChromeBlobStorageContext>();
     chrome_blob_context_->InitializeOnIOThread(base::FilePath(),
                                                base::FilePath(), nullptr);
@@ -133,6 +145,14 @@ class NativeFileSystemManagerImplTest : public testing::Test {
 
     manager_->BindReceiver(kBindingContext,
                            manager_remote_.BindNewPipeAndPassReceiver());
+  }
+
+  void TearDown() override {
+    storage::ExternalMountPoints::GetSystemInstance()->RevokeFileSystem(
+        kTestMountPoint);
+    // TODO(mek): Figure out what code is leaking open files, and uncomment this
+    // to prevent further regressions.
+    // ASSERT_TRUE(dir_.Delete());
   }
 
   template <typename HandleType>
@@ -166,8 +186,8 @@ class NativeFileSystemManagerImplTest : public testing::Test {
 
     blink::mojom::NativeFileSystemEntryPtr entry =
         manager_->CreateDirectoryEntryFromPath(
-            kBindingContext, path,
-            NativeFileSystemPermissionContext::UserAction::kOpen);
+            kBindingContext, NativeFileSystemEntryFactory::PathType::kLocal,
+            path, NativeFileSystemPermissionContext::UserAction::kOpen);
     return mojo::Remote<blink::mojom::NativeFileSystemDirectoryHandle>(
         std::move(entry->entry_handle->get_directory()));
   }
@@ -274,8 +294,8 @@ TEST_F(NativeFileSystemManagerImplTest, CreateFileEntryFromPath_Permissions) {
 
   blink::mojom::NativeFileSystemEntryPtr entry =
       manager_->CreateFileEntryFromPath(
-          kBindingContext, kTestPath,
-          NativeFileSystemPermissionContext::UserAction::kOpen);
+          kBindingContext, NativeFileSystemEntryFactory::PathType::kLocal,
+          kTestPath, NativeFileSystemPermissionContext::UserAction::kOpen);
   mojo::Remote<blink::mojom::NativeFileSystemFileHandle> handle(
       std::move(entry->entry_handle->get_file()));
 
@@ -302,8 +322,8 @@ TEST_F(NativeFileSystemManagerImplTest,
 
   blink::mojom::NativeFileSystemEntryPtr entry =
       manager_->CreateFileEntryFromPath(
-          kBindingContext, kTestPath,
-          NativeFileSystemPermissionContext::UserAction::kSave);
+          kBindingContext, NativeFileSystemEntryFactory::PathType::kLocal,
+          kTestPath, NativeFileSystemPermissionContext::UserAction::kSave);
   mojo::Remote<blink::mojom::NativeFileSystemFileHandle> handle(
       std::move(entry->entry_handle->get_file()));
 
@@ -330,8 +350,8 @@ TEST_F(NativeFileSystemManagerImplTest,
 
   blink::mojom::NativeFileSystemEntryPtr entry =
       manager_->CreateDirectoryEntryFromPath(
-          kBindingContext, kTestPath,
-          NativeFileSystemPermissionContext::UserAction::kOpen);
+          kBindingContext, NativeFileSystemEntryFactory::PathType::kLocal,
+          kTestPath, NativeFileSystemPermissionContext::UserAction::kOpen);
   mojo::Remote<blink::mojom::NativeFileSystemDirectoryHandle> handle(
       std::move(entry->entry_handle->get_directory()));
   EXPECT_EQ(PermissionStatus::GRANTED,
@@ -486,8 +506,8 @@ TEST_F(NativeFileSystemManagerImplTest, SerializeHandle_Native_SingleFile) {
 
   blink::mojom::NativeFileSystemEntryPtr entry =
       manager_->CreateFileEntryFromPath(
-          kBindingContext, kTestPath,
-          NativeFileSystemPermissionContext::UserAction::kOpen);
+          kBindingContext, NativeFileSystemEntryFactory::PathType::kLocal,
+          kTestPath, NativeFileSystemPermissionContext::UserAction::kOpen);
   mojo::Remote<blink::mojom::NativeFileSystemFileHandle> handle(
       std::move(entry->entry_handle->get_file()));
 
@@ -664,6 +684,62 @@ TEST_F(NativeFileSystemManagerImplTest,
   EXPECT_EQ(storage::kFileSystemTypeNativeLocal, url.type());
   EXPECT_EQ(storage::kFileSystemTypeIsolated, url.mount_type());
   EXPECT_EQ(HandleType::kDirectory, token->type());
+  EXPECT_EQ(ask_grant_, token->GetReadGrant());
+  EXPECT_EQ(ask_grant2_, token->GetWriteGrant());
+}
+
+TEST_F(NativeFileSystemManagerImplTest, SerializeHandle_ExternalFile) {
+  const base::FilePath kTestPath =
+      base::FilePath::FromUTF8Unsafe(kTestMountPoint).AppendASCII("foo");
+
+  auto grant = base::MakeRefCounted<FixedNativeFileSystemPermissionGrant>(
+      FixedNativeFileSystemPermissionGrant::PermissionStatus::GRANTED,
+      kTestPath);
+
+  // Expect calls to get grants when creating the initial handle.
+  EXPECT_CALL(permission_context_,
+              GetReadPermissionGrant(
+                  kTestOrigin, kTestPath, HandleType::kFile,
+                  NativeFileSystemPermissionContext::UserAction::kOpen))
+      .WillOnce(testing::Return(grant));
+  EXPECT_CALL(permission_context_,
+              GetWritePermissionGrant(
+                  kTestOrigin, kTestPath, HandleType::kFile,
+                  NativeFileSystemPermissionContext::UserAction::kOpen))
+      .WillOnce(testing::Return(grant));
+
+  blink::mojom::NativeFileSystemEntryPtr entry =
+      manager_->CreateFileEntryFromPath(
+          kBindingContext, NativeFileSystemEntryFactory::PathType::kExternal,
+          kTestPath, NativeFileSystemPermissionContext::UserAction::kOpen);
+  mojo::Remote<blink::mojom::NativeFileSystemFileHandle> handle(
+      std::move(entry->entry_handle->get_file()));
+
+  mojo::PendingRemote<blink::mojom::NativeFileSystemTransferToken> token_remote;
+  handle->Transfer(token_remote.InitWithNewPipeAndPassReceiver());
+
+  // Deserializing tokens should re-request grants, with correct user action.
+  EXPECT_CALL(
+      permission_context_,
+      GetReadPermissionGrant(
+          kTestOrigin, kTestPath, HandleType::kFile,
+          NativeFileSystemPermissionContext::UserAction::kLoadFromStorage))
+      .WillOnce(testing::Return(ask_grant_));
+  EXPECT_CALL(
+      permission_context_,
+      GetWritePermissionGrant(
+          kTestOrigin, kTestPath, HandleType::kFile,
+          NativeFileSystemPermissionContext::UserAction::kLoadFromStorage))
+      .WillOnce(testing::Return(ask_grant2_));
+
+  NativeFileSystemTransferTokenImpl* token =
+      SerializeAndDeserializeToken(std::move(token_remote));
+  ASSERT_TRUE(token);
+  const storage::FileSystemURL& url = token->url();
+  EXPECT_TRUE(url.origin().opaque());
+  EXPECT_EQ(kTestPath, url.virtual_path());
+  EXPECT_EQ(storage::kFileSystemTypeExternal, url.mount_type());
+  EXPECT_EQ(HandleType::kFile, token->type());
   EXPECT_EQ(ask_grant_, token->GetReadGrant());
   EXPECT_EQ(ask_grant2_, token->GetWriteGrant());
 }

@@ -4,6 +4,8 @@
 
 #include "content/browser/native_file_system/file_system_chooser_test_helpers.h"
 
+#include "ui/shell_dialogs/selected_file_info.h"
+
 namespace content {
 
 namespace {
@@ -50,7 +52,7 @@ class CancellingSelectFileDialog : public ui::SelectFileDialog {
 
 class FakeSelectFileDialog : public ui::SelectFileDialog {
  public:
-  FakeSelectFileDialog(std::vector<base::FilePath> result,
+  FakeSelectFileDialog(std::vector<ui::SelectedFileInfo> result,
                        SelectFileDialogParams* out_params,
                        Listener* listener,
                        std::unique_ptr<ui::SelectFilePolicy> policy)
@@ -77,9 +79,9 @@ class FakeSelectFileDialog : public ui::SelectFileDialog {
       out_params_->file_type_index = file_type_index;
     }
     if (result_.size() == 1)
-      listener_->FileSelected(result_[0], 0, params);
+      listener_->FileSelectedWithExtraInfo(result_[0], 0, params);
     else
-      listener_->MultiFilesSelected(result_, params);
+      listener_->MultiFilesSelectedWithExtraInfo(result_, params);
   }
 
   bool IsRunning(gfx::NativeWindow owning_window) const override {
@@ -90,7 +92,7 @@ class FakeSelectFileDialog : public ui::SelectFileDialog {
 
  private:
   ~FakeSelectFileDialog() override = default;
-  std::vector<base::FilePath> result_;
+  std::vector<ui::SelectedFileInfo> result_;
   SelectFileDialogParams* out_params_;
 };
 
@@ -115,6 +117,13 @@ ui::SelectFileDialog* CancellingSelectFileDialogFactory::Create(
 
 FakeSelectFileDialogFactory::FakeSelectFileDialogFactory(
     std::vector<base::FilePath> result,
+    SelectFileDialogParams* out_params)
+    : FakeSelectFileDialogFactory(
+          ui::FilePathListToSelectedFileInfoList(result),
+          out_params) {}
+
+FakeSelectFileDialogFactory::FakeSelectFileDialogFactory(
+    std::vector<ui::SelectedFileInfo> result,
     SelectFileDialogParams* out_params)
     : result_(std::move(result)), out_params_(out_params) {}
 

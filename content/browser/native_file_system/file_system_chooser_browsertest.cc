@@ -25,11 +25,13 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "storage/browser/file_system/external_mount_points.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/shell_dialogs/select_file_dialog_factory.h"
 #include "ui/shell_dialogs/select_file_policy.h"
+#include "ui/shell_dialogs/selected_file_info.h"
 
 namespace content {
 
@@ -37,6 +39,8 @@ using base::test::RunOnceCallback;
 using blink::mojom::PermissionStatus;
 using SensitiveDirectoryResult =
     NativeFileSystemPermissionContext::SensitiveDirectoryResult;
+
+static constexpr char kTestMountPoint[] = "testfs";
 
 // This browser test implements end-to-end tests for the file picker
 // APIs.
@@ -46,6 +50,14 @@ class FileSystemChooserBrowserTest : public ContentBrowserTest {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     scoped_feature_list_.InitAndEnableFeature(
         blink::features::kNativeFileSystemAPI);
+
+    // Register an external mount point to test support for virtual paths.
+    // This maps the virtual path a native local path to make these tests work
+    // on all platforms. We're not testing more complicated ChromeOS specific
+    // file system backends here.
+    storage::ExternalMountPoints::GetSystemInstance()->RegisterFileSystem(
+        kTestMountPoint, storage::kFileSystemTypeNativeLocal,
+        storage::FileSystemMountOption(), temp_dir_.GetPath());
 
     ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -60,8 +72,10 @@ class FileSystemChooserBrowserTest : public ContentBrowserTest {
 
   void TearDown() override {
     ContentBrowserTest::TearDown();
-    ASSERT_TRUE(temp_dir_.Delete());
+    storage::ExternalMountPoints::GetSystemInstance()->RevokeFileSystem(
+        kTestMountPoint);
     ui::SelectFileDialog::SetFactory(nullptr);
+    ASSERT_TRUE(temp_dir_.Delete());
   }
 
   bool IsFullscreen() {
@@ -205,6 +219,37 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
   EXPECT_TRUE(result.error.find("not allowed") != std::string::npos)
       << result.error;
   EXPECT_EQ(ui::SelectFileDialog::SELECT_NONE, dialog_params.type);
+}
+
+IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, OpenFile_ExternalPath) {
+  const std::string file_contents = "hello world!";
+  const base::FilePath test_file = CreateTestFile(file_contents);
+  const base::FilePath virtual_path =
+      base::FilePath::FromUTF8Unsafe(kTestMountPoint)
+          .Append(test_file.BaseName());
+
+  ui::SelectedFileInfo selected_file = {base::FilePath(), base::FilePath()};
+  selected_file.virtual_path = virtual_path;
+
+  SelectFileDialogParams dialog_params;
+  ui::SelectFileDialog::SetFactory(
+      new FakeSelectFileDialogFactory({selected_file}, &dialog_params));
+  ASSERT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
+  EXPECT_EQ(virtual_path.BaseName().AsUTF8Unsafe(),
+            EvalJs(shell(),
+                   "(async () => {"
+                   "  let [e] = await self.showOpenFilePicker();"
+                   "  self.selected_entry = e;"
+                   "  return e.name; })()"));
+  EXPECT_EQ(ui::SelectFileDialog::SELECT_OPEN_FILE, dialog_params.type);
+  EXPECT_EQ(shell()->web_contents()->GetTopLevelNativeWindow(),
+            dialog_params.owning_window);
+  EXPECT_EQ(
+      file_contents,
+      EvalJs(shell(),
+             "(async () => { const file = await self.selected_entry.getFile(); "
+             "return await file.text(); })()"));
 }
 
 IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, SaveFile_NonExistingFile) {

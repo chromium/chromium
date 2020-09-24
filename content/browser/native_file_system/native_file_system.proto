@@ -9,7 +9,7 @@ option optimize_for = LITE_RUNTIME;
 package content;
 
 // Used to serialize a Native File System handle representing a file or
-// directory on the local native file system.
+// directory.
 //
 // Paths are stored as a serialized base::FilePath. I.e. on platforms where
 // base::FilePath uses 8 bit characters this directly contains those
@@ -17,7 +17,7 @@ package content;
 // those characters are serialized using the current platform's endianness.
 // This means paths can't necesarilly be read back on different platforms
 // or computers from where they were written, but since the path references
-// something on the local file system that likely doesn't exist on a different
+// something on the local device that likely doesn't exist on a different
 // computer anyway this should be no problem in practice.
 message NativeFileData {
   // The root path of a Native File System handle is the path that the user
@@ -60,6 +60,9 @@ message NativeFileSystemHandleData {
   // by.
   oneof data {
     SandboxedFileData sandboxed = 2;
-    NativeFileData native = 3;
+    // Paths reference the devices local file system.
+    NativeFileData local = 3;
+    // Paths are virtual paths in an external file system.
+    NativeFileData external = 4;
   }
 }

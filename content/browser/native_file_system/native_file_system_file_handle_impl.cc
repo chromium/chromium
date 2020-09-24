@@ -290,8 +290,9 @@ void NativeFileSystemFileHandleImpl::CreateSwapFile(
           base::StringPrintf(".%d", count));
     }
 
-    auto handle =
-        manager()->CreateFileSystemURLFromPath(context().origin, swap_path);
+    auto handle = manager()->CreateFileSystemURLFromPath(
+        context().origin, NativeFileSystemEntryFactory::PathType::kLocal,
+        swap_path);
     swap_url = std::move(handle.url);
     swap_file_system = std::move(handle.file_system);
   }

@@ -33,6 +33,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
+#include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "ui/shell_dialogs/selected_file_info.h"
@@ -147,6 +148,23 @@ void GetSelectedFileInfoInternal(
       params->selected_files.emplace_back(file_path, file_path);
     }
   }
+
+  // Populate the virtual path for any files on a external mount point. This
+  // lets consumers that are capable of using a virtual path use this rather
+  // than file_path, which can make certain operations more efficient.
+  for (auto& file_info : params->selected_files) {
+    auto* external_mount_points =
+        storage::ExternalMountPoints::GetSystemInstance();
+    base::FilePath virtual_path;
+    if (external_mount_points->GetVirtualPath(file_info.file_path,
+                                              &virtual_path)) {
+      file_info.virtual_path.emplace(std::move(virtual_path));
+    } else {
+      LOG(ERROR) << "Failed to get external virtual path: "
+                 << file_info.file_path;
+    }
+  }
+
   std::move(params->callback).Run(params->selected_files);
 }
 

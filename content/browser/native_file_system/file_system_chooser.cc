@@ -18,8 +18,8 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
 #include "net/base/mime_util.h"
-#include "storage/browser/file_system/isolated_context.h"
 #include "ui/shell_dialogs/select_file_policy.h"
+#include "ui/shell_dialogs/selected_file_info.h"
 
 namespace content {
 
@@ -123,6 +123,8 @@ ui::SelectFileDialog::FileTypeInfo ConvertAcceptsToFileTypeInfo(
   if (file_types.extensions.empty())
     file_types.include_all_files = true;
 
+  file_types.allowed_paths = ui::SelectFileDialog::FileTypeInfo::ANY_PATH;
+
   return file_types;
 }
 
@@ -207,11 +209,34 @@ void FileSystemChooser::FileSelected(const base::FilePath& path,
 void FileSystemChooser::MultiFilesSelected(
     const std::vector<base::FilePath>& files,
     void* params) {
-  auto* isolated_context = storage::IsolatedContext::GetInstance();
-  DCHECK(isolated_context);
+  MultiFilesSelectedWithExtraInfo(ui::FilePathListToSelectedFileInfoList(files),
+                                  params);
+}
 
-  RecordFileSelectionResult(type_, files.size());
-  std::move(callback_).Run(native_file_system_error::Ok(), std::move(files));
+void FileSystemChooser::FileSelectedWithExtraInfo(
+    const ui::SelectedFileInfo& file,
+    int index,
+    void* params) {
+  MultiFilesSelectedWithExtraInfo({file}, params);
+}
+
+void FileSystemChooser::MultiFilesSelectedWithExtraInfo(
+    const std::vector<ui::SelectedFileInfo>& files,
+    void* params) {
+  std::vector<ResultEntry> result;
+
+  for (const ui::SelectedFileInfo& file : files) {
+    if (file.virtual_path.has_value()) {
+      result.push_back({PathType::kExternal, *file.virtual_path});
+    } else {
+      result.push_back({PathType::kLocal, file.local_path.empty()
+                                              ? file.file_path
+                                              : file.local_path});
+    }
+  }
+
+  RecordFileSelectionResult(type_, result.size());
+  std::move(callback_).Run(native_file_system_error::Ok(), std::move(result));
   delete this;
 }
 
@@ -220,7 +245,7 @@ void FileSystemChooser::FileSelectionCanceled(void* params) {
   std::move(callback_).Run(
       native_file_system_error::FromStatus(
           blink::mojom::NativeFileSystemStatus::kOperationAborted),
-      std::vector<base::FilePath>());
+      {});
   delete this;
 }
 

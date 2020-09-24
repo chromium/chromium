@@ -45,8 +45,12 @@ class CancellingSelectFileDialogFactory : public ui::SelectFileDialogFactory {
 // files.
 class FakeSelectFileDialogFactory : public ui::SelectFileDialogFactory {
  public:
-  FakeSelectFileDialogFactory(std::vector<base::FilePath> result,
-                              SelectFileDialogParams* out_params = nullptr);
+  explicit FakeSelectFileDialogFactory(
+      std::vector<base::FilePath> result,
+      SelectFileDialogParams* out_params = nullptr);
+  explicit FakeSelectFileDialogFactory(
+      std::vector<ui::SelectedFileInfo> result,
+      SelectFileDialogParams* out_params = nullptr);
   ~FakeSelectFileDialogFactory() override;
 
   ui::SelectFileDialog* Create(
@@ -54,7 +58,7 @@ class FakeSelectFileDialogFactory : public ui::SelectFileDialogFactory {
       std::unique_ptr<ui::SelectFilePolicy> policy) override;
 
  private:
-  std::vector<base::FilePath> result_;
+  std::vector<ui::SelectedFileInfo> result_;
   SelectFileDialogParams* out_params_;
 };
 

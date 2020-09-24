@@ -16,6 +16,7 @@
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/shell_dialogs/select_file_dialog_factory.h"
 #include "ui/shell_dialogs/select_file_policy.h"
+#include "ui/shell_dialogs/selected_file_info.h"
 
 namespace content {
 
@@ -23,10 +24,11 @@ class FileSystemChooserTest : public testing::Test {
  public:
   void TearDown() override { ui::SelectFileDialog::SetFactory(nullptr); }
 
-  void SyncShowDialog(
+  std::vector<FileSystemChooser::ResultEntry> SyncShowDialog(
       std::vector<blink::mojom::ChooseFileSystemEntryAcceptsOptionPtr> accepts,
       bool include_accepts_all) {
     base::RunLoop loop;
+    std::vector<FileSystemChooser::ResultEntry> result;
     FileSystemChooser::CreateAndShow(
         /*web_contents=*/nullptr,
         FileSystemChooser::Options(
@@ -34,9 +36,13 @@ class FileSystemChooserTest : public testing::Test {
             std::move(accepts), include_accepts_all),
         base::BindLambdaForTesting(
             [&](blink::mojom::NativeFileSystemErrorPtr,
-                std::vector<base::FilePath>) { loop.Quit(); }),
+                std::vector<FileSystemChooser::ResultEntry> entries) {
+              result = std::move(entries);
+              loop.Quit();
+            }),
         base::ScopedClosureRunner());
     loop.Run();
+    return result;
   }
 
  private:
@@ -172,6 +178,33 @@ TEST_F(FileSystemChooserTest, AcceptsExtensionsAndMimeTypes) {
             dialog_params.file_types->extension_description_overrides.size());
   EXPECT_EQ(base::ASCIIToUTF16(""),
             dialog_params.file_types->extension_description_overrides[0]);
+}
+
+TEST_F(FileSystemChooserTest, LocalPath) {
+  const base::FilePath local_path(FILE_PATH_LITERAL("/foo/bar"));
+  ui::SelectedFileInfo selected_file(local_path, local_path);
+
+  ui::SelectFileDialog::SetFactory(
+      new FakeSelectFileDialogFactory({selected_file}));
+  auto results = SyncShowDialog({}, /*include_accepts_all=*/true);
+  ASSERT_EQ(results.size(), 1u);
+  EXPECT_EQ(results[0].type, FileSystemChooser::PathType::kLocal);
+  EXPECT_EQ(results[0].path, local_path);
+}
+
+TEST_F(FileSystemChooserTest, ExternalPath) {
+  const base::FilePath local_path(FILE_PATH_LITERAL("/foo/bar"));
+  const base::FilePath virtual_path(
+      FILE_PATH_LITERAL("/some/virtual/path/filename"));
+  ui::SelectedFileInfo selected_file(local_path, local_path);
+  selected_file.virtual_path = virtual_path;
+
+  ui::SelectFileDialog::SetFactory(
+      new FakeSelectFileDialogFactory({selected_file}));
+  auto results = SyncShowDialog({}, /*include_accepts_all=*/true);
+  ASSERT_EQ(results.size(), 1u);
+  EXPECT_EQ(results[0].type, FileSystemChooser::PathType::kExternal);
+  EXPECT_EQ(results[0].path, virtual_path);
 }
 
 }  // namespace content

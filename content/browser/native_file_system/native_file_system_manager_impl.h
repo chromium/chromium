@@ -125,10 +125,12 @@ class CONTENT_EXPORT NativeFileSystemManagerImpl
   // NativeFileSystemEntryFactory:
   blink::mojom::NativeFileSystemEntryPtr CreateFileEntryFromPath(
       const BindingContext& binding_context,
+      PathType path_type,
       const base::FilePath& file_path,
       UserAction user_action) override;
   blink::mojom::NativeFileSystemEntryPtr CreateDirectoryEntryFromPath(
       const BindingContext& binding_context,
+      PathType path_type,
       const base::FilePath& directory_path,
       UserAction user_action) override;
 
@@ -225,6 +227,7 @@ class CONTENT_EXPORT NativeFileSystemManagerImpl
   };
   FileSystemURLAndFSHandle CreateFileSystemURLFromPath(
       const url::Origin& origin,
+      PathType path_type,
       const base::FilePath& path);
 
  private:
@@ -241,21 +244,21 @@ class CONTENT_EXPORT NativeFileSystemManagerImpl
                         const FileSystemChooser::Options& options,
                         ChooseEntriesCallback callback,
                         blink::mojom::NativeFileSystemErrorPtr result,
-                        std::vector<base::FilePath> entries);
+                        std::vector<FileSystemChooser::ResultEntry> entries);
   void DidVerifySensitiveDirectoryAccess(
       const BindingContext& binding_context,
       const FileSystemChooser::Options& options,
       ChooseEntriesCallback callback,
-      std::vector<base::FilePath> entries,
+      std::vector<FileSystemChooser::ResultEntry> entries,
       NativeFileSystemPermissionContext::SensitiveDirectoryResult result);
   void DidCreateAndTruncateSaveFile(const BindingContext& binding_context,
-                                    const base::FilePath& path,
+                                    const FileSystemChooser::ResultEntry& entry,
                                     FileSystemURLAndFSHandle url,
                                     ChooseEntriesCallback callback,
                                     bool success);
   void DidChooseDirectory(
       const BindingContext& binding_context,
-      const base::FilePath& path,
+      const FileSystemChooser::ResultEntry& entry,
       ChooseEntriesCallback callback,
       const SharedHandleState& shared_handle_state,
       NativeFileSystemPermissionGrant::PermissionRequestOutcome outcome);
