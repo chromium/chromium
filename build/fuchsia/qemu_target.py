@@ -165,7 +165,13 @@ class QemuTarget(emu_target.EmuTarget):
     return emu_command
 
   def _BuildCommand(self):
-    qemu_exec = 'qemu-system-'+self._GetTargetSdkLegacyArch()
+    if self._target_cpu == 'arm64':
+      qemu_exec = 'qemu-system-' + 'aarch64'
+    elif self._target_cpu == 'x64':
+      qemu_exec = 'qemu-system-' + 'x86_64'
+    else:
+      raise Exception('Unknown target_cpu %s:' % self._target_cpu)
+
     qemu_command = [
         os.path.join(GetEmuRootForPlatform(self.EMULATOR_NAME), 'bin',
                      qemu_exec)

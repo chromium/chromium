@@ -246,16 +246,6 @@ class Target(object):
   def _GetSshConfigPath(self, path):
     raise NotImplementedError
 
-  # TODO: remove this once all instances of architecture names have been
-  # converted to the new naming pattern.
-  def _GetTargetSdkLegacyArch(self):
-    """Returns the Fuchsia SDK architecture name for the target CPU."""
-    if self._target_cpu == 'arm64':
-      return 'aarch64'
-    elif self._target_cpu == 'x64':
-      return 'x86_64'
-    raise Exception('Unknown target_cpu %s:' % self._target_cpu)
-
   def GetAmberRepo(self):
     """Returns an AmberRepo instance which serves packages for this Target.
     Callers should typically call GetAmberRepo() in a |with| statement, and
