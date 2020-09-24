@@ -307,6 +307,7 @@
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Откл. 1 прил.}one{Откл. # прил.}few{Откл. # прил.}many{Откл. # прил.}other{Откл. # прил.}}</translation>
 <translation id="4072264167173457037">сигнал средней мощности</translation>
 <translation id="4112140312785995938">Перемотать назад</translation>
+<translation id="4114315158543974537">Включите Phone Hub</translation>
 <translation id="4129129681837227511">Чтобы разрешить показ уведомлений на заблокированном экране, разблокируйте устройство, а затем измените эту настройку.</translation>
 <translation id="4146833061457621061">Включить музыку</translation>
 <translation id="4149156641122542261">Устройство <ph name="DEVICE_TYPE" /> находится в домене <ph name="DOMAIN" />.</translation>
@@ -438,6 +439,7 @@
 <translation id="5648021990716966815">Микрофонный разъем</translation>
 <translation id="5669267381087807207">Активация</translation>
 <translation id="5673434351075758678">В результате синхронизации настроек язык изменен. Теперь используется <ph name="TO_LOCALE" />, а не <ph name="FROM_LOCALE" />.</translation>
+<translation id="5679050765726761783">Подключен маломощный адаптер питания</translation>
 <translation id="5682642926269496722">Google Ассистент недоступен в этом аккаунте.</translation>
 <translation id="5689633613396158040">Она помогает снизить напряжение глаз при тусклом свете. Нажмите здесь, чтобы изменить расписание или полностью отключить ночную подсветку.</translation>
 <translation id="5691772641933328258">Не удалось распознать отпечаток</translation>
@@ -552,6 +554,7 @@
 <translation id="6857811139397017780">Активировать <ph name="NETWORKSERVICE" /></translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Осталась 1 цифра}one{Осталась # цифра}few{Осталось # цифры}many{Осталось # цифр}other{Осталось # цифры}}</translation>
 <translation id="6878400149835617132">Быстрые клавиши отключены</translation>
+<translation id="6886172995547742638">Не исключено, что <ph name="DEVICE_TYPE" /> будет работать неэффективно. Используйте сертифицированный адаптер питания USB-C на <ph name="PREFERRED_MINIMUM_POWER" /> Вт или выше.</translation>
 <translation id="6896758677409633944">Копировать</translation>
 <translation id="6910714959251846841">Чтобы установить это обновление, необходимо сбросить настройки устройства до заводских. Подробнее о последнем обновлении <ph name="SYSTEM_APP_NAME" />…</translation>
 <translation id="6919251195245069855">Не удалось распознать смарт-карту. Повторите попытку.</translation>

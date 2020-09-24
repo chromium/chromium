@@ -1,8 +1,10 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-HK">
+<translation id="2077832278056815832">請關閉其他應用程式的對話氣泡或重疊圖層，然後再試一次。</translation>
 <translation id="2359808026110333948">繼續</translation>
 <translation id="2416359993254398973">Chrome 需要獲取權限，才能讓這個網站存取您的相機。</translation>
+<translation id="2987449669841041897">此網站無法要求您的權限</translation>
 <translation id="557283862590186398">Chrome 需要獲取權限，才能讓這個網站存取您的麥克風。</translation>
 <translation id="5860491529813859533">開啟</translation>
 <translation id="6092062101542170135">在 Android 設定中開啟 NFC 即可繼續</translation>

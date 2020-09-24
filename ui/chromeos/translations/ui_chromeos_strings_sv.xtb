@@ -376,6 +376,7 @@
 <translation id="5098629044894065541">hebreiska</translation>
 <translation id="5123433949759960244">Basketboll</translation>
 <translation id="5129662217315786329">polska</translation>
+<translation id="5132435854979302863">filipino</translation>
 <translation id="5144820558584035333">Hangul 3 Set (390)</translation>
 <translation id="5145331109270917438">Ändringsdatum</translation>
 <translation id="515594325917491223">Schack</translation>
@@ -422,6 +423,7 @@
 <translation id="5464696796438641524">Polskt tangentbord</translation>
 <translation id="5465122519792752163">Nepalesiskt tangentbord (InScript)</translation>
 <translation id="5469868506864199649">italienska</translation>
+<translation id="5484429245813572665">indonesiska</translation>
 <translation id="5494920125229734069">Markera alla</translation>
 <translation id="5500122897333236901">isländska</translation>
 <translation id="5508696409934741614">Punkter</translation>
@@ -609,6 +611,7 @@
 <translation id="7649070708921625228">Hjälp</translation>
 <translation id="7654209398114106148"><ph name="NUMBER_OF_ITEMS" /> objekt flyttas ...</translation>
 <translation id="7658239707568436148">Avbryt</translation>
+<translation id="7693909743393669729">Om du formaterar en enhet raderas all data på den och alla partitioner tas bort, även sådana som inte visas. Det går inte att ångra åtgärden.</translation>
 <translation id="7695430100978772476">Det gick inte att formatera <ph name="DRIVE_NAME" /></translation>
 <translation id="770015031906360009">grekiska</translation>
 <translation id="7706319470528945664">Portugisiskt tangentbord </translation>
@@ -640,6 +643,7 @@
 <translation id="78946041517601018">Delade enheter</translation>
 <translation id="7896906914454843592">Utökat tangentbord för USA</translation>
 <translation id="7898607018410277265">Tangentbord för gujarati (nytt fonetiskt)</translation>
+<translation id="7908793776359722643">Om du formaterar en partition raderas all data på den. Det går inte att ångra åtgärden.</translation>
 <translation id="7917972308273378936">Litauiskt tangentbord</translation>
 <translation id="7925686952655276919">Använd inte mobildata för synkronisering</translation>
 <translation id="7928710562641958568">Mata ut enhet</translation>
@@ -727,6 +731,7 @@
 <translation id="8900820606136623064">ungerska</translation>
 <translation id="8901822611024316615">Tjeckiskt QWERTY-tangentbord</translation>
 <translation id="8919081441417203123">danska</translation>
+<translation id="8941776146379310519">malajiska</translation>
 <translation id="8960999352790021682">Tangentbord för bengaliska (fonetiskt)</translation>
 <translation id="8965697826696209160">Det finns inte tillräckligt med ledigt utrymme.</translation>
 <translation id="9017798300203431059">Ryska (fonetiskt)</translation>

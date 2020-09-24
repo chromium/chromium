@@ -1,8 +1,10 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="is">
+<translation id="2077832278056815832">Lokaðu öllum blöðrum eða yfirlögnum úr öðrum forritum. Reyndu svo aftur.</translation>
 <translation id="2359808026110333948">Halda áfram</translation>
 <translation id="2416359993254398973">Chrome þarf leyfi til að nota myndavélina þína á þessu vefsvæði.</translation>
+<translation id="2987449669841041897">Þetta vefsvæði getur ekki beðið þig um heimild</translation>
 <translation id="557283862590186398">Chrome þarf leyfi til að nota hljóðnemann þinn á þessu vefsvæði.</translation>
 <translation id="5860491529813859533">Kveikja</translation>
 <translation id="6092062101542170135">Kveiktu á NFC í stillingum Android til að halda áfram</translation>

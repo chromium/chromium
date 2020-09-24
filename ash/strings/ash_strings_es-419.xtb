@@ -137,6 +137,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="2341729377289034582">Se bloqueó en posición vertical</translation>
 <translation id="2352467521400612932">Configuración de la pluma stylus</translation>
 <translation id="2354174487190027830">Activación de <ph name="NAME" /></translation>
+<translation id="2356210126990741501">Al parecer, el teléfono no está en línea y, por el momento, no podemos aprovechar todas sus ventajas.</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2365393535144473978">Si habilitas los datos móviles, se habilitará Bluetooth.</translation>
 <translation id="2369165858548251131">"Hola" en chino</translation>
@@ -169,6 +170,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="2705001408393684014">Activa o desactiva el micrófono. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Arriba</translation>
 <translation id="2718395828230677721">Luz nocturna</translation>
+<translation id="2727175239389218057">Responder</translation>
 <translation id="2727977024730340865">Conexión a un cargador de baja potencia. Es posible que la carga de la batería no sea confiable.</translation>
 <translation id="2743387203779672305">Copiar al portapapeles</translation>
 <translation id="2792498699870441125">Alt+tecla de búsqueda</translation>
@@ -177,6 +179,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="2825619548187458965">Biblioteca</translation>
 <translation id="2841907151129139818">Se cambió al modo tablet</translation>
 <translation id="2844169650293029770">Dispositivo USB-C (puerto lateral izquierdo delantero)</translation>
+<translation id="2846247265041961677">No encontramos el teléfono</translation>
 <translation id="2865888419503095837">Información de red</translation>
 <translation id="2872961005593481000">Apagar</translation>
 <translation id="2878884018241093801">No hay elementos recientes</translation>
@@ -460,6 +463,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Activado</translation>
 <translation id="5920710855273935292">El micrófono está silenciado.</translation>
+<translation id="594179686076170922">Conectando con tu teléfono…</translation>
 <translation id="5946788582095584774">La función <ph name="FEATURE_NAME" /> está activada.</translation>
 <translation id="5947494881799873997">Revertir</translation>
 <translation id="595202126637698455">Seguimiento de rendimiento habilitado</translation>

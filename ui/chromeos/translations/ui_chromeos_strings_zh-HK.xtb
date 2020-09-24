@@ -376,6 +376,7 @@
 <translation id="5098629044894065541">希伯來文</translation>
 <translation id="5123433949759960244">籃球</translation>
 <translation id="5129662217315786329">波蘭文</translation>
+<translation id="5132435854979302863">菲律賓文</translation>
 <translation id="5144820558584035333">韓文 3 Set (390)</translation>
 <translation id="5145331109270917438">已修改日期</translation>
 <translation id="515594325917491223">國際象棋</translation>
@@ -422,6 +423,7 @@
 <translation id="5464696796438641524">波蘭文鍵盤</translation>
 <translation id="5465122519792752163">尼泊爾文鍵盤 (印度文)</translation>
 <translation id="5469868506864199649">意大利文</translation>
+<translation id="5484429245813572665">印尼文</translation>
 <translation id="5494920125229734069">全部選取</translation>
 <translation id="5500122897333236901">冰島文</translation>
 <translation id="5508696409934741614">圓點</translation>
@@ -609,6 +611,7 @@
 <translation id="7649070708921625228">說明</translation>
 <translation id="7654209398114106148">正在移動 <ph name="NUMBER_OF_ITEMS" /> 個項目…</translation>
 <translation id="7658239707568436148">取消</translation>
+<translation id="7693909743393669729">將硬碟格式化會清除其中儲存的所有資料，並移除所有的現有分割區，包括隱藏的分割區。此操作無法復原。</translation>
 <translation id="7695430100978772476">無法格式化「<ph name="DRIVE_NAME" />」</translation>
 <translation id="770015031906360009">希臘文</translation>
 <translation id="7706319470528945664">葡萄牙文鍵盤</translation>
@@ -640,6 +643,7 @@
 <translation id="78946041517601018">共用的雲端硬碟</translation>
 <translation id="7896906914454843592">美式改良鍵盤</translation>
 <translation id="7898607018410277265">古吉拉特文鍵盤 (新拼音)</translation>
+<translation id="7908793776359722643">格式化分割將清除其中儲存的所有資料。此操作無法復原。</translation>
 <translation id="7917972308273378936">立陶宛文鍵盤</translation>
 <translation id="7925686952655276919">請勿使用流動數據進行同步處理</translation>
 <translation id="7928710562641958568">退出裝置</translation>
@@ -727,6 +731,7 @@
 <translation id="8900820606136623064">匈牙利文</translation>
 <translation id="8901822611024316615">捷克 QWERTY 鍵盤</translation>
 <translation id="8919081441417203123">丹麥文</translation>
+<translation id="8941776146379310519">馬來文</translation>
 <translation id="8960999352790021682">孟加拉文鍵盤 (拼音)</translation>
 <translation id="8965697826696209160">空間不足。</translation>
 <translation id="9017798300203431059">俄文 (拼音)</translation>

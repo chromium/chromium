@@ -1198,6 +1198,7 @@
 <translation id="2419706071571366386">सुरक्षाका लागि, तपाईंको कम्प्युटर प्रयोग नगरिएको बेला साइन आउट गर्नुहोस्‌।</translation>
 <translation id="2422125132043002186">Linux को पुनर्स्थापना रद्द गरियो</translation>
 <translation id="2423578206845792524">छविलाई यस रूपमा ब&amp;चत गर्नुहोस्...</translation>
+<translation id="2424424966051154874">{0,plural, =1{अतिथि}other{अतिथि (#)}}</translation>
 <translation id="2428510569851653187">ट्याब क्र्यास भएको बेला तपाईं के गर्दै हुनुहुन्थ्यो भनी वर्णन दिनुहोस्</translation>
 <translation id="2428939361789119025">WiFi निष्क्रिय पार्नुहोस्</translation>
 <translation id="2431027948063157455">Google सहायक लोड गर्न सकिएन, कृपया आफ्नो इन्टरनेट जाँच गरी पुनः प्रयास गर्नुहोस्।</translation>
@@ -4194,6 +4195,7 @@
 <translation id="6077189836672154517"><ph name="DEVICE_TYPE" /> बारे सुझाव र अद्यावधिकहरू</translation>
 <translation id="6077476112742402730">बोलेर टाइप गर्ने सुविधा</translation>
 <translation id="6078045608615316905">यो छविको लागि QR कोड सिर्जना गर्नुहोस्</translation>
+<translation id="6078121669093215958">{0,plural, =1{अतिथि}other{# वटा अतिथि विन्डो खुला छन्}}</translation>
 <translation id="6078323886959318429">सर्टकट थप्नुहोस्</translation>
 <translation id="6078752646384677957">कृपया आफ्नो माइक्रोफोन र अडियोको स्तर जाँच गर्नुहोस्।</translation>
 <translation id="6078769373519310690">"<ph name="CHROME_EXTENSION_NAME" />" कुनै HID यन्त्रमा जडान गर्न चाहन्छ</translation>
@@ -4701,6 +4703,7 @@
 <translation id="6704062477274546131">DNS रिजोल्युसन</translation>
 <translation id="6706210727756204531">स्कोप</translation>
 <translation id="6707389671160270963">SSL सेवाग्राही प्रमाणपत्र</translation>
+<translation id="670893696722244877">भाषा वा इनपुटका नामअनुसार खोज्नुहोस्</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> र अन्य १ ट्याब}other{<ph name="PAGE_TITLE" /> र अन्य # ट्याबहरू}}</translation>
 <translation id="6709133671862442373">समाचार</translation>
 <translation id="6709357832553498500"><ph name="EXTENSIONNAME" /> प्रयोग गरेर जडान गर्नुहोस्</translation>
@@ -5538,6 +5541,7 @@
 <translation id="7753735457098489144">पर्याप्त भण्डारण स्थान नभएका कारण स्थापना गर्न सकिएन। ठाउँ खाली गर्न यन्त्रको भण्डारणबाट फाइलहरू मेटाउनुहोस्।</translation>
 <translation id="7754704193130578113">डाउनलोड गर्नुभन्दा पहिले प्रत्येक फाइललाई कहाँ बचत गर्ने भनेर सोध्नुहोस्</translation>
 <translation id="7755287808199759310">तपाईंको अभिभावकले तपाईंको रोक हटाउन सक्नुहुन्छ</translation>
+<translation id="7757592200364144203">यन्त्रको नाम बदल्नुहोस्</translation>
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" /> ले आदान प्रदान गरेको पाठ</translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">आफ्नो प्रदर्शनका सीमाहरूलाई समायोजन गर्नुहोस्</translation>
@@ -5994,6 +5998,7 @@
 <translation id="8264024885325823677">तपाईंका प्रशासक यो सेटिङ मिलाउनुहुन्छ।</translation>
 <translation id="8264718194193514834">"<ph name="EXTENSION_NAME" />" ले फुल स्क्रिन ट्रिगर गर्‍यो।</translation>
 <translation id="826511437356419340">विन्डोको रूपरेखा मोडमा प्रवेश गरियो। तपाईं किबोर्ड प्रयोग गर्दै हुनुहुन्छ भने नेभिगेसन गर्न स्वाइप गर्नुहोस् वा tab थिच्नुहोस्।</translation>
+<translation id="8266947622852630193">सबै इनपुट विधि</translation>
 <translation id="8267539814046467575">प्रिन्टर थप्नुहोस्</translation>
 <translation id="8267961145111171918"><ph name="BEGIN_PARAGRAPH1" />यो जानकारी यस यन्त्र र यसको प्रयोग (जस्तै ब्याट्रीको स्तर, प्रणाली तथा एपका क्रियाकलाप र त्रुटिहरू) सम्बन्धी सामान्य जानकारी हो। यो डेटालाई Android मा सुधार गर्ने प्रयोजनका लागि प्रयोग गरिने छ र केही एकत्रित जानकारीले Google का एप तथा Android का विकासकर्ता जस्ता साझेदारहरूलाई तिनका एप र उत्पादनहरू अझ राम्रो बनाउन पनि मद्दत गर्ने छ।<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />यो सुविधा निष्क्रिय पार्नुले प्रणालीका अद्यावधिक र सुरक्षा जस्ता अत्यावश्यक सेवाहरूलाई आवश्यक पर्ने जानकारी पठाउने यस यन्त्रको क्षमतामा भने कुनै असर पर्दैन।<ph name="END_PARAGRAPH2" />

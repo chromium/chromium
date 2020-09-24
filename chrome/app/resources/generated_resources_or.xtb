@@ -1211,6 +1211,7 @@
 <translation id="2419706071571366386">ଯେତେବେଳେ, ଆପଣଙ୍କର କମ୍ପ୍ୟୁଟର୍‌ ବ୍ୟବହାର ହେଉନାହିଁ, ସେତେବେଳେ ସୁରକ୍ଷା ପାଇଁ ସାଇନ୍‍ ଆଉଟ୍‍ କରନ୍ତୁ।</translation>
 <translation id="2422125132043002186">Linuxର ରିଷ୍ଟୋର୍ ବାତିଲ୍ ହୋଇଯାଇଛି</translation>
 <translation id="2423578206845792524">&amp;ପ୍ରତିଛବି ଏହି ଭାବେ ସଞ୍ଚୟ କରନ୍ତୁ...</translation>
+<translation id="2424424966051154874">{0,plural, =1{ଅତିଥି}other{ଅତିଥି (#)}}</translation>
 <translation id="2428510569851653187">ଟାବ୍ କ୍ରାସ୍ ହେବା ସମୟରେ ଆପଣ କ'ଣ କରୁଥିଲେ ବର୍ଣ୍ଣନା କରନ୍ତୁ</translation>
 <translation id="2428939361789119025">ୱାଇ-ଫାଇ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="2431027948063157455">Google ଆସିଷ୍ଟାଣ୍ଟ ଲୋଡ୍ କରିବାରେ ବିଫଳ ହୋଇଛି, ଦୟାକରି ଆପଣଙ୍କର ନେଟ୍‍ୱର୍କ ସଂଯୋଗ ଯାଞ୍ଚ କରନ୍ତୁ ଏବଂ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
@@ -4248,6 +4249,7 @@
 <translation id="6077189836672154517"><ph name="DEVICE_TYPE" />ରେ ଟିପ୍ ଏବଂ ଅପ୍‌ଡେଟ୍‌ଗୁଡ଼ିକ</translation>
 <translation id="6077476112742402730">ସ୍ପିକ୍-ଟୁ-ଟାଇପ୍</translation>
 <translation id="6078045608615316905">ଏହି ଛବି ପାଇଁ QR କୋଡ୍ ତିଆରି କରନ୍ତୁ</translation>
+<translation id="6078121669093215958">{0,plural, =1{ଅତିଥି}other{#ଟି ଖୋଲା ଥିବା ଅତିଥି ୱିଣ୍ଡୋ}}</translation>
 <translation id="6078323886959318429">ସର୍ଟକଟ୍ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="6078752646384677957">ଦୟାକରି ଆପଣଙ୍କର ମାଇକ୍ରୋଫୋନ୍ ଓ ଅଡିଓ ସ୍ତର ଯାଞ୍ଚ କରନ୍ତୁ।</translation>
 <translation id="6078769373519310690">"<ph name="CHROME_EXTENSION_NAME" />", ଗୋଟିଏ HID ଡିଭାଇସ୍‌କୁ ସଂଯୋଗ କରିବାକୁ ଚାହୁଁଛନ୍ତି</translation>
@@ -4372,6 +4374,7 @@
 <translation id="6227280783235722609">ଏକ୍ସଟେନସନ୍</translation>
 <translation id="6229849828796482487">ନୂଆ ୱାଇ-ଫାଇ ନେଟୱାର୍କ ବିଚ୍ଛିନ୍ନ କରନ୍ତୁ</translation>
 <translation id="6229890768313448549">Google Play ସେବାର ସର୍ତ୍ତାବଳୀକୁ ଲୋଡ୍ କରାଯାଇପାରିବ ନାହିଁ। ଦୟାକରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
+<translation id="6231782223312638214">ପ୍ରସ୍ତାବିତ</translation>
 <translation id="6231881193380278751">ପୃଷ୍ଠାକୁ ସ୍ବତଃ-ରିଫ୍ରେସ୍ କରିବାକୁ URLରେ ଏକ ତ୍ରୁଟି ପରମ ଯୋଗ କରନ୍ତୁ: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">ବ୍ୟାଟେରୀ</translation>
 <translation id="6232116551750539448"><ph name="NAME" /> ସହ ସଂଯୋଗ ବିଚ୍ଛିନ୍ନ ହୋଇଯାଇଛି</translation>
@@ -4764,6 +4767,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="6704062477274546131">DNS ରିଜୋଲ୍ୟୁସନ୍</translation>
 <translation id="6706210727756204531">ସ୍କୋପ୍</translation>
 <translation id="6707389671160270963">SSL କ୍ଲାଏଣ୍ଟ ସାର୍ଟିଫିକେଟ୍</translation>
+<translation id="670893696722244877">ଭାଷା ବା ଇନପୁଟ୍ ନାମ ଅନୁସାରେ ସନ୍ଧାନ କରନ୍ତୁ</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> ଏବଂ ଅନ୍ୟ 1ଟି ଟାବ୍}other{<ph name="PAGE_TITLE" /> ଏବଂ ଅନ୍ୟ #ଟି ଟାବ୍}}</translation>
 <translation id="6709133671862442373">News</translation>
 <translation id="6709357832553498500"><ph name="EXTENSIONNAME" /> ବ୍ୟବହାର କରି ସଂଯୋଗ କରନ୍ତୁ</translation>
@@ -5619,6 +5623,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="7753735457098489144">ଷ୍ଟୋରେଜ୍ ସ୍ଥାନ ଅଭାବ ଯୋଗୁଁ ଇନଷ୍ଟଲ୍ ବିଫଳ ହୋଇଛି। ସ୍ଥାନ ଖାଲି କରିବାକୁ, ଡିଭାଇସ୍ ଷ୍ଟୋରେଜରୁ ଫାଇଲଗୁଡ଼ିକ ଡିଲିଟ୍ କରନ୍ତୁ।</translation>
 <translation id="7754704193130578113">ଡାଉନଲୋଡିଙ୍ଗ୍ କରିବା ପୂର୍ବରୁ ପ୍ରତ୍ୟେକ ଫାଇଲ୍ କେଉଁଠି ସଞ୍ଚୟ ହେବ ପଚାରନ୍ତୁ</translation>
 <translation id="7755287808199759310">ଆପଣଙ୍କ ଅଭିଭାବକ ଆପଣଙ୍କ ପାଇଁ ଏହାର ଅବରୋଧ ହଟାଇପାରିବେ</translation>
+<translation id="7757592200364144203">ଡିଭାଇସର ନାମ ବଦଳାନ୍ତୁ</translation>
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" />ରୁ ଟେକ୍ସଟ୍ ସେୟାର୍ କରାଯାଇଛି</translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">ଆପଣଙ୍କର ଡିସ୍‌ପ୍ଲେ‌ର ସୀମା ଆଡ୍‌ଜଷ୍ଟ କରନ୍ତୁ</translation>
@@ -6078,6 +6083,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="8264024885325823677">ଏହି ସେଟିଂ ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ଦ୍ୱାରା ପରିଚାଳିତ ହୁଏ।</translation>
 <translation id="8264718194193514834">"<ph name="EXTENSION_NAME" />" ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନ୍‌ରେ ଟ୍ରିଗର୍ କରିଛନ୍ତି।</translation>
 <translation id="826511437356419340">ୱିଣ୍ଡୋର ସାରାଂଶ ମୋଡରେ ପ୍ରବେଶ କରିଛନ୍ତି। ନାଭିଗେଟ୍ କରିବାକୁ ସ୍ୱାଇପ୍ କରନ୍ତୁ କିମ୍ବା କୀବୋର୍ଡ ବ୍ୟବହାର କରୁଥିଲେ, ଟାବ୍ ଦବାନ୍ତୁ।</translation>
+<translation id="8266947622852630193">ସମସ୍ତ ଇନପୁଟ୍ ପଦ୍ଧତି</translation>
 <translation id="8267539814046467575">ପ୍ରିଣ୍ଟର୍ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="8267961145111171918"><ph name="BEGIN_PARAGRAPH1" />ଏହା ଏହି ଡିଭାଇସ୍ ଏବଂ ଏହା କିପରି ବ୍ୟବହାର ହୋଇଛି (ଯେପରି ବ୍ୟାଟେରୀ ଲେବଲ୍, ସିଷ୍ଟମ୍, ଆପ୍ ଗତିବିଧି ଓ ତ୍ରୁଟି) ତାହା ବିଷୟରେ ସାଧାରଣ ସୂଚନା ଅଟେ। Androidକୁ ଉନ୍ନତ କରିବା ପାଇଁ ଡାଟାକୁ ବ୍ୟବହାର କରାଯିବ ଏବଂ କିଛି ଏକତ୍ରିତ ସୂଚନା Google ଆପ୍ସ ଏବଂ Android ଡେଭଲପର୍ ପରି ସହଯୋଗୀଙ୍କୁ ସେମାନଙ୍କର ଆପ୍ସ ଓ ଉତ୍ପାଦକୁ ଉନ୍ନତ କରିବାରେ ସାହାଯ୍ୟ କରିବ।<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />ଏହି ବୈଶିଷ୍ଟ୍ୟକୁ ବନ୍ଦ କରିବା ଦ୍ଵାରା ଏହି ଡିଭାଇସ୍‍ର ସିଷ୍ଟମ୍ ଅପ୍‌ଡେଟ୍ ଓ ସୁରକ୍ଷା ପରି ଆବଶ୍ୟକ ସେବାଗୁଡ଼ିକ ପାଇଁ ଆବଶ୍ୟକୀୟ ସୂଚନାକୁ ପଠାଇବାର କ୍ଷମତା ପ୍ରଭାବିତ ହେବନାହିଁ।<ph name="END_PARAGRAPH2" />

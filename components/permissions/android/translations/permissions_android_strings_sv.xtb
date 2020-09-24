@@ -1,8 +1,10 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sv">
+<translation id="2077832278056815832">Stäng alla bubblor eller överlägg från andra appar. Försök sedan igen.</translation>
 <translation id="2359808026110333948">Fortsätt</translation>
 <translation id="2416359993254398973">Du behöver ge Chrome behörighet att använda kameran på den här webbplatsen.</translation>
+<translation id="2987449669841041897">Den här webbplatsen får inte begära tillstånd</translation>
 <translation id="557283862590186398">Du behöver ge Chrome behörighet att använda mikrofonen på den här webbplatsen.</translation>
 <translation id="5860491529813859533">Aktivera</translation>
 <translation id="6092062101542170135">Fortsätt genom att aktivera NFC i Android-inställningarna</translation>
