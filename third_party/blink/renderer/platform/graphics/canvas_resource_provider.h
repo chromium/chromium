@@ -66,13 +66,13 @@ class PLATFORM_EXPORT CanvasResourceProvider
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   enum ResourceProviderType {
-    kTexture = 0,
+    kTexture [[deprecated]] = 0,
     kBitmap = 1,
     kSharedBitmap = 2,
-    kTextureGpuMemoryBuffer = 3,
-    kBitmapGpuMemoryBuffer = 4,
+    kTextureGpuMemoryBuffer [[deprecated]] = 3,
+    kBitmapGpuMemoryBuffer [[deprecated]] = 4,
     kSharedImage = 5,
-    kDirectGpuMemoryBuffer = 6,
+    kDirectGpuMemoryBuffer [[deprecated]] = 6,
     kPassThrough = 7,
     kSwapChain = 8,
     kSkiaDawnSharedImage = 9,
