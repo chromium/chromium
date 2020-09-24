@@ -74,6 +74,54 @@ class SpatialNavigationTest : public RenderingTest {
   void UpdateAllLifecyclePhases(LocalFrameView* frame_view) {
     frame_view->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
   }
+
+  void AssertNormalizedHeight(Element* e, int line_height, bool will_shrink) {
+    PhysicalRect search_origin =
+        SearchOrigin(RootViewport(e->GetDocument().GetFrame()), e,
+                     SpatialNavigationDirection::kDown);
+    PhysicalRect uncropped = NodeRectInRootFrame(e);
+
+    // SearchOrigin uses the normalized height.
+    // If |e| is line broken, SearchOrigin should only use the first line.
+    PhysicalRect normalized =
+        ShrinkInlineBoxToLineBox(*e->GetLayoutObject(), uncropped);
+    EXPECT_EQ(search_origin, normalized);
+    if (will_shrink) {
+      EXPECT_LT(search_origin.Height(), uncropped.Height());
+      EXPECT_EQ(search_origin.Height(), line_height);
+      EXPECT_EQ(search_origin.X(), uncropped.X());
+      EXPECT_EQ(search_origin.Y(), uncropped.Y());
+      EXPECT_EQ(search_origin.Width(), uncropped.Width());
+    } else {
+      EXPECT_EQ(search_origin, uncropped);
+    }
+
+    // Focus candidates will also use normalized heights.
+    // If |e| is line broken, the rect should still include all lines.
+    normalized = ShrinkInlineBoxToLineBox(*e->GetLayoutObject(), uncropped,
+                                          LineBoxes(*e->GetLayoutObject()));
+    FocusCandidate candidate(e, SpatialNavigationDirection::kDown);
+    EXPECT_EQ(normalized, candidate.rect_in_root_frame);
+  }
+
+  bool HasSameSearchOriginRectAndCandidateRect(Element* a) {
+    PhysicalRect a_origin =
+        SearchOrigin(RootViewport(a->GetDocument().GetFrame()), a,
+                     SpatialNavigationDirection::kDown);
+    FocusCandidate a_candidate(a, SpatialNavigationDirection::kDown);
+    return a_candidate.rect_in_root_frame == a_origin;
+  }
+
+  bool Intersects(Element* a, Element* b) {
+    PhysicalRect a_origin =
+        SearchOrigin(RootViewport(a->GetDocument().GetFrame()), a,
+                     SpatialNavigationDirection::kDown);
+    PhysicalRect b_origin =
+        SearchOrigin(RootViewport(b->GetDocument().GetFrame()), b,
+                     SpatialNavigationDirection::kDown);
+
+    return a_origin.Intersects(b_origin);
+  }
 };
 
 TEST_F(SpatialNavigationTest, RootFramesVisualViewport) {
@@ -629,7 +677,7 @@ TEST_F(SpatialNavigationTest, StraightTextNoFragments) {
       "</style>"
       "<a href='#' id='a'>blaaaaa blaaaaa blaaaaa</a>");
   Element* a = GetDocument().getElementById("a");
-  EXPECT_FALSE(IsFragmentedInline(*a));
+  EXPECT_FALSE(IsFragmentedInline(*a->GetLayoutObject()));
 }
 
 TEST_F(SpatialNavigationTest, LineBrokenTextHasFragments) {
@@ -641,7 +689,7 @@ TEST_F(SpatialNavigationTest, LineBrokenTextHasFragments) {
       "</style>"
       "<a href='#' id='a'>blaaaaa blaaaaa blaaaaa</a>");
   Element* a = GetDocument().getElementById("a");
-  EXPECT_TRUE(IsFragmentedInline(*a));
+  EXPECT_TRUE(IsFragmentedInline(*a->GetLayoutObject()));
 }
 
 TEST_F(SpatialNavigationTest, ManyClientRectsButNotLineBrokenText) {
@@ -652,7 +700,7 @@ TEST_F(SpatialNavigationTest, ManyClientRectsButNotLineBrokenText) {
       "</style>"
       "<a href='#' id='a'><div></div></a>");
   Element* a = GetDocument().getElementById("a");
-  EXPECT_FALSE(IsFragmentedInline(*a));
+  EXPECT_FALSE(IsFragmentedInline(*a->GetLayoutObject()));
 }
 
 TEST_F(SpatialNavigationTest, UseTheFirstFragment) {
@@ -664,7 +712,7 @@ TEST_F(SpatialNavigationTest, UseTheFirstFragment) {
       "</style>"
       "<a href='#' id='a'>12345 12</a>");
   Element* a = GetDocument().getElementById("a");
-  EXPECT_TRUE(IsFragmentedInline(*a));
+  EXPECT_TRUE(IsFragmentedInline(*a->GetLayoutObject()));
 
   // Search downards.
   PhysicalRect origin_down = SearchOrigin(RootViewport(&GetFrame()), a,
@@ -699,6 +747,352 @@ TEST_F(SpatialNavigationTest, UseTheFirstFragment) {
   PhysicalRect origin_right = SearchOrigin(RootViewport(&GetFrame()), a,
                                            SpatialNavigationDirection::kRight);
   EXPECT_EQ(origin_right, origin_up);
+}
+
+TEST_F(SpatialNavigationTest, InlineImageLink) {
+  LoadAhem();
+  SetBodyInnerHTML(
+      "<!DOCTYPE html>"
+      "<body style='font: 17px Ahem;'>"
+      "<a id='a'><img id='pic' width='50' height='50'></a>"
+      "</body>");
+  Element* a = GetDocument().getElementById("a");
+  EXPECT_TRUE(HasSameSearchOriginRectAndCandidateRect(a));
+  PhysicalRect uncropped_link = NodeRectInRootFrame(a);
+  EXPECT_EQ(uncropped_link.Width(), 50);
+  EXPECT_EQ(uncropped_link.Height(), 50);
+
+  // The link gets its img's dimensions.
+  PhysicalRect search_origin = SearchOrigin(RootViewport(&GetFrame()), a,
+                                            SpatialNavigationDirection::kDown);
+  EXPECT_EQ(search_origin, uncropped_link);
+}
+
+TEST_F(SpatialNavigationTest, InlineImageLinkWithLineHeight) {
+  LoadAhem();
+  SetBodyInnerHTML(
+      "<!DOCTYPE html>"
+      "<body style='font: 17px Ahem; line-height: 13px;'>"
+      "<a id='a'><img id='pic' width='50' height='50'></a>"
+      "</body>");
+  Element* a = GetDocument().getElementById("a");
+  EXPECT_TRUE(HasSameSearchOriginRectAndCandidateRect(a));
+  PhysicalRect uncropped_link = NodeRectInRootFrame(a);
+  EXPECT_EQ(uncropped_link.Width(), 50);
+  EXPECT_EQ(uncropped_link.Height(), 50);
+
+  // The link gets its img's dimensions.
+  PhysicalRect search_origin = SearchOrigin(RootViewport(&GetFrame()), a,
+                                            SpatialNavigationDirection::kDown);
+  EXPECT_EQ(search_origin, uncropped_link);
+}
+
+TEST_F(SpatialNavigationTest, InlineImageTextLinkWithLineHeight) {
+  LoadAhem();
+  SetBodyInnerHTML(
+      "<!DOCTYPE html>"
+      "<div style='font: 16px Ahem; line-height: 13px;'>"
+      "<a id='a'><img width='30' height='30' id='replacedinline'>aaa</a> "
+      "<a id='b'>b</a><br/>"
+      "<a id='c'>cccccccc</a>"
+      "</div>");
+  Element* a = GetDocument().getElementById("a");
+  Element* b = GetDocument().getElementById("b");
+  Element* c = GetDocument().getElementById("c");
+  EXPECT_TRUE(HasSameSearchOriginRectAndCandidateRect(a));
+  EXPECT_TRUE(HasSameSearchOriginRectAndCandidateRect(b));
+  EXPECT_TRUE(HasSameSearchOriginRectAndCandidateRect(c));
+
+  // The link gets its img's height.
+  PhysicalRect search_origin = SearchOrigin(RootViewport(&GetFrame()), a,
+                                            SpatialNavigationDirection::kDown);
+  EXPECT_EQ(search_origin.Height(), 30);
+
+  EXPECT_FALSE(Intersects(a, c));
+  EXPECT_FALSE(Intersects(b, c));
+}
+
+TEST_F(SpatialNavigationTest, InlineLinkWithInnerBlock) {
+  LoadAhem();
+  SetBodyInnerHTML(
+      "<!DOCTYPE html>"
+      "<div style='font: 20px Ahem; line-height: 16px;'>"
+      "<a id='a'>a<span style='display: inline-block; width: 40px; height: "
+      "45px; color: red'>a</span>a</a><a id='b'>bbb</a><br/>"
+      "<a id='c'>cccccccc</a>"
+      "</div>");
+  Element* a = GetDocument().getElementById("a");
+  Element* b = GetDocument().getElementById("b");
+  Element* c = GetDocument().getElementById("c");
+  EXPECT_TRUE(HasSameSearchOriginRectAndCandidateRect(a));
+  EXPECT_TRUE(HasSameSearchOriginRectAndCandidateRect(b));
+  EXPECT_TRUE(HasSameSearchOriginRectAndCandidateRect(c));
+
+  // The link gets its inner block's height.
+  PhysicalRect search_origin = SearchOrigin(RootViewport(&GetFrame()), a,
+                                            SpatialNavigationDirection::kDown);
+  EXPECT_EQ(search_origin.Height(), 45);
+
+  EXPECT_FALSE(Intersects(a, c));
+  EXPECT_FALSE(Intersects(b, c));
+}
+
+TEST_F(SpatialNavigationTest, NoOverlappingLinks) {
+  LoadAhem();
+  SetBodyInnerHTML(
+      "<!DOCTYPE html>"
+      "<div style='font: 17px Ahem;'>"
+      "  <a id='a'>aaa</a> <a id='b'>bbb</a><br/>"
+      "  <a id='c'>cccccccc</a>"
+      "</div>");
+  Element* a = GetDocument().getElementById("a");
+  Element* b = GetDocument().getElementById("b");
+  Element* c = GetDocument().getElementById("c");
+  AssertNormalizedHeight(a, 17, false);
+  AssertNormalizedHeight(b, 17, false);
+  AssertNormalizedHeight(c, 17, false);
+  EXPECT_TRUE(HasSameSearchOriginRectAndCandidateRect(a));
+  EXPECT_TRUE(HasSameSearchOriginRectAndCandidateRect(b));
+  EXPECT_TRUE(HasSameSearchOriginRectAndCandidateRect(c));
+  EXPECT_FALSE(Intersects(a, b));
+  EXPECT_FALSE(Intersects(a, c));
+}
+
+TEST_F(SpatialNavigationTest, OverlappingLinks) {
+  LoadAhem();
+  SetBodyInnerHTML(
+      "<!DOCTYPE html>"
+      "<div style='font: 16px Ahem; line-height: 13px;'>"
+      "  <a id='a'>aaa</a> <a id='b'>bbb</a><br/>"
+      "  <a id='c'>cccccccc</a>"
+      "</div>");
+  Element* a = GetDocument().getElementById("a");
+  Element* b = GetDocument().getElementById("b");
+  Element* c = GetDocument().getElementById("c");
+  // SpatNav will use the line box's height.
+  AssertNormalizedHeight(a, 13, true);
+  AssertNormalizedHeight(b, 13, true);
+  AssertNormalizedHeight(c, 13, true);
+  EXPECT_TRUE(HasSameSearchOriginRectAndCandidateRect(a));
+  EXPECT_TRUE(HasSameSearchOriginRectAndCandidateRect(b));
+  EXPECT_TRUE(HasSameSearchOriginRectAndCandidateRect(c));
+  EXPECT_FALSE(Intersects(a, b));
+  EXPECT_FALSE(Intersects(a, c));
+}
+
+TEST_F(SpatialNavigationTest, UseInlineBoxHeightWhenShorter) {
+  LoadAhem();
+  SetBodyInnerHTML(
+      "<!DOCTYPE html>"
+      "<div style='font: 17px Ahem; line-height: 20px'>"
+      "  <a id='a'>aaa</a> <a id='b'>bbb</a><br/>"
+      "  <a id='c'>cccccccc</a>"
+      "</div>");
+  Element* a = GetDocument().getElementById("a");
+  Element* b = GetDocument().getElementById("b");
+  Element* c = GetDocument().getElementById("c");
+  // SpatNav will use the inline boxes' height (17px) when it's shorter than
+  // their line box (20px).
+  AssertNormalizedHeight(a, 17, false);
+  AssertNormalizedHeight(b, 17, false);
+  AssertNormalizedHeight(c, 17, false);
+  EXPECT_TRUE(HasSameSearchOriginRectAndCandidateRect(a));
+  EXPECT_TRUE(HasSameSearchOriginRectAndCandidateRect(b));
+  EXPECT_TRUE(HasSameSearchOriginRectAndCandidateRect(c));
+  EXPECT_FALSE(Intersects(a, b));
+  EXPECT_FALSE(Intersects(a, c));
+}
+
+TEST_F(SpatialNavigationTest, LineBrokenLink) {
+  LoadAhem();
+  SetBodyInnerHTML(
+      "<!DOCTYPE html>"
+      "<style>"
+      "  body {font: 10px Ahem; line-height: 12px; width: 40px}"
+      "</style>"
+      "<a id='a'>bla bla bla</a>");
+  Element* a = GetDocument().getElementById("a");
+  ASSERT_TRUE(IsFragmentedInline(*a->GetLayoutObject()));
+  ASSERT_EQ(LineBoxes(*a->GetLayoutObject()), 3);
+  PhysicalRect search_origin =
+      SearchOrigin(RootViewport(a->GetDocument().GetFrame()), a,
+                   SpatialNavigationDirection::kDown);
+  // The line box (12px) is bigger than the inline box (10px).
+  EXPECT_EQ(search_origin.Height(), 10);
+
+  // A line broken link's search origin will only be the first or last line box.
+  // The candidate rect will still contain all line boxes.
+  EXPECT_FALSE(HasSameSearchOriginRectAndCandidateRect(a));
+
+  FocusCandidate candidate(a, SpatialNavigationDirection::kDown);
+  PhysicalRect uncropped = NodeRectInRootFrame(a);
+  EXPECT_EQ(uncropped, candidate.rect_in_root_frame);
+  EXPECT_EQ(candidate.rect_in_root_frame.Height(), 12 + 12 + 10);
+}
+
+TEST_F(SpatialNavigationTest, NormalizedLineBrokenLink) {
+  LoadAhem();
+  SetBodyInnerHTML(
+      "<!DOCTYPE html>"
+      "<style>"
+      "  body {font: 10px Ahem; line-height: 7px; width: 40px}"
+      "</style>"
+      "<a id='a'>bla bla bla</a>");
+  Element* a = GetDocument().getElementById("a");
+  ASSERT_TRUE(IsFragmentedInline(*a->GetLayoutObject()));
+  ASSERT_EQ(LineBoxes(*a->GetLayoutObject()), 3);
+  PhysicalRect search_origin =
+      SearchOrigin(RootViewport(a->GetDocument().GetFrame()), a,
+                   SpatialNavigationDirection::kDown);
+  // The line box (7px) is smaller than the inline box (10px).
+  EXPECT_EQ(search_origin.Height(), 7);
+
+  // A line broken link's search origin will only be the first or last line box.
+  // The candidate rect will still contain all line boxes.
+  EXPECT_FALSE(HasSameSearchOriginRectAndCandidateRect(a));
+
+  FocusCandidate candidate(a, SpatialNavigationDirection::kDown);
+  PhysicalRect uncropped = NodeRectInRootFrame(a);
+  EXPECT_LT(candidate.rect_in_root_frame.Height(), uncropped.Height());
+  EXPECT_EQ(candidate.rect_in_root_frame.Height(), 3 * 7);
+}
+
+TEST_F(SpatialNavigationTest, NormalizedLineBrokenLinkWithImg) {
+  LoadAhem();
+  SetBodyInnerHTML(
+      "<!DOCTYPE html>"
+      "<style>"
+      "body {font: 10px Ahem; line-height: 7px;}"
+      "</style>"
+      "<div style='width: 40px'>"
+      "<a id='a'>aa<img width='10' height='24' src=''>a aaaa</a>"
+      "<a id='b'>bb</a>"
+      "</div>");
+  Element* a = GetDocument().getElementById("a");
+  Element* b = GetDocument().getElementById("b");
+  ASSERT_TRUE(IsFragmentedInline(*a->GetLayoutObject()));
+  ASSERT_FALSE(IsFragmentedInline(*b->GetLayoutObject()));
+  ASSERT_EQ(LineBoxes(*a->GetLayoutObject()), 2);
+  ASSERT_EQ(LineBoxes(*b->GetLayoutObject()), 1);
+
+  // A line broken link's search origin will only be the first or last line box.
+  // The candidate rect will still contain all line boxes.
+  EXPECT_FALSE(HasSameSearchOriginRectAndCandidateRect(a));
+  EXPECT_FALSE(Intersects(a, b));
+}
+
+TEST_F(SpatialNavigationTest, PaddedInlineLinkOverlapping) {
+  LoadAhem();
+  SetBodyInnerHTML(
+      "<!DOCTYPE html>"
+      "<div style='font: 18px Ahem; line-height: 13px;'>"
+      "  <a id='a' style='padding: 10px;'>aaa</a>"
+      "  <a id='b'>bbb</a><br/>"
+      "  <a id='c'>cccccccc</a>"
+      "</div>");
+  Element* a = GetDocument().getElementById("a");
+  Element* b = GetDocument().getElementById("b");
+  Element* c = GetDocument().getElementById("c");
+  // Padding doesn't grow |a|'s line box.
+  AssertNormalizedHeight(a, 13, true);
+  AssertNormalizedHeight(b, 13, true);
+  AssertNormalizedHeight(c, 13, true);
+  EXPECT_TRUE(HasSameSearchOriginRectAndCandidateRect(a));
+  EXPECT_TRUE(HasSameSearchOriginRectAndCandidateRect(b));
+  EXPECT_TRUE(HasSameSearchOriginRectAndCandidateRect(c));
+  EXPECT_FALSE(Intersects(a, b));
+  EXPECT_FALSE(Intersects(a, c));
+}
+
+TEST_F(SpatialNavigationTest, PaddedInlineBlockLinkOverlapping) {
+  LoadAhem();
+  SetBodyInnerHTML(
+      "<!DOCTYPE html>"
+      "<div style='font: 18px Ahem; line-height: 13px;'>"
+      "  <a id='a' style='display: inline-block; padding: 10px;'>aaa</a>"
+      "  <a id='b'>bbb</a><br/>"
+      "  <a id='c'>cccccccc</a>"
+      "</div>");
+  Element* a = GetDocument().getElementById("a");
+  Element* b = GetDocument().getElementById("b");
+  Element* c = GetDocument().getElementById("c");
+  EXPECT_TRUE(HasSameSearchOriginRectAndCandidateRect(a));
+  EXPECT_TRUE(HasSameSearchOriginRectAndCandidateRect(b));
+  EXPECT_TRUE(HasSameSearchOriginRectAndCandidateRect(c));
+  EXPECT_FALSE(Intersects(a, b));
+  EXPECT_FALSE(Intersects(a, c));
+}
+
+TEST_F(SpatialNavigationTest, BoxWithLineHeight) {
+  LoadAhem();
+  SetBodyInnerHTML(
+      "<!DOCTYPE html>"
+      "<div style='font: 16px Ahem; line-height: 13px;' id='block'>"
+      "  aaa bbb<br/>"
+      "  <a id='c'>cccccccc</a>"
+      "</div>");
+  Element* block = GetDocument().getElementById("block");
+  Element* c = GetDocument().getElementById("c");
+  ASSERT_TRUE(Intersects(block, c));
+
+  // The block's inner line-height does not change the block's outer dimensions.
+  PhysicalRect search_origin = SearchOrigin(RootViewport(&GetFrame()), block,
+                                            SpatialNavigationDirection::kDown);
+  PhysicalRect uncropped = NodeRectInRootFrame(block);
+  PhysicalRect normalized =
+      ShrinkInlineBoxToLineBox(*block->GetLayoutObject(), uncropped);
+  EXPECT_EQ(search_origin, uncropped);
+  EXPECT_EQ(normalized, uncropped);
+  EXPECT_TRUE(HasSameSearchOriginRectAndCandidateRect(block));
+}
+
+TEST_F(SpatialNavigationTest, ReplacedInlineElement) {
+  LoadAhem();
+  SetBodyInnerHTML(
+      "<!DOCTYPE html>"
+      "<body style='font: 16px Ahem; line-height: 13px;'>"
+      "  <img width='20' height='20' id='pic'> bbb<br/>"
+      "  <a id='c'>cccccccc</a>"
+      "</body>");
+  Element* pic = GetDocument().getElementById("pic");
+  Element* c = GetDocument().getElementById("c");
+  EXPECT_FALSE(Intersects(pic, c));
+
+  // The line-height around the img does not change the img's outer dimensions.
+  PhysicalRect search_origin = SearchOrigin(RootViewport(&GetFrame()), pic,
+                                            SpatialNavigationDirection::kDown);
+  PhysicalRect uncropped = NodeRectInRootFrame(pic);
+  PhysicalRect normalized =
+      ShrinkInlineBoxToLineBox(*pic->GetLayoutObject(), uncropped);
+  EXPECT_EQ(search_origin, uncropped);
+  EXPECT_EQ(normalized, uncropped);
+  EXPECT_EQ(search_origin.Width(), 20);
+  EXPECT_EQ(search_origin.Height(), 20);
+  EXPECT_TRUE(HasSameSearchOriginRectAndCandidateRect(pic));
+}
+
+TEST_F(SpatialNavigationTest, VerticalText) {
+  LoadAhem();
+  SetBodyInnerHTML(
+      "<!DOCTYPE html>"
+      "<div style='font: 14px/14px Ahem; line-height: 12px; writing-mode: "
+      "vertical-lr; height: 160px'>"
+      "<a id='a'>aaaaaaaaaaa</a>"
+      "<a id='b'>bbb</a> <a id='c'>cccccc</a>"
+      "</div>");
+  Element* a = GetDocument().getElementById("a");
+  Element* b = GetDocument().getElementById("b");
+  Element* c = GetDocument().getElementById("c");
+  EXPECT_TRUE(HasSameSearchOriginRectAndCandidateRect(a));
+  EXPECT_TRUE(HasSameSearchOriginRectAndCandidateRect(b));
+  EXPECT_TRUE(HasSameSearchOriginRectAndCandidateRect(c));
+  EXPECT_FALSE(Intersects(a, b));
+  EXPECT_FALSE(Intersects(a, c));
+
+  PhysicalRect search_origin = SearchOrigin(RootViewport(&GetFrame()), a,
+                                            SpatialNavigationDirection::kDown);
+  ASSERT_EQ(search_origin.Height(), 14 * 11);
+  EXPECT_EQ(search_origin.Width(), 12);  // The logical line-height.
 }
 
 TEST_F(SpatialNavigationTest, TopOfPinchedViewport) {

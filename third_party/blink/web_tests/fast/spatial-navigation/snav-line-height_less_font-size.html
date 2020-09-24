@@ -1,0 +1,50 @@
+<!doctype html>
+<p>CSS's <span style="font-family: monospace">line-height</span> can make the links' line boxes overlap vertically.
+SpatNav needs to handle these overlapping focusables.</p>
+
+<p>This test looks a bit artificial because the Ahem font's "glyphs" are squares that fill the
+entire line height. Real-life fonts don't; they have varying white space above/under the glyphs.
+To reduce the white space, web developers may use <span style="font-family: monospace">line-height < font-size</span>
+(which causes overlapping focusables...).</p>
+
+<p>Test 1 (the red and blue links intersect the purple link below):</p>
+
+<div style="font: 16px Ahem; line-height: 14px;">
+<a href="www" id="a" style="color: green">Aaaaaaaaaa</a> <a href="www" id="b" style="color: red">unreachable</a>, <a href="www" id="c">cccccccc ccc ccccccc</a><br/>
+blabla, <a href="www" id="d" style="color: purple">ddd ddd dddddd dddddd ddd ddd ddd</a> bla.
+</div>
+
+<p>Test 2 (the red and blue links intersect the purple link above):</p>
+
+<div style="font: 16px Ahem; line-height: 14px;">
+blabla, <a href="www" id="d2" style="color: purple">ddd ddd dddddd dddddd ddd ddd ddd</a> bla.
+<a href="www" id="a2" style="color: green">Aaaaaaaaaa</a> <a href="www" id="b2" style="color: red">unreachable</a>, <a href="www" id="c2">cccccccc ccc ccccccc</a><br/>
+</div>
+
+<p><em>Manual test instruction: Ensure that all links are reachable.</em></p>
+
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="resources/snav-testharness.js"></script>
+<script>
+  var resultMap = [
+    ["Down", "c"],
+    ["Left", "b"],
+    ["Left", "a"],
+    ["Right", "b"],
+    ["Right", "c"],
+    ["Down", "d"],
+
+    ["Down", "d2"],
+    ["Down", "c2"],
+    ["Left", "b2"],
+    ["Left", "a2"],
+    ["Right", "b2"],
+    ["Right", "c2"],
+
+    ["Up", "d2"],
+    ["Up", "d"],
+    ["Up", "c"],
+  ];
+  snav.assertFocusMoves(resultMap);
+</script>
