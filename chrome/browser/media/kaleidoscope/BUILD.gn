@@ -37,6 +37,7 @@ if (enable_kaleidoscope) {
       "-E",
       "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
     ]
+    inputs = [ "//third_party/shaka-player/dist/shaka-player.ui.js" ]
     deps = [
       "//chrome/browser/media/kaleidoscope/mojom:mojom_js",
       "//url/mojom:url_mojom_gurl_js",

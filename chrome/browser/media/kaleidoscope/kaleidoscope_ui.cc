@@ -305,7 +305,7 @@ content::WebUIDataSource* KaleidoscopeUI::CreateUntrustedWebUIDataSource() {
   untrusted_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ImgSrc, "img-src * data:;");
   untrusted_source->OverrideContentSecurityPolicy(
-      network::mojom::CSPDirectiveName::MediaSrc, "media-src * data:;");
+      network::mojom::CSPDirectiveName::MediaSrc, "media-src * data: blob:;");
 
   // Allow access to anywhere using fetch.
   untrusted_source->OverrideContentSecurityPolicy(
@@ -331,6 +331,8 @@ content::WebUIDataSource* KaleidoscopeUI::CreateUntrustedWebUIDataSource() {
   untrusted_source->AddResourcePath("toolbar.js", IDR_KALEIDOSCOPE_TOOLBAR_JS);
   untrusted_source->AddResourcePath("side_nav_container.js",
                                     IDR_KALEIDOSCOPE_SIDE_NAV_CONTAINER_JS);
+  untrusted_source->AddResourcePath("shaka-player.ui.js",
+                                    IDR_KALEIDOSCOPE_SHAKA_PLAYER_JS);
 
   untrusted_source->AddResourcePath("geometry.mojom-lite.js",
                                     IDR_GEOMETRY_MOJOM_LITE_JS);
