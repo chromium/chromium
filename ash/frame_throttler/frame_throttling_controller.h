@@ -57,6 +57,7 @@ class ASH_EXPORT FrameThrottlingController {
   base::ObserverList<Observer> observers_;
   // The fps used for throttling.
   uint8_t fps_ = kDefaultThrottleFps;
+  bool windows_throttled_ = false;
 };
 
 }  // namespace ash

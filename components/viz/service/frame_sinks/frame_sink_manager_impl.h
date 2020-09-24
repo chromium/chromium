@@ -341,7 +341,7 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
   base::flat_map<uint32_t, base::ScopedClosureRunner> cached_back_buffers_;
 
   // This tells if any frame sinks are currently throttled.
-  bool frame_sinks_throttled = false;
+  bool frame_sinks_throttled_ = false;
 
   THREAD_CHECKER(thread_checker_);
 

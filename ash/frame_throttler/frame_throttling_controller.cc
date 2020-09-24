@@ -61,11 +61,15 @@ FrameThrottlingController::~FrameThrottlingController() {
 
 void FrameThrottlingController::StartThrottling(
     const std::vector<aura::Window*>& windows) {
+  if (windows_throttled_)
+    EndThrottling();
+
+  windows_throttled_ = true;
   std::vector<viz::FrameSinkId> frame_sink_ids;
   frame_sink_ids.reserve(windows.size());
-
   CollectBrowserFrameSinkIds(windows, &frame_sink_ids);
-  StartThrottling(frame_sink_ids, fps_);
+  if (!frame_sink_ids.empty())
+    StartThrottling(frame_sink_ids, fps_);
 
   for (auto& observer : observers_) {
     observer.OnThrottlingStarted(windows);
@@ -76,7 +80,8 @@ void FrameThrottlingController::StartThrottling(
     const std::vector<viz::FrameSinkId>& frame_sink_ids,
     uint8_t fps) {
   DCHECK_GT(fps, 0);
-  if (context_factory_ && !frame_sink_ids.empty()) {
+  DCHECK(!frame_sink_ids.empty());
+  if (context_factory_) {
     context_factory_->GetHostFrameSinkManager()->StartThrottling(
         frame_sink_ids, base::TimeDelta::FromSeconds(1) / fps);
   }
@@ -89,6 +94,7 @@ void FrameThrottlingController::EndThrottling() {
   for (auto& observer : observers_) {
     observer.OnThrottlingEnded();
   }
+  windows_throttled_ = false;
 }
 
 void FrameThrottlingController::AddObserver(Observer* observer) {

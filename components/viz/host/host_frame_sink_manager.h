@@ -173,10 +173,9 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
 
   // Starts throttling the frame sinks specified by |frame_sink_ids| and all
   // their descendant sinks to send BeginFrames at an interval of |interval|.
-  // |interval| should be greater than zero. Calling this function before
-  // calling EndThrottling() to end a previous throttling operation will
-  // automatically end the previous operation before applying the current
-  // throttling operation.
+  // |interval| should be greater than zero. Previous throttling operation
+  // on any frame sinks must be ended by EndThrottling() before applying the
+  // current throttling operation.
   void StartThrottling(const std::vector<FrameSinkId>& frame_sink_ids,
                        base::TimeDelta interval);
 

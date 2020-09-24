@@ -642,10 +642,9 @@ void FrameSinkManagerImpl::StartThrottling(
     const std::vector<FrameSinkId>& frame_sink_ids,
     base::TimeDelta interval) {
   DCHECK_GT(interval, base::TimeDelta());
-  if (frame_sinks_throttled)
-    EndThrottling();
+  DCHECK(!frame_sinks_throttled_);
 
-  frame_sinks_throttled = true;
+  frame_sinks_throttled_ = true;
   for (auto& frame_sink_id : frame_sink_ids) {
     UpdateThrottlingRecursively(frame_sink_id, interval);
   }
@@ -655,6 +654,6 @@ void FrameSinkManagerImpl::EndThrottling() {
   for (auto& support_map_item : support_map_) {
     support_map_item.second->ThrottleBeginFrame(base::TimeDelta());
   }
-  frame_sinks_throttled = false;
+  frame_sinks_throttled_ = false;
 }
 }  // namespace viz
