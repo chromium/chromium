@@ -199,18 +199,10 @@ bool LinkLoader::LoadLink(const LinkLoadParameters& params,
   base::Optional<mojom::blink::PrerenderRelType> prerender_rel_type =
       PrerenderRelTypeFromRelAttribute(params.rel, document);
   if (prerender_rel_type) {
-    if (!prerender_) {
-      prerender_ = PrerenderHandle::Create(document, this, params.href,
-                                           *prerender_rel_type);
-    } else if (prerender_->Url() != params.href) {
-      prerender_->Cancel();
-      prerender_ = PrerenderHandle::Create(document, this, params.href,
-                                           *prerender_rel_type);
-    }
-    // TODO(gavinp): Handle changes to rel types of existing prerenders.
-  } else if (prerender_) {
-    prerender_->Cancel();
-    prerender_.Clear();
+    // The previous prerender should already be aborted by Abort().
+    DCHECK(!prerender_);
+    prerender_ = PrerenderHandle::Create(document, this, params.href,
+                                         *prerender_rel_type);
   }
   return true;
 }
