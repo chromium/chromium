@@ -25,7 +25,7 @@ class VIEWS_EXPORT ScrollBarViews : public ScrollBar, public ButtonListener {
   METADATA_HEADER(ScrollBarViews);
 
   // Creates new scrollbar, either horizontal or vertical.
-  explicit ScrollBarViews(bool horizontal);
+  explicit ScrollBarViews(bool horizontal = true);
   ~ScrollBarViews() override;
 
   static int GetVerticalScrollBarWidth(const ui::NativeTheme* theme);

@@ -86,8 +86,7 @@ class ScrollBarViewsTest : public ViewsTestBase {
     auto* container =
         widget_->SetContentsView(std::make_unique<TestScrollbarContainer>());
 
-    scrollbar_ =
-        container->AddChildView(std::make_unique<ScrollBarViews>(true));
+    scrollbar_ = container->AddChildView(std::make_unique<ScrollBarViews>());
     scrollbar_->SetBounds(0, 0, 100, 100);
     scrollbar_->Update(100, 1000, 0);
     scrollbar_->set_controller(controller_.get());
