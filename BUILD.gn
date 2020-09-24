@@ -623,6 +623,7 @@ group("gn_all") {
       "//third_party/breakpad:dump_syms",
 
       # The following are accessibility API tools.
+      "//tools/accessibility/inspect:ax_dump_events",
       "//tools/accessibility/inspect:ax_dump_tree",
     ]
     deps -= [
