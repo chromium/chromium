@@ -1155,7 +1155,7 @@ void ProfileSyncService::OnConfigureDone(
     return;
   }
 
-  RecordMemoryUsageHistograms();
+  RecordMemoryUsageAndCountsHistograms();
 
   StartSyncingWithServer();
 }
@@ -2008,7 +2008,7 @@ void ProfileSyncService::RemoveClientFromServer() const {
   }
 }
 
-void ProfileSyncService::RecordMemoryUsageHistograms() {
+void ProfileSyncService::RecordMemoryUsageAndCountsHistograms() {
   ModelTypeSet active_types = GetActiveDataTypes();
   for (ModelType type : active_types) {
     auto dtc_it = data_type_controllers_.find(type);
