@@ -16,7 +16,7 @@ float TextMetrics::GetFontBaseline(const TextBaseline& text_baseline,
   FontMetrics font_metrics = font_data.GetFontMetrics();
   switch (text_baseline) {
     case kTopTextBaseline:
-      return font_data.EmHeightAscent().ToFloat();
+      return font_data.NormalizedTypoAscent().ToFloat();
     case kHangingTextBaseline:
       // According to
       // http://wiki.apache.org/xmlgraphics-fop/LineLayout/AlignmentHandling
@@ -26,11 +26,11 @@ float TextMetrics::GetFontBaseline(const TextBaseline& text_baseline,
     case kIdeographicTextBaseline:
       return -font_metrics.FloatDescent();
     case kBottomTextBaseline:
-      return -font_data.EmHeightDescent().ToFloat();
-    case kMiddleTextBaseline:
-      return (font_data.EmHeightAscent().ToFloat() -
-              font_data.EmHeightDescent().ToFloat()) /
-             2.0f;
+      return -font_data.NormalizedTypoDescent().ToFloat();
+    case kMiddleTextBaseline: {
+      const FontHeight metrics = font_data.NormalizedTypoAscentAndDescent();
+      return (metrics.ascent.ToFloat() - metrics.descent.ToFloat()) / 2.0f;
+    }
     case kAlphabeticTextBaseline:
     default:
       // Do nothing.
@@ -121,8 +121,12 @@ void TextMetrics::Update(const Font& font,
   font_bounding_box_descent_ = descent + baseline_y;
   actual_bounding_box_ascent_ = -glyph_bounds.Y() - baseline_y;
   actual_bounding_box_descent_ = glyph_bounds.MaxY() + baseline_y;
-  em_height_ascent_ = font_data->EmHeightAscent() - baseline_y;
-  em_height_descent_ = font_data->EmHeightDescent() + baseline_y;
+  // TODO(kojii): We use normalized sTypoAscent/Descent here, but this should be
+  // revisited when the spec evolves.
+  const FontHeight normalized_typo_metrics =
+      font_data->NormalizedTypoAscentAndDescent();
+  em_height_ascent_ = normalized_typo_metrics.ascent - baseline_y;
+  em_height_descent_ = normalized_typo_metrics.descent + baseline_y;
 
   // TODO(fserb): hanging/ideographic baselines are broken.
   baselines_->setAlphabetic(-baseline_y);

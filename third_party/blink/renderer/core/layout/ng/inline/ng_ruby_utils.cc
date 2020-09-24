@@ -45,14 +45,18 @@ std::tuple<LayoutUnit, LayoutUnit> AdjustTextOverUnderOffsetsForEmHeight(
     const SimpleFontData* font_data = run_font.font_data_;
     if (!font_data)
       continue;
-    const LayoutUnit em_ascent = font_data->EmHeightAscent(font_baseline);
-    const LayoutUnit em_descent = font_data->EmHeightDescent(font_baseline);
+    const FontHeight normalized_height =
+        font_data->NormalizedTypoAscentAndDescent(font_baseline);
     // Floor() is better than Round().  We should not subtract pixels larger
-    // than |primary_ascent - em_ascent|.
+    // than |primary_ascent - em_box.ascent|.
     const LayoutUnit current_over_diff(
-        (primary_ascent - em_ascent).ClampNegativeToZero().Floor());
+        (primary_ascent - normalized_height.ascent)
+            .ClampNegativeToZero()
+            .Floor());
     const LayoutUnit current_under_diff(
-        (primary_descent - em_descent).ClampNegativeToZero().Floor());
+        (primary_descent - normalized_height.descent)
+            .ClampNegativeToZero()
+            .Floor());
     over_diff = std::min(over_diff, current_over_diff);
     under_diff = std::min(under_diff, current_under_diff);
   }

@@ -97,10 +97,14 @@ class PLATFORM_EXPORT SimpleFontData : public FontData {
     return GetFontMetrics().FloatHeight() - PlatformData().size();
   }
 
-  // "em height" metrics.
-  // https://drafts.css-houdini.org/font-metrics-api-1/#fontmetrics
-  LayoutUnit EmHeightAscent(FontBaseline = kAlphabeticBaseline) const;
-  LayoutUnit EmHeightDescent(FontBaseline = kAlphabeticBaseline) const;
+  // |sTypoAscender| and |sTypoDescender| in |OS/2| table, normalized to 1em.
+  // This metrics can simulate ideographics em-box when the font doesn't have
+  // better ways to compute it.
+  // https://docs.microsoft.com/en-us/typography/opentype/spec/baselinetags#ideoembox
+  FontHeight NormalizedTypoAscentAndDescent(
+      FontBaseline baseline_type = kAlphabeticBaseline) const;
+  LayoutUnit NormalizedTypoAscent(FontBaseline = kAlphabeticBaseline) const;
+  LayoutUnit NormalizedTypoDescent(FontBaseline = kAlphabeticBaseline) const;
 
   LayoutUnit VerticalPosition(FontVerticalPositionType, FontBaseline) const;
 
@@ -173,8 +177,8 @@ class PLATFORM_EXPORT SimpleFontData : public FontData {
   scoped_refptr<SimpleFontData> CreateScaledFontData(const FontDescription&,
                                               float scale_factor) const;
 
-  void ComputeEmHeightMetrics() const;
-  bool NormalizeEmHeightMetrics(float, float) const;
+  void ComputeNormalizedTypoAscentAndDescent() const;
+  bool TrySetNormalizedTypoAscentAndDescent(float ascent, float descent) const;
 
   FontMetrics font_metrics_;
   float max_char_width_;
@@ -213,8 +217,7 @@ class PLATFORM_EXPORT SimpleFontData : public FontData {
   // advance-override value in @font-face.
   base::Optional<float> advance_override_;
 
-  mutable LayoutUnit em_height_ascent_;
-  mutable LayoutUnit em_height_descent_;
+  mutable FontHeight normalized_typo_ascent_descent_;
 
 // See discussion on crbug.com/631032 and Skiaissue
 // https://bugs.chromium.org/p/skia/issues/detail?id=5328 :

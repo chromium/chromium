@@ -269,24 +269,26 @@ scoped_refptr<SimpleFontData> SimpleFontData::MetricsOverriddenFontData(
 // Descent - |--------------------------------
 //           | - Internal Leading (in descent)
 // -------------------------------------------
-LayoutUnit SimpleFontData::EmHeightAscent(FontBaseline baseline_type) const {
+FontHeight SimpleFontData::NormalizedTypoAscentAndDescent(
+    FontBaseline baseline_type) const {
   if (baseline_type == kAlphabeticBaseline) {
-    if (!em_height_ascent_)
-      ComputeEmHeightMetrics();
-    return em_height_ascent_;
+    if (!normalized_typo_ascent_descent_.ascent)
+      ComputeNormalizedTypoAscentAndDescent();
+    return normalized_typo_ascent_descent_;
   }
-  LayoutUnit em_height = LayoutUnit::FromFloatRound(PlatformData().size());
-  return em_height - em_height / 2;
+  const LayoutUnit normalized_height =
+      LayoutUnit::FromFloatRound(PlatformData().size());
+  return {normalized_height - normalized_height / 2, normalized_height / 2};
 }
 
-LayoutUnit SimpleFontData::EmHeightDescent(FontBaseline baseline_type) const {
-  if (baseline_type == kAlphabeticBaseline) {
-    if (!em_height_descent_)
-      ComputeEmHeightMetrics();
-    return em_height_descent_;
-  }
-  LayoutUnit em_height = LayoutUnit::FromFloatRound(PlatformData().size());
-  return em_height / 2;
+LayoutUnit SimpleFontData::NormalizedTypoAscent(
+    FontBaseline baseline_type) const {
+  return NormalizedTypoAscentAndDescent(baseline_type).ascent;
+}
+
+LayoutUnit SimpleFontData::NormalizedTypoDescent(
+    FontBaseline baseline_type) const {
+  return NormalizedTypoAscentAndDescent(baseline_type).descent;
 }
 
 static std::pair<int16_t, int16_t> TypoAscenderAndDescender(
@@ -303,27 +305,28 @@ static std::pair<int16_t, int16_t> TypoAscenderAndDescender(
   return std::make_pair(0, 0);
 }
 
-void SimpleFontData::ComputeEmHeightMetrics() const {
+void SimpleFontData::ComputeNormalizedTypoAscentAndDescent() const {
   // Compute em height metrics from OS/2 sTypoAscender and sTypoDescender.
   SkTypeface* typeface = platform_data_.Typeface();
   int16_t typo_ascender, typo_descender;
   std::tie(typo_ascender, typo_descender) = TypoAscenderAndDescender(typeface);
   if (typo_ascender > 0 &&
-      NormalizeEmHeightMetrics(typo_ascender, typo_ascender + typo_descender)) {
+      TrySetNormalizedTypoAscentAndDescent(typo_ascender, typo_descender)) {
     return;
   }
 
   // As the last resort, compute em height metrics from our ascent/descent.
   const FontMetrics& font_metrics = GetFontMetrics();
-  if (NormalizeEmHeightMetrics(font_metrics.FloatAscent(),
-                               font_metrics.FloatHeight())) {
+  if (TrySetNormalizedTypoAscentAndDescent(font_metrics.FloatAscent(),
+                                           font_metrics.FloatDescent())) {
     return;
   }
   NOTREACHED();
 }
 
-bool SimpleFontData::NormalizeEmHeightMetrics(float ascent,
-                                              float height) const {
+bool SimpleFontData::TrySetNormalizedTypoAscentAndDescent(float ascent,
+                                                          float descent) const {
+  const float height = ascent + descent;
   if (height <= 0 || ascent < 0 || ascent > height)
     return false;
   // While the OpenType specification recommends the sum of sTypoAscender and
@@ -334,10 +337,12 @@ bool SimpleFontData::NormalizeEmHeightMetrics(float ascent,
   // keeping the ratio of sTypoAscender:sTypoDescender.
   // This matches to how Gecko computes "em height":
   // https://github.com/whatwg/html/issues/2470#issuecomment-291425136
-  float em_height = PlatformData().size();
-  em_height_ascent_ = LayoutUnit::FromFloatRound(ascent * em_height / height);
-  em_height_descent_ =
-      LayoutUnit::FromFloatRound(em_height) - em_height_ascent_;
+  const float em_height = PlatformData().size();
+  const LayoutUnit normalized_ascent =
+      LayoutUnit::FromFloatRound(ascent * em_height / height);
+  normalized_typo_ascent_descent_ = {
+      normalized_ascent,
+      LayoutUnit::FromFloatRound(em_height) - normalized_ascent};
   return true;
 }
 
@@ -352,9 +357,9 @@ LayoutUnit SimpleFontData::VerticalPosition(
     case FontVerticalPositionType::TextBottom:
       return LayoutUnit(-GetFontMetrics().Descent(baseline_type));
     case FontVerticalPositionType::TopOfEmHeight:
-      return EmHeightAscent(baseline_type);
+      return NormalizedTypoAscent(baseline_type);
     case FontVerticalPositionType::BottomOfEmHeight:
-      return -EmHeightDescent(baseline_type);
+      return -NormalizedTypoDescent(baseline_type);
   }
   NOTREACHED();
   return LayoutUnit();
