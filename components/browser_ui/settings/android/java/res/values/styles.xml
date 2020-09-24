@@ -31,6 +31,7 @@
     </style>
 
     <style name="PreferenceTheme">
+        <item name="android:scrollbars">vertical</item>
         <item name="preferenceStyle">@style/PreferenceItem</item>
         <item name="preferenceFragmentCompatStyle">@style/SettingsFragment</item>
         <item name="preferenceFragmentListStyle">@style/SettingsFragmentList</item>
