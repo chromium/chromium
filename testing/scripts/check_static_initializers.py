@@ -26,6 +26,31 @@ _LINUX_SI_FILE_ALLOWLIST = {
 }
 _LINUX_SI_FILE_ALLOWLIST['nacl_helper'] = _LINUX_SI_FILE_ALLOWLIST['chrome']
 
+# The lists for Chrome OS are conceptually the same as the Linux ones above.
+# If something adds a static initializer, revert it. We don't accept regressions
+# in static initializers.
+_CROS_SI_FILE_ALLOWLIST = {
+    'chrome': [
+        'InstrProfilingRuntime.cpp',  # Only in coverage builds, not production.
+        'atomicops_internals_x86.cc',  # TODO(crbug.com/973551): Remove.
+        'debugallocation_shim.cc',  # TODO(crbug.com/973552): Remove.
+        'iostream.cpp',  # TODO(crbug.com/973554): Remove.
+        'spinlock.cc',  # TODO(crbug.com/973556): Remove.
+        'crash_report_private_api.cc',  # TODO(crbug.com/537099): Remove.
+        'dlcservice_client.cc',  # TODO(crbug.com/537099): Remove.
+        'ftl_services_context.cc',  # TODO(crbug.com/537099): Remove.
+        'hud_display.cc',  # TODO(crbug.com/537099): Remove.
+        'int256.cc',  # TODO(crbug.com/537099): Remove.
+        'native_message_host_chromeos.cc',  # TODO(crbug.com/537099): Remove.
+        'protobuf_http_status.cc',  # TODO(crbug.com/537099): Remove.
+        'rpc.pb.cc',  # TODO(crbug.com/537099): Remove.
+        'switch_access_menu_view.cc',  # TODO(crbug.com/537099): Remove.
+        'uri_impl.cc',  # TODO(crbug.com/537099): Remove.
+    ],
+    'nacl_helper_bootstrap': [],
+}
+_CROS_SI_FILE_ALLOWLIST['nacl_helper'] = _LINUX_SI_FILE_ALLOWLIST['chrome']
+
 # Mac can use this list when a dsym is available, otherwise it will fall back
 # to checking the count.
 _MAC_SI_FILE_ALLOWLIST = [
@@ -128,9 +153,11 @@ def main_mac(src_dir):
   return ret
 
 
-def main_linux(src_dir):
+def main_linux(src_dir, is_chromeos):
   ret = 0
-  for binary_name in _LINUX_SI_FILE_ALLOWLIST:
+  allowlist = _CROS_SI_FILE_ALLOWLIST if is_chromeos else \
+      _LINUX_SI_FILE_ALLOWLIST
+  for binary_name in allowlist:
     if not os.path.exists(binary_name):
       continue
 
@@ -154,7 +181,7 @@ def main_linux(src_dir):
       files_with_si.add(parts[1])
 
     for f in files_with_si:
-      if f not in _LINUX_SI_FILE_ALLOWLIST[binary_name]:
+      if f not in allowlist[binary_name]:
         ret = 1
         print('Error: file "%s" is not expected to have static initializers in'
               ' binary "%s"') % (f, binary_name)
@@ -176,7 +203,9 @@ def main_run(args):
   if sys.platform.startswith('darwin'):
     rc = main_mac(src_dir)
   elif sys.platform == 'linux2':
-    rc = main_linux(src_dir)
+    is_chromeos = 'buildername' in args.properties and \
+        'chromeos' in args.properties['buildername']
+    rc = main_linux(src_dir, is_chromeos)
   else:
     sys.stderr.write('Unsupported platform %s.\n' % repr(sys.platform))
     return 2
