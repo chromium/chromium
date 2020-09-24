@@ -130,7 +130,6 @@ class CORE_EXPORT Hinge final : public GarbageCollected<Hinge> {
 
 class CORE_EXPORT InspectorOverlayAgent final
     : public InspectorBaseAgent<protocol::Overlay::Metainfo>,
-      public InspectorDOMAgent::DOMListener,
       public InspectorOverlayHost::Delegate {
  public:
   static std::unique_ptr<InspectorGridHighlightConfig> ToGridHighlightConfig(
@@ -212,6 +211,7 @@ class CORE_EXPORT InspectorOverlayAgent final
   void Dispose() override;
 
   void Inspect(Node*);
+  void EnsureAXContext(Node*);
   void DispatchBufferedTouchEvents();
   WebInputEventResult HandleInputEvent(const WebInputEvent&);
   WebInputEventResult HandleInputEventInOverlay(const WebInputEvent&);
@@ -237,12 +237,6 @@ class CORE_EXPORT InspectorOverlayAgent final
 
   // InspectorOverlayHost::Delegate implementation.
   void Dispatch(const String& message) override;
-
-  // InspectorDOMAgent::DOMListener implementation
-  void DidAddDocument(Document*) override;
-  void DidRemoveDocument(Document*) override;
-  void WillRemoveDOMNode(Node*) override;
-  void DidModifyDOMAttr(Element*) override;
 
   bool IsEmpty();
 

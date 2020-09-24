@@ -131,6 +131,8 @@ void SearchingForNodeTool::Draw(float scale) {
                              !omit_tooltip_ && highlight_config_->show_info &&
                              node->GetLayoutObject() &&
                              node->GetDocument().GetFrame();
+  DCHECK(overlay_);
+  overlay_->EnsureAXContext(node);
   InspectorHighlight highlight(node, *highlight_config_, contrast_info_,
                                append_element_info, false, is_locked_ancestor_);
   if (event_target_node_) {
@@ -336,6 +338,10 @@ void NodeHighlightTool::DrawMatchingSelector() {
   ContainerNode* query_base = node_->ContainingShadowRoot();
   if (!query_base)
     query_base = node_->ownerDocument();
+
+  DCHECK(overlay_);
+  overlay_->EnsureAXContext(query_base);
+
   StaticElementList* elements = query_base->QuerySelectorAll(
       AtomicString(selector_list_), exception_state);
   if (exception_state.HadException())
@@ -363,6 +369,8 @@ std::unique_ptr<protocol::DictionaryValue>
 NodeHighlightTool::GetNodeInspectorHighlightAsJson(
     bool append_element_info,
     bool append_distance_info) const {
+  DCHECK(overlay_);
+  overlay_->EnsureAXContext(node_.Get());
   InspectorHighlight highlight(node_.Get(), *highlight_config_, contrast_info_,
                                append_element_info, append_distance_info,
                                is_locked_ancestor_);
@@ -551,6 +559,8 @@ void NearbyDistanceTool::Draw(float scale) {
   Node* node = hovered_node_.Get();
   if (!node)
     return;
+  DCHECK(overlay_);
+  overlay_->EnsureAXContext(node);
   InspectorHighlight highlight(
       node, InspectorHighlight::DefaultConfig(),
       InspectorHighlightContrastInfo(), false /* append_element_info */,

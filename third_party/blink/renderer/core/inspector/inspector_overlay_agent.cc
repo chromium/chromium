@@ -427,25 +427,17 @@ Response InspectorOverlayAgent::enable() {
   }
   backend_node_id_to_inspect_ = 0;
   SetNeedsUnbufferedInput(true);
-  dom_agent_->AddDOMListener(this);
-  for (Document* document : dom_agent_->Documents())
-    DidAddDocument(document);
 
   return Response::Success();
 }
 
-void InspectorOverlayAgent::DidAddDocument(Document* document) {
-  auto context = std::make_unique<AXContext>(*document);
-  document_to_ax_context_.Set(document, std::move(context));
+void InspectorOverlayAgent::EnsureAXContext(Node* node) {
+  Document& document = node->GetDocument();
+  if (!document_to_ax_context_.Contains(&document)) {
+    auto context = std::make_unique<AXContext>(document);
+    document_to_ax_context_.Set(&document, std::move(context));
+  }
 }
-
-void InspectorOverlayAgent::DidRemoveDocument(Document* document) {
-  document_to_ax_context_.erase(document);
-}
-
-void InspectorOverlayAgent::WillRemoveDOMNode(Node* node) {}
-
-void InspectorOverlayAgent::DidModifyDOMAttr(Element* element) {}
 
 Response InspectorOverlayAgent::disable() {
   enabled_.Clear();
@@ -474,7 +466,6 @@ Response InspectorOverlayAgent::disable() {
   persistent_tool_ = nullptr;
   PickTheRightTool();
   SetNeedsUnbufferedInput(false);
-  dom_agent_->RemoveDOMListener(this);
   document_to_ax_context_.clear();
   return Response::Success();
 }
@@ -825,6 +816,7 @@ Response InspectorOverlayAgent::getHighlightObjectForTest(
   }
 
   NodeHighlightTool tool(node, "" /* selector_list */, std::move(config));
+  tool.Init(this, GetFrontend());
   *result = tool.GetNodeInspectorHighlightAsJson(
       true /* append_element_info */, include_distance.fromMaybe(false));
   return Response::Success();
@@ -834,6 +826,7 @@ Response InspectorOverlayAgent::getGridHighlightObjectsForTest(
     std::unique_ptr<protocol::Array<int>> node_ids,
     std::unique_ptr<protocol::DictionaryValue>* highlights) {
   GridHighlightTool grid_highlight_tool;
+  grid_highlight_tool.Init(this, GetFrontend());
   for (const int node_id : *node_ids) {
     Node* node = nullptr;
     Response response = dom_agent_->AssertNode(node_id, node);
@@ -859,6 +852,7 @@ Response InspectorOverlayAgent::getSourceOrderHighlightObjectForTest(
       InspectorSourceOrderHighlight::DefaultConfig());
 
   SourceOrderTool tool(node, std::move(config));
+  tool.Init(this, GetFrontend());
   *result = tool.GetNodeInspectorSourceOrderHighlightAsJson();
   return Response::Success();
 }
