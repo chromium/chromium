@@ -648,16 +648,23 @@ void PrePaintTreeWalk::WalkNGChildren(const LayoutObject* parent,
       DCHECK((*iterator)->BoxFragment()->IsFragmentainerBox());
       PhysicalOffset offset = (*iterator)->Link().offset;
       PaintPropertyTreeBuilderFragmentContext::ContainingBlockContext*
-          fragment_context = nullptr;
+          containing_block_context = nullptr;
       if (context_storage_.back().tree_builder_context) {
         PaintPropertyTreeBuilderContext& tree_builder_context =
             context_storage_.back().tree_builder_context.value();
-        fragment_context = &tree_builder_context.fragments[0].current;
-        fragment_context->paint_offset += offset;
+        PaintPropertyTreeBuilderFragmentContext& context =
+            tree_builder_context.fragments[0];
+        containing_block_context = &context.current;
+        containing_block_context->paint_offset += offset;
+
+        if (box_fragment->IsFragmentainerBox()) {
+          context.absolute_position = *containing_block_context;
+          context.fixed_position = *containing_block_context;
+        }
       }
       WalkChildren(/* parent */ nullptr, iterator);
-      if (fragment_context)
-        fragment_context->paint_offset -= offset;
+      if (containing_block_context)
+        containing_block_context->paint_offset -= offset;
       continue;
     }
     Walk(*object, iterator);
