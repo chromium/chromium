@@ -1262,6 +1262,7 @@ def _ParseApkOtherSymbols(section_ranges, apk_path, apk_so_path,
   zip_info_total = 0
   zipalign_total = 0
   with zipfile.ZipFile(apk_path) as z:
+    signing_block_size = zip_util.MeasureApkSignatureBlock(z)
     for zip_info in z.infolist():
       zip_info_total += zip_info.compress_size
       # Account for zipalign overhead that exists in local file header.
@@ -1289,7 +1290,18 @@ def _ParseApkOtherSymbols(section_ranges, apk_path, apk_so_path,
               zip_info.compress_size,
               source_path=source_path,
               full_name=resource_filename))  # Full name must disambiguate
-  overhead_size = os.path.getsize(apk_path) - zip_info_total - zipalign_total
+
+  if signing_block_size > 0:
+    signing_symbol = models.Symbol(models.SECTION_OTHER,
+                                   signing_block_size,
+                                   full_name='APK Signature Block')
+    apk_symbols.append(signing_symbol)
+
+  # Overhead includes:
+  #  * Size of all local zip headers (minus zipalign padding).
+  #  * Size of central directory & end of central directory.
+  overhead_size = (os.path.getsize(apk_path) - zip_info_total - zipalign_total -
+                   signing_block_size)
   assert overhead_size >= 0, 'Apk overhead must be non-negative'
   zip_overhead_symbol = models.Symbol(
       models.SECTION_OTHER, overhead_size, full_name='Overhead: APK file')

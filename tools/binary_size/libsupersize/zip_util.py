@@ -46,3 +46,27 @@ def ReadZipInfoExtraFieldLength(zip_file, zip_info):
   # Refer to https://en.wikipedia.org/wiki/Zip_(file_format)#File_headers
   zip_file.fp.seek(zip_info.header_offset + 28)
   return struct.unpack('<H', zip_file.fp.read(2))[0]
+
+
+def MeasureApkSignatureBlock(zip_file):
+  """Measures the size of the v2 / v3 signing block.
+
+  Refer to: https://source.android.com/security/apksigning/v2
+  """
+  # Seek to "end of central directory" struct.
+  eocd_offset_from_end = -22 - len(zip_file.comment)
+  zip_file.fp.seek(eocd_offset_from_end, os.SEEK_END)
+  assert zip_file.fp.read(4) == b'PK\005\006', (
+      'failed to find end-of-central-directory')
+
+  # Read out the "start of central directory" offset.
+  zip_file.fp.seek(eocd_offset_from_end + 16, os.SEEK_END)
+  start_of_central_directory = struct.unpack('<I', zip_file.fp.read(4))[0]
+
+  # Compute the offset after the last zip entry.
+  last_info = zip_file.infolist()[-1]
+  last_header_size = (30 + len(last_info.filename) +
+                      ReadZipInfoExtraFieldLength(zip_file, last_info))
+  end_of_last_file = (last_info.header_offset + last_header_size +
+                      last_info.compress_size)
+  return start_of_central_directory - end_of_last_file
