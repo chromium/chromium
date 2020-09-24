@@ -26,6 +26,8 @@ const char kNearbySharingDataUsageName[] = "nearby_sharing.data_usage";
 const char kNearbySharingDeviceIdPrefName[] = "nearby_sharing.device_id";
 const char kNearbySharingDeviceNamePrefName[] = "nearby_sharing.device_name";
 const char kNearbySharingEnabledPrefName[] = "nearby_sharing.enabled";
+const char kNearbySharingOnboardingCompletePrefName[] =
+    "nearby_sharing.onboarding_complete";
 const char kNearbySharingFullNamePrefName[] = "nearby_sharing.full_name";
 const char kNearbySharingIconUrlPrefName[] = "nearby_sharing.icon_url";
 const char kNearbySharingOnboardingDismissedTimePrefName[] =
@@ -58,6 +60,8 @@ void RegisterNearbySharingPrefs(PrefRegistrySimple* registry) {
   // available.
   registry->RegisterBooleanPref(prefs::kNearbySharingEnabledPrefName,
                                 /*default_value=*/true);
+  registry->RegisterBooleanPref(prefs::kNearbySharingOnboardingCompletePrefName,
+                                /*default_value=*/false);
   registry->RegisterIntegerPref(
       prefs::kNearbySharingBackgroundVisibilityName,
       /*default_value=*/static_cast<int>(Visibility::kUnknown));

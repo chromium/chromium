@@ -103,11 +103,6 @@ Polymer({
     if (this.observerReceiver_) {
       this.observerReceiver_.$.close();
     }
-
-    if (this.receiveManager_) {
-      /** @type {nearbyShare.mojom.ReceiveManagerRemote} */
-      (this.receiveManager_).$.close();
-    }
   },
 
   /**
