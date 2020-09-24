@@ -131,8 +131,4 @@ bool SensorProxy::ShouldSuspendUpdates() const {
   return !focused_frame_origin->CanAccess(this_origin);
 }
 
-device::mojom::blink::SensorProvider* SensorProxy::sensor_provider() const {
-  return provider_->sensor_provider();
-}
-
 }  // namespace blink

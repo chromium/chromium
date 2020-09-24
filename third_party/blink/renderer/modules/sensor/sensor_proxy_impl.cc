@@ -41,15 +41,15 @@ void SensorProxyImpl::Initialize() {
   if (state_ != kUninitialized)
     return;
 
-  if (!sensor_provider()) {
+  if (!sensor_provider_proxy()) {
     HandleSensorError();
     return;
   }
 
   state_ = kInitializing;
-  auto callback =
-      WTF::Bind(&SensorProxyImpl::OnSensorCreated, WrapWeakPersistent(this));
-  sensor_provider()->GetSensor(type_, std::move(callback));
+  sensor_provider_proxy()->GetSensor(
+      type_,
+      WTF::Bind(&SensorProxyImpl::OnSensorCreated, WrapWeakPersistent(this)));
 }
 
 void SensorProxyImpl::AddConfiguration(
