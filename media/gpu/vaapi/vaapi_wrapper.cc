@@ -335,39 +335,46 @@ bool ClearNV12Padding(const VAImage& image,
   return true;
 }
 
-// Map of the supported VaProfiles indexed by media's VideoCodecProfile.
-const std::map<VideoCodecProfile, VAProfile> kMediaToVAProfileMap = {
-    // VAProfileH264Baseline is deprecated in <va/va.h> since libva 2.0.0.
-    {H264PROFILE_BASELINE, VAProfileH264ConstrainedBaseline},
-    {H264PROFILE_MAIN, VAProfileH264Main},
-    // TODO(posciak): See if we can/want to support other variants of
-    // H264PROFILE_HIGH*.
-    {H264PROFILE_HIGH, VAProfileH264High},
-    {VP8PROFILE_ANY, VAProfileVP8Version0_3},
-    {VP9PROFILE_PROFILE0, VAProfileVP9Profile0},
-    // VaapiWrapper does not support VP9 Profile 1, see b/153680337.
-    // {VP9PROFILE_PROFILE1, VAProfileVP9Profile1},
-    {VP9PROFILE_PROFILE2, VAProfileVP9Profile2},
-    // VaapiWrapper does not support Profile 3.
-    //{VP9PROFILE_PROFILE3, VAProfileVP9Profile3},
-};
+// Can't statically initialize the profile map:
+// https://google.github.io/styleguide/cppguide.html#Static_and_Global_Variables
+using ProfileCodecMap = std::map<VideoCodecProfile, VAProfile>;
+const ProfileCodecMap& GetProfileCodecMap() {
+  static const base::NoDestructor<ProfileCodecMap> kMediaToVAProfileMap({
+      // VAProfileH264Baseline is deprecated in <va/va.h> since libva 2.0.0.
+      {H264PROFILE_BASELINE, VAProfileH264ConstrainedBaseline},
+      {H264PROFILE_MAIN, VAProfileH264Main},
+      // TODO(posciak): See if we can/want to support other variants of
+      // H264PROFILE_HIGH*.
+      {H264PROFILE_HIGH, VAProfileH264High},
+      {VP8PROFILE_ANY, VAProfileVP8Version0_3},
+      {VP9PROFILE_PROFILE0, VAProfileVP9Profile0},
+      // VaapiWrapper does not support VP9 Profile 1, see b/153680337.
+      // {VP9PROFILE_PROFILE1, VAProfileVP9Profile1},
+      {VP9PROFILE_PROFILE2, VAProfileVP9Profile2},
+      // VaapiWrapper does not support Profile 3.
+      //{VP9PROFILE_PROFILE3, VAProfileVP9Profile3},
+  });
+  return *kMediaToVAProfileMap;
+}
 
 // Maps a VideoCodecProfile |profile| to a VAProfile, or VAProfileNone.
 VAProfile ProfileToVAProfile(VideoCodecProfile profile,
                              VaapiWrapper::CodecMode mode) {
-  if (!base::Contains(kMediaToVAProfileMap, profile))
+  const auto& profiles = GetProfileCodecMap();
+  const auto& maybe_profile = profiles.find(profile);
+  if (maybe_profile == profiles.end())
     return VAProfileNone;
-  return kMediaToVAProfileMap.at(profile);
+  return maybe_profile->second;
 }
 
-// Returns true if |va_profile| is present in kMediaToVAProfileMap.
 bool IsVAProfileSupported(VAProfile va_profile) {
   // VAProfileJPEGBaseline is always recognized but is not a video codec per se.
+  const auto& profiles = GetProfileCodecMap();
   return va_profile == VAProfileJPEGBaseline ||
-         std::find_if(kMediaToVAProfileMap.begin(), kMediaToVAProfileMap.end(),
+         std::find_if(profiles.begin(), profiles.end(),
                       [va_profile](const auto& entry) {
                         return entry.second == va_profile;
-                      }) != kMediaToVAProfileMap.end();
+                      }) != profiles.end();
 }
 
 bool IsBlockedDriver(VaapiWrapper::CodecMode mode, VAProfile va_profile) {
@@ -1255,11 +1262,10 @@ VideoEncodeAccelerator::SupportedProfiles
 VaapiWrapper::GetSupportedEncodeProfiles() {
   VideoEncodeAccelerator::SupportedProfiles profiles;
 
-  for (const auto& media_to_va_profile_map_entry : kMediaToVAProfileMap) {
+  for (const auto& media_to_va_profile_map_entry : GetProfileCodecMap()) {
     const VideoCodecProfile media_profile = media_to_va_profile_map_entry.first;
-    const VAProfile va_profile = ProfileToVAProfile(media_profile, kEncode);
-    if (va_profile == VAProfileNone)
-      continue;
+    const VAProfile va_profile = media_to_va_profile_map_entry.second;
+    DCHECK(va_profile != VAProfileNone);
 
     const VASupportedProfiles::ProfileInfo* profile_info =
         VASupportedProfiles::Get().IsProfileSupported(kEncode, va_profile);
@@ -1289,17 +1295,15 @@ VaapiWrapper::GetSupportedDecodeProfiles(
     const gpu::GpuDriverBugWorkarounds& workarounds) {
   VideoDecodeAccelerator::SupportedProfiles profiles;
 
-  for (const auto& media_to_va_profile_map_entry : kMediaToVAProfileMap) {
+  for (const auto& media_to_va_profile_map_entry : GetProfileCodecMap()) {
     const VideoCodecProfile media_profile = media_to_va_profile_map_entry.first;
+    const VAProfile va_profile = media_to_va_profile_map_entry.second;
+    DCHECK(va_profile != VAProfileNone);
 
     if (media_profile == VP8PROFILE_ANY &&
         workarounds.disable_accelerated_vp8_decode) {
       continue;
     }
-
-    const VAProfile va_profile = ProfileToVAProfile(media_profile, kDecode);
-    if (va_profile == VAProfileNone)
-      continue;
 
     const VASupportedProfiles::ProfileInfo* profile_info =
         VASupportedProfiles::Get().IsProfileSupported(kDecode, va_profile);
