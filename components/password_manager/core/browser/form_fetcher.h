@@ -13,10 +13,7 @@
 #include "base/observer_list_types.h"
 #include "base/strings/string16.h"
 #include "components/autofill/core/common/gaia_id_hash.h"
-
-namespace autofill {
-struct PasswordForm;
-}
+#include "components/password_manager/core/browser/password_form_forward.h"
 
 namespace password_manager {
 
@@ -74,13 +71,11 @@ class FormFetcher {
 
   // Non-federated matches obtained from the backend. Valid only if GetState()
   // returns NOT_WAITING.
-  virtual std::vector<const autofill::PasswordForm*> GetNonFederatedMatches()
-      const = 0;
+  virtual std::vector<const PasswordForm*> GetNonFederatedMatches() const = 0;
 
   // Federated matches obtained from the backend. Valid only if GetState()
   // returns NOT_WAITING.
-  virtual std::vector<const autofill::PasswordForm*> GetFederatedMatches()
-      const = 0;
+  virtual std::vector<const PasswordForm*> GetFederatedMatches() const = 0;
 
   // Whether there are blacklisted matches in the backend. Valid only if
   // GetState() returns NOT_WAITING.
@@ -95,15 +90,14 @@ class FormFetcher {
 
   // Non-federated matches obtained from the backend that have the same scheme
   // of this form.
-  virtual const std::vector<const autofill::PasswordForm*>&
-  GetAllRelevantMatches() const = 0;
-
-  // Nonblacklisted matches obtained from the backend.
-  virtual const std::vector<const autofill::PasswordForm*>& GetBestMatches()
+  virtual const std::vector<const PasswordForm*>& GetAllRelevantMatches()
       const = 0;
 
+  // Nonblacklisted matches obtained from the backend.
+  virtual const std::vector<const PasswordForm*>& GetBestMatches() const = 0;
+
   // Pointer to a preferred entry in the vector returned by GetBestMatches().
-  virtual const autofill::PasswordForm* GetPreferredMatch() const = 0;
+  virtual const PasswordForm* GetPreferredMatch() const = 0;
 
   // Creates a copy of |*this| with contains the same credentials without the
   // need for calling Fetch().

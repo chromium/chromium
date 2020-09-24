@@ -17,9 +17,9 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
-#include "components/autofill/core/common/password_form.h"
 #include "components/password_manager/core/browser/mock_password_store.h"
 #include "components/password_manager/core/browser/multi_store_form_fetcher.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_store.h"
 #include "components/password_manager/core/browser/statistics_table.h"
@@ -33,7 +33,6 @@
 #include "url/origin.h"
 #include "url/url_constants.h"
 
-using autofill::PasswordForm;
 using base::ASCIIToUTF16;
 using base::StringPiece;
 using testing::_;

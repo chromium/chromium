@@ -10,18 +10,16 @@
 #include <utility>
 
 #include "build/build_config.h"
-#include "components/autofill/core/common/password_form.h"
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
 #include "components/password_manager/core/browser/credentials_filter.h"
 #include "components/password_manager/core/browser/multi_store_form_fetcher.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_store.h"
 #include "components/password_manager/core/browser/psl_matching_helper.h"
 #include "components/password_manager/core/browser/statistics_table.h"
 #include "components/password_manager/core/common/password_manager_features.h"
-
-using autofill::PasswordForm;
 
 using Logger = autofill::SavePasswordProgressLogger;
 
@@ -73,9 +71,9 @@ FormFetcherImpl::FormFetcherImpl(PasswordStore::FormDigest form_digest,
                                  bool should_migrate_http_passwords)
     : form_digest_(std::move(form_digest)),
       client_(client),
-      should_migrate_http_passwords_(
-          should_migrate_http_passwords &&
-          form_digest_.scheme == autofill::PasswordForm::Scheme::kHtml) {}
+      should_migrate_http_passwords_(should_migrate_http_passwords &&
+                                     form_digest_.scheme ==
+                                         PasswordForm::Scheme::kHtml) {}
 
 FormFetcherImpl::~FormFetcherImpl() = default;
 

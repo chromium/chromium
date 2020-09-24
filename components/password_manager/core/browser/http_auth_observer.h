@@ -9,7 +9,6 @@
 
 #include "base/macros.h"
 #include "base/strings/string16.h"
-#include "components/autofill/core/common/password_form.h"
 
 namespace password_manager {
 

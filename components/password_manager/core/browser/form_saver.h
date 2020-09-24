@@ -12,7 +12,7 @@
 #include "base/macros.h"
 #include "base/optional.h"
 #include "base/strings/string16.h"
-#include "components/autofill/core/common/password_form.h"
+#include "components/password_manager/core/browser/password_form_forward.h"
 #include "components/password_manager/core/browser/password_store.h"
 
 namespace password_manager {
@@ -27,7 +27,7 @@ class FormSaver {
 
   // Blacklist the origin described by |digest|. Returns the PasswordForm pushed
   // to the store.
-  virtual autofill::PasswordForm PermanentlyBlacklist(
+  virtual PasswordForm PermanentlyBlacklist(
       PasswordStore::FormDigest digest) = 0;
 
   // Unblacklist the origin described by |digest| by deleting all corresponding
@@ -41,16 +41,16 @@ class FormSaver {
   // - empty-username credentials with the same password are removed.
   // - if |old_password| is provided, the old credentials with the same username
   //   and the old password are updated to the new password.
-  virtual void Save(autofill::PasswordForm pending,
-                    const std::vector<const autofill::PasswordForm*>& matches,
+  virtual void Save(PasswordForm pending,
+                    const std::vector<const PasswordForm*>& matches,
                     const base::string16& old_password) = 0;
 
   // Updates the saved credential in the password store sharing the same key as
   // the |pending| form.
   // The algorithm for handling |matches| and |old_password| is the same as
   // above.
-  virtual void Update(autofill::PasswordForm pending,
-                      const std::vector<const autofill::PasswordForm*>& matches,
+  virtual void Update(PasswordForm pending,
+                      const std::vector<const PasswordForm*>& matches,
                       const base::string16& old_password) = 0;
 
   // If any of the unique key fields (signon_realm, origin, username_element,
@@ -59,14 +59,13 @@ class FormSaver {
   // old values for the unique key fields (the rest of the fields are ignored).
   // The algorithm for handling |matches| and |old_password| is the same as
   // above.
-  virtual void UpdateReplace(
-      autofill::PasswordForm pending,
-      const std::vector<const autofill::PasswordForm*>& matches,
-      const base::string16& old_password,
-      const autofill::PasswordForm& old_unique_key) = 0;
+  virtual void UpdateReplace(PasswordForm pending,
+                             const std::vector<const PasswordForm*>& matches,
+                             const base::string16& old_password,
+                             const PasswordForm& old_unique_key) = 0;
 
   // Removes |form| from the password store.
-  virtual void Remove(const autofill::PasswordForm& form) = 0;
+  virtual void Remove(const PasswordForm& form) = 0;
 
   // Creates a new FormSaver with the same state as |*this|.
   virtual std::unique_ptr<FormSaver> Clone() = 0;

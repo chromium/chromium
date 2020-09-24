@@ -19,7 +19,6 @@
 
 using autofill::FormData;
 using autofill::FormFieldData;
-using autofill::PasswordForm;
 
 namespace password_manager {
 
@@ -106,10 +105,9 @@ void FormSaverImpl::Save(PasswordForm pending,
   PostProcessMatches(pending, matches, old_password, store_);
 }
 
-void FormSaverImpl::Update(
-    autofill::PasswordForm pending,
-    const std::vector<const autofill::PasswordForm*>& matches,
-    const base::string16& old_password) {
+void FormSaverImpl::Update(PasswordForm pending,
+                           const std::vector<const PasswordForm*>& matches,
+                           const base::string16& old_password) {
   SanitizeFormData(&pending.form_data);
   store_->UpdateLogin(pending);
   // Update existing matches in the password store.
@@ -117,10 +115,10 @@ void FormSaverImpl::Update(
 }
 
 void FormSaverImpl::UpdateReplace(
-    autofill::PasswordForm pending,
-    const std::vector<const autofill::PasswordForm*>& matches,
+    PasswordForm pending,
+    const std::vector<const PasswordForm*>& matches,
     const base::string16& old_password,
-    const autofill::PasswordForm& old_unique_key) {
+    const PasswordForm& old_unique_key) {
   SanitizeFormData(&pending.form_data);
   store_->UpdateLoginWithPrimaryKey(pending, old_unique_key);
   // Update existing matches in the password store.

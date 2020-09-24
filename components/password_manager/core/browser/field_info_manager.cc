@@ -41,7 +41,7 @@ autofill::ServerFieldType FieldInfoManagerImpl::GetFieldType(
 }
 
 void FieldInfoManagerImpl::OnGetPasswordStoreResults(
-    std::vector<std::unique_ptr<autofill::PasswordForm>> results) {
+    std::vector<std::unique_ptr<PasswordForm>> results) {
   NOTREACHED();
 }
 

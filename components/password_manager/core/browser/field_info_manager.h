@@ -10,6 +10,7 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/password_manager/core/browser/password_form_forward.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
 
 namespace password_manager {
@@ -50,7 +51,7 @@ class FieldInfoManagerImpl : public FieldInfoManager,
  private:
   // PasswordStoreConsumer:
   void OnGetPasswordStoreResults(
-      std::vector<std::unique_ptr<autofill::PasswordForm>> results) override;
+      std::vector<std::unique_ptr<PasswordForm>> results) override;
   void OnGetAllFieldInfo(std::vector<FieldInfo>) override;
 
   std::map<std::pair<autofill::FormSignature, autofill::FieldSignature>,

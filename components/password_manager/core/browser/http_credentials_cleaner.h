@@ -14,9 +14,9 @@
 
 #include "base/containers/flat_set.h"
 #include "base/memory/ref_counted.h"
-#include "components/autofill/core/common/password_form.h"
 #include "components/password_manager/core/browser/credentials_cleaner.h"
 #include "components/password_manager/core/browser/hsts_query.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
 
 namespace network {
@@ -77,19 +77,18 @@ class HttpCredentialCleaner : public PasswordStoreConsumer,
   // signon-realm excluding the protocol, the second argument is
   // the PasswordForm::scheme (i.e. HTML, BASIC, etc.) and the third argument is
   // the username of the form.
-  using FormKey =
-      std::tuple<std::string, autofill::PasswordForm::Scheme, base::string16>;
+  using FormKey = std::tuple<std::string, PasswordForm::Scheme, base::string16>;
 
   // PasswordStoreConsumer:
   void OnGetPasswordStoreResults(
-      std::vector<std::unique_ptr<autofill::PasswordForm>> results) override;
+      std::vector<std::unique_ptr<PasswordForm>> results) override;
 
   // This function will inform us using |hsts_result| parameter if the |form|'s
   // host has HSTS enabled. |key| is |form|'s encoding which is used for
   // matching |form| with an HTTPS credential with the same FormKey.
   // Inside the function the metric counters are updated and, if needed, the
   // |form| is removed or migrated to HTTPS.
-  void OnHSTSQueryResult(std::unique_ptr<autofill::PasswordForm> form,
+  void OnHSTSQueryResult(std::unique_ptr<PasswordForm> form,
                          FormKey key,
                          HSTSResult hsts_result);
 

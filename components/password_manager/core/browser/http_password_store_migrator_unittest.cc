@@ -16,7 +16,6 @@
 namespace password_manager {
 namespace {
 
-using autofill::PasswordForm;
 using testing::_;
 using testing::ElementsAre;
 using testing::Invoke;
@@ -78,16 +77,14 @@ PasswordForm CreateLocalFederatedCredential() {
 
 class MockConsumer : public HttpPasswordStoreMigrator::Consumer {
  public:
-  MOCK_METHOD1(ProcessForms,
-               void(const std::vector<autofill::PasswordForm*>& forms));
+  MOCK_METHOD1(ProcessForms, void(const std::vector<PasswordForm*>& forms));
 
   void ProcessMigratedForms(
-      std::vector<std::unique_ptr<autofill::PasswordForm>> forms) override {
-    std::vector<autofill::PasswordForm*> raw_forms(forms.size());
-    std::transform(forms.begin(), forms.end(), raw_forms.begin(),
-                   [](const std::unique_ptr<autofill::PasswordForm>& form) {
-                     return form.get();
-                   });
+      std::vector<std::unique_ptr<PasswordForm>> forms) override {
+    std::vector<PasswordForm*> raw_forms(forms.size());
+    std::transform(
+        forms.begin(), forms.end(), raw_forms.begin(),
+        [](const std::unique_ptr<PasswordForm>& form) { return form.get(); });
     ProcessForms(raw_forms);
   }
 };
@@ -153,9 +150,9 @@ void HttpPasswordStoreMigratorTest::TestEmptyStore(bool is_hsts) {
       .Times(is_hsts);
   WaitForPasswordStore();
 
-  EXPECT_CALL(consumer(), ProcessForms(std::vector<autofill::PasswordForm*>()));
+  EXPECT_CALL(consumer(), ProcessForms(std::vector<PasswordForm*>()));
   migrator.OnGetPasswordStoreResults(
-      std::vector<std::unique_ptr<autofill::PasswordForm>>());
+      std::vector<std::unique_ptr<PasswordForm>>());
 }
 
 void HttpPasswordStoreMigratorTest::TestFullStore(bool is_hsts) {
@@ -195,7 +192,7 @@ void HttpPasswordStoreMigratorTest::TestFullStore(bool is_hsts) {
   EXPECT_CALL(consumer(),
               ProcessForms(ElementsAre(Pointee(expected_form),
                                        Pointee(expected_federated_form))));
-  std::vector<std::unique_ptr<autofill::PasswordForm>> results;
+  std::vector<std::unique_ptr<PasswordForm>> results;
   results.push_back(std::make_unique<PasswordForm>(psl_form));
   results.push_back(std::make_unique<PasswordForm>(form));
   results.push_back(std::make_unique<PasswordForm>(android_form));
@@ -226,7 +223,7 @@ void HttpPasswordStoreMigratorTest::TestMigratorDeletionByConsumer(
   }));
 
   migrator->OnGetPasswordStoreResults(
-      std::vector<std::unique_ptr<autofill::PasswordForm>>());
+      std::vector<std::unique_ptr<PasswordForm>>());
 
   // We expect a potential call to |RemoveSiteStatsImpl| which is a async task
   // posted from |PasswordStore::RemoveSiteStats|. Hence the following lines are

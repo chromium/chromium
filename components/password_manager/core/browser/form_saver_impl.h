@@ -24,20 +24,19 @@ class FormSaverImpl : public FormSaver {
   ~FormSaverImpl() override;
 
   // FormSaver:
-  autofill::PasswordForm PermanentlyBlacklist(
-      PasswordStore::FormDigest digest) override;
+  PasswordForm PermanentlyBlacklist(PasswordStore::FormDigest digest) override;
   void Unblacklist(const PasswordStore::FormDigest& digest) override;
-  void Save(autofill::PasswordForm pending,
-            const std::vector<const autofill::PasswordForm*>& matches,
+  void Save(PasswordForm pending,
+            const std::vector<const PasswordForm*>& matches,
             const base::string16& old_password) override;
-  void Update(autofill::PasswordForm pending,
-              const std::vector<const autofill::PasswordForm*>& matches,
+  void Update(PasswordForm pending,
+              const std::vector<const PasswordForm*>& matches,
               const base::string16& old_password) override;
-  void UpdateReplace(autofill::PasswordForm pending,
-                     const std::vector<const autofill::PasswordForm*>& matches,
+  void UpdateReplace(PasswordForm pending,
+                     const std::vector<const PasswordForm*>& matches,
                      const base::string16& old_password,
-                     const autofill::PasswordForm& old_unique_key) override;
-  void Remove(const autofill::PasswordForm& form) override;
+                     const PasswordForm& old_unique_key) override;
+  void Remove(const PasswordForm& form) override;
   std::unique_ptr<FormSaver> Clone() override;
 
  private:

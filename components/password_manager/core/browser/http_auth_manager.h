@@ -5,8 +5,8 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_HTTP_AUTH_MANAGER_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_HTTP_AUTH_MANAGER_H_
 
-#include "components/autofill/core/common/password_form.h"
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
+#include "components/password_manager/core/browser/password_form_forward.h"
 
 namespace password_manager {
 
@@ -26,7 +26,7 @@ class HttpAuthManager {
   // Set the observer which is notified in case a form can be auto-filled.
   virtual void SetObserverAndDeliverCredentials(
       HttpAuthObserver* observer,
-      const autofill::PasswordForm& observed_form) = 0;
+      const PasswordForm& observed_form) = 0;
 
   // Detach |observer| as the observer if it is the current observer.
   // Called by the observer when destructed to unregister itself.
@@ -34,8 +34,7 @@ class HttpAuthManager {
 
   // Handles submitted http-auth credentials event.
   // Called by the LoginHandler instance.
-  virtual void OnPasswordFormSubmitted(
-      const autofill::PasswordForm& password_form) = 0;
+  virtual void OnPasswordFormSubmitted(const PasswordForm& password_form) = 0;
 
   // Called by the LoginHandler instance when the password form is dismissed.
   virtual void OnPasswordFormDismissed() = 0;

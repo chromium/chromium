@@ -48,7 +48,7 @@ HttpPasswordStoreMigrator::HttpPasswordStoreMigrator(
   GURL::Replacements rep;
   rep.SetSchemeStr(url::kHttpScheme);
   GURL http_origin = https_origin.GetURL().ReplaceComponents(rep);
-  PasswordStore::FormDigest form(autofill::PasswordForm::Scheme::kHtml,
+  PasswordStore::FormDigest form(PasswordForm::Scheme::kHtml,
                                  http_origin.GetOrigin().spec(), http_origin);
   http_origin_domain_ = url::Origin::Create(http_origin);
   store_->GetLogins(form, this);
@@ -60,11 +60,11 @@ HttpPasswordStoreMigrator::HttpPasswordStoreMigrator(
 
 HttpPasswordStoreMigrator::~HttpPasswordStoreMigrator() = default;
 
-autofill::PasswordForm HttpPasswordStoreMigrator::MigrateHttpFormToHttps(
-    const autofill::PasswordForm& http_form) {
+PasswordForm HttpPasswordStoreMigrator::MigrateHttpFormToHttps(
+    const PasswordForm& http_form) {
   DCHECK(http_form.url.SchemeIs(url::kHttpScheme));
 
-  autofill::PasswordForm https_form = http_form;
+  PasswordForm https_form = http_form;
   GURL::Replacements rep;
   rep.SetSchemeStr(url::kHttpsScheme);
   https_form.url = http_form.url.ReplaceComponents(rep);
@@ -83,13 +83,13 @@ autofill::PasswordForm HttpPasswordStoreMigrator::MigrateHttpFormToHttps(
     https_form.action = https_form.url;
   https_form.form_data = autofill::FormData();
   https_form.generation_upload_status =
-      autofill::PasswordForm::GenerationUploadStatus::kNoSignalSent;
+      PasswordForm::GenerationUploadStatus::kNoSignalSent;
   https_form.skip_zero_click = false;
   return https_form;
 }
 
 void HttpPasswordStoreMigrator::OnGetPasswordStoreResults(
-    std::vector<std::unique_ptr<autofill::PasswordForm>> results) {
+    std::vector<std::unique_ptr<PasswordForm>> results) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   results_ = std::move(results);
   got_password_store_results_ = true;
@@ -113,15 +113,14 @@ void HttpPasswordStoreMigrator::OnHSTSQueryResult(HSTSResult is_hsts) {
 
 void HttpPasswordStoreMigrator::ProcessPasswordStoreResults() {
   // Android and PSL matches are ignored.
-  base::EraseIf(
-      results_, [](const std::unique_ptr<autofill::PasswordForm>& form) {
-        return form->is_affiliation_based_match || form->is_public_suffix_match;
-      });
+  base::EraseIf(results_, [](const std::unique_ptr<PasswordForm>& form) {
+    return form->is_affiliation_based_match || form->is_public_suffix_match;
+  });
 
   // Add the new credentials to the password store. The HTTP forms are
   // removed iff |mode_| == MigrationMode::MOVE.
   for (const auto& form : results_) {
-    autofill::PasswordForm new_form =
+    PasswordForm new_form =
         HttpPasswordStoreMigrator::MigrateHttpFormToHttps(*form);
     store_->AddLogin(new_form);
 

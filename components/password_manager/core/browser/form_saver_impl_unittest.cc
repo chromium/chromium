@@ -14,15 +14,14 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
-#include "components/autofill/core/common/password_form.h"
 #include "components/password_manager/core/browser/mock_password_store.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
 using autofill::FormFieldData;
-using autofill::PasswordForm;
 using base::ASCIIToUTF16;
 using base::StringPiece;
 using testing::_;
@@ -89,14 +88,14 @@ class FormSaverImplSaveTest
       public ::testing::WithParamInterface<SaveOperation> {
  protected:
   // Either saves, updates or replaces |pending| according to the test param.
-  void SaveCredential(autofill::PasswordForm pending,
-                      const std::vector<const autofill::PasswordForm*>& matches,
+  void SaveCredential(PasswordForm pending,
+                      const std::vector<const PasswordForm*>& matches,
                       const base::string16& old_password);
 };
 
 void FormSaverImplSaveTest::SaveCredential(
-    autofill::PasswordForm pending,
-    const std::vector<const autofill::PasswordForm*>& matches,
+    PasswordForm pending,
+    const std::vector<const PasswordForm*>& matches,
     const base::string16& old_password) {
   switch (GetParam()) {
     case SaveOperation::kSave:
