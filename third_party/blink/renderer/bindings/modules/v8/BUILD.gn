@@ -16,11 +16,17 @@ blink_modules_sources("v8") {
   visibility = [ "//third_party/blink/renderer/modules" ]
 
   sources = generated_enumeration_sources_in_modules
-  if (use_blink_v8_binding_new_idl_interface) {
-    sources += generated_interface_sources_in_modules
+  if (use_blink_v8_binding_new_idl_callback_function) {
+    sources += generated_callback_function_sources_in_modules
+  }
+  if (use_blink_v8_binding_new_idl_callback_interface) {
+    sources += generated_callback_interface_sources_in_modules
   }
   if (use_blink_v8_binding_new_idl_dictionary) {
     sources += generated_dictionary_sources_in_modules
+  }
+  if (use_blink_v8_binding_new_idl_interface) {
+    sources += generated_interface_sources_in_modules
   }
 
   deps = [
@@ -90,17 +96,24 @@ idl_compiler("generate_bindings_modules_v8_interfaces") {
     # modules_non_callback_idl_files = interfaces only
     set_sources_assignment_filter([ "*_callback.idl" ])
     sources = modules_idl_files
-    modules_non_callback_idl_files = sources
+    modules_interface_idl_files = sources
+    if (use_blink_v8_binding_new_idl_callback_interface) {
+      modules_callback_interface_idl_files =
+          modules_idl_files - modules_interface_idl_files
+    }
     set_sources_assignment_filter([])
     sources = []
   }
 
   sources = modules_definition_idl_files
-  if (use_blink_v8_binding_new_idl_interface) {
-    sources -= modules_non_callback_idl_files
+  if (use_blink_v8_binding_new_idl_callback_interface) {
+    sources -= modules_callback_interface_idl_files
   }
   if (use_blink_v8_binding_new_idl_dictionary) {
     sources -= modules_dictionary_idl_files
+  }
+  if (use_blink_v8_binding_new_idl_interface) {
+    sources -= modules_interface_idl_files
   }
   output_dir = bindings_modules_v8_output_dir
   output_name_suffix = ""
@@ -113,8 +126,10 @@ idl_impl("bindings_modules_impl_generated") {
   } else {
     dict_idls = modules_dictionary_idl_files
   }
-  non_dict_outputs = bindings_modules_generated_union_type_files +
-                     generated_modules_callback_function_files
+  non_dict_outputs = bindings_modules_generated_union_type_files
+  if (!use_blink_v8_binding_new_idl_callback_function) {
+    non_dict_outputs += generated_modules_callback_function_files
+  }
   non_dict_output_dir = bindings_modules_v8_output_dir
   target_component = "modules"
 }

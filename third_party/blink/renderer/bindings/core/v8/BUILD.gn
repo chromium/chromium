@@ -17,6 +17,12 @@ blink_core_sources("v8") {
   visibility = [ "//third_party/blink/renderer/core" ]
 
   sources = generated_enumeration_sources_in_core
+  if (use_blink_v8_binding_new_idl_callback_function) {
+    sources += generated_callback_function_sources_in_core
+  }
+  if (use_blink_v8_binding_new_idl_callback_interface) {
+    sources += generated_callback_interface_sources_in_core
+  }
   if (use_blink_v8_binding_new_idl_dictionary) {
     sources += generated_dictionary_sources_in_core
   }
@@ -43,11 +49,14 @@ source_set("testing") {
   ]
 
   sources = generated_enumeration_sources_for_testing_in_core
-  if (use_blink_v8_binding_new_idl_interface) {
-    sources += generated_interface_sources_for_testing_in_core
+  if (use_blink_v8_binding_new_idl_callback_function) {
+    sources += generated_callback_function_sources_for_testing_in_core
   }
   if (use_blink_v8_binding_new_idl_dictionary) {
     sources += generated_dictionary_sources_for_testing_in_core
+  }
+  if (use_blink_v8_binding_new_idl_interface) {
+    sources += generated_interface_sources_for_testing_in_core
   }
 
   deps = [
@@ -101,16 +110,19 @@ group("bindings_core_v8_generated") {
 idl_compiler("generate_bindings_core_v8_interfaces") {
   sources = core_definition_idl_files + core_testing_definition_idl_files +
             generated_webcore_testing_idl_files
+  if (use_blink_v8_binding_new_idl_callback_interface) {
+    sources -= core_callback_interface_idl_files
+  }
+  if (use_blink_v8_binding_new_idl_dictionary) {
+    sources -= core_dictionary_idl_files
+    sources -= core_testing_dictionary_idl_files
+  }
   if (use_blink_v8_binding_new_idl_interface) {
     sources -=
         core_interface_idl_files_core_only +
         core_interface_idl_files_modules_dependent + webcore_testing_idl_files +
         webcore_testing_idl_with_modules_dependency_files +
         generated_webcore_testing_idl_files
-  }
-  if (use_blink_v8_binding_new_idl_dictionary) {
-    sources -= core_dictionary_idl_files
-    sources -= core_testing_dictionary_idl_files
   }
   output_dir = bindings_core_v8_output_dir
   output_name_suffix = ""
@@ -139,9 +151,11 @@ idl_impl("bindings_core_impl_generated") {
   } else {
     dict_idls = core_dictionary_idl_files + core_testing_dictionary_idl_files
   }
-  non_dict_outputs = bindings_core_generated_union_type_files +
-                     generated_core_testing_callback_function_files +
-                     generated_core_callback_function_files
+  non_dict_outputs = bindings_core_generated_union_type_files
+  if (!use_blink_v8_binding_new_idl_callback_function) {
+    non_dict_outputs += generated_core_testing_callback_function_files +
+                        generated_core_callback_function_files
+  }
   non_dict_output_dir = bindings_core_v8_output_dir
   target_component = "core"
 }
@@ -149,9 +163,11 @@ idl_impl("bindings_core_impl_generated") {
 # Compile the non-test sources generated above.
 blink_core_sources("bindings_core_impl") {
   sources = get_target_outputs(":bindings_core_impl_generated") +
-            bindings_core_generated_interface_files -
-            generated_core_testing_callback_function_files
+            bindings_core_generated_interface_files
 
+  if (!use_blink_v8_binding_new_idl_callback_function) {
+    sources -= generated_core_testing_callback_function_files
+  }
   if (!use_blink_v8_binding_new_idl_dictionary) {
     sources -= generated_core_testing_dictionary_files
   }
@@ -173,7 +189,10 @@ blink_core_sources("bindings_core_impl") {
 source_set("testing_internal") {
   testonly = true
 
-  sources = generated_core_testing_callback_function_files
+  sources = []
+  if (!use_blink_v8_binding_new_idl_callback_function) {
+    sources += generated_core_testing_callback_function_files
+  }
   if (!use_blink_v8_binding_new_idl_dictionary) {
     sources += generated_core_testing_dictionary_files
   }

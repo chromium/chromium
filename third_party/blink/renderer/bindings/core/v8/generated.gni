@@ -200,8 +200,10 @@ if (is_win && is_official_build) {
   bindings_core_generated_interface_files =
       [ "$bindings_core_v8_output_dir/v8_generated_core_bindings.cc" ]
 } else {
-  _idl_files =
-      core_buffer_source_type_idl_files + core_callback_interface_idl_files
+  _idl_files = core_buffer_source_type_idl_files
+  if (!use_blink_v8_binding_new_idl_callback_interface) {
+    _idl_files += core_callback_interface_idl_files
+  }
   if (!use_blink_v8_binding_new_idl_dictionary) {
     _idl_files += core_dictionary_idl_files
   }

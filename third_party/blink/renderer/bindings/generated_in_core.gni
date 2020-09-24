@@ -4,6 +4,72 @@
 
 # Generated sources for production
 
+generated_callback_function_sources_in_core = [
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_blob_callback.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_blob_callback.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_create_html_callback.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_create_html_callback.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_create_script_callback.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_create_script_callback.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_create_url_callback.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_create_url_callback.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_custom_element_adopted_callback.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_custom_element_adopted_callback.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_custom_element_attribute_changed_callback.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_custom_element_attribute_changed_callback.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_custom_element_constructor.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_custom_element_constructor.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_custom_element_form_associated_callback.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_custom_element_form_associated_callback.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_custom_element_form_disabled_callback.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_custom_element_form_disabled_callback.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_custom_element_form_state_restore_callback.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_custom_element_form_state_restore_callback.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_event_handler_non_null.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_event_handler_non_null.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_for_each_iterator_callback.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_for_each_iterator_callback.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_frame_request_callback.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_frame_request_callback.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_function.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_function.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_function_string_callback.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_function_string_callback.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_idle_request_callback.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_idle_request_callback.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_intersection_observer_callback.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_intersection_observer_callback.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_intrinsic_sizes_callback.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_intrinsic_sizes_callback.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_layout_callback.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_layout_callback.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_mojo_watch_callback.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_mojo_watch_callback.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_mutation_callback.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_mutation_callback.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_no_argument_constructor.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_no_argument_constructor.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_performance_observer_callback.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_performance_observer_callback.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_reporting_observer_callback.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_reporting_observer_callback.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_resize_observer_callback.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_resize_observer_callback.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_scroll_state_callback.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_scroll_state_callback.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_void_function.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_void_function.h",
+]
+
+generated_callback_interface_sources_in_core = [
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_event_listener.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_event_listener.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_node_filter.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_node_filter.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_void_callback.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_void_callback.h",
+]
+
 generated_dictionary_sources_in_core = [
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_add_event_listener_options.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_add_event_listener_options.h",
@@ -1328,6 +1394,19 @@ generated_interface_sources_in_core = [
 ]
 
 # Generated sources for testing
+
+generated_callback_function_sources_for_testing_in_core = [
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_test_callback.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_test_callback.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_test_enum_callback.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_test_enum_callback.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_test_interface_callback.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_test_interface_callback.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_test_receiver_object_callback.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_test_receiver_object_callback.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_test_sequence_callback.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_test_sequence_callback.h",
+]
 
 generated_dictionary_sources_for_testing_in_core = [
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_internal_dictionary.cc",
