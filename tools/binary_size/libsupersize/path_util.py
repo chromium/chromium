@@ -197,7 +197,7 @@ def GetStripPath(tool_prefix):
   if os.path.exists(fake_strip):
     return fake_strip
   return FromToolsSrcRootRelative(
-      os.path.join('buildtools', 'third_party', 'eu-strip'))
+      os.path.join('buildtools', 'third_party', 'eu-strip', 'bin', 'eu-strip'))
 
 
 def GetNmPath(tool_prefix):
