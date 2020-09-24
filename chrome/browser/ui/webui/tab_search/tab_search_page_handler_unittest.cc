@@ -60,6 +60,7 @@ void ExpectNewTab(const tab_search::mojom::Tab* tab,
   EXPECT_FALSE(tab->pinned);
   EXPECT_EQ(title, tab->title);
   EXPECT_EQ(url, tab->url);
+  EXPECT_FALSE(tab->favicon_url.has_value());
   EXPECT_TRUE(tab->is_default_favicon);
   EXPECT_TRUE(tab->show_icon);
   EXPECT_GT(tab->last_active_time_ticks, base::TimeTicks());
@@ -79,10 +80,12 @@ void ExpectProfileTabs(tab_search::mojom::ProfileTabs* profile_tabs) {
 class TestTabSearchPageHandler : public TabSearchPageHandler {
  public:
   TestTabSearchPageHandler(mojo::PendingRemote<tab_search::mojom::Page> page,
+                           content::WebUI* web_ui,
                            TabSearchPageHandler::Delegate* delegate)
       : TabSearchPageHandler(
             mojo::PendingReceiver<tab_search::mojom::PageHandler>(),
             std::move(page),
+            web_ui,
             delegate) {
     mock_debounce_timer_ = new base::MockRetainingOneShotTimer();
     SetTimerForTesting(base::WrapUnique(mock_debounce_timer_));
@@ -118,7 +121,7 @@ class TabSearchPageHandlerTest : public BrowserWithTestWindowTest {
     BrowserList::SetLastActive(browser1());
     handler_delegate_ = std::make_unique<MockTabSearchPageHandlerDelegate>();
     handler_ = std::make_unique<TestTabSearchPageHandler>(
-        page_.BindAndGetRemote(), handler_delegate_.get());
+        page_.BindAndGetRemote(), web_ui(), handler_delegate_.get());
   }
 
   void TearDown() override {
@@ -355,6 +358,25 @@ TEST_F(TabSearchPageHandlerTest, ShowUITest) {
 TEST_F(TabSearchPageHandlerTest, CloseUITest) {
   EXPECT_CALL(*handler_delegate(), CloseUI()).Times(1);
   handler()->CloseUI();
+}
+
+// OTR profile should have a non-empty base64 favicon_url for each tab
+TEST_F(TabSearchPageHandlerTest, OTRProfileFaviconTest) {
+  AddTabWithTitle(browser3(), GURL(kTabUrl1), kTabName1);
+  BrowserList::SetLastActive(browser3());
+  ASSERT_TRUE(browser3()->profile()->IsOffTheRecord());
+  tab_search::mojom::PageHandler::GetProfileTabsCallback callback =
+      base::BindLambdaForTesting(
+          [&](tab_search::mojom::ProfileTabsPtr profile_tabs) {
+            ASSERT_EQ(1u, profile_tabs->windows.size());
+            auto* window1 = profile_tabs->windows[0].get();
+            ASSERT_EQ(1u, window1->tabs.size());
+            ASSERT_TRUE(window1->tabs[0]->favicon_url.has_value());
+          });
+  testing::StrictMock<MockPage> page;
+  auto handler = std::make_unique<TestTabSearchPageHandler>(
+      page.BindAndGetRemote(), web_ui(), handler_delegate());
+  handler->GetProfileTabs(std::move(callback));
 }
 
 }  // namespace

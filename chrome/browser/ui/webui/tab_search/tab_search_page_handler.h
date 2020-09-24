@@ -42,6 +42,7 @@ class TabSearchPageHandler : public tab_search::mojom::PageHandler,
   TabSearchPageHandler(
       mojo::PendingReceiver<tab_search::mojom::PageHandler> receiver,
       mojo::PendingRemote<tab_search::mojom::Page> page,
+      content::WebUI* web_ui,
       Delegate* delegate);
   TabSearchPageHandler(const TabSearchPageHandler&) = delete;
   TabSearchPageHandler& operator=(const TabSearchPageHandler&) = delete;
@@ -99,6 +100,7 @@ class TabSearchPageHandler : public tab_search::mojom::PageHandler,
   mojo::Receiver<tab_search::mojom::PageHandler> receiver_;
   mojo::Remote<tab_search::mojom::Page> page_;
   Browser* const browser_;
+  content::WebUI* const web_ui_;
   Delegate* const delegate_;
   BrowserTabStripTracker browser_tab_strip_tracker_{this, this};
   std::unique_ptr<base::RetainingOneShotTimer> debounce_timer_;

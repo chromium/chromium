@@ -16,6 +16,7 @@
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/favicon/favicon_utils.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -32,10 +33,12 @@ constexpr base::TimeDelta kTabsChangeDelay =
 TabSearchPageHandler::TabSearchPageHandler(
     mojo::PendingReceiver<tab_search::mojom::PageHandler> receiver,
     mojo::PendingRemote<tab_search::mojom::Page> page,
+    content::WebUI* web_ui,
     Delegate* delegate)
     : receiver_(this, std::move(receiver)),
       page_(std::move(page)),
       browser_(chrome::FindLastActive()),
+      web_ui_(web_ui),
       delegate_(delegate),
       debounce_timer_(std::make_unique<base::RetainingOneShotTimer>(
           FROM_HERE,
@@ -182,6 +185,12 @@ tab_search::mojom::TabPtr TabSearchPageHandler::GetTabData(
   if (tab_renderer_data.favicon.isNull()) {
     tab_data->is_default_favicon = true;
   } else {
+    // Only send favicon_url for OTR profile where chrome://favicon2 is not
+    // available.
+    if (browser_->profile()->IsOffTheRecord()) {
+      tab_data->favicon_url = webui::EncodePNGAndMakeDataURI(
+          tab_renderer_data.favicon, web_ui_->GetDeviceScaleFactor());
+    }
     tab_data->is_default_favicon =
         tab_renderer_data.favicon.BackedBySameObjectAs(
             favicon::GetDefaultFavicon().AsImageSkia());
