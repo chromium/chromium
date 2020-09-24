@@ -568,4 +568,16 @@ Additional details:
   <message name="IDS_CHROME_URLS_DISABLED_PAGE_MESSAGE" desc="A paragraph informing the user that the application is blocked.">
     This application has been blocked by your administrator
   </message>
+
+  <!-- Strings for Data Leak Prevetion -->
+  <message name="IDS_POLICY_DLP_CLIPBOARD_BLOCKED_ON_PASTE" desc="A toast informing the user that paste is blocked.">
+    Pasting to this location is blocked by your administrator
+  </message>
+  <message name="IDS_POLICY_DLP_CLIPBOARD_BLOCKED_ON_COPY_VM" desc="A toast informing the user that sharing clipboard data to VMs is blocked.">
+    Your administrator has blocked sharing this content to <ph name="VM_NAME">$1<ex>Linux</ex></ph>
+  </message>
+  <message name="IDS_POLICY_DLP_CLIPBOARD_BLOCKED_ON_COPY_TWO_VMS" desc="A toast informing the user that sharing clipboard data to VMs is blocked.">
+    Your administrator has blocked sharing this content to <ph name="VM_NAME_1">$1<ex>Linux</ex></ph> and <ph name="VM_NAME_2">$2<ex>Parallels</ex></ph>
+  </message>
+
 </grit-part>
