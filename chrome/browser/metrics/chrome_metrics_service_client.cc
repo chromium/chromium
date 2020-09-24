@@ -150,7 +150,6 @@
 #include "chrome/browser/metrics/assistant_service_metrics_provider.h"
 #include "chrome/browser/metrics/chromeos_metrics_provider.h"
 #include "chrome/browser/metrics/cros_healthd_metrics_provider.h"
-#include "chrome/browser/metrics/family_user_metrics_provider.h"
 #include "chrome/browser/signin/signin_status_metrics_provider_chromeos.h"
 #include "components/metrics/structured/structured_metrics_provider.h"
 #endif  // defined(OS_CHROMEOS)
@@ -734,9 +733,6 @@ void ChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
 
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<AmbientModeMetricsProvider>());
-
-  metrics_service_->RegisterMetricsProvider(
-      std::make_unique<FamilyUserMetricsProvider>());
 #endif  // defined(OS_CHROMEOS)
 
 #if !defined(OS_CHROMEOS)
