@@ -101,7 +101,7 @@ class ToolPrefixFinder(_PathFinder):
         ret = os.path.join(TOOLS_SRC_ROOT, 'third_party', 'llvm-build',
                            'Release+Asserts', 'bin', 'llvm-')
       else:
-        # Auto-detect from build_vars.txt
+        # Auto-detect from build_vars.json
         build_vars = _LoadBuildVars(output_directory)
         tool_prefix = build_vars.get('android_tool_prefix')
         if tool_prefix:
@@ -110,7 +110,7 @@ class ToolPrefixFinder(_PathFinder):
           if tool_prefix.endswith(os.path.sep):
             ret += os.path.sep
       if ret:
-        # Check for output directories that have a stale build_vars.txt.
+        # Check for output directories that have a stale build_vars.json
         if os.path.isfile(ret + _SAMPLE_TOOL_SUFFIX):
           return ret
         else:
