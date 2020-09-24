@@ -122,7 +122,6 @@ ci.console_view(
             "chromeos",
             "iOS",
             "linux",
-            "mojo",
             "recipe",
             "remote_run",
             "site_isolation",
@@ -243,6 +242,10 @@ ci.console_view(
         "linux|asan lsan": "*build-or-test*",
         "linux|webkit": ci.ordering(short_names = ["asn", "msn"]),
     },
+)
+
+ci.console_view(
+    name = "chromium.mojo",
 )
 
 ci.console_view(
@@ -2236,30 +2239,6 @@ ci.fyi_builder(
 )
 
 ci.fyi_builder(
-    name = "Mojo Android",
-    console_view_entry = ci.console_view_entry(
-        category = "mojo",
-        short_name = "and",
-    ),
-)
-
-ci.fyi_builder(
-    name = "Mojo ChromiumOS",
-    console_view_entry = ci.console_view_entry(
-        category = "mojo",
-        short_name = "cr",
-    ),
-)
-
-ci.fyi_builder(
-    name = "Mojo Linux",
-    console_view_entry = ci.console_view_entry(
-        category = "mojo",
-        short_name = "lnx",
-    ),
-)
-
-ci.fyi_builder(
     name = "Site Isolation Android",
     console_view_entry = ci.console_view_entry(
         category = "site_isolation",
@@ -2275,14 +2254,6 @@ ci.fyi_builder(
     ),
     cq_mirrors_console_view = settings.cq_mirrors_console_name,
     main_console_view = main_console_if_on_branch(),
-)
-
-ci.fyi_builder(
-    name = "android-mojo-webview-rel",
-    console_view_entry = ci.console_view_entry(
-        category = "mojo",
-        short_name = "aw",
-    ),
 )
 
 ci.fyi_builder(
@@ -2952,15 +2923,6 @@ ci.fyi_mac_builder(
     cores = 8,
 )
 
-ci.fyi_mac_builder(
-    name = "mac-mojo-rel",
-    console_view_entry = ci.console_view_entry(
-        category = "mojo",
-        short_name = "mac",
-    ),
-    os = os.MAC_ANY,
-)
-
 ci.fyi_windows_builder(
     name = "Win10 Tests x64 1803",
     console_view_entry = ci.console_view_entry(
@@ -3010,14 +2972,6 @@ ci.fyi_windows_builder(
     ),
     execution_timeout = 16 * time.hour,
     notifies = ["annotator-rel"],
-)
-
-ci.fyi_windows_builder(
-    name = "Mojo Windows",
-    console_view_entry = ci.console_view_entry(
-        category = "mojo",
-        short_name = "win",
-    ),
 )
 
 ci.gpu_builder(
@@ -4610,6 +4564,52 @@ ci.memory_builder(
     builderless = True,
     main_console_view = "main",
     os = os.WINDOWS_DEFAULT,
+)
+
+ci.mojo_builder(
+    name = "Mojo Android",
+    console_view_entry = ci.console_view_entry(
+        short_name = "and",
+    ),
+)
+
+ci.mojo_builder(
+    name = "Mojo ChromiumOS",
+    console_view_entry = ci.console_view_entry(
+        short_name = "cr",
+    ),
+)
+
+ci.mojo_builder(
+    name = "Mojo Linux",
+    console_view_entry = ci.console_view_entry(
+        short_name = "lnx",
+    ),
+)
+
+ci.mojo_builder(
+    name = "Mojo Windows",
+    builderless = False,
+    console_view_entry = ci.console_view_entry(
+        short_name = "win",
+    ),
+    os = os.WINDOWS_DEFAULT,
+)
+
+ci.mojo_builder(
+    name = "android-mojo-webview-rel",
+    console_view_entry = ci.console_view_entry(
+        short_name = "aw",
+    ),
+)
+
+ci.mojo_builder(
+    name = "mac-mojo-rel",
+    console_view_entry = ci.console_view_entry(
+        short_name = "mac",
+    ),
+    cores = 4,
+    os = os.MAC_ANY,
 )
 
 ci.swangle_linux_builder(

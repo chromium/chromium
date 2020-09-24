@@ -261,6 +261,8 @@
       'Mac Builder Next': 'gpu_tests_release_bot_minimal_symbols',
       'Mac deterministic': 'release_bot_mac_strip_minimal_symbols_deterministic',
       'Mac deterministic (dbg)': 'debug_bot_deterministic',
+      # TODO(https://crbug.com/1131163) Remove the mojo entries once the
+      # builders have started reading from the correct spec file
       'Mojo Android': 'android_release_bot_minimal_symbols_arm64',
       'Mojo ChromiumOS': 'chromeos_with_codecs_release_trybot',
       'Mojo Linux': 'release_trybot',
@@ -272,6 +274,8 @@
       'Win10 Tests x64 1909': 'release_trybot',
       'android-code-coverage': 'gpu_tests_android_release_bot_minimal_symbols_arm64_fastbuild_java_coverage',
       'android-code-coverage-native': 'gpu_tests_android_release_bot_minimal_symbols_arm64_fastbuild_native_coverage',
+      # TODO(https://crbug.com/1131163) Remove the mojo entries once the
+      # builders have started reading from the correct spec file
       'android-mojo-webview-rel': 'android_release_bot_minimal_symbols_arm64',
       'chromeos-amd64-generic-lacros-rel': 'chromeos_amd64-generic_lacros_rel',
       'fuchsia-fyi-arm64-dbg': 'debug_bot_fuchsia_arm64',
@@ -309,6 +313,8 @@
       'linux-wpt-payments-fyi-rel': 'release_bot_minimal_symbols',
       'mac-code-coverage': 'clang_code_coverage',
       'mac-hermetic-upgrade-rel': 'release_bot',
+      # TODO(https://crbug.com/1131163) Remove the mojo entries once the
+      # builders have started reading from the correct spec file
       'mac-mojo-rel': 'release_trybot',
       'mac-omaha-builder-rel': 'updater_release_bot',
       'mac-upload-perfetto': 'release_bot',
@@ -528,6 +534,15 @@
       'WebKit Linux MSAN': 'msan_release_bot_blink',
       'android-asan': 'android_clang_asan_release_bot',
       'win-asan': 'asan_clang_fuzzer_static_v8_heap_minimal_symbols_release',
+    },
+
+    'chromium.mojo': {
+      'Mojo Android': 'android_release_bot_minimal_symbols_arm64',
+      'Mojo ChromiumOS': 'chromeos_with_codecs_release_trybot',
+      'Mojo Linux': 'release_trybot',
+      'Mojo Windows': 'release_bot_x86_minimal_symbols',
+      'android-mojo-webview-rel': 'android_release_bot_minimal_symbols_arm64',
+      'mac-mojo-rel': 'release_trybot',
     },
 
     'chromium.perf': {

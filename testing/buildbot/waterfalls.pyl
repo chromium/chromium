@@ -1869,6 +1869,8 @@
           'isolated_scripts': 'chromium_mac_rel_isolated_scripts',
         },
       },
+      # TODO(https://crbug.com/1131163) Remove the mojo entries once the
+      # builders have started reading from the correct spec file
       'Mojo Android': {
         'swarming': {
           'dimension_sets': [
@@ -2011,6 +2013,8 @@
         'use_swarming': True,
         'os_type': 'android',
       },
+      # TODO(https://crbug.com/1131163) Remove the mojo entries once the
+      # builders have started reading from the correct spec file
       'android-mojo-webview-rel': {
         'swarming': {
           'dimension_sets': [
@@ -2424,6 +2428,8 @@
           'all',
         ],
       },
+      # TODO(https://crbug.com/1131163) Remove the mojo entries once the
+      # builders have started reading from the correct spec file
       'mac-mojo-rel': {
         'mixins': [
           'mac_10.13',
@@ -4777,6 +4783,69 @@
             },
           ],
         },
+      },
+    },
+  },
+  {
+    'project': 'chromium',
+    'bucket': 'ci',
+    'name': 'chromium.mojo',
+    'mixins': ['chromium-tester-service-account'],
+    'machines': {
+      'Mojo Android': {
+        'swarming': {
+          'dimension_sets': [
+            {
+              'device_os': 'MMB29Q',
+              'device_type': 'bullhead',
+              'os': 'Android',
+            },
+          ],
+          'hard_timeout': 3600,
+        },
+        'os_type': 'android',
+        'test_suites': {
+          'gtest_tests': 'mojo_android_gtests',
+        },
+      },
+      'Mojo ChromiumOS': {
+        'test_suites': {
+          'gtest_tests': 'mojo_chromiumos_fyi_gtests',
+        },
+      },
+      'Mojo Linux': {
+        'mixins': [
+          'linux-xenial',
+        ],
+        'test_suites': {
+          'gtest_tests': 'mojo_linux_gtests',
+        },
+      },
+      'Mojo Windows': {
+        'test_suites': {
+          'gtest_tests': 'mojo_windows_gtests',
+        },
+      },
+      'android-mojo-webview-rel': {
+        'swarming': {
+          'dimension_sets': [
+            {
+              'device_os': 'MMB29Q',
+              'device_type': 'bullhead',
+              'os': 'Android',
+            },
+          ],
+        },
+        'os_type': 'android',
+        'test_suites': {
+          'gtest_tests': 'network_service_android_gtests',
+        },
+      },
+      'mac-mojo-rel': {
+        'mixins': [
+          'mac_10.13',
+          'no_gpu',
+        ],
       },
     },
   },
