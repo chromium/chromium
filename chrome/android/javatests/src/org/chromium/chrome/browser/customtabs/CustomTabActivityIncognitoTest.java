@@ -138,7 +138,7 @@ public class CustomTabActivityIncognitoTest {
         assertTrue(item == null || !item.isVisible());
     }
 
-    private void testTopActionIconsIsVisible(String screenshotName) throws Exception {
+    private void testTopActionIconsIsVisible() throws Exception {
         Menu menu = mCustomTabActivityTestRule.getMenu();
         MenuItem iconRow = menu.findItem(R.id.icon_row_menu_id);
 
@@ -261,7 +261,7 @@ public class CustomTabActivityIncognitoTest {
     @Features.EnableFeatures({ChromeFeatureList.CCT_INCOGNITO})
     public void ensureOnlyFourTopIconsAreVisible() throws Exception {
         launchMenuItem();
-        testTopActionIconsIsVisible("Forward, info, bookmark and reload is visible");
+        testTopActionIconsIsVisible();
     }
 
     @Test
@@ -281,7 +281,26 @@ public class CustomTabActivityIncognitoTest {
         assertTrue(menu.findItem(R.id.request_desktop_site_row_menu_id).isVisible());
 
         // Check top icons are still the same.
-        testTopActionIconsIsVisible("Custom menu items not visible");
+        testTopActionIconsIsVisible();
+    }
+
+    @Test
+    @MediumTest
+    @Features.EnableFeatures({ChromeFeatureList.CCT_INCOGNITO})
+    public void ensureAddCustomMenuItemIsEnabledForReaderMode() throws Exception {
+        Intent intent = createMinimalIncognitoCustomTabIntent();
+        CustomTabIntentDataProvider.addReaderModeUIExtras(intent);
+        CustomTabActivity activity = launchIncognitoCustomTab(intent);
+        CustomTabsTestUtils.openAppMenuAndAssertMenuShown(activity);
+
+        Menu menu = mCustomTabActivityTestRule.getMenu();
+        // Check the menu items have only 2 items visible "not" including the top icon row menu.
+        assertEquals(2, CustomTabsTestUtils.getVisibleMenuSize(menu));
+        assertTrue(menu.findItem(R.id.reader_mode_prefs_id).isVisible());
+        assertTrue(menu.findItem(R.id.find_in_page_id).isVisible());
+
+        assertFalse(menu.findItem(R.id.icon_row_menu_id).isVisible());
+        assertFalse(menu.findItem(R.id.request_desktop_site_row_menu_id).isVisible());
     }
 
     @Test
