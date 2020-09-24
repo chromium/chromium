@@ -1207,7 +1207,7 @@ const char kGlobalMediaControlsForCastDescription[] =
     "#global-media-controls and #cast-media-route-provider to also be enabled.";
 
 const char kGlobalMediaControlsForChromeOSName[] =
-    "Global Media Conrols for ChromeOS";
+    "Global Media Controls for ChromeOS";
 const char kGlobalMediaControlsForChromeOSDescription[] =
     "Enable Global Media Controls UI in shelf and quick settings.";
 
