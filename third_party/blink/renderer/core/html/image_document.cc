@@ -208,7 +208,7 @@ ImageDocument::ImageDocument(const DocumentInit& initializer)
       shrink_to_fit_mode_(GetFrame()->GetSettings()->GetViewportEnabled()
                               ? kViewport
                               : kDesktop) {
-  SetCompatibilityMode(kQuirksMode);
+  SetCompatibilityMode(kNoQuirksMode);
   LockCompatibilityMode();
 }
 
@@ -227,6 +227,8 @@ IntSize ImageDocument::ImageSize() const {
 void ImageDocument::CreateDocumentStructure(
     ImageResourceContent* image_content) {
   auto* root_element = MakeGarbageCollected<HTMLHtmlElement>(*this);
+  root_element->SetInlineStyleProperty(
+      CSSPropertyID::kHeight, 100, CSSPrimitiveValue::UnitType::kPercentage);
   AppendChild(root_element);
   root_element->InsertedByParser();
 
@@ -245,7 +247,7 @@ void ImageDocument::CreateDocumentStructure(
   if (ShouldShrinkToFit()) {
     // Display the image prominently centered in the frame.
     body->setAttribute(html_names::kStyleAttr,
-                       "margin: 0px; background: #0e0e0e;");
+                       "margin: 0px; background: #0e0e0e; height: 100%");
 
     // See w3c example on how to center an element:
     // https://www.w3.org/Style/Examples/007/center.en.html
@@ -267,7 +269,7 @@ void ImageDocument::CreateDocumentStructure(
     ShadowRoot& shadow_root = body->EnsureUserAgentShadowRoot();
     shadow_root.AppendChild(div_element_);
   } else {
-    body->setAttribute(html_names::kStyleAttr, "margin: 0px;");
+    body->setAttribute(html_names::kStyleAttr, "margin: 0px; height: 100%");
   }
 
   WillInsertBody();
