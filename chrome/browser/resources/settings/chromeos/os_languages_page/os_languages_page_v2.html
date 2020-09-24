@@ -41,11 +41,15 @@
       }
 
       #addLanguages {
+        --iron-icon-fill-color: var(--cr-link-color);
         margin-top: 16px;
       }
 
+      #addLanguages[disabled] {
+        --iron-icon-fill-color: var(--google-grey-600);
+      }
+
       #addLanguagesIcon {
-        --iron-icon-fill-color: var(--cr-link-color);
         margin-inline-end: 8px;
       }
     </style>
