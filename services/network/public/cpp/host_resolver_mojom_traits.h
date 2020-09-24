@@ -18,11 +18,11 @@
 #include "net/base/address_family.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
-#include "net/dns/dns_config.h"
 #include "net/dns/dns_config_overrides.h"
 #include "net/dns/dns_hosts.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/public/dns_query_type.h"
+#include "net/dns/public/secure_dns_mode.h"
 #include "services/network/public/mojom/host_resolver.mojom-forward.h"
 #include "services/network/public/mojom/host_resolver.mojom-shared.h"
 
@@ -30,7 +30,7 @@ namespace mojo {
 
 // This is made visible for use by network::HostResolver. Not intended to be
 // used elsewhere.
-base::Optional<net::DnsConfig::SecureDnsMode> FromOptionalSecureDnsMode(
+base::Optional<net::SecureDnsMode> FromOptionalSecureDnsMode(
     network::mojom::OptionalSecureDnsMode mode);
 
 template <>
@@ -115,12 +115,11 @@ struct EnumTraits<network::mojom::MdnsListenClient_UpdateType,
 };
 
 template <>
-struct EnumTraits<network::mojom::SecureDnsMode,
-                  net::DnsConfig::SecureDnsMode> {
+struct EnumTraits<network::mojom::SecureDnsMode, net::SecureDnsMode> {
   static network::mojom::SecureDnsMode ToMojom(
-      net::DnsConfig::SecureDnsMode secure_dns_mode);
+      net::SecureDnsMode secure_dns_mode);
   static bool FromMojom(network::mojom::SecureDnsMode in,
-                        net::DnsConfig::SecureDnsMode* out);
+                        net::SecureDnsMode* out);
 };
 
 template <>

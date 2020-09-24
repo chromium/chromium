@@ -25,6 +25,7 @@
 #include "net/cert/mock_cert_verifier.h"
 #include "net/cert/multi_log_ct_verifier.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/dns/public/secure_dns_mode.h"
 #include "net/http/http_auth_handler_factory.h"
 #include "net/http/http_network_session.h"
 #include "net/http/http_proxy_connect_job.h"
@@ -445,7 +446,7 @@ TEST_F(SSLConnectJobTest, DisableSecureDns) {
     EXPECT_EQ(disable_secure_dns,
               host_resolver_.last_secure_dns_mode_override().has_value());
     if (disable_secure_dns) {
-      EXPECT_EQ(net::DnsConfig::SecureDnsMode::OFF,
+      EXPECT_EQ(net::SecureDnsMode::kOff,
                 host_resolver_.last_secure_dns_mode_override().value());
     }
   }

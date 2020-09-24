@@ -31,9 +31,8 @@ struct DnsOverHttpsServer {
 
 // The secure DNS mode specifies what types of lookups (secure/insecure) should
 // be performed and in what order when resolving a specific query. This is
-// an expanded version of DnsConfig::SecureDnsMode that includes representation
-// of an optional SecureDnsMode. Needed because Mojo does not support optional
-// enums.
+// an expanded version of net::SecureDnsMode that includes representation of an
+// optional SecureDnsMode. Needed because Mojo does not support optional enums.
 enum OptionalSecureDnsMode {
   NO_OVERRIDE,
   OFF,
@@ -41,7 +40,7 @@ enum OptionalSecureDnsMode {
   SECURE,
 };
 
-// This enum corresponds to DnsConfig::SecureDnsMode.
+// This enum corresponds to net::SecureDnsMode.
 enum SecureDnsMode {
   OFF,
   AUTOMATIC,

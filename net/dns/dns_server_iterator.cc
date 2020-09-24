@@ -6,7 +6,6 @@
 
 #include "base/optional.h"
 #include "base/time/time.h"
-#include "net/dns/dns_config.h"
 #include "net/dns/dns_session.h"
 #include "net/dns/resolve_context.h"
 
@@ -48,7 +47,7 @@ size_t DohDnsServerIterator::GetNextAttemptIndex() {
     // If the DoH mode is "secure" then don't check GetDohServerAvailability()
     // because we try every server regardless of availability.
     bool secure_or_available_server =
-        secure_dns_mode_ == DnsConfig::SecureDnsMode::SECURE ||
+        secure_dns_mode_ == SecureDnsMode::kSecure ||
         resolve_context_->GetDohServerAvailability(curr_index, session_);
 
     // If we've tried this server |max_times_returned_| already, then we're done
@@ -72,7 +71,6 @@ size_t DohDnsServerIterator::GetNextAttemptIndex() {
       least_recently_failed_time = curr_index_failure_time;
       least_recently_failed_index = curr_index;
     }
-
   } while (next_index_ != previous_index);
 
   // At this point the only available servers we haven't attempted
@@ -92,7 +90,7 @@ bool DohDnsServerIterator::AttemptAvailable() {
     // If the DoH mode is "secure" then don't check GetDohServerAvailability()
     // because we try every server regardless of availability.
     bool secure_or_available_server =
-        secure_dns_mode_ == DnsConfig::SecureDnsMode::SECURE ||
+        secure_dns_mode_ == SecureDnsMode::kSecure ||
         resolve_context_->GetDohServerAvailability(i, session_);
 
     if (times_returned_[i] < max_times_returned_ && secure_or_available_server)
@@ -139,7 +137,6 @@ size_t ClassicDnsServerIterator::GetNextAttemptIndex() {
       least_recently_failed_time = curr_index_failure_time;
       least_recently_failed_index = curr_index;
     }
-
   } while (next_index_ != previous_index);
 
   // At this point the only servers we haven't attempted |max_times_returned_|

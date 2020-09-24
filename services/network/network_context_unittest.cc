@@ -78,6 +78,7 @@
 #include "net/dns/host_resolver_source.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/dns/public/dns_query_type.h"
+#include "net/dns/public/secure_dns_mode.h"
 #include "net/dns/resolve_context.h"
 #include "net/http/http_auth.h"
 #include "net/http/http_cache.h"
@@ -4476,7 +4477,7 @@ TEST_F(NetworkContextTest, TrustedParams_DisableSecureDns) {
     EXPECT_EQ(disable_secure_dns,
               resolver->last_secure_dns_mode_override().has_value());
     if (disable_secure_dns) {
-      EXPECT_EQ(net::DnsConfig::SecureDnsMode::OFF,
+      EXPECT_EQ(net::SecureDnsMode::kOff,
                 resolver->last_secure_dns_mode_override().value());
     }
   }
@@ -4522,7 +4523,7 @@ TEST_F(NetworkContextTest, FactoryParams_DisableSecureDns) {
     EXPECT_EQ(disable_secure_dns,
               resolver.last_secure_dns_mode_override().has_value());
     if (disable_secure_dns) {
-      EXPECT_EQ(net::DnsConfig::SecureDnsMode::OFF,
+      EXPECT_EQ(net::SecureDnsMode::kOff,
                 resolver.last_secure_dns_mode_override().value());
     }
   }

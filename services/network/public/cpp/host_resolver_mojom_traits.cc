@@ -111,32 +111,32 @@ bool ReadDnsOverHttpsServerData(
 }
 
 OptionalSecureDnsMode ToOptionalSecureDnsMode(
-    base::Optional<net::DnsConfig::SecureDnsMode> optional) {
+    base::Optional<net::SecureDnsMode> optional) {
   if (!optional)
     return OptionalSecureDnsMode::NO_OVERRIDE;
   switch (optional.value()) {
-    case net::DnsConfig::SecureDnsMode::OFF:
+    case net::SecureDnsMode::kOff:
       return OptionalSecureDnsMode::OFF;
-    case net::DnsConfig::SecureDnsMode::AUTOMATIC:
+    case net::SecureDnsMode::kAutomatic:
       return OptionalSecureDnsMode::AUTOMATIC;
-    case net::DnsConfig::SecureDnsMode::SECURE:
+    case net::SecureDnsMode::kSecure:
       return OptionalSecureDnsMode::SECURE;
   }
 }
 
 }  // namespace
 
-base::Optional<net::DnsConfig::SecureDnsMode> FromOptionalSecureDnsMode(
+base::Optional<net::SecureDnsMode> FromOptionalSecureDnsMode(
     OptionalSecureDnsMode mode) {
   switch (mode) {
     case OptionalSecureDnsMode::NO_OVERRIDE:
       return base::nullopt;
     case OptionalSecureDnsMode::OFF:
-      return net::DnsConfig::SecureDnsMode::OFF;
+      return net::SecureDnsMode::kOff;
     case OptionalSecureDnsMode::AUTOMATIC:
-      return net::DnsConfig::SecureDnsMode::AUTOMATIC;
+      return net::SecureDnsMode::kAutomatic;
     case OptionalSecureDnsMode::SECURE:
-      return net::DnsConfig::SecureDnsMode::SECURE;
+      return net::SecureDnsMode::kSecure;
   }
 }
 
@@ -383,14 +383,14 @@ bool EnumTraits<MdnsListenClient::UpdateType,
 
 // static
 network::mojom::SecureDnsMode
-EnumTraits<network::mojom::SecureDnsMode, net::DnsConfig::SecureDnsMode>::
-    ToMojom(net::DnsConfig::SecureDnsMode secure_dns_mode) {
+EnumTraits<network::mojom::SecureDnsMode, net::SecureDnsMode>::ToMojom(
+    net::SecureDnsMode secure_dns_mode) {
   switch (secure_dns_mode) {
-    case net::DnsConfig::SecureDnsMode::OFF:
+    case net::SecureDnsMode::kOff:
       return network::mojom::SecureDnsMode::OFF;
-    case net::DnsConfig::SecureDnsMode::AUTOMATIC:
+    case net::SecureDnsMode::kAutomatic:
       return network::mojom::SecureDnsMode::AUTOMATIC;
-    case net::DnsConfig::SecureDnsMode::SECURE:
+    case net::SecureDnsMode::kSecure:
       return network::mojom::SecureDnsMode::SECURE;
   }
   NOTREACHED();
@@ -398,18 +398,18 @@ EnumTraits<network::mojom::SecureDnsMode, net::DnsConfig::SecureDnsMode>::
 }
 
 // static
-bool EnumTraits<network::mojom::SecureDnsMode, net::DnsConfig::SecureDnsMode>::
-    FromMojom(network::mojom::SecureDnsMode in,
-              net::DnsConfig::SecureDnsMode* out) {
+bool EnumTraits<network::mojom::SecureDnsMode, net::SecureDnsMode>::FromMojom(
+    network::mojom::SecureDnsMode in,
+    net::SecureDnsMode* out) {
   switch (in) {
     case network::mojom::SecureDnsMode::OFF:
-      *out = net::DnsConfig::SecureDnsMode::OFF;
+      *out = net::SecureDnsMode::kOff;
       return true;
     case network::mojom::SecureDnsMode::AUTOMATIC:
-      *out = net::DnsConfig::SecureDnsMode::AUTOMATIC;
+      *out = net::SecureDnsMode::kAutomatic;
       return true;
     case network::mojom::SecureDnsMode::SECURE:
-      *out = net::DnsConfig::SecureDnsMode::SECURE;
+      *out = net::SecureDnsMode::kSecure;
       return true;
   }
   return false;

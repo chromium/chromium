@@ -122,7 +122,7 @@ TEST_F(ResolveContextTest, DohServerAvailability_InitialAvailability) {
 
   EXPECT_EQ(context.NumAvailableDohServers(session.get()), 0u);
   std::unique_ptr<DnsServerIterator> doh_itr = context.GetDohIterator(
-      session->config(), DnsConfig::SecureDnsMode::AUTOMATIC, session.get());
+      session->config(), SecureDnsMode::kAutomatic, session.get());
 
   EXPECT_FALSE(doh_itr->AttemptAvailable());
 }
@@ -143,7 +143,7 @@ TEST_F(ResolveContextTest, DohServerAvailability_RecordedSuccess) {
                               session.get());
   EXPECT_EQ(context.NumAvailableDohServers(session.get()), 1u);
   std::unique_ptr<DnsServerIterator> doh_itr = context.GetDohIterator(
-      session->config(), DnsConfig::SecureDnsMode::AUTOMATIC, session.get());
+      session->config(), SecureDnsMode::kAutomatic, session.get());
 
   ASSERT_TRUE(doh_itr->AttemptAvailable());
   EXPECT_EQ(doh_itr->GetNextAttemptIndex(), 1u);
@@ -161,7 +161,7 @@ TEST_F(ResolveContextTest, DohServerAvailability_NoCurrentSession) {
                               session.get());
 
   std::unique_ptr<DnsServerIterator> doh_itr = context.GetDohIterator(
-      session->config(), DnsConfig::SecureDnsMode::AUTOMATIC, session.get());
+      session->config(), SecureDnsMode::kAutomatic, session.get());
 
   EXPECT_FALSE(doh_itr->AttemptAvailable());
   EXPECT_EQ(0u, context.NumAvailableDohServers(session.get()));
@@ -187,7 +187,7 @@ TEST_F(ResolveContextTest, DohServerAvailability_DifferentSession) {
                               session2.get());
 
   std::unique_ptr<DnsServerIterator> doh_itr = context.GetDohIterator(
-      session1->config(), DnsConfig::SecureDnsMode::AUTOMATIC, session1.get());
+      session1->config(), SecureDnsMode::kAutomatic, session1.get());
 
   EXPECT_FALSE(doh_itr->AttemptAvailable());
   EXPECT_EQ(0u, context.NumAvailableDohServers(session1.get()));
@@ -216,7 +216,7 @@ TEST_F(ResolveContextTest, DohServerIndexToUse) {
                               session.get());
   EXPECT_EQ(context.NumAvailableDohServers(session.get()), 1u);
   std::unique_ptr<DnsServerIterator> doh_itr = context.GetDohIterator(
-      session->config(), DnsConfig::SecureDnsMode::AUTOMATIC, session.get());
+      session->config(), SecureDnsMode::kAutomatic, session.get());
 
   ASSERT_TRUE(doh_itr->AttemptAvailable());
   EXPECT_EQ(doh_itr->GetNextAttemptIndex(), 0u);
@@ -234,7 +234,7 @@ TEST_F(ResolveContextTest, DohServerIndexToUse_NoneEligible) {
                                             false /* network_change */);
 
   std::unique_ptr<DnsServerIterator> doh_itr = context.GetDohIterator(
-      session->config(), DnsConfig::SecureDnsMode::AUTOMATIC, session.get());
+      session->config(), SecureDnsMode::kAutomatic, session.get());
 
   EXPECT_FALSE(doh_itr->AttemptAvailable());
 }
@@ -250,7 +250,7 @@ TEST_F(ResolveContextTest, DohServerIndexToUse_SecureMode) {
                                             false /* network_change */);
 
   std::unique_ptr<DnsServerIterator> doh_itr = context.GetDohIterator(
-      session->config(), DnsConfig::SecureDnsMode::SECURE, session.get());
+      session->config(), SecureDnsMode::kSecure, session.get());
 
   ASSERT_TRUE(doh_itr->AttemptAvailable());
   EXPECT_EQ(doh_itr->GetNextAttemptIndex(), 0u);
@@ -660,7 +660,7 @@ TEST_F(ResolveContextTest, DohFailures_Consecutive) {
 
   for (size_t i = 0; i < ResolveContext::kAutomaticModeFailureLimit; i++) {
     std::unique_ptr<DnsServerIterator> doh_itr = context.GetDohIterator(
-        session->config(), DnsConfig::SecureDnsMode::AUTOMATIC, session.get());
+        session->config(), SecureDnsMode::kAutomatic, session.get());
 
     ASSERT_TRUE(doh_itr->AttemptAvailable());
     EXPECT_EQ(doh_itr->GetNextAttemptIndex(), 1u);
@@ -670,7 +670,7 @@ TEST_F(ResolveContextTest, DohFailures_Consecutive) {
                                 ERR_FAILED, session.get());
   }
   std::unique_ptr<DnsServerIterator> doh_itr = context.GetDohIterator(
-      session->config(), DnsConfig::SecureDnsMode::AUTOMATIC, session.get());
+      session->config(), SecureDnsMode::kAutomatic, session.get());
 
   EXPECT_FALSE(doh_itr->AttemptAvailable());
   EXPECT_EQ(0u, context.NumAvailableDohServers(session.get()));
@@ -696,7 +696,7 @@ TEST_F(ResolveContextTest, DohFailures_NonConsecutive) {
 
   for (size_t i = 0; i < ResolveContext::kAutomaticModeFailureLimit - 1; i++) {
     std::unique_ptr<DnsServerIterator> doh_itr = context.GetDohIterator(
-        session->config(), DnsConfig::SecureDnsMode::AUTOMATIC, session.get());
+        session->config(), SecureDnsMode::kAutomatic, session.get());
 
     ASSERT_TRUE(doh_itr->AttemptAvailable());
     EXPECT_EQ(doh_itr->GetNextAttemptIndex(), 1u);
@@ -706,7 +706,7 @@ TEST_F(ResolveContextTest, DohFailures_NonConsecutive) {
   }
   {
     std::unique_ptr<DnsServerIterator> doh_itr = context.GetDohIterator(
-        session->config(), DnsConfig::SecureDnsMode::AUTOMATIC, session.get());
+        session->config(), SecureDnsMode::kAutomatic, session.get());
 
     ASSERT_TRUE(doh_itr->AttemptAvailable());
     EXPECT_EQ(doh_itr->GetNextAttemptIndex(), 1u);
@@ -717,7 +717,7 @@ TEST_F(ResolveContextTest, DohFailures_NonConsecutive) {
                               session.get());
   {
     std::unique_ptr<DnsServerIterator> doh_itr = context.GetDohIterator(
-        session->config(), DnsConfig::SecureDnsMode::AUTOMATIC, session.get());
+        session->config(), SecureDnsMode::kAutomatic, session.get());
 
     ASSERT_TRUE(doh_itr->AttemptAvailable());
     EXPECT_EQ(doh_itr->GetNextAttemptIndex(), 1u);
@@ -730,7 +730,7 @@ TEST_F(ResolveContextTest, DohFailures_NonConsecutive) {
                               ERR_FAILED, session.get());
   {
     std::unique_ptr<DnsServerIterator> doh_itr = context.GetDohIterator(
-        session->config(), DnsConfig::SecureDnsMode::AUTOMATIC, session.get());
+        session->config(), SecureDnsMode::kAutomatic, session.get());
 
     ASSERT_TRUE(doh_itr->AttemptAvailable());
     EXPECT_EQ(doh_itr->GetNextAttemptIndex(), 1u);
@@ -768,7 +768,7 @@ TEST_F(ResolveContextTest, DohFailures_SuccessAfterFailures) {
                               session.get());
   {
     std::unique_ptr<DnsServerIterator> doh_itr = context.GetDohIterator(
-        session->config(), DnsConfig::SecureDnsMode::AUTOMATIC, session.get());
+        session->config(), SecureDnsMode::kAutomatic, session.get());
 
     ASSERT_TRUE(doh_itr->AttemptAvailable());
     EXPECT_EQ(doh_itr->GetNextAttemptIndex(), 1u);
@@ -845,7 +845,7 @@ TEST_F(ResolveContextTest, TwoDohFailures) {
   // Expect server preference to change after |config.attempts| failures.
   for (int i = 0; i < config.attempts; i++) {
     std::unique_ptr<DnsServerIterator> doh_itr = context.GetDohIterator(
-        session->config(), DnsConfig::SecureDnsMode::AUTOMATIC, session.get());
+        session->config(), SecureDnsMode::kAutomatic, session.get());
 
     ASSERT_TRUE(doh_itr->AttemptAvailable());
     EXPECT_EQ(doh_itr->GetNextAttemptIndex(), 0u);
@@ -861,7 +861,7 @@ TEST_F(ResolveContextTest, TwoDohFailures) {
   }
 
   std::unique_ptr<DnsServerIterator> doh_itr = context.GetDohIterator(
-      session->config(), DnsConfig::SecureDnsMode::AUTOMATIC, session.get());
+      session->config(), SecureDnsMode::kAutomatic, session.get());
 
   ASSERT_TRUE(doh_itr->AttemptAvailable());
   EXPECT_EQ(doh_itr->GetNextAttemptIndex(), 2u);

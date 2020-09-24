@@ -365,14 +365,13 @@ std::string GetDohProviderIdForHistogramFromNameserver(
   return entries.empty() ? "Other" : entries[0]->provider;
 }
 
-std::string SecureDnsModeToString(
-    const DnsConfig::SecureDnsMode secure_dns_mode) {
+std::string SecureDnsModeToString(const SecureDnsMode secure_dns_mode) {
   switch (secure_dns_mode) {
-    case DnsConfig::SecureDnsMode::OFF:
+    case SecureDnsMode::kOff:
       return "Off";
-    case DnsConfig::SecureDnsMode::AUTOMATIC:
+    case SecureDnsMode::kAutomatic:
       return "Automatic";
-    case DnsConfig::SecureDnsMode::SECURE:
+    case SecureDnsMode::kSecure:
       return "Secure";
   }
 }

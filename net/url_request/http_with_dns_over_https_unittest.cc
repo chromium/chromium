@@ -17,6 +17,7 @@
 #include "net/dns/host_resolver_manager.h"
 #include "net/dns/host_resolver_proc.h"
 #include "net/dns/public/dns_over_https_server_config.h"
+#include "net/dns/public/secure_dns_mode.h"
 #include "net/http/http_stream_factory_test_util.h"
 #include "net/log/net_log.h"
 #include "net/socket/transport_client_socket_pool.h"
@@ -96,7 +97,7 @@ class HttpWithDnsOverHttpsTest : public TestWithTaskEnvironment {
     DnsConfigOverrides overrides;
     overrides.dns_over_https_servers.emplace(
         {DnsOverHttpsServerConfig(url.spec(), true /* use_post */)});
-    overrides.secure_dns_mode = DnsConfig::SecureDnsMode::SECURE;
+    overrides.secure_dns_mode = SecureDnsMode::kSecure;
     overrides.use_local_ipv6 = true;
     resolver_->GetManagerForTesting()->SetDnsConfigOverrides(
         std::move(overrides));

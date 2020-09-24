@@ -14,6 +14,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/dns/public/doh_provider_entry.h"
+#include "net/dns/public/secure_dns_mode.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -71,7 +72,7 @@ IN_PROC_BROWSER_TEST_P(DohBrowserTest, MANUAL_ExternalDohServers) {
           ->GetSecureDnsConfiguration(
               false /* force_check_parental_controls_for_automatic_mode */);
   // Ensure that DoH is enabled in secure mode
-  EXPECT_EQ(net::DnsConfig::SecureDnsMode::SECURE, secure_dns_config.mode());
+  EXPECT_EQ(net::SecureDnsMode::kSecure, secure_dns_config.mode());
 
   content::TestNavigationObserver nav_observer(
       browser()->tab_strip_model()->GetActiveWebContents(), 1);

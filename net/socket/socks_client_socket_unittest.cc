@@ -16,6 +16,7 @@
 #include "net/base/winsock_init.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/dns/public/secure_dns_mode.h"
 #include "net/log/net_log_event_type.h"
 #include "net/log/test_net_log.h"
 #include "net/log/test_net_log_util.h"
@@ -464,7 +465,7 @@ TEST_F(SOCKSClientSocketTest, SetDisableSecureDns) {
     EXPECT_EQ(disable_secure_dns,
               host_resolver.last_secure_dns_mode_override().has_value());
     if (disable_secure_dns) {
-      EXPECT_EQ(net::DnsConfig::SecureDnsMode::OFF,
+      EXPECT_EQ(net::SecureDnsMode::kOff,
                 host_resolver.last_secure_dns_mode_override().value());
     }
   }

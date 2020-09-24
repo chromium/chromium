@@ -15,6 +15,7 @@
 #include "net/dns/dns_socket_allocator.h"
 #include "net/dns/dns_transaction.h"
 #include "net/dns/dns_util.h"
+#include "net/dns/public/secure_dns_mode.h"
 #include "net/dns/resolve_context.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_event_type.h"
@@ -48,7 +49,7 @@ void UpdateConfigForDohUpgrade(DnsConfig* config) {
   // when there are aspects of the system DNS config that are unhandled.
   if (!config->unhandled_options && config->allow_dns_over_https_upgrade &&
       !has_doh_servers &&
-      config->secure_dns_mode == DnsConfig::SecureDnsMode::AUTOMATIC) {
+      config->secure_dns_mode == SecureDnsMode::kAutomatic) {
     // If we're in strict mode on Android, only attempt to upgrade the
     // specified DoT hostname.
     if (!config->dns_over_tls_hostname.empty()) {

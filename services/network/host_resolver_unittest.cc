@@ -30,6 +30,7 @@
 #include "net/dns/host_resolver_manager.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/dns/public/dns_protocol.h"
+#include "net/dns/public/secure_dns_mode.h"
 #include "net/log/net_log.h"
 #include "net/net_buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -729,7 +730,7 @@ TEST_F(HostResolverTest, SecureDnsModeOverride) {
   EXPECT_EQ(net::OK, response_client.result_error());
   EXPECT_THAT(response_client.result_addresses().value().endpoints(),
               testing::ElementsAre(CreateExpectedEndPoint("127.0.0.1", 80)));
-  EXPECT_EQ(net::DnsConfig::SecureDnsMode::SECURE,
+  EXPECT_EQ(net::SecureDnsMode::kSecure,
             inner_resolver->last_secure_dns_mode_override().value());
 }
 

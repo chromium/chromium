@@ -5,10 +5,6 @@
 import("//net/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 
-if (is_android) {
-  import("//build/config/android/rules.gni")
-}
-
 # Reset sources_assignment_filter for the BUILD.gn file to prevent
 # regression during the migration of Chromium away from the feature.
 # See docs/no_sources_assignment_filter.md for more information.
@@ -394,12 +390,6 @@ source_set("mdns_client") {
     "//net:net_deps",
   ]
   public_deps = [ "//net:net_public_deps" ]
-}
-
-if (is_android) {
-  java_cpp_enum("secure_dns_mode_generated_enum") {
-    sources = [ "dns_config.h" ]
-  }
 }
 
 source_set("tests") {

@@ -370,7 +370,7 @@ class MockDnsTransactionFactory::MockTransaction
                   uint16_t qtype,
                   bool secure,
                   bool force_doh_server_available,
-                  DnsConfig::SecureDnsMode secure_dns_mode,
+                  SecureDnsMode secure_dns_mode,
                   ResolveContext* resolve_context,
                   DnsTransactionFactory::CallbackType callback)
       : result_(MockDnsClientRule::FAIL),
@@ -544,7 +544,7 @@ std::unique_ptr<DnsTransaction> MockDnsTransactionFactory::CreateTransaction(
     DnsTransactionFactory::CallbackType callback,
     const NetLogWithSource&,
     bool secure,
-    DnsConfig::SecureDnsMode secure_dns_mode,
+    SecureDnsMode secure_dns_mode,
     ResolveContext* resolve_context) {
   std::unique_ptr<MockTransaction> transaction =
       std::make_unique<MockTransaction>(
@@ -562,8 +562,8 @@ std::unique_ptr<DnsProbeRunner> MockDnsTransactionFactory::CreateDohProbeRunner(
 
 void MockDnsTransactionFactory::AddEDNSOption(const OptRecordRdata::Opt& opt) {}
 
-DnsConfig::SecureDnsMode MockDnsTransactionFactory::GetSecureDnsModeForTest() {
-  return DnsConfig::SecureDnsMode::AUTOMATIC;
+SecureDnsMode MockDnsTransactionFactory::GetSecureDnsModeForTest() {
+  return SecureDnsMode::kAutomatic;
 }
 
 void MockDnsTransactionFactory::CompleteDelayedTransactions() {

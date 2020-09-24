@@ -1044,7 +1044,7 @@ class DnsTransactionImpl : public DnsTransaction,
                      const NetLogWithSource& net_log,
                      const OptRecordRdata* opt_rdata,
                      bool secure,
-                     DnsConfig::SecureDnsMode secure_dns_mode,
+                     SecureDnsMode secure_dns_mode,
                      ResolveContext* resolve_context)
       : session_(session),
         hostname_(hostname),
@@ -1530,7 +1530,7 @@ class DnsTransactionImpl : public DnsTransaction,
   uint16_t qtype_;
   const OptRecordRdata* opt_rdata_;
   const bool secure_;
-  const DnsConfig::SecureDnsMode secure_dns_mode_;
+  const SecureDnsMode secure_dns_mode_;
   // Cleared in DoCallback.
   DnsTransactionFactory::CallbackType callback_;
 
@@ -1578,7 +1578,7 @@ class DnsTransactionFactoryImpl : public DnsTransactionFactory {
       CallbackType callback,
       const NetLogWithSource& net_log,
       bool secure,
-      DnsConfig::SecureDnsMode secure_dns_mode,
+      SecureDnsMode secure_dns_mode,
       ResolveContext* resolve_context) override {
     return std::make_unique<DnsTransactionImpl>(
         session_.get(), hostname, qtype, std::move(callback), net_log,
@@ -1598,7 +1598,7 @@ class DnsTransactionFactoryImpl : public DnsTransactionFactory {
     opt_rdata_->AddOpt(opt);
   }
 
-  DnsConfig::SecureDnsMode GetSecureDnsModeForTest() override {
+  SecureDnsMode GetSecureDnsModeForTest() override {
     return session_->config().secure_dns_mode;
   }
 

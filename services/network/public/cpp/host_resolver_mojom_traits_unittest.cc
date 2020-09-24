@@ -44,7 +44,7 @@ TEST(HostResolverMojomTraitsTest, DnsConfigOverridesRoundtrip_FullySpecified) {
   original.use_local_ipv6 = false;
   original.dns_over_https_servers.emplace(
       {net::DnsOverHttpsServerConfig("example.com", false)});
-  original.secure_dns_mode = net::DnsConfig::SecureDnsMode::SECURE;
+  original.secure_dns_mode = net::SecureDnsMode::kSecure;
   original.allow_dns_over_https_upgrade = true;
   original.disabled_upgrade_providers.emplace({std::string("provider_name")});
 

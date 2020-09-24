@@ -21,11 +21,11 @@
 #include "base/threading/thread_checker.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/network_isolation_key.h"
-#include "net/dns/dns_config.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/host_resolver_proc.h"
 #include "net/dns/host_resolver_source.h"
 #include "net/dns/public/dns_query_type.h"
+#include "net/dns/public/secure_dns_mode.h"
 
 namespace base {
 class TickClock;
@@ -200,8 +200,7 @@ class MockHostResolverBase
 
   // Returns the SecureDnsMode override of the last call to Resolve() (or
   // base::nullopt if Resolve() hasn't been called yet).
-  const base::Optional<DnsConfig::SecureDnsMode>&
-  last_secure_dns_mode_override() const {
+  const base::Optional<SecureDnsMode>& last_secure_dns_mode_override() const {
     return last_secure_dns_mode_override_;
   }
 
@@ -270,7 +269,7 @@ class MockHostResolverBase
 
   RequestPriority last_request_priority_;
   base::Optional<NetworkIsolationKey> last_request_network_isolation_key_;
-  base::Optional<DnsConfig::SecureDnsMode> last_secure_dns_mode_override_;
+  base::Optional<SecureDnsMode> last_secure_dns_mode_override_;
   bool synchronous_mode_;
   bool ondemand_mode_;
   std::map<HostResolverSource, scoped_refptr<RuleBasedHostResolverProc>>

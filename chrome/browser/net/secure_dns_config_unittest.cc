@@ -8,11 +8,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 TEST(SecureDnsConfig, ParseMode) {
-  EXPECT_EQ(net::DnsConfig::SecureDnsMode::OFF,
+  EXPECT_EQ(net::SecureDnsMode::kOff,
             SecureDnsConfig::ParseMode("off").value());
-  EXPECT_EQ(net::DnsConfig::SecureDnsMode::AUTOMATIC,
+  EXPECT_EQ(net::SecureDnsMode::kAutomatic,
             SecureDnsConfig::ParseMode("automatic").value());
-  EXPECT_EQ(net::DnsConfig::SecureDnsMode::SECURE,
+  EXPECT_EQ(net::SecureDnsMode::kSecure,
             SecureDnsConfig::ParseMode("secure").value());
 
   EXPECT_FALSE(SecureDnsConfig::ParseMode("foo").has_value());
@@ -21,21 +21,20 @@ TEST(SecureDnsConfig, ParseMode) {
 
 TEST(SecureDnsConfig, ModeToString) {
   EXPECT_EQ(std::string("off"),
-            SecureDnsConfig::ModeToString(net::DnsConfig::SecureDnsMode::OFF));
-  EXPECT_EQ(
-      std::string("automatic"),
-      SecureDnsConfig::ModeToString(net::DnsConfig::SecureDnsMode::AUTOMATIC));
-  EXPECT_EQ(std::string("secure"), SecureDnsConfig::ModeToString(
-                                       net::DnsConfig::SecureDnsMode::SECURE));
+            SecureDnsConfig::ModeToString(net::SecureDnsMode::kOff));
+  EXPECT_EQ(std::string("automatic"),
+            SecureDnsConfig::ModeToString(net::SecureDnsMode::kAutomatic));
+  EXPECT_EQ(std::string("secure"),
+            SecureDnsConfig::ModeToString(net::SecureDnsMode::kSecure));
 }
 
 TEST(SecureDnsConfig, Constructor) {
   std::vector<net::DnsOverHttpsServerConfig> servers{
       {{"https://template1", false}, {"https://template2", true}}};
   SecureDnsConfig config(
-      net::DnsConfig::SecureDnsMode::SECURE, servers,
+      net::SecureDnsMode::kSecure, servers,
       SecureDnsConfig::ManagementMode::kDisabledParentalControls);
-  EXPECT_EQ(net::DnsConfig::SecureDnsMode::SECURE, config.mode());
+  EXPECT_EQ(net::SecureDnsMode::kSecure, config.mode());
   EXPECT_THAT(config.servers(), testing::ElementsAreArray(servers));
   EXPECT_EQ(SecureDnsConfig::ManagementMode::kDisabledParentalControls,
             config.management_mode());

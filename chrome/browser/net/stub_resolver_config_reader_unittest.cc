@@ -15,8 +15,8 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"
-#include "net/dns/dns_config.h"
 #include "net/dns/public/dns_over_https_server_config.h"
+#include "net/dns/public/secure_dns_mode.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -75,7 +75,7 @@ TEST_F(StubResolverConfigReaderTest, GetSecureDnsConfiguration) {
       true /* force_check_parental_controls_for_automatic_mode */);
 
   EXPECT_FALSE(config_reader_->GetInsecureStubResolverEnabled());
-  EXPECT_EQ(net::DnsConfig::SecureDnsMode::OFF, secure_dns_config.mode());
+  EXPECT_EQ(net::SecureDnsMode::kOff, secure_dns_config.mode());
   EXPECT_TRUE(secure_dns_config.servers().empty());
 
   // Parental controls should not be checked when DoH otherwise disabled.
@@ -94,7 +94,7 @@ TEST_F(StubResolverConfigReaderTest, DohEnabled) {
       true /* force_check_parental_controls_for_automatic_mode */);
 
   EXPECT_TRUE(config_reader_->GetInsecureStubResolverEnabled());
-  EXPECT_EQ(net::DnsConfig::SecureDnsMode::AUTOMATIC, secure_dns_config.mode());
+  EXPECT_EQ(net::SecureDnsMode::kAutomatic, secure_dns_config.mode());
   EXPECT_THAT(secure_dns_config.servers(),
               testing::ElementsAre(
                   net::DnsOverHttpsServerConfig("https://doh1.test",
@@ -117,7 +117,7 @@ TEST_F(StubResolverConfigReaderTest, DohEnabled_Secure) {
       false /* force_check_parental_controls_for_automatic_mode */);
 
   EXPECT_TRUE(config_reader_->GetInsecureStubResolverEnabled());
-  EXPECT_EQ(net::DnsConfig::SecureDnsMode::SECURE, secure_dns_config.mode());
+  EXPECT_EQ(net::SecureDnsMode::kSecure, secure_dns_config.mode());
   EXPECT_THAT(secure_dns_config.servers(),
               testing::ElementsAre(
                   net::DnsOverHttpsServerConfig("https://doh1.test",
@@ -142,7 +142,7 @@ TEST_F(StubResolverConfigReaderTest, DisabledForManaged) {
       true /* force_check_parental_controls_for_automatic_mode */);
 
   EXPECT_TRUE(config_reader_->GetInsecureStubResolverEnabled());
-  EXPECT_EQ(net::DnsConfig::SecureDnsMode::OFF, secure_dns_config.mode());
+  EXPECT_EQ(net::SecureDnsMode::kOff, secure_dns_config.mode());
   EXPECT_TRUE(secure_dns_config.servers().empty());
 
   // Parental controls should not be checked when DoH otherwise disabled.
@@ -161,7 +161,7 @@ TEST_F(StubResolverConfigReaderTest, DisabledForManaged_Secure) {
       false /* force_check_parental_controls_for_automatic_mode */);
 
   EXPECT_TRUE(config_reader_->GetInsecureStubResolverEnabled());
-  EXPECT_EQ(net::DnsConfig::SecureDnsMode::OFF, secure_dns_config.mode());
+  EXPECT_EQ(net::SecureDnsMode::kOff, secure_dns_config.mode());
   EXPECT_TRUE(secure_dns_config.servers().empty());
 
   // Parental controls should not be checked when DoH otherwise disabled.
@@ -182,7 +182,7 @@ TEST_F(StubResolverConfigReaderTest, DisabledForParentalControls) {
       true /* force_check_parental_controls_for_automatic_mode */);
 
   EXPECT_TRUE(config_reader_->GetInsecureStubResolverEnabled());
-  EXPECT_EQ(net::DnsConfig::SecureDnsMode::OFF, secure_dns_config.mode());
+  EXPECT_EQ(net::SecureDnsMode::kOff, secure_dns_config.mode());
   EXPECT_TRUE(secure_dns_config.servers().empty());
 
   EXPECT_TRUE(config_reader_->parental_controls_checked());
@@ -202,7 +202,7 @@ TEST_F(StubResolverConfigReaderTest, DisabledForParentalControls_Secure) {
       false /* force_check_parental_controls_for_automatic_mode */);
 
   EXPECT_TRUE(config_reader_->GetInsecureStubResolverEnabled());
-  EXPECT_EQ(net::DnsConfig::SecureDnsMode::OFF, secure_dns_config.mode());
+  EXPECT_EQ(net::SecureDnsMode::kOff, secure_dns_config.mode());
   EXPECT_TRUE(secure_dns_config.servers().empty());
 
   EXPECT_TRUE(config_reader_->parental_controls_checked());
@@ -221,7 +221,7 @@ TEST_F(StubResolverConfigReaderTest, DeferredParentalControlsCheck) {
 
   // Parental controls check initially skipped.
   EXPECT_TRUE(config_reader_->GetInsecureStubResolverEnabled());
-  EXPECT_EQ(net::DnsConfig::SecureDnsMode::AUTOMATIC, secure_dns_config.mode());
+  EXPECT_EQ(net::SecureDnsMode::kAutomatic, secure_dns_config.mode());
   EXPECT_THAT(secure_dns_config.servers(),
               testing::ElementsAre(
                   net::DnsOverHttpsServerConfig("https://doh1.test",
@@ -240,7 +240,7 @@ TEST_F(StubResolverConfigReaderTest, DeferredParentalControlsCheck) {
       false /* force_check_parental_controls_for_automatic_mode */);
 
   EXPECT_TRUE(config_reader_->GetInsecureStubResolverEnabled());
-  EXPECT_EQ(net::DnsConfig::SecureDnsMode::OFF, secure_dns_config.mode());
+  EXPECT_EQ(net::SecureDnsMode::kOff, secure_dns_config.mode());
   EXPECT_TRUE(secure_dns_config.servers().empty());
 }
 
@@ -262,7 +262,7 @@ TEST_F(StubResolverConfigReaderTest, DeferredParentalControlsCheck_Managed) {
   // Parental controls check initially skipped, and managed prefs take
   // precedence over disables.
   EXPECT_TRUE(config_reader_->GetInsecureStubResolverEnabled());
-  EXPECT_EQ(net::DnsConfig::SecureDnsMode::AUTOMATIC, secure_dns_config.mode());
+  EXPECT_EQ(net::SecureDnsMode::kAutomatic, secure_dns_config.mode());
   EXPECT_THAT(secure_dns_config.servers(),
               testing::ElementsAre(
                   net::DnsOverHttpsServerConfig("https://doh1.test",
@@ -283,7 +283,7 @@ TEST_F(StubResolverConfigReaderTest, DeferredParentalControlsCheck_Managed) {
   // Expect DoH still enabled after parental controls check because managed
   // prefs have precedence.
   EXPECT_TRUE(config_reader_->GetInsecureStubResolverEnabled());
-  EXPECT_EQ(net::DnsConfig::SecureDnsMode::AUTOMATIC, secure_dns_config.mode());
+  EXPECT_EQ(net::SecureDnsMode::kAutomatic, secure_dns_config.mode());
   EXPECT_THAT(secure_dns_config.servers(),
               testing::ElementsAre(
                   net::DnsOverHttpsServerConfig("https://doh1.test",

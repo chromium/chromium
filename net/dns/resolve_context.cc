@@ -108,7 +108,7 @@ ResolveContext::~ResolveContext() = default;
 
 std::unique_ptr<DnsServerIterator> ResolveContext::GetDohIterator(
     const DnsConfig& config,
-    const DnsConfig::SecureDnsMode& mode,
+    const SecureDnsMode& mode,
     const DnsSession* session) {
   // Make the iterator even if the session differs. The first call to the member
   // functions will catch the out of date session.

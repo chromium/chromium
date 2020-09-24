@@ -10,7 +10,7 @@ constexpr char SecureDnsConfig::kModeAutomatic[];
 constexpr char SecureDnsConfig::kModeSecure[];
 
 SecureDnsConfig::SecureDnsConfig(
-    net::DnsConfig::SecureDnsMode mode,
+    net::SecureDnsMode mode,
     std::vector<net::DnsOverHttpsServerConfig> servers,
     ManagementMode management_mode)
     : mode_(mode),
@@ -21,26 +21,26 @@ SecureDnsConfig& SecureDnsConfig::operator=(SecureDnsConfig&& other) = default;
 SecureDnsConfig::~SecureDnsConfig() = default;
 
 // static
-base::Optional<net::DnsConfig::SecureDnsMode> SecureDnsConfig::ParseMode(
+base::Optional<net::SecureDnsMode> SecureDnsConfig::ParseMode(
     base::StringPiece name) {
   if (name == kModeSecure) {
-    return net::DnsConfig::SecureDnsMode::SECURE;
+    return net::SecureDnsMode::kSecure;
   } else if (name == kModeAutomatic) {
-    return net::DnsConfig::SecureDnsMode::AUTOMATIC;
+    return net::SecureDnsMode::kAutomatic;
   } else if (name == kModeOff) {
-    return net::DnsConfig::SecureDnsMode::OFF;
+    return net::SecureDnsMode::kOff;
   }
   return base::nullopt;
 }
 
 // static
-const char* SecureDnsConfig::ModeToString(net::DnsConfig::SecureDnsMode mode) {
+const char* SecureDnsConfig::ModeToString(net::SecureDnsMode mode) {
   switch (mode) {
-    case net::DnsConfig::SecureDnsMode::SECURE:
+    case net::SecureDnsMode::kSecure:
       return kModeSecure;
-    case net::DnsConfig::SecureDnsMode::AUTOMATIC:
+    case net::SecureDnsMode::kAutomatic:
       return kModeAutomatic;
-    case net::DnsConfig::SecureDnsMode::OFF:
+    case net::SecureDnsMode::kOff:
       return kModeOff;
   }
 }

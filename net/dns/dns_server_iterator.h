@@ -5,8 +5,10 @@
 #ifndef NET_DNS_DNS_SERVER_ITERATOR_H_
 #define NET_DNS_DNS_SERVER_ITERATOR_H_
 
+#include <vector>
+
 #include "net/base/net_export.h"
-#include "net/dns/dns_config.h"
+#include "net/dns/public/secure_dns_mode.h"
 
 namespace net {
 
@@ -81,7 +83,7 @@ class NET_EXPORT_PRIVATE DohDnsServerIterator : public DnsServerIterator {
                        size_t starting_index,
                        int max_times_returned,
                        int max_failures,
-                       const DnsConfig::SecureDnsMode& secure_dns_mode,
+                       const SecureDnsMode& secure_dns_mode,
                        const ResolveContext* resolve_context,
                        const DnsSession* session)
       : DnsServerIterator(nameservers_size,
@@ -107,7 +109,7 @@ class NET_EXPORT_PRIVATE DohDnsServerIterator : public DnsServerIterator {
   bool AttemptAvailable() override;
 
  private:
-  DnsConfig::SecureDnsMode secure_dns_mode_;
+  SecureDnsMode secure_dns_mode_;
 };
 
 // Iterator used to get the next server to try for a classic DNS transaction.

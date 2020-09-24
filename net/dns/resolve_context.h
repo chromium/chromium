@@ -18,6 +18,7 @@
 #include "net/base/isolation_info.h"
 #include "net/base/net_export.h"
 #include "net/dns/dns_config.h"
+#include "net/dns/public/secure_dns_mode.h"
 
 namespace net {
 
@@ -68,10 +69,9 @@ class NET_EXPORT_PRIVATE ResolveContext : public base::CheckedObserver {
   ~ResolveContext() override;
 
   // Returns an iterator for DoH DNS servers.
-  std::unique_ptr<DnsServerIterator> GetDohIterator(
-      const DnsConfig& config,
-      const DnsConfig::SecureDnsMode& mode,
-      const DnsSession* session);
+  std::unique_ptr<DnsServerIterator> GetDohIterator(const DnsConfig& config,
+                                                    const SecureDnsMode& mode,
+                                                    const DnsSession* session);
 
   // Returns an iterator for classic DNS servers.
   std::unique_ptr<DnsServerIterator> GetClassicDnsIterator(

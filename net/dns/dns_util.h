@@ -14,9 +14,9 @@
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_export.h"
 #include "net/base/network_change_notifier.h"
-#include "net/dns/dns_config.h"
 #include "net/dns/public/dns_over_https_server_config.h"
 #include "net/dns/public/dns_query_type.h"
+#include "net/dns/public/secure_dns_mode.h"
 
 namespace net {
 
@@ -140,7 +140,7 @@ NET_EXPORT_PRIVATE std::string GetDohProviderIdForHistogramFromNameserver(
     const IPEndPoint& nameserver);
 
 NET_EXPORT_PRIVATE std::string SecureDnsModeToString(
-    const DnsConfig::SecureDnsMode secure_dns_mode);
+    const SecureDnsMode secure_dns_mode);
 
 }  // namespace net
 

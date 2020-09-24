@@ -750,7 +750,7 @@ mojom("mojom") {
         },
         {
           mojom = "network.mojom.SecureDnsMode"
-          cpp = "::net::DnsConfig::SecureDnsMode"
+          cpp = "::net::SecureDnsMode"
         },
       ]
       traits_headers =

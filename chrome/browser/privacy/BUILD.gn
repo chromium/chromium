@@ -27,7 +27,7 @@ android_library("java") {
     "//chrome/browser/settings:java",
     "//components/browser_ui/settings/android:java",
     "//components/browser_ui/widget/android:java",
-    "//net/dns:secure_dns_mode_generated_enum",
+    "//net/dns/public:secure_dns_mode_generated_enum",
     "//third_party/android_deps:androidx_annotation_annotation_java",
     "//third_party/android_deps:androidx_fragment_fragment_java",
     "//third_party/android_deps:androidx_preference_preference_java",
@@ -35,7 +35,7 @@ android_library("java") {
   ]
   srcjar_deps = [
     "//chrome/browser/net:secure_dns_management_mode_generated_enum",
-    "//net/dns:secure_dns_mode_generated_enum",
+    "//net/dns/public:secure_dns_mode_generated_enum",
   ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   resources_package = "org.chromium.chrome.browser.privacy.secure_dns"

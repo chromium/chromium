@@ -508,7 +508,7 @@ void NetworkService::CreateNetworkContext(
 
 void NetworkService::ConfigureStubHostResolver(
     bool insecure_dns_client_enabled,
-    net::DnsConfig::SecureDnsMode secure_dns_mode,
+    net::SecureDnsMode secure_dns_mode,
     base::Optional<std::vector<mojom::DnsOverHttpsServerPtr>>
         dns_over_https_servers) {
   DCHECK(!dns_over_https_servers || !dns_over_https_servers->empty());
@@ -538,7 +538,7 @@ void NetworkService::ConfigureStubHostResolver(
   // a quick hack to increase the timeout for these requests.
   // TODO(crbug.com/1105138): Rethink the timeout logic to be less aggressive in
   // cases where there is no fallback, without needing to make so many retries.
-  if (secure_dns_mode == net::DnsConfig::SecureDnsMode::SECURE)
+  if (secure_dns_mode == net::SecureDnsMode::kSecure)
     overrides.doh_attempts = 3;
 
   host_resolver_manager_->SetDnsConfigOverrides(overrides);

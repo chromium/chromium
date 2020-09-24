@@ -31,6 +31,7 @@
 #include "net/dns/host_resolver.h"
 #include "net/dns/host_resolver_proc.h"
 #include "net/dns/public/dns_query_type.h"
+#include "net/dns/public/secure_dns_mode.h"
 #include "net/dns/resolve_context.h"
 #include "net/dns/system_dns_config_change_notifier.h"
 #include "url/gurl.h"
@@ -93,7 +94,6 @@ class NET_EXPORT HostResolverManager
  public:
   using MdnsListener = HostResolver::MdnsListener;
   using ResolveHostParameters = HostResolver::ResolveHostParameters;
-  using SecureDnsMode = DnsConfig::SecureDnsMode;
 
   // A request that allows explicit cancellation before destruction. Enables
   // callers (e.g. ContextHostResolver) to implement cancellation of requests on
@@ -295,7 +295,7 @@ class NET_EXPORT HostResolverManager
       ResolveContext* resolve_context,
       DnsQueryType* out_effective_query_type,
       HostResolverFlags* out_effective_host_resolver_flags,
-      DnsConfig::SecureDnsMode* out_effective_secure_dns_mode,
+      SecureDnsMode* out_effective_secure_dns_mode,
       std::deque<TaskType>* out_tasks,
       base::Optional<HostCache::EntryStaleness>* out_stale_info);
 
@@ -303,7 +303,7 @@ class NET_EXPORT HostResolverManager
   // |request|.
   void CreateAndStartJob(DnsQueryType effective_query_type,
                          HostResolverFlags effective_host_resolver_flags,
-                         DnsConfig::SecureDnsMode effective_secure_dns_mode,
+                         SecureDnsMode effective_secure_dns_mode,
                          std::deque<TaskType> tasks,
                          RequestImpl* request);
 
@@ -373,7 +373,7 @@ class NET_EXPORT HostResolverManager
       base::Optional<SecureDnsMode> secure_dns_mode_override,
       ResolveHostParameters::CacheUsage cache_usage,
       ResolveContext* resolve_context,
-      DnsConfig::SecureDnsMode* out_effective_secure_dns_mode,
+      SecureDnsMode* out_effective_secure_dns_mode,
       std::deque<TaskType>* out_tasks);
 
   // Determines "effective" request parameters using manager properties and IPv6
@@ -390,7 +390,7 @@ class NET_EXPORT HostResolverManager
       ResolveContext* resolve_context,
       DnsQueryType* out_effective_type,
       HostResolverFlags* out_effective_flags,
-      DnsConfig::SecureDnsMode* out_effective_secure_dns_mode,
+      SecureDnsMode* out_effective_secure_dns_mode,
       std::deque<TaskType>* out_tasks);
 
   // Probes IPv6 support and returns true if IPv6 support is enabled.

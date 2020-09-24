@@ -2,6 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+if (is_android) {
+  import("//build/config/android/rules.gni")
+}
+
 source_set("public") {
   # Due to circular dependencies, should only be depended on through //net.
   # Limit visibility to //net and other source_sets with the same access
@@ -23,6 +27,7 @@ source_set("public") {
     "doh_provider_entry.h",
     "resolve_error_info.cc",
     "resolve_error_info.h",
+    "secure_dns_mode.h",
     "util.cc",
     "util.h",
   ]
@@ -30,6 +35,12 @@ source_set("public") {
   deps = [ "//net:net_deps" ]
 
   public_deps = [ "//net:net_public_deps" ]
+}
+
+if (is_android) {
+  java_cpp_enum("secure_dns_mode_generated_enum") {
+    sources = [ "secure_dns_mode.h" ]
+  }
 }
 
 source_set("tests") {

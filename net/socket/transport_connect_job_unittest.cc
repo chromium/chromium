@@ -16,6 +16,7 @@
 #include "net/base/net_errors.h"
 #include "net/base/test_completion_callback.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/dns/public/secure_dns_mode.h"
 #include "net/log/test_net_log.h"
 #include "net/socket/connect_job_test_util.h"
 #include "net/socket/connection_attempts.h"
@@ -273,7 +274,7 @@ TEST_F(TransportConnectJobTest, DisableSecureDns) {
     EXPECT_EQ(disable_secure_dns,
               host_resolver_.last_secure_dns_mode_override().has_value());
     if (disable_secure_dns) {
-      EXPECT_EQ(net::DnsConfig::SecureDnsMode::OFF,
+      EXPECT_EQ(net::SecureDnsMode::kOff,
                 host_resolver_.last_secure_dns_mode_override().value());
     }
   }

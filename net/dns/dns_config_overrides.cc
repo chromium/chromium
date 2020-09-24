@@ -4,6 +4,8 @@
 
 #include "net/dns/dns_config_overrides.h"
 
+#include "net/dns/dns_config.h"
+
 namespace net {
 
 DnsConfigOverrides::DnsConfigOverrides() = default;

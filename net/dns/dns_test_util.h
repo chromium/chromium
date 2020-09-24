@@ -24,6 +24,7 @@
 #include "net/dns/dns_transaction.h"
 #include "net/dns/dns_util.h"
 #include "net/dns/public/dns_protocol.h"
+#include "net/dns/public/secure_dns_mode.h"
 #include "net/socket/socket_test_util.h"
 
 namespace net {
@@ -286,7 +287,7 @@ class MockDnsTransactionFactory : public DnsTransactionFactory {
       DnsTransactionFactory::CallbackType callback,
       const NetLogWithSource&,
       bool secure,
-      DnsConfig::SecureDnsMode secure_dns_mode,
+      SecureDnsMode secure_dns_mode,
       ResolveContext* resolve_context) override;
 
   std::unique_ptr<DnsProbeRunner> CreateDohProbeRunner(
@@ -294,7 +295,7 @@ class MockDnsTransactionFactory : public DnsTransactionFactory {
 
   void AddEDNSOption(const OptRecordRdata::Opt& opt) override;
 
-  DnsConfig::SecureDnsMode GetSecureDnsModeForTest() override;
+  SecureDnsMode GetSecureDnsModeForTest() override;
 
   void CompleteDelayedTransactions();
   // If there are any pending transactions of the given type,

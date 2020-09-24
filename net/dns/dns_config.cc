@@ -30,7 +30,7 @@ DnsConfig::DnsConfig(std::vector<IPEndPoint> nameservers)
       doh_attempts(1),
       rotate(false),
       use_local_ipv6(false),
-      secure_dns_mode(SecureDnsMode::OFF),
+      secure_dns_mode(SecureDnsMode::kOff),
       allow_dns_over_https_upgrade(false) {}
 
 DnsConfig::~DnsConfig() = default;

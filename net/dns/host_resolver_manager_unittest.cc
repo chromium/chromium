@@ -3488,14 +3488,14 @@ DnsConfig CreateValidDnsConfig() {
   config.nameservers.push_back(IPEndPoint(dns_ip, dns_protocol::kDefaultPort));
   config.dns_over_https_servers.push_back({DnsOverHttpsServerConfig(
       "https://dns.example.com/", true /* use_post */)});
-  config.secure_dns_mode = DnsConfig::SecureDnsMode::OFF;
+  config.secure_dns_mode = SecureDnsMode::kOff;
   EXPECT_TRUE(config.IsValid());
   return config;
 }
 
 DnsConfig CreateUpgradableDnsConfig() {
   DnsConfig config;
-  config.secure_dns_mode = DnsConfig::SecureDnsMode::AUTOMATIC;
+  config.secure_dns_mode = SecureDnsMode::kAutomatic;
   config.allow_dns_over_https_upgrade = true;
   // Cloudflare upgradeable IPs
   IPAddress dns_ip0(1, 0, 0, 1);
@@ -4438,8 +4438,7 @@ TEST_F(HostResolverManagerDnsTest,
   ChangeDnsConfig(CreateValidDnsConfig());
 
   HostResolver::ResolveHostParameters secure_parameters;
-  secure_parameters.secure_dns_mode_override =
-      DnsConfig::SecureDnsMode::AUTOMATIC;
+  secure_parameters.secure_dns_mode_override = SecureDnsMode::kAutomatic;
   ResolveHostResponseHelper response_secure(resolver_->CreateRequest(
       HostPortPair("automatic", 80), NetworkIsolationKey(), NetLogWithSource(),
       secure_parameters, resolve_context_.get(),
@@ -4809,8 +4808,7 @@ TEST_F(HostResolverManagerDnsTest,
 
   // Secure DnsTasks should not be affected.
   HostResolver::ResolveHostParameters secure_parameters;
-  secure_parameters.secure_dns_mode_override =
-      DnsConfig::SecureDnsMode::AUTOMATIC;
+  secure_parameters.secure_dns_mode_override = SecureDnsMode::kAutomatic;
   ResolveHostResponseHelper secure_response(resolver_->CreateRequest(
       HostPortPair("automatic", 80), NetworkIsolationKey(), NetLogWithSource(),
       secure_parameters, resolve_context_.get(),
@@ -4986,15 +4984,14 @@ TEST_F(HostResolverManagerDnsTest, SeparateJobsBySecureDnsMode) {
                      false /* delay */);
   UseMockDnsClient(CreateValidDnsConfig(), std::move(rules));
   DnsConfigOverrides overrides;
-  overrides.secure_dns_mode = DnsConfig::SecureDnsMode::AUTOMATIC;
+  overrides.secure_dns_mode = SecureDnsMode::kAutomatic;
   resolver_->SetDnsConfigOverrides(overrides);
 
   // Create three requests. One with a SECURE mode override, one with no
   // mode override, and one with an AUTOMATIC mode override (which is a no-op
   // since the DnsConfig uses AUTOMATIC).
   HostResolver::ResolveHostParameters parameters_secure_override;
-  parameters_secure_override.secure_dns_mode_override =
-      DnsConfig::SecureDnsMode::SECURE;
+  parameters_secure_override.secure_dns_mode_override = SecureDnsMode::kSecure;
   ResolveHostResponseHelper secure_response(resolver_->CreateRequest(
       HostPortPair("a", 80), NetworkIsolationKey(), NetLogWithSource(),
       parameters_secure_override, resolve_context_.get(),
@@ -5008,7 +5005,7 @@ TEST_F(HostResolverManagerDnsTest, SeparateJobsBySecureDnsMode) {
 
   HostResolver::ResolveHostParameters parameters_automatic_override;
   parameters_automatic_override.secure_dns_mode_override =
-      DnsConfig::SecureDnsMode::AUTOMATIC;
+      SecureDnsMode::kAutomatic;
   ResolveHostResponseHelper automatic_response1(resolver_->CreateRequest(
       HostPortPair("a", 80), NetworkIsolationKey(), NetLogWithSource(),
       parameters_automatic_override, resolve_context_.get(),
@@ -5117,7 +5114,7 @@ TEST_F(HostResolverManagerDnsTest, DeleteWithActiveTransactions) {
 TEST_F(HostResolverManagerDnsTest, DeleteWithSecureTransactions) {
   ChangeDnsConfig(CreateValidDnsConfig());
   DnsConfigOverrides overrides;
-  overrides.secure_dns_mode = DnsConfig::SecureDnsMode::SECURE;
+  overrides.secure_dns_mode = SecureDnsMode::kSecure;
   resolver_->SetDnsConfigOverrides(overrides);
 
   ResolveHostResponseHelper response(resolver_->CreateRequest(
@@ -5255,7 +5252,7 @@ TEST_F(HostResolverManagerDnsTest, CancelWithAutomaticModeTransactionPending) {
   UseMockDnsClient(CreateValidDnsConfig(), std::move(rules));
 
   DnsConfigOverrides overrides;
-  overrides.secure_dns_mode = DnsConfig::SecureDnsMode::AUTOMATIC;
+  overrides.secure_dns_mode = SecureDnsMode::kAutomatic;
   resolver_->SetDnsConfigOverrides(overrides);
 
   ResolveHostResponseHelper response0(resolver_->CreateRequest(
@@ -5370,7 +5367,7 @@ TEST_F(HostResolverManagerDnsTest, AAAACompletesFirst_AutomaticMode) {
                      false /* delay */);
   UseMockDnsClient(CreateValidDnsConfig(), std::move(rules));
   DnsConfigOverrides overrides;
-  overrides.secure_dns_mode = DnsConfig::SecureDnsMode::AUTOMATIC;
+  overrides.secure_dns_mode = SecureDnsMode::kAutomatic;
   resolver_->SetDnsConfigOverrides(overrides);
 
   ResolveHostResponseHelper response(resolver_->CreateRequest(
@@ -5403,7 +5400,7 @@ TEST_F(HostResolverManagerDnsTest, SecureDnsMode_Automatic) {
 
   ChangeDnsConfig(CreateValidDnsConfig());
   DnsConfigOverrides overrides;
-  overrides.secure_dns_mode = DnsConfig::SecureDnsMode::AUTOMATIC;
+  overrides.secure_dns_mode = SecureDnsMode::kAutomatic;
   resolver_->SetDnsConfigOverrides(overrides);
   const std::pair<const HostCache::Key, HostCache::Entry>* cache_result;
 
@@ -5459,7 +5456,7 @@ TEST_F(HostResolverManagerDnsTest, SecureDnsMode_Automatic) {
 TEST_F(HostResolverManagerDnsTest, SecureDnsMode_Automatic_SecureCache) {
   ChangeDnsConfig(CreateValidDnsConfig());
   DnsConfigOverrides overrides;
-  overrides.secure_dns_mode = DnsConfig::SecureDnsMode::AUTOMATIC;
+  overrides.secure_dns_mode = SecureDnsMode::kAutomatic;
   resolver_->SetDnsConfigOverrides(overrides);
 
   // Populate cache with a secure entry.
@@ -5490,7 +5487,7 @@ TEST_F(HostResolverManagerDnsTest, SecureDnsMode_Automatic_SecureCache) {
 TEST_F(HostResolverManagerDnsTest, SecureDnsMode_Automatic_InsecureCache) {
   ChangeDnsConfig(CreateValidDnsConfig());
   DnsConfigOverrides overrides;
-  overrides.secure_dns_mode = DnsConfig::SecureDnsMode::AUTOMATIC;
+  overrides.secure_dns_mode = SecureDnsMode::kAutomatic;
   resolver_->SetDnsConfigOverrides(overrides);
 
   // Populate cache with an insecure entry.
@@ -5525,7 +5522,7 @@ TEST_F(HostResolverManagerDnsTest, SecureDnsMode_Automatic_Downgrade) {
   DnsConfigOverrides overrides;
   std::vector<DnsOverHttpsServerConfig> doh_servers;
   overrides.dns_over_https_servers = doh_servers;
-  overrides.secure_dns_mode = DnsConfig::SecureDnsMode::AUTOMATIC;
+  overrides.secure_dns_mode = SecureDnsMode::kAutomatic;
   resolver_->SetDnsConfigOverrides(overrides);
   const std::pair<const HostCache::Key, HostCache::Entry>* cache_result;
 
@@ -5586,7 +5583,7 @@ TEST_F(HostResolverManagerDnsTest, SecureDnsMode_Automatic_Downgrade) {
 TEST_F(HostResolverManagerDnsTest, SecureDnsMode_Automatic_Unavailable) {
   ChangeDnsConfig(CreateValidDnsConfig());
   DnsConfigOverrides overrides;
-  overrides.secure_dns_mode = DnsConfig::SecureDnsMode::AUTOMATIC;
+  overrides.secure_dns_mode = SecureDnsMode::kAutomatic;
   resolver_->SetDnsConfigOverrides(overrides);
   dns_client_->SetForceDohServerAvailable(false);
 
@@ -5622,7 +5619,7 @@ TEST_F(HostResolverManagerDnsTest, SecureDnsMode_Automatic_Unavailable_Fail) {
   set_allow_fallback_to_proctask(false);
   ChangeDnsConfig(CreateValidDnsConfig());
   DnsConfigOverrides overrides;
-  overrides.secure_dns_mode = DnsConfig::SecureDnsMode::AUTOMATIC;
+  overrides.secure_dns_mode = SecureDnsMode::kAutomatic;
   resolver_->SetDnsConfigOverrides(overrides);
   dns_client_->SetForceDohServerAvailable(false);
 
@@ -5668,7 +5665,7 @@ TEST_F(HostResolverManagerDnsTest,
   set_allow_fallback_to_proctask(false);
   ChangeDnsConfig(CreateValidDnsConfig());
   DnsConfigOverrides overrides;
-  overrides.secure_dns_mode = DnsConfig::SecureDnsMode::AUTOMATIC;
+  overrides.secure_dns_mode = SecureDnsMode::kAutomatic;
   resolver_->SetDnsConfigOverrides(overrides);
   dns_client_->SetForceDohServerAvailable(false);
 
@@ -5701,7 +5698,7 @@ TEST_F(HostResolverManagerDnsTest,
 TEST_F(HostResolverManagerDnsTest, SecureDnsMode_Automatic_Stale) {
   ChangeDnsConfig(CreateValidDnsConfig());
   DnsConfigOverrides overrides;
-  overrides.secure_dns_mode = DnsConfig::SecureDnsMode::AUTOMATIC;
+  overrides.secure_dns_mode = SecureDnsMode::kAutomatic;
   resolver_->SetDnsConfigOverrides(overrides);
 
   // Populate cache with insecure entry.
@@ -5736,7 +5733,7 @@ TEST_F(HostResolverManagerDnsTest,
   ChangeDnsConfig(CreateValidDnsConfig());
   resolver_->SetInsecureDnsClientEnabled(false);
   DnsConfigOverrides overrides;
-  overrides.secure_dns_mode = DnsConfig::SecureDnsMode::AUTOMATIC;
+  overrides.secure_dns_mode = SecureDnsMode::kAutomatic;
   resolver_->SetDnsConfigOverrides(overrides);
 
   const std::pair<const HostCache::Key, HostCache::Entry>* cache_result;
@@ -5802,7 +5799,7 @@ TEST_F(HostResolverManagerDnsTest, SecureDnsMode_Automatic_DotActive) {
   config.dns_over_tls_active = true;
   ChangeDnsConfig(config);
   DnsConfigOverrides overrides;
-  overrides.secure_dns_mode = DnsConfig::SecureDnsMode::AUTOMATIC;
+  overrides.secure_dns_mode = SecureDnsMode::kAutomatic;
   resolver_->SetDnsConfigOverrides(overrides);
 
   const std::pair<const HostCache::Key, HostCache::Entry>* cache_result;
@@ -5873,7 +5870,7 @@ TEST_F(HostResolverManagerDnsTest, SecureDnsMode_Secure) {
 
   ChangeDnsConfig(CreateValidDnsConfig());
   DnsConfigOverrides overrides;
-  overrides.secure_dns_mode = DnsConfig::SecureDnsMode::SECURE;
+  overrides.secure_dns_mode = SecureDnsMode::kSecure;
   resolver_->SetDnsConfigOverrides(overrides);
   const std::pair<const HostCache::Key, HostCache::Entry>* cache_result;
 
@@ -5920,7 +5917,7 @@ TEST_F(HostResolverManagerDnsTest, SecureDnsMode_Secure_InsecureAsyncDisabled) {
 
   ChangeDnsConfig(CreateValidDnsConfig());
   DnsConfigOverrides overrides;
-  overrides.secure_dns_mode = DnsConfig::SecureDnsMode::SECURE;
+  overrides.secure_dns_mode = SecureDnsMode::kSecure;
   resolver_->SetDnsConfigOverrides(overrides);
   const std::pair<const HostCache::Key, HostCache::Entry>* cache_result;
 
@@ -5940,7 +5937,7 @@ TEST_F(HostResolverManagerDnsTest, SecureDnsMode_Secure_InsecureAsyncDisabled) {
 TEST_F(HostResolverManagerDnsTest, SecureDnsMode_Secure_Local_CacheMiss) {
   ChangeDnsConfig(CreateValidDnsConfig());
   DnsConfigOverrides overrides;
-  overrides.secure_dns_mode = DnsConfig::SecureDnsMode::SECURE;
+  overrides.secure_dns_mode = SecureDnsMode::kSecure;
   resolver_->SetDnsConfigOverrides(overrides);
 
   HostResolver::ResolveHostParameters source_none_parameters;
@@ -5971,7 +5968,7 @@ TEST_F(HostResolverManagerDnsTest, SecureDnsMode_Secure_Local_CacheMiss) {
 TEST_F(HostResolverManagerDnsTest, SecureDnsMode_Secure_Local_CacheHit) {
   ChangeDnsConfig(CreateValidDnsConfig());
   DnsConfigOverrides overrides;
-  overrides.secure_dns_mode = DnsConfig::SecureDnsMode::SECURE;
+  overrides.secure_dns_mode = SecureDnsMode::kSecure;
   resolver_->SetDnsConfigOverrides(overrides);
 
   HostResolver::ResolveHostParameters source_none_parameters;
@@ -6227,8 +6224,7 @@ TEST_F(HostResolverManagerDnsTest,
 
     // Secure DnsTasks should not be affected.
     HostResolver::ResolveHostParameters secure_parameters;
-    secure_parameters.secure_dns_mode_override =
-        DnsConfig::SecureDnsMode::AUTOMATIC;
+    secure_parameters.secure_dns_mode_override = SecureDnsMode::kAutomatic;
     ResolveHostResponseHelper response_secure(resolver_->CreateRequest(
         HostPortPair("automatic", 80), NetworkIsolationKey(),
         NetLogWithSource(), secure_parameters, resolve_context_.get(),
@@ -6563,7 +6559,7 @@ TEST_F(HostResolverManagerDnsTest, CachedError_AutomaticMode) {
 
   // Switch to automatic mode.
   DnsConfigOverrides overrides;
-  overrides.secure_dns_mode = DnsConfig::SecureDnsMode::AUTOMATIC;
+  overrides.secure_dns_mode = SecureDnsMode::kAutomatic;
   resolver_->SetDnsConfigOverrides(overrides);
 
   HostCache::Key insecure_key =
@@ -6605,7 +6601,7 @@ TEST_F(HostResolverManagerDnsTest, CachedError_SecureMode) {
 
   // Switch to secure mode.
   DnsConfigOverrides overrides;
-  overrides.secure_dns_mode = DnsConfig::SecureDnsMode::SECURE;
+  overrides.secure_dns_mode = SecureDnsMode::kSecure;
   resolver_->SetDnsConfigOverrides(overrides);
 
   HostCache::Key insecure_key =
@@ -6862,7 +6858,7 @@ TEST_F(HostResolverManagerDnsTest, AddDnsOverHttpsServerAfterConfig) {
   DnsConfigOverrides overrides;
   overrides.dns_over_https_servers.emplace(
       {DnsOverHttpsServerConfig(server, true)});
-  overrides.secure_dns_mode = DnsConfig::SecureDnsMode::AUTOMATIC;
+  overrides.secure_dns_mode = SecureDnsMode::kAutomatic;
   resolver_->SetDnsConfigOverrides(overrides);
   base::Value config = resolver_->GetDnsConfigAsValue();
   base::Value* doh_servers = config.FindListKey("doh_servers");
@@ -6879,7 +6875,7 @@ TEST_F(HostResolverManagerDnsTest, AddDnsOverHttpsServerAfterConfig) {
   EXPECT_TRUE(server_template);
   EXPECT_EQ(*server_template, server);
   EXPECT_EQ(config.FindKey("secure_dns_mode")->GetInt(),
-            static_cast<int>(DnsConfig::SecureDnsMode::AUTOMATIC));
+            static_cast<int>(SecureDnsMode::kAutomatic));
 }
 
 TEST_F(HostResolverManagerDnsTest, AddDnsOverHttpsServerBeforeConfig) {
@@ -6890,7 +6886,7 @@ TEST_F(HostResolverManagerDnsTest, AddDnsOverHttpsServerBeforeConfig) {
   DnsConfigOverrides overrides;
   overrides.dns_over_https_servers.emplace(
       {DnsOverHttpsServerConfig(server, true)});
-  overrides.secure_dns_mode = DnsConfig::SecureDnsMode::AUTOMATIC;
+  overrides.secure_dns_mode = SecureDnsMode::kAutomatic;
   resolver_->SetDnsConfigOverrides(overrides);
 
   notifier.mock_network_change_notifier()->SetConnectionType(
@@ -6912,7 +6908,7 @@ TEST_F(HostResolverManagerDnsTest, AddDnsOverHttpsServerBeforeConfig) {
   EXPECT_TRUE(server_template);
   EXPECT_EQ(*server_template, server);
   EXPECT_EQ(config.FindKey("secure_dns_mode")->GetInt(),
-            static_cast<int>(DnsConfig::SecureDnsMode::AUTOMATIC));
+            static_cast<int>(SecureDnsMode::kAutomatic));
 }
 
 TEST_F(HostResolverManagerDnsTest, AddDnsOverHttpsServerBeforeClient) {
@@ -6923,7 +6919,7 @@ TEST_F(HostResolverManagerDnsTest, AddDnsOverHttpsServerBeforeClient) {
   DnsConfigOverrides overrides;
   overrides.dns_over_https_servers.emplace(
       {DnsOverHttpsServerConfig(server, true)});
-  overrides.secure_dns_mode = DnsConfig::SecureDnsMode::AUTOMATIC;
+  overrides.secure_dns_mode = SecureDnsMode::kAutomatic;
   resolver_->SetDnsConfigOverrides(overrides);
 
   notifier.mock_network_change_notifier()->SetConnectionType(
@@ -6945,7 +6941,7 @@ TEST_F(HostResolverManagerDnsTest, AddDnsOverHttpsServerBeforeClient) {
   EXPECT_TRUE(server_template);
   EXPECT_EQ(*server_template, server);
   EXPECT_EQ(config.FindKey("secure_dns_mode")->GetInt(),
-            static_cast<int>(DnsConfig::SecureDnsMode::AUTOMATIC));
+            static_cast<int>(SecureDnsMode::kAutomatic));
 }
 
 TEST_F(HostResolverManagerDnsTest, AddDnsOverHttpsServerAndThenRemove) {
@@ -6956,7 +6952,7 @@ TEST_F(HostResolverManagerDnsTest, AddDnsOverHttpsServerAndThenRemove) {
   DnsConfigOverrides overrides;
   overrides.dns_over_https_servers.emplace(
       {DnsOverHttpsServerConfig(server, true)});
-  overrides.secure_dns_mode = DnsConfig::SecureDnsMode::AUTOMATIC;
+  overrides.secure_dns_mode = SecureDnsMode::kAutomatic;
   resolver_->SetDnsConfigOverrides(overrides);
 
   notifier.mock_network_change_notifier()->SetConnectionType(
@@ -6980,7 +6976,7 @@ TEST_F(HostResolverManagerDnsTest, AddDnsOverHttpsServerAndThenRemove) {
   EXPECT_TRUE(server_template);
   EXPECT_EQ(*server_template, server);
   EXPECT_EQ(config.FindKey("secure_dns_mode")->GetInt(),
-            static_cast<int>(DnsConfig::SecureDnsMode::AUTOMATIC));
+            static_cast<int>(SecureDnsMode::kAutomatic));
 
   resolver_->SetDnsConfigOverrides(DnsConfigOverrides());
   config = resolver_->GetDnsConfigAsValue();
@@ -6990,7 +6986,7 @@ TEST_F(HostResolverManagerDnsTest, AddDnsOverHttpsServerAndThenRemove) {
     return;
   EXPECT_EQ(doh_servers->GetList().size(), 0u);
   EXPECT_EQ(config.FindKey("secure_dns_mode")->GetInt(),
-            static_cast<int>(DnsConfig::SecureDnsMode::OFF));
+            static_cast<int>(SecureDnsMode::kOff));
 }
 
 // Basic test socket factory that allows creation of UDP sockets, but those
@@ -7059,8 +7055,7 @@ TEST_F(HostResolverManagerDnsTest, SetDnsConfigOverrides) {
   const std::vector<DnsOverHttpsServerConfig> dns_over_https_servers = {
       DnsOverHttpsServerConfig("dns.example.com", true)};
   overrides.dns_over_https_servers = dns_over_https_servers;
-  const DnsConfig::SecureDnsMode secure_dns_mode =
-      DnsConfig::SecureDnsMode::SECURE;
+  const SecureDnsMode secure_dns_mode = SecureDnsMode::kSecure;
   overrides.secure_dns_mode = secure_dns_mode;
   overrides.allow_dns_over_https_upgrade = true;
   const std::vector<std::string> disabled_upgrade_providers = {"provider_name"};
@@ -7388,7 +7383,7 @@ TEST_F(HostResolverManagerDnsTest, DohMappingModeIneligibleForUpgrade) {
   // SafeBrowsing family filter, SafeBrowsing security filter, and other IPs
   // not associated with hardcoded DoH services.
   DnsConfig original_config = CreateUpgradableDnsConfig();
-  original_config.secure_dns_mode = DnsConfig::SecureDnsMode::SECURE;
+  original_config.secure_dns_mode = SecureDnsMode::kSecure;
   ChangeDnsConfig(original_config);
 
   const DnsConfig* fetched_config = client_ptr->GetEffectiveConfig();
@@ -7542,7 +7537,7 @@ TEST_F(HostResolverManagerDnsTest, DohMappingWithStrictDot) {
   // SafeBrowsing family filter, SafeBrowsing security filter, and other IPs
   // not associated with hardcoded DoH services.
   DnsConfig original_config = CreateUpgradableDnsConfig();
-  original_config.secure_dns_mode = DnsConfig::SecureDnsMode::AUTOMATIC;
+  original_config.secure_dns_mode = SecureDnsMode::kAutomatic;
   original_config.dns_over_tls_active = true;
 
   // Google DoT hostname
@@ -8703,7 +8698,7 @@ class HostResolverManagerDnsTestIntegrity : public HostResolverManagerDnsTest {
   std::unique_ptr<ResolveHostResponseHelper> DoIntegrityQuery(bool use_secure) {
     if (use_secure) {
       DnsConfigOverrides overrides;
-      overrides.secure_dns_mode = DnsConfig::SecureDnsMode::SECURE;
+      overrides.secure_dns_mode = SecureDnsMode::kSecure;
       resolver_->SetDnsConfigOverrides(overrides);
     }
 
@@ -9301,7 +9296,7 @@ TEST_F(HostResolverManagerDnsTest,
   set_allow_fallback_to_proctask(false);
   ChangeDnsConfig(CreateValidDnsConfig());
   DnsConfigOverrides overrides;
-  overrides.secure_dns_mode = DnsConfig::SecureDnsMode::SECURE;
+  overrides.secure_dns_mode = SecureDnsMode::kSecure;
   resolver_->SetDnsConfigOverrides(overrides);
 
   ASSERT_TRUE(dns_client_->GetCurrentSession());
@@ -9334,7 +9329,7 @@ TEST_F(HostResolverManagerDnsTest,
   set_allow_fallback_to_proctask(false);
   InvalidateDnsConfig();
   DnsConfigOverrides overrides;
-  overrides.secure_dns_mode = DnsConfig::SecureDnsMode::SECURE;
+  overrides.secure_dns_mode = SecureDnsMode::kSecure;
   resolver_->SetDnsConfigOverrides(overrides);
 
   ASSERT_FALSE(dns_client_->GetCurrentSession());

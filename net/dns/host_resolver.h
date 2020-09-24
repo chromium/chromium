@@ -19,12 +19,12 @@
 #include "net/base/completion_once_callback.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/request_priority.h"
-#include "net/dns/dns_config.h"
 #include "net/dns/dns_config_overrides.h"
 #include "net/dns/host_cache.h"
 #include "net/dns/host_resolver_source.h"
 #include "net/dns/public/dns_query_type.h"
 #include "net/dns/public/resolve_error_info.h"
+#include "net/dns/public/secure_dns_mode.h"
 
 namespace base {
 class Value;
@@ -245,8 +245,7 @@ class NET_EXPORT HostResolver {
     bool is_speculative = false;
 
     // Set to override the resolver's default secure dns mode for this request.
-    base::Optional<DnsConfig::SecureDnsMode> secure_dns_mode_override =
-        base::nullopt;
+    base::Optional<SecureDnsMode> secure_dns_mode_override = base::nullopt;
   };
 
   // Handler for an ongoing MDNS listening operation. Created by

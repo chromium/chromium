@@ -1090,7 +1090,7 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
           DnsQueryType query_type,
           ResolveContext* resolve_context,
           bool secure,
-          DnsConfig::SecureDnsMode secure_dns_mode,
+          SecureDnsMode secure_dns_mode,
           Delegate* delegate,
           const NetLogWithSource& job_net_log,
           const base::TickClock* tick_clock)
@@ -1749,7 +1749,7 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
 
   // Whether lookups in this DnsTask should occur using DoH or plaintext.
   const bool secure_;
-  const DnsConfig::SecureDnsMode secure_dns_mode_;
+  const SecureDnsMode secure_dns_mode_;
 
   // The listener to the results of this DnsTask.
   Delegate* delegate_;
@@ -1795,7 +1795,7 @@ struct HostResolverManager::JobKey {
   DnsQueryType query_type;
   HostResolverFlags flags;
   HostResolverSource source;
-  DnsConfig::SecureDnsMode secure_dns_mode;
+  SecureDnsMode secure_dns_mode;
   // TODO(ericorth@chromium.org): Use base::UnownedPtr once available.
   ResolveContext* resolve_context;
 };
@@ -1814,7 +1814,7 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
       HostResolverFlags host_resolver_flags,
       HostResolverSource requested_source,
       ResolveHostParameters::CacheUsage cache_usage,
-      DnsConfig::SecureDnsMode secure_dns_mode,
+      SecureDnsMode secure_dns_mode,
       ResolveContext* resolve_context,
       HostCache* host_cache,
       std::deque<TaskType> tasks,
@@ -2319,12 +2319,11 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
                         bool secure) {
     DCHECK_NE(OK, failure_results.error());
 
-    if (secure_dns_mode_ == DnsConfig::SecureDnsMode::SECURE) {
+    if (secure_dns_mode_ == SecureDnsMode::kSecure) {
       DCHECK(secure);
       UMA_HISTOGRAM_LONG_TIMES_100(
           "Net.DNS.SecureDnsTask.DnsModeSecure.FailureTime", duration);
-    } else if (secure_dns_mode_ == DnsConfig::SecureDnsMode::AUTOMATIC &&
-               secure) {
+    } else if (secure_dns_mode_ == SecureDnsMode::kAutomatic && secure) {
       UMA_HISTOGRAM_LONG_TIMES_100(
           "Net.DNS.SecureDnsTask.DnsModeAutomatic.FailureTime", duration);
     } else {
@@ -2667,7 +2666,7 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
   const HostResolverFlags host_resolver_flags_;
   const HostResolverSource requested_source_;
   const ResolveHostParameters::CacheUsage cache_usage_;
-  const DnsConfig::SecureDnsMode secure_dns_mode_;
+  const SecureDnsMode secure_dns_mode_;
   // TODO(ericorth@chromium.org): Use base::UnownedPtr once available.
   ResolveContext* const resolve_context_;
   // TODO(crbug.com/969847): Consider allowing requests within a single Job to
@@ -2993,7 +2992,7 @@ int HostResolverManager::Resolve(RequestImpl* request) {
 
   DnsQueryType effective_query_type;
   HostResolverFlags effective_host_resolver_flags;
-  DnsConfig::SecureDnsMode effective_secure_dns_mode;
+  SecureDnsMode effective_secure_dns_mode;
   std::deque<TaskType> tasks;
   base::Optional<HostCache::EntryStaleness> stale_info;
   HostCache::Entry results = ResolveLocally(
@@ -3030,14 +3029,14 @@ HostCache::Entry HostResolverManager::ResolveLocally(
     DnsQueryType dns_query_type,
     HostResolverSource source,
     HostResolverFlags flags,
-    base::Optional<DnsConfig::SecureDnsMode> secure_dns_mode_override,
+    base::Optional<SecureDnsMode> secure_dns_mode_override,
     ResolveHostParameters::CacheUsage cache_usage,
     const NetLogWithSource& source_net_log,
     HostCache* cache,
     ResolveContext* resolve_context,
     DnsQueryType* out_effective_query_type,
     HostResolverFlags* out_effective_host_resolver_flags,
-    DnsConfig::SecureDnsMode* out_effective_secure_dns_mode,
+    SecureDnsMode* out_effective_secure_dns_mode,
     std::deque<TaskType>* out_tasks,
     base::Optional<HostCache::EntryStaleness>* out_stale_info) {
   DCHECK(out_stale_info);
@@ -3144,7 +3143,7 @@ HostCache::Entry HostResolverManager::ResolveLocally(
 void HostResolverManager::CreateAndStartJob(
     DnsQueryType effective_query_type,
     HostResolverFlags effective_host_resolver_flags,
-    DnsConfig::SecureDnsMode effective_secure_dns_mode,
+    SecureDnsMode effective_secure_dns_mode,
     std::deque<TaskType> tasks,
     RequestImpl* request) {
   DCHECK(!tasks.empty());
@@ -3347,13 +3346,13 @@ std::unique_ptr<HostResolverManager::Job> HostResolverManager::RemoveJob(
   return job;
 }
 
-DnsConfig::SecureDnsMode HostResolverManager::GetEffectiveSecureDnsMode(
+SecureDnsMode HostResolverManager::GetEffectiveSecureDnsMode(
     const std::string& hostname,
-    base::Optional<DnsConfig::SecureDnsMode> secure_dns_mode_override) {
+    base::Optional<SecureDnsMode> secure_dns_mode_override) {
   const DnsConfig* config =
       dns_client_ ? dns_client_->GetEffectiveConfig() : nullptr;
 
-  DnsConfig::SecureDnsMode secure_dns_mode = DnsConfig::SecureDnsMode::OFF;
+  SecureDnsMode secure_dns_mode = SecureDnsMode::kOff;
   if (secure_dns_mode_override) {
     secure_dns_mode = secure_dns_mode_override.value();
   } else if (config) {
@@ -3367,7 +3366,7 @@ bool HostResolverManager::HaveTestProcOverride() {
 }
 
 void HostResolverManager::PushDnsTasks(bool proc_task_allowed,
-                                       DnsConfig::SecureDnsMode secure_dns_mode,
+                                       SecureDnsMode secure_dns_mode,
                                        bool insecure_tasks_allowed,
                                        bool allow_cache,
                                        bool prioritize_local_lookups,
@@ -3382,14 +3381,14 @@ void HostResolverManager::PushDnsTasks(bool proc_task_allowed,
   bool dns_tasks_allowed = !HaveTestProcOverride();
   // Upgrade the insecure DnsTask depending on the secure dns mode.
   switch (secure_dns_mode) {
-    case DnsConfig::SecureDnsMode::SECURE:
+    case SecureDnsMode::kSecure:
       DCHECK(!allow_cache ||
              out_tasks->front() == TaskType::SECURE_CACHE_LOOKUP);
       DCHECK(dns_client_->CanUseSecureDnsTransactions());
       if (dns_tasks_allowed)
         out_tasks->push_back(TaskType::SECURE_DNS);
       break;
-    case DnsConfig::SecureDnsMode::AUTOMATIC:
+    case SecureDnsMode::kAutomatic:
       DCHECK(!allow_cache || out_tasks->front() == TaskType::CACHE_LOOKUP);
       if (dns_client_->FallbackFromSecureTransactionPreferred(
               resolve_context)) {
@@ -3420,7 +3419,7 @@ void HostResolverManager::PushDnsTasks(bool proc_task_allowed,
           out_tasks->push_back(TaskType::DNS);
       }
       break;
-    case DnsConfig::SecureDnsMode::OFF:
+    case SecureDnsMode::kOff:
       DCHECK(!allow_cache || out_tasks->front() == TaskType::CACHE_LOOKUP);
       if (dns_tasks_allowed && insecure_tasks_allowed)
         out_tasks->push_back(TaskType::DNS);
@@ -3448,10 +3447,10 @@ void HostResolverManager::CreateTaskSequence(
     DnsQueryType dns_query_type,
     HostResolverSource source,
     HostResolverFlags flags,
-    base::Optional<DnsConfig::SecureDnsMode> secure_dns_mode_override,
+    base::Optional<SecureDnsMode> secure_dns_mode_override,
     ResolveHostParameters::CacheUsage cache_usage,
     ResolveContext* resolve_context,
-    DnsConfig::SecureDnsMode* out_effective_secure_dns_mode,
+    SecureDnsMode* out_effective_secure_dns_mode,
     std::deque<TaskType>* out_tasks) {
   DCHECK(out_tasks->empty());
   *out_effective_secure_dns_mode =
@@ -3462,7 +3461,7 @@ void HostResolverManager::CreateTaskSequence(
   bool allow_cache =
       cache_usage != ResolveHostParameters::CacheUsage::DISALLOWED;
   if (allow_cache) {
-    if (*out_effective_secure_dns_mode == DnsConfig::SecureDnsMode::SECURE) {
+    if (*out_effective_secure_dns_mode == SecureDnsMode::kSecure) {
       out_tasks->push_front(TaskType::SECURE_CACHE_LOOKUP);
     } else {
       out_tasks->push_front(TaskType::CACHE_LOOKUP);
@@ -3487,7 +3486,7 @@ void HostResolverManager::CreateTaskSequence(
       } else if (!ResemblesMulticastDNSName(hostname)) {
         bool proc_task_allowed =
             IsAddressType(dns_query_type) &&
-            *out_effective_secure_dns_mode != DnsConfig::SecureDnsMode::SECURE;
+            *out_effective_secure_dns_mode != SecureDnsMode::kSecure;
         if (dns_client_ && dns_client_->GetEffectiveConfig()) {
           bool insecure_allowed =
               dns_client_->CanUseInsecureDnsTransactions() &&
@@ -3532,14 +3531,14 @@ void HostResolverManager::GetEffectiveParametersForRequest(
     DnsQueryType dns_query_type,
     HostResolverSource source,
     HostResolverFlags flags,
-    base::Optional<DnsConfig::SecureDnsMode> secure_dns_mode_override,
+    base::Optional<SecureDnsMode> secure_dns_mode_override,
     ResolveHostParameters::CacheUsage cache_usage,
     const IPAddress* ip_address,
     const NetLogWithSource& net_log,
     ResolveContext* resolve_context,
     DnsQueryType* out_effective_type,
     HostResolverFlags* out_effective_flags,
-    DnsConfig::SecureDnsMode* out_effective_secure_dns_mode,
+    SecureDnsMode* out_effective_secure_dns_mode,
     std::deque<TaskType>* out_tasks) {
   *out_effective_flags = flags | additional_resolver_flags_;
   *out_effective_type = dns_query_type;

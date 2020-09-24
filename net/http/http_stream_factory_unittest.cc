@@ -32,6 +32,7 @@
 #include "net/cert/mock_cert_verifier.h"
 #include "net/cert/multi_log_ct_verifier.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/dns/public/secure_dns_mode.h"
 #include "net/http/bidirectional_stream_impl.h"
 #include "net/http/bidirectional_stream_request_info.h"
 #include "net/http/http_auth_handler_factory.h"
@@ -1204,7 +1205,7 @@ TEST_F(HttpStreamFactoryTest, DisableSecureDnsUsesDifferentSocketPoolGroup) {
   waiter.WaitForStream();
 
   EXPECT_EQ(
-      net::DnsConfig::SecureDnsMode::OFF,
+      net::SecureDnsMode::kOff,
       session_deps.host_resolver->last_secure_dns_mode_override().value());
   EXPECT_EQ(GetSocketPoolGroupCount(ssl_pool), 2);
 }

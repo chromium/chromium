@@ -12,11 +12,13 @@
 #include "base/time/time.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_export.h"
-#include "net/dns/dns_config.h"
 #include "net/dns/dns_hosts.h"
 #include "net/dns/public/dns_over_https_server_config.h"
+#include "net/dns/public/secure_dns_mode.h"
 
 namespace net {
+
+struct DnsConfig;
 
 // Overriding values to be applied over a DnsConfig struct.
 struct NET_EXPORT DnsConfigOverrides {
@@ -57,7 +59,7 @@ struct NET_EXPORT DnsConfigOverrides {
   base::Optional<bool> rotate;
   base::Optional<bool> use_local_ipv6;
   base::Optional<std::vector<DnsOverHttpsServerConfig>> dns_over_https_servers;
-  base::Optional<DnsConfig::SecureDnsMode> secure_dns_mode;
+  base::Optional<SecureDnsMode> secure_dns_mode;
   base::Optional<bool> allow_dns_over_https_upgrade;
   base::Optional<std::vector<std::string>> disabled_upgrade_providers;
 

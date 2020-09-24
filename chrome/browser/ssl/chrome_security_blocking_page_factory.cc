@@ -51,7 +51,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/captive_portal/content/captive_portal_tab_helper.h"
 #include "net/base/net_errors.h"
-#include "net/dns/dns_config.h"
+#include "net/dns/public/secure_dns_mode.h"
 #endif
 
 namespace {
@@ -338,7 +338,7 @@ void ChromeSecurityBlockingPageFactory::OpenLoginTabForWebContents(
 
   // If the DNS mode is SECURE, captive portal login tabs should be opened in
   // new popup windows where secure DNS will be disabled.
-  if (secure_dns_config.mode() == net::DnsConfig::SecureDnsMode::SECURE) {
+  if (secure_dns_config.mode() == net::SecureDnsMode::kSecure) {
     // If there is already a captive portal popup window, do not create another.
     for (auto* contents : AllTabContentses()) {
       captive_portal::CaptivePortalTabHelper* captive_portal_tab_helper =

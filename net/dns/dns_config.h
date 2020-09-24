@@ -14,6 +14,7 @@
 #include "net/base/net_export.h"
 #include "net/dns/dns_hosts.h"
 #include "net/dns/public/dns_over_https_server_config.h"
+#include "net/dns/public/secure_dns_mode.h"
 
 namespace base {
 class Value;
@@ -50,20 +51,6 @@ struct NET_EXPORT DnsConfig {
   bool IsValid() const {
     return !nameservers.empty() || !dns_over_https_servers.empty();
   }
-
-  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.net
-  // The SecureDnsMode specifies what types of lookups (secure/insecure) should
-  // be performed and in what order when resolving a specific query. The int
-  // values should not be changed as they are logged.
-  enum class SecureDnsMode : int {
-    // In OFF mode, no DoH lookups should be performed.
-    OFF = 0,
-    // In AUTOMATIC mode, DoH lookups should be performed first if DoH is
-    // available, and insecure DNS lookups should be performed as a fallback.
-    AUTOMATIC = 1,
-    // In SECURE mode, only DoH lookups should be performed.
-    SECURE = 2,
-  };
 
   // List of name server addresses.
   std::vector<IPEndPoint> nameservers;

@@ -24,6 +24,7 @@
 #include "net/base/network_isolation_key.h"
 #include "net/base/test_proxy_delegate.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/dns/public/secure_dns_mode.h"
 #include "net/http/http_network_session.h"
 #include "net/nqe/network_quality_estimator_test_util.h"
 #include "net/socket/client_socket_handle.h"
@@ -886,7 +887,7 @@ TEST_P(HttpProxyConnectJobTest, DisableSecureDns) {
                   .has_value());
     if (disable_secure_dns) {
       EXPECT_EQ(
-          net::DnsConfig::SecureDnsMode::OFF,
+          net::SecureDnsMode::kOff,
           session_deps_.host_resolver->last_secure_dns_mode_override().value());
     }
   }

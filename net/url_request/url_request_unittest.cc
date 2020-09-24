@@ -93,6 +93,7 @@
 #include "net/cookies/test_cookie_access_delegate.h"
 #include "net/disk_cache/disk_cache.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/dns/public/secure_dns_mode.h"
 #include "net/http/http_byte_range.h"
 #include "net/http/http_cache.h"
 #include "net/http/http_network_layer.h"
@@ -1355,7 +1356,7 @@ TEST_F(URLRequestTest, SkipSecureDnsEnabled) {
   req->Start();
   d.RunUntilComplete();
 
-  EXPECT_EQ(net::DnsConfig::SecureDnsMode::OFF,
+  EXPECT_EQ(net::SecureDnsMode::kOff,
             host_resolver.last_secure_dns_mode_override().value());
 }
 
