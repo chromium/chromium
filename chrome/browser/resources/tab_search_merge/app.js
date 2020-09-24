@@ -383,6 +383,13 @@ export class TabSearchAppElement extends PolymerElement {
         b.lastActiveTimeTicks.internalValue - a.lastActiveTimeTicks.internalValue :
         0);
     this.filteredOpenTabs_ = fuzzySearch(this.searchText_, result);
+
+    // Update the item count in css so that the css rule can calculate the final
+    // height of the tabsContainer. This prevents the scrolling height from
+    // changing as list items are added to the dom incrementally via chunking
+    // mode.
+    this.$.tabsContainer.style
+      .setProperty("--item-count", this.filteredOpenTabs_.length.toString());
   }
 
   /**
