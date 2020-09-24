@@ -734,11 +734,10 @@ GetAttributeForKeyState::GetAttributeForKeyState(
 // private key will be searched in all slots.
 crypto::ScopedSECKEYPrivateKey GetPrivateKey(
     const std::string& public_key_spki_der,
-    const crypto::ScopedPK11Slot& slot) {
+    PK11SlotInfo* slot) {
   auto public_key_bytes = base::as_bytes(base::make_span(public_key_spki_der));
   if (slot) {
-    return crypto::FindNSSKeyFromPublicKeyInfoInSlot(public_key_bytes,
-                                                     slot.get());
+    return crypto::FindNSSKeyFromPublicKeyInfoInSlot(public_key_bytes, slot);
   }
   return crypto::FindNSSKeyFromPublicKeyInfo(public_key_bytes);
 }
@@ -847,7 +846,7 @@ void GenerateECKeyWithDB(std::unique_ptr<GenerateECKeyState> state,
 // Does the actual RSA signing on a worker thread.
 void SignRSAOnWorkerThread(std::unique_ptr<SignState> state) {
   crypto::ScopedSECKEYPrivateKey rsa_key =
-      GetPrivateKey(state->public_key_spki_der_, state->slot_);
+      GetPrivateKey(state->public_key_spki_der_, state->slot_.get());
 
   // Fail if the key was not found or is of the wrong type.
   if (!rsa_key || SECKEY_GetPrivateKeyType(rsa_key.get()) != rsaKey) {
@@ -918,7 +917,7 @@ void SignRSAOnWorkerThread(std::unique_ptr<SignState> state) {
 // Does the actual EC Signing on a worker thread.
 void SignECOnWorkerThread(std::unique_ptr<SignState> state) {
   crypto::ScopedSECKEYPrivateKey ec_key =
-      GetPrivateKey(state->public_key_spki_der_, state->slot_);
+      GetPrivateKey(state->public_key_spki_der_, state->slot_.get());
 
   // Fail if the key was not found or is of the wrong type.
   if (!ec_key || SECKEY_GetPrivateKeyType(ec_key.get()) != ecKey) {
@@ -965,7 +964,7 @@ void SignECOnWorkerThread(std::unique_ptr<SignState> state) {
 // Decides which signing algorithm will be used. Used by SignWithDB().
 void SignOnWorkerThread(std::unique_ptr<SignState> state) {
   crypto::ScopedSECKEYPrivateKey key =
-      GetPrivateKey(state->public_key_spki_der_, state->slot_);
+      GetPrivateKey(state->public_key_spki_der_, state->slot_.get());
 
   if (!key) {
     state->OnError(FROM_HERE, Status::kErrorKeyNotFound);
@@ -1213,7 +1212,7 @@ void RemoveKeyOnWorkerThread(std::unique_ptr<RemoveKeyState> state) {
   DCHECK(state->slot_.get());
 
   crypto::ScopedSECKEYPrivateKey private_key =
-      GetPrivateKey(state->public_key_spki_der_, state->slot_);
+      GetPrivateKey(state->public_key_spki_der_, state->slot_.get());
 
   if (!private_key) {
     state->OnError(FROM_HERE, Status::kErrorKeyNotFound);
@@ -1347,7 +1346,7 @@ void SetAttributeForKeyWithDb(std::unique_ptr<SetAttributeForKeyState> state,
   DCHECK(state->slot_.get());
 
   crypto::ScopedSECKEYPrivateKey private_key =
-      GetPrivateKey(state->public_key_spki_der_, state->slot_);
+      GetPrivateKey(state->public_key_spki_der_, state->slot_.get());
 
   if (!private_key) {
     state->OnError(FROM_HERE, Status::kErrorKeyNotFound);
@@ -1380,7 +1379,7 @@ void GetAttributeForKeyWithDb(std::unique_ptr<GetAttributeForKeyState> state,
   DCHECK(state->slot_.get());
 
   crypto::ScopedSECKEYPrivateKey private_key =
-      GetPrivateKey(state->public_key_spki_der_, state->slot_);
+      GetPrivateKey(state->public_key_spki_der_, state->slot_.get());
 
   if (!private_key) {
     state->OnError(FROM_HERE, Status::kErrorKeyNotFound);
