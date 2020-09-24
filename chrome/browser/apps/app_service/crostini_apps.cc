@@ -254,6 +254,10 @@ void CrostiniApps::OnCrostiniEnabledChanged() {
 apps::mojom::AppPtr CrostiniApps::Convert(
     const guest_os::GuestOsRegistryService::Registration& registration,
     bool new_icon_key) {
+  DCHECK_EQ(
+      registration.VmType(),
+      guest_os::GuestOsRegistryService::VmType::ApplicationList_VmType_TERMINA);
+
   apps::mojom::AppPtr app = PublisherBase::MakeApp(
       apps::mojom::AppType::kCrostini, registration.app_id(),
       apps::mojom::Readiness::kReady, registration.Name(),
@@ -275,10 +279,7 @@ apps::mojom::AppPtr CrostiniApps::Convert(
   app->install_time = registration.InstallTime();
 
   auto show = apps::mojom::OptionalBool::kTrue;
-  // Only display for termina (not Plugin VM), if no_display not set.
-  if (registration.VmType() != guest_os::GuestOsRegistryService::VmType::
-                                   ApplicationList_VmType_TERMINA ||
-      registration.NoDisplay()) {
+  if (registration.NoDisplay()) {
     show = apps::mojom::OptionalBool::kFalse;
   }
   auto show_in_search = show;

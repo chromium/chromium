@@ -315,6 +315,9 @@ void PluginVmApps::OnRegistryUpdated(
 apps::mojom::AppPtr PluginVmApps::Convert(
     const guest_os::GuestOsRegistryService::Registration& registration,
     bool new_icon_key) {
+  DCHECK_EQ(registration.VmType(), guest_os::GuestOsRegistryService::VmType::
+                                       ApplicationList_VmType_PLUGIN_VM);
+
   apps::mojom::AppPtr app = PublisherBase::MakeApp(
       apps::mojom::AppType::kPluginVm, registration.app_id(),
       apps::mojom::Readiness::kReady, registration.Name(),
