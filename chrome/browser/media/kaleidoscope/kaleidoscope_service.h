@@ -14,6 +14,10 @@
 
 class Profile;
 
+namespace base {
+class Clock;
+}  // namespace base
+
 namespace kaleidoscope {
 
 namespace {
@@ -23,6 +27,7 @@ class GetCollectionsRequest;
 class KaleidoscopeService : public KeyedService {
  public:
   static const char kNTPModuleCacheHitHistogramName[];
+  static const char kNTPModuleServerFetchTimeHistogramName[];
 
   // When we try and ger Kaleidoscope data we store whether we hit the cache in
   // |kNTPModuleCacheHitHistogramName|. Do not change the numbering since this
@@ -63,8 +68,7 @@ class KaleidoscopeService : public KeyedService {
                        GetCollectionsCallback callback,
                        media::mojom::GetCollectionsResponsePtr cached);
 
-  void OnURLFetchComplete(const std::string& gaia_id,
-                          std::unique_ptr<std::string> data);
+  void OnURLFetchComplete(const std::string& gaia_id, const std::string& data);
 
   scoped_refptr<::network::SharedURLLoaderFactory>
   GetURLLoaderFactoryForFetcher();
@@ -77,6 +81,8 @@ class KaleidoscopeService : public KeyedService {
   std::unique_ptr<GetCollectionsRequest> request_;
 
   std::vector<GetCollectionsCallback> pending_callbacks_;
+
+  base::Clock* clock_;
 
   base::WeakPtrFactory<KaleidoscopeService> weak_ptr_factory_{this};
 };

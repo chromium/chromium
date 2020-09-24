@@ -78563,6 +78563,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Media.Kaleidoscope.NewTabPage.ServerFetchTime" units="ms"
+    expires_after="2021-08-19">
+  <owner>beccahughes@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>
+    Recorded each time the Kaleidoscope module is loaded on the New Tab Page
+    with the time it takes to fetch the data from the server.
+  </summary>
+</histogram>
+
 <histogram base="true" name="Media.Learning.BinaryThreshold.Aggregate"
     enum="ConfusionMatrix" expires_after="2019-10-30">
 <!-- Name completed by histogram_suffixes

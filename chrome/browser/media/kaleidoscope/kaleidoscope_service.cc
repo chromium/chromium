@@ -9,6 +9,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "base/time/default_clock.h"
 #include "chrome/browser/media/history/media_history_store.h"
 #include "chrome/browser/media/kaleidoscope/constants.h"
 #include "chrome/browser/media/kaleidoscope/kaleidoscope_prefs.h"
@@ -39,8 +40,9 @@ class GetCollectionsRequest {
       const std::string& gaia_id,
       const std::string& request_b64,
       scoped_refptr<::network::SharedURLLoaderFactory> url_loader_factory,
-      base::OnceCallback<void(std::unique_ptr<std::string>)> callback)
-      : gaia_id_(gaia_id) {
+      base::Clock* clock,
+      base::OnceCallback<void(const std::string&)> callback)
+      : gaia_id_(gaia_id), clock_(clock), start_time_(clock->Now()) {
     const auto base_url =
         GetGoogleAPIBaseURL(*base::CommandLine::ForCurrentProcess());
 
@@ -100,7 +102,9 @@ class GetCollectionsRequest {
     pending_request_->SetAllowHttpErrorResults(true);
     pending_request_->AttachStringForUpload(request_body, kRequestContentType);
     pending_request_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-        url_loader_factory.get(), std::move(callback));
+        url_loader_factory.get(),
+        base::BindOnce(&GetCollectionsRequest::OnDataLoaded,
+                       base::Unretained(this), std::move(callback)));
   }
 
   ~GetCollectionsRequest() = default;
@@ -122,6 +126,20 @@ class GetCollectionsRequest {
   }
 
  private:
+  void OnDataLoaded(base::OnceCallback<void(const std::string&)> callback,
+                    std::unique_ptr<std::string> data) {
+    base::TimeDelta time_taken = clock_->Now() - start_time_;
+    base::UmaHistogramTimes(
+        KaleidoscopeService::kNTPModuleServerFetchTimeHistogramName,
+        time_taken);
+
+    if (data) {
+      std::move(callback).Run(*data);
+    } else {
+      std::move(callback).Run(std::string());
+    }
+  }
+
   int response_code() const {
     if (url_loader().ResponseInfo() && url_loader().ResponseInfo()->headers) {
       return url_loader().ResponseInfo()->headers->response_code();
@@ -131,6 +149,8 @@ class GetCollectionsRequest {
   }
 
   std::string const gaia_id_;
+  base::Clock* const clock_;
+  base::Time const start_time_;
 
   std::unique_ptr<::network::SimpleURLLoader> pending_request_;
 };
@@ -140,8 +160,13 @@ class GetCollectionsRequest {
 const char KaleidoscopeService::kNTPModuleCacheHitHistogramName[] =
     "Media.Kaleidoscope.NewTabPage.CacheHitWhenForced";
 
-KaleidoscopeService::KaleidoscopeService(Profile* profile) : profile_(profile) {
+const char KaleidoscopeService::kNTPModuleServerFetchTimeHistogramName[] =
+    "Media.Kaleidoscope.NewTabPage.ServerFetchTime";
+
+KaleidoscopeService::KaleidoscopeService(Profile* profile)
+    : profile_(profile), clock_(base::DefaultClock::GetInstance()) {
   DCHECK(!profile->IsOffTheRecord());
+  DCHECK(clock_);
 }
 
 // static
@@ -241,15 +266,14 @@ void KaleidoscopeService::OnGotCachedData(
   if (!request_) {
     request_ = std::make_unique<GetCollectionsRequest>(
         std::move(credentials), gaia_id, request,
-        GetURLLoaderFactoryForFetcher(),
+        GetURLLoaderFactoryForFetcher(), clock_,
         base::BindOnce(&KaleidoscopeService::OnURLFetchComplete,
                        base::Unretained(this), gaia_id));
   }
 }
 
-void KaleidoscopeService::OnURLFetchComplete(
-    const std::string& gaia_id,
-    std::unique_ptr<std::string> data) {
+void KaleidoscopeService::OnURLFetchComplete(const std::string& gaia_id,
+                                             const std::string& data) {
   auto response = media::mojom::GetCollectionsResponse::New();
   if (request_->not_available()) {
     response->result = media::mojom::GetCollectionsResult::kNotAvailable;
@@ -262,7 +286,7 @@ void KaleidoscopeService::OnURLFetchComplete(
     response->result = media::mojom::GetCollectionsResult::kFirstRun;
   } else {
     response->result = media::mojom::GetCollectionsResult::kSuccess;
-    response->response = *data;
+    response->response = data;
   }
 
   for (auto& callback : pending_callbacks_) {

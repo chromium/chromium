@@ -10,6 +10,7 @@
 #include "base/test/bind_test_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/media/kaleidoscope/constants.h"
 #include "chrome/browser/media/kaleidoscope/kaleidoscope_prefs.h"
@@ -50,6 +51,7 @@ class KaleidoscopeServiceTest : public ChromeRenderViewHostTestHarness {
     GetService()->test_url_loader_factory_for_fetcher_ =
         base::MakeRefCounted<::network::WeakWrapperSharedURLLoaderFactory>(
             &url_loader_factory_);
+    GetService()->clock_ = &clock_;
 
     feature_list_.InitWithFeatures({}, {media::kKaleidoscopeModuleCacheOnly});
   }
@@ -99,6 +101,8 @@ class KaleidoscopeServiceTest : public ChromeRenderViewHostTestHarness {
         kKaleidoscopeFirstRunLatestVersion);
   }
 
+  base::SimpleTestClock& clock() { return clock_; }
+
  private:
   std::string GetCurrentlyQueriedHeaderValue(const base::StringPiece& key) {
     std::string out;
@@ -112,11 +116,15 @@ class KaleidoscopeServiceTest : public ChromeRenderViewHostTestHarness {
 
   ::network::TestURLLoaderFactory url_loader_factory_;
 
+  base::SimpleTestClock clock_;
+
   base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(KaleidoscopeServiceTest, Success) {
   MarkFirstRunAsComplete();
+
+  base::HistogramTester histogram_tester;
 
   GetService()->GetCollections(
       CreateCredentials(), "123", "abcd",
@@ -128,7 +136,13 @@ TEST_F(KaleidoscopeServiceTest, Success) {
           }));
 
   WaitForRequest();
+  clock().Advance(base::TimeDelta::FromSeconds(5));
   ASSERT_TRUE(RespondToFetch(kTestData));
+
+  // Wait for the callback to be called.
+  histogram_tester.ExpectUniqueTimeSample(
+      KaleidoscopeService::kNTPModuleServerFetchTimeHistogramName,
+      base::TimeDelta::FromSeconds(5), 1);
 
   // If we call again then we should hit the cache.
   GetService()->GetCollections(
