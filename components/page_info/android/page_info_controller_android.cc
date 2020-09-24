@@ -201,10 +201,9 @@ base::Optional<ContentSetting> PageInfoControllerAndroid::GetSettingToDisplay(
       return permission.default_setting;
   }
 
-  if (base::FeatureList::IsEnabled(page_info::kPageInfoV2) &&
-      !PageInfo::IsPermissionFactoryDefault(permission)) {
-    return permission.default_setting;
-  }
+  // TODO(crbug.com/1077766): Also return permissions that are non
+  // factory-default after we add the functionality to populate the permissions
+  // subpage directly from the permissions returned from this controller.
 
   return base::Optional<ContentSetting>();
 }
