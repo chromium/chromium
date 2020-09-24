@@ -5429,8 +5429,11 @@ crbug.com/908347 media/autoplay/webaudio-audio-context-resume.html [ Failure Pas
 # Sheriff 2018-11-29
 crbug.com/910139 custom-elements/form-submission-file.html [ Crash Pass ]
 
+# TODO: re-enable the below flakiness suppression when removing this line
+crbug.com/1131901 transforms/shadows.html [ Pass Failure ]
+
 #Sheriff 2018-12-04
-crbug.com/911515 [ Mac ] transforms/shadows.html [ Pass Failure ]
+#crbug.com/911515 [ Mac ] transforms/shadows.html [ Pass Failure ]
 crbug.com/911782 [ Mac ] paint/invalidation/forms/submit-focus-by-mouse-then-keydown.html [ Pass Failure ]
 
 # Sheriff 2018-12-06
