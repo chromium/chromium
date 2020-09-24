@@ -1,7 +1,7 @@
 // Copyright 2016 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-// Next MinVersion: 5
+// Next MinVersion: 6
 
 module arc.mojom;
 
@@ -37,6 +37,17 @@ struct BootProgressEvent {
   // event by comparing the uptime with the ARC start time from
   // the same clock source MONOTONIC_CLOCK in session manager.
   int64 uptimeMillis;
+};
+
+// Describes a GFX metrics.
+struct GfxMetrics {
+  // Total frames rendered, it includes janky frames below.
+  uint64 framesTotal;
+  // Janky frames.
+  uint64 framesJanky;
+  // Maximum frame time in milliseconds of 95% of frames sorted from the
+  // shortest to longest.
+  uint32 frameTimePercentile95;
 };
 
 [Extensible]
@@ -105,11 +116,15 @@ interface MetricsHost {
   [MinVersion=4] ReportCompanionLibApiUsage@2(CompanionLibApiId api_id);
 };
 
-// Next method ID: 2
+// Next method ID: 3
 interface MetricsInstance {
   // DEPRECATED: Please use Init@1 instead.
   InitDeprecated@0(pending_remote<MetricsHost> host_remote);
 
   // Establishes full-duplex communication with the host.
   [MinVersion=2] Init@1(pending_remote<MetricsHost> host_remote) => ();
+
+  // Requests GFX metrics for the specified package. In case of error, null is
+  // returned.
+  [MinVersion=5] GetGfxMetrics@2(string packageName) => (GfxMetrics? metrics);
 };
