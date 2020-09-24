@@ -930,7 +930,7 @@ TEST_F(OSExchangeDataWinTest, CFHtml) {
 
 TEST_F(OSExchangeDataWinTest, SetURLWithMaxPath) {
   OSExchangeData data;
-  std::wstring long_title(L'a', MAX_PATH + 1);
+  std::wstring long_title(MAX_PATH + 1, L'a');
   data.SetURL(GURL("http://google.com"), long_title);
 }
 
