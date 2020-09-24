@@ -21,10 +21,11 @@ class FakeNotificationManager : public NotificationManager {
   ~FakeNotificationManager() override;
 
   void SetNotification(const Notification& notification);
-  void SetNotifications(const base::flat_set<Notification>& notifications);
+  void SetNotificationsInternal(
+      const base::flat_set<Notification>& notifications) override;
 
   void RemoveNotification(int64_t id);
-  void RemoveNotifications(const base::flat_set<int64_t>& ids);
+  void RemoveNotificationsInternal(const base::flat_set<int64_t>& ids) override;
 
   const std::vector<int64_t>& dismissed_notification_ids() const {
     return dismissed_notification_ids_;

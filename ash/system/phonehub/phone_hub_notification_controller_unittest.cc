@@ -77,7 +77,7 @@ class PhoneHubNotificationControllerTest : public AshTestBase {
 
 TEST_F(PhoneHubNotificationControllerTest, AddNotifications) {
   EXPECT_FALSE(message_center_->NotificationCount());
-  notification_manager_.SetNotifications(fake_notifications_);
+  notification_manager_.SetNotificationsInternal(fake_notifications_);
   EXPECT_EQ(3u, message_center_->NotificationCount());
 
   ASSERT_TRUE(
@@ -95,7 +95,7 @@ TEST_F(PhoneHubNotificationControllerTest, AddNotifications) {
 
 TEST_F(PhoneHubNotificationControllerTest, UpdateNotifications) {
   EXPECT_FALSE(message_center_->NotificationCount());
-  notification_manager_.SetNotifications(fake_notifications_);
+  notification_manager_.SetNotificationsInternal(fake_notifications_);
   EXPECT_EQ(3u, message_center_->NotificationCount());
 
   auto* notification =
@@ -124,7 +124,7 @@ TEST_F(PhoneHubNotificationControllerTest, UpdateNotifications) {
 
 TEST_F(PhoneHubNotificationControllerTest, RemoveNotifications) {
   EXPECT_FALSE(message_center_->NotificationCount());
-  notification_manager_.SetNotifications(fake_notifications_);
+  notification_manager_.SetNotificationsInternal(fake_notifications_);
   EXPECT_EQ(3u, message_center_->NotificationCount());
 
   notification_manager_.RemoveNotification(kPhoneHubNotificationId0);
@@ -132,13 +132,13 @@ TEST_F(PhoneHubNotificationControllerTest, RemoveNotifications) {
   EXPECT_FALSE(
       message_center_->FindVisibleNotificationById(kCrOSNotificationId0));
 
-  notification_manager_.RemoveNotifications(base::flat_set<int64_t>(
+  notification_manager_.RemoveNotificationsInternal(base::flat_set<int64_t>(
       {kPhoneHubNotificationId1, kPhoneHubNotificationId2}));
   EXPECT_FALSE(message_center_->NotificationCount());
 }
 
 TEST_F(PhoneHubNotificationControllerTest, CloseByUser) {
-  notification_manager_.SetNotifications(fake_notifications_);
+  notification_manager_.SetNotificationsInternal(fake_notifications_);
   EXPECT_EQ(3u, message_center_->NotificationCount());
 
   message_center_->RemoveNotification(kCrOSNotificationId0, /*by_user=*/true);
@@ -152,7 +152,7 @@ TEST_F(PhoneHubNotificationControllerTest, CloseByUser) {
 }
 
 TEST_F(PhoneHubNotificationControllerTest, InlineReply) {
-  notification_manager_.SetNotifications(fake_notifications_);
+  notification_manager_.SetNotificationsInternal(fake_notifications_);
 
   const base::string16 kInlineReply0 = base::UTF8ToUTF16("inline reply 0");
   const base::string16 kInlineReply1 = base::UTF8ToUTF16("inline reply 1");

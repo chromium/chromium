@@ -5,6 +5,7 @@
 #include "chromeos/components/phonehub/notification_manager_impl.h"
 
 #include "chromeos/components/multidevice/logging/logging.h"
+#include "chromeos/components/phonehub/notification.h"
 
 namespace chromeos {
 namespace phonehub {
@@ -16,6 +17,18 @@ NotificationManagerImpl::~NotificationManagerImpl() = default;
 const Notification* NotificationManagerImpl::GetNotification(
     int64_t notification_id) const {
   return nullptr;
+}
+
+void NotificationManagerImpl::SetNotificationsInternal(
+    const base::flat_set<Notification>& notifications) {
+  PA_LOG(INFO) << "Setting notifications internally.";
+  // TODO(jimmyxong): Implement this stub function.
+}
+
+void NotificationManagerImpl::RemoveNotificationsInternal(
+    const base::flat_set<int64_t>& notification_ids) {
+  PA_LOG(INFO) << "Removing notifications internally.";
+  // TODO(jimmyxgong): Implement this stub function.
 }
 
 void NotificationManagerImpl::DismissNotification(int64_t notification_id) {
