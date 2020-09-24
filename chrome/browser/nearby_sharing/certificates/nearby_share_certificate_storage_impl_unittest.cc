@@ -24,7 +24,9 @@
 
 namespace {
 
-const char kSecretId1[] = "secretid1";
+// NOTE: Make sure secret ID alphabetical ordering does not match the 1,2,3,..
+// ordering to test sorting expiration times.
+const char kSecretId1[] = "b_secretid1";
 const char kSecretKey1[] = "secretkey1";
 const char kPublicKey1[] = "publickey1";
 const int64_t kStartSeconds1 = 0;
@@ -35,7 +37,7 @@ const bool kForSelectedContacts1 = false;
 const char kMetadataEncryptionKey1[] = "metadataencryptionkey1";
 const char kEncryptedMetadataBytes1[] = "encryptedmetadatabytes1";
 const char kMetadataEncryptionKeyTag1[] = "metadataencryptionkeytag1";
-const char kSecretId2[] = "secretid2";
+const char kSecretId2[] = "c_secretid2";
 const char kSecretKey2[] = "secretkey2";
 const char kPublicKey2[] = "publickey2";
 const int64_t kStartSeconds2 = 0;
@@ -46,7 +48,7 @@ const bool kForSelectedContacts2 = false;
 const char kMetadataEncryptionKey2[] = "metadataencryptionkey2";
 const char kEncryptedMetadataBytes2[] = "encryptedmetadatabytes2";
 const char kMetadataEncryptionKeyTag2[] = "metadataencryptionkeytag2";
-const char kSecretId3[] = "secretid3";
+const char kSecretId3[] = "a_secretid3";
 const char kSecretKey3[] = "secretkey3";
 const char kPublicKey3[] = "publickey3";
 const int64_t kStartSeconds3 = 0;
@@ -57,7 +59,7 @@ const bool kForSelectedContacts3 = false;
 const char kMetadataEncryptionKey3[] = "metadataencryptionkey3";
 const char kEncryptedMetadataBytes3[] = "encryptedmetadatabytes3";
 const char kMetadataEncryptionKeyTag3[] = "metadataencryptionkeytag3";
-const char kSecretId4[] = "secretid4";
+const char kSecretId4[] = "d_secretid4";
 const char kSecretKey4[] = "secretkey4";
 const char kPublicKey4[] = "publickey4";
 const int64_t kStartSeconds4 = 0;

@@ -621,6 +621,7 @@ bool NearbyShareCertificateStorageImpl::FetchPublicCertificateExpirations() {
   if (!dict) {
     return false;
   }
+
   public_certificate_expirations_.reserve(dict->DictSize());
   for (const std::pair<const std::string&, const base::Value&>& pair :
        dict->DictItems()) {
@@ -631,6 +632,9 @@ bool NearbyShareCertificateStorageImpl::FetchPublicCertificateExpirations() {
 
     public_certificate_expirations_.emplace_back(*id, *expiration);
   }
+  std::sort(public_certificate_expirations_.begin(),
+            public_certificate_expirations_.end(), SortBySecond);
+
   return true;
 }
 
