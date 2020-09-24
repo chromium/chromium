@@ -111,6 +111,7 @@ class ModuleRecordResolverImplTest : public testing::Test,
                                      public ParametrizedModuleTest {
  public:
   void SetUp() override;
+  void TearDown() override;
 
   ModuleRecordResolverImplTestModulator* Modulator() {
     return modulator_.Get();
@@ -126,6 +127,10 @@ void ModuleRecordResolverImplTest::SetUp() {
   ParametrizedModuleTest::SetUp();
   platform_->AdvanceClockSeconds(1.);  // For non-zero DocumentParserTimings
   modulator_ = MakeGarbageCollected<ModuleRecordResolverImplTestModulator>();
+}
+
+void ModuleRecordResolverImplTest::TearDown() {
+  ParametrizedModuleTest::TearDown();
 }
 
 TEST_P(ModuleRecordResolverImplTest, RegisterResolveSuccess) {
