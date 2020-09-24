@@ -47,7 +47,7 @@
 #include "media/gpu/v4l2/v4l2_vda_helpers.h"
 #include "media/gpu/v4l2/v4l2_vp8_accelerator.h"
 #include "media/gpu/v4l2/v4l2_vp8_accelerator_legacy.h"
-#include "media/gpu/v4l2/v4l2_vp9_accelerator.h"
+#include "media/gpu/v4l2/v4l2_vp9_accelerator_legacy.h"
 #include "ui/gfx/native_pixmap_handle.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_image.h"
@@ -315,7 +315,7 @@ bool V4L2SliceVideoDecodeAccelerator::Initialize(const Config& config,
   } else if (video_profile_ >= VP9PROFILE_MIN &&
              video_profile_ <= VP9PROFILE_MAX) {
     decoder_ = std::make_unique<VP9Decoder>(
-        std::make_unique<V4L2VP9Accelerator>(this, device_.get()),
+        std::make_unique<V4L2LegacyVP9Accelerator>(this, device_.get()),
         video_profile_);
   } else {
     NOTREACHED() << "Unsupported profile " << GetProfileName(video_profile_);

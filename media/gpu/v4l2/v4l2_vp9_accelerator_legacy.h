@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_GPU_V4L2_V4L2_VP9_ACCELERATOR_H_
-#define MEDIA_GPU_V4L2_V4L2_VP9_ACCELERATOR_H_
+#ifndef MEDIA_GPU_V4L2_V4L2_VP9_ACCELERATOR_LEGACY_H_
+#define MEDIA_GPU_V4L2_V4L2_VP9_ACCELERATOR_LEGACY_H_
 
 #include <vector>
 
@@ -19,11 +19,11 @@ class V4L2DecodeSurface;
 class V4L2DecodeSurfaceHandler;
 class V4L2Device;
 
-class V4L2VP9Accelerator : public VP9Decoder::VP9Accelerator {
+class V4L2LegacyVP9Accelerator : public VP9Decoder::VP9Accelerator {
  public:
-  explicit V4L2VP9Accelerator(V4L2DecodeSurfaceHandler* surface_handler,
-                              V4L2Device* device);
-  ~V4L2VP9Accelerator() override;
+  explicit V4L2LegacyVP9Accelerator(V4L2DecodeSurfaceHandler* surface_handler,
+                                    V4L2Device* device);
+  ~V4L2LegacyVP9Accelerator() override;
 
   // VP9Decoder::VP9Accelerator implementation.
   scoped_refptr<VP9Picture> CreateVP9Picture() override;
@@ -50,9 +50,9 @@ class V4L2VP9Accelerator : public VP9Decoder::VP9Accelerator {
   V4L2DecodeSurfaceHandler* const surface_handler_;
   V4L2Device* const device_;
 
-  DISALLOW_COPY_AND_ASSIGN(V4L2VP9Accelerator);
+  DISALLOW_COPY_AND_ASSIGN(V4L2LegacyVP9Accelerator);
 };
 
 }  // namespace media
 
-#endif  // MEDIA_GPU_V4L2_V4L2_VP9_ACCELERATOR_H_
+#endif  // MEDIA_GPU_V4L2_V4L2_VP9_ACCELERATOR_LEGACY_H_
