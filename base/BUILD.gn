@@ -1811,7 +1811,7 @@ component("base") {
         ]
       }
 
-      if (is_linux || is_chromeos || is_android) {
+      if (is_linux || is_android) {
         sources += [
           "allocator/partition_allocator/spinning_futex_linux.cc",
           "allocator/partition_allocator/spinning_futex_linux.h",
