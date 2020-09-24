@@ -93,9 +93,10 @@ bool ExpiryInspectingRecordExpiryDelegate::IsRecordExpired(
   // changed (due to data corruption) or the commitments changed (due to an
   // overwrite by the key commitments' producer, or due to data corruption).
   //
-  // In both cases, the SRR's verification key doesn't correspond to the current
-  // key commitments we possess for the issuer, because we don't have any
-  // key commitments whatsoever for the issuer: mark the record as expired.
+  // In both cases, the SRR's associated token-issuance verification key isn't
+  // present in the current key commitments we possess for the issuer, because
+  // we don't have any key commitments whatsoever for the issuer: mark the
+  // record as expired.
   if (!key_commitments)
     return true;
 
