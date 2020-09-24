@@ -414,6 +414,7 @@ class CONTENT_EXPORT RenderThreadImpl
 
  private:
   friend class RenderThreadImplBrowserTest;
+  friend class AgentSchedulingGroup;
 
   void OnProcessFinalRelease() override;
   // IPC::Listener

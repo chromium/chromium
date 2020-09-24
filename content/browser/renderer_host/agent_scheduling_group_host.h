@@ -8,7 +8,7 @@
 #include <stdint.h>
 
 #include "content/common/agent_scheduling_group.mojom.h"
-#include "content/common/associated_interfaces.mojom-forward.h"
+#include "content/common/associated_interfaces.mojom.h"
 #include "content/common/content_export.h"
 #include "content/common/renderer.mojom-forward.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -16,6 +16,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
+#include "third_party/blink/public/mojom/associated_interfaces/associated_interfaces.mojom.h"
 
 namespace IPC {
 class ChannelProxy;
@@ -37,7 +38,9 @@ class SiteInstance;
 // An AgentSchedulingGroupHost is stored as (and owned by) UserData on the
 // RenderProcessHost.
 class CONTENT_EXPORT AgentSchedulingGroupHost
-    : public mojom::AgentSchedulingGroupHost {
+    : public mojom::AgentSchedulingGroupHost,
+      public mojom::RouteProvider,
+      public blink::mojom::AssociatedInterfaceProvider {
  public:
   // Get the appropriate AgentSchedulingGroupHost for the given |instance| and
   // |process|. For now, each RenderProcessHost has a single
@@ -121,6 +124,18 @@ class CONTENT_EXPORT AgentSchedulingGroupHost
   // process. If not, ordering will only be preserved inside an
   // `AgentSchedulingGroup`.
   AgentSchedulingGroupHost(RenderProcessHost& process, bool should_associate);
+
+  // mojom::RouteProvider
+  void GetRoute(
+      int32_t routing_id,
+      mojo::PendingAssociatedReceiver<blink::mojom::AssociatedInterfaceProvider>
+          receiver) override;
+
+  // blink::mojom::AssociatedInterfaceProvider
+  void GetAssociatedInterface(
+      const std::string& name,
+      mojo::PendingAssociatedReceiver<blink::mojom::AssociatedInterface>
+          receiver) override;
 
   // The RenderProcessHost this AgentSchedulingGroup is assigned to.
   RenderProcessHost& process_;

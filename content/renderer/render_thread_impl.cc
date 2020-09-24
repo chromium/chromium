@@ -1860,7 +1860,8 @@ void RenderThreadImpl::CreateAgentSchedulingGroup(
         agent_scheduling_group_host,
     mojo::PendingReceiver<mojom::AgentSchedulingGroup> agent_scheduling_group) {
   agent_scheduling_groups_.emplace(std::make_unique<AgentSchedulingGroup>(
-      std::move(agent_scheduling_group_host), std::move(agent_scheduling_group),
+      this, std::move(agent_scheduling_group_host),
+      std::move(agent_scheduling_group),
       remove_agent_scheduling_group_callback_));
 }
 
@@ -1870,7 +1871,8 @@ void RenderThreadImpl::CreateAssociatedAgentSchedulingGroup(
     mojo::PendingAssociatedReceiver<mojom::AgentSchedulingGroup>
         agent_scheduling_group) {
   agent_scheduling_groups_.emplace(std::make_unique<AgentSchedulingGroup>(
-      std::move(agent_scheduling_group_host), std::move(agent_scheduling_group),
+      this, std::move(agent_scheduling_group_host),
+      std::move(agent_scheduling_group),
       remove_agent_scheduling_group_callback_));
 }
 

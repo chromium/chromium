@@ -7,12 +7,15 @@
 
 #include "base/callback.h"
 #include "content/common/agent_scheduling_group.mojom.h"
+#include "content/common/associated_interfaces.mojom.h"
 #include "content/common/content_export.h"
+#include "content/renderer/render_thread_impl.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
+#include "third_party/blink/public/mojom/associated_interfaces/associated_interfaces.mojom.h"
 
 namespace content {
 
@@ -21,16 +24,21 @@ namespace content {
 // Blink's unit of scheduling and performance isolation, which is the only way
 // to obtain ordering guarantees between different Mojo (associated) interfaces
 // and legacy IPC messages.
-class CONTENT_EXPORT AgentSchedulingGroup : public mojom::AgentSchedulingGroup {
+class CONTENT_EXPORT AgentSchedulingGroup
+    : public mojom::AgentSchedulingGroup,
+      public mojom::RouteProvider,
+      public blink::mojom::AssociatedInterfaceProvider {
  public:
   // |mojo_disconnect_handler| will be called with |this| when |receiver| is
   // disconnected.
   AgentSchedulingGroup(
+      RenderThreadImpl* render_thread,
       mojo::PendingRemote<mojom::AgentSchedulingGroupHost> host_remote,
       mojo::PendingReceiver<mojom::AgentSchedulingGroup> receiver,
       base::OnceCallback<void(const AgentSchedulingGroup*)>
           mojo_disconnect_handler);
   AgentSchedulingGroup(
+      RenderThreadImpl* render_thread,
       mojo::PendingAssociatedRemote<mojom::AgentSchedulingGroupHost>
           host_remote,
       mojo::PendingAssociatedReceiver<mojom::AgentSchedulingGroup> receiver,
@@ -85,6 +93,20 @@ class CONTENT_EXPORT AgentSchedulingGroup : public mojom::AgentSchedulingGroup {
                   mojo::AssociatedRemote<mojom::AgentSchedulingGroupHost>>
         remote_;
   };
+
+  // mojom::RouteProvider
+  void GetRoute(
+      int32_t routing_id,
+      mojo::PendingAssociatedReceiver<blink::mojom::AssociatedInterfaceProvider>
+          receiver) override;
+
+  // blink::mojom::AssociatedInterfaceProvider
+  void GetAssociatedInterface(
+      const std::string& name,
+      mojo::PendingAssociatedReceiver<blink::mojom::AssociatedInterface>
+          receiver) override;
+
+  RenderThreadImpl& render_thread_;
 
   // Implementation of `mojom::AgentSchedulingGroup`, used for responding to
   // calls from the (browser-side) `AgentSchedulingGroupHost`.

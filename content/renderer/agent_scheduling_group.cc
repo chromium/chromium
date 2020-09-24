@@ -63,13 +63,15 @@ AgentSchedulingGroup::MaybeAssociatedRemote::~MaybeAssociatedRemote() = default;
 
 // AgentSchedulingGroup:
 AgentSchedulingGroup::AgentSchedulingGroup(
+    RenderThreadImpl* render_thread,
     PendingRemote<mojom::AgentSchedulingGroupHost> host_remote,
     PendingReceiver<mojom::AgentSchedulingGroup> receiver,
     base::OnceCallback<void(const AgentSchedulingGroup*)>
         mojo_disconnect_handler)
     // TODO(crbug.com/1111231): Mojo interfaces should be associated with
     // per-ASG task runners instead of default.
-    : receiver_(*this,
+    : render_thread_(*render_thread),
+      receiver_(*this,
                 std::move(receiver),
                 base::BindOnce(std::move(mojo_disconnect_handler), this)),
       host_remote_(std::move(host_remote)) {
@@ -78,13 +80,15 @@ AgentSchedulingGroup::AgentSchedulingGroup(
 }
 
 AgentSchedulingGroup::AgentSchedulingGroup(
+    RenderThreadImpl* render_thread,
     PendingAssociatedRemote<mojom::AgentSchedulingGroupHost> host_remote,
     PendingAssociatedReceiver<mojom::AgentSchedulingGroup> receiver,
     base::OnceCallback<void(const AgentSchedulingGroup*)>
         mojo_disconnect_handler)
     // TODO(crbug.com/1111231): Mojo interfaces should be associated with
     // per-ASG task runners instead of default.
-    : receiver_(*this,
+    : render_thread_(*render_thread),
+      receiver_(*this,
                 std::move(receiver),
                 base::BindOnce(std::move(mojo_disconnect_handler), this)),
       host_remote_(std::move(host_remote)) {
@@ -93,5 +97,25 @@ AgentSchedulingGroup::AgentSchedulingGroup(
 }
 
 AgentSchedulingGroup::~AgentSchedulingGroup() = default;
+
+void AgentSchedulingGroup::GetRoute(
+    int32_t routing_id,
+    mojo::PendingAssociatedReceiver<blink::mojom::AssociatedInterfaceProvider>
+        receiver) {
+  // TODO(crbug.com/1111231): Make AgentSchedulingGroup a fully-fledged
+  // RouteProvider, so we can start registering routes directly with an
+  // AgentSchedulingGroup rather than ChildThreadImpl.
+  render_thread_.GetRoute(routing_id, std::move(receiver));
+}
+
+void AgentSchedulingGroup::GetAssociatedInterface(
+    const std::string& name,
+    mojo::PendingAssociatedReceiver<blink::mojom::AssociatedInterface>
+        receiver) {
+  // TODO(crbug.com/1111231): Make AgentSchedulingGroup a fully-fledged
+  // AssociatedInterfaceProvider, so we can start associating interfaces
+  // directly with the AgentSchedulingGroup interface.
+  render_thread_.GetAssociatedInterface(name, std::move(receiver));
+}
 
 }  // namespace content

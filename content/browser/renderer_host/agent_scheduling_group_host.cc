@@ -190,4 +190,26 @@ void AgentSchedulingGroupHost::DestroyView(int32_t routing_id) {
   process_.GetRendererInterface()->DestroyView(routing_id);
 }
 
+void AgentSchedulingGroupHost::GetRoute(
+    int32_t routing_id,
+    mojo::PendingAssociatedReceiver<blink::mojom::AssociatedInterfaceProvider>
+        receiver) {
+  // TODO(crbug.com/1111231): Make AgentSchedulingGroupHost a fully-fledged
+  // RouteProvider, so we can register routes directly with an
+  // AgentSchedulingGroupHost rather than RenderProcessHostImpl.
+  static_cast<RenderProcessHostImpl&>(process_).GetRoute(routing_id,
+                                                         std::move(receiver));
+}
+
+void AgentSchedulingGroupHost::GetAssociatedInterface(
+    const std::string& name,
+    mojo::PendingAssociatedReceiver<blink::mojom::AssociatedInterface>
+        receiver) {
+  // TODO(crbug.com/1111231): Make AgentSchedulingGroupHost a fully-fledged
+  // AssociatedInterfaceProvider, so we can start associating interfaces
+  // directly with the AgentSchedulingGroupHost interface.
+  static_cast<RenderProcessHostImpl&>(process_).GetAssociatedInterface(
+      name, std::move(receiver));
+}
+
 }  // namespace content

@@ -167,6 +167,13 @@ class CONTENT_EXPORT ChildThreadImpl
   bool IsInBrowserProcess() const;
 
  private:
+  // TODO(crbug.com/1111231): This class is a friend so that it can call our
+  // private mojo implementation methods, acting as a pass-through. This is only
+  // necessary during the associated interface migration, after which,
+  // AgentSchedulingGroup will not act as a pass-through to the private methods
+  // here. At that point we'll remove this friend class.
+  friend class AgentSchedulingGroup;
+
   class IOThreadState;
 
   class ChildThreadMessageRouter : public IPC::MessageRouter {
