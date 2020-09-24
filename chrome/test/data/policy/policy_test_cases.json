@@ -1761,7 +1761,7 @@
   },
 
   "DefaultSearchProviderEnabled": {
-    "os": ["win", "linux", "mac", "chromeos"],
+    "os": ["win", "linux", "mac", "chromeos", "android"],
     "policy_pref_mapping_test": [
       {
         "policies": { "DefaultSearchProviderEnabled": false },
@@ -1779,7 +1779,7 @@
   },
 
   "DefaultSearchProviderName": {
-    "os": ["win", "linux", "mac", "chromeos"],
+    "os": ["win", "linux", "mac", "chromeos", "android"],
     "policy_pref_mapping_test": [
       {
         "policies": {
@@ -1794,7 +1794,7 @@
   },
 
   "DefaultSearchProviderKeyword": {
-    "os": ["win", "linux", "mac", "chromeos"],
+    "os": ["win", "linux", "mac", "chromeos", "android"],
     "policy_pref_mapping_test": [
       {
         "policies": {
@@ -1808,7 +1808,7 @@
   },
 
   "DefaultSearchProviderSearchURL": {
-    "os": ["win", "linux", "mac", "chromeos"],
+    "os": ["win", "linux", "mac", "chromeos", "android"],
     "policy_pref_mapping_test": [
       {
         "policies": {
@@ -1822,7 +1822,7 @@
   },
 
   "DefaultSearchProviderSuggestURL": {
-    "os": ["win", "linux", "mac", "chromeos"],
+    "os": ["win", "linux", "mac", "chromeos", "android"],
     "policy_pref_mapping_test": [
       {
         "policies": {
@@ -1841,7 +1841,7 @@
   },
 
   "DefaultSearchProviderNewTabURL": {
-    "os": ["win", "linux", "mac", "chromeos"],
+    "os": ["win", "linux", "mac", "chromeos", "android"],
     "policy_pref_mapping_test": [
       {
         "policies": {
@@ -1856,7 +1856,7 @@
   },
 
   "DefaultSearchProviderIconURL": {
-    "os": ["win", "linux", "mac", "chromeos"],
+    "os": ["win", "linux", "mac", "chromeos", "android"],
     "policy_pref_mapping_test": [
       {
         "policies": {
@@ -1871,7 +1871,7 @@
   },
 
   "DefaultSearchProviderEncodings": {
-    "os": ["win", "linux", "mac", "chromeos"],
+    "os": ["win", "linux", "mac", "chromeos", "android"],
     "policy_pref_mapping_test": [
       {
         "policies": {
@@ -1888,7 +1888,7 @@
   },
 
   "DefaultSearchProviderAlternateURLs": {
-    "os": ["win", "linux", "mac", "chromeos"],
+    "os": ["win", "linux", "mac", "chromeos", "android"],
     "policy_pref_mapping_test": [
       {
         "policies": {
@@ -1910,7 +1910,7 @@
   },
 
   "DefaultSearchProviderImageURL": {
-    "os": ["win", "linux", "mac", "chromeos"],
+    "os": ["win", "linux", "mac", "chromeos", "android"],
     "policy_pref_mapping_test": [
       {
         "policies": {
@@ -1925,7 +1925,7 @@
   },
 
   "DefaultSearchProviderSearchURLPostParams": {
-    "os": ["win", "linux", "mac", "chromeos"],
+    "os": ["win", "linux", "mac", "chromeos", "android"],
     "policy_pref_mapping_test": [
       {
         "policies": {
@@ -1940,7 +1940,7 @@
   },
 
   "DefaultSearchProviderSuggestURLPostParams": {
-    "os": ["win", "linux", "mac", "chromeos"],
+    "os": ["win", "linux", "mac", "chromeos", "android"],
     "policy_pref_mapping_test": [
       {
         "policies": {
@@ -1959,7 +1959,7 @@
   },
 
   "DefaultSearchProviderImageURLPostParams": {
-    "os": ["win", "linux", "mac", "chromeos"],
+    "os": ["win", "linux", "mac", "chromeos", "android"],
     "policy_pref_mapping_test": [
       {
         "policies": {
