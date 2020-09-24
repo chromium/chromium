@@ -57,8 +57,11 @@ class DirectoryModel extends cr.EventTarget {
 
     this.currentFileListContext_ =
         new FileListContext(fileFilter, metadataModel, volumeManager);
-    this.currentDirContents_ = DirectoryContents.createForDirectory(
-        this.currentFileListContext_, null);
+    this.currentDirContents_ =
+        new DirectoryContents(this.currentFileListContext_, false, null, () => {
+          return new DirectoryContentScanner(null);
+        });
+
     /**
      * Empty file list which is used as a dummy for inactive view of file list.
      * @private {!FileListModel}
@@ -1291,15 +1294,46 @@ class DirectoryModel extends cr.EventTarget {
   }
 
   /**
-   * Creates directory contents for the entry and query.
+   * Returns true if directory search should be used for the entry and query.
    *
-   * @param {FileListContext} context File list context.
-   * @param {!DirectoryEntry|!FilesAppEntry} entry Current directory.
+   * @param {!DirectoryEntry|!FilesAppEntry} entry Directory entry.
    * @param {string=} opt_query Search query string.
-   * @return {DirectoryContents} Directory contents.
-   * @private
+   * @return {boolean} True if directory search should be used for the entry
+   *     and query.
    */
-  createDirectoryContents_(context, entry, opt_query) {
+  isSearchDirectory(entry, opt_query) {
+    if (util.isRecentRootType(entry.rootType) ||
+        entry.rootType == VolumeManagerCommon.RootType.CROSTINI ||
+        entry.rootType == VolumeManagerCommon.RootType.DRIVE_FAKE_ROOT) {
+      return true;
+    }
+    if (entry.rootType == VolumeManagerCommon.RootType.MY_FILES) {
+      return false;
+    }
+
+    const query = (opt_query || '').trimLeft();
+    if (query) {
+      return true;
+    }
+
+    const locationInfo = this.volumeManager_.getLocationInfo(entry);
+    if (locationInfo &&
+        (locationInfo.rootType == VolumeManagerCommon.RootType.MEDIA_VIEW ||
+         locationInfo.isSpecialSearchRoot)) {
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * Creates scanner factory for the entry and query.
+   *
+   * @param {!DirectoryEntry|!FilesAppEntry} entry Directory entry.
+   * @param {string=} opt_query Search query string.
+   * @return {function():ContentScanner} The factory to create ContentScanner
+   *     instance.
+   */
+  createScannerFactory(entry, opt_query) {
     const query = (opt_query || '').trimLeft();
     const locationInfo = this.volumeManager_.getLocationInfo(entry);
     const canUseDriveSearch =
@@ -1308,42 +1342,49 @@ class DirectoryModel extends cr.EventTarget {
         (locationInfo && locationInfo.isDriveBased);
 
     if (util.isRecentRootType(entry.rootType)) {
-      return DirectoryContents.createForRecent(
-          context, /** @type {!FakeEntry} */ (entry), query);
+      return () => {
+        const fakeEntry = /** @type {!FakeEntry} */ (entry);
+        return new RecentContentScanner(
+            query, fakeEntry.sourceRestriction, fakeEntry.recentFileType);
+      };
     }
     if (entry.rootType == VolumeManagerCommon.RootType.CROSTINI) {
-      return DirectoryContents.createForCrostiniMounter(
-          context, /** @type {!FakeEntry} */ (entry));
+      return () => {
+        return new CrostiniMounter();
+      };
     }
     if (entry.rootType == VolumeManagerCommon.RootType.MY_FILES) {
-      return DirectoryContents.createForDirectory(
-          context, /** @type {!FilesAppDirEntry} */ (entry));
+      return () => {
+        return new DirectoryContentScanner(
+            /** @type {!FilesAppDirEntry} */ (entry));
+      };
     }
     if (entry.rootType == VolumeManagerCommon.RootType.DRIVE_FAKE_ROOT) {
-      return DirectoryContents.createForFakeDrive(
-          context, /** @type {!FakeEntry} */ (entry));
+      return () => {
+        return new ContentScanner();
+      };
     }
     if (query && canUseDriveSearch) {
       // Drive search.
-      return DirectoryContents.createForDriveSearch(
-          context, /** @type {!DirectoryEntry} */ (entry), query);
+      return () => {
+        return new DriveSearchContentScanner(query);
+      };
     }
     if (query) {
-      // Local search.
-      return DirectoryContents.createForLocalSearch(
-          context, /** @type {!DirectoryEntry} */ (entry), query);
+      // Local search for local files and DocumentsProvider files.
+      return () => {
+        return new LocalSearchContentScanner(
+            /** @type {!DirectoryEntry} */ (entry), query);
+      };
     }
-
-    if (!locationInfo) {
-      return null;
+    if (locationInfo &&
+        locationInfo.rootType == VolumeManagerCommon.RootType.MEDIA_VIEW) {
+      return () => {
+        return new MediaViewContentScanner(
+            /** @type {!DirectoryEntry} */ (entry));
+      };
     }
-
-    if (locationInfo.rootType == VolumeManagerCommon.RootType.MEDIA_VIEW) {
-      return DirectoryContents.createForMediaView(
-          context, /** @type {!DirectoryEntry} */ (entry));
-    }
-
-    if (locationInfo.isSpecialSearchRoot) {
+    if (locationInfo && locationInfo.isSpecialSearchRoot) {
       // Drive special search.
       let searchType;
       switch (locationInfo.rootType) {
@@ -1363,13 +1404,30 @@ class DirectoryModel extends cr.EventTarget {
           // Unknown special search entry.
           throw new Error('Unknown special search type.');
       }
-      return DirectoryContents.createForDriveMetadataSearch(
-          context,
-          /** @type {!FakeEntry} */ (entry), searchType);
+      return () => {
+        return new DriveMetadataSearchContentScanner(searchType);
+      };
     }
     // Local fetch or search.
-    return DirectoryContents.createForDirectory(
-        context, /** @type {!DirectoryEntry} */ (entry));
+    return () => {
+      return new DirectoryContentScanner(
+          /** @type {!DirectoryEntry} */ (entry));
+    };
+  }
+
+  /**
+   * Creates directory contents for the entry and query.
+   *
+   * @param {FileListContext} context File list context.
+   * @param {!DirectoryEntry|!FilesAppDirEntry} entry Current directory.
+   * @param {string=} opt_query Search query string.
+   * @return {DirectoryContents} Directory contents.
+   * @private
+   */
+  createDirectoryContents_(context, entry, opt_query) {
+    const isSearch = this.isSearchDirectory(entry, opt_query);
+    const scannerFactory = this.createScannerFactory(entry, opt_query);
+    return new DirectoryContents(context, isSearch, entry, scannerFactory);
   }
 
   /**
