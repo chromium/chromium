@@ -150,6 +150,8 @@ FrameSequenceMetrics::ThreadType FrameSequenceMetrics::GetEffectiveThread()
 
     case FrameSequenceTrackerType::kMainThreadAnimation:
     case FrameSequenceTrackerType::kRAF:
+    case FrameSequenceTrackerType::kCanvas:
+    case FrameSequenceTrackerType::kJSAnimation:
       return ThreadType::kMain;
 
     case FrameSequenceTrackerType::kTouchScroll:
@@ -158,7 +160,6 @@ FrameSequenceMetrics::ThreadType FrameSequenceMetrics::GetEffectiveThread()
       return scrolling_thread_;
 
     case FrameSequenceTrackerType::kCustom:
-    case FrameSequenceTrackerType::kCanvas:
       return ThreadType::kMain;
 
     case FrameSequenceTrackerType::kMaxType:

@@ -200577,6 +200577,7 @@ regressions. -->
   <affected-histogram name="CompositorLatency.DroppedFrame.Canvas"/>
   <affected-histogram
       name="CompositorLatency.DroppedFrame.CompositorAnimation"/>
+  <affected-histogram name="CompositorLatency.DroppedFrame.JSAnimation"/>
   <affected-histogram
       name="CompositorLatency.DroppedFrame.MainThreadAnimation"/>
   <affected-histogram name="CompositorLatency.DroppedFrame.PinchZoom"/>
@@ -200589,6 +200590,7 @@ regressions. -->
   <affected-histogram name="CompositorLatency.MissedDeadlineFrame.Canvas"/>
   <affected-histogram
       name="CompositorLatency.MissedDeadlineFrame.CompositorAnimation"/>
+  <affected-histogram name="CompositorLatency.MissedDeadlineFrame.JSAnimation"/>
   <affected-histogram
       name="CompositorLatency.MissedDeadlineFrame.MainThreadAnimation"/>
   <affected-histogram name="CompositorLatency.MissedDeadlineFrame.PinchZoom"/>
@@ -200854,6 +200856,7 @@ regressions. -->
   <affected-histogram name="CompositorLatency.CompositorOnlyFrame.Canvas"/>
   <affected-histogram
       name="CompositorLatency.CompositorOnlyFrame.CompositorAnimation"/>
+  <affected-histogram name="CompositorLatency.CompositorOnlyFrame.JSAnimation"/>
   <affected-histogram
       name="CompositorLatency.CompositorOnlyFrame.MainThreadAnimation"/>
   <affected-histogram name="CompositorLatency.CompositorOnlyFrame.PinchZoom"/>
@@ -215159,6 +215162,7 @@ regressions. -->
 <histogram_suffixes name="SmoothnessSequenceTypes" separator=".">
   <suffix name="Canvas" label="Main-thread canvas"/>
   <suffix name="CompositorAnimation" label="Compositor-driven animation"/>
+  <suffix name="JSAnimation" label="JS-driven animation"/>
   <suffix name="MainThreadAnimation" label="Main-thread driven animation"/>
   <suffix name="PinchZoom" label="Pinch-to-zoom interaction"/>
   <suffix name="RAF" label="rAF callback driven animation"/>

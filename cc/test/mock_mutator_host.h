@@ -104,6 +104,7 @@ class MockMutatorHost : public MutatorHost {
   MOCK_METHOD0(TakePendingThroughputTrackerInfos,
                PendingThroughputTrackerInfos());
   MOCK_CONST_METHOD0(HasCanvasInvalidation, bool());
+  MOCK_CONST_METHOD0(HasJSAnimation, bool());
 };
 
 }  // namespace cc

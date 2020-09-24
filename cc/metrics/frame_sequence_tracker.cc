@@ -62,6 +62,8 @@ const char* FrameSequenceTracker::GetFrameSequenceTrackerTypeName(
       return "Custom";
     case FrameSequenceTrackerType::kCanvas:
       return "Canvas";
+    case FrameSequenceTrackerType::kJSAnimation:
+      return "JSAnimation";
     case FrameSequenceTrackerType::kMaxType:
       return "";
   }

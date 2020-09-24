@@ -213,6 +213,7 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
   bool NextFrameHasPendingRAF() const override;
   PendingThroughputTrackerInfos TakePendingThroughputTrackerInfos() override;
   bool HasCanvasInvalidation() const override;
+  bool HasJSAnimation() const override;
 
   // Starts/stops throughput tracking represented by |sequence_id|.
   void StartThroughputTracking(TrackedAnimationSequenceId sequence_id);

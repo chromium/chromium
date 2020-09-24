@@ -30,6 +30,7 @@ enum class FrameSequenceTrackerType {
   kCustom = 9,  // Note that the metrics for kCustom are not reported on UMA,
                 // and instead are dispatched back to the LayerTreeHostClient.
   kCanvas = 10,
+  kJSAnimation = 11,
   kMaxType
 };
 

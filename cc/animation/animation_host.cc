@@ -135,9 +135,11 @@ bool AnimationHost::HasCanvasInvalidation() const {
   return has_canvas_invalidation_;
 }
 
+bool AnimationHost::HasJSAnimation() const {
+  return has_inline_style_mutation_;
+}
+
 void AnimationHost::SetHasInlineStyleMutation(bool has_inline_style_mutation) {
-  // TODO(crbug.com/1111392): send this value to LayerTreeHostImpl for
-  // constructing a tracker.
   has_inline_style_mutation_ = has_inline_style_mutation;
 }
 
