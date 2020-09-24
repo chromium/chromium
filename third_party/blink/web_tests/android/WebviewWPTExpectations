@@ -4516,7 +4516,6 @@ crbug.com/1050754 external/wpt/web-share/canShare.tentative.https.html [ Failure
 crbug.com/1050754 external/wpt/web-share/idlharness.https.window.html [ Failure ]
 crbug.com/1050754 external/wpt/web-share/share-empty.https.html [ Failure ]
 crbug.com/1050754 external/wpt/web-share/share-sharePromise-internal-slot.https.html [ Timeout ]
-crbug.com/1050754 external/wpt/web-share/share-url-invalid.https.html [ Failure ]
 crbug.com/1050754 external/wpt/web-share/share-without-user-gesture.https.html [ Failure ]
 crbug.com/1050754 external/wpt/webaudio/idlharness.https.window.html [ Failure ]
 crbug.com/1050754 external/wpt/webaudio/the-audio-api/processing-model/cycle-without-delay.html [ Failure ]

@@ -16,28 +16,38 @@ async function assertRejectsWithError(promise, name) {
 }
 
 share_test(mock => {
-  mock.pushShareResult('the title', 'the message', 'data:the url',
+  mock.pushShareResult('the title', 'the message', 'https://example.com/',
                        blink.mojom.ShareError.CANCELED);
   return callWithKeyDown(() => assertRejectsWithError(
       navigator.share({
           title: 'the title',
           text: 'the message',
-          url: 'data:the url'
+          url: 'https://example.com/'
       }),
       'AbortError'));
 }, 'share with user cancellation');
 
 share_test(mock => {
-  mock.pushShareResult('the title', 'the message', 'data:the url',
+  mock.pushShareResult('the title', 'the message', 'https://example.com/',
                        blink.mojom.ShareError.INTERNAL_ERROR);
   return callWithKeyDown(() => assertRejectsWithError(
       navigator.share({
           title: 'the title',
           text: 'the message',
-          url: 'data:the url'
+          url: 'https://example.com/'
       }),
       'AbortError'));
-}, 'share with invalid url template');
+}, 'share with internal error');
+
+share_test(mock => {
+  return callWithKeyDown(() => assertRejectsWithError(
+      navigator.share({
+          title: 'the title',
+          text: 'the message',
+          url: 'data:foo'
+      }),
+      'TypeError'));
+}, 'share with data url');
 
 share_test(mock => {
   return callWithKeyDown(async () => {

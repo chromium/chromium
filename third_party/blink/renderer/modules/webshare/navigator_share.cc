@@ -81,7 +81,9 @@ bool CanShareInternal(const LocalDOMWindow& window,
 
   if (data.hasUrl()) {
     url = window.CompleteURL(data.url());
-    if (!url.IsValid()) {
+    if (!url.IsValid() ||
+        (!url.ProtocolIsInHTTPFamily() &&
+         url.Protocol() != window.document()->BaseURL().Protocol())) {
       if (exception_state) {
         exception_state->ThrowTypeError("Invalid URL");
       }

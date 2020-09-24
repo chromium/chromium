@@ -11,21 +11,22 @@ function getAbsoluteUrl(url) {
 }
 
 share_test(mock => {
-  mock.pushShareResult('true', 'the object', getAbsoluteUrl('384957'),
+  mock.pushShareResult('true', 'the object', 'http://example.com/',
                        blink.mojom.ShareError.OK);
 
-  const objectWithToString = {toString() { return 'the object'; }};
+  const textWithToString = {toString() { return 'the object'; }};
+  const urlWithToString = {toString() { return 'http://example.com/'; }};
   return callWithKeyDown(() => navigator.share(
-        {title: true, text: objectWithToString, url: 384957}));
+        {title: true, text: textWithToString, url: urlWithToString}));
 }, 'share of types other than string (expect implicitly converted to string)');
 
 share_test(mock => {
   // null fields should convert into the string 'null' (because the field is
   // not nullable, it just converts to a string like any other type).
-  mock.pushShareResult('null', '', getAbsoluteUrl('null'),
+  mock.pushShareResult('null', '', '',
                        blink.mojom.ShareError.OK);
   return callWithKeyDown(() => navigator.share(
-        {title: null, text: undefined, url: null}));
+        {title: null, text: undefined}));
 }, 'share of null/undefined dict values');
 
 </script>

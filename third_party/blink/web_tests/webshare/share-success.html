@@ -44,12 +44,6 @@ share_test(mock => {
 }, 'successful share with an empty URL');
 
 share_test(mock => {
-  const url = 'data:foo';
-  mock.pushShareResult('', '', getAbsoluteUrl(url), blink.mojom.ShareError.OK);
-  return callWithKeyDown(() => navigator.share({url: url}));
-}, 'successful share with a data URL');
-
-share_test(mock => {
   const url = 'http://example.com/foo\\ab%63\r\n\t "<>`{}';
   // Expect '\' to normalize to '/', "%63" to normalize to 'c', '\r\n\t'
   // to be removed, and all the other illegal characters to be percent-escaped.
