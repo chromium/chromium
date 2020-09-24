@@ -4263,7 +4263,7 @@
   {
     "name": "system-keyboard-lock",
     "owners": [ "joedow", "garykac", "jamiewalch" ],
-    "expiry_milestone": 86
+    "expiry_milestone": 95
   },
   {
     "name": "system-tray-mic-gain",
