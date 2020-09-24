@@ -271,6 +271,7 @@ static_library("browser") {
   }
 
   public_deps = [
+    ":password_form",
     "//base",
     "//components/safe_browsing:buildflags",
     "//components/sync",
@@ -797,8 +798,8 @@ source_set("affiliation_unittests") {
   sources = [ "android_affiliation/affiliation_utils_unittest.cc" ]
   deps = [
     ":affiliation",
+    ":password_form",
     "//base",
-    "//components/autofill/core/common",
     "//testing/gmock",
     "//testing/gtest",
     "//url",

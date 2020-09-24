@@ -14,12 +14,9 @@
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_utils.h"
+#include "components/password_manager/core/browser/password_form_forward.h"
 #include "components/password_manager/core/browser/password_store.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
-
-namespace autofill {
-struct PasswordForm;
-}  // namespace autofill
 
 namespace password_manager {
 
@@ -44,12 +41,12 @@ class AffiliatedMatchHelper : public PasswordStore::Observer,
                               public PasswordStoreConsumer {
  public:
   // Callback to returns the list of affiliated signon_realms (as per defined in
-  // autofill::PasswordForm) to the caller.
+  // PasswordForm) to the caller.
   using AffiliatedRealmsCallback =
       base::OnceCallback<void(const std::vector<std::string>&)>;
 
-  using PasswordFormsCallback = base::OnceCallback<void(
-      std::vector<std::unique_ptr<autofill::PasswordForm>>)>;
+  using PasswordFormsCallback =
+      base::OnceCallback<void(std::vector<std::unique_ptr<PasswordForm>>)>;
 
   // The |password_store| must outlive |this|. Both arguments must be non-NULL,
   // except in tests which do not Initialize() the object.
@@ -86,7 +83,7 @@ class AffiliatedMatchHelper : public PasswordStore::Observer,
   // cache fails, no affiliation and branding information will be injected into
   // corresponding form.
   virtual void InjectAffiliationAndBrandingInformation(
-      std::vector<std::unique_ptr<autofill::PasswordForm>> forms,
+      std::vector<std::unique_ptr<PasswordForm>> forms,
       PasswordFormsCallback result_callback);
 
   // Returns whether or not |form| represents an Android credential.
@@ -131,7 +128,7 @@ class AffiliatedMatchHelper : public PasswordStore::Observer,
   // and |app_icon_url| on |form| if |success| is true and |results| is
   // non-empty. Invokes |barrier_closure|.
   void CompleteInjectAffiliationAndBrandingInformation(
-      autofill::PasswordForm* form,
+      PasswordForm* form,
       base::OnceClosure barrier_closure,
       const AffiliatedFacets& results,
       bool success);
@@ -141,7 +138,7 @@ class AffiliatedMatchHelper : public PasswordStore::Observer,
 
   // PasswordStoreConsumer:
   void OnGetPasswordStoreResults(
-      std::vector<std::unique_ptr<autofill::PasswordForm>> results) override;
+      std::vector<std::unique_ptr<PasswordForm>> results) override;
 
   PasswordStore* const password_store_;
 

@@ -7,7 +7,7 @@
 #include "base/command_line.h"
 #include "base/metrics/field_trial.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/autofill/core/common/password_form.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/url_constants.h"
 
