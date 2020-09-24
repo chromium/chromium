@@ -44,10 +44,6 @@ int translate_y_direction = -1;
 int current_x_translation = 0;
 int current_y_translation = 0;
 
-const views::FlexSpecification kUnboundedScaleToZero(
-    views::MinimumFlexSizeRule::kScaleToZero,
-    views::MaximumFlexSizeRule::kUnbounded);
-
 gfx::ImageSkia ResizeImage(const gfx::ImageSkia& image,
                            const gfx::Size& view_size) {
   if (image.isNull())
@@ -165,6 +161,10 @@ void AmbientBackgroundImageView::ResetRelatedImageForTesting() {
 }
 
 void AmbientBackgroundImageView::InitLayout() {
+  static const views::FlexSpecification kUnboundedScaleToZero(
+      views::MinimumFlexSizeRule::kScaleToZero,
+      views::MaximumFlexSizeRule::kUnbounded);
+
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
   // Inits container for images.
