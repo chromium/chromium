@@ -7,6 +7,8 @@ summary: @@SHORTDESC@@
 description: @@FULLDESC@@
 confinement: strict
 base: core18
+assumes:
+  - snapd2.43 # for 'snapctl is-connected', used in chrome.launcher
 
 apps:
   @@SNAPNAME@@:
@@ -15,9 +17,11 @@ apps:
     environment:
       DISABLE_WAYLAND: 1
       CHROME_DESKTOP: @@SNAPNAME@@.desktop
+      CHROME_CONFIG_HOME: $SNAP_USER_COMMON
     plugs:
       - audio-playback
       - audio-record
+      - bluez # for Web Bluetooth (https://launchpad.net/bugs/1887201)
       - camera
       - cups-control
       - desktop

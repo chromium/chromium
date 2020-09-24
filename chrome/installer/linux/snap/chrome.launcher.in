@@ -5,12 +5,22 @@
 
 REALHOME=$(getent passwd $(id -u) | cut -d ':' -f 6)
 
+# Move an existing profile directory over to $SNAP_USER_COMMON, which is shared
+# across revisions of the snap. This addresses profile corruption when the snap
+# is refreshed while running, until a proper solution is implemented in snapd.
+# Ref: https://launchpad.net/bugs/1616650
+if [ ! -d "$SNAP_USER_COMMON/@@SNAPNAME@@" ]; then
+  if [ -d "$SNAP_USER_DATA/.config/@@SNAPNAME@@" ]; then
+    mv "$SNAP_USER_DATA/.config/@@SNAPNAME@@" "$SNAP_USER_COMMON/"
+  fi
+fi
+
 # When running the snap for the first time, try and locate an existing
 # @@SNAPNAME@@ config in $HOME/.config/@@SNAPNAME@@, and import it if it was
 # created by an older version of @@SNAPNAME@@ (the profile data format is not
 # guaranteed to be forward-compatible). This requires the personal-files plug
 # to be connected.
-if [ ! -d "$HOME/.config/@@SNAPNAME@@" ]; then
+if [ ! -d "$SNAP_USER_COMMON/@@SNAPNAME@@" ]; then
   CHROME_CONFIG="$REALHOME/.config/@@SNAPNAME@@"
   if [ -d "$CHROME_CONFIG" ]; then
     PREF_FILE="$CHROME_CONFIG/Default/Preferences"
@@ -21,22 +31,23 @@ if [ ! -d "$HOME/.config/@@SNAPNAME@@" ]; then
         OLD=$(printf "$VERSION\n$SNAP_VERSION" | sort -V | head -1)
         if [ "$OLD" = "$VERSION" ]; then
           SIZE=$(du -sb $CHROME_CONFIG | cut -f 1)
-          AVAILABLE_BLOCKS=$(stat -f -c %a $HOME)
-          BLOCK_SIZE=$(stat -f -c %s $HOME)
+          AVAILABLE_BLOCKS=$(stat -f -c %a $SNAP_USER_COMMON)
+          BLOCK_SIZE=$(stat -f -c %s $SNAP_USER_COMMON)
           AVAILABLE_SIZE=$(($AVAILABLE_BLOCKS*$BLOCK_SIZE))
           if [ $AVAILABLE_SIZE -gt $SIZE ]; then
             printf "Importing existing @@SNAPNAME@@ profile from "
             printf "$CHROME_CONFIG (version $VERSION)\n"
             TS1=$(date +%s.%3N)
-            cp -R "$CHROME_CONFIG" "$HOME/.config/"
+            cp -R "$CHROME_CONFIG" "$SNAP_USER_COMMON/"
             TS2=$(date +%s.%3N)
             T=$(printf "$TS1 $TS2" | awk '{printf "%.3f",$2-$1}')
             printf "Import done in $T s\n"
           else
             printf "Not importing existing @@SNAPNAME@@ profile from "
             printf "$CHROME_CONFIG (version $VERSION) because there is not "
-            printf "enough available space in $HOME (required: $SIZE bytes / "
-            printf "available: $AVAILABLE_SIZE bytes)\n"
+            printf "enough available space in $SNAP_USER_COMMON "
+            printf "(required: $SIZE bytes / available: $AVAILABLE_SIZE bytes)"
+            printf "\n"
           fi
         fi
       fi
@@ -50,22 +61,10 @@ fi
 # the default password store for the current desktop environment.
 # Ref: https://launchpad.net/bugs/1763829
 PASSWORD_STORE=basic
-dbus-send --session --dest=org.freedesktop.secrets /org/freedesktop/secrets \
-  --print-reply org.freedesktop.DBus.Properties.GetAll \
-  string:'org.freedesktop.Secret.Service' >/dev/null 2>&1
-if [ "$?" -eq "0" ]; then
+if snapctl is-connected password-manager-service; then
   # An empty string means detect the store based on the current DE
   # (os_crypt::SelectBackend())
   PASSWORD_STORE=
-else
-  dbus-send --session --dest=org.kde.kwalletd5 /modules/kwalletd5 \
-    --print-reply org.freedesktop.DBus.Properties.GetAll \
-    string:'org.kde.KWallet' >/dev/null 2>&1
-  if [ "$?" -eq "0" ]; then
-    # An empty string means detect the store based on the current DE
-    # (os_crypt::SelectBackend())
-    PASSWORD_STORE=
-  fi
 fi
 
 # Allow @@SNAPNAME@@ to look for the flash player plugin inside the snap's
