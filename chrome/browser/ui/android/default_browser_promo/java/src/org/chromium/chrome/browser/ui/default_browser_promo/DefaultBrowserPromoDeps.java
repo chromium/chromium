@@ -16,8 +16,6 @@ import android.os.Build;
 import android.provider.Settings;
 import android.text.TextUtils;
 
-import androidx.annotation.NonNull;
-
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.PackageManagerUtils;
@@ -125,8 +123,8 @@ public class DefaultBrowserPromoDeps {
     }
 
     @DefaultBrowserState
-    int getCurrentDefaultBrowserState(@NonNull ResolveInfo info) {
-        if (info.match == 0) return DefaultBrowserState.NO_DEFAULT; // no default
+    int getCurrentDefaultBrowserState(ResolveInfo info) {
+        if (info == null || info.match == 0) return DefaultBrowserState.NO_DEFAULT; // no default
         if (TextUtils.equals(ContextUtils.getApplicationContext().getPackageName(),
                     info.activityInfo.packageName)) {
             return DefaultBrowserState.CHROME_DEFAULT; // Already default
