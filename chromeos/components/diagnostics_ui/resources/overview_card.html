@@ -1,6 +1,17 @@
-<style include="diagnostics-shared">
-</style>
+<style include="diagnostics-shared diagnostics-fonts">
+  #overviewCardContainer {
+    color: var(--diagnostics-overview-text-color);
+    display: flex;
+  }
 
+  #overviewCardContainer > div {
+    margin-right: 15px;
+  }
+
+  #version {
+    margin-right: 0;
+  }
+</style>
 <div id="overviewCardContainer">
   <div id="boardName">[[systemInfo_.board_name]]</div>
   <div id="cpuModelName">[[systemInfo_.cpu_model_name]]</div>

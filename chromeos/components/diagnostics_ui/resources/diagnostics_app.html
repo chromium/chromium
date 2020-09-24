@@ -3,11 +3,17 @@
    @apply --diagnostics-header-font;
     margin-bottom: 10px;
   }
+
+  .overview-container {
+    margin-bottom: 10px;
+  }
 </style>
 <div class="main-container">
   <!-- TODO(zentaro) Localize once strings are confirmed -->
   <div id="header">Diagnostics</div>
-  <overview-card id="overviewCard"></overview-card>
+  <div class="overview-container">
+    <overview-card id="overviewCard"></overview-card>
+  </div>
   <memory-card id="memoryCard"></memory-card>
   <cpu-card id="cpuCard"></cpu-card>
   <battery-status-card id="batteryStatusCard"></battery-status-card>
