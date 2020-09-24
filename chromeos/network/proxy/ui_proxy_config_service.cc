@@ -181,19 +181,6 @@ base::Value NetProxyConfigAsOncValue(const net::ProxyConfig& net_config,
   return base::Value();
 }
 
-ProxyPrefs::ProxyMode OncStringToProxyMode(const std::string& onc_proxy_type) {
-  if (onc_proxy_type == ::onc::proxy::kDirect)
-    return ProxyPrefs::ProxyMode::MODE_DIRECT;
-  if (onc_proxy_type == ::onc::proxy::kWPAD)
-    return ProxyPrefs::ProxyMode::MODE_AUTO_DETECT;
-  if (onc_proxy_type == ::onc::proxy::kPAC)
-    return ProxyPrefs::ProxyMode::MODE_PAC_SCRIPT;
-  if (onc_proxy_type == ::onc::proxy::kManual)
-    return ProxyPrefs::ProxyMode::MODE_FIXED_SERVERS;
-  NOTREACHED() << "Unsupported ONC proxy type: " << onc_proxy_type;
-  return ProxyPrefs::ProxyMode::MODE_DIRECT;
-}
-
 }  // namespace
 
 UIProxyConfigService::UIProxyConfigService(
@@ -325,14 +312,6 @@ ProxyPrefs::ProxyMode UIProxyConfigService::ProxyModeForNetwork(
     if (!proxy_dict || !proxy_dict->GetMode(&mode))
       return ProxyPrefs::MODE_DIRECT;
     return mode;
-  }
-
-  MergeEnforcedProxyConfig(network->guid(), &proxy_settings);
-  if (!proxy_settings.DictEmpty()) {
-    base::Value* proxy_specification_mode = proxy_settings.FindPath(
-        {::onc::network_config::kType, ::onc::kAugmentationActiveSetting});
-    if (proxy_specification_mode)
-      return OncStringToProxyMode(proxy_specification_mode->GetString());
   }
   return ProxyPrefs::ProxyMode::MODE_DIRECT;
 }
