@@ -59,37 +59,12 @@ enum class VerifyStatus {
   VERIFY_STATUS_MAX
 };
 
-const char kExperimentName[] = "ExtensionInstallVerification";
-
 VerifyStatus GetExperimentStatus() {
-  const std::string group = base::FieldTrialList::FindFullName(
-      kExperimentName);
-
-  std::string forced_trials =
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          ::switches::kForceFieldTrials);
-  if (forced_trials.find(kExperimentName) != std::string::npos) {
-    // We don't want to allow turning off enforcement by forcing the field
-    // trial group to something other than enforcement.
-    return VerifyStatus::ENFORCE_STRICT;
-  }
-
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING) && (defined(OS_WIN) || defined(OS_MAC))
-  VerifyStatus default_status = VerifyStatus::ENFORCE;
+  return VerifyStatus::ENFORCE;
 #else
-  VerifyStatus default_status = VerifyStatus::NONE;
+  return VerifyStatus::NONE;
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
-  if (group == "EnforceStrict")
-    return VerifyStatus::ENFORCE_STRICT;
-  else if (group == "Enforce")
-    return VerifyStatus::ENFORCE;
-  else if (group == "Bootstrap")
-    return VerifyStatus::BOOTSTRAP;
-  else if (group == "None" || group == "Control")
-    return VerifyStatus::NONE;
-
-  return default_status;
 }
 
 VerifyStatus GetCommandLineStatus() {

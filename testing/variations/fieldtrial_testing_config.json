@@ -2754,19 +2754,6 @@
             ]
         }
     ],
-    "ExtensionInstallVerification": [
-        {
-            "platforms": [
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enforce"
-                }
-            ]
-        }
-    ],
     "ExtensionSettingsOverriddenDialogs": [
         {
             "platforms": [
