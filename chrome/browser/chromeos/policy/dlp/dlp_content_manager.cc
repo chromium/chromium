@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/ash/chrome_screenshot_grabber.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
 #include "ui/aura/window.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/skia_util.h"
@@ -96,6 +97,19 @@ bool DlpContentManager::IsScreenshotRestricted(
   }
 
   return false;
+}
+
+bool DlpContentManager::IsPrintingRestricted(
+    content::WebContents* web_contents) const {
+  // If we're viewing the PDF in a MimeHandlerViewGuest, use its embedder
+  // WebContents.
+  auto* guest_view =
+      extensions::MimeHandlerViewGuest::FromWebContents(web_contents);
+  web_contents =
+      guest_view ? guest_view->embedder_web_contents() : web_contents;
+
+  return GetConfidentialRestrictions(web_contents)
+      .HasRestriction(DlpContentRestriction::kPrint);
 }
 
 /* static */

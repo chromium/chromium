@@ -28,6 +28,10 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "printing/buildflags/buildflags.h"
 
+#if defined(OS_CHROMEOS)
+#include "chrome/browser/chromeos/policy/dlp/dlp_content_manager.h"
+#endif
+
 using content::BrowserThread;
 
 namespace {
@@ -177,6 +181,14 @@ void PrintViewManager::PrintPreviewDone() {
   print_preview_rfh_ = nullptr;
 }
 
+bool PrintViewManager::RejectPrintPreviewRequestIfRestricted(
+    content::RenderFrameHost* rfh) {
+  if (!IsPrintingRestricted())
+    return false;
+  GetPrintRenderFrame(rfh)->OnPrintPreviewDialogClosed();
+  return true;
+}
+
 void PrintViewManager::RenderFrameCreated(
     content::RenderFrameHost* render_frame_host) {
   if (PrintPreviewDialogController::IsPrintPreviewURL(
@@ -205,6 +217,9 @@ bool PrintViewManager::PrintPreview(
 
   // Don't print / print preview crashed tabs.
   if (IsCrashed())
+    return false;
+
+  if (IsPrintingRestricted())
     return false;
 
   GetPrintRenderFrame(rfh)->InitiatePrintPreview(std::move(print_renderer),
@@ -255,6 +270,9 @@ void PrintViewManager::OnSetupScriptedPrintPreview(
     return;
   }
 
+  if (RejectPrintPreviewRequestIfRestricted(rfh))
+    return;
+
   DCHECK(!print_preview_rfh_);
   print_preview_rfh_ = rfh;
   print_preview_state_ = SCRIPTED_PREVIEW;
@@ -270,6 +288,9 @@ void PrintViewManager::OnSetupScriptedPrintPreview(
 
 void PrintViewManager::OnShowScriptedPrintPreview(content::RenderFrameHost* rfh,
                                                   bool source_is_modifiable) {
+  if (print_preview_state_ != SCRIPTED_PREVIEW)
+    return;
+
   DCHECK(print_preview_rfh_);
   if (rfh != print_preview_rfh_)
     return;
@@ -321,6 +342,15 @@ void PrintViewManager::MaybeUnblockScriptedPreviewRPH() {
     scripted_print_preview_rph_->SetBlocked(false);
     scripted_print_preview_rph_set_blocked_ = false;
   }
+}
+
+bool PrintViewManager::IsPrintingRestricted() const {
+#if defined(OS_CHROMEOS)
+  // Don't print DLP restricted content on Chrome OS.
+  return policy::DlpContentManager::Get()->IsPrintingRestricted(web_contents());
+#else
+  return false;
+#endif
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(PrintViewManager)

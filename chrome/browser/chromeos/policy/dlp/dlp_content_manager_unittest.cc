@@ -22,6 +22,8 @@ const DlpContentRestrictionSet kScreenshotRestricted(
 const DlpContentRestrictionSet kNonEmptyRestrictionSet = kScreenshotRestricted;
 const DlpContentRestrictionSet kPrivacyScreenEnforced(
     DlpContentRestriction::kPrivacyScreen);
+const DlpContentRestrictionSet kPrintingRestricted(
+    DlpContentRestriction::kPrint);
 
 class MockPrivacyScreenHelper : public ash::PrivacyScreenDlpHelper {
  public:
@@ -212,4 +214,20 @@ TEST_F(DlpContentManagerTest, PrivacyScreenEnforcement) {
   task_environment_.FastForwardBy(GetPrivacyScreenOffDelay());
 }
 
+TEST_F(DlpContentManagerTest, PrintingRestricted) {
+  std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
+  EXPECT_EQ(manager_.GetConfidentialRestrictions(web_contents.get()),
+            kEmptyRestrictionSet);
+  EXPECT_FALSE(manager_.IsPrintingRestricted(web_contents.get()));
+
+  ChangeConfidentiality(web_contents.get(), kPrintingRestricted);
+  EXPECT_EQ(manager_.GetConfidentialRestrictions(web_contents.get()),
+            kPrintingRestricted);
+  EXPECT_TRUE(manager_.IsPrintingRestricted(web_contents.get()));
+
+  DestroyWebContents(web_contents.get());
+  EXPECT_EQ(manager_.GetConfidentialRestrictions(web_contents.get()),
+            kEmptyRestrictionSet);
+  EXPECT_FALSE(manager_.IsPrintingRestricted(web_contents.get()));
+}
 }  // namespace policy

@@ -41,6 +41,9 @@ class DlpContentManager {
   // Returns whether screenshots should be restricted.
   virtual bool IsScreenshotRestricted(const ScreenshotArea& area) const;
 
+  // Returns whether printing should be restricted.
+  bool IsPrintingRestricted(content::WebContents* web_contents) const;
+
   // The caller (test) should manage |dlp_content_manager| lifetime.
   // Reset doesn't delete the object.
   static void SetDlpContentManagerForTesting(

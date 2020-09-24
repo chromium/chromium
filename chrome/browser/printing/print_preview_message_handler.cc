@@ -102,9 +102,14 @@ PrintPreviewUI* PrintPreviewMessageHandler::GetPrintPreviewUI(
 void PrintPreviewMessageHandler::OnRequestPrintPreview(
     content::RenderFrameHost* render_frame_host,
     const PrintHostMsg_RequestPrintPreview_Params& params) {
+  PrintViewManager* print_view_manager =
+      PrintViewManager::FromWebContents(web_contents());
+  if (print_view_manager->RejectPrintPreviewRequestIfRestricted(
+          render_frame_host)) {
+    return;
+  }
   if (params.webnode_only) {
-    PrintViewManager::FromWebContents(web_contents())->PrintPreviewForWebNode(
-        render_frame_host);
+    print_view_manager->PrintPreviewForWebNode(render_frame_host);
   }
   PrintPreviewDialogController::PrintPreview(web_contents());
   PrintPreviewUI::SetInitialParams(GetPrintPreviewDialog(), params);

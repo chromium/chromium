@@ -58,6 +58,10 @@ class PrintViewManager : public PrintViewManagerBase,
   // renderer in the case of scripted print preview if needed.
   void PrintPreviewDone();
 
+  // Checks whether printing is currently restricted and aborts print preview if
+  // needed.
+  bool RejectPrintPreviewRequestIfRestricted(content::RenderFrameHost* rfh);
+
   // mojom::PrintManagerHost:
   void DidShowPrintDialog() override;
 
@@ -101,6 +105,9 @@ class PrintViewManager : public PrintViewManagerBase,
   void OnScriptedPrintPreviewReply(IPC::Message* reply_msg);
 
   void MaybeUnblockScriptedPreviewRPH();
+
+  // Checks whether printing is restricted due to Data Leak Protection rules.
+  bool IsPrintingRestricted() const;
 
   base::OnceClosure on_print_dialog_shown_callback_;
 

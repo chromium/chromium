@@ -17,6 +17,8 @@ enum DlpContentRestriction {
   kScreenshot = 1 << 0,
   // Enforce ePrivacy screen when content is visible.
   kPrivacyScreen = 1 << 1,
+  // Do not allow printing.
+  kPrint = 1 << 2,
 };
 
 // Represents set of restrictions applied to on-screen content.
