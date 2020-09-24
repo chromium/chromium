@@ -289,6 +289,33 @@ chromeos.test_support = {};
       }
       return response;
     }
+
+    /**
+     * Requests battery discharge routine to be run.
+     * @param { !number } lengthSeconds
+     * @param { !number } maximumDischargePercentAllowed
+     * @return { !Promise<!Object> }
+     * @public
+     */
+    async runBatteryDischargeRoutine(
+        lengthSeconds, maximumDischargePercentAllowed) {
+      const message =
+          /**
+             @type {!dpsl_internal.DiagnosticsRunBatteryDischargeRoutineRequest}
+           */
+          ({
+            lengthSeconds: lengthSeconds,
+            maximumDischargePercentAllowed: maximumDischargePercentAllowed
+          });
+      const response =
+          /** @type {!Object} */ (await messagePipe.sendMessage(
+              dpsl_internal.Message.DIAGNOSTICS_RUN_BATTERY_DISCHARGE_ROUTINE,
+              message));
+      if (response instanceof Error) {
+        throw response;
+      }
+      return response;
+    }
   };
 
   /**

@@ -37,6 +37,8 @@ dpsl_internal.Message = {
       'DiagnosticsService.RunNvmeSelfTestRoutine',
   DIAGNOSTICS_RUN_PRIME_SEARCH_ROUTINE:
       'DiagnosticsService.RunPrimeSearchRoutine',
+  DIAGNOSTICS_RUN_BATTERY_DISCHARGE_ROUTINE:
+      'DiagnosticsService.RunBatteryDischargeRoutine',
   PROBE_TELEMETRY_INFO: 'ProbeService.ProbeTelemetryInfo',
 };
 
@@ -148,6 +150,15 @@ dpsl_internal.DiagnosticsRunNvmeSelfTestRoutineRequest;
  * maximumNumber: !number}}
  */
 dpsl_internal.DiagnosticsRunPrimeSearchRoutineRequest;
+
+/**
+ * Request message sent by the unprivileged context to the privileged
+ * context to run battery discharge routine.
+ * @typedef {{
+ * lengthSeconds: !number,
+ * maximumDischargePercentAllowed: !number}}
+ */
+dpsl_internal.DiagnosticsRunBatteryDischargeRoutineRequest;
 
 /**
  * Response message sent by the privileged context containing routine

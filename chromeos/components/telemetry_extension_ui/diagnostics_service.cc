@@ -205,4 +205,19 @@ void DiagnosticsService::RunPrimeSearchRoutine(
           std::move(callback)));
 }
 
+void DiagnosticsService::RunBatteryDischargeRoutine(
+    uint32_t length_seconds,
+    uint32_t maximum_discharge_percent_allowed,
+    RunBatteryDischargeRoutineCallback callback) {
+  GetService()->RunBatteryDischargeRoutine(
+      length_seconds, maximum_discharge_percent_allowed,
+      base::BindOnce(
+          [](health::mojom::DiagnosticsService::
+                 RunBatteryDischargeRoutineCallback callback,
+             cros_healthd::mojom::RunRoutineResponsePtr ptr) {
+            std::move(callback).Run(converters::ConvertPtr(std::move(ptr)));
+          },
+          std::move(callback)));
+}
+
 }  // namespace chromeos

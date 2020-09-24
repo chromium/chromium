@@ -328,6 +328,40 @@ UNTRUSTED_TEST('UntrustedDiagnosticsRequestRunPrimeSearchRoutine', async () => {
   assertDeepEquals(response, {id: 123456789, status: 'ready'});
 });
 
+// Tests that runBatteryDischargeRoutine throws the correct error when invalid
+// enum is passed as input.
+UNTRUSTED_TEST(
+    'UntrustedDiagnosticsRequestRunBatteryDischargeRoutineInvalidInput',
+    async () => {
+      let caughtError1;
+      try {
+        await chromeos.diagnostics.runBatteryDischargeRoutine(0, 10);
+      } catch (error) {
+        caughtError1 = error;
+      }
+
+      assertEquals(caughtError1.name, 'RangeError');
+      assertEquals(caughtError1.message, `Parameter must be positive.`);
+
+      let caughtError2;
+      try {
+        await chromeos.diagnostics.runBatteryDischargeRoutine(-2147483648, 5);
+      } catch (error) {
+        caughtError2 = error;
+      }
+
+      assertEquals(caughtError2.name, 'RangeError');
+      assertEquals(caughtError2.message, `Parameter must be positive.`);
+    });
+
+// Tests that runBatteryDischargeRoutine returns the correct Object.
+UNTRUSTED_TEST(
+    'UntrustedDiagnosticsRequestRunBatteryDischargeRoutine', async () => {
+      const response =
+          await chromeos.diagnostics.runBatteryDischargeRoutine(12, 2);
+      assertDeepEquals(response, {id: 123456789, status: 'ready'});
+    });
+
 // Tests that TelemetryInfo can be successfully requested from
 // from chrome-untrusted://.
 UNTRUSTED_TEST('UntrustedRequestTelemetryInfo', async () => {
