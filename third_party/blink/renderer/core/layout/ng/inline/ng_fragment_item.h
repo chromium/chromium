@@ -247,7 +247,7 @@ class CORE_EXPORT NGFragmentItem {
     STACK_ALLOCATED();
 
    public:
-    void RecalcInkOverflow(NGInlineCursor* cursor,
+    void RecalcInkOverflow(const NGInlineCursor& cursor,
                            PhysicalRect* self_and_contents_rect_out) {
       return item_.RecalcInkOverflow(cursor, self_and_contents_rect_out);
     }
@@ -409,9 +409,8 @@ class CORE_EXPORT NGFragmentItem {
   const LayoutBox* InkOverflowOwnerBox() const;
   LayoutBox* MutableInkOverflowOwnerBox();
 
-  // Re-compute the ink overflow for this item. |cursor| should be at |this|,
-  // and is advanced to the next item on return.
-  void RecalcInkOverflow(NGInlineCursor* cursor,
+  // Re-compute the ink overflow for this item. |cursor| should be at |this|.
+  void RecalcInkOverflow(const NGInlineCursor& cursor,
                          PhysicalRect* self_and_contents_rect_out);
 
   const LayoutObject* layout_object_;

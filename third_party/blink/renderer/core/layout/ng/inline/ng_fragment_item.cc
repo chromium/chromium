@@ -507,19 +507,18 @@ PhysicalRect NGFragmentItem::RecalcInkOverflowForCursor(
   DCHECK(cursor);
   DCHECK(!cursor->Current() || cursor->IsAtFirst());
   PhysicalRect contents_ink_overflow;
-  while (*cursor) {
+  for (; *cursor; cursor->MoveToNextSkippingChildren()) {
     const NGFragmentItem* item = cursor->CurrentItem();
     DCHECK(item);
     if (UNLIKELY(item->IsLayoutObjectDestroyedOrMoved())) {
       // TODO(crbug.com/1099613): This should not happen, as long as it is
       // layout-clean. It looks like there are cases where the layout is dirty.
       NOTREACHED();
-      cursor->MoveToNextSkippingChildren();
       continue;
     }
 
     PhysicalRect child_rect;
-    item->GetMutableForPainting().RecalcInkOverflow(cursor, &child_rect);
+    item->GetMutableForPainting().RecalcInkOverflow(*cursor, &child_rect);
     if (item->HasSelfPaintingLayer())
       continue;
     if (!child_rect.IsEmpty()) {
@@ -531,21 +530,18 @@ PhysicalRect NGFragmentItem::RecalcInkOverflowForCursor(
 }
 
 void NGFragmentItem::RecalcInkOverflow(
-    NGInlineCursor* cursor,
+    const NGInlineCursor& cursor,
     PhysicalRect* self_and_contents_rect_out) {
-  DCHECK_EQ(this, cursor->CurrentItem());
+  DCHECK_EQ(this, cursor.CurrentItem());
 
   if (UNLIKELY(IsLayoutObjectDestroyedOrMoved())) {
     // TODO(crbug.com/1099613): This should not happen, as long as it is really
     // layout-clean. It looks like there are cases where the layout is dirty.
     NOTREACHED();
-    cursor->MoveToNextSkippingChildren();
     return;
   }
 
   if (IsText()) {
-    cursor->MoveToNext();
-
     // Re-computing text item is not necessary, because all changes that needs
     // to re-compute ink overflow invalidate layout.
     if (IsInkOverflowComputed()) {
@@ -553,7 +549,7 @@ void NGFragmentItem::RecalcInkOverflow(
       return;
     }
 
-    NGTextFragmentPaintInfo paint_info = TextPaintInfo(cursor->Items());
+    NGTextFragmentPaintInfo paint_info = TextPaintInfo(cursor.Items());
     if (paint_info.shape_result) {
       ink_overflow_type_ = ink_overflow_.SetTextInkOverflow(
           InkOverflowType(), paint_info, Style(), Size(),
@@ -571,15 +567,13 @@ void NGFragmentItem::RecalcInkOverflow(
   // overflow to be stored in |LayoutBox|.
   if (LayoutBox* owner_box = MutableInkOverflowOwnerBox()) {
     DCHECK(!HasChildren());
-    cursor->MoveToNextSkippingChildren();
     owner_box->RecalcNormalFlowChildVisualOverflowIfNeeded();
     *self_and_contents_rect_out = owner_box->PhysicalVisualOverflowRect();
     return;
   }
 
   // Re-compute descendants, then compute the contents ink overflow from them.
-  NGInlineCursor descendants_cursor = cursor->CursorForDescendants();
-  cursor->MoveToNextSkippingChildren();
+  NGInlineCursor descendants_cursor = cursor.CursorForDescendants();
   PhysicalRect contents_rect = RecalcInkOverflowForCursor(&descendants_cursor);
 
   // |contents_rect| is relative to the inline formatting context. Make it
