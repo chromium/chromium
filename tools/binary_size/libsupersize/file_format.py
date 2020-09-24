@@ -627,7 +627,7 @@ def SaveSizeInfo(size_info,
 
     logging.debug('Serialization complete. Gzipping...')
     with _OpenGzipForWrite(path, file_obj=file_obj) as f:
-      f.write(bytesio.getbuffer())
+      f.write(bytesio.getvalue())
 
 
 def LoadSizeInfo(filename, file_obj=None):
@@ -638,6 +638,10 @@ def LoadSizeInfo(filename, file_obj=None):
 
 def SaveDeltaSizeInfo(delta_size_info, path, file_obj=None):
   """Saves |delta_size_info| to |path|."""
+
+  if not file_obj:
+    with open(path, 'wb') as f:
+      return SaveDeltaSizeInfo(delta_size_info, path, f)
 
   changed_symbols = delta_size_info.raw_symbols \
       .WhereDiffStatusIs(models.DIFF_STATUS_UNCHANGED).Inverted()
@@ -663,44 +667,46 @@ def SaveDeltaSizeInfo(delta_size_info, path, file_obj=None):
       include_padding=True,
       sparse_symbols=before_symbols)
 
-  with file_obj or open(path, 'wb') as output_file:
-    w = _Writer(output_file)
-    w.WriteBytes(_COMMON_HEADER + _SIZEDIFF_HEADER)
-    # JSON header fields
-    fields = {
-        'version': _SIZEDIFF_VERSION,
-        'before_length': before_size_file.tell(),
-    }
-    fields_str = json.dumps(fields, indent=2, sort_keys=True)
+  w = _Writer(file_obj)
+  w.WriteBytes(_COMMON_HEADER + _SIZEDIFF_HEADER)
+  # JSON header fields
+  fields = {
+      'version': _SIZEDIFF_VERSION,
+      'before_length': before_size_file.tell(),
+  }
+  fields_str = json.dumps(fields, indent=2, sort_keys=True)
 
-    w.WriteLine(str(len(fields_str)))
-    w.WriteLine(fields_str)
+  w.WriteLine(str(len(fields_str)))
+  w.WriteLine(fields_str)
 
-    w.WriteBytes(before_size_file.getbuffer())
-    after_promise.get()
-    w.WriteBytes(after_size_file.getbuffer())
+  w.WriteBytes(before_size_file.getvalue())
+  after_promise.get()
+  w.WriteBytes(after_size_file.getvalue())
 
 
-def LoadDeltaSizeInfo(filename, file_obj=None):
+def LoadDeltaSizeInfo(path, file_obj=None):
   """Returns a tuple of size infos (before, after).
 
   To reconstruct the DeltaSizeInfo, diff the two size infos.
   """
-  with file_obj or open(filename, 'rb') as f:
-    combined_header = _COMMON_HEADER + _SIZEDIFF_HEADER
-    actual_header = f.read(len(combined_header))
-    if actual_header != combined_header:
-      raise Exception('Bad file header.')
+  if not file_obj:
+    with open(path, 'rb') as f:
+      return LoadDeltaSizeInfo(path, f)
 
-    json_len = int(f.readline())
-    json_str = f.read(json_len + 1)  # + 1 for \n
-    fields = json.loads(json_str)
+  combined_header = _COMMON_HEADER + _SIZEDIFF_HEADER
+  actual_header = file_obj.read(len(combined_header))
+  if actual_header != combined_header:
+    raise Exception('Bad file header.')
 
-    assert fields['version'] == _SIZEDIFF_VERSION
-    after_pos = f.tell() + fields['before_length']
+  json_len = int(file_obj.readline())
+  json_str = file_obj.read(json_len + 1)  # + 1 for \n
+  fields = json.loads(json_str)
 
-    before_size_info = LoadSizeInfo(filename, f)
-    f.seek(after_pos)
-    after_size_info = LoadSizeInfo(filename, f)
+  assert fields['version'] == _SIZEDIFF_VERSION
+  after_pos = file_obj.tell() + fields['before_length']
+
+  before_size_info = LoadSizeInfo(path, file_obj)
+  file_obj.seek(after_pos)
+  after_size_info = LoadSizeInfo(path, file_obj)
 
   return before_size_info, after_size_info
