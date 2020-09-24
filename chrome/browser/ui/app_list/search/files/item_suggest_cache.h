@@ -26,6 +26,31 @@ namespace app_list {
 
 class ItemSuggestCache {
  public:
+  // Information on a single file suggestion result.
+  struct Result {
+    Result(const std::string& id, const std::string& title);
+    Result(const Result& other);
+    ~Result();
+
+    std::string id;
+    std::string title;
+  };
+
+  // Information on all file suggestion results returned from an ItemSuggest
+  // request.
+  struct Results {
+    explicit Results(const std::string& suggestion_id);
+    Results(const Results& other);
+    ~Results();
+
+    // |suggestion_id| should be used to link ItemSuggest feedback to a
+    // particular request.
+    std::string suggestion_id;
+    // |results| has the same ordering as the response from ItemSuggest:
+    // best-to-worst.
+    std::vector<Result> results;
+  };
+
   ItemSuggestCache(
       Profile* profile,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
@@ -54,6 +79,8 @@ class ItemSuggestCache {
   void OnJsonParsed(data_decoder::DataDecoder::ValueOrError result);
   std::unique_ptr<network::SimpleURLLoader> MakeRequestLoader(
       const std::string& token);
+
+  base::Optional<Results> results_;
 
   const bool enabled_;
   const GURL server_url_;

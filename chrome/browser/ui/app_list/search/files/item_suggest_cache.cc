@@ -99,6 +99,72 @@ void LogResponseSize(const int size) {
   // TODO(crbug.com/1034842): Implement.
 }
 
+//---------------
+// JSON utilities
+//---------------
+
+base::Optional<base::Value::ConstListView> GetList(const base::Value* value,
+                                                   const std::string& key) {
+  if (!value->is_dict())
+    return base::nullopt;
+  const base::Value* field = value->FindListKey(key);
+  if (!field)
+    return base::nullopt;
+  return field->GetList();
+}
+
+base::Optional<std::string> GetString(const base::Value* value,
+                                      const std::string& key) {
+  if (!value->is_dict())
+    return base::nullopt;
+  const std::string* field = value->FindStringKey(key);
+  if (!field)
+    return base::nullopt;
+  return *field;
+}
+
+//----------------------
+// JSON response parsing
+//----------------------
+
+// TODO(crbug.com/1034842): Add unit testing for ConvertResults.
+
+base::Optional<ItemSuggestCache::Result> ConvertResult(
+    const base::Value* value) {
+  const auto& item_id = GetString(value, "itemId");
+  const auto& display_text = GetString(value, "displayText");
+
+  if (!item_id || !display_text)
+    return base::nullopt;
+
+  return ItemSuggestCache::Result(item_id.value(), display_text.value());
+}
+
+base::Optional<ItemSuggestCache::Results> ConvertResults(
+    const base::Value* value) {
+  const auto& suggestion_id = GetString(value, "suggestionSessionId");
+  if (!suggestion_id)
+    return base::nullopt;
+
+  ItemSuggestCache::Results results(suggestion_id.value());
+
+  const auto items = GetList(value, "item");
+  if (!items)
+    return base::nullopt;
+
+  for (const auto& result_value : items.value()) {
+    auto result = ConvertResult(&result_value);
+    // If any result fails conversion, fail completely and return base::nullopt,
+    // rather than just skipping this result. This makes clear the distinction
+    // between a response format issue and the response containing no results.
+    if (!result)
+      return base::nullopt;
+    results.results.push_back(std::move(result.value()));
+  }
+
+  return results;
+}
+
 }  // namespace
 
 // static
@@ -106,6 +172,23 @@ const base::Feature ItemSuggestCache::kExperiment{
     "LauncherItemSuggest", base::FEATURE_DISABLED_BY_DEFAULT};
 constexpr base::FeatureParam<bool> ItemSuggestCache::kEnabled;
 constexpr base::FeatureParam<std::string> ItemSuggestCache::kServerUrl;
+
+ItemSuggestCache::Result::Result(const std::string& id,
+                                 const std::string& title)
+    : id(id), title(title) {}
+
+ItemSuggestCache::Result::Result(const Result& other)
+    : id(other.id), title(other.title) {}
+
+ItemSuggestCache::Result::~Result() = default;
+
+ItemSuggestCache::Results::Results(const std::string& suggestion_id)
+    : suggestion_id(suggestion_id) {}
+
+ItemSuggestCache::Results::Results(const Results& other)
+    : suggestion_id(other.suggestion_id), results(other.results) {}
+
+ItemSuggestCache::Results::~Results() = default;
 
 ItemSuggestCache::ItemSuggestCache(
     Profile* profile,
@@ -222,7 +305,17 @@ void ItemSuggestCache::OnJsonParsed(
     return;
   }
 
-  // TODO(crbug.com/1034842): Convert json to result objects.
+  // Convert the JSON value into a Results object. If the conversion fails, or
+  // if the conversion contains no results, we shouldn't update the stored
+  // results.
+  const auto& results = ConvertResults(&result.value.value());
+  if (!results) {
+    LogError(Error::kJsonConversionFailure);
+  } else if (results->results.empty()) {
+    LogError(Error::kNoResultsInResponse);
+  } else {
+    results_ = std::move(results.value());
+  }
 }
 
 std::unique_ptr<network::SimpleURLLoader> ItemSuggestCache::MakeRequestLoader(
