@@ -102,12 +102,20 @@
       Symbol: "kPseudoMediaSliderContainer",
     },
     {
+      name: "-webkit-media-slider-thumb",
+      Symbol: "kPseudoMediaSliderThumb",
+    },
+    {
       name: "-webkit-meter-inner-element",
       Symbol: "kPseudoMeterInnerElement",
     },
     {
       name: "-webkit-slider-container",
       Symbol: "kPseudoSliderContainer",
+    },
+    {
+      name: "-webkit-slider-thumb",
+      Symbol: "kPseudoSliderThumb",
     },
     {
       name: "-webkit-slider-runnable-track",

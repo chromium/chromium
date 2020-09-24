@@ -270,22 +270,10 @@ HTMLInputElement* SliderThumbElement::HostInput() const {
   return To<HTMLInputElement>(OwnerShadowHost());
 }
 
-static const AtomicString& SliderThumbShadowPartId() {
-  DEFINE_STATIC_LOCAL(const AtomicString, slider_thumb,
-                      ("-webkit-slider-thumb"));
-  return slider_thumb;
-}
-
-static const AtomicString& MediaSliderThumbShadowPartId() {
-  DEFINE_STATIC_LOCAL(const AtomicString, media_slider_thumb,
-                      ("-webkit-media-slider-thumb"));
-  return media_slider_thumb;
-}
-
 const AtomicString& SliderThumbElement::ShadowPseudoId() const {
   HTMLInputElement* input = HostInput();
   if (!input || !input->GetLayoutObject())
-    return SliderThumbShadowPartId();
+    return shadow_element_names::kPseudoSliderThumb;
 
   const ComputedStyle& slider_style = input->GetLayoutObject()->StyleRef();
   switch (slider_style.EffectiveAppearance()) {
@@ -293,9 +281,9 @@ const AtomicString& SliderThumbElement::ShadowPseudoId() const {
     case kMediaSliderThumbPart:
     case kMediaVolumeSliderPart:
     case kMediaVolumeSliderThumbPart:
-      return MediaSliderThumbShadowPartId();
+      return shadow_element_names::kPseudoMediaSliderThumb;
     default:
-      return SliderThumbShadowPartId();
+      return shadow_element_names::kPseudoSliderThumb;
   }
 }
 

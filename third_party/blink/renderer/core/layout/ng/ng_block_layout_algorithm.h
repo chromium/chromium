@@ -343,6 +343,12 @@ class CORE_EXPORT NGBlockLayoutAlgorithm
   // |ruby_text_child|. This is called only if IsRubyText() returns true.
   void LayoutRubyText(NGLayoutInputNode* ruby_text_child);
 
+  // Adjusts the inline offset of the slider thumb box from the value of
+  // HTMLInputElement.
+  LogicalOffset AdjustSliderThumbInlineOffset(
+      const NGFragment& fragment,
+      const LogicalOffset& logical_offset);
+
   LogicalSize child_percentage_size_;
   LogicalSize replaced_child_percentage_size_;
 

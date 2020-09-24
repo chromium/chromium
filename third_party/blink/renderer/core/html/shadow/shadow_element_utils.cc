@@ -18,4 +18,13 @@ bool IsSliderContainer(const Element& element) {
          shadow_pseudo == shadow_element_names::kPseudoSliderContainer;
 }
 
+bool IsSliderThumb(const Node* node) {
+  const auto* element = DynamicTo<Element>(node);
+  if (!element || !element->IsInUserAgentShadowRoot())
+    return false;
+  const AtomicString& shadow_pseudo = element->ShadowPseudoId();
+  return shadow_pseudo == shadow_element_names::kPseudoMediaSliderThumb ||
+         shadow_pseudo == shadow_element_names::kPseudoSliderThumb;
+}
+
 }  // namespace blink

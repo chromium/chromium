@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_input_node.h"
 
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
+#include "third_party/blink/renderer/core/html/shadow/shadow_element_utils.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
 #include "third_party/blink/renderer/core/layout/intrinsic_sizing_info.h"
@@ -69,6 +70,10 @@ bool NGLayoutInputNode::IsSlider() const {
   if (const auto* input = DynamicTo<HTMLInputElement>(box_->GetNode()))
     return input->type() == input_type_names::kRange;
   return false;
+}
+
+bool NGLayoutInputNode::IsSliderThumb() const {
+  return IsBlock() && blink::IsSliderThumb(GetDOMNode());
 }
 
 bool NGLayoutInputNode::IsEmptyTableSection() const {
