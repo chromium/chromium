@@ -19,13 +19,17 @@
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/button_controller.h"
+#include "ui/views/controls/button/label_button.h"
 
 ReadLaterButton::ReadLaterButton(Browser* browser)
     : ToolbarButton(this), browser_(browser) {
-  SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_READ_LATER_BUTTON));
+  SetTooltipText(l10n_util::GetStringUTF16(IDS_READ_LATER_TITLE));
   GetViewAccessibility().OverrideHasPopup(ax::mojom::HasPopup::kMenu);
   button_controller()->set_notify_action(
       views::ButtonController::NotifyAction::kOnPress);
+  // We don't want to use ToolbarButton::SetHighlight here because it adds a
+  // border around the button.
+  LabelButton::SetText(l10n_util::GetStringUTF16(IDS_READ_LATER_TITLE));
 }
 
 ReadLaterButton::~ReadLaterButton() = default;

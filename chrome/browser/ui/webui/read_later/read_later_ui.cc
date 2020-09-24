@@ -41,7 +41,7 @@ ReadLaterUI::ReadLaterUI(content::WebUI* web_ui)
                           IDR_READ_LATER_MOJO_LITE_JS);
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"readHeader", IDS_READ_LATER_MENU_READ_HEADER},
-      {"title", IDS_READ_LATER_MENU_TITLE},
+      {"title", IDS_READ_LATER_TITLE},
       {"tooltipDelete", IDS_DELETE},
       {"tooltipMarkAsRead", IDS_READ_LATER_MENU_TOOLTIP_MARK_AS_READ},
       {"tooltipMarkAsUnread", IDS_READ_LATER_MENU_TOOLTIP_MARK_AS_UNREAD},

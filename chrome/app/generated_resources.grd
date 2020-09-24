@@ -5683,10 +5683,17 @@ Keep your key file in a safe place. You will need it to create new versions of y
         </message>
       </if>
 
-      <!-- Read Later menu -->
-      <message name="IDS_READ_LATER_MENU_TITLE" desc="Title of the Read later menu">
-        Read later
-      </message>
+      <!-- Read Later button and menu -->
+      <if expr="use_titlecase">
+        <message name="IDS_READ_LATER_TITLE" desc="Title of the Read later menu">
+          Reading List
+        </message>
+      </if>
+      <if expr="not use_titlecase">
+        <message name="IDS_READ_LATER_TITLE" desc="Title of the Read later menu">
+          Reading list
+        </message>
+      </if>
       <message name="IDS_READ_LATER_MENU_UNREAD_HEADER" desc="Header for section of unread Read later items.">
         UNREAD
       </message>
@@ -5741,9 +5748,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
       <message name="IDS_TOOLTIP_MIC_SEARCH" desc="The tooltip for search-by-voice button">
         Search by voice
-      </message>
-      <message name="IDS_TOOLTIP_READ_LATER_BUTTON" desc="The tooltip for the read-later button">
-        Read later
       </message>
       <message name="IDS_TOOLTIP_SAVE_CREDIT_CARD" desc="The tooltip for the icon that shows the save credit card bubble">
         Save card
