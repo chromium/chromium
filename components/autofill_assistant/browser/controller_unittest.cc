@@ -9,6 +9,7 @@
 
 #include "base/bind_helpers.h"
 #include "base/guid.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/bind_test_util.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gtest_util.h"
@@ -24,11 +25,13 @@
 #include "components/autofill_assistant/browser/service.h"
 #include "components/autofill_assistant/browser/trigger_context.h"
 #include "components/autofill_assistant/browser/web/mock_web_controller.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace autofill_assistant {
 
@@ -165,9 +168,14 @@ class ControllerTest : public content::RenderViewHostTestHarness {
   void Start() { Start("http://initialurl.com"); }
 
   void Start(const std::string& url_string) {
+    Start(url_string, TriggerContext::CreateEmpty());
+  }
+
+  void Start(const std::string& url_string,
+             std::unique_ptr<TriggerContext> trigger_context) {
     GURL url(url_string);
     SetLastCommittedUrl(url);
-    controller_->Start(url, TriggerContext::CreateEmpty());
+    controller_->Start(url, std::move(trigger_context));
   }
 
   void SetLastCommittedUrl(const GURL& url) {
@@ -2783,6 +2791,53 @@ TEST_F(ControllerTest, PauseAndNavigate) {
   EXPECT_CALL(mock_client_, Shutdown(Metrics::DropOutReason::NAVIGATION));
   content::NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents(), GURL("http://b.example.com/path"));
+}
+
+TEST_F(ControllerTest,
+       LiteScriptWithOnboardingDoesNotShowInitialStatusMessage) {
+  SupportsScriptResponseProto script_response;
+  AddRunnableScript(&script_response, "script")
+      ->mutable_presentation()
+      ->set_autostart(true);
+  SetupScripts(script_response);
+
+  ActionsResponseProto actions_response;
+  actions_response.add_actions()->mutable_tell()->set_message("Hello World");
+
+  SetupActionsForScript("script", actions_response);
+  auto trigger_context = std::make_unique<TriggerContextImpl>(
+      std::map<std::string, std::string>{
+          {"TRIGGER_SCRIPT_USED", "example/path"}},
+      /* exp = */ std::string());
+  trigger_context->SetOnboardingShown(true);
+
+  testing::InSequence seq;
+  EXPECT_CALL(mock_observer_,
+              OnStatusMessageChanged(testing::Not("Hello World")))
+      .Times(0);
+  EXPECT_CALL(mock_observer_, OnStatusMessageChanged("Hello World")).Times(1);
+  Start("http://a.example.com/path", std::move(trigger_context));
+}
+
+TEST_F(ControllerTest, RegularScriptShowsDefaultInitialStatusMessage) {
+  SupportsScriptResponseProto script_response;
+  AddRunnableScript(&script_response, "script")
+      ->mutable_presentation()
+      ->set_autostart(true);
+  SetupScripts(script_response);
+
+  ActionsResponseProto actions_response;
+  actions_response.add_actions()->mutable_tell()->set_message("Hello World");
+
+  SetupActionsForScript("script", actions_response);
+
+  testing::InSequence seq;
+  EXPECT_CALL(mock_observer_, OnStatusMessageChanged(l10n_util::GetStringFUTF8(
+                                  IDS_AUTOFILL_ASSISTANT_LOADING,
+                                  base::UTF8ToUTF16("a.example.com"))))
+      .Times(1);
+  EXPECT_CALL(mock_observer_, OnStatusMessageChanged("Hello World")).Times(1);
+  Start("http://a.example.com/path");
 }
 
 }  // namespace autofill_assistant

@@ -1179,8 +1179,11 @@ bool Controller::Start(const GURL& deeplink_url,
 }
 
 void Controller::ShowFirstMessageAndStart() {
-  // Only show default status message if necessary.
-  if (status_message_.empty()) {
+  // Only show default status message if necessary. Scripts started by lite
+  // scripts that also showed the onboarding do not show the loading message.
+  if (status_message_.empty() &&
+      !(GetTriggerContext()->is_onboarding_shown() &&
+        GetTriggerContext()->WasStartedByTriggerScript())) {
     SetStatusMessage(
         l10n_util::GetStringFUTF8(IDS_AUTOFILL_ASSISTANT_LOADING,
                                   base::UTF8ToUTF16(GetCurrentURL().host())));
