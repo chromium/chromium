@@ -44,7 +44,7 @@
                 <TextView
                     android:id="@+id/title"
                     android:text="@string/fre_welcome"
-                    style="@style/FreTitle" />
+                    style="@style/FreWelcomePageTitle" />
 
                 <!-- The FrameLayout here is to facilitate adding a proper content description for
                  the loading view. During development, it didn't seem possible to override the
@@ -124,7 +124,7 @@
             android:paddingEnd="@dimen/fre_button_padding"
             android:text="@string/fre_accept_continue"
             android:animateLayoutChanges="true"
-            style="@style/FilledButton.Flat" />
+            style="@style/FreAcceptTosButton" />
 
         <!-- Same location as the button; marginBottom is adjusted for the different size. -->
         <ProgressBar
