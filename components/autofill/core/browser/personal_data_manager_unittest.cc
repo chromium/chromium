@@ -261,12 +261,6 @@ class PersonalDataManagerTestBase {
     return personal_data->IsSyncFeatureEnabled();
   }
 
-  void EnableWalletCardImport() {
-    identity_test_env_.MakePrimaryAccountAvailable(kPrimaryAccountEmail);
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kEnableOfferStoreUnmaskedWalletCards);
-  }
-
   void RemoveByGUIDFromPersonalDataManager(const std::string& guid,
                                            PersonalDataManager* personal_data) {
     base::RunLoop run_loop;
@@ -1059,7 +1053,6 @@ TEST_F(PersonalDataManagerTest, AddUpdateRemoveProfiles) {
 }
 
 TEST_F(PersonalDataManagerTest, AddUpdateRemoveCreditCards) {
-  EnableWalletCardImport();
   CreditCard credit_card0(base::GenerateGUID(), test::kEmptyOrigin);
   test::SetCreditCardInfo(&credit_card0, "John Dillinger",
                           "4234567890123456" /* Visa */, "01", "2999", "1");
@@ -1147,7 +1140,6 @@ TEST_F(PersonalDataManagerTest, DoNotAddGoogleIssuedCreditCardExpOff) {
   base::test::ScopedFeatureList scoped_features;
   scoped_features.InitAndDisableFeature(
       features::kAutofillEnableGoogleIssuedCard);
-  EnableWalletCardImport();
   // Set up the credit cards.
   CreditCard credit_card0 = test::GetMaskedServerCard();
   credit_card0.set_card_issuer(CreditCard::Issuer::ISSUER_UNKNOWN);
@@ -1173,7 +1165,6 @@ TEST_F(PersonalDataManagerTest, AddGoogleIssuedCreditCard) {
   base::test::ScopedFeatureList scoped_features;
   scoped_features.InitAndEnableFeature(
       features::kAutofillEnableGoogleIssuedCard);
-  EnableWalletCardImport();
   // Set up the credit cards.
   CreditCard credit_card0 = test::GetMaskedServerCard();
   credit_card0.set_card_issuer(CreditCard::Issuer::ISSUER_UNKNOWN);
@@ -3055,7 +3046,6 @@ TEST_F(PersonalDataManagerTest, IsKnownCard_MatchesFullServerCard) {
 }
 
 TEST_F(PersonalDataManagerTest, IsKnownCard_MatchesLocalCard) {
-  EnableWalletCardImport();
   // Add a local card.
   CreditCard credit_card0("287151C8-6AB1-487C-9095-28E80BE5DA15",
                           test::kEmptyOrigin);
@@ -3074,7 +3064,6 @@ TEST_F(PersonalDataManagerTest, IsKnownCard_MatchesLocalCard) {
 }
 
 TEST_F(PersonalDataManagerTest, IsKnownCard_TypeDoesNotMatch) {
-  EnableWalletCardImport();
   // Add a local card.
   CreditCard credit_card0("287151C8-6AB1-487C-9095-28E80BE5DA15",
                           test::kEmptyOrigin);
@@ -3094,7 +3083,6 @@ TEST_F(PersonalDataManagerTest, IsKnownCard_TypeDoesNotMatch) {
 }
 
 TEST_F(PersonalDataManagerTest, IsKnownCard_LastFourDoesNotMatch) {
-  EnableWalletCardImport();
   // Add a local card.
   CreditCard credit_card0("287151C8-6AB1-487C-9095-28E80BE5DA15",
                           test::kEmptyOrigin);
@@ -3212,8 +3200,6 @@ TEST_F(PersonalDataManagerTest, IsServerCard_UniqueLocalCard) {
 // been typed in the field.
 TEST_F(PersonalDataManagerTest,
        GetCreditCardSuggestions_MaskedCardWithMoreThan6Numbers) {
-  EnableWalletCardImport();
-
   // Add a masked server card.
   std::vector<CreditCard> server_cards;
   server_cards.push_back(CreditCard(CreditCard::MASKED_SERVER_CARD, "b459"));
@@ -3265,7 +3251,6 @@ TEST_F(PersonalDataManagerTest, GetCreditCardSuggestions_LocalCardsRanking) {
 // Test that local and server cards are ordered as expected.
 TEST_F(PersonalDataManagerTest,
        GetCreditCardSuggestions_LocalAndServerCardsRanking) {
-  EnableWalletCardImport();
   SetUpReferenceLocalCreditCards();
 
   // Add some server cards.
@@ -3311,7 +3296,6 @@ TEST_F(PersonalDataManagerTest,
 // |kAutofillCreditCardEnabled| is set to |false|.
 TEST_F(PersonalDataManagerTest,
        GetCreditCardSuggestions_CreditCardAutofillDisabled) {
-  EnableWalletCardImport();
   SetUpReferenceLocalCreditCards();
 
   // Add some server cards.
@@ -3358,7 +3342,6 @@ TEST_F(PersonalDataManagerTest,
 // |kAutofillCreditCardEnabled| is set to |false|.
 TEST_F(PersonalDataManagerTest,
        GetCreditCardSuggestions_NoCardsLoadedIfDisabled) {
-  EnableWalletCardImport();
   SetUpReferenceLocalCreditCards();
 
   // Add some server cards.
@@ -3671,7 +3654,6 @@ TEST_F(PersonalDataManagerTest,
 
 // Tests the suggestions of duplicate local and server credit cards.
 TEST_F(PersonalDataManagerTest, GetCreditCardSuggestions_ServerDuplicates) {
-  EnableWalletCardImport();
   SetUpReferenceLocalCreditCards();
 
   // Add some server cards. If there are local dupes, the locals should be
@@ -3734,7 +3716,6 @@ TEST_F(PersonalDataManagerTest, GetCreditCardSuggestions_ServerDuplicates) {
 // Tests that a full server card can be a dupe of more than one local card.
 TEST_F(PersonalDataManagerTest,
        GetCreditCardSuggestions_ServerCardDuplicateOfMultipleLocalCards) {
-  EnableWalletCardImport();
   SetUpReferenceLocalCreditCards();
 
   // Add a duplicate server card.
@@ -3978,9 +3959,6 @@ TEST_F(PersonalDataManagerTest, ClearAllServerData) {
   SetServerCards(server_cards);
   personal_data_->Refresh();
   WaitForOnPersonalDataChanged();
-
-  // Need to set the google services username
-  EnableWalletCardImport();
 
   // The card and profile should be there.
   ResetPersonalDataManager(USER_MODE_NORMAL);
@@ -5635,7 +5613,6 @@ TEST_F(PersonalDataManagerTest,
   ///////////////////////////////////////////////////////////////////////
   // Setup.
   ///////////////////////////////////////////////////////////////////////
-  EnableWalletCardImport();
   ASSERT_TRUE(TurnOnSyncFeature());
 
   base::HistogramTester histogram_tester;
@@ -5738,7 +5715,6 @@ TEST_F(PersonalDataManagerTest,
   ///////////////////////////////////////////////////////////////////////
   // Setup.
   ///////////////////////////////////////////////////////////////////////
-  EnableWalletCardImport();
   ASSERT_TRUE(TurnOnSyncFeature());
 
   base::HistogramTester histogram_tester;
@@ -5834,7 +5810,6 @@ TEST_F(PersonalDataManagerTest,
   ///////////////////////////////////////////////////////////////////////
   // Setup.
   ///////////////////////////////////////////////////////////////////////
-  EnableWalletCardImport();
   ASSERT_TRUE(TurnOnSyncFeature());
 
   base::HistogramTester histogram_tester;
@@ -5877,7 +5852,6 @@ TEST_F(
   ///////////////////////////////////////////////////////////////////////
   // Setup.
   ///////////////////////////////////////////////////////////////////////
-  EnableWalletCardImport();
   ASSERT_TRUE(TurnOnSyncFeature());
 
   base::HistogramTester histogram_tester;
@@ -6002,7 +5976,6 @@ TEST_F(
   // Go through the conversion process for a server address and card. Then add
   // a new server card that refers to the already converted server address as
   // its billing address.
-  EnableWalletCardImport();
   ASSERT_TRUE(TurnOnSyncFeature());
 
   base::HistogramTester histogram_tester;
@@ -6094,7 +6067,6 @@ TEST_F(PersonalDataManagerTest, DoNotConvertWalletAddressesInEphemeralStorage) {
   ///////////////////////////////////////////////////////////////////////
   // Setup.
   ///////////////////////////////////////////////////////////////////////
-  EnableWalletCardImport();
   ResetPersonalDataManager(USER_MODE_NORMAL,
                            /*use_sync_transport_mode=*/true);
   ASSERT_FALSE(personal_data_->IsSyncFeatureEnabled());
@@ -6154,7 +6126,6 @@ TEST_F(PersonalDataManagerTest, RemoveByGUID_ResetsBillingAddress) {
   ///////////////////////////////////////////////////////////////////////
   // Setup.
   ///////////////////////////////////////////////////////////////////////
-  EnableWalletCardImport();
   std::vector<CreditCard> server_cards;
 
   // Add two different profiles
@@ -6282,7 +6253,6 @@ TEST_F(PersonalDataManagerTest, LogStoredProfileMetrics) {
 }
 
 TEST_F(PersonalDataManagerTest, LogStoredCreditCardMetrics) {
-  EnableWalletCardImport();
   ASSERT_EQ(0U, personal_data_->GetCreditCards().size());
 
   // Helper timestamps for setting up the test data.
@@ -7949,7 +7919,6 @@ class PersonalDataManagerTestForSharingNickname
  protected:
   void SetUp() override {
     PersonalDataManagerTest::SetUp();
-    EnableWalletCardImport();
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::
                                   kAutofillEnableSurfacingServerCardNickname,

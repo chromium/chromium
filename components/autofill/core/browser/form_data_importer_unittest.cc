@@ -132,11 +132,6 @@ class FormDataImporterTestBase {
     WaitForOnPersonalDataChanged();
   }
 
-  void EnableWalletCardImport() {
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kEnableOfferStoreUnmaskedWalletCards);
-  }
-
   // Helper method that will add credit card fields in |form|, according to the
   // specified values. If a value is nullptr, the corresponding field won't get
   // added (empty string will add a field with an empty string as the value).
@@ -3237,8 +3232,6 @@ TEST_P(FormDataImporterTest, ImportFormData_AddressCreditCardDisabled) {
 }
 
 TEST_P(FormDataImporterTest, DontDuplicateMaskedServerCard) {
-  EnableWalletCardImport();
-
   std::vector<CreditCard> server_cards;
   server_cards.push_back(CreditCard(CreditCard::MASKED_SERVER_CARD, "a123"));
   test::SetCreditCardInfo(&server_cards.back(), "John Dillinger",
@@ -3362,8 +3355,6 @@ TEST_P(FormDataImporterTest,
 }
 
 TEST_P(FormDataImporterTest, DontDuplicateFullServerCard) {
-  EnableWalletCardImport();
-
   std::vector<CreditCard> server_cards;
   server_cards.push_back(CreditCard(CreditCard::MASKED_SERVER_CARD, "a123"));
   test::SetCreditCardInfo(&server_cards.back(), "John Dillinger",
@@ -3415,8 +3406,6 @@ TEST_P(FormDataImporterTest, DontDuplicateFullServerCard) {
 
 TEST_P(FormDataImporterTest,
        Metrics_SubmittedServerCardExpirationStatus_FullServerCardMatch) {
-  EnableWalletCardImport();
-
   std::vector<CreditCard> server_cards;
   server_cards.push_back(CreditCard(CreditCard::FULL_SERVER_CARD, "c789"));
   test::SetCreditCardInfo(&server_cards.back(), "Clyde Barrow",
@@ -3467,8 +3456,6 @@ TEST_P(FormDataImporterTest,
 // server card and user submitted an invalid expiration date month.
 TEST_P(FormDataImporterTest,
        Metrics_SubmittedServerCardExpirationStatus_EmptyExpirationMonth) {
-  EnableWalletCardImport();
-
   std::vector<CreditCard> server_cards;
   server_cards.push_back(CreditCard(CreditCard::FULL_SERVER_CARD, "c789"));
   test::SetCreditCardInfo(&server_cards.back(), "Clyde Barrow",
@@ -3515,8 +3502,6 @@ TEST_P(FormDataImporterTest,
 // server card and user submitted an invalid expiration date year.
 TEST_P(FormDataImporterTest,
        Metrics_SubmittedServerCardExpirationStatus_EmptyExpirationYear) {
-  EnableWalletCardImport();
-
   std::vector<CreditCard> server_cards;
   server_cards.push_back(CreditCard(CreditCard::FULL_SERVER_CARD, "c789"));
   test::SetCreditCardInfo(&server_cards.back(), "Clyde Barrow",
@@ -3564,8 +3549,6 @@ TEST_P(FormDataImporterTest,
 TEST_P(
     FormDataImporterTest,
     Metrics_SubmittedDifferentServerCardExpirationStatus_EmptyExpirationYear) {
-  EnableWalletCardImport();
-
   std::vector<CreditCard> server_cards;
   server_cards.push_back(CreditCard(CreditCard::FULL_SERVER_CARD, "c789"));
   test::SetCreditCardInfo(&server_cards.back(), "Clyde Barrow",
@@ -3610,8 +3593,6 @@ TEST_P(
 
 TEST_P(FormDataImporterTest,
        Metrics_SubmittedServerCardExpirationStatus_FullServerCardMismatch) {
-  EnableWalletCardImport();
-
   std::vector<CreditCard> server_cards;
   server_cards.push_back(CreditCard(CreditCard::FULL_SERVER_CARD, "c789"));
   test::SetCreditCardInfo(&server_cards.back(), "Clyde Barrow",
@@ -3661,8 +3642,6 @@ TEST_P(FormDataImporterTest,
 
 TEST_P(FormDataImporterTest,
        Metrics_SubmittedServerCardExpirationStatus_MaskedServerCardMatch) {
-  EnableWalletCardImport();
-
   std::vector<CreditCard> server_cards;
   server_cards.push_back(CreditCard(CreditCard::MASKED_SERVER_CARD, "a123"));
   test::SetCreditCardInfo(&server_cards.back(), "John Dillinger",
@@ -3712,8 +3691,6 @@ TEST_P(FormDataImporterTest,
 
 TEST_P(FormDataImporterTest,
        Metrics_SubmittedServerCardExpirationStatus_MaskedServerCardMismatch) {
-  EnableWalletCardImport();
-
   std::vector<CreditCard> server_cards;
   server_cards.push_back(CreditCard(CreditCard::MASKED_SERVER_CARD, "a123"));
   test::SetCreditCardInfo(&server_cards.back(), "John Dillinger",

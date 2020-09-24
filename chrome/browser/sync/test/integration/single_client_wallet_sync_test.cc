@@ -823,11 +823,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest, ChangedEntityGetsUpdated) {
 // client even if the cards on the client are unmasked.
 IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest,
                        SameUpdatesAreIgnoredWhenLocalCardsUnmasked) {
-// We need to allow storing full server cards for this test to work properly.
-#if defined(OS_LINUX) && !defined(OS_CHROMEOS)
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      autofill::switches::kEnableOfferStoreUnmaskedWalletCards);
-#endif
   GetFakeServer()->SetWalletData(
       {CreateSyncWalletCard(/*name=*/"card-1", /*last_four=*/"0001",
                             kDefaultBillingAddressID),

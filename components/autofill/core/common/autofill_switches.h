@@ -16,8 +16,6 @@ extern const char kAutofillAPIKey[];
 extern const char kAutofillServerURL[];
 extern const char kAutofillMetadataUploadEncoding[];
 extern const char kAutofillUploadThrottlingPeriodInDays[];
-extern const char kDisableOfferStoreUnmaskedWalletCards[];
-extern const char kEnableOfferStoreUnmaskedWalletCards[];
 extern const char kIgnoreAutocompleteOffForAutofill[];
 extern const char kShowAutofillTypePredictions[];
 extern const char kShowAutofillSignatures[];

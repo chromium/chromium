@@ -2808,12 +2808,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSuggestionsWithSubStringMatchName,
      flag_descriptions::kSuggestionsWithSubStringMatchDescription, kOsAll,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillTokenPrefixMatching)},
-    {"enable-offer-store-unmasked-wallet-cards",
-     flag_descriptions::kOfferStoreUnmaskedWalletCardsName,
-     flag_descriptions::kOfferStoreUnmaskedWalletCardsDescription, kOsAll,
-     ENABLE_DISABLE_VALUE_TYPE(
-         autofill::switches::kEnableOfferStoreUnmaskedWalletCards,
-         autofill::switches::kDisableOfferStoreUnmaskedWalletCards)},
 #if defined(OS_CHROMEOS)
     {"enable-virtual-keyboard", flag_descriptions::kVirtualKeyboardName,
      flag_descriptions::kVirtualKeyboardDescription, kOsCrOS,

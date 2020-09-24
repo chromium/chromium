@@ -27,17 +27,6 @@ const char kAutofillMetadataUploadEncoding[] =
 const char kAutofillUploadThrottlingPeriodInDays[] =
     "autofill-upload-throttling-period-in-days";
 
-// Force hiding the local save checkbox in the autofill dialog box for getting
-// the full credit card number for a wallet card. The card will never be stored
-// locally.
-const char kDisableOfferStoreUnmaskedWalletCards[] =
-    "disable-offer-store-unmasked-wallet-cards";
-
-// Force showing the local save checkbox in the autofill dialog box for getting
-// the full credit card number for a wallet card.
-const char kEnableOfferStoreUnmaskedWalletCards[] =
-    "enable-offer-store-unmasked-wallet-cards";
-
 // Ignores autocomplete="off" for Autofill data (profiles + credit cards).
 const char kIgnoreAutocompleteOffForAutofill[] =
     "ignore-autocomplete-off-autofill";

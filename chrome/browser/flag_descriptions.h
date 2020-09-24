@@ -867,9 +867,6 @@ extern const char kNotificationsNativeFlagDescription[];
 extern const char kUseMultiloginEndpointName[];
 extern const char kUseMultiloginEndpointDescription[];
 
-extern const char kOfferStoreUnmaskedWalletCardsName[];
-extern const char kOfferStoreUnmaskedWalletCardsDescription[];
-
 extern const char kOmniboxAdaptiveSuggestionsCountName[];
 extern const char kOmniboxAdaptiveSuggestionsCountDescription[];
 
