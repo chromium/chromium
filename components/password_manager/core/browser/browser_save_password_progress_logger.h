@@ -9,14 +9,13 @@
 
 #include "base/macros.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
-#include "components/autofill/core/common/password_form.h"
 #include "components/autofill/core/common/save_password_progress_logger.h"
+#include "components/password_manager/core/browser/password_form_forward.h"
 #include "url/gurl.h"
 
 namespace autofill {
 class FormStructure;
 class LogManager;
-struct PasswordForm;
 }
 
 namespace password_manager {
@@ -48,7 +47,7 @@ class BrowserSavePasswordProgressLogger
   void LogSuccessfulSubmissionIndicatorEvent(
       autofill::mojom::SubmissionIndicatorEvent event);
 
-  void LogPasswordForm(StringID label, const autofill::PasswordForm& form);
+  void LogPasswordForm(StringID label, const PasswordForm& form);
 
  protected:
   // autofill::SavePasswordProgressLogger:

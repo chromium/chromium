@@ -5,8 +5,10 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_CREDENTIALS_FILTER_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_CREDENTIALS_FILTER_H_
 
+#include <string>
+
 #include "base/macros.h"
-#include "components/autofill/core/common/password_form.h"
+#include "components/password_manager/core/browser/password_form_forward.h"
 
 namespace password_manager {
 
@@ -22,17 +24,16 @@ class CredentialsFilter {
   // Should |form| be offered to be saved?
   // Note that this only refers to *saving* - *updating* an already stored
   // credential should still be allowed even if this returns false!
-  virtual bool ShouldSave(const autofill::PasswordForm& form) const = 0;
+  virtual bool ShouldSave(const PasswordForm& form) const = 0;
 
   // Returns true if the hash of the password in |form| should be saved for Gaia
   // password reuse checking.
-  virtual bool ShouldSaveGaiaPasswordHash(
-      const autofill::PasswordForm& form) const = 0;
+  virtual bool ShouldSaveGaiaPasswordHash(const PasswordForm& form) const = 0;
 
   // Returns true if the hash of the password in |form| should be saved for
   // enterprise password reuse checking.
   virtual bool ShouldSaveEnterprisePasswordHash(
-      const autofill::PasswordForm& form) const = 0;
+      const PasswordForm& form) const = 0;
 
   // Call this if the form associated with |form_manager| was filled, and the
   // subsequent sign-in looked like a success.

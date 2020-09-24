@@ -11,13 +11,11 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "components/autofill/core/common/password_form.h"
 #include "components/password_manager/core/browser/form_saver_impl.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_save_manager_impl.h"
 #include "components/password_manager/core/browser/password_store.h"
-
-using autofill::PasswordForm;
 
 namespace password_manager {
 

@@ -66,7 +66,7 @@ class CredentialManagerImpl
                       const CredentialInfo& info) override;
   void SendPasswordForm(SendCredentialCallback send_callback,
                         CredentialMediationRequirement mediation,
-                        const autofill::PasswordForm* form) override;
+                        const PasswordForm* form) override;
   PasswordManagerClient* client() const override;
 
   // CredentialManagerPendingPreventSilentAccessTaskDelegate:

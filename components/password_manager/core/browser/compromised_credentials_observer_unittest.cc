@@ -23,8 +23,8 @@ constexpr char kSite[] = "https://example.com/path";
 constexpr char kUsername[] = "peter";
 constexpr char kUsernameNew[] = "ana";
 
-autofill::PasswordForm TestForm(base::StringPiece username) {
-  autofill::PasswordForm form;
+PasswordForm TestForm(base::StringPiece username) {
+  PasswordForm form;
   form.url = GURL(kSite);
   form.signon_realm = form.url.GetOrigin().spec();
   form.username_value = base::ASCIIToUTF16(username);
@@ -52,7 +52,7 @@ class CompromisedCredentialsObserverTest : public testing::Test {
 };
 
 TEST_F(CompromisedCredentialsObserverTest, DeletePassword) {
-  const autofill::PasswordForm form = TestForm(kUsername);
+  const PasswordForm form = TestForm(kUsername);
   EXPECT_CALL(remove_callback(),
               Run(form.signon_realm, form.username_value,
                   RemoveCompromisedCredentialsReason::kRemove));
@@ -63,7 +63,7 @@ TEST_F(CompromisedCredentialsObserverTest, DeletePassword) {
 }
 
 TEST_F(CompromisedCredentialsObserverTest, UpdateFormNoPasswordChange) {
-  const autofill::PasswordForm form = TestForm(kUsername);
+  const PasswordForm form = TestForm(kUsername);
   EXPECT_CALL(remove_callback(), Run).Times(0);
   ProcessLoginsChanged(
       {PasswordStoreChange(PasswordStoreChange::UPDATE, form, 1000, false)},
@@ -72,7 +72,7 @@ TEST_F(CompromisedCredentialsObserverTest, UpdateFormNoPasswordChange) {
 }
 
 TEST_F(CompromisedCredentialsObserverTest, UpdatePassword) {
-  const autofill::PasswordForm form = TestForm(kUsername);
+  const PasswordForm form = TestForm(kUsername);
   EXPECT_CALL(remove_callback(),
               Run(form.signon_realm, form.username_value,
                   RemoveCompromisedCredentialsReason::kUpdate));
@@ -84,7 +84,7 @@ TEST_F(CompromisedCredentialsObserverTest, UpdatePassword) {
 }
 
 TEST_F(CompromisedCredentialsObserverTest, UpdateTwice) {
-  const autofill::PasswordForm form = TestForm(kUsername);
+  const PasswordForm form = TestForm(kUsername);
   EXPECT_CALL(remove_callback(),
               Run(form.signon_realm, form.username_value,
                   RemoveCompromisedCredentialsReason::kUpdate));
@@ -98,7 +98,7 @@ TEST_F(CompromisedCredentialsObserverTest, UpdateTwice) {
 }
 
 TEST_F(CompromisedCredentialsObserverTest, AddPassword) {
-  const autofill::PasswordForm form = TestForm(kUsername);
+  const PasswordForm form = TestForm(kUsername);
   EXPECT_CALL(remove_callback(), Run).Times(0);
   ProcessLoginsChanged({PasswordStoreChange(PasswordStoreChange::ADD, form)},
                        remove_callback().Get());
@@ -106,7 +106,7 @@ TEST_F(CompromisedCredentialsObserverTest, AddPassword) {
 }
 
 TEST_F(CompromisedCredentialsObserverTest, AddReplacePassword) {
-  autofill::PasswordForm form = TestForm(kUsername);
+  PasswordForm form = TestForm(kUsername);
   PasswordStoreChange remove(PasswordStoreChange::REMOVE, form);
   form.password_value = base::ASCIIToUTF16("new_password_12345");
   PasswordStoreChange add(PasswordStoreChange::ADD, form);
@@ -119,7 +119,7 @@ TEST_F(CompromisedCredentialsObserverTest, AddReplacePassword) {
 }
 
 TEST_F(CompromisedCredentialsObserverTest, UpdateWithPrimaryKey) {
-  const autofill::PasswordForm old_form = TestForm(kUsername);
+  const PasswordForm old_form = TestForm(kUsername);
   PasswordStoreChange remove(PasswordStoreChange::REMOVE, old_form);
   PasswordStoreChange add(PasswordStoreChange::ADD, TestForm(kUsernameNew));
   EXPECT_CALL(remove_callback(),
@@ -131,9 +131,9 @@ TEST_F(CompromisedCredentialsObserverTest, UpdateWithPrimaryKey) {
 }
 
 TEST_F(CompromisedCredentialsObserverTest, UpdateWithPrimaryKey_RemoveTwice) {
-  const autofill::PasswordForm old_form = TestForm(kUsername);
+  const PasswordForm old_form = TestForm(kUsername);
   PasswordStoreChange remove_old(PasswordStoreChange::REMOVE, old_form);
-  const autofill::PasswordForm conflicting_new_form = TestForm(kUsernameNew);
+  const PasswordForm conflicting_new_form = TestForm(kUsernameNew);
   PasswordStoreChange remove_conflicting(PasswordStoreChange::REMOVE,
                                          conflicting_new_form);
   PasswordStoreChange add(PasswordStoreChange::ADD, TestForm(kUsernameNew));

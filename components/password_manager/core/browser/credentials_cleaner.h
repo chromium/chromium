@@ -8,9 +8,7 @@
 #include <memory>
 #include <vector>
 
-namespace autofill {
-struct PasswordForm;
-}
+#include "components/password_manager/core/browser/password_form_forward.h"
 
 namespace password_manager {
 
@@ -51,9 +49,8 @@ class CredentialsCleaner {
   // Iterates through |forms| and removes credentials whose signon_realm does
   // not correspond to a HTTP or HTTPS scheme. In particular, this filters out
   // Android and federated credentials. Returns the result.
-  static std::vector<std::unique_ptr<autofill::PasswordForm>>
-  RemoveNonHTTPOrHTTPSForms(
-      std::vector<std::unique_ptr<autofill::PasswordForm>> forms);
+  static std::vector<std::unique_ptr<PasswordForm>> RemoveNonHTTPOrHTTPSForms(
+      std::vector<std::unique_ptr<PasswordForm>> forms);
 };
 
 }  // namespace password_manager

@@ -4,7 +4,7 @@
 
 #include "components/password_manager/core/browser/credential_manager_pending_prevent_silent_access_task.h"
 
-#include "components/autofill/core/common/password_form.h"
+#include "components/password_manager/core/browser/password_form.h"
 
 namespace password_manager {
 
@@ -27,7 +27,7 @@ void CredentialManagerPendingPreventSilentAccessTask::AddOrigin(
 }
 
 void CredentialManagerPendingPreventSilentAccessTask::OnGetPasswordStoreResults(
-    std::vector<std::unique_ptr<autofill::PasswordForm>> results) {
+    std::vector<std::unique_ptr<PasswordForm>> results) {
   // This class overrides OnGetPasswordStoreResultsFrom() (the version of this
   // method that also receives the originating store), so the store-less version
   // never gets called.
@@ -37,7 +37,7 @@ void CredentialManagerPendingPreventSilentAccessTask::OnGetPasswordStoreResults(
 void CredentialManagerPendingPreventSilentAccessTask::
     OnGetPasswordStoreResultsFrom(
         PasswordStore* store,
-        std::vector<std::unique_ptr<autofill::PasswordForm>> results) {
+        std::vector<std::unique_ptr<PasswordForm>> results) {
   for (const auto& form : results) {
     if (!form->skip_zero_click) {
       form->skip_zero_click = true;

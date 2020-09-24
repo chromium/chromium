@@ -7,11 +7,8 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "components/password_manager/core/browser/password_form_forward.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
-
-namespace autofill {
-struct PasswordForm;
-}
 
 namespace password_manager {
 
@@ -39,7 +36,7 @@ class CredentialManagerPasswordFormManager : public PasswordFormManager {
   // This class does not take ownership of |delegate|.
   CredentialManagerPasswordFormManager(
       PasswordManagerClient* client,
-      std::unique_ptr<autofill::PasswordForm> saved_form,
+      std::unique_ptr<PasswordForm> saved_form,
       CredentialManagerPasswordFormManagerDelegate* delegate,
       std::unique_ptr<FormSaver> form_saver,
       std::unique_ptr<FormFetcher> form_fetcher);

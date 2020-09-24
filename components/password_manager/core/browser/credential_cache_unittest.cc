@@ -9,8 +9,8 @@
 
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/autofill/core/common/password_form.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -19,7 +19,6 @@ namespace password_manager {
 
 namespace {
 
-using autofill::PasswordForm;
 using url::Origin;
 
 using IsPublicSuffixMatch = UiCredential::IsPublicSuffixMatch;

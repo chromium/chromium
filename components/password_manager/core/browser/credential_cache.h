@@ -9,11 +9,8 @@
 
 #include "base/strings/string16.h"
 #include "base/util/type_safety/strong_alias.h"
+#include "components/password_manager/core/browser/password_form_forward.h"
 #include "url/origin.h"
-
-namespace autofill {
-struct PasswordForm;
-}  // namespace autofill
 
 namespace password_manager {
 
@@ -34,7 +31,7 @@ class CredentialCache {
   // Saves credentials and blacklisted status for an origin so that they can be
   // used in the sheet.
   void SaveCredentialsAndBlacklistedForOrigin(
-      const std::vector<const autofill::PasswordForm*>& matches,
+      const std::vector<const PasswordForm*>& matches,
       IsOriginBlacklisted is_blacklisted,
       const url::Origin& origin);
 

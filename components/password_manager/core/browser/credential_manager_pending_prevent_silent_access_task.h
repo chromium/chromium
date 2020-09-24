@@ -38,10 +38,10 @@ class CredentialManagerPendingPreventSilentAccessTask
 
   // PasswordStoreConsumer implementation.
   void OnGetPasswordStoreResults(
-      std::vector<std::unique_ptr<autofill::PasswordForm>> results) override;
+      std::vector<std::unique_ptr<PasswordForm>> results) override;
   void OnGetPasswordStoreResultsFrom(
       PasswordStore* store,
-      std::vector<std::unique_ptr<autofill::PasswordForm>> results) override;
+      std::vector<std::unique_ptr<PasswordForm>> results) override;
 
  private:
   CredentialManagerPendingPreventSilentAccessTaskDelegate* const

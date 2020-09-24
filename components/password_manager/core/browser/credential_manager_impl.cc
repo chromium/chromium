@@ -51,7 +51,7 @@ void CredentialManagerImpl::Store(const CredentialInfo& credential,
 
   client_->NotifyStorePasswordCalled();
 
-  std::unique_ptr<autofill::PasswordForm> form(
+  std::unique_ptr<PasswordForm> form(
       CreatePasswordFormFromCredentialInfo(credential, origin));
 
   // Check whether a stored password credential was leaked.
@@ -59,8 +59,8 @@ void CredentialManagerImpl::Store(const CredentialInfo& credential,
     leak_delegate_.StartLeakCheck(*form);
 
   std::string signon_realm = origin.GetURL().spec();
-  PasswordStore::FormDigest observed_digest(
-      autofill::PasswordForm::Scheme::kHtml, signon_realm, origin.GetURL());
+  PasswordStore::FormDigest observed_digest(PasswordForm::Scheme::kHtml,
+                                            signon_realm, origin.GetURL());
 
   // Create a custom form fetcher without HTTP->HTTPS migration as the API is
   // only available on HTTPS origins.
@@ -169,7 +169,7 @@ bool CredentialManagerImpl::IsZeroClickAllowed() const {
 
 PasswordStore::FormDigest CredentialManagerImpl::GetSynthesizedFormForOrigin()
     const {
-  PasswordStore::FormDigest digest = {autofill::PasswordForm::Scheme::kHtml,
+  PasswordStore::FormDigest digest = {PasswordForm::Scheme::kHtml,
                                       std::string(), GetOrigin().GetURL()};
   digest.signon_realm = digest.url.spec();
   return digest;
@@ -194,7 +194,7 @@ void CredentialManagerImpl::SendCredential(SendCredentialCallback send_callback,
 void CredentialManagerImpl::SendPasswordForm(
     SendCredentialCallback send_callback,
     CredentialMediationRequirement mediation,
-    const autofill::PasswordForm* form) {
+    const PasswordForm* form) {
   CredentialInfo info;
   if (form) {
     password_manager::CredentialType type_to_return =
@@ -207,7 +207,7 @@ void CredentialManagerImpl::SendPasswordForm(
                                : GetProfilePasswordStore();
     if (store) {
       if (form->skip_zero_click && IsZeroClickAllowed()) {
-        autofill::PasswordForm update_form = *form;
+        PasswordForm update_form = *form;
         update_form.skip_zero_click = false;
         store->UpdateLogin(update_form);
       }
@@ -244,7 +244,7 @@ void CredentialManagerImpl::DoneRequiringUserMediation() {
 
 void CredentialManagerImpl::OnProvisionalSaveComplete() {
   DCHECK(form_manager_);
-  const autofill::PasswordForm& form = form_manager_->GetPendingCredentials();
+  const PasswordForm& form = form_manager_->GetPendingCredentials();
   DCHECK(client_->IsSavingAndFillingEnabled(form.url));
 
   if (form_manager_->IsPendingCredentialsPublicSuffixMatch()) {

@@ -30,20 +30,19 @@ class TestPasswordManagerClient : public StubPasswordManagerClient {
 
   // Store |forms| in |forms_passed_to_ui_|.
   bool PromptUserToChooseCredentials(
-      std::vector<std::unique_ptr<autofill::PasswordForm>> forms,
+      std::vector<std::unique_ptr<PasswordForm>> forms,
       const url::Origin& origin,
       CredentialsCallback callback) override {
     forms_passed_to_ui_ = std::move(forms);
     return true;
   }
 
-  const std::vector<std::unique_ptr<autofill::PasswordForm>>&
-  forms_passed_to_ui() {
+  const std::vector<std::unique_ptr<PasswordForm>>& forms_passed_to_ui() {
     return forms_passed_to_ui_;
   }
 
  private:
-  std::vector<std::unique_ptr<autofill::PasswordForm>> forms_passed_to_ui_;
+  std::vector<std::unique_ptr<PasswordForm>> forms_passed_to_ui_;
   PasswordStore* profile_store_;
   PasswordStore* account_store_;
 };
@@ -66,7 +65,7 @@ class CredentialManagerPendingRequestTaskDelegateMock
               SendPasswordForm,
               (SendCredentialCallback send_callback,
                CredentialMediationRequirement mediation,
-               const autofill::PasswordForm* form),
+               const PasswordForm* form),
               (override));
 };
 }  // namespace
@@ -92,7 +91,7 @@ class CredentialManagerPendingRequestTaskTest : public ::testing::Test {
     form_.password_value = base::ASCIIToUTF16("Password");
     form_.url = url;
     form_.signon_realm = form_.url.GetOrigin().spec();
-    form_.scheme = autofill::PasswordForm::Scheme::kHtml;
+    form_.scheme = PasswordForm::Scheme::kHtml;
     form_.skip_zero_click = false;
   }
   ~CredentialManagerPendingRequestTaskTest() override = default;
@@ -111,7 +110,7 @@ class CredentialManagerPendingRequestTaskTest : public ::testing::Test {
       delegate_mock_;
   scoped_refptr<TestPasswordStore> profile_store_;
   scoped_refptr<TestPasswordStore> account_store_;
-  autofill::PasswordForm form_;
+  PasswordForm form_;
 
  private:
   base::test::TaskEnvironment task_environment_;
@@ -156,19 +155,17 @@ TEST_F(CredentialManagerPendingRequestTaskTest,
       CredentialMediationRequirement::kOptional, /*include_passwords=*/true,
       /*request_federations=*/{}, StoresToQuery::kProfileAndAccountStores);
 
-  autofill::PasswordForm profile_form = form_;
-  profile_form.in_store = autofill::PasswordForm::Store::kProfileStore;
+  PasswordForm profile_form = form_;
+  profile_form.in_store = PasswordForm::Store::kProfileStore;
   profile_form.password_value = base::ASCIIToUTF16("ProfilePassword");
-  std::vector<std::unique_ptr<autofill::PasswordForm>> profile_forms;
-  profile_forms.push_back(
-      std::make_unique<autofill::PasswordForm>(profile_form));
+  std::vector<std::unique_ptr<PasswordForm>> profile_forms;
+  profile_forms.push_back(std::make_unique<PasswordForm>(profile_form));
 
-  autofill::PasswordForm account_form = form_;
-  account_form.in_store = autofill::PasswordForm::Store::kAccountStore;
+  PasswordForm account_form = form_;
+  account_form.in_store = PasswordForm::Store::kAccountStore;
   account_form.password_value = base::ASCIIToUTF16("AccountPassword");
-  std::vector<std::unique_ptr<autofill::PasswordForm>> account_forms;
-  account_forms.push_back(
-      std::make_unique<autofill::PasswordForm>(account_form));
+  std::vector<std::unique_ptr<PasswordForm>> account_forms;
+  account_forms.push_back(std::make_unique<PasswordForm>(account_form));
 
   task.OnGetPasswordStoreResultsFrom(profile_store_.get(),
                                      std::move(profile_forms));
@@ -186,17 +183,15 @@ TEST_F(CredentialManagerPendingRequestTaskTest,
       CredentialMediationRequirement::kOptional, /*include_passwords=*/true,
       /*request_federations=*/{}, StoresToQuery::kProfileAndAccountStores);
 
-  autofill::PasswordForm profile_form = form_;
-  profile_form.in_store = autofill::PasswordForm::Store::kProfileStore;
-  std::vector<std::unique_ptr<autofill::PasswordForm>> profile_forms;
-  profile_forms.push_back(
-      std::make_unique<autofill::PasswordForm>(profile_form));
+  PasswordForm profile_form = form_;
+  profile_form.in_store = PasswordForm::Store::kProfileStore;
+  std::vector<std::unique_ptr<PasswordForm>> profile_forms;
+  profile_forms.push_back(std::make_unique<PasswordForm>(profile_form));
 
-  autofill::PasswordForm account_form = form_;
-  account_form.in_store = autofill::PasswordForm::Store::kAccountStore;
-  std::vector<std::unique_ptr<autofill::PasswordForm>> account_forms;
-  account_forms.push_back(
-      std::make_unique<autofill::PasswordForm>(account_form));
+  PasswordForm account_form = form_;
+  account_form.in_store = PasswordForm::Store::kAccountStore;
+  std::vector<std::unique_ptr<PasswordForm>> account_forms;
+  account_forms.push_back(std::make_unique<PasswordForm>(account_form));
 
   task.OnGetPasswordStoreResultsFrom(profile_store_.get(),
                                      std::move(profile_forms));
@@ -220,17 +215,15 @@ TEST_F(CredentialManagerPendingRequestTaskTest,
   form_.password_value = base::string16();
   form_.signon_realm = "federation://example.com/google.com";
 
-  autofill::PasswordForm profile_form = form_;
-  profile_form.in_store = autofill::PasswordForm::Store::kProfileStore;
-  std::vector<std::unique_ptr<autofill::PasswordForm>> profile_forms;
-  profile_forms.push_back(
-      std::make_unique<autofill::PasswordForm>(profile_form));
+  PasswordForm profile_form = form_;
+  profile_form.in_store = PasswordForm::Store::kProfileStore;
+  std::vector<std::unique_ptr<PasswordForm>> profile_forms;
+  profile_forms.push_back(std::make_unique<PasswordForm>(profile_form));
 
-  autofill::PasswordForm account_form = form_;
-  account_form.in_store = autofill::PasswordForm::Store::kAccountStore;
-  std::vector<std::unique_ptr<autofill::PasswordForm>> account_forms;
-  account_forms.push_back(
-      std::make_unique<autofill::PasswordForm>(account_form));
+  PasswordForm account_form = form_;
+  account_form.in_store = PasswordForm::Store::kAccountStore;
+  std::vector<std::unique_ptr<PasswordForm>> account_forms;
+  account_forms.push_back(std::make_unique<PasswordForm>(account_form));
 
   task.OnGetPasswordStoreResultsFrom(profile_store_.get(),
                                      std::move(profile_forms));
