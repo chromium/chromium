@@ -18,6 +18,7 @@
 
 using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::ContentSettingsButton;
+using chrome_test_util::PaymentMethodsButton;
 using chrome_test_util::SettingsCollectionView;
 using chrome_test_util::SettingsDoneButton;
 using chrome_test_util::SettingsMenuBackButton;
@@ -33,10 +34,6 @@ id<GREYMatcher> ClearBrowsingDataCell() {
 // Matcher for the Search Engine cell on the main Settings screen.
 id<GREYMatcher> SearchEngineButton() {
   return ButtonWithAccessibilityLabelId(IDS_IOS_SEARCH_ENGINE_SETTING_TITLE);
-}
-// Matcher for the payment methods cell on the main Settings screen.
-id<GREYMatcher> PaymentMethodsButton() {
-  return ButtonWithAccessibilityLabelId(IDS_AUTOFILL_PAYMENT_METHODS);
 }
 // Matcher for the addresses cell on the main Settings screen.
 id<GREYMatcher> AddressesButton() {

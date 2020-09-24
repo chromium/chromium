@@ -29,6 +29,7 @@
 using chrome_test_util::ButtonWithAccessibilityLabel;
 using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::NavigationBarDoneButton;
+using chrome_test_util::PaymentMethodsButton;
 using chrome_test_util::SettingsMenuBackButton;
 using chrome_test_util::SettingsDoneButton;
 
@@ -93,12 +94,7 @@ id<GREYMatcher> BottomToolbar() {
 // Helper to open the settings page for Autofill credit cards.
 - (void)openCreditCardsSettings {
   [ChromeEarlGreyUI openSettingsMenu];
-  [[[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityLabel(
-                                           l10n_util::GetNSString(
-                                               IDS_AUTOFILL_PAYMENT_METHODS))]
-         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 200)
-      onElementWithMatcher:chrome_test_util::SettingsCollectionView()]
-      performAction:grey_tap()];
+  [ChromeEarlGreyUI tapSettingsMenuButton:PaymentMethodsButton()];
 }
 
 // Helper to open the settings page for the Autofill credit card with |label|.
