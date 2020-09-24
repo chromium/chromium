@@ -4,6 +4,7 @@
 
 #include "ash/wallpaper/wallpaper_view.h"
 
+#include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_animation_types.h"
 #include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
@@ -208,9 +209,11 @@ void WallpaperView::DrawWallpaper(const gfx::ImageSkia& wallpaper,
 
 std::unique_ptr<views::Widget> CreateWallpaperWidget(
     aura::Window* root_window,
-    int container_id,
     const WallpaperProperty& property,
+    bool locked,
     WallpaperView** out_wallpaper_view) {
+  int container_id = locked ? kShellWindowId_LockScreenWallpaperContainer
+                            : kShellWindowId_WallpaperContainer;
   auto* controller = Shell::Get()->wallpaper_controller();
 
   auto wallpaper_widget = std::make_unique<views::Widget>();
@@ -238,11 +241,13 @@ std::unique_ptr<views::Widget> CreateWallpaperWidget(
   // 2. Wallpaper fades in from a non empty background.
   // 3. From an empty background, chrome transit to a logged in user session.
   // 4. From an empty background, guest user logged in.
-  if (controller->ShouldShowInitialAnimation() ||
-      RootWindowController::ForWindow(root_window)
-          ->wallpaper_widget_controller()
-          ->IsAnimating() ||
-      Shell::Get()->session_controller()->NumberOfLoggedInUsers()) {
+  // except for the lock state.
+  if (!locked &&
+      (controller->ShouldShowInitialAnimation() ||
+       RootWindowController::ForWindow(root_window)
+           ->wallpaper_widget_controller()
+           ->IsAnimating() ||
+       Shell::Get()->session_controller()->NumberOfLoggedInUsers())) {
     ::wm::SetWindowVisibilityAnimationTransition(wallpaper_window,
                                                  ::wm::ANIMATE_SHOW);
     base::TimeDelta animation_duration = controller->animation_duration();

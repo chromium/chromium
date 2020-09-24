@@ -880,11 +880,8 @@ void RootWindowController::Init(RootWindowType root_window_type) {
       base::BindOnce(&RootWindowController::OnFirstWallpaperWidgetSet,
                      base::Unretained(this)));
 
-  int container = Shell::Get()->session_controller()->IsUserSessionBlocked()
-                      ? kShellWindowId_LockScreenWallpaperContainer
-                      : kShellWindowId_WallpaperContainer;
-  wallpaper_widget_controller_->Init(container);
-
+  wallpaper_widget_controller_->Init(
+      Shell::Get()->session_controller()->IsUserSessionBlocked());
   root_window_layout_manager_->OnWindowResized();
 
   // Explicitly update the desks controller before notifying the ShellObservers.

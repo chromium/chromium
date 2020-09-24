@@ -1414,11 +1414,13 @@ void DisplayManager::AddRemoveDisplay(
 
     const int kVerticalOffsetPx = 100;
     // Layout the 2nd display below the primary as with the real device.
-    ManagedDisplayInfo display = ManagedDisplayInfo::CreateFromSpec(
+    ManagedDisplayInfo display = ManagedDisplayInfo::CreateFromSpecWithID(
         base::StringPrintf("%d+%d-%dx%d", host_bounds.x(),
                            host_bounds.bottom() + kVerticalOffsetPx,
                            native_display_mode->size().width(),
-                           native_display_mode->size().height()));
+                           native_display_mode->size().height()),
+        first_display.id() + 1);
+
     display.SetManagedDisplayModes(std::move(display_modes));
     new_display_info_list.push_back(std::move(display));
   }

@@ -347,7 +347,8 @@ class ASH_EXPORT WallpaperControllerImpl
 
   // Update a Wallpaper for |root_window|.
   void UpdateWallpaperForRootWindow(aura::Window* root_window,
-                                    bool lock_state_changed);
+                                    bool lock_state_changed,
+                                    bool new_root);
 
   // Update a Wallpaper for all root windows.
   void UpdateWallpaperForAllRootWindows(bool lock_state_changed);

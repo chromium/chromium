@@ -68,8 +68,8 @@ class WallpaperView : public WallpaperBaseView,
 
 std::unique_ptr<views::Widget> CreateWallpaperWidget(
     aura::Window* root_window,
-    int container_id,
     const WallpaperProperty& property,
+    bool locked,
     WallpaperView** out_wallpaper_view);
 
 }  // namespace ash

@@ -34,9 +34,9 @@ WallpaperWidgetController::~WallpaperWidgetController() {
   widget_->CloseNow();
 }
 
-void WallpaperWidgetController::Init(int container) {
-  widget_ = CreateWallpaperWidget(
-      root_window_, container, wallpaper_constants::kClear, &wallpaper_view_);
+void WallpaperWidgetController::Init(bool locked) {
+  widget_ = CreateWallpaperWidget(root_window_, wallpaper_constants::kClear,
+                                  locked, &wallpaper_view_);
 }
 
 views::Widget* WallpaperWidgetController::GetWidget() {
