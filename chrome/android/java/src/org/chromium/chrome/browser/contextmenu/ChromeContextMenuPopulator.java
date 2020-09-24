@@ -389,7 +389,8 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
         // being loaded. Only use native URL formatting methods
         // if the native libraries have been loaded.
         if (BrowserStartupController.getInstance().isFullBrowserStarted()) {
-            return UrlFormatter.formatUrlForDisplayOmitHTTPScheme(params.getLinkUrl());
+            return UrlFormatter.formatUrlForDisplayOmitSchemeOmitTrivialSubdomains(
+                    params.getLinkUrl());
         }
         return params.getLinkUrl();
     }
