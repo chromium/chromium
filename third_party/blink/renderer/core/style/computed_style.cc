@@ -2138,8 +2138,9 @@ StyleColor ComputedStyle::DecorationColorIncludingFallback(
     StyleColor text_stroke_style_color =
         visited_link ? InternalVisitedTextStrokeColor() : TextStrokeColor();
     if (!text_stroke_style_color.IsCurrentColor() &&
-        text_stroke_style_color.GetColor().Alpha())
+        text_stroke_style_color.Resolve(Color(), UsedColorScheme()).Alpha()) {
       return text_stroke_style_color;
+    }
   }
 
   return visited_link ? InternalVisitedTextFillColor() : TextFillColor();
