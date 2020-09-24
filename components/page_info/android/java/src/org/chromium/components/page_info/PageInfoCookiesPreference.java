@@ -6,6 +6,7 @@ package org.chromium.components.page_info;
 import android.os.Bundle;
 import android.text.format.Formatter;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
@@ -29,6 +30,7 @@ public class PageInfoCookiesPreference extends PreferenceFragmentCompat {
 
     private ChromeSwitchPreference mCookieSwitch;
     private ChromeBasePreference mCookieInUse;
+    private Runnable mOnClearCallback;
 
     /**  Parameters to configure the cookie controls view. */
     public static class PageInfoCookiesViewParams {
@@ -65,14 +67,25 @@ public class PageInfoCookiesPreference extends PreferenceFragmentCompat {
         mCookieInUse.setIcon(
                 SettingsUtils.getTintedIcon(getContext(), R.drawable.permission_cookie));
 
+        mOnClearCallback = params.onClearCallback;
         ButtonPreference clearButton = findPreference(CLEAR_BUTTON_PREFERENCE);
         clearButton.setOnPreferenceClickListener(preference -> {
-            params.onClearCallback.run();
+            showClearCookiesConfirmation();
             return true;
         });
         if (params.disableCookieDeletion) {
             clearButton.setEnabled(false);
         }
+    }
+
+    private void showClearCookiesConfirmation() {
+        new AlertDialog.Builder(getActivity(), R.style.Theme_Chromium_AlertDialog)
+                .setTitle(R.string.page_info_cookies_clear)
+                .setMessage(R.string.page_info_cookies_clear_confirmation)
+                .setPositiveButton(R.string.page_info_cookies_clear_confirmation_button,
+                        (dialog, which) -> mOnClearCallback.run())
+                .setNegativeButton(R.string.cancel, null)
+                .show();
     }
 
     public void setCookieBlockingStatus(@CookieControlsStatus int status, boolean isEnforced) {

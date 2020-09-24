@@ -362,6 +362,7 @@ public class PageInfoViewTest {
         onViewWaiting(allOf(withText(containsString("stored data")), isDisplayed()));
         // Clear cookies in page info.
         onView(withText("Clear cookies")).perform(click());
+        onView(withText("Clear")).perform(click());
         // Wait until the UI navigates back and check cookies are deleted.
         onViewWaiting(allOf(withId(R.id.page_info_cookies_row), isDisplayed()));
         expectHasCookies(false);
