@@ -852,7 +852,7 @@ def CreateMetadata(map_path, elf_path, apk_path, minimal_apks_path, tool_prefix,
         key += '-' + name
       metadata[key] = size
 
-  return metadata or None
+  return metadata
 
 
 def _ResolveThinArchivePaths(raw_symbols, thin_archives):
