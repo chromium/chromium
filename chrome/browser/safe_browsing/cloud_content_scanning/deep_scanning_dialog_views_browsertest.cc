@@ -22,6 +22,7 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/throbber.h"
+#include "ui/views/test/ax_event_counter.h"
 
 namespace safe_browsing {
 
@@ -41,13 +42,15 @@ base::string16 text() {
 // - It respects time constraints (minimum shown time, initial delay, timeout)
 // - It is always destroyed, therefore |quit_closure_| is called in the dtor
 //   observer.
+// - It sends accessibility events correctly.
 class DeepScanningDialogViewsBehaviorBrowserTest
     : public DeepScanningBrowserTestBase,
       public DeepScanningDialogViews::TestObserver,
       public testing::WithParamInterface<
           std::tuple<bool, bool, base::TimeDelta>> {
  public:
-  DeepScanningDialogViewsBehaviorBrowserTest() {
+  DeepScanningDialogViewsBehaviorBrowserTest()
+      : ax_event_counter_(views::AXEventManager::Get()) {
     DeepScanningDialogViews::SetObserverForTesting(this);
 
     expected_scan_result_ = dlp_success() && malware_success();
@@ -86,6 +89,11 @@ class DeepScanningDialogViewsBehaviorBrowserTest
     // The dialog's buttons should be Cancel in the pending and fail case.
     EXPECT_EQ(dialog_->GetDialogButtons(), ui::DIALOG_BUTTON_CANCEL);
 
+    // Record the number of AX events until now to check if the text update adds
+    // one later.
+    ax_events_count_when_first_shown_ =
+        ax_event_counter_.GetCount(ax::mojom::Event::kAlert);
+
     // The dialog should only be shown once some time after being constructed.
     EXPECT_TRUE(ctor_called_);
     EXPECT_FALSE(views_first_shown_);
@@ -122,6 +130,10 @@ class DeepScanningDialogViewsBehaviorBrowserTest
     // The dialog should only be updated once some time after being shown.
     EXPECT_TRUE(views_first_shown_);
     EXPECT_FALSE(dialog_updated_);
+
+    // The dialog being updated implies an accessibility alert is sent.
+    EXPECT_EQ(ax_events_count_when_first_shown_ + 1,
+              ax_event_counter_.GetCount(ax::mojom::Event::kAlert));
     dialog_updated_ = true;
   }
 
@@ -178,6 +190,9 @@ class DeepScanningDialogViewsBehaviorBrowserTest
   bool dialog_updated_ = false;
 
   bool expected_scan_result_;
+
+  int ax_events_count_when_first_shown_ = 0;
+  views::test::AXEventCounter ax_event_counter_;
 };
 
 // Tests the behavior of the dialog in the following ways:
