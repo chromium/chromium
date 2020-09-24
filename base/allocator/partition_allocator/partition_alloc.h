@@ -378,21 +378,32 @@ struct BASE_EXPORT PartitionRoot {
   using DirectMapExtent = internal::PartitionDirectMapExtent<thread_safe>;
   using ScopedGuard = internal::ScopedGuard<thread_safe>;
 
-  bool with_thread_cache = false;
-
   internal::MaybeSpinLock<thread_safe> lock_;
+
+  // Flags accessed on fast paths.
+  bool with_thread_cache = false;
+  const bool is_thread_safe = thread_safe;
+  // TODO(bartekn): Consider size of added extras (cookies and/or tag, or
+  // nothing) instead of true|false, so that we can just add or subtract the
+  // size instead of having an if branch on the hot paths.
+  bool allow_extras;
+  bool initialized = false;
+
+#if ENABLE_TAG_FOR_CHECKED_PTR2 || ENABLE_TAG_FOR_MTE_CHECKED_PTR
+  internal::PartitionTag current_partition_tag = 0;
+#endif
+#if ENABLE_TAG_FOR_MTE_CHECKED_PTR
+  char* next_tag_bitmap_page = nullptr;
+#endif
+
+  // Bookkeeping.
   // Invariant: total_size_of_committed_pages <=
   //                total_size_of_super_pages +
   //                total_size_of_direct_mapped_pages.
   size_t total_size_of_committed_pages GUARDED_BY(lock_) = 0;
   size_t total_size_of_super_pages GUARDED_BY(lock_) = 0;
   size_t total_size_of_direct_mapped_pages GUARDED_BY(lock_) = 0;
-  bool is_thread_safe = thread_safe;
-  // TODO(bartekn): Consider size of added extras (cookies and/or tag, or
-  // nothing) instead of true|false, so that we can just add or subtract the
-  // size instead of having an if branch on the hot paths.
-  bool allow_extras;
-  bool initialized = false;
+
   char* next_super_page = nullptr;
   char* next_partition_page = nullptr;
   char* next_partition_page_end = nullptr;
@@ -401,13 +412,9 @@ struct BASE_EXPORT PartitionRoot {
   DirectMapExtent* direct_map_list = nullptr;
   Page* global_empty_page_ring[kMaxFreeableSpans] = {};
   int16_t global_empty_page_ring_index = 0;
+
+  // Integrity check = ~reinterpret_cast<uintptr_t>(this).
   uintptr_t inverted_self = 0;
-#if ENABLE_TAG_FOR_CHECKED_PTR2 || ENABLE_TAG_FOR_MTE_CHECKED_PTR
-  internal::PartitionTag current_partition_tag = 0;
-#endif
-#if ENABLE_TAG_FOR_MTE_CHECKED_PTR
-  char* next_tag_bitmap_page = nullptr;
-#endif
 
   // The bucket lookup table lets us map a size_t to a bucket quickly.
   // The trailing +1 caters for the overflow case for very large allocation
@@ -416,6 +423,8 @@ struct BASE_EXPORT PartitionRoot {
   // behavior.
   static uint16_t
       bucket_index_lookup[((kBitsPerSizeT + 1) * kNumBucketsPerOrder) + 1];
+  // Accessed on fast paths, but sizeof(Bucket) is large, so there is no real
+  // benefit in packing it with other members.
   Bucket buckets[kNumBuckets] = {};
   Bucket sentinel_bucket;
 
