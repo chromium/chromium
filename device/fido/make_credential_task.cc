@@ -51,6 +51,47 @@ bool CtapDeviceShouldUseU2fBecauseClientPinIsSet(
   return client_pin_set && supports_u2f;
 }
 
+// ConvertCTAPResponse returns the AuthenticatorMakeCredentialResponse for a
+// given CTAP response message in |cbor|. It wraps
+// ReadCTAPMakeCredentialResponse() and in addition fills in |is_resident_key|,
+// which requires looking at the request and device.
+base::Optional<AuthenticatorMakeCredentialResponse> ConvertCTAPResponse(
+    FidoDevice* device,
+    bool resident_key_required,
+    const base::Optional<cbor::Value>& cbor) {
+  DCHECK_EQ(device->supported_protocol(), ProtocolVersion::kCtap2);
+  DCHECK(device->device_info());
+
+  base::Optional<AuthenticatorMakeCredentialResponse> response =
+      ReadCTAPMakeCredentialResponse(device->DeviceTransport(), cbor);
+  if (!response) {
+    return base::nullopt;
+  }
+
+  // Fill in whether the created credential is client-side discoverable
+  // (resident). CTAP 2.0 authenticators may decide to treat all credentials as
+  // discoverable, so we need to omit the value unless a resident key was
+  // required.
+  DCHECK(!response->is_resident_key.has_value());
+  if (resident_key_required) {
+    response->is_resident_key = true;
+  } else {
+    const bool resident_key_supported =
+        device->device_info()->options.supports_resident_key;
+    const base::flat_set<Ctap2Version>& ctap2_versions =
+        device->device_info()->ctap2_versions;
+    DCHECK(!ctap2_versions.empty());
+    const bool is_at_least_ctap2_1 =
+        std::any_of(ctap2_versions.begin(), ctap2_versions.end(),
+                    [](Ctap2Version v) { return v > Ctap2Version::kCtap2_0; });
+    if (!resident_key_supported || is_at_least_ctap2_1) {
+      response->is_resident_key = false;
+    }
+  }
+
+  return response;
+}
+
 }  // namespace
 
 MakeCredentialTask::MakeCredentialTask(FidoDevice* device,
@@ -169,8 +210,8 @@ void MakeCredentialTask::MakeCredential() {
     register_operation_ = std::make_unique<Ctap2DeviceOperation<
         CtapMakeCredentialRequest, AuthenticatorMakeCredentialResponse>>(
         device(), std::move(request), std::move(callback_),
-        base::BindOnce(&ReadCTAPMakeCredentialResponse,
-                       device()->DeviceTransport()),
+        base::BindOnce(&ConvertCTAPResponse, device(),
+                       request_.resident_key_required),
         /*string_fixup_predicate=*/nullptr);
     register_operation_->Start();
     return;
@@ -210,8 +251,8 @@ void MakeCredentialTask::HandleResponseToSilentSignRequest(
     register_operation_ = std::make_unique<Ctap2DeviceOperation<
         CtapMakeCredentialRequest, AuthenticatorMakeCredentialResponse>>(
         device(), std::move(request), std::move(callback_),
-        base::BindOnce(&ReadCTAPMakeCredentialResponse,
-                       device()->DeviceTransport()),
+        base::BindOnce(&ConvertCTAPResponse, device(),
+                       request_.resident_key_required),
         /*string_fixup_predicate=*/nullptr);
     register_operation_->Start();
     return;
@@ -228,8 +269,8 @@ void MakeCredentialTask::HandleResponseToSilentSignRequest(
         device(), GetTouchRequest(device()),
         base::BindOnce(&MakeCredentialTask::HandleResponseToDummyTouch,
                        weak_factory_.GetWeakPtr()),
-        base::BindOnce(&ReadCTAPMakeCredentialResponse,
-                       device()->DeviceTransport()),
+        base::BindOnce(&ConvertCTAPResponse, device(),
+                       /*resident_key_required=*/false),
         /*string_fixup_predicate=*/nullptr);
     register_operation_->Start();
     return;
@@ -267,8 +308,8 @@ void MakeCredentialTask::HandleResponseToSilentSignRequest(
   register_operation_ = std::make_unique<Ctap2DeviceOperation<
       CtapMakeCredentialRequest, AuthenticatorMakeCredentialResponse>>(
       device(), std::move(request), std::move(callback_),
-      base::BindOnce(&ReadCTAPMakeCredentialResponse,
-                     device()->DeviceTransport()),
+      base::BindOnce(&ConvertCTAPResponse, device(),
+                     request_.resident_key_required),
       /*string_fixup_predicate=*/nullptr);
   register_operation_->Start();
 }
@@ -305,6 +346,8 @@ void MakeCredentialTask::MaybeRevertU2fFallback(
     // interface was used.
     device()->set_supported_protocol(ProtocolVersion::kCtap2);
   }
+
+  DCHECK(!response || *response->is_resident_key == false);
 
   std::move(callback_).Run(status, std::move(response));
 }

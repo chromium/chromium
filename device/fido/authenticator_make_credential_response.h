@@ -91,6 +91,11 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorMakeCredentialResponse
   // have done so, so this will always be false in the U2F case.
   bool enterprise_attestation_returned = false;
 
+  // is_resident_key indicates whether the created credential is client-side
+  // discoverable. It is nullopt if no discoverable credential was requested,
+  // but the authenticator may have created one anyway.
+  base::Optional<bool> is_resident_key;
+
  private:
   AttestationObject attestation_object_;
 

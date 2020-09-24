@@ -59,13 +59,16 @@ class VirtualAuthenticatorManager {
   }
 
   async createAuthenticator(options = {}) {
-    options = Object.assign({
-      protocol: blink.test.mojom.ClientToAuthenticatorProtocol.CTAP2,
-      transport: blink.mojom.AuthenticatorTransport.USB,
-      attachment: blink.mojom.AuthenticatorAttachment.CROSS_PLATFORM,
-      hasResidentKey: true,
-      hasUserVerification: true,
-    }, options);
+    options = Object.assign(
+        {
+          protocol: blink.test.mojom.ClientToAuthenticatorProtocol.CTAP2,
+          ctap2Version: blink.test.mojom.ClientToAuthenticatorProtocol.CTAP2_0,
+          transport: blink.mojom.AuthenticatorTransport.USB,
+          attachment: blink.mojom.AuthenticatorAttachment.CROSS_PLATFORM,
+          hasResidentKey: true,
+          hasUserVerification: true,
+        },
+        options);
     let createAuthenticatorResponse =
         await this.virtualAuthenticatorManager_.createAuthenticator(options);
     return new VirtualAuthenticator(createAuthenticatorResponse.authenticator);

@@ -124,6 +124,7 @@ static_idl_files_in_modules = get_path_info(
           "//third_party/blink/renderer/modules/credentialmanager/credential.idl",
           "//third_party/blink/renderer/modules/credentialmanager/credential_creation_options.idl",
           "//third_party/blink/renderer/modules/credentialmanager/credential_data.idl",
+          "//third_party/blink/renderer/modules/credentialmanager/credential_properties_output.idl",
           "//third_party/blink/renderer/modules/credentialmanager/credential_request_options.idl",
           "//third_party/blink/renderer/modules/credentialmanager/credential_user_data.idl",
           "//third_party/blink/renderer/modules/credentialmanager/credentials_container.idl",

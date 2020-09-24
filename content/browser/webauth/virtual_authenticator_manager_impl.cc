@@ -44,33 +44,27 @@ void VirtualAuthenticatorManagerImpl::AddReceiver(
   receivers_.Add(this, std::move(receiver));
 }
 
-VirtualAuthenticator* VirtualAuthenticatorManagerImpl::CreateAuthenticator(
-    device::ProtocolVersion protocol,
+VirtualAuthenticator* VirtualAuthenticatorManagerImpl::CreateU2FAuthenticator(
+    device::FidoTransportProtocol transport) {
+  if (!device::VirtualU2fDevice::IsTransportSupported(transport)) {
+    return nullptr;
+  }
+  return AddAuthenticator(std::make_unique<VirtualAuthenticator>(
+      device::ProtocolVersion::kU2f, /*ignored*/ device::Ctap2Version::kCtap2_0,
+      transport, device::AuthenticatorAttachment::kCrossPlatform,
+      /*has_resident_key=*/false,
+      /*has_user_verification=*/false));
+}
+
+VirtualAuthenticator* VirtualAuthenticatorManagerImpl::CreateCTAP2Authenticator(
+    device::Ctap2Version ctap2_version,
     device::FidoTransportProtocol transport,
     device::AuthenticatorAttachment attachment,
     bool has_resident_key,
     bool has_user_verification) {
-  if (protocol == device::ProtocolVersion::kU2f &&
-      !device::VirtualU2fDevice::IsTransportSupported(transport)) {
-    return nullptr;
-  }
-  auto authenticator = std::make_unique<VirtualAuthenticator>(
-      protocol, transport, attachment, has_resident_key, has_user_verification);
-  auto* authenticator_ptr = authenticator.get();
-  bool was_inserted;
-  std::tie(std::ignore, was_inserted) = authenticators_.insert(
-      {authenticator_ptr->unique_id(), std::move(authenticator)});
-  if (!was_inserted) {
-    // unique_id() is unique, so map insertion should succeed. But let's be
-    // paranoid so we don't accidentally return a dangling pointer.
-    NOTREACHED();
-    return nullptr;
-  }
-
-  for (Observer& observer : observers_) {
-    observer.AuthenticatorAdded(authenticator_ptr);
-  }
-  return authenticator_ptr;
+  return AddAuthenticator(std::make_unique<VirtualAuthenticator>(
+      device::ProtocolVersion::kCtap2, ctap2_version, transport, attachment,
+      has_resident_key, has_user_verification));
 }
 
 VirtualAuthenticator* VirtualAuthenticatorManagerImpl::GetAuthenticator(
@@ -79,6 +73,23 @@ VirtualAuthenticator* VirtualAuthenticatorManagerImpl::GetAuthenticator(
   if (authenticator == authenticators_.end())
     return nullptr;
   return authenticator->second.get();
+}
+
+VirtualAuthenticator* VirtualAuthenticatorManagerImpl::AddAuthenticator(
+    std::unique_ptr<VirtualAuthenticator> authenticator) {
+  VirtualAuthenticator* authenticator_ptr = authenticator.get();
+  bool was_inserted;
+  std::tie(std::ignore, was_inserted) = authenticators_.insert(
+      {authenticator_ptr->unique_id(), std::move(authenticator)});
+  if (!was_inserted) {
+    NOTREACHED() << "unique_id() must be unique";
+    return nullptr;
+  }
+
+  for (Observer& observer : observers_) {
+    observer.AuthenticatorAdded(authenticator_ptr);
+  }
+  return authenticator_ptr;
 }
 
 std::vector<VirtualAuthenticator*>
@@ -104,9 +115,19 @@ bool VirtualAuthenticatorManagerImpl::RemoveAuthenticator(
 void VirtualAuthenticatorManagerImpl::CreateAuthenticator(
     blink::test::mojom::VirtualAuthenticatorOptionsPtr options,
     CreateAuthenticatorCallback callback) {
-  auto* authenticator = CreateAuthenticator(
-      options->protocol, options->transport, options->attachment,
-      options->has_resident_key, options->has_user_verification);
+  VirtualAuthenticator* authenticator = nullptr;
+  switch (options->protocol) {
+    case device::ProtocolVersion::kU2f:
+      authenticator = CreateU2FAuthenticator(options->transport);
+      break;
+    case device::ProtocolVersion::kCtap2:
+      authenticator = CreateCTAP2Authenticator(
+          options->ctap2_version, options->transport, options->attachment,
+          options->has_resident_key, options->has_user_verification);
+      break;
+    case device::ProtocolVersion::kUnknown:
+      break;
+  }
   if (!authenticator) {
     std::move(callback).Run(mojo::NullRemote());
     return;

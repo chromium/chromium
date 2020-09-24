@@ -25,6 +25,7 @@ modules_dictionary_idl_files = [
   "credential_creation_options.idl",
   "credential_data.idl",
   "credential_request_options.idl",
+  "credential_properties_output.idl",
   "federated_credential_init.idl",
   "federated_credential_request_options.idl",
   "otp_credential_request_options.idl",

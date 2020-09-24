@@ -7,15 +7,23 @@
 dictionary AuthenticationExtensionsClientInputs {
   // https://w3c.github.io/webauthn/#sctn-appid-extension
   USVString appid;
+
   // https://w3c.github.io/webauthn/#sctn-appid-exclude-extension
   USVString appidExclude;
   CableRegistrationData cableRegistration;
   sequence<CableAuthenticationData> cableAuthentication;
+
   // https://fidoalliance.org/specs/fido-v2.0-rd-20180702/fido-client-to-authenticator-protocol-v2.0-rd-20180702.html#sctn-hmac-secret-extension
   boolean hmacCreateSecret;
+
   // https://w3c.github.io/webauthn/#sctn-uvm-extension
   boolean uvm;
+
   // https://drafts.fidoalliance.org/fido-2/latest/fido-client-to-authenticator-protocol-v2.0-wd-20190409.html#sctn-credProtect-extension
   USVString credentialProtectionPolicy;
   boolean enforceCredentialProtectionPolicy = false;
+
+  // https://w3c.github.io/webauthn/#sctn-authenticator-credential-properties-extension
+  // [RuntimeEnabled=WebAuthenticationResidentKeyRequirement]
+  boolean credProps = false;
 };

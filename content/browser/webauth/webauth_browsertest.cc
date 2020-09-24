@@ -514,11 +514,12 @@ class WebAuthLocalClientBrowserTest : public WebAuthBrowserTestBase {
         rp, user, kTestChallenge, parameters, base::TimeDelta::FromSeconds(30),
         std::vector<device::PublicKeyCredentialDescriptor>(),
         device::AuthenticatorSelectionCriteria(),
-        device::AttestationConveyancePreference::kNone, nullptr,
-        false /* no hmac_secret */, false /* no PRF extension */,
+        device::AttestationConveyancePreference::kNone,
+        /*cable_registration_data=*/nullptr,
+        /*hmac_create_secret=*/false, /*prf_enable=*/false,
         blink::mojom::ProtectionPolicy::UNSPECIFIED,
-        false /* protection policy not enforced */,
-        base::nullopt /* no appid_exclude */);
+        /*enforce_protection_policy=*/false, /*appid_exclude=*/base::nullopt,
+        /*cred_props=*/false);
 
     return mojo_options;
   }

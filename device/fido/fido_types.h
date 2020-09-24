@@ -5,16 +5,23 @@
 #ifndef DEVICE_FIDO_FIDO_TYPES_H_
 #define DEVICE_FIDO_FIDO_TYPES_H_
 
-// The definitions below are for mojo-mappable types that need to be
-// transferred from Blink. Types that have mojo equivalents are better placed
-// in fido_constants.h.
+// The definitions below are for mojo-mappable types that need to be transferred
+// from Blink. Types that do not have mojo equivalents are better placed in
+// fido_constants.h.
 
 namespace device {
 
+// ProtocolVersion is the major protocol version of an authenticator device.
 enum class ProtocolVersion {
   kCtap2,
   kU2f,
   kUnknown,
+};
+
+// Ctap2Version distinguishes different minor versions of the CTAP2 protocol.
+enum class Ctap2Version {
+  kCtap2_0,
+  kCtap2_1,
 };
 
 enum class CredentialType { kPublicKey };

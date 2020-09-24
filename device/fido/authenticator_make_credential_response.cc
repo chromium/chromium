@@ -55,9 +55,11 @@ AuthenticatorMakeCredentialResponse::CreateFromU2fRegisterResponse(
   if (!fido_attestation_statement)
     return base::nullopt;
 
-  return AuthenticatorMakeCredentialResponse(
+  AuthenticatorMakeCredentialResponse response(
       transport_used, AttestationObject(std::move(authenticator_data),
                                         std::move(fido_attestation_statement)));
+  response.is_resident_key = false;
+  return response;
 }
 
 AuthenticatorMakeCredentialResponse::AuthenticatorMakeCredentialResponse(
@@ -70,8 +72,9 @@ AuthenticatorMakeCredentialResponse::AuthenticatorMakeCredentialResponse(
 AuthenticatorMakeCredentialResponse::AuthenticatorMakeCredentialResponse(
     AuthenticatorMakeCredentialResponse&& that) = default;
 
-AuthenticatorMakeCredentialResponse& AuthenticatorMakeCredentialResponse::
-operator=(AuthenticatorMakeCredentialResponse&& other) = default;
+AuthenticatorMakeCredentialResponse&
+AuthenticatorMakeCredentialResponse::operator=(
+    AuthenticatorMakeCredentialResponse&& other) = default;
 
 AuthenticatorMakeCredentialResponse::~AuthenticatorMakeCredentialResponse() =
     default;

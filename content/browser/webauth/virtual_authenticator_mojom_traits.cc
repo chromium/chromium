@@ -5,6 +5,8 @@
 #include "content/browser/webauth/virtual_authenticator_mojom_traits.h"  // nogncheck
 
 namespace mojo {
+using blink::test::mojom::ClientToAuthenticatorProtocol;
+using blink::test::mojom::Ctap2Version;
 
 // static
 ClientToAuthenticatorProtocol
@@ -33,6 +35,35 @@ bool EnumTraits<ClientToAuthenticatorProtocol, device::ProtocolVersion>::
       return true;
     case ClientToAuthenticatorProtocol::CTAP2:
       *output = ::device::ProtocolVersion::kCtap2;
+      return true;
+  }
+  NOTREACHED();
+  return false;
+}
+
+// static
+Ctap2Version EnumTraits<Ctap2Version, device::Ctap2Version>::ToMojom(
+    device::Ctap2Version input) {
+  switch (input) {
+    case ::device::Ctap2Version::kCtap2_0:
+      return Ctap2Version::CTAP2_0;
+    case ::device::Ctap2Version::kCtap2_1:
+      return Ctap2Version::CTAP2_1;
+  }
+  NOTREACHED();
+  return Ctap2Version::CTAP2_0;
+}
+
+// static
+bool EnumTraits<Ctap2Version, device::Ctap2Version>::FromMojom(
+    Ctap2Version input,
+    device::Ctap2Version* output) {
+  switch (input) {
+    case Ctap2Version::CTAP2_0:
+      *output = ::device::Ctap2Version::kCtap2_0;
+      return true;
+    case Ctap2Version::CTAP2_1:
+      *output = ::device::Ctap2Version::kCtap2_1;
       return true;
   }
   NOTREACHED();

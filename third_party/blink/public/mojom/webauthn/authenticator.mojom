@@ -117,6 +117,14 @@ struct MakeCredentialAuthenticatorResponse {
   bool echo_user_verification_methods;
   [EnableIf=is_android]
   array<UvmEntry>? user_verification_methods;
+
+  // True if getClientExtensionResults() called on the returned
+  // PublicKeyCredential instance should contain a `credProps` extension
+  // output. |has_cred_props_rk| indicates if the rk member in that extension
+  // output should be set to the value in |cred_props_rk|.
+  bool echo_cred_props;
+  bool has_cred_props_rk;
+  bool cred_props_rk;
 };
 
 struct GetAssertionAuthenticatorResponse {
@@ -395,6 +403,10 @@ struct PublicKeyCredentialCreationOptions {
   // The contents of the appidExclude extension, if any. See
   // https://w3c.github.io/webauthn/#sctn-appid-exclude-extension
   string? appid_exclude;
+
+  // Whether the credProps extension was requested.
+  // https://w3c.github.io/webauthn/#sctn-authenticator-credential-properties-extension
+  bool cred_props;
 };
 
 enum PublicKeyCredentialType {

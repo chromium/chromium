@@ -1247,6 +1247,10 @@ mojom("authenticator_test_mojo_bindings") {
           mojom = "blink.test.mojom.ClientToAuthenticatorProtocol"
           cpp = "::device::ProtocolVersion"
         },
+        {
+          mojom = "blink.test.mojom.Ctap2Version"
+          cpp = "::device::Ctap2Version"
+        },
       ]
       traits_headers =
           [ "//content/browser/webauth/virtual_authenticator_mojom_traits.h" ]

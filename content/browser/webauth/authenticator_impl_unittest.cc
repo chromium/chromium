@@ -5366,6 +5366,7 @@ TEST_F(ResidentKeyAuthenticatorImplTest, PRFExtension) {
                            1) -> blink::mojom::PRFValuesPtr {
     PublicKeyCredentialRequestOptionsPtr options =
         GetTestPublicKeyCredentialRequestOptions();
+    options->prf = true;
     options->prf_inputs = std::move(inputs);
     options->allow_credentials.clear();
     if (allow_list_size >= 1) {

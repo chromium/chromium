@@ -421,11 +421,11 @@ COMPONENT_EXPORT(DEVICE_FIDO)
 extern const char kCableAuthenticatorHelloMessage[];
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kCableClientHelloMessage[];
 
-enum class Ctap2Version {
-  kUnknown = 0,
-  kCtap2_0 = 1,
-  kCtap2_1 = 2,
-};
+// The list of CTAP versions returned in the getInfo response for different
+// minor versions.
+constexpr Ctap2Version kCtap2Versions2_0[] = {Ctap2Version::kCtap2_0};
+constexpr Ctap2Version kCtap2Versions2_1[] = {Ctap2Version::kCtap2_0,
+                                              Ctap2Version::kCtap2_1};
 
 // Protocol version strings.
 // https://fidoalliance.org/specs/fido-v2.0-ps-20190130/fido-client-to-authenticator-protocol-v2.0-ps-20190130.html#authenticatorGetInfo

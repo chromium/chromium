@@ -149,6 +149,7 @@ void MakeCredentialOperation::PromptTouchIdDone(bool success) {
           std::make_unique<PackedAttestationStatement>(
               CoseAlgorithmIdentifier::kEs256, std::move(*signature),
               /*x509_certificates=*/std::vector<std::vector<uint8_t>>())));
+  response.is_resident_key = request_.resident_key_required;
   std::move(callback_).Run(CtapDeviceResponseCode::kSuccess,
                            std::move(response));
 }

@@ -40,13 +40,14 @@ ProtocolVersion ConvertStringToProtocolVersion(base::StringPiece version) {
   return ProtocolVersion::kUnknown;
 }
 
-Ctap2Version ConvertStringToCtap2Version(base::StringPiece version) {
+base::Optional<Ctap2Version> ConvertStringToCtap2Version(
+    base::StringPiece version) {
   if (version == kCtap2Version)
     return Ctap2Version::kCtap2_0;
   if (version == kCtap2_1Version)
     return Ctap2Version::kCtap2_1;
 
-  return Ctap2Version::kUnknown;
+  return base::nullopt;
 }
 
 // Converts a CBOR unsigned integer value to a uint32_t. The conversion is
@@ -244,21 +245,28 @@ base::Optional<AuthenticatorGetInfoResponse> ReadCTAPGetInfoResponse(
       return base::nullopt;
     }
 
-    auto protocol = ConvertStringToProtocolVersion(version_string);
+    ProtocolVersion protocol = ConvertStringToProtocolVersion(version_string);
     if (protocol == ProtocolVersion::kUnknown) {
       FIDO_LOG(DEBUG) << "Unexpected protocol version received.";
       continue;
     }
 
     if (protocol == ProtocolVersion::kCtap2) {
-      ctap2_versions.insert(ConvertStringToCtap2Version(version_string));
+      base::Optional<Ctap2Version> ctap2_version =
+          ConvertStringToCtap2Version(version_string);
+      if (ctap2_version) {
+        ctap2_versions.insert(*ctap2_version);
+      }
     }
 
     protocol_versions.insert(protocol);
   }
 
-  if (protocol_versions.empty())
+  if (protocol_versions.empty() ||
+      (base::Contains(protocol_versions, ProtocolVersion::kCtap2) &&
+       ctap2_versions.empty())) {
     return base::nullopt;
+  }
 
   it = response_map.find(CBOR(3));
   if (it == response_map.end() || !it->second.is_bytestring() ||

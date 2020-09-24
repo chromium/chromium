@@ -70,6 +70,15 @@
 
 namespace content {
 
+// RequestExtension is a type of extension in a WebAuthn request that might
+// yield an extension output in the response.
+enum class RequestExtension {
+  kAppID,
+  kHMACSecret,
+  kPRF,
+  kCredProps,
+};
+
 namespace client_data {
 const char kCreateType[] = "webauthn.create";
 const char kGetType[] = "webauthn.get";
@@ -314,7 +323,7 @@ CreateMakeCredentialResponse(
     const std::string& client_data_json,
     device::AuthenticatorMakeCredentialResponse response_data,
     AttestationErasureOption attestation_erasure,
-    bool prf_requested) {
+    const base::flat_set<RequestExtension>& requested_extensions) {
   auto response = blink::mojom::MakeCredentialAuthenticatorResponse::New();
   auto common_info = blink::mojom::CommonCredentialInfo::New();
   common_info->client_data_json.assign(client_data_json.begin(),
@@ -347,9 +356,8 @@ CreateMakeCredentialResponse(
   }
 
   response->transports = std::move(transports);
-  response->echo_prf = prf_requested;
-  response->prf = false;
 
+  bool did_create_hmac_secret = false;
   const base::Optional<cbor::Value>& maybe_extensions =
       response_data.attestation_object().authenticator_data().extensions();
   if (maybe_extensions) {
@@ -358,13 +366,31 @@ CreateMakeCredentialResponse(
     const auto hmac_secret_it =
         extensions.find(cbor::Value(device::kExtensionHmacSecret));
     if (hmac_secret_it != extensions.end() &&
-        hmac_secret_it->second.is_bool()) {
-      if (prf_requested) {
-        response->prf = true;
-      } else {
+        hmac_secret_it->second.is_bool() && hmac_secret_it->second.GetBool()) {
+      did_create_hmac_secret = true;
+    }
+  }
+
+  for (const RequestExtension ext : requested_extensions) {
+    switch (ext) {
+      case RequestExtension::kPRF:
+        response->echo_prf = true;
+        response->prf = did_create_hmac_secret;
+        break;
+      case RequestExtension::kHMACSecret:
         response->echo_hmac_create_secret = true;
-        response->hmac_create_secret = hmac_secret_it->second.GetBool();
-      }
+        response->hmac_create_secret = did_create_hmac_secret;
+        break;
+      case RequestExtension::kCredProps:
+        response->echo_cred_props = true;
+        if (response_data.is_resident_key) {
+          response->has_cred_props_rk = true;
+          response->cred_props_rk = *response_data.is_resident_key;
+        }
+        break;
+      case RequestExtension::kAppID:
+        NOTREACHED();
+        break;
     }
   }
 
@@ -400,8 +426,8 @@ CreateMakeCredentialResponse(
 blink::mojom::GetAssertionAuthenticatorResponsePtr CreateGetAssertionResponse(
     const std::string& client_data_json,
     device::AuthenticatorGetAssertionResponse response_data,
-    base::Optional<bool> echo_appid_extension,
-    bool echo_prf_extension) {
+    const base::Optional<std::string>& app_id,
+    const base::flat_set<RequestExtension>& requested_extensions) {
   auto response = blink::mojom::GetAssertionAuthenticatorResponse::New();
   auto common_info = blink::mojom::CommonCredentialInfo::New();
   common_info->client_data_json.assign(client_data_json.begin(),
@@ -416,29 +442,47 @@ blink::mojom::GetAssertionAuthenticatorResponsePtr CreateGetAssertionResponse(
   response->info->authenticator_data =
       response_data.auth_data().SerializeToByteArray();
   response->signature = response_data.signature();
-  if (echo_appid_extension) {
-    response->echo_appid_extension = true;
-    response->appid_extension = *echo_appid_extension;
-  }
-  response->echo_prf = echo_prf_extension;
-  base::Optional<base::span<const uint8_t>> hmac_secret =
-      response_data.hmac_secret();
-  if (hmac_secret) {
-    auto prf_values = blink::mojom::PRFValues::New();
-    DCHECK(hmac_secret->size() == 32 || hmac_secret->size() == 64);
-    prf_values->first =
-        device::fido_parsing_utils::Materialize(hmac_secret->subspan(0, 32));
-    if (hmac_secret->size() == 64) {
-      prf_values->second =
-          device::fido_parsing_utils::Materialize(hmac_secret->subspan(32, 32));
-    }
-    response->prf_results = std::move(prf_values);
-  } else {
-    response->prf_not_evaluated = response_data.hmac_secret_not_evaluated();
-  }
   response_data.user_entity()
       ? response->user_handle.emplace(response_data.user_entity()->id)
       : response->user_handle.emplace();
+
+  for (RequestExtension ext : requested_extensions) {
+    switch (ext) {
+      case RequestExtension::kAppID:
+        DCHECK(app_id);
+        response->echo_appid_extension = true;
+        if (response_data.GetRpIdHash() ==
+            CreateApplicationParameter(*app_id)) {
+          response->appid_extension = true;
+        }
+        break;
+      case RequestExtension::kPRF: {
+        response->echo_prf = true;
+        base::Optional<base::span<const uint8_t>> hmac_secret =
+            response_data.hmac_secret();
+        if (hmac_secret) {
+          auto prf_values = blink::mojom::PRFValues::New();
+          DCHECK(hmac_secret->size() == 32 || hmac_secret->size() == 64);
+          prf_values->first = device::fido_parsing_utils::Materialize(
+              hmac_secret->subspan(0, 32));
+          if (hmac_secret->size() == 64) {
+            prf_values->second = device::fido_parsing_utils::Materialize(
+                hmac_secret->subspan(32, 32));
+          }
+          response->prf_results = std::move(prf_values);
+        } else {
+          response->prf_not_evaluated =
+              response_data.hmac_secret_not_evaluated();
+        }
+        break;
+      }
+      case RequestExtension::kHMACSecret:
+      case RequestExtension::kCredProps:
+        NOTREACHED();
+        break;
+    }
+  }
+
   return response;
 }
 
@@ -886,9 +930,17 @@ void AuthenticatorCommon::MakeCredential(
       client_data_json_, options->relying_party, options->user,
       device::PublicKeyCredentialParams(options->public_key_parameters));
   ctap_make_credential_request_->exclude_list = options->exclude_credentials;
-  prf_requested_ = options->prf_enable;
-  ctap_make_credential_request_->hmac_secret =
-      options->hmac_create_secret || prf_requested_;
+  if (options->prf_enable) {
+    requested_extensions_.insert(RequestExtension::kPRF);
+    ctap_make_credential_request_->hmac_secret = true;
+  }
+  if (options->hmac_create_secret) {
+    requested_extensions_.insert(RequestExtension::kHMACSecret);
+    ctap_make_credential_request_->hmac_secret = true;
+  }
+  if (options->cred_props) {
+    requested_extensions_.insert(RequestExtension::kCredProps);
+  }
   ctap_make_credential_request_->app_id = std::move(appid_exclude);
   ctap_make_credential_request_->is_incognito_mode =
       browser_context()->IsOffTheRecord();
@@ -1026,6 +1078,7 @@ void AuthenticatorCommon::GetAssertion(
   }
 
   if (options->appid) {
+    requested_extensions_.insert(RequestExtension::kAppID);
     app_id_ = ProcessAppIdExtension(*options->appid, caller_origin_);
     if (!app_id_) {
       InvokeCallbackAndCleanup(
@@ -1052,47 +1105,50 @@ void AuthenticatorCommon::GetAssertion(
 
   bool is_first = true;
   base::Optional<std::vector<uint8_t>> last_id;
-  prf_requested_ = options->prf;
-  for (const auto& prf_input_from_renderer : options->prf_inputs) {
-    device::CtapGetAssertionOptions::PRFInput prf_input;
+  if (options->prf) {
+    requested_extensions_.insert(RequestExtension::kPRF);
+    for (const auto& prf_input_from_renderer : options->prf_inputs) {
+      device::CtapGetAssertionOptions::PRFInput prf_input;
 
-    // This statement enforces invariants that should be established by the
-    // renderer.
-    if (
-        // Only the first element in the vector may be the default.
-        (!is_first && !prf_input_from_renderer->id) ||
-        // The PRF inputs must be sorted by credential ID to show that there are
-        // no duplicates.
-        (last_id.has_value() && prf_input_from_renderer->id.has_value() &&
-         *last_id >= *prf_input_from_renderer->id) ||
-        // The lengths are specified in authenticator.mojom, so hopefully Mojo
-        // enforces them too.
-        prf_input_from_renderer->first.size() != prf_input.salt1.size() ||
-        (prf_input_from_renderer->second &&
-         prf_input_from_renderer->second->size() != prf_input.salt1.size())) {
-      NOTREACHED();
+      // This statement enforces invariants that should be established by the
+      // renderer.
+      if (
+          // Only the first element in the vector may be the default.
+          (!is_first && !prf_input_from_renderer->id) ||
+          // The PRF inputs must be sorted by credential ID to show that there
+          // are no duplicates.
+          (last_id.has_value() && prf_input_from_renderer->id.has_value() &&
+           *last_id >= *prf_input_from_renderer->id) ||
+          // The lengths are specified in authenticator.mojom, so hopefully Mojo
+          // enforces them too.
+          prf_input_from_renderer->first.size() != prf_input.salt1.size() ||
+          (prf_input_from_renderer->second &&
+           prf_input_from_renderer->second->size() != prf_input.salt1.size())) {
+        NOTREACHED();
 
-      InvokeCallbackAndCleanup(
-          std::move(get_assertion_response_callback_),
-          blink::mojom::AuthenticatorStatus::UNKNOWN_ERROR);
-      return;
+        InvokeCallbackAndCleanup(
+            std::move(get_assertion_response_callback_),
+            blink::mojom::AuthenticatorStatus::UNKNOWN_ERROR);
+        return;
+      }
+      is_first = false;
+      last_id = prf_input_from_renderer->id;
+
+      if (prf_input_from_renderer->id) {
+        prf_input.credential_id = std::move(*prf_input_from_renderer->id);
+      }
+
+      memcpy(prf_input.salt1.data(), prf_input_from_renderer->first.data(),
+             prf_input.salt1.size());
+      if (prf_input_from_renderer->second) {
+        prf_input.salt2.emplace();
+        memcpy(prf_input.salt2->data(), prf_input_from_renderer->second->data(),
+               prf_input.salt2->size());
+      }
+
+      ctap_get_assertion_options_->prf_inputs.emplace_back(
+          std::move(prf_input));
     }
-    is_first = false;
-    last_id = prf_input_from_renderer->id;
-
-    if (prf_input_from_renderer->id) {
-      prf_input.credential_id = std::move(*prf_input_from_renderer->id);
-    }
-
-    memcpy(prf_input.salt1.data(), prf_input_from_renderer->first.data(),
-           prf_input.salt1.size());
-    if (prf_input_from_renderer->second) {
-      prf_input.salt2.emplace();
-      memcpy(prf_input.salt2->data(), prf_input_from_renderer->second->data(),
-             prf_input.salt2->size());
-    }
-
-    ctap_get_assertion_options_->prf_inputs.emplace_back(std::move(prf_input));
   }
 
   ctap_get_assertion_request_->is_u2f_only = origin_is_crypto_token_extension;
@@ -1321,9 +1377,9 @@ void AuthenticatorCommon::OnRegisterResponse(
         InvokeCallbackAndCleanup(
             std::move(make_credential_response_callback_),
             blink::mojom::AuthenticatorStatus::SUCCESS,
-            CreateMakeCredentialResponse(client_data_json_,
-                                         std::move(*response_data),
-                                         *attestation_erasure, prf_requested_),
+            CreateMakeCredentialResponse(
+                client_data_json_, std::move(*response_data),
+                *attestation_erasure, requested_extensions_),
             Focus::kDoCheck);
       }
 
@@ -1387,7 +1443,7 @@ void AuthenticatorCommon::OnRegisterResponseAttestationDecided(
       std::move(make_credential_response_callback_),
       blink::mojom::AuthenticatorStatus::SUCCESS,
       CreateMakeCredentialResponse(client_data_json_, std::move(response_data),
-                                   attestation_erasure, prf_requested_),
+                                   attestation_erasure, requested_extensions_),
       Focus::kDoCheck);
 }
 
@@ -1500,16 +1556,11 @@ void AuthenticatorCommon::OnSignResponse(
 
 void AuthenticatorCommon::OnAccountSelected(
     device::AuthenticatorGetAssertionResponse response) {
-  base::Optional<bool> echo_appid_extension;
-  if (app_id_) {
-    echo_appid_extension =
-        (response.GetRpIdHash() == CreateApplicationParameter(*app_id_));
-  }
   InvokeCallbackAndCleanup(
       std::move(get_assertion_response_callback_),
       blink::mojom::AuthenticatorStatus::SUCCESS,
       CreateGetAssertionResponse(client_data_json_, std::move(response),
-                                 echo_appid_extension, prf_requested_));
+                                 app_id_, requested_extensions_));
   return;
 }
 
@@ -1616,7 +1667,7 @@ void AuthenticatorCommon::Cleanup() {
   empty_allow_list_ = false;
   error_awaiting_user_acknowledgement_ =
       blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR;
-  prf_requested_ = false;
+  requested_extensions_.clear();
 }
 
 void AuthenticatorCommon::DisableUI() {

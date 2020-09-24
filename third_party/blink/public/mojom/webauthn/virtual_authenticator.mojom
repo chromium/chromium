@@ -13,9 +13,20 @@ enum ClientToAuthenticatorProtocol {
   CTAP2,
 };
 
+// A specific versioned release of the CTAP2 protocol.
+enum Ctap2Version {
+  CTAP2_0,
+  CTAP2_1,
+};
+
 // Attributes that the virtual authenticator should simulate.
 struct VirtualAuthenticatorOptions {
+  // protocol is the client-to-authenticator protocol that the virtual
+  // authenticator simulates.
   ClientToAuthenticatorProtocol protocol;
+  // ctap2_version indicates which minor version of CTAP2 the authenticator
+  // should simulate if |protocol| is CTAP2. It is ignored otherwise.
+  Ctap2Version ctap2_version;
   blink.mojom.AuthenticatorTransport transport;
   blink.mojom.AuthenticatorAttachment attachment;
   bool has_resident_key;

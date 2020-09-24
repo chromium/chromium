@@ -52,7 +52,8 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualCtap2Device
     Config& operator=(const Config&);
     ~Config();
 
-    base::flat_set<Ctap2Version> ctap2_versions = {Ctap2Version::kCtap2_0};
+    base::flat_set<Ctap2Version> ctap2_versions = {
+        std::begin(kCtap2Versions2_0), std::end(kCtap2Versions2_0)};
     // u2f_support, if true, makes this device a dual-protocol (i.e. CTAP2 and
     // U2F) device.
     bool u2f_support = false;

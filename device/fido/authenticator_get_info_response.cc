@@ -59,8 +59,6 @@ std::vector<uint8_t> AuthenticatorGetInfoResponse::EncodeToCBOR(
             case Ctap2Version::kCtap2_1:
               version_array.emplace_back(kCtap2_1Version);
               break;
-            case Ctap2Version::kUnknown:
-              NOTREACHED();
           }
         }
         break;

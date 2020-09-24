@@ -28,9 +28,10 @@ namespace content {
 class CONTENT_EXPORT VirtualAuthenticator
     : public blink::test::mojom::VirtualAuthenticator {
  public:
-  VirtualAuthenticator(::device::ProtocolVersion protocol,
-                       ::device::FidoTransportProtocol transport,
-                       ::device::AuthenticatorAttachment attachment,
+  VirtualAuthenticator(device::ProtocolVersion protocol,
+                       device::Ctap2Version ctap2_version,
+                       device::FidoTransportProtocol transport,
+                       device::AuthenticatorAttachment attachment,
                        bool has_resident_key,
                        bool has_user_verification);
   ~VirtualAuthenticator() override;
@@ -77,9 +78,7 @@ class CONTENT_EXPORT VirtualAuthenticator
 
   bool has_resident_key() const { return has_resident_key_; }
 
-  ::device::FidoTransportProtocol transport() const {
-    return state_->transport;
-  }
+  device::FidoTransportProtocol transport() const { return state_->transport; }
   const std::string& unique_id() const { return unique_id_; }
 
   bool is_user_verifying_platform_authenticator() const {
@@ -93,7 +92,7 @@ class CONTENT_EXPORT VirtualAuthenticator
   //
   // There is an N:1 relationship between VirtualFidoDevices and this class, so
   // this method can be called any number of times.
-  std::unique_ptr<::device::FidoDevice> ConstructDevice();
+  std::unique_ptr<device::FidoDevice> ConstructDevice();
 
  protected:
   // blink::test::mojom::VirtualAuthenticator:
@@ -110,14 +109,15 @@ class CONTENT_EXPORT VirtualAuthenticator
                        SetUserVerifiedCallback callback) override;
 
  private:
-  const ::device::ProtocolVersion protocol_;
-  const ::device::AuthenticatorAttachment attachment_;
+  const device::ProtocolVersion protocol_;
+  const device::Ctap2Version ctap2_version_;
+  const device::AuthenticatorAttachment attachment_;
   const bool has_resident_key_;
   const bool has_user_verification_;
   bool is_user_verified_ = true;
   const std::string unique_id_;
   bool is_user_present_;
-  scoped_refptr<::device::VirtualFidoDevice::State> state_;
+  scoped_refptr<device::VirtualFidoDevice::State> state_;
   mojo::ReceiverSet<blink::test::mojom::VirtualAuthenticator> receiver_set_;
 
   DISALLOW_COPY_AND_ASSIGN(VirtualAuthenticator);

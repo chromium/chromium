@@ -143,3 +143,18 @@ function assertValidGetCredentialResponse(r) {
     assert_true(r.response.userHandle == null);
     assert_false('attestationObject' in r.response);
 }
+
+// Sets up a virtual authenticator with |authenticatorArgs| for the duration of
+// the tests run in |t|.
+function authenticatorSetup(name, t, authenticatorArgs) {
+  promise_test(
+      () => navigator.credentials.test.createAuthenticator(authenticatorArgs),
+      name + ': Setup up the testing environment.');
+  try {
+    t();
+  } finally {
+    promise_test(
+        () => navigator.credentials.test.clearAuthenticators(),
+        name + ': Clean up testing environment.');
+  }
+}

@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/modules/credentialmanager/password_credential.h"
 #include "third_party/blink/renderer/modules/credentialmanager/public_key_credential.h"
 #include "third_party/blink/renderer/platform/bindings/enumeration_base.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace mojo {
 
@@ -541,6 +542,11 @@ TypeConverter<PublicKeyCredentialCreationOptionsPtr,
     if (extensions->hasEnforceCredentialProtectionPolicy() &&
         extensions->enforceCredentialProtectionPolicy()) {
       mojo_options->enforce_protection_policy = true;
+    }
+    if (extensions->credProps()) {
+      DCHECK(blink::RuntimeEnabledFeatures::
+                 WebAuthenticationResidentKeyRequirementEnabled());
+      mojo_options->cred_props = true;
     }
   }
 

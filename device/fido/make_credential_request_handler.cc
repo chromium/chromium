@@ -1013,8 +1013,11 @@ void MakeCredentialRequestHandler::SpecializeRequestForAuthenticator(
           // Windows does not yet support rk=preferred.
           !authenticator->IsWinNativeApiAuthenticator() &&
 #endif
-          observer()->SupportsPIN() && auth_options &&
-          auth_options->supports_resident_key;
+          auth_options && auth_options->supports_resident_key &&
+          (observer()->SupportsPIN() ||
+           auth_options->user_verification_availability ==
+               AuthenticatorSupportedOptions::UserVerificationAvailability::
+                   kSupportedAndConfigured);
       break;
     }
     case ResidentKeyRequirement::kDiscouraged:
