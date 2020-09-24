@@ -236,6 +236,7 @@
     "repeat": 1,
     "stories": [
       "css-parser-yui.html",
+      "declarative-shadow-dom.html",
       "html-parser-threaded.html",
       "html-parser.html",
       "html5-full-render.html",
