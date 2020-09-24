@@ -129,6 +129,8 @@ public class AndroidSyncSettingsTest {
         FeatureList.setTestCanUseDefaultsForTesting();
 
         mSyncContentResolverDelegate = new CountingMockSyncContentResolverDelegate();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> SyncContentResolverDelegate.overrideForTests(mSyncContentResolverDelegate));
 
         FakeAccountManagerFacade fakeAccountManagerFacade = new FakeAccountManagerFacade(null);
         AccountManagerFacadeProvider.setInstanceForTests(fakeAccountManagerFacade);
@@ -140,7 +142,9 @@ public class AndroidSyncSettingsTest {
 
     private void createAndroidSyncSettings() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mAndroidSyncSettings = new AndroidSyncSettings(mSyncContentResolverDelegate, mAccount);
+            // TODO(crbug.com/1105795): Consider setting the fake account in the identity manager
+            // so there's no need to inject it here.
+            mAndroidSyncSettings = new AndroidSyncSettings(mAccount);
             AndroidSyncSettings.overrideForTests(mAndroidSyncSettings);
         });
 

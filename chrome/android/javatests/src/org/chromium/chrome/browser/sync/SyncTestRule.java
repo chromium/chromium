@@ -38,6 +38,7 @@ import org.chromium.components.sync.protocol.AutofillWalletSpecifics;
 import org.chromium.components.sync.protocol.EntitySpecifics;
 import org.chromium.components.sync.protocol.SyncEntity;
 import org.chromium.components.sync.protocol.WalletMaskedCreditCard;
+import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
@@ -305,30 +306,28 @@ public class SyncTestRule extends ChromeActivityTestRule<ChromeActivity> {
         final Statement base = super.apply(new Statement() {
             @Override
             public void evaluate() throws Throwable {
-                TestThreadUtils.runOnUiThreadBlocking(() -> {
-                    mSyncContentResolver = new MockSyncContentResolverDelegate();
-                    AndroidSyncSettingsTestUtils.setUpAndroidSyncSettingsForTesting(
-                            mSyncContentResolver);
-                });
+                mSyncContentResolver = new MockSyncContentResolverDelegate();
+                mSyncContentResolver.setMasterSyncAutomatically(true);
+                TestThreadUtils.runOnUiThreadBlocking(
+                        () -> SyncContentResolverDelegate.overrideForTests(mSyncContentResolver));
 
                 TrustedVaultClient.setInstanceForTesting(
                         new TrustedVaultClient(FakeTrustedVaultClientBackend.get()));
 
-                startMainActivityForSyncTest();
-                mContext = InstrumentationRegistry.getTargetContext();
+                // Load native since the FakeServer needs it and possibly ProfileSyncService as well
+                // (depends on what fake is provided by |createProfileSyncService()|).
+                NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
 
-                TestThreadUtils.runOnUiThreadBlocking(() -> {
-                    // Ensure SyncController is registered with the new AndroidSyncSettings.
-                    AndroidSyncSettings.get().registerObserver(SyncController.get());
-                    mFakeServerHelper = FakeServerHelper.get();
-                });
-                FakeServerHelper.useFakeServer(mContext);
                 TestThreadUtils.runOnUiThreadBlocking(() -> {
                     ProfileSyncService profileSyncService = createProfileSyncService();
                     if (profileSyncService != null) {
                         ProfileSyncService.overrideForTests(profileSyncService);
                     }
                     mProfileSyncService = ProfileSyncService.get();
+
+                    mContext = InstrumentationRegistry.getTargetContext();
+                    FakeServerHelper.useFakeServer(mContext);
+                    mFakeServerHelper = FakeServerHelper.get();
                 });
 
                 UniqueIdentificationGeneratorFactory.registerGenerator(
@@ -340,6 +339,12 @@ public class SyncTestRule extends ChromeActivityTestRule<ChromeActivity> {
                             }
                         },
                         true);
+
+                startMainActivityForSyncTest();
+
+                // Ensure SyncController is created.
+                TestThreadUtils.runOnUiThreadBlocking(() -> SyncController.get());
+
                 statement.evaluate();
             }
         }, desc);

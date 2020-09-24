@@ -72,8 +72,7 @@ public class AndroidSyncSettings {
     public static AndroidSyncSettings get() {
         ThreadUtils.assertOnUiThread();
         if (sInstance == null) {
-            SyncContentResolverDelegate contentResolver = new SystemSyncContentResolverDelegate();
-            sInstance = new AndroidSyncSettings(contentResolver);
+            sInstance = new AndroidSyncSettings(getSyncAccount());
         }
         return sInstance;
     }
@@ -89,29 +88,17 @@ public class AndroidSyncSettings {
     }
 
     /**
-     * @param syncContentResolverDelegate an implementation of {@link SyncContentResolverDelegate}.
-     */
-    @VisibleForTesting
-    AndroidSyncSettings(SyncContentResolverDelegate syncContentResolverDelegate) {
-        this(syncContentResolverDelegate, getSyncAccount());
-    }
-
-    /**
-     * @param syncContentResolverDelegate an implementation of {@link SyncContentResolverDelegate}.
      * @param account The sync account if sync is enabled, null otherwise.
      */
-    // TODO(crbug.com/1125622): Once this class is used only on the UI thread, |callback|
-    // can be removed (syncability update will be synchronous). Same goes for the corresponding
-    // parameter in |updateAccount()|.
     // TODO(crbug.com/1125622): Exposing these testing constructors that don't register the
     // singleton instance can be dangerous when there's code that explicitly calls |get()|
     // (in that case, a new object would be returned, not the one constructed by the test).
     // Consider exposing them as static methods that also register a singleton instance.
     @VisibleForTesting
-    AndroidSyncSettings(
-            SyncContentResolverDelegate syncContentResolverDelegate, @Nullable Account account) {
+    public AndroidSyncSettings(@Nullable Account account) {
+        ThreadUtils.assertOnUiThread();
         mContractAuthority = getContractAuthority();
-        mSyncContentResolverDelegate = syncContentResolverDelegate;
+        mSyncContentResolverDelegate = SyncContentResolverDelegate.get();
 
         mAccount = account;
         updateCachedSettings();

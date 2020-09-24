@@ -24,19 +24,13 @@ import java.util.Set;
  * observers for the SYNC_OBSERVER_TYPE_SETTINGS type and it doesn't allow querying
  * settings for a null account.
  */
-class MockSyncContentResolverDelegate implements SyncContentResolverDelegate {
-    private final Set<String> mSyncAutomaticallySet;
-    private final Map<String, Boolean> mIsSyncableMap;
-    private final Set<SyncStatusObserver> mObservers;
+class MockSyncContentResolverDelegate extends SyncContentResolverDelegate {
+    private final Set<String> mSyncAutomaticallySet = new HashSet<String>();
+    private final Map<String, Boolean> mIsSyncableMap = new HashMap<String, Boolean>();
+    private final Set<SyncStatusObserver> mObservers = new HashSet<SyncStatusObserver>();
     private boolean mMasterSyncAutomatically;
 
     private Object mLock = new Object();
-
-    public MockSyncContentResolverDelegate() {
-        mSyncAutomaticallySet = new HashSet<String>();
-        mIsSyncableMap = new HashMap<String, Boolean>();
-        mObservers = new HashSet<SyncStatusObserver>();
-    }
 
     @Override
     public Object addStatusChangeListener(int mask, SyncStatusObserver observer) {

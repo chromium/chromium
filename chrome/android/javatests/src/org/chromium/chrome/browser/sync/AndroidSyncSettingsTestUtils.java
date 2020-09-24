@@ -23,18 +23,14 @@ public class AndroidSyncSettingsTestUtils {
     @CalledByNative
     @VisibleForTesting
     public static void setUpAndroidSyncSettingsForTesting() {
-        setUpAndroidSyncSettingsForTesting(new MockSyncContentResolverDelegate());
-    }
-
-    static AndroidSyncSettings setUpAndroidSyncSettingsForTesting(
-            SyncContentResolverDelegate delegate) {
+        MockSyncContentResolverDelegate delegate = new MockSyncContentResolverDelegate();
         delegate.setMasterSyncAutomatically(true);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> SyncContentResolverDelegate.overrideForTests(delegate));
         // Explicitly pass null account to AndroidSyncSettings ctor. Normally, AndroidSyncSettings
         // ctor uses IdentityManager to get the sync account, but some native tests call this method
         // before profiles are initialized (when IdentityManager doesn't exist yet).
-        AndroidSyncSettings settings = new AndroidSyncSettings(delegate, null);
-        AndroidSyncSettings.overrideForTests(settings);
-        return settings;
+        AndroidSyncSettings.overrideForTests(new AndroidSyncSettings(null));
     }
 
     public static boolean getIsSyncEnabledOnUiThread() {

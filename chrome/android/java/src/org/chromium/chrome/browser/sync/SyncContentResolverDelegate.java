@@ -5,30 +5,74 @@
 package org.chromium.chrome.browser.sync;
 
 import android.accounts.Account;
+import android.content.ContentResolver;
 import android.content.SyncStatusObserver;
 import android.os.Bundle;
 
+import androidx.annotation.VisibleForTesting;
+
+import org.chromium.base.ThreadUtils;
+
 /**
  * Since the ContentResolver in Android has a lot of static methods, it is hard to
- * mock out for tests. This interface wraps all the sync-related methods we use from
+ * mock out for tests. This class wraps all the sync-related methods we use from
  * the Android ContentResolver.
+ * Note that SyncContentResolverDelegate is not an Android concept. In
+ * particular, it's not this class that will notify observers, Android will
+ * directly do that.
  */
-interface SyncContentResolverDelegate {
-    Object addStatusChangeListener(int mask, SyncStatusObserver callback);
+class SyncContentResolverDelegate {
+    private static SyncContentResolverDelegate sInstance;
 
-    void removeStatusChangeListener(Object handle);
+    public static SyncContentResolverDelegate get() {
+        ThreadUtils.assertOnUiThread();
+        if (sInstance == null) {
+            sInstance = new SyncContentResolverDelegate();
+        }
+        return sInstance;
+    }
 
-    void setMasterSyncAutomatically(boolean sync);
+    public Object addStatusChangeListener(int mask, SyncStatusObserver callback) {
+        return ContentResolver.addStatusChangeListener(mask, callback);
+    }
 
-    boolean getMasterSyncAutomatically();
+    public void removeStatusChangeListener(Object handle) {
+        ContentResolver.removeStatusChangeListener(handle);
+    }
 
-    void setSyncAutomatically(Account account, String authority, boolean sync);
+    public void setMasterSyncAutomatically(boolean sync) {
+        ContentResolver.setMasterSyncAutomatically(sync);
+    }
 
-    boolean getSyncAutomatically(Account account, String authority);
+    public boolean getMasterSyncAutomatically() {
+        return ContentResolver.getMasterSyncAutomatically();
+    }
 
-    void setIsSyncable(Account account, String authority, int syncable);
+    public boolean getSyncAutomatically(Account account, String authority) {
+        return ContentResolver.getSyncAutomatically(account, authority);
+    }
 
-    int getIsSyncable(Account account, String authority);
+    public void setSyncAutomatically(Account account, String authority, boolean sync) {
+        ContentResolver.setSyncAutomatically(account, authority, sync);
+    }
 
-    void removePeriodicSync(Account account, String authority, Bundle extras);
+    public void setIsSyncable(Account account, String authority, int syncable) {
+        ContentResolver.setIsSyncable(account, authority, syncable);
+    }
+
+    public int getIsSyncable(Account account, String authority) {
+        return ContentResolver.getIsSyncable(account, authority);
+    }
+
+    public void removePeriodicSync(Account account, String authority, Bundle extras) {
+        ContentResolver.removePeriodicSync(account, authority, extras);
+    }
+
+    @VisibleForTesting
+    public static void overrideForTests(SyncContentResolverDelegate delegate) {
+        ThreadUtils.assertOnUiThread();
+        sInstance = delegate;
+    }
+
+    protected SyncContentResolverDelegate() {}
 }
