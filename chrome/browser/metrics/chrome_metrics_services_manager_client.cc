@@ -21,7 +21,6 @@
 #include "chrome/browser/metrics/variations/chrome_variations_service_client.h"
 #include "chrome/browser/metrics/variations/ui_string_overrider_factory.h"
 #include "chrome/browser/net/system_network_context_manager.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_otr_state.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/installer/util/google_update_settings.h"
@@ -39,7 +38,9 @@
 #if defined(OS_ANDROID)
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
-#endif  // OS_ANDROID
+#else
+#include "chrome/browser/ui/browser_list.h"
+#endif  // defined(OS_ANDROID)
 
 #if defined(OS_WIN)
 #include "base/win/registry.h"

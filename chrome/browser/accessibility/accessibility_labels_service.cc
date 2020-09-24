@@ -11,7 +11,6 @@
 #include "chrome/browser/accessibility/accessibility_state_utils.h"
 #include "chrome/browser/language/url_language_histogram_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/tab_contents/tab_contents_iterator.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/pref_names.h"
 #include "components/language/core/browser/pref_names.h"
@@ -33,6 +32,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/tab_contents/tab_contents_iterator.h"
 #endif
 
 using LanguageInfo = language::UrlLanguageHistogram::LanguageInfo;

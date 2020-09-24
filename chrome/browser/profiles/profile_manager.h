@@ -23,10 +23,13 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/browser/profiles/profile_shortcut_manager.h"
-#include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/common/buildflags.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
+
+#if !defined(OS_ANDROID)
+#include "chrome/browser/ui/browser_list_observer.h"
+#endif  // !defined(OS_ANDROID)
 
 class ProfileAttributesStorage;
 class ProfileInfoCache;

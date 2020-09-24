@@ -5,20 +5,12 @@
 #ifndef CHROME_BROWSER_UI_TAB_HELPERS_H_
 #define CHROME_BROWSER_UI_TAB_HELPERS_H_
 
+#include "build/build_config.h"
+
+#if defined(OS_ANDROID)
+
 namespace android {
 class TabWebContentsDelegateAndroid;
-}
-
-namespace content {
-class WebContents;
-}
-
-namespace chrome {
-class BrowserTabStripModelDelegate;
-}
-
-namespace prerender {
-class ChromePrerenderContentsDelegate;
 }
 
 namespace thin_webview {
@@ -26,6 +18,22 @@ namespace android {
 class ChromeThinWebViewInitializer;
 }
 }  // namespace thin_webview
+
+#else
+
+namespace chrome {
+class BrowserTabStripModelDelegate;
+}
+
+#endif  // defined(OS_ANDROID)
+
+namespace content {
+class WebContents;
+}
+
+namespace prerender {
+class ChromePrerenderContentsDelegate;
+}
 
 // A "tab contents" is a WebContents that is used as a tab in a browser window
 // (or the equivalent on Android). The TabHelpers class allows specific classes
@@ -40,14 +48,17 @@ class ChromeThinWebViewInitializer;
 // only Browser and BrowserTabStripModelDelegate.)
 class TabHelpers {
  private:
-  // Browser and its TabStripModelDelegate have intimate control of tabs.
-  // TabAndroid is the equivalent on Android.
-  friend class Browser;
-  friend class chrome::BrowserTabStripModelDelegate;
+#if defined(OS_ANDROID)
+  // ThinWebView is used to host WebContents on non-tab UIs in Android. Most
+  // clients of ThinWebView will need a major subset of the tab helpers.
+  friend class thin_webview::android::ChromeThinWebViewInitializer;
 
-  // These are the Android equivalents of the two classes above.
   friend class TabAndroid;
   friend class android::TabWebContentsDelegateAndroid;
+#else
+  friend class Browser;
+  friend class chrome::BrowserTabStripModelDelegate;
+#endif  // defined(OS_ANDROID)
 
   // chrome::Navigate creates WebContents that are destined for the tab strip,
   // and that might have WebUI that immediately calls back into random tab
@@ -57,10 +68,6 @@ class TabHelpers {
   // Prerendering loads pages that have arbitrary external content; it needs
   // the full set of tab helpers to deal with it.
   friend class prerender::ChromePrerenderContentsDelegate;
-
-  // ThinWebView is used to host WebContents on non-tab UIs in Android. Most
-  // clients of ThinWebView will need a major subset of the tab helpers.
-  friend class thin_webview::android::ChromeThinWebViewInitializer;
 
   // FYI: Do NOT add any more friends here. The functions above are the ONLY
   // ones that need to call AttachTabHelpers; if you think you do, re-read the

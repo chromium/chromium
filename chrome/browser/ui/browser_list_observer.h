@@ -5,6 +5,12 @@
 #ifndef CHROME_BROWSER_UI_BROWSER_LIST_OBSERVER_H_
 #define CHROME_BROWSER_UI_BROWSER_LIST_OBSERVER_H_
 
+#include "build/build_config.h"
+
+#if defined(OS_ANDROID)
+#error This file should only be included on desktop.
+#endif
+
 class Browser;
 
 class BrowserListObserver {

@@ -14,6 +14,11 @@
 #include "base/lazy_instance.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
+#include "build/build_config.h"
+
+#if defined(OS_ANDROID)
+#error This file should only be included on desktop.
+#endif
 
 class Browser;
 class Profile;

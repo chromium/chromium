@@ -34,7 +34,6 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/profile_sync_service_factory.h"
 #include "chrome/browser/sync/user_event_service_factory.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -91,6 +90,8 @@
 
 #if defined(OS_ANDROID)
 #include "chrome/browser/safe_browsing/android/password_reuse_controller_android.h"
+#else
+#include "chrome/browser/ui/browser_list.h"
 #endif
 
 using base::RecordAction;

@@ -23,7 +23,6 @@
 #include "chrome/browser/supervised_user/supervised_user_denylist.h"
 #include "chrome/browser/supervised_user/supervised_user_url_filter.h"
 #include "chrome/browser/supervised_user/supervised_users.h"
-#include "chrome/browser/ui/browser_list_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/sync/driver/sync_type_preference_provider.h"
@@ -37,7 +36,10 @@
 #include "extensions/browser/management_policy.h"
 #endif
 
-class Browser;
+#if !defined(OS_ANDROID)
+#include "chrome/browser/ui/browser_list_observer.h"
+#endif  // !defined(OS_ANDROID)
+
 class PermissionRequestCreator;
 class PrefService;
 class Profile;
@@ -61,6 +63,10 @@ class Extension;
 namespace user_prefs {
 class PrefRegistrySyncable;
 }
+
+#if !defined(OS_ANDROID)
+class Browser;
+#endif  // !defined(OS_ANDROID)
 
 // This class handles all the information related to a given supervised profile
 // (e.g. the installed content packs, the default URL filtering behavior, or

@@ -11,8 +11,11 @@
 #include "base/macros.h"
 #include "build/build_config.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/ui/browser_list_observer.h"
 #include "components/signin/core/browser/signin_status_metrics_provider_delegate.h"
+
+#if !defined(OS_ANDROID)
+#include "chrome/browser/ui/browser_list_observer.h"
+#endif  // !defined(OS_ANDROID)
 
 class ChromeSigninStatusMetricsProviderDelegate
     : public SigninStatusMetricsProviderDelegate,
