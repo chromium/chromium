@@ -107,6 +107,31 @@ std::vector<VP9TemporalLayers::FrameConfig> GetTemporalLayersReferencePattern(
 }
 }  // namespace
 
+// static
+std::vector<uint8_t> VP9TemporalLayers::GetFpsAllocation(
+    size_t num_temporal_layers) {
+  DCHECK_GT(num_temporal_layers, 1u);
+  DCHECK_LT(num_temporal_layers, 4u);
+  // The frame rate fraction is given as an 8bit unsigned integer where 0 = 0%
+  // and 255 = 100%. VideoEncoderInfo::fps_allocation is filled in the
+  // cumulative manner. For example, if
+  // fps_allocation[0][0] = kFullFramerate / 4;
+  // fps_allocation[0][1] = kFullFramerate / 2;
+  // fps_allocation[0][2] = kFullFramerate;
+  // then fourth of the frames are in the base layer, fourth are in TL1 and half
+  // are in TL2.
+  constexpr uint8_t kFullFramerate = 255;
+  switch (num_temporal_layers) {
+    case 2:
+      return {kFullFramerate / 2, kFullFramerate};
+    case 3:
+      return {kFullFramerate / 4, kFullFramerate / 2, kFullFramerate};
+    default:
+      NOTREACHED() << "Unsupported temporal layers";
+      return {};
+  }
+}
+
 VP9TemporalLayers::VP9TemporalLayers(size_t number_of_temporal_layers)
     : num_layers_(number_of_temporal_layers),
       temporal_layers_reference_pattern_(

@@ -12,6 +12,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
 #include "media/gpu/vaapi/vaapi_utils.h"
+#include "media/gpu/vaapi/vp9_temporal_layers.h"
 #include "media/gpu/vp9_picture.h"
 #include "media/video/video_encode_accelerator.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -51,6 +52,23 @@ MATCHER_P3(MatchesBitstreamBufferMetadata,
            "") {
   return arg.payload_size_bytes == payload_size_bytes &&
          arg.key_frame == key_frame && arg.vp9.has_value() == has_vp9_metadata;
+}
+
+MATCHER_P(MatchesEncoderInfo, num_of_temporal_layers, "") {
+  const auto& fps_allocation = arg.fps_allocation[0];
+  if (fps_allocation.size() != num_of_temporal_layers)
+    return false;
+  constexpr uint8_t kFullFramerate = 255;
+  if (fps_allocation.back() != kFullFramerate)
+    return false;
+  if (fps_allocation.size() != 1 &&
+      fps_allocation !=
+          VP9TemporalLayers::GetFpsAllocation(num_of_temporal_layers)) {
+    return false;
+  }
+  return arg.implementation_name == "VaapiVideoEncodeAccelerator" &&
+         arg.supports_native_handle && arg.has_trusted_rate_controller &&
+         arg.is_hardware_accelerated && !arg.supports_simulcast;
 }
 
 class MockVideoEncodeAcceleratorClient : public VideoEncodeAccelerator::Client {
@@ -185,10 +203,12 @@ class VaapiVideoEncodeAcceleratorTest
               return true;
             }));
     EXPECT_CALL(client_, RequireBitstreamBuffers(_, kDefaultEncodeSize, _))
-        .WillOnce(WithArgs<2>([this, &quit_closure](size_t output_buffer_size) {
+        .WillOnce(WithArgs<2>([this](size_t output_buffer_size) {
           this->output_buffer_size_ = output_buffer_size;
-          quit_closure.Run();
         }));
+    EXPECT_CALL(client_, NotifyEncoderInfoChange(MatchesEncoderInfo(
+                             config.spatial_layers[0].num_of_temporal_layers)))
+        .WillOnce([&quit_closure]() { quit_closure.Run(); });
     ASSERT_TRUE(InitializeVideoEncodeAccelerator(config));
     run_loop.Run();
   }

@@ -41,6 +41,8 @@ class VP9TemporalLayers {
   explicit VP9TemporalLayers(size_t num_temporal_layers);
   ~VP9TemporalLayers();
 
+  static std::vector<uint8_t> GetFpsAllocation(size_t num_temporal_layers);
+
   // Sets |picture|'s used reference frames and |ref_frames_used| so that they
   // structure valid temporal layers. This also fills |picture|'s
   // |metadata_for_encoding|.

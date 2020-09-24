@@ -42,6 +42,7 @@
 #include "media/gpu/vaapi/vaapi_utils.h"
 #include "media/gpu/vaapi/vp8_encoder.h"
 #include "media/gpu/vaapi/vp9_encoder.h"
+#include "media/gpu/vaapi/vp9_temporal_layers.h"
 #include "media/gpu/vp8_reference_frame_vector.h"
 #include "media/gpu/vp9_reference_frame_vector.h"
 
@@ -470,12 +471,14 @@ void VaapiVideoEncodeAccelerator::InitializeTask(const Config& config) {
   // Investigate and fix the issue.
   // encoder_info_.scaling_settings = encoder_->GetScalingSettings();
 
-  // TODO(crbug.com/1030199): VaapiVideoEncodeAccelerator doesn't support either
-  // temporal-SVC or spatial-SVC. Update |fps_allocation| properly once they are
-  // supported.
-  // A single stream shall be output at the desired FPS.
-  constexpr uint8_t kFullFramerate = 255;
-  encoder_info_.fps_allocation[0] = {kFullFramerate};
+  if (config.HasTemporalLayer()) {
+    DCHECK(!config.spatial_layers.empty());
+    encoder_info_.fps_allocation[0] = VP9TemporalLayers::GetFpsAllocation(
+        config.spatial_layers[0].num_of_temporal_layers);
+  } else {
+    constexpr uint8_t kFullFramerate = 255;
+    encoder_info_.fps_allocation[0] = {kFullFramerate};
+  }
 
   // Notify VideoEncoderInfo after initialization.
   child_task_runner_->PostTask(
