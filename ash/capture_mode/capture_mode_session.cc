@@ -26,6 +26,8 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/scoped_canvas.h"
+#include "ui/gfx/shadow_value.h"
+#include "ui/gfx/skia_paint_util.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/label.h"
 
@@ -33,7 +35,7 @@ namespace ash {
 
 namespace {
 
-constexpr int kBorderStrokePx = 2;
+constexpr int kBorderStrokePx = 1;
 
 // The visual radius of the drag affordance circles which are shown while
 // resizing a drag region.
@@ -48,6 +50,19 @@ constexpr SkColor kRegionBorderColor = SK_ColorWHITE;
 
 // Blue300 at 30%.
 constexpr SkColor kCaptureRegionColor = SkColorSetA(gfx::kGoogleBlue300, 77);
+
+// Values for the shadows of the capture region components.
+constexpr gfx::ShadowValue kRegionOutlineShadow(gfx::Vector2d(0, 0),
+                                                2,
+                                                SkColorSetARGB(41, 0, 0, 0));
+constexpr gfx::ShadowValue kRegionAffordanceCircleShadow1(
+    gfx::Vector2d(0, 1),
+    2,
+    SkColorSetARGB(76, 0, 0, 0));
+constexpr gfx::ShadowValue kRegionAffordanceCircleShadow2(
+    gfx::Vector2d(0, 2),
+    6,
+    SkColorSetARGB(38, 0, 0, 0));
 
 // Mouse cursor warping is disabled when the capture source is a custom region.
 // Sets the mouse warp status to |enable| and return the original value.
@@ -273,7 +288,14 @@ void CaptureModeSession::PaintCaptureRegion(gfx::Canvas* canvas) {
 
   region.Inset(-kBorderStrokePx, -kBorderStrokePx);
   canvas->FillRect(region, SK_ColorTRANSPARENT, SkBlendMode::kClear);
-  canvas->DrawRect(gfx::RectF(region), kRegionBorderColor);
+
+  // Draw the region border.
+  cc::PaintFlags border_flags;
+  border_flags.setColor(kRegionBorderColor);
+  border_flags.setStyle(cc::PaintFlags::kStroke_Style);
+  border_flags.setStrokeWidth(kBorderStrokePx);
+  border_flags.setLooper(gfx::CreateShadowDrawLooper({kRegionOutlineShadow}));
+  canvas->DrawRect(gfx::RectF(region), border_flags);
 
   if (is_select_phase_)
     return;
@@ -283,19 +305,24 @@ void CaptureModeSession::PaintCaptureRegion(gfx::Canvas* canvas) {
     return;
 
   // Draw the drag affordance circles.
-  // TODO(sammiequon): Draw a drop shadow for the affordance circles and the
-  // border.
-  cc::PaintFlags flags;
-  flags.setColor(kRegionBorderColor);
-  flags.setStyle(cc::PaintFlags::kFill_Style);
-  canvas->DrawCircle(region.origin(), kAffordanceCircleRadiusDp, flags);
-  canvas->DrawCircle(region.top_center(), kAffordanceCircleRadiusDp, flags);
-  canvas->DrawCircle(region.top_right(), kAffordanceCircleRadiusDp, flags);
-  canvas->DrawCircle(region.left_center(), kAffordanceCircleRadiusDp, flags);
-  canvas->DrawCircle(region.right_center(), kAffordanceCircleRadiusDp, flags);
-  canvas->DrawCircle(region.bottom_left(), kAffordanceCircleRadiusDp, flags);
-  canvas->DrawCircle(region.bottom_center(), kAffordanceCircleRadiusDp, flags);
-  canvas->DrawCircle(region.bottom_right(), kAffordanceCircleRadiusDp, flags);
+  cc::PaintFlags circle_flags;
+  circle_flags.setColor(kRegionBorderColor);
+  circle_flags.setStyle(cc::PaintFlags::kFill_Style);
+  circle_flags.setLooper(gfx::CreateShadowDrawLooper(
+      {kRegionAffordanceCircleShadow1, kRegionAffordanceCircleShadow2}));
+
+  auto draw_circle = [&canvas, &circle_flags](const gfx::Point& location) {
+    canvas->DrawCircle(location, kAffordanceCircleRadiusDp, circle_flags);
+  };
+
+  draw_circle(region.origin());
+  draw_circle(region.top_center());
+  draw_circle(region.top_right());
+  draw_circle(region.right_center());
+  draw_circle(region.bottom_right());
+  draw_circle(region.bottom_center());
+  draw_circle(region.bottom_left());
+  draw_circle(region.left_center());
 }
 
 void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
