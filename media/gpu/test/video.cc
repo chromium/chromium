@@ -487,8 +487,8 @@ void Video::DecodeTask(const std::vector<uint8_t> data,
          num_decoded_frames < num_frames) {
     if (packet.stream_index == stream_index) {
       media::VideoDecoder::DecodeCB decode_cb = base::BindOnce(
-          [](bool* success, media::DecodeStatus status) {
-            *success = (status == media::DecodeStatus::OK);
+          [](bool* success, media::Status status) {
+            *success = (status.is_ok());
           },
           success);
       decoder.Decode(DecoderBuffer::CopyFrom(packet.data, packet.size),

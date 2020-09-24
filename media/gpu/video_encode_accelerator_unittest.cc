@@ -1087,8 +1087,8 @@ class VideoFrameQualityValidator
 
  private:
   void InitializeCB(Status status);
-  void DecodeDone(DecodeStatus status);
-  void FlushDone(DecodeStatus status);
+  void DecodeDone(Status status);
+  void FlushDone(Status status);
   void VerifyOutputFrame(scoped_refptr<VideoFrame> output_frame);
   void Decode();
   void WriteFrameStats();
@@ -1196,20 +1196,21 @@ void VideoFrameQualityValidator::AddOriginalFrame(
   original_frames_.push(frame);
 }
 
-void VideoFrameQualityValidator::DecodeDone(DecodeStatus status) {
+void VideoFrameQualityValidator::DecodeDone(Status status) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
-  if (status == DecodeStatus::OK) {
+  if (status.is_ok()) {
     decoder_state_ = INITIALIZED;
     Decode();
   } else {
     decoder_state_ = DECODER_ERROR;
     decode_error_cb_.Run();
-    FAIL() << "Unexpected decode status = " << status << ". Stop decoding.";
+    FAIL() << "Unexpected decode status = " << status.code()
+           << ". Stop decoding.";
   }
 }
 
-void VideoFrameQualityValidator::FlushDone(DecodeStatus status) {
+void VideoFrameQualityValidator::FlushDone(Status status) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   WriteFrameStats();

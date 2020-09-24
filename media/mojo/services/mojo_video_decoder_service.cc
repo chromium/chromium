@@ -316,7 +316,7 @@ void MojoVideoDecoderService::OnReaderFlushed() {
 void MojoVideoDecoderService::OnDecoderDecoded(
     DecodeCallback callback,
     std::unique_ptr<ScopedDecodeTrace> trace_event,
-    DecodeStatus status) {
+    media::Status status) {
   DVLOG(3) << __func__;
   if (trace_event) {
     TRACE_EVENT_ASYNC_STEP_PAST0("media", kDecodeTraceName, trace_event.get(),
@@ -324,7 +324,7 @@ void MojoVideoDecoderService::OnDecoderDecoded(
     trace_event->EndTrace(status);
   }
 
-  std::move(callback).Run(status);
+  std::move(callback).Run(std::move(status));
 }
 
 void MojoVideoDecoderService::OnDecoderReset() {

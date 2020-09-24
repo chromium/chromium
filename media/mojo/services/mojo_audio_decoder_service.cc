@@ -140,9 +140,9 @@ void MojoAudioDecoderService::OnReaderFlushDone(ResetCallback callback) {
 }
 
 void MojoAudioDecoderService::OnDecodeStatus(DecodeCallback callback,
-                                             media::DecodeStatus status) {
-  DVLOG(3) << __func__ << " status:" << status;
-  std::move(callback).Run(status);
+                                             const Status status) {
+  DVLOG(3) << __func__ << " status:" << status.code();
+  std::move(callback).Run(std::move(status));
 }
 
 void MojoAudioDecoderService::OnResetDone(ResetCallback callback) {

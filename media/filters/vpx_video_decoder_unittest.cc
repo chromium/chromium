@@ -71,15 +71,14 @@ class VpxVideoDecoderTest : public testing::Test {
   // Sets up expectations and actions to put VpxVideoDecoder in an active
   // decoding state.
   void ExpectDecodingState() {
-    EXPECT_EQ(DecodeStatus::OK, DecodeSingleFrame(i_frame_buffer_));
+    EXPECT_TRUE(DecodeSingleFrame(i_frame_buffer_).is_ok());
     ASSERT_EQ(1U, output_frames_.size());
   }
 
   // Sets up expectations and actions to put VpxVideoDecoder in an end
   // of stream state.
   void ExpectEndOfStreamState() {
-    EXPECT_EQ(DecodeStatus::OK,
-              DecodeSingleFrame(DecoderBuffer::CreateEOSBuffer()));
+    EXPECT_TRUE(DecodeSingleFrame(DecoderBuffer::CreateEOSBuffer()).is_ok());
     ASSERT_FALSE(output_frames_.empty());
   }
 
@@ -89,29 +88,29 @@ class VpxVideoDecoderTest : public testing::Test {
   // Decodes all buffers in |input_buffers| and push all successfully decoded
   // output frames into |output_frames|.
   // Returns the last decode status returned by the decoder.
-  DecodeStatus DecodeMultipleFrames(const InputBuffers& input_buffers) {
+  Status DecodeMultipleFrames(const InputBuffers& input_buffers) {
     for (auto iter = input_buffers.begin(); iter != input_buffers.end();
          ++iter) {
-      DecodeStatus status = Decode(*iter);
-      switch (status) {
-        case DecodeStatus::OK:
+      Status status = Decode(*iter);
+      switch (status.code()) {
+        case StatusCode::kOk:
           break;
-        case DecodeStatus::ABORTED:
+        case StatusCode::kAborted:
           NOTREACHED();
           FALLTHROUGH;
-        case DecodeStatus::DECODE_ERROR:
+        default:
           DCHECK(output_frames_.empty());
           return status;
       }
     }
-    return DecodeStatus::OK;
+    return OkStatus();
   }
 
   // Decodes the single compressed frame in |buffer| and writes the
   // uncompressed output to |video_frame|. This method works with single
   // and multithreaded decoders. End of stream buffers are used to trigger
   // the frame to be returned in the multithreaded decoder case.
-  DecodeStatus DecodeSingleFrame(scoped_refptr<DecoderBuffer> buffer) {
+  Status DecodeSingleFrame(scoped_refptr<DecoderBuffer> buffer) {
     InputBuffers input_buffers;
     input_buffers.push_back(std::move(buffer));
     input_buffers.push_back(DecoderBuffer::CreateEOSBuffer());
@@ -132,9 +131,9 @@ class VpxVideoDecoderTest : public testing::Test {
     input_buffers.push_back(buffer);
     input_buffers.push_back(DecoderBuffer::CreateEOSBuffer());
 
-    DecodeStatus status = DecodeMultipleFrames(input_buffers);
+    Status status = DecodeMultipleFrames(input_buffers);
 
-    EXPECT_EQ(DecodeStatus::OK, status);
+    EXPECT_TRUE(status.is_ok());
     ASSERT_EQ(2U, output_frames_.size());
 
     gfx::Size original_size = TestVideoConfig::NormalCodedSize();
@@ -148,8 +147,8 @@ class VpxVideoDecoderTest : public testing::Test {
               output_frames_[1]->visible_rect().size().height());
   }
 
-  DecodeStatus Decode(scoped_refptr<DecoderBuffer> buffer) {
-    DecodeStatus status;
+  Status Decode(scoped_refptr<DecoderBuffer> buffer) {
+    Status status;
     EXPECT_CALL(*this, DecodeDone(_)).WillOnce(testing::SaveArg<0>(&status));
 
     decoder_->Decode(std::move(buffer),
@@ -165,7 +164,7 @@ class VpxVideoDecoderTest : public testing::Test {
     output_frames_.push_back(std::move(frame));
   }
 
-  MOCK_METHOD1(DecodeDone, void(DecodeStatus));
+  MOCK_METHOD1(DecodeDone, void(Status));
 
   base::test::TaskEnvironment task_env_;
   std::unique_ptr<VideoDecoder> decoder_;
@@ -192,7 +191,7 @@ TEST_F(VpxVideoDecoderTest, DecodeFrame_Normal) {
   Initialize();
 
   // Simulate decoding a single frame.
-  EXPECT_EQ(DecodeStatus::OK, DecodeSingleFrame(i_frame_buffer_));
+  EXPECT_TRUE(DecodeSingleFrame(i_frame_buffer_).is_ok());
   ASSERT_EQ(1U, output_frames_.size());
 }
 
@@ -318,10 +317,10 @@ TEST_F(VpxVideoDecoderTest, MemoryPoolAllowsMultipleDisplay) {
 
   AVPacket packet = {};
   while (av_read_frame(glue.format_context(), &packet) >= 0) {
-    DecodeStatus decode_status =
+    Status decode_status =
         Decode(DecoderBuffer::CopyFrom(packet.data, packet.size));
     av_packet_unref(&packet);
-    if (decode_status != DecodeStatus::OK)
+    if (!decode_status.is_ok())
       break;
   }
 

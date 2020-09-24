@@ -203,7 +203,7 @@ class MEDIA_EXPORT DecoderStream {
   void OnDecodeDone(int buffer_size,
                     bool end_of_stream,
                     std::unique_ptr<ScopedDecodeTrace> trace_event,
-                    DecodeStatus status);
+                    media::Status status);
 
   // Output callback passed to Decoder::Initialize().
   void OnDecodeOutputReady(scoped_refptr<Output> output);

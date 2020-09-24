@@ -396,7 +396,7 @@ TEST_P(MediaCodecVideoDecoderTest, FrameFactoryInitFailureIsAnError) {
   Initialize(TestVideoConfig::Large(codec_));
   ON_CALL(*video_frame_factory_, Initialize(ExpectedOverlayMode(), _))
       .WillByDefault(RunCallback<1>(nullptr));
-  EXPECT_CALL(decode_cb_, Run(DecodeStatus::DECODE_ERROR)).Times(1);
+  EXPECT_CALL(decode_cb_, Run(IsDecodeErrorStatus())).Times(1);
   EXPECT_CALL(*surface_chooser_, MockUpdateState()).Times(0);
   mcvd_->Decode(fake_decoder_buffer_, decode_cb_.Get());
 }
@@ -404,7 +404,7 @@ TEST_P(MediaCodecVideoDecoderTest, FrameFactoryInitFailureIsAnError) {
 TEST_P(MediaCodecVideoDecoderTest, CodecCreationFailureIsAnError) {
   InitializeWithTextureOwner_OneDecodePending(TestVideoConfig::Large(codec_));
   mcvd_->Decode(fake_decoder_buffer_, decode_cb_.Get());
-  EXPECT_CALL(decode_cb_, Run(DecodeStatus::DECODE_ERROR)).Times(2);
+  EXPECT_CALL(decode_cb_, Run(IsDecodeErrorStatus())).Times(2);
   // Failing to create a codec should put MCVD into an error state.
   codec_allocator_->ProvideNullCodecAsync();
 }
@@ -414,7 +414,7 @@ TEST_P(MediaCodecVideoDecoderTest, CodecFailuresAreAnError) {
       InitializeFully_OneDecodePending(TestVideoConfig::Large(codec_));
   EXPECT_CALL(*codec, DequeueInputBuffer(_, _))
       .WillOnce(Return(MEDIA_CODEC_ERROR));
-  EXPECT_CALL(decode_cb_, Run(DecodeStatus::DECODE_ERROR));
+  EXPECT_CALL(decode_cb_, Run(IsDecodeErrorStatus()));
   PumpCodec();
 }
 
@@ -553,7 +553,7 @@ TEST_P(MediaCodecVideoDecoderTest,
 
   surface_chooser_->ProvideTextureOwner();
   EXPECT_CALL(*codec, SetSurface(_)).WillOnce(Return(false));
-  EXPECT_CALL(decode_cb_, Run(DecodeStatus::DECODE_ERROR)).Times(2);
+  EXPECT_CALL(decode_cb_, Run(IsDecodeErrorStatus())).Times(2);
   EXPECT_CALL(*codec_allocator_, MockReleaseMediaCodec(codec));
   mcvd_->Decode(fake_decoder_buffer_, decode_cb_.Get());
   // Verify expectations before we delete the MCVD.
@@ -599,7 +599,7 @@ TEST_P(MediaCodecVideoDecoderTest,
 
 TEST_P(MediaCodecVideoDecoderTest, ResetAbortsPendingDecodes) {
   InitializeWithTextureOwner_OneDecodePending(TestVideoConfig::Large(codec_));
-  EXPECT_CALL(decode_cb_, Run(DecodeStatus::ABORTED));
+  EXPECT_CALL(decode_cb_, Run(HasStatusCode(StatusCode::kAborted)));
   DoReset();
   testing::Mock::VerifyAndClearExpectations(&decode_cb_);
 }
@@ -617,7 +617,7 @@ TEST_P(MediaCodecVideoDecoderTest, ResetAbortsPendingEosDecode) {
   codec->AcceptOneInput(MockMediaCodecBridge::kEos);
   PumpCodec();
 
-  EXPECT_CALL(eos_decode_cb, Run(DecodeStatus::ABORTED));
+  EXPECT_CALL(eos_decode_cb, Run(HasStatusCode(StatusCode::kAborted)));
   DoReset();
   // Should be run before |mcvd_| is destroyed.
   testing::Mock::VerifyAndClearExpectations(&eos_decode_cb);
@@ -766,7 +766,7 @@ TEST_P(MediaCodecVideoDecoderTest, EosDecodeCbIsRunAfterEosIsDequeued) {
   codec->ProduceOneOutput(MockMediaCodecBridge::kEos);
   PumpCodec();
 
-  EXPECT_CALL(eos_decode_cb, Run(DecodeStatus::OK));
+  EXPECT_CALL(eos_decode_cb, Run(IsOkStatus()));
   std::move(video_frame_factory_->last_closure_).Run();
 }
 

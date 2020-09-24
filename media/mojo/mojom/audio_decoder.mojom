@@ -33,7 +33,7 @@ interface AudioDecoder {
   // pending buffers should be processed, the corresponding decoded buffers
   // should be returned to the proxy, and only then the service should return
   // DecoderStatus.
-  Decode(DecoderBuffer buffer) => (DecodeStatus status);
+  Decode(DecoderBuffer buffer) => (Status status);
 
   // Resets decoder state. Should be called only if Initialize() succeeds.
   // All pending Decode() requests will be finished or aborted, then the method

@@ -217,8 +217,8 @@ void MojoAudioDecoder::OnInitialized(const Status& status,
   std::move(init_cb_).Run(std::move(status));
 }
 
-void MojoAudioDecoder::OnDecodeStatus(DecodeStatus status) {
-  DVLOG(1) << __func__ << ": status:" << status;
+void MojoAudioDecoder::OnDecodeStatus(const Status& status) {
+  DVLOG(1) << __func__ << ": status:" << status.code();
   DCHECK(task_runner_->BelongsToCurrentThread());
 
   DCHECK(decode_cb_);

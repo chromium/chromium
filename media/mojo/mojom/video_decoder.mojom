@@ -142,7 +142,7 @@ interface VideoDecoder {
   // If |buffer| is an EOS buffer, implementations must execute all other
   // pending Decode() callbacks and output all pending frames before executing
   // the Decode(EOS) callback. (That is, they must flush.)
-  Decode(DecoderBuffer buffer) => (DecodeStatus status);
+  Decode(DecoderBuffer buffer) => (Status status);
 
   // Reset the decoder. All ongoing Decode() requests must be completed or
   // aborted before executing the callback. This must not be called while there

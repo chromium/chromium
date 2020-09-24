@@ -27,6 +27,9 @@ using StatusCodeType = int32_t;
 enum class StatusCode : StatusCodeType {
   kOk = 0,
 
+  // General errors: 0x00
+  kAborted = 0x00000001,
+
   // Decoder Errors: 0x01
   kDecoderInitializeNeverCompleted = 0x00000101,
   kDecoderFailedDecode = 0x00000102,
@@ -44,6 +47,9 @@ enum class StatusCode : StatusCodeType {
   kInitializationUnspecifiedFailure = 0x0000010C,
   kDecoderVideoFrameConstructionFailed = 0x0000010D,
   kMakeContextCurrentFailed = 0x0000010E,
+  // This is a temporary error for use only by existing code during the
+  // DecodeStatus => Status conversion.
+  kDecodeErrorDoNotUse = 0x0000010F,
 
   // Windows Errors: 0x02
   kWindowsWrappedHresult = 0x00000201,
@@ -119,6 +125,19 @@ enum class StatusCode : StatusCodeType {
   // Format errors: 0x08
   kH264ParsingError = 0x00000801,
   kH264BufferTooSmall = 0x00000802,
+
+  // DecodeStatus temporary codes.  These names were chosen to match the
+  // DecodeStatus enum, so that un-converted code can DecodeStatus::OK/etc.
+  // Note that OK must result in Status::is_ok(), since converted code will
+  // check for it.  These will be removed when the conversion is complete.
+  //
+  // DO NOT ADD NEW USES OF OK/ABORTED/DECODE_ERROR.
+  OK = kOk,  // Everything went as planned.
+  // Read aborted due to Reset() during pending read.
+  ABORTED = kAborted,  // Read aborted due to Reset() during pending read.
+  // Decoder returned decode error. Note: Prefixed by DECODE_
+  // since ERROR is a reserved name (special macro) on Windows.
+  DECODE_ERROR = kDecodeErrorDoNotUse,
 
   // Special codes
   kGenericErrorPleaseRemove = 0x79999999,

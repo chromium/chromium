@@ -42,7 +42,7 @@ class MEDIA_GPU_EXPORT DecoderInterface {
   // TODO(crbug.com/998413): Replace VideoFrame to GpuMemoryBuffer-based
   // instance.
   using OutputCB = base::RepeatingCallback<void(scoped_refptr<VideoFrame>)>;
-  using DecodeCB = base::OnceCallback<void(DecodeStatus)>;
+  using DecodeCB = VideoDecoder::DecodeCB;
 
   // Client interface of DecoderInterface.
   class MEDIA_GPU_EXPORT Client {
@@ -190,7 +190,7 @@ class MEDIA_GPU_EXPORT VideoDecoderPipeline : public VideoDecoder,
                         Status parent_error,
                         Status status);
 
-  void OnDecodeDone(bool eos_buffer, DecodeCB decode_cb, DecodeStatus status);
+  void OnDecodeDone(bool eos_buffer, DecodeCB decode_cb, Status status);
   void OnResetDone();
   void OnError(const std::string& msg);
 

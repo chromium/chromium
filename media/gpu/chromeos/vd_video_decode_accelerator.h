@@ -94,9 +94,9 @@ class MEDIA_GPU_EXPORT VdVideoDecodeAccelerator
 
   // Callback methods of |vd_|.
   void OnInitializeDone(Status status);
-  void OnDecodeDone(int32_t bitstream_buffer_id, DecodeStatus status);
+  void OnDecodeDone(int32_t bitstream_buffer_id, Status status);
   void OnFrameReady(scoped_refptr<VideoFrame> frame);
-  void OnFlushDone(DecodeStatus status);
+  void OnFlushDone(Status status);
   void OnResetDone();
 
   // Get Picture instance that represents the same buffer as |frame|. Return

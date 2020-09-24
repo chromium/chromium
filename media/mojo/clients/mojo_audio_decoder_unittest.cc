@@ -83,7 +83,7 @@ class MojoAudioDecoderTest : public ::testing::Test {
   MOCK_METHOD1(OnInitialized, void(Status));
   MOCK_METHOD1(OnOutput, void(scoped_refptr<AudioBuffer>));
   MOCK_METHOD1(OnWaiting, void(WaitingReason));
-  MOCK_METHOD1(OnDecoded, void(DecodeStatus));
+  MOCK_METHOD1(OnDecoded, void(Status));
   MOCK_METHOD0(OnReset, void());
 
   // Always create a new RunLoop (and destroy the old loop if it exists) before
@@ -206,7 +206,7 @@ class MojoAudioDecoderTest : public ::testing::Test {
 
     InSequence s;  // Make sure OnOutput() and OnDecoded() are called in order.
     EXPECT_CALL(*this, OnOutput(_)).Times(kOutputPerDecode);
-    EXPECT_CALL(*this, OnDecoded(DecodeStatus::OK))
+    EXPECT_CALL(*this, OnDecoded(IsOkStatus()))
         .WillOnce(
             InvokeWithoutArgs(this, &MojoAudioDecoderTest::KeepDecodingOrQuit));
     Decode();
@@ -215,7 +215,7 @@ class MojoAudioDecoderTest : public ::testing::Test {
   void DecodeAndReset() {
     InSequence s;  // Make sure all callbacks are fired in order.
     EXPECT_CALL(*this, OnOutput(_)).Times(kOutputPerDecode);
-    EXPECT_CALL(*this, OnDecoded(DecodeStatus::OK));
+    EXPECT_CALL(*this, OnDecoded(IsOkStatus()));
     EXPECT_CALL(*this, OnReset())
         .WillOnce(InvokeWithoutArgs(this, &MojoAudioDecoderTest::QuitLoop));
     Decode();
@@ -297,7 +297,7 @@ TEST_F(MojoAudioDecoderTest, WaitingForKey) {
         std::move(decode_cb).Run(DecodeStatus::OK);
       });
   EXPECT_CALL(*this, OnWaiting(WaitingReason::kNoDecryptionKey)).Times(1);
-  EXPECT_CALL(*this, OnDecoded(DecodeStatus::OK))
+  EXPECT_CALL(*this, OnDecoded(IsOkStatus()))
       .WillOnce(InvokeWithoutArgs(this, &MojoAudioDecoderTest::QuitLoop));
   Decode();
   RunLoop();

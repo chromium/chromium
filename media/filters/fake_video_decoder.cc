@@ -233,15 +233,15 @@ int FakeVideoDecoder::GetMaxDecodeRequests() const {
 
 void FakeVideoDecoder::OnFrameDecoded(int buffer_size,
                                       DecodeCB decode_cb,
-                                      DecodeStatus status) {
+                                      Status status) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
-  if (status == DecodeStatus::OK) {
+  if (status.is_ok()) {
     total_bytes_decoded_ += buffer_size;
     if (bytes_decoded_cb_)
       bytes_decoded_cb_.Run(buffer_size);
   }
-  std::move(decode_cb).Run(status);
+  std::move(decode_cb).Run(std::move(status));
 }
 
 void FakeVideoDecoder::RunOrHoldDecode(DecodeCB decode_cb) {

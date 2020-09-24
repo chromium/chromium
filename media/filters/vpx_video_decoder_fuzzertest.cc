@@ -30,8 +30,7 @@ struct Env {
   base::test::SingleThreadTaskEnvironment task_environment;
 };
 
-void OnDecodeComplete(const base::Closure& quit_closure,
-                      media::DecodeStatus status) {
+void OnDecodeComplete(const base::Closure& quit_closure, media::Status status) {
   quit_closure.Run();
 }
 

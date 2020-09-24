@@ -160,8 +160,8 @@ class AudioDecoderBrokerTest : public testing::Test {
     done_cb.Run();
   }
   void OnDecodeDoneWithClosure(base::RepeatingClosure done_cb,
-                               media::DecodeStatus status) {
-    OnDecodeDone(status);
+                               media::Status status) {
+    OnDecodeDone(std::move(status));
     done_cb.Run();
   }
 
@@ -171,7 +171,7 @@ class AudioDecoderBrokerTest : public testing::Test {
   }
 
   MOCK_METHOD1(OnInit, void(media::Status status));
-  MOCK_METHOD1(OnDecodeDone, void(media::DecodeStatus));
+  MOCK_METHOD1(OnDecodeDone, void(media::Status));
   MOCK_METHOD0(OnResetDone, void());
 
   void OnOutput(scoped_refptr<media::AudioBuffer> buffer) {
@@ -210,9 +210,9 @@ class AudioDecoderBrokerTest : public testing::Test {
 
   void DecodeBuffer(
       scoped_refptr<media::DecoderBuffer> buffer,
-      media::DecodeStatus expected_status = media::DecodeStatus::OK) {
+      media::StatusCode expected_status = media::StatusCode::kOk) {
     base::RunLoop run_loop;
-    EXPECT_CALL(*this, OnDecodeDone(expected_status));
+    EXPECT_CALL(*this, OnDecodeDone(HasStatusCode(expected_status)));
     decoder_broker_->Decode(
         buffer, WTF::Bind(&AudioDecoderBrokerTest::OnDecodeDoneWithClosure,
                           WTF::Unretained(this), run_loop.QuitClosure()));

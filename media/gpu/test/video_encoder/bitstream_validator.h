@@ -67,7 +67,7 @@ class BitstreamValidator : public BitstreamProcessor {
                             size_t frame_index);
 
   // Functions for media::VideoDecoder.
-  void DecodeDone(int64_t timestamp, DecodeStatus status);
+  void DecodeDone(int64_t timestamp, Status status);
   void VerifyOutputFrame(scoped_refptr<VideoFrame> frame);
 
   // Validator components touched by validator_thread_ only.

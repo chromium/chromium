@@ -7,8 +7,10 @@
 
 #include <string>
 
+#include "base/callback.h"
 #include "base/macros.h"
 #include "media/base/media_export.h"
+#include "media/base/status.h"
 
 namespace media {
 

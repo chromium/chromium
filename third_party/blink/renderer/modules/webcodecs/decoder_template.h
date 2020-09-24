@@ -99,9 +99,9 @@ class MODULES_EXPORT DecoderTemplate : public ScriptWrappable {
 
   // Called by |decoder_|.
   void OnInitializeDone(media::Status status);
-  void OnDecodeDone(uint32_t id, media::DecodeStatus);
-  void OnFlushDone(media::DecodeStatus);
-  void OnConfigureFlushDone(media::DecodeStatus);
+  void OnDecodeDone(uint32_t id, media::Status);
+  void OnFlushDone(media::Status);
+  void OnConfigureFlushDone(media::Status);
   void OnResetDone();
   void OnOutput(scoped_refptr<MediaOutputType>);
 

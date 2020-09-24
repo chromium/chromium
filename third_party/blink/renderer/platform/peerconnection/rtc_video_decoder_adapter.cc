@@ -471,13 +471,13 @@ void RTCVideoDecoderAdapter::DecodeOnMediaThread() {
   }
 }
 
-void RTCVideoDecoderAdapter::OnDecodeDone(media::DecodeStatus status) {
-  DVLOG(3) << __func__ << "(" << status << ")";
+void RTCVideoDecoderAdapter::OnDecodeDone(media::Status status) {
+  DVLOG(3) << __func__ << "(" << status.code() << ")";
   DCHECK(media_task_runner_->BelongsToCurrentThread());
 
   outstanding_decode_requests_--;
 
-  if (status == media::DecodeStatus::DECODE_ERROR) {
+  if (!status.is_ok() && status.code() != media::StatusCode::kAborted) {
     DVLOG(2) << "Entering permanent error state";
     UMA_HISTOGRAM_ENUMERATION("Media.RTCVideoDecoderError",
                               media::VideoDecodeAccelerator::PLATFORM_FAILURE,
@@ -583,8 +583,8 @@ void RTCVideoDecoderAdapter::FlushOnMediaThread(FlushDoneCB flush_success_cb,
       media::DecoderBuffer::CreateEOSBuffer(),
       WTF::BindRepeating(
           [](FlushDoneCB flush_success, FlushDoneCB flush_fail,
-             media::DecodeStatus status) {
-            if (status == media::DecodeStatus::OK)
+             media::Status status) {
+            if (status.is_ok())
               std::move(flush_success).Run();
             else
               std::move(flush_fail).Run();

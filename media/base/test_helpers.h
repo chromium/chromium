@@ -224,13 +224,19 @@ MATCHER_P(SameStatusCode, status, "") {
   return arg.code() == status.code();
 }
 
-// Compares two an |arg| Status to a StatusCode provided
+// Compares an `arg` Status.code() to a test-supplied StatusCode.
 MATCHER_P(HasStatusCode, status_code, "") {
   return arg.code() == status_code;
 }
 
 MATCHER(IsOkStatus, "") {
   return arg.is_ok();
+}
+
+// True if and only if the Status would be interpreted as an error from a decode
+// callback (not okay, not aborted).
+MATCHER(IsDecodeErrorStatus, "") {
+  return !arg.is_ok() && arg.code() != StatusCode::kAborted;
 }
 
 // Compares two {Audio|Video}DecoderConfigs

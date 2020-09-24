@@ -120,7 +120,7 @@ class VideoDecoderShim::DecoderImpl {
  private:
   void OnInitDone(media::Status status);
   void DoDecode();
-  void OnDecodeComplete(media::DecodeStatus status);
+  void OnDecodeComplete(media::Status status);
   void OnOutputComplete(scoped_refptr<media::VideoFrame> frame);
   void OnResetComplete();
 
@@ -252,18 +252,17 @@ void VideoDecoderShim::DecoderImpl::DoDecode() {
   pending_decodes_.pop();
 }
 
-void VideoDecoderShim::DecoderImpl::OnDecodeComplete(
-    media::DecodeStatus status) {
+void VideoDecoderShim::DecoderImpl::OnDecodeComplete(media::Status status) {
   DCHECK(awaiting_decoder_);
   awaiting_decoder_ = false;
 
   int32_t result;
-  switch (status) {
-    case media::DecodeStatus::OK:
-    case media::DecodeStatus::ABORTED:
+  switch (status.code()) {
+    case media::StatusCode::kOk:
+    case media::StatusCode::kAborted:
       result = PP_OK;
       break;
-    case media::DecodeStatus::DECODE_ERROR:
+    default:
       result = PP_ERROR_RESOURCE_FAILED;
       break;
   }

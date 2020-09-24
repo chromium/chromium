@@ -75,9 +75,6 @@ IPC_ENUM_TRAITS_MAX_VALUE(media::CdmSessionType,
 
 IPC_ENUM_TRAITS_MAX_VALUE(media::ChannelLayout, media::CHANNEL_LAYOUT_MAX)
 
-IPC_ENUM_TRAITS_MAX_VALUE(media::DecodeStatus,
-                          media::DecodeStatus::DECODE_STATUS_MAX)
-
 IPC_ENUM_TRAITS_MAX_VALUE(media::Decryptor::Status,
                           media::Decryptor::Status::kStatusMax)
 

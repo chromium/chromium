@@ -365,21 +365,21 @@ void VideoDecoderPipeline::DecodeTask(scoped_refptr<DecoderBuffer> buffer,
 
 void VideoDecoderPipeline::OnDecodeDone(bool is_flush,
                                         DecodeCB decode_cb,
-                                        DecodeStatus status) {
+                                        Status status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
-  DVLOGF(4) << "is_flush: " << is_flush << ", status: " << status;
+  DVLOGF(4) << "is_flush: " << is_flush << ", status: " << status.code();
 
   if (has_error_)
-    status = DecodeStatus::DECODE_ERROR;
+    status = Status(DecodeStatus::DECODE_ERROR);
 
-  if (is_flush && status == DecodeStatus::OK) {
+  if (is_flush && status.is_ok()) {
     client_flush_cb_ = std::move(decode_cb);
     CallFlushCbIfNeeded(DecodeStatus::OK);
     return;
   }
 
-  client_task_runner_->PostTask(FROM_HERE,
-                                base::BindOnce(std::move(decode_cb), status));
+  client_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(std::move(decode_cb), std::move(status)));
 }
 
 void VideoDecoderPipeline::OnFrameDecoded(scoped_refptr<VideoFrame> frame) {

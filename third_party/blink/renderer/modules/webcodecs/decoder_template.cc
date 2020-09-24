@@ -382,7 +382,7 @@ void DecoderTemplate<Traits>::Shutdown(bool is_error) {
 }
 
 template <typename Traits>
-void DecoderTemplate<Traits>::OnConfigureFlushDone(media::DecodeStatus status) {
+void DecoderTemplate<Traits>::OnConfigureFlushDone(media::Status status) {
   DVLOG(3) << __func__;
   if (IsClosed())
     return;
@@ -390,7 +390,7 @@ void DecoderTemplate<Traits>::OnConfigureFlushDone(media::DecodeStatus status) {
   DCHECK(pending_request_);
   DCHECK_EQ(pending_request_->type, Request::Type::kConfigure);
 
-  if (status != media::DecodeStatus::OK) {
+  if (!status.is_ok()) {
     HandleError();
     return;
   }
@@ -425,14 +425,12 @@ void DecoderTemplate<Traits>::OnInitializeDone(media::Status status) {
 }
 
 template <typename Traits>
-void DecoderTemplate<Traits>::OnDecodeDone(uint32_t id,
-                                           media::DecodeStatus status) {
+void DecoderTemplate<Traits>::OnDecodeDone(uint32_t id, media::Status status) {
   DVLOG(3) << __func__;
   if (IsClosed())
     return;
 
-  if (status != media::DecodeStatus::OK &&
-      status != media::DecodeStatus::ABORTED) {
+  if (!status.is_ok() && status.code() != media::StatusCode::kAborted) {
     HandleError();
     return;
   }
@@ -444,7 +442,7 @@ void DecoderTemplate<Traits>::OnDecodeDone(uint32_t id,
 }
 
 template <typename Traits>
-void DecoderTemplate<Traits>::OnFlushDone(media::DecodeStatus status) {
+void DecoderTemplate<Traits>::OnFlushDone(media::Status status) {
   DVLOG(3) << __func__;
   if (IsClosed())
     return;
@@ -452,7 +450,7 @@ void DecoderTemplate<Traits>::OnFlushDone(media::DecodeStatus status) {
   DCHECK(pending_request_);
   DCHECK_EQ(pending_request_->type, Request::Type::kFlush);
 
-  if (status != media::DecodeStatus::OK) {
+  if (!status.is_ok()) {
     HandleError();
     return;
   }

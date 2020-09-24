@@ -260,10 +260,10 @@ class FuchsiaVideoDecoderTest : public testing::Test {
     DecodeBuffer(ReadTestDataFile(name));
   }
 
-  void OnFrameDecoded(size_t frame_pos, DecodeStatus status) {
+  void OnFrameDecoded(size_t frame_pos, Status status) {
     EXPECT_EQ(frame_pos, num_decoded_buffers_);
     num_decoded_buffers_ += 1;
-    last_decode_status_ = status;
+    last_decode_status_ = std::move(status);
     if (run_loop_)
       run_loop_->Quit();
   }
@@ -276,7 +276,7 @@ class FuchsiaVideoDecoderTest : public testing::Test {
       run_loop_ = &run_loop;
       run_loop.Run();
       run_loop_ = nullptr;
-      ASSERT_EQ(last_decode_status_, DecodeStatus::OK);
+      ASSERT_TRUE(last_decode_status_.is_ok());
     }
   }
 
@@ -298,7 +298,7 @@ class FuchsiaVideoDecoderTest : public testing::Test {
   std::list<scoped_refptr<VideoFrame>> output_frames_;
   size_t num_output_frames_ = 0;
 
-  DecodeStatus last_decode_status_ = DecodeStatus::OK;
+  Status last_decode_status_;
   base::RunLoop* run_loop_ = nullptr;
 
   // Number of frames that OnVideoFrame() should keep in |output_frames_|.

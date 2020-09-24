@@ -257,10 +257,10 @@ class MojoVideoDecoderIntegrationTest : public ::testing::Test {
     return result.is_ok();
   }
 
-  DecodeStatus Decode(scoped_refptr<DecoderBuffer> buffer,
-                      VideoFrame::ReleaseMailboxCB release_cb =
-                          VideoFrame::ReleaseMailboxCB()) {
-    DecodeStatus result = DecodeStatus::DECODE_ERROR;
+  Status Decode(scoped_refptr<DecoderBuffer> buffer,
+                VideoFrame::ReleaseMailboxCB release_cb =
+                    VideoFrame::ReleaseMailboxCB()) {
+    Status result(DecodeStatus::DECODE_ERROR);
 
     if (!buffer->end_of_stream()) {
       decoder_->release_mailbox_cb = std::move(release_cb);
@@ -432,7 +432,7 @@ TEST_F(MojoVideoDecoderIntegrationTest, WaitingForKey) {
 
   EXPECT_CALL(*decoder_, Decode_(_, _));
   EXPECT_CALL(waiting_cb_, Run(WaitingReason::kNoDecryptionKey));
-  EXPECT_CALL(decode_cb, Run(DecodeStatus::OK));
+  EXPECT_CALL(decode_cb, Run(IsOkStatus()));
 
   client_->Decode(buffer, decode_cb.Get());
   RunUntilIdle();
@@ -442,10 +442,10 @@ TEST_F(MojoVideoDecoderIntegrationTest, Decode) {
   ASSERT_TRUE(Initialize());
 
   EXPECT_CALL(output_cb_, Run(_));
-  ASSERT_EQ(Decode(CreateKeyframe(0)), DecodeStatus::OK);
+  ASSERT_TRUE(Decode(CreateKeyframe(0)).is_ok());
   Mock::VerifyAndClearExpectations(&output_cb_);
 
-  ASSERT_EQ(Decode(DecoderBuffer::CreateEOSBuffer()), DecodeStatus::OK);
+  ASSERT_TRUE(Decode(DecoderBuffer::CreateEOSBuffer()).is_ok());
 }
 
 TEST_F(MojoVideoDecoderIntegrationTest, Release) {
@@ -455,7 +455,7 @@ TEST_F(MojoVideoDecoderIntegrationTest, Release) {
   scoped_refptr<VideoFrame> frame;
 
   EXPECT_CALL(output_cb_, Run(_)).WillOnce(SaveArg<0>(&frame));
-  ASSERT_EQ(Decode(CreateKeyframe(0), release_cb.Get()), DecodeStatus::OK);
+  ASSERT_TRUE(Decode(CreateKeyframe(0), release_cb.Get()).is_ok());
   Mock::VerifyAndClearExpectations(&output_cb_);
 
   EXPECT_CALL(release_cb, Run(_));
@@ -470,7 +470,7 @@ TEST_F(MojoVideoDecoderIntegrationTest, ReleaseAfterShutdown) {
   scoped_refptr<VideoFrame> frame;
 
   EXPECT_CALL(output_cb_, Run(_)).WillOnce(SaveArg<0>(&frame));
-  ASSERT_EQ(Decode(CreateKeyframe(0), release_cb.Get()), DecodeStatus::OK);
+  ASSERT_TRUE(Decode(CreateKeyframe(0), release_cb.Get()).is_ok());
   Mock::VerifyAndClearExpectations(&output_cb_);
 
   client_.reset();
@@ -546,7 +546,7 @@ TEST_F(MojoVideoDecoderIntegrationTest, InitialPlaybackUMASuccess) {
   EXPECT_CALL(output_cb_, Run(_)).Times(frames_to_decode);
   EXPECT_CALL(*decoder_, Decode_(_, _)).Times(frames_to_decode);
 
-  EXPECT_CALL(decode_cb, Run(DecodeStatus::OK)).Times(frames_to_decode);
+  EXPECT_CALL(decode_cb, Run(IsOkStatus())).Times(frames_to_decode);
 
   for (int i = 0; i < frames_to_decode - 1; i++)
     client_->Decode(CreateKeyframe(i * 16), decode_cb.Get());
@@ -574,9 +574,9 @@ TEST_F(MojoVideoDecoderIntegrationTest, InitialPlaybackUMAError) {
   EXPECT_CALL(output_cb_, Run(_)).Times(frames_to_decode - 1);
   EXPECT_CALL(*decoder_, Decode_(_, _)).Times(frames_to_decode);
 
-  EXPECT_CALL(decode_cb, Run(DecodeStatus::OK)).Times(frames_to_decode - 1);
+  EXPECT_CALL(decode_cb, Run(IsOkStatus())).Times(frames_to_decode - 1);
 
-  EXPECT_CALL(decode_cb, Run(DecodeStatus::DECODE_ERROR)).Times(1);
+  EXPECT_CALL(decode_cb, Run(IsDecodeErrorStatus())).Times(1);
 
   for (int i = 0; i < frames_to_decode - 1; i++)
     client_->Decode(CreateKeyframe(i * 16), decode_cb.Get());

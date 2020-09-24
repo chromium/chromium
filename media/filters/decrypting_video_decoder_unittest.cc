@@ -114,9 +114,17 @@ class DecryptingVideoDecoderTest : public testing::Test {
   }
 
   // Decode |buffer| and expect DecodeDone to get called with |status|.
-  void DecodeAndExpect(scoped_refptr<DecoderBuffer> buffer,
-                       DecodeStatus status) {
-    EXPECT_CALL(*this, DecodeDone(status));
+  void DecodeAndExpect(scoped_refptr<DecoderBuffer> buffer, StatusCode status) {
+    EXPECT_CALL(*this, DecodeDone(HasStatusCode(status)));
+    decoder_->Decode(buffer,
+                     base::BindOnce(&DecryptingVideoDecoderTest::DecodeDone,
+                                    base::Unretained(this)));
+    base::RunLoop().RunUntilIdle();
+  }
+
+  // Decode |buffer| and expect DecodeDone to get called with an error.
+  void DecodeAndExpectError(scoped_refptr<DecoderBuffer> buffer) {
+    EXPECT_CALL(*this, DecodeDone(IsDecodeErrorStatus()));
     decoder_->Decode(buffer,
                      base::BindOnce(&DecryptingVideoDecoderTest::DecodeDone,
                                     base::Unretained(this)));
@@ -224,7 +232,7 @@ class DecryptingVideoDecoderTest : public testing::Test {
   }
 
   MOCK_METHOD1(FrameReady, void(scoped_refptr<VideoFrame>));
-  MOCK_METHOD1(DecodeDone, void(DecodeStatus));
+  MOCK_METHOD1(DecodeDone, void(Status));
 
   MOCK_METHOD1(OnWaiting, void(WaitingReason));
 
@@ -313,10 +321,10 @@ TEST_F(DecryptingVideoDecoderTest, DecryptAndDecode_DecodeError) {
       .WillRepeatedly(RunCallback<1>(Decryptor::kError,
                                      scoped_refptr<VideoFrame>(nullptr)));
 
-  DecodeAndExpect(encrypted_buffer_, DecodeStatus::DECODE_ERROR);
+  DecodeAndExpectError(encrypted_buffer_);
 
   // After a decode error occurred, all following decodes return DECODE_ERROR.
-  DecodeAndExpect(encrypted_buffer_, DecodeStatus::DECODE_ERROR);
+  DecodeAndExpectError(encrypted_buffer_);
 }
 
 // Test the case where the decryptor receives end-of-stream buffer.
@@ -336,7 +344,7 @@ TEST_F(DecryptingVideoDecoderTest, KeyAdded_DuringWaitingForKey) {
       .WillRepeatedly(
           RunCallback<1>(Decryptor::kSuccess, decoded_video_frame_));
   EXPECT_CALL(*this, FrameReady(decoded_video_frame_));
-  EXPECT_CALL(*this, DecodeDone(DecodeStatus::OK));
+  EXPECT_CALL(*this, DecodeDone(IsOkStatus()));
   event_cb_.Run(CdmContext::Event::kHasAdditionalUsableKey);
   base::RunLoop().RunUntilIdle();
 }
@@ -351,7 +359,7 @@ TEST_F(DecryptingVideoDecoderTest, KeyAdded_DuringPendingDecode) {
       .WillRepeatedly(
           RunCallback<1>(Decryptor::kSuccess, decoded_video_frame_));
   EXPECT_CALL(*this, FrameReady(decoded_video_frame_));
-  EXPECT_CALL(*this, DecodeDone(DecodeStatus::OK));
+  EXPECT_CALL(*this, DecodeDone(IsOkStatus()));
   // The video decode callback is returned after the correct decryption key is
   // added.
   event_cb_.Run(CdmContext::Event::kHasAdditionalUsableKey);
@@ -379,7 +387,7 @@ TEST_F(DecryptingVideoDecoderTest, Reset_DuringPendingDecode) {
   Initialize();
   EnterPendingDecodeState();
 
-  EXPECT_CALL(*this, DecodeDone(DecodeStatus::ABORTED));
+  EXPECT_CALL(*this, DecodeDone(HasStatusCode(StatusCode::kAborted)));
 
   Reset();
 }
@@ -389,7 +397,7 @@ TEST_F(DecryptingVideoDecoderTest, Reset_DuringWaitingForKey) {
   Initialize();
   EnterWaitingForKeyState();
 
-  EXPECT_CALL(*this, DecodeDone(DecodeStatus::ABORTED));
+  EXPECT_CALL(*this, DecodeDone(HasStatusCode(StatusCode::kAborted)));
 
   Reset();
 }
@@ -449,7 +457,7 @@ TEST_F(DecryptingVideoDecoderTest, Destroy_DuringPendingDecode) {
   Initialize();
   EnterPendingDecodeState();
 
-  EXPECT_CALL(*this, DecodeDone(DecodeStatus::ABORTED));
+  EXPECT_CALL(*this, DecodeDone(HasStatusCode(StatusCode::kAborted)));
 
   Destroy();
 }
@@ -459,7 +467,7 @@ TEST_F(DecryptingVideoDecoderTest, Destroy_DuringWaitingForKey) {
   Initialize();
   EnterWaitingForKeyState();
 
-  EXPECT_CALL(*this, DecodeDone(DecodeStatus::ABORTED));
+  EXPECT_CALL(*this, DecodeDone(HasStatusCode(StatusCode::kAborted)));
 
   Destroy();
 }
@@ -481,7 +489,7 @@ TEST_F(DecryptingVideoDecoderTest, Destroy_DuringPendingReset) {
   EnterPendingDecodeState();
 
   EXPECT_CALL(*decryptor_, ResetDecoder(Decryptor::kVideo));
-  EXPECT_CALL(*this, DecodeDone(DecodeStatus::ABORTED));
+  EXPECT_CALL(*this, DecodeDone(HasStatusCode(StatusCode::kAborted)));
 
   decoder_->Reset(NewExpectedClosure());
   Destroy();

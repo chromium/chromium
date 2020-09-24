@@ -520,8 +520,8 @@ void DecoderStream<StreamType>::OnDecodeDone(
     int buffer_size,
     bool end_of_stream,
     std::unique_ptr<ScopedDecodeTrace> trace_event,
-    DecodeStatus status) {
-  FUNCTION_DVLOG(3) << ": " << status;
+    Status status) {
+  FUNCTION_DVLOG(status.is_ok() ? 3 : 1) << ": " << status.code();
   DCHECK(state_ == STATE_NORMAL || state_ == STATE_FLUSHING_DECODER ||
          state_ == STATE_ERROR)
       << state_;
@@ -534,7 +534,7 @@ void DecoderStream<StreamType>::OnDecodeDone(
   if (end_of_stream) {
     DCHECK(!pending_decode_requests_);
     decoding_eos_ = false;
-    if (status == DecodeStatus::OK) {
+    if (status.is_ok()) {
       // Even if no frames were decoded, completing a flush counts as
       // successfully selecting a decoder. This allows back-to-back config
       // changes to select from all decoders.
@@ -552,8 +552,37 @@ void DecoderStream<StreamType>::OnDecodeDone(
   if (reset_cb_)
     return;
 
-  switch (status) {
-    case DecodeStatus::DECODE_ERROR:
+  switch (status.code()) {
+    case StatusCode::kAborted:
+      // Decoder can return kAborted during Reset() or during
+      // destruction.
+      return;
+
+    case StatusCode::kOk:
+      // Any successful decode counts!
+      if (buffer_size > 0)
+        traits_->ReportStatistics(statistics_cb_, buffer_size);
+
+      if (state_ == STATE_NORMAL) {
+        if (end_of_stream) {
+          state_ = STATE_END_OF_STREAM;
+          if (ready_outputs_.empty() && unprepared_outputs_.empty() && read_cb_)
+            SatisfyRead(OK, StreamTraits::CreateEOSOutput());
+          return;
+        }
+
+        if (CanDecodeMore())
+          ReadFromDemuxerStream();
+        return;
+      }
+
+      if (state_ == STATE_FLUSHING_DECODER && !pending_decode_requests_)
+        ReinitializeDecoder();
+      return;
+
+    default:
+      // TODO(liberato): Use |status| better, since it might not be a generic
+      // error anymore.
       if (!decoder_produced_a_frame_ &&
           base::FeatureList::IsEnabled(kFallbackAfterDecodeError)) {
         pending_decode_requests_ = 0;
@@ -578,33 +607,6 @@ void DecoderStream<StreamType>::OnDecodeDone(
         if (read_cb_)
           SatisfyRead(DECODE_ERROR, nullptr);
       }
-      return;
-
-    case DecodeStatus::ABORTED:
-      // Decoder can return DecodeStatus::ABORTED during Reset() or during
-      // destruction.
-      return;
-
-    case DecodeStatus::OK:
-      // Any successful decode counts!
-      if (buffer_size > 0)
-        traits_->ReportStatistics(statistics_cb_, buffer_size);
-
-      if (state_ == STATE_NORMAL) {
-        if (end_of_stream) {
-          state_ = STATE_END_OF_STREAM;
-          if (ready_outputs_.empty() && unprepared_outputs_.empty() && read_cb_)
-            SatisfyRead(OK, StreamTraits::CreateEOSOutput());
-          return;
-        }
-
-        if (CanDecodeMore())
-          ReadFromDemuxerStream();
-        return;
-      }
-
-      if (state_ == STATE_FLUSHING_DECODER && !pending_decode_requests_)
-        ReinitializeDecoder();
       return;
   }
 }

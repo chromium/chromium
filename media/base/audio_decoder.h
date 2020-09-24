@@ -27,16 +27,20 @@ class CdmContext;
 
 class MEDIA_EXPORT AudioDecoder : public Decoder {
  public:
-  // Callback for AudioDecoder initialization.
+  // Callback for Decoder initialization.
   using InitCB = base::OnceCallback<void(Status)>;
 
   // Callback for AudioDecoder to return a decoded frame whenever it becomes
   // available. Only non-EOS frames should be returned via this callback.
   using OutputCB = base::RepeatingCallback<void(scoped_refptr<AudioBuffer>)>;
 
-  // Callback for Decode(). Called after the decoder has accepted corresponding
-  // DecoderBuffer, indicating that the pipeline can send next buffer to decode.
-  using DecodeCB = base::OnceCallback<void(DecodeStatus)>;
+  // Callback type for Decode(). Called after the decoder has completed decoding
+  // corresponding DecoderBuffer, indicating that it's ready to accept another
+  // buffer to decode.  |kOk| implies success, |kAborted| implies that the
+  // decode was aborted, which does not necessarily indicate an error.  For
+  // example, a Reset() can trigger this.  Any other status code indicates that
+  // the decoder encountered an error, and must be reset.
+  using DecodeCB = base::OnceCallback<void(Status)>;
 
   AudioDecoder();
 

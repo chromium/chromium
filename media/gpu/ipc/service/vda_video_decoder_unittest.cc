@@ -176,7 +176,7 @@ class VdaVideoDecoderTest : public testing::TestWithParam<bool> {
   }
 
   void NotifyEndOfBitstreamBuffer(int32_t bitstream_id) {
-    EXPECT_CALL(decode_cb_, Run(DecodeStatus::OK));
+    EXPECT_CALL(decode_cb_, Run(HasStatusCode(DecodeStatus::OK)));
     if (GetParam()) {
       // TODO(sandersd): The VDA could notify on either thread. Test both.
       client_->NotifyEndOfBitstreamBuffer(bitstream_id);
@@ -375,7 +375,7 @@ TEST_P(VdaVideoDecoderTest, Decode_Reset) {
   vdavd_->Reset(reset_cb_.Get());
   RunUntilIdle();
 
-  EXPECT_CALL(decode_cb_, Run(DecodeStatus::ABORTED));
+  EXPECT_CALL(decode_cb_, Run(HasStatusCode(DecodeStatus::ABORTED)));
   EXPECT_CALL(reset_cb_, Run());
   NotifyResetDone();
 }
@@ -384,7 +384,7 @@ TEST_P(VdaVideoDecoderTest, Decode_NotifyError) {
   Initialize();
   Decode(base::TimeDelta());
 
-  EXPECT_CALL(decode_cb_, Run(DecodeStatus::DECODE_ERROR));
+  EXPECT_CALL(decode_cb_, Run(IsDecodeErrorStatus()));
   NotifyError(VideoDecodeAccelerator::PLATFORM_FAILURE);
 }
 
@@ -461,7 +461,7 @@ TEST_P(VdaVideoDecoderTest, Flush) {
   vdavd_->Decode(DecoderBuffer::CreateEOSBuffer(), decode_cb_.Get());
   RunUntilIdle();
 
-  EXPECT_CALL(decode_cb_, Run(DecodeStatus::OK));
+  EXPECT_CALL(decode_cb_, Run(IsOkStatus()));
   NotifyFlushDone();
 }
 

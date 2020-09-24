@@ -9,22 +9,17 @@
 
 #include "media/base/decoder_buffer.h"
 #include "media/base/media_export.h"
+#include "media/base/status_codes.h"
 
 namespace media {
 
-enum class DecodeStatus {
-  OK = 0,        // Everything went as planned.
-  ABORTED,       // Read aborted due to Reset() during pending read.
-  DECODE_ERROR,  // Decoder returned decode error. Note: Prefixed by DECODE_
-                 // since ERROR is a reserved name (special macro) on Windows.
-  DECODE_STATUS_MAX = DECODE_ERROR
-};
+class Status;
+
+// TODO(crbug.com/1129662): This is temporary, to allow DecodeStatus::OK to
+// work, while we replace DecodeStatus with actual status codes.
+using DecodeStatus = StatusCode;
 
 MEDIA_EXPORT const char* GetDecodeStatusString(DecodeStatus status);
-
-// Helper function so that DecodeStatus can be printed easily.
-MEDIA_EXPORT std::ostream& operator<<(std::ostream& os,
-                                      const DecodeStatus& status);
 
 // Helper class for ensuring that Decode() traces are properly unique and closed
 // if the Decode is aborted via a WeakPtr invalidation. We use the |this|
@@ -45,7 +40,7 @@ class MEDIA_EXPORT ScopedDecodeTrace {
   ~ScopedDecodeTrace();
 
   // Completes the Decode() trace with the given status.
-  void EndTrace(DecodeStatus status);
+  void EndTrace(const Status& status);
 
  private:
   const char* trace_name_;

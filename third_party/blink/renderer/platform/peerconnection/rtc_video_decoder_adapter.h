@@ -104,7 +104,7 @@ class PLATFORM_EXPORT RTCVideoDecoderAdapter : public webrtc::VideoDecoder {
   static void OnInitializeDone(base::OnceCallback<void(bool)> cb,
                                media::Status status);
   void DecodeOnMediaThread();
-  void OnDecodeDone(media::DecodeStatus status);
+  void OnDecodeDone(media::Status status);
   void OnOutput(scoped_refptr<media::VideoFrame> frame);
 
   bool ShouldReinitializeForSettingHDRColorSpace(

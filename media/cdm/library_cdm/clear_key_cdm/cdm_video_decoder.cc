@@ -233,11 +233,12 @@ class VideoDecoderAdapter : public CdmVideoDecoder {
     auto decode_status = last_decode_status_.value();
     last_decode_status_.reset();
 
-    if (decode_status == DecodeStatus::DECODE_ERROR)
-      return cdm::kDecodeError;
+    // "kAborted" shouldn't happen during a sync decode, so treat it as an
+    // error.
+    DCHECK_NE(decode_status.code(), StatusCode::kAborted);
 
-    // "ABORTED" shouldn't happen during a sync decode, so treat it as an error.
-    DCHECK_EQ(decode_status, DecodeStatus::OK);
+    if (!decode_status.is_ok())
+      return cdm::kDecodeError;
 
     if (decoded_video_frames_.empty())
       return cdm::kNeedMoreData;
@@ -272,9 +273,9 @@ class VideoDecoderAdapter : public CdmVideoDecoder {
     std::move(quit_closure).Run();
   }
 
-  void OnDecoded(base::OnceClosure quit_closure, DecodeStatus decode_status) {
+  void OnDecoded(base::OnceClosure quit_closure, Status decode_status) {
     DCHECK(!last_decode_status_.has_value());
-    last_decode_status_ = decode_status;
+    last_decode_status_ = std::move(decode_status);
     std::move(quit_closure).Run();
   }
 
@@ -284,7 +285,7 @@ class VideoDecoderAdapter : public CdmVideoDecoder {
   // Results of |video_decoder_| operations. Set iff the callback of the
   // operation has been called.
   base::Optional<Status> last_init_result_;
-  base::Optional<DecodeStatus> last_decode_status_;
+  base::Optional<Status> last_decode_status_;
 
   // Queue of decoded video frames.
   using VideoFrameQueue = base::queue<scoped_refptr<VideoFrame>>;

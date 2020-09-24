@@ -41,7 +41,7 @@ class CrossThreadAudioDecoderClient {
   virtual void OnInitialize(media::Status status,
                             base::Optional<DecoderDetails> details) = 0;
 
-  virtual void OnDecodeDone(int cb_id, media::DecodeStatus status) = 0;
+  virtual void OnDecodeDone(int cb_id, media::Status status) = 0;
 
   virtual void OnDecodeOutput(scoped_refptr<media::AudioBuffer> buffer) = 0;
 
@@ -91,7 +91,7 @@ class MODULES_EXPORT AudioDecoderBroker : public media::AudioDecoder,
   // MediaAudioTaskWrapper::CrossThreadAudioDecoderClient
   void OnInitialize(media::Status status,
                     base::Optional<DecoderDetails> details) override;
-  void OnDecodeDone(int cb_id, media::DecodeStatus status) override;
+  void OnDecodeDone(int cb_id, media::Status status) override;
   void OnDecodeOutput(scoped_refptr<media::AudioBuffer> buffer) override;
   void OnReset(int cb_id) override;
 

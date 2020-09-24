@@ -50,7 +50,7 @@ class CrossThreadVideoDecoderClient {
   virtual void OnInitialize(media::Status status,
                             base::Optional<DecoderDetails> details) = 0;
 
-  virtual void OnDecodeDone(int cb_id, media::DecodeStatus status) = 0;
+  virtual void OnDecodeDone(int cb_id, media::Status status) = 0;
 
   virtual void OnDecodeOutput(scoped_refptr<media::VideoFrame> frame,
                               bool can_read_without_stalling) = 0;
@@ -107,7 +107,7 @@ class MODULES_EXPORT VideoDecoderBroker : public media::VideoDecoder,
   // MediaVideoTaskWrapper::CrossThreadVideoDecoderClient
   void OnInitialize(media::Status status,
                     base::Optional<DecoderDetails> details) override;
-  void OnDecodeDone(int cb_id, media::DecodeStatus status) override;
+  void OnDecodeDone(int cb_id, media::Status status) override;
   void OnDecodeOutput(scoped_refptr<media::VideoFrame> frame,
                       bool can_read_without_stalling) override;
   void OnReset(int cb_id) override;

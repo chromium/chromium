@@ -294,7 +294,7 @@ void MojoVideoDecoder::OnVideoFrameDecoded(
   }
 }
 
-void MojoVideoDecoder::OnDecodeDone(uint64_t decode_id, DecodeStatus status) {
+void MojoVideoDecoder::OnDecodeDone(uint64_t decode_id, const Status& status) {
   DVLOG(3) << __func__;
   DCHECK(task_runner_->BelongsToCurrentThread());
 
@@ -305,7 +305,7 @@ void MojoVideoDecoder::OnDecodeDone(uint64_t decode_id, DecodeStatus status) {
     return;
   }
 
-  if (status == DecodeStatus::DECODE_ERROR)
+  if (!status.is_ok() && status.code() != StatusCode::kAborted)
     ReportInitialPlaybackErrorUMA();
 
   DecodeCB decode_cb = std::move(it->second);

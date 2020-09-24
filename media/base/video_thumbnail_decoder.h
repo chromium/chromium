@@ -39,8 +39,8 @@ class MEDIA_EXPORT VideoThumbnailDecoder {
 
  private:
   void OnVideoDecoderInitialized(Status status);
-  void OnVideoBufferDecoded(DecodeStatus status);
-  void OnEosBufferDecoded(DecodeStatus status);
+  void OnVideoBufferDecoded(Status status);
+  void OnEosBufferDecoded(Status status);
 
   // Called when the output frame is generated.
   void OnVideoFrameDecoded(scoped_refptr<VideoFrame> frame);

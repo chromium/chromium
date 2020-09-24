@@ -7,6 +7,7 @@
 #include <ostream>
 
 #include "base/trace_event/trace_event.h"
+#include "media/base/status.h"
 
 namespace media {
 
@@ -18,15 +19,14 @@ const char* GetDecodeStatusString(DecodeStatus status) {
       return "DecodeStatus::ABORTED";
     case DecodeStatus::DECODE_ERROR:
       return "DecodeStatus::DECODE_ERROR";
+    default:
+      // TODO(liberato): Temporary while converting to media::Status.  This
+      // fn should go away.
+      return "DecodeStatus::UNKNOWN_ERROR";
   }
 
   NOTREACHED();
   return "";
-}
-
-std::ostream& operator<<(std::ostream& os, const DecodeStatus& status) {
-  os << GetDecodeStatusString(status);
-  return os;
 }
 
 // static
@@ -59,11 +59,11 @@ ScopedDecodeTrace::~ScopedDecodeTrace() {
     EndTrace(DecodeStatus::ABORTED);
 }
 
-void ScopedDecodeTrace::EndTrace(DecodeStatus status) {
+void ScopedDecodeTrace::EndTrace(const Status& status) {
   DCHECK(!closed_);
   closed_ = true;
   TRACE_EVENT_ASYNC_END1("media", trace_name_, this, "status",
-                         GetDecodeStatusString(status));
+                         GetDecodeStatusString(status.code()));
 }
 
 }  // namespace media

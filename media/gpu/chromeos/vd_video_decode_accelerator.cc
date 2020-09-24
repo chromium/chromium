@@ -190,12 +190,12 @@ void VdVideoDecodeAccelerator::Decode(scoped_refptr<DecoderBuffer> buffer,
 }
 
 void VdVideoDecodeAccelerator::OnDecodeDone(int32_t bitstream_buffer_id,
-                                            DecodeStatus status) {
-  DVLOGF(4) << "status: " << status;
+                                            Status status) {
+  DVLOGF(4) << "status: " << status.code();
   DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
   DCHECK(client_);
 
-  if (status == DecodeStatus::DECODE_ERROR) {
+  if (!status.is_ok() && status.code() != StatusCode::kAborted) {
     OnError(FROM_HERE, PLATFORM_FAILURE);
     return;
   }
@@ -241,19 +241,19 @@ void VdVideoDecodeAccelerator::Flush() {
       base::BindOnce(&VdVideoDecodeAccelerator::OnFlushDone, weak_this_));
 }
 
-void VdVideoDecodeAccelerator::OnFlushDone(DecodeStatus status) {
-  DVLOGF(3) << "status: " << status;
+void VdVideoDecodeAccelerator::OnFlushDone(Status status) {
+  DVLOGF(3) << "status: " << status.code();
   DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
   DCHECK(client_);
 
-  switch (status) {
-    case DecodeStatus::OK:
+  switch (status.code()) {
+    case StatusCode::kOk:
       client_->NotifyFlushDone();
       break;
-    case DecodeStatus::ABORTED:
+    case StatusCode::kAborted:
       // Do nothing.
       break;
-    case DecodeStatus::DECODE_ERROR:
+    default:
       OnError(FROM_HERE, PLATFORM_FAILURE);
       break;
   }

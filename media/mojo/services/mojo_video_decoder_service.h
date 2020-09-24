@@ -72,7 +72,7 @@ class MEDIA_MOJO_EXPORT MojoVideoDecoderService final
                     scoped_refptr<DecoderBuffer> buffer);
   void OnDecoderDecoded(DecodeCallback callback,
                         std::unique_ptr<ScopedDecodeTrace> trace_event,
-                        DecodeStatus status);
+                        media::Status status);
 
   // Called by |mojo_decoder_buffer_reader_| when reset is finished.
   void OnReaderFlushed();

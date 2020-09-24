@@ -301,11 +301,11 @@ class AudioDecoderTest
     decoded_audio_.push_back(std::move(buffer));
   }
 
-  void DecodeFinished(const base::Closure& quit_closure, DecodeStatus status) {
+  void DecodeFinished(const base::Closure& quit_closure, Status status) {
     EXPECT_TRUE(pending_decode_);
     EXPECT_FALSE(pending_reset_);
     pending_decode_ = false;
-    last_decode_status_ = status;
+    last_decode_status_ = std::move(status);
     quit_closure.Run();
   }
 
@@ -389,7 +389,7 @@ class AudioDecoderTest
   const scoped_refptr<AudioBuffer>& decoded_audio(size_t i) {
     return decoded_audio_[i];
   }
-  DecodeStatus last_decode_status() const { return last_decode_status_; }
+  const Status& last_decode_status() const { return last_decode_status_; }
 
  private:
   const AudioDecoderType decoder_type_;
@@ -409,7 +409,7 @@ class AudioDecoderTest
   std::unique_ptr<AudioDecoder> decoder_;
   bool pending_decode_;
   bool pending_reset_;
-  DecodeStatus last_decode_status_;
+  Status last_decode_status_;
 
   base::circular_deque<scoped_refptr<AudioBuffer>> decoded_audio_;
   base::TimeDelta start_timestamp_;
@@ -599,7 +599,7 @@ TEST_P(AudioDecoderTest, ProduceAudioSamples) {
     // (i.e. decoding EOS).
     do {
       ASSERT_NO_FATAL_FAILURE(Decode());
-      ASSERT_EQ(last_decode_status(), DecodeStatus::OK);
+      ASSERT_TRUE(last_decode_status().is_ok());
     } while (decoded_audio_size() < kDecodeRuns);
 
     // With MediaCodecAudioDecoder the output buffers might appear after
@@ -631,7 +631,7 @@ TEST_P(AudioDecoderTest, Decode) {
   SKIP_TEST_IF_NOT_SUPPORTED();
   ASSERT_NO_FATAL_FAILURE(Initialize());
   Decode();
-  EXPECT_EQ(DecodeStatus::OK, last_decode_status());
+  EXPECT_TRUE(last_decode_status().is_ok());
 }
 
 TEST_P(AudioDecoderTest, Reset) {
@@ -646,7 +646,7 @@ TEST_P(AudioDecoderTest, NoTimestamp) {
   scoped_refptr<DecoderBuffer> buffer(new DecoderBuffer(0));
   buffer->set_timestamp(kNoTimestamp);
   DecodeBuffer(std::move(buffer));
-  EXPECT_EQ(DecodeStatus::DECODE_ERROR, last_decode_status());
+  EXPECT_THAT(last_decode_status(), IsDecodeErrorStatus());
 }
 
 INSTANTIATE_TEST_SUITE_P(FFmpeg,

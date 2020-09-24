@@ -157,7 +157,7 @@ class EndToEndFrameChecker
     ++count_frames_checked_;
   }
 
-  void DecodeDone(DecodeStatus status) { EXPECT_EQ(DecodeStatus::OK, status); }
+  void DecodeDone(Status status) { EXPECT_TRUE(status.is_ok()); }
 
   int count_frames_checked() const { return count_frames_checked_; }
 

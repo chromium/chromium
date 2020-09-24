@@ -151,14 +151,14 @@ void BitstreamValidator::ProcessBitstreamTask(
   }
 }
 
-void BitstreamValidator::DecodeDone(int64_t timestamp, DecodeStatus status) {
+void BitstreamValidator::DecodeDone(int64_t timestamp, Status status) {
   SEQUENCE_CHECKER(validator_thread_sequence_checker_);
-  if (status != DecodeStatus::OK) {
+  if (!status.is_ok()) {
     base::AutoLock lock(validator_lock_);
     if (!decode_error_) {
       decode_error_ = true;
       LOG(ERROR) << "DecodeStatus is not OK, status="
-                 << GetDecodeStatusString(status);
+                 << GetDecodeStatusString(status.code());
     }
   }
   if (timestamp == kEOSTimeStamp) {
