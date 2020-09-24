@@ -1929,11 +1929,6 @@
                   '|media/muxers/'\
                   '|services/video_capture/',
     },
-    'video_gpu': {
-      'filepath': 'content/renderer/media/|'\
-                  'media/capture/video/|'\
-                  'media/gpu/',
-    },
     'virtual_keyboard': {
       'filepath': 'ash/keyboard/'\
                   '|chrome/test/data/chromeos/virtual_keyboard/'\
@@ -2822,7 +2817,6 @@
     'video': ['posciak+watch@chromium.org'],
     'video_capture': ['chfremer+watch@chromium.org',
                       'rijubrata.bhaumik@intel.com'],
-    'video_gpu': ['acourbot+watch@chromium.org'],
     'virtual_keyboard': ['dfaden+virtualkb@google.com',
                          'shend+watch@chromium.org',
                          'tranbaoduy+watch@chromium.org',
