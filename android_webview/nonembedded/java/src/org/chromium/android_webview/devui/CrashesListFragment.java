@@ -503,7 +503,8 @@ public class CrashesListFragment extends DevUiBaseFragment {
             // Show a button to open GMS settings activity only if it exists.
             if (intentResolveInfo.size() > 0) {
                 logCrashCollectionState(CollectionState.DISABLED_BY_USER_CONSENT);
-                errorView.setActionButton("Open Settings", v -> startActivity(settingsIntent));
+                errorView.setActionButton(
+                        "Open Settings", v -> mContext.startActivity(settingsIntent));
             } else {
                 logCrashCollectionState(
                         CollectionState.DISABLED_BY_USER_CONSENT_CANNOT_FIND_SETTINGS);
@@ -520,7 +521,7 @@ public class CrashesListFragment extends DevUiBaseFragment {
         dialogBuilder.setMessage(CRASH_BUG_DIALOG_MESSAGE);
         dialogBuilder.setPositiveButton("Provide more info", (dialog, id) -> {
             logCrashInteraction(CrashInteraction.FILE_BUG_REPORT_DIALOG_PROCEED);
-            startActivity(new CrashBugUrlFactory(crashInfo).getReportIntent());
+            mContext.startActivity(new CrashBugUrlFactory(crashInfo).getReportIntent());
         });
         dialogBuilder.setNegativeButton("Dismiss", (dialog, id) -> {
             logCrashInteraction(CrashInteraction.FILE_BUG_REPORT_DIALOG_DISMISS);
