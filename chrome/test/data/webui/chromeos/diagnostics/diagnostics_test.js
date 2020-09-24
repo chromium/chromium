@@ -20,11 +20,11 @@ suite('DiagnosticsFakeMethodResolver', () => {
   /** @type {?FakeMethodResolver} */
   let resolver = null;
 
-  setup(function() {
+  setup(() => {
     resolver = new FakeMethodResolver();
   });
 
-  teardown(function() {
+  teardown(() => {
     resolver = null;
   });
 
@@ -59,14 +59,14 @@ suite('DiagnosticsAppTest', () => {
   /** @type {?DiagnosticsApp} */
   let page = null;
 
-  setup(function() {
+  setup(() => {
     PolymerTest.clearBody();
     page = document.createElement('diagnostics-app');
     assertTrue(!!page);
     document.body.appendChild(page);
   });
 
-  teardown(function() {
+  teardown(() => {
     page.remove();
     page = null;
   });
@@ -105,11 +105,11 @@ suite('BatteryStatusCardTest', () => {
     setSystemDataProviderForTesting(provider);
   });
 
-  setup(function() {
+  setup(() => {
     PolymerTest.clearBody();
   });
 
-  teardown(function() {
+  teardown(() => {
     if (batteryStatusElement) {
       batteryStatusElement.remove();
     }
@@ -183,11 +183,11 @@ suite('CpuCardTest', () => {
     setSystemDataProviderForTesting(provider);
   });
 
-  setup(function() {
+  setup(() => {
     PolymerTest.clearBody();
   });
 
-  teardown(function() {
+  teardown(() => {
     if (cpuElement) {
       cpuElement.remove();
     }
@@ -243,11 +243,11 @@ suite('OverviewCardTest', () => {
     setSystemDataProviderForTesting(provider);
   });
 
-  setup(function() {
+  setup(() => {
     PolymerTest.clearBody();
   });
 
-  teardown(function() {
+  teardown(() => {
     overviewElement.remove();
     overviewElement = null;
     provider = null;
@@ -298,11 +298,11 @@ suite('MemoryCardTest', () => {
     setSystemDataProviderForTesting(provider);
   });
 
-  setup(function() {
+  setup(() => {
     PolymerTest.clearBody();
   });
 
-  teardown(function() {
+  teardown(() => {
     if (memoryElement) {
       memoryElement.remove();
     }
@@ -440,11 +440,11 @@ suite('FakeSystemDataProviderTest', () => {
   /** @type {?FakeSystemDataProvider} */
   let provider = null;
 
-  setup(function() {
+  setup(() => {
     provider = new FakeSystemDataProvider();
   });
 
-  teardown(function() {
+  teardown(() => {
     provider = null;
   });
 
