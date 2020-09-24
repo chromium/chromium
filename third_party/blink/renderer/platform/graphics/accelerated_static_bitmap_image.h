@@ -10,6 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
+#include "third_party/blink/renderer/platform/graphics/mailbox_ref.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 
@@ -120,31 +121,6 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
   PaintImage PaintImageForCurrentFrame() override;
 
  private:
-  class MailboxRef : public ThreadSafeRefCounted<MailboxRef> {
-   public:
-    MailboxRef(const gpu::SyncToken& sync_token,
-               base::PlatformThreadRef context_thread_ref,
-               scoped_refptr<base::SingleThreadTaskRunner> context_task_runner,
-               std::unique_ptr<viz::SingleReleaseCallback> release_callback);
-    ~MailboxRef();
-
-    bool is_cross_thread() const {
-      return base::PlatformThread::CurrentRef() != context_thread_ref_;
-    }
-    void set_sync_token(gpu::SyncToken token) {
-      DCHECK(sync_token_.HasData());
-      sync_token_ = token;
-    }
-    const gpu::SyncToken& sync_token() const { return sync_token_; }
-    bool verified_flush() { return sync_token_.verified_flush(); }
-
-   private:
-    gpu::SyncToken sync_token_;
-    const base::PlatformThreadRef context_thread_ref_;
-    const scoped_refptr<base::SingleThreadTaskRunner> context_task_runner_;
-    std::unique_ptr<viz::SingleReleaseCallback> release_callback_;
-  };
-
   struct ReleaseContext {
     scoped_refptr<MailboxRef> mailbox_ref;
     GLuint texture_id = 0u;

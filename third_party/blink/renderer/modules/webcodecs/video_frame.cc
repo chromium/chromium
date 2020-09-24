@@ -402,13 +402,8 @@ ScriptPromise VideoFrame::CreateImageBitmap(ScriptState* script_state,
 
       auto release_callback = viz::SingleReleaseCallback::Create(base::BindOnce(
           [](gpu::SharedImageInterface* sii, gpu::Mailbox mailbox,
-             const gpu::SyncToken& sync_token, bool is_lost) {
-            // Ideally the SharedImage could be release here this way:
-            //   sii->DestroySharedImage(sync_token, mailbox);
-            // But AcceleratedStaticBitmapImage leaks it when
-            // PaintImageForCurrentFrame() is called by ImageBitmap. So the
-            // 'sync_token' is not precise to destroy the mailbox.
-          },
+             const gpu::SyncToken& sync_token,
+             bool is_lost) { sii->DestroySharedImage(sync_token, mailbox); },
           base::Unretained(shared_image_interface), dest_holder.mailbox));
 
       const SkImageInfo sk_image_info =

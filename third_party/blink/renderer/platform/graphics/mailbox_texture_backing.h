@@ -13,19 +13,23 @@
 
 namespace blink {
 class WebGraphicsContext3DProviderWrapper;
+class MailboxRef;
 
 class MailboxTextureBacking : public TextureBacking {
  public:
   explicit MailboxTextureBacking(
       sk_sp<SkImage> sk_image,
+      scoped_refptr<MailboxRef> mailbox_ref,
       const SkImageInfo& info,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>
           context_provider_wrapper);
   explicit MailboxTextureBacking(
       const gpu::Mailbox& mailbox,
+      scoped_refptr<MailboxRef> mailbox_ref,
       const SkImageInfo& info,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>
           context_provider_wrapper);
+  ~MailboxTextureBacking() override;
   const SkImageInfo& GetSkImageInfo() override;
   gpu::Mailbox GetMailbox() const override;
   sk_sp<SkImage> GetAcceleratedSkImage() override;
@@ -40,6 +44,7 @@ class MailboxTextureBacking : public TextureBacking {
  private:
   const sk_sp<SkImage> sk_image_;
   const gpu::Mailbox mailbox_;
+  scoped_refptr<MailboxRef> mailbox_ref_;
   const SkImageInfo sk_image_info_;
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper_;
 };

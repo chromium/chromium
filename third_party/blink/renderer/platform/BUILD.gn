@@ -1022,6 +1022,8 @@ component("platform") {
     "graphics/interpolation_space.h",
     "graphics/logging_canvas.cc",
     "graphics/logging_canvas.h",
+    "graphics/mailbox_ref.cc",
+    "graphics/mailbox_ref.h",
     "graphics/mailbox_texture_backing.cc",
     "graphics/mailbox_texture_backing.h",
     "graphics/main_thread_mutator_client.cc",

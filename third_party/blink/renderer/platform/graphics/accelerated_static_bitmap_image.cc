@@ -18,46 +18,14 @@
 #include "third_party/blink/public/platform/web_graphics_context_3d_provider.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
+#include "third_party/blink/renderer/platform/graphics/mailbox_ref.h"
 #include "third_party/blink/renderer/platform/graphics/mailbox_texture_backing.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
-#include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
-#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 
 namespace blink {
-namespace {
-
-void ReleaseCallbackOnContextThread(
-    std::unique_ptr<viz::SingleReleaseCallback> callback,
-    const gpu::SyncToken sync_token) {
-  callback->Run(sync_token, /* is_lost = */ false);
-}
-
-}  // namespace
-
-AcceleratedStaticBitmapImage::MailboxRef::MailboxRef(
-    const gpu::SyncToken& sync_token,
-    base::PlatformThreadRef context_thread_ref,
-    scoped_refptr<base::SingleThreadTaskRunner> context_task_runner,
-    std::unique_ptr<viz::SingleReleaseCallback> release_callback)
-    : sync_token_(sync_token),
-      context_thread_ref_(context_thread_ref),
-      context_task_runner_(std::move(context_task_runner)),
-      release_callback_(std::move(release_callback)) {
-  DCHECK(sync_token.HasData());
-}
-
-AcceleratedStaticBitmapImage::MailboxRef::~MailboxRef() {
-  if (context_thread_ref_ == base::PlatformThread::CurrentRef()) {
-    ReleaseCallbackOnContextThread(std::move(release_callback_), sync_token_);
-  } else {
-    context_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&ReleaseCallbackOnContextThread,
-                                  std::move(release_callback_), sync_token_));
-  }
-}
 
 // static
 void AcceleratedStaticBitmapImage::ReleaseTexture(void* ctx) {
@@ -271,7 +239,8 @@ void AcceleratedStaticBitmapImage::InitializeTextureBacking(
     DCHECK_EQ(shared_image_texture_id, 0u);
     skia_context_provider_wrapper_ = context_provider_wrapper;
     texture_backing_ = sk_make_sp<MailboxTextureBacking>(
-        mailbox_, sk_image_info_, std::move(context_provider_wrapper));
+        mailbox_, mailbox_ref_, sk_image_info_,
+        std::move(context_provider_wrapper));
     return;
   }
 
@@ -318,9 +287,9 @@ void AcceleratedStaticBitmapImage::InitializeTextureBacking(
 
   if (sk_image) {
     skia_context_provider_wrapper_ = context_provider_wrapper;
-    texture_backing_ =
-        sk_make_sp<MailboxTextureBacking>(std::move(sk_image), sk_image_info_,
-                                          std::move(context_provider_wrapper));
+    texture_backing_ = sk_make_sp<MailboxTextureBacking>(
+        std::move(sk_image), mailbox_ref_, sk_image_info_,
+        std::move(context_provider_wrapper));
   }
 }
 
