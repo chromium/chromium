@@ -6,11 +6,11 @@
   color: #333;
 }
 
-#app-downloading-video-container {
+#video-container {
   margin: 31px auto auto;
 }
 
-#app-downloading-video-container video {
+#video-container video {
   height: 247px;
   width: 278px;
 }

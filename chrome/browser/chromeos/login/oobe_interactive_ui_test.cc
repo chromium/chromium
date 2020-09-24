@@ -328,7 +328,7 @@ void HandleAppDownloadingScreen() {
   EXPECT_FALSE(ash::LoginScreenTestApi::IsAddUserButtonShown());
 
   const std::initializer_list<base::StringPiece> continue_button = {
-      "app-downloading-screen", "app-downloading-continue-setup-button"};
+      "app-downloading", "continue-setup-button"};
   test::OobeJS().TapOnPath(continue_button);
 
   OobeScreenExitWaiter(AppDownloadingScreenView::kScreenId).Wait();

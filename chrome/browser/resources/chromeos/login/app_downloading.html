@@ -22,7 +22,7 @@
       <h1 slot="title" id="title-plural" hidden="[[hasSingleApp]]">
         [[i18nDynamic(locale, 'appDownloadingScreenTitlePlural', numOfApps)]]
       </h1>
-      <div id="app-downloading-video-container" slot="footer">
+      <div id="video-container" slot="footer">
         <if expr="chromeos and _google_chrome">
           <video id="video" loop="loop" preload="auto" muted>
             <source src="chrome://oobe/res/arc_app_dowsnloading.mp4"
@@ -31,7 +31,7 @@
         </if>
       </div>
       <div slot="bottom-buttons" class="layout horizontal end-justified">
-        <oobe-next-button id="app-downloading-continue-setup-button"
+        <oobe-next-button id="continue-setup-button"
             text-key="appDownloadingContinueSetup" on-tap="onContinue_"
             class="focus-on-show" inverse></oobe-next-button>
       </div>
