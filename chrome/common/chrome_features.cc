@@ -507,7 +507,7 @@ const base::Feature kMacSystemScreenCapturePermissionCheck{
 // Whether to show the Metered toggle in Settings, allowing users to toggle
 // whether to treat a WiFi or Cellular network as 'metered'.
 const base::Feature kMeteredShowToggle{"MeteredShowToggle",
-                                       base::FEATURE_ENABLED_BY_DEFAULT};
+                                       base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
 // Enables showing an entry for mixed content in site settings, which controls
