@@ -163,6 +163,12 @@ id<GREYMatcher> SearchCopiedTextButton() {
     EARL_GREY_TEST_SKIPPED(@"testXClientData doesn't pass on iPad device.");
   }
 #endif
+
+  // TODO(crbug.com/1120723) This test is flakily because of a DCHECK in
+  // ios/web.  Clearing browser history first works around the problem, but
+  // shouldn't be necessary otherwise.  Remove once the bug is fixed.
+  [ChromeEarlGrey clearBrowsingHistory];
+
   // Rewrite the google URL to localhost URL.
   [OmniboxAppInterface rewriteGoogleURLToLocalhost];
 
