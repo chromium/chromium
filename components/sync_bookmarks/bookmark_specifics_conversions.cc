@@ -303,9 +303,7 @@ void UpdateBookmarkNodeFromSpecifics(
   // resolving any conflict in GUID. Either GUIDs are the same, or the GUID in
   // specifics is invalid, and hence we can ignore it.
   DCHECK(specifics.guid() == node->guid() ||
-         !base::IsValidGUIDOutputString(specifics.guid()) ||
-         !base::FeatureList::IsEnabled(
-             switches::kUpdateBookmarkGUIDWithNodeReplacement));
+         !base::IsValidGUIDOutputString(specifics.guid()));
 
   if (!node->is_folder()) {
     model->SetURL(node, GURL(specifics.url()));
@@ -322,11 +320,6 @@ const bookmarks::BookmarkNode* ReplaceBookmarkNodeGUID(
     const bookmarks::BookmarkNode* node,
     const std::string& guid,
     bookmarks::BookmarkModel* model) {
-  if (!base::FeatureList::IsEnabled(
-          switches::kUpdateBookmarkGUIDWithNodeReplacement)) {
-    return node;
-  }
-  const bookmarks::BookmarkNode* new_node;
   DCHECK(base::IsValidGUIDOutputString(guid));
 
   if (node->guid() == guid) {
@@ -334,6 +327,7 @@ const bookmarks::BookmarkNode* ReplaceBookmarkNodeGUID(
     return node;
   }
 
+  const bookmarks::BookmarkNode* new_node = nullptr;
   if (node->is_folder()) {
     new_node =
         model->AddFolder(node->parent(), node->parent()->GetIndexOf(node),
