@@ -4,6 +4,7 @@
 
 #include "chromeos/services/ime/ime_sandbox_hook.h"
 
+#include <dlfcn.h>
 #include <vector>
 
 #include "base/files/file_path.h"
@@ -31,22 +32,11 @@ inline constexpr bool CrosImeSharedDataEnabled() {
 #endif
 }
 
-void AddSharedLibraryAndDepsPath(
-    std::vector<BrokerFilePermission>* permissions) {
-  // Where IME decoder shared library and its dependencies will live.
-  static const char* kReadOnlyLibDirs[] =
-#if defined(__x86_64__) || defined(__aarch64__)
-      {"/usr/lib64", "/lib64"};
-#else
-      {"/usr/lib", "/lib"};
-#endif
+constexpr int dlopen_flag = RTLD_LAZY | RTLD_NODELETE;
 
-  for (const char* dir : kReadOnlyLibDirs) {
-    std::string path(dir);
-    permissions->push_back(
-        BrokerFilePermission::StatOnlyWithIntermediateDirs(path));
-    permissions->push_back(BrokerFilePermission::ReadOnlyRecursive(path + "/"));
-  }
+void PreloadSharedLibrary() {
+  if (!dlopen(kCrosImeDecoderLib, dlopen_flag))
+    LOG(ERROR) << "Unable to open " << kCrosImeDecoderLib << " : " << dlerror();
 }
 
 void AddBundleFolder(std::vector<BrokerFilePermission>* permissions) {
@@ -93,7 +83,7 @@ std::vector<BrokerFilePermission> GetImeFilePermissions() {
       BrokerFilePermission::ReadOnly("/dev/urandom"),
       BrokerFilePermission::ReadOnly("/sys/devices/system/cpu")};
 
-  AddSharedLibraryAndDepsPath(&permissions);
+  PreloadSharedLibrary();
   AddBundleFolder(&permissions);
   AddUserDataFolder(&permissions);
   AddSharedDataFolderIfEnabled(&permissions);

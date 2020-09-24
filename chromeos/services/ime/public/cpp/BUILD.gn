@@ -10,10 +10,7 @@ import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
 buildflag_header("buildflags") {
   header = "buildflags.h"
 
-  flags = [
-    "ENABLE_CROS_IME_SHARED_DATA=$enable_cros_ime_shared_data",
-    "ENABLE_CROS_IME_SANITY_TEST_SO=$enable_cros_ime_sanity_test_so",
-  ]
+  flags = [ "ENABLE_CROS_IME_SHARED_DATA=$enable_cros_ime_shared_data" ]
 }
 
 source_set("rulebased") {

@@ -5,8 +5,4 @@
 declare_args() {
   # Enable share language modules between IME services.
   enable_cros_ime_shared_data = false
-
-  # Enable to load a shared library for sanity tests only.
-  # This is for debugging purposes only.
-  enable_cros_ime_sanity_test_so = false
 }
