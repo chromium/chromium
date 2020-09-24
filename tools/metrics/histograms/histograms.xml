@@ -15980,7 +15980,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.PageTranslationStatus" enum="Boolean"
-    expires_after="2020-10-25">
+    expires_after="2021-10-25">
   <owner>marsin@google.com</owner>
   <owner>koerber@google.com</owner>
   <summary>
@@ -16762,7 +16762,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.TranslatedPageLanguage" enum="LanguageCode"
-    expires_after="2020-10-25">
+    expires_after="2021-10-25">
   <owner>marsin@google.com</owner>
   <owner>koerber@google.com</owner>
   <summary>
