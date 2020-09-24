@@ -269,8 +269,15 @@ const base::Feature kDesktopPWAsWithoutExtensions{
     "DesktopPWAsWithoutExtensions", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enable DNS over HTTPS (DoH).
-const base::Feature kDnsOverHttps{"DnsOverHttps",
-                                  base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kDnsOverHttps {
+  "DnsOverHttps",
+#if defined(OS_WIN) || defined(OS_CHROMEOS) || defined(OS_MAC) || \
+    defined(OS_ANDROID)
+      base::FEATURE_ENABLED_BY_DEFAULT
+#else
+      base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+};
 
 // Provides a mechanism to remove providers from the dropdown list in the
 // settings UI. Separate multiple provider ids with commas. See the
@@ -284,8 +291,15 @@ const base::FeatureParam<bool> kDnsOverHttpsFallbackParam{&kDnsOverHttps,
                                                           "Fallback", true};
 
 // Sets whether the DoH setting is displayed in the settings UI.
-const base::FeatureParam<bool> kDnsOverHttpsShowUiParam{&kDnsOverHttps,
-                                                        "ShowUi", false};
+const base::FeatureParam<bool> kDnsOverHttpsShowUiParam {
+  &kDnsOverHttps, "ShowUi",
+#if defined(OS_WIN) || defined(OS_CHROMEOS) || defined(OS_MAC) || \
+    defined(OS_ANDROID)
+      true
+#else
+      false
+#endif
+};
 
 // Supply one or more space-separated DoH server URI templates to use when this
 // feature is enabled. If no templates are specified, then a hardcoded mapping
