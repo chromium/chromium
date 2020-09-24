@@ -360,6 +360,8 @@ void AutofillProviderAndroid::Reset(AutofillHandlerProxy* handler) {
     if (check_submission_ && form_.get())
       FireSuccessfulSubmission(pending_submission_source_);
 
+    Reset();
+
     JNIEnv* env = AttachCurrentThread();
     ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
     if (obj.is_null())

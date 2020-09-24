@@ -983,6 +983,42 @@ public class AwAutofillTest {
         assertEquals(1, changedValues.get(2).second.getListValue());
     }
 
+    /**
+     * This test is verifying that a user interacting with a form after reloading a webpage
+     * triggers a new autofill session rather than continuing a session that was started before the
+     * reload. This is necessary to ensure that autofill is properly triggered in this case (see
+     * crbug.com/1117563 for details).
+     */
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testAutofillTriggersAfterReload() throws Throwable {
+        final String data = "<html><head></head><body><form action='a.html' name='formname'>"
+                + "<input type='text' id='text1' name='username'"
+                + " placeholder='placeholder@placeholder.com' autocomplete='username name'>"
+                + "<input type='submit'>"
+                + "</form></body></html>";
+        final String url = mWebServer.setResponse(FILE, data, null);
+        int cnt = 0;
+
+        loadUrlSync(url);
+        DOMUtils.waitForNonZeroNodeBounds(mAwContents.getWebContents(), "text1");
+        // TODO(changwan): mock out IME interaction.
+        Assert.assertTrue(DOMUtils.clickNode(mTestContainerView.getWebContents(), "text1"));
+        cnt += waitForCallbackAndVerifyTypes(cnt,
+                new Integer[] {AUTOFILL_CANCEL, AUTOFILL_VIEW_ENTERED, AUTOFILL_SESSION_STARTED});
+
+        // Reload the page and check that the user clicking on the same form field ends the current
+        // autofill session and starts a new session.
+        loadUrlSync(url);
+        DOMUtils.waitForNonZeroNodeBounds(mAwContents.getWebContents(), "text1");
+        // TODO(changwan): mock out IME interaction.
+        Assert.assertTrue(DOMUtils.clickNode(mTestContainerView.getWebContents(), "text1"));
+        cnt += waitForCallbackAndVerifyTypes(cnt,
+                new Integer[] {AUTOFILL_CANCEL, AUTOFILL_VIEW_EXITED, AUTOFILL_VIEW_ENTERED,
+                        AUTOFILL_SESSION_STARTED});
+    }
+
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
