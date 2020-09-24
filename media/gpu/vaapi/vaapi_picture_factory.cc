@@ -82,18 +82,18 @@ VaapiPictureFactory::GetVaapiImplementation(gl::GLImplementation gl_impl) {
 
 uint32_t VaapiPictureFactory::GetGLTextureTarget() {
 #if defined(USE_OZONE)
-  return GL_TEXTURE_EXTERNAL_OES;
-#else
-  return GL_TEXTURE_2D;
+  if (features::IsUsingOzonePlatform())
+    return GL_TEXTURE_EXTERNAL_OES;
 #endif
+  return GL_TEXTURE_2D;
 }
 
 gfx::BufferFormat VaapiPictureFactory::GetBufferFormat() {
 #if defined(USE_OZONE)
-  return gfx::BufferFormat::YUV_420_BIPLANAR;
-#else
-  return gfx::BufferFormat::RGBX_8888;
+  if (features::IsUsingOzonePlatform())
+    return gfx::BufferFormat::YUV_420_BIPLANAR;
 #endif
+  return gfx::BufferFormat::RGBX_8888;
 }
 
 #if defined(USE_OZONE)
