@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/chromeos/search_box/search_box_view_base.h"
+#include "ash/search_box/search_box_view_base.h"
 
 #include <algorithm>
 #include <memory>
 #include <vector>
 
+#include "ash/search_box/search_box_view_delegate.h"
 #include "base/macros.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/ime/text_input_flags.h"
-#include "ui/chromeos/search_box/search_box_view_delegate.h"
 #include "ui/events/event.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"

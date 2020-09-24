@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_CHROMEOS_SEARCH_BOX_SEARCH_BOX_CONSTANTS_H_
-#define UI_CHROMEOS_SEARCH_BOX_SEARCH_BOX_CONSTANTS_H_
+#ifndef ASH_SEARCH_BOX_SEARCH_BOX_CONSTANTS_H_
+#define ASH_SEARCH_BOX_SEARCH_BOX_CONSTANTS_H_
 
+#include "ash/search_box/search_box_export.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "ui/chromeos/search_box/search_box_export.h"
 #include "ui/gfx/color_palette.h"
 
 namespace search_box {
@@ -39,4 +39,4 @@ SEARCH_BOX_EXPORT constexpr int kButtonSizeDip = 40;
 
 }  // namespace search_box
 
-#endif  // UI_CHROMEOS_SEARCH_BOX_SEARCH_BOX_CONSTANTS_H_
+#endif  // ASH_SEARCH_BOX_SEARCH_BOX_CONSTANTS_H_

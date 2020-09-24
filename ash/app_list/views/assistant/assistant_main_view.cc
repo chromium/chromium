@@ -17,7 +17,7 @@
 #include "ash/assistant/util/assistant_util.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
-#include "ui/chromeos/search_box/search_box_constants.h"
+#include "ash/search_box/search_box_constants.h"
 #include "ui/views/layout/box_layout.h"
 
 namespace ash {

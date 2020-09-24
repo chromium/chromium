@@ -9,10 +9,10 @@
 #include <memory>
 #include <vector>
 
+#include "ash/search_box/search_box_view_delegate.h"
 #include "base/macros.h"
 #include "base/optional.h"
 #include "base/timer/timer.h"
-#include "ui/chromeos/search_box/search_box_view_delegate.h"
 #include "ui/views/widget/widget_delegate.h"
 
 namespace aura {

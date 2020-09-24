@@ -11,7 +11,7 @@
 #include "ash/app_list/app_list_view_delegate.h"
 #include "ash/app_list/model/search/search_box_model_observer.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
-#include "ui/chromeos/search_box/search_box_view_base.h"
+#include "ash/search_box/search_box_view_base.h"
 
 namespace views {
 class Textfield;

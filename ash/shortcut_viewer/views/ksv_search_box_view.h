@@ -5,9 +5,9 @@
 #ifndef ASH_SHORTCUT_VIEWER_VIEWS_KSV_SEARCH_BOX_VIEW_H_
 #define ASH_SHORTCUT_VIEWER_VIEWS_KSV_SEARCH_BOX_VIEW_H_
 
+#include "ash/search_box/search_box_view_base.h"
 #include "base/macros.h"
 #include "base/strings/string16.h"
-#include "ui/chromeos/search_box/search_box_view_base.h"
 
 namespace search_box {
 class SearchBoxViewDelegate;

@@ -4,12 +4,12 @@
 
 #include "ash/shortcut_viewer/views/ksv_search_box_view.h"
 
+#include "ash/search_box/search_box_view_delegate.h"
 #include "ash/shortcut_viewer/strings/grit/shortcut_viewer_strings.h"
 #include "ash/shortcut_viewer/vector_icons/vector_icons.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/chromeos/search_box/search_box_view_delegate.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/paint_vector_icon.h"

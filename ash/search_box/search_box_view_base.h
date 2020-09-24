@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_CHROMEOS_SEARCH_BOX_SEARCH_BOX_VIEW_BASE_H_
-#define UI_CHROMEOS_SEARCH_BOX_SEARCH_BOX_VIEW_BASE_H_
+#ifndef ASH_SEARCH_BOX_SEARCH_BOX_VIEW_BASE_H_
+#define ASH_SEARCH_BOX_SEARCH_BOX_VIEW_BASE_H_
 
 #include <vector>
 
+#include "ash/search_box/search_box_constants.h"
+#include "ash/search_box/search_box_export.h"
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/strings/string16.h"
-#include "ui/chromeos/search_box/search_box_constants.h"
-#include "ui/chromeos/search_box/search_box_export.h"
 #include "ui/events/types/event_type.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/image_button.h"
@@ -220,4 +220,4 @@ class SEARCH_BOX_EXPORT SearchBoxViewBase : public views::WidgetDelegateView,
 
 }  // namespace search_box
 
-#endif  // UI_CHROMEOS_SEARCH_BOX_SEARCH_BOX_VIEW_BASE_H_
+#endif  // ASH_SEARCH_BOX_SEARCH_BOX_VIEW_BASE_H_

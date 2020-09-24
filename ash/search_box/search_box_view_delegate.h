@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_CHROMEOS_SEARCH_BOX_SEARCH_BOX_VIEW_DELEGATE_H_
-#define UI_CHROMEOS_SEARCH_BOX_SEARCH_BOX_VIEW_DELEGATE_H_
+#ifndef ASH_SEARCH_BOX_SEARCH_BOX_VIEW_DELEGATE_H_
+#define ASH_SEARCH_BOX_SEARCH_BOX_VIEW_DELEGATE_H_
 
-#include "ui/chromeos/search_box/search_box_export.h"
+#include "ash/search_box/search_box_export.h"
 
 namespace search_box {
 
@@ -34,4 +34,4 @@ class SEARCH_BOX_EXPORT SearchBoxViewDelegate {
 
 }  // namespace search_box
 
-#endif  // UI_CHROMEOS_SEARCH_BOX_SEARCH_BOX_VIEW_DELEGATE_H_
+#endif  // ASH_SEARCH_BOX_SEARCH_BOX_VIEW_DELEGATE_H_

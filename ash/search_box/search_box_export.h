@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_CHROMEOS_SEARCH_BOX_SEARCH_BOX_EXPORT_H_
-#define UI_CHROMEOS_SEARCH_BOX_SEARCH_BOX_EXPORT_H_
+#ifndef ASH_SEARCH_BOX_SEARCH_BOX_EXPORT_H_
+#define ASH_SEARCH_BOX_SEARCH_BOX_EXPORT_H_
 
 // Defines SEARCH_BOX_EXPORT so that functionality implemented by the search_box
 // module can be exported to consumers.
@@ -29,4 +29,4 @@
 #define SEARCH_BOX_EXPORT
 #endif
 
-#endif  // UI_CHROMEOS_SEARCH_BOX_SEARCH_BOX_EXPORT_H_
+#endif  // ASH_SEARCH_BOX_SEARCH_BOX_EXPORT_H_
