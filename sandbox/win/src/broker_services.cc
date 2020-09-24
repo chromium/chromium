@@ -338,12 +338,13 @@ DWORD WINAPI BrokerServicesBase::TargetEventsThread(PVOID param) {
 
       ::UnregisterWait(tracker->wait_handle);
       tracker->wait_handle = INVALID_HANDLE_VALUE;
-
+      // Copy process_id so that we can legally reference it even after we have
+      // found the ProcessTracker object to delete.
+      const DWORD process_id = tracker->process_id;
       // PID is unique until the process handle is closed in dtor.
       processes.erase(std::remove_if(processes.begin(), processes.end(),
                                      [&](auto&& p) -> bool {
-                                       return p->process_id ==
-                                              tracker->process_id;
+                                       return p->process_id == process_id;
                                      }),
                       processes.end());
 
