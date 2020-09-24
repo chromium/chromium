@@ -40,8 +40,16 @@ void JsonProtoConverter::AppendNumber(const NumberValue& number_value) {
 }
 
 void JsonProtoConverter::AppendObject(const JsonObject& json_object) {
-  data_ << '{' << '"' << json_object.name() << '"' << ':';
-  AppendValue(json_object.value());
+  data_ << '{';
+  bool leading_comma = false;
+  for (const auto& field : json_object.field()) {
+    if (leading_comma) {
+      data_ << ",";
+    }
+    leading_comma = true;
+    data_ << '"' << field.name() << '"' << ':';
+    AppendValue(field.value());
+  }
   data_ << '}';
 }
 
