@@ -172,4 +172,25 @@ export class FakeSystemDataProvider {
     this.observables_.setObservableData(
         'MemoryUsageObserver_onMemoryUsageUpdated', memoryUsageList);
   }
+
+  /**
+   * Make the observables fire automatically on various intervals.
+   */
+  startTriggerIntervals() {
+    this.observables_.startTriggerOnInterval(
+        'CpuUsageObserver_onCpuUsageUpdated', 1000);
+    this.observables_.startTriggerOnInterval(
+        'MemoryUsageObserver_onMemoryUsageUpdated', 5000);
+    this.observables_.startTriggerOnInterval(
+        'BatteryHealthObserver_onBatteryHealthUpdated', 30000);
+    this.observables_.startTriggerOnInterval(
+        'BatteryChargeStatusObserver_onBatteryChargeStatusUpdated', 30000);
+  }
+
+  /**
+   * Stop automatically triggering observables.
+   */
+  stopTriggerIntervals() {
+    this.observables_.stopAllTriggerIntervals();
+  }
 }

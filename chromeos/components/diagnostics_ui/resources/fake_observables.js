@@ -33,6 +33,12 @@ class FakeObservableState {
      * @private {number}
      **/
     this.index_ = -1;
+
+    /**
+     * Id of the timer if enabled.
+     * @private {number}
+     */
+    this.timerId_ = -1;
   }
 
   /** @param {!Array<!T>} observations */
@@ -44,6 +50,31 @@ class FakeObservableState {
   /** @param {!function(!T)} callback */
   addObserver(callback) {
     this.observers_.push(callback);
+  }
+
+  /**
+   * Start firing the observers on a fixed interval. setObservableData() must
+   * already have been called.
+   * @param {number} intervalMs
+   */
+  startTriggerOnInterval(intervalMs) {
+    assert(this.index_ >= 0);
+    if (this.timerId_ != -1) {
+      this.stopTriggerOnInterval();
+    }
+
+    assert(this.timerId_ == -1);
+    this.timerId_ = setInterval(this.trigger.bind(this), intervalMs);
+  }
+
+  /**
+   * Disables the observer firing automatically on an interval.
+   */
+  stopTriggerOnInterval() {
+    if (this.timerId_ != -1) {
+      clearInterval(this.timerId_);
+      this.timerId_ = -1;
+    }
   }
 
   /**
@@ -105,6 +136,32 @@ export class FakeObservables {
    */
   setObservableData(methodName, observations) {
     this.getObservable_(methodName).setObservableData(observations);
+  }
+  /**
+   * Start firing the observer on a fixed interval. setObservableData() must
+   * already have been called.
+   * @param {string} methodName
+   * @param {number} intervalMs
+   */
+  startTriggerOnInterval(methodName, intervalMs) {
+    this.getObservable_(methodName).startTriggerOnInterval(intervalMs);
+  }
+
+  /**
+   * Disables the observer firing automatically on an interval.
+   * @param {string} methodName
+   */
+  stopTriggerOnInterval(methodName) {
+    this.getObservable_(methodName).stopTriggerOnInterval();
+  }
+
+  /**
+   * Disables all observers firing automatically on an interval.
+   */
+  stopAllTriggerIntervals() {
+    for (let obs of this.observables_.values()) {
+      obs.stopTriggerOnInterval();
+    }
   }
 
   /**

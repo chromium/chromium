@@ -29,6 +29,9 @@ function setupFakeSystemDataProvider_() {
   provider.setFakeMemoryUsage(fakeMemoryUsage);
   provider.setFakeSystemInfo(fakeSystemInfo);
 
+  // Start the timers to generate some observations.
+  provider.startTriggerIntervals();
+
   // Set the fake provider.
   setSystemDataProviderForTesting(provider);
 }
