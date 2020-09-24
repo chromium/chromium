@@ -983,7 +983,6 @@
         ],
         'test_suites': {
           'gtest_tests': 'linux_chromeos_gtests',
-          'scripts': 'chromium_check_static_initializers_scripts',
         },
       },
       'linux-lacros-rel': {

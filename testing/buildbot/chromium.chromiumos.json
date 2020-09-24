@@ -4220,14 +4220,6 @@
         "test": "zlib_unittests",
         "test_id_prefix": "ninja://third_party/zlib:zlib_unittests/"
       }
-    ],
-    "scripts": [
-      {
-        "isolate_profile_data": true,
-        "name": "check_static_initializers",
-        "script": "check_static_initializers.py",
-        "swarming": {}
-      }
     ]
   },
   "linux-lacros-rel": {
