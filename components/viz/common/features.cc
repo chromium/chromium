@@ -30,10 +30,6 @@ const base::Feature kUseSkiaRenderer{"UseSkiaRenderer",
                                      base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
-// Use the SkiaRenderer to record SkPicture.
-const base::Feature kRecordSkPicture{"RecordSkPicture",
-                                     base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Kill-switch to disable de-jelly, even if flags/properties indicate it should
 // be enabled.
 const base::Feature kDisableDeJelly{"DisableDeJelly",
@@ -121,11 +117,6 @@ bool IsUsingSkiaRenderer() {
 
   return base::FeatureList::IsEnabled(kUseSkiaRenderer) ||
          base::FeatureList::IsEnabled(kVulkan);
-}
-
-bool IsRecordingSkPicture() {
-  return IsUsingSkiaRenderer() &&
-         base::FeatureList::IsEnabled(kRecordSkPicture);
 }
 
 #if defined(OS_ANDROID)

@@ -306,8 +306,7 @@ void PixelTest::SetUpSkiaRenderer(gfx::SurfaceOrigin output_surface_origin) {
   renderer_ = std::make_unique<viz::SkiaRenderer>(
       &renderer_settings_, &debug_settings_, output_surface_.get(),
       resource_provider_.get(), nullptr,
-      static_cast<viz::SkiaOutputSurface*>(output_surface_.get()),
-      viz::SkiaRenderer::DrawMode::DDL);
+      static_cast<viz::SkiaOutputSurface*>(output_surface_.get()));
   renderer_->Initialize();
   renderer_->SetVisible(true);
 

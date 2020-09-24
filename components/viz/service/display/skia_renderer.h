@@ -17,17 +17,10 @@
 #include "components/viz/service/display/direct_renderer.h"
 #include "components/viz/service/display/sync_query_collection.h"
 #include "components/viz/service/viz_service_export.h"
-#include "third_party/skia/include/core/SkPictureRecorder.h"
 #include "ui/latency/latency_info.h"
 
 class SkColorFilter;
-class SkNWayCanvas;
-class SkPictureRecorder;
 class SkRuntimeEffect;
-
-namespace gpu {
-struct Capabilities;
-}
 
 namespace viz {
 class AggregatedRenderPassDrawQuad;
@@ -44,17 +37,13 @@ class YUVVideoDrawQuad;
 // SkColorSpace.
 class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
  public:
-  // Different draw modes that are supported by SkiaRenderer right now.
-  enum DrawMode { DDL, SKPRECORD };
-
   // TODO(penghuang): Remove skia_output_surface when DDL is used everywhere.
   SkiaRenderer(const RendererSettings* settings,
                const DebugRendererSettings* debug_settings,
                OutputSurface* output_surface,
                DisplayResourceProvider* resource_provider,
                OverlayProcessorInterface* overlay_processor,
-               SkiaOutputSurface* skia_output_surface,
-               DrawMode mode);
+               SkiaOutputSurface* skia_output_surface);
   ~SkiaRenderer() override;
 
   void SwapBuffers(SwapFrameData swap_frame_data) override;
@@ -232,12 +221,6 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
   const DrawQuad* CanPassBeDrawnDirectly(
       const AggregatedRenderPass* pass) override;
 
-  // Get corresponding GrContext. Returns nullptr when there is no GrContext.
-  // TODO(weiliangc): This currently only returns nullptr. If SKPRecord isn't
-  // going to use this later, it should be removed.
-  GrDirectContext* GetGrContext();
-  bool is_using_ddl() const { return draw_mode_ == DrawMode::DDL; }
-
   // Get a color filter that converts from |src| color space to |dst| color
   // space using a shader constructed from gfx::ColorTransform.  The color
   // filters are cached in |color_filter_cache_|.  Resource offset and
@@ -257,32 +240,13 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
 
   // A map from RenderPass id to the texture used to draw the RenderPass from.
   struct RenderPassBacking {
-    sk_sp<SkSurface> render_pass_surface;
     gfx::Size size;
     bool generate_mipmap;
     gfx::ColorSpace color_space;
     ResourceFormat format;
-
-    // Specific for SkPictureRecorder.
-    std::unique_ptr<SkPictureRecorder> recorder;
-    sk_sp<SkPicture> picture;
-
-    RenderPassBacking(GrDirectContext* gr_context,
-                      const gpu::Capabilities& caps,
-                      const gfx::Size& size,
-                      bool generate_mipmap,
-                      const gfx::ColorSpace& color_space);
-    RenderPassBacking(const gfx::Size& size,
-                      bool generate_mipmap,
-                      const gfx::ColorSpace& color_space);
-    ~RenderPassBacking();
-    RenderPassBacking(RenderPassBacking&&);
-    RenderPassBacking& operator=(RenderPassBacking&&);
   };
   base::flat_map<AggregatedRenderPassId, RenderPassBacking>
       render_pass_backings_;
-
-  const DrawMode draw_mode_;
 
   // Interface used for drawing. Common among different draw modes.
   sk_sp<SkSurface> root_surface_;
@@ -295,11 +259,6 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
   bool disable_picture_quad_image_filtering_ = false;
   bool is_scissor_enabled_ = false;
   gfx::Rect scissor_rect_;
-
-  // Specific for overdraw.
-  sk_sp<SkSurface> overdraw_surface_;
-  std::unique_ptr<SkCanvas> overdraw_canvas_;
-  std::unique_ptr<SkNWayCanvas> nway_canvas_;
 
   // TODO(crbug.com/920344): Use partial swap for SkDDL.
   bool use_swap_with_bounds_ = false;
@@ -367,14 +326,6 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
                  ScopedReadLockComparator>
       awaiting_release_overlay_locks_;
 #endif  // defined(OS_APPLE)
-
-  // Specific for SkPRecord.
-  std::unique_ptr<SkPictureRecorder> root_recorder_;
-  sk_sp<SkPicture> root_picture_;
-  sk_sp<SkPicture>* current_picture_;
-  SkPictureRecorder* current_recorder_;
-  ContextProvider* context_provider_ = nullptr;
-  base::Optional<SyncQueryCollection> sync_queries_;
 
   base::flat_map<gfx::ColorSpace,
                  base::flat_map<gfx::ColorSpace, sk_sp<SkRuntimeEffect>>>

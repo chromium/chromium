@@ -83,10 +83,6 @@ struct StructTraits<viz::mojom::RendererSettingsDataView,
     return input.use_skia_renderer;
   }
 
-  static bool record_sk_picture(const viz::RendererSettings& input) {
-    return input.record_sk_picture;
-  }
-
   static bool allow_overlays(const viz::RendererSettings& input) {
     return input.allow_overlays;
   }

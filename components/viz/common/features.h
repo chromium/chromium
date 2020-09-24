@@ -35,7 +35,6 @@ VIZ_COMMON_EXPORT extern const base::Feature kUseSetPresentDuration;
 VIZ_COMMON_EXPORT bool IsForcePreferredIntervalForVideoEnabled();
 VIZ_COMMON_EXPORT bool IsVizHitTestingDebugEnabled();
 VIZ_COMMON_EXPORT bool IsUsingSkiaRenderer();
-VIZ_COMMON_EXPORT bool IsRecordingSkPicture();
 #if defined(OS_ANDROID)
 VIZ_COMMON_EXPORT bool IsDynamicColorGamutEnabled();
 #endif

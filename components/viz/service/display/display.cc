@@ -519,23 +519,10 @@ void Display::InitializeRenderer(bool enable_shared_images) {
       mode, output_surface_->context_provider(), bitmap_manager_,
       enable_shared_images);
   if (settings_.use_skia_renderer && mode == DisplayResourceProvider::kGpu) {
-    // Default to use DDL if skia_output_surface is not null.
-    if (skia_output_surface_) {
-      renderer_ = std::make_unique<SkiaRenderer>(
-          &settings_, debug_settings_, output_surface_.get(),
-          resource_provider_.get(), overlay_processor_.get(),
-          skia_output_surface_, SkiaRenderer::DrawMode::DDL);
-    } else {
-      // GPU compositing with GL to an SKP.
-      DCHECK(output_surface_);
-      DCHECK(output_surface_->context_provider());
-      DCHECK(settings_.record_sk_picture);
-      DCHECK(!overlay_processor_->IsOverlaySupported());
-      renderer_ = std::make_unique<SkiaRenderer>(
-          &settings_, debug_settings_, output_surface_.get(),
-          resource_provider_.get(), overlay_processor_.get(),
-          nullptr /* skia_output_surface */, SkiaRenderer::DrawMode::SKPRECORD);
-    }
+    renderer_ = std::make_unique<SkiaRenderer>(
+        &settings_, debug_settings_, output_surface_.get(),
+        resource_provider_.get(), overlay_processor_.get(),
+        skia_output_surface_);
   } else if (output_surface_->context_provider()) {
     renderer_ = std::make_unique<GLRenderer>(
         &settings_, debug_settings_, output_surface_.get(),
