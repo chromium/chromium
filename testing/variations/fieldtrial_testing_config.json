@@ -7820,23 +7820,6 @@
             ]
         }
     ],
-    "WebRTC-LocalIPPermissionCheck": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled"
-                }
-            ]
-        }
-    ],
     "WebRTC-Pacer-BlockAudio": [
         {
             "platforms": [

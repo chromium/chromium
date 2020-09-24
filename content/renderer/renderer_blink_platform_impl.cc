@@ -583,21 +583,10 @@ media::MediaPermission* RendererBlinkPlatformImpl::GetWebRTCMediaPermission(
   DCHECK(ShouldEnforceWebRTCRoutingPreferences());
 
   media::MediaPermission* media_permission = nullptr;
-  bool create_media_permission =
-      base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kEnforceWebRtcIPPermissionCheck);
-  create_media_permission =
-      create_media_permission ||
-      !StartsWith(
-          base::FieldTrialList::FindFullName("WebRTC-LocalIPPermissionCheck"),
-          "Disabled", base::CompareCase::SENSITIVE);
-  if (create_media_permission) {
-    RenderFrameImpl* render_frame = RenderFrameImpl::FromWebFrame(web_frame);
-    if (render_frame)
-      media_permission = render_frame->GetMediaPermission();
-    DCHECK(media_permission);
-  }
-
+  RenderFrameImpl* render_frame = RenderFrameImpl::FromWebFrame(web_frame);
+  if (render_frame)
+    media_permission = render_frame->GetMediaPermission();
+  DCHECK(media_permission);
   return media_permission;
 }
 
