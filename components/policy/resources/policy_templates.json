@@ -6222,10 +6222,10 @@
               'type': 'object',
               'properties': {
                 'ISSUER': {
-                  'type': 'object',
-                  'properties': {
-                    'CN': { 'type': 'string'},
-                  }
+                  '$ref': 'CertPrincipalFields',
+                },
+                'SUBJECT': {
+                  '$ref': 'CertPrincipalFields',
                 }
               }
             }
@@ -6237,7 +6237,7 @@
       'features': {
         'dynamic_refresh': True,
       },
-      'example_value': ['{"pattern":"https://www.example.com","filter":{"ISSUER":{"CN":"certificate issuer name"}}}'],
+      'example_value': ['{"pattern":"https://www.example.com","filter":{"ISSUER":{"CN":"certificate issuer name", "L": "certificate issuer location", "O": "certificate issuer org", "OU": "certificate issuer org unit"}, "SUBJECT":{"CN":"certificate subject name", "L": "certificate subject location", "O": "certificate subject org", "OU": "certificate subject org unit"}}}'],
       'id': 396,
       'caption': '''Automatically select client certificates for these sites on the sign-in screen''',
       'tags': ['website-sharing'],
