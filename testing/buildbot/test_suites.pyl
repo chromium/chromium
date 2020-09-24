@@ -1456,9 +1456,6 @@
       },
       'mojo_unittests': {
         'mixins': ['fuchsia_runner_logs'],
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.mojo_unittests.filter',
-        ],
       },
       'native_theme_unittests': {
         'mixins': ['fuchsia_runner_logs'],
