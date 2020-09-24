@@ -256,13 +256,15 @@ void RangeInputType::CreateShadowSubtree() {
 }
 
 bool RangeInputType::TypeShouldForceLegacyLayout() const {
+  if (RuntimeEnabledFeatures::LayoutNGForControlsEnabled())
+    return false;
+  UseCounter::Count(GetElement().GetDocument(),
+                    WebFeature::kLegacyLayoutBySlider);
   return true;
 }
 
 LayoutObject* RangeInputType::CreateLayoutObject(const ComputedStyle& style,
                                                  LegacyLayout legacy) const {
-  UseCounter::Count(GetElement().GetDocument(),
-                    WebFeature::kLegacyLayoutBySlider);
   // TODO(crbug.com/1131352): input[type=range] should not use
   // LayoutFlexibleBox.
   return LayoutObjectFactory::CreateFlexibleBox(GetElement(), style, legacy);
