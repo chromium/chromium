@@ -430,6 +430,26 @@ void MediaStreamCaptureIndicator::NotifyStopped(
 
 void MediaStreamCaptureIndicator::UnregisterWebContents(
     WebContents* web_contents) {
+  if (IsCapturingVideo(web_contents)) {
+    for (Observer& observer : observers_)
+      observer.OnIsCapturingVideoChanged(web_contents, false);
+  }
+  if (IsCapturingAudio(web_contents)) {
+    for (Observer& observer : observers_)
+      observer.OnIsCapturingAudioChanged(web_contents, false);
+  }
+  if (IsBeingMirrored(web_contents)) {
+    for (Observer& observer : observers_)
+      observer.OnIsBeingMirroredChanged(web_contents, false);
+  }
+  if (IsCapturingWindow(web_contents)) {
+    for (Observer& observer : observers_)
+      observer.OnIsCapturingWindowChanged(web_contents, false);
+  }
+  if (IsCapturingDisplay(web_contents)) {
+    for (Observer& observer : observers_)
+      observer.OnIsCapturingDisplayChanged(web_contents, false);
+  }
   usage_map_.erase(web_contents);
   UpdateNotificationUserInterface();
 }
