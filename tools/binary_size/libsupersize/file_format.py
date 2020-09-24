@@ -124,7 +124,6 @@ _SIZE_HEADER_MULTI_CONTAINER = b'Size File Format v1.1\n'
 _SIZEDIFF_HEADER = b'DIFF\n'
 _SIZEDIFF_VERSION = 1
 
-
 class _Writer:
   """Helper to format and write data to a file object."""
 
@@ -163,8 +162,13 @@ def SortSymbols(raw_symbols):
   #     (and not using .sort()), or have it specify a total ordering (which must
   #     also include putting padding-only symbols before others of the same
   #     address). Note: The sort as-is takes ~1.5 seconds.
+  # s.size_without_padding > 0 prevents CalculatePadding() from incorrectly
+  #   detecting duplicate symbols.
+  # (s.full_name, s.object_path) are important for sort stability when called by
+  #   _ExpandSparseSymbols().
   raw_symbols.sort(
-      key=lambda s: (s.IsPak(), s.IsBss(), s.section_name, s.address))
+      key=lambda s: (s.IsPak(), s.IsBss(), s.section_name, s.address, s.
+                     size_without_padding > 0, s.full_name, s.object_path))
   logging.info('Processed %d symbols', len(raw_symbols))
 
 
@@ -228,7 +232,6 @@ def _ExpandSparseSymbols(sparse_symbols):
   SortSymbols(raw_symbols)
   logging.debug('Done expanding sparse_symbols')
   return models.SymbolGroup(raw_symbols)
-
 
 def _SaveSizeInfoToFile(size_info,
                         file_obj,
