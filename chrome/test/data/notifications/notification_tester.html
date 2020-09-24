@@ -9,6 +9,8 @@ Also can be used to request permission for notifications.
 var g_notifications = [];
 // Whether the site has requested and been granted permission.
 var g_permissionGranted = false;
+// Currently active media stream.
+var g_mediaStream = null;
 
 // Creates a notification with a iconUrl, title, text, and tag.
 // Returns an id for the notification, which can be used to cancel it with
@@ -73,6 +75,28 @@ function permissionCallbackWithResponse(permissionStatus) {
 // Callback for requesting notification privileges.
 function permissionCallbackNoResponse() {
   g_permissionGranted = true;
+}
+
+// Starts a screen cast session and reports success to the test driver.
+function startScreenCast() {
+  navigator.mediaDevices.getDisplayMedia({video: true}).then((stream) => {
+    g_mediaStream = stream;
+    sendResultToTest('success');
+  }).catch(() => {
+    sendResultToTest('error');
+  });
+}
+
+// Stops a screen cast session and reports success to the test driver.
+function stopScreenCast() {
+  if (!g_mediaStream) {
+    sendResultToTest('error');
+    return;
+  }
+  for (const track of g_mediaStream.getTracks())
+    track.stop();
+  g_mediaStream = null;
+  sendResultToTest('success');
 }
 
 // Helper function that adds a notification to |g_notifications| and shows

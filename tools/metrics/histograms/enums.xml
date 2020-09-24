@@ -41639,6 +41639,7 @@ from previous Chrome versions.
   <int value="-1313810940" label="StrictOriginIsolation:disabled"/>
   <int value="-1311575452"
       label="AutofillEnforceMinRequiredFieldsForUpload:disabled"/>
+  <int value="-1311503211" label="MuteNotificationsDuringScreenShare:enabled"/>
   <int value="-1311133348" label="VrBrowsingNativeAndroidUi:enabled"/>
   <int value="-1310737697" label="MaterialDesignSettings:enabled"/>
   <int value="-1309828996"
@@ -42309,6 +42310,7 @@ from previous Chrome versions.
   <int value="-631740127" label="inert-visual-viewport"/>
   <int value="-631614101" label="CameraSystemWebApp:enabled"/>
   <int value="-630946893" label="TabSearchFixedEntrypoint:enabled"/>
+  <int value="-629041881" label="MuteNotificationsDuringScreenShare:disabled"/>
   <int value="-626329144" label="SyncSupportTrustedVaultPassphrase:enabled"/>
   <int value="-626211146" label="DesktopMinimalUI:disabled"/>
   <int value="-624221121" label="CommandLineOnNonRooted:enabled"/>

@@ -11,9 +11,12 @@
 #include "base/memory/ref_counted.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/clock.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/infobars/infobar_service.h"
@@ -26,6 +29,7 @@
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
@@ -39,6 +43,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "media/base/media_switches.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/window_open_disposition.h"
@@ -82,6 +87,32 @@ class ToggledNotificationBlocker : public message_center::NotificationBlocker {
  private:
   bool notifications_enabled_;
 };
+
+#if !defined(OS_ANDROID)
+// Browser test class that creates a fake monitor MediaStream device and auto
+// selects it when requesting one via navigator.mediaDevices.getDisplayMedia().
+class NotificationsTestWithFakeMediaStream : public NotificationsTest {
+ public:
+  NotificationsTestWithFakeMediaStream() {
+    feature_list_.InitAndEnableFeature(
+        features::kMuteNotificationsDuringScreenShare);
+  }
+  ~NotificationsTestWithFakeMediaStream() override = default;
+
+  // InProcessBrowserTest:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    NotificationsTest::SetUpCommandLine(command_line);
+    command_line->RemoveSwitch(switches::kUseFakeDeviceForMediaStream);
+    command_line->AppendSwitchASCII(switches::kUseFakeDeviceForMediaStream,
+                                    "display-media-type=monitor");
+    command_line->AppendSwitchASCII(switches::kAutoSelectDesktopCaptureSource,
+                                    "Entire screen");
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+#endif  // !defined(OS_ANDROID)
 
 }  // namespace
 
@@ -678,7 +709,7 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, TestShouldDisplayMultiFullscreen) {
   std::string result = CreateSimpleNotification(browser(), true);
   EXPECT_NE("-1", result);
 
-  // Set the notifcation page fullscreen
+  // Set the notification page fullscreen
   browser()->exclusive_access_manager()->fullscreen_controller()->
       ToggleBrowserFullscreenMode();
   {
@@ -743,3 +774,46 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, TestShouldDisplayPopupNotification) {
       message_center::MessageCenter::Get()->GetPopupNotifications();
   ASSERT_EQ(1u, notifications.size());
 }
+
+#if !defined(OS_ANDROID)
+// Test fails on Windows on the bots as there is no real display to test with.
+// TODO(knollr): Find a way to run these on Windows and figure out why Lacros
+// times out.
+#if defined(OS_WIN) || BUILDFLAG(IS_LACROS)
+#define MAYBE_ShouldQueueDuringScreenPresent \
+  DISABLED_ShouldQueueDuringScreenPresent
+#else
+#define MAYBE_ShouldQueueDuringScreenPresent ShouldQueueDuringScreenPresent
+#endif
+IN_PROC_BROWSER_TEST_F(NotificationsTestWithFakeMediaStream,
+                       MAYBE_ShouldQueueDuringScreenPresent) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  AllowAllOrigins();
+  ui_test_utils::NavigateToURL(browser(), GetTestPageURL());
+
+  // We should see displayed notifications by default.
+  std::string result = CreateSimpleNotification(browser(), /*wait=*/false);
+  EXPECT_NE("-1", result);
+  ASSERT_EQ(1, GetNotificationCount());
+
+  // Start a screen cast session.
+  content::WebContents* web_contents = GetActiveWebContents(browser());
+  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
+      web_contents, "startScreenCast();", &result));
+  ASSERT_EQ("success", result);
+
+  // Showing a notification during the screen cast session should not show it.
+  result = CreateSimpleNotification(browser(), /*wait=*/false);
+  EXPECT_NE("-1", result);
+  ASSERT_EQ(1, GetNotificationCount());
+
+  // Stop the screen cast session.
+  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
+      web_contents, "stopScreenCast();", &result));
+  ASSERT_EQ("success", result);
+
+  // After stopping the screen cast session we expect the queued notification to
+  // be shown.
+  ASSERT_EQ(2, GetNotificationCount());
+}
+#endif  // !defined(OS_ANDROID)

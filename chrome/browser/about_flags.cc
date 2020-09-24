@@ -6436,6 +6436,14 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kSeparatePointingStickSettings)},
 #endif
 
+#if !defined(OS_ANDROID)
+    {"mute-notifications-during-screen-share",
+     flag_descriptions::kMuteNotificationsDuringScreenShareName,
+     flag_descriptions::kMuteNotificationsDuringScreenShareDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kMuteNotificationsDuringScreenShare)},
+#endif  // !defined(OS_ANDROID)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

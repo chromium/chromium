@@ -1848,6 +1848,9 @@ extern const char kCopyLinkToTextDescription[];
 extern const char kGlobalMediaControlsCastStartStopName[];
 extern const char kGlobalMediaControlsCastStartStopDescription[];
 
+extern const char kMuteNotificationsDuringScreenShareName[];
+extern const char kMuteNotificationsDuringScreenShareDescription[];
+
 extern const char kNtpDismissPromosName[];
 extern const char kNtpDismissPromosDescription[];
 

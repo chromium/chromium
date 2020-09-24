@@ -7,11 +7,76 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/bind.h"
+#include "base/containers/flat_set.h"
+#include "base/feature_list.h"
+#include "build/build_config.h"
+#include "chrome/browser/browser_features.h"
+#include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
+#include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "chrome/browser/notifications/notification_display_service.h"
+
+namespace {
+
+#if !defined(OS_ANDROID)
+// This notification blocker listens to the events when the user starts
+// capturing a display. It will block notifications while such a capture is
+// ongoing. Note that this does not include casting the whole display and only
+// covers capturing via WebContents.
+class ScreenCaptureNotificationBlocker
+    : public NotificationBlocker,
+      public MediaStreamCaptureIndicator::Observer {
+ public:
+  ScreenCaptureNotificationBlocker() {
+    observer_.Add(MediaCaptureDevicesDispatcher::GetInstance()
+                      ->GetMediaStreamCaptureIndicator()
+                      .get());
+  }
+
+  // NotificationBlocker:
+  bool ShouldBlockNotifications() override {
+    return !capturing_web_contents_.empty();
+  }
+
+  // MediaStreamCaptureIndicator::Observer:
+  void OnIsCapturingDisplayChanged(content::WebContents* web_contents,
+                                   bool is_capturing_display) override {
+    if (is_capturing_display)
+      capturing_web_contents_.insert(web_contents);
+    else
+      capturing_web_contents_.erase(web_contents);
+
+    NotifyBlockingStateChanged();
+  }
+
+ private:
+  ScopedObserver<MediaStreamCaptureIndicator,
+                 MediaStreamCaptureIndicator::Observer>
+      observer_{this};
+
+  // Storing raw pointers here is fine because we never access them. We're only
+  // interested in the current set of WebContents that captures a display.
+  base::flat_set<content::WebContents*> capturing_web_contents_;
+};
+#endif  // !defined(OS_ANDROID)
+
+}  // namespace
 
 NotificationDisplayQueue::NotificationDisplayQueue(
     NotificationDisplayService* notification_display_service)
-    : notification_display_service_(notification_display_service) {}
+    : notification_display_service_(notification_display_service) {
+  NotificationBlockers blockers;
+
+#if !defined(OS_ANDROID)
+  // TODO(knollr): Also block notifications while casting a screen.
+  if (base::FeatureList::IsEnabled(
+          features::kMuteNotificationsDuringScreenShare)) {
+    blockers.push_back(std::make_unique<ScreenCaptureNotificationBlocker>());
+  }
+#endif  // !defined(OS_ANDROID)
+
+  SetNotificationBlockers(std::move(blockers));
+}
 
 NotificationDisplayQueue::~NotificationDisplayQueue() = default;
 

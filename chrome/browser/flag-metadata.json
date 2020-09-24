@@ -3131,6 +3131,11 @@
     "expiry_milestone": 86
   },
   {
+    "name": "mute-notifications-during-screen-share",
+    "owners": [ "knollr@chromium.org", "peter@chromium.org" ],
+    "expiry_milestone": 90
+  },
+  {
     "name": "native-file-system-api",
     "owners": [ "mek", "pwnall" ],
     "expiry_milestone": 87
