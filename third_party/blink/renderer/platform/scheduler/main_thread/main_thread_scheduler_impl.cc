@@ -2447,11 +2447,19 @@ void MainThreadSchedulerImpl::OnTaskStarted(
     MainThreadTaskQueue* queue,
     const base::sequence_manager::Task& task,
     const TaskQueue::TaskTiming& task_timing) {
-  if (queue && queue->GetFrameScheduler()) {
-    AgentGroupSchedulerImpl::SetCurrent(
-        queue->GetFrameScheduler()->GetAgentGroupScheduler());
-  } else {
-    AgentGroupSchedulerImpl::SetCurrent(nullptr);
+  // Switch current active scheduler
+  {
+    AgentGroupSchedulerImpl* agent_group_scheduler =
+        queue ? queue->GetAgentGroupScheduler() : nullptr;
+    AgentGroupSchedulerImpl::SetCurrent(agent_group_scheduler);
+    if (agent_group_scheduler) {
+      sequence_manager_->SetDefaultTaskRunner(
+          agent_group_scheduler->DefaultTaskRunner());
+    } else {
+      // If there is no proper AgentGroupScheduler, it means that the
+      // current scheduler is MainThreadScheduler.
+      sequence_manager_->SetDefaultTaskRunner(helper_.DefaultTaskRunner());
+    }
   }
 
   main_thread_only().running_queues.push(queue);
@@ -2517,6 +2525,7 @@ void MainThreadSchedulerImpl::OnTaskCompleted(
   // AgentGroupSchedulerImpl::GetCurrent() should return nullptr when
   // it's running thread global task runners.
   AgentGroupSchedulerImpl::SetCurrent(nullptr);
+  sequence_manager_->SetDefaultTaskRunner(helper_.DefaultTaskRunner());
 }
 
 void MainThreadSchedulerImpl::RecordTaskUkm(

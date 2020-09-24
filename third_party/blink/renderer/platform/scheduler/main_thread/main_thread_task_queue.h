@@ -11,6 +11,7 @@
 #include "base/task/sequence_manager/task_queue.h"
 #include "base/task/sequence_manager/task_queue_impl.h"
 #include "net/base/request_priority.h"
+#include "third_party/blink/renderer/platform/scheduler/main_thread/agent_group_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/web_scheduling_priority.h"
 
@@ -291,10 +292,17 @@ class PLATFORM_EXPORT MainThreadTaskQueue
 
     // Forwarded calls to |spec|.
 
+    QueueCreationParams SetAgentGroupScheduler(
+        AgentGroupSchedulerImpl* scheduler) {
+      agent_group_scheduler = scheduler;
+      return *this;
+    }
+
     QueueCreationParams SetFrameScheduler(FrameSchedulerImpl* scheduler) {
       frame_scheduler = scheduler;
       return *this;
     }
+
     QueueCreationParams SetShouldMonitorQuiescence(bool should_monitor) {
       spec = spec.SetShouldMonitorQuiescence(should_monitor);
       return *this;
@@ -313,6 +321,7 @@ class PLATFORM_EXPORT MainThreadTaskQueue
 
     QueueType queue_type;
     base::sequence_manager::TaskQueue::Spec spec;
+    AgentGroupSchedulerImpl* agent_group_scheduler;
     FrameSchedulerImpl* frame_scheduler;
     QueueTraits queue_traits;
     bool freeze_when_keep_active;
@@ -385,6 +394,8 @@ class PLATFORM_EXPORT MainThreadTaskQueue
   // Override base method to notify MainThreadScheduler about shutdown queue.
   void ShutdownTaskQueue() override;
 
+  AgentGroupSchedulerImpl* GetAgentGroupScheduler();
+
   FrameSchedulerImpl* GetFrameScheduler() const;
 
   scoped_refptr<base::SingleThreadTaskRunner> CreateTaskRunner(
@@ -441,6 +452,8 @@ class PLATFORM_EXPORT MainThreadTaskQueue
 
   // Needed to notify renderer scheduler about completed tasks.
   MainThreadSchedulerImpl* main_thread_scheduler_;  // NOT OWNED
+
+  AgentGroupSchedulerImpl* agent_group_scheduler_{nullptr};  // NOT OWNED
 
   // Set in the constructor. Cleared in ClearReferencesToSchedulers(). Can never
   // be set to a different value afterwards (except in tests).

@@ -10,10 +10,12 @@
 namespace blink {
 namespace scheduler {
 
-MainThreadTaskQueue::QueueCreationParams DefaultTaskQueueCreationParams() {
+MainThreadTaskQueue::QueueCreationParams DefaultTaskQueueCreationParams(
+    AgentGroupSchedulerImpl* agent_group_scheduler_impl) {
   return MainThreadTaskQueue::QueueCreationParams(
              MainThreadTaskQueue::QueueType::kDefault)
-      .SetShouldMonitorQuiescence(true);
+      .SetShouldMonitorQuiescence(true)
+      .SetAgentGroupScheduler(agent_group_scheduler_impl);
 }
 
 static AgentGroupSchedulerImpl* g_current_agent_group_scheduler_impl;
@@ -34,16 +36,14 @@ void AgentGroupSchedulerImpl::SetCurrent(
 AgentGroupSchedulerImpl::AgentGroupSchedulerImpl(
     MainThreadSchedulerImpl* main_thread_scheduler)
     : default_task_queue_(main_thread_scheduler->NewTaskQueue(
-          DefaultTaskQueueCreationParams())),
+          DefaultTaskQueueCreationParams(this))),
       default_task_runner_(default_task_queue_->CreateTaskRunner(
           TaskType::kMainThreadTaskQueueDefault)),
       main_thread_scheduler_(main_thread_scheduler) {}
 
 AgentGroupSchedulerImpl::~AgentGroupSchedulerImpl() {
   default_task_queue_->ShutdownTaskQueue();
-  if (main_thread_scheduler_) {
-    main_thread_scheduler_->RemoveAgentGroupScheduler(this);
-  }
+  main_thread_scheduler_->RemoveAgentGroupScheduler(this);
 }
 
 }  // namespace scheduler

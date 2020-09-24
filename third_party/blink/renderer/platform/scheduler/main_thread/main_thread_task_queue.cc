@@ -187,10 +187,25 @@ void MainThreadTaskQueue::ShutdownTaskQueue() {
   TaskQueue::ShutdownTaskQueue();
 }
 
+AgentGroupSchedulerImpl* MainThreadTaskQueue::GetAgentGroupScheduler() {
+  DCHECK(task_runner()->BelongsToCurrentThread());
+  if (agent_group_scheduler_) {
+    DCHECK(!frame_scheduler_);
+    return agent_group_scheduler_;
+  }
+  if (frame_scheduler_) {
+    return frame_scheduler_->GetAgentGroupScheduler();
+  }
+  // If this MainThreadTaskQueue was created for MainThreadSchedulerImpl, this
+  // queue will not be associated with AgentGroupScheduler or FrameScheduler.
+  return nullptr;
+}
+
 void MainThreadTaskQueue::ClearReferencesToSchedulers() {
   if (main_thread_scheduler_)
     main_thread_scheduler_->OnShutdownTaskQueue(this);
   main_thread_scheduler_ = nullptr;
+  agent_group_scheduler_ = nullptr;
   frame_scheduler_ = nullptr;
 }
 
