@@ -277,6 +277,20 @@ public class AccountPickerBottomSheetRenderTest {
                 mCoordinator.getBottomSheetViewForTesting(), "collapsed_sheet_with_account");
     }
 
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
+    @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
+    public void testIncognitoInterstitialView(boolean nightModeEnabled) throws IOException {
+        mAccountManagerTestRule.addAccount(PROFILE_DATA1);
+        mAccountManagerTestRule.addAccount(PROFILE_DATA2);
+        buildAndShowCollapsedBottomSheet();
+        expandBottomSheet();
+        openIncognitoInterstitialOnExpandedSheet();
+        mRenderTestRule.render(
+                mCoordinator.getBottomSheetViewForTesting(), "signin_incognito_interstitial_view");
+    }
+
     private void openIncognitoInterstitialOnExpandedSheet() {
         // RecyclerView: PROFILE_DATA1, PROFILE_DATA2, |Add account to device|, |Sign in
         // temporarily|
