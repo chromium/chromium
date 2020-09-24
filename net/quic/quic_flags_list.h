@@ -457,3 +457,7 @@ QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_default_to_2_rttvar, true)
 QUIC_FLAG(bool,
           FLAGS_quic_reloadable_flag_quic_deallocate_message_right_after_sent,
           false)
+
+// If true, discard initial key right after a HANDSHAKE packet has been sent and
+// unify the fixes for missing initial keys.
+QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_fix_missing_initial_keys, true)
