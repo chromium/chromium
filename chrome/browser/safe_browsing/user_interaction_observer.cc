@@ -143,10 +143,13 @@ SafeBrowsingUserInteractionObserver::FromWebContents(
 void SafeBrowsingUserInteractionObserver::RenderViewHostChanged(
     content::RenderViewHost* old_host,
     content::RenderViewHost* new_host) {
-  old_host->GetWidget()->RemoveKeyPressEventCallback(key_press_callback_);
+  // |old_host| can be nullptr if the old RVH was shut down.
+  if (old_host)
+    old_host->GetWidget()->RemoveKeyPressEventCallback(key_press_callback_);
   new_host->GetWidget()->AddKeyPressEventCallback(key_press_callback_);
 
-  old_host->GetWidget()->RemoveMouseEventCallback(mouse_event_callback_);
+  if (old_host)
+    old_host->GetWidget()->RemoveMouseEventCallback(mouse_event_callback_);
   new_host->GetWidget()->AddMouseEventCallback(mouse_event_callback_);
 }
 
