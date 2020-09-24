@@ -583,14 +583,9 @@ BookmarkModelMerger::FindGuidMatchesOrReassignLocal(
 
     if (node->is_folder() != remote_entity.is_folder ||
         (node->is_url() &&
-         node->url() != remote_entity.specifics.bookmark().url()) ||
-        !base::FeatureList::IsEnabled(switches::kMergeBookmarksUsingGUIDs)) {
+         node->url() != remote_entity.specifics.bookmark().url())) {
       // If local node and its remote node match are conflicting in node type or
-      // URL, replace local GUID with a random GUID. The logic is applied
-      // unconditionally if kMergeBookmarksUsingGUIDs is disabled, since no
-      // GUID-based matches take place and GUIDs need to be reassigned to avoid
-      // collisions (they will be reassigned once again if there is a semantic
-      // match).
+      // URL, replace local GUID with a random GUID.
       // TODO(crbug.com/978430): Local GUIDs should also be reassigned if they
       // match a remote originator_client_item_id.
       nodes_to_replace_guid.push_back(node);

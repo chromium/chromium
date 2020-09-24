@@ -824,9 +824,6 @@ TEST(BookmarkModelMergerTest,
 }
 
 TEST(BookmarkModelMergerTest, ShouldMergeBookmarkByGUID) {
-  base::test::ScopedFeatureList override_features;
-  override_features.InitAndEnableFeature(switches::kMergeBookmarksUsingGUIDs);
-
   const std::string kId = "Id";
   const std::string kLocalTitle = "Title 1";
   const std::string kRemoteTitle = "Title 2";
@@ -875,9 +872,6 @@ TEST(BookmarkModelMergerTest, ShouldMergeBookmarkByGUID) {
 }
 
 TEST(BookmarkModelMergerTest, ShouldMergeBookmarkByGUIDAndReparent) {
-  base::test::ScopedFeatureList override_features;
-  override_features.InitAndEnableFeature(switches::kMergeBookmarksUsingGUIDs);
-
   const std::string kId = "Id";
   const std::string kLocalTitle = "Title 1";
   const std::string kRemoteTitle = "Title 2";
@@ -937,9 +931,6 @@ TEST(BookmarkModelMergerTest, ShouldMergeBookmarkByGUIDAndReparent) {
 }
 
 TEST(BookmarkModelMergerTest, ShouldMergeFolderByGUIDAndNotSemantics) {
-  base::test::ScopedFeatureList override_features;
-  override_features.InitAndEnableFeature(switches::kMergeBookmarksUsingGUIDs);
-
   const std::string kFolderId = "Folder Id";
   const std::string kTitle1 = "Title 1";
   const std::string kTitle2 = "Title 2";
@@ -1065,9 +1056,6 @@ TEST(BookmarkModelMergerTest, ShouldIgnoreChildrenForNonFolderNodes) {
 TEST(
     BookmarkModelMergerTest,
     ShouldIgnoreFolderSemanticsMatchAndLaterMatchByGUIDWithSemanticsNodeFirst) {
-  base::test::ScopedFeatureList override_features;
-  override_features.InitAndEnableFeature(switches::kMergeBookmarksUsingGUIDs);
-
   const std::string kFolderId1 = "Folder Id 1";
   const std::string kFolderId2 = "Folder Id 2";
   const std::string kOriginalTitle = "Original Title";
@@ -1151,9 +1139,6 @@ TEST(
 
 TEST(BookmarkModelMergerTest,
      ShouldIgnoreFolderSemanticsMatchAndLaterMatchByGUIDWithGUIDNodeFirst) {
-  base::test::ScopedFeatureList override_features;
-  override_features.InitAndEnableFeature(switches::kMergeBookmarksUsingGUIDs);
-
   const std::string kFolderId1 = "Folder Id 1";
   const std::string kFolderId2 = "Folder Id 2";
   const std::string kOriginalTitle = "Original Title";
@@ -1233,9 +1218,6 @@ TEST(BookmarkModelMergerTest,
 }
 
 TEST(BookmarkModelMergerTest, ShouldReplaceBookmarkGUIDWithConflictingURLs) {
-  base::test::ScopedFeatureList override_features;
-  override_features.InitAndEnableFeature(switches::kMergeBookmarksUsingGUIDs);
-
   const std::string kTitle = "Title";
   const std::string kUrl1 = "http://www.foo.com/";
   const std::string kUrl2 = "http://www.bar.com/";
@@ -1288,9 +1270,6 @@ TEST(BookmarkModelMergerTest, ShouldReplaceBookmarkGUIDWithConflictingURLs) {
 }
 
 TEST(BookmarkModelMergerTest, ShouldReplaceBookmarkGUIDWithConflictingTypes) {
-  base::test::ScopedFeatureList override_features;
-  override_features.InitAndEnableFeature(switches::kMergeBookmarksUsingGUIDs);
-
   const std::string kTitle = "Title";
   const std::string kGuid = base::GenerateGUID();
 
@@ -1342,9 +1321,6 @@ TEST(BookmarkModelMergerTest, ShouldReplaceBookmarkGUIDWithConflictingTypes) {
 
 TEST(BookmarkModelMergerTest,
      ShouldReplaceBookmarkGUIDWithConflictingTypesAndLocalChildren) {
-  base::test::ScopedFeatureList override_features;
-  override_features.InitAndEnableFeature(switches::kMergeBookmarksUsingGUIDs);
-
   const std::string kGuid = base::GenerateGUID();
   const std::string kGuid2 = base::GenerateGUID();
 
@@ -1408,9 +1384,6 @@ TEST(BookmarkModelMergerTest,
 // remote node should be ignored and the local bookmark included in the merged
 // tree.
 TEST(BookmarkModelMergerTest, ShouldIgnoreRemoteGUIDIfOrphanNode) {
-  base::test::ScopedFeatureList override_features;
-  override_features.InitAndEnableFeature(switches::kMergeBookmarksUsingGUIDs);
-
   const std::string kId = "Id";
   const std::string kInexistentParentId = "InexistentParentId";
   const std::string kTitle = "Title";
@@ -1463,9 +1436,6 @@ TEST(BookmarkModelMergerTest, ShouldIgnoreRemoteGUIDIfOrphanNode) {
 // (e.g. invalid URL). In this case the remote node should be ignored and the
 // local bookmark included in the merged tree.
 TEST(BookmarkModelMergerTest, ShouldIgnoreRemoteGUIDIfInvalidSpecifics) {
-  base::test::ScopedFeatureList override_features;
-  override_features.InitAndEnableFeature(switches::kMergeBookmarksUsingGUIDs);
-
   const std::string kId = "Id";
   const std::string kTitle = "Title";
   const std::string kLocalUrl = "http://www.foo.com/";
@@ -1517,9 +1487,6 @@ TEST(BookmarkModelMergerTest, ShouldIgnoreRemoteGUIDIfInvalidSpecifics) {
 // Tests that updates with a GUID that is different to originator client item ID
 // are ignored.
 TEST(BookmarkModelMergerTest, ShouldIgnoreRemoteUpdateWithInvalidGUID) {
-  base::test::ScopedFeatureList override_features;
-  override_features.InitAndEnableFeature(switches::kMergeBookmarksUsingGUIDs);
-
   const std::string kId1 = "Id1";
   const std::string kId2 = "Id2";
   const std::string kTitle1 = "Title1";
@@ -1587,9 +1554,6 @@ TEST(BookmarkModelMergerTest, ShouldIgnoreRemoteUpdateWithInvalidGUID) {
 // initial merge.
 TEST(BookmarkModelMergerTest,
      ShouldProcessLocalCreationWithUntrackedPredecessorNode) {
-  base::test::ScopedFeatureList override_features;
-  override_features.InitAndEnableFeature(switches::kMergeBookmarksUsingGUIDs);
-
   const std::string kFolder1Title = "folder1";
   const std::string kFolder2Title = "folder2";
 

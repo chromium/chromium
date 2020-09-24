@@ -9,10 +9,6 @@ namespace switches {
 const base::Feature kSyncDoNotCommitBookmarksWithoutFavicon = {
     "SyncDoNotCommitBookmarksWithoutFavicon", base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Enables the GUID-aware merge algorithm.
-const base::Feature kMergeBookmarksUsingGUIDs{"MergeBookmarksUsingGUIDs",
-                                              base::FEATURE_ENABLED_BY_DEFAULT};
-
 const base::Feature kSyncReuploadBookmarkFullTitles{
     "SyncReuploadBookmarkFullTitles", base::FEATURE_DISABLED_BY_DEFAULT};
 
