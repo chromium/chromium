@@ -185,7 +185,7 @@ public class CachedZeroSuggestionsManager {
             OmniboxSuggestion suggestion = new OmniboxSuggestion(nativeType, subtypes, isSearchType,
                     0, 0, displayText, classifications, description, classifications, null, null,
                     url, GURL.emptyGURL(), null, isStarred, isDeletable, postContentType, postData,
-                    groupId, null, null, false);
+                    groupId, null, null, false, null);
             suggestions.add(suggestion);
         }
 
@@ -280,7 +280,8 @@ public class CachedZeroSuggestionsManager {
         return !suggestion.hasAnswer()
                 && suggestion.getType() != OmniboxSuggestionType.CLIPBOARD_URL
                 && suggestion.getType() != OmniboxSuggestionType.CLIPBOARD_TEXT
-                && suggestion.getType() != OmniboxSuggestionType.CLIPBOARD_IMAGE;
+                && suggestion.getType() != OmniboxSuggestionType.CLIPBOARD_IMAGE
+                && suggestion.getType() != OmniboxSuggestionType.TILE_NAVSUGGEST;
     }
 
     /**

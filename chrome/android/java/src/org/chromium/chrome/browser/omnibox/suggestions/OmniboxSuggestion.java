@@ -28,6 +28,25 @@ public class OmniboxSuggestion {
     public static final int INVALID_TYPE = -1;
 
     /**
+     * Specifies an individual tile for TILE_NAVSUGGEST suggestions.
+     */
+    public static class NavsuggestTile {
+        /**
+         * Title of the website the tile points to.
+         */
+        public final String title;
+        /**
+         * URL of the website the tile points to.
+         */
+        public final GURL url;
+
+        public NavsuggestTile(String title, GURL url) {
+            this.title = title;
+            this.url = url;
+        }
+    }
+
+    /**
      * Specifies the style of portions of the suggestion text.
      * <p>
      * ACMatchClassification (as defined in C++) further describes the fields and usage.
@@ -79,6 +98,7 @@ public class OmniboxSuggestion {
     private final List<QueryTile> mQueryTiles;
     private final byte[] mClipboardImageData;
     private final boolean mHasTabMatch;
+    private final @Nullable List<NavsuggestTile> mNavsuggestTiles;
 
     public OmniboxSuggestion(int nativeType, Set<Integer> subtypes, boolean isSearchType,
             int relevance, int transition, String displayText,
@@ -86,8 +106,8 @@ public class OmniboxSuggestion {
             List<MatchClassification> descriptionClassifications, SuggestionAnswer answer,
             String fillIntoEdit, GURL url, GURL imageUrl, String imageDominantColor,
             boolean isStarred, boolean isDeletable, String postContentType, byte[] postData,
-            int groupId, List<QueryTile> queryTiles, byte[] clipboardImageData,
-            boolean hasTabMatch) {
+            int groupId, List<QueryTile> queryTiles, byte[] clipboardImageData, boolean hasTabMatch,
+            List<NavsuggestTile> navsuggestTiles) {
         if (subtypes == null) {
             subtypes = Collections.emptySet();
         }
@@ -115,6 +135,7 @@ public class OmniboxSuggestion {
         mQueryTiles = queryTiles;
         mClipboardImageData = clipboardImageData;
         mHasTabMatch = hasTabMatch;
+        mNavsuggestTiles = navsuggestTiles;
     }
 
     public int getType() {
@@ -261,6 +282,13 @@ public class OmniboxSuggestion {
      */
     public int getGroupId() {
         return mGroupId;
+    }
+
+    /**
+     * @return List of tiles for TILE_NAVSUGGEST suggestion.
+     */
+    public @Nullable List<NavsuggestTile> getNavsuggestTiles() {
+        return mNavsuggestTiles;
     }
 
     @Override

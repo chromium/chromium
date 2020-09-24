@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteResult.GroupDetails;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestion.MatchClassification;
+import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestion.NavsuggestTile;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler.VoiceResult;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -353,7 +354,8 @@ public class AutocompleteController {
             int[] descriptionClassificationStyles, SuggestionAnswer answer, String fillIntoEdit,
             GURL url, GURL imageUrl, String imageDominantColor, boolean isStarred,
             boolean isDeletable, String postContentType, byte[] postData, int groupId,
-            List<QueryTile> tiles, byte[] clipboardImageData, boolean hasTabMatch) {
+            List<QueryTile> tiles, byte[] clipboardImageData, boolean hasTabMatch,
+            List<NavsuggestTile> navsuggestTiles) {
         assert contentClassificationOffsets.length == contentClassificationStyles.length;
         List<MatchClassification> contentClassifications = new ArrayList<>();
         for (int i = 0; i < contentClassificationOffsets.length; i++) {
@@ -376,7 +378,19 @@ public class AutocompleteController {
         return new OmniboxSuggestion(nativeType, subtypes, isSearchType, relevance, transition,
                 contents, contentClassifications, description, descriptionClassifications, answer,
                 fillIntoEdit, url, imageUrl, imageDominantColor, isStarred, isDeletable,
-                postContentType, postData, groupId, tiles, clipboardImageData, hasTabMatch);
+                postContentType, postData, groupId, tiles, clipboardImageData, hasTabMatch,
+                navsuggestTiles);
+    }
+
+    @CalledByNative
+    private static List<NavsuggestTile> buildOmniboxNavsuggestTileList(int capacity) {
+        return new ArrayList<>(capacity);
+    }
+
+    @CalledByNative
+    private static void addOmniboxNavsuggestTile(
+            List<NavsuggestTile> tiles, String title, GURL url) {
+        tiles.add(new NavsuggestTile(title, url));
     }
 
     /**

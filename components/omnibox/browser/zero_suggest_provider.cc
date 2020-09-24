@@ -91,6 +91,9 @@ void LogOmniboxZeroSuggestRequest(
 
 // Relevance value to use if it was not set explicitly by the server.
 const int kDefaultZeroSuggestRelevance = 100;
+// The relevance score for navsuggest tiles.
+// Navsuggest tiles should be positioned below the Query Tiles object.
+const int kMostVisitedTilesRelevance = 1500;
 
 // Used for testing whether zero suggest is ever available.
 constexpr char kArbitraryInsecureUrlString[] = "http://www.google.com/";
@@ -477,16 +480,34 @@ void ZeroSuggestProvider::ConvertResultsToAutocompleteMatches() {
       return;
     }
     matches_.push_back(current_text_match_);
-    int relevance = 600;
-    const base::string16 current_query_string16(
-        base::ASCIIToUTF16(current_query_));
-    for (const auto& url : most_visited_urls_) {
-      SearchSuggestionParser::NavigationResult nav(
-          client()->GetSchemeClassifier(), url.url,
-          AutocompleteMatchType::NAVSUGGEST, {}, url.title, std::string(),
-          false, relevance, true, current_query_string16);
-      matches_.push_back(NavigationToMatch(nav));
-      --relevance;
+
+    // Short-circuit in case we have no MOST_VISITED urls to show.
+    if (most_visited_urls_.empty())
+      return;
+
+    if (base::FeatureList::IsEnabled(omnibox::kMostVisitedTiles)) {
+      AutocompleteMatch match =
+          NavigationToMatch(SearchSuggestionParser::NavigationResult(
+              client()->GetSchemeClassifier(), GURL::EmptyGURL(),
+              AutocompleteMatchType::TILE_NAVSUGGEST, {}, base::string16(),
+              std::string(), false, kMostVisitedTilesRelevance, true,
+              base::ASCIIToUTF16(current_query_)));
+      match.navsuggest_tiles.reserve(most_visited_urls_.size());
+
+      for (const auto& url : most_visited_urls_) {
+        match.navsuggest_tiles.push_back({url.url, url.title});
+      }
+      matches_.push_back(std::move(match));
+    } else {
+      int relevance = 600;
+      for (const auto& url : most_visited_urls_) {
+        SearchSuggestionParser::NavigationResult nav(
+            client()->GetSchemeClassifier(), url.url,
+            AutocompleteMatchType::NAVSUGGEST, {}, url.title, std::string(),
+            false, relevance, true, base::ASCIIToUTF16(current_query_));
+        matches_.push_back(NavigationToMatch(nav));
+        --relevance;
+      }
     }
     return;
   }

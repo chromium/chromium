@@ -615,6 +615,8 @@ AutocompleteControllerAndroid::BuildOmniboxSuggestion(
   ScopedJavaLocalRef<jobject> j_query_tiles =
       query_tiles::TileConversionBridge::CreateJavaTiles(env,
                                                          match.query_tiles);
+  ScopedJavaLocalRef<jobject> j_navsuggest_tiles =
+      BuildNavsuggestTilesList(env, match.navsuggest_tiles);
 
   BookmarkModel* bookmark_model =
       BookmarkModelFactory::GetForBrowserContext(profile_);
@@ -633,7 +635,27 @@ AutocompleteControllerAndroid::BuildOmniboxSuggestion(
       match.suggestion_group_id.value_or(
           SearchSuggestionParser::kNoSuggestionGroupId),
       j_query_tiles, ToJavaByteArray(env, clipboard_image_data),
-      match.has_tab_match);
+      match.has_tab_match, j_navsuggest_tiles);
+}
+
+base::android::ScopedJavaLocalRef<jobject>
+AutocompleteControllerAndroid::BuildNavsuggestTilesList(
+    JNIEnv* env,
+    const std::vector<AutocompleteMatch::NavsuggestTile>& tiles) {
+  if (tiles.empty())
+    return ScopedJavaLocalRef<jobject>();
+  ScopedJavaLocalRef<jobject> j_navsuggest_tiles =
+      Java_AutocompleteController_buildOmniboxNavsuggestTileList(env,
+                                                                 tiles.size());
+  for (const auto& tile : tiles) {
+    ScopedJavaLocalRef<jstring> title =
+        ConvertUTF16ToJavaString(env, tile.title);
+    ScopedJavaLocalRef<jobject> url =
+        url::GURLAndroid::FromNativeGURL(env, tile.url);
+    Java_AutocompleteController_addOmniboxNavsuggestTile(
+        env, j_navsuggest_tiles, title, url);
+  }
+  return j_navsuggest_tiles;
 }
 
 void AutocompleteControllerAndroid::PopulateOmniboxGroupsDetails(

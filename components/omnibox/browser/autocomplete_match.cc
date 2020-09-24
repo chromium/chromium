@@ -183,7 +183,8 @@ AutocompleteMatch::AutocompleteMatch(const AutocompleteMatch& match)
                        : nullptr),
       additional_info(match.additional_info),
       duplicate_matches(match.duplicate_matches),
-      query_tiles(match.query_tiles) {}
+      query_tiles(match.query_tiles),
+      navsuggest_tiles(match.navsuggest_tiles) {}
 
 AutocompleteMatch::AutocompleteMatch(AutocompleteMatch&& match) noexcept =
     default;
@@ -243,6 +244,7 @@ AutocompleteMatch& AutocompleteMatch::operator=(
   additional_info = match.additional_info;
   duplicate_matches = match.duplicate_matches;
   query_tiles = match.query_tiles;
+  navsuggest_tiles = match.navsuggest_tiles;
   return *this;
 }
 
@@ -264,6 +266,7 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
     case Type::PHYSICAL_WEB_DEPRECATED:
     case Type::PHYSICAL_WEB_OVERFLOW_DEPRECATED:
     case Type::TAB_SEARCH_DEPRECATED:
+    case Type::TILE_NAVSUGGEST:
       return omnibox::kPageIcon;
 
     case Type::SEARCH_SUGGEST: {
@@ -414,8 +417,9 @@ base::string16 AutocompleteMatch::GetWhyThisSuggestionText() const {
     case Type::PHYSICAL_WEB_DEPRECATED:
     case Type::PHYSICAL_WEB_OVERFLOW_DEPRECATED:
     case Type::TAB_SEARCH_DEPRECATED:
-    case Type::NUM_TYPES:
     case Type::TILE_SUGGESTION:
+    case Type::TILE_NAVSUGGEST:
+    case Type::NUM_TYPES:
       NOTREACHED();
       return base::string16();
   }
@@ -975,6 +979,8 @@ AutocompleteMatch::AsOmniboxEventResultType() const {
       return OmniboxEventProto::Suggestion::CLIPBOARD_IMAGE;
     case AutocompleteMatchType::TILE_SUGGESTION:
       return OmniboxEventProto::Suggestion::TILE_SUGGESTION;
+    case AutocompleteMatchType::TILE_NAVSUGGEST:
+      return OmniboxEventProto::Suggestion::NAVSUGGEST;
     case AutocompleteMatchType::VOICE_SUGGEST:
       // VOICE_SUGGEST matches are only used in Java and are not logged,
       // so we should never reach this case.

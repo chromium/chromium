@@ -134,6 +134,11 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer,
   base::android::ScopedJavaLocalRef<jobject> BuildOmniboxSuggestion(
       JNIEnv* env, const AutocompleteMatch& match);
 
+  // Construct Java list of NavsuggestTile objects.
+  base::android::ScopedJavaLocalRef<jobject> BuildNavsuggestTilesList(
+      JNIEnv* env,
+      const std::vector<AutocompleteMatch::NavsuggestTile>& tiles);
+
   // Construct Java GroupDetails map from supplied HeadersMap and expanded
   // state.
   void PopulateOmniboxGroupsDetails(

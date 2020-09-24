@@ -116,6 +116,7 @@ const gfx::VectorIcon& TypeToVectorIcon(AutocompleteMatchType::Type type) {
 
     case AutocompleteMatchType::EXTENSION_APP_DEPRECATED:
     case AutocompleteMatchType::TILE_SUGGESTION:
+    case AutocompleteMatchType::TILE_NAVSUGGEST:
     case AutocompleteMatchType::NUM_TYPES:
       NOTREACHED();
       break;
@@ -231,6 +232,7 @@ ash::SearchResultType OmniboxResult::GetSearchResultType() const {
     case AutocompleteMatchType::CLIPBOARD_IMAGE:
     case AutocompleteMatchType::HISTORY_BODY:
     case AutocompleteMatchType::TILE_SUGGESTION:
+    case AutocompleteMatchType::TILE_NAVSUGGEST:
     case AutocompleteMatchType::NUM_TYPES:
       // TODO(crbug.com/1028447): Add a NOTREACHED here once we are confident we
       // know all possible types for this result.

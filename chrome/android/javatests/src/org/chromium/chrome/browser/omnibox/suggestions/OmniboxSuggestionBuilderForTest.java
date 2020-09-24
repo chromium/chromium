@@ -44,6 +44,7 @@ public class OmniboxSuggestionBuilderForTest {
     private List<QueryTile> mQueryTiles;
     private byte[] mClipboardImageData;
     private boolean mHasTabMatch;
+    private List<OmniboxSuggestion.NavsuggestTile> mNavsuggestTiles;
 
     /**
      * Create a suggestion builder for a search suggestion.
@@ -88,7 +89,7 @@ public class OmniboxSuggestionBuilderForTest {
                 mDisplayText, mDisplayTextClassifications, mDescription,
                 mDescriptionClassifications, mAnswer, mFillIntoEdit, mUrl, mImageUrl,
                 mImageDominantColor, mIsStarred, mIsDeletable, mPostContentType, mPostData,
-                mGroupId, mQueryTiles, mClipboardImageData, mHasTabMatch);
+                mGroupId, mQueryTiles, mClipboardImageData, mHasTabMatch, mNavsuggestTiles);
     }
 
     /**

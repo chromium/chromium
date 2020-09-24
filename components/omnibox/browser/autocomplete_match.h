@@ -106,6 +106,15 @@ struct AutocompleteMatch {
     int style;
   };
 
+  // NavsuggestTiles are used specifically with TILE_NAVSUGGEST matches.
+  // This structure should describe only the specific details for individual
+  // tiles; all other properties are considered as shared and should be
+  // extracted from the encompassing AutocompleteMatch object.
+  struct NavsuggestTile {
+    GURL url;
+    base::string16 title;
+  };
+
   typedef std::vector<ACMatchClassification> ACMatchClassifications;
 
   // Type used by providers to attach additional, optional information to
@@ -641,6 +650,10 @@ struct AutocompleteMatch {
 
   // A list of query tiles to be shown as part of this match.
   std::vector<query_tiles::Tile> query_tiles;
+
+  // A list of navsuggest tiles to be shown as part of this match.
+  // This object is only populated for TILE_NAVSUGGEST AutocompleteMatches.
+  std::vector<NavsuggestTile> navsuggest_tiles;
 
   // So users of AutocompleteMatch can use the same ellipsis that it uses.
   static const char kEllipsis[];

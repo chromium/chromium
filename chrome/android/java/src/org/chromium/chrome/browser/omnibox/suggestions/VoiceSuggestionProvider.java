@@ -124,7 +124,7 @@ class VoiceSuggestionProvider {
         suggestions.add(new OmniboxSuggestion(OmniboxSuggestionType.VOICE_SUGGEST, null, true, 0, 1,
                 result.getMatch(), classifications, null, classifications, null, null, voiceUrl,
                 GURL.emptyGURL(), null, false, false, null, null, OmniboxSuggestion.INVALID_GROUP,
-                null, null, false));
+                null, null, false, null));
     }
 
     private boolean doesVoiceResultHaveMatch(

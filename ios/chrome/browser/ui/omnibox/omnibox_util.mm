@@ -59,6 +59,7 @@ OmniboxSuggestionIconType GetOmniboxSuggestionIconTypeForAutocompleteMatchType(
       return CALCULATOR;
     case AutocompleteMatchType::EXTENSION_APP_DEPRECATED:
     case AutocompleteMatchType::TILE_SUGGESTION:
+    case AutocompleteMatchType::TILE_NAVSUGGEST:
     case AutocompleteMatchType::NUM_TYPES:
       NOTREACHED();
       return DEFAULT_FAVICON;

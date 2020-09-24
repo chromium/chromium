@@ -73,6 +73,7 @@ struct AutocompleteMatchType {
     CLIPBOARD_TEXT              = 26,  // Text based on the clipboard.
     CLIPBOARD_IMAGE             = 27,  // An image based on the clipboard.
     TILE_SUGGESTION             = 28,  // A suggestion containing query tiles.
+    TILE_NAVSUGGEST             = 29,  // A suggestion with navigation tiles.
     NUM_TYPES,
   };
   // clang-format on
