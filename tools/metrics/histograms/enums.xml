@@ -41869,6 +41869,7 @@ from previous Chrome versions.
   <int value="-474806100" label="DataReductionProxyMainMenu:enabled"/>
   <int value="-474322576" label="disable-quick-unlock-pin"/>
   <int value="-473087416" label="DragTabsInTabletMode:enabled"/>
+  <int value="-473052940" label="ContextualSearchLegacyHttpPolicy:enabled"/>
   <int value="-472477695" label="AutofillSaveCardImprovedUserConsent:enabled"/>
   <int value="-472014137" label="HomepageTile:disabled"/>
   <int value="-472013317" label="WebRTC-H264WithOpenH264FFmpeg:disabled"/>
@@ -42149,6 +42150,7 @@ from previous Chrome versions.
       label="WebPaymentsPerMethodCanMakePaymentQuota:enabled"/>
   <int value="-174564579"
       label="ServiceWorkerImportedScriptUpdateCheck:enabled"/>
+  <int value="-174425466" label="ContextualSearchLegacyHttpPolicy:disabled"/>
   <int value="-174319545" label="BulkPrinters:enabled"/>
   <int value="-173268856" label="GesturePropertiesDBusService"/>
   <int value="-171232290" label="ListAllDisplayModes:disabled"/>

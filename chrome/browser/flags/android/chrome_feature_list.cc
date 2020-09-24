@@ -150,6 +150,7 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &kContextMenuSearchAndShopWithGoogleLens,
     &kContextualSearchDebug,
     &kContextualSearchDefinitions,
+    &kContextualSearchLegacyHttpPolicy,
     &kContextualSearchLongpressResolve,
     &kContextualSearchMlTapSuppression,
     &kContextualSearchSecondTap,
@@ -434,6 +435,9 @@ const base::Feature kContextualSearchDebug{"ContextualSearchDebug",
 
 const base::Feature kContextualSearchDefinitions{
     "ContextualSearchDefinitions", base::FEATURE_ENABLED_BY_DEFAULT};
+
+const base::Feature kContextualSearchLegacyHttpPolicy{
+    "ContextualSearchLegacyHttpPolicy", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kContextualSearchLongpressResolve{
     "ContextualSearchLongpressResolve", base::FEATURE_DISABLED_BY_DEFAULT};
