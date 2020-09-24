@@ -14,5 +14,6 @@ DEXDUMP=${dexdumps[0]}
 
 rm -f *.class
 javac *.java && \
-java -jar ../lib/r8.jar *.class --output . --lib ../../jdk/current --no-minification --pg-conf playground.pgcfg && \
+java -cp ../lib/r8.jar com.android.tools.r8.R8 *.class --output . --lib ../../jdk/current --no-minification --pg-conf playground.pgcfg && \
 $DEXDUMP -d classes.dex > dexdump.txt
+echo 'dexdump.txt updated.'
