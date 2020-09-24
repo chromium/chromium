@@ -31,7 +31,7 @@ def get_names(xml_files):
   histograms, had_errors = extract_histograms.ExtractHistogramsFromDom(doc)
   if had_errors:
     raise ValueError("Error parsing inputs.")
-  return extract_histograms.ExtractNames(histograms)
+  return set(extract_histograms.ExtractNames(histograms))
 
 
 def histogram_xml_files():
@@ -59,12 +59,16 @@ def get_diff(revision):
     # _that_ big.
     return StringIO(contents)
 
-  current_histogram_names = set(get_names(histogram_xml_files()))
-  prev_histogram_names = set(
-      get_names([
-          get_file_at_revision(os.path.normpath(p))
-          for p in histogram_paths.ALL_XMLS_RELATIVE
-      ]))
+  prev_files = []
+  for p in histogram_paths.ALL_XMLS_RELATIVE:
+    try:
+      prev_files.append(get_file_at_revision(os.path.normpath(p)))
+    except subprocess.CalledProcessError:
+      # Paths might not exist in the provided revision.
+      continue
+
+  current_histogram_names = get_names(histogram_xml_files())
+  prev_histogram_names = get_names(prev_files)
 
   added_names = sorted(list(current_histogram_names - prev_histogram_names))
   removed_names = sorted(list(prev_histogram_names - current_histogram_names))
