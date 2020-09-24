@@ -336,6 +336,7 @@ void ModulatorImplBase::ProduceCacheModuleTree(
 }
 
 // <specdef href="https://html.spec.whatwg.org/C/#run-a-module-script">
+// Spec with TLA: https://github.com/whatwg/html/pull/4352
 ModuleEvaluationResult ModulatorImplBase::ExecuteModule(
     ModuleScript* module_script,
     CaptureEvalErrorFlag capture_error) {
@@ -409,24 +410,23 @@ ModuleEvaluationResult ModulatorImplBase::ExecuteModule(
       result.GetPromise(script_state_)
           .Then(v8::Local<v8::Function>(), callback_failure);
     }
-    return result.Escape(&scope);
   } else {
     // <spec step="8">If evaluationStatus is an abrupt completion, then:</spec>
     if (result.IsException()) {
       // <spec step="8.1">If rethrow errors is true, rethrow the exception given
       // by evaluationStatus.[[Value]].</spec>
-      if (capture_error == CaptureEvalErrorFlag::kCapture)
-        return result.Escape(&scope);
-
-      // <spec step="8.2">Otherwise, report the exception given by
-      // evaluationStatus.[[Value]] for script.</spec>
-      ModuleRecord::ReportException(script_state_, result.GetException());
+      if (capture_error == CaptureEvalErrorFlag::kReport) {
+        // <spec step="8.2">Otherwise, report the exception given by
+        // evaluationStatus.[[Value]] for script.</spec>
+        ModuleRecord::ReportException(script_state_, result.GetException());
+      }
     }
-    // <spec step="8">Clean up after running script with settings.</spec>
-    // - Partially implement in MicrotaskScope destructor and the
-    // - ScriptState::EscapableScope destructor.
-    return ModuleEvaluationResult::Empty();
   }
+
+  // <spec step="8">Clean up after running script with settings.</spec>
+  // - Partially implement in MicrotaskScope destructor and the
+  // - ScriptState::EscapableScope destructor.
+  return result.Escape(&scope);
 }
 
 void ModulatorImplBase::Trace(Visitor* visitor) const {

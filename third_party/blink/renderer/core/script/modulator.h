@@ -203,10 +203,11 @@ class CORE_EXPORT Modulator : public GarbageCollected<Modulator>,
   // - When "rethrow errors" is to be set, use kCapture for EvaluateModule().
   // Then EvaluateModule() wraps exceptions in a ModuleEvaluationResult instead
   // of throwing it and the caller should rethrow the exception.
-  // - When "rethrow errors" is not to be set, use kReport. EvaluateModule()
-  // "report the error" inside it (if any), and returns either a
-  // ModuleEvaluationResult that is empty or contains the successful
-  // evaluation result.
+  // - When "rethrow errors" is not to be set, use kReport. If there is an error
+  // to throw, EvaluateModule() "report the error" inside it, and returns
+  // ModuleEvaluationResult wrapping the error. Otherwise, it returns either a
+  // ModuleEvaluationResult that is empty or contains the successful evaluation
+  // result.
   virtual ModuleEvaluationResult ExecuteModule(ModuleScript*,
                                                CaptureEvalErrorFlag) = 0;
 
