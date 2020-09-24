@@ -15,7 +15,6 @@ from gpu_tests import common_browser_args as cba
 from gpu_tests import gpu_integration_test
 from gpu_tests import path_util
 from gpu_tests.skia_gold import gpu_skia_gold_properties
-from gpu_tests.skia_gold import gpu_skia_gold_session
 from gpu_tests.skia_gold import gpu_skia_gold_session_manager
 
 from py_utils import cloud_storage
@@ -358,7 +357,8 @@ class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
     if not status:
       return
 
-    status_codes = gpu_skia_gold_session.GpuSkiaGoldSession.StatusCodes
+    status_codes =\
+        self.GetSkiaGoldSessionManager().GetSessionClass().StatusCodes
     if status == status_codes.AUTH_FAILURE:
       logging.error('Gold authentication failed with output %s', error)
     elif status == status_codes.INIT_FAILURE:

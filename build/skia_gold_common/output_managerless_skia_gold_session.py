@@ -1,18 +1,19 @@
 # Copyright 2020 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""GPU implementation of //testing/skia_gold_common/skia_gold_session.py."""
+"""Implementation of skia_gold_session.py without output managers.
+
+Diff output is instead stored in a directory and pointed to with file:// URLs.
+"""
 
 import os
 import subprocess
 import tempfile
 
-from gpu_tests import path_util
-path_util.AddDirToPathIfNeeded(path_util.GetChromiumSrcDir(), 'build')
 from skia_gold_common import skia_gold_session
 
 
-class GpuSkiaGoldSession(skia_gold_session.SkiaGoldSession):
+class OutputManagerlessSkiaGoldSession(skia_gold_session.SkiaGoldSession):
   def RunComparison(  # pylint: disable=too-many-arguments
       self,
       name,
@@ -23,7 +24,7 @@ class GpuSkiaGoldSession(skia_gold_session.SkiaGoldSession):
     # Passing True for the output manager is a bit of a hack, as we don't
     # actually need an output manager and just need to get past the truthy
     # check.
-    return super(GpuSkiaGoldSession, self).RunComparison(
+    return super(OutputManagerlessSkiaGoldSession, self).RunComparison(
         name=name,
         png_file=png_file,
         output_manager=output_manager,

@@ -1091,7 +1091,8 @@ class LocalDeviceInstrumentationTestRun(
         failure_log = (
             'Skia Gold reported failure for RenderTest %s. See '
             'RENDER_TESTS.md for how to fix this failure.' % render_name)
-        status_codes = gold_utils.AndroidSkiaGoldSession.StatusCodes
+        status_codes =\
+            self._skia_gold_session_manager.GetSessionClass().StatusCodes
         if status == status_codes.AUTH_FAILURE:
           _AppendToLog(results,
                        'Gold authentication failed with output %s' % error)

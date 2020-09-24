@@ -4,17 +4,13 @@
 """GPU impl of //testing/skia_gold_common/skia_gold_session_manager.py."""
 
 from gpu_tests import path_util
-from gpu_tests.skia_gold import gpu_skia_gold_session
 
 path_util.AddDirToPathIfNeeded(path_util.GetChromiumSrcDir(), 'build')
+from skia_gold_common import output_managerless_skia_gold_session
 from skia_gold_common import skia_gold_session_manager as sgsm
 
 
 class GpuSkiaGoldSessionManager(sgsm.SkiaGoldSessionManager):
   @staticmethod
-  def _GetDefaultInstance():
-    return 'chrome'
-
-  @staticmethod
-  def _GetSessionClass():
-    return gpu_skia_gold_session.GpuSkiaGoldSession
+  def GetSessionClass():
+    return output_managerless_skia_gold_session.OutputManagerlessSkiaGoldSession

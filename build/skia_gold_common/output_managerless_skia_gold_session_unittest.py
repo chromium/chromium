@@ -11,13 +11,10 @@ import unittest
 
 import mock
 
-from gpu_tests import path_util
-from gpu_tests.skia_gold import gpu_skia_gold_properties
-from gpu_tests.skia_gold import gpu_skia_gold_session
-
 from pyfakefs import fake_filesystem_unittest
 
-path_util.AddDirToPathIfNeeded(path_util.GetChromiumSrcDir(), 'build')
+from skia_gold_common import output_managerless_skia_gold_session as omsgs
+from skia_gold_common import skia_gold_properties
 from skia_gold_common import unittest_utils
 
 createSkiaGoldArgs = unittest_utils.createSkiaGoldArgs
@@ -34,17 +31,17 @@ class GpuSkiaGoldSessionDiffTest(fake_filesystem_unittest.TestCase):
     self._working_dir = tempfile.mkdtemp()
     self._json_keys = tempfile.NamedTemporaryFile(delete=False).name
 
-  @mock.patch.object(gpu_skia_gold_session.GpuSkiaGoldSession,
+  @mock.patch.object(omsgs.OutputManagerlessSkiaGoldSession,
                      '_RunCmdForRcAndOutput')
   def test_commandCommonArgs(self, cmd_mock):
     cmd_mock.return_value = (None, None)
     args = createSkiaGoldArgs(git_revision='a', local_pixel_tests=False)
-    sgp = gpu_skia_gold_properties.GpuSkiaGoldProperties(args)
-    session = gpu_skia_gold_session.GpuSkiaGoldSession(self._working_dir,
-                                                       sgp,
-                                                       self._json_keys,
-                                                       'corpus',
-                                                       instance='instance')
+    sgp = skia_gold_properties.SkiaGoldProperties(args)
+    session = omsgs.OutputManagerlessSkiaGoldSession(self._working_dir,
+                                                     sgp,
+                                                     self._json_keys,
+                                                     'corpus',
+                                                     instance='instance')
     session.Diff('name', 'png_file', None)
     call_args = cmd_mock.call_args[0][0]
     self.assertIn('diff', call_args)
@@ -67,7 +64,8 @@ class GpuSkiaGoldSessionDiffTest(fake_filesystem_unittest.TestCase):
     self.assertNotIn(self._working_dir, call_args[i + 1])
 
 
-class GpuSkiaGoldSessionStoreDiffLinksTest(fake_filesystem_unittest.TestCase):
+class OutputManagerlessSkiaGoldSessionStoreDiffLinksTest(
+    fake_filesystem_unittest.TestCase):
   def setUp(self):
     self.setUpPyfakefs()
     self._working_dir = tempfile.mkdtemp()
@@ -75,10 +73,10 @@ class GpuSkiaGoldSessionStoreDiffLinksTest(fake_filesystem_unittest.TestCase):
 
   def test_outputManagerNotNeeded(self):
     args = createSkiaGoldArgs(git_revision='a', local_pixel_tests=True)
-    sgp = gpu_skia_gold_properties.GpuSkiaGoldProperties(args)
-    session = gpu_skia_gold_session.GpuSkiaGoldSession(self._working_dir, sgp,
-                                                       self._json_keys, None,
-                                                       None)
+    sgp = skia_gold_properties.SkiaGoldProperties(args)
+    session = omsgs.OutputManagerlessSkiaGoldSession(self._working_dir, sgp,
+                                                     self._json_keys, None,
+                                                     None)
     input_filepath = os.path.join(self._working_dir, 'input-inputhash.png')
     with open(input_filepath, 'w') as f:
       f.write('')

@@ -68,11 +68,7 @@ class AndroidSkiaGoldSession(skia_gold_session.SkiaGoldSession):
 class AndroidSkiaGoldSessionManager(
     skia_gold_session_manager.SkiaGoldSessionManager):
   @staticmethod
-  def _GetDefaultInstance():
-    return 'chrome'
-
-  @staticmethod
-  def _GetSessionClass():
+  def GetSessionClass():
     return AndroidSkiaGoldSession
 
 

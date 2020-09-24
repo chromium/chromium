@@ -52,8 +52,8 @@ class SkiaGoldSessionManager(object):
     if not session:
       working_dir = tempfile.mkdtemp(dir=self._working_dir)
       keys_file = _GetKeysAsJson(keys_input, working_dir)
-      session = self._GetSessionClass()(working_dir, self._gold_properties,
-                                        keys_file, corpus, instance)
+      session = self.GetSessionClass()(working_dir, self._gold_properties,
+                                       keys_file, corpus, instance)
       self._sessions[instance][corpus][keys_string] = session
     return session
 
@@ -64,10 +64,10 @@ class SkiaGoldSessionManager(object):
     Returns:
       A string containing the default instance.
     """
-    raise NotImplementedError
+    return 'chrome'
 
   @staticmethod
-  def _GetSessionClass():
+  def GetSessionClass():
     """Gets the SkiaGoldSession class to use for session creation.
 
     Returns:
