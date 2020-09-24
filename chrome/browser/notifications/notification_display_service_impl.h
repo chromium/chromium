@@ -14,6 +14,7 @@
 #include "base/optional.h"
 #include "base/strings/string16.h"
 #include "chrome/browser/notifications/notification_common.h"
+#include "chrome/browser/notifications/notification_display_queue.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/browser/notifications/notification_platform_bridge_delegator.h"
@@ -92,9 +93,24 @@ class NotificationDisplayServiceImpl : public NotificationDisplayService {
                                     const base::Optional<bool>& by_user,
                                     Profile* profile);
 
+  // Sets the list of |blockers| to be used by the |notification_queue_|. Only
+  // used in tests.
+  void SetBlockersForTesting(
+      NotificationDisplayQueue::NotificationBlockers blockers);
+
+  // Sets the platform bridge delegator for tests.
+  void SetNotificationPlatformBridgeDelegatorForTesting(
+      std::unique_ptr<NotificationPlatformBridgeDelegator> bridge_delegator);
+
  private:
   // Called when the NotificationPlatformBridgeDelegator has been initialized.
   void OnNotificationPlatformBridgeReady();
+
+  // Called after getting displayed notifications from the bridge so we can add
+  // any currently queued notification ids.
+  void OnGetDisplayed(DisplayedNotificationsCallback callback,
+                      std::set<std::string> notification_ids,
+                      bool supports_synchronization);
 
   Profile* profile_;
 
@@ -112,6 +128,10 @@ class NotificationDisplayServiceImpl : public NotificationDisplayService {
   // Map containing the notification handlers responsible for processing events.
   std::map<NotificationHandler::Type, std::unique_ptr<NotificationHandler>>
       notification_handlers_;
+
+  // Notification queue that holds on to notifications instead of displaying
+  // them if certain blockers are temporarily active.
+  NotificationDisplayQueue notification_queue_{this};
 
   base::ObserverList<Observer> observers_;
 

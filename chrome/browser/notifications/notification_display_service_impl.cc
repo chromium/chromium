@@ -196,8 +196,13 @@ void NotificationDisplayServiceImpl::Display(
   for (auto& observer : observers_)
     observer.OnNotificationDisplayed(notification, metadata.get());
 
-  bridge_delegator_->Display(notification_type, notification,
-                             std::move(metadata));
+  if (notification_queue_.ShouldEnqueueNotifications()) {
+    notification_queue_.EnqueueNotification(notification_type, notification,
+                                            std::move(metadata));
+  } else {
+    bridge_delegator_->Display(notification_type, notification,
+                               std::move(metadata));
+  }
 
   NotificationHandler* handler = GetNotificationHandler(notification_type);
   if (handler)
@@ -216,6 +221,8 @@ void NotificationDisplayServiceImpl::Close(
     return;
   }
 
+  notification_queue_.RemoveQueuedNotification(notification_id);
+
   bridge_delegator_->Close(notification_type, notification_id);
 }
 
@@ -228,7 +235,9 @@ void NotificationDisplayServiceImpl::GetDisplayed(
     return;
   }
 
-  bridge_delegator_->GetDisplayed(std::move(callback));
+  bridge_delegator_->GetDisplayed(
+      base::BindOnce(&NotificationDisplayServiceImpl::OnGetDisplayed,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void NotificationDisplayServiceImpl::AddObserver(Observer* observer) {
@@ -264,6 +273,18 @@ void NotificationDisplayServiceImpl::ProfileLoadedCallback(
                                                 action_index, reply, by_user);
 }
 
+void NotificationDisplayServiceImpl::SetBlockersForTesting(
+    NotificationDisplayQueue::NotificationBlockers blockers) {
+  notification_queue_.SetNotificationBlockers(std::move(blockers));
+}
+
+void NotificationDisplayServiceImpl::
+    SetNotificationPlatformBridgeDelegatorForTesting(
+        std::unique_ptr<NotificationPlatformBridgeDelegator> bridge_delegator) {
+  bridge_delegator_ = std::move(bridge_delegator);
+  OnNotificationPlatformBridgeReady();
+}
+
 void NotificationDisplayServiceImpl::OnNotificationPlatformBridgeReady() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   bridge_delegator_initialized_ = true;
@@ -273,4 +294,17 @@ void NotificationDisplayServiceImpl::OnNotificationPlatformBridgeReady() {
     std::move(actions_.front()).Run();
     actions_.pop();
   }
+}
+
+void NotificationDisplayServiceImpl::OnGetDisplayed(
+    DisplayedNotificationsCallback callback,
+    std::set<std::string> notification_ids,
+    bool supports_synchronization) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  std::set<std::string> queued = notification_queue_.GetQueuedNotificationIds();
+  notification_ids.insert(queued.begin(), queued.end());
+
+  std::move(callback).Run(std::move(notification_ids),
+                          supports_synchronization);
 }

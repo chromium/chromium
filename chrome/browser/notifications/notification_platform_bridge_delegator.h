@@ -35,18 +35,18 @@ class NotificationPlatformBridgeDelegator {
       const NotificationPlatformBridgeDelegator&) = delete;
   NotificationPlatformBridgeDelegator& operator=(
       const NotificationPlatformBridgeDelegator&) = delete;
-  ~NotificationPlatformBridgeDelegator();
+  virtual ~NotificationPlatformBridgeDelegator();
 
-  void Display(NotificationHandler::Type notification_type,
-               const message_center::Notification& notification,
-               std::unique_ptr<NotificationCommon::Metadata> metadata);
+  virtual void Display(NotificationHandler::Type notification_type,
+                       const message_center::Notification& notification,
+                       std::unique_ptr<NotificationCommon::Metadata> metadata);
 
-  void Close(NotificationHandler::Type notification_type,
-             const std::string& notification_id);
+  virtual void Close(NotificationHandler::Type notification_type,
+                     const std::string& notification_id);
 
-  void GetDisplayed(GetDisplayedNotificationsCallback callback) const;
+  virtual void GetDisplayed(GetDisplayedNotificationsCallback callback) const;
 
-  void DisplayServiceShutDown();
+  virtual void DisplayServiceShutDown();
 
  private:
   // Returns the NotificationPlatformBridge to use for |type|. This method is
