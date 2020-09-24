@@ -40,6 +40,13 @@ void TabMenuModel::Build(TabStripModel* tab_strip, int index) {
   int num_affected_tabs = affected_indices.size();
   AddItemWithStringId(TabStripModel::CommandNewTabToRight,
                       IDS_TAB_CXMENU_NEWTABTORIGHT);
+  if (base::FeatureList::IsEnabled(features::kReadLater)) {
+    AddItem(TabStripModel::CommandAddToReadLater,
+            l10n_util::GetPluralStringFUTF16(IDS_TAB_CXMENU_READ_LATER,
+                                             num_affected_tabs));
+    SetEnabledAt(GetItemCount() - 1,
+                 tab_strip->IsReadLaterSupportedForAny(affected_indices));
+  }
   if (base::FeatureList::IsEnabled(features::kTabGroups)) {
     if (ExistingTabGroupSubMenuModel::ShouldShowSubmenu(tab_strip, index)) {
       // Create submenu with existing groups

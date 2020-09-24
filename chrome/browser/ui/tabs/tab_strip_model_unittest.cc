@@ -21,11 +21,19 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/read_later/read_later_test_utils.h"
+#include "chrome/browser/ui/read_later/reading_list_model_factory.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
+#include "chrome/browser/ui/ui_features.h"
+#include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/reading_list/core/reading_list_model.h"
+#include "components/reading_list/core/reading_list_model_observer.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
@@ -4112,4 +4120,62 @@ TEST_F(TabStripModelTest, MoveTabsToNewWindow) {
   EXPECT_EQ(delegate.move_calls().back(), 0);
 
   strip.CloseAllTabs();
+}
+
+class TabStripModelTestWithReadLaterEnabled : public BrowserWithTestWindowTest {
+ public:
+  TabStripModelTestWithReadLaterEnabled() {
+    feature_list_.InitAndEnableFeature(features::kReadLater);
+  }
+  TabStripModelTestWithReadLaterEnabled(
+      const TabStripModelTestWithReadLaterEnabled&) = delete;
+  TabStripModelTestWithReadLaterEnabled& operator=(
+      const TabStripModelTestWithReadLaterEnabled&) = delete;
+  ~TabStripModelTestWithReadLaterEnabled() override = default;
+
+  void SetUp() override {
+    BrowserWithTestWindowTest::SetUp();
+    BrowserList::SetLastActive(browser());
+    AddTabWithTitle(browser(), GURL("http://foo/1"), "Tab 1");
+    AddTabWithTitle(browser(), GURL("http://foo/2"), "Tab 2");
+  }
+
+  void TearDown() override {
+    browser()->tab_strip_model()->CloseAllTabs();
+    BrowserWithTestWindowTest::TearDown();
+  }
+
+  TestingProfile::TestingFactories GetTestingFactories() override {
+    return {{ReadingListModelFactory::GetInstance(),
+             ReadingListModelFactory::GetDefaultFactoryForTesting()}};
+  }
+
+ protected:
+  void AddTabWithTitle(Browser* browser,
+                       const GURL url,
+                       const std::string title) {
+    AddTab(browser, url);
+    NavigateAndCommitActiveTabWithTitle(browser, url,
+                                        base::ASCIIToUTF16(title));
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(TabStripModelTestWithReadLaterEnabled, AddToReadLater) {
+  ReadingListModel* reading_list_model =
+      ReadingListModelFactory::GetForBrowserContext(profile());
+  test::ReadingListLoadObserver(reading_list_model).Wait();
+
+  TabStripModel* tabstrip = browser()->tab_strip_model();
+  EXPECT_EQ(tabstrip->count(), 2);
+
+  // Add first tab to Read Later and verify it has been added and the tab has
+  // been closed.
+  GURL expected_url = tabstrip->GetWebContentsAt(0)->GetURL();
+  tabstrip->AddToReadLater({0});
+  EXPECT_EQ(reading_list_model->size(), 1u);
+  EXPECT_NE(reading_list_model->GetEntryByURL(expected_url), nullptr);
+  EXPECT_EQ(tabstrip->count(), 1);
 }

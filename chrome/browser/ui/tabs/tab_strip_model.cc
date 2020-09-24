@@ -16,6 +16,7 @@
 #include "base/numerics/ranges.h"
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -26,8 +27,10 @@
 #include "chrome/browser/resource_coordinator/tab_helper.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_desktop_util.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
+#include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/read_later/reading_list_model_factory.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
@@ -40,6 +43,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/reading_list/core/reading_list_model.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
@@ -1119,6 +1123,25 @@ void TabStripModel::RemoveFromGroup(const std::vector<int>& indices) {
   }
 }
 
+bool TabStripModel::IsReadLaterSupportedForAny(const std::vector<int> indices) {
+  ReadingListModel* model =
+      ReadingListModelFactory::GetForBrowserContext(profile_);
+  if (!model || !model->loaded())
+    return false;
+  for (int index : indices) {
+    if (model->IsUrlSupported(
+            chrome::GetURLToBookmark(GetWebContentsAt(index))))
+      return true;
+  }
+  return false;
+}
+
+void TabStripModel::AddToReadLater(const std::vector<int>& indices) {
+  ReentrancyCheck reentrancy_check(&reentrancy_guard_);
+
+  AddToReadLaterImpl(indices);
+}
+
 void TabStripModel::CreateTabGroup(const tab_groups::TabGroupId& group) {
   TabGroupChange change(group, TabGroupChange::kCreated);
   for (auto& observer : observers_)
@@ -1212,6 +1235,9 @@ bool TabStripModel::IsContextMenuCommandEnabled(
       return true;
 
     case CommandSendTabToSelfSingleTarget:
+      return true;
+
+    case CommandAddToReadLater:
       return true;
 
     case CommandAddToNewGroup:
@@ -1364,6 +1390,11 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
             UserMetricsAction("SoundContentSetting.UnmuteBy.TabStrip"));
       }
       SetSitesMuted(GetIndicesForCommand(context_index), mute);
+      break;
+    }
+
+    case CommandAddToReadLater: {
+      AddToReadLater(GetIndicesForCommand(context_index));
       break;
     }
 
@@ -2054,6 +2085,28 @@ void TabStripModel::MoveAndSetGroup(
 
   if (index != new_index)
     MoveWebContentsAtImpl(index, new_index, false);
+}
+
+void TabStripModel::AddToReadLaterImpl(const std::vector<int>& indices) {
+  ReadingListModel* model =
+      ReadingListModelFactory::GetForBrowserContext(profile_);
+  std::vector<WebContents*> closing_contents;
+  if (!model || !model->loaded())
+    return;
+
+  for (int index : indices) {
+    WebContents* contents = GetWebContentsAt(index);
+    GURL url;
+    base::string16 title;
+    chrome::GetURLAndTitleToBookmark(contents, &url, &title);
+    if (model->IsUrlSupported(url)) {
+      model->AddEntry(url, base::UTF16ToUTF8(title),
+                      reading_list::EntrySource::ADDED_VIA_CURRENT_APP);
+      closing_contents.push_back(contents);
+    }
+  }
+  InternalCloseTabs(closing_contents,
+                    CLOSE_CREATE_HISTORICAL_TAB | CLOSE_USER_GESTURE);
 }
 
 base::Optional<tab_groups::TabGroupId> TabStripModel::UngroupTab(int index) {
