@@ -21,6 +21,9 @@ std::unique_ptr<PaymentApp>
 AutofillPaymentAppFactory::ConvertCardToPaymentAppIfSupportedNetwork(
     const autofill::CreditCard& card,
     base::WeakPtr<Delegate> delegate) {
+  DCHECK(delegate);
+  DCHECK(delegate->GetSpec());
+
   std::string basic_card_network =
       autofill::data_util::GetPaymentRequestData(card.network())
           .basic_card_issuer_network;
@@ -46,6 +49,11 @@ AutofillPaymentAppFactory::AutofillPaymentAppFactory()
 AutofillPaymentAppFactory::~AutofillPaymentAppFactory() = default;
 
 void AutofillPaymentAppFactory::Create(base::WeakPtr<Delegate> delegate) {
+  DCHECK(delegate);
+
+  if (!delegate->GetSpec())
+    return;
+
   // No need to create autofill payment apps if native app creation is skipped
   // because autofill payment apps are created completely by the Java factory.
   if (delegate->SkipCreatingNativePaymentApps()) {

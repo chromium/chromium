@@ -48,7 +48,7 @@ class ServiceWorkerPaymentAppCreator {
       content::InstalledPaymentAppsFinder::PaymentApps apps,
       ServiceWorkerPaymentAppFinder::InstallablePaymentApps installable_apps,
       const std::string& error_message) {
-    if (!delegate_) {
+    if (!delegate_ || !delegate_->GetSpec()) {
       FinishAndCleanup();
       return;
     }
@@ -127,6 +127,8 @@ class ServiceWorkerPaymentAppCreator {
       const content::SupportedDelegations& supported_delegations,
       const base::WeakPtr<PaymentAppFactory::Delegate>& delegate,
       bool has_app_store_billing_method) const {
+    DCHECK(delegate);
+    DCHECK(delegate->GetSpec());
     return (base::FeatureList::IsEnabled(features::kEnforceFullDelegation) ||
             has_app_store_billing_method) &&
            !supported_delegations.ProvidesAll(

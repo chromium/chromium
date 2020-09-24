@@ -26,11 +26,10 @@ class ButtonListener;
 class ImageView;
 class Label;
 class View;
-}
+}  // namespace views
 
 namespace payments {
 
-class PaymentOptionsProvider;
 class PaymentsProfileComparator;
 enum class PaymentShippingType;
 
@@ -117,7 +116,9 @@ std::unique_ptr<views::View> GetContactInfoLabel(
     AddressStyleType type,
     const std::string& locale,
     const autofill::AutofillProfile& profile,
-    const PaymentOptionsProvider& options,
+    bool request_payer_name,
+    bool request_payer_email,
+    bool request_payer_phone,
     const PaymentsProfileComparator& comp,
     base::string16* accessible_content);
 

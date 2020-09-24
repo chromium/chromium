@@ -199,7 +199,7 @@ PaymentRequestSheetController::PaymentRequestSheetController(
     PaymentRequestSpec* spec,
     PaymentRequestState* state,
     PaymentRequestDialogView* dialog)
-    : spec_(spec), state_(state), dialog_(dialog) {}
+    : spec_(spec->GetWeakPtr()), state_(state), dialog_(dialog) {}
 
 PaymentRequestSheetController::~PaymentRequestSheetController() = default;
 

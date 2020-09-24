@@ -33,7 +33,7 @@ ServiceWorkerPaymentApp::ServiceWorkerPaymentApp(
     content::WebContents* web_contents,
     const GURL& top_origin,
     const GURL& frame_origin,
-    const PaymentRequestSpec* spec,
+    PaymentRequestSpec* spec,
     std::unique_ptr<content::StoredPaymentApp> stored_payment_app_info,
     bool is_incognito,
     const base::RepeatingClosure& show_processing_spinner)
@@ -41,7 +41,7 @@ ServiceWorkerPaymentApp::ServiceWorkerPaymentApp(
       content::WebContentsObserver(web_contents),
       top_origin_(top_origin),
       frame_origin_(frame_origin),
-      spec_(spec),
+      spec_(spec->GetWeakPtr()),
       stored_payment_app_info_(std::move(stored_payment_app_info)),
       delegate_(nullptr),
       is_incognito_(is_incognito),
@@ -52,7 +52,6 @@ ServiceWorkerPaymentApp::ServiceWorkerPaymentApp(
   DCHECK(web_contents);
   DCHECK(top_origin_.is_valid());
   DCHECK(frame_origin_.is_valid());
-  DCHECK(spec_);
 
   app_method_names_.insert(stored_payment_app_info_->enabled_methods.begin(),
                            stored_payment_app_info_->enabled_methods.end());
@@ -64,7 +63,7 @@ ServiceWorkerPaymentApp::ServiceWorkerPaymentApp(
     content::WebContents* web_contents,
     const GURL& top_origin,
     const GURL& frame_origin,
-    const PaymentRequestSpec* spec,
+    PaymentRequestSpec* spec,
     std::unique_ptr<WebAppInstallationInfo> installable_payment_app_info,
     const std::string& enabled_method,
     bool is_incognito,
@@ -73,7 +72,7 @@ ServiceWorkerPaymentApp::ServiceWorkerPaymentApp(
       content::WebContentsObserver(web_contents),
       top_origin_(top_origin),
       frame_origin_(frame_origin),
-      spec_(spec),
+      spec_(spec->GetWeakPtr()),
       delegate_(nullptr),
       is_incognito_(is_incognito),
       show_processing_spinner_(show_processing_spinner),
@@ -85,7 +84,6 @@ ServiceWorkerPaymentApp::ServiceWorkerPaymentApp(
   DCHECK(web_contents);
   DCHECK(top_origin_.is_valid());
   DCHECK(frame_origin_.is_valid());
-  DCHECK(spec_);
 
   app_method_names_.insert(installable_enabled_method_);
 }
@@ -101,6 +99,9 @@ ServiceWorkerPaymentApp::~ServiceWorkerPaymentApp() {
 
 void ServiceWorkerPaymentApp::ValidateCanMakePayment(
     ValidateCanMakePaymentCallback callback) {
+  if (!spec_)
+    return;
+
   // Returns true for payment app that needs installation.
   if (needs_installation_) {
     OnCanMakePaymentEventSkipped(std::move(callback));
@@ -145,6 +146,9 @@ void ServiceWorkerPaymentApp::ValidateCanMakePayment(
 
 mojom::CanMakePaymentEventDataPtr
 ServiceWorkerPaymentApp::CreateCanMakePaymentEventData() {
+  if (!spec_)
+    return nullptr;
+
   std::set<std::string> requested_url_methods;
   for (const auto& method : spec_->payment_method_identifiers_set()) {
     GURL url_method(method);
@@ -258,6 +262,9 @@ mojom::PaymentRequestEventDataPtr
 ServiceWorkerPaymentApp::CreatePaymentRequestEventData() {
   mojom::PaymentRequestEventDataPtr event_data =
       mojom::PaymentRequestEventData::New();
+
+  if (!spec_)
+    return event_data;
 
   event_data->top_origin = top_origin_;
   event_data->payment_request_origin = frame_origin_;
@@ -518,7 +525,7 @@ void ServiceWorkerPaymentApp::DisableShowingOwnUI() {
 }
 
 bool ServiceWorkerPaymentApp::HandlesShippingAddress() const {
-  if (!spec_->request_shipping())
+  if (!spec_ || !spec_->request_shipping())
     return false;
 
   return needs_installation_
@@ -527,7 +534,7 @@ bool ServiceWorkerPaymentApp::HandlesShippingAddress() const {
 }
 
 bool ServiceWorkerPaymentApp::HandlesPayerName() const {
-  if (!spec_->request_payer_name())
+  if (!spec_ || !spec_->request_payer_name())
     return false;
 
   return needs_installation_
@@ -536,7 +543,7 @@ bool ServiceWorkerPaymentApp::HandlesPayerName() const {
 }
 
 bool ServiceWorkerPaymentApp::HandlesPayerEmail() const {
-  if (!spec_->request_payer_email())
+  if (!spec_ || !spec_->request_payer_email())
     return false;
 
   return needs_installation_
@@ -545,7 +552,7 @@ bool ServiceWorkerPaymentApp::HandlesPayerEmail() const {
 }
 
 bool ServiceWorkerPaymentApp::HandlesPayerPhone() const {
-  if (!spec_->request_payer_phone())
+  if (!spec_ || !spec_->request_payer_phone())
     return false;
 
   return needs_installation_
@@ -602,7 +609,7 @@ void ServiceWorkerPaymentApp::OnPaymentDetailsNotUpdated() {
 void ServiceWorkerPaymentApp::AbortPaymentApp(
     base::OnceCallback<void(bool)> abort_callback) {
   auto* payment_app_provider = GetPaymentAppProvider();
-  if (!payment_app_provider)
+  if (!spec_ || !payment_app_provider)
     return;
 
   payment_app_provider->AbortPayment(

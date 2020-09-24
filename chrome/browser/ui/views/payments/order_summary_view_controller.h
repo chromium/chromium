@@ -25,6 +25,7 @@ class OrderSummaryViewController : public PaymentRequestSheetController,
                                    public PaymentRequestState::Observer {
  public:
   // Does not take ownership of the arguments, which should outlive this object.
+  // The `spec` and `state` parameters should not be null.
   OrderSummaryViewController(PaymentRequestSpec* spec,
                              PaymentRequestState* state,
                              PaymentRequestDialogView* dialog);
