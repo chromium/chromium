@@ -10,8 +10,8 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
-#include "components/autofill/core/common/password_form.h"
 #include "components/password_manager/core/browser/import/csv_password_sequence.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace password_manager {
@@ -52,7 +52,7 @@ class PasswordImporterTest : public testing::Test {
   }
 
   const PasswordImporter::Result& result() { return result_; }
-  const std::vector<autofill::PasswordForm>& imported_passwords() {
+  const std::vector<PasswordForm>& imported_passwords() {
     return imported_passwords_;
   }
 
@@ -64,7 +64,7 @@ class PasswordImporterTest : public testing::Test {
 
   bool callback_called_ = false;
   PasswordImporter::Result result_ = PasswordImporter::NUM_IMPORT_RESULTS;
-  std::vector<autofill::PasswordForm> imported_passwords_;
+  std::vector<PasswordForm> imported_passwords_;
 
   DISALLOW_COPY_AND_ASSIGN(PasswordImporterTest);
 };

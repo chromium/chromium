@@ -15,8 +15,6 @@
 
 namespace password_manager {
 
-using ::autofill::PasswordForm;
-
 using Label = CSVPassword::Label;
 
 TEST(CSVPasswordIteratorTest, Operations) {

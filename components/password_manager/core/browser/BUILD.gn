@@ -379,10 +379,13 @@ static_library("csv") {
     "import/csv_password_sequence.cc",
     "import/csv_password_sequence.h",
   ]
+  public_deps = [
+    ":password_form",
+    "//base",
+  ]
+
   deps = [
     ":affiliation",
-    "//base",
-    "//components/autofill/core/common",
     "//url",
   ]
 }
@@ -397,9 +400,7 @@ source_set("csv_unittests") {
   ]
   deps = [
     ":csv",
-    "//base",
     "//base/test:test_support",
-    "//components/autofill/core/common",
     "//testing/gmock",
     "//testing/gtest",
     "//url",

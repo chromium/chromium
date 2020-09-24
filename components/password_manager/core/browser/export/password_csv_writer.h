@@ -11,10 +11,7 @@
 #include <vector>
 
 #include "base/macros.h"
-
-namespace autofill {
-struct PasswordForm;
-}
+#include "components/password_manager/core/browser/password_form_forward.h"
 
 namespace password_manager {
 
@@ -25,13 +22,13 @@ class PasswordCSVWriter {
   // Creates a CSV representation of the forms stored in |password|. Note that
   // this loses all the metadata except for the origin, username and password.
   static std::string SerializePasswords(
-      const std::vector<std::unique_ptr<autofill::PasswordForm>>& passwords);
+      const std::vector<std::unique_ptr<PasswordForm>>& passwords);
 
  private:
   // Converts |form| into a single line in the CSV format. Metadata are lost,
   // see SerializePasswords.
   static std::map<std::string, std::string> PasswordFormToRecord(
-      const autofill::PasswordForm& form);
+      const PasswordForm& form);
 
   DISALLOW_IMPLICIT_CONSTRUCTORS(PasswordCSVWriter);
 };

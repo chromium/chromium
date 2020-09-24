@@ -9,7 +9,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/strings/string_piece.h"
-#include "components/autofill/core/common/password_form.h"
+#include "components/password_manager/core/browser/password_form.h"
 
 namespace password_manager {
 
@@ -36,7 +36,7 @@ class CSVPassword {
 
   // Returns whether the associated CSV row can be parsed successfully. If
   // returning success, it also stores the parsed result in |*form|.
-  Status Parse(autofill::PasswordForm* form) const;
+  Status Parse(PasswordForm* form) const;
   // TryParse() returns the same value as Parse(). However, TryParse() does not
   // attempt to create and store the corresponding PasswordForm anywhere.
   // Therefore TryParse() is faster than Parse() and a better choice for only
@@ -44,11 +44,11 @@ class CSVPassword {
   Status TryParse() const;
   // Convenience wrapper around Parse() for cases known to be correctly
   // parseable.
-  autofill::PasswordForm ParseValid() const;
+  PasswordForm ParseValid() const;
 
  private:
   // ParseImpl is the common base of Parse() and TryParse().
-  Status ParseImpl(autofill::PasswordForm* form) const;
+  Status ParseImpl(PasswordForm* form) const;
 
   // The members |map_| and |row_| are only modified in constructor or
   // operator=().

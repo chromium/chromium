@@ -15,11 +15,13 @@
 #include "base/task/post_task.h"
 #include "base/task_runner_util.h"
 #include "build/build_config.h"
-#include "components/autofill/core/common/password_form.h"
 #include "components/password_manager/core/browser/export/password_csv_writer.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_list_sorter.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/ui/credential_provider_interface.h"
+
+namespace password_manager {
 
 namespace {
 
@@ -36,8 +38,8 @@ base::LazyThreadPoolSingleThreadTaskRunner g_task_runner =
 // A wrapper for |write_function|, which can be bound and keep a copy of its
 // data on the closure.
 bool DoWriteOnTaskRunner(
-    password_manager::PasswordManagerExporter::WriteCallback write_function,
-    password_manager::PasswordManagerExporter::SetPosixFilePermissionsCallback
+    PasswordManagerExporter::WriteCallback write_function,
+    PasswordManagerExporter::SetPosixFilePermissionsCallback
         set_permissions_function,
     const base::FilePath& destination,
     const std::string& serialised) {
@@ -57,28 +59,23 @@ bool DefaultDeleteFunction(const base::FilePath& file) {
   return base::DeleteFile(file);
 }
 
-std::vector<std::unique_ptr<autofill::PasswordForm>>
-DeduplicatePasswordsAcrossStores(
-    std::vector<std::unique_ptr<autofill::PasswordForm>> passwords) {
+std::vector<std::unique_ptr<PasswordForm>> DeduplicatePasswordsAcrossStores(
+    std::vector<std::unique_ptr<PasswordForm>> passwords) {
   auto get_sort_key = [](const auto& password) {
-    return password_manager::CreateSortKey(*password,
-                                           password_manager::IgnoreStore(true));
+    return CreateSortKey(*password, IgnoreStore(true));
   };
   auto cmp = [&](const auto& lhs, const auto& rhs) {
     return get_sort_key(lhs) < get_sort_key(rhs);
   };
-  base::flat_set<std::unique_ptr<autofill::PasswordForm>, decltype(cmp)>
-      unique_passwords(std::move(passwords), cmp);
+  base::flat_set<std::unique_ptr<PasswordForm>, decltype(cmp)> unique_passwords(
+      std::move(passwords), cmp);
   return std::move(unique_passwords).extract();
 }
 
 }  // namespace
 
-namespace password_manager {
-
 PasswordManagerExporter::PasswordManagerExporter(
-    password_manager::CredentialProviderInterface*
-        credential_provider_interface,
+    CredentialProviderInterface* credential_provider_interface,
     ProgressCallback on_progress)
     : credential_provider_interface_(credential_provider_interface),
       on_progress_(std::move(on_progress)),
@@ -100,19 +97,18 @@ PasswordManagerExporter::~PasswordManagerExporter() = default;
 void PasswordManagerExporter::PreparePasswordsForExport() {
   DCHECK_EQ(GetProgressStatus(), ExportProgressStatus::NOT_STARTED);
 
-  std::vector<std::unique_ptr<autofill::PasswordForm>> password_list =
+  std::vector<std::unique_ptr<PasswordForm>> password_list =
       credential_provider_interface_->GetAllPasswords();
 
   // Deduplicate passwords that are present in multiple stores, so the output
   // file doesn't contain repeated data.
-  std::vector<std::unique_ptr<autofill::PasswordForm>>
-      deduplicated_password_list =
-          DeduplicatePasswordsAcrossStores(std::move(password_list));
+  std::vector<std::unique_ptr<PasswordForm>> deduplicated_password_list =
+      DeduplicatePasswordsAcrossStores(std::move(password_list));
 
   size_t deduplicated_password_list_size = deduplicated_password_list.size();
   base::PostTaskAndReplyWithResult(
       task_runner_.get(), FROM_HERE,
-      base::BindOnce(&password_manager::PasswordCSVWriter::SerializePasswords,
+      base::BindOnce(&PasswordCSVWriter::SerializePasswords,
                      std::move(deduplicated_password_list)),
       base::BindOnce(&PasswordManagerExporter::SetSerialisedPasswordList,
                      weak_factory_.GetWeakPtr(),
@@ -153,8 +149,7 @@ void PasswordManagerExporter::Cancel() {
   Cleanup();
 }
 
-password_manager::ExportProgressStatus
-PasswordManagerExporter::GetProgressStatus() {
+ExportProgressStatus PasswordManagerExporter::GetProgressStatus() {
   return last_progress_status_;
 }
 
@@ -204,9 +199,8 @@ void PasswordManagerExporter::OnPasswordsExported(bool success) {
   }
 }
 
-void PasswordManagerExporter::OnProgress(
-    password_manager::ExportProgressStatus status,
-    const std::string& folder) {
+void PasswordManagerExporter::OnProgress(ExportProgressStatus status,
+                                         const std::string& folder) {
   last_progress_status_ = status;
   on_progress_.Run(status, folder);
 }

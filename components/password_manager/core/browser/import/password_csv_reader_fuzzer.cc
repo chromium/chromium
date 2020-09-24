@@ -10,8 +10,8 @@
 
 #include "base/at_exit.h"
 #include "base/i18n/icu_util.h"
-#include "components/autofill/core/common/password_form.h"
 #include "components/password_manager/core/browser/import/csv_password_sequence.h"
+#include "components/password_manager/core/browser/password_form.h"
 
 namespace password_manager {
 
@@ -43,7 +43,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   CHECK(IsValid(seq.result()))
       << "Invalid parsing result of the whole sequence: "
       << static_cast<int>(seq.result());
-  autofill::PasswordForm form, copy;
+  PasswordForm form, copy;
   for (const auto& pwd : seq) {
     const CSVPassword::Status status = pwd.Parse(&form);
     CHECK(IsValid(status)) << "Invalid parsing result of one row: "

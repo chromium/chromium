@@ -28,8 +28,7 @@ class CredentialProviderInterface;
 class PasswordManagerExporter {
  public:
   using ProgressCallback =
-      base::RepeatingCallback<void(password_manager::ExportProgressStatus,
-                                   const std::string&)>;
+      base::RepeatingCallback<void(ExportProgressStatus, const std::string&)>;
   using WriteCallback =
       base::RepeatingCallback<bool(const base::FilePath&, base::StringPiece)>;
   using DeleteCallback = base::RepeatingCallback<bool(const base::FilePath&)>;
@@ -37,8 +36,7 @@ class PasswordManagerExporter {
       base::RepeatingCallback<bool(const base::FilePath&, int)>;
 
   explicit PasswordManagerExporter(
-      password_manager::CredentialProviderInterface*
-          credential_provider_interface,
+      CredentialProviderInterface* credential_provider_interface,
       ProgressCallback on_progress);
   virtual ~PasswordManagerExporter();
 

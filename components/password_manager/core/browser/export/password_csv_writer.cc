@@ -5,10 +5,8 @@
 #include "components/password_manager/core/browser/export/password_csv_writer.h"
 
 #include "base/strings/utf_string_conversions.h"
-#include "components/autofill/core/common/password_form.h"
 #include "components/password_manager/core/browser/export/csv_writer.h"
-
-using autofill::PasswordForm;
+#include "components/password_manager/core/browser/password_form.h"
 
 namespace password_manager {
 

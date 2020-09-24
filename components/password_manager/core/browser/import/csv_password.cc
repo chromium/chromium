@@ -16,8 +16,6 @@
 
 namespace password_manager {
 
-using ::autofill::PasswordForm;
-
 namespace {
 
 // Convert() unescapes a CSV field |str| and converts the result to a 16-bit
