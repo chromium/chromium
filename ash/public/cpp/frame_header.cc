@@ -7,9 +7,9 @@
 #include "ash/public/cpp/caption_buttons/caption_button_model.h"
 #include "ash/public/cpp/caption_buttons/frame_caption_button_container_view.h"
 #include "ash/public/cpp/frame_utils.h"
-#include "ash/public/cpp/vector_icons/vector_icons.h"
 #include "ash/public/cpp/window_properties.h"
 #include "base/logging.h"  // DCHECK
+#include "chromeos/ui/vector_icons/vector_icons.h"
 #include "ui/base/class_property.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_tree_owner.h"
@@ -248,7 +248,7 @@ void FrameHeader::SetBackButton(views::FrameCaptionButton* back_button) {
     back_button_->SetBackgroundColor(GetCurrentFrameColor());
     back_button_->SetImage(views::CAPTION_BUTTON_ICON_BACK,
                            views::FrameCaptionButton::ANIMATE_NO,
-                           kWindowControlBackIcon);
+                           chromeos::kWindowControlBackIcon);
   }
 }
 
@@ -317,13 +317,15 @@ void FrameHeader::SetCaptionButtonContainer(
   caption_button_container_->SetButtonImage(views::CAPTION_BUTTON_ICON_MINIMIZE,
                                             views::kWindowControlMinimizeIcon);
   caption_button_container_->SetButtonImage(views::CAPTION_BUTTON_ICON_MENU,
-                                            kWindowControlMenuIcon);
+                                            chromeos::kWindowControlMenuIcon);
   caption_button_container_->SetButtonImage(views::CAPTION_BUTTON_ICON_CLOSE,
                                             views::kWindowControlCloseIcon);
   caption_button_container_->SetButtonImage(
-      views::CAPTION_BUTTON_ICON_LEFT_SNAPPED, kWindowControlLeftSnappedIcon);
+      views::CAPTION_BUTTON_ICON_LEFT_SNAPPED,
+      chromeos::kWindowControlLeftSnappedIcon);
   caption_button_container_->SetButtonImage(
-      views::CAPTION_BUTTON_ICON_RIGHT_SNAPPED, kWindowControlRightSnappedIcon);
+      views::CAPTION_BUTTON_ICON_RIGHT_SNAPPED,
+      chromeos::kWindowControlRightSnappedIcon);
 
   // Perform layout to ensure the container height is correct.
   LayoutHeaderInternal();
@@ -351,10 +353,10 @@ void FrameHeader::LayoutHeaderInternal() {
 
   bool use_zoom_icons = caption_button_container()->model()->InZoomMode();
   const gfx::VectorIcon& restore_icon = use_zoom_icons
-                                            ? kWindowControlDezoomIcon
+                                            ? chromeos::kWindowControlDezoomIcon
                                             : views::kWindowControlRestoreIcon;
   const gfx::VectorIcon& maximize_icon =
-      use_zoom_icons ? kWindowControlZoomIcon
+      use_zoom_icons ? chromeos::kWindowControlZoomIcon
                      : views::kWindowControlMaximizeIcon;
   // TODO(crbug.com/1092005): Investigate if we can move this to
   // CaptionButtonModel and just check the model in

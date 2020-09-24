@@ -1634,10 +1634,10 @@ component("ash") {
   public_deps = [
     "//ash/public/cpp",
     "//ash/public/cpp/resources:ash_public_unscaled_resources",
-    "//ash/public/cpp/vector_icons",
     "//ash/resources/vector_icons",
     "//ash/strings",
     "//chromeos/services/multidevice_setup/public/mojom",
+    "//chromeos/ui/vector_icons",
     "//components/discardable_memory/public/mojom",
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/system",
@@ -2266,7 +2266,6 @@ test("ash_unittests") {
     "//ash/public/cpp:unit_tests",
     "//ash/public/cpp/external_arc:test_support",
     "//ash/public/cpp/external_arc:unit_tests",
-    "//ash/public/cpp/vector_icons",
     "//ash/resources/vector_icons",
     "//ash/shortcut_viewer:unit_tests",
     "//ash/strings",
@@ -2277,6 +2276,7 @@ test("ash_unittests") {
     "//build:branding_buildflags",
     "//chromeos:test_support",
     "//chromeos/strings:strings_grit",
+    "//chromeos/ui/vector_icons",
 
     # TODO(https://crbug.com/644336): Make CrasAudioHandler Chrome or Ash only.
     "//chromeos/audio",

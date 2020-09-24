@@ -8,13 +8,13 @@
 #include <string>
 
 #include "ash/public/cpp/notification_utils.h"
-#include "ash/public/cpp/vector_icons/vector_icons.h"
 #include "base/bind.h"
 #include "base/i18n/time_formatting.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ui/vector_icons/vector_icons.h"
 #include "content/public/browser/browser_context.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/time_format.h"
@@ -62,7 +62,7 @@ void ShowNotification(base::string16 title,
               kTimeLimitNotifierId),
           option_fields,
           base::MakeRefCounted<message_center::NotificationDelegate>(),
-          ash::kNotificationSupervisedUserIcon,
+          chromeos::kNotificationSupervisedUserIcon,
           message_center::SystemNotificationWarningLevel::NORMAL);
   NotificationDisplayService::GetForProfile(
       Profile::FromBrowserContext(context))

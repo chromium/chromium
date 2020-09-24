@@ -14,7 +14,6 @@
 #include "ash/public/cpp/default_frame_header.h"
 #include "ash/public/cpp/immersive/immersive_fullscreen_controller.h"
 #include "ash/public/cpp/immersive/immersive_fullscreen_controller_test_api.h"
-#include "ash/public/cpp/vector_icons/vector_icons.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
@@ -28,6 +27,7 @@
 #include "ash/wm/wm_event.h"
 #include "base/command_line.h"
 #include "base/containers/flat_set.h"
+#include "chromeos/ui/vector_icons/vector_icons.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_targeter.h"
@@ -637,10 +637,10 @@ TEST_F(NonClientFrameViewAshTest, CustomButtonModel) {
   model_ptr->set_zoom_mode(true);
   non_client_frame_view->SizeConstraintsChanged();
   widget->LayoutRootViewIfNecessary();
-  EXPECT_STREQ(kWindowControlZoomIcon.name,
+  EXPECT_STREQ(chromeos::kWindowControlZoomIcon.name,
                test_api.size_button()->icon_definition_for_test()->name);
   widget->Maximize();
-  EXPECT_STREQ(kWindowControlDezoomIcon.name,
+  EXPECT_STREQ(chromeos::kWindowControlDezoomIcon.name,
                test_api.size_button()->icon_definition_for_test()->name);
 }
 

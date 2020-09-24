@@ -5,11 +5,11 @@
 #include "ash/system/supervised/supervised_notification_controller.h"
 
 #include "ash/public/cpp/notification_utils.h"
-#include "ash/public/cpp/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/supervised/supervised_icon_string.h"
+#include "chromeos/ui/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -83,7 +83,7 @@ void SupervisedNotificationController::CreateOrUpdateNotification() {
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
                                  kNotifierSupervisedUser),
       message_center::RichNotificationData(), nullptr,
-      kNotificationSupervisedUserIcon,
+      chromeos::kNotificationSupervisedUserIcon,
       message_center::SystemNotificationWarningLevel::NORMAL);
   notification->SetSystemPriority();
   // AddNotification does an update if the notification already exists.

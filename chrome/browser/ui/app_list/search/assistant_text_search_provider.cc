@@ -13,12 +13,12 @@
 #include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "ash/public/cpp/assistant/controller/assistant_controller.h"
 #include "ash/public/cpp/assistant/controller/assistant_suggestions_controller.h"
-#include "ash/public/cpp/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
+#include "chromeos/ui/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -57,7 +57,7 @@ class AssistantTextSearchResult : public ChromeSearchResult {
     SetAccessibleName(l10n_util::GetStringFUTF16(
         IDS_ASH_ASSISTANT_QUERY_ACCESSIBILITY_ANNOUNCEMENT, text));
     SetIcon(gfx::CreateVectorIcon(
-        ash::kAssistantIcon,
+        chromeos::kAssistantIcon,
         ash::AppListConfig::instance().search_list_icon_dimension(),
         gfx::kPlaceholderColor));
 

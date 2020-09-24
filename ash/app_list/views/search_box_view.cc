@@ -25,7 +25,6 @@
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/vector_icons/vector_icons.h"
-#include "ash/public/cpp/vector_icons/vector_icons.h"
 #include "ash/public/cpp/wallpaper_types.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "base/bind.h"
@@ -33,6 +32,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "chromeos/constants/chromeos_switches.h"
+#include "chromeos/ui/vector_icons/vector_icons.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/ime/composition_text.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -795,7 +795,7 @@ void SearchBoxView::SetupAssistantButton() {
   assistant->SetImage(
       views::ImageButton::STATE_NORMAL,
       gfx::CreateVectorIcon(
-          kAssistantIcon, search_box::kIconSize,
+          chromeos::kAssistantIcon, search_box::kIconSize,
           AppListColorProvider::Get()->GetSearchBoxIconColor()));
   base::string16 assistant_button_label(
       l10n_util::GetStringUTF16(IDS_APP_LIST_START_ASSISTANT));

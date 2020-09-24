@@ -5,8 +5,8 @@
 // vector_icons.h.template is used to generate vector_icons.h. Edit the former
 // rather than the latter.
 
-#ifndef ASH_PUBLIC_CPP_VECTOR_ICONS_VECTOR_ICONS_H_
-#define ASH_PUBLIC_CPP_VECTOR_ICONS_VECTOR_ICONS_H_
+#ifndef CHROMEOS_UI_VECTOR_ICONS_VECTOR_ICONS_H_
+#define CHROMEOS_UI_VECTOR_ICONS_VECTOR_ICONS_H_
 
 namespace gfx {
 struct VectorIcon;
@@ -15,12 +15,12 @@ struct VectorIcon;
 #define VECTOR_ICON_TEMPLATE_H(icon_name) \
 extern const gfx::VectorIcon icon_name;
 
-namespace ash {
+namespace chromeos {
 
 TEMPLATE_PLACEHOLDER
 
-}  // namespace ash
+}  // namespace chromeos
 
 #undef VECTOR_ICON_TEMPLATE_H
 
-#endif  // ASH_PUBLIC_CPP_VECTOR_ICONS_VECTOR_ICONS_H_
+#endif  // CHROMEOS_UI_VECTOR_ICONS_VECTOR_ICONS_H_

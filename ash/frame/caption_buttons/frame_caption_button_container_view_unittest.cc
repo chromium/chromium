@@ -4,10 +4,10 @@
 
 #include "ash/public/cpp/caption_buttons/frame_caption_button_container_view.h"
 
-#include "ash/public/cpp/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "chromeos/ui/vector_icons/vector_icons.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/test/test_views.h"
 #include "ui/views/widget/widget.h"

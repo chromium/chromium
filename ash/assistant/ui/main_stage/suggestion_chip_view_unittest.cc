@@ -6,9 +6,9 @@
 
 #include "ash/assistant/ui/test_support/mock_assistant_view_delegate.h"
 #include "ash/assistant/util/test_support/macros.h"
-#include "ash/public/cpp/vector_icons/vector_icons.h"
 #include "ash/test/ash_test_base.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
+#include "chromeos/ui/vector_icons/vector_icons.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/image/image_unittest_util.h"
@@ -43,7 +43,7 @@ TEST_F(SuggestionChipViewTest, ShouldHandleLocalIcons) {
 
   const auto& actual = suggestion_chip_view.GetIcon();
   gfx::ImageSkia expected = gfx::CreateVectorIcon(
-      gfx::IconDescription(ash::kAssistantIcon, /*size=*/16));
+      gfx::IconDescription(chromeos::kAssistantIcon, /*size=*/16));
 
   ASSERT_PIXELS_EQ(actual, expected);
 }

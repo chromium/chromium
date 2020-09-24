@@ -7,7 +7,6 @@
 #include <string>
 #include <utility>
 
-#include "ash/public/cpp/vector_icons/vector_icons.h"
 #include "base/bind.h"
 #include "base/i18n/message_formatter.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -15,6 +14,7 @@
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_thread.h"
@@ -65,7 +65,7 @@ ExtensionInstallBlockedByParentDialogView::
   SetButtonLabel(ui::DIALOG_BUTTON_CANCEL, l10n_util::GetStringUTF16(IDS_OK));
   set_draggable(true);
 
-  SetIcon(gfx::CreateVectorIcon(ash::kNotificationSupervisedUserIcon,
+  SetIcon(gfx::CreateVectorIcon(chromeos::kNotificationSupervisedUserIcon,
                                 SK_ColorDKGRAY));
   SetShowIcon(true);
   ConfigureTitle();
@@ -128,7 +128,7 @@ void ExtensionInstallBlockedByParentDialogView::CreateContents() {
       break;
   }
 
-  icon_ = gfx::CreateVectorIcon(ash::kNotificationSupervisedUserIcon,
+  icon_ = gfx::CreateVectorIcon(chromeos::kNotificationSupervisedUserIcon,
                                 SK_ColorDKGRAY);
 
   const ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();

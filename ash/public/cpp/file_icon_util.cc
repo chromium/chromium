@@ -7,11 +7,11 @@
 #include <string>
 #include <utility>
 
-#include "ash/public/cpp/vector_icons/vector_icons.h"
 #include "base/files/file_path.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chromeos/ui/vector_icons/vector_icons.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/color_palette.h"
@@ -186,79 +186,79 @@ gfx::ImageSkia GetVectorIconFromIconType(IconType icon, bool is_chip_icon) {
   static const base::NoDestructor<std::map<IconType, gfx::IconDescription>>
       icon_type_to_icon_description(
           {{IconType::kArchive,
-            gfx::IconDescription(ash::kFiletypeArchiveIcon, kIconDipSize,
+            gfx::IconDescription(chromeos::kFiletypeArchiveIcon, kIconDipSize,
                                  gfx::kGoogleGrey700)},
            {IconType::kAudio,
-            gfx::IconDescription(ash::kFiletypeAudioIcon, kIconDipSize,
+            gfx::IconDescription(chromeos::kFiletypeAudioIcon, kIconDipSize,
                                  gfx::kGoogleRed500)},
            {IconType::kChart,
-            gfx::IconDescription(ash::kFiletypeChartIcon, kIconDipSize,
+            gfx::IconDescription(chromeos::kFiletypeChartIcon, kIconDipSize,
                                  gfx::kGoogleGreen500)},
            {IconType::kDrive,
-            gfx::IconDescription(ash::kFiletypeTeamDriveIcon, kIconDipSize,
+            gfx::IconDescription(chromeos::kFiletypeTeamDriveIcon, kIconDipSize,
                                  gfx::kGoogleGrey700)},
            {IconType::kExcel,
-            gfx::IconDescription(ash::kFiletypeExcelIcon, kIconDipSize,
+            gfx::IconDescription(chromeos::kFiletypeExcelIcon, kIconDipSize,
                                  gfx::kGoogleGreen500)},
            {IconType::kFolder,
-            gfx::IconDescription(ash::kFiletypeFolderIcon, kIconDipSize,
+            gfx::IconDescription(chromeos::kFiletypeFolderIcon, kIconDipSize,
                                  gfx::kGoogleGrey700)},
            {IconType::kFolderShared,
-            gfx::IconDescription(ash::kFiletypeSharedIcon, kIconDipSize,
+            gfx::IconDescription(chromeos::kFiletypeSharedIcon, kIconDipSize,
                                  gfx::kGoogleGrey700)},
            {IconType::kGdoc,
-            gfx::IconDescription(ash::kFiletypeGdocIcon, kIconDipSize,
+            gfx::IconDescription(chromeos::kFiletypeGdocIcon, kIconDipSize,
                                  gfx::kGoogleBlue500)},
            {IconType::kGdraw,
-            gfx::IconDescription(ash::kFiletypeGdrawIcon, kIconDipSize,
+            gfx::IconDescription(chromeos::kFiletypeGdrawIcon, kIconDipSize,
                                  gfx::kGoogleRed500)},
            {IconType::kGeneric,
-            gfx::IconDescription(ash::kFiletypeGenericIcon, kIconDipSize,
+            gfx::IconDescription(chromeos::kFiletypeGenericIcon, kIconDipSize,
                                  gfx::kGoogleGrey700)},
            {IconType::kGform,
-            gfx::IconDescription(ash::kFiletypeGformIcon, kIconDipSize,
+            gfx::IconDescription(chromeos::kFiletypeGformIcon, kIconDipSize,
                                  gfx::kGoogleGreen500)},
            {IconType::kGmap,
-            gfx::IconDescription(ash::kFiletypeGmapIcon, kIconDipSize,
+            gfx::IconDescription(chromeos::kFiletypeGmapIcon, kIconDipSize,
                                  gfx::kGoogleRed500)},
            {IconType::kGsheet,
-            gfx::IconDescription(ash::kFiletypeGsheetIcon, kIconDipSize,
+            gfx::IconDescription(chromeos::kFiletypeGsheetIcon, kIconDipSize,
                                  gfx::kGoogleGreen500)},
            {IconType::kGsite,
-            gfx::IconDescription(ash::kFiletypeGsiteIcon, kIconDipSize,
+            gfx::IconDescription(chromeos::kFiletypeGsiteIcon, kIconDipSize,
                                  kFiletypeGsiteColor)},
            {IconType::kGslide,
-            gfx::IconDescription(ash::kFiletypeGslidesIcon, kIconDipSize,
+            gfx::IconDescription(chromeos::kFiletypeGslidesIcon, kIconDipSize,
                                  gfx::kGoogleYellow500)},
            {IconType::kGtable,
-            gfx::IconDescription(ash::kFiletypeGtableIcon, kIconDipSize,
+            gfx::IconDescription(chromeos::kFiletypeGtableIcon, kIconDipSize,
                                  gfx::kGoogleGreen500)},
            {IconType::kImage,
-            gfx::IconDescription(ash::kFiletypeImageIcon, kIconDipSize,
+            gfx::IconDescription(chromeos::kFiletypeImageIcon, kIconDipSize,
                                  gfx::kGoogleRed500)},
            {IconType::kLinux,
-            gfx::IconDescription(ash::kFiletypeLinuxIcon, kIconDipSize,
+            gfx::IconDescription(chromeos::kFiletypeLinuxIcon, kIconDipSize,
                                  gfx::kGoogleGrey700)},
            {IconType::kPdf,
-            gfx::IconDescription(ash::kFiletypePdfIcon, kIconDipSize,
+            gfx::IconDescription(chromeos::kFiletypePdfIcon, kIconDipSize,
                                  gfx::kGoogleRed500)},
            {IconType::kPpt,
-            gfx::IconDescription(ash::kFiletypePptIcon, kIconDipSize,
+            gfx::IconDescription(chromeos::kFiletypePptIcon, kIconDipSize,
                                  kFiletypePptColor)},
            {IconType::kScript,
-            gfx::IconDescription(ash::kFiletypeScriptIcon, kIconDipSize,
+            gfx::IconDescription(chromeos::kFiletypeScriptIcon, kIconDipSize,
                                  gfx::kGoogleBlue500)},
            {IconType::kSites,
-            gfx::IconDescription(ash::kFiletypeSitesIcon, kIconDipSize,
+            gfx::IconDescription(chromeos::kFiletypeSitesIcon, kIconDipSize,
                                  kFiletypeSitesColor)},
            {IconType::kTini,
-            gfx::IconDescription(ash::kFiletypeTiniIcon, kIconDipSize,
+            gfx::IconDescription(chromeos::kFiletypeTiniIcon, kIconDipSize,
                                  gfx::kGoogleBlue500)},
            {IconType::kVideo,
-            gfx::IconDescription(ash::kFiletypeVideoIcon, kIconDipSize,
+            gfx::IconDescription(chromeos::kFiletypeVideoIcon, kIconDipSize,
                                  gfx::kGoogleRed500)},
            {IconType::kWord,
-            gfx::IconDescription(ash::kFiletypeWordIcon, kIconDipSize,
+            gfx::IconDescription(chromeos::kFiletypeWordIcon, kIconDipSize,
                                  gfx::kGoogleBlue500)}});
 
   const auto& id_it = icon_type_to_icon_description->find(icon);
@@ -268,8 +268,8 @@ gfx::ImageSkia GetVectorIconFromIconType(IconType icon, bool is_chip_icon) {
   // background icon (kFiletypeChipBackgroundIcon) and the icon of the file.
   if (is_chip_icon) {
     return gfx::ImageSkiaOperations::CreateSuperimposedImage(
-        gfx::CreateVectorIcon(ash::kFiletypeChipBackgroundIcon, kIconDipSize,
-                              kWhiteBackgroundColor),
+        gfx::CreateVectorIcon(chromeos::kFiletypeChipBackgroundIcon,
+                              kIconDipSize, kWhiteBackgroundColor),
         gfx::CreateVectorIcon(id_it->second));
   }
   return gfx::CreateVectorIcon(id_it->second);

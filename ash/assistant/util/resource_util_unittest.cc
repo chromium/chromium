@@ -8,7 +8,7 @@
 #include <string>
 
 #include "ash/assistant/util/test_support/macros.h"
-#include "ash/public/cpp/vector_icons/vector_icons.h"
+#include "chromeos/ui/vector_icons/vector_icons.h"
 #include "net/base/url_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/canvas.h"
@@ -76,21 +76,22 @@ TEST_F(ResourceUtilTest, CreateVectorIcon) {
   // Test w/ name.
   url = "googleassistant://resource?type=icon&name=assistant";
   actual = CreateVectorIcon(GURL(url));
-  expected = gfx::CreateVectorIcon(gfx::IconDescription(ash::kAssistantIcon));
+  expected =
+      gfx::CreateVectorIcon(gfx::IconDescription(chromeos::kAssistantIcon));
   ASSERT_PIXELS_EQ(actual, expected);
 
   // Test w/ name and size.
   url = "googleassistant://resource?type=icon&name=assistant";
   actual = CreateVectorIcon(GURL(url), /*size=*/24);
   expected = gfx::CreateVectorIcon(
-      gfx::IconDescription(ash::kAssistantIcon, /*size=*/24));
+      gfx::IconDescription(chromeos::kAssistantIcon, /*size=*/24));
   ASSERT_PIXELS_EQ(actual, expected);
 
   // Test w/ name, size, and color.
   url = "googleassistant://resource?type=icon&name=assistant&color=ff000000";
   actual = CreateVectorIcon(GURL(url), /*size=*/24);
   expected = gfx::CreateVectorIcon(gfx::IconDescription(
-      ash::kAssistantIcon, /*size=*/24, /*color=*/SK_ColorBLACK));
+      chromeos::kAssistantIcon, /*size=*/24, /*color=*/SK_ColorBLACK));
   ASSERT_PIXELS_EQ(actual, expected);
 
   // Test w/o icon resource link.

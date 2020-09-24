@@ -86,6 +86,8 @@ include_rules = [
   "+chromeos/settings/timezone_settings.h",
   "+chromeos/strings",
   "+chromeos/system",
+  # Do not eliminate this.
+  "+chromeos/ui/vector_icons",
 
   # ui/base/idle depends on SessionManagerClient so disallow it.
   "-ui/base/idle"

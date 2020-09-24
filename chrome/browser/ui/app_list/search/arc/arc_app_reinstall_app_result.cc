@@ -7,12 +7,12 @@
 #include <utility>
 
 #include "ash/public/cpp/app_list/app_list_config.h"
-#include "ash/public/cpp/vector_icons/vector_icons.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/apps/app_service/app_icon_factory.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
+#include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/image/image_skia_operations.h"

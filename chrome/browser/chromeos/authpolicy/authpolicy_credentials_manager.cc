@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "ash/public/cpp/notification_utils.h"
-#include "ash/public/cpp/vector_icons/vector_icons.h"
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/memory/singleton.h"
@@ -32,6 +31,7 @@
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
+#include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "dbus/message.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -282,7 +282,7 @@ void AuthPolicyCredentialsManager::ShowNotification(int message_id) {
           l10n_util::GetStringUTF16(message_id),
           l10n_util::GetStringUTF16(IDS_SIGNIN_ERROR_DISPLAY_SOURCE),
           GURL(notification_id), notifier_id, data, std::move(delegate),
-          ash::kNotificationWarningIcon,
+          chromeos::kNotificationWarningIcon,
           message_center::SystemNotificationWarningLevel::WARNING);
   notification->SetSystemPriority();
 

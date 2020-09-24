@@ -5,13 +5,13 @@
 #include "ash/quick_answers/ui/user_consent_view.h"
 
 #include "ash/accessibility/accessibility_controller_impl.h"
-#include "ash/public/cpp/vector_icons/vector_icons.h"
 #include "ash/quick_answers/quick_answers_ui_controller.h"
 #include "ash/quick_answers/ui/quick_answers_pre_target_handler.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "chromeos/ui/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/event_handler.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -259,7 +259,7 @@ void UserConsentView::InitLayout() {
   assistant_icon->SetBorder(views::CreateEmptyBorder(
       (kLineHeightDip - kAssistantIconSizeDip) / 2, 0, 0, 0));
   assistant_icon->SetImage(gfx::CreateVectorIcon(
-      kAssistantIcon, kAssistantIconSizeDip, gfx::kPlaceholderColor));
+      chromeos::kAssistantIcon, kAssistantIconSizeDip, gfx::kPlaceholderColor));
 
   // Content.
   InitContent();

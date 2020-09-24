@@ -12,11 +12,11 @@
 #include "ash/assistant/util/deep_link_util.h"
 #include "ash/public/cpp/assistant/controller/assistant_controller.h"
 #include "ash/public/cpp/notification_utils.h"
-#include "ash/public/cpp/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/services/assistant/public/cpp/assistant_notification.h"
+#include "chromeos/ui/vector_icons/vector_icons.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -48,7 +48,7 @@ std::unique_ptr<message_center::Notification> CreateSystemNotification(
       ash::CreateSystemNotification(
           message_center::NOTIFICATION_TYPE_SIMPLE, notification.client_id,
           title, message, display_source, GURL(), notifier_id, data,
-          /*delegate=*/nullptr, kNotificationAssistantIcon,
+          /*delegate=*/nullptr, chromeos::kNotificationAssistantIcon,
           message_center::SystemNotificationWarningLevel::NORMAL);
 
   system_notification->set_renotify(notification.renotify);

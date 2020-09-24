@@ -4,7 +4,7 @@
 
 #include "ash/public/cpp/caption_buttons/frame_back_button.h"
 
-#include "ash/public/cpp/vector_icons/vector_icons.h"
+#include "chromeos/ui/vector_icons/vector_icons.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/hit_test.h"

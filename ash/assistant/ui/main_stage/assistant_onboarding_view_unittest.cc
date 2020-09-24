@@ -20,7 +20,6 @@
 #include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
 #include "ash/public/cpp/session/session_types.h"
 #include "ash/public/cpp/session/user_info.h"
-#include "ash/public/cpp/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "base/strings/stringprintf.h"
@@ -30,6 +29,7 @@
 #include "base/unguessable_token.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
+#include "chromeos/ui/vector_icons/vector_icons.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/image/image_unittest_util.h"
@@ -311,53 +311,53 @@ TEST_F(AssistantOnboardingViewTest, ShouldHaveExpectedSuggestions) {
         expected_suggestions.push_back(
             {/*message=*/"Square root of 71",
              /*icon_with_color=*/std::make_unique<VectorIconWithColor>(
-                 ash::kCalculateIcon, gfx::kGoogleBlue800)});
+                 chromeos::kCalculateIcon, gfx::kGoogleBlue800)});
         expected_suggestions.push_back(
             {/*message=*/"How far is Venus",
              /*icon_with_color=*/std::make_unique<VectorIconWithColor>(
-                 ash::kStraightenIcon, gfx::kGoogleRed800)});
+                 chromeos::kStraightenIcon, gfx::kGoogleRed800)});
         expected_suggestions.push_back(
             {/*message=*/"Set timer",
              /*icon_with_color=*/std::make_unique<VectorIconWithColor>(
-                 ash::kTimerIcon, SkColorSetRGB(0xBF, 0x50, 0x00))});
+                 chromeos::kTimerIcon, SkColorSetRGB(0xBF, 0x50, 0x00))});
         expected_suggestions.push_back(
             {/*message=*/"Tell me a joke",
              /*icon_with_color=*/std::make_unique<VectorIconWithColor>(
-                 ash::kSentimentVerySatisfiedIcon, gfx::kGoogleGreen800)});
+                 chromeos::kSentimentVerySatisfiedIcon, gfx::kGoogleGreen800)});
         expected_suggestions.push_back(
             {/*message=*/"\"Hello\" in Chinese",
              /*icon_with_color=*/std::make_unique<VectorIconWithColor>(
-                 ash::kTranslateIcon, SkColorSetRGB(0x8A, 0x0E, 0x9E))});
+                 chromeos::kTranslateIcon, SkColorSetRGB(0x8A, 0x0E, 0x9E))});
         expected_suggestions.push_back(
             {/*message=*/"Take a screenshot",
              /*icon_with_color=*/std::make_unique<VectorIconWithColor>(
-                 ash::kScreenshotIcon, gfx::kGoogleBlue800)});
+                 chromeos::kScreenshotIcon, gfx::kGoogleBlue800)});
         break;
       case AssistantOnboardingMode::kDefault:
         expected_suggestions.push_back(
             {/*message=*/"5K in miles",
              /*icon_with_color=*/std::make_unique<VectorIconWithColor>(
-                 ash::kConversionPathIcon, gfx::kGoogleBlue800)});
+                 chromeos::kConversionPathIcon, gfx::kGoogleBlue800)});
         expected_suggestions.push_back(
             {/*message=*/"Population in Nigeria",
              /*icon_with_color=*/std::make_unique<VectorIconWithColor>(
-                 ash::kPersonPinCircleIcon, gfx::kGoogleRed800)});
+                 chromeos::kPersonPinCircleIcon, gfx::kGoogleRed800)});
         expected_suggestions.push_back(
             {/*message=*/"Set timer",
              /*icon_with_color=*/std::make_unique<VectorIconWithColor>(
-                 ash::kTimerIcon, SkColorSetRGB(0xBF, 0x50, 0x00))});
+                 chromeos::kTimerIcon, SkColorSetRGB(0xBF, 0x50, 0x00))});
         expected_suggestions.push_back(
             {/*message=*/"Tell me a joke",
              /*icon_with_color=*/std::make_unique<VectorIconWithColor>(
-                 ash::kSentimentVerySatisfiedIcon, gfx::kGoogleGreen800)});
+                 chromeos::kSentimentVerySatisfiedIcon, gfx::kGoogleGreen800)});
         expected_suggestions.push_back(
             {/*message=*/"\"Hello\" in Chinese",
              /*icon_with_color=*/std::make_unique<VectorIconWithColor>(
-                 ash::kTranslateIcon, SkColorSetRGB(0x8A, 0x0E, 0x9E))});
+                 chromeos::kTranslateIcon, SkColorSetRGB(0x8A, 0x0E, 0x9E))});
         expected_suggestions.push_back(
             {/*message=*/"Take a screenshot",
              /*icon_with_color=*/std::make_unique<VectorIconWithColor>(
-                 ash::kScreenshotIcon, gfx::kGoogleBlue800)});
+                 chromeos::kScreenshotIcon, gfx::kGoogleBlue800)});
         break;
     }
 
@@ -437,7 +437,7 @@ TEST_F(AssistantOnboardingViewTest, ShouldHandleLocalIcons) {
 
   const auto& actual = suggestion_views.at(0)->GetIcon();
   gfx::ImageSkia expected = gfx::CreateVectorIcon(
-      gfx::IconDescription(ash::kAssistantIcon, /*size=*/24));
+      gfx::IconDescription(chromeos::kAssistantIcon, /*size=*/24));
 
   ASSERT_PIXELS_EQ(actual, expected);
 }

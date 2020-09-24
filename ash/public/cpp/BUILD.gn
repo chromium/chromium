@@ -322,13 +322,13 @@ component("cpp") {
   ]
 
   deps = [
-    "//ash/public/cpp/vector_icons",
     "//base/util/values:values_util",
     "//chromeos/constants",
     "//chromeos/dbus/power:power_manager_proto",
     "//chromeos/services/assistant/public/cpp",
     "//chromeos/services/cellular_setup:in_process_esim_manager",
     "//chromeos/services/network_config:in_process_instance",
+    "//chromeos/ui/vector_icons",
     "//components/prefs",
     "//components/sync:rest_of_sync",
     "//mojo/public/cpp/bindings",

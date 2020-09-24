@@ -8,10 +8,10 @@
 #include <sstream>
 #include <string>
 
-#include "ash/public/cpp/vector_icons/vector_icons.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "chromeos/ui/vector_icons/vector_icons.h"
 #include "net/base/url_util.h"
 
 namespace ash {
@@ -134,23 +134,23 @@ ResourceLinkType ToType(const std::string& type) {
 const gfx::VectorIcon& ToVectorIcon(IconName name) {
   switch (name) {
     case IconName::kAssistant:
-      return ash::kAssistantIcon;
+      return chromeos::kAssistantIcon;
     case IconName::kCalculate:
-      return ash::kCalculateIcon;
+      return chromeos::kCalculateIcon;
     case IconName::kConversionPath:
-      return ash::kConversionPathIcon;
+      return chromeos::kConversionPathIcon;
     case IconName::kPersonPinCircle:
-      return ash::kPersonPinCircleIcon;
+      return chromeos::kPersonPinCircleIcon;
     case IconName::kScreenshot:
-      return ash::kScreenshotIcon;
+      return chromeos::kScreenshotIcon;
     case IconName::kSentimentVerySatisfied:
-      return ash::kSentimentVerySatisfiedIcon;
+      return chromeos::kSentimentVerySatisfiedIcon;
     case IconName::kStraighten:
-      return ash::kStraightenIcon;
+      return chromeos::kStraightenIcon;
     case IconName::kTimer:
-      return ash::kTimerIcon;
+      return chromeos::kTimerIcon;
     case IconName::kTranslate:
-      return ash::kTranslateIcon;
+      return chromeos::kTranslateIcon;
   }
   NOTREACHED();
   return gfx::kNoneIcon;

@@ -7,9 +7,9 @@
 
 // Some of the icons in this target are passed over Mojo and thus rely on having
 // a unique ID, so make sure there's a prefix that won't be reused elsewhere.
-#define VECTOR_ICON_ID_PREFIX "ash_public::"
+#define VECTOR_ICON_ID_PREFIX "chromeos_ui::"
 
-#include "ash/public/cpp/vector_icons/vector_icons.h"
+#include "chromeos/ui/vector_icons/vector_icons.h"
 
 #include "components/vector_icons/cc_macros.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -17,8 +17,8 @@
 #define DECLARE_VECTOR_COMMAND(x) using gfx::x;
 DECLARE_VECTOR_COMMANDS
 
-namespace ash {
+namespace chromeos {
 
 TEMPLATE_PLACEHOLDER
 
-}  // namespace ash
+}  // namespace chromeos

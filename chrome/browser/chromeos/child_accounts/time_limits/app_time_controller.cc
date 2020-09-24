@@ -5,7 +5,6 @@
 #include "chrome/browser/chromeos/child_accounts/time_limits/app_time_controller.h"
 
 #include "ash/public/cpp/notification_utils.h"
-#include "ash/public/cpp/vector_icons/vector_icons.h"
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
@@ -32,6 +31,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -622,7 +622,7 @@ void AppTimeController::ShowNotificationForApp(
                     base::BindRepeating(&AppTimeController::OpenFamilyLinkApp,
                                         weak_ptr_factory_.GetWeakPtr()))
               : base::MakeRefCounted<message_center::NotificationDelegate>(),
-          ash::kNotificationSupervisedUserIcon,
+          chromeos::kNotificationSupervisedUserIcon,
           message_center::SystemNotificationWarningLevel::NORMAL);
 
   if (icon.has_value())

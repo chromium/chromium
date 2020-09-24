@@ -10,11 +10,11 @@
 #include "ash/detachable_base/detachable_base_handler.h"
 #include "ash/detachable_base/detachable_base_pairing_status.h"
 #include "ash/public/cpp/notification_utils.h"
-#include "ash/public/cpp/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/strings/string16.h"
+#include "chromeos/ui/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -71,7 +71,7 @@ void DetachableBaseNotificationController::
               message_center::NotifierType::SYSTEM_COMPONENT,
               kDetachableBaseNotifierId),
           message_center::RichNotificationData(), nullptr,
-          kNotificationWarningIcon,
+          chromeos::kNotificationWarningIcon,
           message_center::SystemNotificationWarningLevel::CRITICAL_WARNING);
   // Set system priority so the notification gets shown when the user session is
   // blocked.
@@ -145,7 +145,7 @@ void DetachableBaseNotificationController::ShowPairingNotificationIfNeeded() {
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
               kDetachableBaseNotifierId),
-          options, nullptr, kNotificationWarningIcon,
+          options, nullptr, chromeos::kNotificationWarningIcon,
           message_center::SystemNotificationWarningLevel::CRITICAL_WARNING);
 
   message_center::MessageCenter::Get()->AddNotification(

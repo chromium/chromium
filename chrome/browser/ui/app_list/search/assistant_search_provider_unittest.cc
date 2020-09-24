@@ -14,7 +14,6 @@
 #include "ash/public/cpp/assistant/controller/assistant_suggestions_controller.h"
 #include "ash/public/cpp/assistant/test_support/mock_assistant_controller.h"
 #include "ash/public/cpp/assistant/test_support/mock_assistant_state.h"
-#include "ash/public/cpp/vector_icons/vector_icons.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/unguessable_token.h"
@@ -22,6 +21,7 @@
 #include "chrome/browser/ui/app_list/search/assistant_search_provider.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
+#include "chromeos/ui/vector_icons/vector_icons.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -48,7 +48,7 @@ class Expect {
     EXPECT_EQ(r_.result_type(), ash::AppListSearchResultType::kAssistantChip);
     EXPECT_EQ(r_.metrics_type(), ash::SearchResultType::ASSISTANT);
     EXPECT_TRUE(r_.chip_icon().BackedBySameObjectAs(gfx::CreateVectorIcon(
-        ash::kAssistantIcon,
+        chromeos::kAssistantIcon,
         ash::AppListConfig::instance().suggestion_chip_icon_dimension(),
         gfx::kPlaceholderColor)));
   }

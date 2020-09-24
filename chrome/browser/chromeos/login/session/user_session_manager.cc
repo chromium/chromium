@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "ash/public/cpp/notification_utils.h"
-#include "ash/public/cpp/vector_icons/vector_icons.h"
 #include "base/base_paths.h"
 #include "base/bind.h"
 #include "base/command_line.h"
@@ -128,6 +127,7 @@
 #include "chromeos/network/portal_detector/network_portal_detector.h"
 #include "chromeos/network/portal_detector/network_portal_detector_strategy.h"
 #include "chromeos/settings/cros_settings_names.h"
+#include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/account_id/account_id.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/flags_ui/flags_ui_metrics.h"
@@ -1232,7 +1232,7 @@ void ShowSupervisedUserDeprecationNotification(Profile* profile,
               message_center::NotifierType::SYSTEM_COMPONENT,
               kUserSessionManagerNotifier),
           rich_notification_data, std::move(delegate),
-          ash::kNotificationWarningIcon,
+          chromeos::kNotificationWarningIcon,
           message_center::SystemNotificationWarningLevel::NORMAL);
   notification->set_priority(message_center::SYSTEM_PRIORITY);
 
