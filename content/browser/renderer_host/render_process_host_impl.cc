@@ -2812,8 +2812,6 @@ bool RenderProcessHostImpl::IsKeepAliveRefCountDisabled() {
   return is_keep_alive_ref_count_disabled_;
 }
 
-void RenderProcessHostImpl::Resume() {}
-
 mojom::Renderer* RenderProcessHostImpl::GetRendererInterface() {
   return renderer_interface_.get();
 }
