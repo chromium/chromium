@@ -189,6 +189,8 @@ Polymer({
     if (prefValue !== selected) {
       this.recordInteractionHistogramOnRadioChange_(
           /** @type {!SafeBrowsingSetting} */ (selected));
+      this.recordActionOnRadioChange_(
+          /** @type {!SafeBrowsingSetting} */ (selected));
     }
     if (selected === SafeBrowsingSetting.DISABLED) {
       this.showDisableSafebrowsingDialog_ = true;
@@ -263,6 +265,7 @@ Polymer({
             this.$$('settings-disable-safebrowsing-dialog'))
             .wasConfirmed();
     this.recordInteractionHistogramOnSafeBrowsingDialogClose_(confirmed);
+    this.recordActionOnSafeBrowsingDialogClose_(confirmed);
     // Check if the dialog was confirmed before closing it.
     if (confirmed) {
       this.$.safeBrowsingRadioGroup.sendPrefChange();
@@ -282,12 +285,14 @@ Polymer({
   onEnhancedProtectionExpandButtonClicked_() {
     this.recordInteractionHistogramOnExpandButtonClicked_(
         SafeBrowsingSetting.ENHANCED);
+    this.recordActionOnExpandButtonClicked_(SafeBrowsingSetting.ENHANCED);
   },
 
   /** @private */
   onStandardProtectionExpandButtonClicked_() {
     this.recordInteractionHistogramOnExpandButtonClicked_(
         SafeBrowsingSetting.STANDARD);
+    this.recordActionOnExpandButtonClicked_(SafeBrowsingSetting.STANDARD);
   },
 
   /**
@@ -323,7 +328,7 @@ Polymer({
   },
 
   /**
-   * @param {!boolean} confirmed
+   * @param {boolean} confirmed
    * @private
    */
   recordInteractionHistogramOnSafeBrowsingDialogClose_(confirmed) {
@@ -332,5 +337,42 @@ Polymer({
                         .SAFE_BROWSING_DISABLE_SAFE_BROWSING_DIALOG_CONFIRMED :
                     SafeBrowsingInteractions
                         .SAFE_BROWSING_DISABLE_SAFE_BROWSING_DIALOG_DENIED);
+  },
+
+  /**
+   * @param {!SafeBrowsingSetting} safeBrowsingSetting
+   * @private
+   */
+  recordActionOnRadioChange_(safeBrowsingSetting) {
+    let actionName;
+    if (safeBrowsingSetting === SafeBrowsingSetting.ENHANCED) {
+      actionName = 'SafeBrowsing.Settings.EnhancedProtectionClicked';
+    } else if (safeBrowsingSetting === SafeBrowsingSetting.STANDARD) {
+      actionName = 'SafeBrowsing.Settings.StandardProtectionClicked';
+    } else {
+      actionName = 'SafeBrowsing.Settings.DisableSafeBrowsingClicked';
+    }
+    this.metricsBrowserProxy_.recordAction(actionName);
+  },
+
+  /**
+   * @param {!SafeBrowsingSetting} safeBrowsingSetting
+   * @private
+   */
+  recordActionOnExpandButtonClicked_(safeBrowsingSetting) {
+    this.metricsBrowserProxy_.recordAction(
+        safeBrowsingSetting === SafeBrowsingSetting.ENHANCED ?
+            'SafeBrowsing.Settings.EnhancedProtectionExpandArrowClicked' :
+            'SafeBrowsing.Settings.StandardProtectionExpandArrowClicked');
+  },
+
+  /**
+   * @param {boolean} confirmed
+   * @private
+   */
+  recordActionOnSafeBrowsingDialogClose_(confirmed) {
+    this.metricsBrowserProxy_.recordAction(
+        confirmed ? 'SafeBrowsing.Settings.DisableSafeBrowsingDialogConfirmed' :
+                    'SafeBrowsing.Settings.DisableSafeBrowsingDialogDenied');
   },
 });

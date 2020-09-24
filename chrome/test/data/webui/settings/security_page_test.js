@@ -422,58 +422,93 @@ suite('CrSettingsSecurityPageTest', function() {
 
     testMetricsBrowserProxy.resetResolver(
         'recordSafeBrowsingInteractionHistogram');
+    testMetricsBrowserProxy.resetResolver('recordAction');
     page.$$('#safeBrowsingEnhanced').click();
     flush();
-    const enhancedClickedResult = await testMetricsBrowserProxy.whenCalled(
-        'recordSafeBrowsingInteractionHistogram');
+    const [enhancedClickedResult, enhancedClickedAction] = await Promise.all([
+      testMetricsBrowserProxy.whenCalled(
+          'recordSafeBrowsingInteractionHistogram'),
+      testMetricsBrowserProxy.whenCalled('recordAction')
+    ]);
     assertEquals(
         SafeBrowsingInteractions.SAFE_BROWSING_ENHANCED_PROTECTION_CLICKED,
         enhancedClickedResult);
+    assertEquals(
+        'SafeBrowsing.Settings.EnhancedProtectionClicked',
+        enhancedClickedAction);
 
     testMetricsBrowserProxy.resetResolver(
         'recordSafeBrowsingInteractionHistogram');
+    testMetricsBrowserProxy.resetResolver('recordAction');
     page.$$('#safeBrowsingEnhanced').$$('cr-expand-button').click();
     flush();
-    const enhancedExpandedResult = await testMetricsBrowserProxy.whenCalled(
-        'recordSafeBrowsingInteractionHistogram');
+    const [enhancedExpandedResult, enhancedExpandedAction] = await Promise.all([
+      testMetricsBrowserProxy.whenCalled(
+          'recordSafeBrowsingInteractionHistogram'),
+      testMetricsBrowserProxy.whenCalled('recordAction')
+    ]);
     assertEquals(
         SafeBrowsingInteractions
             .SAFE_BROWSING_ENHANCED_PROTECTION_EXPAND_ARROW_CLICKED,
         enhancedExpandedResult);
+    assertEquals(
+        'SafeBrowsing.Settings.EnhancedProtectionExpandArrowClicked',
+        enhancedExpandedAction);
 
     testMetricsBrowserProxy.resetResolver(
         'recordSafeBrowsingInteractionHistogram');
+    testMetricsBrowserProxy.resetResolver('recordAction');
     page.$$('#safeBrowsingStandard').$$('cr-expand-button').click();
     flush();
-    const standardExpandedResult = await testMetricsBrowserProxy.whenCalled(
-        'recordSafeBrowsingInteractionHistogram');
+    const [standardExpandedResult, standardExpandedAction] = await Promise.all([
+      testMetricsBrowserProxy.whenCalled(
+          'recordSafeBrowsingInteractionHistogram'),
+      testMetricsBrowserProxy.whenCalled('recordAction')
+    ]);
     assertEquals(
         SafeBrowsingInteractions
             .SAFE_BROWSING_STANDARD_PROTECTION_EXPAND_ARROW_CLICKED,
         standardExpandedResult);
+    assertEquals(
+        'SafeBrowsing.Settings.StandardProtectionExpandArrowClicked',
+        standardExpandedAction);
 
     testMetricsBrowserProxy.resetResolver(
         'recordSafeBrowsingInteractionHistogram');
+    testMetricsBrowserProxy.resetResolver('recordAction');
     page.$$('#safeBrowsingDisabled').click();
     flush();
-    const disableClickedResult = await testMetricsBrowserProxy.whenCalled(
-        'recordSafeBrowsingInteractionHistogram');
+    const [disableClickedResult, disableClickedAction] = await Promise.all([
+      testMetricsBrowserProxy.whenCalled(
+          'recordSafeBrowsingInteractionHistogram'),
+      testMetricsBrowserProxy.whenCalled('recordAction')
+    ]);
     assertEquals(
         SafeBrowsingInteractions.SAFE_BROWSING_DISABLE_SAFE_BROWSING_CLICKED,
         disableClickedResult);
+    assertEquals(
+        'SafeBrowsing.Settings.DisableSafeBrowsingClicked',
+        disableClickedAction);
 
     testMetricsBrowserProxy.resetResolver(
         'recordSafeBrowsingInteractionHistogram');
+    testMetricsBrowserProxy.resetResolver('recordAction');
     page.$$('settings-disable-safebrowsing-dialog')
         .$$('.cancel-button')
         .click();
     flush();
-    const disableDeniedResult = await testMetricsBrowserProxy.whenCalled(
-        'recordSafeBrowsingInteractionHistogram');
+    const [disableDeniedResult, disableDeniedAction] = await Promise.all([
+      testMetricsBrowserProxy.whenCalled(
+          'recordSafeBrowsingInteractionHistogram'),
+      testMetricsBrowserProxy.whenCalled('recordAction')
+    ]);
     assertEquals(
         SafeBrowsingInteractions
             .SAFE_BROWSING_DISABLE_SAFE_BROWSING_DIALOG_DENIED,
         disableDeniedResult);
+    assertEquals(
+        'SafeBrowsing.Settings.DisableSafeBrowsingDialogDenied',
+        disableDeniedAction);
 
     await flushTasks();
 
@@ -481,16 +516,23 @@ suite('CrSettingsSecurityPageTest', function() {
     flush();
     testMetricsBrowserProxy.resetResolver(
         'recordSafeBrowsingInteractionHistogram');
+    testMetricsBrowserProxy.resetResolver('recordAction');
     page.$$('settings-disable-safebrowsing-dialog')
         .$$('.action-button')
         .click();
     flush();
-    const disableConfirmedResult = await testMetricsBrowserProxy.whenCalled(
-        'recordSafeBrowsingInteractionHistogram');
+    const [disableConfirmedResult, disableConfirmedAction] = await Promise.all([
+      testMetricsBrowserProxy.whenCalled(
+          'recordSafeBrowsingInteractionHistogram'),
+      testMetricsBrowserProxy.whenCalled('recordAction')
+    ]);
     assertEquals(
         SafeBrowsingInteractions
             .SAFE_BROWSING_DISABLE_SAFE_BROWSING_DIALOG_CONFIRMED,
         disableConfirmedResult);
+    assertEquals(
+        'SafeBrowsing.Settings.DisableSafeBrowsingDialogConfirmed',
+        disableConfirmedAction);
   });
 
   test('securityPageShowedRecorded', async function() {

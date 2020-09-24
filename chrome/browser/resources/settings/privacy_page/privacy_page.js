@@ -336,7 +336,8 @@ Polymer({
   /** @private */
   onSecurityPageClick_() {
     this.tryShowHatsSurvey_();
-
+    this.metricsBrowserProxy_.recordAction(
+        'SafeBrowsing.Settings.ShowedFromParentSettings');
     Router.getInstance().navigateTo(routes.SECURITY);
   },
 

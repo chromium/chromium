@@ -20043,6 +20043,96 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="SafeBrowsing.Settings.DisableSafeBrowsingClicked">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <description>
+    User clicks the disable Safe Browsing button in the Safe Browsing setting
+    page.
+  </description>
+</action>
+
+<action name="SafeBrowsing.Settings.DisableSafeBrowsingDialogConfirmed">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <description>
+    User clicks the confirmed button on the disable Safe Browsing dialog in the
+    Safe Browsing setting page.
+  </description>
+</action>
+
+<action name="SafeBrowsing.Settings.DisableSafeBrowsingDialogDenied">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <description>
+    User clicks the denied button on the disable Safe Browsing dialog in the
+    Safe Browsing setting page.
+  </description>
+</action>
+
+<action name="SafeBrowsing.Settings.EnhancedProtectionClicked">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <description>
+    User clicks the exhanced protection button in the Safe Browsing setting
+    page.
+  </description>
+</action>
+
+<action name="SafeBrowsing.Settings.EnhancedProtectionExpandArrowClicked">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <description>
+    User clicks the enhanced protection expand arrow in the Safe Browsing
+    setting page.
+  </description>
+</action>
+
+<action name="SafeBrowsing.Settings.ShowedFromDefault">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <description>
+    The Safe Browsing setting page is shown to the user. The user reaches the
+    page from the default route.
+  </description>
+</action>
+
+<action name="SafeBrowsing.Settings.ShowedFromParentSettings">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <description>
+    The Safe Browsing setting page is shown to the user. The user reaches the
+    page from the parent settings.
+  </description>
+</action>
+
+<action name="SafeBrowsing.Settings.ShowedFromSafetyCheck">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <description>
+    The Safe Browsing setting page is shown to the user. The user reaches the
+    page from SafetyCheck.
+  </description>
+</action>
+
+<action name="SafeBrowsing.Settings.StandardProtectionClicked">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <description>
+    User clicks the standard protection button in the Safe Browsing setting
+    page.
+  </description>
+</action>
+
+<action name="SafeBrowsing.Settings.StandardProtectionExpandArrowClicked">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <description>
+    User clicks the standard protection expand arrow in the Safe Browsing
+    setting page.
+  </description>
+</action>
+
 <action name="Save">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>

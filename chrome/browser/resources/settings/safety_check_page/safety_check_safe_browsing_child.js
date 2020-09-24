@@ -176,6 +176,8 @@ Polymer({
 
   /** @private */
   openSecurityPage_: function() {
+    this.metricsBrowserProxy_.recordAction(
+        'SafeBrowsing.Settings.ShowedFromSafetyCheck');
     Router.getInstance().navigateTo(
         routes.SECURITY, /* dynamicParams= */ null,
         /* removeSearch= */ true);
