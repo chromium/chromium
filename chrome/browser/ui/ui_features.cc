@@ -109,6 +109,18 @@ const base::Feature kTabSearchFeedback{"TabSearchFeedback",
 const base::Feature kTabSearchFixedEntrypoint{
     "TabSearchFixedEntrypoint", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::FeatureParam<bool> kTabSearchSearchIgnoreLocation{
+    &kTabSearch, "TabSearchSearchIgnoreLocation", true};
+
+const base::FeatureParam<int> kTabSearchSearchDistance{
+    &kTabSearch, "TabSearchSearchDistance", 200};
+
+const base::FeatureParam<double> kTabSearchSearchThreshold{
+    &kTabSearch, "TabSearchSearchThreshold", 0.0};
+
+const base::FeatureParam<double> kTabSearchTitleToHostnameWeightRatio{
+    &kTabSearch, "TabSearchTitleToHostnameWeightRatio", 2.0};
+
 // Enables showing text next to the 3-dot menu when an update is available.
 // See https://crbug.com/1001731
 const base::Feature kUseTextForUpdateButton{"UseTextForUpdateButton",

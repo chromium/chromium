@@ -9,6 +9,7 @@
 #define CHROME_BROWSER_UI_UI_FEATURES_H_
 
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
 #include "chrome/common/buildflags.h"
 #include "extensions/buildflags/buildflags.h"
@@ -64,6 +65,28 @@ extern const base::Feature kTabSearch;
 extern const base::Feature kTabSearchFeedback;
 
 extern const base::Feature kTabSearchFixedEntrypoint;
+
+// Setting this to true will ignore the distance parameter when finding matches.
+// This means that it will not matter where in the string the pattern occurs.
+extern const base::FeatureParam<bool> kTabSearchSearchIgnoreLocation;
+
+// Determines how close the match must be to the beginning of the string. Eg a
+// distance of 100 and threshold of 0.8 would require a perfect match to be
+// within 80 characters of the beginning of the string.
+extern const base::FeatureParam<int> kTabSearchSearchDistance;
+
+// This determines how strong the match should be for the item to be included in
+// the result set. Eg a threshold of 0.0 requires a perfect match, 1.0 would
+// match anything. Permissible values are [0.0, 1.0].
+extern const base::FeatureParam<double> kTabSearchSearchThreshold;
+
+// These are the hardcoded minimum and maximum search threshold values for
+// |kTabSearchSearchThreshold|.
+constexpr double kTabSearchSearchThresholdMin = 0.0;
+constexpr double kTabSearchSearchThresholdMax = 1.0;
+
+// Controls how heavily weighted the tab's title is relative to the hostname.
+extern const base::FeatureParam<double> kTabSearchTitleToHostnameWeightRatio;
 
 extern const base::Feature kUseTextForUpdateButton;
 

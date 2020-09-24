@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/tab_search/tab_search_ui.h"
 
+#include "base/numerics/ranges.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -56,6 +57,19 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
   source->AddBoolean(
       "submitFeedbackEnabled",
       base::FeatureList::IsEnabled(features::kTabSearchFeedback));
+
+  // Add the configuration parameters for fuzzy search.
+  source->AddBoolean("searchIgnoreLocation",
+                     features::kTabSearchSearchIgnoreLocation.Get());
+  source->AddInteger("searchDistance",
+                     features::kTabSearchSearchDistance.Get());
+  source->AddDouble(
+      "searchThreshold",
+      base::ClampToRange<double>(features::kTabSearchSearchThreshold.Get(),
+                                 features::kTabSearchSearchThresholdMin,
+                                 features::kTabSearchSearchThresholdMax));
+  source->AddDouble("searchTitleToHostnameWeightRatio",
+                    features::kTabSearchTitleToHostnameWeightRatio.Get());
 
   source->AddLocalizedString("close", IDS_CLOSE);
   source->AddResourcePath("tab_search.mojom-lite.js",
