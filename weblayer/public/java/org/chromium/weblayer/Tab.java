@@ -947,20 +947,5 @@ public class Tab {
             StrictModeWorkaround.apply();
             return mCallback.getGaiaId();
         }
-
-        @Override
-        public String getFullName() {
-            StrictModeWorkaround.apply();
-            return mCallback.getFullName();
-        }
-
-        @Override
-        public void getAvatar(int desiredSize, IObjectWrapper avatarLoadedWrapper) {
-            StrictModeWorkaround.apply();
-            ValueCallback<Bitmap> avatarLoadedCallback =
-                    (ValueCallback<Bitmap>) ObjectWrapper.unwrap(
-                            avatarLoadedWrapper, ValueCallback.class);
-            mCallback.getAvatar(desiredSize, avatarLoadedCallback);
-        }
     }
 }

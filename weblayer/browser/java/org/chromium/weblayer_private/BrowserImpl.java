@@ -273,6 +273,7 @@ public class BrowserImpl extends IBrowser.Stub implements View.OnAttachStateChan
     }
 
     @Override
+    @NonNull
     public ProfileImpl getProfile() {
         StrictModeWorkaround.apply();
         return mProfile;

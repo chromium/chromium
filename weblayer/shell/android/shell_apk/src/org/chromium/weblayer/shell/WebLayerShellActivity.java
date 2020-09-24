@@ -12,8 +12,11 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.TextUtils;
 import android.view.ContextMenu;
 import android.view.KeyEvent;
@@ -23,6 +26,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.view.WindowManager;
+import android.webkit.ValueCallback;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -62,6 +66,7 @@ import org.chromium.weblayer.TabCallback;
 import org.chromium.weblayer.TabListCallback;
 import org.chromium.weblayer.UnsupportedVersionException;
 import org.chromium.weblayer.UrlBarOptions;
+import org.chromium.weblayer.UserIdentityCallback;
 import org.chromium.weblayer.WebLayer;
 
 import java.util.ArrayList;
@@ -390,6 +395,28 @@ public class WebLayerShellActivity extends AppCompatActivity {
         mBrowser = Browser.fromFragment(fragment);
         mProfile = mBrowser.getProfile();
         mProfile.setBooleanSetting(SettingType.UKM_ENABLED, true);
+        mProfile.setUserIdentityCallback(new UserIdentityCallback() {
+            @Override
+            public String getEmail() {
+                return "user@example.com";
+            }
+
+            @Override
+            public String getFullName() {
+                return "Jill Doe";
+            }
+
+            @Override
+            public void getAvatar(int desiredSize, ValueCallback<Bitmap> avatarLoadedCallback) {
+                // Simulate a delayed load.
+                final Handler handler = new Handler(Looper.getMainLooper());
+                handler.postDelayed(() -> {
+                    avatarLoadedCallback.onReceiveValue(BitmapFactory.decodeResource(
+                            getApplicationContext().getResources(), R.drawable.avatar_sunglasses));
+                }, 3000);
+            }
+        });
+
         setTabCallbacks(mBrowser.getActiveTab(), fragment);
 
         updateTopView();

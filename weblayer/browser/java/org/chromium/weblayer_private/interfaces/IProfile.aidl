@@ -6,6 +6,7 @@ package org.chromium.weblayer_private.interfaces;
 
 import org.chromium.weblayer_private.interfaces.ICookieManager;
 import org.chromium.weblayer_private.interfaces.IDownloadCallbackClient;
+import org.chromium.weblayer_private.interfaces.IUserIdentityCallbackClient;
 import org.chromium.weblayer_private.interfaces.IObjectWrapper;
 
 interface IProfile {
@@ -40,4 +41,7 @@ interface IProfile {
   // Added in Version 86.
   void getCachedFaviconForPageUri(in String uri,
                                   in IObjectWrapper resultCallback) = 12;
+
+  // Added in Version 87.
+  void setUserIdentityCallbackClient(IUserIdentityCallbackClient client) = 13;
 }

@@ -420,6 +420,7 @@ android_aidl("aidl") {
     "org/chromium/weblayer_private/interfaces/ITab.aidl",
     "org/chromium/weblayer_private/interfaces/ITabClient.aidl",
     "org/chromium/weblayer_private/interfaces/IUrlBarController.aidl",
+    "org/chromium/weblayer_private/interfaces/IUserIdentityCallbackClient.aidl",
     "org/chromium/weblayer_private/interfaces/IWebLayer.aidl",
     "org/chromium/weblayer_private/interfaces/IWebLayerClient.aidl",
     "org/chromium/weblayer_private/interfaces/IWebLayerFactory.aidl",

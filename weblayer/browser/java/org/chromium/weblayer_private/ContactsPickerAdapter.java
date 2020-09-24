@@ -10,6 +10,7 @@ import android.graphics.drawable.Drawable;
 import android.os.RemoteException;
 import android.text.TextUtils;
 import android.util.AndroidRuntimeException;
+import android.webkit.ValueCallback;
 
 import androidx.annotation.Nullable;
 
@@ -17,6 +18,8 @@ import org.chromium.components.browser_ui.contacts_picker.ContactDetails;
 import org.chromium.components.browser_ui.contacts_picker.PickerAdapter;
 import org.chromium.components.browser_ui.util.AvatarGenerator;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.weblayer_private.interfaces.IUserIdentityCallbackClient;
+import org.chromium.weblayer_private.interfaces.ObjectWrapper;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -43,12 +46,12 @@ public class ContactsPickerAdapter extends PickerAdapter {
 
     @Override
     protected String findOwnerEmail() {
-        GoogleAccountsCallbackProxy accountsCallback = getGoogleAccountsCallback();
-        if (accountsCallback == null) return null;
+        IUserIdentityCallbackClient identityCallback = getUserIdentityCallback();
+        if (identityCallback == null) return null;
 
         String email;
         try {
-            email = accountsCallback.getGaiaId();
+            email = identityCallback.getEmail();
         } catch (RemoteException e) {
             throw new AndroidRuntimeException(e);
         }
@@ -59,20 +62,21 @@ public class ContactsPickerAdapter extends PickerAdapter {
     protected void addOwnerInfoToContacts(ArrayList<ContactDetails> contacts) {
         // This method should only be called if there was a valid email returned in
         // findOwnerEmail().
-        GoogleAccountsCallbackProxy accountsCallback = getGoogleAccountsCallback();
-        assert accountsCallback != null;
+        IUserIdentityCallbackClient identityCallback = getUserIdentityCallback();
+        assert identityCallback != null;
 
         String name;
         // Weak ref so that the outstanding callback doesn't hold a ref to |this|.
         final WeakReference<ContactsPickerAdapter> weakThis =
                 new WeakReference<ContactsPickerAdapter>(this);
         try {
-            name = accountsCallback.getFullName();
-            accountsCallback.getAvatar(getIconRawPixelSize(), (Bitmap returnedAvatar) -> {
+            name = identityCallback.getFullName();
+            ValueCallback<Bitmap> onAvatarLoaded = (Bitmap returnedAvatar) -> {
                 if (weakThis.get() == null) return;
 
                 weakThis.get().updateOwnerInfoWithIcon(returnedAvatar);
-            });
+            };
+            identityCallback.getAvatar(getIconRawPixelSize(), ObjectWrapper.wrap(onAvatarLoaded));
         } catch (RemoteException e) {
             throw new AndroidRuntimeException(e);
         }
@@ -92,10 +96,14 @@ public class ContactsPickerAdapter extends PickerAdapter {
     }
 
     @Nullable
-    private GoogleAccountsCallbackProxy getGoogleAccountsCallback() {
-        TabImpl tab = BrowserImpl.fromWindowAndroid(mWindowAndroid).getActiveTab();
-        if (tab == null) return null;
-        return tab.getGoogleAccountsCallbackProxy();
+    private IUserIdentityCallbackClient getUserIdentityCallback() {
+        if (WebLayerFactoryImpl.getClientMajorVersion() < 87) {
+            return null;
+        }
+
+        return BrowserImpl.fromWindowAndroid(mWindowAndroid)
+                .getProfile()
+                .getUserIdentityCallbackClient();
     }
 
     private void updateOwnerInfoWithIcon(Bitmap icon) {

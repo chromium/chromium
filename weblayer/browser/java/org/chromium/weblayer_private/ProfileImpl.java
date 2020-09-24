@@ -22,6 +22,7 @@ import org.chromium.weblayer_private.interfaces.ICookieManager;
 import org.chromium.weblayer_private.interfaces.IDownloadCallbackClient;
 import org.chromium.weblayer_private.interfaces.IObjectWrapper;
 import org.chromium.weblayer_private.interfaces.IProfile;
+import org.chromium.weblayer_private.interfaces.IUserIdentityCallbackClient;
 import org.chromium.weblayer_private.interfaces.ObjectWrapper;
 import org.chromium.weblayer_private.interfaces.SettingType;
 import org.chromium.weblayer_private.interfaces.StrictModeWorkaround;
@@ -44,6 +45,7 @@ public final class ProfileImpl extends IProfile.Stub implements BrowserContextHa
     private boolean mBeingDeleted;
     private boolean mDownloadsInitialized;
     private DownloadCallbackProxy mDownloadCallbackProxy;
+    private IUserIdentityCallbackClient mUserIdentityCallbackClient;
     private List<Intent> mDownloadNotificationIntents = new ArrayList<>();
 
     public static void enumerateAllProfileNames(ValueCallback<String[]> callback) {
@@ -129,6 +131,16 @@ public final class ProfileImpl extends IProfile.Stub implements BrowserContextHa
             return 0;
         }
         return ProfileImplJni.get().getBrowserContext(mNativeProfile);
+    }
+
+    @Override
+    public void setUserIdentityCallbackClient(IUserIdentityCallbackClient client) {
+        StrictModeWorkaround.apply();
+        mUserIdentityCallbackClient = client;
+    }
+
+    public IUserIdentityCallbackClient getUserIdentityCallbackClient() {
+        return mUserIdentityCallbackClient;
     }
 
     public boolean isIncognito() {
