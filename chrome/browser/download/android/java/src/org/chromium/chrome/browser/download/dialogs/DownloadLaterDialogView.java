@@ -119,10 +119,8 @@ public class DownloadLaterDialogView extends ScrollView implements OnCheckedChan
     }
 
     void setCheckbox(@DownloadLaterPromptStatus int promptStatus) {
-        boolean checked = (promptStatus == DownloadLaterPromptStatus.SHOW_INITIAL)
-                || (promptStatus == DownloadLaterPromptStatus.DONT_SHOW);
         mCheckBox.setVisibility(VISIBLE);
-        mCheckBox.setChecked(checked);
+        mCheckBox.setChecked(promptStatus == DownloadLaterPromptStatus.DONT_SHOW);
     }
 
     void setCheckboxEnabled(boolean enabled) {
