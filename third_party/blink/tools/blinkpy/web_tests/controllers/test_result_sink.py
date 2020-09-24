@@ -168,5 +168,13 @@ class TestResultSink(object):
             # 'startTime': result.start_time
             'tags': self._tags(result),
             'testId': result.test_name,
+
+            # testLocation is where the test is defined. It is used to find
+            # the associated component/team/os information in flakiness and
+            # disabled-test dashboards.
+            'testLocation': {
+                'fileName':
+                '//third_party/blink/web_tests/' + result.test_name,
+            },
         }
         self._send({'testResults': [r]})

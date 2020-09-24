@@ -84,6 +84,16 @@ class TestResultSinkMessage(TestResultSinkTestBase):
         self.assertEqual(sent_data['status'], 'CRASH')
         self.assertEqual(sent_data['duration'], '123.456s')
 
+    def test_test_location(self):
+        tr = test_results.TestResult('')
+        prefix = '//third_party/blink/web_tests/'
+        sink = lambda tr: self.sink(True, tr)['testLocation']['fileName']
+
+        tr.test_name = "test-name"
+        self.assertEqual(sink(tr), prefix + 'test-name')
+        tr.test_name = "///test-name"
+        self.assertEqual(sink(tr), prefix + '///test-name')
+
     def test_device_failure(self):
         tr = test_results.TestResult(test_name='test-name')
         tr.type = ResultType.Failure
