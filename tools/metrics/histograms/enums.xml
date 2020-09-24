@@ -17418,6 +17418,7 @@ Called by update_document_policy_enum.py.-->
   <int value="6" label="DNS_SB"/>
   <int value="7" label="CZ_NIC"/>
   <int value="8" label="NEXT_DNS"/>
+  <int value="9" label="OPEN_DNS"/>
 </enum>
 
 <enum name="DomainBoundCerts.DBLoadStatus">

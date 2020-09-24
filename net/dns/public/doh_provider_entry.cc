@@ -134,13 +134,14 @@ const DohProviderEntry::List& DohProviderEntry::GetList() {
           "https://nextdns.io/privacy" /* privacy_policy */,
           false /* display_globally */, {"US"} /* display_countries */),
       new DohProviderEntry(
-          "OpenDNS", base::nullopt /* provider_id_for_histogram */,
+          "OpenDNS", DohProviderIdForHistogram::kOpenDns,
           {"208.67.222.222", "208.67.220.220", "2620:119:35::35",
            "2620:119:53::53"},
           {""} /* dns_over_tls_hostnames */,
-          "https://doh.opendns.com/dns-query{?dns}", "" /* ui_name */,
-          "" /* privacy_policy */, false /* display_globally */,
-          {} /* display_countries */),
+          "https://doh.opendns.com/dns-query{?dns}", "OpenDNS" /* ui_name */,
+          "https://www.cisco.com/c/en/us/about/legal/"
+          "privacy-full.html" /* privacy_policy */,
+          true /* display_globally */, {} /* display_countries */),
       new DohProviderEntry(
           "OpenDNSFamily", base::nullopt /* provider_id_for_histogram */,
           {"208.67.222.123", "208.67.220.123", "2620:119:35::123",
