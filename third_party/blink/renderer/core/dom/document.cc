@@ -7074,9 +7074,9 @@ void Document::ColorSchemeMetaChanged() {
     return;
 
   const CSSValue* color_scheme = nullptr;
-  if (auto* head_element = head()) {
+  if (auto* root_element = documentElement()) {
     for (HTMLMetaElement& meta_element :
-         Traversal<HTMLMetaElement>::DescendantsOf(*head_element)) {
+         Traversal<HTMLMetaElement>::DescendantsOf(*root_element)) {
       if (EqualIgnoringASCIICase(meta_element.GetName(), "color-scheme")) {
         if ((color_scheme = CSSParser::ParseSingleValue(
                  CSSPropertyID::kColorScheme,
