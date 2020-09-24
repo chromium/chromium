@@ -5928,6 +5928,16 @@ void Document::setDomain(const String& raw_domain,
     return;
   }
 
+  if (RuntimeEnabledFeatures::CrossOriginIsolationEnabled() &&
+      Agent::IsCrossOriginIsolated()) {
+    AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+        mojom::blink::ConsoleMessageSource::kSecurity,
+        mojom::blink::ConsoleMessageLevel::kWarning,
+        "document.domain mutation is ignored because the surrounding agent "
+        "cluster is cross-origin isolated."));
+    return;
+  }
+
   if (GetFrame()) {
     UseCounter::Count(*this,
                       dom_window_->GetSecurityOrigin()->Port() == 0
