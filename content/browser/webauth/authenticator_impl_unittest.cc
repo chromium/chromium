@@ -3855,6 +3855,18 @@ TEST_F(PINAuthenticatorImplTest, MakeCredentialHardLock) {
             *test_client_.failure_reason);
 }
 
+TEST_F(PINAuthenticatorImplTest, MakeCredentialWrongPINFirst) {
+  virtual_device_factory_->mutable_state()->pin = kTestPIN;
+  virtual_device_factory_->mutable_state()->pin_retries =
+      device::kMaxPinRetries;
+
+  // Test that we can successfully get a PIN token after a failure.
+  test_client_.expected = {{8, "wrong"}, {7, kTestPIN}};
+  EXPECT_EQ(AuthenticatorMakeCredential().status, AuthenticatorStatus::SUCCESS);
+  EXPECT_EQ(static_cast<int>(device::kMaxPinRetries),
+            virtual_device_factory_->mutable_state()->pin_retries);
+}
+
 TEST_F(PINAuthenticatorImplTest, GetAssertion) {
   typedef int Expectations[3][3];
   // kExpectedWithUISupport enumerates the expected behaviour when the embedder

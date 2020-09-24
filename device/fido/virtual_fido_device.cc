@@ -431,7 +431,6 @@ bool VirtualFidoDevice::State::InjectResidentKey(
 
 VirtualFidoDevice::VirtualFidoDevice() = default;
 
-
 VirtualFidoDevice::VirtualFidoDevice(scoped_refptr<State> state)
     : state_(std::move(state)) {}
 

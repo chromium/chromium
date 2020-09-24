@@ -449,12 +449,16 @@ VirtualCtap2Device::Config& VirtualCtap2Device::Config::operator=(
 VirtualCtap2Device::Config::~Config() = default;
 
 VirtualCtap2Device::VirtualCtap2Device() {
+  RegenerateKeyAgreementKey();
   Init({ProtocolVersion::kCtap2});
 }
 
 VirtualCtap2Device::VirtualCtap2Device(scoped_refptr<State> state,
                                        const Config& config)
     : VirtualFidoDevice(std::move(state)), config_(config) {
+  RegenerateKeyAgreementKey();
+
+  Init({ProtocolVersion::kCtap2});
   std::vector<ProtocolVersion> versions = {ProtocolVersion::kCtap2};
   if (config.u2f_support) {
     versions.emplace_back(ProtocolVersion::kU2f);
@@ -1528,19 +1532,16 @@ base::Optional<CtapDeviceResponseCode> VirtualCtap2Device::OnPINCommand(
       break;
 
     case static_cast<int>(device::pin::Subcommand::kGetKeyAgreement): {
-      bssl::UniquePtr<EC_KEY> key(
-          EC_KEY_new_by_curve_name(NID_X9_62_prime256v1));
-      CHECK(EC_KEY_generate_key(key.get()));
       std::array<uint8_t, kP256X962Length> x962;
       CHECK_EQ(x962.size(),
-               EC_POINT_point2oct(EC_KEY_get0_group(key.get()),
-                                  EC_KEY_get0_public_key(key.get()),
-                                  POINT_CONVERSION_UNCOMPRESSED, x962.data(),
-                                  x962.size(), nullptr /* BN_CTX */));
+               EC_POINT_point2oct(
+                   EC_KEY_get0_group(mutable_state()->ecdh_key.get()),
+                   EC_KEY_get0_public_key(mutable_state()->ecdh_key.get()),
+                   POINT_CONVERSION_UNCOMPRESSED, x962.data(), x962.size(),
+                   nullptr /* BN_CTX */));
 
       response_map.emplace(static_cast<int>(pin::ResponseKey::kKeyAgreement),
                            pin::EncodeCOSEPublicKey(x962));
-      mutable_state()->ecdh_key = std::move(key);
       break;
     }
 
@@ -1602,17 +1603,13 @@ base::Optional<CtapDeviceResponseCode> VirtualCtap2Device::OnPINCommand(
       }
 
       uint8_t shared_key[SHA256_DIGEST_LENGTH];
-      if (!mutable_state()->ecdh_key) {
-        // kGetKeyAgreement should have been called first.
-        NOTREACHED();
-        return CtapDeviceResponseCode::kCtap2ErrPinTokenExpired;
-      }
       pin::CalculateSharedKey(mutable_state()->ecdh_key.get(), peer_key->get(),
                               shared_key);
 
       CtapDeviceResponseCode err =
           ConfirmPresentedPIN(mutable_state(), shared_key, *encrypted_pin_hash);
       if (err != CtapDeviceResponseCode::kSuccess) {
+        RegenerateKeyAgreementKey();
         return err;
       }
 
@@ -1680,6 +1677,7 @@ base::Optional<CtapDeviceResponseCode> VirtualCtap2Device::OnPINCommand(
       CtapDeviceResponseCode err =
           ConfirmPresentedPIN(mutable_state(), shared_key, *encrypted_pin_hash);
       if (err != CtapDeviceResponseCode::kSuccess) {
+        RegenerateKeyAgreementKey();
         return err;
       }
 
@@ -2379,6 +2377,12 @@ void VirtualCtap2Device::InitPendingRegistrations(
     mutable_state()->pending_registrations.emplace_back(
         std::move(response_map));
   }
+}
+
+void VirtualCtap2Device::RegenerateKeyAgreementKey() {
+  bssl::UniquePtr<EC_KEY> key(EC_KEY_new_by_curve_name(NID_X9_62_prime256v1));
+  CHECK(EC_KEY_generate_key(key.get()));
+  mutable_state()->ecdh_key = std::move(key);
 }
 
 void VirtualCtap2Device::GetNextRP(cbor::Value::MapValue* response_map) {

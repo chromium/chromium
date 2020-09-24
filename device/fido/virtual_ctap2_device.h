@@ -235,6 +235,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualCtap2Device
   void InitPendingRPs();
   void GetNextRP(cbor::Value::MapValue* response_map);
   void InitPendingRegistrations(base::span<const uint8_t> rp_id_hash);
+  void RegenerateKeyAgreementKey();
 
   AttestedCredentialData ConstructAttestedCredentialData(
       base::span<const uint8_t> key_handle,
