@@ -91,7 +91,9 @@
         "Tor2",
         "Tor3",
         "LetsEncryptAuthorityPrimary_X1_X3",
-        "LetsEncryptAuthorityBackup_X2_X4"
+        "LetsEncryptAuthorityBackup_X2_X4",
+        "R3LetsEncrypt",
+        "R4LetsEncrypt"
       ]
     },
     {
