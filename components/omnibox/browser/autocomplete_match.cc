@@ -1040,7 +1040,7 @@ AutocompleteMatch::GetMatchWithContentsAndDescriptionPossiblySwapped() const {
 }
 
 void AutocompleteMatch::SetAllowedToBeDefault(const AutocompleteInput& input) {
-  if (inline_autocompletion.empty() && prefix_autocompletion.empty())
+  if (IsEmptyAutocompletion())
     allowed_to_be_default_match = true;
   else if (input.prevent_inline_autocomplete())
     allowed_to_be_default_match = false;
@@ -1129,7 +1129,7 @@ void AutocompleteMatch::UpgradeMatchWithPropertiesFrom(
       fill_into_edit == duplicate_match.fill_into_edit &&
       duplicate_match.allowed_to_be_default_match) {
     allowed_to_be_default_match = true;
-    if (inline_autocompletion.empty() && prefix_autocompletion.empty()) {
+    if (IsEmptyAutocompletion()) {
       inline_autocompletion = duplicate_match.inline_autocompletion;
       prefix_autocompletion = duplicate_match.prefix_autocompletion;
     }
@@ -1252,6 +1252,10 @@ bool AutocompleteMatch::TryRichAutocompletion(
   }
 
   return false;
+}
+
+bool AutocompleteMatch::IsEmptyAutocompletion() const {
+  return inline_autocompletion.empty() && prefix_autocompletion.empty();
 }
 
 #if DCHECK_IS_ON()

@@ -446,6 +446,9 @@ struct AutocompleteMatch {
                              const AutocompleteInput& input,
                              bool shortcut_provider = false);
 
+  // True if both |inline_autocompletion| & |prefix_autocompletion| are empty.
+  bool IsEmptyAutocompletion() const;
+
   // The provider of this match, used to remember which provider the user had
   // selected when the input changes. This may be NULL, in which case there is
   // no provider (or memory of the user's selection).
