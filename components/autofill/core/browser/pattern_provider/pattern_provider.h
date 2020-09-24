@@ -6,7 +6,9 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PATTERN_PROVIDER_PATTERN_PROVIDER_H_
 
 #include <string>
+
 #include "base/macros.h"
+#include "base/no_destructor.h"
 #include "base/synchronization/lock.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_parsing/autofill_parsing_utils.h"
@@ -17,10 +19,13 @@ namespace autofill {
 
 class PatternProvider {
  public:
-  PatternProvider();
-  PatternProvider(ServerFieldType type, const std::string& page_language);
-  explicit PatternProvider(ServerFieldType type);
-  ~PatternProvider();
+  static PatternProvider* getInstance();
+
+  // Setter for loaded patterns from external storage.
+  void SetPatterns(
+      const std::map<std::string,
+                     std::map<std::string, std::vector<MatchingPattern>>>&
+          patterns);
 
   // Provides us with all patterns that can match our field type and page
   // language.
@@ -30,22 +35,25 @@ class PatternProvider {
 
   const std::vector<MatchingPattern>& GetMatchPatterns(
       const std::string& pattern_name,
-      const std::string& page_launguage);
+      const std::string& page_language);
 
   // Provides us with all patterns that can match our field type.
   const std::vector<MatchingPattern>& GetAllPatternsBaseOnType(
       ServerFieldType type);
 
-  // Function that returns pattern that match our field type and page language.
-  MatchingPattern GetSingleMatchPattern(ServerFieldType type,
-                                        const std::string& page_language);
-
  private:
+  PatternProvider();
+  ~PatternProvider();
+
   // Func to sort the incoming map by score.
   void SortPatternsByScore(std::vector<MatchingPattern>& patterns);
 
-  // Local map to store patterns keyed by field type and page language.
-  std::map<std::string, std::map<std::string, MatchingPattern>> patterns_;
+  // Local map to store a vector of patterns keyed by field type and
+  // page language.
+  std::map<std::string, std::map<std::string, std::vector<MatchingPattern>>>
+      patterns_;
+
+  friend class base::NoDestructor<PatternProvider>;
 };
 }  // namespace autofill
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_PATTERN_PROVIDER_PATTERN_PROVIDER_H_

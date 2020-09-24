@@ -28,11 +28,12 @@ bool operator==(const MatchingPattern& mp1, const MatchingPattern& mp2) {
 TEST(AutofillPatternProvider, Single_Match) {
   MatchingPattern kCompanyPatternEn = GetCompanyPatternEn();
   MatchingPattern kCompanyPatternDe = GetCompanyPatternDe();
-  PatternProvider pattern_provider(COMPANY_NAME);
-  EXPECT_EQ(pattern_provider.GetSingleMatchPattern(COMPANY_NAME, "en"),
+  PatternProvider* pattern_provider = PatternProvider::getInstance();
+
+  ASSERT_TRUE(pattern_provider->GetMatchPatterns("COMPANY_NAME", "EN").size() >
+              0);
+  EXPECT_EQ(pattern_provider->GetMatchPatterns("COMPANY_NAME", "EN")[0],
             kCompanyPatternEn);
-  EXPECT_EQ(pattern_provider.GetSingleMatchPattern(COMPANY_NAME, "de"),
-            kCompanyPatternDe);
 }
 
 }  // namespace autofill

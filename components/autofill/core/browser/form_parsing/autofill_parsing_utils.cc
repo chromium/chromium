@@ -19,8 +19,8 @@ autofill::MatchingPattern GetCompanyPatternEn() {
   m_p.positive_pattern = "company|business|organization|organisation";
   m_p.positive_score = 1.1f;
   m_p.negative_pattern = "";
-  m_p.match_field_attributes = autofill::MATCH_NAME;
-  m_p.match_field_input_types = autofill::MATCH_TEXT;
+  m_p.match_field_attributes = MATCH_NAME;
+  m_p.match_field_input_types = MATCH_TEXT;
   m_p.language = "en";
 
   return m_p;
@@ -33,8 +33,8 @@ autofill::MatchingPattern GetCompanyPatternDe() {
   m_p.positive_pattern = "|(?<!con)firma|firmenname";
   m_p.positive_score = 1.1f;
   m_p.negative_pattern = "";
-  m_p.match_field_attributes = autofill::MATCH_LABEL | autofill::MATCH_NAME;
-  m_p.match_field_input_types = autofill::MATCH_TEXT;
+  m_p.match_field_attributes = MATCH_LABEL | MATCH_NAME;
+  m_p.match_field_input_types = MATCH_TEXT;
   m_p.language = "de";
 
   return m_p;

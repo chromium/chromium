@@ -229,7 +229,7 @@ bool FormField::MatchAndAdvance(AutofillScanner* scanner,
   return false;
 }
 
-// static.
+// static
 bool FormField::MatchAndAdvance(AutofillScanner* scanner,
                                 const base::string16& pattern,
                                 int match_type,
