@@ -2229,8 +2229,6 @@ void InspectorCSSAgent::DidAddDocument(Document* document) {
       StyleChangeReasonForTracing::Create(style_change_reason::kInspector));
 }
 
-void InspectorCSSAgent::DidRemoveDocument(Document* document) {}
-
 void InspectorCSSAgent::WillRemoveDOMNode(Node* node) {
   DCHECK(node);
 

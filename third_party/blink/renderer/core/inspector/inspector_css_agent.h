@@ -319,7 +319,6 @@ class CORE_EXPORT InspectorCSSAgent final
 
   // InspectorDOMAgent::DOMListener implementation
   void DidAddDocument(Document*) override;
-  void DidRemoveDocument(Document*) override;
   void WillRemoveDOMNode(Node*) override;
   void DidModifyDOMAttr(Element*) override;
 

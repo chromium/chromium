@@ -270,11 +270,6 @@ void InspectorDOMAgent::NotifyDidAddDocument(Document* document) {
     listener->DidAddDocument(document);
 }
 
-void InspectorDOMAgent::NotifyDidRemoveDocument(Document* document) {
-  for (DOMListener* listener : dom_listeners_)
-    listener->DidRemoveDocument(document);
-}
-
 void InspectorDOMAgent::NotifyWillRemoveDOMNode(Node* node) {
   for (DOMListener* listener : dom_listeners_)
     listener->WillRemoveDOMNode(node);
@@ -328,9 +323,6 @@ void InspectorDOMAgent::Unbind(Node* node) {
 
   id_to_node_.erase(id);
   id_to_nodes_map_.erase(id);
-
-  if (IsA<Document>(node))
-    NotifyDidRemoveDocument(To<Document>(node));
 
   if (auto* frame_owner = DynamicTo<HTMLFrameOwnerElement>(node)) {
     Document* content_document = frame_owner->contentDocument();

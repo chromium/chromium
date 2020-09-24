@@ -75,7 +75,6 @@ class CORE_EXPORT InspectorDOMAgent final
   struct CORE_EXPORT DOMListener : public GarbageCollectedMixin {
     virtual ~DOMListener() = default;
     virtual void DidAddDocument(Document*) = 0;
-    virtual void DidRemoveDocument(Document*) = 0;
     virtual void WillRemoveDOMNode(Node*) = 0;
     virtual void DidModifyDOMAttr(Element*) = 0;
   };
@@ -325,7 +324,6 @@ class CORE_EXPORT InspectorDOMAgent final
   void EnableAndReset();
 
   void NotifyDidAddDocument(Document*);
-  void NotifyDidRemoveDocument(Document*);
   void NotifyWillRemoveDOMNode(Node*);
   void NotifyDidModifyDOMAttr(Element*);
 
