@@ -259,6 +259,10 @@ def _RunLint(lint_binary_path,
     # Generating new baselines is only done locally, and requires more memory to
     # avoid OOMs.
     env['LINT_OPTS'] = '-Xmx4g'
+  else:
+    # The default set in the wrapper script is 1g, but it seems not enough :(
+    env['LINT_OPTS'] = '-Xmx2g'
+
   # This filter is necessary for JDK11.
   stderr_filter = build_utils.FilterReflectiveAccessJavaWarnings
   stdout_filter = lambda x: build_utils.FilterLines(x, 'No issues found')
