@@ -66,6 +66,25 @@
     };
   }
 
+  // Blocks for next/previous tab.
+  void (^focusTabLeft)();
+  void (^focusTabRight)();
+  if (useRTLLayout) {
+    focusTabLeft = ^{
+      [weakConsumer focusNextTab];
+    };
+    focusTabRight = ^{
+      [weakConsumer focusPreviousTab];
+    };
+  } else {
+    focusTabLeft = ^{
+      [weakConsumer focusPreviousTab];
+    };
+    focusTabRight = ^{
+      [weakConsumer focusNextTab];
+    };
+  }
+
   // New tab blocks.
   void (^newTab)() = ^{
     OpenNewTabCommand* newTabCommand = [OpenNewTabCommand command];
@@ -169,6 +188,44 @@
                                         [weakDispatcher closeCurrentTab];
                                       }
                                     }],
+    ]];
+
+    // Deal with the multiple next/previous tab commands we have, only one pair
+    // of which appears in the HUD. Take RTL into account for the direction.
+    const int tabLeftDescriptionID = useRTLLayout
+                                          ? IDS_IOS_KEYBOARD_NEXT_TAB
+                                          : IDS_IOS_KEYBOARD_PREVIOUS_TAB;
+    const int tabRightDescriptionID = useRTLLayout
+                                           ? IDS_IOS_KEYBOARD_PREVIOUS_TAB
+                                           : IDS_IOS_KEYBOARD_NEXT_TAB;
+    NSString* tabLeftTitle = l10n_util::GetNSStringWithFixup(
+        tabLeftDescriptionID);
+    NSString* tabRightTitle = l10n_util::GetNSStringWithFixup(
+        tabRightDescriptionID);
+    [keyCommands addObjectsFromArray:@[
+      [UIKeyCommand
+           cr_keyCommandWithInput:UIKeyInputLeftArrow
+                    modifierFlags:UIKeyModifierCommand | UIKeyModifierAlternate
+                            title:tabLeftTitle
+                           action:focusTabLeft],
+       [UIKeyCommand
+           cr_keyCommandWithInput:UIKeyInputRightArrow
+                    modifierFlags:UIKeyModifierCommand | UIKeyModifierAlternate
+                            title:tabRightTitle
+                           action:focusTabRight],
+       [UIKeyCommand
+           cr_keyCommandWithInput:@"{"
+                    modifierFlags:UIKeyModifierCommand
+                            title:nil
+                           action:focusTabLeft],
+       [UIKeyCommand
+           cr_keyCommandWithInput:@"}"
+                    modifierFlags:UIKeyModifierCommand
+                            title:nil
+                           action:focusTabRight],
+    ]];
+
+    [keyCommands addObjectsFromArray:@[
       [UIKeyCommand
           cr_keyCommandWithInput:@"d"
                    modifierFlags:UIKeyModifierCommand
@@ -339,20 +396,6 @@
                                     action:^{
                                       focusTab([weakConsumer tabsCount] - 1);
                                     }],
-      [UIKeyCommand
-          cr_keyCommandWithInput:UIKeyInputLeftArrow
-                   modifierFlags:UIKeyModifierCommand | UIKeyModifierAlternate
-                           title:nil
-                          action:^{
-                            [weakConsumer focusPreviousTab];
-                          }],
-      [UIKeyCommand
-          cr_keyCommandWithInput:UIKeyInputRightArrow
-                   modifierFlags:UIKeyModifierCommand | UIKeyModifierAlternate
-                           title:nil
-                          action:^{
-                            [weakConsumer focusNextTab];
-                          }],
       [UIKeyCommand
           cr_keyCommandWithInput:@"\t"
                    modifierFlags:UIKeyModifierControl | UIKeyModifierShift
