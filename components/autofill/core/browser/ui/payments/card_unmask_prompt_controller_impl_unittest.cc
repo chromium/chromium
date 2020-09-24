@@ -256,33 +256,8 @@ TEST_F(CardUnmaskPromptControllerImplTest, DisplayCardInformation) {
 }
 
 // Ensures to fallback to network name in the instruction message on iOS and in
-// the title on other platforms when the experiment is disabled, even though the
-// nickname is valid.
-TEST_F(CardUnmaskPromptControllerImplTest, Nickname_ExpOffNicknameValid) {
-  scoped_feature_list_.InitAndDisableFeature(
-      features::kAutofillEnableSurfacingServerCardNickname);
-  SetCreditCardForTesting(test::GetMaskedServerCardWithNickname());
-  ShowPrompt();
-#if defined(OS_IOS)
-  EXPECT_TRUE(
-      base::UTF16ToUTF8(controller_->GetInstructionsMessage()).find("Visa") !=
-      std::string::npos);
-  EXPECT_FALSE(base::UTF16ToUTF8(controller_->GetInstructionsMessage())
-                   .find("Test nickname") != std::string::npos);
-#else
-  EXPECT_TRUE(base::UTF16ToUTF8(controller_->GetWindowTitle()).find("Visa") !=
-              std::string::npos);
-  EXPECT_FALSE(
-      base::UTF16ToUTF8(controller_->GetWindowTitle()).find("Test nickname") !=
-      std::string::npos);
-#endif
-}
-
-// Ensures to fallback to network name in the instruction message on iOS and in
 // the title on other platforms when the nickname is invalid.
-TEST_F(CardUnmaskPromptControllerImplTest, Nickname_ExpOnNicknameInvalid) {
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kAutofillEnableSurfacingServerCardNickname);
+TEST_F(CardUnmaskPromptControllerImplTest, Nickname_NicknameInvalid) {
   SetCreditCardForTesting(test::GetMaskedServerCardWithInvalidNickname());
   ShowPrompt();
 #if defined(OS_IOS)
@@ -302,11 +277,9 @@ TEST_F(CardUnmaskPromptControllerImplTest, Nickname_ExpOnNicknameInvalid) {
 }
 
 // Ensures the nickname is displayed (instead of network) in the instruction
-// message on iOS and in the title on other platforms when experiment is enabled
-// and the nickname is valid.
-TEST_F(CardUnmaskPromptControllerImplTest, Nickname_ExpOnNicknameValid) {
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kAutofillEnableSurfacingServerCardNickname);
+// message on iOS and in the title on other platforms when the nickname is
+// valid.
+TEST_F(CardUnmaskPromptControllerImplTest, Nickname_NicknameValid) {
   SetCreditCardForTesting(test::GetMaskedServerCardWithNickname());
   ShowPrompt();
 #if defined(OS_IOS)

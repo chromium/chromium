@@ -102,11 +102,9 @@ TEST(CreditCardTest, GetObfuscatedStringForCardDigits) {
 TEST(CreditCardTest, PreviewSummaryAndNetworkAndLastFourDigitsStrings) {
   base::test::ScopedFeatureList scoped_feature_list;
   base::string16 valid_nickname = ASCIIToUTF16("My Visa Card");
-  // Enable the flags.
-  scoped_feature_list.InitWithFeatures(
-      /*enable_features=*/{features::kAutofillEnableSurfacingServerCardNickname,
-                           features::kAutofillEnableCardNicknameManagement},
-      /*disable_features=*/{});
+  // Enable the flag.
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAutofillEnableCardNicknameManagement);
 
   // Case 0: empty credit card.
   CreditCard credit_card0(base::GenerateGUID(), "https://www.example.com/");
@@ -208,32 +206,19 @@ TEST(CreditCardTest, PreviewSummaryAndNetworkAndLastFourDigitsStrings) {
                       test::ObfuscatedCardDigitsAsUTF8("5100") + ", 01/2010"),
       summary6);
 
-  // Case 7: Have everything including nickname but flag is off.
+  // Case 7: No credit card number, has valid nickname, but flag is off.
   // Reset and disable the nickname feature flags.
   scoped_feature_list.Reset();
-  scoped_feature_list.InitWithFeatures(
-      /*enable_features=*/{}, /*disable_features=*/{
-          features::kAutofillEnableSurfacingServerCardNickname,
-          features::kAutofillEnableCardNicknameManagement});
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillEnableCardNicknameManagement);
   CreditCard credit_card7(base::GenerateGUID(), "https://www.example.com/");
-  test::SetCreditCardInfo(&credit_card7, "John Dillinger",
-                          "5105 1051 0510 5100" /* Mastercard */, "01", "2010",
+  test::SetCreditCardInfo(&credit_card7, "John Dillinger", "", "01", "2010",
                           "1");
   credit_card7.SetNickname(valid_nickname);
-  base::string16 summary7 = credit_card7.Label();
-  EXPECT_EQ(UTF8ToUTF16(std::string("Mastercard  ") +
-                        test::ObfuscatedCardDigitsAsUTF8("5100") + ", 01/2010"),
-            summary7);
-
-  // Case 8: No credit card number, has valid nickname, but flag is off.
-  CreditCard credit_card8(base::GenerateGUID(), "https://www.example.com/");
-  test::SetCreditCardInfo(&credit_card8, "John Dillinger", "", "01", "2010",
-                          "1");
-  credit_card8.SetNickname(valid_nickname);
-  base::string16 summary8 = credit_card11.Label();
-  EXPECT_EQ(base::string16(ASCIIToUTF16("John Dillinger")), summary8);
-  base::string16 obfuscated8 = credit_card8.NetworkAndLastFourDigits();
-  EXPECT_EQ(ASCIIToUTF16(std::string("Card")), obfuscated8);
+  base::string16 summary7 = credit_card11.Label();
+  EXPECT_EQ(base::string16(ASCIIToUTF16("John Dillinger")), summary7);
+  base::string16 obfuscated7 = credit_card7.NetworkAndLastFourDigits();
+  EXPECT_EQ(ASCIIToUTF16(std::string("Card")), obfuscated7);
 }
 
 TEST(CreditCardTest, NicknameAndLastFourDigitsStrings) {
@@ -262,9 +247,6 @@ TEST(CreditCardTest, CardIdentifierStringsForAutofillDisplay) {
   base::string16 valid_nickname = ASCIIToUTF16("My Visa Card");
   base::string16 invalid_nickname =
       ASCIIToUTF16("Nickname length exceeds 25 characters");
-  // Enable the flag.
-  scoped_feature_list.InitAndEnableFeature(
-      features::kAutofillEnableSurfacingServerCardNickname);
 
   // Case 1: Nickname name is invalid -> show network name.
   CreditCard credit_card1(base::GenerateGUID(), "https://www.example.com/");
@@ -288,31 +270,13 @@ TEST(CreditCardTest, CardIdentifierStringsForAutofillDisplay) {
       valid_nickname + UTF8ToUTF16(std::string("  ") +
                                    test::ObfuscatedCardDigitsAsUTF8("5100")),
       credit_card2.CardIdentifierStringForAutofillDisplay());
-
-  // Case 3: Experiment off -> show network name.
-  // Reset and disable the feature flag.
-  scoped_feature_list.Reset();
-  scoped_feature_list.InitAndDisableFeature(
-      features::kAutofillEnableSurfacingServerCardNickname);
-  CreditCard credit_card3(base::GenerateGUID(), "https://www.example.com/");
-  test::SetCreditCardInfo(&credit_card3, "John Dillinger",
-                          "5105 1051 0510 5100" /* Mastercard */, "01", "2020",
-                          "1");
-  credit_card3.SetNickname(valid_nickname);
-  EXPECT_TRUE(credit_card3.HasNonEmptyValidNickname());
-  EXPECT_EQ(UTF8ToUTF16(std::string("Mastercard  ") +
-                        test::ObfuscatedCardDigitsAsUTF8("5100")),
-            credit_card3.CardIdentifierStringForAutofillDisplay());
 }
 
 TEST(CreditCardTest, CardIdentifierStringForIssuedCard) {
   base::test::ScopedFeatureList scoped_feature_list;
   // Enable the flag.
-  scoped_feature_list.InitWithFeatures(
-      /*enable_features=*/{features::kAutofillEnableGoogleIssuedCard,
-                           features::
-                               kAutofillEnableSurfacingServerCardNickname},
-      /*disable_features=*/{});
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAutofillEnableGoogleIssuedCard);
   // Case 1: Card Issuer set to GOOGLE with no nickname.
   CreditCard credit_card1(base::GenerateGUID(), "https://www.example.com/");
   credit_card1.set_card_issuer(CreditCard::Issuer::GOOGLE);
@@ -344,10 +308,8 @@ TEST(CreditCardTest, CardIdentifierStringForIssuedCard) {
 TEST(CreditCardTest, CardIdentifierStringForIssuedCardExpOff) {
   base::test::ScopedFeatureList scoped_feature_list;
   // Disable the flag.
-  scoped_feature_list.InitWithFeatures(
-      /*enable_features=*/{features::
-                               kAutofillEnableSurfacingServerCardNickname},
-      /*disable_features=*/{features::kAutofillEnableGoogleIssuedCard});
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillEnableGoogleIssuedCard);
   // Case 1: Card Issuer set to GOOGLE with no nickname.
   CreditCard credit_card1(base::GenerateGUID(), "https://www.example.com/");
   credit_card1.set_card_issuer(CreditCard::Issuer::GOOGLE);

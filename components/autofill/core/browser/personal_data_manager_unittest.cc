@@ -3627,8 +3627,6 @@ TEST_F(PersonalDataManagerTest,
 TEST_F(PersonalDataManagerTest,
        GetCreditCardSuggestions_NumberMissing_QueryNonNumberField) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kAutofillEnableSurfacingServerCardNickname);
   ASSERT_EQ(0U, personal_data_->GetCreditCards().size());
 
   CreditCard credit_card("1141084B-72D7-4B73-90CF-3D6AC154673B",
@@ -7919,11 +7917,8 @@ class PersonalDataManagerTestForSharingNickname
  protected:
   void SetUp() override {
     PersonalDataManagerTest::SetUp();
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::
-                                  kAutofillEnableSurfacingServerCardNickname,
-                              features::kAutofillEnableCardNicknameManagement},
-        /*disabled_features=*/{});
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kAutofillEnableCardNicknameManagement);
   }
 
  private:

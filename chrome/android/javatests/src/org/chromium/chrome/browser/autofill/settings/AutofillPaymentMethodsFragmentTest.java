@@ -96,23 +96,6 @@ public class AutofillPaymentMethodsFragmentTest {
 
     @Test
     @MediumTest
-    @Features.DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SURFACING_SERVER_CARD_NICKNAME})
-    public void testCreditCardWithNickname_nicknameExpOff_displayNetworkAndLastFourAsTitle()
-            throws Exception {
-        mAutofillTestHelper.addServerCreditCard(
-                SAMPLE_CARD_VISA, "Test nickname", CARD_ISSUER_UNKNOWN);
-
-        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
-
-        Preference cardPreference = getPreferenceScreen(activity).getPreference(1);
-        String title = cardPreference.getTitle().toString();
-        assertThat(title).contains("Visa");
-        assertThat(title).contains("1111");
-    }
-
-    @Test
-    @MediumTest
-    @Features.EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SURFACING_SERVER_CARD_NICKNAME})
     public void testCreditCardWithNickname_displaysNicknameAndLastFourAsTitle() throws Exception {
         mAutofillTestHelper.addServerCreditCard(
                 SAMPLE_CARD_VISA, "Test nickname", CARD_ISSUER_UNKNOWN);
@@ -127,7 +110,6 @@ public class AutofillPaymentMethodsFragmentTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SURFACING_SERVER_CARD_NICKNAME})
     public void testCreditCardWithLongNickname_displaysCompleteNicknameAndLastFourAsTitle()
             throws Exception {
         mAutofillTestHelper.addServerCreditCard(
@@ -170,10 +152,9 @@ public class AutofillPaymentMethodsFragmentTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_GOOGLE_ISSUED_CARD,
-            ChromeFeatureList.AUTOFILL_ENABLE_SURFACING_SERVER_CARD_NICKNAME})
-    public void
-    testGoogleIssuedServerCardWithNickname_displaysNicknameAndLastFourAsTitle() throws Exception {
+    @Features.EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_GOOGLE_ISSUED_CARD})
+    public void testGoogleIssuedServerCardWithNickname_displaysNicknameAndLastFourAsTitle()
+            throws Exception {
         mAutofillTestHelper.addServerCreditCard(
                 SAMPLE_CARD_VISA, "Test nickname", CARD_ISSUER_GOOGLE);
 

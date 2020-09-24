@@ -6084,12 +6084,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAndroidMultipleDisplayDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kAndroidMultipleDisplay)},
 #endif  // defined(OS_ANDROID)
-    {"autofill-enable-surfacing-server-card-nickname",
-     flag_descriptions::kAutofillEnableSurfacingServerCardNicknameName,
-     flag_descriptions::kAutofillEnableSurfacingServerCardNicknameDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillEnableSurfacingServerCardNickname)},
 
     {"app-cache", flag_descriptions::kAppCacheName,
      flag_descriptions::kAppCacheDescription, kOsAll,

@@ -620,35 +620,6 @@ INSTANTIATE_TEST_SUITE_P(AutofillMetricsTest,
                          AutofillMetricsCompanyTest,
                          testing::Bool());
 
-// Test parameter indicates if surfacing server nickname is enabled. The
-// nickname-related metrics are always being logged when a server nickname is
-// available. Note that depending on the experimental setup, the user may not be
-// shown the nickname.
-class AutofillMetricsServerNicknameTest
-    : public AutofillMetricsTest,
-      public testing::WithParamInterface<bool> {
- public:
-  AutofillMetricsServerNicknameTest()
-      : is_surfacing_server_card_nickname_enabled_(GetParam()) {}
-
-  void SetUp() override {
-    scoped_feature_list_.InitWithFeatureState(
-        features::kAutofillEnableSurfacingServerCardNickname,
-        is_surfacing_server_card_nickname_enabled_);
-    AutofillMetricsTest::SetUp();
-  }
-
- protected:
-  const bool is_surfacing_server_card_nickname_enabled_;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(AutofillMetricsTest,
-                         AutofillMetricsServerNicknameTest,
-                         testing::Bool());
-
 // Test that we log quality metrics appropriately.
 TEST_F(AutofillMetricsTest, QualityMetrics) {
   // Set up our form data.
@@ -6650,11 +6621,9 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardWillSubmitFormEvents) {
   }
 }
 
-// Test that we log form events for masked server card nickname. When
-// surfacing-server-nickname flag is off (we won't display the nickname), we
-// still log when user has a masked server card with nickname in order to
-// compare the selection rate on the same group of user.
-TEST_P(AutofillMetricsServerNicknameTest, LogServerNicknameFormEvents) {
+// Test that we log form events for masked server card nickname.
+// TODO(crbug.com/1059087): Remove histogram logging for server nickname.
+TEST_F(AutofillMetricsTest, LogServerNicknameFormEvents) {
   // Set up our form data.
   FormData form;
   form.name = ASCIIToUTF16("TestForm");
@@ -6799,11 +6768,9 @@ TEST_P(AutofillMetricsServerNicknameTest, LogServerNicknameFormEvents) {
 }
 
 // Test that we log suggestion selection duration for masked server card
-// nickname. When surfacing-server-nickname flag is off (we won't display the
-// nickname), we still log when user has a masked server card with nickname in
-// order to compare the selection duration on the same group of user when server
-// nickname is displayed or not.
-TEST_P(AutofillMetricsServerNicknameTest, LogServerNicknameSelectionDuration) {
+// nickname.
+// TODO(crbug.com/1059087): Remove histogram logging for server nickname.
+TEST_F(AutofillMetricsTest, LogServerNicknameSelectionDuration) {
   base::TimeTicks now = AutofillTickClock::NowTicks();
   TestAutofillTickClock test_clock;
   test_clock.SetNowTicks(now);

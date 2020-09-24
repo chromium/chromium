@@ -45,10 +45,6 @@ extern const char kAutofillEnableGoogleIssuedCardDescription[];
 extern const char kAutofillEnableOffersInDownstreamName[];
 extern const char kAutofillEnableOffersInDownstreamDescription[];
 
-// Title and description for the flag to control surfacing server card nickname.
-extern const char kAutofillEnableSurfacingServerCardNicknameName[];
-extern const char kAutofillEnableSurfacingServerCardNicknameDescription[];
-
 // Enforcing restrictions to enable/disable autofill small form support.
 extern const char kAutofillEnforceMinRequiredFieldsForHeuristicsName[];
 extern const char kAutofillEnforceMinRequiredFieldsForHeuristicsDescription[];

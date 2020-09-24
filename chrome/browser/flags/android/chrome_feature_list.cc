@@ -73,7 +73,6 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &autofill::features::kAutofillEnableCardNicknameManagement,
     &autofill::features::kAutofillEnableCompanyName,
     &autofill::features::kAutofillEnableGoogleIssuedCard,
-    &autofill::features::kAutofillEnableSurfacingServerCardNickname,
     &autofill_assistant::features::kAutofillAssistant,
     &autofill_assistant::features::kAutofillAssistantChromeEntry,
     &autofill_assistant::features::kAutofillAssistantDirectActions,

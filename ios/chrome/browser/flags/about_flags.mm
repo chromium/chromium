@@ -544,12 +544,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSafeBrowsingRealTimeLookupDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(safe_browsing::kRealTimeUrlLookupEnabled)},
-    {"autofill-enable-surfacing-server-card-nickname",
-     flag_descriptions::kAutofillEnableSurfacingServerCardNicknameName,
-     flag_descriptions::kAutofillEnableSurfacingServerCardNicknameDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillEnableSurfacingServerCardNickname)},
     {"managed-bookmarks-ios", flag_descriptions::kManagedBookmarksIOSName,
      flag_descriptions::kManagedBookmarksIOSDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kManagedBookmarksIOS)},

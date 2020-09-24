@@ -862,9 +862,7 @@ base::string16 CreditCard::NetworkAndLastFourDigits() const {
 
 base::string16 CreditCard::CardIdentifierStringForAutofillDisplay(
     base::string16 customized_nickname) const {
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableSurfacingServerCardNickname) &&
-      (HasNonEmptyValidNickname() || !customized_nickname.empty())) {
+  if (HasNonEmptyValidNickname() || !customized_nickname.empty()) {
     return NicknameAndLastFourDigits(customized_nickname);
   }
   // Return a Google-specific string for Google-issued cards.

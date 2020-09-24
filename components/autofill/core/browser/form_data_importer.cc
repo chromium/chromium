@@ -754,10 +754,7 @@ bool FormDataImporter::ImportCreditCard(
       // If the card is a local card and it has a nickname stored in the local
       // database, copy the nickname to the |candidate_credit_card| so that the
       // nickname also shows in the Upstream bubble.
-      if (base::FeatureList::IsEnabled(
-              features::kAutofillEnableSurfacingServerCardNickname)) {
-        candidate_credit_card.SetNickname(card_copy.nickname());
-      }
+      candidate_credit_card.SetNickname(card_copy.nickname());
 
       // If we should not return the local card, return that we merged it,
       // without setting |imported_credit_card|.

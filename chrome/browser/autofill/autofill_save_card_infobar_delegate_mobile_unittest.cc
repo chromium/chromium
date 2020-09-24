@@ -395,42 +395,17 @@ TEST_F(AutofillSaveCardInfoBarDelegateMobileTest,
   }
 }
 
-// Tests to ensure the card nickname is correctly shown in the Upstream infobar.
-// The param here indicates whether the nickname experiment is enabled.
-class AutofillSaveCardInfoBarDelegateMobileTestForNickname
-    : public AutofillSaveCardInfoBarDelegateMobileTest,
-      public ::testing::WithParamInterface<bool> {
- protected:
-  void SetUp() override {
-    scoped_feature_list_.InitWithFeatureState(
-        features::kAutofillEnableSurfacingServerCardNickname, GetParam());
-
-    AutofillSaveCardInfoBarDelegateMobileTest::SetUp();
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(,
-                         AutofillSaveCardInfoBarDelegateMobileTestForNickname,
-                         testing::Bool());
-
-TEST_P(AutofillSaveCardInfoBarDelegateMobileTestForNickname,
-       LocalCardHasNickname) {
+TEST_F(AutofillSaveCardInfoBarDelegateMobileTest, LocalCardHasNickname) {
   CreditCard card = test::GetCreditCard();
   card.SetNickname(base::ASCIIToUTF16("Nickname"));
   std::unique_ptr<AutofillSaveCardInfoBarDelegateMobile> delegate =
       CreateDelegate(/*is_uploading=*/true,
                      prefs::PREVIOUS_SAVE_CREDIT_CARD_PROMPT_USER_DECISION_NONE,
                      card);
-  EXPECT_EQ(delegate->card_label(),
-            GetParam() ? card.NicknameAndLastFourDigitsForTesting()
-                       : card.NetworkAndLastFourDigits());
+  EXPECT_EQ(delegate->card_label(), card.NicknameAndLastFourDigitsForTesting());
 }
 
-TEST_P(AutofillSaveCardInfoBarDelegateMobileTestForNickname,
-       LocalCardHasNoNickname) {
+TEST_F(AutofillSaveCardInfoBarDelegateMobileTest, LocalCardHasNoNickname) {
   CreditCard card = test::GetCreditCard();
   std::unique_ptr<AutofillSaveCardInfoBarDelegateMobile> delegate =
       CreateDelegate(/*is_uploading=*/true,

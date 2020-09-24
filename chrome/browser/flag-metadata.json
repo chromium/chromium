@@ -297,11 +297,6 @@
     "expiry_milestone": 90
   },
   {
-    "name": "autofill-enable-surfacing-server-card-nickname",
-    "owners": [ "sujiezhu@google.com", "jsaul@google.com" ],
-    "expiry_milestone": 90
-  },
-  {
     "name": "autofill-enable-toolbar-status-chip",
     "owners": [ "siyua" ],
     "expiry_milestone": 88

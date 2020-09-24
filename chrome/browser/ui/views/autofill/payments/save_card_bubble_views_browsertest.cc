@@ -2243,37 +2243,8 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // Tests to ensure the card nickname is shown correctly in the Upstream bubble.
-// The param indicates whether the experiment is enabled.
-class SaveCardBubbleViewsFullFormBrowserTestWithUpstreamForNickname
-    : public SaveCardBubbleViewsFullFormBrowserTest,
-      public ::testing::WithParamInterface<bool> {
- protected:
-  SaveCardBubbleViewsFullFormBrowserTestWithUpstreamForNickname() {
-    if (GetParam()) {
-      feature_list_.InitWithFeatures(
-          /*enabled_features=*/{features::
-                                    kAutofillEnableSurfacingServerCardNickname,
-                                features::kAutofillUpstream},
-          /*disabled_features=*/{});
-    } else {
-      feature_list_.InitWithFeatures(
-          /*enabled_features=*/{features::kAutofillUpstream},
-          /*disabled_features=*/{
-              features::kAutofillEnableSurfacingServerCardNickname});
-    }
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    SaveCardBubbleViewsFullFormBrowserTestWithUpstreamForNickname,
-    testing::Bool());
-
-IN_PROC_BROWSER_TEST_P(
-    SaveCardBubbleViewsFullFormBrowserTestWithUpstreamForNickname,
+IN_PROC_BROWSER_TEST_F(
+    SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
     LocalCardHasNickname) {
   base::HistogramTester histogram_tester;
   CreditCard card = test::GetCreditCard();
@@ -2289,12 +2260,11 @@ IN_PROC_BROWSER_TEST_P(
   SubmitFormAndWaitForCardUploadSaveBubble();
 
   EXPECT_EQ(GetSaveCardBubbleViews()->GetCardIdentifierString(),
-            (GetParam() ? card.NicknameAndLastFourDigitsForTesting()
-                        : card.NetworkAndLastFourDigits()));
+            card.NicknameAndLastFourDigitsForTesting());
 }
 
-IN_PROC_BROWSER_TEST_P(
-    SaveCardBubbleViewsFullFormBrowserTestWithUpstreamForNickname,
+IN_PROC_BROWSER_TEST_F(
+    SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
     LocalCardHasNoNickname) {
   base::HistogramTester histogram_tester;
   CreditCard card = test::GetCreditCard();

@@ -153,9 +153,6 @@ extern const char kAutofillEnableOffersInDownstreamDescription[];
 extern const char kAutofillEnableStickyPaymentsBubbleName[];
 extern const char kAutofillEnableStickyPaymentsBubbleDescription[];
 
-extern const char kAutofillEnableSurfacingServerCardNicknameName[];
-extern const char kAutofillEnableSurfacingServerCardNicknameDescription[];
-
 extern const char kAutofillEnableToolbarStatusChipName[];
 extern const char kAutofillEnableToolbarStatusChipDescription[];
 
