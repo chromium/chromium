@@ -10,7 +10,6 @@
 #include "base/containers/flat_set.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "chromeos/components/phonehub/notification.h"
 
 namespace chromeos {
 namespace phonehub {
@@ -62,17 +61,6 @@ class NotificationManager {
 
  protected:
   NotificationManager();
-
-  // Sets the internal collection of notifications. This does not send any
-  // requests to the remote phone device.
-  virtual void SetNotificationsInternal(
-      const base::flat_set<Notification>& notifications) = 0;
-
-  // Removes the dismissed notifications from the internal collection of
-  // notifications. Does not send a request to remove notifications to the
-  // remote device.
-  virtual void RemoveNotificationsInternal(
-      const base::flat_set<int64_t>& notification_ids) = 0;
 
   void NotifyNotificationsAdded(
       const base::flat_set<int64_t>& notification_ids);

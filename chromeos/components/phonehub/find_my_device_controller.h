@@ -34,7 +34,7 @@ class FindMyDeviceController {
   // Note: Ringing the phone via Find My Device is not a synchronous operation,
   // since it requires sending a message to the connected phone. Use the
   // observer interface to be notified of when the state changes.
-  virtual void RequestNewPhoneRingingState(bool ringing) = 0;
+  virtual void SetPhoneRingingState(bool ringing) = 0;
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
@@ -42,9 +42,6 @@ class FindMyDeviceController {
  protected:
   FindMyDeviceController();
 
-  // This only sets the internal state of the whether the phone is ringin
-  // and does not send a request to start ringing the the remote phone device.
-  virtual void SetIsPhoneRingingInternal(bool is_phone_ringing) = 0;
   void NotifyPhoneRingingStateChanged();
 
  private:
