@@ -21,8 +21,6 @@ extern const base::FeatureParam<int> kTimeoutDurationSeconds;
 extern const base::FeatureParam<bool> kThrottleBackgroundFetches;
 extern const base::FeatureParam<bool> kOnlySetLastRefreshAttemptOnSuccess;
 
-extern const base::Feature kInterestFeedNotifications;
-
 extern const base::Feature kInterestFeedFeedback;
 
 // Indicates if user card clicks and views in Chrome's feed should be reported

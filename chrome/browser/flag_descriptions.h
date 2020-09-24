@@ -1620,9 +1620,6 @@ extern const char kInstantStartDescription[];
 extern const char kIntentBlockExternalFormRedirectsNoGestureName[];
 extern const char kIntentBlockExternalFormRedirectsNoGestureDescription[];
 
-extern const char kInterestFeedNotificationsName[];
-extern const char kInterestFeedNotificationsDescription[];
-
 extern const char kInterestFeedContentSuggestionsName[];
 extern const char kInterestFeedContentSuggestionsDescription[];
 

@@ -2800,11 +2800,6 @@ const char kIntentBlockExternalFormRedirectsNoGestureDescription[] =
     "Require a user gesture that triggered a form submission in order to "
     "allow for redirecting to an external intent.";
 
-const char kInterestFeedNotificationsName[] = "Interest Feed Notifications";
-const char kInterestFeedNotificationsDescription[] =
-    "Show notifications for some suggested content from the interest feed. "
-    "#interest-feed-content-suggestions should also be enabled.";
-
 const char kInterestFeedContentSuggestionsDescription[] =
     "Use the interest feed to render content suggestions. Currently "
     "content "

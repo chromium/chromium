@@ -2882,11 +2882,6 @@
     "expiry_milestone": 90
   },
   {
-    "name": "interest-feed-notifications",
-    "owners": [ "iwells", "//chrome/android/feed/OWNERS" ],
-    "expiry_milestone": 80
-  },
-  {
     "name": "interest-feed-v2",
     "owners": [ "//chrome/android/feed/OWNERS", "feed@chromium.org" ],
     "expiry_milestone": 95
