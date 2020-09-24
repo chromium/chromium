@@ -13,6 +13,7 @@ import android.widget.FrameLayout;
 import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chromecast.base.Observer;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.components.embedder_support.view.ContentViewRenderView;
@@ -31,32 +32,34 @@ class CastWebContentsScopes {
     public static Observer<WebContents> onLayoutActivity(
             Activity activity, FrameLayout layout, @ColorInt int backgroundColor) {
         layout.setBackgroundColor(backgroundColor);
-        WindowAndroid window = new ActivityWindowAndroid(activity);
-        return onLayoutInternal(activity, layout, window, backgroundColor);
+        return onLayoutInternal(
+                activity, layout, () -> new ActivityWindowAndroid(activity), backgroundColor);
     }
 
     public static Observer<WebContents> onLayoutFragment(
             Activity activity, FrameLayout layout, @ColorInt int backgroundColor) {
         layout.setBackgroundColor(backgroundColor);
-        WindowAndroid window = new WindowAndroid(activity);
-        return onLayoutInternal(activity, layout, window, backgroundColor);
+        return onLayoutInternal(
+                activity, layout, () -> new WindowAndroid(activity), backgroundColor);
     }
 
     static Observer<WebContents> onLayoutView(Context context, FrameLayout layout,
             @ColorInt int backgroundColor, WindowTokenProvider windowTokenProvider) {
         layout.setBackgroundColor(backgroundColor);
-        WindowAndroid window = new WindowAndroid(context) {
+        return onLayoutInternal(context, layout, () -> new WindowAndroid(context) {
             @Override
             protected IBinder getWindowToken() {
                 return windowTokenProvider.provideWindowToken();
             }
-        };
-        return onLayoutInternal(context, layout, window, backgroundColor);
+        }, backgroundColor);
     }
 
+    // Note: the |windowFactory| should create a new instance of a WindowAndroid each time it is
+    // invoked.
     private static Observer<WebContents> onLayoutInternal(Context context, FrameLayout layout,
-            WindowAndroid window, @ColorInt int backgroundColor) {
+            Supplier<WindowAndroid> windowFactory, @ColorInt int backgroundColor) {
         return (WebContents webContents) -> {
+            WindowAndroid window = windowFactory.get();
             ContentViewRenderView contentViewRenderView = new ContentViewRenderView(context) {
                 @Override
                 protected void onReadyToRender() {
