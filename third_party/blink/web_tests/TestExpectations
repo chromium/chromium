@@ -150,6 +150,18 @@ virtual/composite-after-paint/paint/frames/* [ Pass ]
 virtual/composite-after-paint/scrollingcoordinator/* [ Pass ]
 # --- End CompositeAfterPaint Tests --
 
+# TODO(crbug.com/1121630): These tests are temporarily disabled during
+# investigation of the performance regression.
+crbug.com/1121630 compositing/composited-text-subpixel-translation.html [ Failure ]
+crbug.com/1121630 fast/overflow/overflow-of-video-outline.html [ Failure ]
+crbug.com/1121630 http/tests/media/video-buffered-range-contains-currentTime.html [ Failure ]
+crbug.com/1121630 media/controls-layout-direction.html [ Failure ]
+crbug.com/1121630 media/media-controls-clone.html [ Failure ]
+crbug.com/1121630 media/media-controls-grey-scrubber.html [ Failure ]
+crbug.com/1121630 paint/frames/frameset-with-stacking-context-and-not-stacking-context-children.html [ Failure ]
+crbug.com/1121630 virtual/composite-after-paint/paint/frames/frameset-with-stacking-context-and-not-stacking-context-children.html [ Failure ]
+crbug.com/1121630 virtual/dark-color-scheme/media/audio-controls-rendering.html [ Failure ]
+
 # Sheriff on 2020-09-03
 crbug.com/1124352 media/picture-in-picture/clear-after-request.html [ Crash Pass ]
 crbug.com/1124352 media/picture-in-picture/controls/picture-in-picture-button.html [ Crash Pass ]

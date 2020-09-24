@@ -104,6 +104,8 @@ class CC_EXPORT PictureLayerImpl
 
   void SetNearestNeighbor(bool nearest_neighbor);
 
+  void SetUseTransformedRasterization(bool use);
+
   void SetDirectlyCompositedImageSize(base::Optional<gfx::Size>);
 
   size_t GPUMemoryUsageInBytes() const override;
@@ -141,7 +143,9 @@ class CC_EXPORT PictureLayerImpl
   LCDTextDisallowedReason lcd_text_disallowed_reason() const {
     return lcd_text_disallowed_reason_;
   }
-  LCDTextDisallowedReason ComputeLCDTextDisallowedReasonForTesting() const;
+  LCDTextDisallowedReason ComputeLCDTextDisallowedReasonForTesting() const {
+    return ComputeLCDTextDisallowedReason();
+  }
 
   const Region& InvalidationForTesting() const { return invalidation_; }
 
@@ -177,8 +181,7 @@ class CC_EXPORT PictureLayerImpl
   void AddLowResolutionTilingIfNeeded();
   bool ShouldAdjustRasterScale() const;
   void RecalculateRasterScales();
-  // Returns false if raster translation is not applicable.
-  bool CalculateRasterTranslation(gfx::Vector2dF& raster_translation) const;
+  gfx::Vector2dF CalculateRasterTranslation(float raster_scale);
   void CleanUpTilingsOnActiveLayer(
       const std::vector<PictureLayerTiling*>& used_tilings);
   float MinimumContentsScale() const;
@@ -220,9 +223,9 @@ class CC_EXPORT PictureLayerImpl
       const std::vector<DiscardableImageMap::PaintWorkletInputWithImageId>&
           inputs);
 
-  LCDTextDisallowedReason ComputeLCDTextDisallowedReason(
-      bool raster_translation_aligns_pixels) const;
-  void UpdateCanUseLCDText(bool raster_translation_aligns_pixels);
+  LCDTextDisallowedReason ComputeLCDTextDisallowedReason() const;
+  // Returns true if the LCD state changed.
+  bool UpdateCanUseLCDText();
 
   // TODO(crbug.com/1114504): For now this checks the immediate transform node
   // only. The callers may actually want to know if this layer or ancestor has
@@ -261,6 +264,7 @@ class CC_EXPORT PictureLayerImpl
   bool only_used_low_res_last_append_quads_ : 1;
 
   bool nearest_neighbor_ : 1;
+  bool use_transformed_rasterization_ : 1;
 
   LCDTextDisallowedReason lcd_text_disallowed_reason_;
 

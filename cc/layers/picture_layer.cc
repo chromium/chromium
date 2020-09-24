@@ -61,6 +61,8 @@ void PictureLayer::PushPropertiesTo(LayerImpl* base_layer) {
   DropRecordingSourceContentIfInvalid();
 
   layer_impl->SetNearestNeighbor(picture_layer_inputs_.nearest_neighbor);
+  layer_impl->SetUseTransformedRasterization(
+      ShouldUseTransformedRasterization());
   layer_impl->set_gpu_raster_max_texture_size(
       layer_tree_host()->device_viewport_rect().size());
   layer_impl->SetIsBackdropFilterMask(is_backdrop_filter_mask());
@@ -213,6 +215,14 @@ void PictureLayer::SetNearestNeighbor(bool nearest_neighbor) {
   SetNeedsCommit();
 }
 
+void PictureLayer::SetTransformedRasterizationAllowed(bool allowed) {
+  if (picture_layer_inputs_.transformed_rasterization_allowed == allowed)
+    return;
+
+  picture_layer_inputs_.transformed_rasterization_allowed = allowed;
+  SetNeedsCommit();
+}
+
 bool PictureLayer::HasDrawableContent() const {
   return picture_layer_inputs_.client && Layer::HasDrawableContent();
 }
@@ -293,6 +303,38 @@ void PictureLayer::DropRecordingSourceContentIfInvalid() {
     picture_layer_inputs_.display_list = nullptr;
     picture_layer_inputs_.painter_reported_memory_usage = 0;
   }
+}
+
+bool PictureLayer::ShouldUseTransformedRasterization() const {
+  if (!picture_layer_inputs_.transformed_rasterization_allowed)
+    return false;
+
+  const TransformTree& transform_tree =
+      layer_tree_host()->property_trees()->transform_tree;
+  DCHECK(!transform_tree.needs_update());
+  auto* transform_node = transform_tree.Node(transform_tree_index());
+  DCHECK(transform_node);
+  // TODO(pdr): This is a workaround for https://crbug.com/708951 to avoid
+  // crashing when there's no transform node. This workaround should be removed.
+  if (!transform_node)
+    return false;
+
+  if (transform_node->to_screen_is_potentially_animated)
+    return false;
+
+  const gfx::Transform& to_screen =
+      transform_tree.ToScreen(transform_tree_index());
+  if (!to_screen.IsScaleOrTranslation())
+    return false;
+
+  float origin_x =
+      to_screen.matrix().getFloat(0, 3) + offset_to_transform_parent().x();
+  float origin_y =
+      to_screen.matrix().getFloat(1, 3) + offset_to_transform_parent().y();
+  if (origin_x - floorf(origin_x) == 0.f && origin_y - floorf(origin_y) == 0.f)
+    return false;
+
+  return true;
 }
 
 const DisplayItemList* PictureLayer::GetDisplayItemList() {

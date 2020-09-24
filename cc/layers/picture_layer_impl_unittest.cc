@@ -5066,24 +5066,13 @@ TEST_F(LegacySWPictureLayerImplTest, UpdateLCDTextInvalidatesPendingTree) {
   for (Tile* tile : pending_layer()->HighResTiling()->AllTilesForTesting())
     EXPECT_FALSE(tile->can_use_lcd_text());
 
-  // Change of the specific LCD text disallowed reason should not invalidate
-  // tilings.
   pending_layer()->SetContentsOpaque(true);
-  FilterOperations blur_filter;
-  blur_filter.Append(FilterOperation::CreateBlurFilter(4.0f));
-  SetFilter(pending_layer(), blur_filter);
-  UpdateDrawProperties(host_impl()->pending_tree());
+  pending_layer()->UpdateTiles();
+  // Once we disable lcd text, we don't re-enable it.
   EXPECT_FALSE(pending_layer()->can_use_lcd_text());
   EXPECT_TRUE(pending_layer()->HighResTiling()->has_tiles());
   for (Tile* tile : pending_layer()->HighResTiling()->AllTilesForTesting())
     EXPECT_FALSE(tile->can_use_lcd_text());
-
-  SetFilter(pending_layer(), FilterOperations());
-  UpdateDrawProperties(host_impl()->pending_tree());
-  EXPECT_TRUE(pending_layer()->can_use_lcd_text());
-  EXPECT_TRUE(pending_layer()->HighResTiling()->has_tiles());
-  for (Tile* tile : pending_layer()->HighResTiling()->AllTilesForTesting())
-    EXPECT_TRUE(tile->can_use_lcd_text());
 }
 
 TEST_F(LegacySWPictureLayerImplTest, UpdateLCDTextPushToActiveTree) {
@@ -5655,9 +5644,8 @@ TEST_F(LegacySWPictureLayerImplTest,
        ChangeRasterTranslationNukePendingLayerTiles) {
   gfx::Size layer_bounds(200, 200);
   gfx::Size tile_size(256, 256);
-  auto raster_source = FakeRasterSource::CreateFilledWithText(layer_bounds);
-  SetupTreesWithFixedTileSize(raster_source, raster_source, tile_size,
-                              Region());
+  SetupDefaultTreesWithFixedTileSize(layer_bounds, tile_size, Region());
+  pending_layer()->SetUseTransformedRasterization(true);
 
   // Start with scale & translation of * 2.25 + (0.25, 0.5).
   SetupDrawProperties(pending_layer(), 2.25f, 1.5f, 1.f, 2.25f, 2.25f, false);
@@ -5721,9 +5709,9 @@ TEST_F(LegacySWPictureLayerImplTest,
        ChangeRasterTranslationNukeActiveLayerTiles) {
   gfx::Size layer_bounds(200, 200);
   gfx::Size tile_size(256, 256);
-  auto raster_source = FakeRasterSource::CreateFilledWithText(layer_bounds);
-  SetupTreesWithFixedTileSize(raster_source, raster_source, tile_size,
-                              Region());
+  SetupDefaultTreesWithFixedTileSize(layer_bounds, tile_size, Region());
+  active_layer()->SetUseTransformedRasterization(true);
+  pending_layer()->SetUseTransformedRasterization(true);
 
   // Start with scale & translation of * 2.25 + (0.25, 0.5) on the active layer.
   SetupDrawProperties(active_layer(), 2.25f, 1.5f, 1.f, 2.25f, 2.25f, false);
@@ -5930,67 +5918,22 @@ TEST_F(LegacySWPictureLayerImplTest,
   UpdateDrawProperties(host_impl()->pending_tree());
   EXPECT_TRUE(pending_layer()->contents_opaque());
   EXPECT_TRUE(pending_layer()->contents_opaque_for_text());
-  EXPECT_EQ(LCDTextDisallowedReason::kNone,
+  EXPECT_EQ(LCDTextDisallowedReason::kNonIntegralXOffset,
             pending_layer()->ComputeLCDTextDisallowedReasonForTesting());
-  ASSERT_TRUE(pending_layer()->HighResTiling());
-  EXPECT_EQ(gfx::Vector2dF(0.2, 0.3),
-            pending_layer()->HighResTiling()->raster_transform().translation());
 
-  // Adding will-change:transform will keep the current raster translation.
-  SetWillChangeTransform(pending_layer(), true);
-  host_impl()->pending_tree()->set_needs_update_draw_properties();
-  UpdateDrawProperties(host_impl()->pending_tree());
-  EXPECT_TRUE(pending_layer()->contents_opaque());
-  EXPECT_TRUE(pending_layer()->contents_opaque_for_text());
-  EXPECT_EQ(LCDTextDisallowedReason::kWillChangeTransform,
-            pending_layer()->ComputeLCDTextDisallowedReasonForTesting());
-  ASSERT_TRUE(pending_layer()->HighResTiling());
-  EXPECT_EQ(gfx::Vector2dF(0.2, 0.3),
-            pending_layer()->HighResTiling()->raster_transform().translation());
-
-  // We should not update raster translation when there is
-  // will-change:transform.
-  pending_layer()->SetOffsetToTransformParent(gfx::Vector2dF(0.4, 0.5));
-  host_impl()->pending_tree()->set_needs_update_draw_properties();
-  UpdateDrawProperties(host_impl()->pending_tree());
-  EXPECT_TRUE(pending_layer()->contents_opaque());
-  EXPECT_TRUE(pending_layer()->contents_opaque_for_text());
-  EXPECT_EQ(LCDTextDisallowedReason::kWillChangeTransform,
-            pending_layer()->ComputeLCDTextDisallowedReasonForTesting());
-  ASSERT_TRUE(pending_layer()->HighResTiling());
-  EXPECT_EQ(gfx::Vector2dF(0.2, 0.3),
-            pending_layer()->HighResTiling()->raster_transform().translation());
-
-  // Removing will-change:transform will update raster translation.
-  SetWillChangeTransform(pending_layer(), false);
-  host_impl()->pending_tree()->set_needs_update_draw_properties();
-  UpdateDrawProperties(host_impl()->pending_tree());
+  pending_layer()->SetUseTransformedRasterization(true);
   EXPECT_TRUE(pending_layer()->contents_opaque());
   EXPECT_TRUE(pending_layer()->contents_opaque_for_text());
   EXPECT_EQ(LCDTextDisallowedReason::kNone,
             pending_layer()->ComputeLCDTextDisallowedReasonForTesting());
-  ASSERT_TRUE(pending_layer()->HighResTiling());
-  EXPECT_EQ(gfx::Vector2dF(0.4, 0.5),
-            pending_layer()->HighResTiling()->raster_transform().translation());
-}
 
-TEST_F(LegacySWPictureLayerImplTest,
-       TransformedRasterizationAndLCDTextWithoutText) {
-  auto raster_source = FakeRasterSource::CreateFilled(gfx::Size(200, 200));
-  SetupTreesWithInvalidation(raster_source, raster_source, Region());
-
-  pending_layer()->SetBackgroundColor(SK_ColorWHITE);
+  // Simulate another push from main-thread with the same values.
   pending_layer()->SetContentsOpaque(true);
-  pending_layer()->SetOffsetToTransformParent(gfx::Vector2dF(0.2, 0.3));
-  host_impl()->pending_tree()->set_needs_update_draw_properties();
-  UpdateDrawProperties(host_impl()->pending_tree());
+  pending_layer()->SetUseTransformedRasterization(true);
   EXPECT_TRUE(pending_layer()->contents_opaque());
   EXPECT_TRUE(pending_layer()->contents_opaque_for_text());
-  EXPECT_EQ(LCDTextDisallowedReason::kNoText,
+  EXPECT_EQ(LCDTextDisallowedReason::kNone,
             pending_layer()->ComputeLCDTextDisallowedReasonForTesting());
-  ASSERT_TRUE(pending_layer()->HighResTiling());
-  EXPECT_EQ(gfx::Vector2dF(),
-            pending_layer()->HighResTiling()->raster_transform().translation());
 }
 
 enum {
@@ -6092,9 +6035,7 @@ TEST_P(LCDTextTest, NonIntegralTranslation) {
   gfx::Transform non_integral_translation;
   non_integral_translation.Translate(1.5, 2.5);
   SetTransform(layer_, non_integral_translation);
-  // We can use LCD-text as raster translation can align the text to physical
-  // pixels for fragtional transform in the render target.
-  CheckCanUseLCDText(LCDTextDisallowedReason::kNone,
+  CheckCanUseLCDText(LCDTextDisallowedReason::kNonIntegralTranslation,
                      "non-integeral translation");
 
   SetTransform(layer_, gfx::Transform());
@@ -6123,11 +6064,12 @@ TEST_P(LCDTextTest, NonTranslation) {
   CheckCanUseLCDText(LCDTextDisallowedReason::kNonIntegralTranslation,
                      "Rotation transform");
 
-  // Scale. LCD text is allowed.
+  // Scale.
   gfx::Transform scale;
   scale.Scale(2.0, 2.0);
   SetTransform(layer_, scale);
-  CheckCanUseLCDText(LCDTextDisallowedReason::kNone, "Scale transform");
+  CheckCanUseLCDText(LCDTextDisallowedReason::kNonIntegralTranslation,
+                     "Scale transform");
 
   // Skew.
   gfx::Transform skew;
@@ -6283,17 +6225,6 @@ TEST_P(LCDTextTest, ContentsOpaqueForText) {
   layer_->SetContentsOpaqueForText(false);
   CheckCanUseLCDText(LCDTextDisallowedReason::kContentsNotOpaque,
                      "contents not opaque for text", layer_);
-}
-
-TEST_P(LCDTextTest, TransformAnimation) {
-  GetTransformNode(layer_)->has_potential_animation = true;
-  SetLocalTransformChanged(layer_);
-  CheckCanUseLCDText(LCDTextDisallowedReason::kTransformAnimation,
-                     "transform animation");
-
-  GetTransformNode(layer_)->has_potential_animation = false;
-  SetLocalTransformChanged(layer_);
-  CheckCanUseLCDText(LCDTextDisallowedReason::kNone, "no transform animation");
 }
 
 }  // namespace

@@ -100,6 +100,7 @@ PictureLayerImpl::PictureLayerImpl(LayerTreeImpl* tree_impl, int id)
       was_screen_space_transform_animating_(false),
       only_used_low_res_last_append_quads_(false),
       nearest_neighbor_(false),
+      use_transformed_rasterization_(false),
       lcd_text_disallowed_reason_(LCDTextDisallowedReason::kNone),
       directly_composited_image_size_(base::nullopt),
       directly_composited_image_initial_raster_scale_(0.f),
@@ -155,6 +156,7 @@ void PictureLayerImpl::PushPropertiesTo(LayerImpl* base_layer) {
   layer_impl->twin_layer_ = this;
 
   layer_impl->SetNearestNeighbor(nearest_neighbor_);
+  layer_impl->SetUseTransformedRasterization(use_transformed_rasterization_);
   layer_impl->SetDirectlyCompositedImageSize(directly_composited_image_size_);
   layer_impl->SetIsBackdropFilterMask(is_backdrop_filter_mask_);
 
@@ -812,15 +814,22 @@ void PictureLayerImpl::UpdateRasterSource(
   }
 }
 
-void PictureLayerImpl::UpdateCanUseLCDText(
-    bool raster_translation_aligns_pixels) {
+bool PictureLayerImpl::UpdateCanUseLCDText() {
   // If we have pending/active trees, the active tree doesn't update lcd text
   // status but copies it from the pending tree.
   if (!layer_tree_impl()->IsSyncTree())
-    return;
+    return false;
 
-  lcd_text_disallowed_reason_ =
-      ComputeLCDTextDisallowedReason(raster_translation_aligns_pixels);
+  // Once we disable lcd text, we don't re-enable it.
+  if (!can_use_lcd_text())
+    return false;
+
+  auto new_lcd_text_disallowed_reason = ComputeLCDTextDisallowedReason();
+  if (lcd_text_disallowed_reason_ == new_lcd_text_disallowed_reason)
+    return false;
+
+  lcd_text_disallowed_reason_ = new_lcd_text_disallowed_reason;
+  return true;
 }
 
 bool PictureLayerImpl::HasWillChangeTransformHint() const {
@@ -829,8 +838,8 @@ bool PictureLayerImpl::HasWillChangeTransformHint() const {
   return transform_node && transform_node->will_change_transform;
 }
 
-LCDTextDisallowedReason PictureLayerImpl::ComputeLCDTextDisallowedReason(
-    bool raster_translation_aligns_pixels) const {
+LCDTextDisallowedReason PictureLayerImpl::ComputeLCDTextDisallowedReason()
+    const {
   // No need to use LCD text if there is no text.
   if (!raster_source_ || !raster_source_->GetDisplayItemList() ||
       !raster_source_->GetDisplayItemList()->has_draw_text_ops()) {
@@ -847,16 +856,17 @@ LCDTextDisallowedReason PictureLayerImpl::ComputeLCDTextDisallowedReason(
     return LCDTextDisallowedReason::kContentsNotOpaque;
   }
 
-  // If raster translation aligns pixels, we can ignore fractional layer offset
-  // and transform for LCD text.
-  if (!raster_translation_aligns_pixels) {
+  if (!use_transformed_rasterization_) {
+    if (!GetTransformTree()
+             .Node(transform_tree_index())
+             ->node_and_ancestors_have_only_integer_translation)
+      return LCDTextDisallowedReason::kNonIntegralTranslation;
     if (static_cast<int>(offset_to_transform_parent().x()) !=
         offset_to_transform_parent().x())
       return LCDTextDisallowedReason::kNonIntegralXOffset;
     if (static_cast<int>(offset_to_transform_parent().y()) !=
         offset_to_transform_parent().y())
       return LCDTextDisallowedReason::kNonIntegralYOffset;
-    return LCDTextDisallowedReason::kNonIntegralTranslation;
   }
 
   TransformNode* transform_node =
@@ -864,22 +874,12 @@ LCDTextDisallowedReason PictureLayerImpl::ComputeLCDTextDisallowedReason(
   if (transform_node->node_or_ancestors_will_change_transform)
     return LCDTextDisallowedReason::kWillChangeTransform;
 
-  if (screen_space_transform_is_animating())
-    return LCDTextDisallowedReason::kTransformAnimation;
-
   EffectNode* effect_node = GetEffectTree().Node(effect_tree_index());
   if (effect_node->node_or_ancestor_has_filters ||
       effect_node->affected_by_backdrop_filter)
     return LCDTextDisallowedReason::kPixelOrColorEffect;
 
   return LCDTextDisallowedReason::kNone;
-}
-
-LCDTextDisallowedReason
-PictureLayerImpl::ComputeLCDTextDisallowedReasonForTesting() const {
-  gfx::Vector2dF raster_translation;
-  return ComputeLCDTextDisallowedReason(
-      CalculateRasterTranslation(raster_translation));
 }
 
 void PictureLayerImpl::NotifyTileStateChanged(const Tile* tile) {
@@ -1091,6 +1091,14 @@ void PictureLayerImpl::SetNearestNeighbor(bool nearest_neighbor) {
   NoteLayerPropertyChanged();
 }
 
+void PictureLayerImpl::SetUseTransformedRasterization(bool use) {
+  if (use_transformed_rasterization_ == use)
+    return;
+
+  use_transformed_rasterization_ = use;
+  NoteLayerPropertyChanged();
+}
+
 void PictureLayerImpl::SetDirectlyCompositedImageSize(
     base::Optional<gfx::Size> size) {
   if (directly_composited_image_size_ == size)
@@ -1204,26 +1212,22 @@ bool PictureLayerImpl::CanRecreateHighResTilingForLCDTextAndRasterTranslation(
 }
 
 void PictureLayerImpl::UpdateTilingsForRasterScaleAndTranslation(
-    bool has_adjusted_raster_scale) {
+    bool adjusted_raster_scale) {
   PictureLayerTiling* high_res =
       tilings_->FindTilingWithScaleKey(raster_contents_scale_);
 
-  gfx::Vector2dF raster_translation;
-  bool raster_translation_aligns_pixels =
-      CalculateRasterTranslation(raster_translation);
-  UpdateCanUseLCDText(raster_translation_aligns_pixels);
+  gfx::Vector2dF raster_translation =
+      CalculateRasterTranslation(raster_contents_scale_);
+  bool can_use_lcd_text_changed = UpdateCanUseLCDText();
   if (high_res) {
-    bool raster_translation_is_not_ideal =
-        high_res->raster_transform().translation() != raster_translation;
-    bool can_use_lcd_text_changed =
-        high_res->can_use_lcd_text() != can_use_lcd_text();
-    bool should_recreate_high_res =
-        (raster_translation_is_not_ideal || can_use_lcd_text_changed) &&
-        CanRecreateHighResTilingForLCDTextAndRasterTranslation(*high_res);
-    if (should_recreate_high_res) {
+    if (layer_tree_impl()->IsSyncTree() &&
+        (high_res->raster_transform().translation() != raster_translation ||
+         can_use_lcd_text_changed)) {
+      // We should recreate the high res tiling with the new raster translation
+      // and lcd text, which is for the sync tree only to avoid flickering.
       tilings_->Remove(high_res);
       high_res = nullptr;
-    } else if (!has_adjusted_raster_scale) {
+    } else if (!adjusted_raster_scale) {
       // Nothing changed, no need to update tilings.
       DCHECK_EQ(HIGH_RESOLUTION, high_res->resolution());
       SanityCheckTilingState();
@@ -1572,64 +1576,41 @@ void PictureLayerImpl::CleanUpTilingsOnActiveLayer(
   SanityCheckTilingState();
 }
 
-bool PictureLayerImpl::CalculateRasterTranslation(
-    gfx::Vector2dF& raster_translation) const {
-  // If this setting is set, the client (e.g. the Chromium UI) is sure that it
-  // can almost always align raster pixels to physical pixels, and doesn't care
-  // about temporary misalignment, so don't bother raster translation.
-  if (layer_tree_impl()->settings().layers_always_allowed_lcd_text)
-    return true;
+gfx::Vector2dF PictureLayerImpl::CalculateRasterTranslation(
+    float raster_scale) {
+  if (!use_transformed_rasterization_)
+    return gfx::Vector2dF();
 
-  // No need to use raster translation if there is no text.
-  if (!raster_source_ || !raster_source_->GetDisplayItemList() ||
-      !raster_source_->GetDisplayItemList()->has_draw_text_ops()) {
-    return false;
-  }
-
-  const gfx::Transform& screen_transform = ScreenSpaceTransform();
   gfx::Transform draw_transform = DrawTransform();
-
-  if (!screen_transform.IsScaleOrTranslation() ||
+  // TODO(enne): for performance reasons, we should only have a raster
+  // translation when the screen space transform is not animating.  We try to
+  // avoid this elsewhere but it still happens: http://crbug.com/778440
+  // TODO(enne): Also, we shouldn't ever get here if the draw transform is not
+  // just a scale + translation, but we do sometimes: http://crbug.com/740113
+  if (draw_properties().screen_space_transform_is_animating ||
       !draw_transform.IsScaleOrTranslation()) {
-    return false;
+    // For now, while these problems are not well understood, avoid changing
+    // the raster scale in these cases.
+    return gfx::Vector2dF();
   }
 
   // It is only useful to align the content space to the target space if their
   // relative pixel ratio is some small rational number. Currently we only
-  // align if the relative pixel ratio is 1:1 (i.e. the scale components of
-  // both the screen transform and the draw transform are approximately the same
-  // as |raster_contents_scale_|). Good match if the maximum alignment error on
-  // a layer of size 10000px does not exceed 0.001px.
-  static constexpr float kPixelErrorThreshold = 0.001f;
-  static constexpr float kScaleErrorThreshold = kPixelErrorThreshold / 10000;
-  auto is_raster_scale = [this](float scale) -> bool {
-    return std::abs(scale - raster_contents_scale_) <= kScaleErrorThreshold;
-  };
-  if (!is_raster_scale(screen_transform.matrix().getFloat(0, 0)) ||
-      !is_raster_scale(screen_transform.matrix().getFloat(1, 1)) ||
-      !is_raster_scale(draw_transform.matrix().getFloat(0, 0)) ||
-      !is_raster_scale(draw_transform.matrix().getFloat(1, 1))) {
-    return false;
-  }
+  // align if the relative pixel ratio is 1:1.
+  // Good match if the maximum alignment error on a layer of size 10000px
+  // does not exceed 0.001px.
+  static constexpr float kErrorThreshold = 0.0000001f;
+  if (std::abs(draw_transform.matrix().getFloat(0, 0) - raster_scale) >
+          kErrorThreshold ||
+      std::abs(draw_transform.matrix().getFloat(1, 1) - raster_scale) >
+          kErrorThreshold)
+    return gfx::Vector2dF();
 
-  // Extract the fractional part of layer origin in the screen space and in the
-  // target space.
-  auto fraction = [](float f) -> float { return f - floorf(f); };
-  float screen_x_fraction = fraction(screen_transform.matrix().getFloat(0, 3));
-  float screen_y_fraction = fraction(screen_transform.matrix().getFloat(1, 3));
-  float target_x_fraction = fraction(draw_transform.matrix().getFloat(0, 3));
-  float target_y_fraction = fraction(draw_transform.matrix().getFloat(1, 3));
-
-  // If the origin is different in the screen space and in the target space,
-  // it means the render target is not aligned to physical pixels, and the
-  // text content will be blurry regardless of raster translation.
-  if (std::abs(screen_x_fraction - target_x_fraction) > kPixelErrorThreshold ||
-      std::abs(screen_y_fraction - target_y_fraction) > kPixelErrorThreshold) {
-    return false;
-  }
-
-  raster_translation = gfx::Vector2dF(target_x_fraction, target_y_fraction);
-  return true;
+  // Extract the fractional part of layer origin in the target space.
+  float origin_x = draw_transform.matrix().getFloat(0, 3);
+  float origin_y = draw_transform.matrix().getFloat(1, 3);
+  return gfx::Vector2dF(origin_x - floorf(origin_x),
+                        origin_y - floorf(origin_y));
 }
 
 float PictureLayerImpl::MinimumContentsScale() const {

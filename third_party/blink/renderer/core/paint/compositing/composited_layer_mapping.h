@@ -104,6 +104,8 @@ class CORE_EXPORT CompositedLayerMapping final : public GraphicsLayerClient {
   // Update whether layer needs blending.
   void UpdateContentsOpaque();
 
+  void UpdateRasterizationPolicy();
+
   GraphicsLayer* MainGraphicsLayer() const { return graphics_layer_.get(); }
 
   GraphicsLayer* ForegroundLayer() const { return foreground_layer_.get(); }
