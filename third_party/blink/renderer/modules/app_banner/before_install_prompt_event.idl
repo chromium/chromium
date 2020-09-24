@@ -7,7 +7,7 @@
     Exposed=Window
 ] interface BeforeInstallPromptEvent : Event {
     [CallWith=ExecutionContext] constructor(DOMString type, optional BeforeInstallPromptEventInit eventInitDict = {});
-    readonly attribute FrozenArray<DOMString> platforms;
+    [HighEntropy=Direct, Measure] readonly attribute FrozenArray<DOMString> platforms;
     [CallWith=ScriptState, RaisesException] readonly attribute Promise<AppBannerPromptResult> userChoice;
     [CallWith=ScriptState, RaisesException] Promise<void> prompt();
 };

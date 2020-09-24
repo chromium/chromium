@@ -29315,7 +29315,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3543" label="V8HIDDevice_ProductId_AttributeGetter"/>
   <int value="3544" label="V8HIDDevice_ProductName_AttributeGetter"/>
   <int value="3545" label="V8HIDDevice_VendorId_AttributeGetter"/>
-  <int value="3546" label="IdentifiabilityStudyReserved3546"/>
+  <int value="3546"
+      label="V8BeforeInstallPromptEvent_Platforms_AttributeGetter"/>
   <int value="3547" label="V8HIDReportItem_HasNull_AttributeGetter"/>
   <int value="3548" label="V8HIDReportItem_IsAbsolute_AttributeGetter"/>
   <int value="3549" label="V8HIDReportItem_IsArray_AttributeGetter"/>

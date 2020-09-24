@@ -2873,7 +2873,7 @@ enum WebFeature {
   kV8HIDDevice_ProductId_AttributeGetter = 3543,
   kV8HIDDevice_ProductName_AttributeGetter = 3544,
   kV8HIDDevice_VendorId_AttributeGetter = 3545,
-  kIdentifiabilityStudyReserved3546 = 3546,
+  kV8BeforeInstallPromptEvent_Platforms_AttributeGetter = 3546,
   kV8HIDReportItem_HasNull_AttributeGetter = 3547,
   kV8HIDReportItem_IsAbsolute_AttributeGetter = 3548,
   kV8HIDReportItem_IsArray_AttributeGetter = 3549,
