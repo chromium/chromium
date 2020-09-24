@@ -30926,28 +30926,28 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Crashpad.ExceptionCaptureResult"
-    enum="CrashpadExceptionCaptureResult" expires_after="M85">
+    enum="CrashpadExceptionCaptureResult" expires_after="M90">
   <owner>jperaza@chromium.org</owner>
   <owner>crashpad-dev@chromium.org</owner>
   <summary>The outcome of execution of the Crashpad exception handler.</summary>
 </histogram>
 
 <histogram name="Crashpad.ExceptionCode.Mac" enum="CrashpadMacExceptionCodes"
-    expires_after="M85">
+    expires_after="M90">
   <owner>mark@chromium.org</owner>
   <owner>crashpad-dev@chromium.org</owner>
   <summary>The exception code encountered in a crash on Mac OS X.</summary>
 </histogram>
 
 <histogram name="Crashpad.ExceptionCode.Win" enum="CrashpadWinExceptionCodes"
-    expires_after="M85">
+    expires_after="M90">
   <owner>jperaza@chromium.org</owner>
   <owner>crashpad-dev@chromium.org</owner>
   <summary>The exception code encountered in a crash on Windows.</summary>
 </histogram>
 
 <histogram name="Crashpad.ExceptionEncountered"
-    enum="CrashpadExceptionProcessingState" expires_after="M85">
+    enum="CrashpadExceptionProcessingState" expires_after="M90">
   <owner>jperaza@chromium.org</owner>
   <owner>crashpad-dev@chromium.org</owner>
   <summary>
@@ -30957,7 +30957,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Crashpad.HandlerCrash.ExceptionCode.Mac"
-    enum="CrashpadMacExceptionCodes" expires_after="M85">
+    enum="CrashpadMacExceptionCodes" expires_after="M90">
   <owner>mark@chromium.org</owner>
   <owner>crashpad-dev@chromium.org</owner>
   <summary>
@@ -30967,7 +30967,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Crashpad.HandlerCrash.ExceptionCode.Win"
-    enum="CrashpadWinExceptionCodes" expires_after="M85">
+    enum="CrashpadWinExceptionCodes" expires_after="M90">
   <owner>jperaza@chromium.org</owner>
   <owner>crashpad-dev@chromium.org</owner>
   <summary>
@@ -30977,7 +30977,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Crashpad.HandlerLifetimeMilestone"
-    enum="CrashpadLifetimeMilestone" expires_after="M85">
+    enum="CrashpadLifetimeMilestone" expires_after="M90">
   <owner>jperaza@chromium.org</owner>
   <owner>crashpad-dev@chromium.org</owner>
   <summary>Handler start/crash/exit events.</summary>
