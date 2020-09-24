@@ -621,6 +621,58 @@
   };
 
   /**
+   * Tests opening Quick View with a text file containing some UTF-8 encoded
+   * characters: crbug.com/1064855
+   */
+  testcase.openQuickViewUtf8Text = async () => {
+    const caller = getCaller();
+
+    /**
+     * The text <webview> resides in the #quick-view shadow DOM, as a child of
+     * the #dialog element.
+     */
+    const webView = ['#quick-view', '#dialog[open] webview.text-content'];
+
+    // Open Files app on Downloads containing ENTRIES.utf8Text.
+    const appId = await setupAndWaitUntilReady(
+        RootPath.DOWNLOADS, [ENTRIES.utf8Text], []);
+
+    // Open the file in Quick View.
+    await openQuickView(appId, ENTRIES.utf8Text.nameText);
+
+    // Wait for the Quick View <webview> to load and display its content.
+    function checkWebViewTextLoaded(elements) {
+      let haveElements = Array.isArray(elements) && elements.length === 1;
+      if (haveElements) {
+        haveElements = elements[0].styles.display.includes('block');
+      }
+      if (!haveElements || !elements[0].attributes.src) {
+        return pending(caller, 'Waiting for <webview> to load.');
+      }
+      return;
+    }
+    await repeatUntil(async () => {
+      return checkWebViewTextLoaded(await remoteCall.callRemoteTestUtil(
+          'deepQueryAllElements', appId, [webView, ['display']]));
+    });
+
+    // Wait until the <webview> displays the file's content.
+    await repeatUntil(async () => {
+      const getTextContent = 'window.document.body.textContent';
+      const text = await remoteCall.callRemoteTestUtil(
+          'deepExecuteScriptInWebView', appId, [webView, getTextContent]);
+      // Check: the content of ENTRIES.utf8Text should be shown.
+      if (!text || !text[0].includes('їсти मुझे |∊☀✌✂♁ 🙂\n')) {
+        return pending(caller, 'Waiting for <webview> content.');
+      }
+    });
+
+    // Check: the correct file size should be shown.
+    const size = await getQuickViewMetadataBoxField(appId, 'Size');
+    chrome.test.assertEq('191 bytes', size);
+  };
+
+  /**
    * Tests opening Quick View and scrolling its <webview> which contains a tall
    * text document.
    */

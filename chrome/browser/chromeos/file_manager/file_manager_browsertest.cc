@@ -507,6 +507,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("openQuickViewKeyboardLeftRightChangesView"),
         TestCase("openQuickViewSniffedText"),
         TestCase("openQuickViewTextFileWithUnknownMimeType"),
+        TestCase("openQuickViewUtf8Text"),
         TestCase("openQuickViewScrollText"),
         TestCase("openQuickViewScrollHtml"),
         TestCase("openQuickViewMhtml"),
