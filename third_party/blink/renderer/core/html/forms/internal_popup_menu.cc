@@ -10,7 +10,9 @@
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/css/css_font_selector.h"
 #include "third_party/blink/renderer/core/css/css_value_id_mappings.h"
+#include "third_party/blink/renderer/core/css/pseudo_style_request.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
+#include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/events/scoped_event_queue.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
@@ -25,9 +27,11 @@
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
+#include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page_popup.h"
+#include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/platform/fonts/font_selector.h"
 #include "third_party/blink/renderer/platform/fonts/font_selector_client.h"
 #include "third_party/blink/renderer/platform/geometry/int_rect.h"
@@ -57,6 +61,37 @@ const String SerializeComputedStyleForProperty(const ComputedStyle& style,
       property.CSSValueFromComputedStyle(style, nullptr, false);
   return String::Format("%s : %s;\n", property.GetPropertyName(),
                         value->CssText().Utf8().c_str());
+}
+
+ScrollbarPart ScrollbarPartFromPseudoId(PseudoId id) {
+  switch (id) {
+    case kPseudoIdScrollbar:
+      return kScrollbarBGPart;
+    case kPseudoIdScrollbarThumb:
+      return kThumbPart;
+    case kPseudoIdScrollbarTrack:
+    case kPseudoIdScrollbarTrackPiece:
+      return kBackTrackPart;
+    default:
+      break;
+  }
+  return kNoPart;
+}
+
+scoped_refptr<const ComputedStyle> StyleForHoveredScrollbarPart(
+    HTMLSelectElement& element,
+    const ComputedStyle* style,
+    Scrollbar* scrollbar,
+    PseudoId target_id) {
+  ScrollbarPart part = ScrollbarPartFromPseudoId(target_id);
+  if (part == kNoPart)
+    return nullptr;
+  scrollbar->SetHoveredPart(part);
+  scoped_refptr<const ComputedStyle> part_style = element.StyleForPseudoElement(
+      PseudoElementStyleRequest(target_id, To<CustomScrollbar>(scrollbar),
+                                part),
+      style);
+  return part_style;
 }
 
 }  // anonymous namespace
@@ -236,30 +271,41 @@ void InternalPopupMenu::WriteDocument(SharedBuffer* data) {
       "<!DOCTYPE html><head><meta charset='UTF-8'><style>\n", data);
 
   LayoutObject* owner_layout = owner_element.GetLayoutObject();
-  if (const ComputedStyle* style =
-          owner_layout->GetCachedPseudoElementStyle(kPseudoIdScrollbar)) {
-    AppendOwnerElementPseudoStyles("select::-webkit-scrollbar", data, *style);
+
+  std::pair<PseudoId, const String> targets[] = {
+      {kPseudoIdScrollbar, "select::-webkit-scrollbar"},
+      {kPseudoIdScrollbarThumb, "select::-webkit-scrollbar-thumb"},
+      {kPseudoIdScrollbarTrack, "select::-webkit-scrollbar-track"},
+      {kPseudoIdScrollbarTrackPiece, "select::-webkit-scrollbar-track-piece"},
+      {kPseudoIdScrollbarCorner, "select::-webkit-scrollbar-corner"}};
+
+  Scrollbar* temp_scrollbar = nullptr;
+  const LayoutBox* box = owner_element.InnerElement().GetLayoutBox();
+  if (box && box->GetScrollableArea()) {
+    if (ScrollableArea* scrollable = box->GetScrollableArea()) {
+      temp_scrollbar = MakeGarbageCollected<CustomScrollbar>(
+          scrollable, kVerticalScrollbar, &owner_element.InnerElement());
+    }
   }
-  if (const ComputedStyle* style =
-          owner_layout->GetCachedPseudoElementStyle(kPseudoIdScrollbarThumb)) {
-    AppendOwnerElementPseudoStyles("select::-webkit-scrollbar-thumb", data,
-                                   *style);
+  for (auto target : targets) {
+    if (const ComputedStyle* style =
+            owner_layout->GetCachedPseudoElementStyle(target.first)) {
+      AppendOwnerElementPseudoStyles(target.second, data, *style);
+    }
+    // For Pseudo-class styles, Style should be calculated via that status.
+    if (temp_scrollbar) {
+      scoped_refptr<const ComputedStyle> part_style =
+          StyleForHoveredScrollbarPart(owner_element,
+                                       owner_element.GetComputedStyle(),
+                                       temp_scrollbar, target.first);
+      if (part_style) {
+        AppendOwnerElementPseudoStyles(target.second + ":hover", data,
+                                       *part_style);
+      }
+    }
   }
-  if (const ComputedStyle* style =
-          owner_layout->GetCachedPseudoElementStyle(kPseudoIdScrollbarTrack)) {
-    AppendOwnerElementPseudoStyles("select::-webkit-scrollbar-track", data,
-                                   *style);
-  }
-  if (const ComputedStyle* style = owner_layout->GetCachedPseudoElementStyle(
-          kPseudoIdScrollbarTrackPiece)) {
-    AppendOwnerElementPseudoStyles("select::-webkit-scrollbar-track-piece",
-                                   data, *style);
-  }
-  if (const ComputedStyle* style =
-          owner_layout->GetCachedPseudoElementStyle(kPseudoIdScrollbarCorner)) {
-    AppendOwnerElementPseudoStyles("select::-webkit-scrollbar-corner", data,
-                                   *style);
-  }
+  if (temp_scrollbar)
+    temp_scrollbar->DisconnectFromScrollableArea();
 
   data->Append(ChooserResourceLoader::GetPickerCommonStyleSheet());
   data->Append(ChooserResourceLoader::GetListPickerStyleSheet());
