@@ -22,6 +22,7 @@
 #include "ui/aura/client/focus_client.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/base/class_property.h"
+#include "ui/base/cursor/cursor_loader_win.h"
 #include "ui/base/ime/input_method.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/win/event_creation_utils.h"
@@ -631,6 +632,9 @@ DesktopWindowTreeHostWin::GetKeyboardLayoutMap() {
 void DesktopWindowTreeHostWin::SetCursorNative(gfx::NativeCursor cursor) {
   TRACE_EVENT1("ui,input", "DesktopWindowTreeHostWin::SetCursorNative",
                "cursor", cursor.type());
+  ui::CursorLoaderWin cursor_loader;
+  cursor_loader.SetPlatformCursor(&cursor);
+
   message_handler_->SetCursor(cursor.platform());
 }
 

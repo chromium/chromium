@@ -136,12 +136,11 @@ class AURA_EXPORT WindowTreeHost : public ui::internal::InputMethodDelegate,
   // root window's.
   virtual void ConvertPixelsToDIP(gfx::Point* point) const;
 
+  // Cursor.
   // Sets the currently-displayed cursor. If the cursor was previously hidden
   // via ShowCursor(false), it will remain hidden until ShowCursor(true) is
   // called, at which point the cursor that was last set via SetCursor() will be
   // used.
-  // `cursor` should have its platform cursor set, e.g. via
-  // `CursorLoader::SetPlatformCursor`.
   void SetCursor(gfx::NativeCursor cursor);
 
   // Invoked when the cursor's visibility has changed.
