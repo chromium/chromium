@@ -586,10 +586,10 @@ void ServiceWorkerStorage::PerformStorageCleanup(base::OnceClosure callback) {
       std::move(callback));
 }
 
-std::unique_ptr<ServiceWorkerResponseReader>
-ServiceWorkerStorage::CreateResponseReader(int64_t resource_id) {
-  return base::WrapUnique(
-      new ServiceWorkerResponseReader(resource_id, disk_cache()->GetWeakPtr()));
+std::unique_ptr<ServiceWorkerResourceReaderImpl>
+ServiceWorkerStorage::CreateResourceReader(int64_t resource_id) {
+  return std::make_unique<ServiceWorkerResourceReaderImpl>(
+      resource_id, disk_cache()->GetWeakPtr());
 }
 
 std::unique_ptr<ServiceWorkerResponseWriter>

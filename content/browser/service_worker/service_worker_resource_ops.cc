@@ -4,6 +4,8 @@
 
 #include "content/browser/service_worker/service_worker_resource_ops.h"
 
+#include "base/numerics/checked_math.h"
+#include "base/pickle.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "services/network/public/cpp/net_adapters.h"
@@ -13,14 +15,49 @@ namespace content {
 
 namespace {
 
-// TODO(bashi): Don't duplicate. This is the same as the BigIObuffer defined in
-// //content/browser/code_cache/generated_code_cache.cc
+// Disk cache entry data indices.
+//
+// This enum pertains to data persisted on disk. Do not remove or reuse values.
+enum {
+  kResponseInfoIndex = 0,
+  kResponseContentIndex = 1,
+  kResponseMetadataIndex = 2,
+};
+
+// Convert an HttpResponseInfo retrieved from disk_cache to URLResponseHead.
+network::mojom::URLResponseHeadPtr ConvertHttpResponseInfo(
+    const net::HttpResponseInfo& http_info,
+    int64_t response_data_size) {
+  auto response_head = network::mojom::URLResponseHead::New();
+
+  response_head->request_time = http_info.request_time;
+  response_head->response_time = http_info.response_time;
+  response_head->headers = http_info.headers;
+  response_head->headers->GetMimeType(&response_head->mime_type);
+  response_head->headers->GetCharset(&response_head->charset);
+  response_head->content_length = response_data_size;
+  response_head->was_fetched_via_spdy = http_info.was_fetched_via_spdy;
+  response_head->was_alpn_negotiated = http_info.was_alpn_negotiated;
+  response_head->connection_info = http_info.connection_info;
+  response_head->alpn_negotiated_protocol = http_info.alpn_negotiated_protocol;
+  response_head->remote_endpoint = http_info.remote_endpoint;
+  response_head->cert_status = http_info.ssl_info.cert_status;
+  response_head->ssl_info = http_info.ssl_info;
+
+  return response_head;
+}
+
+}  // namespace
+
+// BigBuffer backed IOBuffer.
 class BigIOBuffer : public net::IOBufferWithSize {
  public:
   explicit BigIOBuffer(mojo_base::BigBuffer buffer);
 
   BigIOBuffer(const BigIOBuffer&) = delete;
   BigIOBuffer& operator=(const BigIOBuffer&) = delete;
+
+  mojo_base::BigBuffer TakeBuffer();
 
  protected:
   ~BigIOBuffer() override;
@@ -36,48 +73,16 @@ BigIOBuffer::BigIOBuffer(mojo_base::BigBuffer buffer)
 }
 
 BigIOBuffer::~BigIOBuffer() {
+  // Reset `data_` to avoid double-free. The base class (IOBuffer) tries to
+  // delete it.
+  data_ = nullptr;
+}
+
+mojo_base::BigBuffer BigIOBuffer::TakeBuffer() {
   data_ = nullptr;
   size_ = 0UL;
+  return std::move(buffer_);
 }
-
-void DidReadInfo(
-    scoped_refptr<HttpResponseInfoIOBuffer> buffer,
-    ServiceWorkerResourceReaderImpl::ReadResponseHeadCallback callback,
-    int status) {
-  DCHECK(buffer);
-  const net::HttpResponseInfo* http_info = buffer->http_info.get();
-  if (!http_info) {
-    DCHECK_LT(status, 0);
-    std::move(callback).Run(status, /*response_head=*/nullptr,
-                            /*metadata=*/base::nullopt);
-    return;
-  }
-
-  auto head = network::mojom::URLResponseHead::New();
-  head->request_time = http_info->request_time;
-  head->response_time = http_info->response_time;
-  head->headers = http_info->headers;
-  head->headers->GetMimeType(&head->mime_type);
-  head->headers->GetCharset(&head->charset);
-  head->content_length = buffer->response_data_size;
-  head->was_fetched_via_spdy = http_info->was_fetched_via_spdy;
-  head->was_alpn_negotiated = http_info->was_alpn_negotiated;
-  head->connection_info = http_info->connection_info;
-  head->alpn_negotiated_protocol = http_info->alpn_negotiated_protocol;
-  head->remote_endpoint = http_info->remote_endpoint;
-  head->cert_status = http_info->ssl_info.cert_status;
-  head->ssl_info = http_info->ssl_info;
-
-  base::Optional<mojo_base::BigBuffer> metadata;
-  if (http_info->metadata) {
-    metadata = mojo_base::BigBuffer(base::as_bytes(base::make_span(
-        http_info->metadata->data(), http_info->metadata->size())));
-  }
-
-  std::move(callback).Run(status, std::move(head), std::move(metadata));
-}
-
-}  // namespace
 
 class ServiceWorkerResourceReaderImpl::DataReader {
  public:
@@ -94,23 +99,57 @@ class ServiceWorkerResourceReaderImpl::DataReader {
         watcher_(FROM_HERE,
                  mojo::SimpleWatcher::ArmingPolicy::MANUAL,
                  base::SequencedTaskRunnerHandle::Get()) {
+    DCHECK(owner_);
     DCHECK(notifier_);
-    watcher_.Watch(producer_handle_.get(), MOJO_HANDLE_SIGNAL_WRITABLE,
-                   base::BindRepeating(&DataReader::OnWritable,
-                                       weak_factory_.GetWeakPtr()));
-    watcher_.ArmOrNotify();
   }
   ~DataReader() = default;
 
   DataReader(const DataReader&) = delete;
   DataReader operator=(const DataReader&) = delete;
 
+  void Start() {
+#if DCHECK_IS_ON()
+    DCHECK_EQ(state_, State::kInitialized);
+    state_ = State::kStarted;
+#endif
+
+    owner_->EnsureEntryIsOpen(base::BindOnce(&DataReader::ContinueReadData,
+                                             weak_factory_.GetWeakPtr()));
+  }
+
  private:
+  void ContinueReadData() {
+#if DCHECK_IS_ON()
+    DCHECK_EQ(state_, State::kStarted);
+    state_ = State::kCacheEntryOpened;
+#endif
+
+    if (!owner_) {
+      Complete(net::ERR_ABORTED);
+      return;
+    }
+
+    if (!owner_->entry_) {
+      Complete(net::ERR_CACHE_MISS);
+      return;
+    }
+
+    watcher_.Watch(producer_handle_.get(), MOJO_HANDLE_SIGNAL_WRITABLE,
+                   base::BindRepeating(&DataReader::OnWritable,
+                                       weak_factory_.GetWeakPtr()));
+    watcher_.ArmOrNotify();
+  }
+
   void OnWritable(MojoResult) {
+#if DCHECK_IS_ON()
+    DCHECK(state_ == State::kCacheEntryOpened || state_ == State::kDataRead);
+    state_ = State::kProducerWritable;
+#endif
+
     DCHECK(producer_handle_.is_valid());
     DCHECK(!pending_buffer_);
 
-    if (!owner_) {
+    if (!owner_ || !owner_->entry_) {
       Complete(net::ERR_ABORTED);
       return;
     }
@@ -137,14 +176,26 @@ class ServiceWorkerResourceReaderImpl::DataReader {
     }
 
     num_bytes = std::min(num_bytes, blink::BlobUtils::GetDataPipeChunkSize());
-    auto buffer =
+    scoped_refptr<network::NetToMojoIOBuffer> buffer =
         base::MakeRefCounted<network::NetToMojoIOBuffer>(pending_buffer_.get());
-    owner_->reader_->ReadData(
-        buffer.get(), num_bytes,
-        base::BindOnce(&DataReader::DidReadData, weak_factory_.GetWeakPtr()));
+
+    net::IOBuffer* raw_buffer = buffer.get();
+    int read_bytes = owner_->entry_->Read(
+        kResponseContentIndex, current_bytes_read_, raw_buffer, num_bytes,
+        base::BindOnce(&DataReader::DidReadData, weak_factory_.GetWeakPtr(),
+                       buffer));
+    if (read_bytes != net::ERR_IO_PENDING) {
+      DidReadData(std::move(buffer), read_bytes);
+    }
   }
 
-  void DidReadData(int read_bytes) {
+  void DidReadData(scoped_refptr<network::NetToMojoIOBuffer> buffer,
+                   int read_bytes) {
+#if DCHECK_IS_ON()
+    DCHECK_EQ(state_, State::kProducerWritable);
+    state_ = State::kDataRead;
+#endif
+
     if (read_bytes < 0) {
       Complete(read_bytes);
       return;
@@ -164,6 +215,11 @@ class ServiceWorkerResourceReaderImpl::DataReader {
   }
 
   void Complete(int status) {
+#if DCHECK_IS_ON()
+    DCHECK_NE(state_, State::kComplete);
+    state_ = State::kComplete;
+#endif
+
     watcher_.Cancel();
     producer_handle_.reset();
 
@@ -184,23 +240,50 @@ class ServiceWorkerResourceReaderImpl::DataReader {
   mojo::SimpleWatcher watcher_;
   scoped_refptr<network::NetToMojoPendingBuffer> pending_buffer_;
 
+#if DCHECK_IS_ON()
+  enum class State {
+    kInitialized,
+    kStarted,
+    kCacheEntryOpened,
+    kProducerWritable,
+    kDataRead,
+    kComplete,
+  };
+  State state_ = State::kInitialized;
+#endif  // DCHECK_IS_ON()
+
   base::WeakPtrFactory<DataReader> weak_factory_{this};
 };
 
 ServiceWorkerResourceReaderImpl::ServiceWorkerResourceReaderImpl(
-    std::unique_ptr<ServiceWorkerResponseReader> reader)
-    : reader_(std::move(reader)) {
-  DCHECK(reader_);
+    int64_t resource_id,
+    base::WeakPtr<AppCacheDiskCache> disk_cache)
+    : resource_id_(resource_id), disk_cache_(std::move(disk_cache)) {
+  DCHECK_NE(resource_id_, blink::mojom::kInvalidServiceWorkerResourceId);
+  DCHECK(disk_cache_);
 }
 
-ServiceWorkerResourceReaderImpl::~ServiceWorkerResourceReaderImpl() = default;
+ServiceWorkerResourceReaderImpl::~ServiceWorkerResourceReaderImpl() {
+  if (entry_) {
+    entry_->Close();
+  }
+}
 
 void ServiceWorkerResourceReaderImpl::ReadResponseHead(
     ReadResponseHeadCallback callback) {
-  auto buffer = base::MakeRefCounted<HttpResponseInfoIOBuffer>();
-  HttpResponseInfoIOBuffer* raw_buffer = buffer.get();
-  reader_->ReadInfo(raw_buffer, base::BindOnce(&DidReadInfo, std::move(buffer),
-                                               std::move(callback)));
+#if DCHECK_IS_ON()
+  DCHECK_EQ(state_, State::kIdle);
+  state_ = State::kReadResponseHeadStarted;
+#endif
+  DCHECK(!read_response_head_callback_) << __func__ << " already called";
+  DCHECK(!response_head_) << " another ReadResponseHead() in progress";
+  DCHECK(!metadata_buffer_);
+  DCHECK(!data_reader_);
+
+  read_response_head_callback_ = std::move(callback);
+  EnsureEntryIsOpen(
+      base::BindOnce(&ServiceWorkerResourceReaderImpl::ContinueReadResponseHead,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void ServiceWorkerResourceReaderImpl::ReadData(
@@ -208,6 +291,15 @@ void ServiceWorkerResourceReaderImpl::ReadData(
     mojo::PendingRemote<storage::mojom::ServiceWorkerDataPipeStateNotifier>
         notifier,
     ReadDataCallback callback) {
+#if DCHECK_IS_ON()
+  DCHECK_EQ(state_, State::kIdle);
+  state_ = State::kReadDataStarted;
+#endif
+  DCHECK(!read_response_head_callback_) << "ReadResponseHead() being operating";
+  DCHECK(!response_head_);
+  DCHECK(!metadata_buffer_);
+  DCHECK(!data_reader_);
+
   MojoCreateDataPipeOptions options;
   options.struct_size = sizeof(MojoCreateDataPipeOptions);
   options.flags = MOJO_CREATE_DATA_PIPE_FLAG_NONE;
@@ -226,12 +318,180 @@ void ServiceWorkerResourceReaderImpl::ReadData(
   data_reader_ = std::make_unique<DataReader>(weak_factory_.GetWeakPtr(), size,
                                               std::move(notifier),
                                               std::move(producer_handle));
+  data_reader_->Start();
   std::move(callback).Run(std::move(consumer_handle));
 }
 
+void ServiceWorkerResourceReaderImpl::ContinueReadResponseHead() {
+#if DCHECK_IS_ON()
+  DCHECK_EQ(state_, State::kReadResponseHeadStarted);
+  state_ = State::kCacheEntryOpened;
+#endif
+  DCHECK(read_response_head_callback_);
+
+  if (!entry_) {
+    FailReadResponseHead(net::ERR_CACHE_MISS);
+    return;
+  }
+
+  int64_t size = entry_->GetSize(kResponseInfoIndex);
+  if (size <= 0) {
+    FailReadResponseHead(net::ERR_CACHE_MISS);
+    return;
+  }
+
+  auto buffer =
+      base::MakeRefCounted<net::IOBuffer>(base::checked_cast<size_t>(size));
+  int rv = entry_->Read(
+      kResponseInfoIndex, /*offset=*/0, buffer.get(), size,
+      base::BindOnce(&ServiceWorkerResourceReaderImpl::DidReadHttpResponseInfo,
+                     weak_factory_.GetWeakPtr(), buffer));
+  if (rv != net::ERR_IO_PENDING) {
+    DidReadHttpResponseInfo(std::move(buffer), rv);
+  }
+}
+
+void ServiceWorkerResourceReaderImpl::DidReadHttpResponseInfo(
+    scoped_refptr<net::IOBuffer> buffer,
+    int status) {
+#if DCHECK_IS_ON()
+  DCHECK_EQ(state_, State::kCacheEntryOpened);
+  state_ = State::kResponseInfoRead;
+#endif
+  DCHECK(read_response_head_callback_);
+  DCHECK(entry_);
+
+  if (status < 0) {
+    FailReadResponseHead(status);
+    return;
+  }
+
+  // Deserialize the http info structure, ensuring we got headers.
+  base::Pickle pickle(buffer->data(), status);
+  auto http_info = std::make_unique<net::HttpResponseInfo>();
+  bool response_truncated = false;
+  if (!http_info->InitFromPickle(pickle, &response_truncated) ||
+      !http_info->headers.get()) {
+    FailReadResponseHead(net::ERR_FAILED);
+    return;
+  }
+  DCHECK(!response_truncated);
+
+  int64_t response_data_size = entry_->GetSize(kResponseContentIndex);
+
+  response_head_ = ConvertHttpResponseInfo(*http_info, response_data_size);
+
+  int64_t metadata_size = entry_->GetSize(kResponseMetadataIndex);
+  DCHECK_GE(metadata_size, 0);
+  if (metadata_size <= 0) {
+    CompleteReadResponseHead(status);
+    return;
+  }
+
+  // Read metadata.
+  metadata_buffer_ = base::MakeRefCounted<BigIOBuffer>(
+      mojo_base::BigBuffer(base::checked_cast<size_t>(metadata_size)));
+  int rv = entry_->Read(
+      kResponseMetadataIndex, /*offset=*/0, metadata_buffer_.get(),
+      metadata_size,
+      base::BindOnce(&ServiceWorkerResourceReaderImpl::DidReadMetadata,
+                     weak_factory_.GetWeakPtr()));
+  if (rv != net::ERR_IO_PENDING) {
+    DidReadMetadata(rv);
+  }
+}
+
+void ServiceWorkerResourceReaderImpl::DidReadMetadata(int status) {
+#if DCHECK_IS_ON()
+  DCHECK_EQ(state_, State::kResponseInfoRead);
+  state_ = State::kMetadataRead;
+#endif
+  DCHECK(read_response_head_callback_);
+  DCHECK(metadata_buffer_);
+
+  if (status < 0) {
+    FailReadResponseHead(status);
+    return;
+  }
+
+  CompleteReadResponseHead(status);
+}
+
+void ServiceWorkerResourceReaderImpl::FailReadResponseHead(int status) {
+  DCHECK_NE(net::OK, status);
+  response_head_ = nullptr;
+  metadata_buffer_ = nullptr;
+  CompleteReadResponseHead(status);
+}
+
+void ServiceWorkerResourceReaderImpl::CompleteReadResponseHead(int status) {
+#if DCHECK_IS_ON()
+  DCHECK_NE(state_, State::kIdle);
+  state_ = State::kIdle;
+#endif
+  DCHECK(read_response_head_callback_);
+
+  base::Optional<mojo_base::BigBuffer> metadata =
+      metadata_buffer_
+          ? base::Optional<mojo_base::BigBuffer>(metadata_buffer_->TakeBuffer())
+          : base::nullopt;
+
+  metadata_buffer_ = nullptr;
+
+  std::move(read_response_head_callback_)
+      .Run(status, std::move(response_head_), std::move(metadata));
+}
+
 void ServiceWorkerResourceReaderImpl::DidReadDataComplete() {
+#if DCHECK_IS_ON()
+  DCHECK_EQ(state_, State::kReadDataStarted);
+  state_ = State::kIdle;
+#endif
   DCHECK(data_reader_);
   data_reader_.reset();
+}
+
+void ServiceWorkerResourceReaderImpl::EnsureEntryIsOpen(
+    base::OnceClosure callback) {
+  DCHECK(!open_entry_callback_);
+  open_entry_callback_ = std::move(callback);
+
+  int rv;
+  AppCacheDiskCacheEntry** entry_ptr = nullptr;
+  if (entry_) {
+    rv = net::OK;
+  } else if (!disk_cache_) {
+    rv = net::ERR_FAILED;
+  } else {
+    entry_ptr = new AppCacheDiskCacheEntry*;
+    rv = disk_cache_->OpenEntry(
+        resource_id_, entry_ptr,
+        base::BindOnce(&DidOpenEntry, weak_factory_.GetWeakPtr(), entry_ptr));
+  }
+
+  if (rv != net::ERR_IO_PENDING) {
+    DidOpenEntry(weak_factory_.GetWeakPtr(), entry_ptr, rv);
+  }
+}
+
+// static
+void ServiceWorkerResourceReaderImpl::DidOpenEntry(
+    base::WeakPtr<ServiceWorkerResourceReaderImpl> reader,
+    AppCacheDiskCacheEntry** entry,
+    int rv) {
+  if (!reader) {
+    delete entry;
+    return;
+  }
+
+  if (!reader->entry_ && rv == net::OK) {
+    DCHECK(entry);
+    reader->entry_ = *entry;
+  }
+  delete entry;
+
+  DCHECK(reader->open_entry_callback_);
+  std::move(reader->open_entry_callback_).Run();
 }
 
 ServiceWorkerResourceWriterImpl::ServiceWorkerResourceWriterImpl(

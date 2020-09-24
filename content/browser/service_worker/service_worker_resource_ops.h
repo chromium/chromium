@@ -11,16 +11,14 @@
 
 namespace content {
 
+class BigIOBuffer;
+
 // The implementation of storage::mojom::ServiceWorkerResourceReader.
-// Currently this class is an adaptor that uses ServiceWorkerResponseReader
-// internally.
-// TODO(crbug.com/1055677): Fork the implementation of
-// ServiceWorkerResponseReader and stop using it.
 class ServiceWorkerResourceReaderImpl
     : public storage::mojom::ServiceWorkerResourceReader {
  public:
-  explicit ServiceWorkerResourceReaderImpl(
-      std::unique_ptr<ServiceWorkerResponseReader> reader);
+  ServiceWorkerResourceReaderImpl(int64_t resource_id,
+                                  base::WeakPtr<AppCacheDiskCache> disk_cache);
 
   ServiceWorkerResourceReaderImpl(const ServiceWorkerResourceReaderImpl&) =
       delete;
@@ -29,7 +27,6 @@ class ServiceWorkerResourceReaderImpl
 
   ~ServiceWorkerResourceReaderImpl() override;
 
- private:
   // storage::mojom::ServiceWorkerResourceReader implementations:
   void ReadResponseHead(ReadResponseHeadCallback callback) override;
   void ReadData(
@@ -38,12 +35,61 @@ class ServiceWorkerResourceReaderImpl
           notifier,
       ReadDataCallback callback) override;
 
+ private:
+  class DataReader;
+
+  // Called while executing ReadResponseHead() in the order they are declared.
+  void ContinueReadResponseHead();
+  void DidReadHttpResponseInfo(scoped_refptr<net::IOBuffer> buffer, int status);
+  void DidReadMetadata(int status);
+  // Complete the operation started by ReadResponseHead().
+  void FailReadResponseHead(int status);
+  void CompleteReadResponseHead(int status);
+
+  // Completes ReadData(). Called when `data_reader_` finished reading response
+  // data.
   void DidReadDataComplete();
 
-  const std::unique_ptr<ServiceWorkerResponseReader> reader_;
+  // Opens a disk cache entry associated with `resource_id_`, if it isn't
+  // opened yet.
+  void EnsureEntryIsOpen(base::OnceClosure callback);
 
-  class DataReader;
+  static void DidOpenEntry(
+      base::WeakPtr<ServiceWorkerResourceReaderImpl> reader,
+      AppCacheDiskCacheEntry** entry,
+      int rv);
+
+  const int64_t resource_id_;
+  base::WeakPtr<AppCacheDiskCache> disk_cache_;
+  AppCacheDiskCacheEntry* entry_ = nullptr;
+
+  // Used to read metadata from disk cache.
+  scoped_refptr<BigIOBuffer> metadata_buffer_;
+  // Holds the return value of ReadResponseHead(). Stored as a member field
+  // to handle net style maybe-async methods.
+  network::mojom::URLResponseHeadPtr response_head_;
+  // Holds the callback of ReadResponseHead(). Stored as a member field to
+  // handle //net-style maybe-async methods.
+  ReadResponseHeadCallback read_response_head_callback_;
+
+  // Helper for ReadData().
   std::unique_ptr<DataReader> data_reader_;
+
+  // Holds the callback of EnsureEntryIsOpen(). Stored as a data member to
+  // handle net style maybe-async methods.
+  base::OnceClosure open_entry_callback_;
+
+#if DCHECK_IS_ON()
+  enum class State {
+    kIdle,
+    kReadResponseHeadStarted,
+    kReadDataStarted,
+    kCacheEntryOpened,
+    kResponseInfoRead,
+    kMetadataRead,
+  };
+  State state_ = State::kIdle;
+#endif  // DCHECK_IS_ON()
 
   base::WeakPtrFactory<ServiceWorkerResourceReaderImpl> weak_factory_{this};
 };

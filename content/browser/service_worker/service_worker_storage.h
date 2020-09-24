@@ -24,6 +24,7 @@
 #include "components/services/storage/public/mojom/local_storage_control.mojom.h"
 #include "components/services/storage/public/mojom/service_worker_storage_control.mojom.h"
 #include "content/browser/service_worker/service_worker_database.h"
+#include "content/browser/service_worker/service_worker_resource_ops.h"
 #include "content/common/content_export.h"
 #include "url/gurl.h"
 
@@ -39,7 +40,6 @@ namespace content {
 
 class ServiceWorkerDiskCache;
 class ServiceWorkerResponseMetadataWriter;
-class ServiceWorkerResponseReader;
 class ServiceWorkerResponseWriter;
 class ServiceWorkerStorageControlImplTest;
 
@@ -189,7 +189,7 @@ class CONTENT_EXPORT ServiceWorkerStorage {
 
   // Creates a resource accessor. Never returns nullptr but an accessor may be
   // associated with the disabled disk cache if the storage is disabled.
-  std::unique_ptr<ServiceWorkerResponseReader> CreateResponseReader(
+  std::unique_ptr<ServiceWorkerResourceReaderImpl> CreateResourceReader(
       int64_t resource_id);
   std::unique_ptr<ServiceWorkerResponseWriter> CreateResponseWriter(
       int64_t resource_id);
