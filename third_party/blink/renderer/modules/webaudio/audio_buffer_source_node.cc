@@ -320,9 +320,61 @@ bool AudioBufferSourceHandler::RenderFromBuffer(
     }
     virtual_read_index = read_index;
   } else {
-    virtual_read_index = RenderFromBufferKernel(
-        write_index, frames_to_process, virtual_read_index, virtual_end_frame,
-        virtual_delta_frames, computed_playback_rate, buffer_length, bus);
+    while (frames_to_process--) {
+      unsigned read_index = static_cast<unsigned>(virtual_read_index);
+      double interpolation_factor = virtual_read_index - read_index;
+
+      // For linear interpolation we need the next sample-frame too.
+      unsigned read_index2 = read_index + 1;
+      if (read_index2 >= buffer_length) {
+        if (Loop()) {
+          // Make sure to wrap around at the end of the buffer.
+          read_index2 = static_cast<unsigned>(virtual_read_index + 1 -
+                                              virtual_delta_frames);
+        } else {
+          read_index2 = read_index;
+        }
+      }
+
+      // Final sanity check on buffer access.
+      // FIXME: as an optimization, try to get rid of this inner-loop check and
+      // put assertions and guards before the loop.
+      if (read_index >= buffer_length || read_index2 >= buffer_length)
+        break;
+
+      // Linear interpolation.
+      for (unsigned i = 0; i < number_of_channels; ++i) {
+        float* destination = destination_channels[i];
+        const float* source = source_channels[i];
+        double sample;
+
+        if (read_index == read_index2 && read_index >= 1) {
+          // We're at the end of the buffer, so just linearly extrapolate from
+          // the last two samples.
+          double sample1 = source[read_index - 1];
+          double sample2 = source[read_index];
+          sample = sample2 + (sample2 - sample1) * interpolation_factor;
+        } else {
+          double sample1 = source[read_index];
+          double sample2 = source[read_index2];
+          sample = (1.0 - interpolation_factor) * sample1 +
+                   interpolation_factor * sample2;
+        }
+        destination[write_index] = clampTo<float>(sample);
+      }
+      write_index++;
+
+      virtual_read_index += computed_playback_rate;
+
+      // Wrap-around, retaining sub-sample position since virtualReadIndex is
+      // floating-point.
+      if (virtual_read_index >= virtual_end_frame) {
+        virtual_read_index -= virtual_delta_frames;
+        if (RenderSilenceAndFinishIfNotLooping(bus, write_index,
+                                               frames_to_process))
+          break;
+      }
+    }
   }
 
   bus->ClearSilentFlag();
@@ -330,167 +382,6 @@ bool AudioBufferSourceHandler::RenderFromBuffer(
   virtual_read_index_ = virtual_read_index;
 
   return true;
-}
-
-std::tuple<double, int, bool> AudioBufferSourceHandler::ComputeIndices(
-    const struct InterpolationInfo& interp_info,
-    const struct IndicesInfo& indices_info,
-    int frames_to_process,
-    uint32_t buffer_length,
-    bool is_looping) const {
-  int frames_processed = frames_to_process;
-  bool end_of_buffer_reached = false;
-
-  unsigned* read0 = interp_info.read0;
-  unsigned* read1 = interp_info.read1;
-  float* interp_factor = interp_info.interp_factor;
-  auto virtual_read_index = indices_info.virtual_read_index;
-  auto computed_playback_rate = indices_info.computed_playback_rate;
-  auto virtual_end_frame = indices_info.virtual_end_frame;
-  auto virtual_delta_frames = indices_info.virtual_delta_frames;
-
-  for (int k = 0; k < frames_to_process; ++k) {
-    unsigned read_index = static_cast<unsigned>(virtual_read_index);
-    double interpolation_factor = virtual_read_index - read_index;
-
-    // For linear interpolation we need the next sample-frame too.
-    unsigned read_index2 = read_index + 1;
-    if (read_index2 >= buffer_length) {
-      if (is_looping) {
-        // Make sure to wrap around at the end of the buffer.
-        read_index2 = static_cast<unsigned>(virtual_read_index + 1 -
-                                            virtual_delta_frames);
-      } else {
-        read_index2 = read_index;
-      }
-    }
-
-    // Final sanity check on buffer access.
-    // FIXME: as an optimization, try to get rid of this inner-loop check and
-    // put assertions and guards before the loop.
-    CHECK_LT(read_index, buffer_length);
-    CHECK_LT(read_index2, buffer_length);
-    if (read_index >= buffer_length || read_index2 >= buffer_length) {
-      // Informs ComputeOutput how many frames we processed so that it only
-      // processes that many output samples. The read indices and interpolation
-      // factor are invalid after this point.
-      frames_processed = k;
-      break;
-    }
-
-    read0[k] = read_index;
-    read1[k] = read_index2;
-    interp_factor[k] = interpolation_factor;
-
-    virtual_read_index += computed_playback_rate;
-
-    // Wrap-around, retaining sub-sample position since virtualReadIndex is
-    // floating-point.
-    if (virtual_read_index >= virtual_end_frame) {
-      virtual_read_index -= virtual_delta_frames;
-      if (!is_looping) {
-        frames_processed = k + 1;
-        end_of_buffer_reached = true;
-        break;
-      }
-    }
-  }
-
-  return std::make_tuple(virtual_read_index, frames_processed,
-                         end_of_buffer_reached);
-}
-
-unsigned AudioBufferSourceHandler::ComputeOutput(
-    float** destination_channels,
-    const float** source_channels,
-    const struct InterpolationInfo& interp_info,
-    int frames_processed,
-    unsigned write_index,
-    unsigned number_of_channels,
-    unsigned buffer_length) const {
-  unsigned* read0 = interp_info.read0;
-  unsigned* read1 = interp_info.read1;
-  float* interp_factor = interp_info.interp_factor;
-
-  for (int k = 0; k < frames_processed; ++k) {
-    // Linear interpolation.
-    for (unsigned i = 0; i < number_of_channels; ++i) {
-      float* destination = destination_channels[i];
-      const float* source = source_channels[i];
-      float sample;
-
-      if (read0[k] == read1[k] && read0[k] >= 1) {
-        // We're at the end of the buffer, so just linearly extrapolate from
-        // the last two samples.
-        // TODO(crbug.com/1116104). Remove this CHECK once the problem is
-        // solved.
-        CHECK_LT(read0[k], buffer_length);
-        float sample1 = source[read0[k] - 1];
-        float sample2 = source[read0[k]];
-        sample = sample2 + (sample2 - sample1) * interp_factor[k];
-      } else {
-        CHECK_LT(read0[k], buffer_length);
-        CHECK_LT(read1[k], buffer_length);
-        // TODO(crbug.com/1116104).  If read1[k] is out-of-bounds, just return
-        // 0.  Remove this when the underlying problem is fixed.
-        if (read1[k] >= buffer_length) {
-          VLOG(1) << "k = " << k << "frames = " << frames_processed
-                  << "read1 = " << read1[k];
-        }
-        float sample1 = source[read0[k]];
-        float sample2 = read1[k] < buffer_length ? source[read1[k]] : 0;
-        sample = sample1 + interp_factor[k] * (sample2 - sample1);
-      }
-      destination[write_index] = sample;
-    }
-    write_index++;
-  }
-
-  return write_index;
-}
-
-double AudioBufferSourceHandler::RenderFromBufferKernel(
-    unsigned write_index,
-    int frames_to_process,
-    double virtual_read_index,
-    double virtual_end_frame,
-    double virtual_delta_frames,
-    double computed_playback_rate,
-    uint32_t buffer_length,
-    AudioBus* bus) {
-  unsigned number_of_channels = this->NumberOfChannels();
-  const float** source_channels = source_channels_.get();
-  float** destination_channels = destination_channels_.get();
-
-  unsigned read0[audio_utilities::kRenderQuantumFrames];
-  unsigned read1[audio_utilities::kRenderQuantumFrames];
-  float interp_factor[audio_utilities::kRenderQuantumFrames];
-
-  int frames_processed;
-  bool end_of_buffer_reached;
-  struct InterpolationInfo interp_info = {read0, read1, interp_factor};
-  struct IndicesInfo indices_info = {virtual_read_index, computed_playback_rate,
-                                     virtual_delta_frames, virtual_end_frame};
-
-  std::tie<double, int, bool>(virtual_read_index, frames_processed,
-                              end_of_buffer_reached) =
-      ComputeIndices(interp_info, indices_info, frames_to_process,
-                     buffer_length, Loop());
-
-  // TODO(crbug.com/1116104): Debugging possible error cases.  Remove this (or
-  // convert to DCHECK) when the underlying issue is fixed.
-  CHECK_LE(frames_processed,
-           static_cast<int>(audio_utilities::kRenderQuantumFrames));
-  write_index = ComputeOutput(destination_channels, source_channels,
-                              interp_info, frames_processed, write_index,
-                              number_of_channels, buffer_length);
-
-  if (end_of_buffer_reached) {
-    RenderSilenceAndFinishIfNotLooping(bus, write_index,
-                                       frames_to_process - frames_processed);
-  }
-
-  return virtual_read_index;
 }
 
 void AudioBufferSourceHandler::SetBuffer(AudioBuffer* buffer,
