@@ -53,7 +53,7 @@ def WriteIncludes(headers, include):
         contents.append(stripped_line)
         if stripped_line == PROTOC_INCLUDE_POINT:
           if include_point_found:
-            raise RuntimeException("Multiple include points found.")
+            raise RuntimeError("Multiple include points found.")
           include_point_found = True
           extra_statement = "#include \"{0}\"".format(include)
           contents.append(extra_statement)
