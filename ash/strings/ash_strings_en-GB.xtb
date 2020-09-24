@@ -24,6 +24,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="119944043368869598">Clear all</translation>
 <translation id="1199716647557067911">Are you sure that you want to turn off switch access?</translation>
 <translation id="121097972571826261">Forward by word</translation>
+<translation id="1225748608451425081">Your Chromebook is locked due to a known issue. You will be able to sign in after: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Stop selecting</translation>
 <translation id="1247372569136754018">Microphone (internal)</translation>
 <translation id="1252999807265626933">Charging from <ph name="POWER_SOURCE" /></translation>
@@ -642,6 +643,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="8196787716797768628">Use gestures to quickly switch between apps and interact with your Chromebook in tablet mode.</translation>
 <translation id="8200772114523450471">Resume</translation>
 <translation id="8203795194971602413">Right click</translation>
+<translation id="8219451629189078428">Your Chromebook needs to stay on and connected to power during this time. Make sure that the charger or adaptor cables are completely plugged in, both to your Chromebook and the power socket. Do not turn off your Chromebook.</translation>
 <translation id="8236042855478648955">Time for a break</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, signal strength <ph name="SIGNAL_STRENGTH" />, phone battery <ph name="BATTERY_STATUS" /></translation>
 <translation id="826107067893790409">Press Enter to unlock for <ph name="USER_EMAIL_ADDRESS" /></translation>

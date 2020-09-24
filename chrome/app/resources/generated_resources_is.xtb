@@ -1276,7 +1276,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2501920221385095727">Festilyklar</translation>
 <translation id="2502441965851148920">Kveikt er á sjálfvirkum uppfærslum. Kerfisstjóri hefur gert handvirkar uppfærslur óvirkar.</translation>
 <translation id="2502719318159902502">Fullur aðgangur</translation>
-<translation id="2505127913256479918">Þessi reikningur undir eftirliti verður brátt fjarlægður</translation>
+<translation id="2505127913256479918">Þessi forsjárreikningur verður bráðum fjarlægður</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{Skjár #}one{Skjár #}other{Skjár #}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> af <ph name="TOTAL_SIZE" /></translation>
 <translation id="250704661983564564">Uppröðun skjáa</translation>

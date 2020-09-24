@@ -24,6 +24,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="119944043368869598">Ta bort alla</translation>
 <translation id="1199716647557067911">Vill du inaktivera brytarstyrning?</translation>
 <translation id="121097972571826261">Framåt ord för ord</translation>
+<translation id="1225748608451425081">Chromebook har låsts på grund av ett känt problem. Du kan logga in om <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Sluta markera</translation>
 <translation id="1247372569136754018">Mikrofon (inbyggd)</translation>
 <translation id="1252999807265626933">Laddar från <ph name="POWER_SOURCE" /></translation>
@@ -642,6 +643,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="8196787716797768628">Använd rörelser för att snabbt växla mellan appar och interagera med Chromebook i surfplatteläge.</translation>
 <translation id="8200772114523450471">Återuppta</translation>
 <translation id="8203795194971602413">Högerklicka</translation>
+<translation id="8219451629189078428">Chromebook måste vara på och ansluten till en strömkälla under den tiden. Se till att kabeln på laddaren eller adaptern är ordentligt ansluten till Chromebook och eluttaget. Stäng inte av Chromebook.</translation>
 <translation id="8236042855478648955">Dags för en paus</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, signalstyrka <ph name="SIGNAL_STRENGTH" />, telefonens batterinivå <ph name="BATTERY_STATUS" /></translation>
 <translation id="826107067893790409">Tryck på Retur för att låsa upp för <ph name="USER_EMAIL_ADDRESS" /></translation>

@@ -24,6 +24,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="119944043368869598">Alles wissen</translation>
 <translation id="1199716647557067911">Weet je zeker dat je 'Toegang via schakelaar' wilt uitschakelen?</translation>
 <translation id="121097972571826261">Vooruit per woord</translation>
+<translation id="1225748608451425081">Je Chromebook is vergrendeld door een bekend probleem. Je kunt inloggen over: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Selecteren stoppen</translation>
 <translation id="1247372569136754018">Microfoon (intern)</translation>
 <translation id="1252999807265626933">Opladen via <ph name="POWER_SOURCE" /></translation>
@@ -642,6 +643,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="8196787716797768628">Met gebaren kun je snel schakelen tussen apps en je Chromebook gebruiken in de tabletmodus.</translation>
 <translation id="8200772114523450471">Doorgaan</translation>
 <translation id="8203795194971602413">Klik met rechtermuisknop</translation>
+<translation id="8219451629189078428">Je Chromebook moet ondertussen ingeschakeld blijven en zijn aangesloten op een stopcontact. Zorg dat de kabels van de oplader of adapter goed zijn aangesloten, zowel op je Chromebook als op het stopcontact. Schakel je Chromebook niet uit.</translation>
 <translation id="8236042855478648955">Tijd voor een pauze</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, signaalsterkte <ph name="SIGNAL_STRENGTH" />, telefoonbatterij <ph name="BATTERY_STATUS" /></translation>
 <translation id="826107067893790409">Druk op Enter om te ontgrendelen voor <ph name="USER_EMAIL_ADDRESS" /></translation>

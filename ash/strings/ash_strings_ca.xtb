@@ -24,6 +24,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="119944043368869598">Esborra-ho tot</translation>
 <translation id="1199716647557067911">Confirmes que vols desactivar l'accés amb interruptors?</translation>
 <translation id="121097972571826261">Endavant per paraula</translation>
+<translation id="1225748608451425081">El Chromebook està bloquejat a causa d'un problema conegut. Podràs iniciar-hi la sessió d'aquí a: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Deixa de seleccionar</translation>
 <translation id="1247372569136754018">Micròfon (intern)</translation>
 <translation id="1252999807265626933">S'està carregant amb: <ph name="POWER_SOURCE" /></translation>
@@ -642,6 +643,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="8196787716797768628">Utilitza gestos per canviar ràpidament entre aplicacions i interaccionar amb el teu Chromebook en mode de tauleta.</translation>
 <translation id="8200772114523450471">Reprèn</translation>
 <translation id="8203795194971602413">Fes clic amb el botó dret</translation>
+<translation id="8219451629189078428">El Chromebook ha d'estar encès i endollat durant aquest període de temps. Assegura't que els cables del carregador o de l'adaptador estiguin completament connectats, tant al Chromebook com a l'endoll. No apaguis el Chromebook.</translation>
 <translation id="8236042855478648955">Ara toca fer una pausa</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, <ph name="SIGNAL_STRENGTH" /> d'intensitat del senyal, <ph name="BATTERY_STATUS" /> de bateria al telèfon</translation>
 <translation id="826107067893790409">Prem Retorn per desbloquejar-lo per a <ph name="USER_EMAIL_ADDRESS" /></translation>

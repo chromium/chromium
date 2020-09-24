@@ -24,6 +24,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="119944043368869598">Pastroji të gjitha</translation>
 <translation id="1199716647557067911">Je i sigurt që dëshiron të çaktivizosh "Qasjen me çelës"?</translation>
 <translation id="121097972571826261">Një fjalë përpara</translation>
+<translation id="1225748608451425081">Pajisja jote Chromebook është kyçur për shkak të një problemi të njohur. Ti do të mund të identifikohesh pas: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Ndalo zgjedhjen</translation>
 <translation id="1247372569136754018">Mikrofoni (i brendshëm)</translation>
 <translation id="1252999807265626933">Po karikohet nga <ph name="POWER_SOURCE" /></translation>
@@ -642,6 +643,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="8196787716797768628">Përdor gjestet për të kaluar me shpejtësi mes aplikacioneve dhe bashkëvepro me pajisjen tënde Chromebook në modalitetin e tabletit.</translation>
 <translation id="8200772114523450471">Vazhdo</translation>
 <translation id="8203795194971602413">Klikimi me butonin djathtas</translation>
+<translation id="8219451629189078428">Pajisja jote Chromebook ka nevojë të qëndrojë aktive dhe e lidhur me energjinë gjatë kësaj kohe. Sigurohu që karikuesi ose kabllot e përshtatësit të jenë plotësisht të lidhura si me pajisjen tënde Chromebook, ashtu dhe me prizën elektrike. Mos e fik pajisjen tënde Chromebook.</translation>
 <translation id="8236042855478648955">Koha për një pushim</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />, bateria e telefonit <ph name="BATTERY_STATUS" /></translation>
 <translation id="826107067893790409">Shtyp "Enter" për ta shkyçur për <ph name="USER_EMAIL_ADDRESS" /></translation>

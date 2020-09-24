@@ -24,6 +24,7 @@
 <translation id="119944043368869598">ყველაფრის გასუფთავება</translation>
 <translation id="1199716647557067911">ნამდვილად გსურთ, გამორთოთ გადამრთველით წვდომა?</translation>
 <translation id="121097972571826261">ერთი სიტყვით წინ</translation>
+<translation id="1225748608451425081">თქვენი Chromebook დაბლოკილია ცნობილი პრობლემის გამო. შესვლას შეძლებთ გარკვეული დროის შემდეგ: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">არჩევის შეწყვეტა</translation>
 <translation id="1247372569136754018">მიკროფონი (შიდა)</translation>
 <translation id="1252999807265626933">იტენება წყაროდან: <ph name="POWER_SOURCE" /></translation>
@@ -642,6 +643,7 @@
 <translation id="8196787716797768628">გამოიყენეთ ჟესტები აპებს შორის სწრაფად გადასართავად ან თქვენს Chromebook-თან ტაბლეტის რეჟიმში ურთიერთქმედებისთვის.</translation>
 <translation id="8200772114523450471">გაგრძელება</translation>
 <translation id="8203795194971602413">მარჯვენა დაწკაპუნება</translation>
+<translation id="8219451629189078428">თქვენი Chromebook ამ დროის განმავლობაში ჩართული და კვების წყაროსთან მიერთებული უნდა იყოს. დარწმუნდით, რომ დამტენის ან ადაპტერის კაბელები კარგად არის შეერთებული როგორც Chromebook-ში, ისე როზეტში. არ გამორთოთ Chromebook.</translation>
 <translation id="8236042855478648955">შესვენების დროა</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, სიგნალის სიძლიერე: <ph name="SIGNAL_STRENGTH" />, ტელეფონის ბატარეა: <ph name="BATTERY_STATUS" /></translation>
 <translation id="826107067893790409"><ph name="USER_EMAIL_ADDRESS" />-ისთვის განსაბლოკად დააჭირეთ „Enter“-ზე</translation>

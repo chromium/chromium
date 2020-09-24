@@ -24,6 +24,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="119944043368869598">Hamısını silin</translation>
 <translation id="1199716647557067911">Dəyişdirici ilə Girişi deaktiv etmək istədiyinizə əminsiniz?</translation>
 <translation id="121097972571826261">Söz üzrə irəli keçin</translation>
+<translation id="1225748608451425081">Chromebook cihazınız məlum problemə görə kilidlənib. Bu müddətdən sonra daxil ola biləcəksiniz: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Seçməyi dayandırın</translation>
 <translation id="1247372569136754018">Mikrofon (daxili)</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> mənbəsindən qidalanır</translation>
@@ -642,6 +643,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="8196787716797768628">Jestlərdən istifadə edərək tətbiqlər arasında sürətli keçid edin və planşet rejimində Chromebook ilə əlaqə yaradın.</translation>
 <translation id="8200772114523450471">Davam edin</translation>
 <translation id="8203795194971602413">Sağ düymə</translation>
+<translation id="8219451629189078428">Bu müddət ərzində Chromebook cihazınız yanılı və şəbəkəyə qoşulu vəziyətdə olmalıdır. Doldurma qurğusu və ya adapter naqillərinin həm Chromebook cihazınıza, həm də elektrik yuvasına tam şəkildə taxılı olduğundan əmin olun. Chromebook cihazını söndürməyin.</translation>
 <translation id="8236042855478648955">Fasilə vaxtı</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, Siqnal Gücü <ph name="SIGNAL_STRENGTH" />, Telefonun Batareyası <ph name="BATTERY_STATUS" /></translation>
 <translation id="826107067893790409"><ph name="USER_EMAIL_ADDRESS" /> üçün kiliddən çıxarmaq üçün Enter düyməsini basın</translation>

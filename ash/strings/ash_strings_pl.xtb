@@ -24,6 +24,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="119944043368869598">Wyczyść wszystko</translation>
 <translation id="1199716647557067911">Czy na pewno chcesz wyłączyć Switch Access?</translation>
 <translation id="121097972571826261">Do przodu o jedno słowo</translation>
+<translation id="1225748608451425081">Ten Chromebook został zablokowany z powodu znanego błędu. Zalogowanie się będzie możliwe za <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Wyjdź z trybu wybierania danych</translation>
 <translation id="1247372569136754018">Mikrofon (wewnętrzny)</translation>
 <translation id="1252999807265626933">Trwa ładowanie z: <ph name="POWER_SOURCE" /></translation>
@@ -642,6 +643,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="8196787716797768628">Używając gestów, możesz szybko przełączać się między aplikacjami i korzystać z Chromebooka w trybie tabletu.</translation>
 <translation id="8200772114523450471">Wznów</translation>
 <translation id="8203795194971602413">Kliknięcie prawym przyciskiem</translation>
+<translation id="8219451629189078428">Chromebook musi być włączony i podłączony do zasilania. Upewnij się, że kable ładowarki lub zasilacza są prawidłowo podłączone do Chromebooka i do gniazdka. Nie wyłączaj Chromebooka.</translation>
 <translation id="8236042855478648955">Czas na przerwę</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, siła sygnału: <ph name="SIGNAL_STRENGTH" />, bateria telefonu: <ph name="BATTERY_STATUS" /></translation>
 <translation id="826107067893790409">Naciśnij Enter, by odblokować dla: <ph name="USER_EMAIL_ADDRESS" /></translation>

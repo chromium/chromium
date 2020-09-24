@@ -24,6 +24,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="119944043368869598">Obriši sve</translation>
 <translation id="1199716647557067911">Želite li stvarno da isključite pristup pomoću prekidača?</translation>
 <translation id="121097972571826261">Reč unapred</translation>
+<translation id="1225748608451425081">Chromebook je zaključan zbog poznatog problema. Moći ćete da se prijavite za: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Izađi iz režima biranja</translation>
 <translation id="1247372569136754018">Mikrofon (interni)</translation>
 <translation id="1252999807265626933">Punjenje iz uređaja <ph name="POWER_SOURCE" /></translation>
@@ -642,6 +643,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="8196787716797768628">Koristite pokrete da biste brzo prelazili sa jedne aplikacije na drugu i imali iinterakciju sa Chromebook-om u režimu tableta.</translation>
 <translation id="8200772114523450471">Nastavi</translation>
 <translation id="8203795194971602413">Desni klik</translation>
+<translation id="8219451629189078428">Chromebook treba da ostane uključen i povezan na napajanje tokom tog perioda. Uverite se da su kablovi punjača ili adaptera ispravno priključeni, i u Chromebook i u utičnicu Ne isključujte Chromebook.</translation>
 <translation id="8236042855478648955">Vreme je za pauzu</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" />, baterija telefona <ph name="BATTERY_STATUS" /></translation>
 <translation id="826107067893790409">Pritisnite Enter da biste otključali za <ph name="USER_EMAIL_ADDRESS" /></translation>

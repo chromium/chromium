@@ -24,6 +24,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="119944043368869598">Tühjenda kõik</translation>
 <translation id="1199716647557067911">Kas soovite lülitiga juurdepääsu kindlasti välja lülitada?</translation>
 <translation id="121097972571826261">Sõna võrra edasi</translation>
+<translation id="1225748608451425081">Teie Chromebook on teadaoleva probleemi tõttu lukustatud. Saate sisse logida pärast <ph name="TIME_LEFT" /> möödumist.</translation>
 <translation id="1229194443904279055">Valimise peatamine</translation>
 <translation id="1247372569136754018">Mikrofon (sisemine)</translation>
 <translation id="1252999807265626933">Laadimine toiteallikast <ph name="POWER_SOURCE" /></translation>
@@ -643,6 +644,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="8196787716797768628">Kasutage tahvelarvutirežiimis rakenduste vahel kiirelt vahetamiseks ja oma Chromebookiga suhtlemiseks liigutusi.</translation>
 <translation id="8200772114523450471">Taasta</translation>
 <translation id="8203795194971602413">Paremklikk</translation>
+<translation id="8219451629189078428">Teie Chromebook peab sel ajal olema sisse lülitatud ja toiteallikaga ühendatud. Veenduge, et laadija või adapteri kaabel oleks korralikult ühendatud nii Chromebooki kui ka pistikupesaga. Ärge lülitage oma Chromebooki välja.</translation>
 <translation id="8236042855478648955">Aeg pausi pidada</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, signaalitugevus: <ph name="SIGNAL_STRENGTH" />, telefoni aku: <ph name="BATTERY_STATUS" /></translation>
 <translation id="826107067893790409">E-posti aadressi <ph name="USER_EMAIL_ADDRESS" /> puhul avamiseks vajutage sisestusklahvi</translation>
