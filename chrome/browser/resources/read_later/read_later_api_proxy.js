@@ -18,6 +18,18 @@ export class ReadLaterApiProxy {
 
   /** @param {!url.mojom.Url} url */
   openSavedEntry(url) {}
+
+  /**
+   * @param {!url.mojom.Url} url
+   * @param {boolean} read
+   */
+  updateReadStatus(url, read) {}
+
+  /** @param {!url.mojom.Url} url */
+  removeEntry(url) {}
+
+  /** @return {!readLater.mojom.PageCallbackRouter} */
+  getCallbackRouter() {}
 }
 
 /** @implements {ReadLaterApiProxy} */
@@ -43,6 +55,21 @@ export class ReadLaterApiProxyImpl {
   /** @override */
   openSavedEntry(url) {
     this.handler.openSavedEntry(url);
+  }
+
+  /** @override */
+  updateReadStatus(url, read) {
+    this.handler.updateReadStatus(url, read);
+  }
+
+  /** @override */
+  removeEntry(url) {
+    this.handler.removeEntry(url);
+  }
+
+  /** @override */
+  getCallbackRouter() {
+    return this.callbackRouter;
   }
 }
 

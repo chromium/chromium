@@ -85,10 +85,12 @@ void ReadLaterPageHandler::OpenSavedEntry(const GURL& url) {
 
 void ReadLaterPageHandler::UpdateReadStatus(const GURL& url, bool read) {
   reading_list_model_->SetReadStatus(url, read);
+  page_->ItemsChanged();
 }
 
 void ReadLaterPageHandler::RemoveEntry(const GURL& url) {
   reading_list_model_->RemoveEntryByURL(url);
+  page_->ItemsChanged();
 }
 
 read_later::mojom::ReadLaterEntryPtr ReadLaterPageHandler::GetEntryData(
@@ -105,6 +107,7 @@ read_later::mojom::ReadLaterEntryPtr ReadLaterPageHandler::GetEntryData(
           url_formatter::kFormatUrlTrimAfterHost,
       net::UnescapeRule::NORMAL, nullptr, nullptr, nullptr));
   entry_data->update_time = entry->UpdateTime();
+  entry_data->read = entry->IsRead();
   entry_data->display_time_since_update =
       GetTimeSinceLastUpdate(entry->UpdateTime());
 

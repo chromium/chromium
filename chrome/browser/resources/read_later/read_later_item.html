@@ -1,4 +1,13 @@
 <style>
+  :host(:hover) .button-container,
+  :host(.selected) .button-container {
+    display: flex;
+  }
+
+  .button-container {
+    display: none;
+  }
+
   .text-container {
     flex-grow: 1;
     overflow: hidden;
@@ -22,6 +31,12 @@
     color: var(--cr-secondary-text-color);
     font-size: var(--mwb-secondary-text-font-size);
   }
+
+  cr-icon-button {
+    --cr-icon-button-margin-end: calc(var(--mwb-icon-size) / 4);
+    --cr-icon-button-margin-start: calc(var(--mwb-icon-size) / 4);
+    --cr-icon-button-size: var(--mwb-icon-size);
+  }
 </style>
 
 <div class="text-container">
@@ -29,4 +44,17 @@
   <div class="secondary-text">
     [[data.displayUrl]] - [[data.displayTimeSinceUpdate]]
   </div>
+</div>
+<div class="button-container">
+  <cr-icon-button id="updateStatusButton"
+      aria-label="[[getUpdateStatusButtonTooltip_(
+      '$i18n{tooltipMarkAsUnread}', '$i18n{tooltipMarkAsRead}', data.read)]]"
+      iron-icon="cr:check" title="[[getUpdateStatusButtonTooltip_(
+      '$i18n{tooltipMarkAsUnread}', '$i18n{tooltipMarkAsRead}', data.read)]]"
+      on-click="onUpdateStatusClick_">
+  </cr-icon-button>
+  <cr-icon-button id="deleteButton" aria-label="$i18n{tooltipDelete}"
+      iron-icon="cr:close" title="$i18n{tooltipDelete}"
+      on-click="onItemDeleteClick_">
+  </cr-icon-button>
 </div>

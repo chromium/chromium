@@ -35,13 +35,11 @@
   <div class="sub-heading">$i18n{unreadHeader}</div>
   <template id="ureadItemsList" is="dom-repeat" items="[[unreadItems_]]">
     <read-later-item data-url$="[[item.url]]" class="mwb-list-item"
-        data="[[item]]" on-click="onItemClick_">
-    </read-later-item>
+        data="[[item]]"></read-later-item>
   </template>
   <div class="sub-heading">$i18n{readHeader}</div>
   <template id="readItemsList" is="dom-repeat" items="[[readItems_]]">
     <read-later-item data-url$="[[item.url]]" class="mwb-list-item"
-        data="[[item]]" on-click="onItemClick_">
-    </read-later-item>
+        data="[[item]]"></read-later-item>
   </template>
 </div>

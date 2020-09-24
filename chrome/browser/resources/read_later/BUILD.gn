@@ -31,7 +31,9 @@ js_library("read_later_api_proxy") {
 
 js_library("read_later_item") {
   deps = [
+    ":read_later_api_proxy",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button.m",
   ]
 }
 

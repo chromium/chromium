@@ -42,6 +42,8 @@ class MockPage : public read_later::mojom::Page {
     return receiver_.BindNewPipeAndPassRemote();
   }
   mojo::Receiver<read_later::mojom::Page> receiver_{this};
+
+  MOCK_METHOD0(ItemsChanged, void());
 };
 
 void ExpectNewReadLaterEntry(const read_later::mojom::ReadLaterEntry* entry,
@@ -104,8 +106,9 @@ class TestReadLaterPageHandlerTest : public BrowserWithTestWindowTest {
                                         base::ASCIIToUTF16(title));
   }
 
- private:
   testing::StrictMock<MockPage> page_;
+
+ private:
   std::unique_ptr<TestReadLaterPageHandler> handler_;
   ReadingListModel* model_;
 };
@@ -156,6 +159,7 @@ TEST_F(TestReadLaterPageHandlerTest, OpenSavedEntry) {
 
 TEST_F(TestReadLaterPageHandlerTest, UpdateReadStatus) {
   handler()->UpdateReadStatus(GURL(kTabUrl3), true);
+  EXPECT_CALL(page_, ItemsChanged()).Times(1);
 
   // Get Read later entries.
   read_later::mojom::PageHandler::GetReadLaterEntriesCallback callback1 =
@@ -177,6 +181,7 @@ TEST_F(TestReadLaterPageHandlerTest, UpdateReadStatus) {
 
 TEST_F(TestReadLaterPageHandlerTest, RemoveEntry) {
   handler()->RemoveEntry(GURL(kTabUrl3));
+  EXPECT_CALL(page_, ItemsChanged()).Times(1);
 
   // Get Read later entries.
   read_later::mojom::PageHandler::GetReadLaterEntriesCallback callback1 =

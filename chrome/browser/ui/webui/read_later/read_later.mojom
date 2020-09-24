@@ -18,6 +18,8 @@ struct ReadLaterEntry {
   url.mojom.Url url;
   string display_url;
   int64 update_time;
+  // Whether the entry has been read.
+  bool read;
   string display_time_since_update;
 };
 
@@ -45,4 +47,7 @@ interface PageHandler {
 
 // WebUI-side handler for requests from the browser.
 interface Page {
+  // Callback when any item in read later is
+  // changed/removed.
+  ItemsChanged();
 };

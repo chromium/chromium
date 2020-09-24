@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/read_later/read_later_ui.h"
 
+#include <string>
 #include <utility>
 
 #include "chrome/browser/ui/webui/read_later/read_later_page_handler.h"
@@ -16,12 +17,21 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
 
 namespace {
 constexpr char kGeneratedPath[] =
     "@out_folder@/gen/chrome/browser/resources/read_later/";
+
+void AddLocalizedString(content::WebUIDataSource* source,
+                        const std::string& message,
+                        int id) {
+  base::string16 str = l10n_util::GetStringUTF16(id);
+  base::Erase(str, '&');
+  source->AddString(message, str);
 }
+}  // namespace
 
 ReadLaterUI::ReadLaterUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui) {
@@ -30,11 +40,16 @@ ReadLaterUI::ReadLaterUI(content::WebUI* web_ui)
   source->AddResourcePath("read_later.mojom-lite.js",
                           IDR_READ_LATER_MOJO_LITE_JS);
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
-      {"title", IDS_READ_LATER_MENU_TITLE},
-      {"unreadHeader", IDS_READ_LATER_MENU_UNREAD_HEADER},
       {"readHeader", IDS_READ_LATER_MENU_READ_HEADER},
+      {"title", IDS_READ_LATER_MENU_TITLE},
+      {"tooltipDelete", IDS_DELETE},
+      {"tooltipMarkAsRead", IDS_READ_LATER_MENU_TOOLTIP_MARK_AS_READ},
+      {"tooltipMarkAsUnread", IDS_READ_LATER_MENU_TOOLTIP_MARK_AS_UNREAD},
+      {"unreadHeader", IDS_READ_LATER_MENU_UNREAD_HEADER},
   };
-  AddLocalizedStringsBulk(source, kLocalizedStrings);
+  for (const auto& str : kLocalizedStrings)
+    AddLocalizedString(source, str.name, str.id);
+
   webui::SetupWebUIDataSource(
       source, base::make_span(kReadLaterResources, kReadLaterResourcesSize),
       kGeneratedPath, IDR_READ_LATER_HTML);

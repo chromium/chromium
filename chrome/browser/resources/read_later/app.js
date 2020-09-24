@@ -34,26 +34,39 @@ export class ReadLaterAppElement extends PolymerElement {
     super();
     /** @private {!ReadLaterApiProxy} */
     this.apiProxy_ = ReadLaterApiProxyImpl.getInstance();
+
+    /** @private {?number} */
+    this.listenerId_ = null;
   }
 
   /** @override */
   ready() {
     super.ready();
+    this.updateItems_();
+  }
 
+  /** @override */
+  connectedCallback() {
+    super.connectedCallback();
+    const callbackRouter = this.apiProxy_.getCallbackRouter();
+    this.listenerId_ =
+        callbackRouter.itemsChanged.addListener(() => this.updateItems_());
+  }
+
+  /** @override */
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    this.apiProxy_.getCallbackRouter().removeListener(
+        /** @type {number} */ (this.listenerId_));
+    this.listenerId_ = null;
+  }
+
+  /** @private */
+  updateItems_() {
     this.apiProxy_.getReadLaterEntries().then(({entries}) => {
       this.unreadItems_ = entries.unreadEntries;
       this.readItems_ = entries.readEntries;
     });
-  }
-
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onItemClick_(e) {
-    const item =
-        /** @type {!ReadLaterItemElement} */ (e.currentTarget);
-    this.apiProxy_.openSavedEntry(item.data.url);
   }
 }
 
