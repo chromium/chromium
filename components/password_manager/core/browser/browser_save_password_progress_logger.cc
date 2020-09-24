@@ -246,7 +246,7 @@ std::string BrowserSavePasswordProgressLogger::FormStructureToFieldsLogString(
 
     if (field->initial_value_hash().has_value()) {
       field_info += ", initial value hash=";
-      field_info += field->initial_value_hash().value();
+      field_info += NumberToString(field->initial_value_hash().value());
     }
 
     std::string generation = GenerationTypeToString(field->generation_type());
