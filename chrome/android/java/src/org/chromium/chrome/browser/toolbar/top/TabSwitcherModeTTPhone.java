@@ -12,11 +12,8 @@ import android.graphics.Color;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewStub;
-
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
-
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -27,8 +24,6 @@ import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.toolbar.IncognitoToggleTabLayout;
 import org.chromium.chrome.browser.toolbar.NewTabButton;
 import org.chromium.chrome.browser.toolbar.TabCountProvider;
-import org.chromium.chrome.browser.toolbar.menu_button.MenuButton;
-import org.chromium.chrome.browser.ui.appmenu.AppMenuButtonHelper;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 import org.chromium.components.browser_ui.widget.animation.Interpolators;
@@ -51,7 +46,6 @@ public class TabSwitcherModeTTPhone extends OptimizedFrameLayout
 
     // The following three buttons are not used when Duet is enabled.
     private @Nullable NewTabButton mNewTabImageButton;
-    private @Nullable MenuButton mMenuButton;
     private @Nullable ToggleTabStackButton mToggleTabStackButton;
 
     private int mPrimaryColor;
@@ -74,7 +68,6 @@ public class TabSwitcherModeTTPhone extends OptimizedFrameLayout
 
         mNewTabImageButton = findViewById(R.id.new_tab_button);
         mNewTabViewButton = findViewById(R.id.new_tab_view);
-        mMenuButton = findViewById(R.id.menu_button_wrapper);
         mToggleTabStackButton = findViewById(R.id.tab_switcher_mode_tab_switcher_button);
 
         // TODO(twellington): Try to make NewTabButton responsible for handling its own clicks.
@@ -116,9 +109,6 @@ public class TabSwitcherModeTTPhone extends OptimizedFrameLayout
         if (mIncognitoToggleTabLayout != null) {
             mIncognitoToggleTabLayout.destroy();
             mIncognitoToggleTabLayout = null;
-        }
-        if (mMenuButton != null) {
-            mMenuButton = null;
         }
     }
 
@@ -176,17 +166,6 @@ public class TabSwitcherModeTTPhone extends OptimizedFrameLayout
         mVisiblityAnimator.start();
 
         if (DeviceClassManager.enableAccessibilityLayout()) mVisiblityAnimator.end();
-    }
-
-    /**
-     * @param appMenuButtonHelper The helper for managing menu button interactions.
-     */
-    void setAppMenuButtonHelper(AppMenuButtonHelper appMenuButtonHelper) {
-        if (mMenuButton == null) return;
-
-        mMenuButton.getImageButton().setOnTouchListener(appMenuButtonHelper);
-        mMenuButton.getImageButton().setAccessibilityDelegate(
-                appMenuButtonHelper.getAccessibilityDelegate());
     }
 
     /**
@@ -285,12 +264,6 @@ public class TabSwitcherModeTTPhone extends OptimizedFrameLayout
         }
     }
 
-    private void setMenuButtonVisibility(boolean isButtonVisible) {
-        if (mMenuButton != null) {
-            mMenuButton.setVisibility(isButtonVisible ? VISIBLE : GONE);
-        }
-    }
-
     private void updatePrimaryColorAndTint() {
         int primaryColor = getToolbarColorForCurrentState();
         if (mPrimaryColor != primaryColor) {
@@ -320,11 +293,6 @@ public class TabSwitcherModeTTPhone extends OptimizedFrameLayout
                     getContext(), R.color.default_icon_color_light_tint_list);
             mDarkIconTint = AppCompatResources.getColorStateList(
                     getContext(), R.color.default_icon_color_tint_list);
-        }
-
-        ColorStateList tintList = useLightIcons ? mLightIconTint : mDarkIconTint;
-        if (mMenuButton != null) {
-            ApiCompatibilityUtils.setImageTintList(mMenuButton.getImageButton(), tintList);
         }
 
         if (mToggleTabStackButton != null) {

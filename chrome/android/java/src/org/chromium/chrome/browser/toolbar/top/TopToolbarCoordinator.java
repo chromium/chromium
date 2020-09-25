@@ -106,7 +106,7 @@ public class TopToolbarCoordinator implements Toolbar {
             ThemeColorProvider normalThemeColorProvider,
             ThemeColorProvider overviewThemeColorProvider,
             MenuButtonCoordinator browsingModeMenuButtonCoordinator,
-            MenuButtonCoordinator startSurfaceMenuButtonCoordinator,
+            MenuButtonCoordinator overviewModeMenuButtonCoordinator,
             ObservableSupplier<AppMenuButtonHelper> appMenuButtonHelperSupplier,
             ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             ObservableSupplier<Boolean> homeButtonVisibilitySupplier,
@@ -129,11 +129,11 @@ public class TopToolbarCoordinator implements Toolbar {
                         controlContainer.getRootView().findViewById(R.id.tab_switcher_toolbar_stub),
                         userEducationHelper, overviewModeBehaviorSupplier,
                         identityDiscStateSupplier, overviewThemeColorProvider,
-                        startSurfaceMenuButtonCoordinator, identityDiscButtonSupplier);
+                        overviewModeMenuButtonCoordinator, identityDiscButtonSupplier);
             } else {
                 mTabSwitcherModeCoordinatorPhone = new TabSwitcherModeTTCoordinatorPhone(
-                        controlContainer.getRootView().findViewById(
-                                R.id.tab_switcher_toolbar_stub));
+                        controlContainer.getRootView().findViewById(R.id.tab_switcher_toolbar_stub),
+                        overviewModeMenuButtonCoordinator);
             }
         }
         controlContainer.setToolbar(this);
@@ -151,9 +151,6 @@ public class TopToolbarCoordinator implements Toolbar {
      */
     public void setAppMenuButtonHelper(AppMenuButtonHelper appMenuButtonHelper) {
         mToolbarLayout.setAppMenuButtonHelper(appMenuButtonHelper);
-        if (mTabSwitcherModeCoordinatorPhone != null) {
-            mTabSwitcherModeCoordinatorPhone.setAppMenuButtonHelper(appMenuButtonHelper);
-        }
     }
 
     /**

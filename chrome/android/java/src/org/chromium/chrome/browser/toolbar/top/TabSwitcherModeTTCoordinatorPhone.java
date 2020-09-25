@@ -11,6 +11,7 @@ import android.view.ViewStub;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.tab.Tab;
@@ -21,7 +22,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.toolbar.TabCountProvider;
-import org.chromium.chrome.browser.ui.appmenu.AppMenuButtonHelper;
+import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 
 /**
  * The coordinator for the tab switcher mode top toolbar shown on phones, responsible for
@@ -34,12 +35,12 @@ class TabSwitcherModeTTCoordinatorPhone {
     // TODO(twellington): Create a model to hold all of these properties. Consider using
     // LazyConstructionPropertyMcp to collect all of the properties since it is designed to
     // aggregate properties and bind them to a view the first time it's shown.
-    private AppMenuButtonHelper mAppMenuButtonHelper;
     private View.OnClickListener mTabSwitcherListener;
     private View.OnClickListener mNewTabListener;
     private TabCountProvider mTabCountProvider;
     private TabModelSelector mTabModelSelector;
     private IncognitoStateProvider mIncognitoStateProvider;
+    private MenuButtonCoordinator mMenuButtonCoordinator;
     private boolean mAccessibilityEnabled;
 
     private TabSwitcherModeTTPhone mTabSwitcherModeToolbar;
@@ -47,8 +48,10 @@ class TabSwitcherModeTTCoordinatorPhone {
     @Nullable
     private TabModelObserver mTabModelObserver;
 
-    TabSwitcherModeTTCoordinatorPhone(ViewStub tabSwitcherToolbarStub) {
+    TabSwitcherModeTTCoordinatorPhone(
+            ViewStub tabSwitcherToolbarStub, MenuButtonCoordinator menuButtonCoordinator) {
         mTabSwitcherToolbarStub = tabSwitcherToolbarStub;
+        mMenuButtonCoordinator = menuButtonCoordinator;
     }
 
     /**
@@ -61,6 +64,10 @@ class TabSwitcherModeTTCoordinatorPhone {
         }
         if (mTabModelSelector != null && mTabModelObserver != null) {
             mTabModelSelector.getModel(true).removeObserver(mTabModelObserver);
+        }
+        if (mMenuButtonCoordinator != null) {
+            mMenuButtonCoordinator.destroy();
+            mMenuButtonCoordinator = null;
         }
     }
 
@@ -77,16 +84,6 @@ class TabSwitcherModeTTCoordinatorPhone {
             mTabSwitcherModeToolbar.setTabSwitcherMode(inTabSwitcherMode);
         } else if (mTabSwitcherModeToolbar != null) {
             mTabSwitcherModeToolbar.setTabSwitcherMode(inTabSwitcherMode);
-        }
-    }
-
-    /**
-     * @param appMenuButtonHelper The helper for managing menu button interactions.
-     */
-    void setAppMenuButtonHelper(AppMenuButtonHelper appMenuButtonHelper) {
-        mAppMenuButtonHelper = appMenuButtonHelper;
-        if (mTabSwitcherModeToolbar != null) {
-            mTabSwitcherModeToolbar.setAppMenuButtonHelper(appMenuButtonHelper);
         }
     }
 
@@ -180,11 +177,10 @@ class TabSwitcherModeTTCoordinatorPhone {
                 });
     }
 
-    /**
-     * @param isVisible Whether the bottom toolbar is visible.
-     */
     private void initializeTabSwitcherToolbar() {
         mTabSwitcherModeToolbar = (TabSwitcherModeTTPhone) mTabSwitcherToolbarStub.inflate();
+        mMenuButtonCoordinator.setMenuButton(
+                mTabSwitcherModeToolbar.findViewById(R.id.menu_button_wrapper));
 
         // It's expected that these properties are set by the time the tab switcher is entered.
         assert mTabSwitcherListener != null;
@@ -192,9 +188,6 @@ class TabSwitcherModeTTCoordinatorPhone {
 
         assert mNewTabListener != null;
         mTabSwitcherModeToolbar.setOnNewTabClickHandler(mNewTabListener);
-
-        assert mAppMenuButtonHelper != null;
-        mTabSwitcherModeToolbar.setAppMenuButtonHelper(mAppMenuButtonHelper);
 
         assert mTabCountProvider != null;
         mTabSwitcherModeToolbar.setTabCountProvider(mTabCountProvider);
