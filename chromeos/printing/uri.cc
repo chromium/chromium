@@ -162,9 +162,7 @@ const Uri::ParserError& Uri::GetLastParsingError() const {
 std::string Uri::GetNormalized(bool always_print_port) const {
   // Calculates a string representation of the Port number.
   std::string port;
-  if (pim_->port() >= 0 &&
-      (always_print_port || Pim::GetDefaultPorts().count(pim_->scheme()) == 0 ||
-       Pim::GetDefaultPorts().at(pim_->scheme()) != pim_->port()))
+  if (ShouldPrintPort(always_print_port))
     port = base::NumberToString(pim_->port());
 
   // Output string. Adds Scheme.
@@ -405,6 +403,20 @@ bool Uri::operator==(const Uri& uri) const {
   if (pim_->query() != uri.pim_->query())
     return false;
   return (pim_->fragment() == uri.pim_->fragment());
+}
+
+bool Uri::ShouldPrintPort(bool always_print_port) const {
+  if (pim_->port() < 0)
+    return false;
+
+  if (always_print_port)
+    return true;
+
+  auto it = Pim::GetDefaultPorts().find(pim_->scheme());
+  if (it == Pim::GetDefaultPorts().end())
+    return true;
+
+  return it->second != pim_->port();
 }
 
 }  // namespace chromeos

@@ -370,6 +370,9 @@ class CHROMEOS_EXPORT Uri {
 
  private:
   class Pim;
+
+  bool ShouldPrintPort(bool always_print_port) const;
+
   std::unique_ptr<Pim> pim_;
 };
 
