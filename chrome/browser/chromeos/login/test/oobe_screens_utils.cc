@@ -143,12 +143,6 @@ void TapUserCreationNext() {
   test::OobeJS().TapOnPath({"user-creation", "nextButton"});
 }
 
-void WaitForLastScreenAndTapGetStarted() {
-  WaitFor(MarketingOptInScreenView::kScreenId);
-  test::OobeJS().TapOnPath(
-      {"marketing-opt-in", "marketing-opt-in-next-button"});
-}
-
 void WaitForEulaScreen() {
   if (!WizardController::IsBrandedBuildForTesting())
     return;

@@ -107,7 +107,6 @@ IN_PROC_BROWSER_TEST_F(ActiveDirectoryLoginTest, LoginSuccess) {
   ad_login_.TestNoError();
   ad_login_.TestDomainHidden();
   ad_login_.SubmitActiveDirectoryCredentials(test_user_, kPassword);
-  test::WaitForLastScreenAndTapGetStarted();
   test::WaitForPrimaryUserSessionStart();
 }
 
@@ -117,7 +116,6 @@ IN_PROC_BROWSER_TEST_F(ActiveDirectoryLoginTest, KerberosVarsCopied) {
   ad_login_.TestNoError();
   ad_login_.TestDomainHidden();
   ad_login_.SubmitActiveDirectoryCredentials(test_user_, kPassword);
-  test::WaitForLastScreenAndTapGetStarted();
   test::WaitForPrimaryUserSessionStart();
 
   base::FilePath dir;
@@ -182,7 +180,6 @@ IN_PROC_BROWSER_TEST_F(ActiveDirectoryLoginTest, PasswordChange_LoginSuccess) {
   fake_authpolicy_client()->set_auth_error(authpolicy::ERROR_NONE);
   ad_login_.SubmitActiveDirectoryPasswordChangeCredentials(
       kPassword, kNewPassword, kNewPassword);
-  test::WaitForLastScreenAndTapGetStarted();
   test::WaitForPrimaryUserSessionStart();
 }
 
@@ -246,7 +243,6 @@ IN_PROC_BROWSER_TEST_F(ActiveDirectoryLoginAutocompleteTest, LoginSuccess) {
 
   ad_login_.SubmitActiveDirectoryCredentials(kTestActiveDirectoryUser,
                                              kPassword);
-  test::WaitForLastScreenAndTapGetStarted();
   test::WaitForPrimaryUserSessionStart();
 }
 
