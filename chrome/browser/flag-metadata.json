@@ -417,6 +417,11 @@
     "expiry_milestone": 89
   },
   {
+    "name": "block-insecure-private-network-requests",
+    "owners": [ "titouan", "chrome-security-owp-team@google.com" ],
+    "expiry_milestone": 90
+  },
+  {
     "name": "bluetooth-aggressive-appearance-filter",
     "owners": [ "hansberry", "cros-system-services@google.com" ],
     "expiry_milestone": 85

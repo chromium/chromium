@@ -41003,6 +41003,7 @@ from previous Chrome versions.
   <int value="-1930720286" label="nacl-debug-mask"/>
   <int value="-1928198763" label="enable-async-dns"/>
   <int value="-1927080237" label="Vulkan:enabled"/>
+  <int value="-1925453192" label="BlockInsecurePrivateNetworkRequests:enabled"/>
   <int value="-1925117279" label="disable-quic-https"/>
   <int value="-1925106340" label="CameraSystemWebApp:disabled"/>
   <int value="-1921593903" label="ImeInputLogicHmm:disabled"/>
@@ -44512,6 +44513,7 @@ from previous Chrome versions.
   <int value="1659082220" label="EnableManualSaving:disabled"/>
   <int value="1659372520" label="WebXrRenderPath:disabled"/>
   <int value="1660491118" label="AllowAmbientEQ:enabled"/>
+  <int value="1661354480" label="BlockInsecurePrivateNetworkRequests:disabled"/>
   <int value="1661925474" label="silent-debugger-extension-api"/>
   <int value="1664401033" label="ColorCorrectRendering:enabled"/>
   <int value="1665349789" label="spurious-power-button-window"/>

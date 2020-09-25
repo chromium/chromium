@@ -851,6 +851,15 @@ const char kEnableWindowsGamingInputDataFetcherDescription[] =
     "Enable Windows.Gaming.Input by default to provide game controller "
     "support on Windows 10 desktop.";
 
+const char kBlockInsecurePrivateNetworkRequestsName[] =
+    "Block insecure private network requests.";
+const char kBlockInsecurePrivateNetworkRequestsDescription[] =
+    "Prevents non-secure contexts from making sub-resource requests to "
+    "more-private IP addresses. An IP address IP1 is more private than IP2 if "
+    "1) IP1 is localhost and IP2 is not, or 2) IP1 is private and IP2 is "
+    "public. This is a first step towards full enforcement of CORS-RFC1918: "
+    "https://wicg.github.io/cors-rfc1918";
+
 const char kCorsForContentScriptsName[] = "CORS for content scripts";
 const char kCorsForContentScriptsDescription[] =
     "Prevent content scripts of Chrome Extensions from bypassing CORS. "

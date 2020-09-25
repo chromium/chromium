@@ -4032,6 +4032,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chromeos::features::kHandwritingGestureEditing)},
 #endif  // OS_CHROMEOS
 
+    {"block-insecure-private-network-requests",
+     flag_descriptions::kBlockInsecurePrivateNetworkRequestsName,
+     flag_descriptions::kBlockInsecurePrivateNetworkRequestsDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kBlockInsecurePrivateNetworkRequests)},
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
     {"cors-for-content-scripts", flag_descriptions::kCorsForContentScriptsName,
      flag_descriptions::kCorsForContentScriptsDescription, kOsDesktop,
