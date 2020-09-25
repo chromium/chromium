@@ -18,7 +18,6 @@
       </div>
       <template is="dom-if" if="[[shouldShowParentButton_(parentStatus_)]]"
           restamp>
-        <div class="separator"></div>
         <cr-button id="safetyCheckParentButton" class="action-button"
             on-click="onRunSafetyCheckClick_" no-search
             aria-label="$i18n{safetyCheckParentButtonAriaLabel}">
@@ -27,7 +26,6 @@
       </template>
       <template is="dom-if" if="[[shouldShowParentIconButton_(parentStatus_)]]"
           restamp>
-        <div class="separator"></div>
         <cr-icon-button id="safetyCheckParentIconButton"
             iron-icon="settings:refresh"
             on-click="onRunSafetyCheckClick_"
