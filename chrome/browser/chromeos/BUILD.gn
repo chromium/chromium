@@ -3453,6 +3453,8 @@ source_set("unit_tests") {
     "policy/device_policy_decoder_chromeos_unittest.cc",
     "policy/dlp/dlp_content_manager_unittest.cc",
     "policy/dlp/dlp_content_tab_helper_unittest.cc",
+    "policy/dlp/dlp_rules_manager_test_utils.cc",
+    "policy/dlp/dlp_rules_manager_test_utils.h",
     "policy/dlp/dlp_rules_manager_unittest.cc",
     "policy/dlp/mock_dlp_content_manager.cc",
     "policy/dlp/mock_dlp_content_manager.h",

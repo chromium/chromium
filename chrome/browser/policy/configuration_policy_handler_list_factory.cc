@@ -1138,9 +1138,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kRequiredClientCertificateForDevice,
     prefs::kRequiredClientCertificateForDevice,
     base::Value::Type::LIST },
-  { key::kDataLeakPreventionRulesList,
-    policy_prefs::kDlpRulesList,
-    base::Value::Type::LIST },
 
 #else  // defined(OS_CHROMEOS)
   { key::kMetricsReportingEnabled,
@@ -1823,6 +1820,11 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
           prefs::kExternalPrintServersAllowlist, base::Value::Type::LIST)));
   handlers->AddHandler(std::make_unique<BooleanDisablingPolicyHandler>(
       key::kNearbyShareAllowed, prefs::kNearbySharingEnabledPrefName));
+  handlers->AddHandler(std::make_unique<SimpleSchemaValidatingPolicyHandler>(
+      key::kDataLeakPreventionRulesList, policy_prefs::kDlpRulesList,
+      chrome_schema, SCHEMA_ALLOW_UNKNOWN,
+      SimpleSchemaValidatingPolicyHandler::RECOMMENDED_PROHIBITED,
+      SimpleSchemaValidatingPolicyHandler::MANDATORY_ALLOWED));
 #if defined(USE_CUPS)
   handlers->AddHandler(std::make_unique<SimpleDeprecatingPolicyHandler>(
       std::make_unique<extensions::ExtensionListPolicyHandler>(
