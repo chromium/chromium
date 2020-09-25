@@ -78,7 +78,6 @@ void AddPdfViewerStrings(base::Value* dict) {
     {"annotationResetTwoPageView", IDS_PDF_ANNOTATION_RESET_TWO_PAGE_VIEW},
     {"annotationResetRotateAndTwoPageView",
      IDS_PDF_ANNOTATION_RESET_ROTATE_AND_TWO_PAGE_VIEW},
-    {"editButton", IDS_EDIT},
     {"cancelButton", IDS_CANCEL},
     {"annotationPen", IDS_PDF_ANNOTATION_PEN},
     {"annotationHighlighter", IDS_PDF_ANNOTATION_HIGHLIGHTER},
@@ -130,6 +129,12 @@ void AddPdfViewerStrings(base::Value* dict) {
   };
   for (const auto& resource : kPdfResources)
     dict->SetStringKey(resource.name, l10n_util::GetStringUTF16(resource.id));
+
+#if defined(OS_CHROMEOS)
+  base::string16 edit_string = l10n_util::GetStringUTF16(IDS_EDIT);
+  base::Erase(edit_string, '&');
+  dict->SetStringKey("editButton", edit_string);
+#endif
 
   webui::SetLoadTimeDataDefaults(g_browser_process->GetApplicationLocale(),
                                  static_cast<base::DictionaryValue*>(dict));

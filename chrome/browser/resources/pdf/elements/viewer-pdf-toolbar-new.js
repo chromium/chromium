@@ -347,13 +347,15 @@ export class ViewerPdfToolbarNewElement extends PolymerElement {
   // <if expr="chromeos">
   /** @private */
   onDialogClose_() {
-    if (/** @type {!ViewerAnnotationsModeDialogElement} */ (
+    const confirmed =
+        /** @type {!ViewerAnnotationsModeDialogElement} */ (
             this.shadowRoot.querySelector('viewer-annotations-mode-dialog'))
-            .wasConfirmed()) {
-      this.dispatchEvent(new CustomEvent('annotation-mode-dialog-confirmed'));
-    }
+            .wasConfirmed();
     this.showAnnotationsModeDialog_ = false;
-    this.toggleAnnotation();
+    if (confirmed) {
+      this.dispatchEvent(new CustomEvent('annotation-mode-dialog-confirmed'));
+      this.toggleAnnotation();
+    }
   }
 
   /** @private */
