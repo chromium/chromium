@@ -593,6 +593,11 @@ const char kAppNotificationBadgingEnabled[] =
 const char kReverseGestureNotificationCount[] =
     "ash.wm.reverse_gesture_notification_count";
 
+// An integer pref that indicates whether global media controls is pinned to
+// shelf or it's unset and need to be determined by screen size during runtime.
+const char kGlobalMediaControlsPinned[] =
+    "ash.system.global_media_controls_pinned";
+
 // NOTE: New prefs should start with the "ash." prefix. Existing prefs moved
 // into this file should not be renamed, since they may be synced.
 

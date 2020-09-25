@@ -69,6 +69,7 @@ class MediaTrayTest : public AshTestBase {
 
     media_tray_ =
         StatusAreaWidgetTestHelper::GetStatusAreaWidget()->media_tray();
+    ASSERT_TRUE(MediaTray::IsPinnedToShelf());
   }
 
   void SimulateNotificationListChanged() {
@@ -79,6 +80,15 @@ class MediaTrayTest : public AshTestBase {
     ui::GestureEvent tap(0, 0, 0, base::TimeTicks(),
                          ui::GestureEventDetails(ui::ET_GESTURE_TAP));
     media_tray_->PerformAction(tap);
+  }
+
+  void SimulateTapOnPinButton() {
+    ASSERT_TRUE(media_tray_->pin_button_for_testing());
+    ui::test::EventGenerator* generator = GetEventGenerator();
+    generator->MoveMouseTo(media_tray_->pin_button_for_testing()
+                               ->GetBoundsInScreen()
+                               .CenterPoint());
+    generator->ClickLeftButton();
   }
 
   TrayBubbleWrapper* GetBubbleWrapper() {
@@ -124,6 +134,11 @@ TEST_F(MediaTrayTest, MediaTrayVisibilityTest) {
   // Media tray should be visible again when we unlock the screen.
   GetSessionControllerClient()->UnlockScreen();
   EXPECT_TRUE(media_tray()->GetVisible());
+
+  // Media tray should not be visible if global media controls is
+  // not pinned to shelf.
+  MediaTray::SetPinnedToShelf(false);
+  EXPECT_FALSE(media_tray()->GetVisible());
 }
 
 TEST_F(MediaTrayTest, ShowAndHideBubbleTest) {
@@ -175,6 +190,38 @@ TEST_F(MediaTrayTest, DialogCloseWhenNoActiveNotificationTest) {
   SimulateNotificationListChanged();
   EXPECT_EQ(GetBubbleWrapper(), nullptr);
   EXPECT_FALSE(media_tray()->GetVisible());
+}
+
+TEST_F(MediaTrayTest, PinButtonTest) {
+  // Media tray should be invisible initially.
+  ASSERT_TRUE(media_tray());
+  EXPECT_FALSE(media_tray()->GetVisible());
+
+  // Open global media controls dialog.
+  provider()->SetHasActiveNotifications(true);
+  SimulateNotificationListChanged();
+  EXPECT_TRUE(media_tray()->GetVisible());
+  SimulateTapOnMediaTray();
+  EXPECT_NE(GetBubbleWrapper(), nullptr);
+
+  // Tapping the pin button while the media controls dialog is opened
+  // should have the dialog closed and the media tray hidden.
+  SimulateTapOnPinButton();
+  EXPECT_EQ(GetBubbleWrapper(), nullptr);
+  EXPECT_FALSE(media_tray()->GetVisible());
+  EXPECT_FALSE(MediaTray::IsPinnedToShelf());
+}
+
+TEST_F(MediaTrayTest, PinToShelfDefaultBehavior) {
+  // Media controls should be pinned on shelf by default on a
+  // 10 inch display.
+  UpdateDisplay("800x530");
+  EXPECT_FALSE(MediaTray::IsPinnedToShelf());
+
+  // Media controls should be pinned on shelf by default on a
+  // display larger than 10 inches.
+  UpdateDisplay("800x600");
+  EXPECT_TRUE(MediaTray::IsPinnedToShelf());
 }
 
 }  // namespace ash

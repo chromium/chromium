@@ -138,6 +138,7 @@ aggregate_vector_icons("ash_vector_icons") {
     "palette_tray_icon_magnify.icon",
     "palette_tray_icon_metalayer.icon",
     "pin_request_lock.icon",
+    "pinned.icon",
     "phone_hub_mobile_no_connection.icon",
     "phone_hub_mobile_no_sim.icon",
     "privacy_screen.icon",
@@ -309,6 +310,7 @@ aggregate_vector_icons("ash_vector_icons") {
     "unified_network_badge_captive_portal.icon",
     "unified_network_badge_secure.icon",
     "unified_network_badge_vpn.icon",
+    "unpinned.icon",
     "unrendered_html_placeholder.icon",
     "wallpaper.icon",
   ]

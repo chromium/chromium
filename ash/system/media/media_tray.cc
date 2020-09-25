@@ -4,8 +4,10 @@
 
 #include "ash/system/media/media_tray.h"
 
+#include "ash/public/cpp/ash_pref_names.h"
 #include "ash/public/cpp/media_notification_provider.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
@@ -18,17 +20,53 @@
 #include "ash/system/tray/tray_popup_item_style.h"
 #include "ash/system/tray/tray_utils.h"
 #include "base/strings/string_util.h"
+#include "components/prefs/pref_change_registrar.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/display/manager/display_manager.h"
+#include "ui/display/manager/managed_display_info.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/controls/separator.h"
 #include "ui/views/layout/box_layout.h"
 
 namespace ash {
 
 namespace {
+
+constexpr gfx::Insets kTitleViewInsets = gfx::Insets(0, 16, 0, 16);
+
+// Minimum screen diagonal (in inches) for pinning global media controls
+// on shelf by default.
+constexpr float kMinimumScreenSizeDiagonal = 10.0f;
+
+// Calculate screen size and returns true if screen size is larger than
+// kMinimumScreenSizeDiagonal.
+bool GetIsPinnedToShelfByDefault() {
+  // Happens in test.
+  if (!Shell::HasInstance())
+    return false;
+
+  display::ManagedDisplayInfo info =
+      Shell::Get()->display_manager()->GetDisplayInfo(
+          display::Screen::GetScreen()->GetPrimaryDisplay().id());
+  DCHECK(info.device_dpi());
+  float screen_width = info.size_in_pixel().width() / info.device_dpi();
+  float screen_height = info.size_in_pixel().height() / info.device_dpi();
+
+  float diagonal_len = sqrt(pow(screen_width, 2) + pow(screen_height, 2));
+  return diagonal_len > kMinimumScreenSizeDiagonal;
+}
+
+// Enum that specifies the pin state of global media controls.
+enum PinState {
+  kDefault = 0,
+  kUnpinned,
+  kPinned,
+};
 
 // View that contains global media controls' title.
 class GlobalMediaControlsTitleView : public views::View {
@@ -43,23 +81,90 @@ class GlobalMediaControlsTitleView : public views::View {
                     kMenuSeparatorVerticalPadding - kMenuSeparatorWidth, 0)));
 
     auto* box_layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
-        views::BoxLayout::Orientation::kHorizontal, gfx::Insets(0, 0, 0, 0)));
+        views::BoxLayout::Orientation::kHorizontal, kTitleViewInsets));
     box_layout->set_minimum_cross_axis_size(kTrayPopupItemMinHeight);
+    box_layout->set_cross_axis_alignment(
+        views::BoxLayout::CrossAxisAlignment::kCenter);
 
     auto* title_label = AddChildView(std::make_unique<views::Label>());
     title_label->SetText(
         l10n_util::GetStringUTF16(IDS_ASH_GLOBAL_MEDIA_CONTROLS_TITLE));
     title_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    title_label->SetBorder(views::CreateEmptyBorder(0, 16, 0, 0));
     TrayPopupItemStyle style(TrayPopupItemStyle::FontStyle::SMALL_TITLE,
                              true /* use_unified_theme */);
     style.SetupLabel(title_label);
 
+    // Media tray should always be pinned to shelf when we are opening the
+    // dialog.
+    DCHECK(MediaTray::IsPinnedToShelf());
+    pin_button_ = AddChildView(std::make_unique<MediaTray::PinButton>());
+
     box_layout->SetFlexForView(title_label, 1);
   }
+
+  views::Button* pin_button() { return pin_button_; }
+
+ private:
+  MediaTray::PinButton* pin_button_ = nullptr;
 };
 
 }  // namespace
+
+// static
+void MediaTray::RegisterProfilePrefs(PrefRegistrySimple* registry) {
+  registry->RegisterIntegerPref(prefs::kGlobalMediaControlsPinned,
+                                PinState::kDefault);
+}
+
+// static
+bool MediaTray::IsPinnedToShelf() {
+  PrefService* pref_service =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  DCHECK(pref_service);
+  switch (pref_service->GetInteger(prefs::kGlobalMediaControlsPinned)) {
+    case PinState::kPinned:
+      return true;
+    case PinState::kUnpinned:
+      return false;
+    case PinState::kDefault:
+      return GetIsPinnedToShelfByDefault();
+  }
+
+  NOTREACHED();
+  return false;
+}
+
+// static
+void MediaTray::SetPinnedToShelf(bool pinned) {
+  PrefService* pref_service =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  DCHECK(pref_service);
+  pref_service->SetInteger(prefs::kGlobalMediaControlsPinned,
+                           pinned ? PinState::kPinned : PinState::kUnpinned);
+}
+
+MediaTray::PinButton::PinButton()
+    : TopShortcutButton(
+          this,
+          MediaTray::IsPinnedToShelf() ? kPinnedIcon : kUnpinnedIcon,
+          MediaTray::IsPinnedToShelf()
+              ? IDS_ASH_GLOBAL_MEDIA_CONTROLS_PINNED_BUTTON_TOOLTIP_TEXT
+              : IDS_ASH_GLOBAL_MEDIA_CONTROLS_UNPINNED_BUTTON_TOOLTIP_TEXT) {}
+
+void MediaTray::PinButton::ButtonPressed(views::Button* sender,
+                                         const ui::Event& event) {
+  MediaTray::SetPinnedToShelf(!MediaTray::IsPinnedToShelf());
+  SetImage(views::Button::STATE_NORMAL,
+           CreateVectorIcon(
+               MediaTray::IsPinnedToShelf() ? kPinnedIcon : kUnpinnedIcon,
+               kTrayTopShortcutButtonIconSize,
+               AshColorProvider::Get()->GetContentLayerColor(
+                   AshColorProvider::ContentLayerType::kIconColorPrimary)));
+  SetTooltipText(l10n_util::GetStringUTF16(
+      MediaTray::IsPinnedToShelf()
+          ? IDS_ASH_GLOBAL_MEDIA_CONTROLS_PINNED_BUTTON_TOOLTIP_TEXT
+          : IDS_ASH_GLOBAL_MEDIA_CONTROLS_UNPINNED_BUTTON_TOOLTIP_TEXT));
+}
 
 MediaTray::MediaTray(Shelf* shelf) : TrayBackgroundView(shelf) {
   if (MediaNotificationProvider::Get())
@@ -142,10 +247,11 @@ void MediaTray::ShowBubble(bool show_by_click) {
 
   TrayBubbleView* bubble_view = new TrayBubbleView(init_params);
 
-  auto* title_view_ptr = bubble_view->AddChildView(
+  auto* title_view = bubble_view->AddChildView(
       std::make_unique<GlobalMediaControlsTitleView>());
-  title_view_ptr->SetPaintToLayer();
-  title_view_ptr->layer()->SetFillsBoundsOpaquely(false);
+  title_view->SetPaintToLayer();
+  title_view->layer()->SetFillsBoundsOpaquely(false);
+  pin_button_ = title_view->pin_button();
 
   bubble_view->AddChildView(
       MediaNotificationProvider::Get()->GetMediaNotificationListView(
@@ -179,6 +285,16 @@ void MediaTray::OnLockStateChanged(bool locked) {
   UpdateDisplayState();
 }
 
+void MediaTray::OnActiveUserPrefServiceChanged(PrefService* pref_service) {
+  pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
+  pref_change_registrar_->Init(pref_service);
+  pref_change_registrar_->Add(
+      prefs::kGlobalMediaControlsPinned,
+      base::BindRepeating(&MediaTray::OnGlobalMediaControlsPinPrefChanged,
+                          base::Unretained(this)));
+  OnGlobalMediaControlsPinPrefChanged();
+}
+
 void MediaTray::UpdateDisplayState() {
   if (!MediaNotificationProvider::Get())
     return;
@@ -186,11 +302,16 @@ void MediaTray::UpdateDisplayState() {
   bool should_show =
       (MediaNotificationProvider::Get()->HasActiveNotifications() ||
        MediaNotificationProvider::Get()->HasFrozenNotifications()) &&
-      !Shell::Get()->session_controller()->IsScreenLocked();
+      !Shell::Get()->session_controller()->IsScreenLocked() &&
+      IsPinnedToShelf();
 
   if (!should_show && bubble_)
     CloseBubble();
   SetVisiblePreferred(should_show);
+}
+
+void MediaTray::OnGlobalMediaControlsPinPrefChanged() {
+  UpdateDisplayState();
 }
 
 }  // namespace ash

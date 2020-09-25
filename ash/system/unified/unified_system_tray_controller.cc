@@ -27,6 +27,7 @@
 #include "ash/system/ime/unified_ime_detailed_view_controller.h"
 #include "ash/system/locale/locale_feature_pod_controller.h"
 #include "ash/system/locale/unified_locale_detailed_view_controller.h"
+#include "ash/system/media/media_tray.h"
 #include "ash/system/media/unified_media_controls_controller.h"
 #include "ash/system/media/unified_media_controls_detailed_view_controller.h"
 #include "ash/system/model/clock_model.h"
@@ -134,7 +135,8 @@ UnifiedSystemTrayView* UnifiedSystemTrayController::CreateView() {
   InitFeaturePods();
 
   if (base::FeatureList::IsEnabled(media::kGlobalMediaControlsForChromeOS) &&
-      !Shell::Get()->session_controller()->IsScreenLocked()) {
+      !Shell::Get()->session_controller()->IsScreenLocked() &&
+      !MediaTray::IsPinnedToShelf()) {
     media_controls_controller_ =
         std::make_unique<UnifiedMediaControlsController>(this);
     unified_view_->AddMediaControlsView(

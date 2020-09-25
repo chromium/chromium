@@ -2534,6 +2534,14 @@ This file contains the strings for ash.
         Media Controls
       </message>
 
+      <message name="IDS_ASH_GLOBAL_MEDIA_CONTROLS_PINNED_BUTTON_TOOLTIP_TEXT" desc="Tooltip for pinned button showing in global media controls' title.">
+        Unpin global media controls from shelf
+      </message>
+
+      <message name="IDS_ASH_GLOBAL_MEDIA_CONTROLS_UNPINNED_BUTTON_TOOLTIP_TEXT" desc="Tooltip for unpinned button showing in global media controls' title.">
+        Pin global media controls to shelf
+      </message>
+
       <!-- Power off menu  -->
       <message name="IDS_ASH_POWER_BUTTON_MENU_POWER_OFF_BUTTON" desc="Text shown on power off button in power button menu.">
         Power off

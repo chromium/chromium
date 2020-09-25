@@ -5,6 +5,7 @@
 #include "ash/system/media/unified_media_controls_detailed_view_controller.h"
 
 #include "ash/public/cpp/media_notification_provider.h"
+#include "ash/system/media/media_tray.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/status_area_widget_test_helper.h"
 #include "ash/system/unified/unified_system_tray.h"
@@ -68,6 +69,10 @@ class UnifiedMediaControlsDetailedViewControllerTest : public AshTestBase {
   void SetUp() override {
     provider_ = std::make_unique<MockMediaNotificationProvider>();
     AshTestBase::SetUp();
+
+    // Ensure media tray is not pinned to shelf so that media controls
+    // show up in quick settings.
+    MediaTray::SetPinnedToShelf(false);
 
     StatusAreaWidgetTestHelper::GetStatusAreaWidget()
         ->unified_system_tray()

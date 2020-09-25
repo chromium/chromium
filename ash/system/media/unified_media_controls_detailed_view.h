@@ -16,6 +16,10 @@ class UnifiedMediaControlsDetailedView : public TrayDetailedView {
       DetailedViewDelegate* delegate,
       std::unique_ptr<views::View> notification_list_view);
   ~UnifiedMediaControlsDetailedView() override = default;
+
+ private:
+  // TrayDetailedView implementation.
+  void CreateExtraTitleRowButtons() override;
 };
 
 }  // namespace ash

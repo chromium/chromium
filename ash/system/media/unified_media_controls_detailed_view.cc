@@ -6,6 +6,8 @@
 
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/system/media/media_tray.h"
+#include "ash/system/tray/tri_view.h"
 
 namespace ash {
 
@@ -20,6 +22,15 @@ UnifiedMediaControlsDetailedView::UnifiedMediaControlsDetailedView(
       AshColorProvider::Get()->GetContentLayerColor(
           AshColorProvider::ContentLayerType::kSeparatorColor)));
   AddChildView(std::move(notification_list_view));
+}
+
+void UnifiedMediaControlsDetailedView::CreateExtraTitleRowButtons() {
+  // DetailedView should only be visible when global media controls
+  // is NOT pinned to shelf.
+  DCHECK(!MediaTray::IsPinnedToShelf());
+
+  tri_view()->SetContainerVisible(TriView::Container::END, true);
+  tri_view()->AddView(TriView::Container::END, new MediaTray::PinButton());
 }
 
 }  // namespace ash

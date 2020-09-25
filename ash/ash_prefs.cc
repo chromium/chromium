@@ -24,6 +24,7 @@
 #include "ash/system/bluetooth/bluetooth_power_controller.h"
 #include "ash/system/caps_lock_notification_controller.h"
 #include "ash/system/gesture_education/gesture_education_notification_controller.h"
+#include "ash/system/media/media_tray.h"
 #include "ash/system/message_center/message_center_controller.h"
 #include "ash/system/network/vpn_list_view.h"
 #include "ash/system/night_light/night_light_controller_impl.h"
@@ -72,6 +73,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry, bool for_test) {
   TouchDevicesController::RegisterProfilePrefs(registry, for_test);
   tray::VPNListView::RegisterProfilePrefs(registry);
   WmGestureHandler::RegisterProfilePrefs(registry);
+  MediaTray::RegisterProfilePrefs(registry);
 
   // Provide prefs registered in the browser for ash_unittests.
   if (for_test) {
