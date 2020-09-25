@@ -26,8 +26,6 @@ class MockNewWindowDelegate : public testing::NiceMock<TestNewWindowDelegate> {
               NewTabWithUrl,
               (const GURL& url, bool from_user_interaction),
               (override));
-
-  MOCK_METHOD(void, OpenFeedbackPage, (bool from_assistant), (override));
 };
 
 class DummyEvent : public ui::Event {
