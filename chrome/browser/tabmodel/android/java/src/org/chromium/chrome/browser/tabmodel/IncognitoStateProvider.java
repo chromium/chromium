@@ -2,15 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.toolbar;
-
-import android.content.Context;
+package org.chromium.chrome.browser.tabmodel;
 
 import org.chromium.base.ObserverList;
-import org.chromium.chrome.browser.tabmodel.EmptyTabModelSelectorObserver;
-import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 
 /** A provider that notifies its observers when incognito mode is entered or exited. */
 public class IncognitoStateProvider {
@@ -29,13 +23,14 @@ public class IncognitoStateProvider {
     /** A {@link TabModelSelector} used to know when incognito mode is entered or exited. */
     private TabModelSelector mTabModelSelector;
 
-    public IncognitoStateProvider(Context context) {
+    public IncognitoStateProvider() {
         mIncognitoStateObservers = new ObserverList<IncognitoStateObserver>();
 
         mTabModelSelectorObserver = new EmptyTabModelSelectorObserver() {
             @Override
             public void onTabModelSelected(TabModel newModel, TabModel oldModel) {
-                incognitoStateChanged(newModel.isIncognito());
+                // TODO(jinsukkim): Emit this only if the state is different.
+                emitIncognitoStateChanged(newModel.isIncognito());
             }
         };
     }
@@ -63,13 +58,19 @@ public class IncognitoStateProvider {
         mIncognitoStateObservers.removeObserver(observer);
     }
 
-    void setTabModelSelector(TabModelSelector tabModelSelector) {
+    /**
+     * @param tabModelSelector {@link TabModelSelector} to set.
+     */
+    public void setTabModelSelector(TabModelSelector tabModelSelector) {
         mTabModelSelector = tabModelSelector;
         mTabModelSelector.addObserver(mTabModelSelectorObserver);
-        incognitoStateChanged(mTabModelSelector.isIncognitoSelected());
+        emitIncognitoStateChanged(mTabModelSelector.isIncognitoSelected());
     }
 
-    void destroy() {
+    /**
+     * Destroy {@link IncognitoStateProvider} object.
+     */
+    public void destroy() {
         if (mTabModelSelector != null) {
             mTabModelSelector.removeObserver(mTabModelSelectorObserver);
             mTabModelSelector = null;
@@ -77,7 +78,11 @@ public class IncognitoStateProvider {
         mIncognitoStateObservers.clear();
     }
 
-    private void incognitoStateChanged(boolean isIncognito) {
+    /**
+     * Update incognito-selected state.
+     * @param isIncognito Whether incognito mode is selected.
+     */
+    private void emitIncognitoStateChanged(boolean isIncognito) {
         for (IncognitoStateObserver observer : mIncognitoStateObservers) {
             observer.onIncognitoStateChanged(isIncognito);
         }

@@ -1542,7 +1542,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/toolbar/ButtonDataProvider.java",
   "java/src/org/chromium/chrome/browser/toolbar/ControlContainer.java",
   "java/src/org/chromium/chrome/browser/toolbar/HomeButton.java",
-  "java/src/org/chromium/chrome/browser/toolbar/IncognitoStateProvider.java",
   "java/src/org/chromium/chrome/browser/toolbar/IncognitoToggleTabLayout.java",
   "java/src/org/chromium/chrome/browser/toolbar/KeyboardNavigationListener.java",
   "java/src/org/chromium/chrome/browser/toolbar/LocationBarFocusScrimHandler.java",

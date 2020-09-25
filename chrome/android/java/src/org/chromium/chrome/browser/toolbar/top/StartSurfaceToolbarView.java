@@ -14,13 +14,15 @@ import android.view.View;
 import android.view.ViewPropertyAnimator;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
+
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.content.res.AppCompatResources;
+
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.device.DeviceClassManager;
+import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
-import org.chromium.chrome.browser.toolbar.IncognitoStateProvider;
 import org.chromium.chrome.browser.toolbar.NewTabButton;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.animation.Interpolators;

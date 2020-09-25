@@ -6,7 +6,8 @@ package org.chromium.chrome.browser.toolbar.top;
 
 import android.graphics.drawable.Drawable;
 import android.view.View;
-import org.chromium.chrome.browser.toolbar.IncognitoStateProvider;
+
+import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 

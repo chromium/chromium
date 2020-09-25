@@ -71,6 +71,7 @@ import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.TabThemeColorHelper;
 import org.chromium.chrome.browser.tabmodel.EmptyTabModelSelectorObserver;
+import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
@@ -277,7 +278,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         };
         mActivity.registerComponentCallbacks(mComponentCallbacks);
 
-        mIncognitoStateProvider = new IncognitoStateProvider(mActivity);
+        mIncognitoStateProvider = new IncognitoStateProvider();
         mTabCountProvider = new TabCountProvider();
         mTabThemeColorProvider = themeColorProvider;
         mTabThemeColorProvider.addThemeColorObserver(this);
