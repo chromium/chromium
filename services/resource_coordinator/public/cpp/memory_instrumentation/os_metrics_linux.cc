@@ -5,6 +5,8 @@
 #include <dlfcn.h>
 #include <fcntl.h>
 #include <stdint.h>
+#include <sys/prctl.h>
+
 #include <memory>
 
 #include "base/android/library_loader/anchor_functions.h"
@@ -228,6 +230,44 @@ uint32_t ReadLinuxProcSmapsFile(FILE* smaps_file,
   return num_valid_regions;
 }
 
+// RAII class making the current process dumpable via prctl(PR_SET_DUMPABLE, 1),
+// in case it is not currently dumpable as described in proc(5) and prctl(2).
+// Noop if the original dumpable state could not be determined.
+class ScopedProcessSetDumpable {
+ public:
+  ScopedProcessSetDumpable() {
+    int result = prctl(PR_GET_DUMPABLE, 0, 0, 0, 0);
+    if (result < 0) {
+      PLOG(ERROR) << "prctl";
+      AvoidPrctlOnDestruction();
+      return;
+    }
+    was_dumpable_ = result > 0;
+
+    if (!was_dumpable_) {
+      if (prctl(PR_SET_DUMPABLE, 1, 0, 0, 0) != 0) {
+        PLOG(ERROR) << "prctl";
+        // PR_SET_DUMPABLE is often disallowed, avoid crashing in this case.
+        AvoidPrctlOnDestruction();
+      }
+    }
+  }
+
+  ScopedProcessSetDumpable(const ScopedProcessSetDumpable&) = delete;
+  ScopedProcessSetDumpable& operator=(const ScopedProcessSetDumpable&) = delete;
+
+  ~ScopedProcessSetDumpable() {
+    if (!was_dumpable_) {
+      PCHECK(prctl(PR_SET_DUMPABLE, 0, 0, 0, 0) == 0) << "prctl";
+    }
+  }
+
+ private:
+  void AvoidPrctlOnDestruction() { was_dumpable_ = true; }
+
+  bool was_dumpable_;
+};
+
 }  // namespace
 
 FILE* g_proc_smaps_for_testing = nullptr;
@@ -328,8 +368,14 @@ OSMetrics::MappedAndResidentPagesDumpState OSMetrics::GetMappedAndResidentPages(
 
   base::ScopedFILE pagemap_file(fopen(kPagemap, "r"));
   if (!pagemap_file.get()) {
-    DLOG(WARNING) << "Could not open " << kPagemap;
-    return OSMetrics::MappedAndResidentPagesDumpState::kAccessPagemapDenied;
+    {
+      ScopedProcessSetDumpable set_dumpable;
+      pagemap_file.reset(fopen(kPagemap, "r"));
+    }
+    if (!pagemap_file.get()) {
+      DLOG(WARNING) << "Could not open " << kPagemap;
+      return OSMetrics::MappedAndResidentPagesDumpState::kAccessPagemapDenied;
+    }
   }
 
   const size_t kPageSize = base::GetPageSize();
