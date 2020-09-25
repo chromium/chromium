@@ -47,7 +47,15 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
  public:
   METADATA_HEADER(ScrollView);
 
+  // Indicates whether or not scroll view is initialized with layer-scrolling.
+  enum class ScrollWithLayers { kDisabled, kEnabled };
+
   ScrollView();
+
+  // Additional constructor for overriding scrolling as defined by
+  // |kUiCompositorScrollWithLayers|. See crbug.com/873923 for more details on
+  // enabling by default this for all platforms.
+  explicit ScrollView(ScrollWithLayers scroll_with_layers);
 
   ~ScrollView() override;
 

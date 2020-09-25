@@ -162,11 +162,17 @@ class ScrollView::Viewport : public View {
 };
 
 ScrollView::ScrollView()
+    : ScrollView(base::FeatureList::IsEnabled(
+                     ::features::kUiCompositorScrollWithLayers)
+                     ? ScrollWithLayers::kEnabled
+                     : ScrollWithLayers::kDisabled) {}
+
+ScrollView::ScrollView(ScrollWithLayers scroll_with_layers)
     : horiz_sb_(PlatformStyle::CreateScrollBar(true)),
       vert_sb_(PlatformStyle::CreateScrollBar(false)),
       corner_view_(std::make_unique<ScrollCornerView>()),
-      scroll_with_layers_enabled_(base::FeatureList::IsEnabled(
-          ::features::kUiCompositorScrollWithLayers)) {
+      scroll_with_layers_enabled_(scroll_with_layers ==
+                                  ScrollWithLayers::kEnabled) {
   SetNotifyEnterExitOnChild(true);
 
   // Since |contents_viewport_| is accessed during the AddChildView call, make
