@@ -161,8 +161,6 @@ class GCMStatsRecorderImpl : public GCMStatsRecorder {
       decryption_failure_activities_;
 
   base::TimeTicks last_connection_initiation_time_;
-  base::TimeTicks last_received_data_message_burst_start_time_;
-  int64_t received_data_message_burst_size_;
 
   DISALLOW_COPY_AND_ASSIGN(GCMStatsRecorderImpl);
 };

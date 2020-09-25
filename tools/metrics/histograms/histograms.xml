@@ -61186,7 +61186,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GCM.Crypto.DecryptMessageResult" enum="GCMDecryptionResult"
-    expires_after="M85">
+    expires_after="never">
+<!-- expires-never: Used to monitor push encryption and debug issues. -->
+
   <owner>peter@chromium.org</owner>
   <owner>zea@chromium.org</owner>
   <summary>
@@ -61265,6 +61267,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="GCM.DataMessageBurstReceivedInterval" units="ms"
     expires_after="M85">
+  <obsolete>
+    Removed in September 2020 as the data was no longer being used.
+  </obsolete>
   <owner>peter@chromium.org</owner>
   <summary>
     Interval between two successive received data message bursts.
@@ -61380,7 +61385,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="GCM.IncomingSendErrors" units="messages" expires_after="M85">
+<histogram name="GCM.IncomingSendErrors" units="messages" expires_after="M90">
   <owner>peter@chromium.org</owner>
   <summary>
     Number of SEND_ERROR messages received from Google Cloud Messaging. Recorded
@@ -61437,7 +61442,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GCM.PendingConnectionEventsAtShutdown" units="events"
-    expires_after="M85">
+    expires_after="M90">
   <owner>peter@chromium.org</owner>
   <summary>
     Number of connection events which have not been sent to GCM. This is
@@ -61449,6 +61454,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="GCM.ReceivedDataMessageBurstSize" units="messages"
     expires_after="M85">
+  <obsolete>
+    Removed in September 2020 as the data was no longer being used.
+  </obsolete>
   <owner>peter@chromium.org</owner>
   <summary>Number of messages in a received GCM data message burst.</summary>
 </histogram>
@@ -69533,7 +69541,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="InstanceID.GetToken.RequestStatus"
-    enum="GCMRegistrationRequestStatus" expires_after="M85">
+    enum="GCMRegistrationRequestStatus" expires_after="M90">
   <owner>peter@chromium.org</owner>
   <summary>Status code of the outcome of GetToken request.</summary>
 </histogram>
@@ -111028,7 +111036,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Notifications.Android.JobStartDelay" units="ms"
-    expires_after="M85">
+    expires_after="M90">
   <owner>peter@chromium.org</owner>
   <summary>
     Records the delay between scheduling a job with the JobScheduler (with a
@@ -111038,7 +111046,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Notifications.Android.SitesChannel" enum="BooleanUsage"
-    expires_after="M85">
+    expires_after="M90">
   <owner>peter@chromium.org</owner>
   <summary>
     Recorded when the Sites channel (which we hope to deprecate) is used as a
@@ -111059,7 +111067,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Notifications.AppNotificationStatus"
-    enum="NotificationAppStatus" expires_after="M85">
+    enum="NotificationAppStatus" expires_after="never">
+<!-- expires-never: Indicates whether Chrome has notification permission. -->
+
   <owner>peter@chromium.org</owner>
   <summary>
     Records whether notifications are enabled for Chrome, as the Android app,
@@ -111242,7 +111252,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Notifications.Database.ReadResult"
-    enum="NotificationDatabaseStatus" expires_after="M85">
+    enum="NotificationDatabaseStatus" expires_after="M90">
   <owner>knollr@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -111252,7 +111262,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Notifications.Database.WriteResult"
-    enum="NotificationDatabaseStatus" expires_after="M85">
+    enum="NotificationDatabaseStatus" expires_after="M90">
   <owner>knollr@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -111345,7 +111355,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Notifications.Freedesktop.Capabilities"
-    enum="BooleanSupported" expires_after="M85">
+    enum="BooleanSupported" expires_after="M90">
 <!-- Name completed by histogram_suffixes name="FreedesktopNotificationCapabilitiesId" -->
 
   <owner>thomasanderson@chromium.org</owner>
@@ -111565,7 +111575,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Notifications.PersistentNotificationActionCount"
-    units="buttons" expires_after="M85">
+    units="buttons" expires_after="M90">
   <owner>peter@chromium.org</owner>
   <summary>
     The number of action buttons the developer provided for a persistent Web
@@ -111588,9 +111598,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Notifications.PersistentWebNotificationClickResult"
-    enum="PlatformNotificationStatus" expires_after="M85">
+    enum="PlatformNotificationStatus" expires_after="M90">
   <owner>peter@chromium.org</owner>
-  <owner>deepak.m1@samsumg.com</owner>
+  <owner>deepak.m1@samsung.com</owner>
   <summary>
     Recorded delivery status for persistent notification clicks to a Service
     Worker when handling a click on a persistent WebNotification has finished.
@@ -111598,9 +111608,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Notifications.PersistentWebNotificationCloseResult"
-    enum="PlatformNotificationStatus" expires_after="M85">
+    enum="PlatformNotificationStatus" expires_after="M90">
   <owner>peter@chromium.org</owner>
-  <owner>nsatragno@chromium.org</owner>
+  <owner>knollr@chromium.org</owner>
   <summary>
     Records delivery status for persistent notification close events sent to a
     Service Worker when the event has been handled.
@@ -111847,7 +111857,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Notifications.UsingNativeNotificationCenter"
-    enum="BooleanNativeNotifications" expires_after="M85">
+    enum="BooleanNativeNotifications" expires_after="never">
+<!-- expires-never: core to the notification user experience. -->
+
+  <owner>peter@chromium.org</owner>
+  <owner>knollr@chromium.org</owner>
   <owner>thomasanderson@chromium.org</owner>
   <summary>
     Indicates if Chrome is using system notifications or the Chrome notification
@@ -111856,7 +111870,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Notifications.Windows.ActivationStatus"
-    enum="WindowsNotificationActivationStatus" expires_after="M85">
+    enum="WindowsNotificationActivationStatus" expires_after="M90">
   <owner>finnur@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <owner>chengx@chromium.org</owner>
@@ -111867,7 +111881,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Notifications.Windows.CloseStatus"
-    enum="WindowsNotificationCloseStatus" expires_after="M87">
+    enum="WindowsNotificationCloseStatus" expires_after="M90">
   <owner>finnur@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -111899,7 +111913,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Notifications.Windows.DisplayStatus"
-    enum="WindowsNotificationDisplayStatus" expires_after="M85">
+    enum="WindowsNotificationDisplayStatus" expires_after="M90">
   <owner>finnur@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -111945,7 +111959,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Notifications.Windows.GetSettingPolicy"
-    enum="WindowsNotificationGetSettingPolicy" expires_after="M85">
+    enum="WindowsNotificationGetSettingPolicy" expires_after="M90">
   <owner>finnur@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -112059,7 +112073,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Notifications.Windows.SetReadyCallbackStatus2"
-    enum="WindowsNotificationSetReadyCallbackStatus2" expires_after="M85">
+    enum="WindowsNotificationSetReadyCallbackStatus2" expires_after="M90">
   <owner>chengx@chromium.org</owner>
   <owner>finnur@chromium.org</owner>
   <owner>peter@chromium.org</owner>
@@ -112081,7 +112095,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Notifications.Windows.StartMenuShortcutStatus"
-    enum="WindowsNotificationStartMenuShortcutStatus" expires_after="M85">
+    enum="WindowsNotificationStartMenuShortcutStatus" expires_after="M90">
   <owner>chengx@chromium.org</owner>
   <owner>finnur@chromium.org</owner>
   <owner>peter@chromium.org</owner>
@@ -141094,7 +141108,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PushMessaging.DeliveryStatus.FindServiceWorker"
-    enum="ServiceWorkerStatusCode" expires_after="M85">
+    enum="ServiceWorkerStatusCode" expires_after="M90">
   <owner>peter@chromium.org</owner>
   <summary>
     When attempting to deliver a push message to a Service Worker, this records

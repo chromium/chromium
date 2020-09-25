@@ -18,7 +18,6 @@
 namespace gcm {
 
 const uint32_t MAX_LOGGED_ACTIVITY_COUNT = 100;
-const int64_t RECEIVED_DATA_MESSAGE_BURST_LENGTH_SECONDS = 2;
 
 namespace {
 
@@ -164,9 +163,7 @@ std::string GetUnregistrationStatusString(
 }  // namespace
 
 GCMStatsRecorderImpl::GCMStatsRecorderImpl()
-    : is_recording_(false),
-      delegate_(nullptr),
-      received_data_message_burst_size_(0) {}
+    : is_recording_(false), delegate_(nullptr) {}
 
 GCMStatsRecorderImpl::~GCMStatsRecorderImpl() = default;
 
@@ -414,24 +411,6 @@ void GCMStatsRecorderImpl::RecordDataMessageReceived(
     const std::string& from,
     int message_byte_size,
     ReceivedMessageType message_type) {
-  base::TimeTicks new_timestamp = base::TimeTicks::Now();
-  if (last_received_data_message_burst_start_time_.is_null()) {
-    last_received_data_message_burst_start_time_ = new_timestamp;
-    received_data_message_burst_size_ = 1;
-  } else if ((new_timestamp - last_received_data_message_burst_start_time_) >=
-             base::TimeDelta::FromSeconds(
-                 RECEIVED_DATA_MESSAGE_BURST_LENGTH_SECONDS)) {
-    UMA_HISTOGRAM_LONG_TIMES(
-        "GCM.DataMessageBurstReceivedInterval",
-        (new_timestamp - last_received_data_message_burst_start_time_));
-    UMA_HISTOGRAM_COUNTS_1M("GCM.ReceivedDataMessageBurstSize",
-                            received_data_message_burst_size_);
-    last_received_data_message_burst_start_time_ = new_timestamp;
-    received_data_message_burst_size_ = 1;
-  } else {
-    ++received_data_message_burst_size_;
-  }
-
   if (!is_recording_)
     return;
 
