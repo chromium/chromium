@@ -35,6 +35,7 @@
 #include "base/time/time.h"
 #include "services/network/public/mojom/cross_origin_embedder_policy.mojom-shared.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
+#include "services/network/public/mojom/ip_address_space.mojom-shared.h"
 #include "third_party/blink/public/platform/web_url_response.h"
 #include "third_party/blink/renderer/platform/network/http_header_map.h"
 #include "third_party/blink/renderer/platform/network/http_parsers.h"
@@ -398,6 +399,11 @@ class PLATFORM_EXPORT ResourceResponse final {
   uint16_t RemotePort() const { return remote_port_; }
   void SetRemotePort(uint16_t value) { remote_port_ = value; }
 
+  network::mojom::IPAddressSpace AddressSpace() const { return address_space_; }
+  void SetAddressSpace(network::mojom::IPAddressSpace value) {
+    address_space_ = value;
+  }
+
   bool WasAlpnNegotiated() const { return was_alpn_negotiated_; }
   void SetWasAlpnNegotiated(bool was_alpn_negotiated) {
     was_alpn_negotiated_ = was_alpn_negotiated;
@@ -509,6 +515,10 @@ class PLATFORM_EXPORT ResourceResponse final {
 
   // Remote port number of the socket which fetched this resource.
   uint16_t remote_port_ = 0;
+
+  // The address space from which this resource was fetched.
+  network::mojom::IPAddressSpace address_space_ =
+      network::mojom::IPAddressSpace::kUnknown;
 
   bool was_cached_ = false;
   bool connection_reused_ = false;

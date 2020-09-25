@@ -160,22 +160,6 @@ void WorkerModuleScriptFetcher::NotifyClient(
           kDoNotSupportReferrerPolicyLegacyKeywords, &response_referrer_policy);
     }
 
-    // Calculate an address space from worker script's response url according to
-    // the "CORS and RFC1918" spec:
-    // https://wicg.github.io/cors-rfc1918/#integration-html
-    //
-    // Currently this implementation is not fully consistent with the spec for
-    // historical reasons.
-    // TODO(https://crbug.com/955213): Make this consistent with the spec.
-    // TODO(https://crbug.com/955213): Move this function to a more appropriate
-    // place so that this is shareable out of worker code.
-    auto response_address_space = network::mojom::IPAddressSpace::kPublic;
-    if (network_utils::IsReservedIPAddress(response.RemoteIPAddress())) {
-      response_address_space = network::mojom::IPAddressSpace::kPrivate;
-    }
-    if (SecurityOrigin::Create(response_url)->IsLocalhost())
-      response_address_space = network::mojom::IPAddressSpace::kLocal;
-
     auto* response_content_security_policy =
         MakeGarbageCollected<ContentSecurityPolicy>();
     response_content_security_policy->DidReceiveHeaders(
@@ -187,7 +171,7 @@ void WorkerModuleScriptFetcher::NotifyClient(
 
     // Step 12.3-12.6 are implemented in Initialize().
     global_scope_->Initialize(
-        response_url, response_referrer_policy, response_address_space,
+        response_url, response_referrer_policy, response.AddressSpace(),
         response_content_security_policy->Headers(),
         response_origin_trial_tokens.get(), response.AppCacheID());
   }

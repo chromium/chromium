@@ -46,6 +46,7 @@ include_rules = [
     "+services/network/public/mojom/cors.mojom-shared.h",
     "+services/network/public/mojom/data_pipe_getter.mojom-shared.h",
     "+services/network/public/mojom/fetch_api.mojom-shared.h",
+    "+services/network/public/mojom/ip_address_space.mojom-shared.h",
     "+services/network/public/mojom/referrer_policy.mojom-shared.h",
     "+services/network/public/mojom/trust_tokens.mojom-shared.h",
     "+services/network/public/mojom/url_loader_factory.mojom-shared.h",

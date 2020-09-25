@@ -36,6 +36,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
+#include "services/network/public/mojom/ip_address_space.mojom-shared.h"
 #include "services/network/public/mojom/load_timing_info.mojom.h"
 #include "third_party/blink/public/platform/web_http_header_visitor.h"
 #include "third_party/blink/public/platform/web_http_load_info.h"
@@ -426,6 +427,15 @@ uint16_t WebURLResponse::RemotePort() const {
 
 void WebURLResponse::SetRemotePort(uint16_t remote_port) {
   resource_response_->SetRemotePort(remote_port);
+}
+
+network::mojom::IPAddressSpace WebURLResponse::AddressSpace() const {
+  return resource_response_->AddressSpace();
+}
+
+void WebURLResponse::SetAddressSpace(
+    network::mojom::IPAddressSpace remote_ip_address_space) {
+  resource_response_->SetAddressSpace(remote_ip_address_space);
 }
 
 void WebURLResponse::SetEncodedDataLength(int64_t length) {

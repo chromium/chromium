@@ -58,7 +58,9 @@
 #include "net/ssl/ssl_connection_status_flags.h"
 #include "net/ssl/ssl_info.h"
 #include "services/network/public/cpp/http_raw_request_response_info.h"
+#include "services/network/public/cpp/ip_address_space_util.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/mojom/ip_address_space.mojom-shared.h"
 #include "services/network/public/mojom/trust_tokens.mojom-shared.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -917,9 +919,6 @@ void WebURLLoaderImpl::PopulateURLResponse(
   response->SetWasCached(!head.load_timing.request_start_time.is_null() &&
                          head.response_time <
                              head.load_timing.request_start_time);
-  response->SetRemoteIPAddress(WebString::FromUTF8(
-      net::HostPortPair::FromIPEndPoint(head.remote_endpoint).HostForURL()));
-  response->SetRemotePort(head.remote_endpoint.port());
   response->SetConnectionID(head.load_timing.socket_log_id);
   response->SetConnectionReused(head.load_timing.socket_reused);
   response->SetWasFetchedViaSPDY(head.was_fetched_via_spdy);
@@ -934,6 +933,26 @@ void WebURLLoaderImpl::PopulateURLResponse(
               network::mojom::FetchResponseSource::kCacheStorage
           ? blink::WebString::FromUTF8(head.cache_storage_cache_name)
           : blink::WebString());
+
+  response->SetRemoteIPAddress(WebString::FromUTF8(
+      net::HostPortPair::FromIPEndPoint(head.remote_endpoint).HostForURL()));
+  response->SetRemotePort(head.remote_endpoint.port());
+
+  // This computation can only be done once SetUrlListViaServiceWorker() has
+  // been called on |response|, so that ResponseUrl() returns the correct
+  // answer.
+  //
+  // Implements: https://wicg.github.io/cors-rfc1918/#integration-html
+  //
+  // TODO(crbug.com/955213): Just copy the address space in |head| once it is
+  // made available.
+  if (response->ResponseUrl().ProtocolIs("file")) {
+    response->SetAddressSpace(network::mojom::IPAddressSpace::kLocal);
+  } else {
+    response->SetAddressSpace(
+        network::IPAddressToIPAddressSpace(head.remote_endpoint.address()));
+  }
+
   blink::WebVector<blink::WebString> cors_exposed_header_names(
       head.cors_exposed_header_names.size());
   std::transform(

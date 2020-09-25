@@ -30,6 +30,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "services/network/public/cpp/ip_address_space_util.h"
 #include "services/network/public/mojom/ip_address_space.mojom-blink.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/security_context/insecure_request_policy.h"
@@ -785,26 +786,24 @@ bool MixedContentChecker::ShouldAutoupgrade(
 
 void MixedContentChecker::CheckMixedPrivatePublic(
     LocalFrame* frame,
-    const AtomicString& resource_ip_address) {
+    const ResourceResponse& response) {
   if (!frame)
     return;
 
-  // Just count these for the moment, don't block them.
-  if (network_utils::IsReservedIPAddress(resource_ip_address) &&
-      frame->DomWindow()->AddressSpace() ==
-          network::mojom::IPAddressSpace::kPublic) {
-    UseCounter::Count(frame->DomWindow(),
-                      WebFeature::kMixedContentPrivateHostnameInPublicHostname);
-    // We can simplify the IP checks here, as we've already verified that
-    // |resourceIPAddress| is a reserved IP address, which means it's also a
-    // valid IP address in a normalized form.
-    if (resource_ip_address.StartsWith("127.0.0.") ||
-        resource_ip_address == "[::1]") {
-      UseCounter::Count(frame->DomWindow(),
-                        frame->DomWindow()->IsSecureContext()
-                            ? WebFeature::kLoopbackEmbeddedInSecureContext
-                            : WebFeature::kLoopbackEmbeddedInNonSecureContext);
-    }
+  LocalDOMWindow* window = frame->DomWindow();
+  if (!network::IsLessPublicAddressSpace(response.AddressSpace(),
+                                         window->AddressSpace())) {
+    return;  // Not a private network request.
+  }
+
+  UseCounter::Count(window,
+                    WebFeature::kMixedContentPrivateHostnameInPublicHostname);
+
+  if (response.AddressSpace() == network::mojom::IPAddressSpace::kLocal) {
+    UseCounter::Count(window,
+                      window->IsSecureContext()
+                          ? WebFeature::kLoopbackEmbeddedInSecureContext
+                          : WebFeature::kLoopbackEmbeddedInNonSecureContext);
   }
 }
 

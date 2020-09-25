@@ -242,18 +242,12 @@ void WorkerClassicScriptLoader::DidReceiveResponse(
   response_url_ = response.ResponseUrl();
   response_encoding_ = response.TextEncodingName();
   app_cache_id_ = response.AppCacheID();
+  response_address_space_ = response.AddressSpace();
 
   referrer_policy_ = response.HttpHeaderField(http_names::kReferrerPolicy);
   ProcessContentSecurityPolicy(response);
   origin_trial_tokens_ = OriginTrialContext::ParseHeaderValue(
       response.HttpHeaderField(http_names::kOriginTrial));
-
-  if (network_utils::IsReservedIPAddress(response.RemoteIPAddress())) {
-    response_address_space_ =
-        SecurityOrigin::Create(response_url_)->IsLocalhost()
-            ? network::mojom::IPAddressSpace::kLocal
-            : network::mojom::IPAddressSpace::kPrivate;
-  }
 
   if (response_callback_)
     std::move(response_callback_).Run();

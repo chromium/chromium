@@ -1254,8 +1254,7 @@ void DocumentLoader::StartLoadingInternal() {
     HandleRedirect(redirect_response.CurrentRequestUrl());
   }
 
-  MixedContentChecker::CheckMixedPrivatePublic(GetFrame(),
-                                               response_.RemoteIPAddress());
+  MixedContentChecker::CheckMixedPrivatePublic(GetFrame(), response_);
   ApplyClientHintsConfig(params_->enabled_client_hints);
   PreloadHelper::LoadLinksFromHeader(
       response_.HttpHeaderField(http_names::kLink),

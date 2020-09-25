@@ -143,8 +143,7 @@ void ResourceLoadObserverForFrame::DidReceiveResponse(
       return;
   }
 
-  MixedContentChecker::CheckMixedPrivatePublic(frame,
-                                               response.RemoteIPAddress());
+  MixedContentChecker::CheckMixedPrivatePublic(frame, response);
 
   std::unique_ptr<AlternateSignedExchangeResourceInfo> alternate_resource_info;
 

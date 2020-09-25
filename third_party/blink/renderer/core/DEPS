@@ -74,6 +74,7 @@ include_rules = [
     "+services/metrics/public",
     "+services/network/public/cpp/cors/cors_error_status.h",
     "+services/network/public/cpp/features.h",
+    "+services/network/public/cpp/ip_address_space_util.h",
     "+services/network/public/cpp/request_destination.h",
     "+services/network/public/cpp/request_mode.h",
     "+services/network/public/cpp/web_sandbox_flags.h",
