@@ -38,8 +38,11 @@ bool NotificationPlatformBridge::CanHandleType(
 
 NotificationPlatformBridgeChromeOs::NotificationPlatformBridgeChromeOs() {
 #if BUILDFLAG(IS_LACROS)
-  impl_ = std::make_unique<NotificationPlatformBridgeLacros>(
-      this, &chromeos::LacrosChromeServiceImpl::Get()->message_center_remote());
+  mojo::Remote<crosapi::mojom::MessageCenter>* remote = nullptr;
+  auto* service = chromeos::LacrosChromeServiceImpl::Get();
+  if (service->IsMessageCenterAvailable())
+    remote = &service->message_center_remote();
+  impl_ = std::make_unique<NotificationPlatformBridgeLacros>(this, remote);
 #else
   impl_ = std::make_unique<ChromeAshMessageCenterClient>(this);
 #endif

@@ -72,7 +72,10 @@ void BindLaCrOSHidManager(
   // D-Bus. Use the HidManager interface from ash-chrome instead.
   auto* lacros_chrome_service = chromeos::LacrosChromeServiceImpl::Get();
   DCHECK(lacros_chrome_service);
-  lacros_chrome_service->hid_manager_remote()->AddReceiver(std::move(receiver));
+  // If the Hid manager is not available, then the pending receiver is deleted.
+  if (lacros_chrome_service->IsHidManagerAvailable())
+    lacros_chrome_service->hid_manager_remote()->AddReceiver(
+        std::move(receiver));
 #endif
 }
 #endif

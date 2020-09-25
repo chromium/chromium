@@ -15,6 +15,10 @@
 namespace chromeos {
 namespace {
 
+// Tests will set this to |true| which will make all crosapi functionality
+// unavailable.
+bool g_disable_all_crosapi_for_tests = false;
+
 // We use a std::atomic here rather than a base::NoDestructor because we want to
 // allow instances of LacrosChromeServiceImpl to be destroyed to facilitate
 // testing.
@@ -189,44 +193,6 @@ LacrosChromeServiceImpl::LacrosChromeServiceImpl(
           &LacrosChromeServiceNeverBlockingState::BindAshChromeServiceRemote,
           weak_sequenced_state_));
 
-  // Bind the remote for SelectFile on the current thread, and then pass the
-  // receiver to the never_blocking_sequence_.
-  never_blocking_sequence_->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &LacrosChromeServiceNeverBlockingState::BindMessageCenterReceiver,
-          weak_sequenced_state_,
-          message_center_remote_.BindNewPipeAndPassReceiver()));
-
-  // Bind the remote for SelectFile on the current thread, and then pass the
-  // receiver to the never_blocking_sequence_.
-  mojo::PendingReceiver<crosapi::mojom::SelectFile>
-      select_file_pending_receiver =
-          select_file_remote_.BindNewPipeAndPassReceiver();
-  never_blocking_sequence_->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &LacrosChromeServiceNeverBlockingState::BindSelectFileReceiver,
-          weak_sequenced_state_, std::move(select_file_pending_receiver)));
-
-  mojo::PendingReceiver<crosapi::mojom::KeystoreService>
-      keystore_service_pending_receiver =
-          keystore_service_remote_.BindNewPipeAndPassReceiver();
-  never_blocking_sequence_->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &LacrosChromeServiceNeverBlockingState::BindKeystoreServiceReceiver,
-          weak_sequenced_state_, std::move(keystore_service_pending_receiver)));
-
-  mojo::PendingReceiver<device::mojom::HidManager>
-      hid_manager_pending_receiver =
-          hid_manager_remote_.BindNewPipeAndPassReceiver();
-  never_blocking_sequence_->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &LacrosChromeServiceNeverBlockingState::BindHidManagerReceiver,
-          weak_sequenced_state_, std::move(hid_manager_pending_receiver)));
-
   DCHECK(!g_instance);
   g_instance = this;
 }
@@ -244,10 +210,83 @@ void LacrosChromeServiceImpl::BindReceiver(
                                     BindLacrosChromeServiceReceiver,
                                 weak_sequenced_state_, std::move(receiver)));
   sequenced_state_->WaitForInit();
+  did_bind_receiver_ = true;
+
+  // Bind the remote for MessageCenter on the current thread, and then pass the
+  // receiver to the never_blocking_sequence_.
+  if (IsMessageCenterAvailable()) {
+    never_blocking_sequence_->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &LacrosChromeServiceNeverBlockingState::BindMessageCenterReceiver,
+            weak_sequenced_state_,
+            message_center_remote_.BindNewPipeAndPassReceiver()));
+  }
+
+  // Bind the remote for SelectFile on the current thread, and then pass the
+  // receiver to the never_blocking_sequence_.
+  if (IsSelectFileAvailable()) {
+    mojo::PendingReceiver<crosapi::mojom::SelectFile>
+        select_file_pending_receiver =
+            select_file_remote_.BindNewPipeAndPassReceiver();
+    never_blocking_sequence_->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &LacrosChromeServiceNeverBlockingState::BindSelectFileReceiver,
+            weak_sequenced_state_, std::move(select_file_pending_receiver)));
+  }
+
+  if (IsKeystoreServiceAvailable()) {
+    mojo::PendingReceiver<crosapi::mojom::KeystoreService>
+        keystore_service_pending_receiver =
+            keystore_service_remote_.BindNewPipeAndPassReceiver();
+    never_blocking_sequence_->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &LacrosChromeServiceNeverBlockingState::BindKeystoreServiceReceiver,
+            weak_sequenced_state_,
+            std::move(keystore_service_pending_receiver)));
+  }
+
+  if (IsHidManagerAvailable()) {
+    mojo::PendingReceiver<device::mojom::HidManager>
+        hid_manager_pending_receiver =
+            hid_manager_remote_.BindNewPipeAndPassReceiver();
+    never_blocking_sequence_->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &LacrosChromeServiceNeverBlockingState::BindHidManagerReceiver,
+            weak_sequenced_state_, std::move(hid_manager_pending_receiver)));
+  }
+}
+
+void LacrosChromeServiceImpl::DisableCrosapiForTests() {
+  g_disable_all_crosapi_for_tests = true;
+}
+
+bool LacrosChromeServiceImpl::IsMessageCenterAvailable() {
+  return AshChromeServiceVersion() >= 0;
+}
+
+bool LacrosChromeServiceImpl::IsSelectFileAvailable() {
+  return AshChromeServiceVersion() >= 0;
+}
+
+bool LacrosChromeServiceImpl::IsKeystoreServiceAvailable() {
+  return AshChromeServiceVersion() >= 0;
+}
+
+bool LacrosChromeServiceImpl::IsHidManagerAvailable() {
+  return AshChromeServiceVersion() >= 0;
+}
+
+bool LacrosChromeServiceImpl::IsScreenManagerAvailable() {
+  return AshChromeServiceVersion() >= 0;
 }
 
 void LacrosChromeServiceImpl::BindScreenManagerReceiver(
     mojo::PendingReceiver<crosapi::mojom::ScreenManager> pending_receiver) {
+  DCHECK(IsScreenManagerAvailable());
   never_blocking_sequence_->PostTask(
       FROM_HERE,
       base::BindOnce(
@@ -258,6 +297,13 @@ void LacrosChromeServiceImpl::BindScreenManagerReceiver(
 void LacrosChromeServiceImpl::NewWindowAffineSequence() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(affine_sequence_checker_);
   delegate_->NewWindow();
+}
+
+int LacrosChromeServiceImpl::AshChromeServiceVersion() {
+  if (g_disable_all_crosapi_for_tests)
+    return -1;
+  DCHECK(did_bind_receiver_);
+  return init_params_->ash_chrome_service_version;
 }
 
 }  // namespace chromeos

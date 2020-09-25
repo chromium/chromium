@@ -49,6 +49,8 @@ class NotificationPlatformBridgeLacros : public NotificationPlatformBridge {
   void OnRemoteNotificationClosed(const std::string& id);
 
   NotificationPlatformBridgeDelegate* const bridge_delegate_;
+
+  // May be nullptr if the message center is unavailable.
   mojo::Remote<crosapi::mojom::MessageCenter>* const message_center_remote_;
 
   // Map key is notification ID.

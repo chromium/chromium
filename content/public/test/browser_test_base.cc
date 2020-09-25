@@ -118,6 +118,7 @@
 #if BUILDFLAG(IS_LACROS)
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
+#include "chromeos/lacros/lacros_chrome_service_impl.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/platform/socket_utils_posix.h"
@@ -365,7 +366,9 @@ void BrowserTestBase::SetUp() {
     // http://crrev.com/c/2402580/2/content/public/test/browser_test_base.cc
     std::string socket_path =
         command_line->GetSwitchValueASCII("lacros-mojo-socket-for-testing");
-    if (!socket_path.empty()) {
+    if (socket_path.empty()) {
+      chromeos::LacrosChromeServiceImpl::Get()->DisableCrosapiForTests();
+    } else {
       auto channel = mojo::NamedPlatformChannel::ConnectToServer(socket_path);
       base::ScopedFD socket_fd = channel.TakePlatformHandle().TakeFD();
 

@@ -172,7 +172,6 @@ NotificationPlatformBridgeLacros::NotificationPlatformBridgeLacros(
     : bridge_delegate_(delegate),
       message_center_remote_(message_center_remote) {
   DCHECK(bridge_delegate_);
-  DCHECK(message_center_remote_);
 }
 
 NotificationPlatformBridgeLacros::~NotificationPlatformBridgeLacros() = default;
@@ -182,6 +181,9 @@ void NotificationPlatformBridgeLacros::Display(
     Profile* profile,
     const message_center::Notification& notification,
     std::unique_ptr<NotificationCommon::Metadata> metadata) {
+  if (!message_center_remote_)
+    return;
+
   // |profile| is ignored because Profile management is handled in
   // NotificationPlatformBridgeChromeOs, which includes a profile ID as part of
   // the notification ID. Lacros does not support Chrome OS multi-signin, so we
@@ -201,6 +203,9 @@ void NotificationPlatformBridgeLacros::Display(
 void NotificationPlatformBridgeLacros::Close(
     Profile* profile,
     const std::string& notification_id) {
+  if (!message_center_remote_)
+    return;
+
   (*message_center_remote_)->CloseNotification(notification_id);
   // |remote_notifications_| is cleaned up after the remote notification closes
   // and notifies us via the delegate.
@@ -215,9 +220,7 @@ void NotificationPlatformBridgeLacros::GetDisplayed(
 
 void NotificationPlatformBridgeLacros::SetReadyCallback(
     NotificationBridgeReadyCallback callback) {
-  // We don't handle the absence of Ash or a failure to open a Mojo connection,
-  // so just assume the client is ready.
-  std::move(callback).Run(true);
+  std::move(callback).Run(!!message_center_remote_);
 }
 
 void NotificationPlatformBridgeLacros::DisplayServiceShutDown(

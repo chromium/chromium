@@ -1,5 +1,10 @@
 include_rules = [
   "-content",
+
+  # These are low-level system APIs on ChromeOS that need to be available
+  # everywhere.
+  "+chromeos/lacros/lacros_chrome_service_impl.h",
+
   "+content/public",
   "+components/discardable_memory/service",
   "+components/download/public/common",
