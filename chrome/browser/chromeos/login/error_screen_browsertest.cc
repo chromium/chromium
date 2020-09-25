@@ -147,7 +147,13 @@ IN_PROC_BROWSER_TEST_F(NetworkErrorScreenTest, ShowsNetwork) {
 
 // Test that error screen hides when a network is connected and that showing and
 //  hiding the error screen does not modify WizardController's current_screen.
-IN_PROC_BROWSER_TEST_F(NetworkErrorScreenTest, SelectNetwork) {
+#if !defined(NDEBUG)
+// Flaky timeout in debug build crbug.com/1132417.
+#define MAYBE_SelectNetwork DISABLED_SelectNetwork
+#else
+#define MAYBE_SelectNetwork SelectNetwork
+#endif
+IN_PROC_BROWSER_TEST_F(NetworkErrorScreenTest, MAYBE_SelectNetwork) {
   SetUpDisconnectedWifiNetwork();
   EXPECT_EQ(
       WizardController::default_controller()->current_screen()->screen_id(),
