@@ -1257,9 +1257,20 @@ base::string16 CreateValidFileNameFromTitle(const GURL& url,
     base::i18n::ReplaceIllegalCharactersInPath(&validated, '-');
   }
   static const wchar_t kExtension[] = L".url";
-  static const size_t kMaxLength = MAX_PATH - base::size(kExtension);
-  if (validated.size() > kMaxLength)
-    validated.erase(kMaxLength);
+
+  // The value of kMaxFileNameLength was chosen to account for local file paths
+  // that can cause total paths to be greater than MAX_PATH while still allowing
+  // for a relatively long title. The total path may still exceed MAX_PATH when
+  // the local path length exceeds MAX_PATH - kMaxFileNameLength. See
+  // crbug.com/779414.
+  static constexpr size_t kMaxFileNameLength = MAX_PATH / 2;
+
+  // Maximum length of title after truncation.
+  static constexpr size_t kMaxFileTitleLength =
+      kMaxFileNameLength - base::size(kExtension);
+
+  if (validated.size() > kMaxFileTitleLength)
+    validated.erase(kMaxFileTitleLength);
   validated += kExtension;
 
   return validated;
