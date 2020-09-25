@@ -200,15 +200,6 @@ size_t RemoveExpiredEntries(base::Value* verdict_dictionary,
   return expired_keys.size();
 }
 
-// Helper function to determine if the given origin matches content settings
-// map's patterns.
-bool OriginMatchPrimaryPattern(
-    const GURL& origin,
-    const ContentSettingsPattern& primary_pattern,
-    const ContentSettingsPattern& secondary_pattern_unused) {
-  return ContentSettingsPattern::FromURLNoWildcard(origin) == primary_pattern;
-}
-
 std::string GetKeyOfTypeFromTriggerType(
     LoginReputationClientRequest::TriggerType trigger_type,
     ReusedPasswordAccountType password_type) {
@@ -799,14 +790,12 @@ void VerdictCacheManager::RemoveContentSettingsOnURLsDeleted(
     stored_verdict_count_real_time_url_check_ =
         GetStoredRealTimeUrlCheckVerdictCount() -
         GetRealTimeUrlCheckVerdictCountForURL(url_key);
-    content_settings_->ClearSettingsForOneTypeWithPredicate(
-        ContentSettingsType::PASSWORD_PROTECTION, base::Time(),
-        base::Time::Max(),
-        base::BindRepeating(&OriginMatchPrimaryPattern, url_key));
-    content_settings_->ClearSettingsForOneTypeWithPredicate(
-        ContentSettingsType::SAFE_BROWSING_URL_CHECK_DATA, base::Time(),
-        base::Time::Max(),
-        base::BindRepeating(&OriginMatchPrimaryPattern, url_key));
+    content_settings_->SetWebsiteSettingDefaultScope(
+        url_key, GURL(), ContentSettingsType::PASSWORD_PROTECTION,
+        std::string(), nullptr);
+    content_settings_->SetWebsiteSettingDefaultScope(
+        url_key, GURL(), ContentSettingsType::SAFE_BROWSING_URL_CHECK_DATA,
+        std::string(), nullptr);
   }
 }
 
