@@ -885,7 +885,6 @@ void StyleEngine::InvalidateStyleAndLayoutForFontUpdates() {
   if (!fonts_need_update_)
     return;
 
-  DCHECK(RuntimeEnabledFeatures::CSSReducedFontLoadingInvalidationsEnabled());
   TRACE_EVENT0("blink", "StyleEngine::InvalidateStyleAndLayoutForFontUpdates");
 
   fonts_need_update_ = false;
@@ -913,13 +912,7 @@ void StyleEngine::FontsNeedUpdate(FontSelector*, FontInvalidationReason) {
   if (resolver_)
     resolver_->InvalidateMatchedPropertiesCache();
   MarkViewportStyleDirty();
-
-  if (RuntimeEnabledFeatures::CSSReducedFontLoadingInvalidationsEnabled()) {
-    MarkFontsNeedUpdate();
-  } else {
-    MarkAllElementsForStyleRecalc(
-        StyleChangeReasonForTracing::Create(style_change_reason::kFonts));
-  }
+  MarkFontsNeedUpdate();
 
   probe::FontsUpdated(document_->GetExecutionContext(), nullptr, String(),
                       nullptr);

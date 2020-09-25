@@ -53,7 +53,6 @@ FontFallbackList::FontFallbackList(FontSelector* font_selector)
       is_invalid_(false) {}
 
 void FontFallbackList::RevalidateDeprecated() {
-  DCHECK(RuntimeEnabledFeatures::CSSReducedFontLoadingInvalidationsEnabled());
   DCHECK(!RuntimeEnabledFeatures::
              CSSReducedFontLoadingLayoutInvalidationsEnabled());
   ReleaseFontData();
@@ -84,17 +83,7 @@ void FontFallbackList::ReleaseFontData() {
 bool FontFallbackList::LoadingCustomFonts() const {
   // This function is only used for style and layout invalidation purposes. We
   // don't need it for invalidation when the feature below is enabled.
-  if (RuntimeEnabledFeatures::CSSReducedFontLoadingInvalidationsEnabled())
-    return false;
-
-  if (!has_loading_fallback_)
-    return false;
-
-  unsigned num_fonts = font_list_.size();
-  for (unsigned i = 0; i < num_fonts; ++i) {
-    if (font_list_[i]->IsLoading())
-      return true;
-  }
+  // TODO(xiaochengh): Remove this function.
   return false;
 }
 

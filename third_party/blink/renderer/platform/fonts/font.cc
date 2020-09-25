@@ -117,12 +117,6 @@ void Font::ReleaseFontFallbackListRef() const {
 }
 
 void Font::RevalidateFontFallbackList() const {
-  if (!RuntimeEnabledFeatures::CSSReducedFontLoadingInvalidationsEnabled()) {
-    // This should be a not-reached, but some test code reaches it. Since this
-    // is a deprecated code path, we don't intend to fix it.
-    return;
-  }
-
   if (!RuntimeEnabledFeatures::
           CSSReducedFontLoadingLayoutInvalidationsEnabled()) {
     font_fallback_list_->RevalidateDeprecated();
@@ -143,20 +137,6 @@ FontFallbackList* Font::EnsureFontFallbackList() const {
   return font_fallback_list_.get();
 }
 
-namespace {
-
-bool FontFallbackListVersionEqual(const FontFallbackList* first,
-                                  const FontFallbackList* second) {
-  if (RuntimeEnabledFeatures::CSSReducedFontLoadingInvalidationsEnabled())
-    return true;
-  return (first ? first->FontSelectorVersion() : 0) ==
-             (second ? second->FontSelectorVersion() : 0) &&
-         (first ? first->Generation() : 0) ==
-             (second ? second->Generation() : 0);
-}
-
-}  // namespace
-
 bool Font::operator==(const Font& other) const {
   if (RuntimeEnabledFeatures::
           CSSReducedFontLoadingLayoutInvalidationsEnabled()) {
@@ -175,9 +155,7 @@ bool Font::operator==(const Font& other) const {
                              ? other.font_fallback_list_->GetFontSelector()
                              : nullptr;
 
-  return first == second && font_description_ == other.font_description_ &&
-         FontFallbackListVersionEqual(font_fallback_list_.get(),
-                                      other.font_fallback_list_.get());
+  return first == second && font_description_ == other.font_description_;
 }
 
 namespace {

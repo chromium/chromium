@@ -17,13 +17,11 @@ namespace blink {
 // not invalidate the full document's style or layout, but for affected elements
 // only.
 class FontUpdateInvalidationTest
-    : private ScopedCSSReducedFontLoadingInvalidationsForTest,
-      private ScopedCSSReducedFontLoadingLayoutInvalidationsForTest,
+    : private ScopedCSSReducedFontLoadingLayoutInvalidationsForTest,
       public SimTest {
  public:
   FontUpdateInvalidationTest()
-      : ScopedCSSReducedFontLoadingInvalidationsForTest(true),
-        ScopedCSSReducedFontLoadingLayoutInvalidationsForTest(true) {}
+      : ScopedCSSReducedFontLoadingLayoutInvalidationsForTest(true) {}
 
  protected:
   static Vector<char> ReadAhemWoff2() {

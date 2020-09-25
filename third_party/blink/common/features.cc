@@ -526,8 +526,6 @@ const base::Feature kLowLatencyWebGLSwapChain{"LowLatencyWebGLSwapChain",
 const base::Feature kDawn2dCanvas{"Dawn2dCanvas",
                                   base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kCSSReducedFontLoadingInvalidations{
-    "CSSReducedFontLoadingInvalidations", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kCSSReducedFontLoadingLayoutInvalidations{
     "CSSReducedFontLoadingLayoutInvalidations",
     base::FEATURE_DISABLED_BY_DEFAULT};

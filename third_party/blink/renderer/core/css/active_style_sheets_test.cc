@@ -471,12 +471,8 @@ TEST_F(ApplyRulesetsTest, AddFontFaceRuleToDocument) {
   GetStyleEngine().ApplyRuleSetChanges(GetDocument(), ActiveStyleSheetVector(),
                                        new_style_sheets);
 
-  StyleChangeType expected =
-      RuntimeEnabledFeatures::CSSReducedFontLoadingInvalidationsEnabled()
-          ? kNoStyleChange
-          : kSubtreeStyleChange;
-
-  EXPECT_EQ(expected, GetDocument().documentElement()->GetStyleChangeType());
+  EXPECT_EQ(kNoStyleChange,
+            GetDocument().documentElement()->GetStyleChangeType());
 }
 
 TEST_F(ApplyRulesetsTest, AddFontFaceRuleToShadowTree) {

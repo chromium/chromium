@@ -2030,8 +2030,7 @@ StyleDifference LayoutObject::AdjustStyleDifference(
 
   // TODO(1088373): Pixel_WebGLHighToLowPower fails without this. This isn't the
   // right way to ensure GPU switching. Investigate and do it in the right way.
-  if (RuntimeEnabledFeatures::CSSReducedFontLoadingInvalidationsEnabled() &&
-      !diff.NeedsPaintInvalidation() && IsLayoutView() && Style() &&
+  if (!diff.NeedsPaintInvalidation() && IsLayoutView() && Style() &&
       !Style()->GetFont().IsFallbackValid()) {
     diff.SetNeedsPaintInvalidation();
   }

@@ -3224,20 +3224,8 @@ TEST_F(StyleEngineTest, InvalidVariableUnsetUseCount) {
   ClearUseCounter(WebFeature::kCSSInvalidVariableUnset);
 }
 
-class ParameterizedStyleEngineTest
-    : public testing::WithParamInterface<bool>,
-      private ScopedCSSReducedFontLoadingInvalidationsForTest,
-      public StyleEngineTest {
- public:
-  ParameterizedStyleEngineTest()
-      : ScopedCSSReducedFontLoadingInvalidationsForTest(GetParam()) {}
-};
-
-INSTANTIATE_TEST_SUITE_P(All, ParameterizedStyleEngineTest, testing::Bool());
-
 // https://crbug.com/1050564
-TEST_P(ParameterizedStyleEngineTest,
-       MediaAttributeChangeUpdatesFontCacheVersion) {
+TEST_F(StyleEngineTest, MediaAttributeChangeUpdatesFontCacheVersion) {
   GetDocument().body()->setInnerHTML(R"HTML(
     <style>
       @font-face { font-family: custom-font; src: url(fake-font.woff); }
