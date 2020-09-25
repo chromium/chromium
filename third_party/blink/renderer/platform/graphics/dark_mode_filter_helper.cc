@@ -49,7 +49,15 @@ void DarkModeFilterHelper::ApplyToImageIfNeeded(
       SkPixmap pixmap;
       bitmap.peekPixels(&pixmap);
       filter = dark_mode_filter->ApplyToImage(pixmap, rounded_src, rounded_dst);
-      cache->Add(rounded_src, filter);
+
+      // Using blink side dark mode for images, it is hard to implement caching
+      // mechanism for partially loaded bitmap image content, as content id for
+      // the image frame being rendered gets decided during rastering only. So
+      // caching of dark mode result will be deferred until default frame is
+      // completely received. This will help get correct classification results
+      // for incremental content received for the given image.
+      if (!image->IsBitmapImage() || image->CurrentFrameIsComplete())
+        cache->Add(rounded_src, filter);
     }
   }
 
