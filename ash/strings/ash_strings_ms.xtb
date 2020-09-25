@@ -59,6 +59,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="1467432559032391204">Kiri</translation>
 <translation id="1479909375538722835">Menu kebolehaksesan terapung</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
+<translation id="1503394326855300303">Akaun pemilik ini perlu menjadi akaun dilog masuk yang pertama dalam sesi berbilang log masuk.</translation>
 <translation id="1516740043221086139">Jangan ganggu dihidupkan.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Tunjukkan tetapan pemberitahuan. Pemberitahuan dimatikan untuk satu apl}other{Tunjukkan tetapan pemberitahuan. Pemberitahuan dimatikan untuk # apl}}</translation>
 <translation id="1525508553941733066">KETEPIKAN</translation>
@@ -172,7 +173,6 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="2718395828230677721">Cahaya Malam</translation>
 <translation id="2727175239389218057">Balas</translation>
 <translation id="2727977024730340865">Dipalamkan pada pengecas berkuasa rendah. Pengecasan bateri mungkin tidak boleh diharapkan.</translation>
-<translation id="2743387203779672305">Salin ke papan keratan</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
 <translation id="2819276065543622893">Anda akan dilog keluar sekarang.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> tidak menyokong <ph name="SPECIFIED_RESOLUTION" />. Peleraian telah ditukar kepada <ph name="FALLBACK_RESOLUTION" />.</translation>
@@ -257,6 +257,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="3486220673238053218">takrif</translation>
 <translation id="3510164367642747937">Serlahkan kursor tetikus</translation>
 <translation id="3513798432020909783">Akaun diurus oleh <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3571734092741541777">Sediakan</translation>
 <translation id="3573179567135747900">Tukar kembali kepada "<ph name="FROM_LOCALE" />" (perlu dimulakan semula)</translation>
 <translation id="3576141592585647168">Tukar zon waktu</translation>
 <translation id="3593646411856133110">Leret ke atas dan tahan untuk melihat apl yang terbuka</translation>
@@ -390,6 +391,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4917385247580444890">Kuat</translation>
 <translation id="4918086044614829423">Terima</translation>
 <translation id="4924411785043111640">Mulakan semula dan tetapkan semula</translation>
+<translation id="4925542575807923399">Pentadbir akaun ini memerlukan akaun ini menjadi akaun dilog masuk yang pertama dalam sesi berbilang log masuk.</translation>
 <translation id="495046168593986294">Tatal ke atas</translation>
 <translation id="4961318399572185831">Hantar skrin</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />j <ph name="MINUTES" />m <ph name="SECONDS" />s</translation>
@@ -536,6 +538,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="6657585470893396449">Kata laluan</translation>
 <translation id="6665545700722362599">Berikan kebenaran kepada tapak web, apl dan sambungan untuk menggunakan perkhidmatan lokasi, mikrofon dan kamera peranti atau ciri lain</translation>
 <translation id="6670153871843998651">Meja 3</translation>
+<translation id="6671495933530132209">Salin imej</translation>
 <translation id="6691659475504239918">Cari+Shift+H</translation>
 <translation id="6692996468359469499">Dapatkan maklumat yang berkaitan dengan pilihan anda</translation>
 <translation id="6696025732084565524">Papan kekunci anda yang boleh dicabut memerlukan kemas kini kritikal</translation>
@@ -735,6 +738,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="8734991477317290293">Papan kekunci mungkin sedang cuba mencuri ketukan kekunci anda</translation>
 <translation id="8735953464173050365">Tunjukkan tetapan papan kekunci. <ph name="KEYBOARD_NAME" /> dipilih</translation>
 <translation id="875593634123171288">Tunjukkan tetapan VPN</translation>
+<translation id="8759408218731716181">Tidak dapat menyediakan berbilang log masuk</translation>
 <translation id="8785070478575117577">Sambung kepada <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>

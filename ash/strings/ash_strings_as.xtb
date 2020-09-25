@@ -59,6 +59,7 @@
 <translation id="1467432559032391204">বাওঁফালে</translation>
 <translation id="1479909375538722835">সাধ্য সুবিধাৰ উপঙি থকা মেনু</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
+<translation id="1503394326855300303">গৰাকীৰ এই একাউণ্টটো একাধিকবাৰ ছাইন ইন কৰা কোনো ছেশ্বনত প্ৰথমতে ছাইন ইন কৰা একাউণ্ট হ’ব লাগিব।</translation>
 <translation id="1516740043221086139">অসুবিধা নিদিব ম’ড অন হৈ আছে।</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{জাননীৰ ছেটিংসমূহ দেখুৱাওক। কোনো এপৰ বাবে জাননী বন্ধ কৰা আছে}one{জাননীৰ ছেটিংসমূহ দেখুৱাওক। #টা এপৰ বাবে জাননী অফ কৰা আছে}other{জাননীৰ ছেটিংসমূহ দেখুৱাওক। #টা এপৰ বাবে জাননী অফ কৰা আছে}}</translation>
 <translation id="1525508553941733066">বাতিল কৰক</translation>
@@ -172,7 +173,6 @@
 <translation id="2718395828230677721">ৰাতিৰ পোহৰ</translation>
 <translation id="2727175239389218057">প্ৰত্যুত্তৰ দিয়ক</translation>
 <translation id="2727977024730340865">কম পাৱাৰৰ এটা চাৰ্জাৰত প্লাগ ইন কৰা হৈছে। বেটাৰীৰ চাৰ্জিং বিশ্বাসযোগ্য নহ'বও পাৰে।</translation>
-<translation id="2743387203779672305">ক্লিপব'ৰ্ডত প্ৰতিলিপি কৰক</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
 <translation id="2819276065543622893">আপুনি এতিয়া ছাইন আউট হ’ব।</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" />এ <ph name="SPECIFIED_RESOLUTION" /> সমর্থন নকৰে। ৰিজ’লিউশ্বনটো <ph name="FALLBACK_RESOLUTION" />লৈ সলনি কৰা হৈছে।</translation>
@@ -257,6 +257,7 @@
 <translation id="3486220673238053218">সংজ্ঞা</translation>
 <translation id="3510164367642747937">মাউছৰ কাৰ্ছৰ হাইলাইট কৰক</translation>
 <translation id="3513798432020909783"><ph name="MANAGER_EMAIL" />এ একাউণ্ট পৰিচালনা কৰে</translation>
+<translation id="3571734092741541777">ছেট আপ কৰক</translation>
 <translation id="3573179567135747900">পুনৰ "<ph name="FROM_LOCALE" />"লৈ সলনি কৰক (ৰিষ্টাৰ্ট কৰাৰ প্ৰয়োজন)</translation>
 <translation id="3576141592585647168">সময় মণ্ডল সলনি কৰক</translation>
 <translation id="3593646411856133110">খোলা এপ্‌সমূহ চাবলৈ ওপৰলৈ ছোৱাইপ কৰি ধৰি ৰাখক</translation>
@@ -388,6 +389,7 @@
 <translation id="4917385247580444890">শক্তিশালী</translation>
 <translation id="4918086044614829423">গ্ৰহণ কৰক</translation>
 <translation id="4924411785043111640">ৰিষ্টাৰ্ট কৰি ৰিছেট কৰক</translation>
+<translation id="4925542575807923399">এই একাউণ্টৰ প্ৰশাসকে এই একাউণ্টটো একাধিকবাৰ ছাইন-ইন কৰা কোনো ছেশ্বনত প্ৰথমে ছাইন ইন কৰাটো বিচাৰে।</translation>
 <translation id="495046168593986294">ওপৰলৈ স্ক্ৰল কৰক</translation>
 <translation id="4961318399572185831">স্ক্রীণ কাষ্ট কৰক</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> ঘ <ph name="MINUTES" /> মি <ph name="SECONDS" /> ছে</translation>
@@ -534,6 +536,7 @@
 <translation id="6657585470893396449">পাছৱৰ্ড</translation>
 <translation id="6665545700722362599">ৱেবছাইট, এপ্‌ আৰু এক্সটেনশ্বনসমূহক অৱস্থান, ডিভাইচৰ মাইক্ৰ’ফ’ন, কেমেৰা বা অন্য সুবিধাসমূহ ব্যৱহাৰ কৰিবলৈ অনুমতি দিয়ক</translation>
 <translation id="6670153871843998651">ডেস্ক ৩</translation>
+<translation id="6671495933530132209">প্ৰতিচ্ছবি প্ৰতিলিপি কৰক</translation>
 <translation id="6691659475504239918">Search+Shift+H</translation>
 <translation id="6692996468359469499">আপুনি বাছনি সম্পর্কীয় তথ্য পাওক</translation>
 <translation id="6696025732084565524">আপোনাৰ পৃথক কৰিব পৰা কীব’ৰ্ডত এটা গুৰুত্বপূর্ণ আপডে’ট কৰাৰ প্ৰয়োজন</translation>
@@ -730,6 +733,7 @@
 <translation id="8734991477317290293">এইটোৱে আপোনাৰ কীষ্ট্র’ক চুৰ কৰিব চেষ্টা কৰি থাকিব পাৰে</translation>
 <translation id="8735953464173050365">কীব'ৰ্ডৰ ছেটিংসমূহ দেখুৱাওক। <ph name="KEYBOARD_NAME" /> বাছনি কৰা হৈছে।</translation>
 <translation id="875593634123171288">VPN ছেটিংসমূহ দেখুৱাওক</translation>
+<translation id="8759408218731716181">একাধিক প্ৰ’ফাইল ব্যৱহাৰ কৰিব পৰা সুবিধাটো ছেট আপ কৰিব নোৱাৰি</translation>
 <translation id="8785070478575117577"><ph name="NETWORK_NAME" />ত সংযোগ কৰক</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />। <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">ৱাই-ফাই</translation>

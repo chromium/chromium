@@ -108,6 +108,7 @@
 <translation id="1868024384445905608">‏اکنون Chrome فایل‌ها را سریع‌تر بارگیری می‌کند</translation>
 <translation id="1877026089748256423">‏نسخه Chrome قدیمی است</translation>
 <translation id="1883903952484604915">فایل‌های من</translation>
+<translation id="189358972401248634">زبان‌های دیگر</translation>
 <translation id="1925021887439448749">نشانی وب سفارشی وارد کنید</translation>
 <translation id="1928696683969751773">به‌روزرسانی‌ها</translation>
 <translation id="19288952978244135">‏Chrome را دوباره باز کنید.</translation>
@@ -217,6 +218,7 @@
 <translation id="2689830683995595741">‏با استفاده کردن از Chrome، با <ph name="BEGIN_LINK1" />شرایط خدمات Google<ph name="END_LINK1" /> و <ph name="BEGIN_LINK2" />شرایط خدمات تکمیلی Google Chrome و سیستم‌عامل Chrome<ph name="END_LINK2" /> موافقت می‌کنید. <ph name="BEGIN_LINK3" />اعلان حریم‌خصوصی برای «حساب‌های Google» مدیریت‌شده با Family Link<ph name="END_LINK3" /> نیز اعمال می‌شود.</translation>
 <translation id="2707726405694321444">بازخوانی صفحه</translation>
 <translation id="2709516037105925701">تکمیل خودکار</translation>
+<translation id="2723001399770238859">صدا</translation>
 <translation id="2728754400939377704">به‌ترتیب سایت</translation>
 <translation id="2744248271121720757">برای جستجوی فوری، روی کلمه‌ای ضربه بزنید یا اقدام‌های مرتبط را ببینید</translation>
 <translation id="2760989362628427051">روشن شدن طرح زمینه تیره وقتی طرح زمینه تیره دستگاه یا «بهینه‌سازی باتری» روشن است</translation>
@@ -467,6 +469,7 @@
 <translation id="4738836084190194332">آخرین همگام‌سازی: <ph name="WHEN" /></translation>
 <translation id="4749960740855309258">باز کردن برگه جدید</translation>
 <translation id="4759238208242260848">بارگیری‌ها</translation>
+<translation id="4763480195061959176">ویدئو</translation>
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{۱ بارگیری کامل شد.}one{# بارگیری کامل شد.}other{# بارگیری کامل شد.}}</translation>
 <translation id="4766678251456904326">افزودن حساب به دستگاه</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{۱ بارگیری زمان‌بندی شد.}one{# بارگیری زمان‌بندی شد.}other{# بارگیری زمان‌بندی شد.}}</translation>

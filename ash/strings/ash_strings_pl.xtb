@@ -59,6 +59,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1467432559032391204">W lewo</translation>
 <translation id="1479909375538722835">Pływające menu ułatwień dostępu</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
+<translation id="1503394326855300303">W sesji wielokrotnego logowania trzeba w pierwszej kolejności zalogować się na konto tego właściciela.</translation>
 <translation id="1516740043221086139">Tryb Nie przeszkadzać jest włączony.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Pokaż ustawienia powiadomień. Jedna aplikacja ma wyłączone powiadomienia.}few{Pokaż ustawienia powiadomień. # aplikacje mają wyłączone powiadomienia.}many{Pokaż ustawienia powiadomień. # aplikacji ma wyłączone powiadomienia.}other{Pokaż ustawienia powiadomień. # aplikacji ma wyłączone powiadomienia.}}</translation>
 <translation id="1525508553941733066">ZAMKNIJ</translation>
@@ -69,6 +70,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1589090746204042747">uzyskiwać dostęp do całej Twojej aktywności w tej sesji;</translation>
 <translation id="1611993646327628135">Włączono</translation>
 <translation id="1632985212731562677">Funkcję Switch Access możesz wyłączyć, otwierając Ustawienia &gt; Ułatwienia dostępu.</translation>
+<translation id="1651447046299738444">Wygląda na to, że na Twoim Chromebooku wyłączone jest połączenie Bluetooth lub Wi-Fi. Aby korzystać z funkcji Phone Hub, sprawdź połączenie.</translation>
 <translation id="1654477262762802994">Rozpocznij zapytanie głosowe</translation>
 <translation id="1667964833127753507">Tryb koloru neutralnego nie wyświetla kolorów wyodrębnionych z tapety. Zamiast nich używa jasnych i ciemnych odcieni stonowanych neutralnie.</translation>
 <translation id="1677472565718498478">Pozostało <ph name="TIME" /></translation>
@@ -151,6 +153,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2435457462613246316">Pokaż hasło</translation>
 <translation id="2473177541599297363">Potwierdź rozdzielczość</translation>
 <translation id="2475982808118771221">Wystąpił błąd</translation>
+<translation id="2479579251444854687">Przesuń 3 palcami do góry, by otworzyć Przegląd, lub w dół, by go zamknąć.</translation>
 <translation id="2482878487686419369">Powiadomienia</translation>
 <translation id="2484513351006226581">Naciśnij <ph name="KEYBOARD_SHORTCUT" />, by przełączyć układ klawiatury.</translation>
 <translation id="2501920221385095727">Klawisze trwałe</translation>
@@ -163,6 +166,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2595239820337756193">Przelicz 5 km na mile</translation>
 <translation id="2617342710774726426">Karta SIM jest zablokowana</translation>
 <translation id="2621713457727696555">Zabezpieczona</translation>
+<translation id="2640255526076764619">Zmienił się gest na touchpadzie służący do przełączania się na poprzednie biurko. Aby przełączyć się na poprzednie biurko, przesuń 4 palcami w lewo.</translation>
 <translation id="2653659639078652383">Prześlij</translation>
 <translation id="2658778018866295321">Kliknij i przeciągnij</translation>
 <translation id="2700493154570097719">Ustaw klawiaturę</translation>
@@ -172,7 +176,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2718395828230677721">Podświetlenie</translation>
 <translation id="2727175239389218057">Odpowiedz</translation>
 <translation id="2727977024730340865">Podłączono ładowarkę o małej mocy. Ładowanie baterii może być nieprawidłowe.</translation>
-<translation id="2743387203779672305">Skopiuj do schowka</translation>
 <translation id="2792498699870441125">Alt+Szukaj</translation>
 <translation id="2819276065543622893">Zostaniesz teraz wylogowany.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> nie obsługuje ustawienia <ph name="SPECIFIED_RESOLUTION" />. Rozdzielczość została zmieniona na <ph name="FALLBACK_RESOLUTION" />.</translation>
@@ -257,6 +260,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="3486220673238053218">definicja</translation>
 <translation id="3510164367642747937">Podświetlaj wskaźnik myszy</translation>
 <translation id="3513798432020909783">Kontem zarządza <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3571734092741541777">Konfiguruj</translation>
 <translation id="3573179567135747900">Zmień z powrotem na „<ph name="FROM_LOCALE" />” (wymaga ponownego uruchomienia)</translation>
 <translation id="3576141592585647168">Zmień strefę czasową</translation>
 <translation id="3593646411856133110">Aby zobaczyć otwarte aplikacje, przesuń palcem w górę i przytrzymaj</translation>
@@ -341,6 +345,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="4412944820643904175">Funkcja <ph name="FEATURE_NAME" /> jest wyłączona.</translation>
 <translation id="4421231901400348175">Udostępnianie sterowania ekranem użytkownikowi <ph name="HELPER_NAME" /> przy użyciu pomocy zdalnej.</translation>
 <translation id="4430019312045809116">Głośność</translation>
+<translation id="4444978951615977024">Ups! Sprawdź połączenie</translation>
 <translation id="4450893287417543264">Nie pokazuj ponownie</translation>
 <translation id="445864333228800152">Dobry wieczór,</translation>
 <translation id="4458688154122353284">Zatrzymaj nagrywanie ekranu</translation>
@@ -350,6 +355,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Niesparowane urządzenia</translation>
 <translation id="4505050298327493054">Aktywne biurko.</translation>
+<translation id="4506458088675900627">Zmienił się gest na touchpadzie związany z trybem przeglądu</translation>
 <translation id="4513946894732546136">Twoja opinia</translation>
 <translation id="4527045527269911712">Urządzenie Bluetooth „<ph name="DEVICE_NAME" />” chce się sparować.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> do pełnego naładowania</translation>
@@ -389,6 +395,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="4917385247580444890">Silny</translation>
 <translation id="4918086044614829423">Akceptuj</translation>
 <translation id="4924411785043111640">Uruchom ponownie i zresetuj</translation>
+<translation id="4925542575807923399">Administrator tego konta wymaga, by w sesji wielokrotnego logowania logować się na nie jako pierwsze.</translation>
 <translation id="495046168593986294">Przewiń w górę</translation>
 <translation id="4961318399572185831">Przesyłanie ekranu</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> godz. <ph name="MINUTES" /> min <ph name="SECONDS" /> s</translation>
@@ -478,6 +485,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="6018164090099858612">Wyłączam tryb odbicia lustrzanego</translation>
 <translation id="602001110135236999">Przewiń w lewo</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, siła sygnału: <ph name="SIGNAL_STRENGTH" />, zarządzana przez administratora</translation>
+<translation id="6029337736376922061">Zmienił się gest na touchpadzie służący do przełączania się na następne biurko. Aby przełączyć się na następne biurko, przesuń 4 palcami w prawo.</translation>
 <translation id="6030495522958826102">Menu zostało przeniesione w lewy dolny róg ekranu.</translation>
 <translation id="6040143037577758943">Zamknij</translation>
 <translation id="6043212731627905357">Ten monitor nie działa z Twoim urządzeniem <ph name="DEVICE_TYPE" /> (nie jest obsługiwany).</translation>
@@ -535,6 +543,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="6657585470893396449">Hasło</translation>
 <translation id="6665545700722362599">przyznawać stronom internetowym, aplikacjom i rozszerzeniom dostęp do usług lokalizacyjnych, mikrofonu bądź aparatu na urządzeniu lub do innych funkcji;</translation>
 <translation id="6670153871843998651">Biurko 3</translation>
+<translation id="6671495933530132209">Kopiuj grafikę</translation>
 <translation id="6691659475504239918">Search+Shift+H</translation>
 <translation id="6692996468359469499">Uzyskiwanie informacji związanych z zaznaczoną treścią</translation>
 <translation id="6696025732084565524">Odłączana klawiatura wymaga krytycznej aktualizacji</translation>
@@ -734,6 +743,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="8734991477317290293">Klawiatura może próbować przechwycić naciskane klawisze</translation>
 <translation id="8735953464173050365">Pokaż ustawienia klawiatury. Wybrana jest: <ph name="KEYBOARD_NAME" />.</translation>
 <translation id="875593634123171288">Pokaż ustawienia VPN</translation>
+<translation id="8759408218731716181">Nie można skonfigurować wielokrotnego logowania</translation>
 <translation id="8785070478575117577">Połącz z <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>

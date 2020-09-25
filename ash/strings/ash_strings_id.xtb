@@ -59,6 +59,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1467432559032391204">Kiri</translation>
 <translation id="1479909375538722835">Menu aksesibilitas mengambang</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
+<translation id="1503394326855300303">Akun pemilik ini harus akun yang masuk pertama dalam sesi fitur masuk banyak akun.</translation>
 <translation id="1516740043221086139">Mode Jangan Ganggu aktif.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Tampilkan setelan notifikasi. Notifikasi nonaktif untuk satu aplikasi}other{Tampilkan setelan notifikasi. Notifikasi nonaktif untuk # aplikasi}}</translation>
 <translation id="1525508553941733066">TUTUP</translation>
@@ -172,7 +173,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="2718395828230677721">Cahaya Malam</translation>
 <translation id="2727175239389218057">Balas</translation>
 <translation id="2727977024730340865">Dipasang ke pengisi daya rendah. Pengisian daya baterai mungkin tidak dapat diandalkan.</translation>
-<translation id="2743387203779672305">Salin ke papan klip</translation>
 <translation id="2792498699870441125">Alt+Telusuri</translation>
 <translation id="2819276065543622893">Anda akan dikeluarkan sekarang.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> tidak mendukung <ph name="SPECIFIED_RESOLUTION" />. Resolusi diubah ke <ph name="FALLBACK_RESOLUTION" />.</translation>
@@ -257,6 +257,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="3486220673238053218">definisi</translation>
 <translation id="3510164367642747937">Sorot kursor mouse</translation>
 <translation id="3513798432020909783">Akun dikelola oleh <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3571734092741541777">Siapkan</translation>
 <translation id="3573179567135747900">Ubah kembali ke "<ph name="FROM_LOCALE" />" (harus dinyalakan ulang)</translation>
 <translation id="3576141592585647168">Ubah zona waktu</translation>
 <translation id="3593646411856133110">Geser ke atas dan tahan untuk melihat aplikasi yang terbuka</translation>
@@ -389,6 +390,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="4917385247580444890">Kuat</translation>
 <translation id="4918086044614829423">Terima</translation>
 <translation id="4924411785043111640">Mulai ulang dan reset</translation>
+<translation id="4925542575807923399">Administrator akun ini mewajibkan akun ini untuk menjadi akun masuk pertama dalam sesi fitur masuk banyak akun.</translation>
 <translation id="495046168593986294">Scroll ke atas</translation>
 <translation id="4961318399572185831">Transmisikan layar</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />j <ph name="MINUTES" />m <ph name="SECONDS" />d</translation>
@@ -535,6 +537,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="6657585470893396449">Sandi</translation>
 <translation id="6665545700722362599">Berikan izin ke situs, aplikasi, atau ekstensi untuk menggunakan layanan lokasi, mikrofon perangkat, kamera, atau fitur lainnya</translation>
 <translation id="6670153871843998651">Halaman kerja 3</translation>
+<translation id="6671495933530132209">Salin gambar</translation>
 <translation id="6691659475504239918">Search+Shift+H</translation>
 <translation id="6692996468359469499">Dapatkan info terkait pilihan Anda</translation>
 <translation id="6696025732084565524">Keyboard yang dapat dilepas memerlukan update penting</translation>
@@ -734,6 +737,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="8734991477317290293">Keyboard mungkin mencoba mencuri ketukan tombol Anda</translation>
 <translation id="8735953464173050365">Tampilkan setelan keyboard. <ph name="KEYBOARD_NAME" /> dipilih</translation>
 <translation id="875593634123171288">Tampilkan setelan VPN</translation>
+<translation id="8759408218731716181">Tidak dapat menyiapkan fitur masuk banyak akun</translation>
 <translation id="8785070478575117577">Hubungkan ke <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>

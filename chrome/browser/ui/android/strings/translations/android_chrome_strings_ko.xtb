@@ -108,6 +108,7 @@
 <translation id="1868024384445905608">이제 Chrome에서 파일을 더 빠르게 다운로드합니다.</translation>
 <translation id="1877026089748256423">Chrome이 이전 버전임</translation>
 <translation id="1883903952484604915">내 파일</translation>
+<translation id="189358972401248634">다른 언어</translation>
 <translation id="1925021887439448749">맞춤 웹 주소 입력</translation>
 <translation id="1928696683969751773">업데이트</translation>
 <translation id="19288952978244135">Chrome을 다시 여세요.</translation>
@@ -217,6 +218,7 @@
 <translation id="2689830683995595741">Chrome을 사용하면 <ph name="BEGIN_LINK1" />Google 서비스 약관<ph name="END_LINK1" />과 <ph name="BEGIN_LINK2" />Chrome 및 Chrome OS 추가 서비스 약관<ph name="END_LINK2" />에 동의하는 것으로 간주됩니다. <ph name="BEGIN_LINK3" />Family Link로 관리되는 Google 계정에 관한 개인정보처리방침<ph name="END_LINK3" />도 적용됩니다.</translation>
 <translation id="2707726405694321444">페이지 새로고침</translation>
 <translation id="2709516037105925701">자동 완성</translation>
+<translation id="2723001399770238859">오디오</translation>
 <translation id="2728754400939377704">사이트별 정렬</translation>
 <translation id="2744248271121720757">단어를 탭하여 즉시 검색하거나 관련 작업을 확인하세요</translation>
 <translation id="2760989362628427051">기기의 어두운 테마 또는 절전 모드가 켜지면 어두운 테마를 사용 설정합니다.</translation>
@@ -467,6 +469,7 @@
 <translation id="4738836084190194332">마지막 동기화 시간: <ph name="WHEN" /></translation>
 <translation id="4749960740855309258">새 탭 열기</translation>
 <translation id="4759238208242260848">다운로드</translation>
+<translation id="4763480195061959176">동영상</translation>
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{다운로드 1개 완료}other{다운로드 #개 완료}}</translation>
 <translation id="4766678251456904326">기기에 계정 추가</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{다운로드 1개가 예약되었습니다.}other{다운로드 #개가 예약되었습니다.}}</translation>

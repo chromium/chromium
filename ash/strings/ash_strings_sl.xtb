@@ -59,6 +59,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1467432559032391204">V levo</translation>
 <translation id="1479909375538722835">Plavajoč meni s funkcijami za ljudi s posebnimi potrebami</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
+<translation id="1503394326855300303">V seji prijave z več računi mora biti ta račun lastnika prvi prijavljeni račun.</translation>
 <translation id="1516740043221086139">Način »ne moti« je vklopljen.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Prikaz nastavitev obvestil. Obvestila so izklopljena za eno aplikacijo.}one{Prikaz nastavitev obvestil. Obvestila so izklopljena za # aplikacijo.}two{Prikaz nastavitev obvestil. Obvestila so izklopljena za # aplikaciji.}few{Prikaz nastavitev obvestil. Obvestila so izklopljena za # aplikacije.}other{Prikaz nastavitev obvestil. Obvestila so izklopljena za # aplikacij.}}</translation>
 <translation id="1525508553941733066">OPUSTI</translation>
@@ -172,7 +173,6 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="2718395828230677721">Nočna svetloba</translation>
 <translation id="2727175239389218057">Odgovori</translation>
 <translation id="2727977024730340865">Priključen je nizkoenergijski polnilnik. Polnjenje akumulatorja morda ne bo zanesljivo.</translation>
-<translation id="2743387203779672305">Kopiraj v odložišče</translation>
 <translation id="2792498699870441125">Alt + iskanje</translation>
 <translation id="2819276065543622893">Zdaj boste odjavljeni.</translation>
 <translation id="2825224105325558319">Zaslon <ph name="DISPLAY_NAME" /> ne podpira te ločljivosti: <ph name="SPECIFIED_RESOLUTION" />. Ločljivost je bila spremenjena na: <ph name="FALLBACK_RESOLUTION" />.</translation>
@@ -257,6 +257,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="3486220673238053218">opredelitev</translation>
 <translation id="3510164367642747937">Označitev miškinega kazalca</translation>
 <translation id="3513798432020909783">Račun upravlja <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3571734092741541777">Nastavi</translation>
 <translation id="3573179567135747900">Spremeni nazaj v jezik »<ph name="FROM_LOCALE" />« (potreben vnovični zagon)</translation>
 <translation id="3576141592585647168">Spreminjanje časovnega pasu</translation>
 <translation id="3593646411856133110">Povlecite navzgor in pridržite, če si želite ogledati odprte aplikacije</translation>
@@ -389,6 +390,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="4917385247580444890">Močan</translation>
 <translation id="4918086044614829423">Sprejmi</translation>
 <translation id="4924411785043111640">Znova zaženi in ponastavi</translation>
+<translation id="4925542575807923399">Skrbnik tega računa zahteva, da je ta račun v seji prijave z več računi prvi prijavljeni račun.</translation>
 <translation id="495046168593986294">Pomik navzgor</translation>
 <translation id="4961318399572185831">Predvajanje zaslona</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> h <ph name="MINUTES" /> min <ph name="SECONDS" /> s</translation>
@@ -535,6 +537,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="6657585470893396449">Geslo</translation>
 <translation id="6665545700722362599">omogočanje spletnim mestom, aplikacijam in razširitvam dovoljenja za uporabo lokacijskih storitev, mikrofona, fotoaparata ali drugih funkcij naprave;</translation>
 <translation id="6670153871843998651">Namizje 3</translation>
+<translation id="6671495933530132209">Kopiraj sliko</translation>
 <translation id="6691659475504239918">Tipka za iskanje + Shift + H</translation>
 <translation id="6692996468359469499">Prejemanje podatkov, povezanih z izborom</translation>
 <translation id="6696025732084565524">Snemljiva tipkovnica potrebuje nujno posodobitev</translation>
@@ -734,6 +737,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="8734991477317290293">Morda poskuša beležiti vse, kar natipkate</translation>
 <translation id="8735953464173050365">Prikaz nastavitev tipkovnice. Izbrana je tipkovnica <ph name="KEYBOARD_NAME" />.</translation>
 <translation id="875593634123171288">Prikaz nastavitev omrežja VPN</translation>
+<translation id="8759408218731716181">Prijave z več računi ni mogoče nastaviti</translation>
 <translation id="8785070478575117577">Vzpostavitev povezave z omrežjem <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>

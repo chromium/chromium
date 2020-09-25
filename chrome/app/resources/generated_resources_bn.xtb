@@ -352,6 +352,7 @@
 <translation id="140520891692800925"><ph name="PROFILE_DISPLAY_NAME" /> (তত্বাবধানে থাকা)</translation>
 <translation id="1405779994569073824">ক্র্যাশ করেছে।</translation>
 <translation id="1406500794671479665">যাচাই করা হচ্ছে...</translation>
+<translation id="1407135791313364759">সব খুলুন</translation>
 <translation id="140723521119632973">সেলুলার চালু করা</translation>
 <translation id="1407489512183974736">মাঝ খান থেকে ক্রপ করা</translation>
 <translation id="1408504635543854729">ফাইল অ্যাপে ডিভাইসের কন্টেন্ট খুঁজে দেখুন। একজন অ্যাডমিনিস্ট্রেটর কন্টেন্টটি সীমাবদ্ধ করে আছে এবং মডিফাই করা যাবে না।</translation>
@@ -1902,7 +1903,6 @@
 <translation id="3246107497225150582">{0,plural, =1{এক দিনের মধ্যে ডিভাইস আপডেট করুন}one{# দিনের মধ্যে ডিভাইস আপডেট করুন}other{# দিনের মধ্যে ডিভাইস আপডেট করুন}}</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - নেটওয়ার্ক ত্রুটি</translation>
 <translation id="3248902735035392926">নিরাপত্তা বজায় রাখা গুরুত্বপূর্ণ। একটু সময় নিয়ে <ph name="BEGIN_LINK" />এখনই আপনার এক্সটেনশন চেক করুন<ph name="END_LINK" /></translation>
-<translation id="325036368918787455">'ছদ্মবেশী' উইন্ডো বন্ধ করুন</translation>
 <translation id="3251759466064201842">&lt;শংসাপত্রের অংশ নয়&gt;</translation>
 <translation id="3253225298092156258">উপলভ্য নয়</translation>
 <translation id="3253448572569133955">অপরিচিত অ্যাকাউন্ট</translation>
@@ -3442,7 +3442,6 @@
 <translation id="5097649414558628673">টুল: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">কার্সর থেমে যাওয়া মাত্রই অটোমেটিক ক্লিক করুন</translation>
 <translation id="5099399397495049098">সাইট জাভাস্ক্রিপ্ট ব্যবহার করতে পারে (সাজেস্ট করা হয়েছে)</translation>
-<translation id="5101042277149003567">সব বুকমার্ক খুলুন</translation>
 <translation id="5101839224773798795">মাউস কার্সার বন্ধ হয়ে গেলে অটোমেটিক ক্লিক হবে</translation>
 <translation id="5107443654503185812">একটি এক্সটেনশন Safe Browsing বন্ধ করে দিয়েছে</translation>
 <translation id="5108967062857032718">সেটিংস - Android অ্যাপ্লিকেশানগুলি সরান</translation>
@@ -4027,7 +4026,6 @@
 <translation id="5804241973901381774">অনুমতিগুলি</translation>
 <translation id="5805697420284793859">উইন্ডো ম্যানেজার</translation>
 <translation id="5806773519584576205">০° (ডিফল্ট)</translation>
-<translation id="5808664694611589238">{0,plural, =1{'গেস্ট' উইন্ডো বন্ধ করুন}one{'গেস্ট' উইন্ডো বন্ধ করুন}other{'গেস্ট' উইন্ডো বন্ধ করুন}}</translation>
 <translation id="5810809306422959727">এই অ্যাকাউন্ট অভিভাবকীয় নিয়ন্ত্রণে রাখা যাবে না</translation>
 <translation id="5812674658566766066">সবগুলি বড় করুন</translation>
 <translation id="5814126672212206791">সংযোগের প্রকার</translation>
@@ -4773,7 +4771,7 @@
 <translation id="6704062477274546131">DNS রেজোলিউশন</translation>
 <translation id="6706210727756204531">সুযোগ</translation>
 <translation id="6707389671160270963">SSL ক্লায়েন্ট সার্টিফিকেট</translation>
-<translation id="670893696722244877">ইনপুট ফিল্ডে নাম লিখে বা ভাষা ব্যবহার করে সার্চ করুন</translation>
+<translation id="670893696722244877">ভাষা অনুযায়ী বা ইনপুট ফিল্ডে নাম লিখে সার্চ করুন</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> এবং অন্য ১টি ট্যাব}one{<ph name="PAGE_TITLE" /> এবং অন্য #টি ট্যাব}other{<ph name="PAGE_TITLE" /> এবং অন্য #টি ট্যাব}}</translation>
 <translation id="6709133671862442373">News</translation>
 <translation id="6709357832553498500"><ph name="EXTENSIONNAME" /> ব্যবহার করে সংযোগ করুন</translation>

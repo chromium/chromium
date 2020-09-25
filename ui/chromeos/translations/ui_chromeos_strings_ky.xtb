@@ -189,7 +189,6 @@
 <translation id="3064388234319122767">Транслитерация (zdravo → здраво)</translation>
 <translation id="3067790092342515856">Windows файлдары</translation>
 <translation id="3078461028045006476"><ph name="EXTENSION_NAME" /> менен бөлүшүү</translation>
-<translation id="3088034400796962477">Транслитерация (salam ← سلام)</translation>
 <translation id="3116361045094675131">БК баскычтобу</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">БҮТТҮ</translation>
@@ -305,7 +304,6 @@
 <translation id="4477219268485577442">Болгарча фонетикалык</translation>
 <translation id="4479812471636796472">АКШ Dvorak баскычтобу</translation>
 <translation id="4481711095103932593">Бул папка Windows менен бөлүшүлдү</translation>
-<translation id="4487088045714738411">Белгийче баскычтоп</translation>
 <translation id="4522570452068850558">Чоо-жайлары</translation>
 <translation id="4542387084127299777">"<ph name="PATH" />" ачылган жок</translation>
 <translation id="4552678318981539154">Көбүрөөк сактоо мейкиндигин сатып алыңыз…</translation>
@@ -376,6 +374,7 @@
 <translation id="5098629044894065541">Еврейче</translation>
 <translation id="5123433949759960244">Баскетбол</translation>
 <translation id="5129662217315786329">Полякча</translation>
+<translation id="5132435854979302863">Филиппинче</translation>
 <translation id="5144820558584035333">Хангул 3 топтому (390)</translation>
 <translation id="5145331109270917438">Өзгөртүлгөн күнү</translation>
 <translation id="515594325917491223">Шахмат</translation>
@@ -421,13 +420,13 @@
 <translation id="5464696796438641524">Полякча баскычтоп</translation>
 <translation id="5465122519792752163">Непалча баскычтоп (InScript)</translation>
 <translation id="5469868506864199649">Италиянча</translation>
+<translation id="5484429245813572665">Индонезияча</translation>
 <translation id="5494920125229734069">Баарын тандоо</translation>
 <translation id="5500122897333236901">Исландча</translation>
 <translation id="5508696409934741614">Чекиттер</translation>
 <translation id="5522908512596376669">Файлдардын тизмеси тизме көрүнүшүнө которулду.</translation>
 <translation id="5524517123096967210">Файл окулбай койду.</translation>
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> фарматындагы сүрөт</translation>
-<translation id="5533555070048896610">Транслитерация (namaste → नमस्ते)</translation>
 <translation id="5534520101572674276">Эсептөө өлчөмү</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5605830556594064952">US Dvorak</translation>
@@ -608,6 +607,7 @@
 <translation id="7649070708921625228">Жардам</translation>
 <translation id="7654209398114106148"><ph name="NUMBER_OF_ITEMS" /> нерсе жылдырылууда…</translation>
 <translation id="7658239707568436148">Жокко чыгаруу</translation>
+<translation id="7693909743393669729">Дискти форматтасаңыз, анда сакталган бардык маалымат тазаланып, көзгө көрүнбөгөн бөлүмдөрдөн бери өчүрүлөт. Бул аракетти артка кайтаруу мүмкүн эмес.</translation>
 <translation id="7695430100978772476"><ph name="DRIVE_NAME" /> форматталган жок</translation>
 <translation id="770015031906360009">Грекче</translation>
 <translation id="7706319470528945664">Португалча баскычтоп</translation>
@@ -639,6 +639,7 @@
 <translation id="78946041517601018">Жалпы дисктер</translation>
 <translation id="7896906914454843592">Кеңейтилген АКШ баскычтобу</translation>
 <translation id="7898607018410277265">Гужарати баскычтобу (Фонетикалык)</translation>
+<translation id="7908793776359722643">Бөлүмдөрдү форматтасаңыз, анда сакталган бардык маалымат өчүрүлөт. Бул аракетти артка кайтаруу мүмкүн эмес.</translation>
 <translation id="7917972308273378936">Литвача баскычтоп</translation>
 <translation id="7925686952655276919">Мобилдик түзмөктөрдөгү дайындар шайкештирилбесин</translation>
 <translation id="7928710562641958568">Түзмөктү сууруу</translation>
@@ -726,6 +727,7 @@
 <translation id="8900820606136623064">Венгерче</translation>
 <translation id="8901822611024316615">Чех QWERTY баскычтобу</translation>
 <translation id="8919081441417203123">Датча</translation>
+<translation id="8941776146379310519">Малайча</translation>
 <translation id="8960999352790021682">Бенгалча баскычтоп (Фонетикалык)</translation>
 <translation id="8965697826696209160">Бош орун жетишсиз.</translation>
 <translation id="9017798300203431059">Орус фонетикасы</translation>

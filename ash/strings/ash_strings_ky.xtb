@@ -59,6 +59,7 @@
 <translation id="1467432559032391204">Сол</translation>
 <translation id="1479909375538722835">Калкыма атайын мүмкүнчүлүктөр менюсу</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
+<translation id="1503394326855300303">Бир нече профилге кирүү сеансында ушул негизги каттоо эсеби биринчи кириши керек.</translation>
 <translation id="1516740043221086139">"Тынчымды алба" режими күйүк.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Билдирмелердин жөндөөлөрүн көрсөтүү. Колдонмонун билдирмелери өчүк}other{Билдирмелердин жөндөөлөрүн көрсөтүү. # колдонмонун билдирмелери өчүк}}</translation>
 <translation id="1525508553941733066">ЭТИБАРГА АЛБОО</translation>
@@ -172,7 +173,6 @@
 <translation id="2718395828230677721">Түнкү режим</translation>
 <translation id="2727175239389218057">Жооп берүү</translation>
 <translation id="2727977024730340865">Кубаттуулугу төмөн кубаттагычка сайылды. Батареяны кубаттоо аракети ишенимдүү эмес.</translation>
-<translation id="2743387203779672305">Алмашуу буферине көчүрүү</translation>
 <translation id="2792498699870441125">Alt+Издөө</translation>
 <translation id="2819276065543622893">Сиз азыр чыгарыласыз.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" /> дааналыкты колдоого албайт. Дааналыгы төмөнкүгө өзгөртүлдү: <ph name="FALLBACK_RESOLUTION" />.</translation>
@@ -257,6 +257,7 @@
 <translation id="3486220673238053218">аныктама</translation>
 <translation id="3510164367642747937">Чычкан курсору баса белгиленсин</translation>
 <translation id="3513798432020909783">Аккаунтту башкарган: <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3571734092741541777">Орнотуу</translation>
 <translation id="3573179567135747900">Төмөнкүгө кайра өзгөртүү "<ph name="FROM_LOCALE" />" (өчүрүп күйгүзүү керек)</translation>
 <translation id="3576141592585647168">Убакыт алкагын өзгөртүү</translation>
 <translation id="3593646411856133110">Ачылган колдонмолорду көрүү үчүн, экранды өйдө сүрүп, коё бербей кармап туруңуз</translation>
@@ -307,6 +308,7 @@
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Колд-до өчүк}other{# колд-до өчүк}}</translation>
 <translation id="4072264167173457037">Орточо сигнал</translation>
 <translation id="4112140312785995938">Артка түрдүрүү</translation>
+<translation id="4114315158543974537">Phone Hub'ды күйгүзүңүз</translation>
 <translation id="4129129681837227511">Билдирмелерди кулпуланган экранда көрүү максатында өзгөртүү киргизүү үчүн, түзмөгүңүздүн кулпусун ачыңыз</translation>
 <translation id="4146833061457621061">Музыканы ойнотуу</translation>
 <translation id="4149156641122542261"><ph name="DEVICE_TYPE" /> түзмөгү <ph name="DOMAIN" /> тарабынан башкарылат</translation>
@@ -388,6 +390,7 @@
 <translation id="4917385247580444890">Күчтүү</translation>
 <translation id="4918086044614829423">Кабыл алуу</translation>
 <translation id="4924411785043111640">Өчүрүп-күйгүзүү жана баштапкы абалга келтирүү</translation>
+<translation id="4925542575807923399">Бул аккаунтунун администратору анын бир нече профиль сеансындагы аккаунтка биринчи кирген каттоо эсеби болушун талап кылат.</translation>
 <translation id="495046168593986294">Өйдө сыдыруу</translation>
 <translation id="4961318399572185831">Экранды тышкы экранга чыгаруу</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> с. <ph name="MINUTES" /> мүн. <ph name="SECONDS" /> сек.</translation>
@@ -438,6 +441,7 @@
 <translation id="5648021990716966815">Микрофондун оюкчасы</translation>
 <translation id="5669267381087807207">Жандырылууда</translation>
 <translation id="5673434351075758678">Жөндөөлөр шайкештештирилгенден кийин тил "<ph name="FROM_LOCALE" />" тилинен "<ph name="TO_LOCALE" />" тилине өзгөртүлдү.</translation>
+<translation id="5679050765726761783">Кубаты төмөн адаптер туташтырылды</translation>
 <translation id="5682642926269496722">Google Жардамчы учурдагы колдонуучунун аккаунтунда жеткиликсиз.</translation>
 <translation id="5689633613396158040">Түнкү режим күңүрт жерде көзүңүзгө күч келтирбөөгө жардам берет. Түнкү режим күйгүзүлө турган убакытты өзгөртүү же биротоло өчүрүп салуу үчүн таптап коюңуз.</translation>
 <translation id="5691772641933328258">Манжа изи таанылган жок</translation>
@@ -533,6 +537,7 @@
 <translation id="6657585470893396449">Сырсөз</translation>
 <translation id="6665545700722362599">Вебсайттарга, колдонмолорго жана кеңейтүүлөргө жайгашкан жерди аныктоо кызматтарын, түзмөктүн микрофонун, камерасын же башка функцияларын колдонуу мүмкүнчүлүгүн берет</translation>
 <translation id="6670153871843998651">3-иш такта</translation>
+<translation id="6671495933530132209">Сүрөттү көчүрүү</translation>
 <translation id="6691659475504239918">Search+Shift+H</translation>
 <translation id="6692996468359469499">Сиз тандаган нерсеге тиешелүү маалыматты алуу</translation>
 <translation id="6696025732084565524">Ажыратылуучу баскычтопко жаңыртуу талап кылынат</translation>
@@ -552,6 +557,7 @@
 <translation id="6857811139397017780"><ph name="NETWORKSERVICE" /> жандыруу</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Бир сан калды}other{# сан калды}}</translation>
 <translation id="6878400149835617132">Ыкчам баскыч өчүрүлдү</translation>
+<translation id="6886172995547742638"><ph name="DEVICE_TYPE" /> түзмөгүңүз начар иштеши мүмкүн. Тастыкталган <ph name="PREFERRED_MINIMUM_POWER" /> Вт же андан жогору USB-C кубаттагыч адаптерин колдонуңуз.</translation>
 <translation id="6896758677409633944">Көчүрүү</translation>
 <translation id="6910714959251846841">Бул жаңыртууну орнотуу үчүн түзмөгүңүздү жууп салуу талап кылынат. <ph name="SYSTEM_APP_NAME" /> колдонмосундагы акыркы жаңыртуу жөнүндө кененирээк маалымат алуу.</translation>
 <translation id="6919251195245069855">Акылдуу картаңыз таанылган жок. Кайталап көрүңүз.</translation>
@@ -731,6 +737,7 @@
 <translation id="8734991477317290293">Ал сырсөзүңүздү тергенде баскан баскычтарды билип алууга аракет кылышы мүмкүн</translation>
 <translation id="8735953464173050365">Баскычтоптун жөндөөлөрүн көрсөтүү. <ph name="KEYBOARD_NAME" /> тандалды</translation>
 <translation id="875593634123171288">VPN жөндөөлөрүн көрсөтүү</translation>
+<translation id="8759408218731716181">Бир нече профиль менен кирүүнү орнотууга болбойт</translation>
 <translation id="8785070478575117577"><ph name="NETWORK_NAME" /> түзмөгүнө туташуу</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>

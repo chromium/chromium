@@ -57,6 +57,7 @@
 <translation id="1056775291175587022">Brak sieci</translation>
 <translation id="1056898198331236512">Ostrzeżenie</translation>
 <translation id="1058262162121953039">PUK</translation>
+<translation id="1059944192885972544">Znaleziono karty (<ph name="NUM" />) dla zapytania „<ph name="SEARCH_TEXT" />”</translation>
 <translation id="1060292118287751956">Określa częstotliwość aktualizacji ekranu</translation>
 <translation id="1061904396131502319">Wielkimi krokami nadchodzi przerwa</translation>
 <translation id="1067048845568873861">Utworzono</translation>
@@ -352,6 +353,7 @@
 <translation id="140520891692800925"><ph name="PROFILE_DISPLAY_NAME" /> (nadzorowany)</translation>
 <translation id="1405779994569073824">Awaria</translation>
 <translation id="1406500794671479665">Weryfikuję...</translation>
+<translation id="1407135791313364759">Otwórz wszystkie</translation>
 <translation id="140723521119632973">Aktywowanie sieci komórkowej</translation>
 <translation id="1407489512183974736">Wyśrodkuj i przytnij</translation>
 <translation id="1408504635543854729">Przeglądaj zawartość urządzenia w aplikacji Pliki. Dostępna zawartość jest określana przez administratora i nie można jej zmienić.</translation>
@@ -473,6 +475,7 @@
 <translation id="1537254971476575106">Lupa pełnego ekranu</translation>
 <translation id="15373452373711364">Duży kursor myszy</translation>
 <translation id="1540605929960647700">Włącz tryb demonstracyjny</translation>
+<translation id="1541346352678737112">Nie znaleziono sieci</translation>
 <translation id="1542514202066550870">Ta karta prezentuje treści VR na goglach.</translation>
 <translation id="1543284117603151572">Zaimportowane z Edge</translation>
 <translation id="1545177026077493356">Automatyczny tryb kiosku</translation>
@@ -727,6 +730,7 @@
 <translation id="1826516787628120939">Sprawdzam</translation>
 <translation id="1827738518074806965">Galeria sztuki</translation>
 <translation id="1828378091493947763">To urządzenie nie obsługuje tej wtyczki</translation>
+<translation id="1828879788654007962">{COUNT,plural, =0{&amp;Otwórz wszystkie}=1{&amp;Otwórz zakładkę}few{&amp;Otwórz wszystkie ({COUNT})}many{&amp;Otwórz wszystkie ({COUNT})}other{&amp;Otwórz wszystkie ({COUNT})}}</translation>
 <translation id="1828901632669367785">Drukuj w oknie systemowym</translation>
 <translation id="1829129547161959350">Pingwin</translation>
 <translation id="1829192082282182671">Po&amp;mniejsz</translation>
@@ -1899,7 +1903,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="3246107497225150582">{0,plural, =1{Aktualizacja urządzenia nastąpi w ciągu 1 dnia}few{Aktualizacja urządzenia nastąpi w ciągu # dni}many{Aktualizacja urządzenia nastąpi w ciągu # dni}other{Aktualizacja urządzenia nastąpi w ciągu # dnia}}</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – błąd sieci</translation>
 <translation id="3248902735035392926">Dbaj o bezpieczeństwo. Poświęć chwilę na <ph name="BEGIN_LINK" />sprawdzenie swoich rozszerzeń<ph name="END_LINK" /></translation>
-<translation id="325036368918787455">Zamknij tryb incognito</translation>
 <translation id="3251759466064201842">&lt;brak w certyfikacie&gt;</translation>
 <translation id="3253225298092156258">Niedostępna</translation>
 <translation id="3253448572569133955">Nieznane konto</translation>
@@ -2102,6 +2105,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="3478685642445675458">Aby usunąć osobę, odblokuj swój profil.</translation>
 <translation id="3479552764303398839">Nie teraz</translation>
 <translation id="3479685872808224578">Nie udało się wykryć serwera druku. Sprawdź adres i spróbuj ponownie.</translation>
+<translation id="3480827850068960424">Znaleziono karty (<ph name="NUM" />)</translation>
 <translation id="3481268647794498892">Strona zostanie otwarta w przeglądarce <ph name="ALTERNATIVE_BROWSER_NAME" /> za <ph name="COUNTDOWN_SECONDS" /> s</translation>
 <translation id="3482719661246593752">Strona <ph name="ORIGIN" /> może wyświetlać te pliki:</translation>
 <translation id="3484273680291419129">Usuwam szkodliwe oprogramowanie…</translation>
@@ -2480,6 +2484,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="3894123633473837029">Uwzględnij ostatnią historię Asystenta w Sherlog. Może ona obejmować informacje na temat Twojej tożsamości i lokalizacji oraz dane debugowania. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="3894427358181296146">Dodaj folder</translation>
 <translation id="3894770151966614831">Przenieść na konto Google?</translation>
+<translation id="3895076768659607631">&amp;Zarządzaj wyszukiwarkami…</translation>
 <translation id="3895090224522145010">Nazwa użytkownika Kerberos</translation>
 <translation id="389589731200570180">Udostępnij gościom</translation>
 <translation id="3898233949376129212">Język urządzenia</translation>
@@ -2871,6 +2876,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="4392896746540753732">Edytuj plik konfiguracji</translation>
 <translation id="4393691030048716353">Strona <ph name="DOMAIN" /> wyłączyła debugowanie ADB. Po zrestartowaniu urządzenia <ph name="DEVICE_TYPE" /> nie będzie można instalować aplikacji z innych urządzeń.</translation>
 <translation id="4394049700291259645">Wyłącz</translation>
+<translation id="4396956294839002702">{COUNT,plural, =0{&amp;Otwórz wszystkie}=1{&amp;Otwórz zakładkę}few{&amp;Otwórz wszystkie ({COUNT})}many{&amp;Otwórz wszystkie ({COUNT})}other{&amp;Otwórz wszystkie ({COUNT})}}</translation>
 <translation id="439817266247065935">Twoje urządzenie nie zostało poprawnie zamknięte. Uruchom ponownie Linuksa, aby używać aplikacji w tym systemie.</translation>
 <translation id="4400367121200150367">Tutaj będą wyświetlane strony, które nigdy nie zapisują haseł</translation>
 <translation id="4400632832271803360">Przytrzymaj klawisz programu uruchamiającego, by zmienić działanie klawiszy z górnego rzędu</translation>
@@ -3135,6 +3141,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="469379815867856270">Siła sygnału</translation>
 <translation id="4694024090038830733">Konfiguracją drukarek zajmuje się administrator.</translation>
 <translation id="4694604912444486114">Małpa</translation>
+<translation id="4697071790493980729">Nie znaleziono wyników</translation>
 <translation id="4697551882387947560">Po zakończeniu sesji przeglądania</translation>
 <translation id="4699172675775169585">Obrazy i pliki zapisane w pamięci podręcznej</translation>
 <translation id="4699357559218762027">(automatyczne uruchamianie)</translation>
@@ -3209,6 +3216,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="4813136279048157860">Moje obrazy</translation>
 <translation id="4813512666221746211">Błąd sieci</translation>
 <translation id="4814378367953456825">Wpisz nazwę tego odcisku</translation>
+<translation id="4816336393325437908">{COUNT,plural, =1{Usunięto 1 zakładkę}few{Usunięto {COUNT} zakładki}many{Usunięto {COUNT} zakładek}other{Usunięto {COUNT} zakładki}}</translation>
 <translation id="4819607494758673676">Powiadomienia od Asystenta Google</translation>
 <translation id="4820236583224459650">Ustaw jako bilet aktywny</translation>
 <translation id="4821935166599369261">&amp;Profilowanie włączone</translation>
@@ -3311,6 +3319,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="49226369361073053">{0,plural, =0{Aktualizacja urządzenia nastąpi teraz}=1{Aktualizacja urządzenia nastąpi w ciągu 1 sekundy}few{Aktualizacja urządzenia nastąpi w ciągu # sekund}many{Aktualizacja urządzenia nastąpi w ciągu # sekund}other{Aktualizacja urządzenia nastąpi w ciągu # sekundy}}</translation>
 <translation id="492299503953721473">Usuń aplikacje na Androida</translation>
 <translation id="492363500327720082">Odinstalowuję <ph name="APP_NAME" />...</translation>
+<translation id="4924002401726507608">Prześlij opinię</translation>
 <translation id="4924352752174756392">12x</translation>
 <translation id="4925320384394644410">Tu pojawią się porty</translation>
 <translation id="4925542575807923399">Administrator tego konta wymaga, by w sesji wielokrotnego logowania logować się na nie jako pierwsze.</translation>
@@ -3440,7 +3449,6 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="5097649414558628673">Narzędzie: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">Klikaj automatycznie, kiedy kursor się zatrzymuje</translation>
 <translation id="5099399397495049098">Strony mogą używać JavaScriptu (zalecane)</translation>
-<translation id="5101042277149003567">Otwórz wszystkie zakładki</translation>
 <translation id="5101839224773798795">Automatyczne kliknięcie po zatrzymaniu kursora</translation>
 <translation id="5107443654503185812">Rozszerzenie spowodowało wyłączenie Bezpiecznego przeglądania</translation>
 <translation id="5108967062857032718">Ustawienia – Usuń aplikacje na Androida</translation>
@@ -4024,7 +4032,6 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="5804241973901381774">Uprawnienia</translation>
 <translation id="5805697420284793859">Menedżer okien</translation>
 <translation id="5806773519584576205">0° (domyślnie)</translation>
-<translation id="5808664694611589238">{0,plural, =1{Zamknij okno gościa}few{Zamknij okna gościa}many{Zamknij okna gościa}other{Zamknij okna gościa}}</translation>
 <translation id="5810809306422959727">To konto nie może podlegać kontroli rodzicielskiej</translation>
 <translation id="5812674658566766066">Rozwiń wszystko</translation>
 <translation id="5814126672212206791">Typ połączenia</translation>
@@ -4158,6 +4165,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="595959584676692139">Aby użyć tego rozszerzenia, załaduj ponownie stronę</translation>
 <translation id="5963117322306686970">Aby pogrupować karty, kliknij jedną z nich prawym przyciskiem</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (<ph name="NUM_KILOBYTES_LIVE" /> w szczycie)</translation>
+<translation id="5964113968897211042">{COUNT,plural, =0{Otwórz wszystkie w &amp;nowym oknie}=1{Otwórz w &amp;nowym oknie}few{Otwórz wszystkie ({COUNT}) w &amp;nowym oknie}many{Otwórz wszystkie ({COUNT}) w &amp;nowym oknie}other{Otwórz wszystkie ({COUNT}) w &amp;nowym oknie}}</translation>
 <translation id="5965661248935608907">Kontroluje także to, jaka strona wyświetla się po kliknięciu przycisku strony głównej lub wyszukiwaniu w omniboksie.</translation>
 <translation id="5969419185858894314">Strona <ph name="ORIGIN" /> może przeglądać pliki w folderze <ph name="FOLDERNAME" /></translation>
 <translation id="5971037678316050792">Kontrolowanie stanu adaptera Bluetooth i parowania</translation>
@@ -4346,6 +4354,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="6176043333338857209">Bluetooth włączy się na chwilę, by połączyć się z kluczem bezpieczeństwa</translation>
 <translation id="6178664161104547336">Wybór certyfikatu</translation>
 <translation id="6181431612547969857">Pobieranie zostało zablokowane</translation>
+<translation id="6184099524311454384">Wyszukaj karty</translation>
 <translation id="6185132558746749656">Lokalizacja urządzenia</translation>
 <translation id="6186394437969115158">Strony zwykle wyświetlają reklamy, by móc dostarczać treści i usługi bezpłatnie. Istnieją jednak strony, które wyświetlają reklamy uciążliwe lub wprowadzające w błąd.</translation>
 <translation id="6191293864534840972">Nieprawidłowe serwery nazw</translation>
@@ -4824,6 +4833,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="6777817260680419853">Przekierowanie zostało zablokowane</translation>
 <translation id="6778737459546443941">Twój rodzic jeszcze na to nie zezwolił</translation>
 <translation id="677965093459947883">Bardzo mała</translation>
+<translation id="6781005693196527806">&amp;Zarządzaj wyszukiwarkami…</translation>
 <translation id="6781284683813954823">Link do doodla</translation>
 <translation id="6781978626986383437">Tworzenie kopii zapasowej Linuksa zostało anulowane</translation>
 <translation id="6782067259631821405">Nieprawidłowy PIN</translation>
@@ -5041,6 +5051,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="7022562585984256452">Strona główna została ustawiona.</translation>
 <translation id="7025082428878635038">Przedstawiamy nowy sposób nawigowania gestami</translation>
 <translation id="7025190659207909717">Zarządzanie komórkową usługą transmisji danych</translation>
+<translation id="7027258625819743915">{COUNT,plural, =0{Otwórz wszystkie w oknie &amp;incognito}=1{Otwórz w oknie &amp;incognito}few{Otwórz wszystkie ({COUNT}) w oknie &amp;incognito}many{Otwórz wszystkie ({COUNT}) w oknie &amp;incognito}other{Otwórz wszystkie ({COUNT}) w oknie &amp;incognito}}</translation>
 <translation id="7029307918966275733">Nie zainstalowano Crostini. Zainstaluj Crostini, by zobaczyć autorów.</translation>
 <translation id="7029809446516969842">Hasła</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> – podłączono port szeregowy</translation>
@@ -5328,6 +5339,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="7388209873137778229">Pokazano tylko obsługiwane urządzenia.</translation>
 <translation id="7392118418926456391">Skanowanie antywirusowe nie powiodło się</translation>
 <translation id="7392915005464253525">Otwórz ponowni&amp;e zamknięte okno</translation>
+<translation id="7393073300870882456">{COUNT,plural, =1{Skopiowano 1 element}few{Skopiowano {COUNT} elementy}many{Skopiowano {COUNT} elementów}other{Skopiowano {COUNT} elementu}}</translation>
 <translation id="7396017167185131589">Tu pojawią się udostępnione foldery</translation>
 <translation id="7396845648024431313">Aplikacja <ph name="APP_NAME" /> zostanie włączona podczas uruchamiania systemu i będzie działać w tle nawet po zamknięciu wszystkich pozostałych okien przeglądarki <ph name="PRODUCT_NAME" />.</translation>
 <translation id="7399045143794278225">Dostosuj synchronizację</translation>
@@ -5560,12 +5572,14 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" /> na stronie <ph name="PAGE_TITLE" />.</translation>
 <translation id="7674416868315480713">W Linuksie dezaktywuj wszystkie przekierowywane porty</translation>
 <translation id="7674542105240814168">Zabroniono dostępu do lokalizacji</translation>
+<translation id="7676119992609591770">Znaleziono <ph name="NUM" /> kartę dla zapytania „<ph name="SEARCH_TEXT" />”</translation>
 <translation id="7676867886086876795">Wysyła Twój głos do Google, by umożliwić dyktowanie w dowolnym polu tekstowym.</translation>
 <translation id="7678280409648629969">Dane logowania zostaną zapisane po wyjściu z trybu incognito. Umożliwi Ci to późniejsze korzystanie na tej stronie z funkcji Touch ID.</translation>
 <translation id="7680416688940118410">Kalibracja ekranu dotykowego</translation>
 <translation id="7681095912841365527">Strona może używać Bluetootha</translation>
 <translation id="7682634383739326341">Nie zezwalaj stronom na łączenie się z urządzeniami USB</translation>
 <translation id="7683373461016844951">Aby kontynuować, kliknij OK, a potem kliknij Dodaj osobę, by utworzyć nowy profil dla swojego adresu e-mail w domenie <ph name="DOMAIN" />.</translation>
+<translation id="7683593009096723900">{COUNT,plural, =0{Otwórz wszystkie w oknie &amp;incognito}=1{Otwórz w oknie &amp;incognito}few{Otwórz wszystkie ({COUNT}) w oknie &amp;incognito}many{Otwórz wszystkie ({COUNT}) w oknie &amp;incognito}other{Otwórz wszystkie ({COUNT}) w oknie &amp;incognito}}</translation>
 <translation id="7684212569183643648">Zainstalowane przez administratora</translation>
 <translation id="7684559058815332124">Wejdź na stronę logowania na portalu przechwytującym</translation>
 <translation id="7684718995427157417">Aby utworzyć i przetestować swoje aplikacje, włącz Android Debug Bridge (ADB). Pamiętaj, że to działanie wiąże się z zezwoleniem na instalowanie aplikacji na Androida, które nie zostały zweryfikowane przez Google, a do wyłączenia tej funkcji konieczne jest przywrócenie ustawień fabrycznych.</translation>
@@ -5647,6 +5661,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="7772773261844472235">Sprawdź stan Chromebooka</translation>
 <translation id="7773726648746946405">Przechowywanie sesji</translation>
 <translation id="7774365994322694683">Ptak</translation>
+<translation id="7774792847912242537">Zbyt wiele żądań.</translation>
 <translation id="7776156998370251340">Strona <ph name="ORIGIN" /> będzie mogła wyświetlać pliki z folderu <ph name="FOLDERNAME" />, dopóki nie zamkniesz wszystkich jej kart</translation>
 <translation id="7776701556330691704">Nie znaleziono głosów</translation>
 <translation id="7780252971640011240">Problemy z połączeniem. Poproś o pomoc operatora sieci komórkowej.</translation>
@@ -5676,6 +5691,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="7799299114731150374">Tapeta została ustawiona</translation>
 <translation id="7800518121066352902">&amp;Obróć w lewo</translation>
 <translation id="780301667611848630">Nie, dziękuję</translation>
+<translation id="7804072833593604762">Karta została zamknięta</translation>
 <translation id="7805768142964895445">Stan</translation>
 <translation id="7807067443225230855">Wyszukiwanie i Asystent</translation>
 <translation id="7807711621188256451">Zawsze zezwalaj witrynie <ph name="HOST" /> na dostęp do kamery</translation>
@@ -5829,6 +5845,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="7963001036288347286">Przyspieszenie touchpada</translation>
 <translation id="7963826112438303517">Asystent używa tych nagrań i wypowiadanych przez Ciebie poleceń do tworzenia i aktualizowania modelu Twojego głosu. Model ten jest przechowywany tylko na tych urządzeniach, na których jest włączona funkcja Voice Match. W ustawieniach Asystenta możesz zobaczyć aktywność głosową oraz nauczyć go ponownie modelu głosu.</translation>
 <translation id="7966241909927244760">K&amp;opiuj adres obrazu</translation>
+<translation id="7966571622054096916">{COUNT,plural, =1{1 element na liście zakładek}few{{COUNT} elementy na liście zakładek}many{{COUNT} elementów na liście zakładek}other{{COUNT} elementu na liście zakładek}}</translation>
 <translation id="7968072247663421402">Opcje dostawcy</translation>
 <translation id="7968198493605442410">Skopiuj link do tekstu</translation>
 <translation id="7968742106503422125">Odczyt i modyfikacja danych, które kopiujesz i wklejasz</translation>
@@ -5952,6 +5969,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="80974698889265265">Kody PIN są różne</translation>
 <translation id="809792523045608178"><ph name="IDS_SHORT_PRODUCT_NAME" /> używa ustawień serwera proxy z rozszerzenia</translation>
 <translation id="8097959162767603171">Najpierw administrator musi zaakceptować warunki usługi na liście urządzenia z Chrome w konsoli administracyjnej.</translation>
+<translation id="810068641062493918">Wybrano: <ph name="LANGUAGE" />. Aby usunąć wybór języka, naciśnij Wyszukaj i spację.</translation>
 <translation id="8101987792947961127">Przy następnym uruchomieniu trzeba wykonać Powerwash</translation>
 <translation id="8102139037507939978">Usuń informacje umożliwiające identyfikację z pliku system_logs.txt.</translation>
 <translation id="8102159139658438129">Otwórz <ph name="LINK_BEGIN" />Ustawienia<ph name="LINK_END" />, by zobaczyć opcje połączenia z telefonem</translation>
@@ -5993,6 +6011,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8143951647992294073">Wybierz <ph name="TOPIC_SOURCE" /> (<ph name="TOPIC_SOURCE_DESC" />)</translation>
 <translation id="8146177459103116374">Jeśli zarejestrowałeś się już na tym urządzeniu, możesz <ph name="LINK2_START" />zalogować się jako istniejący użytkownik<ph name="LINK2_END" />.</translation>
 <translation id="8146793085009540321">Nie udało się zalogować. Skontaktuj się z administratorem lub spróbuj ponownie.</translation>
+<translation id="8147900440966275470">Znaleziono <ph name="NUM" /> kartę</translation>
 <translation id="8148760431881541277">Ograniczanie logowania</translation>
 <translation id="8151579390896831136">Dostosuj swój profil, w tym jego nazwę</translation>
 <translation id="8151638057146502721">Konfiguruj</translation>
@@ -6317,6 +6336,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8557022314818157177">Dotykaj klucza bezpieczeństwa, dopóki Twój odcisk nie zostanie zarejestrowany</translation>
 <translation id="855773602626431402">Uruchomienie wtyczki spoza piaskownicy zostało zablokowane na tej stronie.</translation>
 <translation id="8557930019681227453">Plik manifestu</translation>
+<translation id="8560327176991673955">{COUNT,plural, =0{Otwórz wszystkie w &amp;nowym oknie}=1{Otwórz w &amp;nowym oknie}few{Otwórz wszystkie ({COUNT}) w &amp;nowym oknie}many{Otwórz wszystkie ({COUNT}) w &amp;nowym oknie}other{Otwórz wszystkie ({COUNT}) w &amp;nowym oknie}}</translation>
 <translation id="8561206103590473338">Słoń</translation>
 <translation id="8561853412914299728"><ph name="TAB_TITLE" /> <ph name="EMOJI_PLAYING" /></translation>
 <translation id="8565650234829130278">Próbowano zmienić wersję aplikacji na starszą.</translation>
@@ -6637,6 +6657,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8912810933860534797">Włącz automatyczne skanowanie</translation>
 <translation id="8915370057835397490">Ładuję sugestie</translation>
 <translation id="8916476537757519021">Ramka podrzędna incognito: <ph name="SUBFRAME_SITE" /></translation>
+<translation id="8918637186205009138"><ph name="GIVEN_NAME" />: <ph name="DEVICE_TYPE" /></translation>
 <translation id="8922013791253848639">Zawsze zezwalaj na wyświetlanie reklam na tej stronie</translation>
 <translation id="8923880975836399332">Ciemny morski</translation>
 <translation id="8925458182817574960">&amp;Ustawienia</translation>
@@ -6775,6 +6796,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="9078316009970372699">Wyłącz błyskawiczne połączenie w tetheringu</translation>
 <translation id="9084064520949870008">Otwórz jako okno</translation>
 <translation id="9085256200913095638">Powiel wybraną kartę</translation>
+<translation id="9085776959277692427">Nie wybrano: <ph name="LANGUAGE" />. Aby wybrać język, naciśnij Wyszukaj i spację.</translation>
 <translation id="9087949559523851360">Dodawanie użytkownika z ograniczonym dostępem</translation>
 <translation id="9088234649737575428">Wtyczka <ph name="PLUGIN_NAME" /> została zablokowana przez zasady przedsiębiorstwa</translation>
 <translation id="9088446193279799727">Nie udało się skonfigurować Linuksa. Połącz się z internetem i spróbuj ponownie.</translation>

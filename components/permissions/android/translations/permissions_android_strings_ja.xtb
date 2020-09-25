@@ -1,8 +1,10 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ja">
+<translation id="2077832278056815832">他のアプリのバブルやオーバーレイをすべて閉じてから、もう一度お試しください。</translation>
 <translation id="2359808026110333948">続行</translation>
 <translation id="2416359993254398973">このサイトを利用するには、Chrome でカメラの使用を許可する必要があります。</translation>
+<translation id="2987449669841041897">このサイトは権限を要求できません</translation>
 <translation id="557283862590186398">このサイトを利用するには、Chrome でマイクの使用を許可する必要があります。</translation>
 <translation id="5860491529813859533">オンにする</translation>
 <translation id="6092062101542170135">続行するには、Android の設定で NFC をオンにしてください。</translation>

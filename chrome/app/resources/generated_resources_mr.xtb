@@ -347,6 +347,7 @@
 <translation id="140520891692800925"><ph name="PROFILE_DISPLAY_NAME" /> (पर्यवेक्षी)</translation>
 <translation id="1405779994569073824">क्रॅश झाले</translation>
 <translation id="1406500794671479665">सत्यापित करत आहे...</translation>
+<translation id="1407135791313364759">सर्व उघडा</translation>
 <translation id="140723521119632973">सेल्युलर अ‍ॅक्टिव्हेशन</translation>
 <translation id="1407489512183974736">मध्यभागी क्रॉप केला</translation>
 <translation id="1408504635543854729">Files ॲपमध्ये डिव्हाइसचा आशय एक्सप्लोर करा. ॲडमिनिस्ट्रेटरने आशय प्रतिबंधित केला आहे आणि त्यात बदल केला जाऊ शकत नाही.</translation>
@@ -1879,7 +1880,6 @@
 <translation id="3246107497225150582">{0,plural, =1{डिव्हाइस एका दिवसाच्या आत अपडेट करा}other{डिव्हाइस # दिवसांच्या आत अपडेट करा}}</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - नेटवर्क एरर</translation>
 <translation id="3248902735035392926">सुरक्षा महत्त्वाची आहे. थोडा वेळ काढा आणि <ph name="BEGIN_LINK" />आता तुमची एक्स्टेंशन तपासा<ph name="END_LINK" /></translation>
-<translation id="325036368918787455">गुप्त मोड बंद करा</translation>
 <translation id="3251759466064201842">&lt;प्रमाणपत्राचा भाग नाही&gt;</translation>
 <translation id="3253225298092156258">उपलब्ध नाही</translation>
 <translation id="3253448572569133955">अज्ञात खाते</translation>
@@ -3390,7 +3390,6 @@
 <translation id="5097002363526479830">'<ph name="NAME" />': नेटवर्कशी कनेक्ट करण्यात अयशस्वी. <ph name="DETAILS" /></translation>
 <translation id="5097649414558628673">टूल: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">कर्सर थांबल्यावर आपोआप क्लिक करा</translation>
-<translation id="5101042277149003567">सर्व बुकमार्क उघडा</translation>
 <translation id="5101839224773798795">कर्सर थांबल्यावर आपोआप क्लिक करा</translation>
 <translation id="5107443654503185812">एक्स्टेंशनने सुरक्षित ब्राउझिंग बंद केले आहे</translation>
 <translation id="5108967062857032718">सेटिंग्ज - Android ॲप्स काढून टाका</translation>
@@ -3970,7 +3969,6 @@
 <translation id="5804241973901381774">परवानग्या</translation>
 <translation id="5805697420284793859">विंडो व्यवस्थापक</translation>
 <translation id="5806773519584576205">०° (डीफॉल्ट)</translation>
-<translation id="5808664694611589238">{0,plural, =1{अतिथी विंडो बंद करा}other{अतिथी विंडो बंद करा}}</translation>
 <translation id="5810809306422959727">हे खाते पालक नियंत्रणांसाठी पात्र नाही</translation>
 <translation id="5812674658566766066">सर्व विस्‍तृत करा</translation>
 <translation id="5814126672212206791">कनेक्शन प्रकार</translation>

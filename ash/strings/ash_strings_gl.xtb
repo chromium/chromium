@@ -59,6 +59,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1467432559032391204">Esquerda</translation>
 <translation id="1479909375538722835">Menú flotante de accesibilidade</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
+<translation id="1503394326855300303">Esta conta de propietario debe ser a primeira en que se inicie sesión cando se realice un inicio de sesión múltiple.</translation>
 <translation id="1516740043221086139">Está activado o modo Non molestar.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Mostrar a configuración de notificacións. Están desactivadas para unha aplicación}other{Mostrar a configuración de notificacións. Están desactivadas para # aplicacións}}</translation>
 <translation id="1525508553941733066">IGNORAR</translation>
@@ -172,7 +173,6 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="2718395828230677721">Luz nocturna</translation>
 <translation id="2727175239389218057">Responder</translation>
 <translation id="2727977024730340865">Conectado a un cargador de baixa potencia. É posible que a carga da batería non sexa fiable.</translation>
-<translation id="2743387203779672305">Copiar no portapapeis</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
 <translation id="2819276065543622893">Pecharase a túa sesión agora.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> non admite <ph name="SPECIFIED_RESOLUTION" />. A resolución cambiouse a <ph name="FALLBACK_RESOLUTION" /></translation>
@@ -257,6 +257,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="3486220673238053218">definición</translation>
 <translation id="3510164367642747937">Destacar o cursor do rato</translation>
 <translation id="3513798432020909783">A conta está xestionada por <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3571734092741541777">Configurar</translation>
 <translation id="3573179567135747900">Volver cambiar a "<ph name="FROM_LOCALE" />" (é necesario reiniciar)</translation>
 <translation id="3576141592585647168">Cambiar fuso horario</translation>
 <translation id="3593646411856133110">Pasa o dedo cara arriba e mantén premida a pantalla para ver as aplicacións abertas</translation>
@@ -390,6 +391,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="4917385247580444890">Forte</translation>
 <translation id="4918086044614829423">Aceptar</translation>
 <translation id="4924411785043111640">Reiniciar e restablecer</translation>
+<translation id="4925542575807923399">O administrador desta conta require que esta conta sexa a primeira na que se inicie sesión cando se cree unha sesión de inicio de sesión múltiple.</translation>
 <translation id="495046168593986294">Desprazarse cara arriba</translation>
 <translation id="4961318399572185831">Enviar pantalla</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> h <ph name="MINUTES" /> min <ph name="SECONDS" /> s</translation>
@@ -536,6 +538,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="6657585470893396449">Contrasinal</translation>
 <translation id="6665545700722362599">Conceder permiso aos sitios web, as aplicacións e as extensións para utilizar funcións como os servizos de localización, o micrófono do dispositivo ou a cámara.</translation>
 <translation id="6670153871843998651">Escritorio 3</translation>
+<translation id="6671495933530132209">Copiar imaxe</translation>
 <translation id="6691659475504239918">Buscar+Maiúsculas+H</translation>
 <translation id="6692996468359469499">Consultar a información relacionada coa túa selección</translation>
 <translation id="6696025732084565524">É necesario instalar unha actualización esencial do teclado extraíble</translation>
@@ -735,6 +738,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="8734991477317290293">É posible que estea tentando detectar as teclas que premes</translation>
 <translation id="8735953464173050365">Mostrar a configuración do teclado. Está seleccionado o seguinte: <ph name="KEYBOARD_NAME" /></translation>
 <translation id="875593634123171288">Mostrar a configuración da VPN</translation>
+<translation id="8759408218731716181">Erro ao configurar o inicio de sesión múltiple</translation>
 <translation id="8785070478575117577">Conectar con <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wifi</translation>

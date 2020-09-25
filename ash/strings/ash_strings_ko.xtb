@@ -59,6 +59,7 @@
 <translation id="1467432559032391204">왼쪽</translation>
 <translation id="1479909375538722835">플로팅 접근성 메뉴</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" />(HDMI/DP)</translation>
+<translation id="1503394326855300303">이 소유자 계정이 멀티 로그인 세션에서 처음으로 로그인하는 계정이 되어야 합니다.</translation>
 <translation id="1516740043221086139">방해 금지 모드가 사용 설정되어 있습니다.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{알림 설정을 표시합니다. 앱 1개의 알림이 사용 중지되어 있습니다.}other{알림 설정을 표시합니다. 앱 #개의 알림이 사용 중지되어 있습니다.}}</translation>
 <translation id="1525508553941733066">닫기</translation>
@@ -172,7 +173,6 @@
 <translation id="2718395828230677721">야간 조명</translation>
 <translation id="2727175239389218057">답장</translation>
 <translation id="2727977024730340865">저출력 충전기에 연결되었습니다. 배터리 충전 상태가 불안정합니다.</translation>
-<translation id="2743387203779672305">클립보드로 복사</translation>
 <translation id="2792498699870441125">Alt+검색 키</translation>
 <translation id="2819276065543622893">지금 로그아웃됩니다.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" />에서 <ph name="SPECIFIED_RESOLUTION" />을(를) 지원하지 않습니다. 해상도가 <ph name="FALLBACK_RESOLUTION" />(으)로 변경되었습니다.</translation>
@@ -257,6 +257,7 @@
 <translation id="3486220673238053218">정의</translation>
 <translation id="3510164367642747937">마우스 커서 강조표시</translation>
 <translation id="3513798432020909783">계정 관리자: <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3571734092741541777">설정</translation>
 <translation id="3573179567135747900">'<ph name="FROM_LOCALE" />'(으)로 다시 변경(다시 시작해야 함)</translation>
 <translation id="3576141592585647168">시간대 변경</translation>
 <translation id="3593646411856133110">위로 스와이프한 후 눌러 열려 있는 앱 보기</translation>
@@ -389,6 +390,7 @@
 <translation id="4917385247580444890">강함</translation>
 <translation id="4918086044614829423">수락</translation>
 <translation id="4924411785043111640">다시 시작 및 재설정</translation>
+<translation id="4925542575807923399">이 계정이 멀티 로그인 세션에서 처음으로 로그인하는 계정이 되도록 계정 관리자가 요청합니다.</translation>
 <translation id="495046168593986294">위로 스크롤</translation>
 <translation id="4961318399572185831">화면 전송</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />시간 <ph name="MINUTES" />분 <ph name="SECONDS" />초</translation>
@@ -535,6 +537,7 @@
 <translation id="6657585470893396449">비밀번호</translation>
 <translation id="6665545700722362599">웹사이트, 앱, 확장 프로그램에 위치 서비스, 기기의 마이크, 카메라 또는 기타 기능을 사용할 권한 부여</translation>
 <translation id="6670153871843998651">데스크 3</translation>
+<translation id="6671495933530132209">이미지 복사</translation>
 <translation id="6691659475504239918">Search+Shift+H</translation>
 <translation id="6692996468359469499">선택 항목과 관련된 정보 얻기</translation>
 <translation id="6696025732084565524">분리식 키보드에 중요 업데이트 필요</translation>
@@ -734,6 +737,7 @@
 <translation id="8734991477317290293">키 입력 내용을 도용하려는 시도일 수 있습니다.</translation>
 <translation id="8735953464173050365">키보드 설정을 표시합니다. <ph name="KEYBOARD_NAME" />이(가) 선택되었습니다.</translation>
 <translation id="875593634123171288">VPN 설정 표시</translation>
+<translation id="8759408218731716181">멀티 로그인을 설정할 수 없음</translation>
 <translation id="8785070478575117577"><ph name="NETWORK_NAME" />에 연결</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>

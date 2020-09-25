@@ -59,6 +59,7 @@
 <translation id="1467432559032391204">Злева</translation>
 <translation id="1479909375538722835">Рухомае меню спецыяльных магчымасцей</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
+<translation id="1503394326855300303">У сеансе з уваходам у некалькі ўліковых запісаў гэты ўліковы запіс уладальніка павінен быць першым.</translation>
 <translation id="1516740043221086139">Рэжым "Не турбаваць" уключаны.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Паказаць налады апавяшчэнняў. Апавяшчэнні выключаны для адной праграмы}one{Паказаць налады апавяшчэнняў. Апавяшчэнні выключаны для # праграмы}few{Паказаць налады апавяшчэнняў. Апавяшчэнні выключаны для # праграм}many{Паказаць налады апавяшчэнняў. Апавяшчэнні выключаны для # праграм}other{Паказаць налады апавяшчэнняў. Апавяшчэнні выключаны для # праграмы}}</translation>
 <translation id="1525508553941733066">АДХІЛІЦЬ</translation>
@@ -172,7 +173,6 @@
 <translation id="2718395828230677721">Начная падсветка</translation>
 <translation id="2727175239389218057">Адказаць</translation>
 <translation id="2727977024730340865">Падключана зарадная прылада нізкай магутнасці. Зарадка акумулятара можа быць нестабільнай.</translation>
-<translation id="2743387203779672305">Скапіраваць у буфер абмену</translation>
 <translation id="2792498699870441125">Alt+Пошук</translation>
 <translation id="2819276065543622893">Вы выйдзеце з уліковага запісу зараз.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> не падтрымлівае раздзяляльнасць <ph name="SPECIFIED_RESOLUTION" />. Прыменена раздзяляльнасць <ph name="FALLBACK_RESOLUTION" />.</translation>
@@ -257,6 +257,7 @@
 <translation id="3486220673238053218">азначэнне</translation>
 <translation id="3510164367642747937">Вылучаць курсор мышы</translation>
 <translation id="3513798432020909783">Уліковы запіс пад кіраваннем <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3571734092741541777">Наладзіць</translation>
 <translation id="3573179567135747900">Вярнуць вярнуцца да мовы: <ph name="FROM_LOCALE" /> (патрабуецца перазапуск)</translation>
 <translation id="3576141592585647168">Змена часавага пояса</translation>
 <translation id="3593646411856133110">Каб убачыць адкрытыя праграмы, правядзіце пальцам уверх і ўтрымлівайце</translation>
@@ -389,6 +390,7 @@
 <translation id="4917385247580444890">Моцны</translation>
 <translation id="4918086044614829423">Прыняць</translation>
 <translation id="4924411785043111640">Перазапусціць і скінуць</translation>
+<translation id="4925542575807923399">Адміністратар гэтага ўліковага запісу патрабуе, каб у сеансе з уваходам у некалькі ўліковых запісаў гэты ўліковы запіс быў першым.</translation>
 <translation id="495046168593986294">Прагартаць уверх</translation>
 <translation id="4961318399572185831">Трансляцыя экрана</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> гадз <ph name="MINUTES" /> хв <ph name="SECONDS" /> с</translation>
@@ -535,6 +537,7 @@
 <translation id="6657585470893396449">Пароль</translation>
 <translation id="6665545700722362599">Дазваляць вэб-сайтам, праграмам і пашырэнням выкарыстоўваць службы геалакацыі, мікрафон, камеру або іншыя функцыі прылады</translation>
 <translation id="6670153871843998651">Стол 3</translation>
+<translation id="6671495933530132209">Скапіраваць відарыс</translation>
 <translation id="6691659475504239918">"Пошук"+Shift+H</translation>
 <translation id="6692996468359469499">Атрыманне інфармацыі, звязанай з вылучаным вамі</translation>
 <translation id="6696025732084565524">Патрабуецца крытычнае абнаўленне для здымнай клавіятуры</translation>
@@ -734,6 +737,7 @@
 <translation id="8734991477317290293">Клавіятура можа спрабаваць адсочваць і перадаваць націсканні клавіш</translation>
 <translation id="8735953464173050365">Паказаць налады клавіятуры. Выбрана: <ph name="KEYBOARD_NAME" /></translation>
 <translation id="875593634123171288">Паказаць налады VPN</translation>
+<translation id="8759408218731716181">Не ўдалося наладзіць уваход у некалькі ўліковых запісаў</translation>
 <translation id="8785070478575117577">Падключыцца да сеткі <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>

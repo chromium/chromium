@@ -347,6 +347,7 @@
 <translation id="140520891692800925"><ph name="PROFILE_DISPLAY_NAME" /> (पर्यवेक्षित)</translation>
 <translation id="1405779994569073824">बंद हो गया.</translation>
 <translation id="1406500794671479665">सत्यापन हो रहा है...</translation>
+<translation id="1407135791313364759">सभी बुकमार्क खोलें</translation>
 <translation id="140723521119632973">सेल्युलर एक्टिवेशन</translation>
 <translation id="1407489512183974736">मध्य में काटा गया</translation>
 <translation id="1408504635543854729">डिवाइस की सामग्री फ़ाइल ऐप्लिकेशन में एक्सप्लोर करें. सामग्री किसी एडमिन ने प्रतिबंधित की है और उसे बदला नहीं जा सकता.</translation>
@@ -1880,7 +1881,6 @@
 <translation id="3246107497225150582">{0,plural, =1{1 दिन के अंदर डिवाइस अपडेट करें}one{# दिन के अंदर डिवाइस अपडेट करें}other{# दिनों के अंदर डिवाइस अपडेट करें}}</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - नेटवर्क गड़बड़ी</translation>
 <translation id="3248902735035392926">सुरक्षा ज़रूरी है. थोड़ा समय निकालकर, <ph name="BEGIN_LINK" />अभी अपने एक्सटेंशन की जांच करें.<ph name="END_LINK" /></translation>
-<translation id="325036368918787455">गुप्त विंडो बंद करें</translation>
 <translation id="3251759466064201842">&lt;प्रमाणपत्र का भाग नहीं है&gt;</translation>
 <translation id="3253225298092156258">उपलब्ध नहीं है</translation>
 <translation id="3253448572569133955">अनजान खाता</translation>
@@ -3392,7 +3392,6 @@
 <translation id="5097002363526479830">नेटवर्क से कनेक्ट करने में विफल '<ph name="NAME" />': <ph name="DETAILS" /></translation>
 <translation id="5097649414558628673">टूल: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">कर्सर के रुकने पर अपने-आप क्लिक होगा</translation>
-<translation id="5101042277149003567">सभी बुकमार्क खोलें</translation>
 <translation id="5101839224773798795">कर्सर के रुक जाने पर अपने आप क्लिक होने की सुविधा</translation>
 <translation id="5107443654503185812">एक एक्सटेंशन ने सुरक्षित ब्राउज़िंग की सुविधा बंद कर दी है</translation>
 <translation id="5108967062857032718">सेटिंग - Android ऐप्लिकेशन निकालें</translation>
@@ -3972,7 +3971,6 @@
 <translation id="5804241973901381774">अनुमतियां</translation>
 <translation id="5805697420284793859">विंडो मैनेजर</translation>
 <translation id="5806773519584576205">0° (डिफ़ॉल्ट)</translation>
-<translation id="5808664694611589238">{0,plural, =1{गेस्ट विंडो बंद करें}one{गेस्ट विंडो बंद करें}other{गेस्ट विंडो बंद करें}}</translation>
 <translation id="5810809306422959727">इस खाते पर माता-पिता के कंट्रोल की सुविधा का इस्तेमाल नहीं किया जा सकता</translation>
 <translation id="5812674658566766066">सभी दिखाएं</translation>
 <translation id="5814126672212206791">कनेक्शन का प्रकार</translation>

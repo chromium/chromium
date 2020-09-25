@@ -59,6 +59,7 @@
 <translation id="1467432559032391204">ဘယ်</translation>
 <translation id="1479909375538722835">မျောနေသော အများသုံးစွဲနိုင်မှု မီနူး</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
+<translation id="1503394326855300303">ဒီပိုင်ရှင် အကောင့်မှာ အကြိမ်ကြိမ် လက်မှတ်ထိုးရမည့် အစီအစဉ် ထဲက ပထမဦးဆုံး လက်မှတ်ထိုး ဝင်သည့် အကောင့် ဖြစ်ပါသည်။</translation>
 <translation id="1516740043221086139">'မနှောင့်ယှက်ရ' ဖွင့်ထားသည်။</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{အကြောင်းကြားချက်ဆက်တင်များကို ပြရန်။ အက်ပ်တစ်ခုအတွက် အကြောင်းကြားချက်များကို ပိတ်ထားသည်}other{အကြောင်းကြားချက်ဆက်တင်များကို ပြရန်။ အက်ပ် # ခုအတွက် အကြောင်းကြားချက်များကို ပိတ်ထားသည်}}</translation>
 <translation id="1525508553941733066">ပယ်ရန်</translation>
@@ -172,7 +173,6 @@
 <translation id="2718395828230677721">ညအလင်းရောင်</translation>
 <translation id="2727175239389218057">စာပြန်ရန်</translation>
 <translation id="2727977024730340865">ပါဝါနည်းသည့် အားသွင်းကိရိယာသို့ ချိတ်ဆက်ထားသည်။ ဘတ်ထရီအားသွင်းခြင်း အားကိုး၍ရမည် မဟုတ်ပါ။</translation>
-<translation id="2743387203779672305">ကလစ်ဘုဒ်သို့ ကူးယူရန်</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
 <translation id="2819276065543622893">သင်ယခု ထွက်ပါမည်။</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> က <ph name="SPECIFIED_RESOLUTION" /> ကို မပံ့ပိုးပါ။ ပုံရိပ်ပြတ်သားကိန်းကို <ph name="FALLBACK_RESOLUTION" /> သို့ ပြောင်းထားသည်။</translation>
@@ -257,6 +257,7 @@
 <translation id="3486220673238053218">အဓိပ္ပါယ် ဖွင့်ဆိုချက်</translation>
 <translation id="3510164367642747937">မောက်စ်ကာဆာကို ထင်သာမြင်သာဖြစ်အောင်ပြုလုပ်ရန်</translation>
 <translation id="3513798432020909783">အကောင့်ကို <ph name="MANAGER_EMAIL" /> က စီမံပါသည်</translation>
+<translation id="3571734092741541777">စဖွင့်သတ်မှတ်ရန်</translation>
 <translation id="3573179567135747900">"<ph name="FROM_LOCALE" />" သို့ပြန်ပြောင်းရန် (ပြန်လည်အစပြုရန် လိုအပ်သည်)</translation>
 <translation id="3576141592585647168">စံတော်ချိန် ပြောင်းခြင်း</translation>
 <translation id="3593646411856133110">ဖွင့်ထားသောအက်ပ်များ ကြည့်ရန် အပေါ်သို့ပွတ်ဆွဲပြီး ဖိထားပါ</translation>
@@ -389,6 +390,7 @@
 <translation id="4917385247580444890">အားကောင်းသည်</translation>
 <translation id="4918086044614829423">လက်ခံရန်</translation>
 <translation id="4924411785043111640">ပြန်လည်စတင်ပြီး ပြင်ဆင်သတ်မှတ်ရန်</translation>
+<translation id="4925542575807923399">ဤအကောင့်၏ ကြီးကြပ်သူသည် ဤအကောင့်အား အကြိမ်ကြိမ် လက်မှတ်ထိုးရမည့် အစီအစဉ် ထဲက ပထမဦးဆုံး လက်မှတ်ထိုး ဝင်သည့် အကောင့် အဖြစ်လိုအပ်သည်။</translation>
 <translation id="495046168593986294">အပေါ်သို့ လှိမ့်ရန်</translation>
 <translation id="4961318399572185831">Cast ဖန်မျက်နှာပြင်</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />h <ph name="MINUTES" />m <ph name="SECONDS" />s</translation>
@@ -535,6 +537,7 @@
 <translation id="6657585470893396449">စကားဝှက်</translation>
 <translation id="6665545700722362599">တည်နေရာ ဝန်ဆောင်မှုများ၊ စက်ပစ္စည်း၏ မိုက်ခရိုဖုန်း၊ ကင်မရာ သို့မဟုတ် အခြားဝန်ဆောင်မှုများကို အသုံးပြုရန် ဝဘ်ဆိုက်၊ အက်ပ်နှင့် နောက်ဆက်တွဲများကို ခွင့်ပြုချက်ပေးနိုင်သည်</translation>
 <translation id="6670153871843998651">စာရေးခုံ ၃</translation>
+<translation id="6671495933530132209">ပုံကို ကူးယူရန်</translation>
 <translation id="6691659475504239918">Search+Shift+H</translation>
 <translation id="6692996468359469499">သင့်ရွေးချယ်မှုနှင့် သက်ဆိုင်သည့် အချက်အလက်များ ရယူခြင်း</translation>
 <translation id="6696025732084565524">သင်၏ ဖြုတ်လွယ်တပ်လွယ်ကီးဘုတ်အတွက် အရေးကြီးသည့်အပ်ဒိတ် လိုအပ်နေသည်</translation>
@@ -734,6 +737,7 @@
 <translation id="8734991477317290293">၎င်းသည် သင်၏ ခလုတ်နှိပ်ချက်များကို ခိုးယူရန် ကြိုးပမ်းနိုင်သည်။</translation>
 <translation id="8735953464173050365">ကီးဘုတ်ဆက်တင်များကို ပြရန်။ <ph name="KEYBOARD_NAME" /> ကို ရွေးထားသည်</translation>
 <translation id="875593634123171288">VPN ဆက်တင်များကို ပြရန်</translation>
+<translation id="8759408218731716181">အများအပြား လက်မှတ်ထိုး ဝင်မှုကို သတ်မှတ် မပေးနိုင်</translation>
 <translation id="8785070478575117577"><ph name="NETWORK_NAME" /> သို့ ချိတ်ဆက်ရန်</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />။ <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">ကြိုးမဲ့</translation>

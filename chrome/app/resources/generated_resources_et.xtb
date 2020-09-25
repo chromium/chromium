@@ -352,6 +352,7 @@
 <translation id="140520891692800925"><ph name="PROFILE_DISPLAY_NAME" /> (jälgitav)</translation>
 <translation id="1405779994569073824">Jooksis kokku.</translation>
 <translation id="1406500794671479665">Kinnitamine ...</translation>
+<translation id="1407135791313364759">Ava kõik</translation>
 <translation id="140723521119632973">Mobiilsidevõrgu aktiveerimine</translation>
 <translation id="1407489512183974736">Keskel, kärbitud</translation>
 <translation id="1408504635543854729">Avastage seadme sisu rakenduses Failid. Sisu piirab administraator ja seda ei saa muuta.</translation>
@@ -1903,7 +1904,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3246107497225150582">{0,plural, =1{Värskendage seadet päeva jooksul}other{Värskendage seadet # päeva jooksul}}</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – võrguviga</translation>
 <translation id="3248902735035392926">Ohutus on oluline. Leidke hetk ja <ph name="BEGIN_LINK" />vaadake oma laiendused kohe üle<ph name="END_LINK" /></translation>
-<translation id="325036368918787455">Sule inkognito aknad</translation>
 <translation id="3251759466064201842">&lt;Ei sisaldu sertifikaadis&gt;</translation>
 <translation id="3253225298092156258">Pole saadaval</translation>
 <translation id="3253448572569133955">Tundmatu konto</translation>
@@ -3444,7 +3444,6 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="5097649414558628673">Tööriist: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">Automaatne klikk kursori peatumisel</translation>
 <translation id="5099399397495049098">Saidid saavad kasutada Javascripti (soovitatav)</translation>
-<translation id="5101042277149003567">Ava kõik järjehoidjad</translation>
 <translation id="5101839224773798795">Automaatne klõpsamine kursori peatumisel</translation>
 <translation id="5107443654503185812">Laiendus lülitas Google'i ohutu sirvimise välja</translation>
 <translation id="5108967062857032718">Seaded – Androidi rakenduste eemaldamine</translation>
@@ -4028,7 +4027,6 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="5804241973901381774">Load</translation>
 <translation id="5805697420284793859">Aknahaldur</translation>
 <translation id="5806773519584576205">0° (vaikeseade)</translation>
-<translation id="5808664694611589238">{0,plural, =1{Sule külalise aknad}other{Sule külalise aknad}}</translation>
 <translation id="5810809306422959727">See konto pole vanemliku järelevalve kasutamiseks sobilik</translation>
 <translation id="5812674658566766066">Laienda kõik</translation>
 <translation id="5814126672212206791">Ühenduse tüüp</translation>

@@ -507,6 +507,7 @@
 <translation id="3080254622891793721">ግራፊክ</translation>
 <translation id="3086579638707268289">የእርስዎ በድር ላይ ያለ እንቅስቃሴ ክትትል እየተደረገበት ነው</translation>
 <translation id="3087734570205094154">ግርጌ</translation>
+<translation id="3094457892697649331">ማብራሪያዎች ላይ አርታዒ ሲያደርጉ፣ ይህ ሰነድ ወደ ነጠላ ገጽ እይታ ይመለሳል።</translation>
 <translation id="3095940652251934233">መግለጫ</translation>
 <translation id="3096100844101284527">የመውሰጃ አድራሻ ያክሉ</translation>
 <translation id="3105172416063519923">የእሴት መታወቂያ፦</translation>
@@ -739,6 +740,7 @@
 <translation id="4075941231477579656">የንክኪ መታወቂያ</translation>
 <translation id="4079302484614802869">የተኪ ውቅር ቋሚ አገልጋዮችን ሳይሆን የ.pac ስክሪፕት ዩአርኤል ለመጠቀም ነው የተዋቀረው።</translation>
 <translation id="4082393374666368382">ቅንብሮች - አስተዳደር</translation>
+<translation id="4084120443451129199">የፍለጋ ሁነታ፣ <ph name="KEYWORD_SUFFIX" />ን ለመፈለግ አስገባን ይጫኑ</translation>
 <translation id="4088981014127559358">ጎን 1 ምስል Y ፈረቃ</translation>
 <translation id="4098354747657067197">አሳሳች ጣቢያ ከፊት አለ</translation>
 <translation id="4101413244023615925">ጽሑፍ እና ግራፊክ</translation>
@@ -931,6 +933,7 @@
 <translation id="4809079943450490359">መመሪያዎች ከመሣሪያዎ አስተዳዳሪ፦</translation>
 <translation id="4813512666221746211">የአውታረ መረብ ስህተት</translation>
 <translation id="4816492930507672669">ገጹን አመጣጥን</translation>
+<translation id="4819347708020428563">በነባሪ እይታ ውስጥ ማብራሪያዎችን ያርትዑ?</translation>
 <translation id="484462545196658690">ራስ-ሰር</translation>
 <translation id="4850886885716139402">አሳይ</translation>
 <translation id="4854362297993841467">የማድረሻ ዘዴው አይገኝም። የተለየ ዘዴ ይሞክሩ።</translation>
@@ -1665,6 +1668,7 @@
 <translation id="7802523362929240268">ጣቢያው ህጋዊ ነው</translation>
 <translation id="780301667611848630">አይ፣ አመሰግናለሁ</translation>
 <translation id="7805768142964895445">ሁኔታ</translation>
+<translation id="7811322735445742657">ማብራሪያዎች ላይ አርታዒ ሲያደርጉ፣ ይህ ሰነድ ወደ ነጠላ ገጽ እይታ እና የእርሱ መጀመሪያው ማዞር ይመለሳል።</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">የአስተያየት ጥቆማ ከChrome ይወገድ?</translation>
 <translation id="781440967107097262">ቅንጥብ ሰሌዳ ይጋራ?</translation>
@@ -1700,6 +1704,7 @@
 <translation id="7956713633345437162">የተንቀሳቃሽ ስልክ ዕልባቶች</translation>
 <translation id="7961015016161918242">በፍጹም</translation>
 <translation id="7966803981046576691">የስራ መለያ አይነት</translation>
+<translation id="7976214039405368314">በጣም ብዙ ጥያቄዎች</translation>
 <translation id="7977538094055660992">የውጽዓት መሣሪያ</translation>
 <translation id="7977894662897852582">Edp</translation>
 <translation id="799149739215780103">ጠርዝ</translation>
@@ -1781,6 +1786,7 @@
 <translation id="8289355894181816810">ይሄ ምን ማለት እንደሆነ እርግጠኛ ካልሆኑ የአውታረ መረብ አስተዳዳሪዎን ያግኙ።</translation>
 <translation id="8293206222192510085">እልባት ያክሉ</translation>
 <translation id="8294431847097064396">ምንጭ</translation>
+<translation id="8297398969342264569">ማብራሪያዎችን ሲያርትዑ፣ ይህ ሰነድ ወደ መጀመሪያው ማዞር ይመለሳል።</translation>
 <translation id="8298115750975731693">እየተጠቀሙበት ያለው Wi-Fi (<ph name="WIFI_NAME" />) <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />ን እንዲጎበኙ ሊጠይቅዎት ይችላል።</translation>
 <translation id="8303854710873047864">የ«<ph name="SECTION" />» ክፍሉ ታይቷል</translation>
 <translation id="830498451218851433">ግማሽ እጠፍ</translation>

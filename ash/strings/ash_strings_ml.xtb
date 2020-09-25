@@ -59,6 +59,7 @@
 <translation id="1467432559032391204">ഇടത്</translation>
 <translation id="1479909375538722835">ഫ്ലോട്ടിംഗ് ഉപയോഗസഹായി മെനു</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
+<translation id="1503394326855300303">ഒന്നിലധികം സൈൻ ഇൻ സെഷനിൽ സൈൻ ഇൻ ചെയ്തിരിക്കുന്ന ആദ്യ അക്കൗണ്ട്, ഈ ഉടമ അക്കൗണ്ടായിരിക്കണം.</translation>
 <translation id="1516740043221086139">ശല്യപ്പെടുത്തരുത് മോഡ് ഓണാണ്.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{അറിയിപ്പ് ക്രമീകരണം കാണിക്കുക. ഒരു ആപ്പിന് അറിയിപ്പുകൾ ഓഫാണ്}other{അറിയിപ്പ് ക്രമീകരണം കാണിക്കുക. # ആപ്പുകൾക്ക് അറിയിപ്പുകൾ ഓഫാണ്}}</translation>
 <translation id="1525508553941733066">ഡിസ്മിസ്സ് ചെയ്യുക</translation>
@@ -172,7 +173,6 @@
 <translation id="2718395828230677721">നൈറ്റ് ലൈറ്റ്</translation>
 <translation id="2727175239389218057">മറുപടി നൽകുക</translation>
 <translation id="2727977024730340865">കുറഞ്ഞ തോതിൽ വൈദ്യുതി പ്രവഹിക്കുന്ന ചാർജ്ജറിലേക്ക് പ്ലഗ് ചെയ്‌തിരിക്കുന്നു. ബാറ്ററി ചാർജുചെയ്യൽ വിശ്വസനീയമാകണമെന്നില്ല.</translation>
-<translation id="2743387203779672305">ക്ലിപ്പ്ബോർഡിലേക്ക് പകർത്തുക</translation>
 <translation id="2792498699870441125">Alt+തിരയൽ</translation>
 <translation id="2819276065543622893">നിങ്ങൾ ഇപ്പോൾ സൈൻ ഔട്ട് ചെയ്യും.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" />, <ph name="SPECIFIED_RESOLUTION" /> എന്നതിനെ പിന്തുണയ്‌ക്കുന്നില്ല. റെസല്യൂഷൻ <ph name="FALLBACK_RESOLUTION" /> എന്നതിലേക്ക് മാറ്റി.</translation>
@@ -257,6 +257,7 @@
 <translation id="3486220673238053218">നിർവചനം</translation>
 <translation id="3510164367642747937">മൗസ് കഴ്‌സർ ഹൈലൈറ്റ് ചെയ്യുക</translation>
 <translation id="3513798432020909783">അക്കൗണ്ട് മാനേജ് ചെയ്യുന്നത് <ph name="MANAGER_EMAIL" /> ആണ്</translation>
+<translation id="3571734092741541777">സജ്ജീകരിക്കുക</translation>
 <translation id="3573179567135747900">"<ph name="FROM_LOCALE" />" ഭാഷയിലേയ്‌ക്ക് തിരികെ മാറ്റുക (പുനരാരംഭിക്കേണ്ടതുണ്ട്)</translation>
 <translation id="3576141592585647168">സമയമേഖല മാറ്റുക</translation>
 <translation id="3593646411856133110">തുറന്നിരിക്കുന്ന ആപ്പുകൾ കാണാൻ മുകളിലേക്ക് സ്വൈപ്പ് ചെയ്ത് പിടിക്കുക</translation>
@@ -388,6 +389,7 @@
 <translation id="4917385247580444890">ശക്തം</translation>
 <translation id="4918086044614829423">സ്വീകരിക്കുക</translation>
 <translation id="4924411785043111640">പുനഃരാരംഭിച്ച് പുനഃസജ്ജീകരിക്കുക</translation>
+<translation id="4925542575807923399">ഈ അക്കൗണ്ട് ഒന്നിലധികം സൈൻ ഇൻ സെഷനിൽ സൈൻ ഇൻ ചെയ്‌തിരിക്കുന്ന ആദ്യ അക്കൗണ്ട് ആയിരിക്കാൻ ഈ അക്കൗണ്ടിനായുള്ള അഡ്‌മിനിസ്‌ട്രേറ്റർ ആവശ്യപ്പെടുന്നു.</translation>
 <translation id="495046168593986294">മുകളിലേക്ക് സ്ക്രോള്‍ ചെയ്യുക</translation>
 <translation id="4961318399572185831">സ്‌ക്രീൻ കാസ്റ്റ് ചെയ്യുക</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />മണിക്കൂർ <ph name="MINUTES" />മിനിറ്റ് <ph name="SECONDS" />സെക്കൻഡ്</translation>
@@ -533,6 +535,7 @@
 <translation id="6657585470893396449">പാസ്‌വേഡ്</translation>
 <translation id="6665545700722362599">ലൊക്കേഷൻ സേവനങ്ങൾ, ഉപകരണത്തിന്‍റെ മൈക്രോഫോൺ, ക്യാമറ അല്ലെങ്കിൽ മറ്റ് ഫീച്ചറുകൾ  ഉപയോഗിക്കാൻ, വെബ്സൈറ്റുകൾക്കും ആപ്പുകൾക്കും വിപുലീകരണങ്ങൾക്കും അനുമതി നൽകുക</translation>
 <translation id="6670153871843998651">ഡെസ്‌ക് 3</translation>
+<translation id="6671495933530132209">ചിത്രം പകർത്തുക</translation>
 <translation id="6691659475504239918">തിരയൽ+Shift+H</translation>
 <translation id="6692996468359469499">നിങ്ങളുടെ തിരഞ്ഞെടുക്കലുമായി ബന്ധപ്പെട്ട വിവരങ്ങൾ നേടുക</translation>
 <translation id="6696025732084565524">നിങ്ങളുടെ വേർപെടുത്താനാകുന്ന കീബോഡിന് നിർണ്ണായക അപ്‌ഡേറ്റ് ആവശ്യമാണ്</translation>
@@ -731,6 +734,7 @@
 <translation id="8734991477317290293">ഇത് നിങ്ങളുടെ കീസ്ട്രോക്കുകൾ മോഷ്‌ടിക്കാൻ ശ്രമിച്ചേക്കാം.</translation>
 <translation id="8735953464173050365">കീബോഡ് ക്രമീകരണം കാണിക്കുക. <ph name="KEYBOARD_NAME" /> തിരഞ്ഞെടുത്തിരിക്കുന്നു</translation>
 <translation id="875593634123171288">VPN ക്രമീകരണം കാണിക്കുക</translation>
+<translation id="8759408218731716181">ഒന്നിലധികം സൈൻ ഇൻ സജ്ജമാക്കാനാവില്ല</translation>
 <translation id="8785070478575117577"><ph name="NETWORK_NAME" /> എന്നതിലേക്ക് കണക്‌റ്റ് ചെയ്യുക</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>

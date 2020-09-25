@@ -189,7 +189,6 @@
 <translation id="3064388234319122767">transliteracija (zdravo → здраво)</translation>
 <translation id="3067790092342515856">Windows datoteke</translation>
 <translation id="3078461028045006476">Podijeli s aplikacijom <ph name="EXTENSION_NAME" /></translation>
-<translation id="3088034400796962477">transliteracija (salam ← سلام)</translation>
 <translation id="3116361045094675131">UK tipkovnica</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">GOTOVO</translation>
@@ -305,7 +304,6 @@
 <translation id="4477219268485577442">bugarska (fonetska)</translation>
 <translation id="4479812471636796472">SAD Dvorak tipkovnica</translation>
 <translation id="4481711095103932593">Mapa se dijeli s Windowsima</translation>
-<translation id="4487088045714738411">Belgijska tipkovnica</translation>
 <translation id="4522570452068850558">Detalji</translation>
 <translation id="4542387084127299777">Otvaranje puta "<ph name="PATH" />" nije uspjelo</translation>
 <translation id="4552678318981539154">Kupite još prostora za pohranu</translation>
@@ -366,6 +364,7 @@
 <translation id="5010406651457630570">Računala</translation>
 <translation id="5011233892417813670">Chromebook</translation>
 <translation id="5024856940085636730">Jedan proces traje dulje nego što je to uobičajeno. Želite li ga prekinuti?</translation>
+<translation id="5026887030745057099">hindi</translation>
 <translation id="5036159836254554629">Upravljajte dijeljenjem s Parallels Desktopom</translation>
 <translation id="5038625366300922036">Pogledajte više...</translation>
 <translation id="5061708541166515394">Kontrast</translation>
@@ -430,7 +429,6 @@
 <translation id="5522908512596376669">Popis datoteka promijenio se na prikaz popisa.</translation>
 <translation id="5524517123096967210">Nije bilo moguće pročitati datoteku.</translation>
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> slika</translation>
-<translation id="5533555070048896610">transliteracija (namaste → नमस्ते)</translation>
 <translation id="5534520101572674276">Veličina izračuna</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5605830556594064952">američka (SAD: Dvorak)</translation>

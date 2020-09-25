@@ -59,6 +59,7 @@
 <translation id="1467432559032391204">שמאלה</translation>
 <translation id="1479909375538722835">תפריט נגישות צף</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
+<translation id="1503394326855300303">החשבון של בעלים זה צריך להיות החשבון הראשון שאליו נכנסים בעת כניסה לפעילות באתר מחשבונות מרובים.</translation>
 <translation id="1516740043221086139">מצב 'נא לא להפריע' מופעל.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{צפייה בהגדרות של הודעות. ההודעות מושבתות באפליקציה אחת}two{צפייה בהגדרות של הודעות. ההודעות מושבתות ב-# אפליקציות}many{צפייה בהגדרות של הודעות. ההודעות מושבתות ב-# אפליקציות}other{צפייה בהגדרות של הודעות. ההודעות מושבתות ב-# אפליקציות}}</translation>
 <translation id="1525508553941733066">סגור</translation>
@@ -137,7 +138,7 @@
 <translation id="2341729377289034582">נעול במצב אנכי</translation>
 <translation id="2352467521400612932">הגדרות סטיילוס</translation>
 <translation id="2354174487190027830">מפעיל את <ph name="NAME" /></translation>
-<translation id="2356210126990741501">נראה שהטלפון שלך לא מחובר לאינטרנט ולכן אין לנו אפשרות לספק לך את כל הדברים הטובים שיש בו כרגע.</translation>
+<translation id="2356210126990741501">נראה שהטלפון שלך לא מחובר לאינטרנט ולכן איננו מצליחים להגיע לתוכן.</translation>
 <translation id="2359808026110333948">המשך</translation>
 <translation id="2365393535144473978">‏כשמפעילים את חבילת הגלישה, מופעלת גם תקשורת Bluetooth.</translation>
 <translation id="2369165858548251131">"שלום" בסינית</translation>
@@ -172,7 +173,6 @@
 <translation id="2718395828230677721">תאורת לילה</translation>
 <translation id="2727175239389218057">מענה</translation>
 <translation id="2727977024730340865">מחובר למטען בעל מתח נמוך. ייתכן שטעינת הסוללה לא תהיה אמינה.</translation>
-<translation id="2743387203779672305">העתקה ללוח</translation>
 <translation id="2792498699870441125">‏Alt + חיפוש</translation>
 <translation id="2819276065543622893">תצא עכשיו מהחשבון.</translation>
 <translation id="2825224105325558319">התצוגה של <ph name="DISPLAY_NAME" /> לא תומכת ברזולוציה <ph name="SPECIFIED_RESOLUTION" />. הרזולוציה שונתה ל-<ph name="FALLBACK_RESOLUTION" />.</translation>
@@ -257,6 +257,7 @@
 <translation id="3486220673238053218">הגדרה</translation>
 <translation id="3510164367642747937">הדגשה של סמן העכבר</translation>
 <translation id="3513798432020909783">החשבון מנוהל על-ידי <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3571734092741541777">הגדר</translation>
 <translation id="3573179567135747900">שנה בחזרה ל"<ph name="FROM_LOCALE" />" (דורש הפעלה מחדש)</translation>
 <translation id="3576141592585647168">שינוי אזור הזמן</translation>
 <translation id="3593646411856133110">כדי להציג את האפליקציות הפתוחות, מחליקים כלפי מעלה ולוחצים לחיצה ארוכה</translation>
@@ -389,6 +390,7 @@
 <translation id="4917385247580444890">חזק</translation>
 <translation id="4918086044614829423">אשר</translation>
 <translation id="4924411785043111640">הפעלה מחדש ואתחול</translation>
+<translation id="4925542575807923399">מנהל המערכת עבור החשבון הזה דורש שהחשבון הזה יהיה הראשון שיבצעו עבורו כניסה בעת כניסה עם מספר חשבונות</translation>
 <translation id="495046168593986294">גלילה למעלה</translation>
 <translation id="4961318399572185831">העברת מסך</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> שעות <ph name="MINUTES" /> דקות <ph name="SECONDS" /> שניות</translation>
@@ -535,6 +537,7 @@
 <translation id="6657585470893396449">סיסמה</translation>
 <translation id="6665545700722362599">הענקת הרשאה לאתרים, לאפליקציות ולתוספים להשתמש בשירותי המיקום, במיקרופון של המכשיר, במצלמה או בתכונות אחרות.</translation>
 <translation id="6670153871843998651">שולחן עבודה 3</translation>
+<translation id="6671495933530132209">העתק את התמונה</translation>
 <translation id="6691659475504239918">Search+Shift+H</translation>
 <translation id="6692996468359469499">קבלת מידע בקשר לבחירה שלך</translation>
 <translation id="6696025732084565524">המקלדת הניתנת לניתוק זקוקה לעדכון קריטי</translation>
@@ -736,6 +739,7 @@
 <translation id="8734991477317290293">ייתכן שהיא מנסה לתעד את ההקשות שלך.</translation>
 <translation id="8735953464173050365">צפייה בהגדרות המקלדת. המקלדת שנבחרה היא <ph name="KEYBOARD_NAME" /></translation>
 <translation id="875593634123171288">‏צפייה בהגדרות VPN</translation>
+<translation id="8759408218731716181">לא ניתן להגדיר כניסה עם מספר חשבונות</translation>
 <translation id="8785070478575117577">התחברות אל <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>

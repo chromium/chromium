@@ -59,6 +59,7 @@
 <translation id="1467432559032391204">Сол жақ</translation>
 <translation id="1479909375538722835">Қалқымалы арнайы мүмкіндіктер мәзірі</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
+<translation id="1503394326855300303">Бұл иеленуші есептік жазбасы көп кіру сеансында алғашқы жүйеге кірген есептік жазба болуы керек.</translation>
 <translation id="1516740043221086139">"Мазаламау" режимі қосулы.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Хабарландыру параметрлерін көрсету. Қолданбаның хабарландырулары өшірулі}other{Хабарландыру параметрлерін көрсету. # қолданбаның хабарландырулары өшірулі}}</translation>
 <translation id="1525508553941733066">ЖАБУ</translation>
@@ -172,7 +173,6 @@
 <translation id="2718395828230677721">Түнгі жарық</translation>
 <translation id="2727175239389218057">Жауап беру</translation>
 <translation id="2727977024730340865">Төмен қуатты зарядтағышқа жалғанған. Батареяны зарядтау кезінде қиындықтар болуы мүмкін.</translation>
-<translation id="2743387203779672305">Буферге көшіру</translation>
 <translation id="2792498699870441125">Alt+Іздеу</translation>
 <translation id="2819276065543622893">Жүйеден қазір шығасыз.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> дисплейі <ph name="SPECIFIED_RESOLUTION" /> ажыратымдылығына қолдау көрсетпейді. Ажыратымдылық <ph name="FALLBACK_RESOLUTION" /> етіп өзгертілді.</translation>
@@ -257,6 +257,7 @@
 <translation id="3486220673238053218">анықтама</translation>
 <translation id="3510164367642747937">Тінтуір курсорын бөлектеу</translation>
 <translation id="3513798432020909783"><ph name="MANAGER_EMAIL" /> басқаратын есептік жазба</translation>
+<translation id="3571734092741541777">Орнату</translation>
 <translation id="3573179567135747900">Қайта "<ph name="FROM_LOCALE" />" етіп өзгерту (қайта іске қосуды қажет етеді)</translation>
 <translation id="3576141592585647168">Уақыт белдеуін өзгерту</translation>
 <translation id="3593646411856133110">Ашық қолданбаларды көру үшін жоғары сипап, ұстап тұрыңыз.</translation>
@@ -389,6 +390,7 @@
 <translation id="4917385247580444890">Күшті</translation>
 <translation id="4918086044614829423">Қабылдау</translation>
 <translation id="4924411785043111640">Қайта қосу және бастапқы күйге қайтару</translation>
+<translation id="4925542575807923399">Бұл есептік жазбаның әкімшісі есептік жазбаның көп кіру сеансында алғашқы жүйеге кірген есептік жазба болуын талап етеді.</translation>
 <translation id="495046168593986294">Жоғарыға айналдыру</translation>
 <translation id="4961318399572185831">Экран трансляциясы</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />с <ph name="MINUTES" />м <ph name="SECONDS" />с</translation>
@@ -535,6 +537,7 @@
 <translation id="6657585470893396449">Құпия сөз</translation>
 <translation id="6665545700722362599">Веб-сайттарға, қолданбаларға және кеңейтімдерге орынды анықтау қызметін, құрылғының микрофонын, камерасын немесе басқа функцияларын пайдалануға рұқсат беріңіз</translation>
 <translation id="6670153871843998651">3-ші жұмыс үстелі</translation>
+<translation id="6671495933530132209">Кескінді көшіру</translation>
 <translation id="6691659475504239918">Search+Shift+H</translation>
 <translation id="6692996468359469499">Таңдауға қатысты ақпарат алу</translation>
 <translation id="6696025732084565524">Алынбалы пернетақтаны жаңарту қажет</translation>
@@ -734,6 +737,7 @@
 <translation id="8734991477317290293">Ол басылған пернелерді "ұрлап алу" әрекетін жасауы мүмкін.</translation>
 <translation id="8735953464173050365">Пернетақта параметрлерін көрсету. <ph name="KEYBOARD_NAME" /> таңдалды</translation>
 <translation id="875593634123171288">VPN параметрлерін көрсету</translation>
+<translation id="8759408218731716181">Бірнеше есептік жазбаның кіру мүмкіндігін орнату мүмкін емес</translation>
 <translation id="8785070478575117577"><ph name="NETWORK_NAME" /> желісіне қосылу</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>

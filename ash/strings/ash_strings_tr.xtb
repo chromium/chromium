@@ -59,6 +59,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1467432559032391204">Sola</translation>
 <translation id="1479909375538722835">Kayan erişilebilirlik menüsü</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
+<translation id="1503394326855300303">Bu sahip hesabının bir çoklu oturumda ilk oturum açan hesap olması gerekir.</translation>
 <translation id="1516740043221086139">Rahatsız Etmeyin modu açık.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Bildirim ayarlarını göster. Bildirimler bir uygulama için kapalı}other{Bildirim ayarlarını göster. Bildirimler # uygulama için kapalı}}</translation>
 <translation id="1525508553941733066">KAPAT</translation>
@@ -172,7 +173,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2718395828230677721">Gece Işığı</translation>
 <translation id="2727175239389218057">Yanıtla</translation>
 <translation id="2727977024730340865">Düşük güçlü bir şarj cihazına takıldı. Şarj durumu güvenilir olmayabilir.</translation>
-<translation id="2743387203779672305">Panoya kopyala</translation>
 <translation id="2792498699870441125">Alt+Arama</translation>
 <translation id="2819276065543622893">Şimdi çıkış yapacaksınız.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" />, <ph name="SPECIFIED_RESOLUTION" /> çözünürlüğü desteklemiyor. Çözünürlük <ph name="FALLBACK_RESOLUTION" /> olarak değiştirildi.</translation>
@@ -257,6 +257,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="3486220673238053218">tanım</translation>
 <translation id="3510164367642747937">Fare imlecini vurgula</translation>
 <translation id="3513798432020909783">Hesap <ph name="MANAGER_EMAIL" /> tarafından yönetiliyor</translation>
+<translation id="3571734092741541777">Kur</translation>
 <translation id="3573179567135747900">Tekrar "<ph name="FROM_LOCALE" />" ayarına dön (yeniden başlatmak gerekir)</translation>
 <translation id="3576141592585647168">Saat dilimini değiştir</translation>
 <translation id="3593646411856133110">Açık uygulamaları görmek için yukarı kaydırıp basılı tutun</translation>
@@ -389,6 +390,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="4917385247580444890">Güçlü</translation>
 <translation id="4918086044614829423">Kabul et</translation>
 <translation id="4924411785043111640">Yeniden başlat ve sıfırla</translation>
+<translation id="4925542575807923399">Bu hesabın yöneticisi hesabın bir çoklu oturumda ilk oturum açan hesap olmasını gerektiriyor.</translation>
 <translation id="495046168593986294">Yukarı kaydır</translation>
 <translation id="4961318399572185831">Ekranı yayınla</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> sa. <ph name="MINUTES" /> dk. <ph name="SECONDS" /> sn.</translation>
@@ -536,6 +538,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="6657585470893396449">Şifre</translation>
 <translation id="6665545700722362599">Web sitelerine, uygulamalara ve uzantılara konum hizmetlerini, cihazın mikrofonunu, kamerasını ve diğer özelliklerini kullanma izni verme</translation>
 <translation id="6670153871843998651">Çalışma Masası 3</translation>
+<translation id="6671495933530132209">Resmi kopyala</translation>
 <translation id="6691659475504239918">Arama+Üst Karakter+H</translation>
 <translation id="6692996468359469499">Seçiminizle alakalı bilgi edinin</translation>
 <translation id="6696025732084565524">Çıkarılabilir klavyenizde kritik bir güncelleme yapılması gerekiyor</translation>
@@ -735,6 +738,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="8734991477317290293">Bu klavye, tuş vuruşlarınızı çalmaya çalışıyor olabilir</translation>
 <translation id="8735953464173050365">Klavye ayarlarını göster. <ph name="KEYBOARD_NAME" /> seçildi</translation>
 <translation id="875593634123171288">VPN ayarlarını göster</translation>
+<translation id="8759408218731716181">Çoklu oturum açma kurulamıyor</translation>
 <translation id="8785070478575117577"><ph name="NETWORK_NAME" /> ağına bağlan</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Kablosuz</translation>

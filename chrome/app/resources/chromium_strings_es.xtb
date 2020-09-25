@@ -155,7 +155,6 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="6333502561965082103">Hay otra operación en curso en Chromium. Vuelve a intentarlo más tarde.</translation>
 <translation id="6334986366598267305">Ahora es más fácil utilizar Chromium con tu cuenta de Google y en ordenadores compartidos.</translation>
 <translation id="6373523479360886564">¿Seguro que quieres desinstalar Chromium?</translation>
-<translation id="6400072781405947421">Es posible que Chromium no funcione correctamente porque ya no es compatible con Mac OS X 10.9.</translation>
 <translation id="6403826409255603130">Chromium es un navegador web que ejecuta páginas web y aplicaciones a gran velocidad. Es rápido, estable y fácil de utilizar. Chromium te permite navegar en la Web de forma más segura, ya que incluye protección contra software malicioso y phishing.</translation>
 <translation id="6434250628340475518">Sistema Chromium OS</translation>
 <translation id="6457450909262716557">{SECONDS,plural, =1{Chromium se reiniciará en 1 segundo}other{Chromium se reiniciará en # segundos}}</translation>

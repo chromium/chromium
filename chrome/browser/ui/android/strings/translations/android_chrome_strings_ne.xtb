@@ -108,6 +108,7 @@
 <translation id="1868024384445905608">Chrome ले अब फाइलहरू अझ छिटो डाउनलोड गर्छ</translation>
 <translation id="1877026089748256423">Chrome को मिति समाप्त भएको छ</translation>
 <translation id="1883903952484604915">मेरा फाइलहरू</translation>
+<translation id="189358972401248634">अन्य भाषाहरू</translation>
 <translation id="1925021887439448749">आफू अनुकूल पारिएको वेब ठेगाना प्रविष्टि गर्नुहोस्</translation>
 <translation id="1928696683969751773">अद्यावधिकहरू</translation>
 <translation id="19288952978244135">Chrome पुनः खोल्नुहोस्।</translation>
@@ -215,6 +216,7 @@
 <translation id="2689830683995595741">Chrome प्रयोग गरेर तपाईं <ph name="BEGIN_LINK1" />Google का सेवाका सर्तहरू<ph name="END_LINK1" /> र <ph name="BEGIN_LINK2" />Google Chrome र Chrome OS का सेवाका अतिरिक्त सर्तहरू<ph name="END_LINK2" />मा सहमति जनाउनुहुन्छ। <ph name="BEGIN_LINK3" />Family Link मार्फत व्यवस्थापन गरिएका Google खाताहरूको गोपनीयता सूचना<ph name="END_LINK3" /> पनि लागू हुन्छ।</translation>
 <translation id="2707726405694321444">पृष्ठ ताजा गर्नुहोस्</translation>
 <translation id="2709516037105925701">स्वत:भर्नुहोस्</translation>
+<translation id="2723001399770238859">अडियो</translation>
 <translation id="2728754400939377704">साइटद्वारा क्रमबद्ध गर्नुहोस्</translation>
 <translation id="2744248271121720757">तत्कालै खोज्नका लागि कुनै शब्दमा ट्याप गर्नुहोस् वा सम्बन्धित कारबाहीहरू हेर्नुहोस्</translation>
 <translation id="2760989362628427051">तपाईंको यन्त्रमा अँध्यारो थिम वा ब्याट्री सेभर मोड सक्रिय हुँदा अँध्यारो थिम सक्रिय गर्नुहोस्</translation>
@@ -462,6 +464,7 @@
 <translation id="4738836084190194332">अन्तिम पटक सिंक गरिएको: <ph name="WHEN" /></translation>
 <translation id="4749960740855309258">एउटा नयाँ ट्याब खोल्नुहोस्</translation>
 <translation id="4759238208242260848">डाउनलोडहरू</translation>
+<translation id="4763480195061959176">भिडियो</translation>
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{१ डाउनलोड सम्पन्न भयो।}other{# डाउनलोडहरू सम्पन्न भए।}}</translation>
 <translation id="4766678251456904326">यन्त्रमा खाता जोड्नुहोस्</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{एउटा डाउनलोडको समयतालिका निर्धारण गरियो।}other{# वटा डाउनलोडको समयतालिका निर्धारण गरियो।}}</translation>

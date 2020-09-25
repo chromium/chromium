@@ -59,6 +59,7 @@
 <translation id="1467432559032391204">ເບື້ອງຊ້າຍ</translation>
 <translation id="1479909375538722835">ເມນູການຊ່ວຍເຂົ້າເຖິງແບບລອຍ</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
+<translation id="1503394326855300303">ບັນຊີຜູ້ເປັນເຈົ້າຂອງຕ້ອງເປັນບັນຊີລົງຊື່ເຂົ້າໃຊ້ທໍາອິດຢູ່ໃນຊ່ວງເວລາເຂົ້າໃຊ້ການລົງຊື່ເຂົ້າໃຊ້ຫຼາຍອັນ.</translation>
 <translation id="1516740043221086139">ໂໝດຫ້າມລົບກວນເປີດຢູ່.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{ສະແດງການຕັ້ງຄ່າການແຈ້ງເຕືອນ. ການແຈ້ງເຕືອນປິດຢູ່ສຳລັບໜຶ່ງແອັບ}other{ສະແດງການຕັ້ງຄ່າການແຈ້ງເຕືອນ. ການແຈ້ງເຕືອນປິດຢູ່ສຳລັບ # ແອັບ}}</translation>
 <translation id="1525508553941733066">ປິດໄວ້</translation>
@@ -172,7 +173,6 @@
 <translation id="2718395828230677721">ແສງກາງຄືນ</translation>
 <translation id="2727175239389218057">ຕອບກັບ</translation>
 <translation id="2727977024730340865">ສຽບໃສ່ເຄື່ອງສາກໄຟຕໍ່າແລ້ວ. ການສາກແບັດເຕີຣີອາດຈະບໍ່ເຊື່ອຖືໄດ້.</translation>
-<translation id="2743387203779672305">ກັອບປີ້ໄປໃສ່ຄລິບບອດ</translation>
 <translation id="2792498699870441125">Alt+ຊອກຫາ</translation>
 <translation id="2819276065543622893">ທ່ານຈະຖືກອອກຈາກລະບົບດຽວນີ້.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> ບໍ່ຮອງຮັບ <ph name="SPECIFIED_RESOLUTION" />. ຄວາມລະອຽດຖືກປ່ຽນເປັນ <ph name="FALLBACK_RESOLUTION" /> ແລ້ວ.</translation>
@@ -257,6 +257,7 @@
 <translation id="3486220673238053218">ຄໍາ​ນິ​ຍາມ</translation>
 <translation id="3510164367642747937">ໝາຍເຄີເຊີເມົ້າ</translation>
 <translation id="3513798432020909783">ບັນຊີທີ່ຈັດການໂດຍ <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3571734092741541777">ຕັ້ງຄ່າ</translation>
 <translation id="3573179567135747900">ປ່ຽນ​​ກັບ​ຄືນ​ໄປຫາ "<ph name="FROM_LOCALE" />" (ຕ້ອງການໃຫ້ປິດເປີດຄືນໃໝ່)</translation>
 <translation id="3576141592585647168">ປ່ຽນເຂດເວລາ</translation>
 <translation id="3593646411856133110">ປັດຂຶ້ນຄ້າງໄວ້ເພື່ອເບິ່ງແອັບທີ່ເປີດຢູ່</translation>
@@ -389,6 +390,7 @@
 <translation id="4917385247580444890">ແຮງ</translation>
 <translation id="4918086044614829423">ຍອມ​ຮັບ</translation>
 <translation id="4924411785043111640">ປິດເປີດຄືນໃໝ່ ແລະ ຣິເຊັດ</translation>
+<translation id="4925542575807923399">ຜູ້ຄຸ້ມຄອງບັນຊີນີ້ຕ້ອງການບັນຊີນີ້ໃຫ້ເປັນບັນຊີລົງຊື່ເຂົ້າ​ໃຊ້ທໍາອິດຢູ່ໃນຊ່ວງ​ເວລາ​ເຂົ້າລະບົບຫຼາຍອັນ.</translation>
 <translation id="495046168593986294">ເລື່ອນຂຶ້ນ</translation>
 <translation id="4961318399572185831">ຄາສທ໌ໜ້າຈໍ</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />ຊມ <ph name="MINUTES" />ນທ <ph name="SECONDS" />ວິ</translation>
@@ -535,6 +537,7 @@
 <translation id="6657585470893396449">ລະຫັດຜ່ານ</translation>
 <translation id="6665545700722362599">ໃຫ້ການອະນຸຍາດແກ່ເວັບໄຊ,​ ແອັບ ແລະ ສ່ວນຂະຫຍາຍເພື່ອໃຊ້ການບໍລິການສະຖານທີ່, ໄມໂຄຣໂຟນຂອງອຸປະກອນ, ກ້ອງຖ່າຍຮູບ ຫຼື ຄຸນສົມບັດອື່ນ</translation>
 <translation id="6670153871843998651">ໂຕະ 3</translation>
+<translation id="6671495933530132209">ກັອບປີ້ຮູບ</translation>
 <translation id="6691659475504239918">Search+Shift+H</translation>
 <translation id="6692996468359469499">ຮັບຂໍ້ມູນທີ່ກ່ຽວຂ້ອງກັບການເລືອກຂອງທ່ານ</translation>
 <translation id="6696025732084565524">ແປ້ນພິມທີ່ສາມາດແຍກອອກໄດ້ຂອງທ່ານຈຳເປັນຕ້ອງມີການອັບເດດສຳຄັນ</translation>
@@ -734,6 +737,7 @@
 <translation id="8734991477317290293">ມັນອາດຈະກຳລັງພະຍາຍາມລັກໃຊ້ການກົດແປ້ນພິມຂອງທ່ານຢູ່</translation>
 <translation id="8735953464173050365">ສະແດງການຕັ້ງຄ່າແປ້ນພິມ. ເລືອກ <ph name="KEYBOARD_NAME" /> ແລ້ວ</translation>
 <translation id="875593634123171288">ສະແດງການຕັ້ງຄ່າ VPN</translation>
+<translation id="8759408218731716181">ບໍ່ສາມາດຕັ້ງລົງຊື່ເຂົ້າ​ໃຊ້ຫຼາຍອັນໄດ້</translation>
 <translation id="8785070478575117577">ເຊື່ອມຕໍ່ກັບ <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi​-Fi</translation>

@@ -189,7 +189,6 @@
 <translation id="3064388234319122767">Transliteracija (zdravo → здраво)</translation>
 <translation id="3067790092342515856">„Windows“ failai</translation>
 <translation id="3078461028045006476">Bendrinti su „<ph name="EXTENSION_NAME" />“</translation>
-<translation id="3088034400796962477">Transliteracija (salam ← سلام)</translation>
 <translation id="3116361045094675131">JK klaviatūra</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">ATLIKTA</translation>
@@ -305,7 +304,6 @@
 <translation id="4477219268485577442">Fonetinė bulgarų</translation>
 <translation id="4479812471636796472">JAV Dvorako klaviatūra</translation>
 <translation id="4481711095103932593">Šis aplankas bendrinamas su „Windows“</translation>
-<translation id="4487088045714738411">Belgiška klaviatūra</translation>
 <translation id="4522570452068850558">Išsami informacija</translation>
 <translation id="4542387084127299777">Nepavyko atidaryti „<ph name="PATH" />“</translation>
 <translation id="4552678318981539154">Įsigyti daugiau atminties</translation>
@@ -366,6 +364,7 @@
 <translation id="5010406651457630570">Kompiuteriai</translation>
 <translation id="5011233892417813670">Chromebook</translation>
 <translation id="5024856940085636730">Operacija trunka ilgiau nei tikėtasi. Ar norite ją nutraukti?</translation>
+<translation id="5026887030745057099">Hindi</translation>
 <translation id="5036159836254554629">Tvarkyti „Parallels Desktop“ bendrinimą</translation>
 <translation id="5038625366300922036">Žr. daugiau...</translation>
 <translation id="5061708541166515394">Kontrastas</translation>
@@ -430,7 +429,6 @@
 <translation id="5522908512596376669">Failų sąrašas pakeistas į sąrašo rodinį.</translation>
 <translation id="5524517123096967210">Nepavyko nuskaityti failo.</translation>
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> vaizdas</translation>
-<translation id="5533555070048896610">Transliteracija (namaste → नमस्ते)</translation>
 <translation id="5534520101572674276">Apskaičiuojamas dydis</translation>
 <translation id="5583640892426849032">Grįžties klavišas</translation>
 <translation id="5605830556594064952">JAV Dvorako</translation>

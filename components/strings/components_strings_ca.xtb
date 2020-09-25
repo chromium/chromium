@@ -507,6 +507,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3080254622891793721">Gràfic</translation>
 <translation id="3086579638707268289">La teva activitat al web s'està supervisant</translation>
 <translation id="3087734570205094154">Part inferior</translation>
+<translation id="3094457892697649331">Quan editis anotacions, aquest document tornarà a la visualització d'una sola pàgina.</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3096100844101284527">Afegeix l'adreça de recollida</translation>
 <translation id="3105172416063519923">Identificador de l'element:</translation>
@@ -739,6 +740,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4075941231477579656">Touch ID</translation>
 <translation id="4079302484614802869">La configuració del servidor intermediari s'ha definit perquè utilitzi un URL d'script .pac, en lloc de servidors intermedis fixos.</translation>
 <translation id="4082393374666368382">Configuració - Gestió</translation>
+<translation id="4084120443451129199">Cerca el mode i prem Retorn per cercar <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="4088981014127559358">Desplaçament a l'eix Y del costat 1 de la imatge</translation>
 <translation id="4098354747657067197">Aquest lloc web és enganyós</translation>
 <translation id="4101413244023615925">Text i gràfics</translation>
@@ -930,6 +932,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4809079943450490359">Instruccions de l'administrador del dispositiu:</translation>
 <translation id="4813512666221746211">Error de la xarxa</translation>
 <translation id="4816492930507672669">Ajusta a la mida de la pàgina</translation>
+<translation id="4819347708020428563">Vols editar les anotacions en la visualització predeterminada?</translation>
 <translation id="484462545196658690">Automàtic</translation>
 <translation id="4850886885716139402">Mostra</translation>
 <translation id="4854362297993841467">Aquest mètode d'entrega no està disponible. Prova'n un altre.</translation>
@@ -1664,6 +1667,7 @@ Detalls addicionals:
 <translation id="7802523362929240268">El lloc web és legítim</translation>
 <translation id="780301667611848630">No, gràcies</translation>
 <translation id="7805768142964895445">Estat</translation>
+<translation id="7811322735445742657">Quan editis anotacions, aquest document tornarà a la visualització d'una sola pàgina i a la seva rotació original.</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Voleu suprimir el suggeriment de formulari de Chrome?</translation>
 <translation id="781440967107097262">Vols compartir el porta-retalls?</translation>
@@ -1699,6 +1703,7 @@ Detalls addicionals:
 <translation id="7956713633345437162">Adreces d'interès per a mòbils</translation>
 <translation id="7961015016161918242">Mai</translation>
 <translation id="7966803981046576691">Tipus de compte de treball</translation>
+<translation id="7976214039405368314">Hi ha massa sol·licituds</translation>
 <translation id="7977538094055660992">Dispositiu de sortida</translation>
 <translation id="7977894662897852582">Edp</translation>
 <translation id="799149739215780103">Enquadernació</translation>
@@ -1780,6 +1785,7 @@ Detalls addicionals:
 <translation id="8289355894181816810">Si no esteu segur de què significa això, contacteu amb l'administrador de la xarxa.</translation>
 <translation id="8293206222192510085">Afegeix una adreça d'interès</translation>
 <translation id="8294431847097064396">Font</translation>
+<translation id="8297398969342264569">Quan editis anotacions, aquest document tornarà a la seva rotació original.</translation>
 <translation id="8298115750975731693">És possible que la xarxa Wi-Fi (<ph name="WIFI_NAME" />) que esteu fent servir requereixi que visiteu <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="8303854710873047864">S'ha mostrat la secció "<ph name="SECTION" />"</translation>
 <translation id="830498451218851433">Plegat per la meitat</translation>

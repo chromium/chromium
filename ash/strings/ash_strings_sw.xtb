@@ -59,6 +59,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="1467432559032391204">Kushoto</translation>
 <translation id="1479909375538722835">Menyu ya ufikivu inayoelea</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
+<translation id="1503394326855300303">Akaunti hii ya mmiliki lazima iwe ya kwanza kuingiwa katika kipindi cha kuingia katika akaunti mara nyingi.</translation>
 <translation id="1516740043221086139">Hali ya 'Usinisumbue' imewashwa</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Onyesha mipangilio ya arifa. Umezima arifa katika programu moja}other{Onyesha mipangilio ya arifa. Umezima arifa katika programu #}}</translation>
 <translation id="1525508553941733066">ONDOA</translation>
@@ -172,7 +173,6 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="2718395828230677721">Mwanga wa Usiku</translation>
 <translation id="2727175239389218057">Jibu</translation>
 <translation id="2727977024730340865">Imechomekwa katika chaja ya kawi ya chini. Huenda kuchaji kwa betri hakutakuwa kuzuri.</translation>
-<translation id="2743387203779672305">Nakili kwenye ubao wa kunakili</translation>
 <translation id="2792498699870441125">Alt + Utafutaji</translation>
 <translation id="2819276065543622893">Utaondolewa kwenye akaunti sasa hivi.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> haitumii <ph name="SPECIFIED_RESOLUTION" />. Ubora umebadilishwa kuwa <ph name="FALLBACK_RESOLUTION" /></translation>
@@ -257,6 +257,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="3486220673238053218">ufafanuzi</translation>
 <translation id="3510164367642747937">Angazia kiteuzi cha kipanya</translation>
 <translation id="3513798432020909783">Akaunti inasimamiwa na <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3571734092741541777">Weka mipangilio</translation>
 <translation id="3573179567135747900">Badilisha hadi "<ph name="FROM_LOCALE" />" (inahitaji uzime na uwashe)</translation>
 <translation id="3576141592585647168">Badilisha saa za eneo</translation>
 <translation id="3593646411856133110">Telezesha kidole juu na ushikilie ili uone programu zilizofunguliwa</translation>
@@ -389,6 +390,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="4917385247580444890">Thabiti</translation>
 <translation id="4918086044614829423">Kubali</translation>
 <translation id="4924411785043111640">Zima kisha uwashe na uweke upya</translation>
+<translation id="4925542575807923399">Msimamizi wa akaunti hii anahitaji uingie kwenye akaunti hii kwanza katika kipindi cha kuingia katika akaunti nyingi kwa wakati mmoja.</translation>
 <translation id="495046168593986294">Sogeza juu</translation>
 <translation id="4961318399572185831">Tuma skrini</translation>
 <translation id="4969092041573468113">Saa <ph name="HOURS" /> dak <ph name="MINUTES" /> sek <ph name="SECONDS" /></translation>
@@ -535,6 +537,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="6657585470893396449">Nenosiri</translation>
 <translation id="6665545700722362599">Zipe tovuti, programu na viendelezi ruhusa za kutumia huduma za mahali, maikrofoni, kamera na vipengele vingine vya kifaa</translation>
 <translation id="6670153871843998651">Eneokazi la 3</translation>
+<translation id="6671495933530132209">Nakili picha</translation>
 <translation id="6691659475504239918">Search+Shift+H</translation>
 <translation id="6692996468359469499">Pata maelezo yanayohusiana na chaguo lako</translation>
 <translation id="6696025732084565524">Kibodi unayoweza kutenganisha inahitaji sasisho muhimu</translation>
@@ -735,6 +738,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="8734991477317290293">Huenda inajaribu kuiba mibofyo yako</translation>
 <translation id="8735953464173050365">Onyesha mipangilio ya kibodi. Umechagua <ph name="KEYBOARD_NAME" /></translation>
 <translation id="875593634123171288">Onyesha mipangilio ya VPN</translation>
+<translation id="8759408218731716181">Haiwezi kusanida uwezo wa kuingia katika akaunti nyingi kwa wakati mmoja</translation>
 <translation id="8785070478575117577">Unganisha kwenye <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>

@@ -59,6 +59,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1467432559032391204">Trái</translation>
 <translation id="1479909375538722835">Trình đơn hỗ trợ tiếp cận nổi</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
+<translation id="1503394326855300303">Tài khoản của chủ sở hữu này phải là tài khoản đăng nhập đầu tiên trong phiên đăng nhập nhiều tài khoản.</translation>
 <translation id="1516740043221086139">Chế độ Không làm phiền đang bật.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Hiển thị tùy chọn cài đặt thông báo. Các thông báo hiện đang tắt cho một ứng dụng}other{Hiển thị tùy chọn cài đặt thông báo. Các thông báo hiện đang tắt cho # ứng dụng}}</translation>
 <translation id="1525508553941733066">LOẠI BỎ</translation>
@@ -172,7 +173,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2718395828230677721">Ánh sáng đêm</translation>
 <translation id="2727175239389218057">Trả lời</translation>
 <translation id="2727977024730340865">Được cắm vào bộ sạc công suất thấp. Việc sạc pin có thể không được đảm bảo.</translation>
-<translation id="2743387203779672305">Sao chép vào khay nhớ tạm</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
 <translation id="2819276065543622893">Bạn sẽ bị đăng xuất bây giờ.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> không hỗ trợ <ph name="SPECIFIED_RESOLUTION" />. Độ phân giải đã được thay đổi thành <ph name="FALLBACK_RESOLUTION" />.</translation>
@@ -257,6 +257,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="3486220673238053218">định nghĩa</translation>
 <translation id="3510164367642747937">Đánh dấu con trỏ chuột</translation>
 <translation id="3513798432020909783">Người quản lý tài khoản: <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3571734092741541777">Thiết lập</translation>
 <translation id="3573179567135747900">Thay đổi lại thành "<ph name="FROM_LOCALE" />" (yêu cầu khởi động lại)</translation>
 <translation id="3576141592585647168">Thay đổi múi giờ</translation>
 <translation id="3593646411856133110">Vuốt lên và giữ để xem các ứng dụng đang mở</translation>
@@ -389,6 +390,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="4917385247580444890">Mạnh</translation>
 <translation id="4918086044614829423">Chấp nhận</translation>
 <translation id="4924411785043111640">Khởi động lại và đặt lại</translation>
+<translation id="4925542575807923399">Quản trị viên của tài khoản này yêu cầu tài khoản này là tài khoản đăng nhập đầu tiên trong phiên đăng nhập nhiều tài khoản.</translation>
 <translation id="495046168593986294">Cuộn lên</translation>
 <translation id="4961318399572185831">Truyền màn hình</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> giờ <ph name="MINUTES" /> phút <ph name="SECONDS" /> giây</translation>
@@ -535,6 +537,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="6657585470893396449">Mật khẩu</translation>
 <translation id="6665545700722362599">Cấp cho trang web, ứng dụng và tiện ích quyền sử dụng dịch vụ vị trí, micrô, máy ảnh hoặc các tính năng khác của thiết bị</translation>
 <translation id="6670153871843998651">Không gian làm việc 3</translation>
+<translation id="6671495933530132209">Sao chép ảnh</translation>
 <translation id="6691659475504239918">Search+Shift+H</translation>
 <translation id="6692996468359469499">Nhận thông tin liên quan đến lựa chọn của bạn</translation>
 <translation id="6696025732084565524">Bàn phím có thể tháo rời của bạn cần một bản cập nhật quan trọng</translation>
@@ -734,6 +737,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="8734991477317290293">Bàn phím này có thể đang cố gắng đánh cắp thao tác nhấn phím của bạn</translation>
 <translation id="8735953464173050365">Hiển thị các tùy chọn cài đặt bàn phím. <ph name="KEYBOARD_NAME" /> được chọn</translation>
 <translation id="875593634123171288">Hiển thị các tùy chọn cài đặt VPN</translation>
+<translation id="8759408218731716181">Không thể thiết lập đăng nhập nhiều tài khoản</translation>
 <translation id="8785070478575117577">Kết nối với <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>

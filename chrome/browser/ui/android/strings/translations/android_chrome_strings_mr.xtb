@@ -108,6 +108,7 @@
 <translation id="1868024384445905608">Chrome आता फाइल वेगाने डाउनलोड करते</translation>
 <translation id="1877026089748256423">Chrome कालबाह्य आहे</translation>
 <translation id="1883903952484604915">माझ्या फाइल</translation>
+<translation id="189358972401248634">इतर भाषा</translation>
 <translation id="1925021887439448749">कस्टम वेब पत्ता एंटर करा</translation>
 <translation id="1928696683969751773">अपडेट</translation>
 <translation id="19288952978244135">Chrome पुन्हा उघडा.</translation>
@@ -215,6 +216,7 @@
 <translation id="2689830683995595741">Chrome वापरून, तुम्ही <ph name="BEGIN_LINK1" />Google सेवा अटी<ph name="END_LINK1" /> आणि <ph name="BEGIN_LINK2" />Google Chrome व Chrome OS अतिरिक्त सेवा अटी<ph name="END_LINK2" /> यांना सहमती दर्शवता. <ph name="BEGIN_LINK3" />Family Link सोबत व्यवस्थापित केलेली Google खाती यांसाठी गोपनीयतेची सूचना<ph name="END_LINK3" /> देखील लागू होते.</translation>
 <translation id="2707726405694321444">पृष्ठ रिफ्रेश करा</translation>
 <translation id="2709516037105925701">ऑटोफिल</translation>
+<translation id="2723001399770238859">ऑडिओ</translation>
 <translation id="2728754400939377704">साइटनुसार क्रमाने लावा</translation>
 <translation id="2744248271121720757">झटपट शोधण्यासाठी किंवा संबंधित ॲक्‍शन पाहण्यासाठी एखाद्या शब्दावर टॅप करा</translation>
 <translation id="2760989362628427051">तुमच्या डिव्हाइसची गडद थीम किंवा बॅटरी सेव्हर सुरू असताना गडद थीम सुरू करा</translation>
@@ -463,6 +465,7 @@
 <translation id="4738836084190194332">अखेरचे संकालित: <ph name="WHEN" /></translation>
 <translation id="4749960740855309258">एक नवीन टॅब उघडा</translation>
 <translation id="4759238208242260848">डाउनलोड</translation>
+<translation id="4763480195061959176">व्हिडिओ</translation>
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{एक डाउनलोड पूर्ण झाला आहे.}other{# डाउनलोड पूर्ण झाले आहेत.}}</translation>
 <translation id="4766678251456904326">डिव्हाइसवर खाते जोडा</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{एक डाउनलोड शेड्युल केलेले आहे.}other{# डाउनलोड शेड्युल केलेली आहेत.}}</translation>

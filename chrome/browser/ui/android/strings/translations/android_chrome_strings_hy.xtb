@@ -108,6 +108,7 @@
 <translation id="1868024384445905608">Chrome-ն այժմ ավելի արագ է ֆայլեր ներբեռնում</translation>
 <translation id="1877026089748256423">Chrome-ը հնացած է</translation>
 <translation id="1883903952484604915">Իմ ֆայլերը</translation>
+<translation id="189358972401248634">Այլ լեզուներ</translation>
 <translation id="1925021887439448749">Մուտքագրեք այլ հասցե</translation>
 <translation id="1928696683969751773">Թարմացումներ</translation>
 <translation id="19288952978244135">Նորից բացեք Chrome-ը:</translation>
@@ -217,6 +218,7 @@
 <translation id="2689830683995595741">Օգտվելով Chrome-ից՝ դուք ընդունում եք <ph name="BEGIN_LINK1" />Google-ի օգտագործման պայմանները<ph name="END_LINK1" /> և <ph name="BEGIN_LINK2" />Google Chrome-ի և Chrome OS-ի օգտագործման լրացուցիչ պայմանները<ph name="END_LINK2" />։ Գործում է նաև <ph name="BEGIN_LINK3" />Family Link-ի միջոցով կառավարվող Google հաշիվների գաղտնիության ծանուցագիրը<ph name="END_LINK3" />։</translation>
 <translation id="2707726405694321444">Թարմացնել էջը</translation>
 <translation id="2709516037105925701">Ինքնալցում</translation>
+<translation id="2723001399770238859">audio</translation>
 <translation id="2728754400939377704">Դասավորել ըստ կայքի</translation>
 <translation id="2744248271121720757">Հպեք բառին՝ ակնթարթորեն որոնելու կամ առնչվող գործողությունները տեսնելու համար</translation>
 <translation id="2760989362628427051">Միացնել մուգ թեման, երբ սարքի մուգ թեման կամ մարտկոցի տնտեսման ռեժիմը միացված է</translation>
@@ -467,6 +469,7 @@
 <translation id="4738836084190194332">Վերջին համաժամացումը՝ <ph name="WHEN" /></translation>
 <translation id="4749960740855309258">Բացել նոր ներդիր</translation>
 <translation id="4759238208242260848">Ներբեռնումներ</translation>
+<translation id="4763480195061959176">video</translation>
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{1 ֆայլ ներբեռնվեց։}one{# ֆայլ ներբեռնվեց։}other{# ֆայլ ներբեռնվեց։}}</translation>
 <translation id="4766678251456904326">Սարքում հաշիվ ավելացնել</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{1 պլանավորված ներբեռնում}one{# պլանավորված ներբեռնում}other{# պլանավորված ներբեռնում}}</translation>

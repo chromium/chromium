@@ -108,6 +108,7 @@
 <translation id="1868024384445905608">Chrome अब ज़्यादा तेज़ी से फ़ाइलें डाउनलोड करता है</translation>
 <translation id="1877026089748256423">Chrome पुराना हो गया है</translation>
 <translation id="1883903952484604915">मेरी फ़ाइलें</translation>
+<translation id="189358972401248634">अन्य भाषाएं</translation>
 <translation id="1925021887439448749">पसंद के मुताबिक वेब पता डालें</translation>
 <translation id="1928696683969751773">अपडेट</translation>
 <translation id="19288952978244135">Chrome को फिर से खोलें.</translation>
@@ -215,6 +216,7 @@
 <translation id="2689830683995595741">Chrome इस्तेमाल करने का मतलब है कि आप <ph name="BEGIN_LINK1" />Google की सेवा की शर्तों<ph name="END_LINK1" /> और <ph name="BEGIN_LINK2" />Google Chrome और Chrome OS की सेवा की अतिरिक्त शर्तों<ph name="END_LINK2" /> से सहमत हैं. साथ ही, आप <ph name="BEGIN_LINK3" />Family Link से प्रबंधित होने वाले Google खातों के लिए निजता सूचना<ph name="END_LINK3" /> से भी सहमत हैं.</translation>
 <translation id="2707726405694321444">पेज रीफ्रेश करें</translation>
 <translation id="2709516037105925701">ऑटोमैटिक भरना</translation>
+<translation id="2723001399770238859">ऑडियो</translation>
 <translation id="2728754400939377704">साइट के हिसाब से क्रम में लगाएं</translation>
 <translation id="2744248271121720757">इंस्टैंट सर्च या मिलती-जुलती कार्रवाई देखने के लिए किसी शब्द पर टैप करें</translation>
 <translation id="2760989362628427051">अपने डिवाइस की गहरे रंग वाली थीम या 'बैटरी सेवर' चालू होने पर गहरे रंग वाली थीम चालू करें</translation>
@@ -463,6 +465,7 @@
 <translation id="4738836084190194332">अंतिम बार सिंक किया गया: <ph name="WHEN" /></translation>
 <translation id="4749960740855309258">नया टैब खोलें</translation>
 <translation id="4759238208242260848">डाउनलोड</translation>
+<translation id="4763480195061959176">वीडियो</translation>
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{1 डाउनलोड पूरा हुआ.}one{# डाउनलोड पूरे हुए.}other{# डाउनलोड पूरे हुए.}}</translation>
 <translation id="4766678251456904326">डिवाइस पर खाता जोड़ें</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{1 डाउनलोड शेड्यूल किया गया.}one{# डाउनलोड शेड्यूल किया गया.}other{# डाउनलोड शेड्यूल किए गए.}}</translation>

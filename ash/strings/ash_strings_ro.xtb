@@ -59,6 +59,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1467432559032391204">Stânga</translation>
 <translation id="1479909375538722835">Meniul de accesibilitate flotant</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
+<translation id="1503394326855300303">Acest cont de proprietar trebuie să fie primul conectat într-o sesiune de conectare multiplă.</translation>
 <translation id="1516740043221086139">Funcția Nu deranja este activată.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Afișează setările pentru notificări. Notificările sunt dezactivate pentru o aplicație}few{Afișează setările pentru notificări. Notificările sunt dezactivate pentru # aplicații}other{Afișează setările pentru notificări. Notificările sunt dezactivate pentru # de aplicații}}</translation>
 <translation id="1525508553941733066">ÎNCHIDE</translation>
@@ -172,7 +173,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2718395828230677721">Lum. de noapte</translation>
 <translation id="2727175239389218057">Răspunde</translation>
 <translation id="2727977024730340865">V-ați conectat la un încărcător de putere joasă. Încărcarea bateriei poate fi nesigură.</translation>
-<translation id="2743387203779672305">Copiați în clipboard</translation>
 <translation id="2792498699870441125">Alt+Căutare</translation>
 <translation id="2819276065543622893">Veți fi deconectat(ă) acum.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> nu acceptă <ph name="SPECIFIED_RESOLUTION" />. Rezoluția a fost modificată la <ph name="FALLBACK_RESOLUTION" />.</translation>
@@ -257,6 +257,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="3486220673238053218">definiție</translation>
 <translation id="3510164367642747937">Evidențiază cursorul mouse-ului</translation>
 <translation id="3513798432020909783">Cont gestionat de <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3571734092741541777">Configurează</translation>
 <translation id="3573179567135747900">Modifică înapoi la „<ph name="FROM_LOCALE" />” (este necesară repornirea)</translation>
 <translation id="3576141592585647168">Modifică fusul orar</translation>
 <translation id="3593646411856133110">Glisează în sus și menține pentru a vedea aplicațiile deschise</translation>
@@ -389,6 +390,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="4917385247580444890">Puternic</translation>
 <translation id="4918086044614829423">Acceptă</translation>
 <translation id="4924411785043111640">Repornește și resetează</translation>
+<translation id="4925542575807923399">Administratorul acestui cont solicită ca acest cont să fie primul conectat într-o sesiune de conectare multiplă.</translation>
 <translation id="495046168593986294">Derulează în sus</translation>
 <translation id="4961318399572185831">Proiectează ecranul</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> h <ph name="MINUTES" /> min. <ph name="SECONDS" /> sec.</translation>
@@ -535,6 +537,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="6657585470893396449">Parolă</translation>
 <translation id="6665545700722362599">să permită site-urilor, aplicațiilor și extensiilor să folosească serviciile de localizare, microfonul, camera foto sau alte funcții ale dispozitivului;</translation>
 <translation id="6670153871843998651">Desktop 3</translation>
+<translation id="6671495933530132209">Copiați imaginea</translation>
 <translation id="6691659475504239918">Tasta de căutare + Shift + H</translation>
 <translation id="6692996468359469499">Obține informații despre selecție</translation>
 <translation id="6696025732084565524">Tastatura detașabilă necesită o actualizare esențială</translation>
@@ -734,6 +737,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="8734991477317290293">Aceasta ar putea încerca să înregistreze ce taste apeși</translation>
 <translation id="8735953464173050365">Afișează setările pentru tastatură. Este selectată <ph name="KEYBOARD_NAME" /></translation>
 <translation id="875593634123171288">Afișează setările VPN</translation>
+<translation id="8759408218731716181">Nu se poate configura conectarea multiplă</translation>
 <translation id="8785070478575117577">Conectează-te la <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>

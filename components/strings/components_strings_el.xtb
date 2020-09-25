@@ -513,6 +513,7 @@
 <translation id="3080254622891793721">Γραφικά</translation>
 <translation id="3086579638707268289">Η δραστηριότητά σας στον ιστό παρακολουθείται</translation>
 <translation id="3087734570205094154">Κάτω</translation>
+<translation id="3094457892697649331">Όταν επεξεργάζεστε σχολιασμούς, αυτό το έγγραφο θα επιστρέφει στην προβολή μίας σελίδας .</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3096100844101284527">Προσθήκη διεύθυνσης παραλαβής</translation>
 <translation id="3105172416063519923">Αναγνωριστικό στοιχείο:</translation>
@@ -746,6 +747,7 @@
 <translation id="4075941231477579656">Touch ID</translation>
 <translation id="4079302484614802869">Η διαμόρφωση του διακομιστή μεσολάβησης είναι ορισμένη να χρησιμοποιεί μια διεύθυνση URL σεναρίου .pac και όχι σταθερούς διακομιστές μεσολάβησης.</translation>
 <translation id="4082393374666368382">Ρυθμίσεις - Διαχείριση</translation>
+<translation id="4084120443451129199">Λειτουργία αναζήτησης, πατήστε Enter για να αναζητήσετε τον όρο <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="4088981014127559358">Πλευρά 1 μετατόπιση εικόνας στον άξονα Y</translation>
 <translation id="4098354747657067197">Ακολουθεί παραπλανητικός ιστότοπος</translation>
 <translation id="4101413244023615925">Κείμενο και γραφικά</translation>
@@ -942,6 +944,7 @@
 <translation id="4809079943450490359">Οδηγίες από τον διαχειριστή της συσκευής σας:</translation>
 <translation id="4813512666221746211">Σφάλμα δικτύου</translation>
 <translation id="4816492930507672669">Προσαρμογή στη σελίδα</translation>
+<translation id="4819347708020428563">Επεξεργασία σχολιασμών στην προεπιλεγμένη προβολή;</translation>
 <translation id="484462545196658690">Αυτόματα</translation>
 <translation id="4850886885716139402">Προβολή</translation>
 <translation id="4854362297993841467">Αυτός ο τρόπος παράδοσης δεν είναι διαθέσιμος. Δοκιμάστε έναν άλλο τρόπο.</translation>
@@ -1676,6 +1679,7 @@
 <translation id="7802523362929240268">Ο ιστότοπος είναι νόμιμος</translation>
 <translation id="780301667611848630">Όχι, ευχαριστώ</translation>
 <translation id="7805768142964895445">Κατάσταση</translation>
+<translation id="7811322735445742657">Όταν επεξεργάζεστε σχολιασμούς, αυτό το έγγραφο θα επιστρέφει στην προβολή μίας σελίδας και στην αρχική του περιστροφή.</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Κατάργηση πρότασης φόρμας από το Chrome;</translation>
 <translation id="781440967107097262">Κοινοποίηση προχείρου;</translation>
@@ -1711,6 +1715,7 @@
 <translation id="7956713633345437162">Σελιδοδείκτες κινητής συσκευής</translation>
 <translation id="7961015016161918242">Ποτέ</translation>
 <translation id="7966803981046576691">Τύπος λογαριασμού εργασίας</translation>
+<translation id="7976214039405368314">Πάρα πολλά αιτήματα</translation>
 <translation id="7977538094055660992">Συσκευή εξόδου</translation>
 <translation id="7977894662897852582">Edp</translation>
 <translation id="799149739215780103">Δέσιμο</translation>
@@ -1792,6 +1797,7 @@
 <translation id="8289355894181816810">Επικοινωνήστε με το διαχειριστή του δικτύου σας εάν δεν είστε βέβαιοι για το τι σημαίνει αυτό.</translation>
 <translation id="8293206222192510085">Προσθήκη σελιδοδείκτη</translation>
 <translation id="8294431847097064396">Πηγή</translation>
+<translation id="8297398969342264569">Όταν επεξεργάζεστε σχολιασμούς, αυτό το έγγραφο θα επιστρέφει στην αρχική του περιστροφή.</translation>
 <translation id="8298115750975731693">Το Wi-Fi που χρησιμοποιείτε (<ph name="WIFI_NAME" />) ενδέχεται να σας ζητήσει να επισκεφτείτε τη διεύθυνση <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="8303854710873047864">Εμφανίζεται η ενότητα <ph name="SECTION" /></translation>
 <translation id="830498451218851433">Δίπλωση στη μέση</translation>

@@ -59,6 +59,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="1467432559032391204">Ezkerrera</translation>
 <translation id="1479909375538722835">Erabilerraztasun-menu gainerakorra</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
+<translation id="1503394326855300303">Saio anitzeko saioetan, jabeak hasi behar du kontua lehendabizi.</translation>
 <translation id="1516740043221086139">Aktibatuta dago ez molestatzeko modua.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Erakutsi jakinarazpen-ezarpenak. Aplikazio batean desaktibatuta daude jakinarazpenak.}other{Erakutsi jakinarazpen-ezarpenak. # aplikaziotan desaktibatuta daude jakinarazpenak.}}</translation>
 <translation id="1525508553941733066">BAZTERTU</translation>
@@ -172,7 +173,6 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="2718395828230677721">Gaueko argia</translation>
 <translation id="2727175239389218057">Erantzun</translation>
 <translation id="2727977024730340865">Energia gutxiko kargagailu bat entxufatu duzu. Agian bateria kargatzeko prozesua ez da fidagarria izango.</translation>
-<translation id="2743387203779672305">Kopiatu arbelean</translation>
 <translation id="2792498699870441125">Alt + Bilaketa</translation>
 <translation id="2819276065543622893">Saioa amaituko zaizu.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> pantailak ez du onartzen <ph name="SPECIFIED_RESOLUTION" /> bereizmena. <ph name="FALLBACK_RESOLUTION" /> ezarri da bereizmen gisa.</translation>
@@ -257,6 +257,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="3486220673238053218">definizioa</translation>
 <translation id="3510164367642747937">Nabarmendu saguaren kurtsorea</translation>
 <translation id="3513798432020909783"><ph name="MANAGER_EMAIL" /> kontuaren bidez kudeatzen da kontu hau</translation>
+<translation id="3571734092741541777">Konfiguratu</translation>
 <translation id="3573179567135747900">Itzuli "<ph name="FROM_LOCALE" />" ezarpenera (berrabiarazi egin behar da)</translation>
 <translation id="3576141592585647168">Aldatu ordu-zona</translation>
 <translation id="3593646411856133110">Pasatu hatza gora eta eduki sakatuta irekitako aplikazioak ikusteko</translation>
@@ -390,6 +391,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="4917385247580444890">Sendoa</translation>
 <translation id="4918086044614829423">Onartu</translation>
 <translation id="4924411785043111640">Berrabiarazi eta berrezarri</translation>
+<translation id="4925542575807923399">Saio-hasiera anitzeko saioetan, saioa hasten duen lehen kontua hau izatea eskatzen du kontu honen administratzaileak.</translation>
 <translation id="495046168593986294">Egin gora</translation>
 <translation id="4961318399572185831">Igorri pantaila</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> h <ph name="MINUTES" /> min <ph name="SECONDS" /> s</translation>
@@ -536,6 +538,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="6657585470893396449">Pasahitza</translation>
 <translation id="6665545700722362599">Eman webgune, aplikazio eta luzapenei kokapen-zerbitzuak edota gailuaren mikrofonoa, kamera edo beste eginbide batzuk erabiltzeko baimena</translation>
 <translation id="6670153871843998651">3. lan-eremua</translation>
+<translation id="6671495933530132209">Kopiatu irudia</translation>
 <translation id="6691659475504239918">Bilatu + Maius + H</translation>
 <translation id="6692996468359469499">Lortu hautatutakoari buruzko informazioa</translation>
 <translation id="6696025732084565524">Bereiz daitekeen teklatuak ezinbesteko eguneratze bat behar du</translation>
@@ -735,6 +738,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="8734991477317290293">Agian sakatzen ari zaren teklak erregistratzen ari da, pasahitzak lapurtzeko asmoz.</translation>
 <translation id="8735953464173050365">Erakutsi teklatuaren ezarpenak. <ph name="KEYBOARD_NAME" /> dago hautatuta.</translation>
 <translation id="875593634123171288">Erakutsi VPN ezarpenak</translation>
+<translation id="8759408218731716181">Ezin da saio-hasiera anitza konfiguratu</translation>
 <translation id="8785070478575117577">Konektatu <ph name="NETWORK_NAME" /> sarera</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi konexioa</translation>

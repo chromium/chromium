@@ -513,6 +513,7 @@
 <translation id="3080254622891793721">Слика</translation>
 <translation id="3086579638707268289">Ваше активности на вебу се прате</translation>
 <translation id="3087734570205094154">Дно</translation>
+<translation id="3094457892697649331">Када измените коментаре, овај документ се враћа на приказ појединачне странице.</translation>
 <translation id="3095940652251934233">Изјава</translation>
 <translation id="3096100844101284527">Додај адресу преузимања</translation>
 <translation id="3105172416063519923">ИД елемента:</translation>
@@ -746,6 +747,7 @@
 <translation id="4075941231477579656">Touch ID</translation>
 <translation id="4079302484614802869">Конфигурација проксија је подешена да користи URL адресу .pac скрипте, а не фиксне прокси сервере.</translation>
 <translation id="4082393374666368382">Подешавања – управљање</translation>
+<translation id="4084120443451129199">Режим претраге, притисните Enter да бисте претражили <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="4088981014127559358">Померање слике 1. стране по Y оси</translation>
 <translation id="4098354747657067197">Пред вама је обмањујући сајт</translation>
 <translation id="4101413244023615925">Текст и слика</translation>
@@ -941,6 +943,7 @@
 <translation id="4809079943450490359">Упутства администратора уређаја:</translation>
 <translation id="4813512666221746211">Грешка на мрежи</translation>
 <translation id="4816492930507672669">Уклопи у страницу</translation>
+<translation id="4819347708020428563">Желите ли да измените коментаре у подразумеваном приказу?</translation>
 <translation id="484462545196658690">Аутоматски</translation>
 <translation id="4850886885716139402">Приказ</translation>
 <translation id="4854362297993841467">Овај начин испоруке није доступан. Испробајте неки други начин.</translation>
@@ -1674,6 +1677,7 @@
 <translation id="7802523362929240268">Сајт је легитиман</translation>
 <translation id="780301667611848630">Не, хвала</translation>
 <translation id="7805768142964895445">Статус</translation>
+<translation id="7811322735445742657">Када измените коментаре, овај документ се враћа на приказ појединачне странице и у првобитни положај.</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Желите ли да уклоните предлог из Chrome-а?</translation>
 <translation id="781440967107097262">Дозволићете дељење привремене меморије?</translation>
@@ -1709,6 +1713,7 @@
 <translation id="7956713633345437162">Мобилни обележивачи</translation>
 <translation id="7961015016161918242">Никад</translation>
 <translation id="7966803981046576691">Тип налога задатка</translation>
+<translation id="7976214039405368314">Превише је захтева</translation>
 <translation id="7977538094055660992">Излазни уређај</translation>
 <translation id="7977894662897852582">Edp</translation>
 <translation id="799149739215780103">Повезивање</translation>
@@ -1790,6 +1795,7 @@
 <translation id="8289355894181816810">Контактирајте администратора мреже ако нисте сигурни шта то значи.</translation>
 <translation id="8293206222192510085">Додавање обележивача</translation>
 <translation id="8294431847097064396">Извор</translation>
+<translation id="8297398969342264569">Када измените коментаре, овај документ се враћа у првобитни положај.</translation>
 <translation id="8298115750975731693">Wi-Fi мрежа коју користите (<ph name="WIFI_NAME" />) ће можда захтевати да посетите <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="8303854710873047864">Приказује се одељак „<ph name="SECTION" />“</translation>
 <translation id="830498451218851433">Пресавијање напола</translation>

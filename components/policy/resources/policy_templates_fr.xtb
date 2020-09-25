@@ -576,9 +576,6 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
         |TIME_LIMITS| permet d'appliquer une durée d'utilisation maximale, et de bloquer l'accès à l'application une fois que l'utilisateur a atteint cette limite journalière. Vous pouvez indiquer une limite d'utilisation dans la propriété |daily_limit_mins|. Le compteur est remis à zéro à l'heure UTC que vous avez définie dans la propriété |reset_at|.
         Cette règle s'applique uniquement aux utilisateurs mineurs.
         Elle complète la règle "UsageTimeLimit". Les restrictions que vous indiquez dans la règle "UsageTimeLimit" telles que le temps d'utilisation et l'heure du coucher s'appliquent indépendamment de la règle "PerAppTimeLimits".</translation>
-<translation id="1914840757300882918">Si cette règle est définie, l'hôte utilise un certificat client avec le nom commun de l'émetteur pour s'identifier auprès de RemoteAccessHostTokenValidationUrl. Définissez-la sur "*" pour utiliser tout certificat client disponible.
-
-          Cette fonctionnalité est actuellement désactivée côté serveur.</translation>
 <translation id="1919802376548418720">Utiliser la règle KDC pour déléguer les identifiants.</translation>
 <translation id="1920046221095339924">Autoriser une session gérée sur l'appareil</translation>
 <translation id="1920772397574801429">Permet de spécifier le type des comptes fournis par l'application d'authentification Android qui accepte la méthode d'authentification <ph name="HTTP_NEGOTIATE" /> (l'authentification Kerberos, par exemple). Ces informations doivent être disponibles auprès du fournisseur de l'application en question. Pour en savoir plus, consultez le site https://goo.gl/hajyfN (sur les projets Chromium).
@@ -1108,22 +1105,6 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
       Si cette règle est désactivée, ces avertissements ne s'affichent pas lorsque Chrome est lancé à l'aide d'options de ligne de commande potentiellement dangereuses.
 
       Sous <ph name="MS_WIN_NAME" />, cette règle n'est disponible que sur les instances associées à un domaine <ph name="MS_AD_NAME" />, exécutées sous Windows 10 Pro ou qui bénéficient de la gestion cloud du navigateur Chrome. Sous <ph name="MAC_OS_NAME" />, elle n'est disponible que sur les instances gérées via MDM ou associées à un domaine via MCX.</translation>
-<translation id="2621383458880689826">Fournit les configurations des imprimantes d'entreprise associées à des appareils.
-
-      Cette règle vous permet de communiquer les configurations des imprimantes aux appareils <ph name="PRODUCT_OS_NAME" />.  Le format est le même que celui du dictionnaire NativePrinters, à l'exception d'un champ supplémentaire "id" ou "guid" obligatoire pour chaque imprimante à ajouter à la liste blanche ou noire.
-
-      Le fichier, qui doit être encodé au format JSON, ne doit pas dépasser 5 Mo.  Habituellement, un fichier encodé de 5 Mo peut contenir environ 21 000 imprimantes.  Le hachage cryptographique permet de vérifier l'intégrité du fichier téléchargé.
-
-      Le fichier est téléchargé et mis en cache. Il sera de nouveau téléchargé à chaque modification de l'URL ou du hachage.
-
-      Si cette règle est configurée, <ph name="PRODUCT_OS_NAME" /> télécharge le fichier des configurations d'imprimantes et rend les imprimantes accessibles conformément aux règles <ph name="DEVICE_NATIVE_PRINTERS_ACCESS_MODE" />, <ph name="DEVICE_NATIVE_PRINTERS_WHITELIST_POLICY_NAME" /> et <ph name="DEVICE_NATIVE_PRINTERS_BLACKLIST_POLICY_NAME" />.
-
-      Elle n'a aucune incidence pour les utilisateurs en ce qui concerne la possibilité ou non de configurer des imprimantes sur différents appareils.  Elle est destinée à compléter la configuration des imprimantes effectuée par les différents utilisateurs.
-
-      Elle vient en complément de la règle <ph name="BULK_PRINTERS_POLICY_NAME" />.
-
-      Si cette règle n'est pas configurée, aucune imprimante associée à un appareil n'est affichée, et les autres règles <ph name="DEVICE_NATIVE_PRINTERS_POLICY_PATTERN" /> sont ignorées.
-      </translation>
 <translation id="2623014935069176671">Attendre l'activité utilisateur initiale</translation>
 <translation id="262740370354162807">Activer l'envoi de documents à <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="2632538643061793322">Permet de répertorier les formats d'URL indiquant les sites autorisés à demander aux utilisateurs d'accéder aux appareils USB.
@@ -1290,12 +1271,6 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
       Si vous activez ce paramètre, l'aperçu avant impression utilisera l'imprimante par défaut du système d'exploitation.</translation>
 <translation id="285627849510728211">Définir le jour de recharge de la batterie en mode avancé</translation>
 <translation id="2856674246949497058">Rétablissez et conservez la version cible si elle est antérieure à la version de l'OS. Effectuez un Powerwash pendant le processus.</translation>
-<translation id="2869140260739354012">Permet de déterminer quelles imprimantes soumises à la règle <ph name="DEVICE_PRINTERS_POLICY" /> sont accessibles aux utilisateurs.
-
-      Vous pouvez indiquer la règle d'accès utilisée pour la configuration groupée des imprimantes. Si <ph name="PRINTERS_ALLOW_ALL" /> est sélectionné, toutes les imprimantes sont affichées. Si <ph name="PRINTERS_BLACKLIST" /> est sélectionné, la règle <ph name="DEVICE_NATIVE_PRINTERS_BLACKLIST" /> est utilisée pour limiter l'accès aux imprimantes spécifiées.  Si <ph name="PRINTERS_WHITELIST" /> est sélectionnée, la règle <ph name="DEVICE_NATIVE_PRINTERS_WHITELIST" /> indique uniquement les imprimantes qui peuvent être choisies.
-
-      Si cette règle n'est pas configurée, la règle <ph name="PRINTERS_ALLOW_ALL" /> s'applique.
-      </translation>
 <translation id="2869762730352628426">Activer le clic automatique sur l'écran de connexion</translation>
 <translation id="2872961005593481000">Éteindre</translation>
 <translation id="2874209944580848064">Remarque concernant les appareils <ph name="PRODUCT_OS_NAME" /> compatibles avec les applications Android :</translation>
@@ -1506,7 +1481,7 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 <translation id="3219421230122020860">Mode navigation privée disponible</translation>
 <translation id="3220624000494482595">Si l'application kiosque est une application Android, elle ne contrôlera pas la version <ph name="PRODUCT_OS_NAME" /> même si cette règle est définie sur "<ph name="TRUE" />".</translation>
 <translation id="322359555555487980">Déterminer la disponibilité des variantes de <ph name="PRODUCT_OS_NAME" /></translation>
-<translation id="3225165352822164029">Permet de définir l'URL de la page d'accueil par défaut de <ph name="PRODUCT_NAME" />. La page d'accueil s'ouvre lorsque l'utilisateur clique sur le bouton d'accueil. Sur ordinateur, les pages qui s'affichent au démarrage sont gérées par les règles <ph name="RESTORE_ON_STARTUP_POLICY_NAME" />.
+<translation id="3225165352822164029">Permet de définir l'URL de la page d'accueil par défaut de <ph name="PRODUCT_NAME" />. La page d'accueil s'ouvre lorsque l'utilisateur clique sur le bouton d'accueil. Sur ordinateur, les pages qui s'affichent au démarrage sont gérées par la règle <ph name="RESTORE_ON_STARTUP_POLICY_NAME" />.
 
       Si la page d'accueil est définie sur la page "Nouvel onglet", par l'utilisateur ou par <ph name="HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_NAME" />, cette règle n'a aucune incidence.
 
@@ -1930,12 +1905,6 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
 <translation id="3838094946886335701">Cette règle (recommandation uniquement) permet d'enregistrer une liste de gestionnaires de protocoles combinée à ceux enregistrés par l'utilisateur, afin que les deux ensembles s'appliquent. Définissez la propriété "protocole" sur le schéma (par exemple, "mailto") et la propriété "URL" sur le format d'URL de l'application qui gère le schéma spécifié dans le champ "protocole". Le schéma peut inclure un espace réservé "%s" remplacé par l'URL gérée.
 
       Les utilisateurs ne peuvent pas supprimer un gestionnaire de protocoles enregistré par une règle. Toutefois, l'installation d'un nouveau gestionnaire par défaut leur permet de modifier les gestionnaires de protocoles installés par une règle.</translation>
-<translation id="3848118497246496090">Permet de spécifier les imprimantes auxquelles les utilisateurs n'ont pas accès.
-
-      Cette règle n'est utilisée que si <ph name="PRINTERS_BLACKLIST" /> est sélectionné dans la règle <ph name="DEVICE_NATIVE_PRINTERS_ACCESS_MODE" />.
-
-      Si cette règle est appliquée, toutes les imprimantes sont proposées aux utilisateurs, sauf celles dont les ID y sont répertoriés. Ces ID doivent correspondre à ceux indiqués dans les champs "id" ou "guid" du fichier spécifié dans la règle <ph name="DEVICE_PRINTERS_POLICY" />.
-      </translation>
 <translation id="3851039766298741586">Cette règle permet de transmettre des informations sur la session kiosque active,
       telles que l'ID et la version de l'application.
 
@@ -2301,12 +2270,6 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
 
       Si cette règle n'est pas configurée, les sites Web peuvent demander l'accès. Toutefois, les utilisateurs peuvent modifier ce paramètre.</translation>
 <translation id="4285674129118156176">Autoriser les utilisateurs non affiliés à utiliser ARC</translation>
-<translation id="4309562700894844665">Permet de spécifier les imprimantes auxquelles les utilisateurs ont accès.
-
-      Cette règle est utilisée uniquement si <ph name="PRINTERS_WHITELIST" /> est sélectionné pour <ph name="DEVICE_NATIVE_PRINTERS_ACCESS_MODE" />.
-
-      Si cette règle est appliquée, seules les imprimantes dont l'ID correspond aux valeurs de la règle sont accessibles à l'utilisateur. Les ID doivent correspondre aux champs "id" ou "guid" du fichier spécifié dans <ph name="DEVICE_PRINTERS_POLICY" />.
-      </translation>
 <translation id="4311195029067684288">Complet</translation>
 <translation id="4313767483634435271">Adresse MAC de la station d'accueil désignée de l'appareil</translation>
 <translation id="4322842393287974810">Autoriser l'application kiosque lancée automatiquement sans délai à contrôler la version de l'application <ph name="PRODUCT_OS_NAME" /></translation>
@@ -2323,9 +2286,6 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
 <translation id="4347908978527632940">Si la valeur est définie sur "True" et si l'utilisateur est supervisé, d'autres applications Android peuvent envoyer une requête concernant les restrictions Web de ce dernier via un fournisseur de contenu.
 
           Si la valeur est définie sur "False" ou si elle n'est pas définie, le fournisseur de contenu n'envoie aucune information.</translation>
-<translation id="4360826270668210664">Si cette règle est définie, l'hôte d'accès à distance exigera des clients qui s'authentifient qu'ils obtiennent un jeton d'authentification à partir de cette URL pour se connecter. Elle doit être utilisée avec la règle RemoteAccessHostTokenValidationUrl.
-
-          Cette fonctionnalité est actuellement désactivée côté serveur.</translation>
 <translation id="4363057787588706121">Autoriser la fusion de règles répertoriées qui proviennent de sources différentes</translation>
 <translation id="4363101430102811068">Autorise la détection de fuite pour les identifiants saisis</translation>
 <translation id="436581050240847513">Générer un rapport sur les interfaces réseau de l'appareil</translation>
@@ -4560,9 +4520,6 @@ Si elle est définie sur "False" ou si elle n'est pas configurée, ces publicit�
 <translation id="7477231245051133709">Activer la fonctionnalité d'accessibilité d'audio mono</translation>
 <translation id="7477239290070847560">Destinations des protocoles basés sur Zeroconf (mDNS + DNS-SD)</translation>
 <translation id="7485481791539008776">Instructions de sélection de l'imprimante par défaut</translation>
-<translation id="7485730741952775732">Si cette règle est définie, l'hôte distant utilise cette URL pour valider les jetons d’authentification provenant des clients distants afin d'accepter les connexions. Elle doit être utilisée avec la règle RemoteAccessHostTokenUrl.
-
-          Cette fonctionnalité est actuellement désactivée côté serveur.</translation>
 <translation id="749556411189861380">Indiquer la version du système d'exploitation et du micrologiciel des appareils inscrits.
 
       Si ce paramètre n'est pas défini, ou s'il est défini sur "True", la version du système d'exploitation et celle du micrologiciel sont régulièrement communiquées par les appareils inscrits. Si ce paramètre est défini sur "False", ces informations ne sont pas transmises.</translation>
@@ -4888,9 +4845,6 @@ au maximum si un utilisateur se sert de l'appareil.
 <translation id="7953256619080733119">Hôtes d'exception manuelle des utilisateurs gérés</translation>
 <translation id="7956210013490975468">Configure le service proxy du système pour <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="7958537754689366707">La saisie du mot de passe est requise toutes les 12 heures</translation>
-<translation id="7960293328203000385">Définit la liste des utilisateurs autorisés à se connecter à l'appareil. Les entrées se présentent sous la forme suivante : <ph name="USER_ALLOWLIST_ENTRY_FORMAT" /> (<ph name="USER_ALLOWLIST_ENTRY_EXAMPLE" />, par exemple). Pour autoriser des utilisateurs arbitraires sur un domaine, utilisez les entrées sous la forme suivante : <ph name="USER_ALLOWLIST_ENTRY_WILDCARD" />.
-
-       Si cette règle n'est pas configurée, aucune restriction ne s'applique quant aux utilisateurs autorisés à se connecter. Notez que la création d'utilisateurs nécessite toujours de configurer correctement la règle <ph name="DEVICE_ALLOW_NEW_USERS_POLICY_NAME" />.</translation>
 <translation id="7961779417826583251">Désactiver l'application des règles de transparence des certificats pour une liste d'autorités de certification héritées</translation>
 <translation id="7973609468423251675">Cette règle étant obsolète, elle sera supprimée dans la version 85 de <ph name="PRODUCT_OS_NAME" />. (Veuillez utiliser la règle <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.)
 

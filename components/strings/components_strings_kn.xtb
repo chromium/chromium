@@ -509,6 +509,7 @@
 <translation id="3080254622891793721">ಗ್ರಾಫಿಕ್</translation>
 <translation id="3086579638707268289">ವೆಬ್‌ನಲ್ಲಿನ ನಿಮ್ಮ ಚಟುವಟಿಕೆಯನ್ನು ಮೇಲ್ವಿಚಾರಣೆ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="3087734570205094154">ಕೆಳಗೆ</translation>
+<translation id="3094457892697649331">ನೀವು ಟಿಪ್ಪಣಿಗಳನ್ನು ಎಡಿಟ್ ಮಾಡಿದಾಗ, ಈ ಡಾಕ್ಯುಮೆಂಟ್ ಒಂದೇ ಪುಟದ ವೀಕ್ಷಣೆಗೆ ಹಿಂತಿರುಗುತ್ತದೆ.</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3096100844101284527">ಪಿಕಪ್ ವಿಳಾಸವನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="3105172416063519923">ಸ್ವತ್ತು ID:</translation>
@@ -738,6 +739,7 @@
 <translation id="4075941231477579656">ಸ್ಪರ್ಶ ID</translation>
 <translation id="4079302484614802869">ಪ್ರಾಕ್ಸಿ ಕಾನ್ಫಿಗರೇಶನ್ ಅನ್ನು .pac ಸ್ಕ್ರಿಪ್ಟ್ URL ಬಳಸುವಂತೆ ಹೊಂದಿಸಲಾಗಿದೆ, ಹೊಂದಿಸಿದ ಪ್ರಾಕ್ಸಿ ಸರ್ವರ್‌ಗಳಲ್ಲ.</translation>
 <translation id="4082393374666368382">ಸೆಟ್ಟಿಂಗ್‌ಗಳು - ನಿರ್ವಹಣೆ</translation>
+<translation id="4084120443451129199">Search ಮೋಡ್, ಹುಡುಕಲು <ph name="KEYWORD_SUFFIX" /> Enter ಒತ್ತಿರಿ</translation>
 <translation id="4088981014127559358">ಅಂಚು 1 ಚಿತ್ರ Y ಶಿಫ್ಟ್</translation>
 <translation id="4098354747657067197">ವಂಚನೆಯ ಸೈಟ್ ಮುಂದಿದೆ</translation>
 <translation id="4101413244023615925">ಪಠ್ಯ ಮತ್ತು ಗ್ರಾಫಿಕ್</translation>
@@ -929,6 +931,7 @@
 <translation id="4809079943450490359">ನಿಮ್ಮ ಸಾಧನದ ನಿರ್ವಾಹಕರಿಂದ ಸೂಚನೆಗಳು</translation>
 <translation id="4813512666221746211">ನೆಟ್‌ವರ್ಕ್  ದೋಷ</translation>
 <translation id="4816492930507672669">ಪುಟಕ್ಕೆ ಹೊಂದಿಸು</translation>
+<translation id="4819347708020428563">ಡೀಫಾಲ್ಟ್ ವೀಕ್ಷಣೆಯಲ್ಲಿ ಟಿಪ್ಪಣಿಗಳನ್ನು ಎಡಿಟ್ ಮಾಡಬೇಕೆ?</translation>
 <translation id="484462545196658690">ಆಟೋ</translation>
 <translation id="4850886885716139402">ವೀಕ್ಷಣೆ</translation>
 <translation id="4854362297993841467">ಈ ವಿತರಣೆಯ ವಿಧಾನ ಲಭ್ಯವಿಲ್ಲ. ಬೇರೊಂದು ವಿಧಾನವನ್ನು ಪ್ರಯತ್ನಿಸಿ.</translation>
@@ -1661,6 +1664,7 @@
 <translation id="7802523362929240268">ಸೈಟ್‌ ಕಾನೂನುಬದ್ಧವಾಗಿದೆ</translation>
 <translation id="780301667611848630">ಬೇಡ, ಧನ್ಯವಾದಗಳು</translation>
 <translation id="7805768142964895445">ಸ್ಥಿತಿ</translation>
+<translation id="7811322735445742657">ನೀವು ಟಿಪ್ಪಣಿಗಳನ್ನು ಎಡಿಟ್ ಮಾಡಿದಾಗ, ಈ ಡಾಕ್ಯುಮೆಂಟ್ ಒಂದೇ ಪುಟದ ವೀಕ್ಷಣೆಗೆ ಮತ್ತು ತನ್ನ ಮೂಲ ತಿರುಗಿಸುವಿಕೆ ಸ್ಥಾನಕ್ಕೆ ಮರಳುತ್ತದೆ.</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Chrome ನಿಂದ ಫಾರ್ಮ್ ಸಲಹೆಯನ್ನು ತೆಗೆದುಹಾಕುವುದೇ?</translation>
 <translation id="781440967107097262">ಕ್ಲಿಪ್‌ಬೋರ್ಡ್ ಅನ್ನು ಹಂಚಿಕೊಳ್ಳುವುದೇ?</translation>
@@ -1696,6 +1700,7 @@
 <translation id="7956713633345437162">ಮೊಬೈಲ್ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು</translation>
 <translation id="7961015016161918242">ಎಂದಿಗೂ ಇಲ್ಲ</translation>
 <translation id="7966803981046576691">ಕೆಲಸದ ಖಾತೆ ಪ್ರಕಾರ</translation>
+<translation id="7976214039405368314">ಅತೀ ಹೆಚ್ಚು ವಿನಂತಿಗಳು</translation>
 <translation id="7977538094055660992">ಔಟ್‌ಪುಟ್ ಸಾಧನ</translation>
 <translation id="7977894662897852582">Edp</translation>
 <translation id="799149739215780103">ಬೈಂಡ್ ಮಾಡಿ</translation>
@@ -1777,6 +1782,7 @@
 <translation id="8289355894181816810">ಇದರ ಅರ್ಥವೇನೆಂದು ನಿಮಗೆ ಖಚಿತವಾಗದಿದ್ದರೆ ನಿಮ್ಮ ನೆಟ್‌ವರ್ಕ್ ನಿರ್ವಾಹಕರನ್ನು ಸಂಪರ್ಕಿಸಿ.</translation>
 <translation id="8293206222192510085">ಬುಕ್‌ಮಾರ್ಕ್ ಸೇರಿಸು</translation>
 <translation id="8294431847097064396">ಮೂಲ</translation>
+<translation id="8297398969342264569">ನೀವು ಟಿಪ್ಪಣಿಗಳನ್ನು ಎಡಿಟ್ ಮಾಡಿದಾಗ, ಈ ಡಾಕ್ಯುಮೆಂಟ್ ತನ್ನ ಮೂಲ ತಿರುಗಿಸುವಿಕೆ ಸ್ಥಾನಕ್ಕೆ ಮರಳುತ್ತದೆ.</translation>
 <translation id="8298115750975731693">ನೀವು ಬಳಸುತ್ತಿರುವ ವೈ-ಫೈ (<ph name="WIFI_NAME" />) ಗೆ ನೀವು <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> ಅನ್ನು ಭೇಟಿ ನೀಡುವ ಅಗತ್ಯವಿದೆ.</translation>
 <translation id="8303854710873047864">"<ph name="SECTION" />" ವಿಭಾಗವನ್ನು ತೋರಿಸಲಾಗಿದೆ</translation>
 <translation id="830498451218851433">ಅರ್ಧ ಮಡಿಸಿ</translation>

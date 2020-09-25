@@ -59,6 +59,7 @@
 <translation id="1467432559032391204">اليسار</translation>
 <translation id="1479909375538722835">قائمة "أدوات تمكين الوصول" العائمة</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
+<translation id="1503394326855300303">يجب أن يكون حساب المالك هذا أول حساب يتم تسجيل الدخول إليه في جلسة تسجيل دخول متعدد.</translation>
 <translation id="1516740043221086139">وضع "عدم الإزعاج" مُفعَّل.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{عرض إعدادات الإشعارات. تم إيقاف الإشعارات لتطبيق واحد}zero{عرض إعدادات الإشعارات. تم إيقاف الإشعارات لـ # تطبيق}two{عرض إعدادات الإشعارات. تم إيقاف الإشعارات لتطبيقين (#)}few{عرض إعدادات الإشعارات. تم إيقاف الإشعارات لـ # تطبيقات}many{عرض إعدادات الإشعارات. تم إيقاف الإشعارات لـ # تطبيقًا}other{عرض إعدادات الإشعارات. تم إيقاف الإشعارات لـ # تطبيق}}</translation>
 <translation id="1525508553941733066">إغلاق</translation>
@@ -172,7 +173,6 @@
 <translation id="2718395828230677721">الإضاءة الليلية</translation>
 <translation id="2727175239389218057">الرّد</translation>
 <translation id="2727977024730340865">تمّ توصيل شاحن منخفض الطاقة. لذا قد لا تكون عملية شحن البطارية جديرة بالثقة.</translation>
-<translation id="2743387203779672305">نسخ إلى الحافظة</translation>
 <translation id="2792498699870441125">‏Alt+مفتاح البحث</translation>
 <translation id="2819276065543622893">سيتم تسجيل خروجك الآن.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> غير متوافق مع <ph name="SPECIFIED_RESOLUTION" />. تم تغيير درجة الدقة إلى <ph name="FALLBACK_RESOLUTION" />.</translation>
@@ -257,6 +257,7 @@
 <translation id="3486220673238053218">تعريف</translation>
 <translation id="3510164367642747937">تمييز مؤشر الماوس</translation>
 <translation id="3513798432020909783">يُدير <ph name="MANAGER_EMAIL" /> الحساب.</translation>
+<translation id="3571734092741541777">إعداد</translation>
 <translation id="3573179567135747900">التغيير مرة أخرى إلى "<ph name="FROM_LOCALE" />" (يتطلب إعادة التشغيل)</translation>
 <translation id="3576141592585647168">تغيير المنطقة الزمنية</translation>
 <translation id="3593646411856133110">يُرجى التمرير السريع إلى الأعلى للاطّلاع على التطبيقات المفتوحة.</translation>
@@ -389,6 +390,7 @@
 <translation id="4917385247580444890">قوية</translation>
 <translation id="4918086044614829423">قبول</translation>
 <translation id="4924411785043111640">إعادة التشغيل وإعادة الضبط</translation>
+<translation id="4925542575807923399">يحتاج مشرف هذا الحساب أن يكون هذا الحساب الأول في تسجيل الدخول إلى جلسة دخول متعدد.</translation>
 <translation id="495046168593986294">التمرير لأعلى</translation>
 <translation id="4961318399572185831">إرسال الشاشة</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> س <ph name="MINUTES" /> د <ph name="SECONDS" /> ث</translation>
@@ -536,6 +538,7 @@
 <translation id="6657585470893396449">كلمة المرور</translation>
 <translation id="6665545700722362599">منح المواقع الإلكترونية والتطبيقات والإضافات الإذن لاستخدام خدمات الموقع الجغرافي أو كاميرا وميكروفون الجهاز أو الميزات الأخرى</translation>
 <translation id="6670153871843998651">مكتب 3</translation>
+<translation id="6671495933530132209">نسخ الصورة</translation>
 <translation id="6691659475504239918">Search+Shift+H</translation>
 <translation id="6692996468359469499">الحصول على معلومات ذات صلة باختيارك</translation>
 <translation id="6696025732084565524">تحتاج لوحة المفاتيح القابلة للفصل إلى تحديث مهم</translation>
@@ -735,6 +738,7 @@
 <translation id="8734991477317290293">قد تحاول لوحة المفاتيح سرقة ضغطات المفاتيح.</translation>
 <translation id="8735953464173050365">عرض إعدادات لوحة المفاتيح. تم اختيار <ph name="KEYBOARD_NAME" /></translation>
 <translation id="875593634123171288">‏عرض إعدادات الشبكة الظاهرية الخاصة (VPN)</translation>
+<translation id="8759408218731716181">يتعذر إعداد الدخول المتعدد</translation>
 <translation id="8785070478575117577">الاتصال بالشبكة <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">‏لاسلكي، Wi-Fi</translation>

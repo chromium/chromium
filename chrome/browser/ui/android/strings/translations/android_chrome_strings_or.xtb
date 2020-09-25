@@ -108,6 +108,7 @@
 <translation id="1868024384445905608">ପୂର୍ବାପେକ୍ଷା Chrome ବର୍ତ୍ତମାନ ଦ୍ରୁତତର ଭାବେ ଫାଇଲ୍‌ଗୁଡ଼ିକ ଡାଉନ୍‌ଲୋଡ୍‌ କରୁଛି</translation>
 <translation id="1877026089748256423">Chromeର ସମୟସୀମା ଶେଷ ହୋଇଛି</translation>
 <translation id="1883903952484604915">ମୋ ଫାଇଲ୍‌ଗୁଡ଼ିକ</translation>
+<translation id="189358972401248634">ଅନ୍ୟ ଭାଷାଗୁଡ଼ିକ</translation>
 <translation id="1925021887439448749">ଏକ କଷ୍ଟମ୍ ୱେବ୍ ଠିକଣା ଲେଖନ୍ତୁ</translation>
 <translation id="1928696683969751773">ଅପ୍‌ଡେଟ୍</translation>
 <translation id="19288952978244135">Chrome ପୁଣି ଖୋଲନ୍ତୁ।</translation>
@@ -217,6 +218,7 @@
 <translation id="2689830683995595741">Chrome ବ୍ୟବହାର କରିବା ଦ୍ୱାରା, ଆପଣ <ph name="BEGIN_LINK1" />Google ସେବାର ସର୍ତ୍ତାବଳୀ<ph name="END_LINK1" /> ଏବଂ <ph name="BEGIN_LINK2" />Google Chrome ଏବଂ Chrome OS ଅତିରିକ୍ତ ସେବାର ସର୍ତ୍ତାବଳୀ<ph name="END_LINK2" /> ସହିତ ସହମତ ହେଉଛନ୍ତି। <ph name="BEGIN_LINK3" />Family Link ମାଧ୍ୟମରେ ପରିଚାଳନା କରାଯାଇଥିବା Google ଆକାଉଣ୍ଟଗୁଡ଼ିକ ପାଇଁ ଗୋପନୀୟତା ନୋଟିସ୍<ph name="END_LINK3" /> ମଧ୍ୟ ଲାଗୁ ହୋଇଥାଏ।</translation>
 <translation id="2707726405694321444">ପୃଷ୍ଠା ରିଫ୍ରେସ୍ କରନ୍ତୁ</translation>
 <translation id="2709516037105925701">ସ୍ୱତଃପୂରଣ</translation>
+<translation id="2723001399770238859">ଅଡିଓ</translation>
 <translation id="2728754400939377704">ସାଇଟ୍ ଅନୁସାରେ ସଜାନ୍ତୁ</translation>
 <translation id="2744248271121720757">ତତ୍‍କ୍ଷଣାତ୍‍ ସର୍ଚ୍ଚ କରିବାକୁ କିମ୍ବା ସେହି ସମ୍ବନ୍ଧିତ କାର୍ଯ୍ୟ ଦେଖିବାକୁ ଏକ ଶଦ୍ଦ ଟାପ୍‍ କରନ୍ତୁ</translation>
 <translation id="2760989362628427051">ଆପଣଙ୍କ ଡିଭାଇସ୍‌ର ଗାଢା ଥିମ୍ ବା ବ୍ୟାଟେରୀ ସେଭର୍ ଚାଲୁଥିବା ସମୟରେ ଗାଢା ଥିମ୍ ଚାଲୁ କରନ୍ତୁ</translation>
@@ -467,6 +469,7 @@
 <translation id="4738836084190194332">ଶେଷଥର ସିଙ୍କ ହୋଇଥିଲା: <ph name="WHEN" /></translation>
 <translation id="4749960740855309258">ଏକ ନୂଆ ଟାବ୍ ଖୋଲନ୍ତୁ</translation>
 <translation id="4759238208242260848">ଡାଉନଲୋଡସମୂହ</translation>
+<translation id="4763480195061959176">ଭିଡିଓ</translation>
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{1ଟି ଡାଉନ୍‍‍‍ଲୋଡ୍ ସମୂର୍ଣ୍ଣ ହେଲା।}other{# ଟି ଡାଉନ୍‍‍‍ଲୋଡ୍ ସମୂର୍ଣ୍ଣ ହେଲା।}}</translation>
 <translation id="4766678251456904326">ଡିଭାଇସରେ ଆକାଉଣ୍ଟ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{1ଟି ଡାଉନଲୋଡ୍ ସିଡୁଲ୍ କରାଯାଇଛି।}other{#ଟି ଡାଉନଲୋଡ୍ ସିଡୁଲ୍ କରାଯାଇଛି।}}</translation>

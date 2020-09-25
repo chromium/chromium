@@ -189,7 +189,6 @@
 <translation id="3064388234319122767">Translitterointi (zdravo → здраво)</translation>
 <translation id="3067790092342515856">Windows-tiedostot</translation>
 <translation id="3078461028045006476">Jaa laajennuksen <ph name="EXTENSION_NAME" /> kanssa</translation>
-<translation id="3088034400796962477">Translitterointi (salam ← سلام)</translation>
 <translation id="3116361045094675131">Näppäimistö: UK</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">VALMIS</translation>
@@ -305,7 +304,6 @@
 <translation id="4477219268485577442">bulgaria, foneettinen</translation>
 <translation id="4479812471636796472">Näppäimistö: US, Dvorak</translation>
 <translation id="4481711095103932593">Tämä kansio on jaettu Windowsille</translation>
-<translation id="4487088045714738411">Näppäimistö: Belgia</translation>
 <translation id="4522570452068850558">Tiedot</translation>
 <translation id="4542387084127299777">Avaaminen ei onnistu: <ph name="PATH" /></translation>
 <translation id="4552678318981539154">Osta lisää tallennustilaa</translation>
@@ -366,6 +364,7 @@
 <translation id="5010406651457630570">Tietokoneet</translation>
 <translation id="5011233892417813670">Chromebook</translation>
 <translation id="5024856940085636730">Toiminto kestää odotettua kauemmin. Haluatko keskeyttää sen?</translation>
+<translation id="5026887030745057099">hindi</translation>
 <translation id="5036159836254554629">Määritä Parallels Desktop ‑jakaminen</translation>
 <translation id="5038625366300922036">Lisätietoja…</translation>
 <translation id="5061708541166515394">Kontrasti</translation>
@@ -430,7 +429,6 @@
 <translation id="5522908512596376669">Tiedostot näkyvät nyt luettelona.</translation>
 <translation id="5524517123096967210">Tiedostoa ei voi lukea.</translation>
 <translation id="5533102081734025921">Kuva, jonka tyyppi on <ph name="IMAGE_TYPE" /></translation>
-<translation id="5533555070048896610">Translitterointi (namaste → नमस्ते)</translation>
 <translation id="5534520101572674276">Lasketaan kokoa</translation>
 <translation id="5583640892426849032">Askelpalautin</translation>
 <translation id="5605830556594064952">USA, Dvorak</translation>

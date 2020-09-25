@@ -59,6 +59,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1467432559032391204">Esquerda</translation>
 <translation id="1479909375538722835">Menu de acessibilidade flutuante</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
+<translation id="1503394326855300303">Esta conta de proprietário tem de ser a primeira conta com início de sessão integrado.</translation>
 <translation id="1516740043221086139">O modo Não incomodar está ativado.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Mostrar definições de notificação. As notificações estão desativadas para uma aplicação}other{Mostrar definições de notificação. As notificações estão desativadas para # aplicações}}</translation>
 <translation id="1525508553941733066">IGNORAR</translation>
@@ -69,6 +70,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1589090746204042747">Aceda a toda a sua atividade nesta sessão.</translation>
 <translation id="1611993646327628135">Ativado</translation>
 <translation id="1632985212731562677">O acesso por comutador pode ser desativado em Definições &gt; Acessibilidade.</translation>
+<translation id="1651447046299738444">Parece que o Bluetooth ou o Wi-Fi estão desativados no Chromebook. Verifique a sua ligação para utilizar o Centro do telemóvel.</translation>
 <translation id="1654477262762802994">Iniciar uma consulta de voz</translation>
 <translation id="1667964833127753507">O modo de cores neutras não utiliza cores extraídas da imagem de fundo: substitui-as por um conjunto de tons claros ou escuros.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> restante(s)</translation>
@@ -151,6 +153,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="2435457462613246316">Mostrar palavra-passe</translation>
 <translation id="2473177541599297363">Confirme a resolução</translation>
 <translation id="2475982808118771221">Ocorreu um erro</translation>
+<translation id="2479579251444854687">Deslize rapidamente para cima com três dedos para abrir e para baixo para fechar a Vista geral.</translation>
 <translation id="2482878487686419369">Notificações</translation>
 <translation id="2484513351006226581">Prima <ph name="KEYBOARD_SHORTCUT" /> para mudar o esquema do teclado.</translation>
 <translation id="2501920221385095727">Teclas aderentes</translation>
@@ -163,6 +166,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="2595239820337756193">5 km em milhas</translation>
 <translation id="2617342710774726426">O cartão SIM está bloqueado</translation>
 <translation id="2621713457727696555">Protegida</translation>
+<translation id="2640255526076764619">O gesto do touchpad para mudar para o espaço de trabalho anterior foi alterado. Deslize rapidamente para a esquerda com quatro dedos para mudar para o espaço de trabalho anterior.</translation>
 <translation id="2653659639078652383">Enviar</translation>
 <translation id="2658778018866295321">Clique e arraste</translation>
 <translation id="2700493154570097719">Definir o teclado</translation>
@@ -172,7 +176,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="2718395828230677721">Luz noturna</translation>
 <translation id="2727175239389218057">Responder</translation>
 <translation id="2727977024730340865">Ligado a um carregador de baixo consumo. O carregamento da bateria pode não ser fiável.</translation>
-<translation id="2743387203779672305">Copiar para a área de transferência</translation>
 <translation id="2792498699870441125">Alt + Pesquisar</translation>
 <translation id="2819276065543622893">A sessão será terminada agora.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> não suporta <ph name="SPECIFIED_RESOLUTION" />. A resolução foi alterada para <ph name="FALLBACK_RESOLUTION" />.</translation>
@@ -257,6 +260,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="3486220673238053218">definição</translation>
 <translation id="3510164367642747937">Realçar cursor do rato</translation>
 <translation id="3513798432020909783">Conta gerida por <ph name="MANAGER_EMAIL" />.</translation>
+<translation id="3571734092741541777">Configurar</translation>
 <translation id="3573179567135747900">Reverter alteração para <ph name="FROM_LOCALE" /> (requer reinicio)</translation>
 <translation id="3576141592585647168">Altere o fuso horário</translation>
 <translation id="3593646411856133110">Deslize rapidamente para cima sem soltar para ver as apps abertas.</translation>
@@ -341,6 +345,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="4412944820643904175">A funcionalidade <ph name="FEATURE_NAME" /> está desativada.</translation>
 <translation id="4421231901400348175">A partilhar o controlo do seu ecrã com <ph name="HELPER_NAME" /> através da Assistência remota.</translation>
 <translation id="4430019312045809116">Volume</translation>
+<translation id="4444978951615977024">Ups! Verifique a sua ligação</translation>
 <translation id="4450893287417543264">Não mostrar de novo</translation>
 <translation id="445864333228800152">Boa noite,</translation>
 <translation id="4458688154122353284">Parar gravação de ecrã</translation>
@@ -350,6 +355,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Dispositivos dessincronizados</translation>
 <translation id="4505050298327493054">Espaço de trabalho ativo.</translation>
+<translation id="4506458088675900627">O gesto do touchpad da Vista geral foi alterado</translation>
 <translation id="4513946894732546136">Comentários</translation>
 <translation id="4527045527269911712">O dispositivo Bluetooth "<ph name="DEVICE_NAME" />" necessita de autorização para sincronizar.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> até estar totalmente carregada</translation>
@@ -389,6 +395,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="4917385247580444890">Forte</translation>
 <translation id="4918086044614829423">Aceitar</translation>
 <translation id="4924411785043111640">Reiniciar e repor</translation>
+<translation id="4925542575807923399">O gestor para esta conta requer que esta conta seja a primeira conta com sessão iniciada num início de sessão integrado.</translation>
 <translation id="495046168593986294">Deslocar para cima</translation>
 <translation id="4961318399572185831">Transmitir ecrã</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> h <ph name="MINUTES" /> min <ph name="SECONDS" /> s</translation>
@@ -478,6 +485,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="6018164090099858612">A sair do modo espelhado</translation>
 <translation id="602001110135236999">Deslocar para a esquerda</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, intensidade do sinal: <ph name="SIGNAL_STRENGTH" />, gerida pelo administrador</translation>
+<translation id="6029337736376922061">O gesto do touchpad para mudar para o espaço de trabalho seguinte foi alterado. Deslize rapidamente para a direita com quatro dedos para mudar para o espaço de trabalho seguinte.</translation>
 <translation id="6030495522958826102">O menu foi movido para o canto inferior esquerdo do ecrã.</translation>
 <translation id="6040143037577758943">Fechar</translation>
 <translation id="6043212731627905357">Este monitor está em conflito com o seu <ph name="DEVICE_TYPE" /> (o monitor não é compatível).</translation>
@@ -535,6 +543,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="6657585470893396449">Palavra-passe</translation>
 <translation id="6665545700722362599">Conceda aos Websites, às aplicações e às extensões autorização para utilizar os Serviços de localização, o microfone, a câmara ou outras funcionalidades do dispositivo.</translation>
 <translation id="6670153871843998651">Secretária 3</translation>
+<translation id="6671495933530132209">Copiar imagem</translation>
 <translation id="6691659475504239918">Pesquisa + Shift + H</translation>
 <translation id="6692996468359469499">Obtenha informações relacionadas com a sua seleção</translation>
 <translation id="6696025732084565524">O teclado amovível necessita de uma atualização crítica</translation>
@@ -734,6 +743,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="8734991477317290293">É possível que esteja a tentar roubar os seus toques de teclas.</translation>
 <translation id="8735953464173050365">Mostrar definições do teclado. <ph name="KEYBOARD_NAME" /> está selecionado</translation>
 <translation id="875593634123171288">Mostrar definições da VPN</translation>
+<translation id="8759408218731716181">Não é possível configurar o início de sessão integrado</translation>
 <translation id="8785070478575117577">Ligar a <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>

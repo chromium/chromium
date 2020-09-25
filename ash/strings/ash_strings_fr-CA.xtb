@@ -59,6 +59,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1467432559032391204">À gauche</translation>
 <translation id="1479909375538722835">Menu d'accessibilité flottant</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
+<translation id="1503394326855300303">Ce compte de propriétaire doit être le premier compte à être connecté lors de sessions de connexion multicompte.</translation>
 <translation id="1516740043221086139">Le mode Ne pas déranger est activé.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Afficher les paramètres de notification. Les notifications sont désactivées pour une application}one{Afficher les paramètres de notification. Les notifications sont désactivées pour # application}other{Afficher les paramètres de notification. Les notifications sont désactivées pour # applications}}</translation>
 <translation id="1525508553941733066">IGNORER</translation>
@@ -172,7 +173,6 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="2718395828230677721">Éclairage nocturne</translation>
 <translation id="2727175239389218057">Répondre</translation>
 <translation id="2727977024730340865">L'appareil est branché à un chargeur de faible puissance. Il se peut que la recharge de la batterie ne soit pas fiable.</translation>
-<translation id="2743387203779672305">Copier dans le presse-papiers</translation>
 <translation id="2792498699870441125">Alt + Recherche</translation>
 <translation id="2819276065543622893">Vous allez maintenant être déconnecté.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> ne permet pas un affichage avec une résolution de <ph name="SPECIFIED_RESOLUTION" />. La résolution a donc été remise à <ph name="FALLBACK_RESOLUTION" />.</translation>
@@ -257,6 +257,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="3486220673238053218">définition</translation>
 <translation id="3510164367642747937">Mettre le curseur de la souris en surbrillance</translation>
 <translation id="3513798432020909783">Compte géré par <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3571734092741541777">Configurer</translation>
 <translation id="3573179567135747900">Revenir à « <ph name="FROM_LOCALE" /> » (redémarrage requis)</translation>
 <translation id="3576141592585647168">Changer le fuseau horaire</translation>
 <translation id="3593646411856133110">Balayez l'écran vers le haut et maintenez le doigt sur l'écran pour afficher les applications ouvertes</translation>
@@ -307,6 +308,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Désactivées pour une appli}one{Désactivées pour # appli}other{Désactivées pour # applis}}</translation>
 <translation id="4072264167173457037">Signal moyen</translation>
 <translation id="4112140312785995938">Rechercher vers l'arrière</translation>
+<translation id="4114315158543974537">Activer Phone Hub</translation>
 <translation id="4129129681837227511">Pour afficher les notifications sur l'écran de verrouillage, déverrouillez votre appareil afin de modifier ce paramètre</translation>
 <translation id="4146833061457621061">Faire jouer de la musique</translation>
 <translation id="4149156641122542261">L'appareil <ph name="DEVICE_TYPE" /> est géré par <ph name="DOMAIN" /></translation>
@@ -388,6 +390,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="4917385247580444890">Fort</translation>
 <translation id="4918086044614829423">Accepter</translation>
 <translation id="4924411785043111640">Redémarrer et réinitialiser</translation>
+<translation id="4925542575807923399">L'administrateur pour ce compte l'a configuré de sorte qu'il doit être le premier compte à connecter lors de sessions de connexion multicompte.</translation>
 <translation id="495046168593986294">Faire défiler vers le haut</translation>
 <translation id="4961318399572185831">Diffuser un écran</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> h <ph name="MINUTES" /> min <ph name="SECONDS" /> s</translation>
@@ -438,6 +441,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="5648021990716966815">Prise du microphone</translation>
 <translation id="5669267381087807207">Activation…</translation>
 <translation id="5673434351075758678">De « <ph name="FROM_LOCALE" />  à « <ph name="TO_LOCALE" /> » après la synchronisation de vos paramètres.</translation>
+<translation id="5679050765726761783">Un adaptateur d'alimentation à faible consommation est branché</translation>
 <translation id="5682642926269496722">L'Assistant Google n'est pas accessible pour le compte d'utilisateur actuel.</translation>
 <translation id="5689633613396158040">Le mode Éclairage nocturne permet de regarder l'écran plus facilement lorsque l'éclairage est faible. Touchez l'écran pour modifier l'heure à laquelle le mode Éclairage nocturne s'active ou se désactive complètement.</translation>
 <translation id="5691772641933328258">Empreinte digitale non reconnue</translation>
@@ -533,6 +537,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="6657585470893396449">Mot de passe</translation>
 <translation id="6665545700722362599">Accordez à des sites Web, à des applications et à des extensions l'autorisation d'utiliser les services de localisation, le microphone ou l'appareil photo de l'appareil, ainsi que d'autres fonctionnalités</translation>
 <translation id="6670153871843998651">Bureau 3</translation>
+<translation id="6671495933530132209">Copier l'image</translation>
 <translation id="6691659475504239918">Recherche+Maj+H</translation>
 <translation id="6692996468359469499">Obtenir de l'information sur votre sélection</translation>
 <translation id="6696025732084565524">Votre clavier amovible nécessite une mise à jour critique</translation>
@@ -552,6 +557,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="6857811139397017780">Activer <ph name="NETWORKSERVICE" /></translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Il reste 1 chiffre}one{Il reste # chiffre}other{Il reste # chiffres}}</translation>
 <translation id="6878400149835617132">Raccourci désactivé</translation>
+<translation id="6886172995547742638">Cela peut nuire aux performances de votre <ph name="DEVICE_TYPE" />. Utilisez un adaptateur d'alimentation USB-C de<ph name="PREFERRED_MINIMUM_POWER" /> W ou plus.</translation>
 <translation id="6896758677409633944">Copier</translation>
 <translation id="6910714959251846841">Cette mise à jour nécessite une réinitialisation de votre appareil. En savoir plus sur la dernière mise à jour de <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="6919251195245069855">Votre carte à puce n'a pas été reconnue. Réessayez.</translation>
@@ -731,6 +737,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="8734991477317290293">Il essaie peut-être de récupérer les touches que vous avez utilisées</translation>
 <translation id="8735953464173050365">Afficher les paramètres du clavier. <ph name="KEYBOARD_NAME" /> est sélectionné</translation>
 <translation id="875593634123171288">Afficher les paramètres RPV</translation>
+<translation id="8759408218731716181">Impossible de configurer la connexion multicompte.</translation>
 <translation id="8785070478575117577">Se connecter à <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>

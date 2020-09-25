@@ -59,6 +59,7 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="1467432559032391204">Kwesobunxele</translation>
 <translation id="1479909375538722835">Imenyu yokufinyelela entantayo</translation>
 <translation id="1484102317210609525">I-<ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
+<translation id="1503394326855300303">Le akhawunti yomnikazi kumele kube i-akhawunti yokuqala yokungena ngemvume kwiseshini yokungena ngemvume okuningi.</translation>
 <translation id="1516740043221086139">Ukungaphazamisi kuvuliwe.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Bonisa izilungiselelo zesaziso. Izaziso zivalekile kuhlelo lokusebenza}one{Bonisa izilungiselelo zesaziso. Izaziso zivaliwe kuzinhlelo zokusebenza ezingu-#}other{Bonisa izilungiselelo zesaziso. Izaziso zivaliwe kuzinhlelo zokusebenza ezingu-#}}</translation>
 <translation id="1525508553941733066">CASHISA</translation>
@@ -172,7 +173,6 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="2718395828230677721">Ukukhanya</translation>
 <translation id="2727175239389218057">Phendula</translation>
 <translation id="2727977024730340865">Ixhunye kushaja yamandla aphansi. Ukushaja ibhethri kungenzeka kungathembeki.</translation>
-<translation id="2743387203779672305">Kopisha kubhodi lokunamathisela</translation>
 <translation id="2792498699870441125">I-Alt+Search</translation>
 <translation id="2819276065543622893">Uzokhishwa ngemvume manje.</translation>
 <translation id="2825224105325558319">I-<ph name="DISPLAY_NAME" /> ayisekeli i-<ph name="SPECIFIED_RESOLUTION" />. Ukulungiswa kuguqulelwe ku-<ph name="FALLBACK_RESOLUTION" />.</translation>
@@ -257,6 +257,7 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="3486220673238053218">incazelo</translation>
 <translation id="3510164367642747937">Gqamisa isikhombisi semawuzi</translation>
 <translation id="3513798432020909783">I-akhawunti iphethwe ngu-<ph name="MANAGER_EMAIL" /></translation>
+<translation id="3571734092741541777">Lungisa</translation>
 <translation id="3573179567135747900">Guqulela emuva ku-"<ph name="FROM_LOCALE" />" (kudingeka ukuqalisa kabusha)</translation>
 <translation id="3576141592585647168">Shintsha izoni yesikhathi</translation>
 <translation id="3593646411856133110">Swayiphela phezulu ubambe ukuze ubone izinhlelo zokusebenza ezivuliwe</translation>
@@ -389,6 +390,7 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="4917385247580444890">kunamandla</translation>
 <translation id="4918086044614829423">Yamukela</translation>
 <translation id="4924411785043111640">Qalisa kabusha futhi usethe kabusha</translation>
+<translation id="4925542575807923399">Umlawuli wale akhawunti udinga le akhawunti ukuthi ibe yi-akhawunti yokuqala engene ngemvume kuseshini yokungena ngemvume eningi.</translation>
 <translation id="495046168593986294">Skrolela phezulu</translation>
 <translation id="4961318399572185831">Sakaza isikrini</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />h <ph name="MINUTES" />m <ph name="SECONDS" />s</translation>
@@ -535,6 +537,7 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="6657585470893396449">Igama lokungena</translation>
 <translation id="6665545700722362599">Nikeza amawebhusayithi, izinhlelo zokusebenza nezandiso imvume yokusebenzisa amasevisi endawo, imakrofoni yedivayisi, ikhamera, noma ezinye izici</translation>
 <translation id="6670153871843998651">Itafula 3</translation>
+<translation id="6671495933530132209">Kopisha isithombe</translation>
 <translation id="6691659475504239918">U-Search+Shift+H</translation>
 <translation id="6692996468359469499">Thola ukwaziswa okuhlobene nokhetho lwakho</translation>
 <translation id="6696025732084565524">Ikhibhodi yakho enqamukayo idinga isibuyekezo esibalulekile</translation>
@@ -734,6 +737,7 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="8734991477317290293">Ingazama ukutshontsha okhiye bakho</translation>
 <translation id="8735953464173050365">Bonisa izilungiselelo zekhibhodi. <ph name="KEYBOARD_NAME" /> ikhethiwe</translation>
 <translation id="875593634123171288">Bonisa izilungiselelo ze-VPN</translation>
+<translation id="8759408218731716181">Ayikwazi ukusetha ukungena ngemvume okuningi</translation>
 <translation id="8785070478575117577">Xhuma ku-<ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">I-Wi-Fi</translation>

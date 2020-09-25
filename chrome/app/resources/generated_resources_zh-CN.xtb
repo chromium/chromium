@@ -352,6 +352,7 @@
 <translation id="140520891692800925"><ph name="PROFILE_DISPLAY_NAME" />（受监管用户）</translation>
 <translation id="1405779994569073824">已崩溃。</translation>
 <translation id="1406500794671479665">正在验证...</translation>
+<translation id="1407135791313364759">全部打开</translation>
 <translation id="140723521119632973">移动网络激活</translation>
 <translation id="1407489512183974736">居中并裁剪</translation>
 <translation id="1408504635543854729">在“文件”应用中浏览此设备上的内容。相关内容受到管理员的限制，无法修改。</translation>
@@ -1899,7 +1900,6 @@
 <translation id="3246107497225150582">{0,plural, =1{请在 1 天内更新此设备}other{请在 # 天内更新此设备}}</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - 网络错误</translation>
 <translation id="3248902735035392926">安全至上。请花点时间<ph name="BEGIN_LINK" />立即检查一下您的扩展程序<ph name="END_LINK" />吧</translation>
-<translation id="325036368918787455">关闭无痕式窗口</translation>
 <translation id="3251759466064201842">&lt;未包含在证书中&gt;</translation>
 <translation id="3253225298092156258">无法选择</translation>
 <translation id="3253448572569133955">未知帐号</translation>
@@ -3439,7 +3439,6 @@
 <translation id="5097649414558628673">工具：<ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">光标停止移动时自动点击</translation>
 <translation id="5099399397495049098">网站可以使用 JavaScript（推荐）</translation>
-<translation id="5101042277149003567">打开所有书签</translation>
 <translation id="5101839224773798795">光标停止时自动点击</translation>
 <translation id="5107443654503185812">某个扩展程序关闭了“安全浏览”功能</translation>
 <translation id="5108967062857032718">设置 - 移除 Android 应用</translation>
@@ -4023,7 +4022,6 @@
 <translation id="5804241973901381774">权限</translation>
 <translation id="5805697420284793859">窗口管理器</translation>
 <translation id="5806773519584576205">0°（默认）</translation>
-<translation id="5808664694611589238">{0,plural, =1{关闭访客窗口}other{关闭访客窗口}}</translation>
 <translation id="5810809306422959727">此帐号无法使用家长控制功能</translation>
 <translation id="5812674658566766066">全部展开</translation>
 <translation id="5814126672212206791">连接类型</translation>

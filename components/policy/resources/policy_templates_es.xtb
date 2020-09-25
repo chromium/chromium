@@ -573,9 +573,6 @@ Si inhabilitas esta política, se inhabilitará el desplazamiento de una página
         |TIME_LIMITS| aplica un límite de uso diario y hace que la aplicación deje de estar disponible cuando se alcance ese límite durante el día determinado. El límite de uso se especifica en |daily_limit_mins| y se restablece diariamente a la hora UTC especificada en |reset_at|.
         Esta política solo se usa para usuarios infantiles.
         Esta política es complementaria a "UsageTimeLimit". Las restricciones especificadas en "UsageTimeLimit", como el tiempo de pantalla y la hora de dormir, se aplicarán independientemente de lo que se haya especificado en "PerAppTimeLimits".</translation>
-<translation id="1914840757300882918">Si se asigna un valor a esta política, el host utilizará un certificado de cliente con el CN de emisor especificado para autenticarse en RemoteAccessHostTokenValidationUrl. Si se le asigna el valor "*", se utilizará cualquier certificado de cliente disponible.
-
-          Actualmente, esta función está inhabilitada en el servidor.</translation>
 <translation id="1919802376548418720">Usa la política del centro de distribución de llaves (KDC) para delegar credenciales.</translation>
 <translation id="1920046221095339924">Permitir sesión gestionada en el dispositivo</translation>
 <translation id="1920772397574801429">Si se define esta política, se especificará el tipo de cuentas proporcionadas por la aplicación de autenticación de Android compatible con la autenticación <ph name="HTTP_NEGOTIATE" /> (como la autenticación Kerberos). Esta información debe estar disponible desde el proveedor de la aplicación de autenticación. Para obtener más información, consulta The Chromium Projects (https://goo.gl/hajyfN).
@@ -1101,22 +1098,6 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
       Si se inhabilita esta política, no se mostrará ninguna advertencia de seguridad cuando se inicie Chrome con instrucciones de línea de comandos potencialmente peligrosas.
 
       En <ph name="MS_WIN_NAME" />, esta función solo está disponible en instancias que estén vinculadas a un dominio de <ph name="MS_AD_NAME" />, que se ejecuten en Windows 10 Pro o que se hayan registrado en Gestión en la nube del navegador Chrome. En <ph name="MAC_OS_NAME" />, esta función solo está disponible en instancias que se gestionen mediante MDM o que estén vinculadas a un dominio a través de MCX.</translation>
-<translation id="2621383458880689826">Proporciona opciones de configuración para impresoras de empresa vinculadas a dispositivos.
-
-      Esta política permite proporcionar opciones de configuración de impresoras a dispositivos <ph name="PRODUCT_OS_NAME" />.  El formato es el mismo que el del diccionario NativePrinters, con un campo id o guid obligatorio por impresora para incluirla en una lista de permitidas o bloqueadas.
-
-      El tamaño máximo del archivo es de 5 MB y se debe codificar con formato JSON.  Se estima que el tamaño de un archivo que contiene unas 21.000 impresoras es de 5 MB.  Se usa el hash criptográfico para comprobar la integridad de la descarga.
-
-      El archivo se descarga y se almacena en caché. Se volverá a descargar si se cambia la URL o el hash.
-
-      Si se establece esta política, <ph name="PRODUCT_OS_NAME" /> descargará el archivo con las configuraciones de las impresoras y estas estarán disponibles según lo especificado en las políticas <ph name="DEVICE_NATIVE_PRINTERS_ACCESS_MODE" />, <ph name="DEVICE_NATIVE_PRINTERS_WHITELIST_POLICY_NAME" /> y <ph name="DEVICE_NATIVE_PRINTERS_BLACKLIST_POLICY_NAME" />.
-
-      Esta política no afecta a la capacidad de los usuarios de configurar impresoras en determinados dispositivos.  La política está pensada para ser complementaria a la configuración de impresoras de los usuarios.
-
-      Esta política sirve de complemento de la política <ph name="BULK_PRINTERS_POLICY_NAME" />.
-
-      Si no se establece esta política, no habrá impresoras de dispositivos y se ignorará el resto de las políticas <ph name="DEVICE_NATIVE_PRINTERS_POLICY_PATTERN" />.
-      </translation>
 <translation id="2623014935069176671">Esperar actividad inicial del usuario</translation>
 <translation id="262740370354162807">Habilitar el envío de documentos a <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="2632538643061793322">Si le asignas un valor a esta política, podrás establecer una lista de patrones de URL donde se especifique qué sitios web pueden pedirles a los usuarios que les permitan acceder a un dispositivo USB.
@@ -1283,12 +1264,6 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
       Si habilitas esta opción, la vista previa de impresión mostrará la impresora predeterminada del sistema operativo como impresora de destino predeterminada.</translation>
 <translation id="285627849510728211">Define la configuración diaria del modo avanzado de carga de la batería</translation>
 <translation id="2856674246949497058">Vuelve a instalar la versión de destino si la versión del SO es más reciente que la de destino. Realiza un Powerwash durante el proceso.</translation>
-<translation id="2869140260739354012">Controla qué impresoras de la política <ph name="DEVICE_PRINTERS_POLICY" /> están disponibles para los usuarios.
-
-      Define qué política de acceso se utiliza para configurar impresoras en bloque. Si se selecciona <ph name="PRINTERS_ALLOW_ALL" />, se muestran todas las impresoras. Si se selecciona <ph name="PRINTERS_BLACKLIST" />, <ph name="DEVICE_NATIVE_PRINTERS_BLACKLIST" /> se utiliza para restringir el acceso a impresoras específicas. Si se selecciona <ph name="PRINTERS_WHITELIST" />, <ph name="DEVICE_NATIVE_PRINTERS_WHITELIST" /> define únicamente las impresoras que se pueden seleccionar.
-
-      Si no se establece esta política, se utiliza <ph name="PRINTERS_ALLOW_ALL" />.
-      </translation>
 <translation id="2869762730352628426">Habilitar el clic automático en la pantalla de inicio de sesión</translation>
 <translation id="2872961005593481000">Apagar</translation>
 <translation id="2874209944580848064">Nota para los dispositivos <ph name="PRODUCT_OS_NAME" /> compatibles con las aplicaciones de Android:</translation>
@@ -1929,12 +1904,6 @@ Si se le asigna el valor "False", <ph name="PRODUCT_NAME" /> no usará notificac
 <translation id="3838094946886335701">Si se establece esta política (solo según lo recomendado), podrás registrar una lista de controladores de protocolo, la cual se combinará con las listas que registre el usuario (se usarán ambos conjuntos). Establece la propiedad protocol según el esquema (por ejemplo, mailto) y la propiedad URL según el patrón de URL de la aplicación que controla el esquema especificado en el campo protocol. El patrón puede incluir un marcador de posición %s, que se sustituye por la URL controlada.
 
       Los usuarios no pueden quitar un controlador de protocolo registrado por la política. Sin embargo, si instalan un controlador predeterminado nuevo, podrán cambiar los controladores de protocolo instalados por la política.</translation>
-<translation id="3848118497246496090">Especifica las impresoras que un usuario no puede utilizar.
-
-      Esta política solo se usará si se asigna <ph name="PRINTERS_BLACKLIST" /> a <ph name="DEVICE_NATIVE_PRINTERS_ACCESS_MODE" />.
-
-      Si se usa esta política, el usuario podrá utilizar todas las impresoras, excepto aquellas con los ID indicados en la política. Los ID deben coincidir con los campos id o guid del archivo especificado en <ph name="DEVICE_PRINTERS_POLICY" />.
-      </translation>
 <translation id="3851039766298741586">Proporciona información sobre la sesión del kiosco activa, como el
       ID de la aplicación y la versión.
 
@@ -2299,12 +2268,6 @@ Si esta política se establece en False, el usuario no podrá canjear ofertas.</
 
       Si no se le asigna ningún valor, los sitios web podrán solicitar acceso, pero los usuarios podrán cambiar esta opción.</translation>
 <translation id="4285674129118156176">Permitir que los usuarios no afiliados utilicen ARC</translation>
-<translation id="4309562700894844665">Especifica las impresoras que puede utilizar un usuario.
-
-      Esta política solo se usa si se asigna <ph name="PRINTERS_WHITELIST" /> a <ph name="DEVICE_NATIVE_PRINTERS_ACCESS_MODE" />
-
-      Si se usa esta política, solo las impresoras cuyos ID coincidan con los valores incluidos en la política estarán disponibles para el usuario. Los ID deben coincidir con los campos id o guid del archivo definido en la política <ph name="DEVICE_PRINTERS_POLICY" />.
-      </translation>
 <translation id="4311195029067684288">Llena</translation>
 <translation id="4313767483634435271">Dirección MAC designada de la base del dispositivo</translation>
 <translation id="4322842393287974810">Permite que la aplicación de kiosco sin retardo con inicio automático controle la versión de <ph name="PRODUCT_OS_NAME" /></translation>
@@ -2321,9 +2284,6 @@ Si esta política se establece en False, el usuario no podrá canjear ofertas.</
 <translation id="4347908978527632940">Si la política está activada y se trata de un usuario supervisado, otras aplicaciones de Android pueden consultar las restricciones web del usuario a través de un proveedor de contenido.
 
           Si está desactivada o no se ha establecido, el proveedor de contenido no devuelve ninguna información.</translation>
-<translation id="4360826270668210664">Si se asigna un valor a esta política, el host de acceso remoto necesitará la autenticación de los clientes para obtener un token de autenticación de esta URL y poder conectarse. Debe utilizarse junto con RemoteAccessHostTokenValidationUrl.
-
-          Actualmente, esta función está inhabilitada en el servidor.</translation>
 <translation id="4363057787588706121">Permite combinar listas de políticas de fuentes distintas</translation>
 <translation id="4363101430102811068">Habilita la detección de filtraciones de datos para las credenciales introducidas</translation>
 <translation id="436581050240847513">Permite informar de interfaces de red del dispositivo</translation>
@@ -4575,9 +4535,6 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 <translation id="7477231245051133709">Habilita la función de accesibilidad de audio en mono</translation>
 <translation id="7477239290070847560">Destinos de protocolo zeroconf (mDNS y DNS‑SD)</translation>
 <translation id="7485481791539008776">Reglas para la selección de la impresora predeterminada</translation>
-<translation id="7485730741952775732">Si se asigna un valor a esta política, el host de acceso remoto utilizará esta URL para validar los tokens de autenticación de los clientes de acceso remoto y para aceptar las conexiones. Se debe utilizar junto con RemoteAccessHostTokenUrl.
-
-          Actualmente, esta función está inhabilitada en el servidor.</translation>
 <translation id="749556411189861380">Permite informar sobre la versión del firmware y del sistema operativo de los dispositivos registrados.
 
 Si esta opción no está establecida o está establecida en True, los dispositivos registrados informarán sobre la versión del firmware y del sistema operativo de forma periódica. Si esta opción está establecida en False, no se informará sobre los datos de la versión.</translation>
@@ -4901,9 +4858,6 @@ Si esta opción no está establecida o está establecida en True, los dispositiv
 <translation id="7953256619080733119">Hosts de excepción manual de usuario administrado</translation>
 <translation id="7956210013490975468">Configura el servicio de proxy del sistema en <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="7958537754689366707">Es obligatorio introducir la contraseña cada doce horas</translation>
-<translation id="7960293328203000385">Permite definir la lista de usuarios con permiso para iniciar sesión en el dispositivo. Las entradas tienen el formato <ph name="USER_ALLOWLIST_ENTRY_FORMAT" /> (por ejemplo, <ph name="USER_ALLOWLIST_ENTRY_EXAMPLE" />). Para permitir usuarios arbitrarios en un dominio, utiliza entradas similares a <ph name="USER_ALLOWLIST_ENTRY_WILDCARD" />.
-
-      Si no se configura esta política, no se aplicarán restricciones sobre los usuarios que pueden iniciar sesión. Ten en cuenta que sigue siendo necesario configurar adecuadamente la política <ph name="DEVICE_ALLOW_NEW_USERS_POLICY_NAME" /> para crear nuevos usuarios.</translation>
 <translation id="7961779417826583251">Inhabilitar los requisitos de la transparencia en los certificados en una lista de autoridades de certificación antiguas</translation>
 <translation id="7973609468423251675">Ten en cuenta que esta política está obsoleta y se eliminará de la versión 85 de <ph name="PRODUCT_OS_NAME" />. Utiliza <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" /> en su lugar.
 

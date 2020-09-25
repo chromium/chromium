@@ -352,6 +352,7 @@
 <translation id="140520891692800925"><ph name="PROFILE_DISPLAY_NAME" /> (ကြီးကြပ်ထား)</translation>
 <translation id="1405779994569073824">ရပ်တန့်သွားသည်။</translation>
 <translation id="1406500794671479665">စိစစ်နေ...</translation>
+<translation id="1407135791313364759">အားလုံး ဖွင့်ရန်</translation>
 <translation id="140723521119632973">ဆယ်လူလာ စတင်ခြင်း</translation>
 <translation id="1407489512183974736">အလယ်ဖြတ်ထား</translation>
 <translation id="1408504635543854729">စက်ပစ္စည်း၏ အကြောင်းအရာများကို Files အက်ပ်ထဲတွင် ရှာပါ။ အကြောင်းအရာကို စီမံခန့်ခွဲသူက ပိတ်ပင်ထားသောကြောင့် မွမ်းမံပြင်ဆင်၍မရပါ။</translation>
@@ -1904,7 +1905,6 @@
 <translation id="3246107497225150582">{0,plural, =1{စက်ကို တစ်ရက်အတွင်း အပ်ဒိတ်လုပ်ပါ}other{စက်ကို # ရက်အတွင်း အပ်ဒိတ်လုပ်ပါ}}</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - ကွန်ရက်အမှားအယွင်း</translation>
 <translation id="3248902735035392926">လုံခြုံမှုက အရေးကြီးပါသည်။ အချိန်ခဏပေး၍ <ph name="BEGIN_LINK" />ယခုပင် သင်၏နောက်ဆက်တွဲများကို စစ်ဆေးပါ<ph name="END_LINK" /></translation>
-<translation id="325036368918787455">ရုပ်ဖျက်မုဒ် ပိတ်ရန်</translation>
 <translation id="3251759466064201842">&lt;လက်မှတ် ထဲက အပိုင်း မဟုတ်ပါ&gt;</translation>
 <translation id="3253225298092156258">မရနိုင်ပါ</translation>
 <translation id="3253448572569133955">အမျိုးအမည်မသိ အကောင့်</translation>
@@ -3444,7 +3444,6 @@
 <translation id="5097649414558628673">ကိရိယာ - <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">ကာဆာရပ်သည့်အခါ အလိုအလျောက် နှိပ်ရန်</translation>
 <translation id="5099399397495049098">ဝဘ်ဆိုက်များက Javascript ကို အသုံးပြုနိုင်သည် (အကြံပြုထားသည်)</translation>
-<translation id="5101042277149003567">မှတ်ထားသော လိပ်စာအားလုံးကို ဖွင့်ရန်</translation>
 <translation id="5101839224773798795">ကာဆာရပ်သွားသည့်အခါ အလိုအလျောက် နှိပ်ရန်</translation>
 <translation id="5107443654503185812">နောက်ဆက်တွဲတစ်ခုက 'လုံခြုံစွာ ကြည့်ရှုခြင်း' ကို ပိတ်လိုက်သည်</translation>
 <translation id="5108967062857032718">ဆက်တင်များ − Android အက်ပ်များကို ဖယ်ရှားပါ</translation>
@@ -4029,7 +4028,6 @@
 <translation id="5804241973901381774">ခွင့်ပြုချက်များ</translation>
 <translation id="5805697420284793859">ဝင်းဒိုး မန်နေဂျာ</translation>
 <translation id="5806773519584576205">၀° (မူရင်း)</translation>
-<translation id="5808664694611589238">{0,plural, =1{ဧည့်သည်ဝင်းဒိုး ပိတ်ရန်}other{ဧည့်သည်ဝင်းဒိုး ပိတ်ရန်}}</translation>
 <translation id="5810809306422959727">ဤအကောင့်တွင် မိဘ အထိန်းအချုပ်များကို အသုံးပြု၍မရပါ</translation>
 <translation id="5812674658566766066">အားလုံးချဲ့ရန်</translation>
 <translation id="5814126672212206791">ချိတ်ဆက်မှု အမျိုးအစား</translation>

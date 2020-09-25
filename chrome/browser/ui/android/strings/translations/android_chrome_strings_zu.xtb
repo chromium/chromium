@@ -108,6 +108,7 @@
 <translation id="1868024384445905608">I-Chrome manje ilanda amafayela ngokushesha</translation>
 <translation id="1877026089748256423">I-Chrome ingaphandle kwedethi</translation>
 <translation id="1883903952484604915">Amafayela ami</translation>
+<translation id="189358972401248634">Ezinye izilimi</translation>
 <translation id="1925021887439448749">Faka ikheli lewebhu langokwezifiso</translation>
 <translation id="1928696683969751773">Izibuyekezo</translation>
 <translation id="19288952978244135">Phinda uvule i-Chrome.</translation>
@@ -217,6 +218,7 @@ Thinta uphinde ubambe noma iliphi igama ukuze useshe. Ukuze wenze ngcono usesho 
 <translation id="2689830683995595741">Ngokusebenzisa i-Chrome, uvumelana <ph name="BEGIN_LINK1" />Nemigomo Yesevisi ye-Google<ph name="END_LINK1" />, kanye <ph name="BEGIN_LINK2" />ne-Google Chrome Nemigomo Yesevisi ye-Chrome OS Engeziwe<ph name="END_LINK2" />. <ph name="BEGIN_LINK3" />Isaziso Esemfihlo yama-Akhawunti e-Google Aphethwe nge-Family Link<ph name="END_LINK3" /> naso sizosebenza.</translation>
 <translation id="2707726405694321444">Vuselela ikhasi</translation>
 <translation id="2709516037105925701">Gcwalisa ngokuzenzakalela</translation>
+<translation id="2723001399770238859">umsindo</translation>
 <translation id="2728754400939377704">Hlunga ngesayithi</translation>
 <translation id="2744248271121720757">Thepha igama ukuze useshe ngokushesha noma ubone izenzo eziphathelene</translation>
 <translation id="2760989362628427051">Vula imodi emnyama uma imodi emnyama yedivayisi yakho noma Isilondolozi sebhethri sivuliwe</translation>
@@ -467,6 +469,7 @@ I-akhawunti yakho ye-Google ingaba namanye amafomu omlando okuphequlula afana no
 <translation id="4738836084190194332">Ukuvumelanisa kokugcina: <ph name="WHEN" /></translation>
 <translation id="4749960740855309258">Vula ithebhu entsha</translation>
 <translation id="4759238208242260848">Ukulanda</translation>
+<translation id="4763480195061959176">ividiyo</translation>
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{1 ukulanda kuqediwe.}one{# ukulandwa kuqediwe.}other{# ukulandwa kuqediwe.}}</translation>
 <translation id="4766678251456904326">Engeza i-akhawunti kudivayisi</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{ukulanda oku-1 kushejuliwe.}one{ukulandwa oku-# kushejuliwe.}other{ukulandwa oku-# kushejuliwe.}}</translation>

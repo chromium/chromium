@@ -59,6 +59,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1467432559032391204">Vänster</translation>
 <translation id="1479909375538722835">Flytande tillgänglighetsmeny</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
+<translation id="1503394326855300303">Det här ägarkontot måste vara det första inloggade kontot i en session med flera inloggningar.</translation>
 <translation id="1516740043221086139">Stör ej har aktiverats.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Visa aviseringsinställningar. Aviseringar har inaktiverats för 1 app}other{Visa aviseringsinställningar. Aviseringar har inaktiverats för # appar}}</translation>
 <translation id="1525508553941733066">IGNORERA</translation>
@@ -69,6 +70,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1589090746204042747">Få tillgång till all aktivitet i sessionen</translation>
 <translation id="1611993646327628135">På</translation>
 <translation id="1632985212731562677">Brytarstyrning kan inaktiveras under Inställningar &gt; Tillgänglighet</translation>
+<translation id="1651447046299738444">Det verkar som om Bluetooth eller Wi-Fi har inaktiverats på din Chromebook. Kontrollera anslutningen om du vill använda Phone Hub.</translation>
 <translation id="1654477262762802994">Säg en sökfråga</translation>
 <translation id="1667964833127753507">I det neutrala färgläget ersätts färger från bakgrunden med en uppsättning ljusa eller mörka nyanser i neutrala toner.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> kvar</translation>
@@ -151,6 +153,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2435457462613246316">Visa lösenord</translation>
 <translation id="2473177541599297363">Bekräfta upplösningen</translation>
 <translation id="2475982808118771221">Det uppstod ett fel</translation>
+<translation id="2479579251444854687">Dra uppåt med tre fingrar för att öppna och stänga översikten.</translation>
 <translation id="2482878487686419369">Aviseringar</translation>
 <translation id="2484513351006226581">Tryck på <ph name="KEYBOARD_SHORTCUT" /> om du vill byta tangentbordslayout.</translation>
 <translation id="2501920221385095727">Tröga tangenter</translation>
@@ -163,6 +166,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2595239820337756193">5 km i miles</translation>
 <translation id="2617342710774726426">SIM-kortet är låst</translation>
 <translation id="2621713457727696555">Skyddat</translation>
+<translation id="2640255526076764619">Styrplatterörelsen för att byta till det föregående skrivbordet har ändrats. Svep till vänster med fyra fingrar för att byta till det föregående skrivbordet.</translation>
 <translation id="2653659639078652383">Skicka</translation>
 <translation id="2658778018866295321">Klicka och dra</translation>
 <translation id="2700493154570097719">Ställ in tangentbord</translation>
@@ -172,7 +176,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2718395828230677721">Nattljus</translation>
 <translation id="2727175239389218057">Svara</translation>
 <translation id="2727977024730340865">Ansluten till en laddare med låg effekt. Batteriet kanske inte laddas ordentligt.</translation>
-<translation id="2743387203779672305">Kopiera till Urklipp</translation>
 <translation id="2792498699870441125">Alt + Sök</translation>
 <translation id="2819276065543622893">Du loggas nu ut.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> har inte stöd för <ph name="SPECIFIED_RESOLUTION" />. Upplösningen ändrades till <ph name="FALLBACK_RESOLUTION" />.</translation>
@@ -257,6 +260,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3486220673238053218">definition</translation>
 <translation id="3510164367642747937">Markera muspekaren</translation>
 <translation id="3513798432020909783">Kontot hanteras av <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3571734092741541777">Konfigurera</translation>
 <translation id="3573179567135747900">Byt tillbaka till "<ph name="FROM_LOCALE" />" (kräver omstart)</translation>
 <translation id="3576141592585647168">Ändra tidszon</translation>
 <translation id="3593646411856133110">Svep uppåt och tryck länge för att visa öppna appar</translation>
@@ -341,6 +345,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> är av.</translation>
 <translation id="4421231901400348175">Dela kontroll över skärmen med <ph name="HELPER_NAME" /> via Fjärrhjälp.</translation>
 <translation id="4430019312045809116">Volym</translation>
+<translation id="4444978951615977024">Hoppsan! Kontrollera anslutningen</translation>
 <translation id="4450893287417543264">Visa inte igen</translation>
 <translation id="445864333228800152">Hej!</translation>
 <translation id="4458688154122353284">Stoppa skärminspelningen</translation>
@@ -350,6 +355,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Frånkopplade enheter</translation>
 <translation id="4505050298327493054">Aktiv arbetsyta.</translation>
+<translation id="4506458088675900627">Styrplatterörelsen för översikten har ändrats</translation>
 <translation id="4513946894732546136">Feedback</translation>
 <translation id="4527045527269911712">Bluetooth-enheten <ph name="DEVICE_NAME" /> har begärt tillstånd för koppling.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> tills batteriet är fullt</translation>
@@ -389,6 +395,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="4917385247580444890">Stark</translation>
 <translation id="4918086044614829423">Acceptera</translation>
 <translation id="4924411785043111640">Starta om och återställ</translation>
+<translation id="4925542575807923399">Administratören för kontot kräver att kontot är det första i en session med multiinloggning.</translation>
 <translation id="495046168593986294">Rulla upp</translation>
 <translation id="4961318399572185831">Casta skärmen</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> tim. <ph name="MINUTES" /> min. <ph name="SECONDS" /> sek.</translation>
@@ -478,6 +485,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="6018164090099858612">Spegelläge avslutas</translation>
 <translation id="602001110135236999">Rulla åt vänster</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signalstyrka <ph name="SIGNAL_STRENGTH" />, hanteras av administratören</translation>
+<translation id="6029337736376922061">Styrplatterörelsen för att byta till nästa skrivbord har ändrats. Svep till höger med fyra fingrar för att byta till nästa skrivbord.</translation>
 <translation id="6030495522958826102">Menyn har flyttats till skärmens nedre vänstra hörn.</translation>
 <translation id="6040143037577758943">Stäng</translation>
 <translation id="6043212731627905357">Skärmen kan inte användas med <ph name="DEVICE_TYPE" /> (det finns inte stöd för skärmen).</translation>
@@ -535,6 +543,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="6657585470893396449">Lösenord</translation>
 <translation id="6665545700722362599">Ge webbplatser, appar och tillägg behörighet att använda platstjänster, enhetens mikrofon, kamera eller andra funktioner</translation>
 <translation id="6670153871843998651">Skrivbord 3</translation>
+<translation id="6671495933530132209">Kopiera bild</translation>
 <translation id="6691659475504239918">Sök+Skift+H</translation>
 <translation id="6692996468359469499">Få information utifrån det du markerar</translation>
 <translation id="6696025732084565524">Det behövs en viktig uppdatering till ditt frånkopplingsbara tangentbord</translation>
@@ -734,6 +743,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="8734991477317290293">Det kan försöka stjäla dina tangenttryckningar</translation>
 <translation id="8735953464173050365">Visa tangentbordsinställningar. Inställt på <ph name="KEYBOARD_NAME" /></translation>
 <translation id="875593634123171288">Visa VPN-inställningar</translation>
+<translation id="8759408218731716181">Det går inte att starta multiinloggning</translation>
 <translation id="8785070478575117577">Anslut till <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>

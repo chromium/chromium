@@ -352,6 +352,7 @@
 <translation id="140520891692800925"><ph name="PROFILE_DISPLAY_NAME" /> (បានគ្រប់គ្រង)</translation>
 <translation id="1405779994569073824">បានគាំង។</translation>
 <translation id="1406500794671479665">កំពុងផ្ទៀងផ្ទាត់...</translation>
+<translation id="1407135791313364759">បើកទាំងអស់</translation>
 <translation id="140723521119632973">ការបើកដំណើរការ​បណ្ដាញចល័ត</translation>
 <translation id="1407489512183974736">ចំណុចកណ្តាលត្រូវបានច្រឹប</translation>
 <translation id="1408504635543854729">រុករក​មាតិកា​របស់​ឧបករណ៍​នៅក្នុង​កម្មវិធី​ឯកសារ។ មាតិកា​នេះត្រូវ​បាន​រឹតបន្តឹង​ដោយ​អ្នក​គ្រប់គ្រង និង​មិនអាច​កែសម្រួល​បាន​ឡើយ។</translation>
@@ -1903,7 +1904,6 @@
 <translation id="3246107497225150582">{0,plural, =1{ដំឡើងកំណែ​ឧបករណ៍​ក្នុងរយៈពេល​មួយថ្ងៃ​ទៀត}other{ដំឡើងកំណែ​ឧបករណ៍​ក្នុងរយៈពេល # ថ្ងៃ​ទៀត}}</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - បណ្តាញមានបញ្ហា</translation>
 <translation id="3248902735035392926">សុវត្ថិភាព​ពិតជា​សំខាន់​។ ចំណាយ​ពេល​បន្តិច ដើម្បី<ph name="BEGIN_LINK" />ពិនិត្យមើល​កម្មវិធី​បន្ថែម​របស់អ្នក​ឥឡូវនេះ<ph name="END_LINK" /></translation>
-<translation id="325036368918787455">បិទផ្ទាំងឯកជន</translation>
 <translation id="3251759466064201842">&lt;មិនមែនផ្នែកនៃវិញ្ញាបនប័ត្រទេ&gt;</translation>
 <translation id="3253225298092156258">មិនមានទេ</translation>
 <translation id="3253448572569133955">មិនស្គាល់​គណនី</translation>
@@ -3444,7 +3444,6 @@
 <translation id="5097649414558628673">ឧបករណ៍៖ <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">ចុចដោយស្វ័យប្រវត្តិ នៅពេល​ទស្សន៍ទ្រនិច​ឈប់</translation>
 <translation id="5099399397495049098">គេហទំព័រអាចប្រើ JavaScript (បានណែនាំ)</translation>
-<translation id="5101042277149003567">បើក​ចំណាំ​ទាំងអស់</translation>
 <translation id="5101839224773798795">ចុច​ដោយស្វ័យប្រវត្តិ នៅពេលសញ្ញាព្រួញឈប់</translation>
 <translation id="5107443654503185812">កម្មវិធីបន្ថែមមួយបានបិទការរុករកដោយសុវត្ថិភាព</translation>
 <translation id="5108967062857032718">ការកំណត់៖ យកកម្មវិធី Android ចេញ</translation>
@@ -4029,7 +4028,6 @@
 <translation id="5804241973901381774">ការអនុញ្ញាត</translation>
 <translation id="5805697420284793859">កម្មវិធី​គ្រប់គ្រង​វិនដូ</translation>
 <translation id="5806773519584576205">0° (លំនាំដើម)</translation>
-<translation id="5808664694611589238">{0,plural, =1{បិទ​ផ្ទាំងភ្ញៀវ}other{បិទ​ផ្ទាំងភ្ញៀវ}}</translation>
 <translation id="5810809306422959727">គណនីនេះ​មិនអាចប្រើ​ការគ្រប់គ្រងដោយមាតាបិតា​បានទេ</translation>
 <translation id="5812674658566766066">ពង្រីក​ទាំងអស់</translation>
 <translation id="5814126672212206791">ប្រភេទនៃការតភ្ជាប់</translation>
@@ -4774,7 +4772,7 @@
 <translation id="6704062477274546131">ដំណោះស្រាយ DNS</translation>
 <translation id="6706210727756204531">ដែនកំណត់</translation>
 <translation id="6707389671160270963">វិញ្ញាបនប័ត្រអតិថិជន SSL</translation>
-<translation id="670893696722244877">ស្វែងរកតាមឈ្មោះ ឬបញ្ចូលឈ្មោះ</translation>
+<translation id="670893696722244877">ស្វែងរកតាមភាសា ឬ​ឈ្មោះវិធីសាស្ត្របញ្ចូល</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> និងផ្ទាំង 1 ផ្សេងទៀត}other{<ph name="PAGE_TITLE" /> និងផ្ទាំង # ផ្សេងទៀត}}</translation>
 <translation id="6709133671862442373">ព័ត៌មាន</translation>
 <translation id="6709357832553498500">ភ្ជាប់ដោយប្រើ <ph name="EXTENSIONNAME" /></translation>

@@ -108,6 +108,7 @@
 <translation id="1868024384445905608">Giờ đây, Chrome tải tệp xuống còn nhanh hơn nữa</translation>
 <translation id="1877026089748256423">Chrome đã lỗi thời</translation>
 <translation id="1883903952484604915">Tệp của tôi</translation>
+<translation id="189358972401248634">Ngôn ngữ khác</translation>
 <translation id="1925021887439448749">Nhập địa chỉ web tùy chỉnh</translation>
 <translation id="1928696683969751773">Số lần cập nhật</translation>
 <translation id="19288952978244135">Mở lại Chrome.</translation>
@@ -217,6 +218,7 @@ Chạm và giữ từ bất kỳ để tìm kiếm. Để điều chỉnh nội 
 <translation id="2689830683995595741">Bằng việc sử dụng Chrome, bạn đồng ý với <ph name="BEGIN_LINK1" />Điều khoản dịch vụ của Google<ph name="END_LINK1" /> cũng như <ph name="BEGIN_LINK2" />Điều khoản dịch vụ bổ sung của Google Chrome và Chrome OS<ph name="END_LINK2" />. Bạn sẽ phải tuân thủ cả <ph name="BEGIN_LINK3" />Thông báo về quyền riêng tư cho Tài khoản Google được quản lý bằng Family Link<ph name="END_LINK3" />.</translation>
 <translation id="2707726405694321444">Làm mới trang</translation>
 <translation id="2709516037105925701">Tự động điền</translation>
+<translation id="2723001399770238859">âm thanh</translation>
 <translation id="2728754400939377704">Sắp xếp theo trang web</translation>
 <translation id="2744248271121720757">Hãy nhấn vào một từ để tìm kiếm ngay hoặc xem các hành động có liên quan</translation>
 <translation id="2760989362628427051">Bật giao diện tối khi Trình tiết kiệm pin hoặc giao diện tối trên thiết bị đang bật</translation>
@@ -467,6 +469,7 @@ Tài khoản Google của bạn có thể có các dạng lịch sử duyệt we
 <translation id="4738836084190194332">Đồng bộ hóa lần gần đây nhất: <ph name="WHEN" /></translation>
 <translation id="4749960740855309258">Mở thẻ mới</translation>
 <translation id="4759238208242260848">Tệp đã tải xuống</translation>
+<translation id="4763480195061959176">video</translation>
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{Đã tải xong 1 tệp xuống.}other{Đã tải xong # tệp xuống.}}</translation>
 <translation id="4766678251456904326">Thêm tài khoản vào thiết bị</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{Đã lên lịch 1 quá trình tải xuống.}other{Đã lên lịch # quá trình tải xuống.}}</translation>

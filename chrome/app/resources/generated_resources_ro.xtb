@@ -352,6 +352,7 @@
 <translation id="140520891692800925"><ph name="PROFILE_DISPLAY_NAME" /> (monitorizat)</translation>
 <translation id="1405779994569073824">S-a blocat.</translation>
 <translation id="1406500794671479665">Se verifică...</translation>
+<translation id="1407135791313364759">Deschideți-le pe toate</translation>
 <translation id="140723521119632973">Activare celulară</translation>
 <translation id="1407489512183974736">Pe centru, decupat</translation>
 <translation id="1408504635543854729">Explorează conținutul dispozitivului în aplicația Fișiere. Conținutul este restricționat de un administrator și nu poate fi modificat.</translation>
@@ -1903,7 +1904,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3246107497225150582">{0,plural, =1{Actualizează dispozitivul în cel mult o zi}few{Actualizează dispozitivul în cel mult # zile}other{Actualizează dispozitivul în cel mult # de zile}}</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – eroare de rețea</translation>
 <translation id="3248902735035392926">Siguranța contează. <ph name="BEGIN_LINK" />Verifică-ți extensiile acum<ph name="END_LINK" /></translation>
-<translation id="325036368918787455">Închide ferestrele incognito</translation>
 <translation id="3251759466064201842">&lt;Nu face parte dintr-un certificat&gt;</translation>
 <translation id="3253225298092156258">Indisponibilă</translation>
 <translation id="3253448572569133955">Cont necunoscut</translation>
@@ -3444,7 +3444,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="5097649414558628673">Instrument: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">Dă automat clic la oprirea cursorului</translation>
 <translation id="5099399397495049098">Site-urile pot folosi JavaScript (recomandat)</translation>
-<translation id="5101042277149003567">Deschide toate marcajele</translation>
 <translation id="5101839224773798795">Se dă clic automat când cursorul se oprește</translation>
 <translation id="5107443654503185812">O extensie a dezactivat Navigarea sigură</translation>
 <translation id="5108967062857032718">Setări – Elimină aplicațiile Android</translation>
@@ -4028,7 +4027,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="5804241973901381774">Permisiuni</translation>
 <translation id="5805697420284793859">Managerul de ferestre</translation>
 <translation id="5806773519584576205">0° (prestabilit)</translation>
-<translation id="5808664694611589238">{0,plural, =1{Închide ferestrele pentru invitați}few{Închide ferestrele pentru invitați}other{Închide ferestrele pentru invitați}}</translation>
 <translation id="5810809306422959727">Acest cont nu este eligibil pentru controlul parental</translation>
 <translation id="5812674658566766066">Extinde tot</translation>
 <translation id="5814126672212206791">Tipul de conexiune</translation>

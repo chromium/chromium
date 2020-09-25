@@ -352,6 +352,7 @@
 <translation id="140520891692800925"><ph name="PROFILE_DISPLAY_NAME" /> (контролиран потребител)</translation>
 <translation id="1405779994569073824">Възникна срив.</translation>
 <translation id="1406500794671479665">Потвърждава се...</translation>
+<translation id="1407135791313364759">Отваряне на всички</translation>
 <translation id="140723521119632973">Активиране на мобилна мрежа</translation>
 <translation id="1407489512183974736">Центриране с подрязване</translation>
 <translation id="1408504635543854729">Разгледайте съдържанието на устройството в приложението Файлове. Съдържанието е ограничено от администратор и не може да се променя.</translation>
@@ -1900,7 +1901,6 @@
 <translation id="3246107497225150582">{0,plural, =1{Актуализирайте устройството в рамките на 1 ден}other{Актуализирайте устройството в рамките на # дни}}</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – грешка в мрежата</translation>
 <translation id="3248902735035392926">Безопасността е от първостепенна важност. Отделете малко време и <ph name="BEGIN_LINK" />проверете разширенията си сега<ph name="END_LINK" /></translation>
-<translation id="325036368918787455">Затваряне на прозореца в режим „инкогнито“</translation>
 <translation id="3251759466064201842">&lt;Не е част от сертификата&gt;</translation>
 <translation id="3253225298092156258">Няма достъп</translation>
 <translation id="3253448572569133955">Неизвестен профил</translation>
@@ -3443,7 +3443,6 @@
 <translation id="5097649414558628673">Инструмент: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">Автоматично кликване при спиране на курсора</translation>
 <translation id="5099399397495049098">Сайтовете могат да използват JavaScript (препоръчително)</translation>
-<translation id="5101042277149003567">Отваряне на всички отметки</translation>
 <translation id="5101839224773798795">Автоматично кликване при спиране на курсора</translation>
 <translation id="5107443654503185812">Разширение изключи „Безопасно сърфиране“</translation>
 <translation id="5108967062857032718">Настройки – Премахване на приложенията за Android</translation>
@@ -4028,7 +4027,6 @@
 <translation id="5804241973901381774">Разрешения</translation>
 <translation id="5805697420284793859">Мениджър на прозорците</translation>
 <translation id="5806773519584576205">0° (по подразбиране)</translation>
-<translation id="5808664694611589238">{0,plural, =1{Затваряне на прозореца в режим на гост}other{Затваряне на прозорците в режим на гост}}</translation>
 <translation id="5810809306422959727">Този профил не отговаря на условията за родителски контроли</translation>
 <translation id="5812674658566766066">Разгъване на всички</translation>
 <translation id="5814126672212206791">Тип на връзката</translation>

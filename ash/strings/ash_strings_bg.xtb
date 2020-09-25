@@ -59,6 +59,7 @@
 <translation id="1467432559032391204">Наляво</translation>
 <translation id="1479909375538722835">Плаващо меню за достъпност</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
+<translation id="1503394326855300303">Този профил на собственик трябва да е първият, в който да се влезе, при сесия с централизиран вход.</translation>
 <translation id="1516740043221086139">Режимът „Не безпокойте“ е включен.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Показване на настройките за известия. Известията са изключени за едно приложение}other{Показване на настройките за известия. Известията са изключени за # приложения}}</translation>
 <translation id="1525508553941733066">ОТХВЪРЛЯНЕ</translation>
@@ -172,7 +173,6 @@
 <translation id="2718395828230677721">Нощно осветление</translation>
 <translation id="2727175239389218057">Отговор</translation>
 <translation id="2727977024730340865">Използва се зарядно устройство с малка мощност. Зареждането на батерията може да не е надеждно.</translation>
-<translation id="2743387203779672305">Копиране в буферната памет</translation>
 <translation id="2792498699870441125">Alt + търсене</translation>
 <translation id="2819276065543622893">Ще излезете сега.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> не поддържа <ph name="SPECIFIED_RESOLUTION" />. Разделителната способност бе променена на <ph name="FALLBACK_RESOLUTION" />.</translation>
@@ -257,6 +257,7 @@
 <translation id="3486220673238053218">дефиниция</translation>
 <translation id="3510164367642747937">Открояване на курсора на мишката</translation>
 <translation id="3513798432020909783">Профилът се управлява от <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3571734092741541777">Настройване</translation>
 <translation id="3573179567135747900">Връщане към „<ph name="FROM_LOCALE" />“ (изисква рестартиране)</translation>
 <translation id="3576141592585647168">Промяна на часовата зона</translation>
 <translation id="3593646411856133110">Прекарайте пръст нагоре и задръжте, за да видите отворените приложения</translation>
@@ -389,6 +390,7 @@
 <translation id="4917385247580444890">Силен</translation>
 <translation id="4918086044614829423">Приемам</translation>
 <translation id="4924411785043111640">Рестартиране и нулиране</translation>
+<translation id="4925542575807923399">Този администратор изисква профилът му да е първият, в който да се влезе, при сесия с централизиран вход.</translation>
 <translation id="495046168593986294">Превъртане нагоре</translation>
 <translation id="4961318399572185831">Предаване на екрана</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> ч, <ph name="MINUTES" /> мин и <ph name="SECONDS" /> сек</translation>
@@ -535,6 +537,7 @@
 <translation id="6657585470893396449">Парола</translation>
 <translation id="6665545700722362599">да разрешава на уебсайтове, приложения и разширения да използват услугите за местоположение и микрофона, камерата или други функции на устройството;</translation>
 <translation id="6670153871843998651">Работен кът 3</translation>
+<translation id="6671495933530132209">Копиране на изображението</translation>
 <translation id="6691659475504239918">Клавиш „Търсене“ + Shift + H</translation>
 <translation id="6692996468359469499">Получаване на информация, свързана с избраното от вас</translation>
 <translation id="6696025732084565524">Вашата отделяща се клавиатура се нуждае от критична актуализация</translation>
@@ -734,6 +737,7 @@
 <translation id="8734991477317290293">Тя може да се опитва да записва кои клавиши натискате</translation>
 <translation id="8735953464173050365">Показване на настройките на клавиатурата. Избран метод на въвеждане: <ph name="KEYBOARD_NAME" /></translation>
 <translation id="875593634123171288">Показване на настройките за VPN</translation>
+<translation id="8759408218731716181">Централизираният вход не може да се настрои</translation>
 <translation id="8785070478575117577">Свързване със <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>

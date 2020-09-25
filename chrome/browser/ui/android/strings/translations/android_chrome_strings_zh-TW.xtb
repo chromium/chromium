@@ -108,6 +108,7 @@
 <translation id="1868024384445905608">Chrome 現在的檔案下載速度更快了</translation>
 <translation id="1877026089748256423">Chrome 版本過舊</translation>
 <translation id="1883903952484604915">我的檔案</translation>
+<translation id="189358972401248634">其他語言</translation>
 <translation id="1925021887439448749">輸入自訂網址</translation>
 <translation id="1928696683969751773">更新</translation>
 <translation id="19288952978244135">重新開啟 Chrome。</translation>
@@ -217,6 +218,7 @@
 <translation id="2689830683995595741">使用 Chrome 即表示您同意《<ph name="BEGIN_LINK1" />Google 服務條款<ph name="END_LINK1" />》以及 <ph name="BEGIN_LINK2" />Google Chrome 和 Chrome 作業系統的《附加服務條款》<ph name="END_LINK2" />。您也必須遵守《<ph name="BEGIN_LINK3" />透過 Family Link 管理的 Google 帳戶所適用的隱私權聲明<ph name="END_LINK3" />》。</translation>
 <translation id="2707726405694321444">重新整理頁面</translation>
 <translation id="2709516037105925701">自動填入</translation>
+<translation id="2723001399770238859">音訊</translation>
 <translation id="2728754400939377704">依網站排序</translation>
 <translation id="2744248271121720757">只要輕觸字詞就能立即展開搜尋或查看相關的動作</translation>
 <translation id="2760989362628427051">當裝置開啟深色主題或節約耗電量功能時，啟用深色主題</translation>
@@ -467,6 +469,7 @@
 <translation id="4738836084190194332">上次同步處理時間：<ph name="WHEN" /></translation>
 <translation id="4749960740855309258">開啟新分頁</translation>
 <translation id="4759238208242260848">下載</translation>
+<translation id="4763480195061959176">影片</translation>
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{已完成 1 項下載作業。}other{已完成 # 項下載作業。}}</translation>
 <translation id="4766678251456904326">在裝置上新增帳戶</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{已排定 1 項下載作業。}other{已排定 # 項下載作業。}}</translation>
@@ -927,7 +930,7 @@
 <translation id="8058746566562539958">在新的 Chrome 分頁中開啟</translation>
 <translation id="8063895661287329888">無法加入書籤。</translation>
 <translation id="806745655614357130">分開保留我的資料</translation>
-<translation id="8069669375923284295">輕觸即可繼續同步處理設定</translation>
+<translation id="8069669375923284295">輕觸即可繼續完成同步處理設定</translation>
 <translation id="8073388330009372546">在新分頁中開啟圖片</translation>
 <translation id="8076492880354921740">分頁</translation>
 <translation id="8084114998886531721">已儲存的密碼</translation>

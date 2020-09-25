@@ -352,6 +352,7 @@
 <translation id="140520891692800925"><ph name="PROFILE_DISPLAY_NAME" /> (අධීක්ෂණය කළ)</translation>
 <translation id="1405779994569073824">බිඳ වැටුණා.</translation>
 <translation id="1406500794671479665">තහවුරු කෙරෙමින්...</translation>
+<translation id="1407135791313364759">සියල්ල විවෘත කරන්න</translation>
 <translation id="140723521119632973">සෙලියුලර් ක්‍රියාත්මක කිරීම</translation>
 <translation id="1407489512183974736">මධ්‍යස්ථානය ක්‍රොප් කරන ලදි</translation>
 <translation id="1408504635543854729">ගොනු යෙදුම්වල උපාංගයෙහි අන්තර්ගතය ගවේෂණය කරන්න. පරිපාලක විසින් අනතර්ගතය අවහිර කර තිබේ එම නිසා වෙනස් කළ නොහැක.</translation>
@@ -1900,7 +1901,6 @@
 <translation id="3246107497225150582">{0,plural, =1{උපාංගය දිනයක් තුළ යාවත්කාලීන කරන්න}one{උපාංගය දින # ක් තුළ යාවත්කාලීන කරන්න}other{උපාංගය දින # ක් තුළ යාවත්කාලීන කරන්න}}</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - ජාල දෝෂය</translation>
 <translation id="3248902735035392926">ආරක්‍ෂාව වැදගත්. මොහොතක් ලබා ගෙන <ph name="BEGIN_LINK" />දැන් ඔබේ දිගු පරීක්‍ෂා කරන්න<ph name="END_LINK" /></translation>
-<translation id="325036368918787455">අප්‍රසිද්ධ ප්‍රකාරය වසන්න</translation>
 <translation id="3251759466064201842">&lt;සහතිකයේ කොටසක් නොවේ&gt;</translation>
 <translation id="3253225298092156258">නොතිබේ</translation>
 <translation id="3253448572569133955">නොදන්නා ගිණුම</translation>
@@ -3442,7 +3442,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5097649414558628673">මෙවලම: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">කර්සරය නැවතින විට ස්වයංක්‍රීයව පරීක්ෂා කරන්න</translation>
 <translation id="5099399397495049098">අඩවිවලට ජාවාස්ක්‍රිප්ට් භාවිත කළ හැකිය (නිර්දේශිතයි)</translation>
-<translation id="5101042277149003567">සියලු පිටුසන් විවෘත කරන්න</translation>
 <translation id="5101839224773798795">කර්සරය නතර වූ විට ස්වයංක්‍රීයව ක්ලික් කරන්න</translation>
 <translation id="5107443654503185812">දිගුවක් ආරක්‍ෂිත බ්‍රවුස් කිරීම අක්‍රිය කර ඇත</translation>
 <translation id="5108967062857032718">සැකසීම් - Android යෙදුම් ඉවත් කරන්න</translation>
@@ -4027,7 +4026,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5804241973901381774">අවසර</translation>
 <translation id="5805697420284793859">කවුළු කළමනාකරු</translation>
 <translation id="5806773519584576205">0° (පෙරනිමි)</translation>
-<translation id="5808664694611589238">{0,plural, =1{අමුත්තා වසන්න}one{අමුත්තා වසන්න}other{අමුත්තා වසන්න}}</translation>
 <translation id="5810809306422959727">මෙම ගිණුම මාපිය පාලන සඳහා සුදුසුකම් නොලබයි</translation>
 <translation id="5812674658566766066">සියල්ල දිග හරින්න</translation>
 <translation id="5814126672212206791">සබැඳුම් වර්ගය</translation>

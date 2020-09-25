@@ -352,6 +352,7 @@
 <translation id="140520891692800925"><ph name="PROFILE_DISPLAY_NAME" /> (تحت نظارت)</translation>
 <translation id="1405779994569073824">خراب.</translation>
 <translation id="1406500794671479665">در حال تأیید...</translation>
+<translation id="1407135791313364759">باز کردن همه</translation>
 <translation id="140723521119632973">فعال‌سازی شبکه داده تلفن همراه</translation>
 <translation id="1407489512183974736">برش خورده در مرکز</translation>
 <translation id="1408504635543854729">‏محتوای دستگاه را در برنامه Files کاوش کنید. محتوا توسط سرپرست محدود شده است و قابل ویرایش نیست.</translation>
@@ -1900,7 +1901,6 @@
 <translation id="3246107497225150582">{0,plural, =1{دستگاه را تا یک روز دیگر به‌روزرسانی کنید}one{دستگاه را تا # روز دیگر به‌روزرسانی کنید}other{دستگاه را تا # روز دیگر به‌روزرسانی کنید}}</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - خطای شبکه</translation>
 <translation id="3248902735035392926">امنیت اهمیت دارد. اکنون چند لحظه برای<ph name="BEGIN_LINK" />بررسی افزونه‌هایتان<ph name="END_LINK" /> وقت بگذارید</translation>
-<translation id="325036368918787455">بستن پنجره ناشناس</translation>
 <translation id="3251759466064201842">&lt;جزئی از گواهی نیست&gt;</translation>
 <translation id="3253225298092156258">موجود نیست</translation>
 <translation id="3253448572569133955">حساب نامشخص</translation>
@@ -3441,7 +3441,6 @@
 <translation id="5097649414558628673">ابزار: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">کلیک کردن خودکار هنگام متوقف شدن نشانگر</translation>
 <translation id="5099399397495049098">سایت‌ها می‌توانند از جاوا اسکریپت استفاده کنند (توصیه می‌شود)</translation>
-<translation id="5101042277149003567">باز کردن همه نشانک‌ها</translation>
 <translation id="5101839224773798795">کلیک خودکار با توقف مرورگر</translation>
 <translation id="5107443654503185812">افزونه‌ای «مرور ایمن» را خاموش کرده است</translation>
 <translation id="5108967062857032718">‏تنظیمات - حذف برنامه‌های Android</translation>
@@ -4025,7 +4024,6 @@
 <translation id="5804241973901381774">مجوزها</translation>
 <translation id="5805697420284793859">مدیر پنجره</translation>
 <translation id="5806773519584576205">۰ درجه (پیش‌فرض)</translation>
-<translation id="5808664694611589238">{0,plural, =1{بستن پنجره مهمان}one{بستن پنجره مهمان}other{بستن پنجره‌های مهمان}}</translation>
 <translation id="5810809306422959727">این حساب برای کنترل‌های والدین واجد شرایط نیست</translation>
 <translation id="5812674658566766066">بزرگ کردن همه</translation>
 <translation id="5814126672212206791">نوع اتصال</translation>

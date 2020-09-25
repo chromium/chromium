@@ -352,6 +352,7 @@
 <translation id="140520891692800925"><ph name="PROFILE_DISPLAY_NAME" /> (dozorovaný)</translation>
 <translation id="1405779994569073824">Selhalo.</translation>
 <translation id="1406500794671479665">Ověřování...</translation>
+<translation id="1407135791313364759">Otevřít vše</translation>
 <translation id="140723521119632973">Aktivace mobilní sítě</translation>
 <translation id="1407489512183974736">Ořezat na střed</translation>
 <translation id="1408504635543854729">Prozkoumejte obsah zařízení v aplikaci Soubory. Přístup k obsahu je administrátorem omezen a nelze jej upravovat.</translation>
@@ -1902,7 +1903,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3246107497225150582">{0,plural, =1{Do jednoho dne zařízení aktualizujte}few{Do # dní zařízení aktualizujte}many{Do # dní zařízení aktualizujte}other{Do # dní zařízení aktualizujte}}</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – chyba sítě</translation>
 <translation id="3248902735035392926">Bezpečnost je důležitá. Věnujte chvíli <ph name="BEGIN_LINK" />kontrole svých rozšíření<ph name="END_LINK" />.</translation>
-<translation id="325036368918787455">Zavřít anonymní okna</translation>
 <translation id="3251759466064201842">&lt;Není součástí certifikátu&gt;</translation>
 <translation id="3253225298092156258">Nedostupné</translation>
 <translation id="3253448572569133955">Neznámý účet</translation>
@@ -3442,7 +3442,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="5097649414558628673">Nástroj: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">Automaticky kliknout při zastavení kurzoru</translation>
 <translation id="5099399397495049098">Weby mohou používat JavaScript (doporučeno)</translation>
-<translation id="5101042277149003567">Otevřít všechny záložky</translation>
 <translation id="5101839224773798795">Při zastavení kurzoru automaticky kliknout</translation>
 <translation id="5107443654503185812">Rozšíření vypnulo funkci Bezpečné prohlížení</translation>
 <translation id="5108967062857032718">Nastavení – odstranit aplikace Android</translation>
@@ -4026,7 +4025,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="5804241973901381774">Oprávnění</translation>
 <translation id="5805697420284793859">Správce oken</translation>
 <translation id="5806773519584576205">0° (výchozí)</translation>
-<translation id="5808664694611589238">{0,plural, =1{Zavřít okna hosta}few{Zavřít okna hosta}many{Zavřít okna hosta}other{Zavřít okna hosta}}</translation>
 <translation id="5810809306422959727">Tento účet nemůže používat rodičovskou kontrolu</translation>
 <translation id="5812674658566766066">Rozbalit vše</translation>
 <translation id="5814126672212206791">Typ připojení</translation>
@@ -4486,7 +4484,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="6333064448949140209">Soubor bude odeslán do Googlu k ladění</translation>
 <translation id="6338981933082930623">Všechny weby mohou zobrazovat jakékoli reklamy</translation>
 <translation id="6339668969738228384">Vytvořit nový profil pro uživatele <ph name="USER_EMAIL_ADDRESS" /></translation>
-<translation id="6339995243416022850">Weby mohou žádat o použití pluginu k přístupu k počítači (doporučeno)</translation>
+<translation id="6339995243416022850">Weby mohou žádat o použití pluginu pro přístup do počítače (doporučeno)</translation>
 <translation id="6340017061976355871">K serveru se nelze se připojit. Zkontrolujte připojení k síti a zkuste to znovu. Pokud problém přetrvává, restartujte Chromebook.</translation>
 <translation id="6340071272923955280">Internet Printing Protocol (IPPS)</translation>
 <translation id="6340526405444716530">Personalizace</translation>
@@ -5603,7 +5601,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="7716648931428307506">Vyberte, kam chcete heslo uložit</translation>
 <translation id="7716781361494605745">Adresa URL zásad certifikační autority Netscape</translation>
 <translation id="7717014941119698257">Stahování: <ph name="STATUS" /></translation>
-<translation id="7717134585801378441">Weby mohou žádat o použití polohy (doporučeno)</translation>
+<translation id="7717134585801378441">Weby mohou žádat o přístup k poloze (doporučeno)</translation>
 <translation id="7717845620320228976">Kontrola dostupnosti aktualizací</translation>
 <translation id="7719367874908701697">Přiblížení/oddálení stránky</translation>
 <translation id="7721179060400456005">Povolit rozložení oken na více obrazovek</translation>
@@ -6724,7 +6722,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="9019956081903586892">Slovník kontroly pravopisu se nepodařilo stáhnout</translation>
 <translation id="9020362265352758658">4×</translation>
 <translation id="9021662811137657072">Byl nalezen virus</translation>
-<translation id="902236149563113779">Weby obvykle sledují pozici kamery pro účely funkcí rozšířeného reality, jako jsou hry nebo průhledové displeje</translation>
+<translation id="902236149563113779">Weby obvykle sledují pozici kamery pro účely funkcí rozšířené reality, jako jsou hry nebo průhledové displeje</translation>
 <translation id="9022847679183471841">Tento účet již v tomto počítači používá uživatel <ph name="AVATAR_NAME" />.</translation>
 <translation id="9023009238991294202">Tuto síť mohou používat ostatní uživatelé tohoto zařízení.</translation>
 <translation id="9023015617655685412">Přidat tuto kartu do záložek...</translation>

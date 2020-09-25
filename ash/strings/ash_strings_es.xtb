@@ -59,6 +59,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="1467432559032391204">Izquierda</translation>
 <translation id="1479909375538722835">Menú de accesibilidad flotante</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
+<translation id="1503394326855300303">La cuenta de este propietario debe ser la primera cuenta que ha iniciado sesión en un inicio de sesión múltiple.</translation>
 <translation id="1516740043221086139">El modo No molestar está activado.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Muestra la configuración de notificaciones. Las notificaciones están desactivadas para una aplicación.}other{Muestra la configuración de notificaciones. Las notificaciones están desactivadas para # aplicaciones.}}</translation>
 <translation id="1525508553941733066">CERRAR</translation>
@@ -172,7 +173,6 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="2718395828230677721">Luz nocturna</translation>
 <translation id="2727175239389218057">Responder</translation>
 <translation id="2727977024730340865">Conectado a un cargador de baja potencia. Es posible que la carga de la batería no sea fiable.</translation>
-<translation id="2743387203779672305">Copiar en el portapapeles</translation>
 <translation id="2792498699870441125">Alt+tecla de búsqueda</translation>
 <translation id="2819276065543622893">Tu sesión se cerrará ahora.</translation>
 <translation id="2825224105325558319">La pantalla <ph name="DISPLAY_NAME" /> no admite <ph name="SPECIFIED_RESOLUTION" />. Se ha cambiado la resolución a <ph name="FALLBACK_RESOLUTION" />.</translation>
@@ -257,6 +257,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="3486220673238053218">definición</translation>
 <translation id="3510164367642747937">Resaltar el cursor del ratón</translation>
 <translation id="3513798432020909783">Cuenta gestionada por <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3571734092741541777">Configurar</translation>
 <translation id="3573179567135747900">Cambiar de nuevo por "<ph name="FROM_LOCALE" />" (requiere reiniciar)</translation>
 <translation id="3576141592585647168">Cambiar zona horaria</translation>
 <translation id="3593646411856133110">Desliza el dedo hacia arriba y no lo levantes para ver las aplicaciones abiertas</translation>
@@ -390,6 +391,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="4917385247580444890">Buena</translation>
 <translation id="4918086044614829423">Aceptar</translation>
 <translation id="4924411785043111640">Reiniciar y restablecer</translation>
+<translation id="4925542575807923399">El administrador de esta cuenta requiere que esta cuenta sea la primera en la que se inicie sesión cuando se cree una sesión de inicio de sesión múltiple.</translation>
 <translation id="495046168593986294">Desplazarse hacia arriba</translation>
 <translation id="4961318399572185831">Enviar pantalla</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> h <ph name="MINUTES" /> min <ph name="SECONDS" /> s</translation>
@@ -536,6 +538,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="6657585470893396449">Contraseña</translation>
 <translation id="6665545700722362599">Dar permiso a los sitios web, las aplicaciones y las extensiones para usar los servicios de ubicación, el micrófono del dispositivo, la cámara y otras funciones.</translation>
 <translation id="6670153871843998651">Escritorio 3</translation>
+<translation id="6671495933530132209">Copiar imagen</translation>
 <translation id="6691659475504239918">Tecla de búsqueda + Mayús + H</translation>
 <translation id="6692996468359469499">Obtener información sobre tu selección</translation>
 <translation id="6696025732084565524">Tu teclado independiente necesita una actualización crítica</translation>
@@ -735,6 +738,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="8734991477317290293">Es posible que esté intentando captar tus pulsaciones de teclas</translation>
 <translation id="8735953464173050365">Muestra la configuración de teclado. Actualmente está seleccionado <ph name="KEYBOARD_NAME" />.</translation>
 <translation id="875593634123171288">Muestra la configuración de VPN</translation>
+<translation id="8759408218731716181">No se puede configurar el inicio de sesión múltiple</translation>
 <translation id="8785070478575117577">Conectar a <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>

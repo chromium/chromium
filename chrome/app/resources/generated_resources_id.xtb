@@ -352,6 +352,7 @@
 <translation id="140520891692800925"><ph name="PROFILE_DISPLAY_NAME" /> (Dilindungi)</translation>
 <translation id="1405779994569073824">Error.</translation>
 <translation id="1406500794671479665">Memverifikasi...</translation>
+<translation id="1407135791313364759">Buka semua</translation>
 <translation id="140723521119632973">Aktivasi Seluler</translation>
 <translation id="1407489512183974736">Dipangkas di Tengah</translation>
 <translation id="1408504635543854729">Jelajahi konten perangkat di aplikasi File. Konten dibatasi oleh admin dan tidak dapat diubah.</translation>
@@ -1903,7 +1904,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3246107497225150582">{0,plural, =1{Update perangkat dalam satu hari}other{Update perangkat dalam # hari}}</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - Jaringan error</translation>
 <translation id="3248902735035392926">Keamanan adalah hal utama. Sempatkan untuk <ph name="BEGIN_LINK" />memeriksa ekstensi Anda sekarang<ph name="END_LINK" /></translation>
-<translation id="325036368918787455">Tutup jendela Samaran</translation>
 <translation id="3251759466064201842">&lt;Bukan Bagian Dari Sertifikat&gt;</translation>
 <translation id="3253225298092156258">Tidak tersedia</translation>
 <translation id="3253448572569133955">Akun tidak dikenal</translation>
@@ -3444,7 +3444,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="5097649414558628673">Alat: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">Klik secara otomatis saat kursor berhenti</translation>
 <translation id="5099399397495049098">Situs dapat menggunakan JavaScript (direkomendasikan)</translation>
-<translation id="5101042277149003567">Buka semua bookmark</translation>
 <translation id="5101839224773798795">Klik secara otomatis saat kursor berhenti</translation>
 <translation id="5107443654503185812">Ekstensi telah menonaktifkan Safe Browsing</translation>
 <translation id="5108967062857032718">Setelan - Hapus aplikasi Android</translation>
@@ -4028,7 +4027,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="5804241973901381774">Izin</translation>
 <translation id="5805697420284793859">Window manager</translation>
 <translation id="5806773519584576205">0° (Default)</translation>
-<translation id="5808664694611589238">{0,plural, =1{Tutup jendela tamu}other{Tutup jendela tamu}}</translation>
 <translation id="5810809306422959727">Akun ini tidak memenuhi syarat kontrol orang tua</translation>
 <translation id="5812674658566766066">Luaskan semua</translation>
 <translation id="5814126672212206791">Jenis sambungan</translation>

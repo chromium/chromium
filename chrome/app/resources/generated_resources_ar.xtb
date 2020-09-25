@@ -352,6 +352,7 @@
 <translation id="140520891692800925">(خاضع للإدارة) <ph name="PROFILE_DISPLAY_NAME" /></translation>
 <translation id="1405779994569073824">علامة التبويب تعطَّلت.</translation>
 <translation id="1406500794671479665">جارٍ التحقق...</translation>
+<translation id="1407135791313364759">فتح الكل</translation>
 <translation id="140723521119632973">تفعيل شبكة الجوّال</translation>
 <translation id="1407489512183974736">اقتصاص الوسط</translation>
 <translation id="1408504635543854729">يمكنك استكشاف محتوى الجهاز في تطبيق الملفات. ويعد هذا المحتوى مقيدًا من قبل المشرف، ولا يمكن تعديله.</translation>
@@ -1218,7 +1219,7 @@
 <translation id="2419706071571366386">لأغراض الأمان، سجّل الخروج عندما لا يتم استخدام الكمبيوتر.</translation>
 <translation id="2422125132043002186">‏تم إلغاء عملية الاسترداد من Linux</translation>
 <translation id="2423578206845792524">حف&amp;ظ الصورة باسم...</translation>
-<translation id="2424424966051154874">{0,plural, =1{نافذة ضيف}zero{(#) نافذة ضيف}two{ذافذتا ضيف}few{(#) نافذات ضيف}many{(#) نافذة ضيف}other{(#) نافذة ضيف}}</translation>
+<translation id="2424424966051154874">{0,plural, =1{نافذة ضيف}zero{نافذة ضيف (#)}two{نافذة ضيف (#)}few{نافذة ضيف (#)}many{نافذة ضيف (#)}other{نافذة ضيف (#)}}</translation>
 <translation id="2428510569851653187">وصف ما كنت تفعله عندما تعطّلت علامة التبويب</translation>
 <translation id="2428939361789119025">‏إيقاف شبكة Wi-Fi</translation>
 <translation id="2431027948063157455">‏تعذّر تحميل مساعد Google، يُرجى التحقُّق من اتصال الشبكة وإعادة المحاولة.</translation>
@@ -1903,7 +1904,6 @@
 <translation id="3246107497225150582">{0,plural, =1{تحديث الجهاز خلال يوم واحد}zero{تحديث الجهاز خلال # يوم}two{تحديث الجهاز خلال يومَين}few{تحديث الجهاز خلال # أيام}many{تحديث الجهاز خلال # يومًا}other{تحديث الجهاز خلال # يوم}}</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - خطأ في الشبكة</translation>
 <translation id="3248902735035392926">الحفاظ على الأمان من أهم أولوياتنا. يُرجى <ph name="BEGIN_LINK" />التحقُّق من الإضافات الآن<ph name="END_LINK" />.</translation>
-<translation id="325036368918787455">إغلاق جميع النوافذ في وضع "التصفُّح المتخفي"</translation>
 <translation id="3251759466064201842">&lt;ليس جزءًا من الشهادة&gt;</translation>
 <translation id="3253225298092156258">غير متاح</translation>
 <translation id="3253448572569133955">حساب غير معروف</translation>
@@ -3441,7 +3441,6 @@
 <translation id="5097649414558628673">الأداة: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">النقر تلقائيًا عند توقف المؤشر</translation>
 <translation id="5099399397495049098">‏السماح للمواقع الإلكترونية باستخدام JavaScript (مُستحسَن)</translation>
-<translation id="5101042277149003567">فتح  جميع الإشارات المرجعية</translation>
 <translation id="5101839224773798795">النقر تلقائيًا عند توقف المؤشر</translation>
 <translation id="5107443654503185812">لقد أوقفَت إحدى الإضافات التصفّح الآمن.</translation>
 <translation id="5108967062857032718">‏الإعدادات - إزالة تطبيقات Android</translation>
@@ -4026,7 +4025,6 @@
 <translation id="5804241973901381774">الأذونات</translation>
 <translation id="5805697420284793859">مدير النوافذ</translation>
 <translation id="5806773519584576205">0 درجة (تلقائي)</translation>
-<translation id="5808664694611589238">{0,plural, =1{إغلاق جميع النوافذ في وضع "الضيف"}zero{إغلاق جميع النوافذ في وضع "الضيف"}two{إغلاق جميع النوافذ في وضع "الضيف"}few{إغلاق جميع النوافذ في وضع "الضيف"}many{إغلاق جميع النوافذ في وضع "الضيف"}other{إغلاق جميع النوافذ في وضع "الضيف"}}</translation>
 <translation id="5810809306422959727">هذا الحساب غير مؤهّل لاستخدام أدوات الرقابة الأبوية</translation>
 <translation id="5812674658566766066">توسيع الكل</translation>
 <translation id="5814126672212206791">نوع الاتصال</translation>
@@ -4255,7 +4253,7 @@
 <translation id="6077189836672154517">نصائح وتحديثات حول <ph name="DEVICE_TYPE" /></translation>
 <translation id="6077476112742402730">تحويل الكلام إلى نص</translation>
 <translation id="6078045608615316905">إنشاء رمز استجابة سريعة لهذه الصورة</translation>
-<translation id="6078121669093215958">{0,plural, =1{نافذة ضيف}zero{# نافذة ضيف مفتوحة}two{نافذتا ضيف مفتوحتان}few{# نافذات ضيف مفتوحة}many{# نافذة ضيف مفتوحة}other{# نافذة ضيف مفتوحة}}</translation>
+<translation id="6078121669093215958">{0,plural, =1{نافذة ضيف}zero{# نافذة ضيف مفتوحة}two{نافذتا ضيف مفتوحتان}few{# نوافذ ضيف مفتوحة}many{# نافذة ضيف مفتوحة}other{# نافذة ضيف مفتوحة}}</translation>
 <translation id="6078323886959318429">إضافة اختصار</translation>
 <translation id="6078752646384677957">الرجاء التحقق من الميكروفون ومستويات الصوت.</translation>
 <translation id="6078769373519310690">‏يريد "<ph name="CHROME_EXTENSION_NAME" />" الاتصال بجهاز HID</translation>

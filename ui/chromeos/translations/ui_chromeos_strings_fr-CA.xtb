@@ -189,7 +189,6 @@
 <translation id="3064388234319122767">Translittération (zdravo → здраво)</translation>
 <translation id="3067790092342515856">Fichiers Windows</translation>
 <translation id="3078461028045006476">Partager avec <ph name="EXTENSION_NAME" /></translation>
-<translation id="3088034400796962477">Translittération (salam ← سلام)</translation>
 <translation id="3116361045094675131">Clavier britannique</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">TERMINÉ</translation>
@@ -305,7 +304,6 @@
 <translation id="4477219268485577442">Phonétique bulgare</translation>
 <translation id="4479812471636796472">Clavier Dvorak américain</translation>
 <translation id="4481711095103932593">Ce dossier est partagé avec Windows</translation>
-<translation id="4487088045714738411">Clavier belge</translation>
 <translation id="4522570452068850558">Détails</translation>
 <translation id="4542387084127299777">Impossible d'ouvrir « <ph name="PATH" /> »</translation>
 <translation id="4552678318981539154">Acheter de l'espace de stockage supplémentaire</translation>
@@ -376,6 +374,7 @@
 <translation id="5098629044894065541">Hébreu</translation>
 <translation id="5123433949759960244">Basketball</translation>
 <translation id="5129662217315786329">Polonais</translation>
+<translation id="5132435854979302863">Tagalog</translation>
 <translation id="5144820558584035333">Hangûl sebeol-sik (390)</translation>
 <translation id="5145331109270917438">Date de modification</translation>
 <translation id="515594325917491223">Échecs</translation>
@@ -423,13 +422,13 @@
 <translation id="5464696796438641524">Clavier polonais</translation>
 <translation id="5465122519792752163">Clavier népalais (InScript)</translation>
 <translation id="5469868506864199649">Italien</translation>
+<translation id="5484429245813572665">Indonésien</translation>
 <translation id="5494920125229734069">Tout sélectionner</translation>
 <translation id="5500122897333236901">Islandais</translation>
 <translation id="5508696409934741614">Points</translation>
 <translation id="5522908512596376669">La liste de fichiers utilise maintenant l'affichage en liste.</translation>
 <translation id="5524517123096967210">Échec de lecture du fichier.</translation>
 <translation id="5533102081734025921">Image <ph name="IMAGE_TYPE" /></translation>
-<translation id="5533555070048896610">Translittération (namaste → नमस्ते)</translation>
 <translation id="5534520101572674276">Calcul de la taille en cours…</translation>
 <translation id="5583640892426849032">Effacement arrière</translation>
 <translation id="5605830556594064952">Dvorak américain</translation>
@@ -610,6 +609,7 @@
 <translation id="7649070708921625228">Aide</translation>
 <translation id="7654209398114106148">Déplacement de <ph name="NUMBER_OF_ITEMS" /> éléments en cours…</translation>
 <translation id="7658239707568436148">Annuler</translation>
+<translation id="7693909743393669729">Le formatage d'un disque entraîne la suppression de toutes les données qu'il contient et de toutes ses partitions, y compris les partitions invisibles. Cette action est irréversible.</translation>
 <translation id="7695430100978772476">Impossible de formater <ph name="DRIVE_NAME" /></translation>
 <translation id="770015031906360009">Grec</translation>
 <translation id="7706319470528945664">Clavier portugais</translation>
@@ -641,6 +641,7 @@
 <translation id="78946041517601018">Disques partagés</translation>
 <translation id="7896906914454843592">Clavier américain étendu</translation>
 <translation id="7898607018410277265">Clavier gujarati (nouvelle phonétique)</translation>
+<translation id="7908793776359722643">Le formatage d'une partition entraîne la suppression de toutes les données qui y sont stockées. Cette action est irréversible.</translation>
 <translation id="7917972308273378936">Clavier lituanien</translation>
 <translation id="7925686952655276919">Ne pas utiliser les données mobiles pour la synchronisation</translation>
 <translation id="7928710562641958568">Éjecter l'appareil</translation>
@@ -728,6 +729,7 @@
 <translation id="8900820606136623064">Hongrois</translation>
 <translation id="8901822611024316615">Clavier QWERTY tchèque</translation>
 <translation id="8919081441417203123">Danois</translation>
+<translation id="8941776146379310519">Malais</translation>
 <translation id="8960999352790021682">Clavier bengali (phonétique)</translation>
 <translation id="8965697826696209160">Il n'y a pas suffisamment d'espace.</translation>
 <translation id="9017798300203431059">Russe (phonétique)</translation>

@@ -59,6 +59,7 @@
 <translation id="1467432559032391204">მარცხენა</translation>
 <translation id="1479909375538722835">მარტივი წვდომის მოლივლივე მენიუ</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
+<translation id="1503394326855300303">მფლობელის ეს ანგარიში გახდეს პირველი შესული ანგარიში მრავალპროფილიან სესიაში.</translation>
 <translation id="1516740043221086139">„არ შემაწუხოთ“ ჩართულია.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{შეტყობინების პარამეტრების ჩვენება. შეტყობინებები გამორთულია აპისთვის}other{შეტყობინების პარამეტრების ჩვენება. შეტყობინებები გამორთულია # აპისთვის}}</translation>
 <translation id="1525508553941733066">დახურვა</translation>
@@ -172,7 +173,6 @@
 <translation id="2718395828230677721">ღამის განათება</translation>
 <translation id="2727175239389218057">პასუხი</translation>
 <translation id="2727977024730340865">შეერთებულია დაბალი სიმძლავრის დამტენთან. ბატარეის დატენვა შეიძლება არ იყოს სანდო.</translation>
-<translation id="2743387203779672305">კოპირება გაცვლის ბუფერში</translation>
 <translation id="2792498699870441125">Alt+ძიება</translation>
 <translation id="2819276065543622893">თქვენ ახლა გამოხვალთ.</translation>
 <translation id="2825224105325558319"><ph name="SPECIFIED_RESOLUTION" /> არ არის მხარდაჭერილი <ph name="DISPLAY_NAME" />-ის მიერ. გარჩევადობა შეიცვალა <ph name="FALLBACK_RESOLUTION" />-ზე.</translation>
@@ -257,6 +257,7 @@
 <translation id="3486220673238053218">განსაზღვრება</translation>
 <translation id="3510164367642747937">მაუსის კურსორის გამოყოფა</translation>
 <translation id="3513798432020909783">ანგარიშს მართავს <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3571734092741541777">დაყენება</translation>
 <translation id="3573179567135747900">„<ph name="FROM_LOCALE" />“-ში დაბრუნება (საჭიროებს გადატვირთვას)</translation>
 <translation id="3576141592585647168">სასაათო სარტყლის შეცვლა</translation>
 <translation id="3593646411856133110">გახსნილი აპების სანახავად გადაფურცლეთ ზემოთ და არ აუშვათ</translation>
@@ -389,6 +390,7 @@
 <translation id="4917385247580444890">ძლიერი</translation>
 <translation id="4918086044614829423">მიღება</translation>
 <translation id="4924411785043111640">გადატვირთვა და გადაყენება</translation>
+<translation id="4925542575807923399">ამ ანგარიშის ადმინისტრატორს მოეთხოვება რომ ეს ანგარიში იყოს მრავალჯერადი შესვლის სესიის პირველი ანგარიში.</translation>
 <translation id="495046168593986294">ზემოთ გადაადგილება</translation>
 <translation id="4961318399572185831">ეკრანის ტრანსლირება</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> სთ, <ph name="MINUTES" /> წთ, <ph name="SECONDS" /> წმ</translation>
@@ -535,6 +537,7 @@
 <translation id="6657585470893396449">პაროლი</translation>
 <translation id="6665545700722362599">ვებსაიტებისთვის, აპებისთვის და გაფართოებებისთვის მდებარეობის სერვისების, მოწყობილობის მიკროფონის, კამერისა თუ სხვა ფუნქციების გამოყენების დაშვება</translation>
 <translation id="6670153871843998651">დესკტოპი 3</translation>
+<translation id="6671495933530132209">გამოსახულების კოპირება</translation>
 <translation id="6691659475504239918">Search+Shift+H</translation>
 <translation id="6692996468359469499">მიიღეთ თქვენს არჩევანთან დაკავშირებული ინფორმაცია</translation>
 <translation id="6696025732084565524">თქვენი განცალკევებადი კლავიატურა საჭიროებს კრიტიკულ განახლებას</translation>
@@ -734,6 +737,7 @@
 <translation id="8734991477317290293">ეს შეიძლება იყოს თქვენ მიერ აკრეფილი ტექსტის მოპარვის მცდელობა</translation>
 <translation id="8735953464173050365">კლავიატურის პარამეტრების ჩვენება. არჩეულია <ph name="KEYBOARD_NAME" /></translation>
 <translation id="875593634123171288">VPN-ის პარამეტრების ჩვენება</translation>
+<translation id="8759408218731716181">მრავლობითი შესვლის დაყენება შეუძლებელია</translation>
 <translation id="8785070478575117577"><ph name="NETWORK_NAME" />-თან დაკავშირება</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>

@@ -513,6 +513,7 @@
 <translation id="3080254622891793721">Графика</translation>
 <translation id="3086579638707268289">Вашата активност на интернет е под надзор</translation>
 <translation id="3087734570205094154">Дно</translation>
+<translation id="3094457892697649331">Кога ќе ги изменувате прибелешките, документов ќе се врати на приказ на една страница.</translation>
 <translation id="3095940652251934233">Изјава</translation>
 <translation id="3096100844101284527">Додајте адреса за подигнување</translation>
 <translation id="3105172416063519923">ИД на средство:</translation>
@@ -746,6 +747,7 @@
 <translation id="4075941231477579656">Touch ID</translation>
 <translation id="4079302484614802869">Конфигурацијата на прокси е поставена да користи URL на скрипта .pac, а не фиксни прокси-сервери.</translation>
 <translation id="4082393374666368382">Поставки - Управување</translation>
+<translation id="4084120443451129199">Режим на пребарување, притиснете Enter за да пребарувате <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="4088981014127559358">Промена на страната 1 на сликата Y</translation>
 <translation id="4098354747657067197">Пред вас е страница за измама</translation>
 <translation id="4101413244023615925">Текст и графика</translation>
@@ -941,6 +943,7 @@
 <translation id="4809079943450490359">Упатства од администраторот на уредот:</translation>
 <translation id="4813512666221746211">Грешка на мрежа</translation>
 <translation id="4816492930507672669">Скрој во страница</translation>
+<translation id="4819347708020428563">Сакате ли да ги измените прибелешките во стандарден приказ?</translation>
 <translation id="484462545196658690">Автоматски</translation>
 <translation id="4850886885716139402">Приказ</translation>
 <translation id="4854362297993841467">Овој метод за доставување не е достапен. Изберете друг.</translation>
@@ -1675,6 +1678,7 @@
 <translation id="7802523362929240268">Сајтот е легитимен</translation>
 <translation id="780301667611848630">Не, фала</translation>
 <translation id="7805768142964895445">Статус</translation>
+<translation id="7811322735445742657">Кога ќе ги изменувате прибелешките, документов ќе се врати на приказ на една страница и на својата оригинална ротација.</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Отстрани ги предлозите за формулари од Chrome?</translation>
 <translation id="781440967107097262">Да се сподели привремената меморија?</translation>
@@ -1710,6 +1714,7 @@
 <translation id="7956713633345437162">Мобилни обележувачи</translation>
 <translation id="7961015016161918242">Никогаш</translation>
 <translation id="7966803981046576691">Тип работен налог</translation>
+<translation id="7976214039405368314">Премногу барања</translation>
 <translation id="7977538094055660992">Излезен уред</translation>
 <translation id="7977894662897852582">Edp</translation>
 <translation id="799149739215780103">Врзување</translation>
@@ -1791,6 +1796,7 @@
 <translation id="8289355894181816810">Контактирајте со мрежниот администратор ако не сте сигурни што значи ова.</translation>
 <translation id="8293206222192510085">Додај обележувач</translation>
 <translation id="8294431847097064396">Извор</translation>
+<translation id="8297398969342264569">Кога ќе ги изменувате прибелешките, документов ќе се врати на својата оригинална ротација.</translation>
 <translation id="8298115750975731693">Wi-Fi што го користите (<ph name="WIFI_NAME" />) може да бара да ја посетите страницата <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="8303854710873047864">Прикажан е делот „<ph name="SECTION" />“</translation>
 <translation id="830498451218851433">Превиткување на половина</translation>

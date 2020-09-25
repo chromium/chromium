@@ -352,6 +352,7 @@
 <translation id="140520891692800925"><ph name="PROFILE_DISPLAY_NAME" /> (კონტროლის ქვეშ მყოფი)</translation>
 <translation id="1405779994569073824">ავარიულად გათიშული.</translation>
 <translation id="1406500794671479665">გადამოწმება…</translation>
+<translation id="1407135791313364759">ყველას გახსნა</translation>
 <translation id="140723521119632973">მობილური ქსელის გააქტიურება</translation>
 <translation id="1407489512183974736">ცენტრი ჩამოჭრილია</translation>
 <translation id="1408504635543854729">დაათვალიერეთ მოწყობილობის კონტენტი ფაილების აპში. კონტენტზე წვდომა შეზღუდულია ადმინისტრატორის მიერ და მისი შეცვლა ვერ მოხერხდება.</translation>
@@ -1902,7 +1903,6 @@
 <translation id="3246107497225150582">{0,plural, =1{განაახლეთ მოწყობილობა დღის განმავლობაში}other{განაახლეთ მოწყობილობა # დღის განმავლობაში}}</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> — ქსელის შეცდომა</translation>
 <translation id="3248902735035392926">უსაფრთხოება მნიშვნელოვანია. დაუთმეთ დრო <ph name="BEGIN_LINK" />გამოყენებული გაფართოებების<ph name="END_LINK" /> შემოწმებას.</translation>
-<translation id="325036368918787455">ინკოგნიტო ფანჯრების დახურვა</translation>
 <translation id="3251759466064201842">&lt;არ არის სერთიფიკატის ნაწილი&gt;</translation>
 <translation id="3253225298092156258">მიუწვდომელია</translation>
 <translation id="3253448572569133955">უცნობი ანგარიში</translation>
@@ -3443,7 +3443,6 @@
 <translation id="5097649414558628673">ხელსაწყო: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">ავტომატურად დაწკაპუნება კურსორის გაჩერებისას</translation>
 <translation id="5099399397495049098">საიტებს შეუძლია JavaScript-ის გამოყენება (რეკომენდებული)</translation>
-<translation id="5101042277149003567">ყველა სანიშნის გახსნა</translation>
 <translation id="5101839224773798795">ავტომატური დაწკაპუნება კურსორის გაჩერებისას</translation>
 <translation id="5107443654503185812">გაფართოებამ გამორთო Safe Browsing</translation>
 <translation id="5108967062857032718">პარამეტრები — Android-ის აპების ამოშლა</translation>
@@ -4027,7 +4026,6 @@
 <translation id="5804241973901381774">ნებართვები</translation>
 <translation id="5805697420284793859">ფანჯრების მმართველი</translation>
 <translation id="5806773519584576205">0° (ნაგულისხმევი)</translation>
-<translation id="5808664694611589238">{0,plural, =1{სტუმრის ფანჯრების დახურვა}other{სტუმრის ფანჯრების დახურვა}}</translation>
 <translation id="5810809306422959727">ამ ანგარიშისთვის მშობელთა მიერ კონტროლის დამატება ვერ მოხერხდება</translation>
 <translation id="5812674658566766066">ყველას გაშლა</translation>
 <translation id="5814126672212206791">კავშირის ტიპი</translation>

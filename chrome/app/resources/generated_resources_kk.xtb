@@ -352,6 +352,7 @@
 <translation id="140520891692800925"><ph name="PROFILE_DISPLAY_NAME" /> (Басқарылатын)</translation>
 <translation id="1405779994569073824">Бұзылды.</translation>
 <translation id="1406500794671479665">Расталуда…</translation>
+<translation id="1407135791313364759">Барлығын ашу</translation>
 <translation id="140723521119632973">Ұялы байланысты іске қосу</translation>
 <translation id="1407489512183974736">Ортасы қиып алынған</translation>
 <translation id="1408504635543854729">Файлдар қолданбасында құрылғының мазмұнын қарап шығыңыз. Мазмұнға әкімші шектеу қойған және оны өзгертуге болмайды.</translation>
@@ -1900,7 +1901,6 @@
 <translation id="3246107497225150582">{0,plural, =1{Құрылғыны бір күнде жаңарту керек}other{Құрылғыны # күнде жаңарту керек}}</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – желі қатесі</translation>
 <translation id="3248902735035392926">Қауіпсіздік маңызды. Сәл уақытыңызды бөліп, <ph name="BEGIN_LINK" />кеңейтімдерді тексеріңіз<ph name="END_LINK" />.</translation>
-<translation id="325036368918787455">Инкогнито режимін жабу</translation>
 <translation id="3251759466064201842">&lt;Сертификаттың бөлігі емес&gt;</translation>
 <translation id="3253225298092156258">Қолжетімді емес</translation>
 <translation id="3253448572569133955">Белгісіз есептік жазба</translation>
@@ -3441,7 +3441,6 @@
 <translation id="5097649414558628673">Құрал: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">Көрсеткі тоқтаған кезде, тінтуірдің түймесін автоматты түрде басу</translation>
 <translation id="5099399397495049098">Сайттар JavaScript мазмұнын пайдалана алады (ұсынылады).</translation>
-<translation id="5101042277149003567">Барлық бетбелгілерді ашу</translation>
 <translation id="5101839224773798795">Курсор тоқтағанда автоматты түрде басу</translation>
 <translation id="5107443654503185812">Кеңейтім "Қауіпсіз шолу" функциясын өшірді.</translation>
 <translation id="5108967062857032718">Параметрлер – Android қолданбаларын өшіру</translation>
@@ -4025,7 +4024,6 @@
 <translation id="5804241973901381774">Рұқсаттар</translation>
 <translation id="5805697420284793859">Терезе менеджері</translation>
 <translation id="5806773519584576205">0° (Әдепкі)</translation>
-<translation id="5808664694611589238">{0,plural, =1{Қонақ режимін жабу}other{Қонақ режимін жабу}}</translation>
 <translation id="5810809306422959727">Бұл есептік жазба ата-ана бақылауына жарамайды</translation>
 <translation id="5812674658566766066">Барлығын жаю</translation>
 <translation id="5814126672212206791">Байланыс түрі</translation>
@@ -4770,7 +4768,7 @@
 <translation id="6704062477274546131">DNS ажыратымдылығы</translation>
 <translation id="6706210727756204531">Қолданыс аясы</translation>
 <translation id="6707389671160270963">SSL клиент сертификаты</translation>
-<translation id="670893696722244877">Тіл бойынша немесе енгізілген атауы бойынша іздеу</translation>
+<translation id="670893696722244877">Тіл бойынша немесе енгізу әдісі бойынша іздеу</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> және тағы 1 қойынды}other{<ph name="PAGE_TITLE" /> және тағы # қойынды}}</translation>
 <translation id="6709133671862442373">Жаңалықтар</translation>
 <translation id="6709357832553498500"><ph name="EXTENSIONNAME" /> арқылы қосылу</translation>

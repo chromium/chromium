@@ -508,6 +508,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="3080254622891793721">Afbeelding</translation>
 <translation id="3086579638707268289">Je activiteit op internet wordt in de gaten gehouden</translation>
 <translation id="3087734570205094154">Onderaan</translation>
+<translation id="3094457892697649331">Als je annotaties bewerkt, keert dit document terug naar een weergave op één pagina.</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3096100844101284527">Ophaaladres toevoegen</translation>
 <translation id="3105172416063519923">Item-ID:</translation>
@@ -736,6 +737,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="4075941231477579656">Touch ID</translation>
 <translation id="4079302484614802869">Proxyconfiguratie is ingesteld op het gebruik van een pac-script-URL, niet op het gebruik van vaste proxyservers.</translation>
 <translation id="4082393374666368382">Instellingen: beheer</translation>
+<translation id="4084120443451129199">Zoekmodus, druk op Enter om naar <ph name="KEYWORD_SUFFIX" /> te zoeken</translation>
 <translation id="4088981014127559358">Beeldverschuiving Y van zijde 1</translation>
 <translation id="4098354747657067197">Misleidende site gedetecteerd</translation>
 <translation id="4101413244023615925">Tekst en graphics</translation>
@@ -931,6 +933,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="4809079943450490359">Instructies van de beheerder van je apparaat:</translation>
 <translation id="4813512666221746211">Netwerkfout</translation>
 <translation id="4816492930507672669">Aanpassen aan pagina</translation>
+<translation id="4819347708020428563">Annotaties bewerken in standaardweergave?</translation>
 <translation id="484462545196658690">Auto</translation>
 <translation id="4850886885716139402">Weergave</translation>
 <translation id="4854362297993841467">Deze bezorgingsmethode is niet beschikbaar. Kies een andere methode.</translation>
@@ -1664,6 +1667,7 @@ Aanvullende informatie:
 <translation id="7802523362929240268">Site is legitiem</translation>
 <translation id="780301667611848630">Nee, bedankt</translation>
 <translation id="7805768142964895445">Status</translation>
+<translation id="7811322735445742657">Als je annotaties bewerkt, keert dit document terug naar een weergave op één pagina en de oorspronkelijke paginastand.</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Formuliersuggestie verwijderen uit Chrome?</translation>
 <translation id="781440967107097262">Klembord delen?</translation>
@@ -1699,6 +1703,7 @@ Aanvullende informatie:
 <translation id="7956713633345437162">Mobiele bookmarks</translation>
 <translation id="7961015016161918242">Nooit</translation>
 <translation id="7966803981046576691">Type taakaccount</translation>
+<translation id="7976214039405368314">Te veel verzoeken</translation>
 <translation id="7977538094055660992">Uitvoerapparaat</translation>
 <translation id="7977894662897852582">Edp</translation>
 <translation id="799149739215780103">Inbinden</translation>
@@ -1780,6 +1785,7 @@ Aanvullende informatie:
 <translation id="8289355894181816810">Neem contact op met je netwerkbeheerder als je niet zeker weet wat dit betekent.</translation>
 <translation id="8293206222192510085">Bookmark toevoegen</translation>
 <translation id="8294431847097064396">Bron</translation>
+<translation id="8297398969342264569">Als je annotaties bewerkt, keert dit document terug naar de oorspronkelijke paginastand.</translation>
 <translation id="8298115750975731693">Het is mogelijk dat je <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> moet bezoeken van het wifi-netwerk (<ph name="WIFI_NAME" />) dat je gebruikt.</translation>
 <translation id="8303854710873047864">Het gedeelte '<ph name="SECTION" />' wordt weergegeven</translation>
 <translation id="830498451218851433">Enkele vouw</translation>

@@ -59,6 +59,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1467432559032391204">Vasakule</translation>
 <translation id="1479909375538722835">Hõljuv juurdepääsetavuse menüü</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
+<translation id="1503394326855300303">See omaniku konto peab olema esimene sisselogitud konto mitmele kontole sisselogimise seansil.</translation>
 <translation id="1516740043221086139">Režiim Mitte segada on sees.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Kuvab märguandeseaded. Märguanded on rakenduse jaoks välja lülitatud}other{Kuvab märguandeseaded. Märguanded on # rakenduse jaoks välja lülitatud}}</translation>
 <translation id="1525508553941733066">LOOBU</translation>
@@ -172,7 +173,6 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="2718395828230677721">Öövalgus</translation>
 <translation id="2727175239389218057">Vasta</translation>
 <translation id="2727977024730340865">Ühendatud väikese energiakuluga laadijaga. Aku laadimine võib olla ebastabiilne.</translation>
-<translation id="2743387203779672305">Kopeeri lõikelauale</translation>
 <translation id="2792498699870441125">Alt + otsinguklahv</translation>
 <translation id="2819276065543622893">Teid logitakse nüüd välja.</translation>
 <translation id="2825224105325558319">Üksus <ph name="DISPLAY_NAME" /> ei toeta eraldusvõimet <ph name="SPECIFIED_RESOLUTION" />. Eraldusvõimeks määrati <ph name="FALLBACK_RESOLUTION" />.</translation>
@@ -257,6 +257,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="3486220673238053218">definitsioon</translation>
 <translation id="3510164367642747937">Hiirekursori esiletõstmine</translation>
 <translation id="3513798432020909783">Kontohaldur: <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3571734092741541777">Seadista</translation>
 <translation id="3573179567135747900">Muuda tagasi seadele <ph name="FROM_LOCALE" /> (nõuab taaskäivitust)</translation>
 <translation id="3576141592585647168">Ajavööndi muutmine</translation>
 <translation id="3593646411856133110">Avatud rakenduste nägemiseks pühkige üles ja hoidke sõrme ekraanil</translation>
@@ -390,6 +391,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="4917385247580444890">Tugev</translation>
 <translation id="4918086044614829423">Nõustu</translation>
 <translation id="4924411785043111640">Taaskäivita ja lähtesta</translation>
+<translation id="4925542575807923399">Selle konto administraator nõuab, et mitmesse kontosse sisselogimisega seansil logitaks esmalt sisse sellesse kontosse.</translation>
 <translation id="495046168593986294">Keri üles</translation>
 <translation id="4961318399572185831">Ekraani ülekandmine</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> h <ph name="MINUTES" /> min <ph name="SECONDS" /> s</translation>
@@ -536,6 +538,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="6657585470893396449">Parool</translation>
 <translation id="6665545700722362599">Andke veebisaitidele, rakendustele ja laiendustele luba kasutada asukohateenuseid, seadme mikrofoni, kaamerat ning teisi funktsioone</translation>
 <translation id="6670153871843998651">Töölaud 3</translation>
+<translation id="6671495933530132209">Kopeeri kujutis</translation>
 <translation id="6691659475504239918">Otsinguklahv + tõstuklahv + H</translation>
 <translation id="6692996468359469499">Hankige oma valiku kohta teavet</translation>
 <translation id="6696025732084565524">Eemaldatav klaviatuur vajab kriitilist värskendust</translation>
@@ -735,6 +738,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="8734991477317290293">See võib üritada varastada teie klahvivajutusi</translation>
 <translation id="8735953464173050365">Kuvab klaviatuuriseaded. Valitud on <ph name="KEYBOARD_NAME" /></translation>
 <translation id="875593634123171288">Kuvab VPN-i seaded</translation>
+<translation id="8759408218731716181">Mitmesse kontosse sisselogimist ei saa häälestada</translation>
 <translation id="8785070478575117577">Loo ühendus võrguga <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" />.</translation>
 <translation id="8814190375133053267">WiFi</translation>

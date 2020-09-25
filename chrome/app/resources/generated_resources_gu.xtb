@@ -347,6 +347,7 @@
 <translation id="140520891692800925"><ph name="PROFILE_DISPLAY_NAME" /> (નિરીક્ષિત)</translation>
 <translation id="1405779994569073824">ક્રૅશ થયું</translation>
 <translation id="1406500794671479665">ચકાસી રહ્યું છે...</translation>
+<translation id="1407135791313364759">બધું ખોલો</translation>
 <translation id="140723521119632973">સેલ્યુલર સક્રિયકરણ</translation>
 <translation id="1407489512183974736">મધ્યમાં કાપેલું</translation>
 <translation id="1408504635543854729">Files ઍપ્લિકેશનમાં ડિવાઇસના કન્ટેન્ટમાં નવું શોધો. કન્ટેન્ટ એડમિન દ્વારા પ્રતિબંધિત છે અને બદલી શકતા નથી.</translation>
@@ -1876,7 +1877,6 @@
 <translation id="3246107497225150582">{0,plural, =1{એક દિવસની અંદર ડિવાઇસ અપડેટ કરો}one{# દિવસની અંદર ડિવાઇસ અપડેટ કરો}other{# દિવસની અંદર ડિવાઇસ અપડેટ કરો}}</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - નેટવર્ક ભૂલ</translation>
 <translation id="3248902735035392926">સલામતી મહત્ત્વપૂર્ણ છે. થોડી ક્ષણ ફાળવીને <ph name="BEGIN_LINK" />હમણાં જ તમારા એક્સ્ટેંશન ચેક કરો<ph name="END_LINK" /></translation>
-<translation id="325036368918787455">છૂપો મોડ બંધ કરો</translation>
 <translation id="3251759466064201842">&lt;પ્રમાણપત્રનો ભાગ નથી&gt;</translation>
 <translation id="3253225298092156258">ઉપલબ્ધ નથી</translation>
 <translation id="3253448572569133955">અજાણ એકાઉન્ટ</translation>
@@ -3389,7 +3389,6 @@
 <translation id="5097002363526479830">નેટવર્ક '<ph name="NAME" />' થી કનેક્ટ કરવામાં નિષ્ફળ: <ph name="DETAILS" /></translation>
 <translation id="5097649414558628673">સાધન: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">કર્સર રોકાય ત્યારે ઑટોમૅટિક રીતે ક્લિક કરવાનાં સેટિંગ</translation>
-<translation id="5101042277149003567">બધા બુકમાર્ક ખોલો</translation>
 <translation id="5101839224773798795">કર્સર રોકાઈ જાય ત્યારે ઑટોમૅટિક રીતે ક્લિક કરો</translation>
 <translation id="5107443654503185812">એક્સ્ટેંશન દ્વારા Safe Browsing બંધ કરવામાં આવ્યું છે</translation>
 <translation id="5108967062857032718">સેટિંગ્સ - Android ઍપ્લિકેશનો દૂર કરો</translation>
@@ -3970,7 +3969,6 @@
 <translation id="5804241973901381774">પરવાનગીઓ</translation>
 <translation id="5805697420284793859">વિન્ડો મેનેજર</translation>
 <translation id="5806773519584576205">0° (ડિફૉલ્ટ)</translation>
-<translation id="5808664694611589238">{0,plural, =1{અતિથિ વિંડો બંધ કરો}one{અતિથિ વિંડો બંધ કરો}other{અતિથિ વિંડો બંધ કરો}}</translation>
 <translation id="5810809306422959727">આ એકાઉન્ટ માતાપિતાના યોગ્ય નિયંત્રણો માટે યોગ્યતા ધરાવતું નથી</translation>
 <translation id="5812674658566766066">વધુ જુઓ</translation>
 <translation id="5814126672212206791">કનેક્શનનો પ્રકાર</translation>

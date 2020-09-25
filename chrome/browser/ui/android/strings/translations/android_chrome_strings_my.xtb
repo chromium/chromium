@@ -108,6 +108,7 @@
 <translation id="1868024384445905608">ယခုအခါ Chrome သည် ဖိုင်များကို ပိုမိုလျင်မြန်စွာ ဒေါင်းလုဒ်လုပ်ပါသည်</translation>
 <translation id="1877026089748256423">Chrome မှာ ဟောင်းသွားပြီ</translation>
 <translation id="1883903952484604915">ကျွန်ုပ်၏ဖိုင်များ</translation>
+<translation id="189358972401248634">အခြား ဘာသာစကားများ</translation>
 <translation id="1925021887439448749">စိတ်ကြိုက်ဝဘ်လိပ်စာကို ထည့်ရန်</translation>
 <translation id="1928696683969751773">အဆင့်မြှင့်မှုများ</translation>
 <translation id="19288952978244135">Chrome ပြန်ဖွင့်ပါ။</translation>
@@ -217,6 +218,7 @@
 <translation id="2689830683995595741">Chrome ကို အသုံးပြုခြင်းဖြင့် သင်သည် <ph name="BEGIN_LINK1" />Google ဝန်ဆောင်မှုဆိုင်ရာ စည်းမျဉ်းများ<ph name="END_LINK1" /> နှင့် <ph name="BEGIN_LINK2" />Google Chrome နှင့် Chrome OS ထပ်တိုးဝန်ဆောင်မှု စည်းမျဉ်းများ<ph name="END_LINK2" /> ကို သဘောတူရာရောက်သည်။ <ph name="BEGIN_LINK3" />Family Link ဖြင့် ကြီးကြပ်ထားသည့် Google Account များအတွက် ပုဂ္ဂိုလ်ရေးဆိုင်ရာ ကြေညာချက်<ph name="END_LINK3" /> လည်း အကျုံးဝင်သည်။</translation>
 <translation id="2707726405694321444">စာမျက်နှာကို ဆန်းသစ်ယူရန်</translation>
 <translation id="2709516037105925701">အလိုလျောက် ဖြည့်စွက်</translation>
+<translation id="2723001399770238859">အသံ</translation>
 <translation id="2728754400939377704">ဝဘ်ဆိုက်အလိုက် စီရန်</translation>
 <translation id="2744248271121720757">ချက်ချင်းရှာဖွေရန် သို့မဟုတ် သက်ဆိုင်သည့် လုပ်ဆောင်ချက်များကို ကြည့်ရန် စာလုံးတစ်လုံးကို တို့ပါ</translation>
 <translation id="2760989362628427051">သင့်စက်၏ မှောင်သည့်အပြင်အဆင် သို့မဟုတ် ဘက်ထရီအားထိန်းကို ဖွင့်ထားသည့်အခါ မှောင်သည့် အပြင်အဆင်ကို ဖွင့်ပါ</translation>
@@ -467,6 +469,7 @@
 <translation id="4738836084190194332">နောက်ဆုံး စင့်က် လုပ်ခဲ့မှု- <ph name="WHEN" /></translation>
 <translation id="4749960740855309258">တဘ်အသစ်တစ်ခု ဖွင့်ရန်</translation>
 <translation id="4759238208242260848">ဒေါင်းလုဒ်များ</translation>
+<translation id="4763480195061959176">ဗီဒီယို</translation>
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{ဒေါင်းလုဒ် ၁ ခု လုပ်ပြီးပါပြီ။}other{ဒေါင်းလုဒ် # ခု လုပ်ပြီးပါပြီ။}}</translation>
 <translation id="4766678251456904326">စက်သို့ အကောင့်ထည့်ရန်</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{ဒေါင်းလုဒ် 1 ခု စီစဉ်ထားသည်။}other{ဒေါင်းလုဒ် # ခု စီစဉ်ထားသည်။}}</translation>

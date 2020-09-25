@@ -59,6 +59,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1467432559032391204">Kaliwa</translation>
 <translation id="1479909375538722835">Nakalutang na menu ng accessibility</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
+<translation id="1503394326855300303">Ang account ng may-ari na ito ay dapat ang unang naka-sign in na account sa isang session ng multiple na pag-sign in.</translation>
 <translation id="1516740043221086139">Naka-on ang Huwag istorbohin.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Ipakita ang mga setting ng notification. Naka-off ang mga notification para sa isang app}one{Ipakita ang mga setting ng notification. Naka-off ang mga notification para sa # app}other{Ipakita ang mga setting ng notification. Naka-off ang mga notification para sa # na app}}</translation>
 <translation id="1525508553941733066">I-DISMISS</translation>
@@ -172,7 +173,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2718395828230677721">Night Light</translation>
 <translation id="2727175239389218057">Sumagot</translation>
 <translation id="2727977024730340865">Naka-saksak sa isang low-power charger. Maaaring hindi maging tiyak ang pag-charge ng baterya.</translation>
-<translation id="2743387203779672305">Kopyahin sa clipboard</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
 <translation id="2819276065543622893">Masa-sign out ka ngayon.</translation>
 <translation id="2825224105325558319">Hindi sinusuportahan ng <ph name="DISPLAY_NAME" /> ang <ph name="SPECIFIED_RESOLUTION" />. Ginawang <ph name="FALLBACK_RESOLUTION" /> ang resolution.</translation>
@@ -257,6 +257,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="3486220673238053218">kahulugan</translation>
 <translation id="3510164367642747937">I-highlight ang cursor ng mouse</translation>
 <translation id="3513798432020909783">Pinamamahalaan ni <ph name="MANAGER_EMAIL" /> ang account</translation>
+<translation id="3571734092741541777">I-set up</translation>
 <translation id="3573179567135747900">Palitan pabalik sa "<ph name="FROM_LOCALE" />" (kailangang i-restart)</translation>
 <translation id="3576141592585647168">Baguhin ang timezone</translation>
 <translation id="3593646411856133110">Mag-swipe pataas at i-hold para makita ang mga nakabukas na app</translation>
@@ -389,6 +390,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="4917385247580444890">Malakas</translation>
 <translation id="4918086044614829423">Tanggapin</translation>
 <translation id="4924411785043111640">I-restart at i-reset</translation>
+<translation id="4925542575807923399">Kinakailangan ng administrator sa account na ito na ang account na ito ang unang i-sign in na account sa isang session ng multiple na pag-sign in.</translation>
 <translation id="495046168593986294">Mag-scroll pataas</translation>
 <translation id="4961318399572185831">I-cast ang screen</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />h <ph name="MINUTES" />m <ph name="SECONDS" />s</translation>
@@ -535,6 +537,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="6657585470893396449">Password</translation>
 <translation id="6665545700722362599">Nagbibigay ng pahintulot sa mga website, app, at extension na gumamit ng mga serbisyo ng lokasyon, gamitin ang mikropono, camera, o iba pang feature ng device</translation>
 <translation id="6670153871843998651">Desk 3</translation>
+<translation id="6671495933530132209">Kopyahin ang larawan</translation>
 <translation id="6691659475504239918">Search+Shift+H</translation>
 <translation id="6692996468359469499">Kumuha ng impormasyon kaugnay ng iyong pinili</translation>
 <translation id="6696025732084565524">Nangangailangan ng mahalagang update ang iyong naaalis na keyboard</translation>
@@ -734,6 +737,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="8734991477317290293">Maaaring sinusubukan nitong nakawin ang iyong mga keystroke</translation>
 <translation id="8735953464173050365">Ipakita ang mga setting ng keyboard. Napili ang <ph name="KEYBOARD_NAME" /></translation>
 <translation id="875593634123171288">Ipakita ang mga setting ng VPN</translation>
+<translation id="8759408218731716181">Hindi maaaring mag-set up ng multiple na pag-sign in</translation>
 <translation id="8785070478575117577">Kumonekta sa <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>

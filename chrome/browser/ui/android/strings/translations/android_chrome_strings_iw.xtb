@@ -108,6 +108,7 @@
 <translation id="1868024384445905608">‏הורדת קבצים ב-Chrome מתבצעת עכשיו מהר יותר</translation>
 <translation id="1877026089748256423">‏Chrome אינו מעודכן</translation>
 <translation id="1883903952484604915">הקבצים שלי</translation>
+<translation id="189358972401248634">שפות אחרות</translation>
 <translation id="1925021887439448749">הזן כתובת אינטרנט מותאמת אישית</translation>
 <translation id="1928696683969751773">עדכונים</translation>
 <translation id="19288952978244135">‏יש לפתוח מחדש את Chrome.</translation>
@@ -217,6 +218,7 @@
 <translation id="2689830683995595741">‏השימוש ב-Chrome מבטא הסכמה ל<ph name="BEGIN_LINK1" />תנאים ולהגבלות של Google<ph name="END_LINK1" /> ול<ph name="BEGIN_LINK2" />תנאים ולהגבלות הנוספים של Google Chrome ו-Chrome OS<ph name="END_LINK2" />. על השימוש חלה גם <ph name="BEGIN_LINK3" />הודעת הפרטיות לגבי חשבונות Google המנוהלים באמצעות Family Link<ph name="END_LINK3" />.</translation>
 <translation id="2707726405694321444">רענן את הדף</translation>
 <translation id="2709516037105925701">מילוי אוטומטי</translation>
+<translation id="2723001399770238859">אודיו</translation>
 <translation id="2728754400939377704">מיון לפי אתר</translation>
 <translation id="2744248271121720757">כדי לחפש באופן מיידי או לראות פעולות קשורות, צריך להקיש על מילה</translation>
 <translation id="2760989362628427051">עיצוב כהה מופעל כשבמכשיר פועלת האפשרות 'עיצוב כהה' או 'חיסכון בסוללה'</translation>
@@ -467,6 +469,7 @@
 <translation id="4738836084190194332">סונכרן לאחרונה: <ph name="WHEN" /></translation>
 <translation id="4749960740855309258">פתח כרטיסייה חדשה</translation>
 <translation id="4759238208242260848">הורדות</translation>
+<translation id="4763480195061959176">סרטוני וידאו</translation>
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{הורדה אחת הושלמה.}two{# הורדות הושלמו.}many{# הורדות הושלמו.}other{# הורדות הושלמו.}}</translation>
 <translation id="4766678251456904326">הוספת חשבון למכשיר</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{תוזמנה הורדה אחת.}two{תוזמנו # הורדות.}many{תוזמנו # הורדות.}other{תוזמנו # הורדות.}}</translation>

@@ -59,6 +59,7 @@
 <translation id="1467432559032391204">Ձախ</translation>
 <translation id="1479909375538722835">Հատուկ գործառույթների լողացող ընտրացանկ</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
+<translation id="1503394326855300303">Բազմակի մուտքի աշխատաշրջանում տիրոջ հաշիվը պետք է առաջին մուտք գործած հաշիվը լինի:</translation>
 <translation id="1516740043221086139">«Չանհանգստացնել» ռեժիմն ակտիվ է։</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Ցուցադրել ծանուցումների կարգավորումները: Ծանուցումներն անջատած են մեկ հավելվածի համար:}one{Ցուցադրել ծանուցումների կարգավորումները: Ծանուցումներն անջատած են # հավելվածի համար:}other{Ցուցադրել ծանուցումների կարգավորումները: Ծանուցումներն անջատած են # հավելվածի համար:}}</translation>
 <translation id="1525508553941733066">ՓԱԿԵԼ</translation>
@@ -172,7 +173,6 @@
 <translation id="2718395828230677721">Գիշերային ռեժիմ</translation>
 <translation id="2727175239389218057">Պատասխանել</translation>
 <translation id="2727977024730340865">Միացված է թույլ լիցքավորիչի: Մարտկոցի լիցքավորումը կարող է հուսալի չլինել:</translation>
-<translation id="2743387203779672305">Պատճենել սեղմատախտակին</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
 <translation id="2819276065543622893">Դուք հիմա դուրս կգրվեք:</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" />-ը չի աջակցում <ph name="SPECIFIED_RESOLUTION" /> լուծաչափը։ Լուծաչափը փոխվել է <ph name="FALLBACK_RESOLUTION" />-ի։</translation>
@@ -257,6 +257,7 @@
 <translation id="3486220673238053218">սահմանում</translation>
 <translation id="3510164367642747937">Ընդգծել մկնիկի նշորդը</translation>
 <translation id="3513798432020909783">Հաշվի կառավարիչ՝ <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3571734092741541777">Տեղակայել</translation>
 <translation id="3573179567135747900">Վերադառնալ «<ph name="FROM_LOCALE" />»-ին (հարկավոր է վերագործարկում)</translation>
 <translation id="3576141592585647168">Փոխեք ժամային գոտին</translation>
 <translation id="3593646411856133110">Մատը սահեցրեք վեր և պահեք՝ բացված հավելվածները տեսնելու համար</translation>
@@ -389,6 +390,7 @@
 <translation id="4917385247580444890">Ուժեղ</translation>
 <translation id="4918086044614829423">Ընդունել</translation>
 <translation id="4924411785043111640">Վերագործարկել և վերակայել</translation>
+<translation id="4925542575807923399">Այս հաշվի ադմինիստրատորը պահանջում է, որ այս հաշիվը լինի առաջին մուտքգործած հաշիվը բազմակի մուտքի աշխատաշրջանում:</translation>
 <translation id="495046168593986294">Ոլորել վեր</translation>
 <translation id="4961318399572185831">Էկրանի հեռարձակում</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> ժ <ph name="MINUTES" /> ր <ph name="SECONDS" /> վ</translation>
@@ -535,6 +537,7 @@
 <translation id="6657585470893396449">Գաղտնաբառ</translation>
 <translation id="6665545700722362599">Թույլատրեք կայքերին, հավելվածներին և ընդլայնումներին օգտագործել տեղորոշման ծառայությունները, սարքի խոսափողը, տեսախցիկը և այլ գործառույթներ:</translation>
 <translation id="6670153871843998651">Աշխատասեղան 3</translation>
+<translation id="6671495933530132209">Պատճենել պատկերը</translation>
 <translation id="6691659475504239918">Search+Shift+H</translation>
 <translation id="6692996468359469499">Ստացեք տեղեկություններ էկրանի տարրերի վերաբերյալ</translation>
 <translation id="6696025732084565524">Անհրաժեշտ է թարմացնել արտաքին ստեղնաշարը</translation>
@@ -734,6 +737,7 @@
 <translation id="8734991477317290293">Հնարավոր է՝ ինչ-որ մեկը փորձում է իմանալ, թե ինչ ստեղներ եք սեղմում։</translation>
 <translation id="8735953464173050365">Ցուցադրել ստեղնաշարի կարգավորումները: Ընտրված է <ph name="KEYBOARD_NAME" />ը</translation>
 <translation id="875593634123171288">Ցուցադրել VPN-ի կարգավորումները</translation>
+<translation id="8759408218731716181">Հնարավոր չէ կարգավորել բազմակի մուտքը</translation>
 <translation id="8785070478575117577">Միացում «<ph name="NETWORK_NAME" />» ցանցին</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />։ <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>

@@ -513,6 +513,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3080254622891793721">Gráfico</translation>
 <translation id="3086579638707268289">A sua atividade na Web está a ser monitorizada</translation>
 <translation id="3087734570205094154">Parte inferior</translation>
+<translation id="3094457892697649331">Quando edita anotações, este documento volta à vista de página única.</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3096100844101284527">Adicionar endereço de levantamento</translation>
 <translation id="3105172416063519923">ID de recurso:</translation>
@@ -746,6 +747,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4075941231477579656">Touch ID</translation>
 <translation id="4079302484614802869">A configuração do proxy está definida para utilizar um URL de script .pac e não servidores proxy fixos.</translation>
 <translation id="4082393374666368382">Definições – Gestão</translation>
+<translation id="4084120443451129199">Modo de pesquisa, prima Enter para pesquisar <ph name="KEYWORD_SUFFIX" />.</translation>
 <translation id="4088981014127559358">Turno Y da imagem 1 lateral</translation>
 <translation id="4098354747657067197">O site seguinte é fraudulento</translation>
 <translation id="4101413244023615925">Texto e gráficos</translation>
@@ -941,6 +943,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4809079943450490359">Instruções do administrador do dispositivo:</translation>
 <translation id="4813512666221746211">Erro de rede</translation>
 <translation id="4816492930507672669">Ajustar à página</translation>
+<translation id="4819347708020428563">Pretende editar anotações na vista predefinida?</translation>
 <translation id="484462545196658690">Auto</translation>
 <translation id="4850886885716139402">Ver</translation>
 <translation id="4854362297993841467">Este método de fornecimento não está disponível. Experimente um método diferente.</translation>
@@ -1674,6 +1677,7 @@ Detalhes adicionais:
 <translation id="7802523362929240268">O site é legítimo</translation>
 <translation id="780301667611848630">Não, obrigado</translation>
 <translation id="7805768142964895445">Estado</translation>
+<translation id="7811322735445742657">Quando edita anotações, este documento volta à vista de página única e à respetiva rotação original.</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Remover a sugestão do formulário do Chrome?</translation>
 <translation id="781440967107097262">Pretende partilhar a área de transferência?</translation>
@@ -1709,6 +1713,7 @@ Detalhes adicionais:
 <translation id="7956713633345437162">Marcadores telemóvel</translation>
 <translation id="7961015016161918242">Nunca</translation>
 <translation id="7966803981046576691">Tipo de conta da tarefa</translation>
+<translation id="7976214039405368314">Demasiados pedidos</translation>
 <translation id="7977538094055660992">Dispositivo de saída</translation>
 <translation id="7977894662897852582">Edp</translation>
 <translation id="799149739215780103">Encadernar</translation>
@@ -1790,6 +1795,7 @@ Detalhes adicionais:
 <translation id="8289355894181816810">Se não tiver a certeza do que isto significa, contacte o gestor de rede.</translation>
 <translation id="8293206222192510085">Adicionar marcador</translation>
 <translation id="8294431847097064396">Origem</translation>
+<translation id="8297398969342264569">Quando edita anotações, este documento volta à respetiva rotação original.</translation>
 <translation id="8298115750975731693">A rede Wi-Fi que está a utilizar (<ph name="WIFI_NAME" />) pode exigir que visite <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="8303854710873047864">Secção "<ph name="SECTION" />" apresentada</translation>
 <translation id="830498451218851433">Dobrar a meio</translation>

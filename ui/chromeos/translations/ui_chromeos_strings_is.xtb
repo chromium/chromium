@@ -189,7 +189,6 @@
 <translation id="3064388234319122767">Umritun (zdravo → здраво)</translation>
 <translation id="3067790092342515856">Windows-skrár</translation>
 <translation id="3078461028045006476">Deila með <ph name="EXTENSION_NAME" /></translation>
-<translation id="3088034400796962477">Umritun (salam ← سلام)</translation>
 <translation id="3116361045094675131">Breskt lyklaborð</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">LOKIÐ</translation>
@@ -305,7 +304,6 @@
 <translation id="4477219268485577442">Búlgarskt hljóðritunarlyklaborð</translation>
 <translation id="4479812471636796472">Bandarískt Dvorak-lyklaborð</translation>
 <translation id="4481711095103932593">Þessari möppu er deilt með Windows</translation>
-<translation id="4487088045714738411">Belgískt lyklaborð</translation>
 <translation id="4522570452068850558">Upplýsingar</translation>
 <translation id="4542387084127299777">Ekki tókst að opna „<ph name="PATH" />“</translation>
 <translation id="4552678318981539154">Kaupa meira geymslurými</translation>
@@ -366,6 +364,7 @@
 <translation id="5010406651457630570">Tölvur</translation>
 <translation id="5011233892417813670">Chromebook</translation>
 <translation id="5024856940085636730">Aðgerð tekur lengri tíma en áætlað var. Viltu hætta við hana?</translation>
+<translation id="5026887030745057099">Hindí</translation>
 <translation id="5036159836254554629">Stjórna deilingu Parallels Desktop</translation>
 <translation id="5038625366300922036">Sjá meira...</translation>
 <translation id="5061708541166515394">Birtuskil</translation>
@@ -429,7 +428,6 @@
 <translation id="5522908512596376669">Skráalista var breytt í listayfirlit.</translation>
 <translation id="5524517123096967210">Ekki var hægt að lesa skrána.</translation>
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" />-mynd</translation>
-<translation id="5533555070048896610">Umritun (namaste → नमस्ते)</translation>
 <translation id="5534520101572674276">Reiknar stærð</translation>
 <translation id="5583640892426849032">Bakklykill</translation>
 <translation id="5605830556594064952">Bandarískt Dvorak</translation>

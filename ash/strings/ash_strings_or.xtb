@@ -59,6 +59,7 @@
 <translation id="1467432559032391204">ବାମ</translation>
 <translation id="1479909375538722835">ଫ୍ଲୋଟିଂ ଆକ୍ସେସିବିଲିଟୀ ମେନୁ</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
+<translation id="1503394326855300303">ଏହି ମାଲିକଙ୍କ ଆକାଉଣ୍ଟଟିକୁ ସର୍ବପ୍ରଥମେ ସାଇନ୍ ଇନ୍ କରିଥିବା ଆକାଉଣ୍ଟ ଭାବରେ ରଖିବା ଆବଶ୍ୟକ ଅଟେ৷</translation>
 <translation id="1516740043221086139">'ବିରକ୍ତ କରନ୍ତୁ ନାହିଁ' ଚାଲୁ ଅଛି।</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{ବିଜ୍ଞପ୍ତି ସେଟିଂସ୍ ଦେଖାନ୍ତୁ। ଗୋଟିଏ ଆପ୍ ପାଇଁ ବିଜ୍ଞପ୍ତି ବନ୍ଦ ଅଛି}other{ବିଜ୍ଞପ୍ତି ସେଟିଂସ୍ ଦେଖାନ୍ତୁ। #ଟି ଆପ୍ ପାଇଁ ବିଜ୍ଞପ୍ତି ବନ୍ଦ ଅଛି}}</translation>
 <translation id="1525508553941733066">ଖାରଜ କରନ୍ତୁ</translation>
@@ -172,7 +173,6 @@
 <translation id="2718395828230677721">ରାତି ଆଲୋକ</translation>
 <translation id="2727175239389218057">ପ୍ରତ୍ୟୁତ୍ତର ଦିଅନ୍ତୁ</translation>
 <translation id="2727977024730340865">କମ୍-ପାୱର୍‍ଯୁକ୍ତ ଚାର୍ଜର୍। ବ୍ୟାଟେରୀ ଚାର୍ଜିଂ ନିର୍ଭରଯୋଗ୍ୟ ହୋଇନପାରେ।</translation>
-<translation id="2743387203779672305">କ୍ଲିପ୍‌ବୋର୍ଡକୁ କପି କରନ୍ତୁ</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
 <translation id="2819276065543622893">ବର୍ତ୍ତମାନ, ଆପଣଙ୍କୁ ସାଇନ୍‌ ଆଉଟ୍‌ କରିଦିଆଯିବ।</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" />, <ph name="SPECIFIED_RESOLUTION" />କୁ ସମର୍ଥନ କରେ ନାହିଁ। ରିଜୋଲ୍ୟୁସନକୁ <ph name="FALLBACK_RESOLUTION" />ରେ ବଦଳା ଯାଇଥିଲା।</translation>
@@ -257,6 +257,7 @@
 <translation id="3486220673238053218">ସଂଜ୍ଞା</translation>
 <translation id="3510164367642747937">ମାଉସ୍‌ କର୍ସର୍‌ ହାଇଲାଇଟ୍ କରନ୍ତୁ</translation>
 <translation id="3513798432020909783"><ph name="MANAGER_EMAIL" /> ଦ୍ୱାରା ଆକାଉଣ୍ଟ ପରିଚାଳିତ ହେଉଛି</translation>
+<translation id="3571734092741541777">ସେଟ୍ ଅପ୍</translation>
 <translation id="3573179567135747900">"<ph name="FROM_LOCALE" />"ରେ ପୁଣି ପରିବର୍ତ୍ତନ କରନ୍ତୁ (ପୁନରାରମ୍ଭର ଆବଶ୍ୟକତା ଅଛି)</translation>
 <translation id="3576141592585647168">ସମୟକ୍ଷେତ୍ର ବଦଳାନ୍ତୁ</translation>
 <translation id="3593646411856133110">ଖୋଲା ଥିବା ଆପଗୁଡ଼ିକୁ ଦେଖିବାକୁ ଉପରକୁ ଉଠାଇ ଧରି ରଖନ୍ତୁ</translation>
@@ -389,6 +390,7 @@
 <translation id="4917385247580444890">ଦୃଢ଼</translation>
 <translation id="4918086044614829423">ସ୍ୱୀକାର କରନ୍ତୁ</translation>
 <translation id="4924411785043111640">ରିର୍ଷ୍ଟାଟ୍ ଏବଂ ରିସେଟ୍ କରନ୍ତୁ</translation>
+<translation id="4925542575807923399">ଏହି ଆକାଉଣ୍ଟର ବ୍ୟବସ୍ଥାପକଙ୍କ ପାଇଁ, ଏକ ଏକାଧିକ ସାଇନ୍ ଇନ୍ ଅବଧି କାଳରେ ଏହି ଆକାଉଣ୍ଟଟିକୁ ସର୍ବପ୍ରଥମେ ସାଇନ୍ ଇନ୍ କରିଥିବା ଆକାଉଣ୍ଟ ଭାବରେ ରଖିବା ଆବଶ୍ୟକ ଅଟେ৷</translation>
 <translation id="495046168593986294">ଉପରକୁ ସ୍କ୍ରୋଲ୍ କରନ୍ତୁ</translation>
 <translation id="4961318399572185831">କାଷ୍ଟ ସ୍କ୍ରିନ୍‌</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />ଘ <ph name="MINUTES" />ମି <ph name="SECONDS" />ସେ</translation>
@@ -535,6 +537,7 @@
 <translation id="6657585470893396449">ପାସ୍‌ୱର୍ଡ</translation>
 <translation id="6665545700722362599">ଲୋକେସନ୍ ସେବା, ଡିଭାଇସ୍‌ର ମାଇକ୍ରୋଫୋନ୍, କ୍ୟାମେରା, ବା ଅନ୍ୟାନ୍ୟ ବୈଶିଷ୍ଠ୍ୟ ବ୍ୟବହାର କରିବା ପାଇଁ ୱେବ୍‍ସାଇଟ୍, ଆପ୍ସ, ଏବଂ ସଂପ୍ରସାରଣର ଅନୁମତି ପ୍ରଦାନ କରନ୍ତୁ</translation>
 <translation id="6670153871843998651">ଡେସ୍କ 3</translation>
+<translation id="6671495933530132209">ଛବି କପି କରନ୍ତୁ</translation>
 <translation id="6691659475504239918">Search+Shift+H</translation>
 <translation id="6692996468359469499">ଆପଣଙ୍କ ଚୟନ ସମ୍ବନ୍ଧିତ ସୂଚନା ପାଆନ୍ତୁ</translation>
 <translation id="6696025732084565524">ଆପଣଙ୍କର ଅଲଗା ହୋ‍ଇପାରୁଥିବା କୀବୋର୍ଡରେ ଏକ ମହତ୍ତ୍ୱପୂର୍ଣ୍ଣ ଅପ୍‌ଡେଟ୍‌ ଆବଶ୍ୟକ</translation>
@@ -734,6 +737,7 @@
 <translation id="8734991477317290293">ଆପଣଙ୍କ କୀ'ଷ୍ଟ୍ରୋକ୍‌କୁ ଚୋରି କରିବାକୁ ଏହା ଏକ ପ୍ରୟାସ ହୋଇପାରେ</translation>
 <translation id="8735953464173050365">କୀ'ବୋର୍ଡ ସେଟିଂ‌ସ୍ ଦେଖାନ୍ତୁ। <ph name="KEYBOARD_NAME" />କୁ ଚୟନ କରାଯାଇଛି</translation>
 <translation id="875593634123171288">VPN ସେଟିଂସ୍‌ ଦେଖାନ୍ତୁ</translation>
+<translation id="8759408218731716181">ଏକାଧିକ ସାଇନ୍-ଇନ୍ ସେଟ୍ ଅପ୍ କରିପାରିବେ ନାହିଁ</translation>
 <translation id="8785070478575117577"><ph name="NETWORK_NAME" />ରେ ସଂଯୋଗ କରନ୍ତୁ</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />। <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">ୱାଇ-ଫାଇ</translation>

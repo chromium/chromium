@@ -557,9 +557,6 @@ Se você desativar a política, essa rolagem será desativada.</translation>
         |TIME_LIMITS| aplica o limite de uso diário e torna o app indisponível após o limite ser atingido no dia especificado. O limite de uso é especificado em |daily_limit_mins|. O limite de uso é redefinido diariamente no horário UTC transmitido em |reset_at|.
         Esta política é usada apenas para crianças.
         Esta política complementa a "UsageTimeLimit". Restrições especificadas em "UsageTimeLimit", como tempo de uso e hora de dormir, serão aplicadas independentemente de "PerAppTimeLimits".</translation>
-<translation id="1914840757300882918">Se esta política for definida, o host usará um certificado do cliente com o dado CN do emissor para autenticar em RemoteAccessHostTokenValidationUrl. Configure como "*" para usar qualquer certificado do cliente disponível.
-
-          No momento, esse recurso está desativado para servidores.</translation>
 <translation id="1919802376548418720">Usar a política KDC para delegar credenciais.</translation>
 <translation id="1920046221095339924">Permite sessão gerenciada no dispositivo</translation>
 <translation id="1920772397574801429">Definir a política especifica o tipo de conta fornecido pelo app de autenticação do Android compatível com a autenticação <ph name="HTTP_NEGOTIATE" /> (como Kerberos). Essas informações devem estar disponíveis junto ao fornecedor do app de autenticação. Para saber detalhes, consulte a página The Chromium Projects (https://goo.gl/hajyfN)
@@ -1085,22 +1082,6 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
       Se a política for definida como "Desativada", os avisos de segurança não serão exibidos quando o Chrome for iniciado com sinalizações de linha de comando potencialmente perigosas.
 
       No <ph name="MS_WIN_NAME" />, essa funcionalidade está disponível apenas em instâncias associadas a um domínio do <ph name="MS_AD_NAME" />, executadas no Windows 10 Pro ou registradas no Gerenciamento de nuvem do navegador Chrome. No <ph name="MAC_OS_NAME" />, essa funcionalidade está disponível apenas em instâncias gerenciadas por MDM ou associadas a um domínio via MCX.</translation>
-<translation id="2621383458880689826">Fornece configurações para impressoras empresariais vinculadas a dispositivos.
-
-      Esta política permite fornecer configurações de impressora para dispositivos <ph name="PRODUCT_OS_NAME" />.  O formato é igual ao do dicionário NativePrinters, com um campo "id" ou "guid" obrigatório extra por impressora para inclusão na lista de bloqueio ou de permissões.
-
-      O tamanho do arquivo não pode exceder 5 MB e precisa estar codificado em JSON.  Estima-se que um arquivo contendo aproximadamente 21.000 impressoras será codificado como um arquivo de 5 MB.  O hash criptográfico é usado para verificar a integridade do download.
-
-      O arquivo é transferido por download e armazenado em cache. O download será refeito sempre que o URL ou o hash mudarem.
-
-      Se esta política for definida, o <ph name="PRODUCT_OS_NAME" /> fará o download do arquivo para as configurações de impressora e disponibilizará as impressoras de acordo com <ph name="DEVICE_NATIVE_PRINTERS_ACCESS_MODE" />, <ph name="DEVICE_NATIVE_PRINTERS_WHITELIST_POLICY_NAME" /> e <ph name="DEVICE_NATIVE_PRINTERS_BLACKLIST_POLICY_NAME" />.
-
-      Esta política não afeta a possibilidade de os usuários configurarem impressoras em dispositivos individuais.  Ela tem o objetivo de complementar a configuração de impressoras por usuários individuais.
-
-      Esta política é complementar à <ph name="BULK_PRINTERS_POLICY_NAME" />.
-
-      Se esta política for deixada sem definição, não haverá nenhuma impressora, e as outras políticas <ph name="DEVICE_NATIVE_PRINTERS_POLICY_PATTERN" /> serão ignoradas.
-      </translation>
 <translation id="2623014935069176671">Aguardar atividade inicial do usuário</translation>
 <translation id="262740370354162807">Ativar o envio de documentos para <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="2632538643061793322">Se a política for definida, será possível configurar uma lista de padrões de URL que especifica quais sites podem pedir que o usuário conceda permissão de acesso ao dispositivo USB.
@@ -1267,12 +1248,6 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
       Se você ativar essa configuração, a Visualização de impressão utilizará a impressora padrão do sistema operacional como a escolha padrão.</translation>
 <translation id="285627849510728211">Definir a configuração do dia para o modo avançado de carregamento de bateria</translation>
 <translation id="2856674246949497058">Faça a reversão e permaneça na versão de destino se a versão do SO for mais recente que a de destino. Execute um Powerwash durante o processo.</translation>
-<translation id="2869140260739354012">Controla quais impressoras da <ph name="DEVICE_PRINTERS_POLICY" /> são disponibilizadas para os usuários.
-
-      Determina qual política de acesso é usada para a configuração em massa de impressoras. Se <ph name="PRINTERS_ALLOW_ALL" /> for selecionada, todas as impressoras serão exibidas. Se <ph name="PRINTERS_BLACKLIST" /> for selecionada, <ph name="DEVICE_NATIVE_PRINTERS_BLACKLIST" /> será usada para restringir o acesso às impressoras especificadas.  Se <ph name="PRINTERS_WHITELIST" /> for selecionada, <ph name="DEVICE_NATIVE_PRINTERS_WHITELIST" /> determinará apenas as impressoras que podem ser selecionadas.
-
-      Se esta política for deixada sem definição, <ph name="PRINTERS_ALLOW_ALL" /> será usada.
-      </translation>
 <translation id="2869762730352628426">Ativar clique automático na tela de login</translation>
 <translation id="2872961005593481000">Desligar</translation>
 <translation id="2874209944580848064">Observação para dispositivos <ph name="PRODUCT_OS_NAME" /> compatíveis com apps Android:</translation>
@@ -1619,6 +1594,17 @@ Se esta política for definida como falsa, o <ph name="PRODUCT_NAME" /> não usa
 
       Se esta política não for definida, todo plug-in que corresponder aos padrões em "DisabledPlugins" será mantido desativado, e o usuário não poderá ativá-lo.</translation>
 <translation id="3381968327636295719">Usar o navegador de host por padrão</translation>
+<translation id="3383794118443927579">A definição da política configura o URL padrão da página Nova guia e impede que os usuários o modifiquem.
+
+      Essa página será aberta em novas guias e janelas.
+
+      Esta política não decide quais páginas serão abertas na inicialização. Isso é controlado pelas políticas <ph name="RESTORE_ON_STARTUP_POLICY_NAME" />. Esta política afetará a página inicial e de inicialização se elas estiverem configuradas para abrir a página Nova guia.
+
+      A prática recomendada é fornecer o URL totalmente canonizado. Se isso não ocorrer, o <ph name="PRODUCT_NAME" /> completará com https:// por padrão.
+
+      Se a política não for configurada ou for deixada em branco, a página Nova guia padrão será usada.
+
+      No <ph name="MS_WIN_NAME" />, essa funcionalidade está disponível apenas em instâncias associadas a um domínio do <ph name="MS_AD_NAME" />, executadas no Windows 10 Pro ou registradas no <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />. No <ph name="MAC_OS_NAME" />, essa funcionalidade está disponível apenas em instâncias gerenciadas por MDM ou associadas a um domínio via MCX.</translation>
 <translation id="3391457705621770207">A definição da política determina o tempo (em milissegundos) sem atividade do usuário até o login automático na conta local do dispositivo especificada pela <ph name="DEVICE_LOCAL_ACCOUNT_AUTO_LOGIN_ID_POLICY_NAME" />.
 
       Se a política não for definida, o tempo limite de 0 milissegundos será usado.
@@ -1905,12 +1891,6 @@ Se esta política for definida como falsa, o <ph name="PRODUCT_NAME" /> não usa
 <translation id="3838094946886335701">Se a política for definida (apenas como recomendado), será possível registrar uma lista de gerenciadores de protocolo, que será mesclada às registradas pelo usuário de forma que as duas configurações sejam aplicadas. Defina a propriedade "protocolo" conforme o esquema, por exemplo, "mailto", e defina a propriedade "URL" conforme o padrão de URL do aplicativo que gerencia o esquema especificado no campo "protocolo". O padrão pode incluir um marcador "%s", que é substituído pelo URL gerenciado.
 
       Os usuários não podem remover um gerenciador de protocolo registrado pela política. No entanto, ao instalar um novo gerenciador padrão, eles podem mudar os gerenciadores de protocolo instalados pela política.</translation>
-<translation id="3848118497246496090">Especifica as impressoras que um usuário não pode usar.
-
-      Esta política só será usada se <ph name="PRINTERS_BLACKLIST" /> for escolhida para <ph name="DEVICE_NATIVE_PRINTERS_ACCESS_MODE" />.
-
-      Se esta política for usada, todas as impressoras serão fornecidas para o usuário, exceto para os IDs listados na política. Os IDs precisam corresponder aos campos "id" ou "guid" no arquivo especificado na <ph name="DEVICE_PRINTERS_POLICY" />.
-      </translation>
 <translation id="3851039766298741586">Informações de relatório sobre a sessão de quiosque ativa, como a
       versão e o código do aplicativo.
 
@@ -2276,12 +2256,6 @@ Quando a |IdleAction| não for definida, a ação padrão de suspensão será re
 
       Se não for definida, os sites terão permissão para solicitar acesso, mas os usuários poderão mudar essa configuração.</translation>
 <translation id="4285674129118156176">Permitir que usuários sem afiliação utilizem o ARC</translation>
-<translation id="4309562700894844665">Especifica as impressoras que um usuário pode usar.
-
-      Esta política só será usada se <ph name="PRINTERS_WHITELIST" /> for escolhida para <ph name="DEVICE_NATIVE_PRINTERS_ACCESS_MODE" />.
-
-      Se esta política for usada, somente as impressoras com IDs que correspondem aos valores da política estarão disponíveis para o usuário. Os IDs precisam corresponder aos campos "id" ou "guid" no arquivo especificado na <ph name="DEVICE_PRINTERS_POLICY" />.
-      </translation>
 <translation id="4311195029067684288">Completa</translation>
 <translation id="4313767483634435271">Endereço MAC designado da base para o dispositivo</translation>
 <translation id="4322842393287974810">Permitir que o aplicativo de quiosque aberto automaticamente com zero de atraso controle a versão do <ph name="PRODUCT_OS_NAME" /></translation>
@@ -2298,9 +2272,6 @@ Quando a |IdleAction| não for definida, a ação padrão de suspensão será re
 <translation id="4347908978527632940">Se essa política for definida como "true", e o usuário for um usuário supervisionado, outros apps do Android poderão consultar restrições da Web do usuário por meio de um provedor de conteúdo.
 
           Se for definida como "false" ou não for definida, o provedor de conteúdo não retornará nenhuma informação.</translation>
-<translation id="4360826270668210664">Se esta política for definida, o host de acesso remoto exigirá a autenticação de clientes para receber um token de autenticação deste URL e poder se conectar. Ela precisa ser usada em conjunto com RemoteAccessHostTokenValidationUrl.
-
-          No momento, esse recurso está desativado para servidores.</translation>
 <translation id="4363057787588706121">Permitir a mescla de políticas de lista de diferentes fontes</translation>
 <translation id="4363101430102811068">Ativa a detecção de vazamento para credenciais digitadas</translation>
 <translation id="436581050240847513">Relatar interfaces de redes de dispositivos</translation>
@@ -4524,9 +4495,6 @@ Essas políticas são ignoradas se a Área de trabalho remota do Google Chrome n
 <translation id="7477231245051133709">Ativar o recurso de acessibilidade de áudio mono</translation>
 <translation id="7477239290070847560">Destinos de protocolos baseados em Zeroconf (mDNS + DNS-SD)</translation>
 <translation id="7485481791539008776">Regras de seleção de impressora padrão</translation>
-<translation id="7485730741952775732">Se esta política for definida, o host do acesso remoto usará este URL para validar os tokens de autenticação de clientes de acesso remoto, de modo a aceitar as conexões. Ela precisa ser usada em conjunto com RemoteAccessHostTokenUrl.
-
-          No momento, esse recurso está desativado para servidores.</translation>
 <translation id="749556411189861380">Informa a versão do sistema operacional e do firmware dos dispositivos inscritos.
 
       Se essa configuração não for definida ou for definida como "True", os dispositivos inscritos informarão a versão do sistema operacional e do firmware periodicamente. Se essa configuração for definida como "False", as informações de versão não serão informadas.</translation>
@@ -4850,9 +4818,6 @@ Se a política não for definida, a configuração ficará ativada, mas o usuár
 <translation id="7953256619080733119">Hosts de exceção manual do usuário gerenciado</translation>
 <translation id="7956210013490975468">Configura o serviço de proxy do sistema para o <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="7958537754689366707">A senha precisa ser digitada a cada 12 horas</translation>
-<translation id="7960293328203000385">Define a lista de usuários que têm permissão para fazer login no dispositivo. As entradas são feitas no formato <ph name="USER_ALLOWLIST_ENTRY_FORMAT" />, como <ph name="USER_ALLOWLIST_ENTRY_EXAMPLE" />. Para permitir usuários arbitrários em um domínio, use entradas no formato <ph name="USER_ALLOWLIST_ENTRY_WILDCARD" />.
-
-      Se esta política não for configurada, não haverá restrições quanto aos usuários autorizados a fazer login. Ainda assim, a criação de novos usuários exige que a política <ph name="DEVICE_ALLOW_NEW_USERS_POLICY_NAME" /> seja configurada de forma adequada.</translation>
 <translation id="7961779417826583251">Desativar a aplicação da Transparência dos certificados para uma lista de Autoridades de certificação de legado</translation>
 <translation id="7973609468423251675">Esta política está obsoleta e será removida na versão 85 do <ph name="PRODUCT_OS_NAME" />. Por isso, passe a usar <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.
 

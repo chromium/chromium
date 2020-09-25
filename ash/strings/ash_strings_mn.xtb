@@ -59,6 +59,7 @@
 <translation id="1467432559032391204">Зүүн</translation>
 <translation id="1479909375538722835">Хөвж буй хандалтын цэс</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
+<translation id="1503394326855300303">Эзэмшигчийн дансанд эхлээд олон нэвтрэх хэсэгт нэвтэрсэн байх шаардлагтай.</translation>
 <translation id="1516740043221086139">Бүү саад бол горим асаалттай байна.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Мэдэгдлийн тохиргоог харуулна уу. Аппын мэдэгдлийг унтраасан байна}other{Мэдэгдлийн тохиргоог харуулна уу. # аппын мэдэгдлийг унтраасан байна}}</translation>
 <translation id="1525508553941733066">ХЭРЭГСЭХГҮЙ БОЛГОХ</translation>
@@ -172,7 +173,6 @@
 <translation id="2718395828230677721">Шөнийн гэрэл</translation>
 <translation id="2727175239389218057">Хариулах</translation>
 <translation id="2727977024730340865">Бага энергитэй цэнэглэгч залгасан байна. Тэжээлийг цэнэглэхгүй байж болох юм.</translation>
-<translation id="2743387203779672305">Завсрын түр санах самбар луу хуулах</translation>
 <translation id="2792498699870441125">Alt+ Хайлт</translation>
 <translation id="2819276065543622893">Та нэвтрэх хэсгээс яг одоо гарч байна.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" />-г дэмждэггүй. Нягтралыг <ph name="FALLBACK_RESOLUTION" /> болгож өөрчилсөн.</translation>
@@ -257,6 +257,7 @@
 <translation id="3486220673238053218">тодорхойлолт</translation>
 <translation id="3510164367642747937">Хулганы курсорыг тодруулах</translation>
 <translation id="3513798432020909783"><ph name="MANAGER_EMAIL" />-н удирддаг бүртгэл</translation>
+<translation id="3571734092741541777">Тохиргоо хийх.</translation>
 <translation id="3573179567135747900">"<ph name="FROM_LOCALE" />"-руу буцааж өөрчил (системийг дахин эхлүүлэх хэрэгтэй)</translation>
 <translation id="3576141592585647168">Цагийн бүсийг өөрчлөх</translation>
 <translation id="3593646411856133110">Нээлттэй аппуудыг харахын тулд дээш шудраад удаан дарна уу</translation>
@@ -390,6 +391,7 @@
 <translation id="4917385247580444890">Хүчтэй</translation>
 <translation id="4918086044614829423">Хүлээн зөвшөөрөх</translation>
 <translation id="4924411785043111640">Дахин эхлүүлэх болон шинэчлэх</translation>
+<translation id="4925542575807923399">Энэ хаягийг хариуцсан ажилтан нь олон хаягаар зэрэг нэвтрэх тохиолдолд зөвхөн энэ хаягаар түрүүлж нэвтэрсний дараагаар бусад хаягт нэвтрэх боломжтой байхаар тохируулсан байна.</translation>
 <translation id="495046168593986294">Дээш гүйлгэх</translation>
 <translation id="4961318399572185831">Дэлгэцийг каст хийх</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />ц <ph name="MINUTES" />м <ph name="SECONDS" />с</translation>
@@ -536,6 +538,7 @@
 <translation id="6657585470893396449">Нууц үг</translation>
 <translation id="6665545700722362599">Вэб сайтууд, аппууд болон өргөтгөлүүдэд байршлын үйлчилгээ, төхөөрөмжийн микрофон, камер болон бусад онцлогийг ашиглахыг зөвшөөрөх</translation>
 <translation id="6670153871843998651">Дэлгэц 3</translation>
+<translation id="6671495933530132209">Зургийг хуулах</translation>
 <translation id="6691659475504239918">Search+Shift+H</translation>
 <translation id="6692996468359469499">Сонголттойгоо холбоотой мэдээлэл авах</translation>
 <translation id="6696025732084565524">Та салгах боломжтой гараа зайлшгүй шинэчлэх шаардлагатай байна</translation>
@@ -555,7 +558,7 @@
 <translation id="6857811139397017780"><ph name="NETWORKSERVICE" />-ийг идэвхжүүл</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Нэг цифр үлдсэн}other{# цифр үлдсэн}}</translation>
 <translation id="6878400149835617132">Товчлол унтраалттай байна</translation>
-<translation id="6886172995547742638">Таны <ph name="DEVICE_TYPE" />-н гүйцэтгэл буурч болзошгүй. Баталгаажсан <ph name="PREFERRED_MINIMUM_POWER" />В эсвэл түүнээс дээш USB-C тэжээлийн адаптерыг ашиглана уу.</translation>
+<translation id="6886172995547742638">Таны <ph name="DEVICE_TYPE" />-н гүйцэтгэл буурч болзошгүй. Баталгаажсан <ph name="PREFERRED_MINIMUM_POWER" />Вт эсвэл түүнээс дээш чадалтай USB-C тэжээлийн адаптерыг ашиглана уу.</translation>
 <translation id="6896758677409633944">Хуулах</translation>
 <translation id="6910714959251846841">Тус шинэчлэлт нь таны төхөөрөмжийг үйлдвэрийн тохиргоонд буцааж оруулахыг шаарддаг. Хамгийн сүүлийн үеийн <ph name="SYSTEM_APP_NAME" /> шинэчлэлтийн талаар нэмэлт мэдээлэл авна уу.</translation>
 <translation id="6919251195245069855">Таны ухаалаг картыг таньж чадсангүй. Дахин оролдоно уу.</translation>
@@ -736,6 +739,7 @@
 <translation id="8734991477317290293">Энэ нь таны түлхүүрийн цуглуулгыг хулгайлахаар оролдож байж болзошгүй</translation>
 <translation id="8735953464173050365">Гарын тохиргоог харуулна уу. <ph name="KEYBOARD_NAME" />-г сонгосон</translation>
 <translation id="875593634123171288">VPN тохиргоог харуулах</translation>
+<translation id="8759408218731716181">Олон хэрэглэгчтэй нэвтрэх эрхийг суулгаж чадахгүй байна</translation>
 <translation id="8785070478575117577"><ph name="NETWORK_NAME" />-д холбогдох</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Утасгүй интернет</translation>

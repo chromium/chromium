@@ -189,7 +189,6 @@
 <translation id="3064388234319122767">Transliterācija (zdravo → здраво)</translation>
 <translation id="3067790092342515856">Windows faili</translation>
 <translation id="3078461028045006476">Kopīgot ar paplašinājumu <ph name="EXTENSION_NAME" /></translation>
-<translation id="3088034400796962477">Transliterācija (salam ← سلام)</translation>
 <translation id="3116361045094675131">AK tastatūra</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">GATAVS</translation>
@@ -305,7 +304,6 @@
 <translation id="4477219268485577442">Bulgāru fonētiskā</translation>
 <translation id="4479812471636796472">ASV Dvoraka tastatūra</translation>
 <translation id="4481711095103932593">Šī mape ir kopīgota ar Windows</translation>
-<translation id="4487088045714738411">Beļģu tastatūra</translation>
 <translation id="4522570452068850558">Informācija</translation>
 <translation id="4542387084127299777">Nevar atvērt ceļu <ph name="PATH" /></translation>
 <translation id="4552678318981539154">Iegādāties papildu vietu krātuvē</translation>
@@ -366,6 +364,7 @@
 <translation id="5010406651457630570">Datori</translation>
 <translation id="5011233892417813670">Chromebook</translation>
 <translation id="5024856940085636730">Darbība aizņem vairāk laika, nekā paredzēts. Vai vēlaties to priekšlaikus pārtraukt?</translation>
+<translation id="5026887030745057099">Hindi</translation>
 <translation id="5036159836254554629">Pārvaldīt kopīgošanu ar Parallels Desktop</translation>
 <translation id="5038625366300922036">Skatīt vairāk...</translation>
 <translation id="5061708541166515394">Kontrasts</translation>
@@ -430,7 +429,6 @@
 <translation id="5522908512596376669">Failu saraksts ir mainīts uz saraksta skatu.</translation>
 <translation id="5524517123096967210">Failu nevarēja nolasīt.</translation>
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> attēls</translation>
-<translation id="5533555070048896610">Transliterācija (namaste → नमस्ते)</translation>
 <translation id="5534520101572674276">Notiek lieluma aprēķināšana.</translation>
 <translation id="5583640892426849032">Atkāpšanās taustiņš</translation>
 <translation id="5605830556594064952">ASV Dvorak</translation>

@@ -59,6 +59,7 @@
 <translation id="1467432559032391204">இடது</translation>
 <translation id="1479909375538722835">மிதக்கும் அணுகல்தன்மை மெனு</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
+<translation id="1503394326855300303">பல உள்நுழைவு அமர்வில் இந்த உரிமையாளர் கணக்கு தான் முதலில் உள்நுழைந்த கணக்காக இருக்க வேண்டும்.</translation>
 <translation id="1516740043221086139">'தொந்தரவு செய்ய வேண்டாம்' ஆன் செய்யப்பட்டுள்ளது.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{அறிவிப்பு அமைப்புகளைக் காண்பிக்கும். ஒரு ஆப்ஸுக்கு அறிவிப்புகள் முடக்கப்பட்டுள்ளன}other{அறிவிப்பு அமைப்புகளைக் காண்பிக்கும். # ஆப்ஸுக்கு அறிவிப்புகள் முடக்கப்பட்டுள்ளன}}</translation>
 <translation id="1525508553941733066">நிராகரி</translation>
@@ -172,7 +173,6 @@
 <translation id="2718395828230677721">நைட் லைட்</translation>
 <translation id="2727175239389218057">பதிலளி</translation>
 <translation id="2727977024730340865">குறைந்த சக்தியிலான சார்ஜர் செருகப்பட்டுள்ளது. பேட்டரி சார்ஜிங் நம்பகமானதாக இல்லாமல் இருக்கலாம்.</translation>
-<translation id="2743387203779672305">கிளிப்போர்டுக்கு நகலெடு</translation>
 <translation id="2792498699870441125">Alt+தேடல்</translation>
 <translation id="2819276065543622893">இப்போது வெளியேற்றப்படுவீர்கள்.</translation>
 <translation id="2825224105325558319"><ph name="SPECIFIED_RESOLUTION" /> தெளிவுத்திறனை <ph name="DISPLAY_NAME" /> ஆதரிக்கவில்லை. தெளிவுத்திறன் <ph name="FALLBACK_RESOLUTION" />க்கு மாற்றப்பட்டது.</translation>
@@ -257,6 +257,7 @@
 <translation id="3486220673238053218">விளக்கம்</translation>
 <translation id="3510164367642747937">மவுஸ் கர்சரைத் தனிப்படுத்து</translation>
 <translation id="3513798432020909783">கணக்கை நிர்வகிப்பது: <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3571734092741541777">அமை</translation>
 <translation id="3573179567135747900">"<ph name="FROM_LOCALE" />" க்கு மீண்டும் மாற்று (மறுதொடக்கம் தேவை)</translation>
 <translation id="3576141592585647168">நேரமண்டலத்தை மாற்றுக</translation>
 <translation id="3593646411856133110">திறந்திருக்கும் ஆப்ஸ்களைப் பார்க்க மேலே ஸ்வைப் செய்து பிடிக்கவும்</translation>
@@ -389,6 +390,7 @@
 <translation id="4917385247580444890">வலிமையானது</translation>
 <translation id="4918086044614829423">ஏற்கிறேன்</translation>
 <translation id="4924411785043111640">மீண்டும் தொடங்கி, மீட்டமை</translation>
+<translation id="4925542575807923399">பல உள்நுழைவு அமர்வில் இந்தக் கணக்கு முதலில் உள்நுழைந்த கணக்காக இருக்க வேண்டிய தேவை இந்தக் கணக்கின் நிர்வாகிக்கு உள்ளது.</translation>
 <translation id="495046168593986294">மேலே நகர்த்து</translation>
 <translation id="4961318399572185831">திரையை அலைபரப்பு</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />ம <ph name="MINUTES" />நி <ph name="SECONDS" />வி</translation>
@@ -535,6 +537,7 @@
 <translation id="6657585470893396449">கடவுச்சொல்</translation>
 <translation id="6665545700722362599">இருப்பிடச் சேவைகள், சாதனத்தின் மைக்ரோஃபோன், கேமரா அல்லது பிற அம்சங்களை இணையதளங்கள், ஆப்ஸ், நீட்டிப்புகள் ஆகியவை பயன்படுத்த அனுமதி அளித்தல்</translation>
 <translation id="6670153871843998651">மேசை 3</translation>
+<translation id="6671495933530132209">படத்தை நகலெடு</translation>
 <translation id="6691659475504239918">தேடல்+Shift+H</translation>
 <translation id="6692996468359469499">திரையில் நீங்கள் தேர்ந்தெடுத்தது தொடர்பாக தகவல்களைப் பெறவும்</translation>
 <translation id="6696025732084565524">உங்கள் அகற்றத்தக்க விசைப்பலகைக்கு முக்கியப் புதுப்பிப்பு வேண்டும்</translation>
@@ -734,6 +737,7 @@
 <translation id="8734991477317290293">அது உங்கள் விசை அழுத்தங்களைத் திருட முயற்சித்துக் கொண்டிருக்கக்கூடும்</translation>
 <translation id="8735953464173050365">கீபோர்ட் அமைப்புகளைக் காண்பிக்கும். <ph name="KEYBOARD_NAME" /> தேர்ந்தெடுக்கப்பட்டுள்ளது</translation>
 <translation id="875593634123171288">VPN அமைப்புகளைக் காண்பிக்கும்</translation>
+<translation id="8759408218731716181">பல உள்நுழைவை அமைக்க முடியாது</translation>
 <translation id="8785070478575117577"><ph name="NETWORK_NAME" /> உடன் இணைக்கும்</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">வைஃபை</translation>

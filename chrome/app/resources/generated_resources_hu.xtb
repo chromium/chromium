@@ -352,6 +352,7 @@
 <translation id="140520891692800925"><ph name="PROFILE_DISPLAY_NAME" /> (felügyelt)</translation>
 <translation id="1405779994569073824">Összeomlott.</translation>
 <translation id="1406500794671479665">Ellenőrzés...</translation>
+<translation id="1407135791313364759">Összes megnyitása</translation>
 <translation id="140723521119632973">Mobilhálózati aktiválás</translation>
 <translation id="1407489512183974736">Középre, levágva</translation>
 <translation id="1408504635543854729">Fedezze fel az eszköz tartalmait a Fájlok alkalmazásban. A rendszergazda korlátozta a tartalmakat, így nem lehet módosítani őket.</translation>
@@ -1903,7 +1904,6 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="3246107497225150582">{0,plural, =1{Egy napon belül frissítse az eszközt}other{# napon belül frissítse az eszközt}}</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – Hálózati hiba</translation>
 <translation id="3248902735035392926">A biztonság fontos. Szánjon egy pillanatot <ph name="BEGIN_LINK" />bővítményeinek ellenőrzésére<ph name="END_LINK" />.</translation>
-<translation id="325036368918787455">Inkognitó ablakok bezárása</translation>
 <translation id="3251759466064201842">&lt;Nem része a tanúsítványnak&gt;</translation>
 <translation id="3253225298092156258">Nem hozzáférhető</translation>
 <translation id="3253448572569133955">Ismeretlen fiók</translation>
@@ -3443,7 +3443,6 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="5097649414558628673">Eszköz: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">Automatikus kattintás, ha a kurzor megáll</translation>
 <translation id="5099399397495049098">A webhelyek használhatnak JavaScriptet (ajánlott)</translation>
-<translation id="5101042277149003567">Az összes könyvjelző megnyitása</translation>
 <translation id="5101839224773798795">Automatikus kattintás, amikor a kurzor megáll</translation>
 <translation id="5107443654503185812">Az egyik bővítmény kikapcsolta a Biztonságos Böngészést</translation>
 <translation id="5108967062857032718">Beállítások – Android-alkalmazások eltávolítása</translation>
@@ -4029,7 +4028,6 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="5804241973901381774">Engedélyek</translation>
 <translation id="5805697420284793859">Ablakkezelő</translation>
 <translation id="5806773519584576205">0° (alapértelmezett)</translation>
-<translation id="5808664694611589238">{0,plural, =1{Vendég munkamenet bezárása}other{Vendég munkamenet bezárása}}</translation>
 <translation id="5810809306422959727">Ez a fiók nem jogosult arra, hogy szülői felügyeletet állítson be hozzá</translation>
 <translation id="5812674658566766066">Az összes kibontása</translation>
 <translation id="5814126672212206791">Csatlakozás típusa</translation>

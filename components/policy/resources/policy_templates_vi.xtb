@@ -575,9 +575,6 @@ Nếu bạn tắt chính sách này, thì việc cuộn trang web đến các ph
         |TIME_LIMITS| áp dụng giới hạn mức sử dụng hằng ngày và khiến người dùng không thể sử dụng ứng dụng sau khi đạt đến giới hạn đó vào ngày cụ thể. Giới hạn mức sử dụng được chỉ định theo |daily_limit_mins|. Hằng ngày, hệ thống sẽ đặt lại giới hạn mức sử dụng vào thời gian (theo giờ UTC) đã chỉ định trong |reset_at|.
         Chính sách này chỉ dùng cho người dùng là trẻ em.
         Chính sách này sẽ bổ sung cho 'UsageTimeLimit'. Các giới hạn đã chỉ định trong 'UsageTimeLimit' như thời gian sử dụng thiết bị và giờ đi ngủ sẽ được thực thi bất kể 'PerAppTimeLimits' là như thế nào.</translation>
-<translation id="1914840757300882918">Nếu bạn đặt chính sách này, máy chủ sẽ sử dụng một chứng chỉ ứng dụng có CN của nhà phát hành cụ thể đó để xác thực với RemoteAccessHostTokenValidationUrl. Đặt thành "*" để sử dụng bất kỳ chứng chỉ ứng dụng nào có sẵn.
-
-          Tính năng này hiện bị tắt phía máy chủ.</translation>
 <translation id="1919802376548418720">Sử dụng chính sách KDC để ủy quyền thông tin xác thực.</translation>
 <translation id="1920046221095339924">Cho phép phiên được quản lý trên thiết bị</translation>
 <translation id="1920772397574801429">Nếu bạn đặt chính sách này, hệ thống sẽ chỉ định loại tài khoản do ứng dụng xác thực Android cung cấp có hỗ trợ tính năng xác thực <ph name="HTTP_NEGOTIATE" /> (chẳng hạn như xác thực Kerberos). Nhà cung cấp ứng dụng xác thực sẽ cung cấp thông tin này. Để biết thông tin chi tiết, hãy truy cập vào trang The Chromium Projects (https://goo.gl/hajyfN)
@@ -1102,22 +1099,6 @@ Nếu bạn không đặt chính sách này, thì màn hình bảo vệ quyền 
       Khi bạn đặt chính sách này thành Tắt, cảnh báo bảo mật sẽ không hiện ra khi Chrome được chạy bằng cờ hiệu dòng lệnh có thể nguy hiểm.
 
       Trên <ph name="MS_WIN_NAME" />, chức năng này chỉ có ở những phiên bản liên kết với một miền <ph name="MS_AD_NAME" />, chạy trên Windows 10 Pro, hoặc đã đăng ký tùy chọn Quản lý trình duyệt Chrome qua đám mây. Trên <ph name="MAC_OS_NAME" />, chức năng này chỉ có ở những phiên bản được quản lý qua MDM, hoặc liên kết với một miền qua MCX.</translation>
-<translation id="2621383458880689826">Cung cấp cấu hình máy in dành cho doanh nghiệp được kết nối với các thiết bị.
-
-      Chính sách này cho phép bạn cung cấp cấu hình máy in cho các thiết bị <ph name="PRODUCT_OS_NAME" />.  Định dạng này giống với định dạng của từ điển NativePrinters có thêm trường "id" hoặc "guid" bắt buộc trên mỗi máy in để đưa vào danh sách cho phép hoặc danh sách cấm.
-
-      Kích thước tệp không được vượt quá 5 MB và phải được mã hóa ở định dạng JSON.  Theo ước tính, tệp có chứa khoảng 21.000 máy in sẽ mã hóa dưới dạng tệp 5 MB.  Hàm băm mật mã dùng để xác minh tính toàn vẹn của tệp tải xuống.
-
-      Tệp sẽ được tải xuống và lưu vào bộ nhớ đệm. Tệp này sẽ được tải lại xuống mỗi khi URL hoặc hàm băm thay đổi.
-
-      Nếu bạn đặt chính sách này, <ph name="PRODUCT_OS_NAME" /> sẽ tải tệp cấu hình máy in xuống và cung cấp các máy in theo đúng <ph name="DEVICE_NATIVE_PRINTERS_ACCESS_MODE" />, <ph name="DEVICE_NATIVE_PRINTERS_WHITELIST_POLICY_NAME" /> và <ph name="DEVICE_NATIVE_PRINTERS_BLACKLIST_POLICY_NAME" />.
-
-      Chính sách này không ảnh hưởng đến việc người dùng có thể định cấu hình máy in trên từng thiết bị hay không.  Chính sách này nhằm bổ sung cho quá trình định cấu hình máy in theo từng người dùng.
-
-      Chính sách này bổ sung cho <ph name="BULK_PRINTERS_POLICY_NAME" />.
-
-      Nếu bạn không đặt chính sách này, hệ thống sẽ không bỏ qua máy in được kết nối với thiết bị cũng như các chính sách <ph name="DEVICE_NATIVE_PRINTERS_POLICY_PATTERN" /> khác.
-      </translation>
 <translation id="2623014935069176671">Đợi hoạt động người dùng đầu tiên</translation>
 <translation id="262740370354162807">Cho phép gửi tài liệu tới <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="2632538643061793322">Nếu đặt chính sách này, bạn có thể liệt kê các mẫu URL chỉ định những trang web có thể yêu cầu người dùng cấp quyền truy cập vào thiết bị USB.
@@ -1284,12 +1265,6 @@ Khi chính sách này được đặt thành false hoặc không được địn
       Nếu bạn bật cài đặt này, tính năng Xem trước bản in sẽ chọn máy in có sẵn trong hệ điều hành làm máy in mặc định.</translation>
 <translation id="285627849510728211">Đặt cấu hình ngày cho chế độ sạc pin nâng cao</translation>
 <translation id="2856674246949497058">Hạ cấp và tiếp tục sử dụng phiên bản đích nếu phiên bản hệ điều hành mới hơn phiên bản đích. Thực hiện powerwash trong quá trình này.</translation>
-<translation id="2869140260739354012">Kiểm soát những máy in trong <ph name="DEVICE_PRINTERS_POLICY" /> mà người dùng có thể sử dụng.
-
-      Chỉ định chính sách truy cập dùng cho cấu hình máy in số lượng lớn. Nếu bạn chọn <ph name="PRINTERS_ALLOW_ALL" />, tất cả máy in sẽ hiển thị. Nếu bạn chọn <ph name="PRINTERS_BLACKLIST" />, <ph name="DEVICE_NATIVE_PRINTERS_BLACKLIST" /> sẽ được dùng để hạn chế việc truy cập vào những máy in đã chỉ định. Nếu bạn chọn <ph name="PRINTERS_WHITELIST" />, <ph name="DEVICE_NATIVE_PRINTERS_WHITELIST" /> sẽ chỉ chỉ định những máy in có thể chọn được.
-
-      Nếu bạn không đặt chính sách này, <ph name="PRINTERS_ALLOW_ALL" /> sẽ là tùy chọn mặc định.
-      </translation>
 <translation id="2869762730352628426">Bật chế độ tự động nhấp trên màn hình đăng nhập</translation>
 <translation id="2872961005593481000">Tắt</translation>
 <translation id="2874209944580848064">Lưu ý dành cho thiết bị <ph name="PRODUCT_OS_NAME" /> hỗ trợ ứng dụng Android:</translation>
@@ -1930,12 +1905,6 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
 <translation id="3838094946886335701">Nếu đặt chính sách này (chỉ khi khuyên dùng), thì bạn có thể đăng ký danh sách các trình xử lý giao thức (sẽ hợp nhất với các trình xử lý giao thức mà người dùng đăng ký) để đưa vào sử dụng. Hãy đặt thuộc tính "giao thức" thành lược đồ, chẳng hạn như "mailto", và đặt thuộc tính "URL" thành mẫu URL của ứng dụng xử lý lược đồ được chỉ định trong trường "giao thức". Mẫu này có thể bao gồm trình giữ chỗ "%s" (thay bằng URL đã xử lý).
 
       Người dùng không thể xóa trình xử lý giao thức do chính sách đăng ký. Tuy nhiên, họ có thể thay đổi các trình xử lý giao thức do chính sách cài đặt bằng cách cài đặt một trình xử lý mặc định mới.</translation>
-<translation id="3848118497246496090">Chỉ định những máy in mà người dùng không thể sử dụng.
-
-      Chính sách này chỉ được dùng nếu bạn chọn <ph name="PRINTERS_BLACKLIST" /> cho <ph name="DEVICE_NATIVE_PRINTERS_ACCESS_MODE" />.
-
-      Nếu bạn sử dụng chính sách này, tất cả máy in sẽ được cung cấp cho người dùng ngoại trừ những mã nhận dạng được liệt kê trong chính sách này. Các mã nhận dạng này phải tương ứng với các trường "id" hoặc "guid" ở tệp đã chỉ định trong <ph name="DEVICE_PRINTERS_POLICY" />.
-      </translation>
 <translation id="3851039766298741586">Báo cáo thông tin về phiên kiosk hiện hoạt, chẳng hạn như
       ID và phiên bản ứng dụng.
 
@@ -2300,12 +2269,6 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
 
       Khi bạn không đặt chính sách này, các trang web có thể yêu cầu quyền truy cập, nhưng người dùng có thể thay đổi tùy chọn cài đặt này.</translation>
 <translation id="4285674129118156176">Cho phép người dùng không được liên kết sử dụng ARC</translation>
-<translation id="4309562700894844665">Chỉ định những máy in mà người dùng có thể sử dụng.
-
-      Chính sách này chỉ được dùng nếu bạn chọn <ph name="PRINTERS_WHITELIST" /> cho <ph name="DEVICE_NATIVE_PRINTERS_ACCESS_MODE" />
-
-      Nếu bạn sử dụng chính sách này, chỉ những máy in có mã nhận dạng khớp với các giá trị trong chính sách này mới được cung cấp cho người dùng. Các mã nhận dạng này phải tương ứng với trường "id" hoặc "guid" ở tệp đã chỉ định trong <ph name="DEVICE_PRINTERS_POLICY" />.
-      </translation>
 <translation id="4311195029067684288">Đầy</translation>
 <translation id="4313767483634435271">Địa chỉ MAC chỉ định cho đế sạc của thiết bị</translation>
 <translation id="4322842393287974810">Cho phép ứng dụng kiosk tự động khởi chạy với độ trễ bằng không kiểm soát phiên bản <ph name="PRODUCT_OS_NAME" /></translation>
@@ -2322,9 +2285,6 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
 <translation id="4347908978527632940">Nếu đúng và người dùng là người dùng được giám sát thì các ứng dụng Android khác có thể truy vấn các giới hạn web của người dùng thông qua nhà cung cấp nội dung.
 
           Nếu sai hoặc chưa đặt thì nhà cung cấp nội dung sẽ không trả về thông tin nào.</translation>
-<translation id="4360826270668210664">Nếu bạn đặt chính sách này, máy chủ truy cập từ xa sẽ yêu cầu xác thực ứng dụng để lấy mã xác thực từ URL này để kết nối. Phải sử dụng chính sách này cùng với RemoteAccessHostTokenValidationUrl.
-
-          Tính năng này hiện bị tắt phía máy chủ.</translation>
 <translation id="4363057787588706121">Cho phép hợp nhất các chính sách trong danh sách thuộc các nguồn khác nhau</translation>
 <translation id="4363101430102811068">Bật tùy chọn phát hiện rò rỉ thông tin đăng nhập đã nhập</translation>
 <translation id="436581050240847513">Báo cáo giao diện mạng thiết bị</translation>
@@ -3160,7 +3120,7 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
       Nếu bạn đặt chính sách này thành 'Chặn hoạt động tải các loại tệp không được hỗ trợ lên hoặc xuống' (3), thì <ph name="PRODUCT_NAME" /> sẽ giải quyết theo quy tắc được mô tả trong phần 'Chặn hoạt động tải các loại tệp không được hỗ trợ lên' và 'Chặn hoạt động tải các loại tệp không được hỗ trợ xuống'.
       </translation>
 <translation id="5535973522252703021">Danh sách trắng máy chủ ủy quyền Kerberos</translation>
-<translation id="5540753481451194959">Nếu đặt chính sách này, bạn có thể chỉ định chế độ của hệ thống khi khởi động. Việc tắt tùy chọn cài đặt này tương tự như việc không đặt chính sách vì <ph name="PRODUCT_NAME" /> chắc chắn đã chỉ định chế độ khi khởi động.
+<translation id="5540753481451194959">Nếu đặt chính sách này, bạn có thể chỉ định hoạt động của hệ thống khi khởi động. Việc tắt tùy chọn cài đặt này tương tự như việc không đặt chính sách vì <ph name="PRODUCT_NAME" /> chắc chắn đã chỉ định hoạt động khi khởi động.
 
       Nếu bạn đặt chính sách này, người dùng sẽ không thay đổi được trong <ph name="PRODUCT_NAME" />. Nếu bạn không đặt chính sách này, người dùng có thể thay đổi tùy chọn.
 
@@ -4579,9 +4539,6 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
 <translation id="7477231245051133709">Bật tính năng hỗ trợ tiếp cận về đơn âm</translation>
 <translation id="7477239290070847560">Đích giao thức dựa trên máy in tự động định cấu hình (mDNS + DNS-SD)</translation>
 <translation id="7485481791539008776">Quy tắc chọn máy in mặc định</translation>
-<translation id="7485730741952775732">Nếu bạn đặt chính sách này, máy chủ truy cập từ xa sẽ dùng URL này để xác thực mã xác thực từ các ứng dụng truy cập từ xa để chấp nhận kết nối. Phải sử dụng chính sách này cùng với RemoteAccessHostTokenUrl.
-
-          Tính năng này hiện bị tắt phía máy chủ.</translation>
 <translation id="749556411189861380">Báo cáo phiên bản hệ điều hành và chương trình cơ sở của thiết bị đã đăng ký.
 
       Nếu cài đặt này không được đặt hoặc được đặt thành Đúng, các thiết bị đã đăng ký sẽ báo cáo định kỳ phiên bản hệ điều hành và chương trình cơ sở. Nếu cài đặt này được đặt thành Sai, thông tin phiên bản sẽ không được báo cáo.</translation>
@@ -4902,9 +4859,6 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
 <translation id="7953256619080733119">Lưu trữ ngoại lệ hướng dẫn người dùng được quản lý</translation>
 <translation id="7956210013490975468">Định cấu hình dịch vụ Proxy hệ thống cho <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="7958537754689366707">Yêu cầu cứ 12 giờ nhập mật khẩu một lần</translation>
-<translation id="7960293328203000385">Xác định danh sách những người dùng được phép đăng nhập vào thiết bị. Các mục sẽ có dạng <ph name="USER_ALLOWLIST_ENTRY_FORMAT" />, chẳng hạn như <ph name="USER_ALLOWLIST_ENTRY_EXAMPLE" />. Để cho phép người dùng bất kỳ trên một miền, hãy sử dụng các mục có dạng <ph name="USER_ALLOWLIST_ENTRY_WILDCARD" />.
-
-      Nếu bạn không định cấu hình chính sách này, tất cả người dùng đều được phép đăng nhập. Lưu ý rằng việc tạo người dùng mới sẽ vẫn yêu cầu phải định cấu hình chính sách <ph name="DEVICE_ALLOW_NEW_USERS_POLICY_NAME" /> một cách phù hợp.</translation>
 <translation id="7961779417826583251">Tắt mục cài đặt buộc thực thi Tính minh bạch của chứng chỉ cho một danh sách Tổ chức phát hành chứng chỉ kế thừa</translation>
 <translation id="7973609468423251675">Lưu ý rằng chúng tôi không dùng chính sách này nữa và sẽ xóa khỏi <ph name="PRODUCT_OS_NAME" /> phiên bản 85. Thay vào đó, vui lòng sử dụng <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.
 

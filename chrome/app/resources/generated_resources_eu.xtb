@@ -352,6 +352,7 @@
 <translation id="140520891692800925"><ph name="PROFILE_DISPLAY_NAME" /> (gainbegiratua)</translation>
 <translation id="1405779994569073824">Huts egin du.</translation>
 <translation id="1406500794671479665">Egiaztatzen…</translation>
+<translation id="1407135791313364759">Ireki guztiak</translation>
 <translation id="140723521119632973">Sare mugikorretarako SIM txartelak aktibatzea</translation>
 <translation id="1407489512183974736">Moztu erdialdea uzteko</translation>
 <translation id="1408504635543854729">Arakatu gailuko eduki guztia Fitxategiak aplikazioan. Edukiaren inguruko aukerak murriztuta daude: administratzaileak bakarrik egin ditzake aldaketak.</translation>
@@ -1903,7 +1904,6 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="3246107497225150582">{0,plural, =1{Eguneratu gailua egun bateko epean}other{Eguneratu gailua # eguneko epean}}</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - Sareko errorea</translation>
 <translation id="3248902735035392926">Segurtasuna garrantzitsua da. Hartu unetxo bat eta <ph name="BEGIN_LINK" />begiratu zer luzapen dituzun<ph name="END_LINK" />.</translation>
-<translation id="325036368918787455">Itxi ezkutuko leiho guztiak</translation>
 <translation id="3251759466064201842">&lt;ez dago ziurtagirian&gt;</translation>
 <translation id="3253225298092156258">Ez dago erabilgarri</translation>
 <translation id="3253448572569133955">Kontu ezezaguna</translation>
@@ -3444,7 +3444,6 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="5097649414558628673">Tresna: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">Sakatu automatikoki kurtsorea gelditzen denean</translation>
 <translation id="5099399397495049098">Webguneek JavaScript erabil dezakete (gomendatua)</translation>
-<translation id="5101042277149003567">Ireki laster-marka guztiak</translation>
 <translation id="5101839224773798795">Egin klik automatikoki kurtsorea gelditzen denean</translation>
 <translation id="5107443654503185812">Luzapen batek arakatze segurua desaktibatu du</translation>
 <translation id="5108967062857032718">Ezarpenak - Kendu Android-erako aplikazioak</translation>
@@ -4028,7 +4027,6 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="5804241973901381774">Baimenak</translation>
 <translation id="5805697420284793859">Leiho-kudeatzailea</translation>
 <translation id="5806773519584576205">0° (lehenetsia)</translation>
-<translation id="5808664694611589238">{0,plural, =1{Itxi gonbidatuentzako leiho guztiak}other{Itxi gonbidatuentzako leiho guztiak}}</translation>
 <translation id="5810809306422959727">Ezin dituzu ezarri gurasoen murriztapenak kontu honetan</translation>
 <translation id="5812674658566766066">Zabaldu guztiak</translation>
 <translation id="5814126672212206791">Konexio mota</translation>

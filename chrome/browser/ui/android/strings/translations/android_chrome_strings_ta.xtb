@@ -108,6 +108,7 @@
 <translation id="1868024384445905608">Chrome இப்போது கோப்புகளை வேகமாகப் பதிவிறக்குகிறது</translation>
 <translation id="1877026089748256423">Chrome காலாவதியானது</translation>
 <translation id="1883903952484604915">எனது கோப்புகள்</translation>
+<translation id="189358972401248634">பிற மொழிகள்</translation>
 <translation id="1925021887439448749">பிரத்தியேக இணைய முகவரியை உள்ளிடவும்</translation>
 <translation id="1928696683969751773">புதுப்பிப்புகள்</translation>
 <translation id="19288952978244135">Chromeமை மீண்டும் திறக்கவும்.</translation>
@@ -217,6 +218,7 @@
 <translation id="2689830683995595741">Chromeமைப் பயன்படுத்துவதன் மூலம் <ph name="BEGIN_LINK1" />Google சேவை விதிமுறைகளையும்<ph name="END_LINK1" /> <ph name="BEGIN_LINK2" />Google Chrome மற்றும் Chrome OS தொடர்பான கூடுதல் சேவை விதிமுறைகளையும்<ph name="END_LINK2" /> ஏற்கிறீர்கள். இவற்றோடு <ph name="BEGIN_LINK3" />Family Link நிர்வகிக்கும் Google கணக்குகளுக்கான தனியுரிமை அறிக்கையும்<ph name="END_LINK3" /> பொருந்தும்.</translation>
 <translation id="2707726405694321444">பக்கத்தைப் புதுப்பி</translation>
 <translation id="2709516037105925701">தானாகநிரப்பு</translation>
+<translation id="2723001399770238859">ஆடியோ</translation>
 <translation id="2728754400939377704">தளத்தின்படி வரிசைப்படுத்தும்</translation>
 <translation id="2744248271121720757">உடனடியாகத் தேட அல்லது தொடர்புடைய செயல்களைப் பார்க்க, சொல்லைத் தட்டவும்</translation>
 <translation id="2760989362628427051">சாதனத்தில் டார்க் தீம் அல்லது பேட்டரி சேமிப்பான் ஆன் செய்யப்பட்டால் டார்க் தீமினை ஆன் செய்யும்</translation>
@@ -467,6 +469,7 @@
 <translation id="4738836084190194332">கடைசியாக ஒத்திசைத்தது: <ph name="WHEN" /></translation>
 <translation id="4749960740855309258">புதிய தாவலைத் திறக்கும்</translation>
 <translation id="4759238208242260848">பதிவிறக்கங்கள்</translation>
+<translation id="4763480195061959176">வீடியோ</translation>
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{ஒரு பதிவிறக்கம் முடிந்தது.}other{# பதிவிறக்கங்கள் முடிந்தன.}}</translation>
 <translation id="4766678251456904326">சாதனத்தில் கணக்கைச் சேர்</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{1 பதிவிறக்கம் திட்டமிடப்பட்டுள்ளது.}other{# பதிவிறக்கங்கள் திட்டமிடப்பட்டுள்ளன.}}</translation>

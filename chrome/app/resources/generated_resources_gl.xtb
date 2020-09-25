@@ -352,6 +352,7 @@
 <translation id="140520891692800925"><ph name="PROFILE_DISPLAY_NAME" /> (supervisado)</translation>
 <translation id="1405779994569073824">Produciuse un fallo.</translation>
 <translation id="1406500794671479665">Verificando...</translation>
+<translation id="1407135791313364759">Abrir todo</translation>
 <translation id="140723521119632973">Activación móbil</translation>
 <translation id="1407489512183974736">Centrar fondo de pantalla recortado</translation>
 <translation id="1408504635543854729">Explora o contido do dispositivo na aplicación Ficheiros. Un administrador restrinxiu o contido e non se pode modificar.</translation>
@@ -1902,7 +1903,6 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="3246107497225150582">{0,plural, =1{Actualiza o dispositivo en 1 día}other{Actualiza o dispositivo en # días}}</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" />: erro da rede</translation>
 <translation id="3248902735035392926">A seguranza é importante. Dedica un momento a <ph name="BEGIN_LINK" />comprobar as túas extensións agora<ph name="END_LINK" /></translation>
-<translation id="325036368918787455">Pechar modo de incógnito</translation>
 <translation id="3251759466064201842">&lt;Non forma parte do certificado&gt;</translation>
 <translation id="3253225298092156258">Non dispoñible</translation>
 <translation id="3253448572569133955">Conta descoñecida</translation>
@@ -3443,7 +3443,6 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="5097649414558628673">Ferramenta: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">Facer clic automaticamente cando se detén o cursor</translation>
 <translation id="5099399397495049098">Os sitios poden usar JavaScript (recomendado)</translation>
-<translation id="5101042277149003567">Abrir todos os marcadores</translation>
 <translation id="5101839224773798795">Facer clic automaticamente cando se deteña o cursor</translation>
 <translation id="5107443654503185812">Unha extensión desactivou a opción Navegación segura</translation>
 <translation id="5108967062857032718">Configuración: eliminar aplicacións de Android</translation>
@@ -4027,7 +4026,6 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="5804241973901381774">Permisos</translation>
 <translation id="5805697420284793859">Xestor de ventás</translation>
 <translation id="5806773519584576205">0° (predeterminado)</translation>
-<translation id="5808664694611589238">{0,plural, =1{Pechar todas as ventás da sesión de invitado}other{Pechar todas as ventás da sesión de invitado}}</translation>
 <translation id="5810809306422959727">Esta conta non cumpre os requisitos para usar nela os controis parentais</translation>
 <translation id="5812674658566766066">Despregar todo</translation>
 <translation id="5814126672212206791">Tipo de conexión</translation>

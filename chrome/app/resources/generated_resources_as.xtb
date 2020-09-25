@@ -352,6 +352,7 @@
 <translation id="140520891692800925"><ph name="PROFILE_DISPLAY_NAME" /> (নিৰীক্ষণত থকা)</translation>
 <translation id="1405779994569073824">ক্ৰেশ্ব হ’ল।</translation>
 <translation id="1406500794671479665">সত্যাপন কৰি থকা হৈছে…</translation>
+<translation id="1407135791313364759">সকলো খোলক</translation>
 <translation id="140723521119632973">চেলুলাৰ সক্ৰিয়কৰণ</translation>
 <translation id="1407489512183974736">সোঁমাজত ক্ৰপ কৰা</translation>
 <translation id="1408504635543854729">Files এপত ডিভাইচৰ সমল অন্বেষণ কৰক। প্ৰশাসকে সমল সীমাবদ্ধ কৰাৰ বাবে সংশোধন কৰিব নোৱাৰি।</translation>
@@ -1900,7 +1901,6 @@
 <translation id="3246107497225150582">{0,plural, =1{এদিনৰ ভিতৰত ডিভাইচটো আপডে’ট কৰক}one{# দিনৰ ভিতৰত ডিভাইচটো আপডে’ট কৰক}other{# দিনৰ ভিতৰত ডিভাইচটো আপডে’ট কৰক}}</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - নেটৱৰ্কৰ আসোঁৱাহ</translation>
 <translation id="3248902735035392926">সুৰক্ষা বিষয়টো গুৰুত্বপূৰ্ণ। <ph name="BEGIN_LINK" />এতিয়া আপোনাৰ এক্সটেনশ্বনসমূহ পৰীক্ষা কৰিবলৈ<ph name="END_LINK" /> কিছু সময় খৰচ কৰক</translation>
-<translation id="325036368918787455">ইনক’গনিট’ ৱিণ্ড’ বন্ধ কৰক</translation>
 <translation id="3251759466064201842">&lt;প্ৰমাণপত্ৰৰ অংশ নহয়&gt;</translation>
 <translation id="3253225298092156258">উপলব্ধ নহয়</translation>
 <translation id="3253448572569133955">অজ্ঞাত একাউণ্ট</translation>
@@ -3437,7 +3437,6 @@
 <translation id="5097649414558628673">সঁজুলি: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">কাৰ্ছৰডাল ৰৈ গ’লে স্বয়ংক্ৰিয়ভাৱে ক্লিক কৰক</translation>
 <translation id="5099399397495049098">ছাইটসমূহে JavaScript ব্যৱহাৰ কৰিব পাৰে (চুপাৰিছ কৰা)</translation>
-<translation id="5101042277149003567">সকলো বুকমাৰ্ক খোলক</translation>
 <translation id="5101839224773798795">কাৰ্জৰটো ৰৈ গ’লে স্বয়ংক্ৰিয়ভাৱে ক্লিক কৰক</translation>
 <translation id="5107443654503185812">এটা এক্সটেনশ্বনে সুৰক্ষিত ব্ৰাউজিং অফ কৰিছে</translation>
 <translation id="5108967062857032718">ছেটিং - Android এপ্ আঁতৰাওক</translation>
@@ -4020,7 +4019,6 @@
 <translation id="5804241973901381774">অনুমতি</translation>
 <translation id="5805697420284793859">ৱিণ্ড‘ পৰিচালক</translation>
 <translation id="5806773519584576205">০° (ডিফ’ল্ট)</translation>
-<translation id="5808664694611589238">{0,plural, =1{অতিথিৰ ৱিণ্ড’ বন্ধ কৰক}one{অতিথিৰ ৱিণ্ড’ বন্ধ কৰক}other{অতিথিৰ ৱিণ্ড’ বন্ধ কৰক}}</translation>
 <translation id="5810809306422959727">এই একাউণ্টটো অভিভাৱকীয় নিয়ন্ত্ৰণসমূহ ব্যৱহাৰ কৰিবৰ বাবে যোগ্য নহয়</translation>
 <translation id="5812674658566766066">আটাইখিনি সম্প্ৰসাৰণ কৰক</translation>
 <translation id="5814126672212206791">সংযোগৰ প্ৰকাৰ</translation>

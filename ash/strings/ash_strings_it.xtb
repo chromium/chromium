@@ -59,6 +59,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1467432559032391204">Sinistra</translation>
 <translation id="1479909375538722835">Menu Accessibilità mobile</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
+<translation id="1503394326855300303">Questo account proprietario deve essere il primo account registrato in una sessione con accesso simultaneo.</translation>
 <translation id="1516740043221086139">La modalità Non disturbare è attiva.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Mostra impostazioni di notifica. Le notifiche sono disattivate per un'app}other{Mostra impostazioni di notifica. Le notifiche sono disattivate per # app}}</translation>
 <translation id="1525508553941733066">IGNORA</translation>
@@ -69,6 +70,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1589090746204042747">Accedere a tutte le tue attività in questa sessione.</translation>
 <translation id="1611993646327628135">On</translation>
 <translation id="1632985212731562677">È possibile disattivare Switch Access in Impostazioni &gt; Accessibilità.</translation>
+<translation id="1651447046299738444">Sembra che il Bluetooth o il Wi-Fi siano disattivati sul Chromebook. Controlla la connessione per usare Phone Hub.</translation>
 <translation id="1654477262762802994">Avvia una query vocale</translation>
 <translation id="1667964833127753507">La modalità colore Neutra non usa i colori estratti dallo sfondo, che sostituisce con un insieme di tonalità neutre chiare o scure.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> rimanenti</translation>
@@ -151,6 +153,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2435457462613246316">Mostra password</translation>
 <translation id="2473177541599297363">Conferma la risoluzione</translation>
 <translation id="2475982808118771221">Si è verificato un errore</translation>
+<translation id="2479579251444854687">Scorri con tre dita verso l'alto per aprire la modalità Panoramica e verso il basso per chiuderla.</translation>
 <translation id="2482878487686419369">Notifiche</translation>
 <translation id="2484513351006226581">Premi <ph name="KEYBOARD_SHORTCUT" /> per cambiare il layout della tastiera.</translation>
 <translation id="2501920221385095727">Tasti permanenti</translation>
@@ -163,6 +166,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2595239820337756193">5 km in miglia</translation>
 <translation id="2617342710774726426">La scheda SIM è bloccata</translation>
 <translation id="2621713457727696555">Protetta</translation>
+<translation id="2640255526076764619">Il gesto del touchpad per passare alla scrivania precedente è cambiato. Scorri verso sinistra con quattro dita per passare alla scrivania precedente.</translation>
 <translation id="2653659639078652383">Invia</translation>
 <translation id="2658778018866295321">Fai clic e trascina</translation>
 <translation id="2700493154570097719">Imposta la tastiera</translation>
@@ -172,14 +176,13 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2718395828230677721">Luce notturna</translation>
 <translation id="2727175239389218057">Rispondi</translation>
 <translation id="2727977024730340865">Collegato a un caricabatterie a basso consumo. La carica della batteria potrebbe non essere affidabile.</translation>
-<translation id="2743387203779672305">Copia negli appunti</translation>
 <translation id="2792498699870441125">Alt+tasto per la ricerca</translation>
 <translation id="2819276065543622893">Verrai disconnesso ora.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> non supporta la risoluzione <ph name="SPECIFIED_RESOLUTION" />. È stata impostata la risoluzione <ph name="FALLBACK_RESOLUTION" />.</translation>
 <translation id="2825619548187458965">Shelf</translation>
 <translation id="2841907151129139818">Passaggio alla modalità tablet effettuato</translation>
 <translation id="2844169650293029770">Dispositivo USB-C (porta anteriore sinistra)</translation>
-<translation id="2846247265041961677">Spiacenti. Impossibile trovare il telefono</translation>
+<translation id="2846247265041961677">Errore. Impossibile trovare il telefono</translation>
 <translation id="2865888419503095837">Informazioni di rete</translation>
 <translation id="2872961005593481000">Spegni</translation>
 <translation id="2878884018241093801">Nessun elemento recente</translation>
@@ -257,6 +260,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="3486220673238053218">definizione</translation>
 <translation id="3510164367642747937">Evidenzia il puntatore del mouse</translation>
 <translation id="3513798432020909783">Account gestito da <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3571734092741541777">Configura</translation>
 <translation id="3573179567135747900">Torna a "<ph name="FROM_LOCALE" />" (è necessario riavviare)</translation>
 <translation id="3576141592585647168">Cambia fuso orario</translation>
 <translation id="3593646411856133110">Scorri verso l'alto e tieni premuto per vedere le app aperte</translation>
@@ -342,6 +346,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="4412944820643904175">La funzionalità <ph name="FEATURE_NAME" /> è disattivata.</translation>
 <translation id="4421231901400348175">Condividi il controllo dello schermo con <ph name="HELPER_NAME" /> tramite Assistenza remota.</translation>
 <translation id="4430019312045809116">Volume</translation>
+<translation id="4444978951615977024">Spiacenti. Controlla la connessione</translation>
 <translation id="4450893287417543264">Non mostrare più</translation>
 <translation id="445864333228800152">Buonasera,</translation>
 <translation id="4458688154122353284">Interrompi registrazione dello schermo</translation>
@@ -351,6 +356,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Dispositivi disaccoppiati</translation>
 <translation id="4505050298327493054">Scrivania attiva.</translation>
+<translation id="4506458088675900627">Il gesto del touchpad Panoramica è cambiato</translation>
 <translation id="4513946894732546136">Feedback</translation>
 <translation id="4527045527269911712">Il dispositivo Bluetooth "<ph name="DEVICE_NAME" />" chiede l'autorizzazione per essere accoppiato.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> alla ricarica completa</translation>
@@ -390,6 +396,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="4917385247580444890">Forte</translation>
 <translation id="4918086044614829423">Accetto</translation>
 <translation id="4924411785043111640">Riavvia e reimposta</translation>
+<translation id="4925542575807923399">L'amministratore di questo account richiede che questo account sia il primo account registrato in una sessione con accesso simultaneo.</translation>
 <translation id="495046168593986294">Scorri verso l'alto</translation>
 <translation id="4961318399572185831">Trasmetti schermo</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> h <ph name="MINUTES" /> m <ph name="SECONDS" /> s</translation>
@@ -479,6 +486,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="6018164090099858612">Uscita dalla modalità di mirroring</translation>
 <translation id="602001110135236999">Scorri a sinistra</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, intensità del segnale <ph name="SIGNAL_STRENGTH" />, gestita dall'amministratore</translation>
+<translation id="6029337736376922061">Il gesto del touchpad per passare alla scrivania successiva è cambiato. Scorri verso destra con quattro dita per passare alla scrivania successiva.</translation>
 <translation id="6030495522958826102">Menu spostato nell'angolo in basso a sinistra dello schermo.</translation>
 <translation id="6040143037577758943">Chiudi</translation>
 <translation id="6043212731627905357">Questo monitor non è compatibile con il tuo dispositivo <ph name="DEVICE_TYPE" /> (il monitor non è supportato).</translation>
@@ -536,6 +544,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="6657585470893396449">Password</translation>
 <translation id="6665545700722362599">Concedere a siti web, app ed estensioni l'autorizzazione a utilizzare i servizi di geolocalizzazione, il microfono del dispositivo, la fotocamera o altre funzioni.</translation>
 <translation id="6670153871843998651">Scrivania 3</translation>
+<translation id="6671495933530132209">Copia immagine</translation>
 <translation id="6691659475504239918">Tasto per la ricerca + MAIUSC + H</translation>
 <translation id="6692996468359469499">Ricevi informazioni correlate alla tua selezione</translation>
 <translation id="6696025732084565524">La tastiera rimovibile richiede un aggiornamento critico</translation>
@@ -735,6 +744,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="8734991477317290293">Potrebbe essere un tentativo di rubare i tasti premuti</translation>
 <translation id="8735953464173050365">Mostra impostazioni tastiera. Selezione attiva: <ph name="KEYBOARD_NAME" /></translation>
 <translation id="875593634123171288">Mostra impostazioni VPN</translation>
+<translation id="8759408218731716181">Impossibile impostare l'accesso simultaneo</translation>
 <translation id="8785070478575117577">Connetti a <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>

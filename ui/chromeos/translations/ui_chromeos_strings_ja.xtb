@@ -189,7 +189,6 @@
 <translation id="3064388234319122767">文字変換（zdravo → здраво）</translation>
 <translation id="3067790092342515856">Windows ファイル</translation>
 <translation id="3078461028045006476"><ph name="EXTENSION_NAME" /> と共有</translation>
-<translation id="3088034400796962477">文字変換（salam ← سلام）</translation>
 <translation id="3116361045094675131">英語（英国）のキーボード</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">完了</translation>
@@ -305,7 +304,6 @@
 <translation id="4477219268485577442">ブルガリア語（表音）</translation>
 <translation id="4479812471636796472">Dvorak 配列キーボード（米国）</translation>
 <translation id="4481711095103932593">このフォルダは Windows と共有されています</translation>
-<translation id="4487088045714738411">ベルギーのキーボード</translation>
 <translation id="4522570452068850558">詳細</translation>
 <translation id="4542387084127299777">「<ph name="PATH" />」を開くことができません</translation>
 <translation id="4552678318981539154">追加ストレージを購入</translation>
@@ -376,6 +374,7 @@
 <translation id="5098629044894065541">ヘブライ語</translation>
 <translation id="5123433949759960244">バスケットボール</translation>
 <translation id="5129662217315786329">ポーランド語</translation>
+<translation id="5132435854979302863">フィリピン語</translation>
 <translation id="5144820558584035333">ハングル（3 ボル式、390）</translation>
 <translation id="5145331109270917438">更新日</translation>
 <translation id="515594325917491223">チェス</translation>
@@ -422,13 +421,13 @@
 <translation id="5464696796438641524">ポーランド語のキーボード</translation>
 <translation id="5465122519792752163">ネパール語キーボード（字母）</translation>
 <translation id="5469868506864199649">イタリア語</translation>
+<translation id="5484429245813572665">インドネシア語</translation>
 <translation id="5494920125229734069">すべて選択する</translation>
 <translation id="5500122897333236901">アイスランド語</translation>
 <translation id="5508696409934741614">ドット</translation>
 <translation id="5522908512596376669">ファイルの一覧がリスト表示に切り替わりました。</translation>
 <translation id="5524517123096967210">ファイルを読むことができませんでした。</translation>
 <translation id="5533102081734025921">画像（<ph name="IMAGE_TYPE" />）</translation>
-<translation id="5533555070048896610">文字変換（namaste → नमस्ते）</translation>
 <translation id="5534520101572674276">サイズを計算しています</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5605830556594064952">US Dvorak 配列</translation>
@@ -609,6 +608,7 @@
 <translation id="7649070708921625228">ヘルプ</translation>
 <translation id="7654209398114106148"><ph name="NUMBER_OF_ITEMS" /> 個のアイテムを移動しています...</translation>
 <translation id="7658239707568436148">キャンセル</translation>
+<translation id="7693909743393669729">ドライブをフォーマットすると、そのドライブに保存されているすべてのデータが消去され、既存のパーティションは非表示のパーティションを含めすべて削除されます。この操作は元に戻せません。</translation>
 <translation id="7695430100978772476">「<ph name="DRIVE_NAME" />」をフォーマットできませんでした</translation>
 <translation id="770015031906360009">ギリシャ語</translation>
 <translation id="7706319470528945664">ポルトガル語のキーボード</translation>
@@ -640,6 +640,7 @@
 <translation id="78946041517601018">共有ドライブ</translation>
 <translation id="7896906914454843592">US（拡張）キーボード</translation>
 <translation id="7898607018410277265">グジャラート語キーボード（新表音）</translation>
+<translation id="7908793776359722643">パーティションをフォーマットすると、そのパーティションに保存されているすべてのデータが消去されます。この操作は元に戻せません。</translation>
 <translation id="7917972308273378936">リトアニア語のキーボード</translation>
 <translation id="7925686952655276919">モバイル データを使用して同期しない</translation>
 <translation id="7928710562641958568">デバイスの取り出し</translation>
@@ -727,6 +728,7 @@
 <translation id="8900820606136623064">ハンガリー語</translation>
 <translation id="8901822611024316615">チェコ語 QWERTY 配列キーボード</translation>
 <translation id="8919081441417203123">デンマーク語</translation>
+<translation id="8941776146379310519">マレー語</translation>
 <translation id="8960999352790021682">ベンガル語キーボード（表音）</translation>
 <translation id="8965697826696209160">空き容量が不足しています。</translation>
 <translation id="9017798300203431059">ロシア語（表音）</translation>

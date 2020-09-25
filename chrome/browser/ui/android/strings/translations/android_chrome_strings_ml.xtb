@@ -108,6 +108,7 @@
 <translation id="1868024384445905608">Chrome ഇപ്പോൾ വേഗത്തിൽ ഫയലുകൾ ഡൗൺലോഡ് ചെയ്യുന്നു</translation>
 <translation id="1877026089748256423">Chrome കാലഹരണപ്പെട്ടതാണ്</translation>
 <translation id="1883903952484604915">എന്റെ ഫയലുകൾ</translation>
+<translation id="189358972401248634">മറ്റ് ഭാഷകൾ</translation>
 <translation id="1925021887439448749">ഇഷ്‌ടാനുസൃത വെബ് വിലാസം നൽകുക</translation>
 <translation id="1928696683969751773">അപ്‌ഡേറ്റുചെയ്യുന്നു</translation>
 <translation id="19288952978244135">Chrome വീണ്ടും തുറക്കുക.</translation>
@@ -215,6 +216,7 @@
 <translation id="2689830683995595741">Chrome ഉപയോഗിക്കുന്നതിലൂടെ, നിങ്ങൾ <ph name="BEGIN_LINK1" />Google സേവന നിബന്ധനകളും<ph name="END_LINK1" /> <ph name="BEGIN_LINK2" />Google Chrome, Chrome OS അധിക സേവന നിബന്ധനകളും<ph name="END_LINK2" /> അംഗീകരിക്കുന്നു. <ph name="BEGIN_LINK3" />Family Link ഉപയോഗിച്ച് മാനേജ് ചെയ്യുന്ന Google അക്കൗണ്ടുകൾക്കുള്ള സ്വകാര്യതാ കുറിപ്പും<ph name="END_LINK3" /> ബാധകമാണ്.</translation>
 <translation id="2707726405694321444">പേജ് പുതുക്കുക</translation>
 <translation id="2709516037105925701">സ്വയമേവ പൂരിപ്പിക്കൽ</translation>
+<translation id="2723001399770238859">ഓഡിയോ</translation>
 <translation id="2728754400939377704">സൈറ്റ് അനുസരിച്ച് അടുക്കുക</translation>
 <translation id="2744248271121720757">പെട്ടെന്ന് തിരയാനോ ബന്ധപ്പെട്ട പ്രവർത്തനങ്ങൾ കാണാനോ ഒരു വാക്കിൽ ടാപ്പ് ചെയ്യുക</translation>
 <translation id="2760989362628427051">നിങ്ങളുടെ ഉപകരണത്തിന്റെ ഇരുണ്ട തീമോ ബാറ്ററി ലാഭിക്കലോ ഓണായിരിക്കുമ്പോൾ ഇരുണ്ട തീം ഓണാക്കുക</translation>
@@ -463,6 +465,7 @@
 <translation id="4738836084190194332">അവസാനം സമന്വയിപ്പിച്ചത്: <ph name="WHEN" /></translation>
 <translation id="4749960740855309258">പുതിയൊരു ടാബ് തുറക്കുക</translation>
 <translation id="4759238208242260848">ഡൌണ്‍ലോഡുകള്‍</translation>
+<translation id="4763480195061959176">വീഡിയോ</translation>
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{ഒരു ഡൗൺലോഡ് പൂർത്തിയായി.}other{# ഡൗൺലോഡുകൾ പൂർത്തിയായി.}}</translation>
 <translation id="4766678251456904326">ഉപകരണത്തിലേക്ക് ഒരു അക്കൗണ്ട് ചേർക്കുക</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{ഒരു ഡൗൺലോഡ് ഷെഡ്യൂൾ ചെയ്‌തു.}other{# ഡൗൺലോഡുകൾ ഷെഡ്യൂൾ ചെയ്‌തു.}}</translation>

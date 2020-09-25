@@ -59,6 +59,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1467432559032391204">Izquierda</translation>
 <translation id="1479909375538722835">Menú de accesibilidad flotante</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
+<translation id="1503394326855300303">El propietario de esta cuenta requiere que sea la primera a la que se acceda al crear una sesión de acceso múltiple.</translation>
 <translation id="1516740043221086139">No interrumpir está activado.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Mostrar la configuración de las notificaciones: Están desactivadas para una app}other{Mostrar la configuración de las notificaciones: Están desactivadas para # apps}}</translation>
 <translation id="1525508553941733066">IGNORAR</translation>
@@ -172,14 +173,13 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="2718395828230677721">Luz nocturna</translation>
 <translation id="2727175239389218057">Responder</translation>
 <translation id="2727977024730340865">Conexión a un cargador de baja potencia. Es posible que la carga de la batería no sea confiable.</translation>
-<translation id="2743387203779672305">Copiar al portapapeles</translation>
 <translation id="2792498699870441125">Alt+tecla de búsqueda</translation>
 <translation id="2819276065543622893">Saldrás de la sesión ahora.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> no admite una resolución de <ph name="SPECIFIED_RESOLUTION" />. Se cambió la resolución a <ph name="FALLBACK_RESOLUTION" />.</translation>
 <translation id="2825619548187458965">Biblioteca</translation>
 <translation id="2841907151129139818">Se cambió al modo tablet</translation>
 <translation id="2844169650293029770">Dispositivo USB-C (puerto lateral izquierdo delantero)</translation>
-<translation id="2846247265041961677">No encontramos el teléfono</translation>
+<translation id="2846247265041961677">No se pudo encontrar el teléfono</translation>
 <translation id="2865888419503095837">Información de red</translation>
 <translation id="2872961005593481000">Apagar</translation>
 <translation id="2878884018241093801">No hay elementos recientes</translation>
@@ -257,6 +257,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="3486220673238053218">definición</translation>
 <translation id="3510164367642747937">Resaltar el cursor del mouse</translation>
 <translation id="3513798432020909783">Cuenta administrada por <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3571734092741541777">Configurar</translation>
 <translation id="3573179567135747900">Volver a "<ph name="FROM_LOCALE" />" (debes reiniciar).</translation>
 <translation id="3576141592585647168">Cambiar zona horaria</translation>
 <translation id="3593646411856133110">Desliza hacia arriba y mantén presionado para ver las apps abiertas</translation>
@@ -308,6 +309,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{No para 1 app}other{No para # apps}}</translation>
 <translation id="4072264167173457037">Señal media</translation>
 <translation id="4112140312785995938">Buscar más atrás</translation>
+<translation id="4114315158543974537">Activa Phone Hub</translation>
 <translation id="4129129681837227511">Para ver notificaciones en la pantalla bloqueada, desbloquéala para cambiar la configuración</translation>
 <translation id="4146833061457621061">Reproducir música</translation>
 <translation id="4149156641122542261">Dispositivo <ph name="DEVICE_TYPE" /> administrado por <ph name="DOMAIN" /></translation>
@@ -389,6 +391,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="4917385247580444890">Fuerte</translation>
 <translation id="4918086044614829423">Aceptar</translation>
 <translation id="4924411785043111640">Reiniciar y restablecer</translation>
+<translation id="4925542575807923399">El administrador de esta cuenta requiere que sea la primera a la que se acceda al crear una sesión de acceso múltiple.</translation>
 <translation id="495046168593986294">Desplazar hacia arriba</translation>
 <translation id="4961318399572185831">Transmitir pantalla</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> h <ph name="MINUTES" /> min <ph name="SECONDS" /> s</translation>
@@ -439,6 +442,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="5648021990716966815">Conector para micrófono</translation>
 <translation id="5669267381087807207">Activando</translation>
 <translation id="5673434351075758678">De "<ph name="FROM_LOCALE" />" a "<ph name="TO_LOCALE" />" después de sincronizar tu configuración</translation>
+<translation id="5679050765726761783">Se conectó un adaptador de baja potencia</translation>
 <translation id="5682642926269496722">El Asistente de Google no está disponible para la Cuenta de usuario actual.</translation>
 <translation id="5689633613396158040">La Luz nocturna te permite ver la pantalla o leer mejor con luz tenue. Presiona para cambiar el horario en el que se activa la Luz nocturna o desactívala por completo.</translation>
 <translation id="5691772641933328258">No se reconoció la huella digital</translation>
@@ -534,6 +538,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="6657585470893396449">Contraseña</translation>
 <translation id="6665545700722362599">Otorga permiso a sitios web, apps y extensiones para usar los servicios de ubicación, el micrófono y la cámara del dispositivo, y otras funciones</translation>
 <translation id="6670153871843998651">Escritorio 3</translation>
+<translation id="6671495933530132209">Copiar imagen</translation>
 <translation id="6691659475504239918">Buscar+mayúscula+H</translation>
 <translation id="6692996468359469499">Obtén información relacionada con tu selección</translation>
 <translation id="6696025732084565524">Tu teclado desmontable necesita una actualización muy importante</translation>
@@ -553,6 +558,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="6857811139397017780">Activar <ph name="NETWORKSERVICE" /></translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Queda un dígito}other{Quedan # dígitos}}</translation>
 <translation id="6878400149835617132">Se desactivó la combinación de teclas</translation>
+<translation id="6886172995547742638">Es posible que tu dispositivo <ph name="DEVICE_TYPE" /> tenga un rendimiento deficiente. Usa un adaptador de alimentación con conexión USB tipo C de <ph name="PREFERRED_MINIMUM_POWER" /> W o más.</translation>
 <translation id="6896758677409633944">Copiar</translation>
 <translation id="6910714959251846841">Esta actualización requiere que apliques la función Powerwash en tu dispositivo. Obtén más información sobre la actualización más reciente de <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="6919251195245069855">No se reconoció tu tarjeta inteligente. Vuelve a intentarlo.</translation>
@@ -732,6 +738,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="8734991477317290293">Es posible que alguien esté intentando determinar qué teclas presionaste</translation>
 <translation id="8735953464173050365">Mostrar la configuración del teclado: Está seleccionado el teclado <ph name="KEYBOARD_NAME" /></translation>
 <translation id="875593634123171288">Mostrar la configuración de la VPN</translation>
+<translation id="8759408218731716181">No se puede configurar el acceso múltiple.</translation>
 <translation id="8785070478575117577">Conectar a <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>

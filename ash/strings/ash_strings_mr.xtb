@@ -59,6 +59,7 @@
 <translation id="1467432559032391204">डावे</translation>
 <translation id="1479909375538722835">फ्लोटिंग अ‍ॅक्सेसिबिलिटी मेनू</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
+<translation id="1503394326855300303">हे मालक खाते मल्टिपल साइन-इन सेशनमधील प्रथम साइन-इन केलेले खाते असणे आवश्यक आहे.</translation>
 <translation id="1516740043221086139">व्यत्यय आणू नका सुरू आहे.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{सूचना सेटिंग्ज दाखवा. ॲपसाठी सूचना बंद आहेत}other{सूचना सेटिंग्ज दाखवा. # ॲप्ससाठी सूचना बंद आहेत}}</translation>
 <translation id="1525508553941733066">डिसमिस करा</translation>
@@ -172,7 +173,6 @@
 <translation id="2718395828230677721">रात्री प्रकाश</translation>
 <translation id="2727175239389218057">उत्तर द्या</translation>
 <translation id="2727977024730340865">एका निम्न-उर्जेच्या चार्जरवर प्लग इन केले. बॅटरी चार्जिंग विश्वसनीय असू शकत नाही.</translation>
-<translation id="2743387203779672305">क्लिपबोर्डवर कॉपी करा</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
 <translation id="2819276065543622893">आता तुम्हाला साइन आउट केले जाईल.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" /> ला सपोर्ट करत नाही. रेझोल्यूशन <ph name="FALLBACK_RESOLUTION" /> मध्ये बदलले.</translation>
@@ -257,6 +257,7 @@
 <translation id="3486220673238053218">परिभाषा</translation>
 <translation id="3510164367642747937">माउसचा कर्सर हायलाइट करा</translation>
 <translation id="3513798432020909783">खाते <ph name="MANAGER_EMAIL" /> ने व्‍यवस्‍थापित केले आहे</translation>
+<translation id="3571734092741541777">सेट अप</translation>
 <translation id="3573179567135747900">"<ph name="FROM_LOCALE" />"मध्ये परत बदला (रीस्टार्ट करणे आवश्यक)</translation>
 <translation id="3576141592585647168">टाइमझोन बदला</translation>
 <translation id="3593646411856133110">उघडी अ‍ॅप्स पाहण्यासाठी वर स्वाइप करा आणि धरून ठेवा</translation>
@@ -388,6 +389,7 @@
 <translation id="4917385247580444890">मजबूत</translation>
 <translation id="4918086044614829423">स्वीकारा</translation>
 <translation id="4924411785043111640">रीस्टार्ट करा आणि रीसेट करा</translation>
+<translation id="4925542575807923399">या खात्याच्या ॲडमिनिस्ट्रेटरला हे खाते एका एकाहून अधिक साइन इन सेशनमधील प्रथम साइन इन केलेले खाते असणे आवश्यक आहे.</translation>
 <translation id="495046168593986294">वर स्क्रोल करा</translation>
 <translation id="4961318399572185831">स्क्रीन कास्ट करा</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />ता <ph name="MINUTES" />मि <ph name="SECONDS" />से</translation>
@@ -533,6 +535,7 @@
 <translation id="6657585470893396449">पासवर्ड</translation>
 <translation id="6665545700722362599">वेबसाइट, अ‍ॅप्स आणि एक्स्टेंशनना स्थान सेवा, डिव्हाइसचा मायक्रोफोन, कॅमेरा किंवा इतर वैशिष्ट्ये वापरण्याची परवानगी द्या</translation>
 <translation id="6670153871843998651">डेस्‍क ३</translation>
+<translation id="6671495933530132209">इमेज कॉपी करा</translation>
 <translation id="6691659475504239918">Search+Shift+H</translation>
 <translation id="6692996468359469499">तुमच्या निवडीशी संबंधित माहिती मिळवा</translation>
 <translation id="6696025732084565524">तुमच्या वेगळ्या करण्यायोग्य कीबोर्डला गंभीर अपडेटची आवश्यकता आहे</translation>
@@ -731,6 +734,7 @@
 <translation id="8734991477317290293">तो कदाचित तुमचे कीस्ट्रोक चोरण्याचा प्रयत्न करत असेल.</translation>
 <translation id="8735953464173050365">कीबोर्ड सेटिंग्ज दाखवा. <ph name="KEYBOARD_NAME" /> निवडले आहे</translation>
 <translation id="875593634123171288">VPN सेटिंग्ज दाखवा</translation>
+<translation id="8759408218731716181">एकाधिक साइन इन सेट करता आले नाही</translation>
 <translation id="8785070478575117577"><ph name="NETWORK_NAME" /> शी कनेक्ट करा</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">वाय-फाय</translation>

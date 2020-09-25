@@ -189,7 +189,6 @@
 <translation id="3064388234319122767">Transliteratsiya (zdravo → здраво)</translation>
 <translation id="3067790092342515856">Windows fayllari</translation>
 <translation id="3078461028045006476"><ph name="EXTENSION_NAME" /> orqali yuborish</translation>
-<translation id="3088034400796962477">Transliteratsiya (salam ← سلام)</translation>
 <translation id="3116361045094675131">Ingliz (Birlashgan Qirollik)</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">TAYYOR</translation>
@@ -305,7 +304,6 @@
 <translation id="4477219268485577442">Bolgar fonetik</translation>
 <translation id="4479812471636796472">AQSH Dvorak klaviaturasi</translation>
 <translation id="4481711095103932593">Bu jild Windowsga ulashilgan</translation>
-<translation id="4487088045714738411">Belgiyacha klaviatura</translation>
 <translation id="4522570452068850558">Tafsilotlar</translation>
 <translation id="4542387084127299777">“<ph name="PATH" />” ochilmadi</translation>
 <translation id="4552678318981539154">Ko‘proq joy sotib olish</translation>
@@ -366,6 +364,7 @@
 <translation id="5010406651457630570">Kompyuterlar</translation>
 <translation id="5011233892417813670">Chromebook</translation>
 <translation id="5024856940085636730">Jarayon kutilgandan ko‘ra ko‘proq vaqt olishi mumkin. To‘xtatilsinmi?</translation>
+<translation id="5026887030745057099">Hind</translation>
 <translation id="5036159836254554629">Parallels Desktop ulashuvlarini boshqarish</translation>
 <translation id="5038625366300922036">Batafsil...</translation>
 <translation id="5061708541166515394">Kontrast</translation>
@@ -429,7 +428,6 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="5522908512596376669">Fayllar roʻyxati uchun saralash shakli almashdi.</translation>
 <translation id="5524517123096967210">Faylni o‘qib bo‘lmadi.</translation>
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> rasm</translation>
-<translation id="5533555070048896610">Transliteratsiya (namaste → नमस्ते)</translation>
 <translation id="5534520101572674276">Hajm hisoblanmoqda...</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5605830556594064952">AQSH (Dvorak)</translation>

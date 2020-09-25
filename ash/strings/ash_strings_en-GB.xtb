@@ -59,6 +59,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1467432559032391204">Left</translation>
 <translation id="1479909375538722835">Floating accessibility menu</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
+<translation id="1503394326855300303">This owner account has to be the first signed-in account in a multiple sign-in session.</translation>
 <translation id="1516740043221086139">Do Not Disturb is on.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Show notification settings. Notifications are off for an app}other{Show notification settings. Notifications are off for # apps}}</translation>
 <translation id="1525508553941733066">DISMISS</translation>
@@ -69,6 +70,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1589090746204042747">Access all your activity in this session</translation>
 <translation id="1611993646327628135">On</translation>
 <translation id="1632985212731562677">Switch access can be disabled in Settings &gt; Accessibility.</translation>
+<translation id="1651447046299738444">It looks like your Bluetooth or Wi-Fi is turned off on your Chromebook. Please check your connection to use phone hub.</translation>
 <translation id="1654477262762802994">Start a voice query</translation>
 <translation id="1667964833127753507">The neutral colour mode does not use wallpaper extracted colours, replacing them by a set of neutrally toned light or dark hues.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> left</translation>
@@ -151,6 +153,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2435457462613246316">Show password</translation>
 <translation id="2473177541599297363">Confirm resolution</translation>
 <translation id="2475982808118771221">An error occurred</translation>
+<translation id="2479579251444854687">Swipe up with three fingers to open and down to close the overview.</translation>
 <translation id="2482878487686419369">Notifications</translation>
 <translation id="2484513351006226581">Hit <ph name="KEYBOARD_SHORTCUT" /> to switch keyboard layout.</translation>
 <translation id="2501920221385095727">Sticky keys</translation>
@@ -163,6 +166,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2595239820337756193">5 K in miles</translation>
 <translation id="2617342710774726426">SIM card is locked</translation>
 <translation id="2621713457727696555">Secured</translation>
+<translation id="2640255526076764619">The touchpad gesture to switch to the previous desk has changed. Swipe left with four fingers to switch to the previous desk.</translation>
 <translation id="2653659639078652383">Submit</translation>
 <translation id="2658778018866295321">Click and drag</translation>
 <translation id="2700493154570097719">Set your keyboard</translation>
@@ -172,7 +176,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="2718395828230677721">Night Light</translation>
 <translation id="2727175239389218057">Reply</translation>
 <translation id="2727977024730340865">Plugged in to a low-power charger. Battery charging may not be reliable.</translation>
-<translation id="2743387203779672305">Copy to clipboard</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
 <translation id="2819276065543622893">You will be signed out now.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> doesn't support <ph name="SPECIFIED_RESOLUTION" />. The resolution was changed to <ph name="FALLBACK_RESOLUTION" />.</translation>
@@ -257,6 +260,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="3486220673238053218">definition</translation>
 <translation id="3510164367642747937">Highlight mouse cursor</translation>
 <translation id="3513798432020909783">Account managed by <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3571734092741541777">Set up</translation>
 <translation id="3573179567135747900">Change back to "<ph name="FROM_LOCALE" />" (requires restart)</translation>
 <translation id="3576141592585647168">Change timezone</translation>
 <translation id="3593646411856133110">Swipe up and hold to see open apps</translation>
@@ -341,6 +345,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> is off.</translation>
 <translation id="4421231901400348175">Sharing control of your screen with <ph name="HELPER_NAME" /> via Remote Assistance.</translation>
 <translation id="4430019312045809116">volume</translation>
+<translation id="4444978951615977024">Uh-oh! Check your connection</translation>
 <translation id="4450893287417543264">Don't show again</translation>
 <translation id="445864333228800152">Good evening,</translation>
 <translation id="4458688154122353284">Stop screen recording</translation>
@@ -350,6 +355,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Unpaired devices</translation>
 <translation id="4505050298327493054">Active desk.</translation>
+<translation id="4506458088675900627">The overview touchpad gesture has changed</translation>
 <translation id="4513946894732546136">Feedback</translation>
 <translation id="4527045527269911712">Bluetooth device "<ph name="DEVICE_NAME" />" would like permission to pair.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> until full</translation>
@@ -389,6 +395,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="4917385247580444890">Strong</translation>
 <translation id="4918086044614829423">Accept</translation>
 <translation id="4924411785043111640">Restart and reset</translation>
+<translation id="4925542575807923399">The administrator for this account requires this account to be the first signed-in account in a multiple sign-in session.</translation>
 <translation id="495046168593986294">Scroll up</translation>
 <translation id="4961318399572185831">Cast screen</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />h <ph name="MINUTES" />m <ph name="SECONDS" />s</translation>
@@ -478,6 +485,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="6018164090099858612">Exiting mirror mode</translation>
 <translation id="602001110135236999">Scroll left</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signal strength <ph name="SIGNAL_STRENGTH" />, managed by your administrator</translation>
+<translation id="6029337736376922061">The touchpad gesture to switch to the next desk has changed. Swipe right with four fingers to switch to the next desk.</translation>
 <translation id="6030495522958826102">Menu moved to the bottom-left corner of the screen.</translation>
 <translation id="6040143037577758943">Close</translation>
 <translation id="6043212731627905357">This monitor isn't getting along with your <ph name="DEVICE_TYPE" /> (the monitor is not supported).</translation>
@@ -535,6 +543,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="6657585470893396449">Password</translation>
 <translation id="6665545700722362599">Grant websites, apps and extensions permission to use location services, the device’s microphone, camera or other features</translation>
 <translation id="6670153871843998651">Desk 3</translation>
+<translation id="6671495933530132209">Copy image</translation>
 <translation id="6691659475504239918">Search+Shift+H</translation>
 <translation id="6692996468359469499">Get info related to your selection</translation>
 <translation id="6696025732084565524">Your detachable keyboard needs a critical update</translation>
@@ -734,6 +743,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="8734991477317290293">It may be attempting to steal your keystrokes</translation>
 <translation id="8735953464173050365">Show keyboard settings. <ph name="KEYBOARD_NAME" /> is selected</translation>
 <translation id="875593634123171288">Show VPN settings</translation>
+<translation id="8759408218731716181">Can't set up multiple sign-in</translation>
 <translation id="8785070478575117577">Connect to <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>

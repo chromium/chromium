@@ -59,6 +59,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1467432559032391204">Rangsælis</translation>
 <translation id="1479909375538722835">Fljótandi aðgengisvalmynd</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
+<translation id="1503394326855300303">Þessi eigandareikningur verður að vera fyrsti innskráði reikningurinn í lotu fyrir margar innskráningar.</translation>
 <translation id="1516740043221086139">Kveikt er á „Ónáðið ekki“.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Sýna tilkynningastillingar. Slökkt er á tilkynningum fyrir forrit}one{Sýna tilkynningastillingar. Slökkt er á tilkynningum fyrir # forrit}other{Sýna tilkynningastillingar. Slökkt er á tilkynningum fyrir # forrit}}</translation>
 <translation id="1525508553941733066">LOKA</translation>
@@ -69,6 +70,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1589090746204042747">Fengið aðgang að öllum aðgerðum þínum í þessari lotu</translation>
 <translation id="1611993646327628135">Kveikt</translation>
 <translation id="1632985212731562677">Hægt er að slökkva á rofaaðgangi í Stillingar &gt; Aðgengi.</translation>
+<translation id="1651447046299738444">Svo virðist sem slökkt sé á Bluetooth eða Wi-Fi í Chromebook. Athugaðu tenginguna til að nota Phone Hub.</translation>
 <translation id="1654477262762802994">Hefja raddfyrirspurn</translation>
 <translation id="1667964833127753507">Hlutlaus litastilling notar ekki liti sem dregnir eru úr veggfóðrinu en skiptir þeim þess í stað út fyrir sett af hlutlausum ljósum eða dökkum litbrigðum.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> eftir</translation>
@@ -151,6 +153,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="2435457462613246316">Sýna aðgangsorð</translation>
 <translation id="2473177541599297363">Staðfesta upplausn</translation>
 <translation id="2475982808118771221">Villa kom upp</translation>
+<translation id="2479579251444854687">Strjúktu upp með þremur fingrum til að opna og niður til að loka yfirlitinu.</translation>
 <translation id="2482878487686419369">Tilkynningar</translation>
 <translation id="2484513351006226581">Ýttu á <ph name="KEYBOARD_SHORTCUT" /> til að skipta um lyklaskipan.</translation>
 <translation id="2501920221385095727">Festilyklar</translation>
@@ -163,6 +166,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="2595239820337756193">5 km í mílum</translation>
 <translation id="2617342710774726426">SIM-kortið er læst</translation>
 <translation id="2621713457727696555">Læst</translation>
+<translation id="2640255526076764619">Snertiflatarbending til að skipta yfir í fyrra skrifborð breyttist. Strjúktu til vinstri með fjórum fingrum til að skipta yfir í fyrra skrifborð.</translation>
 <translation id="2653659639078652383">Senda</translation>
 <translation id="2658778018866295321">Smella og draga</translation>
 <translation id="2700493154570097719">Veldu lyklaborð</translation>
@@ -172,7 +176,6 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="2718395828230677721">Næturljós</translation>
 <translation id="2727175239389218057">Svara</translation>
 <translation id="2727977024730340865">Tengt við afllítið hleðslutæki. Hleðsla rafhlöðunnar kann að vera brigðul.</translation>
-<translation id="2743387203779672305">Afrita á klippiborð</translation>
 <translation id="2792498699870441125">Alt+leitarhnappur</translation>
 <translation id="2819276065543622893">Þú verður skráð(ur) út núna.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> styður ekki <ph name="SPECIFIED_RESOLUTION" />. Upplausninni var breytt í <ph name="FALLBACK_RESOLUTION" />.</translation>
@@ -257,6 +260,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="3486220673238053218">skilgreining</translation>
 <translation id="3510164367642747937">Auðkenna músarbendil</translation>
 <translation id="3513798432020909783"><ph name="MANAGER_EMAIL" /> stjórnar þessum reikningi</translation>
+<translation id="3571734092741541777">Setja upp</translation>
 <translation id="3573179567135747900">Skipta aftur yfir í „<ph name="FROM_LOCALE" />“ (krefst endurræsingar)</translation>
 <translation id="3576141592585647168">Breyta tímabelti</translation>
 <translation id="3593646411856133110">Strjúktu upp og haltu fingri þar til að sjá opin forrit</translation>
@@ -341,6 +345,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="4412944820643904175">Slökkt er á <ph name="FEATURE_NAME" />.</translation>
 <translation id="4421231901400348175"><ph name="HELPER_NAME" /> deilir stjórn yfir skjánum þínum í gegnum fjaraðstoð.</translation>
 <translation id="4430019312045809116">Hljóðstyrkur</translation>
+<translation id="4444978951615977024">Obbosí! Athugaðu tenginguna</translation>
 <translation id="4450893287417543264">Ekki sýna þetta aftur</translation>
 <translation id="445864333228800152">Gott kvöld,</translation>
 <translation id="4458688154122353284">Stöðva skjáupptöku</translation>
@@ -350,6 +355,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Aftengd tæki</translation>
 <translation id="4505050298327493054">Virkt svæði.</translation>
+<translation id="4506458088675900627">Bendingu fyrir yfirlitssnertiflöt var breytt</translation>
 <translation id="4513946894732546136">Ábendingar</translation>
 <translation id="4527045527269911712">Bluetooth-tækið „<ph name="DEVICE_NAME" />“ vill fá heimild til að parast.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> fram að fullri hleðslu</translation>
@@ -389,6 +395,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="4917385247580444890">Sterkt</translation>
 <translation id="4918086044614829423">Samþykkja</translation>
 <translation id="4924411785043111640">Endurræsa og endurstilla</translation>
+<translation id="4925542575807923399">Stjórnandi þessa reiknings krefst þess að reikningurinn sé fyrsti innskráði reikningurinn í lotu fyrir margar innskráningar.</translation>
 <translation id="495046168593986294">Fletta upp</translation>
 <translation id="4961318399572185831">Senda út skjá</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> k., <ph name="MINUTES" /> m. og <ph name="SECONDS" /> s.</translation>
@@ -478,6 +485,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="6018164090099858612">Hættir í spegilstillingu</translation>
 <translation id="602001110135236999">Fletta til vinstri</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, sendistyrkur <ph name="SIGNAL_STRENGTH" />, stjórnað af kerfisstjóra</translation>
+<translation id="6029337736376922061">Snertiflatarbendingunni til að skipta yfir í næsta skrifborð var breytt. Strjúktu til hægri með fjórum fingrum til að skipta yfir í næsta skrifborð.</translation>
 <translation id="6030495522958826102">Valmynd færð neðst í vinstra horn skjásins.</translation>
 <translation id="6040143037577758943">Loka</translation>
 <translation id="6043212731627905357">Þessum skjá lyndir ekki vel við <ph name="DEVICE_TYPE" /> (skjárinn er ekki studdur).</translation>
@@ -535,6 +543,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="6657585470893396449">Aðgangsorð</translation>
 <translation id="6665545700722362599">Veitt vefsvæðum, forritum og viðbótum heimild til að nota staðsetningarþjónustu, hljóðnema, myndavél eða aðra eiginleika tækisins</translation>
 <translation id="6670153871843998651">Skrifborð 3</translation>
+<translation id="6671495933530132209">Afrita mynd</translation>
 <translation id="6691659475504239918">Leitarhnappur+Shift+H</translation>
 <translation id="6692996468359469499">Fá upplýsingar í tengslum við val þitt</translation>
 <translation id="6696025732084565524">Lausa lyklaborðið þarf að fá áríðandi uppfærslu</translation>
@@ -734,6 +743,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="8734991477317290293">Það gæti verið að reyna að stela lyklaborðsinnslætti</translation>
 <translation id="8735953464173050365">Sýna lyklaborðsstillingar. <ph name="KEYBOARD_NAME" /> er valið</translation>
 <translation id="875593634123171288">Sýna VPN-stillingar</translation>
+<translation id="8759408218731716181">Ekki er hægt að setja upp margar innskráningar</translation>
 <translation id="8785070478575117577">Tengjast <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>

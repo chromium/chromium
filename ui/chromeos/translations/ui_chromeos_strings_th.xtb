@@ -189,7 +189,6 @@
 <translation id="3064388234319122767">การทับศัพท์ (zdravo → здраво)</translation>
 <translation id="3067790092342515856">ไฟล์ Windows</translation>
 <translation id="3078461028045006476">แชร์กับ <ph name="EXTENSION_NAME" /></translation>
-<translation id="3088034400796962477">การทับศัพท์ (salam ← سلام)</translation>
 <translation id="3116361045094675131">แป้นพิมพ์ภาษาอังกฤษสหราชอาณาจักร</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">เสร็จสิ้น</translation>
@@ -305,7 +304,6 @@
 <translation id="4477219268485577442">การออกเสียงภาษาบัลแกเรีย</translation>
 <translation id="4479812471636796472">แป้นพิมพ์ภาษาดีโวรักสหรัฐอเมริกา</translation>
 <translation id="4481711095103932593">โฟลเดอร์นี้แชร์กับ Windows อยู่</translation>
-<translation id="4487088045714738411">แป้นพิมพ์ภาษาเบลเยียม</translation>
 <translation id="4522570452068850558">รายละเอียด</translation>
 <translation id="4542387084127299777">เปิด "<ph name="PATH" />" ไม่ได้</translation>
 <translation id="4552678318981539154">ซื้อพื้นที่เก็บข้อมูลเพิ่ม</translation>
@@ -376,6 +374,7 @@
 <translation id="5098629044894065541">ฮิบรู</translation>
 <translation id="5123433949759960244">บาสเกตบอล</translation>
 <translation id="5129662217315786329">โปแลนด์</translation>
+<translation id="5132435854979302863">ฟิลิปปินส์</translation>
 <translation id="5144820558584035333">ฮังกูลแบบ 3 ชุด (390)</translation>
 <translation id="5145331109270917438">วันที่แก้ไข</translation>
 <translation id="515594325917491223">หมากรุก</translation>
@@ -422,13 +421,13 @@
 <translation id="5464696796438641524">แป้นพิมพ์ภาษาโปแลนด์</translation>
 <translation id="5465122519792752163">แป้นพิมพ์ภาษาเนปาล (InScript)</translation>
 <translation id="5469868506864199649">อิตาลี</translation>
+<translation id="5484429245813572665">อินโดนีเซีย</translation>
 <translation id="5494920125229734069">เลือกทั้งหมด</translation>
 <translation id="5500122897333236901">ไอซ์แลนดิก</translation>
 <translation id="5508696409934741614">จุด</translation>
 <translation id="5522908512596376669">เปลี่ยนรายการไฟล์เป็นมุมมองรายการแล้ว</translation>
 <translation id="5524517123096967210">ไม่สามารถอ่านไฟล์</translation>
 <translation id="5533102081734025921">รูปภาพ <ph name="IMAGE_TYPE" /></translation>
-<translation id="5533555070048896610">การทับศัพท์ (namaste → नमस्ते)</translation>
 <translation id="5534520101572674276">กำลังคำนวณขนาด</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5605830556594064952">ดีโวรักสหรัฐอเมริกา</translation>
@@ -609,6 +608,7 @@
 <translation id="7649070708921625228">ความช่วยเหลือ</translation>
 <translation id="7654209398114106148">กำลังย้าย <ph name="NUMBER_OF_ITEMS" />รายการ...</translation>
 <translation id="7658239707568436148">ยกเลิก</translation>
+<translation id="7693909743393669729">การฟอร์แมตไดรฟ์จะลบข้อมูลทั้งหมดที่เก็บไว้ในไดรฟ์และลบพาร์ติชันที่มีอยู่ทั้งหมด รวมถึงพาร์ติชันที่อาจมองไม่เห็น การดำเนินการนี้เลิกทำไม่ได้</translation>
 <translation id="7695430100978772476">จัดรูปแบบ <ph name="DRIVE_NAME" /> ไม่ได้</translation>
 <translation id="770015031906360009">กรีก</translation>
 <translation id="7706319470528945664">แป้นพิมพ์ภาษาโปรตุเกส</translation>
@@ -640,6 +640,7 @@
 <translation id="78946041517601018">ไดรฟ์ที่แชร์</translation>
 <translation id="7896906914454843592">แป้นพิมพ์ภาษาอังกฤษสหรัฐอเมริกาแบบ Extended</translation>
 <translation id="7898607018410277265">แป้นพิมพ์ภาษาคุชราต (คำที่ใช้ออกเสียงใหม่)</translation>
+<translation id="7908793776359722643">การฟอร์แมตพาร์ติชันจะลบข้อมูลทั้งหมดที่จัดเก็บในพาร์ติชันนั้น การดำเนินการนี้เลิกทำไม่ได้</translation>
 <translation id="7917972308273378936">แป้นพิมพ์ภาษาลิทัวเนีย</translation>
 <translation id="7925686952655276919">อย่าใช้ข้อมูลมือถือสำหรับการซิงค์</translation>
 <translation id="7928710562641958568">ยกเลิกการต่อเชื่อมอุปกรณ์</translation>
@@ -727,6 +728,7 @@
 <translation id="8900820606136623064">ฮังการี</translation>
 <translation id="8901822611024316615">แป้นพิมพ์ QWERTY ของเช็ก</translation>
 <translation id="8919081441417203123">เดนมาร์ก</translation>
+<translation id="8941776146379310519">มาเลย์</translation>
 <translation id="8960999352790021682">แป้นพิมพ์ภาษาเบงกาลี (คำที่ใช้ออกเสียง)</translation>
 <translation id="8965697826696209160">พื้นที่ไม่เพียงพอ</translation>
 <translation id="9017798300203431059">การออกเสียงภาษารัสเซีย</translation>

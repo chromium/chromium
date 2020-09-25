@@ -352,6 +352,7 @@
 <translation id="140520891692800925"><ph name="PROFILE_DISPLAY_NAME" /> (supervisé)</translation>
 <translation id="1405779994569073824">A planté.</translation>
 <translation id="1406500794671479665">Vérification en cours…</translation>
+<translation id="1407135791313364759">Tout ouvrir</translation>
 <translation id="140723521119632973">Activation mobile</translation>
 <translation id="1407489512183974736">Recadrer et centrer</translation>
 <translation id="1408504635543854729">Explorez le contenu de l'appareil dans l'application Fichiers. L'accès à ce contenu étant limité par un administrateur, vous ne pouvez pas le modifier.</translation>
@@ -1903,7 +1904,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3246107497225150582">{0,plural, =1{Mettre à jour l'appareil d'ici 1 jour}one{Mettre à jour l'appareil d'ici # jour}other{Mettre à jour l'appareil d'ici # jours}}</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – Erreur réseau</translation>
 <translation id="3248902735035392926">La sécurité est essentielle. Prenez quelques instants pour <ph name="BEGIN_LINK" />vérifier vos extensions dès maintenant<ph name="END_LINK" /></translation>
-<translation id="325036368918787455">Fermer les fenêtres de navigation privée</translation>
 <translation id="3251759466064201842">&lt;Ne fait pas partie du certificat&gt;</translation>
 <translation id="3253225298092156258">Indisponible</translation>
 <translation id="3253448572569133955">Compte inconnu</translation>
@@ -3444,7 +3444,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="5097649414558628673">Outil : <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">Clic automatique à l'arrêt du curseur</translation>
 <translation id="5099399397495049098">Les sites peuvent utiliser JavaScript (recommandé)</translation>
-<translation id="5101042277149003567">Ouvrir tous les favoris</translation>
 <translation id="5101839224773798795">Cliquer automatiquement en cas d'arrêt du curseur</translation>
 <translation id="5107443654503185812">Une extension a désactivé la navigation sécurisée</translation>
 <translation id="5108967062857032718">Paramètres – Supprimer les applications Android</translation>
@@ -4029,7 +4028,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5804241973901381774">Autorisations</translation>
 <translation id="5805697420284793859">Gestionnaire de fenêtres</translation>
 <translation id="5806773519584576205">0° (par défaut)</translation>
-<translation id="5808664694611589238">{0,plural, =1{Fermer la fenêtre ouverte en tant qu'invité}one{Fermer la fenêtre ouverte en tant qu'invité}other{Fermer les fenêtres ouvertes en tant qu'invité}}</translation>
 <translation id="5810809306422959727">Ce compte n'est pas éligible au contrôle parental</translation>
 <translation id="5812674658566766066">Tout développer</translation>
 <translation id="5814126672212206791">Type de connexion</translation>
@@ -4938,7 +4936,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6903907808598579934">Activer la synchronisation</translation>
 <translation id="6904344821472985372">Révoquer l'accès aux fichiers</translation>
 <translation id="6904655473976120856">Appuyer sur le bouton de l'application pour sortir</translation>
-<translation id="6909422577741440844">Recevoir le fichier à partir de cet appareil ?</translation>
+<translation id="6909422577741440844">Recevoir à partir de cet appareil ?</translation>
 <translation id="6910211073230771657">Supprimé</translation>
 <translation id="691024665142758461">Télécharger plusieurs fichiers</translation>
 <translation id="691106080621596509">L'ensemble des données et des cookies stockés par <ph name="SITE_GROUP_NAME" /> seront effacés, ainsi que les sites lui appartenant et l'application installée correspondante</translation>

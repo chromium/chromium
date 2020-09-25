@@ -189,7 +189,6 @@
 <translation id="3064388234319122767">Traslitterazione (zdravo → здраво)</translation>
 <translation id="3067790092342515856">File di Windows</translation>
 <translation id="3078461028045006476">Condividi con l'estensione <ph name="EXTENSION_NAME" /></translation>
-<translation id="3088034400796962477">Traslitterazione (salam ← سلام)</translation>
 <translation id="3116361045094675131">Tastiera britannica</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">FINE</translation>
@@ -305,7 +304,6 @@
 <translation id="4477219268485577442">Fonetica bulgara</translation>
 <translation id="4479812471636796472">Tastiera Dvorak USA</translation>
 <translation id="4481711095103932593">Questa cartella è condivisa con Windows</translation>
-<translation id="4487088045714738411">Tastiera belga</translation>
 <translation id="4522570452068850558">Dettagli</translation>
 <translation id="4542387084127299777">Impossibile aprire "<ph name="PATH" />"</translation>
 <translation id="4552678318981539154">Acquista più spazio di archiviazione</translation>
@@ -366,6 +364,7 @@
 <translation id="5010406651457630570">Computer</translation>
 <translation id="5011233892417813670">Chromebook</translation>
 <translation id="5024856940085636730">Un'operazione richiede più tempo del previsto. Vuoi interromperla?</translation>
+<translation id="5026887030745057099">Hindi</translation>
 <translation id="5036159836254554629">Gestisci condivisione con Parallels Desktop</translation>
 <translation id="5038625366300922036">Visualizza altre...</translation>
 <translation id="5061708541166515394">Contrasto</translation>
@@ -429,7 +428,6 @@
 <translation id="5522908512596376669">L'elenco dei file è stato modificato in visualizzazione elenco.</translation>
 <translation id="5524517123096967210">Impossibile leggere il file.</translation>
 <translation id="5533102081734025921">Immagine <ph name="IMAGE_TYPE" /></translation>
-<translation id="5533555070048896610">Traslitterazione (namaste → नमस्ते)</translation>
 <translation id="5534520101572674276">Calcolo dimensioni</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5605830556594064952">Dvorak USA</translation>

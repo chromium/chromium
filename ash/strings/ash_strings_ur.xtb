@@ -59,6 +59,7 @@
 <translation id="1467432559032391204">بائیں</translation>
 <translation id="1479909375538722835">فلوٹنگ ایکسیسبیلٹی مینو</translation>
 <translation id="1484102317210609525">‎<ph name="DEVICE_NAME" /> (HDMI/DP)‎</translation>
+<translation id="1503394326855300303">اس مالک کے اکاؤنٹ کو متعدد سائن ان سیشن میں پہلا سائن ان کردہ اکاؤنٹ ہونا چاہئے۔</translation>
 <translation id="1516740043221086139">'ڈسٹرب نہ کریں' آن ہے۔</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{اطلاع کی ترتیبات دکھائیں۔ اطلاعات ایک ایپ کے لیے آف ہیں}other{اطلاع کی ترتیبات دکھائیں۔ اطلاعات # ایپس کے لیے آف ہیں}}</translation>
 <translation id="1525508553941733066">برخاست کریں</translation>
@@ -172,7 +173,6 @@
 <translation id="2718395828230677721">نائٹ لائٹ</translation>
 <translation id="2727175239389218057">جواب دیں</translation>
 <translation id="2727977024730340865">ایک کم پاور کے چارجر میں پلگ ان ہے۔ بیٹری چارجنگ ممکن ہے بھروسہ مند نہ ہو۔</translation>
-<translation id="2743387203779672305">کلپ بورڈ پر کاپی کریں</translation>
 <translation id="2792498699870441125">‏Alt+تلاش</translation>
 <translation id="2819276065543622893">آپ اب سائن آؤٹ ہو جائیں گے۔</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" /> کو سپورٹ نہیں کرتا ہے۔ ریزولیوشن کو تبدیل کر کے <ph name="FALLBACK_RESOLUTION" /> کر دیا گیا تھا۔</translation>
@@ -257,6 +257,7 @@
 <translation id="3486220673238053218">وضاحت</translation>
 <translation id="3510164367642747937">ماؤس کا کرسر نمایاں کریں</translation>
 <translation id="3513798432020909783"><ph name="MANAGER_EMAIL" /> کے زیر نظم اکاؤنٹ</translation>
+<translation id="3571734092741541777">ترتیب دیں</translation>
 <translation id="3573179567135747900">واپس "<ph name="FROM_LOCALE" />" میں تبدیل کریں (ری اسٹارٹ مطلوب ہے)</translation>
 <translation id="3576141592585647168">ٹائم زون تبدیل کریں</translation>
 <translation id="3593646411856133110">کھلی ایپس کو دیکھنے کے لیے سوائپ اپ اور ہولڈ کریں</translation>
@@ -389,6 +390,7 @@
 <translation id="4917385247580444890">مضبوط</translation>
 <translation id="4918086044614829423">قبول کریں</translation>
 <translation id="4924411785043111640">ری سٹارٹ اور ری سیٹ کریں</translation>
+<translation id="4925542575807923399">اس اکاؤنٹ کے منتظم کا تقاضہ ہے کہ یہ اکاؤنٹ متعدد سائن سیشن میں پہلا سائن ان کردہ اکاؤنٹ ہو۔</translation>
 <translation id="495046168593986294">اوپر اسکرول کریں</translation>
 <translation id="4961318399572185831">اسکرین کاسٹ کریں</translation>
 <translation id="4969092041573468113">h <ph name="MINUTES" />m <ph name="SECONDS" />s<ph name="HOURS" /></translation>
@@ -535,6 +537,7 @@
 <translation id="6657585470893396449">پاس ورڈ</translation>
 <translation id="6665545700722362599">ویب سائٹس، ایپس اور ایکسٹینشنز کو مقام کی سروسز، آلہ کے مائیکروفون، کیمرا یا دیگر خصوصیات کے استعمال کی اجازت دیں</translation>
 <translation id="6670153871843998651">ڈیسک 3</translation>
+<translation id="6671495933530132209">تصویر کاپی کریں</translation>
 <translation id="6691659475504239918">Search+Shift+H</translation>
 <translation id="6692996468359469499">اپنے انتخاب سے متعلق معلومات حاصل کریں</translation>
 <translation id="6696025732084565524">آپ کے الگ ہونے کے قابل کی بورڈ کو ایک اہم اپ ڈیٹ درکار ہے</translation>
@@ -734,6 +737,7 @@
 <translation id="8734991477317290293">ممکن ہے یہ آپ کی کلید کے اسٹروکس کو چوری کرنے کی کوشش کر رہا ہو</translation>
 <translation id="8735953464173050365">کی بورڈ کی ترتیبات دکھائیں۔ <ph name="KEYBOARD_NAME" /> منتخب ہے</translation>
 <translation id="875593634123171288">‏VPN کی ترتیبات دکھائیں</translation>
+<translation id="8759408218731716181">متعدد سائن ان ترتیب نہیں دے سکتے</translation>
 <translation id="8785070478575117577"><ph name="NETWORK_NAME" /> سے منسلک کریں</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />۔ <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>

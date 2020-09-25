@@ -59,6 +59,7 @@
 <translation id="1467432559032391204">ఎడమ</translation>
 <translation id="1479909375538722835">తేలియాడే యాక్సెసిబిలిటీ మెనూ</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
+<translation id="1503394326855300303">ఈ యజమాని ఖాతానే బహుళ సైన్-ఇన్ సెషన్‌లో మొదటిగా సైన్-ఇన్ చేయాల్సిన ఖాతా.</translation>
 <translation id="1516740043221086139">'అంతరాయం కలిగించవద్దు' మోడ్ ఆన్‌లో ఉంది.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{ నోటిఫికేషన్ సెట్టింగ్‌లను చూపుతుంది. యాప్ కోసం నోటిఫికేషన్‌లు ఆఫ్ చేయబడి ఉన్నాయి}other{ నోటిఫికేషన్ సెట్టింగ్‌లను చూపుతుంది. # యాప్‌ల కోసం నోటిఫికేషన్‌లు ఆఫ్ చేయబడి ఉన్నాయి}}</translation>
 <translation id="1525508553941733066">తీసివేయి</translation>
@@ -137,7 +138,7 @@
 <translation id="2341729377289034582">నిలువు ప్రదర్శనకు లాక్ చేయబడింది</translation>
 <translation id="2352467521400612932">స్టైలస్ సెట్టింగ్‌లు</translation>
 <translation id="2354174487190027830"><ph name="NAME" />ని సక్రియం చేస్తోంది</translation>
-<translation id="2356210126990741501">మీ ఫోన్ ఆన్‌లైన్‌లో లేనట్టుగా కనిపిస్తోంది, దాని నుండి అన్ని గూడీలను ఇప్పుడు మీ కోసం అందించలేము.</translation>
+<translation id="2356210126990741501">మీ ఫోన్ ఆన్‌లైన్‌లో లేనట్టుగా కనిపిస్తోంది, దాని నుండి అన్ని ఫీచర్‌లను ఇప్పుడు మీ కోసం అందించలేము.</translation>
 <translation id="2359808026110333948">కొనసాగించు</translation>
 <translation id="2365393535144473978">మొబైల్ డేటాను ప్రారంభిస్తే బ్లూటూత్‌ను ఆరంభిస్తుంది.</translation>
 <translation id="2369165858548251131">చైనీస్‌లో "హలో"</translation>
@@ -172,7 +173,6 @@
 <translation id="2718395828230677721">రాత్రి కాంతి</translation>
 <translation id="2727175239389218057">రిప్లయి ఇవ్వండి</translation>
 <translation id="2727977024730340865">తక్కువ-పవర్ గల ఛార్జర్‌కు ప్లగిన్ చేయబడింది. బ్యాటరీ ఛార్జింగ్ విశ్వసనీయంగా ఉండకపోవచ్చు.</translation>
-<translation id="2743387203779672305">క్లిప్‌బోర్డ్‌కు కాపీ చేయి</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
 <translation id="2819276065543622893">మీరు ఇప్పుడు సైన్ అవుట్ చేయబడతారు.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" />కు మద్దతివ్వదు. రిజల్యూషన్ <ph name="FALLBACK_RESOLUTION" />కు మార్చబడింది.</translation>
@@ -257,6 +257,7 @@
 <translation id="3486220673238053218">నిర్వచనం</translation>
 <translation id="3510164367642747937">మౌస్ కర్సర్‌ను హైలైట్ చేయి</translation>
 <translation id="3513798432020909783"><ph name="MANAGER_EMAIL" /> ద్వారా ఖాతా నిర్వహించబడుతోంది</translation>
+<translation id="3571734092741541777">సెటప్ చేయి</translation>
 <translation id="3573179567135747900">"<ph name="FROM_LOCALE" />"కు వెనుక‌కు మార్చండి (పునఃప్రారంభం అవసరం)</translation>
 <translation id="3576141592585647168">సమయ మండలిని మార్చండి</translation>
 <translation id="3593646411856133110">తెరిచి ఉన్న యాప్‌లను చూడటానికి పైకి స్వైప్ చేసి, పట్టుకోండి</translation>
@@ -390,6 +391,7 @@
 <translation id="4917385247580444890">బలమైన</translation>
 <translation id="4918086044614829423">ఆమోదించు</translation>
 <translation id="4924411785043111640">మళ్లీ ప్రారంభించి, రీసెట్ చేయండి</translation>
+<translation id="4925542575807923399">బహుళ సైన్-ఇన్ సెషన్‌లో ఈ ఖాతా మొదటిగా సైన్-ఇన్ చేసిన ఖాతాగా ఉండటం ఈ ఖాతా నిర్వాహకులకు అవసరం.</translation>
 <translation id="495046168593986294">పైకి స్క్రోల్ చేయి</translation>
 <translation id="4961318399572185831">స్క్రీన్ ప్రసారం చేయండి</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />గం <ph name="MINUTES" />ని <ph name="SECONDS" />సె</translation>
@@ -536,6 +538,7 @@
 <translation id="6657585470893396449">పాస్‌వర్డ్</translation>
 <translation id="6665545700722362599">స్థాన సేవలు, పరికర మైక్రోఫోన్, కెమెరా లేదా ఇతర ఫీచర్‌లను ఉపయోగించడానికి వెబ్‌సైట్‌లు, యాప్‌లు, ఎక్స్‌టెన్షన్‌లను అనుమతించండి</translation>
 <translation id="6670153871843998651">డెస్క్ 3</translation>
+<translation id="6671495933530132209">చిత్రాన్ని కాపీ చేయి</translation>
 <translation id="6691659475504239918">Search+Shift+H</translation>
 <translation id="6692996468359469499">మీ ఎంచుకున్న దానికి సంబంధించిన సమాచారాన్ని పొందండి</translation>
 <translation id="6696025732084565524">మీ తీసివేయగల కీబోర్డ్‌కి ఒక ముఖ్యమైన అప్‌డేట్ అవసరం</translation>
@@ -735,6 +738,7 @@
 <translation id="8734991477317290293">మీ కీస్ట్రోక్‌లను దొంగిలించడానికి ఇది ప్రయత్నిస్తుండవచ్చు</translation>
 <translation id="8735953464173050365">కీబోర్డ్ సెట్టింగ్‌లను చూపుతుంది. <ph name="KEYBOARD_NAME" /> ఎంపిక చేయబడింది</translation>
 <translation id="875593634123171288">VPN సెట్టింగ్‌లను చూపుతుంది</translation>
+<translation id="8759408218731716181">బహుళ సైన్-ఇన్‌ను సెటప్ చేయలేరు</translation>
 <translation id="8785070478575117577"><ph name="NETWORK_NAME" />కు కనెక్ట్ చేయండి</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>

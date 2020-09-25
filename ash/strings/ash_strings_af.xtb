@@ -59,6 +59,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1467432559032391204">Links</translation>
 <translation id="1479909375538722835">Swewende toeganklikheidkieslys</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
+<translation id="1503394326855300303">Hierdie eienaarrekening moet die eerste rekening wees waarby in 'n veelvuldige aanmeldsessie aangemeld word.</translation>
 <translation id="1516740043221086139">Moenie Steur Nie is aan.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Wys kennisgewinginstellings. Kennisgewings is af vir 'n program}other{Wys kennisgewinginstellings. Kennisgewings is af vir # programme}}</translation>
 <translation id="1525508553941733066">MAAK TOE</translation>
@@ -69,6 +70,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1589090746204042747">Kry toegang tot al jou aktiwiteit in hierdie sessie</translation>
 <translation id="1611993646327628135">Aan</translation>
 <translation id="1632985212731562677">Skakelaartoegang kan in Instellings &gt; Toeganklikheid gedeaktiveer word.</translation>
+<translation id="1651447046299738444">Dit lyk of jou Bluetooth of Wi-Fi op jou Chromebook afgeskakel is. Gaan jou verbinding na om Foonsentrum te gebruik.</translation>
 <translation id="1654477262762802994">Begin 'n stemnavraag</translation>
 <translation id="1667964833127753507">Die neutrale kleurmodus gebruik nie kleure wat van die muurpapier onttrek is nie, maar vervang dit met 'n stel ligte of donker skakerings van neutrale kleure.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> oor</translation>
@@ -137,7 +139,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="2341729377289034582">Gesluit op vertikaal</translation>
 <translation id="2352467521400612932">Stilusinstellings</translation>
 <translation id="2354174487190027830">Aktiveer tans <ph name="NAME" /></translation>
-<translation id="2356210126990741501">Dit lyk of jou foon nie aanlyn is nie; ons kan nie op die oomblik al die goedjies van daar af vir jou kry nie.</translation>
+<translation id="2356210126990741501">Dit lyk of jou foon nie aanlyn is nie. Ons kan nie op die oomblik al die lekker dinge van daar af vir jou kry nie.</translation>
 <translation id="2359808026110333948">Gaan voort</translation>
 <translation id="2365393535144473978">As mobiele data geaktiveer word, sal dit Bluetooth aktiveer.</translation>
 <translation id="2369165858548251131">"Hallo" in Chinees</translation>
@@ -151,6 +153,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="2435457462613246316">Wys wagwoord</translation>
 <translation id="2473177541599297363">Bevestig resolusie</translation>
 <translation id="2475982808118771221">'n Fout het voorgekom</translation>
+<translation id="2479579251444854687">Swiep met drie vingers op om die Oorsig oop te maak, en af om dit toe te maak.</translation>
 <translation id="2482878487686419369">Kennisgewings</translation>
 <translation id="2484513351006226581">Druk <ph name="KEYBOARD_SHORTCUT" /> om sleutelborduitleg te wissel.</translation>
 <translation id="2501920221385095727">Taaisleutels</translation>
@@ -163,6 +166,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="2595239820337756193">5K in myl</translation>
 <translation id="2617342710774726426">SIM-kaart is gesluit</translation>
 <translation id="2621713457727696555">Beveilig</translation>
+<translation id="2640255526076764619">Die raakpaneelgebaar om na die vorige lessenaar toe te wissel, het verander. Swiep met vier vingers links om na die vorige lessenaar toe te wissel.</translation>
 <translation id="2653659639078652383">Dien in</translation>
 <translation id="2658778018866295321">Klik en sleep</translation>
 <translation id="2700493154570097719">Stel jou sleutelbord</translation>
@@ -172,7 +176,6 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="2718395828230677721">Aandbeligting</translation>
 <translation id="2727175239389218057">Antwoord</translation>
 <translation id="2727977024730340865">By 'n laekrag-laaier ingeprop. Laai van battery is dalk nie betroubaar nie.</translation>
-<translation id="2743387203779672305">Kopieer na knipbord</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
 <translation id="2819276065543622893">Jy sal nou afgemeld word.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> werk nie met <ph name="SPECIFIED_RESOLUTION" /> nie. Die resolusie is na <ph name="FALLBACK_RESOLUTION" /> verander.</translation>
@@ -257,6 +260,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="3486220673238053218">definisie</translation>
 <translation id="3510164367642747937">Lig muismerker uit</translation>
 <translation id="3513798432020909783">Rekening word bestuur deur <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3571734092741541777">Stel op</translation>
 <translation id="3573179567135747900">Verander terug na "<ph name="FROM_LOCALE" />" (vereis herbegin)</translation>
 <translation id="3576141592585647168">Verander tydsone</translation>
 <translation id="3593646411856133110">Swiep op en hou om oop programme te sien</translation>
@@ -342,6 +346,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> is af.</translation>
 <translation id="4421231901400348175">Deel tans beheer oor jou skerm met <ph name="HELPER_NAME" /> deur afstandbystand.</translation>
 <translation id="4430019312045809116">Volume</translation>
+<translation id="4444978951615977024">Ag nee! Gaan jou verbinding na</translation>
 <translation id="4450893287417543264">Moenie weer wys nie</translation>
 <translation id="445864333228800152">Goeienaand</translation>
 <translation id="4458688154122353284">Stop skermopname</translation>
@@ -351,6 +356,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Losgemaakte toestelle</translation>
 <translation id="4505050298327493054">Aktiewe lessenaar.</translation>
+<translation id="4506458088675900627">Die Oorsig-raakpaneelgebaar het verander</translation>
 <translation id="4513946894732546136">Terugvoer</translation>
 <translation id="4527045527269911712">Bluetooth-toestel "<ph name="DEVICE_NAME" />" wil graag toestemming hê om saam te bind.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> tot vol</translation>
@@ -390,6 +396,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="4917385247580444890">Sterk</translation>
 <translation id="4918086044614829423">Aanvaar</translation>
 <translation id="4924411785043111640">Herbegin en stel terug</translation>
+<translation id="4925542575807923399">Die administrateur vir hierdie rekening vereis dat hierdie rekening die eerste een moet wees waarby in 'n veelvuldige aanmeldsessie aangemeld word.</translation>
 <translation id="495046168593986294">Rollees op</translation>
 <translation id="4961318399572185831">Saai skerm uit</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> u. <ph name="MINUTES" /> m. <ph name="SECONDS" /> s.</translation>
@@ -479,6 +486,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="6018164090099858612">Verlaat tans spieëlmodus</translation>
 <translation id="602001110135236999">Rollees links</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, seinsterkte <ph name="SIGNAL_STRENGTH" />, deur jou administrateur bestuur</translation>
+<translation id="6029337736376922061">Die raakpaneelgebaar om na die volgende lessenaar toe te wissel, het verander. Swiep met vier vingers regs om na die volgende lessenaar toe te wissel.</translation>
 <translation id="6030495522958826102">Kieslys is na die skerm se hoek links onder geskuif.</translation>
 <translation id="6040143037577758943">Maak toe</translation>
 <translation id="6043212731627905357">Hierdie monitor werk nie saam met jou <ph name="DEVICE_TYPE" /> nie (die monitor is nie gesteun nie).</translation>
@@ -536,6 +544,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="6657585470893396449">Wagwoord</translation>
 <translation id="6665545700722362599">Gee webwerwe, programme en uitbreidings toestemming om liggingdienste, die toestel se mikrofoon, kamera of ander kenmerke te gebruik</translation>
 <translation id="6670153871843998651">Lessenaar 3</translation>
+<translation id="6671495933530132209">Kopieer prent</translation>
 <translation id="6691659475504239918">Search+Shift+H</translation>
 <translation id="6692996468359469499">Kry inligting wat met jou keuse verband hou</translation>
 <translation id="6696025732084565524">Jou ontkoppelbare sleutelbord moet dringend opgedateer word</translation>
@@ -735,6 +744,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="8734991477317290293">Dit kan dalk probeer om jou sleuteldrukke te steel</translation>
 <translation id="8735953464173050365">Wys sleutelbordinstellings. <ph name="KEYBOARD_NAME" /> is gekies</translation>
 <translation id="875593634123171288">Wys VPN-instellings</translation>
+<translation id="8759408218731716181">Kan nie veelvuldige aanmelding opstel nie</translation>
 <translation id="8785070478575117577">Koppel aan <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>

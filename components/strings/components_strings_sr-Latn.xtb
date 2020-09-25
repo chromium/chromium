@@ -513,6 +513,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="3080254622891793721">Slika</translation>
 <translation id="3086579638707268289">Vaše aktivnosti na vebu se prate</translation>
 <translation id="3087734570205094154">Dno</translation>
+<translation id="3094457892697649331">Kada izmenite komentare, ovaj dokument se vraća na prikaz pojedinačne stranice.</translation>
 <translation id="3095940652251934233">Izjava</translation>
 <translation id="3096100844101284527">Dodaj adresu preuzimanja</translation>
 <translation id="3105172416063519923">ID elementa:</translation>
@@ -746,6 +747,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="4075941231477579656">Touch ID</translation>
 <translation id="4079302484614802869">Konfiguracija proksija je podešena da koristi URL adresu .pac skripte, a ne fiksne proksi servere.</translation>
 <translation id="4082393374666368382">Podešavanja – upravljanje</translation>
+<translation id="4084120443451129199">Režim pretrage, pritisnite Enter da biste pretražili <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="4088981014127559358">Pomeranje slike 1. strane po Y osi</translation>
 <translation id="4098354747657067197">Pred vama je obmanjujući sajt</translation>
 <translation id="4101413244023615925">Tekst i slika</translation>
@@ -941,6 +943,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="4809079943450490359">Uputstva administratora uređaja:</translation>
 <translation id="4813512666221746211">Greška na mreži</translation>
 <translation id="4816492930507672669">Uklopi u stranicu</translation>
+<translation id="4819347708020428563">Želite li da izmenite komentare u podrazumevanom prikazu?</translation>
 <translation id="484462545196658690">Automatski</translation>
 <translation id="4850886885716139402">Prikaz</translation>
 <translation id="4854362297993841467">Ovaj način isporuke nije dostupan. Isprobajte neki drugi način.</translation>
@@ -1674,6 +1677,7 @@ Dodatni detalji:
 <translation id="7802523362929240268">Sajt je legitiman</translation>
 <translation id="780301667611848630">Ne, hvala</translation>
 <translation id="7805768142964895445">Status</translation>
+<translation id="7811322735445742657">Kada izmenite komentare, ovaj dokument se vraća na prikaz pojedinačne stranice i u prvobitni položaj.</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Želite li da uklonite predlog iz Chrome-a?</translation>
 <translation id="781440967107097262">Dozvolićete deljenje privremene memorije?</translation>
@@ -1709,6 +1713,7 @@ Dodatni detalji:
 <translation id="7956713633345437162">Mobilni obeleživači</translation>
 <translation id="7961015016161918242">Nikad</translation>
 <translation id="7966803981046576691">Tip naloga zadatka</translation>
+<translation id="7976214039405368314">Previše je zahteva</translation>
 <translation id="7977538094055660992">Izlazni uređaj</translation>
 <translation id="7977894662897852582">Edp</translation>
 <translation id="799149739215780103">Povezivanje</translation>
@@ -1790,6 +1795,7 @@ Dodatni detalji:
 <translation id="8289355894181816810">Kontaktirajte administratora mreže ako niste sigurni šta to znači.</translation>
 <translation id="8293206222192510085">Dodavanje obeleživača</translation>
 <translation id="8294431847097064396">Izvor</translation>
+<translation id="8297398969342264569">Kada izmenite komentare, ovaj dokument se vraća u prvobitni položaj.</translation>
 <translation id="8298115750975731693">Wi-Fi mreža koju koristite (<ph name="WIFI_NAME" />) će možda zahtevati da posetite <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="8303854710873047864">Prikazuje se odeljak „<ph name="SECTION" />“</translation>
 <translation id="830498451218851433">Presavijanje napola</translation>

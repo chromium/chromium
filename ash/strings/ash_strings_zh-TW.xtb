@@ -59,6 +59,7 @@
 <translation id="1467432559032391204">向左</translation>
 <translation id="1479909375538722835">浮動式無障礙選單</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
+<translation id="1503394326855300303">擁有者帳戶必須是多重登入工作階段中第一個登入的帳戶。</translation>
 <translation id="1516740043221086139">零打擾模式已開啟。</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{顯示通知設定。已關閉一個應用程式的通知}other{顯示通知設定。已關閉 # 個應用程式的通知}}</translation>
 <translation id="1525508553941733066">關閉</translation>
@@ -137,7 +138,7 @@
 <translation id="2341729377289034582">已鎖定為垂直畫面</translation>
 <translation id="2352467521400612932">觸控筆設定</translation>
 <translation id="2354174487190027830">正在啟用 <ph name="NAME" /></translation>
-<translation id="2356210126990741501">你的手機似乎沒有連上網路，因此我們現在無法為你取得所有好康內容。</translation>
+<translation id="2356210126990741501">手機似乎沒有連上網路，因此我們現在無法取得所有好康內容。</translation>
 <translation id="2359808026110333948">繼續</translation>
 <translation id="2365393535144473978">如果啟用行動數據，藍牙功能也會一併開啟。</translation>
 <translation id="2369165858548251131">「你好」的英文</translation>
@@ -172,14 +173,13 @@
 <translation id="2718395828230677721">夜燈</translation>
 <translation id="2727175239389218057">回覆</translation>
 <translation id="2727977024730340865">使用低功率充電器，可能導致充電狀態不穩定。</translation>
-<translation id="2743387203779672305">複製到剪貼簿</translation>
 <translation id="2792498699870441125">Alt + 搜尋鍵</translation>
 <translation id="2819276065543622893">現在即將登出。</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> 不支援 <ph name="SPECIFIED_RESOLUTION" />，解析度已變更為 <ph name="FALLBACK_RESOLUTION" />。</translation>
 <translation id="2825619548187458965">檔案櫃</translation>
 <translation id="2841907151129139818">已切換為平板電腦模式</translation>
 <translation id="2844169650293029770">USB-C 裝置 (左前方連接埠)</translation>
-<translation id="2846247265041961677">糟糕！找不到電話</translation>
+<translation id="2846247265041961677">糟糕！找不到手機</translation>
 <translation id="2865888419503095837">網路資訊</translation>
 <translation id="2872961005593481000">關閉</translation>
 <translation id="2878884018241093801">最近沒有任何項目</translation>
@@ -257,6 +257,7 @@
 <translation id="3486220673238053218">定義</translation>
 <translation id="3510164367642747937">醒目顯示滑鼠游標</translation>
 <translation id="3513798432020909783">這個帳戶是由 <ph name="MANAGER_EMAIL" /> 管理</translation>
+<translation id="3571734092741541777">設定</translation>
 <translation id="3573179567135747900">改回「<ph name="FROM_LOCALE" />」(需要重新啟動)</translation>
 <translation id="3576141592585647168">變更時區</translation>
 <translation id="3593646411856133110">向上滑動並按住螢幕即可查看開啟的應用程式</translation>
@@ -389,6 +390,7 @@
 <translation id="4917385247580444890">強</translation>
 <translation id="4918086044614829423">接受</translation>
 <translation id="4924411785043111640">重新啟動並重設</translation>
+<translation id="4925542575807923399">這個帳戶的管理員要求此帳戶必需是多重登入工作階段中第一個登入的帳戶。</translation>
 <translation id="495046168593986294">向上捲動</translation>
 <translation id="4961318399572185831">投放螢幕</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> 小時 <ph name="MINUTES" /> 分鐘 <ph name="SECONDS" /> 秒</translation>
@@ -535,6 +537,7 @@
 <translation id="6657585470893396449">密碼</translation>
 <translation id="6665545700722362599">將定位服務、裝置的麥克風、相機或其他功能的使用權限授予網站、應用程式及擴充功能</translation>
 <translation id="6670153871843998651">桌面 3</translation>
+<translation id="6671495933530132209">複製圖片</translation>
 <translation id="6691659475504239918">搜尋鍵 + Shift 鍵 + H 鍵</translation>
 <translation id="6692996468359469499">取得選取項目的相關資訊</translation>
 <translation id="6696025732084565524">你的卸除式鍵盤需安裝重大更新</translation>
@@ -734,6 +737,7 @@
 <translation id="8734991477317290293">你的按鍵行為可能會遭到側錄</translation>
 <translation id="8735953464173050365">顯示鍵盤設定。已選取<ph name="KEYBOARD_NAME" /></translation>
 <translation id="875593634123171288">顯示 VPN 設定</translation>
+<translation id="8759408218731716181">無法設定多重登入</translation>
 <translation id="8785070478575117577">連線至「<ph name="NETWORK_NAME" />」</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />。<ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>

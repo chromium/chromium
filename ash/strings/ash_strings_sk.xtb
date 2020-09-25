@@ -59,6 +59,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="1467432559032391204">Doľava</translation>
 <translation id="1479909375538722835">Plávajúca ponuka dostupnosti</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
+<translation id="1503394326855300303">Tento účet vlastníka musí byť prvým prihláseným účtom v relácii viacerých prihlásení.</translation>
 <translation id="1516740043221086139">Režim Nerušiť je zapnutý.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Zobraziť nastavenia upozornení. Upozornenia sú pre aplikáciu vypnuté}few{Zobraziť nastavenia upozornení. Upozornenia sú vypnuté pre # aplikácie}many{Show notification settings. Notifications are off for # apps}other{Zobraziť nastavenia upozornení. Upozornenia sú vypnuté pre # aplikácií}}</translation>
 <translation id="1525508553941733066">ZATVORIŤ</translation>
@@ -69,6 +70,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="1589090746204042747">Získajte prístup k všetkej svojej aktivite v tejto relácii</translation>
 <translation id="1611993646327628135">Zapnuté</translation>
 <translation id="1632985212731562677">Ovládanie prepínačmi je možné deaktivovať v sekcii Nastavenia &gt; Dostupnosť.</translation>
+<translation id="1651447046299738444">Zdá sa, že máte v Chromebooku vypnuté rozhranie Bluetooth alebo pripojenie Wi-Fi. Ak chcete používať telefonické centrum, skontrolujte svoje pripojenie.</translation>
 <translation id="1654477262762802994">Spustiť hlasový dopyt</translation>
 <translation id="1667964833127753507">Režim neutrálnych farieb nepoužíva farby získané z tapety. Nahradí ich skupinou svetlých a tmavých neutrálnych odtieňov.</translation>
 <translation id="1677472565718498478">Zostávajúci čas: <ph name="TIME" /></translation>
@@ -151,6 +153,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="2435457462613246316">Zobraziť heslo</translation>
 <translation id="2473177541599297363">Potvrďte rozlíšenie</translation>
 <translation id="2475982808118771221">Vyskytla sa chyba</translation>
+<translation id="2479579251444854687">Potiahnutím troma prstami nahor Prehľad otvoríte a rovnakým gestom nadol ho zatvoríte.</translation>
 <translation id="2482878487686419369">Upozornenia</translation>
 <translation id="2484513351006226581">Stlačením klávesov <ph name="KEYBOARD_SHORTCUT" /> zmeníte rozloženie klávesnice.</translation>
 <translation id="2501920221385095727">Funkcia sticky keys</translation>
@@ -163,6 +166,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="2595239820337756193">5 km v míľach</translation>
 <translation id="2617342710774726426">SIM karta je uzamknutá</translation>
 <translation id="2621713457727696555">Zabezpečená</translation>
+<translation id="2640255526076764619">Gesto touchpadu na prepnutie na predchádzajúcu plochu bolo zmenené. Na predchádzajúcu plochu prepnete potiahnutím štyrmi prstami doľava.</translation>
 <translation id="2653659639078652383">Odoslať</translation>
 <translation id="2658778018866295321">Kliknúť a presunúť</translation>
 <translation id="2700493154570097719">Nastavenie klávesnice</translation>
@@ -172,7 +176,6 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="2718395828230677721">Nočný režim</translation>
 <translation id="2727175239389218057">Odpovedať</translation>
 <translation id="2727977024730340865">Batéria je zapojená do nabíjačky s nízkym výkonom. Nabíjanie batérie nemusí byť spoľahlivé.</translation>
-<translation id="2743387203779672305">Kopírovať do schránky</translation>
 <translation id="2792498699870441125">Alt + Hľadať</translation>
 <translation id="2819276065543622893">Teraz prebehne odhlásenie.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> nepodporuje rozlíšenie <ph name="SPECIFIED_RESOLUTION" />. Preto bolo zmenené na <ph name="FALLBACK_RESOLUTION" />.</translation>
@@ -257,6 +260,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="3486220673238053218">definícia</translation>
 <translation id="3510164367642747937">Zvýrazniť ukazovateľ myši</translation>
 <translation id="3513798432020909783">Správca účtu: <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3571734092741541777">Nastaviť</translation>
 <translation id="3573179567135747900">Zmeniť späť na miestne nastavenie „<ph name="FROM_LOCALE" />“ (vyžaduje sa reštart)</translation>
 <translation id="3576141592585647168">Zmena časového pásma</translation>
 <translation id="3593646411856133110">Otvorené aplikácie zobrazíte potiahnutím nahor a pridržaním</translation>
@@ -341,6 +345,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="4412944820643904175">Funkcia <ph name="FEATURE_NAME" /> je vypnutá.</translation>
 <translation id="4421231901400348175">Ovládanie obrazovky sa prostredníctvom Vzdialenej pomoci zdieľa s používateľom <ph name="HELPER_NAME" />.</translation>
 <translation id="4430019312045809116">Hlasitosť</translation>
+<translation id="4444978951615977024">Ojoj! Skontrolujte pripojenie.</translation>
 <translation id="4450893287417543264">Nabudúce nezobrazovať</translation>
 <translation id="445864333228800152">Dobrý večer,</translation>
 <translation id="4458688154122353284">Zastaviť nahrávanie obrazovky</translation>
@@ -350,6 +355,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Nespárované zariadenia</translation>
 <translation id="4505050298327493054">Aktívna plocha.</translation>
+<translation id="4506458088675900627">Gesto touchpadu na zobrazenie Prehľadu bolo zmenené</translation>
 <translation id="4513946894732546136">Spätná väzba</translation>
 <translation id="4527045527269911712">Zariadenie Bluetooth s názvom <ph name="DEVICE_NAME" /> žiada o povolenie párovania.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> do úplného nabitia</translation>
@@ -389,6 +395,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="4917385247580444890">Silné</translation>
 <translation id="4918086044614829423">Prijať</translation>
 <translation id="4924411785043111640">Reštartovať a resetovať</translation>
+<translation id="4925542575807923399">Správca tohto účtu vyžaduje, aby sa tento účet v relácii viacnásobného prihlásenia prihlásil ako prvý.</translation>
 <translation id="495046168593986294">Posunúť nahor</translation>
 <translation id="4961318399572185831">Prenášanie obrazovky</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> h <ph name="MINUTES" /> min <ph name="SECONDS" /> s</translation>
@@ -478,6 +485,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="6018164090099858612">Ukončuje sa režim zrkadlenia</translation>
 <translation id="602001110135236999">Posunúť doľava</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, sila signálu <ph name="SIGNAL_STRENGTH" />, ovládané správcom</translation>
+<translation id="6029337736376922061">Gesto touchpadu na prepnutie na ďalšiu plochu bolo zmenené. Na ďalšiu plochu prepnete potiahnutím štyrmi prstami doprava.</translation>
 <translation id="6030495522958826102">Ponuka bola presunutá do ľavého dolného rohu obrazovky.</translation>
 <translation id="6040143037577758943">Zavrieť</translation>
 <translation id="6043212731627905357">Tento monitor nie je kompatibilný s vaším zariadením <ph name="DEVICE_TYPE" /> (monitor nie je podporovaný).</translation>
@@ -535,6 +543,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="6657585470893396449">Heslo</translation>
 <translation id="6665545700722362599">Udeľte webom, aplikáciám a rozšíreniam povolenie používať služby určovania polohy, mikrofón zariadenia, kameru alebo ďalšie funkcie</translation>
 <translation id="6670153871843998651">3. plocha</translation>
+<translation id="6671495933530132209">Kopírovať obrázok</translation>
 <translation id="6691659475504239918">Hľadať+Shift+H</translation>
 <translation id="6692996468359469499">Získajte informácie súvisiace s vaším výberom</translation>
 <translation id="6696025732084565524">Odoberateľná klávesnica potrebuje kritickú aktualizáciu</translation>
@@ -734,6 +743,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="8734991477317290293">Je možné, že sa pokúša ukradnúť vaše stlačenia klávesov</translation>
 <translation id="8735953464173050365">Zobraziť nastavenia klávesnice. Vybraná klávesnica: <ph name="KEYBOARD_NAME" /></translation>
 <translation id="875593634123171288">Zobraziť nastavenia VPN</translation>
+<translation id="8759408218731716181">Nie je možné nastaviť viacnásobné prihlásenie</translation>
 <translation id="8785070478575117577">Pripojiť k sieti <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi‑Fi</translation>

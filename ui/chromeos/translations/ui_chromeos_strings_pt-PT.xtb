@@ -189,7 +189,6 @@
 <translation id="3064388234319122767">Transliteração (zdravo → здраво)</translation>
 <translation id="3067790092342515856">Ficheiros do Windows</translation>
 <translation id="3078461028045006476">Partilhar com <ph name="EXTENSION_NAME" /></translation>
-<translation id="3088034400796962477">Transliteração (salam ← سلام)</translation>
 <translation id="3116361045094675131">Teclado inglês</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">CONCLUÍDO</translation>
@@ -305,7 +304,6 @@
 <translation id="4477219268485577442">Fonético búlgaro</translation>
 <translation id="4479812471636796472">Teclado americano (Dvorak)</translation>
 <translation id="4481711095103932593">Esta pasta é partilhada com o Windows.</translation>
-<translation id="4487088045714738411">Teclado belga</translation>
 <translation id="4522570452068850558">Detalhes</translation>
 <translation id="4542387084127299777">Não é possível abrir "<ph name="PATH" />".</translation>
 <translation id="4552678318981539154">Comprar mais armazenamento</translation>
@@ -366,6 +364,7 @@
 <translation id="5010406651457630570">Computadores</translation>
 <translation id="5011233892417813670">Chromebook</translation>
 <translation id="5024856940085636730">Uma operação está a demorar mais do que o previsto. Pretende interrompê-la?</translation>
+<translation id="5026887030745057099">Hindi</translation>
 <translation id="5036159836254554629">Gerir a partilha do Parallels Desktop</translation>
 <translation id="5038625366300922036">Veja mais…</translation>
 <translation id="5061708541166515394">Contraste</translation>
@@ -430,7 +429,6 @@
 <translation id="5522908512596376669">A lista de ficheiros foi alterada para a vista de lista.</translation>
 <translation id="5524517123096967210">Não foi possível ler o ficheiro.</translation>
 <translation id="5533102081734025921">Imagem <ph name="IMAGE_TYPE" /></translation>
-<translation id="5533555070048896610">Transliteração (namaste → नमस्ते)</translation>
 <translation id="5534520101572674276">A calcular tamanho</translation>
 <translation id="5583640892426849032">Retrocesso</translation>
 <translation id="5605830556594064952">EUA Dvorak</translation>

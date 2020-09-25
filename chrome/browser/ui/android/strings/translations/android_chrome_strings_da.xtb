@@ -108,6 +108,7 @@
 <translation id="1868024384445905608">Chrome downloader nu filer endnu hurtigere</translation>
 <translation id="1877026089748256423">Chrome er forældet</translation>
 <translation id="1883903952484604915">Mine filer</translation>
+<translation id="189358972401248634">Andre sprog</translation>
 <translation id="1925021887439448749">Angiv tilpasset webadresse</translation>
 <translation id="1928696683969751773">Opdateringer</translation>
 <translation id="19288952978244135">Åbn Chrome igen.</translation>
@@ -217,6 +218,7 @@ Tryk og hold på et ord for at søge. Du kan tilpasse din søgning ved at vælge
 <translation id="2689830683995595741">Når du bruger Chrome, accepterer du <ph name="BEGIN_LINK1" />Googles servicevilkår<ph name="END_LINK1" /> og de <ph name="BEGIN_LINK2" />yderligere servicevilkår for Google Chrome og Chrome OS<ph name="END_LINK2" />. <ph name="BEGIN_LINK3" />Erklæringen om privatliv for Google-konti, der administreres med Family Link<ph name="END_LINK3" />, gælder også.</translation>
 <translation id="2707726405694321444">Opdater siden</translation>
 <translation id="2709516037105925701">AutoFyld</translation>
+<translation id="2723001399770238859">lyd</translation>
 <translation id="2728754400939377704">Sortér efter website</translation>
 <translation id="2744248271121720757">Tryk på et ord for at søge øjeblikkeligt eller se relaterede handlinger</translation>
 <translation id="2760989362628427051">Aktivér mørkt tema, når enhedens mørke tema eller batterisparefunktion er aktiveret</translation>
@@ -467,6 +469,7 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="4738836084190194332">Seneste synkronisering: <ph name="WHEN" /></translation>
 <translation id="4749960740855309258">Åbn en ny fane</translation>
 <translation id="4759238208242260848">Downloads</translation>
+<translation id="4763480195061959176">video</translation>
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{1 download er fuldført.}one{# download er fuldført.}other{# downloads er fuldført.}}</translation>
 <translation id="4766678251456904326">Føj konto til enhed</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{1 planlagt download.}one{# planlagt download.}other{# planlagte downloads.}}</translation>

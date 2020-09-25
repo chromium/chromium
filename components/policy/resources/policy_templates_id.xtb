@@ -574,9 +574,6 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
         |TIME_LIMITS| menerapkan batas penggunaan harian dan membuat aplikasi menjadi tidak tersedia setelah batas tersebut tercapai pada hari yang sudah ditentukan. Batas penggunaan ditentukan dalam |daily_limit_mins|. Batas penggunaan direset setiap hari pada waktu UTC yang dilewati dalam |reset_at|.
         Kebijakan ini hanya digunakan untuk anak-anak sebagai pengguna.
         Kebijakan ini bersifat komplementer terhadap 'UsageTimeLimit'. Pembatasan yang ditentukan dalam 'UsageTimeLimit' seperti waktu pemakaian perangkat dan waktu tidur akan diterapkan tanpa memandang 'PerAppTimeLimits'.</translation>
-<translation id="1914840757300882918">Jika kebijakan ini ditetapkan, host akan menggunakan sertifikat klien dengan CN penerbit yang diberikan untuk mengautentikasi ke RemoteAccessHostTokenValidationUrl. Tetapkan ke "*" untuk menggunakan sertifikat klien mana pun yang tersedia.
-
-          Fitur ini saat ini dinonaktifkan pada sistem server.</translation>
 <translation id="1919802376548418720">Gunakan kebijakan KDC untuk mendelegasikan kredensial.</translation>
 <translation id="1920046221095339924">Mengizinkan sesi yang dikelola di perangkat</translation>
 <translation id="1920772397574801429">Menyetel kebijakan akan menentukan jenis akun yang disediakan oleh aplikasi autentikasi Android yang mendukung autentikasi <ph name="HTTP_NEGOTIATE" /> (seperti autentikasi Kerberos). Informasi ini seharusnya tersedia dari penyedia aplikasi autentikasi. Untuk detailnya, lihat Project Chromium (https://goo.gl/hajyfN)
@@ -1102,22 +1099,6 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
       Jika kebijakan disetel ke Nonaktif, peringatan keamanan akan dicegah muncul saat Chrome diluncurkan dengan tanda command line yang berpotensi berbahaya.
 
       Di <ph name="MS_WIN_NAME" />, fungsi ini hanya tersedia di instance yang dihubungkan ke domain <ph name="MS_AD_NAME" />, dijalankan di Windows 10 Pro, atau didaftarkan di Pengelolaan Cloud Browser Chrome. Di <ph name="MAC_OS_NAME" />, fungsi ini hanya tersedia di instance yang dikelola melalui MDM, atau dihubungkan ke domain melalui MCX.</translation>
-<translation id="2621383458880689826">Memberikan konfigurasi untuk printer perusahaan yang terikat ke perangkat.
-
-      Kebijakan ini memungkinkan Anda memberikan konfigurasi printer untuk perangkat <ph name="PRODUCT_OS_NAME" />.  Formatnya sama dengan kamus NativePrinters, dengan tambahan kolom "id" atau "guid" per printer yang diperlukan untuk pemberian atau pemblokiran izin.
-
-      Ukuran file tidak boleh lebih dari 5 MB dan harus dienkode dalam format JSON.  File yang berisi sekitar 21.000 printer diperkirakan akan dienkode menjadi file berukuran 5 MB.  Hash kriptografi digunakan untuk memverifikasi integritas download.
-
-      File didownload dan disimpan di cache. File akan didownload ulang setiap kali URL atau hash berubah.
-
-      Jika kebijakan ini disetel, <ph name="PRODUCT_OS_NAME" /> akan mendownload file untuk konfigurasi printer dan menyediakan printer sesuai dengan <ph name="DEVICE_NATIVE_PRINTERS_ACCESS_MODE" />, <ph name="DEVICE_NATIVE_PRINTERS_WHITELIST_POLICY_NAME" />, dan <ph name="DEVICE_NATIVE_PRINTERS_BLACKLIST_POLICY_NAME" />.
-
-      Kebijakan ini tidak memengaruhi kemampuan pengguna untuk mengonfigurasi printer di tiap perangkat.  Kebijakan ini ditujukan sebagai tambahan untuk konfigurasi printer yang ditentukan oleh tiap pengguna.
-
-      Kebijakan ini bersifat tambahan untuk <ph name="BULK_PRINTERS_POLICY_NAME" />.
-
-      Jika kebijakan ini tidak disetel, tidak akan ada printer perangkat, dan kebijakan <ph name="DEVICE_NATIVE_PRINTERS_POLICY_PATTERN" /> yang lain akan diabaikan.
-      </translation>
 <translation id="2623014935069176671">Tunggu aktivitas pengguna awal</translation>
 <translation id="262740370354162807">Aktifkan penyerahan dokumen ke <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="2632538643061793322">Jika menyetel kebijakan, Anda akan dapat menyetel daftar pola URL yang menentukan situs mana yang dapat meminta izin kepada pengguna untuk mengakses perangkat USB.
@@ -1284,12 +1265,6 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
       Jika setelan ini diaktifkan, Pratinjau Cetak akan menggunakan printer default sistem OS sebagai pilihan tujuan default.</translation>
 <translation id="285627849510728211">Menetapkan konfigurasi hari mode pengisian daya baterai lanjutan</translation>
 <translation id="2856674246949497058">Rollback dan tetap menggunakan versi target jika versi OS lebih baru dari target. Lakukan powerwash selama prosesnya.</translation>
-<translation id="2869140260739354012">Mengontrol printer mana dari <ph name="DEVICE_PRINTERS_POLICY" /> yang tersedia bagi pengguna.
-
-      Menetapkan kebijakan akses mana yang digunakan untuk konfigurasi printer massal. Jika <ph name="PRINTERS_ALLOW_ALL" /> dipilih, semua printer akan ditampilkan. Jika <ph name="PRINTERS_BLACKLIST" /> dipilih, <ph name="DEVICE_NATIVE_PRINTERS_BLACKLIST" /> akan digunakan untuk membatasi akses ke printer tertentu. Jika <ph name="PRINTERS_WHITELIST" /> dipilih, <ph name="DEVICE_NATIVE_PRINTERS_WHITELIST" /> hanya akan menetapkan printer yang dapat dipilih.
-
-      Jika kebijakan ini tidak disetel, <ph name="PRINTERS_ALLOW_ALL" /> akan diberlakukan.
-      </translation>
 <translation id="2869762730352628426">Mengaktifkan klik otomatis di layar login</translation>
 <translation id="2872961005593481000">Matikan</translation>
 <translation id="2874209944580848064">Catatan untuk perangkat <ph name="PRODUCT_OS_NAME" /> yang mendukung aplikasi Android:</translation>
@@ -1930,12 +1905,6 @@ Jika kebijakan ini tidak disetel, setelan default-nya tidak diizinkan bagi pengg
 <translation id="3838094946886335701">Jika menyetel kebijakan (sebagai direkomendasikan saja), Anda akan dapat mendaftarkan daftar pengendali protokol, yang digabungkan dengan yang didaftarkan pengguna, sehingga keduanya dapat digunakan. Setel properti "protokol" ke skema, seperti "mailto", dan setel properti "URL" ke pola URL aplikasi yang menangani skema yang ditentukan dalam kolom "protokol". Pola dapat mencakup placeholder "%s", yang diganti dengan URL yang ditangani.
 
       Pengguna tidak dapat menghapus pengendali protokol yang didaftarkan oleh kebijakan. Namun, dengan menginstal pengendali default baru, pengguna dapat mengubah pengendali protokol yang diinstal oleh kebijakan.</translation>
-<translation id="3848118497246496090">Menentukan printer yang tidak dapat digunakan pengguna.
-
-      Kebijakan ini hanya digunakan jika <ph name="PRINTERS_BLACKLIST" /> dipilih untuk <ph name="DEVICE_NATIVE_PRINTERS_ACCESS_MODE" />.
-
-      Jika kebijakan ini digunakan, semua printer akan tersedia bagi pengguna, kecuali ID yang dicantumkan di kebijakan ini. ID harus sesuai dengan kolom "id" atau "guid" dalam file yang ditentukan di <ph name="DEVICE_PRINTERS_POLICY" />.
-      </translation>
 <translation id="3851039766298741586">Laporkan informasi tentang sesi kios aktif, misalnya
       ID dan versi aplikasi.
 
@@ -2301,12 +2270,6 @@ Jika kebijakan ini tidak disetel, setelan default-nya tidak diizinkan bagi pengg
 
       Jika tidak disetel, situs dapat meminta akses tetapi pengguna dapat mengubah setelan ini.</translation>
 <translation id="4285674129118156176">Mengizinkan pengguna yang tak terafiliasi menggunakan ARC</translation>
-<translation id="4309562700894844665">Menentukan printer yang dapat digunakan pengguna.
-
-      Kebijakan ini hanya digunakan jika <ph name="PRINTERS_WHITELIST" /> dipilih untuk <ph name="DEVICE_NATIVE_PRINTERS_ACCESS_MODE" />
-
-      Jika kebijakan ini digunakan, hanya printer dengan ID yang cocok dengan nilai di kebijakan ini yang tersedia bagi pengguna. ID harus sesuai dengan kolom "id" atau "guid" dalam file yang ditentukan di <ph name="DEVICE_PRINTERS_POLICY" />.
-      </translation>
 <translation id="4311195029067684288">Penuh</translation>
 <translation id="4313767483634435271">Alamat MAC dok yang ditetapkan untuk perangkat</translation>
 <translation id="4322842393287974810">Izinkan peluncuran otomatis dengan aplikasi kios tanpa penundaan untuk mengontrol versi <ph name="PRODUCT_OS_NAME" /></translation>
@@ -2323,9 +2286,6 @@ Jika kebijakan ini tidak disetel, setelan default-nya tidak diizinkan bagi pengg
 <translation id="4347908978527632940">Jika nilai disetel ke "true" dan pengguna adalah pengguna yang dilindungi, aplikasi Android lainnya dapat mengajukan kueri batasan web pengguna melalui penyedia konten.
 
           Jika nilai disetel ke "false" atau tidak disetel, penyedia konten tidak mengembalikan informasi apa pun.</translation>
-<translation id="4360826270668210664">Jika kebijakan ini ditetapkan, host akses jarak jauh akan mewajibkan autentikasi klien untuk memperoleh token autentikasi dari URL ini agar dapat tersambung. Harus digunakan bersama RemoteAccessHostTokenValidationUrl.
-
-          Fitur ini saat ini dinonaktifkan pada sistem server.</translation>
 <translation id="4363057787588706121">Mengizinkan penggabungan kebijakan yang ada dalam daftar dari sumber berbeda</translation>
 <translation id="4363101430102811068">Aktifkan deteksi kebocoran untuk kredensial yang dimasukkan</translation>
 <translation id="436581050240847513">Melaporkan antarmuka jaringan perangkat</translation>
@@ -4569,9 +4529,6 @@ Jika kebijakan ini tidak disetel atau kosong, pengguna dapat menyetel akun Googl
 <translation id="7477231245051133709">Mengaktifkan fitur aksesibilitas audio mono</translation>
 <translation id="7477239290070847560">Tujuan protokol berbasis Zeroconf (mDNS + DNS-SD)</translation>
 <translation id="7485481791539008776">Aturan pemilihan printer default</translation>
-<translation id="7485730741952775732">Jika kebijakan ini ditetapkan, host akses jarak jauh akan menggunakan URL ini untuk memvalidasi token autentikasi dari klien akses jarak jauh, agar dapat menerima sambungan. Harus digunakan bersama RemoteAccessHostTokenUrl.
-
-          Fitur ini saat ini dinonaktifkan pada sistem server.</translation>
 <translation id="749556411189861380">Laporkan versi firmware dan OS perangkat yang terdaftar.
 
       Jika setelan ini tidak disetel atau disetel ke True, perangkat terdaftar akan melaporkan versi firmware dan OS secara berkala. Jika setelan ini disetel ke False, info versi tidak akan dilaporkan.</translation>
@@ -4894,9 +4851,6 @@ Cara yang diharapkan terkait penggunaan kebijakan ini adalah merotasi konfiguras
 <translation id="7953256619080733119">Hosting pengecualian manual pengguna yang dikelola</translation>
 <translation id="7956210013490975468">Mengonfigurasi layanan System-proxy untuk <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="7958537754689366707">Sandi harus dimasukkan setiap dua belas jam</translation>
-<translation id="7960293328203000385">Menetapkan daftar pengguna yang diizinkan untuk login ke perangkat. Entri memiliki format <ph name="USER_ALLOWLIST_ENTRY_FORMAT" />, misalnya <ph name="USER_ALLOWLIST_ENTRY_EXAMPLE" />. Untuk mengizinkan sembarang pengguna di suatu domain, gunakan entri berformat <ph name="USER_ALLOWLIST_ENTRY_WILDCARD" />.
-
-      Jika kebijakan ini tidak dikonfigurasi, semua pengguna akan diizinkan untuk login. Perlu diperhatikan bahwa pembuatan pengguna baru tetap mengharuskan kebijakan <ph name="DEVICE_ALLOW_NEW_USERS_POLICY_NAME" /> dikonfigurasi dengan tepat.</translation>
 <translation id="7961779417826583251">Nonaktifkan penerapan Transparansi Sertifikat untuk daftar Otoritas Sertifikat Lama</translation>
 <translation id="7973609468423251675">Perhatikan bahwa kebijakan ini sudah tidak digunakan lagi dan akan dihapus di <ph name="PRODUCT_OS_NAME" /> versi 85. Sebagai gantinya, gunakan <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.
 

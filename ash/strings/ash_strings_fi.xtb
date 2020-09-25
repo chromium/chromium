@@ -59,6 +59,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1467432559032391204">Vasemmalla</translation>
 <translation id="1479909375538722835">Kelluva esteettömyysvalikko</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
+<translation id="1503394326855300303">Tämän omistajatilin täytyy olla ensimmäinen sisään kirjautuva tili useiden tilien istunnossa.</translation>
 <translation id="1516740043221086139">Älä häiritse ‑tila on päällä.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Näytä ilmoitusasetukset. Ilmoitukset on poistettu 1 sovelluksen käytöstä.}other{Näytä ilmoitusasetukset. Ilmoitukset on poistettu # sovelluksen käytöstä.}}</translation>
 <translation id="1525508553941733066">HYLKÄÄ</translation>
@@ -69,6 +70,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1589090746204042747">nähdä kaikki tämän käyttökerran toimintosi</translation>
 <translation id="1611993646327628135">Päällä</translation>
 <translation id="1632985212731562677">Kytkimen käytön voi laittaa pois päältä kohdassa Asetukset &gt; Esteettömyys.</translation>
+<translation id="1651447046299738444">Näyttää siltä, että Chromebookin Bluetooth tai Wi-Fi on poissa päältä. Tarkista yhteys, jotta voit käyttää Phone Hubia.</translation>
 <translation id="1654477262762802994">Aloita puhekysely</translation>
 <translation id="1667964833127753507">Neutraali väritila ei käytä taustakuvasta poimittuja värejä vaan korvaa ne vaaleilla tai tummilla neutraaleilla sävyillä.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> jäljellä</translation>
@@ -151,6 +153,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2435457462613246316">Näytä salasana</translation>
 <translation id="2473177541599297363">Vahvista resoluutio</translation>
 <translation id="2475982808118771221">Tapahtui virhe</translation>
+<translation id="2479579251444854687">Avaa Viimeisimmät pyyhkäisemällä ylöspäin kolmella sormella ja sulje se pyyhkäisemällä sormilla alaspäin.</translation>
 <translation id="2482878487686419369">Ilmoitukset</translation>
 <translation id="2484513351006226581">Paina <ph name="KEYBOARD_SHORTCUT" /> vaihtaaksesi näppäimistöasettelua.</translation>
 <translation id="2501920221385095727">Päälle jäävät näppäimet</translation>
@@ -163,6 +166,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2595239820337756193">5 km maileina</translation>
 <translation id="2617342710774726426">SIM-kortti on lukittu.</translation>
 <translation id="2621713457727696555">Suojattu</translation>
+<translation id="2640255526076764619">Kosketuslevyele, jolla siirrytään edelliseen työpöytään, on muuttunut. Siirry edelliseen työpöytään pyyhkäisemälle vasemmalle neljällä sormella.</translation>
 <translation id="2653659639078652383">Lähetä</translation>
 <translation id="2658778018866295321">Klikkaa ja vedä</translation>
 <translation id="2700493154570097719">Määritä näppäimistö</translation>
@@ -172,7 +176,6 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2718395828230677721">Yövalo</translation>
 <translation id="2727175239389218057">Vastaa</translation>
 <translation id="2727977024730340865">Pienitehoinen laturi kytketty. Akku ei ehkä lataudu luotettavasti.</translation>
-<translation id="2743387203779672305">Kopioi leikepöydälle</translation>
 <translation id="2792498699870441125">Alt + haku</translation>
 <translation id="2819276065543622893">Sinut kirjataan ulos nyt.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> ei tue resoluutiota <ph name="SPECIFIED_RESOLUTION" />. Resoluutioksi vaihdettiin <ph name="FALLBACK_RESOLUTION" />.</translation>
@@ -257,6 +260,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="3486220673238053218">määritelmä</translation>
 <translation id="3510164367642747937">Korosta hiiren osoitin</translation>
 <translation id="3513798432020909783"><ph name="MANAGER_EMAIL" /> hallinnoi tiliä</translation>
+<translation id="3571734092741541777">Määritä</translation>
 <translation id="3573179567135747900">Vaihda takaisin kieleksi <ph name="FROM_LOCALE" /> (vaatii uudelleenkäynnistyksen)</translation>
 <translation id="3576141592585647168">Muuta aikavyöhykettä</translation>
 <translation id="3593646411856133110">Näet avoimet sovellukset pyyhkäisemällä ylös ja painamalla pitkään</translation>
@@ -341,6 +345,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> ei ole päällä.</translation>
 <translation id="4421231901400348175">Näyttösi hallinta jaetaan käyttäjän <ph name="HELPER_NAME" /> kanssa Etätuen kautta.</translation>
 <translation id="4430019312045809116">Äänenvoimakkuus</translation>
+<translation id="4444978951615977024">O-ou! Tarkista yhteys</translation>
 <translation id="4450893287417543264">Älä näytä uudelleen</translation>
 <translation id="445864333228800152">Hyvää iltaa</translation>
 <translation id="4458688154122353284">Lopeta näytön tallennus</translation>
@@ -350,6 +355,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Laitteet ilman paria</translation>
 <translation id="4505050298327493054">Aktiivinen työpöytä</translation>
+<translation id="4506458088675900627">Viimeisimmät-näytön kosketuslevyele on muuttunut</translation>
 <translation id="4513946894732546136">Palaute</translation>
 <translation id="4527045527269911712">Bluetooth-laite <ph name="DEVICE_NAME" /> pyytää lupaa laiteparin muodostamiseen.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> täyteen lataukseen</translation>
@@ -389,6 +395,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="4917385247580444890">Vahva</translation>
 <translation id="4918086044614829423">Hyväksy</translation>
 <translation id="4924411785043111640">Käynnistä uudelleen ja palauta</translation>
+<translation id="4925542575807923399">Tämän tilin järjestelmänvalvoja edellyttää, että tämä tili on ensimmäinen sisään kirjautuva tili useiden tilien istunnossa.</translation>
 <translation id="495046168593986294">Vieritä ylös</translation>
 <translation id="4961318399572185831">Suoratoista näyttö</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> t <ph name="MINUTES" /> min <ph name="SECONDS" /> s</translation>
@@ -478,6 +485,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="6018164090099858612">Poistutaan peilitilasta</translation>
 <translation id="602001110135236999">Vieritä vasemmalle</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signaalin vahvuus <ph name="SIGNAL_STRENGTH" />, järjestelmänvalvojan hallinnoima</translation>
+<translation id="6029337736376922061">Kosketuslevyele, jolla siirrytään seuraavaan työpöytään, on muuttunut. Siirry seuraavaan työpöytään pyyhkäisemällä oikealle neljällä sormella.</translation>
 <translation id="6030495522958826102">Valikko siirretty näytön vasempaan alanurkkaan</translation>
 <translation id="6040143037577758943">Sulje</translation>
 <translation id="6043212731627905357">Näyttö ja <ph name="DEVICE_TYPE" /> eivät sovi yhteen (näyttöä ei tueta).</translation>
@@ -537,6 +545,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="6657585470893396449">Salasana</translation>
 <translation id="6665545700722362599">Anna verkkosivustoille, sovelluksille ja laajennuksille oikeus käyttää sijaintipalveluita, laitteen mikrofonia, kameraa ja muita ominaisuuksia</translation>
 <translation id="6670153871843998651">Pöytä 3</translation>
+<translation id="6671495933530132209">Kopioi kuva</translation>
 <translation id="6691659475504239918">Haku + vaihto + H</translation>
 <translation id="6692996468359469499">Tietoja valinnastasi</translation>
 <translation id="6696025732084565524">Irrotettavaan näppäimistöösi täytyy asentaa kriittinen päivitys</translation>
@@ -736,6 +745,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="8734991477317290293">Sillä voidaan yrittää kaapata näppäinpainalluksesi</translation>
 <translation id="8735953464173050365">Näytä näppäimistöasetukset. <ph name="KEYBOARD_NAME" /> on valittuna.</translation>
 <translation id="875593634123171288">Näytä VPN-asetukset</translation>
+<translation id="8759408218731716181">Useisiin tileihin kirjautumista ei sallita</translation>
 <translation id="8785070478575117577">Yhdistä: <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>

@@ -108,6 +108,7 @@
 <translation id="1868024384445905608">Изтеглянето на файлове в Chrome вече е по-бързо</translation>
 <translation id="1877026089748256423">Chrome не е актуален</translation>
 <translation id="1883903952484604915">Моите файлове</translation>
+<translation id="189358972401248634">Други езици</translation>
 <translation id="1925021887439448749">Въведете персонализиран уеб адрес</translation>
 <translation id="1928696683969751773">Актуализации</translation>
 <translation id="19288952978244135">Отворете отново Chrome.</translation>
@@ -217,6 +218,7 @@
 <translation id="2689830683995595741">С използването на Chrome приемате <ph name="BEGIN_LINK1" />Общите условия на Google<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />Допълнителните общи условия на Chrome и Chrome OS<ph name="END_LINK2" />. В сила е и <ph name="BEGIN_LINK3" />Съобщението за поверителност за профилите в Google, управлявани чрез Family Link<ph name="END_LINK3" />.</translation>
 <translation id="2707726405694321444">Опресняване на страницата</translation>
 <translation id="2709516037105925701">Автоматично попълване</translation>
+<translation id="2723001399770238859">звук</translation>
 <translation id="2728754400939377704">Сортиране по сайт</translation>
 <translation id="2744248271121720757">Докоснете дума, за да извършите незабавно търсене, или вижте свързаните действия</translation>
 <translation id="2760989362628427051">Включване на тъмната тема, когато тъмната тема на устройството или режимът за запазване на батерията в него са включени</translation>
@@ -467,6 +469,7 @@
 <translation id="4738836084190194332">Последно синхронизиране: <ph name="WHEN" /></translation>
 <translation id="4749960740855309258">Отваряне на нов раздел</translation>
 <translation id="4759238208242260848">Изтегляния</translation>
+<translation id="4763480195061959176">видео</translation>
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{1 изтегляне завърши.}other{# изтегляния завършиха.}}</translation>
 <translation id="4766678251456904326">Добавяне на профил към устройството</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{Насрочено е 1 изтегляне.}other{Насрочени са # изтегляния.}}</translation>

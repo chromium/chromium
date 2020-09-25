@@ -1,8 +1,10 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sq">
+<translation id="2077832278056815832">Mbyll çdo flluskë ose mbivendosje nga aplikacionet e tjera. Më pas provo përsëri.</translation>
 <translation id="2359808026110333948">Vazhdo</translation>
 <translation id="2416359993254398973">Chrome ka nevojë për leje për t'u qasur te kamera jote për këtë sajt.</translation>
+<translation id="2987449669841041897">Ky sajt nuk mund të kërkojë lejen tënde</translation>
 <translation id="557283862590186398">Chrome ka nevojë për leje për t'u qasur te mikrofoni yt për këtë sajt.</translation>
 <translation id="5860491529813859533">Aktivizo</translation>
 <translation id="6092062101542170135">Për të vazhduar, aktivizo NFC-në te cilësimet e Android</translation>

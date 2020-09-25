@@ -108,6 +108,7 @@
 <translation id="1868024384445905608">Sasa Chrome inapakua faili haraka zaidi</translation>
 <translation id="1877026089748256423">Toleo hili la Chrome limepitwa na wakati</translation>
 <translation id="1883903952484604915">Faili Zangu</translation>
+<translation id="189358972401248634">Lugha zingine</translation>
 <translation id="1925021887439448749">Weka anwani maalum ya wavuti</translation>
 <translation id="1928696683969751773">Usasishaji</translation>
 <translation id="19288952978244135">Fungua Chrome Upya.</translation>
@@ -217,6 +218,7 @@ Gusa na ushikilie neno lolote ili utafute. Ili uchuje utafutaji wako, chagua man
 <translation id="2689830683995595741">Kwa kutumia Chrome, unakubali <ph name="BEGIN_LINK1" />Sheria na Masharti ya Google<ph name="END_LINK1" /> na <ph name="BEGIN_LINK2" />Sheria na Masharti ya Ziada ya Google Chrome na Mfumo wa Uendeshaji wa Chrome<ph name="END_LINK2" />. <ph name="BEGIN_LINK3" />Ilani ya Faragha ya Akaunti za Google Zinazodhibitiwa na Family Link<ph name="END_LINK3" /> inatumika pia.</translation>
 <translation id="2707726405694321444">Onyesha upya ukurasa</translation>
 <translation id="2709516037105925701">Kujaza Kiotomatiki</translation>
+<translation id="2723001399770238859">sauti</translation>
 <translation id="2728754400939377704">Panga kulingana na tovuti</translation>
 <translation id="2744248271121720757">Gusa neno ili utafute papo hapo au uone vitendo vinavyohusiana</translation>
 <translation id="2760989362628427051">Washa hali ya mandhari meusi wakati umewasha kipengele cha mandhari meusi au Kiokoa Betri cha kifaa chako</translation>
@@ -467,6 +469,7 @@ Huenda akaunti yako ya Google ina aina nyingine za historia ya kuvinjari kama vi
 <translation id="4738836084190194332">Kilisawazishwa mara ya mwisho: <ph name="WHEN" /></translation>
 <translation id="4749960740855309258">Fungua kichupo kipya</translation>
 <translation id="4759238208242260848">Vipakuliwa</translation>
+<translation id="4763480195061959176">video</translation>
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{Imemaliza kupakua faili 1.}other{Imemaliza kupakua faili #.}}</translation>
 <translation id="4766678251456904326">Ongeza akaunti kwenye kifaa</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{Faili moja imeratibiwa kupakuliwa.}other{Faili # zimeratibiwa kupakuliwa.}}</translation>

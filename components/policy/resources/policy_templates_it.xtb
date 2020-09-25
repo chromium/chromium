@@ -552,9 +552,6 @@ Questa norma viene rispettata soltanto se la norma "DefaultSearchProviderEnabled
         |BLOCK| consente di non rendere disponibile l'app per l'utente. Se viene specificato un valore |daily_limit_mins| con il limite |BLOCK|, il valore |daily_limit_mins| viene ignorato.
         |TIME_LIMITS| consente di applicare un limite di utilizzo giornaliero e di non rendere disponibile l'app una volta raggiunto il limite nella giornata specifica. Il limite di utilizzo viene specificato tramite |daily_limit_mins| e viene reimpostato ogni giorno all'orario UTC impostato tramite |reset_at|.
         Questo criterio viene usato soltanto per i bambini ed è complementare al criterio "UsageTimeLimit". I limiti specificati nel criterio "UsageTimeLimit", ad esempio relativi al tempo di utilizzo e di interruzione dell'uso, verranno applicati a prescindere dal criterio "PerAppTimeLimits".</translation>
-<translation id="1914840757300882918">Se questa norma è impostata, l'host utilizzerà un certificato client con il nome comune dell'emittente indicato per eseguire l'autenticazione su RemoteAccessHostTokenValidationUrl. Impostare la norma su "*" per utilizzare qualsiasi certificato client disponibile.
-
-          Questa funzione è attualmente disattivata lato server.</translation>
 <translation id="1919802376548418720">Utilizza il criterio KDC per delegare credenziali.</translation>
 <translation id="1920046221095339924">Consenti la sessione gestita sul dispositivo</translation>
 <translation id="1920772397574801429">La configurazione del criterio consente di specificare il tipo di account, tra quelli forniti dall'app di autenticazione Android, che supporta l'autenticazione <ph name="HTTP_NEGOTIATE" />, ad esempio Kerberos. Queste informazioni dovrebbero essere messe a disposizione dal fornitore dell'app di autenticazione. Per i dettagli, consulta la pagina I progetti di Chromium ( https://goo.gl/hajyfN )
@@ -1081,22 +1078,6 @@ Se questa norma non viene impostata, l'utente potrà scegliere se utilizzare o m
       Se il criterio viene impostato su Disattivato, viene impedita la visualizzazione degli avvisi di sicurezza quando Chrome viene avviato con flag della riga di comando potenzialmente pericolosi.
 
       Su <ph name="MS_WIN_NAME" />, questa funzionalità è disponibile soltanto sulle istanze che fanno parte di un dominio <ph name="MS_AD_NAME" />, sono in esecuzione su Windows 10 Pro o sono registrate in Chrome Browser Cloud Management. Su <ph name="MAC_OS_NAME" />, questa funzionalità è disponibile soltanto sulle istanze gestite tramite MDM o aggiunte a un dominio tramite MCX.</translation>
-<translation id="2621383458880689826">Consente di specificare le configurazioni delle stampanti aziendali associate ai dispositivi.
-
-      Questo criterio consente di fornire configurazioni delle stampanti ai dispositivi <ph name="PRODUCT_OS_NAME" />.  Il formato corrisponde a quello del dizionario NativePrinters, con un campo "id" o "guid" aggiuntivo obbligatorio per ciascuna stampante ai fini dell'autorizzazione o del blocco della stessa.
-
-      La dimensione del file non deve superare 5 MB e deve essere codificata in JSON.  È stato stimato che un file contenente circa 21.000 stampanti viene codificato come file di 5 MB.  L'hash di crittografia viene utilizzato per verificare l'integrità del download.
-
-      Il file viene scaricato e memorizzato nella cache. Verrà scaricato nuovamente ogni volta che l'URL o l'hash cambiano.
-
-      Se il criterio è impostato, <ph name="PRODUCT_OS_NAME" /> scaricherà il file per le configurazioni delle stampanti e renderà disponibili le stampanti in base a <ph name="DEVICE_NATIVE_PRINTERS_ACCESS_MODE" />, <ph name="DEVICE_NATIVE_PRINTERS_WHITELIST_POLICY_NAME" /> e <ph name="DEVICE_NATIVE_PRINTERS_BLACKLIST_POLICY_NAME" />.
-
-      Questo criterio non influisce sulla possibilità per gli utenti di configurare le stampanti su singoli dispositivi.  È supplementare alla configurazione delle stampanti da parte dei singoli utenti.
-
-      Si tratta di un criterio aggiuntivo rispetto al criterio <ph name="BULK_PRINTERS_POLICY_NAME" />.
-
-      Se il criterio non viene impostato, non ci saranno stampanti per i dispositivi e gli altri criteri <ph name="DEVICE_NATIVE_PRINTERS_POLICY_PATTERN" /> verranno ignorati.
-      </translation>
 <translation id="2623014935069176671">Attesa dell'attività iniziale dell'utente</translation>
 <translation id="262740370354162807">Attiva l'invio di documenti a <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="2632538643061793322">Se il criterio viene configurato, puoi elencare i pattern URL che specificano i siti che possono chiedere agli utenti l'autorizzazione di accesso a un dispositivo USB.
@@ -1263,12 +1244,6 @@ Se questa norma non viene impostata, l'utente potrà scegliere se utilizzare o m
       Se attivi questa impostazione, in Anteprima di stampa viene usata la stampante predefinita del sistema operativo come destinazione predefinita.</translation>
 <translation id="285627849510728211">Imposta la configurazione giornaliera per la modalità di ricarica avanzata della batteria</translation>
 <translation id="2856674246949497058">Esegui il rollback e rimani nella versione target se la versione del sistema operativo è più recente di quella target. Esegui un powerwash durante la procedura.</translation>
-<translation id="2869140260739354012">Consente di stabilire quali stampanti del criterio <ph name="DEVICE_PRINTERS_POLICY" /> sono disponibili agli utenti.
-
-      Determina quale criterio di accesso utilizzare per la configurazione collettiva delle stampanti. Se viene selezionata l'opzione <ph name="PRINTERS_ALLOW_ALL" />, vengono mostrate tutte le stampanti. Se viene selezionata l'opzione <ph name="PRINTERS_BLACKLIST" />, viene utilizzato <ph name="DEVICE_NATIVE_PRINTERS_BLACKLIST" /> per limitare l'accesso a stampanti specifiche. Se viene selezionata l'opzione <ph name="PRINTERS_WHITELIST" />, <ph name="DEVICE_NATIVE_PRINTERS_WHITELIST" /> stabilisce soltanto le stampanti selezionabili.
-
-      Se questo criterio non viene impostato, viene utilizzata l'opzione <ph name="PRINTERS_ALLOW_ALL" />.
-      </translation>
 <translation id="2869762730352628426">Attiva la funzione di clic automatico nella schermata di accesso</translation>
 <translation id="2872961005593481000">Spegni</translation>
 <translation id="2874209944580848064">Nota per i dispositivi <ph name="PRODUCT_OS_NAME" /> che supportano le app Android:</translation>
@@ -1487,7 +1462,7 @@ Questa norma viene rispettata soltanto se viene attivata la norma "DefaultSearch
 
       Se entrambi i criteri <ph name="HOMEPAGE_LOCATION_POLICY_NAME" /> e <ph name="HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_NAME" /> non vengono impostati, gli utenti possono scegliere la pagina iniziale che preferiscono.
 
-      Su <ph name="MS_WIN_NAME" />, questa funzionalità è disponibile soltanto sulle istanze che fanno parte di un dominio <ph name="MS_AD_NAME" />, sono in esecuzione su Windows 10 Pro o sono registrate in <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />. Su <ph name="MAC_OS_NAME" />, questa funzionalità è disponibile soltanto sulle istanze gestite tramite MDM o aggiunte a un dominio tramite MCX.</translation>
+      Su <ph name="MS_WIN_NAME" />, questa funzionalità è disponibile soltanto nelle istanze che fanno parte di un dominio <ph name="MS_AD_NAME" />, sono in esecuzione su Windows 10 Pro o sono registrate in <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />. Su <ph name="MAC_OS_NAME" />, questa funzionalità è disponibile soltanto nelle istanze gestite tramite MDM o aggiunte a un dominio tramite MCX.</translation>
 <translation id="3231837273069128027">La configurazione del criterio consente di impostare disponibilità e comportamento degli aggiornamenti del firmware <ph name="TPM_FIRMWARE_UPDATE_TPM" />.
 
       Specifica le singole impostazioni nelle proprietà JSON:
@@ -1619,6 +1594,17 @@ Se questo criterio viene impostato su False, <ph name="PRODUCT_NAME" /> non util
 
       Se questo criterio non è impostato, tutti i plug-in che soddisfano i pattern in "DisabledPlugins" verranno disattivati e bloccati e l'utente non potrà attivarli.</translation>
 <translation id="3381968327636295719">Utilizza il browser host per impostazione predefinita</translation>
+<translation id="3383794118443927579">Questo criterio consente di configurare l'URL predefinito della pagina Nuova scheda e impedisce agli utenti di modificarlo.
+
+      La pagina Nuova scheda è la pagina che si apre quando vengono create nuove schede e finestre.
+
+      Questo criterio non consente di stabilire quali pagine aprire all'avvio. Tali pagine dipendono infatti dai criteri <ph name="RESTORE_ON_STARTUP_POLICY_NAME" />. Questo criterio influisce tuttavia sulla home page e sulla pagina iniziale se sono impostate per l'apertura della pagina Nuova scheda.
+
+      Una best practice consiste nello specificare l'URL canonicalizzato completo; in caso contrario, in <ph name="PRODUCT_NAME" /> viene usato https:// per impostazione predefinita.
+
+      Se il criterio non viene impostato o viene lasciato vuoto, viene usata la pagina Nuova scheda predefinita.
+
+      Su <ph name="MS_WIN_NAME" />, questa funzionalità è disponibile soltanto sulle istanze che fanno parte di un dominio <ph name="MS_AD_NAME" />, sono in esecuzione su Windows 10 Pro o sono registrate in <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />. Su <ph name="MAC_OS_NAME" />, questa funzionalità è disponibile soltanto sulle istanze gestite tramite MDM o aggiunte a un dominio tramite MCX.</translation>
 <translation id="3391457705621770207">La configurazione del criterio consente di determinare la quantità di tempo in millisecondi trascorsa senza attività utente prima che venga effettuato l'accesso automatico all'account locale del dispositivo specificato dal criterio <ph name="DEVICE_LOCAL_ACCOUNT_AUTO_LOGIN_ID_POLICY_NAME" />.
 
       Se il criterio non viene configurato, il timeout è 0 millisecondi.
@@ -1835,11 +1821,11 @@ Se questa norma viene impostata su False o non viene impostata, i ritardi di ges
       Questo criterio verrà rimosso nella versione 88 di Chrome.
 
       Visita la pagina https://www.chromestatus.com/feature/5989473649164288.</translation>
-<translation id="3691155504326059225">Se il criterio viene impostato su Attivato, la pagina Nuova scheda viene impostata come pagina iniziale dell'utente e l'eventuale URL della pagina iniziale specificato viene ignorato. Se il criterio viene impostato su Disattivato, la pagina iniziale dell'utente non sarà mai la pagina Nuova scheda, a meno che venga impostata la pagina chrome://newtab come URL della pagina iniziale dell'utente.
+<translation id="3691155504326059225">Se il criterio viene impostato su Attivato, la pagina Nuova scheda viene impostata come pagina iniziale dell'utente e l'eventuale URL della pagina iniziale specificato viene ignorato. Se viene impostato su Disattivato, la pagina iniziale dell'utente non sarà mai la pagina Nuova scheda, a meno che chrome://newtab venga impostato come URL della pagina iniziale dell'utente.
 
       Se il criterio viene impostato, gli utenti non possono cambiare il tipo di pagina iniziale in <ph name="PRODUCT_NAME" />. Se non viene impostato, l'utente può decidere se impostare o meno la pagina Nuova scheda come pagina iniziale.
 
-      Su <ph name="MS_WIN_NAME" />, questa funzionalità è disponibile soltanto sulle istanze che fanno parte di un dominio <ph name="MS_AD_NAME" />, sono in esecuzione su Windows 10 Pro o sono registrate in <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />. Su <ph name="MAC_OS_NAME" />, questa funzionalità è disponibile soltanto sulle istanze gestite tramite MDM o aggiunte a un dominio tramite MCX.</translation>
+      Su <ph name="MS_WIN_NAME" />, questa funzionalità è disponibile soltanto nelle istanze che fanno parte di un dominio <ph name="MS_AD_NAME" />, sono in esecuzione su Windows 10 Pro o sono registrate in <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />. Su <ph name="MAC_OS_NAME" />, questa funzionalità è disponibile soltanto nelle istanze gestite tramite MDM o aggiunte a un dominio tramite MCX.</translation>
 <translation id="3701121231485832347">Consente di gestire le impostazioni specifiche dei dispositivi <ph name="PRODUCT_OS_NAME" /> gestiti da <ph name="MS_AD_NAME" />.</translation>
 <translation id="3702518095257671450">Attestazione da remoto</translation>
 <translation id="3702647575225525306"><ph name="POLICY_NAME" /> (Il campo a una sola riga è obsoleto e sarà rimosso a breve. Inizia a usare la casella di testo multiriga qui sotto).</translation>
@@ -1910,12 +1896,6 @@ Se questa norma viene impostata su False o non viene impostata, i ritardi di ges
 <translation id="3838094946886335701">Se il criterio viene impostato (solo come consigliato), puoi registrare un elenco di gestori di protocolli che vengono uniti a quelli registrati dall'utente, con conseguente utilizzo di entrambi i gruppi. Imposta la proprietà "protocollo" sullo schema (ad esempio "mailto") e la proprietà "URL" sul pattern URL dell'applicazione che gestisce lo schema specificato nel campo "protocollo". Il pattern può includere un segnaposto "%s", che viene sostituito dall'URL gestito.
 
       Gli utenti non possono rimuovere un gestore di protocollo registrato tramite il criterio. Se però installano un nuovo gestore predefinito, possono cambiare i gestori di protocolli installati in base al criterio.</translation>
-<translation id="3848118497246496090">Consente di specificare le stampanti non utilizzabili da un utente.
-
-      Questo criterio viene utilizzato soltanto se l'opzione <ph name="PRINTERS_BLACKLIST" /> è selezionata per <ph name="DEVICE_NATIVE_PRINTERS_ACCESS_MODE" />.
-
-      Se viene utilizzato questo criterio, l'utente avrà a disposizione tutte le stampanti tranne quelle i cui ID sono elencati in questo criterio. Gli ID devono corrispondere ai campi "id" o "guid" del file specificato nel criterio <ph name="DEVICE_PRINTERS_POLICY" />.
-      </translation>
 <translation id="3851039766298741586">Consente di segnalare informazioni sulla sessione kiosk attiva, ad esempio l'ID e la versione dell'applicazione.
 
       Se la norma viene impostata su false, le informazioni relative alla sessione kiosk non verranno segnalate. Se viene impostata su true o non viene impostata, tali informazioni verranno segnalate.</translation>
@@ -2278,12 +2258,6 @@ Il valore della norma dovrebbe essere specificato in secondi. Il valore minimo d
 
       Se non viene configurato, i siti web possono richiedere l'accesso, ma gli utenti possono modificare l'impostazione.</translation>
 <translation id="4285674129118156176">Consenti agli utenti non affiliati di usare ARC</translation>
-<translation id="4309562700894844665">Consente di specificare le stampanti utilizzabili da un utente.
-
-      Questo criterio viene utilizzato soltanto se viene selezionata l'opzione <ph name="PRINTERS_WHITELIST" /> per <ph name="DEVICE_NATIVE_PRINTERS_ACCESS_MODE" />.
-
-      Se viene utilizzato questo criterio, solo le stampanti con ID corrispondenti ai valori del criterio saranno disponibili per l'utente. Gli ID devono corrispondere ai campi "id" o "guid" del file specificato nel criterio <ph name="DEVICE_PRINTERS_POLICY" />.
-      </translation>
 <translation id="4311195029067684288">Full</translation>
 <translation id="4313767483634435271">Indirizzo MAC designato del dock del dispositivo</translation>
 <translation id="4322842393287974810">Consenti all'app kiosk avviata automaticamente senza ritardo di controllare la versione di <ph name="PRODUCT_OS_NAME" /></translation>
@@ -2300,9 +2274,6 @@ Il valore della norma dovrebbe essere specificato in secondi. Il valore minimo d
 <translation id="4347908978527632940">Se la norma viene impostata su true e l'utente è supervisionato, le altre app Android possono chiedere le restrizioni web dell'utente tramite un provider di contenuti.
 
           Se la norma è impostata su false o non è impostata, il provider di contenuti non restituisce informazioni.</translation>
-<translation id="4360826270668210664">Se questa norma viene impostata, l'host di accesso remoto richiederà che i client di autenticazione ottengano un token di autenticazione da questo URL per consentire la connessione. Deve essere utilizzata insieme a RemoteAccessHostTokenValidationUrl.
-
-          Questa funzione è attualmente disattivata lato server.</translation>
 <translation id="4363057787588706121">Consenti l'unione dei criteri nell'elenco provenienti da origini diverse</translation>
 <translation id="4363101430102811068">Attiva il rilevamento della divulgazione delle credenziali inserite</translation>
 <translation id="436581050240847513">Riporta interfacce di rete del dispositivo</translation>
@@ -3137,7 +3108,7 @@ Se questa impostazione viene disattivata o non viene impostata, sia gli utenti l
 
       Se questo criterio viene impostato su <ph name="POLICY_ENUM_RESTOREONSTARTUP_RESTOREONSTARTUPISLASTSESSION" />, vengono disattivate alcune impostazioni basate sulle sessioni o che compiono azioni all'uscita, ad esempio la cancellazione dei dati di navigazione alla chiusura o dei cookie della sessione.
 
-      Su <ph name="MS_WIN_NAME" />, questa funzionalità è disponibile soltanto sulle istanze che fanno parte di un dominio <ph name="MS_AD_NAME" />, sono in esecuzione su Windows 10 Pro o sono registrate in <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />. Su <ph name="MAC_OS_NAME" />, questa funzionalità è disponibile soltanto sulle istanze gestite tramite MDM o aggiunte a un dominio tramite MCX.</translation>
+      Su <ph name="MS_WIN_NAME" />, questa funzionalità è disponibile soltanto nelle istanze che fanno parte di un dominio <ph name="MS_AD_NAME" />, sono in esecuzione su Windows 10 Pro o sono registrate in <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />. Su <ph name="MAC_OS_NAME" />, questa funzionalità è disponibile soltanto nelle istanze gestite tramite MDM o aggiunte a un dominio tramite MCX.</translation>
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="555022085242359084">Attiva l'alto contrasto nella schermata di accesso</translation>
 <translation id="555077880566103058">Consenti l'esecuzione automatica del plug-in <ph name="FLASH_PLUGIN_NAME" /> in tutti i siti</translation>
@@ -4543,9 +4514,6 @@ Se l'impostazione viene disattivata, questa funzione non sarà disponibile.</tra
 <translation id="7477231245051133709">Attiva la funzione di accessibilità di audio in formato mono</translation>
 <translation id="7477239290070847560">Destinazioni protocolli (mDNS e DNS-SD) basate su configurazione automatica</translation>
 <translation id="7485481791539008776">Regole di selezione della stampante predefinita</translation>
-<translation id="7485730741952775732">Se questa norma è impostata, l'host di accesso remoto utilizzerà questo URL per convalidare i token di autenticazione dai client di accesso remoto per accettare connessioni. Deve essere usata insieme a RemoteAccessHostTokenUrl.
-
-          Questa funzione è attualmente disattivata lato server.</translation>
 <translation id="749556411189861380">Consente di indicare la versione del sistema operativo e del firmware dei dispositivi registrati. Se questa impostazione non è impostata o viene impostata su True, i dispositivi registrati indicheranno periodicamente la versione del sitema operativo e del firmware. Se l'impostazione viene impostata su False, le informazioni sulla versione non verranno indicate.</translation>
 <translation id="7504111874944876852">Consente di configurare un elenco di stampanti.
 
@@ -4666,7 +4634,7 @@ Se l'impostazione viene disattivata, questa funzione non sarà disponibile.</tra
 
       Se non viene impostato, all'avvio viene aperta la pagina Nuova scheda.
 
-      Su <ph name="MS_WIN_NAME" />, questa funzionalità è disponibile soltanto sulle istanze che fanno parte di un dominio <ph name="MS_AD_NAME" />, sono in esecuzione su Windows 10 Pro o sono registrate in <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />. Su <ph name="MAC_OS_NAME" />, questa funzionalità è disponibile soltanto sulle istanze gestite tramite MDM o aggiunte a un dominio tramite MCX.</translation>
+      Su <ph name="MS_WIN_NAME" />, questa funzionalità è disponibile soltanto nelle istanze che fanno parte di un dominio <ph name="MS_AD_NAME" />, sono in esecuzione su Windows 10 Pro o sono registrate in <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />. Su <ph name="MAC_OS_NAME" />, questa funzionalità è disponibile soltanto nelle istanze gestite tramite MDM o aggiunte a un dominio tramite MCX.</translation>
 <translation id="7625444193696794922">Consente di specificare il canale di rilascio su cui deve essere bloccato questo dispositivo.</translation>
 <translation id="7629840767216985001">Se il criterio è impostato su True, viene attivato il cursore grande nella schermata di accesso. Se il criterio è impostato su False, viene disattivato il cursore grande nella schermata di accesso.
 
@@ -4867,9 +4835,6 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 <translation id="7953256619080733119">Host delle eccezioni manuali per gli utenti gestiti</translation>
 <translation id="7956210013490975468">Configura il servizio proxy di sistema per <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="7958537754689366707">Richiedi inserimento della password ogni dodici ore</translation>
-<translation id="7960293328203000385">Determina l'elenco di utenti autorizzati ad accedere al dispositivo. Le voci sono nel formato <ph name="USER_ALLOWLIST_ENTRY_FORMAT" />, ad esempio <ph name="USER_ALLOWLIST_ENTRY_EXAMPLE" />. Per autorizzare utenti arbitrari su un dominio, le voci devono essere nel formato <ph name="USER_ALLOWLIST_ENTRY_WILDCARD" />.
-
-      Se questo criterio non viene configurato, non ci sono limitazioni in termini di utenti autorizzati ad accedere. Tieni presente che la creazione di nuovi utenti richiede comunque la corretta configurazione del criterio <ph name="DEVICE_ALLOW_NEW_USERS_POLICY_NAME" />.</translation>
 <translation id="7961779417826583251">Disattiva l'applicazione di Certificate Transparency per un elenco di autorità di certificazione precedenti</translation>
 <translation id="7973609468423251675">Tieni presente che questo criterio è obsoleto e verrà rimosso nella versione 85 di <ph name="PRODUCT_OS_NAME" />. Usa il criterio <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.
 
@@ -5412,7 +5377,7 @@ Se l'impostazione viene impostata su true, o se non viene impostata, l'attestazi
 
       Questo criterio non influisce sulla possibilità per gli utenti di configurare le stampanti su singoli dispositivi. È supplementare alla configurazione delle stampanti da parte dei singoli utenti.</translation>
 <translation id="8764477907716150749">Questa norma è per uso interno di <ph name="PRODUCT_NAME" />.</translation>
-<translation id="8767743923206070405">Se il criterio viene impostato su Attivato, nella barra degli strumenti di <ph name="PRODUCT_NAME" /> viene mostrato il pulsante Pagina iniziale. Se il criterio viene impostato su Disattivato, il pulsante Pagina iniziale non viene mostrato.
+<translation id="8767743923206070405">Se il criterio viene impostato su Attivato, nella barra degli strumenti di <ph name="PRODUCT_NAME" /> viene mostrato il pulsante Pagina iniziale. Se viene impostato su Disattivato, il pulsante Pagina iniziale non viene mostrato.
 
       Se il criterio viene impostato, gli utenti non possono modificarlo in <ph name="PRODUCT_NAME" />. Se non viene impostato, gli utenti possono decidere se mostrare o meno il pulsante Pagina iniziale.</translation>
 <translation id="877185520360032968">L'impostazione del criterio modificherà la directory predefinita in cui Chrome scarica i file, che però gli utenti possono modificare.

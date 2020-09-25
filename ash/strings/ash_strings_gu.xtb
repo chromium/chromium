@@ -59,6 +59,7 @@
 <translation id="1467432559032391204">ડાબું</translation>
 <translation id="1479909375538722835">ફ્લોટિંગ ઍક્સેસિબિલિટી મેનૂ</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
+<translation id="1503394326855300303">આ માલિક એકાઉન્ટ દ્વારા એકથી વધુ સાઇન ઇન સત્રમાં પહેલા સાઇન ઇન કરનાર એકાઉન્ટ હોવું જોઈએ.</translation>
 <translation id="1516740043221086139">ખલેલ પાડશો નહીં ચાલુ છે.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{નોટિફિકેશનની સેટિંગ બતાવો. ઍપ માટે નોટિફિકેશન બંધ છે}one{નોટિફિકેશનની સેટિંગ બતાવો. # ઍપ માટે નોટિફિકેશન બંધ છે}other{નોટિફિકેશનની સેટિંગ બતાવો. # ઍપ માટે નોટિફિકેશન બંધ છે}}</translation>
 <translation id="1525508553941733066">છોડી દો</translation>
@@ -172,7 +173,6 @@
 <translation id="2718395828230677721">રાત્રિ પ્રકાશ</translation>
 <translation id="2727175239389218057">જવાબ આપો</translation>
 <translation id="2727977024730340865">નિમ્ન-પાવર ચાર્જરમાં પ્લગ કરેલું છે. બૅટરી ચાર્જિંગ વિશ્વસનીય હશે નહીં.</translation>
-<translation id="2743387203779672305">ક્લિપબોર્ડ પર કૉપિ કરો</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
 <translation id="2819276065543622893">તમે હવે સાઇન આઉટ થશો.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" />, <ph name="SPECIFIED_RESOLUTION" />ને સપોર્ટ આપતું નથી. રિઝોલ્યુશનને <ph name="FALLBACK_RESOLUTION" /> પર બદલવામાં આવ્યું હતું.</translation>
@@ -257,6 +257,7 @@
 <translation id="3486220673238053218">વિવરણ</translation>
 <translation id="3510164367642747937">માઉસ કર્સરને હાઇલાઇટ કરો</translation>
 <translation id="3513798432020909783"><ph name="MANAGER_EMAIL" /> દ્વારા મેનેજ કરાતું એકાઉન્ટ</translation>
+<translation id="3571734092741541777">સેટ અપ</translation>
 <translation id="3573179567135747900">"<ph name="FROM_LOCALE" />" પર પાછા જાઓ (ફરી શરૂ કરવું જરૂરી છે)</translation>
 <translation id="3576141592585647168">ટાઇમઝોનમાં ફેરફાર કરો</translation>
 <translation id="3593646411856133110">ખુલ્લી ઍપ જોવા માટે ઉપર સ્વાઇપ કરો અને હોલ્ડ કરો</translation>
@@ -388,6 +389,7 @@
 <translation id="4917385247580444890">સશક્ત</translation>
 <translation id="4918086044614829423">સ્વીકારો</translation>
 <translation id="4924411785043111640">ફરી શરૂ કરો અને રીસેટ કરો</translation>
+<translation id="4925542575807923399">આ એકાઉન્ટના એડમિન માટે જરૂરી છે કે આ એકાઉન્ટ એકથી વધુ સાઇન ઇન સત્રમાં પ્રથમ સાઇન ઇન કરેલ એકાઉન્ટ હોય.</translation>
 <translation id="495046168593986294">ઉપર સ્ક્રોલ કરો</translation>
 <translation id="4961318399572185831">સ્ક્રીનને કાસ્ટ કરો</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> કલાક <ph name="MINUTES" /> મિનિટ <ph name="SECONDS" /> સેકન્ડ</translation>
@@ -533,6 +535,7 @@
 <translation id="6657585470893396449">પાસવર્ડ</translation>
 <translation id="6665545700722362599">સ્થાન સેવાઓ, ડિવાઇસના માઇક્રોફોન, કૅમેરા અથવા અન્ય સુવિધાઓનો ઉપયોગ કરવા માટે વેબસાઇટ, ઍપ અને એક્સ્ટેન્શનને પરવાનગી આપો</translation>
 <translation id="6670153871843998651">ડેસ્ક 3</translation>
+<translation id="6671495933530132209">છબી કૉપિ કરો</translation>
 <translation id="6691659475504239918">Search+Shift+H</translation>
 <translation id="6692996468359469499">તમારી પસંદગી સંબંધિત માહિતી મેળવો</translation>
 <translation id="6696025732084565524">અલગ પાડી શકાય તેવા તમારા કીબોર્ડ માટે મહત્ત્વપૂર્ણ અપડેટ જરૂરી છે</translation>
@@ -731,6 +734,7 @@
 <translation id="8734991477317290293">તે તમારા કીસ્ટ્રોકની ચોરી કરવાનો પ્રયાસ કરતું હોઈ શકે છે</translation>
 <translation id="8735953464173050365">કીબોર્ડ સેટિંગ બતાવો. <ph name="KEYBOARD_NAME" /> પસંદ કરેલું છે</translation>
 <translation id="875593634123171288">VPN સેટિંગ બતાવો</translation>
+<translation id="8759408218731716181">બહુવિધ સાઇન-ઇન સેટ કરી શકતાં નથી</translation>
 <translation id="8785070478575117577"><ph name="NETWORK_NAME" /> સાથે કનેક્ટ કરો</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">વાઇ-ફાઇ</translation>

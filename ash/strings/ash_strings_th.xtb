@@ -59,6 +59,7 @@
 <translation id="1467432559032391204">ซ้าย</translation>
 <translation id="1479909375538722835">เมนูการช่วยเหลือพิเศษแบบลอย</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
+<translation id="1503394326855300303">บัญชีเจ้าของนี้ต้องเป็นบัญชีที่ลงชื่อเข้าใช้บัญชีแรกในเซสชันการลงชื่อเข้าใช้พร้อมกัน</translation>
 <translation id="1516740043221086139">โหมดห้ามรบกวนเปิดอยู่</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{แสดงการตั้งค่าการแจ้งเตือน ปิดการแจ้งเตือนไว้สำหรับ 1 แอป}other{แสดงการตั้งค่าการแจ้งเตือน ปิดการแจ้งเตือนไว้สำหรับ # แอป}}</translation>
 <translation id="1525508553941733066">ปิด</translation>
@@ -172,7 +173,6 @@
 <translation id="2718395828230677721">แสงตอนกลางคืน</translation>
 <translation id="2727175239389218057">ตอบ</translation>
 <translation id="2727977024730340865">เสียบอยู่กับที่ชาร์จพลังงานต่ำ การชาร์จแบตเตอรี่อาจไม่น่าเชื่อถือ</translation>
-<translation id="2743387203779672305">คัดลอกไว้ที่คลิปบอร์ด</translation>
 <translation id="2792498699870441125">Alt+ค้นหา</translation>
 <translation id="2819276065543622893">คุณจะออกจากระบบในตอนนี้</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> ไม่รองรับ <ph name="SPECIFIED_RESOLUTION" /> ระบบเปลี่ยนความละเอียดเป็น <ph name="FALLBACK_RESOLUTION" /></translation>
@@ -257,6 +257,7 @@
 <translation id="3486220673238053218">คำจำกัดความ</translation>
 <translation id="3510164367642747937">ไฮไลต์เคอร์เซอร์เมาส์</translation>
 <translation id="3513798432020909783">บัญชีที่จัดการโดย <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3571734092741541777">ตั้งค่า</translation>
 <translation id="3573179567135747900">เปลี่ยนกลับเป็น "<ph name="FROM_LOCALE" />" (จำเป็นต้องรีสตาร์ต)</translation>
 <translation id="3576141592585647168">เปลี่ยนแปลงเขตเวลา</translation>
 <translation id="3593646411856133110">เลื่อนขึ้นค้างไว้เพื่อดูแอปที่เปิดอยู่</translation>
@@ -307,6 +308,7 @@
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{ปิดไว้ 1 แอป}other{ปิดไว้ # แอป}}</translation>
 <translation id="4072264167173457037">สัญญาณแรงปานกลาง</translation>
 <translation id="4112140312785995938">ย้อนกลับ</translation>
+<translation id="4114315158543974537">เปิด Phone Hub</translation>
 <translation id="4129129681837227511">หากต้องการดูการแจ้งเตือนในหน้าจอล็อก ให้ปลดล็อกเพื่อเปลี่ยนการตั้งค่า</translation>
 <translation id="4146833061457621061">เปิดเพลง</translation>
 <translation id="4149156641122542261"><ph name="DEVICE_TYPE" /> จัดการโดย <ph name="DOMAIN" /></translation>
@@ -388,6 +390,7 @@
 <translation id="4917385247580444890">แรง</translation>
 <translation id="4918086044614829423">ยอมรับ</translation>
 <translation id="4924411785043111640">รีสตาร์ทและรีเซ็ต</translation>
+<translation id="4925542575807923399">ผู้ดูแลระบบต้องทำให้บัญชีนี้เป็นบัญชีที่ลงชื่อเข้าใช้เป็นบัญชีแรก ในเซสชันการลงชื่อเข้าสู่ระบบพร้อมกันหลายบัญชี</translation>
 <translation id="495046168593986294">เลื่อนขึ้น</translation>
 <translation id="4961318399572185831">แคสต์หน้าจอ</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> ชม. <ph name="MINUTES" /> นาที <ph name="SECONDS" /> วินาที</translation>
@@ -438,6 +441,7 @@
 <translation id="5648021990716966815">ช่องเสียบไมโครโฟน</translation>
 <translation id="5669267381087807207">กำลังเปิดใช้</translation>
 <translation id="5673434351075758678">เปลี่ยนจาก "<ph name="FROM_LOCALE" />" เป็น "<ph name="TO_LOCALE" />" หลังการซิงก์การตั้งค่า</translation>
+<translation id="5679050765726761783">เชื่อมต่ออะแดปเตอร์พลังงานต่ำแล้ว</translation>
 <translation id="5682642926269496722">Google Assistant ไม่พร้อมใช้งานกับบัญชีผู้ใช้ปัจจุบัน</translation>
 <translation id="5689633613396158040">แสงตอนกลางคืนช่วยให้มองหรืออ่านหน้าจอในแสงสลัวได้ง่ายขึ้น แตะเพื่อเปลี่ยนเวลาเปิดแสงตอนกลางคืนหรือจะปิดไปเลยก็ได้</translation>
 <translation id="5691772641933328258">ระบบไม่รู้จักลายนิ้วมือนี้</translation>
@@ -533,6 +537,7 @@
 <translation id="6657585470893396449">รหัสผ่าน</translation>
 <translation id="6665545700722362599">ให้สิทธิ์เว็บไซต์ แอป และส่วนขยายเพื่อใช้บริการตำแหน่ง ไมโครโฟนของอุปกรณ์ กล้อง หรือฟีเจอร์อื่นๆ</translation>
 <translation id="6670153871843998651">โต๊ะที่ 3</translation>
+<translation id="6671495933530132209">คัดลอกรูปภาพ</translation>
 <translation id="6691659475504239918">Search+Shift+H</translation>
 <translation id="6692996468359469499">ดูข้อมูลที่เกี่ยวข้องกับการเลือกของคุณ</translation>
 <translation id="6696025732084565524">แป้มพิมพ์ที่ถอดได้ต้องได้รับอัปเดตที่สำคัญ</translation>
@@ -552,6 +557,7 @@
 <translation id="6857811139397017780">เปิดใช้งาน <ph name="NETWORKSERVICE" /></translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{เหลือตัวเลขอีก 1 หลัก}other{เหลือตัวเลขอีก # หลัก}}</translation>
 <translation id="6878400149835617132">ทางลัดปิดอยู่</translation>
+<translation id="6886172995547742638"><ph name="DEVICE_TYPE" /> อาจมีประสิทธิภาพลดลง ใช้อะแดปเตอร์ USB-C <ph name="PREFERRED_MINIMUM_POWER" /> วัตต์ขึ้นไปที่ได้รับการรับรอง</translation>
 <translation id="6896758677409633944">คัดลอก</translation>
 <translation id="6910714959251846841">อัปเดตนี้จะมีการ Powerwash อุปกรณ์ ดูข้อมูลเพิ่มเติมเกี่ยวกับอัปเดตล่าสุดของ <ph name="SYSTEM_APP_NAME" /></translation>
 <translation id="6919251195245069855">ไม่พบสมาร์ทการ์ดของคุณ ลองใหม่</translation>
@@ -731,6 +737,7 @@
 <translation id="8734991477317290293">แป้นพิมพ์นี้อาจพยายามขโมยการกดแป้นพิมพ์ของคุณ</translation>
 <translation id="8735953464173050365">แสดงการตั้งค่าแป้นพิมพ์ เลือก<ph name="KEYBOARD_NAME" />ไว้</translation>
 <translation id="875593634123171288">แสดงการตั้งค่า VPN</translation>
+<translation id="8759408218731716181">ไม่สามารถตั้งค่าการลงชื่อเข้าสู่ระบบพร้อมกันหลายบัญชีได้</translation>
 <translation id="8785070478575117577">เชื่อมต่อกับ <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" /> <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>

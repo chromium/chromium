@@ -108,6 +108,7 @@
 <translation id="1868024384445905608">‏Chrome اب فائلز کو مزید تیزی سے ڈاؤن لوڈ کرتا ہے</translation>
 <translation id="1877026089748256423">‏Chrome پرانا ہے</translation>
 <translation id="1883903952484604915">میری فائلز</translation>
+<translation id="189358972401248634">دوسری زبانیں</translation>
 <translation id="1925021887439448749">حسب ضرورت ویب پتہ درج کریں</translation>
 <translation id="1928696683969751773">اپ ڈيٹس</translation>
 <translation id="19288952978244135">‏Chrome دوبارہ کھولیں۔</translation>
@@ -217,6 +218,7 @@
 <translation id="2689830683995595741">‏Chrome کا استعمال کر کے، آپ <ph name="BEGIN_LINK1" />Google کی سروس کی شرائط<ph name="END_LINK1" />، اور <ph name="BEGIN_LINK2" />Chrome OS کی اضافی سروس کی شرائط<ph name="END_LINK2" />سے اتفاق کرتے ہیں۔ <ph name="BEGIN_LINK3" />Google اکاؤنٹس کے لیے Family Link سے نظم کردہ رازداری کا نوٹس<ph name="END_LINK3" /> بھی لاگو ہوتا ہے۔</translation>
 <translation id="2707726405694321444">صفحہ ریفریش کریں</translation>
 <translation id="2709516037105925701">آٹو فل</translation>
+<translation id="2723001399770238859">آڈیو</translation>
 <translation id="2728754400939377704">سائٹ کے لحاظ سے ترتیب دیں</translation>
 <translation id="2744248271121720757">فوری تلاش یا متعلقہ کارروائی کے لیے کسی لفظ پر تھپتھپائیں</translation>
 <translation id="2760989362628427051">اپنے آلہ کے بیٹری سیور یا گہری تھیم کے آن ہونے پر گہری تھیم آن کریں</translation>
@@ -467,6 +469,7 @@
 <translation id="4738836084190194332">آخری مطابقت پذیری: <ph name="WHEN" /></translation>
 <translation id="4749960740855309258">ایک نیا ٹیب کھولیں</translation>
 <translation id="4759238208242260848">ڈاؤن لوڈز</translation>
+<translation id="4763480195061959176">ویڈیو</translation>
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{1 ڈاؤن لوڈ مکمل ہو گیا۔}other{# ڈاؤن لوڈز مکمل ہو گئے۔}}</translation>
 <translation id="4766678251456904326">اکاؤنٹ کو آلہ میں شامل کریں</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{1 ڈاؤن لوڈ شیڈول کیا گیا۔}other{# ڈاؤن لوڈز شیڈول کیے گئے۔}}</translation>
@@ -788,7 +791,7 @@
 <translation id="7055152154916055070">ری ڈائریکٹ مسدود کیا گیا:</translation>
 <translation id="7063006564040364415">مطابقت پذیری سرور سے منسلک نہیں کیا جا سکا۔</translation>
 <translation id="7071521146534760487">اکاؤنٹ کا نظم کریں</translation>
-<translation id="707155805709242880">منتخب کریں کہ کیا ذیل میں مطابقت پذیری کرنا ہے</translation>
+<translation id="707155805709242880">ذیل میں منتخب کریں کہ کس چیز کی مطابقت پذیری کرنی ہے</translation>
 <translation id="7077143737582773186">‏SD کارڈ</translation>
 <translation id="7080806333218412752">‏چیک کرنے کے لیے URLs کو محفوظ براؤزنگ کو بھیجتا ہے۔ نئے خطرات کا پتہ لگانے میں مدد کے لیے صفحات، ڈاؤن لوڈز، ایکسٹینشن کی سرگرمی اور سسٹم کی معلومات کا چھوٹا سا نمونہ بھی بھیجتا ہے۔ Google ایپس پر آپ کی حفاظت کرنے کے لیے آپ کے سائن ان ہونے پر آپ کے Google اکاؤنٹ سے اس ڈیٹا کو عارضی طور پر لنک کرتا ہے۔</translation>
 <translation id="7088681679121566888">‏Chrome اپ ٹو ڈیٹ ہے</translation>

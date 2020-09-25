@@ -351,6 +351,7 @@
 <translation id="140520891692800925"><ph name="PROFILE_DISPLAY_NAME" /> (ପର୍ଯ୍ୟବେକ୍ଷିତ)</translation>
 <translation id="1405779994569073824">କ୍ରାସ୍ ହୋଇଯାଇଛି।</translation>
 <translation id="1406500794671479665">ଯାଞ୍ଚ ହେଉଛି...</translation>
+<translation id="1407135791313364759">ସବୁ ଖୋଲନ୍ତୁ</translation>
 <translation id="140723521119632973">ସେଲ୍ୟୁଲାର୍ ସକ୍ରିୟକରଣ</translation>
 <translation id="1407489512183974736">କେନ୍ଦ୍ରସ୍ଥଳରେ କ୍ରପ୍‌ କରାଗଲା</translation>
 <translation id="1408504635543854729">Files ଆପ୍‌ରେ ଡିଭାଇସ୍‌ର ବିଷୟବସ୍ତୁ ଏକ୍ସପ୍ଲୋର୍ କରନ୍ତୁ। ଏହି ବିଷୟବସ୍ତୁ ଜଣେ ବ୍ୟବସ୍ଥାପକଙ୍କ ଦ୍ଵାରା ପ୍ରତିବନ୍ଧିତ ଏବଂ ଏହାକୁ ସଂଶୋଧନ କରାଯାଇ ପାରିବ ନାହିଁ।</translation>
@@ -608,7 +609,7 @@
 <translation id="1692115862433274081">ଅନ୍ୟ ଏକ ଆକାଉଣ୍ଟ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="1692118695553449118">ସିଙ୍କ୍ ଚାଲୁ ଅଛି</translation>
 <translation id="1692210323591458290">ଗାଢ଼ ବାଇଗଣୀ</translation>
-<translation id="1697150536837697295">କଳା</translation>
+<translation id="1697150536837697295">ଆର୍ଟ</translation>
 <translation id="1697686431566694143">ଫାଇଲ୍ ଏଡିଟ୍ କରନ୍ତୁ</translation>
 <translation id="1698122934742150150">କେବଳ ବର୍ତ୍ତମାନର ଇନ୍‌କଗ୍ନିଟୋ ସମୟ ଅବଧି</translation>
 <translation id="1700079447639026019">କୁକୀଗୁଡ଼ିକୁ କେବେ ବି ବ୍ୟବହାର କରିପାରୁନଥିବା ସାଇଟଗୁଡ଼ିକ</translation>
@@ -1896,7 +1897,6 @@
 <translation id="3246107497225150582">{0,plural, =1{ଗୋଟିଏ ଦିନ ଭିତରେ ଡିଭାଇସ୍ ଅପଡେଟ୍ କରନ୍ତୁ}other{# ଦିନ ଭିତରେ ଡିଭାଇସ୍ ଅପଡେଟ୍ କରନ୍ତୁ}}</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - ନେଟ୍‌ୱର୍କ ତ୍ରୁଟି</translation>
 <translation id="3248902735035392926">ସୁରକ୍ଷା ଗୁରୁତ୍ୱପୂର୍ଣ୍ଣ ଅଟେ। କିଛି ସମୟ ନିଅନ୍ତୁ ଏବଂ <ph name="BEGIN_LINK" />ବର୍ତ୍ତମାନ ଆପଣଙ୍କ ଏକ୍ସଟେନ୍‍ସନ୍‍ଗୁଡ଼ିକର ଯାଞ୍ଚ କରନ୍ତୁ<ph name="END_LINK" /></translation>
-<translation id="325036368918787455">ଇନକଗ୍ନିଟୋ ୱିଣ୍ଡୋ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="3251759466064201842">&lt;ସାର୍ଟିଫିକେଟ୍‍ର ଅଂଶ ନୁହେଁ&gt;</translation>
 <translation id="3253225298092156258">ଉପଲବ୍ଧ ନାହିଁ</translation>
 <translation id="3253448572569133955">ଅଜଣା ଆକାଉଣ୍ଟ</translation>
@@ -3436,7 +3436,6 @@
 <translation id="5097649414558628673">ଟୁଲ୍: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">କର୍ସର୍ ମୁଭ୍ ହେବା ବନ୍ଦ ହେଲେ ସ୍ୱଚାଳିତ ଭାବେ କ୍ଲିକ୍ କରନ୍ତୁ</translation>
 <translation id="5099399397495049098">ସାଇଟଗୁଡ଼ିକ JavaScript ବ୍ଯବହାର କରିପାରିବେ (ସୁପାରିଶ କରାଯାଇଛି)</translation>
-<translation id="5101042277149003567">ସମସ୍ତ ବୁକମାର୍କ ଖୋଲନ୍ତୁ</translation>
 <translation id="5101839224773798795">କର୍ସର୍ ବନ୍ଦ ଦେବା ସମୟରେ ସ୍ୱଚାଳିତ ଭାବେ କ୍ଲିକ୍ କରିଥାଏ</translation>
 <translation id="5107443654503185812">ଏକ ଏକ୍ସଟେନସନ୍ ସେଫ୍ ବ୍ରାଉଜିଂ ବନ୍ଦ କରିଦେଇଛି</translation>
 <translation id="5108967062857032718">ସେଟିଂସ୍ - Android ଆପ୍ସ କାଢ଼ି ଦିଅନ୍ତୁ</translation>
@@ -4020,7 +4019,6 @@
 <translation id="5804241973901381774">ଅନୁମତିଗୁଡ଼ିକ</translation>
 <translation id="5805697420284793859">ୱିଣ୍ଡୋ ପରିଚାଳକ</translation>
 <translation id="5806773519584576205">0° (ଡିଫଲ୍ଟ)</translation>
-<translation id="5808664694611589238">{0,plural, =1{ଅତିଥି ୱିଣ୍ଡୋ ବନ୍ଦ କରନ୍ତୁ}other{ଅତିଥି ୱିଣ୍ଡୋ ବନ୍ଦ କରନ୍ତୁ}}</translation>
 <translation id="5810809306422959727">ଏହି ଆକାଉଣ୍ଟ ବାପାମାଙ୍କ ନିୟନ୍ତ୍ରଣ ପାଇଁ ଯୋଗ୍ୟ ନୁହେଁ</translation>
 <translation id="5812674658566766066">ସବୁ ପ୍ରସାରିତ କରନ୍ତୁ</translation>
 <translation id="5814126672212206791">ସଂଯୋଗର ପ୍ରକାର</translation>

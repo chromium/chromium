@@ -189,7 +189,6 @@
 <translation id="3064388234319122767">Transliteracija (zdravo → zdravo)</translation>
 <translation id="3067790092342515856">Windows datoteke</translation>
 <translation id="3078461028045006476">Deli pomoću dodatka <ph name="EXTENSION_NAME" /></translation>
-<translation id="3088034400796962477">Transliteracija (salam ← سلام)</translation>
 <translation id="3116361045094675131">Jezik tastature: engleski (UK)</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">GOTOVO</translation>
@@ -305,7 +304,6 @@
 <translation id="4477219268485577442">bugarska fonetska</translation>
 <translation id="4479812471636796472">Jezik tastature: engleski (SAD dvorak)</translation>
 <translation id="4481711095103932593">Ovaj direktorijum se deli sa Windows-om</translation>
-<translation id="4487088045714738411">Jezik tastature: belgijski</translation>
 <translation id="4522570452068850558">Detalji</translation>
 <translation id="4542387084127299777">Otvaranje datoteke „<ph name="PATH" />“ nije uspelo</translation>
 <translation id="4552678318981539154">Kupi još memorijskog prostora</translation>
@@ -366,6 +364,7 @@
 <translation id="5010406651457630570">Računari</translation>
 <translation id="5011233892417813670">Chromebook</translation>
 <translation id="5024856940085636730">Radnja traje duže od očekivanog. Želite li da je prekinete?</translation>
+<translation id="5026887030745057099">hindi</translation>
 <translation id="5036159836254554629">Upravljajte deljenjem pomoću Parallels Desktop-a</translation>
 <translation id="5038625366300922036">Prikaži više...</translation>
 <translation id="5061708541166515394">Kontrast</translation>
@@ -430,7 +429,6 @@
 <translation id="5522908512596376669">Lista datoteka se promenila u prikaz liste.</translation>
 <translation id="5524517123096967210">Nije moguće pročitati datoteku.</translation>
 <translation id="5533102081734025921">Slika <ph name="IMAGE_TYPE" /></translation>
-<translation id="5533555070048896610">Transliteracija (namaste → नमस्ते)</translation>
 <translation id="5534520101572674276">Izračunavanje veličine</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5605830556594064952">američka Dvorak</translation>

@@ -345,6 +345,7 @@
 <translation id="140520891692800925"><ph name="PROFILE_DISPLAY_NAME" /> (निरीक्षण गरिएको)</translation>
 <translation id="1405779994569073824">क्र्यास भयो।</translation>
 <translation id="1406500794671479665">रुजू गर्दै...</translation>
+<translation id="1407135791313364759">सबै खोल्नुहोस्</translation>
 <translation id="140723521119632973">सेलुलर सक्रिय गर्ने कार्य</translation>
 <translation id="1407489512183974736">केन्द्रलाई काटियो</translation>
 <translation id="1408504635543854729">फाइलहरू नामक एपमा यन्त्रको सामग्री अन्वेषण गर्नुहोस्। कुनै प्रशासकद्वारा बन्देज लगाइएको सामग्रीलाई परिमार्जन गर्न सकिँदैन।</translation>
@@ -1877,7 +1878,6 @@
 <translation id="3246107497225150582">{0,plural, =1{एक दिनभित्र यन्त्र अपडेट गर्नुहोस्}other{# एक दिनभित्र यन्त्र अपडेट गर्नुहोस्}}</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - नेटवर्क सम्बन्धी त्रुटि</translation>
 <translation id="3248902735035392926">सुरक्षासम्बन्धी विषयहरू केही क्षण निकालेर <ph name="BEGIN_LINK" />अहिले नै आफ्ना एक्स्टेन्सनहरू जाँच्नुहोस्<ph name="END_LINK" /></translation>
-<translation id="325036368918787455">इन्कोग्निटो विन्डोहरू बन्द गर्नुहोस्</translation>
 <translation id="3251759466064201842">&lt;प्रमाणपत्रको भाग होइन&gt;</translation>
 <translation id="3253225298092156258">उपलब्ध छैन</translation>
 <translation id="3253448572569133955">अज्ञात खाता</translation>
@@ -3389,7 +3389,6 @@
 <translation id="5097002363526479830">नेटवर्क '<ph name="NAME" />' मा जडान हुन असफल भयो: <ph name="DETAILS" /></translation>
 <translation id="5097649414558628673">टुल: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">कर्सर रोकिँदा स्वतः क्लिक गरियोस्</translation>
-<translation id="5101042277149003567">सबै पुस्तक चिन्हहरू खोल्नुहोस्</translation>
 <translation id="5101839224773798795">कर्सर रोकिँदा स्वतः क्लिक गर्नुहोस्</translation>
 <translation id="5107443654503185812">एउटा एक्स्टेन्सनले सुरक्षित ब्राउजिङ सेवा निष्क्रिय पारेको छ</translation>
 <translation id="5108967062857032718">सेटिङहरू - Android अनुप्रयोगहरूलाई हटाउनुहोस्</translation>
@@ -3969,7 +3968,6 @@
 <translation id="5804241973901381774">अनुमतिहरू</translation>
 <translation id="5805697420284793859">विन्डोको प्रबन्धक</translation>
 <translation id="5806773519584576205">०° (पूर्वनिर्धारित)</translation>
-<translation id="5808664694611589238">{0,plural, =1{अतिथि विन्डो बन्द गर्नुहोस्}other{अतिथि विन्डोहरू बन्द गर्नुहोस्}}</translation>
 <translation id="5810809306422959727">यो खातामा अभिभावकीय नियन्त्रणहरू प्रयोग गर्न मिल्दैन</translation>
 <translation id="5812674658566766066">सबै विस्तृत गर्नुहोस्</translation>
 <translation id="5814126672212206791">जडानको प्रकार</translation>

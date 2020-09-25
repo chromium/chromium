@@ -352,6 +352,7 @@ I-<ph name="EXTENSION_NAME" /></translation>
 <translation id="140520891692800925"><ph name="PROFILE_DISPLAY_NAME" /> (Ugadiwe)</translation>
 <translation id="1405779994569073824">Iphahlazekile.</translation>
 <translation id="1406500794671479665">Iyaqinisekisa...</translation>
+<translation id="1407135791313364759">Vula konke</translation>
 <translation id="140723521119632973">Ukusetshenziswa kweselula</translation>
 <translation id="1407489512183974736">Imaphakathi lisikiwe</translation>
 <translation id="1408504635543854729">Hlola okuqukethwe kwedivayisi kuhlelo lokusebenza lwamafayela. Okuqukethwe kukhawulelwe umqondisi futhi akukwazi ukushintshwa.</translation>
@@ -1901,7 +1902,6 @@ Ungaphatha izilungiselelo zale akhawunti ngokufaka uhlelo lokusebenza lwe-Family
 <translation id="3246107497225150582">{0,plural, =1{Buyekeza idivayisi phakathi nosuku}one{Buyekeza idivayisi phakathi nezinsuku ezingu-#}other{Buyekeza idivayisi phakathi nezinsuku ezingu-#}}</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - Iphutha lenethiwekhi</translation>
 <translation id="3248902735035392926">Izindaba zokuphepha. Thatha isikhashana <ph name="BEGIN_LINK" />uhlole izandiso zakho manje<ph name="END_LINK" /></translation>
-<translation id="325036368918787455">Vala i-incognito</translation>
 <translation id="3251759466064201842">&lt;Akuyona Ingxenye Yesitifiketi&gt;</translation>
 <translation id="3253225298092156258">Ayitholakali</translation>
 <translation id="3253448572569133955">I-akhawunti engaziwa</translation>
@@ -3441,7 +3441,6 @@ Ungaphatha izilungiselelo zale akhawunti ngokufaka uhlelo lokusebenza lwe-Family
 <translation id="5097649414558628673">Ithuluzi: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">Chofoza ngokuzenzakalelayo uma i-cursor ima</translation>
 <translation id="5099399397495049098">Amasayithi angasebenzisa i-JavaScript (kunconyiwe)</translation>
-<translation id="5101042277149003567">Vula wonke amabhukhimakhi</translation>
 <translation id="5101839224773798795">Chofoza ngokuzenzakalela uma ikhesa ima</translation>
 <translation id="5107443654503185812">Isandiso sivale Ukuphequlula Okuphephile</translation>
 <translation id="5108967062857032718">Izilungiselelo - Susa izinhlelo zokusebenza ze-Android</translation>
@@ -4028,7 +4027,6 @@ Qiniseka ukuthi awuvezi noma yiluphi ulwazi olubucayi.</translation>
 <translation id="5804241973901381774">Izimvume</translation>
 <translation id="5805697420284793859">Isiphathi sewindi</translation>
 <translation id="5806773519584576205">0° (Okuzenzakalelayo)</translation>
-<translation id="5808664694611589238">{0,plural, =1{Vala isihambeli}one{Vala isihambeli}other{Vala isihambeli}}</translation>
 <translation id="5810809306422959727">Le akhawunti ayifanelekeli izilawuli zomzali</translation>
 <translation id="5812674658566766066">Nweba konke</translation>
 <translation id="5814126672212206791">Uhlobo lokuxhumeka</translation>

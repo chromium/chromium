@@ -513,6 +513,7 @@ brukere av denne nettleseren.</translation>
 <translation id="3080254622891793721">Grafikk</translation>
 <translation id="3086579638707268289">Aktiviteten din på nettet overvåkes</translation>
 <translation id="3087734570205094154">Bunn</translation>
+<translation id="3094457892697649331">Når du redigerer annoteringer, går dette dokumentet tilbake til enkeltsidevisning.</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3096100844101284527">Legg til henteadresse</translation>
 <translation id="3105172416063519923">Ressurs-ID:</translation>
@@ -746,6 +747,7 @@ brukere av denne nettleseren.</translation>
 <translation id="4075941231477579656">Touch ID</translation>
 <translation id="4079302484614802869">Konfigurasjonen av proxytjeneren er angitt til å bruke en nettadresse med .pac-skript, ikke statiske proxytjenere.</translation>
 <translation id="4082393374666368382">Innstillinger – Administrasjon</translation>
+<translation id="4084120443451129199">Søkemodus – trykk på Enter for å søke på <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="4088981014127559358">Y-forskyvning av bilde på side 1</translation>
 <translation id="4098354747657067197">Villedende nettsted i sikte</translation>
 <translation id="4101413244023615925">Tekst og grafikk</translation>
@@ -941,6 +943,7 @@ brukere av denne nettleseren.</translation>
 <translation id="4809079943450490359">Veiledning fra enhetsadministratoren din:</translation>
 <translation id="4813512666221746211">Nettverksfeil</translation>
 <translation id="4816492930507672669">Tilpass til siden</translation>
+<translation id="4819347708020428563">Vil du redigere annoteringer i standardvisningen?</translation>
 <translation id="484462545196658690">Auto</translation>
 <translation id="4850886885716139402">Visning</translation>
 <translation id="4854362297993841467">Denne leveringsmetoden er ikke tilgjengelig. Prøv en annen metode.</translation>
@@ -1674,6 +1677,7 @@ brukere av denne nettleseren.</translation>
 <translation id="7802523362929240268">Nettstedet er legitimt</translation>
 <translation id="780301667611848630">Nei takk</translation>
 <translation id="7805768142964895445">Status</translation>
+<translation id="7811322735445742657">Når du redigerer annoteringer, går dette dokumentet tilbake til enkeltsidevisning og den opprinnelige rotasjonen.</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Vil du fjerne skjemaforslaget fra Chrome?</translation>
 <translation id="781440967107097262">Vil du dele utklippstavlen din?</translation>
@@ -1709,6 +1713,7 @@ brukere av denne nettleseren.</translation>
 <translation id="7956713633345437162">Bokmerker for mobil</translation>
 <translation id="7961015016161918242">Aldri</translation>
 <translation id="7966803981046576691">Jobbkontotype</translation>
+<translation id="7976214039405368314">For mange forespørsler</translation>
 <translation id="7977538094055660992">Utskriftsenhet</translation>
 <translation id="7977894662897852582">Edp</translation>
 <translation id="799149739215780103">Innbinding</translation>
@@ -1790,6 +1795,7 @@ brukere av denne nettleseren.</translation>
 <translation id="8289355894181816810">Kontakt nettverksadministratoren hvis du ikke er sikker på hva dette betyr.</translation>
 <translation id="8293206222192510085">Legg til bokmerke</translation>
 <translation id="8294431847097064396">Kilde</translation>
+<translation id="8297398969342264569">Når du redigerer annoteringer, går dette dokumentet tilbake til den opprinnelige rotasjonen.</translation>
 <translation id="8298115750975731693">Det kan hende at Wi-Fi-nettverket du bruker (<ph name="WIFI_NAME" />), krever at du besøker <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="8303854710873047864">Delen «<ph name="SECTION" />» vises</translation>
 <translation id="830498451218851433">Halvfals</translation>

@@ -59,6 +59,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1467432559032391204">Doleva</translation>
 <translation id="1479909375538722835">Plovoucí nabídka usnadnění přístupu</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
+<translation id="1503394326855300303">Účet tohoto vlastníka musí být v relaci multiprofilu přihlášen jako první.</translation>
 <translation id="1516740043221086139">Režim Nerušit je zapnutý.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Zobrazit nastavení oznámení. U jedné aplikace jsou oznámení vypnutá}few{Zobrazit nastavení oznámení. U # aplikací jsou oznámení vypnutá}many{Zobrazit nastavení oznámení. U # aplikace jsou oznámení vypnutá}other{Zobrazit nastavení oznámení. U # aplikací jsou oznámení vypnutá}}</translation>
 <translation id="1525508553941733066">ZAVŘÍT</translation>
@@ -172,7 +173,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="2718395828230677721">Noční režim</translation>
 <translation id="2727175239389218057">Odpovědět</translation>
 <translation id="2727977024730340865">Byla připojena nabíječka s nízkým výkonem. Nabíjení baterie nemusí probíhat spolehlivě.</translation>
-<translation id="2743387203779672305">Zkopírovat do schránky</translation>
 <translation id="2792498699870441125">Alt + Vyhledávání</translation>
 <translation id="2819276065543622893">Nyní budete odhlášeni.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> rozlišení <ph name="SPECIFIED_RESOLUTION" /> nepodporuje. Rozlišení bylo změněno na <ph name="FALLBACK_RESOLUTION" />.</translation>
@@ -257,6 +257,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="3486220673238053218">definice</translation>
 <translation id="3510164367642747937">Zvýraznit ukazatel myši</translation>
 <translation id="3513798432020909783">Správce účtu: <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3571734092741541777">Nastavit</translation>
 <translation id="3573179567135747900">Změnit zpět na jazyk <ph name="FROM_LOCALE" /> (vyžaduje restart)</translation>
 <translation id="3576141592585647168">Změnit časové pásmo</translation>
 <translation id="3593646411856133110">Přejetím nahoru a podržením zobrazíte otevřené aplikace</translation>
@@ -389,6 +390,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="4917385247580444890">Silný</translation>
 <translation id="4918086044614829423">Přijmout</translation>
 <translation id="4924411785043111640">Restartovat a resetovat</translation>
+<translation id="4925542575807923399">Správce tohoto účtu vyžaduje, aby se tento účet v relaci multiprofilu přihlásil jako první.</translation>
 <translation id="495046168593986294">Posunout nahoru</translation>
 <translation id="4961318399572185831">Odesílání obrazovky</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> h <ph name="MINUTES" /> min <ph name="SECONDS" /> s</translation>
@@ -535,6 +537,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="6657585470893396449">Heslo</translation>
 <translation id="6665545700722362599">Udělit webům, aplikacím a rozšířením oprávnění používat služby určování polohy, mikrofon či fotoaparát zařízení nebo další funkce</translation>
 <translation id="6670153871843998651">Plocha 3</translation>
+<translation id="6671495933530132209">Zkopírovat obrázek</translation>
 <translation id="6691659475504239918">Hledat+Shift+H</translation>
 <translation id="6692996468359469499">Získejte informace týkající se vybraného obsahu</translation>
 <translation id="6696025732084565524">Odpojitelná klávesnice vyžaduje kritickou aktualizaci</translation>
@@ -734,6 +737,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="8734991477317290293">Je možné, že se pokouší odcizit vaše stisknutí kláves.</translation>
 <translation id="8735953464173050365">Zobrazit nastavení klávesnice. Je vybrána klávesnice <ph name="KEYBOARD_NAME" /></translation>
 <translation id="875593634123171288">Zobrazit nastavení VPN</translation>
+<translation id="8759408218731716181">Vícenásobné přihlášení nelze nastavit</translation>
 <translation id="8785070478575117577">Připojit k síti <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>

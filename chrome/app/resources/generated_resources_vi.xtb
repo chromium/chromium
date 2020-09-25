@@ -352,6 +352,7 @@
 <translation id="140520891692800925"><ph name="PROFILE_DISPLAY_NAME" /> (Được giám sát)</translation>
 <translation id="1405779994569073824">Đã bị lỗi.</translation>
 <translation id="1406500794671479665">Đang xác minh...</translation>
+<translation id="1407135791313364759">Mở tất cả</translation>
 <translation id="140723521119632973">Kích hoạt mạng di động</translation>
 <translation id="1407489512183974736">Cắt giữa</translation>
 <translation id="1408504635543854729">Khám phá nội dung của thiết bị trong ứng dụng Tệp. Quản trị viên đã hạn chế nội dung và bạn không thể sửa đổi nội dung này.</translation>
@@ -1903,7 +1904,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3246107497225150582">{0,plural, =1{Cập nhật thiết bị trong vòng 1 ngày}other{Cập nhật thiết bị trong vòng # ngày}}</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - Lỗi mạng</translation>
 <translation id="3248902735035392926">Vấn đề an toàn rất quan trọng. Hãy dành giây lát để <ph name="BEGIN_LINK" />kiểm tra các tiện ích của bạn ngay bây giờ<ph name="END_LINK" /></translation>
-<translation id="325036368918787455">Đóng cửa sổ ẩn danh</translation>
 <translation id="3251759466064201842">&lt;Không Thuộc Chứng chỉ&gt;</translation>
 <translation id="3253225298092156258">Chưa có</translation>
 <translation id="3253448572569133955">Tài khoản không xác định</translation>
@@ -3444,7 +3444,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="5097649414558628673">Công cụ: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">Tự động nhấp khi con trỏ dừng lại</translation>
 <translation id="5099399397495049098">Các trang web có thể sử dụng JavaScript (khuyến nghị)</translation>
-<translation id="5101042277149003567">Mở tất cả dấu trang</translation>
 <translation id="5101839224773798795">Tự động nhấp chuột khi con trỏ dừng lại</translation>
 <translation id="5107443654503185812">Một tiện ích đã tắt tính năng Duyệt web an toàn</translation>
 <translation id="5108967062857032718">Cài đặt - Xóa ứng dụng Android</translation>
@@ -4028,7 +4027,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="5804241973901381774">Quyền</translation>
 <translation id="5805697420284793859">Trình quản lý cửa sổ</translation>
 <translation id="5806773519584576205">0° (Mặc định)</translation>
-<translation id="5808664694611589238">{0,plural, =1{Đóng cửa sổ khách}other{Đóng cửa sổ khách}}</translation>
 <translation id="5810809306422959727">Tài khoản này không đủ điều kiện để thêm các quyền kiểm soát của cha mẹ</translation>
 <translation id="5812674658566766066">Mở rộng tất cả</translation>
 <translation id="5814126672212206791">Loại kết nối</translation>

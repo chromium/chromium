@@ -59,6 +59,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1467432559032391204">Venstre</translation>
 <translation id="1479909375538722835">Flytende tilgjengelighetsmeny</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
+<translation id="1503394326855300303">Denne eierkontoen må være den første påloggingskontoen i en multipåloggingsøkt.</translation>
 <translation id="1516740043221086139">Ikke forstyrr er på.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Vis innstillinger for varsler. Varsler er slått av for en app}other{Vis innstillinger for varsler. Varsler er slått av for # apper}}</translation>
 <translation id="1525508553941733066">AVVIS</translation>
@@ -69,6 +70,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1589090746204042747">se all aktiviteten din i denne økten</translation>
 <translation id="1611993646327628135">På</translation>
 <translation id="1632985212731562677">Brytertilgang kan slås av i Innstillinger &gt; Tilgjengelighet.</translation>
+<translation id="1651447046299738444">Det ser ut som om Bluetooth eller Wi-Fi er slått av på Chromebooken din. Kontrollér tilkoblingen din for å bruke Phone Hub.</translation>
 <translation id="1654477262762802994">Start et talesøk</translation>
 <translation id="1667964833127753507">Den nøytrale fargemodusen bruker ikke farger som er hentet fra bakgrunnen. I stedet brukes et nøytralt utvalg av lyse eller mørke fargetoner.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> igjen</translation>
@@ -151,6 +153,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2435457462613246316">Vis passord</translation>
 <translation id="2473177541599297363">Bekreft oppløsningen</translation>
 <translation id="2475982808118771221">Det oppstod en feil</translation>
+<translation id="2479579251444854687">Sveip opp med tre fingre for å åpne og ned for å lukke Oversikt.</translation>
 <translation id="2482878487686419369">Varsler</translation>
 <translation id="2484513351006226581">Trykk på <ph name="KEYBOARD_SHORTCUT" /> for å bytte tastaturoppsett.</translation>
 <translation id="2501920221385095727">Trege taster</translation>
@@ -163,6 +166,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2595239820337756193">5 km i miles</translation>
 <translation id="2617342710774726426">SIM-kortet er låst</translation>
 <translation id="2621713457727696555">Sikret</translation>
+<translation id="2640255526076764619">Styreflatebevegelsen for å bytte til forrige skrivebord er endret. Sveip til venstre med fire fingre for å bytte til forrige skrivebord.</translation>
 <translation id="2653659639078652383">Send inn</translation>
 <translation id="2658778018866295321">Klikk og dra</translation>
 <translation id="2700493154570097719">Velg tastatur</translation>
@@ -172,7 +176,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2718395828230677721">Nattlys</translation>
 <translation id="2727175239389218057">Svar</translation>
 <translation id="2727977024730340865">Tilkoblet laveffektslader. Batteriladingen kan være upålitelig.</translation>
-<translation id="2743387203779672305">Kopiér til utklippstavlen</translation>
 <translation id="2792498699870441125">Alt + Søk</translation>
 <translation id="2819276065543622893">Du blir nå logget av.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> støtter ikke <ph name="SPECIFIED_RESOLUTION" />. Oppløsningen ble endret til <ph name="FALLBACK_RESOLUTION" />.</translation>
@@ -257,6 +260,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="3486220673238053218">definisjon</translation>
 <translation id="3510164367642747937">Fremhev musemarkøren</translation>
 <translation id="3513798432020909783">Kontoen er administrert av <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3571734092741541777">Konfigurer</translation>
 <translation id="3573179567135747900">Endre tilbake til <ph name="FROM_LOCALE" /> (krever omstart)</translation>
 <translation id="3576141592585647168">Endre tidssonen</translation>
 <translation id="3593646411856133110">Sveip opp og hold for å se åpne apper</translation>
@@ -341,6 +345,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> er av.</translation>
 <translation id="4421231901400348175">Deler kontroll av skjermen med <ph name="HELPER_NAME" /> via fjernhjelp.</translation>
 <translation id="4430019312045809116">Volum</translation>
+<translation id="4444978951615977024">Uff da. Kontrollér tilkoblingen din</translation>
 <translation id="4450893287417543264">Ikke vis igjen</translation>
 <translation id="445864333228800152">God kveld</translation>
 <translation id="4458688154122353284">Avslutt skjermopptak</translation>
@@ -350,6 +355,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Frakoblede enheter</translation>
 <translation id="4505050298327493054">Aktivt skrivebord.</translation>
+<translation id="4506458088675900627">Styreflatebevegelsen for Oversikt er endret</translation>
 <translation id="4513946894732546136">Google Feedback</translation>
 <translation id="4527045527269911712">Bluetooth-enheten «<ph name="DEVICE_NAME" />» ber om tillatelse til å koble til.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> til batteriet er fulladet</translation>
@@ -389,6 +395,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="4917385247580444890">Sterkt</translation>
 <translation id="4918086044614829423">Godta</translation>
 <translation id="4924411785043111640">Start på nytt og tilbakestill</translation>
+<translation id="4925542575807923399">Administratoren for denne kontoen krever at denne kontoen er den første påloggingskontoen i en multipåloggingsøkt.</translation>
 <translation id="495046168593986294">Rull opp</translation>
 <translation id="4961318399572185831">Cast skjermen</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> t <ph name="MINUTES" /> m <ph name="SECONDS" /> s</translation>
@@ -478,6 +485,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="6018164090099858612">Avslutter speilingsmodus</translation>
 <translation id="602001110135236999">Rull til venstre</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" /> – <ph name="CONNECTION_STATUS" /> – signalstyrke <ph name="SIGNAL_STRENGTH" /> – administreres av administratoren din</translation>
+<translation id="6029337736376922061">Styreflatebevegelsen for å bytte til neste skrivebord er endret. Sveip til høyre med fire fingre for å bytte til neste skrivebord.</translation>
 <translation id="6030495522958826102">Menyen ble flyttet til nedre venstre hjørne av skjermen.</translation>
 <translation id="6040143037577758943">Lukk</translation>
 <translation id="6043212731627905357">Denne skjermen liker ikke <ph name="DEVICE_TYPE" /> (skjermen støttes ikke).</translation>
@@ -535,6 +543,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="6657585470893396449">Passord</translation>
 <translation id="6665545700722362599">gi nettsteder, apper og utvidelser tillatelse til å bruke posisjonstjenester, enhetens mikrofon, kamera eller andre funksjoner</translation>
 <translation id="6670153871843998651">Skrivebord 3</translation>
+<translation id="6671495933530132209">Kopiér bildet</translation>
 <translation id="6691659475504239918">Søk + Shift + H</translation>
 <translation id="6692996468359469499">Få informasjon tilknyttet det du har merket</translation>
 <translation id="6696025732084565524">Det avtakbare tastaturet trenger en kritisk oppdatering</translation>
@@ -734,6 +743,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="8734991477317290293">Det brukes kanskje til å stjele tastetrykkene dine.</translation>
 <translation id="8735953464173050365">Vis tastaturinnstillinger. <ph name="KEYBOARD_NAME" /> er valgt</translation>
 <translation id="875593634123171288">Vis innstillinger for VPN</translation>
+<translation id="8759408218731716181">Kan ikke konfigurere multipålogging</translation>
 <translation id="8785070478575117577">Koble til <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>

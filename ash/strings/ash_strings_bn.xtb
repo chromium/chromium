@@ -59,6 +59,7 @@
 <translation id="1467432559032391204">বামে</translation>
 <translation id="1479909375538722835">ভাসমান অ্যাক্সেসিবিলিটি মেনু</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
+<translation id="1503394326855300303">একাধিক সাইন-ইন সেশনে এই মালিক অ্যাকাউন্টটি প্রথম সাইন-ইন অ্যাকাউন্ট হতে হবে৷</translation>
 <translation id="1516740043221086139">'বিরক্ত করবে না' মোড চালু আছে।</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{বিজ্ঞপ্তির সেটিংস দেখান। একটি অ্যাপের জন্য বিজ্ঞপ্তির নোটিফিকেশন বন্ধ আছে}one{বিজ্ঞপ্তির সেটিংস দেখান। #টি অ্যাপের জন্য নোটিফিকেশন বন্ধ আছে}other{বিজ্ঞপ্তির সেটিংস দেখান। #টি অ্যাপের জন্য নোটিফিকেশন বন্ধ আছে}}</translation>
 <translation id="1525508553941733066">খারিজ করুন</translation>
@@ -172,7 +173,6 @@
 <translation id="2718395828230677721">নাইট লাইট</translation>
 <translation id="2727175239389218057">উত্তর দিন</translation>
 <translation id="2727977024730340865">একটি নিম্ন শক্তির চার্জার প্লাগইন করা হয়েছে৷ বিশ্বস্ত ব্যাটারি চার্জ নাও হতে পারে৷</translation>
-<translation id="2743387203779672305">ক্লিপবোর্ডে কপি করুন</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
 <translation id="2819276065543622893">আপনি এখনই প্রস্থান করুন হবেন৷</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" /> রেজোলিউশনে চলতে পারে না। তাই রেজোলিউশন পরিবর্তন করে <ph name="FALLBACK_RESOLUTION" /> করা হয়েছে।</translation>
@@ -257,6 +257,7 @@
 <translation id="3486220673238053218">সংজ্ঞা</translation>
 <translation id="3510164367642747937">মাউস কার্সার হাইলাইট করুন</translation>
 <translation id="3513798432020909783">অ্যাকাউন্টটি <ph name="MANAGER_EMAIL" /> ম্যানেজ করছেন</translation>
+<translation id="3571734092741541777">সেট-আপ</translation>
 <translation id="3573179567135747900">"<ph name="FROM_LOCALE" />" তে ফেরান (পুনর্সূচনা প্রয়োজন)</translation>
 <translation id="3576141592585647168">টাইমজোন পরিবর্তন করা</translation>
 <translation id="3593646411856133110">খুলে রাখা অ্যাপগুলি দেখার জন্য উপরের দিকে সোয়াইপ করে ধরে রাখুন</translation>
@@ -389,6 +390,7 @@
 <translation id="4917385247580444890">জোরালো</translation>
 <translation id="4918086044614829423">স্বীকার</translation>
 <translation id="4924411785043111640">রিস্টার্ট করুন এবং রিসেট করুন</translation>
+<translation id="4925542575807923399">এই অ্যাকাউন্টের অ্যাডমিনিস্ট্রেটর অ্যাকাউন্টটিকে একাধিক সাইন-ইন সেশনের প্রথম সাইন-ইন করে থাকা অ্যাকাউন্ট হিসেবে রাখতে চায়৷</translation>
 <translation id="495046168593986294">উপরের দিকে স্ক্রল করুন</translation>
 <translation id="4961318399572185831">স্ক্রিন কাস্ট করুন</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />ঘঃ <ph name="MINUTES" />মিঃ <ph name="SECONDS" />সেঃ</translation>
@@ -536,6 +538,7 @@
 <translation id="6657585470893396449">পাসওয়ার্ড</translation>
 <translation id="6665545700722362599">ওয়েবসাইট, অ্যাপ এবং এক্সটেনশনকে লোকেশন ভিত্তিক পরিষেবা, ডিভাইসের মাইক্রোফোন, ক্যামেরা ও অন্যান্য ফিচার ব্যবহারের অনুমতি দেয়</translation>
 <translation id="6670153871843998651">ডেস্ক ৩</translation>
+<translation id="6671495933530132209">ছবি কপি করুন</translation>
 <translation id="6691659475504239918">Search+Shift+H</translation>
 <translation id="6692996468359469499">আপনার বেছে নেওয়া প্রশ্ন সম্পর্কিত উত্তর পান</translation>
 <translation id="6696025732084565524">আলাদা করা যায় এমন কীবোর্ডের একটি জরুরি আপডেট প্রয়োজন</translation>
@@ -735,6 +738,7 @@
 <translation id="8734991477317290293">এটি আপনার পাসওয়ার্ড চুরি করার চেষ্টা করতে পারে</translation>
 <translation id="8735953464173050365">কীবোর্ড সেটিংস দেখান। <ph name="KEYBOARD_NAME" /> বেছে নেওয়া হয়েছে</translation>
 <translation id="875593634123171288">VPN সেটিংস দেখান</translation>
+<translation id="8759408218731716181">একাধিক সাইন-ইন সেট-আপ করা যাবে না</translation>
 <translation id="8785070478575117577"><ph name="NETWORK_NAME" />-এ কানেক্ট করুন</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />। <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">ওয়াই-ফাই</translation>

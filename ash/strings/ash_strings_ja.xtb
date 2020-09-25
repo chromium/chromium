@@ -59,6 +59,7 @@
 <translation id="1467432559032391204">左</translation>
 <translation id="1479909375538722835">フローティング ユーザー補助機能メニュー</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" />（HDMI / DP）</translation>
+<translation id="1503394326855300303">この所有者アカウントは、マルチログイン セッションで最初にログインするアカウントである必要があります。</translation>
 <translation id="1516740043221086139">サイレント モードはオンです。</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{通知設定を表示します。1 件のアプリで通知がオフになっています}other{通知設定を表示します。# 件のアプリで通知がオフになっています}}</translation>
 <translation id="1525508553941733066">閉じる</translation>
@@ -172,7 +173,6 @@
 <translation id="2718395828230677721">夜間モード</translation>
 <translation id="2727175239389218057">返信</translation>
 <translation id="2727977024730340865">低電力の充電器に接続しています。バッテリーが充電されない可能性があります。</translation>
-<translation id="2743387203779672305">クリップボードにコピー</translation>
 <translation id="2792498699870441125">Alt+ 検索</translation>
 <translation id="2819276065543622893">ログアウトします。</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> は <ph name="SPECIFIED_RESOLUTION" /> に対応していません。解像度を <ph name="FALLBACK_RESOLUTION" /> に変更しました。</translation>
@@ -257,6 +257,7 @@
 <translation id="3486220673238053218">定義</translation>
 <translation id="3510164367642747937">マウスカーソルをハイライト表示する</translation>
 <translation id="3513798432020909783">このアカウントは <ph name="MANAGER_EMAIL" /> により管理されています</translation>
+<translation id="3571734092741541777">設定</translation>
 <translation id="3573179567135747900">「<ph name="FROM_LOCALE" />」に戻します（再起動が必要です）</translation>
 <translation id="3576141592585647168">タイムゾーンを変更</translation>
 <translation id="3593646411856133110">開いているアプリを表示するには、上にスワイプして長押ししてください</translation>
@@ -307,6 +308,7 @@
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{1 アプリでオフ}other{# アプリでオフ}}</translation>
 <translation id="4072264167173457037">電波: 中程度</translation>
 <translation id="4112140312785995938">後方に移動</translation>
+<translation id="4114315158543974537">Phone Hub をオンにする</translation>
 <translation id="4129129681837227511">ロック画面に通知を表示するには、ロックを解除して設定を変更してください</translation>
 <translation id="4146833061457621061">音楽を再生して</translation>
 <translation id="4149156641122542261"><ph name="DEVICE_TYPE" /> は <ph name="DOMAIN" /> によって管理されています</translation>
@@ -388,6 +390,7 @@
 <translation id="4917385247580444890">強い</translation>
 <translation id="4918086044614829423">同意する</translation>
 <translation id="4924411785043111640">再起動してリセット</translation>
+<translation id="4925542575807923399">このアカウントの管理者が、マルチ ログイン セッションにおいて最初にこのアカウントにログインすることを要件としています。</translation>
 <translation id="495046168593986294">上にスクロール</translation>
 <translation id="4961318399572185831">画面をキャスト</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />時間<ph name="MINUTES" />分<ph name="SECONDS" />秒</translation>
@@ -438,6 +441,7 @@
 <translation id="5648021990716966815">マイク差込口</translation>
 <translation id="5669267381087807207">有効化中</translation>
 <translation id="5673434351075758678">設定の同期後に「<ph name="FROM_LOCALE" />」から「<ph name="TO_LOCALE" />」に変更されました。</translation>
+<translation id="5679050765726761783">低電力アダプターが接続されています</translation>
 <translation id="5682642926269496722">Google アシスタントは、現在のユーザー アカウントではご利用いただけません。</translation>
 <translation id="5689633613396158040">夜間モードを利用すると、薄明かりの下でも画面が見やすくなります。タップして、夜間モードをオンにする時間を変更したり、完全にオフにしたりできます。</translation>
 <translation id="5691772641933328258">指紋を認識できません</translation>
@@ -533,6 +537,7 @@
 <translation id="6657585470893396449">パスワード</translation>
 <translation id="6665545700722362599">ウェブサイト、アプリ、拡張機能に対して、位置情報サービスまたはデバイスのマイクやカメラなどの機能の使用を許可する</translation>
 <translation id="6670153871843998651">デスク 3</translation>
+<translation id="6671495933530132209">画像をコピー</translation>
 <translation id="6691659475504239918">検索+Shift+H</translation>
 <translation id="6692996468359469499">選択した項目に関連する情報を取得する</translation>
 <translation id="6696025732084565524">お使いのキーボード（取り外し可能）に重要なアップデートを適用する必要があります</translation>
@@ -552,6 +557,7 @@
 <translation id="6857811139397017780"><ph name="NETWORKSERVICE" /> を有効にする</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{残り 1 桁}other{残り # 桁}}</translation>
 <translation id="6878400149835617132">ショートカットがオフになっています</translation>
+<translation id="6886172995547742638"><ph name="DEVICE_TYPE" /> のパフォーマンスが低下する可能性があります。正規の <ph name="PREFERRED_MINIMUM_POWER" /> W 以上の USB-C 電源アダプターを使用してください。</translation>
 <translation id="6896758677409633944">コピー</translation>
 <translation id="6910714959251846841">このアップデートを適用するにはデバイスで Powerwash を実行する必要があります。<ph name="SYSTEM_APP_NAME" /> の最新アップデートの詳細をご確認ください。</translation>
 <translation id="6919251195245069855">スマートカードを認識できませんでした。もう一度お試しください。</translation>
@@ -732,6 +738,7 @@
 <translation id="8734991477317290293">キー入力が読み取られる可能性があります</translation>
 <translation id="8735953464173050365">キーボード設定を表示します。<ph name="KEYBOARD_NAME" /> が選択されています</translation>
 <translation id="875593634123171288">VPN 設定を表示</translation>
+<translation id="8759408218731716181">マルチログインを設定できません</translation>
 <translation id="8785070478575117577"><ph name="NETWORK_NAME" /> に接続</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />。<ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>

@@ -352,6 +352,7 @@
 <translation id="140520891692800925"><ph name="PROFILE_DISPLAY_NAME" /> (受監管)</translation>
 <translation id="1405779994569073824">已停止運作。</translation>
 <translation id="1406500794671479665">驗證中...</translation>
+<translation id="1407135791313364759">全部開啟</translation>
 <translation id="140723521119632973">啟用行動網路</translation>
 <translation id="1407489512183974736">置中並剪裁</translation>
 <translation id="1408504635543854729">在「檔案」應用程式中探索裝置內容。內容受管理員限制，使用者無法修改。</translation>
@@ -1902,7 +1903,6 @@
 <translation id="3246107497225150582">{0,plural, =1{請在 1 天內更新裝置}other{請在 # 天內更新裝置}}</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - 網路錯誤</translation>
 <translation id="3248902735035392926">安全至上。現在就花點時間<ph name="BEGIN_LINK" />檢查擴充功能<ph name="END_LINK" />吧</translation>
-<translation id="325036368918787455">關閉無痕模式</translation>
 <translation id="3251759466064201842">&lt;不是憑證的一部分&gt;</translation>
 <translation id="3253225298092156258">無法使用</translation>
 <translation id="3253448572569133955">未知的帳戶</translation>
@@ -3442,7 +3442,6 @@
 <translation id="5097649414558628673">工具：<ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">游標停止時自動點擊</translation>
 <translation id="5099399397495049098">網站可以使用 JavaScript (建議)</translation>
-<translation id="5101042277149003567">開啟所有書籤</translation>
 <translation id="5101839224773798795">游標停止時自動點擊</translation>
 <translation id="5107443654503185812">某個擴充功能已停用安全瀏覽功能</translation>
 <translation id="5108967062857032718">設定 - 移除 Android 應用程式</translation>
@@ -4026,7 +4025,6 @@
 <translation id="5804241973901381774">權限</translation>
 <translation id="5805697420284793859">視窗管理員</translation>
 <translation id="5806773519584576205">0° (預設)</translation>
-<translation id="5808664694611589238">{0,plural, =1{關閉訪客視窗}other{關閉訪客視窗}}</translation>
 <translation id="5810809306422959727">這個帳戶無法使用家長監護功能</translation>
 <translation id="5812674658566766066">全部展開</translation>
 <translation id="5814126672212206791">連線類型</translation>

@@ -561,9 +561,6 @@ Ist die Richtlinie auf "False" gesetzt, können Nutzer keine eigenen Drucker hin
         |TIME_LIMITS| geben ein tägliches Nutzungslimit vor. Ist das Limit erreicht, ist die App an diesem Tag nicht mehr verfügbar. Das Nutzungslimit ist in |daily_limit_mins| angegeben. Das Limit wird täglich zur unter |reset_at| angegebenen UTC-Zeit zurückgesetzt.
         Diese Richtlinie wird nur für minderjährige Nutzer angewendet.
         Diese Richtlinie ergänzt "UsageTimeLimit". In "UsageTimeLimit" angegebene Beschränkungen wie Gerätenutzungsdauer und Schlafenszeit werden unabhängig von den "PerAppTimeLimits" erzwungen.</translation>
-<translation id="1914840757300882918">Wenn diese Richtlinie festgelegt ist, verwendet der Host ein Clientzertifikat mit dem angegebenen Aussteller-CN zur Authentifizierung bei "RemoteAccessHostTokenValidationUrl". Verwenden Sie "*", um ein beliebiges verfügbares Clientzertifikat zu nutzen.
-
-          Diese Funktion ist derzeit serverseitig deaktiviert.</translation>
 <translation id="1919802376548418720">Sie können die KDC-Richtlinie verwenden, um Anmeldedaten zu delegieren.</translation>
 <translation id="1920046221095339924">Verwaltete Sitzung auf Gerät zulassen</translation>
 <translation id="1920772397574801429">Wenn die Richtlinie konfiguriert ist, werden die Typen von Konten festgelegt, die von der Android-Authentifizierungs-App angegeben werden, die die Authentifizierung durch <ph name="HTTP_NEGOTIATE" /> unterstützt, z. B. die Kerberos-Authentifizierung. Diese Informationen sollten vom Anbieter der Authentifizierungs-App bereitgestellt werden. Weitere Informationen finden Sie in den Chromium-Projekten unter https://goo.gl/hajyfN.
@@ -1078,22 +1075,6 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
       Ist diese Richtlinie deaktiviert, werden keine Sicherheitswarnungen angezeigt, wenn Chrome mit potenziell schädlichen Befehlszeilen-Flags gestartet wird.
 
       Unter <ph name="MS_WIN_NAME" /> steht diese Funktion nur bei Instanzen zur Verfügung, die Teil einer <ph name="MS_AD_NAME" />-Domain sind, auf denen Windows 10 Pro läuft oder die durch die Chrome-Verwaltung über die Cloud verwaltet werden. Unter <ph name="MAC_OS_NAME" /> steht diese Funktion nur bei Instanzen zur Verfügung, die über die Mobilgeräteverwaltung verwaltet werden oder per MCX mit einer Domain verbunden sind.</translation>
-<translation id="2621383458880689826">Stellt Konfigurationen für gerätegebundene Unternehmensdrucker bereit.
-
-      Mit dieser Richtlinie können Druckerkonfigurationen für <ph name="PRODUCT_OS_NAME" />-Geräte bereitgestellt werden.  Das Format entspricht dem des "NativePrinters"-Wörterbuchs, erfordert jedoch zusätzlich ein "id"- oder "guid"-Feld pro Drucker für die Zulassungs- oder Sperrliste.
-
-      Die Datei darf nicht größer als 5 MB und muss in JSON codiert sein.  Eine Datei mit ungefähr 21.000 Druckern ergibt nach dem Codieren eine Datei mit schätzungsweise 5 MB.  Anhand des kryptografischen Hashs wird die Integrität des Downloads verifiziert.
-
-      Die Datei wird heruntergeladen und im Cache gespeichert. Sobald sich URL oder Hash ändern, wird sie noch einmal heruntergeladen.
-
-      Wenn diese Richtlinie konfiguriert ist, lädt <ph name="PRODUCT_OS_NAME" /> die Datei für Druckerkonfigurationen herunter und die Drucker werden gemäß <ph name="DEVICE_NATIVE_PRINTERS_ACCESS_MODE" />, <ph name="DEVICE_NATIVE_PRINTERS_WHITELIST_POLICY_NAME" /> und <ph name="DEVICE_NATIVE_PRINTERS_BLACKLIST_POLICY_NAME" /> bereitgestellt.
-
-      Diese Richtlinie hat keinen Einfluss darauf, ob Nutzer auf einzelnen Geräten Drucker konfigurieren können.  Sie ist als Ergänzung zu den Druckerkonfigurationen der einzelnen Nutzer gedacht.
-
-      Diese Richtlinie ist ein Zusatz zu <ph name="BULK_PRINTERS_POLICY_NAME" />.
-
-      Wenn diese Richtlinie nicht konfiguriert ist, gibt es keine gerätegebundenen Drucker und <ph name="DEVICE_NATIVE_PRINTERS_POLICY_PATTERN" />-Richtlinien werden ignoriert.
-      </translation>
 <translation id="2623014935069176671">Auf erste Nutzeraktivität warten</translation>
 <translation id="262740370354162807">Senden von Dokumenten an <ph name="CLOUD_PRINT_NAME" /> aktivieren</translation>
 <translation id="2632538643061793322">Wenn diese Richtlinie konfiguriert ist, können Sie eine Liste mit URL-Mustern erstellen, die angeben, welche Websites Nutzer auffordern dürfen, ihnen Zugriff auf ein USB-Gerät zu gewähren.
@@ -1260,12 +1241,6 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
       Ist diese Einstellung aktiviert, wird für die Druckvorschau der Standarddrucker des Betriebssystems als Standarddrucker ausgewählt.</translation>
 <translation id="285627849510728211">Tageskonfiguration für den intelligenten Akkulademodus festlegen</translation>
 <translation id="2856674246949497058">Führen Sie ein Rollback durch und bleiben Sie bei der Zielversion, falls die Version des Betriebssystems neuer ist als die der Zielversion. Außerdem sollten Sie während des Vorgangs einen Powerwash durchführen.</translation>
-<translation id="2869140260739354012">Legt fest, welche Drucker aus <ph name="DEVICE_PRINTERS_POLICY" /> Nutzern zur Verfügung stehen.
-
-      Gibt an, welche Zugriffsrichtlinie für die Massenkonfiguration von Druckern verwendet wird. Wenn <ph name="PRINTERS_ALLOW_ALL" /> ausgewählt ist, werden alle Drucker angezeigt. Wenn <ph name="PRINTERS_BLACKLIST" /> ausgewählt ist, wird der Zugriff auf die angegebenen Drucker anhand von <ph name="DEVICE_NATIVE_PRINTERS_BLACKLIST" /> eingeschränkt.  Wenn <ph name="PRINTERS_WHITELIST" /> ausgewählt ist, gibt <ph name="DEVICE_NATIVE_PRINTERS_WHITELIST" /> nur die Drucker an, die ausgewählt werden können.
-
-      Wenn die Richtlinie nicht festgelegt wird, wird angenommen, dass <ph name="PRINTERS_ALLOW_ALL" /> ausgewählt ist.
-      </translation>
 <translation id="2869762730352628426">Funktion "Automatisch klicken" auf dem Anmeldebildschirm aktivieren</translation>
 <translation id="2872961005593481000">Herunterfahren</translation>
 <translation id="2874209944580848064">Hinweis für <ph name="PRODUCT_OS_NAME" />-Geräte, die Android-Apps unterstützen:</translation>
@@ -1904,12 +1879,6 @@ Wenn diese Richtlinie nicht festgelegt ist, gilt die Standardeinstellung: Vom Un
 <translation id="3838094946886335701">Wenn diese Richtlinie konfiguriert ist – jedoch nur wie empfohlen –, können Sie eine Liste mit Protokoll-Handlern registrieren, die mit den vom Nutzer registrierten zusammengeführt werden. Nachfolgend werden beide Handler-Gruppen verwendet. Setzen Sie die Eigenschaft "protocol" auf das Schema, z. B. "mailto", und die Eigenschaft "URL" auf das URL-Muster der Anwendung, die das im Feld "protocol" angegebene Schema bearbeitet. In dem Muster kann es einen "%s"-Platzhalter geben, der von der verarbeiteten URL ersetzt wird.
 
       Ein von der Richtlinie registrierter Protokoll-Handler kann vom Nutzer nicht entfernt werden. Allerdings können durch Installation eines neuen Standard-Handlers die von der Richtlinie installierten Protokoll-Handler geändert werden.</translation>
-<translation id="3848118497246496090">Gibt die Drucker an, die ein Nutzer nicht verwenden kann.
-
-      Diese Richtlinie wird nur verwendet, wenn <ph name="PRINTERS_BLACKLIST" /> für <ph name="DEVICE_NATIVE_PRINTERS_ACCESS_MODE" /> ausgewählt wurde.
-
-      Wenn diese Richtlinie verwendet wird, werden dem Nutzer alle Drucker mit Ausnahme der in dieser Richtlinie aufgeführten IDs zur Verfügung gestellt. Die IDs müssen den Feldern "id" oder "guid" in der Datei entsprechen, die in <ph name="DEVICE_PRINTERS_POLICY" /> angegeben ist.
-      </translation>
 <translation id="3851039766298741586">Durch diese Richtlinien werden Informationen zur aktiven Kiosksitzung gesendet, etwa Anwendungs-ID und Anwendungsversion.
 
 Wenn für die Richtlinien "false" festgelegt wird, werden die Informationen zu der Kiosksitzung nicht gesendet. Wird für die Richtlinien "true" festgelegt oder werden sie nicht konfiguriert, werden die Informationen zu der Kiosksitzung gesendet.</translation>
@@ -2274,12 +2243,6 @@ Diese Richtlinie hat keine Auswirkungen darauf, ob die lokalen Nutzerdaten auf d
 
       Wenn sie nicht konfiguriert ist, können Websites den Zugriff erfragen, aber Nutzer können diese Einstellung ändern.</translation>
 <translation id="4285674129118156176">Nicht verknüpften Nutzern die Verwendung von ARC gestatten</translation>
-<translation id="4309562700894844665">Gibt die Drucker an, die ein Nutzer verwenden kann.
-
-Diese Richtlinie wird nur verwendet, wenn <ph name="PRINTERS_WHITELIST" /> für <ph name="DEVICE_NATIVE_PRINTERS_ACCESS_MODE" /> ausgewählt wurde.
-
-Wenn diese Richtlinie verwendet wird, stehen dem Nutzer nur die Drucker zur Verfügung, deren IDs mit den Werten in dieser Richtlinie übereinstimmen. Die IDs müssen den Feldern "id" oder "guid" in der Datei entsprechen, die in <ph name="DEVICE_PRINTERS_POLICY" /> angegeben ist.
-      </translation>
 <translation id="4311195029067684288">Vollständig</translation>
 <translation id="4313767483634435271">Eingetragene Dock-MAC-Adresse des Geräts</translation>
 <translation id="4322842393287974810">Der automatisch ohne Verzögerung gestarteten Kiosk-App die Steuerung der <ph name="PRODUCT_OS_NAME" />-Version gestatten</translation>
@@ -2296,9 +2259,6 @@ Wenn diese Richtlinie verwendet wird, stehen dem Nutzer nur die Drucker zur Verf
 <translation id="4347908978527632940">Wenn "true" eingestellt ist und der Nutzer ein betreuter Nutzer ist, können andere Android-Apps die Webeinschränkungen des Nutzers über einen Contentanbieter abfragen.
 
           Wenn "false" oder nichts eingestellt ist, gibt der Contentanbieter keine Informationen zurück.</translation>
-<translation id="4360826270668210664">Wenn diese Richtlinie konfiguriert ist, verlangt der Host für den Remotezugriff von Clients, die sich authentifizieren, ein Authentifizierungstoken von dieser URL, damit eine Verbindung aufgebaut werden kann. Diese Richtlinie muss in Verbindung mit "RemoteAccessHostTokenValidationUrl" verwendet werden.
-
-          Diese Funktion ist derzeit serverseitig deaktiviert.</translation>
 <translation id="4363057787588706121">Zusammenführen von Listenrichtlinien aus unterschiedlichen Quellen erlauben</translation>
 <translation id="4363101430102811068">Datenleck-Erkennung für eingegebene Anmeldedaten aktivieren</translation>
 <translation id="436581050240847513">Gerätenetzwerk-Schnittstellen melden</translation>
@@ -4542,9 +4502,6 @@ Wenn die Richtlinie "<ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" />" k
 <translation id="7477231245051133709">Bedienungshilfe "Mono-Audio" aktivieren</translation>
 <translation id="7477239290070847560">Zeroconf-basierte (mDNS + DNS-SD) Protokollziele</translation>
 <translation id="7485481791539008776">Regeln zur Auswahl des Standarddruckers</translation>
-<translation id="7485730741952775732">Ist diese Richtlinie konfiguriert, verwendet der Host für den Remotezugriff diese URL zur Validierung von Authentifizierungstokens von Clients für den Remotezugriff, um Verbindungen zu akzeptieren. Die Richtlinie muss in Verbindung mit "RemoteAccessHostTokenUrl" verwendet werden.
-
-          Diese Funktion ist derzeit serverseitig deaktiviert.</translation>
 <translation id="749556411189861380">Meldet die Betriebssystem- und Firmwareversion von registrierten Geräten
 
       Wird diese Einstellung nicht konfiguriert oder auf "True" gesetzt, melden registrierte Geräte in regelmäßigen Abständen ihre Betriebssystem- und Firmwareversion. Wird für diese Einstellung "False" festgelegt, werden keine Informationen zur Version gemeldet.</translation>
@@ -4866,9 +4823,6 @@ Die Richtlinienwerte sollten in % angegeben werden und zwischen 0 und 100 liegen
 <translation id="7953256619080733119">Manuell festgelegte Ausnahme-Hosts für verwalteten Nutzer</translation>
 <translation id="7956210013490975468">Konfiguriert den System-Proxy-Dienst für <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="7958537754689366707">Passworteingabe alle zwölf Stunden erforderlich</translation>
-<translation id="7960293328203000385">Definiert eine Liste mit Nutzern, die sich auf dem Gerät anmelden dürfen. Die Einträge haben das Format <ph name="USER_ALLOWLIST_ENTRY_FORMAT" />, zum Beispiel <ph name="USER_ALLOWLIST_ENTRY_EXAMPLE" />. Wenn allen Nutzern in einer Domain die Anmeldung erlaubt werden soll, verwenden Sie Einträge im Format <ph name="USER_ALLOWLIST_ENTRY_WILDCARD" />.
-
-      Wenn diese Richtlinie nicht konfiguriert ist, gibt es keine Einschränkungen im Hinblick auf die Nutzer, die sich anmelden dürfen. Zum Erstellen neuer Nutzer muss aber weiterhin die Richtlinie <ph name="DEVICE_ALLOW_NEW_USERS_POLICY_NAME" /> entsprechend konfiguriert werden.</translation>
 <translation id="7961779417826583251">Erzwingung der Zertifikatstransparenz für eine Liste alter Zertifizierungsstellen deaktivieren</translation>
 <translation id="7973609468423251675">Diese Richtlinie ist veraltet und wird in Version 85 von <ph name="PRODUCT_OS_NAME" /> entfernt. Bitte verwenden Sie stattdessen die Richtlinie "<ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />".
 

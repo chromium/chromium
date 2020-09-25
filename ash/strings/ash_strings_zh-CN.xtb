@@ -59,6 +59,7 @@
 <translation id="1467432559032391204">向左</translation>
 <translation id="1479909375538722835">悬浮无障碍功能菜单</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
+<translation id="1503394326855300303">在多帐号登录会话中，此所有者帐号必须是最先登录的帐号。</translation>
 <translation id="1516740043221086139">“勿扰”模式已开启。</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{显示通知设置。针对 1 个应用关闭通知}other{显示通知设置。针对 # 个应用关闭通知}}</translation>
 <translation id="1525508553941733066">关闭</translation>
@@ -137,7 +138,7 @@
 <translation id="2341729377289034582">已锁定为纵向</translation>
 <translation id="2352467521400612932">触控笔设置</translation>
 <translation id="2354174487190027830">正在激活“<ph name="NAME" />”</translation>
-<translation id="2356210126990741501">您的手机好像未联网，因此我们现在无法为您获取其中的所有个性小应用。</translation>
+<translation id="2356210126990741501">您的手机好像未联网，因此我们现在无法为您获取所有个性小应用。</translation>
 <translation id="2359808026110333948">继续</translation>
 <translation id="2365393535144473978">如果您启用移动数据网络，蓝牙亦会随之开启。</translation>
 <translation id="2369165858548251131">“你好”用英文怎么说</translation>
@@ -172,7 +173,6 @@
 <translation id="2718395828230677721">护眼模式</translation>
 <translation id="2727175239389218057">回复</translation>
 <translation id="2727977024730340865">已插入低功率充电器；可能无法保证充电成功。</translation>
-<translation id="2743387203779672305">复制到剪贴板</translation>
 <translation id="2792498699870441125">Alt + 搜索键</translation>
 <translation id="2819276065543622893">您将立即退出。</translation>
 <translation id="2825224105325558319">“<ph name="DISPLAY_NAME" />”不支持 <ph name="SPECIFIED_RESOLUTION" />。分辨率已改为 <ph name="FALLBACK_RESOLUTION" />。</translation>
@@ -257,6 +257,7 @@
 <translation id="3486220673238053218">定义</translation>
 <translation id="3510164367642747937">突出显示鼠标光标</translation>
 <translation id="3513798432020909783">该帐号由 <ph name="MANAGER_EMAIL" /> 管理</translation>
+<translation id="3571734092741541777">设置</translation>
 <translation id="3573179567135747900">重新更改为“<ph name="FROM_LOCALE" />”（需要重启）</translation>
 <translation id="3576141592585647168">更改时区</translation>
 <translation id="3593646411856133110">向上滑动并按住屏幕可查看已打开的应用</translation>
@@ -389,6 +390,7 @@
 <translation id="4917385247580444890">强</translation>
 <translation id="4918086044614829423">接受</translation>
 <translation id="4924411785043111640">重启并重置</translation>
+<translation id="4925542575807923399">此帐号的管理员规定：在多帐号登录会话中，此帐号必须是最先登录的帐号。</translation>
 <translation id="495046168593986294">向上滚动</translation>
 <translation id="4961318399572185831">投射屏幕</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> 小时 <ph name="MINUTES" /> 分 <ph name="SECONDS" /> 秒</translation>
@@ -535,6 +537,7 @@
 <translation id="6657585470893396449">密码</translation>
 <translation id="6665545700722362599">授权网站、应用和扩展程序使用位置信息服务或使用此设备的麦克风/摄像头/其他功能</translation>
 <translation id="6670153871843998651">桌面 3</translation>
+<translation id="6671495933530132209">复制图片</translation>
 <translation id="6691659475504239918">搜索键+Shift+H</translation>
 <translation id="6692996468359469499">获取与您的所选项相关的信息</translation>
 <translation id="6696025732084565524">您的可拆卸式键盘需要安装一项重要更新</translation>
@@ -734,6 +737,7 @@
 <translation id="8734991477317290293">当前连接的键盘可能会试图窃取您的击键操作</translation>
 <translation id="8735953464173050365">显示键盘设置。已选择<ph name="KEYBOARD_NAME" /></translation>
 <translation id="875593634123171288">显示 VPN 设置</translation>
+<translation id="8759408218731716181">无法设置多帐号登录</translation>
 <translation id="8785070478575117577">连接到“<ph name="NETWORK_NAME" />”</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />。<ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>

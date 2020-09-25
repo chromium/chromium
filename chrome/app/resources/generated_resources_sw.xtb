@@ -352,6 +352,7 @@
 <translation id="140520891692800925"><ph name="PROFILE_DISPLAY_NAME" /> (Mtumiaji anayesimamiwa)</translation>
 <translation id="1405779994569073824">Kimeacha kufanya kazi.</translation>
 <translation id="1406500794671479665">Inathibitisha...</translation>
+<translation id="1407135791313364759">Fungua zote</translation>
 <translation id="140723521119632973">Kuwasha Mtandao wa Simu</translation>
 <translation id="1407489512183974736">Imepogolewa Katikati</translation>
 <translation id="1408504635543854729">Gundua maudhui ya kifaa katika programu ya Faili. Msimamizi ameweka vikwazo kwenye maudhui na hayawezi kurekebishwa.</translation>
@@ -1900,7 +1901,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="3246107497225150582">{0,plural, =1{Sasisha kifaa ndani ya siku moja}other{Sasisha kifaa ndani ya siku #}}</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - Hitilafu ya mtandao</translation>
 <translation id="3248902735035392926">Masuala ya usalama. Chukua muda mfupi na <ph name="BEGIN_LINK" />uangalie viendelezi vyako sasa<ph name="END_LINK" /></translation>
-<translation id="325036368918787455">Funga madirisha fiche</translation>
 <translation id="3251759466064201842">&lt;Sio Sehemu Ya Cheti&gt;</translation>
 <translation id="3253225298092156258">Haipatikani</translation>
 <translation id="3253448572569133955">Akaunti isiyojulikana</translation>
@@ -3439,7 +3439,6 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5097649414558628673">Zana: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">Bofya kiotomatiki kiteuzi kinaposimama</translation>
 <translation id="5099399397495049098">Tovuti zinaweza kutumia JavaScript (inapendekezwa)</translation>
-<translation id="5101042277149003567">Fungua alamisho zote</translation>
 <translation id="5101839224773798795">Bofya kiotomatiki kiteuzi kinaposimama</translation>
 <translation id="5107443654503185812">Kiendelezi kimezima kipengele cha Kuvinjari Salama</translation>
 <translation id="5108967062857032718">Mipangilio - Ondoa programu za Android</translation>
@@ -4023,7 +4022,6 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5804241973901381774">Idhini</translation>
 <translation id="5805697420284793859">Kidhibiti cha dirisha</translation>
 <translation id="5806773519584576205">0° (Chaguomsingi)</translation>
-<translation id="5808664694611589238">{0,plural, =1{Funga dirisha la mgeni}other{Funga madirisha ya wageni}}</translation>
 <translation id="5810809306422959727">Akaunti hii haijatimiza masharti ya vidhibiti vya wazazi</translation>
 <translation id="5812674658566766066">Panua zote</translation>
 <translation id="5814126672212206791">Aina ya muunganisho</translation>

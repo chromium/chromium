@@ -59,6 +59,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1467432559032391204">Links</translation>
 <translation id="1479909375538722835">Zwevend toegankelijkheidsmenu</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
+<translation id="1503394326855300303">Dit eigenaarsaccount is het eerste account waarop moet worden ingelogd wanneer meerdere inlogsessies worden uitgevoerd.</translation>
 <translation id="1516740043221086139">'Niet storen' is ingeschakeld.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Instellingen voor meldingen weergeven. Meldingen zijn uitgeschakeld voor een app}other{Instellingen voor meldingen weergeven. Meldingen zijn uitgeschakeld voor # apps}}</translation>
 <translation id="1525508553941733066">SLUITEN</translation>
@@ -69,6 +70,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1589090746204042747">Al je activiteit in deze sessie bekijken</translation>
 <translation id="1611993646327628135">Aan</translation>
 <translation id="1632985212731562677">Je kunt 'Toegang via schakelaar' uitschakelen via Instellingen &gt; Toegankelijkheid.</translation>
+<translation id="1651447046299738444">Zo te zien is bluetooth of wifi uitgeschakeld op je Chromebook. Check je verbinding om Phone Hub te gebruiken.</translation>
 <translation id="1654477262762802994">Een gesproken zoekopdracht starten</translation>
 <translation id="1667964833127753507">De neutrale kleurenmodus vervangt de kleuren van de achtergrond door neutrale lichte of donkere tinten.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> resterend</translation>
@@ -151,6 +153,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="2435457462613246316">Wachtwoord weergeven</translation>
 <translation id="2473177541599297363">Resolutie bevestigen</translation>
 <translation id="2475982808118771221">Er is een fout opgetreden</translation>
+<translation id="2479579251444854687">Swipe met twee vingers omhoog om het overzicht te openen en omlaag om het te sluiten.</translation>
 <translation id="2482878487686419369">Meldingen</translation>
 <translation id="2484513351006226581">Druk op <ph name="KEYBOARD_SHORTCUT" /> om van toetsenbordindeling te wisselen.</translation>
 <translation id="2501920221385095727">Plaktoetsen</translation>
@@ -163,6 +166,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="2595239820337756193">5 km in mijl</translation>
 <translation id="2617342710774726426">Simkaart is vergrendeld</translation>
 <translation id="2621713457727696555">Beveiligd</translation>
+<translation id="2640255526076764619">Het touchpadgebaar om naar het vorige bureau te schakelen, is gewijzigd. Swipe met vier vingers naar links om naar het vorige bureau te schakelen.</translation>
 <translation id="2653659639078652383">Verzenden</translation>
 <translation id="2658778018866295321">Klikken en slepen</translation>
 <translation id="2700493154570097719">Je toetsenbord instellen</translation>
@@ -172,7 +176,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="2718395828230677721">Nachtlicht</translation>
 <translation id="2727175239389218057">Reageren</translation>
 <translation id="2727977024730340865">Aangesloten op een laag-vermogen-lader. Opladen van de batterij mogelijk niet betrouwbaar.</translation>
-<translation id="2743387203779672305">Kopiëren naar klembord</translation>
 <translation id="2792498699870441125">Alt+Zoeken</translation>
 <translation id="2819276065543622893">Je wordt nu uitgelogd.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> ondersteunt <ph name="SPECIFIED_RESOLUTION" /> niet. De resolutie is gewijzigd in <ph name="FALLBACK_RESOLUTION" />.</translation>
@@ -257,6 +260,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="3486220673238053218">definitie</translation>
 <translation id="3510164367642747937">Muisaanwijzer markeren</translation>
 <translation id="3513798432020909783">Account wordt beheerd door <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3571734092741541777">Instellen</translation>
 <translation id="3573179567135747900">Teruggaan naar '<ph name="FROM_LOCALE" />' (opnieuw starten vereist)</translation>
 <translation id="3576141592585647168">Tijdzone wijzigen</translation>
 <translation id="3593646411856133110">Swipe omhoog en houd vast om apps te openen</translation>
@@ -341,6 +345,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> is uitgeschakeld.</translation>
 <translation id="4421231901400348175">De controle over je scherm wordt gedeeld met <ph name="HELPER_NAME" /> via externe ondersteuning.</translation>
 <translation id="4430019312045809116">Volume</translation>
+<translation id="4444978951615977024">Check je verbinding</translation>
 <translation id="4450893287417543264">Niet meer tonen</translation>
 <translation id="445864333228800152">Goedenavond,</translation>
 <translation id="4458688154122353284">Schermopname stoppen</translation>
@@ -350,6 +355,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Ontkoppelde apparaten</translation>
 <translation id="4505050298327493054">Actief bureaublad.</translation>
+<translation id="4506458088675900627">Het touchpadgebaar voor het overzicht is gewijzigd</translation>
 <translation id="4513946894732546136">Feedback</translation>
 <translation id="4527045527269911712">Bluetooth-apparaat '<ph name="DEVICE_NAME" />' wil rechten om te koppelen.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> tot volledig opgeladen</translation>
@@ -389,6 +395,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="4917385247580444890">Sterk</translation>
 <translation id="4918086044614829423">Accepteren</translation>
 <translation id="4924411785043111640">Opnieuw opstarten en resetten</translation>
+<translation id="4925542575807923399">De beheerder van dit account vereist dat dit account het eerste ingelogde account is in een sessie met toegang tot meerdere accounts.</translation>
 <translation id="495046168593986294">Omhoog scrollen</translation>
 <translation id="4961318399572185831">Scherm casten</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> u <ph name="MINUTES" /> m <ph name="SECONDS" /> s</translation>
@@ -478,6 +485,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="6018164090099858612">Mirrormodus wordt gesloten</translation>
 <translation id="602001110135236999">Naar links scrollen</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signaalsterkte <ph name="SIGNAL_STRENGTH" />, beheerd door je beheerder</translation>
+<translation id="6029337736376922061">Het touchpadgebaar om naar het volgende bureau te schakelen, is gewijzigd. Swipe met vier vingers naar rechts om naar het volgende bureau te schakelen.</translation>
 <translation id="6030495522958826102">Menu verplaatst naar linksonder in het scherm.</translation>
 <translation id="6040143037577758943">Sluiten</translation>
 <translation id="6043212731627905357">Dit beeldscherm werkt niet met je <ph name="DEVICE_TYPE" /> (het beeldscherm wordt niet ondersteund).</translation>
@@ -535,6 +543,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="6657585470893396449">Wachtwoord</translation>
 <translation id="6665545700722362599">Kies of websites, apps en extensies mogen gebruikmaken van locatieservices of de microfoon, de camera of andere functies van het apparaat</translation>
 <translation id="6670153871843998651">Bureau 3</translation>
+<translation id="6671495933530132209">Afbeelding kopiëren</translation>
 <translation id="6691659475504239918">Zoeken+Shift+H</translation>
 <translation id="6692996468359469499">Informatie over je selectie bekijken</translation>
 <translation id="6696025732084565524">Je afneembare toetsenbord heeft een essentiële update nodig</translation>
@@ -734,6 +743,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="8734991477317290293">Mogelijk wordt geprobeerd om je toetsaanslagen te stelen</translation>
 <translation id="8735953464173050365">Toetsenbordinstellingen weergeven. <ph name="KEYBOARD_NAME" /> is geselecteerd</translation>
 <translation id="875593634123171288">VPN-instellingen weergeven</translation>
+<translation id="8759408218731716181">Kan toegang tot meerdere accounts niet instellen</translation>
 <translation id="8785070478575117577">Verbinding maken met <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wifi</translation>

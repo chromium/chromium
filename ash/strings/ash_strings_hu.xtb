@@ -59,6 +59,7 @@
 <translation id="1467432559032391204">Balra</translation>
 <translation id="1479909375538722835">Kisegítő lehetőségek lebegő menüje</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
+<translation id="1503394326855300303">Ennek a tulajdonosi fióknak kell lennie az első bejelentkezett fióknak a többfiókos bejelentkezés munkamenete során.</translation>
 <translation id="1516740043221086139">A Ne zavarjanak funkció be van kapcsolva.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Értesítési beállítások megjelenítése. Az értesítések egyetlen alkalmazásnál vannak kikapcsolva}other{Értesítési beállítások megjelenítése. Az értesítések # alkalmazásnál ki vannak kapcsolva}}</translation>
 <translation id="1525508553941733066">ELVETÉS</translation>
@@ -172,7 +173,6 @@
 <translation id="2718395828230677721">Éjszakai fény</translation>
 <translation id="2727175239389218057">Válasz</translation>
 <translation id="2727977024730340865">Kis teljesítményű töltőt csatlakoztatott. Az akkumulátor töltése nem megbízható.</translation>
-<translation id="2743387203779672305">Másolás a vágólapra</translation>
 <translation id="2792498699870441125">Alt + Keresés</translation>
 <translation id="2819276065543622893">A rendszer most kijelentkezteti Önt.</translation>
 <translation id="2825224105325558319">A(z) <ph name="DISPLAY_NAME" /> nem támogatja a következő felbontást: <ph name="SPECIFIED_RESOLUTION" />. A felbontás erre módosult: <ph name="FALLBACK_RESOLUTION" />.</translation>
@@ -257,6 +257,7 @@
 <translation id="3486220673238053218">definíció</translation>
 <translation id="3510164367642747937">Egérmutató kiemelése</translation>
 <translation id="3513798432020909783">A fiókot a(z) <ph name="MANAGER_EMAIL" /> kezeli</translation>
+<translation id="3571734092741541777">Beállítás</translation>
 <translation id="3573179567135747900">Visszatérés ehhez: "<ph name="FROM_LOCALE" />" (újraindítás szükséges)</translation>
 <translation id="3576141592585647168">Időzóna módosítása</translation>
 <translation id="3593646411856133110">Felfelé csúsztatva és nyomva tartva megjelenik a többi alkalmazás</translation>
@@ -390,6 +391,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="4917385247580444890">Erős</translation>
 <translation id="4918086044614829423">Elfogadás</translation>
 <translation id="4924411785043111640">Újraindítás és visszaállítás</translation>
+<translation id="4925542575807923399">A fiók rendszergazdája megköveteli, hogy ez a fiók legyen az első bejelentkezett fiók a többfiókos bejelentkezés munkamenete során.</translation>
 <translation id="495046168593986294">Görgetés felfelé</translation>
 <translation id="4961318399572185831">Képernyő átküldése</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> ó <ph name="MINUTES" /> p <ph name="SECONDS" /> mp</translation>
@@ -536,6 +538,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="6657585470893396449">Jelszó</translation>
 <translation id="6665545700722362599">Engedélyadás webhelyek, alkalmazások és bővítmények számára a helyszolgáltatásoknak, illetve az eszköz mikrofonjának, kamerájának vagy más funkcióinak használatára</translation>
 <translation id="6670153871843998651">3. asztal</translation>
+<translation id="6671495933530132209">Kép másolása</translation>
 <translation id="6691659475504239918">Keresés+Shift+H</translation>
 <translation id="6692996468359469499">Információk kérése a kiválasztott elemmel kapcsolatban</translation>
 <translation id="6696025732084565524">Szükség van a leválasztható billentyűzet kritikus frissítésének telepítésére</translation>
@@ -735,6 +738,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="8734991477317290293">Előfordulhat, hogy így kísérlik meg a billentyűleütések rögzítését</translation>
 <translation id="8735953464173050365">A billentyűzet beállításainak megjelenítése. <ph name="KEYBOARD_NAME" /> van kiválasztva</translation>
 <translation id="875593634123171288">VPN-beállítások megjelenítése</translation>
+<translation id="8759408218731716181">Nem lehet beállítani a többfiókos bejelentkezést</translation>
 <translation id="8785070478575117577">Csatlakozás a következőhöz: <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>

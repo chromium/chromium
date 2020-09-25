@@ -108,6 +108,7 @@
 <translation id="1868024384445905608">Chrome zdaj hitreje prenaša datoteke</translation>
 <translation id="1877026089748256423">Chrome je zastarel</translation>
 <translation id="1883903952484604915">Moje datoteke</translation>
+<translation id="189358972401248634">Drugi jeziki</translation>
 <translation id="1925021887439448749">Vnesite spletni naslov po meri</translation>
 <translation id="1928696683969751773">Posodobitve</translation>
 <translation id="19288952978244135">Znova odprite Chrome.</translation>
@@ -217,6 +218,7 @@ Dotaknite se poljubne besede in jo pridržite, če želite iskati. Če želite i
 <translation id="2689830683995595741">Če uporabljate Chrome, se strinjate z <ph name="BEGIN_LINK1" />Googlovimi pogoji storitve<ph name="END_LINK1" /> in <ph name="BEGIN_LINK2" />dodatnimi pogoji storitve za Google Chrome in Chrome OS<ph name="END_LINK2" />. Za vas velja tudi <ph name="BEGIN_LINK3" />pravilnik o zasebnosti za račune Google, upravljane s Family Linkom<ph name="END_LINK3" />.</translation>
 <translation id="2707726405694321444">Osveži stran</translation>
 <translation id="2709516037105925701">Samodejno izpolnjevanje</translation>
+<translation id="2723001399770238859">zvok</translation>
 <translation id="2728754400939377704">Razvrsti glede na spletno mesto</translation>
 <translation id="2744248271121720757">Dotaknite se besede, če želite dinamično iskati ali prikazati sorodna dejanja</translation>
 <translation id="2760989362628427051">Vklop temne teme, ko je v napravi vklopljena temna tema ali je vklopljeno varčevanje z energijo akumulatorja</translation>
@@ -467,6 +469,7 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="4738836084190194332">Zadnja sinhronizacija: <ph name="WHEN" /></translation>
 <translation id="4749960740855309258">Odpiranje novega zavihka</translation>
 <translation id="4759238208242260848">Prenosi</translation>
+<translation id="4763480195061959176">video</translation>
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{1 prenos je končan.}one{# prenos je končan.}two{# prenosa sta končana.}few{# prenosi so končani.}other{# prenosov je končanih.}}</translation>
 <translation id="4766678251456904326">Dodajte račun v napravo</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{Načrtovan je 1 prenos.}one{Načrtovan je # prenos.}two{Načrtovana sta # prenosa.}few{Načrtovani so # prenosi.}other{Načrtovanih je # prenosov.}}</translation>
@@ -788,7 +791,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="7055152154916055070">Preusmeritev je preprečena:</translation>
 <translation id="7063006564040364415">Povezave s strežnikom za sinhronizacijo ni bilo mogoče vzpostaviti.</translation>
 <translation id="7071521146534760487">Upravljanje računa</translation>
-<translation id="707155805709242880">Spodaj izberite, kaj želite sinhronizirati</translation>
+<translation id="707155805709242880">Spodaj izberite, kaj želite sinhronizirati.</translation>
 <translation id="7077143737582773186">SD kartica</translation>
 <translation id="7080806333218412752">Pošlje URL-je Varnemu brskanju, da jih ta preveri. Prav tako pošlje manjši vzorec strani, prenosov, dejavnosti razširitev in podatkov o sistemu zaradi pomoči pri odkrivanju novih groženj. Te podatke začasno poveže z vašim računom Google, če ste prijavljeni, zaradi zagotavljanja zaščite v Googlovih aplikacijah.</translation>
 <translation id="7088681679121566888">Chrome je posodobljen</translation>
@@ -927,7 +930,7 @@ V načinu brez beleženja dejavnosti je vaša dejavnost morda še vedno vidna sp
 <translation id="8058746566562539958">Odpiranje na novem zavihku v Chromu</translation>
 <translation id="8063895661287329888">Zaznamka ni bilo mogoče dodati.</translation>
 <translation id="806745655614357130">Podatki naj bodo ločeni</translation>
-<translation id="8069669375923284295">Dotaknite se, če želite nadaljevati nastavitev sinhronizacije</translation>
+<translation id="8069669375923284295">Dotaknite se, če želite nadaljevati nastavitev sinhronizacije.</translation>
 <translation id="8073388330009372546">Odpri sliko na novem zavihku</translation>
 <translation id="8076492880354921740">Zavihki</translation>
 <translation id="8084114998886531721">Shranjeno geslo</translation>

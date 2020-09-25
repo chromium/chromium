@@ -509,6 +509,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="3080254622891793721">Grafika</translation>
 <translation id="3086579638707268289">Twoja aktywność w internecie jest monitorowana</translation>
 <translation id="3087734570205094154">Na dół</translation>
+<translation id="3094457892697649331">Gdy edytujesz adnotacje, dokument powraca do widoku jednej strony.</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3096100844101284527">Dodaj adres odbioru</translation>
 <translation id="3105172416063519923">Identyfikator zasobu:</translation>
@@ -741,6 +742,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="4075941231477579656">Touch ID</translation>
 <translation id="4079302484614802869">Proxy skonfigurowano do używania URL-a skryptu PAC, a nie ustalonych serwerów proxy.</translation>
 <translation id="4082393374666368382">Ustawienia – Zarządzanie</translation>
+<translation id="4084120443451129199">Tryb wyszukiwania. Naciśnij Enter, by wyszukać w <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="4088981014127559358">Strona 1 – przesunięcie obrazu wzdłuż osi Y</translation>
 <translation id="4098354747657067197">Wchodzisz na stronę wprowadzającą w błąd</translation>
 <translation id="4101413244023615925">Tekst i grafika</translation>
@@ -932,6 +934,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="4809079943450490359">Instrukcje od administratora urządzenia:</translation>
 <translation id="4813512666221746211">Błąd sieci</translation>
 <translation id="4816492930507672669">Dopasuj do strony</translation>
+<translation id="4819347708020428563">Czy chcesz edytować adnotacje w widoku domyślnym?</translation>
 <translation id="484462545196658690">Automatycznie</translation>
 <translation id="4850886885716139402">Widok</translation>
 <translation id="4854362297993841467">Ta metoda dostawy jest niedostępna. Wybierz inną.</translation>
@@ -1666,6 +1669,7 @@ Dodatkowe informacje:
 <translation id="7802523362929240268">Strona spełnia wymagania prawne</translation>
 <translation id="780301667611848630">Nie, dziękuję</translation>
 <translation id="7805768142964895445">Stan</translation>
+<translation id="7811322735445742657">Gdy edytujesz adnotacje, dokument powraca do widoku jednej strony i pierwotnej orientacji.</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Usunąć tę podpowiedź do formularza z Chrome?</translation>
 <translation id="781440967107097262">Udostępnić schowek?</translation>
@@ -1701,6 +1705,7 @@ Dodatkowe informacje:
 <translation id="7956713633345437162">Zakładki na komórce</translation>
 <translation id="7961015016161918242">Nigdy</translation>
 <translation id="7966803981046576691">Rodzaj konta zadania</translation>
+<translation id="7976214039405368314">Zbyt wiele żądań</translation>
 <translation id="7977538094055660992">Urządzenie wyjściowe</translation>
 <translation id="7977894662897852582">Edp</translation>
 <translation id="799149739215780103">Wiązanie</translation>
@@ -1782,6 +1787,7 @@ Dodatkowe informacje:
 <translation id="8289355894181816810">Jeśli nie masz pewności, co to oznacza, skontaktuj się z administratorem sieci.</translation>
 <translation id="8293206222192510085">Dodaj zakładkę</translation>
 <translation id="8294431847097064396">Źródło</translation>
+<translation id="8297398969342264569">Gdy edytujesz adnotacje, dokument powraca do pierwotnej orientacji.</translation>
 <translation id="8298115750975731693">Sieć Wi-Fi (<ph name="WIFI_NAME" />), której używasz, może wymagać otwarcia strony <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="8303854710873047864">Wyświetlam sekcję „<ph name="SECTION" />”</translation>
 <translation id="830498451218851433">Składanie w połowie</translation>

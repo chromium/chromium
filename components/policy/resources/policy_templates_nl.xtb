@@ -560,9 +560,6 @@ Als je dit beleid uitschakelt, wordt op de webpagina naar specifieke tekstfragme
         |TIME_LIMITS| past een dagelijkse gebruikslimiet toe en zorgt dat de app niet beschikbaar is nadat de tijdslimiet voor de betreffende dag is bereikt. De gebruikslimiet wordt opgegeven in |daily_limit_mins|. De gebruikslimiet wordt dagelijks gereset op de UTC-tijd die wordt doorgegeven in |reset_at|.
         Dit beleid wordt alleen gebruikt voor minderjarige gebruikers.
         Dit beleid vormt een aanvulling op 'UsageTimeLimit'. Beperkingen die zijn opgegeven in 'UsageTimeLimit' (zoals schermtijd en bedtijd), worden afgedwongen, ongeacht 'PerAppTimeLimits'.</translation>
-<translation id="1914840757300882918">Als dit beleid is ingesteld, gebruikt de host een clientcertificaat met het CN van de opgegeven verstrekker voor verificatie voor RemoteAccessHostTokenValidationUrl. Stel dit in op '*' om een willekeurig beschikbaar clientcertificaat te gebruiken.
-
-          Deze functie is momenteel uitgeschakeld aan de serverzijde.</translation>
 <translation id="1919802376548418720">Gebruik KDC-beleid om gegevens te delegeren.</translation>
 <translation id="1920046221095339924">Beheerde sessie op apparaat toestaan</translation>
 <translation id="1920772397574801429">Als je het beleid instelt, wordt het accounttype opgegeven van de accounts die worden geleverd door de Android-verificatie-app die <ph name="HTTP_NEGOTIATE" />-verificatie ondersteunt (zoals Kerberos-verificatie). Deze informatie is beschikbaar via de leverancier van de verificatie-app. Ga naar The Chromium Projects (https://goo.gl/hajyfN) voor meer informatie.
@@ -1078,22 +1075,6 @@ Als dit beleid niet is ingesteld, is het privacyscherm in eerste instantie uitge
       Als dit beleid is uitgeschakeld, worden er geen beveiligingswaarschuwingen weergegeven als Chrome wordt gestart met bepaalde mogelijk schadelijke opdrachtregelmarkeringen.
 
       In <ph name="MS_WIN_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein, worden uitgevoerd in Windows 10 Pro of zijn ingeschreven voor 'Cloudbeheer voor de Chrome-browser'. In <ph name="MAC_OS_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die via MDM worden beheerd of via MCX aan een domein zijn gekoppeld.</translation>
-<translation id="2621383458880689826">Biedt configuraties voor bedrijfsprinters die aan apparaten zijn gekoppeld.
-
-      Met dit beleid kun je printerconfiguraties leveren aan <ph name="PRODUCT_OS_NAME" />-apparaten.  De indeling is hetzelfde als de NativePrinters-woordenlijst, met een extra verplicht ID- of GUID-veld per printer voor de toelatings- of blokkeringslijst.
-
-      Het bestand mag niet groter zijn dan 5 MB en moet zijn gecodeerd in JSON.  Naar schatting wordt een bestand met ongeveer 21.000 printers gecodeerd als een bestand van 5 MB.  De cryptografische hash wordt gebruikt om de integriteit van de download te verifiëren.
-
-      Het bestand wordt gedownload en opgeslagen in het cachegeheugen. Het wordt opnieuw gedownload als de URL of de hash wordt gewijzigd.
-
-      Als dit beleid is ingesteld, downloadt <ph name="PRODUCT_OS_NAME" /> het bestand voor printerconfiguraties en worden printers beschikbaar in overeenstemming met <ph name="DEVICE_NATIVE_PRINTERS_ACCESS_MODE" />, <ph name="DEVICE_NATIVE_PRINTERS_WHITELIST_POLICY_NAME" /> en <ph name="DEVICE_NATIVE_PRINTERS_BLACKLIST_POLICY_NAME" />.
-
-      Dit beleid is niet van invloed op de mogelijkheid van gebruikers om printers op afzonderlijke apparaten in te stellen.  Het is bedoeld als aanvulling op de printerinstellingen van afzonderlijke gebruikers.
-
-      Dit beleid is een aanvulling op <ph name="BULK_PRINTERS_POLICY_NAME" />.
-
-      Als dit beleid niet is ingesteld, zijn er geen apparaatprinters en worden de andere beleidsregels '<ph name="DEVICE_NATIVE_PRINTERS_POLICY_PATTERN" />' genegeerd.
-      </translation>
 <translation id="2623014935069176671">Wachten op initiële gebruikersactiviteit</translation>
 <translation id="262740370354162807">Verzenden van documenten naar <ph name="CLOUD_PRINT_NAME" /> inschakelen</translation>
 <translation id="2632538643061793322">Als je het beleid instelt, kun je een lijst met URL-patronen maken om op te geven welke sites gebruikers mogen vragen om toegang tot een USB-apparaat.
@@ -1260,12 +1241,6 @@ Als dit beleid niet is ingesteld, is het privacyscherm in eerste instantie uitge
       Als je deze instelling inschakelt, gebruikt Afdrukvoorbeeld de standaardprinter van het besturingssysteem als standaardbestemming.</translation>
 <translation id="285627849510728211">Dagconfiguratie voor geavanceerde batterijoplaadmodus instellen</translation>
 <translation id="2856674246949497058">Herstel en blijf op de doelversie als de OS-versie nieuwer is dan de doelversie. Voer een powerwash uit tijdens het proces.</translation>
-<translation id="2869140260739354012">Hiermee wordt beheerd welke printers uit <ph name="DEVICE_PRINTERS_POLICY" /> beschikbaar zijn voor gebruikers.
-
-      Hiermee wordt aangegeven welk toegangsbeleid wordt gebruikt voor bulksgewijze printerconfiguratie. Als <ph name="PRINTERS_ALLOW_ALL" /> is geselecteerd, worden alle printers weergegeven. Als <ph name="PRINTERS_BLACKLIST" /> is geselecteerd, wordt <ph name="DEVICE_NATIVE_PRINTERS_BLACKLIST" /> gebruikt om de toegang tot de opgegeven printers te beperken. Als <ph name="PRINTERS_WHITELIST" /> is geselecteerd, geeft <ph name="DEVICE_NATIVE_PRINTERS_WHITELIST" /> alleen de printers aan die kunnen worden geselecteerd.
-
-      Als dit beleid niet is ingesteld, wordt er uitgegaan van <ph name="PRINTERS_ALLOW_ALL" />.
-      </translation>
 <translation id="2869762730352628426">Automatisch klikken op het inlogscherm inschakelen</translation>
 <translation id="2872961005593481000">Afsluiten</translation>
 <translation id="2874209944580848064">Opmerking voor <ph name="PRODUCT_OS_NAME" />-apparaten die Android-apps ondersteunen:</translation>
@@ -1612,6 +1587,17 @@ Als dit beleid is ingesteld op False, gebruikt <ph name="PRODUCT_NAME" /> geen n
 
       Als dit beleid niet is ingesteld, wordt elke plug-in uitgeschakeld die overeenkomt met de patronen in 'DisabledPlugins', en kan de gebruiker deze niet inschakelen.</translation>
 <translation id="3381968327636295719"> gebruiken</translation>
+<translation id="3383794118443927579">Met dit beleid wordt de standaard-URL van pagina 'Nieuw tabblad' geconfigureerd en wordt voorkomen dat gebruikers deze kunnen wijzigen.
+
+      De pagina 'Nieuw tabblad' wordt geopend als er nieuwe tabbladen en vensters worden geopend.
+
+      Met dit beleid bepaal je niet welke pagina's worden geopend als de browser wordt opgestart. Deze pagina's worden beheerd door het <ph name="RESTORE_ON_STARTUP_POLICY_NAME" />-beleid. Dit beleid is wel van invloed op de homepage als hiervoor is ingesteld dat de pagina 'Nieuw tabblad' moet worden geopend, maar ook op de startpagina als deze is ingesteld op de pagina 'Nieuw tabblad'.
+
+      Het is verstandig om de volledige canonieke URL op te geven. Als de URL niet volledig canoniek is, gebruikt <ph name="PRODUCT_NAME" /> standaard https://.
+
+      Als je het beleid niet instelt of leeg laat, wordt de standaardpagina 'Nieuw tabblad' gebruikt.
+
+      In <ph name="MS_WIN_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein, worden uitgevoerd in Windows 10 Pro of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />. In <ph name="MAC_OS_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die via MDM worden beheerd of via MCX aan een domein zijn gekoppeld.</translation>
 <translation id="3391457705621770207">Als je het beleid instelt, geef je de hoeveelheid tijd in milliseconden zonder gebruikersactiviteit aan voordat er automatisch wordt ingelogd op het lokale account op het apparaat dat wordt gespecificeerd door het beleid <ph name="DEVICE_LOCAL_ACCOUNT_AUTO_LOGIN_ID_POLICY_NAME" />.
 
       Als je het beleid niet instelt, betekent dit dat 0 milliseconden wordt gebruikt voor de time-out.
@@ -1902,12 +1888,6 @@ Als dit beleid is ingesteld op False, gebruikt <ph name="PRODUCT_NAME" /> geen n
 <translation id="3838094946886335701">Als je het beleid instelt (alleen zoals aanbevolen), kun je een lijst met protocolhandlers registreren. Deze worden samengevoegd met de protocolhandlers die de gebruiker registreert, waarna beide sets gebruikt worden. Stel de eigenschap 'protocol' in op het schema, zoals 'mailto', en stel de eigenschap 'URL' in op het URL-patroon van de app die het schema verwerkt dat in het veld 'protocol' wordt gespecificeerd. Het patroon mag de tijdelijke aanduiding '%s' bevatten die wordt vervangen door de verwerkte URL.
 
       Gebruikers kunnen een protocolhandler niet verwijderen als deze is geregistreerd door een beleid. Als ze een nieuwe standaard handler installeren, kunnen ze de protocolhandlers wijzigen die door het beleid zijn geïnstalleerd.</translation>
-<translation id="3848118497246496090">Geeft aan welke printers een gebruiker niet kan gebruiken.
-
-      Dit beleid wordt alleen gebruikt als <ph name="PRINTERS_BLACKLIST" /> is gekozen voor <ph name="DEVICE_NATIVE_PRINTERS_ACCESS_MODE" />.
-
-      Als dit beleid wordt gebruikt, zijn alle printers voor de gebruiker beschikbaar, behalve de ID's in dit beleid. De ID's moeten overeenkomen met het ID- of GUID-veld in het bestand dat is opgegeven in <ph name="DEVICE_PRINTERS_POLICY" />.
-      </translation>
 <translation id="3851039766298741586">Informatie rapporteren over de actieve kiosksessie, zoals
       de ID en versie van de app.
 
@@ -2272,12 +2252,6 @@ Als dit beleid is ingesteld op False, gebruikt <ph name="PRODUCT_NAME" /> geen n
 
       Als je het beleid niet instelt, vragen websites om toegang maar kunnen gebruikers deze instelling wijzigen.</translation>
 <translation id="4285674129118156176">Toestaan dat niet-gelieerde gebruikers ARC gebruiken</translation>
-<translation id="4309562700894844665">Hiermee worden de printers gespecificeerd die een gebruiker kan gebruiken.
-
-      Dit beleid wordt alleen gebruikt als <ph name="PRINTERS_WHITELIST" /> is gekozen voor <ph name="DEVICE_NATIVE_PRINTERS_ACCESS_MODE" />
-
-Als dit beleid wordt gebruikt, zijn alleen de printers met ID's die overeenkomen met de waarden in dit beleid beschikbaar voor de gebruiker. De ID's moeten overeenkomen met het ID- of GUID-veld in het bestand dat is opgegeven in <ph name="DEVICE_PRINTERS_POLICY" />.
-      </translation>
 <translation id="4311195029067684288">Full</translation>
 <translation id="4313767483634435271">Toegewezen MAC-adres van dock van apparaat</translation>
 <translation id="4322842393287974810">Toestaan dat de kiosk-app die automatisch zonder vertraging is gestart, de <ph name="PRODUCT_OS_NAME" />-versie beheert</translation>
@@ -2294,9 +2268,6 @@ Als dit beleid wordt gebruikt, zijn alleen de printers met ID's die overeenkomen
 <translation id="4347908978527632940">Als beleid 'True' is en de gebruiker een gebruiker met beperkte rechten is, kunnen andere Android-apps de internetbeperkingen van de gebruiker opvragen via de contentprovider.
 
           Als het beleid 'False' of niet ingesteld is, retourneert de contentprovider geen informatie.</translation>
-<translation id="4360826270668210664">Als dit beleid is ingesteld, moet de host voor externe toegang clients verifiëren om een verificatietoken van deze URL te verkrijgen en zo verbinding te kunnen maken. Moet samen met RemoteAccessHostTokenValidationUrl worden gebruikt.
-
-          Deze functie is momenteel uitgeschakeld aan de serverzijde.</translation>
 <translation id="4363057787588706121">Toestaan dat lijstbeleid van verschillende bronnen kan worden samengevoegd</translation>
 <translation id="4363101430102811068">Gegevenslekdetectie voor ingevoerde gegevens inschakelen</translation>
 <translation id="436581050240847513">Apparaatnetwerkinterface rapporteren</translation>
@@ -4535,9 +4506,6 @@ Als dit beleid wordt gebruikt, zijn alleen de printers met ID's die overeenkomen
 <translation id="7477231245051133709">De toegankelijkheidsfunctie voor monogeluid inschakelen</translation>
 <translation id="7477239290070847560">Op zeroconf gebaseerde (mDNS + DNS-SD) protocolbestemmingen</translation>
 <translation id="7485481791539008776">Regels voor selectie van standaardprinter</translation>
-<translation id="7485730741952775732">Als dit beleid is ingesteld, gebruikt de host voor externe toegang deze URL om verificatietokens van clients voor externe toegang te valideren om zo connecties te accepteren. Moet samen met RemoteAccessHostTokenUrl worden gebruikt.
-
-          Deze functie is momenteel uitgeschakeld aan de serverzijde.</translation>
 <translation id="749556411189861380">De OS- en firmwareversie van aangemelde apparaten melden.
 
       Als deze instelling niet is ingesteld of is ingesteld op 'True', melden de aangemelde apparaten regelmatig de OS- en firmwareversie. Als deze instelling is ingesteld op 'False', wordt geen versie-informatie gemeld.</translation>
@@ -4768,7 +4736,7 @@ Als dit beleid wordt gebruikt, zijn alleen de printers met ID's die overeenkomen
 
       Als het beleid niet wordt ingesteld, worden alle <ph name="PRODUCT_OS_NAME" />-functies standaard ingeschakeld en kan de gebruiker ze allemaal gebruiken.
 
-      Opmerking: De scanfuncties wordt momenteel standaard uitgeschakeld via een functievlag. Als de gebruiker deze functie inschakelt via de functievlag, kan de functie nog altijd worden uitgeschakeld door dit beleid.</translation>
+      Opmerking: De scanfunctie wordt momenteel standaard uitgeschakeld via een functievlag. Als de gebruiker deze functie inschakelt via de functievlag, kan de functie nog altijd worden uitgeschakeld door dit beleid.</translation>
 <translation id="7765879851993224640">Toestaan dat Smart Lock Signin wordt gebruikt</translation>
 <translation id="7774768074957326919">Proxyinstellingen van het systeem gebruiken</translation>
 <translation id="777734450201217641">Schakel snelkoppelingen voor toegankelijkheidsfuncties in op het inlogscherm.
@@ -4861,9 +4829,6 @@ Als dit beleid wordt gebruikt, zijn alleen de printers met ID's die overeenkomen
 <translation id="7953256619080733119">Hosts van handmatige uitzonderingen voor beheerde gebruikers</translation>
 <translation id="7956210013490975468">Configureert de systeemproxyservice voor <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="7958537754689366707">Het wachtwoord moet elke twaalf uur worden opgegeven</translation>
-<translation id="7960293328203000385">Definieert de lijst met gebruikers die toestemming hebben om op het apparaat in te loggen. De invoer heeft de vorm <ph name="USER_ALLOWLIST_ENTRY_FORMAT" />, zoals <ph name="USER_ALLOWLIST_ENTRY_EXAMPLE" />. Als je willekeurige gebruikers toegang wilt geven tot een domein, gebruik je invoer in de vorm <ph name="USER_ALLOWLIST_ENTRY_WILDCARD" />.
-
-      Als dit beleid niet is geconfigureerd, zijn er geen beperkingen voor welke gebruikers mogen inloggen. Als je nieuwe gebruikers wilt maken, moet het beleid <ph name="DEVICE_ALLOW_NEW_USERS_POLICY_NAME" /> correct zijn ingesteld.</translation>
 <translation id="7961779417826583251">Handhaving van Certificaattransparantie voor een lijst met certificeringsinstanties uitschakelen</translation>
 <translation id="7973609468423251675">Dit beleid is beëindigd en wordt verwijderd in <ph name="PRODUCT_OS_NAME" />-versie 85. Gebruik in plaats daarvan <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.
 

@@ -553,9 +553,6 @@
         |TIME_LIMITS| 会应用每日使用限制；当在某一天达到此限制后，相应应用在当天的剩余时间内便会一直处于不可用的状态。使用限制应在 |daily_limit_mins| 中指定。系统每天都会在指定的 UTC 时间（通过 |reset_at| 传递）重置使用限制。
         此政策仅适用于未成年用户。
         此政策是对“UsageTimeLimit”的补充。无论“PerAppTimeLimits”是如何设置的，系统都会强制执行“UsageTimeLimit”中指定的限制（例如设备使用时间和就寝时间）。</translation>
-<translation id="1914840757300882918">如果您设置了此政策，主机将使用带有指定颁发者 CN 的客户端证书进行身份验证，以便连接到 RemoteAccessHostTokenValidationUrl。如果将此政策设为“*”，则可以使用任何可用的客户端证书。
-
-          该功能目前在服务器端已停用。</translation>
 <translation id="1919802376548418720">使用 KDC 政策委派凭据。</translation>
 <translation id="1920046221095339924">允许在设备上使用受管理自助服务终端</translation>
 <translation id="1920772397574801429">通过设置此政策，您可以指定支持 <ph name="HTTP_NEGOTIATE" /> 身份验证（例如 Kerberos 身份验证）的 Android 身份验证应用提供的帐号所属的类型。您应该可以从身份验证应用的供应商处获得此信息。如需更多详细信息，请访问 https://goo.gl/hajyfN 查看 Chromium 项目
@@ -1071,22 +1068,6 @@
       如果此政策已停用，当您使用可能不安全的命令行标记启动 Chrome 时，系统会禁止显示安全警告。
 
       在 <ph name="MS_WIN_NAME" /> 上，此功能仅适用于已加入 <ph name="MS_AD_NAME" /> 网域的实例、在 Windows 10 专业版上运行的实例，或已注册 Chrome 浏览器云管理的实例。在 <ph name="MAC_OS_NAME" /> 上，此功能仅适用于通过 MDM 进行管理或通过 MCX 加入网域的实例。</translation>
-<translation id="2621383458880689826">为绑定到设备的企业打印机提供配置。
-
-      此政策让您能够为 <ph name="PRODUCT_OS_NAME" />设备提供打印机配置。格式与 NativePrinters 字典一样，不过每台打印机都还对应一个额外的必填字段“id”或“guid”，以用于将相应打印机加入白名单/黑名单。
-
-      该文件不得超过 5MB，且必须用 JSON 编码。据估计，一个包含大约 21000 台打印机的文件在编码后的大小将会是 5MB。相应的加密哈希值用于验证下载内容是否完整。
-
-      系统会下载并缓存该文件。只要相应网址或哈希值发生了变化，系统就会重新下载该文件。
-
-      如果您设置了此政策，<ph name="PRODUCT_OS_NAME" />将会下载该文件以获取打印机配置，并会根据 <ph name="DEVICE_NATIVE_PRINTERS_ACCESS_MODE" />、<ph name="DEVICE_NATIVE_PRINTERS_WHITELIST_POLICY_NAME" /> 和 <ph name="DEVICE_NATIVE_PRINTERS_BLACKLIST_POLICY_NAME" /> 向用户提供可用的打印机。
-
-      此政策对用户能否在各部设备上配置打印机没有影响。它旨在对各用户的打印机配置进行补充。
-
-      此政策是 <ph name="BULK_PRINTERS_POLICY_NAME" /> 的附加内容。
-
-      如果您不设置此政策，便不存在任何设备打印机，同时其他 <ph name="DEVICE_NATIVE_PRINTERS_POLICY_PATTERN" /> 政策会被忽略。
-      </translation>
 <translation id="2623014935069176671">等待首个用户活动</translation>
 <translation id="262740370354162807">允许将文档提交到 <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="2632538643061793322">通过设置此政策，您可以创建一个网址格式列表，从而指定哪些网站可以请求用户授权其访问 USB 设备。
@@ -1253,12 +1234,6 @@
       如果您启用此设置，打印预览则会将操作系统默认打印机用作默认目标选项。</translation>
 <translation id="285627849510728211">设定日间高级电池充电模式配置</translation>
 <translation id="2856674246949497058">如果操作系统版本比目标版本新，则回滚到并持续使用目标版本。在此过程中，系统会执行 Powerwash 操作。</translation>
-<translation id="2869140260739354012">控制用户可以使用 <ph name="DEVICE_PRINTERS_POLICY" /> 中的哪些打印机。
-
-      通过设置此政策，您可以指定对批量打印机配置使用哪项访问政策。如果您选择 <ph name="PRINTERS_ALLOW_ALL" />，系统将会显示所有打印机。如果您选择 <ph name="PRINTERS_BLACKLIST" />，系统便会使用 <ph name="DEVICE_NATIVE_PRINTERS_BLACKLIST" /> 来限制用户对指定打印机的访问权。如果您选择 <ph name="PRINTERS_WHITELIST" />，<ph name="DEVICE_NATIVE_PRINTERS_WHITELIST" /> 仅会指定可供用户选择的打印机。
-
-      如果此政策未设置，系统将会默认使用 <ph name="PRINTERS_ALLOW_ALL" />。
-      </translation>
 <translation id="2869762730352628426">在登录屏幕上启用自动点击</translation>
 <translation id="2872961005593481000">关机</translation>
 <translation id="2874209944580848064">针对支持 Android 应用的 <ph name="PRODUCT_OS_NAME" />设备的注意事项：</translation>
@@ -1469,11 +1444,11 @@
 <translation id="3219421230122020860">隐身模式已启用</translation>
 <translation id="3220624000494482595">如果自助服务终端应用是一款 Android 应用，它将无法控制 <ph name="PRODUCT_OS_NAME" />版本，即使此政策设为 <ph name="TRUE" /> 也是如此。</translation>
 <translation id="322359555555487980">确定变体在 <ph name="PRODUCT_OS_NAME" />中的可用情况</translation>
-<translation id="3225165352822164029">通过设置此政策，您可以配置 <ph name="PRODUCT_NAME" /> 中的默认主页网址。您可以使用“主页”按钮打开主页。在桌面设备上，<ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> 政策控制着哪些页面会在 Chrome 启动时打开。
+<translation id="3225165352822164029">通过设置此政策，您可以配置 <ph name="PRODUCT_NAME" /> 中的默认主页网址。您可以使用“主页”按钮打开主页。在桌面设备上，<ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> 政策控制着哪些页面会在启动时打开。
 
-      如果用户或 <ph name="HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_NAME" /> 将主页设为“新标签页”页面，此政策不会产生任何效力。
+      如果用户或 <ph name="HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_NAME" /> 将主页设为“新标签页”页面，此政策不会产生任何影响。
 
-       此网址必须是采用标准协议的网址，例如 http://example.com 或 https://example.com。如果您设置了此政策，用户将无法在 <ph name="PRODUCT_NAME" /> 中更改主页网址。
+       此网址必须是采用标准架构的网址，例如 http://example.com 或 https://example.com。如果您设置了此政策，用户将无法在 <ph name="PRODUCT_NAME" /> 中更改主页网址。
 
       如果 <ph name="HOMEPAGE_LOCATION_POLICY_NAME" /> 和 <ph name="HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_NAME" /> 均未设置，用户便可自行选择主页。
 
@@ -1818,7 +1793,7 @@
       在 Chrome 88 中，此政策将被移除。
 
       请参阅 https://www.chromestatus.com/feature/5989473649164288。</translation>
-<translation id="3691155504326059225">如果此政策已启用，系统会使用“新标签页”页面作为用户的主页，并忽略所有主页网址位置。如果此政策已停用，系统绝不会使用“新标签页”页面作为用户的主页，除非用户的主页网址设为 chrome://newtab。
+<translation id="3691155504326059225">如果此政策已启用，系统会使用“新标签页”页面作为用户的主页，并忽略所有主页网址位置。如果此政策已停用，系统绝不会使用“新标签页”页面作为用户的主页，除非用户将主页网址设为 chrome://newtab。
 
       如果您设置了此政策，用户将无法更改 <ph name="PRODUCT_NAME" /> 中的主页类型。如果您未设置此政策，用户便可自行决定是否使用“新标签页”页面作为主页。
 
@@ -1893,12 +1868,6 @@
 <translation id="3838094946886335701">通过设置此政策（仅为建议性政策），您可以注册一个协议处理程序列表以与用户注册的协议处理程序列表合并，从而同时使用这两组协议处理程序。“protocol”属性应设为“mailto”之类的协议，“URL”属性应设为处理相应协议（“protocol”字段中指定的协议）的应用所采用的网址格式。该格式可以包含一个“%s”占位符（将会替换为被处理的网址）。
 
       用户无法卸载由政策注册的协议处理程序，但可通过安装新的默认处理程序来更改由政策安装的协议处理程序。</translation>
-<translation id="3848118497246496090">此政策旨在指定用户无法使用的打印机。
-
-      仅当为 <ph name="DEVICE_NATIVE_PRINTERS_ACCESS_MODE" /> 选择了 <ph name="PRINTERS_BLACKLIST" /> 时，才会用到此政策。
-
-      如果您设置了此政策，那么除了与此政策中所列 ID 对应的打印机之外，其他所有打印机都可供用户使用。ID 必须与 <ph name="DEVICE_PRINTERS_POLICY" /> 所指定文件内的“id”或“guid”字段相符。
-      </translation>
 <translation id="3851039766298741586">报告有关当前自助服务终端会话的信息，例如应用 ID 和版本。
 
       如果此政策设为 false，则系统不会报告自助服务终端会话信息。如果此政策设为 true 或未设置，则系统会报告自助服务终端会话信息。</translation>
@@ -2260,12 +2229,6 @@
 
       如果此政策未设置，系统会允许网站请求访问，但用户可以更改此设置。</translation>
 <translation id="4285674129118156176">允许独立用户使用 ARC</translation>
-<translation id="4309562700894844665">此政策旨在指定用户可以使用的打印机。
-
-      仅当为 <ph name="DEVICE_NATIVE_PRINTERS_ACCESS_MODE" /> 选择了 <ph name="PRINTERS_WHITELIST" /> 时，才会用到此政策。
-
-      如果您设置了此政策，用户将只能使用那些符合条件（ID 与此政策中所列的值匹配）的打印机。ID 必须与 <ph name="DEVICE_PRINTERS_POLICY" /> 所指定文件内的“id”或“guid”字段相符。
-      </translation>
 <translation id="4311195029067684288">Full</translation>
 <translation id="4313767483634435271">设备的指定基座 MAC 地址</translation>
 <translation id="4322842393287974810">允许自动启动零延迟的自助服务终端应用控制 <ph name="PRODUCT_OS_NAME" />版本</translation>
@@ -2282,9 +2245,6 @@
 <translation id="4347908978527632940">如果设为 true 且该用户是受监管用户，则其他 Android 应用可以通过内容提供方查询该用户的网络限制。
 
           如果设为 false 或未设置，则内容提供方不会返回任何信息。</translation>
-<translation id="4360826270668210664">如果设置了此政策，远程访问主机将要求身份验证客户端从该网址获取身份验证令牌，以便建立连接。此政策必须与 RemoteAccessHostTokenValidationUrl 结合使用。
-
-          该功能目前在服务器端已停用。</translation>
 <translation id="4363057787588706121">允许合并具有多个不同来源的列表政策</translation>
 <translation id="4363101430102811068">针对输入的凭据启用泄露检测功能</translation>
 <translation id="436581050240847513">报告设备网络接口</translation>
@@ -3102,7 +3062,7 @@
       如果此政策设为“禁止不受支持的文件类型 - 上传内容和下载内容”(3)，<ph name="PRODUCT_NAME" /> 会根据“禁止不受支持的文件类型 - 上传内容”和“禁止不受支持的文件类型 - 下载内容”所述的规则操作。
       </translation>
 <translation id="5535973522252703021">Kerberos 授权服务器白名单</translation>
-<translation id="5540753481451194959">通过设置此政策，您可以指定 Chrome 启动时的系统行为。关闭此设置等同于未配置它，因为 <ph name="PRODUCT_NAME" /> 必须具有指定的启动行为。
+<translation id="5540753481451194959">通过设置此政策，您可以指定启动时的系统行为。关闭此设置相当于未对其进行配置，因为 <ph name="PRODUCT_NAME" /> 必须具有指定的启动行为。
 
       如果您设置了此政策，用户将无法在 <ph name="PRODUCT_NAME" /> 中更改它。如果您未设置此政策，用户便可自行更改它。
 
@@ -4511,9 +4471,6 @@
 <translation id="7477231245051133709">启用“单声道音频”无障碍功能</translation>
 <translation id="7477239290070847560">基于 Zeroconf (mDNS + DNS-SD) 的协议目的地</translation>
 <translation id="7485481791539008776">默认打印机选择规则</translation>
-<translation id="7485730741952775732">如果此政策已设置，远程访问主机将使用此网址验证来自远程访问客户端的身份验证令牌，以便确定是否允许建立连接。此政策必须与 RemoteAccessHostTokenUrl 结合使用。
-
-          该功能目前在服务器端已停用。</translation>
 <translation id="749556411189861380">报告已注册的设备使用的操作系统和固件版本。
 
       如果此政策未设置或设为True，已注册的设备将定期报告操作系统和固件版本。如果此政策设为False，则不报告版本信息。</translation>
@@ -4631,9 +4588,9 @@
       此政策仅适用于未成年用户。
       如果设置了此政策，则可在未成年用户的设备上验证家长访问码。
       如果未设置此政策，则无法在未成年用户的设备上验证家长访问码。</translation>
-<translation id="7623187731914468284">如果 <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> 设为 RestoreOnStartupIsURLs，那么将 <ph name="RESTORE_ON_STARTUP_URLS_POLICY_NAME" /> 设为一系列网址即可指定哪些网址会在 Chrome 启动时打开。
+<translation id="7623187731914468284">如果 <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> 设为 RestoreOnStartupIsURLs，那么将 <ph name="RESTORE_ON_STARTUP_URLS_POLICY_NAME" /> 设为一系列网址即可指定哪些网址会在启动时打开。
 
-      如果此政策未设置，“新标签页”页面会在 Chrome 启动时打开。
+      如果您未设置此政策，“新标签页”页面会在启动时打开。
 
       在 <ph name="MS_WIN_NAME" /> 上，此功能仅适用于已加入 <ph name="MS_AD_NAME" /> 网域的实例、在 Windows 10 专业版上运行的实例，或已注册 <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />的实例。在 <ph name="MAC_OS_NAME" /> 上，此功能仅适用于通过 MDM 进行管理或通过 MCX 加入网域的实例。</translation>
 <translation id="7625444193696794922">指定该设备应锁定到的发布渠道。</translation>
@@ -4835,9 +4792,6 @@
 <translation id="7953256619080733119">托管用户手动管理的例外主机</translation>
 <translation id="7956210013490975468">为 <ph name="PRODUCT_OS_NAME" />配置系统代理服务。</translation>
 <translation id="7958537754689366707">必须每 12 小时输入一次密码</translation>
-<translation id="7960293328203000385">此政策旨在以列表形式指定哪些用户能登录该设备。条目应采用 <ph name="USER_ALLOWLIST_ENTRY_FORMAT" /> 格式，例如 <ph name="USER_ALLOWLIST_ENTRY_EXAMPLE" />。若要允许某个网域上的任意用户登录该设备，请使用 <ph name="USER_ALLOWLIST_ENTRY_WILDCARD" /> 格式的条目。
-
-      如果此政策未配置，任何用户都能登录该设备。请注意，倘若涉及到创建新用户，您仍需适当配置 <ph name="DEVICE_ALLOW_NEW_USERS_POLICY_NAME" /> 政策。</translation>
 <translation id="7961779417826583251">对于指定的一系列旧版证书授权机构，不强制执行证书透明化要求</translation>
 <translation id="7973609468423251675">请注意，此政策已被弃用，并将在 <ph name="PRODUCT_OS_NAME" />版本 85 中移除。请改用 <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />。
 

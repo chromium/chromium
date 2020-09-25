@@ -108,6 +108,7 @@
 <translation id="1868024384445905608">ឥឡូវនេះ Chrome ទាញយក​ឯកសារ​បានរហ័ស​ជាងមុន</translation>
 <translation id="1877026089748256423">Chrome ហួសសម័យហើយ</translation>
 <translation id="1883903952484604915">ឯកសារ​របស់ខ្ញុំ</translation>
+<translation id="189358972401248634">ភាសាផ្សេងទៀត</translation>
 <translation id="1925021887439448749">បញ្ចូល​អាសយដ្ឋាន​ទំព័រ​ផ្ទាល់ខ្លួន</translation>
 <translation id="1928696683969751773">ធ្វើបច្ចុប្បន្នភាព</translation>
 <translation id="19288952978244135">បើក Chrome ឡើងវិញ។</translation>
@@ -217,6 +218,7 @@
 <translation id="2689830683995595741">ប្រសិនបើប្រើ Chrome មានន័យថាអ្នកយល់ព្រមតាម<ph name="BEGIN_LINK1" />លក្ខខណ្ឌប្រើប្រាស់ Google<ph name="END_LINK1" /> និង<ph name="BEGIN_LINK2" />លក្ខខណ្ឌប្រើប្រាស់បន្ថែមរបស់ Google Chrome និង Chrome OS<ph name="END_LINK2" />។ <ph name="BEGIN_LINK3" />ការជូន​ដំណឹង​អំពី​ឯកជនភាព​សម្រាប់​គណនី Google ដែល​គ្រប់គ្រង​ដោយ​ប្រើ Family Link<ph name="END_LINK3" /> ក៏អនុវត្តផងដែរ។</translation>
 <translation id="2707726405694321444">ធ្វើឲ្យទំព័រថ្មីឡើងវិញ</translation>
 <translation id="2709516037105925701">បំពេញស្វ័យប្រវត្តិ</translation>
+<translation id="2723001399770238859">សម្លេង</translation>
 <translation id="2728754400939377704">តម្រៀប​តាមគេហទំព័រ</translation>
 <translation id="2744248271121720757">ចុចពាក្យណាមួយ​ដើម្បី​ស្វែងរក​ភ្លាមៗ ឬមើល​សកម្មភាព​ដែល​ទាក់ទង</translation>
 <translation id="2760989362628427051">បើក​រចនាប័ទ្មងងឹត ពេលបើក​កម្មវិធីសន្សំថ្ម ឬរចនាប័ទ្មងងឹត​នៅលើ​ឧបករណ៍របស់អ្នក</translation>
@@ -467,6 +469,7 @@
 <translation id="4738836084190194332">ធ្វើសមកាលកម្មចុងក្រោយ៖ <ph name="WHEN" /></translation>
 <translation id="4749960740855309258">បើកផ្ទាំងថ្មី</translation>
 <translation id="4759238208242260848">ទាញយក</translation>
+<translation id="4763480195061959176">វីដេអូ</translation>
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{ការទាញយក 1 បាន​បញ្ចប់។}other{ការទាញយក # បាន​បញ្ចប់។}}</translation>
 <translation id="4766678251456904326">បញ្ចូលគណនីទៅក្នុងឧបករណ៍</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{បានកំណត់​កាលវិភាគ​នៃការទាញយក 1។}other{បានកំណត់​កាលវិភាគ​នៃការទាញយក #។}}</translation>

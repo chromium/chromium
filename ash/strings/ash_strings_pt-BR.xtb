@@ -59,6 +59,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1467432559032391204">À esquerda</translation>
 <translation id="1479909375538722835">Menu de acessibilidade flutuante</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
+<translation id="1503394326855300303">Esta conta de proprietário precisa ser a primeira conta a fazer login em uma sessão de login múltiplo.</translation>
 <translation id="1516740043221086139">O "Não perturbe" está ativado.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Mostrar configurações de notificação. As notificações estão desativadas para um app}one{Mostrar configurações de notificação. As notificações estão desativadas para # app}other{Mostrar configurações de notificação. As notificações estão desativadas para # apps}}</translation>
 <translation id="1525508553941733066">DISPENSAR</translation>
@@ -69,6 +70,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1589090746204042747">acessar todas as suas atividades nesta sessão;</translation>
 <translation id="1611993646327628135">Ativado</translation>
 <translation id="1632985212731562677">O "acesso com interruptor" pode ser desativado em Configurações &gt; Acessibilidade.</translation>
+<translation id="1651447046299738444">Parece que seu Bluetooth ou Wi-Fi está desativado no Chromebook. Verifique sua conexão para usar o Phone Hub.</translation>
 <translation id="1654477262762802994">Iniciar uma consulta por voz</translation>
 <translation id="1667964833127753507">O modo de cores neutras substitui as cores extraídas do plano de fundo por um conjunto de tons neutros claros ou escuros.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> restante(s)</translation>
@@ -151,6 +153,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="2435457462613246316">Mostrar senha</translation>
 <translation id="2473177541599297363">Confirmar resolução</translation>
 <translation id="2475982808118771221">Ocorreu um erro</translation>
+<translation id="2479579251444854687">Deslize com três dedos para cima para abrir e para baixo para fechar a Visão geral.</translation>
 <translation id="2482878487686419369">Notificações</translation>
 <translation id="2484513351006226581">Pressione <ph name="KEYBOARD_SHORTCUT" /> para alterar o layout do teclado.</translation>
 <translation id="2501920221385095727">Teclas aderentes</translation>
@@ -163,6 +166,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="2595239820337756193">5 km em milhas</translation>
 <translation id="2617342710774726426">O chip está bloqueado</translation>
 <translation id="2621713457727696555">Protegida</translation>
+<translation id="2640255526076764619">O gesto no touchpad para alternar para o espaço de trabalho anterior mudou. Deslize para a esquerda com quatro dedos para alternar para o espaço de trabalho anterior.</translation>
 <translation id="2653659639078652383">Enviar</translation>
 <translation id="2658778018866295321">Clicar e arrastar</translation>
 <translation id="2700493154570097719">Configurar teclado</translation>
@@ -172,7 +176,6 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="2718395828230677721">Modo noturno</translation>
 <translation id="2727175239389218057">Responder</translation>
 <translation id="2727977024730340865">Conectado a um carregador de baixa potência. O carregamento da bateria pode não ser confiável.</translation>
-<translation id="2743387203779672305">Copiar para área de transferência</translation>
 <translation id="2792498699870441125">Alt + Pesquisar</translation>
 <translation id="2819276065543622893">Você sairá agora.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> não é compatível com <ph name="SPECIFIED_RESOLUTION" />. A resolução foi modificada para <ph name="FALLBACK_RESOLUTION" />.</translation>
@@ -257,6 +260,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="3486220673238053218">definição</translation>
 <translation id="3510164367642747937">Destacar cursor do mouse</translation>
 <translation id="3513798432020909783">Conta gerenciada por <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3571734092741541777">Configurar</translation>
 <translation id="3573179567135747900">Voltar a "<ph name="FROM_LOCALE" />" (exige reinicialização)</translation>
 <translation id="3576141592585647168">Alterar fuso horário</translation>
 <translation id="3593646411856133110">Deslize para cima e mantenha a tela pressionada para ver os apps abertos</translation>
@@ -341,6 +345,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="4412944820643904175">O recurso <ph name="FEATURE_NAME" /> está desativado.</translation>
 <translation id="4421231901400348175">Compartilhando o controle da sua tela com <ph name="HELPER_NAME" /> via Assistência remota.</translation>
 <translation id="4430019312045809116">Volume</translation>
+<translation id="4444978951615977024">Ops! Verifique sua conexão</translation>
 <translation id="4450893287417543264">Não mostrar novamente</translation>
 <translation id="445864333228800152">Boa noite,</translation>
 <translation id="4458688154122353284">Parar gravação da tela</translation>
@@ -350,6 +355,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Dispositvos não pareados</translation>
 <translation id="4505050298327493054">Espaço de trabalho ativo.</translation>
+<translation id="4506458088675900627">O gesto no touchpad para abrir a Visão geral mudou</translation>
 <translation id="4513946894732546136">Comentários</translation>
 <translation id="4527045527269911712">O dispositivo Bluetooth "<ph name="DEVICE_NAME" />" deseja permissão para realizar o pareamento.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> até completar</translation>
@@ -389,6 +395,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="4917385247580444890">Forte</translation>
 <translation id="4918086044614829423">Aceitar</translation>
 <translation id="4924411785043111640">Reiniciar e redefinir</translation>
+<translation id="4925542575807923399">O administrador dessa conta exige que ela seja a primeira conta a fazer o login em uma sessão de login múltiplo.</translation>
 <translation id="495046168593986294">Rolar para cima</translation>
 <translation id="4961318399572185831">Transmitir tela</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />h<ph name="MINUTES" />min<ph name="SECONDS" />s</translation>
@@ -478,6 +485,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="6018164090099858612">Saindo do modo espelhado</translation>
 <translation id="602001110135236999">Rolar para a esquerda</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, intensidade do sinal em <ph name="SIGNAL_STRENGTH" />, gerenciada pelo seu administrador</translation>
+<translation id="6029337736376922061">O gesto no touchpad para alternar para o próximo espaço de trabalho mudou. Deslize para a direita com quatro dedos para alternar para o próximo espaço de trabalho.</translation>
 <translation id="6030495522958826102">O menu foi movido para o canto inferior esquerdo da tela.</translation>
 <translation id="6040143037577758943">Fechar</translation>
 <translation id="6043212731627905357">Este monitor não está funcionando bem com seu <ph name="DEVICE_TYPE" /> (o monitor não é compatível).</translation>
@@ -536,6 +544,7 @@ permanentemente excluídos assim que esse usuário for removido. Os websites vis
 <translation id="6657585470893396449">Senha</translation>
 <translation id="6665545700722362599">conceder aos sites, apps e extensões permissão para usar serviços de localização, microfone, câmera ou outros recursos do dispositivo;</translation>
 <translation id="6670153871843998651">Espaço de trabalho 3</translation>
+<translation id="6671495933530132209">Copiar imagem</translation>
 <translation id="6691659475504239918">Pesquisa+Shift+H</translation>
 <translation id="6692996468359469499">Veja informações relacionadas à sua seleção</translation>
 <translation id="6696025732084565524">Seu teclado removível precisa de uma atualização crítica</translation>
@@ -735,6 +744,7 @@ permanentemente excluídos assim que esse usuário for removido. Os websites vis
 <translation id="8734991477317290293">Ele pode estar tentando capturar sua digitação</translation>
 <translation id="8735953464173050365">Mostrar configurações do teclado. <ph name="KEYBOARD_NAME" /> está selecionado</translation>
 <translation id="875593634123171288">Mostrar configurações de VPN</translation>
+<translation id="8759408218731716181">Não é possível configurar o login múltiplo</translation>
 <translation id="8785070478575117577">Conectar-se a <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>

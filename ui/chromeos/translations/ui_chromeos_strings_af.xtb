@@ -189,7 +189,6 @@
 <translation id="3064388234319122767">Transliterasie (zdravo → здраво)</translation>
 <translation id="3067790092342515856">Windows-lêers</translation>
 <translation id="3078461028045006476">Deel met <ph name="EXTENSION_NAME" /></translation>
-<translation id="3088034400796962477">Transliterasie (salam ← سلام)</translation>
 <translation id="3116361045094675131">VK-sleutelbord</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">KLAAR</translation>
@@ -305,7 +304,6 @@
 <translation id="4477219268485577442">Bulgaars foneties</translation>
 <translation id="4479812471636796472">VSA Dvorak-sleutelbord</translation>
 <translation id="4481711095103932593">Hierdie vouer word met Windows gedeel</translation>
-<translation id="4487088045714738411">Belgiese sleutelbord</translation>
 <translation id="4522570452068850558">Besonderhede</translation>
 <translation id="4542387084127299777">Kan nie "<ph name="PATH" />" oopmaak nie</translation>
 <translation id="4552678318981539154">Koop meer berging</translation>
@@ -366,6 +364,7 @@
 <translation id="5010406651457630570">Rekenaars</translation>
 <translation id="5011233892417813670">Chromebook</translation>
 <translation id="5024856940085636730">'n Handeling vat langer as verwag. Wil jy dit staak?</translation>
+<translation id="5026887030745057099">Hindi</translation>
 <translation id="5036159836254554629">Bestuur Parallels Desktop-deling</translation>
 <translation id="5038625366300922036">Sien nog …</translation>
 <translation id="5061708541166515394">Kontras</translation>
@@ -429,7 +428,6 @@
 <translation id="5522908512596376669">Lêerlys het na lysaansig toe verander.</translation>
 <translation id="5524517123096967210">Die lêer kon nie gelees word nie.</translation>
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" />-prent</translation>
-<translation id="5533555070048896610">Transliterasie (namaste → नमस्ते)</translation>
 <translation id="5534520101572674276">Bereken tans grootte</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5605830556594064952">VSA Dvorak</translation>

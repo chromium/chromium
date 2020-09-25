@@ -59,6 +59,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="1467432559032391204">Chapga</translation>
 <translation id="1479909375538722835">Erkin harakatlanuvchi maxsus imkoniyatlar menyusi</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
+<translation id="1503394326855300303">Birdaniga bir nechta hisobdan ishlash vaqtida birinchi o‘rinda hisob egasi kirishi kerak.</translation>
 <translation id="1516740043221086139">Bezovta qilinmasin rejimi yoniq.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Bildirishnoma sozlamalarini ochish. Ilova uchun bildirishnomalar yoqilmagan}other{Bildirishnoma sozlamalarini ochish. # ta ilova uchun bildirishnomalar yoqilmagan}}</translation>
 <translation id="1525508553941733066">YOPISH</translation>
@@ -69,6 +70,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="1589090746204042747">Bu seansdagi barcha harakatlaringizga ruxsat</translation>
 <translation id="1611993646327628135">Yoniq</translation>
 <translation id="1632985212731562677">Switch Access funksiyasini Sozlamalar &gt; Maxsus imkoniyatlar orqali faolsizlantirish mumkin.</translation>
+<translation id="1651447046299738444">Chromebook qurilmangizda Bluetooth yoki Wi-Fi yoniqligini tekshiring. Phone Hub xizmatidan foydalanish uchun aloqani tekshiring.</translation>
 <translation id="1654477262762802994">Ovozli qidiruvni boshlash</translation>
 <translation id="1667964833127753507">Neytral ranglar rejimida fon uchun yorqin yoki xira tusdagi toʻplam koʻrinishidagi ixtiyoriy ranglar ishlatiladi.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> qoldi</translation>
@@ -151,6 +153,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="2435457462613246316">Parolni ko‘rsatish</translation>
 <translation id="2473177541599297363">Ekran hajmini tasdiqlash</translation>
 <translation id="2475982808118771221">Xatolik yuz berdi</translation>
+<translation id="2479579251444854687">Umumiy nazarni ochish uchun 3 ta barmoq bilan tepaga, yopish uchun pastga suring.</translation>
 <translation id="2482878487686419369">Bildirishnomalar</translation>
 <translation id="2484513351006226581">Klaviatura terilmasini almashtirish uchun <ph name="KEYBOARD_SHORTCUT" /> tugmalarini bosing.</translation>
 <translation id="2501920221385095727">Yopishqoq tugmalar</translation>
@@ -163,6 +166,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="2595239820337756193">5 mil kilometrda</translation>
 <translation id="2617342710774726426">SIM karta qulflangan</translation>
 <translation id="2621713457727696555">Himoyalangan</translation>
+<translation id="2640255526076764619">Sensorli paneldan avvalgi ish stoliga qaytish ishorasi oʻzgardi. Avvalgi ish stoliga qaytish uchun 4 ta barmoq bilan chapga suring.</translation>
 <translation id="2653659639078652383">Yuborish</translation>
 <translation id="2658778018866295321">Bosib torting</translation>
 <translation id="2700493154570097719">Klaviaturani tanlash</translation>
@@ -172,7 +176,6 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="2718395828230677721">Tungi rejim</translation>
 <translation id="2727175239389218057">Javob berish</translation>
 <translation id="2727977024730340865">Kam quvvatli zaryadlash vositasi ulanildi. Quvvatlantirishda muammolar bo‘lishi mumkin.</translation>
-<translation id="2743387203779672305">Vaqtincha xotiraga nusxalash</translation>
 <translation id="2792498699870441125">Alt + Search</translation>
 <translation id="2819276065543622893">Seans yakunlandi.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> displeyining ekrani <ph name="SPECIFIED_RESOLUTION" /> hajmida ishlay olmaydi. Ekran <ph name="FALLBACK_RESOLUTION" /> hajmiga qaytarildi.</translation>
@@ -257,6 +260,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="3486220673238053218">ta’rif</translation>
 <translation id="3510164367642747937">Sichqoncha kursori ajratib ko‘rsatilsin</translation>
 <translation id="3513798432020909783">Hisobni <ph name="MANAGER_EMAIL" /> boshqaradi</translation>
+<translation id="3571734092741541777">Sozlash</translation>
 <translation id="3573179567135747900">"<ph name="FROM_LOCALE" />" tiliga qaytarish (qayta yuklash kerak bo‘ladi)</translation>
 <translation id="3576141592585647168">Vaqt mintaqasini almashtirish</translation>
 <translation id="3593646411856133110">Ochiq ilovalarni chiqarish uchun tepaga suring va ushlab turing.</translation>
@@ -341,6 +345,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> yoqilmagan</translation>
 <translation id="4421231901400348175">Ekraningiz boshqaruvini masofaviy yordamchi orqali <ph name="HELPER_NAME" /> bilan ulashish.</translation>
 <translation id="4430019312045809116">Hajmi</translation>
+<translation id="4444978951615977024">Xato! Aloqani tekshiring</translation>
 <translation id="4450893287417543264">Boshqa ko‘rsatilmasin</translation>
 <translation id="445864333228800152">Xayrli kech,</translation>
 <translation id="4458688154122353284">Ekranni yozib olishni toʻxtatish</translation>
@@ -350,6 +355,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Uzilgan qurilmalar</translation>
 <translation id="4505050298327493054">Faol ish stoli.</translation>
+<translation id="4506458088675900627">Sensorli panelda Umumiy nazar ishorasi oʻzgardi</translation>
 <translation id="4513946894732546136">Fikr-mulohaza</translation>
 <translation id="4527045527269911712">“<ph name="DEVICE_NAME" />” qurilmasi Bluetooth orqali bog‘lanishga ruxsat so‘ramoqda.</translation>
 <translation id="453661520163887813">To‘liq quvvatlanishiga <ph name="TIME" /> qoldi</translation>
@@ -389,6 +395,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="4917385247580444890">Kuchli</translation>
 <translation id="4918086044614829423">Qabul qilish</translation>
 <translation id="4924411785043111640">Qayta ishga tushirish va asliga qaytarish</translation>
+<translation id="4925542575807923399">Bu hisobning administratori ko‘plab tizimga kirish seanslarida birinchi bo‘lib shu hisobga kirishni talab qiladi.</translation>
 <translation id="495046168593986294">Tepaga chiqish</translation>
 <translation id="4961318399572185831">Ekranni translatsiya qilish</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />s <ph name="MINUTES" />d <ph name="SECONDS" />s</translation>
@@ -478,6 +485,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="6018164090099858612">Translatsiya rejimidan chiqish</translation>
 <translation id="602001110135236999">Chapga aylantirish</translation>
 <translation id="6025324406281560198">Himoya: <ph name="SECURITY_STATUS" />, Ulanish: <ph name="CONNECTION_STATUS" />, Signal darajasi: <ph name="SIGNAL_STRENGTH" />, Administrator boshqaruvida</translation>
+<translation id="6029337736376922061">Sensorli paneldan keyingi ish stoliga qaytish ishorasi oʻzgardi. Keyingi ish stoliga qaytish uchun 4 ta barmoq bilan oʻngga suring.</translation>
 <translation id="6030495522958826102">Menyu ekranning quyi chap burchagiga surildi.</translation>
 <translation id="6040143037577758943">Yopish</translation>
 <translation id="6043212731627905357">Bu monitor <ph name="DEVICE_TYPE" /> qurilmasi bilan ishlamaydi (monitor qo‘llab-quvvatlanmaydi).</translation>
@@ -535,6 +543,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="6657585470893396449">Parol</translation>
 <translation id="6665545700722362599">Joylashuv xizmatlari, qurilmadagi mikrofon, kamera yoki boshqa funksiyalardan foydalanish uchun saytlar, ilovalar va kengaytmalarga ruxsat taqdim eting</translation>
 <translation id="6670153871843998651">Desk 3</translation>
+<translation id="6671495933530132209">Rasmni nusxalash</translation>
 <translation id="6691659475504239918">Qidiruv+Shift+H</translation>
 <translation id="6692996468359469499">Tanlovingizga aloqador axborot olish</translation>
 <translation id="6696025732084565524">Tashqi klaviatura yangilanishi zarur</translation>
@@ -734,6 +743,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="8734991477317290293">Bu bosilayotgan tugmalarni kuzatish urinishi bo‘lishi mumkin.</translation>
 <translation id="8735953464173050365">Klaviatura sozlamalarini ochish. <ph name="KEYBOARD_NAME" /> tanlandi</translation>
 <translation id="875593634123171288">VPN sozlamalarini ochish</translation>
+<translation id="8759408218731716181">Bir nechta hisobdan kirish sozlanmadi</translation>
 <translation id="8785070478575117577">Bunga ulanish: <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>

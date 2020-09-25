@@ -108,6 +108,7 @@
 <translation id="1868024384445905608">Chrome 现可更快速地下载文件</translation>
 <translation id="1877026089748256423">Chrome版本太旧</translation>
 <translation id="1883903952484604915">我的文件</translation>
+<translation id="189358972401248634">其他语言</translation>
 <translation id="1925021887439448749">输入自定义网址</translation>
 <translation id="1928696683969751773">更新</translation>
 <translation id="19288952978244135">重新打开 Chrome。</translation>
@@ -217,6 +218,7 @@
 <translation id="2689830683995595741">使用 Chrome 即表示您同意接受 <ph name="BEGIN_LINK1" />Google 服务条款<ph name="END_LINK1" />以及 <ph name="BEGIN_LINK2" />Google Chrome 和 Chrome 操作系统附加服务条款<ph name="END_LINK2" />。<ph name="BEGIN_LINK3" />针对通过 Family Link 管理的 Google 帐号的隐私权声明<ph name="END_LINK3" />也适用。</translation>
 <translation id="2707726405694321444">刷新网页</translation>
 <translation id="2709516037105925701">自动填充</translation>
+<translation id="2723001399770238859">音频</translation>
 <translation id="2728754400939377704">按网站排序</translation>
 <translation id="2744248271121720757">点按某个字词可立即开始搜索或查看相关操作</translation>
 <translation id="2760989362628427051">在设备开启深色主题背景或省电模式时启用深色主题背景</translation>
@@ -467,6 +469,7 @@
 <translation id="4738836084190194332">上次同步时间：<ph name="WHEN" /></translation>
 <translation id="4749960740855309258">打开新标签页</translation>
 <translation id="4759238208242260848">下载内容</translation>
+<translation id="4763480195061959176">视频</translation>
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{已完成 1 项下载。}other{已完成 # 项下载。}}</translation>
 <translation id="4766678251456904326">向设备添加帐号</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{已排定 1 项下载。}other{已排定 # 项下载。}}</translation>

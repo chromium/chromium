@@ -507,6 +507,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3080254622891793721">Gráfico</translation>
 <translation id="3086579638707268289">Sua atividade na Web está sendo monitorada</translation>
 <translation id="3087734570205094154">Parte inferior</translation>
+<translation id="3094457892697649331">Quando você editar as anotações, este documento voltará à visualização de uma página.</translation>
 <translation id="3095940652251934233">Meia carta</translation>
 <translation id="3096100844101284527">Adicionar endereço de retirada</translation>
 <translation id="3105172416063519923">Código do recurso:</translation>
@@ -739,6 +740,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4075941231477579656">Touch ID</translation>
 <translation id="4079302484614802869">A configuração do proxy definida utiliza um URL de script .pac, e não servidores proxy fixos.</translation>
 <translation id="4082393374666368382">Configurações: gerenciamento</translation>
+<translation id="4084120443451129199">Modo de pesquisa. Pressione "Enter" para pesquisar <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="4088981014127559358">Mudança Y no lado 1 da imagem</translation>
 <translation id="4098354747657067197">Site enganoso</translation>
 <translation id="4101413244023615925">Texto e gráficos</translation>
@@ -930,6 +932,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4809079943450490359">Instruções do administrador do dispositivo:</translation>
 <translation id="4813512666221746211">Erro na rede</translation>
 <translation id="4816492930507672669">Ajustar à página</translation>
+<translation id="4819347708020428563">Editar anotações na visualização padrão?</translation>
 <translation id="484462545196658690">Automática</translation>
 <translation id="4850886885716139402">Visualizar</translation>
 <translation id="4854362297993841467">Esse método de entrega não está disponível. Tente um método diferente.</translation>
@@ -1664,6 +1667,7 @@ Mais detalhes:
 <translation id="7802523362929240268">O site é legítimo</translation>
 <translation id="780301667611848630">Não</translation>
 <translation id="7805768142964895445">Status</translation>
+<translation id="7811322735445742657">Quando você editar as anotações, este documento voltará à visualização de uma página e à rotação original.</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Remover sugestão de formulário do Chrome?</translation>
 <translation id="781440967107097262">Compartilhar área de transferência?</translation>
@@ -1699,6 +1703,7 @@ Mais detalhes:
 <translation id="7956713633345437162">Favoritos de dispositivos móveis</translation>
 <translation id="7961015016161918242">Nunca</translation>
 <translation id="7966803981046576691">Tipo de conta da tarefa</translation>
+<translation id="7976214039405368314">Excesso de solicitações</translation>
 <translation id="7977538094055660992">Dispositivo de saída</translation>
 <translation id="7977894662897852582">Edp</translation>
 <translation id="799149739215780103">Encadernar</translation>
@@ -1780,6 +1785,7 @@ Mais detalhes:
 <translation id="8289355894181816810">Entre em contato com seu administrador de rede se não souber o que isso significa.</translation>
 <translation id="8293206222192510085">Adicionar favorito</translation>
 <translation id="8294431847097064396">Origem</translation>
+<translation id="8297398969342264569">Quando você editar as anotações, este documento voltará à rotação original.</translation>
 <translation id="8298115750975731693">O Wi-Fi que você está usando (<ph name="WIFI_NAME" />) pode exigir a visita a <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="8303854710873047864">Seção "<ph name="SECTION" />" exibida</translation>
 <translation id="830498451218851433">Dobra simples</translation>

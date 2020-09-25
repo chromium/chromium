@@ -108,6 +108,7 @@
 <translation id="1868024384445905608">ດຽວນີ້ Chrome ດາວໂຫຼດໄຟລ໌ໄດ້ໄວກວ່າເກົ່າ</translation>
 <translation id="1877026089748256423">Chrome ລ້າສະໄໝແລ້ວ</translation>
 <translation id="1883903952484604915">ໄຟລ໌ຂອງຂ້ອຍ</translation>
+<translation id="189358972401248634">​ພາ​ສາ​ອື່ນໆ</translation>
 <translation id="1925021887439448749">ປ້ອນທີ່ຢູ່ເວັບແບບກຳນົດເອງ</translation>
 <translation id="1928696683969751773">ອັບເດດ</translation>
 <translation id="19288952978244135">ເປີດ Chrome ຄືນໃໝ່.</translation>
@@ -217,6 +218,7 @@
 <translation id="2689830683995595741">ໂດຍການໃຊ້ Chrome, ແມ່ນຖືວ່າທ່ານເຫັນດີນຳ <ph name="BEGIN_LINK1" />ຂໍ້ກຳນົດການບໍລິການຂອງ Google<ph name="END_LINK1" /> ແລະ <ph name="BEGIN_LINK2" />ຂໍ້ກຳນົດການບໍລິການເພີ່ມເຕີມຂອງ Google Chrome ແລະ Chrome OS<ph name="END_LINK2" />. ນຳໃຊ້ <ph name="BEGIN_LINK3" />ແຈ້ງການຄວາມເປັນສ່ວນຕົວສຳລັບບັນຊີ Google ທີ່ຈັດການດ້ວຍ Family Link<ph name="END_LINK3" /> ເຊັ່ນກັນ.</translation>
 <translation id="2707726405694321444">ຣີ​ເຟ​ຣ​ຊຫນ້າ</translation>
 <translation id="2709516037105925701">ຕື່ມອັດຕະໂນມັດ</translation>
+<translation id="2723001399770238859">ສຽງ</translation>
 <translation id="2728754400939377704">ຮຽງຕາມເວັບໄຊ</translation>
 <translation id="2744248271121720757">ແຕະຄຳສັບໃດໜຶ່ງເພື່ອຊອກຫາໃນທັນທີ ຫຼື ເບິ່ງການດຳເນີນການທີ່ກ່ຽວຂ້ອງ</translation>
 <translation id="2760989362628427051">ເປີດຮູບແບບສີສັນມືດເມື່ອຮູບແບບສີສັນມືດ ຫຼື ຕົວປະຢັດແບັດເຕີຣີຂອງອຸປະກອນຂອງທ່ານເປີດຢູ່</translation>
@@ -467,6 +469,7 @@
 <translation id="4738836084190194332">ຊິ້ງຂໍ້ມູນຫຼ້າສຸດ: <ph name="WHEN" /></translation>
 <translation id="4749960740855309258">ເປີດແຖບໃໝ່</translation>
 <translation id="4759238208242260848">ດາວ​ໂຫຼດ</translation>
+<translation id="4763480195061959176">ວິ​ດີ​ໂອ</translation>
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{ສຳເລັດ 1 ການດາວໂຫຼດແລ້ວ.}other{ສຳເລັດ # ການດາວໂຫຼດແລ້ວ.}}</translation>
 <translation id="4766678251456904326">ເພີ່ມບັນຊີໃສ່ອຸປະກອນ</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{ກຳນົດເວລາການດາວໂຫຼດ 1 ລາຍການແລ້ວ}other{ກຳນົດເວລາການດາວໂຫຼດ # ລາຍການແລ້ວ}}</translation>

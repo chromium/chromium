@@ -108,6 +108,7 @@
 <translation id="1868024384445905608">Chrome agora descarga os ficheiros máis rápido</translation>
 <translation id="1877026089748256423">Chromium está desactualizado</translation>
 <translation id="1883903952484604915">Os meus ficheiros</translation>
+<translation id="189358972401248634">Outros idiomas</translation>
 <translation id="1925021887439448749">Introducir enderezo web personalizado</translation>
 <translation id="1928696683969751773">Actualizacións</translation>
 <translation id="19288952978244135">Abre Chrome de novo.</translation>
@@ -217,6 +218,7 @@ Mantén premida calquera palabra para buscala. Se queres refinar a busca, selecc
 <translation id="2689830683995595741">Ao utilizar Chrome, aceptas as <ph name="BEGIN_LINK1" />Condicións de servizo de Google<ph name="END_LINK1" /> e as <ph name="BEGIN_LINK2" />Condicións de servizo adicionais de Google Chrome e Chrome OS<ph name="END_LINK2" />. Tamén se aplica o <ph name="BEGIN_LINK3" />Aviso de privacidade das Contas de Google xestionadas a través de Family Link<ph name="END_LINK3" />.</translation>
 <translation id="2707726405694321444">Actualiza páxina</translation>
 <translation id="2709516037105925701">Autocompletar</translation>
+<translation id="2723001399770238859">audio</translation>
 <translation id="2728754400939377704">Ordenar por sitio</translation>
 <translation id="2744248271121720757">Toca unha palabra para realizar buscas de forma instantánea ou ver accións relacionadas</translation>
 <translation id="2760989362628427051">Activa o tema escuro cando o teu dispositivo teña activado o tema escuro ou a función Aforro de batería</translation>
@@ -467,6 +469,7 @@ Mantén premida calquera palabra para buscala. Se queres refinar a busca, selecc
 <translation id="4738836084190194332">Última sincronización: <ph name="WHEN" /></translation>
 <translation id="4749960740855309258">Abrir unha nova pestana</translation>
 <translation id="4759238208242260848">Descargas</translation>
+<translation id="4763480195061959176">vídeo</translation>
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{1 descarga completada.}other{# descargas completadas.}}</translation>
 <translation id="4766678251456904326">Engadir conta ao dispositivo</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{Hai 1 descarga programada.}other{Hai # descargas programadas.}}</translation>

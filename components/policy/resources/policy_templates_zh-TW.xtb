@@ -553,9 +553,6 @@
         |TIME_LIMITS| 會對應用程式套用每日用量上限，當使用者達到當日的用量上限後，就會無法繼續使用該應用程式。你可以在 |daily_limit_mins| 中指定用量上限。系統每天會在 |reset_at| 欄位指定的時間 (採用世界標準時間) 重新設定用量上限。
         這項政策只適用於兒童使用者。
         這項政策與「UsageTimeLimit」彼此互補。系統會強制執行在「UsageTimeLimit」中指定的限制 (例如裝置使用時間和就寢時間)，而忽略「PerAppTimeLimits」。</translation>
-<translation id="1914840757300882918">如果設定這項政策，主機會使用用戶端憑證和指定核發機構一般名稱 (CN) 來驗證 RemoteAccessHostTokenValidationUrl 的連線。如果設為「*」，則可使用任何可用的用戶端憑證。
-
-          這項功能目前在伺服器端設為停用。</translation>
 <translation id="1919802376548418720">使用 KDC 政策來委派憑證。</translation>
 <translation id="1920046221095339924">允許在裝置上進入受管理的工作階段</translation>
 <translation id="1920772397574801429">你可以透過這項政策，指定支援 <ph name="HTTP_NEGOTIATE" /> 驗證 (例如 Kerberos 驗證) 的 Android 驗證應用程式所提供的帳戶類型。驗證應用程式的供應商應可提供這類資訊。詳情請見 Chromium 計畫，網址為 https://goo.gl/hajyfN
@@ -1071,22 +1068,6 @@
       如果將這項政策設為停用，在使用具有安全疑慮的指令列旗標啟動 Chrome 時，系統不會顯示安全性警告。
 
       在 <ph name="MS_WIN_NAME" /> 上，這項功能僅適用於已加入 <ph name="MS_AD_NAME" /> 網域的執行個體、在 Windows 10 專業版上執行的執行個體，或是已註冊 Chrome 瀏覽器雲端管理服務的執行個體。在 <ph name="MAC_OS_NAME" /> 上，這項功能僅適用於透過行動裝置管理 (MDM) 進行管理或透過 MCX 加入網域的執行個體。</translation>
-<translation id="2621383458880689826">為繫結至裝置的企業印表機提供設定。
-
-      這項政策可讓你為 <ph name="PRODUCT_OS_NAME" />裝置提供印表機設定。格式與 NativePrinters 條目相符，每台印表機還有額外的「id」或「guid」必填欄位，用於將印表機加入許可清單或列入黑名單。
-
-      檔案大小不得超過 5 MB，且必須使用 JSON 編碼。根據估計，一個 5 MB 的編碼檔案中可包含約 21,000 台印表機。系統會使用加密編譯雜湊碼驗證下載內容的完整性。
-
-      系統會下載並快取這個檔案，只要網址或雜湊碼有任何變更，系統就會重新下載檔案。
-
-      如果設定這項政策，<ph name="PRODUCT_OS_NAME" />會下載用於設定印表機的檔案，並按照 <ph name="DEVICE_NATIVE_PRINTERS_ACCESS_MODE" />、<ph name="DEVICE_NATIVE_PRINTERS_WHITELIST_POLICY_NAME" /> 和 <ph name="DEVICE_NATIVE_PRINTERS_BLACKLIST_POLICY_NAME" /> 政策提供可用的印表機。
-
-      這項政策對使用者是否能在個別裝置上設定印表機沒有影響，而是補足個別使用者的印表機設定。
-
-      這項政策是用來補充 <ph name="BULK_PRINTERS_POLICY_NAME" />。
-
-      如果不設定這項政策，系統將不會提供任何裝置印表機，並且會忽略其他 <ph name="DEVICE_NATIVE_PRINTERS_POLICY_PATTERN" /> 政策。
-      </translation>
 <translation id="2623014935069176671">等待初始使用者活動</translation>
 <translation id="262740370354162807">啟用「<ph name="CLOUD_PRINT_NAME" />」文件提交功能</translation>
 <translation id="2632538643061793322">你可以透過這項政策建立網址模式清單，用於指定可要求使用者授予 USB 裝置存取權的網站。
@@ -1248,12 +1229,6 @@
       如果啟用這項設定，預覽列印會使用作業系統預設印表機做為預設目的地選擇。</translation>
 <translation id="285627849510728211">設定日間進階充電模式配置</translation>
 <translation id="2856674246949497058">如果作業系統比目標版本還新，則復原並維持在目標版本，並在作業過程中執行 Powerwash。</translation>
-<translation id="2869140260739354012">根據 <ph name="DEVICE_PRINTERS_POLICY" /> 政策控管可供使用的印表機。
-
-      這項政策可指派用於大量印表機設定的存取權政策。如果選取 <ph name="PRINTERS_ALLOW_ALL" />，系統會顯示所有印表機。如果選取 <ph name="PRINTERS_BLACKLIST" />，系統會使用 <ph name="DEVICE_NATIVE_PRINTERS_BLACKLIST" /> 限制對特定印表機的存取權。如果選取 <ph name="PRINTERS_WHITELIST" />，<ph name="DEVICE_NATIVE_PRINTERS_WHITELIST" /> 只會指派可選取的印表機。
-
-      如果不設定這項政策，系統會自動採用 <ph name="PRINTERS_ALLOW_ALL" />。
-      </translation>
 <translation id="2869762730352628426">在登入畫面上啟用自動點擊功能</translation>
 <translation id="2872961005593481000">關閉</translation>
 <translation id="2874209944580848064">支援 Android 裝置的 <ph name="PRODUCT_OS_NAME" />裝置注意事項：</translation>
@@ -1884,12 +1859,6 @@
 <translation id="3838094946886335701">你可以透過這項政策 (只能設為「建議」) 註冊通訊協定處理常式的清單，其中的通訊協定處理常式會與使用者所註冊的合併，二種皆可供使用。請將「protocol」(通訊協定) 屬性設為「mailto」等類型的網路通訊協定配置，並將「URL」(網址) 屬性設為處理該網路通訊協定的應用程式所使用的網址模式 (這裡的網路通訊協定指的是「通訊協定」欄位中所指定的網路通訊協定配置)。模式可包含「%s」預留位置，將替換為受處理的網址。
 
       使用者無法移除透過政策註冊的通訊協定處理常式，但可透過安裝新的預設處理常式，變更透過政策安裝的通訊協定處理常式。</translation>
-<translation id="3848118497246496090">指定禁止使用的印表機。
-
-      只有在為 <ph name="DEVICE_NATIVE_PRINTERS_ACCESS_MODE" /> 選擇 <ph name="PRINTERS_BLACKLIST" /> 的情況下，系統才會使用這項政策。
-
-      如果使用這項政策，除了本政策中列出的 ID 之外，其他所有印表機皆可供使用。ID 必須與 <ph name="DEVICE_PRINTERS_POLICY" /> 政策中指定檔案的「id」或「guid」欄位相符。
-      </translation>
 <translation id="3851039766298741586">回報執行中資訊站工作階段的相關資訊，例如
       應用程式 ID 和版本。
 
@@ -2257,12 +2226,6 @@
 
       如果不設定，網站可要求存取檔案和目錄，但使用者可以變更這項設定。</translation>
 <translation id="4285674129118156176">允許無關聯的使用者使用 ARC</translation>
-<translation id="4309562700894844665">指定可供使用的印表機。
-
-      只有在為 <ph name="DEVICE_NATIVE_PRINTERS_ACCESS_MODE" /> 選擇 <ph name="PRINTERS_WHITELIST" /> 的情況下，系統才會使用這項政策。
-
-      如果使用這項政策，只有 ID 與這項政策值相符的印表機可供使用。ID 必須與 <ph name="DEVICE_PRINTERS_POLICY" /> 政策中指定檔案的「id」或「guid」欄位相符。
-      </translation>
 <translation id="4311195029067684288">Full</translation>
 <translation id="4313767483634435271">裝置的指定座架 MAC 位址</translation>
 <translation id="4322842393287974810">允許使用無延遲資訊站應用程式的自動啟動功能來控制 <ph name="PRODUCT_OS_NAME" /> 版本</translation>
@@ -2279,9 +2242,6 @@
 <translation id="4347908978527632940">如果設為 true，且使用者是受監管的使用者，其他 Android 應用程式即可透過內容提供者查詢使用者的網路限制。
 
           如果設為 false 或沒有設定，內容提供者將不會傳回任何資訊。</translation>
-<translation id="4360826270668210664">如果設定這項政策，遠端存取主機會要求用戶端透過此網址取得驗證憑證，驗證通過後才能建立連線。這項政策必須搭配 RemoteAccessHostTokenValidationUrl 使用。
-
-          這項功能目前在伺服器端設為停用。</translation>
 <translation id="4363057787588706121">允許合併不同來源的清單政策</translation>
 <translation id="4363101430102811068">為已輸入的憑證啟用資料外洩偵測功能</translation>
 <translation id="436581050240847513">回報裝置網路介面</translation>
@@ -3105,7 +3065,7 @@
       如果將這項政策設為「禁止上傳及下載不支援的檔案類型」(3)，<ph name="PRODUCT_NAME" /> 會依照「禁止上傳不支援的檔案類型」和「禁止下載不支援的檔案類型」所設定的規則執行作業。
       </translation>
 <translation id="5535973522252703021">Kerberos 委派伺服器許可清單</translation>
-<translation id="5540753481451194959">你可以透過這項政策，指定系統啟動時的行為。關閉這項設定等同於未設定，因為 <ph name="PRODUCT_NAME" /> 必須有指定的啟動行為。
+<translation id="5540753481451194959">你可以透過這項政策，指定瀏覽器啟動時的行為。關閉這項設定等同於未設定，因為 <ph name="PRODUCT_NAME" /> 必須有指定的啟動行為。
 
       如果設定這項政策，使用者將無法在 <ph name="PRODUCT_NAME" /> 中進行變更。如果未設定，使用者可以進行變更。
 
@@ -4516,9 +4476,6 @@
 <translation id="7477231245051133709">啟用單聲道音訊無障礙功能</translation>
 <translation id="7477239290070847560">可支援無須調整設定 (mDNS 和 DNS-SD) 的通訊協定目的地</translation>
 <translation id="7485481791539008776">預設印表機選取規則</translation>
-<translation id="7485730741952775732">如果設定這項政策，遠端存取主機會使用這個網址，驗證遠端存取用戶端提供的驗證憑證，據此決定是否要接受連線。這項政策必須搭配 RemoteAccessHostTokenUrl 使用。
-
-          這項功能目前在伺服器端設為停用。</translation>
 <translation id="749556411189861380">回報註冊裝置的作業系統和韌體版本。
 
       如果這項政策未設定或設為 True，註冊的裝置會定期回報作業系統和韌體版本。如果設為 False，則不會回報版本資訊。</translation>
@@ -4834,9 +4791,6 @@
 <translation id="7953256619080733119">管理化環境下使用者手動建立的例外主機</translation>
 <translation id="7956210013490975468">設定 <ph name="PRODUCT_OS_NAME" />的系統 Proxy 服務。</translation>
 <translation id="7958537754689366707">每 12 小時需輸入密碼</translation>
-<translation id="7960293328203000385">這項政策會定義可登入裝置的使用者清單，輸入項目格式為 <ph name="USER_ALLOWLIST_ENTRY_FORMAT" /> (例如 <ph name="USER_ALLOWLIST_ENTRY_EXAMPLE" />)。如要允許特定網域的任意使用者登入裝置，請使用 <ph name="USER_ALLOWLIST_ENTRY_WILDCARD" /> 格式輸入項目。
-
-      如果不設定這項政策，所有使用者均可登入裝置。請注意，建立新使用者時，仍然需要正確設定 <ph name="DEVICE_ALLOW_NEW_USERS_POLICY_NAME" /> 政策。</translation>
 <translation id="7961779417826583251">不針對列出的舊版憑證授權單位強制執行憑證透明化政策</translation>
 <translation id="7973609468423251675">請注意，這項政策已遭淘汰，並將在 <ph name="PRODUCT_OS_NAME" />第 85 版中移除。請改用 <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />。
 

@@ -108,6 +108,7 @@
 <translation id="1868024384445905608">Chrome ახლა უფრო სწრაფად ჩამოტვირთავს ფაილებს</translation>
 <translation id="1877026089748256423">Chrome მოძველებულია</translation>
 <translation id="1883903952484604915">ჩემი ფაილები</translation>
+<translation id="189358972401248634">სხვა ენები</translation>
 <translation id="1925021887439448749">შეიყვანეთ მორგებული ვებ-მისამართი</translation>
 <translation id="1928696683969751773">განახლება</translation>
 <translation id="19288952978244135">Chrome-ის ხელახლა გახსნა.</translation>
@@ -217,6 +218,7 @@
 <translation id="2689830683995595741">Chrome-ის გამოყენებით ეთანხმებით <ph name="BEGIN_LINK1" />Google-ის მომსახურების პირობებს<ph name="END_LINK1" />, ასევე, <ph name="BEGIN_LINK2" />Google Chrome-ისა და Chrome OS-ის მომსახურების დამატებით პირობებს<ph name="END_LINK2" />. გარდა ამისა, ვრცელდება <ph name="BEGIN_LINK3" />კონფიდენციალურობის შეტყობინება Family Link-ით მართული Google ანგარიშებისთვის<ph name="END_LINK3" />.</translation>
 <translation id="2707726405694321444">გვერდის განახლება</translation>
 <translation id="2709516037105925701">ავტომატური შევსება</translation>
+<translation id="2723001399770238859">აუდიო</translation>
 <translation id="2728754400939377704">დალაგება საიტის მიხედვით</translation>
 <translation id="2744248271121720757">შეეხეთ სიტყვას მყისიერი ძიებისთვის ან დაკავშირებული ქმედებების სანახავად</translation>
 <translation id="2760989362628427051">მუქი თემის ჩართვა მოწყობილობაზე მუქი თემის ან ბატარეის დამზოგის გააქტიურებისას</translation>
@@ -467,6 +469,7 @@
 <translation id="4738836084190194332">ბოლო სინქრონიზაცია: <ph name="WHEN" /></translation>
 <translation id="4749960740855309258">ახალ ჩანართში გახსნა</translation>
 <translation id="4759238208242260848">ჩამოტვირთვები</translation>
+<translation id="4763480195061959176">ვიდეო</translation>
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{1 ჩამოტვირთვა დასრულდა.}other{# ჩამოტვირთვა დასრულდა.}}</translation>
 <translation id="4766678251456904326">ანგარიშის დამატება მოწყობილობაზე</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{დაგეგმილია 1 ჩამოტვირთვა.}other{დაგეგმილია # ჩამოტვირთვა.}}</translation>

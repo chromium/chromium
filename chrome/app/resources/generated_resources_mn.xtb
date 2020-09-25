@@ -352,6 +352,7 @@
 <translation id="140520891692800925"><ph name="PROFILE_DISPLAY_NAME" /> (хяналтанд байна)</translation>
 <translation id="1405779994569073824">Эвдэрсэн.</translation>
 <translation id="1406500794671479665">Шалгаж байна...</translation>
+<translation id="1407135791313364759">Бүгдийг нээ</translation>
 <translation id="140723521119632973">Үүрэн сүлжээний идэвхжүүлэлт</translation>
 <translation id="1407489512183974736">Төвийг хайчилсан</translation>
 <translation id="1408504635543854729">Файлс апп доторх төхөөрөмжийн агуулгыг судална уу. Агуулгыг админ хязгаарласан ба өөрчлөх боломжгүй.</translation>
@@ -395,7 +396,7 @@
 <translation id="1451375123200651445">Вэб хуудас, Нэг файл</translation>
 <translation id="1451917004835509682">Хяналттай хэрэглэгч нэмэх</translation>
 <translation id="1454223536435069390">Дэлгэцийн зураг авах</translation>
-<translation id="145432137617179457">Зөв бичгийн алдаа шалгах хэл</translation>
+<translation id="145432137617179457">Зөв бичгийн алдаа шалгах хэлнүүд</translation>
 <translation id="1459693405370120464">Цаг агаар</translation>
 <translation id="1459967076783105826">Өргөтгөлүүд хайлтын хөдөлгүүр нэмсэн</translation>
 <translation id="146000042969587795">Аюултай агуулгыг агуулж байгаа учраас энэ хүрээ хаагдсан байна.</translation>
@@ -1898,7 +1899,6 @@
 <translation id="3246107497225150582">{0,plural, =1{Төхөөрөмжийг нэг хоногийн дотор шинэчилнэ үү}other{Төхөөрөмжийг # хоногийн дотор шинэчилнэ үү}}</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - Сүлжээний алдаа</translation>
 <translation id="3248902735035392926">Аюулгүй байдал чухал билээ. <ph name="BEGIN_LINK" />Одоо өргөтгөлүүдээ шалгахын<ph name="END_LINK" /> тулд хэсэг хором зарцуулаарай</translation>
-<translation id="325036368918787455">Нууцлалтай цонхыг хаах</translation>
 <translation id="3251759466064201842">&lt;Сертификатын хэсэг биш&gt;</translation>
 <translation id="3253225298092156258">Боломжгүй байна</translation>
 <translation id="3253448572569133955">Тодорхойгүй бүртгэл</translation>
@@ -3214,7 +3214,7 @@
 <translation id="4824037980212326045">Linux-н нөөцлөлт болон сэргээлт</translation>
 <translation id="4824958205181053313">Синкийг цуцлах уу?</translation>
 <translation id="4827675678516992122">Холбогдож чадсангүй</translation>
-<translation id="4827784381479890589">Chrome хөтчийн сайжруулсан зөв бичгийн алдаа шалгах (текстийг Google рүү зөв бичгийн зөвлөмж авахаар илгээдэг)</translation>
+<translation id="4827784381479890589">Chrome хөтчийн сайжруулсан зөв бичгийн алдаа шалгах онцлог (текстийг Google рүү зөв бичгийн зөвлөмж авахаар илгээдэг)</translation>
 <translation id="4829768588131278040">ПИН тохируулах</translation>
 <translation id="4830121310592638841">Сайтыг таны дэлгэцэд цонх нээх болон байрлуулахыг хүсэх үед асууна</translation>
 <translation id="4830502475412647084">Үйлдлийн системийн шинэчлэлтийг суулгаж байна</translation>
@@ -3438,7 +3438,6 @@
 <translation id="5097649414558628673">Хэрэгсэл: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">Курсорыг зогссон үед автоматаар товших</translation>
 <translation id="5099399397495049098">Сайтууд JavaScript-г ашиглах боломжтой (санал болгосон)</translation>
-<translation id="5101042277149003567">Бүх хавчуургыг нээх</translation>
 <translation id="5101839224773798795">Курсор зогссон үед автоматаар товших</translation>
 <translation id="5107443654503185812">Өргөтгөл нь Аюулгүй хайлтыг унтраасан</translation>
 <translation id="5108967062857032718">Тохиргоо - Андройд апп-г устгах</translation>
@@ -4023,7 +4022,6 @@
 <translation id="5804241973901381774">Зөвшөөрлүүд</translation>
 <translation id="5805697420284793859">Цонхны менежер</translation>
 <translation id="5806773519584576205">0° (өгөгдмөл)</translation>
-<translation id="5808664694611589238">{0,plural, =1{Зочны цонхыг хаах}other{Зочны цонхыг хаах}}</translation>
 <translation id="5810809306422959727">Энэ бүртгэл эцэг эхийн хяналтын эрхгүй</translation>
 <translation id="5812674658566766066">Бүгдийг дэлгэх</translation>
 <translation id="5814126672212206791">Холболтын төрөл</translation>
@@ -4339,7 +4337,7 @@
 <translation id="6170470584681422115">Сэндвич</translation>
 <translation id="6170498031581934115">ADB алдаа засахыг идэвхжүүлж чадсангүй Тохиргоо хэсэгт очиж, дахин оролдоно уу.</translation>
 <translation id="6173623053897475761">ПИН-ээ дахин бичих</translation>
-<translation id="6173870063490457111">Үзэгдэх зүйл болон дахин чиглүүлэлтийг блоклоно (санал болгосон)</translation>
+<translation id="6173870063490457111">Попап болон дахин чиглүүлэлтийг блоклоно (санал болгосон)</translation>
 <translation id="6175314957787328458">Microsoft Домэйн GUID</translation>
 <translation id="6176043333338857209">Таны аюулгүй байдлын түлхүүртэй холбогдохын тулд Bluetooth-г түр асаана</translation>
 <translation id="6178664161104547336">Гэрчилгээг сонгоно уу</translation>
@@ -6257,7 +6255,7 @@
 <translation id="8487678622945914333">Томруулж харах</translation>
 <translation id="8489156414266187072">Хувийн зөвлөмж зөвхөн таны бүртгэл дээр харагдана</translation>
 <translation id="8490896350101740396">Дараах киоск апп-ууд "<ph name="UPDATED_APPS" />" шинэчлэгдсэн байна. Шинэчлэх үйл явцыг дуусгахын тулд төхөөрөмжийг унтрааж асаах хэрэгтэй.</translation>
-<translation id="8492822722330266509">Сайтууд үзэгдэх зүйлийг илгээж, дахин чиглүүлэлтийг ашиглах боломжтой</translation>
+<translation id="8492822722330266509">Сайтууд попапыг илгээж, дахин чиглүүлэлтийг ашиглах боломжтой</translation>
 <translation id="8493236660459102203">Микрофон:</translation>
 <translation id="8496717697661868878">Энэ нэмэлт өргөтгөлийг ажиллуул</translation>
 <translation id="8497219075884839166">Windows хэрэгсэл</translation>
@@ -6926,7 +6924,7 @@
 <translation id="980731642137034229">Үйлдлийн цэсийн товчлуур</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="983511809958454316">Энэ онцлогийг VR-д дэмжээгүй</translation>
-<translation id="984136553749462603">Сайт зохиогчийн эрхээр хамгаалагдсан контент тоглуулахдаа танаас төхөөрөмжөө танихыг хүсэж болзошгүй</translation>
+<translation id="984136553749462603">Сайт зохиогчийн эрхээр хамгаалагдсан контент тоглуулахдаа таны төхөөрөмжийг танихыг хүсэж болзошгүй</translation>
 <translation id="984275831282074731">Төлбөрийн хэрэгсэл</translation>
 <translation id="98515147261107953">Газрын гадаргуун зураг</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>

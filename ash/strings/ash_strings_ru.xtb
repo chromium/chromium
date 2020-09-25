@@ -59,6 +59,7 @@
 <translation id="1467432559032391204">Слева</translation>
 <translation id="1479909375538722835">Плавающее меню специальных возможностей</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
+<translation id="1503394326855300303">При одновременной работе в нескольких аккаунтах необходимо сначала зайти в аккаунт владельца.</translation>
 <translation id="1516740043221086139">Режим "Не беспокоить" включен</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Показать настройки уведомлений. Уведомления отключены для одного приложения.}one{Показать настройки уведомлений. Уведомления отключены для # приложения.}few{Показать настройки уведомлений. Уведомления отключены для # приложений.}many{Показать настройки уведомлений. Уведомления отключены для # приложений.}other{Показать настройки уведомлений. Уведомления отключены для # приложения.}}</translation>
 <translation id="1525508553941733066">ЗАКРЫТЬ</translation>
@@ -172,7 +173,6 @@
 <translation id="2718395828230677721">Ночной свет</translation>
 <translation id="2727175239389218057">Ответить</translation>
 <translation id="2727977024730340865">Подключено маломощное зарядное устройство. Возможны проблемы при зарядке.</translation>
-<translation id="2743387203779672305">Скопировать в буфер</translation>
 <translation id="2792498699870441125">Alt + Search</translation>
 <translation id="2819276065543622893">Сеанс завершен.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> не поддерживает разрешение <ph name="SPECIFIED_RESOLUTION" />. Установлено разрешение <ph name="FALLBACK_RESOLUTION" />.</translation>
@@ -257,6 +257,7 @@
 <translation id="3486220673238053218">описание</translation>
 <translation id="3510164367642747937">Выделять указатель мыши</translation>
 <translation id="3513798432020909783">Администратор аккаунта: <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3571734092741541777">Настроить</translation>
 <translation id="3573179567135747900">Вернуться к языку: "<ph name="FROM_LOCALE" />" (потребуется перезагрузка)</translation>
 <translation id="3576141592585647168">Изменение часового пояса</translation>
 <translation id="3593646411856133110">Чтобы увидеть открытые приложения, проведите по экрану вверх и удерживайте палец.</translation>
@@ -389,6 +390,7 @@
 <translation id="4917385247580444890">Сильный</translation>
 <translation id="4918086044614829423">Принять</translation>
 <translation id="4924411785043111640">Перезапустить и сбросить настройки</translation>
+<translation id="4925542575807923399">Чтобы начать сеанс множественного входа, необходимо в первую очередь выполнить вход в этот аккаунт</translation>
 <translation id="495046168593986294">Прокрутить вверх</translation>
 <translation id="4961318399572185831">Трансляция экрана</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> ч. <ph name="MINUTES" /> мин. <ph name="SECONDS" /> сек.</translation>
@@ -535,6 +537,7 @@
 <translation id="6657585470893396449">Пароль</translation>
 <translation id="6665545700722362599">Разрешать сайтам, приложениям и расширениям использовать геолокацию, микрофон, камеру и другие функции устройства.</translation>
 <translation id="6670153871843998651">Рабочий стол 3</translation>
+<translation id="6671495933530132209">Копировать изображение</translation>
 <translation id="6691659475504239918">ПОИСК + SHIFT + H</translation>
 <translation id="6692996468359469499">Получайте информацию об объектах на экране</translation>
 <translation id="6696025732084565524">Необходимо обновить внешнюю клавиатуру</translation>
@@ -734,6 +737,7 @@
 <translation id="8734991477317290293">Это может быть попыткой узнать, какие клавиши вы нажимаете.</translation>
 <translation id="8735953464173050365">Показать настройки клавиатуры. Выбрана клавиатура "<ph name="KEYBOARD_NAME" />".</translation>
 <translation id="875593634123171288">Показать настройки VPN</translation>
+<translation id="8759408218731716181">Не удалось настроить множественный вход</translation>
 <translation id="8785070478575117577">Подключиться к сети "<ph name="NETWORK_NAME" />"</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" />.</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>

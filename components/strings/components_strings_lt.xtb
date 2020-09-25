@@ -513,6 +513,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="3080254622891793721">Grafiniai elementai</translation>
 <translation id="3086579638707268289">Jūsų veikla žiniatinklyje stebima</translation>
 <translation id="3087734570205094154">Apačia</translation>
+<translation id="3094457892697649331">Kai redaguosite komentarus, bus pateikta šio dokumento vieno puslapio peržiūra.</translation>
 <translation id="3095940652251934233">Ataskaita</translation>
 <translation id="3096100844101284527">Pridėti paėmimo adresą</translation>
 <translation id="3105172416063519923">Ištekliaus ID:</translation>
@@ -747,6 +748,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="4075941231477579656">Touch ID</translation>
 <translation id="4079302484614802869">Įgaliotojo serverio konfigūracijoje nustatyta naudoti .pac scenarijaus URL, o ne fiksuotus įgaliotuosius serverius.</translation>
 <translation id="4082393374666368382">Nustatymai – valdymas</translation>
+<translation id="4084120443451129199">Paieškos režimas, paspauskite „Enter“, kad būtų ieškoma „<ph name="KEYWORD_SUFFIX" />“</translation>
 <translation id="4088981014127559358">1 pusė: sukti vaizdą pagal Y ašį</translation>
 <translation id="4098354747657067197">Ketinate apsilankyti apgaulingoje svetainėje</translation>
 <translation id="4101413244023615925">Tekstas ir grafiniai elementai</translation>
@@ -942,6 +944,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="4809079943450490359">Įrenginio administratoriaus instrukcijos:</translation>
 <translation id="4813512666221746211">Tinklo klaida</translation>
 <translation id="4816492930507672669">Pritaikyti pagal puslapį</translation>
+<translation id="4819347708020428563">Redaguoti komentarus numatytajame rodinyje?</translation>
 <translation id="484462545196658690">Automatiškai</translation>
 <translation id="4850886885716139402">Žiūrėti</translation>
 <translation id="4854362297993841467">Šis pristatymo metodas nepasiekiamas. Išbandykite kitą metodą.</translation>
@@ -1676,6 +1679,7 @@ Papildoma išsami informacija:
 <translation id="7802523362929240268">Svetainė yra teisėta</translation>
 <translation id="780301667611848630">Ačiū, ne</translation>
 <translation id="7805768142964895445">Būsena</translation>
+<translation id="7811322735445742657">Kai redaguosite komentarus, bus pateikta šio dokumento vieno puslapio peržiūra arba pradinis pasukimas.</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Pašalinti formos pasiūlymą iš „Chrome“?</translation>
 <translation id="781440967107097262">Bendrinti iškarpinę?</translation>
@@ -1711,6 +1715,7 @@ Papildoma išsami informacija:
 <translation id="7956713633345437162">Žymės mobiliesiems</translation>
 <translation id="7961015016161918242">Niekada</translation>
 <translation id="7966803981046576691">Užduoties paskyros tipas</translation>
+<translation id="7976214039405368314">Per daug užklausų</translation>
 <translation id="7977538094055660992">Išvesties įrenginys</translation>
 <translation id="7977894662897852582">Edp</translation>
 <translation id="799149739215780103">Įrišimas</translation>
@@ -1792,6 +1797,7 @@ Papildoma išsami informacija:
 <translation id="8289355894181816810">Jei nesate tikri, ką tai reiškia, susisiekite su tinklo administratoriumi.</translation>
 <translation id="8293206222192510085">Pridėti žymę</translation>
 <translation id="8294431847097064396">Šaltinis</translation>
+<translation id="8297398969342264569">Kai redaguosite komentarus, bus pateiktas šio dokumento pradinis pasukimas.</translation>
 <translation id="8298115750975731693">Naudojant šį „Wi-Fi“ tinklą („<ph name="WIFI_NAME" />“) gali būti prašoma apsilankyti <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="8303854710873047864">Rodoma skiltis „<ph name="SECTION" />“</translation>
 <translation id="830498451218851433">Perlenkimas per pusę</translation>

@@ -352,6 +352,7 @@
 <translation id="140520891692800925"><ph name="PROFILE_DISPLAY_NAME" /> (падкантрольны карыстальнік)</translation>
 <translation id="1405779994569073824">Збой.</translation>
 <translation id="1406500794671479665">Ідзе спраўджанне...</translation>
+<translation id="1407135791313364759">Адкрыць усе</translation>
 <translation id="140723521119632973">Актывацыя SIM-карты ў мабільнай сетцы</translation>
 <translation id="1407489512183974736">Адцэнтравана і абрэзана</translation>
 <translation id="1408504635543854729">Глядзець змесціва прылады ў праграме "Файлы". Змесціва нельга мадыфікаваць: дазволы на яго абмежаваны адміністратарам.</translation>
@@ -1903,7 +1904,6 @@
 <translation id="3246107497225150582">{0,plural, =1{Перазапусціце прыладу на працягу дня}one{Перазапусціце прыладу на працягу # дня}few{Перазапусціце прыладу на працягу # дзён}many{Перазапусціце прыладу на працягу # дзён}other{Перазапусціце прыладу на працягу # дня}}</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – памылка сеткі</translation>
 <translation id="3248902735035392926">Бяспека мае значэнне. Удзяліце некаторы час і <ph name="BEGIN_LINK" />праверце пашырэнні<ph name="END_LINK" /></translation>
-<translation id="325036368918787455">Закрыць вокны ў рэжыме інкогніта</translation>
 <translation id="3251759466064201842">&lt;Не з'яўляецца часткай сертыфіката&gt;</translation>
 <translation id="3253225298092156258">Недаступна</translation>
 <translation id="3253448572569133955">Невядомы ўліковы запіс</translation>
@@ -3444,7 +3444,6 @@
 <translation id="5097649414558628673">Інструмент: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">Аўтаматычна націскаць клавішу мышы, калі курсор спыняецца</translation>
 <translation id="5099399397495049098">Сайты могуць выкарыстоўваць змесціва JavaScript (рэкамендуецца)</translation>
-<translation id="5101042277149003567">Адкрыць усе закладкі</translation>
 <translation id="5101839224773798795">Аўтаматычна націскаць, калі курсор спыняецца</translation>
 <translation id="5107443654503185812">Адно з пашырэнняў выключыла Бяспечны прагляд</translation>
 <translation id="5108967062857032718">Налады &gt; Выдаліць праграмы Android</translation>
@@ -4028,7 +4027,6 @@
 <translation id="5804241973901381774">Дазволы</translation>
 <translation id="5805697420284793859">Менеджар вокнаў</translation>
 <translation id="5806773519584576205">0° (стандартна)</translation>
-<translation id="5808664694611589238">{0,plural, =1{Закрыць гасцявое акно}one{Закрыць гасцявыя вокны}few{Закрыць гасцявыя вокны}many{Закрыць гасцявыя вокны}other{Закрыць гасцявыя вокны}}</translation>
 <translation id="5810809306422959727">Гэты ўліковы запіс не прыдатны для выкарыстання функцыі бацькоўскага кантролю</translation>
 <translation id="5812674658566766066">Разгарнуць усе</translation>
 <translation id="5814126672212206791">Тып падключэння</translation>

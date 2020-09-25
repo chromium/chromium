@@ -513,6 +513,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3080254622891793721">Grafico</translation>
 <translation id="3086579638707268289">La tua attività sul Web viene monitorata</translation>
 <translation id="3087734570205094154">In basso</translation>
+<translation id="3094457892697649331">Quando modificherai le annotazioni, questo documento tornerà in visualizzazione a pagina singola.</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3096100844101284527">Aggiungi l'indirizzo di ritiro</translation>
 <translation id="3105172416063519923">ID asset:</translation>
@@ -743,6 +744,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4075941231477579656">Touch ID</translation>
 <translation id="4079302484614802869">L'impostazione della configurazione proxy prevede l'utilizzo di un URL script .pac, non di server proxy fissi.</translation>
 <translation id="4082393374666368382">Impostazioni - Gestione</translation>
+<translation id="4084120443451129199">Modalità di ricerca, premi Invio per cercare <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="4088981014127559358">Spostamento Y lato 1 immagine</translation>
 <translation id="4098354747657067197">Sito ingannevole in vista</translation>
 <translation id="4101413244023615925">Testo e grafica</translation>
@@ -938,6 +940,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4809079943450490359">Istruzioni dell'amministratore del tuo dispositivo:</translation>
 <translation id="4813512666221746211">Errore di rete</translation>
 <translation id="4816492930507672669">Adatta alla pagina</translation>
+<translation id="4819347708020428563">Vuoi modificare le annotazioni nella visualizzazione predefinita?</translation>
 <translation id="484462545196658690">Automatico</translation>
 <translation id="4850886885716139402">Visualizza</translation>
 <translation id="4854362297993841467">Questo metodo di consegna non è disponibile. Prova un metodo diverso.</translation>
@@ -1671,6 +1674,7 @@ Ulteriori dettagli:
 <translation id="7802523362929240268">Il sito è legittimo</translation>
 <translation id="780301667611848630">No grazie</translation>
 <translation id="7805768142964895445">Stato</translation>
+<translation id="7811322735445742657">Quando modificherai le annotazioni, questo documento tornerà in visualizzazione a pagina singola e nella sua rotazione originale.</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Rimuovere il suggerimento per i moduli da Chrome?</translation>
 <translation id="781440967107097262">Condividere gli appunti?</translation>
@@ -1706,6 +1710,7 @@ Ulteriori dettagli:
 <translation id="7956713633345437162">Preferiti su disp. mobili</translation>
 <translation id="7961015016161918242">Mai</translation>
 <translation id="7966803981046576691">Tipo di account lavoro</translation>
+<translation id="7976214039405368314">Numero eccessivo di richieste</translation>
 <translation id="7977538094055660992">Dispositivo di uscita</translation>
 <translation id="7977894662897852582">Edp</translation>
 <translation id="799149739215780103">Rilegatura</translation>
@@ -1787,6 +1792,7 @@ Ulteriori dettagli:
 <translation id="8289355894181816810">Contatta l'amministratore di rete se non sei sicuro del significato.</translation>
 <translation id="8293206222192510085">Aggiunta preferito</translation>
 <translation id="8294431847097064396">Origine</translation>
+<translation id="8297398969342264569">Quando modificherai le annotazioni, questo documento tornerà alla sua rotazione originale.</translation>
 <translation id="8298115750975731693">La rete Wi-Fi in uso (<ph name="WIFI_NAME" />) potrebbe richiedere la visita della pagina <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="8303854710873047864">Sezione "<ph name="SECTION" />" mostrata</translation>
 <translation id="830498451218851433">Piegatura a metà</translation>

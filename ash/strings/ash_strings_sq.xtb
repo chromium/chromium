@@ -59,6 +59,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1467432559032391204">Majtas</translation>
 <translation id="1479909375538722835">Menyja pluskuese e qasshmërisë</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
+<translation id="1503394326855300303">Kjo llogari zotëruesi duhet të jetë llogaria e parë e identifikimit në një sesion me identifikime të shumëfishta.</translation>
 <translation id="1516740043221086139">Modaliteti "Mos shqetëso" është aktiv.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Shfaq cilësimet e njoftimeve. Njoftimet janë joaktive për një aplikacion}other{Shfaq cilësimet e njoftimeve. Njoftimet janë joaktive për # aplikacione}}</translation>
 <translation id="1525508553941733066">ANULO</translation>
@@ -172,7 +173,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2718395828230677721">Drita e natës</translation>
 <translation id="2727175239389218057">Përgjigju</translation>
 <translation id="2727977024730340865">E lidhur me një karikues me fuqi të ulët. Ngarkimi i baterisë mund të mos jetë i sigurt.</translation>
-<translation id="2743387203779672305">Kopjo te kujtesa e fragmenteve</translation>
 <translation id="2792498699870441125">Alt+Kërko</translation>
 <translation id="2819276065543622893">Do të dalësh nga llogaria tani.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> nuk e mbështet <ph name="SPECIFIED_RESOLUTION" />. Rezolucioni është ndryshuar në <ph name="FALLBACK_RESOLUTION" />.</translation>
@@ -257,6 +257,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="3486220673238053218">përkufizimi</translation>
 <translation id="3510164367642747937">Thekso kursorin e miut</translation>
 <translation id="3513798432020909783">Llogaria menaxhohet nga <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3571734092741541777">Konfigurimi</translation>
 <translation id="3573179567135747900">Ndryshoje përsëri te "<ph name="FROM_LOCALE" />" (kërkohet rinisja)</translation>
 <translation id="3576141592585647168">Ndrysho brezin orar</translation>
 <translation id="3593646411856133110">Rrëshqit shpejt larg dhe mbaj shtypur për të parë aplikacionet e hapura</translation>
@@ -307,6 +308,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Joaktiv për një apl.}other{Joaktiv për # apl.}}</translation>
 <translation id="4072264167173457037">Sinjal mesatar</translation>
 <translation id="4112140312785995938">Kërko prapa</translation>
+<translation id="4114315158543974537">Aktivizo "Qendrën e telefonit"</translation>
 <translation id="4129129681837227511">Për të parë njoftime në ekranin e kyçjes, shkyçe për të ndryshuar cilësimin</translation>
 <translation id="4146833061457621061">Luaj muzikë</translation>
 <translation id="4149156641122542261"><ph name="DEVICE_TYPE" /> menaxhohet nga <ph name="DOMAIN" /></translation>
@@ -388,6 +390,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="4917385247580444890">I fortë</translation>
 <translation id="4918086044614829423">Prano</translation>
 <translation id="4924411785043111640">Rinis dhe rivendos</translation>
+<translation id="4925542575807923399">Administratori për këtë llogari kërkon që ajo të jetë llogaria e parë e identifikimit në një sesion me identifikime të shumëfishta.</translation>
 <translation id="495046168593986294">Lëviz lart</translation>
 <translation id="4961318399572185831">Ekrani i transmetimit</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> orë e <ph name="MINUTES" /> min. e <ph name="SECONDS" /> sek.</translation>
@@ -438,6 +441,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="5648021990716966815">Fisha e mikrofonit</translation>
 <translation id="5669267381087807207">Po aktivizohet</translation>
 <translation id="5673434351075758678">Nga "<ph name="FROM_LOCALE" />" në "<ph name="TO_LOCALE" />" pas sinkronizimit të cilësimeve të tua.</translation>
+<translation id="5679050765726761783">Është lidhur një përshtatës me fuqi të ulët</translation>
 <translation id="5682642926269496722">"Asistenti i Google" nuk ofrohet për llogarinë aktuale të përdoruesit.</translation>
 <translation id="5689633613396158040">"Drita e natës" e bën më të lehtë shikimin e ekranit ose leximin në dritë të zbehtë. Trokit për të ndryshuar se kur aktivizohet ose çaktivizohet plotësisht "Drita e natës".</translation>
 <translation id="5691772641933328258">Gjurma e gishtit nuk njihet</translation>
@@ -533,6 +537,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="6657585470893396449">Fjalëkalimi</translation>
 <translation id="6665545700722362599">Jepi leje sajteve të uebit, aplikacioneve dhe shtesave të përdorin shërbimet e vendndodhjes, mikrofonin e pajisjes, kamerën ose funksione të tjera</translation>
 <translation id="6670153871843998651">Tavolina e punës 3</translation>
+<translation id="6671495933530132209">Kopjo imazhin</translation>
 <translation id="6691659475504239918">Kërko+Shift+H</translation>
 <translation id="6692996468359469499">Merr informacion në lidhje me përzgjedhjen tënde</translation>
 <translation id="6696025732084565524">Tastiera jote e shkëputshme ka nevojë për një përditësim me rëndësi</translation>
@@ -552,6 +557,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="6857811139397017780">Aktivizo <ph name="NETWORKSERVICE" /></translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Një shifër e mbetur}other{# shifra të mbetura}}</translation>
 <translation id="6878400149835617132">Shkurtorja është çaktivizuar</translation>
+<translation id="6886172995547742638">Pajisja jote <ph name="DEVICE_TYPE" /> mund të ketë një cilësi funksionimi më të ulët. Përdor një përshtatës elektrik të certifikuar të tipit USB-C me fuqi <ph name="PREFERRED_MINIMUM_POWER" /> W ose më shumë.</translation>
 <translation id="6896758677409633944">Kopjo</translation>
 <translation id="6910714959251846841">Ky përditësim kërkon spastrim rrënjësor të pajisjes tënde. Mëso më shumë për përditësimin e fundit të <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="6919251195245069855">Karta inteligjente nuk mund të njihej. Provo përsëri.</translation>
@@ -731,6 +737,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="8734991477317290293">Ajo ndoshta po përpiqet të regjistrojë goditjet e tasteve</translation>
 <translation id="8735953464173050365">Shfaq cilësimet e tastierës. Është zgjedhur <ph name="KEYBOARD_NAME" /></translation>
 <translation id="875593634123171288">Shfaq cilësimet e VPN</translation>
+<translation id="8759408218731716181">Identifikimi i shumëfishtë nuk mund të konfigurohet</translation>
 <translation id="8785070478575117577">Lidhu me <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>

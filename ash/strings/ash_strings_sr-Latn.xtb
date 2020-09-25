@@ -59,6 +59,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="1467432559032391204">Ulevo</translation>
 <translation id="1479909375538722835">Plutajući meni pristupačnosti</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
+<translation id="1503394326855300303">Ovaj vlasnički nalog mora da bude prvi prijavljeni nalog u sesiji sa višestrukim prijavljivanjem.</translation>
 <translation id="1516740043221086139">Režim Ne uznemiravaj je uključen.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Pregledajte podešavanja obaveštenja. Obaveštenja su isključena za jednu aplikaciju}one{Pregledajte podešavanja obaveštenja. Obaveštenja su isključena za # aplikaciju}few{Pregledajte podešavanja obaveštenja. Obaveštenja su isključena za # aplikacije}other{Pregledajte podešavanja obaveštenja. Obaveštenja su isključena za # aplikacija}}</translation>
 <translation id="1525508553941733066">ODBACI</translation>
@@ -69,6 +70,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="1589090746204042747">Pristupite svim aktivnostima u ovoj sesiji</translation>
 <translation id="1611993646327628135">Uključeno</translation>
 <translation id="1632985212731562677">Pristup pomoću prekidača može da se onemogući u odeljku Podešavanja &gt; Pristupačnost.</translation>
+<translation id="1651447046299738444">Izgleda da je isključen Bluetooth ili Wi-Fi na Chromebook-u. Proverite vezu da biste koristili Phone Hub.</translation>
 <translation id="1654477262762802994">Započnite glasovnu pretragu</translation>
 <translation id="1667964833127753507">Režim neutralnih boja ne koristi boje iz pozadina i zamenjuje ih skupom neutralnih svetlih i tamnih nijansi.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> je preostalo</translation>
@@ -151,6 +153,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="2435457462613246316">Prikaži lozinku</translation>
 <translation id="2473177541599297363">Potvrdite rezoluciju</translation>
 <translation id="2475982808118771221">Došlo je do greške</translation>
+<translation id="2479579251444854687">Prevucite nagore pomoću tri prsta da biste otvorili pregled ili nadole da biste ga zatvorili.</translation>
 <translation id="2482878487686419369">Obaveštenja</translation>
 <translation id="2484513351006226581">Pritisnite <ph name="KEYBOARD_SHORTCUT" /> da biste promenili raspored tastature.</translation>
 <translation id="2501920221385095727">Lepljivi tasteri</translation>
@@ -163,6 +166,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="2595239820337756193">5 km u miljama</translation>
 <translation id="2617342710774726426">SIM kartica je zaključana</translation>
 <translation id="2621713457727696555">Zaštićeno</translation>
+<translation id="2640255526076764619">Promenjen je pokret po tačpedu za prelazak na prethodnu radnu površinu. Prevucite nalevo pomoću četiri prsta da biste prešli na prethodnu radnu površinu.</translation>
 <translation id="2653659639078652383">Pošalji</translation>
 <translation id="2658778018866295321">Kliknite i prevucite</translation>
 <translation id="2700493154570097719">Podesite tastaturu</translation>
@@ -172,7 +176,6 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="2718395828230677721">Noćno svetlo</translation>
 <translation id="2727175239389218057">Odgovori</translation>
 <translation id="2727977024730340865">Uređaj je uključen u punjač male snage. Punjenje baterije možda neće biti pouzdano.</translation>
-<translation id="2743387203779672305">Kopiraj u memoriju</translation>
 <translation id="2792498699870441125">Alt + taster za pretragu</translation>
 <translation id="2819276065543622893">Bićete odmah odjavljeni.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> ne podržava rezoluciju <ph name="SPECIFIED_RESOLUTION" />. Rezolucija je promenjena u <ph name="FALLBACK_RESOLUTION" />.</translation>
@@ -257,6 +260,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="3486220673238053218">definicija</translation>
 <translation id="3510164367642747937">Istakni kursor miša</translation>
 <translation id="3513798432020909783">Nalogom upravlja <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3571734092741541777">Podesi</translation>
 <translation id="3573179567135747900">Vrati na „<ph name="FROM_LOCALE" />“ (potrebno je ponovno pokretanje)</translation>
 <translation id="3576141592585647168">Promenite vremensku zonu</translation>
 <translation id="3593646411856133110">Prevucite nagore i zadržite da biste videli otvorene aplikacije</translation>
@@ -341,6 +345,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="4412944820643904175">Funkcija <ph name="FEATURE_NAME" /> je isključena.</translation>
 <translation id="4421231901400348175">Delite kontrolu nad ekranom sa osobom <ph name="HELPER_NAME" /> preko Daljinske pomoći.</translation>
 <translation id="4430019312045809116">Jačina zvuka</translation>
+<translation id="4444978951615977024">O, ne! Proverite vezu</translation>
 <translation id="4450893287417543264">Ne prikazuj ponovo</translation>
 <translation id="445864333228800152">Dobro veče,</translation>
 <translation id="4458688154122353284">Zaustavite snimanje ekrana</translation>
@@ -350,6 +355,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="4479639480957787382">Eternet</translation>
 <translation id="4481530544597605423">Uređaji čije je uparivanje opozvano</translation>
 <translation id="4505050298327493054">Aktivan radni prostor.</translation>
+<translation id="4506458088675900627">Promenjen je pokret po tačpedu za pregled</translation>
 <translation id="4513946894732546136">Povratne informacije</translation>
 <translation id="4527045527269911712">Bluetooth uređaj „<ph name="DEVICE_NAME" />“ želi dozvolu za uparivanje.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> do kraja punjenja</translation>
@@ -389,6 +395,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="4917385247580444890">Jak</translation>
 <translation id="4918086044614829423">Prihvati</translation>
 <translation id="4924411785043111640">Restartuj i resetuj</translation>
+<translation id="4925542575807923399">Administrator za ovaj nalog zahteva da ovaj nalog bude prvi prijavljeni nalog u sesiji sa višestrukim prijavljivanjem.</translation>
 <translation id="495046168593986294">Pomeri nagore</translation>
 <translation id="4961318399572185831">Prebacivanje ekrana</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> s <ph name="MINUTES" /> min <ph name="SECONDS" /> sek</translation>
@@ -478,6 +485,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="6018164090099858612">Izlazak iz režima sa preslikavanjem</translation>
 <translation id="602001110135236999">Pomeri nalevo</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" />, upravlja administrator</translation>
+<translation id="6029337736376922061">Promenjen je pokret po tačpedu za prelazak na sledeću radnu površinu. Prevucite udesno pomoću četiri prsta da biste prešli na novu radnu površinu.</translation>
 <translation id="6030495522958826102">Meni je premešten u donji levi ugao ekrana.</translation>
 <translation id="6040143037577758943">Zatvori</translation>
 <translation id="6043212731627905357">Ovaj monitor nije kompatibilan sa uređajem <ph name="DEVICE_TYPE" /> (monitor nije podržan).</translation>
@@ -535,6 +543,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="6657585470893396449">Lozinka</translation>
 <translation id="6665545700722362599">Dozvolite veb-sajtovima, aplikacijama i dodacima da koriste usluge lokacije ili mikrofon, kameru ili druge funkcije uređaja</translation>
 <translation id="6670153871843998651">Radna površina 3</translation>
+<translation id="6671495933530132209">Kopiraj sliku</translation>
 <translation id="6691659475504239918">Taster za pretragu + Shift + H</translation>
 <translation id="6692996468359469499">Pronađite informacije u vezi sa vašim izborom</translation>
 <translation id="6696025732084565524">Treba da instalirate važno ažuriranje za odvojivu tastaturu</translation>
@@ -734,6 +743,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="8734991477317290293">Možda pokušava da ukrade vašu kombinaciju tastera</translation>
 <translation id="8735953464173050365">Pregledajte podešavanja tastature. Izabrana je <ph name="KEYBOARD_NAME" /></translation>
 <translation id="875593634123171288">Pregledajte podešavanja VPN-a</translation>
+<translation id="8759408218731716181">Nije moguće podesiti višestruko prijavljivanje</translation>
 <translation id="8785070478575117577">Povežite se sa uređajem <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>

@@ -59,6 +59,7 @@
 <translation id="1467432559032391204">बाँया</translation>
 <translation id="1479909375538722835">पहुँचसम्बन्धी फ्लोटिङ मेनु</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
+<translation id="1503394326855300303">यो मालिक खाता मल्टिपल साइन-इन सत्रमा पहिलो पटक साइन-इन गरिएको खाता हुनुपर्दछ।</translation>
 <translation id="1516740043221086139">बाधा नपुर्‍याउनुहोस् नामक मोड सक्रिय छ।</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{सूचनासम्बन्धी सेटिङहरू देखाउनुहोस्। एउटा अनुप्रयोगका लागि सूचनाहरू निष्क्रिय छन्}other{सूचनासम्बन्धी सेटिङहरू देखाउनुहोस्। # अनुप्रयोगका लागि सूचनाहरू निष्क्रिय छन्}}</translation>
 <translation id="1525508553941733066">खारेज गर्नुहोस्</translation>
@@ -172,7 +173,6 @@
 <translation id="2718395828230677721">रात्रिकालीन प्रकाश</translation>
 <translation id="2727175239389218057">जवाफ दिनुहोस्</translation>
 <translation id="2727977024730340865">कम शक्ति भएको चार्जरमा प्लग इन गरिएको छ। ब्याट्री चार्जिङ भरपर्दो नहुन सक्छ।</translation>
-<translation id="2743387203779672305">क्लिपबोर्डमा प्रतिलिपि बनाउँनुहोस्</translation>
 <translation id="2792498699870441125">Alt + खोज</translation>
 <translation id="2819276065543622893">तपाइँलाई अब साइन आउट गराइनेछ।</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> ले <ph name="SPECIFIED_RESOLUTION" /> समर्थन गर्दैन। रिजोल्युसन परिवर्तन गरी <ph name="FALLBACK_RESOLUTION" /> पारियो।</translation>
@@ -257,6 +257,7 @@
 <translation id="3486220673238053218">परिभाषा</translation>
 <translation id="3510164367642747937">माउसको कर्सरलाई हाइलाइट</translation>
 <translation id="3513798432020909783"><ph name="MANAGER_EMAIL" /> ले व्यवस्थापन गरेको खाता</translation>
+<translation id="3571734092741541777">सेटअप गर्नुहोस्</translation>
 <translation id="3573179567135747900">पुन: "<ph name="FROM_LOCALE" />" मा परिवर्तन गर्नुहोस् (फेरि सुरु गर्न आवश्यक छ)</translation>
 <translation id="3576141592585647168">समय क्षेत्र परिवर्तन गर्नुहोस्</translation>
 <translation id="3593646411856133110">खुला रहेका एपहरू हेर्न माथितिर स्वाइप गरी थिचिरहनुहोस्</translation>
@@ -388,6 +389,7 @@
 <translation id="4917385247580444890">बलियो</translation>
 <translation id="4918086044614829423">स्वीकार्नुहोस्</translation>
 <translation id="4924411785043111640">पुनः सुरु गरी रिसेट गर्नुहोस्</translation>
+<translation id="4925542575807923399">यस खाताको प्रशासकलाई एक बहुविध साइन-इन सत्रमा प्रथम साइन-इन गरिएको खाता हुन यस खातालाई आवश्यक छ।</translation>
 <translation id="495046168593986294">माथि स्क्रोल गर्नुहोस्</translation>
 <translation id="4961318399572185831">स्क्रिन cast गर्नुहोस्</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />घन्टा <ph name="MINUTES" />मिनेट <ph name="SECONDS" />सेकेन्ड</translation>
@@ -533,6 +535,7 @@
 <translation id="6657585470893396449">पासवर्ड</translation>
 <translation id="6665545700722362599">वेबसाइट, एप र विस्तारहरूलाई स्थानसम्बन्धी सेवा, यन्त्रको माइक्रोफोन, क्यामेरा वा अन्य सुविधाहरूको प्रयोग गर्ने अनुमति दिनुहोस्</translation>
 <translation id="6670153871843998651">डेस्क ३</translation>
+<translation id="6671495933530132209">छविको प्रतिलिपि गर्नुहोस्</translation>
 <translation id="6691659475504239918">Search+Shift+H</translation>
 <translation id="6692996468359469499">आफ्नो चयनसँग सम्बन्धित जानकारी प्राप्त गर्नुहोस्</translation>
 <translation id="6696025732084565524">तपाईंको अलग्याउन मिल्ने किबोर्डलाई महत्त्वपूर्ण अद्यावधिक आवश्यक छ</translation>
@@ -731,6 +734,7 @@
 <translation id="8734991477317290293">यसले तपाईंका किस्ट्रोकहरू चोर्न खोजिरहेको हुन सक्छ</translation>
 <translation id="8735953464173050365">किबोर्डका सेटिङहरू देखाउनुहोस्। <ph name="KEYBOARD_NAME" /> चयन गरिएको छ</translation>
 <translation id="875593634123171288">VPN सेटिङहरू देखाउनुहोस्</translation>
+<translation id="8759408218731716181">बहुविध साइन-इन सेटअप गर्न सक्दैन</translation>
 <translation id="8785070478575117577"><ph name="NETWORK_NAME" /> मा जोड्नुहोस्</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />। <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>

@@ -352,6 +352,7 @@
 <translation id="140520891692800925"><ph name="PROFILE_DISPLAY_NAME" /> (վերահսկվող)</translation>
 <translation id="1405779994569073824">Չհաջողվեց բեռնել:</translation>
 <translation id="1406500794671479665">Հաստատում…</translation>
+<translation id="1407135791313364759">Բացել բոլորը</translation>
 <translation id="140723521119632973">Բջջային ցանցի ակտիվացում</translation>
 <translation id="1407489512183974736">Եզրատել և կենտրոնաբերել</translation>
 <translation id="1408504635543854729">Դիտեք սարքի բովանդակությունը «Ֆայլեր» հավելվածում: Բովանդակության հասանելիությունը սահմանափակված է ադմինիստրատորի կողմից, և այն հնարավոր չէ փոփոխել։</translation>
@@ -1903,7 +1904,6 @@
 <translation id="3246107497225150582">{0,plural, =1{Թարմացրեք սարքը մեկ օրվա ընթացքում}one{Թարմացրեք սարքը # օրվա ընթացքում}other{Թարմացրեք սարքը # օրվա ընթացքում}}</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – Ցանցի սխալ</translation>
 <translation id="3248902735035392926">Անվտանգությունը կարևոր է: <ph name="BEGIN_LINK" />Ստուգեք ձեր ընդլայնումները<ph name="END_LINK" />:</translation>
-<translation id="325036368918787455">Փակել ինկոգնիտո պատուհանները</translation>
 <translation id="3251759466064201842">&lt;Վկայագրի մաս չի կազմում&gt;</translation>
 <translation id="3253225298092156258">Հասանելի չէ</translation>
 <translation id="3253448572569133955">Անհայտ հաշիվ</translation>
@@ -3445,7 +3445,6 @@
 <translation id="5097649414558628673">Գործիք՝ <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">Ավտոմատ սեղմել, երբ նշորդը կանգնում է</translation>
 <translation id="5099399397495049098">Կայքերը կարող են JavaScript բովանդակություն օգտագործել (խորհուրդ է տրվում)</translation>
-<translation id="5101042277149003567">Բացել բոլոր էջանիշները</translation>
 <translation id="5101839224773798795">Ավտոմատ սեղմել, երբ մկնիկի նշորդը կանգնում է</translation>
 <translation id="5107443654503185812">Անվտանգ դիտարկումն անջատվել է ընդլայնման կողմից</translation>
 <translation id="5108967062857032718">Կարգավորումներ – Android հավելվածների հեռացում</translation>
@@ -4031,7 +4030,6 @@
 <translation id="5804241973901381774">Թույլտվություններ</translation>
 <translation id="5805697420284793859">Պատուհանների կառավարիչ</translation>
 <translation id="5806773519584576205">0° (կանխադրված)</translation>
-<translation id="5808664694611589238">{0,plural, =1{Փակել հյուրի պատուհանները}one{Փակել հյուրի պատուհանները}other{Փակել հյուրի պատուհանները}}</translation>
 <translation id="5810809306422959727">Այս հաշվի միջոցով հնարավոր չէ օգտագործել ծնողական վերահսկողությունը</translation>
 <translation id="5812674658566766066">Ծավալել բոլորը</translation>
 <translation id="5814126672212206791">Կապի տեսակը</translation>

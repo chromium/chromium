@@ -59,6 +59,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="1467432559032391204">Ulijevo</translation>
 <translation id="1479909375538722835">Pomični izbornik pristupačnosti</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
+<translation id="1503394326855300303">Vlasnik ovog računa mora biti prvi prijavljeni račun u sesiji s višestrukom prijavom.</translation>
 <translation id="1516740043221086139">Način Ne uznemiravaj je uključen.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Prikaz postavki obavijesti. Obavijesti su isključene za jednu aplikaciju}one{Prikaz postavki obavijesti. Obavijesti su isključene za # aplikaciju}few{Prikaz postavki obavijesti. Obavijesti su isključene za # aplikacije}other{Prikaz postavki obavijesti. Obavijesti su isključene za # aplikacija}}</translation>
 <translation id="1525508553941733066">ODBACI</translation>
@@ -69,6 +70,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="1589090746204042747">Pristup svim vašim aktivnostima u ovoj sesiji</translation>
 <translation id="1611993646327628135">Uključeno</translation>
 <translation id="1632985212731562677">Prekidač za pristup možete onemogućiti tako da otvorite Postavke &gt; Pristupačnost.</translation>
+<translation id="1651447046299738444">Čini se da je Bluetooth ili Wi-Fi na Chromebooku isključen. Da biste mogli upotrebljavati Phone Hub, provjerite vezu.</translation>
 <translation id="1654477262762802994">Pokrenite glasovni upit</translation>
 <translation id="1667964833127753507">Način neutralne boje ne upotrebljava boje izdvojene iz pozadine, već ih zamjenjuje skupom neutralnih svijetlih ili tamnih nijansi.</translation>
 <translation id="1677472565718498478">Još <ph name="TIME" /></translation>
@@ -151,6 +153,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="2435457462613246316">Pokaži zaporku</translation>
 <translation id="2473177541599297363">Potvrđivanje razlučivosti</translation>
 <translation id="2475982808118771221">Došlo je do pogreške</translation>
+<translation id="2479579251444854687">Prijeđite s tri prsta prema gore da biste otvorili Pregled ili prema dolje da biste ga zatvorili.</translation>
 <translation id="2482878487686419369">Obavijesti</translation>
 <translation id="2484513351006226581">Pritisnite <ph name="KEYBOARD_SHORTCUT" /> da biste promijenili raspored tipkovnice.</translation>
 <translation id="2501920221385095727">Ljepljive tipke</translation>
@@ -163,6 +166,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="2595239820337756193">5 km u miljama</translation>
 <translation id="2617342710774726426">SIM kartica je zaključana</translation>
 <translation id="2621713457727696555">Zaštićeno</translation>
+<translation id="2640255526076764619">Promijenjen je pokret po dodirnoj podlozi za prelazak na prethodnu radnu površinu. Da biste prešli na prethodnu radnu površinu, prijeđite s četiri prsta ulijevo.</translation>
 <translation id="2653659639078652383">Pošalji</translation>
 <translation id="2658778018866295321">Klikanje i povlačenje</translation>
 <translation id="2700493154570097719">Postavite tipkovnicu</translation>
@@ -172,7 +176,6 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="2718395828230677721">Noćno svjetlo</translation>
 <translation id="2727175239389218057">Odgovori</translation>
 <translation id="2727977024730340865">Uređaj je priključen na punjač male snage. Punjenje baterije možda nije pouzdano.</translation>
-<translation id="2743387203779672305">Kopiraj u međuspremnik</translation>
 <translation id="2792498699870441125">Alt + Pretraživanje</translation>
 <translation id="2819276065543622893">Odjavit ćete se sada.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> ne podržava razlučivost <ph name="SPECIFIED_RESOLUTION" />. Razlučivost je promijenjena u <ph name="FALLBACK_RESOLUTION" />.</translation>
@@ -257,6 +260,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="3486220673238053218">definicija</translation>
 <translation id="3510164367642747937">Istakni pokazivač miša</translation>
 <translation id="3513798432020909783">Računom upravlja <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3571734092741541777">Postavi</translation>
 <translation id="3573179567135747900">Vratite na "<ph name="FROM_LOCALE" />" (zahtijeva ponovno pokretanje)</translation>
 <translation id="3576141592585647168">Promjena vremenske zone</translation>
 <translation id="3593646411856133110">Prijeđite prstom prema gore i držite da biste vidjeli otvorene aplikacije</translation>
@@ -341,6 +345,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="4412944820643904175">Značajka <ph name="FEATURE_NAME" /> je isključena.</translation>
 <translation id="4421231901400348175"><ph name="HELPER_NAME" /> i vi dijelite kontrolu nad zaslonom putem Daljinske pomoći.</translation>
 <translation id="4430019312045809116">Glasnoća</translation>
+<translation id="4444978951615977024">O, ne! Provjerite vezu</translation>
 <translation id="4450893287417543264">Ne prikazuj ponovo</translation>
 <translation id="445864333228800152">Dobra večer,</translation>
 <translation id="4458688154122353284">Zaustavite snimanje zaslona</translation>
@@ -350,6 +355,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="4479639480957787382">Eternet</translation>
 <translation id="4481530544597605423">Neupareni uređaji</translation>
 <translation id="4505050298327493054">Aktivna radna površina</translation>
+<translation id="4506458088675900627">Promijenjen je pokret po dodirnoj podlozi za Pregled</translation>
 <translation id="4513946894732546136">Povratne informacije</translation>
 <translation id="4527045527269911712">Bluetooth uređaj "<ph name="DEVICE_NAME" />" traži dopuštenje za uparivanje.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> do potpune napunjenosti</translation>
@@ -389,6 +395,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="4917385247580444890">Jak</translation>
 <translation id="4918086044614829423">Prihvati</translation>
 <translation id="4924411785043111640">Ponovo pokreni i vrati na prethodno</translation>
+<translation id="4925542575807923399">Administrator ovog računa zahtijeva da u sesiji s višestrukom prijavom ovaj račun bude prvi prijavljen.</translation>
 <translation id="495046168593986294">Pomakni prema gore</translation>
 <translation id="4961318399572185831">Emitiranje zaslona</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> h <ph name="MINUTES" /> min <ph name="SECONDS" /> s</translation>
@@ -478,6 +485,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="6018164090099858612">Izlaz iz zrcalnog načina</translation>
 <translation id="602001110135236999">Pomicanje ulijevo</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" />, upravlja administrator</translation>
+<translation id="6029337736376922061">Promijenjen je pokret po dodirnoj podlozi za prelazak na sljedeću radnu površinu. Za prelazak na sljedeću radnu površinu prijeđite s četiri prsta udesno.</translation>
 <translation id="6030495522958826102">Izbornik je premješten u donji lijevi kut zaslona.</translation>
 <translation id="6040143037577758943">Zatvori</translation>
 <translation id="6043212731627905357">Ovaj se monitor ne podudara s vašim uređajem <ph name="DEVICE_TYPE" /> (monitor nije podržan).</translation>
@@ -535,6 +543,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="6657585470893396449">Zaporka</translation>
 <translation id="6665545700722362599">Dopustite web-lokacijama, aplikacijama i proširenjima da upotrebljavaju usluge lokacije, mikrofon i kameru uređaja ili druge značajke</translation>
 <translation id="6670153871843998651">Radna površina 3</translation>
+<translation id="6671495933530132209">Kopiraj sliku</translation>
 <translation id="6691659475504239918">Search + Shift + H</translation>
 <translation id="6692996468359469499">Dohvaćanje informacija povezanih s vašim odabirom</translation>
 <translation id="6696025732084565524">Potrebno je preuzeti važno ažuriranje za vašu odvojivu tipkovnicu</translation>
@@ -734,6 +743,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="8734991477317290293">Možda pokušava ukrasti podatke o pritisnutim tipkama</translation>
 <translation id="8735953464173050365">Prikaz postavki tipkovnice. Odabrana je tipkovnica <ph name="KEYBOARD_NAME" /></translation>
 <translation id="875593634123171288">Prikaz postavki VPN-a</translation>
+<translation id="8759408218731716181">Nije moguće postaviti višestruku prijavu</translation>
 <translation id="8785070478575117577">Povežite se sa satom <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>

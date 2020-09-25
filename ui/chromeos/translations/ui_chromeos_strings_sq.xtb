@@ -189,7 +189,6 @@
 <translation id="3064388234319122767">Transliterim (zdravo → здраво)</translation>
 <translation id="3067790092342515856">Skedarët e Windows</translation>
 <translation id="3078461028045006476">Ndaje me <ph name="EXTENSION_NAME" /></translation>
-<translation id="3088034400796962477">Transliterim (salam ← سلام)</translation>
 <translation id="3116361045094675131">Tastierë britanike</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">U KRYE</translation>
@@ -305,7 +304,6 @@
 <translation id="4477219268485577442">Tastierë fonetike bullgare</translation>
 <translation id="4479812471636796472">Tastierë amerikane dvorak</translation>
 <translation id="4481711095103932593">Kjo dosje është ndarë me Windows</translation>
-<translation id="4487088045714738411">Tastierë belge</translation>
 <translation id="4522570452068850558">Detajet</translation>
 <translation id="4542387084127299777">Është e pamundur hapja e "<ph name="PATH" />"</translation>
 <translation id="4552678318981539154">Bli më shumë hapësirë ruajtëse</translation>
@@ -376,6 +374,7 @@
 <translation id="5098629044894065541">Hebraisht</translation>
 <translation id="5123433949759960244">Basketboll</translation>
 <translation id="5129662217315786329">Polonisht</translation>
+<translation id="5132435854979302863">Filipinisht</translation>
 <translation id="5144820558584035333">Paketa Hangul 3 (390)</translation>
 <translation id="5145331109270917438">Data u modifikua</translation>
 <translation id="515594325917491223">Shah</translation>
@@ -421,13 +420,13 @@
 <translation id="5464696796438641524">Tastiera në polonisht</translation>
 <translation id="5465122519792752163">Tastiera nepaleze (InScript)</translation>
 <translation id="5469868506864199649">Italisht</translation>
+<translation id="5484429245813572665">Indonezisht</translation>
 <translation id="5494920125229734069">Zgjidh të gjitha</translation>
 <translation id="5500122897333236901">Islandisht</translation>
 <translation id="5508696409934741614">Pika</translation>
 <translation id="5522908512596376669">Lista e skedarëve ka ndryshuar në pamjen e listës.</translation>
 <translation id="5524517123096967210">Ky skedar nuk mund të lexohej.</translation>
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> imazh</translation>
-<translation id="5533555070048896610">Transliterimi (namaste → नमस्ते)</translation>
 <translation id="5534520101572674276">Po llogarit madhësinë</translation>
 <translation id="5583640892426849032">Hapësirë prapa</translation>
 <translation id="5605830556594064952">Amerikane Dvorak</translation>
@@ -608,6 +607,7 @@
 <translation id="7649070708921625228">Ndihma</translation>
 <translation id="7654209398114106148">Po lëviz <ph name="NUMBER_OF_ITEMS" /> artikuj...</translation>
 <translation id="7658239707568436148">Anulo</translation>
+<translation id="7693909743393669729">Formatimi i një disku do të spastrojë të gjitha të dhënat e ruajtura në të dhe do të heqë të gjitha ndarjet ekzistuese, duke përfshirë ndarjet që mund të mos jenë të dukshme. Ky veprim nuk mund të zhbëhet.</translation>
 <translation id="7695430100978772476"><ph name="DRIVE_NAME" /> nuk mund të formatohej</translation>
 <translation id="770015031906360009">Greqisht</translation>
 <translation id="7706319470528945664">Tastierë portugeze</translation>
@@ -639,6 +639,7 @@
 <translation id="78946041517601018">Disqet e ndara</translation>
 <translation id="7896906914454843592">Tastiera e zgjeruar amerikane</translation>
 <translation id="7898607018410277265">Tastiera guxharati (fonetike e re)</translation>
+<translation id="7908793776359722643">Formatimi i një ndarjeje do të spastrojë të gjitha të dhënat e ruajtura në të. Ky veprim nuk mund të zhbëhet.</translation>
 <translation id="7917972308273378936">Tastierë lituaneze</translation>
 <translation id="7925686952655276919">Mos përdor të dhëna celulare për sinkronizim</translation>
 <translation id="7928710562641958568">Nxirr pajisjen</translation>
@@ -726,6 +727,7 @@
 <translation id="8900820606136623064">Hungarisht</translation>
 <translation id="8901822611024316615">Tastierë çekisht QWERTY</translation>
 <translation id="8919081441417203123">Danisht</translation>
+<translation id="8941776146379310519">Malajzisht</translation>
 <translation id="8960999352790021682">Tastierë në bengalisht (Fonetike)</translation>
 <translation id="8965697826696209160">Nuk ka hapësirë të mjaftueshme</translation>
 <translation id="9017798300203431059">Fonetikë ruse</translation>

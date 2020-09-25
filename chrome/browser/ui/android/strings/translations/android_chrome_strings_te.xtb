@@ -108,6 +108,7 @@
 <translation id="1868024384445905608">Chrome ఇప్పుడు ఫైల్‌లను మరింత వేగంగా డౌన్‌లోడ్ చేస్తుంది</translation>
 <translation id="1877026089748256423">Chrome కాలం చెల్లినది</translation>
 <translation id="1883903952484604915">నా ఫైల్‌లు</translation>
+<translation id="189358972401248634">ఇతర భాషలు</translation>
 <translation id="1925021887439448749">అనుకూల వెబ్ చిరునామాను నమోదు చేయండి</translation>
 <translation id="1928696683969751773">నవీకరిస్తుంది</translation>
 <translation id="19288952978244135">Chromeను మళ్లీ తెరవండి.</translation>
@@ -217,6 +218,7 @@
 <translation id="2689830683995595741">Chromeను ఉపయోగించడం ద్వారా, మీరు <ph name="BEGIN_LINK1" />Google సేవా నిబంధనలు<ph name="END_LINK1" />, అలాగే <ph name="BEGIN_LINK2" />Google Chrome, Chrome OS అదనపు సేవా నిబంధనలు<ph name="END_LINK2" />కు అంగీకరిస్తున్నారు. <ph name="BEGIN_LINK3" />Family Linkతో మేనేజ్ చేస్తున్న Google ఖాతాల కోసం గోప్యతా ప్రకటన<ph name="END_LINK3" /> కూడా వర్తిస్తుంది.</translation>
 <translation id="2707726405694321444">పేజీని రిఫ్రెష్ చేయండి</translation>
 <translation id="2709516037105925701">ఆటో-ఫిల్</translation>
+<translation id="2723001399770238859">ఆడియో</translation>
 <translation id="2728754400939377704">సైట్ ద్వారా క్రమీకరించు</translation>
 <translation id="2744248271121720757">తక్షణమే వెతకడానికి లేదా సంబంధిత చర్యలను చూడటానికి ఒక పదాన్ని నొక్కండి</translation>
 <translation id="2760989362628427051">మీ పరికరంలో ముదురు రంగు థీమ్ లేదా బ్యాటరీ సేవర్ ఆన్‌లో ఉన్నప్పుడు, ముదురు రంగు థీమ్‌ను ఆన్ చేయండి</translation>
@@ -467,6 +469,7 @@
 <translation id="4738836084190194332">చివరిగా సమకాలీకరించినది: <ph name="WHEN" /></translation>
 <translation id="4749960740855309258">కొత్త ట్యాబ్‌ను తెరవండి</translation>
 <translation id="4759238208242260848">డౌన్‌లోడ్‌లు</translation>
+<translation id="4763480195061959176">వీడియో</translation>
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{1 డౌన్‌లోడ్ పూర్తయింది.}other{# డౌన్‌లోడ్‌లు పూర్తయ్యాయి.}}</translation>
 <translation id="4766678251456904326">పరికరానికి మరొక ఖాతాను జోడించండి</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{1 డౌన్‌లోడ్ షెడ్యూల్ చేయబడింది.}other{# డౌన్‌లోడ్‌లు షెడ్యూల్ చేయబడ్డాయి.}}</translation>
