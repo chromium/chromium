@@ -58,14 +58,6 @@ class URLLoaderWrapper {
   virtual void ReadResponseBody(char* buffer,
                                 int buffer_size,
                                 ResultCallback callback) = 0;
-
-  // Returns the current download progress.
-  // Progress only refers to the response body and does not include the headers.
-  // If false, progress is unknown, bytes_received/total_bytes_to_be_received
-  // will be undefined.
-  virtual bool GetDownloadProgress(
-      int64_t& bytes_received,
-      int64_t& total_bytes_to_be_received) const = 0;
 };
 
 }  // namespace chrome_pdf

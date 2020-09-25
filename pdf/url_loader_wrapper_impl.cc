@@ -144,13 +144,6 @@ bool URLLoaderWrapperImpl::GetByteRangeStart(int* start) const {
   return byte_range_.IsValid();
 }
 
-bool URLLoaderWrapperImpl::GetDownloadProgress(
-    int64_t& bytes_received,
-    int64_t& total_bytes_to_be_received) const {
-  return url_loader_->GetDownloadProgress(bytes_received,
-                                          total_bytes_to_be_received);
-}
-
 void URLLoaderWrapperImpl::Close() {
   url_loader_->Close();
   read_starter_.Stop();

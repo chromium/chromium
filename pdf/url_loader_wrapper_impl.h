@@ -36,8 +36,6 @@ class URLLoaderWrapperImpl : public URLLoaderWrapper {
   int GetStatusCode() const override;
   bool IsMultipart() const override;
   bool GetByteRangeStart(int* start) const override;
-  bool GetDownloadProgress(int64_t& bytes_received,
-                           int64_t& total_bytes_to_be_received) const override;
   void Close() override;
   void OpenRange(const std::string& url,
                  const std::string& referrer_url,

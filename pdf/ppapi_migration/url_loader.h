@@ -103,9 +103,6 @@ class UrlLoader {
 
   // Mimic `pp::URLLoader`:
   virtual void Open(const UrlRequest& request, ResultCallback callback) = 0;
-  virtual bool GetDownloadProgress(
-      int64_t& bytes_received,
-      int64_t& total_bytes_to_be_received) const = 0;
   virtual void ReadResponseBody(base::span<char> buffer,
                                 ResultCallback callback) = 0;
   virtual void Close() = 0;
@@ -167,8 +164,6 @@ class BlinkUrlLoader final : public UrlLoader,
   // UrlLoader:
   void GrantUniversalAccess() override;
   void Open(const UrlRequest& request, ResultCallback callback) override;
-  bool GetDownloadProgress(int64_t& bytes_received,
-                           int64_t& total_bytes_to_be_received) const override;
   void ReadResponseBody(base::span<char> buffer,
                         ResultCallback callback) override;
   void Close() override;
@@ -243,8 +238,6 @@ class PepperUrlLoader final : public UrlLoader {
   // UrlLoader:
   void GrantUniversalAccess() override;
   void Open(const UrlRequest& request, ResultCallback callback) override;
-  bool GetDownloadProgress(int64_t& bytes_received,
-                           int64_t& total_bytes_to_be_received) const override;
   void ReadResponseBody(base::span<char> buffer,
                         ResultCallback callback) override;
   void Close() override;

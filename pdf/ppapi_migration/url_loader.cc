@@ -157,13 +157,6 @@ void BlinkUrlLoader::Open(const UrlRequest& request, ResultCallback callback) {
   blink_loader_->LoadAsynchronously(blink_request, this);
 }
 
-bool BlinkUrlLoader::GetDownloadProgress(
-    int64_t& bytes_received,
-    int64_t& total_bytes_to_be_received) const {
-  NOTIMPLEMENTED();
-  return false;
-}
-
 // Modeled on `ppapi::proxy::URLLoaderResource::ReadResponseBody()`.
 void BlinkUrlLoader::ReadResponseBody(base::span<char> buffer,
                                       ResultCallback callback) {
@@ -376,13 +369,6 @@ void PepperUrlLoader::Open(const UrlRequest& request, ResultCallback callback) {
   int32_t result = pepper_loader_.Open(pp_request, pp_callback);
   if (result != PP_OK_COMPLETIONPENDING)
     pp_callback.Run(result);
-}
-
-bool PepperUrlLoader::GetDownloadProgress(
-    int64_t& bytes_received,
-    int64_t& total_bytes_to_be_received) const {
-  return pepper_loader_.GetDownloadProgress(&bytes_received,
-                                            &total_bytes_to_be_received);
 }
 
 void PepperUrlLoader::ReadResponseBody(base::span<char> buffer,
