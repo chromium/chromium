@@ -297,6 +297,7 @@ source_set("base") {
     "tuneable.h",
     "unaligned_shared_memory.cc",
     "unaligned_shared_memory.h",
+    "use_after_free_checker.h",
     "user_input_monitor.cc",
     "user_input_monitor.h",
     "video_bitrate_allocation.cc",
