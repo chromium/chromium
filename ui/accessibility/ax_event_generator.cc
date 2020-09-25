@@ -957,139 +957,139 @@ std::ostream& operator<<(std::ostream& os, AXEventGenerator::Event event) {
 const char* ToString(AXEventGenerator::Event event) {
   switch (event) {
     case AXEventGenerator::Event::ACCESS_KEY_CHANGED:
-      return "ACCESS_KEY_CHANGED";
+      return "accessKeyChanged";
     case AXEventGenerator::Event::ATOMIC_CHANGED:
-      return "ATOMIC_CHANGED";
+      return "atomicChanged";
     case AXEventGenerator::Event::ACTIVE_DESCENDANT_CHANGED:
-      return "ACTIVE_DESCENDANT_CHANGED";
+      return "activeDescendantChanged";
     case AXEventGenerator::Event::ALERT:
-      return "ALERT";
+      return "alert";
     case AXEventGenerator::Event::ATK_TEXT_OBJECT_ATTRIBUTE_CHANGED:
-      return "ATK_TEXT_OBJECT_ATTRIBUTE_CHANGED";
+      return "atkTextObjectAttributeChanged";
     case AXEventGenerator::Event::BUSY_CHANGED:
-      return "BUSY_CHANGED";
+      return "busyChanged";
     case AXEventGenerator::Event::CHECKED_STATE_CHANGED:
-      return "CHECKED_STATE_CHANGED";
+      return "checkedStateChanged";
     case AXEventGenerator::Event::CHILDREN_CHANGED:
-      return "CHILDREN_CHANGED";
+      return "childrenChanged";
     case AXEventGenerator::Event::CLASS_NAME_CHANGED:
-      return "CLASS_NAME_CHANGED";
+      return "classNameChanged";
     case AXEventGenerator::Event::COLLAPSED:
-      return "COLLAPSED";
+      return "collapsed";
     case AXEventGenerator::Event::CONTROLS_CHANGED:
-      return "CONTROLS_CHANGED";
+      return "controlsChanged";
     case AXEventGenerator::Event::DESCRIBED_BY_CHANGED:
-      return "DESCRIBED_BY_CHANGED";
+      return "describedByChanged";
     case AXEventGenerator::Event::DESCRIPTION_CHANGED:
-      return "DESCRIPTION_CHANGED";
+      return "descriptionChanged";
     case AXEventGenerator::Event::DOCUMENT_SELECTION_CHANGED:
-      return "DOCUMENT_SELECTION_CHANGED";
+      return "documentSelectionChanged";
     case AXEventGenerator::Event::DOCUMENT_TITLE_CHANGED:
-      return "DOCUMENT_TITLE_CHANGED";
+      return "documentTitleChanged";
     case AXEventGenerator::Event::DROPEFFECT_CHANGED:
-      return "DROPEFFECT_CHANGED";
+      return "dropeffectChanged";
     case AXEventGenerator::Event::ENABLED_CHANGED:
-      return "ENABLED_CHANGED";
+      return "enabledChanged";
     case AXEventGenerator::Event::EXPANDED:
-      return "EXPANDED";
+      return "expanded";
     case AXEventGenerator::Event::FLOW_FROM_CHANGED:
-      return "FLOW_FROM_CHANGED";
+      return "flowFromChanged";
     case AXEventGenerator::Event::FLOW_TO_CHANGED:
-      return "FLOW_TO_CHANGED";
+      return "flowToChanged";
     case AXEventGenerator::Event::GRABBED_CHANGED:
-      return "GRABBED_CHANGED";
+      return "grabbedChanged";
     case AXEventGenerator::Event::HASPOPUP_CHANGED:
-      return "HASPOPUP_CHANGED";
+      return "haspopupChanged";
     case AXEventGenerator::Event::HIERARCHICAL_LEVEL_CHANGED:
-      return "HIERARCHICAL_LEVEL_CHANGED";
+      return "hierarchicalLevelChanged";
     case ui::AXEventGenerator::Event::IGNORED_CHANGED:
-      return "IGNORED_CHANGED";
+      return "ignoredChanged";
     case AXEventGenerator::Event::IMAGE_ANNOTATION_CHANGED:
-      return "IMAGE_ANNOTATION_CHANGED";
+      return "imageAnnotationChanged";
     case AXEventGenerator::Event::INVALID_STATUS_CHANGED:
-      return "INVALID_STATUS_CHANGED";
+      return "invalidStatusChanged";
     case AXEventGenerator::Event::KEY_SHORTCUTS_CHANGED:
-      return "KEY_SHORTCUTS_CHANGED";
+      return "keyShortcutsChanged";
     case AXEventGenerator::Event::LABELED_BY_CHANGED:
-      return "LABELED_BY_CHANGED";
+      return "labeledByChanged";
     case AXEventGenerator::Event::LANGUAGE_CHANGED:
-      return "LANGUAGE_CHANGED";
+      return "languageChanged";
     case AXEventGenerator::Event::LAYOUT_INVALIDATED:
-      return "LAYOUT_INVALIDATED";
+      return "layoutInvalidated";
     case AXEventGenerator::Event::LIVE_REGION_CHANGED:
-      return "LIVE_REGION_CHANGED";
+      return "liveRegionChanged";
     case AXEventGenerator::Event::LIVE_REGION_CREATED:
-      return "LIVE_REGION_CREATED";
+      return "liveRegionCreated";
     case AXEventGenerator::Event::LIVE_REGION_NODE_CHANGED:
-      return "LIVE_REGION_NODE_CHANGED";
+      return "liveRegionNodeChanged";
     case AXEventGenerator::Event::LIVE_RELEVANT_CHANGED:
-      return "LIVE_RELEVANT_CHANGED";
+      return "liveRelevantChanged";
     case AXEventGenerator::Event::LIVE_STATUS_CHANGED:
-      return "LIVE_STATUS_CHANGED";
+      return "liveStatusChanged";
     case AXEventGenerator::Event::LOAD_COMPLETE:
-      return "LOAD_COMPLETE";
+      return "loadComplete";
     case AXEventGenerator::Event::LOAD_START:
-      return "LOAD_START";
+      return "loadStart";
     case AXEventGenerator::Event::MENU_ITEM_SELECTED:
-      return "MENU_ITEM_SELECTED";
+      return "menuItemSelected";
     case AXEventGenerator::Event::MULTILINE_STATE_CHANGED:
-      return "MULTILINE_STATE_CHANGED";
+      return "multilineStateChanged";
     case AXEventGenerator::Event::MULTISELECTABLE_STATE_CHANGED:
-      return "MULTISELECTABLE_STATE_CHANGED";
+      return "multiselectableStateChanged";
     case AXEventGenerator::Event::NAME_CHANGED:
-      return "NAME_CHANGED";
+      return "nameChanged";
     case AXEventGenerator::Event::OBJECT_ATTRIBUTE_CHANGED:
-      return "OBJECT_ATTRIBUTE_CHANGED";
+      return "objectAttributeChanged";
     case AXEventGenerator::Event::OTHER_ATTRIBUTE_CHANGED:
-      return "OTHER_ATTRIBUTE_CHANGED";
+      return "otherAttributeChanged";
     case AXEventGenerator::Event::PLACEHOLDER_CHANGED:
-      return "PLACEHOLDER_CHANGED";
+      return "placeholderChanged";
     case AXEventGenerator::Event::PORTAL_ACTIVATED:
-      return "PORTAL_ACTIVATED";
+      return "portalActivated";
     case AXEventGenerator::Event::POSITION_IN_SET_CHANGED:
-      return "POSITION_IN_SET_CHANGED";
+      return "positionInSetChanged";
     case AXEventGenerator::Event::READONLY_CHANGED:
-      return "READONLY_CHANGED";
+      return "readonlyChanged";
     case AXEventGenerator::Event::RELATED_NODE_CHANGED:
-      return "RELATED_NODE_CHANGED";
+      return "relatedNodeChanged";
     case AXEventGenerator::Event::REQUIRED_STATE_CHANGED:
-      return "REQUIRED_STATE_CHANGED";
+      return "requiredStateChanged";
     case AXEventGenerator::Event::ROLE_CHANGED:
-      return "ROLE_CHANGED";
+      return "roleChanged";
     case AXEventGenerator::Event::ROW_COUNT_CHANGED:
-      return "ROW_COUNT_CHANGED";
+      return "rowCountChanged";
     case AXEventGenerator::Event::SCROLL_HORIZONTAL_POSITION_CHANGED:
-      return "SCROLL_HORIZONTAL_POSITION_CHANGED";
+      return "scrollHorizontalPositionChanged";
     case AXEventGenerator::Event::SCROLL_VERTICAL_POSITION_CHANGED:
-      return "SCROLL_VERTICAL_POSITION_CHANGED";
+      return "scrollVerticalPositionChanged";
     case AXEventGenerator::Event::SELECTED_CHANGED:
-      return "SELECTED_CHANGED";
+      return "selectedChanged";
     case AXEventGenerator::Event::SELECTED_CHILDREN_CHANGED:
-      return "SELECTED_CHILDREN_CHANGED";
+      return "selectedChildrenChanged";
     case AXEventGenerator::Event::SET_SIZE_CHANGED:
-      return "SET_SIZE_CHANGED";
+      return "setSizeChanged";
     case AXEventGenerator::Event::STATE_CHANGED:
-      return "STATE_CHANGED";
+      return "stateChanged";
     case AXEventGenerator::Event::SUBTREE_CREATED:
-      return "SUBTREE_CREATED";
+      return "subtreeCreated";
     case AXEventGenerator::Event::TEXT_ATTRIBUTE_CHANGED:
-      return "TEXT_ATTRIBUTE_CHANGED";
+      return "textAttributeChanged";
     case AXEventGenerator::Event::VALUE_CHANGED:
-      return "VALUE_CHANGED";
+      return "valueChanged";
     case AXEventGenerator::Event::VALUE_MAX_CHANGED:
-      return "VALUE_MAX_CHANGED";
+      return "valueMaxChanged";
     case AXEventGenerator::Event::VALUE_MIN_CHANGED:
-      return "VALUE_MIN_CHANGED";
+      return "valueMinChanged";
     case AXEventGenerator::Event::VALUE_STEP_CHANGED:
-      return "VALUE_STEP_CHANGED";
+      return "valueStepChanged";
     case AXEventGenerator::Event::AUTO_COMPLETE_CHANGED:
-      return "AUTO_COMPLETE_CHANGED";
+      return "autoCompleteChanged";
     case AXEventGenerator::Event::FOCUS_CHANGED:
-      return "FOCUS_CHANGED";
+      return "focusChanged";
     case AXEventGenerator::Event::SORT_CHANGED:
-      return "SORT_CHANGED";
+      return "sortChanged";
     case AXEventGenerator::Event::WIN_IACCESSIBLE_STATE_CHANGED:
-      return "WIN_IACCESSIBLE_STATE_CHANGED";
+      return "winIaccessibleStateChanged";
   }
   NOTREACHED();
 }

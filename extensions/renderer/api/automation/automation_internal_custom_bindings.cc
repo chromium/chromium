@@ -29,6 +29,7 @@
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_handlers/automation.h"
 #include "extensions/common/manifest_handlers/background_info.h"
+#include "extensions/renderer/api/automation/automation_api_util.h"
 #include "extensions/renderer/api/automation/automation_position.h"
 #include "extensions/renderer/native_extension_bindings_system.h"
 #include "extensions/renderer/script_context.h"
@@ -137,6 +138,62 @@ static gfx::Rect ComputeGlobalNodeBounds(AutomationAXTreeWrapper* tree_wrapper,
   }
 
   return gfx::ToEnclosingRect(bounds);
+}
+
+// Maps a key, a stringification of values in ui::AXEventGenerator::Event or
+// ax::mojom::Event into a value, automation::api::EventType. The runtime
+// invariant is that there should be exactly the same number of values in the
+// map as is the size of api::automation::EventType.
+api::automation::EventType AXEventToAutomationEventType(
+    ax::mojom::Event event_type) {
+  static base::NoDestructor<std::vector<api::automation::EventType>> enum_map;
+  if (enum_map->empty()) {
+    for (int i = static_cast<int>(ax::mojom::Event::kMinValue);
+         i <= static_cast<int>(ax::mojom::Event::kMaxValue); i++) {
+      auto ax_event_type = static_cast<ax::mojom::Event>(i);
+      if (IsEventTypeHandledByAXEventGenerator(ax_event_type) ||
+          ax_event_type == ax::mojom::Event::kNone) {
+        enum_map->emplace_back(api::automation::EVENT_TYPE_NONE);
+        continue;
+      }
+
+      const char* val = ui::ToString(ax_event_type);
+      api::automation::EventType automation_event_type =
+          api::automation::ParseEventType(val);
+      if (automation_event_type == api::automation::EVENT_TYPE_NONE)
+        NOTREACHED() << "Missing mapping from ax::mojom::Event: " << val;
+
+      enum_map->emplace_back(automation_event_type);
+    }
+  }
+
+  return (*enum_map)[static_cast<int>(event_type)];
+}
+
+api::automation::EventType AXGeneratedEventToAutomationEventType(
+    ui::AXEventGenerator::Event event_type) {
+  static base::NoDestructor<std::vector<api::automation::EventType>> enum_map;
+  if (enum_map->empty()) {
+    for (int i = 0;
+         i <= static_cast<int>(ui::AXEventGenerator::Event::MAX_VALUE); i++) {
+      auto ax_event_type = static_cast<ui::AXEventGenerator::Event>(i);
+      if (ShouldIgnoreGeneratedEvent(ax_event_type)) {
+        enum_map->emplace_back(api::automation::EVENT_TYPE_NONE);
+        continue;
+      }
+
+      const char* val = ui::ToString(ax_event_type);
+      api::automation::EventType automation_event_type =
+          api::automation::ParseEventType(val);
+      if (automation_event_type == api::automation::EVENT_TYPE_NONE)
+        NOTREACHED() << "Missing mapping from ui::AXEventGenerator::Event: "
+                     << val;
+
+      enum_map->emplace_back(automation_event_type);
+    }
+  }
+
+  return (*enum_map)[static_cast<int>(event_type)];
 }
 
 //
@@ -464,7 +521,7 @@ using NodeIDPlusEventFunction = void (*)(v8::Isolate* isolate,
                                          v8::ReturnValue<v8::Value> result,
                                          AutomationAXTreeWrapper* tree_wrapper,
                                          ui::AXNode* node,
-                                         ax::mojom::Event event_type);
+                                         api::automation::EventType event_type);
 
 class NodeIDPlusEventWrapper
     : public base::RefCountedThreadSafe<NodeIDPlusEventWrapper> {
@@ -483,7 +540,7 @@ class NodeIDPlusEventWrapper
     ui::AXTreeID tree_id =
         ui::AXTreeID::FromString(*v8::String::Utf8Value(isolate, args[0]));
     int node_id = args[1].As<v8::Int32>()->Value();
-    auto event_type = ui::ParseAXEnum<ax::mojom::Event>(
+    auto event_type = api::automation::ParseEventType(
         *v8::String::Utf8Value(isolate, args[2]));
 
     AutomationAXTreeWrapper* tree_wrapper =
@@ -506,6 +563,7 @@ class NodeIDPlusEventWrapper
   AutomationInternalCustomBindings* automation_bindings_;
   NodeIDPlusEventFunction function_;
 };
+
 }  // namespace
 
 class AutomationMessageFilter : public IPC::MessageFilter {
@@ -1594,14 +1652,14 @@ void AutomationInternalCustomBindings::AddRoutes() {
       "EventListenerAdded",
       [](v8::Isolate* isolate, v8::ReturnValue<v8::Value> result,
          AutomationAXTreeWrapper* tree_wrapper, ui::AXNode* node,
-         ax::mojom::Event event_type) {
+         api::automation::EventType event_type) {
         tree_wrapper->EventListenerAdded(event_type, node);
       });
   RouteNodeIDPlusEventFunction(
       "EventListenerRemoved",
       [](v8::Isolate* isolate, v8::ReturnValue<v8::Value> result,
          AutomationAXTreeWrapper* tree_wrapper, ui::AXNode* node,
-         ax::mojom::Event event_type) {
+         api::automation::EventType event_type) {
         tree_wrapper->EventListenerRemoved(event_type, node);
       });
 }
@@ -2346,12 +2404,19 @@ void AutomationInternalCustomBindings::SendAutomationEvent(
     ui::AXTreeID tree_id,
     const gfx::Point& mouse_location,
     const ui::AXEvent& event,
-    api::automation::EventType event_type,
-    api::automation::GeneratedEventType generated_event_type) {
+    base::Optional<ui::AXEventGenerator::Event> generated_event_type) {
   AutomationAXTreeWrapper* tree_wrapper =
       GetAutomationAXTreeWrapperFromTreeID(tree_id);
   if (!tree_wrapper)
     return;
+
+  // Resolve the proper event based on generated or non-generated event sources.
+  api::automation::EventType automation_event_type =
+      generated_event_type.has_value()
+          ? AXGeneratedEventToAutomationEventType(*generated_event_type)
+          : AXEventToAutomationEventType(event.event_type);
+  const char* automation_event_type_str =
+      api::automation::ToString(automation_event_type);
 
   // These events get used internally to trigger other behaviors in js.
   ax::mojom::Event ax_event = event.event_type;
@@ -2368,7 +2433,7 @@ void AutomationInternalCustomBindings::SendAutomationEvent(
     return;
 
   while (node && tree_wrapper && !fire_event) {
-    if (tree_wrapper->HasEventListener(event.event_type, node))
+    if (tree_wrapper->HasEventListener(automation_event_type, node))
       fire_event = true;
     node = GetParent(node, &tree_wrapper);
   }
@@ -2379,11 +2444,8 @@ void AutomationInternalCustomBindings::SendAutomationEvent(
   base::Value event_params(base::Value::Type::DICTIONARY);
   event_params.SetKey("treeID", base::Value(tree_id.ToString()));
   event_params.SetKey("targetID", base::Value(event.id));
-  event_params.SetKey("eventType",
-                      base::Value(api::automation::ToString(event_type)));
-  event_params.SetKey(
-      "generatedEventType",
-      base::Value(api::automation::ToString(generated_event_type)));
+  event_params.SetKey("eventType", base::Value(automation_event_type_str));
+
   event_params.SetKey("eventFrom", base::Value(ui::ToString(event.event_from)));
   event_params.SetKey("actionRequestID", base::Value(event.action_request_id));
   event_params.SetKey("mouseX", base::Value(mouse_location.x()));
@@ -2463,8 +2525,9 @@ void AutomationInternalCustomBindings::MaybeSendFocusAndBlur(
     ui::AXEvent blur_event;
     blur_event.id = old_node->id();
     blur_event.event_from = *event_from;
+    blur_event.event_type = ax::mojom::Event::kBlur;
     SendAutomationEvent(old_wrapper->GetTreeID(), event_bundle.mouse_location,
-                        blur_event, api::automation::EVENT_TYPE_BLUR);
+                        blur_event);
 
     focus_id_ = -1;
     focus_tree_id_ = ui::AXTreeIDUnknown();
@@ -2475,8 +2538,9 @@ void AutomationInternalCustomBindings::MaybeSendFocusAndBlur(
     ui::AXEvent focus_event;
     focus_event.id = new_node->id();
     focus_event.event_from = *event_from;
+    focus_event.event_type = ax::mojom::Event::kFocus;
     SendAutomationEvent(new_wrapper->GetTreeID(), event_bundle.mouse_location,
-                        focus_event, api::automation::EVENT_TYPE_FOCUS);
+                        focus_event);
     focus_id_ = new_node->id();
     focus_tree_id_ = new_wrapper->GetTreeID();
   }
@@ -2508,8 +2572,8 @@ void AutomationInternalCustomBindings::SendAccessibilityFocusedLocationChange(
 
   ui::AXEvent event;
   event.id = tree_wrapper->accessibility_focused_id();
-  SendAutomationEvent(accessibility_focused_tree_id_, mouse_location, event,
-                      api::automation::EVENT_TYPE_LOCATIONCHANGED);
+  event.event_type = ax::mojom::Event::kLocationChanged;
+  SendAutomationEvent(accessibility_focused_tree_id_, mouse_location, event);
 }
 
 void AutomationInternalCustomBindings::SendChildTreeIDEvent(

@@ -5,385 +5,13 @@
 #include "base/no_destructor.h"
 #include "components/crash/core/common/crash_key.h"
 #include "extensions/common/extension_messages.h"
+#include "extensions/renderer/api/automation/automation_api_util.h"
 #include "extensions/renderer/api/automation/automation_internal_custom_bindings.h"
 #include "ui/accessibility/ax_language_detection.h"
 #include "ui/accessibility/ax_node_position.h"
 #include "ui/accessibility/ax_tree_manager_map.h"
 
 namespace extensions {
-
-namespace {
-
-// Convert from ax::mojom::Event to api::automation::EventType.
-api::automation::EventType ToAutomationEvent(ax::mojom::Event event_type) {
-  switch (event_type) {
-    case ax::mojom::Event::kNone:
-      return api::automation::EVENT_TYPE_NONE;
-    case ax::mojom::Event::kActiveDescendantChanged:
-      return api::automation::EVENT_TYPE_ACTIVEDESCENDANTCHANGED;
-    case ax::mojom::Event::kAlert:
-      return api::automation::EVENT_TYPE_ALERT;
-    case ax::mojom::Event::kAriaAttributeChanged:
-      return api::automation::EVENT_TYPE_ARIAATTRIBUTECHANGED;
-    case ax::mojom::Event::kAutocorrectionOccured:
-      return api::automation::EVENT_TYPE_AUTOCORRECTIONOCCURED;
-    case ax::mojom::Event::kBlur:
-      return api::automation::EVENT_TYPE_BLUR;
-    case ax::mojom::Event::kCheckedStateChanged:
-      return api::automation::EVENT_TYPE_CHECKEDSTATECHANGED;
-    case ax::mojom::Event::kChildrenChanged:
-      return api::automation::EVENT_TYPE_CHILDRENCHANGED;
-    case ax::mojom::Event::kClicked:
-      return api::automation::EVENT_TYPE_CLICKED;
-    case ax::mojom::Event::kControlsChanged:
-      return api::automation::EVENT_TYPE_CONTROLSCHANGED;
-    case ax::mojom::Event::kDocumentSelectionChanged:
-      return api::automation::EVENT_TYPE_DOCUMENTSELECTIONCHANGED;
-    case ax::mojom::Event::kDocumentTitleChanged:
-      return api::automation::EVENT_TYPE_DOCUMENTTITLECHANGED;
-    case ax::mojom::Event::kEndOfTest:
-      return api::automation::EVENT_TYPE_ENDOFTEST;
-    case ax::mojom::Event::kExpandedChanged:
-      return api::automation::EVENT_TYPE_EXPANDEDCHANGED;
-    case ax::mojom::Event::kFocus:
-    case ax::mojom::Event::kFocusAfterMenuClose:
-    case ax::mojom::Event::kFocusContext:
-      return api::automation::EVENT_TYPE_NONE;
-    case ax::mojom::Event::kHide:
-      return api::automation::EVENT_TYPE_HIDE;
-    case ax::mojom::Event::kHitTestResult:
-      return api::automation::EVENT_TYPE_HITTESTRESULT;
-    case ax::mojom::Event::kHover:
-      return api::automation::EVENT_TYPE_HOVER;
-    case ax::mojom::Event::kImageFrameUpdated:
-      return api::automation::EVENT_TYPE_IMAGEFRAMEUPDATED;
-    case ax::mojom::Event::kInvalidStatusChanged:
-      return api::automation::EVENT_TYPE_INVALIDSTATUSCHANGED;
-    case ax::mojom::Event::kLayoutComplete:
-      return api::automation::EVENT_TYPE_LAYOUTCOMPLETE;
-    case ax::mojom::Event::kLiveRegionCreated:
-      return api::automation::EVENT_TYPE_LIVEREGIONCREATED;
-    case ax::mojom::Event::kLiveRegionChanged:
-      return api::automation::EVENT_TYPE_LIVEREGIONCHANGED;
-    case ax::mojom::Event::kLoadComplete:
-      return api::automation::EVENT_TYPE_LOADCOMPLETE;
-    case ax::mojom::Event::kLoadStart:
-      return api::automation::EVENT_TYPE_LOADSTART;
-    case ax::mojom::Event::kLocationChanged:
-      return api::automation::EVENT_TYPE_LOCATIONCHANGED;
-    case ax::mojom::Event::kMediaStartedPlaying:
-      return api::automation::EVENT_TYPE_MEDIASTARTEDPLAYING;
-    case ax::mojom::Event::kMediaStoppedPlaying:
-      return api::automation::EVENT_TYPE_MEDIASTOPPEDPLAYING;
-    case ax::mojom::Event::kMenuEnd:
-      return api::automation::EVENT_TYPE_MENUEND;
-    case ax::mojom::Event::kMenuListItemSelected:
-      return api::automation::EVENT_TYPE_MENULISTITEMSELECTED;
-    case ax::mojom::Event::kMenuListValueChanged:
-      return api::automation::EVENT_TYPE_MENULISTVALUECHANGED;
-    case ax::mojom::Event::kMenuPopupEnd:
-      return api::automation::EVENT_TYPE_MENUPOPUPEND;
-    case ax::mojom::Event::kMenuPopupStart:
-      return api::automation::EVENT_TYPE_MENUPOPUPSTART;
-    case ax::mojom::Event::kMenuStart:
-      return api::automation::EVENT_TYPE_MENUSTART;
-    case ax::mojom::Event::kMouseCanceled:
-      return api::automation::EVENT_TYPE_MOUSECANCELED;
-    case ax::mojom::Event::kMouseDragged:
-      return api::automation::EVENT_TYPE_MOUSEDRAGGED;
-    case ax::mojom::Event::kMouseMoved:
-      return api::automation::EVENT_TYPE_MOUSEMOVED;
-    case ax::mojom::Event::kMousePressed:
-      return api::automation::EVENT_TYPE_MOUSEPRESSED;
-    case ax::mojom::Event::kMouseReleased:
-      return api::automation::EVENT_TYPE_MOUSERELEASED;
-    case ax::mojom::Event::kRowCollapsed:
-      return api::automation::EVENT_TYPE_ROWCOLLAPSED;
-    case ax::mojom::Event::kRowCountChanged:
-      return api::automation::EVENT_TYPE_ROWCOUNTCHANGED;
-    case ax::mojom::Event::kRowExpanded:
-      return api::automation::EVENT_TYPE_ROWEXPANDED;
-    case ax::mojom::Event::kScrollPositionChanged:
-      return api::automation::EVENT_TYPE_SCROLLPOSITIONCHANGED;
-    case ax::mojom::Event::kScrolledToAnchor:
-      return api::automation::EVENT_TYPE_SCROLLEDTOANCHOR;
-    case ax::mojom::Event::kSelectedChildrenChanged:
-      return api::automation::EVENT_TYPE_SELECTEDCHILDRENCHANGED;
-    case ax::mojom::Event::kSelection:
-      return api::automation::EVENT_TYPE_SELECTION;
-    case ax::mojom::Event::kSelectionAdd:
-      return api::automation::EVENT_TYPE_SELECTIONADD;
-    case ax::mojom::Event::kSelectionRemove:
-      return api::automation::EVENT_TYPE_SELECTIONREMOVE;
-    case ax::mojom::Event::kShow:
-      return api::automation::EVENT_TYPE_SHOW;
-    case ax::mojom::Event::kStateChanged:
-      return api::automation::EVENT_TYPE_NONE;
-    case ax::mojom::Event::kTextChanged:
-      return api::automation::EVENT_TYPE_TEXTCHANGED;
-    case ax::mojom::Event::kTextSelectionChanged:
-      return api::automation::EVENT_TYPE_TEXTSELECTIONCHANGED;
-    case ax::mojom::Event::kTooltipClosed:
-    case ax::mojom::Event::kTooltipOpened:
-      return api::automation::EVENT_TYPE_NONE;
-    case ax::mojom::Event::kWindowActivated:
-      return api::automation::EVENT_TYPE_WINDOWACTIVATED;
-    case ax::mojom::Event::kWindowDeactivated:
-      return api::automation::EVENT_TYPE_WINDOWDEACTIVATED;
-    case ax::mojom::Event::kWindowVisibilityChanged:
-      return api::automation::EVENT_TYPE_WINDOWVISIBILITYCHANGED;
-    case ax::mojom::Event::kTreeChanged:
-      return api::automation::EVENT_TYPE_TREECHANGED;
-    case ax::mojom::Event::kValueChanged:
-      return api::automation::EVENT_TYPE_VALUECHANGED;
-  }
-
-  NOTREACHED();
-  return api::automation::EVENT_TYPE_NONE;
-}
-
-// Convert from ui::AXEventGenerator::Event to api::automation::EventType.
-api::automation::EventType ToAutomationEvent(
-    ui::AXEventGenerator::Event event_type) {
-  switch (event_type) {
-    case ui::AXEventGenerator::Event::ACTIVE_DESCENDANT_CHANGED:
-      return api::automation::EVENT_TYPE_ACTIVEDESCENDANTCHANGED;
-    case ui::AXEventGenerator::Event::ALERT:
-      return api::automation::EVENT_TYPE_ALERT;
-    case ui::AXEventGenerator::Event::CHECKED_STATE_CHANGED:
-      return api::automation::EVENT_TYPE_CHECKEDSTATECHANGED;
-    case ui::AXEventGenerator::Event::CHILDREN_CHANGED:
-      return api::automation::EVENT_TYPE_CHILDRENCHANGED;
-    case ui::AXEventGenerator::Event::COLLAPSED:
-      return api::automation::EVENT_TYPE_EXPANDEDCHANGED;
-    case ui::AXEventGenerator::Event::DOCUMENT_SELECTION_CHANGED:
-      return api::automation::EVENT_TYPE_DOCUMENTSELECTIONCHANGED;
-    case ui::AXEventGenerator::Event::DOCUMENT_TITLE_CHANGED:
-      return api::automation::EVENT_TYPE_DOCUMENTTITLECHANGED;
-    case ui::AXEventGenerator::Event::EXPANDED:
-      return api::automation::EVENT_TYPE_EXPANDEDCHANGED;
-    case ui::AXEventGenerator::Event::INVALID_STATUS_CHANGED:
-      return api::automation::EVENT_TYPE_INVALIDSTATUSCHANGED;
-    case ui::AXEventGenerator::Event::LIVE_REGION_CHANGED:
-      return api::automation::EVENT_TYPE_LIVEREGIONCHANGED;
-    case ui::AXEventGenerator::Event::LIVE_REGION_CREATED:
-      return api::automation::EVENT_TYPE_LIVEREGIONCREATED;
-    case ui::AXEventGenerator::Event::LOAD_COMPLETE:
-      return api::automation::EVENT_TYPE_LOADCOMPLETE;
-    case ui::AXEventGenerator::Event::LOAD_START:
-      return api::automation::EVENT_TYPE_LOADSTART;
-    case ui::AXEventGenerator::Event::MENU_ITEM_SELECTED:
-      return api::automation::EVENT_TYPE_MENULISTITEMSELECTED;
-    case ui::AXEventGenerator::Event::RELATED_NODE_CHANGED:
-      return api::automation::EVENT_TYPE_ARIAATTRIBUTECHANGED;
-    case ui::AXEventGenerator::Event::ROW_COUNT_CHANGED:
-      return api::automation::EVENT_TYPE_ROWCOUNTCHANGED;
-    case ui::AXEventGenerator::Event::SCROLL_HORIZONTAL_POSITION_CHANGED:
-    case ui::AXEventGenerator::Event::SCROLL_VERTICAL_POSITION_CHANGED:
-      return api::automation::EVENT_TYPE_SCROLLPOSITIONCHANGED;
-    case ui::AXEventGenerator::Event::SELECTED_CHILDREN_CHANGED:
-      return api::automation::EVENT_TYPE_SELECTEDCHILDRENCHANGED;
-    case ui::AXEventGenerator::Event::VALUE_CHANGED:
-      return api::automation::EVENT_TYPE_VALUECHANGED;
-
-    // Map these into generic attribute changes (not necessarily aria related,
-    // but mapping for backward compat).
-    case ui::AXEventGenerator::Event::AUTO_COMPLETE_CHANGED:
-    case ui::AXEventGenerator::Event::DESCRIPTION_CHANGED:
-    case ui::AXEventGenerator::Event::IMAGE_ANNOTATION_CHANGED:
-    case ui::AXEventGenerator::Event::LIVE_REGION_NODE_CHANGED:
-    case ui::AXEventGenerator::Event::NAME_CHANGED:
-    case ui::AXEventGenerator::Event::ROLE_CHANGED:
-    case ui::AXEventGenerator::Event::SELECTED_CHANGED:
-    case ui::AXEventGenerator::Event::SORT_CHANGED:
-    case ui::AXEventGenerator::Event::STATE_CHANGED:
-      return api::automation::EVENT_TYPE_ARIAATTRIBUTECHANGED;
-
-    case ui::AXEventGenerator::Event::ACCESS_KEY_CHANGED:
-    case ui::AXEventGenerator::Event::ATK_TEXT_OBJECT_ATTRIBUTE_CHANGED:
-    case ui::AXEventGenerator::Event::ATOMIC_CHANGED:
-    case ui::AXEventGenerator::Event::BUSY_CHANGED:
-    case ui::AXEventGenerator::Event::CONTROLS_CHANGED:
-    case ui::AXEventGenerator::Event::CLASS_NAME_CHANGED:
-    case ui::AXEventGenerator::Event::DESCRIBED_BY_CHANGED:
-    case ui::AXEventGenerator::Event::DROPEFFECT_CHANGED:
-    case ui::AXEventGenerator::Event::ENABLED_CHANGED:
-    case ui::AXEventGenerator::Event::FOCUS_CHANGED:
-    case ui::AXEventGenerator::Event::FLOW_FROM_CHANGED:
-    case ui::AXEventGenerator::Event::FLOW_TO_CHANGED:
-    case ui::AXEventGenerator::Event::GRABBED_CHANGED:
-    case ui::AXEventGenerator::Event::HASPOPUP_CHANGED:
-    case ui::AXEventGenerator::Event::HIERARCHICAL_LEVEL_CHANGED:
-    case ui::AXEventGenerator::Event::IGNORED_CHANGED:
-    case ui::AXEventGenerator::Event::KEY_SHORTCUTS_CHANGED:
-    case ui::AXEventGenerator::Event::LABELED_BY_CHANGED:
-    case ui::AXEventGenerator::Event::LANGUAGE_CHANGED:
-    case ui::AXEventGenerator::Event::LAYOUT_INVALIDATED:
-    case ui::AXEventGenerator::Event::LIVE_RELEVANT_CHANGED:
-    case ui::AXEventGenerator::Event::LIVE_STATUS_CHANGED:
-    case ui::AXEventGenerator::Event::MULTILINE_STATE_CHANGED:
-    case ui::AXEventGenerator::Event::MULTISELECTABLE_STATE_CHANGED:
-    case ui::AXEventGenerator::Event::OBJECT_ATTRIBUTE_CHANGED:
-    case ui::AXEventGenerator::Event::OTHER_ATTRIBUTE_CHANGED:
-    case ui::AXEventGenerator::Event::PLACEHOLDER_CHANGED:
-    case ui::AXEventGenerator::Event::PORTAL_ACTIVATED:
-    case ui::AXEventGenerator::Event::POSITION_IN_SET_CHANGED:
-    case ui::AXEventGenerator::Event::READONLY_CHANGED:
-    case ui::AXEventGenerator::Event::REQUIRED_STATE_CHANGED:
-    case ui::AXEventGenerator::Event::SET_SIZE_CHANGED:
-    case ui::AXEventGenerator::Event::SUBTREE_CREATED:
-    case ui::AXEventGenerator::Event::TEXT_ATTRIBUTE_CHANGED:
-    case ui::AXEventGenerator::Event::VALUE_MAX_CHANGED:
-    case ui::AXEventGenerator::Event::VALUE_MIN_CHANGED:
-    case ui::AXEventGenerator::Event::VALUE_STEP_CHANGED:
-    case ui::AXEventGenerator::Event::WIN_IACCESSIBLE_STATE_CHANGED:
-      return api::automation::EVENT_TYPE_NONE;
-  }
-
-  NOTREACHED();
-  return api::automation::EVENT_TYPE_NONE;
-}
-
-// Convert from ui::AXEventGenerator::Event to
-// api::automation::GeneratedEventType.
-api::automation::GeneratedEventType ToAutomationGeneratedEvent(
-    ui::AXEventGenerator::Event event_type) {
-  // Note for future changes:
-  // Please add a corresponding definition of the AXeventGenerator::Event enum
-  // to extensions/common/api/automation.idl if the generated event is an
-  // attribute or something not mirrored in ax::mojom::Event.
-  switch (event_type) {
-    case ui::AXEventGenerator::Event::ACCESS_KEY_CHANGED:
-      return api::automation::GENERATED_EVENT_TYPE_ACCESSKEYCHANGED;
-    case ui::AXEventGenerator::Event::ATOMIC_CHANGED:
-      return api::automation::GENERATED_EVENT_TYPE_ATOMICCHANGED;
-    case ui::AXEventGenerator::Event::AUTO_COMPLETE_CHANGED:
-      return api::automation::GENERATED_EVENT_TYPE_AUTOCOMPLETECHANGED;
-    case ui::AXEventGenerator::Event::BUSY_CHANGED:
-      return api::automation::GENERATED_EVENT_TYPE_BUSYCHANGED;
-    case ui::AXEventGenerator::Event::CLASS_NAME_CHANGED:
-      return api::automation::GENERATED_EVENT_TYPE_CLASSNAMECHANGED;
-    case ui::AXEventGenerator::Event::COLLAPSED:
-      return api::automation::GENERATED_EVENT_TYPE_COLLAPSED;
-    case ui::AXEventGenerator::Event::DESCRIBED_BY_CHANGED:
-      return api::automation::GENERATED_EVENT_TYPE_DESCRIBEDBYCHANGED;
-    case ui::AXEventGenerator::Event::DESCRIPTION_CHANGED:
-      return api::automation::GENERATED_EVENT_TYPE_DESCRIPTIONCHANGED;
-
-    case ui::AXEventGenerator::Event::DROPEFFECT_CHANGED:
-      return api::automation::GENERATED_EVENT_TYPE_DROPEFFECTCHANGED;
-    case ui::AXEventGenerator::Event::ENABLED_CHANGED:
-      return api::automation::GENERATED_EVENT_TYPE_ENABLEDCHANGED;
-    case ui::AXEventGenerator::Event::EXPANDED:
-      return api::automation::GENERATED_EVENT_TYPE_EXPANDED;
-    case ui::AXEventGenerator::Event::FOCUS_CHANGED:
-      return api::automation::GENERATED_EVENT_TYPE_FOCUSCHANGED;
-    case ui::AXEventGenerator::Event::FLOW_FROM_CHANGED:
-      return api::automation::GENERATED_EVENT_TYPE_FLOWFROMCHANGED;
-    case ui::AXEventGenerator::Event::FLOW_TO_CHANGED:
-      return api::automation::GENERATED_EVENT_TYPE_FLOWTOCHANGED;
-    case ui::AXEventGenerator::Event::GRABBED_CHANGED:
-      return api::automation::GENERATED_EVENT_TYPE_GRABBEDCHANGED;
-    case ui::AXEventGenerator::Event::HASPOPUP_CHANGED:
-      return api::automation::GENERATED_EVENT_TYPE_HASPOPUPCHANGED;
-    case ui::AXEventGenerator::Event::HIERARCHICAL_LEVEL_CHANGED:
-      return api::automation::GENERATED_EVENT_TYPE_HIERARCHICALLEVELCHANGED;
-    case ui::AXEventGenerator::Event::IGNORED_CHANGED:
-      return api::automation::GENERATED_EVENT_TYPE_IGNOREDCHANGED;
-    case ui::AXEventGenerator::Event::IMAGE_ANNOTATION_CHANGED:
-      return api::automation::GENERATED_EVENT_TYPE_IMAGEANNOTATIONCHANGED;
-    case ui::AXEventGenerator::Event::KEY_SHORTCUTS_CHANGED:
-      return api::automation::GENERATED_EVENT_TYPE_KEYSHORTCUTSCHANGED;
-    case ui::AXEventGenerator::Event::LABELED_BY_CHANGED:
-      return api::automation::GENERATED_EVENT_TYPE_LABELEDBYCHANGED;
-    case ui::AXEventGenerator::Event::LANGUAGE_CHANGED:
-      return api::automation::GENERATED_EVENT_TYPE_LANGUAGECHANGED;
-    case ui::AXEventGenerator::Event::LAYOUT_INVALIDATED:
-      return api::automation::GENERATED_EVENT_TYPE_LAYOUTINVALIDATED;
-    case ui::AXEventGenerator::Event::LIVE_REGION_NODE_CHANGED:
-      return api::automation::GENERATED_EVENT_TYPE_LIVEREGIONNODECHANGED;
-    case ui::AXEventGenerator::Event::LIVE_RELEVANT_CHANGED:
-      return api::automation::GENERATED_EVENT_TYPE_LIVERELEVANTCHANGED;
-    case ui::AXEventGenerator::Event::LIVE_STATUS_CHANGED:
-      return api::automation::GENERATED_EVENT_TYPE_LIVESTATUSCHANGED;
-    case ui::AXEventGenerator::Event::MENU_ITEM_SELECTED:
-      return api::automation::GENERATED_EVENT_TYPE_MENUITEMSELECTED;
-    case ui::AXEventGenerator::Event::MULTILINE_STATE_CHANGED:
-      return api::automation::GENERATED_EVENT_TYPE_MULTILINESTATECHANGED;
-    case ui::AXEventGenerator::Event::MULTISELECTABLE_STATE_CHANGED:
-      return api::automation::GENERATED_EVENT_TYPE_MULTISELECTABLESTATECHANGED;
-    case ui::AXEventGenerator::Event::NAME_CHANGED:
-      return api::automation::GENERATED_EVENT_TYPE_NAMECHANGED;
-    case ui::AXEventGenerator::Event::OBJECT_ATTRIBUTE_CHANGED:
-      return api::automation::GENERATED_EVENT_TYPE_OBJECTATTRIBUTECHANGED;
-    case ui::AXEventGenerator::Event::OTHER_ATTRIBUTE_CHANGED:
-      return api::automation::GENERATED_EVENT_TYPE_OTHERATTRIBUTECHANGED;
-    case ui::AXEventGenerator::Event::PLACEHOLDER_CHANGED:
-      return api::automation::GENERATED_EVENT_TYPE_PLACEHOLDERCHANGED;
-    case ui::AXEventGenerator::Event::PORTAL_ACTIVATED:
-      return api::automation::GENERATED_EVENT_TYPE_PORTALACTIVATED;
-    case ui::AXEventGenerator::Event::POSITION_IN_SET_CHANGED:
-      return api::automation::GENERATED_EVENT_TYPE_POSITIONINSETCHANGED;
-    case ui::AXEventGenerator::Event::RELATED_NODE_CHANGED:
-      return api::automation::GENERATED_EVENT_TYPE_RELATEDNODECHANGED;
-    case ui::AXEventGenerator::Event::READONLY_CHANGED:
-      return api::automation::GENERATED_EVENT_TYPE_READONLYCHANGED;
-    case ui::AXEventGenerator::Event::REQUIRED_STATE_CHANGED:
-      return api::automation::GENERATED_EVENT_TYPE_REQUIREDSTATECHANGED;
-    case ui::AXEventGenerator::Event::ROLE_CHANGED:
-      return api::automation::GENERATED_EVENT_TYPE_ROLECHANGED;
-    case ui::AXEventGenerator::Event::SCROLL_HORIZONTAL_POSITION_CHANGED:
-      return api::automation::
-          GENERATED_EVENT_TYPE_SCROLLHORIZONTALPOSITIONCHANGED;
-    case ui::AXEventGenerator::Event::SCROLL_VERTICAL_POSITION_CHANGED:
-      return api::automation::
-          GENERATED_EVENT_TYPE_SCROLLVERTICALPOSITIONCHANGED;
-    case ui::AXEventGenerator::Event::SELECTED_CHANGED:
-      return api::automation::GENERATED_EVENT_TYPE_SELECTEDCHANGED;
-    case ui::AXEventGenerator::Event::SET_SIZE_CHANGED:
-      return api::automation::GENERATED_EVENT_TYPE_SETSIZECHANGED;
-    case ui::AXEventGenerator::Event::SORT_CHANGED:
-      return api::automation::GENERATED_EVENT_TYPE_SORTCHANGED;
-    case ui::AXEventGenerator::Event::SUBTREE_CREATED:
-      return api::automation::GENERATED_EVENT_TYPE_SUBTREECREATED;
-    case ui::AXEventGenerator::Event::TEXT_ATTRIBUTE_CHANGED:
-      return api::automation::GENERATED_EVENT_TYPE_TEXTATTRIBUTECHANGED;
-    case ui::AXEventGenerator::Event::VALUE_MAX_CHANGED:
-      return api::automation::GENERATED_EVENT_TYPE_VALUEMAXCHANGED;
-    case ui::AXEventGenerator::Event::VALUE_MIN_CHANGED:
-      return api::automation::GENERATED_EVENT_TYPE_VALUEMINCHANGED;
-    case ui::AXEventGenerator::Event::VALUE_STEP_CHANGED:
-      return api::automation::GENERATED_EVENT_TYPE_VALUESTEPCHANGED;
-
-      // These do not have a mapping to automation either because they're
-      // already represented in ax::mojom::Event or they are not publically
-      // relevant.
-    case ui::AXEventGenerator::Event::ACTIVE_DESCENDANT_CHANGED:
-    case ui::AXEventGenerator::Event::ALERT:
-    case ui::AXEventGenerator::Event::ATK_TEXT_OBJECT_ATTRIBUTE_CHANGED:
-    case ui::AXEventGenerator::Event::CHECKED_STATE_CHANGED:
-    case ui::AXEventGenerator::Event::CHILDREN_CHANGED:
-    case ui::AXEventGenerator::Event::CONTROLS_CHANGED:
-    case ui::AXEventGenerator::Event::DOCUMENT_SELECTION_CHANGED:
-    case ui::AXEventGenerator::Event::DOCUMENT_TITLE_CHANGED:
-    case ui::AXEventGenerator::Event::INVALID_STATUS_CHANGED:
-    case ui::AXEventGenerator::Event::LIVE_REGION_CHANGED:
-    case ui::AXEventGenerator::Event::LIVE_REGION_CREATED:
-    case ui::AXEventGenerator::Event::LOAD_COMPLETE:
-    case ui::AXEventGenerator::Event::LOAD_START:
-    case ui::AXEventGenerator::Event::ROW_COUNT_CHANGED:
-    case ui::AXEventGenerator::Event::SELECTED_CHILDREN_CHANGED:
-    case ui::AXEventGenerator::Event::STATE_CHANGED:
-    case ui::AXEventGenerator::Event::VALUE_CHANGED:
-    case ui::AXEventGenerator::Event::WIN_IACCESSIBLE_STATE_CHANGED:
-      return api::automation::GENERATED_EVENT_TYPE_NONE;
-  }
-
-  NOTREACHED();
-  return api::automation::GENERATED_EVENT_TYPE_NONE;
-}
-
-}  // namespace
 
 AutomationAXTreeWrapper::AutomationAXTreeWrapper(
     ui::AXTreeID tree_id,
@@ -497,19 +125,15 @@ bool AutomationAXTreeWrapper::OnAccessibilityEvents(
 
   // Send auto-generated AXEventGenerator events.
   for (const auto& targeted_event : event_generator_) {
-    api::automation::EventType event_type =
-        ToAutomationEvent(targeted_event.event_params.event);
-
-    if (IsEventTypeHandledByAXEventGenerator(event_type)) {
-      ui::AXEvent generated_event;
-      generated_event.id = targeted_event.node->id();
-      generated_event.event_from = targeted_event.event_params.event_from;
-      generated_event.event_intents = targeted_event.event_params.event_intents;
-      owner_->SendAutomationEvent(
-          event_bundle.tree_id, event_bundle.mouse_location, generated_event,
-          event_type,
-          ToAutomationGeneratedEvent(targeted_event.event_params.event));
-    }
+    if (ShouldIgnoreGeneratedEvent(targeted_event.event_params.event))
+      continue;
+    ui::AXEvent generated_event;
+    generated_event.id = targeted_event.node->id();
+    generated_event.event_from = targeted_event.event_params.event_from;
+    generated_event.event_intents = targeted_event.event_params.event_intents;
+    owner_->SendAutomationEvent(event_bundle.tree_id,
+                                event_bundle.mouse_location, generated_event,
+                                targeted_event.event_params.event);
   }
   event_generator_.ClearEvents();
 
@@ -518,15 +142,11 @@ bool AutomationAXTreeWrapper::OnAccessibilityEvents(
         event.event_type == ax::mojom::Event::kBlur)
       continue;
 
-    api::automation::EventType automation_event_type =
-        ToAutomationEvent(event.event_type);
-
     // Send some events directly from the event message, if they're not
     // handled by AXEventGenerator yet.
-    if (!IsEventTypeHandledByAXEventGenerator(automation_event_type)) {
+    if (!IsEventTypeHandledByAXEventGenerator(event.event_type)) {
       owner_->SendAutomationEvent(event_bundle.tree_id,
-                                  event_bundle.mouse_location, event,
-                                  automation_event_type);
+                                  event_bundle.mouse_location, event);
     }
   }
 
@@ -603,20 +223,23 @@ ui::AXNode* AutomationAXTreeWrapper::GetAccessibilityFocusedNode() {
              : tree_.GetFromId(accessibility_focused_id_);
 }
 
-void AutomationAXTreeWrapper::EventListenerAdded(ax::mojom::Event event_type,
-                                                 ui::AXNode* node) {
+void AutomationAXTreeWrapper::EventListenerAdded(
+    api::automation::EventType event_type,
+    ui::AXNode* node) {
   node_id_to_events_[node->id()].insert(event_type);
 }
 
-void AutomationAXTreeWrapper::EventListenerRemoved(ax::mojom::Event event_type,
-                                                   ui::AXNode* node) {
+void AutomationAXTreeWrapper::EventListenerRemoved(
+    api::automation::EventType event_type,
+    ui::AXNode* node) {
   auto it = node_id_to_events_.find(node->id());
   if (it != node_id_to_events_.end())
     it->second.erase(event_type);
 }
 
-bool AutomationAXTreeWrapper::HasEventListener(ax::mojom::Event event_type,
-                                               ui::AXNode* node) {
+bool AutomationAXTreeWrapper::HasEventListener(
+    api::automation::EventType event_type,
+    ui::AXNode* node) {
   auto it = node_id_to_events_.find(node->id());
   if (it == node_id_to_events_.end())
     return false;
@@ -685,89 +308,6 @@ void AutomationAXTreeWrapper::OnAtomicUpdateFinished(
         tree->GetFromId(id));
   }
   text_changed_node_ids_.clear();
-}
-
-bool AutomationAXTreeWrapper::IsEventTypeHandledByAXEventGenerator(
-    api::automation::EventType event_type) const {
-  switch (event_type) {
-    // Generated by AXEventGenerator.
-    case api::automation::EVENT_TYPE_ACTIVEDESCENDANTCHANGED:
-    case api::automation::EVENT_TYPE_ARIAATTRIBUTECHANGED:
-    case api::automation::EVENT_TYPE_CHECKEDSTATECHANGED:
-    case api::automation::EVENT_TYPE_CHILDRENCHANGED:
-    case api::automation::EVENT_TYPE_DOCUMENTSELECTIONCHANGED:
-    case api::automation::EVENT_TYPE_DOCUMENTTITLECHANGED:
-    case api::automation::EVENT_TYPE_EXPANDEDCHANGED:
-    case api::automation::EVENT_TYPE_INVALIDSTATUSCHANGED:
-    case api::automation::EVENT_TYPE_LOADCOMPLETE:
-    case api::automation::EVENT_TYPE_LOADSTART:
-    case api::automation::EVENT_TYPE_ROWCOLLAPSED:
-    case api::automation::EVENT_TYPE_ROWCOUNTCHANGED:
-    case api::automation::EVENT_TYPE_ROWEXPANDED:
-    case api::automation::EVENT_TYPE_SCROLLPOSITIONCHANGED:
-    case api::automation::EVENT_TYPE_SELECTEDCHILDRENCHANGED:
-      return true;
-
-    // Not generated by AXEventGenerator and possible candidates
-    // for removal from the automation API entirely.
-    case api::automation::EVENT_TYPE_HIDE:
-    case api::automation::EVENT_TYPE_LAYOUTCOMPLETE:
-    case api::automation::EVENT_TYPE_MENULISTVALUECHANGED:
-    case api::automation::EVENT_TYPE_MENUPOPUPEND:
-    case api::automation::EVENT_TYPE_MENUPOPUPSTART:
-    case api::automation::EVENT_TYPE_SELECTIONADD:
-    case api::automation::EVENT_TYPE_SELECTIONREMOVE:
-    case api::automation::EVENT_TYPE_SHOW:
-    case api::automation::EVENT_TYPE_STATECHANGED:
-    case api::automation::EVENT_TYPE_TREECHANGED:
-      return false;
-
-    // These events will never be generated by AXEventGenerator.
-    // These are all events that can't be inferred from a tree change.
-    case api::automation::EVENT_TYPE_NONE:
-    case api::automation::EVENT_TYPE_AUTOCORRECTIONOCCURED:
-    case api::automation::EVENT_TYPE_CLICKED:
-    case api::automation::EVENT_TYPE_ENDOFTEST:
-    case api::automation::EVENT_TYPE_FOCUSAFTERMENUCLOSE:
-    case api::automation::EVENT_TYPE_FOCUSCONTEXT:
-    case api::automation::EVENT_TYPE_HITTESTRESULT:
-    case api::automation::EVENT_TYPE_HOVER:
-    case api::automation::EVENT_TYPE_MEDIASTARTEDPLAYING:
-    case api::automation::EVENT_TYPE_MEDIASTOPPEDPLAYING:
-    case api::automation::EVENT_TYPE_MOUSECANCELED:
-    case api::automation::EVENT_TYPE_MOUSEDRAGGED:
-    case api::automation::EVENT_TYPE_MOUSEMOVED:
-    case api::automation::EVENT_TYPE_MOUSEPRESSED:
-    case api::automation::EVENT_TYPE_MOUSERELEASED:
-    case api::automation::EVENT_TYPE_SCROLLEDTOANCHOR:
-    case api::automation::EVENT_TYPE_TOOLTIPCLOSED:
-    case api::automation::EVENT_TYPE_TOOLTIPOPENED:
-    case api::automation::EVENT_TYPE_WINDOWACTIVATED:
-    case api::automation::EVENT_TYPE_WINDOWDEACTIVATED:
-    case api::automation::EVENT_TYPE_WINDOWVISIBILITYCHANGED:
-      return false;
-
-    // These events might need to be migrated to AXEventGenerator.
-    case api::automation::EVENT_TYPE_ALERT:
-    case api::automation::EVENT_TYPE_BLUR:
-    case api::automation::EVENT_TYPE_CONTROLSCHANGED:
-    case api::automation::EVENT_TYPE_FOCUS:
-    case api::automation::EVENT_TYPE_IMAGEFRAMEUPDATED:
-    case api::automation::EVENT_TYPE_LIVEREGIONCHANGED:
-    case api::automation::EVENT_TYPE_LIVEREGIONCREATED:
-    case api::automation::EVENT_TYPE_LOCATIONCHANGED:
-    case api::automation::EVENT_TYPE_MENUEND:
-    case api::automation::EVENT_TYPE_MENULISTITEMSELECTED:
-    case api::automation::EVENT_TYPE_MENUSTART:
-    case api::automation::EVENT_TYPE_SELECTION:
-    case api::automation::EVENT_TYPE_TEXTCHANGED:
-    case api::automation::EVENT_TYPE_TEXTSELECTIONCHANGED:
-    case api::automation::EVENT_TYPE_VALUECHANGED:
-      return false;
-  }
-
-  NOTREACHED();
-  return false;
 }
 
 ui::AXNode* AutomationAXTreeWrapper::GetNodeFromTree(

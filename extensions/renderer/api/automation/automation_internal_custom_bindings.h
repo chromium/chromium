@@ -87,9 +87,8 @@ class AutomationInternalCustomBindings : public ObjectBackedNativeHandler {
       ui::AXTreeID tree_id,
       const gfx::Point& mouse_location,
       const ui::AXEvent& event,
-      api::automation::EventType event_type,
-      api::automation::GeneratedEventType generated_event_type =
-          api::automation::GENERATED_EVENT_TYPE_NONE);
+      base::Optional<ui::AXEventGenerator::Event> generated_event_type =
+          base::Optional<ui::AXEventGenerator::Event>());
 
   void MaybeSendFocusAndBlur(
       AutomationAXTreeWrapper* tree,
@@ -190,7 +189,7 @@ class AutomationInternalCustomBindings : public ObjectBackedNativeHandler {
                        v8::ReturnValue<v8::Value> result,
                        AutomationAXTreeWrapper* tree_wrapper,
                        ui::AXNode* node,
-                       ax::mojom::Event event_type));
+                       api::automation::EventType event_type));
 
   //
   // Access the cached accessibility trees and properties of their nodes.

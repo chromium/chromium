@@ -13,6 +13,8 @@ source_set("renderer") {
     "activity_log_converter_strategy.h",
     "api/automation/automation_api_helper.cc",
     "api/automation/automation_api_helper.h",
+    "api/automation/automation_api_util.cc",
+    "api/automation/automation_api_util.h",
     "api/automation/automation_ax_tree_wrapper.cc",
     "api/automation/automation_ax_tree_wrapper.h",
     "api/automation/automation_internal_custom_bindings.cc",

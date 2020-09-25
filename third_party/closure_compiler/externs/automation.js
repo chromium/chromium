@@ -19,36 +19,63 @@ chrome.automation = {};
  * @see https://developer.chrome.com/extensions/automation#type-EventType
  */
 chrome.automation.EventType = {
-  ACTIVEDESCENDANTCHANGED: 'activedescendantchanged',
+  ACCESS_KEY_CHANGED: 'accessKeyChanged',
+  ACTIVE_DESCENDANT_CHANGED: 'activeDescendantChanged',
   ALERT: 'alert',
   ARIA_ATTRIBUTE_CHANGED: 'ariaAttributeChanged',
+  ATOMIC_CHANGED: 'atomicChanged',
+  AUTO_COMPLETE_CHANGED: 'autoCompleteChanged',
   AUTOCORRECTION_OCCURED: 'autocorrectionOccured',
   BLUR: 'blur',
+  BUSY_CHANGED: 'busyChanged',
   CHECKED_STATE_CHANGED: 'checkedStateChanged',
   CHILDREN_CHANGED: 'childrenChanged',
+  CLASS_NAME_CHANGED: 'classNameChanged',
   CLICKED: 'clicked',
+  COLLAPSED: 'collapsed',
   CONTROLS_CHANGED: 'controlsChanged',
+  DESCRIBED_BY_CHANGED: 'describedByChanged',
+  DESCRIPTION_CHANGED: 'descriptionChanged',
   DOCUMENT_SELECTION_CHANGED: 'documentSelectionChanged',
   DOCUMENT_TITLE_CHANGED: 'documentTitleChanged',
+  DROPEFFECT_CHANGED: 'dropeffectChanged',
+  ENABLED_CHANGED: 'enabledChanged',
   END_OF_TEST: 'endOfTest',
+  EXPANDED: 'expanded',
   EXPANDED_CHANGED: 'expandedChanged',
+  FLOW_FROM_CHANGED: 'flowFromChanged',
+  FLOW_TO_CHANGED: 'flowToChanged',
   FOCUS: 'focus',
   FOCUS_AFTER_MENU_CLOSE: 'focusAfterMenuClose',
+  FOCUS_CHANGED: 'focusChanged',
   FOCUS_CONTEXT: 'focusContext',
+  GRABBED_CHANGED: 'grabbedChanged',
+  HASPOPUP_CHANGED: 'haspopupChanged',
   HIDE: 'hide',
+  HIERARCHICAL_LEVEL_CHANGED: 'hierarchicalLevelChanged',
   HIT_TEST_RESULT: 'hitTestResult',
   HOVER: 'hover',
+  IGNORED_CHANGED: 'ignoredChanged',
+  IMAGE_ANNOTATION_CHANGED: 'imageAnnotationChanged',
   IMAGE_FRAME_UPDATED: 'imageFrameUpdated',
   INVALID_STATUS_CHANGED: 'invalidStatusChanged',
+  KEY_SHORTCUTS_CHANGED: 'keyShortcutsChanged',
+  LABELED_BY_CHANGED: 'labeledByChanged',
+  LANGUAGE_CHANGED: 'languageChanged',
   LAYOUT_COMPLETE: 'layoutComplete',
+  LAYOUT_INVALIDATED: 'layoutInvalidated',
   LIVE_REGION_CHANGED: 'liveRegionChanged',
   LIVE_REGION_CREATED: 'liveRegionCreated',
+  LIVE_REGION_NODE_CHANGED: 'liveRegionNodeChanged',
+  LIVE_RELEVANT_CHANGED: 'liveRelevantChanged',
+  LIVE_STATUS_CHANGED: 'liveStatusChanged',
   LOAD_COMPLETE: 'loadComplete',
   LOAD_START: 'loadStart',
   LOCATION_CHANGED: 'locationChanged',
   MEDIA_STARTED_PLAYING: 'mediaStartedPlaying',
   MEDIA_STOPPED_PLAYING: 'mediaStoppedPlaying',
   MENU_END: 'menuEnd',
+  MENU_ITEM_SELECTED: 'menuItemSelected',
   MENU_LIST_ITEM_SELECTED: 'menuListItemSelected',
   MENU_LIST_VALUE_CHANGED: 'menuListValueChanged',
   MENU_POPUP_END: 'menuPopupEnd',
@@ -59,26 +86,48 @@ chrome.automation.EventType = {
   MOUSE_MOVED: 'mouseMoved',
   MOUSE_PRESSED: 'mousePressed',
   MOUSE_RELEASED: 'mouseReleased',
+  MULTILINE_STATE_CHANGED: 'multilineStateChanged',
+  MULTISELECTABLE_STATE_CHANGED: 'multiselectableStateChanged',
+  NAME_CHANGED: 'nameChanged',
+  OBJECT_ATTRIBUTE_CHANGED: 'objectAttributeChanged',
+  OTHER_ATTRIBUTE_CHANGED: 'otherAttributeChanged',
+  PLACEHOLDER_CHANGED: 'placeholderChanged',
+  PORTAL_ACTIVATED: 'portalActivated',
+  POSITION_IN_SET_CHANGED: 'positionInSetChanged',
+  READONLY_CHANGED: 'readonlyChanged',
+  RELATED_NODE_CHANGED: 'relatedNodeChanged',
+  REQUIRED_STATE_CHANGED: 'requiredStateChanged',
+  ROLE_CHANGED: 'roleChanged',
   ROW_COLLAPSED: 'rowCollapsed',
   ROW_COUNT_CHANGED: 'rowCountChanged',
   ROW_EXPANDED: 'rowExpanded',
+  SCROLL_HORIZONTAL_POSITION_CHANGED: 'scrollHorizontalPositionChanged',
   SCROLL_POSITION_CHANGED: 'scrollPositionChanged',
+  SCROLL_VERTICAL_POSITION_CHANGED: 'scrollVerticalPositionChanged',
   SCROLLED_TO_ANCHOR: 'scrolledToAnchor',
+  SELECTED_CHANGED: 'selectedChanged',
   SELECTED_CHILDREN_CHANGED: 'selectedChildrenChanged',
   SELECTION: 'selection',
   SELECTION_ADD: 'selectionAdd',
   SELECTION_REMOVE: 'selectionRemove',
+  SET_SIZE_CHANGED: 'setSizeChanged',
   SHOW: 'show',
+  SORT_CHANGED: 'sortChanged',
   STATE_CHANGED: 'stateChanged',
+  SUBTREE_CREATED: 'subtreeCreated',
+  TEXT_ATTRIBUTE_CHANGED: 'textAttributeChanged',
   TEXT_CHANGED: 'textChanged',
   TEXT_SELECTION_CHANGED: 'textSelectionChanged',
   TOOLTIP_CLOSED: 'tooltipClosed',
   TOOLTIP_OPENED: 'tooltipOpened',
+  TREE_CHANGED: 'treeChanged',
+  VALUE_CHANGED: 'valueChanged',
+  VALUE_MAX_CHANGED: 'valueMaxChanged',
+  VALUE_MIN_CHANGED: 'valueMinChanged',
+  VALUE_STEP_CHANGED: 'valueStepChanged',
   WINDOW_ACTIVATED: 'windowActivated',
   WINDOW_DEACTIVATED: 'windowDeactivated',
   WINDOW_VISIBILITY_CHANGED: 'windowVisibilityChanged',
-  TREE_CHANGED: 'treeChanged',
-  VALUE_CHANGED: 'valueChanged',
 };
 
 /**
@@ -542,62 +591,6 @@ chrome.automation.SortDirectionType = {
 };
 
 /**
- * @enum {string}
- * @see https://developer.chrome.com/extensions/automation#type-GeneratedEventType
- */
-chrome.automation.GeneratedEventType = {
-  ACCESS_KEY_CHANGED: 'accessKeyChanged',
-  ATOMIC_CHANGED: 'atomicChanged',
-  AUTO_COMPLETE_CHANGED: 'autoCompleteChanged',
-  BUSY_CHANGED: 'busyChanged',
-  CLASS_NAME_CHANGED: 'classNameChanged',
-  COLLAPSED: 'collapsed',
-  DESCRIBED_BY_CHANGED: 'describedByChanged',
-  DESCRIPTION_CHANGED: 'descriptionChanged',
-  DROPEFFECT_CHANGED: 'dropeffectChanged',
-  ENABLED_CHANGED: 'enabledChanged',
-  EXPANDED: 'expanded',
-  FOCUS_CHANGED: 'focusChanged',
-  FLOW_FROM_CHANGED: 'flowFromChanged',
-  FLOW_TO_CHANGED: 'flowToChanged',
-  GRABBED_CHANGED: 'grabbedChanged',
-  HASPOPUP_CHANGED: 'haspopupChanged',
-  HIERARCHICAL_LEVEL_CHANGED: 'hierarchicalLevelChanged',
-  IGNORED_CHANGED: 'ignoredChanged',
-  IMAGE_ANNOTATION_CHANGED: 'imageAnnotationChanged',
-  KEY_SHORTCUTS_CHANGED: 'keyShortcutsChanged',
-  LABELED_BY_CHANGED: 'labeledByChanged',
-  LANGUAGE_CHANGED: 'languageChanged',
-  LAYOUT_INVALIDATED: 'layoutInvalidated',
-  LIVE_REGION_NODE_CHANGED: 'liveRegionNodeChanged',
-  LIVE_RELEVANT_CHANGED: 'liveRelevantChanged',
-  LIVE_STATUS_CHANGED: 'liveStatusChanged',
-  MENU_ITEM_SELECTED: 'menuItemSelected',
-  MULTILINE_STATE_CHANGED: 'multilineStateChanged',
-  MULTISELECTABLE_STATE_CHANGED: 'multiselectableStateChanged',
-  NAME_CHANGED: 'nameChanged',
-  OBJECT_ATTRIBUTE_CHANGED: 'objectAttributeChanged',
-  OTHER_ATTRIBUTE_CHANGED: 'otherAttributeChanged',
-  PLACEHOLDER_CHANGED: 'placeholderChanged',
-  PORTAL_ACTIVATED: 'portalActivated',
-  POSITION_IN_SET_CHANGED: 'positionInSetChanged',
-  RELATED_NODE_CHANGED: 'relatedNodeChanged',
-  READONLY_CHANGED: 'readonlyChanged',
-  REQUIRED_STATE_CHANGED: 'requiredStateChanged',
-  ROLE_CHANGED: 'roleChanged',
-  SCROLL_HORIZONTAL_POSITION_CHANGED: 'scrollHorizontalPositionChanged',
-  SCROLL_VERTICAL_POSITION_CHANGED: 'scrollVerticalPositionChanged',
-  SELECTED_CHANGED: 'selectedChanged',
-  SET_SIZE_CHANGED: 'setSizeChanged',
-  SORT_CHANGED: 'sortChanged',
-  SUBTREE_CREATED: 'subtreeCreated',
-  TEXT_ATTRIBUTE_CHANGED: 'textAttributeChanged',
-  VALUE_MAX_CHANGED: 'valueMaxChanged',
-  VALUE_MIN_CHANGED: 'valueMinChanged',
-  VALUE_STEP_CHANGED: 'valueStepChanged',
-};
-
-/**
  * @typedef {{
  *   left: number,
  *   top: number,
@@ -661,13 +654,6 @@ chrome.automation.AutomationEvent.prototype.target;
 chrome.automation.AutomationEvent.prototype.type;
 
 /**
- * The type of the generated event, if any.
- * @type {(!chrome.automation.GeneratedEventType|undefined)}
- * @see https://developer.chrome.com/extensions/automation#type-generatedType
- */
-chrome.automation.AutomationEvent.prototype.generatedType;
-
-/**
  * The source of this event.
  * @type {string}
  * @see https://developer.chrome.com/extensions/automation#type-eventFrom
@@ -675,6 +661,7 @@ chrome.automation.AutomationEvent.prototype.generatedType;
 chrome.automation.AutomationEvent.prototype.eventFrom;
 
 /**
+ * Any mouse coordinates associated with this event.
  * @type {number}
  * @see https://developer.chrome.com/extensions/automation#type-mouseX
  */

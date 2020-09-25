@@ -66,6 +66,11 @@ RangeAutomationHandler = class extends BaseAutomationHandler {
       }
       retarget = retarget.parent;
     }
+
+    // TODO: some of the events mapped to onAriaAttributeChanged need to have
+    // specific handlers that only output the specific attribute. There also
+    // needs to be an audit of all attribute change events to ensure they get
+    // outputted.
     this.addListener_(
         EventType.ARIA_ATTRIBUTE_CHANGED, this.onAriaAttributeChanged);
     this.addListener_(EventType.AUTOCORRECTION_OCCURED, this.onEventIfInRange);
@@ -74,8 +79,12 @@ RangeAutomationHandler = class extends BaseAutomationHandler {
     this.addListener_(EventType.EXPANDED_CHANGED, this.onEventIfInRange);
     this.addListener_(EventType.INVALID_STATUS_CHANGED, this.onEventIfInRange);
     this.addListener_(EventType.LOCATION_CHANGED, this.onLocationChanged);
+    this.addListener_(
+        EventType.RELATED_NODE_CHANGED, this.onAriaAttributeChanged);
     this.addListener_(EventType.ROW_COLLAPSED, this.onEventIfInRange);
     this.addListener_(EventType.ROW_EXPANDED, this.onEventIfInRange);
+    this.addListener_(EventType.STATE_CHANGED, this.onAriaAttributeChanged);
+    this.addListener_(EventType.SORT_CHANGED, this.onAriaAttributeChanged);
   }
 
   /**
@@ -144,8 +153,7 @@ RangeAutomationHandler = class extends BaseAutomationHandler {
     }
 
     // Report attribute changes for specific generated events.
-    if (evt.generatedType ==
-        chrome.automation.GeneratedEventType.SORT_CHANGED) {
+    if (evt.type == chrome.automation.EventType.SORT_CHANGED) {
       let msgId;
       if (evt.target.sortDirection ==
           chrome.automation.SortDirectionType.ASCENDING) {

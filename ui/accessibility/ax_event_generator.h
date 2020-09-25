@@ -100,6 +100,7 @@ class AX_EXPORT AXEventGenerator : public AXTreeObserver {
     // the MSAA/IAccessible state on Windows. Not needed on other platforms,
     // but very natural to compute here.
     WIN_IACCESSIBLE_STATE_CHANGED,
+    MAX_VALUE = WIN_IACCESSIBLE_STATE_CHANGED,
   };
 
   // For distinguishing between show and hide state when a node has

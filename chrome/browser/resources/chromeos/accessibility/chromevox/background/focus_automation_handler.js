@@ -39,7 +39,7 @@ FocusAutomationHandler = class extends BaseAutomationHandler {
     this.previousActiveDescendant_ = evt.target.activeDescendant;
     this.node_ = evt.target;
     this.addListener_(
-        EventType.ACTIVEDESCENDANTCHANGED, this.onActiveDescendantChanged);
+        EventType.ACTIVE_DESCENDANT_CHANGED, this.onActiveDescendantChanged);
     this.addListener_(
         EventType.MENU_LIST_ITEM_SELECTED, this.onEventIfSelected);
     this.addListener_(EventType.TEXT_CHANGED, this.onTextChanged_);
