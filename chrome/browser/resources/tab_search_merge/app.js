@@ -88,6 +88,12 @@ export class TabSearchAppElement extends PolymerElement {
           ],
         },
       },
+
+      /** @private {boolean} */
+      feedbackButtonEnabled_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('submitFeedbackEnabled'),
+      },
     };
   }
 
