@@ -64,21 +64,18 @@ void SpeechRecognitionService::LaunchIfNotRunning() {
   PrefService* prefs = user_prefs::UserPrefs::Get(context_);
   DCHECK(prefs);
 
-  if (enable_soda_) {
-    content::ServiceProcessHost::Launch(
-        speech_recognition_service_.BindNewPipeAndPassReceiver(),
-        content::ServiceProcessHost::Options()
-            .WithDisplayName(
-                IDS_UTILITY_PROCESS_SPEECH_RECOGNITION_SERVICE_NAME)
-            .Pass());
-  } else {
-    content::ServiceProcessHost::Launch(
-        speech_recognition_service_.BindNewPipeAndPassReceiver(),
-        content::ServiceProcessHost::Options()
-            .WithDisplayName(
-                IDS_UTILITY_PROCESS_SPEECH_RECOGNITION_SERVICE_NAME)
-            .Pass());
+  auto binary_path = prefs->GetFilePath(prefs::kSodaBinaryPath);
+  auto config_path = SpeechRecognitionService::GetSodaConfigPath(prefs);
+  if (enable_soda_ && (binary_path.empty() || config_path.empty())) {
+    LOG(ERROR) << "Unable to find SODA files on the device.";
+    return;
   }
+
+  content::ServiceProcessHost::Launch(
+      speech_recognition_service_.BindNewPipeAndPassReceiver(),
+      content::ServiceProcessHost::Options()
+          .WithDisplayName(IDS_UTILITY_PROCESS_SPEECH_RECOGNITION_SERVICE_NAME)
+          .Pass());
 
   // Ensure that if the interface is ever disconnected (e.g. the service
   // process crashes) or goes idle for a short period of time -- meaning there
@@ -90,15 +87,8 @@ void SpeechRecognitionService::LaunchIfNotRunning() {
 
   speech_recognition_service_client_.reset();
 
-  if (enable_soda_) {
-    auto binary_path = prefs->GetFilePath(prefs::kSodaBinaryPath);
-    auto config_path = SpeechRecognitionService::GetSodaConfigPath(prefs);
-    if (binary_path.empty() || config_path.empty()) {
-      LOG(ERROR) << "Unable to find SODA files on the device.";
-      return;
-    }
+  if (enable_soda_)
     speech_recognition_service_->SetSodaPath(binary_path, config_path);
-  }
 
   speech_recognition_service_->BindSpeechRecognitionServiceClient(
       speech_recognition_service_client_.BindNewPipeAndPassRemote());
