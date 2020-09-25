@@ -17,7 +17,6 @@ from core import benchmark_finders
 from core import path_util
 from py_utils import cloud_storage
 
-
 def _FetchDependenciesIfNeeded(story_set):
   """ Download files needed by a user story set. """
   # Download files in serving_dirs.
@@ -86,6 +85,10 @@ def main(args):
                       help=('Force fetching all the benchmarks when '
                             'benchmark_name is not specified'),
                       action='store_true', default=False)
+  parser.add_argument('--platform', '-p',
+                      help=('Only fetch benchmarks for the specified platform '
+                            '(win, linux, mac, android)'),
+                      default=None)
   # Flag --output-deps: output the dependencies to a json file, CrOS autotest
   # telemetry_runner parses the output to upload the dependencies to the DUT.
   # Example output, fetch_benchmark_deps.py --output-deps=deps octane:
@@ -122,7 +125,11 @@ def main(args):
           'No benchmark name is specified. Fetching all benchmark deps. '
           'Press enter to continue...')
     for b in benchmark_finders.GetOfficialBenchmarks():
-      deps[b.Name()] = _FetchDepsForBenchmark(b)
+      supported_platforms = b.GetSupportedPlatformNames(b.SUPPORTED_PLATFORMS)
+      if(not options.platform or
+         options.platform in supported_platforms or
+         'all' in supported_platforms):
+        deps[b.Name()] = _FetchDepsForBenchmark(b)
 
   if options.output_deps:
     with open(options.output_deps, 'w') as outfile:

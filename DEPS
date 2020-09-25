@@ -4628,17 +4628,53 @@ hooks = [
                 'src/third_party/catapult/telemetry/bin/fetch_telemetry_binary_dependencies',
     ],
   },
-        #
+
   # Download Telemetry's benchmark binary dependencies via conditionals
   {
     'name': 'checkout_telemetry_benchmark_deps',
-    'condition': 'checkout_telemetry_dependencies',
+    'condition': 'checkout_telemetry_dependencies and checkout_linux',
     'pattern': '.',
     'action': [ 'vpython',
                 'src/tools/perf/fetch_benchmark_deps.py',
                 '-f',
+                '-p',
+                'linux'
     ],
   },
+  {
+    'name': 'checkout_telemetry_benchmark_deps',
+    'condition': 'checkout_telemetry_dependencies and checkout_win',
+    'pattern': '.',
+    'action': [ 'vpython',
+                'src/tools/perf/fetch_benchmark_deps.py',
+                '-f',
+                '-p',
+                'win'
+    ],
+  },
+  {
+    'name': 'checkout_telemetry_benchmark_deps',
+    'condition': 'checkout_telemetry_dependencies and checkout_mac',
+    'pattern': '.',
+    'action': [ 'vpython',
+                'src/tools/perf/fetch_benchmark_deps.py',
+                '-f',
+                '-p',
+                'mac'
+    ],
+  },
+  {
+    'name': 'checkout_telemetry_benchmark_deps',
+    'condition': 'checkout_telemetry_dependencies and checkout_android',
+    'pattern': '.',
+    'action': [ 'vpython',
+                'src/tools/perf/fetch_benchmark_deps.py',
+                '-f',
+                '-p',
+                'android'
+    ],
+  },
+
 
   # This is used to ensure that all network operations are properly
   # annotated so we can document what they're for.
