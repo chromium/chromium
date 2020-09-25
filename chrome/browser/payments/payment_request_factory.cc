@@ -31,6 +31,15 @@ PaymentRequestFactoryCallback& GetTestingFactoryCallback() {
 void CreatePaymentRequest(
     content::RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<mojom::PaymentRequest> receiver) {
+  if (!render_frame_host->IsCurrent()) {
+    // This happens when the page has navigated away, which would cause the
+    // blink PaymentRequest to be released shortly, or when the iframe is being
+    // removed from the page, which is not a use case that we support.
+    // Abandoning the `receiver` will close the mojo connection, so blink
+    // PaymentRequest will receive a connection error and will clean up itself.
+    return;
+  }
+
   if (!render_frame_host->IsFeatureEnabled(
           blink::mojom::FeaturePolicyFeature::kPayment)) {
     mojo::ReportBadMessage("Feature policy blocks Payment");
