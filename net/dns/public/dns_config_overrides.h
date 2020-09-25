@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef NET_DNS_DNS_CONFIG_OVERRIDES_H_
-#define NET_DNS_DNS_CONFIG_OVERRIDES_H_
+#ifndef NET_DNS_PUBLIC_DNS_CONFIG_OVERRIDES_H_
+#define NET_DNS_PUBLIC_DNS_CONFIG_OVERRIDES_H_
 
 #include <string>
 #include <vector>
@@ -70,4 +70,4 @@ struct NET_EXPORT DnsConfigOverrides {
 
 }  // namespace net
 
-#endif  // NET_DNS_DNS_CONFIG_OVERRIDES_H_
+#endif  // NET_DNS_PUBLIC_DNS_CONFIG_OVERRIDES_H_

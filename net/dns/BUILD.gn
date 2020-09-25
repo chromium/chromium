@@ -44,7 +44,6 @@ source_set("dns") {
       "context_host_resolver.cc",
       "context_host_resolver.h",
       "dns_config.cc",
-      "dns_config_overrides.cc",
       "dns_config_service.cc",
       "dns_config_service.h",
       "dns_hosts.cc",
@@ -219,7 +218,6 @@ source_set("host_resolver") {
   if (!is_nacl) {
     sources += [
       "dns_config.h",
-      "dns_config_overrides.h",
       "host_cache.h",
       "host_resolver.h",
       "host_resolver_source.h",
@@ -232,6 +230,8 @@ source_set("host_resolver") {
     "//net/dns/public",
   ]
   public_deps = [ "//net:net_public_deps" ]
+
+  allow_circular_includes_from = [ "//net/dns/public" ]
 }
 
 # Shared mostly-global handler of HostResolver requests.

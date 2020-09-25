@@ -18,6 +18,8 @@ source_set("public") {
   ]
 
   sources = [
+    "dns_config_overrides.cc",
+    "dns_config_overrides.h",
     "dns_over_https_server_config.cc",
     "dns_over_https_server_config.h",
     "dns_protocol.h",

@@ -15,7 +15,7 @@
 #include "components/embedder_support/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
-#include "net/dns/dns_config_overrides.h"
+#include "net/dns/public/dns_config_overrides.h"
 #include "net/dns/public/doh_provider_entry.h"
 #include "net/dns/public/util.h"
 #include "net/third_party/uri_template/uri_template.h"

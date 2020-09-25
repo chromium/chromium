@@ -11,7 +11,7 @@
 #include "base/callback.h"
 #include "components/error_page/common/net_error_info.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "net/dns/dns_config_overrides.h"
+#include "net/dns/public/dns_config_overrides.h"
 
 namespace chrome_browser_net {
 

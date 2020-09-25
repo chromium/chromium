@@ -13,7 +13,7 @@
 #include "components/embedder_support/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
-#include "net/dns/dns_config_overrides.h"
+#include "net/dns/public/dns_config_overrides.h"
 #include "net/dns/public/doh_provider_entry.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"

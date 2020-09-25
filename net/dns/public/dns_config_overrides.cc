@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "net/dns/dns_config_overrides.h"
+#include "net/dns/public/dns_config_overrides.h"
 
 #include "net/dns/dns_config.h"
 

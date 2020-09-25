@@ -12,8 +12,8 @@
 #include "net/base/net_export.h"
 #include "net/base/rand_callback.h"
 #include "net/dns/dns_config.h"
-#include "net/dns/dns_config_overrides.h"
 #include "net/dns/dns_hosts.h"
+#include "net/dns/public/dns_config_overrides.h"
 
 namespace net {
 
