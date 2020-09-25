@@ -14,6 +14,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.content.pm.ShortcutInfo;
 import android.content.pm.ShortcutManager;
 import android.graphics.drawable.Icon;
@@ -30,12 +31,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.browser.customtabs.CustomTabsClient;
 import androidx.browser.customtabs.CustomTabsIntent;
+import androidx.browser.customtabs.CustomTabsService;
 import androidx.browser.customtabs.CustomTabsServiceConnection;
 import androidx.browser.customtabs.CustomTabsSession;
 
 import org.chromium.webapk.lib.common.WebApkConstants;
 
 import java.util.Collections;
+import java.util.List;
 
 /**
  * A convenience class for adding site setting shortcuts into WebApks.
@@ -54,7 +57,8 @@ public class ManageDataLauncherActivity extends Activity {
     private static final String EXTRA_SITE_SETTINGS_URL = "SITE_SETTINGS_URL";
     private static final String EXTRA_PROVIDER_PACKAGE = "PROVIDER_PACKAGE";
 
-    public static final int CHROMIUM_VERSION_SUPPORTS_WEBAPK_MANAGE_SPACE = 87;
+    private static final String CATEGORY_LAUNCH_WEBAPK_SITE_SETTINGS =
+            "androidx.browser.trusted.category.LaunchWebApkSiteSettings";
 
     @Nullable
     private String mProviderPackage;
@@ -71,7 +75,7 @@ public class ManageDataLauncherActivity extends Activity {
         mProviderPackage = getIntent().getStringExtra(EXTRA_PROVIDER_PACKAGE);
         mUrl = Uri.parse(getIntent().getStringExtra(EXTRA_SITE_SETTINGS_URL));
 
-        if (!supportsManageSpace(this, mProviderPackage)) {
+        if (!supportsWebApkManageSpace(this, mProviderPackage)) {
             handleNoSupportForManageSpace();
             return;
         }
@@ -169,9 +173,13 @@ public class ManageDataLauncherActivity extends Activity {
         }
     }
 
-    private static boolean supportsManageSpace(Context context, String providerPackage) {
-        return HostBrowserUtils.queryHostBrowserMajorChromiumVersion(context, providerPackage)
-                >= CHROMIUM_VERSION_SUPPORTS_WEBAPK_MANAGE_SPACE;
+    private static boolean supportsWebApkManageSpace(Context context, String providerPackage) {
+        Intent customTabsIntent = new Intent(CustomTabsService.ACTION_CUSTOM_TABS_CONNECTION);
+        customTabsIntent.addCategory(CATEGORY_LAUNCH_WEBAPK_SITE_SETTINGS);
+        customTabsIntent.setPackage(providerPackage);
+        List<ResolveInfo> services = context.getPackageManager().queryIntentServices(
+                customTabsIntent, PackageManager.GET_RESOLVED_FILTER);
+        return services.size() > 0;
     }
 
     /**
@@ -217,7 +225,7 @@ public class ManageDataLauncherActivity extends Activity {
         ShortcutManager shortcutManager = context.getSystemService(ShortcutManager.class);
 
         // Remove potentially existing shortcut if package does not support shortcuts.
-        if (!supportsManageSpace(context, params.getHostBrowserPackageName())) {
+        if (!supportsWebApkManageSpace(context, params.getHostBrowserPackageName())) {
             shortcutManager.removeDynamicShortcuts(Collections.singletonList(
                     ManageDataLauncherActivity.SITE_SETTINGS_SHORTCUT_ID));
             return;

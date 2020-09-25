@@ -7,7 +7,6 @@ package org.chromium.webapk.shell_apk.h2o;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import static org.chromium.webapk.shell_apk.ManageDataLauncherActivity.CHROMIUM_VERSION_SUPPORTS_WEBAPK_MANAGE_SPACE;
 import static org.chromium.webapk.shell_apk.ManageDataLauncherActivity.SITE_SETTINGS_SHORTCUT_ID;
 
 import android.app.Activity;
@@ -17,6 +16,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.content.pm.ShortcutInfo;
 import android.content.pm.ShortcutManager;
 import android.net.Uri;
@@ -58,9 +58,12 @@ public final class LaunchTest {
     /** Values based on manifest specified in GN file. */
     private static final String BROWSER_PACKAGE_NAME = "com.google.android.apps.chrome";
     private static final String DEFAULT_START_URL = "https://pwa.rocks/";
+    private static final String CATEGORY_LAUNCH_WEBAPK_SITE_SETTINGS =
+            "androidx.browser.trusted.category.LaunchWebApkSiteSettings";
 
     /** Chromium version which does not support showing the splash screen within WebAPK. */
     private static final int BROWSER_H2O_INCOMPATIBLE_VERSION = 57;
+    public static final int SITE_SETTINGS_COMPATIBLE_BROWSER_VERSION = 87;
 
     private static String sWebApkPackageName;
 
@@ -492,12 +495,13 @@ public final class LaunchTest {
     @Config(sdk = Build.VERSION_CODES.N_MR1)
     public void testAddsSiteSettings() {
         registerWebApk(true /* isNewStyleWebApk */);
+        registerSiteSettingsCategory();
 
         Intent launchIntent = new Intent(Intent.ACTION_MAIN);
         launchIntent.setPackage(sWebApkPackageName);
 
         launchAndCheckBrowserLaunched(false /* opaqueMainActivityInitiallyEnabled */, launchIntent,
-                H2OMainActivity.class, CHROMIUM_VERSION_SUPPORTS_WEBAPK_MANAGE_SPACE);
+                H2OMainActivity.class, SITE_SETTINGS_COMPATIBLE_BROWSER_VERSION);
 
         ShortcutManager shortcutManager = mAppContext.getSystemService(ShortcutManager.class);
         assertTrue(containsSiteSettingsDynamicShortcut(shortcutManager));
@@ -505,7 +509,7 @@ public final class LaunchTest {
         shortcutManager.removeAllDynamicShortcuts();
 
         launchAndCheckBrowserLaunched(true /* opaqueMainActivityInitiallyEnabled */, launchIntent,
-                H2OOpaqueMainActivity.class, CHROMIUM_VERSION_SUPPORTS_WEBAPK_MANAGE_SPACE);
+                H2OOpaqueMainActivity.class, SITE_SETTINGS_COMPATIBLE_BROWSER_VERSION);
         assertTrue(containsSiteSettingsDynamicShortcut(shortcutManager));
     }
 
@@ -515,20 +519,16 @@ public final class LaunchTest {
      */
     @Test
     @Config(sdk = Build.VERSION_CODES.N_MR1)
-    public void testRemovesSiteSettingsIfChromeVersionLow() {
+    public void testDoesNotAddSiteSettingsIfCategoryMissing() {
         registerWebApk(true /* isNewStyleWebApk */);
 
         Intent launchIntent = new Intent(Intent.ACTION_MAIN);
         launchIntent.setPackage(sWebApkPackageName);
 
         launchAndCheckBrowserLaunched(false /* opaqueMainActivityInitiallyEnabled */, launchIntent,
-                H2OMainActivity.class, CHROMIUM_VERSION_SUPPORTS_WEBAPK_MANAGE_SPACE);
+                H2OMainActivity.class, SITE_SETTINGS_COMPATIBLE_BROWSER_VERSION);
 
         ShortcutManager shortcutManager = mAppContext.getSystemService(ShortcutManager.class);
-        assertTrue(containsSiteSettingsDynamicShortcut(shortcutManager));
-
-        launchAndCheckBrowserLaunched(false /* opaqueMainActivityInitiallyEnabled */, launchIntent,
-                H2OMainActivity.class, CHROMIUM_VERSION_SUPPORTS_WEBAPK_MANAGE_SPACE - 1);
         assertFalse(containsSiteSettingsDynamicShortcut(shortcutManager));
     }
 
@@ -537,12 +537,13 @@ public final class LaunchTest {
     @Config(sdk = Build.VERSION_CODES.LOLLIPOP)
     public void testDoesNotAddSiteSettingsWhenSdkLow() {
         registerWebApk(true /* isNewStyleWebApk */);
+        registerSiteSettingsCategory();
 
         Intent launchIntent = new Intent(Intent.ACTION_MAIN);
         launchIntent.setPackage(sWebApkPackageName);
 
         launchAndCheckBrowserLaunched(false /* opaqueMainActivityInitiallyEnabled */, launchIntent,
-                H2OMainActivity.class, CHROMIUM_VERSION_SUPPORTS_WEBAPK_MANAGE_SPACE);
+                H2OMainActivity.class, SITE_SETTINGS_COMPATIBLE_BROWSER_VERSION);
 
         // There is no shortcut manager in Android M. Therefore if
         // this test passes, then we did not attempt to add the shortcut.
@@ -579,6 +580,14 @@ public final class LaunchTest {
         metadata.putBoolean(WebApkMetaDataKeys.IS_NEW_STYLE_WEBAPK, isNewStyleWebApk);
         metadata.putString(WebApkMetaDataKeys.START_URL, "https://pwa.rocks/");
         WebApkTestHelper.registerWebApkWithMetaData(sWebApkPackageName, metadata, null);
+    }
+
+    private void registerSiteSettingsCategory() {
+        Intent intent =
+                new Intent().setAction("android.support.customtabs.action.CustomTabsService");
+        intent.setPackage(BROWSER_PACKAGE_NAME);
+        intent.addCategory(CATEGORY_LAUNCH_WEBAPK_SITE_SETTINGS);
+        mShadowPackageManager.addResolveInfoForIntent(intent, new ResolveInfo());
     }
 
     /**
