@@ -2596,8 +2596,10 @@
   },
   {
     "name": "force-startup-signin-promo",
-    "owners": [ "jlebel" ],
-    "expiry_milestone": 86
+    "owners": [ "jlebel", "chrome-signin-team" ],
+    // This is required by test teams and dev teams to verify the startup
+    // sign-in promo functionality.
+    "expiry_milestone": -1
   },
   {
     "name": "force-text-direction",

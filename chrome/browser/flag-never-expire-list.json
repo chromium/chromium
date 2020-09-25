@@ -60,6 +60,7 @@
   "extensions-on-chrome-urls",
   "force-effective-connection-type",
   "force-show-update-menu-badge",
+  "force-startup-signin-promo",
   "force-text-direction",
   "force-ui-direction",
   "force-update-menu-type",
