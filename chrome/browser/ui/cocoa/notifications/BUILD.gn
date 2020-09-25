@@ -31,7 +31,9 @@ mac_app_bundle("alert_notification_xpc_service") {
   frameworks = [
     "AppKit.framework",
     "Foundation.framework",
-    "UserNotifications.framework",
+  ]
+  weak_frameworks = [
+    "UserNotifications.framework",  # macOS 10.14
   ]
 
   ldflags = []

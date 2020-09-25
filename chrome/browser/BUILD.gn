@@ -4733,9 +4733,11 @@ static_library("browser") {
       "ImageCaptureCore.framework",
       "OpenGL.framework",
       "QuartzCore.framework",
-      "SafariServices.framework",
       "SecurityInterface.framework",
-      "UserNotifications.framework",
+    ]
+    weak_frameworks = [
+      "SafariServices.framework",  # macOS 10.12
+      "UserNotifications.framework",  # macOS 10.14
     ]
   }
 
