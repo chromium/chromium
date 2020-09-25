@@ -14,7 +14,7 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.SysUtils;
-import org.chromium.chrome.browser.DeviceConditions;
+import org.chromium.chrome.browser.device.DeviceConditions;
 import org.chromium.components.background_task_scheduler.NativeBackgroundTask;
 import org.chromium.components.background_task_scheduler.TaskIds;
 import org.chromium.components.background_task_scheduler.TaskParameters;

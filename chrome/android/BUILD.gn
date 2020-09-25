@@ -795,6 +795,7 @@ junit_binary("chrome_junit_tests") {
     "//chrome/browser/android/lifecycle:java",
     "//chrome/browser/browser_controls/android:java",
     "//chrome/browser/browser_controls/android:junit",
+    "//chrome/browser/device:device_junit_tests",
     "//chrome/browser/device:java",
     "//chrome/browser/download/android:java",
     "//chrome/browser/download/android:junit_tests",

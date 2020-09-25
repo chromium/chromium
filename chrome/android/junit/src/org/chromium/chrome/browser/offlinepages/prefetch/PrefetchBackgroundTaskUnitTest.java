@@ -34,9 +34,9 @@ import org.robolectric.shadows.multidex.ShadowMultiDex;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
-import org.chromium.chrome.browser.DeviceConditions;
-import org.chromium.chrome.browser.ShadowDeviceConditions;
 import org.chromium.chrome.browser.background_task_scheduler.ChromeNativeBackgroundTaskDelegate;
+import org.chromium.chrome.browser.device.DeviceConditions;
+import org.chromium.chrome.browser.device.ShadowDeviceConditions;
 import org.chromium.chrome.browser.init.BrowserParts;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.components.background_task_scheduler.BackgroundTask.TaskFinishedCallback;

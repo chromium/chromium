@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser;
+package org.chromium.chrome.browser.device;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
