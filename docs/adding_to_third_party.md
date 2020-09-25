@@ -66,8 +66,9 @@ you have a wrong path in DEPS and want to change the path of the existing
 library in DEPS, please ask the infrastructure team before committing the
 change.
 
-Lastly, add the new directory to Chromium's `//.gitignore`, so that it won't
-show up as untracked files when you run `git status` on the main repository.
+Lastly, add the new directory to Chromium's `//third_party/.gitignore`, so that
+it won't show up as untracked files when you run `git status` on the main
+repository.
 
 ### Checking in the code directly
 
@@ -81,7 +82,7 @@ README.chromium and Change List. The SHA-512 hash can be computed via
 repository, please list the revision that the code was pulled from.
 
 If you are checking the files in directly, you do not need an entry in DEPS
-and do not need to modify `//.gitignore`.
+and do not need to modify `//third_party/.gitignore`.
 
 ### Checking in large files
 
