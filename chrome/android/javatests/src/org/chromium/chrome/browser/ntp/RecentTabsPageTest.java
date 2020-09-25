@@ -40,6 +40,7 @@ import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.content_public.common.ContentUrlConstants;
+import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -133,7 +134,8 @@ public class RecentTabsPageTest {
         final List<RecentlyClosedTab> tabs = new ArrayList<>();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             for (int i = 0; i < tabCount; i++) {
-                tabs.add(new RecentlyClosedTab(i, "RecentlyClosedTab title " + i, "url " + i));
+                tabs.add(new RecentlyClosedTab(i, "RecentlyClosedTab title " + i,
+                        new GURL("https://www.example.com/url" + i)));
             }
             mManager.setRecentlyClosedTabs(tabs);
         });

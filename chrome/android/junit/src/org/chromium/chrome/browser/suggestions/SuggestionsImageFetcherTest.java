@@ -24,6 +24,8 @@ import org.chromium.chrome.browser.thumbnail.generator.ThumbnailProvider;
 import org.chromium.chrome.browser.ui.favicon.LargeIconBridge;
 import org.chromium.chrome.browser.ui.favicon.LargeIconBridge.LargeIconCallback;
 import org.chromium.chrome.test.util.browser.suggestions.SuggestionsDependenciesRule;
+import org.chromium.url.GURL;
+import org.chromium.url.JUnitTestGURLs;
 
 import java.util.HashMap;
 
@@ -34,7 +36,7 @@ import java.util.HashMap;
 @Config(manifest = Config.NONE)
 public class SuggestionsImageFetcherTest {
     public static final int IMAGE_SIZE_PX = 100;
-    public static final String URL_STRING = "http://www.test.com";
+    public static final GURL URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
 
     @Rule
     public SuggestionsDependenciesRule mSuggestionsDeps = new SuggestionsDependenciesRule();
@@ -57,10 +59,9 @@ public class SuggestionsImageFetcherTest {
     public void testLargeIconFetch() {
         ImageFetcher imageFetcher = new ImageFetcher(mock(Profile.class));
 
-        imageFetcher.makeLargeIconRequest(URL_STRING, IMAGE_SIZE_PX, mock(LargeIconCallback.class));
+        imageFetcher.makeLargeIconRequest(URL, IMAGE_SIZE_PX, mock(LargeIconCallback.class));
 
         verify(mLargeIconBridge)
-                .getLargeIconForStringUrl(
-                        eq(URL_STRING), eq(IMAGE_SIZE_PX), any(LargeIconCallback.class));
+                .getLargeIconForUrl(eq(URL), eq(IMAGE_SIZE_PX), any(LargeIconCallback.class));
     }
 }

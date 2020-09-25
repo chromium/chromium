@@ -39,7 +39,7 @@ class MostVisitedSitesBridge {
 
   void AddOrRemoveBlockedUrl(JNIEnv* env,
                              const base::android::JavaParamRef<jobject>& obj,
-                             const base::android::JavaParamRef<jstring>& j_url,
+                             const base::android::JavaParamRef<jobject>& j_url,
                              jboolean add_url);
   void RecordPageImpression(JNIEnv* env,
                             const base::android::JavaParamRef<jobject>& obj,
@@ -52,7 +52,7 @@ class MostVisitedSitesBridge {
                             jint jtitle_source,
                             jint jsource,
                             jlong jdata_generation_time_ms,
-                            const base::android::JavaParamRef<jstring>& jurl);
+                            const base::android::JavaParamRef<jobject>& jurl);
   void RecordOpenedMostVisitedItem(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj,

@@ -45,6 +45,7 @@ import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -113,7 +114,7 @@ public class TileGroupTest {
 
         // Dismiss the tile using the context menu.
         invokeContextMenu(tileView, ContextMenuManager.ContextMenuItemId.REMOVE);
-        Assert.assertTrue(mMostVisitedSites.isUrlBlocklisted(mSiteSuggestionUrls[0]));
+        Assert.assertTrue(mMostVisitedSites.isUrlBlocklisted(new GURL(mSiteSuggestionUrls[0])));
 
         // Ensure that the removal is reflected in the ui.
         Assert.assertEquals(3, getTileGridLayout().getChildCount());
@@ -146,6 +147,9 @@ public class TileGroupTest {
     @MediumTest
     @Feature({"NewTabPage"})
     public void testDismissTileUndo() throws Exception {
+        GURL url0 = new GURL(mSiteSuggestionUrls[0]);
+        GURL url1 = new GURL(mSiteSuggestionUrls[1]);
+        GURL url2 = new GURL(mSiteSuggestionUrls[2]);
         SiteSuggestion siteToDismiss = mMostVisitedSites.getCurrentSites().get(0);
         final ViewGroup tileContainer = getTileGridLayout();
         final View tileView = getTileViewFor(siteToDismiss);
@@ -162,10 +166,10 @@ public class TileGroupTest {
         Assert.assertEquals(2, tileContainer.getChildCount());
         final View snackbarButton = waitForSnackbar(mActivityTestRule.getActivity());
 
-        Assert.assertTrue(mMostVisitedSites.isUrlBlocklisted(mSiteSuggestionUrls[0]));
+        Assert.assertTrue(mMostVisitedSites.isUrlBlocklisted(url0));
         TestThreadUtils.runOnUiThreadBlocking(() -> { snackbarButton.callOnClick(); });
 
-        Assert.assertFalse(mMostVisitedSites.isUrlBlocklisted(mSiteSuggestionUrls[0]));
+        Assert.assertFalse(mMostVisitedSites.isUrlBlocklisted(url0));
 
         // Ensure that the removal of the update goes through.
         TestThreadUtils.runOnUiThreadBlocking(
@@ -259,8 +263,8 @@ public class TileGroupTest {
                 new ArrayList<>(mMostVisitedSites.getCurrentSites());
 
         SiteSuggestion exploreTile = new SiteSuggestion("chrome-native://explore",
-                "chrome-native://explore", "", TileTitleSource.UNKNOWN, TileSource.EXPLORE,
-                TileSectionType.PERSONALIZED, new Date());
+                new GURL("chrome-native://explore"), "", TileTitleSource.UNKNOWN,
+                TileSource.EXPLORE, TileSectionType.PERSONALIZED, new Date());
         currentSuggestions.add(exploreTile);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> mMostVisitedSites.setTileSuggestions(currentSuggestions));

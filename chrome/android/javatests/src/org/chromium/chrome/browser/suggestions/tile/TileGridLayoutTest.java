@@ -66,6 +66,7 @@ import org.chromium.net.test.EmbeddedTestServerRule;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.modelutil.ListObservable;
 import org.chromium.ui.test.util.NightModeTestUtils;
+import org.chromium.url.GURL;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -191,7 +192,7 @@ public class TileGridLayoutTest {
     public void testTileAppearanceModern(boolean nightModeEnabled)
             throws IOException, InterruptedException, TimeoutException {
         List<SiteSuggestion> suggestions = makeSuggestions(2);
-        List<String> offlineAvailableUrls = Collections.singletonList(suggestions.get(0).url);
+        List<GURL> offlineAvailableUrls = Collections.singletonList(suggestions.get(0).url);
         ViewGroup tiles = renderTiles(suggestions, offlineAvailableUrls);
 
         mLoadCompleteHelper.waitForCallback(0);
@@ -277,8 +278,8 @@ public class TileGridLayoutTest {
      * Starts and sets up an activity to render the provided site suggestions in the activity.
      * @return the layout in which the suggestions are rendered.
      */
-    private TileGridLayout renderTiles(List<SiteSuggestion> siteSuggestions,
-            List<String> offlineUrls) throws InterruptedException {
+    private TileGridLayout renderTiles(List<SiteSuggestion> siteSuggestions, List<GURL> offlineUrls)
+            throws InterruptedException {
         // Launching the activity, that should now use the right UI.
         mActivityTestRule.startMainActivityOnBlankPage();
         ChromeActivity activity = mActivityTestRule.getActivity();
@@ -316,7 +317,7 @@ public class TileGridLayoutTest {
     }
 
     private SiteSection createSiteSection(
-            final SiteSectionViewHolder viewHolder, UiConfig uiConfig, List<String> offlineUrls) {
+            final SiteSectionViewHolder viewHolder, UiConfig uiConfig, List<GURL> offlineUrls) {
         ThreadUtils.assertOnUiThread();
 
         ChromeActivity activity = mActivityTestRule.getActivity();
@@ -329,8 +330,8 @@ public class TileGridLayoutTest {
         FakeOfflinePageBridge offlinePageBridge = new FakeOfflinePageBridge();
         List<OfflinePageItem> offlinePageItems = new ArrayList<>();
         for (int i = 0; i < offlineUrls.size(); i++) {
-            offlinePageItems.add(
-                    FakeOfflinePageBridge.createOfflinePageItem(offlineUrls.get(i), i + 1L));
+            offlinePageItems.add(FakeOfflinePageBridge.createOfflinePageItem(
+                    offlineUrls.get(i).getSpec(), i + 1L));
         }
         offlinePageBridge.setItems(offlinePageItems);
         offlinePageBridge.setIsOfflinePageModelLoaded(true);

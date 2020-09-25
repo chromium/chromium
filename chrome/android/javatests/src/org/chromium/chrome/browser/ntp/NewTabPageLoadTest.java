@@ -34,6 +34,7 @@ import org.chromium.chrome.test.util.browser.suggestions.SuggestionsDependencies
 import org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVisitedSites;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.url.GURL;
 
 /**
  * Tests for events around the loading of a New Tab Page.
@@ -94,8 +95,8 @@ public class NewTabPageLoadTest {
 
     private static class AsyncMockLargeIconBridge extends LargeIconBridge {
         @Override
-        public boolean getLargeIconForStringUrl(String pageUrl, int desiredSizePx,
-                final LargeIconBridge.LargeIconCallback callback) {
+        public boolean getLargeIconForUrl(
+                GURL pageUrl, int desiredSizePx, final LargeIconBridge.LargeIconCallback callback) {
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {

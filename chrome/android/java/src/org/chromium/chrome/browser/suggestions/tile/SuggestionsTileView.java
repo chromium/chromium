@@ -11,6 +11,7 @@ import android.util.AttributeSet;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ntp.TitleUtil;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
+import org.chromium.url.GURL;
 
 /**
  * The view for a site suggestion tile. Displays the title of the site beneath a large icon. If a
@@ -46,7 +47,7 @@ public class SuggestionsTileView extends TileView {
     }
 
     /** Retrieves url associated with this view. */
-    public String getUrl() {
+    public GURL getUrl() {
         return mData.url;
     }
 

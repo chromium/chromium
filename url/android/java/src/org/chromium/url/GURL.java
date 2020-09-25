@@ -115,6 +115,11 @@ public class GURL {
         }
     }
 
+    /** @return true if the GURL is null, empty, or invalid. */
+    public static boolean isEmptyOrInvalid(@Nullable GURL gurl) {
+        return gurl == null || gurl.isEmpty() || !gurl.isValid();
+    }
+
     @CalledByNative
     private void init(String spec, boolean isValid, Parsed parsed) {
         mSpec = spec;

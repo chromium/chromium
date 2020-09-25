@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.suggestions.tile.TileSource;
 import org.chromium.chrome.browser.suggestions.tile.TileTitleSource;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.url.GURL;
 
 import java.io.File;
 import java.io.IOException;
@@ -84,10 +85,10 @@ public class MostVisitedSitesMetadataUtilsTest {
 
     private static List<SiteSuggestion> createFakeSiteSuggestions() {
         List<SiteSuggestion> siteSuggestions = new ArrayList<>();
-        siteSuggestions.add(new SiteSuggestion("0 TOP_SITES", "https://www.foo.com", "",
+        siteSuggestions.add(new SiteSuggestion("0 TOP_SITES", new GURL("https://www.foo.com"), "",
                 TileTitleSource.TITLE_TAG, TileSource.TOP_SITES, TileSectionType.PERSONALIZED,
                 new Date()));
-        siteSuggestions.add(new SiteSuggestion("1 WHITELIST", "https://www.bar.com", "",
+        siteSuggestions.add(new SiteSuggestion("1 WHITELIST", new GURL("https://www.bar.com"), "",
                 TileTitleSource.UNKNOWN, TileSource.WHITELIST, TileSectionType.PERSONALIZED,
                 new Date()));
         siteSuggestions.get(1).faviconId = 1;

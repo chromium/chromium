@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.suggestions;
 import org.chromium.chrome.browser.suggestions.tile.TileSectionType;
 import org.chromium.chrome.browser.suggestions.tile.TileSource;
 import org.chromium.chrome.browser.suggestions.tile.TileTitleSource;
+import org.chromium.url.GURL;
 
 import java.util.Date;
 
@@ -20,7 +21,7 @@ public class SiteSuggestion {
     public final String title;
 
     /** URL of the suggested site. */
-    public final String url;
+    public final GURL url;
 
     /** Id of the favicon. It is optional and used when caching the favion on device. */
     public int faviconId;
@@ -47,7 +48,7 @@ public class SiteSuggestion {
         (produced by a ranking algorithm). */
     public final Date dataGenerationTime;
 
-    public SiteSuggestion(String title, String url, String whitelistIconPath, int titleSource,
+    public SiteSuggestion(String title, GURL url, String whitelistIconPath, int titleSource,
             int source, int sectionType, Date dataGenerationTime) {
         this.title = title;
         this.url = url;

@@ -7,6 +7,7 @@ package org.chromium.chrome.test.util.browser.offlinepages;
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.offlinepages.OfflinePageItem;
+import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,7 +49,7 @@ public class FakeOfflinePageBridge extends OfflinePageBridge {
 
     @Override
     public void selectPageForOnlineUrl(
-            String onlineUrl, int tabId, Callback<OfflinePageItem> callback) {
+            GURL onlineUrl, int tabId, Callback<OfflinePageItem> callback) {
         assert tabId == 0;
         if (mAnswersRequestsImmediately) {
             answerRequest(onlineUrl, callback);
@@ -58,10 +59,10 @@ public class FakeOfflinePageBridge extends OfflinePageBridge {
         mRequests.add(new SelectPageRequest(onlineUrl, callback));
     }
 
-    private void answerRequest(String onlineUrl, Callback<OfflinePageItem> callback) {
+    private void answerRequest(GURL onlineUrl, Callback<OfflinePageItem> callback) {
         OfflinePageItem result = null;
         for (OfflinePageItem item : mItems) {
-            if (!item.getUrl().equals(onlineUrl)) continue;
+            if (!item.getUrl().equals(onlineUrl.getSpec())) continue;
             if (result == null || item.getCreationTimeMs() > result.getCreationTimeMs()) {
                 result = item;
             }
@@ -81,10 +82,10 @@ public class FakeOfflinePageBridge extends OfflinePageBridge {
     }
 
     private static class SelectPageRequest {
-        public final String onlineUrl;
+        public final GURL onlineUrl;
         public final Callback<OfflinePageItem> callback;
 
-        public SelectPageRequest(String onlineUrl, Callback<OfflinePageItem> callback) {
+        public SelectPageRequest(GURL onlineUrl, Callback<OfflinePageItem> callback) {
             this.onlineUrl = onlineUrl;
             this.callback = callback;
         }

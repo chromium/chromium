@@ -243,7 +243,7 @@ public class TileRenderer {
             return;
         }
         mIconGenerator.setBackgroundColor(fallbackColor);
-        Bitmap icon = mIconGenerator.generateIconForUrl(tile.getUrl());
+        Bitmap icon = mIconGenerator.generateIconForUrl(tile.getUrl().getSpec());
         tile.setIcon(new BitmapDrawable(mResources, icon));
         tile.setType(
                 isFallbackColorDefault ? TileVisualType.ICON_DEFAULT : TileVisualType.ICON_COLOR);

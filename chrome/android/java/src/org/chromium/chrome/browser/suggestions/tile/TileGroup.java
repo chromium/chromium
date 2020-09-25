@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.suggestions.mostvisited.MostVisitedSites;
 import org.chromium.chrome.browser.ui.favicon.IconType;
 import org.chromium.chrome.browser.ui.favicon.LargeIconBridge;
 import org.chromium.ui.mojom.WindowOpenDisposition;
+import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -53,7 +54,7 @@ public class TileGroup implements MostVisitedSites.Observer {
          * @param removalUndoneCallback The callback to invoke if the removal is reverted. The
          *                              callback's argument is the URL being restored.
          */
-        void removeMostVisitedItem(Tile tile, Callback<String> removalUndoneCallback);
+        void removeMostVisitedItem(Tile tile, Callback<GURL> removalUndoneCallback);
 
         void openMostVisitedItem(int windowDisposition, Tile tile);
 
@@ -199,7 +200,7 @@ public class TileGroup implements MostVisitedSites.Observer {
      * the tile backend.
      */
     @Nullable
-    private String mPendingRemovalUrl;
+    private GURL mPendingRemovalUrl;
 
     /**
      * URL of the most recently added tile. Used to identify when a given tile's insertion is
@@ -207,7 +208,7 @@ public class TileGroup implements MostVisitedSites.Observer {
      * then the user undoes the action and wants that tile back.
      */
     @Nullable
-    private String mPendingInsertionUrl;
+    private GURL mPendingInsertionUrl;
 
     private boolean mHasReceivedData;
     private boolean mExploreSitesLoaded;
@@ -287,7 +288,7 @@ public class TileGroup implements MostVisitedSites.Observer {
     }
 
     @Override
-    public void onIconMadeAvailable(String siteUrl) {
+    public void onIconMadeAvailable(GURL siteUrl) {
         for (Tile tile : findTilesForUrl(siteUrl)) {
             mTileRenderer.updateIcon(tile.getData(),
                     new LargeIconCallbackImpl(tile.getData(), /* trackLoadTask = */ false));
@@ -412,7 +413,7 @@ public class TileGroup implements MostVisitedSites.Observer {
      * @param tiles The section to search in, represented by the contained list of tiles.
      * @return A tile matching the provided URL and section, or {@code null} if none is found.
      */
-    private Tile findTile(String url, @Nullable List<Tile> tiles) {
+    private Tile findTile(GURL url, @Nullable List<Tile> tiles) {
         if (tiles == null) return null;
         for (Tile tile : tiles) {
             if (tile.getUrl().equals(url)) return tile;
@@ -421,7 +422,7 @@ public class TileGroup implements MostVisitedSites.Observer {
     }
 
     /** @return All tiles matching the provided URL, or an empty list if none is found. */
-    private List<Tile> findTilesForUrl(String url) {
+    private List<Tile> findTilesForUrl(GURL url) {
         List<Tile> tiles = new ArrayList<>();
         for (int i = 0; i < mTileSections.size(); ++i) {
             for (Tile tile : mTileSections.valueAt(i)) {
@@ -563,7 +564,7 @@ public class TileGroup implements MostVisitedSites.Observer {
 
         @Override
         public String getUrl() {
-            return mSuggestion.url;
+            return mSuggestion.url.getSpec();
         }
 
         @Override

@@ -80,6 +80,21 @@ ScopedJavaLocalRef<jobject> GURLAndroid::EmptyGURL(JNIEnv* env) {
   return Java_GURL_emptyGURL(env);
 }
 
+// static
+ScopedJavaLocalRef<jobjectArray> GURLAndroid::ToJavaArrayOfGURLs(
+    JNIEnv* env,
+    base::span<ScopedJavaLocalRef<jobject>> v) {
+  jclass clazz = org_chromium_url_GURL_clazz(env);
+  DCHECK(clazz);
+  jobjectArray joa = env->NewObjectArray(v.size(), clazz, nullptr);
+  base::android::CheckException(env);
+
+  for (size_t i = 0; i < v.size(); ++i) {
+    env->SetObjectArrayElement(joa, i, v[i].obj());
+  }
+  return ScopedJavaLocalRef<jobjectArray>(env, joa);
+}
+
 static void JNI_GURL_GetOrigin(JNIEnv* env,
                                const JavaParamRef<jstring>& j_spec,
                                jboolean is_valid,

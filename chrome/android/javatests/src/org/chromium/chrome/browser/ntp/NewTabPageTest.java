@@ -251,15 +251,15 @@ public class NewTabPageTest {
     @SmallTest
     @Feature({"NewTabPage", "FeedNewTabPage"})
     public void testClickMostVisitedItem() {
-        ChromeTabUtils.waitForTabPageLoaded(mTab, mSiteSuggestions.get(0).url, new Runnable() {
-            @Override
-            public void run() {
-                View mostVisitedItem = mTileGridLayout.getChildAt(0);
-                TouchCommon.singleClickView(mostVisitedItem);
-            }
-        });
-        Assert.assertEquals(
-                mSiteSuggestions.get(0).url, ChromeTabUtils.getUrlStringOnUiThread(mTab));
+        ChromeTabUtils.waitForTabPageLoaded(
+                mTab, mSiteSuggestions.get(0).url.getSpec(), new Runnable() {
+                    @Override
+                    public void run() {
+                        View mostVisitedItem = mTileGridLayout.getChildAt(0);
+                        TouchCommon.singleClickView(mostVisitedItem);
+                    }
+                });
+        Assert.assertEquals(mSiteSuggestions.get(0).url, ChromeTabUtils.getUrlOnUiThread(mTab));
     }
 
     /**
@@ -272,7 +272,7 @@ public class NewTabPageTest {
     public void testOpenMostVisitedItemInNewTab() throws ExecutionException {
         ChromeTabUtils.invokeContextMenuAndOpenInANewTab(mActivityTestRule,
                 mTileGridLayout.getChildAt(0), ContextMenuManager.ContextMenuItemId.OPEN_IN_NEW_TAB,
-                false, mSiteSuggestions.get(0).url);
+                false, mSiteSuggestions.get(0).url.getSpec());
     }
 
     /**
@@ -285,7 +285,7 @@ public class NewTabPageTest {
         ChromeTabUtils.invokeContextMenuAndOpenInANewTab(mActivityTestRule,
                 mTileGridLayout.getChildAt(0),
                 ContextMenuManager.ContextMenuItemId.OPEN_IN_INCOGNITO_TAB, true,
-                mSiteSuggestions.get(0).url);
+                mSiteSuggestions.get(0).url.getSpec());
     }
 
     /**

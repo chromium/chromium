@@ -29,6 +29,7 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.content_public.browser.test.util.Criteria;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.url.GURL;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -69,7 +70,7 @@ public class MostVisitedSitesFaviconHelperTest {
     @MediumTest
     public void testSaveFaviconsToFile() {
         // Add sites' URLs into the urlsToUpdate, except the last one.
-        Set<String> urlsToUpdate = new HashSet<>();
+        Set<GURL> urlsToUpdate = new HashSet<>();
         for (int i = 0; i < mExpectedSiteSuggestions.size() - 1; i++) {
             urlsToUpdate.add(mExpectedSiteSuggestions.get(i).url);
         }
@@ -106,16 +107,16 @@ public class MostVisitedSitesFaviconHelperTest {
     private static List<SiteSuggestion> createFakeSiteSuggestions() {
         List<SiteSuggestion> siteSuggestions = new ArrayList<>();
 
-        siteSuggestions.add(new SiteSuggestion("0 TOP_SITES", "https://www.foo.com", "",
+        siteSuggestions.add(new SiteSuggestion("0 TOP_SITES", new GURL("https://www.foo.com"), "",
                 TileTitleSource.TITLE_TAG, TileSource.TOP_SITES, TileSectionType.PERSONALIZED,
                 new Date()));
-        siteSuggestions.add(new SiteSuggestion("1 WHITELIST", "https://www.bar.com",
+        siteSuggestions.add(new SiteSuggestion("1 WHITELIST", new GURL("https://www.bar.com"),
                 "/not_exist.png", TileTitleSource.UNKNOWN, TileSource.WHITELIST,
                 TileSectionType.PERSONALIZED, new Date()));
-        siteSuggestions.add(new SiteSuggestion("2 TOP_SITES", "https://www.baz.com",
+        siteSuggestions.add(new SiteSuggestion("2 TOP_SITES", new GURL("https://www.baz.com"),
                 createBitmapAndWriteToFile(), TileTitleSource.UNKNOWN, TileSource.WHITELIST,
                 TileSectionType.PERSONALIZED, new Date()));
-        siteSuggestions.add(new SiteSuggestion("3 TOP_SITES", "https://www.qux.com", "",
+        siteSuggestions.add(new SiteSuggestion("3 TOP_SITES", new GURL("https://www.qux.com"), "",
                 TileTitleSource.UNKNOWN, TileSource.WHITELIST, TileSectionType.PERSONALIZED,
                 new Date()));
         siteSuggestions.get(0).faviconId = 0;

@@ -14,6 +14,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.chrome.browser.suggestions.SuggestionsDependencyFactory;
 import org.chromium.chrome.browser.ui.favicon.LargeIconBridge;
+import org.chromium.url.GURL;
 
 import java.io.File;
 import java.io.IOException;
@@ -38,15 +39,15 @@ public class MostVisitedSitesHost implements MostVisitedSites.Observer {
 
     // The map mapping URL to faviconId. This map will be updated once there are new suggestions
     // available.
-    private final Map<String, Integer> mUrlToIdMap = new HashMap<>();
+    private final Map<GURL, Integer> mUrlToIdMap = new HashMap<>();
 
     // The map mapping faviconId to URL. This map will be reconstructed based on the mUrlToIdMap
     // once there are new suggestions available.
-    private final Map<Integer, String> mIdToUrlMap = new HashMap<>();
+    private final Map<Integer, GURL> mIdToUrlMap = new HashMap<>();
 
     // The set of URLs needed to fetch favicon. This set will be reconstructed once there are new
     // suggestions available.
-    private final Set<String> mUrlsToUpdateFavicon = new HashSet<>();
+    private final Set<GURL> mUrlsToUpdateFavicon = new HashSet<>();
 
     private static boolean sSkipRestoreFromDiskForTests;
     /** The singleton helper class for this class. */
@@ -127,7 +128,7 @@ public class MostVisitedSitesHost implements MostVisitedSites.Observer {
     }
 
     @Override
-    public void onIconMadeAvailable(String siteUrl) {}
+    public void onIconMadeAvailable(GURL siteUrl) {}
 
     /**
      * Start the observer.
@@ -222,7 +223,7 @@ public class MostVisitedSitesHost implements MostVisitedSites.Observer {
             List<SiteSuggestion> newSuggestions, Set<String> existingIconFiles) {
         // Add topsites URLs which need to fetch icon to the mUrlsToUpdateFavicon Set.
         for (SiteSuggestion topSiteData : newSuggestions) {
-            String url = topSiteData.url;
+            GURL url = topSiteData.url;
             // If the old map doesn't contain the URL or there is no favicon file for this URL, then
             // add this URL to mUrlsToUpdateFavicon.
             if (!mUrlToIdMap.containsKey(url)
@@ -239,14 +240,14 @@ public class MostVisitedSitesHost implements MostVisitedSites.Observer {
      */
     private void updateMapForNewSites(List<SiteSuggestion> newSuggestions, Runnable callback) {
         // Get the set of new top sites' URLs.
-        Set<String> newUrls = new HashSet<>();
+        Set<GURL> newUrls = new HashSet<>();
         for (SiteSuggestion topSiteData : newSuggestions) {
             newUrls.add(topSiteData.url);
         }
 
         // Add new URLs and ids to the mUrlToIDMap.
         int id = 0;
-        for (String url : mUrlsToUpdateFavicon) {
+        for (GURL url : mUrlsToUpdateFavicon) {
             if (mUrlToIdMap.containsKey(url)) {
                 continue;
             }
@@ -275,7 +276,7 @@ public class MostVisitedSitesHost implements MostVisitedSites.Observer {
     }
 
     @VisibleForTesting
-    protected int getNextAvailableId(int start, Set<String> newTopSiteUrls) {
+    protected int getNextAvailableId(int start, Set<GURL> newTopSiteUrls) {
         int id = start;
         // The available ids should be in range [0, newTopSiteUrls.size()), since we only need
         // |newTopSiteUrls.size()| ids.
@@ -293,7 +294,7 @@ public class MostVisitedSitesHost implements MostVisitedSites.Observer {
     @VisibleForTesting
     protected void buildIdToUrlMap() {
         mIdToUrlMap.clear();
-        for (Map.Entry<String, Integer> entry : mUrlToIdMap.entrySet()) {
+        for (Map.Entry<GURL, Integer> entry : mUrlToIdMap.entrySet()) {
             mIdToUrlMap.put(entry.getValue(), entry.getKey());
         }
     }
@@ -303,12 +304,12 @@ public class MostVisitedSitesHost implements MostVisitedSites.Observer {
      * @param newUrls The URLs in new SiteSuggestions.
      * @return The list of faviconIds needed to remove.
      */
-    private List<Integer> removeStaleData(Set<String> newUrls) {
+    private List<Integer> removeStaleData(Set<GURL> newUrls) {
         List<Integer> idsToDeleteFile = new ArrayList<>();
-        for (Iterator<Map.Entry<String, Integer>> it = mUrlToIdMap.entrySet().iterator();
+        for (Iterator<Map.Entry<GURL, Integer>> it = mUrlToIdMap.entrySet().iterator();
                 it.hasNext();) {
-            Map.Entry<String, Integer> entry = it.next();
-            String url = entry.getKey();
+            Map.Entry<GURL, Integer> entry = it.next();
+            GURL url = entry.getKey();
             int faviconId = entry.getValue();
             if (!newUrls.contains(url)) {
                 it.remove();
@@ -362,17 +363,17 @@ public class MostVisitedSitesHost implements MostVisitedSites.Observer {
     }
 
     @VisibleForTesting
-    protected Map<String, Integer> getUrlToIDMapForTesting() {
+    protected Map<GURL, Integer> getUrlToIDMapForTesting() {
         return mUrlToIdMap;
     }
 
     @VisibleForTesting
-    protected Set<String> getUrlsToUpdateFaviconForTesting() {
+    protected Set<GURL> getUrlsToUpdateFaviconForTesting() {
         return mUrlsToUpdateFavicon;
     }
 
     @VisibleForTesting
-    protected Map<Integer, String> getIdToUrlMapForTesting() {
+    protected Map<Integer, GURL> getIdToUrlMapForTesting() {
         return mIdToUrlMap;
     }
 

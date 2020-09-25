@@ -8,6 +8,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.favicon.LargeIconBridge;
+import org.chromium.url.GURL;
 
 /**
  * Class responsible for fetching images for the views in the NewTabPage and Chrome Home.
@@ -41,10 +42,10 @@ public class ImageFetcher {
      * @param callback The callback to be notified when the icon is available.
      */
     public void makeLargeIconRequest(
-            String url, int size, LargeIconBridge.LargeIconCallback callback) {
+            GURL url, int size, LargeIconBridge.LargeIconCallback callback) {
         assert !mIsDestroyed;
 
-        getLargeIconBridge().getLargeIconForStringUrl(url, size, callback);
+        getLargeIconBridge().getLargeIconForUrl(url, size, callback);
     }
 
     public void onDestroy() {

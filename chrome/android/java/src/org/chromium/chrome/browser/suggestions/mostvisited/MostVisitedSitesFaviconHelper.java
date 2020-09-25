@@ -62,9 +62,9 @@ public class MostVisitedSitesFaviconHelper {
      * @param callback The callback function after skipping the existing favicon or saving favicon.
      */
     public void saveFaviconsToFile(
-            List<SiteSuggestion> topSitesInfo, Set<String> urlsToUpdate, Runnable callback) {
+            List<SiteSuggestion> topSitesInfo, Set<GURL> urlsToUpdate, Runnable callback) {
         for (SiteSuggestion siteData : topSitesInfo) {
-            String url = siteData.url;
+            GURL url = siteData.url;
             if (!urlsToUpdate.contains(url)) {
                 if (callback != null) {
                     callback.run();
@@ -91,7 +91,7 @@ public class MostVisitedSitesFaviconHelper {
     private void fetchIcon(
             final SiteSuggestion siteData, final LargeIconBridge.LargeIconCallback iconCallback) {
         if (siteData.whitelistIconPath.isEmpty()) {
-            mLargeIconBridge.getLargeIconForUrl(new GURL(siteData.url), mMinIconSize, iconCallback);
+            mLargeIconBridge.getLargeIconForUrl(siteData.url, mMinIconSize, iconCallback);
             return;
         }
 
@@ -108,8 +108,7 @@ public class MostVisitedSitesFaviconHelper {
             @Override
             protected void onPostExecute(Bitmap icon) {
                 if (icon == null) {
-                    mLargeIconBridge.getLargeIconForUrl(
-                            new GURL(siteData.url), mMinIconSize, iconCallback);
+                    mLargeIconBridge.getLargeIconForUrl(siteData.url, mMinIconSize, iconCallback);
                 } else {
                     iconCallback.onLargeIconAvailable(icon, Color.BLACK, false, IconType.INVALID);
                 }
@@ -127,7 +126,7 @@ public class MostVisitedSitesFaviconHelper {
      * @param icon The favicon fetched from native.
      * @param callback The callback function after saving each favicon.
      */
-    private void saveFaviconToFile(String fileName, File directory, String url, int fallbackColor,
+    private void saveFaviconToFile(String fileName, File directory, GURL url, int fallbackColor,
             Bitmap icon, Runnable callback) {
         new AsyncTask<Void>() {
             @Override
@@ -135,9 +134,11 @@ public class MostVisitedSitesFaviconHelper {
                 Bitmap newIcon = icon;
                 // If icon is null, we need to generate a favicon.
                 if (newIcon == null) {
-                    Log.i(TAG, "Favicon is null for " + url + ". Generating an icon for it.");
+                    Log.i(TAG,
+                            "Favicon is null for " + url.getSpec()
+                                    + ". Generating an icon for it.");
                     mIconGenerator.setBackgroundColor(fallbackColor);
-                    newIcon = mIconGenerator.generateIconForUrl(url);
+                    newIcon = mIconGenerator.generateIconForUrl(url.getSpec());
                 }
                 // Save icon to file.
                 File metadataFile = new File(directory, fileName);

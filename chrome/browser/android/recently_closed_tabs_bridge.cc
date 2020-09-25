@@ -15,6 +15,7 @@
 #include "components/sessions/core/live_tab.h"
 #include "components/sessions/core/tab_restore_service.h"
 #include "content/public/browser/web_contents.h"
+#include "url/android/gurl_android.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertUTF16ToJavaString;
@@ -34,7 +35,7 @@ void JNI_RecentlyClosedBridge_AddTabToList(
   Java_RecentlyClosedBridge_pushTab(
       env, jtabs_list, tab.id.id(),
       ConvertUTF16ToJavaString(env, current_navigation.title()),
-      ConvertUTF8ToJavaString(env, current_navigation.virtual_url().spec()));
+      url::GURLAndroid::FromNativeGURL(env, current_navigation.virtual_url()));
 }
 
 void JNI_RecentlyClosedBridge_AddTabsToList(

@@ -24,6 +24,7 @@ import org.chromium.components.offline_items_collection.LaunchLocation;
 import org.chromium.components.offlinepages.DeletePageResult;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -240,8 +241,8 @@ public class OfflinePageBridge {
      * @param callback callback to pass back the matching {@link OfflinePageItem} if found. Will
      *         pass back null if not.
      */
-    public void selectPageForOnlineUrl(String onlineUrl, int tabId,
-            Callback<OfflinePageItem> callback) {
+    public void selectPageForOnlineUrl(
+            GURL onlineUrl, int tabId, Callback<OfflinePageItem> callback) {
         OfflinePageBridgeJni.get().selectPageForOnlineUrl(
                 mNativeOfflinePageBridge, OfflinePageBridge.this, onlineUrl, tabId, callback);
     }
@@ -689,7 +690,7 @@ public class OfflinePageBridge {
         void publishInternalPageByGuid(long nativeOfflinePageBridge, OfflinePageBridge caller,
                 String guid, Callback<String> publishedCallback);
         void selectPageForOnlineUrl(long nativeOfflinePageBridge, OfflinePageBridge caller,
-                String onlineUrl, int tabId, Callback<OfflinePageItem> callback);
+                GURL onlineUrl, int tabId, Callback<OfflinePageItem> callback);
         void savePage(long nativeOfflinePageBridge, OfflinePageBridge caller,
                 SavePageCallback callback, WebContents webContents, String clientNamespace,
                 String clientId, String origin);

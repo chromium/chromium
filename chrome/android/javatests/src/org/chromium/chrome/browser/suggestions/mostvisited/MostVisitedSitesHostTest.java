@@ -29,6 +29,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.url.GURL;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -62,32 +63,36 @@ public class MostVisitedSitesHostTest {
     @Test
     @SmallTest
     public void testNextAvailableId() {
-        Set<String> newTopSiteUrls = new HashSet<>();
+        Set<GURL> newTopSiteUrls = new HashSet<>();
+        GURL url0 = new GURL("https://www.0.com");
+        GURL url1 = new GURL("https://www.1.com");
+        GURL url2 = new GURL("https://www.2.com");
+        GURL url3 = new GURL("https://www.3.com");
 
         // Update map and set.
-        newTopSiteUrls.add("https://www.0.com");
-        newTopSiteUrls.add("https://www.1.com");
+        newTopSiteUrls.add(url0);
+        newTopSiteUrls.add(url1);
         mMostVisitedSitesHost.getUrlsToUpdateFaviconForTesting().addAll(newTopSiteUrls);
 
         // The next available ID should be 0.
         assertEquals(0, mMostVisitedSitesHost.getNextAvailableId(0, newTopSiteUrls));
-        mMostVisitedSitesHost.getUrlToIDMapForTesting().put("https://www.0.com", 0);
+        mMostVisitedSitesHost.getUrlToIDMapForTesting().put(url0, 0);
         mMostVisitedSitesHost.buildIdToUrlMap();
 
         // The next available ID should be 1.
         assertEquals(1, mMostVisitedSitesHost.getNextAvailableId(1, newTopSiteUrls));
-        mMostVisitedSitesHost.getUrlToIDMapForTesting().put("https://www.1.com", 1);
+        mMostVisitedSitesHost.getUrlToIDMapForTesting().put(url1, 1);
         mMostVisitedSitesHost.buildIdToUrlMap();
 
         // Create a new batch of SiteSuggestions.
         newTopSiteUrls.clear();
-        newTopSiteUrls.add("https://www.0.com");
-        newTopSiteUrls.add("https://www.2.com");
-        newTopSiteUrls.add("https://www.3.com");
+        newTopSiteUrls.add(url0);
+        newTopSiteUrls.add(url2);
+        newTopSiteUrls.add(url3);
 
         // The next available ID should be ID for "https://www.1.com".
         assertEquals(1, mMostVisitedSitesHost.getNextAvailableId(0, newTopSiteUrls));
-        mMostVisitedSitesHost.getUrlToIDMapForTesting().put("https://www.2.com", 1);
+        mMostVisitedSitesHost.getUrlToIDMapForTesting().put(url2, 1);
 
         // After setting 1 to "https://www.2.com", the next available ID should be 2.
         assertEquals(2, mMostVisitedSitesHost.getNextAvailableId(2, newTopSiteUrls));
@@ -96,11 +101,13 @@ public class MostVisitedSitesHostTest {
     @Test
     @SmallTest
     public void testUpdateMapAndSet() {
+        GURL url0 = new GURL("https://www.0.com");
+        GURL url2 = new GURL("https://www.2.com");
         mMostVisitedSitesHost.getUrlToIDMapForTesting().clear();
         mMostVisitedSitesHost.getUrlsToUpdateFaviconForTesting().clear();
         mMostVisitedSitesHost.getIdToUrlMapForTesting().clear();
 
-        Set<String> newUrls;
+        Set<GURL> newUrls;
         Set<Integer> expectedIdsInMap = new HashSet<>();
         AtomicBoolean isUpdated = new AtomicBoolean(false);
 
@@ -117,10 +124,12 @@ public class MostVisitedSitesHostTest {
         checkMapAndSet(newUrls, newUrls, expectedIdsInMap, newTopSites);
 
         // Record ID of "https://www.0.com" for checking later.
-        int expectedId0 = mMostVisitedSitesHost.getUrlToIDMapForTesting().get("https://www.0.com");
+        int expectedId0 =
+                mMostVisitedSitesHost.getUrlToIDMapForTesting().get(new GURL("https://www.0.com"));
 
         // Emulate saving favicons for the first batch of sites except "https://www.2.com".
-        int expectedId2 = mMostVisitedSitesHost.getUrlToIDMapForTesting().get("https://www.2.com");
+        int expectedId2 =
+                mMostVisitedSitesHost.getUrlToIDMapForTesting().get(new GURL("https://www.2.com"));
         for (int i = 0; i < 3; i++) {
             if (i == expectedId2) {
                 continue;
@@ -136,14 +145,12 @@ public class MostVisitedSitesHostTest {
         CriteriaHelper.pollInstrumentationThread(isUpdated::get);
 
         // Check the map and set.
-        Set<String> expectedUrlsToFetchIcon = new HashSet<>(newUrls);
-        expectedUrlsToFetchIcon.remove("https://www.0.com");
+        Set<GURL> expectedUrlsToFetchIcon = new HashSet<>(newUrls);
+        expectedUrlsToFetchIcon.remove(url0);
         expectedIdsInMap.add(3);
         checkMapAndSet(expectedUrlsToFetchIcon, newUrls, expectedIdsInMap, newTopSites);
-        assertEquals(expectedId0,
-                (int) mMostVisitedSitesHost.getUrlToIDMapForTesting().get("https://www.0.com"));
-        assertEquals(expectedId2,
-                (int) mMostVisitedSitesHost.getUrlToIDMapForTesting().get("https://www.2.com"));
+        assertEquals(expectedId0, (int) mMostVisitedSitesHost.getUrlToIDMapForTesting().get(url0));
+        assertEquals(expectedId2, (int) mMostVisitedSitesHost.getUrlToIDMapForTesting().get(url2));
     }
 
     /**
@@ -217,7 +224,7 @@ public class MostVisitedSitesHostTest {
         CriteriaHelper.pollInstrumentationThread(isPendingRun::get);
     }
 
-    private void checkMapAndSet(Set<String> expectedUrlsToFetchIcon, Set<String> expectedUrlsInMap,
+    private void checkMapAndSet(Set<GURL> expectedUrlsToFetchIcon, Set<GURL> expectedUrlsInMap,
             Set<Integer> expectedIdsInMap, List<SiteSuggestion> newSiteSuggestions) {
         // Check whether mExpectedSiteSuggestions' faviconIDs have been updated.
         for (SiteSuggestion siteData : newSiteSuggestions) {
@@ -225,8 +232,8 @@ public class MostVisitedSitesHostTest {
                     siteData.faviconId);
         }
 
-        Set<String> urlsToUpdateFavicon = mMostVisitedSitesHost.getUrlsToUpdateFaviconForTesting();
-        Map<String, Integer> urlToIDMap = mMostVisitedSitesHost.getUrlToIDMapForTesting();
+        Set<GURL> urlsToUpdateFavicon = mMostVisitedSitesHost.getUrlsToUpdateFaviconForTesting();
+        Map<GURL, Integer> urlToIDMap = mMostVisitedSitesHost.getUrlToIDMapForTesting();
 
         assertEquals(expectedUrlsToFetchIcon, urlsToUpdateFavicon);
         assertThat(expectedUrlsInMap, containsInAnyOrder(urlToIDMap.keySet().toArray()));
@@ -235,37 +242,37 @@ public class MostVisitedSitesHostTest {
 
     private static List<SiteSuggestion> createFakeSiteSuggestions1() {
         List<SiteSuggestion> siteSuggestions = new ArrayList<>();
-        siteSuggestions.add(new SiteSuggestion("0 TOP_SITES", "https://www.0.com", "",
+        siteSuggestions.add(new SiteSuggestion("0 TOP_SITES", new GURL("https://www.0.com"), "",
                 TileTitleSource.TITLE_TAG, TileSource.TOP_SITES, TileSectionType.PERSONALIZED,
                 new Date()));
-        siteSuggestions.add(
-                new SiteSuggestion("1 WHITELIST", "https://www.1.com", "", TileTitleSource.UNKNOWN,
-                        TileSource.WHITELIST, TileSectionType.PERSONALIZED, new Date()));
-        siteSuggestions.add(
-                new SiteSuggestion("2 TOP_SITES", "https://www.2.com", "", TileTitleSource.UNKNOWN,
-                        TileSource.TOP_SITES, TileSectionType.PERSONALIZED, new Date()));
+        siteSuggestions.add(new SiteSuggestion("1 WHITELIST", new GURL("https://www.1.com"), "",
+                TileTitleSource.UNKNOWN, TileSource.WHITELIST, TileSectionType.PERSONALIZED,
+                new Date()));
+        siteSuggestions.add(new SiteSuggestion("2 TOP_SITES", new GURL("https://www.2.com"), "",
+                TileTitleSource.UNKNOWN, TileSource.TOP_SITES, TileSectionType.PERSONALIZED,
+                new Date()));
         return siteSuggestions;
     }
 
     private static List<SiteSuggestion> createFakeSiteSuggestions2() {
         List<SiteSuggestion> siteSuggestions = new ArrayList<>();
-        siteSuggestions.add(new SiteSuggestion("0 TOP_SITES", "https://www.0.com", "",
+        siteSuggestions.add(new SiteSuggestion("0 TOP_SITES", new GURL("https://www.0.com"), "",
                 TileTitleSource.TITLE_TAG, TileSource.TOP_SITES, TileSectionType.PERSONALIZED,
                 new Date()));
-        siteSuggestions.add(
-                new SiteSuggestion("2 TOP_SITES", "https://www.2.com", "", TileTitleSource.UNKNOWN,
-                        TileSource.TOP_SITES, TileSectionType.PERSONALIZED, new Date()));
-        siteSuggestions.add(
-                new SiteSuggestion("3 TOP_SITES", "https://www.3.com", "", TileTitleSource.UNKNOWN,
-                        TileSource.TOP_SITES, TileSectionType.PERSONALIZED, new Date()));
-        siteSuggestions.add(
-                new SiteSuggestion("4 TOP_SITES", "https://www.4.com", "", TileTitleSource.UNKNOWN,
-                        TileSource.TOP_SITES, TileSectionType.PERSONALIZED, new Date()));
+        siteSuggestions.add(new SiteSuggestion("2 TOP_SITES", new GURL("https://www.2.com"), "",
+                TileTitleSource.UNKNOWN, TileSource.TOP_SITES, TileSectionType.PERSONALIZED,
+                new Date()));
+        siteSuggestions.add(new SiteSuggestion("3 TOP_SITES", new GURL("https://www.3.com"), "",
+                TileTitleSource.UNKNOWN, TileSource.TOP_SITES, TileSectionType.PERSONALIZED,
+                new Date()));
+        siteSuggestions.add(new SiteSuggestion("4 TOP_SITES", new GURL("https://www.4.com"), "",
+                TileTitleSource.UNKNOWN, TileSource.TOP_SITES, TileSectionType.PERSONALIZED,
+                new Date()));
         return siteSuggestions;
     }
 
-    private Set<String> getUrls(List<SiteSuggestion> newSuggestions) {
-        Set<String> newTopSiteUrls = new HashSet<>();
+    private Set<GURL> getUrls(List<SiteSuggestion> newSuggestions) {
+        Set<GURL> newTopSiteUrls = new HashSet<>();
         for (SiteSuggestion topSiteData : newSuggestions) {
             newTopSiteUrls.add(topSiteData.url);
         }

@@ -121,7 +121,7 @@ class OfflinePageBridge : public OfflinePageModel::Observer,
   void SelectPageForOnlineUrl(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj,
-      const base::android::JavaParamRef<jstring>& j_online_url,
+      const base::android::JavaParamRef<jobject>& j_online_url,
       int tab_id,
       const base::android::JavaParamRef<jobject>& j_callback_obj);
 

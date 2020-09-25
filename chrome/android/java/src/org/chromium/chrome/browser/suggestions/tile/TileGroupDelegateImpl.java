@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
 import org.chromium.ui.mojom.WindowOpenDisposition;
+import org.chromium.url.GURL;
 
 import java.util.List;
 
@@ -45,7 +46,7 @@ public class TileGroupDelegateImpl implements TileGroup.Delegate {
     }
 
     @Override
-    public void removeMostVisitedItem(Tile item, Callback<String> removalUndoneCallback) {
+    public void removeMostVisitedItem(Tile item, Callback<GURL> removalUndoneCallback) {
         assert !mIsDestroyed;
 
         mMostVisitedSites.addBlocklistedUrl(item.getUrl());
@@ -56,7 +57,7 @@ public class TileGroupDelegateImpl implements TileGroup.Delegate {
     public void openMostVisitedItem(int windowDisposition, Tile item) {
         assert !mIsDestroyed;
 
-        String url = item.getUrl();
+        String url = item.getUrl().getSpec();
 
         // TODO(treib): Should we call recordOpenedMostVisitedItem here?
         if (windowDisposition != WindowOpenDisposition.NEW_WINDOW) {
@@ -103,7 +104,7 @@ public class TileGroupDelegateImpl implements TileGroup.Delegate {
         mMostVisitedSites.destroy();
     }
 
-    private void showTileRemovedSnackbar(String url, final Callback<String> removalUndoneCallback) {
+    private void showTileRemovedSnackbar(GURL url, final Callback<GURL> removalUndoneCallback) {
         if (mTileRemovedSnackbarController == null) {
             mTileRemovedSnackbarController = new SnackbarController() {
                 @Override
@@ -113,7 +114,7 @@ public class TileGroupDelegateImpl implements TileGroup.Delegate {
                 @Override
                 public void onAction(Object actionData) {
                     if (mIsDestroyed) return;
-                    String url = (String) actionData;
+                    GURL url = (GURL) actionData;
                     removalUndoneCallback.onResult(url);
                     mMostVisitedSites.removeBlocklistedUrl(url);
                 }

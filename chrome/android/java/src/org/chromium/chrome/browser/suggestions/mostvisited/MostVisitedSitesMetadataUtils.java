@@ -14,6 +14,7 @@ import org.chromium.base.StreamUtil;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
+import org.chromium.url.GURL;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -37,6 +38,9 @@ public class MostVisitedSitesMetadataUtils {
 
     /** Prevents two MostVisitedSitesUtils from saving the same file simultaneously. */
     private static final Object SAVE_LIST_LOCK = new Object();
+
+    /** Current version of the cache, to be updated when the cache structure or meaning changes. */
+    private static final int CACHE_VERSION = 1;
 
     private static File sStateDirectory;
     private static String sStateDirName = "top_sites";
@@ -118,9 +122,10 @@ public class MostVisitedSitesMetadataUtils {
 
         // Save top sites.
         for (int i = 0; i < topSitesCount; i++) {
+            stream.writeInt(CACHE_VERSION);
             stream.writeInt(topSitesInfo.get(i).faviconId);
             stream.writeUTF(topSitesInfo.get(i).title);
-            stream.writeUTF(topSitesInfo.get(i).url);
+            stream.writeUTF(topSitesInfo.get(i).url.serialize());
             stream.writeUTF(topSitesInfo.get(i).whitelistIconPath);
             stream.writeInt(topSitesInfo.get(i).titleSource);
             stream.writeInt(topSitesInfo.get(i).source);
@@ -150,9 +155,15 @@ public class MostVisitedSitesMetadataUtils {
         // Restore top sites.
         List<SiteSuggestion> suggestions = new ArrayList<>();
         for (int i = 0; i < count; i++) {
+            int version = stream.readInt();
+            if (version > CACHE_VERSION) {
+                throw new IOException("Cache version not supported.");
+            }
             int faviconId = stream.readInt();
             String title = stream.readUTF();
-            String url = stream.readUTF();
+            GURL url = GURL.deserialize(stream.readUTF());
+            if (url.isEmpty()) throw new IOException("GURL deserialization failed.");
+
             String whitelistIconPath = stream.readUTF();
             int titleSource = stream.readInt();
             int source = stream.readInt();

@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 import org.chromium.chrome.browser.suggestions.OfflinableSuggestion;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.chrome.browser.ui.favicon.IconType;
+import org.chromium.url.GURL;
 
 /**
  * Holds the details to populate a site suggestion tile.
@@ -46,7 +47,7 @@ public class Tile implements OfflinableSuggestion {
     }
 
     @Override
-    public String getUrl() {
+    public GURL getUrl() {
         return mSiteData.url;
     }
 

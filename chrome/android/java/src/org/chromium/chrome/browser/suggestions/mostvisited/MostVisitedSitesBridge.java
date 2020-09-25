@@ -10,6 +10,7 @@ import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.chrome.browser.suggestions.tile.Tile;
+import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -62,14 +63,14 @@ public class MostVisitedSitesBridge implements MostVisitedSites {
     }
 
     @Override
-    public void addBlocklistedUrl(String url) {
+    public void addBlocklistedUrl(GURL url) {
         if (mNativeMostVisitedSitesBridge == 0) return;
         MostVisitedSitesBridgeJni.get().addOrRemoveBlockedUrl(
                 mNativeMostVisitedSitesBridge, MostVisitedSitesBridge.this, url, true);
     }
 
     @Override
-    public void removeBlocklistedUrl(String url) {
+    public void removeBlocklistedUrl(GURL url) {
         if (mNativeMostVisitedSitesBridge == 0) return;
         MostVisitedSitesBridgeJni.get().addOrRemoveBlockedUrl(
                 mNativeMostVisitedSitesBridge, MostVisitedSitesBridge.this, url, false);
@@ -103,7 +104,7 @@ public class MostVisitedSitesBridge implements MostVisitedSites {
      * Utility function to convert JNI friendly site suggestion data to a Java friendly list of
      * {@link SiteSuggestion}s.
      */
-    public static List<SiteSuggestion> buildSiteSuggestions(String[] titles, String[] urls,
+    public static List<SiteSuggestion> buildSiteSuggestions(String[] titles, GURL[] urls,
             int[] sections, String[] allowlistIconPaths, int[] titleSources, int[] sources,
             long[] dataGenerationTimesMs) {
         List<SiteSuggestion> siteSuggestions = new ArrayList<>(titles.length);
@@ -127,7 +128,7 @@ public class MostVisitedSitesBridge implements MostVisitedSites {
      * @param sources For each tile, the {@code TileSource} that generated the tile.
      */
     @CalledByNative
-    private void onURLsAvailable(String[] titles, String[] urls, int[] sections,
+    private void onURLsAvailable(String[] titles, GURL[] urls, int[] sections,
             String[] allowlistIconPaths, int[] titleSources, int[] sources,
             long[] dataGenerationTimesMs) {
         // Don't notify observer if we've already been destroyed.
@@ -148,7 +149,7 @@ public class MostVisitedSitesBridge implements MostVisitedSites {
      * @param siteUrl URL of site with newly-cached icon.
      */
     @CalledByNative
-    private void onIconMadeAvailable(String siteUrl) {
+    private void onIconMadeAvailable(GURL siteUrl) {
         // Don't notify observer if we've already been destroyed.
         if (mNativeMostVisitedSitesBridge != 0) {
             mWrappedObserver.onIconMadeAvailable(siteUrl);
@@ -166,12 +167,12 @@ public class MostVisitedSitesBridge implements MostVisitedSites {
         void setObserver(long nativeMostVisitedSitesBridge, MostVisitedSitesBridge caller,
                 MostVisitedSitesBridge observer, int numSites);
         void addOrRemoveBlockedUrl(long nativeMostVisitedSitesBridge, MostVisitedSitesBridge caller,
-                String url, boolean addUrl);
+                GURL url, boolean addUrl);
         void recordPageImpression(
                 long nativeMostVisitedSitesBridge, MostVisitedSitesBridge caller, int tilesCount);
         void recordTileImpression(long nativeMostVisitedSitesBridge, MostVisitedSitesBridge caller,
                 int index, int type, int iconType, int titleSource, int source,
-                long dataGenerationTimeMs, String url);
+                long dataGenerationTimeMs, GURL url);
         void recordOpenedMostVisitedItem(long nativeMostVisitedSitesBridge,
                 MostVisitedSitesBridge caller, int index, int tileType, int titleSource, int source,
                 long dataGenerationTimeMs);
