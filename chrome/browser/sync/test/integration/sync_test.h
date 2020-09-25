@@ -13,6 +13,7 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chrome/browser/profiles/profile.h"
@@ -405,6 +406,13 @@ class SyncTest : public PlatformBrowserTest {
 
   void ClearProfiles();
 
+  // Used to differentiate between single-client and two-client tests.
+  const TestType test_type_;
+
+  // Used to remember when the test fixture was constructed and later understand
+  // how long the setup took.
+  const base::Time test_construction_time_;
+
   // GAIA account used by the test case.
   std::string username_;
 
@@ -413,10 +421,6 @@ class SyncTest : public PlatformBrowserTest {
 
   // Locally available plain text file in which GAIA credentials are stored.
   base::FilePath password_file_;
-
-  // Used to differentiate between single-client and two-client tests as well
-  // as wher the in-process FakeServer is used.
-  TestType test_type_;
 
   // Tells us what kind of server we're using (some tests run only on certain
   // server types).

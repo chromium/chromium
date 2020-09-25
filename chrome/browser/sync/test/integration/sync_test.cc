@@ -227,6 +227,7 @@ bool SyncTest::FakeInstanceIDDriver::ExistsInstanceID(
 
 SyncTest::SyncTest(TestType test_type)
     : test_type_(test_type),
+      test_construction_time_(base::Time::Now()),
       server_type_(SERVER_TYPE_UNDECIDED),
       previous_profile_(nullptr),
       num_clients_(-1),
@@ -279,6 +280,9 @@ void SyncTest::SetUp() {
 
   // Yield control back to the PlatformBrowserTest framework.
   PlatformBrowserTest::SetUp();
+
+  LOG(INFO) << "SyncTest::SetUp() completed; elapsed time since construction: "
+            << (base::Time::Now() - test_construction_time_);
 }
 
 void SyncTest::TearDown() {
@@ -571,6 +575,10 @@ bool SyncTest::SetupClients() {
     if (!CreateProfile(i)) {
       return false;
     }
+
+    LOG(INFO) << "SyncTest::SetupClients() created profile " << i
+              << "; elapsed time since construction: "
+              << (base::Time::Now() - test_construction_time_);
   }
 
   // Verifier account is not useful when running against external servers.
@@ -610,6 +618,10 @@ bool SyncTest::SetupClients() {
       return false;
   }
 #endif
+
+  LOG(INFO)
+      << "SyncTest::SetupClients() completed; elapsed time since construction: "
+      << (base::Time::Now() - test_construction_time_);
 
   return true;
 }
