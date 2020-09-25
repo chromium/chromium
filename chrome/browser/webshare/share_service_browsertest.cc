@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_features.h"
@@ -22,7 +23,7 @@ class ShareServiceBrowserTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(ShareServiceBrowserTest, Cancellation) {
+IN_PROC_BROWSER_TEST_F(ShareServiceBrowserTest, Text) {
   ASSERT_TRUE(embedded_test_server()->Start());
   ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/webshare/index.html"));
@@ -30,6 +31,12 @@ IN_PROC_BROWSER_TEST_F(ShareServiceBrowserTest, Cancellation) {
   content::WebContents* const contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   const std::string script = "share_text('hello')";
-  EXPECT_EQ("share failed: AbortError: Share canceled",
-            content::EvalJs(contents, script));
+  const content::EvalJsResult result = content::EvalJs(contents, script);
+
+#if defined(OS_CHROMEOS)
+  // ChromeOS currently only supports file sharing.
+  EXPECT_EQ("share failed: AbortError: Share canceled", result);
+#else
+  EXPECT_EQ("share succeeded", result);
+#endif
 }

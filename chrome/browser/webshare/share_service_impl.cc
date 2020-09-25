@@ -20,6 +20,9 @@
 ShareServiceImpl::ShareServiceImpl(content::RenderFrameHost& render_frame_host)
     : content::WebContentsObserver(
           content::WebContents::FromRenderFrameHost(&render_frame_host)),
+#if defined(OS_CHROMEOS)
+      sharesheet_client_(web_contents()),
+#endif
       render_frame_host_(&render_frame_host) {
   DCHECK(base::FeatureList::IsEnabled(features::kWebShare));
 }
@@ -128,13 +131,20 @@ void ShareServiceImpl::Share(const std::string& title,
                              const GURL& share_url,
                              std::vector<blink::mojom::SharedFilePtr> files,
                              ShareCallback callback) {
+  content::WebContents* const web_contents =
+      content::WebContents::FromRenderFrameHost(render_frame_host_);
+  if (!web_contents) {
+    std::move(callback).Run(blink::mojom::ShareError::PERMISSION_DENIED);
+    return;
+  }
+
   if (files.size() > kMaxSharedFileCount) {
     std::move(callback).Run(blink::mojom::ShareError::PERMISSION_DENIED);
     return;
   }
 
   for (auto& file : files) {
-    if (!file || !file->blob) {
+    if (!file || !file->blob || !file->blob->blob) {
       mojo::ReportBadMessage("Invalid file to share()");
       return;
     }
@@ -152,10 +162,14 @@ void ShareServiceImpl::Share(const std::string& title,
     // the blobs.
   }
 
+#if defined(OS_CHROMEOS)
+  sharesheet_client_.Share(title, text, share_url, std::move(files),
+                           std::move(callback));
+#else
   // TODO(crbug.com/1035527): Add implementation for OS_WIN
-  // TODO(crbug.com/1110119): Add implementation for OS_CHROMEOS
   NOTIMPLEMENTED();
-  std::move(callback).Run(blink::mojom::ShareError::CANCELED);
+  std::move(callback).Run(blink::mojom::ShareError::OK);
+#endif
 }
 
 void ShareServiceImpl::RenderFrameDeleted(

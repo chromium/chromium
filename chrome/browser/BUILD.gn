@@ -4253,6 +4253,12 @@ static_library("browser") {
       "upgrade_detector/installed_version_updater_chromeos.h",
       "upgrade_detector/upgrade_detector_chromeos.cc",
       "upgrade_detector/upgrade_detector_chromeos.h",
+      "webshare/chromeos/prepare_directory_task.cc",
+      "webshare/chromeos/prepare_directory_task.h",
+      "webshare/chromeos/sharesheet_client.cc",
+      "webshare/chromeos/sharesheet_client.h",
+      "webshare/chromeos/store_files_task.cc",
+      "webshare/chromeos/store_files_task.h",
     ]
     deps += [
       "//ash",

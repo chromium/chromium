@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 
+#include "base/guid.h"
 #include "base/run_loop.h"
 #include "base/test/bind_test_util.h"
 #include "base/test/scoped_feature_list.h"
@@ -13,9 +14,20 @@
 #include "chrome/browser/webshare/share_service_impl.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
+#include "storage/browser/blob/blob_data_builder.h"
+#include "storage/browser/blob/blob_impl.h"
+#include "storage/browser/blob/blob_storage_context.h"
+#include "third_party/blink/public/mojom/blob/serialized_blob.mojom.h"
 #include "url/gurl.h"
 
 using blink::mojom::ShareError;
+
+#if defined(OS_CHROMEOS)
+#include "chrome/browser/webshare/chromeos/sharesheet_client.h"
+#endif
 
 class ShareServiceUnitTest : public ChromeRenderViewHostTestHarness {
  public:
@@ -27,10 +39,15 @@ class ShareServiceUnitTest : public ChromeRenderViewHostTestHarness {
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
     share_service_ = std::make_unique<ShareServiceImpl>(*main_rfh());
+
+#if defined(OS_CHROMEOS)
+    webshare::SharesheetClient::SetSharesheetCallbackForTesting(
+        base::BindRepeating(&ShareServiceUnitTest::AcceptShareRequest));
+#endif
   }
 
   ShareError ShareGeneratedFileData(const std::string& extension,
-                                    const std::string& mime_type,
+                                    const std::string& content_type,
                                     unsigned file_length = 100,
                                     unsigned file_count = 1) {
     const std::string kTitle;
@@ -41,10 +58,7 @@ class ShareServiceUnitTest : public ChromeRenderViewHostTestHarness {
     for (unsigned index = 0; index < file_count; ++index) {
       const std::string name =
           base::StringPrintf("share%d%s", index, extension.c_str());
-      auto blob = blink::mojom::SerializedBlob::New();
-      blob->content_type = mime_type;
-      blob->size = file_length;
-      files.push_back(blink::mojom::SharedFile::New(name, std::move(blob)));
+      files.push_back(CreateSharedFile(name, content_type, file_length));
     }
 
     ShareError result;
@@ -60,37 +74,63 @@ class ShareServiceUnitTest : public ChromeRenderViewHostTestHarness {
   }
 
  private:
+  blink::mojom::SharedFilePtr CreateSharedFile(const std::string& name,
+                                               const std::string& content_type,
+                                               unsigned file_length) {
+    const std::string uuid = base::GenerateGUID();
+
+    auto blob = blink::mojom::SerializedBlob::New();
+    blob->uuid = uuid;
+    blob->content_type = content_type;
+    blob->size = file_length;
+
+    base::RunLoop run_loop;
+    auto blob_context_getter =
+        content::BrowserContext::GetBlobStorageContext(browser_context());
+    content::GetIOThreadTaskRunner({})->PostTaskAndReply(
+        FROM_HERE,
+        base::BindLambdaForTesting(
+            [&blob_context_getter, &blob, &uuid, &content_type, file_length]() {
+              storage::BlobImpl::Create(
+                  blob_context_getter.Run()->AddFinishedBlob(
+                      CreateBuilder(uuid, content_type, file_length)),
+                  blob->blob.InitWithNewPipeAndPassReceiver());
+            }),
+        base::BindLambdaForTesting([&run_loop]() { run_loop.Quit(); }));
+
+    run_loop.Run();
+    return blink::mojom::SharedFile::New(name, std::move(blob));
+  }
+
+  static std::unique_ptr<storage::BlobDataBuilder> CreateBuilder(
+      const std::string& uuid,
+      const std::string& content_type,
+      unsigned file_length) {
+    auto builder = std::make_unique<storage::BlobDataBuilder>(uuid);
+    builder->set_content_type(content_type);
+    const std::string contents(file_length, '*');
+    builder->AppendData(contents);
+    return builder;
+  }
+
+#if defined(OS_CHROMEOS)
+  static ShareError AcceptShareRequest(content::WebContents* web_contents,
+                                       std::vector<GURL> file_urls,
+                                       std::vector<std::string> content_types) {
+    return ShareError::OK;
+  }
+#endif
+
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<ShareServiceImpl> share_service_;
 };
 
 TEST_F(ShareServiceUnitTest, FileCount) {
-  EXPECT_EQ(
-      ShareError::CANCELED,
-      ShareGeneratedFileData(".txt", "text/plain", 1234, kMaxSharedFileCount));
+  EXPECT_EQ(ShareError::OK, ShareGeneratedFileData(".txt", "text/plain", 1234,
+                                                   kMaxSharedFileCount));
   EXPECT_EQ(ShareError::PERMISSION_DENIED,
             ShareGeneratedFileData(".txt", "text/plain", 1234,
                                    kMaxSharedFileCount + 1));
-}
-
-TEST_F(ShareServiceUnitTest, TotalBytes) {
-  EXPECT_EQ(ShareError::CANCELED,
-            ShareGeneratedFileData(".txt", "text/plain",
-                                   kMaxSharedFileBytes / kMaxSharedFileCount,
-                                   kMaxSharedFileCount));
-  EXPECT_EQ(
-      ShareError::CANCELED,
-      ShareGeneratedFileData(".txt", "text/plain",
-                             (kMaxSharedFileBytes / kMaxSharedFileCount) + 1,
-                             kMaxSharedFileCount));
-}
-
-TEST_F(ShareServiceUnitTest, FileBytes) {
-  EXPECT_EQ(ShareError::CANCELED,
-            ShareGeneratedFileData(".txt", "text/plain", kMaxSharedFileBytes));
-  EXPECT_EQ(
-      ShareError::CANCELED,
-      ShareGeneratedFileData(".txt", "text/plain", kMaxSharedFileBytes + 1));
 }
 
 TEST_F(ShareServiceUnitTest, DangerousFilename) {
@@ -123,13 +163,10 @@ TEST_F(ShareServiceUnitTest, DangerousMimeType) {
 }
 
 TEST_F(ShareServiceUnitTest, Multimedia) {
-  EXPECT_EQ(ShareError::CANCELED, ShareGeneratedFileData(".bmp", "image/bmp"));
-  EXPECT_EQ(ShareError::CANCELED,
-            ShareGeneratedFileData(".xbm", "image/x-xbitmap"));
-  EXPECT_EQ(ShareError::CANCELED,
-            ShareGeneratedFileData(".flac", "audio/flac"));
-  EXPECT_EQ(ShareError::CANCELED,
-            ShareGeneratedFileData(".webm", "video/webm"));
+  EXPECT_EQ(ShareError::OK, ShareGeneratedFileData(".bmp", "image/bmp"));
+  EXPECT_EQ(ShareError::OK, ShareGeneratedFileData(".xbm", "image/x-xbitmap"));
+  EXPECT_EQ(ShareError::OK, ShareGeneratedFileData(".flac", "audio/flac"));
+  EXPECT_EQ(ShareError::OK, ShareGeneratedFileData(".webm", "video/webm"));
 }
 
 TEST_F(ShareServiceUnitTest, PortableDocumentFormat) {
