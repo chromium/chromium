@@ -458,8 +458,25 @@ size_t GetQuicMaxPacketLength(const VariationParameters& quic_trial_params) {
 
 quic::ParsedQuicVersionVector GetQuicVersions(
     const VariationParameters& quic_trial_params) {
-  return quic::ParseQuicVersionVectorString(
-      GetVariationParam(quic_trial_params, "quic_version"));
+  quic::ParsedQuicVersionVector trial_versions =
+      quic::ParseQuicVersionVectorString(
+          GetVariationParam(quic_trial_params, "quic_version"));
+  const bool obsolete_versions_allowed = base::LowerCaseEqualsASCII(
+      GetVariationParam(quic_trial_params, "obsolete_versions_allowed"),
+      "true");
+  if (!obsolete_versions_allowed) {
+    quic::ParsedQuicVersionVector filtered_versions;
+    quic::ParsedQuicVersionVector obsolete_versions =
+        net::ObsoleteQuicVersions();
+    for (const quic::ParsedQuicVersion& version : trial_versions) {
+      if (std::find(obsolete_versions.begin(), obsolete_versions.end(),
+                    version) == obsolete_versions.end()) {
+        filtered_versions.push_back(version);
+      }
+    }
+    trial_versions = filtered_versions;
+  }
+  return trial_versions;
 }
 
 bool ShouldEnableServerPushCancelation(

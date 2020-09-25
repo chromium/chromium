@@ -90,6 +90,7 @@ const char kQuicHostWhitelist[] = "host_whitelist";
 const char kQuicEnableSocketRecvOptimization[] =
     "enable_socket_recv_optimization";
 const char kQuicVersion[] = "quic_version";
+const char kQuicObsoleteVersionsAllowed[] = "obsolete_versions_allowed";
 const char kQuicFlags[] = "set_quic_flags";
 
 // AsyncDNS experiment dictionary name.
@@ -316,6 +317,27 @@ void URLRequestContextConfig::ParseAndSetExperimentalOptions(
       if (quic_args->GetString(kQuicVersion, &quic_version_string)) {
         quic::ParsedQuicVersionVector supported_versions =
             quic::ParseQuicVersionVectorString(quic_version_string);
+        bool obsolete_versions_allowed = false;
+        if (!quic_args->GetBoolean(kQuicObsoleteVersionsAllowed,
+                                   &obsolete_versions_allowed) ||
+            !obsolete_versions_allowed) {
+          quic::ParsedQuicVersionVector filtered_versions;
+          quic::ParsedQuicVersionVector obsolete_versions =
+              net::ObsoleteQuicVersions();
+          for (const quic::ParsedQuicVersion& version : supported_versions) {
+            if (version == quic::ParsedQuicVersion::Q043()) {
+              // TODO(dschinazi) Remove this special-casing of Q043 once we no
+              // longer have cronet applications that require it.
+              filtered_versions.push_back(version);
+              continue;
+            }
+            if (std::find(obsolete_versions.begin(), obsolete_versions.end(),
+                          version) == obsolete_versions.end()) {
+              filtered_versions.push_back(version);
+            }
+          }
+          supported_versions = filtered_versions;
+        }
         if (!supported_versions.empty())
           quic_params->supported_versions = supported_versions;
       }

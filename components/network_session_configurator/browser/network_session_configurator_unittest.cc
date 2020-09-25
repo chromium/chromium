@@ -512,34 +512,10 @@ TEST_F(NetworkSessionConfiguratorTest, QuicVersionFromFieldTrialParamsAlpn) {
 }
 
 TEST_F(NetworkSessionConfiguratorTest,
-       MultipleQuicVersionFromFieldTrialParams) {
-  // Note that this test covers the legacy field param mechanism which relies on
-  // QuicVersionToString. We should now be using ALPNs instead.
-  quic::ParsedQuicVersionVector versions_with_quic_crypto =
-      quic::AllSupportedVersionsWithQuicCrypto();
-  ASSERT_LE(2u, versions_with_quic_crypto.size());
-
-  quic::ParsedQuicVersion version1 = versions_with_quic_crypto.front();
-  quic::ParsedQuicVersion version2 = versions_with_quic_crypto.back();
-  std::string quic_versions =
-      quic::QuicVersionToString(version1.transport_version) + "," +
-      quic::QuicVersionToString(version2.transport_version);
-
-  std::map<std::string, std::string> field_trial_params;
-  field_trial_params["quic_version"] = quic_versions;
-  variations::AssociateVariationParams("QUIC", "Enabled", field_trial_params);
-  base::FieldTrialList::CreateFieldTrial("QUIC", "Enabled");
-
-  ParseFieldTrials();
-
-  quic::ParsedQuicVersionVector supported_versions = {version1, version2};
-  EXPECT_EQ(supported_versions, quic_params_.supported_versions);
-}
-
-TEST_F(NetworkSessionConfiguratorTest,
        MultipleQuicVersionFromFieldTrialParamsAlpn) {
-  quic::ParsedQuicVersion version1 = quic::AllSupportedVersions().front();
-  quic::ParsedQuicVersion version2 = quic::AllSupportedVersions().back();
+  ASSERT_LE(2u, quic::AllSupportedVersions().size());
+  quic::ParsedQuicVersion version1 = quic::AllSupportedVersions()[0];
+  quic::ParsedQuicVersion version2 = quic::AllSupportedVersions()[1];
   std::string quic_versions =
       quic::AlpnForVersion(version1) + "," + quic::AlpnForVersion(version2);
 
@@ -924,7 +900,8 @@ class NetworkSessionConfiguratorWithQuicVersionTest
 
 INSTANTIATE_TEST_SUITE_P(QuicVersion,
                          NetworkSessionConfiguratorWithQuicVersionTest,
-                         ::testing::ValuesIn(quic::AllSupportedVersions()));
+                         ::testing::ValuesIn(quic::AllSupportedVersions()),
+                         ::testing::PrintToStringParamName());
 
 TEST_P(NetworkSessionConfiguratorWithQuicVersionTest, QuicVersion) {
   // Note that this test covers the legacy mechanism which relies on
@@ -932,16 +909,14 @@ TEST_P(NetworkSessionConfiguratorWithQuicVersionTest, QuicVersion) {
   if (!version_.UsesQuicCrypto()) {
     return;
   }
-
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   command_line.AppendSwitch(switches::kEnableQuic);
   command_line.AppendSwitchASCII(
       switches::kQuicVersion,
       quic::QuicVersionToString(version_.transport_version));
   ParseCommandLineAndFieldTrials(command_line);
-
-  ASSERT_EQ(1u, quic_params_.supported_versions.size());
-  EXPECT_EQ(version_, quic_params_.supported_versions[0]);
+  quic::ParsedQuicVersionVector expected_versions = {version_};
+  EXPECT_EQ(expected_versions, quic_params_.supported_versions);
 }
 
 TEST_P(NetworkSessionConfiguratorWithQuicVersionTest, QuicVersionAlpn) {
@@ -950,9 +925,8 @@ TEST_P(NetworkSessionConfiguratorWithQuicVersionTest, QuicVersionAlpn) {
   command_line.AppendSwitchASCII(switches::kQuicVersion,
                                  quic::AlpnForVersion(version_));
   ParseCommandLineAndFieldTrials(command_line);
-
-  ASSERT_EQ(1u, quic_params_.supported_versions.size());
-  EXPECT_EQ(version_, quic_params_.supported_versions[0]);
+  quic::ParsedQuicVersionVector expected_versions = {version_};
+  EXPECT_EQ(expected_versions, quic_params_.supported_versions);
 }
 
 TEST_P(NetworkSessionConfiguratorWithQuicVersionTest,
@@ -962,36 +936,126 @@ TEST_P(NetworkSessionConfiguratorWithQuicVersionTest,
   if (!version_.UsesQuicCrypto()) {
     return;
   }
-
+  quic::ParsedQuicVersionVector obsolete_versions = net::ObsoleteQuicVersions();
+  if (std::find(obsolete_versions.begin(), obsolete_versions.end(), version_) !=
+      obsolete_versions.end()) {
+    // Do not test obsolete versions here as those are covered by the
+    // ObsoleteQuicVersion tests.
+    return;
+  }
   std::string quic_versions =
       quic::QuicVersionToString(version_.transport_version) + "," +
       quic::QuicVersionToString(version_.transport_version);
-
   std::map<std::string, std::string> field_trial_params;
   field_trial_params["quic_version"] = quic_versions;
   variations::AssociateVariationParams("QUIC", "Enabled", field_trial_params);
   base::FieldTrialList::CreateFieldTrial("QUIC", "Enabled");
-
   ParseFieldTrials();
-
-  ASSERT_EQ(1u, quic_params_.supported_versions.size());
-  EXPECT_EQ(version_, quic_params_.supported_versions[0]);
+  quic::ParsedQuicVersionVector expected_versions = {version_};
+  EXPECT_EQ(expected_versions, quic_params_.supported_versions);
 }
 
 TEST_P(NetworkSessionConfiguratorWithQuicVersionTest,
        SameQuicVersionsFromFieldTrialParamsAlpn) {
+  quic::ParsedQuicVersionVector obsolete_versions = net::ObsoleteQuicVersions();
+  if (std::find(obsolete_versions.begin(), obsolete_versions.end(), version_) !=
+      obsolete_versions.end()) {
+    // Do not test obsolete versions here as those are covered by the
+    // ObsoleteQuicVersion tests.
+    return;
+  }
   std::string quic_versions =
       quic::AlpnForVersion(version_) + "," + quic::AlpnForVersion(version_);
-
   std::map<std::string, std::string> field_trial_params;
   field_trial_params["quic_version"] = quic_versions;
   variations::AssociateVariationParams("QUIC", "Enabled", field_trial_params);
   base::FieldTrialList::CreateFieldTrial("QUIC", "Enabled");
-
   ParseFieldTrials();
+  quic::ParsedQuicVersionVector expected_versions = {version_};
+  EXPECT_EQ(expected_versions, quic_params_.supported_versions);
+}
 
-  ASSERT_EQ(1u, quic_params_.supported_versions.size());
-  EXPECT_EQ(version_, quic_params_.supported_versions[0]);
+TEST_P(NetworkSessionConfiguratorWithQuicVersionTest, ObsoleteQuicVersion) {
+  // Test that a single obsolete version causes us to use default versions.
+  quic::ParsedQuicVersionVector obsolete_versions = net::ObsoleteQuicVersions();
+  if (std::find(obsolete_versions.begin(), obsolete_versions.end(), version_) ==
+      obsolete_versions.end()) {
+    // Only test obsolete versions here.
+    return;
+  }
+  std::string quic_versions = quic::AlpnForVersion(version_);
+  std::map<std::string, std::string> field_trial_params;
+  field_trial_params["quic_version"] = quic_versions;
+  variations::AssociateVariationParams("QUIC", "Enabled", field_trial_params);
+  base::FieldTrialList::CreateFieldTrial("QUIC", "Enabled");
+  ParseFieldTrials();
+  EXPECT_EQ(net::DefaultSupportedQuicVersions(),
+            quic_params_.supported_versions);
+}
+
+TEST_P(NetworkSessionConfiguratorWithQuicVersionTest,
+       ObsoleteQuicVersionAllowed) {
+  // Test that a single obsolete version is used when explicitly allowed.
+  quic::ParsedQuicVersionVector obsolete_versions = net::ObsoleteQuicVersions();
+  if (std::find(obsolete_versions.begin(), obsolete_versions.end(), version_) ==
+      obsolete_versions.end()) {
+    // Only test obsolete versions here.
+    return;
+  }
+  std::string quic_versions = quic::AlpnForVersion(version_);
+  std::map<std::string, std::string> field_trial_params;
+  field_trial_params["quic_version"] = quic_versions;
+  field_trial_params["obsolete_versions_allowed"] = "true";
+  variations::AssociateVariationParams("QUIC", "Enabled", field_trial_params);
+  base::FieldTrialList::CreateFieldTrial("QUIC", "Enabled");
+  ParseFieldTrials();
+  quic::ParsedQuicVersionVector expected_versions = {version_};
+  EXPECT_EQ(expected_versions, quic_params_.supported_versions);
+}
+
+TEST_P(NetworkSessionConfiguratorWithQuicVersionTest,
+       ObsoleteQuicVersionWithGoodVersion) {
+  // Test that when using one obsolete version and a supported version, the
+  // supported version is used.
+  quic::ParsedQuicVersionVector obsolete_versions = net::ObsoleteQuicVersions();
+  if (std::find(obsolete_versions.begin(), obsolete_versions.end(), version_) ==
+      obsolete_versions.end()) {
+    // Only test obsolete versions here.
+    return;
+  }
+  quic::ParsedQuicVersion good_version = quic::AllSupportedVersions().front();
+  std::string quic_versions =
+      quic::AlpnForVersion(version_) + "," + quic::AlpnForVersion(good_version);
+  std::map<std::string, std::string> field_trial_params;
+  field_trial_params["quic_version"] = quic_versions;
+  variations::AssociateVariationParams("QUIC", "Enabled", field_trial_params);
+  base::FieldTrialList::CreateFieldTrial("QUIC", "Enabled");
+  ParseFieldTrials();
+  quic::ParsedQuicVersionVector expected_versions = {good_version};
+  EXPECT_EQ(expected_versions, quic_params_.supported_versions);
+}
+
+TEST_P(NetworkSessionConfiguratorWithQuicVersionTest,
+       ObsoleteQuicVersionAllowedWithGoodVersion) {
+  // Test that when using one obsolete version and a non-obsolete version, and
+  // obsolete versions are allowed, then both are used.
+  quic::ParsedQuicVersionVector obsolete_versions = net::ObsoleteQuicVersions();
+  if (std::find(obsolete_versions.begin(), obsolete_versions.end(), version_) ==
+      obsolete_versions.end()) {
+    // Only test obsolete versions here.
+    return;
+  }
+  quic::ParsedQuicVersion good_version = quic::AllSupportedVersions().front();
+  std::string quic_versions =
+      quic::AlpnForVersion(version_) + "," + quic::AlpnForVersion(good_version);
+  std::map<std::string, std::string> field_trial_params;
+  field_trial_params["quic_version"] = quic_versions;
+  field_trial_params["obsolete_versions_allowed"] = "true";
+  variations::AssociateVariationParams("QUIC", "Enabled", field_trial_params);
+  base::FieldTrialList::CreateFieldTrial("QUIC", "Enabled");
+  ParseFieldTrials();
+  quic::ParsedQuicVersionVector expected_versions = {version_, good_version};
+  EXPECT_EQ(expected_versions, quic_params_.supported_versions);
 }
 
 }  // namespace network_session_configurator
