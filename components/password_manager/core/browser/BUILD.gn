@@ -486,6 +486,8 @@ static_library("test_support") {
     "android_affiliation/mock_affiliation_consumer.h",
     "android_affiliation/mock_affiliation_fetcher.cc",
     "android_affiliation/mock_affiliation_fetcher.h",
+    "android_affiliation/mock_affiliation_fetcher_delegate.cc",
+    "android_affiliation/mock_affiliation_fetcher_delegate.h",
     "fake_form_fetcher.cc",
     "fake_form_fetcher.h",
     "mock_bulk_leak_check_service.cc",

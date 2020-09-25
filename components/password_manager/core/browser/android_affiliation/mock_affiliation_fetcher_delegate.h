@@ -1,0 +1,31 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_ANDROID_AFFILIATION_MOCK_AFFILIATION_FETCHER_DELEGATE_H_
+#define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_ANDROID_AFFILIATION_MOCK_AFFILIATION_FETCHER_DELEGATE_H_
+
+#include <memory>
+#include <vector>
+
+#include "components/password_manager/core/browser/android_affiliation/affiliation_fetcher_delegate.h"
+#include "testing/gmock/include/gmock/gmock.h"
+
+namespace password_manager {
+
+class MockAffiliationFetcherDelegate : public AffiliationFetcherDelegate {
+ public:
+  MockAffiliationFetcherDelegate();
+  ~MockAffiliationFetcherDelegate() override;
+
+  MOCK_METHOD(void,
+              OnFetchSucceeded,
+              (std::unique_ptr<Result> result),
+              (override));
+  MOCK_METHOD(void, OnFetchFailed, (), (override));
+  MOCK_METHOD(void, OnMalformedResponse, (), (override));
+};
+
+}  // namespace password_manager
+
+#endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_ANDROID_AFFILIATION_MOCK_AFFILIATION_FETCHER_DELEGATE_H_
