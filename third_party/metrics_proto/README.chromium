@@ -16,4 +16,4 @@ blaze run //analysis/uma/proto_export:proto_export -- \
   --output=$CHROMIUM_SRC/third_party/metrics_proto
 
 Local Modifications:
-Unchanged from the output of the export script.
+Changed to only picking up the result type enum for TILE_SUGGESTION.

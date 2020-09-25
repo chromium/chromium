@@ -285,6 +285,8 @@ message OmniboxEventProto {
                                    // suggestion.
       CLIPBOARD_TEXT = 28;         // Text based on the clipboard.
       CLIPBOARD_IMAGE = 29;        // An image based on the clipboard.
+      TILE_SUGGESTION = 30;        // A search query from Chrome Query Tiles
+                                   // feature. Only used by Android.
     }
     optional ResultType result_type = 2;
 
