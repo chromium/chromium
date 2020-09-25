@@ -224,12 +224,12 @@ Touch* TouchEventManager::CreateDomTouch(
 WebCoalescedInputEvent TouchEventManager::GenerateWebCoalescedInputEvent() {
   DCHECK(!touch_attribute_map_.IsEmpty());
 
-  WebTouchEvent event;
+  auto event = std::make_unique<WebTouchEvent>();
 
   const auto& first_touch_pointer_event =
       touch_attribute_map_.begin()->value->event_;
 
-  SetWebTouchEventAttributesFromWebPointerEvent(&event,
+  SetWebTouchEventAttributesFromWebPointerEvent(event.get(),
                                                 first_touch_pointer_event);
   SetWebTouchEventAttributesFromWebPointerEvent(&last_coalesced_touch_event_,
                                                 first_touch_pointer_event);
@@ -242,12 +242,12 @@ WebCoalescedInputEvent TouchEventManager::GenerateWebCoalescedInputEvent() {
   for (const int& touch_point_id : available_ids) {
     auto* const touch_point_attribute = touch_attribute_map_.at(touch_point_id);
     const WebPointerEvent& touch_pointer_event = touch_point_attribute->event_;
-    event.touches[event.touches_length++] =
+    event->touches[event->touches_length++] =
         CreateWebTouchPointFromWebPointerEvent(touch_pointer_event,
                                                touch_point_attribute->stale_);
     if (!touch_point_attribute->stale_) {
-      event.SetTimeStamp(std::max(event.TimeStamp(),
-                                  touch_point_attribute->event_.TimeStamp()));
+      event->SetTimeStamp(std::max(event->TimeStamp(),
+                                   touch_point_attribute->event_.TimeStamp()));
     }
 
     // Only change the touch event type from move. So if we have two pointers
@@ -271,7 +271,7 @@ WebCoalescedInputEvent TouchEventManager::GenerateWebCoalescedInputEvent() {
       all_coalesced_events.push_back(coalesced_event);
     }
   }
-  event.SetType(touch_event_type);
+  event->SetType(touch_event_type);
   last_coalesced_touch_event_.SetType(touch_event_type);
 
   // Create all coalesced touch events based on pointerevents
@@ -282,7 +282,7 @@ WebCoalescedInputEvent TouchEventManager::GenerateWebCoalescedInputEvent() {
   } timestamp_based_event_comparison;
   std::sort(all_coalesced_events.begin(), all_coalesced_events.end(),
             timestamp_based_event_comparison);
-  WebCoalescedInputEvent result(event.Clone(), {}, {}, ui::LatencyInfo());
+  WebCoalescedInputEvent result(std::move(event), {}, {}, ui::LatencyInfo());
   for (const auto& web_pointer_event : all_coalesced_events) {
     if (web_pointer_event.GetType() == WebInputEvent::Type::kPointerDown) {
       // TODO(crbug.com/732842): Technically we should never receive the
@@ -343,12 +343,6 @@ WebCoalescedInputEvent TouchEventManager::GenerateWebCoalescedInputEvent() {
           break;
         }
       }
-    }
-
-    for (unsigned i = 0; i < event.touches_length; ++i) {
-      event.touches[i].state = blink::WebTouchPoint::State::kStateStationary;
-      event.touches[i].movement_x = 0;
-      event.touches[i].movement_y = 0;
     }
   }
 

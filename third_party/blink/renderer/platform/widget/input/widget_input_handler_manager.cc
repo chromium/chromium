@@ -89,25 +89,25 @@ mojom::blink::InputEventResultState InputEventDispositionToAck(
   }
 }
 
-blink::WebGestureEvent ScrollBeginFromScrollUpdate(
+std::unique_ptr<blink::WebGestureEvent> ScrollBeginFromScrollUpdate(
     const WebGestureEvent& gesture_update) {
   DCHECK(gesture_update.GetType() == WebInputEvent::Type::kGestureScrollUpdate);
 
-  WebGestureEvent scroll_begin(gesture_update);
-  scroll_begin.SetType(WebInputEvent::Type::kGestureScrollBegin);
+  auto scroll_begin = std::make_unique<WebGestureEvent>(gesture_update);
+  scroll_begin->SetType(WebInputEvent::Type::kGestureScrollBegin);
 
-  scroll_begin.data.scroll_begin.delta_x_hint =
+  scroll_begin->data.scroll_begin.delta_x_hint =
       gesture_update.data.scroll_update.delta_x;
-  scroll_begin.data.scroll_begin.delta_y_hint =
+  scroll_begin->data.scroll_begin.delta_y_hint =
       gesture_update.data.scroll_update.delta_y;
-  scroll_begin.data.scroll_begin.delta_hint_units =
+  scroll_begin->data.scroll_begin.delta_hint_units =
       gesture_update.data.scroll_update.delta_units;
-  scroll_begin.data.scroll_begin.target_viewport = false;
-  scroll_begin.data.scroll_begin.inertial_phase =
+  scroll_begin->data.scroll_begin.target_viewport = false;
+  scroll_begin->data.scroll_begin.inertial_phase =
       gesture_update.data.scroll_update.inertial_phase;
-  scroll_begin.data.scroll_begin.synthetic = false;
-  scroll_begin.data.scroll_begin.pointer_count = 0;
-  scroll_begin.data.scroll_begin.scrollable_area_element_id = 0;
+  scroll_begin->data.scroll_begin.synthetic = false;
+  scroll_begin->data.scroll_begin.pointer_count = 0;
+  scroll_begin->data.scroll_begin.scrollable_area_element_id = 0;
 
   return scroll_begin;
 }
@@ -322,7 +322,7 @@ void WidgetInputHandlerManager::GenerateScrollBeginAndSendToMainThread(
   DCHECK_EQ(update_event.GetType(), WebInputEvent::Type::kGestureScrollUpdate);
   std::unique_ptr<WebCoalescedInputEvent> event =
       std::make_unique<WebCoalescedInputEvent>(
-          ScrollBeginFromScrollUpdate(update_event).Clone(), ui::LatencyInfo());
+          ScrollBeginFromScrollUpdate(update_event), ui::LatencyInfo());
 
   DispatchNonBlockingEventToMainThread(std::move(event), attribution);
 }

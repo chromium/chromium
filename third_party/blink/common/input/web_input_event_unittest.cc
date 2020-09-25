@@ -167,14 +167,16 @@ TEST(WebInputEventTest, GesturePinchUpdateCoalescing) {
   ASSERT_TRUE(WebGestureEvent::IsCompatibleScrollorPinch(event_to_be_coalesced,
                                                          coalesced_event));
 
-  WebGestureEvent logical_scroll, logical_pinch;
+  std::unique_ptr<WebGestureEvent> logical_scroll, logical_pinch;
   std::tie(logical_scroll, logical_pinch) =
       WebGestureEvent::CoalesceScrollAndPinch(nullptr, coalesced_event,
                                               event_to_be_coalesced);
+  ASSERT_NE(nullptr, logical_scroll);
+  ASSERT_NE(nullptr, logical_pinch);
   ASSERT_EQ(WebInputEvent::Type::kGestureScrollUpdate,
-            logical_scroll.GetType());
-  ASSERT_EQ(WebInputEvent::Type::kGesturePinchUpdate, logical_pinch.GetType());
-  EXPECT_FLOAT_EQ(1.21, logical_pinch.data.pinch_update.scale);
+            logical_scroll->GetType());
+  ASSERT_EQ(WebInputEvent::Type::kGesturePinchUpdate, logical_pinch->GetType());
+  EXPECT_FLOAT_EQ(1.21, logical_pinch->data.pinch_update.scale);
 }
 
 TEST(WebInputEventTest, MouseEventCoalescing) {

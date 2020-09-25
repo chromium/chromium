@@ -61,7 +61,7 @@ void CompositorThreadEventQueue::Queue(
                                         "CompositorThreadEventQueue::Queue",
                                         new_event->first_original_event());
     }
-    queue_.emplace_back(std::move(new_event));
+    queue_.push_back(std::move(new_event));
     return;
   }
 
@@ -164,31 +164,31 @@ void CompositorThreadEventQueue::Queue(
                new_event->latency_info().trace_id(), "traceId",
                scroll_latency.trace_id() != -1 ? scroll_latency.trace_id()
                                                : pinch_latency.trace_id());
-  std::pair<WebGestureEvent, WebGestureEvent> coalesced_events =
-      WebGestureEvent::CoalesceScrollAndPinch(
+  std::pair<std::unique_ptr<WebGestureEvent>, std::unique_ptr<WebGestureEvent>>
+      coalesced_events = WebGestureEvent::CoalesceScrollAndPinch(
           second_last_event ? &ToWebGestureEvent(second_last_event->event())
                             : nullptr,
           ToWebGestureEvent(last_event->event()),
           ToWebGestureEvent(new_event->event()));
+  DCHECK(coalesced_events.first);
+  DCHECK(coalesced_events.second);
 
-  std::unique_ptr<EventWithCallback> scroll_event =
-      std::make_unique<EventWithCallback>(
-          std::make_unique<WebCoalescedInputEvent>(
-              coalesced_events.first.Clone(), scroll_latency),
-          oldest_creation_timestamp, timestamp_now,
-          std::move(scroll_original_events));
+  auto scroll_event = std::make_unique<EventWithCallback>(
+      std::make_unique<WebCoalescedInputEvent>(
+          std::move(coalesced_events.first), scroll_latency),
+      oldest_creation_timestamp, timestamp_now,
+      std::move(scroll_original_events));
   scroll_event->set_coalesced_scroll_and_pinch();
 
-  std::unique_ptr<EventWithCallback> pinch_event =
-      std::make_unique<EventWithCallback>(
-          std::make_unique<WebCoalescedInputEvent>(
-              coalesced_events.second.Clone(), pinch_latency),
-          oldest_creation_timestamp, timestamp_now,
-          std::move(pinch_original_events));
+  auto pinch_event = std::make_unique<EventWithCallback>(
+      std::make_unique<WebCoalescedInputEvent>(
+          std::move(coalesced_events.second), pinch_latency),
+      oldest_creation_timestamp, timestamp_now,
+      std::move(pinch_original_events));
   pinch_event->set_coalesced_scroll_and_pinch();
 
-  queue_.emplace_back(std::move(scroll_event));
-  queue_.emplace_back(std::move(pinch_event));
+  queue_.push_back(std::move(scroll_event));
+  queue_.push_back(std::move(pinch_event));
 }
 
 std::unique_ptr<EventWithCallback> CompositorThreadEventQueue::Pop() {

@@ -299,7 +299,7 @@ bool WebGestureEvent::IsCompatibleScrollorPinch(
          new_event.SourceDevice() == WebGestureDevice::kTouchscreen;
 }
 
-std::pair<WebGestureEvent, WebGestureEvent>
+std::pair<std::unique_ptr<WebGestureEvent>, std::unique_ptr<WebGestureEvent>>
 WebGestureEvent::CoalesceScrollAndPinch(
     const WebGestureEvent* second_last_event,
     const WebGestureEvent& last_event,
@@ -311,14 +311,13 @@ WebGestureEvent::CoalesceScrollAndPinch(
   DCHECK(!second_last_event ||
          IsCompatibleScrollorPinch(new_event, *second_last_event));
 
-  WebGestureEvent scroll_event(WebInputEvent::Type::kGestureScrollUpdate,
-                               new_event.GetModifiers(), new_event.TimeStamp(),
-                               new_event.SourceDevice());
-  WebGestureEvent pinch_event;
-  scroll_event.primary_pointer_type = new_event.primary_pointer_type;
-  pinch_event = scroll_event;
-  pinch_event.SetType(WebInputEvent::Type::kGesturePinchUpdate);
-  pinch_event.SetPositionInWidget(
+  auto scroll_event = std::make_unique<WebGestureEvent>(
+      WebInputEvent::Type::kGestureScrollUpdate, new_event.GetModifiers(),
+      new_event.TimeStamp(), new_event.SourceDevice());
+  scroll_event->primary_pointer_type = new_event.primary_pointer_type;
+  auto pinch_event = std::make_unique<WebGestureEvent>(*scroll_event);
+  pinch_event->SetType(WebInputEvent::Type::kGesturePinchUpdate);
+  pinch_event->SetPositionInWidget(
       new_event.GetType() == WebInputEvent::Type::kGesturePinchUpdate
           ? new_event.PositionInWidget()
           : last_event.PositionInWidget());
@@ -336,17 +335,17 @@ WebGestureEvent::CoalesceScrollAndPinch(
       SkScalarToFloat(combined_scroll_pinch.matrix().get(0, 3));
   float combined_scroll_pinch_y =
       SkScalarToFloat(combined_scroll_pinch.matrix().get(1, 3));
-  scroll_event.data.scroll_update.delta_x =
-      (combined_scroll_pinch_x + pinch_event.PositionInWidget().x()) /
+  scroll_event->data.scroll_update.delta_x =
+      (combined_scroll_pinch_x + pinch_event->PositionInWidget().x()) /
           combined_scale -
-      pinch_event.PositionInWidget().x();
-  scroll_event.data.scroll_update.delta_y =
-      (combined_scroll_pinch_y + pinch_event.PositionInWidget().y()) /
+      pinch_event->PositionInWidget().x();
+  scroll_event->data.scroll_update.delta_y =
+      (combined_scroll_pinch_y + pinch_event->PositionInWidget().y()) /
           combined_scale -
-      pinch_event.PositionInWidget().y();
-  pinch_event.data.pinch_update.scale = combined_scale;
+      pinch_event->PositionInWidget().y();
+  pinch_event->data.pinch_update.scale = combined_scale;
 
-  return std::make_pair(scroll_event, pinch_event);
+  return std::make_pair(std::move(scroll_event), std::move(pinch_event));
 }
 
 std::unique_ptr<blink::WebGestureEvent>

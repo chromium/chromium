@@ -70,15 +70,15 @@ std::unique_ptr<WebInputEvent> CreateGestureScrollPinch(
     float delta_y_or_scale = 0,
     int x = 0,
     int y = 0) {
-  WebGestureEvent gesture(type, WebInputEvent::kNoModifiers, event_time,
-                          source_device);
+  auto gesture = std::make_unique<WebGestureEvent>(
+      type, WebInputEvent::kNoModifiers, event_time, source_device);
   if (type == WebInputEvent::Type::kGestureScrollUpdate) {
-    gesture.data.scroll_update.delta_y = delta_y_or_scale;
+    gesture->data.scroll_update.delta_y = delta_y_or_scale;
   } else if (type == WebInputEvent::Type::kGesturePinchUpdate) {
-    gesture.data.pinch_update.scale = delta_y_or_scale;
-    gesture.SetPositionInWidget(gfx::PointF(x, y));
+    gesture->data.pinch_update.scale = delta_y_or_scale;
+    gesture->SetPositionInWidget(gfx::PointF(x, y));
   }
-  return gesture.Clone();
+  return gesture;
 }
 
 class MockInputHandler : public cc::InputHandler {
@@ -3995,29 +3995,29 @@ class InputHandlerProxyMomentumScrollJankTest : public testing::Test {
   ~InputHandlerProxyMomentumScrollJankTest() = default;
 
   void HandleScrollBegin() {
-    WebGestureEvent gesture(WebInputEvent::Type::kGestureScrollBegin,
-                            WebInputEvent::kNoModifiers, tick_clock_.NowTicks(),
-                            WebGestureDevice::kTouchscreen);
-    HandleGesture(gesture.Clone());
+    auto gesture = std::make_unique<WebGestureEvent>(
+        WebInputEvent::Type::kGestureScrollBegin, WebInputEvent::kNoModifiers,
+        tick_clock_.NowTicks(), WebGestureDevice::kTouchscreen);
+    HandleGesture(std::move(gesture));
   }
 
   void HandleScrollEnd() {
-    WebGestureEvent gesture(WebInputEvent::Type::kGestureScrollEnd,
-                            WebInputEvent::kNoModifiers, tick_clock_.NowTicks(),
-                            WebGestureDevice::kTouchscreen);
-    HandleGesture(gesture.Clone());
+    auto gesture = std::make_unique<WebGestureEvent>(
+        WebInputEvent::Type::kGestureScrollEnd, WebInputEvent::kNoModifiers,
+        tick_clock_.NowTicks(), WebGestureDevice::kTouchscreen);
+    HandleGesture(std::move(gesture));
   }
 
   void HandleScrollUpdate(bool is_momentum) {
-    WebGestureEvent gesture(WebInputEvent::Type::kGestureScrollUpdate,
-                            WebInputEvent::kNoModifiers, tick_clock_.NowTicks(),
-                            WebGestureDevice::kTouchscreen);
-    gesture.data.scroll_update.delta_y = -20;
+    auto gesture = std::make_unique<WebGestureEvent>(
+        WebInputEvent::Type::kGestureScrollUpdate, WebInputEvent::kNoModifiers,
+        tick_clock_.NowTicks(), WebGestureDevice::kTouchscreen);
+    gesture->data.scroll_update.delta_y = -20;
     if (is_momentum) {
-      gesture.data.scroll_update.inertial_phase =
+      gesture->data.scroll_update.inertial_phase =
           WebGestureEvent::InertialPhaseState::kMomentum;
     }
-    HandleGesture(gesture.Clone());
+    HandleGesture(std::move(gesture));
   }
 
   void AdvanceClock(uint32_t milliseconds) {

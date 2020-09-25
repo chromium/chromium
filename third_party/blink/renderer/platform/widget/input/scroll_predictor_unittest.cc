@@ -47,20 +47,20 @@ class ScrollPredictorTest : public testing::Test {
       double time_delta_in_milliseconds = 0,
       WebGestureEvent::InertialPhaseState phase =
           WebGestureEvent::InertialPhaseState::kNonMomentum) {
-    WebGestureEvent gesture(
+    auto gesture = std::make_unique<WebGestureEvent>(
         WebInputEvent::Type::kGestureScrollUpdate, WebInputEvent::kNoModifiers,
         WebInputEvent::GetStaticTimeStampForTests() +
             base::TimeDelta::FromMillisecondsD(time_delta_in_milliseconds),
         WebGestureDevice::kTouchscreen);
-    gesture.data.scroll_update.delta_x = delta_x;
-    gesture.data.scroll_update.delta_y = delta_y;
-    gesture.data.scroll_update.inertial_phase = phase;
+    gesture->data.scroll_update.delta_x = delta_x;
+    gesture->data.scroll_update.delta_y = delta_y;
+    gesture->data.scroll_update.inertial_phase = phase;
 
     original_events_.emplace_back(std::make_unique<WebCoalescedInputEvent>(
-                                      gesture.Clone(), ui::LatencyInfo()),
+                                      gesture->Clone(), ui::LatencyInfo()),
                                   base::NullCallback());
 
-    return gesture.Clone();
+    return gesture;
   }
 
   void CoalesceWith(const std::unique_ptr<WebInputEvent>& new_event,
@@ -199,12 +199,12 @@ TEST_F(ScrollPredictorTest, ScrollResamplingStates) {
   EXPECT_FALSE(GetResamplingState());
 
   // after GSE
-  WebGestureEvent gesture_end(WebInputEvent::Type::kGestureScrollEnd,
-                              WebInputEvent::kNoModifiers,
-                              WebInputEvent::GetStaticTimeStampForTests(),
-                              WebGestureDevice::kTouchscreen);
-  std::unique_ptr<WebInputEvent> event = gesture_end.Clone();
-  HandleResampleScrollEvents(event);
+  std::unique_ptr<WebInputEvent> gesture_end =
+      std::make_unique<WebGestureEvent>(
+          WebInputEvent::Type::kGestureScrollEnd, WebInputEvent::kNoModifiers,
+          WebInputEvent::GetStaticTimeStampForTests(),
+          WebGestureDevice::kTouchscreen);
+  HandleResampleScrollEvents(gesture_end);
   EXPECT_FALSE(GetResamplingState());
 }
 
