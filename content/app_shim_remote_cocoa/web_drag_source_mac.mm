@@ -298,8 +298,11 @@ using content::DropData;
               &_downloadURL)) {
         // Generate the file name based on both mime type and proposed file
         // name.
-        std::string defaultName =
-            content::GetContentClient()->browser()->GetDefaultDownloadName();
+        std::string defaultName = content::GetContentClient()->browser()
+                                      ? content::GetContentClient()
+                                            ->browser()
+                                            ->GetDefaultDownloadName()
+                                      : std::string();
         mimeType = base::UTF16ToUTF8(mimeType16);
         _downloadFileName =
             net::GenerateFileName(_downloadURL,
