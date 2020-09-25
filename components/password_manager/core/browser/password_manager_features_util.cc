@@ -20,7 +20,6 @@
 #include "google_apis/gaia/gaia_urls.h"
 
 using autofill::GaiaIdHash;
-using autofill::PasswordForm;
 using password_manager::metrics_util::PasswordAccountStorageUsageLevel;
 using password_manager::metrics_util::PasswordAccountStorageUserState;
 

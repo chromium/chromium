@@ -88,7 +88,7 @@ bool ShouldShowAccountStorageBubbleUi(const PrefService* pref_service,
 // See PasswordFeatureManager::SetDefaultPasswordStore.
 void SetDefaultPasswordStore(PrefService* pref_service,
                              const syncer::SyncService* sync_service,
-                             autofill::PasswordForm::Store default_store);
+                             PasswordForm::Store default_store);
 
 // Returns the default storage location for signed-in but non-syncing users
 // (i.e. will new passwords be saved to locally or to the account by default).
@@ -97,7 +97,7 @@ void SetDefaultPasswordStore(PrefService* pref_service,
 // |sync_service| may be null (commonly the case in incognito mode), in which
 // case this will return kProfileStore.
 // See PasswordFeatureManager::GetDefaultPasswordStore.
-autofill::PasswordForm::Store GetDefaultPasswordStore(
+PasswordForm::Store GetDefaultPasswordStore(
     const PrefService* pref_service,
     const syncer::SyncService* sync_service);
 

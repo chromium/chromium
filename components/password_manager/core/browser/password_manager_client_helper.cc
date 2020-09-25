@@ -44,14 +44,13 @@ PasswordManagerClientHelper::PasswordManagerClientHelper(
 PasswordManagerClientHelper::~PasswordManagerClientHelper() = default;
 
 void PasswordManagerClientHelper::NotifyUserCouldBeAutoSignedIn(
-    std::unique_ptr<autofill::PasswordForm> form) {
+    std::unique_ptr<PasswordForm> form) {
   possible_auto_sign_in_ = std::move(form);
 }
 
 void PasswordManagerClientHelper::NotifySuccessfulLoginWithExistingPassword(
     std::unique_ptr<PasswordFormManagerForUI> submitted_manager) {
-  const autofill::PasswordForm& form =
-      submitted_manager->GetPendingCredentials();
+  const PasswordForm& form = submitted_manager->GetPendingCredentials();
   if (!possible_auto_sign_in_ ||
       possible_auto_sign_in_->username_value != form.username_value ||
       possible_auto_sign_in_->password_value != form.password_value ||
@@ -70,7 +69,7 @@ void PasswordManagerClientHelper::NotifySuccessfulLoginWithExistingPassword(
 void PasswordManagerClientHelper::OnCredentialsChosen(
     PasswordManagerClient::CredentialsCallback callback,
     bool one_local_credential,
-    const autofill::PasswordForm* form) {
+    const PasswordForm* form) {
   std::move(callback).Run(form);
   // If a site gets back a credential some navigations are likely to occur. They
   // shouldn't trigger the autofill password manager.
@@ -111,7 +110,7 @@ bool PasswordManagerClientHelper::ShouldPromptToMovePasswordToAccount(
   if (!feature_manager->ShouldShowAccountStorageBubbleUi())
     return false;
   if (feature_manager->GetDefaultPasswordStore() ==
-      autofill::PasswordForm::Store::kProfileStore) {
+      PasswordForm::Store::kProfileStore) {
     return false;
   }
   if (!submitted_manager.IsMovableToAccountStore())

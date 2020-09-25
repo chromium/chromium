@@ -56,7 +56,6 @@ using autofill::FormRendererId;
 using autofill::FormStructure;
 using autofill::NEW_PASSWORD;
 using autofill::NOT_USERNAME;
-using autofill::PasswordForm;
 using autofill::SINGLE_USERNAME;
 using autofill::UNKNOWN_TYPE;
 using autofill::USERNAME;

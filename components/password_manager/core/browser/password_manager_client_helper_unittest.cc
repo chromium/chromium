@@ -10,8 +10,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "components/autofill/core/common/password_form.h"
 #include "components/password_manager/core/browser/mock_password_form_manager_for_ui.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
@@ -29,7 +29,6 @@ namespace password_manager {
 
 namespace {
 
-using autofill::PasswordForm;
 using testing::AnyNumber;
 using testing::NiceMock;
 using testing::Return;
@@ -141,7 +140,7 @@ TEST_F(PasswordManagerClientHelperTest, PromptMoveForMovableFormInAccountMode) {
               ShouldShowAccountStorageBubbleUi)
       .WillOnce(Return(true));
   EXPECT_CALL(*client()->GetPasswordFeatureManager(), GetDefaultPasswordStore)
-      .WillOnce(Return(autofill::PasswordForm::Store::kAccountStore));
+      .WillOnce(Return(PasswordForm::Store::kAccountStore));
   EXPECT_CALL(*client(), PromptUserToMovePasswordToAccount);
   EXPECT_CALL(*client(), PromptUserToEnableAutosignin).Times(0);
 
@@ -158,7 +157,7 @@ TEST_F(PasswordManagerClientHelperTest,
               ShouldShowAccountStorageBubbleUi)
       .WillOnce(Return(true));
   EXPECT_CALL(*client()->GetPasswordFeatureManager(), GetDefaultPasswordStore)
-      .WillOnce(Return(autofill::PasswordForm::Store::kProfileStore));
+      .WillOnce(Return(PasswordForm::Store::kProfileStore));
   EXPECT_CALL(*client(), PromptUserToMovePasswordToAccount).Times(0);
   EXPECT_CALL(*client(), PromptUserToEnableAutosignin).Times(0);
 
@@ -205,7 +204,7 @@ TEST_F(PasswordManagerClientHelperTest, NoPromptToMoveForGaiaAccountForm) {
               ShouldShowAccountStorageBubbleUi)
       .WillOnce(Return(true));
   EXPECT_CALL(*client()->GetPasswordFeatureManager(), GetDefaultPasswordStore)
-      .WillOnce(Return(autofill::PasswordForm::Store::kAccountStore));
+      .WillOnce(Return(PasswordForm::Store::kAccountStore));
 
   EXPECT_CALL(*client(), PromptUserToMovePasswordToAccount).Times(0);
 
@@ -225,7 +224,7 @@ TEST_F(PasswordManagerClientHelperTest,
           ShouldShowAccountStorageBubbleUi)
       .WillByDefault(Return(true));
   ON_CALL(*client()->GetPasswordFeatureManager(), GetDefaultPasswordStore)
-      .WillByDefault(Return(autofill::PasswordForm::Store::kAccountStore));
+      .WillByDefault(Return(PasswordForm::Store::kAccountStore));
 
   // Simulate that no refusals happened so far. Moving should be offered.
   EXPECT_CALL(*client()->GetPasswordFeatureManager(),

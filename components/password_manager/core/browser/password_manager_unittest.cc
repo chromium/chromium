@@ -66,7 +66,6 @@ using autofill::FormRendererId;
 using autofill::FormStructure;
 using autofill::NO_SERVER_DATA;
 using autofill::NOT_USERNAME;
-using autofill::PasswordForm;
 using autofill::PasswordFormFillData;
 using autofill::ServerFieldType;
 using autofill::SINGLE_USERNAME;
@@ -123,14 +122,13 @@ class MockLeakDetectionCheck : public LeakDetectionCheck {
 
 class MockStoreResultFilter : public StubCredentialsFilter {
  public:
-  MOCK_CONST_METHOD1(ShouldSave, bool(const autofill::PasswordForm& form));
+  MOCK_CONST_METHOD1(ShouldSave, bool(const PasswordForm& form));
   MOCK_CONST_METHOD1(ReportFormLoginSuccess,
                      void(const PasswordFormManager& form_manager));
   MOCK_CONST_METHOD1(IsSyncAccountEmail, bool(const std::string&));
-  MOCK_CONST_METHOD1(ShouldSaveGaiaPasswordHash,
-                     bool(const autofill::PasswordForm&));
+  MOCK_CONST_METHOD1(ShouldSaveGaiaPasswordHash, bool(const PasswordForm&));
   MOCK_CONST_METHOD1(ShouldSaveEnterprisePasswordHash,
-                     bool(const autofill::PasswordForm&));
+                     bool(const PasswordForm&));
 };
 
 class MockPasswordManagerClient : public StubPasswordManagerClient {
@@ -153,7 +151,7 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
   MOCK_METHOD(net::CertStatus, GetMainFrameCertStatus, (), (const, override));
   MOCK_METHOD(void,
               AutofillHttpAuth,
-              (const autofill::PasswordForm&, const PasswordFormManagerForUI*),
+              (const PasswordForm&, const PasswordFormManagerForUI*),
               (override));
   MOCK_METHOD(PasswordStore*, GetProfilePasswordStore, (), (const, override));
   MOCK_METHOD(PasswordStore*, GetAccountPasswordStore, (), (const, override));
@@ -1795,8 +1793,8 @@ TEST_P(PasswordManagerTest, FormSubmittedUnchangedNotifiesClient) {
       .WillRepeatedly(Return(true));
   OnPasswordFormSubmitted(form.form_data);
 
-  autofill::PasswordForm updated_form;
-  autofill::PasswordForm notified_form;
+  PasswordForm updated_form;
+  PasswordForm notified_form;
   EXPECT_CALL(client_, PromptUserToSaveOrUpdatePasswordPtr(_)).Times(0);
   EXPECT_CALL(*store_, UpdateLogin(_)).WillOnce(SaveArg<0>(&updated_form));
   EXPECT_CALL(client_, NotifySuccessfulLoginWithExistingPassword(_))
@@ -2217,7 +2215,7 @@ TEST_P(PasswordManagerTest, AutofillingOfAffiliatedCredentials) {
   OnPasswordFormSubmitted(filled_form.form_data);
 
   PasswordForm saved_form;
-  autofill::PasswordForm saved_notified_form;
+  PasswordForm saved_notified_form;
   EXPECT_CALL(*store_, UpdateLogin(_)).WillOnce(SaveArg<0>(&saved_form));
   EXPECT_CALL(client_, PromptUserToSaveOrUpdatePasswordPtr(_)).Times(0);
   EXPECT_CALL(client_, NotifySuccessfulLoginWithExistingPassword(_))

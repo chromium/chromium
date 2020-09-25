@@ -17,8 +17,7 @@ class PasswordManagerClientHelper {
   ~PasswordManagerClientHelper();
 
   // Implementation of PasswordManagerClient::NotifyUserCouldBeAutoSignedIn.
-  void NotifyUserCouldBeAutoSignedIn(
-      std::unique_ptr<autofill::PasswordForm> form);
+  void NotifyUserCouldBeAutoSignedIn(std::unique_ptr<PasswordForm> form);
 
   // Implementation of
   // PasswordManagerClient::NotifySuccessfulLoginWithExistingPassword.
@@ -31,7 +30,7 @@ class PasswordManagerClientHelper {
   // just one local credential to be chosen from.
   void OnCredentialsChosen(PasswordManagerClient::CredentialsCallback callback,
                            bool one_local_credential,
-                           const autofill::PasswordForm* form);
+                           const PasswordForm* form);
 
   // Common logic for IOSChromePasswordManagerClient and
   // ChromePasswordManagerClient implementation of NotifyStorePasswordCalled.
@@ -58,7 +57,7 @@ class PasswordManagerClientHelper {
 
   // Set during 'NotifyUserCouldBeAutoSignedIn' in order to store the
   // form for potential use during 'NotifySuccessfulLoginWithExistingPassword'.
-  std::unique_ptr<autofill::PasswordForm> possible_auto_sign_in_;
+  std::unique_ptr<PasswordForm> possible_auto_sign_in_;
 };
 
 }  // namespace password_manager

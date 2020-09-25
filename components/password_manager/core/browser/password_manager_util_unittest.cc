@@ -14,8 +14,8 @@
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
-#include "components/autofill/core/common/password_form.h"
 #include "components/password_manager/core/browser/mock_password_feature_manager.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/browser/test_password_store.h"
@@ -24,7 +24,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using autofill::PasswordForm;
+using password_manager::PasswordForm;
 
 namespace password_manager_util {
 namespace {
@@ -53,9 +53,9 @@ class MockPasswordManagerClient
   MOCK_METHOD(void, GeneratePassword, (), (override));
 };
 
-autofill::PasswordForm GetTestAndroidCredential() {
-  autofill::PasswordForm form;
-  form.scheme = autofill::PasswordForm::Scheme::kHtml;
+PasswordForm GetTestAndroidCredential() {
+  PasswordForm form;
+  form.scheme = PasswordForm::Scheme::kHtml;
   form.url = GURL(kTestAndroidRealm);
   form.signon_realm = kTestAndroidRealm;
   form.username_value = base::ASCIIToUTF16(kTestUsername);
@@ -63,9 +63,9 @@ autofill::PasswordForm GetTestAndroidCredential() {
   return form;
 }
 
-autofill::PasswordForm GetTestCredential() {
-  autofill::PasswordForm form;
-  form.scheme = autofill::PasswordForm::Scheme::kHtml;
+PasswordForm GetTestCredential() {
+  PasswordForm form;
+  form.scheme = PasswordForm::Scheme::kHtml;
   form.url = GURL(kTestURL);
   form.signon_realm = form.url.GetOrigin().spec();
   form.username_value = base::ASCIIToUTF16(kTestUsername);
@@ -73,9 +73,9 @@ autofill::PasswordForm GetTestCredential() {
   return form;
 }
 
-autofill::PasswordForm GetTestProxyCredential() {
-  autofill::PasswordForm form;
-  form.scheme = autofill::PasswordForm::Scheme::kBasic;
+PasswordForm GetTestProxyCredential() {
+  PasswordForm form;
+  form.scheme = PasswordForm::Scheme::kBasic;
   form.url = GURL(kTestProxyOrigin);
   form.signon_realm = kTestProxySignonRealm;
   form.username_value = base::ASCIIToUTF16(kTestUsername);
@@ -91,26 +91,24 @@ using testing::DoAll;
 using testing::Return;
 
 TEST(PasswordManagerUtil, TrimUsernameOnlyCredentials) {
-  std::vector<std::unique_ptr<autofill::PasswordForm>> forms;
-  std::vector<std::unique_ptr<autofill::PasswordForm>> expected_forms;
-  forms.push_back(
-      std::make_unique<autofill::PasswordForm>(GetTestAndroidCredential()));
+  std::vector<std::unique_ptr<PasswordForm>> forms;
+  std::vector<std::unique_ptr<PasswordForm>> expected_forms;
+  forms.push_back(std::make_unique<PasswordForm>(GetTestAndroidCredential()));
   expected_forms.push_back(
-      std::make_unique<autofill::PasswordForm>(GetTestAndroidCredential()));
+      std::make_unique<PasswordForm>(GetTestAndroidCredential()));
 
-  autofill::PasswordForm username_only;
-  username_only.scheme = autofill::PasswordForm::Scheme::kUsernameOnly;
+  PasswordForm username_only;
+  username_only.scheme = PasswordForm::Scheme::kUsernameOnly;
   username_only.signon_realm = kTestAndroidRealm;
   username_only.username_value = base::ASCIIToUTF16(kTestUsername2);
-  forms.push_back(std::make_unique<autofill::PasswordForm>(username_only));
+  forms.push_back(std::make_unique<PasswordForm>(username_only));
 
   username_only.federation_origin =
       url::Origin::Create(GURL(kTestFederationURL));
   username_only.skip_zero_click = false;
-  forms.push_back(std::make_unique<autofill::PasswordForm>(username_only));
+  forms.push_back(std::make_unique<PasswordForm>(username_only));
   username_only.skip_zero_click = true;
-  expected_forms.push_back(
-      std::make_unique<autofill::PasswordForm>(username_only));
+  expected_forms.push_back(std::make_unique<PasswordForm>(username_only));
 
   TrimUsernameOnlyCredentials(&forms);
 
@@ -118,17 +116,17 @@ TEST(PasswordManagerUtil, TrimUsernameOnlyCredentials) {
 }
 
 TEST(PasswordManagerUtil, GetSignonRealmWithProtocolExcluded) {
-  autofill::PasswordForm http_form;
+  PasswordForm http_form;
   http_form.url = GURL("http://www.google.com/page-1/");
   http_form.signon_realm = "http://www.google.com/";
   EXPECT_EQ(GetSignonRealmWithProtocolExcluded(http_form), "www.google.com/");
 
-  autofill::PasswordForm https_form;
+  PasswordForm https_form;
   https_form.url = GURL("https://www.google.com/page-1/");
   https_form.signon_realm = "https://www.google.com/";
   EXPECT_EQ(GetSignonRealmWithProtocolExcluded(https_form), "www.google.com/");
 
-  autofill::PasswordForm federated_form;
+  PasswordForm federated_form;
   federated_form.url = GURL("http://localhost:8000/");
   federated_form.signon_realm =
       "federation://localhost/accounts.federation.com";
@@ -295,24 +293,24 @@ TEST(PasswordManagerUtil, FindBestMatchesInProfileAndAccountStores) {
 }
 
 TEST(PasswordManagerUtil, GetMatchForUpdating_MatchUsername) {
-  autofill::PasswordForm stored = GetTestCredential();
-  autofill::PasswordForm parsed = GetTestCredential();
+  PasswordForm stored = GetTestCredential();
+  PasswordForm parsed = GetTestCredential();
   parsed.password_value = base::ASCIIToUTF16("new_password");
 
   EXPECT_EQ(&stored, GetMatchForUpdating(parsed, {&stored}));
 }
 
 TEST(PasswordManagerUtil, GetMatchForUpdating_RejectUnknownUsername) {
-  autofill::PasswordForm stored = GetTestCredential();
-  autofill::PasswordForm parsed = GetTestCredential();
+  PasswordForm stored = GetTestCredential();
+  PasswordForm parsed = GetTestCredential();
   parsed.username_value = base::ASCIIToUTF16("other_username");
 
   EXPECT_EQ(nullptr, GetMatchForUpdating(parsed, {&stored}));
 }
 
 TEST(PasswordManagerUtil, GetMatchForUpdating_FederatedCredential) {
-  autofill::PasswordForm stored = GetTestCredential();
-  autofill::PasswordForm parsed = GetTestCredential();
+  PasswordForm stored = GetTestCredential();
+  PasswordForm parsed = GetTestCredential();
   parsed.password_value.clear();
   parsed.federation_origin = url::Origin::Create(GURL(kTestFederationURL));
 
@@ -320,17 +318,17 @@ TEST(PasswordManagerUtil, GetMatchForUpdating_FederatedCredential) {
 }
 
 TEST(PasswordManagerUtil, GetMatchForUpdating_MatchUsernamePSL) {
-  autofill::PasswordForm stored = GetTestCredential();
+  PasswordForm stored = GetTestCredential();
   stored.is_public_suffix_match = true;
-  autofill::PasswordForm parsed = GetTestCredential();
+  PasswordForm parsed = GetTestCredential();
 
   EXPECT_EQ(&stored, GetMatchForUpdating(parsed, {&stored}));
 }
 
 TEST(PasswordManagerUtil, GetMatchForUpdating_MatchUsernamePSLAnotherPassword) {
-  autofill::PasswordForm stored = GetTestCredential();
+  PasswordForm stored = GetTestCredential();
   stored.is_public_suffix_match = true;
-  autofill::PasswordForm parsed = GetTestCredential();
+  PasswordForm parsed = GetTestCredential();
   parsed.password_value = base::ASCIIToUTF16("new_password");
 
   EXPECT_EQ(nullptr, GetMatchForUpdating(parsed, {&stored}));
@@ -338,9 +336,9 @@ TEST(PasswordManagerUtil, GetMatchForUpdating_MatchUsernamePSLAnotherPassword) {
 
 TEST(PasswordManagerUtil,
      GetMatchForUpdating_MatchUsernamePSLNewPasswordKnown) {
-  autofill::PasswordForm stored = GetTestCredential();
+  PasswordForm stored = GetTestCredential();
   stored.is_public_suffix_match = true;
-  autofill::PasswordForm parsed = GetTestCredential();
+  PasswordForm parsed = GetTestCredential();
   parsed.new_password_value = parsed.password_value;
   parsed.password_value.clear();
 
@@ -349,9 +347,9 @@ TEST(PasswordManagerUtil,
 
 TEST(PasswordManagerUtil,
      GetMatchForUpdating_MatchUsernamePSLNewPasswordUnknown) {
-  autofill::PasswordForm stored = GetTestCredential();
+  PasswordForm stored = GetTestCredential();
   stored.is_public_suffix_match = true;
-  autofill::PasswordForm parsed = GetTestCredential();
+  PasswordForm parsed = GetTestCredential();
   parsed.new_password_value = base::ASCIIToUTF16("new_password");
   parsed.password_value.clear();
 
@@ -359,25 +357,25 @@ TEST(PasswordManagerUtil,
 }
 
 TEST(PasswordManagerUtil, GetMatchForUpdating_EmptyUsernameFindByPassword) {
-  autofill::PasswordForm stored = GetTestCredential();
-  autofill::PasswordForm parsed = GetTestCredential();
+  PasswordForm stored = GetTestCredential();
+  PasswordForm parsed = GetTestCredential();
   parsed.username_value.clear();
 
   EXPECT_EQ(&stored, GetMatchForUpdating(parsed, {&stored}));
 }
 
 TEST(PasswordManagerUtil, GetMatchForUpdating_EmptyUsernameFindByPasswordPSL) {
-  autofill::PasswordForm stored = GetTestCredential();
+  PasswordForm stored = GetTestCredential();
   stored.is_public_suffix_match = true;
-  autofill::PasswordForm parsed = GetTestCredential();
+  PasswordForm parsed = GetTestCredential();
   parsed.username_value.clear();
 
   EXPECT_EQ(&stored, GetMatchForUpdating(parsed, {&stored}));
 }
 
 TEST(PasswordManagerUtil, GetMatchForUpdating_EmptyUsernameCMAPI) {
-  autofill::PasswordForm stored = GetTestCredential();
-  autofill::PasswordForm parsed = GetTestCredential();
+  PasswordForm stored = GetTestCredential();
+  PasswordForm parsed = GetTestCredential();
   parsed.username_value.clear();
   parsed.type = PasswordForm::Type::kApi;
 
@@ -387,17 +385,17 @@ TEST(PasswordManagerUtil, GetMatchForUpdating_EmptyUsernameCMAPI) {
 }
 
 TEST(PasswordManagerUtil, GetMatchForUpdating_EmptyUsernamePickFirst) {
-  autofill::PasswordForm stored1 = GetTestCredential();
+  PasswordForm stored1 = GetTestCredential();
   stored1.username_value = base::ASCIIToUTF16("Adam");
   stored1.password_value = base::ASCIIToUTF16("Adam_password");
-  autofill::PasswordForm stored2 = GetTestCredential();
+  PasswordForm stored2 = GetTestCredential();
   stored2.username_value = base::ASCIIToUTF16("Ben");
   stored2.password_value = base::ASCIIToUTF16("Ben_password");
-  autofill::PasswordForm stored3 = GetTestCredential();
+  PasswordForm stored3 = GetTestCredential();
   stored3.username_value = base::ASCIIToUTF16("Cindy");
   stored3.password_value = base::ASCIIToUTF16("Cindy_password");
 
-  autofill::PasswordForm parsed = GetTestCredential();
+  PasswordForm parsed = GetTestCredential();
   parsed.username_value.clear();
 
   // The first credential is picked (arbitrarily).
@@ -406,7 +404,7 @@ TEST(PasswordManagerUtil, GetMatchForUpdating_EmptyUsernamePickFirst) {
 }
 
 TEST(PasswordManagerUtil, MakeNormalizedBlacklistedForm_Android) {
-  autofill::PasswordForm blacklisted_credential = MakeNormalizedBlacklistedForm(
+  PasswordForm blacklisted_credential = MakeNormalizedBlacklistedForm(
       password_manager::PasswordStore::FormDigest(GetTestAndroidCredential()));
   EXPECT_TRUE(blacklisted_credential.blocked_by_user);
   EXPECT_EQ(PasswordForm::Scheme::kHtml, blacklisted_credential.scheme);
@@ -415,7 +413,7 @@ TEST(PasswordManagerUtil, MakeNormalizedBlacklistedForm_Android) {
 }
 
 TEST(PasswordManagerUtil, MakeNormalizedBlacklistedForm_Html) {
-  autofill::PasswordForm blacklisted_credential = MakeNormalizedBlacklistedForm(
+  PasswordForm blacklisted_credential = MakeNormalizedBlacklistedForm(
       password_manager::PasswordStore::FormDigest(GetTestCredential()));
   EXPECT_TRUE(blacklisted_credential.blocked_by_user);
   EXPECT_EQ(PasswordForm::Scheme::kHtml, blacklisted_credential.scheme);
@@ -425,7 +423,7 @@ TEST(PasswordManagerUtil, MakeNormalizedBlacklistedForm_Html) {
 }
 
 TEST(PasswordManagerUtil, MakeNormalizedBlacklistedForm_Proxy) {
-  autofill::PasswordForm blacklisted_credential = MakeNormalizedBlacklistedForm(
+  PasswordForm blacklisted_credential = MakeNormalizedBlacklistedForm(
       password_manager::PasswordStore::FormDigest(GetTestProxyCredential()));
   EXPECT_TRUE(blacklisted_credential.blocked_by_user);
   EXPECT_EQ(PasswordForm::Scheme::kBasic, blacklisted_credential.scheme);

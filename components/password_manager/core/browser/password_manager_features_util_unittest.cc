@@ -54,14 +54,14 @@ TEST(PasswordFeatureManagerUtil,
   EXPECT_FALSE(IsOptedInForAccountStorage(&pref_service, &sync_service));
   EXPECT_FALSE(ShouldShowAccountStorageOptIn(&pref_service, &sync_service));
   EXPECT_EQ(GetDefaultPasswordStore(&pref_service, &sync_service),
-            autofill::PasswordForm::Store::kProfileStore);
+            PasswordForm::Store::kProfileStore);
 
   // Same if the user is signed out.
   sync_service.SetAuthenticatedAccountInfo(CoreAccountInfo());
   sync_service.SetTransportState(syncer::SyncService::TransportState::DISABLED);
   EXPECT_FALSE(IsOptedInForAccountStorage(&pref_service, &sync_service));
   EXPECT_EQ(GetDefaultPasswordStore(&pref_service, &sync_service),
-            autofill::PasswordForm::Store::kProfileStore);
+            PasswordForm::Store::kProfileStore);
 }
 
 TEST(PasswordFeatureManagerUtil, ShowAccountStorageResignIn) {
@@ -207,7 +207,7 @@ TEST(PasswordFeatureManagerUtil, AccountStoragePerAccountSettings) {
   EXPECT_FALSE(ShouldShowAccountStorageOptIn(&pref_service, &sync_service));
   EXPECT_FALSE(ShouldShowAccountStorageBubbleUi(&pref_service, &sync_service));
   EXPECT_EQ(GetDefaultPasswordStore(&pref_service, &sync_service),
-            autofill::PasswordForm::Store::kProfileStore);
+            PasswordForm::Store::kProfileStore);
 
   // Now let SyncService run in transport mode with |first_account|.
   sync_service.SetAuthenticatedAccountInfo(first_account);
@@ -220,7 +220,7 @@ TEST(PasswordFeatureManagerUtil, AccountStoragePerAccountSettings) {
   EXPECT_FALSE(IsOptedInForAccountStorage(&pref_service, &sync_service));
   EXPECT_TRUE(ShouldShowAccountStorageOptIn(&pref_service, &sync_service));
   EXPECT_EQ(GetDefaultPasswordStore(&pref_service, &sync_service),
-            autofill::PasswordForm::Store::kAccountStore);
+            PasswordForm::Store::kAccountStore);
 
   // Opt in!
   OptInToAccountStorage(&pref_service, &sync_service);
@@ -228,9 +228,9 @@ TEST(PasswordFeatureManagerUtil, AccountStoragePerAccountSettings) {
   EXPECT_FALSE(ShouldShowAccountStorageOptIn(&pref_service, &sync_service));
   // ...and change the default store to the profile one.
   SetDefaultPasswordStore(&pref_service, &sync_service,
-                          autofill::PasswordForm::Store::kProfileStore);
+                          PasswordForm::Store::kProfileStore);
   EXPECT_EQ(GetDefaultPasswordStore(&pref_service, &sync_service),
-            autofill::PasswordForm::Store::kProfileStore);
+            PasswordForm::Store::kProfileStore);
 
   // Change to |second_account|. The opt-in for |first_account| should not
   // apply, and similarly the default store should be back to "account".
@@ -238,7 +238,7 @@ TEST(PasswordFeatureManagerUtil, AccountStoragePerAccountSettings) {
   EXPECT_FALSE(IsOptedInForAccountStorage(&pref_service, &sync_service));
   EXPECT_TRUE(ShouldShowAccountStorageOptIn(&pref_service, &sync_service));
   EXPECT_EQ(GetDefaultPasswordStore(&pref_service, &sync_service),
-            autofill::PasswordForm::Store::kAccountStore);
+            PasswordForm::Store::kAccountStore);
 
   // Change back to |first_account|. The previous opt-in and chosen default
   // store should now apply again.
@@ -246,7 +246,7 @@ TEST(PasswordFeatureManagerUtil, AccountStoragePerAccountSettings) {
   EXPECT_TRUE(IsOptedInForAccountStorage(&pref_service, &sync_service));
   EXPECT_FALSE(ShouldShowAccountStorageOptIn(&pref_service, &sync_service));
   EXPECT_EQ(GetDefaultPasswordStore(&pref_service, &sync_service),
-            autofill::PasswordForm::Store::kProfileStore);
+            PasswordForm::Store::kProfileStore);
 
   // Sign out. Now the settings should have reasonable default values (not opted
   // in, save to profile store).
@@ -255,7 +255,7 @@ TEST(PasswordFeatureManagerUtil, AccountStoragePerAccountSettings) {
   EXPECT_FALSE(IsOptedInForAccountStorage(&pref_service, &sync_service));
   EXPECT_FALSE(ShouldShowAccountStorageOptIn(&pref_service, &sync_service));
   EXPECT_EQ(GetDefaultPasswordStore(&pref_service, &sync_service),
-            autofill::PasswordForm::Store::kProfileStore);
+            PasswordForm::Store::kProfileStore);
 }
 
 TEST(PasswordFeatureManagerUtil, AccountStorageKeepSettingsOnlyForUsers) {
@@ -372,7 +372,7 @@ TEST(PasswordFeatureManagerUtil, SyncDisablesAccountStorage) {
   ASSERT_TRUE(ShouldShowAccountStorageOptIn(&pref_service, &sync_service));
   ASSERT_TRUE(ShouldShowAccountStorageBubbleUi(&pref_service, &sync_service));
   ASSERT_EQ(GetDefaultPasswordStore(&pref_service, &sync_service),
-            autofill::PasswordForm::Store::kAccountStore);
+            PasswordForm::Store::kAccountStore);
 
   // Opt in.
   OptInToAccountStorage(&pref_service, &sync_service);
@@ -380,7 +380,7 @@ TEST(PasswordFeatureManagerUtil, SyncDisablesAccountStorage) {
   ASSERT_FALSE(ShouldShowAccountStorageOptIn(&pref_service, &sync_service));
   ASSERT_TRUE(ShouldShowAccountStorageBubbleUi(&pref_service, &sync_service));
   ASSERT_EQ(GetDefaultPasswordStore(&pref_service, &sync_service),
-            autofill::PasswordForm::Store::kAccountStore);
+            PasswordForm::Store::kAccountStore);
 
   // Now enable Sync-the-feature. This should effectively turn *off* the account
   // storage again (since with Sync, there's only a single combined storage),
@@ -392,7 +392,7 @@ TEST(PasswordFeatureManagerUtil, SyncDisablesAccountStorage) {
   EXPECT_FALSE(ShouldShowAccountStorageOptIn(&pref_service, &sync_service));
   EXPECT_FALSE(ShouldShowAccountStorageBubbleUi(&pref_service, &sync_service));
   EXPECT_EQ(GetDefaultPasswordStore(&pref_service, &sync_service),
-            autofill::PasswordForm::Store::kProfileStore);
+            PasswordForm::Store::kProfileStore);
 }
 
 TEST(PasswordFeatureManagerUtil, OptOutClearsStorePreference) {
@@ -421,7 +421,7 @@ TEST(PasswordFeatureManagerUtil, OptOutClearsStorePreference) {
   OptInToAccountStorage(&pref_service, &sync_service);
   ASSERT_TRUE(IsOptedInForAccountStorage(&pref_service, &sync_service));
   SetDefaultPasswordStore(&pref_service, &sync_service,
-                          autofill::PasswordForm::Store::kProfileStore);
+                          PasswordForm::Store::kProfileStore);
 
   // Opt out.
   OptOutOfAccountStorageAndClearSettings(&pref_service, &sync_service);
@@ -429,16 +429,15 @@ TEST(PasswordFeatureManagerUtil, OptOutClearsStorePreference) {
   // The default store pref should have been erased, so GetDefaultPasswordStore
   // should return kAccountStore again.
   EXPECT_EQ(GetDefaultPasswordStore(&pref_service, &sync_service),
-            autofill::PasswordForm::Store::kAccountStore);
+            PasswordForm::Store::kAccountStore);
   EXPECT_FALSE(IsOptedInForAccountStorage(&pref_service, &sync_service));
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.AccountStorage.SignedInAccountFoundDuringOptOut", true,
       1);
   // The change to the profile store above should have been recorded. Clearing
   // the pref does not get recorded in this histogram!
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.DefaultPasswordStoreSet",
-      autofill::PasswordForm::Store::kProfileStore, 1);
+  histogram_tester.ExpectUniqueSample("PasswordManager.DefaultPasswordStoreSet",
+                                      PasswordForm::Store::kProfileStore, 1);
 }
 
 TEST(PasswordFeatureManagerUtil, OptInOutHistograms) {

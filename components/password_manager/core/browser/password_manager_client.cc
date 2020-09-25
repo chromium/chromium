@@ -39,16 +39,16 @@ void PasswordManagerClient::GeneratePassword() {}
 
 void PasswordManagerClient::UpdateCredentialCache(
     const url::Origin& origin,
-    const std::vector<const autofill::PasswordForm*>& best_matches,
+    const std::vector<const PasswordForm*>& best_matches,
     bool is_blacklisted) {}
 
 void PasswordManagerClient::PasswordWasAutofilled(
-    const std::vector<const autofill::PasswordForm*>& best_matches,
+    const std::vector<const PasswordForm*>& best_matches,
     const url::Origin& origin,
-    const std::vector<const autofill::PasswordForm*>* federated_matches) {}
+    const std::vector<const PasswordForm*>* federated_matches) {}
 
 void PasswordManagerClient::AutofillHttpAuth(
-    const autofill::PasswordForm& preferred_match,
+    const PasswordForm& preferred_match,
     const PasswordFormManagerForUI* form_manager) {}
 
 void PasswordManagerClient::NotifyUserCredentialsWereLeaked(
