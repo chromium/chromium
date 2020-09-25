@@ -31,11 +31,17 @@
   if (!provider_)
     return;
   if (@available(macOS 10.12.0, *)) {
-    if (status == kCLAuthorizationStatusAuthorizedAlways)
-      provider_->OnPermissionGranted();
+    if (status == kCLAuthorizationStatusAuthorizedAlways) {
+      provider_->SystemLocationPermissionGranted();
+    } else {
+      provider_->SystemLocationPermissionDenied();
+    }
   } else {
-    if (status == kCLAuthorizationStatusAuthorized)
-      provider_->OnPermissionGranted();
+    if (status == kCLAuthorizationStatusAuthorized) {
+      provider_->SystemLocationPermissionGranted();
+    } else {
+      provider_->SystemLocationPermissionDenied();
+    }
   }
 }
 
@@ -73,7 +79,15 @@ void CoreLocationProvider::StartProvider(bool high_accuracy) {
     location_manager_.get().desiredAccuracy = kCLLocationAccuracyHundredMeters;
   }
 
-  [location_manager_ startUpdatingLocation];
+  // macOS guarantees that didChangeAuthorization will be called at least once
+  // with the initial authorization status. Therefore this variable will be
+  // updated regardless of whether that authorization status has recently
+  // changed.
+  if (has_permission_) {
+    [location_manager_ startUpdatingLocation];
+  } else {
+    provider_start_attemped_ = true;
+  }
 }
 
 void CoreLocationProvider::StopProvider() {
@@ -86,6 +100,18 @@ const mojom::Geoposition& CoreLocationProvider::GetPosition() {
 
 void CoreLocationProvider::OnPermissionGranted() {
   // Nothing to do here.
+}
+
+void CoreLocationProvider::SystemLocationPermissionGranted() {
+  has_permission_ = true;
+  if (provider_start_attemped_) {
+    [location_manager_ startUpdatingLocation];
+    provider_start_attemped_ = false;
+  }
+}
+
+void CoreLocationProvider::SystemLocationPermissionDenied() {
+  has_permission_ = false;
 }
 
 void CoreLocationProvider::DidUpdatePosition(CLLocation* location) {

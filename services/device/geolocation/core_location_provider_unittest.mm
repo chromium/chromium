@@ -24,6 +24,7 @@
 
 // Utility functions.
 - (void)fakeUpdatePosition:(CLLocation*)test_location;
+- (void)fakeUpdatePermission:(CLAuthorizationStatus)status;
 @end
 
 @implementation FakeCLLocationManager
@@ -49,6 +50,10 @@
 
 - (void)fakeUpdatePosition:(CLLocation*)testLocation {
   [_delegate locationManager:(id)self didUpdateLocations:@[ testLocation ]];
+}
+
+- (void)fakeUpdatePermission:(CLAuthorizationStatus)status {
+  [_delegate locationManager:(id)self didChangeAuthorizationStatus:status];
 }
 
 @end
@@ -92,6 +97,13 @@ TEST_F(CoreLocationProviderTest, CreateDestroy) {
 
 TEST_F(CoreLocationProviderTest, StartAndStopUpdating) {
   InitializeProvider();
+  if (@available(macOS 10.12.0, *)) {
+    [fake_location_manager_
+        fakeUpdatePermission:kCLAuthorizationStatusAuthorizedAlways];
+  } else {
+    [fake_location_manager_
+        fakeUpdatePermission:kCLAuthorizationStatusAuthorized];
+  }
   provider_->StartProvider(/*high_accuracy=*/true);
   EXPECT_TRUE(IsUpdating());
   EXPECT_EQ([fake_location_manager_ desiredAccuracy], kCLLocationAccuracyBest);
@@ -100,8 +112,39 @@ TEST_F(CoreLocationProviderTest, StartAndStopUpdating) {
   provider_.reset();
 }
 
+TEST_F(CoreLocationProviderTest, DontStartUpdatingIfPermissionDenied) {
+  InitializeProvider();
+  [fake_location_manager_ fakeUpdatePermission:kCLAuthorizationStatusDenied];
+  provider_->StartProvider(/*high_accuracy=*/true);
+  EXPECT_FALSE(IsUpdating());
+}
+
+TEST_F(CoreLocationProviderTest, DontStartUpdatingUntilPermissionGranted) {
+  InitializeProvider();
+  provider_->StartProvider(/*high_accuracy=*/true);
+  EXPECT_FALSE(IsUpdating());
+  [fake_location_manager_ fakeUpdatePermission:kCLAuthorizationStatusDenied];
+  EXPECT_FALSE(IsUpdating());
+  if (@available(macOS 10.12.0, *)) {
+    [fake_location_manager_
+        fakeUpdatePermission:kCLAuthorizationStatusAuthorizedAlways];
+  } else {
+    [fake_location_manager_
+        fakeUpdatePermission:kCLAuthorizationStatusAuthorized];
+  }
+  EXPECT_TRUE(IsUpdating());
+  provider_.reset();
+}
+
 TEST_F(CoreLocationProviderTest, GetPositionUpdates) {
   InitializeProvider();
+  if (@available(macOS 10.12.0, *)) {
+    [fake_location_manager_
+        fakeUpdatePermission:kCLAuthorizationStatusAuthorizedAlways];
+  } else {
+    [fake_location_manager_
+        fakeUpdatePermission:kCLAuthorizationStatusAuthorized];
+  }
   provider_->StartProvider(/*high_accuracy=*/true);
   EXPECT_TRUE(IsUpdating());
   EXPECT_EQ([fake_location_manager_ desiredAccuracy], kCLLocationAccuracyBest);

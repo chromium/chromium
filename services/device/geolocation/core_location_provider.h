@@ -29,6 +29,8 @@ class CoreLocationProvider : public LocationProvider {
   const mojom::Geoposition& GetPosition() override;
   void OnPermissionGranted() override;
 
+  void SystemLocationPermissionGranted();
+  void SystemLocationPermissionDenied();
   void DidUpdatePosition(CLLocation* location);
   void SetManagerForTesting(CLLocationManager* location_manager);
 
@@ -37,6 +39,8 @@ class CoreLocationProvider : public LocationProvider {
   base::scoped_nsobject<LocationDelegate> delegate_;
   mojom::Geoposition last_position_;
   LocationProviderUpdateCallback callback_;
+  bool has_permission_ = false;
+  bool provider_start_attemped_ = false;
   base::WeakPtrFactory<CoreLocationProvider> weak_ptr_factory_{this};
 };
 
