@@ -125,6 +125,7 @@ if (android_64bit_target_cpu) {
     variables = trichrome_jinja_variables + [
                   "trichrome_version=$trichrome_64_32_version_code",
                   "manifest_package=$trichrome_library_package",
+                  "use32bitAbi=",
                 ]
   }
   jinja_template("trichrome_library_64_android_manifest") {
@@ -133,6 +134,7 @@ if (android_64bit_target_cpu) {
     variables = trichrome_jinja_variables + [
                   "trichrome_version=$trichrome_64_version_code",
                   "manifest_package=$trichrome_library_package",
+                  "use32bitAbi=",
                 ]
   }
   jinja_template("trichrome_library_32_android_manifest") {
