@@ -30,7 +30,7 @@ chrome.test.runTests([
     relativePageLoaded = chrome.test.callbackAdded();
 
     chrome.tabs.update(testTabId, {url: pageUrl("a")}, function(tab) {
-      chrome.test.assertEq(pageUrl("a"), tab.url);
+      chrome.test.assertEq(pageUrl("a"), tab.pendingUrl);
       chrome.tabs.update(tab.id, {url: "relative.html"}, function(tab) {
       });
     });

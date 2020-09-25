@@ -98,7 +98,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, TabEvents) {
   ASSERT_TRUE(RunExtensionSubtest("tabs/basics", "events.html")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, DISABLED_TabRelativeURLs) {
+IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, TabRelativeURLs) {
   ASSERT_TRUE(RunExtensionSubtest("tabs/basics", "relative_urls.html"))
       << message_;
 }
