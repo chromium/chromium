@@ -42,8 +42,8 @@ public class VersionNumber {
 
     @Override
     public String toString() {
-        return String.format(Locale.US, "%d.%d.%d.%d", mVersion[0], mVersion[1], mVersion[2],
-                mVersion[3]);
+        return String.format(
+                Locale.US, "%d.%d.%d.%d", mVersion[0], mVersion[1], mVersion[2], mVersion[3]);
     }
 
     /**
