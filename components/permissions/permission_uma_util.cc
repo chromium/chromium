@@ -444,6 +444,12 @@ PermissionUmaUtil::ScopedRevocationReporter::ScopedRevocationReporter(
   ContentSetting initial_content_setting = settings_map->GetContentSetting(
       primary_url_, secondary_url_, content_type_, std::string());
   is_initially_allowed_ = initial_content_setting == CONTENT_SETTING_ALLOW;
+  content_settings::SettingInfo setting_info;
+  settings_map->GetWebsiteSetting(primary_url, secondary_url, content_type_,
+                                  std::string(), &setting_info);
+  last_modified_date_ = settings_map->GetSettingLastModifiedDate(
+      setting_info.primary_pattern, setting_info.secondary_pattern,
+      content_type);
 }
 
 PermissionUmaUtil::ScopedRevocationReporter::ScopedRevocationReporter(
@@ -473,6 +479,13 @@ PermissionUmaUtil::ScopedRevocationReporter::~ScopedRevocationReporter() {
     GURL requesting_origin = primary_url_.GetOrigin();
     PermissionRevoked(content_type_, source_ui_, requesting_origin,
                       browser_context_);
+    if ((content_type_ == ContentSettingsType::GEOLOCATION ||
+         content_type_ == ContentSettingsType::MEDIASTREAM_CAMERA ||
+         content_type_ == ContentSettingsType::MEDIASTREAM_MIC) &&
+        !last_modified_date_.is_null()) {
+      RecordTimeElapsedBetweenGrantAndRevoke(
+          content_type_, base::Time::Now() - last_modified_date_);
+    }
   }
 }
 
@@ -606,6 +619,24 @@ void PermissionUmaUtil::RecordPromptDecided(
                                        kPermissionsPromptDeniedNoGesture,
                                        gesture_type, request_type);
   }
+}
+
+void PermissionUmaUtil::RecordTimeElapsedBetweenGrantAndUse(
+    ContentSettingsType type,
+    base::TimeDelta delta) {
+  base::UmaHistogramCustomCounts(
+      "Permissions.Usage.ElapsedTimeSinceGrant." +
+          PermissionUtil::GetPermissionString(type),
+      delta.InSeconds(), 1, base::TimeDelta::FromDays(365).InSeconds(), 100);
+}
+
+void PermissionUmaUtil::RecordTimeElapsedBetweenGrantAndRevoke(
+    ContentSettingsType type,
+    base::TimeDelta delta) {
+  base::UmaHistogramCustomCounts(
+      "Permissions.Revocation.ElapsedTimeSinceGrant." +
+          PermissionUtil::GetPermissionString(type),
+      delta.InSeconds(), 1, base::TimeDelta::FromDays(365).InSeconds(), 100);
 }
 
 }  // namespace permissions

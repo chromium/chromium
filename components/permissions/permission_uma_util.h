@@ -161,6 +161,12 @@ class PermissionUmaUtil {
       PermissionAction action,
       const std::vector<ContentSettingsType>& content_settings_types);
 
+  static void RecordTimeElapsedBetweenGrantAndUse(ContentSettingsType type,
+                                                  base::TimeDelta delta);
+
+  static void RecordTimeElapsedBetweenGrantAndRevoke(ContentSettingsType type,
+                                                     base::TimeDelta delta);
+
   // A scoped class that will check the current resolved content setting on
   // construction and report a revocation metric accordingly if the revocation
   // condition is met (from ALLOW to something else).
@@ -187,6 +193,7 @@ class PermissionUmaUtil {
     ContentSettingsType content_type_;
     PermissionSourceUI source_ui_;
     bool is_initially_allowed_;
+    base::Time last_modified_date_;
   };
 
  private:

@@ -19,6 +19,7 @@
 #include "chrome/common/renderer_configuration.mojom.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
+#include "components/permissions/permission_uma_util.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_process_host.h"
@@ -157,6 +158,25 @@ PageSpecificContentSettingsDelegate::GetMicrophoneCameraState() {
     state |= PageSpecificContentSettings::CAMERA_ACCESSED;
 
   return state;
+}
+
+void PageSpecificContentSettingsDelegate::OnContentAllowed(
+    ContentSettingsType type) {
+  if (!(type == ContentSettingsType::GEOLOCATION ||
+        type == ContentSettingsType::MEDIASTREAM_CAMERA ||
+        type == ContentSettingsType::MEDIASTREAM_MIC)) {
+    return;
+  }
+  content_settings::SettingInfo setting_info;
+  GetSettingsMap()->GetWebsiteSetting(web_contents()->GetLastCommittedURL(),
+                                      web_contents()->GetLastCommittedURL(),
+                                      type, std::string(), &setting_info);
+  const base::Time grant_time = GetSettingsMap()->GetSettingLastModifiedDate(
+      setting_info.primary_pattern, setting_info.secondary_pattern, type);
+  if (grant_time.is_null())
+    return;
+  permissions::PermissionUmaUtil::RecordTimeElapsedBetweenGrantAndUse(
+      type, base::Time::Now() - grant_time);
 }
 
 void PageSpecificContentSettingsDelegate::OnContentBlocked(

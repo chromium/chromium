@@ -124,6 +124,10 @@ class PageSpecificContentSettings
     // media stream request.
     virtual MicrophoneCameraState GetMicrophoneCameraState() = 0;
 
+    // Notifies the delegate a particular content settings type was allowed for
+    // the first time on this page.
+    virtual void OnContentAllowed(ContentSettingsType type) = 0;
+
     // Notifies the delegate a particular content settings type was blocked.
     virtual void OnContentBlocked(ContentSettingsType type) = 0;
 

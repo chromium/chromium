@@ -130036,6 +130036,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram base="true" name="Permissions.Revocation.ElapsedTimeSinceGrant"
+    units="seconds" expires_after="2021-08-20">
+  <owner>engedy@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records the time elapsed since the grant of the permission until it's
+    revoked.
+  </summary>
+</histogram>
+
 <histogram name="Permissions.Serial.ChooserClosed" enum="SerialChooserOutcome"
     expires_after="2021-06-21">
   <owner>reillyg@chromium.org</owner>
@@ -130051,6 +130061,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>reillyg@chromium.org</owner>
   <owner>src/content/browser/serial/OWNERS</owner>
   <summary>Records when permission to access a serial port is revoked.</summary>
+</histogram>
+
+<histogram base="true" name="Permissions.Usage.ElapsedTimeSinceGrant"
+    units="seconds" expires_after="2021-08-20">
+  <owner>engedy@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records the time elapsed since the grant of the permission until it's latest
+    usage. This histogram will be recorded only for the first usage of a given
+    permission after the site has loaded.
+  </summary>
 </histogram>
 
 <histogram base="true" name="PhoneHub.MultiDeviceFeatureState"
@@ -211568,6 +211589,8 @@ regressions. -->
   <affected-histogram name="Permissions.Prompt.Ignored.PriorIgnoreCount"/>
   <affected-histogram name="Permissions.Prompt.Ignored.PriorIgnoreCount2"/>
   <affected-histogram name="Permissions.Requested.CrossOrigin"/>
+  <affected-histogram name="Permissions.Revocation.ElapsedTimeSinceGrant"/>
+  <affected-histogram name="Permissions.Usage.ElapsedTimeSinceGrant"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="PhoneHubFeature" separator=".">
