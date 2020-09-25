@@ -162,6 +162,13 @@ void NativeInputMethodEngine::ImeObserver::OnActivate(
   }
   base_observer_->OnActivate(engine_id);
 }
+void NativeInputMethodEngine::ImeObserver::ProcessMessage(
+    const std::vector<uint8_t>& message,
+    ProcessMessageCallback callback) {
+  // NativeInputMethodEngine doesn't use binary messages, but it must run the
+  // callback to avoid dropping the connection.
+  std::move(callback).Run(std::vector<uint8_t>());
+}
 
 void NativeInputMethodEngine::ImeObserver::OnFocus(
     const IMEEngineHandlerInterface::InputContext& context) {
