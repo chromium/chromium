@@ -158,7 +158,7 @@ class CORE_EXPORT WebViewFrameWidget : public WebFrameWidgetBase {
 
   // Converts from DIPs to Blink coordinate space (ie. Viewport/Physical
   // pixels).
-  gfx::Size DIPsToBlinkSpace(const gfx::Size& size);
+  gfx::Size DIPsToCeiledBlinkSpace(const gfx::Size& size);
 
  private:
   PageWidgetEventHandler* GetPageWidgetEventHandler() override;

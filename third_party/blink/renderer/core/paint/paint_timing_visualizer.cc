@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/paint/paint_timing_visualizer.h"
 
-#include "third_party/blink/public/platform/web_float_rect.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -91,9 +90,9 @@ void PaintTimingVisualizer::RecordMainFrameViewport(
 
   FloatClipRect float_clip_visual_rect =
       FloatClipRect(FloatRect(viewport_rect));
-  WebFloatRect float_visual_rect = float_clip_visual_rect.Rect();
-  frame_view.GetPaintTimingDetector().ConvertViewportToWindow(
-      &float_visual_rect);
+  FloatRect float_visual_rect =
+      frame_view.GetPaintTimingDetector().BlinkSpaceToDIPs(
+          float_clip_visual_rect.Rect());
 
   std::unique_ptr<TracedValue> value = std::make_unique<TracedValue>();
   CreateQuad(value.get(), "viewport_rect", FloatQuad(float_visual_rect));

@@ -28,12 +28,10 @@ FloatRect ElementTimingUtils::ComputeIntersectionRect(
                                                 ->FirstFragment()
                                                 .LocalBorderBoxProperties(),
                                             visual_rect);
-  WebFloatRect intersection_rect = visual_rect.Rect();
   WebFrameWidgetBase* widget =
       WebLocalFrameImpl::FromFrame(frame)->LocalRootFrameWidget();
   DCHECK(widget);
-  widget->Client()->ConvertViewportToWindow(&intersection_rect);
-  return intersection_rect;
+  return FloatRect(widget->BlinkSpaceToDIPs(visual_rect.Rect()));
 }
 
 }  // namespace blink

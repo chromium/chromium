@@ -4,7 +4,6 @@
 #include "third_party/blink/renderer/core/paint/paint_timing_detector.h"
 
 #include "third_party/blink/public/common/input/web_input_event.h"
-#include "third_party/blink/public/platform/web_float_rect.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -315,16 +314,13 @@ void PaintTimingDetector::DidChangePerformanceTiming() {
   loader->DidChangePerformanceTiming();
 }
 
-void PaintTimingDetector::ConvertViewportToWindow(
-    WebFloatRect* float_rect) const {
-  WebLocalFrameImpl* web_frame =
-      WebLocalFrameImpl::FromFrame(&frame_view_->GetFrame());
-  // May be nullptr in some tests.
-  if (!web_frame)
-    return;
-  WebFrameWidgetBase* widget = web_frame->LocalRootFrameWidget();
-  DCHECK(widget);
-  widget->Client()->ConvertViewportToWindow(float_rect);
+FloatRect PaintTimingDetector::BlinkSpaceToDIPs(
+    const FloatRect& float_rect) const {
+  FrameWidget* widget = frame_view_->GetFrame().GetWidgetForLocalRoot();
+  // May be nullptr in tests.
+  if (!widget)
+    return float_rect;
+  return FloatRect(widget->BlinkSpaceToDIPs(gfx::RectF(float_rect)));
 }
 
 FloatRect PaintTimingDetector::CalculateVisualRect(
@@ -339,21 +335,18 @@ FloatRect PaintTimingDetector::CalculateVisualRect(
   GeometryMapper::LocalToAncestorVisualRect(current_paint_chunk_properties,
                                             PropertyTreeState::Root(),
                                             float_clip_visual_rect);
-  WebFloatRect float_visual_rect = float_clip_visual_rect.Rect();
   if (frame_view_->GetFrame().LocalFrameRoot().IsMainFrame()) {
-    ConvertViewportToWindow(&float_visual_rect);
-    return float_visual_rect;
+    return BlinkSpaceToDIPs(float_clip_visual_rect.Rect());
   }
   // OOPIF. The final rect lives in the iframe's root frame space. We need to
   // project it to the top frame space.
-  auto layout_visual_rect = PhysicalRect::EnclosingRect(float_visual_rect);
+  auto layout_visual_rect =
+      PhysicalRect::EnclosingRect(float_clip_visual_rect.Rect());
   frame_view_->GetFrame()
       .LocalFrameRoot()
       .View()
       ->MapToVisualRectInRemoteRootFrame(layout_visual_rect);
-  WebFloatRect float_rect = FloatRect(layout_visual_rect);
-  ConvertViewportToWindow(&float_rect);
-  return float_rect;
+  return BlinkSpaceToDIPs(FloatRect(layout_visual_rect));
 }
 
 void PaintTimingDetector::UpdateLargestContentfulPaintCandidate() {

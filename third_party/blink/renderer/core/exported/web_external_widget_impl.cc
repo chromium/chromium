@@ -181,7 +181,8 @@ void WebExternalWidgetImpl::UpdateVisualProperties(
       visual_properties.screen_info);
   widget_base_->SetVisibleViewportSizeInDIPs(
       visual_properties.visible_viewport_size);
-  Resize(WebSize(widget_base_->DIPsToBlinkSpace(visual_properties.new_size)));
+  Resize(WebSize(
+      widget_base_->DIPsToCeiledBlinkSpace(visual_properties.new_size)));
   client_->DidUpdateVisualProperties();
 }
 

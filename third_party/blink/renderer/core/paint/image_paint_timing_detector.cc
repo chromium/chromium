@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 #include "third_party/blink/renderer/core/paint/image_paint_timing_detector.h"
 
-#include "third_party/blink/public/platform/web_float_rect.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/layout/layout_image_resource.h"
@@ -295,12 +294,12 @@ uint64_t ImagePaintTimingDetector::ComputeImageRectSize(
   }
   uint64_t rect_size = mapped_visual_rect.Size().Area();
   // Transform visual rect to window before calling downscale.
-  WebFloatRect float_visual_rect = FloatRect(image_border);
-  frame_view_->GetPaintTimingDetector().ConvertViewportToWindow(
-      &float_visual_rect);
+  FloatRect float_visual_rect =
+      frame_view_->GetPaintTimingDetector().BlinkSpaceToDIPs(
+          FloatRect(image_border));
   rect_size = DownScaleIfIntrinsicSizeIsSmaller(
       rect_size, intrinsic_size.Area(),
-      float_visual_rect.width * float_visual_rect.height);
+      float_visual_rect.Width() * float_visual_rect.Height());
   return rect_size;
 }
 

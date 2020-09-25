@@ -214,7 +214,6 @@ class CONTENT_EXPORT RenderWidget
   void Show(blink::WebNavigationPolicy) override;
   void SetWindowRect(const gfx::Rect&) override;
   void ConvertViewportToWindow(blink::WebRect* rect) override;
-  void ConvertViewportToWindow(blink::WebFloatRect* rect) override;
   void ConvertWindowToViewport(blink::WebFloatRect* rect) override;
   bool RequestPointerLock(blink::WebLocalFrame* requester_frame,
                           blink::WebWidgetClient::PointerLockCallback callback,

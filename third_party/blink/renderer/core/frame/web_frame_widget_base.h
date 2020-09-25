@@ -228,6 +228,7 @@ class CORE_EXPORT WebFrameWidgetBase
 #if defined(OS_ANDROID)
   void SelectWordAroundCaret(SelectWordAroundCaretCallback callback) override;
 #endif
+  gfx::RectF BlinkSpaceToDIPs(const gfx::RectF& rect) override;
 
   // WebFrameWidget implementation.
   WebLocalFrame* LocalRoot() const override;

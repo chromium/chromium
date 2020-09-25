@@ -457,9 +457,7 @@ blink::WebTextInputType RenderWidget::GetPepperTextInputType() {
 
 gfx::Rect RenderWidget::GetPepperCaretBounds() {
 #if BUILDFLAG(ENABLE_PLUGINS)
-  blink::WebRect caret(GetFocusedPepperPluginInsideWidget()->GetCaretBounds());
-  ConvertViewportToWindow(&caret);
-  return caret;
+  return GetFocusedPepperPluginInsideWidget()->GetCaretBounds();
 #else
   NOTREACHED();
   return gfx::Rect();
@@ -681,17 +679,6 @@ void RenderWidget::ConvertViewportToWindow(blink::WebRect* rect) {
     rect->y = window_rect.y();
     rect->width = window_rect.width();
     rect->height = window_rect.height();
-  }
-}
-
-void RenderWidget::ConvertViewportToWindow(blink::WebFloatRect* rect) {
-  if (compositor_deps_->IsUseZoomForDSFEnabled()) {
-    float device_scale_factor =
-        GetWebWidget()->GetOriginalScreenInfo().device_scale_factor;
-    rect->x /= device_scale_factor;
-    rect->y /= device_scale_factor;
-    rect->width /= device_scale_factor;
-    rect->height /= device_scale_factor;
   }
 }
 

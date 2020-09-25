@@ -189,6 +189,10 @@ class PLATFORM_EXPORT FrameWidget
   // Called to get the view rect in screen coordinates. This is the actual
   // content view area, i.e. doesn't include any window decorations.
   virtual gfx::Rect ViewRect() = 0;
+
+  // Converts from Blink coordinate (ie. Viewport/Physical pixels) space to
+  // DIPs.
+  virtual gfx::RectF BlinkSpaceToDIPs(const gfx::RectF&) = 0;
 };
 
 }  // namespace blink

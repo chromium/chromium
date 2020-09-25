@@ -3228,8 +3228,8 @@ bool WebViewImpl::AutoResizeMode() {
 
 void WebViewImpl::EnableAutoResizeForTesting(const gfx::Size& min_window_size,
                                              const gfx::Size& max_window_size) {
-  EnableAutoResizeMode(web_widget_->DIPsToBlinkSpace(min_window_size),
-                       web_widget_->DIPsToBlinkSpace(max_window_size));
+  EnableAutoResizeMode(web_widget_->DIPsToCeiledBlinkSpace(min_window_size),
+                       web_widget_->DIPsToCeiledBlinkSpace(max_window_size));
 }
 
 void WebViewImpl::DisableAutoResizeForTesting(
@@ -3242,7 +3242,7 @@ void WebViewImpl::DisableAutoResizeForTesting(
   // this case the current size should just be preserved.
   if (!new_window_size.IsEmpty()) {
     web_widget_->Resize(
-        WebSize(web_widget_->DIPsToBlinkSpace(new_window_size)));
+        WebSize(web_widget_->DIPsToCeiledBlinkSpace(new_window_size)));
   }
 }
 

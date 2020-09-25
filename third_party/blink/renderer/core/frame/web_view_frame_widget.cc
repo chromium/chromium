@@ -218,7 +218,7 @@ WebString WebViewFrameWidget::GetLastToolTipTextForTesting() const {
 void WebViewFrameWidget::EnableDeviceEmulation(
     const DeviceEmulationParams& parameters) {
   if (!device_emulator_) {
-    gfx::Size size_in_dips = widget_base_->BlinkSpaceToDIPs(size_);
+    gfx::Size size_in_dips = widget_base_->BlinkSpaceToCeiledDIPs(size_);
 
     device_emulator_ = MakeGarbageCollected<ScreenMetricsEmulator>(
         this, widget_base_->GetScreenInfo(), size_in_dips,
@@ -305,7 +305,7 @@ void WebViewFrameWidget::SetDeviceScaleFactorForTesting(float factor) {
 
   // Stash the window size before we adjust the scale factor, as subsequent
   // calls to convert will use the new scale factor.
-  gfx::Size size_in_dips = widget_base_->BlinkSpaceToDIPs(size_);
+  gfx::Size size_in_dips = widget_base_->BlinkSpaceToCeiledDIPs(size_);
   device_scale_factor_for_testing_ = factor;
 
   // Receiving a 0 is used to reset between tests, it removes the override in
@@ -325,7 +325,7 @@ void WebViewFrameWidget::SetDeviceScaleFactorForTesting(float factor) {
   if (!AutoResizeMode()) {
     // This picks up the new device scale factor as
     // UpdateCompositorViewportAndScreenInfo has applied a new value.
-    Resize(WebSize(widget_base_->DIPsToBlinkSpace(size_in_dips)));
+    Resize(WebSize(widget_base_->DIPsToCeiledBlinkSpace(size_in_dips)));
   }
 }
 
@@ -374,7 +374,7 @@ void WebViewFrameWidget::SetPageScaleStateAndLimits(
 }
 
 void WebViewFrameWidget::DidAutoResize(const gfx::Size& size) {
-  gfx::Size size_in_dips = widget_base_->BlinkSpaceToDIPs(size);
+  gfx::Size size_in_dips = widget_base_->BlinkSpaceToCeiledDIPs(size);
   size_ = size;
 
   if (synchronous_resize_mode_for_testing_) {
@@ -444,7 +444,7 @@ void WebViewFrameWidget::SetScreenInfoAndSize(
 
   UpdateScreenInfo(screen_info);
   widget_base_->SetVisibleViewportSizeInDIPs(visible_viewport_size_in_dips);
-  Resize(WebSize(widget_base_->DIPsToBlinkSpace(widget_size_in_dips)));
+  Resize(WebSize(widget_base_->DIPsToCeiledBlinkSpace(widget_size_in_dips)));
 }
 
 void WebViewFrameWidget::SetWindowRectSynchronouslyForTesting(
@@ -481,13 +481,14 @@ void WebViewFrameWidget::UseSynchronousResizeModeForTesting(bool enable) {
   synchronous_resize_mode_for_testing_ = enable;
 }
 
-gfx::Size WebViewFrameWidget::DIPsToBlinkSpace(const gfx::Size& size) {
-  return widget_base_->DIPsToBlinkSpace(size);
+gfx::Size WebViewFrameWidget::DIPsToCeiledBlinkSpace(const gfx::Size& size) {
+  return widget_base_->DIPsToCeiledBlinkSpace(size);
 }
 
 void WebViewFrameWidget::ApplyVisualPropertiesSizing(
     const VisualProperties& visual_properties) {
-  if (widget_base_->BlinkSpaceToDIPs(size_) != visual_properties.new_size) {
+  if (widget_base_->BlinkSpaceToCeiledDIPs(size_) !=
+      visual_properties.new_size) {
     // Only hide popups when the size changes. Eg https://crbug.com/761908.
     web_view_->CancelPagePopup();
   }
@@ -524,7 +525,7 @@ void WebViewFrameWidget::ApplyVisualPropertiesSizing(
       visual_properties.compositor_viewport_pixel_rect;
   if (AutoResizeMode()) {
     new_compositor_viewport_pixel_rect = gfx::Rect(gfx::ScaleToCeiledSize(
-        widget_base_->BlinkSpaceToDIPs(size_),
+        widget_base_->BlinkSpaceToCeiledDIPs(size_),
         visual_properties.screen_info.device_scale_factor));
   }
 
@@ -540,11 +541,11 @@ void WebViewFrameWidget::ApplyVisualPropertiesSizing(
       visual_properties.visible_viewport_size);
 
   if (!AutoResizeMode()) {
-    size_ = widget_base_->DIPsToBlinkSpace(visual_properties.new_size);
+    size_ = widget_base_->DIPsToCeiledBlinkSpace(visual_properties.new_size);
 
     View()->ResizeWithBrowserControls(
         WebSize(size_),
-        WebSize(widget_base_->DIPsToBlinkSpace(
+        WebSize(widget_base_->DIPsToCeiledBlinkSpace(
             widget_base_->VisibleViewportSizeInDIPs())),
         visual_properties.browser_controls_params);
   }

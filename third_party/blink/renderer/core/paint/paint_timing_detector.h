@@ -26,7 +26,6 @@ class LocalFrameView;
 class PropertyTreeStateOrAlias;
 class StyleFetchedImage;
 class TextPaintTimingDetector;
-struct WebFloatRect;
 
 // |PaintTimingCallbackManager| is an interface between
 // |ImagePaintTimingDetector|/|TextPaintTimingDetector| and |ChromeClient|.
@@ -163,7 +162,7 @@ class CORE_EXPORT PaintTimingDetector
     return tracing_enabled;
   }
 
-  void ConvertViewportToWindow(WebFloatRect* float_rect) const;
+  FloatRect BlinkSpaceToDIPs(const FloatRect& float_rect) const;
   FloatRect CalculateVisualRect(const IntRect& visual_rect,
                                 const PropertyTreeStateOrAlias&) const;
 

@@ -814,7 +814,8 @@ void WebPagePopupImpl::UpdateVisualProperties(
   widget_base_->SetVisibleViewportSizeInDIPs(
       visual_properties.visible_viewport_size);
 
-  Resize(WebSize(widget_base_->DIPsToBlinkSpace(visual_properties.new_size)));
+  Resize(WebSize(
+      widget_base_->DIPsToCeiledBlinkSpace(visual_properties.new_size)));
 }
 
 const ScreenInfo& WebPagePopupImpl::GetOriginalScreenInfo() {
