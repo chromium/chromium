@@ -38,15 +38,15 @@
           focus-type="cr-menu-button"></cr-icon-button>
       <cr-action-menu role-description="$i18n{menu}">
         <button class="dropdown-item" on-click="onMakeDefaultTap_"
-            hidden$="[[!engine.canBeDefault]]" id="makeDefault">
+            disabled$="[[!engine.canBeDefault]]" id="makeDefault">
           $i18n{searchEnginesMakeDefault}
         </button>
         <button class="dropdown-item" on-click="onEditTap_"
-            hidden$="[[!engine.canBeEdited]]" id="edit">
+            disabled$="[[!engine.canBeEdited]]" id="edit">
           $i18n{edit}
         </button>
         <button class="dropdown-item" on-click="onDeleteTap_"
-            hidden$="[[!engine.canBeRemoved]]" id="delete">
+            disabled$="[[!engine.canBeRemoved]]" id="delete">
           $i18n{searchEnginesRemoveFromList}
         </button>
       </cr-action-menu>

@@ -37,15 +37,6 @@ Polymer({
       type: Boolean,
       computed: 'computeIsDefault_(engine)'
     },
-
-    /** @private {boolean} */
-    showDots_: {
-      reflectToAttribute: true,
-      type: Boolean,
-      computed: 'computeShowDots_(engine.canBeDefault,' +
-          'engine.canBeEdited,' +
-          'engine.canBeRemoved)',
-    },
   },
 
   /** @private {SearchEnginesBrowserProxy} */
@@ -67,17 +58,6 @@ Polymer({
    */
   computeIsDefault_() {
     return this.engine.default;
-  },
-
-  /**
-   * @param {boolean} canBeDefault
-   * @param {boolean} canBeEdited
-   * @param {boolean} canBeRemoved
-   * @return {boolean} Whether to show the dots menu.
-   * @private
-   */
-  computeShowDots_(canBeDefault, canBeEdited, canBeRemoved) {
-    return canBeDefault || canBeEdited || canBeRemoved;
   },
 
   /** @private */
