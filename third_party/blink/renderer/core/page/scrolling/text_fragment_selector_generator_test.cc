@@ -547,6 +547,47 @@ text_text_text_text_text_text_text_text_text_and_last_text",
   GenerateAndVerifySelector(selected_start, selected_end, "");
 }
 
+// Selection should be autocompleted to contain full words.
+TEST_F(TextFragmentSelectorGeneratorTest, WordLimit) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <div>Test page</div>
+    <p id='first'>First paragraph text that is longer than 20 chars</p>
+  )HTML");
+  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  const auto& selected_start = Position(first_paragraph, 7);
+  const auto& selected_end = Position(first_paragraph, 33);
+  ASSERT_EQ("aragraph text that is long",
+            PlainText(EphemeralRange(selected_start, selected_end)));
+
+  GenerateAndVerifySelector(selected_start, selected_end,
+                            "paragraph%20text%20that%20is%20longer");
+}
+
+// Selection should be autocompleted to contain full words. The autocompletion
+// should work with extra spaces.
+TEST_F(TextFragmentSelectorGeneratorTest, WordLimit_ExtraSpaces) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <div>Test page</div>
+    <p id='first'>First
+    paragraph text
+    that is longer than 20 chars</p>
+  )HTML");
+  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  const auto& selected_start = Position(first_paragraph, 11);
+  const auto& selected_end = Position(first_paragraph, 41);
+  ASSERT_EQ("aragraph text that is long",
+            PlainText(EphemeralRange(selected_start, selected_end)));
+
+  GenerateAndVerifySelector(selected_start, selected_end,
+                            "paragraph%20text%20that%20is%20longer");
+}
+
 // Basic test case for |GetNextTextBlock|.
 TEST_F(TextFragmentSelectorGeneratorTest, GetPreviousTextBlock) {
   SimRequest request("https://example.com/test.html", "text/html");

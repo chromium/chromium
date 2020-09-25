@@ -182,6 +182,36 @@ void TextFragmentSelectorGenerator::BindTextFragmentSelectorProducer(
       selection_frame_->GetTaskRunner(blink::TaskType::kInternalDefault));
 }
 
+void TextFragmentSelectorGenerator::CompleteSelection() {
+  if (!selection_range_)
+    return;
+
+  EphemeralRangeInFlatTree ephemeral_range(selection_range_);
+  Node* start_container =
+      ephemeral_range.StartPosition().ComputeContainerNode();
+  Node* end_container = ephemeral_range.EndPosition().ComputeContainerNode();
+
+  String start_text = start_container->textContent();
+  int selection_start_pos =
+      ephemeral_range.StartPosition().ComputeOffsetInContainerNode();
+  start_text.Ensure16Bit();
+  int word_start = FindWordStartBoundary(
+      start_text.Characters16(), start_text.length(), selection_start_pos);
+
+  String end_text = end_container->textContent();
+  int selection_end_pos =
+      ephemeral_range.EndPosition().ComputeOffsetInContainerNode();
+  end_text.Ensure16Bit();
+  int word_end = FindWordEndBoundary(end_text.Characters16(), end_text.length(),
+                                     selection_end_pos);
+  if (word_start != selection_start_pos || word_end != selection_end_pos) {
+    selection_range_ =
+        MakeGarbageCollected<Range>(selection_range_->OwnerDocument(),
+                                    Position(start_container, word_start),
+                                    Position(end_container, word_end));
+  }
+}
+
 void TextFragmentSelectorGenerator::GenerateSelector(
     GenerateSelectorCallback callback) {
   DCHECK(selection_range_);
@@ -195,6 +225,7 @@ void TextFragmentSelectorGenerator::GenerateSelector(
   num_prefix_words_ = 0;
   num_suffix_words_ = 0;
 
+  CompleteSelection();
   GenerateSelectorCandidate();
 }
 
@@ -283,13 +314,14 @@ void TextFragmentSelectorGenerator::GenerateExactSelector() {
   DCHECK_EQ(kNeedsNewCandidate, state_);
 
   EphemeralRangeInFlatTree ephemeral_range(selection_range_);
+  Node* start_container =
+      ephemeral_range.StartPosition().ComputeContainerNode();
+  Node* end_container = ephemeral_range.EndPosition().ComputeContainerNode();
 
   Node& start_first_block_ancestor =
-      FindBuffer::GetFirstBlockLevelAncestorInclusive(
-          *ephemeral_range.StartPosition().ComputeContainerNode());
+      FindBuffer::GetFirstBlockLevelAncestorInclusive(*start_container);
   Node& end_first_block_ancestor =
-      FindBuffer::GetFirstBlockLevelAncestorInclusive(
-          *ephemeral_range.EndPosition().ComputeContainerNode());
+      FindBuffer::GetFirstBlockLevelAncestorInclusive(*end_container);
 
   // If not in same node, should use ranges.
   if (!start_first_block_ancestor.isSameNode(&end_first_block_ancestor)) {
@@ -300,8 +332,6 @@ void TextFragmentSelectorGenerator::GenerateExactSelector() {
   // TODO(gayane): If same node, need to check if start and end are interrupted
   // by a block. Example: <div>start of the selection <div> sub block </div>end
   // of the selection</div>.
-
-  // TODO(gayane): Move selection start and end to contain full words.
 
   String selected_text = PlainText(ephemeral_range);
 
@@ -397,11 +427,7 @@ void TextFragmentSelectorGenerator::ExtendRangeSelector() {
 void TextFragmentSelectorGenerator::ExtendContext() {
   DCHECK_EQ(kContext, step_);
   DCHECK_EQ(kNeedsNewCandidate, state_);
-
-  // TODO(gayane): Change this to DCHECK after |ExtendRangeSelector| is
-  // implemented.
-  if (!selector_)
-    return;
+  DCHECK(selector_);
 
   // Give up if context is already too long.
   if (num_prefix_words_ == kMaxContextWords ||
