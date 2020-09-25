@@ -127,8 +127,6 @@ base::Optional<std::string> GetString(const base::Value* value,
 // JSON response parsing
 //----------------------
 
-// TODO(crbug.com/1034842): Add unit testing for ConvertResults.
-
 base::Optional<ItemSuggestCache::Result> ConvertResult(
     const base::Value* value) {
   const auto& item_id = GetString(value, "itemId");
@@ -339,6 +337,12 @@ std::unique_ptr<network::SimpleURLLoader> ItemSuggestCache::MakeRequestLoader(
 
   return network::SimpleURLLoader::Create(std::move(resource_request),
                                           kTrafficAnnotation);
+}
+
+// static
+base::Optional<ItemSuggestCache::Results> ItemSuggestCache::ConvertJsonForTest(
+    const base::Value* value) {
+  return ConvertResults(value);
 }
 
 }  // namespace app_list

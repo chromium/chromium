@@ -61,6 +61,9 @@ class ItemSuggestCache {
 
   void UpdateCache();
 
+  static base::Optional<ItemSuggestCache::Results> ConvertJsonForTest(
+      const base::Value* value);
+
   // Whether or not to override configuration of the cache with an experiment.
   static const base::Feature kExperiment;
 
