@@ -1229,14 +1229,12 @@ void FileManagerPrivateInternalGetThumbnailFunction::FetchPdfThumbnail(
     return;
   }
   memcpy(pdf_region.mapping.memory(), content.data(), content.size());
-  if (!pdf_thumbnailer_.is_bound()) {
-    GetPrintingService()->BindPdfThumbnailer(
-        pdf_thumbnailer_.BindNewPipeAndPassReceiver());
-    pdf_thumbnailer_.set_disconnect_handler(
-        base::BindOnce(&FileManagerPrivateInternalGetThumbnailFunction::
-                           PdfThumbnailDisconected,
-                       base::Unretained(this)));
-  }
+  DCHECK(!pdf_thumbnailer_.is_bound());
+  GetPrintingService()->BindPdfThumbnailer(
+      pdf_thumbnailer_.BindNewPipeAndPassReceiver());
+  pdf_thumbnailer_.set_disconnect_handler(base::BindOnce(
+      &FileManagerPrivateInternalGetThumbnailFunction::PdfThumbnailDisconected,
+      base::Unretained(this)));
   gfx::Size thumb_size =
       crop_to_square
           ? gfx::Size(FileManagerPrivateInternalGetThumbnailFunction::kSize,
@@ -1263,6 +1261,7 @@ void FileManagerPrivateInternalGetThumbnailFunction::PdfThumbnailDisconected() {
 void FileManagerPrivateInternalGetThumbnailFunction::GotPdfThumbnail(
     const SkBitmap& bitmap) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  pdf_thumbnailer_.reset();
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, base::BindOnce(&ConvertAndEncode, bitmap),
       base::BindOnce(
