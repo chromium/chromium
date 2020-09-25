@@ -1,0 +1,21 @@
+<style include="diagnostics-shared diagnostics-fonts">
+  .data-point {
+    display: flex;
+    flex-direction: column;
+    height: 45px;
+    justify-content: space-between;
+  }
+
+  .title {
+    @apply --diagnostics-data-point-title-font;
+    color: var(--diagnostics-overview-text-color);
+  }
+
+  .value {
+    @apply --diagnostics-data-point-subtitle-font;
+  }
+</style>
+<div class="data-point">
+  <div class="title">[[title]]</div>
+  <div class="value">[[value]]</div>
+</div>

@@ -6,9 +6,13 @@
 
       --diagnostics-default-font-size: 14px;
       --diagnostics-header-font-size: 22px;
+      --diagnostics-data-point-title-font-size: 12px;
+      --diagnostics-data-point-subtitle-font-size: 15px;
 
       --diagnostics-default-font-weight: 500;
       --diagnostics-header-font-weight: 600;
+      --diagnostics-data-point-title-font-weight: 500;
+      --diagnostics-data-point-subtitle-font-weight: 550;
 
       --diagnostics-default-text-color: var(--google-grey-900);
       --diagnostics-header-text-color: var(--google-grey-900);
@@ -23,6 +27,16 @@
           font-family: var(--diagnostics-header-font-family);
           font-size: var(--diagnostics-header-font-size);
           font-weight: var(--diagnostics-header-font-weight);
+      }
+      --diagnostics-data-point-title-font: {
+          font-family: var(--diagnostics-default-font-family);
+          font-size: var(--diagnostics-data-point-title-font-size);
+          font-weight: var(--diagnostics-data-point-title-font-weight);
+      };
+      --diagnostics-data-point-subtitle-font: {
+          font-family: var(--diagnostics-default-font-family);
+          font-size: var(--diagnostics-data-point-subtitle-font-size);
+          font-weight: var(--diagnostics-data-point-subtitle-font-weight);
       };
     }
   </style>

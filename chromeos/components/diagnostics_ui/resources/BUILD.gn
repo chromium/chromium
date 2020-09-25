@@ -12,6 +12,7 @@ js_type_check("closure_compile_module") {
   deps = [
     ":battery_status_card",
     ":cpu_card",
+    ":data_point",
     ":diagnostics_app",
     ":diagnostics_card",
     ":diagnostics_types",
@@ -32,6 +33,12 @@ js_library("battery_status_card") {
 }
 
 js_library("cpu_card") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("data_point") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
@@ -99,6 +106,7 @@ html_to_js("web_components") {
   js_files = [
     "battery_status_card.js",
     "cpu_card.js",
+    "data_point.js",
     "diagnostics_app.js",
     "diagnostics_card.js",
     "diagnostics_fonts_css.js",
