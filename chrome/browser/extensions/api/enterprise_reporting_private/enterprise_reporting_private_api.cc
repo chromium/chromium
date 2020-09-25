@@ -69,11 +69,22 @@ EnterpriseReportingPrivateGetPersistentSecretFunction::Run() {
           base::BindOnce(
               &EnterpriseReportingPrivateGetPersistentSecretFunction::
                   OnDataRetrieved,
-              this)));
+              this, base::ThreadTaskRunnerHandle::Get())));
   return RespondLater();
 }
 
 void EnterpriseReportingPrivateGetPersistentSecretFunction::OnDataRetrieved(
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
+    const std::string& data,
+    long int status) {
+  task_runner->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &EnterpriseReportingPrivateGetPersistentSecretFunction::SendResponse,
+          this, data, status));
+}
+
+void EnterpriseReportingPrivateGetPersistentSecretFunction::SendResponse(
     const std::string& data,
     long int status) {
   if (status == 0) {  // Success.
@@ -109,11 +120,22 @@ EnterpriseReportingPrivateGetDeviceDataFunction::Run() {
           &RetrieveDeviceData, params->id,
           base::BindOnce(
               &EnterpriseReportingPrivateGetDeviceDataFunction::OnDataRetrieved,
-              this)));
+              this, base::ThreadTaskRunnerHandle::Get())));
   return RespondLater();
 }
 
 void EnterpriseReportingPrivateGetDeviceDataFunction::OnDataRetrieved(
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
+    const std::string& data,
+    RetrieveDeviceDataStatus status) {
+  task_runner->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &EnterpriseReportingPrivateGetDeviceDataFunction::SendResponse, this,
+          data, status));
+}
+
+void EnterpriseReportingPrivateGetDeviceDataFunction::SendResponse(
     const std::string& data,
     RetrieveDeviceDataStatus status) {
   switch (status) {
@@ -156,11 +178,21 @@ EnterpriseReportingPrivateSetDeviceDataFunction::Run() {
           &StoreDeviceData, params->id, std::move(params->data),
           base::BindOnce(
               &EnterpriseReportingPrivateSetDeviceDataFunction::OnDataStored,
-              this)));
+              this, base::ThreadTaskRunnerHandle::Get())));
   return RespondLater();
 }
 
 void EnterpriseReportingPrivateSetDeviceDataFunction::OnDataStored(
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
+    bool status) {
+  task_runner->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &EnterpriseReportingPrivateSetDeviceDataFunction::SendResponse, this,
+          status));
+}
+
+void EnterpriseReportingPrivateSetDeviceDataFunction::SendResponse(
     bool status) {
   if (status) {
     VLOG(1) << "The Endpoint Verification data was stored.";

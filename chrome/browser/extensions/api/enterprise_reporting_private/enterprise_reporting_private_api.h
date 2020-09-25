@@ -54,7 +54,11 @@ class EnterpriseReportingPrivateGetPersistentSecretFunction
   ExtensionFunction::ResponseAction Run() override;
 
   // Callback once the data was retrieved from the file.
-  void OnDataRetrieved(const std::string& data, long int status);
+  void OnDataRetrieved(scoped_refptr<base::SequencedTaskRunner> task_runner,
+                       const std::string& data,
+                       long int status);
+
+  void SendResponse(const std::string& data, long int status);
 };
 
 class EnterpriseReportingPrivateGetDeviceDataFunction
@@ -76,8 +80,11 @@ class EnterpriseReportingPrivateGetDeviceDataFunction
   ExtensionFunction::ResponseAction Run() override;
 
   // Callback once the data was retrieved from the file.
-  void OnDataRetrieved(const std::string& data,
+  void OnDataRetrieved(scoped_refptr<base::SequencedTaskRunner> task_runner,
+                       const std::string& data,
                        RetrieveDeviceDataStatus status);
+
+  void SendResponse(const std::string& data, RetrieveDeviceDataStatus status);
 };
 
 class EnterpriseReportingPrivateSetDeviceDataFunction
@@ -99,7 +106,10 @@ class EnterpriseReportingPrivateSetDeviceDataFunction
   ExtensionFunction::ResponseAction Run() override;
 
   // Callback once the data was stored to the file.
-  void OnDataStored(bool status);
+  void OnDataStored(scoped_refptr<base::SequencedTaskRunner> task_runner,
+                    bool status);
+
+  void SendResponse(bool status);
 };
 
 class EnterpriseReportingPrivateGetDeviceInfoFunction
