@@ -11,8 +11,7 @@ _ink_dir =
 
 declare_args() {
   # Whether to enable the ImageEditor in Chrome.
-  enable_image_editor =
-      android_channel == "default" || android_channel == "canary"
+  enable_image_editor = true
 }
 
 image_editor_module_desc = {
