@@ -3,10 +3,6 @@
 // found in the LICENSE file.
 
 // https://github.com/WICG/is-input-pending
-[
-    Exposed=Window,
-    RuntimeEnabled=ExperimentalIsInputPending
-] interface IsInputPendingOptions {
-    constructor(optional IsInputPendingOptionsInit options = {});
-    attribute boolean includeContinuous;
+dictionary IsInputPendingOptions {
+  boolean includeContinuous = false;
 };

@@ -19,8 +19,7 @@ class Scheduling : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  bool isInputPending(ScriptState*,
-                      const IsInputPendingOptions* options = nullptr) const;
+  bool isInputPending(ScriptState*, const IsInputPendingOptions* options) const;
   bool isFramePending() const;
 };
 

@@ -8,5 +8,5 @@
     RuntimeEnabled=ExperimentalIsInputPending
 ] interface Scheduling {
     [RuntimeEnabled=ExperimentalIsInputPending] boolean isFramePending();
-    [CallWith=ScriptState, MeasureAs=SchedulingIsInputPending, RuntimeEnabled=ExperimentalIsInputPending] boolean isInputPending(optional IsInputPendingOptions options);
+    [CallWith=ScriptState, MeasureAs=SchedulingIsInputPending, RuntimeEnabled=ExperimentalIsInputPending] boolean isInputPending(optional IsInputPendingOptions options = {});
 };

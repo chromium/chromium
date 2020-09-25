@@ -258,7 +258,6 @@ static_idl_files_in_core = get_path_info(
           "//third_party/blink/renderer/core/frame/history.idl",
           "//third_party/blink/renderer/core/frame/intervention_report_body.idl",
           "//third_party/blink/renderer/core/frame/is_input_pending_options.idl",
-          "//third_party/blink/renderer/core/frame/is_input_pending_options_init.idl",
           "//third_party/blink/renderer/core/frame/location.idl",
           "//third_party/blink/renderer/core/frame/navigator.idl",
           "//third_party/blink/renderer/core/frame/navigator_automation_information.idl",

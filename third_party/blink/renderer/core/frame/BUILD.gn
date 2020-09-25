@@ -95,8 +95,6 @@ blink_core_sources("frame") {
     "intervention.h",
     "intervention_report_body.cc",
     "intervention_report_body.h",
-    "is_input_pending_options.cc",
-    "is_input_pending_options.h",
     "layout_subtree_root_list.cc",
     "layout_subtree_root_list.h",
     "local_dom_window.cc",

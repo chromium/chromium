@@ -4646,11 +4646,6 @@ interface IntersectionObserverEntry
     getter target
     getter time
     method constructor
-interface IsInputPendingOptions
-    attribute @@toStringTag
-    getter includeContinuous
-    method constructor
-    setter includeContinuous
 interface Keyboard
     attribute @@toStringTag
     method constructor

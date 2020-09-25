@@ -17,14 +17,14 @@ bool Scheduling::isInputPending(ScriptState* script_state,
                                 const IsInputPendingOptions* options) const {
   DCHECK(RuntimeEnabledFeatures::ExperimentalIsInputPendingEnabled(
       ExecutionContext::From(script_state)));
+  DCHECK(options);
 
   auto* frame = LocalDOMWindow::From(script_state)->GetFrame();
   if (!frame)
     return false;
 
   auto* scheduler = ThreadScheduler::Current();
-  auto info = scheduler->GetPendingUserInputInfo(
-      options ? options->includeContinuous() : false);
+  auto info = scheduler->GetPendingUserInputInfo(options->includeContinuous());
 
   for (const auto& attribution : info) {
     if (frame->CanAccessEvent(attribution)) {
