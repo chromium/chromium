@@ -10,7 +10,7 @@ include_rules = [
     "+build",
     "+cc/paint/element_id.h",
     "+cc/trees/browser_controls_params.h",
-    "+components/viz/common/surfaces/local_surface_id_allocation.h",
+    "+components/viz/common/surfaces/local_surface_id.h",
     "+net",
     "+media",
     "+mojo",

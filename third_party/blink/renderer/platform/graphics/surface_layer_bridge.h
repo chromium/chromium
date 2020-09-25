@@ -60,8 +60,6 @@ class PLATFORM_EXPORT SurfaceLayerBridge
     return current_surface_id_;
   }
 
-  base::TimeTicks GetLocalSurfaceIdAllocationTime() const override;
-
  private:
   scoped_refptr<cc::SurfaceLayer> surface_layer_;
   scoped_refptr<cc::SolidColorLayer> solid_color_layer_;

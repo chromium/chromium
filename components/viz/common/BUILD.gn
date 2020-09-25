@@ -267,8 +267,6 @@ viz_component("common") {
     "surfaces/frame_sink_id_allocator.h",
     "surfaces/local_surface_id.cc",
     "surfaces/local_surface_id.h",
-    "surfaces/local_surface_id_allocation.cc",
-    "surfaces/local_surface_id_allocation.h",
     "surfaces/parent_local_surface_id_allocator.cc",
     "surfaces/parent_local_surface_id_allocator.h",
     "surfaces/scoped_surface_id_allocator.cc",

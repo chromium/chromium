@@ -323,8 +323,8 @@ class LayerTreeHostCopyRequestTestLayerDestroyed
         main_destroyed_.reset();
 
         // Prevent drawing so we can't make a copy of the impl_destroyed layer.
-        layer_tree_host()->SetViewportRectAndScale(
-            gfx::Rect(), 1.f, GetCurrentLocalSurfaceIdAllocation());
+        layer_tree_host()->SetViewportRectAndScale(gfx::Rect(), 1.f,
+                                                   GetCurrentLocalSurfaceId());
         break;
       case 2:
         // Flush the message loops.
@@ -758,7 +758,7 @@ class LayerTreeHostTestAsyncTwoReadbacksWithoutDraw
 
     // Prevent drawing.
     layer_tree_host()->SetViewportRectAndScale(gfx::Rect(0, 0), 1.f,
-                                               viz::LocalSurfaceIdAllocation());
+                                               viz::LocalSurfaceId());
 
     AddCopyRequest(copy_layer_.get());
   }
@@ -774,8 +774,7 @@ class LayerTreeHostTestAsyncTwoReadbacksWithoutDraw
     if (layer_tree_host()->SourceFrameNumber() == 1) {
       // Allow drawing.
       layer_tree_host()->SetViewportRectAndScale(
-          gfx::Rect(root_->bounds()), 1.f,
-          GetCurrentLocalSurfaceIdAllocation());
+          gfx::Rect(root_->bounds()), 1.f, GetCurrentLocalSurfaceId());
 
       AddCopyRequest(copy_layer_.get());
     }
@@ -1157,8 +1156,8 @@ class LayerTreeHostCopyRequestTestDestroyBeforeCopy
         copy_layer_->RequestCopyOfOutput(std::move(request));
 
         // Stop drawing.
-        layer_tree_host()->SetViewportRectAndScale(
-            gfx::Rect(), 1.f, GetCurrentLocalSurfaceIdAllocation());
+        layer_tree_host()->SetViewportRectAndScale(gfx::Rect(), 1.f,
+                                                   GetCurrentLocalSurfaceId());
         break;
       }
       case 2:
@@ -1171,7 +1170,7 @@ class LayerTreeHostCopyRequestTestDestroyBeforeCopy
         // Allow us to draw now.
         layer_tree_host()->SetViewportRectAndScale(
             gfx::Rect(layer_tree_host()->root_layer()->bounds()), 1.f,
-            GetCurrentLocalSurfaceIdAllocation());
+            GetCurrentLocalSurfaceId());
         break;
       case 4:
         EXPECT_EQ(1, callback_count_);
@@ -1244,8 +1243,8 @@ class LayerTreeHostCopyRequestTestShutdownBeforeCopy
                                base::Unretained(this)));
         copy_layer_->RequestCopyOfOutput(std::move(request));
 
-        layer_tree_host()->SetViewportRectAndScale(
-            gfx::Rect(), 1.f, GetCurrentLocalSurfaceIdAllocation());
+        layer_tree_host()->SetViewportRectAndScale(gfx::Rect(), 1.f,
+                                                   GetCurrentLocalSurfaceId());
         break;
       }
       case 2:

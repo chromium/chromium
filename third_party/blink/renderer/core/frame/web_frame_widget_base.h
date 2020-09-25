@@ -539,7 +539,7 @@ class CORE_EXPORT WebFrameWidgetBase
   // changed.
   void BatterySavingsChanged(WebBatterySavingsFlags savings);
 
-  const viz::LocalSurfaceIdAllocation& LocalSurfaceIdAllocationFromParent();
+  const viz::LocalSurfaceId& LocalSurfaceIdFromParent();
   cc::LayerTreeHost* LayerTreeHost();
 
   virtual ScreenMetricsEmulator* DeviceEmulator() { return nullptr; }
@@ -551,7 +551,7 @@ class CORE_EXPORT WebFrameWidgetBase
   // Update the surface allocation information, compositor viewport rect and
   // screen info on the widget.
   void UpdateSurfaceAndScreenInfo(
-      const viz::LocalSurfaceIdAllocation& new_local_surface_id_allocation,
+      const viz::LocalSurfaceId& new_local_surface_id,
       const gfx::Rect& compositor_viewport_pixel_rect,
       const ScreenInfo& new_screen_info);
   // Similar to UpdateSurfaceAndScreenInfo but the surface allocation

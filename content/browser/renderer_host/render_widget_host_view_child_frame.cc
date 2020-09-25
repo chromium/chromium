@@ -199,7 +199,7 @@ bool RenderWidgetHostViewChildFrame::HasFocus() {
 }
 
 bool RenderWidgetHostViewChildFrame::IsSurfaceAvailableForCopy() {
-  return GetLocalSurfaceIdAllocation().IsValid();
+  return GetLocalSurfaceId().is_valid();
 }
 
 void RenderWidgetHostViewChildFrame::EnsureSurfaceSynchronizedForWebTest() {
@@ -608,11 +608,11 @@ const viz::FrameSinkId& RenderWidgetHostViewChildFrame::GetFrameSinkId() const {
   return frame_sink_id_;
 }
 
-const viz::LocalSurfaceIdAllocation&
-RenderWidgetHostViewChildFrame::GetLocalSurfaceIdAllocation() const {
+const viz::LocalSurfaceId& RenderWidgetHostViewChildFrame::GetLocalSurfaceId()
+    const {
   if (frame_connector_)
-    return frame_connector_->local_surface_id_allocation();
-  return viz::ParentLocalSurfaceIdAllocator::InvalidLocalSurfaceIdAllocation();
+    return frame_connector_->local_surface_id();
+  return viz::ParentLocalSurfaceIdAllocator::InvalidLocalSurfaceId();
 }
 
 void RenderWidgetHostViewChildFrame::NotifyHitTestRegionUpdated(
@@ -664,8 +664,7 @@ viz::FrameSinkId RenderWidgetHostViewChildFrame::GetRootFrameSinkId() {
 }
 
 viz::SurfaceId RenderWidgetHostViewChildFrame::GetCurrentSurfaceId() const {
-  return viz::SurfaceId(frame_sink_id_,
-                        GetLocalSurfaceIdAllocation().local_surface_id());
+  return viz::SurfaceId(frame_sink_id_, GetLocalSurfaceId());
 }
 
 bool RenderWidgetHostViewChildFrame::HasSize() const {

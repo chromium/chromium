@@ -615,8 +615,7 @@ void LayerTreeImpl::PushPropertiesTo(LayerTreeImpl* target_tree) {
 
   if (TakeNewLocalSurfaceIdRequest())
     target_tree->RequestNewLocalSurfaceId();
-  target_tree->SetLocalSurfaceIdAllocationFromParent(
-      local_surface_id_allocation_from_parent());
+  target_tree->SetLocalSurfaceIdFromParent(local_surface_id_from_parent());
 
   target_tree->pending_page_scale_animation_ =
       std::move(pending_page_scale_animation_);
@@ -1175,11 +1174,9 @@ void LayerTreeImpl::SetDeviceScaleFactor(float device_scale_factor) {
   host_impl_->SetNeedUpdateGpuRasterizationStatus();
 }
 
-void LayerTreeImpl::SetLocalSurfaceIdAllocationFromParent(
-    const viz::LocalSurfaceIdAllocation&
-        local_surface_id_allocation_from_parent) {
-  local_surface_id_allocation_from_parent_ =
-      local_surface_id_allocation_from_parent;
+void LayerTreeImpl::SetLocalSurfaceIdFromParent(
+    const viz::LocalSurfaceId& local_surface_id_from_parent) {
+  local_surface_id_from_parent_ = local_surface_id_from_parent;
 }
 
 void LayerTreeImpl::RequestNewLocalSurfaceId() {

@@ -258,8 +258,7 @@ RenderWidgetHostViewAndroid::RenderWidgetHostViewAndroid(
         host()->GetFrameSinkId());
     if (is_showing_) {
       delegated_frame_host_->WasShown(
-          local_surface_id_allocator_.GetCurrentLocalSurfaceIdAllocation()
-              .local_surface_id(),
+          local_surface_id_allocator_.GetCurrentLocalSurfaceId(),
           GetCompositorViewportPixelSize(), host()->delegate()->IsFullscreen());
     }
 
@@ -330,11 +329,9 @@ void RenderWidgetHostViewAndroid::InitAsFullscreen(
 
 bool RenderWidgetHostViewAndroid::SynchronizeVisualProperties(
     const cc::DeadlinePolicy& deadline_policy,
-    const base::Optional<viz::LocalSurfaceIdAllocation>&
-        child_local_surface_id_allocation) {
-  if (child_local_surface_id_allocation) {
-    local_surface_id_allocator_.UpdateFromChild(
-        *child_local_surface_id_allocation);
+    const base::Optional<viz::LocalSurfaceId>& child_local_surface_id) {
+  if (child_local_surface_id) {
+    local_surface_id_allocator_.UpdateFromChild(*child_local_surface_id);
   } else {
     local_surface_id_allocator_.GenerateId();
   }
@@ -344,13 +341,12 @@ bool RenderWidgetHostViewAndroid::SynchronizeVisualProperties(
   // synchronization message via DidUpdateVisualProperties. The child has not
   // prompted any further property changes, so we do not need to continue
   // syncrhonization. Nor do we want to embed an invalid surface.
-  if (!local_surface_id_allocator_.HasValidLocalSurfaceIdAllocation())
+  if (!local_surface_id_allocator_.HasValidLocalSurfaceId())
     return false;
 
   if (delegated_frame_host_) {
     delegated_frame_host_->EmbedSurface(
-        local_surface_id_allocator_.GetCurrentLocalSurfaceIdAllocation()
-            .local_surface_id(),
+        local_surface_id_allocator_.GetCurrentLocalSurfaceId(),
         GetCompositorViewportPixelSize(), deadline_policy,
         host()->delegate()->IsFullscreen());
   }
@@ -1386,7 +1382,7 @@ bool RenderWidgetHostViewAndroid::UpdateControls(
 void RenderWidgetHostViewAndroid::OnDidUpdateVisualPropertiesComplete(
     const cc::RenderFrameMetadata& metadata) {
   SynchronizeVisualProperties(cc::DeadlinePolicy::UseDefaultDeadline(),
-                              metadata.local_surface_id_allocation);
+                              metadata.local_surface_id);
   if (delegated_frame_host_) {
     delegated_frame_host_->SetTopControlsVisibleHeight(
         metadata.top_controls_height * metadata.top_controls_shown_ratio);
@@ -1429,7 +1425,7 @@ void RenderWidgetHostViewAndroid::ShowInternal() {
 
   if ((delegated_frame_host_ &&
        delegated_frame_host_->IsPrimarySurfaceEvicted()) ||
-      !local_surface_id_allocator_.HasValidLocalSurfaceIdAllocation()) {
+      !local_surface_id_allocator_.HasValidLocalSurfaceId()) {
     ui::WindowAndroidCompositor* compositor =
         view_.GetWindowAndroid() ? view_.GetWindowAndroid()->GetCompositor()
                                  : nullptr;
@@ -1464,8 +1460,7 @@ void RenderWidgetHostViewAndroid::ShowInternal() {
 
   if (delegated_frame_host_) {
     delegated_frame_host_->WasShown(
-        local_surface_id_allocator_.GetCurrentLocalSurfaceIdAllocation()
-            .local_surface_id(),
+        local_surface_id_allocator_.GetCurrentLocalSurfaceId(),
         GetCompositorViewportPixelSize(), host()->delegate()->IsFullscreen());
   }
 
@@ -2030,9 +2025,9 @@ RenderWidgetHostViewAndroid::GetTouchSelectionControllerClientManager() {
   return touch_selection_controller_client_manager_.get();
 }
 
-const viz::LocalSurfaceIdAllocation&
-RenderWidgetHostViewAndroid::GetLocalSurfaceIdAllocation() const {
-  return local_surface_id_allocator_.GetCurrentLocalSurfaceIdAllocation();
+const viz::LocalSurfaceId& RenderWidgetHostViewAndroid::GetLocalSurfaceId()
+    const {
+  return local_surface_id_allocator_.GetCurrentLocalSurfaceId();
 }
 
 void RenderWidgetHostViewAndroid::OnRenderWidgetInit() {
@@ -2321,7 +2316,7 @@ void RenderWidgetHostViewAndroid::DidNavigate() {
     if (is_first_navigation_) {
       SynchronizeVisualProperties(
           cc::DeadlinePolicy::UseExistingDeadline(),
-          local_surface_id_allocator_.GetCurrentLocalSurfaceIdAllocation());
+          local_surface_id_allocator_.GetCurrentLocalSurfaceId());
     } else {
       SynchronizeVisualProperties(cc::DeadlinePolicy::UseExistingDeadline(),
                                   base::nullopt);
@@ -2379,7 +2374,7 @@ void RenderWidgetHostViewAndroid::WasEvicted() {
     // is no guarantee that they will occur after the eviction.
     SynchronizeVisualProperties(
         cc::DeadlinePolicy::UseExistingDeadline(),
-        local_surface_id_allocator_.GetCurrentLocalSurfaceIdAllocation());
+        local_surface_id_allocator_.GetCurrentLocalSurfaceId());
   } else {
     local_surface_id_allocator_.Invalidate();
   }

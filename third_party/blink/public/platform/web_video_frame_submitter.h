@@ -58,8 +58,8 @@ class BLINK_PLATFORM_EXPORT WebVideoFrameSubmitter
   virtual void SetRotation(media::VideoRotation) = 0;
 
   // Prepares the compositor frame sink to accept frames by providing
-  // a SurfaceId, with its associated allocation time.
-  virtual void EnableSubmission(viz::SurfaceId, base::TimeTicks) = 0;
+  // a SurfaceId.
+  virtual void EnableSubmission(viz::SurfaceId) = 0;
 
   // Set whether the surface is visible within the current view port. Stops
   // submission if not unless SetForceSubmit(true) has been called.

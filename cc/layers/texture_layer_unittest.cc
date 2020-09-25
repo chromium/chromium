@@ -180,7 +180,7 @@ class TextureLayerTest : public testing::Test {
         &fake_client_, &task_graph_runner_, animation_host_.get());
     EXPECT_CALL(*layer_tree_host_, SetNeedsCommit()).Times(AnyNumber());
     layer_tree_host_->SetViewportRectAndScale(gfx::Rect(10, 10), 1.f,
-                                              viz::LocalSurfaceIdAllocation());
+                                              viz::LocalSurfaceId());
     Mock::VerifyAndClearExpectations(layer_tree_host_.get());
   }
 
@@ -272,8 +272,8 @@ TEST_F(TextureLayerTest, ShutdownWithResource) {
 
     viz::ParentLocalSurfaceIdAllocator allocator;
     allocator.GenerateId();
-    host->SetViewportRectAndScale(
-        gfx::Rect(10, 10), 1.f, allocator.GetCurrentLocalSurfaceIdAllocation());
+    host->SetViewportRectAndScale(gfx::Rect(10, 10), 1.f,
+                                  allocator.GetCurrentLocalSurfaceId());
     host->SetVisible(true);
     host->SetRootLayer(layer);
 
@@ -718,7 +718,7 @@ class TextureLayerImplWithMailboxThreadedCallback : public LayerTreeTest {
     root_->AddChild(layer_);
     layer_tree_host()->SetRootLayer(root_);
     layer_tree_host()->SetViewportRectAndScale(gfx::Rect(bounds), 1.f,
-                                               viz::LocalSurfaceIdAllocation());
+                                               viz::LocalSurfaceId());
     SetMailbox('1');
     EXPECT_EQ(0, callback_count_);
 
@@ -1220,7 +1220,7 @@ class TextureLayerWithResourceMainThreadDeleted : public LayerTreeTest {
     root_->AddChild(layer_);
     layer_tree_host()->SetRootLayer(root_);
     layer_tree_host()->SetViewportRectAndScale(gfx::Rect(bounds), 1.f,
-                                               viz::LocalSurfaceIdAllocation());
+                                               viz::LocalSurfaceId());
   }
 
   void BeginTest() override {
@@ -1292,7 +1292,7 @@ class TextureLayerWithResourceImplThreadDeleted : public LayerTreeTest {
     root_->AddChild(layer_);
     layer_tree_host()->SetRootLayer(root_);
     layer_tree_host()->SetViewportRectAndScale(gfx::Rect(bounds), 1.f,
-                                               viz::LocalSurfaceIdAllocation());
+                                               viz::LocalSurfaceId());
   }
 
   void BeginTest() override {

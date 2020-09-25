@@ -115,8 +115,7 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
       bool request_unadjusted_movement) override;
   void UnlockMouse() override;
   const viz::FrameSinkId& GetFrameSinkId() const override;
-  const viz::LocalSurfaceIdAllocation& GetLocalSurfaceIdAllocation()
-      const override;
+  const viz::LocalSurfaceId& GetLocalSurfaceId() const override;
   void NotifyHitTestRegionUpdated(const viz::AggregatedHitTestRegion&) override;
   bool ScreenRectIsUnstableFor(const blink::WebInputEvent& event) override;
   void PreProcessTouchEvent(const blink::WebTouchEvent& event) override;

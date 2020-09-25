@@ -1096,8 +1096,8 @@ bool LayerTreeHostImpl::HasDamage() const {
 
   // If we have a new LocalSurfaceId, we must always submit a CompositorFrame
   // because the parent is blocking on us.
-  if (last_draw_local_surface_id_allocation_ !=
-      child_local_surface_id_allocator_.GetCurrentLocalSurfaceIdAllocation()) {
+  if (last_draw_local_surface_id_ !=
+      child_local_surface_id_allocator_.GetCurrentLocalSurfaceId()) {
     return true;
   }
 
@@ -2160,10 +2160,6 @@ viz::CompositorFrameMetadata LayerTreeHostImpl::MakeCompositorFrameMetadata() {
         browser_controls_offset_manager_->TopControlsShownRatio());
   }
 
-  metadata.local_surface_id_allocation_time =
-      child_local_surface_id_allocator_.GetCurrentLocalSurfaceIdAllocation()
-          .allocation_time();
-
   if (InnerViewportScrollNode()) {
     // TODO(miletus) : Change the metadata to hold ScrollOffset.
     metadata.root_scroll_offset =
@@ -2278,12 +2274,11 @@ RenderFrameMetadata LayerTreeHostImpl::MakeRenderFrameMetadata(
            metadata.has_transparent_background);
 #endif
 
-  if (child_local_surface_id_allocator_.GetCurrentLocalSurfaceIdAllocation()
-          .IsValid()) {
+  if (child_local_surface_id_allocator_.GetCurrentLocalSurfaceId().is_valid()) {
     if (allocate_new_local_surface_id)
       AllocateLocalSurfaceId();
-    metadata.local_surface_id_allocation =
-        child_local_surface_id_allocator_.GetCurrentLocalSurfaceIdAllocation();
+    metadata.local_surface_id =
+        child_local_surface_id_allocator_.GetCurrentLocalSurfaceId();
   }
 
   return metadata;
@@ -2524,13 +2519,12 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
   // single-thread-without-scheduler mode is only used in tests so it doesn't
   // matter.
   CHECK(!settings_.single_thread_proxy_scheduler ||
-        active_tree()->local_surface_id_allocation_from_parent().IsValid());
+        active_tree()->local_surface_id_from_parent().is_valid());
   layer_tree_frame_sink_->SetLocalSurfaceId(
-      child_local_surface_id_allocator_.GetCurrentLocalSurfaceIdAllocation()
-          .local_surface_id());
+      child_local_surface_id_allocator_.GetCurrentLocalSurfaceId());
 
-  last_draw_local_surface_id_allocation_ =
-      child_local_surface_id_allocator_.GetCurrentLocalSurfaceIdAllocation();
+  last_draw_local_surface_id_ =
+      child_local_surface_id_allocator_.GetCurrentLocalSurfaceId();
   return compositor_frame;
 }
 
@@ -3170,9 +3164,9 @@ void LayerTreeHostImpl::ActivateSyncTree() {
     input_delegate_->DidActivatePendingTree();
 
   // Update the child's LocalSurfaceId.
-  if (active_tree()->local_surface_id_allocation_from_parent().IsValid()) {
+  if (active_tree()->local_surface_id_from_parent().is_valid()) {
     child_local_surface_id_allocator_.UpdateFromParent(
-        active_tree()->local_surface_id_allocation_from_parent());
+        active_tree()->local_surface_id_from_parent());
     if (active_tree()->TakeNewLocalSurfaceIdRequest())
       AllocateLocalSurfaceId();
   }
@@ -3644,9 +3638,9 @@ bool LayerTreeHostImpl::InitializeFrameSink(
   // Always allocate a new viz::LocalSurfaceId when we get a new
   // LayerTreeFrameSink to ensure that we do not reuse the same surface after
   // it might have been garbage collected.
-  const viz::LocalSurfaceIdAllocation& local_surface_id_allocation =
-      child_local_surface_id_allocator_.GetCurrentLocalSurfaceIdAllocation();
-  if (local_surface_id_allocation.IsValid())
+  const viz::LocalSurfaceId& local_surface_id =
+      child_local_surface_id_allocator_.GetCurrentLocalSurfaceId();
+  if (local_surface_id.is_valid())
     AllocateLocalSurfaceId();
 
   return true;

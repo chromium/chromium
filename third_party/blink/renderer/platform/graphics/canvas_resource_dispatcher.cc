@@ -167,8 +167,7 @@ void CanvasResourceDispatcher::DispatchFrameSync(
   pending_compositor_frames_++;
   WTF::Vector<viz::ReturnedResource> resources;
   sink_->SubmitCompositorFrameSync(
-      parent_local_surface_id_allocator_.GetCurrentLocalSurfaceIdAllocation()
-          .local_surface_id(),
+      parent_local_surface_id_allocator_.GetCurrentLocalSurfaceId(),
       std::move(frame), base::nullopt, 0, &resources);
   DidReceiveCompositorFrameAck(resources);
 }
@@ -188,8 +187,7 @@ void CanvasResourceDispatcher::DispatchFrame(
 
   pending_compositor_frames_++;
   sink_->SubmitCompositorFrame(
-      parent_local_surface_id_allocator_.GetCurrentLocalSurfaceIdAllocation()
-          .local_surface_id(),
+      parent_local_surface_id_allocator_.GetCurrentLocalSurfaceId(),
       std::move(frame), base::nullopt, 0);
 }
 
@@ -287,16 +285,12 @@ bool CanvasResourceDispatcher::PrepareFrame(
   frame->render_pass_list.push_back(std::move(pass));
 
   if (change_size_for_next_commit_ ||
-      !parent_local_surface_id_allocator_.HasValidLocalSurfaceIdAllocation()) {
+      !parent_local_surface_id_allocator_.HasValidLocalSurfaceId()) {
     parent_local_surface_id_allocator_.GenerateId();
     surface_embedder_->SetLocalSurfaceId(
-        parent_local_surface_id_allocator_.GetCurrentLocalSurfaceIdAllocation()
-            .local_surface_id());
+        parent_local_surface_id_allocator_.GetCurrentLocalSurfaceId());
     change_size_for_next_commit_ = false;
   }
-  frame->metadata.local_surface_id_allocation_time =
-      parent_local_surface_id_allocator_.GetCurrentLocalSurfaceIdAllocation()
-          .allocation_time();
 
   return true;
 }

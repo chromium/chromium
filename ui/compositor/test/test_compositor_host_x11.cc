@@ -49,7 +49,7 @@ void TestCompositorHostX11::Show() {
   compositor_.SetAcceleratedWidget(
       static_cast<gfx::AcceleratedWidget>(window_));
   compositor_.SetScaleAndSize(1.0f, bounds_.size(),
-                              allocator_.GetCurrentLocalSurfaceIdAllocation());
+                              allocator_.GetCurrentLocalSurfaceId());
   compositor_.SetVisible(true);
 }
 

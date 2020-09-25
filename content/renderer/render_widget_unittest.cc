@@ -593,8 +593,7 @@ class NotifySwapTimesRenderWidgetUnittest : public RenderWidgetUnittest {
     // some reason.
     allocator.GenerateId();
     widget()->layer_tree_host()->SetViewportRectAndScale(
-        gfx::Rect(200, 100), 1.f,
-        allocator.GetCurrentLocalSurfaceIdAllocation());
+        gfx::Rect(200, 100), 1.f, allocator.GetCurrentLocalSurfaceId());
 
     auto root_layer = cc::SolidColorLayer::Create();
     root_layer->SetBounds(gfx::Size(200, 100));

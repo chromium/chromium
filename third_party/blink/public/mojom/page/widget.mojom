@@ -9,7 +9,7 @@ import "third_party/blink/public/mojom/input/touch_event.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/text_direction.mojom";
 import "mojo/public/mojom/base/time.mojom";
-import "services/viz/public/mojom/compositing/local_surface_id_allocation.mojom";
+import "services/viz/public/mojom/compositing/local_surface_id.mojom";
 import "services/viz/public/mojom/hit_test/input_target_client.mojom";
 import "skia/public/mojom/bitmap.mojom";
 import "third_party/blink/public/mojom/frame/intrinsic_sizing_info.mojom";

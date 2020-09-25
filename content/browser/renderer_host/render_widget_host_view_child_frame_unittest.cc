@@ -291,15 +291,14 @@ TEST_F(RenderWidgetHostViewChildFrameTest,
   constexpr gfx::Rect screen_space_rect(compositor_viewport_pixel_rect);
   viz::ParentLocalSurfaceIdAllocator allocator;
   allocator.GenerateId();
-  viz::LocalSurfaceIdAllocation local_surface_id_allocation =
-      allocator.GetCurrentLocalSurfaceIdAllocation();
+  viz::LocalSurfaceId local_surface_id = allocator.GetCurrentLocalSurfaceId();
 
   blink::FrameVisualProperties visual_properties;
   visual_properties.screen_space_rect = screen_space_rect;
   visual_properties.compositor_viewport = compositor_viewport_pixel_rect;
   visual_properties.local_frame_size = compositor_viewport_pixel_rect.size();
   visual_properties.capture_sequence_number = 123u;
-  visual_properties.local_surface_id_allocation = local_surface_id_allocation;
+  visual_properties.local_surface_id = local_surface_id;
   visual_properties.root_widget_window_segments.emplace_back(1, 2, 3, 4);
 
   base::RunLoop().RunUntilIdle();
@@ -316,8 +315,7 @@ TEST_F(RenderWidgetHostViewChildFrameTest,
     EXPECT_EQ(compositor_viewport_pixel_rect,
               sent_visual_properties.compositor_viewport_pixel_rect);
     EXPECT_EQ(screen_space_rect.size(), sent_visual_properties.new_size);
-    EXPECT_EQ(local_surface_id_allocation,
-              sent_visual_properties.local_surface_id_allocation);
+    EXPECT_EQ(local_surface_id, sent_visual_properties.local_surface_id);
     EXPECT_EQ(123u, sent_visual_properties.capture_sequence_number);
     EXPECT_EQ(1u, sent_visual_properties.root_widget_window_segments.size());
     EXPECT_EQ(gfx::Rect(1, 2, 3, 4),

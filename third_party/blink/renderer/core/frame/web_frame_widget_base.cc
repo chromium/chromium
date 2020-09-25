@@ -1205,12 +1205,11 @@ float WebFrameWidgetBase::PageScaleInMainFrame() {
 }
 
 void WebFrameWidgetBase::UpdateSurfaceAndScreenInfo(
-    const viz::LocalSurfaceIdAllocation& new_local_surface_id_allocation,
+    const viz::LocalSurfaceId& new_local_surface_id,
     const gfx::Rect& compositor_viewport_pixel_rect,
     const ScreenInfo& new_screen_info) {
-  widget_base_->UpdateSurfaceAndScreenInfo(new_local_surface_id_allocation,
-                                           compositor_viewport_pixel_rect,
-                                           new_screen_info);
+  widget_base_->UpdateSurfaceAndScreenInfo(
+      new_local_surface_id, compositor_viewport_pixel_rect, new_screen_info);
 }
 
 void WebFrameWidgetBase::UpdateScreenInfo(const ScreenInfo& new_screen_info) {
@@ -2174,9 +2173,8 @@ void WebFrameWidgetBase::BatterySavingsChanged(WebBatterySavingsFlags savings) {
       savings & kAllowReducedFrameRate);
 }
 
-const viz::LocalSurfaceIdAllocation&
-WebFrameWidgetBase::LocalSurfaceIdAllocationFromParent() {
-  return widget_base_->local_surface_id_allocation_from_parent();
+const viz::LocalSurfaceId& WebFrameWidgetBase::LocalSurfaceIdFromParent() {
+  return widget_base_->local_surface_id_from_parent();
 }
 
 cc::LayerTreeHost* WebFrameWidgetBase::LayerTreeHost() {

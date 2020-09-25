@@ -8,7 +8,7 @@
 #include "base/optional.h"
 #include "base/time/time.h"
 #include "cc/trees/browser_controls_params.h"
-#include "components/viz/common/surfaces/local_surface_id_allocation.h"
+#include "components/viz/common/surfaces/local_surface_id.h"
 #include "third_party/blink/public/common/widget/screen_info.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "ui/gfx/geometry/size.h"
@@ -92,8 +92,8 @@ struct VisualProperties {
   // resize.
   bool scroll_focused_node_into_view = false;
 
-  // The local surface ID to use (if valid) and its allocation time.
-  base::Optional<viz::LocalSurfaceIdAllocation> local_surface_id_allocation;
+  // The local surface ID to use (if valid).
+  base::Optional<viz::LocalSurfaceId> local_surface_id;
 
   // Indicates whether tab-initiated fullscreen was granted.
   bool is_fullscreen_granted = false;

@@ -111,8 +111,7 @@ class TestRenderWidgetHostView : public RenderWidgetHostViewBase,
   blink::mojom::PointerLockResult ChangeMouseLock(bool) override;
   void UnlockMouse() override;
   const viz::FrameSinkId& GetFrameSinkId() const override;
-  const viz::LocalSurfaceIdAllocation& GetLocalSurfaceIdAllocation()
-      const override;
+  const viz::LocalSurfaceId& GetLocalSurfaceId() const override;
   viz::SurfaceId GetCurrentSurfaceId() const override;
   std::unique_ptr<SyntheticGestureTarget> CreateSyntheticGestureTarget()
       override;

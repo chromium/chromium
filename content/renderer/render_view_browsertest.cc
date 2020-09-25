@@ -572,10 +572,8 @@ class RenderViewImplScaleFactorTest : public RenderViewImplTest {
     visual_properties.auto_resize_enabled = view()->AutoResizeMode();
     visual_properties.min_size_for_auto_resize = min_size_for_autoresize_;
     visual_properties.max_size_for_auto_resize = max_size_for_autoresize_;
-    visual_properties.local_surface_id_allocation =
-        viz::LocalSurfaceIdAllocation(
-            viz::LocalSurfaceId(1, 1, base::UnguessableToken::Create()),
-            base::TimeTicks::Now());
+    visual_properties.local_surface_id =
+        viz::LocalSurfaceId(1, 1, base::UnguessableToken::Create());
     return visual_properties;
   }
 

@@ -161,8 +161,6 @@ FuzzedData FuzzedCompositorFrameBuilder::Build(
   data_.frame.metadata.begin_frame_ack.has_damage = true;
   data_.frame.metadata.frame_token = ++next_frame_token;
   data_.frame.metadata.device_scale_factor = 1;
-  data_.frame.metadata.local_surface_id_allocation_time =
-      base::TimeTicks::Now();
 
   AddRenderPass(render_pass_spec);
 

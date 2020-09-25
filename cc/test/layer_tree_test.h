@@ -93,8 +93,8 @@ class LayerTreeTest : public testing::Test, public TestHooks {
       Animation* animation_to_receive_animation);
   void PostAddOpacityAnimationToMainThreadDelayed(
       Animation* animation_to_receive_animation);
-  void PostSetLocalSurfaceIdAllocationToMainThread(
-      const viz::LocalSurfaceIdAllocation& local_surface_id_allocation);
+  void PostSetLocalSurfaceIdToMainThread(
+      const viz::LocalSurfaceId& local_surface_id);
   void PostRequestNewLocalSurfaceIdToMainThread();
   void PostGetDeferMainFrameUpdateToMainThread(
       std::unique_ptr<ScopedDeferMainFrameUpdate>*
@@ -123,8 +123,7 @@ class LayerTreeTest : public testing::Test, public TestHooks {
       viz::RendererType renderer_type = viz::RendererType::kGL);
 
   void SkipAllocateInitialLocalSurfaceId();
-  const viz::LocalSurfaceIdAllocation& GetCurrentLocalSurfaceIdAllocation()
-      const;
+  const viz::LocalSurfaceId& GetCurrentLocalSurfaceId() const;
   void GenerateNewLocalSurfaceId();
 
   virtual void InitializeSettings(LayerTreeSettings* settings) {}
@@ -239,8 +238,7 @@ class LayerTreeTest : public testing::Test, public TestHooks {
   virtual void DispatchAddOpacityAnimation(
       Animation* animation_to_receive_animation,
       double animation_duration);
-  void DispatchSetLocalSurfaceIdAllocation(
-      const viz::LocalSurfaceIdAllocation& local_surface_id_allocation);
+  void DispatchSetLocalSurfaceId(const viz::LocalSurfaceId& local_surface_id);
   void DispatchRequestNewLocalSurfaceId();
   void DispatchGetDeferMainFrameUpdate(
       std::unique_ptr<ScopedDeferMainFrameUpdate>*

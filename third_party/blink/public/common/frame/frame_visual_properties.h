@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_FRAME_FRAME_VISUAL_PROPERTIES_H_
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_FRAME_FRAME_VISUAL_PROPERTIES_H_
 
-#include "components/viz/common/surfaces/local_surface_id_allocation.h"
+#include "components/viz/common/surfaces/local_surface_id.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/widget/screen_info.h"
 #include "ui/gfx/geometry/rect.h"
@@ -46,7 +46,7 @@ struct BLINK_COMMON_EXPORT FrameVisualProperties {
 
   // The time at which the viz::LocalSurfaceId used to submit this was
   // allocated.
-  viz::LocalSurfaceIdAllocation local_surface_id_allocation;
+  viz::LocalSurfaceId local_surface_id;
 };
 
 }  // namespace blink

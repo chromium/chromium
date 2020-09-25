@@ -41,8 +41,6 @@ struct CompositorFrameMetadata {
 
   float min_page_scale_factor;
 
-  mojo_base.mojom.TimeTicks local_surface_id_allocation_time;
-
   // Specifies the interval at which the client's content is updated. This can
   // be used to configure the display to the optimal vsync interval available.
   // If unspecified, or set to BeginFrameArgs::MinInterval, it is assumed that

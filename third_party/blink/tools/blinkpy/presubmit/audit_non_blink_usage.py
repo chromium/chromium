@@ -596,7 +596,7 @@ _CONFIG = [
             'gfx::DisplayColorSpaces',
             'ui::ImeTextSpan',
             'viz::FrameSinkId',
-            'viz::LocalSurfaceIdAllocation',
+            'viz::LocalSurfaceId',
         ],
     },
     {

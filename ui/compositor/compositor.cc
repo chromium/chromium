@@ -409,22 +409,18 @@ void Compositor::ReenableSwap() {
 }
 #endif
 
-void Compositor::SetScaleAndSize(
-    float scale,
-    const gfx::Size& size_in_pixel,
-    const viz::LocalSurfaceIdAllocation& local_surface_id_allocation) {
+void Compositor::SetScaleAndSize(float scale,
+                                 const gfx::Size& size_in_pixel,
+                                 const viz::LocalSurfaceId& local_surface_id) {
   DCHECK_GT(scale, 0);
   bool device_scale_factor_changed = device_scale_factor_ != scale;
   device_scale_factor_ = scale;
 
 #if DCHECK_IS_ON()
-  if (size_ != size_in_pixel && local_surface_id_allocation.IsValid()) {
+  if (size_ != size_in_pixel && local_surface_id.is_valid()) {
     // A new LocalSurfaceId must be set when the compositor size changes.
-    DCHECK_NE(
-        local_surface_id_allocation.local_surface_id(),
-        host_->local_surface_id_allocation_from_parent().local_surface_id());
-    DCHECK_NE(local_surface_id_allocation,
-              host_->local_surface_id_allocation_from_parent());
+    DCHECK_NE(local_surface_id, host_->local_surface_id_from_parent());
+    DCHECK_NE(local_surface_id, host_->local_surface_id_from_parent());
   }
 #endif  // DECHECK_IS_ON()
 
@@ -432,7 +428,7 @@ void Compositor::SetScaleAndSize(
     bool size_changed = size_ != size_in_pixel;
     size_ = size_in_pixel;
     host_->SetViewportRectAndScale(gfx::Rect(size_in_pixel), scale,
-                                   local_surface_id_allocation);
+                                   local_surface_id);
     root_web_layer_->SetBounds(size_in_pixel);
     if (display_private_ && (size_changed || disabled_swap_until_resize_)) {
       display_private_->Resize(size_in_pixel);

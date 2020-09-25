@@ -470,7 +470,7 @@ void WebViewFrameWidget::SetWindowRectSynchronously(
       new_window_rect.size(),
       widget_base_->GetScreenInfo().device_scale_factor));
   widget_base_->UpdateSurfaceAndScreenInfo(
-      widget_base_->local_surface_id_allocation_from_parent(),
+      widget_base_->local_surface_id_from_parent(),
       compositor_viewport_pixel_rect, widget_base_->GetScreenInfo());
 
   Resize(WebSize(new_window_rect.size()));
@@ -530,8 +530,7 @@ void WebViewFrameWidget::ApplyVisualPropertiesSizing(
   }
 
   widget_base_->UpdateSurfaceAndScreenInfo(
-      visual_properties.local_surface_id_allocation.value_or(
-          viz::LocalSurfaceIdAllocation()),
+      visual_properties.local_surface_id.value_or(viz::LocalSurfaceId()),
       new_compositor_viewport_pixel_rect, visual_properties.screen_info);
 
   // Store this even when auto-resizing, it is the size of the full viewport
@@ -552,9 +551,9 @@ void WebViewFrameWidget::ApplyVisualPropertiesSizing(
 }
 
 void WebViewFrameWidget::UpdateSurfaceAndCompositorRect(
-    const viz::LocalSurfaceIdAllocation& new_local_surface_id_allocation,
+    const viz::LocalSurfaceId& new_local_surface_id,
     const gfx::Rect& compositor_viewport_pixel_rect) {
-  widget_base_->UpdateSurfaceAndCompositorRect(new_local_surface_id_allocation,
+  widget_base_->UpdateSurfaceAndCompositorRect(new_local_surface_id,
                                                compositor_viewport_pixel_rect);
 }
 

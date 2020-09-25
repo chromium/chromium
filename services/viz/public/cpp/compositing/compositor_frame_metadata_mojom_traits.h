@@ -101,12 +101,6 @@ struct StructTraits<viz::mojom::CompositorFrameMetadataDataView,
     return metadata.min_page_scale_factor;
   }
 
-  static base::TimeTicks local_surface_id_allocation_time(
-      const viz::CompositorFrameMetadata& metadata) {
-    DCHECK(!metadata.local_surface_id_allocation_time.is_null());
-    return metadata.local_surface_id_allocation_time;
-  }
-
   static base::Optional<base::TimeDelta> preferred_frame_interval(
       const viz::CompositorFrameMetadata& metadata) {
     return metadata.preferred_frame_interval;

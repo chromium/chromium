@@ -87,7 +87,7 @@ void TestCompositorHostOzone::Show() {
   allocator_.GenerateId();
   compositor_.SetAcceleratedWidget(window_delegate_->widget());
   compositor_.SetScaleAndSize(1.0f, bounds_.size(),
-                              allocator_.GetCurrentLocalSurfaceIdAllocation());
+                              allocator_.GetCurrentLocalSurfaceId());
   compositor_.SetVisible(true);
 }
 

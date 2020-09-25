@@ -95,17 +95,14 @@ void RenderFrameMetadataObserverImpl::OnRenderFrameSubmission(
     TRACE_EVENT_WITH_FLOW1(
         TRACE_DISABLED_BY_DEFAULT("viz.surface_id_flow"),
         "RenderFrameMetadataObserverImpl::OnRenderFrameSubmission",
-        metadata_copy.local_surface_id_allocation &&
-                metadata_copy.local_surface_id_allocation->IsValid()
-            ? metadata_copy.local_surface_id_allocation->local_surface_id()
-                      .submission_trace_id() +
-                  metadata_copy.local_surface_id_allocation->local_surface_id()
-                      .embed_trace_id()
+        metadata_copy.local_surface_id &&
+                metadata_copy.local_surface_id->is_valid()
+            ? metadata_copy.local_surface_id->submission_trace_id() +
+                  metadata_copy.local_surface_id->embed_trace_id()
             : 0,
-        TRACE_EVENT_FLAG_FLOW_OUT, "local_surface_id_allocation",
-        metadata_copy.local_surface_id_allocation
-            ? metadata_copy.local_surface_id_allocation->local_surface_id()
-                  .ToString()
+        TRACE_EVENT_FLAG_FLOW_OUT, "local_surface_id",
+        metadata_copy.local_surface_id
+            ? metadata_copy.local_surface_id->ToString()
             : "null");
   }
 
@@ -168,7 +165,7 @@ bool RenderFrameMetadataObserverImpl::ShouldSendRenderFrameMetadata(
       rfm1.viewport_size_in_pixels != rfm2.viewport_size_in_pixels ||
       rfm1.top_controls_height != rfm2.top_controls_height ||
       rfm1.top_controls_shown_ratio != rfm2.top_controls_shown_ratio ||
-      rfm1.local_surface_id_allocation != rfm2.local_surface_id_allocation ||
+      rfm1.local_surface_id != rfm2.local_surface_id ||
       rfm2.new_vertical_scroll_direction !=
           viz::VerticalScrollDirection::kNull) {
     *needs_activation_notification = true;

@@ -83,7 +83,6 @@ class LayerTreeFrameSinkHolder : public cc::LayerTreeFrameSinkClient,
 
   gfx::Size last_frame_size_in_pixels_;
   float last_frame_device_scale_factor_ = 1.0f;
-  base::TimeTicks last_local_surface_id_allocation_time_;
   std::vector<viz::ResourceId> last_frame_resources_;
   viz::FrameTokenGenerator next_frame_token_;
 

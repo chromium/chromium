@@ -193,9 +193,8 @@ class TestView : public TestRenderWidgetHostView {
 
   // RenderWidgetHostView override.
   gfx::Rect GetViewBounds() override { return bounds_; }
-  const viz::LocalSurfaceIdAllocation& GetLocalSurfaceIdAllocation()
-      const override {
-    return local_surface_id_allocator_.GetCurrentLocalSurfaceIdAllocation();
+  const viz::LocalSurfaceId& GetLocalSurfaceId() const override {
+    return local_surface_id_allocator_.GetCurrentLocalSurfaceId();
   }
 
   void SetInsets(const gfx::Insets& insets) override { insets_ = insets; }
@@ -873,7 +872,7 @@ TEST_F(RenderWidgetHostTest, SynchronizeVisualProperties) {
   EXPECT_EQ(original_size.size(), host_->old_visual_properties_->new_size);
   cc::RenderFrameMetadata metadata;
   metadata.viewport_size_in_pixels = original_size.size();
-  metadata.local_surface_id_allocation = base::nullopt;
+  metadata.local_surface_id = base::nullopt;
   static_cast<RenderFrameMetadataProvider::Observer&>(*host_)
       .OnLocalSurfaceIdChanged(metadata);
   EXPECT_FALSE(host_->visual_properties_ack_pending_);
@@ -906,7 +905,7 @@ TEST_F(RenderWidgetHostTest, SynchronizeVisualProperties) {
   // sent. Since this isn't the second_size, the message handler should
   // immediately send a new resize message for the new size to the renderer.
   metadata.viewport_size_in_pixels = original_size.size();
-  metadata.local_surface_id_allocation = base::nullopt;
+  metadata.local_surface_id = base::nullopt;
   static_cast<RenderFrameMetadataProvider::Observer&>(*host_)
       .OnLocalSurfaceIdChanged(metadata);
   EXPECT_TRUE(host_->visual_properties_ack_pending_);
@@ -918,7 +917,7 @@ TEST_F(RenderWidgetHostTest, SynchronizeVisualProperties) {
 
   // Send the visual properties ACK for the latest size.
   metadata.viewport_size_in_pixels = third_size.size();
-  metadata.local_surface_id_allocation = base::nullopt;
+  metadata.local_surface_id = base::nullopt;
   static_cast<RenderFrameMetadataProvider::Observer&>(*host_)
       .OnLocalSurfaceIdChanged(metadata);
   EXPECT_FALSE(host_->visual_properties_ack_pending_);
@@ -1305,7 +1304,7 @@ TEST_F(RenderWidgetHostTest, HideShowMessages) {
   process_->sink().ClearMessages();
   cc::RenderFrameMetadata metadata;
   metadata.viewport_size_in_pixels = gfx::Size(100, 100);
-  metadata.local_surface_id_allocation = base::nullopt;
+  metadata.local_surface_id = base::nullopt;
   static_cast<RenderFrameMetadataProvider::Observer&>(*host_)
       .OnLocalSurfaceIdChanged(metadata);
 

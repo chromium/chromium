@@ -99,9 +99,8 @@ void RenderFrameMetadataProviderImpl::OnRenderFrameMetadataChanged(
   for (Observer& observer : observers_)
     observer.OnRenderFrameMetadataChangedBeforeActivation(metadata);
 
-  if (metadata.local_surface_id_allocation !=
-      last_local_surface_id_allocation_) {
-    last_local_surface_id_allocation_ = metadata.local_surface_id_allocation;
+  if (metadata.local_surface_id != last_local_surface_id_) {
+    last_local_surface_id_ = metadata.local_surface_id;
     for (Observer& observer : observers_)
       observer.OnLocalSurfaceIdChanged(metadata);
   }

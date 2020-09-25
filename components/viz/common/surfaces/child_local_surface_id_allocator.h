@@ -8,15 +8,10 @@
 #include <stdint.h>
 
 #include "base/macros.h"
-#include "base/time/time.h"
 #include "base/unguessable_token.h"
-#include "components/viz/common/surfaces/local_surface_id_allocation.h"
+#include "components/viz/common/surfaces/local_surface_id.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "components/viz/common/viz_common_export.h"
-
-namespace base {
-class TickClock;
-}  // namespace base
 
 namespace viz {
 
@@ -28,8 +23,6 @@ namespace viz {
 // This is that child allocator.
 class VIZ_COMMON_EXPORT ChildLocalSurfaceIdAllocator {
  public:
-  explicit ChildLocalSurfaceIdAllocator(const base::TickClock* tick_clock);
-
   ChildLocalSurfaceIdAllocator();
 
   ~ChildLocalSurfaceIdAllocator() = default;
@@ -38,18 +31,16 @@ class VIZ_COMMON_EXPORT ChildLocalSurfaceIdAllocator {
   // needs to update its understanding of the last generated message so the
   // messages can continue to monotonically increase. Returns whether the
   // current LocalSurfaceId has been updated.
-  bool UpdateFromParent(
-      const LocalSurfaceIdAllocation& parent_local_surface_id_allocation);
+  bool UpdateFromParent(const LocalSurfaceId& parent_local_surface_id);
 
   void GenerateId();
 
-  const LocalSurfaceIdAllocation& GetCurrentLocalSurfaceIdAllocation() const {
-    return current_local_surface_id_allocation_;
+  const LocalSurfaceId& GetCurrentLocalSurfaceId() const {
+    return current_local_surface_id_;
   }
 
  private:
-  LocalSurfaceIdAllocation current_local_surface_id_allocation_;
-  const base::TickClock* tick_clock_;
+  LocalSurfaceId current_local_surface_id_;
 
   DISALLOW_COPY_AND_ASSIGN(ChildLocalSurfaceIdAllocator);
 };

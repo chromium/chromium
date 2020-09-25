@@ -1109,7 +1109,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
 
   viz::FrameTokenGenerator next_frame_token_;
 
-  viz::LocalSurfaceIdAllocation last_draw_local_surface_id_allocation_;
+  viz::LocalSurfaceId last_draw_local_surface_id_;
   base::flat_set<viz::SurfaceRange> last_draw_referenced_surfaces_;
   base::Optional<RenderFrameMetadata> last_draw_render_frame_metadata_;
   viz::ChildLocalSurfaceIdAllocator child_local_surface_id_allocator_;

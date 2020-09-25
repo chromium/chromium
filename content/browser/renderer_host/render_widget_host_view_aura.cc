@@ -23,7 +23,7 @@
 #include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
-#include "components/viz/common/surfaces/local_surface_id_allocation.h"
+#include "components/viz/common/surfaces/local_surface_id.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/browser/accessibility/browser_accessibility_state_impl.h"
 #include "content/browser/bad_message.h"
@@ -427,13 +427,13 @@ void RenderWidgetHostViewAura::InitAsFullscreen(
 }
 
 void RenderWidgetHostViewAura::Show() {
-  // If the viz::LocalSurfaceIdAllocation is invalid, we may have been evicted,
+  // If the viz::LocalSurfaceId is invalid, we may have been evicted,
   // and no other visual properties have since been changed. Allocate a new id
   // and start synchronizing.
-  if (!window_->GetLocalSurfaceIdAllocation().IsValid()) {
+  if (!window_->GetLocalSurfaceId().is_valid()) {
     window_->AllocateLocalSurfaceId();
     SynchronizeVisualProperties(cc::DeadlinePolicy::UseDefaultDeadline(),
-                                window_->GetLocalSurfaceIdAllocation());
+                                window_->GetLocalSurfaceId());
   }
 
   window_->Show();
@@ -612,8 +612,7 @@ void RenderWidgetHostViewAura::WasUnOccluded() {
     // If the frame for the renderer is already available, then the
     // tab-switching time is the presentation time for the browser-compositor.
     delegated_frame_host_->WasShown(
-        GetLocalSurfaceIdAllocation().local_surface_id(),
-        window_->bounds().size(),
+        GetLocalSurfaceId(), window_->bounds().size(),
         has_saved_frame ? std::move(tab_switch_start_state)
                         : blink::mojom::RecordContentToVisibleTimeRequestPtr());
   }
@@ -708,12 +707,12 @@ void RenderWidgetHostViewAura::SetInsets(const gfx::Insets& insets) {
     insets_ = insets;
     window_->AllocateLocalSurfaceId();
     if (!insets.IsEmpty()) {
-      inset_surface_id_allocation_ = window_->GetLocalSurfaceIdAllocation();
+      inset_surface_id_ = window_->GetLocalSurfaceId();
     } else {
-      inset_surface_id_allocation_ = viz::LocalSurfaceIdAllocation();
+      inset_surface_id_ = viz::LocalSurfaceId();
     }
     SynchronizeVisualProperties(cc::DeadlinePolicy::UseDefaultDeadline(),
-                                window_->GetLocalSurfaceIdAllocation());
+                                window_->GetLocalSurfaceId());
   }
 }
 
@@ -1677,7 +1676,7 @@ void RenderWidgetHostViewAura::OnDeviceScaleFactorChanged(
     ProcessDisplayMetricsChanged();
 
   SynchronizeVisualProperties(cc::DeadlinePolicy::UseDefaultDeadline(),
-                              window_->GetLocalSurfaceIdAllocation());
+                              window_->GetLocalSurfaceId());
 
   device_scale_factor_ = new_device_scale_factor;
   const display::Display display =
@@ -1961,13 +1960,10 @@ void RenderWidgetHostViewAura::OnRenderFrameMetadataChangedAfterActivation() {
   const cc::RenderFrameMetadata& metadata =
       host()->render_frame_metadata_provider()->LastRenderFrameMetadata();
   SetContentBackgroundColor(metadata.root_background_color);
-  if (inset_surface_id_allocation_.IsValid() &&
-      metadata.local_surface_id_allocation &&
-      metadata.local_surface_id_allocation.value().IsValid() &&
-      metadata.local_surface_id_allocation.value()
-          .local_surface_id()
-          .IsSameOrNewerThan(inset_surface_id_allocation_.local_surface_id())) {
-    inset_surface_id_allocation_ = viz::LocalSurfaceIdAllocation();
+  if (inset_surface_id_.is_valid() && metadata.local_surface_id &&
+      metadata.local_surface_id.value().is_valid() &&
+      metadata.local_surface_id.value().IsSameOrNewerThan(inset_surface_id_)) {
+    inset_surface_id_ = viz::LocalSurfaceId();
     ScrollFocusedEditableNodeIntoRect(gfx::Rect());
   }
 
@@ -2136,20 +2132,17 @@ void RenderWidgetHostViewAura::UpdateCursorIfOverSelf() {
 
 bool RenderWidgetHostViewAura::SynchronizeVisualProperties(
     const cc::DeadlinePolicy& deadline_policy,
-    const base::Optional<viz::LocalSurfaceIdAllocation>&
-        child_local_surface_id_allocation) {
+    const base::Optional<viz::LocalSurfaceId>& child_local_surface_id) {
   DCHECK(window_);
-  window_->UpdateLocalSurfaceIdFromEmbeddedClient(
-      child_local_surface_id_allocation);
-  // If the viz::LocalSurfaceIdAllocation is invalid, we may have been evicted,
+  window_->UpdateLocalSurfaceIdFromEmbeddedClient(child_local_surface_id);
+  // If the viz::LocalSurfaceId is invalid, we may have been evicted,
   // allocate a new one to establish bounds.
-  if (!GetLocalSurfaceIdAllocation().IsValid())
+  if (!GetLocalSurfaceId().is_valid())
     window_->AllocateLocalSurfaceId();
 
   if (delegated_frame_host_) {
     delegated_frame_host_->EmbedSurface(
-        GetLocalSurfaceIdAllocation().local_surface_id(),
-        window_->bounds().size(), deadline_policy);
+        GetLocalSurfaceId(), window_->bounds().size(), deadline_policy);
   }
   return host()->SynchronizeVisualProperties();
 }
@@ -2168,11 +2161,10 @@ void RenderWidgetHostViewAura::OnDidUpdateVisualPropertiesComplete(
     // viz::LocalSurfaceId. However we do not want to embed surfaces while
     // hidden. Nor do we want to embed invalid ids when we are evicted. Becoming
     // visible will generate a new id, if necessary, and begin embedding.
-    window_->UpdateLocalSurfaceIdFromEmbeddedClient(
-        metadata.local_surface_id_allocation);
+    window_->UpdateLocalSurfaceIdFromEmbeddedClient(metadata.local_surface_id);
   } else {
     SynchronizeVisualProperties(cc::DeadlinePolicy::UseDefaultDeadline(),
-                                metadata.local_surface_id_allocation);
+                                metadata.local_surface_id);
   }
 }
 
@@ -2283,7 +2275,7 @@ void RenderWidgetHostViewAura::InternalSetBounds(const gfx::Rect& rect) {
   // needs to begin layout. Waiting until we show to start layout leads to
   // significant delays in embedding the first shown surface (500+ ms.)
   SynchronizeVisualProperties(cc::DeadlinePolicy::UseDefaultDeadline(),
-                              window_->GetLocalSurfaceIdAllocation());
+                              window_->GetLocalSurfaceId());
 
 #if defined(OS_WIN)
   UpdateLegacyWin();
@@ -2443,9 +2435,8 @@ const viz::FrameSinkId& RenderWidgetHostViewAura::GetFrameSinkId() const {
   return frame_sink_id_;
 }
 
-const viz::LocalSurfaceIdAllocation&
-RenderWidgetHostViewAura::GetLocalSurfaceIdAllocation() const {
-  return window_->GetLocalSurfaceIdAllocation();
+const viz::LocalSurfaceId& RenderWidgetHostViewAura::GetLocalSurfaceId() const {
+  return window_->GetLocalSurfaceId();
 }
 
 void RenderWidgetHostViewAura::OnUpdateTextInputStateCalled(
@@ -2598,7 +2589,7 @@ void RenderWidgetHostViewAura::DidNavigate() {
       // The first navigation does not need a new LocalSurfaceID. The renderer
       // can use the ID that was already provided.
       SynchronizeVisualProperties(cc::DeadlinePolicy::UseExistingDeadline(),
-                                  window_->GetLocalSurfaceIdAllocation());
+                                  window_->GetLocalSurfaceId());
     } else {
       SynchronizeVisualProperties(cc::DeadlinePolicy::UseExistingDeadline(),
                                   base::nullopt);

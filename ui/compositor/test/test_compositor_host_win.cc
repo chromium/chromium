@@ -29,8 +29,8 @@ class TestCompositorHostWin : public TestCompositorHost,
         base::ThreadTaskRunnerHandle::Get(), false /* enable_pixel_canvas */);
     allocator_.GenerateId();
     compositor_->SetAcceleratedWidget(hwnd());
-    compositor_->SetScaleAndSize(
-        1.0f, GetSize(), allocator_.GetCurrentLocalSurfaceIdAllocation());
+    compositor_->SetScaleAndSize(1.0f, GetSize(),
+                                 allocator_.GetCurrentLocalSurfaceId());
   }
 
   ~TestCompositorHostWin() override { DestroyWindow(hwnd()); }

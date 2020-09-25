@@ -145,10 +145,6 @@ class VIZ_COMMON_EXPORT CompositorFrameMetadata {
   // value set.
   base::Optional<float> top_controls_visible_height;
 
-  // The time at which the LocalSurfaceId used to submit this CompositorFrame
-  // was allocated.
-  base::TimeTicks local_surface_id_allocation_time;
-
   base::Optional<base::TimeDelta> preferred_frame_interval;
 
   // Display transform hint when the frame is generated. Note this is only

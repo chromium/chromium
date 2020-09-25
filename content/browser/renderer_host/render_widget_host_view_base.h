@@ -265,8 +265,7 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
   virtual const viz::FrameSinkId& GetFrameSinkId() const = 0;
 
   // Returns the LocalSurfaceId allocated by the parent client for this view.
-  virtual const viz::LocalSurfaceIdAllocation& GetLocalSurfaceIdAllocation()
-      const = 0;
+  virtual const viz::LocalSurfaceId& GetLocalSurfaceId() const = 0;
 
   // Called whenever the browser receives updated hit test data from viz.
   virtual void NotifyHitTestRegionUpdated(

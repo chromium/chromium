@@ -471,9 +471,8 @@ void LayerTreeHost::WillCommit() {
 }
 
 void LayerTreeHost::UpdateDeferMainFrameUpdateInternal() {
-  proxy_->SetDeferMainFrameUpdate(
-      defer_main_frame_update_count_ > 0 ||
-      !local_surface_id_allocation_from_parent_.IsValid());
+  proxy_->SetDeferMainFrameUpdate(defer_main_frame_update_count_ > 0 ||
+                                  !local_surface_id_from_parent_.is_valid());
 }
 
 bool LayerTreeHost::IsUsingLayerLists() const {
@@ -1245,12 +1244,10 @@ void LayerTreeHost::SetEventListenerProperties(
 void LayerTreeHost::SetViewportRectAndScale(
     const gfx::Rect& device_viewport_rect,
     float device_scale_factor,
-    const viz::LocalSurfaceIdAllocation&
-        local_surface_id_allocation_from_parent) {
+    const viz::LocalSurfaceId& local_surface_id_from_parent) {
   const viz::LocalSurfaceId previous_local_surface_id =
-      local_surface_id_allocation_from_parent_.local_surface_id();
-  SetLocalSurfaceIdAllocationFromParent(
-      local_surface_id_allocation_from_parent);
+      local_surface_id_from_parent_;
+  SetLocalSurfaceIdFromParent(local_surface_id_from_parent);
 
   bool device_viewport_rect_changed = false;
   if (device_viewport_rect_ != device_viewport_rect) {
@@ -1380,18 +1377,10 @@ void LayerTreeHost::SetExternalPageScaleFactor(
   SetNeedsCommit();
 }
 
-void LayerTreeHost::SetLocalSurfaceIdAllocationFromParent(
-    const viz::LocalSurfaceIdAllocation&
-        local_surface_id_allocation_from_parent) {
-  const viz::LocalSurfaceId& local_surface_id_from_parent =
-      local_surface_id_allocation_from_parent.local_surface_id();
+void LayerTreeHost::SetLocalSurfaceIdFromParent(
+    const viz::LocalSurfaceId& local_surface_id_from_parent) {
   const viz::LocalSurfaceId current_local_surface_id_from_parent =
-      local_surface_id_allocation_from_parent_.local_surface_id();
-
-  // If the viz::LocalSurfaceId is valid but the allocation time is invalid then
-  // this API is not being used correctly.
-  DCHECK_EQ(local_surface_id_from_parent.is_valid(),
-            local_surface_id_allocation_from_parent.IsValid());
+      local_surface_id_from_parent_;
 
   // These traces are split into two due to the usage of TRACE_ID_GLOBAL for the
   // incoming flow (it comes from a different process), and TRACE_ID_LOCAL for
@@ -1401,20 +1390,17 @@ void LayerTreeHost::SetLocalSurfaceIdAllocationFromParent(
       TRACE_DISABLED_BY_DEFAULT("viz.surface_id_flow"),
       "LocalSurfaceId.Submission.Flow",
       TRACE_ID_GLOBAL(local_surface_id_from_parent.submission_trace_id()),
-      TRACE_EVENT_FLAG_FLOW_IN, "step", "SetLocalSurfaceAllocationIdFromParent",
-      "local_surface_id_allocation",
-      local_surface_id_allocation_from_parent.ToString());
+      TRACE_EVENT_FLAG_FLOW_IN, "step", "SetLocalSurfaceIdFromParent",
+      "local_surface_id", local_surface_id_from_parent.ToString());
   TRACE_EVENT_WITH_FLOW2(
       TRACE_DISABLED_BY_DEFAULT("viz.surface_id_flow"),
       "LocalSurfaceId.Submission.Flow",
       TRACE_ID_LOCAL(local_surface_id_from_parent.submission_trace_id()),
-      TRACE_EVENT_FLAG_FLOW_OUT, "step",
-      "SetLocalSurfaceAllocationIdFromParent", "local_surface_id_allocation",
-      local_surface_id_allocation_from_parent.ToString());
+      TRACE_EVENT_FLAG_FLOW_OUT, "step", "SetLocalSurfaceIdFromParent",
+      "local_surface_id", local_surface_id_from_parent.ToString());
   // Always update the cached state of the viz::LocalSurfaceId to reflect the
   // latest value received from our parent.
-  local_surface_id_allocation_from_parent_ =
-      local_surface_id_allocation_from_parent;
+  local_surface_id_from_parent_ = local_surface_id_from_parent;
 
   // If the parent sequence number has not advanced, then there is no need to
   // commit anything. This can occur when the child sequence number has
@@ -1609,8 +1595,7 @@ void LayerTreeHost::PushLayerTreePropertiesTo(LayerTreeImpl* tree_impl) {
   if (TakeNewLocalSurfaceIdRequest())
     tree_impl->RequestNewLocalSurfaceId();
 
-  tree_impl->SetLocalSurfaceIdAllocationFromParent(
-      local_surface_id_allocation_from_parent_);
+  tree_impl->SetLocalSurfaceIdFromParent(local_surface_id_from_parent_);
 
   if (pending_page_scale_animation_) {
     tree_impl->SetPendingPageScaleAnimation(

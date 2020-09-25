@@ -49,7 +49,7 @@ namespace demo {
 class DemoClient : public viz::mojom::CompositorFrameSinkClient {
  public:
   DemoClient(const viz::FrameSinkId& frame_sink_id,
-             const viz::LocalSurfaceIdAllocation& local_surface_id,
+             const viz::LocalSurfaceId& local_surface_id,
              const gfx::Rect& bounds);
   ~DemoClient() override;
 
@@ -69,17 +69,17 @@ class DemoClient : public viz::mojom::CompositorFrameSinkClient {
   // LocalSurfaceId, and returns that. The client that should be embedded (i.e.
   // the client represented by |frame_sink_id|) should use the returned
   // LocalSurfaceId to submit visual content (CompositorFrame).
-  viz::LocalSurfaceIdAllocation Embed(const viz::FrameSinkId& frame_sink_id,
-                                      const gfx::Rect& bounds);
+  viz::LocalSurfaceId Embed(const viz::FrameSinkId& frame_sink_id,
+                            const gfx::Rect& bounds);
 
   // When this client is resized, it is important that it also receives a new
   // LocalSurfaceId with the new size.
   void Resize(const gfx::Size& size,
-              const viz::LocalSurfaceIdAllocation& local_surface_id);
+              const viz::LocalSurfaceId& local_surface_id);
 
  private:
   struct EmbedInfo {
-    viz::LocalSurfaceIdAllocation lsid;
+    viz::LocalSurfaceId lsid;
     gfx::Rect bounds;
     float degrees = 0.f;
   };
@@ -109,7 +109,7 @@ class DemoClient : public viz::mojom::CompositorFrameSinkClient {
   base::Thread thread_;
 
   const viz::FrameSinkId frame_sink_id_;
-  viz::LocalSurfaceIdAllocation local_surface_id_ GUARDED_BY(lock_);
+  viz::LocalSurfaceId local_surface_id_ GUARDED_BY(lock_);
   gfx::Rect bounds_ GUARDED_BY(lock_);
 
   mojo::Receiver<viz::mojom::CompositorFrameSinkClient> receiver_{this};

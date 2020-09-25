@@ -41,7 +41,7 @@
 #include "components/viz/common/features.h"
 #include "components/viz/common/gpu/context_provider.h"
 #include "components/viz/common/quads/compositor_frame.h"
-#include "components/viz/common/surfaces/local_surface_id_allocation.h"
+#include "components/viz/common/surfaces/local_surface_id.h"
 #include "components/viz/common/viz_utils.h"
 #include "components/viz/host/host_display_client.h"
 #include "content/browser/compositor/surface_utils.h"
@@ -871,9 +871,9 @@ void CompositorImpl::InitializeVizLayerTreeFrameSink(
       root_window_->GetSupportedRefreshRates());
 }
 
-viz::LocalSurfaceIdAllocation CompositorImpl::GenerateLocalSurfaceId() {
+viz::LocalSurfaceId CompositorImpl::GenerateLocalSurfaceId() {
   local_surface_id_allocator_.GenerateId();
-  return local_surface_id_allocator_.GetCurrentLocalSurfaceIdAllocation();
+  return local_surface_id_allocator_.GetCurrentLocalSurfaceId();
 }
 
 void CompositorImpl::OnContextCreationResult(

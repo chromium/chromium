@@ -455,8 +455,7 @@ class SurfaceAggregatorValidSurfaceTest : public SurfaceAggregatorTest {
   void SetUp() override {
     SurfaceAggregatorTest::SetUp();
     root_allocator_.GenerateId();
-    root_local_surface_id_ =
-        root_allocator_.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+    root_local_surface_id_ = root_allocator_.GetCurrentLocalSurfaceId();
     root_surface_ = manager_.surface_manager()->GetSurfaceForId(
         SurfaceId(root_sink_->frame_sink_id(), root_local_surface_id_));
   }
@@ -636,8 +635,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, OpacityCopied) {
   ParentLocalSurfaceIdAllocator embedded_allocator;
   embedded_allocator.GenerateId();
   LocalSurfaceId embedded_local_surface_id =
-      embedded_allocator.GetCurrentLocalSurfaceIdAllocation()
-          .local_surface_id();
+      embedded_allocator.GetCurrentLocalSurfaceId();
   SurfaceId embedded_surface_id(embedded_support->frame_sink_id(),
                                 embedded_local_surface_id);
 
@@ -700,8 +698,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, RotatedClip) {
   ParentLocalSurfaceIdAllocator embedded_allocator;
   embedded_allocator.GenerateId();
   LocalSurfaceId embedded_local_surface_id =
-      embedded_allocator.GetCurrentLocalSurfaceIdAllocation()
-          .local_surface_id();
+      embedded_allocator.GetCurrentLocalSurfaceId();
   SurfaceId embedded_surface_id(embedded_support->frame_sink_id(),
                                 embedded_local_surface_id);
 
@@ -822,8 +819,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, SimpleSurfaceReference) {
   ParentLocalSurfaceIdAllocator embedded_allocator;
   embedded_allocator.GenerateId();
   LocalSurfaceId embedded_local_surface_id =
-      embedded_allocator.GetCurrentLocalSurfaceIdAllocation()
-          .local_surface_id();
+      embedded_allocator.GetCurrentLocalSurfaceId();
   SurfaceId embedded_surface_id(embedded_support->frame_sink_id(),
                                 embedded_local_surface_id);
 
@@ -921,7 +917,7 @@ class TestVizClient {
   SurfaceId surface_id() const { return {frame_sink_id_, local_surface_id()}; }
   const gfx::Rect& bounds() const { return bounds_; }
   const LocalSurfaceId& local_surface_id() const {
-    return allocator_.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+    return allocator_.GetCurrentLocalSurfaceId();
   }
 
  private:
@@ -1097,7 +1093,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, StretchContentToFillBounds) {
   ParentLocalSurfaceIdAllocator child_allocator;
   child_allocator.GenerateId();
   LocalSurfaceId primary_child_local_surface_id =
-      child_allocator.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+      child_allocator.GetCurrentLocalSurfaceId();
   SurfaceId primary_child_surface_id(primary_child_support->frame_sink_id(),
                                      primary_child_local_surface_id);
 
@@ -1168,7 +1164,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, StretchContentToFillStretchedBounds) {
   ParentLocalSurfaceIdAllocator child_allocator;
   child_allocator.GenerateId();
   LocalSurfaceId primary_child_local_surface_id =
-      child_allocator.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+      child_allocator.GetCurrentLocalSurfaceId();
   SurfaceId primary_child_surface_id(primary_child_support->frame_sink_id(),
                                      primary_child_local_surface_id);
 
@@ -1240,7 +1236,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, StretchContentToFillSquashedBounds) {
   ParentLocalSurfaceIdAllocator child_allocator;
   child_allocator.GenerateId();
   LocalSurfaceId primary_child_local_surface_id =
-      child_allocator.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+      child_allocator.GetCurrentLocalSurfaceId();
   SurfaceId primary_child_surface_id(primary_child_support->frame_sink_id(),
                                      primary_child_local_surface_id);
 
@@ -1335,7 +1331,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, ReflectedSurfaceDrawQuadScaled) {
   ParentLocalSurfaceIdAllocator lsi_allocator;
   lsi_allocator.GenerateId();
   LocalSurfaceId mirror_display_local_surface_id =
-      lsi_allocator.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+      lsi_allocator.GetCurrentLocalSurfaceId();
 
   // The mirroring display size is smaller than the primary display. The
   // mirrored content would be scaled to fit.
@@ -1419,7 +1415,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, ReflectedSurfaceDrawQuadNotScaled) {
   ParentLocalSurfaceIdAllocator lsi_allocator;
   lsi_allocator.GenerateId();
   LocalSurfaceId mirror_display_local_surface_id =
-      lsi_allocator.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+      lsi_allocator.GetCurrentLocalSurfaceId();
 
   // The mirroring display is the same width but different height. The mirrored
   // content would be letterboxed by translating it.
@@ -1478,7 +1474,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, FallbackSurfaceReferenceWithPrimary) {
   ParentLocalSurfaceIdAllocator primary_allocator;
   primary_allocator.GenerateId();
   LocalSurfaceId primary_child_local_surface_id =
-      primary_allocator.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+      primary_allocator.GetCurrentLocalSurfaceId();
   SurfaceId primary_child_surface_id(primary_child_support->frame_sink_id(),
                                      primary_child_local_surface_id);
   std::vector<Quad> primary_child_quads = {
@@ -1499,8 +1495,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, FallbackSurfaceReferenceWithPrimary) {
   ParentLocalSurfaceIdAllocator fallback_allocator;
   fallback_allocator.GenerateId();
   LocalSurfaceId fallback_child_local_surface_id =
-      fallback_allocator.GetCurrentLocalSurfaceIdAllocation()
-          .local_surface_id();
+      fallback_allocator.GetCurrentLocalSurfaceId();
   SurfaceId fallback_child_surface_id(fallback_child_support->frame_sink_id(),
                                       fallback_child_local_surface_id);
 
@@ -1574,8 +1569,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, CopyRequest) {
   ParentLocalSurfaceIdAllocator embedded_allocator;
   embedded_allocator.GenerateId();
   LocalSurfaceId embedded_local_surface_id =
-      embedded_allocator.GetCurrentLocalSurfaceIdAllocation()
-          .local_surface_id();
+      embedded_allocator.GetCurrentLocalSurfaceId();
   SurfaceId embedded_surface_id(embedded_support->frame_sink_id(),
                                 embedded_local_surface_id);
 
@@ -1639,8 +1633,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, RootCopyRequest) {
   ParentLocalSurfaceIdAllocator embedded_allocator;
   embedded_allocator.GenerateId();
   LocalSurfaceId embedded_local_surface_id =
-      embedded_allocator.GetCurrentLocalSurfaceIdAllocation()
-          .local_surface_id();
+      embedded_allocator.GetCurrentLocalSurfaceId();
   SurfaceId embedded_surface_id(embedded_support->frame_sink_id(),
                                 embedded_local_surface_id);
 
@@ -1726,13 +1719,12 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, UnreferencedSurface) {
   ParentLocalSurfaceIdAllocator child_allocator;
   child_allocator.GenerateId();
   LocalSurfaceId embedded_local_surface_id =
-      child_allocator.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+      child_allocator.GetCurrentLocalSurfaceId();
   SurfaceId embedded_surface_id(embedded_support->frame_sink_id(),
                                 embedded_local_surface_id);
   root_allocator_.GenerateId();
-  SurfaceId nonexistent_surface_id(
-      root_sink_->frame_sink_id(),
-      root_allocator_.GetCurrentLocalSurfaceIdAllocation().local_surface_id());
+  SurfaceId nonexistent_surface_id(root_sink_->frame_sink_id(),
+                                   root_allocator_.GetCurrentLocalSurfaceId());
 
   std::vector<Quad> embedded_quads = {
       Quad::SolidColorQuad(SK_ColorGREEN, gfx::Rect(5, 5))};
@@ -1749,7 +1741,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, UnreferencedSurface) {
   ParentLocalSurfaceIdAllocator parent_allocator;
   parent_allocator.GenerateId();
   LocalSurfaceId parent_local_surface_id =
-      parent_allocator.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+      parent_allocator.GetCurrentLocalSurfaceId();
   SurfaceId parent_surface_id(parent_support->frame_sink_id(),
                               parent_local_surface_id);
 
@@ -1826,7 +1818,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, MultiPassSurfaceReference) {
   ParentLocalSurfaceIdAllocator child_allocator;
   child_allocator.GenerateId();
   LocalSurfaceId embedded_local_surface_id =
-      child_allocator.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+      child_allocator.GetCurrentLocalSurfaceId();
   SurfaceId embedded_surface_id(child_sink_->frame_sink_id(),
                                 embedded_local_surface_id);
 
@@ -2007,7 +1999,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, ValidSurfaceReferenceWithNoFrame) {
   ParentLocalSurfaceIdAllocator child_allocator;
   child_allocator.GenerateId();
   LocalSurfaceId empty_local_surface_id =
-      child_allocator.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+      child_allocator.GetCurrentLocalSurfaceId();
   SurfaceId surface_with_no_frame_id(kArbitraryFrameSinkId1,
                                      empty_local_surface_id);
 
@@ -2039,7 +2031,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, ValidSurfaceReferenceWithNoFrame) {
 TEST_F(SurfaceAggregatorValidSurfaceTest, ValidFallbackWithNoFrame) {
   root_allocator_.GenerateId();
   const LocalSurfaceId empty_local_surface_id =
-      root_allocator_.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+      root_allocator_.GetCurrentLocalSurfaceId();
   const SurfaceId surface_with_no_frame_id(root_sink_->frame_sink_id(),
                                            empty_local_surface_id);
 
@@ -2088,7 +2080,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, TwoSurfaceCyclicalReference) {
   ParentLocalSurfaceIdAllocator child_allocator;
   child_allocator.GenerateId();
   LocalSurfaceId child_local_surface_id =
-      child_allocator.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+      child_allocator.GetCurrentLocalSurfaceId();
   SurfaceId child_surface_id(child_sink_->frame_sink_id(),
                              child_local_surface_id);
 
@@ -2138,7 +2130,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, RenderPassIdMapping) {
   ParentLocalSurfaceIdAllocator child_allocator;
   child_allocator.GenerateId();
   LocalSurfaceId child_local_surface_id =
-      child_allocator.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+      child_allocator.GetCurrentLocalSurfaceId();
   SurfaceId child_surface_id(child_sink_->frame_sink_id(),
                              child_local_surface_id);
 
@@ -2279,8 +2271,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, AggregateSharedQuadStateProperties) {
   CompositorRenderPassId pass_id{1};
   grandchild_allocator.GenerateId();
   LocalSurfaceId grandchild_local_surface_id =
-      grandchild_allocator.GetCurrentLocalSurfaceIdAllocation()
-          .local_surface_id();
+      grandchild_allocator.GetCurrentLocalSurfaceId();
   SurfaceId grandchild_surface_id(grandchild_support->frame_sink_id(),
                                   grandchild_local_surface_id);
 
@@ -2298,8 +2289,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, AggregateSharedQuadStateProperties) {
 
   child_one_allocator.GenerateId();
   LocalSurfaceId child_one_local_surface_id =
-      child_one_allocator.GetCurrentLocalSurfaceIdAllocation()
-          .local_surface_id();
+      child_one_allocator.GetCurrentLocalSurfaceId();
   SurfaceId child_one_surface_id(child_one_support->frame_sink_id(),
                                  child_one_local_surface_id);
 
@@ -2322,8 +2312,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, AggregateSharedQuadStateProperties) {
 
   child_two_allocator.GenerateId();
   LocalSurfaceId child_two_local_surface_id =
-      child_two_allocator.GetCurrentLocalSurfaceIdAllocation()
-          .local_surface_id();
+      child_two_allocator.GetCurrentLocalSurfaceId();
   SurfaceId child_two_surface_id(child_two_support->frame_sink_id(),
                                  child_two_local_surface_id);
 
@@ -2434,8 +2423,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
   // Setup childe three surface.
   child_three_allocator.GenerateId();
   LocalSurfaceId child_three_local_surface_id =
-      child_three_allocator.GetCurrentLocalSurfaceIdAllocation()
-          .local_surface_id();
+      child_three_allocator.GetCurrentLocalSurfaceId();
   SurfaceId child_three_surface_id(child_three_support->frame_sink_id(),
                                    child_three_local_surface_id);
 
@@ -2450,8 +2438,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
   // Setup Child one surface
   child_one_allocator.GenerateId();
   LocalSurfaceId child_one_local_surface_id =
-      child_one_allocator.GetCurrentLocalSurfaceIdAllocation()
-          .local_surface_id();
+      child_one_allocator.GetCurrentLocalSurfaceId();
   SurfaceId child_one_surface_id(child_one_support->frame_sink_id(),
                                  child_one_local_surface_id);
 
@@ -2479,8 +2466,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
   // Setup child two surface
   child_two_allocator.GenerateId();
   LocalSurfaceId child_two_local_surface_id =
-      child_two_allocator.GetCurrentLocalSurfaceIdAllocation()
-          .local_surface_id();
+      child_two_allocator.GetCurrentLocalSurfaceId();
   SurfaceId child_two_surface_id(child_two_support->frame_sink_id(),
                                  child_two_local_surface_id);
 
@@ -2497,8 +2483,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
   // Setup child root surface
   child_root_allocator.GenerateId();
   LocalSurfaceId child_root_local_surface_id =
-      child_root_allocator.GetCurrentLocalSurfaceIdAllocation()
-          .local_surface_id();
+      child_root_allocator.GetCurrentLocalSurfaceId();
   SurfaceId child_root_surface_id(child_root_support->frame_sink_id(),
                                   child_root_local_surface_id);
 
@@ -2607,7 +2592,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, AggregateMultiplePassWithTransform) {
   ParentLocalSurfaceIdAllocator child_allocator;
   child_allocator.GenerateId();
   LocalSurfaceId child_local_surface_id =
-      child_allocator.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+      child_allocator.GetCurrentLocalSurfaceId();
   SurfaceId child_surface_id(child_sink_->frame_sink_id(),
                              child_local_surface_id);
   {
@@ -2645,7 +2630,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, AggregateMultiplePassWithTransform) {
   ParentLocalSurfaceIdAllocator middle_allocator;
   middle_allocator.GenerateId();
   LocalSurfaceId middle_local_surface_id =
-      middle_allocator.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+      middle_allocator.GetCurrentLocalSurfaceId();
   SurfaceId middle_surface_id(middle_support->frame_sink_id(),
                               middle_local_surface_id);
   {
@@ -2788,15 +2773,14 @@ TEST_P(SurfaceAggregatorValidSurfaceWithMergingPassesTest,
   ParentLocalSurfaceIdAllocator fallback_allocator;
   fallback_allocator.GenerateId();
   LocalSurfaceId fallback_child_local_surface_id =
-      fallback_allocator.GetCurrentLocalSurfaceIdAllocation()
-          .local_surface_id();
+      fallback_allocator.GetCurrentLocalSurfaceId();
   SurfaceId fallback_child_surface_id(fallback_child_support->frame_sink_id(),
                                       fallback_child_local_surface_id);
 
   ParentLocalSurfaceIdAllocator primary_allocator;
   primary_allocator.GenerateId();
   LocalSurfaceId primary_child_local_surface_id =
-      primary_allocator.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+      primary_allocator.GetCurrentLocalSurfaceId();
   SurfaceId primary_child_surface_id(primary_child_support->frame_sink_id(),
                                      primary_child_local_surface_id);
 
@@ -2887,8 +2871,7 @@ TEST_P(SurfaceAggregatorValidSurfaceWithMergingPassesTest,
   // Submit the fallback again to create some damage then aggregate again.
   fallback_allocator.GenerateId();
   fallback_child_local_surface_id =
-      fallback_allocator.GetCurrentLocalSurfaceIdAllocation()
-          .local_surface_id();
+      fallback_allocator.GetCurrentLocalSurfaceId();
 
   SubmitCompositorFrame(fallback_child_support.get(), fallback_child_passes,
                         fallback_child_local_surface_id, device_scale_factor_2);
@@ -2993,7 +2976,7 @@ TEST_P(SurfaceAggregatorValidSurfaceWithMergingPassesTest,
   ParentLocalSurfaceIdAllocator child_allocator;
   child_allocator.GenerateId();
   LocalSurfaceId child_local_surface_id =
-      child_allocator.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+      child_allocator.GetCurrentLocalSurfaceId();
   SurfaceId child_surface_id(child_sink_->frame_sink_id(),
                              child_local_surface_id);
   child_sink_->SubmitCompositorFrame(child_local_surface_id,
@@ -3014,7 +2997,7 @@ TEST_P(SurfaceAggregatorValidSurfaceWithMergingPassesTest,
   ParentLocalSurfaceIdAllocator parent_allocator;
   parent_allocator.GenerateId();
   LocalSurfaceId parent_local_surface_id =
-      parent_allocator.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+      parent_allocator.GetCurrentLocalSurfaceId();
   SurfaceId parent_surface_id(parent_support->frame_sink_id(),
                               parent_local_surface_id);
   parent_support->SubmitCompositorFrame(parent_local_surface_id,
@@ -3189,7 +3172,7 @@ TEST_P(SurfaceAggregatorValidSurfaceWithMergingPassesTest,
   ParentLocalSurfaceIdAllocator child_allocator;
   child_allocator.GenerateId();
   LocalSurfaceId child_local_surface_id =
-      child_allocator.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+      child_allocator.GetCurrentLocalSurfaceId();
   SurfaceId child_surface_id(child_sink_->frame_sink_id(),
                              child_local_surface_id);
   child_sink_->SubmitCompositorFrame(child_local_surface_id,
@@ -3210,7 +3193,7 @@ TEST_P(SurfaceAggregatorValidSurfaceWithMergingPassesTest,
   ParentLocalSurfaceIdAllocator parent_allocator;
   parent_allocator.GenerateId();
   LocalSurfaceId parent_local_surface_id =
-      parent_allocator.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+      parent_allocator.GetCurrentLocalSurfaceId();
   SurfaceId parent_surface_id(parent_support->frame_sink_id(),
                               parent_local_surface_id);
   parent_support->SubmitCompositorFrame(parent_local_surface_id,
@@ -3302,7 +3285,7 @@ TEST_P(SurfaceAggregatorValidSurfaceWithMergingPassesTest,
   ParentLocalSurfaceIdAllocator child_allocator;
   child_allocator.GenerateId();
   LocalSurfaceId child_local_surface_id =
-      child_allocator.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+      child_allocator.GetCurrentLocalSurfaceId();
   SurfaceId child_surface_id(child_sink_->frame_sink_id(),
                              child_local_surface_id);
   child_sink_->SubmitCompositorFrame(child_local_surface_id,
@@ -3323,7 +3306,7 @@ TEST_P(SurfaceAggregatorValidSurfaceWithMergingPassesTest,
   ParentLocalSurfaceIdAllocator parent_allocator;
   parent_allocator.GenerateId();
   LocalSurfaceId parent_local_surface_id =
-      parent_allocator.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+      parent_allocator.GetCurrentLocalSurfaceId();
   SurfaceId parent_surface_id(parent_support->frame_sink_id(),
                               parent_local_surface_id);
   parent_support->SubmitCompositorFrame(parent_local_surface_id,
@@ -3420,7 +3403,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, SwitchSurfaceDamage) {
   }
 
   LocalSurfaceId second_root_local_surface_id =
-      root_allocator_.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+      root_allocator_.GetCurrentLocalSurfaceId();
   SurfaceId second_root_surface_id(root_sink_->frame_sink_id(),
                                    second_root_local_surface_id);
   {
@@ -3467,20 +3450,15 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, SurfaceDamageSameFrameSinkId) {
       nullptr, &manager_, kArbitraryFrameSinkId1, kRootIsRoot);
   ParentLocalSurfaceIdAllocator child_allocator;
   child_allocator.GenerateId();
-  LocalSurfaceId id1 =
-      child_allocator.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+  LocalSurfaceId id1 = child_allocator.GetCurrentLocalSurfaceId();
   child_allocator.GenerateId();
-  LocalSurfaceId id2 =
-      child_allocator.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+  LocalSurfaceId id2 = child_allocator.GetCurrentLocalSurfaceId();
   child_allocator.GenerateId();
-  LocalSurfaceId id3 =
-      child_allocator.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+  LocalSurfaceId id3 = child_allocator.GetCurrentLocalSurfaceId();
   child_allocator.GenerateId();
-  LocalSurfaceId id4 =
-      child_allocator.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+  LocalSurfaceId id4 = child_allocator.GetCurrentLocalSurfaceId();
   child_allocator.GenerateId();
-  LocalSurfaceId id5 =
-      child_allocator.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+  LocalSurfaceId id5 = child_allocator.GetCurrentLocalSurfaceId();
   SurfaceId fallback_surface_id(kArbitraryFrameSinkId1, id2);
   SurfaceId primary_surface_id(kArbitraryFrameSinkId1, id4);
   std::vector<Quad> embedded_quads = {
@@ -3535,17 +3513,13 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, SurfaceDamageDifferentFrameSinkId) {
   ParentLocalSurfaceIdAllocator sink2_allocator;
   ParentLocalSurfaceIdAllocator sink3_allocator;
   sink1_allocator.GenerateId();
-  LocalSurfaceId id1 =
-      sink1_allocator.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+  LocalSurfaceId id1 = sink1_allocator.GetCurrentLocalSurfaceId();
   sink1_allocator.GenerateId();
-  LocalSurfaceId id2 =
-      sink1_allocator.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+  LocalSurfaceId id2 = sink1_allocator.GetCurrentLocalSurfaceId();
   sink2_allocator.GenerateId();
-  LocalSurfaceId id3 =
-      sink2_allocator.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+  LocalSurfaceId id3 = sink2_allocator.GetCurrentLocalSurfaceId();
   sink2_allocator.GenerateId();
-  LocalSurfaceId id4 =
-      sink2_allocator.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+  LocalSurfaceId id4 = sink2_allocator.GetCurrentLocalSurfaceId();
   SurfaceId fallback_surface_id(kArbitraryFrameSinkId1, id2);
   SurfaceId primary_surface_id(kArbitraryFrameSinkId2, id4);
   std::vector<Quad> embedded_quads = {
@@ -3592,20 +3566,16 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, SurfaceDamageDifferentFrameSinkId) {
 TEST_F(SurfaceAggregatorValidSurfaceTest, SurfaceDamagePrimarySurfaceOnly) {
   ParentLocalSurfaceIdAllocator allocator;
   allocator.GenerateId();
-  LocalSurfaceId id1 =
-      allocator.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+  LocalSurfaceId id1 = allocator.GetCurrentLocalSurfaceId();
   allocator.GenerateId();
-  LocalSurfaceId id2 =
-      allocator.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+  LocalSurfaceId id2 = allocator.GetCurrentLocalSurfaceId();
   allocator.GenerateId();
-  LocalSurfaceId id3 =
-      allocator.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+  LocalSurfaceId id3 = allocator.GetCurrentLocalSurfaceId();
   SurfaceId primary_surface_id(kArbitraryFrameSinkId1, id2);
 
   ParentLocalSurfaceIdAllocator allocator2;
   allocator.GenerateId();
-  LocalSurfaceId id4 =
-      allocator2.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+  LocalSurfaceId id4 = allocator2.GetCurrentLocalSurfaceId();
 
   CompositorFrame frame = MakeCompositorFrameFromSurfaceRanges(
       {SurfaceRange(base::nullopt, primary_surface_id)});
@@ -3640,20 +3610,16 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
       nullptr, &manager_, kArbitraryFrameSinkId1, kRootIsRoot);
   ParentLocalSurfaceIdAllocator allocator;
   allocator.GenerateId();
-  LocalSurfaceId id1 =
-      allocator.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+  LocalSurfaceId id1 = allocator.GetCurrentLocalSurfaceId();
   allocator.GenerateId();
-  LocalSurfaceId id2 =
-      allocator.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+  LocalSurfaceId id2 = allocator.GetCurrentLocalSurfaceId();
   allocator.GenerateId();
-  LocalSurfaceId id3 =
-      allocator.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+  LocalSurfaceId id3 = allocator.GetCurrentLocalSurfaceId();
   SurfaceId surface_id(kArbitraryFrameSinkId1, id2);
 
   ParentLocalSurfaceIdAllocator allocator2;
   allocator2.GenerateId();
-  LocalSurfaceId id4 =
-      allocator2.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+  LocalSurfaceId id4 = allocator2.GetCurrentLocalSurfaceId();
 
   std::vector<Quad> embedded_quads = {
       Quad::SolidColorQuad(SK_ColorGREEN, gfx::Rect(5, 5)),
@@ -3717,7 +3683,7 @@ TEST_P(SurfaceAggregatorValidSurfaceWithMergingPassesTest,
   ParentLocalSurfaceIdAllocator child_allocator;
   child_allocator.GenerateId();
   LocalSurfaceId child_local_surface_id =
-      child_allocator.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+      child_allocator.GetCurrentLocalSurfaceId();
   SurfaceId child_surface_id(child_sink_->frame_sink_id(),
                              child_local_surface_id);
   child_sink_->SubmitCompositorFrame(child_local_surface_id,
@@ -3939,7 +3905,7 @@ TEST_P(SurfaceAggregatorValidSurfaceWithMergingPassesTest,
   ParentLocalSurfaceIdAllocator child_allocator;
   child_allocator.GenerateId();
   LocalSurfaceId child_local_surface_id =
-      child_allocator.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+      child_allocator.GetCurrentLocalSurfaceId();
   SurfaceId child_surface_id(child_sink_->frame_sink_id(),
                              child_local_surface_id);
   child_sink_->SubmitCompositorFrame(child_local_surface_id,
@@ -3962,7 +3928,7 @@ TEST_P(SurfaceAggregatorValidSurfaceWithMergingPassesTest,
   ParentLocalSurfaceIdAllocator second_allocator;
   second_allocator.GenerateId();
   LocalSurfaceId second_local_surface_id =
-      second_allocator.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+      second_allocator.GetCurrentLocalSurfaceId();
   SurfaceId second_surface_id(second_support->frame_sink_id(),
                               second_local_surface_id);
   second_support->SubmitCompositorFrame(second_local_surface_id,
@@ -4204,7 +4170,7 @@ TEST_P(SurfaceAggregatorValidSurfaceWithMergingPassesTest,
   ParentLocalSurfaceIdAllocator child_allocator;
   child_allocator.GenerateId();
   LocalSurfaceId child_local_surface_id =
-      child_allocator.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+      child_allocator.GetCurrentLocalSurfaceId();
   SurfaceId child_surface_id(child_sink_->frame_sink_id(),
                              child_local_surface_id);
   child_sink_->SubmitCompositorFrame(child_local_surface_id,
@@ -4226,7 +4192,7 @@ TEST_P(SurfaceAggregatorValidSurfaceWithMergingPassesTest,
   ParentLocalSurfaceIdAllocator parent_allocator;
   parent_allocator.GenerateId();
   LocalSurfaceId parent_local_surface_id =
-      parent_allocator.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+      parent_allocator.GetCurrentLocalSurfaceId();
   SurfaceId parent_surface_id(parent_support->frame_sink_id(),
                               parent_local_surface_id);
   parent_support->SubmitCompositorFrame(parent_local_surface_id,
@@ -4435,7 +4401,7 @@ TEST_P(SurfaceAggregatorValidSurfaceWithMergingPassesTest,
   ParentLocalSurfaceIdAllocator child_allocator;
   child_allocator.GenerateId();
   LocalSurfaceId child_local_surface_id =
-      child_allocator.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+      child_allocator.GetCurrentLocalSurfaceId();
   SurfaceId child_surface_id(child_sink_->frame_sink_id(),
                              child_local_surface_id);
   child_sink_->SubmitCompositorFrame(child_local_surface_id,
@@ -4688,7 +4654,7 @@ TEST_P(SurfaceAggregatorValidSurfaceWithMergingPassesTest,
   ParentLocalSurfaceIdAllocator child_allocator;
   child_allocator.GenerateId();
   LocalSurfaceId child_local_surface_id =
-      child_allocator.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+      child_allocator.GetCurrentLocalSurfaceId();
   SurfaceId child_surface_id(child_sink_->frame_sink_id(),
                              child_local_surface_id);
   child_sink_->SubmitCompositorFrame(child_local_surface_id,
@@ -4828,7 +4794,7 @@ TEST_P(SurfaceAggregatorValidSurfaceWithMergingPassesTest,
   ParentLocalSurfaceIdAllocator child_allocator;
   child_allocator.GenerateId();
   LocalSurfaceId child_local_surface_id =
-      child_allocator.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+      child_allocator.GetCurrentLocalSurfaceId();
   SurfaceId child_surface_id(child_sink_->frame_sink_id(),
                              child_local_surface_id);
   child_sink_->SubmitCompositorFrame(child_local_surface_id,
@@ -4942,8 +4908,7 @@ class SurfaceAggregatorPartialSwapTest
 TEST_F(SurfaceAggregatorPartialSwapTest, IgnoreOutside) {
   ParentLocalSurfaceIdAllocator allocator;
   allocator.GenerateId();
-  LocalSurfaceId child_local_surface_id =
-      allocator.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+  LocalSurfaceId child_local_surface_id = allocator.GetCurrentLocalSurfaceId();
   SurfaceId child_surface_id(child_sink_->frame_sink_id(),
                              child_local_surface_id);
   constexpr float device_scale_factor = 1.0f;
@@ -5407,8 +5372,7 @@ TEST_F(SurfaceAggregatorPartialSwapTest, IgnoreOutside) {
 TEST_F(SurfaceAggregatorPartialSwapTest, ExpandByTargetDamage) {
   ParentLocalSurfaceIdAllocator allocator;
   allocator.GenerateId();
-  LocalSurfaceId child_local_surface_id =
-      allocator.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+  LocalSurfaceId child_local_surface_id = allocator.GetCurrentLocalSurfaceId();
   SurfaceId child_surface_id(child_sink_->frame_sink_id(),
                              child_local_surface_id);
   constexpr float device_scale_factor = 1.0f;
@@ -6035,8 +5999,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, MetadataContentColorUsageTest) {
         ParentLocalSurfaceIdAllocator child_allocator;
         child_allocator.GenerateId();
         LocalSurfaceId child_local_surface_id =
-            child_allocator.GetCurrentLocalSurfaceIdAllocation()
-                .local_surface_id();
+            child_allocator.GetCurrentLocalSurfaceId();
         SurfaceId child_surface_id(child_sink_->frame_sink_id(),
                                    child_local_surface_id);
         child_sink_->SubmitCompositorFrame(child_local_surface_id,
@@ -6086,8 +6049,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, HasDamageByChangingChildSurface) {
 
   ParentLocalSurfaceIdAllocator allocator;
   allocator.GenerateId();
-  LocalSurfaceId child_local_surface_id =
-      allocator.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+  LocalSurfaceId child_local_surface_id = allocator.GetCurrentLocalSurfaceId();
   SurfaceId child_surface_id(child_sink_->frame_sink_id(),
                              child_local_surface_id);
   child_sink_->SubmitCompositorFrame(child_local_surface_id,
@@ -6168,7 +6130,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
   ParentLocalSurfaceIdAllocator child_allocator;
   child_allocator.GenerateId();
   LocalSurfaceId child_local_surface_id =
-      child_allocator.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+      child_allocator.GetCurrentLocalSurfaceId();
   SurfaceId child_surface_id(child_sink_->frame_sink_id(),
                              child_local_surface_id);
   child_sink_->SubmitCompositorFrame(child_local_surface_id,
@@ -6208,8 +6170,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
   ParentLocalSurfaceIdAllocator grandchild_allocator;
   grandchild_allocator.GenerateId();
   LocalSurfaceId grand_child_local_surface_id =
-      grandchild_allocator.GetCurrentLocalSurfaceIdAllocation()
-          .local_surface_id();
+      grandchild_allocator.GetCurrentLocalSurfaceId();
   SurfaceId grand_child_surface_id(grand_child_support->frame_sink_id(),
                                    grand_child_local_surface_id);
   {
@@ -6290,8 +6251,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, HasDamageFromRenderPassQuads) {
 
   ParentLocalSurfaceIdAllocator allocator;
   allocator.GenerateId();
-  LocalSurfaceId child_local_surface_id =
-      allocator.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+  LocalSurfaceId child_local_surface_id = allocator.GetCurrentLocalSurfaceId();
   SurfaceId child_surface_id(child_sink_->frame_sink_id(),
                              child_local_surface_id);
   child_sink_->SubmitCompositorFrame(child_local_surface_id,
@@ -6459,8 +6419,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
 
   ParentLocalSurfaceIdAllocator allocator;
   allocator.GenerateId();
-  LocalSurfaceId child_local_surface_id =
-      allocator.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+  LocalSurfaceId child_local_surface_id = allocator.GetCurrentLocalSurfaceId();
   SurfaceId child_surface_id(child_sink_->frame_sink_id(),
                              child_local_surface_id);
   child_sink_->SubmitCompositorFrame(child_local_surface_id,
@@ -6563,8 +6522,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, DamageRectWithClippedChildSurface) {
 
   ParentLocalSurfaceIdAllocator allocator;
   allocator.GenerateId();
-  LocalSurfaceId child_local_surface_id =
-      allocator.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+  LocalSurfaceId child_local_surface_id = allocator.GetCurrentLocalSurfaceId();
   SurfaceId child_surface_id(child_sink_->frame_sink_id(),
                              child_local_surface_id);
   child_sink_->SubmitCompositorFrame(child_local_surface_id,
@@ -6653,8 +6611,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, DamageRectWithClippedChildSurface) {
 TEST_F(SurfaceAggregatorValidSurfaceTest, DamageRectWithInvalidChildFrame) {
   ParentLocalSurfaceIdAllocator allocator;
   allocator.GenerateId();
-  LocalSurfaceId child_local_surface_id =
-      allocator.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+  LocalSurfaceId child_local_surface_id = allocator.GetCurrentLocalSurfaceId();
   SurfaceId child_surface_id(child_sink_->frame_sink_id(),
                              child_local_surface_id);
 
@@ -6737,7 +6694,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, DamageRectWithInvalidChildFrame) {
   {
     allocator.GenerateId();
     LocalSurfaceId child_local_surface_id2 =
-        allocator.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+        allocator.GetCurrentLocalSurfaceId();
     SurfaceId child_surface_id2(child_sink_->frame_sink_id(),
                                 child_local_surface_id2);
     std::vector<Quad> root_surface_quads = {Quad::SurfaceQuad(
@@ -6781,8 +6738,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, OverlayOccludingDamageRect) {
 
   ParentLocalSurfaceIdAllocator allocator;
   allocator.GenerateId();
-  LocalSurfaceId child_local_surface_id =
-      allocator.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+  LocalSurfaceId child_local_surface_id = allocator.GetCurrentLocalSurfaceId();
   SurfaceId child_surface_id(child_sink_->frame_sink_id(),
                              child_local_surface_id);
   child_sink_->SubmitCompositorFrame(child_local_surface_id,
@@ -7086,8 +7042,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, OverlayOccludingDamageRect) {
 TEST_F(SurfaceAggregatorPartialSwapTest, NotIgnoreOutsideForCachedRenderPass) {
   ParentLocalSurfaceIdAllocator allocator;
   allocator.GenerateId();
-  LocalSurfaceId child_local_surface_id =
-      allocator.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+  LocalSurfaceId child_local_surface_id = allocator.GetCurrentLocalSurfaceId();
   SurfaceId child_surface_id(child_sink_->frame_sink_id(),
                              child_local_surface_id);
   // The child surface has two quads, one with a visible rect of 15,15 6x6 and
@@ -7223,7 +7178,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, DisplayTransformDamageCallback) {
   ParentLocalSurfaceIdAllocator child_allocator;
   child_allocator.GenerateId();
   LocalSurfaceId primary_child_local_surface_id =
-      child_allocator.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+      child_allocator.GetCurrentLocalSurfaceId();
   SurfaceId primary_child_surface_id(primary_child_support->frame_sink_id(),
                                      primary_child_local_surface_id);
 
@@ -7285,7 +7240,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, RoundedCornerTransformChange) {
   ParentLocalSurfaceIdAllocator child_allocator;
   child_allocator.GenerateId();
   LocalSurfaceId child_local_surface_id =
-      child_allocator.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+      child_allocator.GetCurrentLocalSurfaceId();
   SurfaceId child_surface_id(child_sink_->frame_sink_id(),
                              child_local_surface_id);
   {
@@ -7347,7 +7302,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, RoundedCornerTransformedSurfaceQuad) {
   child_allocator.GenerateId();
 
   LocalSurfaceId grandchild_local_surface_id =
-      child_allocator.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+      child_allocator.GetCurrentLocalSurfaceId();
   SurfaceId grandchild_surface_id(child_sink_->frame_sink_id(),
                                   grandchild_local_surface_id);
   {
@@ -7368,7 +7323,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, RoundedCornerTransformedSurfaceQuad) {
   // Child surface.
   child_allocator.GenerateId();
   LocalSurfaceId child_local_surface_id =
-      child_allocator.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+      child_allocator.GetCurrentLocalSurfaceId();
   SurfaceId child_surface_id(child_sink_->frame_sink_id(),
                              child_local_surface_id);
   {
@@ -7435,7 +7390,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
   child_allocator.GenerateId();
 
   LocalSurfaceId grandchild_local_surface_id =
-      child_allocator.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+      child_allocator.GetCurrentLocalSurfaceId();
   SurfaceId grandchild_surface_id(child_sink_->frame_sink_id(),
                                   grandchild_local_surface_id);
   {
@@ -7456,7 +7411,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
   // Child surface.
   child_allocator.GenerateId();
   LocalSurfaceId child_local_surface_id =
-      child_allocator.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+      child_allocator.GetCurrentLocalSurfaceId();
   SurfaceId child_surface_id(child_sink_->frame_sink_id(),
                              child_local_surface_id);
   {
@@ -7522,7 +7477,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, TransformedRoundedSurfaceQuad) {
   // Child surface.
   child_allocator.GenerateId();
   LocalSurfaceId child_local_surface_id =
-      child_allocator.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+      child_allocator.GetCurrentLocalSurfaceId();
   SurfaceId child_surface_id(child_sink_->frame_sink_id(),
                              child_local_surface_id);
   {
@@ -7600,7 +7555,7 @@ TEST_P(SurfaceAggregatorValidSurfaceWithMergingPassesTest,
   ParentLocalSurfaceIdAllocator child_allocator;
   child_allocator.GenerateId();
   LocalSurfaceId child_local_surface_id =
-      child_allocator.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+      child_allocator.GetCurrentLocalSurfaceId();
   SurfaceId child_surface_id(child_sink_->frame_sink_id(),
                              child_local_surface_id);
   child_sink_->SubmitCompositorFrame(child_local_surface_id,
@@ -7703,7 +7658,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
   ParentLocalSurfaceIdAllocator child_allocator;
   child_allocator.GenerateId();
   LocalSurfaceId child_local_surface_id =
-      child_allocator.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+      child_allocator.GetCurrentLocalSurfaceId();
   SurfaceId child_surface_id(child_sink_->frame_sink_id(),
                              child_local_surface_id);
   child_sink_->SubmitCompositorFrame(child_local_surface_id,
@@ -7786,7 +7741,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, AllowMerge) {
   child_allocator.GenerateId();
 
   LocalSurfaceId child_local_surface_id =
-      child_allocator.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+      child_allocator.GetCurrentLocalSurfaceId();
   SurfaceId child_surface_id(child_sink_->frame_sink_id(),
                              child_local_surface_id);
   {
@@ -7873,7 +7828,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, SkipInvisibleSurface) {
   child_allocator.GenerateId();
 
   LocalSurfaceId child_local_surface_id =
-      child_allocator.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+      child_allocator.GetCurrentLocalSurfaceId();
   SurfaceId child_surface_id(child_sink_->frame_sink_id(),
                              child_local_surface_id);
   {
@@ -7932,7 +7887,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, RenderPassDoesNotFillSurface) {
   child_allocator.GenerateId();
 
   LocalSurfaceId child_local_surface_id =
-      child_allocator.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+      child_allocator.GetCurrentLocalSurfaceId();
   SurfaceId child_surface_id(child_sink_->frame_sink_id(),
                              child_local_surface_id);
   {
@@ -8019,7 +7974,7 @@ TEST_P(SurfaceAggregatorValidSurfaceWithMergingPassesTest,
   ParentLocalSurfaceIdAllocator child_allocator;
   child_allocator.GenerateId();
   LocalSurfaceId child_local_surface_id =
-      child_allocator.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+      child_allocator.GetCurrentLocalSurfaceId();
   SurfaceId child_surface_id(child_sink_->frame_sink_id(),
                              child_local_surface_id);
   child_sink_->SubmitCompositorFrame(child_local_surface_id,
@@ -8147,8 +8102,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
   ParentLocalSurfaceIdAllocator embedded_allocator;
   embedded_allocator.GenerateId();
   LocalSurfaceId embedded_local_surface_id =
-      embedded_allocator.GetCurrentLocalSurfaceIdAllocation()
-          .local_surface_id();
+      embedded_allocator.GetCurrentLocalSurfaceId();
   SurfaceId embedded_surface_id(embedded_support->frame_sink_id(),
                                 embedded_local_surface_id);
   SurfaceId root_surface_id(root_sink_->frame_sink_id(),
@@ -8233,7 +8187,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, DelegatedInkMetadataTest) {
   ParentLocalSurfaceIdAllocator child_allocator;
   child_allocator.GenerateId();
   LocalSurfaceId child_local_surface_id =
-      child_allocator.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+      child_allocator.GetCurrentLocalSurfaceId();
   SurfaceId child_surface_id(child_sink_->frame_sink_id(),
                              child_local_surface_id);
   child_sink_->SubmitCompositorFrame(child_local_surface_id,
@@ -8311,8 +8265,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
   ParentLocalSurfaceIdAllocator greatgrandchild_allocator;
   greatgrandchild_allocator.GenerateId();
   LocalSurfaceId greatgrandchild_local_surface_id =
-      greatgrandchild_allocator.GetCurrentLocalSurfaceIdAllocation()
-          .local_surface_id();
+      greatgrandchild_allocator.GetCurrentLocalSurfaceId();
   SurfaceId great_grandchild_surface_id(
       greatgrand_child_support->frame_sink_id(),
       greatgrandchild_local_surface_id);
@@ -8353,8 +8306,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
   ParentLocalSurfaceIdAllocator grandchild_allocator;
   grandchild_allocator.GenerateId();
   LocalSurfaceId grandchild_local_surface_id =
-      grandchild_allocator.GetCurrentLocalSurfaceIdAllocation()
-          .local_surface_id();
+      grandchild_allocator.GetCurrentLocalSurfaceId();
   SurfaceId grandchild_surface_id(grand_child_support->frame_sink_id(),
                                   grandchild_local_surface_id);
   grand_child_support->SubmitCompositorFrame(grandchild_local_surface_id,
@@ -8384,7 +8336,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
   ParentLocalSurfaceIdAllocator child_allocator;
   child_allocator.GenerateId();
   LocalSurfaceId child_local_surface_id =
-      child_allocator.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+      child_allocator.GetCurrentLocalSurfaceId();
   SurfaceId child_surface_id(child_sink_->frame_sink_id(),
                              child_local_surface_id);
   child_sink_->SubmitCompositorFrame(child_local_surface_id,
@@ -8457,7 +8409,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
   ParentLocalSurfaceIdAllocator child_1_allocator;
   child_1_allocator.GenerateId();
   LocalSurfaceId child_1_local_surface_id =
-      child_1_allocator.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+      child_1_allocator.GetCurrentLocalSurfaceId();
   SurfaceId child_1_surface_id(child_sink_->frame_sink_id(),
                                child_1_local_surface_id);
   child_sink_->SubmitCompositorFrame(child_1_local_surface_id,
@@ -8480,7 +8432,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
   ParentLocalSurfaceIdAllocator child_2_allocator;
   child_2_allocator.GenerateId();
   LocalSurfaceId child_2_local_surface_id =
-      child_2_allocator.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+      child_2_allocator.GetCurrentLocalSurfaceId();
   SurfaceId child_2_surface_id(child_2_support->frame_sink_id(),
                                child_2_local_surface_id);
   child_2_support->SubmitCompositorFrame(child_2_local_surface_id,
@@ -8498,7 +8450,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
   ParentLocalSurfaceIdAllocator child_3_allocator;
   child_3_allocator.GenerateId();
   LocalSurfaceId child_3_local_surface_id =
-      child_3_allocator.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+      child_3_allocator.GetCurrentLocalSurfaceId();
   SurfaceId child_3_surface_id(child_3_support->frame_sink_id(),
                                child_3_local_surface_id);
   child_3_support->SubmitCompositorFrame(child_3_local_surface_id,
@@ -8588,7 +8540,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
   ParentLocalSurfaceIdAllocator child_1_allocator;
   child_1_allocator.GenerateId();
   LocalSurfaceId child_1_local_surface_id =
-      child_1_allocator.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+      child_1_allocator.GetCurrentLocalSurfaceId();
   SurfaceId child_1_surface_id(child_sink_->frame_sink_id(),
                                child_1_local_surface_id);
   child_sink_->SubmitCompositorFrame(child_1_local_surface_id,
@@ -8621,7 +8573,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
   ParentLocalSurfaceIdAllocator child_2_allocator;
   child_2_allocator.GenerateId();
   LocalSurfaceId child_2_local_surface_id =
-      child_2_allocator.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+      child_2_allocator.GetCurrentLocalSurfaceId();
   SurfaceId child_2_surface_id(child_2_support->frame_sink_id(),
                                child_2_local_surface_id);
   child_2_support->SubmitCompositorFrame(child_2_local_surface_id,
@@ -8641,7 +8593,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
   ParentLocalSurfaceIdAllocator child_3_allocator;
   child_3_allocator.GenerateId();
   LocalSurfaceId child_3_local_surface_id =
-      child_3_allocator.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+      child_3_allocator.GetCurrentLocalSurfaceId();
   SurfaceId child_3_surface_id(child_3_support->frame_sink_id(),
                                child_3_local_surface_id);
   child_3_support->SubmitCompositorFrame(child_3_local_surface_id,
@@ -8733,7 +8685,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
   ParentLocalSurfaceIdAllocator child_allocator;
   child_allocator.GenerateId();
   LocalSurfaceId child_local_surface_id =
-      child_allocator.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+      child_allocator.GetCurrentLocalSurfaceId();
   SurfaceId child_surface_id(child_sink_->frame_sink_id(),
                              child_local_surface_id);
   child_sink_->SubmitCompositorFrame(child_local_surface_id,

@@ -1371,7 +1371,7 @@ class ScaledScrollbarLayerTestResourceCreation : public ScrollbarLayerTest {
 
     layer_tree_host_->SetViewportRectAndScale(
         layer_tree_host_->device_viewport_rect(), test_scale,
-        layer_tree_host_->local_surface_id_allocation_from_parent());
+        layer_tree_host_->local_surface_id_from_parent());
 
     scrollbar_layer->Update();
 
@@ -1436,7 +1436,7 @@ class ScaledScrollbarLayerTestScaledRasterization : public ScrollbarLayerTest {
 
     layer_tree_host_->SetViewportRectAndScale(
         layer_tree_host_->device_viewport_rect(), test_scale,
-        layer_tree_host_->local_surface_id_allocation_from_parent());
+        layer_tree_host_->local_surface_id_from_parent());
     UpdateDrawProperties(layer_tree_host_.get());
 
     scrollbar_layer->Update();

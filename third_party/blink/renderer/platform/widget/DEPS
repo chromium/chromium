@@ -5,7 +5,7 @@ include_rules = [
     "+cc/trees/layer_tree_host.h",
     "+cc/trees/layer_tree_settings.h",
     "+cc/trees/ukm_manager.h",
-    "+components/viz/common/surfaces/local_surface_id_allocation.h",
+    "+components/viz/common/surfaces/local_surface_id.h",
     "+ui/base/ime/text_input_mode.h",
     "+ui/base/ime/text_input_type.h",
     "+ui/base/ime/mojom/text_input_state.mojom-blink.h",

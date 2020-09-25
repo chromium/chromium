@@ -2211,26 +2211,23 @@ TEST_F(InputMethodMacTest, TouchBarTextSuggestionsInvalidSelection) {
 // This test verifies that in AutoResize mode a child-allocated
 // viz::LocalSurfaceId will be properly routed and stored in the parent.
 TEST_F(RenderWidgetHostViewMacTest, ChildAllocationAcceptedInParent) {
-  viz::LocalSurfaceId local_surface_id1(
-      rwhv_mac_->GetLocalSurfaceIdAllocation().local_surface_id());
+  viz::LocalSurfaceId local_surface_id1(rwhv_mac_->GetLocalSurfaceId());
   EXPECT_TRUE(local_surface_id1.is_valid());
 
   host_->SetAutoResize(true, gfx::Size(50, 50), gfx::Size(100, 100));
 
   viz::ChildLocalSurfaceIdAllocator child_allocator;
-  child_allocator.UpdateFromParent(rwhv_mac_->GetLocalSurfaceIdAllocation());
+  child_allocator.UpdateFromParent(rwhv_mac_->GetLocalSurfaceId());
   child_allocator.GenerateId();
   viz::LocalSurfaceId local_surface_id2 =
-      child_allocator.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+      child_allocator.GetCurrentLocalSurfaceId();
   cc::RenderFrameMetadata metadata;
   metadata.viewport_size_in_pixels = gfx::Size(75, 75);
-  metadata.local_surface_id_allocation =
-      child_allocator.GetCurrentLocalSurfaceIdAllocation();
+  metadata.local_surface_id = child_allocator.GetCurrentLocalSurfaceId();
   static_cast<RenderFrameMetadataProvider::Observer&>(*host_)
       .OnLocalSurfaceIdChanged(metadata);
 
-  viz::LocalSurfaceId local_surface_id3(
-      rwhv_mac_->GetLocalSurfaceIdAllocation().local_surface_id());
+  viz::LocalSurfaceId local_surface_id3(rwhv_mac_->GetLocalSurfaceId());
   EXPECT_NE(local_surface_id1, local_surface_id3);
   EXPECT_EQ(local_surface_id2, local_surface_id3);
 }
@@ -2238,28 +2235,25 @@ TEST_F(RenderWidgetHostViewMacTest, ChildAllocationAcceptedInParent) {
 // This test verifies that when the child and parent both allocate their own
 // viz::LocalSurfaceId the resulting conflict is resolved.
 TEST_F(RenderWidgetHostViewMacTest, ConflictingAllocationsResolve) {
-  viz::LocalSurfaceId local_surface_id1(
-      rwhv_mac_->GetLocalSurfaceIdAllocation().local_surface_id());
+  viz::LocalSurfaceId local_surface_id1(rwhv_mac_->GetLocalSurfaceId());
   EXPECT_TRUE(local_surface_id1.is_valid());
 
   host_->SetAutoResize(true, gfx::Size(50, 50), gfx::Size(100, 100));
   viz::ChildLocalSurfaceIdAllocator child_allocator;
-  child_allocator.UpdateFromParent(rwhv_mac_->GetLocalSurfaceIdAllocation());
+  child_allocator.UpdateFromParent(rwhv_mac_->GetLocalSurfaceId());
   child_allocator.GenerateId();
   viz::LocalSurfaceId local_surface_id2 =
-      child_allocator.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+      child_allocator.GetCurrentLocalSurfaceId();
   cc::RenderFrameMetadata metadata;
   metadata.viewport_size_in_pixels = gfx::Size(75, 75);
-  metadata.local_surface_id_allocation =
-      child_allocator.GetCurrentLocalSurfaceIdAllocation();
+  metadata.local_surface_id = child_allocator.GetCurrentLocalSurfaceId();
   static_cast<RenderFrameMetadataProvider::Observer&>(*host_)
       .OnLocalSurfaceIdChanged(metadata);
 
   // Cause a conflicting viz::LocalSurfaceId allocation
   BrowserCompositorMac* browser_compositor = rwhv_mac_->BrowserCompositor();
   EXPECT_TRUE(browser_compositor->ForceNewSurfaceForTesting());
-  viz::LocalSurfaceId local_surface_id3(
-      rwhv_mac_->GetLocalSurfaceIdAllocation().local_surface_id());
+  viz::LocalSurfaceId local_surface_id3(rwhv_mac_->GetLocalSurfaceId());
   EXPECT_NE(local_surface_id1, local_surface_id3);
 
   // RenderWidgetHostImpl has delayed auto-resize processing. Yield here to
@@ -2269,8 +2263,7 @@ TEST_F(RenderWidgetHostViewMacTest, ConflictingAllocationsResolve) {
                                                 run_loop.QuitClosure());
   run_loop.Run();
 
-  viz::LocalSurfaceId local_surface_id4(
-      rwhv_mac_->GetLocalSurfaceIdAllocation().local_surface_id());
+  viz::LocalSurfaceId local_surface_id4(rwhv_mac_->GetLocalSurfaceId());
   EXPECT_NE(local_surface_id1, local_surface_id4);
   EXPECT_NE(local_surface_id2, local_surface_id4);
   viz::LocalSurfaceId merged_local_surface_id(

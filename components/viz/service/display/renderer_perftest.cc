@@ -338,9 +338,7 @@ class RendererPerfTest : public testing::Test {
     display_->Resize(kSurfaceSize);
 
     id_allocator_.GenerateId();
-    display_->SetLocalSurfaceId(
-        id_allocator_.GetCurrentLocalSurfaceIdAllocation().local_surface_id(),
-        1.f);
+    display_->SetLocalSurfaceId(id_allocator_.GetCurrentLocalSurfaceId(), 1.f);
   }
 
   void TearDown() override {
@@ -393,9 +391,8 @@ class RendererPerfTest : public testing::Test {
                                 .SetRenderPassList(std::move(pass_list))
                                 .SetTransferableResources(resource_list_)
                                 .Build();
-    support_->SubmitCompositorFrame(
-        id_allocator_.GetCurrentLocalSurfaceIdAllocation().local_surface_id(),
-        std::move(frame));
+    support_->SubmitCompositorFrame(id_allocator_.GetCurrentLocalSurfaceId(),
+                                    std::move(frame));
     ASSERT_TRUE(display_->DrawAndSwap(base::TimeTicks::Now()));
   }
 

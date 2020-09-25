@@ -759,10 +759,8 @@ void Window::OnDeviceScaleFactorChanged(float old_device_scale_factor,
       IsEmbeddingExternalContent()) {
     last_device_scale_factor_ = new_device_scale_factor;
     parent_local_surface_id_allocator_->GenerateId();
-    if (frame_sink_) {
-      frame_sink_->SetLocalSurfaceId(
-          GetCurrentLocalSurfaceIdAllocation().local_surface_id());
-    }
+    if (frame_sink_)
+      frame_sink_->SetLocalSurfaceId(GetCurrentLocalSurfaceId());
   }
 
   ScopedCursorHider hider(this);
@@ -1185,7 +1183,7 @@ std::unique_ptr<cc::LayerTreeFrameSink> Window::CreateLayerTreeFrameSink() {
           &params);
   frame_sink_ = frame_sink->GetWeakPtr();
   AllocateLocalSurfaceId();
-  DCHECK(GetLocalSurfaceIdAllocation().local_surface_id().is_valid());
+  DCHECK(GetLocalSurfaceId().is_valid());
 #if DCHECK_IS_ON()
   created_layer_tree_frame_sink_ = true;
 #endif
@@ -1193,8 +1191,7 @@ std::unique_ptr<cc::LayerTreeFrameSink> Window::CreateLayerTreeFrameSink() {
 }
 
 viz::SurfaceId Window::GetSurfaceId() {
-  return viz::SurfaceId(GetFrameSinkId(),
-                        GetLocalSurfaceIdAllocation().local_surface_id());
+  return viz::SurfaceId(GetFrameSinkId(), GetLocalSurfaceId());
 }
 
 void Window::AllocateLocalSurfaceId() {
@@ -1212,10 +1209,10 @@ viz::ScopedSurfaceIdAllocator Window::GetSurfaceIdAllocator(
                                        std::move(allocation_task));
 }
 
-const viz::LocalSurfaceIdAllocation& Window::GetLocalSurfaceIdAllocation() {
+const viz::LocalSurfaceId& Window::GetLocalSurfaceId() {
   if (!parent_local_surface_id_allocator_)
     AllocateLocalSurfaceId();
-  return GetCurrentLocalSurfaceIdAllocation();
+  return GetCurrentLocalSurfaceId();
 }
 
 void Window::InvalidateLocalSurfaceId() {
@@ -1225,11 +1222,11 @@ void Window::InvalidateLocalSurfaceId() {
 }
 
 void Window::UpdateLocalSurfaceIdFromEmbeddedClient(
-    const base::Optional<viz::LocalSurfaceIdAllocation>&
-        embedded_client_local_surface_id_allocation) {
-  if (embedded_client_local_surface_id_allocation) {
+    const base::Optional<viz::LocalSurfaceId>&
+        embedded_client_local_surface_id) {
+  if (embedded_client_local_surface_id) {
     parent_local_surface_id_allocator_->UpdateFromChild(
-        *embedded_client_local_surface_id_allocation);
+        *embedded_client_local_surface_id);
     UpdateLocalSurfaceId();
   } else {
     AllocateLocalSurfaceId();
@@ -1312,8 +1309,7 @@ void Window::OnLayerBoundsChanged(const gfx::Rect& old_bounds,
       IsEmbeddingExternalContent()) {
     parent_local_surface_id_allocator_->GenerateId();
     if (frame_sink_) {
-      frame_sink_->SetLocalSurfaceId(
-          GetCurrentLocalSurfaceIdAllocation().local_surface_id());
+      frame_sink_->SetLocalSurfaceId(GetCurrentLocalSurfaceId());
     }
   }
 
@@ -1500,15 +1496,12 @@ void Window::UnregisterFrameSinkId() {
 void Window::UpdateLocalSurfaceId() {
   last_device_scale_factor_ = ui::GetScaleFactorForNativeView(this);
   if (frame_sink_) {
-    frame_sink_->SetLocalSurfaceId(
-        GetCurrentLocalSurfaceIdAllocation().local_surface_id());
+    frame_sink_->SetLocalSurfaceId(GetCurrentLocalSurfaceId());
   }
 }
 
-const viz::LocalSurfaceIdAllocation&
-Window::GetCurrentLocalSurfaceIdAllocation() const {
-  return parent_local_surface_id_allocator_
-      ->GetCurrentLocalSurfaceIdAllocation();
+const viz::LocalSurfaceId& Window::GetCurrentLocalSurfaceId() const {
+  return parent_local_surface_id_allocator_->GetCurrentLocalSurfaceId();
 }
 
 bool Window::IsEmbeddingExternalContent() const {

@@ -65,9 +65,8 @@ void FuzzerBrowserProcess::EmbedFuzzedCompositorFrame(
   }
 
   lsi_allocator_.GenerateId();
-  SurfaceId embedded_surface_id(
-      kEmbeddedFrameSinkId,
-      lsi_allocator_.GetCurrentLocalSurfaceIdAllocation().local_surface_id());
+  SurfaceId embedded_surface_id(kEmbeddedFrameSinkId,
+                                lsi_allocator_.GetCurrentLocalSurfaceId());
   sink_remote->SubmitCompositorFrame(embedded_surface_id.local_surface_id(),
                                      std::move(fuzzed_frame), base::nullopt, 0);
 
@@ -120,7 +119,6 @@ CompositorFrame FuzzerBrowserProcess::BuildBrowserUICompositorFrame(
   frame.metadata.begin_frame_ack.frame_id = BeginFrameId(
       BeginFrameArgs::kManualSourceId, BeginFrameArgs::kStartingFrameNumber);
   frame.metadata.device_scale_factor = 1;
-  frame.metadata.local_surface_id_allocation_time = base::TimeTicks::Now();
   frame.metadata.referenced_surfaces.push_back(
       SurfaceRange(base::nullopt, renderer_surface_id));
 

@@ -45,7 +45,7 @@ bool StructTraits<
          data.ReadRootLayerSize(&out->root_layer_size) &&
 #endif
          data.ReadViewportSizeInPixels(&out->viewport_size_in_pixels) &&
-         data.ReadLocalSurfaceIdAllocation(&out->local_surface_id_allocation) &&
+         data.ReadLocalSurfaceId(&out->local_surface_id) &&
          data.ReadNewVerticalScrollDirection(
              &out->new_vertical_scroll_direction);
 }

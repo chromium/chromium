@@ -28,8 +28,7 @@ ViewportLayersSetup::ViewportLayersSetup() {
   layer_tree_->layer_tree_host()->SetRootLayer(&root_layer_->CcLayer());
 
   layer_tree_->layer_tree_host()->SetViewportRectAndScale(
-      gfx::Rect(1, 1), /*device_scale_factor=*/1.f,
-      viz::LocalSurfaceIdAllocation());
+      gfx::Rect(1, 1), /*device_scale_factor=*/1.f, viz::LocalSurfaceId());
 
   graphics_layer_->SetLayerState(PropertyTreeState(PropertyTreeState::Root()),
                                  IntPoint());

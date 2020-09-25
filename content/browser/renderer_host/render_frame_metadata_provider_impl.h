@@ -86,8 +86,7 @@ class CONTENT_EXPORT RenderFrameMetadataProviderImpl
 
   cc::RenderFrameMetadata last_render_frame_metadata_;
 
-  base::Optional<viz::LocalSurfaceIdAllocation>
-      last_local_surface_id_allocation_;
+  base::Optional<viz::LocalSurfaceId> last_local_surface_id_;
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 

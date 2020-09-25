@@ -41,7 +41,6 @@ CompositorFrameMetadata::CompositorFrameMetadata(
       send_frame_token_to_embedder(other.send_frame_token_to_embedder),
       min_page_scale_factor(other.min_page_scale_factor),
       top_controls_visible_height(other.top_controls_visible_height),
-      local_surface_id_allocation_time(other.local_surface_id_allocation_time),
       preferred_frame_interval(other.preferred_frame_interval),
       display_transform_hint(other.display_transform_hint) {
   if (other.delegated_ink_metadata) {

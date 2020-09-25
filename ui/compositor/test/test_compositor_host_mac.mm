@@ -161,7 +161,7 @@ void TestCompositorHostMac::Show() {
   accelerated_widget_.SetNSView(test_accelerated_widget_nsview_.get());
   compositor_.SetAcceleratedWidget(accelerated_widget_.accelerated_widget());
   compositor_.SetScaleAndSize(1.0f, bounds_.size(),
-                              allocator_.GetCurrentLocalSurfaceIdAllocation());
+                              allocator_.GetCurrentLocalSurfaceId());
   [view setCompositor:&compositor_];
   [window_ setContentView:view];
   [window_ orderFront:nil];

@@ -1139,7 +1139,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // collects them and passes them though
   // blink::mojom::Widget::UpdateVisualProperties so that the renderer receives
   // updates in an atomic fashion along with a synchronization token for the
-  // compositor in a LocalSurfaceIdAllocation.
+  // compositor in a LocalSurfaceId.
   struct MainFramePropagationProperties {
     MainFramePropagationProperties();
     ~MainFramePropagationProperties();

@@ -71,8 +71,7 @@ class DisplayDamageTrackerTest : public testing::Test {
 
     SurfaceId MakeNewSurfaceId() {
       id_allocator_.GenerateId();
-      local_surface_id_ =
-          id_allocator_.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+      local_surface_id_ = id_allocator_.GetCurrentLocalSurfaceId();
       return SurfaceId(frame_sink_id_, local_surface_id_);
     }
 

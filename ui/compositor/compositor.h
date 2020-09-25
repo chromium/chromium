@@ -76,7 +76,7 @@ class DelegatedInkPointRenderer;
 }  // namespace mojom
 class ContextProvider;
 class HostFrameSinkManager;
-class LocalSurfaceIdAllocation;
+class LocalSurfaceId;
 class RasterContextProvider;
 }
 
@@ -205,10 +205,9 @@ class COMPOSITOR_EXPORT Compositor : public cc::LayerTreeHostClient,
 #endif
 
   // Sets the compositor's device scale factor and size.
-  void SetScaleAndSize(
-      float scale,
-      const gfx::Size& size_in_pixel,
-      const viz::LocalSurfaceIdAllocation& local_surface_id_allocation);
+  void SetScaleAndSize(float scale,
+                       const gfx::Size& size_in_pixel,
+                       const viz::LocalSurfaceId& local_surface_id);
 
   // Set the output color profile into which this compositor should render. Also
   // sets the SDR white level (in nits) used to scale HDR color space primaries.

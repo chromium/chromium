@@ -54,14 +54,7 @@ bool StructTraits<viz::mojom::CompositorFrameMetadataDataView,
       !data.ReadReferencedSurfaces(&out->referenced_surfaces) ||
       !data.ReadDeadline(&out->deadline) ||
       !data.ReadActivationDependencies(&out->activation_dependencies) ||
-      !data.ReadBeginFrameAck(&out->begin_frame_ack) ||
-      !data.ReadLocalSurfaceIdAllocationTime(
-          &out->local_surface_id_allocation_time)) {
-    return false;
-  }
-  if (out->local_surface_id_allocation_time.is_null()) {
-    viz::SetDeserializationCrashKeyString(
-        "Null local surface ID allocation time");
+      !data.ReadBeginFrameAck(&out->begin_frame_ack)) {
     return false;
   }
   return data.ReadPreferredFrameInterval(&out->preferred_frame_interval) &&

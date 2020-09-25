@@ -86,7 +86,6 @@ class MODULES_EXPORT WebMediaPlayerMSCompositor
   // submit video frames given by WebMediaPlayerMSCompositor.
   virtual void EnableSubmission(
       const viz::SurfaceId& id,
-      base::TimeTicks local_surface_id_allocation_time,
       media::VideoTransformation transformation,
       bool force_submit);
 

@@ -167,7 +167,7 @@ void SetDeviceScaleAndUpdateViewportRect(LayerTreeHost* layer_tree_host,
   gfx::Rect viewport_rect(root_bounds.width() * device_scale_factor,
                           root_bounds.height() * device_scale_factor);
   layer_tree_host->SetViewportRectAndScale(viewport_rect, device_scale_factor,
-                                           viz::LocalSurfaceIdAllocation());
+                                           viz::LocalSurfaceId());
 }
 
 }  // namespace cc

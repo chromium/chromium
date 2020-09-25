@@ -204,9 +204,8 @@ const viz::FrameSinkId& TestRenderWidgetHostView::GetFrameSinkId() const {
   return frame_sink_id_;
 }
 
-const viz::LocalSurfaceIdAllocation&
-TestRenderWidgetHostView::GetLocalSurfaceIdAllocation() const {
-  return viz::ParentLocalSurfaceIdAllocator::InvalidLocalSurfaceIdAllocation();
+const viz::LocalSurfaceId& TestRenderWidgetHostView::GetLocalSurfaceId() const {
+  return viz::ParentLocalSurfaceIdAllocator::InvalidLocalSurfaceId();
 }
 
 viz::SurfaceId TestRenderWidgetHostView::GetCurrentSurfaceId() const {

@@ -459,8 +459,7 @@ viz::SurfaceId WebContentController::GetSurfaceId() {
   if (!rwhv)
     return viz::SurfaceId();
   auto frame_sink_id = rwhv->GetRenderWidgetHost()->GetFrameSinkId();
-  auto local_surface_id =
-      rwhv->GetNativeView()->GetLocalSurfaceIdAllocation().local_surface_id();
+  auto local_surface_id = rwhv->GetNativeView()->GetLocalSurfaceId();
   return viz::SurfaceId(frame_sink_id, local_surface_id);
 }
 

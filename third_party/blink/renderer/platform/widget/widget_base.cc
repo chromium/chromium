@@ -416,11 +416,11 @@ void WidgetBase::SendScrollEndEventFromImplSide(
 
 void WidgetBase::OnDeferMainFrameUpdatesChanged(bool defer) {
   // LayerTreeHost::CreateThreaded() will defer main frame updates immediately
-  // until it gets a LocalSurfaceIdAllocation. That's before the
+  // until it gets a LocalSurfaceId. That's before the
   // |widget_input_handler_manager_| is created, so it can be null here.
   // TODO(schenney): To avoid ping-ponging between defer main frame states
   // during initialization, and requiring null checks here, we should probably
-  // pass the LocalSurfaceIdAllocation to the compositor while it is
+  // pass the LocalSurfaceId to the compositor while it is
   // initialized so that it doesn't have to immediately switch into deferred
   // mode without being requested to.
   if (!widget_input_handler_manager_)
@@ -1112,7 +1112,7 @@ void WidgetBase::RequestMouseLock(
 }
 
 void WidgetBase::UpdateSurfaceAndScreenInfo(
-    const viz::LocalSurfaceIdAllocation& new_local_surface_id_allocation,
+    const viz::LocalSurfaceId& new_local_surface_id,
     const gfx::Rect& compositor_viewport_pixel_rect,
     const ScreenInfo& new_screen_info_param) {
   ScreenInfo new_screen_info = new_screen_info_param;
@@ -1131,7 +1131,7 @@ void WidgetBase::UpdateSurfaceAndScreenInfo(
       screen_info_.orientation_type != new_screen_info.orientation_type;
   ScreenInfo previous_original_screen_info = client_->GetOriginalScreenInfo();
 
-  local_surface_id_allocation_from_parent_ = new_local_surface_id_allocation;
+  local_surface_id_from_parent_ = new_local_surface_id;
   screen_info_ = new_screen_info;
 
   // Note carefully that the DSF specified in |new_screen_info| is not the
@@ -1139,7 +1139,7 @@ void WidgetBase::UpdateSurfaceAndScreenInfo(
   LayerTreeHost()->SetViewportRectAndScale(
       compositor_viewport_pixel_rect,
       client_->GetOriginalScreenInfo().device_scale_factor,
-      local_surface_id_allocation_from_parent_);
+      local_surface_id_from_parent_);
   // The ViewportVisibleRect derives from the LayerTreeView's viewport size,
   // which is set above.
   LayerTreeHost()->SetViewportVisibleRect(client_->ViewportVisibleRect());
@@ -1152,27 +1152,27 @@ void WidgetBase::UpdateSurfaceAndScreenInfo(
 }
 
 void WidgetBase::UpdateScreenInfo(const ScreenInfo& new_screen_info) {
-  UpdateSurfaceAndScreenInfo(local_surface_id_allocation_from_parent_,
+  UpdateSurfaceAndScreenInfo(local_surface_id_from_parent_,
                              CompositorViewportRect(), new_screen_info);
 }
 
 void WidgetBase::UpdateCompositorViewportAndScreenInfo(
     const gfx::Rect& compositor_viewport_pixel_rect,
     const ScreenInfo& new_screen_info) {
-  UpdateSurfaceAndScreenInfo(local_surface_id_allocation_from_parent_,
+  UpdateSurfaceAndScreenInfo(local_surface_id_from_parent_,
                              compositor_viewport_pixel_rect, new_screen_info);
 }
 
 void WidgetBase::UpdateCompositorViewportRect(
     const gfx::Rect& compositor_viewport_pixel_rect) {
-  UpdateSurfaceAndScreenInfo(local_surface_id_allocation_from_parent_,
+  UpdateSurfaceAndScreenInfo(local_surface_id_from_parent_,
                              compositor_viewport_pixel_rect, screen_info_);
 }
 
 void WidgetBase::UpdateSurfaceAndCompositorRect(
-    const viz::LocalSurfaceIdAllocation& new_local_surface_id_allocation,
+    const viz::LocalSurfaceId& new_local_surface_id,
     const gfx::Rect& compositor_viewport_pixel_rect) {
-  UpdateSurfaceAndScreenInfo(new_local_surface_id_allocation,
+  UpdateSurfaceAndScreenInfo(new_local_surface_id,
                              compositor_viewport_pixel_rect, screen_info_);
 }
 

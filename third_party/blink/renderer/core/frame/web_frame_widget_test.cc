@@ -25,17 +25,15 @@ TEST_F(WebFrameWidgetSimTest, AutoResizeAllocatedLocalSurfaceId) {
   visual_properties.min_size_for_auto_resize = gfx::Size(100, 100);
   visual_properties.max_size_for_auto_resize = gfx::Size(200, 200);
   allocator.GenerateId();
-  visual_properties.local_surface_id_allocation =
-      allocator.GetCurrentLocalSurfaceIdAllocation();
+  visual_properties.local_surface_id = allocator.GetCurrentLocalSurfaceId();
   WebView().MainFrameWidget()->ApplyVisualProperties(visual_properties);
   WebView().MainFrameViewWidget()->UpdateSurfaceAndScreenInfo(
-      visual_properties.local_surface_id_allocation.value(),
+      visual_properties.local_surface_id.value(),
       visual_properties.compositor_viewport_pixel_rect,
       visual_properties.screen_info);
 
-  EXPECT_EQ(
-      allocator.GetCurrentLocalSurfaceIdAllocation(),
-      WebView().MainFrameViewWidget()->LocalSurfaceIdAllocationFromParent());
+  EXPECT_EQ(allocator.GetCurrentLocalSurfaceId(),
+            WebView().MainFrameViewWidget()->LocalSurfaceIdFromParent());
   EXPECT_FALSE(WebView()
                    .MainFrameViewWidget()
                    ->LayerTreeHost()
@@ -44,9 +42,8 @@ TEST_F(WebFrameWidgetSimTest, AutoResizeAllocatedLocalSurfaceId) {
   constexpr gfx::Size size(200, 200);
   static_cast<WebViewFrameWidget*>(WebView().MainFrameViewWidget())
       ->DidAutoResize(size);
-  EXPECT_EQ(
-      allocator.GetCurrentLocalSurfaceIdAllocation(),
-      WebView().MainFrameViewWidget()->LocalSurfaceIdAllocationFromParent());
+  EXPECT_EQ(allocator.GetCurrentLocalSurfaceId(),
+            WebView().MainFrameViewWidget()->LocalSurfaceIdFromParent());
   EXPECT_TRUE(WebView()
                   .MainFrameViewWidget()
                   ->LayerTreeHost()

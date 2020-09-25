@@ -277,9 +277,7 @@ TEST_F(DisplayTest, DisplayDamaged) {
 
   EXPECT_FALSE(scheduler_->damaged());
   id_allocator_.GenerateId();
-  display_->SetLocalSurfaceId(
-      id_allocator_.GetCurrentLocalSurfaceIdAllocation().local_surface_id(),
-      1.f);
+  display_->SetLocalSurfaceId(id_allocator_.GetCurrentLocalSurfaceId(), 1.f);
   display_->Resize(gfx::Size(100, 100));
 
   // First draw from surface should have full damage.
@@ -291,9 +289,7 @@ TEST_F(DisplayTest, DisplayDamaged) {
   pass_list.push_back(std::move(pass));
 
   ResetDamageForTest();
-  SubmitCompositorFrame(
-      &pass_list,
-      id_allocator_.GetCurrentLocalSurfaceIdAllocation().local_surface_id());
+  SubmitCompositorFrame(&pass_list, id_allocator_.GetCurrentLocalSurfaceId());
   EXPECT_TRUE(scheduler_->damaged());
 
   EXPECT_FALSE(scheduler_->swapped());
@@ -317,9 +313,7 @@ TEST_F(DisplayTest, DisplayDamaged) {
 
     pass_list.push_back(std::move(pass));
     ResetDamageForTest();
-    SubmitCompositorFrame(
-        &pass_list,
-        id_allocator_.GetCurrentLocalSurfaceIdAllocation().local_surface_id());
+    SubmitCompositorFrame(&pass_list, id_allocator_.GetCurrentLocalSurfaceId());
     EXPECT_TRUE(scheduler_->damaged());
 
     scheduler_->reset_swapped_for_test();
@@ -347,9 +341,7 @@ TEST_F(DisplayTest, DisplayDamaged) {
 
     pass_list.push_back(std::move(pass));
     ResetDamageForTest();
-    SubmitCompositorFrame(
-        &pass_list,
-        id_allocator_.GetCurrentLocalSurfaceIdAllocation().local_surface_id());
+    SubmitCompositorFrame(&pass_list, id_allocator_.GetCurrentLocalSurfaceId());
     EXPECT_TRUE(scheduler_->damaged());
 
     scheduler_->reset_swapped_for_test();
@@ -375,9 +367,7 @@ TEST_F(DisplayTest, DisplayDamaged) {
 
     pass_list.push_back(std::move(pass));
     ResetDamageForTest();
-    SubmitCompositorFrame(
-        &pass_list,
-        id_allocator_.GetCurrentLocalSurfaceIdAllocation().local_surface_id());
+    SubmitCompositorFrame(&pass_list, id_allocator_.GetCurrentLocalSurfaceId());
     EXPECT_TRUE(scheduler_->damaged());
 
     scheduler_->reset_swapped_for_test();
@@ -390,9 +380,7 @@ TEST_F(DisplayTest, DisplayDamaged) {
   // result in latency info being stored for the next swap.
   {
     id_allocator_.GenerateId();
-    display_->SetLocalSurfaceId(
-        id_allocator_.GetCurrentLocalSurfaceIdAllocation().local_surface_id(),
-        1.f);
+    display_->SetLocalSurfaceId(id_allocator_.GetCurrentLocalSurfaceId(), 1.f);
 
     ResetDamageForTest();
 
@@ -403,9 +391,8 @@ TEST_F(DisplayTest, DisplayDamaged) {
                                 .AddLatencyInfo(ui::LatencyInfo())
                                 .Build();
 
-    support_->SubmitCompositorFrame(
-        id_allocator_.GetCurrentLocalSurfaceIdAllocation().local_surface_id(),
-        std::move(frame));
+    support_->SubmitCompositorFrame(id_allocator_.GetCurrentLocalSurfaceId(),
+                                    std::move(frame));
     EXPECT_TRUE(scheduler_->damaged());
 
     scheduler_->reset_swapped_for_test();
@@ -422,15 +409,11 @@ TEST_F(DisplayTest, DisplayDamaged) {
     pass->id = CompositorRenderPassId{1u};
 
     id_allocator_.GenerateId();
-    display_->SetLocalSurfaceId(
-        id_allocator_.GetCurrentLocalSurfaceIdAllocation().local_surface_id(),
-        1.f);
+    display_->SetLocalSurfaceId(id_allocator_.GetCurrentLocalSurfaceId(), 1.f);
 
     pass_list.push_back(std::move(pass));
     ResetDamageForTest();
-    SubmitCompositorFrame(
-        &pass_list,
-        id_allocator_.GetCurrentLocalSurfaceIdAllocation().local_surface_id());
+    SubmitCompositorFrame(&pass_list, id_allocator_.GetCurrentLocalSurfaceId());
     EXPECT_TRUE(scheduler_->damaged());
 
     scheduler_->reset_swapped_for_test();
@@ -458,9 +441,7 @@ TEST_F(DisplayTest, DisplayDamaged) {
 
     pass_list.push_back(std::move(pass));
     ResetDamageForTest();
-    SubmitCompositorFrame(
-        &pass_list,
-        id_allocator_.GetCurrentLocalSurfaceIdAllocation().local_surface_id());
+    SubmitCompositorFrame(&pass_list, id_allocator_.GetCurrentLocalSurfaceId());
     EXPECT_TRUE(scheduler_->damaged());
 
     scheduler_->reset_swapped_for_test();
@@ -484,9 +465,8 @@ TEST_F(DisplayTest, DisplayDamaged) {
                                 .Build();
     frame.metadata.latency_info.push_back(ui::LatencyInfo());
 
-    support_->SubmitCompositorFrame(
-        id_allocator_.GetCurrentLocalSurfaceIdAllocation().local_surface_id(),
-        std::move(frame));
+    support_->SubmitCompositorFrame(id_allocator_.GetCurrentLocalSurfaceId(),
+                                    std::move(frame));
     EXPECT_TRUE(scheduler_->damaged());
 
     scheduler_->reset_swapped_for_test();
@@ -499,9 +479,7 @@ TEST_F(DisplayTest, DisplayDamaged) {
   // previous size.
   {
     id_allocator_.GenerateId();
-    display_->SetLocalSurfaceId(
-        id_allocator_.GetCurrentLocalSurfaceIdAllocation().local_surface_id(),
-        1.f);
+    display_->SetLocalSurfaceId(id_allocator_.GetCurrentLocalSurfaceId(), 1.f);
     scheduler_->reset_swapped_for_test();
     display_->Resize(gfx::Size(200, 200));
     EXPECT_FALSE(scheduler_->swapped());
@@ -514,9 +492,8 @@ TEST_F(DisplayTest, DisplayDamaged) {
                                 .AddRenderPass(kOutputRect, kDamageRect)
                                 .Build();
 
-    support_->SubmitCompositorFrame(
-        id_allocator_.GetCurrentLocalSurfaceIdAllocation().local_surface_id(),
-        std::move(frame));
+    support_->SubmitCompositorFrame(id_allocator_.GetCurrentLocalSurfaceId(),
+                                    std::move(frame));
     EXPECT_TRUE(scheduler_->damaged());
 
     scheduler_->reset_swapped_for_test();
@@ -530,9 +507,7 @@ TEST_F(DisplayTest, DisplayDamaged) {
   // Surface that's damaged completely should be resized and swapped.
   {
     id_allocator_.GenerateId();
-    display_->SetLocalSurfaceId(
-        id_allocator_.GetCurrentLocalSurfaceIdAllocation().local_surface_id(),
-        1.0f);
+    display_->SetLocalSurfaceId(id_allocator_.GetCurrentLocalSurfaceId(), 1.0f);
     pass = CompositorRenderPass::Create();
     pass->output_rect = gfx::Rect(0, 0, 99, 99);
     pass->damage_rect = gfx::Rect(0, 0, 99, 99);
@@ -540,9 +515,7 @@ TEST_F(DisplayTest, DisplayDamaged) {
 
     pass_list.push_back(std::move(pass));
     ResetDamageForTest();
-    SubmitCompositorFrame(
-        &pass_list,
-        id_allocator_.GetCurrentLocalSurfaceIdAllocation().local_surface_id());
+    SubmitCompositorFrame(&pass_list, id_allocator_.GetCurrentLocalSurfaceId());
     EXPECT_TRUE(scheduler_->damaged());
 
     scheduler_->reset_swapped_for_test();
@@ -565,8 +538,7 @@ void DisplayTest::LatencyInfoCapTest(bool over_capacity) {
   display_->Initialize(&client, manager_.surface_manager());
 
   id_allocator_.GenerateId();
-  LocalSurfaceId local_surface_id(
-      id_allocator_.GetCurrentLocalSurfaceIdAllocation().local_surface_id());
+  LocalSurfaceId local_surface_id(id_allocator_.GetCurrentLocalSurfaceId());
   display_->SetLocalSurfaceId(local_surface_id, 1.f);
 
   display_->Resize(gfx::Size(100, 100));
@@ -630,11 +602,9 @@ TEST_F(DisplayTest, OverLatencyInfoCap) {
 
 TEST_F(DisplayTest, DisableSwapUntilResize) {
   id_allocator_.GenerateId();
-  LocalSurfaceId local_surface_id1(
-      id_allocator_.GetCurrentLocalSurfaceIdAllocation().local_surface_id());
+  LocalSurfaceId local_surface_id1(id_allocator_.GetCurrentLocalSurfaceId());
   id_allocator_.GenerateId();
-  LocalSurfaceId local_surface_id2(
-      id_allocator_.GetCurrentLocalSurfaceIdAllocation().local_surface_id());
+  LocalSurfaceId local_surface_id2(id_allocator_.GetCurrentLocalSurfaceId());
 
   RendererSettings settings;
   settings.partial_swap_enabled = true;
@@ -708,7 +678,7 @@ TEST_F(DisplayTest, BackdropFilterTest) {
   settings.partial_swap_enabled = true;
   id_allocator_.GenerateId();
   const LocalSurfaceId local_surface_id(
-      id_allocator_.GetCurrentLocalSurfaceIdAllocation().local_surface_id());
+      id_allocator_.GetCurrentLocalSurfaceId());
 
   // Set up first display.
   SetUpSoftwareDisplay(settings);
@@ -881,8 +851,7 @@ TEST_F(DisplayTest, ContextLossInformsClient) {
 TEST_F(DisplayTest, CompositorFrameDamagesCorrectDisplay) {
   RendererSettings settings;
   id_allocator_.GenerateId();
-  LocalSurfaceId local_surface_id(
-      id_allocator_.GetCurrentLocalSurfaceIdAllocation().local_surface_id());
+  LocalSurfaceId local_surface_id(id_allocator_.GetCurrentLocalSurfaceId());
 
   // Set up first display.
   SetUpSoftwareDisplay(settings);
@@ -3500,7 +3469,7 @@ TEST_F(DisplayTest, CompositorFrameWithPresentationToken) {
   RendererSettings settings;
   id_allocator_.GenerateId();
   const LocalSurfaceId local_surface_id(
-      id_allocator_.GetCurrentLocalSurfaceIdAllocation().local_surface_id());
+      id_allocator_.GetCurrentLocalSurfaceId());
 
   // Set up first display.
   SetUpSoftwareDisplay(settings);
@@ -3613,9 +3582,7 @@ TEST_F(DisplayTest, BeginFrameThrottling) {
 
   StubDisplayClient client;
   display_->Initialize(&client, manager_.surface_manager());
-  display_->SetLocalSurfaceId(
-      id_allocator_.GetCurrentLocalSurfaceIdAllocation().local_surface_id(),
-      1.f);
+  display_->SetLocalSurfaceId(id_allocator_.GetCurrentLocalSurfaceId(), 1.f);
   support_->SetNeedsBeginFrame(true);
 
   // Helper fn to submit a CF.
@@ -3627,9 +3594,7 @@ TEST_F(DisplayTest, BeginFrameThrottling) {
     pass->id = CompositorRenderPassId{1u};
     pass_list.push_back(std::move(pass));
 
-    SubmitCompositorFrame(
-        &pass_list,
-        id_allocator_.GetCurrentLocalSurfaceIdAllocation().local_surface_id());
+    SubmitCompositorFrame(&pass_list, id_allocator_.GetCurrentLocalSurfaceId());
   };
 
   // Submit kUndrawnFrameLimit+1 frames. BeginFrames should be throttled only
@@ -3688,9 +3653,7 @@ TEST_F(DisplayTest, BeginFrameThrottlingMultipleSurfaces) {
 
   StubDisplayClient client;
   display_->Initialize(&client, manager_.surface_manager());
-  display_->SetLocalSurfaceId(
-      id_allocator_.GetCurrentLocalSurfaceIdAllocation().local_surface_id(),
-      1.f);
+  display_->SetLocalSurfaceId(id_allocator_.GetCurrentLocalSurfaceId(), 1.f);
   support_->SetNeedsBeginFrame(true);
 
   // Helper fn to submit a CF.
@@ -3702,9 +3665,7 @@ TEST_F(DisplayTest, BeginFrameThrottlingMultipleSurfaces) {
     pass->id = CompositorRenderPassId{1u};
     pass_list.push_back(std::move(pass));
 
-    SubmitCompositorFrame(
-        &pass_list,
-        id_allocator_.GetCurrentLocalSurfaceIdAllocation().local_surface_id());
+    SubmitCompositorFrame(&pass_list, id_allocator_.GetCurrentLocalSurfaceId());
   };
 
   // Submit kUndrawnFrameLimit frames. BeginFrames should be throttled only
@@ -3738,9 +3699,7 @@ TEST_F(DisplayTest, BeginFrameThrottlingMultipleSurfaces) {
 
   // Now the last surface is drawn. This should unblock us to submit
   // kUndrawnFrameLimit+1 frames again.
-  display_->SetLocalSurfaceId(
-      id_allocator_.GetCurrentLocalSurfaceIdAllocation().local_surface_id(),
-      1.f);
+  display_->SetLocalSurfaceId(id_allocator_.GetCurrentLocalSurfaceId(), 1.f);
   display_->DrawAndSwap(base::TimeTicks::Now());
   id_allocator_.GenerateId();
   for (uint32_t i = 0; i < CompositorFrameSinkSupport::kUndrawnFrameLimit + 1;
@@ -3763,9 +3722,7 @@ TEST_F(DisplayTest, DontThrottleWhenParentBlocked) {
 
   StubDisplayClient client;
   display_->Initialize(&client, manager_.surface_manager());
-  display_->SetLocalSurfaceId(
-      id_allocator_.GetCurrentLocalSurfaceIdAllocation().local_surface_id(),
-      1.f);
+  display_->SetLocalSurfaceId(id_allocator_.GetCurrentLocalSurfaceId(), 1.f);
   support_->SetNeedsBeginFrame(true);
 
   // Create frame sink for a sub surface.
@@ -3810,9 +3767,8 @@ TEST_F(DisplayTest, DontThrottleWhenParentBlocked) {
                                      std::numeric_limits<uint32_t>::max(),
                                      base::TimeDelta::FromSeconds(1), false))
           .Build();
-  support_->SubmitCompositorFrame(
-      id_allocator_.GetCurrentLocalSurfaceIdAllocation().local_surface_id(),
-      std::move(frame));
+  support_->SubmitCompositorFrame(id_allocator_.GetCurrentLocalSurfaceId(),
+                                  std::move(frame));
 
   for (uint32_t i = 0; i < CompositorFrameSinkSupport::kUndrawnFrameLimit * 3;
        ++i) {
@@ -3844,7 +3800,7 @@ TEST_F(DisplayTest, InvalidPresentationTimestamps) {
   RendererSettings settings;
   id_allocator_.GenerateId();
   const LocalSurfaceId local_surface_id(
-      id_allocator_.GetCurrentLocalSurfaceIdAllocation().local_surface_id());
+      id_allocator_.GetCurrentLocalSurfaceId());
 
   // Set up first display.
   SetUpSoftwareDisplay(settings);
@@ -4288,9 +4244,7 @@ TEST_F(DisplayTest, DrawOcclusionSplitDeviceScaleFactorFractional) {
 
   StubDisplayClient client;
   display_->Initialize(&client, manager_.surface_manager());
-  display_->SetLocalSurfaceId(
-      id_allocator_.GetCurrentLocalSurfaceIdAllocation().local_surface_id(),
-      1.5f);
+  display_->SetLocalSurfaceId(id_allocator_.GetCurrentLocalSurfaceId(), 1.5f);
   display_->Resize(gfx::Size(1000, 1000));
 
   AggregatedFrame frame = MakeDefaultAggregatedFrame();
@@ -4452,8 +4406,7 @@ TEST_F(DisplayTest, DisplayTransformHint) {
   display_->Initialize(&client, manager_.surface_manager());
 
   id_allocator_.GenerateId();
-  LocalSurfaceId local_surface_id(
-      id_allocator_.GetCurrentLocalSurfaceIdAllocation().local_surface_id());
+  LocalSurfaceId local_surface_id(id_allocator_.GetCurrentLocalSurfaceId());
   display_->SetLocalSurfaceId(local_surface_id, 1.f);
 
   constexpr gfx::Size kSize = gfx::Size(100, 80);
@@ -4517,9 +4470,7 @@ TEST_F(DisplayTest, DisplaySizeMismatch) {
   display_->Initialize(&client, manager_.surface_manager());
 
   id_allocator_.GenerateId();
-  display_->SetLocalSurfaceId(
-      id_allocator_.GetCurrentLocalSurfaceIdAllocation().local_surface_id(),
-      1.f);
+  display_->SetLocalSurfaceId(id_allocator_.GetCurrentLocalSurfaceId(), 1.f);
   display_->Resize(gfx::Size(100, 100));
 
   // Pass has copy output request but wrong size so it should be drawn, but not
@@ -4539,9 +4490,7 @@ TEST_F(DisplayTest, DisplaySizeMismatch) {
     CompositorRenderPassList pass_list;
     pass_list.push_back(std::move(pass));
 
-    SubmitCompositorFrame(
-        &pass_list,
-        id_allocator_.GetCurrentLocalSurfaceIdAllocation().local_surface_id());
+    SubmitCompositorFrame(&pass_list, id_allocator_.GetCurrentLocalSurfaceId());
     EXPECT_TRUE(scheduler_->damaged());
 
     display_->DrawAndSwap(base::TimeTicks::Now());

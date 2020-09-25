@@ -1221,7 +1221,6 @@ void WebMediaPlayerMS::ActivateSurfaceLayerForVideo() {
       *compositor_task_runner_, FROM_HERE,
       CrossThreadBindOnce(&WebMediaPlayerMSCompositor::EnableSubmission,
                           compositor_, bridge_->GetSurfaceId(),
-                          bridge_->GetLocalSurfaceIdAllocationTime(),
                           video_transformation_, IsInPictureInPicture()));
 
   // If the element is already in Picture-in-Picture mode, it means that it

@@ -76,8 +76,8 @@ class RenderWidgetInitialSizeTest : public RenderWidgetTest {
     initial_visual_properties.new_size = initial_size_;
     initial_visual_properties.compositor_viewport_pixel_rect =
         gfx::Rect(initial_size_);
-    initial_visual_properties.local_surface_id_allocation =
-        local_surface_id_allocator_.GetCurrentLocalSurfaceIdAllocation();
+    initial_visual_properties.local_surface_id =
+        local_surface_id_allocator_.GetCurrentLocalSurfaceId();
     return initial_visual_properties;
   }
 

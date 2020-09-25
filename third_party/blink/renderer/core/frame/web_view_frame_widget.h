@@ -146,7 +146,7 @@ class CORE_EXPORT WebViewFrameWidget : public WebFrameWidgetBase {
   void Trace(Visitor*) const override;
 
   void UpdateSurfaceAndCompositorRect(
-      const viz::LocalSurfaceIdAllocation& new_local_surface_id_allocation,
+      const viz::LocalSurfaceId& new_local_surface_id,
       const gfx::Rect& compositor_viewport_pixel_rect);
   void SetIsNestedMainFrameWidget(bool is_nested);
   void DidAutoResize(const gfx::Size& size);

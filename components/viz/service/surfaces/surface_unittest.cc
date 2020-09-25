@@ -68,13 +68,10 @@ TEST(SurfaceTest, SurfaceIds) {
   for (size_t i = 0; i < 3; ++i) {
     ParentLocalSurfaceIdAllocator allocator;
     allocator.GenerateId();
-    LocalSurfaceIdAllocation id1 =
-        allocator.GetCurrentLocalSurfaceIdAllocation();
+    LocalSurfaceId id1 = allocator.GetCurrentLocalSurfaceId();
     allocator.GenerateId();
-    LocalSurfaceIdAllocation id2 =
-        allocator.GetCurrentLocalSurfaceIdAllocation();
+    LocalSurfaceId id2 = allocator.GetCurrentLocalSurfaceId();
     EXPECT_NE(id1, id2);
-    EXPECT_NE(id1.local_surface_id(), id2.local_surface_id());
   }
 }
 

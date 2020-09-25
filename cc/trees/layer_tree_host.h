@@ -53,7 +53,7 @@
 #include "cc/trees/viewport_layers.h"
 #include "components/viz/common/delegated_ink_metadata.h"
 #include "components/viz/common/resources/resource_format.h"
-#include "components/viz/common/surfaces/local_surface_id_allocation.h"
+#include "components/viz/common/surfaces/local_surface_id.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/overlay_transform.h"
@@ -402,10 +402,10 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   // to prioritize lower power/CPU use.
   void SetEnableFrameRateThrottling(bool enable_frame_rate_throttling);
 
-  void SetViewportRectAndScale(const gfx::Rect& device_viewport_rect,
-                               float device_scale_factor,
-                               const viz::LocalSurfaceIdAllocation&
-                                   local_surface_id_allocation_from_parent);
+  void SetViewportRectAndScale(
+      const gfx::Rect& device_viewport_rect,
+      float device_scale_factor,
+      const viz::LocalSurfaceId& local_surface_id_from_parent);
 
   void SetViewportVisibleRect(const gfx::Rect& visible_rect);
 
@@ -452,13 +452,11 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
 
   // If this LayerTreeHost needs a valid viz::LocalSurfaceId then commits will
   // be deferred until a valid viz::LocalSurfaceId is provided.
-  void SetLocalSurfaceIdAllocationFromParent(
-      const viz::LocalSurfaceIdAllocation&
-          local_surface_id_allocation_from_parent);
+  void SetLocalSurfaceIdFromParent(
+      const viz::LocalSurfaceId& local_surface_id_from_parent);
 
-  const viz::LocalSurfaceIdAllocation& local_surface_id_allocation_from_parent()
-      const {
-    return local_surface_id_allocation_from_parent_;
+  const viz::LocalSurfaceId& local_surface_id_from_parent() const {
+    return local_surface_id_from_parent_;
   }
 
   // Requests the allocation of a new LocalSurfaceId on the compositor thread.
@@ -856,7 +854,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   gfx::DisplayColorSpaces display_color_spaces_;
 
   bool clear_caches_on_next_commit_ = false;
-  viz::LocalSurfaceIdAllocation local_surface_id_allocation_from_parent_;
+  viz::LocalSurfaceId local_surface_id_from_parent_;
   bool new_local_surface_id_request_ = false;
   uint32_t defer_main_frame_update_count_ = 0;
 

@@ -421,10 +421,7 @@ TEST_F(WindowTest, ContainsMouse) {
 
 // Tests that the root window gets a valid LocalSurfaceId.
 TEST_F(WindowTest, RootWindowHasValidLocalSurfaceId) {
-  EXPECT_TRUE(root_window()
-                  ->GetLocalSurfaceIdAllocation()
-                  .local_surface_id()
-                  .is_valid());
+  EXPECT_TRUE(root_window()->GetLocalSurfaceId().is_valid());
 }
 
 TEST_F(WindowTest, WindowEmbeddingClientHasValidLocalSurfaceId) {
@@ -432,8 +429,7 @@ TEST_F(WindowTest, WindowEmbeddingClientHasValidLocalSurfaceId) {
       SK_ColorWHITE, 1, gfx::Rect(10, 10, 300, 200), root_window()));
   test::WindowTestApi(window.get()).DisableFrameSinkRegistration();
   window->SetEmbedFrameSinkId(viz::FrameSinkId(0, 1));
-  EXPECT_TRUE(
-      window->GetLocalSurfaceIdAllocation().local_surface_id().is_valid());
+  EXPECT_TRUE(window->GetLocalSurfaceId().is_valid());
 }
 
 // Test Window::ConvertPointToWindow() with transform to root_window.
@@ -3266,37 +3262,32 @@ TEST_F(WindowTest, LocalSurfaceIdChanges) {
 
   std::unique_ptr<cc::LayerTreeFrameSink> frame_sink(
       window.CreateLayerTreeFrameSink());
-  viz::LocalSurfaceId local_surface_id1 =
-      window.GetLocalSurfaceIdAllocation().local_surface_id();
+  viz::LocalSurfaceId local_surface_id1 = window.GetLocalSurfaceId();
   EXPECT_NE(nullptr, frame_sink.get());
   EXPECT_TRUE(local_surface_id1.is_valid());
 
   // Resize to 0x0 to make sure the correct window size is stored before
   // creating the frame sink.
   window.SetBounds(gfx::Rect(0, 0));
-  viz::LocalSurfaceId local_surface_id2 =
-      window.GetLocalSurfaceIdAllocation().local_surface_id();
+  viz::LocalSurfaceId local_surface_id2 = window.GetLocalSurfaceId();
   EXPECT_TRUE(local_surface_id2.is_valid());
   EXPECT_NE(local_surface_id1, local_surface_id2);
 
   window.SetBounds(gfx::Rect(300, 300));
-  viz::LocalSurfaceId local_surface_id3 =
-      window.GetLocalSurfaceIdAllocation().local_surface_id();
+  viz::LocalSurfaceId local_surface_id3 = window.GetLocalSurfaceId();
   EXPECT_TRUE(local_surface_id3.is_valid());
   EXPECT_NE(local_surface_id1, local_surface_id3);
   EXPECT_NE(local_surface_id2, local_surface_id3);
 
   window.OnDeviceScaleFactorChanged(1.0f, 3.0f);
-  viz::LocalSurfaceId local_surface_id4 =
-      window.GetLocalSurfaceIdAllocation().local_surface_id();
+  viz::LocalSurfaceId local_surface_id4 = window.GetLocalSurfaceId();
   EXPECT_TRUE(local_surface_id4.is_valid());
   EXPECT_NE(local_surface_id1, local_surface_id4);
   EXPECT_NE(local_surface_id2, local_surface_id4);
   EXPECT_NE(local_surface_id3, local_surface_id4);
 
   window.RecreateLayer();
-  viz::LocalSurfaceId local_surface_id5 =
-      window.GetLocalSurfaceIdAllocation().local_surface_id();
+  viz::LocalSurfaceId local_surface_id5 = window.GetLocalSurfaceId();
   EXPECT_TRUE(local_surface_id5.is_valid());
   EXPECT_NE(local_surface_id1, local_surface_id5);
   EXPECT_NE(local_surface_id2, local_surface_id5);
@@ -3304,8 +3295,7 @@ TEST_F(WindowTest, LocalSurfaceIdChanges) {
   EXPECT_NE(local_surface_id4, local_surface_id5);
 
   window.AllocateLocalSurfaceId();
-  viz::LocalSurfaceId local_surface_id6 =
-      window.GetLocalSurfaceIdAllocation().local_surface_id();
+  viz::LocalSurfaceId local_surface_id6 = window.GetLocalSurfaceId();
   EXPECT_TRUE(local_surface_id6.is_valid());
   EXPECT_NE(local_surface_id1, local_surface_id6);
   EXPECT_NE(local_surface_id2, local_surface_id6);

@@ -364,11 +364,9 @@ TEST_F(FrameSinkManagerTest, EvictSurfaces) {
   ParentLocalSurfaceIdAllocator allocator1;
   ParentLocalSurfaceIdAllocator allocator2;
   allocator1.GenerateId();
-  LocalSurfaceId local_surface_id1 =
-      allocator1.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+  LocalSurfaceId local_surface_id1 = allocator1.GetCurrentLocalSurfaceId();
   allocator2.GenerateId();
-  LocalSurfaceId local_surface_id2 =
-      allocator2.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+  LocalSurfaceId local_surface_id2 = allocator2.GetCurrentLocalSurfaceId();
   SurfaceId surface_id1(kFrameSinkIdA, local_surface_id1);
   SurfaceId surface_id2(kFrameSinkIdB, local_surface_id2);
 

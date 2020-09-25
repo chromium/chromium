@@ -4685,7 +4685,7 @@ TEST_F(ViewLayerTest, SnapLayerToPixel) {
 
   const gfx::Size& size = GetRootLayer()->GetCompositor()->size();
   GetRootLayer()->GetCompositor()->SetScaleAndSize(
-      1.25f, size, allocator.GetCurrentLocalSurfaceIdAllocation());
+      1.25f, size, allocator.GetCurrentLocalSurfaceId());
 
   v11->SetBoundsRect(gfx::Rect(1, 1, 10, 10));
   v1->SetBoundsRect(gfx::Rect(1, 1, 10, 10));
@@ -4700,7 +4700,7 @@ TEST_F(ViewLayerTest, SnapLayerToPixel) {
 
   // DSF change should get propagated and update offsets.
   GetRootLayer()->GetCompositor()->SetScaleAndSize(
-      1.5f, size, allocator.GetCurrentLocalSurfaceIdAllocation());
+      1.5f, size, allocator.GetCurrentLocalSurfaceId());
   EXPECT_EQ("0.33 0.33", ToString(v1->layer()->GetSubpixelOffset()));
   EXPECT_EQ("0.33 0.33", ToString(v11->layer()->GetSubpixelOffset()));
 
@@ -4714,15 +4714,15 @@ TEST_F(ViewLayerTest, SnapLayerToPixel) {
 
   // Setting integral DSF should reset the offset.
   GetRootLayer()->GetCompositor()->SetScaleAndSize(
-      2.0f, size, allocator.GetCurrentLocalSurfaceIdAllocation());
+      2.0f, size, allocator.GetCurrentLocalSurfaceId());
   EXPECT_EQ("0.00 0.00", ToString(v11->layer()->GetSubpixelOffset()));
 
   // DSF reset followed by DSF change should update the offset.
   GetRootLayer()->GetCompositor()->SetScaleAndSize(
-      1.0f, size, allocator.GetCurrentLocalSurfaceIdAllocation());
+      1.0f, size, allocator.GetCurrentLocalSurfaceId());
   EXPECT_EQ("0.00 0.00", ToString(v11->layer()->GetSubpixelOffset()));
   GetRootLayer()->GetCompositor()->SetScaleAndSize(
-      1.5f, size, allocator.GetCurrentLocalSurfaceIdAllocation());
+      1.5f, size, allocator.GetCurrentLocalSurfaceId());
   EXPECT_EQ("0.33 0.33", ToString(v11->layer()->GetSubpixelOffset()));
 }
 
@@ -4768,7 +4768,7 @@ TEST_F(ViewLayerTest, LayerBeneathAtFractionalScale) {
   allocator.GenerateId();
   const gfx::Size& size = GetRootLayer()->GetCompositor()->size();
   GetRootLayer()->GetCompositor()->SetScaleAndSize(
-      device_scale, size, allocator.GetCurrentLocalSurfaceIdAllocation());
+      device_scale, size, allocator.GetCurrentLocalSurfaceId());
 
   View* view = widget()->SetContentsView(std::make_unique<View>());
 
@@ -5063,7 +5063,7 @@ TEST_F(ViewLayerPixelCanvasTest, SnapLayerToPixel) {
 
   const gfx::Size& size = GetRootLayer()->GetCompositor()->size();
   GetRootLayer()->GetCompositor()->SetScaleAndSize(
-      1.6f, size, allocator.GetCurrentLocalSurfaceIdAllocation());
+      1.6f, size, allocator.GetCurrentLocalSurfaceId());
 
   v3->SetBoundsRect(gfx::Rect(14, 13, 13, 5));
   v2->SetBoundsRect(gfx::Rect(7, 7, 50, 50));
@@ -5079,7 +5079,7 @@ TEST_F(ViewLayerPixelCanvasTest, SnapLayerToPixel) {
 
   // DSF change should get propagated and update offsets.
   GetRootLayer()->GetCompositor()->SetScaleAndSize(
-      1.5f, size, allocator.GetCurrentLocalSurfaceIdAllocation());
+      1.5f, size, allocator.GetCurrentLocalSurfaceId());
 
   EXPECT_EQ("0.33 0.33", ToString(v1->layer()->GetSubpixelOffset()));
   EXPECT_EQ("0.33 0.67", ToString(v3->layer()->GetSubpixelOffset()));
@@ -5089,7 +5089,7 @@ TEST_F(ViewLayerPixelCanvasTest, SnapLayerToPixel) {
   v1->SetPaintToLayer();
 
   GetRootLayer()->GetCompositor()->SetScaleAndSize(
-      1.33f, size, allocator.GetCurrentLocalSurfaceIdAllocation());
+      1.33f, size, allocator.GetCurrentLocalSurfaceId());
 
   EXPECT_EQ("0.02 0.02", ToString(v1->layer()->GetSubpixelOffset()));
   EXPECT_EQ("0.05 -0.45", ToString(v3->layer()->GetSubpixelOffset()));
@@ -5106,15 +5106,15 @@ TEST_F(ViewLayerPixelCanvasTest, SnapLayerToPixel) {
 
   // Setting integral DSF should reset the offset.
   GetRootLayer()->GetCompositor()->SetScaleAndSize(
-      2.0f, size, allocator.GetCurrentLocalSurfaceIdAllocation());
+      2.0f, size, allocator.GetCurrentLocalSurfaceId());
   EXPECT_EQ("0.00 0.00", ToString(v3->layer()->GetSubpixelOffset()));
 
   // DSF reset followed by DSF change should update the offset.
   GetRootLayer()->GetCompositor()->SetScaleAndSize(
-      1.0f, size, allocator.GetCurrentLocalSurfaceIdAllocation());
+      1.0f, size, allocator.GetCurrentLocalSurfaceId());
   EXPECT_EQ("0.00 0.00", ToString(v3->layer()->GetSubpixelOffset()));
   GetRootLayer()->GetCompositor()->SetScaleAndSize(
-      1.33f, size, allocator.GetCurrentLocalSurfaceIdAllocation());
+      1.33f, size, allocator.GetCurrentLocalSurfaceId());
   EXPECT_EQ("0.06 -0.44", ToString(v3->layer()->GetSubpixelOffset()));
 }
 
@@ -5125,7 +5125,7 @@ TEST_F(ViewLayerPixelCanvasTest, LayerBeneathOnPixelCanvas) {
   allocator.GenerateId();
   const gfx::Size& size = GetRootLayer()->GetCompositor()->size();
   GetRootLayer()->GetCompositor()->SetScaleAndSize(
-      device_scale, size, allocator.GetCurrentLocalSurfaceIdAllocation());
+      device_scale, size, allocator.GetCurrentLocalSurfaceId());
 
   View* view = widget()->SetContentsView(std::make_unique<View>());
 

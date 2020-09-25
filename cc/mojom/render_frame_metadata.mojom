@@ -5,7 +5,7 @@
 module cc.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
-import "services/viz/public/mojom/compositing/local_surface_id_allocation.mojom";
+import "services/viz/public/mojom/compositing/local_surface_id.mojom";
 import "services/viz/public/mojom/compositing/selection.mojom";
 import "services/viz/public/mojom/compositing/vertical_scroll_direction.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
@@ -47,8 +47,8 @@ struct RenderFrameMetadata {
   // The size of the viewport used to generate a CompositorFrame.
   gfx.mojom.Size viewport_size_in_pixels;
 
-  // The last viz::LocalSurfaceIdAllocation used to submit a CompositorFrame.
-  viz.mojom.LocalSurfaceIdAllocation? local_surface_id_allocation;
+  // The last viz::LocalSurfaceId used to submit a CompositorFrame.
+  viz.mojom.LocalSurfaceId? local_surface_id;
 
   // The page scale factor used on the content.
   float page_scale_factor;

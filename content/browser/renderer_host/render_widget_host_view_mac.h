@@ -183,8 +183,7 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
       override;
 
   const viz::FrameSinkId& GetFrameSinkId() const override;
-  const viz::LocalSurfaceIdAllocation& GetLocalSurfaceIdAllocation()
-      const override;
+  const viz::LocalSurfaceId& GetLocalSurfaceId() const override;
   // Returns true when we can hit test input events with location data to be
   // sent to the targeted RenderWidgetHost.
   bool ShouldRouteEvents() const;

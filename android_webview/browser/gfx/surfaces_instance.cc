@@ -173,18 +173,16 @@ void SurfacesInstance::DrawAndSwap(gfx::Size viewport,
   frame.metadata.referenced_surfaces = GetChildIdsRanges();
   frame.metadata.frame_token = ++next_frame_token_;
 
-  if (!root_id_allocation_.IsValid() || viewport != surface_size_ ||
+  if (!root_local_surface_id_.is_valid() || viewport != surface_size_ ||
       device_scale_factor != device_scale_factor_) {
     parent_local_surface_id_allocator_->GenerateId();
-    root_id_allocation_ = parent_local_surface_id_allocator_
-                              ->GetCurrentLocalSurfaceIdAllocation();
+    root_local_surface_id_ =
+        parent_local_surface_id_allocator_->GetCurrentLocalSurfaceId();
     surface_size_ = viewport;
     device_scale_factor_ = device_scale_factor;
-    display_->SetLocalSurfaceId(root_id_allocation_.local_surface_id(),
-                                device_scale_factor);
+    display_->SetLocalSurfaceId(root_local_surface_id_, device_scale_factor);
   }
-  support_->SubmitCompositorFrame(root_id_allocation_.local_surface_id(),
-                                  std::move(frame));
+  support_->SubmitCompositorFrame(root_local_surface_id_, std::move(frame));
 
   if (output_surface_provider_.shared_context_state()) {
     // GL state could be changed across frames, so we need reset GrContext.
@@ -210,7 +208,7 @@ void SurfacesInstance::DrawAndSwap(gfx::Size viewport,
 void SurfacesInstance::AddChildId(const viz::SurfaceId& child_id) {
   DCHECK(!base::Contains(child_ids_, child_id));
   child_ids_.push_back(child_id);
-  if (root_id_allocation_.IsValid())
+  if (root_local_surface_id_.is_valid())
     SetSolidColorRootFrame();
 }
 
@@ -218,7 +216,7 @@ void SurfacesInstance::RemoveChildId(const viz::SurfaceId& child_id) {
   auto itr = std::find(child_ids_.begin(), child_ids_.end(), child_id);
   DCHECK(itr != child_ids_.end());
   child_ids_.erase(itr);
-  if (root_id_allocation_.IsValid())
+  if (root_local_surface_id_.is_valid())
     SetSolidColorRootFrame();
 }
 
@@ -246,8 +244,7 @@ void SurfacesInstance::SetSolidColorRootFrame() {
   frame.metadata.referenced_surfaces = GetChildIdsRanges();
   frame.metadata.device_scale_factor = device_scale_factor_;
   frame.metadata.frame_token = ++next_frame_token_;
-  support_->SubmitCompositorFrame(root_id_allocation_.local_surface_id(),
-                                  std::move(frame));
+  support_->SubmitCompositorFrame(root_local_surface_id_, std::move(frame));
 }
 
 void SurfacesInstance::DidReceiveCompositorFrameAck(

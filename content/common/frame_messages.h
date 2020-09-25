@@ -210,7 +210,7 @@ IPC_STRUCT_TRAITS_BEGIN(blink::FrameVisualProperties)
   IPC_STRUCT_TRAITS_MEMBER(screen_space_rect)
   IPC_STRUCT_TRAITS_MEMBER(local_frame_size)
   IPC_STRUCT_TRAITS_MEMBER(compositor_viewport)
-  IPC_STRUCT_TRAITS_MEMBER(local_surface_id_allocation)
+  IPC_STRUCT_TRAITS_MEMBER(local_surface_id)
 IPC_STRUCT_TRAITS_END()
 
 IPC_STRUCT_TRAITS_BEGIN(blink::FramePolicy)

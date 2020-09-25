@@ -25,7 +25,6 @@ mojom("mojom") {
     "compositing/frame_sink_id.mojom",
     "compositing/frame_timing_details.mojom",
     "compositing/local_surface_id.mojom",
-    "compositing/local_surface_id_allocation.mojom",
     "compositing/paint_filter.mojom",
     "compositing/quads.mojom",
     "compositing/resource_settings.mojom",
@@ -131,16 +130,6 @@ mojom("mojom") {
         "//components/viz/common",
         "//ui/gfx/geometry/mojom",
       ]
-    },
-    {
-      types = [
-        {
-          mojom = "viz.mojom.LocalSurfaceIdAllocation"
-          cpp = "::viz::LocalSurfaceIdAllocation"
-        },
-      ]
-      traits_headers = [ "//services/viz/public/cpp/compositing/local_surface_id_allocation_mojom_traits.h" ]
-      traits_public_deps = [ "//components/viz/common" ]
     },
     {
       types = [

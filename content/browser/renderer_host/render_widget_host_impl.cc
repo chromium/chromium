@@ -1001,10 +1001,9 @@ blink::VisualProperties RenderWidgetHostImpl::GetVisualProperties() {
 
   // TODO(ccameron): GetLocalSurfaceId is not synchronized with the device
   // scale factor of the surface. Fix this.
-  viz::LocalSurfaceIdAllocation local_surface_id_allocation =
-      view_->GetLocalSurfaceIdAllocation();
-  if (local_surface_id_allocation.IsValid()) {
-    visual_properties.local_surface_id_allocation = local_surface_id_allocation;
+  viz::LocalSurfaceId local_surface_id = view_->GetLocalSurfaceId();
+  if (local_surface_id.is_valid()) {
+    visual_properties.local_surface_id = local_surface_id;
   }
 
   if (screen_orientation_type_for_testing_) {
@@ -1060,7 +1059,7 @@ bool RenderWidgetHostImpl::SynchronizeVisualProperties(
     return false;
 
   // Skip if the |delegate_| has already been detached because it's web contents
-  // is being deleted, or if LocalSurfaceIdAllocation is suppressed, as we are
+  // is being deleted, or if LocalSurfaceId is suppressed, as we are
   // first updating our internal state from a child's request, before
   // subsequently merging ids to send.
   if (visual_properties_ack_pending_ ||
@@ -1101,15 +1100,11 @@ bool RenderWidgetHostImpl::SynchronizeVisualProperties(
   TRACE_EVENT_WITH_FLOW2(
       TRACE_DISABLED_BY_DEFAULT("viz.surface_id_flow"),
       "RenderWidgetHostImpl::SynchronizeVisualProperties send message",
-      visual_properties->local_surface_id_allocation
-          .value_or(viz::LocalSurfaceIdAllocation())
-          .local_surface_id()
+      visual_properties->local_surface_id.value_or(viz::LocalSurfaceId())
           .submission_trace_id(),
       TRACE_EVENT_FLAG_FLOW_OUT, "message",
       "WidgetMsg_SynchronizeVisualProperties", "local_surface_id",
-      visual_properties->local_surface_id_allocation
-          .value_or(viz::LocalSurfaceIdAllocation())
-          .local_surface_id()
+      visual_properties->local_surface_id.value_or(viz::LocalSurfaceId())
           .ToString());
   visual_properties_ack_pending_ =
       DoesVisualPropertiesNeedAck(old_visual_properties_, *visual_properties);
@@ -2339,17 +2334,13 @@ void RenderWidgetHostImpl::OnLocalSurfaceIdChanged(
   TRACE_EVENT_WITH_FLOW1(
       "renderer_host,disabled-by-default-viz.surface_id_flow",
       "RenderWidgetHostImpl::OnLocalSurfaceIdChanged",
-      metadata.local_surface_id_allocation &&
-              metadata.local_surface_id_allocation->IsValid()
-          ? metadata.local_surface_id_allocation->local_surface_id()
-                    .submission_trace_id() +
-                metadata.local_surface_id_allocation->local_surface_id()
-                    .embed_trace_id()
+      metadata.local_surface_id && metadata.local_surface_id->is_valid()
+          ? metadata.local_surface_id->submission_trace_id() +
+                metadata.local_surface_id->embed_trace_id()
           : 0,
-      TRACE_EVENT_FLAG_FLOW_IN, "local_surface_id_allocation",
-      metadata.local_surface_id_allocation
-          ? metadata.local_surface_id_allocation->ToString()
-          : "null");
+      TRACE_EVENT_FLAG_FLOW_IN, "local_surface_id",
+      metadata.local_surface_id ? metadata.local_surface_id->ToString()
+                                : "null");
 
   // Update our knowledge of the RenderWidget's size.
   DCHECK(!metadata.viewport_size_in_pixels.IsEmpty());
@@ -2406,7 +2397,7 @@ bool RenderWidgetHostImpl::DoesVisualPropertiesNeedAck(
       !new_visual_properties.auto_resize_enabled &&
       !new_visual_properties.new_size.IsEmpty() &&
       !new_visual_properties.compositor_viewport_pixel_rect.IsEmpty() &&
-      new_visual_properties.local_surface_id_allocation;
+      new_visual_properties.local_surface_id;
 
   // If acking is applicable, then check if there has been an
   // |old_visual_properties| stored which would indicate an update has been
@@ -2427,19 +2418,12 @@ bool RenderWidgetHostImpl::StoredVisualPropertiesNeedsUpdate(
   const bool size_changed = DidVisualPropertiesSizeChange(
       *old_visual_properties, new_visual_properties);
 
-  // Hold on the the LocalSurfaceIdAllocation in a local variable otherwise the
+  // Hold on the the LocalSurfaceId in a local variable otherwise the
   // LocalSurfaceId may become invalid when used later.
-  viz::LocalSurfaceIdAllocation old_parent_local_surface_id_allocation =
-      old_visual_properties->local_surface_id_allocation.value_or(
-          viz::LocalSurfaceIdAllocation());
-  viz::LocalSurfaceIdAllocation new_parent_local_surface_id_allocation =
-      new_visual_properties.local_surface_id_allocation.value_or(
-          viz::LocalSurfaceIdAllocation());
-
-  const viz::LocalSurfaceId& old_parent_local_surface_id =
-      old_parent_local_surface_id_allocation.local_surface_id();
-  const viz::LocalSurfaceId& new_parent_local_surface_id =
-      new_parent_local_surface_id_allocation.local_surface_id();
+  const viz::LocalSurfaceId old_parent_local_surface_id =
+      old_visual_properties->local_surface_id.value_or(viz::LocalSurfaceId());
+  const viz::LocalSurfaceId new_parent_local_surface_id =
+      new_visual_properties.local_surface_id.value_or(viz::LocalSurfaceId());
 
   const bool parent_local_surface_id_changed =
       old_parent_local_surface_id.parent_sequence_number() !=

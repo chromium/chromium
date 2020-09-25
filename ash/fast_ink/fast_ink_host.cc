@@ -101,8 +101,6 @@ class FastInkHost::LayerTreeFrameSinkHolder
                           viz::BeginFrameArgs::kStartingFrameNumber);
     frame.metadata.begin_frame_ack.has_damage = true;
     frame.metadata.device_scale_factor = last_frame_device_scale_factor_;
-    frame.metadata.local_surface_id_allocation_time =
-        last_local_surface_id_allocation_time_;
     frame.metadata.frame_token = ++next_frame_token_;
     auto pass = viz::CompositorRenderPass::Create();
     pass->SetNew(viz::CompositorRenderPassId{1},
@@ -139,8 +137,6 @@ class FastInkHost::LayerTreeFrameSinkHolder
     exported_resources_[resource_id] = std::move(resource);
     last_frame_size_in_pixels_ = frame.size_in_pixels();
     last_frame_device_scale_factor_ = frame.metadata.device_scale_factor;
-    last_local_surface_id_allocation_time_ =
-        frame.metadata.local_surface_id_allocation_time;
     frame.metadata.frame_token = ++next_frame_token_;
     frame_sink_->SubmitCompositorFrame(std::move(frame),
                                        /*hit_test_data_changed=*/true,
@@ -222,7 +218,6 @@ class FastInkHost::LayerTreeFrameSinkHolder
   viz::FrameTokenGenerator next_frame_token_;
   gfx::Size last_frame_size_in_pixels_;
   float last_frame_device_scale_factor_ = 1.0f;
-  base::TimeTicks last_local_surface_id_allocation_time_;
   aura::Window* root_window_ = nullptr;
   bool delete_pending_ = false;
 };
@@ -401,8 +396,6 @@ void FastInkHost::SubmitCompositorFrame() {
   frame.metadata.begin_frame_ack =
       viz::BeginFrameAck::CreateManualAckWithDamage();
   frame.metadata.device_scale_factor = device_scale_factor;
-  frame.metadata.local_surface_id_allocation_time =
-      host_window_->GetLocalSurfaceIdAllocation().allocation_time();
 
   viz::TextureDrawQuad* texture_quad =
       render_pass->CreateAndAppendDrawQuad<viz::TextureDrawQuad>();

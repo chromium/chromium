@@ -140,9 +140,7 @@ void HardwareRendererSingleThread::DrawAndSwap(
 void HardwareRendererSingleThread::AllocateSurface() {
   DCHECK(!child_id_.is_valid());
   parent_local_surface_id_allocator_->GenerateId();
-  child_id_ =
-      parent_local_surface_id_allocator_->GetCurrentLocalSurfaceIdAllocation()
-          .local_surface_id();
+  child_id_ = parent_local_surface_id_allocator_->GetCurrentLocalSurfaceId();
   surfaces_->AddChildId(viz::SurfaceId(frame_sink_id_, child_id_));
 }
 

@@ -24,7 +24,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
-#include "components/viz/common/surfaces/local_surface_id_allocation.h"
+#include "components/viz/common/surfaces/local_surface_id.h"
 #include "components/viz/common/surfaces/scoped_surface_id_allocator.h"
 #include "components/viz/host/host_frame_sink_client.h"
 #include "ui/aura/aura_export.h"
@@ -427,8 +427,7 @@ class AURA_EXPORT Window : public ui::LayerDelegate,
   viz::ScopedSurfaceIdAllocator GetSurfaceIdAllocator(
       base::OnceCallback<void()> allocation_task);
 
-  // Returns the current viz::LocalSurfaceIdAllocation.
-  const viz::LocalSurfaceIdAllocation& GetLocalSurfaceIdAllocation();
+  const viz::LocalSurfaceId& GetLocalSurfaceId();
 
   // Marks the current viz::LocalSurfaceId as invalid. AllocateLocalSurfaceId
   // must be called before submitting new CompositorFrames.
@@ -438,8 +437,7 @@ class AURA_EXPORT Window : public ui::LayerDelegate,
   // has allocated one. Also sets child sequence number component of the
   // viz::LocalSurfaceId allocator.
   void UpdateLocalSurfaceIdFromEmbeddedClient(
-      const base::Optional<viz::LocalSurfaceIdAllocation>&
-          local_surface_id_allocation);
+      const base::Optional<viz::LocalSurfaceId>& local_surface_id);
 
   // Returns the FrameSinkId. In LOCAL mode, this returns a valid FrameSinkId
   // only if a LayerTreeFrameSink has been created. In MUS mode, this always
@@ -627,8 +625,7 @@ class AURA_EXPORT Window : public ui::LayerDelegate,
   void RegisterFrameSinkId();
   void UnregisterFrameSinkId();
   void UpdateLocalSurfaceId();
-  const viz::LocalSurfaceIdAllocation& GetCurrentLocalSurfaceIdAllocation()
-      const;
+  const viz::LocalSurfaceId& GetCurrentLocalSurfaceId() const;
   bool IsEmbeddingExternalContent() const;
 
   // Bounds of this window relative to the parent. This is cached as the bounds

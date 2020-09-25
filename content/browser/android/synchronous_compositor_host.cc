@@ -193,7 +193,7 @@ SynchronousCompositorHost::DemandDrawHwAsync(
     const gfx::Transform& transform_for_tile_priority) {
   invalidate_needs_draw_ = false;
   scoped_refptr<FrameFuture> frame_future =
-      new FrameFuture(rwhva_->GetLocalSurfaceIdAllocation().local_surface_id());
+      new FrameFuture(rwhva_->GetLocalSurfaceId());
   if (!allow_async_draw_) {
     allow_async_draw_ = allow_async_draw_ || IsReadyForSynchronousCall();
     auto frame_ptr = std::make_unique<Frame>();

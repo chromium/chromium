@@ -187838,6 +187838,11 @@ regressions. -->
 
 <histogram name="Viz.DisplayCompositor.SurfaceEmbeddingTime" units="ms"
     expires_after="M85">
+  <obsolete>
+    This previously reported a latency metric for Viz on all platforms. This has
+    been replaced by improved tracing and Graphics.Smoothness metrics. Marked
+    obsolete in M87.
+  </obsolete>
   <owner>jonross@chromium.org</owner>
   <summary>
     Records the delta from when a viz::LocalSurfaceId was allocated, to the time

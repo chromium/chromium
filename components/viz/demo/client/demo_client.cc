@@ -15,7 +15,7 @@
 namespace demo {
 
 DemoClient::DemoClient(const viz::FrameSinkId& frame_sink_id,
-                       const viz::LocalSurfaceIdAllocation& local_surface_id,
+                       const viz::LocalSurfaceId& local_surface_id,
                        const gfx::Rect& bounds)
     : thread_(frame_sink_id.ToString()),
       frame_sink_id_(frame_sink_id),
@@ -46,20 +46,18 @@ void DemoClient::Initialize(
                      std::move(sink_remote)));
 }
 
-viz::LocalSurfaceIdAllocation DemoClient::Embed(
-    const viz::FrameSinkId& frame_sink_id,
-    const gfx::Rect& bounds) {
+viz::LocalSurfaceId DemoClient::Embed(const viz::FrameSinkId& frame_sink_id,
+                                      const gfx::Rect& bounds) {
   // |embeds_| is used on the client-thread in CreateFrame(). So this needs to
   // be mutated under a lock.
   base::AutoLock lock(lock_);
   allocator_.GenerateId();
-  embeds_[frame_sink_id] = {allocator_.GetCurrentLocalSurfaceIdAllocation(),
-                            bounds};
+  embeds_[frame_sink_id] = {allocator_.GetCurrentLocalSurfaceId(), bounds};
   return embeds_[frame_sink_id].lsid;
 }
 
 void DemoClient::Resize(const gfx::Size& size,
-                        const viz::LocalSurfaceIdAllocation& local_surface_id) {
+                        const viz::LocalSurfaceId& local_surface_id) {
   // |bounds_| and |local_surface_id_| are used on the client-thread in
   // CreateFrame(). So these need to be mutated under a lock.
   base::AutoLock lock(lock_);
@@ -73,8 +71,6 @@ viz::CompositorFrame DemoClient::CreateFrame(const viz::BeginFrameArgs& args) {
 
   frame.metadata.begin_frame_ack = viz::BeginFrameAck(args, true);
   frame.metadata.device_scale_factor = 1.f;
-  frame.metadata.local_surface_id_allocation_time =
-      local_surface_id_.allocation_time();
   frame.metadata.frame_token = ++next_frame_token_;
 
   const viz::CompositorRenderPassId kRenderPassId{1};
@@ -113,7 +109,7 @@ viz::CompositorFrame DemoClient::CreateFrame(const viz::BeginFrameArgs& args) {
 
     viz::SurfaceDrawQuad* embed =
         render_pass->CreateAndAppendDrawQuad<viz::SurfaceDrawQuad>();
-    viz::SurfaceId surface_id(iter.first, iter.second.lsid.local_surface_id());
+    viz::SurfaceId surface_id(iter.first, iter.second.lsid);
     // |rect| and |visible_rect| needs to be in the quad's coord-space, so to
     // draw the whole quad, it needs to use origin (0, 0).
     embed->SetNew(quad_state,
@@ -179,8 +175,7 @@ void DemoClient::OnBeginFrame(
   // for the client to delay sending the compositor-frame. |args| includes the
   // deadline for the client before it needs to submit the compositor-frame.
   base::AutoLock lock(lock_);
-  GetPtr()->SubmitCompositorFrame(local_surface_id_.local_surface_id(),
-                                  CreateFrame(args),
+  GetPtr()->SubmitCompositorFrame(local_surface_id_, CreateFrame(args),
                                   base::Optional<viz::HitTestRegionList>(),
                                   /*trace_time=*/0);
 }

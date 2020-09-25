@@ -73,10 +73,10 @@ void RecyclableCompositorMac::UpdateSurface(
     size_pixels_ = size_pixels;
     scale_factor_ = scale_factor;
     local_surface_id_allocator_.GenerateId();
-    viz::LocalSurfaceIdAllocation local_surface_id_allocation =
-        local_surface_id_allocator_.GetCurrentLocalSurfaceIdAllocation();
+    viz::LocalSurfaceId local_surface_id =
+        local_surface_id_allocator_.GetCurrentLocalSurfaceId();
     compositor()->SetScaleAndSize(scale_factor_, size_pixels_,
-                                  local_surface_id_allocation);
+                                  local_surface_id);
   }
   if (display_color_spaces != display_color_spaces_) {
     display_color_spaces_ = display_color_spaces;
@@ -91,7 +91,7 @@ void RecyclableCompositorMac::InvalidateSurface() {
   display_color_spaces_ = gfx::DisplayColorSpaces();
   compositor()->SetScaleAndSize(
       scale_factor_, size_pixels_,
-      local_surface_id_allocator_.GetCurrentLocalSurfaceIdAllocation());
+      local_surface_id_allocator_.GetCurrentLocalSurfaceId());
   compositor()->SetDisplayColorSpaces(gfx::DisplayColorSpaces());
 }
 

@@ -295,12 +295,11 @@ void SynchronousLayerTreeFrameSinkImpl::SubmitCompositorFrame(
   gfx::Size child_size = in_software_draw_
                              ? sw_viewport_for_current_draw_.size()
                              : frame.size_in_pixels();
-  if (!child_local_surface_id_allocation_.IsValid() ||
-      child_size_ != child_size ||
+  if (!child_local_surface_id_.is_valid() || child_size_ != child_size ||
       device_scale_factor_ != frame.metadata.device_scale_factor) {
     child_local_surface_id_allocator_.GenerateId();
-    child_local_surface_id_allocation_ =
-        child_local_surface_id_allocator_.GetCurrentLocalSurfaceIdAllocation();
+    child_local_surface_id_ =
+        child_local_surface_id_allocator_.GetCurrentLocalSurfaceId();
     child_size_ = child_size;
     device_scale_factor_ = frame.metadata.device_scale_factor;
   }
@@ -321,19 +320,17 @@ void SynchronousLayerTreeFrameSinkImpl::SubmitCompositorFrame(
                            sw_viewport_for_current_draw_.bottom());
     display_->Resize(display_size);
 
-    if (!root_local_surface_id_allocation_.IsValid() ||
-        display_size_ != display_size ||
+    if (!root_local_surface_id_.is_valid() || display_size_ != display_size ||
         device_scale_factor_ != frame.metadata.device_scale_factor) {
       root_local_surface_id_allocator_.GenerateId();
-      root_local_surface_id_allocation_ =
-          root_local_surface_id_allocator_.GetCurrentLocalSurfaceIdAllocation();
+      root_local_surface_id_ =
+          root_local_surface_id_allocator_.GetCurrentLocalSurfaceId();
       display_size_ = display_size;
       device_scale_factor_ = frame.metadata.device_scale_factor;
     }
 
-    display_->SetLocalSurfaceId(
-        root_local_surface_id_allocation_.local_surface_id(),
-        frame.metadata.device_scale_factor);
+    display_->SetLocalSurfaceId(root_local_surface_id_,
+                                frame.metadata.device_scale_factor);
 
     // The offset for the child frame relative to the origin of the canvas being
     // drawn into.
@@ -375,17 +372,13 @@ void SynchronousLayerTreeFrameSinkImpl::SubmitCompositorFrame(
         shared_quad_state, gfx::Rect(child_size), gfx::Rect(child_size),
         viz::SurfaceRange(
             base::nullopt,
-            viz::SurfaceId(
-                kChildFrameSinkId,
-                child_local_surface_id_allocation_.local_surface_id())),
+            viz::SurfaceId(kChildFrameSinkId, child_local_surface_id_)),
         SK_ColorWHITE, false /* stretch_content_to_fill_bounds */);
 
-    child_support_->SubmitCompositorFrame(
-        child_local_surface_id_allocation_.local_surface_id(),
-        std::move(frame));
-    root_support_->SubmitCompositorFrame(
-        root_local_surface_id_allocation_.local_surface_id(),
-        std::move(embed_frame));
+    child_support_->SubmitCompositorFrame(child_local_surface_id_,
+                                          std::move(frame));
+    root_support_->SubmitCompositorFrame(root_local_surface_id_,
+                                         std::move(embed_frame));
     display_->DrawAndSwap(base::TimeTicks::Now());
 
     // We don't track metrics for frames submitted to |display_| but it still
@@ -395,9 +388,6 @@ void SynchronousLayerTreeFrameSinkImpl::SubmitCompositorFrame(
     display_->DidReceivePresentationFeedback(
         gfx::PresentationFeedback::Failure());
   } else {
-    frame.metadata.local_surface_id_allocation_time =
-        child_local_surface_id_allocation_.allocation_time();
-
     if (viz_frame_submission_enabled_) {
       frame.metadata.begin_frame_ack =
           viz::BeginFrameAck::CreateManualAckWithDamage();

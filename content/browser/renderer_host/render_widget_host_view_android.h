@@ -167,8 +167,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
       gfx::PointF* transformed_point) override;
   TouchSelectionControllerClientManager*
   GetTouchSelectionControllerClientManager() override;
-  const viz::LocalSurfaceIdAllocation& GetLocalSurfaceIdAllocation()
-      const override;
+  const viz::LocalSurfaceId& GetLocalSurfaceId() const override;
   void OnRenderWidgetInit() override;
   void TakeFallbackContentFrom(RenderWidgetHostView* view) override;
   void OnSynchronizedDisplayPropertiesChanged() override;
@@ -264,8 +263,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
 
   bool SynchronizeVisualProperties(
       const cc::DeadlinePolicy& deadline_policy,
-      const base::Optional<viz::LocalSurfaceIdAllocation>&
-          child_local_surface_id_allocation);
+      const base::Optional<viz::LocalSurfaceId>& child_local_surface_id);
 
   bool HasValidFrame() const;
 

@@ -85,7 +85,7 @@ class CONTENT_EXPORT BrowserCompositorMac : public DelegatedFrameHostClient,
       bool auto_resize_enabled,
       float new_device_scale_factor,
       const gfx::Size& new_size_in_pixels,
-      const viz::LocalSurfaceIdAllocation& child_local_surface_id_allocation);
+      const viz::LocalSurfaceId& child_local_surface_id);
 
   // This is used to ensure that the ui::Compositor be attached to the
   // DelegatedFrameHost while the RWHImpl is visible.
@@ -112,7 +112,7 @@ class CONTENT_EXPORT BrowserCompositorMac : public DelegatedFrameHostClient,
   void GetRendererScreenInfo(blink::ScreenInfo* screen_info) const;
   viz::ScopedSurfaceIdAllocator GetScopedRendererSurfaceIdAllocator(
       base::OnceCallback<void()> allocation_task);
-  const viz::LocalSurfaceIdAllocation& GetRendererLocalSurfaceIdAllocation();
+  const viz::LocalSurfaceId& GetRendererLocalSurfaceId();
   void TransformPointToRootSurface(gfx::PointF* point);
 
   // Indicate that the recyclable compositor should be destroyed, and no future

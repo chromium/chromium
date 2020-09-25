@@ -192,8 +192,7 @@ class VideoFrameSubmitterTest : public testing::Test {
                             base::UnguessableToken::Deserialize(0x111111, 0)));
     submitter_->frame_sink_id_ = surface_id.frame_sink_id();
     submitter_->child_local_surface_id_allocator_.UpdateFromParent(
-        viz::LocalSurfaceIdAllocation(surface_id.local_surface_id(),
-                                      base::TimeTicks::Now()));
+        surface_id.local_surface_id());
   }
 
   bool IsRendering() const { return submitter_->is_rendering_; }
@@ -688,9 +687,7 @@ TEST_F(VideoFrameSubmitterTest, StopUsingProviderDuringContextLost) {
 TEST_F(VideoFrameSubmitterTest, FrameSizeChangeUpdatesLocalSurfaceId) {
   {
     viz::LocalSurfaceId local_surface_id =
-        child_local_surface_id_allocator()
-            .GetCurrentLocalSurfaceIdAllocation()
-            .local_surface_id();
+        child_local_surface_id_allocator().GetCurrentLocalSurfaceId();
     EXPECT_TRUE(local_surface_id.is_valid());
     EXPECT_EQ(11u, local_surface_id.parent_sequence_number());
     EXPECT_EQ(viz::kInitialChildSequenceNumber,
@@ -709,9 +706,7 @@ TEST_F(VideoFrameSubmitterTest, FrameSizeChangeUpdatesLocalSurfaceId) {
 
   {
     viz::LocalSurfaceId local_surface_id =
-        child_local_surface_id_allocator()
-            .GetCurrentLocalSurfaceIdAllocation()
-            .local_surface_id();
+        child_local_surface_id_allocator().GetCurrentLocalSurfaceId();
     EXPECT_TRUE(local_surface_id.is_valid());
     EXPECT_EQ(11u, local_surface_id.parent_sequence_number());
     EXPECT_EQ(viz::kInitialChildSequenceNumber,
@@ -735,9 +730,7 @@ TEST_F(VideoFrameSubmitterTest, FrameSizeChangeUpdatesLocalSurfaceId) {
 
   {
     viz::LocalSurfaceId local_surface_id =
-        child_local_surface_id_allocator()
-            .GetCurrentLocalSurfaceIdAllocation()
-            .local_surface_id();
+        child_local_surface_id_allocator().GetCurrentLocalSurfaceId();
     EXPECT_TRUE(local_surface_id.is_valid());
     EXPECT_EQ(11u, local_surface_id.parent_sequence_number());
     EXPECT_EQ(viz::kInitialChildSequenceNumber + 1,

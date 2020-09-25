@@ -375,8 +375,6 @@ viz::CompositorFrame SurfaceTreeHost::PrepareToSubmitCompositorFrame() {
   render_pass->SetNew(kRenderPassId, gfx::Rect(output_surface_size_in_pixels),
                       gfx::Rect(), gfx::Transform());
   frame.metadata.device_scale_factor = device_scale_factor;
-  frame.metadata.local_surface_id_allocation_time =
-      host_window()->GetLocalSurfaceIdAllocation().allocation_time();
 
   return frame;
 }

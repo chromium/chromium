@@ -23,7 +23,7 @@
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/common/frame_timing_details_map.h"
 #include "components/viz/common/quads/compositor_frame.h"
-#include "components/viz/common/surfaces/local_surface_id_allocation.h"
+#include "components/viz/common/surfaces/local_surface_id.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "components/viz/service/display/display_client.h"
 #include "components/viz/service/display_embedder/server_shared_bitmap_manager.h"
@@ -185,8 +185,8 @@ class SynchronousLayerTreeFrameSinkImpl
   std::unique_ptr<viz::FrameSinkManagerImpl> frame_sink_manager_;
   viz::ParentLocalSurfaceIdAllocator root_local_surface_id_allocator_;
   viz::ParentLocalSurfaceIdAllocator child_local_surface_id_allocator_;
-  viz::LocalSurfaceIdAllocation child_local_surface_id_allocation_;
-  viz::LocalSurfaceIdAllocation root_local_surface_id_allocation_;
+  viz::LocalSurfaceId child_local_surface_id_;
+  viz::LocalSurfaceId root_local_surface_id_;
   gfx::Size child_size_;
   gfx::Size display_size_;
   float device_scale_factor_ = 0;

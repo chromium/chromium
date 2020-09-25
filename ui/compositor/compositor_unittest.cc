@@ -105,7 +105,7 @@ TEST_F(CompositorTestWithMessageLoop, ShouldUpdateDisplayProperties) {
   root_layer->SetBounds(gfx::Rect(10, 10));
   compositor()->SetRootLayer(root_layer.get());
   compositor()->SetScaleAndSize(1.0f, gfx::Size(10, 10),
-                                allocator.GetCurrentLocalSurfaceIdAllocation());
+                                allocator.GetCurrentLocalSurfaceId());
   ASSERT_TRUE(compositor()->IsVisible());
 
   // Set a non-identity color matrix, color space, sdr white level, vsync
@@ -238,7 +238,7 @@ TEST_F(CompositorTestWithMessageLoop, ThroughputTracker) {
   root_layer->SetBounds(gfx::Rect(10, 10));
   compositor()->SetRootLayer(root_layer.get());
   compositor()->SetScaleAndSize(1.0f, gfx::Size(10, 10),
-                                allocator.GetCurrentLocalSurfaceIdAllocation());
+                                allocator.GetCurrentLocalSurfaceId());
   ASSERT_TRUE(compositor()->IsVisible());
 
   ThroughputTracker tracker = compositor()->RequestNewThroughputTracker();
@@ -297,7 +297,7 @@ TEST_F(CompositorTestWithMessageLoop, MAYBE_CreateAndReleaseOutputSurface) {
   root_layer->SetBounds(gfx::Rect(10, 10));
   compositor()->SetRootLayer(root_layer.get());
   compositor()->SetScaleAndSize(1.0f, gfx::Size(10, 10),
-                                allocator.GetCurrentLocalSurfaceIdAllocation());
+                                allocator.GetCurrentLocalSurfaceId());
   ASSERT_TRUE(compositor()->IsVisible());
   compositor()->ScheduleDraw();
   DrawWaiterForTest::WaitForCompositingEnded(compositor());

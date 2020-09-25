@@ -57,7 +57,7 @@ class SurfaceLayerTest : public testing::Test {
     layer_tree_host_ = FakeLayerTreeHost::Create(
         &fake_client_, &task_graph_runner_, animation_host_.get());
     layer_tree_host_->SetViewportRectAndScale(gfx::Rect(10, 10), 1.f,
-                                              viz::LocalSurfaceIdAllocation());
+                                              viz::LocalSurfaceId());
     host_impl_.CreatePendingTree();
   }
 

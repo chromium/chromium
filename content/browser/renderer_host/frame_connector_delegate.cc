@@ -32,7 +32,7 @@ void FrameConnectorDelegate::SendIntrinsicSizingInfoToParent(
 void FrameConnectorDelegate::SynchronizeVisualProperties(
     const blink::FrameVisualProperties& visual_properties) {
   screen_info_ = visual_properties.screen_info;
-  local_surface_id_allocation_ = visual_properties.local_surface_id_allocation;
+  local_surface_id_ = visual_properties.local_surface_id;
 
   capture_sequence_number_ = visual_properties.capture_sequence_number;
 

@@ -732,20 +732,6 @@ struct FuzzTraits<viz::LocalSurfaceId> {
 };
 
 template <>
-struct FuzzTraits<viz::LocalSurfaceIdAllocation> {
-  static bool Fuzz(viz::LocalSurfaceIdAllocation* p, Fuzzer* fuzzer) {
-    viz::LocalSurfaceId local_surface_id = p->local_surface_id();
-    base::TimeTicks allocation_time = p->allocation_time();
-    if (!FuzzParam(&local_surface_id, fuzzer))
-      return false;
-    if (!FuzzParam(&allocation_time, fuzzer))
-      return false;
-    *p = viz::LocalSurfaceIdAllocation(local_surface_id, allocation_time);
-    return true;
-  }
-};
-
-template <>
 struct FuzzTraits<viz::ResourceFormat> {
   static bool Fuzz(viz::ResourceFormat* p, Fuzzer* fuzzer) {
     int format = RandInRange(viz::ResourceFormat::RESOURCE_FORMAT_MAX + 1);

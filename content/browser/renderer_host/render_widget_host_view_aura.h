@@ -168,8 +168,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   void DidStopFlinging() override;
   void OnDidNavigateMainFrameToNewPage() override;
   const viz::FrameSinkId& GetFrameSinkId() const override;
-  const viz::LocalSurfaceIdAllocation& GetLocalSurfaceIdAllocation()
-      const override;
+  const viz::LocalSurfaceId& GetLocalSurfaceId() const override;
   bool TransformPointToCoordSpaceForView(
       const gfx::PointF& point,
       RenderWidgetHostViewBase* target_view,
@@ -495,8 +494,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
 
   bool SynchronizeVisualProperties(
       const cc::DeadlinePolicy& deadline_policy,
-      const base::Optional<viz::LocalSurfaceIdAllocation>&
-          child_local_surface_id_allocation);
+      const base::Optional<viz::LocalSurfaceId>& child_local_surface_id);
 
   void OnDidUpdateVisualPropertiesComplete(
       const cc::RenderFrameMetadata& metadata);
@@ -701,7 +699,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
       ui::EventPointerType::kUnknown;
 
   bool is_first_navigation_ = true;
-  viz::LocalSurfaceIdAllocation inset_surface_id_allocation_;
+  viz::LocalSurfaceId inset_surface_id_;
 
   // See OnDisplayMetricsChanged() for details.
   bool needs_to_update_display_metrics_ = false;

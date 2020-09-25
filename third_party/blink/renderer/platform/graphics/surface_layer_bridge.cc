@@ -126,8 +126,7 @@ void SurfaceLayerBridge::CreateSurfaceLayer() {
   parent_local_surface_id_allocator_.GenerateId();
   current_surface_id_ = viz::SurfaceId(
       frame_sink_id_,
-      parent_local_surface_id_allocator_.GetCurrentLocalSurfaceIdAllocation()
-          .local_surface_id());
+      parent_local_surface_id_allocator_.GetCurrentLocalSurfaceId());
 
   surface_layer_->SetSurfaceId(current_surface_id_,
                                cc::DeadlinePolicy::UseDefaultDeadline());
@@ -143,11 +142,6 @@ void SurfaceLayerBridge::CreateSurfaceLayer() {
   // We ignore our opacity until we are sure that we have something to show,
   // as indicated by getting an OnFirstSurfaceActivation call.
   surface_layer_->SetContentsOpaque(false);
-}
-
-base::TimeTicks SurfaceLayerBridge::GetLocalSurfaceIdAllocationTime() const {
-  return parent_local_surface_id_allocator_.GetCurrentLocalSurfaceIdAllocation()
-      .allocation_time();
 }
 
 }  // namespace blink

@@ -374,12 +374,10 @@ class CC_EXPORT LayerTreeImpl {
     return painted_device_scale_factor_;
   }
 
-  void SetLocalSurfaceIdAllocationFromParent(
-      const viz::LocalSurfaceIdAllocation&
-          local_surface_id_allocation_from_parent);
-  const viz::LocalSurfaceIdAllocation& local_surface_id_allocation_from_parent()
-      const {
-    return local_surface_id_allocation_from_parent_;
+  void SetLocalSurfaceIdFromParent(
+      const viz::LocalSurfaceId& local_surface_id_from_parent);
+  const viz::LocalSurfaceId& local_surface_id_from_parent() const {
+    return local_surface_id_from_parent_;
   }
 
   void RequestNewLocalSurfaceId();
@@ -791,7 +789,7 @@ class CC_EXPORT LayerTreeImpl {
   float painted_device_scale_factor_;
   gfx::DisplayColorSpaces display_color_spaces_;
 
-  viz::LocalSurfaceIdAllocation local_surface_id_allocation_from_parent_;
+  viz::LocalSurfaceId local_surface_id_from_parent_;
   bool new_local_surface_id_request_ = false;
   // Contains the physical rect of the device viewport, to be used in
   // determining what needs to be drawn.

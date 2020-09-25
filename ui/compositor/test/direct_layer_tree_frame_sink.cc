@@ -84,13 +84,12 @@ void DirectLayerTreeFrameSink::SubmitCompositorFrame(
 
   if (frame.size_in_pixels() != last_swap_frame_size_ ||
       frame.device_scale_factor() != device_scale_factor_ ||
-      !parent_local_surface_id_allocator_.HasValidLocalSurfaceIdAllocation()) {
+      !parent_local_surface_id_allocator_.HasValidLocalSurfaceId()) {
     parent_local_surface_id_allocator_.GenerateId();
     last_swap_frame_size_ = frame.size_in_pixels();
     device_scale_factor_ = frame.device_scale_factor();
     display_->SetLocalSurfaceId(
-        parent_local_surface_id_allocator_.GetCurrentLocalSurfaceIdAllocation()
-            .local_surface_id(),
+        parent_local_surface_id_allocator_.GetCurrentLocalSurfaceId(),
         device_scale_factor_);
   }
 
@@ -114,8 +113,7 @@ void DirectLayerTreeFrameSink::SubmitCompositorFrame(
   }
 
   support_->SubmitCompositorFrame(
-      parent_local_surface_id_allocator_.GetCurrentLocalSurfaceIdAllocation()
-          .local_surface_id(),
+      parent_local_surface_id_allocator_.GetCurrentLocalSurfaceId(),
       std::move(frame), std::move(hit_test_region_list));
 }
 

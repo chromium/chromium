@@ -3385,9 +3385,8 @@ bool TestGuestAutoresize(RenderProcessHost* embedder_rph,
 
   embedder_rph_impl->AddFilter(filter.get());
 
-  viz::LocalSurfaceId current_id = guest_rwh_impl->GetView()
-                                       ->GetLocalSurfaceIdAllocation()
-                                       .local_surface_id();
+  viz::LocalSurfaceId current_id =
+      guest_rwh_impl->GetView()->GetLocalSurfaceId();
   // The guest may not yet be fully attached / initted. If not, |current_id|
   // will be invalid, and we should wait for an ID before proceeding.
   if (!current_id.is_valid())
@@ -3408,8 +3407,7 @@ bool TestGuestAutoresize(RenderProcessHost* embedder_rph,
                                        current_id.embed_token());
   cc::RenderFrameMetadata metadata;
   metadata.viewport_size_in_pixels = gfx::Size(75, 75);
-  metadata.local_surface_id_allocation =
-      viz::LocalSurfaceIdAllocation(local_surface_id, base::TimeTicks::Now());
+  metadata.local_surface_id = local_surface_id;
   guest_rwh_impl->OnLocalSurfaceIdChanged(metadata);
 
   // This won't generate a response, as we short-circuit auto-resizes, so cause
@@ -3497,8 +3495,7 @@ void SynchronizeVisualPropertiesMessageFilter::OnSynchronizeVisualProperties(
       FROM_HERE,
       base::BindOnce(
           &SynchronizeVisualPropertiesMessageFilter::OnUpdatedSurfaceIdOnUI,
-          this,
-          visual_properties.local_surface_id_allocation.local_surface_id()));
+          this, visual_properties.local_surface_id));
 
   // We can't nest on the IO thread. So tests will wait on the UI thread, so
   // post there to exit the nesting.

@@ -705,21 +705,6 @@ void Surface::OnWillBeDrawn() {
   if (!seen_first_surface_embedding_) {
     seen_first_surface_embedding_ = true;
 
-    // Tests may not be sending valid time stamps.
-    // Additionally since the allocation time is not a member of LocalSurfaceId
-    // it has to be added to each new site that is sneding LocalSurfaceIds to
-    // Viz. Due to this, new embedders may initially be sending invalid time
-    // stamps. Do not calculate metrics for those.
-    if (!active_frame_data_->frame.metadata.local_surface_id_allocation_time
-             .is_null()) {
-      // Only send UMAs if we can calculate a valid delta.
-      base::TimeDelta delta =
-          base::TimeTicks::Now() -
-          active_frame_data_->frame.metadata.local_surface_id_allocation_time;
-      base::UmaHistogramTimes("Viz.DisplayCompositor.SurfaceEmbeddingTime",
-                              delta);
-    }
-
     TRACE_EVENT_WITH_FLOW2(
         TRACE_DISABLED_BY_DEFAULT("viz.surface_id_flow"),
         "LocalSurfaceId.Embed.Flow",

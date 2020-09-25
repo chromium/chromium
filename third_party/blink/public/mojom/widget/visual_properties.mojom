@@ -5,7 +5,7 @@
 module blink.mojom;
 
 import "cc/mojom/browser_controls_params.mojom";
-import "services/viz/public/mojom/compositing/local_surface_id_allocation.mojom";
+import "services/viz/public/mojom/compositing/local_surface_id.mojom";
 import "third_party/blink/public/mojom/manifest/display_mode.mojom";
 import "third_party/blink/public/mojom/widget/screen_info.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
@@ -56,7 +56,7 @@ struct VisualProperties {
   bool scroll_focused_node_into_view;
 
   // The local surface ID to use (if valid) and its allocation time.
-  viz.mojom.LocalSurfaceIdAllocation? local_surface_id_allocation;
+  viz.mojom.LocalSurfaceId? local_surface_id;
 
   // Indicates whether tab-initiated fullscreen was granted.
   // Page scoped value.

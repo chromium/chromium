@@ -12,7 +12,7 @@
 #include "base/command_line.h"
 #include "base/lazy_instance.h"
 #include "base/memory/ptr_util.h"
-#include "components/viz/common/surfaces/local_surface_id_allocation.h"
+#include "components/viz/common/surfaces/local_surface_id.h"
 #include "content/common/content_switches_internal.h"
 #include "content/common/frame_replication_state.h"
 #include "content/common/input_messages.h"
@@ -465,8 +465,7 @@ void RenderFrameProxy::DidStartLoading() {
 void RenderFrameProxy::DidUpdateVisualProperties(
     const cc::RenderFrameMetadata& metadata) {
   if (!parent_local_surface_id_allocator_->UpdateFromChild(
-          metadata.local_surface_id_allocation.value_or(
-              viz::LocalSurfaceIdAllocation()))) {
+          metadata.local_surface_id.value_or(viz::LocalSurfaceId()))) {
     return;
   }
 
@@ -546,9 +545,8 @@ void RenderFrameProxy::SynchronizeVisualProperties() {
 
   if (synchronized_props_changed) {
     parent_local_surface_id_allocator_->GenerateId();
-    pending_visual_properties_.local_surface_id_allocation =
-        parent_local_surface_id_allocator_
-            ->GetCurrentLocalSurfaceIdAllocation();
+    pending_visual_properties_.local_surface_id =
+        parent_local_surface_id_allocator_->GetCurrentLocalSurfaceId();
   }
 
   // If we're synchronizing surfaces, then use an infinite deadline to ensure
@@ -577,13 +575,11 @@ void RenderFrameProxy::SynchronizeVisualProperties() {
   TRACE_EVENT_WITH_FLOW2(
       TRACE_DISABLED_BY_DEFAULT("viz.surface_id_flow"),
       "RenderFrameProxy::SynchronizeVisualProperties Send Message",
-      TRACE_ID_GLOBAL(pending_visual_properties_.local_surface_id_allocation
-                          .local_surface_id()
-                          .submission_trace_id()),
+      TRACE_ID_GLOBAL(
+          pending_visual_properties_.local_surface_id.submission_trace_id()),
       TRACE_EVENT_FLAG_FLOW_OUT, "message",
       "FrameHostMsg_SynchronizeVisualProperties", "local_surface_id",
-      pending_visual_properties_.local_surface_id_allocation.local_surface_id()
-          .ToString());
+      pending_visual_properties_.local_surface_id.ToString());
 }
 
 void RenderFrameProxy::FrameDetached(DetachType type) {
@@ -733,9 +729,7 @@ SkBitmap* RenderFrameProxy::GetSadPageBitmap() {
 }
 
 const viz::LocalSurfaceId& RenderFrameProxy::GetLocalSurfaceId() const {
-  return parent_local_surface_id_allocator_
-      ->GetCurrentLocalSurfaceIdAllocation()
-      .local_surface_id();
+  return parent_local_surface_id_allocator_->GetCurrentLocalSurfaceId();
 }
 
 mojom::RenderFrameProxyHost* RenderFrameProxy::GetFrameProxyHost() {

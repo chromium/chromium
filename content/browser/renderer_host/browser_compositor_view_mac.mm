@@ -14,7 +14,7 @@
 #include "base/optional.h"
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/features.h"
-#include "components/viz/common/surfaces/local_surface_id_allocation.h"
+#include "components/viz/common/surfaces/local_surface_id.h"
 #include "content/browser/compositor/image_transport_factory.h"
 #include "content/browser/renderer_host/display_util.h"
 #include "content/public/browser/browser_thread.h"
@@ -89,9 +89,8 @@ DelegatedFrameHost* BrowserCompositorMac::GetDelegatedFrameHost() {
 bool BrowserCompositorMac::ForceNewSurfaceId() {
   dfh_local_surface_id_allocator_.GenerateId();
   delegated_frame_host_->EmbedSurface(
-      dfh_local_surface_id_allocator_.GetCurrentLocalSurfaceIdAllocation()
-          .local_surface_id(),
-      dfh_size_dip_, cc::DeadlinePolicy::UseExistingDeadline());
+      dfh_local_surface_id_allocator_.GetCurrentLocalSurfaceId(), dfh_size_dip_,
+      cc::DeadlinePolicy::UseExistingDeadline());
   return client_->OnBrowserCompositorSurfaceIdChanged();
 }
 
@@ -136,8 +135,7 @@ bool BrowserCompositorMac::UpdateSurfaceFromNSView(
   if (needs_new_surface_id) {
     dfh_local_surface_id_allocator_.GenerateId();
     delegated_frame_host_->EmbedSurface(
-        dfh_local_surface_id_allocator_.GetCurrentLocalSurfaceIdAllocation()
-            .local_surface_id(),
+        dfh_local_surface_id_allocator_.GetCurrentLocalSurfaceId(),
         dfh_size_dip_, GetDeadlinePolicy(is_resize));
   }
 
@@ -154,9 +152,8 @@ void BrowserCompositorMac::UpdateSurfaceFromChild(
     bool auto_resize_enabled,
     float new_device_scale_factor,
     const gfx::Size& new_size_in_pixels,
-    const viz::LocalSurfaceIdAllocation& child_local_surface_id_allocation) {
-  if (dfh_local_surface_id_allocator_.UpdateFromChild(
-          child_local_surface_id_allocation)) {
+    const viz::LocalSurfaceId& child_local_surface_id) {
+  if (dfh_local_surface_id_allocator_.UpdateFromChild(child_local_surface_id)) {
     if (auto_resize_enabled) {
       dfh_display_.set_device_scale_factor(new_device_scale_factor);
       // TODO(danakj): We should avoid lossy conversions to integer DIPs.
@@ -171,8 +168,7 @@ void BrowserCompositorMac::UpdateSurfaceFromChild(
       }
     }
     delegated_frame_host_->EmbedSurface(
-        dfh_local_surface_id_allocator_.GetCurrentLocalSurfaceIdAllocation()
-            .local_surface_id(),
+        dfh_local_surface_id_allocator_.GetCurrentLocalSurfaceId(),
         dfh_size_dip_, GetDeadlinePolicy(true /* is_resize */));
   }
   client_->OnBrowserCompositorSurfaceIdChanged();
@@ -285,9 +281,8 @@ void BrowserCompositorMac::TransitionToState(State new_state) {
   delegated_frame_host_->AttachToCompositor(GetCompositor());
   has_saved_frame_before_state_transition_ =
       delegated_frame_host_->HasSavedFrame();
-  delegated_frame_host_->WasShown(
-      GetRendererLocalSurfaceIdAllocation().local_surface_id(), dfh_size_dip_,
-      {} /* record_tab_switch_time_request */);
+  delegated_frame_host_->WasShown(GetRendererLocalSurfaceId(), dfh_size_dip_,
+                                  {} /* record_tab_switch_time_request */);
 }
 
 // static
@@ -359,8 +354,7 @@ void BrowserCompositorMac::DidNavigate() {
       dfh_local_surface_id_allocator_.GenerateId();
     }
     delegated_frame_host_->EmbedSurface(
-        dfh_local_surface_id_allocator_.GetCurrentLocalSurfaceIdAllocation()
-            .local_surface_id(),
+        dfh_local_surface_id_allocator_.GetCurrentLocalSurfaceId(),
         dfh_size_dip_, cc::DeadlinePolicy::UseExistingDeadline());
     client_->OnBrowserCompositorSurfaceIdChanged();
   }
@@ -400,12 +394,11 @@ BrowserCompositorMac::GetScopedRendererSurfaceIdAllocator(
                                        std::move(allocation_task));
 }
 
-const viz::LocalSurfaceIdAllocation&
-BrowserCompositorMac::GetRendererLocalSurfaceIdAllocation() {
-  if (!dfh_local_surface_id_allocator_.HasValidLocalSurfaceIdAllocation())
+const viz::LocalSurfaceId& BrowserCompositorMac::GetRendererLocalSurfaceId() {
+  if (!dfh_local_surface_id_allocator_.HasValidLocalSurfaceId())
     dfh_local_surface_id_allocator_.GenerateId();
 
-  return dfh_local_surface_id_allocator_.GetCurrentLocalSurfaceIdAllocation();
+  return dfh_local_surface_id_allocator_.GetCurrentLocalSurfaceId();
 }
 
 void BrowserCompositorMac::TransformPointToRootSurface(gfx::PointF* point) {

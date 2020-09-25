@@ -2670,15 +2670,14 @@ TEST_F(RenderWidgetHostViewAuraTest, AutoResizeWithScale) {
       view_->GetNativeView(), parent_view_->GetNativeView()->GetRootWindow(),
       gfx::Rect());
 
-  viz::LocalSurfaceIdAllocation host_local_surface_id_allocation =
-      view_->GetLocalSurfaceIdAllocation();
-  EXPECT_TRUE(host_local_surface_id_allocation.IsValid());
+  viz::LocalSurfaceId host_local_surface_id = view_->GetLocalSurfaceId();
+  EXPECT_TRUE(host_local_surface_id.is_valid());
 
   widget_host_->ClearVisualProperties();
 
   view_->EnableAutoResize(gfx::Size(50, 50), gfx::Size(100, 100));
 
-  // Update to the renderer. It includes the current LocalSurfaceIdAllocation.
+  // Update to the renderer. It includes the current LocalSurfaceId.
   base::RunLoop().RunUntilIdle();
   ASSERT_EQ(1u, widget_host_->visual_properties().size());
   {
@@ -2689,26 +2688,21 @@ TEST_F(RenderWidgetHostViewAuraTest, AutoResizeWithScale) {
     EXPECT_EQ(gfx::Size(100, 100), visual_properties.max_size_for_auto_resize);
     // Default DSF is 1.
     EXPECT_EQ(1, visual_properties.screen_info.device_scale_factor);
-    // Passed the original LocalSurfaceIdAllocation.
-    EXPECT_TRUE(visual_properties.local_surface_id_allocation.has_value());
-    EXPECT_EQ(host_local_surface_id_allocation,
-              visual_properties.local_surface_id_allocation.value());
+    // Passed the original LocalSurfaceId.
+    EXPECT_TRUE(visual_properties.local_surface_id.has_value());
+    EXPECT_EQ(host_local_surface_id,
+              visual_properties.local_surface_id.value());
   }
 
-  // Receive a changed LocalSurfaceIdAllocation from the renderer with a size.
-  viz::LocalSurfaceIdAllocation renderer_local_surface_id_allocation(
-      viz::LocalSurfaceId(
-          host_local_surface_id_allocation.local_surface_id()
-              .parent_sequence_number(),
-          host_local_surface_id_allocation.local_surface_id()
-                  .child_sequence_number() +
-              1,
-          host_local_surface_id_allocation.local_surface_id().embed_token()),
-      base::TimeTicks::Now());
+  // Receive a changed LocalSurfaceId from the renderer with a size.
+  viz::LocalSurfaceId renderer_local_surface_id(
+      host_local_surface_id.parent_sequence_number(),
+      host_local_surface_id.child_sequence_number() + 1,
+      host_local_surface_id.embed_token());
   {
     cc::RenderFrameMetadata metadata;
     metadata.viewport_size_in_pixels = gfx::Size(75, 75);
-    metadata.local_surface_id_allocation = renderer_local_surface_id_allocation;
+    metadata.local_surface_id = renderer_local_surface_id;
     static_cast<RenderFrameMetadataProvider::Observer*>(widget_host_)
         ->OnLocalSurfaceIdChanged(metadata);
   }
@@ -2730,12 +2724,12 @@ TEST_F(RenderWidgetHostViewAuraTest, AutoResizeWithScale) {
     EXPECT_EQ(gfx::Size(100, 100), visual_properties.max_size_for_auto_resize);
     // Updated DSF for the renderer.
     EXPECT_EQ(2, visual_properties.screen_info.device_scale_factor);
-    // The LocalSurfaceIdAllocation has changed to the one from the renderer.
-    EXPECT_TRUE(visual_properties.local_surface_id_allocation.has_value());
-    EXPECT_NE(host_local_surface_id_allocation,
-              visual_properties.local_surface_id_allocation.value());
-    EXPECT_NE(renderer_local_surface_id_allocation,
-              visual_properties.local_surface_id_allocation.value());
+    // The LocalSurfaceId has changed to the one from the renderer.
+    EXPECT_TRUE(visual_properties.local_surface_id.has_value());
+    EXPECT_NE(host_local_surface_id,
+              visual_properties.local_surface_id.value());
+    EXPECT_NE(renderer_local_surface_id,
+              visual_properties.local_surface_id.value());
   }
 }
 
@@ -2747,9 +2741,8 @@ TEST_F(RenderWidgetHostViewAuraTest, AutoResizeWithBrowserInitiatedResize) {
   aura::client::ParentWindowWithContext(
       view_->GetNativeView(), parent_view_->GetNativeView()->GetRootWindow(),
       gfx::Rect());
-  viz::LocalSurfaceIdAllocation host_local_surface_id_allocation(
-      view_->GetLocalSurfaceIdAllocation());
-  EXPECT_TRUE(host_local_surface_id_allocation.IsValid());
+  viz::LocalSurfaceId host_local_surface_id(view_->GetLocalSurfaceId());
+  EXPECT_TRUE(host_local_surface_id.is_valid());
 
   widget_host_->ClearVisualProperties();
   view_->EnableAutoResize(gfx::Size(50, 50), gfx::Size(100, 100));
@@ -2763,26 +2756,21 @@ TEST_F(RenderWidgetHostViewAuraTest, AutoResizeWithBrowserInitiatedResize) {
     // Auto-resizve limits sent to the renderer.
     EXPECT_EQ(gfx::Size(50, 50), visual_properties.min_size_for_auto_resize);
     EXPECT_EQ(gfx::Size(100, 100), visual_properties.max_size_for_auto_resize);
-    // The original LocalSurfaceIdAllocation is sent.
-    EXPECT_TRUE(visual_properties.local_surface_id_allocation.has_value());
-    EXPECT_EQ(host_local_surface_id_allocation,
-              visual_properties.local_surface_id_allocation.value());
+    // The original LocalSurfaceId is sent.
+    EXPECT_TRUE(visual_properties.local_surface_id.has_value());
+    EXPECT_EQ(host_local_surface_id,
+              visual_properties.local_surface_id.value());
   }
 
-  // A size arrives from the renderer with a changed LocalSurfaceIdAllocation.
-  viz::LocalSurfaceIdAllocation renderer_local_surface_id_allocation(
-      viz::LocalSurfaceId(
-          host_local_surface_id_allocation.local_surface_id()
-              .parent_sequence_number(),
-          host_local_surface_id_allocation.local_surface_id()
-                  .child_sequence_number() +
-              1,
-          host_local_surface_id_allocation.local_surface_id().embed_token()),
-      base::TimeTicks::Now());
+  // A size arrives from the renderer with a changed LocalSurfaceId.
+  viz::LocalSurfaceId renderer_local_surface_id(
+      host_local_surface_id.parent_sequence_number(),
+      host_local_surface_id.child_sequence_number() + 1,
+      host_local_surface_id.embed_token());
   {
     cc::RenderFrameMetadata metadata;
     metadata.viewport_size_in_pixels = gfx::Size(75, 75);
-    metadata.local_surface_id_allocation = renderer_local_surface_id_allocation;
+    metadata.local_surface_id = renderer_local_surface_id;
     static_cast<RenderFrameMetadataProvider::Observer*>(widget_host_)
         ->OnLocalSurfaceIdChanged(metadata);
   }
@@ -2803,12 +2791,12 @@ TEST_F(RenderWidgetHostViewAuraTest, AutoResizeWithBrowserInitiatedResize) {
     EXPECT_EQ(gfx::Size(100, 100), visual_properties.max_size_for_auto_resize);
     EXPECT_EQ(gfx::Size(120, 120), visual_properties.new_size);
     EXPECT_EQ(1, visual_properties.screen_info.device_scale_factor);
-    // A newly generated LocalSurfaceIdAllocation is sent.
-    EXPECT_TRUE(visual_properties.local_surface_id_allocation.has_value());
-    EXPECT_NE(host_local_surface_id_allocation,
-              visual_properties.local_surface_id_allocation.value());
-    EXPECT_NE(renderer_local_surface_id_allocation,
-              visual_properties.local_surface_id_allocation.value());
+    // A newly generated LocalSurfaceId is sent.
+    EXPECT_TRUE(visual_properties.local_surface_id.has_value());
+    EXPECT_NE(host_local_surface_id,
+              visual_properties.local_surface_id.value());
+    EXPECT_NE(renderer_local_surface_id,
+              visual_properties.local_surface_id.value());
   }
 }
 
@@ -2820,29 +2808,27 @@ TEST_F(RenderWidgetHostViewAuraTest, ChildAllocationAcceptedInParent) {
       view_->GetNativeView(), parent_view_->GetNativeView()->GetRootWindow(),
       gfx::Rect());
   sink_->ClearMessages();
-  viz::LocalSurfaceIdAllocation local_surface_id_allocation1(
-      view_->GetLocalSurfaceIdAllocation());
-  EXPECT_TRUE(local_surface_id_allocation1.IsValid());
+  viz::LocalSurfaceId local_surface_id1(view_->GetLocalSurfaceId());
+  EXPECT_TRUE(local_surface_id1.is_valid());
 
   widget_host_->SetAutoResize(true, gfx::Size(50, 50), gfx::Size(100, 100));
   viz::ChildLocalSurfaceIdAllocator child_allocator;
-  child_allocator.UpdateFromParent(local_surface_id_allocation1);
+  child_allocator.UpdateFromParent(local_surface_id1);
   child_allocator.GenerateId();
-  viz::LocalSurfaceIdAllocation local_surface_id_allocation2 =
-      child_allocator.GetCurrentLocalSurfaceIdAllocation();
+  viz::LocalSurfaceId local_surface_id2 =
+      child_allocator.GetCurrentLocalSurfaceId();
 
   {
     cc::RenderFrameMetadata metadata;
     metadata.viewport_size_in_pixels = gfx::Size(75, 75);
-    metadata.local_surface_id_allocation = local_surface_id_allocation2;
+    metadata.local_surface_id = local_surface_id2;
     static_cast<RenderFrameMetadataProvider::Observer*>(widget_host_)
         ->OnLocalSurfaceIdChanged(metadata);
   }
 
-  viz::LocalSurfaceIdAllocation local_surface_id_allocation3(
-      view_->GetLocalSurfaceIdAllocation());
-  EXPECT_NE(local_surface_id_allocation1, local_surface_id_allocation3);
-  EXPECT_EQ(local_surface_id_allocation2, local_surface_id_allocation3);
+  viz::LocalSurfaceId local_surface_id3(view_->GetLocalSurfaceId());
+  EXPECT_NE(local_surface_id1, local_surface_id3);
+  EXPECT_EQ(local_surface_id2, local_surface_id3);
 }
 
 // This test verifies that if the parent is hidden when the child sends a
@@ -2855,16 +2841,15 @@ TEST_F(RenderWidgetHostViewAuraTest,
       view_->GetNativeView(), parent_view_->GetNativeView()->GetRootWindow(),
       gfx::Rect());
   widget_host_->ClearVisualProperties();
-  viz::LocalSurfaceIdAllocation local_surface_id_allocation1(
-      view_->GetLocalSurfaceIdAllocation());
-  EXPECT_TRUE(local_surface_id_allocation1.IsValid());
+  viz::LocalSurfaceId local_surface_id1(view_->GetLocalSurfaceId());
+  EXPECT_TRUE(local_surface_id1.is_valid());
 
   widget_host_->SetAutoResize(true, gfx::Size(50, 50), gfx::Size(100, 100));
   viz::ChildLocalSurfaceIdAllocator child_allocator;
-  child_allocator.UpdateFromParent(local_surface_id_allocation1);
+  child_allocator.UpdateFromParent(local_surface_id1);
   child_allocator.GenerateId();
-  viz::LocalSurfaceIdAllocation local_surface_id_allocation2 =
-      child_allocator.GetCurrentLocalSurfaceIdAllocation();
+  viz::LocalSurfaceId local_surface_id2 =
+      child_allocator.GetCurrentLocalSurfaceId();
 
   view_->WasOccluded();
   EXPECT_TRUE(widget_host_->is_hidden());
@@ -2872,15 +2857,14 @@ TEST_F(RenderWidgetHostViewAuraTest,
   {
     cc::RenderFrameMetadata metadata;
     metadata.viewport_size_in_pixels = gfx::Size(75, 75);
-    metadata.local_surface_id_allocation = local_surface_id_allocation2;
+    metadata.local_surface_id = local_surface_id2;
     static_cast<RenderFrameMetadataProvider::Observer*>(widget_host_)
         ->OnLocalSurfaceIdChanged(metadata);
   }
 
-  viz::LocalSurfaceIdAllocation local_surface_id_allocation3(
-      view_->GetLocalSurfaceIdAllocation());
-  EXPECT_NE(local_surface_id_allocation1, local_surface_id_allocation3);
-  EXPECT_EQ(local_surface_id_allocation2, local_surface_id_allocation3);
+  viz::LocalSurfaceId local_surface_id3(view_->GetLocalSurfaceId());
+  EXPECT_NE(local_surface_id1, local_surface_id3);
+  EXPECT_EQ(local_surface_id2, local_surface_id3);
 
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(0u, widget_host_->visual_properties().size());
@@ -2894,39 +2878,33 @@ TEST_F(RenderWidgetHostViewAuraTest, ConflictingAllocationsResolve) {
       view_->GetNativeView(), parent_view_->GetNativeView()->GetRootWindow(),
       gfx::Rect());
   sink_->ClearMessages();
-  viz::LocalSurfaceIdAllocation local_surface_id_allocation1(
-      view_->GetLocalSurfaceIdAllocation());
-  EXPECT_TRUE(local_surface_id_allocation1.IsValid());
+  viz::LocalSurfaceId local_surface_id1(view_->GetLocalSurfaceId());
+  EXPECT_TRUE(local_surface_id1.is_valid());
 
   widget_host_->SetAutoResize(true, gfx::Size(50, 50), gfx::Size(100, 100));
   viz::ChildLocalSurfaceIdAllocator child_allocator;
-  child_allocator.UpdateFromParent(local_surface_id_allocation1);
+  child_allocator.UpdateFromParent(local_surface_id1);
   child_allocator.GenerateId();
-  viz::LocalSurfaceIdAllocation local_surface_id_allocation2 =
-      child_allocator.GetCurrentLocalSurfaceIdAllocation();
+  viz::LocalSurfaceId local_surface_id2 =
+      child_allocator.GetCurrentLocalSurfaceId();
 
   {
     cc::RenderFrameMetadata metadata;
     metadata.viewport_size_in_pixels = gfx::Size(75, 75);
-    metadata.local_surface_id_allocation = local_surface_id_allocation2;
+    metadata.local_surface_id = local_surface_id2;
     static_cast<RenderFrameMetadataProvider::Observer*>(widget_host_)
         ->OnLocalSurfaceIdChanged(metadata);
   }
 
   // Cause a conflicting viz::LocalSurfaceId allocation
   aura_test_helper_->GetTestScreen()->SetDeviceScaleFactor(2.0f);
-  viz::LocalSurfaceIdAllocation merged_local_surface_id_allocation(
-      view_->GetLocalSurfaceIdAllocation());
-  EXPECT_NE(local_surface_id_allocation1, merged_local_surface_id_allocation);
-  EXPECT_NE(local_surface_id_allocation2, merged_local_surface_id_allocation);
-  EXPECT_GT(
-      merged_local_surface_id_allocation.local_surface_id()
-          .parent_sequence_number(),
-      local_surface_id_allocation2.local_surface_id().parent_sequence_number());
-  EXPECT_EQ(
-      merged_local_surface_id_allocation.local_surface_id()
-          .child_sequence_number(),
-      local_surface_id_allocation2.local_surface_id().child_sequence_number());
+  viz::LocalSurfaceId merged_local_surface_id(view_->GetLocalSurfaceId());
+  EXPECT_NE(local_surface_id1, merged_local_surface_id);
+  EXPECT_NE(local_surface_id2, merged_local_surface_id);
+  EXPECT_GT(merged_local_surface_id.parent_sequence_number(),
+            local_surface_id2.parent_sequence_number());
+  EXPECT_EQ(merged_local_surface_id.child_sequence_number(),
+            local_surface_id2.child_sequence_number());
 }
 
 // Checks that WidgetInputHandler::CursorVisibilityChange IPC messages are
@@ -3061,8 +3039,7 @@ TEST_F(RenderWidgetHostViewAuraTest, UpdateCursorIfOverSelf) {
 TEST_F(RenderWidgetHostViewAuraTest, ZeroSizeStillGetsLocalSurfaceId) {
   parent_local_surface_id_allocator_.GenerateId();
   viz::LocalSurfaceId local_surface_id =
-      parent_local_surface_id_allocator_.GetCurrentLocalSurfaceIdAllocation()
-          .local_surface_id();
+      parent_local_surface_id_allocator_.GetCurrentLocalSurfaceId();
 
   view_->InitAsChild(nullptr);
 
@@ -3083,9 +3060,9 @@ TEST_F(RenderWidgetHostViewAuraTest, ZeroSizeStillGetsLocalSurfaceId) {
         widget_host_->visual_properties().at(0);
     // Empty size is sent.
     EXPECT_EQ(gfx::Size(), visual_properties.new_size);
-    // A LocalSurfaceIdAllocation is sent too.
-    ASSERT_TRUE(visual_properties.local_surface_id_allocation.has_value());
-    EXPECT_TRUE(visual_properties.local_surface_id_allocation->IsValid());
+    // A LocalSurfaceId is sent too.
+    ASSERT_TRUE(visual_properties.local_surface_id.has_value());
+    EXPECT_TRUE(visual_properties.local_surface_id->is_valid());
   }
 }
 
@@ -3093,8 +3070,7 @@ TEST_F(RenderWidgetHostViewAuraTest, BackgroundColorMatchesCompositorFrame) {
   gfx::Size frame_size(100, 100);
   parent_local_surface_id_allocator_.GenerateId();
   viz::LocalSurfaceId local_surface_id =
-      parent_local_surface_id_allocator_.GetCurrentLocalSurfaceIdAllocation()
-          .local_surface_id();
+      parent_local_surface_id_allocator_.GetCurrentLocalSurfaceId();
 
   view_->InitAsChild(nullptr);
   aura::client::ParentWindowWithContext(
@@ -5581,8 +5557,7 @@ TEST_F(RenderWidgetHostViewAuraTest, NewContentRenderingTimeout) {
 
   widget_host_->set_new_content_rendering_delay_for_testing(kTimeout);
 
-  viz::LocalSurfaceId id0 =
-      view_->GetLocalSurfaceIdAllocation().local_surface_id();
+  viz::LocalSurfaceId id0 = view_->GetLocalSurfaceId();
   EXPECT_TRUE(id0.is_valid());
 
   // No LocalSurfaceId will be allocated if the view is hidden during
@@ -5591,8 +5566,7 @@ TEST_F(RenderWidgetHostViewAuraTest, NewContentRenderingTimeout) {
   // No new LocalSurfaceId should be allocated for the first navigation and the
   // timer should not fire.
   widget_host_->DidNavigate();
-  viz::LocalSurfaceId id1 =
-      view_->GetLocalSurfaceIdAllocation().local_surface_id();
+  viz::LocalSurfaceId id1 = view_->GetLocalSurfaceId();
   EXPECT_EQ(id0, id1);
   {
     base::RunLoop run_loop;
@@ -5606,8 +5580,7 @@ TEST_F(RenderWidgetHostViewAuraTest, NewContentRenderingTimeout) {
 
   // Start the timer. Verify that a new LocalSurfaceId is allocated.
   widget_host_->DidNavigate();
-  viz::LocalSurfaceId id2 =
-      view_->GetLocalSurfaceIdAllocation().local_surface_id();
+  viz::LocalSurfaceId id2 = view_->GetLocalSurfaceId();
   EXPECT_TRUE(id2.is_valid());
   EXPECT_LT(id1.parent_sequence_number(), id2.parent_sequence_number());
 
@@ -5632,14 +5605,12 @@ TEST_F(RenderWidgetHostViewAuraTest, AllocateLocalSurfaceIdOnEviction) {
       view_->GetNativeView(), parent_view_->GetNativeView()->GetRootWindow(),
       gfx::Rect());
   view_->Show();
-  viz::LocalSurfaceId id1 =
-      view_->GetLocalSurfaceIdAllocation().local_surface_id();
+  viz::LocalSurfaceId id1 = view_->GetLocalSurfaceId();
   view_->Hide();
   static_cast<viz::FrameEvictorClient*>(view_->delegated_frame_host_.get())
       ->EvictDelegatedFrame();
   view_->Show();
-  viz::LocalSurfaceId id2 =
-      view_->GetLocalSurfaceIdAllocation().local_surface_id();
+  viz::LocalSurfaceId id2 = view_->GetLocalSurfaceId();
   EXPECT_NE(id1, id2);
 }
 
@@ -5667,8 +5638,7 @@ TEST_F(RenderWidgetHostViewAuraTest, DontDropFallbackIfNotResizedWhileHidden) {
       view_->GetNativeView(), parent_view_->GetNativeView()->GetRootWindow(),
       gfx::Rect());
   view_->Show();
-  viz::LocalSurfaceId id1 =
-      view_->GetLocalSurfaceIdAllocation().local_surface_id();
+  viz::LocalSurfaceId id1 = view_->GetLocalSurfaceId();
   // Force fallback being set.
   view_->DidNavigate();
   view_->ResetFallbackToFirstNavigationSurface();

@@ -506,8 +506,6 @@ TEST_F(StructTraitsTest, CompositorFrame) {
   const float page_scale_factor = 1337.5f;
   const gfx::SizeF scrollable_viewport_size(1337.7f, 1234.5f);
   const BeginFrameAck begin_frame_ack(5, 10, false);
-  const base::TimeTicks local_surface_id_allocation_time =
-      base::TimeTicks::Now();
 
   CompositorFrame input;
   input.metadata.device_scale_factor = device_scale_factor;
@@ -518,8 +516,6 @@ TEST_F(StructTraitsTest, CompositorFrame) {
   input.resource_list.push_back(resource);
   input.metadata.begin_frame_ack = begin_frame_ack;
   input.metadata.frame_token = 1;
-  input.metadata.local_surface_id_allocation_time =
-      local_surface_id_allocation_time;
 
   CompositorFrame output;
   mojo::test::SerializeAndDeserialize<mojom::CompositorFrame>(&input, &output);
@@ -529,8 +525,6 @@ TEST_F(StructTraitsTest, CompositorFrame) {
   EXPECT_EQ(page_scale_factor, output.metadata.page_scale_factor);
   EXPECT_EQ(scrollable_viewport_size, output.metadata.scrollable_viewport_size);
   EXPECT_EQ(begin_frame_ack, output.metadata.begin_frame_ack);
-  EXPECT_EQ(local_surface_id_allocation_time,
-            output.metadata.local_surface_id_allocation_time);
 
   ASSERT_EQ(1u, output.resource_list.size());
   TransferableResource out_resource = output.resource_list[0];
@@ -644,8 +638,6 @@ TEST_F(StructTraitsTest, CompositorFrameMetadata) {
   FrameDeadline frame_deadline(base::TimeTicks(), 4u, base::TimeDelta(), true);
   const float min_page_scale_factor = 3.5f;
   const float top_controls_visible_height = 12.f;
-  const base::TimeTicks local_surface_id_allocation_time =
-      base::TimeTicks::Now();
 
   CompositorFrameMetadata input;
   input.device_scale_factor = device_scale_factor;
@@ -665,7 +657,6 @@ TEST_F(StructTraitsTest, CompositorFrameMetadata) {
       begin_frame_ack_sequence_number;
   input.min_page_scale_factor = min_page_scale_factor;
   input.top_controls_visible_height.emplace(top_controls_visible_height);
-  input.local_surface_id_allocation_time = local_surface_id_allocation_time;
 
   CompositorFrameMetadata output;
   mojo::test::SerializeAndDeserialize<mojom::CompositorFrameMetadata>(&input,
@@ -694,8 +685,6 @@ TEST_F(StructTraitsTest, CompositorFrameMetadata) {
             output.begin_frame_ack.frame_id.sequence_number);
   EXPECT_EQ(min_page_scale_factor, output.min_page_scale_factor);
   EXPECT_EQ(*output.top_controls_visible_height, top_controls_visible_height);
-  EXPECT_EQ(local_surface_id_allocation_time,
-            output.local_surface_id_allocation_time);
 }
 
 TEST_F(StructTraitsTest, RenderPass) {

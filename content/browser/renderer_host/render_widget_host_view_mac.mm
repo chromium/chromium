@@ -466,8 +466,7 @@ void RenderWidgetHostViewMac::WasUnOccluded() {
     // tab-switching time is the presentation time for the browser-compositor.
     const bool record_presentation_time = has_saved_frame;
     delegated_frame_host->WasShown(
-        browser_compositor_->GetRendererLocalSurfaceIdAllocation()
-            .local_surface_id(),
+        browser_compositor_->GetRendererLocalSurfaceId(),
         browser_compositor_->GetRendererSize(),
         record_presentation_time
             ? std::move(tab_switch_start_state)
@@ -869,8 +868,7 @@ void RenderWidgetHostViewMac::OnDidUpdateVisualPropertiesComplete(
   browser_compositor_->UpdateSurfaceFromChild(
       host()->auto_resize_enabled(), metadata.device_scale_factor,
       metadata.viewport_size_in_pixels,
-      metadata.local_surface_id_allocation.value_or(
-          viz::LocalSurfaceIdAllocation()));
+      metadata.local_surface_id.value_or(viz::LocalSurfaceId()));
 }
 
 void RenderWidgetHostViewMac::TakeFallbackContentFrom(
@@ -1235,9 +1233,8 @@ RenderWidgetHostViewMac::CreateSyntheticGestureTarget() {
       new SyntheticGestureTargetMac(host, GetInProcessNSView()));
 }
 
-const viz::LocalSurfaceIdAllocation&
-RenderWidgetHostViewMac::GetLocalSurfaceIdAllocation() const {
-  return browser_compositor_->GetRendererLocalSurfaceIdAllocation();
+const viz::LocalSurfaceId& RenderWidgetHostViewMac::GetLocalSurfaceId() const {
+  return browser_compositor_->GetRendererLocalSurfaceId();
 }
 
 const viz::FrameSinkId& RenderWidgetHostViewMac::GetFrameSinkId() const {

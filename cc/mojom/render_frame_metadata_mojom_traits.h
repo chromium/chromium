@@ -11,7 +11,7 @@
 #include "build/build_config.h"
 #include "cc/mojom/render_frame_metadata.mojom-shared.h"
 #include "cc/trees/render_frame_metadata.h"
-#include "services/viz/public/cpp/compositing/local_surface_id_allocation_mojom_traits.h"
+#include "services/viz/public/cpp/compositing/local_surface_id_mojom_traits.h"
 
 namespace mojo {
 
@@ -56,9 +56,9 @@ struct COMPONENT_EXPORT(CC_SHARED_MOJOM_TRAITS)
     return metadata.viewport_size_in_pixels;
   }
 
-  static const base::Optional<viz::LocalSurfaceIdAllocation>&
-  local_surface_id_allocation(const cc::RenderFrameMetadata& metadata) {
-    return metadata.local_surface_id_allocation;
+  static const base::Optional<viz::LocalSurfaceId>& local_surface_id(
+      const cc::RenderFrameMetadata& metadata) {
+    return metadata.local_surface_id;
   }
 
   static float page_scale_factor(const cc::RenderFrameMetadata& metadata) {

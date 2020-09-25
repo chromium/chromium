@@ -255,7 +255,7 @@ TEST_F(SquareInkDropRippleCalculateTransformsTest, RippleIsPixelAligned) {
       SCOPED_TRACE(testing::Message()
                    << "target_size=" << target_size << " dsf=" << dsf);
       host_view->layer()->GetCompositor()->SetScaleAndSize(
-          dsf, gfx::Size(100, 100), viz::LocalSurfaceIdAllocation());
+          dsf, gfx::Size(100, 100), viz::LocalSurfaceId());
 
       SquareInkDropRippleTestApi::InkDropTransforms transforms;
       test_api.CalculateRectTransforms(gfx::Size(target_size, target_size), 0,
