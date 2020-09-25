@@ -592,9 +592,9 @@ void ChromeMainDelegate::PostFieldTrialInitialization() {
   bool is_browser_process = process_type.empty();
 
 #if defined(OS_ANDROID)
-  // For child processes, this requires whitelisting of the sched_setaffinity()
+  // For child processes, this requires allowlisting of the sched_setaffinity()
   // syscall in the sandbox (baseline_policy_android.cc). When this call is
-  // removed, the sandbox whitelist should be updated too.
+  // removed, the sandbox allowlist should be updated too.
   chrome::InitializeCpuAffinityExperiments();
 #endif
 
