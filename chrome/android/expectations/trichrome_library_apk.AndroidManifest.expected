@@ -14,7 +14,8 @@
       android:extractNativeLibs="false"
       android:icon="@drawable/icon_webview"
       android:label="Trichrome Library"
-      android:multiArch="true">
+      android:multiArch="true"
+      android:use32bitAbi="true">
     <static-library android:name="$PACKAGE" android:version="$VERSION_NUMBER"/>
   </application>
 </manifest>
