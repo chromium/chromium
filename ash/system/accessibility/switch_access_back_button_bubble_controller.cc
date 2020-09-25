@@ -9,7 +9,6 @@
 #include "ash/system/accessibility/switch_access_back_button_view.h"
 #include "ash/system/tray/tray_background_view.h"
 #include "ash/system/tray/tray_constants.h"
-#include "ash/system/unified/unified_system_tray_view.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -31,7 +30,6 @@ void SwitchAccessBackButtonBubbleController::ShowBackButton(
     bool for_menu) {
   if (!widget_) {
     back_button_view_ = new SwitchAccessBackButtonView(for_menu);
-    back_button_view_->SetBackground(UnifiedSystemTrayView::CreateBackground());
 
     TrayBubbleView::InitParams init_params;
     init_params.delegate = this;
@@ -43,11 +41,11 @@ void SwitchAccessBackButtonBubbleController::ShowBackButton(
     init_params.is_anchored_to_status_area = false;
     init_params.has_shadow = false;
     init_params.preferred_width = back_button_view_->size().width();
+    init_params.translucent = true;
 
     bubble_view_ = new TrayBubbleView(init_params);
     bubble_view_->SetArrow(views::BubbleBorder::BOTTOM_RIGHT);
     bubble_view_->AddChildView(back_button_view_);
-    bubble_view_->set_color(SK_ColorTRANSPARENT);
     bubble_view_->SetPaintToLayer();
     bubble_view_->layer()->SetFillsBoundsOpaquely(false);
 

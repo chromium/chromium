@@ -71,9 +71,6 @@ class ASH_EXPORT UnifiedSystemTrayView : public views::View,
   // Get focus ring color for system tray elements.
   static SkColor GetFocusRingColor();
 
-  // Create background of UnifiedSystemTray with rounded corners.
-  static std::unique_ptr<views::Background> CreateBackground();
-
   UnifiedSystemTrayView(UnifiedSystemTrayController* controller,
                         bool initially_expanded);
   ~UnifiedSystemTrayView() override;
