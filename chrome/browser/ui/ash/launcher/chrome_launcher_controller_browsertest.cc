@@ -2858,11 +2858,10 @@ IN_PROC_BROWSER_TEST_P(PerDeskShelfAppBrowserTest, AppMenus) {
   }
 }
 
-// TODO(crbug.com/1054116): Also test with kWebApps.
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    ShelfWebAppBrowserTest,
-    ::testing::Values(web_app::ProviderType::kBookmarkApps),
-    web_app::ProviderTypeParamToString);
+INSTANTIATE_TEST_SUITE_P(All,
+                         ShelfWebAppBrowserTest,
+                         ::testing::Values(web_app::ProviderType::kBookmarkApps,
+                                           web_app::ProviderType::kWebApps),
+                         web_app::ProviderTypeParamToString);
 
 INSTANTIATE_TEST_SUITE_P(All, PerDeskShelfAppBrowserTest, ::testing::Bool());

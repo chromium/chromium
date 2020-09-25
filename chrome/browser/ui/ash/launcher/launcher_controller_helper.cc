@@ -91,8 +91,10 @@ base::Optional<std::string> GetAppIdForTab(Profile* profile,
 
       base::Optional<web_app::AppId> app_id =
           provider->registrar().FindAppWithUrlInScope(tab->GetURL());
-      if (app_id)
+      if (app_id && provider->registrar().GetAppUserDisplayMode(*app_id) ==
+                        web_app::DisplayMode::kBrowser) {
         return app_id;
+      }
     }
   }
 
