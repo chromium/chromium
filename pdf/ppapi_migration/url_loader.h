@@ -5,6 +5,7 @@
 #ifndef PDF_PPAPI_MIGRATION_URL_LOADER_H_
 #define PDF_PPAPI_MIGRATION_URL_LOADER_H_
 
+#include <stddef.h>
 #include <stdint.h>
 
 #include <memory>
@@ -60,6 +61,16 @@ struct UrlRequest final {
 
   // Request body.
   std::string body;
+
+  // Thresholds for throttling filling of the loader's internal buffer. Filling
+  // will stop after exceeding the upper threshold, and resume after dropping
+  // below the lower threshold.
+  //
+  // Default values taken from `ppapi/shared_impl/url_request_info_data.cc`. The
+  // PDF viewer never changes the defaults in production, so these fields mostly
+  // exist for testing purposes.
+  size_t buffer_lower_threshold = 50 * 1000 * 1000;
+  size_t buffer_upper_threshold = 100 * 1000 * 1000;
 };
 
 // Properties returned from a URL request. Does not include the response body.
@@ -211,7 +222,12 @@ class BlinkUrlLoader final : public UrlLoader,
   bool ignore_redirects_ = false;
   ResultCallback open_callback_;
 
+  // Thresholds control buffer throttling, as defined in `UrlRequest`.
+  size_t buffer_lower_threshold_ = 0;
+  size_t buffer_upper_threshold_ = 0;
+  bool deferring_loading_ = false;
   base::circular_deque<char> buffer_;
+
   ResultCallback read_callback_;
   base::span<char> client_buffer_;
 };

@@ -140,6 +140,11 @@ void BlinkUrlLoader::Open(const UrlRequest& request, ResultCallback callback) {
                                    GURL(request.custom_referrer_url));
   }
 
+  buffer_lower_threshold_ = request.buffer_lower_threshold;
+  buffer_upper_threshold_ = request.buffer_upper_threshold;
+  DCHECK_GT(buffer_lower_threshold_, 0u);
+  DCHECK_LE(buffer_lower_threshold_, buffer_upper_threshold_);
+
   blink_request.SetRequestContext(blink::mojom::RequestContextType::PLUGIN);
   blink_request.SetRequestDestination(
       network::mojom::RequestDestination::kEmbed);
@@ -235,6 +240,13 @@ void BlinkUrlLoader::DidReceiveData(const char* data, int data_length) {
     return;
 
   buffer_.insert(buffer_.end(), data, data + data_length);
+
+  // Defer loading if the buffer is too full.
+  if (!deferring_loading_ && buffer_.size() >= buffer_upper_threshold_) {
+    deferring_loading_ = true;
+    blink_loader_->SetDefersLoading(true);
+  }
+
   RunReadCallback();
 }
 
@@ -301,6 +313,12 @@ void BlinkUrlLoader::RunReadCallback() {
     auto read_end = read_begin + num_bytes;
     std::copy(read_begin, read_end, client_buffer_.data());
     buffer_.erase(read_begin, read_end);
+
+    // Resume loading if the buffer is too empty.
+    if (deferring_loading_ && buffer_.size() <= buffer_lower_threshold_) {
+      deferring_loading_ = false;
+      blink_loader_->SetDefersLoading(false);
+    }
   } else {
     DCHECK_EQ(state_, LoadingState::kLoadComplete);
     num_bytes = complete_result_;

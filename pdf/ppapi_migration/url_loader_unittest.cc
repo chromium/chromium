@@ -42,9 +42,9 @@
 namespace chrome_pdf {
 namespace {
 
-using ::testing::_;
 using ::testing::Each;
 using ::testing::ElementsAreArray;
+using ::testing::InSequence;
 using ::testing::Invoke;
 using ::testing::NiceMock;
 using ::testing::Return;
@@ -100,7 +100,9 @@ class FakeBlinkUrlLoaderClient : public BlinkUrlLoader::Client {
 
   void Invalidate() { valid_ = false; }
 
-  MockWebAssociatedURLLoader& mock_url_loader() { return *mock_url_loader_; }
+  MockWebAssociatedURLLoader* mock_url_loader() {
+    return mock_url_loader_.get();
+  }
 
   const blink::WebAssociatedURLLoaderOptions& saved_options() const {
     return saved_options_;
@@ -148,7 +150,7 @@ class FakeBlinkUrlLoaderClient : public BlinkUrlLoader::Client {
 class BlinkUrlLoaderTest : public testing::Test {
  protected:
   BlinkUrlLoaderTest() {
-    ON_CALL(fake_client_.mock_url_loader(), LoadAsynchronously(_, _))
+    ON_CALL(*mock_url_loader_, LoadAsynchronously)
         .WillByDefault(
             Invoke(this, &BlinkUrlLoaderTest::FakeLoadAsynchronously));
     loader_ = std::make_unique<BlinkUrlLoader>(fake_client_.GetWeakPtr());
@@ -160,10 +162,18 @@ class BlinkUrlLoaderTest : public testing::Test {
     EXPECT_EQ(loader_.get(), client);
   }
 
+  void StartLoadWithThresholds(size_t lower, size_t upper) {
+    UrlRequest request;
+    request.buffer_lower_threshold = lower;
+    request.buffer_upper_threshold = upper;
+    loader_->Open(request, mock_callback_.Get());
+    loader_->DidReceiveResponse(blink::WebURLResponse());
+  }
+
   int32_t DidFailWithError(const blink::WebURLError& error) {
     int32_t result = 0;
     loader_->Open(UrlRequest(), mock_callback_.Get());
-    EXPECT_CALL(mock_callback_, Run(_)).WillOnce(SaveArg<0>(&result));
+    EXPECT_CALL(mock_callback_, Run).WillOnce(SaveArg<0>(&result));
 
     loader_->DidFail(error);
     return result;
@@ -172,6 +182,9 @@ class BlinkUrlLoaderTest : public testing::Test {
   FakeBlinkUrlLoaderClient fake_client_;
   NiceMock<base::MockCallback<ResultCallback>> mock_callback_;
   std::unique_ptr<BlinkUrlLoader> loader_;
+
+  // Becomes invalid if `loader_` is closed or destructed.
+  MockWebAssociatedURLLoader* mock_url_loader_ = fake_client_.mock_url_loader();
 
   blink::WebURLRequest saved_request_;
 };
@@ -183,8 +196,8 @@ TEST_F(BlinkUrlLoaderTest, GrantUniversalAccess) {
 }
 
 TEST_F(BlinkUrlLoaderTest, Open) {
-  EXPECT_CALL(fake_client_.mock_url_loader(), LoadAsynchronously(_, _));
-  EXPECT_CALL(mock_callback_, Run(_)).Times(0);
+  EXPECT_CALL(*mock_url_loader_, LoadAsynchronously);
+  EXPECT_CALL(mock_callback_, Run).Times(0);
 
   UrlRequest request;
   request.url = "http://example.com/fake.pdf";
@@ -205,8 +218,7 @@ TEST_F(BlinkUrlLoaderTest, Open) {
 }
 
 TEST_F(BlinkUrlLoaderTest, OpenWithInvalidatedClientWeakPtr) {
-  EXPECT_CALL(fake_client_.mock_url_loader(), LoadAsynchronously(_, _))
-      .Times(0);
+  EXPECT_CALL(*mock_url_loader_, LoadAsynchronously).Times(0);
   EXPECT_CALL(mock_callback_, Run(PP_ERROR_FAILED));
 
   fake_client_.InvalidateWeakPtrs();
@@ -214,8 +226,7 @@ TEST_F(BlinkUrlLoaderTest, OpenWithInvalidatedClientWeakPtr) {
 }
 
 TEST_F(BlinkUrlLoaderTest, OpenWithInvalidatedClient) {
-  EXPECT_CALL(fake_client_.mock_url_loader(), LoadAsynchronously(_, _))
-      .Times(0);
+  EXPECT_CALL(*mock_url_loader_, LoadAsynchronously).Times(0);
   EXPECT_CALL(mock_callback_, Run(PP_ERROR_FAILED));
 
   fake_client_.Invalidate();
@@ -343,11 +354,44 @@ TEST_F(BlinkUrlLoaderTest, DidReceiveDataWithZeroLength) {
   loader_->Open(UrlRequest(), mock_callback_.Get());
   loader_->DidReceiveResponse(blink::WebURLResponse());
   loader_->ReadResponseBody(buffer, mock_callback_.Get());
-  EXPECT_CALL(mock_callback_, Run(_)).Times(0);
+  EXPECT_CALL(mock_callback_, Run).Times(0);
 
   loader_->DidReceiveData(kFakeData.data(), 0);
 
   EXPECT_THAT(buffer, Each(0));
+}
+
+TEST_F(BlinkUrlLoaderTest, DidReceiveDataBelowUpperThreshold) {
+  StartLoadWithThresholds(/*lower=*/2, /*upper=*/4);
+  EXPECT_CALL(*mock_url_loader_, SetDefersLoading).Times(0);
+
+  char buffer[3] = {};
+  loader_->DidReceiveData(buffer, sizeof(buffer));
+}
+
+TEST_F(BlinkUrlLoaderTest, DidReceiveDataCrossUpperThreshold) {
+  StartLoadWithThresholds(/*lower=*/2, /*upper=*/4);
+
+  char read_buffer[1];
+  loader_->ReadResponseBody(read_buffer, mock_callback_.Get());
+  {
+    InSequence defer_before_read_callback;
+    EXPECT_CALL(*mock_url_loader_, SetDefersLoading(true));
+    EXPECT_CALL(mock_callback_, Run);
+  }
+
+  char buffer[4] = {};
+  loader_->DidReceiveData(buffer, sizeof(buffer));
+}
+
+TEST_F(BlinkUrlLoaderTest, DidReceiveDataAboveUpperThreshold) {
+  StartLoadWithThresholds(/*lower=*/2, /*upper=*/4);
+
+  char buffer[4] = {};
+  loader_->DidReceiveData(buffer, sizeof(buffer));
+  EXPECT_CALL(*mock_url_loader_, SetDefersLoading).Times(0);
+
+  loader_->DidReceiveData(buffer, sizeof(buffer));
 }
 
 TEST_F(BlinkUrlLoaderTest, ReadResponseBody) {
@@ -362,14 +406,14 @@ TEST_F(BlinkUrlLoaderTest, ReadResponseBody) {
   EXPECT_THAT(buffer, ElementsAreArray(kFakeData));
 
   // Verify no more data returned on next call.
-  EXPECT_CALL(mock_callback_, Run(_)).Times(0);
+  EXPECT_CALL(mock_callback_, Run).Times(0);
   loader_->ReadResponseBody(buffer, mock_callback_.Get());
 }
 
 TEST_F(BlinkUrlLoaderTest, ReadResponseBodyWithoutData) {
   loader_->Open(UrlRequest(), mock_callback_.Get());
   loader_->DidReceiveResponse(blink::WebURLResponse());
-  EXPECT_CALL(mock_callback_, Run(_)).Times(0);
+  EXPECT_CALL(mock_callback_, Run).Times(0);
 
   char buffer[kFakeData.size()] = {};
   loader_->ReadResponseBody(buffer, mock_callback_.Get());
@@ -420,7 +464,7 @@ TEST_F(BlinkUrlLoaderTest, ReadResponseBodyWithBiggerBuffer) {
   EXPECT_THAT(buffer_span.subspan(kFakeData.size()), Each(0));
 
   // Verify no more data returned on next call.
-  EXPECT_CALL(mock_callback_, Run(_)).Times(0);
+  EXPECT_CALL(mock_callback_, Run).Times(0);
   loader_->ReadResponseBody(buffer, mock_callback_.Get());
 }
 
@@ -468,10 +512,49 @@ TEST_F(BlinkUrlLoaderTest, ReadResponseBodyWhileLoadCompleteWithError) {
   EXPECT_THAT(buffer, Each(0));
 }
 
+TEST_F(BlinkUrlLoaderTest, ReadResponseBodyAboveLowerThreshold) {
+  StartLoadWithThresholds(/*lower=*/2, /*upper=*/4);
+
+  char write_buffer[5] = {};
+  loader_->DidReceiveData(write_buffer, sizeof(write_buffer));
+  EXPECT_CALL(*mock_url_loader_, SetDefersLoading).Times(0);
+
+  char buffer[2] = {};
+  loader_->ReadResponseBody(buffer, mock_callback_.Get());
+}
+
+TEST_F(BlinkUrlLoaderTest, ReadResponseBodyCrossLowerThreshold) {
+  StartLoadWithThresholds(/*lower=*/2, /*upper=*/4);
+
+  char write_buffer[5] = {};
+  loader_->DidReceiveData(write_buffer, sizeof(write_buffer));
+  {
+    InSequence resume_before_read_callback;
+    EXPECT_CALL(*mock_url_loader_, SetDefersLoading(false));
+    EXPECT_CALL(mock_callback_, Run);
+  }
+
+  char buffer[3] = {};
+  loader_->ReadResponseBody(buffer, mock_callback_.Get());
+}
+
+TEST_F(BlinkUrlLoaderTest, ReadResponseBodyBelowLowerThreshold) {
+  StartLoadWithThresholds(/*lower=*/2, /*upper=*/4);
+
+  char write_buffer[5] = {};
+  loader_->DidReceiveData(write_buffer, sizeof(write_buffer));
+
+  char buffer[3] = {};
+  loader_->ReadResponseBody(buffer, mock_callback_.Get());
+  EXPECT_CALL(*mock_url_loader_, SetDefersLoading).Times(0);
+
+  loader_->ReadResponseBody(buffer, mock_callback_.Get());
+}
+
 TEST_F(BlinkUrlLoaderTest, DidFinishLoading) {
   loader_->Open(UrlRequest(), mock_callback_.Get());
   loader_->DidReceiveResponse(blink::WebURLResponse());
-  EXPECT_CALL(mock_callback_, Run(_)).Times(0);
+  EXPECT_CALL(mock_callback_, Run).Times(0);
 
   loader_->DidFinishLoading();
 }
@@ -527,7 +610,7 @@ TEST_F(BlinkUrlLoaderTest, DidFailWithWebSecurityViolationError) {
 }
 
 TEST_F(BlinkUrlLoaderTest, CloseWhileWaitingToOpen) {
-  EXPECT_CALL(mock_callback_, Run(_)).Times(0);
+  EXPECT_CALL(mock_callback_, Run).Times(0);
 
   loader_->Close();
 }
@@ -542,7 +625,7 @@ TEST_F(BlinkUrlLoaderTest, CloseWhileOpening) {
 TEST_F(BlinkUrlLoaderTest, CloseWhileStreamingData) {
   loader_->Open(UrlRequest(), mock_callback_.Get());
   loader_->DidReceiveResponse(blink::WebURLResponse());
-  EXPECT_CALL(mock_callback_, Run(_)).Times(0);
+  EXPECT_CALL(mock_callback_, Run).Times(0);
 
   loader_->Close();
 }
@@ -561,7 +644,7 @@ TEST_F(BlinkUrlLoaderTest, CloseWhileLoadComplete) {
   loader_->Open(UrlRequest(), mock_callback_.Get());
   loader_->DidReceiveResponse(blink::WebURLResponse());
   loader_->DidFinishLoading();
-  EXPECT_CALL(mock_callback_, Run(_)).Times(0);
+  EXPECT_CALL(mock_callback_, Run).Times(0);
 
   loader_->Close();
 }
@@ -569,7 +652,7 @@ TEST_F(BlinkUrlLoaderTest, CloseWhileLoadComplete) {
 TEST_F(BlinkUrlLoaderTest, CloseAgain) {
   loader_->Open(UrlRequest(), mock_callback_.Get());
   loader_->Close();
-  EXPECT_CALL(mock_callback_, Run(_)).Times(0);
+  EXPECT_CALL(mock_callback_, Run).Times(0);
 
   loader_->Close();
 }
