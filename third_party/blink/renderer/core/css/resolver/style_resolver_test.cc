@@ -781,4 +781,35 @@ TEST_F(StyleResolverTest, CascadedValuesForPseudoElement) {
   EXPECT_EQ("1em", map.at(top)->CssText());
 }
 
+TEST_F(StyleResolverTest, EnsureComputedStyleSlotFallback) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <div id="host"><span></span></div>
+  )HTML");
+
+  ShadowRoot& shadow_root =
+      GetDocument().getElementById("host")->AttachShadowRootInternal(
+          ShadowRootType::kOpen);
+  shadow_root.setInnerHTML(R"HTML(
+    <style>
+      slot { color: red }
+    </style>
+    <slot><span id="fallback"></span></slot>
+  )HTML");
+  Element* fallback = shadow_root.getElementById("fallback");
+  ASSERT_TRUE(fallback);
+
+  UpdateAllLifecyclePhasesForTest();
+
+  // Elements outside the flat tree does not get styles computed during the
+  // lifecycle update.
+  EXPECT_FALSE(fallback->GetComputedStyle());
+
+  // We are currently allowed to query the computed style of elements outside
+  // the flat tree, but slot fallback does not inherit from the slot.
+  const ComputedStyle* fallback_style = fallback->EnsureComputedStyle();
+  ASSERT_TRUE(fallback_style);
+  EXPECT_EQ(Color::kBlack,
+            fallback_style->VisitedDependentColor(GetCSSPropertyColor()));
+}
+
 }  // namespace blink

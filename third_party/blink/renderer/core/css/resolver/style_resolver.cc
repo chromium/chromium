@@ -903,9 +903,10 @@ void StyleResolver::InitStyleAndApplyInheritance(Element& element,
       // Strictly, we should only allow the root element to inherit from
       // initial styles, but we allow getComputedStyle() for connected
       // elements outside the flat tree rooted at an unassigned shadow host
-      // child, or Shadow DOM V0 insertion points.
+      // child, a slot fallback element, or Shadow DOM V0 insertion points.
       DCHECK(element.IsV0InsertionPoint() ||
-             (IsShadowHost(element.parentNode()) &&
+             ((IsShadowHost(element.parentNode()) ||
+               IsA<HTMLSlotElement>(element.parentNode())) &&
               !LayoutTreeBuilderTraversal::ParentElement(element)));
       state.Style()->SetIsEnsuredOutsideFlatTree();
     }
