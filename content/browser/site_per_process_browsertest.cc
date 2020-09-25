@@ -8773,9 +8773,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 // same site as the canceled RFH doesn't lead to a renderer crash.  The steps
 // here are similar to ReuseNonLiveRenderViewHostAfterCancelPending, but don't
 // involve crashing the renderer. See https://crbug.com/651980.
-// Flaky on all platforms, see https://crbug.com/1104826.
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
-                       DISABLED_RecreateMainFrameAfterCancelPending) {
+                       RecreateMainFrameAfterCancelPending) {
   GURL a_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL b_url(embedded_test_server()->GetURL("b.com", "/title2.html"));
   GURL c_url(embedded_test_server()->GetURL("c.com", "/title3.html"));
