@@ -79,15 +79,13 @@ void PluginVmHandler::RegisterMessages() {
 }
 
 void PluginVmHandler::OnJavascriptAllowed() {
-  if (chromeos::CrosUsbDetector::Get()) {
-    chromeos::CrosUsbDetector::Get()->AddUsbDeviceObserver(this);
+  if (auto* detector = chromeos::CrosUsbDetector::Get()) {
+    cros_usb_device_observer_.Add(detector);
   }
 }
 
 void PluginVmHandler::OnJavascriptDisallowed() {
-  if (chromeos::CrosUsbDetector::Get()) {
-    chromeos::CrosUsbDetector::Get()->RemoveUsbDeviceObserver(this);
-  }
+  cros_usb_device_observer_.RemoveAll();
 }
 
 void PluginVmHandler::HandleGetPluginVmSharedPathsDisplayText(
