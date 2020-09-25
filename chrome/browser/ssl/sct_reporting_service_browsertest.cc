@@ -153,8 +153,6 @@ IN_PROC_BROWSER_TEST_F(SCTReportingServiceBrowserTest,
 
   // Check that no reports are sent.
   EXPECT_EQ(0u, connection_listener()->connections_seen());
-
-  // TODO(crbug.com/1107897): Check histograms once they are added.
 }
 
 // Tests that reports should be sent when extended reporting is opted in.

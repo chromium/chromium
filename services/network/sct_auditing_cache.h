@@ -104,6 +104,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SCTAuditingCache {
   net::MutableNetworkTrafficAnnotationTag traffic_annotation_;
   mojo::Remote<mojom::URLLoaderFactory> url_loader_factory_;
 
+  size_t cache_size_hwm_;
+
   base::WeakPtrFactory<SCTAuditingCache> weak_factory_{this};
 };
 

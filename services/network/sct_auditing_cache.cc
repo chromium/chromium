@@ -7,6 +7,7 @@
 #include "base/callback.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "crypto/secure_hash.h"
 #include "crypto/sha2.h"
@@ -80,6 +81,39 @@ sct_auditing::SCTWithSourceAndVerifyStatus::Source MapSCTOriginToSource(
   }
 }
 
+// Records the high-water mark of the cache size (in number of reports).
+void RecordSCTAuditingCacheHighWaterMarkMetrics(size_t hwm) {
+  base::UmaHistogramCounts1000("Security.SCTAuditing.OptIn.CacheHWM", hwm);
+}
+
+// Records whether a new report is deduplicated against an existing report in
+// the cache.
+void RecordSCTAuditingReportDeduplicatedMetrics(bool deduplicated) {
+  base::UmaHistogramBoolean("Security.SCTAuditing.OptIn.ReportDeduplicated",
+                            deduplicated);
+}
+
+// Records whether a new report that wasn't deduplicated was sampled for
+// sending to the reporting server.
+void RecordSCTAuditingReportSampledMetrics(bool sampled) {
+  base::UmaHistogramBoolean("Security.SCTAuditing.OptIn.ReportSampled",
+                            sampled);
+}
+
+// Records the size of a report that will be sent to the reporting server, in
+// bytes. Used to track how much bandwidth is consumed by sending reports.
+void RecordSCTAuditingReportSizeMetrics(size_t report_size) {
+  base::UmaHistogramCounts10M("Security.SCTAuditing.OptIn.ReportSize",
+                              report_size);
+}
+
+// Records whether sending the report to the reporting server succeeded for each
+// report sent.
+void RecordSCTAuditingReportSucceededMetrics(bool success) {
+  base::UmaHistogramBoolean("Security.SCTAuditing.OptIn.ReportSucceeded",
+                            success);
+}
+
 // Owns the SimpleURLLoader and runs the callback and then deletes itself when
 // the response arrives.
 class SimpleURLLoaderOwner {
@@ -124,8 +158,11 @@ class SimpleURLLoaderOwner {
 
 }  // namespace
 
-SCTAuditingCache::SCTAuditingCache(size_t cache_size) : cache_(cache_size) {}
-SCTAuditingCache::~SCTAuditingCache() = default;
+SCTAuditingCache::SCTAuditingCache(size_t cache_size)
+    : cache_(cache_size), cache_size_hwm_(0) {}
+SCTAuditingCache::~SCTAuditingCache() {
+  RecordSCTAuditingCacheHighWaterMarkMetrics(cache_size_hwm_);
+}
 
 void SCTAuditingCache::MaybeEnqueueReport(
     NetworkContext* context,
@@ -152,8 +189,11 @@ void SCTAuditingCache::MaybeEnqueueReport(
   // Check if the SCTs are already in the cache. This will update the last seen
   // time if they are present in the cache.
   auto it = cache_.Get(cache_key);
-  if (it != cache_.end())
+  if (it != cache_.end()) {
+    RecordSCTAuditingReportDeduplicatedMetrics(true);
     return;
+  }
+  RecordSCTAuditingReportDeduplicatedMetrics(false);
 
   // Set the `cache_key` with an null report. If we don't choose to sample these
   // SCTs, then we don't need to store a report as we won't reference it again
@@ -161,8 +201,11 @@ void SCTAuditingCache::MaybeEnqueueReport(
   // then construct the report and move it into the cache entry for `cache_key`.
   cache_.Put(cache_key, nullptr);
 
-  if (base::RandDouble() > sampling_rate_)
+  if (base::RandDouble() > sampling_rate_) {
+    RecordSCTAuditingReportSampledMetrics(false);
     return;
+  }
+  RecordSCTAuditingReportSampledMetrics(true);
 
   // Insert SCTs into cache.
   auto report = std::make_unique<sct_auditing::TLSConnectionReport>();
@@ -195,7 +238,16 @@ void SCTAuditingCache::MaybeEnqueueReport(
     sct_source_and_status->set_sct(serialized_sct);
   }
 
+  // Log the size of the report. This only tracks reports that are not dropped
+  // due to sampling (as those reports will just be empty).
+  RecordSCTAuditingReportSizeMetrics(report->ByteSizeLong());
+
   cache_.Put(cache_key, std::move(report));
+
+  // Track high-water-mark for the size of the cache.
+  if (cache_.size() > cache_size_hwm_)
+    cache_size_hwm_ = cache_.size();
+
   SendReport(cache_key);
 }
 
@@ -259,10 +311,12 @@ void SCTAuditingCache::OnReportComplete(const net::SHA256HashValue& cache_key,
   // TODO(crbug.com/1082860): Mark report as complete on success, handle retries
   // on failures. For now we empty the cache entry to save space once it has
   // been successfully sent.
-  if (net_error == net::OK && http_response_code == net::HTTP_OK) {
+  bool success = net_error == net::OK && http_response_code == net::HTTP_OK;
+  if (success) {
     if (GetPendingReport(cache_key))
       cache_.Put(cache_key, nullptr);
   }
+  RecordSCTAuditingReportSucceededMetrics(success);
 }
 
 void SCTAuditingCache::ClearCache() {

@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "net/base/host_port_pair.h"
@@ -387,6 +388,99 @@ TEST_F(SCTAuditingCacheTest, ReportSentWithServerError) {
   for (const auto& entry : *cache.GetCacheForTesting()) {
     EXPECT_TRUE(entry.second);
   }
+}
+
+// Tests that cache size high water mark metrics are correctly logged.
+TEST_F(SCTAuditingCacheTest, HighWaterMarkMetrics) {
+  base::HistogramTester histograms;
+  // Create a cache so we can trigger destruction when it goes out of scope,
+  // which is when HWM metrics are logged.
+  {
+    SCTAuditingCache cache(5);
+    InitSCTAuditing(&cache);
+
+    const net::HostPortPair host_port_pair1("example1.com", 443);
+    const net::HostPortPair host_port_pair2("example2.com", 443);
+
+    // Fill the cache with two reports.
+    net::SignedCertificateTimestampAndStatusList sct_list1;
+    MakeTestSCTAndStatus(net::ct::SignedCertificateTimestamp::SCT_EMBEDDED,
+                         "extensions1", "signature1", base::Time::Now(),
+                         net::ct::SCT_STATUS_LOG_UNKNOWN, &sct_list1);
+    cache.MaybeEnqueueReport(network_context_.get(), host_port_pair1,
+                             chain_.get(), sct_list1);
+
+    net::SignedCertificateTimestampAndStatusList sct_list2;
+    MakeTestSCTAndStatus(net::ct::SignedCertificateTimestamp::SCT_EMBEDDED,
+                         "extensions2", "signature2", base::Time::Now(),
+                         net::ct::SCT_STATUS_LOG_UNKNOWN, &sct_list2);
+    cache.MaybeEnqueueReport(network_context_.get(), host_port_pair2,
+                             chain_.get(), sct_list2);
+
+    EXPECT_EQ(2u, cache.GetCacheForTesting()->size());
+  }
+
+  // The bucket for a HWM of 2 should have a single sample as there were two
+  // items in the cache when it was destroyed.
+  histograms.ExpectUniqueSample("Security.SCTAuditing.OptIn.CacheHWM", 2, 1);
+}
+
+// Tests that enqueueing a report causes its size to be logged. Trying to log
+// the same SCTs a second time will cause the deduplication to be logged instead
+// of logging the report size a second time.
+TEST_F(SCTAuditingCacheTest, ReportSizeMetrics) {
+  SCTAuditingCache cache(10);
+  InitSCTAuditing(&cache);
+
+  base::HistogramTester histograms;
+
+  const net::HostPortPair host_port_pair("example.com", 443);
+  net::SignedCertificateTimestampAndStatusList sct_list;
+  MakeTestSCTAndStatus(net::ct::SignedCertificateTimestamp::SCT_EMBEDDED,
+                       "extensions", "signature", base::Time::Now(),
+                       net::ct::SCT_STATUS_LOG_UNKNOWN, &sct_list);
+  cache.MaybeEnqueueReport(network_context_.get(), host_port_pair, chain_.get(),
+                           sct_list);
+
+  // Get the size of the enqueued report and test that it is correctly logged.
+  size_t report_size =
+      cache.GetCacheForTesting()->begin()->second->ByteSizeLong();
+  ASSERT_GT(report_size, 0u);
+  histograms.ExpectUniqueSample("Security.SCTAuditing.OptIn.ReportSize",
+                                report_size, 1);
+
+  // Retry enqueueing the same report which will be deduplicated.
+  cache.MaybeEnqueueReport(network_context_.get(), host_port_pair, chain_.get(),
+                           sct_list);
+
+  histograms.ExpectTotalCount("Security.SCTAuditing.OptIn.ReportSampled", 1);
+  histograms.ExpectTotalCount("Security.SCTAuditing.OptIn.ReportSize", 1);
+  histograms.ExpectBucketCount("Security.SCTAuditing.OptIn.ReportDeduplicated",
+                               true, 1);
+}
+
+// Test that metrics for when reports are dropped due to sampling are correctly
+// logged.
+TEST_F(SCTAuditingCacheTest, ReportSampleDroppedMetrics) {
+  base::HistogramTester histograms;
+
+  SCTAuditingCache cache(10);
+  InitSCTAuditing(&cache);
+  cache.set_sampling_rate(0);
+
+  const net::HostPortPair host_port_pair("example.com", 443);
+  net::SignedCertificateTimestampAndStatusList sct_list;
+  MakeTestSCTAndStatus(net::ct::SignedCertificateTimestamp::SCT_EMBEDDED,
+                       "extensions", "signature", base::Time::Now(),
+                       net::ct::SCT_STATUS_LOG_UNKNOWN, &sct_list);
+  cache.MaybeEnqueueReport(network_context_.get(), host_port_pair, chain_.get(),
+                           sct_list);
+
+  histograms.ExpectUniqueSample("Security.SCTAuditing.OptIn.ReportSampled",
+                                false, 1);
+  histograms.ExpectTotalCount("Security.SCTAuditing.OptIn.ReportSize", 0);
+  histograms.ExpectBucketCount("Security.SCTAuditing.OptIn.ReportDeduplicated",
+                               false, 1);
 }
 
 }  // namespace network
