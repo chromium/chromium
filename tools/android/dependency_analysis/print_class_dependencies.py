@@ -20,8 +20,21 @@ class PrintMode:
     """Options of how and which dependencies to output."""
     inbound: bool
     outbound: bool
-    build_targets: bool
+    ignore_modularized: bool
     fully_qualified: bool
+
+
+INBOUND = 'inbound'
+OUTBOUND = 'outbound'
+ALLOWED_PREFIXES = {
+    '//base/',
+    '//base:',
+    '//chrome/browser/',
+    '//components/',
+    '//content/',
+    '//ui/',
+    '//url:',
+}
 
 
 def get_class_name_to_display(fully_qualified_name: str,
@@ -47,15 +60,27 @@ def print_with_indent(indent: int, message: str,
     print(f'{indents}{bullet_point_text}{message}')
 
 
+def is_allowed_dependency(build_target: str) -> bool:
+    return any(build_target.startswith(p) for p in ALLOWED_PREFIXES)
+
+
 def print_class_nodes_grouped_by_target(
         class_nodes: List[class_dependency.JavaClass], print_mode: PrintMode,
-        bullet_point: None):
+        bullet_point: str, ignore_modularized: bool):
     # TODO(crbug.com/1124836): This is not quite correct because
     # sets considered equal can be converted to different strings. Fix this by
     # making JavaClass.build_targets return a List instead of a Set.
+    suspect_dependencies = 0
     class_nodes = sorted(class_nodes, key=lambda c: str(c.build_targets))
     last_build_target = None
     for class_node in class_nodes:
+        if ignore_modularized:
+            if all(
+                    is_allowed_dependency(target)
+                    for target in class_node.build_targets):
+                continue
+            else:
+                suspect_dependencies += 1
         build_target = str(class_node.build_targets)
         if last_build_target != build_target:
             build_target_names = [
@@ -67,18 +92,20 @@ def print_class_nodes_grouped_by_target(
         print_with_indent(
             8, get_class_name_to_display(class_node.name, print_mode),
             bullet_point)
+    if ignore_modularized:
+        if suspect_dependencies:
+            print(f'{suspect_dependencies} dependencies above may need to be '
+                  'broken, ignored others.')
+        else:
+            print('No suspect dependencies, ignored all.')
 
 
 def print_class_nodes(class_nodes: List[class_dependency.JavaClass],
-                      print_mode: PrintMode, bullet_point: None):
-    if print_mode.build_targets:
-        print_class_nodes_grouped_by_target(class_nodes, print_mode,
-                                            bullet_point)
-    else:
-        for class_node in class_nodes:
-            print_with_indent(
-                8, get_class_name_to_display(class_node.name, print_mode),
-                bullet_point)
+                      print_mode: PrintMode, direction: str):
+    ignore_modularized = direction == OUTBOUND and print_mode.ignore_modularized
+    bullet_point = '<-' if direction == INBOUND else '->'
+    print_class_nodes_grouped_by_target(class_nodes, print_mode, bullet_point,
+                                        ignore_modularized)
 
 
 def print_class_dependencies_for_key(
@@ -92,14 +119,14 @@ def print_class_dependencies_for_key(
         print(
             f'{len(node.inbound)} inbound dependency(ies) into {class_name}:')
         print_class_nodes(graph.sorted_nodes_by_name(node.inbound), print_mode,
-                          '<-')
+                          INBOUND)
 
     if print_mode.outbound:
         print(
             f'{len(node.outbound)} outbound dependency(ies) from {class_name}:'
         )
         print_class_nodes(graph.sorted_nodes_by_name(node.outbound),
-                          print_mode, '->')
+                          print_mode, OUTBOUND)
 
 
 def main():
@@ -134,18 +161,20 @@ def main():
                                      dest='outbound_only',
                                      action='store_true',
                                      help='Print outbound dependencies only.')
-    arg_parser.add_argument('--no-build-target',
-                            action='store_true',
-                            help='Do not print build target (cleaner output).')
     arg_parser.add_argument('--fully-qualified',
                             action='store_true',
                             help='Use fully qualified class names instead of '
                             'shortened ones.')
+    arg_parser.add_argument('--ignore-modularized',
+                            action='store_true',
+                            help='Do not print outbound dependencies on '
+                            'allowed (modules, components, base, etc.) '
+                            'dependencies.')
     arguments = arg_parser.parse_args()
 
     print_mode = PrintMode(inbound=not arguments.outbound_only,
                            outbound=not arguments.inbound_only,
-                           build_targets=not arguments.no_build_target,
+                           ignore_modularized=arguments.ignore_modularized,
                            fully_qualified=arguments.fully_qualified)
 
     class_graph = serialization.load_class_graph_from_file(arguments.file)
