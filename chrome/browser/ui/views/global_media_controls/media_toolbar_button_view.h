@@ -12,7 +12,6 @@
 class Browser;
 class BrowserView;
 class FeaturePromoControllerViews;
-class GlobalMediaControlsPromoController;
 class MediaNotificationService;
 class MediaToolbarButtonController;
 class MediaToolbarButtonObserver;
@@ -40,44 +39,15 @@ class MediaToolbarButtonView : public ToolbarButton,
   void ButtonPressed(views::Button* sender, const ui::Event& event) override;
 
   // ToolbarButton implementation.
-  SkColor GetInkDropBaseColor() const override;
   void UpdateIcon() override;
 
-  void ShowPromo();
-
-  // Called when the in-product help bubble has gone away.
-  void OnPromoEnded();
-
-  GlobalMediaControlsPromoController* GetPromoControllerForTesting() {
-    EnsurePromoController();
-    return promo_controller_.get();
-  }
-
  private:
-  // Lazily constructs |promo_controller_| if necessary.
-  void EnsurePromoController();
-
-  // Informs the Global Media Controls in-product help that the GMC dialog was
-  // opened.
-  void InformIPHOfDialogShown();
-
-  // Informs the Global Media Controls in-product help of the current button
-  // state.
-  void InformIPHOfButtonEnabled();
-  void InformIPHOfButtonDisabledorHidden();
-
   const Browser* const browser_;
 
   MediaNotificationService* const service_;
 
   // The window's IPH promo controller.
   FeaturePromoControllerViews* const feature_promo_controller_;
-
-  // Shows the in-product help bubble.
-  std::unique_ptr<GlobalMediaControlsPromoController> promo_controller_;
-
-  // True if the in-product help bubble is currently showing.
-  bool is_promo_showing_ = false;
 
   std::unique_ptr<MediaToolbarButtonController> controller_;
 

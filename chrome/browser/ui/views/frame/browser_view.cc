@@ -3450,10 +3450,6 @@ void BrowserView::ShowInProductHelpPromo(InProductHelpFeature iph_feature) {
     case InProductHelpFeature::kReopenTab:
       reopen_tab_promo_controller_.ShowPromo();
       break;
-    case InProductHelpFeature::kGlobalMediaControls:
-      if (toolbar_ && toolbar_->media_button())
-        toolbar_->media_button()->ShowPromo();
-      break;
   }
 }
 
