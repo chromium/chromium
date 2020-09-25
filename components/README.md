@@ -48,6 +48,7 @@ Components **can** depend on the lower layers of the Chromium codebase:
   * `//gpu`
   * `//mojo`
   * `//net`
+  * `//printing`
   * `//ui`
 
 Components **can** depend on each other. This must be made explicit in the
