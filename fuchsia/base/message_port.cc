@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/check.h"
 #include "base/containers/circular_deque.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/macros.h"
@@ -40,16 +41,14 @@ base::Optional<fuchsia::web::FrameError> BlinkMessageFromFidl(
   }
   blink_message->data = data_utf16;
 
+  if (fidl_message.has_outgoing_transfer() &&
+      fidl_message.has_incoming_transfer()) {
+    DLOG(WARNING) << "WebMessage may only have incoming or outgoing transfer.";
+    return fuchsia::web::FrameError::INTERNAL_ERROR;
+  }
   if (fidl_message.has_outgoing_transfer()) {
     for (fuchsia::web::OutgoingTransferable& transferrable :
          *fidl_message.mutable_outgoing_transfer()) {
-      blink_message->ports.push_back(
-          BlinkMessagePortFromFidl(std::move(transferrable.message_port())));
-    }
-  }
-  if (fidl_message.has_incoming_transfer()) {
-    for (fuchsia::web::IncomingTransferable& transferrable :
-         *fidl_message.mutable_incoming_transfer()) {
       blink_message->ports.push_back(
           BlinkMessagePortFromFidl(std::move(transferrable.message_port())));
     }
