@@ -499,10 +499,10 @@ void UmaPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
     if (timing.paint_timing->first_contentful_paint >
         kFirstContentfulPaintTraceThreshold) {
       base::TimeTicks navigation_start = GetDelegate().GetNavigationStart();
-      TRACE_EVENT_ASYNC_BEGIN_WITH_TIMESTAMP0(
+      TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
           "latency", "Long Navigation to First Contentful Paint",
           TRACE_ID_LOCAL(g_num_trace_events_in_process), navigation_start);
-      TRACE_EVENT_ASYNC_END_WITH_TIMESTAMP0(
+      TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
           "latency", "Long Navigation to First Contentful Paint",
           TRACE_ID_LOCAL(g_num_trace_events_in_process),
           navigation_start +
