@@ -42,11 +42,17 @@ PopupBlockType ShouldBlockPopup(content::WebContents* web_contents,
   // unloading page.
   const GURL& url =
       opener_url ? *opener_url : web_contents->GetLastCommittedURL();
-  if (url.is_valid() &&
-      settings_map->GetContentSetting(url, url, ContentSettingsType::POPUPS,
-                                      std::string()) == CONTENT_SETTING_ALLOW) {
-    return PopupBlockType::kNotBlocked;
+  ContentSetting cs;
+  if (url.is_valid()) {
+    cs = settings_map->GetContentSetting(url, url, ContentSettingsType::POPUPS,
+                                         std::string());
+  } else {
+    cs = settings_map->GetDefaultContentSetting(ContentSettingsType::POPUPS,
+                                                nullptr);
   }
+
+  if (cs == CONTENT_SETTING_ALLOW)
+    return PopupBlockType::kNotBlocked;
 
   if (!user_gesture)
     return PopupBlockType::kNoGesture;
