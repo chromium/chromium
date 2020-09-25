@@ -160,6 +160,9 @@ have any Debug build-bots, it may be more broken than Release.
 
 `use_goma=true` is fine to use also if you're a Googler.
 
+Architecture options are x64 (default) and arm64. This can be set with
+`target_cpu=arm64`.
+
 ## Build
 
 All targets included in the GN build should build successfully. You can also
