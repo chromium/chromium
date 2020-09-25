@@ -167247,14 +167247,6 @@
      "b8a1d0a6098492b615dfae8a1e5e44ade8a2f3db",
      []
     ],
-    "idlharness.tentative.https.any.sharedworker-expected.txt": [
-     "ad18929256152fa1478c17ef8acb9acfbdaf8096",
-     []
-    ],
-    "idlharness.tentative.https.any.worker-expected.txt": [
-     "ad18929256152fa1478c17ef8acb9acfbdaf8096",
-     []
-    ],
     "resources": {
      "always_changing_sw.sub.js": [
       "9fdf99848fa50316e275cd6636a5755270a9bb1e",
@@ -206247,7 +206239,7 @@
       []
      ],
      "testdriver.md": [
-      "63608a71c27831cdae45fef5c85fad8f0d792c82",
+      "8eec38729f41b40a5e1cf073c9e8bba99c6f5efc",
       []
      ],
      "testharness-api.md": [
@@ -226286,6 +226278,22 @@
        []
       ]
      },
+     "click_child.html": [
+      "5899841c4c1bcc9181f71b4b8699ded57cfe93fd",
+      []
+     ],
+     "click_nested-expected.txt": [
+      "4396eb3f18a9019f35fb5f59f619c3a9fdbb955e",
+      []
+     ],
+     "click_outer_child.html": [
+      "ae4944635f00fb400fa8345a77bfb3b62766bc49",
+      []
+     ],
+     "click_window-expected.txt": [
+      "ed125b6e9febcf10d0fe5d2e926f0576c34fc46f",
+      []
+     ],
      "file_upload.py": [
       "9c4dd75438454b852a1590018361ee682f1106df",
       []
@@ -226654,7 +226662,7 @@
      []
     ],
     "is-input-pending.idl": [
-     "aa918fb568b107ce12c0d51f38713e195592d893",
+     "76e47cc06cfd66887b2ffbe60550a522ccfcf7f8",
      []
     ],
     "js-self-profiling.idl": [
@@ -227147,7 +227155,7 @@
       []
      ],
      "input-onmessage.js": [
-      "21dddfb11b5d385ec4e4087c5b82fb37866fabcb",
+      "919c939d1fc8de666f83159778c19a1a91548c8b",
       []
      ],
      "pending-input-utils.js": [
@@ -227277,7 +227285,7 @@
     ]
    },
    "lint.ignore": [
-    "c740932e60ad5dc6939e7a41dc7d92534d81a5e4",
+    "94ee0fdbe6d3ae00913ce0fe1ecab0b89762b617",
     []
    ],
    "loading": {
@@ -233230,7 +233238,7 @@
      []
     ],
     "testdriver.js": [
-     "4d373c9281d85e6ff37a6d0dfe4cdc2fc9c10787",
+     "165147d1430bfe990da2c8d3d601267dbe5143af",
      []
     ],
     "testdriver.js.headers": [
@@ -238471,7 +238479,7 @@
       ],
       "tasks": {
        "test.yml": [
-        "c3fccff065555c25961efa6599c32b3a6d495e93",
+        "1b5c7acfd743dd613fb667acb19d594b0edccce4",
         []
        ]
       },
@@ -238581,7 +238589,7 @@
       []
      ],
      "lint.py": [
-      "bb49d8970d96dfe6767fcefdf1eea183e6bbccbd",
+      "5027da705774f8d306e4d491608e562daa378d0f",
       []
      ],
      "rules.py": [
@@ -244382,7 +244390,7 @@
        []
       ],
       "client.py": [
-       "1a4b6498312d652b4a9d839e2076dbb7d8b0f9f5",
+       "adc9b3a3f705e4624408ed74b581478fd2422cd8",
        []
       ],
       "error.py": [
@@ -244659,11 +244667,11 @@
         []
        ],
        "actions.py": [
-        "fc43dd665a2f3bc5576cb535f29d49abbc9593fd",
+        "b11d30bb94aa7c2747fcc4dcfb61292f7678e273",
         []
        ],
        "base.py": [
-        "b5820a3808563675e57499a26e6dbca3998a5437",
+        "0247b3feed2b00d8de7da1dbc1c0da4f3841e5bd",
         []
        ],
        "executorchrome.py": [
@@ -244683,7 +244691,7 @@
         []
        ],
        "executormarionette.py": [
-        "9c1f4f366d5fe782b772b79d3f6d4978ada010ac",
+        "e7c9726974b31118bb1dc6027feb9f817dd37563",
         []
        ],
        "executoropera.py": [
@@ -244707,7 +244715,7 @@
         []
        ],
        "executorwebdriver.py": [
-        "ad79600aeb8f943f5c5621102df8b6e701eed303",
+        "139c475ce44ed29608d68509a88ba1b4c4aa932c",
         []
        ],
        "executorwebkit.py": [
@@ -244719,7 +244727,7 @@
         []
        ],
        "protocol.py": [
-        "3f0e44339f9b5499b22e40fc5c4ee4e044691478",
+        "1c85c0f8b963482e8da72e7a793830e0d49b29be",
         []
        ],
        "pytestrunner": {
@@ -244830,7 +244838,7 @@
        []
       ],
       "testdriver-extra.js": [
-       "5001b004f2e199d864810e316ab8e3a80044a50f",
+       "241fc83395152fc9188b791e1f8e1ab9a3d3a542",
        []
       ],
       "testdriver-vendor.js": [
@@ -364554,6 +364562,33 @@
        }
       ]
      ],
+     "click_iframe.html": [
+      "167a91afcfaa3d4e9a023adf5bbbe0aa4c7c3bf6",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "click_nested.html": [
+      "378b9e8c0f1411afdf7b93f7e93c03d05af227c7",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "click_window.html": [
+      "614a92478e07d51e48c420d5fa253338a87378b2",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
      "file_upload.sub.html": [
       "0490e89c422b851653d760cdb38855b2ce6816a6",
       [
@@ -365192,7 +365227,7 @@
    },
    "is-input-pending": {
     "idlharness.window.js": [
-     "e6bb26a5a710d0dbd35bddae78143b433cb5bb1b",
+     "726dd137dd6717addd33dbbafef8955f39e8bb2c",
      [
       "is-input-pending/idlharness.window.html",
       {
