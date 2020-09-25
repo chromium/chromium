@@ -5,8 +5,8 @@
 #include "device/base/synchronization/one_writer_seqlock.h"
 
 #include <stdlib.h>
+#include <atomic>
 
-#include "base/atomic_ref_count.h"
 #include "base/macros.h"
 #include "base/third_party/dynamic_annotations/dynamic_annotations.h"
 #include "base/threading/platform_thread.h"
@@ -18,7 +18,8 @@ namespace device {
 // Basic test to make sure that basic operation works correctly.
 
 struct TestData {
-  unsigned a, b, c;
+  // Data copies larger than a cache line.
+  uint32_t buffer[32];
 };
 
 class BasicSeqLockTestThread : public base::PlatformThread::Delegate {
@@ -27,13 +28,13 @@ class BasicSeqLockTestThread : public base::PlatformThread::Delegate {
 
   void Init(OneWriterSeqLock* seqlock,
             TestData* data,
-            base::AtomicRefCount* ready) {
+            std::atomic<int>* ready) {
     seqlock_ = seqlock;
     data_ = data;
     ready_ = ready;
   }
   void ThreadMain() override {
-    while (ready_->IsZero()) {
+    while (!*ready_) {
       base::PlatformThread::YieldCurrentThread();
     }
 
@@ -42,22 +43,52 @@ class BasicSeqLockTestThread : public base::PlatformThread::Delegate {
       base::subtle::Atomic32 version;
       do {
         version = seqlock_->ReadBegin();
-        copy = *data_;
+        OneWriterSeqLock::AtomicReaderMemcpy(&copy, data_, sizeof(TestData));
       } while (seqlock_->ReadRetry(version));
 
-      EXPECT_EQ(copy.a + 100, copy.b);
-      EXPECT_EQ(copy.c, copy.b + copy.a);
+      for (unsigned j = 1; j < 32; ++j)
+        EXPECT_EQ(copy.buffer[j], copy.buffer[0] + copy.buffer[j - 1]);
     }
 
-    ready_->Decrement();
+    --(*ready_);
   }
 
  private:
   OneWriterSeqLock* seqlock_;
   TestData* data_;
-  base::AtomicRefCount* ready_;
+  std::atomic<int>* ready_;
 
   DISALLOW_COPY_AND_ASSIGN(BasicSeqLockTestThread);
+};
+
+class MaxRetriesSeqLockTestThread : public base::PlatformThread::Delegate {
+ public:
+  MaxRetriesSeqLockTestThread() = default;
+
+  void Init(OneWriterSeqLock* seqlock, std::atomic<int>* ready) {
+    seqlock_ = seqlock;
+    ready_ = ready;
+  }
+  void ThreadMain() override {
+    while (!*ready_) {
+      base::PlatformThread::YieldCurrentThread();
+    }
+
+    for (unsigned i = 0; i < 10; ++i) {
+      base::subtle::Atomic32 version;
+      version = seqlock_->ReadBegin(100);
+
+      EXPECT_NE(version & 1, 0);
+    }
+
+    --*ready_;
+  }
+
+ private:
+  OneWriterSeqLock* seqlock_;
+  std::atomic<int>* ready_;
+
+  DISALLOW_COPY_AND_ASSIGN(MaxRetriesSeqLockTestThread);
 };
 
 #if defined(OS_ANDROID)
@@ -67,8 +98,8 @@ class BasicSeqLockTestThread : public base::PlatformThread::Delegate {
 #endif
 TEST(OneWriterSeqLockTest, MAYBE_ManyThreads) {
   OneWriterSeqLock seqlock;
-  TestData data = {0, 0, 0};
-  base::AtomicRefCount ready(0);
+  TestData data;
+  std::atomic<int> ready(0);
 
   ANNOTATE_BENIGN_RACE_SIZED(&data, sizeof(data), "Racey reads are discarded");
 
@@ -76,26 +107,54 @@ TEST(OneWriterSeqLockTest, MAYBE_ManyThreads) {
   BasicSeqLockTestThread threads[kNumReaderThreads];
   base::PlatformThreadHandle handles[kNumReaderThreads];
 
-  for (unsigned i = 0; i < kNumReaderThreads; ++i)
+  for (uint32_t i = 0; i < kNumReaderThreads; ++i)
     threads[i].Init(&seqlock, &data, &ready);
-  for (unsigned i = 0; i < kNumReaderThreads; ++i)
+  for (uint32_t i = 0; i < kNumReaderThreads; ++i)
     ASSERT_TRUE(base::PlatformThread::Create(0, &threads[i], &handles[i]));
 
   // The main thread is the writer, and the spawned are readers.
-  unsigned counter = 0;
+  uint32_t counter = 0;
   for (;;) {
+    TestData new_data;
+    new_data.buffer[0] = counter++;
+    for (unsigned i = 1; i < 32; ++i) {
+      new_data.buffer[i] = new_data.buffer[0] + new_data.buffer[i - 1];
+    }
     seqlock.WriteBegin();
-    data.a = counter++;
-    data.b = data.a + 100;
-    data.c = data.b + data.a;
+    OneWriterSeqLock::AtomicWriterMemcpy(&data, &new_data, sizeof(TestData));
     seqlock.WriteEnd();
 
     if (counter == 1)
-      ready.Increment(kNumReaderThreads);
+      ready += kNumReaderThreads;
 
-    if (ready.IsZero())
+    if (!ready)
       break;
   }
+
+  for (unsigned i = 0; i < kNumReaderThreads; ++i)
+    base::PlatformThread::Join(handles[i]);
+}
+
+TEST(OneWriterSeqLockTest, MaxRetries) {
+  OneWriterSeqLock seqlock;
+  std::atomic<int> ready(0);
+
+  static const unsigned kNumReaderThreads = 3;
+  MaxRetriesSeqLockTestThread threads[kNumReaderThreads];
+  base::PlatformThreadHandle handles[kNumReaderThreads];
+
+  for (uint32_t i = 0; i < kNumReaderThreads; ++i)
+    threads[i].Init(&seqlock, &ready);
+  for (uint32_t i = 0; i < kNumReaderThreads; ++i)
+    ASSERT_TRUE(base::PlatformThread::Create(0, &threads[i], &handles[i]));
+
+  // The main thread is the writer, and the spawned are readers.
+  seqlock.WriteBegin();
+  ready += kNumReaderThreads;
+  while (ready) {
+    base::PlatformThread::YieldCurrentThread();
+  }
+  seqlock.WriteEnd();
 
   for (unsigned i = 0; i < kNumReaderThreads; ++i)
     base::PlatformThread::Join(handles[i]);
