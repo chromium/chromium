@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<!-- This test has to be internal because "zoom" property is not standard and is not supported by all browsers. -->
+<meta charset="utf-8">
+<title>CSS Backgrounds and Borders Test: border-width zoom</title>
+<link rel="author" title="Manuel Rego Casasnovas" href="mailto:rego@igalia.com">
+<link rel="help" href="https://drafts.csswg.org/css-backgrounds/#border-width">
+<link rel="match" href="border-width-zoom-001-ref.html">
+<meta name="assert" content="Tese tests check that border-width with different zoom values are properly rendered and always visible.">
+<p>The test passses if you see 4 boxes with green border, the last 2 ones with a thicker border.</p>
+<div style="zoom: 1.5; border: solid 0.5px green; width: 50px; height: 50px;"></div>
+<br>
+<div style="zoom: 1.5; border: solid 0.5px green; width: 50px; height: 50px; border-radius: 10px;"></div>
+</br>
+<div style="zoom: 0.1; border: solid 50px green; width: 750px; height: 750px;"></div>
+<br>
+<div style="zoom: 0.1; border: solid 50px green; width: 750px; height: 750px; border-radius: 100px;"></div>
