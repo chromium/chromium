@@ -1934,12 +1934,11 @@ bool VaapiWrapper::UploadVideoFrameToSurface(const VideoFrame& frame,
   }
 
   const gfx::Size visible_size = frame.visible_rect().size();
-  bool va_create_put_fallback = false;
+  bool needs_va_put_image = false;
   VAImage image;
   VAStatus va_res = vaDeriveImage(va_display_, va_surface_id, &image);
   if (va_res == VA_STATUS_ERROR_OPERATION_FAILED) {
     DVLOG(4) << "vaDeriveImage failed and fallback to Create_PutImage";
-    va_create_put_fallback = true;
     constexpr VAImageFormat kImageFormatNV12{.fourcc = VA_FOURCC_NV12,
                                              .byte_order = VA_LSB_FIRST,
                                              .bits_per_pixel = 12};
@@ -1948,6 +1947,7 @@ bool VaapiWrapper::UploadVideoFrameToSurface(const VideoFrame& frame,
     va_res = vaCreateImage(va_display_, &image_format, va_surface_size.width(),
                            va_surface_size.height(), &image);
     VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVACreateImage, false);
+    needs_va_put_image = true;
   }
   base::ScopedClosureRunner vaimage_deleter(
       base::Bind(&DestroyVAImage, va_display_, image));
@@ -1980,6 +1980,8 @@ bool VaapiWrapper::UploadVideoFrameToSurface(const VideoFrame& frame,
 
   int ret = 0;
   {
+    TRACE_EVENT0("media,gpu", "VaapiWrapper::UploadVideoFrameToSurface_copy");
+
     base::AutoUnlock auto_unlock(*va_lock_);
     switch (frame.format()) {
       case PIXEL_FORMAT_I420:
@@ -2019,10 +2021,11 @@ bool VaapiWrapper::UploadVideoFrameToSurface(const VideoFrame& frame,
         return false;
     }
   }
-  if (va_create_put_fallback) {
-    va_res = vaPutImage(va_display_, va_surface_id, image.image_id, 0, 0,
-                        visible_size.width(), visible_size.height(), 0, 0,
-                        visible_size.width(), visible_size.height());
+  if (needs_va_put_image) {
+    const VAStatus va_res =
+        vaPutImage(va_display_, va_surface_id, image.image_id, 0, 0,
+                   visible_size.width(), visible_size.height(), 0, 0,
+                   visible_size.width(), visible_size.height());
     VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVAPutImage, false);
   }
   return ret == 0;
@@ -2070,8 +2073,11 @@ bool VaapiWrapper::DownloadFromVABuffer(VABufferID buffer_id,
   base::AutoLock auto_lock(*va_lock_);
   TRACE_EVENT0("media,gpu", "VaapiWrapper::DownloadFromVABufferLocked");
 
-  VAStatus va_res = vaSyncSurface(va_display_, sync_surface_id);
-  VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVASyncSurface, false);
+  {
+    TRACE_EVENT0("media,gpu", "VaapiWrapper::DownloadFromVABuffer_SyncSurface");
+    const VAStatus va_res = vaSyncSurface(va_display_, sync_surface_id);
+    VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVASyncSurface, false);
+  }
 
   ScopedVABufferMapping mapping(va_lock_, va_display_, buffer_id);
   if (!mapping.IsValid())
@@ -2083,7 +2089,7 @@ bool VaapiWrapper::DownloadFromVABuffer(VABufferID buffer_id,
   // cause another thread to acquire the lock and we'd have to wait delaying the
   // notification that the encode is done.
   {
-    TRACE_EVENT0("media,gpu", "VaapiWrapper::DownloadFromVABufferCopyEncoded");
+    TRACE_EVENT0("media,gpu", "VaapiWrapper::DownloadFromVABuffer_copy");
     *coded_data_size = 0;
 
     while (buffer_segment) {
