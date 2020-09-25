@@ -53,6 +53,20 @@ class NodeUtils {
   }
 
   /**
+   * Returns true if the node should be ignored by Select-to-Speak because
+   * it was marked with user-select:none. For Inline Text elements, the
+   * parent is marked with this attribute, hence the check.
+   *
+   * @param {!AutomationNode} node The node to test
+   * @return {boolean} whether this node was marked user-select:none
+   */
+  static isNotSelectable(node) {
+    return node &&
+        (node.notUserSelectableStyle ||
+         (node.parent && node.parent.notUserSelectableStyle));
+  }
+
+  /**
    * Returns true if a node is invisible for any reason.
    * @param {!AutomationNode} node The node to test
    * @param {boolean} includeOffscreen Whether to include offscreen nodes

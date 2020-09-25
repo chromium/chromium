@@ -271,7 +271,8 @@ class SelectToSpeak {
     let selectedNode = firstPosition.node;
     if (selectedNode.name && firstPosition.offset < selectedNode.name.length &&
         !NodeUtils.shouldIgnoreNode(
-            selectedNode, /* include offscreen */ true)) {
+            selectedNode, /* include offscreen */ true) &&
+        !NodeUtils.isNotSelectable(selectedNode)) {
       // Initialize to the first node in the list if it's valid and inside
       // of the offset bounds.
       nodes.push(selectedNode);
@@ -304,7 +305,8 @@ class SelectToSpeak {
         }
       }
       if (!NodeUtils.shouldIgnoreNode(
-              selectedNode, /* include offscreen */ true)) {
+              selectedNode, /* include offscreen */ true) &&
+          !NodeUtils.isNotSelectable(selectedNode)) {
         nodes.push(selectedNode);
       }
     }

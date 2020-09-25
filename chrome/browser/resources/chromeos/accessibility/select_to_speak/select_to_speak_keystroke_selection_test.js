@@ -227,6 +227,25 @@ TEST_F(
     });
 
 TEST_F(
+    'SelectToSpeakKeystrokeSelectionTest', 'IgnoresTextMarkedNotUserSelectable',
+    function() {
+      this.testReadTextAtKeystroke(
+          '<div><p>This is some <span style="user-select:none">unselectable</span> text</p></div>',
+          function(desktop) {
+            const firstNode =
+                this.findTextNode(desktop, 'This is some ').root.children[0];
+            const lastNode = this.findTextNode(desktop, ' text');
+            chrome.automation.setDocumentSelection({
+              anchorObject: firstNode,
+              anchorOffset: 0,
+              focusObject: lastNode,
+              focusOffset: 5
+            });
+          },
+          'This is some text');
+    });
+
+TEST_F(
     'SelectToSpeakKeystrokeSelectionTest',
     'HandlesSingleImageCorrectlyWithAutomation', function() {
       this.testReadTextAtKeystroke(

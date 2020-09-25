@@ -1058,6 +1058,9 @@ enum GeneratedEventType {
     // The affinity of the tree selection end, if any.
     DOMString? selectionEndAffinity;
 
+    // Indicates that the node is marked user-select:none
+    boolean? notUserSelectableStyle;
+
     //
     // Range attributes.
     //
