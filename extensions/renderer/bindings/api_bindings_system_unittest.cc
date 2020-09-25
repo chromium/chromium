@@ -94,6 +94,10 @@ bool AllowAllAPIs(v8::Local<v8::Context> context, const std::string& name) {
   return true;
 }
 
+bool DisallowPromises(v8::Local<v8::Context> context) {
+  return false;
+}
+
 }  // namespace
 
 APIBindingsSystemTest::APIBindingsSystemTest() {}
@@ -119,6 +123,7 @@ void APIBindingsSystemTest::SetUp() {
       base::BindRepeating(&APIBindingsSystemTest::GetAPISchema,
                           base::Unretained(this)),
       base::BindRepeating(&AllowAllAPIs),
+      base::BindRepeating(&DisallowPromises),
       base::BindRepeating(&APIBindingsSystemTest::OnAPIRequest,
                           base::Unretained(this)),
       std::make_unique<TestInteractionProvider>(),

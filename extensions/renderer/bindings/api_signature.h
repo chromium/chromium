@@ -22,14 +22,25 @@ class ListValue;
 namespace extensions {
 class APITypeReferenceMap;
 class ArgumentSpec;
+class BindingAccessChecker;
+
+// Whether promises are allowed to be used for a given call to an API.
+enum class PromisesAllowed {
+  kAllowed,
+  kDisallowed,
+};
 
 // A representation of the expected signature for an API method, along with the
 // ability to match provided arguments and convert them to base::Values.
 class APISignature {
  public:
-  explicit APISignature(const base::ListValue& specification);
-  APISignature(const base::Value& specification_list, bool supports_promises);
+  APISignature(const base::Value& specification_list,
+               bool api_supports_promises,
+               BindingAccessChecker* access_checker);
   explicit APISignature(std::vector<std::unique_ptr<ArgumentSpec>> signature);
+  APISignature(std::vector<std::unique_ptr<ArgumentSpec>> signature,
+               bool api_supports_promises,
+               BindingAccessChecker* access_checker);
   ~APISignature();
 
   struct V8ParseResult {
@@ -113,18 +124,21 @@ class APISignature {
   // 'someInt', this would return "string someStr, optional integer someInt".
   std::string GetExpectedSignature() const;
 
-  void set_promise_support(binding::PromiseSupport promise_support) {
-    promise_support_ = promise_support;
-  }
-
   bool has_callback() const { return has_callback_; }
 
  private:
+  // Checks if promises are allowed to be used for a call to an API from a given
+  // |context|.
+  PromisesAllowed CheckPromisesAllowed(v8::Local<v8::Context> context) const;
+
   // The list of expected arguments.
   std::vector<std::unique_ptr<ArgumentSpec>> signature_;
 
-  binding::PromiseSupport promise_support_ =
-      binding::PromiseSupport::kDisallowed;
+  binding::APIPromiseSupport api_promise_support_ =
+      binding::APIPromiseSupport::kUnsupported;
+
+  // The associated access checker; required to outlive this object.
+  const BindingAccessChecker* access_checker_;
 
   bool has_callback_ = false;
 

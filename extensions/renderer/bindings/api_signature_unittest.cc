@@ -11,6 +11,7 @@
 #include "extensions/renderer/bindings/api_type_reference_map.h"
 #include "extensions/renderer/bindings/argument_spec.h"
 #include "extensions/renderer/bindings/argument_spec_builder.h"
+#include "extensions/renderer/bindings/binding_access_checker.h"
 #include "gin/converter.h"
 #include "gin/dictionary.h"
 
@@ -643,45 +644,82 @@ TEST_F(APISignatureTest, ValidateResponse) {
 // Tests signature parsing when promise-based responses are supported.
 TEST_F(APISignatureTest, PromisesSupport) {
   v8::HandleScope handle_scope(isolate());
+  auto api_available =
+      base::BindRepeating([](v8::Local<v8::Context> context,
+                             const std::string& name) { return true; });
+  // Set up a boolean we can flip to simulate if a context supports promises.
+  // For clarity, this should be explicitly set before each testcase below.
+  bool context_allows_promises = true;
+  auto promises_available = base::BindRepeating(
+      [](bool* flag, v8::Local<v8::Context> context) { return *flag; },
+      &context_allows_promises);
+  BindingAccessChecker access_checker(api_available, promises_available);
 
   {
     // Test a signature with a required callback.
+    context_allows_promises = true;
     SpecVector required_callback_specs;
     required_callback_specs.push_back(
         ArgumentSpecBuilder(ArgumentType::FUNCTION, "callback").Build());
     auto required_callback_signature =
         std::make_unique<APISignature>(std::move(required_callback_specs));
-    // By default, promises are not supported, and passing in no arguments
+    // By default, APIs don't support promises, and passing in no arguments
     // should fail.
     ExpectFailure(*required_callback_signature, "[]", NoMatchingSignature());
-    // If we allow promises, parsing the arguments should succeed (with a
-    // promise-based response type).
-    required_callback_signature->set_promise_support(
-        binding::PromiseSupport::kAllowed);
+  }
+
+  {
+    // If we allow promises on the API, parsing the arguments should succeed
+    // (with a promise-based response type) if the context supports promises.
+    context_allows_promises = true;
+    SpecVector required_callback_specs;
+    required_callback_specs.push_back(
+        ArgumentSpecBuilder(ArgumentType::FUNCTION, "callback").Build());
+    auto required_callback_signature = std::make_unique<APISignature>(
+        std::move(required_callback_specs), true /*api_supports_promises*/,
+        &access_checker);
     ExpectPass(*required_callback_signature, "[]", "[]",
                binding::AsyncResponseType::kPromise);
+    // If the context doesn't support promises, parsing should fail.
+    context_allows_promises = false;
+    ExpectFailure(*required_callback_signature, "[]", NoMatchingSignature());
   }
 
   {
     // Next, try an optional callback.
-    // Test a signature with a required callback.
-    SpecVector required_callback_specs;
-    required_callback_specs.push_back(
+    context_allows_promises = true;
+    SpecVector optional_callback_specs;
+    optional_callback_specs.push_back(
         ArgumentSpecBuilder(ArgumentType::FUNCTION, "callback")
             .MakeOptional()
             .Build());
-    auto required_callback_signature =
-        std::make_unique<APISignature>(std::move(required_callback_specs));
+    auto optional_callback_signature =
+        std::make_unique<APISignature>(std::move(optional_callback_specs));
     // Even if promises aren't supported, parsing should succeed, because the
     // callback is optional.
-    ExpectPass(*required_callback_signature, "[]", "[]",
+    ExpectPass(*optional_callback_signature, "[]", "[]",
                binding::AsyncResponseType::kNone);
-    // If we allow promises, parsing the arguments should succeed, with a
-    // promise-based response type.
-    required_callback_signature->set_promise_support(
-        binding::PromiseSupport::kAllowed);
-    ExpectPass(*required_callback_signature, "[]", "[]",
+  }
+
+  {
+    // If we allow promises on the API, parsing the arguments should succeed,
+    // with a promise-based response type.
+    context_allows_promises = true;
+    SpecVector optional_callback_specs;
+    optional_callback_specs.push_back(
+        ArgumentSpecBuilder(ArgumentType::FUNCTION, "callback")
+            .MakeOptional()
+            .Build());
+    auto optional_callback_signature = std::make_unique<APISignature>(
+        std::move(optional_callback_specs), true /*api_supports_promises*/,
+        &access_checker);
+    ExpectPass(*optional_callback_signature, "[]", "[]",
                binding::AsyncResponseType::kPromise);
+    // If the context doesn't support promises, the call should still pass, but
+    // there shouldn't be a promise response type.
+    context_allows_promises = false;
+    ExpectPass(*optional_callback_signature, "[]", "[]",
+               binding::AsyncResponseType::kNone);
   }
 }
 

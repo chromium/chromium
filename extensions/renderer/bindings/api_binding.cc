@@ -65,7 +65,9 @@ struct SignaturePair {
   std::unique_ptr<APISignature> callback_signature;
 };
 
-SignaturePair GetAPISignatureFromDictionary(const base::Value* dict) {
+SignaturePair GetAPISignatureFromDictionary(
+    const base::Value* dict,
+    BindingAccessChecker* access_checker) {
   const base::Value* params =
       dict->FindKeyOfType("parameters", base::Value::Type::LIST);
   CHECK(params);
@@ -76,12 +78,9 @@ SignaturePair GetAPISignatureFromDictionary(const base::Value* dict) {
       dict->FindKeyOfType("returns_async", base::Value::Type::DICTIONARY);
 
   SignaturePair result;
-  result.method_signature =
-      std::make_unique<APISignature>(*params, returns_async);
-  result.method_signature->set_promise_support(
-      returns_async && APIBinding::enable_promise_support_for_testing
-          ? binding::PromiseSupport::kAllowed
-          : binding::PromiseSupport::kDisallowed);
+  bool supports_promises = returns_async != nullptr;
+  result.method_signature = std::make_unique<APISignature>(
+      *params, supports_promises, access_checker);
   // If response validation is enabled, parse the callback signature. Otherwise,
   // there's no reason to, so don't bother.
   if (result.method_signature->has_callback() &&
@@ -92,10 +91,9 @@ SignaturePair GetAPISignatureFromDictionary(const base::Value* dict) {
                       : params->GetList().back().FindKeyOfType(
                             "parameters", base::Value::Type::LIST);
     if (callback_params) {
-      const base::ListValue* params_as_list = nullptr;
-      callback_params->GetAsList(&params_as_list);
-      result.callback_signature =
-          std::make_unique<APISignature>(*params_as_list);
+      result.callback_signature = std::make_unique<APISignature>(
+          *callback_params, false /*api_supports_promises*/,
+          nullptr /*access_checker*/);
     }
   }
 
@@ -241,7 +239,8 @@ APIBinding::APIBinding(const std::string& api_name,
       std::string name;
       CHECK(func_dict->GetString("name", &name));
 
-      SignaturePair signatures = GetAPISignatureFromDictionary(func_dict);
+      SignaturePair signatures =
+          GetAPISignatureFromDictionary(func_dict, access_checker);
 
       std::string full_name =
           base::StringPrintf("%s.%s", api_name_.c_str(), name.c_str());
@@ -288,7 +287,8 @@ APIBinding::APIBinding(const std::string& api_name,
           std::string function_name;
           CHECK(func_dict->GetString("name", &function_name));
 
-          SignaturePair signatures = GetAPISignatureFromDictionary(func_dict);
+          SignaturePair signatures =
+              GetAPISignatureFromDictionary(func_dict, access_checker);
 
           std::string full_name =
               base::StringPrintf("%s.%s", id.c_str(), function_name.c_str());

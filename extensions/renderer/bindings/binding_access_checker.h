@@ -18,11 +18,17 @@ class BindingAccessChecker {
  public:
   // The callback for determining if a given API feature (specified by |name|)
   // is available in the given context.
-  using AvailabilityCallback =
+  using APIAvailabilityCallback =
       base::RepeatingCallback<bool(v8::Local<v8::Context>,
                                    const std::string& name)>;
 
-  BindingAccessChecker(AvailabilityCallback is_available);
+  // The callback for determining if a given context is allowed to use promises
+  // with API calls.
+  using PromiseAvailabilityCallback =
+      base::RepeatingCallback<bool(v8::Local<v8::Context>)>;
+
+  BindingAccessChecker(APIAvailabilityCallback api_available,
+                       PromiseAvailabilityCallback promises_available);
   ~BindingAccessChecker();
 
   // Returns true if the feature specified by |full_name| is available to the
@@ -35,8 +41,12 @@ class BindingAccessChecker {
   bool HasAccessOrThrowError(v8::Local<v8::Context> context,
                              const std::string& full_name) const;
 
+  // Returns true if the given |context| is allowed to use promise-based APIs.
+  bool HasPromiseAccess(v8::Local<v8::Context> context) const;
+
  private:
-  AvailabilityCallback is_available_;
+  APIAvailabilityCallback api_available_;
+  PromiseAvailabilityCallback promises_available_;
 
   DISALLOW_COPY_AND_ASSIGN(BindingAccessChecker);
 };

@@ -15,6 +15,7 @@
 #include "extensions/common/event_filtering_info.h"
 #include "extensions/common/extension_api.h"
 #include "extensions/common/extension_messages.h"
+#include "extensions/common/features/feature.h"
 #include "extensions/common/features/feature_provider.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/content_capabilities_handler.h"
@@ -189,6 +190,15 @@ bool IsAPIFeatureAvailable(v8::Local<v8::Context> context,
                            const std::string& name) {
   ScriptContext* script_context = GetScriptContextFromV8ContextChecked(context);
   return script_context->GetAvailability(name).is_available();
+}
+
+// Returns true if the specified |context| is allowed to use promise based
+// returns from APIs.
+bool ArePromisesAllowed(v8::Local<v8::Context> context) {
+  ScriptContext* script_context = GetScriptContextFromV8ContextChecked(context);
+  const Extension* extension = script_context->extension();
+  return (extension && extension->manifest_version() >= 3) ||
+         script_context->context_type() == Feature::WEBUI_CONTEXT;
 }
 
 // Instantiates the binding object for the given |name|. |name| must specify a
@@ -448,6 +458,7 @@ NativeExtensionBindingsSystem::NativeExtensionBindingsSystem(
       api_system_(
           base::BindRepeating(&GetAPISchema),
           base::BindRepeating(&IsAPIFeatureAvailable),
+          base::BindRepeating(&ArePromisesAllowed),
           base::BindRepeating(&NativeExtensionBindingsSystem::SendRequest,
                               base::Unretained(this)),
           std::make_unique<ExtensionInteractionProvider>(),

@@ -105,6 +105,10 @@ bool AllowAllFeatures(v8::Local<v8::Context> context, const std::string& name) {
   return true;
 }
 
+bool DisallowPromises(v8::Local<v8::Context> context) {
+  return false;
+}
+
 void OnEventListenersChanged(const std::string& event_name,
                              binding::EventListenersChanged change,
                              const base::DictionaryValue* filter,
@@ -187,9 +191,14 @@ class APIBindingUnittest : public APIBindingTest {
     on_silent_request_ = callback;
   }
 
-  void SetAvailabilityCallback(
-      const BindingAccessChecker::AvailabilityCallback& callback) {
-    availability_callback_ = callback;
+  void SetAPIAvailabilityCallback(
+      const BindingAccessChecker::APIAvailabilityCallback& callback) {
+    api_availability_callback_ = callback;
+  }
+
+  void SetPromiseAvailabilityCallback(
+      const BindingAccessChecker::PromiseAvailabilityCallback& callback) {
+    promise_availability_callback_ = callback;
   }
 
   void InitializeBinding() {
@@ -199,16 +208,18 @@ class APIBindingUnittest : public APIBindingTest {
       binding_hooks_->SetDelegate(std::move(binding_hooks_delegate_));
     if (!on_silent_request_)
       on_silent_request_ = base::DoNothing();
-    if (!availability_callback_)
-      availability_callback_ = base::BindRepeating(&AllowAllFeatures);
+    if (!api_availability_callback_)
+      api_availability_callback_ = base::BindRepeating(&AllowAllFeatures);
+    if (!promise_availability_callback_)
+      promise_availability_callback_ = base::BindRepeating(&DisallowPromises);
     auto get_context_owner = [](v8::Local<v8::Context>) {
       return std::string("context");
     };
     event_handler_ = std::make_unique<APIEventHandler>(
         base::BindRepeating(&OnEventListenersChanged),
         base::BindRepeating(get_context_owner), nullptr);
-    access_checker_ =
-        std::make_unique<BindingAccessChecker>(availability_callback_);
+    access_checker_ = std::make_unique<BindingAccessChecker>(
+        api_availability_callback_, promise_availability_callback_);
     binding_ = std::make_unique<APIBinding>(
         kBindingName, binding_functions_.get(), binding_types_.get(),
         binding_events_.get(), binding_properties_.get(), create_custom_type_,
@@ -284,7 +295,9 @@ class APIBindingUnittest : public APIBindingTest {
   std::unique_ptr<APIBindingHooksDelegate> binding_hooks_delegate_;
   APIBinding::CreateCustomType create_custom_type_;
   APIBinding::OnSilentRequest on_silent_request_;
-  BindingAccessChecker::AvailabilityCallback availability_callback_;
+  BindingAccessChecker::APIAvailabilityCallback api_availability_callback_;
+  BindingAccessChecker::PromiseAvailabilityCallback
+      promise_availability_callback_;
 
   DISALLOW_COPY_AND_ASSIGN(APIBindingUnittest);
 };
@@ -513,7 +526,7 @@ TEST_F(APIBindingUnittest, RestrictedAPIs) {
     EXPECT_TRUE(allowed.count(name) || restricted.count(name)) << name;
     return allowed.count(name) != 0;
   };
-  SetAvailabilityCallback(base::BindRepeating(is_available));
+  SetAPIAvailabilityCallback(base::BindRepeating(is_available));
 
   InitializeBinding();
 
@@ -1673,11 +1686,6 @@ TEST_F(APIBindingUnittest,
 
 // Tests promise-based APIs exposed on bindings.
 TEST_F(APIBindingUnittest, PromiseBasedAPIs) {
-  // TODO(tjudkins): Remove this once promise support is fully integrated into
-  // the API calling flow.
-  base::AutoReset<bool> auto_reset(
-      &APIBinding::enable_promise_support_for_testing, true);
-
   constexpr char kFunctions[] =
       R"([{
             'name': 'supportsPromises',
@@ -1692,12 +1700,20 @@ TEST_F(APIBindingUnittest, PromiseBasedAPIs) {
           }])";
   SetFunctions(kFunctions);
 
+  // Set a local boolean we can change to simulate if the context supports
+  // promises or not.
+  bool context_allows_promises = true;
+  SetPromiseAvailabilityCallback(base::BindRepeating(
+      [](bool* flag, v8::Local<v8::Context> context) { return *flag; },
+      &context_allows_promises));
+
   InitializeBinding();
 
   v8::HandleScope handle_scope(isolate());
   v8::Local<v8::Context> context = MainContext();
   v8::Local<v8::Object> binding_object = binding()->CreateInstance(context);
 
+  // A normal call into the promised based API should return a promise.
   {
     constexpr char kFunctionCall[] =
         R"((function(api) {
@@ -1747,6 +1763,46 @@ TEST_F(APIBindingUnittest, PromiseBasedAPIs) {
                                        std::string());
 
     EXPECT_EQ(R"("bar")", GetStringPropertyFromObject(
+                              context->Global(), context, "callbackResult"));
+  }
+  // If the context doesn't support promises, there should be an error if a
+  // callback isn't supplied.
+  context_allows_promises = false;
+  {
+    constexpr char kPromiseFunctionCall[] =
+        R"((function(api) {
+             this.apiResult = api.supportsPromises(3);
+           }))";
+    v8::Local<v8::Function> promise_api_call =
+        FunctionFromString(context, kPromiseFunctionCall);
+    v8::Local<v8::Value> args[] = {binding_object};
+    auto expected_error =
+        "Uncaught TypeError: " +
+        api_errors::InvocationError("test.supportsPromises",
+                                    "integer int, function callback",
+                                    api_errors::NoMatchingSignature());
+    RunFunctionAndExpectError(promise_api_call, context, base::size(args), args,
+                              expected_error);
+  }
+  // Test that callbacks still work when the context doesn't support promises.
+  {
+    constexpr char kFunctionCall[] =
+        R"((function(api) {
+             api.supportsPromises(3, (strResult) => {
+               this.callbackResult = strResult
+             });
+           }))";
+    v8::Local<v8::Function> promise_api_call =
+        FunctionFromString(context, kFunctionCall);
+    v8::Local<v8::Value> args[] = {binding_object};
+    RunFunctionOnGlobal(promise_api_call, context, base::size(args), args);
+
+    ASSERT_TRUE(last_request());
+    request_handler()->CompleteRequest(last_request()->request_id,
+                                       *ListValueFromString(R"(["foo"])"),
+                                       std::string());
+
+    EXPECT_EQ(R"("foo")", GetStringPropertyFromObject(
                               context->Global(), context, "callbackResult"));
   }
 }

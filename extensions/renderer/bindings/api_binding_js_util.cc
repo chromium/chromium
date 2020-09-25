@@ -295,8 +295,9 @@ void APIBindingJSUtil::AddCustomSignature(
 
   type_refs_->AddCustomSignature(
       custom_signature_name,
-      std::make_unique<APISignature>(
-          *base::ListValue::From(std::move(base_signature))));
+      std::make_unique<APISignature>(*base_signature,
+                                     false /*api_supports_promises*/,
+                                     nullptr /*access_checker*/));
 }
 
 void APIBindingJSUtil::ValidateCustomSignature(
