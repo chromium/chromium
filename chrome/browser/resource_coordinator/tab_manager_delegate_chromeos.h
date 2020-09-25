@@ -147,18 +147,6 @@ class TabManagerDelegate : public wm::ActivationChangeObserver,
       const LifecycleUnitVector& lifecycle_units,
       const OptionalArcProcessList& arc_processes);
 
-  // This is only used for TabRanker experiment for now.
-  // If TabRanker is enabled, this will take the last N lifecycle units in the
-  // |candidates|; sort these lifecycle units based on the TabRanker order; and
-  // put these sorted lifecycle unit back to the vacancies of these lifecycle
-  // units in the |candidates|.
-  // If TabRanker is disabled, this will log the TabMetrics of these lifecycle
-  // units.
-  // All apps in the |candidates| will not be influenced.
-  static void LogAndMaybeSortLifecycleUnitWithTabRanker(
-      std::vector<Candidate>* candidates,
-      LifecycleUnitSorter sorter);
-
   // Returns the LifecycleUnits in TabManager. Virtual for unit tests.
   virtual LifecycleUnitVector GetLifecycleUnits();
 
