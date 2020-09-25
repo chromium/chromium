@@ -34,6 +34,9 @@
 // UIButton displayed aligned to the trailing of the view.
 @property(nonatomic, readonly, strong) UIButton* trailingButton;
 
+// The customized accessibility hint text string.
+@property(nonatomic, copy) NSString* customizedAccessibilityHint;
+
 // Sets the icon |image| and tint |color| for it that should be displayed at the
 // leading edge of the cell. If set to nil, the icon will be hidden and the
 // remaining content will expand to fill the full width of the cell.

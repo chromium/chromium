@@ -34,7 +34,7 @@
   }
   cell.statusTextLabel.text = self.statusText;
   if (self.accessibilityHint) {
-    cell.accessibilityHint = self.accessibilityHint;
+    cell.customizedAccessibilityHint = self.accessibilityHint;
   }
   cell.selectionStyle = UITableViewCellSelectionStyleNone;
 
