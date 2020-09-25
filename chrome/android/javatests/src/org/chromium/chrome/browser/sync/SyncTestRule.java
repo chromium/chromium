@@ -199,7 +199,8 @@ public class SyncTestRule extends ChromeActivityTestRule<ChromeActivity> {
      * @return the test account that is signed in.
      */
     public Account setUpAccountAndSignInForTesting() {
-        Account account = mAccountManagerTestRule.addAndSignInTestAccount(mProfileSyncService);
+        Account account =
+                mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync(mProfileSyncService);
         enableUKM();
         SyncTestUtil.waitForSyncActive();
         SyncTestUtil.triggerSyncAndWaitForCompletion();
@@ -211,8 +212,8 @@ public class SyncTestRule extends ChromeActivityTestRule<ChromeActivity> {
      * @return the test account that is signed in.
      */
     public Account setUpTestAccountAndSignInWithSyncSetupAsIncomplete() {
-        Account account =
-                mAccountManagerTestRule.addAndSignInTestAccount(/* profileSyncService= */ null);
+        Account account = mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync(
+                /* profileSyncService= */ null);
         enableUKM();
         SyncTestUtil.waitForSyncTransportActive();
         return account;
@@ -233,7 +234,7 @@ public class SyncTestRule extends ChromeActivityTestRule<ChromeActivity> {
     }
 
     public void signinAndEnableSync(final Account account) {
-        SigninTestUtil.signIn(account, mProfileSyncService);
+        SigninTestUtil.signinAndEnableSync(account, mProfileSyncService);
         enableUKM();
         SyncTestUtil.waitForSyncActive();
         SyncTestUtil.triggerSyncAndWaitForCompletion();

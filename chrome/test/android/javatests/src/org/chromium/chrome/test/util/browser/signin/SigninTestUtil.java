@@ -47,7 +47,8 @@ public final class SigninTestUtil {
      *
      * @param profileSyncService Enable the sync with it if it is not null.
      */
-    public static void signIn(Account account, @Nullable ProfileSyncService profileSyncService) {
+    public static void signinAndEnableSync(
+            Account account, @Nullable ProfileSyncService profileSyncService) {
         CallbackHelper callbackHelper = new CallbackHelper();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(

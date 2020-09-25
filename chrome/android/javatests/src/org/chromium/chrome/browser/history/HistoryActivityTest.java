@@ -178,7 +178,7 @@ public class HistoryActivityTest {
     @Test
     @SmallTest
     public void testPrivacyDisclaimers_SignedIn() {
-        mAccountManagerTestRule.addAndSignInTestAccount();
+        mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
 
         setHasOtherFormsOfBrowsingData(false);
 
@@ -188,7 +188,7 @@ public class HistoryActivityTest {
     @Test
     @SmallTest
     public void testPrivacyDisclaimers_SignedInSynced() {
-        mAccountManagerTestRule.addAndSignInTestAccount();
+        mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
 
         setHasOtherFormsOfBrowsingData(false);
 
@@ -198,7 +198,7 @@ public class HistoryActivityTest {
     @Test
     @SmallTest
     public void testPrivacyDisclaimers_SignedInSyncedAndOtherForms() {
-        mAccountManagerTestRule.addAndSignInTestAccount();
+        mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
 
         setHasOtherFormsOfBrowsingData(true);
 
@@ -385,7 +385,7 @@ public class HistoryActivityTest {
         Assert.assertEquals(1, headerGroup.size());
 
         // Signed in but not synced and history has items. The info button should be hidden.
-        mAccountManagerTestRule.addAndSignInTestAccount();
+        mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
         setHasOtherFormsOfBrowsingData(false);
         TestThreadUtils.runOnUiThreadBlocking(() -> toolbar.onSignInStateChange());
         Assert.assertFalse(infoMenuItem.isVisible());
@@ -442,7 +442,7 @@ public class HistoryActivityTest {
 
         // Sign in and set has other forms of browsing data to true.
         int callCount = mTestObserver.onSelectionCallback.getCallCount();
-        mAccountManagerTestRule.addAndSignInTestAccount();
+        mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
         setHasOtherFormsOfBrowsingData(true);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             toolbar.onSignInStateChange();

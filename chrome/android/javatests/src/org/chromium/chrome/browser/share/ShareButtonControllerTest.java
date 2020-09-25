@@ -129,7 +129,7 @@ public final class ShareButtonControllerTest {
     public void
     testShareButtonInToolbarNotAffectedByOverview() {
         // Sign in.
-        mAccountManagerTestRule.addAndSignInTestAccount();
+        mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
 
         TestThreadUtils.runOnUiThreadBlocking(
                 ()

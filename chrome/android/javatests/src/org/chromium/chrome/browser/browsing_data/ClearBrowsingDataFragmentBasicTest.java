@@ -136,7 +136,7 @@ public class ClearBrowsingDataFragmentBasicTest {
     @Test
     @SmallTest
     public void testCheckBoxTextSigned() {
-        mAccountManagerTestRule.addAndSignInTestAccount();
+        mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
         setSyncable(false);
 
         mSettingsActivityTestRule.startSettingsActivity();
@@ -165,7 +165,7 @@ public class ClearBrowsingDataFragmentBasicTest {
     @Test
     @SmallTest
     public void testCheckBoxTextSignedAndSynced() {
-        mAccountManagerTestRule.addAndSignInTestAccount();
+        mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
         setSyncable(true);
 
         mSettingsActivityTestRule.startSettingsActivity();

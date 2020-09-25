@@ -24,7 +24,7 @@ public final class SyncTestSigninUtils {
     @CalledByNative
     private static Account setUpAccountAndSignInForTesting() {
         sAccountManagerTestRule.waitForSeeding();
-        return sAccountManagerTestRule.addAndSignInTestAccount();
+        return sAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
     }
 
     /**

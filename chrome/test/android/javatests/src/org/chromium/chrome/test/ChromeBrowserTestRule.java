@@ -47,6 +47,6 @@ public class ChromeBrowserTestRule implements TestRule {
      * Add and sign in an account with the default name.
      */
     public Account addAndSignInTestAccount() {
-        return mAccountManagerTestRule.addAndSignInTestAccount();
+        return mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
     }
 }
