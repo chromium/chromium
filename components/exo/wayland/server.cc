@@ -159,8 +159,8 @@ Server::Server(Display* display)
                    display_, bind_secure_output);
   wl_global_create(wl_display_.get(), &zcr_alpha_compositing_v1_interface, 1,
                    display_, bind_alpha_compositing);
-  wl_global_create(wl_display_.get(), &zcr_stylus_v2_interface, 1, display_,
-                   bind_stylus_v2);
+  wl_global_create(wl_display_.get(), &zcr_stylus_v2_interface,
+                   zcr_stylus_v2_interface.version, display_, bind_stylus_v2);
 
   seat_data_ =
       std::make_unique<WaylandSeat>(display_->seat(), serial_tracker_.get());

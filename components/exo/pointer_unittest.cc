@@ -16,6 +16,7 @@
 #include "components/exo/data_source_delegate.h"
 #include "components/exo/pointer_constraint_delegate.h"
 #include "components/exo/pointer_delegate.h"
+#include "components/exo/pointer_stylus_delegate.h"
 #include "components/exo/relative_pointer_delegate.h"
 #include "components/exo/seat.h"
 #include "components/exo/shell_surface.h"
@@ -78,6 +79,17 @@ class MockPointerConstraintDelegate : public PointerConstraintDelegate {
   // Overridden from PointerConstraintDelegate:
   MOCK_METHOD0(OnConstraintBroken, void());
   MOCK_METHOD0(GetConstrainedSurface, Surface*());
+};
+
+class MockPointerStylusDelegate : public PointerStylusDelegate {
+ public:
+  MockPointerStylusDelegate() {}
+
+  // Overridden from PointerStylusDelegate:
+  MOCK_METHOD(void, OnPointerDestroying, (Pointer*));
+  MOCK_METHOD(void, OnPointerToolChange, (ui::EventPointerType));
+  MOCK_METHOD(void, OnPointerForce, (base::TimeTicks, float));
+  MOCK_METHOD(void, OnPointerTilt, (base::TimeTicks, const gfx::Vector2dF&));
 };
 
 class TestDataSourceDelegate : public DataSourceDelegate {
@@ -1266,6 +1278,42 @@ TEST_F(PointerTest, UnconstrainPointerWhenWindowLosesFocus) {
   pointer.reset();
 }
 #endif
+
+TEST_F(PointerTest, PointerStylus) {
+  std::unique_ptr<Surface> surface(new Surface);
+  std::unique_ptr<ShellSurface> shell_surface(new ShellSurface(surface.get()));
+  gfx::Size buffer_size(10, 10);
+  std::unique_ptr<Buffer> buffer(
+      new Buffer(exo_test_helper()->CreateGpuMemoryBuffer(buffer_size)));
+  surface->Attach(buffer.get());
+  surface->Commit();
+
+  MockPointerDelegate delegate;
+  MockPointerStylusDelegate stylus_delegate;
+  Seat seat;
+  std::unique_ptr<Pointer> pointer(new Pointer(&delegate, &seat));
+  ui::test::EventGenerator generator(ash::Shell::GetPrimaryRootWindow());
+
+  pointer->SetStylusDelegate(&stylus_delegate);
+
+  EXPECT_CALL(delegate, CanAcceptPointerEventsForSurface(surface.get()))
+      .WillRepeatedly(testing::Return(true));
+
+  {
+    testing::InSequence sequence;
+    EXPECT_CALL(delegate, OnPointerEnter(surface.get(), gfx::PointF(), 0));
+    EXPECT_CALL(delegate, OnPointerFrame());
+    EXPECT_CALL(stylus_delegate,
+                OnPointerToolChange(ui::EventPointerType::kMouse));
+    EXPECT_CALL(delegate, OnPointerFrame());
+  }
+
+  generator.MoveMouseTo(surface->window()->GetBoundsInScreen().origin());
+
+  EXPECT_CALL(delegate, OnPointerDestroying(pointer.get()));
+  EXPECT_CALL(stylus_delegate, OnPointerDestroying(pointer.get()));
+  pointer.reset();
+}
 
 }  // namespace
 }  // namespace exo

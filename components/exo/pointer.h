@@ -38,6 +38,7 @@ namespace exo {
 class PointerConstraintDelegate;
 class PointerDelegate;
 class PointerGesturePinchDelegate;
+class PointerStylusDelegate;
 class RelativePointerDelegate;
 class Seat;
 class Surface;
@@ -106,6 +107,10 @@ class Pointer : public SurfaceTreeHost,
   // delegate.
   void UnconstrainPointer();
 
+  // Set the stylus delegate for handling stylus events.
+  void SetStylusDelegate(PointerStylusDelegate* delegate);
+  bool HasStylusDelegate() const;
+
  private:
   // Capture the pointer for the given surface. Returns true iff the capture
   // succeeded.
@@ -167,6 +172,9 @@ class Pointer : public SurfaceTreeHost,
   // The delegate instance that controls when to lock/unlock this pointer.
   PointerConstraintDelegate* pointer_constraint_delegate_ = nullptr;
 
+  // The delegate instance that stylus/pen events are dispatched to.
+  PointerStylusDelegate* stylus_delegate_ = nullptr;
+
   // The current focus surface for the pointer.
   Surface* focus_surface_ = nullptr;
 
@@ -208,6 +216,11 @@ class Pointer : public SurfaceTreeHost,
 
   // Last received event type.
   ui::EventType last_event_type_ = ui::ET_UNKNOWN;
+
+  // Last reported stylus values.
+  ui::EventPointerType last_pointer_type_ = ui::EventPointerType::kUnknown;
+  float last_force_ = std::numeric_limits<float>::quiet_NaN();
+  gfx::Vector2dF last_tilt_;
 
   // Weak pointer factory used for cursor capture callbacks.
   base::WeakPtrFactory<Pointer> cursor_capture_weak_ptr_factory_{this};

@@ -13,6 +13,7 @@
 #include "components/exo/pointer_constraint_delegate.h"
 #include "components/exo/pointer_delegate.h"
 #include "components/exo/pointer_gesture_pinch_delegate.h"
+#include "components/exo/pointer_stylus_delegate.h"
 #include "components/exo/relative_pointer_delegate.h"
 #include "components/exo/seat.h"
 #include "components/exo/shell_surface_util.h"
@@ -71,6 +72,14 @@ bool SameLocation(const gfx::PointF& location_in_target,
   return offset.LengthSquared() < (2 * kLocatedEventEpsilonSquared);
 }
 
+// Granularity for reporting force/pressure values coming from styli or other
+// devices that are normalized from 0 to 1, used to limit sending noisy values.
+const float kForceGranularity = 1e-2f;
+
+// Granularity for reporting tilt values coming from styli or other devices in
+// degrees, used to limit sending noisy values.
+const float kTiltGranularity = 1.f;
+
 display::ManagedDisplayInfo GetCaptureDisplayInfo() {
   display::ManagedDisplayInfo capture_info;
   for (const auto& display : display::Screen::GetScreen()->GetAllDisplays()) {
@@ -115,9 +124,8 @@ Pointer::Pointer(PointerDelegate* delegate, Seat* seat)
 
 Pointer::~Pointer() {
   delegate_->OnPointerDestroying(this);
-  if (focus_surface_) {
+  if (focus_surface_)
     focus_surface_->RemoveSurfaceObserver(this);
-  }
   if (pinch_delegate_)
     pinch_delegate_->OnPointerDestroying(this);
   if (relative_pointer_delegate_)
@@ -128,6 +136,8 @@ Pointer::~Pointer() {
     VLOG(1) << "Pointer constraint broken by pointer destruction";
     pointer_constraint_delegate_->OnConstraintBroken();
   }
+  if (stylus_delegate_)
+    stylus_delegate_->OnPointerDestroying(this);
   WMHelper* helper = WMHelper::GetInstance();
   helper->RemovePreTargetHandler(this);
   // TODO(sky): CursorClient does not exist in mash
@@ -302,6 +312,19 @@ void Pointer::DisablePointerCapture() {
   UpdateCursor();
 }
 
+void Pointer::SetStylusDelegate(PointerStylusDelegate* delegate) {
+  stylus_delegate_ = delegate;
+
+  // Reset last reported values to default.
+  last_pointer_type_ = ui::EventPointerType::kUnknown;
+  last_force_ = std::numeric_limits<float>::quiet_NaN();
+  last_tilt_ = gfx::Vector2dF();
+}
+
+bool Pointer::HasStylusDelegate() const {
+  return !!stylus_delegate_;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // SurfaceDelegate overrides:
 
@@ -366,6 +389,13 @@ void Pointer::OnMouseEvent(ui::MouseEvent* event) {
     return;
 
   TRACE_EXO_INPUT_EVENT(event);
+
+  const auto& details = event->pointer_details();
+  if (stylus_delegate_ && last_pointer_type_ != details.pointer_type) {
+    last_pointer_type_ = details.pointer_type;
+    stylus_delegate_->OnPointerToolChange(details.pointer_type);
+    delegate_->OnPointerFrame();
+  }
 
   if (event->IsMouseEvent()) {
     // Generate motion event if location changed. We need to check location
@@ -457,6 +487,31 @@ void Pointer::OnMouseEvent(ui::MouseEvent* event) {
     default:
       NOTREACHED();
       break;
+  }
+
+  if (stylus_delegate_) {
+    bool needs_frame = false;
+    // Report the force value when either:
+    // - switching from a device that supports force to one that doesn't or
+    //   vice-versa (since force is NaN if the device doesn't support it), OR
+    // - the force value differs from the last reported force by greater than
+    //   the granularity.
+    // Using std::isgreaterequal for quiet error handling for NaNs.
+    if (std::isnan(last_force_) != std::isnan(details.force) ||
+        std::isgreaterequal(abs(last_force_ - details.force),
+                            kForceGranularity)) {
+      last_force_ = details.force;
+      stylus_delegate_->OnPointerForce(event->time_stamp(), details.force);
+      needs_frame = true;
+    }
+    if (abs(last_tilt_.x() - details.tilt_x) >= kTiltGranularity ||
+        abs(last_tilt_.y() - details.tilt_y) >= kTiltGranularity) {
+      last_tilt_ = gfx::Vector2dF(details.tilt_x, details.tilt_y);
+      stylus_delegate_->OnPointerTilt(event->time_stamp(), last_tilt_);
+      needs_frame = true;
+    }
+    if (needs_frame)
+      delegate_->OnPointerFrame();
   }
 
   last_event_type_ = event->type();

@@ -6,6 +6,8 @@
 
 #include <stylus-unstable-v2-server-protocol.h>
 
+#include "components/exo/pointer.h"
+#include "components/exo/pointer_stylus_delegate.h"
 #include "components/exo/touch.h"
 #include "components/exo/touch_stylus_delegate.h"
 #include "components/exo/wayland/server_util.h"
@@ -15,7 +17,7 @@ namespace wayland {
 namespace {
 
 ////////////////////////////////////////////////////////////////////////////////
-// touch_stylus interface:
+// zcr_touch_stylus_v2 interface:
 
 class WaylandTouchStylusDelegate : public TouchStylusDelegate {
  public:
@@ -66,7 +68,75 @@ const struct zcr_touch_stylus_v2_interface touch_stylus_implementation = {
     touch_stylus_destroy};
 
 ////////////////////////////////////////////////////////////////////////////////
-// stylus_v2 interface:
+// zcr_pointer_stylus_v2 interface:
+
+class WaylandPointerStylusDelegate : public PointerStylusDelegate {
+ public:
+  WaylandPointerStylusDelegate(wl_resource* resource, Pointer* pointer)
+      : resource_(resource), pointer_(pointer) {
+    pointer_->SetStylusDelegate(this);
+  }
+  WaylandPointerStylusDelegate(const WaylandPointerStylusDelegate&) = delete;
+  const WaylandPointerStylusDelegate& operator=(
+      const WaylandPointerStylusDelegate&) = delete;
+  ~WaylandPointerStylusDelegate() override {
+    if (pointer_ != nullptr)
+      pointer_->SetStylusDelegate(nullptr);
+  }
+  void OnPointerDestroying(Pointer* pointer_) override { pointer_ = nullptr; }
+  void OnPointerToolChange(ui::EventPointerType type) override {
+    uint wayland_type = ZCR_POINTER_STYLUS_V2_TOOL_TYPE_NONE;
+    if (type == ui::EventPointerType::kTouch)
+      wayland_type = ZCR_POINTER_STYLUS_V2_TOOL_TYPE_TOUCH;
+    else if (type == ui::EventPointerType::kPen)
+      wayland_type = ZCR_POINTER_STYLUS_V2_TOOL_TYPE_PEN;
+    else if (type == ui::EventPointerType::kEraser)
+      wayland_type = ZCR_POINTER_STYLUS_V2_TOOL_TYPE_ERASER;
+    zcr_pointer_stylus_v2_send_tool(resource_, wayland_type);
+    supports_force_ = false;
+    supports_tilt_ = false;
+  }
+  void OnPointerForce(base::TimeTicks time_stamp, float force) override {
+    // Set the force as 0 if the current tool previously reported a valid
+    // force, but is now reporting a NaN value indicating that force is not
+    // supported.
+    if (std::isnan(force)) {
+      if (supports_force_)
+        force = 0;
+      else
+        return;
+    }
+    supports_force_ = true;
+    zcr_pointer_stylus_v2_send_force(resource_,
+                                     TimeTicksToMilliseconds(time_stamp),
+                                     wl_fixed_from_double(force));
+  }
+  void OnPointerTilt(base::TimeTicks time_stamp,
+                     const gfx::Vector2dF& tilt) override {
+    if (!supports_tilt_ && tilt.IsZero())
+      return;
+    supports_tilt_ = true;
+    zcr_pointer_stylus_v2_send_tilt(
+        resource_, TimeTicksToMilliseconds(time_stamp),
+        wl_fixed_from_double(tilt.x()), wl_fixed_from_double(tilt.y()));
+  }
+
+ private:
+  wl_resource* resource_;
+  Pointer* pointer_;
+  bool supports_force_ = false;
+  bool supports_tilt_ = false;
+};
+
+void pointer_stylus_destroy(wl_client* client, wl_resource* resource) {
+  wl_resource_destroy(resource);
+}
+
+const struct zcr_pointer_stylus_v2_interface pointer_stylus_implementation = {
+    pointer_stylus_destroy};
+
+////////////////////////////////////////////////////////////////////////////////
+// zcr_stylus_v2 interface:
 
 void stylus_get_touch_stylus(wl_client* client,
                              wl_resource* resource,
@@ -81,15 +151,37 @@ void stylus_get_touch_stylus(wl_client* client,
   }
 
   wl_resource* stylus_resource =
-      wl_resource_create(client, &zcr_touch_stylus_v2_interface, 1, id);
+      wl_resource_create(client, &zcr_touch_stylus_v2_interface,
+                         wl_resource_get_version(resource), id);
 
   SetImplementation(
       stylus_resource, &touch_stylus_implementation,
       std::make_unique<WaylandTouchStylusDelegate>(stylus_resource, touch));
 }
 
+void stylus_get_pointer_stylus(wl_client* client,
+                               wl_resource* resource,
+                               uint32_t id,
+                               wl_resource* pointer_resource) {
+  Pointer* pointer = GetUserDataAs<Pointer>(pointer_resource);
+  if (pointer->HasStylusDelegate()) {
+    wl_resource_post_error(
+        resource, ZCR_STYLUS_V2_ERROR_POINTER_STYLUS_EXISTS,
+        "pointer has already been associated with a stylus object");
+    return;
+  }
+
+  wl_resource* stylus_resource =
+      wl_resource_create(client, &zcr_pointer_stylus_v2_interface,
+                         wl_resource_get_version(resource), id);
+
+  SetImplementation(
+      stylus_resource, &pointer_stylus_implementation,
+      std::make_unique<WaylandPointerStylusDelegate>(stylus_resource, pointer));
+}
+
 const struct zcr_stylus_v2_interface stylus_v2_implementation = {
-    stylus_get_touch_stylus};
+    stylus_get_touch_stylus, stylus_get_pointer_stylus};
 
 }  // namespace
 
