@@ -17,6 +17,7 @@ namespace chromeos {
 namespace quick_answers {
 
 struct QuickAnswersRequest;
+struct IntentInfo;
 enum class IntentType;
 
 // Generate intent from the |QuickAnswersRequest|.
@@ -24,7 +25,7 @@ class IntentGenerator {
  public:
   // Callback used when intent generation is complete.
   using IntentGeneratorCallback =
-      base::OnceCallback<void(const std::string& text, IntentType type)>;
+      base::OnceCallback<void(const IntentInfo& intent_info)>;
 
   explicit IntentGenerator(IntentGeneratorCallback complete_callback);
 

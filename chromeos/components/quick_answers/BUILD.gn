@@ -32,6 +32,8 @@ source_set("quick_answers") {
     "utils/language_detector.h",
     "utils/quick_answers_metrics.cc",
     "utils/quick_answers_metrics.h",
+    "utils/quick_answers_utils.cc",
+    "utils/quick_answers_utils.h",
   ]
   deps = [
     "//ash/public/cpp",

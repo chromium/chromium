@@ -159,8 +159,10 @@ void QuickAnswersControllerImpl::OnRequestPreprocessFinished(
     return;
   }
 
-  if (processed_request.preprocessed_output.intent_type ==
-      chromeos::quick_answers::IntentType::kUnknown) {
+  auto intent_type =
+      processed_request.preprocessed_output.intent_info.intent_type;
+
+  if (intent_type == chromeos::quick_answers::IntentType::kUnknown) {
     return;
   }
 
@@ -168,12 +170,10 @@ void QuickAnswersControllerImpl::OnRequestPreprocessFinished(
     return;
 
   query_ = processed_request.preprocessed_output.query;
-  title_ = processed_request.preprocessed_output.intent_text;
+  title_ = processed_request.preprocessed_output.intent_info.intent_text;
 
-  if (!MaybeShowUserConsent(
-          IntentTypeToString(processed_request.preprocessed_output.intent_type),
-          base::UTF8ToUTF16(
-              processed_request.preprocessed_output.intent_text))) {
+  if (!MaybeShowUserConsent(IntentTypeToString(intent_type),
+                            base::UTF8ToUTF16(title_))) {
     if (!quick_answers_ui_controller_->is_showing_quick_answers_view()) {
       visibility_ = QuickAnswersVisibility::kVisible;
       quick_answers_ui_controller_->CreateQuickAnswersView(anchor_bounds_,

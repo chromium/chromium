@@ -10,6 +10,7 @@
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
+#include "chromeos/components/quick_answers/utils/quick_answers_utils.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/machine_learning/public/cpp/service_connection.h"
 #include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
@@ -88,13 +89,14 @@ IntentGenerator::IntentGenerator(IntentGeneratorCallback complete_callback)
 
 IntentGenerator::~IntentGenerator() {
   if (complete_callback_)
-    std::move(complete_callback_).Run(std::string(), IntentType::kUnknown);
+    std::move(complete_callback_)
+        .Run(IntentInfo(std::string(), IntentType::kUnknown));
 }
 
 void IntentGenerator::GenerateIntent(const QuickAnswersRequest& request) {
   if (!features::IsQuickAnswersTextAnnotatorEnabled()) {
     std::move(complete_callback_)
-        .Run(request.selected_text, IntentType::kUnknown);
+        .Run(IntentInfo(request.selected_text, IntentType::kUnknown));
     return;
   }
 
@@ -110,7 +112,7 @@ void IntentGenerator::LoadModelCallback(const QuickAnswersRequest& request,
   if (result != LoadModelResult::OK) {
     LOG(ERROR) << "Failed to load TextClassifier.";
     std::move(complete_callback_)
-        .Run(request.selected_text, IntentType::kUnknown);
+        .Run(IntentInfo(request.selected_text, IntentType::kUnknown));
     return;
   }
 
@@ -144,8 +146,8 @@ void IntentGenerator::AnnotationCallback(
     auto it = intent_type_map.find(type);
     if (it != intent_type_map.end()) {
       std::move(complete_callback_)
-          .Run(entity_str,
-               RewriteIntent(request.selected_text, entity_str, it->second));
+          .Run(IntentInfo(entity_str, RewriteIntent(request.selected_text,
+                                                    entity_str, it->second)));
       return;
     }
   }
@@ -158,11 +160,17 @@ void IntentGenerator::FindLanguagesCallback(
     std::vector<machine_learning::mojom::TextLanguagePtr> languages) {
   auto intent_type = IntentType::kUnknown;
   // TODO(b/b/150034512): Take confidence level into consideration.
-  if (!languages.empty() &&
-      languages.front()->locale != request.context.device_properties.language) {
-    intent_type = IntentType::kTranslation;
+  if (languages.empty() ||
+      languages.front()->locale == request.context.device_properties.language) {
+    std::move(complete_callback_)
+        .Run(IntentInfo(request.selected_text, IntentType::kUnknown));
+    return;
   }
-  std::move(complete_callback_).Run(request.selected_text, intent_type);
+  intent_type = IntentType::kTranslation;
+  std::move(complete_callback_)
+      .Run(IntentInfo(request.selected_text, intent_type,
+                      languages.front()->locale,
+                      request.context.device_properties.language));
 }
 
 void IntentGenerator::MaybeGenerateTranslationIntent(
@@ -171,7 +179,7 @@ void IntentGenerator::MaybeGenerateTranslationIntent(
 
   if (!features::IsQuickAnswersTranslationEnabled()) {
     std::move(complete_callback_)
-        .Run(request.selected_text, IntentType::kUnknown);
+        .Run(IntentInfo(request.selected_text, IntentType::kUnknown));
     return;
   }
 
@@ -180,7 +188,7 @@ void IntentGenerator::MaybeGenerateTranslationIntent(
   if (request.context.device_properties.language.empty() ||
       request.selected_text.length() > kTranslationTextLengthThreshold) {
     std::move(complete_callback_)
-        .Run(request.selected_text, IntentType::kUnknown);
+        .Run(IntentInfo(request.selected_text, IntentType::kUnknown));
     return;
   }
 

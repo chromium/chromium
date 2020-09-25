@@ -13,6 +13,7 @@
 #include "base/test/task_environment.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "chromeos/components/quick_answers/test/test_helpers.h"
+#include "chromeos/components/quick_answers/utils/quick_answers_utils.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -51,13 +52,14 @@ class MockResultLoader : public TestResultLoader {
 };
 
 MATCHER_P(QuickAnswersRequestWithOutputEqual, quick_answers_request, "") {
-  return (arg.selected_text == quick_answers_request.selected_text &&
-          arg.preprocessed_output.intent_type ==
-              quick_answers_request.preprocessed_output.intent_type &&
-          arg.preprocessed_output.intent_text ==
-              quick_answers_request.preprocessed_output.intent_text &&
-          arg.preprocessed_output.query ==
-              quick_answers_request.preprocessed_output.query);
+  return (
+      arg.selected_text == quick_answers_request.selected_text &&
+      arg.preprocessed_output.intent_info.intent_type ==
+          quick_answers_request.preprocessed_output.intent_info.intent_type &&
+      arg.preprocessed_output.intent_info.intent_text ==
+          quick_answers_request.preprocessed_output.intent_info.intent_text &&
+      arg.preprocessed_output.query ==
+          quick_answers_request.preprocessed_output.query);
 }
 
 class MockIntentGenerator : public IntentGenerator {
@@ -107,7 +109,7 @@ class QuickAnswersClientTest : public testing::Test {
     client_.reset();
   }
 
-  void IntentGeneratorTestCallback(const std::string& text, IntentType type) {}
+  void IntentGeneratorTestCallback(const IntentInfo& intent_info) {}
 
  protected:
   void NotifyAssistantStateChange(
@@ -309,7 +311,7 @@ TEST_F(QuickAnswersClientTest, SendRequest) {
 
   client_->SendRequest(*quick_answers_request);
   client_->IntentGeneratorCallback(*quick_answers_request, /*skip_fetch=*/false,
-                                   "sel", IntentType::kDictionary);
+                                   IntentInfo("sel", IntentType::kDictionary));
 
   std::unique_ptr<QuickAnswer> quick_answer = std::make_unique<QuickAnswer>();
   quick_answer->primary_answer = "answer";
@@ -368,7 +370,7 @@ TEST_F(QuickAnswersClientTest, NotSendRequestForUnknownIntent) {
       &result_loader_factory_callback_);
 
   client_->IntentGeneratorCallback(*quick_answers_request, /*skip_fetch=*/false,
-                                   "sel", IntentType::kUnknown);
+                                   IntentInfo("sel", IntentType::kUnknown));
 }
 
 TEST_F(QuickAnswersClientTest, PreprocessDefinitionIntent) {
@@ -381,16 +383,17 @@ TEST_F(QuickAnswersClientTest, PreprocessDefinitionIntent) {
       std::make_unique<QuickAnswersRequest>();
   processed_request->selected_text = "unfathomable";
   PreprocessedOutput expected_processed_output;
-  expected_processed_output.intent_text = "unfathomable";
+  expected_processed_output.intent_info.intent_text = "unfathomable";
   expected_processed_output.query = "Define:unfathomable";
-  expected_processed_output.intent_type = IntentType::kDictionary;
+  expected_processed_output.intent_info.intent_type = IntentType::kDictionary;
   processed_request->preprocessed_output = expected_processed_output;
   EXPECT_CALL(*mock_delegate_,
               OnRequestPreprocessFinished(
                   QuickAnswersRequestWithOutputEqual(*processed_request)));
 
-  client_->IntentGeneratorCallback(*quick_answers_request, /*skip_fetch=*/false,
-                                   "unfathomable", IntentType::kDictionary);
+  client_->IntentGeneratorCallback(
+      *quick_answers_request, /*skip_fetch=*/false,
+      IntentInfo("unfathomable", IntentType::kDictionary));
 }
 
 TEST_F(QuickAnswersClientTest, PreprocessTranslationIntent) {
@@ -403,16 +406,17 @@ TEST_F(QuickAnswersClientTest, PreprocessTranslationIntent) {
       std::make_unique<QuickAnswersRequest>();
   processed_request->selected_text = "sel";
   PreprocessedOutput expected_processed_output;
-  expected_processed_output.intent_text = "intent text";
+  expected_processed_output.intent_info.intent_text = "intent text";
   expected_processed_output.query = "Translate:intent text";
-  expected_processed_output.intent_type = IntentType::kTranslation;
+  expected_processed_output.intent_info.intent_type = IntentType::kTranslation;
   processed_request->preprocessed_output = expected_processed_output;
   EXPECT_CALL(*mock_delegate_,
               OnRequestPreprocessFinished(
                   QuickAnswersRequestWithOutputEqual(*processed_request)));
 
-  client_->IntentGeneratorCallback(*quick_answers_request, /*skip_fetch=*/false,
-                                   "intent text", IntentType::kTranslation);
+  client_->IntentGeneratorCallback(
+      *quick_answers_request, /*skip_fetch=*/false,
+      IntentInfo("intent text", IntentType::kTranslation));
 }
 
 TEST_F(QuickAnswersClientTest, PreprocessUnitConversionIntent) {
@@ -425,16 +429,16 @@ TEST_F(QuickAnswersClientTest, PreprocessUnitConversionIntent) {
       std::make_unique<QuickAnswersRequest>();
   processed_request->selected_text = "20ft";
   PreprocessedOutput expected_processed_output;
-  expected_processed_output.intent_text = "20ft";
+  expected_processed_output.intent_info.intent_text = "20ft";
   expected_processed_output.query = "Convert:20ft";
-  expected_processed_output.intent_type = IntentType::kUnit;
+  expected_processed_output.intent_info.intent_type = IntentType::kUnit;
   processed_request->preprocessed_output = expected_processed_output;
   EXPECT_CALL(*mock_delegate_,
               OnRequestPreprocessFinished(
                   QuickAnswersRequestWithOutputEqual(*processed_request)));
 
   client_->IntentGeneratorCallback(*quick_answers_request, /*skip_fetch=*/false,
-                                   "20ft", IntentType::kUnit);
+                                   IntentInfo("20ft", IntentType::kUnit));
 }
 
 }  // namespace quick_answers
