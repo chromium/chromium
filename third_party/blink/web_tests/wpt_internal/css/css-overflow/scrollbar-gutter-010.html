@@ -1,6 +1,6 @@
 <!doctype html>
 <meta charset="utf-8">
-<title>CSS Overflow: test scrollbar-gutter: always both (classic scrollbars)</title>
+<title>CSS Overflow: test scrollbar-gutter: always both (classic scrollbars, vertical text)</title>
 <link rel="author" title="Felipe Erias Morandeira" href="mailto:felipeerias@gmail.com"/>
 <link rel="help" href="https://www.w3.org/TR/css-overflow-4/#scollbar-gutter-property"/>
 <meta name="assert" content="Test scrollbar-gutter: always with custom classic scrollbars">
@@ -29,11 +29,7 @@
         background: lightsalmon;
     }
 
-    /* ensure that we are using classic scrollbars */
-    .classic {
-        scrollbar-width: 20px;
-        scrollbar-color: hsla(0, 0%, 20%, 0.6) hsla(0, 0%, 40%, 0.3);
-    }
+    /* ensure that we are using classic scrollbars with a known thickness */
     .classic::-webkit-scrollbar {
         width: 20px;
         height: 20px;
@@ -46,21 +42,14 @@
         border-radius: 10px;
     }
 
-    /* writing modes */
-    .horizontal {
-        writing-mode: horizontal-tb;
-        overflow-x: auto;
-    }
+    /* writing mode */
     .vertical   {
         writing-mode: vertical-rl;
+        direction: ltr;
         overflow-y: auto;
     }
 
     /* overflow on the block direction */
-    .horizontal.auto    { overflow-y: auto;    }
-    .horizontal.scroll  { overflow-y: scroll;  }
-    .horizontal.visible { overflow:   visible; }
-    .horizontal.hidden  { overflow-y: hidden;  }
     .vertical.auto      { overflow-x: auto;    }
     .vertical.scroll    { overflow-x: scroll;  }
     .vertical.visible   { overflow:   visible; }
@@ -73,68 +62,6 @@
 
     function performTest() {
         setup({explicit_done: true});
-
-        // horizontal
-
-        test(function() {
-            let container = document.getElementById('container_auto_h');
-            let content = document.getElementById('content_auto_h');
-            assert_equals(container.scrollWidth, 160, "auto/always both scrollWidth");
-            assert_equals(container.clientWidth, 160, "auto/always both clientWidth");
-            assert_equals(container.offsetLeft, content.offsetLeft - 20, "auto/always both offsetLeft");
-            assert_equals(container.clientWidth, content.clientWidth, "auto/always both clientWidth");
-            assert_not_equals(container.offsetWidth, content.offsetWidth, "auto/always both offsetWidth");
-        }, "Unexpected layout: overflow auto, scrollbar-gutter always both, horizontal-tb");
-
-        test(function() {
-            let container = document.getElementById('container_scroll_h');
-            let content = document.getElementById('content_scroll_h');
-            assert_equals(container.scrollWidth, 160, "scroll/always both scrollWidth");
-            assert_equals(container.clientWidth, 160, "scroll/always both clientWidth");
-            assert_equals(container.offsetLeft, content.offsetLeft - 20, "scroll/always both offsetLeft");
-            assert_equals(container.clientWidth, content.clientWidth, "scroll/always both clientWidth");
-            assert_not_equals(container.offsetWidth, content.offsetWidth, "scroll/always both offsetWidth");
-        }, "Unexpected layout: overflow scroll, scrollbar-gutter always both, horizontal-tb");
-
-        test(function() {
-            let container = document.getElementById('container_visible_h');
-            let content = document.getElementById('content_visible_h');
-            assert_equals(container.scrollWidth, 200, "visible/always both scrollWidth");
-            assert_equals(container.clientWidth, 200, "visible/always both clientWidth");
-            assert_equals(container.offsetLeft, content.offsetLeft, "visible/always both offsetLeft");
-            assert_equals(container.clientWidth, content.clientWidth, "visible/always both clientWidth");
-            assert_equals(container.offsetWidth, content.offsetWidth, "visible/always both offsetWidth");
-        }, "Unexpected layout: overflow visible, scrollbar-gutter always both, horizontal-tb");
-
-        test(function() {
-            let container = document.getElementById('container_hidden_h');
-            let content = document.getElementById('content_hidden_h');
-            assert_equals(container.scrollWidth, 200, "hidden/always both scrollWidth");
-            assert_equals(container.clientWidth, 200, "hidden/always both clientWidth");
-            assert_equals(container.offsetLeft, content.offsetLeft, "hidden/always both offsetLeft");
-            assert_equals(container.clientWidth, content.clientWidth, "hidden/always both clientWidth");
-            assert_equals(container.offsetWidth, content.offsetWidth, "hidden/always both offsetWidth");
-        }, "Unexpected layout: overflow hidden, scrollbar-gutter always both, horizontal-tb");
-
-        test(function() {
-            let container = document.getElementById('container_visible_force_h');
-            let content = document.getElementById('content_visible_force_h');
-            assert_equals(container.scrollWidth, 160, "visible/always both force scrollWidth");
-            assert_equals(container.clientWidth, 160, "visible/always both force clientWidth");
-            assert_equals(container.offsetLeft, content.offsetLeft - 20, "visible/always both force offsetLeft");
-            assert_equals(container.clientWidth, content.clientWidth, "visible/always both force clientWidth");
-            assert_not_equals(container.offsetWidth, content.offsetWidth, "visible/always both force offsetWidth");
-        }, "Unexpected layout: overflow visible, scrollbar-gutter always both force, horizontal-tb");
-
-        test(function() {
-            let container = document.getElementById('container_hidden_force_h');
-            let content = document.getElementById('content_hidden_force_h');
-            assert_equals(container.scrollWidth, 160, "hidden/always both force scrollWidth");
-            assert_equals(container.clientWidth, 160, "hidden/always both force clientWidth");
-            assert_equals(container.offsetLeft, content.offsetLeft - 20, "hidden/always both force offsetLeft");
-            assert_equals(container.clientWidth, content.clientWidth, "hidden/always both force clientWidth");
-            assert_not_equals(container.offsetWidth, content.offsetWidth, "hidden/always both force offsetWidth");
-        }, "Unexpected layout: overflow hidden, scrollbar-gutter always both force, horizontal-tb");
 
         // vertical
 
@@ -204,60 +131,32 @@
 </script>
 <body onload="performTest()">
 
-    Test scrollbar-gutter: always both, writing-mode: horizontal-tb
-
-    <div class="container classic horizontal auto" id="container_auto_h">
-        <div class="content" id="content_auto_h">overflow-y: auto</div>
-    </div>
-
-    <div class="container classic horizontal scroll" id="container_scroll_h">
-        <div class="content" id="content_scroll_h">overflow-y: scroll</div>
-    </div>
-
-    <div class="container classic horizontal visible" id="container_visible_h">
-        <div class="content" id="content_visible_h">overflow: visible</div>
-    </div>
-
-    <div class="container classic horizontal hidden" id="container_hidden_h">
-        <div class="content" id="content_hidden_h">overflow-y: hidden</div>
-    </div>
-
-    scrollbar-gutter: always both force
-
-    <div class="container classic horizontal visible force" id="container_visible_force_h">
-        <div class="content" id="content_visible_force_h">overflow: visible (force)</div>
-    </div>
-
-    <div class="container classic horizontal hidden force" id="container_hidden_force_h">
-        <div class="content" id="content_hidden_force_h">overflow-y: hidden (force)</div>
-    </div>
-
-    writing-mode: vertical-rl;
+    Test scrollbar-gutter: always both, writing-mode: vertical-rl;
 
     <div class="container classic vertical auto" id="container_auto_v">
-        <div class="content" id="content_auto_v">overflow-x: auto</div>
+        <div class="content" id="content_auto_v">ｏｖｅｒｆｌｏｗ：ａｕｔｏ</div>
     </div>
 
     <div class="container classic vertical scroll" id="container_scroll_v">
-        <div class="content" id="content_scroll_v">overflow-x: scroll</div>
+        <div class="content" id="content_scroll_v">ｏｖｅｒｆｌｏｗ－ｘ：ｓｃｒｏｌｌ</div>
     </div>
 
     <div class="container classic vertical visible" id="container_visible_v">
-        <div class="content" id="content_visible_v">overflow: visible</div>
+        <div class="content" id="content_visible_v">ｏｖｅｒｆｌｏｗ：ｖｉｓｉｂｌｅ</div>
     </div>
 
     <div class="container classic vertical hidden" id="container_hidden_v">
-        <div class="content" id="content_hidden_v">overflow-x: hidden</div>
+        <div class="content" id="content_hidden_v">ｏｖｅｒｆｌｏｗ－ｘ：ｈｉｄｄｅｎ</div>
     </div>
 
     scrollbar-gutter: always both force
 
     <div class="container classic vertical visible force" id="container_visible_force_v">
-        <div class="content" id="content_visible_force_v">overflow: visible</div>
+        <div class="content" id="content_visible_force_v">ｏｖｅｒｆｌｏｗ：ｖｉｓｉｂｌｅ</div>
     </div>
 
     <div class="container classic vertical hidden force" id="container_hidden_force_v">
-        <div class="content" id="content_hidden_force_v">overflow-x: hidden</div>
+        <div class="content" id="content_hidden_force_v">ｏｖｅｒｆｌｏｗ－ｘ：ｈｉｄｄｅｎ</div>
     </div>
 
 </body>
