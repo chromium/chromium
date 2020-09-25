@@ -187,11 +187,19 @@ void ValidateFontEnumerationBasic(FontEnumerationStatus status,
   base::ReadOnlySharedMemoryMapping mapping = region.Map();
   table.ParseFromArray(mapping.memory(), mapping.size());
 
+  blink::FontEnumerationTable_FontMetadata previous_font;
   for (const auto& font : table.fonts()) {
     EXPECT_GT(font.postscript_name().size(), 0ULL)
         << "postscript_name size is not zero.";
     EXPECT_GT(font.full_name().size(), 0ULL) << "full_name size is not zero.";
     EXPECT_GT(font.family().size(), 0ULL) << "family size is not zero.";
+
+    if (previous_font.IsInitialized()) {
+      EXPECT_LT(previous_font.postscript_name(), font.postscript_name())
+          << "font list is sorted";
+    }
+
+    previous_font = font;
   }
 }
 

@@ -97,6 +97,12 @@ void FontEnumerationCache::BuildEnumerationCache(
     std::unique_ptr<blink::FontEnumerationTable> table) {
   DCHECK(!enumeration_cache_built_.IsSet());
 
+  std::sort(table->mutable_fonts()->begin(), table->mutable_fonts()->end(),
+            [](const blink::FontEnumerationTable_FontMetadata& a,
+               const blink::FontEnumerationTable_FontMetadata& b) {
+              return a.postscript_name() < b.postscript_name();
+            });
+
   enumeration_cache_memory_ =
       base::ReadOnlySharedMemoryRegion::Create(table->ByteSizeLong());
 
