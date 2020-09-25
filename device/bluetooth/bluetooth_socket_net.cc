@@ -238,14 +238,43 @@ void BluetoothSocketNet::SendFrontWriteRequest() {
   if (!tcp_socket_)
     return;
 
+  if (pending_write_request_) {
+    // It is possible to enter this function while a write request is
+    // currently pending if the following sequence happens:
+    //
+    // 1) A single pending write is running and it is the last one in the queue.
+    // 2) A Send() call queues a DoSend() call on the sequence.
+    // 3) The pending write completes, queue length is zero, a call to
+    //      SendFrontWriteRequest is queued on the sequence.
+    // 4) DoSend() runs on the sequence, queues a write request, and runs
+    //      SendFrontWriteRequest() inline because the queue size is 1.
+    // 5) The immediate call for SendFrontWriteRequest() starts a write request
+    //      and exits.
+    // 6) The next SendFrontWriteRequest() which was queued in step 3 now runs
+    //      while the write request from 5 is still pending.
+    //
+    // At this point we have entered SendFrontWriteRequest() while we are
+    // waiting for a pending write. Previously the code did not handle this
+    // situation and would attempt to process the write request at the front
+    // of the queue twice which is both wrong from a data perspective and also
+    // triggers a CHECK in the Socket.
+    //
+    // The fix is to ensure we only process a new write request when there are
+    // no pending requests, so we exit early here and let OnSocketWriteComplete
+    // queue the next SendFrontWriteRequest.
+    return;
+  }
+
   if (write_queue_.size() == 0)
     return;
 
-  WriteRequest* request = write_queue_.front().get();
+  pending_write_request_ = std::move(write_queue_.front());
+  write_queue_.pop();
+
   auto copyable_callback = base::AdaptCallbackForRepeating(
       base::BindOnce(&BluetoothSocketNet::OnSocketWriteComplete, this,
-                     std::move(request->success_callback),
-                     std::move(request->error_callback)));
+                     std::move(pending_write_request_->success_callback),
+                     std::move(pending_write_request_->error_callback)));
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("bluetooth_socket", R"(
         semantics {
@@ -270,9 +299,9 @@ void BluetoothSocketNet::SendFrontWriteRequest() {
             "DeviceAllowBluetooth policy can disable Bluetooth for ChromeOS, "
             "not implemented for other platforms."
         })");
-  int send_result =
-      tcp_socket_->Write(request->buffer.get(), request->buffer_size,
-                         copyable_callback, traffic_annotation);
+  int send_result = tcp_socket_->Write(pending_write_request_->buffer.get(),
+                                       pending_write_request_->buffer_size,
+                                       copyable_callback, traffic_annotation);
   // Write() will not have run |copyable_callback| if there is no pending I/O.
   if (send_result != net::ERR_IO_PENDING)
     copyable_callback.Run(send_result);
@@ -284,7 +313,7 @@ void BluetoothSocketNet::OnSocketWriteComplete(
     int send_result) {
   DCHECK(socket_thread_->task_runner()->RunsTasksInCurrentSequence());
 
-  write_queue_.pop();
+  pending_write_request_.reset();
 
   if (send_result >= net::OK) {
     std::move(success_callback).Run(send_result);
