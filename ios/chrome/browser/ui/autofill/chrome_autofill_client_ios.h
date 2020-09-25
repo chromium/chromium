@@ -121,6 +121,8 @@ class ChromeAutofillClientIOS : public AutofillClient {
 
   LogManager* GetLogManager() const override;
 
+  bool IsQueryIDRelevant(int query_id) override;
+
  private:
   PrefService* pref_service_;
   syncer::SyncService* sync_service_;

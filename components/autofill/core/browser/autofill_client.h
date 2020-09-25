@@ -500,6 +500,11 @@ class AutofillClient : public RiskDataLoader {
   // Returns a LogManager instance. May be null for platforms that don't support
   // this.
   virtual LogManager* GetLogManager() const;
+
+#if defined(OS_IOS)
+  // Checks whether the qurrent query is the most recent one.
+  virtual bool IsQueryIDRelevant(int query_id) = 0;
+#endif
 };
 
 }  // namespace autofill

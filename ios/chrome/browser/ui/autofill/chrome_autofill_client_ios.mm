@@ -396,4 +396,8 @@ LogManager* ChromeAutofillClientIOS::GetLogManager() const {
   return log_manager_.get();
 }
 
+bool ChromeAutofillClientIOS::IsQueryIDRelevant(int query_id) {
+  return [bridge_ isQueryIDRelevant:query_id];
+}
+
 }  // namespace autofill

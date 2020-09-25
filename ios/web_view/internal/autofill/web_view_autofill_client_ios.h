@@ -116,6 +116,8 @@ class WebViewAutofillClientIOS : public AutofillClient {
 
   void set_bridge(id<CWVAutofillClientIOSBridge> bridge) { bridge_ = bridge; }
 
+  bool IsQueryIDRelevant(int query_id) override;
+
  private:
   PrefService* pref_service_;
   PersonalDataManager* personal_data_manager_;

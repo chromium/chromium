@@ -148,6 +148,10 @@ class TestAutofillClient : public AutofillClient {
   void LoadRiskData(
       base::OnceCallback<void(const std::string&)> callback) override;
 
+#if defined(OS_IOS)
+  bool IsQueryIDRelevant(int query_id) override;
+#endif
+
   // Initializes UKM source from form_origin_. This needs to be called
   // in unittests after calling Purge for ukm recorder to re-initialize
   // sources.

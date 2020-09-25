@@ -195,6 +195,9 @@ void UpdateFieldManagerForClearedIDs(
       _last_submitted_autofill_driver;
 
   scoped_refptr<FieldDataManager> _fieldDataManager;
+
+  // ID of the last Autofill query made. Used to discard outdated suggestions.
+  int _lastQueryID;
 }
 
 @end
@@ -226,6 +229,7 @@ void UpdateFieldManagerForClearedIDs(
     UniqueIDDataTabHelper* uniqueIDDataTabHelper =
         UniqueIDDataTabHelper::FromWebState(_webState);
     _fieldDataManager = uniqueIDDataTabHelper->GetFieldDataManager();
+    _lastQueryID = 0;
   }
   return self;
 }
@@ -336,9 +340,6 @@ autofillManagerFromWebState:(web::WebState*)webState
   if (!autofillManager)
     return;
 
-  // Passed to delegates; we don't use it so it's set to zero.
-  int queryId = 0;
-
   // Find the right field.
   autofill::FormFieldData field;
   GetFormField(&field, form, SysNSStringToUTF16(fieldIdentifier));
@@ -350,7 +351,7 @@ autofillManagerFromWebState:(web::WebState*)webState
   // Query the AutofillManager for suggestions. Results will arrive in
   // -showAutofillPopup:popupDelegate:.
   autofillManager->OnQueryFormFieldAutofill(
-      queryId, form, field, gfx::RectF(),
+      ++_lastQueryID, form, field, gfx::RectF(),
       /*autoselect_first_suggestion=*/false);
 }
 
@@ -608,6 +609,10 @@ autofillManagerFromWebState:(web::WebState*)webState
 - (void)hideAutofillPopup {
   [self onSuggestionsReady:@[]
              popupDelegate:base::WeakPtr<autofill::AutofillPopupDelegate>()];
+}
+
+- (bool)isQueryIDRelevant:(int)queryID {
+  return queryID == _lastQueryID;
 }
 
 #pragma mark - CRWWebStateObserver

@@ -304,4 +304,8 @@ LogManager* WebViewAutofillClientIOS::GetLogManager() const {
   return log_manager_.get();
 }
 
+bool WebViewAutofillClientIOS::IsQueryIDRelevant(int query_id) {
+  return [bridge_ isQueryIDRelevant:query_id];
+}
+
 }  // namespace autofill

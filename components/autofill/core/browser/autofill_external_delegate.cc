@@ -87,6 +87,10 @@ void AutofillExternalDelegate::OnSuggestionsReturned(
     bool is_all_server_suggestions) {
   if (query_id != query_id_)
     return;
+#if defined(OS_IOS)
+  if (!manager_->client()->IsQueryIDRelevant(query_id))
+    return;
+#endif
 
   std::vector<Suggestion> suggestions(input_suggestions);
 

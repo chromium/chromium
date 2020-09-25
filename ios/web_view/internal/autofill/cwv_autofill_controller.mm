@@ -339,6 +339,10 @@ using autofill::FieldRendererId;
   [_autofillAgent hideAutofillPopup];
 }
 
+- (bool)isQueryIDRelevant:(int)queryID {
+  return [_autofillAgent isQueryIDRelevant:queryID];
+}
+
 - (void)
     confirmCreditCardAccountName:(const base::string16&)name
                         callback:

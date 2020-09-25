@@ -263,6 +263,12 @@ void TestAutofillClient::LoadRiskData(
   std::move(callback).Run("some risk data");
 }
 
+#if defined(OS_IOS)
+bool TestAutofillClient::IsQueryIDRelevant(int query_id) {
+  return true;
+}
+#endif
+
 void TestAutofillClient::InitializeUKMSources() {
   test_ukm_recorder_.UpdateSourceURL(source_id_, form_origin_);
 }
