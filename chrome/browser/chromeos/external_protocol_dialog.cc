@@ -4,13 +4,18 @@
 
 #include "chrome/browser/chromeos/external_protocol_dialog.h"
 
+#include "base/feature_list.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/chromeos/arc/intent_helper/arc_external_protocol_dialog.h"
+#include "chrome/browser/chromeos/guest_os/guest_os_external_protocol_handler.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
 #include "chrome/browser/sharing/click_to_call/feature.h"
 #include "chrome/browser/tab_contents/tab_util.h"
 #include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/views/external_protocol_dialog.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
@@ -27,9 +32,28 @@ namespace {
 
 const int kMessageWidth = 400;
 
-void OnArcHandled(WebContents* web_contents, const GURL& url, bool handled) {
-  if (!handled)
-    new ExternalProtocolDialog(web_contents, url);
+void OnArcHandled(WebContents* web_contents,
+                  const GURL& url,
+                  const base::Optional<url::Origin>& initiating_origin,
+                  bool handled) {
+  if (handled)
+    return;
+
+  // Display the standard ExternalProtocolDialog if Guest OS has a handler.
+  if (base::FeatureList::IsEnabled(
+          chromeos::features::kGuestOsExternalProtocol)) {
+    base::Optional<guest_os::GuestOsRegistryService::Registration>
+        registration = guest_os::GetHandler(
+            Profile::FromBrowserContext(web_contents->GetBrowserContext()),
+            url);
+    if (registration) {
+      new ExternalProtocolDialog(web_contents, url,
+                                 base::UTF8ToUTF16(registration->Name()),
+                                 initiating_origin);
+      return;
+    }
+  }
+  new ExternalProtocolNoHandlersDialog(web_contents, url);
 }
 
 }  // namespace
@@ -55,21 +79,22 @@ void ExternalProtocolHandler::RunExternalProtocolDialog(
   arc::RunArcExternalProtocolDialog(
       url, initiating_origin, render_process_host_id, routing_id,
       page_transition, has_user_gesture,
-      base::BindOnce(&OnArcHandled, web_contents, url));
+      base::BindOnce(&OnArcHandled, web_contents, url, initiating_origin));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// ExternalProtocolDialog
+// ExternalProtocolNoHandlersDialog
 
-ExternalProtocolDialog::ExternalProtocolDialog(WebContents* web_contents,
-                                               const GURL& url)
+ExternalProtocolNoHandlersDialog::ExternalProtocolNoHandlersDialog(
+    WebContents* web_contents,
+    const GURL& url)
     : creation_time_(base::TimeTicks::Now()), scheme_(url.scheme()) {
   SetOwnedByWidget(true);
 
   views::DialogDelegate::SetButtons(ui::DIALOG_BUTTON_OK);
   views::DialogDelegate::SetButtonLabel(
       ui::DIALOG_BUTTON_OK,
-      l10n_util::GetStringUTF16(IDS_EXTERNAL_PROTOCOL_OK_BUTTON_TEXT));
+      l10n_util::GetStringUTF16(IDS_EXTERNAL_PROTOCOL_CLOSE_BUTTON_TEXT));
 
   message_box_view_ = new views::MessageBoxView();
   message_box_view_->SetMessageWidth(kMessageWidth);
@@ -87,9 +112,9 @@ ExternalProtocolDialog::ExternalProtocolDialog(WebContents* web_contents,
       chrome::DialogIdentifier::EXTERNAL_PROTOCOL_CHROMEOS);
 }
 
-ExternalProtocolDialog::~ExternalProtocolDialog() = default;
+ExternalProtocolNoHandlersDialog::~ExternalProtocolNoHandlersDialog() = default;
 
-base::string16 ExternalProtocolDialog::GetWindowTitle() const {
+base::string16 ExternalProtocolNoHandlersDialog::GetWindowTitle() const {
   // If click to call feature is available, we display a message to the user on
   // how to use the feature.
   // TODO(crbug.com/1007995) - This is a hotfix for M78 and we plan to use our
@@ -101,17 +126,17 @@ base::string16 ExternalProtocolDialog::GetWindowTitle() const {
         l10n_util::GetStringUTF16(
             IDS_BROWSER_SHARING_CLICK_TO_CALL_DIALOG_TROUBLESHOOT_LINK));
   }
-  return l10n_util::GetStringUTF16(IDS_EXTERNAL_PROTOCOL_TITLE);
+  return l10n_util::GetStringUTF16(IDS_EXTERNAL_PROTOCOL_NO_HANDLER_TITLE);
 }
 
-views::View* ExternalProtocolDialog::GetContentsView() {
+views::View* ExternalProtocolNoHandlersDialog::GetContentsView() {
   return message_box_view_;
 }
 
-const views::Widget* ExternalProtocolDialog::GetWidget() const {
+const views::Widget* ExternalProtocolNoHandlersDialog::GetWidget() const {
   return message_box_view_->GetWidget();
 }
 
-views::Widget* ExternalProtocolDialog::GetWidget() {
+views::Widget* ExternalProtocolNoHandlersDialog::GetWidget() {
   return message_box_view_->GetWidget();
 }
