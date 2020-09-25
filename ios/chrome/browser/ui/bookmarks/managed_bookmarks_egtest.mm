@@ -164,7 +164,8 @@ void SearchBookmarksForText(NSString* search_text) {
 
 // Tests that the managed bookmarks folder does not exist when the policy data
 // is empty.
-- (void)testEmptyManagedBookmarks {
+// Flaky. TODO(crbug.com/1132310): Re-enable.
+- (void)DISABLED_testEmptyManagedBookmarks {
   [BookmarkEarlGreyUI openBookmarks];
 
   [BookmarkEarlGreyUI verifyEmptyState];
