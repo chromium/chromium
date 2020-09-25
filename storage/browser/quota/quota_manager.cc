@@ -53,7 +53,7 @@ constexpr int64_t kReportHistogramInterval = 60 * 60 * 1000;  // 1 hour
 
 // Take action on write errors if there is <= 2% disk space
 // available.
-constexpr double kStoragePressureThresholdPercent = 2;
+constexpr double kStoragePressureThresholdRatio = 0.02;
 
 // Limit how frequently QuotaManager polls for free disk space when
 // only using that information to identify storage pressure.
@@ -1487,7 +1487,7 @@ void QuotaManager::MaybeRunStoragePressureCallback(const url::Origin& origin,
     return;
   }
 
-  if (100 * available_space < kStoragePressureThresholdPercent * total_space) {
+  if (available_space < kStoragePressureThresholdRatio * total_space) {
     storage_pressure_callback_.Run(std::move(origin));
   }
 }
