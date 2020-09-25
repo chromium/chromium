@@ -19,17 +19,15 @@ const WKNavigationActionPolicy
         static_cast<WKNavigationActionPolicy>(WKNavigationActionPolicyAllow +
                                               2);
 
-WKNavigationActionPolicy GetAllowNavigationActionPolicy(
-    bool block_universal_links) {
+WKNavigationActionPolicy GetAllowNavigationActionPolicy(bool off_the_record) {
   // When both the |block_universal_links_in_off_the_record| gn arg and the
   // |web::features::kBlockUniversalLinksInOffTheRecordMode| feature flag are
   // enabled, the returned value will block opening native applications if
-  // |block_universal_links| is true to prevent sharing off the record state or
-  // opening an app unexpectedly during restore.
+  // |off_the_record| is true to prevent sharing off the record state.
 #if BUILDFLAG(BLOCK_UNIVERSAL_LINKS_IN_OFF_THE_RECORD_MODE)
   bool block_universal_links_enabled = base::FeatureList::IsEnabled(
       web::features::kBlockUniversalLinksInOffTheRecordMode);
-  if (block_universal_links && block_universal_links_enabled) {
+  if (off_the_record && block_universal_links_enabled) {
     return kNavigationActionPolicyAllowAndBlockUniversalLinks;
   }
 #endif  // BUILDFLAG(BLOCK_UNIVERSAL_LINKS_IN_OFF_THE_RECORD_MODE)

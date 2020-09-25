@@ -533,11 +533,7 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
     return;
   }
   BOOL isOffTheRecord = self.webStateImpl->GetBrowserState()->IsOffTheRecord();
-  BOOL isInRestoreSession =
-      self.webStateImpl->GetNavigationManager()->IsRestoreSessionInProgress();
-  BOOL isDocURLRestoringSession = IsRestoreSessionUrl(self.documentURL);
-  decisionHandler(web::GetAllowNavigationActionPolicy(
-      isOffTheRecord | isInRestoreSession | isDocURLRestoringSession));
+  decisionHandler(web::GetAllowNavigationActionPolicy(isOffTheRecord));
 }
 
 - (void)webView:(WKWebView*)webView
