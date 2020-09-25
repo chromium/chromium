@@ -9,8 +9,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
-import android.content.Intent;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -19,7 +17,6 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
-import org.chromium.components.browser_ui.media.MediaNotificationInfo;
 import org.chromium.content_public.browser.WebContents;
 
 /**
@@ -41,20 +38,12 @@ public class BrowserMediaRouterRouteTest extends BrowserMediaRouterTestBase {
         doReturn(false).when(mWebContents1).isIncognito();
         doReturn(false).when(mWebContents2).isIncognito();
 
-        MediaRouterClient.setInstance(new MediaRouterClient() {
+        MediaRouterClient.setInstance(new TestMediaRouterClient() {
             @Override
             public int getTabId(WebContents webContents) {
                 if (webContents == mWebContents1) return TAB_ID1;
                 return TAB_ID2;
             }
-
-            @Override
-            public Intent createBringTabToFrontIntent(int tabId) {
-                return null;
-            }
-
-            @Override
-            public void showNotification(MediaNotificationInfo notificationInfo) {}
         });
     }
 

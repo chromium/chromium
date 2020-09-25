@@ -7,6 +7,8 @@ package org.chromium.components.media_router;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 
+import androidx.fragment.app.FragmentManager;
+
 import org.chromium.components.browser_ui.media.MediaNotificationInfo;
 import org.chromium.content_public.browser.WebContents;
 
@@ -47,4 +49,11 @@ public abstract class MediaRouterClient {
      *         that should be shown.
      */
     public abstract void showNotification(MediaNotificationInfo notificationInfo);
+
+    /**
+     * @param initiator the web contents that initiated the request.
+     * @return a {@link FragmentManager} suitable for displaying a media router {@link
+     *         DialogFragment} in.
+     */
+    public abstract FragmentManager getSupportFragmentManager(WebContents initiator);
 }

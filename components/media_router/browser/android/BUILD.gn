@@ -23,6 +23,7 @@ android_library("java") {
     "//third_party/android_deps:androidx_annotation_annotation_java",
     "//third_party/android_deps:androidx_collection_collection_java",
     "//third_party/android_deps:androidx_core_core_java",
+    "//third_party/android_deps:androidx_fragment_fragment_java",
     "//third_party/android_deps:androidx_mediarouter_mediarouter_java",
     "//third_party/android_media:android_media_java",
   ]
@@ -42,7 +43,6 @@ android_library("java") {
     "java/src/org/chromium/components/media_router/MediaRouteChooserDialogManager.java",
     "java/src/org/chromium/components/media_router/MediaRouteControllerDialogManager.java",
     "java/src/org/chromium/components/media_router/MediaRouteDialogDelegate.java",
-    "java/src/org/chromium/components/media_router/MediaRouteDialogManager.java",
     "java/src/org/chromium/components/media_router/MediaRouteManager.java",
     "java/src/org/chromium/components/media_router/MediaRouteProvider.java",
     "java/src/org/chromium/components/media_router/MediaRouterClient.java",
@@ -95,6 +95,7 @@ android_library("test_support_java") {
     "//components/browser_ui/media/android:java",
     "//content/public/android:content_java",
     "//third_party/android_deps:androidx_annotation_annotation_java",
+    "//third_party/android_deps:androidx_fragment_fragment_java",
   ]
 }
 
@@ -128,6 +129,7 @@ java_library("junit") {
 
   deps = [
     ":java",
+    ":test_support_java",
     "$google_play_services_package:google_play_services_basement_java",
     "$google_play_services_package:google_play_services_cast_framework_java",
     "$google_play_services_package:google_play_services_cast_java",

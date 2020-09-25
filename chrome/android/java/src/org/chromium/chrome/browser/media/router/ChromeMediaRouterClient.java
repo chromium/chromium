@@ -6,6 +6,10 @@ package org.chromium.chrome.browser.media.router;
 
 import android.content.Intent;
 
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
+
+import org.chromium.base.ApplicationStatus;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.chrome.browser.document.ChromeIntentUtil;
@@ -35,6 +39,13 @@ public class ChromeMediaRouterClient extends MediaRouterClient {
     @Override
     public void showNotification(MediaNotificationInfo notificationInfo) {
         ChromeMediaNotificationManager.show(notificationInfo);
+    }
+
+    @Override
+    public FragmentManager getSupportFragmentManager(WebContents initiator) {
+        FragmentActivity currentActivity =
+                (FragmentActivity) ApplicationStatus.getLastTrackedFocusedActivity();
+        return currentActivity == null ? null : currentActivity.getSupportFragmentManager();
     }
 
     @CalledByNative

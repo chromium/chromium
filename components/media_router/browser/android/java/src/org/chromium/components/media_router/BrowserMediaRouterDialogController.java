@@ -13,6 +13,7 @@ import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.components.media_router.caf.CastMediaSource;
 import org.chromium.components.media_router.caf.remoting.RemotingMediaSource;
+import org.chromium.content_public.browser.WebContents;
 
 /**
  * Implements the JNI interface called from the C++ Media Router dialog controller implementation
@@ -24,16 +25,19 @@ public class BrowserMediaRouterDialogController implements MediaRouteDialogDeleg
             "android.support.v7.mediarouter:MediaRouteControllerDialogFragment";
 
     private final long mNativeDialogController;
-    private MediaRouteDialogManager mDialogManager;
+    private BaseMediaRouteDialogManager mDialogManager;
+    private WebContents mWebContents;
 
     /**
      * Returns a new initialized {@link BrowserMediaRouterDialogController}.
      * @param nativeDialogController the handle of the native object.
+     * @param webContents the initiator of the dialog.
      * @return a new dialog controller to use from the native side.
      */
     @CalledByNative
-    public static BrowserMediaRouterDialogController create(long nativeDialogController) {
-        return new BrowserMediaRouterDialogController(nativeDialogController);
+    public static BrowserMediaRouterDialogController create(
+            long nativeDialogController, WebContents webContents) {
+        return new BrowserMediaRouterDialogController(nativeDialogController, webContents);
     }
 
     /**
@@ -62,7 +66,7 @@ public class BrowserMediaRouterDialogController implements MediaRouteDialogDeleg
 
         mDialogManager =
                 new MediaRouteChooserDialogManager(source.getSourceId(), routeSelector, this);
-        mDialogManager.openDialog();
+        mDialogManager.openDialog(mWebContents);
     }
 
     /**
@@ -87,7 +91,7 @@ public class BrowserMediaRouterDialogController implements MediaRouteDialogDeleg
 
         mDialogManager = new MediaRouteControllerDialogManager(
                 source.getSourceId(), routeSelector, mediaRouteId, this);
-        mDialogManager.openDialog();
+        mDialogManager.openDialog(mWebContents);
     }
 
     /**
@@ -136,8 +140,10 @@ public class BrowserMediaRouterDialogController implements MediaRouteDialogDeleg
                 mNativeDialogController, BrowserMediaRouterDialogController.this);
     }
 
-    private BrowserMediaRouterDialogController(long nativeDialogController) {
+    private BrowserMediaRouterDialogController(
+            long nativeDialogController, WebContents webContents) {
         mNativeDialogController = nativeDialogController;
+        mWebContents = webContents;
     }
 
     @NativeMethods

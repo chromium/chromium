@@ -5,7 +5,7 @@
 package org.chromium.components.media_router;
 
 /**
- * An interface providing callbacks for {@link MediaRouteDialogManager}.
+ * An interface providing callbacks for {@link BaseMediaRouteDialogManager}.
  */
 public interface MediaRouteDialogDelegate {
     /**
