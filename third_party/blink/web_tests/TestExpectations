@@ -433,6 +433,19 @@ crbug.com/1054894 [ Mac ] http/tests/images/image-decode-in-frame.html [ Pass Fa
 # Regression from crbug.com/109224.
 crbug.com/1128962 svg/filters/feDisplacementMap.svg [ Failure ]
 
+# Disabled for Skia roll (https://crbug.com/skia/10744).
+paint/invalidation/svg/feImage-multiple-targets-id-change.svg [ Skip ]
+paint/invalidation/svg/feImage-reference-invalidation.svg [ Skip ]
+paint/invalidation/svg/feImage-target-add-to-document.svg [ Skip ]
+paint/invalidation/svg/feImage-target-attribute-change-with-use-indirection-2.svg [ Skip ]
+paint/invalidation/svg/feImage-target-attribute-change-with-use-indirection.svg [ Skip ]
+paint/invalidation/svg/feImage-target-attribute-change.svg [ Skip ]
+paint/invalidation/svg/feImage-target-inline-style-change.svg [ Skip ]
+paint/invalidation/svg/feImage-target-property-change.svg [ Skip ]
+paint/invalidation/svg/feImage-target-reappend-to-document.svg [ Skip ]
+paint/invalidation/svg/feImage-target-remove-from-document.svg [ Skip ]
+paint/invalidation/svg/feImage-target-style-change.svg [ Skip ]
+
 # ====== Paint team owned tests to here ======
 
 crbug.com/922249 virtual/android/fullscreen/compositor-touch-hit-rects-fullscreen-video-controls.html [ Failure Pass ]

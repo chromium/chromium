@@ -875,7 +875,8 @@ TEST_F(DiscardableImageMapTest, CapturesImagesInPaintRecordShaders) {
   EXPECT_EQ(SkSize::Make(4.f, 4.f), draw_images[0].scale);
 }
 
-TEST_F(DiscardableImageMapTest, CapturesImagesInPaintFilters) {
+// Temporarily disabled for a Skia roll (https://crbug.com/skia/10744).
+TEST_F(DiscardableImageMapTest, DISABLED_CapturesImagesInPaintFilters) {
   // Create the record to use in the filter.
   auto filter_record = sk_make_sp<PaintOpBuffer>();
 
