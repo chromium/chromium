@@ -14,14 +14,22 @@ namespace ash {
 
 namespace {
 
-constexpr base::TimeDelta kMinTokenRefreshDelay =
-    base::TimeDelta::FromMilliseconds(1000);
-constexpr base::TimeDelta kMaxTokenRefreshDelay =
-    base::TimeDelta::FromMilliseconds(60 * 1000);
+constexpr int kMaxRetries = 3;
+
+constexpr net::BackoffEntry::Policy kRetryBackoffPolicy = {
+    0,          // Number of initial errors to ignore.
+    1000,       // Initial delay in ms.
+    2.0,        // Factor by which the waiting time will be multiplied.
+    0.2,        // Fuzzing percentage.
+    60 * 1000,  // Maximum delay in ms.
+    -1,         // Never discard the entry.
+    true,       // Use initial delay.
+};
 
 }  // namespace
 
-AmbientAccessTokenController::AmbientAccessTokenController() = default;
+AmbientAccessTokenController::AmbientAccessTokenController()
+    : refresh_token_retry_backoff_(&kRetryBackoffPolicy) {}
 
 AmbientAccessTokenController::~AmbientAccessTokenController() = default;
 
@@ -75,11 +83,17 @@ void AmbientAccessTokenController::AccessTokenRefreshed(
   has_pending_request_ = false;
 
   if (gaia_id.empty() || access_token.empty()) {
-    RetryRefreshAccessToken();
+    refresh_token_retry_backoff_.InformOfRequest(/*succeeded=*/false);
+    if (refresh_token_retry_backoff_.failure_count() <= kMaxRetries)
+      RetryRefreshAccessToken();
+    else
+      NotifyAccessTokenRefreshed();
+
     return;
   }
 
   VLOG(1) << "Access token fetched.";
+  refresh_token_retry_backoff_.Reset();
   gaia_id_ = gaia_id;
   access_token_ = access_token;
   expiration_time_ = expiration_time;
@@ -88,14 +102,7 @@ void AmbientAccessTokenController::AccessTokenRefreshed(
 
 void AmbientAccessTokenController::RetryRefreshAccessToken() {
   base::TimeDelta backoff_delay =
-      std::min(kMinTokenRefreshDelay *
-                   (1 << (token_refresh_error_backoff_factor - 1)),
-               kMaxTokenRefreshDelay) +
-      base::RandDouble() * kMinTokenRefreshDelay;
-
-  if (backoff_delay < kMaxTokenRefreshDelay)
-    ++token_refresh_error_backoff_factor;
-
+      refresh_token_retry_backoff_.GetTimeUntilRelease();
   token_refresh_timer_.Start(
       FROM_HERE, backoff_delay,
       base::BindOnce(&AmbientAccessTokenController::RefreshAccessToken,
@@ -116,6 +123,10 @@ void AmbientAccessTokenController::RunCallback(AccessTokenCallback callback) {
 void AmbientAccessTokenController::SetTokenUsageBufferForTesting(
     base::TimeDelta time) {
   token_usage_time_buffer_ = time;
+}
+
+base::TimeDelta AmbientAccessTokenController::GetTimeUntilReleaseForTesting() {
+  return refresh_token_retry_backoff_.GetTimeUntilRelease();
 }
 
 }  // namespace ash

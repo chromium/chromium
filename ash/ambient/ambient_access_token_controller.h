@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "net/base/backoff_entry.h"
 
 namespace ash {
 
@@ -54,6 +55,8 @@ class ASH_EXPORT AmbientAccessTokenController {
 
   void SetTokenUsageBufferForTesting(base::TimeDelta time);
 
+  base::TimeDelta GetTimeUntilReleaseForTesting();
+
   std::string gaia_id_;
   std::string access_token_;
 
@@ -67,7 +70,8 @@ class ASH_EXPORT AmbientAccessTokenController {
   base::TimeDelta token_usage_time_buffer_ = kTokenUsageTimeBuffer;
 
   base::OneShotTimer token_refresh_timer_;
-  int token_refresh_error_backoff_factor = 1;
+
+  net::BackoffEntry refresh_token_retry_backoff_;
 
   std::vector<AccessTokenCallback> callbacks_;
 

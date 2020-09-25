@@ -264,6 +264,10 @@ bool AmbientAshTestBase::IsAccessTokenRequestPending() const {
   return ambient_client_->IsAccessTokenRequestPending();
 }
 
+base::TimeDelta AmbientAshTestBase::GetRefreshTokenDelay() {
+  return token_controller()->GetTimeUntilReleaseForTesting();
+}
+
 AmbientController* AmbientAshTestBase::ambient_controller() {
   return Shell::Get()->ambient_controller();
 }

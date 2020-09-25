@@ -96,6 +96,8 @@ class AmbientAshTestBase : public AshTestBase {
 
   bool IsAccessTokenRequestPending() const;
 
+  base::TimeDelta GetRefreshTokenDelay();
+
   AmbientBackgroundImageView* GetAmbientBackgroundImageView();
 
   // Returns the media string view for displaying ongoing media info.

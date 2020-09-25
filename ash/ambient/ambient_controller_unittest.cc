@@ -215,7 +215,7 @@ TEST_F(AmbientControllerTest, ShouldReturnEmptyAccessToken) {
   CloseAmbientScreen();
 }
 
-TEST_F(AmbientControllerTest, ShouldRefreshAccessTokenAfterFailure) {
+TEST_F(AmbientControllerTest, ShouldRetryRefreshAccessTokenAfterFailure) {
   EXPECT_FALSE(IsAccessTokenRequestPending());
 
   // Lock the screen will request a token.
@@ -225,13 +225,69 @@ TEST_F(AmbientControllerTest, ShouldRefreshAccessTokenAfterFailure) {
   EXPECT_FALSE(IsAccessTokenRequestPending());
 
   // Token request automatically retry.
-  // The failure delay has jitter so fast forward a bit more.
-  constexpr base::TimeDelta kMaxTokenRefreshDelay =
-      base::TimeDelta::FromSeconds(60);
-  task_environment()->FastForwardBy(kMaxTokenRefreshDelay * 2);
+  task_environment()->FastForwardBy(GetRefreshTokenDelay() * 1.1);
   EXPECT_TRUE(IsAccessTokenRequestPending());
 
   // Clean up.
+  CloseAmbientScreen();
+}
+
+TEST_F(AmbientControllerTest, ShouldRetryRefreshAccessTokenWithBackoffPolicy) {
+  EXPECT_FALSE(IsAccessTokenRequestPending());
+
+  // Lock the screen will request a token.
+  LockScreen();
+  EXPECT_TRUE(IsAccessTokenRequestPending());
+  IssueAccessToken(/*access_token=*/std::string(), /*with_error=*/true);
+  EXPECT_FALSE(IsAccessTokenRequestPending());
+
+  base::TimeDelta delay1 = GetRefreshTokenDelay();
+  task_environment()->FastForwardBy(delay1 * 1.1);
+  EXPECT_TRUE(IsAccessTokenRequestPending());
+  IssueAccessToken(/*access_token=*/std::string(), /*with_error=*/true);
+  EXPECT_FALSE(IsAccessTokenRequestPending());
+
+  base::TimeDelta delay2 = GetRefreshTokenDelay();
+  EXPECT_GT(delay2, delay1);
+
+  task_environment()->FastForwardBy(delay2 * 1.1);
+  EXPECT_TRUE(IsAccessTokenRequestPending());
+
+  // Clean up.
+  CloseAmbientScreen();
+}
+
+TEST_F(AmbientControllerTest, ShouldRetryRefreshAccessTokenOnlyThreeTimes) {
+  EXPECT_FALSE(IsAccessTokenRequestPending());
+
+  // Lock the screen will request a token.
+  LockScreen();
+  EXPECT_TRUE(IsAccessTokenRequestPending());
+  IssueAccessToken(/*access_token=*/std::string(), /*with_error=*/true);
+  EXPECT_FALSE(IsAccessTokenRequestPending());
+
+  // 1st retry.
+  task_environment()->FastForwardBy(GetRefreshTokenDelay() * 1.1);
+  EXPECT_TRUE(IsAccessTokenRequestPending());
+  IssueAccessToken(/*access_token=*/std::string(), /*with_error=*/true);
+  EXPECT_FALSE(IsAccessTokenRequestPending());
+
+  // 2nd retry.
+  task_environment()->FastForwardBy(GetRefreshTokenDelay() * 1.1);
+  EXPECT_TRUE(IsAccessTokenRequestPending());
+  IssueAccessToken(/*access_token=*/std::string(), /*with_error=*/true);
+  EXPECT_FALSE(IsAccessTokenRequestPending());
+
+  // 3rd retry.
+  task_environment()->FastForwardBy(GetRefreshTokenDelay() * 1.1);
+  EXPECT_TRUE(IsAccessTokenRequestPending());
+  IssueAccessToken(/*access_token=*/std::string(), /*with_error=*/true);
+  EXPECT_FALSE(IsAccessTokenRequestPending());
+
+  // Will not retry.
+  task_environment()->FastForwardBy(GetRefreshTokenDelay() * 1.1);
+  EXPECT_FALSE(IsAccessTokenRequestPending());
+
   CloseAmbientScreen();
 }
 
