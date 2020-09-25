@@ -6,7 +6,6 @@ include_rules = [
   "-chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
 
   "+chrome/browser/browser_controls/android",
-  "+chrome/browser/device",
   "+chrome/browser/enterprise",
   "+chrome/browser/feedback/android",
   "+chrome/browser/flags/android",

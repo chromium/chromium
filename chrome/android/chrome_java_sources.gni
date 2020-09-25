@@ -34,6 +34,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/DeferredStartupHandler.java",
   "java/src/org/chromium/chrome/browser/DelayedScreenLockIntentHandler.java",
   "java/src/org/chromium/chrome/browser/DevToolsServer.java",
+  "java/src/org/chromium/chrome/browser/DeviceConditions.java",
   "java/src/org/chromium/chrome/browser/FileProviderHelper.java",
   "java/src/org/chromium/chrome/browser/IntentHandler.java",
   "java/src/org/chromium/chrome/browser/IntentHelper.java",
