@@ -10,6 +10,7 @@ GEN_INCLUDE([
 SwitchAccessE2ETest = class extends E2ETestBase {
   /** @override */
   testGenCppIncludes() {
+    super.testGenCppIncludes();
     GEN(`
 #include "ash/accessibility/accessibility_delegate.h"
 #include "ash/shell.h"
@@ -24,6 +25,7 @@ SwitchAccessE2ETest = class extends E2ETestBase {
 
   /** @override */
   testGenPreamble() {
+    super.testGenPreamble();
     GEN(`
   base::Closure load_cb =
       base::Bind(&chromeos::AccessibilityManager::SetSwitchAccessEnabled,

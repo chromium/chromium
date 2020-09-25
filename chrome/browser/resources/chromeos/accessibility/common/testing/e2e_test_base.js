@@ -16,6 +16,20 @@ E2ETestBase = class extends testing.Test {
     this.desktop_;
   }
 
+  /** @override */
+  testGenCppIncludes() {
+    GEN(`
+  #include "chrome/browser/speech/extension_api/tts_engine_extension_api.h"
+      `);
+  }
+
+  /** @override */
+  testGenPreamble() {
+    GEN(`
+    TtsExtensionEngine::GetInstance()->DisableBuiltInTTSEngineForTesting();
+      `);
+  }
+
   /**
    * Listens and waits for the first event on the given node of the given type.
    * @param {!chrome.automation.AutomationNode} node

@@ -329,6 +329,9 @@ void TtsExtensionEngine::Resume(content::TtsUtterance* utterance) {
 
 bool TtsExtensionEngine::LoadBuiltInTtsEngine(
     content::BrowserContext* browser_context) {
+  if (disable_built_in_tts_engine_for_testing_)
+    return false;
+
 #if defined(OS_CHROMEOS)
   Profile* profile = Profile::FromBrowserContext(browser_context);
 

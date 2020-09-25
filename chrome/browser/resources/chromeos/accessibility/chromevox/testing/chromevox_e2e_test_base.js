@@ -15,6 +15,7 @@ GEN_INCLUDE([
 ChromeVoxE2ETest = class extends E2ETestBase {
   /** @override */
   testGenCppIncludes() {
+    super.testGenCppIncludes();
     GEN(`
   #include "ash/accessibility/accessibility_delegate.h"
   #include "ash/shell.h"
@@ -29,6 +30,7 @@ ChromeVoxE2ETest = class extends E2ETestBase {
 
   /** @override */
   testGenPreamble() {
+    super.testGenPreamble();
     GEN(`
     auto allow = extension_l10n_util::AllowGzippedMessagesAllowedForTest();
     base::Closure load_cb =

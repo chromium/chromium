@@ -14,6 +14,7 @@ AccessibilityCommonE2ETest = class extends E2ETestBase {
 
   /** @override */
   testGenCppIncludes() {
+    super.testGenCppIncludes();
     GEN(`
 #include "ash/accessibility/accessibility_delegate.h"
 #include "ash/shell.h"
@@ -27,6 +28,7 @@ AccessibilityCommonE2ETest = class extends E2ETestBase {
 
   /** @override */
   testGenPreamble() {
+    super.testGenPreamble();
     // Note that at least one accessibility common feature has to be enabled for
     // the extension to load. Extension load is required for this test suite to
     // have a place to be injected.

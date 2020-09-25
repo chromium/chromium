@@ -10,6 +10,7 @@ GEN_INCLUDE(['../common/testing/e2e_test_base.js']);
 SelectToSpeakE2ETest = class extends E2ETestBase {
   /** @override */
   testGenCppIncludes() {
+    super.testGenCppIncludes();
     GEN(`
 #include "ash/accessibility/accessibility_delegate.h"
 #include "ash/keyboard/ui/keyboard_util.h"
@@ -24,6 +25,7 @@ SelectToSpeakE2ETest = class extends E2ETestBase {
 
   /** @override */
   testGenPreamble() {
+    super.testGenPreamble();
     GEN(`
     //keyboard::SetRequestedKeyboardState(keyboard::KEYBOARD_STATE_ENABLED);
     //ash::Shell::Get()->CreateKeyboard();
