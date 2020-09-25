@@ -26,6 +26,7 @@
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "components/signin/public/identity_manager/scope_set.h"
 #include "components/variations/net/variations_http_headers.h"
+#include "net/base/isolation_info.h"
 #include "net/base/load_flags.h"
 #include "net/base/url_util.h"
 #include "net/http/http_response_headers.h"
@@ -267,13 +268,21 @@ class FeedNetworkImpl::NetworkFetch {
     resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
     resource_request->method = request_type_;
 
-    // Include credentials ONLY if the user has overridden the feed host through
-    // the internals page. This allows for some authentication workflows we need
-    // for testing.
     if (allow_bless_auth_) {
+      // Include credentials ONLY if the user has overridden the feed host
+      // through the internals page. This allows for some authentication
+      // workflows we need for testing.
       resource_request->credentials_mode =
           network::mojom::CredentialsMode::kInclude;
       resource_request->site_for_cookies = net::SiteForCookies::FromUrl(url);
+    } else {
+      // Otherwise, isolate feed traffic from other requests the browser might
+      // be making. This prevents the browser from reusing network connections
+      // which may not match the signed-in/out status of the feed.
+      resource_request->trusted_params =
+          network::ResourceRequest::TrustedParams();
+      resource_request->trusted_params->isolation_info =
+          net::IsolationInfo::CreateTransient();
     }
 
     SetRequestHeaders(!request_body_.empty(), *resource_request);
