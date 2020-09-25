@@ -10421,16 +10421,9 @@ TEST_F(AutofillMetricsTest,
 // Verify that we don't log Autofill.WebOTP.OneTimeCode.FromAutocomplete if the
 // frame has no form.
 TEST_F(AutofillMetricsTest, FrameHasNoForm) {
-#if defined(OS_IOS) && !TARGET_IPHONE_SIMULATOR
-  // TODO(crbug.com/1127005): Test is failing on iOS 12 device.
-  if (!base::ios::IsRunningOnOrLater(13, 0, 0)) {
-    return;
-  }
-#endif
-
+  base::HistogramTester histogram_tester;
   autofill_manager_.reset();
-  EXPECT_FALSE(base::StatisticsRecorder::FindHistogram(
-      "Autofill.WebOTP.OneTimeCode.FromAutocomplete"));
+  histogram_tester.ExpectTotalCount("Autofill.WebOTP.OneTimeCode.FromAutocomplete", 0);
 }
 
 // Verify that we correctly log metrics if a frame has
