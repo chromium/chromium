@@ -76,6 +76,9 @@ void SVGFEImageElement::ClearResourceReferences() {
 }
 
 void SVGFEImageElement::FetchImageResource() {
+  if (!GetExecutionContext())
+    return;
+
   ResourceLoaderOptions options(GetExecutionContext()->GetCurrentWorld());
   options.initiator_info.name = localName();
   FetchParameters params(
