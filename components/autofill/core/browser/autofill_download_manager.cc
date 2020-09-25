@@ -29,8 +29,7 @@
 #include "components/autofill/core/browser/autofill_metrics.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/logging/log_protobufs.h"
-#include "components/autofill/core/browser/proto/legacy_proto_bridge.h"
-#include "components/autofill/core/browser/proto/server.pb.h"
+#include "components/autofill/core/browser/proto/api_v1.pb.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_internals/log_message.h"
@@ -324,16 +323,16 @@ const char* RequestTypeToString(AutofillDownloadManager::RequestType type) {
 }
 
 std::ostream& operator<<(std::ostream& out,
-                         const autofill::AutofillQueryContents& query) {
+                         const autofill::AutofillPageQueryRequest& query) {
   out << "client_version: " << query.client_version();
-  for (const auto& form : query.form()) {
+  for (const auto& form : query.forms()) {
     out << "\nForm\n signature: " << form.signature();
-    for (const auto& field : form.field()) {
+    for (const auto& field : form.fields()) {
       out << "\n Field\n  signature: " << field.signature();
       if (!field.name().empty())
         out << "\n  name: " << field.name();
-      if (!field.type().empty())
-        out << "\n  type: " << field.type();
+      if (!field.control_type().empty())
+        out << "\n  type: " << field.control_type();
     }
   }
   return out;
@@ -560,13 +559,12 @@ bool GetAPIBodyPayload(const std::string& payload,
 }
 
 // Gets the data payload for API Query (POST and GET).
-bool GetAPIQueryPayload(const AutofillQueryContents& query,
+bool GetAPIQueryPayload(const AutofillPageQueryRequest& query,
                         std::string* payload) {
   std::string serialized_query;
-  if (!CreateApiRequestFromLegacyRequest(query).SerializeToString(
-          &serialized_query)) {
+  if (!query.SerializeToString(&serialized_query))
     return false;
-  }
+
   base::Base64UrlEncode(serialized_query,
                         base::Base64UrlEncodePolicy::INCLUDE_PADDING, payload);
   return true;
@@ -627,7 +625,7 @@ bool AutofillDownloadManager::StartQueryRequest(
     return false;
 
   // Encode the query for the requested forms.
-  AutofillQueryContents query;
+  AutofillPageQueryRequest query;
   FormAndFieldSignatures signatures;
   if (!FormStructure::EncodeQueryRequest(forms, &query, &signatures)) {
     return false;

@@ -2329,26 +2329,26 @@ TEST_F(FormStructureTestImpl, EncodeQueryRequest) {
        }});
 
   // Prepare the expected proto string.
-  AutofillQueryContents query;
+  AutofillPageQueryRequest query;
   query.set_client_version("6.1.1715.1442/en (GGLL)");
-  AutofillQueryContents::Form* query_form = query.add_form();
+  AutofillPageQueryRequest::Form* query_form = query.add_forms();
   query_form->set_signature(form_structure.form_signature().value());
 
-  test::FillQueryField(query_form->add_field(), 412125936U, "name_on_card",
+  test::FillQueryField(query_form->add_fields(), 412125936U, "name_on_card",
                        "text");
-  test::FillQueryField(query_form->add_field(), 1917667676U, "billing_address",
+  test::FillQueryField(query_form->add_fields(), 1917667676U, "billing_address",
                        "text");
-  test::FillQueryField(query_form->add_field(), 2226358947U, "card_number",
+  test::FillQueryField(query_form->add_fields(), 2226358947U, "card_number",
                        "text");
-  test::FillQueryField(query_form->add_field(), 747221617U, "expiration_month",
+  test::FillQueryField(query_form->add_fields(), 747221617U, "expiration_month",
                        "text");
-  test::FillQueryField(query_form->add_field(), 4108155786U, "expiration_year",
+  test::FillQueryField(query_form->add_fields(), 4108155786U, "expiration_year",
                        "text");
 
   std::string expected_query_string;
   ASSERT_TRUE(query.SerializeToString(&expected_query_string));
 
-  AutofillQueryContents encoded_query;
+  AutofillPageQueryRequest encoded_query;
   FormAndFieldSignatures encoded_signatures;
   ASSERT_TRUE(FormStructure::EncodeQueryRequest(forms, &encoded_query,
                                                 &encoded_signatures));
@@ -2365,7 +2365,7 @@ TEST_F(FormStructureTestImpl, EncodeQueryRequest) {
 
   FormAndFieldSignatures expected_signatures2 = expected_signatures;
 
-  AutofillQueryContents encoded_query2;
+  AutofillPageQueryRequest encoded_query2;
   FormAndFieldSignatures encoded_signatures2;
   ASSERT_TRUE(FormStructure::EncodeQueryRequest(forms, &encoded_query2,
                                                 &encoded_signatures2));
@@ -2400,27 +2400,27 @@ TEST_F(FormStructureTestImpl, EncodeQueryRequest) {
         form_structure3.field(10)->GetFieldSignature()}});
 
   // Add the second form to the expected proto.
-  query_form = query.add_form();
+  query_form = query.add_forms();
   query_form->set_signature(form_structure3.form_signature().value());
 
-  test::FillQueryField(query_form->add_field(), 412125936U, "name_on_card",
+  test::FillQueryField(query_form->add_fields(), 412125936U, "name_on_card",
                        "text");
-  test::FillQueryField(query_form->add_field(), 1917667676U, "billing_address",
+  test::FillQueryField(query_form->add_fields(), 1917667676U, "billing_address",
                        "text");
-  test::FillQueryField(query_form->add_field(), 2226358947U, "card_number",
+  test::FillQueryField(query_form->add_fields(), 2226358947U, "card_number",
                        "text");
-  test::FillQueryField(query_form->add_field(), 747221617U, "expiration_month",
+  test::FillQueryField(query_form->add_fields(), 747221617U, "expiration_month",
                        "text");
-  test::FillQueryField(query_form->add_field(), 4108155786U, "expiration_year",
+  test::FillQueryField(query_form->add_fields(), 4108155786U, "expiration_year",
                        "text");
   for (int i = 0; i < 5; ++i) {
-    test::FillQueryField(query_form->add_field(), 509334676U, "address",
+    test::FillQueryField(query_form->add_fields(), 509334676U, "address",
                          "text");
   }
 
   ASSERT_TRUE(query.SerializeToString(&expected_query_string));
 
-  AutofillQueryContents encoded_query3;
+  AutofillPageQueryRequest encoded_query3;
   FormAndFieldSignatures encoded_signatures3;
   ASSERT_TRUE(FormStructure::EncodeQueryRequest(forms, &encoded_query3,
                                                 &encoded_signatures3));
@@ -2437,7 +2437,7 @@ TEST_F(FormStructureTestImpl, EncodeQueryRequest) {
 
   FormAndFieldSignatures expected_signatures4 = expected_signatures3;
 
-  AutofillQueryContents encoded_query4;
+  AutofillPageQueryRequest encoded_query4;
   FormAndFieldSignatures encoded_signatures4;
   ASSERT_TRUE(FormStructure::EncodeQueryRequest(forms, &encoded_query4,
                                                 &encoded_signatures4));
@@ -2460,7 +2460,7 @@ TEST_F(FormStructureTestImpl, EncodeQueryRequest) {
 
   FormAndFieldSignatures expected_signatures5 = expected_signatures4;
 
-  AutofillQueryContents encoded_query5;
+  AutofillPageQueryRequest encoded_query5;
   FormAndFieldSignatures encoded_signatures5;
   ASSERT_TRUE(FormStructure::EncodeQueryRequest(forms, &encoded_query5,
                                                 &encoded_signatures5));
@@ -2472,7 +2472,7 @@ TEST_F(FormStructureTestImpl, EncodeQueryRequest) {
   // Check that we fail if there are only bad form(s).
   std::vector<FormStructure*> bad_forms;
   bad_forms.push_back(&malformed_form_structure);
-  AutofillQueryContents encoded_query6;
+  AutofillPageQueryRequest encoded_query6;
   FormAndFieldSignatures encoded_signatures6;
   EXPECT_FALSE(FormStructure::EncodeQueryRequest(bad_forms, &encoded_query6,
                                                  &encoded_signatures6));
@@ -4891,16 +4891,17 @@ TEST_F(FormStructureTestImpl, SkipFieldTest) {
   std::vector<FormStructure*> forms;
   forms.push_back(&form_structure);
   FormAndFieldSignatures encoded_signatures;
-  AutofillQueryContents encoded_query;
+  AutofillPageQueryRequest encoded_query;
 
   // Create the expected query and serialize it to a string.
-  AutofillQueryContents query;
+  AutofillPageQueryRequest query;
   query.set_client_version("6.1.1715.1442/en (GGLL)");
-  AutofillQueryContents::Form* query_form = query.add_form();
+  AutofillPageQueryRequest::Form* query_form = query.add_forms();
   query_form->set_signature(form_structure.form_signature().value());
 
-  test::FillQueryField(query_form->add_field(), 239111655U, "username", "text");
-  test::FillQueryField(query_form->add_field(), 420638584U, "email", "text");
+  test::FillQueryField(query_form->add_fields(), 239111655U, "username",
+                       "text");
+  test::FillQueryField(query_form->add_fields(), 420638584U, "email", "text");
 
   std::string expected_query_string;
   ASSERT_TRUE(query.SerializeToString(&expected_query_string));
@@ -4943,17 +4944,18 @@ TEST_F(FormStructureTestImpl, EncodeQueryRequest_WithLabels) {
   FormStructure form_structure(form);
   forms.push_back(&form_structure);
   FormAndFieldSignatures encoded_signatures;
-  AutofillQueryContents encoded_query;
+  AutofillPageQueryRequest encoded_query;
 
   // Create the expected query and serialize it to a string.
-  AutofillQueryContents query;
+  AutofillPageQueryRequest query;
   query.set_client_version("6.1.1715.1442/en (GGLL)");
-  AutofillQueryContents::Form* query_form = query.add_form();
+  AutofillPageQueryRequest::Form* query_form = query.add_forms();
   query_form->set_signature(form_structure.form_signature().value());
 
-  test::FillQueryField(query_form->add_field(), 239111655U, "username", "text");
-  test::FillQueryField(query_form->add_field(), 420638584U, "email", "text");
-  test::FillQueryField(query_form->add_field(), 2051817934U, "password",
+  test::FillQueryField(query_form->add_fields(), 239111655U, "username",
+                       "text");
+  test::FillQueryField(query_form->add_fields(), 420638584U, "email", "text");
+  test::FillQueryField(query_form->add_fields(), 2051817934U, "password",
                        "password");
 
   std::string expected_query_string;
@@ -4998,17 +5000,18 @@ TEST_F(FormStructureTestImpl, EncodeQueryRequest_WithLongLabels) {
   std::vector<FormStructure*> forms;
   forms.push_back(&form_structure);
   FormAndFieldSignatures encoded_signatures;
-  AutofillQueryContents encoded_query;
+  AutofillPageQueryRequest encoded_query;
 
   // Create the expected query and serialize it to a string.
-  AutofillQueryContents query;
+  AutofillPageQueryRequest query;
   query.set_client_version("6.1.1715.1442/en (GGLL)");
-  AutofillQueryContents::Form* query_form = query.add_form();
+  AutofillPageQueryRequest::Form* query_form = query.add_forms();
   query_form->set_signature(form_structure.form_signature().value());
 
-  test::FillQueryField(query_form->add_field(), 239111655U, "username", "text");
-  test::FillQueryField(query_form->add_field(), 420638584U, "email", "text");
-  test::FillQueryField(query_form->add_field(), 2051817934U, "password",
+  test::FillQueryField(query_form->add_fields(), 239111655U, "username",
+                       "text");
+  test::FillQueryField(query_form->add_fields(), 420638584U, "email", "text");
+  test::FillQueryField(query_form->add_fields(), 2051817934U, "password",
                        "password");
 
   std::string expected_query_string;
@@ -5047,16 +5050,17 @@ TEST_F(FormStructureTestImpl, EncodeQueryRequest_MissingNames) {
   std::vector<FormStructure*> forms;
   forms.push_back(&form_structure);
   FormAndFieldSignatures encoded_signatures;
-  AutofillQueryContents encoded_query;
+  AutofillPageQueryRequest encoded_query;
 
   // Create the expected query and serialize it to a string.
-  AutofillQueryContents query;
+  AutofillPageQueryRequest query;
   query.set_client_version("6.1.1715.1442/en (GGLL)");
-  AutofillQueryContents::Form* query_form = query.add_form();
+  AutofillPageQueryRequest::Form* query_form = query.add_forms();
   query_form->set_signature(form_structure.form_signature().value());
 
-  test::FillQueryField(query_form->add_field(), 239111655U, "username", "text");
-  test::FillQueryField(query_form->add_field(), 1318412689U, nullptr, "text");
+  test::FillQueryField(query_form->add_fields(), 239111655U, "username",
+                       "text");
+  test::FillQueryField(query_form->add_fields(), 1318412689U, nullptr, "text");
 
   std::string expected_query_string;
   ASSERT_TRUE(query.SerializeToString(&expected_query_string));
@@ -5098,16 +5102,16 @@ TEST_F(FormStructureTestImpl, EncodeQueryRequest_DisabledMetadataTrial) {
   std::vector<FormStructure*> forms;
   forms.push_back(&form_structure);
   FormAndFieldSignatures encoded_signatures;
-  AutofillQueryContents encoded_query;
+  AutofillPageQueryRequest encoded_query;
 
   // Create the expected query and serialize it to a string.
-  AutofillQueryContents query;
+  AutofillPageQueryRequest query;
   query.set_client_version("6.1.1715.1442/en (GGLL)");
-  AutofillQueryContents::Form* query_form = query.add_form();
+  AutofillPageQueryRequest::Form* query_form = query.add_forms();
   query_form->set_signature(form_structure.form_signature().value());
 
-  test::FillQueryField(query_form->add_field(), 239111655U, nullptr, nullptr);
-  test::FillQueryField(query_form->add_field(), 3654076265U, nullptr, nullptr);
+  test::FillQueryField(query_form->add_fields(), 239111655U, nullptr, nullptr);
+  test::FillQueryField(query_form->add_fields(), 3654076265U, nullptr, nullptr);
 
   std::string expected_query_string;
   ASSERT_TRUE(query.SerializeToString(&expected_query_string));
@@ -7661,7 +7665,7 @@ TEST_F(FormStructureTestImpl, AllowBigForms) {
   forms.push_back(&form_structure);
   FormAndFieldSignatures encoded_signatures;
 
-  AutofillQueryContents encoded_query;
+  AutofillPageQueryRequest encoded_query;
   ASSERT_TRUE(FormStructure::EncodeQueryRequest(forms, &encoded_query,
                                                 &encoded_signatures));
   EXPECT_EQ(1u, encoded_signatures.size());

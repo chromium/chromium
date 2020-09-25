@@ -87,7 +87,7 @@ class FormStructure {
   // FormStructures have the same FormSignature, only the first one is included
   // in |query| and |encoded_signatures|.
   static bool EncodeQueryRequest(const std::vector<FormStructure*>& forms,
-                                 autofill::AutofillQueryContents* query,
+                                 autofill::AutofillPageQueryRequest* query,
                                  FormAndFieldSignatures* encoded_signatures);
 
   // Parses `payload` as AutofillQueryResponse proto and calls
@@ -524,7 +524,7 @@ class FormStructure {
   // when it considers necessary.
   void RationalizeFieldTypePredictions();
 
-  void EncodeFormForQuery(autofill::AutofillQueryContents::Form* query_form,
+  void EncodeFormForQuery(autofill::AutofillPageQueryRequest::Form* query_form,
                           FormAndFieldSignatures* encoded_signatures) const;
 
   void EncodeFormForUpload(autofill::AutofillUploadContents* upload,
