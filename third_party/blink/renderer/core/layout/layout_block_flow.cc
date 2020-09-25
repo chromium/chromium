@@ -4509,16 +4509,17 @@ void LayoutBlockFlow::RecalcInlineChildrenVisualOverflow() {
     return;
   }
 
-  if (UNLIKELY(RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled())) {
-    if (const NGPhysicalBoxFragment* fragment = CurrentFragment()) {
-      if (const NGFragmentItems* items = fragment->Items()) {
+  if (PhysicalFragmentCount() &&
+      RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled()) {
+    for (const NGPhysicalBoxFragment& fragment : PhysicalFragments()) {
+      if (const NGFragmentItems* items = fragment.Items()) {
         NGInlineCursor cursor(*items);
         NGFragmentItem::RecalcInkOverflowForCursor(&cursor);
-      } else if (fragment->HasFloatingDescendantsForPaint()) {
-        RecalcFloatingDescendantsVisualOverflow(*fragment);
+      } else if (fragment.HasFloatingDescendantsForPaint()) {
+        RecalcFloatingDescendantsVisualOverflow(fragment);
       }
-      return;
     }
+    return;
   }
 
   for (InlineWalker walker(LineLayoutBlockFlow(this)); !walker.AtEnd();
