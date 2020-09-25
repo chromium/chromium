@@ -8,6 +8,7 @@
 #include "base/bind.h"
 #include "base/stl_util.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/ui/ash/chrome_screenshot_grabber.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
@@ -150,7 +151,26 @@ void DlpContentManager::OnWebContentsDestroyed(
 DlpContentRestrictionSet DlpContentManager::GetRestrictionSetForURL(
     const GURL& url) const {
   DlpContentRestrictionSet set;
-  // TODO(crbug/1109783): Implement based on the policy.
+  if (!DlpRulesManager::IsInitialized())
+    return set;
+  DlpRulesManager* dlp_rules_manager = DlpRulesManager::Get();
+
+  static const base::NoDestructor<
+      base::flat_map<DlpRulesManager::Restriction, DlpContentRestriction>>
+      kRestrictionsMap({{DlpRulesManager::Restriction::kScreenshot,
+                         DlpContentRestriction::kScreenshot},
+                        {DlpRulesManager::Restriction::kPrivacyScreen,
+                         DlpContentRestriction::kPrivacyScreen},
+                        {DlpRulesManager::Restriction::kPrinting,
+                         DlpContentRestriction::kPrint}});
+
+  for (const auto& restriction : *kRestrictionsMap) {
+    if (dlp_rules_manager->IsRestricted(url, restriction.first) ==
+        DlpRulesManager::Level::kBlock) {
+      set.SetRestriction(restriction.second);
+    }
+  }
+
   return set;
 }
 

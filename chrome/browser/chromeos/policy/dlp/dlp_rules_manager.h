@@ -75,8 +75,12 @@ class DlpRulesManager {
 
   using RuleId = int;
 
-  // Creates a signleton instance of the class.
+  // Creates a singleton instance of the class.
   static void Init();
+
+  // Returns whether DlpRulesManager was already created after user policy stack
+  // is initialized.
+  static bool IsInitialized();
 
   // Returns a pointer to the existing instance of the class.
   static DlpRulesManager* Get();

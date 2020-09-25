@@ -108,6 +108,11 @@ void DlpRulesManager::Init() {
 }
 
 // static
+bool DlpRulesManager::IsInitialized() {
+  return g_dlp_rules_manager != nullptr;
+}
+
+// static
 DlpRulesManager* DlpRulesManager::Get() {
   DCHECK(g_dlp_rules_manager);
   return g_dlp_rules_manager;
