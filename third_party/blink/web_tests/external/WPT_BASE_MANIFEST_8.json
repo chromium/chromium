@@ -109524,7 +109524,7 @@
       ]
      ],
      "text-decoration-thickness-scroll-001.html": [
-      "acc829dc66d75e776dbe4ca5ad2976576c5c3241",
+      "283e28793d0ea778f30e904d986626fde596e29a",
       [
        null,
        [
@@ -109927,7 +109927,7 @@
       ]
      ],
      "text-underline-offset-scroll-001.html": [
-      "6fb53aa421ab8a869a6e43125b9b04badc1dad10",
+      "ee521fa215c7b9102ec6a6805c2866bf433c10a4",
       [
        null,
        [
@@ -179018,20 +179018,8 @@
       ]
      },
      "math-script-level-and-math-style": {
-      "math-script-level-001.tentative-expected.txt": [
-       "a7d18f09cf00fb75e115c1225aa7fbce2c9fdb8b",
-       []
-      ],
-      "math-script-level-002.tentative-expected.txt": [
-       "7661e0eae64239f288844673483e9892fc64c339",
-       []
-      ],
       "math-script-level-003.tentative-ref.html": [
        "d73e71f41c90154f7d72e63c86aa268bd3424c9a",
-       []
-      ],
-      "math-script-level-004.tentative-expected.txt": [
-       "38d497777e114e2d68d5844f88f93d0d4ffcd6a3",
        []
       ],
       "math-script-level-auto-and-math-style-001.tentative-ref.html": [
@@ -202118,7 +202106,7 @@
       []
      ],
      "cssstyledeclaration-custom-properties-expected.txt": [
-      "374d57c8271a26acbed860dab004c785ca56872b",
+      "bf3d544556516f9558ce0ed786685c937f83b0f9",
       []
      ],
      "cssstyledeclaration-properties-expected.txt": [
@@ -202130,7 +202118,7 @@
       []
      ],
      "getComputedStyle-detached-subtree-expected.txt": [
-      "b5e9a58d2a04703acc0b5ab247043e3544c8479a",
+      "54aa713bb71272a388086270b9335ac86fc97e37",
       []
      ],
      "getComputedStyle-insets-absolute-expected.txt": [
@@ -215646,7 +215634,7 @@
       },
       "resources": {
        "dispatcher.js": [
-        "23c5ee97b71d2d2169f8d396d644c69550ce206f",
+        "ade25ee15327a4ee66b13a5874c3458121fc4762",
         []
        ],
        "dispatcher.py": [
@@ -244616,7 +244604,7 @@
         []
        ],
        "edgechromium.py": [
-        "0bcb18cdc0cca64376906e9156b07c4a9cc7dcdb",
+        "9e1ef3836bebffd1f21ea1fb1aea458a78f12a1f",
         []
        ],
        "epiphany.py": [
@@ -346195,7 +346183,7 @@
      "reporting": {
       "access-reporting": {
        "access-from-coop-page-to-openee_coop-ro.https.html": [
-        "481b9294377c3fe4f0b49b3aebe04528bd39d4a2",
+        "8d65a902a2de725df9410bf5a7ef13e11594b0bf",
         [
          null,
          {
@@ -346204,7 +346192,7 @@
         ]
        ],
        "access-from-coop-page-to-openee_coop-ro_cross-origin.https.html": [
-        "a78c75eaae6edf7d60ef3aeae2af52002209ba52",
+        "d7d074e5c562f96a6b4349fd0497fd55751e171b",
         [
          null,
          {
@@ -346213,7 +346201,7 @@
         ]
        ],
        "access-from-coop-page-to-opener_coop-ro.https.html": [
-        "9cc92dcd9617608ac428480608272134871c6c57",
+        "3cdd592b626cd843dbff99701ef04818eca1b218",
         [
          null,
          {
@@ -346222,7 +346210,7 @@
         ]
        ],
        "access-from-coop-page-to-opener_coop-ro_cross-origin.https.html": [
-        "39a58331259f5e1de882d265f89f44e317800c08",
+        "3319069dde178335bca1e03ca5dbf37afc191987",
         [
          null,
          {
@@ -346231,7 +346219,7 @@
         ]
        ],
        "access-from-coop-page-to-other_coop-ro.https.html": [
-        "e5cc726c5e0b38c8d25cd3ee8fb80f227e1c3e19",
+        "42a4f926de336932faa715bd20e211b77407ce77",
         [
          null,
          {
@@ -346240,7 +346228,7 @@
         ]
        ],
        "access-from-coop-page-to-other_coop-ro_cross-origin.https.html": [
-        "4505c4c82823f08592fdbdc6bd4f64f39b8f3eb4",
+        "93e9247251cae192794798443a6a859ca52be3f2",
         [
          null,
          {
@@ -346249,7 +346237,7 @@
         ]
        ],
        "access-to-coop-page-from-openee_coop-ro.https.html": [
-        "0c63c067798f2d8776f0a97020dfdee3575a9de9",
+        "0016534f76cb73d287780a23f65989e924f2e5ff",
         [
          null,
          {
@@ -346258,7 +346246,7 @@
         ]
        ],
        "access-to-coop-page-from-openee_coop-ro_cross-origin.https.html": [
-        "a5859228077039dab62341059f6c591a7eb97f50",
+        "29712ab9f2c1fda1f76279849e28e65c3f89ae99",
         [
          null,
          {
@@ -346267,7 +346255,7 @@
         ]
        ],
        "access-to-coop-page-from-opener_coop-ro.https.html": [
-        "79f20b149f0674b8b86522498bed8075f4c57204",
+        "f296155ebc3b90c9d582f2ea5e171db1eceba554",
         [
          null,
          {
@@ -346276,7 +346264,7 @@
         ]
        ],
        "access-to-coop-page-from-opener_coop-ro_cross-origin.https.html": [
-        "ea3fa0b21bf3652edbdacfc17860f3862f295063",
+        "885f0ccabf61cec20b71952af49f6c71348d4d06",
         [
          null,
          {
@@ -346285,7 +346273,7 @@
         ]
        ],
        "access-to-coop-page-from-other_coop-ro.https.html": [
-        "c349b9a708e7cb579db921cc1d574869dc0b081c",
+        "47bc9cd6063b8b320df8d7224aa93326ba79a0be",
         [
          null,
          {
@@ -346294,7 +346282,7 @@
         ]
        ],
        "access-to-coop-page-from-other_coop-ro_cross-origin.https.html": [
-        "4cc49fc62a77371c33aa7a9b04a4439da4a491b8",
+        "4d419f0bee56685bba0e0741fc68bac05288b1ab",
         [
          null,
          {
@@ -346321,7 +346309,7 @@
         ]
        ],
        "property.https.html": [
-        "d6c563be4f333a9a4105fc54618b4837e3e79ba0",
+        "73e403146937f2aeb0ba3940753a7a413d2b5a1b",
         [
          null,
          {
@@ -346330,7 +346318,7 @@
         ]
        ],
        "report-to-both_coop-ro.https.html": [
-        "1979d13c1099a3cc27d90d1afcc6572d4502f17c",
+        "5c2dd1b3d9b3e3cb7ca8ca74e32f0262dec8aad1",
         [
          null,
          {
@@ -346339,7 +346327,7 @@
         ]
        ],
        "reporting-observer.html": [
-        "5b67575a0eab47df04a6067ac573328ba6ea6a20",
+        "435f6471b75d052720257fc9708f9b6a789f29e9",
         [
          null,
          {
@@ -346456,7 +346444,7 @@
         ]
        ],
        "reporting-redirect-with-same-origin-allow-popups.https.html": [
-        "3b513371b0257b8d380c7db44cfcc3b7ace1217a",
+        "616270d468bb62e42bb95b50404e81642c303f06",
         [
          null,
          {
