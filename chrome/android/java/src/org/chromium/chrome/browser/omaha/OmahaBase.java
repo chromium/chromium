@@ -29,7 +29,6 @@ import java.io.OutputStreamWriter;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Date;
 
@@ -423,12 +422,8 @@ public class OmahaBase {
      * @throws RequestFailureException if the request fails.
      */
     private String postRequest(long timestamp, String xml) throws RequestFailureException {
-        String response = null;
-
-        HttpURLConnection urlConnection = null;
+        HttpURLConnection urlConnection = createConnection();
         try {
-            urlConnection = createConnection();
-
             // Prepare the HTTP header.
             urlConnection.setDoOutput(true);
             urlConnection.setFixedLengthStreamingMode(
@@ -438,20 +433,10 @@ public class OmahaBase {
                 urlConnection.addRequestProperty("X-RequestAge", age);
             }
 
-            response = OmahaBase.sendRequestToServer(urlConnection, xml);
-        } catch (IllegalAccessError e) {
-            throw new RequestFailureException("Caught an IllegalAccessError:", e);
-        } catch (IllegalArgumentException e) {
-            throw new RequestFailureException("Caught an IllegalArgumentException:", e);
-        } catch (IllegalStateException e) {
-            throw new RequestFailureException("Caught an IllegalStateException:", e);
+            return OmahaBase.sendRequestToServer(urlConnection, xml);
         } finally {
-            if (urlConnection != null) {
-                urlConnection.disconnect();
-            }
+            urlConnection.disconnect();
         }
-
-        return response;
     }
 
     /**
@@ -465,8 +450,6 @@ public class OmahaBase {
             connection.setConnectTimeout(MS_CONNECTION_TIMEOUT);
             connection.setReadTimeout(MS_CONNECTION_TIMEOUT);
             return connection;
-        } catch (MalformedURLException e) {
-            throw new RequestFailureException("Caught a malformed URL exception.", e);
         } catch (IOException e) {
             throw new RequestFailureException("Failed to open connection to URL", e,
                     RequestFailureException.ERROR_CONNECTIVITY);
@@ -594,7 +577,9 @@ public class OmahaBase {
             writer.write(request, 0, request.length());
             StreamUtil.closeQuietly(writer);
             checkServerResponseCode(urlConnection);
-        } catch (IOException | SecurityException | ArrayIndexOutOfBoundsException e) {
+        } catch (IOException | SecurityException | IndexOutOfBoundsException e) {
+            // IndexOutOfBoundsException is thought to be triggered by a bug in okio.
+            // TODO(crbug.com/1111334): Record IndexOutOfBoundsException specifically.
             throw new RequestFailureException("Failed to write request to server: ", e,
                     RequestFailureException.ERROR_CONNECTIVITY);
         }

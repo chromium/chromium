@@ -126,12 +126,6 @@ public abstract class RequestGenerator {
             serializer.endDocument();
         } catch (IOException e) {
             throw new RequestFailureException("Caught an IOException creating the XML: ", e);
-        } catch (IllegalArgumentException e) {
-            throw new RequestFailureException(
-                    "Caught an IllegalArgumentException creating the XML: ", e);
-        } catch (IllegalStateException e) {
-            throw new RequestFailureException(
-                    "Caught an IllegalStateException creating the XML: ", e);
         }
 
         return writer.toString();
