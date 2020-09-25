@@ -74,6 +74,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   "java/src/org/chromium/chrome/browser/app/appmenu/AppMenuIconRowFooter.java",
   "java/src/org/chromium/chrome/browser/app/appmenu/AppMenuPropertiesDelegateImpl.java",
+  "java/src/org/chromium/chrome/browser/app/appmenu/ChipViewMenuItemViewBinder.java",
   "java/src/org/chromium/chrome/browser/app/appmenu/DividerLineMenuItemViewBinder.java",
   "java/src/org/chromium/chrome/browser/app/appmenu/IncognitoMenuItemViewBinder.java",
   "java/src/org/chromium/chrome/browser/app/appmenu/ManagedByMenuItemViewBinder.java",

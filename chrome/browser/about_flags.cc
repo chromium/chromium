@@ -1891,6 +1891,21 @@ const FeatureEntry::FeatureVariation kTabbedAppOverflowMenuRegroupVariations[] =
       base::size(kTabbedAppOverflowMenuRegroupBackward), nullptr},
      {"(share button)", kTabbedAppOverflowMenuRegroupShare,
       base::size(kTabbedAppOverflowMenuRegroupShare), nullptr}};
+const FeatureEntry::FeatureParam
+    kTabbedAppOverflowMenuThreeButtonActionbarAction[] = {
+        {"three_button_action_bar", "action_chip_view"}};
+const FeatureEntry::FeatureParam
+    kTabbedAppOverflowMenuThreeButtonActionbarDestination[] = {
+        {"three_button_action_bar", "destination_chip_view"}};
+const FeatureEntry::FeatureVariation
+    kTabbedAppOverflowMenuThreeButtonActionbarVariations[] = {
+        {"(three button with action chip view)",
+         kTabbedAppOverflowMenuThreeButtonActionbarAction,
+         base::size(kTabbedAppOverflowMenuThreeButtonActionbarAction), nullptr},
+        {"(three button with destination chip view)",
+         kTabbedAppOverflowMenuThreeButtonActionbarDestination,
+         base::size(kTabbedAppOverflowMenuThreeButtonActionbarDestination),
+         nullptr}};
 #endif  // OS_ANDROID
 
 const FeatureEntry::FeatureVariation
@@ -3898,6 +3913,14 @@ const FeatureEntry kFeatureEntries[] = {
          chrome::android::kTabbedAppOverflowMenuRegroup,
          kTabbedAppOverflowMenuRegroupVariations,
          "AndroidAppMenuUiRework")},
+    {"tabbed-app-overflow-menu-three-button-actionbar",
+     flag_descriptions::kTabbedAppOverflowMenuThreeButtonActionbarName,
+     flag_descriptions::kTabbedAppOverflowMenuThreeButtonActionbarDescription,
+     kOsAndroid,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         chrome::android::kTabbedAppOverflowMenuThreeButtonActionbar,
+         kTabbedAppOverflowMenuThreeButtonActionbarVariations,
+         "AndroidAppMenuThreeButtonActionbar")},
 #endif  // OS_ANDROID
 
     {"omnibox-display-title-for-current-url",

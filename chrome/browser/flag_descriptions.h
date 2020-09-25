@@ -1826,6 +1826,9 @@ extern const char kTabbedAppOverflowMenuIconsDescription[];
 extern const char kTabbedAppOverflowMenuRegroupName[];
 extern const char kTabbedAppOverflowMenuRegroupDescription[];
 
+extern const char kTabbedAppOverflowMenuThreeButtonActionbarName[];
+extern const char kTabbedAppOverflowMenuThreeButtonActionbarDescription[];
+
 // Non-Android ----------------------------------------------------------------
 
 #else  // !defined(OS_ANDROID)

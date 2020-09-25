@@ -3187,6 +3187,11 @@ const char kTabbedAppOverflowMenuRegroupName[] =
 const char kTabbedAppOverflowMenuRegroupDescription[] =
     "If enabled, regroup overflow menu items.";
 
+const char kTabbedAppOverflowMenuThreeButtonActionbarName[] =
+    "Android tabbed app overflow menu three buttons actionbar";
+const char kTabbedAppOverflowMenuThreeButtonActionbarDescription[] =
+    "If enabled, the actionbar in the overflow menu will have 3 buttons.";
+
 // Non-Android -----------------------------------------------------------------
 
 #else  // !defined(OS_ANDROID)

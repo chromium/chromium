@@ -22,17 +22,12 @@
 
      <org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables
         android:id="@+id/title"
-        style="@style/AppMenuItemText"
+        style="@style/AppMenuItemTextViewWithCompoundDrawables"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:background="?attr/listChoiceBackgroundIndicator"
         android:paddingStart="16dp"
-        android:drawablePadding="12dp"
-        app:chromeDrawableTint="@color/default_icon_color_secondary"
-        android:tintMode="src_in"
-        app:drawableWidth="24dp"
-        app:drawableHeight="24dp" />
+        android:background="?attr/listChoiceBackgroundIndicator" />
 
     <!-- Checkbox.  Paddings account for built-in padding from the Android resource. -->
     <org.chromium.chrome.browser.ui.appmenu.AppMenuItemIcon

@@ -52,7 +52,7 @@ import java.util.List;
  *   - Only visible MenuItems are shown.
  *   - Disabled items are grayed out.
  */
-class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuAdapter.OnClickHandler {
+class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler {
     private static final float LAST_ITEM_SHOW_FRACTION = 0.5f;
 
     private final Menu mMenu;

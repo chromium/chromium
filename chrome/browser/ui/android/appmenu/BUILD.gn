@@ -9,6 +9,7 @@ android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/ui/appmenu/AppMenuBlocker.java",
     "java/src/org/chromium/chrome/browser/ui/appmenu/AppMenuButtonHelper.java",
+    "java/src/org/chromium/chrome/browser/ui/appmenu/AppMenuClickHandler.java",
     "java/src/org/chromium/chrome/browser/ui/appmenu/AppMenuCoordinator.java",
     "java/src/org/chromium/chrome/browser/ui/appmenu/AppMenuDelegate.java",
     "java/src/org/chromium/chrome/browser/ui/appmenu/AppMenuHandler.java",

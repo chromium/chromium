@@ -4338,6 +4338,11 @@
     "expiry_milestone": 90
   },
   {
+    "name": "tabbed-app-overflow-menu-three-button-actionbar",
+    "owners": [ "gangwu" ],
+    "expiry_milestone": 91
+  },
+  {
     "name": "textfield-focus-on-tap-up",
     "owners": [ "collinbaker" ],
     "expiry_milestone": 86

@@ -300,6 +300,9 @@
       <message name="IDS_MENU_ITEM_MOVE_TO_TOP" desc="Option in item menu. User can click the 'Move to top' option to move the item up to the top of its list. [CHAR-LIMIT=24]">
         Move to top
       </message>
+      <message name="IDS_ALL" desc="Generic label for a button to show all items or options, for example a button to view all bookmarks. [CHAR-LIMIT=20]">
+        All
+      </message>
 
       <message name="IDS_ACCESSIBILITY_TOOLBAR_BTN_MENU" desc="Content description for the settings menu button.">
         More options

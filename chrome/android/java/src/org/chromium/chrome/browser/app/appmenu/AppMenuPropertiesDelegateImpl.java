@@ -73,6 +73,10 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
     public static final StringCachedFieldTrialParameter ACTION_BAR_VARIATION =
             new StringCachedFieldTrialParameter(
                     ChromeFeatureList.TABBED_APP_OVERFLOW_MENU_REGROUP, "action_bar", "");
+    public static final StringCachedFieldTrialParameter THREE_BUTTON_ACTION_BAR_VARIATION =
+            new StringCachedFieldTrialParameter(
+                    ChromeFeatureList.TABBED_APP_OVERFLOW_MENU_THREE_BUTTON_ACTIONBAR,
+                    "three_button_action_bar", "");
 
     private static Boolean sItemBookmarkedForTesting;
 
@@ -109,6 +113,14 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
         int STANDARD = 0;
         int BACKWARD_BUTTON = 1;
         int SHARE_BUTTON = 2;
+    }
+
+    @IntDef({ThreeButtonActionBarType.DISABLED, ThreeButtonActionBarType.ACTION_CHIP_VIEW,
+            ThreeButtonActionBarType.DESTINATION_CHIP_VIEW})
+    @interface ThreeButtonActionBarType {
+        int DISABLED = 0;
+        int ACTION_CHIP_VIEW = 1;
+        int DESTINATION_CHIP_VIEW = 2;
     }
 
     protected @Nullable OverviewModeBehavior mOverviewModeBehavior;
@@ -165,7 +177,7 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
 
     @Override
     public int getAppMenuLayoutId() {
-        if (shouldShowRegroupedMenu()) {
+        if (shouldShowRegroupedMenu() || shouldShowThreeButtonActionBar()) {
             return R.menu.main_menu_regroup;
         }
         return R.menu.main_menu;
@@ -178,6 +190,7 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
         customViewBinders.add(new ManagedByMenuItemViewBinder());
         customViewBinders.add(new IncognitoMenuItemViewBinder());
         customViewBinders.add(new DividerLineMenuItemViewBinder());
+        customViewBinders.add(new ChipViewMenuItemViewBinder(getThreeButtonActionBarType()));
         return customViewBinders;
     }
 
@@ -283,27 +296,39 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
             loadingStateChanged(currentTab.isLoading());
 
             MenuItem bookmarkMenuItem = actionBar.findItem(R.id.bookmark_this_page_id);
-            updateBookmarkMenuItem(bookmarkMenuItem, currentTab);
+            if (shouldShowThreeButtonActionBar()) {
+                actionBar.removeItem(R.id.bookmark_this_page_id);
+            } else {
+                updateBookmarkMenuItem(bookmarkMenuItem, currentTab);
+            }
 
             MenuItem offlineMenuItem = actionBar.findItem(R.id.offline_page_id);
             if (offlineMenuItem != null) {
-                offlineMenuItem.setEnabled(shouldEnableDownloadPage(currentTab));
+                if (shouldShowThreeButtonActionBar()) {
+                    actionBar.removeItem(R.id.offline_page_id);
+                } else {
+                    offlineMenuItem.setEnabled(shouldEnableDownloadPage(currentTab));
+                }
             }
 
             MenuItem shareMenuItem = actionBar.findItem(R.id.share_menu_button_id);
             if (shareMenuItem != null) {
-                if (actionBarType == ActionBarType.SHARE_BUTTON) {
-                    shareMenuItem.setEnabled(mShareUtils.shouldEnableShare(currentTab));
-                } else {
+                if (shouldShowShareInMenu()) {
                     actionBar.removeItem(R.id.share_menu_button_id);
+                } else {
+                    shareMenuItem.setEnabled(mShareUtils.shouldEnableShare(currentTab));
                 }
             }
 
-            if (actionBarType != ActionBarType.STANDARD) {
+            if (shouldShowInfoInMenu()) {
                 actionBar.removeItem(R.id.info_menu_id);
             }
 
-            assert actionBar.size() == 5;
+            if (shouldShowThreeButtonActionBar()) {
+                assert actionBar.size() == 3;
+            } else {
+                assert actionBar.size() == 5;
+            }
         }
 
         mUpdateMenuItemVisible = shouldShowUpdateMenuItem();
@@ -314,6 +339,41 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
         }
 
         menu.findItem(R.id.move_to_other_window_menu_id).setVisible(shouldShowMoveToOtherWindow());
+
+        if (shouldShowThreeButtonActionBar()) {
+            @ThreeButtonActionBarType
+            int threeButtonActionBarType = getThreeButtonActionBarType();
+
+            MenuItem downloadMenuItem =
+                    menu.findItem(R.id.downloads_row_menu_id).getSubMenu().getItem(1);
+            assert downloadMenuItem.getItemId() == R.id.offline_page_chip_id;
+            downloadMenuItem.setEnabled(shouldEnableDownloadPage(currentTab));
+
+            MenuItem bookmarkMenuItem =
+                    menu.findItem(R.id.all_bookmarks_row_menu_id).getSubMenu().getItem(1);
+            assert bookmarkMenuItem.getItemId() == R.id.bookmark_this_page_chip_id;
+            updateBookmarkMenuItem(bookmarkMenuItem, currentTab);
+
+            // Update titles for ChipView menu items.
+            if (threeButtonActionBarType == ThreeButtonActionBarType.ACTION_CHIP_VIEW) {
+                downloadMenuItem.setTitle(R.string.add);
+                if (bookmarkMenuItem.isChecked()) {
+                    bookmarkMenuItem.setTitle(R.string.bookmark_item_edit);
+                } else {
+                    bookmarkMenuItem.setTitle(R.string.add);
+                }
+            } else if (threeButtonActionBarType == ThreeButtonActionBarType.DESTINATION_CHIP_VIEW) {
+                MenuItem allDownloadMenuItem =
+                        menu.findItem(R.id.downloads_row_menu_id).getSubMenu().getItem(0);
+                assert allDownloadMenuItem.getItemId() == R.id.downloads_menu_id;
+                allDownloadMenuItem.setTitle(R.string.all);
+
+                MenuItem allBookmarkMenuItem =
+                        menu.findItem(R.id.all_bookmarks_row_menu_id).getSubMenu().getItem(0);
+                assert allBookmarkMenuItem.getItemId() == R.id.all_bookmarks_menu_id;
+                allBookmarkMenuItem.setTitle(R.string.all);
+            }
+        }
 
         // Don't allow either "chrome://" pages or interstitial pages to be shared.
         menu.findItem(R.id.share_row_menu_id)
@@ -675,11 +735,6 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
         return false;
     }
 
-    @Override
-    public boolean shouldShowRegroupedMenu() {
-        return CachedFeatureFlags.isEnabled(ChromeFeatureList.TABBED_APP_OVERFLOW_MENU_REGROUP);
-    }
-
     /**
      * Updates the bookmark item's visibility.
      *
@@ -757,6 +812,15 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
         sItemBookmarkedForTesting = bookmarked;
     }
 
+    private boolean shouldShowRegroupedMenu() {
+        return CachedFeatureFlags.isEnabled(ChromeFeatureList.TABBED_APP_OVERFLOW_MENU_REGROUP);
+    }
+
+    private boolean shouldShowThreeButtonActionBar() {
+        return CachedFeatureFlags.isEnabled(
+                ChromeFeatureList.TABBED_APP_OVERFLOW_MENU_THREE_BUTTON_ACTIONBAR);
+    }
+
     private boolean shouldShowShareInMenu() {
         return getActionBarType() != ActionBarType.SHARE_BUTTON;
     }
@@ -777,5 +841,20 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
             }
         }
         return ActionBarType.STANDARD;
+    }
+
+    /**
+     * @return The type of three button action bar should be shown.
+     */
+    private @ThreeButtonActionBarType int getThreeButtonActionBarType() {
+        if (shouldShowThreeButtonActionBar()) {
+            if (THREE_BUTTON_ACTION_BAR_VARIATION.getValue().equals("action_chip_view")) {
+                return ThreeButtonActionBarType.ACTION_CHIP_VIEW;
+            } else if (THREE_BUTTON_ACTION_BAR_VARIATION.getValue().equals(
+                               "destination_chip_view")) {
+                return ThreeButtonActionBarType.DESTINATION_CHIP_VIEW;
+            }
+        }
+        return ThreeButtonActionBarType.DISABLED;
     }
 }

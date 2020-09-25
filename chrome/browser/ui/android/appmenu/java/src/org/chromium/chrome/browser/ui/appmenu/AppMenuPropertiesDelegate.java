@@ -116,9 +116,4 @@ public interface AppMenuPropertiesDelegate {
      *         should show the icon before the text.
      */
     boolean shouldShowIconBeforeItem();
-
-    /**
-     * @return whether regrouped app menu should be shown.
-     */
-    boolean shouldShowRegroupedMenu();
 }

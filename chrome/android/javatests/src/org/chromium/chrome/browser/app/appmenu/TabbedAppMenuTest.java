@@ -355,22 +355,94 @@ public class TabbedAppMenuTest {
     @Test
     @SmallTest
     @Feature({"Browser", "Main", "RenderTest"})
+    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @EnableFeatures({ChromeFeatureList.TABBED_APP_OVERFLOW_MENU_THREE_BUTTON_ACTIONBAR + "<Study"})
+    @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
+            "force-fieldtrial-params=Study.Group:three_button_action_bar/action_chip_view"})
+    public void
+    testActionChipViewMenuItem() throws IOException {
+        LinearLayout actionBar = (LinearLayout) getListView().getChildAt(0);
+        Assert.assertEquals(3, actionBar.getChildCount());
+        mRenderTestRule.render(getListView().getChildAt(0), "icon_row_three_buttons");
+
+        int downloadRowIndex = findIndexOfMenuItemById(R.id.downloads_row_menu_id);
+        Assert.assertNotEquals("No download row found.", -1, downloadRowIndex);
+        mRenderTestRule.render(
+                getListView().getChildAt(downloadRowIndex), "download_row_action_chip_view");
+
+        MenuItem bookmarkRow = AppMenuTestSupport.getMenu(mActivityTestRule.getAppMenuCoordinator())
+                                       .findItem(R.id.all_bookmarks_row_menu_id);
+        MenuItem bookmarkMenuItem = bookmarkRow.getSubMenu().getItem(1);
+        Assert.assertFalse("Bookmark item should not be checked.", bookmarkMenuItem.isChecked());
+        int bookmarkRowIndex = findIndexOfMenuItemById(R.id.all_bookmarks_row_menu_id);
+        Assert.assertTrue("No bookmark row found.", bookmarkRowIndex != -1);
+        mRenderTestRule.render(
+                getListView().getChildAt(bookmarkRowIndex), "bookmark_row_action_chip_view");
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> mAppMenuHandler.hideAppMenu());
+        AppMenuPropertiesDelegateImpl.setPageBookmarkedForTesting(true);
+        showAppMenuAndAssertMenuShown();
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+        bookmarkRow = AppMenuTestSupport.getMenu(mActivityTestRule.getAppMenuCoordinator())
+                              .findItem(R.id.all_bookmarks_row_menu_id);
+        bookmarkMenuItem = bookmarkRow.getSubMenu().getItem(1);
+        Assert.assertTrue("Bookmark item should be checked.", bookmarkMenuItem.isChecked());
+        mRenderTestRule.render(getListView().getChildAt(bookmarkRowIndex),
+                "bookmark_row_action_chip_view_bookmarked");
+
+        AppMenuPropertiesDelegateImpl.setPageBookmarkedForTesting(null);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Browser", "Main", "RenderTest"})
+    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @EnableFeatures({ChromeFeatureList.TABBED_APP_OVERFLOW_MENU_THREE_BUTTON_ACTIONBAR + "<Study"})
+    @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
+            "force-fieldtrial-params=Study.Group:three_button_action_bar/destination_chip_view"})
+    public void
+    testDestinationChipViewMenuItem() throws IOException {
+        LinearLayout actionBar = (LinearLayout) getListView().getChildAt(0);
+        Assert.assertEquals(3, actionBar.getChildCount());
+        mRenderTestRule.render(getListView().getChildAt(0), "icon_row_three_buttons");
+
+        int downloadRowIndex = findIndexOfMenuItemById(R.id.downloads_row_menu_id);
+        Assert.assertNotEquals("No download row found.", -1, downloadRowIndex);
+        mRenderTestRule.render(
+                getListView().getChildAt(downloadRowIndex), "download_row_destination_chip_view");
+
+        MenuItem bookmarkRow = AppMenuTestSupport.getMenu(mActivityTestRule.getAppMenuCoordinator())
+                                       .findItem(R.id.all_bookmarks_row_menu_id);
+        MenuItem bookmarkMenuItem = bookmarkRow.getSubMenu().getItem(1);
+        Assert.assertFalse("Bookmark item should not be checked.", bookmarkMenuItem.isChecked());
+        int bookmarkRowIndex = findIndexOfMenuItemById(R.id.all_bookmarks_row_menu_id);
+        Assert.assertTrue("No bookmark row found.", bookmarkRowIndex != -1);
+        mRenderTestRule.render(
+                getListView().getChildAt(bookmarkRowIndex), "bookmark_row_destination_chip_view");
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> mAppMenuHandler.hideAppMenu());
+        AppMenuPropertiesDelegateImpl.setPageBookmarkedForTesting(true);
+        showAppMenuAndAssertMenuShown();
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+        bookmarkRow = AppMenuTestSupport.getMenu(mActivityTestRule.getAppMenuCoordinator())
+                              .findItem(R.id.all_bookmarks_row_menu_id);
+        bookmarkMenuItem = bookmarkRow.getSubMenu().getItem(1);
+        Assert.assertTrue("Bookmark item should be checked.", bookmarkMenuItem.isChecked());
+        mRenderTestRule.render(getListView().getChildAt(bookmarkRowIndex),
+                "bookmark_row_destination_chip_view_bookmarked");
+
+        AppMenuPropertiesDelegateImpl.setPageBookmarkedForTesting(null);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Browser", "Main", "RenderTest"})
     @EnableFeatures({ChromeFeatureList.TABBED_APP_OVERFLOW_MENU_REGROUP})
     public void testDividerLineMenuItem() throws IOException {
-        Menu menu = AppMenuTestSupport.getMenu(mActivityTestRule.getAppMenuCoordinator());
-        int firstDividerLineIndex = -1;
-        boolean foundDividerLine = false;
-        for (int i = 0; i < menu.size(); i++) {
-            MenuItem item = menu.getItem(i);
-            if (item.isVisible()) {
-                firstDividerLineIndex++;
-            }
-            if (item.getItemId() == R.id.divider_line_id) {
-                foundDividerLine = true;
-                break;
-            }
-        }
-        Assert.assertTrue("No divider line found.", foundDividerLine);
+        int firstDividerLineIndex = findIndexOfMenuItemById(R.id.divider_line_id);
+        Assert.assertTrue("No divider line found.", firstDividerLineIndex != -1);
         mRenderTestRule.render(getListView().getChildAt(firstDividerLineIndex), "divider_line");
     }
 
@@ -439,5 +511,23 @@ public class TabbedAppMenuTest {
     private void selectMenuItem(int id) {
         CriteriaHelper.pollUiThread(
                 () -> { mActivityTestRule.getActivity().onMenuOrKeyboardAction(id, true); });
+    }
+
+    private int findIndexOfMenuItemById(int id) {
+        Menu menu = AppMenuTestSupport.getMenu(mActivityTestRule.getAppMenuCoordinator());
+        int firstMenuItemIndex = -1;
+        boolean foundMenuItem = false;
+        for (int i = 0; i < menu.size(); i++) {
+            MenuItem item = menu.getItem(i);
+            if (item.isVisible()) {
+                firstMenuItemIndex++;
+            }
+            if (item.getItemId() == id) {
+                foundMenuItem = true;
+                break;
+            }
+        }
+
+        return foundMenuItem ? firstMenuItemIndex : -1;
     }
 }

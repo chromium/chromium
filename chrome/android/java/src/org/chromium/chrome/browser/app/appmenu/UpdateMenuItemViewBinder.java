@@ -21,6 +21,7 @@ import androidx.core.graphics.drawable.DrawableCompat;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.omaha.UpdateMenuItemHelper;
+import org.chromium.chrome.browser.ui.appmenu.AppMenuClickHandler;
 import org.chromium.chrome.browser.ui.appmenu.CustomViewBinder;
 
 /**
@@ -40,8 +41,8 @@ class UpdateMenuItemViewBinder implements CustomViewBinder {
     }
 
     @Override
-    public View getView(
-            MenuItem item, View convertView, ViewGroup parent, LayoutInflater inflater) {
+    public View getView(MenuItem item, View convertView, ViewGroup parent, LayoutInflater inflater,
+            AppMenuClickHandler appMenuClickHandler) {
         assert item.getItemId() == R.id.update_menu_id;
         UpdateMenuItemViewHolder holder;
         if (convertView == null || !(convertView.getTag() instanceof UpdateMenuItemViewHolder)) {
@@ -87,6 +88,7 @@ class UpdateMenuItemViewBinder implements CustomViewBinder {
                     ApiCompatibilityUtils.getColor(resources, itemState.iconTintId));
         }
         convertView.setEnabled(itemState.enabled);
+        convertView.setOnClickListener(v -> appMenuClickHandler.onItemClick(item));
 
         return convertView;
     }

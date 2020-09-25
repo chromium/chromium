@@ -2004,10 +2004,10 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                 currentTab.goForward();
                 RecordUserAction.record("MobileMenuForward");
             }
-        } else if (id == R.id.bookmark_this_page_id) {
+        } else if (id == R.id.bookmark_this_page_id || id == R.id.bookmark_this_page_chip_id) {
             addOrEditBookmark(currentTab);
             RecordUserAction.record("MobileMenuAddToBookmarks");
-        } else if (id == R.id.offline_page_id) {
+        } else if (id == R.id.offline_page_id || id == R.id.offline_page_chip_id) {
             DownloadUtils.downloadOfflinePage(this, currentTab);
             RecordUserAction.record("MobileMenuDownloadPage");
         } else if (id == R.id.reload_menu_id) {

@@ -16,7 +16,8 @@ import androidx.annotation.Nullable;
 /**
  * An interface for providing a custom view binder for a menu item displayed in the app menu.
  * The binder may be used to custom layout/presentation of individual menu items. Clicks on the menu
- * item will still be handled by the app menu.
+ * item need to be handled by {@link AppMenuClickHandler}, which is received in {{@link
+ * #getView(MenuItem, View, ViewGroup, LayoutInflater, AppMenuClickHandler)}}.
  */
 public interface CustomViewBinder {
     /**
@@ -27,9 +28,9 @@ public interface CustomViewBinder {
 
     /**
      * @return The number of types of Views that will be created by
-     * {{@link #getView(MenuItem, View, ViewGroup, LayoutInflater)}}. The value returned by this
-     * method should be effectively treated as final. Once the CustomViewBinder has been
-     * retrieved by the app menu, it is expected that the item view type count remains stable.
+     * {{@link #getView(MenuItem, View, ViewGroup, LayoutInflater, AppMenuClickHandler)}}. The value
+     * returned by this method should be effectively treated as final. Once the CustomViewBinder has
+     * been retrieved by the app menu, it is expected that the item view type count remains stable.
      */
     int getViewTypeCount();
 
@@ -47,10 +48,11 @@ public interface CustomViewBinder {
      * @param convertView The old view to re-use if possible.
      * @param parent The parent that this view will eventually be attached to.
      * @param inflater A {@link LayoutInflater} to use when inflating new views.
+     * @param appMenuClickHandler A {@link AppMenuClickHandler} to handle click events in the view.
      * @return A View corresponding to the provided menu item.
      */
-    View getView(
-            MenuItem item, @Nullable View convertView, ViewGroup parent, LayoutInflater inflater);
+    View getView(MenuItem item, @Nullable View convertView, ViewGroup parent,
+            LayoutInflater inflater, AppMenuClickHandler appMenuClickHandler);
 
     /**
      * Determines whether the enter animation should be applied to the menu item matching the

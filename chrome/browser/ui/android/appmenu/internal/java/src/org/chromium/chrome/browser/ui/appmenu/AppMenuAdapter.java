@@ -54,24 +54,6 @@ import java.util.Map;
  * 3) Hope that the icon row still fits on small phones.
  */
 class AppMenuAdapter extends BaseAdapter {
-    /**
-     * Interface to handle clicks and long-clicks on menu items.
-     */
-    interface OnClickHandler {
-        /**
-         * Handles clicks on the AppMenu popup.
-         * @param menuItem The menu item in that was clicked.
-         */
-        void onItemClick(MenuItem menuItem);
-
-        /**
-         * Handles long clicks on image buttons on the AppMenu popup.
-         * @param menuItem The menu item that was long clicked.
-         * @param view The anchor view of the menu item.
-         */
-        boolean onItemLongClick(MenuItem menuItem, View view);
-    }
-
     @IntDef({MenuItemType.STANDARD, MenuItemType.TITLE_BUTTON, MenuItemType.THREE_BUTTON,
             MenuItemType.FOUR_BUTTON, MenuItemType.FIVE_BUTTON})
     @Retention(RetentionPolicy.SOURCE)
@@ -116,7 +98,7 @@ class AppMenuAdapter extends BaseAdapter {
     private static final float ENTER_STANDARD_ITEM_OFFSET_Y_DP = -10.f;
     private static final float ENTER_STANDARD_ITEM_OFFSET_X_DP = 10.f;
 
-    private final OnClickHandler mOnClickHandler;
+    private final AppMenuClickHandler mAppMenuClickHandler;
     private final LayoutInflater mInflater;
     private final List<MenuItem> mMenuItems;
     private final int mNumMenuItems;
@@ -127,10 +109,10 @@ class AppMenuAdapter extends BaseAdapter {
     private final Map<CustomViewBinder, Integer> mViewTypeOffsetMap;
     private final boolean mIconBeforeItem;
 
-    public AppMenuAdapter(OnClickHandler onClickHandler, List<MenuItem> menuItems,
+    public AppMenuAdapter(AppMenuClickHandler appMenuClickHandler, List<MenuItem> menuItems,
             LayoutInflater inflater, Integer highlightedItemId,
             @Nullable List<CustomViewBinder> customViewBinders, boolean iconBeforeItem) {
-        mOnClickHandler = onClickHandler;
+        mAppMenuClickHandler = appMenuClickHandler;
         mMenuItems = menuItems;
         mInflater = inflater;
         mHighlightedItemId = highlightedItemId;
@@ -259,7 +241,7 @@ class AppMenuAdapter extends BaseAdapter {
                 holder.title.setText(titleItem.getTitle());
                 holder.title.setEnabled(titleItem.isEnabled());
                 holder.title.setFocusable(titleItem.isEnabled());
-                holder.title.setOnClickListener(v -> mOnClickHandler.onItemClick(titleItem));
+                holder.title.setOnClickListener(v -> mAppMenuClickHandler.onItemClick(titleItem));
 
                 if (TextUtils.isEmpty(titleItem.getTitleCondensed())) {
                     holder.title.setContentDescription(null);
@@ -306,7 +288,8 @@ class AppMenuAdapter extends BaseAdapter {
                         convertView = null;
                     }
 
-                    convertView = binder.getView(item, convertView, parent, mInflater);
+                    convertView = binder.getView(
+                            item, convertView, parent, mInflater, mAppMenuClickHandler);
 
                     if (binder.supportsEnterAnimation(item.getItemId())) {
                         convertView.setTag(R.id.menu_item_enter_anim_id,
@@ -315,8 +298,6 @@ class AppMenuAdapter extends BaseAdapter {
 
                     // This will ensure that the item is not highlighted when selected.
                     convertView.setEnabled(item.isEnabled());
-
-                    convertView.setOnClickListener(v -> mOnClickHandler.onItemClick(item));
 
                     bound = true;
                     break;
@@ -375,9 +356,9 @@ class AppMenuAdapter extends BaseAdapter {
             button.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_AUTO);
         }
 
-        button.setOnClickListener(v -> mOnClickHandler.onItemClick(item));
+        button.setOnClickListener(v -> mAppMenuClickHandler.onItemClick(item));
 
-        button.setOnLongClickListener(v -> mOnClickHandler.onItemLongClick(item, v));
+        button.setOnLongClickListener(v -> mAppMenuClickHandler.onItemLongClick(item, v));
 
         if (mHighlightedItemId != null && item.getItemId() == mHighlightedItemId) {
             ViewHighlighter.turnOnHighlight(button, true);
@@ -407,7 +388,7 @@ class AppMenuAdapter extends BaseAdapter {
         // This will ensure that the item is not highlighted when selected.
         convertView.setEnabled(isEnabled);
 
-        convertView.setOnClickListener(v -> mOnClickHandler.onItemClick(item));
+        convertView.setOnClickListener(v -> mAppMenuClickHandler.onItemClick(item));
     }
 
     /**

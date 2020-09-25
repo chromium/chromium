@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
+import org.chromium.chrome.browser.ui.appmenu.AppMenuClickHandler;
 import org.chromium.chrome.browser.ui.appmenu.CustomViewBinder;
 import org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables;
 import org.chromium.ui.widget.ChromeImageView;
@@ -35,8 +36,8 @@ class IncognitoMenuItemViewBinder implements CustomViewBinder {
     }
 
     @Override
-    public View getView(
-            MenuItem item, View convertView, ViewGroup parent, LayoutInflater inflater) {
+    public View getView(MenuItem item, View convertView, ViewGroup parent, LayoutInflater inflater,
+            AppMenuClickHandler appMenuClickHandler) {
         assert item.getItemId() == R.id.new_incognito_tab_menu_id;
 
         IncognitoMenuItemViewHolder holder;
@@ -59,6 +60,7 @@ class IncognitoMenuItemViewBinder implements CustomViewBinder {
         if (IncognitoUtils.isIncognitoModeManaged()) {
             holder.image.setVisibility(View.VISIBLE);
         }
+        convertView.setOnClickListener(v -> appMenuClickHandler.onItemClick(item));
 
         return convertView;
     }
