@@ -14,7 +14,8 @@ enable_nasm = (current_cpu == "x86" || current_cpu == "x64") && !is_msan
 if (is_win) {
   platform_config_root = "config/win/$current_cpu"
 } else if (is_msan) {
-  assert(current_cpu == "x64" && is_linux, "Only Linux X64 MSAN is supported")
+  assert(current_cpu == "x64" && (is_linux || is_chromeos),
+         "Only Linux X64 MSAN is supported")
   platform_config_root = "config/linux-noasm/$current_cpu"
 } else {
   # Linux configuration files seem to work on Mac, so just reuse them.
