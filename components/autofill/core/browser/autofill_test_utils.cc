@@ -879,22 +879,26 @@ std::string ObfuscatedCardDigitsAsUTF8(const std::string& str) {
 
 std::string NextMonth() {
   base::Time::Exploded now;
-  AutofillClock::Now().LocalExplode(&now);
+  // Using AutofillClock here might cause test flakiness. See crbug/1108232.
+  base::Time::Now().LocalExplode(&now);
   return base::StringPrintf("%02d", now.month % 12 + 1);
 }
 std::string LastYear() {
   base::Time::Exploded now;
-  AutofillClock::Now().LocalExplode(&now);
+  // Using AutofillClock here might cause test flakiness. See crbug/1108232.
+  base::Time::Now().LocalExplode(&now);
   return base::NumberToString(now.year - 1);
 }
 std::string NextYear() {
   base::Time::Exploded now;
-  AutofillClock::Now().LocalExplode(&now);
+  // Using AutofillClock here might cause test flakiness. See crbug/1108232.
+  base::Time::Now().LocalExplode(&now);
   return base::NumberToString(now.year + 1);
 }
 std::string TenYearsFromNow() {
   base::Time::Exploded now;
-  AutofillClock::Now().LocalExplode(&now);
+  // Using AutofillClock here might cause test flakiness. See crbug/1108232.
+  base::Time::Now().LocalExplode(&now);
   return base::NumberToString(now.year + 10);
 }
 

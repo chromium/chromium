@@ -89,12 +89,6 @@ const char kTestCredentialId[] = "VGhpcyBpcyBhIHRlc3QgQ3JlZGVudGlhbCBJRC4=";
 const char kTestSignature[] = "VGhpcyBpcyBhIHRlc3Qgc2lnbmF0dXJl";
 const char kTestAuthToken[] = "dummy_card_authorization_token";
 
-std::string NextMonth() {
-  base::Time::Exploded now;
-  AutofillClock::Now().LocalExplode(&now);
-  return base::NumberToString(now.month % 12 + 1);
-}
-
 std::vector<uint8_t> Base64ToBytes(std::string base64) {
   std::string bytes;
   bool did_succeed = base::Base64Decode(base::StringPiece(base64), &bytes);
@@ -152,7 +146,7 @@ class CreditCardFIDOAuthenticatorTest : public testing::Test {
   CreditCard CreateServerCard(std::string guid, std::string number) {
     CreditCard masked_server_card = CreditCard();
     test::SetCreditCardInfo(&masked_server_card, "Elvis Presley",
-                            number.c_str(), NextMonth().c_str(),
+                            number.c_str(), test::NextMonth().c_str(),
                             test::NextYear().c_str(), "1");
     masked_server_card.set_guid(guid);
     masked_server_card.set_record_type(CreditCard::MASKED_SERVER_CARD);

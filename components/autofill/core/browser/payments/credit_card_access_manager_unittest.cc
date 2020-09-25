@@ -133,18 +133,6 @@ class TestAccessor : public CreditCardAccessManager::Accessor {
   base::WeakPtrFactory<TestAccessor> weak_ptr_factory_{this};
 };
 
-std::string NextYear() {
-  base::Time::Exploded now;
-  AutofillClock::Now().LocalExplode(&now);
-  return base::NumberToString(now.year + 1);
-}
-
-std::string NextMonth() {
-  base::Time::Exploded now;
-  AutofillClock::Now().LocalExplode(&now);
-  return base::NumberToString(now.month % 12 + 1);
-}
-
 }  // namespace
 
 class CreditCardAccessManagerTest : public testing::Test {
@@ -217,7 +205,8 @@ class CreditCardAccessManagerTest : public testing::Test {
   void CreateLocalCard(std::string guid, std::string number = std::string()) {
     CreditCard local_card = CreditCard();
     test::SetCreditCardInfo(&local_card, "Elvis Presley", number.c_str(),
-                            NextMonth().c_str(), NextYear().c_str(), "1");
+                            test::NextMonth().c_str(), test::NextYear().c_str(),
+                            "1");
     local_card.set_guid(guid);
     local_card.set_record_type(CreditCard::LOCAL_CARD);
 
@@ -229,7 +218,8 @@ class CreditCardAccessManagerTest : public testing::Test {
                         bool masked = true) {
     CreditCard server_card = CreditCard();
     test::SetCreditCardInfo(&server_card, "Elvis Presley", number.c_str(),
-                            NextMonth().c_str(), NextYear().c_str(), "1");
+                            test::NextMonth().c_str(), test::NextYear().c_str(),
+                            "1");
     server_card.set_guid(guid);
     server_card.set_record_type(masked ? CreditCard::MASKED_SERVER_CARD
                                        : CreditCard::FULL_SERVER_CARD);

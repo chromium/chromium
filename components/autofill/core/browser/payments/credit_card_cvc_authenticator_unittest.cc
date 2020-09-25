@@ -74,18 +74,6 @@ namespace {
 const char kTestGUID[] = "00000000-0000-0000-0000-000000000001";
 const char kTestNumber[] = "4234567890123456";  // Visa
 
-std::string NextYear() {
-  base::Time::Exploded now;
-  AutofillClock::Now().LocalExplode(&now);
-  return base::NumberToString(now.year + 1);
-}
-
-std::string NextMonth() {
-  base::Time::Exploded now;
-  AutofillClock::Now().LocalExplode(&now);
-  return base::NumberToString(now.month % 12 + 1);
-}
-
 }  // namespace
 
 class CreditCardCVCAuthenticatorTest : public testing::Test {
@@ -129,8 +117,8 @@ class CreditCardCVCAuthenticatorTest : public testing::Test {
   CreditCard CreateServerCard(std::string guid, std::string number) {
     CreditCard masked_server_card = CreditCard();
     test::SetCreditCardInfo(&masked_server_card, "Elvis Presley",
-                            number.c_str(), NextMonth().c_str(),
-                            NextYear().c_str(), "1");
+                            number.c_str(), test::NextMonth().c_str(),
+                            test::NextYear().c_str(), "1");
     masked_server_card.set_guid(guid);
     masked_server_card.set_record_type(CreditCard::MASKED_SERVER_CARD);
 
