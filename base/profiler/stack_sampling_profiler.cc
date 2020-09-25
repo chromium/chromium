@@ -740,9 +740,9 @@ TimeTicks StackSamplingProfiler::TestPeer::GetNextSampleTime(
 }
 
 // static
-// The profiler is currently only implemented for Windows x64 and MacOSX.
-// TODO(https://crbug.com/1004855): enable for Android arm.
-bool StackSamplingProfiler::IsSupported() {
+// The profiler is currently supported for Windows x64, MacOSX x64, and Android
+// ARM32.
+bool StackSamplingProfiler::IsSupportedForCurrentPlatform() {
 #if (defined(OS_WIN) && defined(ARCH_CPU_X86_64)) || \
     (defined(OS_MAC) && defined(ARCH_CPU_X86_64)) || \
     (defined(OS_ANDROID) && BUILDFLAG(ENABLE_ARM_CFI_TABLE))

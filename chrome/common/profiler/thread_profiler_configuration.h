@@ -15,6 +15,8 @@ namespace base {
 class CommandLine;
 }  // namespace base
 
+class ThreadProfilerPlatformConfiguration;
+
 // ThreadProfilerConfiguration chooses a configuration for the enable state of
 // the stack sampling profiler across all processes. This configuration is
 // determined once at browser process startup. Configurations for child
@@ -22,6 +24,7 @@ class CommandLine;
 class ThreadProfilerConfiguration {
  public:
   ThreadProfilerConfiguration();
+  ~ThreadProfilerConfiguration();
 
   // Get the stack sampling params to use.
   base::StackSamplingProfiler::SamplingParams GetSamplingParams() const;
@@ -72,10 +75,14 @@ class ThreadProfilerConfiguration {
       const std::vector<Variation>& variations);
 
   // Generates sampling profiler configurations for all processes.
-  static ProfileConfiguration GenerateConfiguration();
+  static ProfileConfiguration GenerateConfiguration(
+      const ThreadProfilerPlatformConfiguration& platform_configuration);
 
   // NOTE: all state in this class must be const and initialized at construction
   // time to ensure thread-safe access post-construction.
+
+  const std::unique_ptr<ThreadProfilerPlatformConfiguration>
+      platform_configuration_;
 
   // In the browser process this represents the configuration to use across all
   // Chrome processes. In the child processes it is always

@@ -190,7 +190,7 @@ bool ShouldSkipTestForMacOS11() {
   // DCHECK here so that when the sampling profiler is re-enabled on macOS 11,
   // these tests are also re-enabled.
   if (base::mac::IsAtLeastOS11()) {
-    DCHECK(!base::StackSamplingProfiler::IsSupported());
+    DCHECK(!base::StackSamplingProfiler::IsSupportedForCurrentPlatform());
     return true;
   }
 #endif
