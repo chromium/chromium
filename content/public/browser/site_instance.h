@@ -10,6 +10,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/site_instance_process_assignment.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -168,6 +169,12 @@ class CONTENT_EXPORT SiteInstance : public base::RefCounted<SiteInstance> {
 
   // Returns true if this object is used for a <webview> guest.
   virtual bool IsGuest() = 0;
+
+  // Returns how this SiteInstance was assigned to a renderer process the most
+  // recent time that such an assignment was done. This allows the content
+  // embedder to collect metrics on how renderer process starting or reuse
+  // affects performance.
+  virtual SiteInstanceProcessAssignment GetLastProcessAssignmentOutcome() = 0;
 
   // Factory method to create a new SiteInstance.  This will create a new
   // BrowsingInstance, so it should only be used when creating a new tab from
