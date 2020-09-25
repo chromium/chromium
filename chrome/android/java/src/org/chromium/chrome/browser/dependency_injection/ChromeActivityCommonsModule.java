@@ -30,9 +30,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
-import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
 import org.chromium.content_public.browser.ScreenOrientationProvider;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.WindowAndroid;
@@ -47,54 +45,120 @@ import dagger.Provides;
  */
 @Module
 public class ChromeActivityCommonsModule {
-    private final ChromeActivity<?> mActivity;
+    private final ChromeActivity mActivity;
+    private final BottomSheetController mBottomSheetController;
+    private final Supplier<TabModelSelector> mTabModelSelectorSupplier;
+    private final BrowserControlsManager mBrowserControlsManager;
+    private final BrowserControlsVisibilityManager mBrowserControlsVisibilityManager;
+    private final BrowserControlsSizer mBrowserControlsSizer;
+    private final FullscreenManager mFullscreenManager;
+    private final Supplier<LayoutManager> mLayoutManagerSupplier;
     private final ActivityLifecycleDispatcher mLifecycleDispatcher;
+    private final Supplier<SnackbarManager> mSnackbarManagerSupplier;
+    private final ActivityTabProvider mActivityTabProvider;
+    private final TabContentManager mTabContentManager;
+    private final ActivityWindowAndroid mActivityWindowAndroid;
+    private final Supplier<CompositorViewHolder> mCompositorViewHolderSupplier;
+    private final TabCreatorManager mTabCreatorManager;
+    private final Supplier<TabCreator> mTabCreatorSupplier;
+    private final Supplier<Boolean> mIsPromotableToTabSupplier;
+    private final StatusBarColorController mStatusBarColorController;
+    private final ScreenOrientationProvider mScreenOrientationProvider;
+    private final Supplier<NotificationManagerProxy> mNotificationManagerProxySupplier;
 
     /** See {@link ModuleFactoryOverrides} */
     public interface Factory {
-        ChromeActivityCommonsModule create(ChromeActivity<?> activity,
-                ActivityLifecycleDispatcher activityLifecycleDispatcher);
+        ChromeActivityCommonsModule create(ChromeActivity activity,
+                BottomSheetController bottomSheetController,
+                Supplier<TabModelSelector> tabModelSelectorSupplier,
+                BrowserControlsManager browserControlsManager,
+                BrowserControlsVisibilityManager browserControlsVisibilityManager,
+                BrowserControlsSizer browserControlsSizer, FullscreenManager fullscreenManager,
+                Supplier<LayoutManager> layoutManagerSupplier,
+                ActivityLifecycleDispatcher lifecycleDispatcher,
+                Supplier<SnackbarManager> snackbarManagerSupplier,
+                ActivityTabProvider activityTabProvider, TabContentManager tabContentManager,
+                ActivityWindowAndroid activityWindowAndroid,
+                Supplier<CompositorViewHolder> compositorViewHolderSupplier,
+                TabCreatorManager tabCreatorManager, Supplier<TabCreator> tabCreatorSupplier,
+                Supplier<Boolean> isPromotableToTabSupplier,
+                StatusBarColorController statusBarColorController,
+                ScreenOrientationProvider screenOrientationProvider,
+                Supplier<NotificationManagerProxy> notificationManagerProxySupplier);
     }
 
-    public ChromeActivityCommonsModule(
-            ChromeActivity<?> activity, ActivityLifecycleDispatcher lifecycleDispatcher) {
+    public ChromeActivityCommonsModule(ChromeActivity activity,
+            BottomSheetController bottomSheetController,
+            Supplier<TabModelSelector> tabModelSelectorSupplier,
+            BrowserControlsManager browserControlsManager,
+            BrowserControlsVisibilityManager browserControlsVisibilityManager,
+            BrowserControlsSizer browserControlsSizer, FullscreenManager fullscreenManager,
+            Supplier<LayoutManager> layoutManagerSupplier,
+            ActivityLifecycleDispatcher lifecycleDispatcher,
+            Supplier<SnackbarManager> snackbarManagerSupplier,
+            ActivityTabProvider activityTabProvider, TabContentManager tabContentManager,
+            ActivityWindowAndroid activityWindowAndroid,
+            Supplier<CompositorViewHolder> compositorViewHolderSupplier,
+            TabCreatorManager tabCreatorManager, Supplier<TabCreator> tabCreatorSupplier,
+            Supplier<Boolean> isPromotableToTabSupplier,
+            StatusBarColorController statusBarColorController,
+            ScreenOrientationProvider screenOrientationProvider,
+            Supplier<NotificationManagerProxy> notificationManagerProxySupplier) {
         mActivity = activity;
+        mBottomSheetController = bottomSheetController;
+        mTabModelSelectorSupplier = tabModelSelectorSupplier;
+        mBrowserControlsManager = browserControlsManager;
+        mBrowserControlsVisibilityManager = browserControlsVisibilityManager;
+        mBrowserControlsSizer = browserControlsSizer;
+        mFullscreenManager = fullscreenManager;
+        mLayoutManagerSupplier = layoutManagerSupplier;
         mLifecycleDispatcher = lifecycleDispatcher;
+        mSnackbarManagerSupplier = snackbarManagerSupplier;
+        mActivityTabProvider = activityTabProvider;
+        mTabContentManager = tabContentManager;
+        mActivityWindowAndroid = activityWindowAndroid;
+        mCompositorViewHolderSupplier = compositorViewHolderSupplier;
+        mTabCreatorManager = tabCreatorManager;
+        mTabCreatorSupplier = tabCreatorSupplier;
+        mIsPromotableToTabSupplier = isPromotableToTabSupplier;
+        mStatusBarColorController = statusBarColorController;
+        mScreenOrientationProvider = screenOrientationProvider;
+        mNotificationManagerProxySupplier = notificationManagerProxySupplier;
     }
 
     @Provides
     public BottomSheetController provideBottomSheetController() {
-        return BottomSheetControllerProvider.from(mActivity.getWindowAndroid());
+        return mBottomSheetController;
     }
 
     @Provides
     public TabModelSelector provideTabModelSelector() {
-        return mActivity.getTabModelSelector();
+        return mTabModelSelectorSupplier.get();
     }
 
     @Provides
     public BrowserControlsManager provideBrowserControlsManager() {
-        return mActivity.getBrowserControlsManager();
+        return mBrowserControlsManager;
     }
 
     @Provides
     public BrowserControlsVisibilityManager provideBrowserControlsVisibilityManager() {
-        return mActivity.getBrowserControlsManager();
+        return mBrowserControlsVisibilityManager;
     }
 
     @Provides
     public BrowserControlsSizer provideBrowserControlsSizer() {
-        return mActivity.getBrowserControlsManager();
+        return mBrowserControlsSizer;
     }
 
     @Provides
     public FullscreenManager provideFullscreenManager() {
-        return mActivity.getFullscreenManager();
+        return mFullscreenManager;
     }
 
     @Provides
     public LayoutManager provideLayoutManager() {
-        return mActivity.getCompositorViewHolder().getLayoutManager();
+        return mLayoutManagerSupplier.get();
     }
 
     @Provides
@@ -138,57 +202,57 @@ public class ChromeActivityCommonsModule {
 
     @Provides
     public SnackbarManager provideSnackbarManager() {
-        return mActivity.getSnackbarManager();
+        return mSnackbarManagerSupplier.get();
     }
 
     @Provides
     public ActivityTabProvider provideActivityTabProvider() {
-        return mActivity.getActivityTabProvider();
+        return mActivityTabProvider;
     }
 
     @Provides
     public TabContentManager provideTabContentManager() {
-        return mActivity.getTabContentManager();
+        return mTabContentManager;
     }
 
     @Provides
     public ActivityWindowAndroid provideActivityWindowAndroid() {
-        return mActivity.getWindowAndroid();
+        return mActivityWindowAndroid;
     }
 
     @Provides
     public CompositorViewHolder provideCompositorViewHolder() {
-        return mActivity.getCompositorViewHolder();
+        return mCompositorViewHolderSupplier.get();
     }
 
     @Provides
     public TabCreatorManager provideTabCreatorManager() {
-        return mActivity;
+        return mTabCreatorManager;
     }
 
     @Provides
-    public Supplier<TabCreator> provideTabCreator() {
-        return mActivity::getCurrentTabCreator;
+    public Supplier<TabCreator> provideTabCreatorSupplier() {
+        return mTabCreatorSupplier;
     }
 
     @Provides
     @Named(IS_PROMOTABLE_TO_TAB_BOOLEAN)
     public boolean provideIsPromotableToTab() {
-        return !mActivity.isCustomTab();
+        return !mIsPromotableToTabSupplier.get();
     }
 
     @Provides
     public StatusBarColorController provideStatusBarColorController() {
-        return mActivity.getStatusBarColorController();
+        return mStatusBarColorController;
     }
 
     @Provides
     public ScreenOrientationProvider provideScreenOrientationProvider() {
-        return ScreenOrientationProvider.getInstance();
+        return mScreenOrientationProvider;
     }
 
     @Provides
     public NotificationManagerProxy provideNotificationManagerProxy() {
-        return new NotificationManagerProxyImpl(mActivity.getApplicationContext());
+        return mNotificationManagerProxySupplier.get();
     }
 }

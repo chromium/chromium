@@ -35,20 +35,17 @@ import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeApplication;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.dependency_injection.ChromeActivityCommonsModule;
 import org.chromium.chrome.browser.dependency_injection.ModuleOverridesRule;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.notifications.MockNotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.MockNotificationManagerProxy.NotificationEntry;
-import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -58,7 +55,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.TimeoutException;
-
 /**
  * Instrumentation tests to make sure the Running in Chrome prompt is shown.
  */
@@ -78,9 +74,27 @@ public class RunningInChromeTest {
     private final CustomTabActivityTestRule mCustomTabActivityTestRule =
             new CustomTabActivityTestRule();
     private final EmbeddedTestServerRule mEmbeddedTestServerRule = new EmbeddedTestServerRule();
-    private final TestRule mModuleOverridesRule = new ModuleOverridesRule()
-            .setOverride(ChromeActivityCommonsModule.Factory.class,
-                    ChromeActivityCommonsModuleForTest::new);
+    private final MockNotificationManagerProxy mMockNotificationManager =
+            new MockNotificationManagerProxy();
+
+    private final TestRule mModuleOverridesRule = new ModuleOverridesRule().setOverride(
+            ChromeActivityCommonsModule.Factory.class,
+            (activity, bottomSheetController, tabModelSelectorSupplier, browserControlsManager,
+                    browserControlsVisibilityManager, browserControlsSizer, fullscreenManager,
+                    layoutManagerSupplier, lifecycleDispatcher, snackbarManagerSupplier,
+                    activityTabProvider, tabContentManager, activityWindowAndroid,
+                    compositorViewHolderSupplier, tabCreatorManager, tabCreatorSupplier,
+                    isPromotableToTabSupplier, statusBarColorController, screenOrientationProvider,
+                    notificationManagerProxySupplier) -> {
+                return new ChromeActivityCommonsModule(activity, bottomSheetController,
+                        tabModelSelectorSupplier, browserControlsManager,
+                        browserControlsVisibilityManager, browserControlsSizer, fullscreenManager,
+                        layoutManagerSupplier, lifecycleDispatcher, snackbarManagerSupplier,
+                        activityTabProvider, tabContentManager, activityWindowAndroid,
+                        compositorViewHolderSupplier, tabCreatorManager, tabCreatorSupplier,
+                        isPromotableToTabSupplier, statusBarColorController,
+                        screenOrientationProvider, () -> mMockNotificationManager);
+            });
 
     @Rule
     public RuleChain mRuleChain = RuleChain.emptyRuleChain()
@@ -88,26 +102,9 @@ public class RunningInChromeTest {
             .around(mEmbeddedTestServerRule)
             .around(mModuleOverridesRule);
 
-    /**
-     * This class causes Dagger to provide our MockNotificationManagerProxy instead of the real one.
-     */
-    class ChromeActivityCommonsModuleForTest extends ChromeActivityCommonsModule {
-        public ChromeActivityCommonsModuleForTest(ChromeActivity<?> activity,
-                ActivityLifecycleDispatcher lifecycleDispatcher) {
-            super(activity, lifecycleDispatcher);
-        }
-
-        @Override
-        public NotificationManagerProxy provideNotificationManagerProxy() {
-            return mMockNotificationManager;
-        }
-    }
-
 
     private String mTestPage;
     private BrowserServicesStore mStore;
-    private final MockNotificationManagerProxy mMockNotificationManager =
-            new MockNotificationManagerProxy();
 
     @Before
     public void setUp() {

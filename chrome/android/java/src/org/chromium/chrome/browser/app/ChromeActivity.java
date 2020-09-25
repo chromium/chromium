@@ -174,6 +174,8 @@ import org.chromium.chrome.modules.image_editor.ImageEditorModuleProvider;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
+import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
+import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
 import org.chromium.components.browser_ui.util.ComposedBrowserControlsVisibilityDelegate;
 import org.chromium.components.browser_ui.widget.InsetObserverView;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
@@ -186,6 +188,7 @@ import org.chromium.components.policy.CombinedPolicyProvider.PolicyChangeListene
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.webapk.lib.client.WebApkValidator;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.content_public.browser.ScreenOrientationProvider;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ContentSwitches;
@@ -391,13 +394,35 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                 mTabModelSelectorSupplier);
     }
 
+    private NotificationManagerProxy getNotificationManagerProxy() {
+        return new NotificationManagerProxyImpl(getApplicationContext());
+    }
+
     private C createComponent() {
         ChromeActivityCommonsModule.Factory overridenCommonsFactory =
                 ModuleFactoryOverrides.getOverrideFor(ChromeActivityCommonsModule.Factory.class);
 
         ChromeActivityCommonsModule commonsModule = overridenCommonsFactory == null
-                ? new ChromeActivityCommonsModule(this, getLifecycleDispatcher())
-                : overridenCommonsFactory.create(this, getLifecycleDispatcher());
+                ? new ChromeActivityCommonsModule(this,
+                        mRootUiCoordinator.getBottomSheetController(), mTabModelSelectorSupplier,
+                        getBrowserControlsManager(), getBrowserControlsManager(),
+                        getBrowserControlsManager(), getFullscreenManager(),
+                        getLayoutManagerSupplier(), getLifecycleDispatcher(),
+                        this::getSnackbarManager, mActivityTabProvider, getTabContentManager(),
+                        getWindowAndroid(), this::getCompositorViewHolder, this,
+                        this::getCurrentTabCreator, this::isCustomTab,
+                        getStatusBarColorController(), ScreenOrientationProvider.getInstance(),
+                        this::getNotificationManagerProxy)
+                : overridenCommonsFactory.create(this,
+                        mRootUiCoordinator.getBottomSheetController(), mTabModelSelectorSupplier,
+                        getBrowserControlsManager(), getBrowserControlsManager(),
+                        getBrowserControlsManager(), getFullscreenManager(),
+                        getLayoutManagerSupplier(), getLifecycleDispatcher(),
+                        this::getSnackbarManager, mActivityTabProvider, getTabContentManager(),
+                        getWindowAndroid(), this::getCompositorViewHolder, this,
+                        this::getCurrentTabCreator, this::isCustomTab,
+                        getStatusBarColorController(), ScreenOrientationProvider.getInstance(),
+                        this::getNotificationManagerProxy);
 
         return createComponent(commonsModule);
     }

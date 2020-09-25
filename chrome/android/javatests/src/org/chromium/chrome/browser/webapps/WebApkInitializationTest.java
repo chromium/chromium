@@ -85,10 +85,23 @@ public class WebApkInitializationTest {
             new TrackingActivityLifecycleDispatcher();
 
     private final TestRule mModuleOverridesRule = new ModuleOverridesRule().setOverride(
-            ChromeActivityCommonsModule.Factory.class, (activity, lifecycleDispatcher) -> {
+            ChromeActivityCommonsModule.Factory.class,
+            (activity, bottomSheetController, tabModelSelectorSupplier, browserControlsManager,
+                    browserControlsVisibilityManager, browserControlsSizer, fullscreenManager,
+                    layoutManagerSupplier, lifecycleDispatcher, snackbarManagerSupplier,
+                    activityTabProvider, tabContentManager, activityWindowAndroid,
+                    compositorViewHolderSupplier, tabCreatorManager, tabCreatorSupplier,
+                    isPromotableToTabSupplier, statusBarColorController, screenOrientationProvider,
+                    notificationManagerProxySupplier) -> {
                 mTrackingActivityLifecycleDispatcher.init(lifecycleDispatcher);
-                return new ChromeActivityCommonsModule(
-                        activity, mTrackingActivityLifecycleDispatcher);
+                return new ChromeActivityCommonsModule(activity, bottomSheetController,
+                        tabModelSelectorSupplier, browserControlsManager,
+                        browserControlsVisibilityManager, browserControlsSizer, fullscreenManager,
+                        layoutManagerSupplier, mTrackingActivityLifecycleDispatcher,
+                        snackbarManagerSupplier, activityTabProvider, tabContentManager,
+                        activityWindowAndroid, compositorViewHolderSupplier, tabCreatorManager,
+                        tabCreatorSupplier, isPromotableToTabSupplier, statusBarColorController,
+                        screenOrientationProvider, notificationManagerProxySupplier);
             });
 
     private final WebApkActivityTestRule mActivityRule = new WebApkActivityTestRule();
