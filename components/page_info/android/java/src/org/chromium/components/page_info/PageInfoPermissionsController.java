@@ -37,6 +37,7 @@ public class PageInfoPermissionsController implements PageInfoSubpageController 
     }
 
     private void launchSubpage() {
+        mMainController.recordAction(PageInfoAction.PAGE_INFO_PERMISSION_DIALOG_OPENED);
         mMainController.launchSubpage(this);
     }
 
@@ -53,10 +54,15 @@ public class PageInfoPermissionsController implements PageInfoSubpageController 
                 mRowView.getContext(), SingleWebsiteSettings.class.getName(), fragmentArgs);
         mSubpageFragment.setSiteSettingsClient(mDelegate.getSiteSettingsClient());
         mSubpageFragment.setHideNonPermissionPreferences(true);
-        mSubpageFragment.setWebsiteResetCallback(mMainController::exitSubpage);
+        mSubpageFragment.setWebsiteResetCallback(this::onPermissionsDeleted);
         AppCompatActivity host = (AppCompatActivity) mRowView.getContext();
         host.getSupportFragmentManager().beginTransaction().add(mSubpageFragment, null).commitNow();
         return mSubpageFragment.requireView();
+    }
+
+    private void onPermissionsDeleted() {
+        mMainController.recordAction(PageInfoAction.PAGE_INFO_PERMISSIONS_CLEARED);
+        mMainController.exitSubpage();
     }
 
     @Override

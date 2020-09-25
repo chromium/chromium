@@ -75244,6 +75244,9 @@ Called by update_scheduler_enums.py.-->
   <int value="10" label="Security details opened"/>
   <int value="11" label="Third-party cookies allowed for site"/>
   <int value="12" label="Third-party cookies blocked for site"/>
+  <int value="13" label="Cookies deleted for site"/>
+  <int value="14" label="Permission dialog opened"/>
+  <int value="15" label="Permission deleted for site"/>
 </enum>
 
 <enum name="WebSiteSettingsAllSitesAction">

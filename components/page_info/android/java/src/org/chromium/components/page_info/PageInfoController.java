@@ -288,8 +288,8 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
             CookieControlsView.CookieControlsParams cookieControlsParams =
                     new CookieControlsView.CookieControlsParams();
             cookieControlsParams.onCheckedChangedCallback = (Boolean blockCookies) -> {
-                recordAction(blockCookies ? PageInfoAction.PAGE_INFO_COOKIE_BLOCKED_FOR_SITE
-                                          : PageInfoAction.PAGE_INFO_COOKIE_ALLOWED_FOR_SITE);
+                recordAction(blockCookies ? PageInfoAction.PAGE_INFO_COOKIES_BLOCKED_FOR_SITE
+                                          : PageInfoAction.PAGE_INFO_COOKIES_ALLOWED_FOR_SITE);
                 mCookieBridge.setThirdPartyCookieBlockingEnabledForSite(blockCookies);
             };
             mView.getCookieControlsView().setParams(cookieControlsParams);

@@ -196257,7 +196257,7 @@ regressions. -->
 </histogram>
 
 <histogram name="WebsiteSettings.Action" enum="WebsiteSettingsAction"
-    expires_after="M87">
+    expires_after="M90">
   <owner>estark@chromium.org</owner>
   <owner>dullweber@chromium.org</owner>
   <summary>

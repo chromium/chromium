@@ -150,7 +150,7 @@ public class CookieControlsViewTest {
         onView(withId(switch_id)).check(matches(isNotChecked()));
         Assert.assertEquals(2, getTotalPageActionHistogramCount());
         Assert.assertEquals(
-                1, getPageActionHistogramCount(PageInfoAction.PAGE_INFO_COOKIE_ALLOWED_FOR_SITE));
+                1, getPageActionHistogramCount(PageInfoAction.PAGE_INFO_COOKIES_ALLOWED_FOR_SITE));
 
         // Load a different page.
         loadUrlAndOpenPageInfo(mTestServer.getURLWithHostName("bar.com", mPath));
@@ -164,7 +164,7 @@ public class CookieControlsViewTest {
         Assert.assertEquals(5, getTotalPageActionHistogramCount());
 
         Assert.assertEquals(
-                1, getPageActionHistogramCount(PageInfoAction.PAGE_INFO_COOKIE_BLOCKED_FOR_SITE));
+                1, getPageActionHistogramCount(PageInfoAction.PAGE_INFO_COOKIES_BLOCKED_FOR_SITE));
         Assert.assertEquals(3, getPageActionHistogramCount(PageInfoAction.PAGE_INFO_OPENED));
     }
 }
