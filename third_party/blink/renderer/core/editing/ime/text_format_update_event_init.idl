@@ -7,6 +7,8 @@ dictionary TextFormatUpdateEventInit {
     unsigned long formatRangeEnd;
     DOMString underlineColor;
     DOMString backgroundColor;
-    DOMString textDecorationColor;
-    DOMString textUnderlineStyle;
+    DOMString suggestionHighlightColor;
+    DOMString textColor;
+    DOMString underlineThickness;
+    DOMString underlineStyle;
 };

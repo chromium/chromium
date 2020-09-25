@@ -33,7 +33,9 @@ class CORE_EXPORT TextFormatUpdateEvent final : public Event {
                         const String& underline_color,
                         const String& background_color,
                         const String& text_decoration_color,
-                        const String& text_underline_style);
+                        const String& text_color,
+                        const String& underline_thickness,
+                        const String& underline_style);
   static TextFormatUpdateEvent* Create(const TextFormatUpdateEventInit* dict);
   ~TextFormatUpdateEvent() override;
 
@@ -41,8 +43,10 @@ class CORE_EXPORT TextFormatUpdateEvent final : public Event {
   uint32_t formatRangeEnd() const;
   String underlineColor() const;
   String backgroundColor() const;
-  String textDecorationColor() const;
-  String textUnderlineStyle() const;
+  String suggestionHighlightColor() const;
+  String textColor() const;
+  String underlineThickness() const;
+  String underlineStyle() const;
 
   const AtomicString& InterfaceName() const override;
   // member variables to keep track of the event parameters
@@ -51,8 +55,10 @@ class CORE_EXPORT TextFormatUpdateEvent final : public Event {
   uint32_t format_range_end_ = 0;
   String underline_color_;
   String background_color_;
-  String text_decoration_color_;
-  String text_underline_style_;
+  String suggestion_highlight_color_;
+  String text_color_;
+  String underline_thickness_;
+  String underline_style_;
 };
 
 }  // namespace blink

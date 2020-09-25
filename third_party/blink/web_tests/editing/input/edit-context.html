@@ -75,10 +75,12 @@ test(function() {
   test.innerHTML = "";
   let formatRangeStart = 0;
   let formatRangeEnd = 0;
-  let underlineTextColor = "";
-  let backgroundTextColor = "";
-  let compositionTextDecorationColor = "";
+  let underlineColor = "";
+  let backgroundColor = "";
+  let textColor = "";
+  let suggestionHighlightColor = "";
   let compositionTextUnderlineStyle = "";
+  let compositionTextUnderlineThickness = "";
   // Add EditContext event listeners
   editContext.addEventListener("textupdate", e => {
     // Update the text in the div
@@ -91,8 +93,10 @@ test(function() {
     formatRangeEnd = e.formatRangeEnd;
     underlineColor = e.underlineColor;
     backgroundColor = e.backgroundColor;
-    compositionTextDecorationColor = e.textDecorationColor;
-    compositionTextUnderlineStyle = e.textUnderlineStyle;
+    textColor = e.textColor;
+    suggestionHighlightColor = e.suggestionHighlightColor;
+    compositionTextUnderlineStyle = e.underlineStyle;
+    compositionTextUnderlineThickness = e.underlineThickness;
   });
 
   test.focus();
@@ -103,8 +107,10 @@ test(function() {
   assert_equals(formatRangeEnd, 3);
   assert_equals(underlineColor, "rgba(0, 0, 0, 0)");
   assert_equals(backgroundColor, "rgba(0, 0, 0, 0)");
-  assert_equals(compositionTextDecorationColor, "rgba(0, 0, 0, 0)");
-  assert_equals(compositionTextUnderlineStyle, "Thin");
+  assert_equals(textColor, "rgba(0, 0, 0, 0)");
+  assert_equals(suggestionHighlightColor, "rgba(0, 0, 0, 0)");
+  assert_equals(compositionTextUnderlineStyle, "Solid");
+  assert_equals(compositionTextUnderlineThickness, "Thin");
 }, 'Testing EditContext TextFormatUpdate');
 
 test(function() {

@@ -8397,9 +8397,11 @@ interface TextFormatUpdateEvent : Event
     getter backgroundColor
     getter formatRangeEnd
     getter formatRangeStart
-    getter textDecorationColor
-    getter textUnderlineStyle
+    getter suggestionHighlightColor
+    getter textColor
     getter underlineColor
+    getter underlineStyle
+    getter underlineThickness
     method constructor
 interface TextMetrics
     attribute @@toStringTag

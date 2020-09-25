@@ -16,6 +16,8 @@
     readonly attribute unsigned long formatRangeEnd;
     readonly attribute DOMString underlineColor;
     readonly attribute DOMString backgroundColor;
-    readonly attribute DOMString textDecorationColor;
-    readonly attribute DOMString textUnderlineStyle;
+    readonly attribute DOMString suggestionHighlightColor;
+    readonly attribute DOMString textColor;
+    readonly attribute DOMString underlineThickness;
+    readonly attribute DOMString underlineStyle;
 };

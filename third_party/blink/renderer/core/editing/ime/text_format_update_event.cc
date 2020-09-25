@@ -24,11 +24,17 @@ TextFormatUpdateEvent::TextFormatUpdateEvent(
   if (dict->hasBackgroundColor())
     background_color_ = dict->backgroundColor();
 
-  if (dict->hasTextDecorationColor())
-    text_decoration_color_ = dict->textDecorationColor();
+  if (dict->hasSuggestionHighlightColor())
+    suggestion_highlight_color_ = dict->suggestionHighlightColor();
 
-  if (dict->hasTextUnderlineStyle())
-    text_underline_style_ = dict->textUnderlineStyle();
+  if (dict->hasTextColor())
+    text_color_ = dict->textColor();
+
+  if (dict->hasUnderlineThickness())
+    underline_thickness_ = dict->underlineThickness();
+
+  if (dict->hasUnderlineStyle())
+    underline_style_ = dict->underlineStyle();
 }
 
 TextFormatUpdateEvent::TextFormatUpdateEvent(
@@ -36,8 +42,10 @@ TextFormatUpdateEvent::TextFormatUpdateEvent(
     uint32_t format_range_end,
     const String& underline_color,
     const String& background_color,
-    const String& text_decoration_color,
-    const String& text_underline_style)
+    const String& suggestion_highlight_color,
+    const String& text_color,
+    const String& underline_thickness,
+    const String& underline_style)
     : Event(event_type_names::kTextformatupdate,
             Bubbles::kNo,
             Cancelable::kYes,
@@ -47,8 +55,10 @@ TextFormatUpdateEvent::TextFormatUpdateEvent(
       format_range_end_(format_range_end),
       underline_color_(underline_color),
       background_color_(background_color),
-      text_decoration_color_(text_decoration_color),
-      text_underline_style_(text_underline_style) {}
+      suggestion_highlight_color_(suggestion_highlight_color),
+      text_color_(text_color),
+      underline_thickness_(underline_thickness),
+      underline_style_(underline_style) {}
 
 TextFormatUpdateEvent* TextFormatUpdateEvent::Create(
     const TextFormatUpdateEventInit* dict) {
@@ -73,12 +83,20 @@ String TextFormatUpdateEvent::backgroundColor() const {
   return background_color_;
 }
 
-String TextFormatUpdateEvent::textDecorationColor() const {
-  return text_decoration_color_;
+String TextFormatUpdateEvent::suggestionHighlightColor() const {
+  return suggestion_highlight_color_;
 }
 
-String TextFormatUpdateEvent::textUnderlineStyle() const {
-  return text_underline_style_;
+String TextFormatUpdateEvent::textColor() const {
+  return text_color_;
+}
+
+String TextFormatUpdateEvent::underlineThickness() const {
+  return underline_thickness_;
+}
+
+String TextFormatUpdateEvent::underlineStyle() const {
+  return underline_style_;
 }
 
 const AtomicString& TextFormatUpdateEvent::InterfaceName() const {
