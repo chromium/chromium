@@ -102007,6 +102007,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Net.ResourceLoader.ResponseStartToEnd" units="microseconds"
     expires_after="M85">
+  <obsolete>
+    Removed 09/2020, no longer needed.
+  </obsolete>
   <owner>tzik@chromium.org</owner>
   <summary>
     Time from the start to the end of receiving a response body. Recorded for
