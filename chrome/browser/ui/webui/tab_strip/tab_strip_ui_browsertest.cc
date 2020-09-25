@@ -110,7 +110,10 @@ IN_PROC_BROWSER_TEST_F(TabStripUIBrowserTest, ActivatingTabClosesEmbedder) {
                               ISOLATED_WORLD_ID_CHROME_INTERNAL));
 }
 
-IN_PROC_BROWSER_TEST_F(TabStripUIBrowserTest, InvokesEditDialogForGroups) {
+// Flaky.
+// TODO(https://crbug.com/1132300): Re-enable.
+IN_PROC_BROWSER_TEST_F(TabStripUIBrowserTest,
+                       DISABLED_InvokesEditDialogForGroups) {
   using ::testing::_;
 
   tab_groups::TabGroupId group_id =
