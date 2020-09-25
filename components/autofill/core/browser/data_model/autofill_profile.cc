@@ -461,6 +461,30 @@ int AutofillProfile::Compare(const AutofillProfile& profile) const {
       return 1;
   }
 
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillAddressEnhancementVotes)) {
+    const ServerFieldType new_types[] = {
+        ADDRESS_HOME_HOUSE_NUMBER,
+        ADDRESS_HOME_STREET_NAME,
+        ADDRESS_HOME_DEPENDENT_STREET_NAME,
+        ADDRESS_HOME_PREMISE_NAME,
+        ADDRESS_HOME_SUBPREMISE,
+    };
+    for (ServerFieldType type : new_types) {
+      int comparison = GetRawInfo(type).compare(profile.GetRawInfo(type));
+      if (comparison != 0) {
+        return comparison;
+      }
+    }
+
+    for (ServerFieldType type : new_types) {
+      if (GetVerificationStatus(type) < profile.GetVerificationStatus(type))
+        return -1;
+      if (GetVerificationStatus(type) > profile.GetVerificationStatus(type))
+        return 1;
+    }
+  }
+
   return 0;
 }
 
