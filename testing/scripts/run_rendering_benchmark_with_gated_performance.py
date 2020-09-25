@@ -142,8 +142,6 @@ class RenderingRepresentativePerfTest(object):
 
     re_run_test_output = os.path.join(re_run_output_dir,
       os.path.basename(self.options.isolated_script_test_output))
-    re_run_test_perf_output = os.path.join(re_run_output_dir,
-      os.path.basename(self.options.isolated_script_test_perf_output))
 
     self.set_platform_specific_attributes()
 
@@ -165,8 +163,7 @@ class RenderingRepresentativePerfTest(object):
     self.args.extend(['--story-tag-filter', self.story_tag])
 
     self.re_run_args = replace_arg_values(list(sys.argv), [
-      ('--isolated-script-test-output', re_run_test_output),
-      ('--isolated-script-test-perf-output', re_run_test_perf_output)])
+      ('--isolated-script-test-output', re_run_test_output)])
 
   def parse_csv_results(self, csv_obj):
     """ Parses the raw CSV data
