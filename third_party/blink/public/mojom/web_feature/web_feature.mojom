@@ -2937,7 +2937,7 @@ enum WebFeature {
   kIdentifiabilityStudyReserved3607 = 3607,
   kIdentifiabilityStudyReserved3608 = 3608,
   kIdentifiabilityStudyReserved3609 = 3609,
-  kIdentifiabilityStudyReserved3610 = 3610,
+  kBarcodeDetector_GetSupportedFormats = 3610,
   kIdentifiabilityStudyReserved3611 = 3611,
   kIdentifiabilityStudyReserved3612 = 3612,
   kIdentifiabilityStudyReserved3613 = 3613,

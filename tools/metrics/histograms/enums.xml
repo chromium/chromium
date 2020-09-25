@@ -29386,7 +29386,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3607" label="IdentifiabilityStudyReserved3607"/>
   <int value="3608" label="IdentifiabilityStudyReserved3608"/>
   <int value="3609" label="IdentifiabilityStudyReserved3609"/>
-  <int value="3610" label="IdentifiabilityStudyReserved3610"/>
+  <int value="3610" label="BarcodeDetector_GetSupportedFormats"/>
   <int value="3611" label="IdentifiabilityStudyReserved3611"/>
   <int value="3612" label="IdentifiabilityStudyReserved3612"/>
   <int value="3613" label="IdentifiabilityStudyReserved3613"/>
