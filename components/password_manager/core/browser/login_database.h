@@ -84,7 +84,7 @@ class LoginDatabase : public PasswordStoreSync::MetadataStore {
   // then the REMOVE is associated with the form that was added. Thus only the
   // primary key columns contain the values associated with the removed form. In
   // case of error, it sets |error| if |error| isn't null.
-  PasswordStoreChangeList AddLogin(const autofill::PasswordForm& form,
+  PasswordStoreChangeList AddLogin(const PasswordForm& form,
                                    AddLoginError* error = nullptr)
       WARN_UNUSED_RESULT;
 
@@ -93,7 +93,7 @@ class LoginDatabase : public PasswordStoreSync::MetadataStore {
   // username_element, username_value, password_element, signon_realm}. These
   // columns stay intact. In case of error, it sets |error| if |error| isn't
   // null.
-  PasswordStoreChangeList UpdateLogin(const autofill::PasswordForm& form,
+  PasswordStoreChangeList UpdateLogin(const PasswordForm& form,
                                       UpdateLoginError* error = nullptr)
       WARN_UNUSED_RESULT;
 
@@ -101,7 +101,7 @@ class LoginDatabase : public PasswordStoreSync::MetadataStore {
   // |form| was successfully removed from the database. If |changes| is not be
   // null, it will be used to populate the change list of the removed forms if
   // any.
-  bool RemoveLogin(const autofill::PasswordForm& form,
+  bool RemoveLogin(const PasswordForm& form,
                    PasswordStoreChangeList* changes) WARN_UNUSED_RESULT;
 
   // Removes the form with |primary_key| from the list of remembered password
@@ -127,13 +127,13 @@ class LoginDatabase : public PasswordStoreSync::MetadataStore {
   // Gets a list of credentials matching |form|, including blacklisted matches
   // and federated credentials.
   bool GetLogins(const PasswordStore::FormDigest& form,
-                 std::vector<std::unique_ptr<autofill::PasswordForm>>* forms)
+                 std::vector<std::unique_ptr<PasswordForm>>* forms)
       WARN_UNUSED_RESULT;
 
   // Gets a list of credentials with password_value=|plain_text_password|.
   bool GetLoginsByPassword(const base::string16& plain_text_password,
-                           std::vector<std::unique_ptr<autofill::PasswordForm>>*
-                               forms) WARN_UNUSED_RESULT;
+                           std::vector<std::unique_ptr<PasswordForm>>* forms)
+      WARN_UNUSED_RESULT;
 
   // Gets all logins created from |begin| onwards (inclusive) and before |end|.
   // You may use a null Time value to do an unbounded search in either
@@ -149,13 +149,12 @@ class LoginDatabase : public PasswordStoreSync::MetadataStore {
       WARN_UNUSED_RESULT;
 
   // Gets the complete list of not blacklisted credentials.
-  bool GetAutofillableLogins(
-      std::vector<std::unique_ptr<autofill::PasswordForm>>* forms)
+  bool GetAutofillableLogins(std::vector<std::unique_ptr<PasswordForm>>* forms)
       WARN_UNUSED_RESULT;
 
   // Gets the complete list of blacklisted credentials.
-  bool GetBlacklistLogins(std::vector<std::unique_ptr<autofill::PasswordForm>>*
-                              forms) WARN_UNUSED_RESULT;
+  bool GetBlacklistLogins(std::vector<std::unique_ptr<PasswordForm>>* forms)
+      WARN_UNUSED_RESULT;
 
   // Gets the list of auto-sign-inable credentials.
   bool GetAutoSignInLogins(PrimaryKeyToFormMap* key_to_form_map)
@@ -291,19 +290,19 @@ class LoginDatabase : public PasswordStoreSync::MetadataStore {
       const sql::Statement& s,
       bool decrypt_and_fill_password_value,
       int* primary_key,
-      autofill::PasswordForm* form) const WARN_UNUSED_RESULT;
+      PasswordForm* form) const WARN_UNUSED_RESULT;
 
   // Gets all blacklisted or all non-blacklisted (depending on |blacklisted|)
   // credentials. On success returns true and overwrites |forms| with the
   // result.
   bool GetAllLoginsWithBlacklistSetting(
       bool blacklisted,
-      std::vector<std::unique_ptr<autofill::PasswordForm>>* forms);
+      std::vector<std::unique_ptr<PasswordForm>>* forms);
 
   // Returns the DB primary key for the specified |form| and decrypted/encrypted
   // password. Returns {-1, "", ""} if the row for this |form| is not found.
   PrimaryKeyAndPassword GetPrimaryKeyAndPassword(
-      const autofill::PasswordForm& form) const;
+      const PasswordForm& form) const;
 
   // Reads all the stored sync entities metadata in a MetadataBatch. Returns
   // nullptr in case of failure.
@@ -331,7 +330,7 @@ class LoginDatabase : public PasswordStoreSync::MetadataStore {
 
   // Sets the `in_store` member of `form` to either kProfileStore or
   // kAccountStore depending on the value of `is_account_store_`.
-  void FillFormInStore(autofill::PasswordForm* form) const;
+  void FillFormInStore(PasswordForm* form) const;
 
   const base::FilePath db_path_;
   const IsAccountStore is_account_store_;

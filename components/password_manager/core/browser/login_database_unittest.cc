@@ -22,9 +22,9 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "components/autofill/core/common/password_form.h"
 #include "components/os_crypt/os_crypt.h"
 #include "components/os_crypt/os_crypt_mocker.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/psl_matching_helper.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -39,7 +39,6 @@
 #include "url/origin.h"
 
 using autofill::GaiaIdHash;
-using autofill::PasswordForm;
 using autofill::ValueElementPair;
 using autofill::ValueElementVector;
 using base::ASCIIToUTF16;
@@ -2061,7 +2060,7 @@ TEST_F(LoginDatabaseTest, HandleObfuscationMix) {
     EXPECT_EQ(AddChangeForForm(password_form), db.AddLogin(password_form));
   }
 
-  std::vector<std::unique_ptr<autofill::PasswordForm>> forms;
+  std::vector<std::unique_ptr<PasswordForm>> forms;
   {
     LoginDatabase db(file, IsAccountStore(false));
     ASSERT_TRUE(db.Init());

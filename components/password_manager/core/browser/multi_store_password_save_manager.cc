@@ -14,8 +14,6 @@
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 
-using autofill::PasswordForm;
-
 namespace password_manager {
 
 namespace {

@@ -30,14 +30,14 @@ class MultiStoreFormFetcher : public FormFetcherImpl {
 
   // PasswordStoreConsumer:
   void OnGetPasswordStoreResults(
-      std::vector<std::unique_ptr<autofill::PasswordForm>> results) override;
+      std::vector<std::unique_ptr<PasswordForm>> results) override;
   void OnGetPasswordStoreResultsFrom(
       PasswordStore* store,
-      std::vector<std::unique_ptr<autofill::PasswordForm>> results) override;
+      std::vector<std::unique_ptr<PasswordForm>> results) override;
 
   // HttpPasswordStoreMigrator::Consumer:
   void ProcessMigratedForms(
-      std::vector<std::unique_ptr<autofill::PasswordForm>> forms) override;
+      std::vector<std::unique_ptr<PasswordForm>> forms) override;
 
   // CompromisedCredentialsConsumer:
   void OnGetCompromisedCredentials(
@@ -45,12 +45,12 @@ class MultiStoreFormFetcher : public FormFetcherImpl {
 
  private:
   void AggregatePasswordStoreResults(
-      std::vector<std::unique_ptr<autofill::PasswordForm>> results);
+      std::vector<std::unique_ptr<PasswordForm>> results);
 
   // Splits |results| into |federated_|, |non_federated_|,
   // |is_blacklisted_in_profile_store_| and |is_blacklisted_in_account_store_|.
   void SplitResults(
-      std::vector<std::unique_ptr<autofill::PasswordForm>> results) override;
+      std::vector<std::unique_ptr<PasswordForm>> results) override;
 
   // Whether there were any blacklisted credentials obtained from the profile
   // and account password stores respectively.
@@ -58,7 +58,7 @@ class MultiStoreFormFetcher : public FormFetcherImpl {
   bool is_blacklisted_in_account_store_ = false;
 
   int wait_counter_ = 0;
-  std::vector<std::unique_ptr<autofill::PasswordForm>> partial_results_;
+  std::vector<std::unique_ptr<PasswordForm>> partial_results_;
 
   base::flat_map<PasswordStore*, std::unique_ptr<HttpPasswordStoreMigrator>>
       http_migrators_;

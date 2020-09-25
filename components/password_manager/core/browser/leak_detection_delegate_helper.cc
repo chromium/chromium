@@ -43,7 +43,7 @@ void LeakDetectionDelegateHelper::ProcessLeakedPassword(
 }
 
 void LeakDetectionDelegateHelper::OnGetPasswordStoreResults(
-    std::vector<std::unique_ptr<autofill::PasswordForm>> results) {
+    std::vector<std::unique_ptr<PasswordForm>> results) {
   // Store the results.
   base::ranges::move(results, std::back_inserter(partial_results_));
 

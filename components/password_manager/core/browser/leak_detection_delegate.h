@@ -12,10 +12,7 @@
 #include "components/password_manager/core/browser/leak_detection/leak_detection_check_factory.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_delegate_interface.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
-
-namespace autofill {
-struct PasswordForm;
-}  // namespace autofill
+#include "components/password_manager/core/browser/password_form_forward.h"
 
 class PrefService;
 
@@ -45,7 +42,7 @@ class LeakDetectionDelegate : public LeakDetectionDelegateInterface {
   LeakDetectionCheck* leak_check() const { return leak_check_.get(); }
 #endif  // defined(UNIT_TEST)
 
-  void StartLeakCheck(const autofill::PasswordForm& form);
+  void StartLeakCheck(const PasswordForm& form);
 
  private:
   // LeakDetectionDelegateInterface:

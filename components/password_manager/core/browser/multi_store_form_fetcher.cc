@@ -12,8 +12,6 @@
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/statistics_table.h"
 
-using autofill::PasswordForm;
-
 using Logger = autofill::SavePasswordProgressLogger;
 
 namespace password_manager {
@@ -76,8 +74,8 @@ bool MultiStoreFormFetcher::IsBlacklisted() const {
 bool MultiStoreFormFetcher::IsMovingBlocked(
     const autofill::GaiaIdHash& destination,
     const base::string16& username) const {
-  for (const std::vector<std::unique_ptr<autofill::PasswordForm>>*
-           matches_vector : {&federated_, &non_federated_}) {
+  for (const std::vector<std::unique_ptr<PasswordForm>>* matches_vector :
+       {&federated_, &non_federated_}) {
     for (const auto& form : *matches_vector) {
       // Only local entries can be moved to the account store (though
       // account store matches should never have |moving_blocked_for_list|

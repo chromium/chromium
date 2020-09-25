@@ -19,7 +19,6 @@
 #include "sql/statement.h"
 
 using base::ScopedCFTypeRef;
-using autofill::PasswordForm;
 
 namespace password_manager {
 

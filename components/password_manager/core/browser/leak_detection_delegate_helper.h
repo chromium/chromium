@@ -45,7 +45,7 @@ class LeakDetectionDelegateHelper : public PasswordStoreConsumer {
   // All the saved credentials with the same username and password are stored to
   // the database.
   void OnGetPasswordStoreResults(
-      std::vector<std::unique_ptr<autofill::PasswordForm>> results) override;
+      std::vector<std::unique_ptr<PasswordForm>> results) override;
 
   scoped_refptr<PasswordStore> profile_store_;
   scoped_refptr<PasswordStore> account_store_;
@@ -55,7 +55,7 @@ class LeakDetectionDelegateHelper : public PasswordStoreConsumer {
   base::string16 password_;
 
   int wait_counter_ = 0;
-  std::vector<std::unique_ptr<autofill::PasswordForm>> partial_results_;
+  std::vector<std::unique_ptr<PasswordForm>> partial_results_;
 
   // Instances should be neither copyable nor assignable.
   DISALLOW_COPY_AND_ASSIGN(LeakDetectionDelegateHelper);

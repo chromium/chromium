@@ -10,12 +10,9 @@
 #include "base/containers/span.h"
 #include "base/strings/string16.h"
 #include "base/util/type_safety/strong_alias.h"
+#include "components/password_manager/core/browser/password_form_forward.h"
 #include "url/gurl.h"
 #include "url/origin.h"
-
-namespace autofill {
-struct PasswordForm;
-}
 
 namespace password_manager {
 
@@ -33,8 +30,7 @@ class UiCredential {
                url::Origin origin,
                IsPublicSuffixMatch is_public_suffix_match,
                IsAffiliationBasedMatch is_affiliation_based_match);
-  UiCredential(const autofill::PasswordForm& form,
-               const url::Origin& affiliated_origin);
+  UiCredential(const PasswordForm& form, const url::Origin& affiliated_origin);
   UiCredential(UiCredential&&);
   UiCredential(const UiCredential&);
   UiCredential& operator=(UiCredential&&);

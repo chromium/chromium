@@ -9,9 +9,9 @@
 #include <string>
 #include <vector>
 
-#include "components/autofill/core/common/password_form.h"
 #include "components/password_manager/core/browser/compromised_credentials_table.h"
 #include "components/password_manager/core/browser/field_info_table.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store.h"
 #include "components/password_manager/core/browser/statistics_table.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -22,27 +22,25 @@ class MockPasswordStore : public PasswordStore {
  public:
   MockPasswordStore();
 
-  MOCK_METHOD1(RemoveLogin, void(const autofill::PasswordForm&));
+  MOCK_METHOD1(RemoveLogin, void(const PasswordForm&));
   MOCK_METHOD2(Unblacklist,
                void(const PasswordStore::FormDigest&, base::OnceClosure));
   MOCK_METHOD2(GetLogins,
                void(const PasswordStore::FormDigest&, PasswordStoreConsumer*));
-  MOCK_METHOD1(AddLogin, void(const autofill::PasswordForm&));
-  MOCK_METHOD1(UpdateLogin, void(const autofill::PasswordForm&));
+  MOCK_METHOD1(AddLogin, void(const PasswordForm&));
+  MOCK_METHOD1(UpdateLogin, void(const PasswordForm&));
   MOCK_METHOD2(UpdateLoginWithPrimaryKey,
-               void(const autofill::PasswordForm&,
-                    const autofill::PasswordForm&));
+               void(const PasswordForm&, const PasswordForm&));
   MOCK_METHOD3(ReportMetrics, void(const std::string&, bool, bool));
   MOCK_METHOD3(ReportMetricsImpl,
                void(const std::string&, bool, BulkCheckDone));
   MOCK_METHOD2(AddLoginImpl,
-               PasswordStoreChangeList(const autofill::PasswordForm&,
+               PasswordStoreChangeList(const PasswordForm&,
                                        AddLoginError* error));
   MOCK_METHOD2(UpdateLoginImpl,
-               PasswordStoreChangeList(const autofill::PasswordForm&,
+               PasswordStoreChangeList(const PasswordForm&,
                                        UpdateLoginError* error));
-  MOCK_METHOD1(RemoveLoginImpl,
-               PasswordStoreChangeList(const autofill::PasswordForm&));
+  MOCK_METHOD1(RemoveLoginImpl, PasswordStoreChangeList(const PasswordForm&));
   MOCK_METHOD3(
       RemoveLoginsByURLAndTimeImpl,
       PasswordStoreChangeList(const base::RepeatingCallback<bool(const GURL&)>&,
@@ -57,17 +55,17 @@ class MockPasswordStore : public PasswordStore {
   MOCK_METHOD1(DisableAutoSignInForOriginsImpl,
                PasswordStoreChangeList(
                    const base::RepeatingCallback<bool(const GURL&)>&));
-  std::vector<std::unique_ptr<autofill::PasswordForm>> FillMatchingLogins(
+  std::vector<std::unique_ptr<PasswordForm>> FillMatchingLogins(
       const PasswordStore::FormDigest& form) override {
-    return std::vector<std::unique_ptr<autofill::PasswordForm>>();
+    return std::vector<std::unique_ptr<PasswordForm>>();
   }
-  MOCK_METHOD1(FillMatchingLoginsByPassword,
-               std::vector<std::unique_ptr<autofill::PasswordForm>>(
-                   const base::string16&));
+  MOCK_METHOD1(
+      FillMatchingLoginsByPassword,
+      std::vector<std::unique_ptr<PasswordForm>>(const base::string16&));
   MOCK_METHOD1(FillAutofillableLogins,
-               bool(std::vector<std::unique_ptr<autofill::PasswordForm>>*));
+               bool(std::vector<std::unique_ptr<PasswordForm>>*));
   MOCK_METHOD1(FillBlacklistLogins,
-               bool(std::vector<std::unique_ptr<autofill::PasswordForm>>*));
+               bool(std::vector<std::unique_ptr<PasswordForm>>*));
   MOCK_METHOD0(DeleteUndecryptableLogins, DatabaseCleanupResult());
   MOCK_METHOD1(NotifyLoginsChanged, void(const PasswordStoreChangeList&));
   MOCK_METHOD0(GetAllSiteStatsImpl, std::vector<InteractionsStats>());

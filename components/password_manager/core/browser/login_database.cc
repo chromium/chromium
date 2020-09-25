@@ -31,10 +31,10 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "components/autofill/core/common/password_form.h"
 #include "components/os_crypt/os_crypt.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/password_bubble_experiment.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
@@ -54,7 +54,6 @@
 #include "url/url_constants.h"
 
 using autofill::GaiaIdHash;
-using autofill::PasswordForm;
 
 namespace password_manager {
 
@@ -1560,7 +1559,7 @@ bool LoginDatabase::GetLogins(
 
 bool LoginDatabase::GetLoginsByPassword(
     const base::string16& plain_text_password,
-    std::vector<std::unique_ptr<autofill::PasswordForm>>* forms) {
+    std::vector<std::unique_ptr<PasswordForm>>* forms) {
   TRACE_EVENT0("passwords", "LoginDatabase::GetLoginsByPassword");
   DCHECK(forms);
   forms->clear();

@@ -19,7 +19,6 @@
 
 using autofill::FormData;
 using autofill::FormFieldData;
-using autofill::PasswordForm;
 using base::ASCIIToUTF16;
 using testing::_;
 using testing::NiceMock;
@@ -166,13 +165,13 @@ class MultiStorePasswordSaveManagerTest : public testing::Test {
   }
 
   void SetNonFederatedAndNotifyFetchCompleted(
-      const std::vector<const autofill::PasswordForm*>& non_federated) {
+      const std::vector<const PasswordForm*>& non_federated) {
     fetcher_->SetNonFederated(non_federated);
     fetcher_->NotifyFetchCompleted();
   }
 
   void SetFederatedAndNotifyFetchCompleted(
-      const std::vector<const autofill::PasswordForm*>& federated) {
+      const std::vector<const PasswordForm*>& federated) {
     fetcher_->set_federated(federated);
     fetcher_->NotifyFetchCompleted();
   }
@@ -183,16 +182,16 @@ class MultiStorePasswordSaveManagerTest : public testing::Test {
         .WillByDefault(Return(is_enabled));
   }
 
-  void SetDefaultPasswordStore(const autofill::PasswordForm::Store& store) {
+  void SetDefaultPasswordStore(const PasswordForm::Store& store) {
     ON_CALL(*client()->GetPasswordFeatureManager(), GetDefaultPasswordStore())
         .WillByDefault(Return(store));
   }
 
   PasswordForm CreateSavedFederated() {
-    autofill::PasswordForm federated;
+    PasswordForm federated;
     federated.url = GURL("https://example.in/login");
     federated.signon_realm = "federation://example.in/google.com";
-    federated.type = autofill::PasswordForm::Type::kApi;
+    federated.type = PasswordForm::Type::kApi;
     federated.federation_origin =
         url::Origin::Create(GURL("https://google.com/"));
     federated.username_value = ASCIIToUTF16("federated_username");

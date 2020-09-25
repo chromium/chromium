@@ -19,18 +19,15 @@ class MockPasswordFormManagerForUI : public PasswordFormManagerForUI {
   ~MockPasswordFormManagerForUI() override;
 
   MOCK_METHOD(const GURL&, GetURL, (), (const override));
-  MOCK_METHOD(const std::vector<const autofill::PasswordForm*>&,
+  MOCK_METHOD(const std::vector<const PasswordForm*>&,
               GetBestMatches,
               (),
               (const override));
-  MOCK_METHOD(std::vector<const autofill::PasswordForm*>,
+  MOCK_METHOD(std::vector<const PasswordForm*>,
               GetFederatedMatches,
               (),
               (const override));
-  MOCK_METHOD(const autofill::PasswordForm&,
-              GetPendingCredentials,
-              (),
-              (const override));
+  MOCK_METHOD(const PasswordForm&, GetPendingCredentials, (), (const override));
   MOCK_METHOD(metrics_util::CredentialSourceType,
               GetCredentialSource,
               (),
@@ -48,7 +45,7 @@ class MockPasswordFormManagerForUI : public PasswordFormManagerForUI {
   MOCK_METHOD(bool, WasUnblacklisted, (), (const override));
   MOCK_METHOD(bool, IsMovableToAccountStore, (), (const override));
   MOCK_METHOD(void, Save, (), (override));
-  MOCK_METHOD(void, Update, (const autofill::PasswordForm&), (override));
+  MOCK_METHOD(void, Update, (const PasswordForm&), (override));
   MOCK_METHOD(void,
               OnUpdateUsernameFromPrompt,
               (const base::string16&),

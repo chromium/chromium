@@ -12,13 +12,12 @@
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
-#include "components/autofill/core/common/password_form.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 
 using base::ScopedCFTypeRef;
 using base::UTF16ToUTF8;
-using autofill::PasswordForm;
 
 namespace password_manager {
 

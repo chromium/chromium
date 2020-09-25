@@ -41,27 +41,25 @@ class MultiStorePasswordSaveManager : public PasswordSaveManagerImpl {
 
  protected:
   void SavePendingToStoreImpl(
-      const autofill::PasswordForm& parsed_submitted_form) override;
-  std::pair<const autofill::PasswordForm*, PendingCredentialsState>
+      const PasswordForm& parsed_submitted_form) override;
+  std::pair<const PasswordForm*, PendingCredentialsState>
   FindSimilarSavedFormAndComputeState(
-      const autofill::PasswordForm& parsed_submitted_form) const override;
+      const PasswordForm& parsed_submitted_form) const override;
   FormSaver* GetFormSaverForGeneration() override;
-  std::vector<const autofill::PasswordForm*> GetRelevantMatchesForGeneration(
-      const std::vector<const autofill::PasswordForm*>& matches) override;
+  std::vector<const PasswordForm*> GetRelevantMatchesForGeneration(
+      const std::vector<const PasswordForm*>& matches) override;
 
  private:
   struct PendingCredentialsStates {
     PendingCredentialsState profile_store_state = PendingCredentialsState::NONE;
     PendingCredentialsState account_store_state = PendingCredentialsState::NONE;
 
-    const autofill::PasswordForm* similar_saved_form_from_profile_store =
-        nullptr;
-    const autofill::PasswordForm* similar_saved_form_from_account_store =
-        nullptr;
+    const PasswordForm* similar_saved_form_from_profile_store = nullptr;
+    const PasswordForm* similar_saved_form_from_account_store = nullptr;
   };
   static PendingCredentialsStates ComputePendingCredentialsStates(
-      const autofill::PasswordForm& parsed_submitted_form,
-      const std::vector<const autofill::PasswordForm*>& matches);
+      const PasswordForm& parsed_submitted_form,
+      const std::vector<const PasswordForm*>& matches);
 
   bool IsOptedInForAccountStorage() const;
   bool AccountStoreIsDefault() const;
