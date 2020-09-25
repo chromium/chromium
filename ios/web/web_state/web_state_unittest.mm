@@ -299,6 +299,51 @@ TEST_F(WebStateTest, CreateFullPagePdf_InvalidURLs) {
   }
 }
 
+// Tests that CreateFullPagePdf invokes completion callback nil when the
+// WebState content is not HTML (e.g. a PDF file).
+TEST_F(WebStateTest, CreateFullPagePdfWebStatePdfContent) {
+  CGRect fake_bounds = CGRectMake(0, 0, 100, 100);
+  UIGraphicsPDFRenderer* pdf_renderer =
+      [[UIGraphicsPDFRenderer alloc] initWithBounds:fake_bounds];
+  NSData* pdf_data = [pdf_renderer
+      PDFDataWithActions:^(UIGraphicsPDFRendererContext* context) {
+        [context beginPage];
+        [[UIColor blueColor] setFill];
+        [context fillRect:fake_bounds];
+      }];
+
+  GURL test_url("https://www.chromium.org/somePDF.pdf");
+  NavigationManager::WebLoadParams load_params(test_url);
+  web_state()->GetNavigationManager()->LoadURLWithParams(load_params);
+  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForPageLoadTimeout, ^bool {
+        return web_state()->GetLastCommittedURL() == test_url &&
+               !web_state()->IsLoading();
+      }));
+
+  std::string mime_type = "application/pdf";
+  web_state()->LoadData(
+      pdf_data, [NSString stringWithUTF8String:mime_type.c_str()], test_url);
+
+  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForPageLoadTimeout, ^bool {
+        return !web_state()->IsLoading();
+      }));
+
+  __block NSData* callback_data = nil;
+  __block bool callback_called = false;
+  web_state()->CreateFullPagePdf(base::BindOnce(^(NSData* pdf_document_data) {
+    callback_data = [pdf_document_data copy];
+    callback_called = true;
+  }));
+
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^bool {
+    return callback_called;
+  }));
+
+  ASSERT_FALSE(callback_data);
+}
+
 // Tests that message sent from main frame triggers the ScriptCommandCallback
 // with |is_main_frame| = true.
 TEST_F(WebStateTest, MessageFromMainFrame) {
