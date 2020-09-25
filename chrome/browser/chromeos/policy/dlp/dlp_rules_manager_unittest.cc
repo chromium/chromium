@@ -7,7 +7,6 @@
 #include <string>
 
 #include "base/values.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_test_utils.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/policy/core/common/policy_pref_names.h"
@@ -20,10 +19,61 @@ namespace policy {
 
 namespace {
 
+constexpr char kName[] = "name";
+constexpr char kDescription[] = "description";
+constexpr char kSources[] = "sources";
+constexpr char kUrls[] = "urls";
+constexpr char kDestinations[] = "destinations";
+constexpr char kComponents[] = "components";
+constexpr char kRestrictions[] = "restrictions";
+constexpr char kClass[] = "class";
+constexpr char kLevel[] = "level";
+
 constexpr char kUrlStr1[] = "https://wwww.example.com";
 constexpr char kUrlStr2[] = "https://wwww.google.com";
 constexpr char kUrlStr3[] = "*";
 constexpr char kUrlStr4[] = "https://www.gmail.com";
+
+base::Value CreateSources(base::Value urls) {
+  base::Value srcs(base::Value::Type::DICTIONARY);
+  srcs.SetKey(kUrls, std::move(urls));
+  return srcs;
+}
+
+base::Value CreateDestinations(base::Value urls, base::Value components) {
+  base::Value dsts(base::Value::Type::DICTIONARY);
+  dsts.SetKey(kUrls, std::move(urls));
+  dsts.SetKey(kComponents, std::move(components));
+  return dsts;
+}
+
+base::Value CreateRestrictionWithLevel(const std::string& restriction,
+                                       const std::string& level) {
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetStringKey(kClass, restriction);
+  dict.SetStringKey(kLevel, level);
+  return dict;
+}
+
+base::Value CreateRule(const std::string& name,
+                       const std::string& desc,
+                       base::Value src_urls,
+                       base::Value dst_urls,
+                       base::Value dst_components,
+                       base::Value restrictions) {
+  base::Value rule(base::Value::Type::DICTIONARY);
+  rule.SetStringKey(kName, name);
+  rule.SetStringKey(kDescription, desc);
+  DCHECK(src_urls.is_list());
+  rule.SetKey(kSources, CreateSources(std::move(src_urls)));
+  DCHECK(dst_urls.is_list());
+  DCHECK(dst_components.is_list());
+  rule.SetKey(kDestinations, CreateDestinations(std::move(dst_urls),
+                                                std::move(dst_components)));
+  DCHECK(restrictions.is_list());
+  rule.SetKey(kRestrictions, std::move(restrictions));
+  return rule;
+}
 
 }  // namespace
 
@@ -76,12 +126,12 @@ TEST_F(DlpRulesManagerTest, IsRestricted_LevelPrecedence) {
   dst_urls_1.Append(kUrlStr3);
 
   base::Value restrictions_1(base::Value::Type::LIST);
-  restrictions_1.Append(dlp_test_util::CreateRestrictionWithLevel(
-      dlp::kClipboardRestriction, dlp::kBlockLevel));
-  restrictions_1.Append(dlp_test_util::CreateRestrictionWithLevel(
-      dlp::kScreenshotRestriction, dlp::kBlockLevel));
+  restrictions_1.Append(
+      CreateRestrictionWithLevel(dlp::kClipboardRestriction, dlp::kBlockLevel));
+  restrictions_1.Append(CreateRestrictionWithLevel(dlp::kScreenshotRestriction,
+                                                   dlp::kBlockLevel));
 
-  rules.Append(dlp_test_util::CreateRule(
+  rules.Append(CreateRule(
       "rule #1", "Block", std::move(src_urls_1), std::move(dst_urls_1),
       base::Value(base::Value::Type::LIST), std::move(restrictions_1)));
 
@@ -93,13 +143,13 @@ TEST_F(DlpRulesManagerTest, IsRestricted_LevelPrecedence) {
   dst_urls_2.Append(kUrlStr2);
 
   base::Value restrictions_2(base::Value::Type::LIST);
-  restrictions_2.Append(dlp_test_util::CreateRestrictionWithLevel(
-      dlp::kClipboardRestriction, dlp::kAllowLevel));
+  restrictions_2.Append(
+      CreateRestrictionWithLevel(dlp::kClipboardRestriction, dlp::kAllowLevel));
 
-  rules.Append(dlp_test_util::CreateRule(
-      "rule #2", "exceptional allow", std::move(src_urls_2),
-      std::move(dst_urls_2), base::Value(base::Value::Type::LIST),
-      std::move(restrictions_2)));
+  rules.Append(CreateRule("rule #2", "exceptional allow", std::move(src_urls_2),
+                          std::move(dst_urls_2),
+                          base::Value(base::Value::Type::LIST),
+                          std::move(restrictions_2)));
   UpdatePolicyPref(std::move(rules));
 
   EXPECT_EQ(DlpRulesManager::Level::kAllow,
@@ -142,13 +192,13 @@ TEST_F(DlpRulesManagerTest, UpdatePref) {
   src_urls_1.Append(kUrlStr1);
 
   base::Value restrictions_1(base::Value::Type::LIST);
-  restrictions_1.Append(dlp_test_util::CreateRestrictionWithLevel(
-      dlp::kScreenshotRestriction, dlp::kBlockLevel));
+  restrictions_1.Append(CreateRestrictionWithLevel(dlp::kScreenshotRestriction,
+                                                   dlp::kBlockLevel));
 
-  rules_1.Append(dlp_test_util::CreateRule(
-      "rule #1", "Block", std::move(src_urls_1),
-      base::Value(base::Value::Type::LIST),
-      base::Value(base::Value::Type::LIST), std::move(restrictions_1)));
+  rules_1.Append(CreateRule("rule #1", "Block", std::move(src_urls_1),
+                            base::Value(base::Value::Type::LIST),
+                            base::Value(base::Value::Type::LIST),
+                            std::move(restrictions_1)));
   UpdatePolicyPref(std::move(rules_1));
 
   EXPECT_EQ(DlpRulesManager::Level::kBlock,
@@ -162,10 +212,10 @@ TEST_F(DlpRulesManagerTest, UpdatePref) {
   src_urls_2.Append(kUrlStr2);
 
   base::Value restrictions_2(base::Value::Type::LIST);
-  restrictions_2.Append(dlp_test_util::CreateRestrictionWithLevel(
-      dlp::kScreenshotRestriction, dlp::kBlockLevel));
+  restrictions_2.Append(CreateRestrictionWithLevel(dlp::kScreenshotRestriction,
+                                                   dlp::kBlockLevel));
 
-  rules_2.Append(dlp_test_util::CreateRule(
+  rules_2.Append(CreateRule(
       "rule #2", "exceptional allow", std::move(src_urls_2),
       base::Value(base::Value::Type::LIST),
       base::Value(base::Value::Type::LIST), std::move(restrictions_2)));
@@ -189,13 +239,12 @@ TEST_F(DlpRulesManagerTest, IsRestrictedComponent_Clipboard) {
   dst_components.Append("ARC");
 
   base::Value restrictions(base::Value::Type::LIST);
-  restrictions.Append(dlp_test_util::CreateRestrictionWithLevel(
-      dlp::kClipboardRestriction, dlp::kBlockLevel));
+  restrictions.Append(
+      CreateRestrictionWithLevel(dlp::kClipboardRestriction, dlp::kBlockLevel));
 
-  rules.Append(dlp_test_util::CreateRule(
-      "rule #1", "Block", std::move(src_urls),
-      base::Value(base::Value::Type::LIST), std::move(dst_components),
-      std::move(restrictions)));
+  rules.Append(CreateRule("rule #1", "Block", std::move(src_urls),
+                          base::Value(base::Value::Type::LIST),
+                          std::move(dst_components), std::move(restrictions)));
   UpdatePolicyPref(std::move(rules));
 
   EXPECT_EQ(DlpRulesManager::Level::kBlock,
@@ -219,10 +268,10 @@ TEST_F(DlpRulesManagerTest, SameSrcDst_Clipboard) {
   dst_urls.Append(kUrlStr3);
 
   base::Value restrictions(base::Value::Type::LIST);
-  restrictions.Append(dlp_test_util::CreateRestrictionWithLevel(
-      dlp::kClipboardRestriction, dlp::kBlockLevel));
+  restrictions.Append(
+      CreateRestrictionWithLevel(dlp::kClipboardRestriction, dlp::kBlockLevel));
 
-  rules.Append(dlp_test_util::CreateRule(
+  rules.Append(CreateRule(
       "rule #1", "Block", std::move(src_urls), std::move(dst_urls),
       base::Value(base::Value::Type::LIST), std::move(restrictions)));
 
@@ -245,10 +294,10 @@ TEST_F(DlpRulesManagerTest, EmptyUrl_Clipboard) {
   dst_urls_1.Append(kUrlStr3);
 
   base::Value restrictions_1(base::Value::Type::LIST);
-  restrictions_1.Append(dlp_test_util::CreateRestrictionWithLevel(
-      dlp::kClipboardRestriction, dlp::kBlockLevel));
+  restrictions_1.Append(
+      CreateRestrictionWithLevel(dlp::kClipboardRestriction, dlp::kBlockLevel));
 
-  rules.Append(dlp_test_util::CreateRule(
+  rules.Append(CreateRule(
       "rule #1", "Block *", std::move(src_urls_1), std::move(dst_urls_1),
       base::Value(base::Value::Type::LIST), std::move(restrictions_1)));
 
@@ -260,10 +309,10 @@ TEST_F(DlpRulesManagerTest, EmptyUrl_Clipboard) {
   dst_urls_2.Append(kUrlStr2);
 
   base::Value restrictions_2(base::Value::Type::LIST);
-  restrictions_2.Append(dlp_test_util::CreateRestrictionWithLevel(
-      dlp::kClipboardRestriction, dlp::kBlockLevel));
+  restrictions_2.Append(
+      CreateRestrictionWithLevel(dlp::kClipboardRestriction, dlp::kBlockLevel));
 
-  rules.Append(dlp_test_util::CreateRule(
+  rules.Append(CreateRule(
       "rule #2", "Block", std::move(src_urls_2), std::move(dst_urls_2),
       base::Value(base::Value::Type::LIST), std::move(restrictions_2)));
 

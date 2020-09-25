@@ -23247,7 +23247,7 @@ If you disable this policy, web page scrolling to specific text fragments via UR
     {
       'name': 'DataLeakPreventionRulesList',
       'owners': ['file://chrome/browser/chromeos/policy/dlp/OWNERS'],
-      'type': 'dict',
+      'type': 'list',
       'schema': {
         'type': 'array',
         'items': {
