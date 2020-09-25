@@ -26,6 +26,7 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+import mock
 import unittest
 
 from blinkpy.common.host_mock import MockHost
@@ -64,7 +65,7 @@ def run_results(port, extra_skipped_tests=None):
         for test in extra_skipped_tests:
             extra_expectations += '\n%s [ Skip ]' % test
         expectations.merge_raw_expectations(extra_expectations)
-    return test_run_results.TestRunResults(expectations, len(tests))
+    return test_run_results.TestRunResults(expectations, len(tests), None)
 
 
 def summarized_results(port,
@@ -205,6 +206,25 @@ def summarized_results(port,
         initial_results,
         all_retry_results,
         only_include_failing=only_include_failing)
+
+
+class RunResultsWithSinkTest(unittest.TestCase):
+    def setUp(self):
+        expectations = test_expectations.TestExpectations(
+            MockHost().port_factory.get(port_name='test'))
+        self.results = test_run_results.TestRunResults(expectations, 1, None)
+        self.test = get_result('failures/expected/text.html',
+                               ResultType.Timeout,
+                               run_time=1)
+
+    def testAddWithSink(self):
+        self.results.result_sink = mock.Mock()
+        self.results.add(self.test, False, False)
+        self.results.result_sink.sink.assert_called_with(False, self.test)
+
+    def testAddWithoutSink(self):
+        self.results.result_sink = None
+        self.results.add(self.test, False, False)
 
 
 class InterpretTestFailuresTest(unittest.TestCase):
@@ -392,14 +412,15 @@ class SummarizedResultsTest(unittest.TestCase):
     def test_timeout_then_unexpected_pass(self):
         test_name = 'failures/expected/text.html'
         expectations = test_expectations.TestExpectations(self.port)
-        initial_results = test_run_results.TestRunResults(expectations, 1)
+        initial_results = test_run_results.TestRunResults(
+            expectations, 1, None)
         initial_results.add(
             get_result(test_name, ResultType.Timeout, run_time=1), False,
             False)
         all_retry_results = [
-            test_run_results.TestRunResults(expectations, 1),
-            test_run_results.TestRunResults(expectations, 1),
-            test_run_results.TestRunResults(expectations, 1)
+            test_run_results.TestRunResults(expectations, 1, None),
+            test_run_results.TestRunResults(expectations, 1, None),
+            test_run_results.TestRunResults(expectations, 1, None)
         ]
         all_retry_results[0].add(
             get_result(test_name, ResultType.Failure, run_time=0.1), False,
@@ -480,13 +501,14 @@ class SummarizedResultsTest(unittest.TestCase):
     def test_summarized_results_flaky_pass_after_first_retry(self):
         test_name = 'passes/text.html'
         expectations = test_expectations.TestExpectations(self.port)
-        initial_results = test_run_results.TestRunResults(expectations, 1)
+        initial_results = test_run_results.TestRunResults(
+            expectations, 1, None)
         initial_results.add(
             get_result(test_name, ResultType.Crash), False, False)
         all_retry_results = [
-            test_run_results.TestRunResults(expectations, 1),
-            test_run_results.TestRunResults(expectations, 1),
-            test_run_results.TestRunResults(expectations, 1)
+            test_run_results.TestRunResults(expectations, 1, None),
+            test_run_results.TestRunResults(expectations, 1, None),
+            test_run_results.TestRunResults(expectations, 1, None)
         ]
         all_retry_results[0].add(
             get_result(test_name, ResultType.Timeout), False, False)
@@ -509,14 +531,17 @@ class SummarizedResultsTest(unittest.TestCase):
     def test_summarized_results_with_iterations(self):
         test_name = 'passes/text.html'
         expectations = test_expectations.TestExpectations(self.port)
-        initial_results = test_run_results.TestRunResults(expectations, 3)
+        initial_results = test_run_results.TestRunResults(
+            expectations, 3, None)
         initial_results.add(
             get_result(test_name, ResultType.Crash), False, False)
         initial_results.add(
             get_result(test_name, ResultType.Failure), False, False)
         initial_results.add(
             get_result(test_name, ResultType.Timeout), False, False)
-        all_retry_results = [test_run_results.TestRunResults(expectations, 2)]
+        all_retry_results = [
+            test_run_results.TestRunResults(expectations, 2, None)
+        ]
         all_retry_results[0].add(
             get_result(test_name, ResultType.Failure), False, False)
         all_retry_results[0].add(

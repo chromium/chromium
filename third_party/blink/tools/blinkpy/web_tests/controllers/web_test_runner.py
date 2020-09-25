@@ -91,7 +91,9 @@ class WebTestRunner(object):
 
         test_run_results = TestRunResults(
             self._expectations,
-            len(test_inputs) + len(tests_to_skip))
+            len(test_inputs) + len(tests_to_skip),
+            self._test_result_sink,
+        )
         self._current_run_results = test_run_results
         self._printer.num_tests = len(test_inputs)
         self._printer.num_completed = 0
@@ -225,8 +227,6 @@ class WebTestRunner(object):
             result.test_name, result.type)
         expectation_string = ' '.join(
             self._expectations.get_expectations(result.test_name).results)
-        if self._test_result_sink:
-            self._test_result_sink.sink(expected, result)
 
         if result.device_failed:
             self._printer.print_finished_test(self._port, result, False,

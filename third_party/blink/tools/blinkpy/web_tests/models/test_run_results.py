@@ -45,10 +45,11 @@ class TestRunException(Exception):
 
 
 class TestRunResults(object):
-    def __init__(self, expectations, num_tests):
+    def __init__(self, expectations, num_tests, result_sink):
         self.total = num_tests
         self.remaining = self.total
         self.expectations = expectations
+        self.result_sink = result_sink
 
         # Various counters:
         self.expected = 0
@@ -88,6 +89,8 @@ class TestRunResults(object):
         result_type_for_stats = test_result.type
         self.tests_by_expectation[result_type_for_stats].add(
             test_result.test_name)
+        if self.result_sink:
+            self.result_sink.sink(expected, test_result)
 
         self.results_by_name[test_result.test_name] = test_result
         if test_result.type != ResultType.Skip:
