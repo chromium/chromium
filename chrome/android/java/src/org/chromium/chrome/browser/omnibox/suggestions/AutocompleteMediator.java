@@ -25,7 +25,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
@@ -929,9 +928,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
      */
     private void loadUrlFromOmniboxMatch(int matchPosition, OmniboxSuggestion suggestion,
             long inputStart, boolean inVisibleSuggestionList) {
-        final long activationTime = System.currentTimeMillis();
-        RecordHistogram.recordMediumTimesHistogram(
-                "Omnibox.FocusToOpenTimeAnyPopupState3", activationTime - mUrlFocusTime);
+        SuggestionsMetrics.recordFocusToOpenTime(System.currentTimeMillis() - mUrlFocusTime);
 
         mOmniboxFocusResultedInNavigation = true;
         GURL url = updateSuggestionUrlIfNeeded(suggestion, matchPosition, !inVisibleSuggestionList);
@@ -1184,6 +1181,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
      */
     @SuppressWarnings("VisibleForTests")
     private void launchSearchUrlForQueryTileSuggestion(QueryTile queryTile) {
+        SuggestionsMetrics.recordFocusToOpenTime(System.currentTimeMillis() - mUrlFocusTime);
         int position = -1;
         int suggestionCount = getSuggestionCount();
         OmniboxSuggestion suggestion = null;

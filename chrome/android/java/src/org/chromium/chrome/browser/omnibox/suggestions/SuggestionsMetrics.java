@@ -103,4 +103,12 @@ class SuggestionsMetrics {
         RecordHistogram.recordBooleanHistogram(
                 "Omnibox.FocusResultedInNavigation", focusResultedInNavigation);
     }
+
+    /**
+     * Record the length of time between when omnibox gets focused and when a omnibox match is open.
+     */
+    static final void recordFocusToOpenTime(long focusToOpenTimeInMillis) {
+        RecordHistogram.recordMediumTimesHistogram(
+                "Omnibox.FocusToOpenTimeAnyPopupState3", focusToOpenTimeInMillis);
+    }
 }
