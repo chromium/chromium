@@ -8,24 +8,15 @@
 #include <memory>
 
 #include "ash/ash_export.h"
-#include "ash/system/holding_space/holding_space_item_view_delegate.h"
+#include "ash/system/holding_space/holding_space_tray_bubble.h"
 #include "ash/system/tray/tray_background_view.h"
 #include "base/memory/weak_ptr.h"
-
-namespace gfx {
-class Point;
-}
 
 namespace views {
 class ImageView;
 }
 
 namespace ash {
-
-class PinnedFilesContainer;
-class RecentFilesContainer;
-class TrayBubbleWrapper;
-
 // The HoldingSpaceTray shows the tray button in the bottom area of the screen.
 // This class also controls the lifetime for all of the tools available in the
 // palette. HoldingSpaceTray has one instance per-display.
@@ -35,10 +26,6 @@ class ASH_EXPORT HoldingSpaceTray : public TrayBackgroundView {
   HoldingSpaceTray(const HoldingSpaceTray& other) = delete;
   HoldingSpaceTray& operator=(const HoldingSpaceTray& other) = delete;
   ~HoldingSpaceTray() override;
-
-  // Returns true if the tray contains the given point. This is useful
-  // for determining if an event should be propagated through to the palette.
-  bool ContainsPointInScreen(const gfx::Point& point);
 
   // TrayBackgroundView:
   void ClickedOutsideBubble() override;
@@ -50,7 +37,6 @@ class ASH_EXPORT HoldingSpaceTray : public TrayBackgroundView {
   bool PerformAction(const ui::Event& event) override;
   void CloseBubble() override;
   void ShowBubble(bool show_by_click) override;
-  TrayBubbleView* GetBubbleView() override;
   const char* GetClassName() const override;
 
  private:
@@ -59,14 +45,7 @@ class ASH_EXPORT HoldingSpaceTray : public TrayBackgroundView {
   bool ShouldEnableExtraKeyboardAccessibility() override;
   void HideBubble(const TrayBubbleView* bubble_view) override;
 
-  // The singleton delegate for `HoldingSpaceItemView`s that implements support
-  // for context menu, drag-and-drop, and multiple selection.
-  HoldingSpaceItemViewDelegate delegate_;
-
-  std::unique_ptr<TrayBubbleWrapper> bubble_;
-
-  PinnedFilesContainer* pinned_files_container_ = nullptr;
-  RecentFilesContainer* recent_files_container_ = nullptr;
+  std::unique_ptr<HoldingSpaceTrayBubble> bubble_;
 
   // Weak pointer, will be parented by TrayContainer for its lifetime.
   views::ImageView* icon_ = nullptr;
