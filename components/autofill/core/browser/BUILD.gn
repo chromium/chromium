@@ -370,7 +370,6 @@ static_library("browser") {
   ]
   deps = [
     ":autofill_address_rewriter_resources",
-    "proto:legacy_proto_bridge",
     "//base",
     "//base:i18n",
     "//build:branding_buildflags",
@@ -647,7 +646,6 @@ source_set("unit_tests") {
     "payments/strike_database_integrator_test_strike_database_unittest.cc",
     "payments/strike_database_unittest.cc",
     "personal_data_manager_unittest.cc",
-    "proto/legacy_proto_bridge_unittest.cc",
     "randomized_encoder_unittest.cc",
     "rationalization_util_unittest.cc",
     "ui/address_combobox_model_unittest.cc",
@@ -706,7 +704,6 @@ source_set("unit_tests") {
     ":browser",
     ":test_support",
     ":unit_tests_bundle_data",
-    "proto:legacy_proto_bridge",
     "//base",
     "//base/test:test_support",
     "//components/autofill/core/common",
