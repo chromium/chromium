@@ -80,10 +80,8 @@
 <div id="no-results" hidden="[[filteredOpenTabs_.length]]">
   $i18n{noResultsFound}
 </div>
-<template is="dom-if" if="[[feedbackButtonEnabled_]]">
-  <button id="feedback-footer" class="mwb-list-item" on-click="onFeedbackClick_"
-      on-focus="onFeedbackFocus_">
-    <iron-icon id="feedback-icon" icon="ts:feedback"></iron-icon>
-    <div id="feedback-text">$i18n{submitFeedback}</div>
-  </button>
-</template>
+<button id="feedback-footer" class="mwb-list-item" on-click="onFeedbackClick_"
+    on-focus="onFeedbackFocus_">
+  <iron-icon id="feedback-icon" icon="ts:feedback"></iron-icon>
+  <div id="feedback-text">$i18n{submitFeedback}</div>
+</button>
