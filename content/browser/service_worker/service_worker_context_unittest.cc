@@ -560,7 +560,7 @@ TEST_F(ServiceWorkerContextTest, OnVersionRunningStatusChangedObserver) {
       base::BindOnce(&RegisteredCallback, run_loop.QuitClosure()));
   run_loop.Run();
 
-  context_wrapper()->StopAllServiceWorkersForOrigin(scope);
+  context_wrapper()->StopAllServiceWorkersForOrigin(url::Origin::Create(scope));
   base::RunLoop().RunUntilIdle();
 
   std::vector<TestServiceWorkerContextObserver::EventLog> events;

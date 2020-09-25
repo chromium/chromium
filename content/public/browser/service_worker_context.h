@@ -261,7 +261,7 @@ class CONTENT_EXPORT ServiceWorkerContext {
   // Stops all running workers on the given |origin|.
   //
   // This function can be called from any thread.
-  virtual void StopAllServiceWorkersForOrigin(const GURL& origin) = 0;
+  virtual void StopAllServiceWorkersForOrigin(const url::Origin& origin) = 0;
 
   // Stops all running service workers.
   //

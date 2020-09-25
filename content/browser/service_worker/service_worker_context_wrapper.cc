@@ -884,7 +884,7 @@ void ServiceWorkerContextWrapper::StartServiceWorkerForNavigationHint(
 }
 
 void ServiceWorkerContextWrapper::StopAllServiceWorkersForOrigin(
-    const GURL& origin) {
+    const url::Origin& origin) {
   if (!BrowserThread::CurrentlyOn(GetCoreThreadId())) {
     base::PostTask(
         FROM_HERE, {GetCoreThreadId()},
@@ -899,7 +899,7 @@ void ServiceWorkerContextWrapper::StopAllServiceWorkersForOrigin(
   std::vector<ServiceWorkerVersionInfo> live_versions = GetAllLiveVersionInfo();
   for (const ServiceWorkerVersionInfo& info : live_versions) {
     ServiceWorkerVersion* version = GetLiveVersion(info.version_id);
-    if (version && version->scope().GetOrigin() == origin)
+    if (version && version->origin() == origin)
       version->StopWorker(base::DoNothing());
   }
 }

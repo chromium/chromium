@@ -111,7 +111,7 @@ void FakeServiceWorkerContext::StartServiceWorkerAndDispatchMessage(
 }
 
 void FakeServiceWorkerContext::StopAllServiceWorkersForOrigin(
-    const GURL& origin) {
+    const url::Origin& origin) {
   stop_all_service_workers_for_origin_calls_.push_back(origin);
 }
 

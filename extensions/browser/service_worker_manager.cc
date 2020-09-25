@@ -27,7 +27,7 @@ void ServiceWorkerManager::OnExtensionUnloaded(
     UnloadedExtensionReason reason) {
   util::GetStoragePartitionForExtensionId(extension->id(), browser_context_)
       ->GetServiceWorkerContext()
-      ->StopAllServiceWorkersForOrigin(extension->url());
+      ->StopAllServiceWorkersForOrigin(extension->origin());
 }
 
 void ServiceWorkerManager::OnExtensionUninstalled(
@@ -40,8 +40,7 @@ void ServiceWorkerManager::OnExtensionUninstalled(
   // c) Check for any orphaned workers.
   util::GetStoragePartitionForExtensionId(extension->id(), browser_context_)
       ->GetServiceWorkerContext()
-      ->DeleteForOrigin(url::Origin::Create(extension->url()),
-                        base::DoNothing());
+      ->DeleteForOrigin(extension->origin(), base::DoNothing());
 }
 
 }  // namespace extensions

@@ -25,6 +25,7 @@
 #include "extensions/common/manifest.h"
 #include "extensions/common/url_pattern_set.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 #if !BUILDFLAG(ENABLE_EXTENSIONS)
 #error "Extensions must be enabled"
@@ -257,6 +258,7 @@ class Extension : public base::RefCountedThreadSafe<Extension> {
 
   const base::FilePath& path() const { return path_; }
   const GURL& url() const { return extension_url_; }
+  url::Origin origin() const { return url::Origin::Create(extension_url_); }
   Manifest::Location location() const;
   const ExtensionId& id() const;
   const HashedExtensionId& hashed_id() const;

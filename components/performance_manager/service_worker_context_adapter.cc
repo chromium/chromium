@@ -181,7 +181,7 @@ void ServiceWorkerContextAdapter::StartServiceWorkerForNavigationHint(
 }
 
 void ServiceWorkerContextAdapter::StopAllServiceWorkersForOrigin(
-    const GURL& origin) {
+    const url::Origin& origin) {
   NOTIMPLEMENTED();
 }
 

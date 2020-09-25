@@ -197,7 +197,7 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
   void StartServiceWorkerForNavigationHint(
       const GURL& document_url,
       StartServiceWorkerForNavigationHintCallback callback) override;
-  void StopAllServiceWorkersForOrigin(const GURL& origin) override;
+  void StopAllServiceWorkersForOrigin(const url::Origin& origin) override;
   void StopAllServiceWorkers(base::OnceClosure callback) override;
   const base::flat_map<int64_t, ServiceWorkerRunningInfo>&
   GetRunningServiceWorkerInfos() override;
