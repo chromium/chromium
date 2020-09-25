@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
+import android.accounts.Account;
 import android.view.View;
 
 import androidx.test.filters.MediumTest;
@@ -34,6 +35,7 @@ import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.signin.ProfileDataSource;
 import org.chromium.components.signin.test.util.FakeProfileDataSource;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.ui.test.util.UiDisableIf;
 
@@ -47,8 +49,10 @@ import org.chromium.ui.test.util.UiDisableIf;
 public class BookmarkPersonalizedPromoRenderTest {
     // FakeProfileDataSource is required to create the ProfileDataCache entry with sync_off badge
     // for Sync promo.
+    private final FakeProfileDataSource mFakeProfileDataSource = new FakeProfileDataSource();
+
     private final AccountManagerTestRule mAccountManagerTestRule =
-            new AccountManagerTestRule(new FakeProfileDataSource());
+            new AccountManagerTestRule(mFakeProfileDataSource);
 
     private final ChromeActivityTestRule<ChromeActivity> mActivityTestRule =
             new ChromeActivityTestRule<>(ChromeActivity.class);
@@ -78,9 +82,14 @@ public class BookmarkPersonalizedPromoRenderTest {
 
     @Before
     public void setUp() {
-        mAccountManagerTestRule.addAccount(new ProfileDataSource.ProfileData(
-                "test@gmail.com", null, "Full Name", "Given Name"));
+        // Native side needs to loaded before signing in test account.
         mActivityTestRule.startMainActivityOnBlankPage();
+        Account account = mAccountManagerTestRule.addAndSignInTestAccount();
+        TestThreadUtils.runOnUiThreadBlocking(
+                ()
+                        -> mFakeProfileDataSource.setProfileData(account.name,
+                                new ProfileDataSource.ProfileData(
+                                        account.name, null, "Full Name", "Given Name")));
     }
 
     @After
