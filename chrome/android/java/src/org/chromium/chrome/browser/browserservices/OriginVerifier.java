@@ -437,6 +437,11 @@ public class OriginVerifier {
             Log.d(TAG, "Adding: %s for %s", mPackageName, origin);
             VerificationResultStore.addRelationship(
                     new Relationship(mPackageName, mSignatureFingerprint, origin, mRelation));
+        } else {
+            Log.d(TAG,
+                    "Digital Asset Link verification failed for package %s with "
+                            + "fingerprint %s.",
+                    mPackageName, mSignatureFingerprint);
         }
 
         // We save the result even if there is a failure as a way of overwriting a previously
