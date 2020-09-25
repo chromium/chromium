@@ -167,7 +167,6 @@ void TestWebContents::TestDidNavigateWithSequenceNumber(
   params.redirects = std::vector<GURL>();
   params.should_update_history = true;
   params.contents_mime_type = std::string("text/html");
-  params.socket_address = net::HostPortPair();
   params.intended_as_new_entry = did_create_new_entry;
   params.did_create_new_entry = did_create_new_entry;
   params.should_replace_current_entry = false;

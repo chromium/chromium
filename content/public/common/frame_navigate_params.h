@@ -74,9 +74,6 @@ struct CONTENT_EXPORT FrameNavigateParams : public IPC::NoParams {
 
   // Contents MIME type of main frame.
   std::string contents_mime_type;
-
-  // Remote address of the socket which fetched this resource.
-  net::HostPortPair socket_address;
 };
 
 }  // namespace content

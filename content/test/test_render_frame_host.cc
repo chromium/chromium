@@ -207,8 +207,6 @@ void TestRenderFrameHost::SimulateNavigationCommit(const GURL& url) {
   params.contents_mime_type = "text/html";
   params.method = "GET";
   params.http_status_code = 200;
-  params.socket_address.set_host("2001:db8::1");
-  params.socket_address.set_port(80);
   params.history_list_was_cleared = simulate_history_list_was_cleared_;
   params.original_request_url = url;
 
@@ -593,8 +591,6 @@ TestRenderFrameHost::BuildDidCommitParams(int nav_entry_id,
   params->contents_mime_type = "text/html";
   params->method = "GET";
   params->http_status_code = response_code;
-  params->socket_address.set_host("2001:db8::1");
-  params->socket_address.set_port(80);
   params->history_list_was_cleared = simulate_history_list_was_cleared_;
   params->original_request_url = url;
 
