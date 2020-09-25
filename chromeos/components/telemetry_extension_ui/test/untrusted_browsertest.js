@@ -279,22 +279,6 @@ UNTRUSTED_TEST(
       assertDeepEquals(response2, {id: 123456789, status: 'ready'});
     });
 
-// Tests that TelemetryInfo throws an error if category is unknown.
-UNTRUSTED_TEST('UntrustedRequestTelemetryInfoUnknownCategory', async () => {
-  let caughtError = {};
-
-  try {
-    await chromeos.telemetry.probeTelemetryInfo(['unknown-category']);
-  } catch (error) {
-    caughtError = error;
-  }
-
-  assertEquals(caughtError.name, 'TypeError');
-  assertEquals(
-      caughtError.message,
-      'Telemetry category \'unknown-category\' is unknown.');
-});
-
 // Tests that runPrimeSearchRoutine throws the correct error when invalid enum
 // is passed as input.
 UNTRUSTED_TEST(
@@ -361,6 +345,22 @@ UNTRUSTED_TEST(
           await chromeos.diagnostics.runBatteryDischargeRoutine(12, 2);
       assertDeepEquals(response, {id: 123456789, status: 'ready'});
     });
+
+// Tests that TelemetryInfo throws an error if category is unknown.
+UNTRUSTED_TEST('UntrustedRequestTelemetryInfoUnknownCategory', async () => {
+  let caughtError = {};
+
+  try {
+    await chromeos.telemetry.probeTelemetryInfo(['unknown-category']);
+  } catch (error) {
+    caughtError = error;
+  }
+
+  assertEquals(caughtError.name, 'TypeError');
+  assertEquals(
+      caughtError.message,
+      'Telemetry category \'unknown-category\' is unknown.');
+});
 
 // Tests that TelemetryInfo can be successfully requested from
 // from chrome-untrusted://.
