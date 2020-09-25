@@ -3096,6 +3096,7 @@ test("base_unittests") {
       sources += [
         "cpu_affinity_posix_unittest.cc",
         "profiler/stack_copier_signal_unittest.cc",
+        "profiler/thread_delegate_posix_unittest.cc",
       ]
     }
   }

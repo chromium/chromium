@@ -73,8 +73,11 @@ std::vector<Frame> CaptureScenario(
       scenario,
       BindLambdaForTesting(
           [&](SamplingProfilerThreadToken target_thread_token) {
-            auto stack_copier = std::make_unique<StackCopierSignal>(
-                std::make_unique<ThreadDelegatePosix>(target_thread_token));
+            auto thread_delegate =
+                ThreadDelegatePosix::Create(target_thread_token);
+            ASSERT_TRUE(thread_delegate);
+            auto stack_copier =
+                std::make_unique<StackCopierSignal>(std::move(thread_delegate));
             std::unique_ptr<StackBuffer> stack_buffer =
                 StackSampler::CreateStackBuffer();
 

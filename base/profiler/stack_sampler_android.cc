@@ -21,9 +21,11 @@ std::unique_ptr<StackSampler> StackSampler::Create(
     UnwindersFactory core_unwinders_factory,
     RepeatingClosure record_sample_callback,
     StackSamplerTestDelegate* test_delegate) {
+  auto thread_delegate = ThreadDelegatePosix::Create(thread_token);
+  if (!thread_delegate)
+    return nullptr;
   return std::make_unique<StackSamplerImpl>(
-      std::make_unique<StackCopierSignal>(
-          std::make_unique<ThreadDelegatePosix>(thread_token)),
+      std::make_unique<StackCopierSignal>(std::move(thread_delegate)),
       std::move(core_unwinders_factory), module_cache,
       std::move(record_sample_callback), test_delegate);
 }

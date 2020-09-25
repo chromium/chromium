@@ -2,17 +2,43 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <inttypes.h>
 #include <pthread.h>
+#include <stdio.h>
 
+#include "base/memory/ptr_util.h"
+#include "base/optional.h"
 #include "base/process/process_handle.h"
 #include "base/profiler/thread_delegate_posix.h"
 #include "base/stl_util.h"
-
 #include "build/build_config.h"
+
+#if defined(OS_ANDROID)
+#include "base/files/file_util.h"
+#include "base/files/scoped_file.h"
+#endif
 
 namespace base {
 
 namespace {
+
+#if defined(OS_ANDROID)
+base::Optional<uintptr_t> GetAndroidMainThreadStackBaseAddressImpl() {
+  char line[1024];
+  base::ScopedFILE fp(base::OpenFile(base::FilePath("/proc/self/maps"), "r"));
+  uintptr_t stack_addr = reinterpret_cast<uintptr_t>(line);
+  if (!fp)
+    return base::nullopt;
+  while (fgets(line, sizeof(line), fp.get()) != nullptr) {
+    uintptr_t start, end;
+    if (sscanf(line, "%" SCNxPTR "-%" SCNxPTR, &start, &end) == 2) {
+      if (start <= stack_addr && stack_addr < end)
+        return end;
+    }
+  }
+  return base::nullopt;
+}
+#endif
 
 uintptr_t GetThreadStackBaseAddressImpl(
     SamplingProfilerThreadToken thread_token) {
@@ -27,15 +53,18 @@ uintptr_t GetThreadStackBaseAddressImpl(
   return base_address;
 }
 
-uintptr_t GetThreadStackBaseAddress(SamplingProfilerThreadToken thread_token) {
+base::Optional<uintptr_t> GetThreadStackBaseAddress(
+    SamplingProfilerThreadToken thread_token) {
 #if defined(OS_ANDROID)
-  // Caches the main thread base address on Android since Bionic has to read
-  // /proc/$PID/maps to obtain it. Other thread base addresses are sourced from
-  // pthread state so are cheap to get.
+  // The implementation of pthread_getattr_np() in Bionic reads proc/self/maps
+  // to find the main thread base address, and throws SIGABRT when it fails to
+  // read or parse the file. So, try to read the maps to get the main thread
+  // stack base and cache the result. Other thread base addresses are sourced
+  // from pthread state so are cheap to get.
   const bool is_main_thread = thread_token.id == GetCurrentProcId();
   if (is_main_thread) {
-    static const uintptr_t main_thread_base_address =
-        GetThreadStackBaseAddressImpl(thread_token);
+    static const base::Optional<uintptr_t> main_thread_base_address =
+        GetAndroidMainThreadStackBaseAddressImpl();
     return main_thread_base_address;
   }
 #endif
@@ -44,10 +73,18 @@ uintptr_t GetThreadStackBaseAddress(SamplingProfilerThreadToken thread_token) {
 
 }  // namespace
 
-ThreadDelegatePosix::ThreadDelegatePosix(
-    SamplingProfilerThreadToken thread_token)
-    : thread_id_(thread_token.id),
-      thread_stack_base_address_(GetThreadStackBaseAddress(thread_token)) {}
+// static
+std::unique_ptr<ThreadDelegatePosix> ThreadDelegatePosix::Create(
+    SamplingProfilerThreadToken thread_token) {
+  base::Optional<uintptr_t> base_address =
+      GetThreadStackBaseAddress(thread_token);
+  if (!base_address)
+    return nullptr;
+  return base::WrapUnique(
+      new ThreadDelegatePosix(thread_token.id, *base_address));
+}
+
+ThreadDelegatePosix::~ThreadDelegatePosix() = default;
 
 PlatformThreadId ThreadDelegatePosix::GetThreadId() const {
   return thread_id_;
@@ -116,5 +153,9 @@ std::vector<uintptr_t*> ThreadDelegatePosix::GetRegistersToRewrite(
   return {};
 #endif
 }
+
+ThreadDelegatePosix::ThreadDelegatePosix(PlatformThreadId id,
+                                         uintptr_t base_address)
+    : thread_id_(id), thread_stack_base_address_(base_address) {}
 
 }  // namespace base
