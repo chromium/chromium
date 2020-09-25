@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {TabSearchAppElement} from 'chrome://tab-search/app.js';
@@ -25,6 +26,7 @@ suite('TabSearchAppFocusTest', () => {
     testProxy.setProfileTabs(sampleData());
     TabSearchApiProxyImpl.instance_ = testProxy;
 
+    loadTimeData.overrideValues({'submitFeedbackEnabled': true});
     tabSearchApp = /** @type {!TabSearchAppElement} */
         (document.createElement('tab-search-app'));
 

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {TabSearchAppElement} from 'chrome://tab-search/app.js';
 import {TabSearchApiProxy, TabSearchApiProxyImpl} from 'chrome://tab-search/tab_search_api_proxy.js'
@@ -37,10 +38,18 @@ suite('TabSearchAppTest', () => {
     return tabSearchApp.shadowRoot.querySelectorAll('tab-search-item');
   }
 
-  async function setupTest(sampleData) {
+  /**
+   * @param {tabSearch.mojom.ProfileTabs} sampleData
+   * @param {Object=} loadTimeOverridenData
+   */
+  async function setupTest(sampleData, loadTimeOverridenData) {
     testProxy = new TestTabSearchApiProxy();
     testProxy.setProfileTabs(sampleData);
     TabSearchApiProxyImpl.instance_ = testProxy;
+
+    if (loadTimeOverridenData) {
+      loadTimeData.overrideValues(loadTimeOverridenData);
+    }
 
     tabSearchApp = /** @type {!TabSearchAppElement} */
         (document.createElement('tab-search-app'));
@@ -319,8 +328,14 @@ suite('TabSearchAppTest', () => {
     assertEquals(1, testProxy.getCallCount('showUI'));
   });
 
-  test('Click on Sumit Feedback footer triggers action', async () => {
+  test('Submit feeedback footer disabled by default', async () => {
     await setupTest(sampleData());
+    assertTrue(
+        tabSearchApp.shadowRoot.querySelector('#feedback-footer') === null);
+  });
+
+  test('Click on Sumit Feedback footer triggers action', async () => {
+    await setupTest(sampleData(), {'submitFeedbackEnabled': true});
 
     const feedbackButton = /** @type {!HTMLButtonElement} */
         (tabSearchApp.shadowRoot.querySelector('#feedback-footer'));
@@ -357,7 +372,7 @@ suite('TabSearchAppTest', () => {
   });
 
   test('Escape key triggers close UI API', async () => {
-    await setupTest(sampleData());
+    await setupTest(sampleData(), {'submitFeedbackEnabled': true});
 
     const elements = [
       tabSearchApp.shadowRoot.querySelector('#searchField'),
