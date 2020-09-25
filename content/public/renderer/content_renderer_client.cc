@@ -205,14 +205,6 @@ bool ContentRendererClient::AllowScriptExtensionForServiceWorker(
   return false;
 }
 
-BrowserPluginDelegate* ContentRendererClient::CreateBrowserPluginDelegate(
-    RenderFrame* render_frame,
-    const WebPluginInfo& info,
-    const std::string& mime_type,
-    const GURL& original_url) {
-  return nullptr;
-}
-
 bool ContentRendererClient::IsExcludedHeaderForServiceWorkerFetchEvent(
     const std::string& header_name) {
   return false;

@@ -966,10 +966,6 @@ void UiaGetPropertyValueVtArrayVtUnknownValidate(
     const std::vector<std::string>& expected_names);
 #endif
 
-// Find out if the BrowserPlugin for a guest WebContents is focused. Returns
-// false if the WebContents isn't a guest with a BrowserPlugin.
-bool IsWebContentsBrowserPluginFocused(content::WebContents* web_contents);
-
 // Returns the RenderWidgetHost that holds the mouse lock.
 RenderWidgetHost* GetMouseLockWidget(WebContents* web_contents);
 

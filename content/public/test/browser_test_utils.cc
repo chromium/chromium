@@ -37,7 +37,6 @@
 #include "components/viz/client/frame_evictor.h"
 #include "content/browser/accessibility/browser_accessibility.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
-#include "content/browser/browser_plugin/browser_plugin_guest.h"
 #include "content/browser/file_system/file_system_manager_impl.h"
 #include "content/browser/renderer_host/cross_process_frame_connector.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
@@ -60,7 +59,6 @@
 #include "content/common/input_messages.h"
 #include "content/common/widget_messages.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/browser_plugin_guest_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_termination_info.h"
@@ -2136,14 +2134,6 @@ void UiaGetPropertyValueVtArrayVtUnknownValidate(
   ASSERT_THAT(names, testing::UnorderedElementsAreArray(expected_names));
 }
 #endif
-
-bool IsWebContentsBrowserPluginFocused(content::WebContents* web_contents) {
-  WebContentsImpl* web_contents_impl =
-      static_cast<WebContentsImpl*>(web_contents);
-  BrowserPluginGuest* browser_plugin_guest =
-      web_contents_impl->GetBrowserPluginGuest();
-  return browser_plugin_guest ? browser_plugin_guest->focused() : false;
-}
 
 RenderWidgetHost* GetMouseLockWidget(WebContents* web_contents) {
   return static_cast<WebContentsImpl*>(web_contents)->GetMouseLockWidget();

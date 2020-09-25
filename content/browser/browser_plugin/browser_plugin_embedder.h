@@ -84,8 +84,6 @@ class CONTENT_EXPORT BrowserPluginEmbedder {
 
   void ClearGuestDragStateIfApplicable();
 
-  static bool DidSendScreenRectsCallback(WebContents* guest_web_contents);
-
   // Closes modal dialogs in |guest_web_contents|.
   static bool CancelDialogs(WebContents* guest_web_contents);
 
@@ -110,8 +108,6 @@ class CONTENT_EXPORT BrowserPluginEmbedder {
 
   // Keeps track of "dragend" state.
   bool guest_drag_ending_;
-
-  base::WeakPtrFactory<BrowserPluginEmbedder> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(BrowserPluginEmbedder);
 };

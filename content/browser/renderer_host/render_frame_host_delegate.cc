@@ -70,12 +70,6 @@ ui::AXMode RenderFrameHostDelegate::GetAccessibilityMode() {
   return ui::AXMode();
 }
 
-RenderFrameHost* RenderFrameHostDelegate::GetGuestByInstanceID(
-    RenderFrameHost* render_frame_host,
-    int browser_plugin_instance_id) {
-  return nullptr;
-}
-
 device::mojom::GeolocationContext*
 RenderFrameHostDelegate::GetGeolocationContext() {
   return nullptr;

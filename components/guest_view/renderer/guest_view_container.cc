@@ -186,7 +186,7 @@ void GuestViewContainer::RunDestructionCallback(bool embedder_frame_destroyed) {
 }
 
 void GuestViewContainer::OnHandleCallback(const IPC::Message& message) {
-  base::WeakPtr<content::BrowserPluginDelegate> weak_ptr(GetWeakPtr());
+  base::WeakPtr<GuestViewContainer> weak_ptr(weak_ptr_factory_.GetWeakPtr());
 
   // Handle the callback for the current request with a pending response.
   HandlePendingResponseCallback(message);
@@ -272,10 +272,6 @@ void GuestViewContainer::CallElementResizeCallback(
 
   callback->Call(context, context->Global(), argc, argv)
       .FromMaybe(v8::Local<v8::Value>());
-}
-
-base::WeakPtr<content::BrowserPluginDelegate> GuestViewContainer::GetWeakPtr() {
-  return weak_ptr_factory_.GetWeakPtr();
 }
 
 }  // namespace guest_view

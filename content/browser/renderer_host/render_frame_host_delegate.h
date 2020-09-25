@@ -269,12 +269,6 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   virtual void AccessibilityLocationChangesReceived(
       const std::vector<AXLocationChangeNotificationDetails>& details) {}
 
-  // Find a guest RenderFrameHost by its parent |render_frame_host| and
-  // |browser_plugin_instance_id|.
-  virtual RenderFrameHost* GetGuestByInstanceID(
-      RenderFrameHost* render_frame_host,
-      int browser_plugin_instance_id);
-
   // Gets the GeolocationContext associated with this delegate.
   virtual device::mojom::GeolocationContext* GetGeolocationContext();
 

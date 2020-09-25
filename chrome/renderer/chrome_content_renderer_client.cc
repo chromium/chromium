@@ -1445,20 +1445,6 @@ bool ChromeContentRendererClient::IsPluginAllowedToUseCameraDeviceAPI(
   return false;
 }
 
-content::BrowserPluginDelegate*
-ChromeContentRendererClient::CreateBrowserPluginDelegate(
-    content::RenderFrame* render_frame,
-    const content::WebPluginInfo& info,
-    const std::string& mime_type,
-    const GURL& original_url) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  return ChromeExtensionsRendererClient::CreateBrowserPluginDelegate(
-      render_frame, info, mime_type, original_url);
-#else
-  return nullptr;
-#endif
-}
-
 void ChromeContentRendererClient::RunScriptsAtDocumentStart(
     content::RenderFrame* render_frame) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)

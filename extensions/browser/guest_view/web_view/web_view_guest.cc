@@ -1331,7 +1331,7 @@ bool WebViewGuest::LoadDataWithBaseURL(const std::string& data_url,
       content::NavigationController::UA_OVERRIDE_INHERIT;
 
   // Navigate to the data URL.
-  GuestViewBase::LoadURLWithParams(load_params);
+  web_contents()->GetController().LoadURLWithParams(load_params);
 
   return true;
 }
@@ -1514,7 +1514,7 @@ void WebViewGuest::LoadURLWithParams(
     load_url_params.override_user_agent =
         content::NavigationController::UA_OVERRIDE_TRUE;
   }
-  GuestViewBase::LoadURLWithParams(load_url_params);
+  web_contents()->GetController().LoadURLWithParams(load_url_params);
 
   src_ = validated_url;
 }

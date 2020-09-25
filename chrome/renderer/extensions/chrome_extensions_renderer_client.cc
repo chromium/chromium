@@ -332,7 +332,7 @@ ChromeExtensionsRendererClient::GetExtensionDispatcherForTest() {
 }
 
 // static
-content::BrowserPluginDelegate*
+guest_view::GuestViewContainer*
 ChromeExtensionsRendererClient::CreateBrowserPluginDelegate(
     content::RenderFrame* render_frame,
     const content::WebPluginInfo& info,

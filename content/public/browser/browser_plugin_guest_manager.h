@@ -18,11 +18,6 @@ class CONTENT_EXPORT BrowserPluginGuestManager {
  public:
   virtual ~BrowserPluginGuestManager() {}
 
-  // Requests a guest WebContents associated with the provided
-  // <owner_process_id, browser_plugin_instance_id> tuple.
-  virtual WebContents* GetGuestByInstanceID(int owner_process_id,
-                                            int browser_plugin_instance_id);
-
   // Iterates over all WebContents belonging to a given |embedder_web_contents|,
   // calling |callback| for each. If one of the callbacks returns true, then
   // the iteration exits early.

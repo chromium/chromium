@@ -615,9 +615,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   void RecordAccessibilityEvents(
       bool start_recording,
       base::Optional<AccessibilityEventCallback> callback) override;
-  RenderFrameHost* GetGuestByInstanceID(
-      RenderFrameHost* render_frame_host,
-      int browser_plugin_instance_id) override;
   device::mojom::GeolocationContext* GetGeolocationContext() override;
   device::mojom::WakeLockContext* GetWakeLockContext() override;
 #if defined(OS_ANDROID)

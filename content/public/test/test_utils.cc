@@ -26,7 +26,6 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/public/browser/browser_child_process_host_iterator.h"
-#include "content/public/browser/browser_plugin_guest_delegate.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/notification_service.h"

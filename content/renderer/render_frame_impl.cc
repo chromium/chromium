@@ -77,7 +77,6 @@
 #include "content/public/common/untrustworthy_context_menu_params.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/common/url_utils.h"
-#include "content/public/renderer/browser_plugin_delegate.h"
 #include "content/public/renderer/content_renderer_client.h"
 #include "content/public/renderer/context_menu_client.h"
 #include "content/public/renderer/document_state.h"

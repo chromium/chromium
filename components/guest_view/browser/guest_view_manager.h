@@ -121,10 +121,10 @@ class GuestViewManager : public content::BrowserPluginGuestManager,
   content::SiteInstance* GetGuestSiteInstance(
       const GURL& guest_site);
 
+  content::WebContents* GetGuestByInstanceID(int owner_process_id,
+                                             int element_instance_id);
+
   // BrowserPluginGuestManager implementation.
-  content::WebContents* GetGuestByInstanceID(
-      int owner_process_id,
-      int element_instance_id) override;
   bool ForEachGuest(content::WebContents* owner_web_contents,
                     const GuestCallback& callback) override;
   content::WebContents* GetFullPageGuest(

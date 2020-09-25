@@ -89,8 +89,6 @@ class CONTENT_EXPORT BrowserPluginGuest : public GuestHost,
   WebContentsImpl* CreateNewGuestWindow(
       const WebContents::CreateParams& params);
 
-  bool focused() const { return focused_; }
-
   // WebContentsObserver implementation.
   void DidStartNavigation(NavigationHandle* navigation_handle) override;
   void DidFinishNavigation(NavigationHandle* navigation_handle) override;
@@ -112,8 +110,6 @@ class CONTENT_EXPORT BrowserPluginGuest : public GuestHost,
 #endif
 
   // GuestHost implementation.
-  int LoadURLWithParams(
-      const NavigationController::LoadURLParams& load_params) override;
   void WillDestroy() override;
 
   // Exposes the protected web_contents() from WebContentsObserver.
@@ -147,12 +143,6 @@ class CONTENT_EXPORT BrowserPluginGuest : public GuestHost,
   void SendTextInputTypeChangedToView(RenderWidgetHostViewBase* guest_rwhv);
 
   WebContentsImpl* owner_web_contents_;
-
-  // Indicates whether this guest has been attached to a container.
-  bool attached_;
-
-  gfx::Rect frame_rect_;
-  bool focused_;
 
   // BrowserPluginGuest::Init can only be called once. This flag allows it to
   // exit early if it's already been called.

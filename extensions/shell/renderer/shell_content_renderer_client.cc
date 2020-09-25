@@ -13,9 +13,7 @@
 #include "extensions/common/extensions_client.h"
 #include "extensions/renderer/dispatcher.h"
 #include "extensions/renderer/extension_frame_helper.h"
-#include "extensions/renderer/guest_view/extensions_guest_view_container.h"
 #include "extensions/renderer/guest_view/extensions_guest_view_container_dispatcher.h"
-#include "extensions/renderer/guest_view/mime_handler_view/mime_handler_view_container.h"
 #include "extensions/shell/common/shell_extensions_client.h"
 #include "extensions/shell/renderer/shell_extensions_renderer_client.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -106,20 +104,6 @@ bool ShellContentRendererClient::IsExternalPepperPlugin(
 #else
   return false;
 #endif
-}
-
-content::BrowserPluginDelegate*
-ShellContentRendererClient::CreateBrowserPluginDelegate(
-    content::RenderFrame* render_frame,
-    const content::WebPluginInfo& info,
-    const std::string& mime_type,
-    const GURL& original_url) {
-  if (mime_type == content::kBrowserPluginMimeType) {
-    return new extensions::ExtensionsGuestViewContainer(render_frame);
-  } else {
-    return new extensions::MimeHandlerViewContainer(render_frame, info,
-                                                    mime_type, original_url);
-  }
 }
 
 void ShellContentRendererClient::RunScriptsAtDocumentStart(

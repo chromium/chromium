@@ -6,12 +6,6 @@
 
 namespace content {
 
-WebContents* BrowserPluginGuestManager::GetGuestByInstanceID(
-    int owner_process_id,
-    int browser_plugin_instance_id) {
-  return nullptr;
-}
-
 bool BrowserPluginGuestManager::ForEachGuest(WebContents* embedder_web_contents,
                                              const GuestCallback& callback) {
   return false;

@@ -584,7 +584,6 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   blink::mojom::FrameWidgetInputHandler*
   GetFrameWidgetInputHandlerForFocusedWidget();
 
-  // NOTE: this is null if |is_mus_browser_plugin_guest_| is true.
   aura::Window* window_;
 
   std::unique_ptr<DelegatedFrameHostClient> delegated_frame_host_client_;

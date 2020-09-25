@@ -145,10 +145,6 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
     return owner_web_contents_;
   }
 
-  content::GuestHost* host() const {
-    return guest_host_;
-  }
-
   // Returns the parameters associated with the element hosting this GuestView
   // passed in from JavaScript.
   base::DictionaryValue* attach_params() const { return attach_params_.get(); }
@@ -192,10 +188,6 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
   // Whether the guest view is inside a plugin document.
   bool is_full_page_plugin() const { return is_full_page_plugin_; }
 
-  // Returns the routing ID of the guest proxy in the owner's renderer process.
-  // This value is only valid after attachment or first navigation.
-  int proxy_routing_id() const { return guest_proxy_routing_id_; }
-
   // Destroy this guest.
   void Destroy(bool also_delete);
 
@@ -208,9 +200,11 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
   void SetAttachParams(const base::DictionaryValue& params);
   void SetOpener(GuestViewBase* opener);
 
-  // BrowserPluginGuestDelegate implementation.
-  content::RenderWidgetHost* GetOwnerRenderWidgetHost() override;
-  content::SiteInstance* GetOwnerSiteInstance() override;
+  // Returns the RenderWidgetHost corresponding to the owner frame.
+  virtual content::RenderWidgetHost* GetOwnerRenderWidgetHost();
+
+  // The SiteInstance of the owner frame.
+  virtual content::SiteInstance* GetOwnerSiteInstance();
 
   // Starts the attaching process for a (frame-based) GuestView.
   // |embedder_frame| is a frame in the embedder WebContents (owned by a
@@ -219,6 +213,10 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
   void AttachToOuterWebContentsFrame(content::RenderFrameHost* embedder_frame,
                                      int32_t element_instance_id,
                                      bool is_full_page_plugin);
+
+  // Returns true if the corresponding guest is allowed to be embedded inside an
+  // <iframe> which is cross process.
+  virtual bool CanBeEmbeddedInsideCrossProcessFrames();
 
  protected:
   explicit GuestViewBase(content::WebContents* owner_web_contents);
@@ -319,9 +317,6 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
   // to destruction.
   virtual void WillDestroy() {}
 
-  void LoadURLWithParams(
-      const content::NavigationController::LoadURLParams& load_params);
-
   // Convert sizes in pixels from logical to physical numbers of pixels.
   // Note that a size can consist of a fractional number of logical pixels
   // (hence |logical_pixels| is represented as a double), but will always
@@ -342,17 +337,19 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
   class OwnerContentsObserver;
   class OpenerLifetimeObserver;
 
-  // BrowserPluginGuestDelegate implementation.
-  content::WebContents* CreateNewGuestWindow(
-      const content::WebContents::CreateParams& create_params) final;
-  void DidAttach(int guest_proxy_routing_id) final;
-  void DidDetach() final;
-  content::WebContents* GetOwnerWebContents() final;
-  void SetGuestHost(content::GuestHost* guest_host) final;
+  // TODO(533069): Remove since BrowserPlugin has been removed.
+  void DidAttach(int guest_proxy_routing_id);
+  void DidDetach();
   void WillAttach(content::WebContents* embedder_web_contents,
                   int browser_plugin_instance_id,
                   bool is_full_page_plugin,
-                  base::OnceClosure completion_callback) final;
+                  base::OnceClosure completion_callback);
+
+  // BrowserPluginGuestDelegate implementation.
+  content::WebContents* CreateNewGuestWindow(
+      const content::WebContents::CreateParams& create_params) final;
+  content::WebContents* GetOwnerWebContents() final;
+  void SetGuestHost(content::GuestHost* guest_host) final;
 
   // WebContentsDelegate implementation.
   void ActivateContents(content::WebContents* contents) final;
@@ -496,9 +493,6 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
 
   // Whether the guest view is inside a plugin document.
   bool is_full_page_plugin_;
-
-  // The routing ID of the proxy to the guest in the owner's renderer process.
-  int guest_proxy_routing_id_;
 
   // This is used to ensure pending tasks will not fire after this object is
   // destroyed.

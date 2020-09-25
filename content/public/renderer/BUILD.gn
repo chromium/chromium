@@ -32,8 +32,6 @@ target(link_target_type, "renderer_sources") {
   visibility = [ "//content/*" ]
 
   sources = [
-    "browser_plugin_delegate.cc",
-    "browser_plugin_delegate.h",
     "chrome_object_extensions_utils.cc",
     "chrome_object_extensions_utils.h",
     "content_renderer_client.cc",

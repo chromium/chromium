@@ -1076,7 +1076,6 @@
                   'chrome/renderer/resources/extensions/web_view|'\
                   'components/guest_view|'\
                   'content/browser/browser_plugin|'\
-                  'content/renderer/browser_plugin|'\
                   'extensions/browser/api/guest_view|'\
                   'extensions/browser/guest_view|'\
                   'extensions/common/guest_view|'\

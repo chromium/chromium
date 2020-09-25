@@ -68,10 +68,8 @@ class BinderMap;
 }
 
 namespace content {
-class BrowserPluginDelegate;
 class RenderFrame;
 class RenderView;
-struct WebPluginInfo;
 
 // Embedder API for participating in renderer logic.
 class CONTENT_EXPORT ContentRendererClient {
@@ -128,13 +126,6 @@ class CONTENT_EXPORT ContentRendererClient {
   virtual blink::WebPlugin* CreatePluginReplacement(
       RenderFrame* render_frame,
       const base::FilePath& plugin_path);
-
-  // Creates a delegate for browser plugin.
-  virtual BrowserPluginDelegate* CreateBrowserPluginDelegate(
-      RenderFrame* render_frame,
-      const WebPluginInfo& info,
-      const std::string& mime_type,
-      const GURL& original_url);
 
   // Returns true if the embedder has an error page to show for the given http
   // status code.

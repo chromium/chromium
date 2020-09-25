@@ -5,11 +5,7 @@
 #ifndef CONTENT_PUBLIC_BROWSER_GUEST_HOST_H_
 #define CONTENT_PUBLIC_BROWSER_GUEST_HOST_H_
 
-#include "ui/gfx/geometry/size.h"
-
 namespace content {
-
-class WebContents;
 
 // A GuestHost is the content API for a guest WebContents.
 // Guests are top-level frames that can be embedded within other pages.
@@ -22,11 +18,6 @@ class WebContents;
 // its API can only be accessed by a BrowserPluginGuestDelegate.
 class GuestHost {
  public:
-  // Loads a URL using the specified |load_params| and returns a routing ID for
-  // a proxy for the guest.
-  virtual int LoadURLWithParams(
-      const NavigationController::LoadURLParams& load_params) = 0;
-
   // Called when the GuestHost is about to be destroyed.
   virtual void WillDestroy() = 0;
 };

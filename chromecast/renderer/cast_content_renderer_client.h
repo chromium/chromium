@@ -55,11 +55,6 @@ class CastContentRendererClient
   void RenderThreadStarted() override;
   void RenderViewCreated(content::RenderView* render_view) override;
   void RenderFrameCreated(content::RenderFrame* render_frame) override;
-  content::BrowserPluginDelegate* CreateBrowserPluginDelegate(
-      content::RenderFrame* render_frame,
-      const content::WebPluginInfo& info,
-      const std::string& mime_type,
-      const GURL& original_url) override;
   void RunScriptsAtDocumentStart(content::RenderFrame* render_frame) override;
   void RunScriptsAtDocumentEnd(content::RenderFrame* render_frame) override;
   void AddSupportedKeySystems(

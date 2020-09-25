@@ -84,11 +84,11 @@ class MimeHandlerViewContainer : public blink::WebAssociatedURLLoaderClient,
   bool OnMessage(const IPC::Message& message) override;
   void OnReady() override;
 
-  // BrowserPluginDelegate implementation.
-  void PluginDidFinishLoading() override;
-  void PluginDidReceiveData(const char* data, int data_length) override;
-  void DidResizeElement(const gfx::Size& new_size) override;
-  v8::Local<v8::Object> V8ScriptableObject(v8::Isolate*) override;
+  // TODO(533069): Remove since BrowserPlugin has been removed.
+  void PluginDidFinishLoading();
+  void PluginDidReceiveData(const char* data, int data_length);
+  void DidResizeElement(const gfx::Size& new_size);
+  v8::Local<v8::Object> V8ScriptableObject(v8::Isolate*);
 
   // GuestViewContainer overrides.
   void OnRenderFrameDestroyed() override;

@@ -9,9 +9,12 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/macros.h"
-#include "content/public/renderer/browser_plugin_delegate.h"
 #include "ipc/ipc_message.h"
 #include "v8/include/v8.h"
+
+namespace gfx {
+class Size;
+}
 
 namespace content {
 class RenderFrame;
@@ -21,7 +24,7 @@ namespace guest_view {
 
 class GuestViewRequest;
 
-class GuestViewContainer : public content::BrowserPluginDelegate {
+class GuestViewContainer {
  public:
   explicit GuestViewContainer(content::RenderFrame* render_frame);
 
@@ -64,13 +67,13 @@ class GuestViewContainer : public content::BrowserPluginDelegate {
   // Note that this should be called exactly once.
   virtual void OnDestroy(bool embedder_frame_destroyed) {}
 
-  // BrowserPluginGuestDelegate public implementation.
-  void SetElementInstanceID(int element_instance_id) final;
-  void DidResizeElement(const gfx::Size& new_size) override;
-  base::WeakPtr<BrowserPluginDelegate> GetWeakPtr() final;
+  void SetElementInstanceID(int element_instance_id);
+
+  // TODO(533069): Remove since BrowserPlugin has been removed.
+  void DidResizeElement(const gfx::Size& new_size);
 
  protected:
-  ~GuestViewContainer() override;
+  virtual ~GuestViewContainer();
 
   bool ready_;
 
@@ -88,9 +91,9 @@ class GuestViewContainer : public content::BrowserPluginDelegate {
   void RunDestructionCallback(bool embedder_frame_destroyed);
   void CallElementResizeCallback(const gfx::Size& new_size);
 
-  // BrowserPluginDelegate implementation.
-  void Ready() final;
-  void DidDestroyElement() final;
+  // TODO(533069): Remove since BrowserPlugin has been removed.
+  void Ready();
+  void DidDestroyElement();
 
   int element_instance_id_;
   content::RenderFrame* render_frame_;

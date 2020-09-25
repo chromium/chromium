@@ -59,7 +59,6 @@
 #include "extensions/common/extension_urls.h"            // nogncheck
 #include "extensions/renderer/dispatcher.h"              // nogncheck
 #include "extensions/renderer/extension_frame_helper.h"  // nogncheck
-#include "extensions/renderer/guest_view/extensions_guest_view_container.h"  // nogncheck
 #include "extensions/renderer/guest_view/extensions_guest_view_container_dispatcher.h"  // nogncheck
 #endif
 
@@ -220,20 +219,6 @@ void CastContentRendererClient::RenderFrameCreated(
           base::BindOnce(&CastContentRendererClient::OnRenderFrameRemoved,
                          base::Unretained(this),
                          render_frame->GetRoutingID())));
-}
-
-content::BrowserPluginDelegate*
-CastContentRendererClient::CreateBrowserPluginDelegate(
-    content::RenderFrame* render_frame,
-    const content::WebPluginInfo& info,
-    const std::string& mime_type,
-    const GURL& original_url) {
-#if BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
-  if (mime_type == content::kBrowserPluginMimeType) {
-    return new extensions::ExtensionsGuestViewContainer(render_frame);
-  }
-#endif
-  return nullptr;
 }
 
 void CastContentRendererClient::RunScriptsAtDocumentStart(

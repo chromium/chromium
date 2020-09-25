@@ -62,7 +62,6 @@ class WebRtcLoggingAgentImpl;
 }  // namespace chrome
 
 namespace content {
-class BrowserPluginDelegate;
 struct WebPluginInfo;
 }  // namespace content
 
@@ -159,11 +158,6 @@ class ChromeContentRendererClient
       override;
   bool IsKeySystemsUpdateNeeded() override;
   bool IsPluginAllowedToUseCameraDeviceAPI(const GURL& url) override;
-  content::BrowserPluginDelegate* CreateBrowserPluginDelegate(
-      content::RenderFrame* render_frame,
-      const content::WebPluginInfo& info,
-      const std::string& mime_type,
-      const GURL& original_url) override;
   void RunScriptsAtDocumentStart(content::RenderFrame* render_frame) override;
   void RunScriptsAtDocumentEnd(content::RenderFrame* render_frame) override;
   void RunScriptsAtDocumentIdle(content::RenderFrame* render_frame) override;

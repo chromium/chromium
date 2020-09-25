@@ -100,7 +100,6 @@
 #include "content/browser/web_package/save_as_web_bundle_job.h"
 #include "content/browser/webui/web_ui_controller_factory_registry.h"
 #include "content/browser/webui/web_ui_impl.h"
-#include "content/common/browser_plugin/browser_plugin_constants.h"
 #include "content/common/content_switches_internal.h"
 #include "content/common/drag_messages.h"
 #include "content/common/frame_messages.h"
@@ -113,7 +112,6 @@
 #include "content/public/browser/accessibility_tree_formatter.h"
 #include "content/public/browser/ax_event_notification_details.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/browser_plugin_guest_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
@@ -4177,23 +4175,6 @@ void WebContentsImpl::RecordAccessibilityEvents(
       event_recorder_.reset(nullptr);
     }
   }
-}
-
-RenderFrameHost* WebContentsImpl::GetGuestByInstanceID(
-    RenderFrameHost* render_frame_host,
-    int browser_plugin_instance_id) {
-  OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::GetGuestByInstanceID");
-  BrowserPluginGuestManager* guest_manager =
-      GetBrowserContext()->GetGuestManager();
-  if (!guest_manager)
-    return nullptr;
-
-  WebContents* guest = guest_manager->GetGuestByInstanceID(
-      render_frame_host->GetProcess()->GetID(), browser_plugin_instance_id);
-  if (!guest)
-    return nullptr;
-
-  return guest->GetMainFrame();
 }
 
 device::mojom::GeolocationContext* WebContentsImpl::GetGeolocationContext() {

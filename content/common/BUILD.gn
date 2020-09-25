@@ -67,8 +67,6 @@ source_set("common") {
     "ax_serialization_utils.h",
     "background_fetch/background_fetch_types.cc",
     "background_fetch/background_fetch_types.h",
-    "browser_plugin/browser_plugin_constants.cc",
-    "browser_plugin/browser_plugin_constants.h",
     "child_process_host_impl.cc",
     "child_process_host_impl.h",
     "common_param_traits.cc",

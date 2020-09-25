@@ -34,8 +34,6 @@ BrowserPluginGuest::BrowserPluginGuest(WebContentsImpl* web_contents,
                                        BrowserPluginGuestDelegate* delegate)
     : WebContentsObserver(web_contents),
       owner_web_contents_(nullptr),
-      attached_(false),
-      focused_(false),
       initialized_(false),
       last_drag_status_(blink::kWebDragStatusUnknown),
       seen_embedder_system_drag_ended_(false),
@@ -46,17 +44,10 @@ BrowserPluginGuest::BrowserPluginGuest(WebContentsImpl* web_contents,
   RecordAction(base::UserMetricsAction("BrowserPlugin.Guest.Create"));
 }
 
-int BrowserPluginGuest::LoadURLWithParams(
-    const NavigationController::LoadURLParams& load_params) {
-  GetWebContents()->GetController().LoadURLWithParams(load_params);
-  return MSG_ROUTING_NONE;
-}
-
 void BrowserPluginGuest::WillDestroy() {
   // It is important that the WebContents is notified before detaching.
   GetWebContents()->BrowserPluginGuestWillDetach();
 
-  attached_ = false;
   owner_web_contents_ = nullptr;
 }
 
@@ -80,7 +71,6 @@ void BrowserPluginGuest::SetFocus(bool focused,
   RenderWidgetHostView* rwhv = web_contents()->GetRenderWidgetHostView();
   RenderWidgetHost* rwh = rwhv ? rwhv->GetRenderWidgetHost() : nullptr;
 
-  focused_ = focused;
   if (!rwh)
     return;
 
@@ -104,10 +94,7 @@ WebContentsImpl* BrowserPluginGuest::CreateNewGuestWindow(
 }
 
 void BrowserPluginGuest::InitInternal(WebContentsImpl* owner_web_contents) {
-  focused_ = false;
-  SetFocus(focused_, blink::mojom::FocusType::kNone);
-
-  frame_rect_ = gfx::Rect();
+  SetFocus(false, blink::mojom::FocusType::kNone);
 
   if (owner_web_contents_ != owner_web_contents) {
     // Once a BrowserPluginGuest has an embedder WebContents, it's considered to
@@ -164,12 +151,7 @@ WebContentsImpl* BrowserPluginGuest::GetWebContents() const {
 
 gfx::Point BrowserPluginGuest::GetScreenCoordinates(
     const gfx::Point& relative_position) const {
-  if (!attached_)
-    return relative_position;
-
-  gfx::Point screen_pos(relative_position);
-  screen_pos += frame_rect_.OffsetFromOrigin();
-  return screen_pos;
+  return relative_position;
 }
 
 void BrowserPluginGuest::DragSourceEndedAt(float client_x,

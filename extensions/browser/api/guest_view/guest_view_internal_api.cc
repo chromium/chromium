@@ -64,15 +64,12 @@ ExtensionFunction::ResponseAction GuestViewInternalCreateGuestFunction::Run() {
 void GuestViewInternalCreateGuestFunction::CreateGuestCallback(
     content::WebContents* guest_web_contents) {
   int guest_instance_id = 0;
-  int content_window_id = MSG_ROUTING_NONE;
   if (guest_web_contents) {
     GuestViewBase* guest = GuestViewBase::FromWebContents(guest_web_contents);
     guest_instance_id = guest->guest_instance_id();
-    content_window_id = guest->proxy_routing_id();
   }
   auto return_params = std::make_unique<base::DictionaryValue>();
   return_params->SetInteger(guest_view::kID, guest_instance_id);
-  return_params->SetInteger(guest_view::kContentWindowID, content_window_id);
 
   Respond(OneArgument(std::move(return_params)));
 }
