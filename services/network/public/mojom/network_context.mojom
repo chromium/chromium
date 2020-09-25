@@ -1310,8 +1310,7 @@ interface NetworkContext {
                               url.mojom.Url url,
                               string ocsp_response,
                               string sct_list) => (int32 error_code,
-                                                   CertVerifyResult cv_result,
-                                                   CTVerifyResult ct_result);
+                                                   CertVerifyResult cv_result);
 
   // Parses response headers and returns a structured version to the caller.
   // This call originates from the browser process. Used for navigations when

@@ -21,7 +21,6 @@
 #include "net/base/request_priority.h"
 #include "net/cert/cert_verify_result.h"
 #include "net/cert/ct_policy_status.h"
-#include "net/cert/ct_verify_result.h"
 #include "net/cert/signed_certificate_timestamp.h"
 #include "net/cert/signed_certificate_timestamp_and_status.h"
 #include "net/cert/x509_certificate.h"
@@ -74,16 +73,6 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ParamTraits<net::AuthCredentials> {
 template <>
 struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ParamTraits<net::CertVerifyResult> {
   typedef net::CertVerifyResult param_type;
-  static void Write(base::Pickle* m, const param_type& p);
-  static bool Read(const base::Pickle* m,
-                   base::PickleIterator* iter,
-                   param_type* r);
-  static void Log(const param_type& p, std::string* l);
-};
-
-template <>
-struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ParamTraits<net::ct::CTVerifyResult> {
-  typedef net::ct::CTVerifyResult param_type;
   static void Write(base::Pickle* m, const param_type& p);
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,

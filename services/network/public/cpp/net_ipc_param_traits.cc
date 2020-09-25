@@ -74,6 +74,8 @@ void ParamTraits<net::CertVerifyResult>::Write(base::Pickle* m,
   WriteParam(m, p.is_issued_by_known_root);
   WriteParam(m, p.is_issued_by_additional_trust_anchor);
   WriteParam(m, p.ocsp_result);
+  WriteParam(m, p.scts);
+  WriteParam(m, p.policy_compliance);
 }
 
 bool ParamTraits<net::CertVerifyResult>::Read(const base::Pickle* m,
@@ -87,32 +89,13 @@ bool ParamTraits<net::CertVerifyResult>::Read(const base::Pickle* m,
          ReadParam(m, iter, &r->public_key_hashes) &&
          ReadParam(m, iter, &r->is_issued_by_known_root) &&
          ReadParam(m, iter, &r->is_issued_by_additional_trust_anchor) &&
-         ReadParam(m, iter, &r->ocsp_result);
+         ReadParam(m, iter, &r->ocsp_result) && ReadParam(m, iter, &r->scts) &&
+         ReadParam(m, iter, &r->policy_compliance);
 }
 
 void ParamTraits<net::CertVerifyResult>::Log(const param_type& p,
                                              std::string* l) {
   l->append("<CertVerifyResult>");
-}
-
-void ParamTraits<net::ct::CTVerifyResult>::Write(base::Pickle* m,
-                                                 const param_type& p) {
-  WriteParam(m, p.scts);
-  WriteParam(m, p.policy_compliance);
-  WriteParam(m, p.policy_compliance_required);
-}
-
-bool ParamTraits<net::ct::CTVerifyResult>::Read(const base::Pickle* m,
-                                                base::PickleIterator* iter,
-                                                param_type* r) {
-  return ReadParam(m, iter, &r->scts) &&
-         ReadParam(m, iter, &r->policy_compliance) &&
-         ReadParam(m, iter, &r->policy_compliance_required);
-}
-
-void ParamTraits<net::ct::CTVerifyResult>::Log(const param_type& p,
-                                               std::string* l) {
-  l->append("<CTVerifyResult>");
 }
 
 void ParamTraits<net::HashValue>::Write(base::Pickle* m, const param_type& p) {

@@ -15,7 +15,6 @@
 #include "base/strings/stringprintf.h"
 #include "net/base/hex_utils.h"
 #include "net/cert/ct_serialization.h"
-#include "net/cert/ct_verify_result.h"
 #include "net/cert/merkle_tree_leaf.h"
 #include "net/cert/signed_tree_head.h"
 #include "net/cert/x509_certificate.h"

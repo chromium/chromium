@@ -11,12 +11,18 @@
 #include "base/supports_user_data.h"
 #include "net/base/net_export.h"
 #include "net/cert/cert_status_flags.h"
+#include "net/cert/ct_policy_status.h"
 #include "net/cert/ocsp_verify_result.h"
+#include "net/cert/signed_certificate_timestamp_and_status.h"
 #include "net/cert/x509_cert_types.h"
 
 namespace base {
 class Value;
 }
+
+namespace ct {
+enum class CTPolicyCompliance;
+}  // namespace ct
 
 namespace net {
 
@@ -97,6 +103,16 @@ class NET_EXPORT CertVerifyResult : public base::SupportsUserData {
 
   // Verification of stapled OCSP response, if present.
   OCSPVerifyResult ocsp_result;
+
+  // `scts` contains the result of verifying any provided or embedded SCTs for
+  // this certificate against the set of known logs. Consumers should not simply
+  // check this for the presence of a successfully verified SCT to determine CT
+  // compliance. Instead look at `policy_compliance`.
+  SignedCertificateTimestampAndStatusList scts;
+
+  // The result of evaluating whether the certificate complies with the
+  // Certificate Transparency policy.
+  ct::CTPolicyCompliance policy_compliance;
 };
 
 }  // namespace net

@@ -20,14 +20,4 @@ void SSLInfo::Reset() {
   *this = SSLInfo();
 }
 
-void SSLInfo::UpdateCertificateTransparencyInfo(
-    const ct::CTVerifyResult& ct_verify_result) {
-  signed_certificate_timestamps.insert(signed_certificate_timestamps.end(),
-                                       ct_verify_result.scts.begin(),
-                                       ct_verify_result.scts.end());
-
-  ct_policy_compliance = ct_verify_result.policy_compliance;
-  ct_policy_compliance_required = ct_verify_result.policy_compliance_required;
-}
-
 }  // namespace net

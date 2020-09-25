@@ -43,7 +43,6 @@ ProofVerifyDetailsChromium::ProofVerifyDetailsChromium(
 quic::ProofVerifyDetails* ProofVerifyDetailsChromium::Clone() const {
   ProofVerifyDetailsChromium* other = new ProofVerifyDetailsChromium;
   other->cert_verify_result = cert_verify_result;
-  other->ct_verify_result = ct_verify_result;
   return other;
 }
 
@@ -242,7 +241,7 @@ quic::QuicAsyncStatus ProofVerifierChromium::Job::VerifyProof(
   // external communication.
   cert_transparency_verifier_->Verify(
       hostname, cert_.get(), std::string(), cert_sct,
-      &verify_details_->ct_verify_result.scts, net_log_);
+      &verify_details_->cert_verify_result.scts, net_log_);
 
   // We call VerifySignature first to avoid copying of server_config and
   // signature.
@@ -291,7 +290,7 @@ quic::QuicAsyncStatus ProofVerifierChromium::Job::VerifyCertChain(
   // external communication.
   cert_transparency_verifier_->Verify(
       hostname, cert_.get(), std::string(), cert_sct,
-      &verify_details_->ct_verify_result.scts, net_log_);
+      &verify_details_->cert_verify_result.scts, net_log_);
 
   return VerifyCert(hostname, port, ocsp_response, cert_sct, error_details,
                     verify_details, std::move(callback));
@@ -421,16 +420,18 @@ int ProofVerifierChromium::Job::DoVerifyCertComplete(int result) {
   // If the connection was good, check HPKP and CT status simultaneously,
   // but prefer to treat the HPKP error as more serious, if there was one.
   if (result == OK) {
-    ct::SCTList verified_scts = ct::SCTsMatchingStatus(
-        verify_details_->ct_verify_result.scts, ct::SCT_STATUS_OK);
-
-    verify_details_->ct_verify_result.policy_compliance =
+    ct::SCTList verified_scts;
+    for (const auto& sct_and_status : cert_verify_result.scts) {
+      if (sct_and_status.status == ct::SCT_STATUS_OK)
+        verified_scts.push_back(sct_and_status.sct);
+    }
+    verify_details_->cert_verify_result.policy_compliance =
         policy_enforcer_->CheckCompliance(
             cert_verify_result.verified_cert.get(), verified_scts, net_log_);
     if (verify_details_->cert_verify_result.cert_status & CERT_STATUS_IS_EV) {
-      if (verify_details_->ct_verify_result.policy_compliance !=
+      if (verify_details_->cert_verify_result.policy_compliance !=
               ct::CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS &&
-          verify_details_->ct_verify_result.policy_compliance !=
+          verify_details_->cert_verify_result.policy_compliance !=
               ct::CTPolicyCompliance::CT_POLICY_BUILD_NOT_TIMELY) {
         verify_details_->cert_verify_result.cert_status |=
             CERT_STATUS_CT_COMPLIANCE_FAILED;
@@ -443,7 +444,7 @@ int ProofVerifierChromium::Job::DoVerifyCertComplete(int result) {
       if (verify_details_->cert_verify_result.is_issued_by_known_root) {
         UMA_HISTOGRAM_ENUMERATION(
             "Net.CertificateTransparency.EVCompliance2.QUIC",
-            verify_details_->ct_verify_result.policy_compliance,
+            cert_verify_result.policy_compliance,
             ct::CTPolicyCompliance::CT_POLICY_COUNT);
       }
     }
@@ -453,7 +454,7 @@ int ProofVerifierChromium::Job::DoVerifyCertComplete(int result) {
     if (verify_details_->cert_verify_result.is_issued_by_known_root) {
       UMA_HISTOGRAM_ENUMERATION(
           "Net.CertificateTransparency.ConnectionComplianceStatus2.QUIC",
-          verify_details_->ct_verify_result.policy_compliance,
+          verify_details_->cert_verify_result.policy_compliance,
           ct::CTPolicyCompliance::CT_POLICY_COUNT);
     }
 
@@ -464,12 +465,11 @@ int ProofVerifierChromium::Job::DoVerifyCertComplete(int result) {
             cert_verify_result.is_issued_by_known_root,
             cert_verify_result.public_key_hashes,
             cert_verify_result.verified_cert.get(), cert_.get(),
-            verify_details_->ct_verify_result.scts,
+            cert_verify_result.scts,
             TransportSecurityState::ENABLE_EXPECT_CT_REPORTS,
-            verify_details_->ct_verify_result.policy_compliance,
+            cert_verify_result.policy_compliance,
             proof_verifier_->network_isolation_key_);
     if (ct_requirement_status != TransportSecurityState::CT_NOT_REQUIRED) {
-      verify_details_->ct_verify_result.policy_compliance_required = true;
       if (verify_details_->cert_verify_result.is_issued_by_known_root) {
         // Record the CT compliance of connections for which compliance is
         // required; this helps answer the question: "Of all connections that
@@ -478,19 +478,16 @@ int ProofVerifierChromium::Job::DoVerifyCertComplete(int result) {
         UMA_HISTOGRAM_ENUMERATION(
             "Net.CertificateTransparency.CTRequiredConnectionComplianceStatus2."
             "QUIC",
-            verify_details_->ct_verify_result.policy_compliance,
+            cert_verify_result.policy_compliance,
             ct::CTPolicyCompliance::CT_POLICY_COUNT);
       }
-    } else {
-      verify_details_->ct_verify_result.policy_compliance_required = false;
     }
 
     if (sct_auditing_delegate_ &&
         sct_auditing_delegate_->IsSCTAuditingEnabled()) {
       sct_auditing_delegate_->MaybeEnqueueReport(
           HostPortPair(hostname_, port_),
-          cert_verify_result.verified_cert.get(),
-          verify_details_->ct_verify_result.scts);
+          cert_verify_result.verified_cert.get(), cert_verify_result.scts);
     }
 
     switch (ct_requirement_status) {

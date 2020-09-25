@@ -8,6 +8,8 @@
 
 #include "base/values.h"
 #include "net/base/net_errors.h"
+#include "net/cert/ct_policy_status.h"
+#include "net/cert/ct_signed_certificate_timestamp_log_param.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_certificate_net_log_param.h"
 
@@ -38,6 +40,9 @@ CertVerifyResult& CertVerifyResult::operator=(const CertVerifyResult& other) {
   public_key_hashes = other.public_key_hashes;
   ocsp_result = other.ocsp_result;
 
+  scts = other.scts;
+  policy_compliance = other.policy_compliance;
+
   ClearAllUserData();
   CloneDataFrom(other);
 
@@ -57,6 +62,10 @@ void CertVerifyResult::Reset() {
 
   public_key_hashes.clear();
   ocsp_result = OCSPVerifyResult();
+
+  scts.clear();
+  policy_compliance =
+      ct::CTPolicyCompliance::CT_POLICY_COMPLIANCE_DETAILS_NOT_AVAILABLE;
 
   ClearAllUserData();
 }
@@ -88,6 +97,8 @@ base::Value CertVerifyResult::NetLogParams(int net_error) const {
   for (const auto& public_key_hash : public_key_hashes)
     hashes.Append(public_key_hash.ToString());
   results.SetKey("public_key_hashes", std::move(hashes));
+
+  results.SetKey("scts", net::NetLogSignedCertificateTimestampParams(&scts));
 
   return std::move(results);
 }

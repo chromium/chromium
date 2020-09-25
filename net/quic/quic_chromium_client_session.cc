@@ -29,6 +29,7 @@
 #include "net/base/network_isolation_key.h"
 #include "net/base/privacy_mode.h"
 #include "net/base/url_util.h"
+#include "net/cert/signed_certificate_timestamp_and_status.h"
 #include "net/http/transport_security_state.h"
 #include "net/log/net_log_event_type.h"
 #include "net/log/net_log_source_type.h"
@@ -1293,7 +1294,8 @@ bool QuicChromiumClientSession::GetSSLInfo(SSLInfo* ssl_info) const {
   ssl_info->pinning_failure_log = pinning_failure_log_;
   ssl_info->is_fatal_cert_error = is_fatal_cert_error_;
 
-  ssl_info->UpdateCertificateTransparencyInfo(*ct_verify_result_);
+  ssl_info->signed_certificate_timestamps = cert_verify_result_->scts;
+  ssl_info->ct_policy_compliance = cert_verify_result_->policy_compliance;
 
   const auto& crypto_params = crypto_stream_->crypto_negotiated_params();
   uint16_t cipher_suite;
@@ -2517,9 +2519,6 @@ void QuicChromiumClientSession::OnProofVerifyDetailsAvailable(
   cert_verify_result_.reset(
       new CertVerifyResult(verify_details_chromium->cert_verify_result));
   pinning_failure_log_ = verify_details_chromium->pinning_failure_log;
-  std::unique_ptr<ct::CTVerifyResult> ct_verify_result_copy(
-      new ct::CTVerifyResult(verify_details_chromium->ct_verify_result));
-  ct_verify_result_ = std::move(ct_verify_result_copy);
   logger_->OnCertificateVerified(*cert_verify_result_);
   pkp_bypassed_ = verify_details_chromium->pkp_bypassed;
   is_fatal_cert_error_ = verify_details_chromium->is_fatal_cert_error;
