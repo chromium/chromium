@@ -24,11 +24,6 @@ namespace features {
 const base::Feature kAutofillAddressEnhancementVotes{
     "kAutofillAddressEnhancementVotes", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Controls whether the AddressNormalizer is supplied. If available, it may be
-// used to normalize address and will incur fetching rules from the server.
-const base::Feature kAutofillAddressNormalizer{
-    "AutofillAddressNormalizer", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // By default, AutofillAgent and, if |kAutofillProbableFormSubmissionInBrowser|
 // is enabled, also ContentAutofillDriver omit duplicate form submissions, even
 // though the form's data may have changed substantially. If enabled, the

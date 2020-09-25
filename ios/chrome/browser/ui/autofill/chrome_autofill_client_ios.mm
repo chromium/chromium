@@ -180,9 +180,7 @@ ukm::SourceId ChromeAutofillClientIOS::GetUkmSourceId() {
 }
 
 AddressNormalizer* ChromeAutofillClientIOS::GetAddressNormalizer() {
-  if (base::FeatureList::IsEnabled(features::kAutofillAddressNormalizer))
-    return AddressNormalizerFactory::GetInstance();
-  return nullptr;
+  return AddressNormalizerFactory::GetInstance();
 }
 
 const GURL& ChromeAutofillClientIOS::GetLastCommittedURL() {
