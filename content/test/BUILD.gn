@@ -2400,6 +2400,8 @@ test("content_unittests") {
       "//components/autofill/content/browser/webauthn",
       "//device/base",
       "//device/fido",
+      "//device/fido:cablev2_authenticator",
+      "//device/fido:cablev2_test_util",
       "//device/fido:mocks",
       "//device/fido:test_support",
       "//services/device/public/cpp/hid:test_support",

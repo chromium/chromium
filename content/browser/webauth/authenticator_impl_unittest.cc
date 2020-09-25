@@ -47,6 +47,11 @@
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "device/fido/attested_credential_data.h"
 #include "device/fido/authenticator_data.h"
+#include "device/fido/cable/v2_authenticator.h"
+#include "device/fido/cable/v2_constants.h"
+#include "device/fido/cable/v2_discovery.h"
+#include "device/fido/cable/v2_handshake.h"
+#include "device/fido/cable/v2_test_util.h"
 #include "device/fido/fake_fido_discovery.h"
 #include "device/fido/features.h"
 #include "device/fido/fido_authenticator.h"
@@ -62,7 +67,9 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
+#include "third_party/boringssl/src/include/openssl/ec_key.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
+#include "third_party/boringssl/src/include/openssl/obj.h"
 #include "url/url_util.h"
 
 #if defined(OS_MAC)
@@ -5692,5 +5699,170 @@ TEST_F(TouchIdAuthenticatorImplTest, IsUVPAA) {
   }
 }
 #endif  // defined(OS_MAC)
+
+class CableV2AuthenticatorImplTest : public AuthenticatorImplTest {
+ public:
+  CableV2AuthenticatorImplTest()
+      : network_context_(device::cablev2::NewMockTunnelServer(
+            base::BindRepeating(&CableV2AuthenticatorImplTest::OnContact,
+                                base::Unretained(this)))) {}
+
+  void SetUp() override {
+    AuthenticatorImplTest::SetUp();
+
+    EnableFeature(features::kWebAuthCable);
+    EnableFeature(device::kWebAuthPhoneSupport);
+    NavigateAndCommit(GURL(kTestOrigin1));
+
+    bssl::UniquePtr<EC_GROUP> p256(
+        EC_GROUP_new_by_curve_name(NID_X9_62_prime256v1));
+    bssl::UniquePtr<EC_KEY> peer_identity(EC_KEY_derive_from_secret(
+        p256.get(), zero_seed_.data(), zero_seed_.size()));
+    CHECK_EQ(sizeof(peer_identity_x962_),
+             EC_POINT_point2oct(
+                 p256.get(), EC_KEY_get0_public_key(peer_identity.get()),
+                 POINT_CONVERSION_UNCOMPRESSED, peer_identity_x962_,
+                 sizeof(peer_identity_x962_), /*ctx=*/nullptr));
+  }
+
+  base::RepeatingCallback<void(std::unique_ptr<device::cablev2::Pairing>)>
+  GetPairingCallback() {
+    return base::BindRepeating(&CableV2AuthenticatorImplTest::OnPairing,
+                               base::Unretained(this));
+  }
+
+ protected:
+  class DiscoveryFactory : public device::FidoDiscoveryFactory {
+   public:
+    explicit DiscoveryFactory(
+        std::unique_ptr<device::cablev2::Discovery> discovery)
+        : discovery_(std::move(discovery)) {}
+
+    std::vector<std::unique_ptr<device::FidoDiscoveryBase>> Create(
+        device::FidoTransportProtocol transport) override {
+      if (transport !=
+              device::FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy ||
+          !discovery_) {
+        return {};
+      }
+
+      return SingleDiscovery(std::move(discovery_));
+    }
+
+   private:
+    std::unique_ptr<device::cablev2::Discovery> discovery_;
+  };
+
+  void OnContact(
+      base::span<const uint8_t, device::cablev2::kTunnelIdSize> tunnel_id,
+      base::span<const uint8_t> pairing_id,
+      base::span<const uint8_t, device::cablev2::kClientNonceSize>
+          client_nonce) {
+    std::move(contact_callback_).Run(tunnel_id, pairing_id, client_nonce);
+  }
+
+  void OnPairing(std::unique_ptr<device::cablev2::Pairing> pairing) {
+    pairings_.emplace_back(std::move(pairing));
+  }
+
+  const std::array<uint8_t, device::cablev2::kRootSecretSize> root_secret_ = {
+      0};
+  const device::QRGeneratorKey qr_generator_key_ = {0};
+  const std::array<uint8_t, 16> zero_qr_secret_ = {0};
+  const device::CableIdentityKeySeed zero_seed_ = {0};
+
+  std::unique_ptr<network::mojom::NetworkContext> network_context_;
+  uint8_t peer_identity_x962_[device::kP256X962Length] = {0};
+  device::VirtualCtap2Device virtual_device_;
+  std::vector<std::unique_ptr<device::cablev2::Pairing>> pairings_;
+  base::OnceCallback<void(
+      base::span<const uint8_t, device::cablev2::kTunnelIdSize> tunnel_id,
+      base::span<const uint8_t> pairing_id,
+      base::span<const uint8_t, device::cablev2::kClientNonceSize>
+          client_nonce)>
+      contact_callback_;
+};
+
+TEST_F(CableV2AuthenticatorImplTest, QRBasedWithNoPairing) {
+  auto discovery = std::make_unique<device::cablev2::Discovery>(
+      network_context_.get(), qr_generator_key_,
+      /*pairings=*/std::vector<std::unique_ptr<device::cablev2::Pairing>>(),
+      GetPairingCallback());
+  auto* const discovery_ptr = discovery.get();
+
+  AuthenticatorEnvironmentImpl::GetInstance()
+      ->ReplaceDefaultDiscoveryFactoryForTesting(
+          std::make_unique<DiscoveryFactory>(std::move(discovery)));
+
+  std::unique_ptr<device::cablev2::authenticator::Transaction> transaction =
+      device::cablev2::authenticator::TransactFromQRCode(
+          device::cablev2::authenticator::NewMockPlatform(discovery_ptr,
+                                                          &virtual_device_),
+          network_context_.get(), root_secret_, "Test Authenticator",
+          zero_qr_secret_, peer_identity_x962_,
+          /*contact_id=*/base::nullopt, base::DoNothing());
+
+  EXPECT_EQ(AuthenticatorMakeCredential().status, AuthenticatorStatus::SUCCESS);
+  EXPECT_EQ(pairings_.size(), 0u);
+}
+
+TEST_F(CableV2AuthenticatorImplTest, PairingBased) {
+  // First do unpaired exchange to get pairing data.
+  auto discovery = std::make_unique<device::cablev2::Discovery>(
+      network_context_.get(), qr_generator_key_,
+      /*pairings=*/std::vector<std::unique_ptr<device::cablev2::Pairing>>(),
+      GetPairingCallback());
+  auto* discovery_ptr = discovery.get();
+
+  AuthenticatorEnvironmentImpl::GetInstance()
+      ->ReplaceDefaultDiscoveryFactoryForTesting(
+          std::make_unique<DiscoveryFactory>(std::move(discovery)));
+
+  std::unique_ptr<device::cablev2::authenticator::Transaction> transaction =
+      device::cablev2::authenticator::TransactFromQRCode(
+          device::cablev2::authenticator::NewMockPlatform(discovery_ptr,
+                                                          &virtual_device_),
+          network_context_.get(), root_secret_, "Test Authenticator",
+          zero_qr_secret_, peer_identity_x962_,
+          /*contact_id=*/std::vector<uint8_t>({1, 2, 3}), base::DoNothing());
+
+  EXPECT_EQ(AuthenticatorMakeCredential().status, AuthenticatorStatus::SUCCESS);
+  EXPECT_EQ(pairings_.size(), 1u);
+
+  // Now do a pairing-based exchange.
+  discovery = std::make_unique<device::cablev2::Discovery>(
+      network_context_.get(), qr_generator_key_, std::move(pairings_),
+      GetPairingCallback());
+  discovery_ptr = discovery.get();
+
+  const std::array<uint8_t, device::cablev2::kRoutingIdSize> routing_id = {0};
+  bool contact_callback_was_called = false;
+  // When the |cablev2::Discovery| starts it'll make a connection to the tunnel
+  // service with the contact ID from the pairing data. This will be handled by
+  // the |TestNetworkContext| and turned into a call to |contact_callback_|.
+  // This simulates the tunnel server sending a cloud message to a phone. Given
+  // the information from the connection, a transaction can be created.
+  contact_callback_ = base::BindLambdaForTesting(
+      [this, &transaction, discovery_ptr, routing_id,
+       &contact_callback_was_called](
+          base::span<const uint8_t, device::cablev2::kTunnelIdSize> tunnel_id,
+          base::span<const uint8_t> pairing_id,
+          base::span<const uint8_t, device::cablev2::kClientNonceSize>
+              client_nonce) -> void {
+        contact_callback_was_called = true;
+        transaction = device::cablev2::authenticator::TransactFromFCM(
+            device::cablev2::authenticator::NewMockPlatform(discovery_ptr,
+                                                            &virtual_device_),
+            network_context_.get(), root_secret_, routing_id, tunnel_id,
+            pairing_id, client_nonce, base::DoNothing());
+      });
+
+  AuthenticatorEnvironmentImpl::GetInstance()
+      ->ReplaceDefaultDiscoveryFactoryForTesting(
+          std::make_unique<DiscoveryFactory>(std::move(discovery)));
+
+  EXPECT_EQ(AuthenticatorMakeCredential().status, AuthenticatorStatus::SUCCESS);
+  EXPECT_TRUE(contact_callback_was_called);
+}
 
 }  // namespace content

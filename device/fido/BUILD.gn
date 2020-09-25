@@ -294,6 +294,22 @@ static_library("cablev2_authenticator") {
   ]
 }
 
+static_library("cablev2_test_util") {
+  testonly = true
+  sources = [
+    "cable/v2_test_util.cc",
+    "cable/v2_test_util.h",
+  ]
+  deps = [
+    ":cablev2_authenticator",
+    ":fido",
+    "//components/cbor",
+    "//crypto",
+    "//services/network:test_support",
+    "//services/network/public/mojom",
+  ]
+}
+
 if (is_chromeos) {
   proto_library("u2f_proto") {
     sources = [ "//third_party/cros_system_api/dbus/u2f/u2f_interface.proto" ]
@@ -383,7 +399,6 @@ source_set("test_support") {
   testonly = true
   sources = [ "test_callback_receiver.h" ]
   deps = [
-    ":cablev2_authenticator",
     "//base",
     "//components/apdu",
     "//device/fido",
