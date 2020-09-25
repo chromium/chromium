@@ -19,8 +19,8 @@ namespace policy {
 // policy rules set by the admin.
 class EnterpriseClipboardDlpController : public ui::ClipboardDlpController {
  public:
-  EnterpriseClipboardDlpController() = default;
-  ~EnterpriseClipboardDlpController() override = default;
+  EnterpriseClipboardDlpController();
+  ~EnterpriseClipboardDlpController() override;
 
   EnterpriseClipboardDlpController(const EnterpriseClipboardDlpController&) =
       delete;

@@ -96,6 +96,12 @@ DlpRulesManager::Level GetMaxLevel(const DlpRulesManager::Level& level_1,
                                                                    : level_2;
 }
 
+DlpRulesManager::Level GetMinLevel(const DlpRulesManager::Level& level_1,
+                                   const DlpRulesManager::Level& level_2) {
+  return GetPriorityMapping(level_1) < GetPriorityMapping(level_2) ? level_1
+                                                                   : level_2;
+}
+
 // A singleton instance of DlpRulesManager. Set from DlpRulesManager::Init().
 static DlpRulesManager* g_dlp_rules_manager = nullptr;
 
@@ -178,6 +184,18 @@ DlpRulesManager::Level DlpRulesManager::IsRestrictedComponent(
 
   return GetMaxJoinRestrictionLevel(restriction, source_rules_ids,
                                     components_rules_ids);
+}
+
+DlpRulesManager::Level DlpRulesManager::IsRestrictedAnyOfComponents(
+    const GURL& source,
+    const std::vector<Component>& destinations,
+    Restriction restriction) const {
+  Level min_level = Level::kAllow;
+  for (const auto& destination : destinations) {
+    min_level = GetMinLevel(
+        min_level, IsRestrictedComponent(source, destination, restriction));
+  }
+  return min_level;
 }
 
 DlpRulesManager::DlpRulesManager() {
