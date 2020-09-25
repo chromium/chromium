@@ -457,6 +457,12 @@ class AddressComponent {
   // the normalized value.
   virtual base::string16 ValueForComparison() const;
 
+  // Returns true if the merging of two token identical values should give
+  // precedence to the newer value. By default, the newer component gets
+  // precedence if it has the same or better verification status.
+  virtual bool HasNewerValuePrecendenceInMerging(
+      const AddressComponent& newer_component) const;
+
  private:
   // Unsets the node and all of its children.
   void UnsetAddressComponentAndItsSubcomponents();

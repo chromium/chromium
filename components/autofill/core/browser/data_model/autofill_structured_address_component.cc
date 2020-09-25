@@ -868,7 +868,7 @@ bool AddressComponent::MergeWithComponent(
 
   if ((merge_mode_ & kPickShorterIfOneContainsTheOther) &&
       token_comparison_result.ContainEachOther()) {
-    if (newer_component.GetValue().size() < GetValue().size())
+    if (newer_component.GetValue().size() <= GetValue().size())
       *this = newer_component;
     return true;
   }
@@ -889,11 +889,18 @@ bool AddressComponent::MergeWithComponent(
   return false;
 }
 
+bool AddressComponent::HasNewerValuePrecendenceInMerging(
+    const AddressComponent& newer_component) const {
+  return newer_component.GetVerificationStatus() >= GetVerificationStatus();
+}
+
 bool AddressComponent::MergeTokenEquivalentComponent(
     const AddressComponent& newer_component) {
-  if (!AreSortedTokensEqual(GetSortedTokens(),
-                            newer_component.GetSortedTokens()))
+  if (!AreSortedTokensEqual(
+          TokenizeValue(ValueForComparison()),
+          TokenizeValue(newer_component.ValueForComparison()))) {
     return false;
+  }
 
   // Assumption:
   // The values of both components are a permutation of the same tokens.
@@ -912,7 +919,7 @@ bool AddressComponent::MergeTokenEquivalentComponent(
   // this component or the other depending on which substructure is better in
   // terms of the number of validated tokens.
 
-  if (newer_component.GetVerificationStatus() >= GetVerificationStatus()) {
+  if (HasNewerValuePrecendenceInMerging(newer_component)) {
     SetValue(newer_component.GetValue(),
              newer_component.GetVerificationStatus());
   }

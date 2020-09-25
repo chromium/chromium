@@ -115,6 +115,12 @@ class StreetAddress : public AddressComponentWithRewriter {
   void UnsetValue() override;
 
  protected:
+  // Gives the component with the higher verification status precedence.
+  // If the statuses are the same, the older component gets precedence if it
+  // contains newlines but the newer one does not.
+  bool HasNewerValuePrecendenceInMerging(
+      const AddressComponent& newer_component) const override;
+
   std::vector<const re2::RE2*> GetParseRegularExpressionsByRelevance()
       const override;
 

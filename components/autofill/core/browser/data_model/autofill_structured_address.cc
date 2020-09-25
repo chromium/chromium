@@ -4,7 +4,6 @@
 
 #include "components/autofill/core/browser/data_model/autofill_structured_address.h"
 
-#include <iostream>
 #include <utility>
 #include "base/i18n/case_conversion.h"
 #include "base/strings/strcat.h"
@@ -26,10 +25,10 @@ base::string16 AddressComponentWithRewriter::RewriteValue(
     const base::string16& value) const {
   // Retrieve the country name from the structured tree the node resides in.
   base::string16 country = GetRootNode().GetValueForType(ADDRESS_HOME_COUNTRY);
-  if (!country.empty())
-    return RewriterCache::Rewrite(country, value);
-  // Without a county the value can not be rewritten.
-  return value;
+  // If no country is available (this should not be the case for a valid
+  // importable profile), use the US as a fallback country for the rewriter.
+  return RewriterCache::Rewrite(
+      !country.empty() ? country : base::ASCIIToUTF16("US"), value);
 }
 
 base::string16 AddressComponentWithRewriter::ValueForComparison() const {
@@ -103,7 +102,8 @@ StreetAddress::StreetAddress(AddressComponent* parent)
           ADDRESS_HOME_STREET_ADDRESS,
           parent,
           {&streets_, &number_, &premise_, &sub_premise_},
-          MergeMode::kReplaceSubset | MergeMode::kDefault) {}
+          MergeMode::kReplaceEmpty | MergeMode::kReplaceSubset |
+              MergeMode::kDefault) {}
 
 StreetAddress::~StreetAddress() = default;
 
@@ -115,6 +115,24 @@ StreetAddress::GetParseRegularExpressionsByRelevance() const {
           pattern_provider->GetRegEx(RegEx::kParseStreetNameHouseNumber),
           pattern_provider->GetRegEx(
               RegEx::kParseStreetNameHouseNumberSuffixedFloor)};
+}
+
+bool StreetAddress::HasNewerValuePrecendenceInMerging(
+    const AddressComponent& newer_component) const {
+  // If the newer component has a better verification status, use the newer one.
+  if (GetVerificationStatus() < newer_component.GetVerificationStatus())
+    return true;
+
+  // If the verification statuses are the same, do not use the newer component
+  // if the older one has new lines but the newer one doesn't.
+  if (GetVerificationStatus() == newer_component.GetVerificationStatus()) {
+    if (GetValue().find('\n') != base::string16::npos &&
+        newer_component.GetValue().find('\n') == base::string16::npos) {
+      return false;
+    }
+    return true;
+  }
+  return false;
 }
 
 base::string16 StreetAddress::GetBestFormatString() const {

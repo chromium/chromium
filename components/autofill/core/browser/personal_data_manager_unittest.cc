@@ -88,6 +88,11 @@ bool StructuredNames() {
       features::kAutofillEnableSupportForMoreStructureInNames);
 }
 
+bool StructuredAddress() {
+  return base::FeatureList::IsEnabled(
+      features::kAutofillEnableSupportForMoreStructureInAddresses);
+}
+
 class PersonalDataLoadedObserverMock : public PersonalDataManagerObserver {
  public:
   PersonalDataLoadedObserverMock() {}
@@ -1731,12 +1736,17 @@ TEST_F(PersonalDataManagerTest, GetNonEmptyTypes) {
   EXPECT_EQ(1U, personal_data_->GetProfiles().size());
 
   personal_data_->GetNonEmptyTypes(&non_empty_types);
-  // For structured names, there is one more non-empty type.
+  // For structured names and addresses, there are more non-empty types.
   // TODO(crbug.com/1103421): Clean once launched.
+  unsigned int non_empty_types_expectation = 15;
   if (StructuredNames())
-    EXPECT_EQ(16U, non_empty_types.size());
-  else
-    EXPECT_EQ(15U, non_empty_types.size());
+    non_empty_types_expectation += 1;
+  // TODO(crbug.com/1130194): Clean once launched.
+  if (StructuredAddress())
+    non_empty_types_expectation += 2;
+
+  EXPECT_EQ(non_empty_types_expectation, non_empty_types.size());
+
   EXPECT_TRUE(non_empty_types.count(NAME_FIRST));
   EXPECT_TRUE(non_empty_types.count(NAME_LAST));
   // TODO(crbug.com/1103421): Clean once launched.
@@ -1746,6 +1756,11 @@ TEST_F(PersonalDataManagerTest, GetNonEmptyTypes) {
   EXPECT_TRUE(non_empty_types.count(EMAIL_ADDRESS));
   EXPECT_TRUE(non_empty_types.count(ADDRESS_HOME_LINE1));
   EXPECT_TRUE(non_empty_types.count(ADDRESS_HOME_STREET_ADDRESS));
+  // TODO(crbug.com/1130194): Clean once launched.
+  if (StructuredAddress()) {
+    EXPECT_TRUE(non_empty_types.count(ADDRESS_HOME_STREET_NAME));
+    EXPECT_TRUE(non_empty_types.count(ADDRESS_HOME_HOUSE_NUMBER));
+  }
   EXPECT_TRUE(non_empty_types.count(ADDRESS_HOME_CITY));
   EXPECT_TRUE(non_empty_types.count(ADDRESS_HOME_STATE));
   EXPECT_TRUE(non_empty_types.count(ADDRESS_HOME_ZIP));
@@ -1773,12 +1788,15 @@ TEST_F(PersonalDataManagerTest, GetNonEmptyTypes) {
   EXPECT_EQ(3U, personal_data_->GetProfiles().size());
 
   personal_data_->GetNonEmptyTypes(&non_empty_types);
+  non_empty_types_expectation = 19;
   // For structured names, there is one more non-empty type.
   // TODO(crbug.com/1103421): Clean once launched.
   if (StructuredNames())
-    EXPECT_EQ(20U, non_empty_types.size());
-  else
-    EXPECT_EQ(19U, non_empty_types.size());
+    non_empty_types_expectation += 1;
+  // TODO(crbug.com/1130194): Clean once launched.
+  if (StructuredAddress())
+    non_empty_types_expectation += 2;
+  EXPECT_EQ(non_empty_types_expectation, non_empty_types.size());
   EXPECT_TRUE(non_empty_types.count(NAME_FIRST));
   EXPECT_TRUE(non_empty_types.count(NAME_MIDDLE));
   EXPECT_TRUE(non_empty_types.count(NAME_MIDDLE_INITIAL));
@@ -1791,6 +1809,11 @@ TEST_F(PersonalDataManagerTest, GetNonEmptyTypes) {
   EXPECT_TRUE(non_empty_types.count(ADDRESS_HOME_LINE1));
   EXPECT_TRUE(non_empty_types.count(ADDRESS_HOME_LINE2));
   EXPECT_TRUE(non_empty_types.count(ADDRESS_HOME_STREET_ADDRESS));
+  // TODO(crbug.com/1130194): Clean once launched.
+  if (StructuredAddress()) {
+    EXPECT_TRUE(non_empty_types.count(ADDRESS_HOME_STREET_NAME));
+    EXPECT_TRUE(non_empty_types.count(ADDRESS_HOME_HOUSE_NUMBER));
+  }
   EXPECT_TRUE(non_empty_types.count(ADDRESS_HOME_CITY));
   EXPECT_TRUE(non_empty_types.count(ADDRESS_HOME_STATE));
   EXPECT_TRUE(non_empty_types.count(ADDRESS_HOME_ZIP));
@@ -1813,20 +1836,30 @@ TEST_F(PersonalDataManagerTest, GetNonEmptyTypes) {
   personal_data_->GetNonEmptyTypes(&non_empty_types);
   // For structured names, there is one more non-empty type.
   // TODO(crbug.com/1103421): Clean once launched.
+  non_empty_types_expectation = 29;
   if (StructuredNames())
-    EXPECT_EQ(30U, non_empty_types.size());
-  else
-    EXPECT_EQ(29U, non_empty_types.size());
+    non_empty_types_expectation += 1;
+  // TODO(crbug.com/1130194): Clean once launched.
+  if (StructuredAddress())
+    non_empty_types_expectation += 2;
+  EXPECT_EQ(non_empty_types_expectation, non_empty_types.size());
   EXPECT_TRUE(non_empty_types.count(NAME_FIRST));
   EXPECT_TRUE(non_empty_types.count(NAME_MIDDLE));
   EXPECT_TRUE(non_empty_types.count(NAME_MIDDLE_INITIAL));
   EXPECT_TRUE(non_empty_types.count(NAME_LAST));
   EXPECT_TRUE(non_empty_types.count(NAME_FULL));
+  if (StructuredNames())
+    EXPECT_TRUE(non_empty_types.count(NAME_LAST));
   EXPECT_TRUE(non_empty_types.count(EMAIL_ADDRESS));
   EXPECT_TRUE(non_empty_types.count(COMPANY_NAME));
   EXPECT_TRUE(non_empty_types.count(ADDRESS_HOME_LINE1));
   EXPECT_TRUE(non_empty_types.count(ADDRESS_HOME_LINE2));
   EXPECT_TRUE(non_empty_types.count(ADDRESS_HOME_STREET_ADDRESS));
+  // TODO(crbug.com/1130194): Clean once launched.
+  if (StructuredAddress()) {
+    EXPECT_TRUE(non_empty_types.count(ADDRESS_HOME_STREET_NAME));
+    EXPECT_TRUE(non_empty_types.count(ADDRESS_HOME_HOUSE_NUMBER));
+  }
   EXPECT_TRUE(non_empty_types.count(ADDRESS_HOME_CITY));
   EXPECT_TRUE(non_empty_types.count(ADDRESS_HOME_STATE));
   EXPECT_TRUE(non_empty_types.count(ADDRESS_HOME_ZIP));
@@ -4054,8 +4087,9 @@ TEST_P(SaveImportedProfileTest, SaveImportedProfile) {
 
   // Apply changes to the original profile (if applicable).
   for (ProfileField change : test_case.changes_to_original) {
-    original_profile.SetRawInfo(change.field_type,
-                                base::UTF8ToUTF16(change.field_value));
+    original_profile.SetRawInfoWithVerificationStatus(
+        change.field_type, base::UTF8ToUTF16(change.field_value),
+        structured_address::VerificationStatus::kObserved);
   }
 
   // Initialize PersonalDataManager with the original profile.
@@ -4069,8 +4103,9 @@ TEST_P(SaveImportedProfileTest, SaveImportedProfile) {
 
   // Apply changes to the second profile (if applicable).
   for (ProfileField change : test_case.changes_to_new) {
-    profile2.SetRawInfo(change.field_type,
-                        base::UTF8ToUTF16(change.field_value));
+    profile2.SetRawInfoWithVerificationStatus(
+        change.field_type, base::UTF8ToUTF16(change.field_value),
+        structured_address::VerificationStatus::kObserved);
   }
 
   profile2.FinalizeAfterImport();

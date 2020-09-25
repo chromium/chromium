@@ -1208,11 +1208,15 @@ std::unique_ptr<AutofillProfile> AutofillTable::GetAutofillProfile(
   // The details should be added after the other info to make sure they don't
   // change when we change the names/emails/phones.
   AddAutofillProfileDetailsFromStatement(s, profile.get());
+  bool validation_status = profile->is_client_validity_states_updated();
 
   // The structured address information should be added after the street_address
   // from the query above was  written because this information is used to
   // detect changes by a legacy client.
   AddAutofillProfileAddressesToProfile(db_, profile.get());
+  // Set the validation status again to prevent a change due to the repeated
+  // writing.
+  profile->set_is_client_validity_states_updated(validation_status);
 
   // For more-structured profiles, the profile must be finalized to fully
   // populate the name fields.
