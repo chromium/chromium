@@ -113,7 +113,6 @@ class SiteDataCacheFacadeTest : public testing::TestWithPerformanceManager {
   void TearDown() override {
     use_in_memory_db_for_testing_.reset();
     profile_.reset();
-    SiteDataCacheFacadeFactory::ReleaseInstanceForTesting();
     testing::TestWithPerformanceManager::TearDown();
   }
 

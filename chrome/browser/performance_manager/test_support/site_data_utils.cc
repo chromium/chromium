@@ -46,7 +46,6 @@ void SiteDataTestHarness::TearDown(Profile* profile) {
 }
 
 void SiteDataTestHarness::TearDown() {
-  SiteDataCacheFacadeFactory::ReleaseInstanceForTesting();
   PerformanceManagerTestHarnessHelper::TearDown();
 }
 

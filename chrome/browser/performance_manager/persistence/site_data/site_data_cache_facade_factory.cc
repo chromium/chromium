@@ -19,18 +19,13 @@
 namespace performance_manager {
 
 namespace {
-
-SiteDataCacheFacadeFactory* g_instance = nullptr;
-
 // Tests that want to use this factory will have to explicitly enable it.
 bool g_enable_for_testing = false;
 }
 
 SiteDataCacheFacadeFactory* SiteDataCacheFacadeFactory::GetInstance() {
-  if (!g_instance)
-    new SiteDataCacheFacadeFactory();
-  DCHECK(g_instance);
-  return g_instance;
+  static base::NoDestructor<SiteDataCacheFacadeFactory> instance;
+  return instance.get();
 }
 
 // static
@@ -48,30 +43,14 @@ void SiteDataCacheFacadeFactory::DisassociateForTesting(Profile* profile) {
   GetInstance()->Disassociate(profile);
 }
 
-// static
-void SiteDataCacheFacadeFactory::ReleaseInstanceForTesting() {
-  base::RunLoop run_loop;
-  g_instance->cache_factory()->ResetWithCallbackAfterDestruction(
-      run_loop.QuitClosure());
-  run_loop.Run();
-  delete g_instance;
-  DCHECK(!g_instance);
-}
-
 SiteDataCacheFacadeFactory::SiteDataCacheFacadeFactory()
     : BrowserContextKeyedServiceFactory(
           "SiteDataCacheFacadeFactory",
-          BrowserContextDependencyManager::GetInstance()),
-      cache_factory_(performance_manager::PerformanceManager::GetTaskRunner()) {
-  DCHECK(!g_instance);
-  g_instance = this;
+          BrowserContextDependencyManager::GetInstance()) {
   DependsOn(HistoryServiceFactory::GetInstance());
 }
 
-SiteDataCacheFacadeFactory::~SiteDataCacheFacadeFactory() {
-  DCHECK_EQ(this, g_instance);
-  g_instance = nullptr;
-}
+SiteDataCacheFacadeFactory::~SiteDataCacheFacadeFactory() = default;
 
 KeyedService* SiteDataCacheFacadeFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
@@ -91,6 +70,25 @@ bool SiteDataCacheFacadeFactory::ServiceIsCreatedWithBrowserContext() const {
 
 bool SiteDataCacheFacadeFactory::ServiceIsNULLWhileTesting() const {
   return !g_enable_for_testing;
+}
+
+void SiteDataCacheFacadeFactory::OnBeforeFacadeCreated(
+    util::PassKey<SiteDataCacheFacade>) {
+  if (service_instance_count_ == 0U) {
+    DCHECK(cache_factory_.is_null());
+    cache_factory_ = base::SequenceBound<SiteDataCacheFactory>(
+        performance_manager::PerformanceManager::GetTaskRunner());
+  }
+  ++service_instance_count_;
+}
+
+void SiteDataCacheFacadeFactory::OnFacadeDestroyed(
+    util::PassKey<SiteDataCacheFacade>) {
+  DCHECK_GT(service_instance_count_, 0U);
+  // Destroy the cache factory if there's no more SiteDataCacheFacade needing
+  // it.
+  if (--service_instance_count_ == 0)
+    cache_factory_.Reset();
 }
 
 }  // namespace performance_manager
