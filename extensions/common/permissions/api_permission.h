@@ -66,7 +66,7 @@ class APIPermission {
     kBrowser = 22,
     kBrowsingData = 23,
     kCast = 24,
-    kCastStreaming = 25,
+    kDeleted_kCastStreaming = 25,
     kChromeosInfoPrivate = 26,
     kClipboardRead = 27,
     kClipboardWrite = 28,

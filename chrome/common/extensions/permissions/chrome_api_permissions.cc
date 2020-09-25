@@ -223,7 +223,6 @@ constexpr APIPermissionInfo::InitInfo permissions_to_register[] = {
     // Platform-app permissions.
     {APIPermission::kFileSystemProvider, "fileSystemProvider",
      APIPermissionInfo::kFlagDoesNotRequireManagedSessionFullLoginWarning},
-    {APIPermission::kCastStreaming, "cast.streaming"},
     {APIPermission::kLauncherSearchProvider, "launcherSearchProvider"},
 
     // Settings override permissions.
