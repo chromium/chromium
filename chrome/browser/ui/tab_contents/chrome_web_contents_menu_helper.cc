@@ -14,11 +14,8 @@
 content::ContextMenuParams AddContextMenuParamsPropertiesFromPreferences(
     content::WebContents* web_contents,
     const content::ContextMenuParams& params) {
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
-  if (!browser)
-    return params;
-
-  Profile* profile = browser->profile();
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
   PrefService* prefs = profile->GetPrefs();
 
   if (!prefs->GetBoolean(prefs::kDefaultSearchProviderContextMenuAccessAllowed))
