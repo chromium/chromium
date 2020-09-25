@@ -80,7 +80,7 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
     request.mutable_settings()->set_allocated_source(&source);
 
     dbus::MethodCall method_call(lorgnette::kManagerServiceInterface,
-                                 lorgnette::kStartScanMultiPageMethod);
+                                 lorgnette::kStartScanMethod);
     dbus::MessageWriter writer(&method_call);
     if (!writer.AppendProtoAsArrayOfBytes(request)) {
       LOG(ERROR) << "Failed to encode StartScanRequest protobuf";
