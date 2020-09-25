@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-FAIL scriptPercentScaleDown=80, scriptScriptPercentScaleDown=40 assert_approx_equals: Wrong font-size (id=scale80-40-scaledown ; level=0 ; i=0) expected 1073.733 +/- 1 but got 3000
-FAIL scriptPercentScaleDown=0, scriptScriptPercentScaleDown=40 assert_approx_equals: Wrong font-size (id=scale0-40-scaledown ; level=0 ; i=0) expected 1073.733 +/- 1 but got 3000
-FAIL scriptPercentScaleDown=80, scriptScriptPercentScaleDown=0 assert_approx_equals: Wrong font-size (id=scale80-0-scaledown ; level=0 ; i=0) expected 1073.733 +/- 1 but got 3000
-FAIL No MATH table assert_approx_equals: Wrong font-size (id=default-scaledown ; level=0 ; i=0) expected 1073.733 +/- 1 but got 3000
-Harness: the test ran to completion.
-

@@ -389,6 +389,8 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
       return a.ContainIntrinsicSize() == b.ContainIntrinsicSize();
     case CSSPropertyID::kAspectRatio:
       return a.AspectRatio() == b.AspectRatio();
+    case CSSPropertyID::kMathDepth:
+      return a.MathDepth() == b.MathDepth();
     default:
       NOTREACHED();
       return true;

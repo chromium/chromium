@@ -52,6 +52,7 @@ bool IsValueOutOfRangeForProperty(CSSPropertyID property_id,
   switch (property_id) {
     case CSSPropertyID::kOrder:
     case CSSPropertyID::kZIndex:
+    case CSSPropertyID::kMathDepth:
       return round(value) != value;
     case CSSPropertyID::kTabSize:
       return value < 0 || (unit == CSSPrimitiveValue::UnitType::kNumber &&

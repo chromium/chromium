@@ -1056,14 +1056,6 @@
       getter: "GetMathMaxSize",
     },
     {
-      name: "MathScriptLevel",
-      inherited: true,
-      field_template: "primitive",
-      type_name: "short",
-      default_value: "0",
-      field_group: "*",
-    },
-    {
       name: "EffectiveZIndexZero",
       field_template: "primitive",
       type_name: "bool",

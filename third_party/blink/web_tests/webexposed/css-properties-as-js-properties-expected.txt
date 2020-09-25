@@ -240,6 +240,7 @@ markerMid
 markerStart
 mask
 maskType
+mathDepth
 mathShift
 mathStyle
 maxBlockSize

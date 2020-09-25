@@ -232,6 +232,7 @@ All changes to this list should go through Blink's feature review process: http:
     marker-start
     mask
     mask-type
+    math-depth
     math-shift
     math-style
     max-block-size

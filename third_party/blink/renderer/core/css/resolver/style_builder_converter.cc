@@ -309,8 +309,8 @@ StyleBuilderConverter::ConvertFontVariationSettings(
 }
 
 float MathScriptScaleFactor(StyleResolverState& state) {
-  int a = state.ParentStyle()->MathScriptLevel();
-  int b = state.Style()->MathScriptLevel();
+  int a = state.ParentStyle()->MathDepth();
+  int b = state.Style()->MathDepth();
   if (b == a)
     return 1.0;
   bool invertScaleFactor = false;
@@ -423,35 +423,6 @@ FontDescription::Size StyleBuilderConverterBase::ConvertFontSize(
       is_absolute);
 }
 
-static FontDescription::Size ConvertScriptLevelFontSize(
-    StyleResolverState& state,
-    const FontDescription::Size& parent_size,
-    const CSSFunctionValue& function_value) {
-  SECURITY_DCHECK(function_value.length() == 1);
-  const auto& css_value = function_value.Item(0);
-  if (const auto* list = DynamicTo<CSSValueList>(css_value)) {
-    DCHECK_EQ(list->length(), 1U);
-    const auto& relative_value = To<CSSPrimitiveValue>(list->Item(0));
-    state.Style()->SetMathScriptLevel(state.ParentStyle()->MathScriptLevel() +
-                                      relative_value.GetIntValue());
-  } else if (auto* identifier_value =
-                 DynamicTo<CSSIdentifierValue>(css_value)) {
-    DCHECK(identifier_value->GetValueID() == CSSValueID::kAuto);
-    unsigned level = 0;
-    if (state.ParentStyle()->MathStyle() == EMathStyle::kCompact)
-      level += 1;
-    state.Style()->SetMathScriptLevel(state.ParentStyle()->MathScriptLevel() +
-                                      level);
-  } else if (DynamicTo<CSSPrimitiveValue>(css_value)) {
-    state.Style()->SetMathScriptLevel(
-        To<CSSPrimitiveValue>(css_value).GetIntValue());
-  }
-  auto scale_factor = MathScriptScaleFactor(state);
-  state.Style()->SetHasGlyphRelativeUnits();
-  return FontDescription::Size(0, (scale_factor * parent_size.value),
-                               parent_size.is_absolute);
-}
-
 FontDescription::Size StyleBuilderConverter::ConvertFontSize(
     StyleResolverState& state,
     const CSSValue& value) {
@@ -460,8 +431,13 @@ FontDescription::Size StyleBuilderConverter::ConvertFontSize(
                          ? state.ParentFontDescription().GetSize()
                          : FontDescription::Size(0, 0.0f, false);
 
-  if (const auto* function_value = DynamicTo<CSSFunctionValue>(value))
-    return ConvertScriptLevelFontSize(state, parent_size, *function_value);
+  auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
+  if (identifier_value && identifier_value->GetValueID() == CSSValueID::kMath) {
+    auto scale_factor = MathScriptScaleFactor(state);
+    state.Style()->SetHasGlyphRelativeUnits();
+    return FontDescription::Size(0, (scale_factor * parent_size.value),
+                                 parent_size.is_absolute);
+  }
 
   return StyleBuilderConverterBase::ConvertFontSize(
       value, state.FontSizeConversionData(), parent_size);

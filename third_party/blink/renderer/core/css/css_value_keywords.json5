@@ -135,6 +135,7 @@
     "smaller",
     "larger",
     "-webkit-xxx-large",
+    // math
 
     //
     // font-family (<generic-family> in CSS 2.1)
@@ -1372,9 +1373,9 @@
     "p3",
     "rec2020",
 
-    // math-script-level
+    // math-depth
     "add",
-    "scriptlevel",
+    "auto-add",
 
     // overscroll-behavior
     // auto,

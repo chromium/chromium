@@ -30,6 +30,7 @@
 /* Default display */
 * {
     display: math;
+    font-size: math;
 }
 
 /* By default, we only display the MathML formulas without any formatting other than the one specified by the display attribute. */
@@ -37,6 +38,8 @@ math {
     display: inline-math;
     math-shift: normal;
     math-style: compact;
+    font-size: inherited;
+    math-depth: 0;
 }
 
 math[display="block"] {
@@ -78,7 +81,7 @@ mfrac {
 }
 
 mfrac > * {
-  font-size: scriptlevel(auto);
+  math-depth: auto-add;
   math-style: compact;
 }
 
@@ -88,7 +91,7 @@ mfrac > :nth-child(2) {
 
 /* Other rules for scriptlevel, displaystyle and math-shift */
 mroot > :not(:first-child) {
-    font-size: scriptlevel(add(2));
+    math-depth: add(2);
     math-style: compact;
 }
 mroot, msqrt {
@@ -101,7 +104,7 @@ mmultiscripts > :not(:first-child),
 munder > :not(:first-child),
 mover > :not(:first-child),
 munderover > :not(:first-child) {
-  font-size: scriptlevel(add(1));
+  math-depth: add(1);
   math-style: compact;
 }
 

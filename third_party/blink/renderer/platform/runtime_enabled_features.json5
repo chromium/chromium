@@ -508,6 +508,11 @@
       name: "CSSMatchedPropertiesCacheDependencies",
     },
     {
+      name: "CSSMathDepth",
+      status: "experimental",
+      implied_by: ["MathMLCore"],
+    },
+    {
       name: "CSSMathShift",
       status: "experimental",
       implied_by: ["MathMLCore"],

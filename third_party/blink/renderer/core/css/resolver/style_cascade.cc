@@ -164,6 +164,10 @@ void StyleCascade::Apply(CascadeFilter filter) {
   // high-priority properties.
   LookupAndApply(GetCSSPropertyColorScheme(), resolver);
 
+  // Affects the computed value of 'font-size', hence needs to happen before
+  // high-priority properties.
+  LookupAndApply(GetCSSPropertyMathDepth(), resolver);
+
   ApplyWebkitBorderImage(resolver);
 
   // -webkit-mask-image needs to be applied before -webkit-mask-composite,

@@ -4099,6 +4099,40 @@ const CSSValue* MathStyle::CSSValueFromComputedStyleInternal(
   return CSSIdentifierValue::Create(style.MathStyle());
 }
 
+const CSSValue* MathDepth::ParseSingleValue(
+    CSSParserTokenRange& range,
+    const CSSParserContext& context,
+    const CSSParserLocalContext&) const {
+  return css_parsing_utils::ConsumeMathDepth(range, context);
+}
+
+const CSSValue* MathDepth::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const SVGComputedStyle&,
+    const LayoutObject*,
+    bool allow_visited_style) const {
+  return CSSNumericLiteralValue::Create(style.MathDepth(),
+                                        CSSPrimitiveValue::UnitType::kNumber);
+}
+
+void MathDepth::ApplyValue(StyleResolverState& state,
+                           const CSSValue& value) const {
+  if (const auto* list = DynamicTo<CSSValueList>(value)) {
+    DCHECK_EQ(list->length(), 1U);
+    const auto& relative_value = To<CSSPrimitiveValue>(list->Item(0));
+    state.Style()->SetMathDepth(state.ParentStyle()->MathDepth() +
+                                relative_value.GetIntValue());
+  } else if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
+    DCHECK(identifier_value->GetValueID() == CSSValueID::kAutoAdd);
+    unsigned depth = 0;
+    if (state.ParentStyle()->MathStyle() == EMathStyle::kCompact)
+      depth += 1;
+    state.Style()->SetMathDepth(state.ParentStyle()->MathDepth() + depth);
+  } else if (DynamicTo<CSSPrimitiveValue>(value)) {
+    state.Style()->SetMathDepth(To<CSSPrimitiveValue>(value).GetIntValue());
+  }
+}
+
 const CSSValue* MaxBlockSize::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,

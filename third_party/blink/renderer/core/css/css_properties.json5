@@ -968,6 +968,18 @@
       priority: "High",
     },
     {
+      name: "math-depth",
+      default_value: 0,
+      field_group: "*",
+      field_template: "primitive",
+      inherited: true,
+      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      runtime_flag: "CSSMathDepth",
+      style_builder_custom_functions: ["value"],
+      type_name: "short",
+      typedom_types: ["Number"],
+    },
+    {
       name: "text-orientation",
       property_methods: ["CSSValueFromComputedStyleInternal"],
       inherited: true,
@@ -1801,7 +1813,6 @@
       type_name: "Vector<AtomicString>",
       default_value: "Vector<AtomicString, 0>()",
       field_template: "external",
-      priority: "High",
     },
     {
       name: "column-fill",
@@ -2526,7 +2537,6 @@
       default_value: "normal",
       runtime_flag: "CSSMathShift"
     },
-    // TODO(rbuis): should be moved to high priority later.
     {
       name: "math-style",
       property_methods: ["CSSValueFromComputedStyleInternal"],

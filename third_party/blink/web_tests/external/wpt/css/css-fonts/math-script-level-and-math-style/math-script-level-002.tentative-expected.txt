@@ -1,9 +1,0 @@
-This is a testharness.js-based test.
-FAIL auto assert_equals: expected 355 but got 500
-FAIL auto ; starting from level 7 assert_approx_equals: expected 181.90240316781995 +/- 0.1 but got 2000
-FAIL add(<integer>) assert_equals: expected 100 but got 71
-FAIL add(<integer>) ; starting from level 3 assert_equals: expected 100 but got 71
-FAIL <integer> assert_equals: expected 100 but got 71
-FAIL <integer> ; starting from level 50 assert_equals: expected 100 but got 71
-Harness: the test ran to completion.
-

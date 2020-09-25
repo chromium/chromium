@@ -354,6 +354,9 @@ CSSValue* ConsumeFontSize(CSSParserTokenRange&,
 
 CSSValue* ConsumeLineHeight(CSSParserTokenRange&, const CSSParserContext&);
 
+CSSValue* ConsumeMathDepth(CSSParserTokenRange& range,
+                           const CSSParserContext& context);
+
 CSSValueList* ConsumeFontFamily(CSSParserTokenRange&);
 CSSValue* ConsumeGenericFamily(CSSParserTokenRange&);
 CSSValue* ConsumeFamilyName(CSSParserTokenRange&);

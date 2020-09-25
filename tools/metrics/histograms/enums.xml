@@ -46437,6 +46437,7 @@ Called by update_use_counter_css.py.-->
   <int value="674" label="advance-override"/>
   <int value="675" label="line-gap-override"/>
   <int value="676" label="math-shift"/>
+  <int value="677" label="math-depth"/>
 </enum>
 
 <enum name="MappedEditingCommands">
