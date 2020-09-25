@@ -130,6 +130,13 @@ class WindowCycleControllerTest : public AshTestBase {
         ->cycle_view_for_testing();
   }
 
+  int GetCurrentIndex() const {
+    return Shell::Get()
+        ->window_cycle_controller()
+        ->window_cycle_list()
+        ->current_index_for_testing();
+  }
+
  private:
   std::unique_ptr<ShelfViewTestAPI> shelf_view_test_;
 
@@ -286,6 +293,94 @@ TEST_F(WindowCycleControllerTest, HandleCycleWindow) {
   EXPECT_TRUE(wm::IsActiveWindow(window0.get()));
   EXPECT_FALSE(wm::IsActiveWindow(skip_overview_window.get()));
   EXPECT_FALSE(wm::IsActiveWindow(window1.get()));
+}
+
+TEST_F(WindowCycleControllerTest, Scroll) {
+  WindowCycleController* controller = Shell::Get()->window_cycle_controller();
+
+  // Doesn't crash if there are no windows.
+  controller->Scroll(WindowCycleController::FORWARD);
+
+  // Create test windows.
+  std::unique_ptr<Window> w5 = CreateTestWindow(gfx::Rect(0, 0, 200, 200));
+  std::unique_ptr<Window> w4 = CreateTestWindow(gfx::Rect(0, 0, 200, 200));
+  std::unique_ptr<Window> w3 = CreateTestWindow(gfx::Rect(0, 0, 200, 200));
+  std::unique_ptr<Window> w2 = CreateTestWindow(gfx::Rect(0, 0, 200, 200));
+  std::unique_ptr<Window> w1 = CreateTestWindow(gfx::Rect(0, 0, 200, 200));
+  std::unique_ptr<Window> w0 = CreateTestWindow(gfx::Rect(0, 0, 200, 200));
+
+  auto ScrollAndReturnCurrentIndex =
+      [this](WindowCycleController::Direction direction, int num_of_scrolls) {
+        WindowCycleController* controller =
+            Shell::Get()->window_cycle_controller();
+        for (int i = 0; i < num_of_scrolls; i++)
+          controller->Scroll(direction);
+
+        return GetCurrentIndex();
+      };
+
+  auto GetXOfCycleListCenterPoint = [this]() {
+    return GetWindowCycleListWidget()
+        ->GetWindowBoundsInScreen()
+        .CenterPoint()
+        .x();
+  };
+
+  auto GetXOfWindowCycleItemViewCenterPoint = [this](int index) {
+    return GetWindowCycleItemViews()[index]
+        ->GetBoundsInScreen()
+        .CenterPoint()
+        .x();
+  };
+
+  // Start cycling and scroll forward. The list should be not be centered around
+  // w1. Since w1 is so close to the beginning of the list.
+  controller->StartCycling();
+  int current_index =
+      ScrollAndReturnCurrentIndex(WindowCycleController::FORWARD, 1);
+  EXPECT_EQ(1, current_index);
+  EXPECT_GT(GetXOfCycleListCenterPoint(),
+            GetXOfWindowCycleItemViewCenterPoint(current_index));
+
+  // Scroll forward twice. The list should be centered around w3.
+  current_index =
+      ScrollAndReturnCurrentIndex(WindowCycleController::FORWARD, 2);
+  EXPECT_EQ(3, current_index);
+  EXPECT_EQ(GetXOfCycleListCenterPoint(),
+            GetXOfWindowCycleItemViewCenterPoint(current_index));
+
+  // Scroll backward once. The list should be centered around w2.
+  current_index =
+      ScrollAndReturnCurrentIndex(WindowCycleController::BACKWARD, 1);
+  EXPECT_EQ(2, current_index);
+  EXPECT_EQ(GetXOfCycleListCenterPoint(),
+            GetXOfWindowCycleItemViewCenterPoint(current_index));
+
+  // Scroll backward three times. The list should not be centered around w5.
+  current_index =
+      ScrollAndReturnCurrentIndex(WindowCycleController::BACKWARD, 3);
+  EXPECT_EQ(5, current_index);
+  EXPECT_LT(GetXOfCycleListCenterPoint(),
+            GetXOfWindowCycleItemViewCenterPoint(current_index));
+
+  // Cycle forward. Since the target window != current window, it should scroll
+  // to target window then cycle. The target_window was w0 prior to cycling.
+  controller->HandleCycleWindow(WindowCycleController::FORWARD);
+  current_index = GetCurrentIndex();
+  EXPECT_EQ(1, current_index);
+  EXPECT_GT(GetXOfCycleListCenterPoint(),
+            GetXOfWindowCycleItemViewCenterPoint(current_index));
+  controller->CompleteCycling();
+  EXPECT_TRUE(wm::IsActiveWindow(w1.get()));
+
+  // Start cycling, scroll backward once and complete cycling. Scroll should not
+  // affect the selected window.
+  controller->StartCycling();
+  current_index =
+      ScrollAndReturnCurrentIndex(WindowCycleController::BACKWARD, 1);
+  EXPECT_EQ(5, current_index);
+  controller->CompleteCycling();
+  EXPECT_TRUE(wm::IsActiveWindow(w1.get()));
 }
 
 // Cycles between a maximized and normal window.

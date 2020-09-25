@@ -46,13 +46,16 @@ class ASH_EXPORT WindowCycleList : public aura::WindowObserver,
   // |windows| is empty, cancels cycling.
   void ReplaceWindows(const WindowList& windows);
 
-  // Cycles to the next or previous window based on |direction| and re-layouts
-  // the window cycle list, scrolling the list.
+  // Cycles to the next or previous window based on |direction|. This moves the
+  // focus ring to the next/previous window and also scrolls the list.
   void Step(WindowCycleController::Direction direction);
 
-  // Skip window cycle list directly to |window| and don't re-layout the window
-  // cycle list, only moving the focus ring.
-  void StepToWindow(aura::Window* window);
+  // Scrolls windows in given |direction|. Does not move the focus ring.
+  void ScrollInDirection(WindowCycleController::Direction direction);
+
+  // Moves the focus ring to the respective preview for |window|. Does not
+  // scroll the window cycle list.
+  void SetFocusedWindow(aura::Window* window);
 
   // Checks whether |event| occurs within the cycle view. Returns false if
   // |cycle_view_| does not exist.
@@ -95,17 +98,26 @@ class ASH_EXPORT WindowCycleList : public aura::WindowObserver,
   // PIP.
   void SelectWindow(aura::Window* window);
 
-  // Cycles windows by |offset|. If |should_layout|, layouts the window cycle
-  // list and moves the focus border to the newly selected window. If not
-  // |should_layout|, just moves the focus border to the newly selected window.
-  // Should be called with |should_layout| if we want the Step() call to animate
-  // the window cycle list, scrolling it.
-  void Step(int offset, bool should_layout);
+  // Scrolls windows by |offset|. Does not move the focus ring. If you want to
+  // scroll the list and move the focus ring in one animation, call
+  // SetFocusedWindow() before this.
+  void Scroll(int offset);
+
+  // Returns the index for the window |offset| away from |current_index_|. Can
+  // only be called if |windows_| is not empty. Also checks that the window for
+  // the returned index exists.
+  int GetOffsettedWindowIndex(int offset) const;
+
+  // Returns the index for |window| in |windows_|. |window| must be in
+  // |windows_|.
+  int GetIndexOfWindow(aura::Window* window) const;
 
   // Returns the views for the window cycle list.
   const views::View::Views& GetWindowCycleItemViewsForTesting() const;
 
   WindowCycleView* cycle_view_for_testing() const { return cycle_view_; }
+
+  int current_index_for_testing() const { return current_index_; }
 
   // List of weak pointers to windows to use while cycling with the keyboard.
   // List is built when the user initiates the gesture (i.e. hits alt-tab the

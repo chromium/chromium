@@ -91,6 +91,17 @@ void WindowCycleController::HandleCycleWindow(Direction direction) {
   Step(direction);
 }
 
+void WindowCycleController::Scroll(Direction direction) {
+  if (!CanCycle())
+    return;
+
+  if (!IsCycling())
+    StartCycling();
+
+  DCHECK(window_cycle_list_);
+  window_cycle_list_->ScrollInDirection(direction);
+}
+
 void WindowCycleController::StartCycling() {
   // Close the wallpaper preview if it is open to prevent visual glitches where
   // the window view item for the preview is transparent
@@ -127,9 +138,12 @@ void WindowCycleController::MaybeResetCycleList() {
   window_cycle_list_->ReplaceWindows(window_list);
 }
 
-void WindowCycleController::StepToWindow(aura::Window* window) {
+void WindowCycleController::SetFocusedWindow(aura::Window* window) {
+  if (!IsCycling())
+    return;
+
   DCHECK(window_cycle_list_);
-  window_cycle_list_->StepToWindow(window);
+  window_cycle_list_->SetFocusedWindow(window);
 }
 
 bool WindowCycleController::IsEventInCycleView(ui::LocatedEvent* event) {

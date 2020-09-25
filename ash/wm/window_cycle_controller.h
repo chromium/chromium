@@ -45,8 +45,13 @@ class ASH_EXPORT WindowCycleController {
   // certain times, such as when the lock screen is visible.
   static bool CanCycle();
 
-  // Cycles between windows in the given |direction|.
+  // Cycles between windows in the given |direction|. This moves the focus ring
+  // to the window in the given |direction| and also scrolls the list.
   void HandleCycleWindow(Direction direction);
+
+  // Scrolls the window in the given |direction|. This does not move the focus
+  // ring.
+  void Scroll(Direction direction);
 
   // Returns true if we are in the middle of a window cycling gesture.
   bool IsCycling() const { return window_cycle_list_.get() != NULL; }
@@ -66,8 +71,9 @@ class ASH_EXPORT WindowCycleController {
   // cycling.
   void MaybeResetCycleList();
 
-  // Skip window cycle list directly to |window|.
-  void StepToWindow(aura::Window* window);
+  // Moves the focus ring to |window|. Does not scroll the list. Do nothing if
+  // not cycling.
+  void SetFocusedWindow(aura::Window* window);
 
   // Checks whether |event| occurs within the cycle view.
   bool IsEventInCycleView(ui::LocatedEvent* event);

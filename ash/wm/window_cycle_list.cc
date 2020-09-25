@@ -141,10 +141,11 @@ class WindowCycleItemView : public WindowMiniView {
 
   // views::View:
   void OnMouseEntered(const ui::MouseEvent& event) override {
-    Shell::Get()->window_cycle_controller()->StepToWindow(source_window());
+    Shell::Get()->window_cycle_controller()->SetFocusedWindow(source_window());
   }
 
   bool OnMousePressed(const ui::MouseEvent& event) override {
+    Shell::Get()->window_cycle_controller()->SetFocusedWindow(source_window());
     Shell::Get()->window_cycle_controller()->CompleteCycling();
     return true;
   }
@@ -157,7 +158,7 @@ class WindowCycleItemView : public WindowMiniView {
       case ui::ET_GESTURE_TWO_FINGER_TAP: {
         WindowCycleController* controller =
             Shell::Get()->window_cycle_controller();
-        controller->StepToWindow(source_window());
+        controller->SetFocusedWindow(source_window());
         controller->CompleteCycling();
         break;
       }
@@ -311,7 +312,8 @@ class WindowCycleView : public views::WidgetDelegateView,
     widget_rect.ClampToCenteredSize(GetPreferredSize());
     GetWidget()->SetBounds(widget_rect);
 
-    SetTargetWindow(windows[0], /*should_layout=*/true);
+    SetTargetWindow(windows[0]);
+    ScrollToWindow(windows[0]);
   }
 
   void FadeInLayer() {
@@ -331,7 +333,15 @@ class WindowCycleView : public views::WidgetDelegateView,
     layer()->SetOpacity(1.f);
   }
 
-  void SetTargetWindow(aura::Window* target, bool should_layout) {
+  void ScrollToWindow(aura::Window* target) {
+    current_window_ = target;
+
+    if (GetWidget()) {
+      Layout();
+    }
+  }
+
+  void SetTargetWindow(aura::Window* target) {
     // Hide the focus border of the previous target window and show the focus
     // border of the new one.
     if (target_window_) {
@@ -344,11 +354,8 @@ class WindowCycleView : public views::WidgetDelegateView,
     if (target_it != window_view_map_.end())
       target_it->second->UpdateBorderState(/*show=*/true);
 
-    if (GetWidget() && should_layout) {
-      Layout();
-      if (target_window_)
-        window_view_map_[target_window_]->RequestFocus();
-    }
+    if (GetWidget() && target_window_)
+      window_view_map_[target_window_]->RequestFocus();
   }
 
   void HandleWindowDestruction(aura::Window* destroying_window,
@@ -362,17 +369,19 @@ class WindowCycleView : public views::WidgetDelegateView,
     delete preview;
 
     // With one of its children now gone, we must re-layout
-    // |mirror_container_|. This must happen before SetTargetWindow() to make
+    // |mirror_container_|. This must happen before ScrollToWindow() to make
     // sure our own Layout() works correctly when it's calculating highlight
     // bounds.
     parent->Layout();
-    SetTargetWindow(new_target, /*should_layout=*/true);
+    SetTargetWindow(new_target);
+    ScrollToWindow(new_target);
   }
 
   void DestroyContents() {
     window_view_map_.clear();
     no_previews_set_.clear();
     target_window_ = nullptr;
+    current_window_ = nullptr;
     RemoveAllChildViews(true);
   }
 
@@ -382,7 +391,7 @@ class WindowCycleView : public views::WidgetDelegateView,
   }
 
   void Layout() override {
-    if (!target_window_ || bounds().IsEmpty())
+    if (!target_window_ || !current_window_ || bounds().IsEmpty())
       return;
 
     const bool first_layout = mirror_container_->bounds().IsEmpty();
@@ -398,7 +407,7 @@ class WindowCycleView : public views::WidgetDelegateView,
         layer()->SetRoundedCornerRadius(kBackgroundCornerRadius);
     }
 
-    views::View* target_view = window_view_map_[target_window_];
+    views::View* target_view = window_view_map_[current_window_];
     gfx::RectF target_bounds(target_view->GetLocalBounds());
     views::View::ConvertRectToTarget(target_view, mirror_container_,
                                      &target_bounds);
@@ -456,6 +465,8 @@ class WindowCycleView : public views::WidgetDelegateView,
     }
   }
 
+  aura::Window* GetTargetWindow() { return target_window_; }
+
   View* GetInitiallyFocusedView() override {
     return window_view_map_[target_window_];
   }
@@ -472,7 +483,16 @@ class WindowCycleView : public views::WidgetDelegateView,
  private:
   std::map<aura::Window*, WindowCycleItemView*> window_view_map_;
   views::View* mirror_container_ = nullptr;
+
+  // The |target_window_| is the window that has the focus ring. When the user
+  // completes cycling the |target_window_| is activated.
   aura::Window* target_window_ = nullptr;
+
+  // The |current_window_| is the window that the window cycle list uses to
+  // determine the layout and positioning of the list's items. If this window's
+  // preview can equally divide the list it is centered, otherwise it is
+  // off-center.
+  aura::Window* current_window_ = nullptr;
 
   // Set which contains items which have been created but have some of their
   // performance heavy elements not created yet. These elements will be created
@@ -513,20 +533,26 @@ WindowCycleList::~WindowCycleList() {
   if (cycle_ui_widget_)
     cycle_ui_widget_->Close();
 
+  // Store the target window before |cycle_view_| is destroyed.
+  aura::Window* target_window = nullptr;
+
   // |this| is responsible for notifying |cycle_view_| when windows are
   // destroyed. Since |this| is going away, clobber |cycle_view_|. Otherwise
   // there will be a race where a window closes after now but before the
   // Widget::Close() call above actually destroys |cycle_view_|. See
   // crbug.com/681207
-  if (cycle_view_)
+  if (cycle_view_) {
+    target_window = cycle_view_->GetTargetWindow();
     cycle_view_->DestroyContents();
+  }
 
   // While the cycler widget is shown, the windows listed in the cycler is
   // marked as force-visible and don't contribute to occlusion. In order to
   // work occlusion calculation properly, we need to activate a window after
   // the widget has been destroyed. See b/138914552.
   if (!windows_.empty() && user_did_accept_) {
-    auto* target_window = windows_[current_index_];
+    if (!target_window)
+      target_window = windows_[current_index_];
     SelectWindow(target_window);
   }
   Shell::Get()->frame_throttling_controller()->EndThrottling();
@@ -547,19 +573,36 @@ void WindowCycleList::ReplaceWindows(const WindowList& windows) {
 }
 
 void WindowCycleList::Step(WindowCycleController::Direction direction) {
-  Step(direction == WindowCycleController::FORWARD ? 1 : -1,
-       /*should_layout=*/true);
+  if (windows_.empty())
+    return;
+
+  // If the position of the window cycle list is out-of-sync with the currently
+  // selected item, scroll to the selected item and then step.
+  if (cycle_view_) {
+    aura::Window* selected_window = cycle_view_->GetTargetWindow();
+    Scroll(GetIndexOfWindow(selected_window) - current_index_);
+  }
+
+  const int offset = direction == WindowCycleController::FORWARD ? 1 : -1;
+  SetFocusedWindow(windows_[GetOffsettedWindowIndex(offset)]);
+  Scroll(offset);
 }
 
-void WindowCycleList::StepToWindow(aura::Window* window) {
-  auto target_window = std::find(windows_.begin(), windows_.end(), window);
-  DCHECK(target_window != windows_.end());
-  int target_index = std::distance(windows_.begin(), target_window);
+void WindowCycleList::ScrollInDirection(
+    WindowCycleController::Direction direction) {
+  if (windows_.empty())
+    return;
 
-  // If the user hovers over an item and the window cycle list scrolls,
-  // sometimes it can cause the mouse to not hover over the selected item. To
-  // avoid this, prevent scrolling and only move focus border.
-  Step(target_index - current_index_, /*should_layout=*/false);
+  const int offset = direction == WindowCycleController::FORWARD ? 1 : -1;
+  Scroll(offset);
+}
+
+void WindowCycleList::SetFocusedWindow(aura::Window* window) {
+  if (windows_.empty())
+    return;
+
+  if (ShouldShowUi() && cycle_view_)
+    cycle_view_->SetTargetWindow(windows_[GetIndexOfWindow(window)]);
 }
 
 bool WindowCycleList::IsEventInCycleView(ui::LocatedEvent* event) {
@@ -632,6 +675,7 @@ void WindowCycleList::RemoveAllWindows() {
 
   windows_.clear();
   current_index_ = 0;
+  window_selected_ = false;
 }
 
 void WindowCycleList::InitWindowCycleView() {
@@ -639,8 +683,8 @@ void WindowCycleList::InitWindowCycleView() {
     return;
 
   cycle_view_ = new WindowCycleView(windows_);
-  cycle_view_->SetTargetWindow(windows_[current_index_],
-                               /*should_layout=*/true);
+  cycle_view_->SetTargetWindow(windows_[current_index_]);
+  cycle_view_->ScrollToWindow(windows_[current_index_]);
 
   // We need to activate the widget if ChromeVox is enabled as ChromeVox
   // relies on activation.
@@ -696,7 +740,7 @@ void WindowCycleList::InitWindowCycleView() {
 
 void WindowCycleList::SelectWindow(aura::Window* window) {
   // If the list has only one window, the window can be selected twice (in
-  // Step() and the destructor). This causes ARC PIP windows to be restored
+  // Scroll() and the destructor). This causes ARC PIP windows to be restored
   // twice, which leads to a wrong window state.
   if (window_selected_)
     return;
@@ -711,7 +755,7 @@ void WindowCycleList::SelectWindow(aura::Window* window) {
   window_selected_ = true;
 }
 
-void WindowCycleList::Step(int offset, bool should_layout) {
+void WindowCycleList::Scroll(int offset) {
   if (windows_.empty())
     return;
 
@@ -733,20 +777,31 @@ void WindowCycleList::Step(int offset, bool should_layout) {
       current_index_ = -1;
   }
 
-  current_index_ += offset;
-
-  // Wrap to window list size.
-  current_index_ = (current_index_ + windows_.size()) % windows_.size();
-  DCHECK(windows_[current_index_]);
+  current_index_ = GetOffsettedWindowIndex(offset);
 
   if (ShouldShowUi()) {
     if (current_index_ > 1)
       InitWindowCycleView();
 
     if (cycle_view_)
-      cycle_view_->SetTargetWindow(windows_[current_index_],
-                                   /*should_layout=*/should_layout);
+      cycle_view_->ScrollToWindow(windows_[current_index_]);
   }
+}
+
+int WindowCycleList::GetIndexOfWindow(aura::Window* window) const {
+  auto target_window = std::find(windows_.begin(), windows_.end(), window);
+  DCHECK(target_window != windows_.end());
+  return std::distance(windows_.begin(), target_window);
+}
+
+int WindowCycleList::GetOffsettedWindowIndex(int offset) const {
+  DCHECK(!windows_.empty());
+
+  const int offsetted_index =
+      (current_index_ + offset + windows_.size()) % windows_.size();
+  DCHECK(windows_[offsetted_index]);
+
+  return offsetted_index;
 }
 
 const views::View::Views& WindowCycleList::GetWindowCycleItemViewsForTesting()
