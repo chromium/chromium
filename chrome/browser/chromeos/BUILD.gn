@@ -3561,6 +3561,7 @@ source_set("unit_tests") {
     "printing/ppd_resolution_state_unittest.cc",
     "printing/ppd_resolution_tracker_unittest.cc",
     "printing/print_management/print_job_info_mojom_conversions_unittest.cc",
+    "printing/print_management/printing_manager_factory_unittest.cc",
     "printing/print_management/printing_manager_unittest.cc",
     "printing/print_servers_provider_unittest.cc",
     "printing/printer_detector_test_util.h",

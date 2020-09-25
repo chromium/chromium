@@ -9,6 +9,7 @@
 #include "chrome/browser/chromeos/printing/print_management/printing_manager.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/history/history_service_factory.h"
+#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -47,8 +48,9 @@ PrintingManagerFactory::PrintingManagerFactory()
 
 PrintingManagerFactory::~PrintingManagerFactory() = default;
 
-KeyedService* PrintingManagerFactory::BuildServiceInstanceFor(
-    content::BrowserContext* context) const {
+// static
+KeyedService* PrintingManagerFactory::BuildInstanceFor(
+    content::BrowserContext* context) {
   Profile* profile = Profile::FromBrowserContext(context);
 
   // We do not want an instance of PrintingManager on the lock screen. The
@@ -64,6 +66,16 @@ KeyedService* PrintingManagerFactory::BuildServiceInstanceFor(
                                            ServiceAccessType::EXPLICIT_ACCESS),
       CupsPrintJobManagerFactory::GetForBrowserContext(context),
       profile->GetPrefs());
+}
+
+KeyedService* PrintingManagerFactory::BuildServiceInstanceFor(
+    content::BrowserContext* context) const {
+  return BuildInstanceFor(static_cast<Profile*>(context));
+}
+
+content::BrowserContext* PrintingManagerFactory::GetBrowserContextToUse(
+    content::BrowserContext* context) const {
+  return chrome::GetBrowserContextRedirectedInIncognito(context);
 }
 
 bool PrintingManagerFactory::ServiceIsCreatedWithBrowserContext() const {
