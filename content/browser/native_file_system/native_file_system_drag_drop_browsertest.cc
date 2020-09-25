@@ -138,11 +138,11 @@ IN_PROC_BROWSER_TEST_F(NativeFileSystemDragDropBrowserTest, DropFile) {
   render_widget_host_impl->FilterDropData(&drop_data);
   render_widget_host_impl->DragTargetDragEnter(
       drop_data, client_point, screen_point,
-      blink::WebDragOperationsMask::kWebDragOperationEvery,
+      blink::DragOperationsMask::kDragOperationEvery,
       /*key_modifiers=*/0);
   render_widget_host_impl->DragTargetDragOver(
       client_point, screen_point,
-      blink::WebDragOperationsMask::kWebDragOperationEvery,
+      blink::DragOperationsMask::kDragOperationEvery,
       /*key_modifiers=*/0);
   render_widget_host_impl->DragTargetDrop(drop_data, client_point, screen_point,
                                           /*key_modifiers=*/0);
@@ -223,11 +223,11 @@ IN_PROC_BROWSER_TEST_F(NativeFileSystemDragDropBrowserTest, DropDirectory) {
   render_widget_host_impl->FilterDropData(&drop_data);
   render_widget_host_impl->DragTargetDragEnter(
       drop_data, client_point, screen_point,
-      blink::WebDragOperationsMask::kWebDragOperationEvery,
+      blink::DragOperationsMask::kDragOperationEvery,
       /*key_modifiers=*/0);
   render_widget_host_impl->DragTargetDragOver(
       client_point, screen_point,
-      blink::WebDragOperationsMask::kWebDragOperationEvery,
+      blink::DragOperationsMask::kDragOperationEvery,
       /*key_modifiers=*/0);
   render_widget_host_impl->DragTargetDrop(drop_data, client_point, screen_point,
                                           /*key_modifiers=*/0);

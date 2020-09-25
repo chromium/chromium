@@ -231,17 +231,17 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   void DragTargetDragEnter(const DropData& drop_data,
                            const gfx::PointF& client_pt,
                            const gfx::PointF& screen_pt,
-                           blink::WebDragOperationsMask operations_allowed,
+                           blink::DragOperationsMask operations_allowed,
                            int key_modifiers) override;
   void DragTargetDragEnterWithMetaData(
       const std::vector<DropData::Metadata>& metadata,
       const gfx::PointF& client_pt,
       const gfx::PointF& screen_pt,
-      blink::WebDragOperationsMask operations_allowed,
+      blink::DragOperationsMask operations_allowed,
       int key_modifiers) override;
   void DragTargetDragOver(const gfx::PointF& client_point,
                           const gfx::PointF& screen_point,
-                          blink::WebDragOperationsMask operations_allowed,
+                          blink::DragOperationsMask operations_allowed,
                           int key_modifiers) override;
   void DragTargetDragLeave(const gfx::PointF& client_point,
                            const gfx::PointF& screen_point) override;
@@ -253,7 +253,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
                       int key_modifiers) override;
   void DragSourceEndedAt(const gfx::PointF& client_pt,
                          const gfx::PointF& screen_pt,
-                         blink::WebDragOperation operation) override;
+                         blink::DragOperation operation) override;
   void DragSourceSystemDragEnded() override;
   void FilterDropData(DropData* drop_data) override;
   void SetCursor(const ui::Cursor& cursor) override;
@@ -910,7 +910,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   void OnClose();
   void OnUpdateScreenRectsAck();
   void OnRequestSetBounds(const gfx::Rect& bounds);
-  void OnUpdateDragCursor(blink::WebDragOperation current_op);
+  void OnUpdateDragCursor(blink::DragOperation current_op);
 
   // blink::mojom::FrameWidgetHost overrides.
   void AnimateDoubleTapZoomInMainFrame(const gfx::Point& tap_point,
@@ -925,7 +925,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   void AutoscrollEnd() override;
   void DidFirstVisuallyNonEmptyPaint() override;
   void StartDragging(blink::mojom::DragDataPtr drag_data,
-                     blink::WebDragOperationsMask drag_operations_mask,
+                     blink::DragOperationsMask drag_operations_mask,
                      const SkBitmap& bitmap,
                      const gfx::Vector2d& bitmap_offset_in_dip,
                      blink::mojom::DragEventSourceInfoPtr event_info) override;

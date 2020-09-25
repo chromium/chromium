@@ -101,7 +101,7 @@ class OffscreenTab : public ProfileObserver,
                              const blink::WebGestureEvent& event) final;
   bool CanDragEnter(content::WebContents* source,
                     const content::DropData& data,
-                    blink::WebDragOperationsMask operations_allowed) final;
+                    blink::DragOperationsMask operations_allowed) final;
   bool IsWebContentsCreationOverridden(
       content::SiteInstance* source_site_instance,
       content::mojom::WindowContainerType window_container_type,

@@ -65,7 +65,7 @@
 #include "services/device/public/mojom/geolocation_context.mojom.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/network/public/mojom/fetch_api.mojom-forward.h"
-#include "third_party/blink/public/common/page/web_drag_operation.h"
+#include "third_party/blink/public/common/page/drag_operation.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/choosers/color_chooser.mojom.h"
 #include "third_party/blink/public/mojom/choosers/popup_menu.mojom.h"
@@ -239,7 +239,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
                          float client_y,
                          float screen_x,
                          float screen_y,
-                         blink::WebDragOperation operation,
+                         blink::DragOperation operation,
                          RenderWidgetHost* source_rwh);
 
   // Notification that the RenderViewHost's load state changed.

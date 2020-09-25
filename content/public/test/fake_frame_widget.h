@@ -34,7 +34,7 @@ class FakeFrameWidget : public blink::mojom::FrameWidget {
  private:
   void DragTargetDragOver(const gfx::PointF& point_in_viewport,
                           const gfx::PointF& screen_point,
-                          blink::WebDragOperationsMask operations_allowed,
+                          blink::DragOperationsMask operations_allowed,
                           uint32_t modifiers,
                           DragTargetDragOverCallback callback) override {}
   void DragTargetDragLeave(const gfx::PointF& point_in_viewport,
@@ -45,7 +45,7 @@ class FakeFrameWidget : public blink::mojom::FrameWidget {
                       uint32_t key_modifiers) override {}
   void DragSourceEndedAt(const gfx::PointF& client_point,
                          const gfx::PointF& screen_point,
-                         blink::WebDragOperation operation) override {}
+                         blink::DragOperation operation) override {}
   void DragSourceSystemDragEnded() override {}
   void SetBackgroundOpaque(bool value) override {}
   void SetTextDirection(base::i18n::TextDirection direction) override;

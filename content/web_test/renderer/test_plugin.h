@@ -88,7 +88,7 @@ class TestPlugin : public blink::WebPlugin, public cc::TextureLayerClient {
       ui::Cursor* cursor) override;
   bool HandleDragStatusUpdate(blink::WebDragStatus drag_status,
                               const blink::WebDragData& data,
-                              blink::WebDragOperationsMask mask,
+                              blink::DragOperationsMask mask,
                               const gfx::PointF& position,
                               const gfx::PointF& screen_position) override;
   void DidReceiveResponse(const blink::WebURLResponse& response) override {}

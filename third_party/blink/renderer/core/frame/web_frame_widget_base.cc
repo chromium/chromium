@@ -151,16 +151,16 @@ viz::FrameSinkId GetRemoteFrameSinkId(const HitTestResult& result) {
 
 }  // namespace
 
-// Ensure that the WebDragOperation enum values stay in sync with the original
+// Ensure that the DragOperation enum values stay in sync with the original
 // DragOperation constants.
-STATIC_ASSERT_ENUM(kDragOperationNone, kWebDragOperationNone);
-STATIC_ASSERT_ENUM(kDragOperationCopy, kWebDragOperationCopy);
-STATIC_ASSERT_ENUM(kDragOperationLink, kWebDragOperationLink);
-STATIC_ASSERT_ENUM(kDragOperationGeneric, kWebDragOperationGeneric);
-STATIC_ASSERT_ENUM(kDragOperationPrivate, kWebDragOperationPrivate);
-STATIC_ASSERT_ENUM(kDragOperationMove, kWebDragOperationMove);
-STATIC_ASSERT_ENUM(kDragOperationDelete, kWebDragOperationDelete);
-STATIC_ASSERT_ENUM(kDragOperationEvery, kWebDragOperationEvery);
+// STATIC_ASSERT_ENUM(kDragOperationNone, kDragOperationNone);
+// STATIC_ASSERT_ENUM(kDragOperationCopy, kDragOperationCopy);
+// STATIC_ASSERT_ENUM(kDragOperationLink, kDragOperationLink);
+// STATIC_ASSERT_ENUM(kDragOperationGeneric, kDragOperationGeneric);
+// STATIC_ASSERT_ENUM(kDragOperationPrivate, kDragOperationPrivate);
+// STATIC_ASSERT_ENUM(kDragOperationMove, kDragOperationMove);
+// STATIC_ASSERT_ENUM(kDragOperationDelete, kDragOperationDelete);
+// STATIC_ASSERT_ENUM(kDragOperationEvery, kDragOperationEvery);
 
 bool WebFrameWidgetBase::ignore_input_events_ = false;
 
@@ -250,11 +250,11 @@ WebRect WebFrameWidgetBase::ComputeBlockBound(
   return WebRect();
 }
 
-WebDragOperation WebFrameWidgetBase::DragTargetDragEnter(
+DragOperation WebFrameWidgetBase::DragTargetDragEnter(
     const WebDragData& web_drag_data,
     const gfx::PointF& point_in_viewport,
     const gfx::PointF& screen_point,
-    WebDragOperationsMask operations_allowed,
+    DragOperationsMask operations_allowed,
     uint32_t key_modifiers) {
   DCHECK(!current_drag_data_);
 
@@ -268,12 +268,12 @@ WebDragOperation WebFrameWidgetBase::DragTargetDragEnter(
 void WebFrameWidgetBase::DragTargetDragOver(
     const gfx::PointF& point_in_viewport,
     const gfx::PointF& screen_point,
-    WebDragOperationsMask operations_allowed,
+    DragOperationsMask operations_allowed,
     uint32_t key_modifiers,
     DragTargetDragOverCallback callback) {
   operations_allowed_ = operations_allowed;
 
-  blink::WebDragOperation operation = DragTargetDragEnterOrOver(
+  blink::DragOperation operation = DragTargetDragEnterOrOver(
       point_in_viewport, screen_point, kDragOver, key_modifiers);
   std::move(callback).Run(operation);
 }
@@ -295,15 +295,14 @@ void WebFrameWidgetBase::DragTargetDragLeave(
 
   gfx::PointF point_in_root_frame(ViewportToRootFrame(point_in_viewport));
   DragData drag_data(current_drag_data_.Get(), FloatPoint(point_in_root_frame),
-                     FloatPoint(screen_point),
-                     static_cast<DragOperation>(operations_allowed_));
+                     FloatPoint(screen_point), operations_allowed_);
 
   GetPage()->GetDragController().DragExited(&drag_data,
                                             *local_root_->GetFrame());
 
   // FIXME: why is the drag scroll timer not stopped here?
 
-  drag_operation_ = kWebDragOperationNone;
+  drag_operation_ = kDragOperationNone;
   current_drag_data_ = nullptr;
 }
 
@@ -323,7 +322,7 @@ void WebFrameWidgetBase::DragTargetDrop(const WebDragData& web_drag_data,
   // the browser forwards the drop to this webview.  So only allow a drop to
   // proceed if our webview m_dragOperation state is not DragOperationNone.
 
-  if (drag_operation_ == kWebDragOperationNone) {
+  if (drag_operation_ == kDragOperationNone) {
     // IPC RACE CONDITION: do not allow this drop.
     DragTargetDragLeave(point_in_viewport, screen_point);
     return;
@@ -333,19 +332,18 @@ void WebFrameWidgetBase::DragTargetDrop(const WebDragData& web_drag_data,
     current_drag_data_->SetModifiers(key_modifiers);
     DragData drag_data(current_drag_data_.Get(),
                        FloatPoint(point_in_root_frame),
-                       FloatPoint(screen_point),
-                       static_cast<DragOperation>(operations_allowed_));
+                       FloatPoint(screen_point), operations_allowed_);
 
     GetPage()->GetDragController().PerformDrag(&drag_data,
                                                *local_root_->GetFrame());
   }
-  drag_operation_ = kWebDragOperationNone;
+  drag_operation_ = kDragOperationNone;
   current_drag_data_ = nullptr;
 }
 
 void WebFrameWidgetBase::DragSourceEndedAt(const gfx::PointF& point_in_viewport,
                                            const gfx::PointF& screen_point,
-                                           WebDragOperation operation) {
+                                           DragOperation operation) {
   if (!local_root_) {
     // We should figure out why |local_root_| could be nullptr
     // (https://crbug.com/792345).
@@ -365,8 +363,8 @@ void WebFrameWidgetBase::DragSourceEndedAt(const gfx::PointF& point_in_viewport,
       WebPointerProperties::Button::kLeft, 0, WebInputEvent::kNoModifiers,
       base::TimeTicks::Now());
   fake_mouse_move.SetFrameScale(1);
-  local_root_->GetFrame()->GetEventHandler().DragSourceEndedAt(
-      fake_mouse_move, static_cast<DragOperation>(operation));
+  local_root_->GetFrame()->GetEventHandler().DragSourceEndedAt(fake_mouse_move,
+                                                               operation);
 }
 
 void WebFrameWidgetBase::DragSourceSystemDragEnded() {
@@ -484,7 +482,7 @@ void WebFrameWidgetBase::CancelDrag() {
 }
 
 void WebFrameWidgetBase::StartDragging(const WebDragData& drag_data,
-                                       WebDragOperationsMask operations_allowed,
+                                       DragOperationsMask operations_allowed,
                                        const SkBitmap& drag_image,
                                        const gfx::Point& drag_image_offset) {
   doing_drag_and_drop_ = true;
@@ -501,7 +499,7 @@ void WebFrameWidgetBase::StartDragging(const WebDragData& drag_data,
       possible_drag_event_info_.Clone());
 }
 
-WebDragOperation WebFrameWidgetBase::DragTargetDragEnterOrOver(
+DragOperation WebFrameWidgetBase::DragTargetDragEnterOrOver(
     const gfx::PointF& point_in_viewport,
     const gfx::PointF& screen_point,
     DragAction drag_action,
@@ -514,15 +512,14 @@ WebDragOperation WebFrameWidgetBase::DragTargetDragEnterOrOver(
   // check for |!m_currentDragData| should be removed. (crbug.com/671504)
   if (IgnoreInputEvents() || !current_drag_data_) {
     CancelDrag();
-    return kWebDragOperationNone;
+    return kDragOperationNone;
   }
 
   FloatPoint point_in_root_frame(ViewportToRootFrame(point_in_viewport));
 
   current_drag_data_->SetModifiers(key_modifiers);
   DragData drag_data(current_drag_data_.Get(), FloatPoint(point_in_root_frame),
-                     FloatPoint(screen_point),
-                     static_cast<DragOperation>(operations_allowed_));
+                     FloatPoint(screen_point), operations_allowed_);
 
   DragOperation drag_operation =
       GetPage()->GetDragController().DragEnteredOrUpdated(
@@ -533,7 +530,7 @@ WebDragOperation WebFrameWidgetBase::DragTargetDragEnterOrOver(
   if (!(drag_operation & drag_data.DraggingSourceOperationMask()))
     drag_operation = kDragOperationNone;
 
-  drag_operation_ = static_cast<WebDragOperation>(drag_operation);
+  drag_operation_ = drag_operation;
 
   return drag_operation_;
 }

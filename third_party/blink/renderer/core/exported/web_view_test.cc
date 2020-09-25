@@ -54,8 +54,8 @@
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
+#include "third_party/blink/public/common/page/drag_operation.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
-#include "third_party/blink/public/common/page/web_drag_operation.h"
 #include "third_party/blink/public/common/widget/device_emulation_params.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_element_type.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/tree_scope_type.mojom-blink.h"
@@ -2623,7 +2623,7 @@ static void DragAndDropURL(WebViewImpl* web_view, const std::string& url) {
   const gfx::PointF screen_point;
   WebFrameWidget* widget = web_view->MainFrameImpl()->FrameWidget();
   widget->DragTargetDragEnter(drag_data, client_point, screen_point,
-                              kWebDragOperationCopy, 0);
+                              kDragOperationCopy, 0);
   widget->DragTargetDrop(drag_data, client_point, screen_point, 0);
   frame_test_helpers::PumpPendingRequestsForFrameToLoad(
       web_view->MainFrameImpl());
@@ -2973,7 +2973,7 @@ TEST_F(WebViewTest, TouchDragContextMenuWithoutDrag) {
   // Simulate the end of a non-moving drag.
   const gfx::PointF dragend_point(250, 8);
   web_view->MainFrameViewWidget()->DragSourceEndedAt(
-      dragend_point, dragend_point, kWebDragOperationNone);
+      dragend_point, dragend_point, kDragOperationNone);
   EXPECT_TRUE(
       web_view->GetPage()->GetContextMenuController().ContextMenuNodeForFrame(
           web_view->MainFrameImpl()->GetFrame()));
@@ -3012,7 +3012,7 @@ TEST_F(WebViewTest, TouchDragContextMenuWithDrag) {
   // Simulate the end of a drag.
   const gfx::PointF dragend_point(270, 28);
   web_view->MainFrameViewWidget()->DragSourceEndedAt(
-      dragend_point, dragend_point, kWebDragOperationNone);
+      dragend_point, dragend_point, kDragOperationNone);
   EXPECT_FALSE(
       web_view->GetPage()->GetContextMenuController().ContextMenuNodeForFrame(
           web_view->MainFrameImpl()->GetFrame()));
@@ -4146,7 +4146,7 @@ class FakeFrameWidgetHost : public mojom::blink::FrameWidgetHost {
   void AutoscrollEnd() override {}
   void DidFirstVisuallyNonEmptyPaint() override {}
   void StartDragging(const blink::WebDragData& drag_data,
-                     blink::WebDragOperationsMask operations_allowed,
+                     blink::DragOperationsMask operations_allowed,
                      const SkBitmap& bitmap,
                      const gfx::Vector2d& bitmap_offset_in_dip,
                      mojom::blink::DragEventSourceInfoPtr event_info) override {

@@ -584,7 +584,7 @@ class Browser : public TabStripModelObserver,
                              const blink::WebGestureEvent& event) override;
   bool CanDragEnter(content::WebContents* source,
                     const content::DropData& data,
-                    blink::WebDragOperationsMask operations_allowed) override;
+                    blink::DragOperationsMask operations_allowed) override;
   blink::SecurityStyle GetSecurityStyle(
       content::WebContents* web_contents,
       content::SecurityStyleExplanations* security_style_explanations) override;

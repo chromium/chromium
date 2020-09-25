@@ -35,7 +35,7 @@
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "third_party/blink/public/common/dom_storage/session_storage_namespace_id.h"
 #include "third_party/blink/public/common/feature_policy/feature_policy_features.h"
-#include "third_party/blink/public/common/page/web_drag_operation.h"
+#include "third_party/blink/public/common/page/drag_operation.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/blame_context.h"
@@ -200,7 +200,7 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
   // Start a system drag and drop operation.
   virtual void StartDragging(LocalFrame*,
                              const WebDragData&,
-                             WebDragOperationsMask,
+                             DragOperationsMask,
                              const SkBitmap& drag_image,
                              const gfx::Point& drag_image_offset) = 0;
   virtual bool AcceptsLoadDrops() const = 0;

@@ -4821,7 +4821,7 @@ void WebContentsImpl::DragSourceEndedAt(float client_x,
                                         float client_y,
                                         float screen_x,
                                         float screen_y,
-                                        blink::WebDragOperation operation,
+                                        blink::DragOperation operation,
                                         RenderWidgetHost* source_rwh) {
   OPTIONAL_TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("content.verbose"),
                         "WebContentsImpl::DragSourceEndedAt");

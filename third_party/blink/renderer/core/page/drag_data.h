@@ -26,6 +26,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_DRAG_DATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_DRAG_DATA_H_
 
+#include "third_party/blink/public/common/page/drag_operation.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/page/drag_actions.h"
 #include "third_party/blink/renderer/platform/geometry/float_point.h"

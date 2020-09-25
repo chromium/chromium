@@ -257,7 +257,7 @@ class MockRenderViewHostDelegateView : public RenderViewHostDelegateView {
 
   // RenderViewHostDelegateView:
   void StartDragging(const DropData& drop_data,
-                     blink::WebDragOperationsMask allowed_ops,
+                     blink::DragOperationsMask allowed_ops,
                      const gfx::ImageSkia& image,
                      const gfx::Vector2d& image_offset,
                      const blink::mojom::DragEventSourceInfo& event_info,
@@ -2013,7 +2013,7 @@ TEST_F(RenderWidgetHostTest, RendererExitedNoDrag) {
   NativeFileSystemManagerImpl* file_system_manager =
       static_cast<StoragePartitionImpl*>(process_->GetStoragePartition())
           ->GetNativeFileSystemManager();
-  blink::WebDragOperationsMask drag_operation = blink::kWebDragOperationEvery;
+  blink::DragOperationsMask drag_operation = blink::kDragOperationEvery;
   host_->StartDragging(
       DropDataToDragData(drop_data, file_system_manager, process_->GetID()),
       drag_operation, SkBitmap(), gfx::Vector2d(),

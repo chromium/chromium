@@ -1371,11 +1371,11 @@ bool Browser::PreHandleGestureEvent(content::WebContents* source,
 
 bool Browser::CanDragEnter(content::WebContents* source,
                            const content::DropData& data,
-                           blink::WebDragOperationsMask operations_allowed) {
+                           blink::DragOperationsMask operations_allowed) {
 #if defined(OS_CHROMEOS)
   // Disallow drag-and-drop navigation for Settings windows which do not support
   // external navigation.
-  if ((operations_allowed & blink::kWebDragOperationLink) &&
+  if ((operations_allowed & blink::kDragOperationLink) &&
       chrome::SettingsWindowManager::GetInstance()->IsSettingsBrowser(this)) {
     return false;
   }

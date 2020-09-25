@@ -357,28 +357,28 @@ void PrepareDropData(DropData* drop_data, const ui::OSExchangeData& data) {
         pickle.data(), pickle.size(), &drop_data->custom_data);
 }
 
-// Utilities to convert between blink::WebDragOperationsMask and
+// Utilities to convert between blink::DragOperationsMask and
 // ui::DragDropTypes.
-int ConvertFromWeb(blink::WebDragOperationsMask ops) {
+int ConvertFromWeb(blink::DragOperationsMask ops) {
   int drag_op = ui::DragDropTypes::DRAG_NONE;
-  if (ops & blink::kWebDragOperationCopy)
+  if (ops & blink::kDragOperationCopy)
     drag_op |= ui::DragDropTypes::DRAG_COPY;
-  if (ops & blink::kWebDragOperationMove)
+  if (ops & blink::kDragOperationMove)
     drag_op |= ui::DragDropTypes::DRAG_MOVE;
-  if (ops & blink::kWebDragOperationLink)
+  if (ops & blink::kDragOperationLink)
     drag_op |= ui::DragDropTypes::DRAG_LINK;
   return drag_op;
 }
 
-blink::WebDragOperationsMask ConvertToWeb(int drag_op) {
-  int web_drag_op = blink::kWebDragOperationNone;
+blink::DragOperationsMask ConvertToWeb(int drag_op) {
+  int web_drag_op = blink::kDragOperationNone;
   if (drag_op & ui::DragDropTypes::DRAG_COPY)
-    web_drag_op |= blink::kWebDragOperationCopy;
+    web_drag_op |= blink::kDragOperationCopy;
   if (drag_op & ui::DragDropTypes::DRAG_MOVE)
-    web_drag_op |= blink::kWebDragOperationMove;
+    web_drag_op |= blink::kDragOperationMove;
   if (drag_op & ui::DragDropTypes::DRAG_LINK)
-    web_drag_op |= blink::kWebDragOperationLink;
-  return (blink::WebDragOperationsMask) web_drag_op;
+    web_drag_op |= blink::kDragOperationLink;
+  return static_cast<blink::DragOperationsMask>(web_drag_op);
 }
 
 GlobalRoutingID GetRenderViewHostID(RenderViewHost* rvh) {
@@ -688,7 +688,7 @@ WebContentsViewAura::WebContentsViewAura(WebContentsImpl* web_contents,
                                          WebContentsViewDelegate* delegate)
     : web_contents_(web_contents),
       delegate_(delegate),
-      current_drag_op_(blink::kWebDragOperationNone),
+      current_drag_op_(blink::kDragOperationNone),
       drag_dest_delegate_(nullptr),
       current_rvh_for_drag_(ChildProcessHost::kInvalidUniqueID,
                             MSG_ROUTING_NONE),
@@ -718,7 +718,7 @@ WebContentsViewAura::~WebContentsViewAura() {
 
 void WebContentsViewAura::EndDrag(
     base::WeakPtr<RenderWidgetHostImpl> source_rwh_weak_ptr,
-    blink::WebDragOperationsMask ops) {
+    blink::DragOperationsMask ops) {
   drag_start_process_id_ = ChildProcessHost::kInvalidUniqueID;
   drag_start_view_id_ = GlobalRoutingID(ChildProcessHost::kInvalidUniqueID,
                                         MSG_ROUTING_NONE);
@@ -1019,7 +1019,7 @@ void WebContentsViewAura::ShowContextMenu(RenderFrameHost* render_frame_host,
 
 void WebContentsViewAura::StartDragging(
     const DropData& drop_data,
-    blink::WebDragOperationsMask operations,
+    blink::DragOperationsMask operations,
     const gfx::ImageSkia& image,
     const gfx::Vector2d& image_offset,
     const blink::mojom::DragEventSourceInfo& event_info,
@@ -1091,7 +1091,7 @@ void WebContentsViewAura::StartDragging(
         std::move(source_rwh_weak_ptr), ConvertToWeb(result_op)));
 }
 
-void WebContentsViewAura::UpdateDragCursor(blink::WebDragOperation operation) {
+void WebContentsViewAura::UpdateDragCursor(blink::DragOperation operation) {
   current_drag_op_ = operation;
 }
 
@@ -1248,7 +1248,7 @@ void WebContentsViewAura::DragEnteredCallback(
   current_drop_data_.reset(drop_data.release());
   current_rwh_for_drag_->FilterDropData(current_drop_data_.get());
 
-  blink::WebDragOperationsMask op = ConvertToWeb(event.source_operations());
+  blink::DragOperationsMask op = ConvertToWeb(event.source_operations());
 
   // Give the delegate an opportunity to cancel the drag.
   if (web_contents_->GetDelegate() &&
@@ -1342,7 +1342,7 @@ void WebContentsViewAura::DragUpdatedCallback(
   }
 
   DCHECK(transformed_pt.has_value());
-  blink::WebDragOperationsMask op = ConvertToWeb(event.source_operations());
+  blink::DragOperationsMask op = ConvertToWeb(event.source_operations());
   target_rwh->DragTargetDragOver(
       transformed_pt.value(), screen_pt, op,
       ui::EventFlagsToWebEventModifiers(event.flags()));

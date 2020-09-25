@@ -27,7 +27,7 @@
 #include "content/public/common/window_container_type.mojom-forward.h"
 #include "third_party/blink/public/common/loader/previews_state.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
-#include "third_party/blink/public/common/page/web_drag_operation.h"
+#include "third_party/blink/public/common/page/drag_operation.h"
 #include "third_party/blink/public/common/security/security_style.h"
 #include "third_party/blink/public/mojom/choosers/color_chooser.mojom-forward.h"
 #include "third_party/blink/public/mojom/frame/blocked_navigation_types.mojom.h"
@@ -298,7 +298,7 @@ class CONTENT_EXPORT WebContentsDelegate {
   // cancel the operation. This method is used by Chromium Embedded Framework.
   virtual bool CanDragEnter(WebContents* source,
                             const DropData& data,
-                            blink::WebDragOperationsMask operations_allowed);
+                            blink::DragOperationsMask operations_allowed);
 
   // Shows the repost form confirmation dialog box.
   virtual void ShowRepostFormWarningDialog(WebContents* source) {}

@@ -28,8 +28,8 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_PAGE_WEB_DRAG_OPERATION_H_
-#define THIRD_PARTY_BLINK_PUBLIC_COMMON_PAGE_WEB_DRAG_OPERATION_H_
+#ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_PAGE_DRAG_OPERATION_H_
+#define THIRD_PARTY_BLINK_PUBLIC_COMMON_PAGE_DRAG_OPERATION_H_
 
 #include <limits.h>
 
@@ -41,21 +41,21 @@ namespace blink {
 // should not be renumbered.)
 // TODO(hferreiro): replace this enum and the corresponding one in
 // drag_actions.h with blink::mojom::DragOperation.
-enum WebDragOperation {
-  kWebDragOperationNone = 0,
-  kWebDragOperationCopy = 1,
-  kWebDragOperationLink = 2,
-  kWebDragOperationGeneric = 4,
-  kWebDragOperationPrivate = 8,
-  kWebDragOperationMove = 16,
-  kWebDragOperationDelete = 32,
-  kWebDragOperationEvery = UINT_MAX
+enum DragOperation {
+  kDragOperationNone = 0,
+  kDragOperationCopy = 1,
+  kDragOperationLink = 2,
+  kDragOperationGeneric = 4,
+  kDragOperationPrivate = 8,
+  kDragOperationMove = 16,
+  kDragOperationDelete = 32,
+  kDragOperationEvery = UINT_MAX
 };
 
 // Alternate typedef to make it clear when this is being used as a mask
 // with potentially multiple value bits set.
-typedef WebDragOperation WebDragOperationsMask;
+typedef DragOperation DragOperationsMask;
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_PUBLIC_COMMON_PAGE_WEB_DRAG_OPERATION_H_
+#endif  // THIRD_PARTY_BLINK_PUBLIC_COMMON_PAGE_DRAG_OPERATION_H_

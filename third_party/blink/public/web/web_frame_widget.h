@@ -34,7 +34,7 @@
 #include <stdint.h>
 
 #include "base/callback_forward.h"
-#include "third_party/blink/public/common/page/web_drag_operation.h"
+#include "third_party/blink/public/common/page/drag_operation.h"
 #include "third_party/blink/public/mojom/page/widget.mojom-shared.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/viewport_intersection_state.h"
@@ -100,18 +100,18 @@ class WebFrameWidget : public WebWidget {
 
   // Callback methods when a drag-and-drop operation is trying to drop something
   // on the WebFrameWidget.
-  virtual WebDragOperation DragTargetDragEnter(
+  virtual DragOperation DragTargetDragEnter(
       const WebDragData&,
       const gfx::PointF& point_in_viewport,
       const gfx::PointF& screen_point,
-      WebDragOperationsMask operations_allowed,
+      DragOperationsMask operations_allowed,
       uint32_t key_modifiers) = 0;
   virtual void DragTargetDragOver(
       const gfx::PointF& point_in_viewport,
       const gfx::PointF& screen_point,
-      WebDragOperationsMask operations_allowed,
+      DragOperationsMask operations_allowed,
       uint32_t key_modifiers,
-      base::OnceCallback<void(blink::WebDragOperation)> callback) = 0;
+      base::OnceCallback<void(blink::DragOperation)> callback) = 0;
   virtual void DragTargetDragLeave(const gfx::PointF& point_in_viewport,
                                    const gfx::PointF& screen_point) = 0;
   virtual void DragTargetDrop(const WebDragData&,
@@ -122,7 +122,7 @@ class WebFrameWidget : public WebWidget {
   // Notifies the WebFrameWidget that a drag has terminated.
   virtual void DragSourceEndedAt(const gfx::PointF& point_in_viewport,
                                  const gfx::PointF& screen_point,
-                                 WebDragOperation) = 0;
+                                 DragOperation) = 0;
 
   // Notifies the WebFrameWidget that the system drag and drop operation has
   // ended.

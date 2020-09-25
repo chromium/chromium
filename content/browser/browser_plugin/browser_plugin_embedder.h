@@ -17,7 +17,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
-#include "third_party/blink/public/common/page/web_drag_operation.h"
+#include "third_party/blink/public/common/page/drag_operation.h"
 
 namespace content {
 
@@ -40,7 +40,7 @@ class CONTENT_EXPORT BrowserPluginEmbedder {
                          float client_y,
                          float screen_x,
                          float screen_y,
-                         blink::WebDragOperation operation);
+                         blink::DragOperation operation);
 
   // Indicates that a drag operation has entered into the bounds of a given
   // |guest|. Returns whether the |guest| also started the operation.

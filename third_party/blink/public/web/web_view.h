@@ -32,7 +32,7 @@
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_VIEW_H_
 
 #include "base/time/time.h"
-#include "third_party/blink/public/common/page/web_drag_operation.h"
+#include "third_party/blink/public/common/page/drag_operation.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-shared.h"
 #include "third_party/blink/public/mojom/page/page.mojom-shared.h"

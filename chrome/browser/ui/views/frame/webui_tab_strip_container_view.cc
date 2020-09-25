@@ -193,7 +193,7 @@ class WebUITabStripWebView : public views::WebView {
   // content::WebContentsDelegate:
   bool CanDragEnter(content::WebContents* source,
                     const content::DropData& data,
-                    blink::WebDragOperationsMask operations_allowed) override {
+                    blink::DragOperationsMask operations_allowed) override {
     // TODO(crbug.com/1032592): Prevent dragging across Chromium instances.
     if (data.custom_data.find(base::ASCIIToUTF16(kWebUITabIdDataType)) !=
         data.custom_data.end()) {

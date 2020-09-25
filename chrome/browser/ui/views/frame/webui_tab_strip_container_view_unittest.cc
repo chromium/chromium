@@ -75,14 +75,14 @@ TEST_F(WebUITabStripContainerViewTest, PreventsInvalidTabDrags) {
   content::DropData empty_drop_data;
   EXPECT_FALSE(
       browser_view()->webui_tab_strip()->web_view_for_testing()->CanDragEnter(
-          nullptr, empty_drop_data, blink::kWebDragOperationMove));
+          nullptr, empty_drop_data, blink::kDragOperationMove));
 
   content::DropData invalid_drop_data;
   invalid_drop_data.custom_data.insert(std::make_pair(
       base::ASCIIToUTF16(kWebUITabIdDataType), base::ASCIIToUTF16("3000")));
   EXPECT_FALSE(
       browser_view()->webui_tab_strip()->web_view_for_testing()->CanDragEnter(
-          nullptr, invalid_drop_data, blink::kWebDragOperationMove));
+          nullptr, invalid_drop_data, blink::kDragOperationMove));
 
   AddTab(browser(), GURL("http://foo"));
   int valid_tab_id = extensions::ExtensionTabUtil::GetTabId(
@@ -93,7 +93,7 @@ TEST_F(WebUITabStripContainerViewTest, PreventsInvalidTabDrags) {
                      base::NumberToString16(valid_tab_id)));
   EXPECT_TRUE(
       browser_view()->webui_tab_strip()->web_view_for_testing()->CanDragEnter(
-          nullptr, valid_drop_data, blink::kWebDragOperationMove));
+          nullptr, valid_drop_data, blink::kDragOperationMove));
 }
 
 TEST_F(WebUITabStripContainerViewTest, PreventsInvalidGroupDrags) {
@@ -103,7 +103,7 @@ TEST_F(WebUITabStripContainerViewTest, PreventsInvalidGroupDrags) {
                      base::ASCIIToUTF16("not a real group")));
   EXPECT_FALSE(
       browser_view()->webui_tab_strip()->web_view_for_testing()->CanDragEnter(
-          nullptr, invalid_drop_data, blink::kWebDragOperationMove));
+          nullptr, invalid_drop_data, blink::kDragOperationMove));
 
   AddTab(browser(), GURL("http://foo"));
   tab_groups::TabGroupId group_id =
@@ -114,7 +114,7 @@ TEST_F(WebUITabStripContainerViewTest, PreventsInvalidGroupDrags) {
                      base::ASCIIToUTF16(group_id.ToString())));
   EXPECT_TRUE(
       browser_view()->webui_tab_strip()->web_view_for_testing()->CanDragEnter(
-          nullptr, valid_drop_data, blink::kWebDragOperationMove));
+          nullptr, valid_drop_data, blink::kDragOperationMove));
 
   // Another group from a different profile.
   std::unique_ptr<BrowserWindow> new_window(
@@ -132,7 +132,7 @@ TEST_F(WebUITabStripContainerViewTest, PreventsInvalidGroupDrags) {
                      base::ASCIIToUTF16(new_group_id.ToString())));
   EXPECT_FALSE(
       browser_view()->webui_tab_strip()->web_view_for_testing()->CanDragEnter(
-          nullptr, different_profile_drop_data, blink::kWebDragOperationMove));
+          nullptr, different_profile_drop_data, blink::kDragOperationMove));
 
   // Close all tabs before destructing.
   new_browser.get()->tab_strip_model()->CloseAllTabs();

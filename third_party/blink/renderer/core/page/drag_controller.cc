@@ -30,7 +30,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
-#include "third_party/blink/public/common/page/web_drag_operation.h"
+#include "third_party/blink/public/common/page/drag_operation.h"
 #include "third_party/blink/public/common/widget/screen_info.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_drag_data.h"
@@ -1335,8 +1335,7 @@ void DragController::DoSystemDrag(DragImage* image,
   gfx::Point offset_point(offset_size.Width(), offset_size.Height());
   WebDragData drag_data = data_transfer->GetDataObject()->ToWebDragData();
   drag_data.SetReferrerPolicy(drag_initiator_->GetReferrerPolicy());
-  WebDragOperationsMask drag_operation_mask =
-      static_cast<WebDragOperationsMask>(data_transfer->SourceOperation());
+  DragOperationsMask drag_operation_mask = data_transfer->SourceOperation();
   SkBitmap drag_image;
 
   if (image) {

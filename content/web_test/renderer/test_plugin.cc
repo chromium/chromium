@@ -598,7 +598,7 @@ blink::WebInputEventResult TestPlugin::HandleInputEvent(
 
 bool TestPlugin::HandleDragStatusUpdate(blink::WebDragStatus drag_status,
                                         const blink::WebDragData& data,
-                                        blink::WebDragOperationsMask mask,
+                                        blink::DragOperationsMask mask,
                                         const gfx::PointF& position,
                                         const gfx::PointF& screen_position) {
   const char* drag_status_name = nullptr;

@@ -8,43 +8,43 @@
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "third_party/blink/public/common/common_export.h"
-#include "third_party/blink/public/common/page/web_drag_operation.h"
+#include "third_party/blink/public/common/page/drag_operation.h"
 #include "third_party/blink/public/mojom/page/widget.mojom-shared.h"
 
 namespace mojo {
 
 template <>
 struct BLINK_COMMON_EXPORT
-    EnumTraits<blink::mojom::DragOperation, blink::WebDragOperation> {
-  static blink::mojom::DragOperation ToMojom(blink::WebDragOperation op);
+    EnumTraits<blink::mojom::DragOperation, blink::DragOperation> {
+  static blink::mojom::DragOperation ToMojom(blink::DragOperation op);
   static bool FromMojom(blink::mojom::DragOperation op,
-                        blink::WebDragOperation* out);
+                        blink::DragOperation* out);
 };
 
 template <>
 struct BLINK_COMMON_EXPORT
     StructTraits<blink::mojom::AllowedDragOperationsDataView,
-                 blink::WebDragOperationsMask> {
-  static bool allow_copy(const blink::WebDragOperationsMask& op_mask) {
-    return op_mask & blink::kWebDragOperationCopy;
+                 blink::DragOperationsMask> {
+  static bool allow_copy(const blink::DragOperationsMask& op_mask) {
+    return op_mask & blink::kDragOperationCopy;
   }
-  static bool allow_link(const blink::WebDragOperationsMask& op_mask) {
-    return op_mask & blink::kWebDragOperationLink;
+  static bool allow_link(const blink::DragOperationsMask& op_mask) {
+    return op_mask & blink::kDragOperationLink;
   }
-  static bool allow_generic(const blink::WebDragOperationsMask& op_mask) {
-    return op_mask & blink::kWebDragOperationGeneric;
+  static bool allow_generic(const blink::DragOperationsMask& op_mask) {
+    return op_mask & blink::kDragOperationGeneric;
   }
-  static bool allow_private(const blink::WebDragOperationsMask& op_mask) {
-    return op_mask & blink::kWebDragOperationPrivate;
+  static bool allow_private(const blink::DragOperationsMask& op_mask) {
+    return op_mask & blink::kDragOperationPrivate;
   }
-  static bool allow_move(const blink::WebDragOperationsMask& op_mask) {
-    return op_mask & blink::kWebDragOperationMove;
+  static bool allow_move(const blink::DragOperationsMask& op_mask) {
+    return op_mask & blink::kDragOperationMove;
   }
-  static bool allow_delete(const blink::WebDragOperationsMask& op_mask) {
-    return op_mask & blink::kWebDragOperationDelete;
+  static bool allow_delete(const blink::DragOperationsMask& op_mask) {
+    return op_mask & blink::kDragOperationDelete;
   }
   static bool Read(blink::mojom::AllowedDragOperationsDataView data,
-                   blink::WebDragOperationsMask* out);
+                   blink::DragOperationsMask* out);
 };
 
 }  // namespace mojo

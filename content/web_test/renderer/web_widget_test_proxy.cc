@@ -109,7 +109,7 @@ bool WebWidgetTestProxy::IsPointerLocked() {
 
 bool WebWidgetTestProxy::InterceptStartDragging(
     const blink::WebDragData& data,
-    blink::WebDragOperationsMask mask,
+    blink::DragOperationsMask mask,
     const SkBitmap& drag_image,
     const gfx::Point& image_offset) {
   GetTestRunner()->SetDragImage(drag_image);

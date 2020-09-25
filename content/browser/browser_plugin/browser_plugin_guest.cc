@@ -176,7 +176,7 @@ void BrowserPluginGuest::DragSourceEndedAt(float client_x,
                                            float client_y,
                                            float screen_x,
                                            float screen_y,
-                                           blink::WebDragOperation operation) {
+                                           blink::DragOperation operation) {
   web_contents()->GetRenderViewHost()->GetWidget()->DragSourceEndedAt(
       gfx::PointF(client_x, client_y), gfx::PointF(screen_x, screen_y),
       operation);

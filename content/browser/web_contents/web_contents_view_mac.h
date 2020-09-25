@@ -87,12 +87,12 @@ class WebContentsViewMac : public WebContentsView,
 
   // RenderViewHostDelegateView:
   void StartDragging(const DropData& drop_data,
-                     blink::WebDragOperationsMask allowed_operations,
+                     blink::DragOperationsMask allowed_operations,
                      const gfx::ImageSkia& image,
                      const gfx::Vector2d& image_offset,
                      const blink::mojom::DragEventSourceInfo& event_info,
                      RenderWidgetHostImpl* source_rwh) override;
-  void UpdateDragCursor(blink::WebDragOperation operation) override;
+  void UpdateDragCursor(blink::DragOperation operation) override;
   void GotFocus(RenderWidgetHostImpl* render_widget_host) override;
   void LostFocus(RenderWidgetHostImpl* render_widget_host) override;
   void TakeFocus(bool reverse) override;

@@ -304,7 +304,7 @@ void WebContentsViewAndroid::ShowPopupMenu(
 
 void WebContentsViewAndroid::StartDragging(
     const DropData& drop_data,
-    blink::WebDragOperationsMask allowed_ops,
+    blink::DragOperationsMask allowed_ops,
     const gfx::ImageSkia& image,
     const gfx::Vector2d& image_offset,
     const blink::mojom::DragEventSourceInfo& event_info,
@@ -354,7 +354,7 @@ void WebContentsViewAndroid::StartDragging(
   }
 }
 
-void WebContentsViewAndroid::UpdateDragCursor(blink::WebDragOperation op) {
+void WebContentsViewAndroid::UpdateDragCursor(blink::DragOperation op) {
   // Intentional no-op because Android does not have cursor.
 }
 
@@ -412,9 +412,9 @@ void WebContentsViewAndroid::OnDragEntered(
     const std::vector<DropData::Metadata>& metadata,
     const gfx::PointF& location,
     const gfx::PointF& screen_location) {
-  blink::WebDragOperationsMask allowed_ops =
-      static_cast<blink::WebDragOperationsMask>(blink::kWebDragOperationCopy |
-                                                blink::kWebDragOperationMove);
+  blink::DragOperationsMask allowed_ops =
+      static_cast<blink::DragOperationsMask>(blink::kDragOperationCopy |
+                                             blink::kDragOperationMove);
   web_contents_->GetRenderViewHost()->GetWidget()->
       DragTargetDragEnterWithMetaData(metadata, location, screen_location,
                                       allowed_ops, 0);
@@ -425,9 +425,9 @@ void WebContentsViewAndroid::OnDragUpdated(const gfx::PointF& location,
   drag_location_ = location;
   drag_screen_location_ = screen_location;
 
-  blink::WebDragOperationsMask allowed_ops =
-      static_cast<blink::WebDragOperationsMask>(blink::kWebDragOperationCopy |
-                                                blink::kWebDragOperationMove);
+  blink::DragOperationsMask allowed_ops =
+      static_cast<blink::DragOperationsMask>(blink::kDragOperationCopy |
+                                             blink::kDragOperationMove);
   web_contents_->GetRenderViewHost()->GetWidget()->DragTargetDragOver(
       location, screen_location, allowed_ops, 0);
 }
@@ -460,7 +460,7 @@ void WebContentsViewAndroid::OnSystemDragEnded() {
 
 void WebContentsViewAndroid::OnDragEnded() {
   web_contents_->GetRenderViewHost()->GetWidget()->DragSourceEndedAt(
-      drag_location_, drag_screen_location_, blink::kWebDragOperationNone);
+      drag_location_, drag_screen_location_, blink::kDragOperationNone);
   OnSystemDragEnded();
 
   drag_location_ = gfx::PointF();

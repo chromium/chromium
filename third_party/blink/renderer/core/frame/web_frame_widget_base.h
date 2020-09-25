@@ -232,11 +232,11 @@ class CORE_EXPORT WebFrameWidgetBase
 
   // WebFrameWidget implementation.
   WebLocalFrame* LocalRoot() const override;
-  WebDragOperation DragTargetDragEnter(const WebDragData&,
-                                       const gfx::PointF& point_in_viewport,
-                                       const gfx::PointF& screen_point,
-                                       WebDragOperationsMask operations_allowed,
-                                       uint32_t key_modifiers) override;
+  DragOperation DragTargetDragEnter(const WebDragData&,
+                                    const gfx::PointF& point_in_viewport,
+                                    const gfx::PointF& screen_point,
+                                    DragOperationsMask operations_allowed,
+                                    uint32_t key_modifiers) override;
   void SendOverscrollEventFromImplSide(
       const gfx::Vector2dF& overscroll_delta,
       cc::ElementId scroll_latched_element_id) override;
@@ -263,7 +263,7 @@ class CORE_EXPORT WebFrameWidgetBase
 
   // Called when a drag-n-drop operation should begin.
   void StartDragging(const WebDragData&,
-                     WebDragOperationsMask,
+                     DragOperationsMask,
                      const SkBitmap& drag_image,
                      const gfx::Point& drag_image_offset);
 
@@ -365,7 +365,7 @@ class CORE_EXPORT WebFrameWidgetBase
   // mojom::blink::FrameWidget methods.
   void DragTargetDragOver(const gfx::PointF& point_in_viewport,
                           const gfx::PointF& screen_point,
-                          WebDragOperationsMask operations_allowed,
+                          DragOperationsMask operations_allowed,
                           uint32_t key_modifiers,
                           DragTargetDragOverCallback callback) override;
   void DragTargetDragLeave(const gfx::PointF& point_in_viewport,
@@ -376,7 +376,7 @@ class CORE_EXPORT WebFrameWidgetBase
                       uint32_t key_modifiers) override;
   void DragSourceEndedAt(const gfx::PointF& point_in_viewport,
                          const gfx::PointF& screen_point,
-                         WebDragOperation) override;
+                         DragOperation) override;
   void DragSourceSystemDragEnded() override;
   void SetBackgroundOpaque(bool opaque) override;
   void SetActive(bool active) override;
@@ -567,11 +567,10 @@ class CORE_EXPORT WebFrameWidgetBase
   // Consolidate some common code between starting a drag over a target and
   // updating a drag over a target. If we're starting a drag, |isEntering|
   // should be true.
-  WebDragOperation DragTargetDragEnterOrOver(
-      const gfx::PointF& point_in_viewport,
-      const gfx::PointF& screen_point,
-      DragAction,
-      uint32_t key_modifiers);
+  DragOperation DragTargetDragEnterOrOver(const gfx::PointF& point_in_viewport,
+                                          const gfx::PointF& screen_point,
+                                          DragAction,
+                                          uint32_t key_modifiers);
 
   // Helper function to call VisualViewport::viewportToRootFrame().
   gfx::PointF ViewportToRootFrame(const gfx::PointF& point_in_viewport) const;
@@ -603,12 +602,12 @@ class CORE_EXPORT WebFrameWidgetBase
   bool doing_drag_and_drop_ = false;
 
   // The available drag operations (copy, move link...) allowed by the source.
-  WebDragOperation operations_allowed_ = kWebDragOperationNone;
+  DragOperation operations_allowed_ = kDragOperationNone;
 
   // The current drag operation as negotiated by the source and destination.
   // When not equal to DragOperationNone, the drag data can be dropped onto the
   // current drop target in this WebView (the drop target can accept the drop).
-  WebDragOperation drag_operation_ = kWebDragOperationNone;
+  DragOperation drag_operation_ = kDragOperationNone;
 
   // This field stores drag/drop related info for the event that is currently
   // being handled. If the current event results in starting a drag/drop

@@ -21,7 +21,7 @@
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_mouse_wheel_event.h"
 #include "third_party/blink/public/common/input/web_touch_point.h"
-#include "third_party/blink/public/common/page/web_drag_operation.h"
+#include "third_party/blink/public/common/page/drag_operation.h"
 #include "third_party/blink/public/platform/web_drag_data.h"
 #include "third_party/blink/public/platform/web_input_event_result.h"
 #include "third_party/blink/public/web/web_widget_client.h"
@@ -63,7 +63,7 @@ class EventSender {
 
   void SetContextMenuData(const blink::WebContextMenuData&);
 
-  void DoDragDrop(const blink::WebDragData&, blink::WebDragOperationsMask);
+  void DoDragDrop(const blink::WebDragData&, blink::DragOperationsMask);
 
   // Methods used to implement pointer requests and override behaviour.
   bool RequestPointerLock(blink::WebLocalFrame* requester_frame,
@@ -220,7 +220,7 @@ class EventSender {
                              float* radius_x,
                              float* radius_y);
 
-  void FinishDragAndDrop(const blink::WebMouseEvent&, blink::WebDragOperation);
+  void FinishDragAndDrop(const blink::WebMouseEvent&, blink::DragOperation);
 
   int ModifiersForPointer(int pointer_id);
   void DoDragAfterMouseUp(const blink::WebMouseEvent&);
@@ -326,7 +326,7 @@ class EventSender {
 
   base::circular_deque<SavedEvent> mouse_event_queue_;
 
-  blink::WebDragOperationsMask current_drag_effects_allowed_;
+  blink::DragOperationsMask current_drag_effects_allowed_;
 
   // Time and place of the last mouse up event.
   base::TimeTicks last_click_time_;
@@ -336,7 +336,7 @@ class EventSender {
   // Used to determine whether the click count continues to increment or not.
   static blink::WebMouseEvent::Button last_button_type_;
 
-  blink::WebDragOperation current_drag_effect_;
+  blink::DragOperation current_drag_effect_;
 
   base::TimeDelta time_offset_;
   int click_count_;

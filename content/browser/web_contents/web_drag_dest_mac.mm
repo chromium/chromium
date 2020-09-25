@@ -29,7 +29,7 @@
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/point.h"
 
-using blink::WebDragOperationsMask;
+using blink::DragOperationsMask;
 using content::DropData;
 using content::OpenURLParams;
 using content::Referrer;
@@ -204,9 +204,7 @@ void DropCompletionCallback(
 
   // Give the delegate an opportunity to cancel the drag.
   _canceled = !_webContents->GetDelegate()->CanDragEnter(
-      _webContents,
-      *dropData,
-      static_cast<WebDragOperationsMask>(mask));
+      _webContents, *dropData, static_cast<DragOperationsMask>(mask));
   if (_canceled)
     return NSDragOperationNone;
 
@@ -219,7 +217,7 @@ void DropCompletionCallback(
 
   _currentRWHForDrag->DragTargetDragEnter(
       *_dropDataFiltered, transformedPt, info->location_in_screen,
-      static_cast<WebDragOperationsMask>(mask), GetModifierFlags());
+      static_cast<DragOperationsMask>(mask), GetModifierFlags());
 
   // We won't know the true operation (whether the drag is allowed) until we
   // hear back from the renderer. For now, be optimistic:
@@ -300,7 +298,7 @@ void DropCompletionCallback(
 
   NSDragOperation mask = info->operation_mask;
   targetRWH->DragTargetDragOver(transformedPt, info->location_in_screen,
-                                static_cast<WebDragOperationsMask>(mask),
+                                static_cast<DragOperationsMask>(mask),
                                 GetModifierFlags());
 
   if (_delegate)

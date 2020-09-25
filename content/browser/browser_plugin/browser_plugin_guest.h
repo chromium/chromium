@@ -27,7 +27,7 @@
 #include "content/public/browser/guest_host.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "third_party/blink/public/common/page/web_drag_operation.h"
+#include "third_party/blink/public/common/page/drag_operation.h"
 #include "third_party/blink/public/mojom/choosers/popup_menu.mojom.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-forward.h"
 #include "third_party/blink/public/web/web_drag_status.h"
@@ -125,7 +125,7 @@ class CONTENT_EXPORT BrowserPluginGuest : public GuestHost,
                          float client_y,
                          float screen_x,
                          float screen_y,
-                         blink::WebDragOperation operation);
+                         blink::DragOperation operation);
 
   // Called when the drag started by this guest ends at an OS-level.
   void EmbedderSystemDragEnded();

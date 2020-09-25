@@ -269,10 +269,9 @@ bool OffscreenTab::PreHandleGestureEvent(WebContents* source,
   return true;
 }
 
-bool OffscreenTab::CanDragEnter(
-    WebContents* source,
-    const content::DropData& data,
-    blink::WebDragOperationsMask operations_allowed) {
+bool OffscreenTab::CanDragEnter(WebContents* source,
+                                const content::DropData& data,
+                                blink::DragOperationsMask operations_allowed) {
   DCHECK_EQ(offscreen_tab_web_contents_.get(), source);
   // Halt all drag attempts onto the page since there should be no direct user
   // interaction with it.

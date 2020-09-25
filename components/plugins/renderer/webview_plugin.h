@@ -179,7 +179,7 @@ class WebViewPlugin : public blink::WebPlugin,
 
     // WebWidgetClient methods:
     bool InterceptStartDragging(const blink::WebDragData&,
-                                blink::WebDragOperationsMask,
+                                blink::DragOperationsMask,
                                 const SkBitmap&,
                                 const gfx::Point&) override;
     void DidChangeCursor(const ui::Cursor& cursor) override;

@@ -71,7 +71,7 @@ class WebWidgetTestProxy : public RenderWidget {
   void RequestPointerUnlock() override;
   bool IsPointerLocked() override;
   bool InterceptStartDragging(const blink::WebDragData& data,
-                              blink::WebDragOperationsMask mask,
+                              blink::DragOperationsMask mask,
                               const SkBitmap& drag_image,
                               const gfx::Point& image_offset) override;
 

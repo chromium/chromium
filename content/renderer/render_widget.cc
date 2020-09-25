@@ -63,7 +63,7 @@
 #include "ppapi/buildflags/buildflags.h"
 #include "skia/ext/platform_canvas.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/common/page/web_drag_operation.h"
+#include "third_party/blink/public/common/page/drag_operation.h"
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/platform/file_path_conversion.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -109,9 +109,9 @@
 #include "third_party/skia/include/core/SkPixelRef.h"
 #endif  // defined(OS_POSIX)
 
+using blink::DragOperation;
+using blink::DragOperationsMask;
 using blink::WebDragData;
-using blink::WebDragOperation;
-using blink::WebDragOperationsMask;
 using blink::WebFrameWidget;
 using blink::WebLocalFrame;
 using blink::WebNavigationPolicy;
@@ -655,13 +655,13 @@ void RenderWidget::OnDragTargetDragEnter(
     const std::vector<DropData::Metadata>& drop_meta_data,
     const gfx::PointF& client_point,
     const gfx::PointF& screen_point,
-    WebDragOperationsMask ops,
+    DragOperationsMask ops,
     int key_modifiers) {
   blink::WebFrameWidget* frame_widget = GetFrameWidget();
   if (!frame_widget)
     return;
 
-  WebDragOperation operation = frame_widget->DragTargetDragEnter(
+  DragOperation operation = frame_widget->DragTargetDragEnter(
       DropMetaDataToWebDragData(drop_meta_data), client_point, screen_point,
       ops, key_modifiers);
 

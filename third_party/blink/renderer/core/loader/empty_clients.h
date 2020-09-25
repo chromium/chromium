@@ -110,7 +110,7 @@ class CORE_EXPORT EmptyChromeClient : public ChromeClient {
                             cc::PaintHoldingCommitTrigger) override {}
   void StartDragging(LocalFrame*,
                      const WebDragData&,
-                     WebDragOperationsMask,
+                     DragOperationsMask,
                      const SkBitmap& drag_image,
                      const gfx::Point& drag_image_offset) override {}
   bool AcceptsLoadDrops() const override { return true; }

@@ -16,7 +16,7 @@
 #include "content/web_test/common/web_test.mojom.h"
 #include "content/web_test/renderer/accessibility_controller.h"
 #include "content/web_test/renderer/text_input_controller.h"
-#include "third_party/blink/public/common/page/web_drag_operation.h"
+#include "third_party/blink/public/common/page/drag_operation.h"
 #include "third_party/blink/public/platform/web_rect.h"
 #include "third_party/blink/public/platform/web_url_error.h"
 #include "third_party/blink/public/platform/web_url_request.h"

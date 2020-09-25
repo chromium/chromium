@@ -109,7 +109,7 @@ class CONTENT_EXPORT WebContentsViewAura
   ~WebContentsViewAura() override;
 
   void EndDrag(base::WeakPtr<RenderWidgetHostImpl> source_rwh_weak_ptr,
-               blink::WebDragOperationsMask ops);
+               blink::DragOperationsMask ops);
 
   void InstallOverscrollControllerDelegate(RenderWidgetHostViewAura* view);
 
@@ -160,12 +160,12 @@ class CONTENT_EXPORT WebContentsViewAura
   void ShowContextMenu(RenderFrameHost* render_frame_host,
                        const ContextMenuParams& params) override;
   void StartDragging(const DropData& drop_data,
-                     blink::WebDragOperationsMask operations,
+                     blink::DragOperationsMask operations,
                      const gfx::ImageSkia& image,
                      const gfx::Vector2d& image_offset,
                      const blink::mojom::DragEventSourceInfo& event_info,
                      RenderWidgetHostImpl* source_rwh) override;
-  void UpdateDragCursor(blink::WebDragOperation operation) override;
+  void UpdateDragCursor(blink::DragOperation operation) override;
   void GotFocus(RenderWidgetHostImpl* render_widget_host) override;
   void LostFocus(RenderWidgetHostImpl* render_widget_host) override;
   void TakeFocus(bool reverse) override;
@@ -290,7 +290,7 @@ class CONTENT_EXPORT WebContentsViewAura
 
   std::unique_ptr<WebContentsViewDelegate> delegate_;
 
-  blink::WebDragOperationsMask current_drag_op_;
+  blink::DragOperationsMask current_drag_op_;
 
   std::unique_ptr<DropData> current_drop_data_;
 

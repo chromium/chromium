@@ -56,7 +56,7 @@ class ChromeKeyboardContentsDelegate : public content::WebContentsDelegate,
 
   bool CanDragEnter(content::WebContents* source,
                     const content::DropData& data,
-                    blink::WebDragOperationsMask operations_allowed) override {
+                    blink::DragOperationsMask operations_allowed) override {
     return false;
   }
 

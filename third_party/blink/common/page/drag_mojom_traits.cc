@@ -9,9 +9,9 @@
 namespace {
 
 constexpr int allow_all =
-    blink::kWebDragOperationCopy | blink::kWebDragOperationLink |
-    blink::kWebDragOperationGeneric | blink::kWebDragOperationPrivate |
-    blink::kWebDragOperationMove | blink::kWebDragOperationDelete;
+    blink::kDragOperationCopy | blink::kDragOperationLink |
+    blink::kDragOperationGeneric | blink::kDragOperationPrivate |
+    blink::kDragOperationMove | blink::kDragOperationDelete;
 
 }  // namespace
 
@@ -19,25 +19,25 @@ namespace mojo {
 
 // static
 blink::mojom::DragOperation
-EnumTraits<blink::mojom::DragOperation, blink::WebDragOperation>::ToMojom(
-    blink::WebDragOperation op) {
+EnumTraits<blink::mojom::DragOperation, blink::DragOperation>::ToMojom(
+    blink::DragOperation op) {
   switch (op) {
-    case blink::kWebDragOperationNone:
+    case blink::kDragOperationNone:
       return blink::mojom::DragOperation::kNone;
-    case blink::kWebDragOperationCopy:
+    case blink::kDragOperationCopy:
       return blink::mojom::DragOperation::kCopy;
-    case blink::kWebDragOperationLink:
+    case blink::kDragOperationLink:
       return blink::mojom::DragOperation::kLink;
-    case blink::kWebDragOperationGeneric:
+    case blink::kDragOperationGeneric:
       return blink::mojom::DragOperation::kGeneric;
-    case blink::kWebDragOperationPrivate:
+    case blink::kDragOperationPrivate:
       return blink::mojom::DragOperation::kPrivate;
-    case blink::kWebDragOperationMove:
+    case blink::kDragOperationMove:
       return blink::mojom::DragOperation::kMove;
-    case blink::kWebDragOperationDelete:
+    case blink::kDragOperationDelete:
       return blink::mojom::DragOperation::kDelete;
     default:
-      // blink::kWebDragOperationEvery is not handled on purpose, as
+      // blink::kDragOperationEvery is not handled on purpose, as
       // DragOperation should only represent a single operation.
       NOTREACHED();
       return blink::mojom::DragOperation::kNone;
@@ -45,29 +45,30 @@ EnumTraits<blink::mojom::DragOperation, blink::WebDragOperation>::ToMojom(
 }
 
 // static
-bool EnumTraits<blink::mojom::DragOperation, blink::WebDragOperation>::
-    FromMojom(blink::mojom::DragOperation op, blink::WebDragOperation* out) {
+bool EnumTraits<blink::mojom::DragOperation, blink::DragOperation>::FromMojom(
+    blink::mojom::DragOperation op,
+    blink::DragOperation* out) {
   switch (op) {
     case blink::mojom::DragOperation::kNone:
-      *out = blink::kWebDragOperationNone;
+      *out = blink::kDragOperationNone;
       return true;
     case blink::mojom::DragOperation::kCopy:
-      *out = blink::kWebDragOperationCopy;
+      *out = blink::kDragOperationCopy;
       return true;
     case blink::mojom::DragOperation::kLink:
-      *out = blink::kWebDragOperationLink;
+      *out = blink::kDragOperationLink;
       return true;
     case blink::mojom::DragOperation::kGeneric:
-      *out = blink::kWebDragOperationGeneric;
+      *out = blink::kDragOperationGeneric;
       return true;
     case blink::mojom::DragOperation::kPrivate:
-      *out = blink::kWebDragOperationPrivate;
+      *out = blink::kDragOperationPrivate;
       return true;
     case blink::mojom::DragOperation::kMove:
-      *out = blink::kWebDragOperationMove;
+      *out = blink::kDragOperationMove;
       return true;
     case blink::mojom::DragOperation::kDelete:
-      *out = blink::kWebDragOperationDelete;
+      *out = blink::kDragOperationDelete;
       return true;
   }
   NOTREACHED();
@@ -76,25 +77,25 @@ bool EnumTraits<blink::mojom::DragOperation, blink::WebDragOperation>::
 
 // static
 bool StructTraits<blink::mojom::AllowedDragOperationsDataView,
-                  blink::WebDragOperationsMask>::
+                  blink::DragOperationsMask>::
     Read(blink::mojom::AllowedDragOperationsDataView data,
-         blink::WebDragOperationsMask* out) {
-  int op_mask = blink::kWebDragOperationNone;
+         blink::DragOperationsMask* out) {
+  int op_mask = blink::kDragOperationNone;
   if (data.allow_copy())
-    op_mask |= blink::kWebDragOperationCopy;
+    op_mask |= blink::kDragOperationCopy;
   if (data.allow_link())
-    op_mask |= blink::kWebDragOperationLink;
+    op_mask |= blink::kDragOperationLink;
   if (data.allow_generic())
-    op_mask |= blink::kWebDragOperationGeneric;
+    op_mask |= blink::kDragOperationGeneric;
   if (data.allow_private())
-    op_mask |= blink::kWebDragOperationPrivate;
+    op_mask |= blink::kDragOperationPrivate;
   if (data.allow_move())
-    op_mask |= blink::kWebDragOperationMove;
+    op_mask |= blink::kDragOperationMove;
   if (data.allow_delete())
-    op_mask |= blink::kWebDragOperationDelete;
+    op_mask |= blink::kDragOperationDelete;
   if (op_mask == allow_all)
-    op_mask = blink::kWebDragOperationEvery;
-  *out = static_cast<blink::WebDragOperationsMask>(op_mask);
+    op_mask = blink::kDragOperationEvery;
+  *out = static_cast<blink::DragOperationsMask>(op_mask);
   return true;
 }
 

@@ -867,8 +867,7 @@ void WebPluginContainerImpl::HandleDragEvent(MouseEvent& event) {
 
   DataTransfer* data_transfer = event.getDataTransfer();
   WebDragData drag_data = data_transfer->GetDataObject()->ToWebDragData();
-  WebDragOperationsMask drag_operation_mask =
-      static_cast<WebDragOperationsMask>(data_transfer->SourceOperation());
+  DragOperationsMask drag_operation_mask = data_transfer->SourceOperation();
   gfx::PointF drag_screen_location(event.screenX(), event.screenY());
   IntPoint location(Location());
   gfx::PointF drag_location(event.AbsoluteLocation().X() - location.X(),

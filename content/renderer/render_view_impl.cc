@@ -170,11 +170,11 @@
 #include "content/renderer/pepper/pepper_plugin_registry.h"
 #endif
 
+using blink::DragOperation;
 using blink::WebAXObject;
 using blink::WebConsoleMessage;
 using blink::WebData;
 using blink::WebDocument;
-using blink::WebDragOperation;
 using blink::WebElement;
 using blink::WebFormControlElement;
 using blink::WebFormElement;

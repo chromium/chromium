@@ -43,7 +43,7 @@
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
-#include "third_party/blink/public/common/page/web_drag_operation.h"
+#include "third_party/blink/public/common/page/drag_operation.h"
 #include "third_party/blink/public/common/widget/device_emulation_params.h"
 #include "third_party/blink/public/common/widget/screen_info.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom-shared.h"
@@ -150,7 +150,7 @@ class WebWidgetClient {
   // Called when a drag-and-drop operation should begin. Returns whether the
   // call has been handled.
   virtual bool InterceptStartDragging(const WebDragData&,
-                                      WebDragOperationsMask,
+                                      DragOperationsMask,
                                       const SkBitmap& drag_image,
                                       const gfx::Point& drag_image_offset) {
     return false;

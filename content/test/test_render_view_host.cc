@@ -331,7 +331,7 @@ void TestRenderViewHost::TestStartDragging(const DropData& drop_data) {
       DropDataToDragData(drop_data,
                          storage_partition->GetNativeFileSystemManager(),
                          GetProcess()->GetID()),
-      blink::kWebDragOperationEvery, SkBitmap(), gfx::Vector2d(),
+      blink::kDragOperationEvery, SkBitmap(), gfx::Vector2d(),
       blink::mojom::DragEventSourceInfo::New());
 }
 

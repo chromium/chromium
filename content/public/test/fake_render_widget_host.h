@@ -46,7 +46,7 @@ class FakeRenderWidgetHost : public blink::mojom::FrameWidgetHost,
   void AutoscrollEnd() override;
   void DidFirstVisuallyNonEmptyPaint() override;
   void StartDragging(blink::mojom::DragDataPtr drag_data,
-                     blink::WebDragOperationsMask operations_allowed,
+                     blink::DragOperationsMask operations_allowed,
                      const SkBitmap& bitmap,
                      const gfx::Vector2d& bitmap_offset_in_dip,
                      blink::mojom::DragEventSourceInfoPtr event_info) override;

@@ -32,7 +32,7 @@
 #include "content/test/test_web_contents.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/filename_util.h"
-#include "third_party/blink/public/common/page/web_drag_operation.h"
+#include "third_party/blink/public/common/page/drag_operation.h"
 #include "ui/base/page_transition_types.h"
 
 namespace content {
@@ -96,7 +96,7 @@ class MockDraggingRenderViewHostDelegateView
  public:
   ~MockDraggingRenderViewHostDelegateView() override {}
   void StartDragging(const DropData& drop_data,
-                     blink::WebDragOperationsMask allowed_ops,
+                     blink::DragOperationsMask allowed_ops,
                      const gfx::ImageSkia& image,
                      const gfx::Vector2d& image_offset,
                      const blink::mojom::DragEventSourceInfo& event_info,
@@ -177,9 +177,8 @@ TEST_F(RenderViewHostTest, DragEnteredFileURLsStillBlocked) {
   // TODO(paulmeyer): These will need to target the correct specific
   // RenderWidgetHost to work with OOPIFs. See crbug.com/647249.
   rvh()->GetWidget()->FilterDropData(&dropped_data);
-  rvh()->GetWidget()->DragTargetDragEnter(dropped_data, client_point,
-                                          screen_point,
-                                          blink::kWebDragOperationNone, 0);
+  rvh()->GetWidget()->DragTargetDragEnter(
+      dropped_data, client_point, screen_point, blink::kDragOperationNone, 0);
 
   int id = process()->GetID();
   ChildProcessSecurityPolicyImpl* policy =

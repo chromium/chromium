@@ -314,11 +314,11 @@ class CONTENT_EXPORT RenderWidget
       const std::vector<DropData::Metadata>& drop_meta_data,
       const gfx::PointF& client_pt,
       const gfx::PointF& screen_pt,
-      blink::WebDragOperationsMask operations_allowed,
+      blink::DragOperationsMask operations_allowed,
       int key_modifiers);
   void OnDragSourceEnded(const gfx::PointF& client_point,
                          const gfx::PointF& screen_point,
-                         blink::WebDragOperation drag_operation);
+                         blink::DragOperation drag_operation);
 
   // Set the pending window rect.
   // Because the real render_widget is hosted in another process, there is

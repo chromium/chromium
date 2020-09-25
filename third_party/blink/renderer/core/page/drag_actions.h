@@ -46,18 +46,6 @@ typedef enum {
   kDragSourceActionSelection,
 } DragSourceAction;
 
-// matches NSDragOperation
-typedef enum {
-  kDragOperationNone = 0,
-  kDragOperationCopy = 1,
-  kDragOperationLink = 2,
-  kDragOperationGeneric = 4,
-  kDragOperationPrivate = 8,
-  kDragOperationMove = 16,
-  kDragOperationDelete = 32,
-  kDragOperationEvery = UINT_MAX
-} DragOperation;
-
 }  // namespace blink
 
 #endif  // !DragActions_h

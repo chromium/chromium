@@ -84,12 +84,11 @@ void BrowserPluginEmbedder::ClearGuestDragStateIfApplicable() {
   }
 }
 
-void BrowserPluginEmbedder::DragSourceEndedAt(
-    float client_x,
-    float client_y,
-    float screen_x,
-    float screen_y,
-    blink::WebDragOperation operation) {
+void BrowserPluginEmbedder::DragSourceEndedAt(float client_x,
+                                              float client_y,
+                                              float screen_x,
+                                              float screen_y,
+                                              blink::DragOperation operation) {
   if (guest_started_drag_) {
     gfx::Point guest_offset =
         guest_started_drag_->GetScreenCoordinates(gfx::Point());

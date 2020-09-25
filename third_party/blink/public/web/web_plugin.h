@@ -33,7 +33,7 @@
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_PLUGIN_H_
 
 #include "cc/paint/paint_canvas.h"
-#include "third_party/blink/public/common/page/web_drag_operation.h"
+#include "third_party/blink/public/common/page/drag_operation.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-shared.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
@@ -127,7 +127,7 @@ class WebPlugin {
 
   virtual bool HandleDragStatusUpdate(WebDragStatus,
                                       const WebDragData&,
-                                      WebDragOperationsMask,
+                                      DragOperationsMask,
                                       const gfx::PointF& position,
                                       const gfx::PointF& screen_position) {
     return false;

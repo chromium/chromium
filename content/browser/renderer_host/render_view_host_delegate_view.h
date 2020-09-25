@@ -11,7 +11,7 @@
 #include "build/build_config.h"
 #include "content/common/buildflags.h"
 #include "content/common/content_export.h"
-#include "third_party/blink/public/common/page/web_drag_operation.h"
+#include "third_party/blink/public/common/page/drag_operation.h"
 #include "third_party/blink/public/mojom/choosers/popup_menu.mojom.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
 #include "third_party/blink/public/mojom/page/drag.mojom-forward.h"
@@ -54,7 +54,7 @@ class CONTENT_EXPORT RenderViewHostDelegateView {
   // this results in bugs like http://crbug.com/157134.
   virtual void StartDragging(
       const DropData& drop_data,
-      blink::WebDragOperationsMask allowed_ops,
+      blink::DragOperationsMask allowed_ops,
       const gfx::ImageSkia& image,
       const gfx::Vector2d& image_offset,
       const blink::mojom::DragEventSourceInfo& event_info,
@@ -62,7 +62,7 @@ class CONTENT_EXPORT RenderViewHostDelegateView {
 
   // The page wants to update the mouse cursor during a drag & drop operation.
   // |operation| describes the current operation (none, move, copy, link.)
-  virtual void UpdateDragCursor(blink::WebDragOperation operation) {}
+  virtual void UpdateDragCursor(blink::DragOperation operation) {}
 
   // Notification that view for this delegate got the focus.
   virtual void GotFocus(RenderWidgetHostImpl* render_widget_host) {}

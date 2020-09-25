@@ -21,7 +21,7 @@
 #include "ipc/ipc_sender.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
-#include "third_party/blink/public/common/page/web_drag_operation.h"
+#include "third_party/blink/public/common/page/drag_operation.h"
 #include "third_party/blink/public/common/widget/screen_info.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
@@ -290,23 +290,21 @@ class CONTENT_EXPORT RenderWidgetHost : public IPC::Sender {
   virtual base::Optional<cc::TouchAction> GetAllowedTouchAction() = 0;
 
   // Drag-and-drop drop target messages that get sent to Blink.
-  virtual void DragTargetDragEnter(
-      const DropData& drop_data,
-      const gfx::PointF& client_pt,
-      const gfx::PointF& screen_pt,
-      blink::WebDragOperationsMask operations_allowed,
-      int key_modifiers) {}
+  virtual void DragTargetDragEnter(const DropData& drop_data,
+                                   const gfx::PointF& client_pt,
+                                   const gfx::PointF& screen_pt,
+                                   blink::DragOperationsMask operations_allowed,
+                                   int key_modifiers) {}
   virtual void DragTargetDragEnterWithMetaData(
       const std::vector<DropData::Metadata>& metadata,
       const gfx::PointF& client_pt,
       const gfx::PointF& screen_pt,
-      blink::WebDragOperationsMask operations_allowed,
+      blink::DragOperationsMask operations_allowed,
       int key_modifiers) {}
-  virtual void DragTargetDragOver(
-      const gfx::PointF& client_pt,
-      const gfx::PointF& screen_pt,
-      blink::WebDragOperationsMask operations_allowed,
-      int key_modifiers) {}
+  virtual void DragTargetDragOver(const gfx::PointF& client_pt,
+                                  const gfx::PointF& screen_pt,
+                                  blink::DragOperationsMask operations_allowed,
+                                  int key_modifiers) {}
   virtual void DragTargetDragLeave(const gfx::PointF& client_point,
                                    const gfx::PointF& screen_point) {}
   virtual void DragTargetDrop(const DropData& drop_data,
@@ -318,7 +316,7 @@ class CONTENT_EXPORT RenderWidgetHost : public IPC::Sender {
   // either in a drop or by being cancelled.
   virtual void DragSourceEndedAt(const gfx::PointF& client_pt,
                                  const gfx::PointF& screen_pt,
-                                 blink::WebDragOperation operation) {}
+                                 blink::DragOperation operation) {}
 
   // Notifies the renderer that we're done with the drag and drop operation.
   // This allows the renderer to reset some state.

@@ -145,8 +145,8 @@
 
 using base::TimeDelta;
 using base::TimeTicks;
-using blink::WebDragOperation;
-using blink::WebDragOperationsMask;
+using blink::DragOperation;
+using blink::DragOperationsMask;
 using blink::WebGestureEvent;
 using blink::WebInputEvent;
 using blink::WebKeyboardEvent;
@@ -1773,7 +1773,7 @@ void RenderWidgetHostImpl::DragTargetDragEnter(
     const DropData& drop_data,
     const gfx::PointF& client_pt,
     const gfx::PointF& screen_pt,
-    WebDragOperationsMask operations_allowed,
+    DragOperationsMask operations_allowed,
     int key_modifiers) {
   DragTargetDragEnterWithMetaData(DropDataToMetaData(drop_data), client_pt,
                                   screen_pt, operations_allowed, key_modifiers);
@@ -1783,7 +1783,7 @@ void RenderWidgetHostImpl::DragTargetDragEnterWithMetaData(
     const std::vector<DropData::Metadata>& metadata,
     const gfx::PointF& client_pt,
     const gfx::PointF& screen_pt,
-    WebDragOperationsMask operations_allowed,
+    DragOperationsMask operations_allowed,
     int key_modifiers) {
   Send(new DragMsg_TargetDragEnter(GetRoutingID(), metadata, client_pt,
                                    screen_pt, operations_allowed,
@@ -1793,7 +1793,7 @@ void RenderWidgetHostImpl::DragTargetDragEnterWithMetaData(
 void RenderWidgetHostImpl::DragTargetDragOver(
     const gfx::PointF& client_point,
     const gfx::PointF& screen_point,
-    WebDragOperationsMask operations_allowed,
+    DragOperationsMask operations_allowed,
     int key_modifiers) {
   // TODO(https://crbug.com/1102769): Replace with a for_frame() check.
   if (blink_frame_widget_) {
@@ -1836,10 +1836,9 @@ void RenderWidgetHostImpl::DragTargetDrop(const DropData& drop_data,
   }
 }
 
-void RenderWidgetHostImpl::DragSourceEndedAt(
-    const gfx::PointF& client_point,
-    const gfx::PointF& screen_point,
-    blink::WebDragOperation operation) {
+void RenderWidgetHostImpl::DragSourceEndedAt(const gfx::PointF& client_point,
+                                             const gfx::PointF& screen_point,
+                                             blink::DragOperation operation) {
   // TODO(https://crbug.com/1102769): Replace with a for_frame() check.
   if (blink_frame_widget_) {
     blink_frame_widget_->DragSourceEndedAt(
@@ -1975,7 +1974,7 @@ void RenderWidgetHostImpl::SelectionBoundsChanged(
                                   focus_dir, is_anchor_first);
 }
 
-void RenderWidgetHostImpl::OnUpdateDragCursor(WebDragOperation current_op) {
+void RenderWidgetHostImpl::OnUpdateDragCursor(DragOperation current_op) {
   if (delegate_->OnUpdateDragCursor())
     return;
 
@@ -2521,7 +2520,7 @@ void RenderWidgetHostImpl::DidFirstVisuallyNonEmptyPaint() {
 
 void RenderWidgetHostImpl::StartDragging(
     blink::mojom::DragDataPtr drag_data,
-    blink::WebDragOperationsMask drag_operations_mask,
+    blink::DragOperationsMask drag_operations_mask,
     const SkBitmap& bitmap,
     const gfx::Vector2d& bitmap_offset_in_dip,
     blink::mojom::DragEventSourceInfoPtr event_info) {

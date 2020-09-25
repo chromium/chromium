@@ -58,9 +58,9 @@
 #include "ui/gfx/geometry/point_conversions.h"
 #include "v8/include/v8.h"
 
+using blink::DragOperationsMask;
 using blink::WebContextMenuData;
 using blink::WebDragData;
-using blink::WebDragOperationsMask;
 using blink::WebGestureEvent;
 using blink::WebInputEvent;
 using blink::WebInputEventResult;
@@ -1316,8 +1316,8 @@ EventSender::~EventSender() {}
 
 void EventSender::Reset() {
   current_drag_data_ = base::nullopt;
-  current_drag_effect_ = blink::kWebDragOperationNone;
-  current_drag_effects_allowed_ = blink::kWebDragOperationNone;
+  current_drag_effect_ = blink::kDragOperationNone;
+  current_drag_effects_allowed_ = blink::kDragOperationNone;
   if (widget() && current_pointer_state_[kRawMousePointerId].pressed_button_ !=
                       WebMouseEvent::Button::kNoButton)
     widget()->MouseCaptureLost();
@@ -1490,7 +1490,7 @@ void EventSender::DidLosePointerLock() {
 }
 
 void EventSender::DoDragDrop(const WebDragData& drag_data,
-                             WebDragOperationsMask mask) {
+                             DragOperationsMask mask) {
   if (!MainFrameWidget())
     return;
 
@@ -1857,7 +1857,7 @@ void EventSender::KeyDown(const std::string& code_str,
                    current_pointer_state_[kRawMousePointerId].current_buttons_,
                    current_pointer_state_[kRawMousePointerId].last_pos_,
                    click_count_, &event);
-    FinishDragAndDrop(event, blink::kWebDragOperationNone);
+    FinishDragAndDrop(event, blink::kDragOperationNone);
   }
 
   web_widget_test_proxy_->GetWebFrameWidget()->ClearEditCommands();
@@ -2085,7 +2085,7 @@ void EventSender::BeginDragWithItems(
     current_drag_data_->SetFilesystemId(
         test_runner()->RegisterIsolatedFileSystem(file_paths));
   }
-  current_drag_effects_allowed_ = blink::kWebDragOperationCopy;
+  current_drag_effects_allowed_ = blink::kDragOperationCopy;
 
   const gfx::PointF& last_pos =
       current_pointer_state_[kRawMousePointerId].last_pos_;
@@ -2640,7 +2640,7 @@ void EventSender::GestureEvent(WebInputEvent::Type type,
                    current_pointer_state_[kRawMousePointerId].current_buttons_,
                    gfx::PointF(x, y), click_count_, &mouse_event);
 
-    FinishDragAndDrop(mouse_event, blink::kWebDragOperationNone);
+    FinishDragAndDrop(mouse_event, blink::kDragOperationNone);
   }
   args->Return(result != WebInputEventResult::kNotHandled);
 }
@@ -2800,7 +2800,7 @@ void EventSender::InitPointerProperties(gin::Arguments* args,
 }
 
 void EventSender::FinishDragAndDrop(const WebMouseEvent& event,
-                                    blink::WebDragOperation drag_effect) {
+                                    blink::DragOperation drag_effect) {
   // Bail if cancelled.
   if (!current_drag_data_)
     return;
@@ -2847,7 +2847,7 @@ void EventSender::DoDragAfterMouseMove(const WebMouseEvent& event) {
       event.PositionInWidget(), event.PositionInScreen(),
       current_drag_effects_allowed_, event.GetModifiers(),
       base::BindOnce(
-          [](base::WeakPtr<EventSender> sender, blink::WebDragOperation op) {
+          [](base::WeakPtr<EventSender> sender, blink::DragOperation op) {
             if (sender)
               sender->current_drag_effect_ = op;
           },

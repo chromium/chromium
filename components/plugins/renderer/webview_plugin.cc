@@ -34,8 +34,8 @@
 #include "third_party/blink/public/web/web_plugin_container.h"
 #include "third_party/blink/public/web/web_view.h"
 
+using blink::DragOperationsMask;
 using blink::WebDragData;
-using blink::WebDragOperationsMask;
 using blink::WebFrameWidget;
 using blink::WebLocalFrame;
 using blink::WebMouseEvent;
@@ -312,7 +312,7 @@ void WebViewPlugin::WebViewHelper::SetToolTipText(
 }
 
 bool WebViewPlugin::WebViewHelper::InterceptStartDragging(const WebDragData&,
-                                                          WebDragOperationsMask,
+                                                          DragOperationsMask,
                                                           const SkBitmap&,
                                                           const gfx::Point&) {
   // Immediately stop dragging.

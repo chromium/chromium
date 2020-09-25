@@ -366,10 +366,10 @@ IN_PROC_BROWSER_TEST_F(WebUIWebViewBrowserTest, DISABLED_DragAndDropToInput) {
       guest_dest_rect.y() + guest_dest_rect.height() / 2.0 + webview_rect.y());
   gfx::Rect container_bounds = embedder_web_contents->GetContainerBounds();
   const gfx::PointF screen_pt(container_bounds.x(), container_bounds.y());
-  const blink::WebDragOperationsMask drag_operation_mask =
-      static_cast<blink::WebDragOperationsMask>(blink::kWebDragOperationCopy |
-                                                blink::kWebDragOperationLink |
-                                                blink::kWebDragOperationMove);
+  const blink::DragOperationsMask drag_operation_mask =
+      static_cast<blink::DragOperationsMask>(blink::kDragOperationCopy |
+                                             blink::kDragOperationLink |
+                                             blink::kDragOperationMove);
   content::DropData dropdata;
   dropdata.did_originate_from_renderer = true;
   dropdata.url = GURL(url::kAboutBlankURL);
