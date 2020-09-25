@@ -840,6 +840,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Accessibility.Mac.DifferentiateWithoutColor"
     enum="BooleanEnabled" expires_after="2020-11-02">
+  <obsolete>
+    Removed 2020-09: Data no longer needed or gathered.
+  </obsolete>
   <owner>ellyjones@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -850,6 +853,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Accessibility.Mac.FullKeyboardAccessEnabled"
     enum="BooleanEnabled" expires_after="2020-11-02">
+  <obsolete>
+    Removed 2020-09: Data no longer needed or gathered.
+  </obsolete>
   <owner>ellyjones@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -860,6 +866,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Accessibility.Mac.IncreaseContrast" enum="BooleanEnabled"
     expires_after="2020-11-02">
+  <obsolete>
+    Removed 2020-09: Data no longer needed or gathered.
+  </obsolete>
   <owner>ellyjones@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
