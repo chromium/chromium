@@ -27,6 +27,14 @@
 
 namespace blink {
 
+static MeasureMemoryController::V8MemoryReporter*
+    g_dedicated_worker_memory_reporter_ = nullptr;
+
+void MeasureMemoryController::SetDedicatedWorkerMemoryReporter(
+    V8MemoryReporter* reporter) {
+  g_dedicated_worker_memory_reporter_ = reporter;
+}
+
 MeasureMemoryController::MeasureMemoryController(
     util::PassKey<MeasureMemoryController>,
     v8::Isolate* isolate,
@@ -44,6 +52,8 @@ MeasureMemoryController::MeasureMemoryController(
 
 void MeasureMemoryController::Trace(Visitor* visitor) const {
   visitor->Trace(promise_resolver_);
+  visitor->Trace(main_result_);
+  visitor->Trace(worker_result_);
 }
 
 ScriptPromise MeasureMemoryController::StartMeasurement(
@@ -75,9 +85,19 @@ ScriptPromise MeasureMemoryController::StartMeasurement(
   isolate->MeasureMemory(
       std::make_unique<MeasureMemoryDelegate>(
           isolate, context,
-          WTF::Bind(&MeasureMemoryController::MeasurementComplete,
+          WTF::Bind(&MeasureMemoryController::MainMeasurementComplete,
                     WrapPersistent(impl))),
       execution);
+  if (g_dedicated_worker_memory_reporter_) {
+    g_dedicated_worker_memory_reporter_->GetMemoryUsage(
+        WTF::Bind(&MeasureMemoryController::WorkerMeasurementComplete,
+                  WrapPersistent(impl)),
+
+        execution);
+  } else {
+    HeapVector<Member<MeasureMemoryBreakdown>> result;
+    impl->WorkerMeasurementComplete(result);
+  }
   return ScriptPromise(script_state, promise_resolver->GetPromise());
 }
 
@@ -100,14 +120,35 @@ bool MeasureMemoryController::IsMeasureMemoryAvailable(LocalDOMWindow* window) {
   return true;
 }
 
-void MeasureMemoryController::MeasurementComplete(
-    HeapVector<Member<MeasureMemoryBreakdown>> breakdown) {
+void MeasureMemoryController::MainMeasurementComplete(Result result) {
+  DCHECK(!main_measurement_completed_);
+  main_result_ = result;
+  main_measurement_completed_ = true;
+  MaybeResolvePromise();
+}
+
+void MeasureMemoryController::WorkerMeasurementComplete(Result result) {
+  DCHECK(!worker_measurement_completed_);
+  worker_result_ = result;
+  worker_measurement_completed_ = true;
+  MaybeResolvePromise();
+}
+
+void MeasureMemoryController::MaybeResolvePromise() {
+  if (!main_measurement_completed_ || !worker_measurement_completed_) {
+    // Wait until we have all results.
+    return;
+  }
   if (context_.IsEmpty()) {
     // The context was garbage collected in the meantime.
     return;
   }
+  v8::HandleScope handle_scope(isolate_);
   v8::Local<v8::Context> context = context_.NewLocal(isolate_);
+  v8::Context::Scope context_scope(context);
   MeasureMemory* result = MeasureMemory::Create();
+  auto breakdown = main_result_;
+  breakdown.AppendVector(worker_result_);
   size_t total_size = 0;
   for (auto entry : breakdown) {
     total_size += entry->bytes();
@@ -118,6 +159,7 @@ void MeasureMemoryController::MeasurementComplete(
       promise_resolver_.NewLocal(isolate_);
   promise_resolver->Resolve(context, ToV8(result, promise_resolver, isolate_))
       .ToChecked();
+  promise_resolver_.Clear();
 }
 
 }  // namespace blink

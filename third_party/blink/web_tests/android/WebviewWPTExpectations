@@ -3083,6 +3083,7 @@ crbug.com/1050754 external/wpt/measure-memory/iframe.cross-origin.tentative.wind
 crbug.com/1050754 external/wpt/measure-memory/iframe.cross-site.tentative.window.html [ Failure ]
 crbug.com/1050754 external/wpt/measure-memory/iframe.same-origin.tentative.window.html [ Failure ]
 crbug.com/1050754 external/wpt/measure-memory/main-frame.tentative.window.html [ Failure ]
+crbug.com/1050754 external/wpt/measure-memory/main-frame-and-worker.tentative.window.html [ Failure ]
 crbug.com/1050754 external/wpt/measure-memory/redirect.client.tentative.window.html [ Failure ]
 crbug.com/1050754 external/wpt/measure-memory/redirect.server.tentative.window.html [ Failure ]
 crbug.com/1050754 external/wpt/measure-memory/window-open.cross-origin.tentative.window.html [ Failure ]
