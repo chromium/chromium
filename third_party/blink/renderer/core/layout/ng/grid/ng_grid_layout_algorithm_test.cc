@@ -135,9 +135,7 @@ class NGGridLayoutAlgorithmTest
     NGBlockNode container(ToLayoutBox(element->GetLayoutObject()));
     NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
         WritingMode::kHorizontalTb, TextDirection::kLtr,
-        LogicalSize(LayoutUnit(1000), kIndefiniteSize),
-        /* shrink_to_fit */ false,
-        /* is_new_formatting_context */ true);
+        LogicalSize(LayoutUnit(1000), kIndefiniteSize));
     return NGBaseLayoutAlgorithmTest::RunBlockLayoutAlgorithm(container, space);
   }
 
@@ -741,25 +739,28 @@ TEST_F(NGGridLayoutAlgorithmTest, FixedSizePositioning) {
       }
 
     </style>
-    <div id="grid">
-      <div class="grid_item">1</div>
-      <div class="grid_item">2</div>
-      <div class="grid_item">3</div>
-      <div class="grid_item">4</div>
+    <div id="wrapper">
+      <div id="grid">
+        <div class="grid_item">1</div>
+        <div class="grid_item">2</div>
+        <div class="grid_item">3</div>
+        <div class="grid_item">4</div>
+      </div>
     </div>
   )HTML");
-  String dump = DumpFragmentTree(GetElementById("grid"));
+  String dump = DumpFragmentTree(GetElementById("wrapper"));
 
   String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
-  offset:unplaced size:200x200
-    offset:0,0 size:100x100
-      offset:0,0 size:10x10
-    offset:0,100 size:100x100
-      offset:0,0 size:10x10
-    offset:0,200 size:100x100
-      offset:0,0 size:10x10
-    offset:0,300 size:100x100
-      offset:0,0 size:10x10
+  offset:unplaced size:1000x200
+    offset:0,0 size:200x200
+      offset:0,0 size:100x100
+        offset:0,0 size:10x10
+      offset:100,0 size:100x100
+        offset:0,0 size:10x10
+      offset:0,100 size:100x100
+        offset:0,0 size:10x10
+      offset:100,100 size:100x100
+        offset:0,0 size:10x10
 )DUMP";
   EXPECT_EQ(expectation, dump);
 }

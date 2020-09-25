@@ -20,6 +20,7 @@ NGGridLayoutAlgorithm::NGGridLayoutAlgorithm(
   DCHECK(!params.break_token);
   container_builder_.SetIsNewFormattingContext(true);
 
+  border_box_size_ = container_builder_.InitialBorderBoxSize();
   child_percentage_size_ = CalculateChildPercentageSize(
       ConstraintSpace(), Node(), ChildAvailableSize());
 }
@@ -72,8 +73,17 @@ scoped_refptr<const NGLayoutResult> NGGridLayoutAlgorithm::Layout() {
     }
   }
 
-  // TODO(kschmi): Calculate correct block-size.
-  container_builder_.SetFragmentsTotalBlockSize(LayoutUnit());
+  // TODO(ansollan): Calculate the intrinsic-block-size from the tracks.
+  LayoutUnit intrinsic_block_size = BorderScrollbarPadding().BlockSum();
+  intrinsic_block_size =
+      ClampIntrinsicBlockSize(ConstraintSpace(), Node(),
+                              BorderScrollbarPadding(), intrinsic_block_size);
+  LayoutUnit block_size = ComputeBlockSizeForFragment(
+      ConstraintSpace(), Style(), BorderPadding(), intrinsic_block_size,
+      border_box_size_.inline_size);
+
+  container_builder_.SetIntrinsicBlockSize(intrinsic_block_size);
+  container_builder_.SetFragmentsTotalBlockSize(block_size);
   NGOutOfFlowLayoutPart(Node(), ConstraintSpace(), &container_builder_).Run();
   return container_builder_.ToBoxFragment();
 }

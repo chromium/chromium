@@ -117,6 +117,7 @@ class CORE_EXPORT NGGridLayoutAlgorithm
   void PlaceGridItems();
 
   GridLayoutAlgorithmState state_;
+  LogicalSize border_box_size_;
   LogicalSize child_percentage_size_;
 
   Vector<GridItemData> items_;
