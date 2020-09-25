@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/clipboard/clipboard_history_controller.h"
+#include "ash/clipboard/clipboard_history_controller_impl.h"
 
 #include <memory>
 
@@ -36,6 +36,7 @@
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/strings/grit/ui_strings.h"
+#include "ui/views/controls/menu/menu_controller.h"
 
 namespace ash {
 
@@ -59,12 +60,12 @@ bool IsRectContainedByAnyDisplay(const gfx::Rect& rect) {
 
 }  // namespace
 
-// ClipboardHistoryController::AcceleratorTarget -------------------------------
+// ClipboardHistoryControllerImpl::AcceleratorTarget ---------------------------
 
-class ClipboardHistoryController::AcceleratorTarget
+class ClipboardHistoryControllerImpl::AcceleratorTarget
     : public ui::AcceleratorTarget {
  public:
-  explicit AcceleratorTarget(ClipboardHistoryController* controller)
+  explicit AcceleratorTarget(ClipboardHistoryControllerImpl* controller)
       : controller_(controller),
         show_menu_combo_(
             ui::Accelerator(/*key_code=*/ui::VKEY_V,
@@ -115,7 +116,7 @@ class ClipboardHistoryController::AcceleratorTarget
     if (controller_->IsMenuShowing())
       controller_->ExecuteSelectedMenuItem(show_menu_combo_.modifiers());
     else
-      controller_->ShowMenu();
+      controller_->ShowMenuByAccelerator();
   }
 
   void HandleDeleteSelected() {
@@ -124,7 +125,7 @@ class ClipboardHistoryController::AcceleratorTarget
   }
 
   // The controller responsible for showing the Clipboard History menu.
-  ClipboardHistoryController* const controller_;
+  ClipboardHistoryControllerImpl* const controller_;
 
   // The accelerator to show the menu or execute the selected menu item.
   const ui::Accelerator show_menu_combo_;
@@ -134,12 +135,12 @@ class ClipboardHistoryController::AcceleratorTarget
   const ui::Accelerator delete_selected_;
 };
 
-// ClipboardHistoryController::MenuDelegate ------------------------------------
+// ClipboardHistoryControllerImpl::MenuDelegate --------------------------------
 
-class ClipboardHistoryController::MenuDelegate
+class ClipboardHistoryControllerImpl::MenuDelegate
     : public ui::SimpleMenuModel::Delegate {
  public:
-  explicit MenuDelegate(ClipboardHistoryController* controller)
+  explicit MenuDelegate(ClipboardHistoryControllerImpl* controller)
       : controller_(controller) {}
   MenuDelegate(const MenuDelegate&) = delete;
   MenuDelegate& operator=(const MenuDelegate&) = delete;
@@ -156,12 +157,12 @@ class ClipboardHistoryController::MenuDelegate
 
  private:
   // The controller responsible for showing the Clipboard History menu.
-  ClipboardHistoryController* const controller_;
+  ClipboardHistoryControllerImpl* const controller_;
 };
 
-// ClipboardHistoryController --------------------------------------------------
+// ClipboardHistoryControllerImpl ----------------------------------------------
 
-ClipboardHistoryController::ClipboardHistoryController()
+ClipboardHistoryControllerImpl::ClipboardHistoryControllerImpl()
     : clipboard_history_(std::make_unique<ClipboardHistory>()),
       resource_manager_(std::make_unique<ClipboardHistoryResourceManager>(
           clipboard_history_.get())),
@@ -170,26 +171,50 @@ ClipboardHistoryController::ClipboardHistoryController()
       nudge_controller_(std::make_unique<ClipboardNudgeController>(
           clipboard_history_.get())) {}
 
-ClipboardHistoryController::~ClipboardHistoryController() = default;
+ClipboardHistoryControllerImpl::~ClipboardHistoryControllerImpl() = default;
 
-void ClipboardHistoryController::Init() {
+void ClipboardHistoryControllerImpl::Init() {
   accelerator_target_->Init();
 }
 
-bool ClipboardHistoryController::IsMenuShowing() const {
+bool ClipboardHistoryControllerImpl::IsMenuShowing() const {
   return context_menu_ && context_menu_->IsRunning();
 }
 
-gfx::Rect ClipboardHistoryController::GetMenuBoundsInScreenForTest() const {
+gfx::Rect ClipboardHistoryControllerImpl::GetMenuBoundsInScreenForTest() const {
   return context_menu_->GetMenuBoundsInScreenForTest();
 }
 
-bool ClipboardHistoryController::CanShowMenu() const {
+void ClipboardHistoryControllerImpl::ShowMenu(
+    const gfx::Rect& anchor_rect,
+    views::MenuAnchorPosition menu_anchor_position,
+    ui::MenuSourceType source_type) {
+  if (IsMenuShowing() || !CanShowMenu())
+    return;
+
+  // Close the running context menu if any before showing the clipboard history
+  // menu. Because the clipboard history menu should not be nested.
+  auto* active_menu_instance = views::MenuController::GetActiveInstance();
+  if (active_menu_instance)
+    active_menu_instance->Cancel(views::MenuController::ExitType::kAll);
+
+  context_menu_ = ClipboardHistoryMenuModelAdapter::Create(
+      menu_delegate_.get(),
+      base::BindRepeating(&ClipboardHistoryControllerImpl::OnMenuClosed,
+                          base::Unretained(this)),
+      clipboard_history_.get(), resource_manager_.get());
+  context_menu_->Run(anchor_rect, menu_anchor_position, source_type);
+
+  DCHECK(IsMenuShowing());
+  accelerator_target_->OnMenuShown();
+}
+
+bool ClipboardHistoryControllerImpl::CanShowMenu() const {
   return !clipboard_history_->IsEmpty() &&
          clipboard_history_->IsEnabledInCurrentMode();
 }
 
-void ClipboardHistoryController::ExecuteSelectedMenuItem(int event_flags) {
+void ClipboardHistoryControllerImpl::ExecuteSelectedMenuItem(int event_flags) {
   DCHECK(IsMenuShowing());
   auto command = context_menu_->GetSelectedMenuItemCommand();
 
@@ -198,23 +223,13 @@ void ClipboardHistoryController::ExecuteSelectedMenuItem(int event_flags) {
       command.value_or(ClipboardHistoryUtil::kFirstItemCommandId), event_flags);
 }
 
-void ClipboardHistoryController::ShowMenu() {
-  if (IsMenuShowing() || !CanShowMenu())
-    return;
-
-  context_menu_ = ClipboardHistoryMenuModelAdapter::Create(
-      menu_delegate_.get(),
-      base::BindRepeating(&ClipboardHistoryController::OnMenuClosed,
-                          base::Unretained(this)),
-      clipboard_history_.get(), resource_manager_.get());
-  context_menu_->Run(CalculateAnchorRect());
-
-  DCHECK(IsMenuShowing());
-  accelerator_target_->OnMenuShown();
+void ClipboardHistoryControllerImpl::ShowMenuByAccelerator() {
+  ShowMenu(CalculateAnchorRect(), views::MenuAnchorPosition::kBubbleRight,
+           ui::MENU_SOURCE_KEYBOARD);
 }
 
-void ClipboardHistoryController::MenuOptionSelected(int command_id,
-                                                    int event_flags) {
+void ClipboardHistoryControllerImpl::MenuOptionSelected(int command_id,
+                                                        int event_flags) {
   // Force close the context menu. Failure to do so before dispatching our
   // synthetic key event will result in the context menu consuming the event.
   DCHECK(context_menu_);
@@ -269,7 +284,7 @@ void ClipboardHistoryController::MenuOptionSelected(int command_id,
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(
-          [](const base::WeakPtr<ClipboardHistoryController>& weak_ptr,
+          [](const base::WeakPtr<ClipboardHistoryControllerImpl>& weak_ptr,
              std::unique_ptr<ui::ClipboardData> original_data) {
             // When restoring the original item back on top of the clipboard we
             // need to pause clipboard history. Failure to do so will result in
@@ -286,7 +301,7 @@ void ClipboardHistoryController::MenuOptionSelected(int command_id,
       base::TimeDelta::FromMilliseconds(200));
 }
 
-void ClipboardHistoryController::DeleteSelectedMenuItemIfAny() {
+void ClipboardHistoryControllerImpl::DeleteSelectedMenuItemIfAny() {
   DCHECK(context_menu_);
   auto selected_command = context_menu_->GetSelectedMenuItemCommand();
 
@@ -309,7 +324,7 @@ void ClipboardHistoryController::DeleteSelectedMenuItemIfAny() {
   context_menu_->RemoveMenuItemWithCommandId(*selected_command);
 }
 
-gfx::Rect ClipboardHistoryController::CalculateAnchorRect() const {
+gfx::Rect ClipboardHistoryControllerImpl::CalculateAnchorRect() const {
   display::Display display = display::Screen::GetScreen()->GetPrimaryDisplay();
   auto* host = ash::GetWindowTreeHostForDisplay(display.id());
 
@@ -341,7 +356,7 @@ gfx::Rect ClipboardHistoryController::CalculateAnchorRect() const {
                    gfx::Size());
 }
 
-void ClipboardHistoryController::OnMenuClosed() {
+void ClipboardHistoryControllerImpl::OnMenuClosed() {
   accelerator_target_->OnMenuClosed();
 }
 

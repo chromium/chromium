@@ -211,10 +211,13 @@
 #endif
 
 #if defined(OS_CHROMEOS)
+#include "ash/public/cpp/clipboard_history_controller.h"
 #include "chrome/browser/chromeos/arc/arc_util.h"
 #include "chrome/browser/chromeos/arc/intent_helper/open_with_menu.h"
 #include "chrome/browser/chromeos/arc/intent_helper/start_smart_selection_action_menu.h"
 #include "chrome/browser/renderer_context_menu/quick_answers_menu_observer.h"
+#include "chromeos/constants/chromeos_features.h"
+#include "ui/views/controls/menu/menu_types.h"
 #endif
 
 using base::UserMetricsAction;
@@ -365,13 +368,14 @@ const std::map<int, int>& GetIdcToUmaMap(UmaEnumIdLookupType type) {
        {IDC_CONTENT_CONTEXT_SHARING_SHARED_CLIPBOARD_SINGLE_DEVICE, 108},
        {IDC_CONTENT_CONTEXT_SHARING_SHARED_CLIPBOARD_MULTIPLE_DEVICES, 109},
        {IDC_CONTENT_CONTEXT_GENERATE_QR_CODE, 110},
+       {IDC_CONTENT_CLIPBOARD_HISTORY_MENU, 111},
        // To add new items:
        //   - Add one more line above this comment block, using the UMA value
        //     from the line below this comment block.
        //   - Increment the UMA value in that latter line.
        //   - Add the new item to the RenderViewContextMenuItem enum in
        //     tools/metrics/histograms/enums.xml.
-       {0, 111}});
+       {0, 112}});
 
   // These UMA values are for the the ContextMenuOptionDesktop enum, used for
   // the ContextMenu.SelectedOptionDesktop histograms.
@@ -1698,9 +1702,22 @@ void RenderViewContextMenu::AppendEditableItems() {
                                   IDS_CONTENT_CONTEXT_COPY);
   menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_PASTE,
                                   IDS_CONTENT_CONTEXT_PASTE);
-  if (params_.misspelled_word.empty()) {
+
+  const bool has_misspelled_word = !params_.misspelled_word.empty();
+  if (!has_misspelled_word) {
     menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_PASTE_AND_MATCH_STYLE,
                                     IDS_CONTENT_CONTEXT_PASTE_AND_MATCH_STYLE);
+  }
+
+#if defined(OS_CHROMEOS)
+  if (chromeos::features::IsClipboardHistoryEnabled()) {
+    menu_model_.AddItemWithStringId(
+        IDC_CONTENT_CLIPBOARD_HISTORY_MENU,
+        IDS_CONTEXT_MENU_SHOW_CLIPBOARD_HISTORY_MENU);
+  }
+#endif
+
+  if (!has_misspelled_word) {
     menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_SELECTALL,
                                     IDS_CONTENT_CONTEXT_SELECTALL);
   }
@@ -2087,6 +2104,15 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
     case IDC_CONTENT_CONTEXT_START_SMART_SELECTION_ACTION5:
       return true;
 
+    case IDC_CONTENT_CLIPBOARD_HISTORY_MENU:
+#if defined(OS_CHROMEOS)
+      if (chromeos::features::IsClipboardHistoryEnabled())
+        return ash::ClipboardHistoryController::Get()->CanShowMenu();
+#else
+      NOTREACHED();
+#endif
+      return false;
+
     default:
       NOTREACHED();
       return false;
@@ -2417,6 +2443,31 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
         // process. This fails in print preview for PWA windows on Mac.
         ui::ShowEmojiPanel();
       }
+      break;
+    }
+
+    case IDC_CONTENT_CLIPBOARD_HISTORY_MENU: {
+#if defined(OS_CHROMEOS)
+      // Calculate the anchor point in screen coordinates.
+      gfx::Point anchor_point_in_screen =
+          GetRenderFrameHost()->GetNativeView()->GetBoundsInScreen().origin();
+      anchor_point_in_screen.Offset(params_.x, params_.y);
+
+      // Calculate the menu source type from `event_flags`.
+      ui::MenuSourceType source_type;
+      if (event_flags & ui::EF_LEFT_MOUSE_BUTTON)
+        source_type = ui::MENU_SOURCE_MOUSE;
+      else if (event_flags & ui::EF_FROM_TOUCH)
+        source_type = ui::MENU_SOURCE_TOUCH;
+      else
+        source_type = ui::MENU_SOURCE_KEYBOARD;
+
+      ash::ClipboardHistoryController::Get()->ShowMenu(
+          gfx::Rect(anchor_point_in_screen, gfx::Size()),
+          views::MenuAnchorPosition::kTopLeft, source_type);
+#else
+      NOTREACHED();
+#endif
       break;
     }
 

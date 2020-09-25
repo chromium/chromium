@@ -183,7 +183,7 @@ class SystemTrayModel;
 class SystemTrayNotifier;
 class ToastManagerImpl;
 class ToplevelWindowEventHandler;
-class ClipboardHistoryController;
+class ClipboardHistoryControllerImpl;
 class TouchDevicesController;
 class TrayAction;
 class TrayBluetoothHelper;
@@ -508,7 +508,7 @@ class ASH_EXPORT Shell : public SessionObserver,
   views::corewm::TooltipController* tooltip_controller() {
     return tooltip_controller_.get();
   }
-  ClipboardHistoryController* clipboard_history_controller() {
+  ClipboardHistoryControllerImpl* clipboard_history_controller() {
     return clipboard_history_controller_.get();
   }
   TouchDevicesController* touch_devices_controller() {
@@ -723,7 +723,7 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<SystemTrayModel> system_tray_model_;
   std::unique_ptr<SystemTrayNotifier> system_tray_notifier_;
   std::unique_ptr<ToastManagerImpl> toast_manager_;
-  std::unique_ptr<ClipboardHistoryController> clipboard_history_controller_;
+  std::unique_ptr<ClipboardHistoryControllerImpl> clipboard_history_controller_;
   std::unique_ptr<TouchDevicesController> touch_devices_controller_;
   std::unique_ptr<TrayAction> tray_action_;
   std::unique_ptr<WallpaperControllerImpl> wallpaper_controller_;

@@ -6,7 +6,7 @@
 #include <memory>
 
 #include "ash/clipboard/clipboard_history.h"
-#include "ash/clipboard/clipboard_history_controller.h"
+#include "ash/clipboard/clipboard_history_controller_impl.h"
 #include "ash/clipboard/clipboard_history_item.h"
 #include "ash/clipboard/clipboard_history_menu_model_adapter.h"
 #include "ash/shell.h"
@@ -75,7 +75,7 @@ void SetClipboardTextAndHtml(const std::string& text, const std::string& html) {
   FlushMessageLoop();
 }
 
-ash::ClipboardHistoryController* GetClipboardHistoryController() {
+ash::ClipboardHistoryControllerImpl* GetClipboardHistoryController() {
   return ash::Shell::Get()->clipboard_history_controller();
 }
 

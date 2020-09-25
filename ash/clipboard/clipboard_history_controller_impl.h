@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_CLIPBOARD_CLIPBOARD_HISTORY_CONTROLLER_H_
-#define ASH_CLIPBOARD_CLIPBOARD_HISTORY_CONTROLLER_H_
+#ifndef ASH_CLIPBOARD_CLIPBOARD_HISTORY_CONTROLLER_IMPL_H_
+#define ASH_CLIPBOARD_CLIPBOARD_HISTORY_CONTROLLER_IMPL_H_
 
 #include <memory>
 #include <vector>
@@ -11,7 +11,12 @@
 #include "ash/ash_export.h"
 #include "ash/clipboard/clipboard_history_item.h"
 #include "ash/clipboard/clipboard_nudge_controller.h"
+#include "ash/public/cpp/clipboard_history_controller.h"
 #include "base/memory/weak_ptr.h"
+
+namespace views {
+enum class MenuAnchorPosition;
+}  // namespace views
 
 namespace gfx {
 class Rect;
@@ -25,13 +30,15 @@ class ClipboardHistoryResourceManager;
 
 // Shows a menu with the last few things saved in the clipboard when the
 // keyboard shortcut is pressed.
-class ASH_EXPORT ClipboardHistoryController {
+class ASH_EXPORT ClipboardHistoryControllerImpl
+    : public ClipboardHistoryController {
  public:
-  ClipboardHistoryController();
-  ClipboardHistoryController(const ClipboardHistoryController&) = delete;
-  ClipboardHistoryController& operator=(const ClipboardHistoryController&) =
+  ClipboardHistoryControllerImpl();
+  ClipboardHistoryControllerImpl(const ClipboardHistoryControllerImpl&) =
       delete;
-  ~ClipboardHistoryController();
+  ClipboardHistoryControllerImpl& operator=(
+      const ClipboardHistoryControllerImpl&) = delete;
+  ~ClipboardHistoryControllerImpl() override;
 
   void Init();
 
@@ -62,8 +69,15 @@ class ASH_EXPORT ClipboardHistoryController {
   class AcceleratorTarget;
   class MenuDelegate;
 
-  bool CanShowMenu() const;
-  void ShowMenu();
+  // ClipboardHistoryController:
+  void ShowMenu(const gfx::Rect& anchor_rect,
+                views::MenuAnchorPosition menu_anchor_position,
+                ui::MenuSourceType source_type) override;
+  bool CanShowMenu() const override;
+
+  // Shows the clipboard history menu through the keyboard accelerator.
+  void ShowMenuByAccelerator();
+
   void ExecuteSelectedMenuItem(int event_flags);
   void MenuOptionSelected(int command_id, int event_flags);
 
@@ -89,9 +103,9 @@ class ASH_EXPORT ClipboardHistoryController {
   // Controller that shows contextual nudges for multipaste.
   std::unique_ptr<ClipboardNudgeController> nudge_controller_;
 
-  base::WeakPtrFactory<ClipboardHistoryController> weak_ptr_factory_{this};
+  base::WeakPtrFactory<ClipboardHistoryControllerImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace ash
 
-#endif  // ASH_CLIPBOARD_CLIPBOARD_HISTORY_CONTROLLER_H_
+#endif  // ASH_CLIPBOARD_CLIPBOARD_HISTORY_CONTROLLER_IMPL_H_

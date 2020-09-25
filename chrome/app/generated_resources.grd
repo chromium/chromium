@@ -7303,6 +7303,12 @@ the Bookmarks menu.">
           Can't create QR code
       </message>
 
+      <!-- Clipboard History Menu feature. -->
+      <message name="IDS_CONTEXT_MENU_SHOW_CLIPBOARD_HISTORY_MENU"
+          desc="Show the clipboard history menu.">
+          Clipboard
+      </message>
+
       <!-- Sharing features. -->
       <message name="IDS_SHARING_REMOTE_COPY_NOTIFICATION_TITLE_TEXT_CONTENT_UNKNOWN_DEVICE" desc="Title text displayed in a Remote Copy (for text content) notification when the source device name is unknown.">
         Text copied from other device

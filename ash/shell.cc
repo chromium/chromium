@@ -25,7 +25,7 @@
 #include "ash/autoclick/autoclick_controller.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/child_accounts/parent_access_controller_impl.h"
-#include "ash/clipboard/clipboard_history_controller.h"
+#include "ash/clipboard/clipboard_history_controller_impl.h"
 #include "ash/dbus/ash_dbus_services.h"
 #include "ash/detachable_base/detachable_base_handler.h"
 #include "ash/detachable_base/detachable_base_notification_controller.h"
@@ -1017,7 +1017,7 @@ void Shell::Init(
   accelerator_controller_ = std::make_unique<AcceleratorControllerImpl>();
   if (chromeos::features::IsClipboardHistoryEnabled()) {
     clipboard_history_controller_ =
-        std::make_unique<ClipboardHistoryController>();
+        std::make_unique<ClipboardHistoryControllerImpl>();
     clipboard_history_controller_->Init();
   }
   shelf_config_ = std::make_unique<ShelfConfig>();

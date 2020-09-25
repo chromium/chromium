@@ -7,7 +7,7 @@
 #include <list>
 #include <unordered_map>
 
-#include "ash/clipboard/clipboard_history_controller.h"
+#include "ash/clipboard/clipboard_history_controller_impl.h"
 #include "ash/clipboard/clipboard_history_item.h"
 #include "ash/public/cpp/clipboard_image_model_factory.h"
 #include "ash/shell.h"
@@ -131,7 +131,7 @@ class ClipboardHistoryTest : public AshTestBase {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  // Owned by ClipboardHistoryController.
+  // Owned by ClipboardHistoryControllerImpl.
   ClipboardHistory* clipboard_history_ = nullptr;
 };
 

@@ -8,7 +8,7 @@
 #include <unordered_map>
 
 #include "ash/clipboard/clipboard_history.h"
-#include "ash/clipboard/clipboard_history_controller.h"
+#include "ash/clipboard/clipboard_history_controller_impl.h"
 #include "ash/clipboard/clipboard_history_item.h"
 #include "ash/clipboard/test_support/clipboard_history_item_builder.h"
 #include "ash/public/cpp/clipboard_image_model_factory.h"

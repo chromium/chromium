@@ -4,7 +4,7 @@
 
 #include "ash/clipboard/views/clipboard_history_text_item_view.h"
 
-#include "ash/clipboard/clipboard_history_controller.h"
+#include "ash/clipboard/clipboard_history_controller_impl.h"
 #include "ash/clipboard/clipboard_history_resource_manager.h"
 #include "ash/shell.h"
 #include "ui/views/controls/label.h"

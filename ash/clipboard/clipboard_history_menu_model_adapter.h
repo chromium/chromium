@@ -44,8 +44,11 @@ class ASH_EXPORT ClipboardHistoryMenuModelAdapter : views::MenuModelAdapter {
       const ClipboardHistoryMenuModelAdapter&) = delete;
   ~ClipboardHistoryMenuModelAdapter() override;
 
-  // Shows the menu, anchored below |anchor_rect|.
-  void Run(const gfx::Rect& anchor_rect);
+  // Shows the menu anchored at `anchor_rect` with the menu position being
+  // `menu_anchor_position`. `source_type` indicates how the menu is triggered.
+  void Run(const gfx::Rect& anchor_rect,
+           views::MenuAnchorPosition menu_anchor_position,
+           ui::MenuSourceType source_type);
 
   // Returns if the menu is currently running.
   bool IsRunning() const;

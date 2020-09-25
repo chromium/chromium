@@ -5,7 +5,7 @@
 #include "ash/clipboard/clipboard_nudge_controller.h"
 
 #include "ash/clipboard/clipboard_history.h"
-#include "ash/clipboard/clipboard_history_controller.h"
+#include "ash/clipboard/clipboard_history_controller_impl.h"
 #include "ash/clipboard/clipboard_nudge_constants.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"

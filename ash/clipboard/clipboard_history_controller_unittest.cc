@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/clipboard/clipboard_history_controller.h"
+#include "ash/clipboard/clipboard_history_controller_impl.h"
 
 #include <memory>
 
@@ -87,7 +87,7 @@ class ClipboardHistoryControllerTest : public AshTestBase {
     mock_image_factory_ = std::make_unique<MockClipboardImageModelFactory>();
   }
 
-  ClipboardHistoryController* GetClipboardHistoryController() {
+  ClipboardHistoryControllerImpl* GetClipboardHistoryController() {
     return Shell::Get()->clipboard_history_controller();
   }
 
