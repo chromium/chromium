@@ -773,27 +773,30 @@ template <bool thread_safe>
 void PartitionRoot<thread_safe>::DumpStats(const char* partition_name,
                                            bool is_light_dump,
                                            PartitionStatsDumper* dumper) {
-  ScopedGuard guard{lock_};
-  PartitionMemoryStats stats = {0};
-  stats.total_mmapped_bytes =
-      total_size_of_super_pages + total_size_of_direct_mapped_pages;
-  stats.total_committed_bytes = total_size_of_committed_pages;
-
-  size_t direct_mapped_allocations_total_size = 0;
-
   static const size_t kMaxReportableDirectMaps = 4096;
-
   // Allocate on the heap rather than on the stack to avoid stack overflow
-  // skirmishes (on Windows, in particular).
+  // skirmishes (on Windows, in particular). Allocate before locking below,
+  // otherwise when PartitionAlloc is malloc() we get reentrancy issues. This
+  // inflates reported values a bit for detailed dumps though, by 16kiB.
   std::unique_ptr<uint32_t[]> direct_map_lengths = nullptr;
   if (!is_light_dump) {
     direct_map_lengths =
         std::unique_ptr<uint32_t[]>(new uint32_t[kMaxReportableDirectMaps]);
   }
-
   PartitionBucketMemoryStats bucket_stats[kNumBuckets];
   size_t num_direct_mapped_allocations = 0;
+  PartitionMemoryStats stats = {0};
+
+  // Collect data with the lock held, cannot allocate or call third-party code
+  // below.
   {
+    ScopedGuard guard{lock_};
+
+    stats.total_mmapped_bytes =
+        total_size_of_super_pages + total_size_of_direct_mapped_pages;
+    stats.total_committed_bytes = total_size_of_committed_pages;
+
+    size_t direct_mapped_allocations_total_size = 0;
     for (size_t i = 0; i < kNumBuckets; ++i) {
       const Bucket* bucket = &buckets[i];
       // Don't report the pseudo buckets that the generic allocator sets up in
@@ -822,12 +825,21 @@ void PartitionRoot<thread_safe>::DumpStats(const char* partition_name,
         continue;
       direct_map_lengths[num_direct_mapped_allocations] = slot_size;
     }
+
+    stats.total_resident_bytes += direct_mapped_allocations_total_size;
+    stats.total_active_bytes += direct_mapped_allocations_total_size;
+
+    stats.has_thread_cache = !is_light_dump && with_thread_cache;
+    if (stats.has_thread_cache) {
+      internal::ThreadCacheRegistry::Instance().DumpStats(
+          true, &stats.current_thread_cache_stats);
+      internal::ThreadCacheRegistry::Instance().DumpStats(
+          false, &stats.all_thread_caches_stats);
+    }
   }
 
+  // Do not hold the lock when calling |dumper|, as it may allocate.
   if (!is_light_dump) {
-    // Call |PartitionsDumpBucketStats| after collecting stats because it can
-    // try to allocate using |PartitionRoot::Alloc()| and it can't
-    // obtain the lock.
     for (size_t i = 0; i < kNumBuckets; ++i) {
       if (bucket_stats[i].is_valid)
         dumper->PartitionsDumpBucketStats(partition_name, &bucket_stats[i]);
@@ -847,18 +859,6 @@ void PartitionRoot<thread_safe>::DumpStats(const char* partition_name,
       dumper->PartitionsDumpBucketStats(partition_name, &mapped_stats);
     }
   }
-
-  stats.total_resident_bytes += direct_mapped_allocations_total_size;
-  stats.total_active_bytes += direct_mapped_allocations_total_size;
-
-  stats.has_thread_cache = !is_light_dump && with_thread_cache;
-  if (stats.has_thread_cache) {
-    internal::ThreadCacheRegistry::Instance().DumpStats(
-        true, &stats.current_thread_cache_stats);
-    internal::ThreadCacheRegistry::Instance().DumpStats(
-        false, &stats.all_thread_caches_stats);
-  }
-
   dumper->PartitionDumpTotals(partition_name, &stats);
 }
 
