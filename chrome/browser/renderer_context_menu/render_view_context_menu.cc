@@ -257,7 +257,7 @@ const std::map<int, int>& GetIdcToUmaMap(UmaEnumIdLookupType type) {
 
   // These UMA values are for the the RenderViewContextMenuItem enum, used for
   // the RenderViewContextMenu.Shown and RenderViewContextMenu.Used histograms.
-  static base::NoDestructor<std::map<int, int>> general_map(
+  static const base::NoDestructor<std::map<int, int>> kGeneralMap(
       {// NB: UMA values for 0 and 1 are detected using
        // RenderViewContextMenu::IsContentCustomCommandId() and
        // ContextMenuMatcher::IsExtensionsCustomCommandId()
@@ -375,7 +375,7 @@ const std::map<int, int>& GetIdcToUmaMap(UmaEnumIdLookupType type) {
 
   // These UMA values are for the the ContextMenuOptionDesktop enum, used for
   // the ContextMenu.SelectedOptionDesktop histograms.
-  static base::NoDestructor<std::map<int, int>> specific_map(
+  static const base::NoDestructor<std::map<int, int>> kSpecificMap(
       {{IDC_CONTENT_CONTEXT_OPENLINKNEWTAB, 0},
        {IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD, 1},
        {IDC_CONTENT_CONTEXT_COPYLINKLOCATION, 2},
@@ -404,8 +404,8 @@ const std::map<int, int>& GetIdcToUmaMap(UmaEnumIdLookupType type) {
        //     tools/metrics/histograms/enums.xml.
        {0, 20}});
 
-  return *(type == UmaEnumIdLookupType::GeneralEnumId ? general_map
-                                                      : specific_map);
+  return *(type == UmaEnumIdLookupType::GeneralEnumId ? kGeneralMap
+                                                      : kSpecificMap);
 }
 
 int GetUmaValueMax(UmaEnumIdLookupType type) {
@@ -1628,10 +1628,11 @@ void RenderViewContextMenu::AppendSearchProvider() {
     if (!default_provider)
       return;
 
-    if (params_.properties.find(
-            prefs::kDefaultSearchProviderContextMenuAccessAllowed) ==
-        params_.properties.end())
+    if (!base::Contains(
+            params_.properties,
+            prefs::kDefaultSearchProviderContextMenuAccessAllowed)) {
       return;
+    }
 
     menu_model_.AddItem(
         IDC_CONTENT_CONTEXT_SEARCHWEBFOR,
