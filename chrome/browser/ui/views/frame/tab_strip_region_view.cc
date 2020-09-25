@@ -39,8 +39,7 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip) {
   const views::FlexSpecification tab_strip_container_flex_spec =
       views::FlexSpecification(views::LayoutOrientation::kHorizontal,
                                views::MinimumFlexSizeRule::kScaleToZero,
-                               views::MaximumFlexSizeRule::kUnbounded)
-          .WithWeight(0);
+                               views::MaximumFlexSizeRule::kUnbounded);
   tab_strip_container_->SetProperty(views::kFlexBehaviorKey,
                                     tab_strip_container_flex_spec);
 
