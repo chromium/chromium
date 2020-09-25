@@ -166,7 +166,7 @@ goog.provide('{{module.namespace}}.{{interface.name}}PendingReceiver');
    */
   static getRemote() {
     let remote = new {{module.namespace}}.{{interface.name}}Remote;
-    Mojo.bindInterface(this.$interfaceName,
+    Mojo.bindInterface({{module.namespace}}.{{interface.name}}.$interfaceName,
                        remote.$.bindNewPipeAndPassReceiver().handle);
     return remote;
   }
