@@ -644,8 +644,6 @@ public class PaymentUIsManager implements SettingsAutofillAndPaymentsObserver.Ob
                 mAddressEditor.setAddressErrors(errors.shippingAddress);
                 AutofillAddress selectedAddress =
                         (AutofillAddress) mShippingAddressesSection.getSelectedItem();
-                // Log the edit of a shipping address.
-                mJourneyLogger.incrementSelectionEdits(Section.SHIPPING_ADDRESS);
                 editAddress(selectedAddress);
             });
         }
@@ -655,7 +653,6 @@ public class PaymentUIsManager implements SettingsAutofillAndPaymentsObserver.Ob
                 mContactEditor.setPayerErrors(errors.payer);
                 AutofillContact selectedContact =
                         (AutofillContact) mContactSection.getSelectedItem();
-                mJourneyLogger.incrementSelectionEdits(Section.CONTACT_INFO);
                 editContactOnPaymentRequestUI(selectedContact);
             });
         }
@@ -1258,10 +1255,6 @@ public class PaymentUIsManager implements SettingsAutofillAndPaymentsObserver.Ob
      *         allowed to be null.
      */
     public void editCard(@Nullable final AutofillPaymentInstrument toEdit) {
-        if (toEdit != null) {
-            // Log the edit of a credit card.
-            mJourneyLogger.incrementSelectionEdits(Section.PAYMENT_METHOD);
-        }
         mCardEditor.edit(toEdit, new Callback<AutofillPaymentInstrument>() {
             @Override
             public void onResult(AutofillPaymentInstrument editedCard) {
@@ -1343,18 +1336,12 @@ public class PaymentUIsManager implements SettingsAutofillAndPaymentsObserver.Ob
         if (optionType == PaymentRequestUI.DataType.SHIPPING_ADDRESSES) {
             editAddress(null);
             mPaymentInformationCallback = callback;
-            // Log the add of shipping address.
-            mJourneyLogger.incrementSelectionAdds(Section.SHIPPING_ADDRESS);
             return PaymentRequestUI.SelectionResult.ASYNCHRONOUS_VALIDATION;
         } else if (optionType == PaymentRequestUI.DataType.CONTACT_DETAILS) {
             editContactOnPaymentRequestUI(null);
-            // Log the add of contact info.
-            mJourneyLogger.incrementSelectionAdds(Section.CONTACT_INFO);
             return PaymentRequestUI.SelectionResult.EDITOR_LAUNCH;
         } else if (optionType == PaymentRequestUI.DataType.PAYMENT_METHODS) {
             editCard(null);
-            // Log the add of credit card.
-            mJourneyLogger.incrementSelectionAdds(Section.PAYMENT_METHOD);
             return PaymentRequestUI.SelectionResult.EDITOR_LAUNCH;
         }
 
@@ -1365,8 +1352,6 @@ public class PaymentUIsManager implements SettingsAutofillAndPaymentsObserver.Ob
     public int onSectionEditOption(@PaymentRequestUI.DataType int optionType, EditableOption option,
             Callback<PaymentInformation> callback) {
         if (optionType == PaymentRequestUI.DataType.SHIPPING_ADDRESSES) {
-            // Log the edit of a shipping address.
-            mJourneyLogger.incrementSelectionEdits(Section.SHIPPING_ADDRESS);
             editAddress((AutofillAddress) option);
             mPaymentInformationCallback = callback;
 
@@ -1374,7 +1359,6 @@ public class PaymentUIsManager implements SettingsAutofillAndPaymentsObserver.Ob
         }
 
         if (optionType == PaymentRequestUI.DataType.CONTACT_DETAILS) {
-            mJourneyLogger.incrementSelectionEdits(Section.CONTACT_INFO);
             editContactOnPaymentRequestUI((AutofillContact) option);
             return PaymentRequestUI.SelectionResult.EDITOR_LAUNCH;
         }
@@ -1539,15 +1523,11 @@ public class PaymentUIsManager implements SettingsAutofillAndPaymentsObserver.Ob
     public int onSectionOptionSelected(@PaymentRequestUI.DataType int optionType,
             EditableOption option, Callback<PaymentInformation> callback, boolean wasRetryCalled) {
         if (optionType == PaymentRequestUI.DataType.SHIPPING_ADDRESSES) {
-            // Log the change of shipping address.
-            mJourneyLogger.incrementSelectionChanges(Section.SHIPPING_ADDRESS);
             AutofillAddress address = (AutofillAddress) option;
             if (address.isComplete()) {
                 mShippingAddressesSection.setSelectedItem(option);
                 startShippingAddressChangeNormalization(address);
             } else {
-                // Log the edit of a shipping address.
-                mJourneyLogger.incrementSelectionEdits(Section.SHIPPING_ADDRESS);
                 editAddress(address);
             }
             mPaymentInformationCallback = callback;
@@ -1559,15 +1539,12 @@ public class PaymentUIsManager implements SettingsAutofillAndPaymentsObserver.Ob
             mPaymentInformationCallback = callback;
             return PaymentRequestUI.SelectionResult.ASYNCHRONOUS_VALIDATION;
         } else if (optionType == PaymentRequestUI.DataType.CONTACT_DETAILS) {
-            // Log the change of contact info.
-            mJourneyLogger.incrementSelectionChanges(Section.CONTACT_INFO);
             AutofillContact contact = (AutofillContact) option;
             if (contact.isComplete()) {
                 mContactSection.setSelectedItem(option);
                 if (!wasRetryCalled) return PaymentRequestUI.SelectionResult.NONE;
                 mDelegate.dispatchPayerDetailChangeEventIfNeeded(contact.toPayerDetail());
             } else {
-                mJourneyLogger.incrementSelectionEdits(Section.CONTACT_INFO);
                 editContactOnPaymentRequestUI(contact);
                 if (!wasRetryCalled) return PaymentRequestUI.SelectionResult.EDITOR_LAUNCH;
             }
@@ -1595,8 +1572,6 @@ public class PaymentUIsManager implements SettingsAutofillAndPaymentsObserver.Ob
                     return PaymentRequestUI.SelectionResult.EDITOR_LAUNCH;
                 }
             }
-            // Log the change of payment method.
-            mJourneyLogger.incrementSelectionChanges(Section.PAYMENT_METHOD);
 
             updateOrderSummary(paymentApp);
             mPaymentMethodsSection.setSelectedItem(option);

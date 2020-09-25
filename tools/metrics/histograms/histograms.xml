@@ -128488,6 +128488,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="PaymentRequest.NumberOfSelectionAdds" units="units"
     expires_after="2020-07-26">
+  <obsolete>
+    Removed 09/2020. Made decision in issue 1128111 to remove unused payment
+    sheet histograms.
+  </obsolete>
   <owner>danyao@chromium.org</owner>
   <owner>web-payments-team@google.com</owner>
   <summary>
@@ -128497,6 +128501,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="PaymentRequest.NumberOfSelectionChanges" units="units"
     expires_after="2020-07-26">
+  <obsolete>
+    Removed 09/2020. Made decision in issue 1128111 to remove unused payment
+    sheet histograms.
+  </obsolete>
   <owner>danyao@chromium.org</owner>
   <owner>web-payments-team@google.com</owner>
   <summary>
@@ -128505,7 +128513,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PaymentRequest.NumberOfSelectionEdits" units="units"
-    expires_after="2020-10-22">
+    expires_after="2020-09-01">
+  <obsolete>
+    Removed 09/2020. Made decision in issue 1128111 to remove unused payment
+    sheet histograms.
+  </obsolete>
   <owner>danyao@chromium.org</owner>
   <owner>web-payments-team@google.com</owner>
   <summary>
@@ -128718,6 +128730,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="PaymentRequest.UserHadSuggestionsForEverything.EffectOnCompletion"
     enum="PaymentRequestFlowCompletionStatus" expires_after="M85">
+  <obsolete>
+    M62+ Part of PaymentRequest.Events
+  </obsolete>
   <owner>danyao@chromium.org</owner>
   <owner>web-payments-team@google.com</owner>
   <summary>
@@ -211457,6 +211472,10 @@ regressions. -->
 </histogram_suffixes>
 
 <histogram_suffixes name="PaymentRequestSection" separator=".">
+  <obsolete>
+    Removed 09/2020. Made decision in issue 1128111 to remove unused payment
+    sheet histograms.
+  </obsolete>
   <suffix name="ContactInfo"
       label="For the contact info section of a Payment Request"/>
   <suffix name="CreditCards"

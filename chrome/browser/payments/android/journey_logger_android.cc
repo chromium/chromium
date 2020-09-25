@@ -41,36 +41,6 @@ void JourneyLoggerAndroid::SetNumberOfSuggestionsShown(
       jhas_complete_suggestion);
 }
 
-void JourneyLoggerAndroid::IncrementSelectionChanges(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jcaller,
-    jint jsection) {
-  DCHECK_GE(jsection, 0);
-  DCHECK_LT(jsection, JourneyLogger::Section::SECTION_MAX);
-  journey_logger_.IncrementSelectionChanges(
-      static_cast<JourneyLogger::Section>(jsection));
-}
-
-void JourneyLoggerAndroid::IncrementSelectionEdits(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jcaller,
-    jint jsection) {
-  DCHECK_GE(jsection, 0);
-  DCHECK_LT(jsection, JourneyLogger::Section::SECTION_MAX);
-  journey_logger_.IncrementSelectionEdits(
-      static_cast<JourneyLogger::Section>(jsection));
-}
-
-void JourneyLoggerAndroid::IncrementSelectionAdds(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jcaller,
-    jint jsection) {
-  DCHECK_GE(jsection, 0);
-  DCHECK_LT(jsection, JourneyLogger::Section::SECTION_MAX);
-  journey_logger_.IncrementSelectionAdds(
-      static_cast<JourneyLogger::Section>(jsection));
-}
-
 void JourneyLoggerAndroid::SetCanMakePaymentValue(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jcaller,

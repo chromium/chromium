@@ -82,10 +82,8 @@ class PaymentMethodListItem : public PaymentRequestItemList::Item {
             BackNavigationType::kPaymentSheet,
             static_cast<int>(PaymentMethodViewControllerTags::MAX_TAG),
             /*on_edited=*/
-            base::BindOnce(
-                &PaymentRequestState::SetSelectedApp, state()->AsWeakPtr(),
-                app_,
-                PaymentRequestState::SectionSelectionStatus::kEditedSelected),
+            base::BindOnce(&PaymentRequestState::SetSelectedApp,
+                           state()->AsWeakPtr(), app_),
             /*on_added=*/
             base::OnceCallback<void(const autofill::CreditCard&)>(),
             static_cast<AutofillPaymentApp*>(app_)->credit_card());
@@ -149,8 +147,7 @@ class PaymentMethodListItem : public PaymentRequestItemList::Item {
 
   void SelectedStateChanged() override {
     if (selected()) {
-      state()->SetSelectedApp(
-          app_, PaymentRequestState::SectionSelectionStatus::kSelected);
+      state()->SetSelectedApp(app_);
       dialog_->GoBack();
     }
   }

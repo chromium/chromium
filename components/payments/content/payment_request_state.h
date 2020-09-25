@@ -91,24 +91,6 @@ class PaymentRequestState : public PaymentAppFactory::Delegate,
     virtual ~Delegate() {}
   };
 
-  // Shows the status of the selected section. For example if the user changes
-  // the shipping address section from A to B then the SectionSelectionStatus
-  // will be kSelected. If the user edits an item like B from the shipping
-  // address section before selecting it, then the SectionSelectionStatus will
-  // be kEditedSelected. Finally if the user decides to add a new item like C to
-  // the shipping address section, then the SectionSelectionStatus will be
-  // kAddedSelected. IncrementSelectionStatus uses SectionSelectionStatus to log
-  // the number of times that the user has decided to change, edit, or add the
-  // selected item in any of the sections during payment process.
-  enum class SectionSelectionStatus {
-    // The newly selected section is neither edited nor added.
-    kSelected = 1,
-    // The newly selected section is edited before selection.
-    kEditedSelected = 2,
-    // The newly selected section is added before selection.
-    kAddedSelected = 3,
-  };
-
   using StatusCallback = base::OnceCallback<void(bool)>;
   using MethodsSupportedCallback =
       base::OnceCallback<void(bool methods_supported,
@@ -255,11 +237,9 @@ class PaymentRequestState : public PaymentAppFactory::Delegate,
   // Setters to change the selected information. Will have the side effect of
   // recomputing "is ready to pay" and notify observers.
   void SetSelectedShippingOption(const std::string& shipping_option_id);
-  void SetSelectedShippingProfile(autofill::AutofillProfile* profile,
-                                  SectionSelectionStatus selection_status);
-  void SetSelectedContactProfile(autofill::AutofillProfile* profile,
-                                 SectionSelectionStatus selection_status);
-  void SetSelectedApp(PaymentApp* app, SectionSelectionStatus selection_status);
+  void SetSelectedShippingProfile(autofill::AutofillProfile* profile);
+  void SetSelectedContactProfile(autofill::AutofillProfile* profile);
+  void SetSelectedApp(PaymentApp* app);
 
   bool is_ready_to_pay() { return is_ready_to_pay_; }
 
@@ -345,9 +325,6 @@ class PaymentRequestState : public PaymentAppFactory::Delegate,
 
   void OnAddressNormalized(bool success,
                            const autofill::AutofillProfile& normalized_profile);
-
-  void IncrementSelectionStatus(JourneyLogger::Section section,
-                                SectionSelectionStatus selection_status);
 
   // Returns whether the browser is currently in a TWA.
   bool IsInTwa() const;

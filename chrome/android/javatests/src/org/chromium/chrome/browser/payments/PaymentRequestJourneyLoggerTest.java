@@ -4,10 +4,6 @@
 
 package org.chromium.chrome.browser.payments;
 
-import static org.chromium.chrome.browser.payments.PaymentRequestTestRule.DECEMBER;
-import static org.chromium.chrome.browser.payments.PaymentRequestTestRule.FIRST_BILLING_ADDRESS;
-import static org.chromium.chrome.browser.payments.PaymentRequestTestRule.NEXT_YEAR;
-
 import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
@@ -100,17 +96,6 @@ public class PaymentRequestJourneyLoggerTest implements MainActivityStartCallbac
         Assert.assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "PaymentRequest.NumberOfSuggestionsShown.ShippingAddress.Completed", 2));
-
-        // Make sure no adds, edits or changes were logged.
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "PaymentRequest.NumberOfSelectionAdds.ShippingAddress.Completed", 0));
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "PaymentRequest.NumberOfSelectionChanges.ShippingAddress.Completed", 0));
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "PaymentRequest.NumberOfSelectionEdits.ShippingAddress.Completed", 0));
     }
 
     /**
@@ -142,110 +127,6 @@ public class PaymentRequestJourneyLoggerTest implements MainActivityStartCallbac
         Assert.assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "PaymentRequest.NumberOfSuggestionsShown.ShippingAddress.UserAborted", 2));
-
-        // Make sure no adds, edits or changes were logged.
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "PaymentRequest.NumberOfSelectionAdds.ShippingAddress.UserAborted", 0));
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "PaymentRequest.NumberOfSelectionChanges.ShippingAddress.UserAborted", 0));
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "PaymentRequest.NumberOfSelectionEdits.ShippingAddress.UserAborted", 0));
-    }
-
-    /**
-     * Expect that the NumberOfSelectionEdits histogram gets logged properly for shipping addresses.
-     */
-    @Test
-    @MediumTest
-    @Feature({"Payments"})
-    public void testNumberOfSelectionEdits_ShippingAddress_Completed() throws TimeoutException {
-        createTestData();
-
-        // Complete a Payment Request with a credit card.
-        mPaymentRequestTestRule.triggerUIAndWait("ccBuy", mPaymentRequestTestRule.getReadyToPay());
-        mPaymentRequestTestRule.clickInShippingAddressAndWait(
-                R.id.payments_section, mPaymentRequestTestRule.getReadyForInput());
-
-        // Select the incomplete address and edit it.
-        mPaymentRequestTestRule.clickOnShippingAddressSuggestionOptionAndWait(
-                1, mPaymentRequestTestRule.getReadyToEdit());
-        mPaymentRequestTestRule.setTextInEditorAndWait(
-                new String[] {"In Complete", "Google", "344 Main St", "CA", "Los Angeles"},
-                mPaymentRequestTestRule.getEditorTextUpdate());
-        mPaymentRequestTestRule.clickInEditorAndWait(
-                R.id.editor_dialog_done_button, mPaymentRequestTestRule.getReadyToPay());
-        mPaymentRequestTestRule.clickAndWait(
-                R.id.button_primary, mPaymentRequestTestRule.getReadyForUnmaskInput());
-        mPaymentRequestTestRule.setTextInCardUnmaskDialogAndWait(
-                R.id.card_unmask_input, "123", mPaymentRequestTestRule.getReadyToUnmask());
-        mPaymentRequestTestRule.clickCardUnmaskButtonAndWait(
-                ModalDialogProperties.ButtonType.POSITIVE, mPaymentRequestTestRule.getDismissed());
-
-        // Make sure the edit was logged.
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "PaymentRequest.NumberOfSelectionEdits.ShippingAddress.Completed", 1));
-
-        // Since the edit was not for the default selection a change should be logged.
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "PaymentRequest.NumberOfSelectionChanges.ShippingAddress.Completed", 1));
-
-        // Make sure no add was logged.
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "PaymentRequest.NumberOfSelectionAdds.ShippingAddress.Completed", 0));
-    }
-
-    /**
-     * Expect that the NumberOfSelectionAdds histogram gets logged properly for shipping addresses.
-     */
-    @Test
-    @MediumTest
-    @Feature({"Payments"})
-    public void testNumberOfSelectionAdds_ShippingAddress_Completed() throws TimeoutException {
-        createTestData();
-
-        // Complete a Payment Request with a credit card.
-        mPaymentRequestTestRule.triggerUIAndWait("ccBuy", mPaymentRequestTestRule.getReadyToPay());
-        mPaymentRequestTestRule.clickInShippingAddressAndWait(
-                R.id.payments_section, mPaymentRequestTestRule.getReadyForInput());
-
-        // Add a new shipping address.
-        mPaymentRequestTestRule.clickInShippingAddressAndWait(
-                R.id.payments_add_option_button, mPaymentRequestTestRule.getReadyToEdit());
-        mPaymentRequestTestRule.setSpinnerSelectionInEditorAndWait(
-                0 /* Afghanistan */, mPaymentRequestTestRule.getReadyToEdit());
-        mPaymentRequestTestRule.setTextInEditorAndWait(
-                new String[] {
-                        "Alice", "Supreme Court", "Airport Road", "Kabul", "1043", "020-253-0000"},
-                mPaymentRequestTestRule.getEditorTextUpdate());
-        mPaymentRequestTestRule.clickInEditorAndWait(
-                R.id.editor_dialog_done_button, mPaymentRequestTestRule.getReadyToPay());
-
-        // Complete the transaction.
-        mPaymentRequestTestRule.clickAndWait(
-                R.id.button_primary, mPaymentRequestTestRule.getReadyForUnmaskInput());
-        mPaymentRequestTestRule.setTextInCardUnmaskDialogAndWait(
-                R.id.card_unmask_input, "123", mPaymentRequestTestRule.getReadyToUnmask());
-        mPaymentRequestTestRule.clickCardUnmaskButtonAndWait(
-                ModalDialogProperties.ButtonType.POSITIVE, mPaymentRequestTestRule.getDismissed());
-
-        // Make sure the add was logged.
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "PaymentRequest.NumberOfSelectionAdds.ShippingAddress.Completed", 1));
-
-        // Make sure no edits or changes were logged.
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "PaymentRequest.NumberOfSelectionChanges.ShippingAddress.Completed", 0));
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "PaymentRequest.NumberOfSelectionEdits.ShippingAddress.Completed", 0));
     }
 
     /**
@@ -274,17 +155,6 @@ public class PaymentRequestJourneyLoggerTest implements MainActivityStartCallbac
         Assert.assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "PaymentRequest.NumberOfSuggestionsShown.PaymentMethod.Completed", 3));
-
-        // Make sure no adds, edits or changes were logged.
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "PaymentRequest.NumberOfSelectionAdds.PaymentMethod.Completed", 0));
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "PaymentRequest.NumberOfSelectionChanges.PaymentMethod.Completed", 0));
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "PaymentRequest.NumberOfSelectionEdits.PaymentMethod.Completed", 0));
     }
 
     /**
@@ -315,17 +185,6 @@ public class PaymentRequestJourneyLoggerTest implements MainActivityStartCallbac
         Assert.assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "PaymentRequest.NumberOfSuggestionsShown.PaymentMethod.UserAborted", 3));
-
-        // Make sure no adds, edits or changes were logged.
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "PaymentRequest.NumberOfSelectionAdds.PaymentMethod.UserAborted", 0));
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "PaymentRequest.NumberOfSelectionChanges.PaymentMethod.UserAborted", 0));
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "PaymentRequest.NumberOfSelectionEdits.PaymentMethod.UserAborted", 0));
     }
 
     /**
@@ -358,54 +217,6 @@ public class PaymentRequestJourneyLoggerTest implements MainActivityStartCallbac
     }
 
     /**
-     * Expect that the NumberOfSelectionAdds histogram gets logged properly for payment methods.
-     */
-    @Test
-    @MediumTest
-    @Feature({"Payments"})
-    public void testNumberOfSelectionAdds_PaymentMethod_Completed() throws TimeoutException {
-        createTestData();
-
-        // Complete a Payment Request with a credit card.
-        mPaymentRequestTestRule.triggerUIAndWait("ccBuy", mPaymentRequestTestRule.getReadyToPay());
-
-        // Add a new credit card.
-        mPaymentRequestTestRule.clickInPaymentMethodAndWait(
-                R.id.payments_section, mPaymentRequestTestRule.getReadyForInput());
-        mPaymentRequestTestRule.clickInPaymentMethodAndWait(
-                R.id.payments_add_option_button, mPaymentRequestTestRule.getReadyToEdit());
-        mPaymentRequestTestRule.setSpinnerSelectionsInCardEditorAndWait(
-                new int[] {DECEMBER, NEXT_YEAR, FIRST_BILLING_ADDRESS},
-                mPaymentRequestTestRule.getBillingAddressChangeProcessed());
-        mPaymentRequestTestRule.setTextInCardEditorAndWait(
-                new String[] {"4111111111111111", "Jon Doe"},
-                mPaymentRequestTestRule.getEditorTextUpdate());
-        mPaymentRequestTestRule.clickInCardEditorAndWait(
-                R.id.editor_dialog_done_button, mPaymentRequestTestRule.getReadyToPay());
-
-        // Complete the transaction.
-        mPaymentRequestTestRule.clickAndWait(
-                R.id.button_primary, mPaymentRequestTestRule.getReadyForUnmaskInput());
-        mPaymentRequestTestRule.setTextInCardUnmaskDialogAndWait(
-                R.id.card_unmask_input, "123", mPaymentRequestTestRule.getReadyToUnmask());
-        mPaymentRequestTestRule.clickCardUnmaskButtonAndWait(
-                ModalDialogProperties.ButtonType.POSITIVE, mPaymentRequestTestRule.getDismissed());
-
-        // Make sure the add was logged.
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "PaymentRequest.NumberOfSelectionAdds.PaymentMethod.Completed", 1));
-
-        // Make sure no edits or changes were logged.
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "PaymentRequest.NumberOfSelectionChanges.PaymentMethod.Completed", 0));
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "PaymentRequest.NumberOfSelectionEdits.PaymentMethod.Completed", 0));
-    }
-
-    /**
      * Expect that the number of contact info suggestions was logged properly.
      */
     @Test
@@ -428,17 +239,6 @@ public class PaymentRequestJourneyLoggerTest implements MainActivityStartCallbac
         Assert.assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "PaymentRequest.NumberOfSuggestionsShown.ContactInfo.Completed", 2));
-
-        // Make sure no adds, edits or changes were logged.
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "PaymentRequest.NumberOfSelectionAdds.ContactInfo.Completed", 0));
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "PaymentRequest.NumberOfSelectionChanges.ContactInfo.Completed", 0));
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "PaymentRequest.NumberOfSelectionEdits.ContactInfo.Completed", 0));
     }
 
     /**
@@ -464,109 +264,6 @@ public class PaymentRequestJourneyLoggerTest implements MainActivityStartCallbac
         Assert.assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "PaymentRequest.NumberOfSuggestionsShown.ContactInfo.UserAborted", 2));
-
-        // Make sure no adds, edits or changes were logged.
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "PaymentRequest.NumberOfSelectionAdds.ContactInfo.UserAborted", 0));
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "PaymentRequest.NumberOfSelectionChanges.ContactInfo.UserAborted", 0));
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "PaymentRequest.NumberOfSelectionEdits.ContactInfo.UserAborted", 0));
-    }
-
-    /**
-     * Expect that the NumberOfSelectionEdits histogram gets logged properly for contact info.
-     */
-    @Test
-    @MediumTest
-    @Feature({"Payments"})
-    public void testNumberOfSelectionEdits_ContactInfo_Completed() throws TimeoutException {
-        createTestData();
-
-        // Complete a Payment Request with a credit card.
-        mPaymentRequestTestRule.triggerUIAndWait(
-                "contactInfoBuy", mPaymentRequestTestRule.getReadyToPay());
-        mPaymentRequestTestRule.clickInContactInfoAndWait(
-                R.id.payments_section, mPaymentRequestTestRule.getReadyForInput());
-
-        // Select the incomplete contact info and edit it.
-        mPaymentRequestTestRule.clickOnContactInfoSuggestionOptionAndWait(
-                1, mPaymentRequestTestRule.getReadyToEdit());
-        mPaymentRequestTestRule.setTextInEditorAndWait(
-                new String[] {"In Complete", "514-123-1234", "test@email.com"},
-                mPaymentRequestTestRule.getEditorTextUpdate());
-        mPaymentRequestTestRule.clickInEditorAndWait(
-                R.id.editor_dialog_done_button, mPaymentRequestTestRule.getReadyToPay());
-        mPaymentRequestTestRule.clickAndWait(
-                R.id.button_primary, mPaymentRequestTestRule.getReadyForUnmaskInput());
-        mPaymentRequestTestRule.setTextInCardUnmaskDialogAndWait(
-                R.id.card_unmask_input, "123", mPaymentRequestTestRule.getReadyToUnmask());
-        mPaymentRequestTestRule.clickCardUnmaskButtonAndWait(
-                ModalDialogProperties.ButtonType.POSITIVE, mPaymentRequestTestRule.getDismissed());
-
-        // Make sure the edit was logged.
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "PaymentRequest.NumberOfSelectionEdits.ContactInfo.Completed", 1));
-
-        // Since the edit was not for the default selection a change should be logged.
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "PaymentRequest.NumberOfSelectionChanges.ContactInfo.Completed", 1));
-
-        // Make sure no add was logged.
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "PaymentRequest.NumberOfSelectionAdds.ContactInfo.Completed", 0));
-    }
-
-    /**
-     * Expect that the NumberOfSelectionAdds histogram gets logged properly for contact info.
-     */
-    @Test
-    @MediumTest
-    @Feature({"Payments"})
-    public void testNumberOfSelectionAdds_ContactInfo_Completed() throws TimeoutException {
-        createTestData();
-
-        // Complete a Payment Request with a credit card.
-        mPaymentRequestTestRule.triggerUIAndWait(
-                "contactInfoBuy", mPaymentRequestTestRule.getReadyToPay());
-        mPaymentRequestTestRule.clickInContactInfoAndWait(
-                R.id.payments_section, mPaymentRequestTestRule.getReadyForInput());
-
-        // Add a new shipping address.
-        mPaymentRequestTestRule.clickInContactInfoAndWait(
-                R.id.payments_add_option_button, mPaymentRequestTestRule.getReadyToEdit());
-        mPaymentRequestTestRule.setTextInEditorAndWait(
-                new String[] {"Alice", "020-253-0000", "test@email.com"},
-                mPaymentRequestTestRule.getEditorTextUpdate());
-        mPaymentRequestTestRule.clickInEditorAndWait(
-                R.id.editor_dialog_done_button, mPaymentRequestTestRule.getReadyToPay());
-
-        // Complete the transaction.
-        mPaymentRequestTestRule.clickAndWait(
-                R.id.button_primary, mPaymentRequestTestRule.getReadyForUnmaskInput());
-        mPaymentRequestTestRule.setTextInCardUnmaskDialogAndWait(
-                R.id.card_unmask_input, "123", mPaymentRequestTestRule.getReadyToUnmask());
-        mPaymentRequestTestRule.clickCardUnmaskButtonAndWait(
-                ModalDialogProperties.ButtonType.POSITIVE, mPaymentRequestTestRule.getDismissed());
-
-        // Make sure the add was logged.
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "PaymentRequest.NumberOfSelectionAdds.ContactInfo.Completed", 1));
-
-        // Make sure no edits or changes were logged.
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "PaymentRequest.NumberOfSelectionChanges.ContactInfo.Completed", 0));
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "PaymentRequest.NumberOfSelectionEdits.ContactInfo.Completed", 0));
     }
 
     /**
@@ -1010,15 +707,6 @@ public class PaymentRequestJourneyLoggerTest implements MainActivityStartCallbac
         Assert.assertEquals(0,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "PaymentRequest.NumberOfSuggestionsShown.ContactInfo.Completed", 2));
-        Assert.assertEquals(0,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "PaymentRequest.NumberOfSelectionAdds.ContactInfo.Completed", 0));
-        Assert.assertEquals(0,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "PaymentRequest.NumberOfSelectionChanges.ContactInfo.Completed", 0));
-        Assert.assertEquals(0,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "PaymentRequest.NumberOfSelectionEdits.ContactInfo.Completed", 0));
     }
 
     /**
@@ -1045,17 +733,6 @@ public class PaymentRequestJourneyLoggerTest implements MainActivityStartCallbac
                 RecordHistogram.getHistogramValueCountForTesting(
                         "PaymentRequest.NumberOfSuggestionsShown.ShippingAddress.Completed", 2));
 
-        // Make sure no adds, edits or changes were logged.
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "PaymentRequest.NumberOfSelectionAdds.ShippingAddress.Completed", 0));
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "PaymentRequest.NumberOfSelectionChanges.ShippingAddress.Completed", 0));
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "PaymentRequest.NumberOfSelectionEdits.ShippingAddress.Completed", 0));
-
         // Complete a second Payment Request with a credit card.
         mPaymentRequestTestRule.reTriggerUIAndWait(
                 "ccBuy", mPaymentRequestTestRule.getReadyToPay());
@@ -1070,17 +747,6 @@ public class PaymentRequestJourneyLoggerTest implements MainActivityStartCallbac
         Assert.assertEquals(2,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "PaymentRequest.NumberOfSuggestionsShown.ShippingAddress.Completed", 2));
-
-        // Make sure no adds, edits or changes were logged.
-        Assert.assertEquals(2,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "PaymentRequest.NumberOfSelectionAdds.ShippingAddress.Completed", 0));
-        Assert.assertEquals(2,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "PaymentRequest.NumberOfSelectionChanges.ShippingAddress.Completed", 0));
-        Assert.assertEquals(2,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "PaymentRequest.NumberOfSelectionEdits.ShippingAddress.Completed", 0));
 
         // Make sure the events were logged correctly.
         int expectedSample = Event.SHOWN | Event.COMPLETED | Event.REQUEST_SHIPPING

@@ -28,18 +28,6 @@ class JourneyLoggerAndroid {
       jint jsection,
       jint jnumber,
       jboolean jhas_complete_suggestion);
-  void IncrementSelectionChanges(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jcaller,
-      jint jsection);
-  void IncrementSelectionEdits(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jcaller,
-      jint jsection);
-  void IncrementSelectionAdds(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jcaller,
-      jint jsection);
   void SetCanMakePaymentValue(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& jcaller,

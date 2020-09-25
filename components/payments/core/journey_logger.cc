@@ -97,21 +97,6 @@ JourneyLogger::~JourneyLogger() {
                         has_recorded_);
 }
 
-void JourneyLogger::IncrementSelectionAdds(Section section) {
-  DCHECK_LT(section, SECTION_MAX);
-  sections_[section].number_selection_adds_++;
-}
-
-void JourneyLogger::IncrementSelectionChanges(Section section) {
-  DCHECK_LT(section, SECTION_MAX);
-  sections_[section].number_selection_changes_++;
-}
-
-void JourneyLogger::IncrementSelectionEdits(Section section) {
-  DCHECK_LT(section, SECTION_MAX);
-  sections_[section].number_selection_edits_++;
-}
-
 void JourneyLogger::SetNumberOfSuggestionsShown(Section section,
                                                 int number,
                                                 bool has_complete_suggestion) {
@@ -313,18 +298,6 @@ void JourneyLogger::RecordSectionSpecificStats(
     std::string name_suffix = GetHistogramNameSuffix(i, completion_status);
     // Only log the metrics for a section if it was requested by the merchant.
     if (sections_[i].is_requested_) {
-      base::UmaHistogramCustomCounts(
-          "PaymentRequest.NumberOfSelectionAdds." + name_suffix,
-          std::min(sections_[i].number_selection_adds_, MAX_EXPECTED_SAMPLE),
-          MIN_EXPECTED_SAMPLE, MAX_EXPECTED_SAMPLE, NUMBER_BUCKETS);
-      base::UmaHistogramCustomCounts(
-          "PaymentRequest.NumberOfSelectionChanges." + name_suffix,
-          std::min(sections_[i].number_selection_changes_, MAX_EXPECTED_SAMPLE),
-          MIN_EXPECTED_SAMPLE, MAX_EXPECTED_SAMPLE, NUMBER_BUCKETS);
-      base::UmaHistogramCustomCounts(
-          "PaymentRequest.NumberOfSelectionEdits." + name_suffix,
-          std::min(sections_[i].number_selection_edits_, MAX_EXPECTED_SAMPLE),
-          MIN_EXPECTED_SAMPLE, MAX_EXPECTED_SAMPLE, NUMBER_BUCKETS);
       base::UmaHistogramCustomCounts(
           "PaymentRequest.NumberOfSuggestionsShown." + name_suffix,
           std::min(sections_[i].number_suggestions_shown_, MAX_EXPECTED_SAMPLE),

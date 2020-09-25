@@ -184,15 +184,6 @@ class JourneyLogger {
   JourneyLogger(bool is_incognito, ukm::SourceId payment_request_source_id);
   ~JourneyLogger();
 
-  // Increments the number of selection adds for the specified section.
-  void IncrementSelectionAdds(Section section);
-
-  // Increments the number of selection changes for the specified section.
-  void IncrementSelectionChanges(Section section);
-
-  // Increments the number of selection edits for the specified section.
-  void IncrementSelectionEdits(Section section);
-
   // Sets the number of suggestions shown for the specified section.
   void SetNumberOfSuggestionsShown(Section section,
                                    int number,
@@ -267,16 +258,10 @@ class JourneyLogger {
 
   struct SectionStats {
     SectionStats()
-        : number_selection_adds_(0),
-          number_selection_changes_(0),
-          number_selection_edits_(0),
-          number_suggestions_shown_(0),
+        : number_suggestions_shown_(0),
           is_requested_(false),
           has_complete_suggestion_(false) {}
 
-    int number_selection_adds_;
-    int number_selection_changes_;
-    int number_selection_edits_;
     int number_suggestions_shown_;
     bool is_requested_;
     bool has_complete_suggestion_;
