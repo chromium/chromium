@@ -108,7 +108,7 @@ class APP_LIST_MODEL_EXPORT AppListItemList {
   void FixItemPosition(size_t index);
 
   std::vector<std::unique_ptr<AppListItem>> app_list_items_;
-  base::ObserverList<AppListItemListObserver, true>::Unchecked observers_;
+  base::ObserverList<AppListItemListObserver, true> observers_;
 
   DISALLOW_COPY_AND_ASSIGN(AppListItemList);
 };

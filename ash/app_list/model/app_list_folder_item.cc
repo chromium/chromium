@@ -16,7 +16,7 @@ namespace ash {
 AppListFolderItem::AppListFolderItem(const std::string& id)
     : AppListItem(id),
       folder_type_(id == kOemFolderId ? FOLDER_TYPE_OEM : FOLDER_TYPE_NORMAL),
-      item_list_(new AppListItemList) {
+      item_list_(std::make_unique<AppListItemList>()) {
   EnsureIconsForAvailableConfigTypes(
       {AppListConfigType::kLarge, AppListConfigType::kMedium,
        AppListConfigType::kSmall},

@@ -19,7 +19,9 @@ AppListModel::AppListModel()
   item_list_scoped_observer_.Add(top_level_item_list_.get());
 }
 
-AppListModel::~AppListModel() = default;
+AppListModel::~AppListModel() {
+  item_list_scoped_observer_.RemoveAll();
+}
 
 void AppListModel::AddObserver(AppListModelObserver* observer) {
   observers_.AddObserver(observer);
@@ -368,9 +370,13 @@ AppListItem* AppListModel::AddItemToFolderItemAndNotify(
 }
 
 std::unique_ptr<AppListItem> AppListModel::RemoveItem(AppListItem* item) {
-  if (!item->IsInFolder())
+  if (!item->IsInFolder()) {
+    if (item->GetItemType() == AppListFolderItem::kItemType) {
+      item_list_scoped_observer_.Remove(
+          static_cast<AppListFolderItem*>(item)->item_list());
+    }
     return top_level_item_list_->RemoveItem(item->id());
-
+  }
   AppListFolderItem* folder = FindFolderItem(item->folder_id());
   return RemoveItemFromFolder(folder, item);
 }

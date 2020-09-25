@@ -226,6 +226,27 @@ TEST_F(AppListModelTest, AppOrder) {
 
 using AppListModelFolderTest = AppListModelTest;
 
+// Test that moving an item into a folder does not crash. (See
+// https://crbug.com/1130901)
+TEST_F(AppListModelFolderTest, MergeItemIntoFolder) {
+  model_.PopulateApps(1);
+
+  AppListItem* item0 = model_.top_level_item_list()->item_at(0);
+  AppListFolderItem* folder = new AppListFolderItem("folder1");
+  model_.AddItem(folder);
+  const size_t num_folder_apps = 2;
+  for (int i = 0; static_cast<size_t>(i) < num_folder_apps; ++i) {
+    std::string name = model_.GetItemName(i);
+    model_.AddItemToFolder(model_.CreateItem(name), folder->id());
+  }
+
+  // Calling MergeItems(AppListItem, AppListFolderItem) results in
+  // AppListFolderItem being deleted. Previously AppListModel did not remove
+  // itself from observing AppListFolderItem's AppListItemList, causing a crash
+  // on ~AppListModel when clearing observers.
+  model_.MergeItems(item0->id(), folder->id());
+}
+
 TEST_F(AppListModelFolderTest, NonSharedConfigIconGeneration) {
   // Ensure any configs set by previous tests are cleared.
   AppListConfigProvider::Get().ResetForTesting();
