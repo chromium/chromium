@@ -35,6 +35,13 @@ class TabSearchWebView : public views::WebView {
     parent_->OnWebViewSizeChanged();
   }
 
+  // content::WebContentsDelegate:
+  bool HandleContextMenu(content::RenderFrameHost* render_frame_host,
+                         const content::ContextMenuParams& params) override {
+    // Ignores context menu.
+    return true;
+  }
+
  private:
   TabSearchBubbleView* parent_;
 };
