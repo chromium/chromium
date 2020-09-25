@@ -2185,7 +2185,7 @@
     ],
 
     'official_goma_mac_pgo': [
-      'official', 'goma', 'no_keystone_registration_framework', 'no_widevine_cdm_host_verification', 'static', 'no_symbols', 'pgo_phase_1'
+      'official', 'goma', 'no_keystone_registration_framework', 'no_widevine_cdm_host_verification', 'disable_widevine_signing', 'static', 'no_symbols', 'pgo_phase_1'
     ],
 
     'official_goma_linux_perf': [
@@ -2688,6 +2688,10 @@
 
     'disable_seed_corpus': {
       'gn_args': 'archive_seed_corpus=false',
+    },
+
+    'disable_widevine_signing': {
+      'gn_args': 'enable_widevine_cdm_host_verification = false'
     },
 
     'dx12vk': {
