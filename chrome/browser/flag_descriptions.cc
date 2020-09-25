@@ -218,11 +218,6 @@ const char kAutofillEnableCardNicknameUpstreamDescription[] =
     "When enabled, nicknames for credit cards stored locally will be able to "
     "be uploaded to Payments.";
 
-const char kAutofillEnableCompanyNameName[] =
-    "Enable Autofill Company Name field";
-const char kAutofillEnableCompanyNameDescription[] =
-    "When enabled, Company Name fields will be auto filled";
-
 const char kAutofillEnableGoogleIssuedCardName[] =
     "Enable Autofill Google-issued card";
 const char kAutofillEnableGoogleIssuedCardDescription[] =

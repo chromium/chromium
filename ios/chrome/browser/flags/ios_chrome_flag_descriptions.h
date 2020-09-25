@@ -32,10 +32,6 @@ extern const char kAutofillEnableCardNicknameManagementDescription[];
 extern const char kAutofillEnableCardNicknameUpstreamName[];
 extern const char kAutofillEnableCardNicknameUpstreamDescription[];
 
-// Title and description for the flag to control deprecating company name.
-extern const char kAutofillEnableCompanyNameName[];
-extern const char kAutofillEnableCompanyNameDescription[];
-
 // Title and description for the flag to control enabling Google-issued cards in
 // autofill suggestions.
 extern const char kAutofillEnableGoogleIssuedCardName[];

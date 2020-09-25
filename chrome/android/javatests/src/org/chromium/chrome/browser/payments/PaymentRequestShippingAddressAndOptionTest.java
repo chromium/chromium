@@ -18,7 +18,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.MainActivityStartCallback;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -147,8 +146,6 @@ public class PaymentRequestShippingAddressAndOptionTest implements MainActivityS
                 R.id.payments_section, mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.clickInShippingAddressAndWait(
                 R.id.payments_add_option_button, mPaymentRequestTestRule.getReadyToEdit());
-        Boolean is_company_name_enabled =
-                ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_ENABLE_COMPANY_NAME);
         mPaymentRequestTestRule.setTextInEditorAndWait(
                 new String[] {"Seb Doe", "Google", "340 Main St", "Los Angeles", "CA", "90291",
                         "650-253-0000"},

@@ -22,7 +22,6 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.content_public.browser.test.util.Criteria;
@@ -82,19 +81,10 @@ public class AutofillProfilesFragmentTest {
         Assert.assertNotNull(addProfile);
 
         // Add a profile.
-        // TODO(jeffreycohen): Change this test into a parameterized test that exercises
-        // both branches of this if statement.
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_ENABLE_COMPANY_NAME)) {
-            updatePreferencesAndWait(autofillProfileFragment, addProfile,
-                    new String[] {"Alice Doe", "Google", "111 Added St", "Los Angeles", "CA",
-                            "90291", "650-253-0000", "add@profile.com"},
-                    R.id.editor_dialog_done_button, false);
-        } else {
-            updatePreferencesAndWait(autofillProfileFragment, addProfile,
-                    new String[] {"Alice Doe", "111 Added St", "Los Angeles", "CA", "90291",
-                            "650-253-0000", "add@profile.com"},
-                    R.id.editor_dialog_done_button, false);
-        }
+        updatePreferencesAndWait(autofillProfileFragment, addProfile,
+                new String[] {"Alice Doe", "Google", "111 Added St", "Los Angeles", "CA", "90291",
+                        "650-253-0000", "add@profile.com"},
+                R.id.editor_dialog_done_button, false);
 
         Assert.assertEquals(7 /* One toggle + one add button + five profiles. */,
                 autofillProfileFragment.getPreferenceScreen().getPreferenceCount());
@@ -178,17 +168,10 @@ public class AutofillProfilesFragmentTest {
         Assert.assertEquals("John Doe", johnProfile.getTitle());
 
         // Edit a profile.
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_ENABLE_COMPANY_NAME)) {
-            updatePreferencesAndWait(autofillProfileFragment, johnProfile,
-                    new String[] {"Emily Doe", "Google", "111 Edited St", "Los Angeles", "CA",
-                            "90291", "650-253-0000", "edit@profile.com"},
-                    R.id.editor_dialog_done_button, false);
-        } else {
-            updatePreferencesAndWait(autofillProfileFragment, johnProfile,
-                    new String[] {"Emily Doe", "111 Edited St", "Los Angeles", "CA", "90291",
-                            "650-253-0000", "edit@profile.com"},
-                    R.id.editor_dialog_done_button, false);
-        }
+        updatePreferencesAndWait(autofillProfileFragment, johnProfile,
+                new String[] {"Emily Doe", "Google", "111 Edited St", "Los Angeles", "CA", "90291",
+                        "650-253-0000", "edit@profile.com"},
+                R.id.editor_dialog_done_button, false);
         // Check if the preferences are updated correctly.
         Assert.assertEquals(6 /* One toggle + one add button + four profiles. */,
                 autofillProfileFragment.getPreferenceScreen().getPreferenceCount());

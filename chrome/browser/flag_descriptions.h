@@ -141,9 +141,6 @@ extern const char kAutofillEnableCardNicknameManagementDescription[];
 extern const char kAutofillEnableCardNicknameUpstreamName[];
 extern const char kAutofillEnableCardNicknameUpstreamDescription[];
 
-extern const char kAutofillEnableCompanyNameName[];
-extern const char kAutofillEnableCompanyNameDescription[];
-
 extern const char kAutofillEnableGoogleIssuedCardName[];
 extern const char kAutofillEnableGoogleIssuedCardDescription[];
 

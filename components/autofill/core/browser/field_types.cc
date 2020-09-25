@@ -96,7 +96,7 @@ bool IsFillableFieldType(ServerFieldType field_type) {
       return base::FeatureList::IsEnabled(features::kAutofillSaveAndFillVPA);
 
     case COMPANY_NAME:
-      return base::FeatureList::IsEnabled(features::kAutofillEnableCompanyName);
+      return true;
 
     // Fillable credential fields.
     case USERNAME:

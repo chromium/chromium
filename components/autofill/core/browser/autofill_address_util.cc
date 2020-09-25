@@ -96,10 +96,6 @@ void GetAddressComponents(const std::string& country_code,
 
   base::ListValue* line = nullptr;
   for (size_t i = 0; i < components.size(); ++i) {
-    if (components[i].field == ::i18n::addressinput::ORGANIZATION &&
-        !base::FeatureList::IsEnabled(features::kAutofillEnableCompanyName)) {
-      continue;
-    }
     if (i == 0 ||
         components[i - 1].length_hint == AddressUiComponent::HINT_LONG ||
         components[i].length_hint == AddressUiComponent::HINT_LONG) {

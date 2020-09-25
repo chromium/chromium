@@ -25,7 +25,6 @@ import org.chromium.chrome.browser.autofill.prefeditor.EditorModel;
 import org.chromium.chrome.browser.autofill.settings.AutofillProfileBridge;
 import org.chromium.chrome.browser.autofill.settings.AutofillProfileBridge.AddressField;
 import org.chromium.chrome.browser.autofill.settings.AutofillProfileBridge.AddressUiComponent;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.payments.mojom.AddressErrors;
 
 import java.lang.annotation.Retention;
@@ -498,12 +497,6 @@ public class AddressEditor
             AddressUiComponent component = mAddressUiComponents.get(i);
 
             EditorFieldModel field = mAddressFields.get(component.id);
-
-            if (component.id == AddressField.ORGANIZATION && mPurpose != Purpose.PAYMENT_REQUEST
-                    && !ChromeFeatureList.isEnabled(
-                            ChromeFeatureList.AUTOFILL_ENABLE_COMPANY_NAME)) {
-                continue;
-            }
 
             // Labels depend on country, e.g., state is called province in some countries. These are
             // already localized.

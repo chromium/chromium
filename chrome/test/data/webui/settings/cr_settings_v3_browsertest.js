@@ -181,41 +181,12 @@ var CrSettingsAutofillSectionCompanyEnabledV3Test =
   get browsePreload() {
     return 'chrome://settings/test_loader.html?module=settings/autofill_section_test.js';
   }
-
-  /** @override */
-  get featureListInternal() {
-    return {
-      enabled: ['autofill::features::kAutofillEnableCompanyName'],
-    };
-  }
 };
 
 TEST_F('CrSettingsAutofillSectionCompanyEnabledV3Test', 'All', function() {
   // Use 'EnableCompanyName' to inform tests that the feature is enabled.
   const loadTimeDataOverride = {};
   loadTimeDataOverride['EnableCompanyName'] = true;
-  loadTimeData.overrideValues(loadTimeDataOverride);
-  mocha.run();
-});
-
-// eslint-disable-next-line no-var
-var CrSettingsAutofillSectionCompanyDisabledV3Test =
-    class extends CrSettingsV3BrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://settings/test_loader.html?module=settings/autofill_section_test.js';
-  }
-
-  /** @override */
-  get featureListInternal() {
-    return {disabled: ['autofill::features::kAutofillEnableCompanyName']};
-  }
-};
-
-TEST_F('CrSettingsAutofillSectionCompanyDisabledV3Test', 'All', function() {
-  // Use 'EnableCompanyName' to inform tests that the feature is enabled.
-  const loadTimeDataOverride = {};
-  loadTimeDataOverride['EnableCompanyName'] = false;
   loadTimeData.overrideValues(loadTimeDataOverride);
   mocha.run();
 });

@@ -4526,11 +4526,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillCacheQueryResponsesDescription, kOsAll,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillCacheQueryResponses)},
 
-    {"autofill-enable-company-name",
-     flag_descriptions::kAutofillEnableCompanyNameName,
-     flag_descriptions::kAutofillEnableCompanyNameDescription, kOsAll,
-     FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableCompanyName)},
-
     {"autofill-enable-toolbar-status-chip",
      flag_descriptions::kAutofillEnableToolbarStatusChipName,
      flag_descriptions::kAutofillEnableToolbarStatusChipDescription,

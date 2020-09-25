@@ -732,11 +732,6 @@ NSString* SerializedPref(const PrefService::Preference* pref) {
   return base::FeatureList::IsEnabled(kCreditCardScanner);
 }
 
-+ (BOOL)isAutofillCompanyNameEnabled {
-  return base::FeatureList::IsEnabled(
-      autofill::features::kAutofillEnableCompanyName);
-}
-
 + (BOOL)isDemographicMetricsReportingEnabled {
   return base::FeatureList::IsEnabled(
       metrics::DemographicMetricsProvider::kDemographicMetricsReporting);

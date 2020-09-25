@@ -83,10 +83,6 @@ const base::Feature kAutofillEnableAugmentedPhoneCountryCode{
     "AutofillEnableAugmentedPhoneCountryCode",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Controls whether we use COMPANY as part of Autofill
-const base::Feature kAutofillEnableCompanyName{
-    "AutofillEnableCompanyName", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Controls whether we show "Hide suggestions" item in the suggestions menu.
 const base::Feature kAutofillEnableHideSuggestionsUI{
     "AutofillEnableHideSuggestionsUI", base::FEATURE_DISABLED_BY_DEFAULT};

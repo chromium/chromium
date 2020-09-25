@@ -189,12 +189,6 @@ static const AutofillFieldDisplayInfo kFieldsToDisplay[] = {
   for (size_t i = 0; i < base::size(kFieldsToDisplay); ++i) {
     const AutofillFieldDisplayInfo& field = kFieldsToDisplay[i];
 
-    if ((field.autofillType == autofill::COMPANY_NAME) &&
-        !base::FeatureList::IsEnabled(
-            autofill::features::kAutofillEnableCompanyName)) {
-      continue;
-    }
-
     AutofillEditItem* item =
         [[AutofillEditItem alloc] initWithType:ItemTypeField];
     item.textFieldName = l10n_util::GetNSString(field.displayStringID);

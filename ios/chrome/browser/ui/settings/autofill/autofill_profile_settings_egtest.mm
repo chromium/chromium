@@ -148,18 +148,13 @@ id<GREYMatcher> NavigationBarEditButton() {
         stringWithFormat:@"%@, %@",
                          l10n_util::GetNSString(expectation.display_string_id),
                          expectation.expected_result]);
-    BOOL mustBePresent = YES;
-    if (expectation.display_string_id == IDS_IOS_AUTOFILL_COMPANY_NAME &&
-        ![ChromeEarlGrey isAutofillCompanyNameEnabled]) {
-      mustBePresent = NO;
-    }
     [[[EarlGrey
         selectElementWithMatcher:grey_allOf(elementMatcher,
                                             grey_sufficientlyVisible(), nil)]
            usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 150)
         onElementWithMatcher:grey_accessibilityID(
                                  kAutofillProfileEditTableViewId)]
-        assertWithMatcher:mustBePresent ? grey_notNil() : grey_nil()];
+        assertWithMatcher:grey_notNil()];
   }
 
   // Go back to the list view page.

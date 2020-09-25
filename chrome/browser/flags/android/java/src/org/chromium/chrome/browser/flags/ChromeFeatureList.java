@@ -199,7 +199,6 @@ public abstract class ChromeFeatureList {
             "AutofillDownstreamCvcPromptUseGooglePayLogo";
     public static final String AUTOFILL_ENABLE_CARD_NICKNAME_MANAGEMENT =
             "AutofillEnableCardNicknameManagement";
-    public static final String AUTOFILL_ENABLE_COMPANY_NAME = "AutofillEnableCompanyName";
     public static final String AUTOFILL_ENABLE_GOOGLE_ISSUED_CARD =
             "AutofillEnableGoogleIssuedCard";
     public static final String ADJUST_WEBAPK_INSTALLATION_SPACE = "AdjustWebApkInstallationSpace";
