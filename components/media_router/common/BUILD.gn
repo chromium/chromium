@@ -39,6 +39,8 @@ static_library("common") {
       "discovery/media_sink_service_base.h",
       "discovery/media_sink_service_util.cc",
       "discovery/media_sink_service_util.h",
+      "pref_names.cc",
+      "pref_names.h",
       "providers/cast/cast_media_source.cc",
       "providers/cast/cast_media_source.h",
     ]

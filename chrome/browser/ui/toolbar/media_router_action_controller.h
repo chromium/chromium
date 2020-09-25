@@ -9,10 +9,10 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "chrome/browser/media/router/issues_observer.h"
-#include "chrome/browser/media/router/media_routes_observer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/toolbar/media_router_contextual_menu.h"
+#include "components/media_router/browser/issues_observer.h"
+#include "components/media_router/browser/media_routes_observer.h"
 #include "components/prefs/pref_change_registrar.h"
 
 // Controller for the Cast toolbar icon that determines when to show and hide

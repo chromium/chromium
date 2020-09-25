@@ -9,18 +9,18 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/extensions/extension_action_test_util.h"
 #include "chrome/browser/extensions/load_error_reporter.h"
-#include "chrome/browser/media/router/media_router_factory.h"
-#include "chrome/browser/media/router/test/mock_media_router.h"
+#include "chrome/browser/media/router/chrome_media_router_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/media_router/media_router_ui_service.h"
 #include "chrome/browser/ui/media_router/media_router_ui_service_factory.h"
 #include "chrome/browser/ui/toolbar/media_router_action_controller.h"
 #include "chrome/browser/ui/toolbar/media_router_contextual_menu.h"
 #include "chrome/browser/ui/toolbar/mock_media_router_action_controller.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
+#include "components/media_router/browser/test/mock_media_router.h"
+#include "components/media_router/common/pref_names.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -86,7 +86,7 @@ class MediaRouterContextualMenuUnitTest : public BrowserWithTestWindowTest {
 
   TestingProfile::TestingFactories GetTestingFactories() override {
     TestingProfile::TestingFactories factories = {
-        {media_router::MediaRouterFactory::GetInstance(),
+        {media_router::ChromeMediaRouterFactory::GetInstance(),
          base::BindRepeating(&media_router::MockMediaRouter::Create)},
         {media_router::MediaRouterUIServiceFactory::GetInstance(),
          base::BindRepeating(&BuildUIService)}};
@@ -187,7 +187,7 @@ TEST_F(MediaRouterContextualMenuUnitTest, ToggleCloudServicesItem) {
   // Set this preference so that the cloud services can be enabled without
   // showing the opt-in dialog.
   browser()->profile()->GetPrefs()->SetBoolean(
-      prefs::kMediaRouterCloudServicesPrefSet, true);
+      media_router::prefs::kMediaRouterCloudServicesPrefSet, true);
 
   // By default, the command is not checked.
   EXPECT_FALSE(menu.IsCommandIdChecked(
@@ -206,18 +206,19 @@ TEST_F(MediaRouterContextualMenuUnitTest, ToggleMediaRemotingItem) {
   MediaRouterContextualMenu menu(browser(), kShownByPolicy, &observer_);
 
   PrefService* pref_service = browser()->profile()->GetPrefs();
-  pref_service->SetBoolean(prefs::kMediaRouterMediaRemotingEnabled, false);
+  pref_service->SetBoolean(
+      media_router::prefs::kMediaRouterMediaRemotingEnabled, false);
   EXPECT_FALSE(menu.IsCommandIdChecked(IDC_MEDIA_ROUTER_TOGGLE_MEDIA_REMOTING));
 
   menu.ExecuteCommand(IDC_MEDIA_ROUTER_TOGGLE_MEDIA_REMOTING, 0);
   EXPECT_TRUE(menu.IsCommandIdChecked(IDC_MEDIA_ROUTER_TOGGLE_MEDIA_REMOTING));
-  EXPECT_TRUE(
-      pref_service->GetBoolean(prefs::kMediaRouterMediaRemotingEnabled));
+  EXPECT_TRUE(pref_service->GetBoolean(
+      media_router::prefs::kMediaRouterMediaRemotingEnabled));
 
   menu.ExecuteCommand(IDC_MEDIA_ROUTER_TOGGLE_MEDIA_REMOTING, 0);
   EXPECT_FALSE(menu.IsCommandIdChecked(IDC_MEDIA_ROUTER_TOGGLE_MEDIA_REMOTING));
-  EXPECT_FALSE(
-      pref_service->GetBoolean(prefs::kMediaRouterMediaRemotingEnabled));
+  EXPECT_FALSE(pref_service->GetBoolean(
+      media_router::prefs::kMediaRouterMediaRemotingEnabled));
 }
 
 TEST_F(MediaRouterContextualMenuUnitTest, ToggleAlwaysShowIconItem) {

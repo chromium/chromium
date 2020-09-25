@@ -30,6 +30,7 @@ include_rules = [
   "+components/keyed_service/content",
   "+components/keyed_service/core",
   "+components/leveldb_proto/public",
+  "+components/media_router/browser",
   "+components/nacl/browser",
   "+components/nacl/common",
   "+components/nacl/renderer",

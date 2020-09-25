@@ -14,8 +14,10 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_views_delegate.h"
 #include "chrome/browser/ui/views/devtools_process_observer.h"
+#include "chrome/browser/ui/views/media_router/media_router_dialog_controller_views.h"
 #include "chrome/browser/ui/views/relaunch_notification/relaunch_notification_controller.h"
 #include "components/constrained_window/constrained_window_views.h"
+#include "components/media_router/browser/media_router_dialog_controller.h"
 #include "components/ui_devtools/connector_delegate.h"
 #include "components/ui_devtools/switches.h"
 #include "components/ui_devtools/views/devtools_server_util.h"
@@ -98,6 +100,19 @@ void ChromeBrowserMainExtraPartsViews::PreProfileInit() {
     devtools_process_observer_ = std::make_unique<DevtoolsProcessObserver>(
         devtools_server_->tracing_agent());
   }
+
+  media_router::MediaRouterDialogController::SetGetOrCreate(
+      base::BindRepeating([](content::WebContents* web_contents) {
+        DCHECK(web_contents);
+        media_router::MediaRouterDialogController* controller = nullptr;
+        // This call does nothing if the controller already exists.
+        media_router::MediaRouterDialogControllerViews::CreateForWebContents(
+            web_contents);
+        controller =
+            media_router::MediaRouterDialogControllerViews::FromWebContents(
+                web_contents);
+        return controller;
+      }));
 
 #if defined(OS_LINUX) && !defined(OS_CHROMEOS)
   // On the Linux desktop, we want to prevent the user from logging in as root,

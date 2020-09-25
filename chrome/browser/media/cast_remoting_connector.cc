@@ -14,10 +14,10 @@
 #include "base/memory/ptr_util.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
-#include "chrome/browser/media/router/media_router.h"
-#include "chrome/browser/media/router/media_router_factory.h"
 #include "chrome/browser/media/router/media_router_feature.h"
-#include "chrome/common/pref_names.h"
+#include "components/media_router/browser/media_router.h"
+#include "components/media_router/browser/media_router_factory.h"
+#include "components/media_router/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/user_prefs/user_prefs.h"
@@ -510,18 +510,22 @@ void CastRemotingConnector::OnDataSendFailed() {
 
 void CastRemotingConnector::StartObservingPref() {
   pref_change_registrar_.Init(pref_service_);
+#if !defined(OS_ANDROID)
   pref_change_registrar_.Add(
-      prefs::kMediaRouterMediaRemotingEnabled,
+      media_router::prefs::kMediaRouterMediaRemotingEnabled,
       base::BindRepeating(&CastRemotingConnector::OnPrefChanged,
                           base::Unretained(this)));
+#endif
 }
 
 void CastRemotingConnector::OnPrefChanged() {
-  const PrefService::Preference* pref =
-      pref_service_->FindPreference(prefs::kMediaRouterMediaRemotingEnabled);
+#if !defined(OS_ANDROID)
+  const PrefService::Preference* pref = pref_service_->FindPreference(
+      media_router::prefs::kMediaRouterMediaRemotingEnabled);
   bool enabled = false;
   pref->GetValue()->GetAsBoolean(&enabled);
   remoting_allowed_ = enabled;
   if (!enabled)
     OnStopped(media::mojom::RemotingStopReason::USER_DISABLED);
+#endif
 }

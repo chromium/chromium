@@ -920,12 +920,6 @@ extern const char kClickedUpdateMenuItem[];
 extern const char kLatestVersionWhenClickedUpdateMenuItem[];
 #endif
 
-extern const char kMediaRouterCloudServicesPrefSet[];
-extern const char kMediaRouterEnableCloudServices[];
-extern const char kMediaRouterFirstRunFlowAcknowledged[];
-extern const char kMediaRouterMediaRemotingEnabled[];
-extern const char kMediaRouterTabMirroringSources[];
-
 extern const char kOriginTrialPublicKey[];
 extern const char kOriginTrialDisabledFeatures[];
 extern const char kOriginTrialDisabledTokens[];

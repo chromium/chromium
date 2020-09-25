@@ -11,9 +11,9 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
-#include "chrome/browser/media/router/presentation/web_contents_presentation_manager.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_service_observer.h"
 #include "chrome/browser/ui/global_media_controls/presentation_request_notification_item.h"
+#include "components/media_router/browser/presentation/web_contents_presentation_manager.h"
 
 // An object that creates and manages media notifications related to
 // presentation requests.

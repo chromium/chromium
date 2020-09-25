@@ -7,9 +7,7 @@
 #include "base/bind_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/media/router/media_router_factory.h"
-#include "chrome/browser/media/router/presentation/web_contents_presentation_manager.h"
-#include "chrome/browser/media/router/test/mock_media_router.h"
+#include "chrome/browser/media/router/chrome_media_router_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/global_media_controls/media_toolbar_button_observer.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -22,6 +20,8 @@
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/media_message_center/media_notification_view_impl.h"
+#include "components/media_router/browser/presentation/web_contents_presentation_manager.h"
+#include "components/media_router/browser/test/mock_media_router.h"
 #include "content/public/browser/presentation_request.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -332,7 +332,7 @@ class MediaDialogViewBrowserTest : public InProcessBrowserTest {
 
   void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
     media_router_ = static_cast<TestMediaRouter*>(
-        media_router::MediaRouterFactory::GetInstance()
+        media_router::ChromeMediaRouterFactory::GetInstance()
             ->SetTestingFactoryAndUse(
                 context, base::BindRepeating(&TestMediaRouter::Create)));
   }

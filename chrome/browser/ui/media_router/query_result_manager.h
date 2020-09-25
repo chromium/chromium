@@ -14,10 +14,10 @@
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
-#include "chrome/browser/media/router/media_routes_observer.h"
 #include "chrome/browser/ui/media_router/cast_modes_with_media_sources.h"
 #include "chrome/browser/ui/media_router/media_cast_mode.h"
 #include "chrome/browser/ui/media_router/media_sink_with_cast_modes.h"
+#include "components/media_router/browser/media_routes_observer.h"
 #include "components/media_router/common/media_sink.h"
 #include "components/media_router/common/media_source.h"
 

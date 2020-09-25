@@ -8,7 +8,7 @@
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
-#include "chrome/browser/media/router/test/test_helper.h"
+#include "chrome/browser/media/router/test/provider_test_helpers.h"
 #include "components/cast_channel/cast_test_util.h"
 #include "components/media_router/common/discovery/media_sink_service_base.h"
 #include "components/media_router/common/providers/cast/cast_media_source.h"

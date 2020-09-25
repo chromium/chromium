@@ -22,6 +22,7 @@
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_prefs.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/language/core/browser/pref_names.h"
+#include "components/media_router/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -331,20 +332,18 @@ void Profile::RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
                                std::string());
 #endif
 
+#if !defined(OS_ANDROID)
   registry->RegisterBooleanPref(
-      prefs::kMediaRouterCloudServicesPrefSet,
-      false,
+      media_router::prefs::kMediaRouterCloudServicesPrefSet, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterBooleanPref(
-      prefs::kMediaRouterEnableCloudServices,
-      false,
+      media_router::prefs::kMediaRouterEnableCloudServices, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterBooleanPref(
-      prefs::kMediaRouterFirstRunFlowAcknowledged,
-      false,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-  registry->RegisterBooleanPref(prefs::kMediaRouterMediaRemotingEnabled, true);
-  registry->RegisterListPref(prefs::kMediaRouterTabMirroringSources);
+      media_router::prefs::kMediaRouterMediaRemotingEnabled, true);
+  registry->RegisterListPref(
+      media_router::prefs::kMediaRouterTabMirroringSources);
+#endif
 
   registry->RegisterDictionaryPref(prefs::kWebShareVisitedTargets);
   registry->RegisterDictionaryPref(

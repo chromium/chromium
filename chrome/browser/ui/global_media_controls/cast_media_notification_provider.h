@@ -11,8 +11,8 @@
 
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/media/router/media_routes_observer.h"
 #include "chrome/browser/ui/global_media_controls/cast_media_notification_item.h"
+#include "components/media_router/browser/media_routes_observer.h"
 
 class Profile;
 

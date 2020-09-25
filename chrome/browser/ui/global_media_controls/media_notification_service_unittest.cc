@@ -12,8 +12,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
-#include "chrome/browser/media/router/media_router_factory.h"
-#include "chrome/browser/media/router/test/mock_media_router.h"
+#include "chrome/browser/media/router/chrome_media_router_factory.h"
 #include "chrome/browser/ui/global_media_controls/cast_media_notification_provider.h"
 #include "chrome/browser/ui/global_media_controls/media_dialog_delegate.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_service_observer.h"
@@ -22,6 +21,7 @@
 #include "components/media_message_center/media_notification_item.h"
 #include "components/media_message_center/media_notification_util.h"
 #include "components/media_message_center/media_session_notification_item.h"
+#include "components/media_router/browser/test/mock_media_router.h"
 #include "content/public/test/browser_task_environment.h"
 #include "media/base/media_switches.h"
 #include "services/media_session/public/mojom/audio_focus.mojom.h"
@@ -135,7 +135,7 @@ class MediaNotificationServiceTest : public testing::Test {
   ~MediaNotificationServiceTest() override = default;
 
   void SetUp() override {
-    media_router::MediaRouterFactory::GetInstance()->SetTestingFactory(
+    media_router::ChromeMediaRouterFactory::GetInstance()->SetTestingFactory(
         &profile_, base::BindRepeating(&media_router::MockMediaRouter::Create));
     service_ = std::make_unique<MediaNotificationService>(&profile_, false);
     service_->AddObserver(&observer_);

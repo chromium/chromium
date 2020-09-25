@@ -12,8 +12,8 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/devtools/protocol/cast.h"
-#include "chrome/browser/media/router/issues_observer.h"
 #include "chrome/browser/ui/media_router/query_result_manager.h"
+#include "components/media_router/browser/issues_observer.h"
 #include "components/media_router/common/mojom/media_router.mojom.h"
 
 namespace content {

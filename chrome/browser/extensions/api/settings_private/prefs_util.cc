@@ -28,6 +28,7 @@
 #include "components/drive/drive_pref_names.h"
 #include "components/embedder_support/pref_names.h"
 #include "components/language/core/browser/pref_names.h"
+#include "components/media_router/common/pref_names.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/payments/core/payment_prefs.h"
@@ -716,14 +717,14 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::PREF_TYPE_DICTIONARY;
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  (*s_allowlist)[::prefs::kMediaRouterEnableCloudServices] =
+  (*s_allowlist)[prefs::kMediaRouterEnableCloudServices] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
   (*s_allowlist)[::prefs::kUserFeedbackAllowed] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
   // Media Remoting settings.
-  (*s_allowlist)[::prefs::kMediaRouterMediaRemotingEnabled] =
+  (*s_allowlist)[media_router::prefs::kMediaRouterMediaRemotingEnabled] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
 
 #if defined(OS_WIN)

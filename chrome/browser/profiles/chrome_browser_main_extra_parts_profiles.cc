@@ -41,7 +41,8 @@
 #include "chrome/browser/media/history/media_history_keyed_service_factory.h"
 #include "chrome/browser/media/media_engagement_service.h"
 #include "chrome/browser/media/media_engagement_service_factory.h"
-#include "chrome/browser/media/router/media_router_factory.h"
+#include "chrome/browser/media/router/chrome_media_router_factory.h"
+#include "chrome/browser/media/router/presentation/chrome_local_presentation_manager_factory.h"
 #include "chrome/browser/media/webrtc/webrtc_event_log_manager_keyed_service_factory.h"
 #include "chrome/browser/media_galleries/media_galleries_preferences_factory.h"
 #include "chrome/browser/notifications/notifier_state_tracker_factory.h"
@@ -297,7 +298,8 @@ void ChromeBrowserMainExtraPartsProfiles::
 #endif
   if (base::FeatureList::IsEnabled(media::kUseMediaHistoryStore))
     media_history::MediaHistoryKeyedServiceFactory::GetInstance();
-  media_router::MediaRouterFactory::GetInstance();
+  media_router::ChromeLocalPresentationManagerFactory::GetInstance();
+  media_router::ChromeMediaRouterFactory::GetInstance();
 #if !defined(OS_ANDROID)
   media_router::MediaRouterUIServiceFactory::GetInstance();
 #endif

@@ -13,10 +13,10 @@
 #include <sstream>
 #endif
 
+#include "base/metrics/histogram_macros.h"
 #include "base/stl_util.h"
 #include "chrome/browser/media/router/discovery/dial/device_description_fetcher.h"
 #include "chrome/browser/media/router/discovery/dial/safe_dial_device_description_parser.h"
-#include "chrome/browser/media/router/media_router_metrics.h"
 #include "net/base/ip_address.h"
 #include "url/gurl.h"
 
@@ -58,6 +58,15 @@ ParsingError ValidateParsedDeviceDescription(
     return ParsingError::kInvalidAppUrl;
   }
   return ParsingError::kNone;
+}
+
+void RecordDialParsingError(
+    SafeDialDeviceDescriptionParser::ParsingError parsing_error) {
+  DCHECK_LT(parsing_error,
+            SafeDialDeviceDescriptionParser::ParsingError::kTotalCount);
+  UMA_HISTOGRAM_ENUMERATION(
+      "MediaRouter.Dial.ParsingError", parsing_error,
+      SafeDialDeviceDescriptionParser::ParsingError::kTotalCount);
 }
 
 }  // namespace
@@ -183,7 +192,7 @@ void DeviceDescriptionService::OnParsedDeviceDescription(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   pending_device_count_--;
   if (parsing_error != ParsingError::kNone) {
-    MediaRouterMetrics::RecordDialParsingError(parsing_error);
+    RecordDialParsingError(parsing_error);
     error_cb_.Run(device_data, "Failed to parse device description XML");
     return;
   }
@@ -191,7 +200,7 @@ void DeviceDescriptionService::OnParsedDeviceDescription(
   ParsingError error = ValidateParsedDeviceDescription(
       device_data.device_description_url(), device_description);
   if (error != ParsingError::kNone) {
-    MediaRouterMetrics::RecordDialParsingError(error);
+    RecordDialParsingError(error);
     error_cb_.Run(device_data, "Failed to process fetch result");
     return;
   }

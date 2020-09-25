@@ -5,8 +5,8 @@
 #include <string>
 #include <utility>
 
-#include "chrome/browser/media/router/media_router.h"
 #include "chrome/test/media_router/test_media_sinks_observer.h"
+#include "components/media_router/browser/media_router.h"
 
 namespace media_router {
 

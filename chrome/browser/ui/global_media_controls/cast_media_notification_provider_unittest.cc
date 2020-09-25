@@ -4,10 +4,10 @@
 
 #include "chrome/browser/ui/global_media_controls/cast_media_notification_provider.h"
 
-#include "chrome/browser/media/router/test/mock_media_router.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/media_message_center/media_notification_controller.h"
 #include "components/media_message_center/media_notification_view.h"
+#include "components/media_router/browser/test/mock_media_router.h"
 #include "components/media_router/common/media_route.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"

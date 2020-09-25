@@ -12,7 +12,7 @@
 #include "base/json/json_writer.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/media/router/providers/dial/dial_activity_manager.h"
-#include "chrome/browser/media/router/route_message_util.h"
+#include "components/media_router/browser/route_message_util.h"
 #include "components/media_router/common/discovery/media_sink_internal.h"
 #include "net/base/escape.h"
 #include "url/url_util.h"

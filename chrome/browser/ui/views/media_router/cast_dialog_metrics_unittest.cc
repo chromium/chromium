@@ -8,6 +8,7 @@
 #include "base/time/time.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/media_router/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -101,7 +102,7 @@ TEST_F(CastDialogMetricsTest, RecordIconState) {
       MediaRouterMetrics::kHistogramUiDialogIconStateAtOpen,
       /* is_pinned */ false, 1);
 
-  profile_.GetPrefs()->SetBoolean(prefs::kShowCastIconInToolbar, true);
+  profile_.GetPrefs()->SetBoolean(::prefs::kShowCastIconInToolbar, true);
   CastDialogMetrics metrics_with_pinned_icon{
       init_time, MediaRouterDialogOpenOrigin::PAGE, &profile_};
   tester_.ExpectBucketCount(
@@ -124,7 +125,7 @@ TEST_F(CastDialogMetricsTest, RecordDialogActivationLocationAndCastMode) {
   metrics_.OnSinksLoaded(sink_load_time);
   metrics_.OnStartCasting(start_casting_time, kSinkIndex, TAB_MIRROR);
   tester_.ExpectUniqueSample(
-      MediaRouterMetrics::kHistogramUiDialogActivationLocationAndCastMode,
+      "MediaRouter.Ui.Dialog.ActivationLocationAndCastMode",
       DialogActivationLocationAndCastMode::kEphemeralIconAndTabMirror, 1);
 
   CastDialogMetrics metrics_opened_from_page{
@@ -133,17 +134,17 @@ TEST_F(CastDialogMetricsTest, RecordDialogActivationLocationAndCastMode) {
   metrics_opened_from_page.OnStartCasting(start_casting_time, kSinkIndex,
                                           PRESENTATION);
   tester_.ExpectBucketCount(
-      MediaRouterMetrics::kHistogramUiDialogActivationLocationAndCastMode,
+      "MediaRouter.Ui.Dialog.ActivationLocationAndCastMode",
       DialogActivationLocationAndCastMode::kPageAndPresentation, 1);
 
-  profile_.GetPrefs()->SetBoolean(prefs::kShowCastIconInToolbar, true);
+  profile_.GetPrefs()->SetBoolean(::prefs::kShowCastIconInToolbar, true);
   CastDialogMetrics metrics_with_pinned_icon{
       init_time, MediaRouterDialogOpenOrigin::TOOLBAR, &profile_};
   metrics_with_pinned_icon.OnSinksLoaded(sink_load_time);
   metrics_with_pinned_icon.OnStartCasting(start_casting_time, kSinkIndex,
                                           DESKTOP_MIRROR);
   tester_.ExpectBucketCount(
-      MediaRouterMetrics::kHistogramUiDialogActivationLocationAndCastMode,
+      "MediaRouter.Ui.Dialog.ActivationLocationAndCastMode",
       DialogActivationLocationAndCastMode::kPinnedIconAndDesktopMirror, 1);
 }
 

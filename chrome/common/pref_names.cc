@@ -10,7 +10,6 @@
 #include "chrome/common/buildflags.h"
 #include "chrome/common/pref_font_webkit_names.h"
 #include "extensions/buildflags/buildflags.h"
-#include "media/media_buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
 
 namespace prefs {
@@ -2715,24 +2714,6 @@ const char kClickedUpdateMenuItem[] = "omaha.clicked_update_menu_item";
 const char kLatestVersionWhenClickedUpdateMenuItem[] =
     "omaha.latest_version_when_clicked_upate_menu_item";
 #endif
-
-// Whether or not the user has explicitly set the cloud services preference
-// through the first run flow.
-const char kMediaRouterCloudServicesPrefSet[] =
-    "media_router.cloudservices.prefset";
-// Whether or not the user has enabled cloud services with Media Router.
-const char kMediaRouterEnableCloudServices[] =
-    "media_router.cloudservices.enabled";
-// Whether or not the Media Router first run flow has been acknowledged by the
-// user.
-const char kMediaRouterFirstRunFlowAcknowledged[] =
-    "media_router.firstrunflow.acknowledged";
-// Whether or not the user has enabled Media Remoting. Defaults to true.
-const char kMediaRouterMediaRemotingEnabled[] =
-    "media_router.media_remoting.enabled";
-// A list of website origins on which the user has chosen to use tab mirroring.
-const char kMediaRouterTabMirroringSources[] =
-    "media_router.tab_mirroring_sources";
 
 // The base64-encoded representation of the public key to use to validate origin
 // trial token signatures.

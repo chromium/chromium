@@ -5,8 +5,8 @@
 #include "chrome/browser/ui/global_media_controls/presentation_request_notification_item.h"
 
 #include "base/unguessable_token.h"
-#include "chrome/browser/media/router/presentation/presentation_service_delegate_impl.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_service.h"
+#include "components/media_router/browser/presentation/presentation_service_delegate_impl.h"
 
 PresentationRequestNotificationItem::PresentationRequestNotificationItem(
     MediaNotificationService* notification_service,

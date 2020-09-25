@@ -2,23 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/media/router/presentation/presentation_service_delegate_impl.h"
+#include "components/media_router/browser/presentation/presentation_service_delegate_impl.h"
 
 #include "base/bind.h"
 #include "base/test/mock_callback.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/router/media_router_factory.h"
-#include "chrome/browser/media/router/presentation/local_presentation_manager.h"
-#include "chrome/browser/media/router/presentation/local_presentation_manager_factory.h"
-#include "chrome/browser/media/router/presentation/web_contents_presentation_manager.h"
-#include "chrome/browser/media/router/test/mock_media_router.h"
-#include "chrome/browser/media/router/test/mock_screen_availability_listener.h"
-#include "chrome/browser/media/router/test/test_helper.h"
+#include "chrome/browser/media/router/test/provider_test_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/media_router/browser/presentation/local_presentation_manager.h"
+#include "components/media_router/browser/presentation/local_presentation_manager_factory.h"
+#include "components/media_router/browser/presentation/web_contents_presentation_manager.h"
+#include "components/media_router/browser/test/mock_media_router.h"
+#include "components/media_router/browser/test/mock_screen_availability_listener.h"
 #include "components/media_router/common/media_source.h"
+#include "components/media_router/common/pref_names.h"
 #include "components/media_router/common/route_request_result.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/browser/presentation_request.h"
@@ -227,7 +228,7 @@ class PresentationServiceDelegateImplTest
   }
 
   void SetMockLocalPresentationManager() {
-    LocalPresentationManagerFactory::GetInstanceForTest()->SetTestingFactory(
+    ChromeLocalPresentationManagerFactory::GetInstance()->SetTestingFactory(
         profile(), base::BindRepeating(&BuildMockLocalPresentationManager));
     mock_local_manager_ = static_cast<MockLocalPresentationManager*>(
         LocalPresentationManagerFactory::GetOrCreateForBrowserContext(

@@ -6,7 +6,7 @@
 
 #include "base/json/json_string_value_serializer.h"
 #include "base/values.h"
-#include "chrome/browser/media/router/test/test_helper.h"
+#include "chrome/browser/media/router/test/provider_test_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

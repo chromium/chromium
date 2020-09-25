@@ -83,13 +83,24 @@ generate_jni("jni_headers") {
 
 android_library("test_support_java") {
   testonly = true
-  sources = [ "javatests/src/org/chromium/components/media_router/MockMediaRouteProvider.java" ]
+  sources = [
+    "java/src/org/chromium/components/media_router/TestMediaRouterClient.java",
+    "javatests/src/org/chromium/components/media_router/MockMediaRouteProvider.java",
+  ]
 
   deps = [
     ":java",
+    ":test_jni_headers",
     "//base:base_java",
+    "//components/browser_ui/media/android:java",
     "//content/public/android:content_java",
     "//third_party/android_deps:androidx_annotation_annotation_java",
+  ]
+}
+
+generate_jni("test_jni_headers") {
+  sources = [
+    "java/src/org/chromium/components/media_router/TestMediaRouterClient.java",
   ]
 }
 

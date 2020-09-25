@@ -6,8 +6,7 @@
 
 #include "base/bind.h"
 #include "chrome/app/chrome_command_ids.h"
-#include "chrome/browser/media/router/media_router_factory.h"
-#include "chrome/browser/media/router/test/mock_media_router.h"
+#include "chrome/browser/media/router/chrome_media_router_factory.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/ui/browser.h"
@@ -18,6 +17,8 @@
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "components/media_router/browser/media_router_factory.h"
+#include "components/media_router/browser/test/mock_media_router.h"
 #include "components/vector_icons/vector_icons.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -75,7 +76,7 @@ class CastToolbarButtonTest : public ChromeViewsTestBase {
 
     profile_ = std::make_unique<TestingProfile>();
 
-    MediaRouterFactory::GetInstance()->SetTestingFactory(
+    ChromeMediaRouterFactory::GetInstance()->SetTestingFactory(
         profile_.get(), base::BindRepeating(&MockMediaRouter::Create));
     MediaRouterUIServiceFactory::GetInstance()->SetTestingFactory(
         profile_.get(), base::BindRepeating(&BuildUIService));

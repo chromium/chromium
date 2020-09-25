@@ -6,11 +6,11 @@
 
 #include "base/bind.h"
 #include "base/bind_helpers.h"
-#include "chrome/browser/media/router/media_router_factory.h"
-#include "chrome/browser/media/router/media_sinks_observer.h"
-#include "chrome/browser/media/router/presentation/presentation_service_delegate_impl.h"
-#include "chrome/browser/media/router/test/mock_media_router.h"
+#include "chrome/browser/media/router/chrome_media_router_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/media_router/browser/media_sinks_observer.h"
+#include "components/media_router/browser/presentation/presentation_service_delegate_impl.h"
+#include "components/media_router/browser/test/mock_media_router.h"
 #include "components/media_router/common/media_sink.h"
 #include "components/media_router/common/media_source.h"
 #include "components/sessions/content/session_tab_helper.h"
@@ -57,7 +57,7 @@ class CastHandlerTest : public ChromeRenderViewHostTestHarness {
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
     router_ = static_cast<media_router::MockMediaRouter*>(
-        media_router::MediaRouterFactory::GetInstance()
+        media_router::ChromeMediaRouterFactory::GetInstance()
             ->SetTestingFactoryAndUse(
                 web_contents()->GetBrowserContext(),
                 base::BindRepeating(&media_router::MockMediaRouter::Create)));

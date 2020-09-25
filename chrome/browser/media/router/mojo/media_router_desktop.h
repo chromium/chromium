@@ -32,6 +32,9 @@ class WiredDisplayMediaRouteProvider;
 // the component extension.
 class MediaRouterDesktop : public MediaRouterMojoImpl {
  public:
+  // This constructor performs a firewall check on Windows and is not suitable
+  // for use in unit tests; instead use the constructor below.
+  explicit MediaRouterDesktop(content::BrowserContext* context);
   ~MediaRouterDesktop() override;
 
   // Max number of Mojo connection error counts on a MediaRouteProvider message
@@ -68,13 +71,9 @@ class MediaRouterDesktop : public MediaRouterMojoImpl {
 
  private:
   friend class MediaRouterDesktopTest;
-  friend class MediaRouterFactory;
   FRIEND_TEST_ALL_PREFIXES(MediaRouterDesktopTest, ProvideSinks);
   FRIEND_TEST_ALL_PREFIXES(MediaRouterDesktopTest,
                            ExtensionMrpRecoversFromConnectionError);
-  // This constructor performs a firewall check on Windows and is not suitable
-  // for use in unit tests; instead use the constructor below.
-  explicit MediaRouterDesktop(content::BrowserContext* context);
 
   // Used by tests only. This constructor skips the firewall check so unit tests
   // do not have to depend on the system's firewall configuration.

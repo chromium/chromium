@@ -34,49 +34,15 @@ static_library("router") {
     "//url",
   ]
   public_deps = [
+    "//components/media_router/browser",
     "//components/media_router/common",
     "//components/media_router/common/mojom:media_router",
   ]
   sources = [
-    "issue_manager.cc",
-    "issue_manager.h",
-    "issues_observer.cc",
-    "issues_observer.h",
-    "media_router.h",
-    "media_router_base.cc",
-    "media_router_base.h",
-    "media_router_dialog_controller.cc",
-    "media_router_dialog_controller.h",
-    "media_router_factory.cc",
-    "media_router_factory.h",
-    "media_router_metrics.cc",
-    "media_router_metrics.h",
-    "media_routes_observer.cc",
-    "media_routes_observer.h",
-    "media_sinks_observer.cc",
-    "media_sinks_observer.h",
-    "presentation/browser_presentation_connection_proxy.cc",
-    "presentation/browser_presentation_connection_proxy.h",
-    "presentation/local_presentation_manager.cc",
-    "presentation/local_presentation_manager.h",
-    "presentation/local_presentation_manager_factory.cc",
-    "presentation/local_presentation_manager_factory.h",
-    "presentation/presentation_media_sinks_observer.cc",
-    "presentation/presentation_media_sinks_observer.h",
-    "presentation/presentation_service_delegate_impl.cc",
-    "presentation/presentation_service_delegate_impl.h",
-    "presentation/presentation_service_delegate_observers.cc",
-    "presentation/presentation_service_delegate_observers.h",
-    "presentation/receiver_presentation_service_delegate_impl.cc",
-    "presentation/receiver_presentation_service_delegate_impl.h",
-    "presentation/start_presentation_context.cc",
-    "presentation/start_presentation_context.h",
-    "presentation/web_contents_presentation_manager.cc",
-    "presentation/web_contents_presentation_manager.h",
-    "route_message_observer.cc",
-    "route_message_observer.h",
-    "route_message_util.cc",
-    "route_message_util.h",
+    "chrome_media_router_factory.cc",
+    "chrome_media_router_factory.h",
+    "presentation/chrome_local_presentation_manager_factory.cc",
+    "presentation/chrome_local_presentation_manager_factory.h",
   ]
 
   if (enable_extensions) {
@@ -109,8 +75,6 @@ static_library("router") {
       "event_page_request_manager.h",
       "event_page_request_manager_factory.cc",
       "event_page_request_manager_factory.h",
-      "logger_impl.cc",
-      "logger_impl.h",
       "mojo/media_route_provider_util_win.cc",
       "mojo/media_route_provider_util_win.h",
       "mojo/media_router_desktop.cc",
@@ -121,8 +85,6 @@ static_library("router") {
       "mojo/media_router_mojo_metrics.h",
       "mojo/media_sink_service_status.cc",
       "mojo/media_sink_service_status.h",
-      "presentation/presentation_navigation_policy.cc",
-      "presentation/presentation_navigation_policy.h",
       "providers/cast/app_activity.cc",
       "providers/cast/app_activity.h",
       "providers/cast/cast_activity.cc",
@@ -191,31 +153,20 @@ static_library("router") {
   }
 }
 
-static_library("test_support") {
-  testonly = true
-  deps = [
-    "//chrome/test:test_support",
-    "//testing/gmock",
-  ]
-  public_deps = [ ":router" ]
-  sources = [
-    "test/mock_media_router.cc",
-    "test/mock_media_router.h",
-    "test/mock_screen_availability_listener.cc",
-    "test/mock_screen_availability_listener.h",
-    "test/test_helper.cc",
-    "test/test_helper.h",
-  ]
-
-  if (enable_extensions) {
-    deps += [
+if (!is_android) {
+  static_library("test_support") {
+    testonly = true
+    deps = [
       "discovery",
+      "//chrome/test:test_support",
       "//components/media_router/common/mojom:media_router",
       "//components/media_router/common/mojom:media_router_test_interfaces",
       "//extensions/browser",
       "//extensions/common",
+      "//testing/gmock",
     ]
-    sources += [
+    public_deps = [ ":router" ]
+    sources = [
       "test/media_router_mojo_test.cc",
       "test/media_router_mojo_test.h",
       "test/mock_dns_sd_registry.cc",
@@ -226,6 +177,8 @@ static_library("test_support") {
       "test/mock_mojo_media_router.h",
       "test/noop_dual_media_sink_service.cc",
       "test/noop_dual_media_sink_service.h",
+      "test/provider_test_helpers.cc",
+      "test/provider_test_helpers.h",
     ]
   }
 }
@@ -234,17 +187,18 @@ source_set("unittests") {
   testonly = true
 
   sources = [
-    "issue_manager_unittest.cc",
-    "media_router_base_unittest.cc",
-    "media_router_dialog_controller_unittest.cc",
-    "media_router_factory_unittest.cc",
-    "media_router_metrics_unittest.cc",
-    "media_sinks_observer_unittest.cc",
-    "presentation/browser_presentation_connection_proxy_unittest.cc",
-    "presentation/local_presentation_manager_factory_unittest.cc",
-    "presentation/local_presentation_manager_unittest.cc",
-    "presentation/presentation_media_sinks_observer_unittest.cc",
-    "presentation/presentation_service_delegate_impl_unittest.cc",
+    "chrome_media_router_factory_unittest.cc",
+    "presentation/chrome_local_presentation_manager_factory_unittest.cc",
+  ]
+
+  deps = [
+    ":router",
+    "//base",
+    "//base/test:test_support",
+    "//components/media_router/browser:test_support",
+    "//components/media_router/common:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
   ]
 
   if (!is_android) {
@@ -268,7 +222,6 @@ source_set("unittests") {
       "discovery/mdns/dns_sd_registry_unittest.cc",
       "discovery/media_sink_discovery_metrics_unittest.cc",
       "event_page_request_manager_unittest.cc",
-      "logger_impl_unittest.cc",
       "media_router_feature_unittest.cc",
       "mojo/media_router_desktop_unittest.cc",
       "mojo/media_router_mojo_impl_unittest.cc",
@@ -298,9 +251,8 @@ source_set("unittests") {
       "providers/extension/extension_media_route_provider_proxy_unittest.cc",
       "providers/wired_display/wired_display_media_route_provider_unittest.cc",
     ]
+    deps += [ ":test_support" ]
   }
-
-  deps = []
 
   if (enable_openscreen) {
     include_dirs = [ "//third_party/openscreen/src" ]
@@ -310,16 +262,6 @@ source_set("unittests") {
       "providers/openscreen/network_service_quic_packet_writer_unittest.cc",
     ]
   }
-
-  deps += [
-    ":router",
-    ":test_support",
-    "//base",
-    "//base/test:test_support",
-    "//components/media_router/common:test_support",
-    "//testing/gmock",
-    "//testing/gtest",
-  ]
 }
 
 if (enable_openscreen) {

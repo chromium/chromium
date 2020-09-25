@@ -9,10 +9,10 @@
 
 #include "base/bind.h"
 #include "base/stl_util.h"
-#include "chrome/browser/media/router/presentation/presentation_navigation_policy.h"
-#include "chrome/browser/media/router/presentation/receiver_presentation_service_delegate_impl.h"  // nogncheck
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_destroyer.h"
+#include "components/media_router/browser/presentation/presentation_navigation_policy.h"
+#include "components/media_router/browser/presentation/receiver_presentation_service_delegate_impl.h"  // nogncheck
 #include "content/public/browser/keyboard_event_processing_result.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/presentation_receiver_flags.h"

@@ -8,9 +8,9 @@
 #include <memory>
 #include <string>
 
-#include "chrome/browser/media/router/media_router.h"
 #include "chrome/test/media_router/media_router_integration_browsertest.h"
 #include "chrome/test/media_router/test_media_sinks_observer.h"
+#include "components/media_router/browser/media_router.h"
 #include "components/media_router/common/media_route.h"
 
 namespace media_router {

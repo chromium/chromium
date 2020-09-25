@@ -62,6 +62,7 @@
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
+#include "chrome/browser/media/router/chrome_media_router_factory.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/webrtc_log_util.h"
 #include "chrome/browser/metrics/chrome_feature_list_creator.h"
@@ -1064,6 +1065,7 @@ void ChromeBrowserMainParts::PreProfileInit() {
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   InstallChromeJavaScriptAppModalDialogViewFactory();
+  media_router::ChromeMediaRouterFactory::DoPlatformInit();
 }
 
 void ChromeBrowserMainParts::PostProfileInit() {

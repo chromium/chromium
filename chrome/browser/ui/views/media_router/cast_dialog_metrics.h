@@ -7,7 +7,8 @@
 
 #include "base/macros.h"
 #include "base/time/time.h"
-#include "chrome/browser/media/router/media_router_metrics.h"
+#include "chrome/browser/ui/media_router/media_cast_mode.h"
+#include "components/media_router/browser/media_router_metrics.h"
 
 class Profile;
 

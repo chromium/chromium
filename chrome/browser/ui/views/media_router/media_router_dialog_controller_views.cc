@@ -8,7 +8,6 @@
 
 #include "build/build_config.h"
 #include "chrome/browser/media/router/media_router_feature.h"
-#include "chrome/browser/media/router/presentation/start_presentation_context.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_service.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_service_factory.h"
@@ -19,6 +18,7 @@
 #include "chrome/browser/ui/views/global_media_controls/media_toolbar_button_view.h"
 #include "chrome/browser/ui/views/media_router/cast_dialog_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "components/media_router/browser/presentation/start_presentation_context.h"
 #include "content/public/browser/web_contents.h"
 
 using content::WebContents;
@@ -34,16 +34,6 @@ MediaRouterUIService* GetMediaRouterUIService(WebContents* web_contents) {
 }
 
 }  // namespace
-
-// static
-MediaRouterDialogController*
-MediaRouterDialogController::GetOrCreateForWebContents(
-    content::WebContents* web_contents) {
-  DCHECK(web_contents);
-  // This call does nothing if the controller already exists.
-  MediaRouterDialogControllerViews::CreateForWebContents(web_contents);
-  return MediaRouterDialogControllerViews::FromWebContents(web_contents);
-}
 
 MediaRouterDialogControllerViews::~MediaRouterDialogControllerViews() {
   Reset();

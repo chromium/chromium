@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/guid.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/stl_util.h"
@@ -19,21 +20,20 @@
 #include "chrome/browser/media/cast_remoting_connector.h"
 #include "chrome/browser/media/router/event_page_request_manager.h"
 #include "chrome/browser/media/router/event_page_request_manager_factory.h"
-#include "chrome/browser/media/router/issues_observer.h"
-#include "chrome/browser/media/router/media_router_factory.h"
 #include "chrome/browser/media/router/media_router_feature.h"
-#include "chrome/browser/media/router/media_router_metrics.h"
-#include "chrome/browser/media/router/media_routes_observer.h"
-#include "chrome/browser/media/router/media_sinks_observer.h"
 #include "chrome/browser/media/router/mojo/media_route_provider_util_win.h"
 #include "chrome/browser/media/router/mojo/media_router_mojo_metrics.h"
 #include "chrome/browser/media/router/mojo/media_sink_service_status.h"
-#include "chrome/browser/media/router/route_message_observer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/grit/chromium_strings.h"
+#include "components/media_router/browser/issues_observer.h"
+#include "components/media_router/browser/media_router_metrics.h"
+#include "components/media_router/browser/media_routes_observer.h"
+#include "components/media_router/browser/media_sinks_observer.h"
+#include "components/media_router/browser/route_message_observer.h"
 #include "components/media_router/common/media_source.h"
 #include "components/media_router/common/providers/cast/cast_media_source.h"
 #include "components/sessions/content/session_tab_helper.h"
@@ -42,6 +42,7 @@
 #include "content/public/browser/desktop_streams_registry.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
+#include "extensions/common/constants.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace media_router {
@@ -114,6 +115,63 @@ DesktopMediaPickerController::Params MakeDesktopPickerParams(
   params.approve_audio_by_default = true;
 
   return params;
+}
+
+// Records the possible ways a Presentation URL can be used to start a
+// presentation, both by the kind of URL and the type of the sink the URL will
+// be presented on.  "Normal" (https:, file:, or chrome-extension:) URLs are
+// typically implemented by loading them into an offscreen tab for streaming,
+// while Cast and DIAL URLs are sent directly to a compatible device.
+enum class PresentationUrlBySink {
+  kUnknown = 0,
+  kNormalUrlToChromecast = 1,
+  kNormalUrlToExtension = 2,
+  kNormalUrlToWiredDisplay = 3,
+  kCastUrlToChromecast = 4,
+  kDialUrlToDial = 5,
+  // Add new values immediately above this line.  Also update kMaxValue below
+  // and the enum of the same name in tools/metrics/histograms/enums.xml.
+  kMaxValue = kDialUrlToDial,
+};
+
+// NOTE: To record this on Android, will need to move to
+// //components/media_router and refactor to avoid the extensions dependency.
+void RecordPresentationRequestUrlBySink(const MediaSource& source,
+                                        MediaRouteProviderId provider_id) {
+  PresentationUrlBySink value = PresentationUrlBySink::kUnknown;
+  // URLs that can be rendered in offscreen tabs (for cloud or Chromecast
+  // sinks), or on a wired display.
+  bool is_normal_url = source.url().SchemeIs(url::kHttpsScheme) ||
+                       source.url().SchemeIs(extensions::kExtensionScheme) ||
+                       source.url().SchemeIs(url::kFileScheme);
+  switch (provider_id) {
+    case MediaRouteProviderId::EXTENSION:
+      if (is_normal_url) {
+        value = PresentationUrlBySink::kNormalUrlToExtension;
+      }
+      break;
+    case MediaRouteProviderId::WIRED_DISPLAY:
+      if (is_normal_url) {
+        value = PresentationUrlBySink::kNormalUrlToWiredDisplay;
+      }
+      break;
+    case MediaRouteProviderId::CAST:
+      if (source.IsCastPresentationUrl()) {
+        value = PresentationUrlBySink::kCastUrlToChromecast;
+      } else if (is_normal_url) {
+        value = PresentationUrlBySink::kNormalUrlToChromecast;
+      }
+      break;
+    case MediaRouteProviderId::DIAL:
+      if (source.IsDialSource()) {
+        value = PresentationUrlBySink::kDialUrlToDial;
+      }
+      break;
+    case MediaRouteProviderId::UNKNOWN:
+      break;
+  }
+  base::UmaHistogramEnumeration("MediaRouter.PresentationRequest.UrlBySink",
+                                value);
 }
 
 }  // namespace
@@ -275,7 +333,7 @@ void MediaRouterMojoImpl::CreateRoute(const MediaSource::Id& source_id,
   // Record which of the possible ways the sink may render the source's
   // presentation URL (if it has one).
   if (source.url().is_valid()) {
-    MediaRouterMetrics::RecordPresentationRequestUrlBySink(source, provider_id);
+    RecordPresentationRequestUrlBySink(source, provider_id);
   }
 
   const std::string presentation_id = MediaRouterBase::CreatePresentationId();

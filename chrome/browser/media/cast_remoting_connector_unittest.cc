@@ -13,7 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
-#include "chrome/browser/media/router/test/mock_media_router.h"
+#include "components/media_router/browser/test/mock_media_router.h"
 #include "components/media_router/common/media_route.h"
 #include "components/media_router/common/media_source.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"

@@ -1,0 +1,11 @@
+include_rules = [
+  "+media/base",
+  "+mojo/public/cpp",
+  "+components/keyed_service",
+  "+components/prefs",
+  "+components/sessions",
+  "+components/user_prefs",
+  "+content/public/browser",
+  "+content/public/test",
+  "+third_party/blink/public",
+]

@@ -31,8 +31,8 @@
 #include "extensions/test/extension_test_message_listener.h"
 
 #if defined(OS_CHROMEOS)
-#include "chrome/browser/media/router/media_routes_observer.h"
 #include "chrome/browser/ui/ash/cast_config_controller_media_router.h"
+#include "components/media_router/browser/media_routes_observer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #endif
 

@@ -10,8 +10,8 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/media_router/cast_toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/media_router/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/button/checkbox.h"
@@ -34,7 +34,7 @@ void MediaRemotingDialogView::GetPermission(content::WebContents* web_contents,
   PrefService* const pref_service = profile->GetPrefs();
   DCHECK(pref_service);
   const PrefService::Preference* pref =
-      pref_service->FindPreference(::prefs::kMediaRouterMediaRemotingEnabled);
+      pref_service->FindPreference(prefs::kMediaRouterMediaRemotingEnabled);
   if (pref && !pref->IsDefaultValue()) {
     std::move(callback).Run(pref->GetValue()->GetBool());
     return;
@@ -137,8 +137,7 @@ void MediaRemotingDialogView::ReportPermission(bool allowed) {
   DCHECK(remember_choice_checkbox_);
   DCHECK(permission_callback_);
   if (remember_choice_checkbox_->GetChecked()) {
-    pref_service_->SetBoolean(::prefs::kMediaRouterMediaRemotingEnabled,
-                              allowed);
+    pref_service_->SetBoolean(prefs::kMediaRouterMediaRemotingEnabled, allowed);
   }
   std::move(permission_callback_).Run(allowed);
 }

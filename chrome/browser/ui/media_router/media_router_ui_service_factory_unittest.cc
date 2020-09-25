@@ -6,8 +6,7 @@
 
 #include "base/bind.h"
 #include "base/values.h"
-#include "chrome/browser/media/router/media_router_factory.h"
-#include "chrome/browser/media/router/test/mock_media_router.h"
+#include "chrome/browser/media/router/chrome_media_router_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/media_router/media_router_ui_service.h"
 #include "chrome/browser/ui/media_router/media_router_ui_service_factory.h"
@@ -15,6 +14,7 @@
 #include "chrome/browser/ui/toolbar/toolbar_actions_model_factory.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/media_router/browser/test/mock_media_router.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -44,7 +44,7 @@ class MediaRouterUIServiceFactoryUnitTest : public testing::Test {
     builder.AddTestingFactory(
         ToolbarActionsModelFactory::GetInstance(),
         base::BindRepeating(&BuildFakeToolBarActionsModel));
-    builder.AddTestingFactory(MediaRouterFactory::GetInstance(),
+    builder.AddTestingFactory(ChromeMediaRouterFactory::GetInstance(),
                               base::BindRepeating(&MockMediaRouter::Create));
     profile_ = builder.Build();
   }

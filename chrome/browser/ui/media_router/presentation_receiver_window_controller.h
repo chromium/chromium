@@ -10,10 +10,10 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "chrome/browser/media/router/presentation/presentation_navigation_policy.h"
 #include "chrome/browser/media/router/providers/wired_display/wired_display_presentation_receiver.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/ui/media_router/presentation_receiver_window_delegate.h"
+#include "components/media_router/browser/presentation/presentation_navigation_policy.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
 

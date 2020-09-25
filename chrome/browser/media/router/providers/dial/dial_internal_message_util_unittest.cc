@@ -7,7 +7,7 @@
 #include "base/json/json_reader.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/media/router/providers/dial/dial_activity_manager.h"
-#include "chrome/browser/media/router/test/test_helper.h"
+#include "chrome/browser/media/router/test/provider_test_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

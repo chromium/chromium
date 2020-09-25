@@ -13,9 +13,9 @@
 #include "chrome/browser/ui/views/media_router/cast_toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/browser_actions_container.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/media_router/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -68,8 +68,8 @@ CloudServicesDialogView* CloudServicesDialogView::GetDialogForTest() {
 
 void CloudServicesDialogView::OnDialogAccepted() {
   PrefService* pref_service = browser_->profile()->GetPrefs();
-  pref_service->SetBoolean(::prefs::kMediaRouterEnableCloudServices, true);
-  pref_service->SetBoolean(::prefs::kMediaRouterCloudServicesPrefSet, true);
+  pref_service->SetBoolean(prefs::kMediaRouterEnableCloudServices, true);
+  pref_service->SetBoolean(prefs::kMediaRouterCloudServicesPrefSet, true);
 }
 
 gfx::Size CloudServicesDialogView::CalculatePreferredSize() const {

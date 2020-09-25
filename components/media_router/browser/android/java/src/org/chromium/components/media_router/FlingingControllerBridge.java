@@ -10,8 +10,7 @@ import org.chromium.base.annotations.NativeMethods;
 
 /**
  * A wrapper around a FlingingController that allows the native code to use it
- * See chrome/browser/media/android/remote/flinging_controller_bridge.h for the
- * corresponding native code.
+ * See flinging_controller_bridge.h for the corresponding native code.
  */
 @JNINamespace("media_router")
 public class FlingingControllerBridge implements MediaStatusObserver {
