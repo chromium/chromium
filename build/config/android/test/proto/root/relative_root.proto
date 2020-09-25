@@ -5,6 +5,7 @@
 syntax = "proto2";
 
 package build.config.android.test;
+option java_package = "build.config.android.test";
 
 import "relative_child.proto";
 import "build/config/android/test/proto/absolute_dep/absolute_dep.proto";

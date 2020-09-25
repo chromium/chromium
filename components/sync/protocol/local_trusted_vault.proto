@@ -6,6 +6,7 @@ syntax = "proto2";
 
 option optimize_for = LITE_RUNTIME;
 
+option java_package = "sync_pb";
 package sync_pb;
 
 message LocalTrustedVaultKey {
