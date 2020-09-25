@@ -8,7 +8,6 @@ namespace blink {
 
 scoped_refptr<Hyphenation> Hyphenation::PlatformGetHyphenation(
     const AtomicString&) {
-  // TODO(fuchsia): Implement this when UI support is ready. crbug.com/750946
   return nullptr;
 }
 
