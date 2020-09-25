@@ -17,35 +17,34 @@ namespace base {
 
 namespace {
 
-HANDLE GetCurrentProcessToken() {
-  HANDLE process_token;
+base::win::ScopedHandle CreateCurrentProcessToken() {
+  // OpenProcessToken can fail due to permission or allocation failures
+  // for the kernel object. Return nullptr in those cases.
+  HANDLE process_token = nullptr;
   OpenProcessToken(GetCurrentProcess(), TOKEN_QUERY, &process_token);
-  DCHECK(process_token != NULL && process_token != INVALID_HANDLE_VALUE);
-  return process_token;
+  return base::win::ScopedHandle(process_token);
 }
 
 }  // namespace
 
 IntegrityLevel GetCurrentProcessIntegrityLevel() {
-  HANDLE process_token(GetCurrentProcessToken());
+  base::win::ScopedHandle scoped_process_token(CreateCurrentProcessToken());
 
   DWORD token_info_length = 0;
-  if (::GetTokenInformation(process_token, TokenIntegrityLevel, nullptr, 0,
-                            &token_info_length) ||
+  if (::GetTokenInformation(scoped_process_token.Get(), TokenIntegrityLevel,
+                            nullptr, 0, &token_info_length) ||
       ::GetLastError() != ERROR_INSUFFICIENT_BUFFER) {
-    NOTREACHED();
     return INTEGRITY_UNKNOWN;
   }
 
   auto token_label_bytes = std::make_unique<char[]>(token_info_length);
   TOKEN_MANDATORY_LABEL* token_label =
       reinterpret_cast<TOKEN_MANDATORY_LABEL*>(token_label_bytes.get());
-  if (!::GetTokenInformation(process_token, TokenIntegrityLevel, token_label,
-                             token_info_length, &token_info_length)) {
-    NOTREACHED();
+  if (!::GetTokenInformation(scoped_process_token.Get(), TokenIntegrityLevel,
+                             token_label, token_info_length,
+                             &token_info_length)) {
     return INTEGRITY_UNKNOWN;
   }
-
   DWORD integrity_level = *::GetSidSubAuthority(
       token_label->Label.Sid,
       static_cast<DWORD>(*::GetSidSubAuthorityCount(token_label->Label.Sid) -
@@ -70,14 +69,14 @@ IntegrityLevel GetCurrentProcessIntegrityLevel() {
 }
 
 bool IsCurrentProcessElevated() {
-  HANDLE process_token(GetCurrentProcessToken());
+  base::win::ScopedHandle scoped_process_token(CreateCurrentProcessToken());
 
   // Unlike TOKEN_ELEVATION_TYPE which returns TokenElevationTypeDefault when
   // UAC is turned off, TOKEN_ELEVATION returns whether the process is elevated.
   DWORD size;
   TOKEN_ELEVATION elevation;
-  if (!GetTokenInformation(process_token, TokenElevation, &elevation,
-                           sizeof(elevation), &size)) {
+  if (!GetTokenInformation(scoped_process_token.Get(), TokenElevation,
+                           &elevation, sizeof(elevation), &size)) {
     PLOG(ERROR) << "GetTokenInformation() failed";
     return false;
   }
