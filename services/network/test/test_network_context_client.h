@@ -82,7 +82,6 @@ class TestNetworkContextClient : public network::mojom::NetworkContextClient {
   void OnTrustAnchorUsed() override {}
 #endif
 #if BUILDFLAG(IS_CT_SUPPORTED)
-  void OnSCTReportReady(const std::string& cache_key) override {}
 #endif
 
  private:

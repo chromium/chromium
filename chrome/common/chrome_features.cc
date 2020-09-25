@@ -661,6 +661,13 @@ const base::Feature kSchedulerConfiguration{"SchedulerConfiguration",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
 #endif  // defined(OS_CHROMEOS)
 
+// Controls whether SCT audit reports are queued and the rate at which they
+// should be sampled.
+const base::Feature kSCTAuditing{"SCTAuditing",
+                                 base::FEATURE_DISABLED_BY_DEFAULT};
+constexpr base::FeatureParam<double> kSCTAuditingSamplingRate{
+    &kSCTAuditing, "sampling_rate", 0.0};
+
 // Controls whether the user is prompted when sites request attestation.
 const base::Feature kSecurityKeyAttestationPrompt{
     "SecurityKeyAttestationPrompt", base::FEATURE_ENABLED_BY_DEFAULT};

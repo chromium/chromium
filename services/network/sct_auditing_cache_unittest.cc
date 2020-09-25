@@ -15,24 +15,20 @@
 #include "net/cert/signed_certificate_timestamp_and_status.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
+#include "net/traffic_annotation/network_traffic_annotation.h"
+#include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/network_context.h"
 #include "services/network/network_service.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/proto/sct_audit_report.pb.h"
 #include "services/network/test/test_network_context_client.h"
 
+#include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace network {
 
 namespace {
-
-base::test::ScopedFeatureList::FeatureAndParams probability_zero{
-    network::features::kSCTAuditing,
-    {{network::features::kSCTAuditingSamplingRate.name, "0.0"}}};
-base::test::ScopedFeatureList::FeatureAndParams probability_one{
-    network::features::kSCTAuditing,
-    {{network::features::kSCTAuditingSamplingRate.name, "1.0"}}};
 
 class SCTAuditingCacheTest : public testing::Test {
  public:
@@ -67,11 +63,33 @@ class SCTAuditingCacheTest : public testing::Test {
     network_context_->SetClient(std::move(network_context_client_remote));
   }
 
+  // Initializes the configuration for the SCTAuditingCache to defaults and
+  // sets up the URLLoaderFactory. Individual tests can directly call the set_*
+  // methods to tweak the configuration.
+  void InitSCTAuditing(SCTAuditingCache* cache) {
+    cache->set_enabled(true);
+    cache->set_sampling_rate(1.0);
+    cache->set_report_uri(GURL("https://example.test"));
+    cache->set_traffic_annotation(
+        net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
+
+    url_loader_factory_ = std::make_unique<TestURLLoaderFactory>();
+    mojo::PendingRemote<network::mojom::URLLoaderFactory> factory_client;
+    url_loader_factory_->Clone(factory_client.InitWithNewPipeAndPassReceiver());
+    cache->set_url_loader_factory(std::move(factory_client));
+  }
+
+  // Getter for TestURLLoaderFactory to allow tests to specify responses.
+  TestURLLoaderFactory* url_loader_factory() {
+    return url_loader_factory_.get();
+  }
+
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::IO};
   std::unique_ptr<NetworkService> network_service_;
   std::unique_ptr<NetworkContext> network_context_;
   std::unique_ptr<network::mojom::NetworkContextClient> network_context_client_;
+  std::unique_ptr<TestURLLoaderFactory> url_loader_factory_;
 
   scoped_refptr<net::X509Certificate> chain_;
 
@@ -115,9 +133,8 @@ void MakeTestSCTAndStatus(
 // Test that if auditing is disabled on the NetworkContext, no reports are
 // cached.
 TEST_F(SCTAuditingCacheTest, NoReportsCachedWhenAuditingDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters({probability_one}, {});
   SCTAuditingCache cache(10);
+  InitSCTAuditing(&cache);
 
   network_context_->SetIsSCTAuditingEnabledForTesting(false);
 
@@ -134,9 +151,8 @@ TEST_F(SCTAuditingCacheTest, NoReportsCachedWhenAuditingDisabled) {
 
 // Test that inserting and retrieving a report works.
 TEST_F(SCTAuditingCacheTest, InsertAndRetrieveReport) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters({probability_one}, {});
   SCTAuditingCache cache(10);
+  InitSCTAuditing(&cache);
 
   const net::HostPortPair host_port_pair("example.com", 443);
   net::SignedCertificateTimestampAndStatusList sct_list;
@@ -151,9 +167,8 @@ TEST_F(SCTAuditingCacheTest, InsertAndRetrieveReport) {
 
 // Tests that old entries are evicted when the cache is full.
 TEST_F(SCTAuditingCacheTest, EvictLRUAfterCacheFull) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters({probability_one}, {});
   SCTAuditingCache cache(2);
+  InitSCTAuditing(&cache);
 
   const net::HostPortPair host_port_pair1("example1.com", 443);
   const net::HostPortPair host_port_pair2("example2.com", 443);
@@ -198,9 +213,8 @@ TEST_F(SCTAuditingCacheTest, EvictLRUAfterCacheFull) {
 // Tests that a new report gets dropped if the same SCTs are already in the
 // cache.
 TEST_F(SCTAuditingCacheTest, ReportWithSameSCTsDeduplicated) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters({probability_one}, {});
   SCTAuditingCache cache(10);
+  InitSCTAuditing(&cache);
 
   const net::HostPortPair host_port_pair1("example.com", 443);
   const net::HostPortPair host_port_pair2("example.org", 443);
@@ -224,9 +238,8 @@ TEST_F(SCTAuditingCacheTest, ReportWithSameSCTsDeduplicated) {
 // When a report gets deduplicated, the existing entry should have its last-seen
 // time bumped up.
 TEST_F(SCTAuditingCacheTest, DeduplicationUpdatesLastSeenTime) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters({probability_one}, {});
   SCTAuditingCache cache(2);
+  InitSCTAuditing(&cache);
 
   const net::HostPortPair host_port_pair1("example1.com", 443);
   const net::HostPortPair host_port_pair2("example2.com", 443);
@@ -267,6 +280,112 @@ TEST_F(SCTAuditingCacheTest, DeduplicationUpdatesLastSeenTime) {
   EXPECT_EQ(2u, cache.GetCacheForTesting()->size());
   for (const auto& entry : *cache.GetCacheForTesting()) {
     ASSERT_NE("example2.com", entry.second->context().origin().hostname());
+  }
+}
+
+TEST_F(SCTAuditingCacheTest, NoReportsCachedWhenCacheDisabled) {
+  SCTAuditingCache cache(2);
+  InitSCTAuditing(&cache);
+  cache.set_enabled(false);
+
+  // Try to enqueue a report.
+  const net::HostPortPair host_port_pair("example.com", 443);
+  net::SignedCertificateTimestampAndStatusList sct_list;
+  MakeTestSCTAndStatus(net::ct::SignedCertificateTimestamp::SCT_EMBEDDED,
+                       "extensions", "signature", base::Time::Now(),
+                       net::ct::SCT_STATUS_LOG_UNKNOWN, &sct_list);
+  cache.MaybeEnqueueReport(network_context_.get(), host_port_pair, chain_.get(),
+                           sct_list);
+
+  // Check that there are no entries in the cache.
+  EXPECT_EQ(0u, cache.GetCacheForTesting()->size());
+}
+
+TEST_F(SCTAuditingCacheTest, ReportsCachedButNotSentWhenSamplingIsZero) {
+  SCTAuditingCache cache(2);
+  InitSCTAuditing(&cache);
+  cache.set_sampling_rate(0);
+
+  // Enqueue a report.
+  const net::HostPortPair host_port_pair("example.com", 443);
+  net::SignedCertificateTimestampAndStatusList sct_list;
+  MakeTestSCTAndStatus(net::ct::SignedCertificateTimestamp::SCT_EMBEDDED,
+                       "extensions", "signature", base::Time::Now(),
+                       net::ct::SCT_STATUS_LOG_UNKNOWN, &sct_list);
+  cache.MaybeEnqueueReport(network_context_.get(), host_port_pair, chain_.get(),
+                           sct_list);
+
+  // Check that there is one entry in the cache.
+  EXPECT_EQ(1u, cache.GetCacheForTesting()->size());
+
+  // Check that there are no pending reports.
+  EXPECT_EQ(0, url_loader_factory()->NumPending());
+}
+
+// Tests that when a new report is sampled, it will be sent to the server.
+// TODO(cthomp): Allow tracking success/failure of the report being sent. One
+// way would be to have OnSuccess/OnError handlers be defined by an
+// SCTAuditingReportingDelegate installed on the cache.
+TEST_F(SCTAuditingCacheTest, ReportsSentWithServerOK) {
+  SCTAuditingCache cache(2);
+  InitSCTAuditing(&cache);
+
+  // Enqueue a report which will trigger a send.
+  const net::HostPortPair host_port_pair("example.com", 443);
+  net::SignedCertificateTimestampAndStatusList sct_list;
+  MakeTestSCTAndStatus(net::ct::SignedCertificateTimestamp::SCT_EMBEDDED,
+                       "extensions", "signature", base::Time::Now(),
+                       net::ct::SCT_STATUS_LOG_UNKNOWN, &sct_list);
+  cache.MaybeEnqueueReport(network_context_.get(), host_port_pair, chain_.get(),
+                           sct_list);
+
+  // Check that there is one pending report.
+  EXPECT_EQ(1, url_loader_factory()->NumPending());
+
+  // Simulate the server returning 200 OK to the report request.
+  url_loader_factory()->AddResponse("https://example.test",
+                                    /*content=*/"",
+                                    /*status=*/net::HTTP_OK);
+  task_environment_.RunUntilIdle();
+
+  EXPECT_EQ(0, url_loader_factory()->NumPending());
+
+  // Check that the report has been cleared in the cache as it has been
+  // successfully sent.
+  for (const auto& entry : *cache.GetCacheForTesting()) {
+    EXPECT_FALSE(entry.second);
+  }
+}
+
+// Tests when the report server returns an HTTP error code.
+// TODO(cthomp): Check that the cache treats the send as a failure.
+TEST_F(SCTAuditingCacheTest, ReportSentWithServerError) {
+  SCTAuditingCache cache(2);
+  InitSCTAuditing(&cache);
+
+  // Enqueue a report which will trigger a send.
+  const net::HostPortPair host_port_pair("example.com", 443);
+  net::SignedCertificateTimestampAndStatusList sct_list;
+  MakeTestSCTAndStatus(net::ct::SignedCertificateTimestamp::SCT_EMBEDDED,
+                       "extensions", "signature", base::Time::Now(),
+                       net::ct::SCT_STATUS_LOG_UNKNOWN, &sct_list);
+  cache.MaybeEnqueueReport(network_context_.get(), host_port_pair, chain_.get(),
+                           sct_list);
+
+  // Check that there is one pending report.
+  EXPECT_EQ(1, url_loader_factory()->NumPending());
+
+  // Simulate the server returning 429 TOO MANY REQUEST to the report request.
+  url_loader_factory()->AddResponse("https://example.test",
+                                    /*content=*/"",
+                                    /*status=*/net::HTTP_TOO_MANY_REQUESTS);
+  task_environment_.RunUntilIdle();
+
+  EXPECT_EQ(0, url_loader_factory()->NumPending());
+
+  // Check that the report is still stored in the cache as it has not succeeded.
+  for (const auto& entry : *cache.GetCacheForTesting()) {
+    EXPECT_TRUE(entry.second);
   }
 }
 

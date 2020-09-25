@@ -433,6 +433,11 @@ extern const base::Feature kSchedulerConfiguration;
 #endif
 
 COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kSCTAuditing;
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<double> kSCTAuditingSamplingRate;
+
+COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kSecurityKeyAttestationPrompt;
 
 #if defined(OS_CHROMEOS)

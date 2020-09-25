@@ -15,6 +15,7 @@ import "mojo/public/mojom/base/values.mojom";
 import "services/network/public/mojom/cookie_manager.mojom";
 import "services/network/public/mojom/host_resolver.mojom";
 import "services/network/public/mojom/http_raw_headers.mojom";
+import "services/network/public/mojom/mutable_network_traffic_annotation_tag.mojom";
 import "services/network/public/mojom/net_log.mojom";
 import "services/network/public/mojom/network_change_manager.mojom";
 import "services/network/public/mojom/network_context.mojom";
@@ -391,6 +392,18 @@ interface NetworkService {
   // Clears the SCT auditing cache.
   [EnableIf=is_ct_supported]
   ClearSCTAuditingCache();
+
+  // Configures SCT auditing.
+  // This allows the embedder to specify whether SCT auditing should be enabled,
+  // what sampling rate to use on reports, and which URLLoaderFactory to use for
+  // sending reports.
+  // TODO(cthomp): Document what happens if the URLLoaderFactory is destroyed.
+  [EnableIf=is_ct_supported]
+  ConfigureSCTAuditing(bool enabled,
+                       double sampling_rate,
+                       url.mojom.Url report_uri,
+                       MutableNetworkTrafficAnnotationTag traffic_annotation,
+                       pending_remote<network.mojom.URLLoaderFactory> factory);
 
   // Calls base::debug::DumpWithoutCrashing for the network process.
   // TODO(http://crbug.com/934317): Remove this once done debugging renderer

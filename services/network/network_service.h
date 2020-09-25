@@ -30,6 +30,7 @@
 #include "net/dns/public/secure_dns_mode.h"
 #include "net/log/net_log.h"
 #include "net/log/trace_net_log_observer.h"
+#include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/keepalive_statistics_recorder.h"
 #include "services/network/network_change_manager.h"
 #include "services/network/network_quality_estimator_manager.h"
@@ -40,6 +41,7 @@
 #include "services/network/public/mojom/network_quality_estimator_manager.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/mojom/trust_tokens.mojom.h"
+#include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/trust_tokens/trust_token_key_commitments.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
 
@@ -216,6 +218,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
                                    base::OnceClosure done) override;
 #if BUILDFLAG(IS_CT_SUPPORTED)
   void ClearSCTAuditingCache() override;
+  void ConfigureSCTAuditing(
+      bool enabled,
+      double sampling_rate,
+      const GURL& reporting_uri,
+      const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
+      mojo::PendingRemote<mojom::URLLoaderFactory> factory) override;
 #endif
 
 #if defined(OS_ANDROID)

@@ -1873,10 +1873,6 @@ void StoragePartitionImpl::OnTrustAnchorUsed() {
 }
 #endif
 
-void StoragePartitionImpl::OnSCTReportReady(const std::string& cache_key) {
-  GetContentClient()->browser()->OnSCTReportReady(browser_context_, cache_key);
-}
-
 void StoragePartitionImpl::ClearDataImpl(
     uint32_t remove_mask,
     uint32_t quota_storage_remove_mask,
