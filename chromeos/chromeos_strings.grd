@@ -458,6 +458,11 @@ Try tapping the mic to ask me anything.
       <message name="IDS_PRINT_MANAGEMENT_COLLAPSE_PRINTING_STATUS" desc="A text that indicates to the user that the print job is currently printing. This text only appears if the width of the app's window is small and cannot display the entire ongoing printing status.">
         Printing
       </message>
+
+      <!-- Scanning App -->
+      <message name="IDS_SCANNING_APP_SCANNER_DROPDOWN_LABEL" desc="The label for the dropdown that displays connected scanners.">
+        Scanner
+      </message>
     </messages>
   </release>
 </grit>

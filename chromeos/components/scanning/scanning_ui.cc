@@ -12,10 +12,12 @@
 #include "chromeos/components/scanning/url_constants.h"
 #include "chromeos/grit/chromeos_scanning_app_resources.h"
 #include "chromeos/grit/chromeos_scanning_app_resources_map.h"
+#include "chromeos/strings/grit/chromeos_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
+#include "ui/base/webui/web_ui_util.h"
 #include "ui/resources/grit/webui_resources.h"
 
 namespace chromeos {
@@ -44,6 +46,16 @@ void SetUpWebUIDataSource(content::WebUIDataSource* source,
   source->AddResourcePath("test_loader.js", IDR_WEBUI_JS_TEST_LOADER);
 }
 
+void AddScanningAppStrings(content::WebUIDataSource* html_source) {
+  static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      {"scannerDropdownLabel", IDS_SCANNING_APP_SCANNER_DROPDOWN_LABEL}};
+
+  for (const auto& str : kLocalizedStrings)
+    html_source->AddLocalizedString(str.name, str.id);
+
+  html_source->UseStringsJs();
+}
+
 }  // namespace
 
 ScanningUI::ScanningUI(content::WebUI* web_ui, BindScanServiceCallback callback)
@@ -63,6 +75,8 @@ ScanningUI::ScanningUI(content::WebUI* web_ui, BindScanServiceCallback callback)
 
   html_source->AddResourcePath("scanning.mojom-lite.js",
                                IDR_SCANNING_MOJO_LITE_JS);
+
+  AddScanningAppStrings(html_source.get());
 
   content::WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
                                 html_source.release());
