@@ -2314,14 +2314,14 @@ MainThreadSchedulerImpl::NonWakingTaskRunner() {
   return non_waking_task_runner_;
 }
 
-AgentGroupSchedulerImpl* MainThreadSchedulerImpl::EnsureAgentGroupScheduler() {
+AgentGroupSchedulerImpl& MainThreadSchedulerImpl::EnsureAgentGroupScheduler() {
   // TODO(crbug/1113102): Currently, MainThreadSchedulerImpl owns
   // AgentGroupSchedulerImpl
   if (!agent_group_scheduler_) {
-    agent_group_scheduler_ = std::make_unique<AgentGroupSchedulerImpl>(this);
+    agent_group_scheduler_ = std::make_unique<AgentGroupSchedulerImpl>(*this);
     AddAgentGroupScheduler(agent_group_scheduler_.get());
   }
-  return agent_group_scheduler_.get();
+  return *agent_group_scheduler_.get();
 }
 
 void MainThreadSchedulerImpl::RemoveAgentGroupScheduler(

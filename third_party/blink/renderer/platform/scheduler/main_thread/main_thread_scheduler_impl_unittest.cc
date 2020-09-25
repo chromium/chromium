@@ -302,11 +302,11 @@ void AnticipationTestTask(MainThreadSchedulerImpl* scheduler,
 
 class MockPageSchedulerImpl : public PageSchedulerImpl {
  public:
-  explicit MockPageSchedulerImpl(AgentGroupSchedulerImpl* agent_group_scheduler)
+  explicit MockPageSchedulerImpl(AgentGroupSchedulerImpl& agent_group_scheduler)
       : PageSchedulerImpl(nullptr, agent_group_scheduler) {
     // This would normally be called by
     // MainThreadSchedulerImpl::CreatePageScheduler.
-    agent_group_scheduler->GetMainThreadScheduler()->AddPageScheduler(this);
+    agent_group_scheduler.GetMainThreadScheduler().AddPageScheduler(this);
 
     ON_CALL(*this, IsWaitingForMainFrameContentfulPaint)
         .WillByDefault(Return(true));

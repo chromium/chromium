@@ -19,8 +19,8 @@ MainThreadTaskQueue::QueueCreationParams DefaultTaskQueueCreationParams(
 }
 
 AgentGroupSchedulerImpl::AgentGroupSchedulerImpl(
-    MainThreadSchedulerImpl* main_thread_scheduler)
-    : default_task_queue_(main_thread_scheduler->NewTaskQueue(
+    MainThreadSchedulerImpl& main_thread_scheduler)
+    : default_task_queue_(main_thread_scheduler.NewTaskQueue(
           DefaultTaskQueueCreationParams(this))),
       default_task_runner_(default_task_queue_->CreateTaskRunner(
           TaskType::kMainThreadTaskQueueDefault)),
@@ -28,7 +28,7 @@ AgentGroupSchedulerImpl::AgentGroupSchedulerImpl(
 
 AgentGroupSchedulerImpl::~AgentGroupSchedulerImpl() {
   default_task_queue_->ShutdownTaskQueue();
-  main_thread_scheduler_->RemoveAgentGroupScheduler(this);
+  main_thread_scheduler_.RemoveAgentGroupScheduler(this);
 }
 
 }  // namespace scheduler

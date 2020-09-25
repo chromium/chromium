@@ -221,7 +221,7 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   scoped_refptr<base::SingleThreadTaskRunner> CompositorTaskRunner() override;
   // TODO(crbug/1113102): rename to CreateAgentGroupScheduler when integrate
   // with AgentSchedulingGroup
-  AgentGroupSchedulerImpl* EnsureAgentGroupScheduler();
+  AgentGroupSchedulerImpl& EnsureAgentGroupScheduler();
   std::unique_ptr<PageScheduler> CreatePageScheduler(
       PageScheduler::Delegate*) override;
   AgentGroupScheduler* GetCurrentAgentGroupScheduler() override;

@@ -23,22 +23,25 @@ class MainThreadTaskQueue;
 class PLATFORM_EXPORT AgentGroupSchedulerImpl
     : public blink::AgentGroupScheduler {
  public:
+  static AgentGroupSchedulerImpl* GetCurrent();
+  static void SetCurrent(AgentGroupSchedulerImpl*);
   explicit AgentGroupSchedulerImpl(
-      MainThreadSchedulerImpl* main_thread_scheduler);
+      MainThreadSchedulerImpl& main_thread_scheduler);
   AgentGroupSchedulerImpl(const AgentGroupSchedulerImpl&) = delete;
   AgentGroupSchedulerImpl& operator=(const AgentGroupSchedulerImpl&) = delete;
   ~AgentGroupSchedulerImpl() override;
+
   scoped_refptr<base::SingleThreadTaskRunner> DefaultTaskRunner() override {
     return default_task_runner_;
   }
-  MainThreadSchedulerImpl* GetMainThreadScheduler() {
+  MainThreadSchedulerImpl& GetMainThreadScheduler() {
     return main_thread_scheduler_;
   }
 
  private:
   scoped_refptr<MainThreadTaskQueue> default_task_queue_;
   scoped_refptr<base::SingleThreadTaskRunner> default_task_runner_;
-  MainThreadSchedulerImpl* main_thread_scheduler_;  // Not owned.
+  MainThreadSchedulerImpl& main_thread_scheduler_;  // Not owned.
 };
 
 }  // namespace scheduler
