@@ -30,7 +30,6 @@ BLINK_COMMON_EXPORT extern const base::Feature kFtpProtocol;
 BLINK_COMMON_EXPORT extern const base::Feature kImplicitRootScroller;
 BLINK_COMMON_EXPORT extern const base::Feature kCSSOMViewScrollCoordinates;
 BLINK_COMMON_EXPORT extern const base::Feature kDisplayLocking;
-BLINK_COMMON_EXPORT extern const base::Feature kMeasureMemoryExperiment;
 BLINK_COMMON_EXPORT extern const base::Feature kJSONModules;
 BLINK_COMMON_EXPORT extern const base::Feature kForceSynchronousHTMLParsing;
 BLINK_COMMON_EXPORT extern const base::Feature kTopLevelAwait;
@@ -54,6 +53,8 @@ BLINK_COMMON_EXPORT extern const base::Feature kRTCGetDisplayMedia;
 BLINK_COMMON_EXPORT extern const base::Feature kRTCUnifiedPlanByDefault;
 BLINK_COMMON_EXPORT extern const base::Feature kRTCOfferExtmapAllowMixed;
 BLINK_COMMON_EXPORT extern const base::Feature kV8OptimizeWorkersForPerformance;
+BLINK_COMMON_EXPORT extern const base::Feature
+    kWebMeasureMemoryViaPerformanceManager;
 BLINK_COMMON_EXPORT extern const base::Feature kWebRtcMultiplexCodec;
 BLINK_COMMON_EXPORT extern const base::Feature kWebRtcHideLocalIpsWithMdns;
 

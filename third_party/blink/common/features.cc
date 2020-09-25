@@ -59,9 +59,6 @@ const base::Feature kFreezeUserAgent{"FreezeUserAgent",
 const base::Feature kFtpProtocol{"FtpProtocol",
                                  base::FEATURE_ENABLED_BY_DEFAULT};
 
-const base::Feature kMeasureMemoryExperiment{"MeasureMemoryExperiment",
-                                             base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Enable Display Locking JavaScript APIs.
 const base::Feature kDisplayLocking{"DisplayLocking",
                                     base::FEATURE_DISABLED_BY_DEFAULT};
@@ -200,6 +197,11 @@ const base::Feature kRTCOfferExtmapAllowMixed{
 // and thus instructs V8 to favor performance over memory on workers.
 const base::Feature kV8OptimizeWorkersForPerformance{
     "V8OptimizeWorkersForPerformance", base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Controls whether the implementation of the performance.measureMemory
+// web API uses PerformanceManager or not.
+const base::Feature kWebMeasureMemoryViaPerformanceManager{
+    "WebMeasureMemoryViaPerformanceManager", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enables negotiation of experimental multiplex codec in SDP.
 const base::Feature kWebRtcMultiplexCodec{"WebRTC-MultiplexCodec",
