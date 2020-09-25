@@ -28,6 +28,7 @@
 #include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/login/auth/user_context.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_manager/known_user.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 
@@ -471,6 +472,43 @@ IN_PROC_BROWSER_TEST_F(FirstLoginKeyboardTest,
 
   // Last input method should be stored.
   EXPECT_FALSE(lock_screen_utils::GetUserLastInputMethod(test_user_).empty());
+}
+
+class EphemeralUserKeyboardTest : public LoginManagerTest {
+ protected:
+  // LoginManagerTest:
+  void SetUpInProcessBrowserTestFixture() override {
+    std::unique_ptr<ScopedDevicePolicyUpdate> update =
+        device_state_.RequestDevicePolicyUpdate();
+    update->policy_payload()
+        ->mutable_ephemeral_users_enabled()
+        ->set_ephemeral_users_enabled(true);
+    update.reset();
+    LoginManagerTest::SetUpInProcessBrowserTestFixture();
+  }
+
+  LoginManagerMixin login_manager_{&mixin_host_};
+  DeviceStateMixin device_state_{
+      &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
+};
+
+// Check that ephemeral users have last input method set.
+IN_PROC_BROWSER_TEST_F(EphemeralUserKeyboardTest, PersistToProfile) {
+  WizardController::SkipPostLoginScreensForTesting();
+  login_manager_.LoginAsNewRegularUser();
+  login_manager_.WaitForActiveSession();
+
+  const AccountId& account_id =
+      user_manager::UserManager::Get()->GetActiveUser()->GetAccountId();
+  // Should be empty because known_user does not persist data for ephemeral
+  // users.
+  EXPECT_FALSE(
+      user_manager::known_user::GetUserLastInputMethod(account_id, nullptr));
+
+  std::vector<std::string> expected_input_method;
+  Append_en_US_InputMethod(&expected_input_method);
+  EXPECT_EQ(lock_screen_utils::GetUserLastInputMethod(account_id),
+            expected_input_method[0]);
 }
 
 }  // namespace chromeos

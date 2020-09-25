@@ -7,7 +7,10 @@
 #include "ash/public/cpp/ash_constants.h"
 #include "ash/public/cpp/ash_pref_names.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/chromeos/login/login_pref_names.h"
+#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/settings/cros_settings.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/ime_controller_client.h"
 #include "chrome/common/pref_names.h"
 #include "components/account_id/account_id.h"
@@ -80,10 +83,20 @@ std::string GetUserLastInputMethod(const AccountId& account_id) {
     return input_method;
   }
 
+  // Try profile prefs. For the ephemeral case known_user does not persist the
+  // data.
+  Profile* profile =
+      chromeos::ProfileHelper::Get()->GetProfileByAccountId(account_id);
+  if (profile && profile->GetPrefs()) {
+    input_method = profile->GetPrefs()->GetString(prefs::kLastLoginInputMethod);
+    if (!input_method.empty())
+      return input_method;
+  }
+
   // Try to use old values.
   PrefService* const local_state = g_browser_process->local_state();
   const base::DictionaryValue* users_last_input_methods =
-      local_state->GetDictionary(prefs::kUsersLastInputMethod);
+      local_state->GetDictionary(::prefs::kUsersLastInputMethod);
 
   if (!users_last_input_methods) {
     DLOG(WARNING) << "GetUserLastInputMethod: no kUsersLastInputMethod";

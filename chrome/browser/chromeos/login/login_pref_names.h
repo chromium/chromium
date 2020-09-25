@@ -9,6 +9,7 @@ namespace chromeos {
 
 namespace prefs {
 
+extern const char kLastLoginInputMethod[];
 extern const char kOobeOnboardingTime[];
 extern const char kSAMLOfflineSigninTimeLimit[];
 extern const char kSAMLLastGAIASignInTime[];
