@@ -371,7 +371,7 @@ void TabGroupEditorBubbleView::ButtonListener::ButtonPressed(
           browser_, chrome::FeedbackSource::kFeedbackSourceDesktopTabGroups,
           std::string() /* description_template */,
           std::string() /* description_placeholder_text */,
-          std::string("DESKTOP_TAB_GROUPS") /* category_tag */,
+          std::string() /* category_tag */,
           std::string() /* extra_diagnostics */);
       break;
     }
