@@ -13,13 +13,13 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_provider.h"
 #include "ash/system/holding_space/pinned_files_container.h"
 #include "ash/system/holding_space/recent_files_container.h"
 #include "ash/system/tray/tray_bubble_wrapper.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_container.h"
 #include "ash/system/tray/tray_utils.h"
-#include "ash/system/unified/unified_system_tray_view.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/image_view.h"
@@ -43,7 +43,8 @@ void SetupChildLayer(views::View* child) {
 
   auto* layer = child->layer();
   layer->SetRoundedCornerRadius(gfx::RoundedCornersF{kUnifiedTrayCornerRadius});
-  layer->SetColor(UnifiedSystemTrayView::GetBackgroundColor());
+  layer->SetColor(AshColorProvider::Get()->GetBaseLayerColor(
+      AshColorProvider::BaseLayerType::kTransparent80));
   layer->SetBackgroundBlur(kUnifiedMenuBackgroundBlur);
   layer->SetFillsBoundsOpaquely(false);
   layer->SetIsFastRoundedCorner(true);

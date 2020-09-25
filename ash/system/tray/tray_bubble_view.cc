@@ -8,6 +8,7 @@
 #include <numeric>
 
 #include "ash/public/cpp/ash_features.h"
+#include "ash/style/ash_color_provider.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/unified/unified_system_tray_view.h"
 #include "base/macros.h"
@@ -247,7 +248,8 @@ TrayBubbleView::TrayBubbleView(const InitParams& init_params)
 
     layer()->SetRoundedCornerRadius(
         gfx::RoundedCornersF{kUnifiedTrayCornerRadius});
-    layer()->SetColor(UnifiedSystemTrayView::GetBackgroundColor());
+    layer()->SetColor(AshColorProvider::Get()->GetBaseLayerColor(
+        AshColorProvider::BaseLayerType::kTransparent80));
     layer()->SetFillsBoundsOpaquely(false);
     layer()->SetIsFastRoundedCorner(true);
     layer()->SetBackgroundBlur(kUnifiedMenuBackgroundBlur);

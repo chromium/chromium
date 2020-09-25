@@ -10,7 +10,6 @@
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/system/media/unified_media_controls_container.h"
 #include "ash/system/message_center/ash_message_center_lock_screen_controller.h"
 #include "ash/system/message_center/unified_message_center_view.h"
@@ -171,12 +170,6 @@ class UnifiedSystemTrayView::SystemTrayContainer : public views::View {
  private:
   views::BoxLayout* const layout_manager_;
 };
-
-// static
-SkColor UnifiedSystemTrayView::GetBackgroundColor() {
-  return AshColorProvider::Get()->GetBaseLayerColor(
-      AshColorProvider::BaseLayerType::kTransparent80);
-}
 
 // static
 SkColor UnifiedSystemTrayView::GetFocusRingColor() {
