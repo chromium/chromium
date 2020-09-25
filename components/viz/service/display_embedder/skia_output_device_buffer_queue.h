@@ -30,7 +30,8 @@ class VIZ_SERVICE_EXPORT SkiaOutputDeviceBufferQueue : public SkiaOutputDevice {
       SkiaOutputSurfaceDependency* deps,
       gpu::SharedImageRepresentationFactory* representation_factory,
       gpu::MemoryTracker* memory_tracker,
-      const DidSwapBufferCompleteCallback& did_swap_buffer_complete_callback);
+      const DidSwapBufferCompleteCallback& did_swap_buffer_complete_callback,
+      bool needs_background_image);
 
   ~SkiaOutputDeviceBufferQueue() override;
 
@@ -123,6 +124,13 @@ class VIZ_SERVICE_EXPORT SkiaOutputDeviceBufferQueue : public SkiaOutputDevice {
 
   // Set to true if no image is to be used for the primary plane of this frame.
   bool current_frame_has_no_primary_plane_ = false;
+  // Whether the platform needs an occluded background image. Wayland needs it
+  // for opaque accelerated widgets and event wiring.
+  bool needs_background_image_ = false;
+  // A 4x4 small image that will be scaled to cover an opaque region.
+  std::unique_ptr<OutputPresenter::Image> background_image_ = nullptr;
+  // Set to true if background has been scheduled in a frame.
+  bool background_image_is_scheduled_ = false;
 };
 
 }  // namespace viz

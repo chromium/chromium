@@ -235,6 +235,12 @@ class OzonePlatformWayland : public OzonePlatform {
       properties->ignore_screen_bounds_for_menus = true;
       properties->app_modal_dialogs_use_event_blocker = true;
 
+      // Primary planes can be transluscent due to underlay strategy. As a
+      // result Wayland server draws contents occluded by an accelerated widget.
+      // To prevent this, an opaque background image is stacked below the
+      // accelerated widget to occlude contents below.
+      properties->needs_background_image = true;
+
       initialised = true;
     }
 

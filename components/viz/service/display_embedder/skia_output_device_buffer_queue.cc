@@ -102,13 +102,15 @@ SkiaOutputDeviceBufferQueue::SkiaOutputDeviceBufferQueue(
     SkiaOutputSurfaceDependency* deps,
     gpu::SharedImageRepresentationFactory* representation_factory,
     gpu::MemoryTracker* memory_tracker,
-    const DidSwapBufferCompleteCallback& did_swap_buffer_complete_callback)
+    const DidSwapBufferCompleteCallback& did_swap_buffer_complete_callback,
+    bool needs_background_image)
     : SkiaOutputDevice(deps->GetSharedContextState()->gr_context(),
                        memory_tracker,
                        did_swap_buffer_complete_callback),
       presenter_(std::move(presenter)),
       dependency_(deps),
-      representation_factory_(representation_factory) {
+      representation_factory_(representation_factory),
+      needs_background_image_(needs_background_image) {
   capabilities_.uses_default_gl_framebuffer = false;
   capabilities_.preserve_buffer_content = true;
   capabilities_.only_invalidates_damage_rect = false;
@@ -190,6 +192,21 @@ bool SkiaOutputDeviceBufferQueue::IsPrimaryPlaneOverlay() const {
 void SkiaOutputDeviceBufferQueue::SchedulePrimaryPlane(
     const base::Optional<OverlayProcessorInterface::OutputSurfaceOverlayPlane>&
         plane) {
+  if (background_image_) {
+    if (!background_image_is_scheduled_)
+      background_image_->BeginPresent();
+
+    // WaylandWindow can attach a null wl_buffer to its surface to hide its
+    // content so needs to reschedule |background_image_| so that
+    // the wl_surface has a non-null wl_buffer when the window re-appears.
+    //
+    // TODO(fangzhoug): It should not be necessary to schedule
+    // |background_image_| every frame. Make this a responsibility of
+    // WaylandWindow instead.
+    presenter_->ScheduleBackground(background_image_.get());
+    background_image_is_scheduled_ = true;
+  }
+
   if (plane) {
     // If the current_image_ is nullptr, it means there is no change on the
     // primary plane. So we just need to schedule the last submitted image.
@@ -419,6 +436,12 @@ bool SkiaOutputDeviceBufferQueue::Reshape(const gfx::Size& size,
   color_space_ = color_space;
   image_size_ = size;
   FreeAllSurfaces();
+
+  if (needs_background_image_ && !background_image_) {
+    background_image_ =
+        presenter_->AllocateBackgroundImage(color_space_, gfx::Size(4, 4));
+    background_image_is_scheduled_ = false;
+  }
 
   images_ = presenter_->AllocateImages(color_space_, image_size_,
                                        capabilities_.number_of_buffers);

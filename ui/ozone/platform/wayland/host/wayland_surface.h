@@ -74,10 +74,14 @@ class WaylandSurface {
   // See:
   // https://cgit.freedesktop.org/wayland/wayland-protocols/tree/stable/viewporter/viewporter.xml
   // If |src_rect| is empty, the source rectangle is unset.
+  // Note this method does not send corresponding wayland requests until
+  // attaching the next buffer.
   void SetViewportSource(const gfx::RectF& src_rect);
 
   // Set the destination size of the associated wl_surface according to
   // |dest_size_px|, which should be in physical pixels.
+  // Note this method sends corresponding wayland requests immediately because
+  // it does not need a new buffer attach to take effect.
   void SetViewportDestination(const gfx::Size& dest_size_px);
 
   // Creates a wl_subsurface relating this surface and a parent surface,
