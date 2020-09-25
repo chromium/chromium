@@ -59,9 +59,12 @@ class VarDictionary;
 namespace chrome_pdf {
 
 class InputEvent;
+class Thumbnail;
 class UrlLoader;
 struct DocumentAttachmentInfo;
 struct DocumentMetadata;
+
+using SendThumbnailCallback = base::OnceCallback<void(Thumbnail)>;
 
 // Do one time initialization of the SDK.
 // If |enable_v8| is false, then the PDFEngine will not be able to run
@@ -491,6 +494,12 @@ class PDFEngine {
 
   virtual uint32_t GetLoadedByteSize() = 0;
   virtual bool ReadLoadedBytes(uint32_t length, void* buffer) = 0;
+
+  // Requests for a thumbnail to be sent using a callback when the page is ready
+  // to be rendered. |send_callback| is run with the thumbnail data when ready.
+  virtual void RequestThumbnail(int page_index,
+                                float device_pixel_ratio,
+                                SendThumbnailCallback send_callback) = 0;
 };
 
 // Interface for exports that wrap the PDF engine.

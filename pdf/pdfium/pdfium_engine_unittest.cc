@@ -8,6 +8,8 @@
 
 #include "base/hash/md5.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/gtest_util.h"
+#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "pdf/document_attachment_info.h"
@@ -19,6 +21,7 @@
 #include "pdf/ppapi_migration/input_event_conversions.h"
 #include "pdf/test/test_client.h"
 #include "pdf/test/test_document_loader.h"
+#include "pdf/thumbnail.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/point.h"
@@ -111,7 +114,6 @@ class PDFiumEngineTest : public PDFiumTestBase {
     return loaded_incrementally;
   }
 
- private:
   // Counts the number of available pages. Returns `int` instead of `size_t` for
   // consistency with `PDFiumEngine::GetNumberOfPages()`.
   int CountAvailablePages(const PDFiumEngine& engine) {
@@ -393,6 +395,88 @@ TEST_F(PDFiumEngineTest, IncrementalLoadingFeatureDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(features::kPdfIncrementalLoading);
   EXPECT_FALSE(TryLoadIncrementally());
+}
+
+TEST_F(PDFiumEngineTest, RequestThumbnail) {
+  TestClient client;
+  std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
+      &client, FILE_PATH_LITERAL("rectangles_multi_pages.pdf"));
+  ASSERT_TRUE(engine);
+
+  const int num_pages = engine->GetNumberOfPages();
+  ASSERT_EQ(5, num_pages);
+  ASSERT_EQ(num_pages, CountAvailablePages(*engine));
+
+  // Each page should immediately return a thumbnail.
+  for (int i = 0; i < num_pages; ++i) {
+    base::MockCallback<SendThumbnailCallback> send_callback;
+    EXPECT_CALL(send_callback, Run);
+    engine->RequestThumbnail(/*page_index=*/i, /*device_pixel_ratio=*/1,
+                             send_callback.Get());
+  }
+}
+
+TEST_F(PDFiumEngineTest, RequestThumbnailLinearized) {
+  NiceMock<MockTestClient> client;
+  InitializeEngineResult initialize_result = InitializeEngineWithoutLoading(
+      &client, FILE_PATH_LITERAL("linearized.pdf"));
+  ASSERT_TRUE(initialize_result.engine);
+  PDFiumEngine& engine = *initialize_result.engine;
+
+  // Load only some pages.
+  initialize_result.document_loader->SimulateLoadData(8192);
+
+  // Note: Plugin size chosen so all pages of the document are visible. The
+  // engine only updates availability incrementally for visible pages.
+  engine.PluginSizeUpdated({1024, 4096});
+
+  const int num_pages = engine.GetNumberOfPages();
+  ASSERT_EQ(3, num_pages);
+  const int available_pages = CountAvailablePages(engine);
+  ASSERT_LT(0, available_pages);
+  ASSERT_GT(num_pages, available_pages);
+
+  // Initialize callbacks for first and last pages.
+  base::MockCallback<SendThumbnailCallback> first_loaded;
+  base::MockCallback<SendThumbnailCallback> last_loaded;
+
+  // When the document is partially loaded, `SendThumbnailCallback` is only run
+  // for the loaded page even though `RequestThumbnail()` gets called for both
+  // pages.
+  EXPECT_CALL(first_loaded, Run);
+  engine.RequestThumbnail(/*page_index=*/0, /*device_pixel_ratio=*/1,
+                          first_loaded.Get());
+  engine.RequestThumbnail(/*page_index=*/num_pages - 1,
+                          /*device_pixel_ratio=*/1, last_loaded.Get());
+
+  // Finish loading the document. `SendThumbnailCallback` should be run for the
+  // last page.
+  EXPECT_CALL(last_loaded, Run);
+  while (initialize_result.document_loader->SimulateLoadData(UINT32_MAX))
+    continue;
+}
+
+using PDFiumEngineDeathTest = PDFiumEngineTest;
+
+TEST_F(PDFiumEngineDeathTest, RequestThumbnailRedundant) {
+  ::testing::FLAGS_gtest_death_test_style = "threadsafe";
+
+  NiceMock<MockTestClient> client;
+  InitializeEngineResult initialize_result = InitializeEngineWithoutLoading(
+      &client, FILE_PATH_LITERAL("linearized.pdf"));
+  ASSERT_TRUE(initialize_result.engine);
+  PDFiumEngine& engine = *initialize_result.engine;
+
+  // Load only some pages.
+  initialize_result.document_loader->SimulateLoadData(8192);
+
+  // Twice request a thumbnail for the second page, which is not loaded. The
+  // second call should crash.
+  base::MockCallback<SendThumbnailCallback> mock_callback;
+  engine.RequestThumbnail(/*page_index=*/1, /*device_pixel_ratio=*/1,
+                          mock_callback.Get());
+  EXPECT_DCHECK_DEATH(engine.RequestThumbnail(
+      /*page_index=*/1, /*device_pixel_ratio=*/1, mock_callback.Get()));
 }
 
 class TabbingTestClient : public TestClient {

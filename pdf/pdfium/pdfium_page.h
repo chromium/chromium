@@ -10,6 +10,8 @@
 #include <string>
 #include <vector>
 
+#include "base/callback.h"
+#include "base/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/optional.h"
 #include "base/strings/string16.h"
@@ -159,7 +161,11 @@ class PDFiumPage {
                          double bottom,
                          PageOrientation orientation) const;
 
-  // Generate a page thumbnail accommodating a specific |device_pixel_ratio|.
+  // Sets the callbacks for sending the thumbnail.
+  void RequestThumbnail(float device_pixel_ratio,
+                        SendThumbnailCallback send_callback);
+
+  // Generates a page thumbnail accommodating a specific |device_pixel_ratio|.
   Thumbnail GenerateThumbnail(float device_pixel_ratio);
 
   int index() const { return index_; }
@@ -170,7 +176,7 @@ class PDFiumPage {
   // Availability is a one-way transition: A page can become available, but it
   // cannot become unavailable (unless deleted entirely).
   bool available() const { return available_; }
-  void MarkAvailable() { available_ = true; }
+  void MarkAvailable();
 
   void set_calculated_links(bool calculated_links) {
     calculated_links_ = calculated_links;
@@ -376,6 +382,9 @@ class PDFiumPage {
       const std::vector<Highlight>& highlights);
   bool PopulateFormFieldProperties(FPDF_ANNOTATION annot,
                                    FormField* form_field);
+  // Generates and sends the thumbnail using |send_callback|.
+  void GenerateAndSendThumbnail(float device_pixel_ratio,
+                                SendThumbnailCallback send_callback);
 
   PDFiumEngine* engine_;
   ScopedFPDFPage page_;
@@ -397,6 +406,7 @@ class PDFiumPage {
   // The set of character indices on which text runs need to be broken for page
   // objects.
   std::set<int> page_object_text_run_breaks_;
+  base::OnceClosure thumbnail_callback_;
   bool available_;
 };
 

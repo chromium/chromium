@@ -174,6 +174,9 @@ class PDFiumEngine : public PDFEngine,
   PP_PrivateAccessibilityFocusInfo GetFocusInfo() override;
   uint32_t GetLoadedByteSize() override;
   bool ReadLoadedBytes(uint32_t length, void* buffer) override;
+  void RequestThumbnail(int page_index,
+                        float device_pixel_ratio,
+                        SendThumbnailCallback send_callback) override;
 
   // DocumentLoader::Client:
   pp::Instance* GetPluginInstance() override;

@@ -11,6 +11,8 @@
 #include <memory>
 #include <utility>
 
+#include "base/bind.h"
+#include "base/callback.h"
 #include "base/check_op.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
@@ -1463,6 +1465,22 @@ gfx::Rect PDFiumPage::PageToScreen(const gfx::Point& page_point,
                    new_size_y.ValueOrDie());
 }
 
+void PDFiumPage::RequestThumbnail(float device_pixel_ratio,
+                                  SendThumbnailCallback send_callback) {
+  DCHECK(!thumbnail_callback_);
+
+  if (available()) {
+    GenerateAndSendThumbnail(device_pixel_ratio, std::move(send_callback));
+    return;
+  }
+
+  // It is safe to use base::Unretained(this) because the callback is only used
+  // by |this|.
+  thumbnail_callback_ = base::BindOnce(
+      &PDFiumPage::GenerateAndSendThumbnail, base::Unretained(this),
+      device_pixel_ratio, std::move(send_callback));
+}
+
 Thumbnail PDFiumPage::GenerateThumbnail(float device_pixel_ratio) {
   DCHECK(available());
 
@@ -1489,6 +1507,19 @@ Thumbnail PDFiumPage::GenerateThumbnail(float device_pixel_ratio) {
                         /*rotate=*/0, FPDF_ANNOT | FPDF_REVERSE_BYTE_ORDER);
 
   return thumbnail;
+}
+
+void PDFiumPage::GenerateAndSendThumbnail(float device_pixel_ratio,
+                                          SendThumbnailCallback send_callback) {
+  std::move(send_callback).Run(GenerateThumbnail(device_pixel_ratio));
+}
+
+void PDFiumPage::MarkAvailable() {
+  available_ = true;
+
+  // Fulfill pending thumbnail request.
+  if (thumbnail_callback_)
+    std::move(thumbnail_callback_).Run();
 }
 
 PDFiumPage::ScopedUnloadPreventer::ScopedUnloadPreventer(PDFiumPage* page)

@@ -4139,6 +4139,14 @@ void PDFiumEngine::SetLinkUnderCursorForAnnotation(FPDF_ANNOTATION annot,
   UpdateLinkUnderCursor(target.url);
 }
 
+void PDFiumEngine::RequestThumbnail(int page_index,
+                                    float device_pixel_ratio,
+                                    SendThumbnailCallback send_callback) {
+  DCHECK(PageIndexInBounds(page_index));
+  pages_[page_index]->RequestThumbnail(device_pixel_ratio,
+                                       std::move(send_callback));
+}
+
 PDFiumEngine::ProgressivePaint::ProgressivePaint(int index,
                                                  const gfx::Rect& rect)
     : page_index_(index), rect_(rect) {}
