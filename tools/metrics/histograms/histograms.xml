@@ -15988,6 +15988,46 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Autofill.Offer.StoredOfferCount" units="offers"
+    expires_after="2021-08-01">
+  <owner>siyua@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Tracks the number of autofill offers data a user has stored, measured at
+    Chrome profile launch time.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.Offer.StoredOfferRelatedCardCount" units="cards"
+    expires_after="2021-08-01">
+  <owner>siyua@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Tracks the number of the credit cards an autofill card linked offer data is
+    related to, measured at Chrome profile launch time.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.Offer.StoredOfferRelatedMerchantCount"
+    units="merchants" expires_after="2021-08-01">
+  <owner>siyua@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Tracks the number of the merchants an autofill offer data is related to,
+    measured at Chrome profile launch time.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.Offer.SyncedOfferDataBeingValid" units="offers"
+    expires_after="2021-08-01">
+  <owner>siyua@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Tracks whether the offer data is valid or not, measured whenever offer data
+    is synced down via Sync.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.PageTranslationStatus" enum="Boolean"
     expires_after="2021-10-25">
   <owner>marsin@google.com</owner>

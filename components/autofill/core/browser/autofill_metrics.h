@@ -32,6 +32,7 @@ namespace autofill {
 
 class AutofillField;
 class CreditCard;
+struct AutofillOfferData;
 
 // A given maximum is enforced to minimize the number of buckets generated.
 extern const int kMaxBucketsCount;
@@ -1416,6 +1417,14 @@ class AutofillMetrics {
       const std::vector<std::unique_ptr<CreditCard>>& local_cards,
       const std::vector<std::unique_ptr<CreditCard>>& server_cards,
       base::TimeDelta disused_data_threshold);
+
+  // Logs metrics about the offer data associated with a profile. This should be
+  // called each time a chrome profile is launched.
+  static void LogStoredOfferMetrics(
+      const std::vector<std::unique_ptr<AutofillOfferData>>& offers);
+
+  // Logs whether the synced autofill offer data is valid.
+  static void LogSyncedOfferDataBeingValid(bool invalid);
 
   // Log the number of autofill credit card suggestions suppressed because they
   // have not been used for a long time and are expired. Note that these cards

@@ -13,6 +13,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind_test_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
@@ -261,6 +262,26 @@ TEST_F(AutofillWalletOfferSyncBridgeTest, MergeSyncData_NoData) {
   StartSyncing({});
 
   EXPECT_TRUE(GetAllLocalData().empty());
+}
+
+// Test to ensure whether the data being valid is logged correctly.
+TEST_F(AutofillWalletOfferSyncBridgeTest, MergeSyncData_LogDataValidity) {
+  AutofillOfferSpecifics offer_specifics1;
+  SetAutofillOfferSpecificsFromOfferData(test::GetCardLinkedOfferData1(),
+                                         &offer_specifics1);
+  AutofillOfferSpecifics offer_specifics2;
+  SetAutofillOfferSpecificsFromOfferData(test::GetCardLinkedOfferData2(),
+                                         &offer_specifics2);
+  offer_specifics2.clear_id();
+
+  EXPECT_CALL(*backend(), CommitChanges());
+  base::HistogramTester histogram_tester;
+  StartSyncing({offer_specifics1, offer_specifics2});
+
+  histogram_tester.ExpectBucketCount("Autofill.Offer.SyncedOfferDataBeingValid",
+                                     true, 1);
+  histogram_tester.ExpectBucketCount("Autofill.Offer.SyncedOfferDataBeingValid",
+                                     false, 1);
 }
 
 // Tests that when sync is stopped and the data type is disabled, client should

@@ -8,6 +8,7 @@
 
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
+#include "components/autofill/core/browser/autofill_metrics.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/webdata/autofill_sync_bridge_util.h"
 #include "components/autofill/core/browser/webdata/autofill_table.h"
@@ -175,12 +176,11 @@ void AutofillWalletOfferSyncBridge::MergeRemoteData(
     DCHECK(change->data().specifics.has_autofill_offer());
     const sync_pb::AutofillOfferSpecifics specifics =
         change->data().specifics.autofill_offer();
-    if (IsOfferSpecificsValid(specifics)) {
+    bool offer_valid = IsOfferSpecificsValid(specifics);
+    if (offer_valid) {
       offer_data.push_back(AutofillOfferDataFromOfferSpecifics(specifics));
-    } else {
-      // TODO(crbug.com/1112095): Add logging to record how often invalid data
-      // arrives.
     }
+    AutofillMetrics::LogSyncedOfferDataBeingValid(offer_valid);
   }
 
   AutofillTable* table = GetAutofillTable();

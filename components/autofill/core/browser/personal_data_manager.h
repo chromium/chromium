@@ -561,8 +561,12 @@ class PersonalDataManager : public KeyedService,
   void LogStoredProfileMetrics() const;
 
   // The first time this is called, logs an UMA metric about the user's autofill
-  // credit cardss. On subsequent calls, does nothing.
+  // credit cards. On subsequent calls, does nothing.
   void LogStoredCreditCardMetrics() const;
+
+  // The first time this is called, logs UMA metrics about the users's autofill
+  // offer data. On subsequent calls, does nothing.
+  void LogStoredOfferMetrics() const;
 
   // Whether the server cards are enabled and should be suggested to the user.
   virtual bool ShouldSuggestServerCards() const;
@@ -817,6 +821,9 @@ class PersonalDataManager : public KeyedService,
 
   // Whether we have already logged the stored credit card metrics this session.
   mutable bool has_logged_stored_credit_card_metrics_ = false;
+
+  // Whether we have already logged the stored offer metrics this session.
+  mutable bool has_logged_stored_offer_metrics_ = false;
 
   // An observer to listen for changes to prefs::kAutofillCreditCardEnabled.
   std::unique_ptr<BooleanPrefMember> credit_card_enabled_pref_;

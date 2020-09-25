@@ -504,9 +504,10 @@ void PersonalDataManager::OnWebDataServiceRequestDone(
       if (!IsSyncEnabledFor(sync_service_, syncer::AUTOFILL_WALLET_DATA))
         ApplyCardFixesAndCleanups();
 
-      // Log address and credit card startup metrics.
+      // Log address, credit card and offer startup metrics.
       LogStoredProfileMetrics();
       LogStoredCreditCardMetrics();
+      LogStoredOfferMetrics();
     }
 
     is_data_loaded_ = true;
@@ -1860,6 +1861,14 @@ void PersonalDataManager::LogStoredCreditCardMetrics() const {
 
     // Only log this info once per chrome user profile load.
     has_logged_stored_credit_card_metrics_ = true;
+  }
+}
+
+void PersonalDataManager::LogStoredOfferMetrics() const {
+  if (!has_logged_stored_offer_metrics_) {
+    AutofillMetrics::LogStoredOfferMetrics(autofill_offer_data_);
+    // Only log this info once per chrome user profile load.
+    has_logged_stored_offer_metrics_ = true;
   }
 }
 
