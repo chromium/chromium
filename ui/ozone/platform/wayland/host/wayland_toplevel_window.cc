@@ -24,10 +24,6 @@
 #include "ui/platform_window/extensions/wayland_extension.h"
 #include "ui/platform_window/wm/wm_drop_handler.h"
 
-#if BUILDFLAG(IS_LACROS)
-#include "chromeos/crosapi/cpp/crosapi_constants.h"
-#endif
-
 namespace ui {
 
 WaylandToplevelWindow::WaylandToplevelWindow(PlatformWindowDelegate* delegate,
@@ -342,8 +338,7 @@ bool WaylandToplevelWindow::OnInitialize(
     PlatformWindowInitProperties properties) {
 #if BUILDFLAG(IS_LACROS)
   auto token = base::UnguessableToken::Create();
-  window_unique_id_ =
-      std::string(crosapi::kLacrosAppIdPrefix) + token.ToString();
+  window_unique_id_ = "org.chromium.lacros." + token.ToString();
 #else
   wm_class_class_ = properties.wm_class_class;
 #endif
