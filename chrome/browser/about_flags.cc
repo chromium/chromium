@@ -3461,6 +3461,10 @@ const FeatureEntry kFeatureEntries[] = {
      kOsCrOS,
      SINGLE_VALUE_TYPE(
          ::switches::kEnableExperimentalAccessibilitySwitchAccessText)},
+    {"enable-switch-access-point-scanning",
+     flag_descriptions::kSwitchAccessPointScanningName,
+     flag_descriptions::kSwitchAccessPointScanningDescription, kOsCrOS,
+     SINGLE_VALUE_TYPE(::switches::kEnableSwitchAccessPointScanning)},
     {"enable-experimental-accessibility-chromevox-annotations",
      flag_descriptions::kExperimentalAccessibilityChromeVoxAnnotationsName,
      flag_descriptions::

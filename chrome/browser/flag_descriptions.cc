@@ -4003,16 +4003,17 @@ const char kExperimentalAccessibilityChromeVoxTutorialName[] =
 const char kExperimentalAccessibilityChromeVoxTutorialDescription[] =
     "A comprehensive and interactive tutorial for the ChromeVox screen reader.";
 
-const char kExperimentalAccessibilitySwitchAccessName[] =
-    "Experimental feature Switch Access";
-const char kExperimentalAccessibilitySwitchAccessDescription[] =
-    "Add a setting to enable the prototype of Switch Access";
-
 const char kExperimentalAccessibilitySwitchAccessTextName[] =
     "Enable enhanced Switch Access text input.";
 const char kExperimentalAccessibilitySwitchAccessTextDescription[] =
     "Enable experimental or in-progress Switch Access features for improved "
     "text input";
+
+const char kSwitchAccessPointScanningName[] =
+    "Enable point scanning with Switch Access.";
+const char kSwitchAccessPointScanningDescription[] =
+    "Enable an in-process feature to select points onscreen with Switch "
+    "Access.";
 
 const char kExperimentalAccessibilityCursorColorsName[] =
     "Enable cursor colors.";
