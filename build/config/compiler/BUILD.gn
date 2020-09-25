@@ -2167,9 +2167,9 @@ if (is_clang && is_a_target_toolchain) {
   } else if (clang_use_default_sample_profile) {
     assert(build_with_chromium,
            "Our default profiles currently only apply to Chromium")
-    assert(is_android || is_desktop_linux || is_chromeos,
+    assert(is_android || chromeos_is_browser_only || is_chromeos,
            "The current platform has no default profile")
-    if (is_android || is_desktop_linux) {
+    if (is_android) {
       _clang_sample_profile = "//chrome/android/profiles/afdo.prof"
     } else {
       assert(
