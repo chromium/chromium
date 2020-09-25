@@ -423,10 +423,10 @@ bool NeuralStylusPalmDetectionFilter::
     return true;
   };
 
-  static const std::vector<int> kRequiredAbsMtCodes = {
+  static constexpr int kRequiredAbsMtCodes[] = {
       ABS_MT_POSITION_X, ABS_MT_POSITION_Y, ABS_MT_TOUCH_MAJOR};
-  if (!std::all_of(kRequiredAbsMtCodes.begin(), kRequiredAbsMtCodes.end(),
-                   code_check)) {
+  if (!std::all_of(std::begin(kRequiredAbsMtCodes),
+                   std::end(kRequiredAbsMtCodes), code_check)) {
     return false;
   }
 
