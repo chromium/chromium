@@ -35,7 +35,7 @@
 #include "third_party/blink/public/common/css/preferred_color_scheme.h"
 #include "third_party/blink/public/common/web_preferences/editing_behavior_types.h"
 #include "third_party/blink/public/common/web_preferences/image_animation_policy.h"
-#include "third_party/blink/public/common/web_preferences/web_viewport_style.h"
+#include "third_party/blink/public/common/web_preferences/viewport_style.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 #include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
 #include "third_party/blink/public/platform/web_effective_connection_type.h"

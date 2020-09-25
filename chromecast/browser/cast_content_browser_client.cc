@@ -549,7 +549,7 @@ void CastContentBrowserClient::OverrideWebkitPrefs(
   // 1280px wide layout viewport by default.
   DCHECK(prefs->viewport_enabled);
   DCHECK(prefs->viewport_meta_enabled);
-  prefs->viewport_style = blink::web_pref::WebViewportStyle::kTelevision;
+  prefs->viewport_style = blink::web_pref::ViewportStyle::kTelevision;
 #endif  // defined(OS_ANDROID)
 
   // Disable WebSQL databases by default.

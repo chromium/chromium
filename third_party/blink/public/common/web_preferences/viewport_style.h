@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_WEB_PREFERENCES_WEB_VIEWPORT_STYLE_H_
-#define THIRD_PARTY_BLINK_PUBLIC_COMMON_WEB_PREFERENCES_WEB_VIEWPORT_STYLE_H_
+#ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_WEB_PREFERENCES_VIEWPORT_STYLE_H_
+#define THIRD_PARTY_BLINK_PUBLIC_COMMON_WEB_PREFERENCES_VIEWPORT_STYLE_H_
 
 namespace blink {
 namespace web_pref {
 
 // UA style if viewport is enabled.
-enum class WebViewportStyle {
+enum class ViewportStyle {
   kDefault,
   // Includes viewportAndroid.css.
   kMobile,
@@ -20,4 +20,4 @@ enum class WebViewportStyle {
 }  // namespace web_pref
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_PUBLIC_COMMON_WEB_PREFERENCES_WEB_VIEWPORT_STYLE_H_
+#endif  // THIRD_PARTY_BLINK_PUBLIC_COMMON_WEB_PREFERENCES_VIEWPORT_STYLE_H_

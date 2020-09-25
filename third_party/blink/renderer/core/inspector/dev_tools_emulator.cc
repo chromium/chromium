@@ -140,7 +140,7 @@ void DevToolsEmulator::SetPreferCompositingToLCDTextEnabled(bool enabled) {
   }
 }
 
-void DevToolsEmulator::SetViewportStyle(web_pref::WebViewportStyle style) {
+void DevToolsEmulator::SetViewportStyle(web_pref::ViewportStyle style) {
   embedder_viewport_style_ = style;
   bool emulate_mobile_enabled =
       device_metrics_enabled_ && emulate_mobile_enabled_;
@@ -302,7 +302,7 @@ void DevToolsEmulator::EnableMobileEmulation() {
   Page::PlatformColorsChanged();
   web_view_->GetPage()->GetSettings().SetForceAndroidOverlayScrollbar(true);
   web_view_->GetPage()->GetSettings().SetViewportStyle(
-      web_pref::WebViewportStyle::kMobile);
+      web_pref::ViewportStyle::kMobile);
   web_view_->GetPage()->GetSettings().SetViewportEnabled(true);
   web_view_->GetPage()->GetSettings().SetViewportMetaEnabled(true);
   web_view_->GetPage()->GetVisualViewport().InitializeScrollbars();

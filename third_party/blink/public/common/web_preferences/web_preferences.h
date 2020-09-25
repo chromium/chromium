@@ -18,7 +18,7 @@
 #include "third_party/blink/public/common/web_preferences/autoplay_policy.h"
 #include "third_party/blink/public/common/web_preferences/editing_behavior_types.h"
 #include "third_party/blink/public/common/web_preferences/image_animation_policy.h"
-#include "third_party/blink/public/common/web_preferences/web_viewport_style.h"
+#include "third_party/blink/public/common/web_preferences/viewport_style.h"
 #include "third_party/blink/public/mojom/v8_cache_options.mojom-forward.h"
 #include "ui/base/pointer/pointer_device.h"
 #include "url/gurl.h"
@@ -146,7 +146,7 @@ struct BLINK_COMMON_EXPORT WebPreferences {
   // viewport_enabled is on.
   bool shrinks_viewport_contents_to_fit;
 
-  web_pref::WebViewportStyle viewport_style;
+  web_pref::ViewportStyle viewport_style;
   bool always_show_context_menu_on_touch;
   bool smooth_scroll_for_find_enabled;
   bool main_frame_resizes_are_orientation_changes;

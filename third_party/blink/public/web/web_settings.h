@@ -35,8 +35,8 @@
 
 #include "third_party/blink/public/common/css/navigation_controls.h"
 #include "third_party/blink/public/common/css/preferred_color_scheme.h"
+#include "third_party/blink/public/common/web_preferences/viewport_style.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
-#include "third_party/blink/public/common/web_preferences/web_viewport_style.h"
 #include "third_party/blink/public/mojom/v8_cache_options.mojom-forward.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_effective_connection_type.h"
@@ -241,7 +241,7 @@ class WebSettings {
   virtual void SetTouchDragEndContextMenu(bool) = 0;
   virtual void SetBarrelButtonForDragEnabled(bool) = 0;
   virtual void SetUseLegacyBackgroundSizeShorthandBehavior(bool) = 0;
-  virtual void SetViewportStyle(web_pref::WebViewportStyle) = 0;
+  virtual void SetViewportStyle(web_pref::ViewportStyle) = 0;
   virtual void SetUseWideViewport(bool) = 0;
   virtual void SetV8CacheOptions(mojom::V8CacheOptions) = 0;
   virtual void SetValidationMessageTimerMagnification(int) = 0;

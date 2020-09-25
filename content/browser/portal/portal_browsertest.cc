@@ -2383,7 +2383,7 @@ IN_PROC_BROWSER_TEST_F(PortalPixelBrowserTest, MAYBE_PageScaleRaster) {
         prefs->viewport_enabled = true;
         prefs->viewport_meta_enabled = true;
         prefs->shrinks_viewport_contents_to_fit = true;
-        prefs->viewport_style = blink::web_pref::WebViewportStyle::kMobile;
+        prefs->viewport_style = blink::web_pref::ViewportStyle::kMobile;
 
         // Hide scrollbars to make pixel testing more robust.
         prefs->hide_scrollbars = true;
