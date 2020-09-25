@@ -79,7 +79,6 @@
       'Linux FYI Release (AMD R7 240)',
       # Temporarily disabled due to bad NVIDIA driver upgrade crbug.com/950542
       'Linux FYI Debug (NVIDIA)',
-      'Linux FYI GPU TSAN Release',
       # Disabling on RX 550 as we are currently qualifying the card and not
       # checking for regressions. crbug.com/1025745
       'Win10 FYI x64 Release (AMD RX 550)',

@@ -10043,6 +10043,35 @@
     "gtest_tests": [
       {
         "args": [
+          "--test-launcher-retry-limit=0",
+          "--test-launcher-batch-limit=256",
+          "--gtest_filter=-*Vulkan_SwiftShader*",
+          "--use-gpu-in-tests",
+          "--no-xvfb"
+        ],
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "should_retry_with_patch": false,
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "containment_type": "AUTO",
+          "dimension_sets": [
+            {
+              "gpu": "10de:1cb3-418.56",
+              "os": "Ubuntu-19.04",
+              "pool": "chromium.tests.gpu"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 4
+        },
+        "test": "angle_end2end_tests",
+        "test_id_prefix": "ninja://third_party/angle/src/tests:angle_end2end_tests/"
+      },
+      {
+        "args": [
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
           "--no-xvfb"
