@@ -19,8 +19,6 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
-import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.base.WindowAndroid;
@@ -132,17 +130,7 @@ public class SigninPromoUtil {
     public static void setupSyncPromoViewFromCache(SigninPromoController signinPromoController,
             ProfileDataCache profileDataCache, PersonalizedSigninPromoView view,
             SigninPromoController.OnDismissListener listener) {
-        String signedInAccount = CoreAccountInfo.getEmailFrom(
-                IdentityServicesProvider.get()
-                        .getIdentityManager(Profile.getLastUsedRegularProfile())
-                        .getPrimaryAccountInfo(ConsentLevel.NOT_REQUIRED));
-        assert signedInAccount != null : "Sync promo should only be shown for a signed in account";
-        profileDataCache.update(Collections.singletonList(signedInAccount));
-        DisplayableProfileData profileData =
-                profileDataCache.getProfileDataOrDefault(signedInAccount);
-        signinPromoController.detach();
-        signinPromoController.setupPromoView(view.getContext(), view, profileData, listener);
-
+        setupSigninPromoViewFromCache(signinPromoController, profileDataCache, view, listener);
         view.getPrimaryButton().setText(R.string.sync_promo_turn_on_sync);
         view.getSecondaryButton().setVisibility(View.GONE);
     }

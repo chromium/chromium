@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.ntp;
 
-import android.accounts.Account;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -54,11 +53,9 @@ import java.util.concurrent.ExecutionException;
 public class RecentTabsPageTest {
     // FakeProfileDataSource is required to create the ProfileDataCache entry with sync_off badge
     // for Sync promo.
-    private final FakeProfileDataSource mFakeProfileDataSource = new FakeProfileDataSource();
-
     @Rule
     public final AccountManagerTestRule mAccountManagerTestRule =
-            new AccountManagerTestRule(mFakeProfileDataSource);
+            new AccountManagerTestRule(new FakeProfileDataSource());
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
@@ -108,12 +105,8 @@ public class RecentTabsPageTest {
     @LargeTest
     @Feature("RenderTest")
     public void testPersonalizedSigninPromoInRecentTabsPage() throws Exception {
-        Account account = mAccountManagerTestRule.addAndSignInTestAccount();
-        TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> mFakeProfileDataSource.setProfileData(account.name,
-                                new ProfileDataSource.ProfileData(
-                                        account.name, createAvatar(), "Full Name", "Given Name")));
+        mAccountManagerTestRule.addAccount(new ProfileDataSource.ProfileData(
+                "test@gmail.com", createAvatar(), "Full Name", "Given Name"));
         RecentTabsManager.forcePromoStateForTests(
                 RecentTabsManager.PromoState.PROMO_SIGNIN_PERSONALIZED);
         mPage = loadRecentTabsPage();
@@ -124,12 +117,8 @@ public class RecentTabsPageTest {
     @LargeTest
     @Feature("RenderTest")
     public void testPersonalizedSyncPromoInRecentTabsPage() throws Exception {
-        Account account = mAccountManagerTestRule.addAndSignInTestAccount();
-        TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> mFakeProfileDataSource.setProfileData(account.name,
-                                new ProfileDataSource.ProfileData(
-                                        account.name, createAvatar(), "Full Name", "Given Name")));
+        mAccountManagerTestRule.addAccount(new ProfileDataSource.ProfileData(
+                "test@gmail.com", createAvatar(), "Full Name", "Given Name"));
         RecentTabsManager.forcePromoStateForTests(
                 RecentTabsManager.PromoState.PROMO_SYNC_PERSONALIZED);
         mPage = loadRecentTabsPage();
