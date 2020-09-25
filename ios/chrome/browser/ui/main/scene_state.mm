@@ -96,6 +96,14 @@
   return _window;
 }
 
+- (NSString*)sceneSessionID {
+  NSString* sessionID = nil;
+  if (@available(ios 13, *)) {
+    sessionID = _scene.session.persistentIdentifier;
+  }
+  return sessionID;
+}
+
 - (void)setActivationLevel:(SceneActivationLevel)newLevel {
   if (_activationLevel == newLevel) {
     return;

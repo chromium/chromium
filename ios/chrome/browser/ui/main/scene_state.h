@@ -76,6 +76,9 @@ typedef NS_ENUM(NSUInteger, SceneActivationLevel) {
 @property(nonatomic, strong, readonly) id<BrowserInterfaceProvider>
     interfaceProvider;
 
+// The persistent identifier for the scene session.
+@property(nonatomic, readonly) NSString* sceneSessionID;
+
 // True if First Run UI (terms of service & sync sign-in) is being presented
 // in a modal dialog.
 @property(nonatomic, assign) BOOL presentingFirstRunUI;

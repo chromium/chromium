@@ -48,6 +48,16 @@ source_set("url_loading") {
   ]
 }
 
+source_set("url_loading_params_header") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [ "url_loading_params.h" ]
+  deps = [
+    "//ios/chrome/browser/ui/commands",
+    "//ios/web/public",
+    "//ui/base",
+  ]
+}
+
 source_set("test_support") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true

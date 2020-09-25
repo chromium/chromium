@@ -116,10 +116,6 @@ NSString* const kPreviousSessionInfoConnectedSceneSessionIDs =
 // Can be greater than one if multiple sessions are being restored in parallel.
 @property(atomic, assign) int numberOfSessionsBeingRestored;
 
-// The list of the session IDs for all the connected scenes, used for crash
-// restoration.
-@property(nonatomic, strong) NSMutableSet<NSString*>* connectedSceneSessionsIDs;
-
 // Redefined to be read-write.
 @property(nonatomic, assign) NSInteger availableDeviceStorage;
 @property(nonatomic, assign) float deviceBatteryLevel;
@@ -134,6 +130,7 @@ NSString* const kPreviousSessionInfoConnectedSceneSessionIDs =
 @property(nonatomic, strong) NSString* OSVersion;
 @property(nonatomic, strong) NSDate* sessionEndTime;
 @property(nonatomic, assign) BOOL terminatedDuringSessionRestoration;
+@property(nonatomic, strong) NSMutableSet<NSString*>* connectedSceneSessionsIDs;
 
 @end
 
