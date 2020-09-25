@@ -1095,10 +1095,16 @@ void QuicChromiumClientSession::UpdateStreamPriority(
 }
 
 void QuicChromiumClientSession::OnHttp3GoAway(uint64_t id) {
-  // TODO(https://crbug.com/1113661): Retry requests with stream ID greater than
-  // or equal to |id|.
   quic::QuicSpdySession::OnHttp3GoAway(id);
   NotifyFactoryOfSessionGoingAway();
+
+  PerformActionOnActiveStreams([id](quic::QuicStream* stream) {
+    if (stream->id() >= id) {
+      static_cast<QuicChromiumClientStream*>(stream)->OnError(
+          ERR_QUIC_GOAWAY_REQUEST_CAN_BE_RETRIED);
+    }
+    return true;
+  });
 }
 
 void QuicChromiumClientSession::AddHandle(Handle* handle) {

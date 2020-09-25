@@ -801,6 +801,10 @@ NET_ERROR(HTTP_RESPONSE_CODE_FAILURE, -379)
 // are allowed.
 NET_ERROR(QUIC_CERT_ROOT_NOT_KNOWN, -380)
 
+// A GOAWAY frame has been received indicating that the request has not been
+// processed and is therefore safe to retry on a different connection.
+NET_ERROR(QUIC_GOAWAY_REQUEST_CAN_BE_RETRIED, -381)
+
 // The cache does not have the requested entry.
 NET_ERROR(CACHE_MISS, -400)
 

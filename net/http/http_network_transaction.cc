@@ -1553,6 +1553,7 @@ int HttpNetworkTransaction::HandleIOError(int error) {
     case ERR_HTTP2_CLAIMED_PUSHED_STREAM_RESET_BY_SERVER:
     case ERR_HTTP2_PUSHED_RESPONSE_DOES_NOT_MATCH:
     case ERR_QUIC_HANDSHAKE_FAILED:
+    case ERR_QUIC_GOAWAY_REQUEST_CAN_BE_RETRIED:
       if (HasExceededMaxRetries())
         break;
       net_log_.AddEventWithNetErrorCode(

@@ -9762,6 +9762,136 @@ TEST_P(QuicNetworkTransactionTest, IncorrectHttp3GoAway) {
               quic::test::IsError(quic::QUIC_HTTP_GOAWAY_INVALID_STREAM_ID));
 }
 
+TEST_P(QuicNetworkTransactionTest, RetryOnHttp3GoAway) {
+  if (!version_.HasIetfQuicFrames()) {
+    return;
+  }
+
+  MockQuicData mock_quic_data1(version_);
+  int write_packet_number1 = 1;
+  mock_quic_data1.AddWrite(
+      SYNCHRONOUS, ConstructInitialSettingsPacket(write_packet_number1++));
+  const quic::QuicStreamId stream_id1 =
+      GetNthClientInitiatedBidirectionalStreamId(0);
+  mock_quic_data1.AddWrite(SYNCHRONOUS,
+                           ConstructClientRequestHeadersPacket(
+                               write_packet_number1++, stream_id1, true, true,
+                               GetRequestHeaders("GET", "https", "/")));
+  const quic::QuicStreamId stream_id2 =
+      GetNthClientInitiatedBidirectionalStreamId(1);
+  mock_quic_data1.AddWrite(SYNCHRONOUS,
+                           ConstructClientRequestHeadersPacket(
+                               write_packet_number1++, stream_id2, true, true,
+                               GetRequestHeaders("GET", "https", "/foo")));
+
+  int read_packet_number1 = 1;
+  mock_quic_data1.AddRead(
+      ASYNC, server_maker_.MakeInitialSettingsPacket(read_packet_number1++));
+
+  // GOAWAY with stream_id2 informs the client that stream_id2 (and streams with
+  // larger IDs) have not been processed and can safely be retried.
+  quic::GoAwayFrame goaway{stream_id2};
+  std::unique_ptr<char[]> goaway_buffer;
+  auto goaway_length =
+      quic::HttpEncoder::SerializeGoAwayFrame(goaway, &goaway_buffer);
+  const quic::QuicStreamId control_stream_id =
+      quic::QuicUtils::GetFirstUnidirectionalStreamId(
+          version_.transport_version, quic::Perspective::IS_SERVER);
+  mock_quic_data1.AddRead(
+      ASYNC,
+      ConstructServerDataPacket(
+          read_packet_number1++, control_stream_id, false, false,
+          quiche::QuicheStringPiece(goaway_buffer.get(), goaway_length)));
+  mock_quic_data1.AddWrite(
+      ASYNC, ConstructClientAckPacket(write_packet_number1++, 2, 1));
+
+  // Response to first request is accepted after GOAWAY.
+  mock_quic_data1.AddRead(ASYNC, ConstructServerResponseHeadersPacket(
+                                     read_packet_number1++, stream_id1, false,
+                                     false, GetResponseHeaders("200 OK")));
+  mock_quic_data1.AddRead(
+      ASYNC, ConstructServerDataPacket(
+                 read_packet_number1++, stream_id1, false, true,
+                 ConstructDataFrame("response on the first connection")));
+  mock_quic_data1.AddWrite(
+      ASYNC, ConstructClientAckPacket(write_packet_number1++, 4, 1));
+  mock_quic_data1.AddRead(ASYNC, 0);  // EOF
+  mock_quic_data1.AddSocketDataToFactory(&socket_factory_);
+
+  // Second request is retried on a new connection.
+  MockQuicData mock_quic_data2(version_);
+  QuicTestPacketMaker client_maker2(
+      version_,
+      quic::QuicUtils::CreateRandomConnectionId(context_.random_generator()),
+      context_.clock(), kDefaultServerHostName, quic::Perspective::IS_CLIENT,
+      client_headers_include_h2_stream_dependency_);
+  int write_packet_number2 = 1;
+  mock_quic_data2.AddWrite(SYNCHRONOUS, client_maker2.MakeInitialSettingsPacket(
+                                            write_packet_number2++));
+  spdy::SpdyPriority priority =
+      ConvertRequestPriorityToQuicPriority(DEFAULT_PRIORITY);
+  mock_quic_data2.AddWrite(
+      SYNCHRONOUS, client_maker2.MakeRequestHeadersPacket(
+                       write_packet_number2++, stream_id1, true, true, priority,
+                       GetRequestHeaders("GET", "https", "/foo"), 0, nullptr));
+
+  QuicTestPacketMaker server_maker2(
+      version_,
+      quic::QuicUtils::CreateRandomConnectionId(context_.random_generator()),
+      context_.clock(), kDefaultServerHostName, quic::Perspective::IS_SERVER,
+      false);
+  int read_packet_number2 = 1;
+  mock_quic_data2.AddRead(ASYNC,
+                          server_maker2.MakeResponseHeadersPacket(
+                              read_packet_number2++, stream_id1, false, false,
+                              GetResponseHeaders("200 OK"), nullptr));
+  mock_quic_data2.AddRead(
+      ASYNC, server_maker2.MakeDataPacket(
+                 read_packet_number2++, stream_id1, false, true,
+                 ConstructDataFrame("response on the second connection")));
+  mock_quic_data2.AddWrite(
+      ASYNC, client_maker2.MakeAckPacket(write_packet_number2++, 2, 1));
+  mock_quic_data2.AddRead(ASYNC, ERR_IO_PENDING);  // No more data to read
+  mock_quic_data2.AddRead(ASYNC, 0);               // EOF
+  mock_quic_data2.AddSocketDataToFactory(&socket_factory_);
+
+  AddHangingNonAlternateProtocolSocketData();
+  CreateSession();
+  AddQuicAlternateProtocolMapping(MockCryptoClientStream::CONFIRM_HANDSHAKE);
+
+  HttpNetworkTransaction trans1(DEFAULT_PRIORITY, session_.get());
+  TestCompletionCallback callback1;
+  int rv = trans1.Start(&request_, callback1.callback(), net_log_.bound());
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+  base::RunLoop().RunUntilIdle();
+
+  HttpRequestInfo request2;
+  request2.method = "GET";
+  std::string url("https://");
+  url.append(kDefaultServerHostName);
+  url.append("/foo");
+  request2.url = GURL(url);
+  request2.load_flags = 0;
+  request2.traffic_annotation =
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+  HttpNetworkTransaction trans2(DEFAULT_PRIORITY, session_.get());
+  TestCompletionCallback callback2;
+  rv = trans2.Start(&request2, callback2.callback(), net_log_.bound());
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  EXPECT_THAT(callback1.WaitForResult(), IsOk());
+  CheckResponseData(&trans1, "response on the first connection");
+
+  EXPECT_THAT(callback2.WaitForResult(), IsOk());
+  CheckResponseData(&trans2, "response on the second connection");
+
+  mock_quic_data2.Resume();
+  EXPECT_TRUE(mock_quic_data1.AllWriteDataConsumed());
+  EXPECT_TRUE(mock_quic_data1.AllReadDataConsumed());
+  EXPECT_TRUE(mock_quic_data2.AllWriteDataConsumed());
+  EXPECT_TRUE(mock_quic_data2.AllReadDataConsumed());
+}
+
 // TODO(yoichio):  Add the TCP job reuse case. See crrev.com/c/2174099.
 
 }  // namespace test
