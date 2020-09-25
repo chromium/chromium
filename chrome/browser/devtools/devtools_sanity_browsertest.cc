@@ -2456,8 +2456,10 @@ IN_PROC_BROWSER_TEST_F(InProcessBrowserTest, BrowserCloseWithBeforeUnload) {
   ui_test_utils::WaitForBrowserToClose(browser());
 }
 
+// Flaky.
+// TODO(https://crbug.com/1132296): Re-enable.
 IN_PROC_BROWSER_TEST_F(InProcessBrowserTest,
-                       BrowserCloseWithContextMenuOpened) {
+                       DISABLED_BrowserCloseWithContextMenuOpened) {
   EXPECT_FALSE(KeepAliveRegistry::GetInstance()->IsOriginRegistered(
       KeepAliveOrigin::REMOTE_DEBUGGING));
   ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
