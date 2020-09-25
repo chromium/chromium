@@ -2863,21 +2863,21 @@ String AXNodeObject::TextFromDescendants(AXObjectSet& visited,
     bool is_continuation = child->GetLayoutObject() &&
                            child->GetLayoutObject()->IsElementContinuation();
 
-    // Don't recurse into children that are explicitly marked as aria-hidden.
-    // Note that we don't call isInertOrAriaHidden because that would return
+    // Don't recurse into children that are explicitly hidden.
+    // Note that we don't call IsInertOrAriaHidden because that would return
     // true if any ancestor is hidden, but we need to be able to compute the
     // accessible name of object inside hidden subtrees (for example, if
     // aria-labelledby points to an object that's hidden).
     if (!is_continuation &&
-        child->AOMPropertyOrARIAAttributeIsTrue(AOMBooleanProperty::kHidden))
+        (child->AOMPropertyOrARIAAttributeIsTrue(AOMBooleanProperty::kHidden) ||
+         child->IsHiddenForTextAlternativeCalculation()))
       continue;
 
     ax::mojom::blink::NameFrom child_name_from =
         ax::mojom::blink::NameFrom::kUninitialized;
     String result;
     if (!is_continuation && child->IsPresentational()) {
-      if (child->IsVisible())
-        result = child->TextFromDescendants(visited, true);
+      result = child->TextFromDescendants(visited, true);
     } else {
       result =
           RecursiveTextAlternative(*child, false, visited, child_name_from);

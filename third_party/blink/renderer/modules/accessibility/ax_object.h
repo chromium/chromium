@@ -1222,6 +1222,8 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // Blink-internal DOM Node ID. Currently used for PDF exporting.
   int GetDOMNodeId() const;
 
+  bool IsHiddenForTextAlternativeCalculation() const;
+
   // Returns a string representation of this object.
   String ToString(bool verbose = false) const;
 
@@ -1243,7 +1245,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
                                          bool in_aria_labelled_by_traversal,
                                          AXObjectSet& visited,
                                          ax::mojom::blink::NameFrom& name_from);
-  bool IsHiddenForTextAlternativeCalculation() const;
   String AriaTextAlternative(bool recursive,
                              bool in_aria_labelled_by_traversal,
                              AXObjectSet& visited,

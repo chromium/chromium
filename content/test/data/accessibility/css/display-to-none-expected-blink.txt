@@ -5,7 +5,7 @@ rootWebArea
 ++++++++genericContainer display='block'
 ++++++++++staticText display='block' name='Cats'
 ++++++++++++inlineTextBox display='block' name='Cats'
-++++++++genericContainer ignored invisible display='none' name='checkbox'
+++++++++genericContainer ignored invisible display='none'
 ++++++++++checkBox ignored invisible display='inline-block' name='checkbox' checkedState=false
 ++++++++genericContainer display='block'
 ++++++++++staticText display='inline' name='done'
