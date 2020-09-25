@@ -14,9 +14,6 @@ namespace mojo {
 
 using network::mojom::DnsConfigOverrides;
 using network::mojom::DnsConfigOverridesDataView;
-using network::mojom::DnsHost;
-using network::mojom::DnsHostDataView;
-using network::mojom::DnsHostPtr;
 using network::mojom::DnsOverHttpsServer;
 using network::mojom::DnsOverHttpsServerDataView;
 using network::mojom::DnsOverHttpsServerPtr;
@@ -44,46 +41,6 @@ base::Optional<bool> FromTristate(DnsConfigOverrides::Tristate tristate) {
     case DnsConfigOverrides::Tristate::TRISTATE_FALSE:
       return false;
   }
-}
-
-bool ReadHostData(mojo::ArrayDataView<DnsHostDataView> data,
-                  base::Optional<net::DnsHosts>* out) {
-  if (data.is_null()) {
-    out->reset();
-    return true;
-  }
-
-  out->emplace();
-  for (size_t i = 0; i < data.size(); ++i) {
-    DnsHostDataView host_data;
-    data.GetDataView(i, &host_data);
-
-    std::string hostname;
-    if (!host_data.ReadHostname(&hostname))
-      return false;
-
-    net::IPAddress address;
-    if (!host_data.ReadAddress(&address) || !address.IsValid())
-      return false;
-
-    net::AddressFamily address_family;
-    if (address.IsIPv4()) {
-      address_family = net::ADDRESS_FAMILY_IPV4;
-    } else if (address.IsIPv6()) {
-      address_family = net::ADDRESS_FAMILY_IPV6;
-    } else {
-      return false;
-    }
-
-    net::DnsHostsKey key = std::make_pair(std::move(hostname), address_family);
-    if (out->value().find(key) != out->value().end()) {
-      // Each DnsHostsKey expected to be unique.
-      return false;
-    }
-    out->value()[std::move(key)] = std::move(address);
-  }
-
-  return true;
 }
 
 bool ReadDnsOverHttpsServerData(
@@ -138,21 +95,6 @@ base::Optional<net::SecureDnsMode> FromOptionalSecureDnsMode(
     case OptionalSecureDnsMode::SECURE:
       return net::SecureDnsMode::kSecure;
   }
-}
-
-// static
-base::Optional<std::vector<DnsHostPtr>>
-StructTraits<DnsConfigOverridesDataView, net::DnsConfigOverrides>::hosts(
-    const net::DnsConfigOverrides& overrides) {
-  if (!overrides.hosts)
-    return base::nullopt;
-
-  std::vector<DnsHostPtr> out_hosts;
-  for (const net::DnsHosts::value_type& host : overrides.hosts.value()) {
-    out_hosts.push_back(DnsHost::New(host.first.first, host.second));
-  }
-
-  return base::make_optional(std::move(out_hosts));
 }
 
 // static
@@ -216,11 +158,6 @@ bool StructTraits<DnsConfigOverridesDataView, net::DnsConfigOverrides>::Read(
   if (!data.ReadSearch(&out->search))
     return false;
 
-  mojo::ArrayDataView<DnsHostDataView> hosts_data;
-  data.GetHostsDataView(&hosts_data);
-  if (!ReadHostData(hosts_data, &out->hosts))
-    return false;
-
   out->append_to_multi_label_name =
       FromTristate(data.append_to_multi_label_name());
 
@@ -255,6 +192,8 @@ bool StructTraits<DnsConfigOverridesDataView, net::DnsConfigOverrides>::Read(
       FromTristate(data.allow_dns_over_https_upgrade());
   if (!data.ReadDisabledUpgradeProviders(&out->disabled_upgrade_providers))
     return false;
+
+  out->clear_hosts = data.clear_hosts();
 
   return true;
 }

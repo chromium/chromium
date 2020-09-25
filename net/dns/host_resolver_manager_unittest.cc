@@ -7027,6 +7027,8 @@ TEST_F(HostResolverManagerDnsTest, SetDnsConfigOverrides) {
   resolver_->SetDnsClientForTesting(std::move(client));
 
   DnsConfig original_config = CreateValidDnsConfig();
+  original_config.hosts = {
+      {DnsHostsKey("host", ADDRESS_FAMILY_IPV4), IPAddress(192, 168, 1, 1)}};
   ChangeDnsConfig(original_config);
 
   // Confirm pre-override state.
@@ -7038,9 +7040,6 @@ TEST_F(HostResolverManagerDnsTest, SetDnsConfigOverrides) {
   overrides.nameservers = nameservers;
   const std::vector<std::string> search = {"str"};
   overrides.search = search;
-  const DnsHosts hosts = {
-      {DnsHostsKey("host", ADDRESS_FAMILY_IPV4), IPAddress(192, 168, 1, 1)}};
-  overrides.hosts = hosts;
   overrides.append_to_multi_label_name = false;
   const int ndots = 5;
   overrides.ndots = ndots;
@@ -7060,6 +7059,7 @@ TEST_F(HostResolverManagerDnsTest, SetDnsConfigOverrides) {
   overrides.allow_dns_over_https_upgrade = true;
   const std::vector<std::string> disabled_upgrade_providers = {"provider_name"};
   overrides.disabled_upgrade_providers = disabled_upgrade_providers;
+  overrides.clear_hosts = true;
 
   // This test is expected to test overriding all fields.
   EXPECT_TRUE(overrides.OverridesEverything());
@@ -7072,7 +7072,6 @@ TEST_F(HostResolverManagerDnsTest, SetDnsConfigOverrides) {
   ASSERT_TRUE(overridden_config);
   EXPECT_EQ(nameservers, overridden_config->nameservers);
   EXPECT_EQ(search, overridden_config->search);
-  EXPECT_EQ(hosts, overridden_config->hosts);
   EXPECT_FALSE(overridden_config->append_to_multi_label_name);
   EXPECT_EQ(ndots, overridden_config->ndots);
   EXPECT_EQ(timeout, overridden_config->timeout);
@@ -7085,6 +7084,7 @@ TEST_F(HostResolverManagerDnsTest, SetDnsConfigOverrides) {
   EXPECT_TRUE(overridden_config->allow_dns_over_https_upgrade);
   EXPECT_EQ(disabled_upgrade_providers,
             overridden_config->disabled_upgrade_providers);
+  EXPECT_THAT(overridden_config->hosts, testing::IsEmpty());
 
   base::RunLoop().RunUntilIdle();  // Notifications are async.
   EXPECT_EQ(1, config_observer.dns_changed_calls());

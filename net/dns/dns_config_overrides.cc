@@ -25,7 +25,6 @@ DnsConfigOverrides& DnsConfigOverrides::operator=(DnsConfigOverrides&& other) =
 
 bool DnsConfigOverrides::operator==(const DnsConfigOverrides& other) const {
   return nameservers == other.nameservers && search == other.search &&
-         hosts == other.hosts &&
          append_to_multi_label_name == other.append_to_multi_label_name &&
          ndots == other.ndots && timeout == other.timeout &&
          attempts == other.attempts && doh_attempts == other.doh_attempts &&
@@ -33,7 +32,8 @@ bool DnsConfigOverrides::operator==(const DnsConfigOverrides& other) const {
          dns_over_https_servers == other.dns_over_https_servers &&
          secure_dns_mode == other.secure_dns_mode &&
          allow_dns_over_https_upgrade == other.allow_dns_over_https_upgrade &&
-         disabled_upgrade_providers == other.disabled_upgrade_providers;
+         disabled_upgrade_providers == other.disabled_upgrade_providers &&
+         clear_hosts == other.clear_hosts;
 }
 
 bool DnsConfigOverrides::operator!=(const DnsConfigOverrides& other) const {
@@ -48,7 +48,6 @@ DnsConfigOverrides::CreateOverridingEverythingWithDefaults() {
   DnsConfigOverrides overrides;
   overrides.nameservers = defaults.nameservers;
   overrides.search = defaults.search;
-  overrides.hosts = defaults.hosts;
   overrides.append_to_multi_label_name = defaults.append_to_multi_label_name;
   overrides.ndots = defaults.ndots;
   overrides.timeout = defaults.timeout;
@@ -61,15 +60,17 @@ DnsConfigOverrides::CreateOverridingEverythingWithDefaults() {
   overrides.allow_dns_over_https_upgrade =
       defaults.allow_dns_over_https_upgrade;
   overrides.disabled_upgrade_providers = defaults.disabled_upgrade_providers;
+  overrides.clear_hosts = true;
 
   return overrides;
 }
 
 bool DnsConfigOverrides::OverridesEverything() const {
-  return nameservers && search && hosts && append_to_multi_label_name &&
-         ndots && timeout && attempts && doh_attempts && rotate &&
-         use_local_ipv6 && dns_over_https_servers && secure_dns_mode &&
-         allow_dns_over_https_upgrade && disabled_upgrade_providers;
+  return nameservers && search && append_to_multi_label_name && ndots &&
+         timeout && attempts && doh_attempts && rotate && use_local_ipv6 &&
+         dns_over_https_servers && secure_dns_mode &&
+         allow_dns_over_https_upgrade && disabled_upgrade_providers &&
+         clear_hosts;
 }
 
 DnsConfig DnsConfigOverrides::ApplyOverrides(const DnsConfig& config) const {
@@ -82,8 +83,6 @@ DnsConfig DnsConfigOverrides::ApplyOverrides(const DnsConfig& config) const {
     overridden.nameservers = nameservers.value();
   if (search)
     overridden.search = search.value();
-  if (hosts)
-    overridden.hosts = hosts.value();
   if (append_to_multi_label_name)
     overridden.append_to_multi_label_name = append_to_multi_label_name.value();
   if (ndots)
@@ -108,6 +107,8 @@ DnsConfig DnsConfigOverrides::ApplyOverrides(const DnsConfig& config) const {
   }
   if (disabled_upgrade_providers)
     overridden.disabled_upgrade_providers = disabled_upgrade_providers.value();
+  if (clear_hosts)
+    overridden.hosts.clear();
 
   return overridden;
 }

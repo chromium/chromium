@@ -19,7 +19,6 @@
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
 #include "net/dns/dns_config_overrides.h"
-#include "net/dns/dns_hosts.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/public/dns_query_type.h"
 #include "net/dns/public/secure_dns_mode.h"
@@ -45,9 +44,6 @@ struct StructTraits<network::mojom::DnsConfigOverridesDataView,
       const net::DnsConfigOverrides& overrides) {
     return overrides.search;
   }
-
-  static base::Optional<std::vector<network::mojom::DnsHostPtr>> hosts(
-      const net::DnsConfigOverrides& overrides);
 
   static network::mojom::DnsConfigOverrides_Tristate append_to_multi_label_name(
       const net::DnsConfigOverrides& overrides);
@@ -82,6 +78,10 @@ struct StructTraits<network::mojom::DnsConfigOverridesDataView,
   static const base::Optional<std::vector<std::string>>&
   disabled_upgrade_providers(const net::DnsConfigOverrides& overrides) {
     return overrides.disabled_upgrade_providers;
+  }
+
+  static bool clear_hosts(const net::DnsConfigOverrides& overrides) {
+    return overrides.clear_hosts;
   }
 
   static bool Read(network::mojom::DnsConfigOverridesDataView data,

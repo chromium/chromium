@@ -12,7 +12,6 @@
 #include "base/time/time.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_export.h"
-#include "net/dns/dns_hosts.h"
 #include "net/dns/public/dns_over_https_server_config.h"
 #include "net/dns/public/secure_dns_mode.h"
 
@@ -50,7 +49,6 @@ struct NET_EXPORT DnsConfigOverrides {
   // Overriding values. See same-named fields in DnsConfig for explanations.
   base::Optional<std::vector<IPEndPoint>> nameservers;
   base::Optional<std::vector<std::string>> search;
-  base::Optional<DnsHosts> hosts;
   base::Optional<bool> append_to_multi_label_name;
   base::Optional<int> ndots;
   base::Optional<base::TimeDelta> timeout;
@@ -62,6 +60,9 @@ struct NET_EXPORT DnsConfigOverrides {
   base::Optional<SecureDnsMode> secure_dns_mode;
   base::Optional<bool> allow_dns_over_https_upgrade;
   base::Optional<std::vector<std::string>> disabled_upgrade_providers;
+
+  // |hosts| is not supported for overriding except to clear it.
+  bool clear_hosts = false;
 
   // Note no overriding value for |unhandled_options|. It is meta-configuration,
   // and there should be no reason to override it.

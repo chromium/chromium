@@ -6,17 +6,10 @@ module network.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/address_list.mojom";
-import "services/network/public/mojom/ip_address.mojom";
 import "services/network/public/mojom/ip_endpoint.mojom";
 import "services/network/public/mojom/network_isolation_key.mojom";
 import "services/network/public/mojom/network_param.mojom";
 import "services/network/public/mojom/url_loader.mojom";
-
-// A single entry from a HOSTS file.
-struct DnsHost {
-  string hostname;
-  IPAddress address;
-};
 
 // An HTTPS server to send DNS queries to, per the DNS Queries over HTTPS spec.
 // spec:  https://tools.ietf.org/html/draft-ietf-doh-dns-over-https-12
@@ -66,11 +59,6 @@ struct DnsConfigOverrides {
   // is less than |ndots|.
   array<string>? search;
 
-  // Entries from a HOSTS file. This array is intended for serialization to/from
-  // a lookup map, so unlike the source data from actual HOSTS files, each entry
-  // should represent a unique host query key (|hostname| and AddressFamily).
-  array<DnsHost>? hosts;
-
   // Whether suffix search should be performed for multi-label names.
   Tristate append_to_multi_label_name = Tristate.NO_OVERRIDE;
 
@@ -105,6 +93,9 @@ struct DnsConfigOverrides {
   // List of providers to exclude from upgrade mapping. See the
   // mapping in net/dns/dns_util.cc for provider ids.
   array<string>? disabled_upgrade_providers;
+
+  // Whether to clear data read from the system HOSTS file.
+  bool clear_hosts = false;
 };
 
 // Host resolution error info.

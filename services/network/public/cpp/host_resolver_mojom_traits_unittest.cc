@@ -31,11 +31,6 @@ TEST(HostResolverMojomTraitsTest, DnsConfigOverridesRoundtrip_FullySpecified) {
   original.nameservers.emplace(
       {net::IPEndPoint(net::IPAddress(1, 2, 3, 4), 80)});
   original.search.emplace({std::string("str")});
-  original.hosts = net::DnsHosts(
-      {std::make_pair(net::DnsHostsKey("host1", net::ADDRESS_FAMILY_IPV4),
-                      net::IPAddress(2, 3, 4, 5)),
-       std::make_pair(net::DnsHostsKey("host2", net::ADDRESS_FAMILY_IPV4),
-                      net::IPAddress(2, 3, 4, 5))});
   original.append_to_multi_label_name = true;
   original.ndots = 2;
   original.timeout = base::TimeDelta::FromHours(4);
@@ -47,6 +42,7 @@ TEST(HostResolverMojomTraitsTest, DnsConfigOverridesRoundtrip_FullySpecified) {
   original.secure_dns_mode = net::SecureDnsMode::kSecure;
   original.allow_dns_over_https_upgrade = true;
   original.disabled_upgrade_providers.emplace({std::string("provider_name")});
+  original.clear_hosts = true;
 
   net::DnsConfigOverrides deserialized;
   EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::DnsConfigOverrides>(
@@ -77,42 +73,6 @@ TEST(HostResolverMojomTraitsTest, DnsConfigOverrides_OnlyDnsOverHttpsServers) {
       &original, &deserialized));
 
   EXPECT_EQ(original, deserialized);
-}
-
-TEST(HostResolverMojomTraitsTest, DnsConfigOverrides_OnlyHosts) {
-  net::DnsConfigOverrides original;
-  original.hosts = net::DnsHosts(
-      {std::make_pair(net::DnsHostsKey("host", net::ADDRESS_FAMILY_IPV4),
-                      net::IPAddress(1, 1, 1, 1))});
-
-  net::DnsConfigOverrides deserialized;
-  EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::DnsConfigOverrides>(
-      &original, &deserialized));
-
-  EXPECT_EQ(original, deserialized);
-}
-
-TEST(HostResolverMojomTraitsTest, DnsConfigOverrides_NonUniqueHostKeys) {
-  mojom::DnsConfigOverridesPtr overrides = mojom::DnsConfigOverrides::New();
-  overrides->hosts.emplace();
-
-  // Create two different entries that share the key ("host", IPV4).
-  mojom::DnsHostPtr host_entry1 = mojom::DnsHost::New();
-  host_entry1->hostname = "host";
-  host_entry1->address = net::IPAddress(1, 1, 1, 1);
-  overrides->hosts.value().push_back(std::move(host_entry1));
-
-  mojom::DnsHostPtr host_entry2 = mojom::DnsHost::New();
-  host_entry2->hostname = "host";
-  host_entry2->address = net::IPAddress(2, 2, 2, 2);
-  overrides->hosts.value().push_back(std::move(host_entry2));
-
-  std::vector<uint8_t> serialized =
-      mojom::DnsConfigOverrides::Serialize(&overrides);
-
-  net::DnsConfigOverrides deserialized;
-  EXPECT_FALSE(
-      mojom::DnsConfigOverrides::Deserialize(serialized, &deserialized));
 }
 
 TEST(HostResolverMojomTraitsTest, ResolveErrorInfo) {
