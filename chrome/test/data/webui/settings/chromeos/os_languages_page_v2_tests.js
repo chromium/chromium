@@ -304,28 +304,33 @@ suite('languages page', () => {
       actionMenu.close();
     });
 
-    test('test translate target language is labelled', function() {
-      // Translate target language disabled.
+    test('test translate target language is labelled', () => {
       const targetLanguageCode = languageHelper.languages.translateTarget;
       assertTrue(!!targetLanguageCode);
-      assertTrue(languageHelper.languages.enabled.some(
-          l => languageHelper.convertLanguageCodeForTranslate(
-                   l.language.code) === targetLanguageCode));
-      assertTrue(languageHelper.languages.enabled.some(
-          l => languageHelper.convertLanguageCodeForTranslate(
-                   l.language.code) !== targetLanguageCode));
-      let translateTargetLabel = null;
-      let item = null;
+
+      // Add 'en' to have more than one translate-target language.
+      languageHelper.enableLanguage('en');
+      const isTranslateTarget = languageState =>
+          languageHelper.convertLanguageCodeForTranslate(
+              languageState.language.code) === targetLanguageCode;
+      const translateTargets =
+          languageHelper.languages.enabled.filter(isTranslateTarget);
+      assertTrue(translateTargets.length > 1);
+      // Ensure there is at least one non-translate-target language.
+      assertTrue(
+          translateTargets.length < languageHelper.languages.enabled.length);
 
       const listItems = languagesList.querySelectorAll('.list-item');
       const domRepeat = languagesList.querySelector('dom-repeat');
       assertTrue(!!domRepeat);
 
+      let translateTargetLabel;
+      let item;
       let num_visibles = 0;
-      Array.from(listItems).forEach(function(el) {
+      Array.from(listItems).forEach(el => {
         item = domRepeat.itemForElement(el);
         if (item) {
-          translateTargetLabel = el.querySelector('.secondary');
+          translateTargetLabel = el.querySelector('.target-info');
           assertTrue(!!translateTargetLabel);
           if (getComputedStyle(translateTargetLabel).display !== 'none') {
             num_visibles++;

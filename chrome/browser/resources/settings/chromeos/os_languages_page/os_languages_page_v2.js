@@ -281,12 +281,14 @@ Polymer({
 
   /**
    * @param {string} languageCode The language code identifying a language.
-   * @param {string} translateTarget The target language.
-   * @return {boolean} true if |languageCode| matches the target language
+   * @param {string} translateTarget The translate target language.
+   * @return {string} class name for whether it's a translate-target or not.
    * @private
    */
-  isTranslationTarget_(languageCode, translateTarget) {
+  getTranslationTargetClass_(languageCode, translateTarget) {
     return this.languageHelper.convertLanguageCodeForTranslate(languageCode) ===
-        translateTarget;
+            translateTarget ?
+        'translate-target' :
+        'non-translate-target';
   },
 });

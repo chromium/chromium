@@ -44,6 +44,18 @@
         margin-bottom: var(--cr-section-vertical-margin);
       }
 
+      .list-item.non-translate-target .target-info {
+        display: none;
+      }
+
+      /* There can be more than 1 translate target in the language list.
+       * This hides the label for all except the first one, a way to do
+       * a :first-of-class selector.
+       */
+      .list-item.translate-target ~ .list-item.translate-target .target-info {
+        display: none;
+      }
+
       #addLanguages {
         --iron-icon-fill-color: var(--cr-link-color);
         margin-top: 16px;
@@ -93,14 +105,14 @@
         </settings-localized-link>
         <div class="list-frame vertical-list" id="languagesList">
           <template is="dom-repeat" items="[[languages.enabled]]">
-            <div class="list-item">
+            <div class$="list-item [[getTranslationTargetClass_(
+                item.language.code, languages.translateTarget)]]">
               <div class="flex" id="displayText-[[index]]"
                   aria-hidden="true">
                 <div title="[[item.language.nativeDisplayName]]">
                   [[item.language.displayName]]
                 </div>
-                <div class="secondary" hidden="[[!isTranslationTarget_(
-                    item.language.code, languages.translateTarget)]]">
+                <div class="target-info secondary">
                   $i18n{translateTargetLabel}
                 </div>
               </div>
