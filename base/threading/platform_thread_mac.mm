@@ -19,6 +19,7 @@
 #include "base/logging.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/mach_logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/threading/thread_id_name_manager.h"
 #include "base/threading/threading_features.h"
 #include "build/build_config.h"
@@ -209,6 +210,15 @@ void SetPriorityRealtimeAudio(TimeDelta realtime_period) {
                         THREAD_TIME_CONSTRAINT_POLICY_COUNT);
   MACH_DVLOG_IF(1, result != KERN_SUCCESS, result) << "thread_policy_set";
 
+  UmaHistogramCustomMicrosecondsTimes(
+      "PlatformThread.Mac.AttemptedRealtimePeriod", realtime_period,
+      base::TimeDelta(), base::TimeDelta::FromMilliseconds(100), 100);
+
+  if (result == KERN_SUCCESS) {
+    UmaHistogramCustomMicrosecondsTimes(
+        "PlatformThread.Mac.SucceededRealtimePeriod", realtime_period,
+        base::TimeDelta(), base::TimeDelta::FromMilliseconds(100), 100);
+  }
   return;
 }
 
