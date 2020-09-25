@@ -16,14 +16,15 @@
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/webdata/autofill_table.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/sync/driver/sync_driver_switches.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
 
-using autofill::AutofillTable;
 using autofill::AutofillProfile;
+using autofill::AutofillTable;
 using autofill::AutofillType;
 using autofill::CreditCard;
 using autofill::PersonalDataManager;
@@ -33,11 +34,11 @@ using autofill_helper::CreateUniqueAutofillProfile;
 using autofill_helper::GetAllAutoFillProfiles;
 using autofill_helper::GetPersonalDataManager;
 using autofill_helper::GetProfileCount;
-using autofill_helper::ProfilesMatch;
 using autofill_helper::PROFILE_FRASIER;
 using autofill_helper::PROFILE_HOMER;
 using autofill_helper::PROFILE_MARION;
 using autofill_helper::PROFILE_NULL;
+using autofill_helper::ProfilesMatch;
 using autofill_helper::RemoveProfile;
 using autofill_helper::SetCreditCards;
 using autofill_helper::UpdateProfile;
@@ -85,10 +86,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientAutofillProfileSyncTest,
   EXPECT_TRUE(AutofillProfileChecker(0, 1, /*expected_count=*/1U).Wait());
 
   // Client0 updates a profile.
-  UpdateProfile(0,
-                GetAllAutoFillProfiles(0)[0]->guid(),
-                AutofillType(autofill::NAME_FIRST),
-                base::ASCIIToUTF16("Bart"));
+  UpdateProfile(0, GetAllAutoFillProfiles(0)[0]->guid(),
+                AutofillType(autofill::NAME_FIRST), base::ASCIIToUTF16("Bart"));
   EXPECT_TRUE(AutofillProfileChecker(0, 1, /*expected_count=*/1U).Wait());
 
   // Client1 removes remaining profile.
@@ -339,6 +338,35 @@ IN_PROC_BROWSER_TEST_F(TwoClientAutofillProfileSyncTest, UpdateFields) {
                 autofill::EMAIL_ADDRESS)));
 }
 
+// Tests that modifying the verification status of a token in the profile will
+// be propagated.
+IN_PROC_BROWSER_TEST_F(TwoClientAutofillProfileSyncTest,
+                       UpdateVerificationStatus) {
+  // This test is only applicable for structured names.
+  if (!base::FeatureList::IsEnabled(
+          autofill::features::kAutofillEnableSupportForMoreStructureInNames)) {
+    return;
+  }
+
+  ASSERT_TRUE(SetupSync());
+
+  AddProfile(0, CreateAutofillProfile(PROFILE_HOMER));
+  ASSERT_TRUE(AutofillProfileChecker(0, 1, /*expected_count=*/1U).Wait());
+
+  AutofillProfile* profile = GetAllAutoFillProfiles(0)[0];
+  ASSERT_TRUE(profile);
+  UpdateProfile(
+      0, profile->guid(), AutofillType(autofill::NAME_FIRST),
+      profile->GetRawInfo(autofill::NAME_FIRST),
+      autofill::structured_address::VerificationStatus::kUserVerified);
+
+  // Make sure the change is propagated to the other client.
+  EXPECT_TRUE(AutofillProfileChecker(0, 1, /*expected_count=*/1U).Wait());
+  EXPECT_EQ(autofill::structured_address::VerificationStatus::kUserVerified,
+            GetAllAutoFillProfiles(1)[0]->GetVerificationStatus(
+                autofill::NAME_FIRST));
+}
+
 // Tests that modifying a profile at the same time one two clients while
 // syncing results in the both client having the same profile (doesn't matter
 // which one).
@@ -351,10 +379,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientAutofillProfileSyncTest,
   EXPECT_TRUE(AutofillProfileChecker(0, 1, /*expected_count=*/1U).Wait());
 
   // Update the same field differently on the two clients at the same time.
-  UpdateProfile(0,
-                GetAllAutoFillProfiles(0)[0]->guid(),
-                AutofillType(autofill::NAME_FIRST),
-                base::ASCIIToUTF16("Lisa"));
+  UpdateProfile(0, GetAllAutoFillProfiles(0)[0]->guid(),
+                AutofillType(autofill::NAME_FIRST), base::ASCIIToUTF16("Lisa"));
   UpdateProfile(1, GetAllAutoFillProfiles(1)[0]->guid(),
                 AutofillType(autofill::NAME_FIRST), base::ASCIIToUTF16("Bart"));
 
@@ -445,18 +471,12 @@ IN_PROC_BROWSER_TEST_F(TwoClientAutofillProfileSyncTest, MaxLength) {
   ASSERT_TRUE(AutofillProfileChecker(0, 1, /*expected_count=*/1U).Wait());
 
   base::string16 max_length_string(AutofillTable::kMaxDataLength, '.');
-  UpdateProfile(0,
-                GetAllAutoFillProfiles(0)[0]->guid(),
-                AutofillType(autofill::NAME_FULL),
-                max_length_string);
-  UpdateProfile(0,
-                GetAllAutoFillProfiles(0)[0]->guid(),
-                AutofillType(autofill::EMAIL_ADDRESS),
-                max_length_string);
-  UpdateProfile(0,
-                GetAllAutoFillProfiles(0)[0]->guid(),
-                AutofillType(autofill::ADDRESS_HOME_LINE1),
-                max_length_string);
+  UpdateProfile(0, GetAllAutoFillProfiles(0)[0]->guid(),
+                AutofillType(autofill::NAME_FULL), max_length_string);
+  UpdateProfile(0, GetAllAutoFillProfiles(0)[0]->guid(),
+                AutofillType(autofill::EMAIL_ADDRESS), max_length_string);
+  UpdateProfile(0, GetAllAutoFillProfiles(0)[0]->guid(),
+                AutofillType(autofill::ADDRESS_HOME_LINE1), max_length_string);
 
   EXPECT_TRUE(AutofillProfileChecker(0, 1, /*expected_count=*/1U).Wait());
 }
@@ -467,22 +487,16 @@ IN_PROC_BROWSER_TEST_F(TwoClientAutofillProfileSyncTest, ExceedsMaxLength) {
   AddProfile(0, CreateAutofillProfile(PROFILE_HOMER));
   ASSERT_TRUE(AutofillProfileChecker(0, 1, /*expected_count=*/1U).Wait());
 
-  base::string16 exceeds_max_length_string(
-      AutofillTable::kMaxDataLength + 1, '.');
-  UpdateProfile(0,
-                GetAllAutoFillProfiles(0)[0]->guid(),
-                AutofillType(autofill::NAME_FIRST),
-                exceeds_max_length_string);
-  UpdateProfile(0,
-                GetAllAutoFillProfiles(0)[0]->guid(),
-                AutofillType(autofill::NAME_LAST),
-                exceeds_max_length_string);
-  UpdateProfile(0,
-                GetAllAutoFillProfiles(0)[0]->guid(),
+  base::string16 exceeds_max_length_string(AutofillTable::kMaxDataLength + 1,
+                                           '.');
+  UpdateProfile(0, GetAllAutoFillProfiles(0)[0]->guid(),
+                AutofillType(autofill::NAME_FIRST), exceeds_max_length_string);
+  UpdateProfile(0, GetAllAutoFillProfiles(0)[0]->guid(),
+                AutofillType(autofill::NAME_LAST), exceeds_max_length_string);
+  UpdateProfile(0, GetAllAutoFillProfiles(0)[0]->guid(),
                 AutofillType(autofill::EMAIL_ADDRESS),
                 exceeds_max_length_string);
-  UpdateProfile(0,
-                GetAllAutoFillProfiles(0)[0]->guid(),
+  UpdateProfile(0, GetAllAutoFillProfiles(0)[0]->guid(),
                 AutofillType(autofill::ADDRESS_HOME_LINE1),
                 exceeds_max_length_string);
 

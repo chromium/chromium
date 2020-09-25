@@ -56,8 +56,7 @@ ACTION_P(SignalEvent, event) {
 class MockWebDataServiceObserver
     : public AutofillWebDataServiceObserverOnDBSequence {
  public:
-  MOCK_METHOD1(AutofillEntriesChanged,
-               void(const AutofillChangeList& changes));
+  MOCK_METHOD1(AutofillEntriesChanged, void(const AutofillChangeList& changes));
 };
 
 scoped_refptr<AutofillWebDataService> GetWebDataService(int index) {
@@ -102,8 +101,8 @@ void RemoveKeyDontBlockForSync(int profile, const AutofillKey& key) {
 void GetAllAutofillEntriesOnDBSequence(AutofillWebDataService* wds,
                                        std::vector<AutofillEntry>* entries) {
   DCHECK(wds->GetDBTaskRunner()->RunsTasksInCurrentSequence());
-  AutofillTable::FromWebDatabase(
-      wds->GetDatabase())->GetAllAutofillEntries(entries);
+  AutofillTable::FromWebDatabase(wds->GetDatabase())
+      ->GetAllAutofillEntries(entries);
 }
 
 std::vector<AutofillEntry> GetAllAutofillEntries(AutofillWebDataService* wds) {
@@ -177,45 +176,40 @@ AutofillProfile CreateAutofillProfile(ProfileType type) {
   AutofillProfile profile;
   switch (type) {
     case PROFILE_MARION:
-      autofill::test::SetProfileInfoWithGuid(&profile,
-          "C837507A-6C3B-4872-AC14-5113F157D668",
-          "Marion", "Mitchell", "Morrison",
-          "johnwayne@me.xyz", "Fox",
-          "123 Zoo St.", "unit 5", "Hollywood", "CA",
-          "91601", "US", "12345678910");
+      autofill::test::SetProfileInfoWithGuid(
+          &profile, "C837507A-6C3B-4872-AC14-5113F157D668", "Marion",
+          "Mitchell", "Morrison", "johnwayne@me.xyz", "Fox", "123 Zoo St.",
+          "unit 5", "Hollywood", "CA", "91601", "US", "12345678910");
       break;
     case PROFILE_HOMER:
-      autofill::test::SetProfileInfoWithGuid(&profile,
-          "137DE1C3-6A30-4571-AC86-109B1ECFBE7F",
-          "Homer", "J.", "Simpson",
-          "homer@abc.com", "SNPP",
-          "742 Evergreen Terrace", "PO Box 1", "Springfield", "MA",
-          "94101", "US", "14155551212");
+      autofill::test::SetProfileInfoWithGuid(
+          &profile, "137DE1C3-6A30-4571-AC86-109B1ECFBE7F", "Homer", "J.",
+          "Simpson", "homer@abc.com", "SNPP", "742 Evergreen Terrace",
+          "PO Box 1", "Springfield", "MA", "94101", "US", "14155551212");
       break;
     case PROFILE_FRASIER:
-      autofill::test::SetProfileInfoWithGuid(&profile,
-          "9A5E6872-6198-4688-BF75-0016E781BB0A",
-          "Frasier", "Winslow", "Crane",
-          "", "randomness", "", "Apt. 4", "Seattle", "WA",
+      autofill::test::SetProfileInfoWithGuid(
+          &profile, "9A5E6872-6198-4688-BF75-0016E781BB0A", "Frasier",
+          "Winslow", "Crane", "", "randomness", "", "Apt. 4", "Seattle", "WA",
           "99121", "US", "0000000000");
       break;
     case PROFILE_NULL:
-      autofill::test::SetProfileInfoWithGuid(&profile,
-          "FE461507-7E13-4198-8E66-74C7DB6D8322",
-          "", "", "", "", "", "", "", "", "", "", "", "");
+      autofill::test::SetProfileInfoWithGuid(
+          &profile, "FE461507-7E13-4198-8E66-74C7DB6D8322", "", "", "", "", "",
+          "", "", "", "", "", "", "");
       break;
   }
+  profile.FinalizeAfterImport();
   return profile;
 }
 
 AutofillProfile CreateUniqueAutofillProfile() {
   AutofillProfile profile;
-  autofill::test::SetProfileInfoWithGuid(&profile,
-      base::GenerateGUID().c_str(),
-      "First", "Middle", "Last",
-      "email@domain.tld", "Company",
-      "123 Main St", "Apt 456", "Nowhere", "OK",
+  autofill::test::SetProfileInfoWithGuid(
+      &profile, base::GenerateGUID().c_str(), "First", "Middle", "Last",
+      "email@domain.tld", "Company", "123 Main St", "Apt 456", "Nowhere", "OK",
       "73038", "US", "12345678910");
+  profile.FinalizeAfterImport();
   return profile;
 }
 
@@ -327,12 +321,14 @@ void RemoveProfile(int profile, const std::string& guid) {
 void UpdateProfile(int profile,
                    const std::string& guid,
                    const AutofillType& type,
-                   const base::string16& value) {
+                   const base::string16& value,
+                   autofill::structured_address::VerificationStatus status) {
   std::vector<AutofillProfile> profiles;
   for (AutofillProfile* profile : GetAllAutoFillProfiles(profile)) {
     profiles.push_back(*profile);
     if (profile->guid() == guid) {
-      profiles.back().SetRawInfo(type.GetStorableType(), value);
+      profiles.back().SetRawInfoWithVerificationStatus(type.GetStorableType(),
+                                                       value, status);
     }
   }
   autofill_helper::SetProfiles(profile, &profiles);

@@ -13,6 +13,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/strings/string16.h"
 #include "chrome/browser/sync/test/integration/multi_client_status_change_checker.h"
+#include "components/autofill/core/browser/data_model/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -23,6 +24,7 @@ class AutofillProfile;
 class AutofillType;
 class CreditCard;
 class PersonalDataManager;
+
 }  // namespace autofill
 
 namespace autofill_helper {
@@ -74,11 +76,14 @@ void AddProfile(int profile, const autofill::AutofillProfile& autofill_profile);
 void RemoveProfile(int profile, const std::string& guid);
 
 // Updates the autofill profile with guid |guid| in sync profile |profile|
-// to |type| and |value|.
-void UpdateProfile(int profile,
-                   const std::string& guid,
-                   const autofill::AutofillType& type,
-                   const base::string16& value);
+// to |type| and |value| with the verification status |status|.
+void UpdateProfile(
+    int profile,
+    const std::string& guid,
+    const autofill::AutofillType& type,
+    const base::string16& value,
+    autofill::structured_address::VerificationStatus status =
+        autofill::structured_address::VerificationStatus::kObserved);
 
 // Gets all the Autofill profiles in the PersonalDataManager of sync profile
 // |profile|.
