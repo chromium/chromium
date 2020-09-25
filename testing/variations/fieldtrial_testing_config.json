@@ -5267,6 +5267,21 @@
             ]
         }
     ],
+    "PasswordScriptsFetching": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PasswordScriptsFetching"
+                    ]
+                }
+            ]
+        }
+    ],
     "PaymentRequestAlwaysAllowJustInTimePaymentApp": [
         {
             "platforms": [
