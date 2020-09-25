@@ -17,6 +17,7 @@
 #include "ui/gfx/text_constants.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/selection_controller_delegate.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view.h"
@@ -441,6 +442,33 @@ class VIEWS_EXPORT Label : public View,
 
   DISALLOW_COPY_AND_ASSIGN(Label);
 };
+
+BEGIN_VIEW_BUILDER(VIEWS_EXPORT, Label, View)
+VIEW_BUILDER_PROPERTY(const gfx::FontList&, FontList)
+VIEW_BUILDER_PROPERTY(const base::string16&, Text)
+VIEW_BUILDER_PROPERTY(int, TextStyle)
+VIEW_BUILDER_PROPERTY(bool, AutoColorReadabilityEnabled)
+VIEW_BUILDER_PROPERTY(SkColor, EnabledColor)
+VIEW_BUILDER_PROPERTY(SkColor, BackgroundColor)
+VIEW_BUILDER_PROPERTY(SkColor, SelectionTextColor)
+VIEW_BUILDER_PROPERTY(SkColor, SelectionBackgroundColor)
+VIEW_BUILDER_PROPERTY(const gfx::ShadowValues&, Shadows)
+VIEW_BUILDER_PROPERTY(bool, SubpixelRenderingEnabled)
+VIEW_BUILDER_PROPERTY(gfx::HorizontalAlignment, HorizontalAlignment)
+VIEW_BUILDER_PROPERTY(gfx::VerticalAlignment, VerticalAlignment)
+VIEW_BUILDER_PROPERTY(int, LineHeight)
+VIEW_BUILDER_PROPERTY(bool, MultiLine)
+VIEW_BUILDER_PROPERTY(int, MaxLines)
+VIEW_BUILDER_PROPERTY(bool, Obscured)
+VIEW_BUILDER_PROPERTY(bool, AllowCharacterBreak)
+VIEW_BUILDER_PROPERTY(size_t, TruncateLength)
+VIEW_BUILDER_PROPERTY(gfx::ElideBehavior, ElideBehavior)
+VIEW_BUILDER_PROPERTY(const base::string16&, TooltipText)
+VIEW_BUILDER_PROPERTY(bool, HandlesTooltips)
+VIEW_BUILDER_PROPERTY(int, MaximumWidth)
+VIEW_BUILDER_PROPERTY(bool, CollapseWhenHidden)
+VIEW_BUILDER_PROPERTY(bool, Selectable)
+END_VIEW_BUILDER(VIEWS_EXPORT, Label)
 
 }  // namespace views
 
