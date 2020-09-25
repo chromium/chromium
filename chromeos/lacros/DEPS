@@ -1,0 +1,7 @@
+# This directory must not depend on //content or //chrome. This contains
+# low-level ChromeOS system APIs for lacros. It's the equivalent of Win32 for
+# Windows or Cocoa for macOS.
+include_rules = [
+  "-chrome",
+  "-content",
+]
