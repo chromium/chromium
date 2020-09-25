@@ -18,7 +18,6 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-using autofill::PasswordForm;
 using password_manager::PasswordStore;
 using testing::_;
 using testing::ElementsAre;
@@ -117,7 +116,7 @@ TYPED_TEST_P(PasswordStoreOriginTest,
 TYPED_TEST_P(PasswordStoreOriginTest,
              RemoveLoginsByURLAndTimeImpl_NonMatchingOrigin) {
   const char origin_url[] = "http://foo.example.com/";
-  std::unique_ptr<autofill::PasswordForm> form =
+  std::unique_ptr<PasswordForm> form =
       FillPasswordFormWithData(CreateTestPasswordFormDataByOrigin(origin_url));
   this->delegate_.store()->AddLogin(*form);
   this->delegate_.FinishAsyncProcessing();
@@ -141,7 +140,7 @@ TYPED_TEST_P(PasswordStoreOriginTest,
 TYPED_TEST_P(PasswordStoreOriginTest,
              RemoveLoginsByURLAndTimeImpl_NotWithinTimeInterval) {
   const char origin_url[] = "http://foo.example.com/";
-  std::unique_ptr<autofill::PasswordForm> form =
+  std::unique_ptr<PasswordForm> form =
       FillPasswordFormWithData(CreateTestPasswordFormDataByOrigin(origin_url));
   this->delegate_.store()->AddLogin(*form);
   this->delegate_.FinishAsyncProcessing();

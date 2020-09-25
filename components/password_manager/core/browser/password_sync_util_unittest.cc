@@ -9,7 +9,7 @@
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "components/autofill/core/common/password_form.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/sync_username_test_base.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -19,7 +19,6 @@
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"  // nogncheck
 #endif  // PASSWORD_REUSE_DETECTION_ENABLED
 
-using autofill::PasswordForm;
 using base::ASCIIToUTF16;
 
 namespace password_manager {

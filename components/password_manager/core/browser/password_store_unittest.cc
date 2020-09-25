@@ -40,7 +40,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using autofill::PasswordForm;
 using base::WaitableEvent;
 using testing::_;
 using testing::DoAll;

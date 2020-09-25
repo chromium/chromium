@@ -27,7 +27,6 @@ using autofill::AutofillUploadContents;
 using autofill::FormData;
 using autofill::FormFieldData;
 using autofill::FormStructure;
-using autofill::PasswordForm;
 using autofill::PasswordFormFillData;
 using base::ASCIIToUTF16;
 using base::TestMockTimeTaskRunner;
@@ -354,7 +353,7 @@ class PasswordSaveManagerImplTest : public testing::Test,
   TestMockTimeTaskRunner* task_runner() { return task_runner_.get(); }
 
   void SetNonFederatedAndNotifyFetchCompleted(
-      const std::vector<const autofill::PasswordForm*>& non_federated) {
+      const std::vector<const PasswordForm*>& non_federated) {
     fetcher()->SetNonFederated(non_federated);
     fetcher()->NotifyFetchCompleted();
   }

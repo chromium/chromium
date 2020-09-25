@@ -11,12 +11,9 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "components/password_manager/core/browser/password_form_forward.h"
 #include "components/password_manager/core/browser/password_store_change.h"
 #include "components/sync/model/sync_metadata_store.h"
-
-namespace autofill {
-struct PasswordForm;
-}
 
 namespace syncer {
 class MetadataBatch;
@@ -24,8 +21,7 @@ class MetadataBatch;
 
 namespace password_manager {
 
-using PrimaryKeyToFormMap =
-    std::map<int, std::unique_ptr<autofill::PasswordForm>>;
+using PrimaryKeyToFormMap = std::map<int, std::unique_ptr<PasswordForm>>;
 
 // This enum is used to determine result status when deleting undecryptable
 // logins from database.
@@ -130,17 +126,16 @@ class PasswordStoreSync {
 
   // Synchronous implementation to add the given login.
   virtual PasswordStoreChangeList AddLoginSync(
-      const autofill::PasswordForm& form,
+      const PasswordForm& form,
       AddLoginError* error = nullptr) = 0;
 
   // Synchronous implementation to update the given login.
   virtual PasswordStoreChangeList UpdateLoginSync(
-      const autofill::PasswordForm& form,
+      const PasswordForm& form,
       UpdateLoginError* error = nullptr) = 0;
 
   // Synchronous implementation to remove the given login.
-  virtual PasswordStoreChangeList RemoveLoginSync(
-      const autofill::PasswordForm& form) = 0;
+  virtual PasswordStoreChangeList RemoveLoginSync(const PasswordForm& form) = 0;
 
   // Synchronous implementation to remove the login with the given primary key.
   virtual PasswordStoreChangeList RemoveLoginByPrimaryKeySync(
@@ -158,7 +153,7 @@ class PasswordStoreSync {
   // in order to offer the user the option of saving them in the profile store.
   // Should only be called for the account store.
   virtual void NotifyUnsyncedCredentialsWillBeDeleted(
-      std::vector<autofill::PasswordForm> unsynced_credentials) = 0;
+      std::vector<PasswordForm> unsynced_credentials) = 0;
 
   // The methods below adds transaction support to the password store that's
   // required by sync to guarantee atomic writes of data and sync metadata.

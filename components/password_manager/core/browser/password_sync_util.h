@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "components/autofill/core/common/password_form.h"
+#include "components/password_manager/core/browser/password_form_forward.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/driver/sync_service.h"
 
@@ -30,7 +30,7 @@ std::string GetSyncUsernameIfSyncingPasswords(
 // Returns true if |form| corresponds to the account specified by
 // GetSyncUsernameIfSyncingPasswords. Returns false if
 // GetSyncUsernameIfSyncingPasswords does not specify any account.
-bool IsSyncAccountCredential(const autofill::PasswordForm& form,
+bool IsSyncAccountCredential(const PasswordForm& form,
                              const syncer::SyncService* sync_service,
                              const signin::IdentityManager* identity_manager);
 
@@ -43,7 +43,7 @@ bool IsGaiaCredentialPage(const std::string& signon_realm);
 
 // If |form|'s origin matches enterprise login URL or enterprise change password
 // URL.
-bool ShouldSaveEnterprisePasswordHash(const autofill::PasswordForm& form,
+bool ShouldSaveEnterprisePasswordHash(const PasswordForm& form,
                                       const PrefService& prefs);
 
 }  // namespace sync_util

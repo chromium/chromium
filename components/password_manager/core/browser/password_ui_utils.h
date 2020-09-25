@@ -12,11 +12,8 @@
 
 #include "base/strings/string_piece.h"
 
+#include "components/password_manager/core/browser/password_form_forward.h"
 #include "url/origin.h"
-
-namespace autofill {
-struct PasswordForm;
-}
 
 namespace password_manager {
 
@@ -36,7 +33,7 @@ std::string SplitByDotAndReverse(base::StringPiece host);
 //  if available, otherwise it is the reversed package name (e.g.
 //  com.example.android gets transformed to android.example.com).
 std::pair<std::string, GURL> GetShownOriginAndLinkUrl(
-    const autofill::PasswordForm& password_form);
+    const PasswordForm& password_form);
 
 // Returns a string suitable for security display to the user (just like
 // |FormatUrlForSecurityDisplay| with OMIT_HTTP_AND_HTTPS) based on origin of

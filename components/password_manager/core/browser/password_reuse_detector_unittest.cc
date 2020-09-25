@@ -11,13 +11,12 @@
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
-#include "components/autofill/core/common/password_form.h"
 #include "components/password_manager/core/browser/hash_password_manager.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using autofill::PasswordForm;
 using base::ASCIIToUTF16;
 using testing::_;
 using testing::IsEmpty;

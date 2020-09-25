@@ -15,8 +15,8 @@
 #include "base/macros.h"
 #include "base/optional.h"
 #include "base/strings/string16.h"
-#include "components/autofill/core/common/password_form.h"
 #include "components/password_manager/core/browser/hash_password_manager.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store_change.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
 
@@ -35,8 +35,7 @@ struct MatchingReusedCredential {
   std::string signon_realm;
   base::string16 username;
   // The store in which those credentials are stored.
-  autofill::PasswordForm::Store in_store =
-      autofill::PasswordForm::Store::kNotSet;
+  PasswordForm::Store in_store = PasswordForm::Store::kNotSet;
 
   bool operator<(const MatchingReusedCredential& other) const;
   bool operator==(const MatchingReusedCredential& other) const;
@@ -54,7 +53,7 @@ class PasswordReuseDetector : public PasswordStoreConsumer {
 
   // PasswordStoreConsumer
   void OnGetPasswordStoreResults(
-      std::vector<std::unique_ptr<autofill::PasswordForm>> results) override;
+      std::vector<std::unique_ptr<PasswordForm>> results) override;
 
   // Add new or updated passwords from |changes| to internal password index.
   void OnLoginsChanged(const PasswordStoreChangeList& changes);
@@ -100,7 +99,7 @@ class PasswordReuseDetector : public PasswordStoreConsumer {
 
   // Add password from |form| to |passwords_| and
   // |passwords_with_matching_reused_credentials_|.
-  void AddPassword(const autofill::PasswordForm& form);
+  void AddPassword(const PasswordForm& form);
 
   // If Gaia password reuse is found, return the PasswordHashData of the reused
   // password. If no reuse is found, return |base::nullopt|.

@@ -8,12 +8,10 @@
 #include <ostream>
 
 #include "base/strings/string_util.h"
-#include "components/autofill/core/common/password_form.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
-
-using autofill::PasswordForm;
 
 namespace password_manager {
 

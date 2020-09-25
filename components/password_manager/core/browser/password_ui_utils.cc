@@ -12,8 +12,8 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/autofill/core/common/password_form.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_utils.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
 #include "components/url_formatter/elide_url.h"
@@ -38,7 +38,7 @@ std::string SplitByDotAndReverse(base::StringPiece host) {
 }
 
 std::pair<std::string, GURL> GetShownOriginAndLinkUrl(
-    const autofill::PasswordForm& password_form) {
+    const PasswordForm& password_form) {
   std::string shown_origin;
   GURL link_url;
 

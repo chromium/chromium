@@ -29,7 +29,7 @@ class PasswordSaveManagerImpl : public PasswordSaveManager {
   static std::unique_ptr<PasswordSaveManagerImpl> CreatePasswordSaveManagerImpl(
       const PasswordManagerClient* client);
 
-  const autofill::PasswordForm& GetPendingCredentials() const override;
+  const PasswordForm& GetPendingCredentials() const override;
   const base::string16& GetGeneratedPassword() const override;
   FormSaver* GetFormSaver() const override;
 
@@ -41,32 +41,31 @@ class PasswordSaveManagerImpl : public PasswordSaveManager {
 
   // Create pending credentials from |parsed_submitted_form|, |observed_form|
   // and |submitted_form|.
-  void CreatePendingCredentials(
-      const autofill::PasswordForm& parsed_submitted_form,
-      const autofill::FormData* observed_form,
-      const autofill::FormData& submitted_form,
-      bool is_http_auth,
-      bool is_credential_api_save) override;
+  void CreatePendingCredentials(const PasswordForm& parsed_submitted_form,
+                                const autofill::FormData* observed_form,
+                                const autofill::FormData& submitted_form,
+                                bool is_http_auth,
+                                bool is_credential_api_save) override;
 
   void ResetPendingCredentials() override;
 
   void Save(const autofill::FormData* observed_form,
-            const autofill::PasswordForm& parsed_submitted_form) override;
+            const PasswordForm& parsed_submitted_form) override;
 
-  void Update(const autofill::PasswordForm& credentials_to_update,
+  void Update(const PasswordForm& credentials_to_update,
               const autofill::FormData* observed_form,
-              const autofill::PasswordForm& parsed_submitted_form) override;
+              const PasswordForm& parsed_submitted_form) override;
 
   void PermanentlyBlacklist(
       const PasswordStore::FormDigest& form_digest) override;
   void Unblacklist(const PasswordStore::FormDigest& form_digest) override;
 
   // Called when generated password is accepted or changed by user.
-  void PresaveGeneratedPassword(autofill::PasswordForm parsed_form) override;
+  void PresaveGeneratedPassword(PasswordForm parsed_form) override;
 
   // Called when user wants to start generation flow for |generated|.
   void GeneratedPasswordAccepted(
-      autofill::PasswordForm parsed_form,
+      PasswordForm parsed_form,
       base::WeakPtr<PasswordManagerDriver> driver) override;
 
   // Signals that the user cancels password generation.
@@ -90,21 +89,21 @@ class PasswordSaveManagerImpl : public PasswordSaveManager {
 
  protected:
   static PendingCredentialsState ComputePendingCredentialsState(
-      const autofill::PasswordForm& parsed_submitted_form,
-      const autofill::PasswordForm* similar_saved_form);
-  static autofill::PasswordForm BuildPendingCredentials(
+      const PasswordForm& parsed_submitted_form,
+      const PasswordForm* similar_saved_form);
+  static PasswordForm BuildPendingCredentials(
       PendingCredentialsState pending_credentials_state,
-      const autofill::PasswordForm& parsed_submitted_form,
+      const PasswordForm& parsed_submitted_form,
       const autofill::FormData* observed_form,
       const autofill::FormData& submitted_form,
       const base::Optional<base::string16>& generated_password,
       bool is_http_auth,
       bool is_credential_api_save,
-      const autofill::PasswordForm* similar_saved_form);
+      const PasswordForm* similar_saved_form);
 
-  virtual std::pair<const autofill::PasswordForm*, PendingCredentialsState>
+  virtual std::pair<const PasswordForm*, PendingCredentialsState>
   FindSimilarSavedFormAndComputeState(
-      const autofill::PasswordForm& parsed_submitted_form) const;
+      const PasswordForm& parsed_submitted_form) const;
 
   // Returns the form_saver to be used for generated passwords. Subclasses will
   // override this method to provide different logic for get the form saver.
@@ -112,12 +111,11 @@ class PasswordSaveManagerImpl : public PasswordSaveManager {
 
   // Returns the forms in |matches| that should be taken into account for
   // conflict resolution during generation. Will be overridden in subclasses.
-  virtual std::vector<const autofill::PasswordForm*>
-  GetRelevantMatchesForGeneration(
-      const std::vector<const autofill::PasswordForm*>& matches);
+  virtual std::vector<const PasswordForm*> GetRelevantMatchesForGeneration(
+      const std::vector<const PasswordForm*>& matches);
 
   virtual void SavePendingToStoreImpl(
-      const autofill::PasswordForm& parsed_submitted_form);
+      const PasswordForm& parsed_submitted_form);
 
   // Clones the current object into |clone|. |clone| must not be null.
   void CloneInto(PasswordSaveManagerImpl* clone);
@@ -133,7 +131,7 @@ class PasswordSaveManagerImpl : public PasswordSaveManager {
   // unknown. This variable contains credentials that are ready to be written
   // (saved or updated) to a password store. It is calculated based on
   // |submitted_form_| and |best_matches_|.
-  autofill::PasswordForm pending_credentials_;
+  PasswordForm pending_credentials_;
 
   PendingCredentialsState pending_credentials_state_ =
       PendingCredentialsState::NONE;
@@ -143,20 +141,19 @@ class PasswordSaveManagerImpl : public PasswordSaveManager {
 
  private:
   base::string16 GetOldPassword(
-      const autofill::PasswordForm& parsed_submitted_form) const;
+      const PasswordForm& parsed_submitted_form) const;
 
   void SetVotesAndRecordMetricsForPendingCredentials(
-      const autofill::PasswordForm& parsed_submitted_form);
+      const PasswordForm& parsed_submitted_form);
 
   // Save/update |pending_credentials_| to the password store.
   void SavePendingToStore(const autofill::FormData* observed_form,
-                          const autofill::PasswordForm& parsed_submitted_form);
+                          const PasswordForm& parsed_submitted_form);
 
   // This sends needed signals to the autofill server, and also triggers some
   // UMA reporting.
-  void UploadVotesAndMetrics(
-      const autofill::FormData* observed_form,
-      const autofill::PasswordForm& parsed_submitted_form);
+  void UploadVotesAndMetrics(const autofill::FormData* observed_form,
+                             const PasswordForm& parsed_submitted_form);
 
   // Handles the user flows related to the generation.
   std::unique_ptr<PasswordGenerationManager> generation_manager_;

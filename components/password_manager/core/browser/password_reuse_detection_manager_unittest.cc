@@ -227,7 +227,7 @@ TEST_F(PasswordReuseDetectionManagerTest,
   std::vector<MatchingReusedCredential> reused_credentials = {
       {.signon_realm = "www.example2.com",
        .username = base::ASCIIToUTF16("username1"),
-       .in_store = autofill::PasswordForm::Store::kProfileStore}};
+       .in_store = PasswordForm::Store::kProfileStore}};
 
   // CheckProtectedPasswordEntry should get called once, and the reused
   // credentials get used reported once in this call.
@@ -311,7 +311,7 @@ TEST_F(PasswordReuseDetectionManagerWithTwoStoresTest,
   std::vector<MatchingReusedCredential> profile_reused_credentials = {
       {.signon_realm = "www.example2.com",
        .username = base::ASCIIToUTF16("username1"),
-       .in_store = autofill::PasswordForm::Store::kProfileStore}};
+       .in_store = PasswordForm::Store::kProfileStore}};
   // Simulate response from the profile store.
   manager.OnReuseCheckDone(/*is_reuse_found=*/true, /*password_length=*/10,
                            /*reused_protected_password_hash=*/base::nullopt,
@@ -320,7 +320,7 @@ TEST_F(PasswordReuseDetectionManagerWithTwoStoresTest,
   std::vector<MatchingReusedCredential> account_reused_credentials{
       {.signon_realm = "www.example2.com",
        .username = base::ASCIIToUTF16("username2"),
-       .in_store = autofill::PasswordForm::Store::kAccountStore}};
+       .in_store = PasswordForm::Store::kAccountStore}};
 
   // The callback is run only after both stores respond.
   EXPECT_CALL(client_,
@@ -359,7 +359,7 @@ TEST_F(PasswordReuseDetectionManagerWithTwoStoresTest,
   std::vector<MatchingReusedCredential> profile_reused_credentials = {
       {.signon_realm = "www.example2.com",
        .username = base::ASCIIToUTF16("username1"),
-       .in_store = autofill::PasswordForm::Store::kProfileStore}};
+       .in_store = PasswordForm::Store::kProfileStore}};
   // Simulate response from the profile store.
   manager.OnReuseCheckDone(/*is_reuse_found=*/true, /*password_length=*/10,
                            /*reused_protected_password_hash=*/base::nullopt,
@@ -403,7 +403,7 @@ TEST_F(PasswordReuseDetectionManagerWithTwoStoresTest,
   std::vector<MatchingReusedCredential> profile_reused_credentials = {
       {.signon_realm = "www.example2.com",
        .username = base::ASCIIToUTF16("username1"),
-       .in_store = autofill::PasswordForm::Store::kProfileStore}};
+       .in_store = PasswordForm::Store::kProfileStore}};
 
   // The callback is run only after both stores respond.
   EXPECT_CALL(client_,

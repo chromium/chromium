@@ -11,10 +11,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
-
-namespace autofill {
-struct PasswordForm;
-}
+#include "components/password_manager/core/browser/password_form_forward.h"
 
 namespace password_manager {
 
@@ -34,7 +31,7 @@ class PasswordStoreConsumer {
   // Called when the GetLogins() request is finished, with the associated
   // |results|.
   virtual void OnGetPasswordStoreResults(
-      std::vector<std::unique_ptr<autofill::PasswordForm>> results) = 0;
+      std::vector<std::unique_ptr<PasswordForm>> results) = 0;
 
   // Like OnGetPasswordStoreResults(), but also receives the originating
   // PasswordStore as a parameter. This is useful for consumers that query both
@@ -43,7 +40,7 @@ class PasswordStoreConsumer {
   // consumers that don't care about the store can just ignore this.
   virtual void OnGetPasswordStoreResultsFrom(
       PasswordStore* store,
-      std::vector<std::unique_ptr<autofill::PasswordForm>> results);
+      std::vector<std::unique_ptr<PasswordForm>> results);
 
   // Called when the GetSiteStats() request is finished, with the associated
   // site statistics.

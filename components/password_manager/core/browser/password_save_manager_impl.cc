@@ -24,7 +24,6 @@ using autofill::FieldRendererId;
 using autofill::FormData;
 using autofill::FormFieldData;
 using autofill::FormStructure;
-using autofill::PasswordForm;
 using autofill::ValueElementPair;
 
 namespace password_manager {
@@ -447,7 +446,7 @@ PasswordForm PasswordSaveManagerImpl::BuildPendingCredentials(
   return pending_credentials;
 }
 
-std::pair<const autofill::PasswordForm*, PendingCredentialsState>
+std::pair<const PasswordForm*, PendingCredentialsState>
 PasswordSaveManagerImpl::FindSimilarSavedFormAndComputeState(
     const PasswordForm& parsed_submitted_form) const {
   const PasswordForm* similar_saved_form =
@@ -550,9 +549,9 @@ FormSaver* PasswordSaveManagerImpl::GetFormSaverForGeneration() {
   return form_saver_.get();
 }
 
-std::vector<const autofill::PasswordForm*>
+std::vector<const PasswordForm*>
 PasswordSaveManagerImpl::GetRelevantMatchesForGeneration(
-    const std::vector<const autofill::PasswordForm*>& matches) {
+    const std::vector<const PasswordForm*>& matches) {
   return matches;
 }
 

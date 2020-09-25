@@ -6,7 +6,7 @@
 
 #include <tuple>
 
-#include "components/autofill/core/common/password_form.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -40,7 +40,7 @@ TEST(GetShownOriginTest, RemovePrefixes) {
 }
 
 TEST(GetShownOriginAndLinkUrlTest, OriginFromAndroidForm_NoAppDisplayName) {
-  autofill::PasswordForm android_form;
+  PasswordForm android_form;
   android_form.signon_realm = "android://hash@com.example.android";
   android_form.app_display_name.clear();
 
@@ -54,7 +54,7 @@ TEST(GetShownOriginAndLinkUrlTest, OriginFromAndroidForm_NoAppDisplayName) {
 }
 
 TEST(GetShownOriginAndLinkUrlTest, OriginFromAndroidForm_WithAppDisplayName) {
-  autofill::PasswordForm android_form;
+  PasswordForm android_form;
   android_form.signon_realm = "android://hash@com.example.android";
   android_form.app_display_name = "Example Android App";
 
@@ -68,7 +68,7 @@ TEST(GetShownOriginAndLinkUrlTest, OriginFromAndroidForm_WithAppDisplayName) {
 }
 
 TEST(GetShownOriginAndLinkUrlTest, OriginFromNonAndroidForm) {
-  autofill::PasswordForm form;
+  PasswordForm form;
   form.signon_realm = "https://example.com/";
   form.url = GURL("https://example.com/login?ref=1");
 

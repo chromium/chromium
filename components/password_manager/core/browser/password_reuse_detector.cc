@@ -8,8 +8,8 @@
 #include <utility>
 
 #include "base/stl_util.h"
-#include "components/autofill/core/common/password_form.h"
 #include "components/password_manager/core/browser/hash_password_manager.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_hash_data.h"
 #include "components/password_manager/core/browser/password_reuse_detector_consumer.h"
 #include "components/password_manager/core/browser/psl_matching_helper.h"
@@ -86,7 +86,7 @@ PasswordReuseDetector::PasswordReuseDetector() = default;
 PasswordReuseDetector::~PasswordReuseDetector() = default;
 
 void PasswordReuseDetector::OnGetPasswordStoreResults(
-    std::vector<std::unique_ptr<autofill::PasswordForm>> results) {
+    std::vector<std::unique_ptr<PasswordForm>> results) {
   for (const auto& form : results)
     AddPassword(*form);
 }
@@ -285,7 +285,7 @@ void PasswordReuseDetector::ClearAllNonGmailPasswordHash() {
       });
 }
 
-void PasswordReuseDetector::AddPassword(const autofill::PasswordForm& form) {
+void PasswordReuseDetector::AddPassword(const PasswordForm& form) {
   if (form.password_value.size() < kMinPasswordLengthToCheck)
     return;
 

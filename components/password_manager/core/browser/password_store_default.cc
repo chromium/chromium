@@ -14,8 +14,6 @@
 #include "components/password_manager/core/browser/password_store_change.h"
 #include "components/prefs/pref_service.h"
 
-using autofill::PasswordForm;
-
 namespace password_manager {
 
 PasswordStoreDefault::PasswordStoreDefault(

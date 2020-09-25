@@ -39,12 +39,11 @@ class PasswordStoreDefault : public PasswordStore {
   void ReportMetricsImpl(const std::string& sync_username,
                          bool custom_passphrase_sync_enabled,
                          BulkCheckDone bulk_check_done) override;
-  PasswordStoreChangeList AddLoginImpl(const autofill::PasswordForm& form,
+  PasswordStoreChangeList AddLoginImpl(const PasswordForm& form,
                                        AddLoginError* error) override;
-  PasswordStoreChangeList UpdateLoginImpl(const autofill::PasswordForm& form,
+  PasswordStoreChangeList UpdateLoginImpl(const PasswordForm& form,
                                           UpdateLoginError* error) override;
-  PasswordStoreChangeList RemoveLoginImpl(
-      const autofill::PasswordForm& form) override;
+  PasswordStoreChangeList RemoveLoginImpl(const PasswordForm& form) override;
   PasswordStoreChangeList RemoveLoginsByURLAndTimeImpl(
       const base::RepeatingCallback<bool(const GURL&)>& url_filter,
       base::Time delete_begin,
@@ -58,15 +57,14 @@ class PasswordStoreDefault : public PasswordStore {
       const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
       base::Time delete_begin,
       base::Time delete_end) override;
-  std::vector<std::unique_ptr<autofill::PasswordForm>> FillMatchingLogins(
+  std::vector<std::unique_ptr<PasswordForm>> FillMatchingLogins(
       const FormDigest& form) override;
-  std::vector<std::unique_ptr<autofill::PasswordForm>>
-  FillMatchingLoginsByPassword(
+  std::vector<std::unique_ptr<PasswordForm>> FillMatchingLoginsByPassword(
       const base::string16& plain_text_password) override;
   bool FillAutofillableLogins(
-      std::vector<std::unique_ptr<autofill::PasswordForm>>* forms) override;
+      std::vector<std::unique_ptr<PasswordForm>>* forms) override;
   bool FillBlacklistLogins(
-      std::vector<std::unique_ptr<autofill::PasswordForm>>* forms) override;
+      std::vector<std::unique_ptr<PasswordForm>>* forms) override;
   DatabaseCleanupResult DeleteUndecryptableLogins() override;
   void AddSiteStatsImpl(const InteractionsStats& stats) override;
   void RemoveSiteStatsImpl(const GURL& origin_domain) override;

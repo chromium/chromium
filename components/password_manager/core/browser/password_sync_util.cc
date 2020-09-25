@@ -6,7 +6,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "components/autofill/core/common/password_form.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/driver/sync_user_settings.h"
@@ -18,7 +18,6 @@
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #endif  // PASSWORD_REUSE_DETECTION_ENABLED
 
-using autofill::PasswordForm;
 using url::Origin;
 
 namespace {
@@ -47,7 +46,7 @@ std::string GetSyncUsernameIfSyncingPasswords(
   return identity_manager->GetPrimaryAccountInfo().email;
 }
 
-bool IsSyncAccountCredential(const autofill::PasswordForm& form,
+bool IsSyncAccountCredential(const PasswordForm& form,
                              const syncer::SyncService* sync_service,
                              const signin::IdentityManager* identity_manager) {
   if (!GURL(form.signon_realm).DomainIs("google.com"))
@@ -86,7 +85,7 @@ bool IsGaiaCredentialPage(const std::string& signon_realm) {
          signon_realm == kGoogleChangePasswordSignonRealm;
 }
 
-bool ShouldSaveEnterprisePasswordHash(const autofill::PasswordForm& form,
+bool ShouldSaveEnterprisePasswordHash(const PasswordForm& form,
                                       const PrefService& prefs) {
 #if defined(PASSWORD_REUSE_DETECTION_ENABLED)
   return safe_browsing::MatchesPasswordProtectionLoginURL(form.url, prefs) ||

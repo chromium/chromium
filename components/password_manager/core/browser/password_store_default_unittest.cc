@@ -27,11 +27,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using autofill::PasswordForm;
+using testing::_;
 using testing::ElementsAre;
 using testing::ElementsAreArray;
 using testing::IsEmpty;
-using testing::_;
 
 namespace password_manager {
 

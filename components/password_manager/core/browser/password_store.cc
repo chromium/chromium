@@ -25,12 +25,12 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/autofill/core/common/form_data.h"
-#include "components/autofill/core/common/password_form.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliated_match_helper.h"
 #include "components/password_manager/core/browser/compromised_credentials_consumer.h"
 #include "components/password_manager/core/browser/compromised_credentials_observer.h"
 #include "components/password_manager/core/browser/compromised_credentials_table.h"
 #include "components/password_manager/core/browser/field_info_table.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
@@ -47,8 +47,6 @@
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #endif
 
-using autofill::PasswordForm;
-
 namespace password_manager {
 
 namespace {
@@ -60,8 +58,8 @@ namespace {
 // necessary.
 void FilterLogins(
     base::Time cutoff,
-    base::OnceCallback<
-        void(std::vector<std::unique_ptr<autofill::PasswordForm>>)> callback,
+    base::OnceCallback<void(std::vector<std::unique_ptr<PasswordForm>>)>
+        callback,
     std::vector<std::unique_ptr<PasswordForm>> logins) {
   base::EraseIf(logins, [cutoff](const auto& form) {
     return form->date_created < cutoff;
@@ -73,8 +71,8 @@ void FilterLogins(
 void CloseTraceAndCallBack(
     const char* trace_name,
     PasswordStoreConsumer* consumer,
-    base::OnceCallback<
-        void(std::vector<std::unique_ptr<autofill::PasswordForm>>)> callback,
+    base::OnceCallback<void(std::vector<std::unique_ptr<PasswordForm>>)>
+        callback,
     std::vector<std::unique_ptr<PasswordForm>> results) {
   TRACE_EVENT_NESTABLE_ASYNC_END0("passwords", trace_name, consumer);
 
@@ -120,7 +118,7 @@ void PasswordStore::CheckReuseRequest::OnReuseCheckDone(
 }
 #endif
 
-PasswordStore::FormDigest::FormDigest(autofill::PasswordForm::Scheme new_scheme,
+PasswordStore::FormDigest::FormDigest(PasswordForm::Scheme new_scheme,
                                       const std::string& new_signon_realm,
                                       const GURL& new_url)
     : scheme(new_scheme), signon_realm(new_signon_realm), url(new_url) {}
@@ -194,8 +192,8 @@ void PasswordStore::UpdateLogin(const PasswordForm& form) {
 }
 
 void PasswordStore::UpdateLoginWithPrimaryKey(
-    const autofill::PasswordForm& new_form,
-    const autofill::PasswordForm& old_primary_key) {
+    const PasswordForm& new_form,
+    const PasswordForm& old_primary_key) {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
   ScheduleTask(base::BindOnce(&PasswordStore::UpdateLoginWithPrimaryKeyInternal,
                               this, new_form, old_primary_key));
@@ -805,7 +803,7 @@ void PasswordStore::InvokeAndNotifyAboutCompromisedPasswordsChange(
 }
 
 void PasswordStore::NotifyUnsyncedCredentialsWillBeDeleted(
-    std::vector<autofill::PasswordForm> unsynced_credentials) {
+    std::vector<PasswordForm> unsynced_credentials) {
   DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(IsAccountStore());
   // |deletion_notifier_| only gets set for desktop.
@@ -1133,8 +1131,8 @@ void PasswordStore::ClearStoreInternal(
   }
 }
 
-std::vector<std::unique_ptr<autofill::PasswordForm>>
-PasswordStore::GetLoginsImpl(const FormDigest& form) {
+std::vector<std::unique_ptr<PasswordForm>> PasswordStore::GetLoginsImpl(
+    const FormDigest& form) {
   DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
   return FillMatchingLogins(form);
 }

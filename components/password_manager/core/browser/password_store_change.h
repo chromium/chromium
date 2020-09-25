@@ -8,7 +8,7 @@
 #include <ostream>
 #include <vector>
 
-#include "components/autofill/core/common/password_form.h"
+#include "components/password_manager/core/browser/password_form.h"
 
 namespace password_manager {
 
@@ -21,12 +21,12 @@ class PasswordStoreChange {
   // Linux backends production. It should be available only on Linux, and all
   // test code should be updates to the other constructor that accepts a
   // |primary_key|.
-  PasswordStoreChange(Type type, autofill::PasswordForm form)
+  PasswordStoreChange(Type type, PasswordForm form)
       : type_(type), form_(std::move(form)) {}
-  PasswordStoreChange(Type type, autofill::PasswordForm form, int primary_key)
+  PasswordStoreChange(Type type, PasswordForm form, int primary_key)
       : type_(type), form_(std::move(form)), primary_key_(primary_key) {}
   PasswordStoreChange(Type type,
-                      autofill::PasswordForm form,
+                      PasswordForm form,
                       int primary_key,
                       bool password_changed)
       : type_(type),
@@ -40,7 +40,7 @@ class PasswordStoreChange {
   virtual ~PasswordStoreChange() {}
 
   Type type() const { return type_; }
-  const autofill::PasswordForm& form() const { return form_; }
+  const PasswordForm& form() const { return form_; }
   int primary_key() const { return primary_key_; }
   bool password_changed() const { return password_changed_; }
 
@@ -63,7 +63,7 @@ class PasswordStoreChange {
 
  private:
   Type type_;
-  autofill::PasswordForm form_;
+  PasswordForm form_;
   // The corresponding primary key in the database for this password.
   int primary_key_ = -1;
   bool password_changed_ = false;
