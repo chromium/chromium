@@ -35,7 +35,7 @@ void FakeLorgnetteManagerClient::GetScannerCapabilities(
 
 void FakeLorgnetteManagerClient::StartScan(
     std::string device_name,
-    const ScanProperties& properties,
+    const lorgnette::ScanSettings& settings,
     VoidDBusMethodCallback completion_callback,
     base::RepeatingCallback<void(std::string)> page_callback,
     base::Optional<base::RepeatingCallback<void(int)>> progress_callback) {

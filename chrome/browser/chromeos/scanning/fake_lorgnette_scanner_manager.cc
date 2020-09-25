@@ -30,11 +30,10 @@ void FakeLorgnetteScannerManager::GetScannerCapabilities(
       FROM_HERE, base::BindOnce(std::move(callback), scanner_capabilities_));
 }
 
-void FakeLorgnetteScannerManager::Scan(
-    const std::string& scanner_name,
-    const LorgnetteManagerClient::ScanProperties& scan_properties,
-    PageCallback page_callback,
-    ScanCallback callback) {
+void FakeLorgnetteScannerManager::Scan(const std::string& scanner_name,
+                                       const lorgnette::ScanSettings& settings,
+                                       PageCallback page_callback,
+                                       ScanCallback callback) {
   if (scan_data_.has_value()) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(page_callback, scan_data_.value()));

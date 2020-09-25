@@ -161,9 +161,9 @@ class LorgnetteScannerManagerTest : public testing::Test {
   // Calls LorgnetteScannerManager::Scan() and binds a callback to process the
   // result.
   void Scan(const std::string& scanner_name,
-            const LorgnetteManagerClient::ScanProperties& scan_properties) {
+            const lorgnette::ScanSettings& settings) {
     lorgnette_scanner_manager_->Scan(
-        scanner_name, scan_properties,
+        scanner_name, settings,
         base::BindRepeating(&LorgnetteScannerManagerTest::PageCallback,
                             base::Unretained(this)),
         base::Bind(&LorgnetteScannerManagerTest::ScanCallback,
@@ -401,8 +401,8 @@ TEST_F(LorgnetteScannerManagerTest, GetCaps) {
 
 // Test that scanning fails when GetScannerNames() has never been called.
 TEST_F(LorgnetteScannerManagerTest, NoScannersNames) {
-  chromeos::LorgnetteManagerClient::ScanProperties properties;
-  Scan(kUnknownScannerName, properties);
+  lorgnette::ScanSettings settings;
+  Scan(kUnknownScannerName, settings);
   WaitForResult();
   EXPECT_EQ(scan_data().size(), 0);
   EXPECT_FALSE(scan_success());
@@ -415,8 +415,8 @@ TEST_F(LorgnetteScannerManagerTest, UnknownScannerName) {
   CompleteTasks();
   GetScannerNames();
   WaitForResult();
-  chromeos::LorgnetteManagerClient::ScanProperties properties;
-  Scan(kUnknownScannerName, properties);
+  lorgnette::ScanSettings settings;
+  Scan(kUnknownScannerName, settings);
   WaitForResult();
   EXPECT_EQ(scan_data().size(), 0);
   EXPECT_FALSE(scan_success());
@@ -429,8 +429,8 @@ TEST_F(LorgnetteScannerManagerTest, NoUsableDeviceName) {
   CompleteTasks();
   GetScannerNames();
   WaitForResult();
-  chromeos::LorgnetteManagerClient::ScanProperties properties;
-  Scan(scanner.display_name, properties);
+  lorgnette::ScanSettings settings;
+  Scan(scanner.display_name, settings);
   WaitForResult();
   EXPECT_EQ(scan_data().size(), 0);
   EXPECT_FALSE(scan_success());
@@ -445,8 +445,8 @@ TEST_F(LorgnetteScannerManagerTest, ScanOnePage) {
   WaitForResult();
   std::vector<std::string> pages = {"TestScanData"};
   GetLorgnetteManagerClient()->SetScanResponse(pages);
-  chromeos::LorgnetteManagerClient::ScanProperties properties;
-  Scan(scanner.display_name, properties);
+  lorgnette::ScanSettings settings;
+  Scan(scanner.display_name, settings);
   WaitForResult();
   ASSERT_EQ(scan_data().size(), 1);
   EXPECT_EQ(scan_data()[0], "TestScanData");
@@ -462,8 +462,8 @@ TEST_F(LorgnetteScannerManagerTest, ScanMultiplePages) {
   std::vector<std::string> pages = {"TestPageOne", "TestPageTwo",
                                     "TestPageThree"};
   GetLorgnetteManagerClient()->SetScanResponse(pages);
-  chromeos::LorgnetteManagerClient::ScanProperties properties;
-  Scan(scanner.display_name, properties);
+  lorgnette::ScanSettings settings;
+  Scan(scanner.display_name, settings);
   WaitForResult();
   ASSERT_EQ(scan_data().size(), 3);
   EXPECT_EQ(scan_data()[0], "TestPageOne");

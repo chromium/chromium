@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "chrome/browser/chromeos/scanning/lorgnette_scanner_manager.h"
 #include "chrome/browser/chromeos/scanning/lorgnette_scanner_manager_factory.h"
+#include "chromeos/dbus/lorgnette/lorgnette_service.pb.h"
 #include "content/public/browser/browser_context.h"
 #include "third_party/cros_system_api/dbus/lorgnette/dbus-constants.h"
 
@@ -74,12 +75,12 @@ void DocumentScanScanFunction::OnNamesReceived(
   // selected. Since all of the scanners only support PNG, this results in
   // selecting the first scanner in the list.
   const std::string& scanner_name = scanner_names[0];
-  chromeos::LorgnetteManagerClient::ScanProperties properties;
-  properties.mode = lorgnette::kScanPropertyModeColor;
+  lorgnette::ScanSettings settings;
+  settings.set_color_mode(lorgnette::MODE_COLOR);  // Hardcoded for now.
   chromeos::LorgnetteScannerManagerFactory::GetForBrowserContext(
       browser_context())
       ->Scan(
-          scanner_name, properties,
+          scanner_name, settings,
           base::BindRepeating(&DocumentScanScanFunction::OnPageReceived, this),
           base::BindOnce(&DocumentScanScanFunction::OnScanCompleted, this));
 }

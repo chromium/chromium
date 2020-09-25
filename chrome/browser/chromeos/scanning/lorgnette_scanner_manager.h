@@ -51,11 +51,10 @@ class LorgnetteScannerManager : public KeyedService {
   // |scanner_name| does not correspond to a known scanner, false is returned
   // in |callback|. After the scan has completed, |callback| will be called
   // with argument success=true.
-  virtual void Scan(
-      const std::string& scanner_name,
-      const LorgnetteManagerClient::ScanProperties& scan_properties,
-      PageCallback page_callback,
-      ScanCallback callback) = 0;
+  virtual void Scan(const std::string& scanner_name,
+                    const lorgnette::ScanSettings& settings,
+                    PageCallback page_callback,
+                    ScanCallback callback) = 0;
 };
 
 }  // namespace chromeos

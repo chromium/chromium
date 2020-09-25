@@ -67,25 +67,17 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
 
   // LorgnetteManagerClient override.
   void StartScan(std::string device_name,
-                 const ScanProperties& properties,
+                 const lorgnette::ScanSettings& settings,
                  VoidDBusMethodCallback completion_callback,
                  base::RepeatingCallback<void(std::string)> page_callback,
                  base::Optional<base::RepeatingCallback<void(int)>>
                      progress_callback) override {
     lorgnette::StartScanRequest request;
     request.set_device_name(device_name);
-    request.mutable_settings()->set_resolution(properties.resolution_dpi);
-
-    lorgnette::ColorMode mode = lorgnette::MODE_UNSPECIFIED;
-    // Defined in system_api/dbus/lorgnette/dbus-constants.h
-    if (properties.mode == lorgnette::kScanPropertyModeColor) {
-      mode = lorgnette::MODE_COLOR;
-    } else if (properties.mode == lorgnette::kScanPropertyModeGray) {
-      mode = lorgnette::MODE_GRAYSCALE;
-    } else if (properties.mode == lorgnette::kScanPropertyModeLineart) {
-      mode = lorgnette::MODE_LINEART;
-    }
-    request.mutable_settings()->set_color_mode(mode);
+    request.mutable_settings()->set_color_mode(settings.color_mode());
+    request.mutable_settings()->set_resolution(settings.resolution());
+    lorgnette::DocumentSource source = settings.source();
+    request.mutable_settings()->set_allocated_source(&source);
 
     dbus::MethodCall method_call(lorgnette::kManagerServiceInterface,
                                  lorgnette::kStartScanMultiPageMethod);

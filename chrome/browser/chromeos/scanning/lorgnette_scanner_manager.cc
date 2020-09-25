@@ -88,7 +88,7 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
 
   // LorgnetteScannerManager:
   void Scan(const std::string& scanner_name,
-            const LorgnetteManagerClient::ScanProperties& scan_properties,
+            const lorgnette::ScanSettings& settings,
             PageCallback page_callback,
             ScanCallback callback) override {
     std::string device_name;
@@ -98,7 +98,7 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
       return;
     }
 
-    GetLorgnetteManagerClient()->StartScan(device_name, scan_properties,
+    GetLorgnetteManagerClient()->StartScan(device_name, settings,
                                            std::move(callback), page_callback,
                                            base::nullopt);
   }
