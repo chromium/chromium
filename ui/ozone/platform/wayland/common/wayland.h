@@ -5,17 +5,27 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_COMMON_WAYLAND_H_
 #define UI_OZONE_PLATFORM_WAYLAND_COMMON_WAYLAND_H_
 
-#include <dlfcn.h>
 // This header includes wayland-client-core.h and wayland-client-protocol.h
 #include <wayland-client.h>
 
 #include "base/notreached.h"
 
+#define WEAK_WAYLAND_FN(x) extern "C" __attribute__((weak)) decltype(x) x
+
+// These functions are used by wl_proxy_get_version and wl_registry_bind.
+// However, they were introduced in libwayland 1.10, and if we run Chromium with
+// older library, these symbols are undefined. Thus, check their availability
+// and use some older API.
+//
+// TODO(msisov): Remove these once support for Ubuntu Trusty is dropped.
+WEAK_WAYLAND_FN(wl_proxy_marshal_constructor_versioned);
+WEAK_WAYLAND_FN(wl_proxy_get_version);
+
 namespace wl {
 
 template <typename T>
 uint32_t get_version_of_object(T* obj) {
-  if (dlsym(RTLD_DEFAULT, "wl_proxy_get_version"))
+  if (wl_proxy_get_version)
     return wl_proxy_get_version(reinterpret_cast<wl_proxy*>(obj));
   // Older version of the libwayland-client didn't support version of objects.
   return 0;

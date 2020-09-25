@@ -232,8 +232,7 @@ source_set("clipboard_test") {
     ]
   }
 
-  if (use_aura && !chromeos_is_browser_only && !use_x11 && !is_win &&
-      !use_ozone) {
+  if (use_aura && !chromeos_is_browser_only && !use_x11 && !is_win) {
     sources += [
       "clipboard_data_unittest.cc",
       "clipboard_non_backed_unittest.cc",

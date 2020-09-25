@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 import("//build/config/linux/pkg_config.gni")
 import("//third_party/wayland/features.gni")
-import("//tools/generate_stubs/rules.gni")
 
 if (!use_system_libwayland) {
   config("wayland_config") {
@@ -118,9 +117,7 @@ if (!use_system_libwayland) {
 
     public_configs = [ ":wayland_config" ]
   }
-}
 
-if (!use_system_wayland_scanner) {
   config("wayland_scanner_config") {
     cflags = [
       "-Wno-int-conversion",
@@ -173,42 +170,5 @@ if (use_system_libwayland) {
 
   group("wayland_egl") {
     public_configs = [ ":wayland_egl_config" ]
-  }
-
-  generate_stubs("wayland_wrappers") {
-    visibility = [ ":wayland_stubs" ]
-
-    extra_header = "stubs/libwayland.fragment"
-    sigs = [
-      "stubs/libwayland-client.sigs",
-      "stubs/libwayland-egl.sigs",
-    ]
-
-    output_name = "libwayland_stubs"
-    deps = [ "//base" ]
-  }
-
-  # This is a source_set, not a component, because we don't want to leak
-  # our own wayland symbols in component builds, which can interfere with
-  # the system libEGL's usage of wayland.
-  source_set("wayland_stubs") {
-    public_deps = [ ":wayland_wrappers" ]
-    sources = [
-      # Provide data symbols which generate_stubs.py cannot wrap -- only
-      # functions are wrappable.  wayland-protocol.c contains only data and
-      # no code.
-      "protocol/wayland-protocol.c",
-
-      # Provide implementations of C variadic functions, which
-      # generate_stubs.py cannot generate forwarding-functions for.
-      "stubs/libwayland_variadic_support.cc",
-    ]
-
-    # This is a hack to hide the symbols annoted with
-    # attribute((visibility("default"))) in wayland-protocol.c since libwayland
-    # currently doesn't provide a way to override this behavior.  This can be
-    # removed once https://gitlab.freedesktop.org/wayland/wayland/-/issues/179
-    # is fixed and we can switch to overriding WL_EXPORT directly.
-    defines = [ "visibility(x)=visibility(\"hidden\")" ]
   }
 }

@@ -33,17 +33,11 @@ def main(argv):
   root_gen_dir = options.root_gen_dir
   protocols = options.protocols
 
-  version = subprocess.check_output([cmd, '--version'],
-                                    stderr=subprocess.STDOUT)
-  # The version is of the form "wayland-scanner 1.18.0\n"
-  version = tuple([int(x) for x in version.strip().split(' ')[1].split('.')])
-
   for protocol in protocols:
     protocol_path = os.path.join(src_root, protocol)
     protocol_without_extension = protocol.rsplit(".", 1)[0]
     out_base_name = os.path.join(root_gen_dir, protocol_without_extension)
-    code_cmd = 'private-code' if version > (1, 14, 90) else 'code'
-    generate_code(cmd, code_cmd, protocol_path,
+    generate_code(cmd, "private-code", protocol_path,
                   out_base_name + "-protocol.c")
     generate_code(cmd, "client-header", protocol_path,
                   out_base_name + "-client-protocol.h")

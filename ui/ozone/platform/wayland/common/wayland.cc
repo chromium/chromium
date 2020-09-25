@@ -10,7 +10,7 @@ void* bind_registry(struct wl_registry* registry,
                     uint32_t name,
                     const struct wl_interface* interface,
                     uint32_t version) {
-  if (dlsym(RTLD_DEFAULT, "wl_proxy_marshal_constructor_versioned")) {
+  if (wl_proxy_marshal_constructor_versioned) {
     return wl_registry_bind(registry, name, interface, version);
   } else {
     return wl_proxy_marshal_constructor(reinterpret_cast<wl_proxy*>(registry),

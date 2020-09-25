@@ -52,7 +52,7 @@ template("wayland_protocol") {
       rebase_path(root_gen_dir, root_build_dir),
     ]
 
-    if (use_system_wayland_scanner) {
+    if (use_system_libwayland) {
       args += [
         "--cmd",
         system_wayland_scanner_path,

@@ -52,7 +52,7 @@
 #include "ui/base/clipboard/clipboard_util_win.h"
 #endif
 
-#if defined(USE_X11) || defined(USE_OZONE)
+#if defined(USE_X11)
 #include "ui/base/ui_base_features.h"
 #include "ui/events/platform/platform_event_source.h"
 #endif
