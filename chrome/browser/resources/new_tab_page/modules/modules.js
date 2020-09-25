@@ -8,7 +8,9 @@
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
+// <if expr="not is_official_build">
 import {dummyDescriptor, dummyDescriptor2} from './dummy/module.js';
+// </if>
 import {kaleidoscopeDescriptor} from './kaleidoscope/module.js';
 import {ModuleDescriptor} from './module_descriptor.js';
 import {ModuleRegistry} from './module_registry.js';
@@ -20,7 +22,9 @@ if (loadTimeData.getBoolean('kaleidoscopeModuleEnabled')) {
   descriptors.push(kaleidoscopeDescriptor);
 }
 
+// <if expr="not is_official_build">
 descriptors.push(dummyDescriptor);
 descriptors.push(dummyDescriptor2);
+// </if>
 
 ModuleRegistry.getInstance().registerModules(descriptors);

@@ -203,6 +203,9 @@ TEST_F('NewTabPageModulesModuleRegistryTest', 'All', function() {
   mocha.run();
 });
 
+// The dummy module is not available in official builds.
+GEN('#if !defined(OFFICIAL_BUILD)');
+
 // eslint-disable-next-line no-var
 var NewTabPageModulesDummyModuleTest = class extends NewTabPageBrowserTest {
   /** @override */
@@ -214,6 +217,8 @@ var NewTabPageModulesDummyModuleTest = class extends NewTabPageBrowserTest {
 TEST_F('NewTabPageModulesDummyModuleTest', 'All', function() {
   mocha.run();
 });
+
+GEN('#endif  // !defined(OFFICIAL_BUILD)');
 
 // eslint-disable-next-line no-var
 var NewTabPageMiddleSlotPromoTest = class extends NewTabPageBrowserTest {
