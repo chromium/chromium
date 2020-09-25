@@ -3186,8 +3186,6 @@ TEST_F(GLRendererPartialSwapTest, SetDrawRectangle_NoPartialSwap) {
 // Test that SetEnableDCLayersCHROMIUM is properly called when enabling
 // and disabling DC layers.
 TEST_F(GLRendererTest, DCLayerOverlaySwitch) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kDirectCompositionUnderlays);
   auto gl_owned = std::make_unique<PartialSwapMockGLES2Interface>();
   gl_owned->set_have_post_sub_buffer(true);
   auto* gl = gl_owned.get();
