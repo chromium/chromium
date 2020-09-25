@@ -38,6 +38,7 @@
 #include "content/public/browser/resource_context.h"
 #include "content/public/browser/shared_cors_origin_access_list.h"
 #include "content/public/browser/url_loader_throttles.h"
+#include "content/public/browser/web_ui_url_loader_factory.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/referrer.h"
@@ -55,11 +56,6 @@
 #include "url/origin.h"
 
 namespace content {
-
-namespace {
-
-
-}  // namespace
 
 // static
 void WorkerScriptFetchInitiator::Start(
@@ -111,11 +107,13 @@ void WorkerScriptFetchInitiator::Start(
   std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
       factory_bundle_for_browser = CreateFactoryBundle(
           LoaderType::kMainResource, worker_process_id, storage_partition,
-          storage_domain, constructor_uses_file_url, filesystem_url_support);
+          storage_domain, constructor_uses_file_url, filesystem_url_support,
+          creator_render_frame_host);
   std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
       subresource_loader_factories = CreateFactoryBundle(
           LoaderType::kSubResource, worker_process_id, storage_partition,
-          storage_domain, constructor_uses_file_url, filesystem_url_support);
+          storage_domain, constructor_uses_file_url, filesystem_url_support,
+          creator_render_frame_host);
 
   // Create a resource request for initiating worker script fetch from the
   // browser process.
@@ -192,7 +190,8 @@ WorkerScriptFetchInitiator::CreateFactoryBundle(
     StoragePartitionImpl* storage_partition,
     const std::string& storage_domain,
     bool file_support,
-    bool filesystem_url_support) {
+    bool filesystem_url_support,
+    RenderFrameHost* creator_render_frame_host) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   ContentBrowserClient::NonNetworkURLLoaderFactoryDeprecatedMap
@@ -236,6 +235,22 @@ WorkerScriptFetchInitiator::CreateFactoryBundle(
               worker_process_id, MSG_ROUTING_NONE,
               &non_network_uniquely_owned_factories, &non_network_factories);
       break;
+  }
+
+  // Create WebUI loader for chrome:// workers from WebUI frames.
+  // TODO(crbug.com/1128243): Enable shared worker on "chrome-untrusted://" as
+  // well.
+  if (creator_render_frame_host) {
+    auto requesting_scheme =
+        creator_render_frame_host->GetLastCommittedOrigin().scheme();
+    if (requesting_scheme == kChromeUIScheme &&
+        creator_render_frame_host->GetWebUI() != nullptr) {
+      non_network_factories.emplace(
+          kChromeUIScheme,
+          CreateWebUIURLLoaderFactory(
+              creator_render_frame_host, kChromeUIScheme,
+              /*allowed_webui_hosts=*/base::flat_set<std::string>()));
+    }
   }
 
   auto factory_bundle =

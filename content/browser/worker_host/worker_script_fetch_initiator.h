@@ -91,14 +91,16 @@ class CONTENT_EXPORT WorkerScriptFetchInitiator {
   // Used for specifying how URLLoaderFactoryBundle is used.
   enum class LoaderType { kMainResource, kSubResource };
 
-  // Creates a loader factory bundle. Must be called on the UI thread.
+  // Creates a loader factory bundle. Must be called on the UI thread. For
+  // nested workers, |creator_render_frame_host| can be null.
   static std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
   CreateFactoryBundle(LoaderType loader_type,
                       int worker_process_id,
                       StoragePartitionImpl* storage_partition,
                       const std::string& storage_domain,
                       bool file_support,
-                      bool filesystem_url_support);
+                      bool filesystem_url_support,
+                      RenderFrameHost* creator_render_frame_host);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(WorkerScriptFetchInitiatorTest,

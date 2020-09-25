@@ -17,6 +17,7 @@
 #include "base/test/bind_test_util.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "content/browser/webui/content_web_ui_controller_factory.h"
 #include "content/browser/webui/web_ui_impl.h"
 #include "content/public/browser/child_process_security_policy.h"
@@ -33,6 +34,7 @@
 #include "content/public/test/test_utils.h"
 #include "content/public/test/web_ui_browsertest_util.h"
 #include "content/shell/browser/shell.h"
+#include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/common/input/web_mouse_wheel_event.h"
 #include "ui/events/base_event_utils.h"
@@ -42,6 +44,16 @@ namespace content {
 namespace {
 
 using WebUIImplBrowserTest = ContentBrowserTest;
+
+const char kLoadSharedWorkerScript[] = R"(
+    new Promise((resolve) => {
+      const sharedWorker = new SharedWorker($1);
+      sharedWorker.port.onmessage = (event) => {
+        resolve(event.data === 'pong');
+      };
+      sharedWorker.port.postMessage('ping');
+    });
+  )";
 
 class TestWebUIMessageHandler : public WebUIMessageHandler {
  public:
@@ -517,6 +529,74 @@ IN_PROC_BROWSER_TEST_F(WebUIRequestSchemesTest,
     EXPECT_FALSE(ChildProcessSecurityPolicy::GetInstance()->CanRequestURL(
         web_contents->GetMainFrame()->GetProcess()->GetID(), url));
   }
+}
+
+class WebUIWorkerTest : public ContentBrowserTest {
+ public:
+  WebUIWorkerTest() { WebUIControllerFactory::RegisterFactory(&factory_); }
+
+  ~WebUIWorkerTest() override {
+    WebUIControllerFactory::UnregisterFactoryForTesting(&factory_);
+  }
+
+  WebUIWorkerTest(const WebUIWorkerTest&) = delete;
+
+  WebUIWorkerTest& operator=(const WebUIWorkerTest&) = delete;
+
+ private:
+  TestWebUIControllerFactory factory_;
+};
+
+// TODO(crbug.com/154571): Shared workers are not available on Android.
+#if defined(OS_ANDROID)
+#define MAYBE_CanCreateWebUISharedWorkerForWebUI \
+  DISABLED_CanCreateWebUISharedWorkerForWebUI
+#define MAYBE_CannotCreateWebUISharedWorkerForNonWebUI \
+  DISABLED_CannotCreateWebUISharedWorkerForNonWebUI
+#else
+#define MAYBE_CanCreateWebUISharedWorkerForWebUI \
+  CanCreateWebUISharedWorkerForWebUI
+#define MAYBE_CannotCreateWebUISharedWorkerForNonWebUI \
+  CannotCreateWebUISharedWorkerForNonWebUI
+#endif
+
+// Verify that we can create SharedWorker with scheme "chrome://" under
+// WebUI page.
+IN_PROC_BROWSER_TEST_F(WebUIWorkerTest, CanCreateWebUISharedWorkerForWebUI) {
+  const GURL web_ui_url =
+      GURL(GetWebUIURL("test-host/title2.html?notrustedtypes=true"));
+  const GURL web_ui_worker_url =
+      GURL(GetWebUIURL("test-host/web_ui_shared_worker.js"));
+
+  auto* web_contents = shell()->web_contents();
+  ASSERT_TRUE(NavigateToURL(web_contents, web_ui_url));
+
+  EXPECT_EQ(true, EvalJs(web_contents,
+                         JsReplace(kLoadSharedWorkerScript,
+                                   web_ui_worker_url.spec().c_str()),
+                         EXECUTE_SCRIPT_DEFAULT_OPTIONS, 1 /* world_id */));
+}
+
+// Verify that pages with scheme other than "chrome://" cannot create
+// SharedWorker with scheme "chrome://".
+IN_PROC_BROWSER_TEST_F(WebUIWorkerTest,
+                       CannotCreateWebUISharedWorkerForNonWebUI) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL non_web_ui_url =
+      GURL(embedded_test_server()->GetURL("/title1.html?notrustedtypes=true"));
+  const GURL web_ui_worker_url =
+      GURL(GetWebUIURL("test-host/web_ui_shared_worker.js"));
+
+  auto* web_contents = shell()->web_contents();
+  ASSERT_TRUE(NavigateToURL(web_contents, non_web_ui_url));
+
+  auto result = EvalJs(
+      web_contents,
+      JsReplace(kLoadSharedWorkerScript, web_ui_worker_url.spec().c_str()),
+      EXECUTE_SCRIPT_DEFAULT_OPTIONS, 1 /* world_id */);
+  std::string expected_failure = R"(a JavaScript error:
+Error: Failed to construct 'SharedWorker')";
+  EXPECT_THAT(result.error, ::testing::StartsWith(expected_failure));
 }
 
 }  // namespace content

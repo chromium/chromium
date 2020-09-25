@@ -502,6 +502,13 @@ void DedicatedWorkerHost::UpdateSubresourceLoaderFactories() {
   // Start observing Network Service crash again.
   ObserveNetworkServiceCrash(storage_partition_impl);
 
+  // If this is a nested worker, there is no creator frame and
+  // |creator_render_frame_host| will be null.
+  RenderFrameHostImpl* creator_render_frame_host =
+      creator_render_frame_host_id_
+          ? RenderFrameHostImpl::FromID(creator_render_frame_host_id_.value())
+          : nullptr;
+
   // Recreate the default URLLoaderFactory. This doesn't support
   // AppCache-specific factory.
   std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
@@ -510,7 +517,7 @@ void DedicatedWorkerHost::UpdateSubresourceLoaderFactories() {
               WorkerScriptFetchInitiator::LoaderType::kSubResource,
               worker_process_host_->GetID(), storage_partition_impl,
               partition_domain, file_url_support_,
-              /*filesystem_url_support=*/true);
+              /*filesystem_url_support=*/true, creator_render_frame_host);
 
   bool bypass_redirect_checks = false;
   subresource_loader_factories->pending_default_factory() =
