@@ -127,15 +127,6 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
                  finish_js_condition='domAutomationController._finished',
                  success_eval_func='CheckGLCategory',
                  other_args=p.other_args))
-    for p in namespace.DefaultPages('DeviceTraceTest'):
-      yield (p.name, gpu_relative_path + p.url,
-             _TraceTestArguments(
-                 browser_args=p.browser_args,
-                 category=cls._DisabledByDefaultTraceCategory('gpu.device'),
-                 test_harness_script=webgl_test_harness_script,
-                 finish_js_condition='domAutomationController._finished',
-                 success_eval_func='CheckGLCategory',
-                 other_args=p.other_args))
     for p in namespace.DirectCompositionPages('VideoPathTraceTest'):
       yield (p.name, gpu_relative_path + p.url,
              _TraceTestArguments(

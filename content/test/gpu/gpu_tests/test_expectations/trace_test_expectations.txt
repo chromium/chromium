@@ -14,9 +14,6 @@
 crbug.com/648369 [ linux debug intel ] TraceTest_* [ RetryOnFailure ]
 crbug.com/978516 [ win10 nvidia-0x1cb3 ] TraceTest_* [ RetryOnFailure ]
 
-# Device traces are not supported on all machines.
-DeviceTraceTest_* [ Skip ]
-
 # Require page actions - which are only supported in pixel tests.
 crbug.com/1048892 TraceTest_OffscreenCanvasIBRCWebGLMain [ Skip ]
 crbug.com/1048892 TraceTest_OffscreenCanvasIBRCWebGLWorker [ Skip ]
@@ -25,9 +22,7 @@ crbug.com/1048892 TraceTest_OffscreenCanvasIBRCWebGLWorker [ Skip ]
 # appear flaky on multiple platforms. These are mainly meant to run as
 # pixel tests so they're being skipped in this test suite.
 crbug.com/974077 TraceTest_Video_Context_Loss_MP4 [ Skip ]
-crbug.com/974077 DeviceTraceTest_Video_Context_Loss_MP4 [ Skip ]
 crbug.com/974077 TraceTest_Video_Context_Loss_VP9 [ Skip ]
-crbug.com/974077 DeviceTraceTest_Video_Context_Loss_VP9 [ Skip ]
 
 # Skip on platforms where DirectComposition isn't supported
 crbug.com/867136 [ mac ] VideoPathTraceTest_* [ Skip ]
@@ -115,21 +110,12 @@ crbug.com/1058255 [ fuchsia ] TraceTest_WebGLGreenTriangle_AA_Alpha [ Skip ]
 [ android ] TraceTest_RepeatedWebGLTo2D_SoftwareCompositing [ Skip ]
 [ android ] TraceTest_Canvas2DTabSwitch_SoftwareCompositing [ Skip ]
 [ android ] TraceTest_WebGLReadPixelsTabSwitch_SoftwareCompositing [ Skip ]
-[ android ] DeviceTraceTest_RepeatedWebGLTo2D_SoftwareCompositing [ Skip ]
-[ android ] DeviceTraceTest_Canvas2DTabSwitch_SoftwareCompositing [ Skip ]
-[ android ] DeviceTraceTest_WebGLReadPixelsTabSwitch_SoftwareCompositing [ Skip ]
 [ chromeos ] TraceTest_RepeatedWebGLTo2D_SoftwareCompositing [ Skip ]
 [ chromeos ] TraceTest_Canvas2DTabSwitch_SoftwareCompositing [ Skip ]
 [ chromeos ] TraceTest_WebGLReadPixelsTabSwitch_SoftwareCompositing [ Skip ]
-[ chromeos ] DeviceTraceTest_RepeatedWebGLTo2D_SoftwareCompositing [ Skip ]
-[ chromeos ] DeviceTraceTest_Canvas2DTabSwitch_SoftwareCompositing [ Skip ]
-[ chromeos ] DeviceTraceTest_WebGLReadPixelsTabSwitch_SoftwareCompositing [ Skip ]
 [ fuchsia ] TraceTest_RepeatedWebGLTo2D_SoftwareCompositing [ Skip ]
 [ fuchsia ] TraceTest_Canvas2DTabSwitch_SoftwareCompositing [ Skip ]
 [ fuchsia ] TraceTest_WebGLReadPixelsTabSwitch_SoftwareCompositing [ Skip ]
-[ fuchsia ] DeviceTraceTest_RepeatedWebGLTo2D_SoftwareCompositing [ Skip ]
-[ fuchsia ] DeviceTraceTest_Canvas2DTabSwitch_SoftwareCompositing [ Skip ]
-[ fuchsia ] DeviceTraceTest_WebGLReadPixelsTabSwitch_SoftwareCompositing [ Skip ]
 
 # Cannot use file in Chromium checkout for fake video capture device on Android
 # or ChromeOS.
