@@ -6,7 +6,10 @@
 
 #include "base/task/post_task.h"
 #include "base/test/task_environment.h"
+#include "base/timer/mock_timer.h"
+#include "components/password_manager/core/browser/site_affiliation/affiliation_service_impl.h"
 #include "components/password_manager/core/browser/well_known_change_password_util.h"
+#include "components/sync/driver/test_sync_service.h"
 #include "net/base/isolation_info.h"
 #include "net/base/load_flags.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -38,6 +41,19 @@ class MockWellKnownChangePasswordStateDelegate
   MOCK_METHOD(void, OnProcessingFinished, (bool), (override));
 };
 
+class MockAffiliationService : public AffiliationService {
+ public:
+  MockAffiliationService() = default;
+  ~MockAffiliationService() override = default;
+
+  MOCK_METHOD(void,
+              PrefetchChangePasswordURLs,
+              (const std::vector<GURL>&, base::OnceClosure),
+              (override));
+  MOCK_METHOD(void, Clear, (), (override));
+  MOCK_METHOD(GURL, GetChangePasswordURL, (const GURL&), (override, const));
+};
+
 class WellKnownChangePasswordStateTest
     : public testing::Test,
       public testing::WithParamInterface<ResponseDelayParams> {
@@ -59,16 +75,25 @@ class WellKnownChangePasswordStateTest
   void RespondeToChangePasswordRequest(net::HttpStatusCode status, int delay);
 
   MockWellKnownChangePasswordStateDelegate* delegate() { return &delegate_; }
+  WellKnownChangePasswordState* state() { return &state_; }
+  network::SharedURLLoaderFactory* test_shared_loader_factory() {
+    return test_shared_loader_factory_.get();
+  }
 
   // Wait until all PostTasks are processed.
   void FastForwardPostTasks() {
     task_environment_.FastForwardUntilNoTasksRemain();
   }
 
+  // Fast forward by certain amount of time.
+  void FastForwardBy(base::TimeDelta delta) {
+    task_environment_.FastForwardBy(delta);
+  }
+
  private:
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  MockWellKnownChangePasswordStateDelegate delegate_;
+  testing::StrictMock<MockWellKnownChangePasswordStateDelegate> delegate_;
   WellKnownChangePasswordState state_{&delegate_};
   network::ResourceRequest::TrustedParams trusted_params_;
   network::TestURLLoaderFactory test_url_loader_factory_;
@@ -165,6 +190,62 @@ TEST_P(WellKnownChangePasswordStateTest, NoSupport_Redirect) {
                                   params.change_password_delay);
   RespondeToNonExistingRequest(net::HTTP_NOT_FOUND, params.not_exist_delay);
   FastForwardPostTasks();
+}
+
+TEST_P(WellKnownChangePasswordStateTest,
+       NoAwaitForPrefetchResultIfWellKnownChangePasswordSupported) {
+  MockAffiliationService mock_affiliation_service;
+  EXPECT_CALL(mock_affiliation_service, PrefetchChangePasswordURLs);
+  state()->PrefetchChangePasswordURLs(&mock_affiliation_service, {});
+
+  EXPECT_CALL(*delegate(), OnProcessingFinished(true));
+
+  ResponseDelayParams params = GetParam();
+  RespondeToChangePasswordRequest(net::HTTP_OK, params.change_password_delay);
+  RespondeToNonExistingRequest(net::HTTP_NOT_FOUND, params.not_exist_delay);
+
+  // FastForwardBy makes sure the prefech timeout is not reached.
+  const int64_t ms_to_forward =
+      std::max(params.change_password_delay, params.not_exist_delay) + 1;
+  FastForwardBy(base::TimeDelta::FromMilliseconds(ms_to_forward));
+}
+
+TEST_P(WellKnownChangePasswordStateTest, TimeoutTriggersOnProcessingFinished) {
+  MockAffiliationService mock_affiliation_service;
+  EXPECT_CALL(mock_affiliation_service, PrefetchChangePasswordURLs);
+  state()->PrefetchChangePasswordURLs(&mock_affiliation_service, {});
+
+  ResponseDelayParams params = GetParam();
+  RespondeToChangePasswordRequest(net::HTTP_NOT_FOUND,
+                                  params.change_password_delay);
+  RespondeToNonExistingRequest(net::HTTP_NOT_FOUND, params.not_exist_delay);
+  const int64_t ms_to_forward =
+      std::max(params.change_password_delay, params.not_exist_delay) + 1;
+  FastForwardBy(base::TimeDelta::FromMilliseconds(ms_to_forward));
+
+  EXPECT_CALL(*delegate(), OnProcessingFinished(false));
+  FastForwardBy(WellKnownChangePasswordState::kPrefetchTimeout);
+}
+
+TEST_P(WellKnownChangePasswordStateTest,
+       PrefetchCallbackTriggersOnProcessingFinished) {
+  syncer::TestSyncService test_sync_service;
+  AffiliationServiceImpl affiliation_service(&test_sync_service,
+                                             test_shared_loader_factory());
+  state()->PrefetchChangePasswordURLs(&affiliation_service, {});
+
+  ResponseDelayParams params = GetParam();
+  RespondeToChangePasswordRequest(net::HTTP_NOT_FOUND,
+                                  params.change_password_delay);
+  RespondeToNonExistingRequest(net::HTTP_NOT_FOUND, params.not_exist_delay);
+  const int64_t ms_to_forward =
+      std::max(params.change_password_delay, params.not_exist_delay) + 1;
+  FastForwardBy(base::TimeDelta::FromMilliseconds(ms_to_forward));
+
+  EXPECT_CALL(*delegate(), OnProcessingFinished(false));
+  static_cast<AffiliationFetcherDelegate*>(&affiliation_service)
+      ->OnFetchSucceeded(
+          std::make_unique<AffiliationFetcherDelegate::Result>());
 }
 
 constexpr ResponseDelayParams kDelayParams[] = {{0, 1}, {1, 0}};

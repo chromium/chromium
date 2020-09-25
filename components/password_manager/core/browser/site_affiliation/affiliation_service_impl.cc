@@ -143,8 +143,9 @@ std::vector<FacetURI> AffiliationServiceImpl::ConvertMissingURLsToFacets(
     if (url.is_valid()) {
       url::SchemeHostPort scheme_host_port(url);
       if (!base::Contains(change_password_urls_, scheme_host_port)) {
+        facets.push_back(
+            FacetURI::FromCanonicalSpec(scheme_host_port.Serialize()));
         requested_tuple_origins_.push_back(std::move(scheme_host_port));
-        facets.push_back(FacetURI::FromCanonicalSpec(url.spec()));
       }
     }
   }

@@ -42,7 +42,8 @@ constexpr char k5ExampleURL[] = "https://5.example.com";
 std::vector<FacetURI> ToFacetsURIs(const std::vector<GURL>& urls) {
   std::vector<FacetURI> facet_URIs;
   for (const auto& url : urls) {
-    facet_URIs.push_back(FacetURI::FromCanonicalSpec(url.spec()));
+    facet_URIs.push_back(
+        FacetURI::FromCanonicalSpec(url::SchemeHostPort(url).Serialize()));
   }
   return facet_URIs;
 }

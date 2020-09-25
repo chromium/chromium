@@ -9,6 +9,7 @@
 #include "base/optional.h"
 #include "components/password_manager/core/browser/site_affiliation/affiliation_service.h"
 #include "components/password_manager/core/browser/well_known_change_password_util.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -69,6 +70,8 @@ CreateResourceRequestToWellKnownNonExistingResourceFor(
 }
 }  // namespace
 
+constexpr base::TimeDelta WellKnownChangePasswordState::kPrefetchTimeout;
+
 WellKnownChangePasswordState::WellKnownChangePasswordState(
     WellKnownChangePasswordStateDelegate* delegate)
     : delegate_(delegate) {}
@@ -95,6 +98,8 @@ void WellKnownChangePasswordState::FetchNonExistingResource(
 void WellKnownChangePasswordState::PrefetchChangePasswordURLs(
     AffiliationService* affiliation_service,
     const std::vector<GURL>& urls) {
+  prefetch_timer_.Start(FROM_HERE, kPrefetchTimeout, this,
+                        &WellKnownChangePasswordState::ContinueProcessing);
   affiliation_service->PrefetchChangePasswordURLs(
       urls,
       base::BindOnce(
@@ -115,15 +120,21 @@ void WellKnownChangePasswordState::FetchNonExistingResourceCallback(
   ContinueProcessing();
 }
 
-void WellKnownChangePasswordState::PrefetchChangePasswordURLsCallback() {}
+void WellKnownChangePasswordState::PrefetchChangePasswordURLsCallback() {
+  if (prefetch_timer_.IsRunning()) {
+    prefetch_timer_.Stop();
+    ContinueProcessing();
+  }
+}
 
 void WellKnownChangePasswordState::ContinueProcessing() {
-  // TODO: Implement timer and insert condition (prefetch_completed_ ||
-  // prefetch_tiemout_) if ChangePasswordAffiliationInfo flag is enabled.
-  if (!BothRequestsFinished()) {
-    return;
+  if (BothRequestsFinished()) {
+    bool is_well_known_supported = SupportsWellKnownChangePasswordUrl();
+    // Don't wait for change password URL from Affiliation Service if
+    // .well-known/change-password is supported.
+    if (is_well_known_supported || !prefetch_timer_.IsRunning())
+      delegate_->OnProcessingFinished(is_well_known_supported);
   }
-  delegate_->OnProcessingFinished(SupportsChangePasswordUrl());
 }
 
 bool WellKnownChangePasswordState::BothRequestsFinished() const {
@@ -131,7 +142,7 @@ bool WellKnownChangePasswordState::BothRequestsFinished() const {
          change_password_response_code_ != 0;
 }
 
-bool WellKnownChangePasswordState::SupportsChangePasswordUrl() const {
+bool WellKnownChangePasswordState::SupportsWellKnownChangePasswordUrl() const {
   DCHECK(BothRequestsFinished());
   return 200 <= change_password_response_code_ &&
          change_password_response_code_ < 300 &&
