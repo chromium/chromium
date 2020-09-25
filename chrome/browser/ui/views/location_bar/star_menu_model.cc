@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ui/views/location_bar/star_menu_model.h"
 
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/omnibox/browser/vector_icons.h"
-#include "components/vector_icons/vector_icons.h"
 #include "ui/base/models/image_model.h"
 #include "ui/native_theme/native_theme.h"
 
@@ -29,15 +29,13 @@ void StarMenuModel::Build(bool bookmarked,
                  : IDS_STAR_VIEW_MENU_ADD_BOOKMARK,
       ui::ImageModel::FromVectorIcon(
           omnibox::kStarIcon, ui::NativeTheme::kColorId_DefaultIconColor));
-  // TODO(corising): Replace placeholder folder icon with read-later icon once
-  // available.
   AddItemWithStringIdAndIcon(
       exists_as_unread_in_read_later ? CommandMarkAsRead
                                      : CommandMoveToReadLater,
       exists_as_unread_in_read_later ? IDS_STAR_VIEW_MENU_MARK_AS_READ
                                      : IDS_STAR_VIEW_MENU_MOVE_TO_READ_LATER,
       ui::ImageModel::FromVectorIcon(
-          vector_icons::kFolderIcon,
+          exists_as_unread_in_read_later ? kReadLaterIcon : kReadLaterAddIcon,
           can_move_to_read_later
               ? ui::NativeTheme::kColorId_DefaultIconColor
               : ui::NativeTheme::kColorId_DisabledIconColor));

@@ -5,13 +5,13 @@
 #include "chrome/browser/ui/views/read_later/read_later_button.h"
 
 #include "base/strings/string16.h"
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/read_later/read_later_bubble_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/gfx/geometry/insets.h"
@@ -39,10 +39,9 @@ const char* ReadLaterButton::GetClassName() const {
 }
 
 void ReadLaterButton::UpdateIcon() {
-  // TODO(corising): Update this to the correct icon once it is added.
   SetImageModel(views::Button::STATE_NORMAL,
                 ui::ImageModel::FromVectorIcon(
-                    vector_icons::kFolderIcon,
+                    kReadLaterIcon,
                     GetThemeProvider()->GetColor(
                         ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON),
                     GetIconSize()));
