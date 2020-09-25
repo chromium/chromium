@@ -504,7 +504,7 @@ public class BrowserControlsManager
      */
     private void setPositionsForTabToNonFullscreen() {
         Tab tab = getTab();
-        if (tab == null
+        if (tab == null || !tab.isInitialized()
                 || TabBrowserControlsConstraintsHelper.getConstraints(tab)
                         != BrowserControlsState.HIDDEN) {
             setPositionsForTab(0, 0, getTopControlsHeight(), getTopControlsMinHeight(),
