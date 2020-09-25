@@ -2509,8 +2509,8 @@ int Textfield::CharsToDips(int width_in_chars) const {
   // effects like find boxes on different tabs being 1 DIP different width.
   const int cursor_width =
       (!GetReadOnly() && GetRenderText()->cursor_enabled()) ? 1 : 0;
-  return GetFontList().GetExpectedTextWidth(default_width_in_chars_) +
-         cursor_width + GetInsets().width();
+  return GetFontList().GetExpectedTextWidth(width_in_chars) + cursor_width +
+         GetInsets().width();
 }
 
 bool Textfield::ShouldBlinkCursor() const {
