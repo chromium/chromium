@@ -776,10 +776,10 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, TestShouldDisplayPopupNotification) {
 }
 
 #if !defined(OS_ANDROID)
-// Test fails on Windows on the bots as there is no real display to test with.
-// TODO(knollr): Find a way to run these on Windows and figure out why Lacros
-// times out.
-#if defined(OS_WIN) || BUILDFLAG(IS_LACROS)
+// TODO(knollr): Test fails on Windows and macOS on the bots as there is no real
+// display to test with. Need to find a way to run these without a display and
+// figure out why Lacros is timing out. Tests pass locally with a real display.
+#if defined(OS_MAC) || defined(OS_WIN) || BUILDFLAG(IS_LACROS)
 #define MAYBE_ShouldQueueDuringScreenPresent \
   DISABLED_ShouldQueueDuringScreenPresent
 #else
