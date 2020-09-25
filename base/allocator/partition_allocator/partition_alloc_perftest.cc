@@ -84,7 +84,8 @@ class PartitionAllocator : public Allocator {
   void Free(void* data) override { ThreadSafePartitionRoot::FreeNoHooks(data); }
 
  private:
-  ThreadSafePartitionRoot alloc_{false, false};
+  ThreadSafePartitionRoot alloc_{{PartitionOptions::Alignment::kRegular,
+                                  PartitionOptions::ThreadCache::kDisabled}};
 };
 
 class TestLoopThread : public PlatformThread::Delegate {

@@ -75,8 +75,8 @@ bool Partitions::InitializeOnce() {
   // - BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC): Only one thread cache at a time
   //   is supported, in this case it is already claimed by malloc().
 #if DCHECK_IS_ON() && !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-  fast_malloc_allocator.init(base::PartitionAllocatorAlignment::kRegular,
-                             true /* with_thread_cache */);
+  fast_malloc_allocator.init({base::PartitionOptions::Alignment::kRegular,
+                              base::PartitionOptions::ThreadCache::kEnabled});
 #else
   fast_malloc_allocator.init();
 #endif

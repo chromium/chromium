@@ -367,6 +367,31 @@ constexpr size_t kOrderSubIndexMask[BITS_PER_SIZE_T + 1] = {
 
 }  // namespace
 
+// Options struct used to configure PartitionRoot and PartitionAllocator.
+struct PartitionOptions {
+  enum class Alignment {
+    // By default all allocations will be aligned to 8B (16B if
+    // BUILDFLAG_INTERNAL_USE_PARTITION_ALLOC_AS_MALLOC is true).
+    kRegular,
+
+    // In addition to the above alignment enforcement, this option allows using
+    // AlignedAlloc() which can align at a larger boundary.  This option comes
+    // at a cost of disallowing cookies on Debug builds and tags/ref-counts for
+    // CheckedPtr. It also causes all allocations to go outside of GigaCage, so
+    // that CheckedPtr can easily tell if a pointer comes with a tag/ref-count
+    // or not.
+    kAlignedAlloc,
+  };
+
+  enum class ThreadCache {
+    kDisabled,
+    kEnabled,
+  };
+
+  Alignment alignment = Alignment::kRegular;
+  ThreadCache thread_cache = ThreadCache::kDisabled;
+};
+
 // Never instantiate a PartitionRoot directly, instead use
 // PartitionAllocator.
 template <bool thread_safe>
@@ -429,9 +454,7 @@ struct BASE_EXPORT PartitionRoot {
   Bucket sentinel_bucket;
 
   PartitionRoot() = default;
-  PartitionRoot(bool enable_tag_pointers, bool enable_thread_cache) {
-    Init(enable_tag_pointers, enable_thread_cache);
-  }
+  explicit PartitionRoot(PartitionOptions opts) { Init(opts); }
   ~PartitionRoot();
 
   // Public API
@@ -444,7 +467,7 @@ struct BASE_EXPORT PartitionRoot {
   //
   // Moving it a layer lower couples PartitionRoot and PartitionBucket, but
   // preserves the layering of the includes.
-  void Init(bool enforce_alignment, bool enable_thread_cache);
+  void Init(PartitionOptions);
 
   ALWAYS_INLINE static bool IsValidPage(Page* page);
   ALWAYS_INLINE static PartitionRoot* FromPage(Page* page);
@@ -1144,28 +1167,13 @@ ALWAYS_INLINE size_t PartitionRoot<thread_safe>::ActualSize(size_t size) {
 #endif
 }
 
-enum class PartitionAllocatorAlignment {
-  // By default all allocations will be aligned to 8B (16B if
-  // BUILDFLAG_INTERNAL_USE_PARTITION_ALLOC_AS_MALLOC is true).
-  kRegular,
-
-  // In addition to the above alignment enforcement, this option allows using
-  // AlignedAlloc() which can align at a larger boundary.
-  // This option comes at a cost of disallowing cookies on Debug builds and tags
-  // for CheckedPtr. It also causes all allocations to go outside of GigaCage,
-  // so that CheckedPtr can easily tell if a pointer comes with a tag or not.
-  kAlignedAlloc,
-};
-
 namespace internal {
 template <bool thread_safe>
 struct BASE_EXPORT PartitionAllocator {
   PartitionAllocator() = default;
   ~PartitionAllocator();
 
-  void init(PartitionAllocatorAlignment alignment =
-                PartitionAllocatorAlignment::kRegular,
-            bool with_thread_cache = false);
+  void init(PartitionOptions = {});
   ALWAYS_INLINE PartitionRoot<thread_safe>* root() { return &partition_root_; }
 
  private:

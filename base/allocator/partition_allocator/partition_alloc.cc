@@ -258,8 +258,7 @@ void InitBucketIndexLookup(PartitionRoot<thread_safe>* root) {
 }
 
 template <bool thread_safe>
-void PartitionRoot<thread_safe>::Init(bool enforce_alignment,
-                                      bool enable_thread_cache) {
+void PartitionRoot<thread_safe>::Init(PartitionOptions opts) {
   ScopedGuard guard{lock_};
   if (initialized)
     return;
@@ -272,12 +271,13 @@ void PartitionRoot<thread_safe>::Init(bool enforce_alignment,
 
   // If alignment needs to be enforced, disallow adding cookies and/or tags at
   // the beginning of the slot.
-  allow_extras = !enforce_alignment;
+  allow_extras = (opts.alignment != PartitionOptions::Alignment::kAlignedAlloc);
 #if !defined(OS_POSIX)
   // TLS in ThreadCache not supported on other OSes.
   with_thread_cache = false;
 #else
-  with_thread_cache = enable_thread_cache;
+  with_thread_cache =
+      (opts.thread_cache == PartitionOptions::ThreadCache::kEnabled);
 
   if (with_thread_cache)
     internal::ThreadCache::Init(this);
@@ -874,29 +874,21 @@ PartitionAllocator<thread_safe>::~PartitionAllocator() {
 }
 
 template <bool thread_safe>
-void PartitionAllocator<thread_safe>::init(
-    PartitionAllocatorAlignment alignment,
-    bool with_thread_cache) {
+void PartitionAllocator<thread_safe>::init(PartitionOptions opts) {
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-  PA_CHECK(!with_thread_cache)
+  PA_CHECK(opts.thread_cache == PartitionOptions::ThreadCache::kDisabled)
       << "Cannot use a thread cache when PartitionAlloc is malloc().";
 #endif
-  partition_root_.Init(
-      alignment ==
-          PartitionAllocatorAlignment::kAlignedAlloc /* enforce_alignment */,
-      with_thread_cache);
+  partition_root_.Init(opts);
   PartitionAllocMemoryReclaimer::Instance()->RegisterPartition(
       &partition_root_);
 }
 
 template PartitionAllocator<internal::ThreadSafe>::~PartitionAllocator();
-template void PartitionAllocator<internal::ThreadSafe>::init(
-    PartitionAllocatorAlignment alignment,
-    bool with_thread_cache);
+template void PartitionAllocator<internal::ThreadSafe>::init(PartitionOptions);
 template PartitionAllocator<internal::NotThreadSafe>::~PartitionAllocator();
 template void PartitionAllocator<internal::NotThreadSafe>::init(
-    PartitionAllocatorAlignment alignment,
-    bool with_thread_cache);
+    PartitionOptions);
 
 #if DCHECK_IS_ON()
 void DCheckIfManagedByPartitionAllocNormalBuckets(const void* ptr) {

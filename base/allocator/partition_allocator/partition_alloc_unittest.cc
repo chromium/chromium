@@ -156,8 +156,8 @@ class PartitionAllocTest : public testing::Test {
   void SetUp() override {
     scoped_feature_list.InitWithFeatures({kPartitionAllocGigaCage}, {});
     PartitionAllocGlobalInit(HandleOOM);
-    allocator.init(PartitionAllocatorAlignment::kRegular);
-    aligned_allocator.init(PartitionAllocatorAlignment::kAlignedAlloc);
+    allocator.init({PartitionOptions::Alignment::kRegular});
+    aligned_allocator.init({PartitionOptions::Alignment::kAlignedAlloc});
     test_bucket_index_ = SizeToIndex(kRealAllocSize);
   }
 

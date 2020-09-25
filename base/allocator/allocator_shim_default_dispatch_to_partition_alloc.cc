@@ -76,7 +76,8 @@ base::ThreadSafePartitionRoot& Allocator() {
   }
 
   auto* new_root = new (g_allocator_buffer) base::ThreadSafePartitionRoot(
-      false /* enforce_alignment */, true /* enable_thread_cache */);
+      {base::PartitionOptions::Alignment::kRegular,
+       base::PartitionOptions::ThreadCache::kEnabled});
   g_root_.store(new_root, std::memory_order_release);
 
   // Semantically equivalent to base::Lock::Release().
@@ -105,8 +106,9 @@ void* PartitionCalloc(const AllocatorDispatch*,
 
 base::ThreadSafePartitionRoot* AlignedAllocator() {
   // Since the general-purpose allocator uses the thread cache, this one cannot.
-  static base::NoDestructor<base::ThreadSafePartitionRoot> aligned_allocator{
-      true /* enforce_alignment */, false /* enable_thread_cache */};
+  static base::NoDestructor<base::ThreadSafePartitionRoot> aligned_allocator(
+      base::PartitionOptions{base::PartitionOptions::Alignment::kAlignedAlloc,
+                             base::PartitionOptions::ThreadCache::kDisabled});
   return aligned_allocator.get();
 }
 
