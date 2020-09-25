@@ -29,6 +29,7 @@
 #include "media/base/media_switches.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "ui/views/controls/button/image_button.h"
+#include "ui/views/view_utils.h"
 
 using media_session::mojom::MediaSessionAction;
 
@@ -527,7 +528,7 @@ class MediaDialogViewBrowserTest : public InProcessBrowserTest {
   // media_message_center::MediaNotificationViewImpl sets the tags of its action
   // buttons to the MediaSessionAction value.
   views::ImageButton* GetButtonForAction(views::View* view, int action) {
-    if (view->GetClassName() == views::ImageButton::kViewClassName) {
+    if (views::IsViewClass<views::ImageButton>(view)) {
       views::ImageButton* image_button = static_cast<views::ImageButton*>(view);
       if (image_button->tag() == action)
         return image_button;

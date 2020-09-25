@@ -24,6 +24,7 @@
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/masked_targeter_delegate.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view_observer.h"
 
 class AlertIndicator;
@@ -53,8 +54,7 @@ class Tab : public gfx::AnimationDelegate,
             public views::ViewObserver,
             public TabSlotView {
  public:
-  // The Tab's class name.
-  static const char kViewClassName[];
+  METADATA_HEADER(Tab);
 
   // When the content's width of the tab shrinks to below this size we should
   // hide the close button on inactive tabs. Any smaller and they're too easy
@@ -83,7 +83,6 @@ class Tab : public gfx::AnimationDelegate,
 
   // TabSlotView:
   void Layout() override;
-  const char* GetClassName() const override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;
   bool OnKeyReleased(const ui::KeyEvent& event) override;
   bool OnMousePressed(const ui::MouseEvent& event) override;

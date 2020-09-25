@@ -94,6 +94,7 @@
 #include "ui/views/view_observer.h"
 #include "ui/views/view_targeter.h"
 #include "ui/views/view_targeter_delegate.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/root_view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/non_client_view.h"
@@ -1984,8 +1985,7 @@ void TabStrip::OnMouseEventInTab(views::View* source,
   // Record time from cursor entering the tabstrip to first tap on a tab to
   // switch.
   if (mouse_entered_tabstrip_time_.has_value() &&
-      event.type() == ui::ET_MOUSE_PRESSED &&
-      !strcmp(source->GetClassName(), Tab::kViewClassName)) {
+      event.type() == ui::ET_MOUSE_PRESSED && views::IsViewClass<Tab>(source)) {
     UMA_HISTOGRAM_MEDIUM_TIMES(
         "TabStrip.TimeToSwitch",
         base::TimeTicks::Now() - mouse_entered_tabstrip_time_.value());
@@ -2426,7 +2426,7 @@ views::View* TabStrip::GetTooltipHandlerForPoint(const gfx::Point& point) {
     // Return any view that isn't a Tab or this TabStrip immediately. We don't
     // want to interfere.
     views::View* v = View::GetTooltipHandlerForPoint(point);
-    if (v && v != this && strcmp(v->GetClassName(), Tab::kViewClassName))
+    if (v && v != this && !views::IsViewClass<Tab>(v))
       return v;
 
     views::View* tab = FindTabHitByPoint(point);
@@ -3359,7 +3359,7 @@ void TabStrip::TabContextMenuController::ShowContextMenuForViewImpl(
     ui::MenuSourceType source_type) {
   // We are only intended to be installed as a context-menu handler for tabs, so
   // this cast should be safe.
-  DCHECK_EQ(Tab::kViewClassName, source->GetClassName());
+  DCHECK(views::IsViewClass<Tab>(source));
   Tab* const tab = static_cast<Tab*>(source);
   if (tab->closing())
     return;
@@ -3798,7 +3798,7 @@ views::View* TabStrip::TargetForRect(views::View* root, const gfx::Rect& rect) {
     // Return any view that isn't a Tab or this TabStrip immediately. We don't
     // want to interfere.
     views::View* v = views::ViewTargeterDelegate::TargetForRect(root, rect);
-    if (v && v != this && strcmp(v->GetClassName(), Tab::kViewClassName))
+    if (v && v != this && !views::IsViewClass<Tab>(v))
       return v;
 
     views::View* tab = FindTabHitByPoint(point);

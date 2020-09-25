@@ -42,6 +42,7 @@
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_targeter.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
@@ -50,7 +51,7 @@ namespace {
 // found tab view, on NULL if none is found.
 views::View* FindTabView(views::View* view) {
   views::View* current = view;
-  while (current && strcmp(current->GetClassName(), Tab::kViewClassName)) {
+  while (current && !views::IsViewClass<Tab>(current)) {
     current = current->parent();
   }
   return current;

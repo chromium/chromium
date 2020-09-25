@@ -76,6 +76,7 @@
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/rect_based_targeting_utils.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
@@ -174,9 +175,6 @@ class Tab::TabCloseButtonObserver : public views::ViewObserver {
 };
 
 // Tab -------------------------------------------------------------------------
-
-// static
-const char Tab::kViewClassName[] = "Tab";
 
 // static
 void Tab::SetShowHoverCardOnMouseHoverForTesting(bool value) {
@@ -421,10 +419,6 @@ void Tab::Layout() {
 
   if (focus_ring_)
     focus_ring_->Layout();
-}
-
-const char* Tab::GetClassName() const {
-  return kViewClassName;
 }
 
 bool Tab::OnKeyPressed(const ui::KeyEvent& event) {
@@ -1049,3 +1043,6 @@ void Tab::UpdateForegroundColors() {
 
   SchedulePaint();
 }
+
+BEGIN_METADATA(Tab, TabSlotView)
+END_METADATA
