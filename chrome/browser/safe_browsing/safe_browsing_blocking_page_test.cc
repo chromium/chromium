@@ -1227,7 +1227,13 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
   EXPECT_EQ(url, controller.GetVisibleEntry()->GetURL());
 }
 
-IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest, LearnMore) {
+#if defined(OS_MAC) && !defined(NDEBUG)
+// TODO(crbug.com/1132307): Address flaky timeout.
+#define MAYBE_LearnMore DISABLED_LearnMore
+#else
+#define MAYBE_LearnMore LearnMore
+#endif
+IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest, MAYBE_LearnMore) {
   SetupWarningAndNavigate(browser());
 
   SafeBrowsingBlockingPage* sb_interstitial;
@@ -1408,8 +1414,16 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest, WhitelistUnsaved) {
   AssertNoInterstitial(true);
 }
 
+#if defined(OS_MAC) && !defined(NDEBUG)
+// TODO(crbug.com/1132307): Address flay failure.
+#define MAYBE_VerifyHitReportSentOnSBERAndNotIncognito \
+  DISABLED_VerifyHitReportSentOnSBERAndNotIncognito
+#else
+#define MAYBE_VerifyHitReportSentOnSBERAndNotIncognito \
+  VerifyHitReportSentOnSBERAndNotIncognito
+#endif
 IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
-                       VerifyHitReportSentOnSBERAndNotIncognito) {
+                       MAYBE_VerifyHitReportSentOnSBERAndNotIncognito) {
   // The extended reporting opt-in is presented in the interstitial for malware,
   // phishing, and UwS threats.
   const bool expect_threat_details =
@@ -1744,8 +1758,14 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
 }
 
 // Check back and forward work correctly after clicking through an interstitial.
+#if defined(OS_MAC) && !defined(NDEBUG)
+// TODO(crbug.com/1132307): Address flay failure.
+#define MAYBE_NavigatingBackAndForth DISABLED_NavigatingBackAndForth
+#else
+#define MAYBE_NavigatingBackAndForth NavigatingBackAndForth
+#endif
 IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
-                       NavigatingBackAndForth) {
+                       MAYBE_NavigatingBackAndForth) {
   // Load a safe page. (Despite the name, kMaliciousPage is not the page flagged
   // as bad in this test.)
   GURL safe_url(embedded_test_server()->GetURL(kMaliciousPage));
