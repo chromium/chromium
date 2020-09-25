@@ -1279,11 +1279,13 @@ def _ParseApkOtherSymbols(section_ranges, apk_path, apk_so_path,
               source_path=source_path,
               full_name=resource_filename))  # Full name must disambiguate
 
-  if signing_block_size > 0:
-    signing_symbol = models.Symbol(models.SECTION_OTHER,
-                                   signing_block_size,
-                                   full_name='APK Signature Block')
-    apk_symbols.append(signing_symbol)
+  # Store zipalign overhead and signing block size as metadata rather than an
+  # "Overhead:" symbol because they fluctuate in size, and would be a source of
+  # noise in symbol diffs if included as symbols (http://crbug.com/1130754).
+  # Might be even better if we had an option in Tiger Viewer to ignore certain
+  # symbols, but taking this as a short-cut for now.
+  metadata[models.METADATA_ZIPALIGN_OVERHEAD] = zipalign_total
+  metadata[models.METADATA_SIGNING_BLOCK_SIZE] = signing_block_size
 
   # Overhead includes:
   #  * Size of all local zip headers (minus zipalign padding).
@@ -1294,9 +1296,6 @@ def _ParseApkOtherSymbols(section_ranges, apk_path, apk_so_path,
   zip_overhead_symbol = models.Symbol(
       models.SECTION_OTHER, overhead_size, full_name='Overhead: APK file')
   apk_symbols.append(zip_overhead_symbol)
-  # Store as metadata rather than an Overhead: symbol so that the sum of symbols
-  # matches normalized apk size.
-  metadata[models.METADATA_ZIPALIGN_OVERHEAD] = zipalign_total
   _ExtendSectionRange(section_ranges, models.SECTION_OTHER,
                       sum(s.size for s in apk_symbols))
   return dex_size, apk_symbols

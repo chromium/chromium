@@ -106,6 +106,30 @@ def _ReadZipInfoExtraFieldLength(zip_file, zip_info):
   return struct.unpack('<H', zip_file.fp.read(2))[0]
 
 
+def _MeasureApkSignatureBlock(zip_file):
+  """Measures the size of the v2 / v3 signing block.
+
+  Refer to: https://source.android.com/security/apksigning/v2
+  """
+  # Seek to "end of central directory" struct.
+  eocd_offset_from_end = -22 - len(zip_file.comment)
+  zip_file.fp.seek(eocd_offset_from_end, os.SEEK_END)
+  assert zip_file.fp.read(4) == b'PK\005\006', (
+      'failed to find end-of-central-directory')
+
+  # Read out the "start of central directory" offset.
+  zip_file.fp.seek(eocd_offset_from_end + 16, os.SEEK_END)
+  start_of_central_directory = struct.unpack('<I', zip_file.fp.read(4))[0]
+
+  # Compute the offset after the last zip entry.
+  last_info = zip_file.infolist()[-1]
+  last_header_size = (30 + len(last_info.filename) +
+                      _ReadZipInfoExtraFieldLength(zip_file, last_info))
+  end_of_last_file = (last_info.header_offset + last_header_size +
+                      last_info.compress_size)
+  return start_of_central_directory - end_of_last_file
+
+
 def _RunReadelf(so_path, options, tool_prefix=''):
   return cmd_helper.GetCmdOutput(
       [tool_prefix + 'readelf'] + options + [so_path])
@@ -322,6 +346,7 @@ def _DoApkAnalysis(apk_filename, apks_path, tool_prefix, out_dir, report_func):
     # Happens when python aligns entries in apkbuilder.py, but does not
     # exist when using Android's zipalign. E.g. for bundle .apks files.
     zipalign_overhead += sum(len(i.extra) for i in apk_contents)
+    signing_block_size = _MeasureApkSignatureBlock(apk)
 
   sdk_version, skip_extract_lib = _ParseManifestAttributes(apk_filename)
 
@@ -490,9 +515,13 @@ def _DoApkAnalysis(apk_filename, apks_path, tool_prefix, out_dir, report_func):
   normalized_apk_size += java_code.ComputeUncompressedSize()
   # Don't include zipalign overhead in normalized size, since it effectively
   # causes size changes files that proceed aligned files to be rounded.
-  # For APKs where classes.dex directly proceeds libchrome.so, this causes
-  # small dex size changes to disappear into libchrome.so alignment.
+  # For APKs where classes.dex directly proceeds libchrome.so (the normal case),
+  # this causes small dex size changes to disappear into libchrome.so alignment.
   normalized_apk_size -= zipalign_overhead
+  # Don't include the size of the apk's signing block because it can fluctuate
+  # by up to 4kb (from my non-scientific observations), presumably based on hash
+  # sizes.
+  normalized_apk_size -= signing_block_size
 
   # Unaligned size should be ~= uncompressed size or something is wrong.
   # As of now, padding_fraction ~= .007
