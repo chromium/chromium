@@ -14,6 +14,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.accessibility_tab_switcher.OverviewListLayout;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -76,6 +77,7 @@ public class LayoutManagerChrome
     private boolean mCreateOverviewLayout;
 
     protected ObservableSupplier<TabContentManager> mTabContentManagerSupplier;
+    private final OneshotSupplierImpl<OverviewModeBehavior> mOverviewModeBehaviorSupplier;
 
     /**
      * Creates the {@link LayoutManagerChrome} instance.
@@ -87,7 +89,8 @@ public class LayoutManagerChrome
      */
     public LayoutManagerChrome(LayoutManagerHost host, ViewGroup contentContainer,
             boolean createOverviewLayout, @Nullable StartSurface startSurface,
-            ObservableSupplier<TabContentManager> tabContentManagerSupplier) {
+            ObservableSupplier<TabContentManager> tabContentManagerSupplier,
+            OneshotSupplierImpl<OverviewModeBehavior> overviewModeBehaviorSupplier) {
         super(host, contentContainer, tabContentManagerSupplier);
         Context context = host.getContext();
         LayoutRenderHost renderHost = host.getLayoutRenderHost();
@@ -119,10 +122,8 @@ public class LayoutManagerChrome
                     @Override
                     public void onStateChanged(@OverviewModeState int overviewModeState,
                             boolean shouldShowTabSwitcherToolbar) {
-                        for (OverviewModeObserver observer : mOverviewModeObservers) {
-                            observer.onOverviewModeStateChanged(
-                                    overviewModeState, shouldShowTabSwitcherToolbar);
-                        }
+                        notifyObserversStateChanged(
+                                overviewModeState, shouldShowTabSwitcherToolbar);
                     }
                 });
                 final ObservableSupplier<? extends BrowserControlsStateProvider>
@@ -134,6 +135,9 @@ public class LayoutManagerChrome
                 mCreateOverviewLayout = true;
             }
         }
+
+        mOverviewModeBehaviorSupplier = overviewModeBehaviorSupplier;
+        mOverviewModeBehaviorSupplier.set(this);
     }
 
     /**
@@ -278,9 +282,7 @@ public class LayoutManagerChrome
         if (isOverviewLayout(layoutBeingShown)) {
             boolean showToolbar = animate && (!mEnableAnimations
                     || getTabModelSelector().getCurrentModel().getCount() <= 0);
-            for (OverviewModeObserver observer : mOverviewModeObservers) {
-                observer.onOverviewModeStartedShowing(showToolbar);
-            }
+            notifyObserversStartedShowing(showToolbar);
         }
     }
 
@@ -298,9 +300,7 @@ public class LayoutManagerChrome
 
             boolean creatingNtp = layoutBeingHidden == mOverviewLayout && mCreatingNtp;
 
-            for (OverviewModeObserver observer : mOverviewModeObservers) {
-                observer.onOverviewModeStartedHiding(showToolbar, creatingNtp);
-            }
+            notifyObserversStartedHiding(showToolbar, creatingNtp);
         }
     }
 
@@ -309,9 +309,7 @@ public class LayoutManagerChrome
         super.doneShowing();
 
         if (isOverviewLayout(getActiveLayout())) {
-            for (OverviewModeObserver observer : mOverviewModeObservers) {
-                observer.onOverviewModeFinishedShowing();
-            }
+            notifyObserversFinishedShowing();
         }
     }
 
@@ -327,9 +325,7 @@ public class LayoutManagerChrome
         super.doneHiding();
 
         if (isOverviewLayout(layoutBeingHidden)) {
-            for (OverviewModeObserver observer : mOverviewModeObservers) {
-                observer.onOverviewModeFinishedHiding();
-            }
+            notifyObserversFinishedHiding();
         }
     }
 
@@ -595,5 +591,47 @@ public class LayoutManagerChrome
                     .getModel(lastTab.isIncognito())
                     .closeTab(lastTab, tab, false, false, false);
         }
+    }
+
+    private void notifyObserversStartedShowing(boolean showToolbar) {
+        mOverviewModeBehaviorSupplier.onAvailable((unused) -> {
+            for (OverviewModeObserver overviewModeObserver : mOverviewModeObservers) {
+                overviewModeObserver.onOverviewModeStartedShowing(showToolbar);
+            }
+        });
+    }
+
+    private void notifyObserversFinishedShowing() {
+        mOverviewModeBehaviorSupplier.onAvailable((unused) -> {
+            for (OverviewModeObserver overviewModeObserver : mOverviewModeObservers) {
+                overviewModeObserver.onOverviewModeFinishedShowing();
+            }
+        });
+    }
+
+    private void notifyObserversStartedHiding(boolean showToolbar, boolean creatingNtp) {
+        mOverviewModeBehaviorSupplier.onAvailable((unused) -> {
+            for (OverviewModeObserver overviewModeObserver : mOverviewModeObservers) {
+                overviewModeObserver.onOverviewModeStartedHiding(showToolbar, creatingNtp);
+            }
+        });
+    }
+
+    private void notifyObserversFinishedHiding() {
+        mOverviewModeBehaviorSupplier.onAvailable((unused) -> {
+            for (OverviewModeObserver overviewModeObserver : mOverviewModeObservers) {
+                overviewModeObserver.onOverviewModeFinishedHiding();
+            }
+        });
+    }
+
+    private void notifyObserversStateChanged(
+            @OverviewModeState int overviewModeState, boolean shouldShowTabSwitcherToolbar) {
+        mOverviewModeBehaviorSupplier.onAvailable((unused) -> {
+            for (OverviewModeObserver overviewModeObserver : mOverviewModeObservers) {
+                overviewModeObserver.onOverviewModeStateChanged(
+                        overviewModeState, shouldShowTabSwitcherToolbar);
+            }
+        });
     }
 }

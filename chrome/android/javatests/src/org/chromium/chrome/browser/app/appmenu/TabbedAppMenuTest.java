@@ -237,7 +237,8 @@ public class TabbedAppMenuTest {
                 () -> mActivityTestRule.getActivity().getLayoutManager().hideOverview(false));
         Assert.assertFalse("Overview shouldn't be showing.",
                 mActivityTestRule.getActivity().getOverviewModeBehavior().overviewVisible());
-        Assert.assertFalse("App menu shouldn't be showing.", mAppMenuHandler.isAppMenuShowing());
+        CriteriaHelper.pollUiThread(
+                () -> !mAppMenuHandler.isAppMenuShowing(), "App menu shouldn't be showing.");
     }
 
     @Test
@@ -374,12 +375,10 @@ public class TabbedAppMenuTest {
     }
 
     private void showAppMenuAndAssertMenuShown() {
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT,
-                ()
-                        -> AppMenuTestSupport.showAppMenu(
-                                mActivityTestRule.getAppMenuCoordinator(), null, false));
-        CriteriaHelper.pollInstrumentationThread(
-                () -> mAppMenuHandler.isAppMenuShowing(), "AppMenu did not show");
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            AppMenuTestSupport.showAppMenu(mActivityTestRule.getAppMenuCoordinator(), null, false);
+            Assert.assertTrue(mAppMenuHandler.isAppMenuShowing());
+        });
     }
 
     private void hitEnterAndAssertAppMenuDismissed() {

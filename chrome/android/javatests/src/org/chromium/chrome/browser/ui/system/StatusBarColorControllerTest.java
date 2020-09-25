@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ui.system;
 
+import android.app.Activity;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Build;
@@ -11,6 +12,7 @@ import android.os.Build;
 import androidx.annotation.ColorInt;
 import androidx.test.filters.LargeTest;
 
+import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -34,9 +36,14 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.ThemeTestUtils;
 import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.content_public.browser.test.util.Criteria;
+import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.UiRestriction;
 import org.chromium.ui.util.ColorUtils;
+
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 
 /**
  * {@link StatusBarColorController} tests.
@@ -68,7 +75,7 @@ public class StatusBarColorControllerTest {
     @Feature({"StatusBar"})
     @MinAndroidSdkLevel(Build.VERSION_CODES.LOLLIPOP_MR1)
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE}) // Status bar is always black on tablets
-    public void testColorToggleIncongitoInOverview() {
+    public void testColorToggleIncongitoInOverview() throws Exception {
         ChromeTabbedActivity activity = mActivityTestRule.getActivity();
         Resources resources = activity.getResources();
         final int expectedOverviewStandardColor = defaultColorFallbackToBlack(
@@ -84,8 +91,7 @@ public class StatusBarColorControllerTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { activity.getLayoutManager().showOverview(false /* animate */); });
 
-        ThemeTestUtils.assertStatusBarColor(activity, expectedOverviewIncognitoColor);
-
+        waitForStatusBarColor(activity, expectedOverviewIncognitoColor);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { tabModelSelector.selectModel(false /* incongito */); });
         ThemeTestUtils.assertStatusBarColor(activity, expectedOverviewStandardColor);
@@ -109,11 +115,11 @@ public class StatusBarColorControllerTest {
                 "/chrome/test/data/android/theme_color_test.html");
         mActivityTestRule.loadUrl(pageWithBrandColorUrl);
         ThemeTestUtils.waitForThemeColor(activity, Color.RED);
-        ThemeTestUtils.assertStatusBarColor(activity, Color.RED);
+        waitForStatusBarColor(activity, Color.RED);
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { activity.getLayoutManager().showOverview(false /* animate */); });
-        ThemeTestUtils.assertStatusBarColor(activity, expectedDefaultStandardColor);
+        waitForStatusBarColor(activity, expectedDefaultStandardColor);
     }
 
     /**
@@ -190,5 +196,16 @@ public class StatusBarColorControllerTest {
         final float scrimColorAlpha = (mScrimColor >>> 24) / 255f;
         final int scrimColorOpaque = mScrimColor & 0xFF000000;
         return ColorUtils.getColorWithOverlay(color, scrimColorOpaque, fraction * scrimColorAlpha);
+    }
+
+    private void waitForStatusBarColor(Activity activity, int expectedColor)
+            throws ExecutionException, TimeoutException {
+        final int actualExpectedColor = Build.VERSION.SDK_INT < Build.VERSION_CODES.M
+                ? ColorUtils.getDarkenedColorForStatusBar(expectedColor)
+                : expectedColor;
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(
+                    activity.getWindow().getStatusBarColor(), Matchers.is(actualExpectedColor));
+        }, CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
     }
 }
