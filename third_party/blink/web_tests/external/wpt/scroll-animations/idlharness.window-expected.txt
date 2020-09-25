@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-PASS idl_test setup
+FAIL idl_test setup promise_test: Unhandled rejection with value: object "CSSScrollTimelineRule inherits CSSRule, but CSSRule is undefined."
 PASS idl_test validation
 PASS Partial interface Element: member names are unique
 PASS Element includes Animatable: member names are unique
@@ -7,23 +7,5 @@ PASS Element includes ParentNode: member names are unique
 PASS Element includes NonDocumentTypeChildNode: member names are unique
 PASS Element includes ChildNode: member names are unique
 PASS Element includes Slottable: member names are unique
-PASS ScrollTimeline interface: existence and properties of interface object
-PASS ScrollTimeline interface object length
-PASS ScrollTimeline interface object name
-PASS ScrollTimeline interface: existence and properties of interface prototype object
-PASS ScrollTimeline interface: existence and properties of interface prototype object's "constructor" property
-PASS ScrollTimeline interface: existence and properties of interface prototype object's @@unscopables property
-FAIL ScrollTimeline interface: attribute source assert_true: The prototype object must have a property "source" expected true got false
-PASS ScrollTimeline interface: attribute orientation
-FAIL ScrollTimeline interface: attribute start assert_true: The prototype object must have a property "start" expected true got false
-FAIL ScrollTimeline interface: attribute end assert_true: The prototype object must have a property "end" expected true got false
-PASS ScrollTimeline interface: attribute timeRange
-FAIL ScrollTimeline must be primary interface of new ScrollTimeline() assert_equals: Unexpected exception when evaluating object expected null but got object "NotSupportedError: Failed to construct 'ScrollTimeline': 'auto' value for timeRange not yet supported"
-FAIL Stringification of new ScrollTimeline() assert_equals: Unexpected exception when evaluating object expected null but got object "NotSupportedError: Failed to construct 'ScrollTimeline': 'auto' value for timeRange not yet supported"
-FAIL ScrollTimeline interface: new ScrollTimeline() must inherit property "source" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "NotSupportedError: Failed to construct 'ScrollTimeline': 'auto' value for timeRange not yet supported"
-FAIL ScrollTimeline interface: new ScrollTimeline() must inherit property "orientation" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "NotSupportedError: Failed to construct 'ScrollTimeline': 'auto' value for timeRange not yet supported"
-FAIL ScrollTimeline interface: new ScrollTimeline() must inherit property "start" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "NotSupportedError: Failed to construct 'ScrollTimeline': 'auto' value for timeRange not yet supported"
-FAIL ScrollTimeline interface: new ScrollTimeline() must inherit property "end" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "NotSupportedError: Failed to construct 'ScrollTimeline': 'auto' value for timeRange not yet supported"
-FAIL ScrollTimeline interface: new ScrollTimeline() must inherit property "timeRange" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "NotSupportedError: Failed to construct 'ScrollTimeline': 'auto' value for timeRange not yet supported"
 Harness: the test ran to completion.
 

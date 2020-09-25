@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 110 tests; 107 PASS, 3 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 93 tests; 92 PASS, 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS PaymentRequest interface: existence and properties of interface object
@@ -16,7 +16,6 @@ PASS PaymentRequest interface: attribute id
 PASS PaymentRequest interface: attribute shippingAddress
 PASS PaymentRequest interface: attribute shippingOption
 PASS PaymentRequest interface: attribute shippingType
-FAIL PaymentRequest interface: attribute onmerchantvalidation assert_true: The prototype object must have a property "onmerchantvalidation" expected true got false
 PASS PaymentRequest interface: attribute onshippingaddresschange
 PASS PaymentRequest interface: attribute onshippingoptionchange
 PASS PaymentRequest interface: attribute onpaymentmethodchange
@@ -31,7 +30,6 @@ PASS PaymentRequest interface: paymentRequest must inherit property "id" with th
 PASS PaymentRequest interface: paymentRequest must inherit property "shippingAddress" with the proper type
 PASS PaymentRequest interface: paymentRequest must inherit property "shippingOption" with the proper type
 PASS PaymentRequest interface: paymentRequest must inherit property "shippingType" with the proper type
-FAIL PaymentRequest interface: paymentRequest must inherit property "onmerchantvalidation" with the proper type assert_inherits: property "onmerchantvalidation" not found in prototype chain
 PASS PaymentRequest interface: paymentRequest must inherit property "onshippingaddresschange" with the proper type
 PASS PaymentRequest interface: paymentRequest must inherit property "onshippingoptionchange" with the proper type
 PASS PaymentRequest interface: paymentRequest must inherit property "onpaymentmethodchange" with the proper type
@@ -70,21 +68,6 @@ PASS PaymentResponse interface: attribute payerPhone
 PASS PaymentResponse interface: operation complete(optional PaymentComplete)
 PASS PaymentResponse interface: operation retry(optional PaymentValidationErrors)
 PASS PaymentResponse interface: attribute onpayerdetailchange
-PASS MerchantValidationEvent interface: existence and properties of interface object
-PASS MerchantValidationEvent interface object length
-PASS MerchantValidationEvent interface object name
-PASS MerchantValidationEvent interface: existence and properties of interface prototype object
-PASS MerchantValidationEvent interface: existence and properties of interface prototype object's "constructor" property
-PASS MerchantValidationEvent interface: existence and properties of interface prototype object's @@unscopables property
-PASS MerchantValidationEvent interface: attribute methodName
-PASS MerchantValidationEvent interface: attribute validationURL
-PASS MerchantValidationEvent interface: operation complete(Promise<any>)
-PASS MerchantValidationEvent must be primary interface of new MerchantValidationEvent("merchantvalidation")
-PASS Stringification of new MerchantValidationEvent("merchantvalidation")
-PASS MerchantValidationEvent interface: new MerchantValidationEvent("merchantvalidation") must inherit property "methodName" with the proper type
-PASS MerchantValidationEvent interface: new MerchantValidationEvent("merchantvalidation") must inherit property "validationURL" with the proper type
-PASS MerchantValidationEvent interface: new MerchantValidationEvent("merchantvalidation") must inherit property "complete(Promise<any>)" with the proper type
-PASS MerchantValidationEvent interface: calling complete(Promise<any>) on new MerchantValidationEvent("merchantvalidation") with too few arguments must throw TypeError
 PASS PaymentMethodChangeEvent interface: existence and properties of interface object
 PASS PaymentMethodChangeEvent interface object length
 PASS PaymentMethodChangeEvent interface object name
