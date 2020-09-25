@@ -5982,6 +5982,10 @@ const FeatureEntry kFeatureEntries[] = {
          password_manager::features::kPasswordChangeInSettings,
          kPasswordChangeInSettingsFeatureVariations,
          "PasswordChangeInSettingsFeatureVariations")},
+    {"password-scripts-fetching",
+     flag_descriptions::kPasswordScriptsFetchingName,
+     flag_descriptions::kPasswordScriptsFetchingDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(password_manager::features::kPasswordScriptsFetching)},
     {"password-change-support", flag_descriptions::kPasswordChangeName,
      flag_descriptions::kPasswordChangeDescription, kOsAndroid,
      FEATURE_WITH_PARAMS_VALUE_TYPE(password_manager::features::kPasswordChange,
@@ -6559,6 +6563,10 @@ bool SkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
   }
 
   if (!strcmp("password-change-support", entry.internal_name)) {
+    return !base::FeatureList::IsEnabled(features::kTeamfoodFlags);
+  }
+
+  if (!strcmp("password-scripts-fetching", entry.internal_name)) {
     return !base::FeatureList::IsEnabled(features::kTeamfoodFlags);
   }
 #endif  // OS_ANDROID

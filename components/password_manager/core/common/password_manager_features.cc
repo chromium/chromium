@@ -77,6 +77,10 @@ const base::Feature kPasswordCheck = {"PasswordCheck",
 const base::Feature kPasswordImport = {"PasswordImport",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables password scripts fetching for the |PasswordChangeInSettings| feature.
+const base::Feature kPasswordScriptsFetching = {
+    "PasswordScriptsFetching", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables checking credentials for weakness in Password Check.
 const base::Feature kPasswordsWeaknessCheck = {
     "PasswordsWeaknessCheck", base::FEATURE_DISABLED_BY_DEFAULT};

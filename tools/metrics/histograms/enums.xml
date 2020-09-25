@@ -40869,6 +40869,7 @@ from previous Chrome versions.
   <int value="-2047822258" label="enable-avfoundation"/>
   <int value="-2047190657" label="SyncUserConsentSeparateType:enabled"/>
   <int value="-2047071651" label="NearbySharing:enabled"/>
+  <int value="-2043331707" label="PasswordScriptsFetching:disabled"/>
   <int value="-2043128632" label="enable-tab-switcher-in-document-mode"/>
   <int value="-2042278511" label="SmartSuggestionForLargeDownloads:disabled"/>
   <int value="-2041281386" label="MultiPaste:disabled"/>
@@ -41801,6 +41802,7 @@ from previous Chrome versions.
   <int value="-1161409696" label="MediaRemotingEncrypted:enabled"/>
   <int value="-1161384421" label="ContextualSuggestionsAboveArticles:enabled"/>
   <int value="-1160941363" label="AffiliationBasedMatching:disabled"/>
+  <int value="-1160797265" label="PasswordScriptsFetching:enabled"/>
   <int value="-1160026273" label="enable-web-notification-custom-layouts"/>
   <int value="-1159563774" label="enable-accessibility-script-injection"/>
   <int value="-1159369873" label="TabGroupsUiImprovementsAndroid:disabled"/>

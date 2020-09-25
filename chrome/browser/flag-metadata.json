@@ -3629,6 +3629,11 @@
     "expiry_milestone": 87
   },
   {
+    "name": "password-scripts-fetching",
+    "owners": [ "kolos" ],
+    "expiry_milestone": 89
+  },
+  {
     "name": "PasswordImport",
     "owners": [ "vasilii" ],
     "expiry_milestone": 88

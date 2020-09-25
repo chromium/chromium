@@ -1833,6 +1833,10 @@ const char kPasswordImportName[] = "Password import";
 const char kPasswordImportDescription[] =
     "Import functionality in password settings.";
 
+const char kPasswordScriptsFetchingName[] = "Fetch password scripts";
+const char kPasswordScriptsFetchingDescription[] =
+    "Fetches scripts for password change flows.";
+
 const char kForceWebContentsDarkModeName[] = "Force Dark Mode for Web Contents";
 const char kForceWebContentsDarkModeDescription[] =
     "Automatically render all web contents using a dark theme.";
