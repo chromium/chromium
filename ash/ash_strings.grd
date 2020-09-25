@@ -949,11 +949,14 @@ This file contains the strings for ash.
       </message>
 
       <!-- Holding space tray-->
+      <message name="IDS_ASH_HOLDING_SPACE_TITLE" desc="Title of the holding space tray and bubble.">
+        Recent screenshots and downloads
+      </message>
       <message name="IDS_ASH_HOLDING_SPACE_PINNED_TITLE" desc="Title of the pinned files area in the holding space bubble.">
         Pinned
       </message>
-      <message name="IDS_ASH_HOLDING_SPACE_RECENT_DOWNLOADS_TITLE" desc="Title of the recent downloads area in the holding space bubble.">
-        Recent downloads
+      <message name="IDS_ASH_HOLDING_SPACE_DOWNLOADS_TITLE" desc="Title of the downloads area in the holding space bubble.">
+        Downloads
       </message>
       <message name="IDS_ASH_HOLDING_SPACE_SCREENSHOTS_TITLE" desc="Title of the screenshots area in the holding space bubble.">
         Screenshots

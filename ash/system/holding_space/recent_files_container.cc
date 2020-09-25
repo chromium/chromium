@@ -55,12 +55,12 @@ RecentFilesContainer::RecentFilesContainer(
                   gfx::Insets(/*top=*/0, /*left=*/0, /*bottom=*/0,
                               /*right=*/kHoldingSpaceScreenshotSpacing));
 
-  auto* recent_downloads_label = AddChildView(std::make_unique<views::Label>(
-      l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_RECENT_DOWNLOADS_TITLE)));
-  setup_layered_child(recent_downloads_label);
-  style.SetupLabel(recent_downloads_label);
+  auto* downloads_label = AddChildView(std::make_unique<views::Label>(
+      l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_DOWNLOADS_TITLE)));
+  setup_layered_child(downloads_label);
+  style.SetupLabel(downloads_label);
 
-  recent_downloads_container_ =
+  downloads_container_ =
       AddChildView(std::make_unique<HoldingSpaceItemChipsContainer>());
 
   if (HoldingSpaceController::Get()->model())
@@ -80,7 +80,7 @@ void RecentFilesContainer::AddHoldingSpaceItemView(
 void RecentFilesContainer::RemoveAllHoldingSpaceItemViews() {
   views_by_item_id_.clear();
   screenshots_container_->RemoveAllChildViews(true);
-  recent_downloads_container_->RemoveAllChildViews(true);
+  downloads_container_->RemoveAllChildViews(true);
 }
 
 void RecentFilesContainer::RemoveHoldingSpaceItemView(
@@ -147,16 +147,15 @@ void RecentFilesContainer::AddHoldingSpaceDownloadView(
   DCHECK(!base::Contains(views_by_item_id_, item->id()));
 
   // Remove the last download view if we are already at max capacity.
-  if (recent_downloads_container_->children().size() == kMaxDownloads) {
-    std::unique_ptr<views::View> view =
-        recent_downloads_container_->RemoveChildViewT(
-            recent_downloads_container_->children().back());
+  if (downloads_container_->children().size() == kMaxDownloads) {
+    std::unique_ptr<views::View> view = downloads_container_->RemoveChildViewT(
+        downloads_container_->children().back());
     views_by_item_id_.erase(
         HoldingSpaceItemView::Cast(view.get())->item()->id());
   }
 
   // Add the download view to the front in order to sort by recency.
-  views_by_item_id_[item->id()] = recent_downloads_container_->AddChildViewAt(
+  views_by_item_id_[item->id()] = downloads_container_->AddChildViewAt(
       std::make_unique<HoldingSpaceItemChipView>(delegate_, item), /*index=*/0);
 }
 
@@ -169,11 +168,11 @@ void RecentFilesContainer::RemoveHoldingSpaceDownloadView(
     return;
 
   // Remove the download view associated with `item`.
-  recent_downloads_container_->RemoveChildViewT(it->second);
+  downloads_container_->RemoveChildViewT(it->second);
   views_by_item_id_.erase(it);
 
   // Verify that we are *not* at max capacity.
-  DCHECK_LT(recent_downloads_container_->children().size(), kMaxDownloads);
+  DCHECK_LT(downloads_container_->children().size(), kMaxDownloads);
 
   // Since we are under max capacity, we can add at most one download view to
   // replace the view we just removed. Note that we add the replacement to the
@@ -182,10 +181,9 @@ void RecentFilesContainer::RemoveHoldingSpaceDownloadView(
        base::Reversed(HoldingSpaceController::Get()->model()->items())) {
     if (candidate->type() == HoldingSpaceItem::Type::kDownload &&
         !base::Contains(views_by_item_id_, candidate->id())) {
-      views_by_item_id_[candidate->id()] =
-          recent_downloads_container_->AddChildView(
-              std::make_unique<HoldingSpaceItemChipView>(delegate_,
-                                                         candidate.get()));
+      views_by_item_id_[candidate->id()] = downloads_container_->AddChildView(
+          std::make_unique<HoldingSpaceItemChipView>(delegate_,
+                                                     candidate.get()));
       return;
     }
   }

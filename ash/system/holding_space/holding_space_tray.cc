@@ -54,10 +54,9 @@ void SetupChildLayer(views::View* child) {
 
 HoldingSpaceTray::HoldingSpaceTray(Shelf* shelf) : TrayBackgroundView(shelf) {
   SetLayoutManager(std::make_unique<views::FillLayout>());
-  icon_ = tray_container()->AddChildView(std::make_unique<views::ImageView>());
-  icon_->SetTooltipText(
-      l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_SCREENSHOTS_TITLE));
 
+  icon_ = tray_container()->AddChildView(std::make_unique<views::ImageView>());
+  icon_->SetTooltipText(l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_TITLE));
   icon_->SetImage(CreateVectorIcon(kHoldingSpaceIcon,
                                    ShelfConfig::Get()->shelf_icon_color()));
 
@@ -84,12 +83,11 @@ void HoldingSpaceTray::ClickedOutsideBubble() {
 }
 
 base::string16 HoldingSpaceTray::GetAccessibleNameForTray() {
-  return l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_SCREENSHOTS_TITLE);
+  return l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_TITLE);
 }
 
 void HoldingSpaceTray::HandleLocaleChange() {
-  icon_->SetTooltipText(
-      l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_SCREENSHOTS_TITLE));
+  icon_->SetTooltipText(l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_TITLE));
 }
 
 void HoldingSpaceTray::HideBubbleWithView(const TrayBubbleView* bubble_view) {}

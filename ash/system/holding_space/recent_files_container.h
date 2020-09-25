@@ -14,7 +14,7 @@ namespace ash {
 class HoldingSpaceItemChipsContainer;
 class HoldingSpaceItemViewDelegate;
 
-// Container for the recent files (Screenshots, downloads etc).
+// Container for the recent files (e.g. screenshots, downloads, etc).
 class RecentFilesContainer : public HoldingSpaceItemViewsContainer {
  public:
   explicit RecentFilesContainer(HoldingSpaceItemViewDelegate* delegate);
@@ -35,7 +35,7 @@ class RecentFilesContainer : public HoldingSpaceItemViewsContainer {
 
   HoldingSpaceItemViewDelegate* const delegate_;
   views::View* screenshots_container_ = nullptr;
-  HoldingSpaceItemChipsContainer* recent_downloads_container_ = nullptr;
+  HoldingSpaceItemChipsContainer* downloads_container_ = nullptr;
 
   std::map<std::string, views::View*> views_by_item_id_;
 };
