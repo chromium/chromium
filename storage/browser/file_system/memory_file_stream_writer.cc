@@ -34,6 +34,7 @@ MemoryFileStreamWriter::MemoryFileStreamWriter(
       file_path_(file_path),
       offset_(initial_offset) {
   DCHECK(memory_file_util_.MaybeValid());
+  has_pending_operation_ = false;
 }
 
 MemoryFileStreamWriter::~MemoryFileStreamWriter() = default;
@@ -41,6 +42,11 @@ MemoryFileStreamWriter::~MemoryFileStreamWriter() = default;
 int MemoryFileStreamWriter::Write(net::IOBuffer* buf,
                                   int buf_len,
                                   net::CompletionOnceCallback callback) {
+  DCHECK(!has_pending_operation_);
+  DCHECK(cancel_callback_.is_null());
+
+  has_pending_operation_ = true;
+
   task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(
@@ -66,17 +72,43 @@ int MemoryFileStreamWriter::Write(net::IOBuffer* buf,
 void MemoryFileStreamWriter::OnWriteCompleted(
     net::CompletionOnceCallback callback,
     int result) {
+  DCHECK(has_pending_operation_);
+
+  if (CancelIfRequested())
+    return;
+  has_pending_operation_ = false;
+
   if (result > 0)
     offset_ += result;
 
   std::move(callback).Run(result);
 }
 
-int MemoryFileStreamWriter::Cancel(net::CompletionOnceCallback /*callback*/) {
-  return net::ERR_UNEXPECTED;
+int MemoryFileStreamWriter::Cancel(net::CompletionOnceCallback callback) {
+  if (!has_pending_operation_)
+    return net::ERR_UNEXPECTED;
+
+  DCHECK(!callback.is_null());
+  cancel_callback_ = std::move(callback);
+  return net::ERR_IO_PENDING;
 }
 
 int MemoryFileStreamWriter::Flush(net::CompletionOnceCallback /*callback*/) {
+  DCHECK(!has_pending_operation_);
+  DCHECK(cancel_callback_.is_null());
+
   return net::OK;
 }
+
+bool MemoryFileStreamWriter::CancelIfRequested() {
+  DCHECK(has_pending_operation_);
+
+  if (cancel_callback_.is_null())
+    return false;
+
+  has_pending_operation_ = false;
+  std::move(cancel_callback_).Run(net::OK);
+  return true;
+}
+
 }  // namespace storage

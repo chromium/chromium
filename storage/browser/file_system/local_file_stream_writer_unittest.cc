@@ -24,6 +24,12 @@
 
 namespace storage {
 
+namespace {
+void NeverCalled(int unused) {
+  ADD_FAILURE();
+}
+}  // namespace
+
 class LocalFileStreamWriterTest : public testing::Test {
  public:
   LocalFileStreamWriterTest() : file_thread_("TestFileThread") {}
@@ -74,10 +80,6 @@ class LocalFileStreamWriterTest : public testing::Test {
   base::Thread file_thread_;
   base::ScopedTempDir temp_dir_;
 };
-
-void NeverCalled(int unused) {
-  ADD_FAILURE();
-}
 
 TEST_F(LocalFileStreamWriterTest, Write) {
   base::FilePath path = CreateFileWithContent("file_a", std::string());

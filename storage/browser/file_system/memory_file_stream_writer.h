@@ -37,14 +37,20 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) MemoryFileStreamWriter
 
   void OnWriteCompleted(net::CompletionOnceCallback callback, int result);
 
+  // Stops the in-flight operation and calls |cancel_callback_| if it has been
+  // set by Cancel() for the current operation.
+  bool CancelIfRequested();
+
   base::WeakPtr<ObfuscatedFileUtilMemoryDelegate> memory_file_util_;
 
   const scoped_refptr<base::TaskRunner> task_runner_;
   const base::FilePath file_path_;
   int64_t offset_;
 
-  base::WeakPtrFactory<MemoryFileStreamWriter> weak_factory_{this};
+  bool has_pending_operation_;
+  net::CompletionOnceCallback cancel_callback_;
 
+  base::WeakPtrFactory<MemoryFileStreamWriter> weak_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(MemoryFileStreamWriter);
 };
 
