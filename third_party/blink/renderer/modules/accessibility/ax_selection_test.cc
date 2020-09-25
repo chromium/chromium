@@ -479,10 +479,10 @@ TEST_F(AccessibilitySelectionTest, SetSelectionInDisplayNone) {
       "++++<Main>\n"
       "++++++<Paragraph>\n"
       "++++++++<StaticText: Before display:none.>\n"
-      "++++++<Paragraph>\n"
+      "++++++<Paragraph: Display:none 1.>\n"
       "^++++++<Paragraph>\n"
       "++++++++<StaticText: In between two display:none elements.>\n"
-      "++++++<Paragraph>\n"
+      "++++++<Paragraph: Display:none 2.>\n"
       "|++++++<Paragraph>\n"
       "++++++++<StaticText: After display:none.>\n");
   EXPECT_EQ(selection_text, GetSelectionText(ax_selection_shrink));

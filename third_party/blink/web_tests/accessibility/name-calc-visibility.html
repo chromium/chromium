@@ -61,7 +61,7 @@ test(function(t) {
 <script>
 test(function(t) {
     var axInput3 = accessibilityController.accessibleElementById("input3");
-    assert_equals(axInput3.name, "1 2 3 4 5 6 7");
+    assert_equals(axInput3.name, "1 2 3 4 6 7");
 }, "Visibility: 'hidden' and display: 'none' referenced directly by aria-labelledby");
 </script>
 
@@ -89,18 +89,3 @@ test(function(t) {
     assert_equals(axInput4.name, "1 2 7");
 }, "Visibility: 'hidden' and display: 'none' inside aria-labelledby label subtree, where entire label subtree is display: 'none'");
 </script>
-
-<div class="container">
-  <button id="button1" style="display:none">Hello</button>
-  <button id="button2" aria-labelledby="button1">X</button>
-</div>
-
-<script>
-test(function(t) {
-    var axButton1 = accessibilityController.accessibleElementById("button1");
-    assert_equals(axButton1.name, "");
-    var axButton2 = accessibilityController.accessibleElementById("button2");
-    assert_equals(axButton2.name, "Hello");
-}, "Visibility: display: 'none' objects have no name, but can label other things.");
-</script>
-
