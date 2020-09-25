@@ -11,6 +11,7 @@
 #include "base/compiler_specific.h"
 #include "base/optional.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
+#include "chrome/browser/ui/views/tabs/tab_strip_types.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "ui/base/models/list_selection_model.h"
@@ -50,9 +51,9 @@ class FakeBaseTabStripController : public TabStripController {
   void CloseTab(int index) override;
   void MoveTab(int from_index, int to_index) override;
   void MoveGroup(const tab_groups::TabGroupId&, int to_index) override;
-  bool ToggleTabGroupCollapsedState(const tab_groups::TabGroupId group,
-                                    bool from_mouse_event,
-                                    bool record_user_action) override;
+  bool ToggleTabGroupCollapsedState(
+      const tab_groups::TabGroupId group,
+      ToggleTabGroupCollapsedStateOrigin origin) override;
   void ShowContextMenuForTab(Tab* tab,
                              const gfx::Point& p,
                              ui::MenuSourceType source_type) override;

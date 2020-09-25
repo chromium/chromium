@@ -385,11 +385,10 @@ void BrowserTabStripController::MoveGroup(const tab_groups::TabGroupId& group,
 
 bool BrowserTabStripController::ToggleTabGroupCollapsedState(
     const tab_groups::TabGroupId group,
-    bool from_mouse_event,
-    bool record_user_action) {
+    ToggleTabGroupCollapsedStateOrigin origin) {
   const bool is_currently_collapsed = IsGroupCollapsed(group);
   if (is_currently_collapsed) {
-    if (record_user_action) {
+    if (origin != ToggleTabGroupCollapsedStateOrigin::kImplicitAction) {
       base::RecordAction(
           base::UserMetricsAction("TabGroups_TabGroupHeader_Expanded"));
     }
@@ -414,12 +413,12 @@ bool BrowserTabStripController::ToggleTabGroupCollapsedState(
       model_->ActivateTabAt(GetActiveIndex(),
                             {TabStripModel::GestureType::kOther});
     }
-    if (record_user_action) {
+    if (origin != ToggleTabGroupCollapsedStateOrigin::kImplicitAction) {
       base::RecordAction(
           base::UserMetricsAction("TabGroups_TabGroupHeader_Collapsed"));
     }
   }
-  tabstrip_->ToggleTabGroup(group, !is_currently_collapsed, from_mouse_event);
+  tabstrip_->ToggleTabGroup(group, !is_currently_collapsed, origin);
 
   std::vector<int> tabs_in_group = ListTabsInGroup(group);
   for (int i : tabs_in_group) {

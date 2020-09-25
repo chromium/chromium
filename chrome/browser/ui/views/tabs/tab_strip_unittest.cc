@@ -504,7 +504,8 @@ TEST_P(TabStripTest, GroupedTabSlotVisibility) {
   CompleteAnimationAndLayout();
   ASSERT_FALSE(controller_->IsGroupCollapsed(group2.value()));
   EXPECT_TRUE(tab_strip_->group_header(group2.value())->GetVisible());
-  controller_->ToggleTabGroupCollapsedState(group2.value(), false, false);
+  controller_->ToggleTabGroupCollapsedState(
+      group2.value(), ToggleTabGroupCollapsedStateOrigin::kImplicitAction);
   ASSERT_TRUE(controller_->IsGroupCollapsed(group2.value()));
   EXPECT_TRUE(tab_strip_->group_header(group2.value())->GetVisible());
 }

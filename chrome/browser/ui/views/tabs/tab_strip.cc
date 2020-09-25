@@ -1383,7 +1383,8 @@ void TabStrip::AddTabToGroup(base::Optional<tab_groups::TabGroupId> group,
   // active tab is not in the group.
   if (model_index == selected_tabs_.active() && group.has_value() &&
       controller()->IsGroupCollapsed(group.value())) {
-    controller()->ToggleTabGroupCollapsedState(group.value(), false);
+    controller()->ToggleTabGroupCollapsedState(
+        group.value(), ToggleTabGroupCollapsedStateOrigin::kImplicitAction);
   }
 
   ExitTabClosingMode();
@@ -1422,11 +1423,16 @@ void TabStrip::OnGroupVisualsChanged(const tab_groups::TabGroupId& group) {
 
 void TabStrip::ToggleTabGroup(const tab_groups::TabGroupId& group,
                               bool is_collapsing,
-                              bool from_mouse_event) {
-  if (is_collapsing && from_mouse_event) {
+                              ToggleTabGroupCollapsedStateOrigin origin) {
+  if (is_collapsing && GetWidget()) {
     in_tab_close_ = true;
-    if (GetWidget())
+    if (origin == ToggleTabGroupCollapsedStateOrigin::kMouse) {
       AddMessageLoopObserver();
+    } else if (origin == ToggleTabGroupCollapsedStateOrigin::kGesture) {
+      StartResizeLayoutTabsFromTouchTimer();
+    } else {
+      return;
+    }
 
     // The current group header is expanded which is slightly smaller than the
     // size when the header is collapsed. Calculate the size of the header once
@@ -1593,7 +1599,8 @@ void TabStrip::SetSelection(const ui::ListSelectionModel& new_selection) {
       // If the tab that is about to be activated is in a collapsed group,
       // automatically expand the group.
       if (controller()->IsGroupCollapsed(new_group))
-        controller()->ToggleTabGroupCollapsedState(new_group, false);
+        controller()->ToggleTabGroupCollapsedState(
+            new_group, ToggleTabGroupCollapsedStateOrigin::kImplicitAction);
       UpdateTabGroupVisuals(new_group);
     }
 

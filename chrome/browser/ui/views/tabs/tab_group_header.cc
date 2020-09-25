@@ -121,7 +121,7 @@ bool TabGroupHeader::OnKeyPressed(const ui::KeyEvent& event) {
       // editor bubble to toggling the collapsed state of the group.
       bool successful_toggle =
           tab_strip_->controller()->ToggleTabGroupCollapsedState(
-              group().value(), false);
+              group().value(), ToggleTabGroupCollapsedStateOrigin::kKeyboard);
       if (successful_toggle) {
 #if defined(OS_WIN)
         NotifyAccessibilityEvent(ax::mojom::Event::kSelection, true);
@@ -186,7 +186,7 @@ void TabGroupHeader::OnMouseReleased(const ui::MouseEvent& event) {
     if (event.IsLeftMouseButton() && !dragging()) {
       bool successful_toggle =
           tab_strip_->controller()->ToggleTabGroupCollapsedState(
-              group().value(), true);
+              group().value(), ToggleTabGroupCollapsedStateOrigin::kMouse);
       if (successful_toggle)
         LogCollapseTime();
     }
@@ -217,11 +217,26 @@ void TabGroupHeader::OnGestureEvent(ui::GestureEvent* event) {
   tab_strip_->UpdateHoverCard(nullptr);
   switch (event->type()) {
     case ui::ET_GESTURE_TAP: {
+      if (base::FeatureList::IsEnabled(features::kTabGroupsCollapse)) {
+        // The collapse feature changes the behavior from showing the
+        // editor bubble to toggling the collapsed state of the group.
+        bool successful_toggle =
+            tab_strip_->controller()->ToggleTabGroupCollapsedState(
+                group().value(), ToggleTabGroupCollapsedStateOrigin::kGesture);
+        if (successful_toggle)
+          LogCollapseTime();
+      } else {
+        editor_bubble_tracker_.Opened(TabGroupEditorBubbleView::Show(
+            tab_strip_->controller()->GetBrowser(), group().value(), this));
+      }
+      break;
+    }
+
+    case ui::ET_GESTURE_LONG_TAP: {
       editor_bubble_tracker_.Opened(TabGroupEditorBubbleView::Show(
           tab_strip_->controller()->GetBrowser(), group().value(), this));
       break;
     }
-
     case ui::ET_GESTURE_SCROLL_BEGIN: {
       tab_strip_->MaybeStartDrag(this, *event, tab_strip_->GetSelectionModel());
       break;

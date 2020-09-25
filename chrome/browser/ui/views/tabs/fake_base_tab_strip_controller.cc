@@ -54,8 +54,7 @@ void FakeBaseTabStripController::MoveGroup(const tab_groups::TabGroupId& group,
 
 bool FakeBaseTabStripController::ToggleTabGroupCollapsedState(
     const tab_groups::TabGroupId group,
-    bool from_mouse_event,
-    bool record_user_action) {
+    ToggleTabGroupCollapsedStateOrigin origin) {
   fake_group_data_ = tab_groups::TabGroupVisualData(
       fake_group_data_.title(), fake_group_data_.color(),
       !fake_group_data_.is_collapsed());
