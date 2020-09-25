@@ -91,6 +91,13 @@ class InputStreamImpl : public InputStream {
     DCHECK_LT(pending_read_buffer_pos_, pending_read_buffer_->size());
     DCHECK(task_run_);
 
+    if (state.peer_closed()) {
+      exception_or_received_byte_array_ =
+          ExceptionOr<ByteArray>(Exception::kIo);
+      task_run_->Signal();
+      return;
+    }
+
     if (result == MOJO_RESULT_OK) {
       uint32_t num_bytes = static_cast<uint32_t>(pending_read_buffer_->size() -
                                                  pending_read_buffer_pos_);
@@ -204,6 +211,12 @@ class OutputStreamImpl : public OutputStream {
     DCHECK(pending_write_buffer_);
     DCHECK_LT(pending_write_buffer_pos_, pending_write_buffer_->size());
     DCHECK(task_run_);
+
+    if (state.peer_closed()) {
+      write_success_ = false;
+      task_run_->Signal();
+      return;
+    }
 
     if (result == MOJO_RESULT_OK) {
       uint32_t num_bytes = static_cast<uint32_t>(pending_write_buffer_->size() -

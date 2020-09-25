@@ -281,6 +281,37 @@ TEST_F(BluetoothSocketTest, TestOutputStream_MultipleChunks) {
   run_loop.Run();
 }
 
+TEST_F(BluetoothSocketTest, TestInputStreamResetHandler) {
+  InputStream& input_stream = bluetooth_socket_->GetInputStream();
+
+  // Setup a message to receive that would work if the connection was not reset.
+  std::string message = "ReceivedMessage";
+  uint32_t message_size = message.size();
+  EXPECT_EQ(MOJO_RESULT_OK,
+            receive_stream_->WriteData(message.data(), &message_size,
+                                       MOJO_WRITE_DATA_FLAG_NONE));
+  EXPECT_EQ(message.size(), message_size);
+
+  // Reset the pipe on the other side to trigger a peer_reset state.
+  receive_stream_.reset();
+
+  ExceptionOr<ByteArray> exception_or_byte_array =
+      input_stream.Read(message_size);
+  ASSERT_FALSE(exception_or_byte_array.ok());
+  EXPECT_EQ(Exception::kIo, exception_or_byte_array.exception());
+}
+
+TEST_F(BluetoothSocketTest, TestOutputStreamResetHandling) {
+  OutputStream& output_stream = bluetooth_socket_->GetOutputStream();
+
+  // Reset the pipe on the other side to trigger a peer_reset state.
+  send_stream_.reset();
+
+  std::string message = "SentMessage";
+  ByteArray byte_array(message);
+  EXPECT_EQ(Exception::kIo, output_stream.Write(byte_array).value);
+}
+
 }  // namespace chrome
 }  // namespace nearby
 }  // namespace location
