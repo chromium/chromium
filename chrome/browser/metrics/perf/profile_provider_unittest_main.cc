@@ -219,7 +219,7 @@ TEST_F(ProfileProviderRealCollectionTest, OnJankStarted) {
   ASSERT_TRUE(profile.has_perf_data());
 }
 
-TEST_F(ProfileProviderRealCollectionTest, OnJankStopped) {
+TEST_F(ProfileProviderRealCollectionTest, DISABLED_OnJankStopped) {
   // Trigger a resume from suspend.
   profile_provider_->OnJankStarted();
 
