@@ -36,6 +36,10 @@
         min-height: 36px;
       }
 
+      cr-policy-indicator {
+        margin-inline-end: 8px;
+      }
+
       .bottom-margin {
         margin-bottom: var(--cr-section-vertical-margin);
       }
@@ -62,13 +66,23 @@
             [[getLanguageDisplayName_(languages.prospectiveUILanguage)]]
           </div>
         </div>
-        <cr-button id="changeDeviceLanguage"
-            on-click="onChangeDeviceLanguageClick_"
-            aria-label="[[getChangeDeviceLanguageButtonDescription_(
-              languages.prospectiveUILanguage)]]"
-            deep-link-focus-id$="[[Setting.kChangeDeviceLanguage]]">
-          $i18n{changeDeviceLanguageLabel}
-        </cr-button>
+        <template is="dom-if" if="[[isSecondaryUser_]]">
+          <cr-policy-indicator id="changeDeviceLanguagePolicyIndicator"
+              indicator-type="primary_user"
+              indicator-source-name="[[primaryUserEmail_]]">
+          </cr-policy-indicator>
+        </template>
+        <template is="dom-if" if="[[!isGuest_]]">
+          <cr-button id="changeDeviceLanguage"
+              on-click="onChangeDeviceLanguageClick_"
+              disabled="[[isSecondaryUser_]]"
+              aria-label="[[getChangeDeviceLanguageButtonDescription_(
+                languages.prospectiveUILanguage)]]"
+              deep-link-focus-id$="[[Setting.kChangeDeviceLanguage]]">
+            $i18n{changeDeviceLanguageLabel}
+          </cr-button>
+        </template>
+
       </div>
 
       <div class="hr bottom-margin">

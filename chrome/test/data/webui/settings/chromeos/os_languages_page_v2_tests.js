@@ -525,3 +525,51 @@ suite('languages page', () => {
     });
   });
 });
+
+suite('change device language button', () => {
+  test('is hidden for guest users', () => {
+    loadTimeData.overrideValues({
+      isGuest: true,
+    });
+    const page = document.createElement('os-settings-languages-page-v2');
+    document.body.appendChild(page);
+    Polymer.dom.flush();
+
+    assertFalse(!!page.$$('#changeDeviceLanguage'));
+    assertFalse(!!page.$$('#changeDeviceLanguagePolicyIndicator'));
+  });
+
+  test('is disabled for secondary users', () => {
+    loadTimeData.overrideValues(
+        {isGuest: false, isSecondaryUser: true, primaryUserEmail: 'test.com'});
+    const page = document.createElement('os-settings-languages-page-v2');
+    document.body.appendChild(page);
+    Polymer.dom.flush();
+
+    const changeDeviceLanguageButton = page.$$('#changeDeviceLanguage');
+    assertTrue(changeDeviceLanguageButton.disabled);
+    assertFalse(changeDeviceLanguageButton.hidden);
+
+    const changeDeviceLanguagePolicyIndicator =
+        page.$$('#changeDeviceLanguagePolicyIndicator');
+    assertFalse(changeDeviceLanguagePolicyIndicator.hidden);
+    assertEquals(
+        'test.com', changeDeviceLanguagePolicyIndicator.indicatorSourceName);
+  });
+
+  test('is enabled for primary users', () => {
+    loadTimeData.overrideValues({
+      isGuest: false,
+      isSecondaryUser: false,
+    });
+    const page = document.createElement('os-settings-languages-page-v2');
+    document.body.appendChild(page);
+    Polymer.dom.flush();
+
+    const changeDeviceLanguageButton = page.$$('#changeDeviceLanguage');
+    assertFalse(changeDeviceLanguageButton.disabled);
+    assertFalse(changeDeviceLanguageButton.hidden);
+
+    assertFalse(!!page.$$('#changeDeviceLanguagePolicyIndicator'));
+  });
+});
