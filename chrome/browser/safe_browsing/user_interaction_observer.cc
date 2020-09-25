@@ -16,10 +16,13 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/browser/extension_registry.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+using blink::WebInputEvent;
 
 namespace {
 // Id for extension that enables users to report sites to Safe Browsing.
@@ -303,11 +306,29 @@ void SafeBrowsingUserInteractionObserver::RecordUMA(DelayedWarningEvent event) {
   }
 }
 
+bool IsAllowedModifier(const content::NativeWebKeyboardEvent& event) {
+  const int key_modifiers =
+      event.GetModifiers() & blink::WebInputEvent::kKeyModifiers;
+  // If the only modifier is shift, the user may be typing uppercase
+  // letters.
+  if (key_modifiers == WebInputEvent::kShiftKey) {
+    return event.windows_key_code == ui::VKEY_SHIFT;
+  }
+  // Disallow CTRL+C and CTRL+V.
+  if (key_modifiers == WebInputEvent::kControlKey &&
+      (event.windows_key_code == ui::VKEY_C ||
+       event.windows_key_code == ui::VKEY_V)) {
+    return false;
+  }
+  return key_modifiers != 0;
+}
+
 bool SafeBrowsingUserInteractionObserver::HandleKeyPress(
     const content::NativeWebKeyboardEvent& event) {
   // Allow non-character keys such as ESC. These can be used to exit fullscreen,
   // for example.
-  if (!event.IsCharacterKey()) {
+  if (!event.IsCharacterKey() || event.is_browser_shortcut ||
+      IsAllowedModifier(event)) {
     return false;
   }
   ShowInterstitial(DelayedWarningEvent::kWarningShownOnKeypress);
