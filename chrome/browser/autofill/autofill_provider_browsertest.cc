@@ -309,43 +309,28 @@ class AutofillProviderBrowserTestWithSkipFlagOff
   base::test::ScopedFeatureList feature_list_;
 };
 
-#if defined(OS_MAC)
-// These tests are flaky on Mac: https://crbug.com/1076487
-#define MAYBE_InferredLabelChangeImpactFormComparing \
-  DISABLED_InferredLabelChangeImpactFormComparing
-#define MAYBE_InferredLabelChangeNotImpactFormComparing \
-  DISABLED_InferredLabelChangeNotImpactFormComparing
-#define MAYBE_LabelTagChangeImpactFormComparing \
-  DISABLED_LabelTagChangeImpactFormComparing
-#else
-#define MAYBE_InferredLabelChangeImpactFormComparing \
-  InferredLabelChangeImpactFormComparing
-#define MAYBE_InferredLabelChangeNotImpactFormComparing \
-  InferredLabelChangeNotImpactFormComparing
-#define MAYBE_LabelTagChangeImpactFormComparing \
-  LabelTagChangeImpactFormComparing
-#endif
+// TODO(crbug.com/1076487): These tests are flaky on all platforms.
 
 IN_PROC_BROWSER_TEST_F(AutofillProviderBrowserTestWithSkipFlagOn,
-                       MAYBE_LabelTagChangeImpactFormComparing) {
+                       DISABLED_LabelTagChangeImpactFormComparing) {
   SetLabelChangeExpectationAndTriggerQuery();
   ChangeLabelAndCheckResult("label_id", false /*expect_forms_same*/);
 }
 
 IN_PROC_BROWSER_TEST_F(AutofillProviderBrowserTestWithSkipFlagOn,
-                       MAYBE_InferredLabelChangeNotImpactFormComparing) {
+                       DISABLED_InferredLabelChangeNotImpactFormComparing) {
   SetLabelChangeExpectationAndTriggerQuery();
   ChangeLabelAndCheckResult("p_id", true /*expect_forms_same*/);
 }
 
 IN_PROC_BROWSER_TEST_F(AutofillProviderBrowserTestWithSkipFlagOff,
-                       MAYBE_LabelTagChangeImpactFormComparing) {
+                       DISABLED_LabelTagChangeImpactFormComparing) {
   SetLabelChangeExpectationAndTriggerQuery();
   ChangeLabelAndCheckResult("label_id", false /*expect_forms_same*/);
 }
 
 IN_PROC_BROWSER_TEST_F(AutofillProviderBrowserTestWithSkipFlagOff,
-                       MAYBE_InferredLabelChangeImpactFormComparing) {
+                       DISABLED_InferredLabelChangeImpactFormComparing) {
   SetLabelChangeExpectationAndTriggerQuery();
   ChangeLabelAndCheckResult("p_id", false /*expect_forms_same*/);
 }
