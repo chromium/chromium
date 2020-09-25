@@ -567,6 +567,13 @@
        null,
        {}
       ]
+     ],
+     "feimage-target-child-reference-crash.html": [
+      "eef96ef094d913fb9423616af9177ddfd932796c",
+      [
+       null,
+       {}
+      ]
      ]
     }
    },
@@ -228161,7 +228168,7 @@
     ],
     "resources": {
      "common.js": [
-      "6da98746ecd0939295e4463ef7af580f29111efa",
+      "3b246719799d2f963bc5cb4cd12500bba62ecb08",
       []
      ],
      "iframe.redirect.sub.html": [
@@ -228186,6 +228193,10 @@
      ],
      "window.sub.html": [
       "c2540943828ce9fd9db463ad4f33c643c6f1eadf",
+      []
+     ],
+     "worker.js": [
+      "bc194a854cd93528930b49ff2a3051e63d4ad43e",
       []
      ]
     }
@@ -244605,7 +244616,7 @@
         []
        ],
        "edgechromium.py": [
-        "64850165323e4e3351ddbd2058ba07f79a7a6b28",
+        "0bcb18cdc0cca64376906e9156b07c4a9cc7dcdb",
         []
        ],
        "epiphany.py": [
@@ -364688,7 +364699,7 @@
      ]
     ],
     "input-events-get-target-ranges-backspace.tentative.html": [
-     "6967fa746c6fbcd4da6969ab040fc6c7244a7481",
+     "50d5cb96e84a8400fd961d7221b551b536dbcc57",
      [
       null,
       {
@@ -364698,7 +364709,7 @@
      ]
     ],
     "input-events-get-target-ranges-forwarddelete.tentative.html": [
-     "dd349fc444d7e51c424b3bc94bd81fca55ab3bce",
+     "03518d54e42e5aea5ed51635a4fb088d2428ef86",
      [
       null,
       {
@@ -367292,6 +367303,29 @@
      "7fc02036117a152ffeb945fb4ad32ab2bdf97215",
      [
       "measure-memory/iframe.same-origin.tentative.window.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/common/get-host-info.sub.js"
+        ],
+        [
+         "script",
+         "./resources/common.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ]
+    ],
+    "main-frame-and-worker.tentative.window.js": [
+     "514a4ed067315433c5a368fc7d065b415a4e8229",
+     [
+      "measure-memory/main-frame-and-worker.tentative.window.html",
       {
        "script_metadata": [
         [
