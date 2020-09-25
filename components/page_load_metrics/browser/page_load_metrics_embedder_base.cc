@@ -7,7 +7,7 @@
 #include "base/timer/timer.h"
 
 #include "components/page_load_metrics/browser/observers/back_forward_cache_page_load_metrics_observer.h"
-#include "components/page_load_metrics/browser/observers/core_page_load_metrics_observer.h"
+#include "components/page_load_metrics/browser/observers/core/uma_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/observers/layout_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/observers/use_counter_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/page_load_tracker.h"
@@ -25,7 +25,7 @@ void PageLoadMetricsEmbedderBase::RegisterObservers(PageLoadTracker* tracker) {
   if (!IsPrerendering()) {
     tracker->AddObserver(
         std::make_unique<BackForwardCachePageLoadMetricsObserver>());
-    tracker->AddObserver(std::make_unique<CorePageLoadMetricsObserver>());
+    tracker->AddObserver(std::make_unique<UmaPageLoadMetricsObserver>());
     tracker->AddObserver(std::make_unique<LayoutPageLoadMetricsObserver>());
     tracker->AddObserver(std::make_unique<UseCounterPageLoadMetricsObserver>());
   }

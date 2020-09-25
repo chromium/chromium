@@ -85,7 +85,7 @@ void LiveTabCountPageLoadMetricsObserver::OnFirstInputInPage(
 
   // These are the same histogram parameters used for the non-suffixed
   // FirstInputDelay histogram (see
-  // CorePageLoadMetricsObserver::OnFirstInputInPage).
+  // UmaPageLoadMetricsObserver::OnFirstInputInPage).
   const size_t bucket = tab_count_metrics::BucketForTabCount(GetLiveTabCount());
   LIVE_TAB_COUNT_HISTOGRAM(
       std::string(internal::kHistogramPrefixLiveTabCount)

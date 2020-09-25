@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/page_load_metrics/observers/amp_page_load_metrics_observer.h"
+#include "chrome/browser/page_load_metrics/observers/core/amp_page_load_metrics_observer.h"
 
 #include <string>
 #include <utility>

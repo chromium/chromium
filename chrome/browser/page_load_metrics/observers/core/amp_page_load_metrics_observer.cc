@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/page_load_metrics/observers/amp_page_load_metrics_observer.h"
+#include "chrome/browser/page_load_metrics/observers/core/amp_page_load_metrics_observer.h"
 
 #include <algorithm>
 #include <string>
@@ -11,7 +11,7 @@
 #include "base/optional.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
-#include "components/page_load_metrics/browser/observers/largest_contentful_paint_handler.h"
+#include "components/page_load_metrics/browser/observers/core/largest_contentful_paint_handler.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "components/page_load_metrics/common/page_load_timing.h"
 #include "content/public/browser/navigation_handle.h"

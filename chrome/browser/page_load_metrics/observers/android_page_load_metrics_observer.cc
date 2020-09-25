@@ -12,7 +12,7 @@
 #include "base/time/time.h"
 #include "chrome/android/chrome_jni_headers/PageLoadMetrics_jni.h"
 #include "chrome/browser/browser_process.h"
-#include "components/page_load_metrics/browser/observers/largest_contentful_paint_handler.h"
+#include "components/page_load_metrics/browser/observers/core/largest_contentful_paint_handler.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"

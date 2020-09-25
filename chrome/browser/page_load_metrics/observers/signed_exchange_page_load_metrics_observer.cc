@@ -191,7 +191,7 @@ void SignedExchangePageLoadMetricsObserver::OnFirstInputInPage(
     return;
   }
 
-  // Copied from the CorePageLoadMetricsObserver implementation.
+  // Copied from the UmaPageLoadMetricsObserver implementation.
   UMA_HISTOGRAM_CUSTOM_TIMES(
       internal::kHistogramSignedExchangeFirstInputDelay,
       timing.interactive_timing->first_input_delay.value(),

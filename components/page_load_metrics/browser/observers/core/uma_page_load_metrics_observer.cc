@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/page_load_metrics/browser/observers/core_page_load_metrics_observer.h"
+#include "components/page_load_metrics/browser/observers/core/uma_page_load_metrics_observer.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -12,7 +12,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/power_monitor/power_monitor.h"
-#include "components/page_load_metrics/browser/observers/largest_contentful_paint_handler.h"
+#include "components/page_load_metrics/browser/observers/core/largest_contentful_paint_handler.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "content/public/common/process_type.h"
 #include "net/http/http_response_headers.h"
@@ -371,7 +371,7 @@ const char kHistogramEarlyHintsEarlyHintsToFinalResponseStart[] =
 
 }  // namespace internal
 
-CorePageLoadMetricsObserver::CorePageLoadMetricsObserver()
+UmaPageLoadMetricsObserver::UmaPageLoadMetricsObserver()
     : transition_(ui::PAGE_TRANSITION_LINK),
       was_no_store_main_resource_(false),
       num_cache_resources_(0),
@@ -381,17 +381,17 @@ CorePageLoadMetricsObserver::CorePageLoadMetricsObserver()
       network_bytes_including_headers_(0),
       redirect_chain_size_(0) {}
 
-CorePageLoadMetricsObserver::~CorePageLoadMetricsObserver() {}
+UmaPageLoadMetricsObserver::~UmaPageLoadMetricsObserver() {}
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
-CorePageLoadMetricsObserver::OnRedirect(
+UmaPageLoadMetricsObserver::OnRedirect(
     content::NavigationHandle* navigation_handle) {
   redirect_chain_size_++;
   return CONTINUE_OBSERVING;
 }
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
-CorePageLoadMetricsObserver::OnCommit(
+UmaPageLoadMetricsObserver::OnCommit(
     content::NavigationHandle* navigation_handle,
     ukm::SourceId source_id) {
   transition_ = navigation_handle->GetPageTransition();
@@ -413,7 +413,7 @@ CorePageLoadMetricsObserver::OnCommit(
   return CONTINUE_OBSERVING;
 }
 
-void CorePageLoadMetricsObserver::OnDomContentLoadedEventStart(
+void UmaPageLoadMetricsObserver::OnDomContentLoadedEventStart(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
   if (page_load_metrics::WasStartedInForegroundOptionalEventInForeground(
           timing.document_timing->dom_content_loaded_event_start,
@@ -428,7 +428,7 @@ void CorePageLoadMetricsObserver::OnDomContentLoadedEventStart(
   }
 }
 
-void CorePageLoadMetricsObserver::OnLoadEventStart(
+void UmaPageLoadMetricsObserver::OnLoadEventStart(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
   if (page_load_metrics::WasStartedInForegroundOptionalEventInForeground(
           timing.document_timing->load_event_start, GetDelegate())) {
@@ -440,7 +440,7 @@ void CorePageLoadMetricsObserver::OnLoadEventStart(
   }
 }
 
-void CorePageLoadMetricsObserver::OnFirstPaintInPage(
+void UmaPageLoadMetricsObserver::OnFirstPaintInPage(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
   first_paint_ = GetDelegate().GetNavigationStart() +
                  timing.paint_timing->first_paint.value();
@@ -472,7 +472,7 @@ void CorePageLoadMetricsObserver::OnFirstPaintInPage(
   }
 }
 
-void CorePageLoadMetricsObserver::OnFirstImagePaintInPage(
+void UmaPageLoadMetricsObserver::OnFirstImagePaintInPage(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
   if (page_load_metrics::WasStartedInForegroundOptionalEventInForeground(
           timing.paint_timing->first_image_paint, GetDelegate())) {
@@ -484,7 +484,7 @@ void CorePageLoadMetricsObserver::OnFirstImagePaintInPage(
   }
 }
 
-void CorePageLoadMetricsObserver::OnFirstContentfulPaintInPage(
+void UmaPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
   if (page_load_metrics::WasStartedInForegroundOptionalEventInForeground(
           timing.paint_timing->first_contentful_paint, GetDelegate())) {
@@ -627,7 +627,7 @@ void CorePageLoadMetricsObserver::OnFirstContentfulPaintInPage(
   }
 }
 
-void CorePageLoadMetricsObserver::OnFirstMeaningfulPaintInMainFrameDocument(
+void UmaPageLoadMetricsObserver::OnFirstMeaningfulPaintInMainFrameDocument(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
   if (page_load_metrics::WasStartedInForegroundOptionalEventInForeground(
           timing.paint_timing->first_meaningful_paint, GetDelegate())) {
@@ -643,7 +643,7 @@ void CorePageLoadMetricsObserver::OnFirstMeaningfulPaintInMainFrameDocument(
   }
 }
 
-void CorePageLoadMetricsObserver::OnFirstInputInPage(
+void UmaPageLoadMetricsObserver::OnFirstInputInPage(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
   if (!page_load_metrics::WasStartedInForegroundOptionalEventInForeground(
           timing.interactive_timing->first_input_timestamp, GetDelegate())) {
@@ -663,7 +663,7 @@ void CorePageLoadMetricsObserver::OnFirstInputInPage(
       "data", FirstInputDelayTraceData(timing));
 }
 
-void CorePageLoadMetricsObserver::OnParseStart(
+void UmaPageLoadMetricsObserver::OnParseStart(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
   if (page_load_metrics::WasStartedInForegroundOptionalEventInForeground(
           timing.parse_timing->parse_start, GetDelegate())) {
@@ -698,7 +698,7 @@ void CorePageLoadMetricsObserver::OnParseStart(
   }
 }
 
-void CorePageLoadMetricsObserver::OnParseStop(
+void UmaPageLoadMetricsObserver::OnParseStop(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
   base::TimeDelta parse_duration = timing.parse_timing->parse_stop.value() -
                                    timing.parse_timing->parse_start.value();
@@ -736,7 +736,7 @@ void CorePageLoadMetricsObserver::OnParseStop(
   }
 }
 
-void CorePageLoadMetricsObserver::OnComplete(
+void UmaPageLoadMetricsObserver::OnComplete(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
   RecordNavigationTimingHistograms();
   RecordTimingHistograms(timing);
@@ -746,7 +746,7 @@ void CorePageLoadMetricsObserver::OnComplete(
 }
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
-CorePageLoadMetricsObserver::FlushMetricsOnAppEnterBackground(
+UmaPageLoadMetricsObserver::FlushMetricsOnAppEnterBackground(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
   // FlushMetricsOnAppEnterBackground is invoked on Android in cases where the
   // app is about to be backgrounded, as part of the Activity.onPause()
@@ -762,7 +762,7 @@ CorePageLoadMetricsObserver::FlushMetricsOnAppEnterBackground(
   return STOP_OBSERVING;
 }
 
-void CorePageLoadMetricsObserver::OnFailedProvisionalLoad(
+void UmaPageLoadMetricsObserver::OnFailedProvisionalLoad(
     const page_load_metrics::FailedProvisionalLoadInfo& failed_load_info) {
   // Only handle actual failures; provisional loads that failed due to another
   // committed load or due to user action are recorded in
@@ -781,7 +781,7 @@ void CorePageLoadMetricsObserver::OnFailedProvisionalLoad(
                                      base::TimeTicks());
 }
 
-void CorePageLoadMetricsObserver::OnUserInput(
+void UmaPageLoadMetricsObserver::OnUserInput(
     const blink::WebInputEvent& event,
     const page_load_metrics::mojom::PageLoadTiming& timing) {
   base::TimeTicks now;
@@ -813,7 +813,7 @@ void CorePageLoadMetricsObserver::OnUserInput(
   }
 }
 
-void CorePageLoadMetricsObserver::OnResourceDataUseObserved(
+void UmaPageLoadMetricsObserver::OnResourceDataUseObserved(
     content::RenderFrameHost* rfh,
     const std::vector<page_load_metrics::mojom::ResourceDataUpdatePtr>&
         resources) {
@@ -832,7 +832,7 @@ void CorePageLoadMetricsObserver::OnResourceDataUseObserved(
   }
 }
 
-void CorePageLoadMetricsObserver::RecordNavigationTimingHistograms() {
+void UmaPageLoadMetricsObserver::RecordNavigationTimingHistograms() {
   const base::TimeTicks navigation_start_time =
       GetDelegate().GetNavigationStart();
   const content::NavigationHandleTiming& timing = navigation_handle_timing_;
@@ -945,7 +945,7 @@ void CorePageLoadMetricsObserver::RecordNavigationTimingHistograms() {
 // other event, or records failure status for metrics that have not been
 // collected yet. This is meant to be called at the end of a page lifetime, for
 // example, when the user is navigating away from the page.
-void CorePageLoadMetricsObserver::RecordTimingHistograms(
+void UmaPageLoadMetricsObserver::RecordTimingHistograms(
     const page_load_metrics::mojom::PageLoadTiming& main_frame_timing) {
   // Log time to first foreground / time to first background. Log counts that we
   // started a relevant page load in the foreground / background.
@@ -1054,7 +1054,7 @@ void CorePageLoadMetricsObserver::RecordTimingHistograms(
   }
 }
 
-void CorePageLoadMetricsObserver::RecordForegroundDurationHistograms(
+void UmaPageLoadMetricsObserver::RecordForegroundDurationHistograms(
     const page_load_metrics::mojom::PageLoadTiming& timing,
     base::TimeTicks app_background_time) {
   base::Optional<base::TimeDelta> foreground_duration =
@@ -1095,7 +1095,7 @@ void CorePageLoadMetricsObserver::RecordForegroundDurationHistograms(
   }
 }
 
-void CorePageLoadMetricsObserver::OnCpuTimingUpdate(
+void UmaPageLoadMetricsObserver::OnCpuTimingUpdate(
     content::RenderFrameHost* subframe_rfh,
     const page_load_metrics::mojom::CpuTiming& timing) {
   total_cpu_usage_ += timing.task_time;
@@ -1105,7 +1105,7 @@ void CorePageLoadMetricsObserver::OnCpuTimingUpdate(
   }
 }
 
-void CorePageLoadMetricsObserver::RecordByteAndResourceHistograms(
+void UmaPageLoadMetricsObserver::RecordByteAndResourceHistograms(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
   DCHECK_GE(network_bytes_, 0);
   DCHECK_GE(cache_bytes_, 0);
@@ -1166,7 +1166,7 @@ void CorePageLoadMetricsObserver::RecordByteAndResourceHistograms(
   click_tracker_.RecordClickBurst(GetDelegate().GetPageUkmSourceId());
 }
 
-void CorePageLoadMetricsObserver::RecordCpuUsageHistograms() {
+void UmaPageLoadMetricsObserver::RecordCpuUsageHistograms() {
   PAGE_LOAD_HISTOGRAM(internal::kHistogramPageLoadCpuTotalUsage,
                       total_cpu_usage_);
   PAGE_LOAD_HISTOGRAM(internal::kHistogramPageLoadCpuTotalUsageForegrounded,
@@ -1174,7 +1174,7 @@ void CorePageLoadMetricsObserver::RecordCpuUsageHistograms() {
 }
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
-CorePageLoadMetricsObserver::OnEnterBackForwardCache(
+UmaPageLoadMetricsObserver::OnEnterBackForwardCache(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
   UMA_HISTOGRAM_ENUMERATION(
       internal::kHistogramBackForwardCacheEvent,
@@ -1182,7 +1182,7 @@ CorePageLoadMetricsObserver::OnEnterBackForwardCache(
   return PageLoadMetricsObserver::OnEnterBackForwardCache(timing);
 }
 
-void CorePageLoadMetricsObserver::OnRestoreFromBackForwardCache(
+void UmaPageLoadMetricsObserver::OnRestoreFromBackForwardCache(
     const page_load_metrics::mojom::PageLoadTiming& timing,
     content::NavigationHandle* navigation_handle) {
   // This never reaches yet because OnEnterBackForwardCache returns

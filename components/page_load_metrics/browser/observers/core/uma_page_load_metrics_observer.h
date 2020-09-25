@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PAGE_LOAD_METRICS_BROWSER_OBSERVERS_CORE_PAGE_LOAD_METRICS_OBSERVER_H_
-#define COMPONENTS_PAGE_LOAD_METRICS_BROWSER_OBSERVERS_CORE_PAGE_LOAD_METRICS_OBSERVER_H_
+#ifndef COMPONENTS_PAGE_LOAD_METRICS_BROWSER_OBSERVERS_CORE_UMA_PAGE_LOAD_METRICS_OBSERVER_H_
+#define COMPONENTS_PAGE_LOAD_METRICS_BROWSER_OBSERVERS_CORE_UMA_PAGE_LOAD_METRICS_OBSERVER_H_
 
 #include "components/page_load_metrics/browser/observers/click_input_tracker.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
@@ -153,14 +153,14 @@ enum class PageLoadBackForwardCacheEvent {
 
 }  // namespace internal
 
-// Observer responsible for recording 'core' page load metrics. Core metrics are
-// maintained by loading-dev team, typically the metrics under
+// Observer responsible for recording 'core' UMA page load metrics. Core metrics
+// are maintained by loading-dev team, typically the metrics under
 // PageLoad.(Document|Paint|Parse)Timing.*.
-class CorePageLoadMetricsObserver
+class UmaPageLoadMetricsObserver
     : public page_load_metrics::PageLoadMetricsObserver {
  public:
-  CorePageLoadMetricsObserver();
-  ~CorePageLoadMetricsObserver() override;
+  UmaPageLoadMetricsObserver();
+  ~UmaPageLoadMetricsObserver() override;
 
   // page_load_metrics::PageLoadMetricsObserver:
   ObservePolicy OnRedirect(
@@ -256,7 +256,7 @@ class CorePageLoadMetricsObserver
   // Tracks user input clicks for possible click burst.
   page_load_metrics::ClickInputTracker click_tracker_;
 
-  DISALLOW_COPY_AND_ASSIGN(CorePageLoadMetricsObserver);
+  DISALLOW_COPY_AND_ASSIGN(UmaPageLoadMetricsObserver);
 };
 
-#endif  // COMPONENTS_PAGE_LOAD_METRICS_BROWSER_OBSERVERS_CORE_PAGE_LOAD_METRICS_OBSERVER_H_
+#endif  // COMPONENTS_PAGE_LOAD_METRICS_BROWSER_OBSERVERS_CORE_UMA_PAGE_LOAD_METRICS_OBSERVER_H_

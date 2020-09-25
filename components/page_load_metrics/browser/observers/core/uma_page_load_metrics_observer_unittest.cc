@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/page_load_metrics/browser/observers/core_page_load_metrics_observer.h"
+#include "components/page_load_metrics/browser/observers/core/uma_page_load_metrics_observer.h"
 
 #include <memory>
 
 #include "base/test/power_monitor_test_base.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
-#include "components/page_load_metrics/browser/observers/largest_contentful_paint_handler.h"
+#include "components/page_load_metrics/browser/observers/core/largest_contentful_paint_handler.h"
 #include "components/page_load_metrics/browser/observers/page_load_metrics_observer_content_test_harness.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "components/page_load_metrics/browser/page_load_tracker.h"
@@ -33,11 +33,11 @@ const char kDefaultTestUrl2[] = "https://whatever.com";
 
 }  // namespace
 
-class CorePageLoadMetricsObserverTest
+class UmaPageLoadMetricsObserverTest
     : public page_load_metrics::PageLoadMetricsObserverContentTestHarness {
  protected:
   void RegisterObservers(page_load_metrics::PageLoadTracker* tracker) override {
-    tracker->AddObserver(std::make_unique<CorePageLoadMetricsObserver>());
+    tracker->AddObserver(std::make_unique<UmaPageLoadMetricsObserver>());
   }
 
   void SetUp() override {
@@ -155,7 +155,7 @@ class CorePageLoadMetricsObserverTest
   }
 };
 
-TEST_F(CorePageLoadMetricsObserverTest, NoMetrics) {
+TEST_F(UmaPageLoadMetricsObserverTest, NoMetrics) {
   tester()->histogram_tester().ExpectTotalCount(
       internal::kHistogramDomContentLoaded, 0);
   tester()->histogram_tester().ExpectTotalCount(internal::kHistogramLoad, 0);
@@ -163,9 +163,8 @@ TEST_F(CorePageLoadMetricsObserverTest, NoMetrics) {
       internal::kHistogramFirstImagePaint, 0);
 }
 
-TEST_F(CorePageLoadMetricsObserverTest,
+TEST_F(UmaPageLoadMetricsObserverTest,
        SameDocumentNoTriggerUntilTrueNavCommit) {
-
   page_load_metrics::mojom::PageLoadTiming timing;
   page_load_metrics::InitPageLoadTimingForTest(&timing);
   timing.navigation_start = base::Time::FromDoubleT(1);
@@ -184,7 +183,7 @@ TEST_F(CorePageLoadMetricsObserverTest,
       internal::kHistogramFirstImagePaint, 0);
 }
 
-TEST_F(CorePageLoadMetricsObserverTest, SingleMetricAfterCommit) {
+TEST_F(UmaPageLoadMetricsObserverTest, SingleMetricAfterCommit) {
   base::TimeDelta parse_start = base::TimeDelta::FromMilliseconds(1);
   base::TimeDelta parse_stop = base::TimeDelta::FromMilliseconds(5);
   base::TimeDelta parse_script_load_duration =
@@ -228,7 +227,7 @@ TEST_F(CorePageLoadMetricsObserverTest, SingleMetricAfterCommit) {
       internal::kHistogramPageTimingForegroundDuration, 1);
 }
 
-TEST_F(CorePageLoadMetricsObserverTest, MultipleMetricsAfterCommits) {
+TEST_F(UmaPageLoadMetricsObserverTest, MultipleMetricsAfterCommits) {
   base::TimeDelta parse_start = base::TimeDelta::FromMilliseconds(1);
   base::TimeDelta response = base::TimeDelta::FromMilliseconds(1);
   base::TimeDelta first_image_paint = base::TimeDelta::FromMilliseconds(30);
@@ -288,7 +287,7 @@ TEST_F(CorePageLoadMetricsObserverTest, MultipleMetricsAfterCommits) {
                                                  load.InMilliseconds(), 1);
 }
 
-TEST_F(CorePageLoadMetricsObserverTest, BackgroundDifferentHistogram) {
+TEST_F(UmaPageLoadMetricsObserverTest, BackgroundDifferentHistogram) {
   page_load_metrics::mojom::PageLoadTiming timing;
   page_load_metrics::InitPageLoadTimingForTest(&timing);
   timing.navigation_start = base::Time::FromDoubleT(1);
@@ -319,7 +318,7 @@ TEST_F(CorePageLoadMetricsObserverTest, BackgroundDifferentHistogram) {
       internal::kHistogramFirstImagePaint, 0);
 }
 
-TEST_F(CorePageLoadMetricsObserverTest, OnlyBackgroundLaterEvents) {
+TEST_F(UmaPageLoadMetricsObserverTest, OnlyBackgroundLaterEvents) {
   page_load_metrics::mojom::PageLoadTiming timing;
   page_load_metrics::InitPageLoadTimingForTest(&timing);
   timing.navigation_start = base::Time::FromDoubleT(1);
@@ -383,7 +382,7 @@ TEST_F(CorePageLoadMetricsObserverTest, OnlyBackgroundLaterEvents) {
       internal::kHistogramPageTimingForegroundDuration, 1);
 }
 
-TEST_F(CorePageLoadMetricsObserverTest, DontBackgroundQuickerLoad) {
+TEST_F(UmaPageLoadMetricsObserverTest, DontBackgroundQuickerLoad) {
   page_load_metrics::mojom::PageLoadTiming timing;
   page_load_metrics::InitPageLoadTimingForTest(&timing);
   timing.navigation_start = base::Time::FromDoubleT(1);
@@ -411,7 +410,7 @@ TEST_F(CorePageLoadMetricsObserverTest, DontBackgroundQuickerLoad) {
       internal::kHistogramFirstImagePaint, 0);
 }
 
-TEST_F(CorePageLoadMetricsObserverTest, FailedProvisionalLoad) {
+TEST_F(UmaPageLoadMetricsObserverTest, FailedProvisionalLoad) {
   GURL url(kDefaultTestUrl);
   // The following tests a navigation that fails and should commit an error
   // page, but finishes before the error page commit.
@@ -434,7 +433,7 @@ TEST_F(CorePageLoadMetricsObserverTest, FailedProvisionalLoad) {
       internal::kHistogramPageTimingForegroundDurationNoCommit, 1);
 }
 
-TEST_F(CorePageLoadMetricsObserverTest, FailedBackgroundProvisionalLoad) {
+TEST_F(UmaPageLoadMetricsObserverTest, FailedBackgroundProvisionalLoad) {
   // Test that failed provisional event does not get logged in the
   // histogram if it happened in the background
   GURL url(kDefaultTestUrl);
@@ -446,7 +445,7 @@ TEST_F(CorePageLoadMetricsObserverTest, FailedBackgroundProvisionalLoad) {
       internal::kHistogramFailedProvisionalLoad, 0);
 }
 
-TEST_F(CorePageLoadMetricsObserverTest, Reload) {
+TEST_F(UmaPageLoadMetricsObserverTest, Reload) {
   page_load_metrics::mojom::PageLoadTiming timing;
   page_load_metrics::InitPageLoadTimingForTest(&timing);
   timing.navigation_start = base::Time::FromDoubleT(1);
@@ -521,7 +520,7 @@ TEST_F(CorePageLoadMetricsObserverTest, Reload) {
       internal::kHistogramLoadTypeTotalBytesNewNavigation, 0);
 }
 
-TEST_F(CorePageLoadMetricsObserverTest, ForwardBack) {
+TEST_F(UmaPageLoadMetricsObserverTest, ForwardBack) {
   page_load_metrics::mojom::PageLoadTiming timing;
   page_load_metrics::InitPageLoadTimingForTest(&timing);
   timing.navigation_start = base::Time::FromDoubleT(1);
@@ -601,7 +600,7 @@ TEST_F(CorePageLoadMetricsObserverTest, ForwardBack) {
       internal::kHistogramLoadTypeTotalBytesReload, 0);
 }
 
-TEST_F(CorePageLoadMetricsObserverTest, NavigationTiming) {
+TEST_F(UmaPageLoadMetricsObserverTest, NavigationTiming) {
   GURL url(kDefaultTestUrl);
   tester()->NavigateWithPageTransitionAndCommit(url, ui::PAGE_TRANSITION_LINK);
   tester()->NavigateToUntrackedUrl();
@@ -633,7 +632,7 @@ TEST_F(CorePageLoadMetricsObserverTest, NavigationTiming) {
     tester()->histogram_tester().ExpectTotalCount(metric, 1);
 }
 
-TEST_F(CorePageLoadMetricsObserverTest, NewNavigation) {
+TEST_F(UmaPageLoadMetricsObserverTest, NewNavigation) {
   page_load_metrics::mojom::PageLoadTiming timing;
   page_load_metrics::InitPageLoadTimingForTest(&timing);
   timing.navigation_start = base::Time::FromDoubleT(1);
@@ -707,7 +706,7 @@ TEST_F(CorePageLoadMetricsObserverTest, NewNavigation) {
       internal::kHistogramLoadTypeTotalBytesReload, 0);
 }
 
-TEST_F(CorePageLoadMetricsObserverTest, BytesAndResourcesCounted) {
+TEST_F(UmaPageLoadMetricsObserverTest, BytesAndResourcesCounted) {
   NavigateAndCommit(GURL(kDefaultTestUrl));
   NavigateAndCommit(GURL(kDefaultTestUrl2));
   tester()->histogram_tester().ExpectTotalCount(
@@ -726,7 +725,7 @@ TEST_F(CorePageLoadMetricsObserverTest, BytesAndResourcesCounted) {
       internal::kHistogramCacheCompletedResources, 1);
 }
 
-TEST_F(CorePageLoadMetricsObserverTest, CpuUsageCounted) {
+TEST_F(UmaPageLoadMetricsObserverTest, CpuUsageCounted) {
   NavigateAndCommit(GURL(kDefaultTestUrl));
   OnCpuTimingUpdate(web_contents()->GetMainFrame(),
                     base::TimeDelta::FromMilliseconds(750));
@@ -741,7 +740,7 @@ TEST_F(CorePageLoadMetricsObserverTest, CpuUsageCounted) {
       internal::kHistogramPageLoadCpuTotalUsageForegrounded, 750, 1);
 }
 
-TEST_F(CorePageLoadMetricsObserverTest, FirstMeaningfulPaint) {
+TEST_F(UmaPageLoadMetricsObserverTest, FirstMeaningfulPaint) {
   page_load_metrics::mojom::PageLoadTiming timing;
   page_load_metrics::InitPageLoadTimingForTest(&timing);
   timing.navigation_start = base::Time::FromDoubleT(1);
@@ -763,7 +762,7 @@ TEST_F(CorePageLoadMetricsObserverTest, FirstMeaningfulPaint) {
       internal::FIRST_MEANINGFUL_PAINT_RECORDED, 1);
 }
 
-TEST_F(CorePageLoadMetricsObserverTest, LargestImageLoading) {
+TEST_F(UmaPageLoadMetricsObserverTest, LargestImageLoading) {
   page_load_metrics::mojom::PageLoadTiming timing;
   page_load_metrics::InitPageLoadTimingForTest(&timing);
   timing.navigation_start = base::Time::FromDoubleT(1);
@@ -789,7 +788,7 @@ TEST_F(CorePageLoadMetricsObserverTest, LargestImageLoading) {
   TestNoLCP();
 }
 
-TEST_F(CorePageLoadMetricsObserverTest, LargestImageLoadingSmallerThanText) {
+TEST_F(UmaPageLoadMetricsObserverTest, LargestImageLoadingSmallerThanText) {
   page_load_metrics::mojom::PageLoadTiming timing;
   page_load_metrics::InitPageLoadTimingForTest(&timing);
   timing.navigation_start = base::Time::FromDoubleT(1);
@@ -814,7 +813,7 @@ TEST_F(CorePageLoadMetricsObserverTest, LargestImageLoadingSmallerThanText) {
   TestAllFramesLCP(4780, LargestContentType::kText);
 }
 
-TEST_F(CorePageLoadMetricsObserverTest,
+TEST_F(UmaPageLoadMetricsObserverTest,
        LargestContentfulPaintAllFrames_OnlySubframeProvided) {
   const char kSubframeTestUrl[] = "https://google.com/subframe.html";
 
@@ -854,7 +853,7 @@ TEST_F(CorePageLoadMetricsObserverTest,
   TestEmptyMainFrameLCP();
 }
 
-TEST_F(CorePageLoadMetricsObserverTest,
+TEST_F(UmaPageLoadMetricsObserverTest,
        LargestContentfulPaintAllFrames_SubframeImageLoading) {
   const char kSubframeTestUrl[] = "https://google.com/subframe.html";
 
@@ -897,7 +896,7 @@ TEST_F(CorePageLoadMetricsObserverTest,
   TestNoLCP();
 }
 
-TEST_F(CorePageLoadMetricsObserverTest,
+TEST_F(UmaPageLoadMetricsObserverTest,
        LargestContentfulPaintAllFrames_OnlyMainFrameProvided) {
   const char kSubframeTestUrl[] = "https://google.com/subframe.html";
 
@@ -939,7 +938,7 @@ TEST_F(CorePageLoadMetricsObserverTest,
 // This is to test whether LargestContentfulPaintAllFrames could merge
 // candidates from different frames correctly. The merging will substitutes the
 // existing candidate if a larger candidate from subframe is provided.
-TEST_F(CorePageLoadMetricsObserverTest,
+TEST_F(UmaPageLoadMetricsObserverTest,
        LargestContentfulPaintAllFrames_MergeFromFramesBySize_SubframeLarger) {
   const char kSubframeTestUrl[] = "https://google.com/subframe.html";
 
@@ -987,7 +986,7 @@ TEST_F(CorePageLoadMetricsObserverTest,
 // This is to test whether LargestContentfulPaintAllFrames could merge
 // candidates from different frames correctly. The merging will substitutes the
 // existing candidate if a larger candidate from main frame is provided.
-TEST_F(CorePageLoadMetricsObserverTest,
+TEST_F(UmaPageLoadMetricsObserverTest,
        LargestContentfulPaintAllFrames_MergeFromFramesBySize_MainFrameLarger) {
   const char kSubframeTestUrl[] = "https://google.com/subframe.html";
 
@@ -1035,7 +1034,7 @@ TEST_F(CorePageLoadMetricsObserverTest,
 // which makes LCP unable to substitute the subframe candidate with a smaller
 // candidate. This test provides two subframe candidates, the later larger than
 // the first one.
-TEST_F(CorePageLoadMetricsObserverTest,
+TEST_F(UmaPageLoadMetricsObserverTest,
        LargestContentfulPaintAllFrames_SubframesCandidateOnlyGetLarger_Larger) {
   const char kSubframeTestUrl[] = "https://google.com/subframe.html";
 
@@ -1085,7 +1084,7 @@ TEST_F(CorePageLoadMetricsObserverTest,
 // candidate. This test provides two subframe candidates, the later smaller than
 // the first one.
 TEST_F(
-    CorePageLoadMetricsObserverTest,
+    UmaPageLoadMetricsObserverTest,
     LargestContentfulPaintAllFrames_SubframesCandidateOnlyGetLarger_Smaller) {
   const char kSubframeTestUrl[] = "https://google.com/subframe.html";
 
@@ -1130,7 +1129,7 @@ TEST_F(
   TestAllFramesLCP(990, LargestContentType::kImage);
 }
 
-TEST_F(CorePageLoadMetricsObserverTest, LargestContentfulPaint_NoTextOrImage) {
+TEST_F(UmaPageLoadMetricsObserverTest, LargestContentfulPaint_NoTextOrImage) {
   page_load_metrics::mojom::PageLoadTiming timing;
   page_load_metrics::InitPageLoadTimingForTest(&timing);
   timing.navigation_start = base::Time::FromDoubleT(1);
@@ -1148,7 +1147,7 @@ TEST_F(CorePageLoadMetricsObserverTest, LargestContentfulPaint_NoTextOrImage) {
   TestNoLCP();
 }
 
-TEST_F(CorePageLoadMetricsObserverTest, LargestContentfulPaint_OnlyText) {
+TEST_F(UmaPageLoadMetricsObserverTest, LargestContentfulPaint_OnlyText) {
   page_load_metrics::mojom::PageLoadTiming timing;
   page_load_metrics::InitPageLoadTimingForTest(&timing);
   timing.navigation_start = base::Time::FromDoubleT(1);
@@ -1167,7 +1166,7 @@ TEST_F(CorePageLoadMetricsObserverTest, LargestContentfulPaint_OnlyText) {
   TestAllFramesLCP(4780, LargestContentType::kText);
 }
 
-TEST_F(CorePageLoadMetricsObserverTest, LargestContentfulPaint_OnlyImage) {
+TEST_F(UmaPageLoadMetricsObserverTest, LargestContentfulPaint_OnlyImage) {
   page_load_metrics::mojom::PageLoadTiming timing;
   page_load_metrics::InitPageLoadTimingForTest(&timing);
   timing.navigation_start = base::Time::FromDoubleT(1);
@@ -1186,7 +1185,7 @@ TEST_F(CorePageLoadMetricsObserverTest, LargestContentfulPaint_OnlyImage) {
   TestAllFramesLCP(4780, LargestContentType::kImage);
 }
 
-TEST_F(CorePageLoadMetricsObserverTest,
+TEST_F(UmaPageLoadMetricsObserverTest,
        LargestContentfulPaint_ImageLargerThanText) {
   page_load_metrics::mojom::PageLoadTiming timing;
   page_load_metrics::InitPageLoadTimingForTest(&timing);
@@ -1209,7 +1208,7 @@ TEST_F(CorePageLoadMetricsObserverTest,
   TestAllFramesLCP(4780, LargestContentType::kImage);
 }
 
-TEST_F(CorePageLoadMetricsObserverTest,
+TEST_F(UmaPageLoadMetricsObserverTest,
        LargestContentfulPaint_TextLargerThanImage) {
   page_load_metrics::mojom::PageLoadTiming timing;
   page_load_metrics::InitPageLoadTimingForTest(&timing);
@@ -1232,7 +1231,7 @@ TEST_F(CorePageLoadMetricsObserverTest,
   TestAllFramesLCP(990, LargestContentType::kText);
 }
 
-TEST_F(CorePageLoadMetricsObserverTest, FirstInputDelayAndTimestamp) {
+TEST_F(UmaPageLoadMetricsObserverTest, FirstInputDelayAndTimestamp) {
   page_load_metrics::mojom::PageLoadTiming timing;
   page_load_metrics::InitPageLoadTimingForTest(&timing);
   timing.navigation_start = base::Time::FromDoubleT(1);
@@ -1256,7 +1255,7 @@ TEST_F(CorePageLoadMetricsObserverTest, FirstInputDelayAndTimestamp) {
               testing::ElementsAre(base::Bucket(4780, 1)));
 }
 
-TEST_F(CorePageLoadMetricsObserverTest, LongestInputDelayAndTimestamp) {
+TEST_F(UmaPageLoadMetricsObserverTest, LongestInputDelayAndTimestamp) {
   page_load_metrics::mojom::PageLoadTiming timing;
   page_load_metrics::InitPageLoadTimingForTest(&timing);
   timing.navigation_start = base::Time::FromDoubleT(1);
@@ -1280,7 +1279,7 @@ TEST_F(CorePageLoadMetricsObserverTest, LongestInputDelayAndTimestamp) {
               testing::ElementsAre(base::Bucket(4780, 1)));
 }
 
-TEST_F(CorePageLoadMetricsObserverTest,
+TEST_F(UmaPageLoadMetricsObserverTest,
        FirstInputDelayAndTimestampBackgrounded) {
   page_load_metrics::mojom::PageLoadTiming timing;
   page_load_metrics::InitPageLoadTimingForTest(&timing);
@@ -1307,7 +1306,7 @@ TEST_F(CorePageLoadMetricsObserverTest,
       internal::kHistogramFirstInputTimestamp, 0);
 }
 
-TEST_F(CorePageLoadMetricsObserverTest, NavigationToBackNavigationWithGesture) {
+TEST_F(UmaPageLoadMetricsObserverTest, NavigationToBackNavigationWithGesture) {
   GURL url(kDefaultTestUrl);
 
   // Navigate once to the page with a user gesture.
@@ -1324,7 +1323,7 @@ TEST_F(CorePageLoadMetricsObserverTest, NavigationToBackNavigationWithGesture) {
       internal::kHistogramUserGestureNavigationToForwardBack, 1);
 }
 
-TEST_F(CorePageLoadMetricsObserverTest,
+TEST_F(UmaPageLoadMetricsObserverTest,
        BrowserNavigationToBackNavigationWithGesture) {
   GURL url(kDefaultTestUrl);
 
@@ -1342,7 +1341,7 @@ TEST_F(CorePageLoadMetricsObserverTest,
       internal::kHistogramUserGestureNavigationToForwardBack, 0);
 }
 
-TEST_F(CorePageLoadMetricsObserverTest,
+TEST_F(UmaPageLoadMetricsObserverTest,
        NavigationToBackNavigationWithoutGesture) {
   GURL url(kDefaultTestUrl);
 
@@ -1360,7 +1359,7 @@ TEST_F(CorePageLoadMetricsObserverTest,
       internal::kHistogramUserGestureNavigationToForwardBack, 0);
 }
 
-TEST_F(CorePageLoadMetricsObserverTest,
+TEST_F(UmaPageLoadMetricsObserverTest,
        AbortedNavigationToBackNavigationWithGesture) {
   GURL url(kDefaultTestUrl);
 
@@ -1378,7 +1377,7 @@ TEST_F(CorePageLoadMetricsObserverTest,
       internal::kHistogramUserGestureNavigationToForwardBack, 1);
 }
 
-TEST_F(CorePageLoadMetricsObserverTest, UnfinishedBytesRecorded) {
+TEST_F(UmaPageLoadMetricsObserverTest, UnfinishedBytesRecorded) {
   NavigateAndCommit(GURL(kDefaultTestUrl));
 
   std::vector<page_load_metrics::mojom::ResourceDataUpdatePtr> resources;
