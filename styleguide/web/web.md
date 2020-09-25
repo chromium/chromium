@@ -1,13 +1,3 @@
-<style>
-
-.note::before {
-  content: 'Note: ';
-  font-variant: small-caps;
-  font-style: italic;
-}
-
-</style>
-
 # Chromium Web Development Style Guide
 
 [TOC]
@@ -25,10 +15,10 @@ This guide follows and builds on:
 * [Google JavaScript Style Guide](https://google.github.io/styleguide/jsguide.html)
 * [Google Polymer Style Guide](http://go/polymer-style)
 
-<div class="note">
-Concerns for browser compatibility are usually not relevant for Chromium-only
-code.
-</div>
+*** aside
+Note: Concerns for browser compatibility are usually not relevant for
+Chromium-only code.
+***
 
 ## Separation of presentation and content
 
@@ -73,14 +63,14 @@ document.querySelector('b').onclick = fireZeeMissiles;
 DON'T:
 ```html
 <!-- missile-button.html -->
-<b style="color: red;" onclick="fireZeeMissiles()">LAUNCH BUTTON WARNING</span>
+<b style="color: red;" onclick="fireZeeMissiles()">LAUNCH BUTTON WARNING</b>
 ```
 
-<div class="note">
-For various technical and historical reasons, code using the Polymer library may
-use <code>on-event</code>-style event listener wiring and
-<code>&lt;style&gt;</code> tags that live inside of .html files.
-</div>
+*** aside
+Note: For various technical and historical reasons, code using the Polymer
+library may use `on-event`-style event listener wiring and `<style>` tags that
+live inside of .html files.
+***
 
 ## HTML
 
@@ -117,10 +107,10 @@ guide](https://google.github.io/styleguide/htmlcssguide.html).
 * Include the appropriate JS scripts.
     * Do not add JS to element event handlers.
 
-<div class="note">
-Polymer event handlers like <code>on-click</code> are allowed and often reduce
-the amount of addressing (adding an ID just to wire up event handling).
-</div>
+*** aside
+Note: Polymer event handlers like `on-click` are allowed and often reduce the
+amount of addressing (adding an ID just to wire up event handling).
+***
 
 ### Body
 
@@ -157,10 +147,10 @@ the amount of addressing (adding an ID just to wire up event handling).
     * DO: `<input type="radio">`
     * DON'T: `<input type="radio" />`
 
-<div class="note">
-All <code>&lt;custom-elements&gt;</code> and some HTML elements like
-<code>&lt;iframe&gt;</code> require closing.
-</div>
+*** aside
+Note: All `<custom-elements>` and some HTML elements like `<iframe>` require
+closing.
+***
 
 * Use the `button` element instead of `<input type="button">`.
 
@@ -270,7 +260,7 @@ compatibility issues are less relevant for Chrome-only code).
 background-image: url(../path/to/image.svg);
 ```
 
-The contents of file.png are base64-encoded and the `url()` is replaced with
+The contents of image.svg are base64-encoded and the `url()` is replaced with
 
 ```css
 background-image: url(data:image/svg+xml;base64,...);
@@ -383,7 +373,7 @@ Also see the [Google Polymer Style Guide](http://go/polymer-style).
     * event handlers, computed functions, and private methods
 
 * Use camelCase for element IDs to simplify local DOM accessors (i.e.
-  `this.$.camelCase` instead of `this.$[‘dash-case’]`).
+  `this.$.camelCase` instead of `this.$['dash-case']`).
 
 * Use `this.foo` instead of `newFoo` arguments in observers when possible.
   This makes changing the type of `this.foo` easier (as the `@type` is
@@ -435,18 +425,18 @@ Chromium.
 ### Preprocessing
 
 Grit can be used to selectively include or exclude code at compile-time in web
-code.  Preprocessing is be enabled by adding the `preprocess="true"` attribute
+code.  Preprocessing is enabled by adding the `preprocess="true"` attribute
 inside of a `.grd` file on `<structure>` and `<include>` nodes.
 
-<div class="note">
-These preprocesor statements can live in places that surprise linters or
-formatters (for example: running clang-format on a .js file with an &lt;if&gt;
-in it).  Generally, putting these language-invalid features inside of comments
+*** aside
+Note: These preprocessor statements can live in places that surprise linters or
+formatters (for example: running clang-format on a .js file with an `<if>` in
+it).  Generally, putting these language-invalid features inside of comments
 helps alleviate problems with unexpected input.
-</div>
+***
 
 `<if>` tags allow conditional logic by evaluating an expression in a
-compile-time environment of grit variables.  These allow conditionally include
+compile-time environment of grit variables.  These allow conditionally including
 or excluding code.
 
 Example:
@@ -466,10 +456,10 @@ Instead, use JS imports in new pages and pages that use JS modules.
 
 Grit can read and inline resources when enabled via `flattenhtml="true"`.
 
-<div class="note">
-The implementation of flattening does HTML parsing and URL detection via regular
-expresions and is not guaranteed to work in all cases.
-</div>
+*** aside
+Note: The implementation of flattening does HTML parsing and URL detection via regular
+expressions and is not guaranteed to work in all cases.
+***
 
 Example:
 
