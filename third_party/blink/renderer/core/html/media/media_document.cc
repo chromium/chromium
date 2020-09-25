@@ -121,7 +121,7 @@ void MediaDocumentParser::Finish() {
 
 MediaDocument::MediaDocument(const DocumentInit& initializer)
     : HTMLDocument(initializer, kMediaDocumentClass) {
-  SetCompatibilityMode(kQuirksMode);
+  SetCompatibilityMode(kNoQuirksMode);
   LockCompatibilityMode();
 
   // Set the autoplay policy to kNoUserGestureRequired.
