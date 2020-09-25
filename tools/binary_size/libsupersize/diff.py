@@ -115,6 +115,8 @@ def _DiffSymbolGroups(containers, before, after):
 
   # Create a DeltaSymbol to represent the zero'd out padding of matched symbols.
   for (container_name, section_name), padding in padding_by_segment.items():
+    # Values need to be integer (crbug.com/1132394).
+    padding = round(padding)
     if padding != 0:
       after_sym = models.Symbol(section_name, padding)
       after_sym.container = container_from_name[container_name]
