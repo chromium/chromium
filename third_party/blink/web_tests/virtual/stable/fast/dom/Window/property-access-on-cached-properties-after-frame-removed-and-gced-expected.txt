@@ -3,6 +3,7 @@ Tests access of cached DOMWindow properties after the associated frame is remove
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
+PASS window.cached_cookieStore.onchange is null
 FAIL window.cached_location.hash should be  (of type string). Was undefined (of type undefined).
 FAIL window.cached_location.host should be  (of type string). Was undefined (of type undefined).
 FAIL window.cached_location.hostname should be  (of type string). Was undefined (of type undefined).

@@ -1354,7 +1354,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     attribute @@toStringTag
 [Worker]     getter active
 [Worker]     getter backgroundFetch
-[Worker]     getter cookies
 [Worker]     getter index
 [Worker]     getter installing
 [Worker]     getter navigationPreload

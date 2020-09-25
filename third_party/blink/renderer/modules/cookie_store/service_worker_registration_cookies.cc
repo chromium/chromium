@@ -45,13 +45,6 @@ class ServiceWorkerRegistrationCookiesImpl final
           registration_->GetExecutionContext();
       DCHECK(execution_context);
 
-      // TODO(crbug.com/839117): Remove once Expose on partial interface is
-      // supported or Origin Trial as ended.
-      if (!execution_context->IsWindow() &&
-          !execution_context->IsServiceWorkerGlobalScope()) {
-        return nullptr;
-      }
-
       HeapMojoRemote<mojom::blink::CookieStore,
                      HeapMojoWrapperMode::kWithoutContextObserver>
           backend(execution_context);

@@ -3,10 +3,7 @@
 // found in the LICENSE file.
 
 [
-  // TODO(crbug.com/839117): Enable the following [Exposed] on the partial
-  // interface declaration one it's supported.
-  //
-  // Exposed=(ServiceWorker,Window),
+  Exposed=(ServiceWorker,Window),
   RuntimeEnabled=CookieStoreWorker,
   ImplementedAs=ServiceWorkerRegistrationCookies
 ] partial interface ServiceWorkerRegistration {

@@ -898,6 +898,26 @@ interface ConvolverNode : AudioNode
     method constructor
     setter buffer
     setter normalize
+interface CookieChangeEvent : Event
+    attribute @@toStringTag
+    getter changed
+    getter deleted
+    method constructor
+interface CookieStore : EventTarget
+    attribute @@toStringTag
+    getter onchange
+    method constructor
+    method delete
+    method get
+    method getAll
+    method set
+    setter onchange
+interface CookieStoreManager
+    attribute @@toStringTag
+    method constructor
+    method getSubscriptions
+    method subscribe
+    method unsubscribe
 interface CountQueuingStrategy
     attribute @@toStringTag
     getter highWaterMark
@@ -6984,6 +7004,7 @@ interface ServiceWorkerRegistration : EventTarget
     attribute @@toStringTag
     getter active
     getter backgroundFetch
+    getter cookies
     getter installing
     getter navigationPreload
     getter onupdatefound
@@ -9538,6 +9559,7 @@ interface webkitURL
     getter caches
     getter clientInformation
     getter closed
+    getter cookieStore
     getter crypto
     getter customElements
     getter defaultStatus

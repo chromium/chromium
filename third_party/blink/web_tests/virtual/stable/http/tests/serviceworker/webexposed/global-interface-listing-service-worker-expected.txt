@@ -148,6 +148,19 @@ interface CompressionStream
     getter readable
     getter writable
     method constructor
+interface CookieStore : EventTarget
+    attribute @@toStringTag
+    method constructor
+    method delete
+    method get
+    method getAll
+    method set
+interface CookieStoreManager
+    attribute @@toStringTag
+    method constructor
+    method getSubscriptions
+    method subscribe
+    method unsubscribe
 interface CountQueuingStrategy
     attribute @@toStringTag
     getter highWaterMark
@@ -431,6 +444,11 @@ interface EventTarget
     method constructor
     method dispatchEvent
     method removeEventListener
+interface ExtendableCookieChangeEvent : ExtendableEvent
+    attribute @@toStringTag
+    getter changed
+    getter deleted
+    method constructor
 interface ExtendableEvent : Event
     attribute @@toStringTag
     method constructor
@@ -1179,6 +1197,7 @@ interface ServiceWorkerRegistration : EventTarget
     attribute @@toStringTag
     getter active
     getter backgroundFetch
+    getter cookies
     getter installing
     getter navigationPreload
     getter onupdatefound
@@ -2726,6 +2745,7 @@ interface WritableStreamDefaultWriter
     attribute globalThis
     attribute internals
     getter clients
+    getter cookieStore
     getter onabortpayment
     getter onactivate
     getter onbackgroundfetchabort
@@ -2733,6 +2753,7 @@ interface WritableStreamDefaultWriter
     getter onbackgroundfetchfail
     getter onbackgroundfetchsuccess
     getter oncanmakepayment
+    getter oncookiechange
     getter onfetch
     getter oninstall
     getter onmessage
@@ -2754,6 +2775,7 @@ interface WritableStreamDefaultWriter
     setter onbackgroundfetchfail
     setter onbackgroundfetchsuccess
     setter oncanmakepayment
+    setter oncookiechange
     setter onfetch
     setter oninstall
     setter onmessage
