@@ -1118,7 +1118,8 @@ void FlexLayout::AllocateZeroWeightFlex(
     }
 
     ChildLayout& child_layout = data.layout.child_layouts[child_index];
-    DCHECK(is_first_pass || child_layout.visible);
+    DCHECK(is_first_pass || child_layout.visible ||
+           flex_child.preferred_size.main() == 0);
 
     const int old_size =
         child_layout.visible ? flex_child.current_size.main() : 0;
