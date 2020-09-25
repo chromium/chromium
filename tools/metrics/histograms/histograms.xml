@@ -89757,7 +89757,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="NativeFileSystemAPI.ConfirmReadDirectoryResult"
-    enum="PermissionAction" expires_after="M86">
+    enum="PermissionAction" expires_after="2021-06-01">
   <owner>mek@chromium.org</owner>
   <owner>src/content/browser/native_file_system/OWNERS</owner>
   <summary>
@@ -89767,7 +89767,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="NativeFileSystemAPI.FileChooserResult" units="units"
-    expires_after="M86">
+    expires_after="2021-06-01">
   <owner>mek@chromium.org</owner>
   <owner>src/content/browser/native_file_system/OWNERS</owner>
   <summary>
@@ -89777,7 +89777,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="NativeFileSystemAPI.ReadPermissionRequestOutcome"
-    enum="NativeFileSystemPermissionRequestOutcome" expires_after="M86">
+    enum="NativeFileSystemPermissionRequestOutcome" expires_after="2021-06-01">
   <owner>mek@chromium.org</owner>
   <owner>src/content/browser/native_file_system/OWNERS</owner>
   <summary>
@@ -89787,7 +89787,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="NativeFileSystemAPI.SensitiveDirectoryAccessResult"
-    enum="SensitiveDirectoryAccessResult" expires_after="M86">
+    enum="SensitiveDirectoryAccessResult" expires_after="2021-06-01">
   <owner>mek@chromium.org</owner>
   <owner>src/content/browser/native_file_system/OWNERS</owner>
   <summary>
@@ -89797,7 +89797,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="NativeFileSystemAPI.WritePermissionRequestOutcome"
-    enum="NativeFileSystemPermissionRequestOutcome" expires_after="M86">
+    enum="NativeFileSystemPermissionRequestOutcome" expires_after="2021-06-01">
   <owner>mek@chromium.org</owner>
   <owner>src/content/browser/native_file_system/OWNERS</owner>
   <summary>
