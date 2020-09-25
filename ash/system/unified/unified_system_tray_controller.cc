@@ -32,6 +32,7 @@
 #include "ash/system/media/unified_media_controls_detailed_view_controller.h"
 #include "ash/system/model/clock_model.h"
 #include "ash/system/model/system_tray_model.h"
+#include "ash/system/nearby_share/nearby_share_feature_pod_controller.h"
 #include "ash/system/network/network_feature_pod_controller.h"
 #include "ash/system/network/unified_network_detailed_view_controller.h"
 #include "ash/system/network/unified_vpn_detailed_view_controller.h"
@@ -453,6 +454,7 @@ void UnifiedSystemTrayController::InitFeaturePods() {
     AddFeaturePodItem(std::make_unique<CaptureModeFeaturePodController>());
   if (features::IsDarkLightModeEnabled())
     AddFeaturePodItem(std::make_unique<DarkModeFeaturePodController>(this));
+  AddFeaturePodItem(std::make_unique<NearbyShareFeaturePodController>(this));
 
   // If you want to add a new feature pod item, add here.
 

@@ -20,7 +20,6 @@ class NearbyShareController;
 }  // namespace ash
 
 namespace base {
-class TimeDelta;
 class TimeTicks;
 }  // namespace base
 
@@ -57,13 +56,14 @@ class NearbyShareDelegateImpl
   // ash::NearbyShareDelegate
   bool IsPodButtonVisible() override;
   bool IsHighVisibilityOn() override;
-  base::Optional<base::TimeDelta> RemainingHighVisibilityTime() override;
+  base::TimeTicks HighVisibilityShutoffTime() const override;
   void EnableHighVisibility() override;
   void DisableHighVisibility() override;
   void ShowNearbyShareSettings() const override;
 
   // ash::SessionObserver
   void OnLockStateChanged(bool locked) override;
+  void OnFirstSessionStarted() override;
 
   // nearby_share::mojom::NearbyShareSettingsObserver
   void OnEnabledChanged(bool enabled) override;
@@ -78,29 +78,23 @@ class NearbyShareDelegateImpl
   void OnHighVisibilityChanged(bool high_visibility_on) override;
   void OnShutdown() override;
 
-  void set_nearby_share_service_for_test(NearbySharingService* service) {
-    nearby_share_service_for_test_ = service;
-  }
+  void SetNearbyShareServiceForTest(NearbySharingService* service);
   void set_settings_opener_for_test(
       std::unique_ptr<SettingsOpener> settings_opener) {
     settings_opener_ = std::move(settings_opener);
   }
 
  private:
-  void OnShutoffTimerFired();
-  void OnCountdownTimerFired();
-
-  // Fetch the NearbySharingService using the primary profile. Will return null
-  // if the service does not exist yet, which may be the case since the delegate
-  // is constructed before the service.
-  NearbySharingService* GetService();
+  void AddNearbyShareServiceObservers();
+  void RemoveNearbyShareServiceObservers();
 
   ash::NearbyShareController* const nearby_share_controller_;
-  NearbySharingService* nearby_share_service_for_test_ = nullptr;
+  NearbySharingService* nearby_share_service_ = nullptr;
   std::unique_ptr<SettingsOpener> settings_opener_;
 
+  // This timer is used to automatically turn off high visibility after a
+  // timeout.
   base::RetainingOneShotTimer shutoff_timer_;
-  base::RepeatingTimer countdown_timer_;
 
   // If Nearby Share is not enabled when |EnableHighVisibility| is called, then
   // onboarding will be opened instead. If Nearby Share is enabled within a

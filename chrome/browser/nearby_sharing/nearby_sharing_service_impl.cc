@@ -361,6 +361,11 @@ void NearbySharingServiceImpl::RemoveObserver(
   observers_.RemoveObserver(observer);
 }
 
+bool NearbySharingServiceImpl::HasObserver(
+    NearbySharingService::Observer* observer) {
+  return observers_.HasObserver(observer);
+}
+
 NearbySharingService::StatusCodes NearbySharingServiceImpl::RegisterSendSurface(
     TransferUpdateCallback* transfer_callback,
     ShareTargetDiscoveredCallback* discovery_callback,

@@ -23,6 +23,7 @@ const char kDefaultDeviceName[] = "Josh's Chromebook";
 }  // namespace
 
 using ::testing::_;
+using ::testing::Assign;
 using ::testing::AtLeast;
 using ::testing::Return;
 using ::testing::ReturnPointee;
@@ -34,10 +35,6 @@ class MockSettingsOpener : public NearbyShareDelegateImpl::SettingsOpener {
 
 class MockNearbyShareController : public ash::NearbyShareController {
  public:
-  MOCK_METHOD(void,
-              HighVisibilityCountdownUpdate,
-              (base::TimeDelta),
-              (override));
   MOCK_METHOD(void, HighVisibilityEnabledChanged, (bool), (override));
 };
 
@@ -50,13 +47,6 @@ class NearbyShareDelegateImplTest : public ::testing::Test {
         settings_(&test_pref_service_, &test_local_device_data_),
         delegate_(&controller_) {
     RegisterNearbySharingPrefs(test_pref_service_.registry());
-
-    delegate_.set_nearby_share_service_for_test(&nearby_share_service_);
-
-    std::unique_ptr<MockSettingsOpener> settings_opener =
-        std::make_unique<MockSettingsOpener>();
-    settings_opener_ = settings_opener.get();
-    delegate_.set_settings_opener_for_test(std::move(settings_opener));
   }
 
   ~NearbyShareDelegateImplTest() override = default;
@@ -82,6 +72,19 @@ class NearbyShareDelegateImplTest : public ::testing::Test {
         .WillRepeatedly(Return(&settings_));
     EXPECT_CALL(nearby_share_service_, IsInHighVisibility())
         .WillRepeatedly(ReturnPointee(&high_visibility_on_));
+    EXPECT_CALL(nearby_share_service_, AddObserver(_))
+        .WillRepeatedly(Assign(&service_observer_bound_, true));
+    EXPECT_CALL(nearby_share_service_, RemoveObserver(_))
+        .WillRepeatedly(Assign(&service_observer_bound_, false));
+    EXPECT_CALL(nearby_share_service_, HasObserver(_))
+        .WillRepeatedly(ReturnPointee(&service_observer_bound_));
+
+    delegate_.SetNearbyShareServiceForTest(&nearby_share_service_);
+
+    std::unique_ptr<MockSettingsOpener> settings_opener =
+        std::make_unique<MockSettingsOpener>();
+    settings_opener_ = settings_opener.get();
+    delegate_.set_settings_opener_for_test(std::move(settings_opener));
   }
 
  protected:
@@ -95,6 +98,7 @@ class NearbyShareDelegateImplTest : public ::testing::Test {
   MockNearbyShareController controller_;
   NearbyShareDelegateImpl delegate_;
   bool high_visibility_on_ = false;
+  bool service_observer_bound_ = false;
 };
 
 TEST_F(NearbyShareDelegateImplTest, StartHighVisibilityAndTimeout) {
@@ -102,7 +106,6 @@ TEST_F(NearbyShareDelegateImplTest, StartHighVisibilityAndTimeout) {
 
   EXPECT_CALL(*settings_opener_, ShowSettingsPage(_));
   EXPECT_CALL(controller_, HighVisibilityEnabledChanged(true));
-  EXPECT_CALL(controller_, HighVisibilityCountdownUpdate(_)).Times(AtLeast(1));
 
   delegate_.EnableHighVisibility();
   SetHighVisibilityOn(true);
@@ -120,7 +123,6 @@ TEST_F(NearbyShareDelegateImplTest, StartStopHighVisibility) {
 
   EXPECT_CALL(*settings_opener_, ShowSettingsPage(_));
   EXPECT_CALL(controller_, HighVisibilityEnabledChanged(true));
-  EXPECT_CALL(controller_, HighVisibilityCountdownUpdate(_)).Times(AtLeast(1));
 
   delegate_.EnableHighVisibility();
   SetHighVisibilityOn(true);
@@ -178,7 +180,6 @@ TEST_F(NearbyShareDelegateImplTest, StopHighVisibilityOnScreenLock) {
   settings_.SetEnabled(true);
 
   EXPECT_CALL(controller_, HighVisibilityEnabledChanged(true));
-  EXPECT_CALL(controller_, HighVisibilityCountdownUpdate(_)).Times(AtLeast(1));
   EXPECT_CALL(*settings_opener_, ShowSettingsPage(_));
 
   delegate_.EnableHighVisibility();

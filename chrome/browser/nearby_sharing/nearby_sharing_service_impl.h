@@ -77,6 +77,7 @@ class NearbySharingServiceImpl
   void Shutdown() override;
   void AddObserver(NearbySharingService::Observer* observer) override;
   void RemoveObserver(NearbySharingService::Observer* observer) override;
+  bool HasObserver(NearbySharingService::Observer* observer) override;
   StatusCodes RegisterSendSurface(
       TransferUpdateCallback* transfer_callback,
       ShareTargetDiscoveredCallback* discovery_callback,

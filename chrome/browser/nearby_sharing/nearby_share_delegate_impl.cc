@@ -8,7 +8,6 @@
 #include "ash/public/cpp/session/session_controller.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
-#include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -24,8 +23,6 @@ const char kStopReceivingQueryParam[] = "stop_receiving";
 constexpr base::TimeDelta kShutoffTimeout = base::TimeDelta::FromMinutes(5);
 constexpr base::TimeDelta kOnboardingWaitTimeout =
     base::TimeDelta::FromMinutes(5);
-constexpr base::TimeDelta kOneMinute = base::TimeDelta::FromSeconds(60);
-constexpr base::TimeDelta kOneSecond = base::TimeDelta::FromSeconds(1);
 
 std::string GetTimestampString() {
   return base::NumberToString(
@@ -41,7 +38,7 @@ NearbyShareDelegateImpl::NearbyShareDelegateImpl(
       shutoff_timer_(
           FROM_HERE,
           kShutoffTimeout,
-          base::BindRepeating(&NearbyShareDelegateImpl::OnShutoffTimerFired,
+          base::BindRepeating(&NearbyShareDelegateImpl::DisableHighVisibility,
                               base::Unretained(this))),
       onboarding_wait_timer_(FROM_HERE,
                              kOnboardingWaitTimeout,
@@ -51,49 +48,38 @@ NearbyShareDelegateImpl::NearbyShareDelegateImpl(
 
 NearbyShareDelegateImpl::~NearbyShareDelegateImpl() {
   ash::SessionController::Get()->RemoveObserver(this);
+  if (nearby_share_service_)
+    RemoveNearbyShareServiceObservers();
 }
 
 bool NearbyShareDelegateImpl::IsPodButtonVisible() {
-  return GetService() != nullptr;
+  return nearby_share_service_ != nullptr;
 }
 
 bool NearbyShareDelegateImpl::IsHighVisibilityOn() {
-  NearbySharingService* service = GetService();
-  return service && service->IsInHighVisibility();
+  return nearby_share_service_ && nearby_share_service_->IsInHighVisibility();
 }
 
-base::Optional<base::TimeDelta>
-NearbyShareDelegateImpl::RemainingHighVisibilityTime() {
-  if (!IsHighVisibilityOn())
-    return base::nullopt;
-
-  return shutoff_time_ - base::TimeTicks::Now();
+base::TimeTicks NearbyShareDelegateImpl::HighVisibilityShutoffTime() const {
+  return shutoff_time_;
 }
 
 void NearbyShareDelegateImpl::EnableHighVisibility() {
-  NearbySharingService* service = GetService();
-  if (!service)
+  if (!nearby_share_service_)
     return;
 
   settings_opener_->ShowSettingsPage(kStartReceivingQueryParam);
 
-  if (!service->GetSettings()->GetEnabled()) {
+  if (!nearby_share_service_->GetSettings()->GetEnabled()) {
     onboarding_wait_timer_.Reset();
-
-    if (!settings_receiver_.is_bound()) {
-      service->GetSettings()->AddSettingsObserver(
-          settings_receiver_.BindNewPipeAndPassRemote());
-    }
   }
 }
 
 void NearbyShareDelegateImpl::DisableHighVisibility() {
-  NearbySharingService* service = GetService();
-  if (!service)
+  if (!nearby_share_service_)
     return;
 
   shutoff_timer_.Stop();
-  countdown_timer_.Stop();
 
   settings_opener_->ShowSettingsPage(kStopReceivingQueryParam);
 }
@@ -104,6 +90,36 @@ void NearbyShareDelegateImpl::OnLockStateChanged(bool locked) {
   }
 }
 
+void NearbyShareDelegateImpl::OnFirstSessionStarted() {
+  nearby_share_service_ = NearbySharingServiceFactory::GetForBrowserContext(
+      ProfileManager::GetPrimaryUserProfile());
+
+  if (nearby_share_service_)
+    AddNearbyShareServiceObservers();
+}
+
+void NearbyShareDelegateImpl::SetNearbyShareServiceForTest(
+    NearbySharingService* service) {
+  nearby_share_service_ = service;
+  AddNearbyShareServiceObservers();
+}
+
+void NearbyShareDelegateImpl::AddNearbyShareServiceObservers() {
+  DCHECK(nearby_share_service_);
+  DCHECK(!nearby_share_service_->HasObserver(this));
+  DCHECK(!settings_receiver_.is_bound());
+  nearby_share_service_->AddObserver(this);
+  nearby_share_service_->GetSettings()->AddSettingsObserver(
+      settings_receiver_.BindNewPipeAndPassRemote());
+}
+
+void NearbyShareDelegateImpl::RemoveNearbyShareServiceObservers() {
+  DCHECK(nearby_share_service_);
+  DCHECK(nearby_share_service_->HasObserver(this));
+  nearby_share_service_->RemoveObserver(this);
+  settings_receiver_.reset();
+}
+
 void NearbyShareDelegateImpl::OnEnabledChanged(bool enabled) {
   if (enabled && onboarding_wait_timer_.IsRunning()) {
     onboarding_wait_timer_.Stop();
@@ -112,56 +128,21 @@ void NearbyShareDelegateImpl::OnEnabledChanged(bool enabled) {
 }
 
 void NearbyShareDelegateImpl::OnHighVisibilityChanged(bool high_visibility_on) {
-  nearby_share_controller_->HighVisibilityEnabledChanged(high_visibility_on);
-
   if (high_visibility_on) {
     shutoff_time_ = base::TimeTicks::Now() + kShutoffTimeout;
     shutoff_timer_.Reset();
-
-    countdown_timer_.Start(
-        FROM_HERE, kOneMinute,
-        base::BindRepeating(&NearbyShareDelegateImpl::OnCountdownTimerFired,
-                            base::Unretained(this)));
-    OnCountdownTimerFired();
   } else {
     shutoff_timer_.Stop();
-    countdown_timer_.Stop();
   }
+
+  nearby_share_controller_->HighVisibilityEnabledChanged(high_visibility_on);
 }
 
 void NearbyShareDelegateImpl::OnShutdown() {
-  settings_receiver_.reset();
-}
-
-void NearbyShareDelegateImpl::OnShutoffTimerFired() {
-  DisableHighVisibility();
-}
-
-void NearbyShareDelegateImpl::OnCountdownTimerFired() {
-  base::Optional<base::TimeDelta> remaining_time =
-      RemainingHighVisibilityTime();
-  if (!remaining_time)
-    return;
-
-  if (countdown_timer_.GetCurrentDelay() > kOneSecond &&
-      *remaining_time < kOneMinute) {
-    countdown_timer_.Stop();
-    countdown_timer_.Start(
-        FROM_HERE, kOneSecond,
-        base::BindRepeating(&NearbyShareDelegateImpl::OnCountdownTimerFired,
-                            base::Unretained(this)));
+  if (nearby_share_service_) {
+    RemoveNearbyShareServiceObservers();
+    nearby_share_service_ = nullptr;
   }
-
-  nearby_share_controller_->HighVisibilityCountdownUpdate(*remaining_time);
-}
-
-NearbySharingService* NearbyShareDelegateImpl::GetService() {
-  if (nearby_share_service_for_test_) {
-    return nearby_share_service_for_test_;
-  }
-
-  return NearbySharingServiceFactory::GetForBrowserContext(
-      ProfileManager::GetPrimaryUserProfile());
 }
 
 void NearbyShareDelegateImpl::ShowNearbyShareSettings() const {

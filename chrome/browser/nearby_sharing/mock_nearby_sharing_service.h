@@ -19,6 +19,7 @@ class MockNearbySharingService : public NearbySharingService {
               RemoveObserver,
               (NearbySharingService::Observer*),
               (override));
+  MOCK_METHOD(bool, HasObserver, (NearbySharingService::Observer*), (override));
   MOCK_METHOD(StatusCodes,
               RegisterSendSurface,
               (TransferUpdateCallback*,

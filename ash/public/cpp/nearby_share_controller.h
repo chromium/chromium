@@ -7,10 +7,6 @@
 
 #include "ash/public/cpp/ash_public_export.h"
 
-namespace base {
-class TimeDelta;
-}  // namespace base
-
 namespace ash {
 
 // Relays events from //chrome to //ash for Nearby Share.
@@ -20,11 +16,6 @@ class ASH_PUBLIC_EXPORT NearbyShareController {
 
   // To be called whenever Nearby Share's  High Visibility state changes.
   virtual void HighVisibilityEnabledChanged(bool enabled) = 0;
-
-  // Called periodically while high visibility is on in order to update the
-  // Nearby Share pod button's countdown display.
-  virtual void HighVisibilityCountdownUpdate(
-      base::TimeDelta remaining_time) = 0;
 };
 
 }  // namespace ash

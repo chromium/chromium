@@ -294,6 +294,8 @@ aggregate_vector_icons("ash_vector_icons") {
     "unified_menu_lock.icon",
     "unified_menu_managed.icon",
     "unified_menu_more.icon",
+    "unified_menu_nearby_share_not_visible.icon",
+    "unified_menu_nearby_share_visible.icon",
     "unified_menu_night_light.icon",
     "unified_menu_power.icon",
     "unified_menu_rotation_lock_auto.icon",

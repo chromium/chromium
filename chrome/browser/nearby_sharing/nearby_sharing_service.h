@@ -78,6 +78,7 @@ class NearbySharingService : public KeyedService {
 
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;
+  virtual bool HasObserver(Observer* observer) = 0;
 
   // Registers a send surface for handling payload transfer status and device
   // discovery.

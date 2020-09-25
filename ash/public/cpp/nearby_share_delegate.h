@@ -7,10 +7,9 @@
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/observer_list_types.h"
-#include "base/optional.h"
 
 namespace base {
-class TimeDelta;
+class TimeTicks;
 }  // namespace base
 
 namespace ash {
@@ -28,9 +27,9 @@ class ASH_PUBLIC_EXPORT NearbyShareDelegate {
   // Gets the current high visibility state from the NearbySharingService.
   virtual bool IsHighVisibilityOn() = 0;
 
-  // If high visibility is on, returns the remaining duration until the delegate
-  // will turn it off, or nullopt if high visibility is off.
-  virtual base::Optional<base::TimeDelta> RemainingHighVisibilityTime() = 0;
+  // If high visibility is on, returns the time when the delegate
+  // will turn it off. May return any value if high visibility is off.
+  virtual base::TimeTicks HighVisibilityShutoffTime() const = 0;
 
   // Request high visibility be turned on. If Nearby Share is disabled in prefs,
   // this will instead redirect the user to onboarding.

@@ -4,6 +4,8 @@
 
 #include "ash/public/cpp/test/test_nearby_share_delegate.h"
 
+#include "base/time/time.h"
+
 namespace ash {
 
 TestNearbyShareDelegate::TestNearbyShareDelegate() = default;
@@ -11,21 +13,24 @@ TestNearbyShareDelegate::TestNearbyShareDelegate() = default;
 TestNearbyShareDelegate::~TestNearbyShareDelegate() = default;
 
 bool TestNearbyShareDelegate::IsPodButtonVisible() {
-  return false;
+  return is_pod_button_visible_;
 }
 
 bool TestNearbyShareDelegate::IsHighVisibilityOn() {
-  return false;
+  return is_high_visibility_on_;
 }
 
-base::Optional<base::TimeDelta>
-TestNearbyShareDelegate::RemainingHighVisibilityTime() {
-  return base::nullopt;
+base::TimeTicks TestNearbyShareDelegate::HighVisibilityShutoffTime() const {
+  return high_visibility_shutoff_time_;
 }
 
-void TestNearbyShareDelegate::EnableHighVisibility() {}
+void TestNearbyShareDelegate::EnableHighVisibility() {
+  method_calls_.emplace_back(Method::kEnableHighVisibility);
+}
 
-void TestNearbyShareDelegate::DisableHighVisibility() {}
+void TestNearbyShareDelegate::DisableHighVisibility() {
+  method_calls_.emplace_back(Method::kDisableHighVisibility);
+}
 
 void TestNearbyShareDelegate::ShowNearbyShareSettings() const {}
 

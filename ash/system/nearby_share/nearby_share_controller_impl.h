@@ -17,12 +17,6 @@ class NearbyShareControllerImpl : public NearbyShareController {
  public:
   class Observer : public base::CheckedObserver {
    public:
-    // The delegate implementation maintains a timer and shuts off high
-    // visibility after a timeout. During that timeout, this event fires
-    // periodically to update the remaining time on the pod button UI.
-    virtual void OnHighVisibilityCountdownUpdate(
-        base::TimeDelta remaining_time) = 0;
-
     // Relays high visibility state changes from the service to the pod button.
     virtual void OnHighVisibilityEnabledChanged(bool enabled) = 0;
   };
@@ -33,7 +27,6 @@ class NearbyShareControllerImpl : public NearbyShareController {
   ~NearbyShareControllerImpl() override;
 
   // NearbyShareController
-  void HighVisibilityCountdownUpdate(base::TimeDelta remaining_time) override;
   void HighVisibilityEnabledChanged(bool enabled) override;
 
   void AddObserver(Observer* obs);
