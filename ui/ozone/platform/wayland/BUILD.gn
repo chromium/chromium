@@ -8,6 +8,7 @@ import("//build/config/linux/gtk/gtk.gni")
 import("//build/config/linux/pkg_config.gni")
 import("//gpu/vulkan/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
+import("//third_party/wayland/features.gni")
 import("//ui/ozone/platform/wayland/wayland.gni")
 
 source_set("wayland") {
@@ -150,7 +151,6 @@ source_set("wayland") {
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/system",
     "//skia",
-    "//third_party/wayland:wayland_egl",
     "//third_party/wayland-protocols:gtk_primary_selection_protocol",
     "//third_party/wayland-protocols:keyboard_extension_protocol",
     "//third_party/wayland-protocols:linux_dmabuf_protocol",
@@ -185,18 +185,6 @@ source_set("wayland") {
     "//ui/platform_window/wm",
   ]
 
-  # TODO(msisov): we should do the following once support for Trusty and Jessie
-  # are dropped:
-  # 1. Remove libs=["wayland-client"] and
-  # add deps+=["//third_party/wayland:wayland_client"]
-  # 2. Set use_system_libwayland=true for is_desktop_linux.
-  libs = []
-  if (!is_chromeos) {
-    libs = [ "wayland-client" ]
-  } else {
-    deps += [ "//third_party/wayland:wayland_client" ]
-  }
-
   if (is_linux && !is_chromeos) {
     deps += [ "//ui/base/ime/linux" ]
   }
@@ -213,6 +201,16 @@ source_set("wayland") {
   }
 
   defines = [ "OZONE_IMPLEMENTATION" ]
+
+  if (use_system_libwayland) {
+    defines += [ "USE_LIBWAYLAND_STUBS" ]
+    deps += [ "//third_party/wayland:wayland_stubs" ]
+  } else {
+    deps += [
+      "//third_party/wayland:wayland_client",
+      "//third_party/wayland:wayland_egl",
+    ]
+  }
 
   if (use_wayland_gbm) {
     defines += [ "WAYLAND_GBM" ]
