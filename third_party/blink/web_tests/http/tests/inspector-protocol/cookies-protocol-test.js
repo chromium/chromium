@@ -2,9 +2,7 @@
   var {page, session, dp} = await testRunner.startBlank(
       `Tests that cookies are set, updated and removed.`);
 
-  async function logCookies(success) {
-    if (success !== undefined)
-      testRunner.log('Success: ' + success);
+  async function logCookies() {
     var data = (await dp.Network.getAllCookies()).result;
     testRunner.log('Num of cookies ' + data.cookies.length);
     data.cookies.sort((a, b) => a.name.localeCompare(b.name));
@@ -27,7 +25,9 @@
   async function setCookie(cookie) {
     testRunner.log('Setting Cookie');
     var response = await dp.Network.setCookie(cookie);
-    await logCookies(response.result.success);
+    if (response.error)
+      testRunner.log(`setCookie failed: ${response.error.message}`);
+    await logCookies();
   }
 
   async function deleteCookie(cookie) {

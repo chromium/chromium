@@ -866,7 +866,9 @@ Response TargetHandler::CloseTarget(const std::string& target_id,
       DevToolsAgentHost::GetForId(target_id);
   if (!agent_host)
     return Response::InvalidParams("No target with given id found");
-  *out_success = agent_host->Close();
+  if (!agent_host->Close())
+    return Response::InvalidParams("Specified target doesn't support closing");
+  *out_success = true;
   return Response::Success();
 }
 

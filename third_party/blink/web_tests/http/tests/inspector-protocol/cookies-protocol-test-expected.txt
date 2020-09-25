@@ -4,19 +4,16 @@ Enabling network
 
 Running test: simpleCookieAdd
 Setting Cookie
-Success: true
 Num of cookies 1
 name: foo, value: bar1, domain: 127.0.0.1, path: /, session
 
 Running test: simpleCookieChange
 Setting Cookie
-Success: true
 Num of cookies 1
 name: foo, value: second bar2, domain: 127.0.0.1, path: /, session
 
 Running test: anotherSimpleCookieAdd
 Setting Cookie
-Success: true
 Num of cookies 2
 name: foo, value: second bar2, domain: 127.0.0.1, path: /, session
 name: foo2, value: bar1, domain: 127.0.0.1, path: /, session
@@ -30,7 +27,6 @@ Running test: deleteAllCookies
 
 Running test: sessionCookieAdd
 Setting Cookie
-Success: true
 Num of cookies 1
 name: foo, value: bar4, domain: 127.0.0.1, path: /, session
 
@@ -38,14 +34,12 @@ Running test: deleteAllCookies
 
 Running test: nonSessionCookieZeroAdd
 Setting Cookie
-Success: true
 Num of cookies 0
 
 Running test: deleteAllCookies
 
 Running test: nonSessionCookieAdd
 Setting Cookie
-Success: true
 Num of cookies 1
 name: foo, value: bar6, domain: 127.0.0.1, path: /, expires
 
@@ -53,7 +47,6 @@ Running test: deleteAllCookies
 
 Running test: differentOriginCookieAdd
 Setting Cookie
-Success: true
 Num of cookies 1
 name: foo, value: bar7, domain: example.com, path: /, session
 
@@ -61,21 +54,20 @@ Running test: deleteAllCookies
 
 Running test: invalidCookieAddDomain
 Setting Cookie
-Success: false
+setCookie failed: Invalid cookie fields
 Num of cookies 0
 
 Running test: deleteAllCookies
 
 Running test: invalidCookieAddName
 Setting Cookie
-Success: false
+setCookie failed: Invalid cookie fields
 Num of cookies 0
 
 Running test: deleteAllCookies
 
 Running test: secureCookieAdd
 Setting Cookie
-Success: true
 Num of cookies 1
 name: foo, value: bar, domain: 127.0.0.1, path: /, secure, session
 
@@ -83,7 +75,6 @@ Running test: deleteAllCookies
 
 Running test: cookieAddHttpOnly
 Setting Cookie
-Success: true
 Num of cookies 1
 name: foo, value: bar, domain: 127.0.0.1, path: /, httpOnly, session
 
@@ -91,7 +82,6 @@ Running test: deleteAllCookies
 
 Running test: cookieAddSameSiteLax
 Setting Cookie
-Success: true
 Num of cookies 1
 name: foo, value: bar, domain: 127.0.0.1, path: /, session, Lax
 
@@ -99,7 +89,6 @@ Running test: deleteAllCookies
 
 Running test: cookieAddSameSiteLax
 Setting Cookie
-Success: true
 Num of cookies 1
 name: foo, value: bar, domain: 127.0.0.1, path: /, session, Strict
 

@@ -5051,8 +5051,8 @@ domain Network
       # Cookie Priority type.
       experimental optional CookiePriority priority
     returns
-      # True if successfully set cookie.
-      boolean success
+      # Always set to true. If an error occurs, the response indicates protocol error.
+      deprecated boolean success
 
   # Sets given cookies.
   command setCookies
@@ -7434,7 +7434,8 @@ domain Target
     parameters
       TargetID targetId
     returns
-      boolean success
+      # Always set to true. If an error occurs, the response indicates protocol error.
+      deprecated boolean success
 
   # Inject object to the target's main frame that provides a communication
   # channel with browser target.

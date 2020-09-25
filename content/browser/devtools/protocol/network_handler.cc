@@ -102,6 +102,8 @@ using DeleteCookiesCallback = Network::Backend::DeleteCookiesCallback;
 using ClearBrowserCookiesCallback =
     Network::Backend::ClearBrowserCookiesCallback;
 
+const char kInvalidCookieFields[] = "Invalid cookie fields";
+
 Network::CertificateTransparencyCompliance SerializeCTPolicyCompliance(
     net::ct::CTPolicyCompliance ct_compliance) {
   switch (ct_compliance) {
@@ -1186,9 +1188,7 @@ void NetworkHandler::SetCookie(const std::string& name,
       same_site.fromMaybe(""), expires.fromMaybe(-1), priority.fromMaybe(""));
 
   if (!cookie) {
-    // TODO(caseq): Current logic is for compatability only.
-    // Consider returning protocol error here.
-    callback->sendSuccess(false);
+    callback->sendFailure(Response::InvalidParams(kInvalidCookieFields));
     return;
   }
 
@@ -1260,7 +1260,7 @@ void NetworkHandler::SetCookies(
               callback->sendSuccess();
             } else {
               callback->sendFailure(
-                  Response::InvalidParams("Invalid cookie fields"));
+                  Response::InvalidParams(kInvalidCookieFields));
             }
           },
           std::move(callback)));
