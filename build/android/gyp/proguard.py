@@ -161,9 +161,6 @@ def _ParseOptions():
   elif not options.output_path:
     parser.error('Output path required when feature splits aren\'t used')
 
-  if options.main_dex_rules_path and not options.r8_path:
-    parser.error('R8 must be enabled to pass main dex rules.')
-
   options.classpath = build_utils.ParseGnList(options.classpath)
   options.proguard_configs = build_utils.ParseGnList(options.proguard_configs)
   options.input_paths = build_utils.ParseGnList(options.input_paths)
@@ -376,14 +373,6 @@ def _CombineConfigs(configs, dynamic_config_data, exclude_generated=False):
 
 def _CreateDynamicConfig(options):
   ret = []
-  if not options.r8_path and options.min_api:
-    # R8 adds this option automatically, and uses -assumenosideeffects instead
-    # (which ProGuard doesn't support doing).
-    ret.append("""\
--assumevalues class android.os.Build$VERSION {
-  public static final int SDK_INT return %s..9999;
-}""" % options.min_api)
-
   if options.sourcefile:
     ret.append("-renamesourcefileattribute '%s' # OMIT FROM EXPECTATIONS" %
                options.sourcefile)
