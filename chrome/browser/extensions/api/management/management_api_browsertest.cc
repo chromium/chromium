@@ -30,6 +30,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/notification_types.h"
 #include "extensions/common/extension_builder.h"
+#include "extensions/common/scoped_worker_based_extensions_channel.h"
 #include "extensions/test/extension_test_message_listener.h"
 
 #if defined(OS_CHROMEOS)
@@ -57,11 +58,45 @@ class ExtensionManagementApiBrowserTest : public ExtensionBrowserTest {
   ScopedInstallVerifierBypassForTest install_verifier_bypass_;
 };
 
+using ContextType = ExtensionBrowserTest::ContextType;
+
+class ExtensionManagementApiTestWithBackgroundType
+    : public ExtensionManagementApiBrowserTest,
+      public testing::WithParamInterface<ContextType> {
+ public:
+  ExtensionManagementApiTestWithBackgroundType() {
+    // Service Workers are currently only available on certain channels, so set
+    // the channel for those tests.
+    if (GetParam() == ContextType::kServiceWorker)
+      current_channel_ = std::make_unique<ScopedWorkerBasedExtensionsChannel>();
+  }
+
+  const Extension* LoadExtensionWithParamFlags(const base::FilePath& path) {
+    int flags = kFlagEnableFileAccess;
+    if (GetParam() == ContextType::kServiceWorker)
+      flags |= ExtensionBrowserTest::kFlagRunAsServiceWorkerBasedExtension;
+    return LoadExtensionWithFlags(path, flags);
+  }
+
+ private:
+  std::unique_ptr<extensions::ScopedWorkerBasedExtensionsChannel>
+      current_channel_;
+};
+
+INSTANTIATE_TEST_SUITE_P(PersistentBackground,
+                         ExtensionManagementApiTestWithBackgroundType,
+                         ::testing::Values(ContextType::kPersistentBackground));
+
+INSTANTIATE_TEST_SUITE_P(ServiceWorker,
+                         ExtensionManagementApiTestWithBackgroundType,
+                         ::testing::Values(ContextType::kServiceWorker));
+
 // We test this here instead of in an ExtensionApiTest because normal extensions
 // are not allowed to call the install function.
-IN_PROC_BROWSER_TEST_F(ExtensionManagementApiBrowserTest, InstallEvent) {
+IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTestWithBackgroundType,
+                       InstallEvent) {
   ExtensionTestMessageListener listener1("ready", false);
-  ASSERT_TRUE(LoadExtension(
+  ASSERT_TRUE(LoadExtensionWithParamFlags(
       test_data_dir_.AppendASCII("management/install_event")));
   ASSERT_TRUE(listener1.WaitUntilSatisfied());
 
@@ -71,14 +106,15 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementApiBrowserTest, InstallEvent) {
   ASSERT_TRUE(listener2.WaitUntilSatisfied());
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionManagementApiBrowserTest, LaunchApp) {
+IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTestWithBackgroundType,
+                       LaunchApp) {
   ExtensionTestMessageListener listener1("app_launched", false);
   ExtensionTestMessageListener listener2("got_expected_error", false);
   ASSERT_TRUE(LoadExtension(
       test_data_dir_.AppendASCII("management/simple_extension")));
   ASSERT_TRUE(LoadExtension(
       test_data_dir_.AppendASCII("management/packaged_app")));
-  ASSERT_TRUE(LoadExtension(
+  ASSERT_TRUE(LoadExtensionWithParamFlags(
       test_data_dir_.AppendASCII("management/launch_app")));
   ASSERT_TRUE(listener1.WaitUntilSatisfied());
   ASSERT_TRUE(listener2.WaitUntilSatisfied());
@@ -86,7 +122,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementApiBrowserTest, LaunchApp) {
 
 #if defined(OS_CHROMEOS)
 
-IN_PROC_BROWSER_TEST_F(ExtensionManagementApiBrowserTest,
+IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTestWithBackgroundType,
                        NoDemoModeAppLaunchSourceReported) {
   EXPECT_FALSE(chromeos::DemoSession::IsDeviceInDemoMode());
 
@@ -105,7 +141,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementApiBrowserTest,
   histogram_tester.ExpectTotalCount("DemoMode.AppLaunchSource", 0);
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionManagementApiBrowserTest,
+IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTestWithBackgroundType,
                        DemoModeAppLaunchSourceReported) {
   chromeos::DemoSession::SetDemoConfigForTesting(
       chromeos::DemoSession::DemoModeConfig::kOnline);
@@ -130,7 +166,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementApiBrowserTest,
 
 #endif
 
-IN_PROC_BROWSER_TEST_F(ExtensionManagementApiBrowserTest,
+IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTestWithBackgroundType,
                        LaunchAppFromBackground) {
   ExtensionTestMessageListener listener1("success", false);
   ASSERT_TRUE(LoadExtension(
@@ -140,30 +176,30 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementApiBrowserTest,
   ASSERT_TRUE(listener1.WaitUntilSatisfied());
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionManagementApiBrowserTest,
+IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTestWithBackgroundType,
                        SelfUninstall) {
   ExtensionTestMessageListener listener1("success", false);
-  ASSERT_TRUE(LoadExtension(
+  ASSERT_TRUE(LoadExtensionWithParamFlags(
       test_data_dir_.AppendASCII("management/self_uninstall_helper")));
-  ASSERT_TRUE(LoadExtension(
+  ASSERT_TRUE(LoadExtensionWithParamFlags(
       test_data_dir_.AppendASCII("management/self_uninstall")));
   ASSERT_TRUE(listener1.WaitUntilSatisfied());
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionManagementApiBrowserTest,
+IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTestWithBackgroundType,
                        SelfUninstallNoPermissions) {
   ExtensionTestMessageListener listener1("success", false);
-  ASSERT_TRUE(LoadExtension(
+  ASSERT_TRUE(LoadExtensionWithParamFlags(
       test_data_dir_.AppendASCII("management/self_uninstall_helper")));
-  ASSERT_TRUE(LoadExtension(
+  ASSERT_TRUE(LoadExtensionWithParamFlags(
       test_data_dir_.AppendASCII("management/self_uninstall_noperm")));
   ASSERT_TRUE(listener1.WaitUntilSatisfied());
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionManagementApiBrowserTest,
+IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTestWithBackgroundType,
                        GetSelfNoPermissions) {
   ExtensionTestMessageListener listener1("success", false);
-  ASSERT_TRUE(LoadExtension(
+  ASSERT_TRUE(LoadExtensionWithParamFlags(
       test_data_dir_.AppendASCII("management/get_self")));
   ASSERT_TRUE(listener1.WaitUntilSatisfied());
 }

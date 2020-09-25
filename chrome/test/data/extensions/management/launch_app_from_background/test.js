@@ -2,17 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-window.onload = function() {
-  chrome.management.getAll(function(items) {
-    for (var i in items) {
-      var item = items[i];
-      if (item.name == "packaged_app") {
-        launchFromBackground(item.id);
-        break;
-      }
+chrome.management.getAll(function(items) {
+  for (var i in items) {
+    var item = items[i];
+    if (item.name == 'packaged_app') {
+      launchFromBackground(item.id);
+      break;
     }
-  });
-};
+  }
+});
 
 function launchFromBackground(appId) {
   // Create a new 'popup' window so the last active window isn't 'normal'.
