@@ -435,6 +435,12 @@
       <message name="IDS_PAGE_INFO_PERMISSIONS_TITLE" desc="Label used in the Page Info dialog above the permissions list.">
         Permissions
       </message>
+      <message name="IDS_PAGE_INFO_PERMISSIONS_RESET" desc="The label for the button allowing users to reset the permissions for a website.">
+        Reset permissions
+      </message>
+      <message name="IDS_PAGE_INFO_PERMISSIONS_RESET_CONFIRMATION" desc="The confirmation text asking if the user is sure about resetting the permissions for a site.">
+        Are you sure you want to reset all permissions for this website?
+      </message>
       <message name="IDS_PAGE_INFO_PERMISSIONS_OS_WARNING" desc="Text to show an OS-level permission warning.">
         <ph name="PERMISSION">%1$s<ex>Location</ex></ph> - <ph name="WARNING_MESSAGE">%2$s<ex>Turned off for this device</ex></ph>
       </message>

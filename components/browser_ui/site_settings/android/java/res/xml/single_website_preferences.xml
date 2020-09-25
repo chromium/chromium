@@ -87,6 +87,5 @@
         android:key="idle_detection_permission_list" />
 
     <org.chromium.components.browser_ui.settings.ButtonPreference
-        android:key="reset_site_button"
-        android:title="@string/website_reset" />
+        android:key="reset_site_button" />
 </PreferenceScreen>

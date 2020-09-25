@@ -446,6 +446,9 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
     }
 
     private void setupResetSitePreference(Preference preference) {
+        int titleResId = mHideNonPermissionPreferences ? R.string.page_info_permissions_reset
+                                                       : R.string.website_reset;
+        preference.setTitle(titleResId);
         preference.setOnPreferenceClickListener(this);
         if (WebsitePreferenceBridge.isCookieDeletionDisabled(
                     getSiteSettingsClient().getBrowserContextHandle(),
@@ -1014,11 +1017,17 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
 
     @Override
     public boolean onPreferenceClick(Preference preference) {
+        int titleResId = mHideNonPermissionPreferences ? R.string.page_info_permissions_reset
+                                                       : R.string.website_reset;
+        int confirmationResId = mHideNonPermissionPreferences
+                ? R.string.page_info_permissions_reset_confirmation
+                : R.string.website_reset_confirmation;
+        preference.setTitle(titleResId);
         // Handle the Clear & Reset preference click by showing a confirmation.
         new AlertDialog.Builder(getActivity(), R.style.Theme_Chromium_AlertDialog)
-                .setTitle(R.string.website_reset)
-                .setMessage(R.string.website_reset_confirmation)
-                .setPositiveButton(R.string.website_reset,
+                .setTitle(titleResId)
+                .setMessage(confirmationResId)
+                .setPositiveButton(titleResId,
                         (dialog, which) -> {
                             if (mHideNonPermissionPreferences) {
                                 mSiteDataCleaner.resetPermissions(
