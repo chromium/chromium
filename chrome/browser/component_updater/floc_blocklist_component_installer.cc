@@ -78,7 +78,8 @@ bool FlocBlocklistComponentInstallerPolicy::VerifyInstallation(
 
 base::FilePath FlocBlocklistComponentInstallerPolicy::GetRelativeInstallDir()
     const {
-  return base::FilePath(federated_learning::kTopLevelDirectoryName);
+  return base::FilePath(federated_learning::kTopLevelDirectoryName)
+      .Append(federated_learning::kBlocklistBaseDirectoryName);
 }
 
 void FlocBlocklistComponentInstallerPolicy::GetHash(

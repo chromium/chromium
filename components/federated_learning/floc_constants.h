@@ -18,6 +18,14 @@ extern const int kCurrentBlocklistFormatVersion;
 extern const base::FilePath::CharType kTopLevelDirectoryName[];
 
 // Paths under |kTopLevelDirectoryName|
+// ------------------------------------
+
+// The name of the subdirectory under the top-level directory that stores
+// blocklist downloaded through the component updater.
+extern const base::FilePath::CharType kBlocklistBaseDirectoryName[];
+
+// Paths under kBlocklistBaseDirectoryName
+// ---------------------------------------
 
 // The name of the file that stores the blocklist.
 extern const base::FilePath::CharType kBlocklistFileName[];

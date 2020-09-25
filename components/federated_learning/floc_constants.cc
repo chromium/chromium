@@ -13,6 +13,9 @@ const int kCurrentBlocklistFormatVersion = 1;
 const base::FilePath::CharType kTopLevelDirectoryName[] =
     FILE_PATH_LITERAL("Floc");
 
+const base::FilePath::CharType kBlocklistBaseDirectoryName[] =
+    FILE_PATH_LITERAL("Blocklist");
+
 const base::FilePath::CharType kBlocklistFileName[] =
     FILE_PATH_LITERAL("Blocklist");
 
