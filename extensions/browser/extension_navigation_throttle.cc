@@ -15,10 +15,12 @@
 #include "content/public/common/url_constants.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
+#include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/guest_view/app_view/app_view_guest.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
+#include "extensions/browser/process_manager.h"
 #include "extensions/browser/url_request_util.h"
 #include "extensions/browser/view_type_utils.h"
 #include "extensions/common/constants.h"
@@ -104,10 +106,29 @@ content::NavigationThrottle::ThrottleCheckResult
 ExtensionNavigationThrottle::WillStartOrRedirectRequest() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   content::WebContents* web_contents = navigation_handle()->GetWebContents();
-  ExtensionRegistry* registry =
-      ExtensionRegistry::Get(web_contents->GetBrowserContext());
+  content::BrowserContext* browser_context = web_contents->GetBrowserContext();
+
+  // Prevent the extension's background page from being navigated away. See
+  // crbug.com/1130083.
+  if (navigation_handle()->IsInMainFrame()) {
+    ProcessManager* process_manager = ProcessManager::Get(browser_context);
+    DCHECK(process_manager);
+    ExtensionHost* host = process_manager->GetExtensionHostForRenderFrameHost(
+        web_contents->GetMainFrame());
+
+    // Navigation throttles don't intercept same document navigations, hence we
+    // can ignore that case.
+    DCHECK(!navigation_handle()->IsSameDocument());
+
+    if (host &&
+        host->extension_host_type() == VIEW_TYPE_EXTENSION_BACKGROUND_PAGE &&
+        host->initial_url() != navigation_handle()->GetURL()) {
+      return content::NavigationThrottle::CANCEL;
+    }
+  }
 
   // Is this navigation targeting an extension resource?
+  ExtensionRegistry* registry = ExtensionRegistry::Get(browser_context);
   const GURL& url = navigation_handle()->GetURL();
   bool url_has_extension_scheme = url.SchemeIs(kExtensionScheme);
   url::Origin target_origin = url::Origin::Create(url);
