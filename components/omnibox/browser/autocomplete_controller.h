@@ -229,9 +229,7 @@ class AutocompleteController : public AutocompleteProviderListener,
   void UpdateAssociatedKeywords(AutocompleteResult* result);
 
   // Updates |result| with the suggestion group ID to header string mapping as
-  // well as the set of hidden suggestion group IDs. Also, strips all match
-  // group IDs that don't have a equivalent header string; essentially treating
-  // those matches as ordinary ones that do not belong to any suggestion group.
+  // well as the set of hidden suggestion group IDs.
   // Called for zero-prefix suggestions only. This call is followed by
   // AutocompleteResult::GroupAndDemoteMatchesWithHeaders() which groups and
   // demotes matches with suggestion group IDs to the bottom of the result set.

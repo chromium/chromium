@@ -332,10 +332,20 @@ void AutocompleteResult::GroupAndDemoteMatchesWithHeaders() {
   std::map<int, int> group_id_index_map = {{kNoHeaderSuggesetionGroupId, 0}};
   for (auto it = matches_.begin(); it != matches_.end(); ++it) {
     if (it->suggestion_group_id.has_value()) {
-      // Make sure every suggestion group ID has an equivalent header string.
-      // AutocompleteController::UpdateHeaderInfoFromZeroSuggestProvider() is
-      // expected to always have be called before this function.
-      DCHECK(!GetHeaderForGroupId(it->suggestion_group_id.value()).empty());
+      // Record group IDs and header strings, if available, into the
+      // additional_info field for chrome://omnibox.
+      int group_id = it->suggestion_group_id.value();
+      it->RecordAdditionalInfo("suggestion_group_id", group_id);
+      const base::string16 header = GetHeaderForGroupId(group_id);
+      if (!header.empty()) {
+        it->RecordAdditionalInfo("header string", header);
+      } else {
+        // Strip group IDs for which there is no header string from the matches.
+        // Otherwise, these matches may be shown at the bottom with an empty
+        // header row. They should instead be treated as ordinary matches with
+        // no group ID.
+        it->suggestion_group_id.reset();
+      }
     }
 
     int group_id =
@@ -665,6 +675,8 @@ size_t AutocompleteResult::CalculateNumMatchesPerUrlCount(
 
 void AutocompleteResult::Reset() {
   matches_.clear();
+  headers_map_.clear();
+  hidden_group_ids_.clear();
 }
 
 void AutocompleteResult::Swap(AutocompleteResult* other) {
@@ -811,6 +823,16 @@ bool AutocompleteResult::IsSuggestionGroupIdHidden(
 
   DCHECK_EQ(user_preference, omnibox::SuggestionGroupVisibility::DEFAULT);
   return base::Contains(hidden_group_ids_, suggestion_group_id);
+}
+
+void AutocompleteResult::MergeHeadersMap(
+    const SearchSuggestionParser::HeadersMap& headers_map) {
+  headers_map_.insert(headers_map.begin(), headers_map.end());
+}
+
+void AutocompleteResult::MergeHiddenGroupIds(
+    const std::vector<int>& hidden_group_ids) {
+  hidden_group_ids_.insert(hidden_group_ids.begin(), hidden_group_ids.end());
 }
 
 // static

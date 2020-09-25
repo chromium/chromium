@@ -145,7 +145,7 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer,
       JNIEnv* env,
       base::android::ScopedJavaLocalRef<jobject> j_autocomplete_result,
       const SearchSuggestionParser::HeadersMap& header_map,
-      const std::vector<int>& hidden_group_ids);
+      const std::set<int>& hidden_group_ids);
 
   // A helper method for fetching the top synchronous autocomplete result.
   // The |prevent_inline_autocomplete| flag is passed to the AutocompleteInput

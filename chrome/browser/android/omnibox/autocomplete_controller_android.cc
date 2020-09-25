@@ -662,14 +662,12 @@ void AutocompleteControllerAndroid::PopulateOmniboxGroupsDetails(
     JNIEnv* env,
     ScopedJavaLocalRef<jobject> j_autocomplete_result,
     const SearchSuggestionParser::HeadersMap& native_header_map,
-    const std::vector<int>& hidden_group_ids) {
-  base::flat_set<int> hidden_group_ids_set = hidden_group_ids;
-
+    const std::set<int>& hidden_group_ids) {
   for (const auto& group_header : native_header_map) {
     Java_AutocompleteController_addOmniboxGroupDetailsToResult(
         env, j_autocomplete_result, group_header.first,
         ConvertUTF16ToJavaString(env, group_header.second),
-        hidden_group_ids_set.contains(group_header.first));
+        base::Contains(hidden_group_ids, group_header.first));
   }
 }
 

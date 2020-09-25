@@ -84,6 +84,10 @@ class AutocompleteResult {
   // matches without headers appear at the top of the result set, and two, there
   // are no interleaving headers whether this is caused by bad server data or by
   // mixing of local and remote zero-prefix suggestions.
+  // Note that prior to grouping and demoting the matches with headers, we strip
+  // all match group IDs that don't have an equivalent header string;
+  // essentially treating those matches as if they did not belong to any
+  // suggestion group.
   // Called after matches are deduped and sorted and before they are culled.
   void GroupAndDemoteMatchesWithHeaders();
 
@@ -150,7 +154,7 @@ class AutocompleteResult {
     return headers_map_;
   }
 
-  const std::vector<int>& hidden_group_ids() const { return hidden_group_ids_; }
+  const std::set<int>& hidden_group_ids() const { return hidden_group_ids_; }
 
   // Clears the matches for this result set.
   void Reset();
@@ -191,19 +195,15 @@ class AutocompleteResult {
   bool IsSuggestionGroupIdHidden(PrefService* prefs,
                                  int suggestion_group_id) const;
 
+  void MergeHeadersMap(const SearchSuggestionParser::HeadersMap& headers_map);
+
+  void MergeHiddenGroupIds(const std::vector<int>& hidden_group_ids);
+
   // Logs metrics for when |new_result| replaces |old_result| asynchronously.
   // |old_result| a list of the comparators for the old matches.
   static void LogAsynchronousUpdateMetrics(
       const std::vector<MatchDedupComparator>& old_result,
       const AutocompleteResult& new_result);
-
-  void set_headers_map(const SearchSuggestionParser::HeadersMap& headers_map) {
-    headers_map_ = headers_map;
-  }
-
-  void set_hidden_group_ids(const std::vector<int>& hidden_group_ids) {
-    hidden_group_ids_ = hidden_group_ids;
-  }
 
   // This value should be comfortably larger than any max-autocomplete-matches
   // under consideration.
@@ -306,8 +306,7 @@ class AutocompleteResult {
   SearchSuggestionParser::HeadersMap headers_map_;
 
   // The server supplied list of group IDs that should be hidden-by-default.
-  // Typical size is 0 to 3, from one provider. That's why it's not a set.
-  std::vector<int> hidden_group_ids_;
+  std::set<int> hidden_group_ids_;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_AUTOCOMPLETE_RESULT_H_

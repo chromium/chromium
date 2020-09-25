@@ -244,7 +244,7 @@ TEST_F(OmniboxPopupModelTest, PopupStepSelection) {
                           metrics::OmniboxEventProto::NTP,
                           TestSchemeClassifier());
   result->AppendMatches(input, matches);
-  result->set_headers_map({{7, base::UTF8ToUTF16("header")}});
+  result->MergeHeadersMap({{7, base::UTF8ToUTF16("header")}});
   result->SortAndCull(input, nullptr);
   popup_model()->OnResultChanged();
   EXPECT_EQ(0u, model()->popup_model()->selected_line());
@@ -326,7 +326,7 @@ TEST_F(OmniboxPopupModelTest, PopupStepSelectionWithHiddenGroupIds) {
                           metrics::OmniboxEventProto::NTP,
                           TestSchemeClassifier());
   result->AppendMatches(input, matches);
-  result->set_headers_map({{7, base::UTF8ToUTF16("header")}});
+  result->MergeHeadersMap({{7, base::UTF8ToUTF16("header")}});
   result->SortAndCull(input, nullptr);
   popup_model()->OnResultChanged();
   EXPECT_EQ(0u, model()->popup_model()->selected_line());
@@ -406,7 +406,7 @@ TEST_F(OmniboxPopupModelSuggestionButtonRowTest,
                           metrics::OmniboxEventProto::NTP,
                           TestSchemeClassifier());
   result->AppendMatches(input, matches);
-  result->set_headers_map({{7, base::UTF8ToUTF16("header")}});
+  result->MergeHeadersMap({{7, base::UTF8ToUTF16("header")}});
   result->SortAndCull(input, nullptr);
   popup_model()->OnResultChanged();
   EXPECT_EQ(0u, model()->popup_model()->selected_line());
@@ -502,7 +502,7 @@ TEST_F(OmniboxPopupModelSuggestionButtonRowTest,
                           metrics::OmniboxEventProto::NTP,
                           TestSchemeClassifier());
   result->AppendMatches(input, matches);
-  result->set_headers_map({{7, base::UTF8ToUTF16("header")}});
+  result->MergeHeadersMap({{7, base::UTF8ToUTF16("header")}});
   result->SortAndCull(input, nullptr);
   popup_model()->OnResultChanged();
   EXPECT_EQ(0u, model()->popup_model()->selected_line());
@@ -594,7 +594,7 @@ TEST_F(OmniboxPopupModelTest, PopupInlineAutocompleteAndTemporaryText) {
                           metrics::OmniboxEventProto::NTP,
                           TestSchemeClassifier());
   result->AppendMatches(input, matches);
-  result->set_headers_map({{7, base::UTF8ToUTF16("header")}});
+  result->MergeHeadersMap({{7, base::UTF8ToUTF16("header")}});
   result->SortAndCull(input, nullptr);
   popup_model()->OnResultChanged();
 

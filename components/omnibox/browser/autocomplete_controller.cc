@@ -811,27 +811,11 @@ void AutocompleteController::UpdateHeaderInfoFromZeroSuggestProvider(
   if (!zero_suggest_provider_)
     return;
 
-  result->set_headers_map(zero_suggest_provider_->headers_map());
-  result->set_hidden_group_ids(zero_suggest_provider_->hidden_group_ids());
-
-  for (AutocompleteMatch& match : *result) {
-    if (match.suggestion_group_id.has_value()) {
-      // Record header data into the additional_info field for chrome://omnibox.
-      // For improved debugging, we record all group IDs sent by the server.
-      int group_id = match.suggestion_group_id.value();
-      match.RecordAdditionalInfo("suggestion_group_id", group_id);
-
-      const base::string16 header = result->GetHeaderForGroupId(group_id);
-      if (!header.empty()) {
-        match.RecordAdditionalInfo("header string", header);
-      } else {
-        // Strip all match group IDs that don't have a header string. Otherwise,
-        // these matches will be shown at the bottom with an empty header row.
-        // They should be treated as an ordinary match with no group ID.
-        match.suggestion_group_id.reset();
-      }
-    }
-  }
+  // Merge the new header info with the existing one rather than replacing it.
+  // We might end up using the existing matches fully or partially if there are
+  // not enough new ones. Thus, we should also keep the existing header info.
+  result->MergeHeadersMap(zero_suggest_provider_->headers_map());
+  result->MergeHiddenGroupIds(zero_suggest_provider_->hidden_group_ids());
 }
 
 void AutocompleteController::UpdateKeywordDescriptions(
