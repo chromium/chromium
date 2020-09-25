@@ -25,6 +25,9 @@ namespace ui {
 
 namespace {
 
+// Use |kInvalidBufferId| to commit surface state without updating wl_buffer.
+constexpr uint32_t kInvalidBufferId = 0u;
+
 uint32_t GetPresentationKindFlags(uint32_t flags) {
   // Wayland spec has different meaning of VSync. In Chromium, VSync means to
   // update the begin frame vsync timing based on presentation feedback.
@@ -65,10 +68,19 @@ class WaylandBufferManagerHost::Surface {
         buffer_manager_(buffer_manager) {}
   ~Surface() = default;
 
-  bool CommitBuffer(uint32_t buffer_id, const gfx::Rect& damage_region) {
+  bool CommitBuffer(uint32_t buffer_id,
+                    const gfx::Rect& damage_region,
+                    bool wait_for_frame_callback) {
     // The window has already been destroyed.
     if (!wayland_surface_)
       return true;
+
+    // This is a buffer-less commit, do not lookup buffers.
+    if (buffer_id == kInvalidBufferId) {
+      pending_commits_.push_back({nullptr, wait_for_frame_callback});
+      MaybeProcessPendingBuffer();
+      return true;
+    }
 
     WaylandBuffer* buffer = GetBuffer(buffer_id);
     if (!buffer) {
@@ -95,7 +107,7 @@ class WaylandBufferManagerHost::Surface {
     if (buffer->attached && !buffer->wl_buffer)
       return false;
 
-    pending_buffers_.push_back(buffer);
+    pending_commits_.push_back({buffer, wait_for_frame_callback});
     MaybeProcessPendingBuffer();
     return true;
   }
@@ -108,7 +120,11 @@ class WaylandBufferManagerHost::Surface {
     if (buffer) {
       buffer->released = true;
       MaybeProcessSubmittedBuffers();
-      base::Erase(pending_buffers_, buffer);
+      for (auto it = pending_commits_.begin(); it != pending_commits_.end();
+           ++it) {
+        if (it->buffer == buffer)
+          pending_commits_.erase(it++);
+      }
     }
 
     return buffers_.erase(buffer_id);
@@ -139,7 +155,7 @@ class WaylandBufferManagerHost::Surface {
     ResetSurfaceContents();
 
     submitted_buffers_.clear();
-    pending_buffers_.clear();
+    pending_commits_.clear();
 
     connection_->ScheduleFlush();
   }
@@ -204,7 +220,16 @@ class WaylandBufferManagerHost::Surface {
     bool acked;
   };
 
-  bool CommitBufferInternal(WaylandBuffer* buffer) {
+  // Represents a pending surface commit.
+  struct PendingCommit {
+    // If null, means this commit will not attach buffer.
+    WaylandBuffer* buffer = nullptr;
+    // Whether this commit must wait for a wl_frame_callback and setup another
+    // wl_frame_callback.
+    bool wait_for_callback = false;
+  };
+
+  bool CommitBufferInternal(WaylandBuffer* buffer, bool wait_for_callback) {
     DCHECK(buffer && wayland_surface_);
 
     // If the same buffer has been submitted again right after the client
@@ -225,7 +250,8 @@ class WaylandBufferManagerHost::Surface {
 
     DamageBuffer(buffer);
 
-    SetupFrameCallback();
+    if (wait_for_callback)
+      SetupFrameCallback();
     SetupPresentationFeedback(buffer->buffer_id);
 
     CommitSurface();
@@ -504,10 +530,10 @@ class WaylandBufferManagerHost::Surface {
   }
 
   void MaybeProcessPendingBuffer() {
-    DCHECK_LE(pending_buffers_.size(), 6u);
+    DCHECK_LE(pending_commits_.size(), 6u);
     // There is nothing to process if there is no pending buffer or the window
     // has been destroyed.
-    if (pending_buffers_.empty() || !wayland_surface_)
+    if (pending_commits_.empty() || !wayland_surface_)
       return;
 
     // This request may come earlier than the Wayland compositor has imported a
@@ -524,12 +550,27 @@ class WaylandBufferManagerHost::Surface {
     //
     // The third case happens if the window hasn't been configured until a
     // request to attach a buffer to its surface is sent.
-    auto* pending_buffer = pending_buffers_.front();
-    if (!pending_buffer->wl_buffer || wl_frame_callback_ || !configured_)
+    auto pending_commit = std::move(pending_commits_.front());
+    if ((pending_commit.buffer && !pending_commit.buffer->wl_buffer) ||
+        (wl_frame_callback_ && pending_commit.wait_for_callback) ||
+        !configured_) {
       return;
+    }
 
-    pending_buffers_.erase(pending_buffers_.begin());
-    CommitBufferInternal(pending_buffer);
+    // A Commit without attaching buffers only needs to setup wl_frame_callback.
+    if (!pending_commit.buffer) {
+      pending_commits_.erase(pending_commits_.begin());
+      if (pending_commit.wait_for_callback)
+        SetupFrameCallback();
+      CommitSurface();
+      connection_->ScheduleFlush();
+      MaybeProcessSubmittedBuffers();
+      return;
+    }
+
+    pending_commits_.erase(pending_commits_.begin());
+    CommitBufferInternal(pending_commit.buffer,
+                         pending_commit.wait_for_callback);
   }
 
   // Widget this helper surface backs and has 1:1 relationship with the
@@ -552,9 +593,9 @@ class WaylandBufferManagerHost::Surface {
   // operation.
   wl::Object<wl_callback> wl_frame_callback_;
 
-  // Queue of buffers which are pending to be submitted (look the comment
+  // Queue of commits which are pending to be submitted (look the comment
   // in the CommitBuffer method).
-  std::vector<WaylandBuffer*> pending_buffers_;
+  std::list<PendingCommit> pending_commits_;
 
   // Queue of buffers which have been submitted and are waiting to be
   // acked (send OnSubmission)
@@ -763,18 +804,38 @@ void WaylandBufferManagerHost::CreateShmBasedBuffer(mojo::PlatformHandle shm_fd,
 bool WaylandBufferManagerHost::CommitBufferInternal(
     WaylandSurface* wayland_surface,
     uint32_t buffer_id,
-    const gfx::Rect& damage_region) {
+    const gfx::Rect& damage_region,
+    bool wait_for_frame_callback) {
   DCHECK(base::CurrentUIThread::IsSet());
 
   Surface* surface = GetSurface(wayland_surface);
   if (!surface || !ValidateBufferIdFromGpu(buffer_id))
     return false;
 
-  if (!surface->CommitBuffer(buffer_id, damage_region)) {
+  if (!surface->CommitBuffer(buffer_id, damage_region,
+                             wait_for_frame_callback)) {
     error_message_ =
         base::StrCat({"Buffer with ", NumberToString(buffer_id),
                       " id does not exist or failed to be created."});
   }
+
+  if (!error_message_.empty())
+    TerminateGpuProcess();
+  return true;
+}
+
+bool WaylandBufferManagerHost::CommitWithoutBufferInternal(
+    WaylandSurface* wayland_surface,
+    bool wait_for_frame_callback) {
+  DCHECK(base::CurrentUIThread::IsSet());
+
+  Surface* surface = GetSurface(wayland_surface);
+  if (!surface)
+    return false;
+
+  bool result = surface->CommitBuffer(kInvalidBufferId, gfx::Rect(),
+                                      wait_for_frame_callback);
+  DCHECK(result);
 
   if (!error_message_.empty())
     TerminateGpuProcess();

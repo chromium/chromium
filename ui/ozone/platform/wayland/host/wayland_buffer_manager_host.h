@@ -157,9 +157,22 @@ class WaylandBufferManagerHost : public ozone::mojom::WaylandBufferManagerHost,
   // |buffer_id| to a WaylandSurface.
   // Calls OnSubmission and OnPresentation on successful swap and pixels
   // presented.
+  // |wait_for_frame_callback| instructs that a surface should wait for previous
+  // wl_frame_callback. This is primarily used for sync wl_subsurfaces case
+  // where buffer updates within a frame should be seen together. A root_surface
+  // commit will move an entire wl_surface tree from pending state to ready
+  // state. This root_surface commit must wait for wl_frame_callback, such that
+  // in effect all other surface updates wait for this wl_frame_callback, too.
   bool CommitBufferInternal(WaylandSurface* wayland_surface,
                             uint32_t buffer_id,
-                            const gfx::Rect& damage_region);
+                            const gfx::Rect& damage_region,
+                            bool wait_for_frame_callback = true);
+
+  // Does a wl_surface commit without attaching any buffers. This commit will
+  // still wait for previous wl_frame_callback. Similar to above but for
+  // commits that do not change the root_surface.
+  bool CommitWithoutBufferInternal(WaylandSurface* wayland_surface,
+                                   bool wait_for_frame_callback = true);
 
   // When a surface is hidden, the client may want to detach the buffer attached
   // to the surface to ensure Wayland does not present those contents and do not
@@ -239,8 +252,13 @@ class WaylandBufferManagerHost : public ozone::mojom::WaylandBufferManagerHost,
   base::OnceCallback<void(std::string)> terminate_gpu_cb_;
 
   // Contains anonymous buffers aka buffers that are not attached to any of the
-  // existing surfaces and that will be mapped to surfaces later.  Typically
-  // created when CreateAnonymousImage is called on the gpu process side.
+  // existing surfaces and that will be mapped to surfaces later.
+  // Typically created when CreateAnonymousImage is called on the gpu process
+  // side.
+  // We assume that a buffer_id/wl_buffer will never be used on multiple
+  // wl_surfaces so we never re-map buffers to surfaces. If we ever need to use
+  // the same buffer for 2 surfaces at the same time, create multiple wl_buffers
+  // referencing the same dmabuf or underlying storage.
   base::flat_map<uint32_t, std::unique_ptr<WaylandBuffer>> anonymous_buffers_;
 
   base::WeakPtrFactory<WaylandBufferManagerHost> weak_factory_;

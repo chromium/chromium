@@ -541,8 +541,9 @@ bool WaylandWindow::CommitOverlays(
       ozone::mojom::WaylandOverlayConfig::New();
   auto split = std::lower_bound(overlays.begin(), overlays.end(), value,
                                 OverlayStackOrderCompare);
-  CHECK((*split)->z_order >= 0);
-  size_t num_primary_planes = (*split)->z_order == 0 ? 1 : 0;
+  CHECK(split == overlays.end() || (*split)->z_order >= 0);
+  size_t num_primary_planes =
+      (split != overlays.end() && (*split)->z_order == 0) ? 1 : 0;
 
   size_t above = (overlays.end() - split) - num_primary_planes;
   size_t below = split - overlays.begin();
@@ -572,8 +573,8 @@ bool WaylandWindow::CommitOverlays(
             (*overlay_iter)->bounds_rect, (*overlay_iter)->enable_blend,
             nullptr, reference_above);
         connection_->buffer_manager_host()->CommitBufferInternal(
-            (*iter)->wayland_surface(), (*overlay_iter)->buffer_id,
-            gfx::Rect());
+            (*iter)->wayland_surface(), (*overlay_iter)->buffer_id, gfx::Rect(),
+            /*wait_for_frame_callback=*/false);
       } else {
         // If there're more subsurfaces requested that we don't need at the
         // moment, hide them.
@@ -601,8 +602,8 @@ bool WaylandWindow::CommitOverlays(
             (*overlay_iter)->bounds_rect, (*overlay_iter)->enable_blend,
             reference_below, nullptr);
         connection_->buffer_manager_host()->CommitBufferInternal(
-            (*iter)->wayland_surface(), (*overlay_iter)->buffer_id,
-            gfx::Rect());
+            (*iter)->wayland_surface(), (*overlay_iter)->buffer_id, gfx::Rect(),
+            /*wait_for_frame_callback=*/false);
       } else {
         // If there're more subsurfaces requested that we don't need at the
         // moment, hide them.
@@ -612,16 +613,16 @@ bool WaylandWindow::CommitOverlays(
   }
 
   if (num_primary_planes) {
-    // TODO: forward fence.
     connection_->buffer_manager_host()->CommitBufferInternal(
-        root_surface(), (*split)->buffer_id, (*split)->damage_region);
+        root_surface(), (*split)->buffer_id, (*split)->damage_region,
+        /*wait_for_frame_callback=*/true);
   } else {
-    // Subsurfaces are set to desync, above operations will only take effects
+    // Subsurfaces are set to sync, above operations will only take effects
     // when root_surface is committed.
-    root_surface()->Commit();
+    connection_->buffer_manager_host()->CommitWithoutBufferInternal(
+        root_surface(), /*wait_for_frame_callback=*/true);
   }
 
-  // commit all;
   return true;
 }
 
