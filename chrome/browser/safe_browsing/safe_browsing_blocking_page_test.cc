@@ -1227,7 +1227,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
   EXPECT_EQ(url, controller.GetVisibleEntry()->GetURL());
 }
 
-#if defined(OS_MAC) && !defined(NDEBUG)
+#if (defined(OS_MAC) && !defined(NDEBUG)) || defined(MEMORY_SANITIZER)
 // TODO(crbug.com/1132307): Address flaky timeout.
 #define MAYBE_LearnMore DISABLED_LearnMore
 #else
@@ -1414,7 +1414,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest, WhitelistUnsaved) {
   AssertNoInterstitial(true);
 }
 
-#if defined(OS_MAC) && !defined(NDEBUG)
+#if (defined(OS_MAC) && !defined(NDEBUG)) || defined(MEMORY_SANITIZER)
 // TODO(crbug.com/1132307): Address flay failure.
 #define MAYBE_VerifyHitReportSentOnSBERAndNotIncognito \
   DISABLED_VerifyHitReportSentOnSBERAndNotIncognito
@@ -1758,7 +1758,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
 }
 
 // Check back and forward work correctly after clicking through an interstitial.
-#if defined(OS_MAC) && !defined(NDEBUG)
+#if (defined(OS_MAC) && !defined(NDEBUG)) || defined(MEMORY_SANITIZER)
 // TODO(crbug.com/1132307): Address flay failure.
 #define MAYBE_NavigatingBackAndForth DISABLED_NavigatingBackAndForth
 #else
