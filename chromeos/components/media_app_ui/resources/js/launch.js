@@ -599,7 +599,8 @@ async function getFileFromHandle(fileSystemHandle) {
 function isVideoOrImage(file) {
   // Check for .mkv explicitly because it is not a web-supported type, but is in
   // common use on ChromeOS.
-  return /^(image)|(video)\//.test(file.type) || /\.mkv$/.test(file.name);
+  return /^(image)|(video)\//.test(file.type) ||
+      /\.mkv$/.test(file.name.toLowerCase());
 }
 
 /**
