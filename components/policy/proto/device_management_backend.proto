@@ -686,6 +686,11 @@ message PolicyData {
   // UNSPECIFIED if not relevant.
   // This field should only be set for User Policy response.
   optional MetricsLogSegment metrics_log_segment = 35;
+
+  // This field will be populated with primary domain name for domain verified
+  // customer, and primary admin email for domainless customer. The client side
+  // will use this field to display who manages this device/browser/user.
+  optional string managed_by = 36;
 }
 
 message ClientActionRequired {
