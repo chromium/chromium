@@ -122,7 +122,7 @@ void VulkanDemo::CreateSkSurface() {
     vk_image_info.fFormat = VK_FORMAT_B8G8R8A8_UNORM;
     vk_image_info.fLevelCount = 1;
     const auto& size = vulkan_surface_->image_size();
-    GrBackendRenderTarget render_target(size.width(), size.height(), 0, 0,
+    GrBackendRenderTarget render_target(size.width(), size.height(), 0,
                                         vk_image_info);
     sk_surface = SkSurface::MakeFromBackendRenderTarget(
         vulkan_context_provider_->GetGrContext(), render_target,
