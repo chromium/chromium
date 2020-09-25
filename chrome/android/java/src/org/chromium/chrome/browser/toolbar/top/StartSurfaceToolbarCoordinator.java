@@ -13,13 +13,15 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.CallbackController;
 import org.chromium.base.library_loader.LibraryLoader;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ThemeColorProvider;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
-import org.chromium.chrome.browser.identity_disc.IdentityDiscController;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.toolbar.ButtonData;
 import org.chromium.chrome.browser.toolbar.IncognitoStateProvider;
 import org.chromium.chrome.browser.toolbar.TabCountProvider;
 import org.chromium.chrome.browser.toolbar.TabSwitcherButtonCoordinator;
@@ -53,9 +55,11 @@ public class StartSurfaceToolbarCoordinator {
     private CallbackController mCallbackController = new CallbackController();
 
     StartSurfaceToolbarCoordinator(ViewStub startSurfaceToolbarStub,
-            IdentityDiscController identityDiscController, UserEducationHelper userEducationHelper,
+            UserEducationHelper userEducationHelper,
             OneshotSupplier<OverviewModeBehavior> overviewModeBehaviorSupplier,
-            ThemeColorProvider provider, MenuButtonCoordinator menuButtonCoordinator) {
+            ObservableSupplier<Boolean> identityDiscStateSupplier, ThemeColorProvider provider,
+            MenuButtonCoordinator menuButtonCoordinator,
+            Supplier<ButtonData> identityDiscButtonSupplier) {
         mStub = startSurfaceToolbarStub;
 
         overviewModeBehaviorSupplier.onAvailable(
@@ -78,7 +82,7 @@ public class StartSurfaceToolbarCoordinator {
         // should not be both true.
         assert !(StartSurfaceConfiguration.START_SURFACE_HIDE_INCOGNITO_SWITCH_NO_TAB.getValue()
                 && StartSurfaceConfiguration.START_SURFACE_SHOW_STACK_TAB_SWITCHER.getValue());
-        mToolbarMediator = new StartSurfaceToolbarMediator(mPropertyModel, identityDiscController,
+        mToolbarMediator = new StartSurfaceToolbarMediator(mPropertyModel,
                 (iphCommandBuilder)
                         -> {
                     // TODO(crbug.com/865801): Replace the null check with an assert after fixing or
@@ -90,7 +94,7 @@ public class StartSurfaceToolbarCoordinator {
                 StartSurfaceConfiguration.START_SURFACE_HIDE_INCOGNITO_SWITCH_NO_TAB.getValue(),
                 StartSurfaceConfiguration.START_SURFACE_HIDE_INCOGNITO_SWITCH.getValue(),
                 StartSurfaceConfiguration.START_SURFACE_SHOW_STACK_TAB_SWITCHER.getValue(),
-                menuButtonCoordinator);
+                menuButtonCoordinator, identityDiscStateSupplier, identityDiscButtonSupplier);
 
         mThemeColorProvider = provider;
         mMenuButtonCoordinator = menuButtonCoordinator;

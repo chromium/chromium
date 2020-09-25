@@ -46,7 +46,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
-import org.chromium.chrome.browser.compositor.Invalidator.Client;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManager;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
@@ -137,8 +136,7 @@ public class CompositorViewHolder extends FrameLayout
 
     private int mPendingFrameCount;
 
-    private final ArrayList<Invalidator.Client> mPendingInvalidations =
-            new ArrayList<>();
+    private final ArrayList<Runnable> mPendingInvalidations = new ArrayList<>();
     private boolean mSkipInvalidation;
 
     /**
@@ -1402,11 +1400,11 @@ public class CompositorViewHolder extends FrameLayout
     }
 
     @Override
-    public void deferInvalidate(Client client) {
+    public void deferInvalidate(Runnable clientInvalidator) {
         if (mPendingFrameCount <= 0) {
-            client.doInvalidate();
-        } else if (!mPendingInvalidations.contains(client)) {
-            mPendingInvalidations.add(client);
+            clientInvalidator.run();
+        } else if (!mPendingInvalidations.contains(clientInvalidator)) {
+            mPendingInvalidations.add(clientInvalidator);
         }
     }
 
@@ -1414,7 +1412,7 @@ public class CompositorViewHolder extends FrameLayout
         if (mPendingInvalidations.isEmpty()) return;
         TraceEvent.instant("CompositorViewHolder.flushInvalidation");
         for (int i = 0; i < mPendingInvalidations.size(); i++) {
-            mPendingInvalidations.get(i).doInvalidate();
+            mPendingInvalidations.get(i).run();
         }
         mPendingInvalidations.clear();
     }

@@ -17,20 +17,20 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
+
 import androidx.annotation.CallSuper;
 import androidx.annotation.ColorRes;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+
+import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.base.TraceEvent;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ThemeColorProvider;
 import org.chromium.chrome.browser.ThemeColorProvider.ThemeColorObserver;
 import org.chromium.chrome.browser.ThemeColorProvider.TintObserver;
-import org.chromium.chrome.browser.compositor.Invalidator;
-import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
-import org.chromium.chrome.browser.findinpage.FindToolbar;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.omnibox.LocationBar;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
@@ -58,7 +58,7 @@ import org.chromium.ui.base.ViewUtils;
  */
 public abstract class ToolbarLayout
         extends FrameLayout implements TintObserver, ThemeColorObserver {
-    private Invalidator mInvalidator;
+    private Callback<Runnable> mInvalidator;
 
     protected final ObserverList<UrlExpansionObserver> mUrlExpansionObservers =
             new ObserverList<>();
@@ -411,7 +411,7 @@ public abstract class ToolbarLayout
      * {@link Invalidator} a chance to defer the actual invalidate to sync drawing.
      * @param invalidator An {@link Invalidator} instance.
      */
-    void setPaintInvalidator(Invalidator invalidator) {
+    void setInvalidatorCallback(Callback<Runnable> invalidator) {
         mInvalidator = invalidator;
     }
 
@@ -420,12 +420,8 @@ public abstract class ToolbarLayout
      * {@link #setPaintInvalidator(Invalidator)} to decide when to actually invalidate.
      * @param client A {@link Invalidator.Client} instance that wants to be invalidated.
      */
-    void triggerPaintInvalidate(Invalidator.Client client) {
-        if (mInvalidator == null) {
-            client.doInvalidate();
-        } else {
-            mInvalidator.invalidate(client);
-        }
+    protected void triggerPaintInvalidate(Runnable clientInvalidator) {
+        mInvalidator.onResult(clientInvalidator);
     }
 
     /**
@@ -603,7 +599,7 @@ public abstract class ToolbarLayout
         return false;
     }
 
-    void setLayoutUpdateHost(LayoutUpdateHost layoutUpdateHost) {}
+    void setLayoutUpdater(Runnable layoutUpdater) {}
 
     void setOverviewModeBehavior(OverviewModeBehavior overviewModeBehavior) {}
 

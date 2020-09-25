@@ -49,8 +49,6 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.MathUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.compositor.Invalidator;
-import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -90,9 +88,8 @@ import java.util.List;
 /**
  * Phone specific toolbar implementation.
  */
-public class ToolbarPhone extends ToolbarLayout implements Invalidator.Client, OnClickListener,
-                                                           NewTabPage.OnSearchBoxScrollListener,
-                                                           TabCountObserver {
+public class ToolbarPhone extends ToolbarLayout
+        implements OnClickListener, NewTabPage.OnSearchBoxScrollListener, TabCountObserver {
     /** The amount of time transitioning from one theme color to another should take in ms. */
     public static final long THEME_COLOR_TRANSITION_DURATION = 250;
 
@@ -240,7 +237,7 @@ public class ToolbarPhone extends ToolbarLayout implements Invalidator.Client, O
 
     private boolean mIsHomeButtonEnabled;
 
-    private LayoutUpdateHost mLayoutUpdateHost;
+    private Runnable mLayoutUpdater;
 
     /** The vertical inset of the location bar background. */
     private int mLocationBarBackgroundVerticalInset;
@@ -311,7 +308,7 @@ public class ToolbarPhone extends ToolbarLayout implements Invalidator.Client, O
                 @Override
                 public void set(ToolbarPhone object, Float value) {
                     object.mTabSwitcherModePercent = value;
-                    triggerPaintInvalidate(ToolbarPhone.this);
+                    triggerPaintInvalidate(ToolbarPhone.this::postInvalidateOnAnimation);
                 }
             };
 
@@ -1322,11 +1319,6 @@ public class ToolbarPhone extends ToolbarLayout implements Invalidator.Client, O
         canvas.restore();
     }
 
-    @Override
-    public void doInvalidate() {
-        postInvalidateOnAnimation();
-    }
-
     /**
      * Translates the canvas to ensure the specified view's coordinates are at 0, 0.
      *
@@ -1576,8 +1568,8 @@ public class ToolbarPhone extends ToolbarLayout implements Invalidator.Client, O
     }
 
     @Override
-    public void setLayoutUpdateHost(LayoutUpdateHost layoutUpdateHost) {
-        mLayoutUpdateHost = layoutUpdateHost;
+    public void setLayoutUpdater(Runnable layoutUpdater) {
+        mLayoutUpdater = layoutUpdater;
     }
 
     @Override
@@ -1654,7 +1646,7 @@ public class ToolbarPhone extends ToolbarLayout implements Invalidator.Client, O
         // TODO(amaralp): Have the LocationBar listen to tint changes.
         if (mLocationBar != null) mLocationBar.updateVisualsForState();
 
-        if (mLayoutUpdateHost != null) mLayoutUpdateHost.requestUpdate();
+        if (mLayoutUpdater != null) mLayoutUpdater.run();
     }
 
     @Override
@@ -1730,7 +1722,7 @@ public class ToolbarPhone extends ToolbarLayout implements Invalidator.Client, O
         // Request a texture update to ensure a texture is captured before the user
         // re-enters the tab switcher.
         postInvalidate();
-        mLayoutUpdateHost.requestUpdate();
+        mLayoutUpdater.run();
     }
 
     @Override
@@ -2294,7 +2286,7 @@ public class ToolbarPhone extends ToolbarLayout implements Invalidator.Client, O
         });
         mBrandColorTransitionAnimation.start();
         mBrandColorTransitionActive = true;
-        if (mLayoutUpdateHost != null) mLayoutUpdateHost.requestUpdate();
+        if (mLayoutUpdater != null) mLayoutUpdater.run();
     }
 
     private void updateNtpAnimationState() {
@@ -2462,8 +2454,8 @@ public class ToolbarPhone extends ToolbarLayout implements Invalidator.Client, O
 
         // Refresh the toolbar texture.
         if ((mVisualState == VisualState.BRAND_COLOR || visualStateChanged)
-                && mLayoutUpdateHost != null) {
-            mLayoutUpdateHost.requestUpdate();
+                && mLayoutUpdater != null) {
+            mLayoutUpdater.run();
         }
         updateShadowVisibility();
         updateUrlExpansionAnimation();
@@ -2602,7 +2594,7 @@ public class ToolbarPhone extends ToolbarLayout implements Invalidator.Client, O
     }
 
     private void requestLayoutHostUpdateForOptionalButton() {
-        if (mLayoutUpdateHost != null) mLayoutUpdateHost.requestUpdate();
+        if (mLayoutUpdater != null) mLayoutUpdater.run();
         getViewTreeObserver().removeOnGlobalLayoutListener(mOptionalButtonLayoutListener);
     }
 

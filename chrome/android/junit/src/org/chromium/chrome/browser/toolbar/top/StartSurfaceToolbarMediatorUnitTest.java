@@ -41,6 +41,7 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior.OverviewModeObserver;
@@ -99,6 +100,7 @@ public class StartSurfaceToolbarMediatorUnitTest {
 
     private ButtonData mButtonData;
     private ButtonData mDisabledButtonData;
+    private ObservableSupplierImpl<Boolean> mIdentityDiscStateSupplier;
 
     @Before
     public void setUp() {
@@ -113,6 +115,7 @@ public class StartSurfaceToolbarMediatorUnitTest {
                         .build();
         mButtonData = new ButtonData(false, mDrawable, mOnClickListener, 0, false, null, true);
         mDisabledButtonData = new ButtonData(false, null, null, 0, false, null, true);
+        mIdentityDiscStateSupplier = new ObservableSupplierImpl<>();
         doReturn(mButtonData)
                 .when(mIdentityDiscController)
                 .getForStartSurface(OverviewModeState.SHOWN_HOMEPAGE);
@@ -589,17 +592,17 @@ public class StartSurfaceToolbarMediatorUnitTest {
         assertEquals(mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE), false);
 
         mButtonData.canShow = true;
-        mMediator.identityDiscStateChanged(true);
+        mIdentityDiscStateSupplier.set(true);
         assertEquals(mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE), true);
 
         mButtonData.canShow = false;
-        mMediator.identityDiscStateChanged(false);
+        mIdentityDiscStateSupplier.set(false);
         assertEquals(mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE), false);
 
         // updateIdentityDisc() should properly handle a hint that contradicts the true value of
         // canShow.
         mButtonData.canShow = false;
-        mMediator.identityDiscStateChanged(true);
+        mIdentityDiscStateSupplier.set(true);
         assertEquals(mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE), false);
     }
 
@@ -720,9 +723,12 @@ public class StartSurfaceToolbarMediatorUnitTest {
 
     private void createMediator(boolean hideIncognitoSwitchWhenNoTabs,
             boolean hideIncognitoSwitchOnHomePage, boolean showNewTabAndIdentityDiscAtStart) {
-        mMediator = new StartSurfaceToolbarMediator(mPropertyModel, mIdentityDiscController,
-                mMockCallback, hideIncognitoSwitchWhenNoTabs, hideIncognitoSwitchOnHomePage,
-                showNewTabAndIdentityDiscAtStart, mMenuButtonCoordinator);
+        mMediator = new StartSurfaceToolbarMediator(mPropertyModel, mMockCallback,
+                hideIncognitoSwitchWhenNoTabs, hideIncognitoSwitchOnHomePage,
+                showNewTabAndIdentityDiscAtStart, mMenuButtonCoordinator,
+                mIdentityDiscStateSupplier,
+                () -> mIdentityDiscController.getForStartSurface(
+                        mMediator.getOverviewModeStateForTesting()));
         mMediator.setOverviewModeBehavior(mOverviewModeBehavior);
         verify(mOverviewModeBehavior)
                 .addOverviewModeObserver(mOverviewModeObserverCaptor.capture());

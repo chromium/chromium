@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.toolbar.top;
 
-import android.content.Context;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.view.View;
@@ -14,20 +13,18 @@ import android.view.View.OnLongClickListener;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneShotCallback;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ThemeColorProvider;
-import org.chromium.chrome.browser.compositor.Invalidator;
-import org.chromium.chrome.browser.compositor.layouts.LayoutManager;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
-import org.chromium.chrome.browser.findinpage.FindToolbar;
-import org.chromium.chrome.browser.homepage.HomepageManager;
-import org.chromium.chrome.browser.identity_disc.IdentityDiscController;
 import org.chromium.chrome.browser.omnibox.LocationBar;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.toolbar.ButtonData;
 import org.chromium.chrome.browser.toolbar.ButtonDataProvider;
 import org.chromium.chrome.browser.toolbar.IncognitoStateProvider;
 import org.chromium.chrome.browser.toolbar.TabCountProvider;
@@ -75,7 +72,6 @@ public class TopToolbarCoordinator implements Toolbar {
      */
     private @Nullable StartSurfaceToolbarCoordinator mStartSurfaceToolbarCoordinator;
 
-    private final IdentityDiscController mIdentityDiscController;
     private OptionalBrowsingModeButtonController mOptionalButtonController;
 
     private MenuButtonCoordinator mMenuButtonCoordinator;
@@ -83,19 +79,10 @@ public class TopToolbarCoordinator implements Toolbar {
     private CallbackController mCallbackController = new CallbackController();
     private ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
 
-    private HomepageManager.HomepageStateListener mHomepageStateListener =
-            new HomepageManager.HomepageStateListener() {
-                @Override
-                public void onHomepageStateUpdated() {
-                    mToolbarLayout.onHomeButtonUpdate(HomepageManager.isHomepageEnabled());
-                }
-            };
-
     /**
      * Creates a new {@link TopToolbarCoordinator}.
      * @param controlContainer The {@link ToolbarControlContainer} for the containing activity.
      * @param toolbarLayout The {@link ToolbarLayout}.
-     * @param identityDiscController Class that controls the state of the identity disc.
      * @param userEducationHelper Helper class for showing in-product help text bubbles.
      * @param buttonDataProviders List of classes that wish to display an optional button in the
      *         browsing mode toolbar.
@@ -104,20 +91,29 @@ public class TopToolbarCoordinator implements Toolbar {
      * @param normalThemeColorProvider The {@link ThemeColorProvider} for normal mode.
      * @param overviewThemeColorProvider The {@link ThemeColorProvider} for overview mode.
      * @param tabModelSelectorSupplier Supplier of the {@link TabModelSelector}.
+     * @param homeButtonVisibilitySupplier Supplier of the visibility change of Home button.
+     * @param identityDiscStateSupplier Supplier of the state change of identity disc button.
+     * @param invalidatorCallback Callback that will be invoked  when the toolbar attempts to
+     *        invalidate the drawing surface.  This will give the object that registers as the host
+     *        for the {@link Invalidator} a chance to defer the actual invalidate to sync drawing.
+     * @param identityDiscButtonSupplier Supplier of Identity Disc button.
      */
     public TopToolbarCoordinator(ToolbarControlContainer controlContainer,
-            ToolbarLayout toolbarLayout, IdentityDiscController identityDiscController,
-            ToolbarDataProvider toolbarDataProvider, ToolbarTabController tabController,
-            UserEducationHelper userEducationHelper, List<ButtonDataProvider> buttonDataProviders,
+            ToolbarLayout toolbarLayout, ToolbarDataProvider toolbarDataProvider,
+            ToolbarTabController tabController, UserEducationHelper userEducationHelper,
+            List<ButtonDataProvider> buttonDataProviders,
             OneshotSupplier<OverviewModeBehavior> overviewModeBehaviorSupplier,
             ThemeColorProvider normalThemeColorProvider,
             ThemeColorProvider overviewThemeColorProvider,
             MenuButtonCoordinator browsingModeMenuButtonCoordinator,
             MenuButtonCoordinator startSurfaceMenuButtonCoordinator,
-            ObservableSupplier<AppMenuButtonHelper> appMenuButtonHelperSupplier, Context context,
-            ObservableSupplier<TabModelSelector> tabModelSelectorSupplier) {
+            ObservableSupplier<AppMenuButtonHelper> appMenuButtonHelperSupplier,
+            ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
+            ObservableSupplier<Boolean> homeButtonVisibilitySupplier,
+            ObservableSupplier<Boolean> identityDiscStateSupplier,
+            Callback<Runnable> invalidatorCallback,
+            Supplier<ButtonData> identityDiscButtonSupplier) {
         mToolbarLayout = toolbarLayout;
-        mIdentityDiscController = identityDiscController;
         mMenuButtonCoordinator = browsingModeMenuButtonCoordinator;
         mOptionalButtonController = new OptionalBrowsingModeButtonController(buttonDataProviders,
                 userEducationHelper, mToolbarLayout, () -> toolbarDataProvider.getTab());
@@ -131,8 +127,9 @@ public class TopToolbarCoordinator implements Toolbar {
             if (StartSurfaceConfiguration.isStartSurfaceEnabled()) {
                 mStartSurfaceToolbarCoordinator = new StartSurfaceToolbarCoordinator(
                         controlContainer.getRootView().findViewById(R.id.tab_switcher_toolbar_stub),
-                        mIdentityDiscController, userEducationHelper, overviewModeBehaviorSupplier,
-                        overviewThemeColorProvider, startSurfaceMenuButtonCoordinator);
+                        userEducationHelper, overviewModeBehaviorSupplier,
+                        identityDiscStateSupplier, overviewThemeColorProvider,
+                        startSurfaceMenuButtonCoordinator, identityDiscButtonSupplier);
             } else {
                 mTabSwitcherModeCoordinatorPhone = new TabSwitcherModeTTCoordinatorPhone(
                         controlContainer.getRootView().findViewById(
@@ -140,12 +137,13 @@ public class TopToolbarCoordinator implements Toolbar {
             }
         }
         controlContainer.setToolbar(this);
-        HomepageManager.getInstance().addListener(mHomepageStateListener);
         mToolbarLayout.initialize(toolbarDataProvider, tabController, mMenuButtonCoordinator);
 
         mToolbarLayout.setThemeColorProvider(normalThemeColorProvider);
         mAppMenuButtonHelperSupplier = appMenuButtonHelperSupplier;
         new OneShotCallback<>(mAppMenuButtonHelperSupplier, this::setAppMenuButtonHelper);
+        homeButtonVisibilitySupplier.addObserver((show) -> mToolbarLayout.onHomeButtonUpdate(show));
+        mToolbarLayout.setInvalidatorCallback(invalidatorCallback);
     }
 
     /**
@@ -163,14 +161,14 @@ public class TopToolbarCoordinator implements Toolbar {
      * <p>
      * Calling this must occur after the native library have completely loaded.
      *
-     * @param layoutManager A {@link LayoutManager} instance used to watch for scene changes.
+     * @param layoutUpdater A {@link Runnable} used to request layout update upon scene change.
      * @param tabSwitcherClickHandler The click handler for the tab switcher button.
      * @param tabSwitcherLongClickHandler The long click handler for the tab switcher button.
      * @param newTabClickHandler The click handler for the new tab button.
      * @param bookmarkClickHandler The click handler for the bookmarks button.
      * @param customTabsBackClickHandler The click handler for the custom tabs back button.
      */
-    public void initializeWithNative(LayoutManager layoutManager,
+    public void initializeWithNative(Runnable layoutUpdater,
             OnClickListener tabSwitcherClickHandler,
             OnLongClickListener tabSwitcherLongClickHandler, OnClickListener newTabClickHandler,
             OnClickListener bookmarkClickHandler, OnClickListener customTabsBackClickHandler) {
@@ -195,7 +193,7 @@ public class TopToolbarCoordinator implements Toolbar {
         mToolbarLayout.setOnTabSwitcherLongClickHandler(tabSwitcherLongClickHandler);
         mToolbarLayout.setBookmarkClickHandler(bookmarkClickHandler);
         mToolbarLayout.setCustomTabCloseClickHandler(customTabsBackClickHandler);
-        mToolbarLayout.setLayoutUpdateHost(layoutManager);
+        mToolbarLayout.setLayoutUpdater(layoutUpdater);
 
         mToolbarLayout.onNativeLibraryReady();
     }
@@ -230,7 +228,6 @@ public class TopToolbarCoordinator implements Toolbar {
      * Cleans up any code as necessary.
      */
     public void destroy() {
-        HomepageManager.getInstance().removeListener(mHomepageStateListener);
         mToolbarLayout.destroy();
         if (mTabSwitcherModeCoordinatorPhone != null) {
             mTabSwitcherModeCoordinatorPhone.destroy();
@@ -302,8 +299,8 @@ public class TopToolbarCoordinator implements Toolbar {
      * {@link Invalidator} a chance to defer the actual invalidate to sync drawing.
      * @param invalidator An {@link Invalidator} instance.
      */
-    public void setPaintInvalidator(Invalidator invalidator) {
-        mToolbarLayout.setPaintInvalidator(invalidator);
+    public void setInvalidatorCallback(Callback<Runnable> callback) {
+        mToolbarLayout.setInvalidatorCallback(callback);
     }
 
     /**

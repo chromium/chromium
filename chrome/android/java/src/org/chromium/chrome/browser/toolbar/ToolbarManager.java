@@ -24,6 +24,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
@@ -50,6 +51,7 @@ import org.chromium.chrome.browser.findinpage.FindToolbarManager;
 import org.chromium.chrome.browser.findinpage.FindToolbarObserver;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
+import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.identity_disc.IdentityDiscController;
 import org.chromium.chrome.browser.ntp.FakeboxDelegate;
 import org.chromium.chrome.browser.ntp.IncognitoNewTabPage;
@@ -83,6 +85,7 @@ import org.chromium.chrome.browser.toolbar.top.Toolbar;
 import org.chromium.chrome.browser.toolbar.top.ToolbarActionModeCallback;
 import org.chromium.chrome.browser.toolbar.top.ToolbarControlContainer;
 import org.chromium.chrome.browser.toolbar.top.ToolbarLayout;
+import org.chromium.chrome.browser.toolbar.top.ToolbarPhone;
 import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator;
 import org.chromium.chrome.browser.toolbar.top.ViewShiftingActionBarDelegate;
 import org.chromium.chrome.browser.ui.TabObscuringHandler;
@@ -121,6 +124,10 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
     private final ToolbarControlContainer mControlContainer;
     private final BrowserControlsStateProvider.Observer mBrowserControlsObserver;
     private final FullscreenManager.Observer mFullscreenObserver;
+    private final ObservableSupplierImpl<Boolean> mHomeButtonVisibilitySupplier =
+            new ObservableSupplierImpl<>();
+    private final ObservableSupplierImpl<Boolean> mIdentityDiscStateSupplier =
+            new ObservableSupplierImpl<>();
 
     private BottomControlsCoordinator mBottomControlsCoordinator;
     private TabModelSelector mTabModelSelector;
@@ -142,6 +149,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
     private BookmarkBridge.BookmarkModelObserver mBookmarksObserver;
     private FindToolbarObserver mFindToolbarObserver;
     private OverviewModeObserver mOverviewModeObserver;
+    private @OverviewModeState int mOverviewModeState = OverviewModeState.NOT_SHOWN;
 
     private OverviewModeBehavior mOverviewModeBehavior;
     private OneshotSupplier<OverviewModeBehavior> mOverviewModeBehaviorSupplier;
@@ -160,6 +168,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
     private final LoadProgressCoordinator mProgressBarCoordinator;
     private final ToolbarTabControllerImpl mToolbarTabController;
     private MenuButtonCoordinator mMenuButtonCoordinator;
+    private HomepageManager.HomepageStateListener mHomepageStateListener;
 
     private BrowserStateBrowserControlsVisibilityDelegate mControlsVisibilityDelegate;
     private int mFullscreenFocusToken = TokenHolder.INVALID_TOKEN;
@@ -309,17 +318,13 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                 mActivity.getCompositorViewHolder()::requestFocus, shouldShowUpdateBadge,
                 mActivity::isInOverviewMode, overviewModeThemeColorProvider, R.id.none);
 
-        mToolbar = new TopToolbarCoordinator(controlContainer, toolbarLayout,
-                identityDiscController, mLocationBarModel, mToolbarTabController,
-                new UserEducationHelper(mActivity, mHandler), buttonDataProviders,
-                mOverviewModeBehaviorSupplier, browsingModeThemeColorProvider,
-                mAppThemeColorProvider, mMenuButtonCoordinator, startSurfaceMenuButtonCoordinator,
-                mMenuButtonCoordinator.getMenuButtonHelperSupplier(), mActivity,
-                mTabModelSelectorSupplier);
+        mToolbar = createTopToolbarCoordinator(controlContainer, toolbarLayout, buttonDataProviders,
+                browsingModeThemeColorProvider, startSurfaceMenuButtonCoordinator, invalidator,
+                identityDiscController);
+
         mActionModeController =
                 new ActionModeController(mActivity, mActionBarDelegate, toolbarActionModeCallback);
 
-        mToolbar.setPaintInvalidator(invalidator);
         mActionModeController.setTabStripHeight(mToolbar.getTabStripHeight());
         mLocationBar = mToolbar.getLocationBar();
         mLocationBar.setProfileSupplier(profileSupplier);
@@ -573,6 +578,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             public void onOverviewModeStateChanged(
                     @OverviewModeState int overviewModeState, boolean showTabSwitcherToolbar) {
                 assert StartSurfaceConfiguration.isStartSurfaceEnabled();
+                mOverviewModeState = overviewModeState;
                 mToolbar.updateTabSwitcherToolbarState(showTabSwitcherToolbar);
             }
 
@@ -616,6 +622,36 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         mFindToolbarManager = findToolbarManager;
         mFindToolbarManager.addObserver(mFindToolbarObserver);
         TraceEvent.end("ToolbarManager.ToolbarManager");
+    }
+
+    private TopToolbarCoordinator createTopToolbarCoordinator(
+            ToolbarControlContainer controlContainer, ToolbarLayout toolbarLayout,
+            List<ButtonDataProvider> buttonDataProviders,
+            ThemeColorProvider browsingModeThemeColorProvider,
+            MenuButtonCoordinator startSurfaceMenuButtonCoordinator, Invalidator invalidator,
+            IdentityDiscController identityDiscController) {
+        TopToolbarCoordinator toolbar = new TopToolbarCoordinator(controlContainer, toolbarLayout,
+                mLocationBarModel, mToolbarTabController,
+                new UserEducationHelper(mActivity, mHandler), buttonDataProviders,
+                mOverviewModeBehaviorSupplier, browsingModeThemeColorProvider,
+                mAppThemeColorProvider, mMenuButtonCoordinator, startSurfaceMenuButtonCoordinator,
+                mMenuButtonCoordinator.getMenuButtonHelperSupplier(), mTabModelSelectorSupplier,
+                mHomeButtonVisibilitySupplier, mIdentityDiscStateSupplier, (client) -> {
+                    if (invalidator != null) {
+                        invalidator.invalidate(client);
+                    } else {
+                        client.run();
+                    }
+                }, () -> identityDiscController.getForStartSurface(mOverviewModeState));
+        mHomepageStateListener =
+                () -> mHomeButtonVisibilitySupplier.set(HomepageManager.isHomepageEnabled());
+        HomepageManager.getInstance().addListener(mHomepageStateListener);
+        if (toolbarLayout instanceof ToolbarPhone
+                && StartSurfaceConfiguration.isStartSurfaceEnabled()) {
+            identityDiscController.addObserver(
+                    (canShowHint) -> mIdentityDiscStateSupplier.set(canShowHint));
+        }
+        return toolbar;
     }
 
     /**
@@ -693,7 +729,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                 TabSwitcherActionMenuCoordinator.createOnLongClickListener(
                         (id) -> mActivity.onOptionsItemSelected(id, null));
 
-        mToolbar.initializeWithNative(layoutManager, tabSwitcherClickHandler,
+        mToolbar.initializeWithNative(layoutManager::requestUpdate, tabSwitcherClickHandler,
                 tabSwitcherLongClickHandler, newTabClickHandler, bookmarkClickHandler,
                 customTabsBackClickHandler);
 
@@ -842,6 +878,8 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             mLayoutManager.removeSceneChangeObserver(mSceneChangeObserver);
             mLayoutManager = null;
         }
+
+        HomepageManager.getInstance().removeListener(mHomepageStateListener);
 
         if (mBottomControlsCoordinator != null) {
             mBottomControlsCoordinator.destroy();
