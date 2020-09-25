@@ -1705,11 +1705,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
         node.setDismissable(dismissable);
         node.setMultiLine(multiLine);
         node.setInputType(inputType);
-
-        // Deliberately don't call setLiveRegion because TalkBack speaks
-        // the entire region anytime it changes. Instead Chrome will
-        // call announceLiveRegionText() only on the nodes that change.
-        // node.setLiveRegion(liveRegion);
+        node.setLiveRegion(liveRegion);
 
         // We only apply the |errorMessage| if {@link setAccessibilityNodeInfoBooleanAttributes}
         // set |contentInvalid| to true based on throttle delay.
