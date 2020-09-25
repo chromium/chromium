@@ -11,7 +11,6 @@
 #include <functional>
 #include <tuple>
 
-#include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
 
 namespace blink {
