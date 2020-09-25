@@ -11486,6 +11486,11 @@ Called by update_net_error_codes.py.-->
   <int value="32" label="HTTP/3 (T049)"/>
   <int value="33" label="HTTP/3 (T050)"/>
   <int value="34" label="HTTP/3 (T099)"/>
+  <int value="35" label="HTTP/3 (draft-25)"/>
+  <int value="36" label="HTTP/3 (draft-27)"/>
+  <int value="37" label="HTTP/3 (draft-28)"/>
+  <int value="38" label="HTTP/3 (draft-29)"/>
+  <int value="39" label="HTTP/3 (T051)"/>
 </enum>
 
 <enum name="ConnectionResult">
