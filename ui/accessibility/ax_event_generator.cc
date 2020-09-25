@@ -132,17 +132,16 @@ AXEventGenerator::Iterator& AXEventGenerator::Iterator::operator++() {
   if (map_iter_ == map_.end())
     return *this;
 
-  DCHECK(set_iter_ != map_iter_->second.end())
-      << "The set of events should not be empty";
+  DCHECK(set_iter_ != map_iter_->second.end());
   set_iter_++;
 
-  if (set_iter_ == map_iter_->second.end()) {
+  // |map_| may contain empty sets of events in its entries (i.e. |set_iter_| is
+  // at the iterator's end). In this case, we want to increment |map_iter_| to
+  // point to the next entry of |map_| that contains non-empty set of events.
+  while (map_iter_ != map_.end() && set_iter_ == map_iter_->second.end()) {
     map_iter_++;
-    if (map_iter_ != map_.end()) {
+    if (map_iter_ != map_.end())
       set_iter_ = map_iter_->second.begin();
-      DCHECK(set_iter_ != map_iter_->second.end())
-          << "The set of events should not be empty";
-    }
   }
 
   return *this;
@@ -173,6 +172,30 @@ void AXEventGenerator::SetTree(AXTree* new_tree) {
 void AXEventGenerator::ReleaseTree() {
   tree_event_observer_.RemoveAll();
   tree_ = nullptr;
+}
+
+AXEventGenerator::Iterator AXEventGenerator::begin() const {
+  auto map_iter = tree_events_.begin();
+  if (map_iter != tree_events_.end()) {
+    auto set_iter = map_iter->second.begin();
+
+    // |tree_events_| may contain empty sets of events in its first entry
+    // (i.e. |set_iter| is at the iterator's end). In this case, we want to
+    // increment |map_iter| to point to the next entry of |tree_events_| that
+    // contains non-empty set of events.
+    while (map_iter != tree_events_.end() &&
+           set_iter == map_iter->second.end()) {
+      map_iter++;
+      if (map_iter != tree_events_.end())
+        set_iter = map_iter->second.begin();
+    }
+  }
+
+  return AXEventGenerator::Iterator(tree_events_, map_iter);
+}
+
+AXEventGenerator::Iterator AXEventGenerator::end() const {
+  return AXEventGenerator::Iterator(tree_events_, tree_events_.end());
 }
 
 void AXEventGenerator::ClearEvents() {
@@ -630,6 +653,12 @@ void AXEventGenerator::OnAtomicUpdateFinished(
   FireActiveDescendantEvents();
 
   PostprocessEvents();
+}
+
+void AXEventGenerator::AddEventsForTesting(
+    AXNode* node,
+    const std::set<EventParams>& events) {
+  tree_events_[node] = events;
 }
 
 void AXEventGenerator::FireLiveRegionEvents(AXNode* node) {

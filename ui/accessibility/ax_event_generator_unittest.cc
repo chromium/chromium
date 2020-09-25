@@ -40,6 +40,133 @@ MATCHER_P2(HasEventAtNode,
 
 }  // namespace
 
+TEST(AXEventGeneratorTest, IterateThroughEmptyEventSets) {
+  // The event map contains the following:
+  // node1, <>
+  // node2, <>
+  // node3, <IGNORED_CHANGED, SUBTREE_CREATED, NAME_CHANGED>
+  // node4, <>
+  // node5, <>
+  // node6, <>
+  // node7, <IGNORED_CHANGED>
+  // node8, <>
+  // node9, <>
+  // Verify AXEventGenerator can iterate through empty event sets, and returning
+  // the correct events.
+  AXTreeUpdate initial_state;
+  initial_state.root_id = 1;
+  initial_state.nodes.resize(9);
+  initial_state.nodes[0].id = 1;
+  initial_state.nodes[0].child_ids.push_back(2);
+
+  initial_state.nodes[1].id = 2;
+  initial_state.nodes[1].child_ids.push_back(3);
+
+  initial_state.nodes[2].id = 3;
+  initial_state.nodes[2].child_ids.push_back(4);
+
+  initial_state.nodes[3].id = 4;
+  initial_state.nodes[3].child_ids.push_back(5);
+
+  initial_state.nodes[4].id = 5;
+  initial_state.nodes[4].child_ids.push_back(6);
+
+  initial_state.nodes[5].id = 6;
+  initial_state.nodes[5].child_ids.push_back(7);
+
+  initial_state.nodes[6].id = 7;
+  initial_state.nodes[6].child_ids.push_back(8);
+
+  initial_state.nodes[7].id = 8;
+  initial_state.nodes[7].child_ids.push_back(9);
+
+  initial_state.nodes[8].id = 9;
+  initial_state.has_tree_data = true;
+
+  AXTree tree(initial_state);
+  AXEventGenerator event_generator(&tree);
+  AXNode* node1 = tree.root();
+  AXNode* node2 = tree.GetFromId(2);
+  AXNode* node3 = tree.GetFromId(3);
+  AXNode* node4 = tree.GetFromId(4);
+  AXNode* node5 = tree.GetFromId(5);
+  AXNode* node6 = tree.GetFromId(6);
+  AXNode* node7 = tree.GetFromId(7);
+  AXNode* node8 = tree.GetFromId(8);
+  AXNode* node9 = tree.GetFromId(9);
+
+  // Node1 contains no event.
+  std::set<AXEventGenerator::EventParams> node1_events;
+  // Node2 contains no event.
+  std::set<AXEventGenerator::EventParams> node2_events;
+  // Node3 contains IGNORED_CHANGED, SUBTREE_CREATED, NAME_CHANGED.
+  std::set<AXEventGenerator::EventParams> node3_events;
+  node3_events.emplace(AXEventGenerator::Event::IGNORED_CHANGED,
+                       ax::mojom::EventFrom::kNone, tree.event_intents());
+  node3_events.emplace(AXEventGenerator::Event::SUBTREE_CREATED,
+                       ax::mojom::EventFrom::kNone, tree.event_intents());
+  node3_events.emplace(AXEventGenerator::Event::NAME_CHANGED,
+                       ax::mojom::EventFrom::kNone, tree.event_intents());
+  // Node4 contains no event.
+  std::set<AXEventGenerator::EventParams> node4_events;
+  // Node5 contains no event.
+  std::set<AXEventGenerator::EventParams> node5_events;
+  // Node6 contains no event.
+  std::set<AXEventGenerator::EventParams> node6_events;
+  // Node7 contains IGNORED_CHANGED.
+  std::set<AXEventGenerator::EventParams> node7_events;
+  node7_events.emplace(AXEventGenerator::Event::IGNORED_CHANGED,
+                       ax::mojom::EventFrom::kNone, tree.event_intents());
+  // Node8 contains no event.
+  std::set<AXEventGenerator::EventParams> node8_events;
+  // Node9 contains no event.
+  std::set<AXEventGenerator::EventParams> node9_events;
+
+  event_generator.AddEventsForTesting(node1, node1_events);
+  event_generator.AddEventsForTesting(node2, node2_events);
+  event_generator.AddEventsForTesting(node3, node3_events);
+  event_generator.AddEventsForTesting(node4, node4_events);
+  event_generator.AddEventsForTesting(node5, node5_events);
+  event_generator.AddEventsForTesting(node6, node6_events);
+  event_generator.AddEventsForTesting(node7, node7_events);
+  event_generator.AddEventsForTesting(node8, node8_events);
+  event_generator.AddEventsForTesting(node9, node9_events);
+
+  std::map<AXNode*, std::set<AXEventGenerator::Event>> expected_event_map;
+  expected_event_map[node3] = {AXEventGenerator::Event::IGNORED_CHANGED,
+                               AXEventGenerator::Event::SUBTREE_CREATED,
+                               AXEventGenerator::Event::NAME_CHANGED};
+  expected_event_map[node7] = {AXEventGenerator::Event::IGNORED_CHANGED};
+
+  for (const auto& targeted_event : event_generator) {
+    auto map_iter = expected_event_map.find(targeted_event.node);
+
+    ASSERT_NE(map_iter, expected_event_map.end())
+        << "|expected_event_map| contains node.id=" << targeted_event.node->id()
+        << "\nExpected: true"
+        << "\nActual: " << std::boolalpha
+        << (map_iter != expected_event_map.end());
+
+    std::set<AXEventGenerator::Event>& node_events = map_iter->second;
+    auto event_iter = node_events.find(targeted_event.event_params.event);
+
+    ASSERT_NE(event_iter, node_events.end())
+        << "Event=" << targeted_event.event_params.event
+        << ", on node.id=" << targeted_event.node->id()
+        << " NOT found in |expected_event_map|";
+
+    // If the event from |event_generator| is found in |expected_event_map|,
+    // we want to delete the corresponding entry in |expected_event_map|.
+    node_events.erase(event_iter);
+    if (node_events.empty())
+      expected_event_map.erase(map_iter);
+  }
+
+  // We should expect |expected_event_map_| to be empty, when all the generated
+  // events match expected events.
+  EXPECT_TRUE(expected_event_map.empty());
+}
+
 TEST(AXEventGeneratorTest, LoadCompleteSameTree) {
   AXTreeUpdate initial_state;
   initial_state.root_id = 1;

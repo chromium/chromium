@@ -180,10 +180,8 @@ class AX_EXPORT AXEventGenerator : public AXTreeObserver {
   // Null |tree_| without accessing it or destroying it.
   void ReleaseTree();
 
-  Iterator begin() const {
-    return Iterator(tree_events_, tree_events_.begin());
-  }
-  Iterator end() const { return Iterator(tree_events_, tree_events_.end()); }
+  Iterator begin() const;
+  Iterator end() const;
 
   // Clear any previously added events.
   void ClearEvents();
@@ -200,6 +198,8 @@ class AX_EXPORT AXEventGenerator : public AXTreeObserver {
   void set_always_fire_load_complete(bool val) {
     always_fire_load_complete_ = val;
   }
+
+  void AddEventsForTesting(AXNode* node, const std::set<EventParams>& events);
 
  protected:
   // AXTreeObserver overrides.
