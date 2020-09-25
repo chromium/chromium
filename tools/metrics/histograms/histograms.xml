@@ -148276,8 +148276,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SafeBrowsing.ReferrerAttributionResult"
-    enum="SafeBrowsingAttributionResultTypes" expires_after="M85">
-  <owner>vakh@chromium.org</owner>
+    enum="SafeBrowsingAttributionResultTypes" expires_after="M90">
+  <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     The result of referrer attribution, including different types of success or
@@ -148287,8 +148287,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SafeBrowsing.ReferrerHasInvalidTabID" enum="BooleanInvalid"
-    expires_after="M85">
-  <owner>vakh@chromium.org</owner>
+    expires_after="M90">
+  <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     Number of times referrer attribution encounters an invalid tab ID. This is
@@ -148298,8 +148298,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SafeBrowsing.ReferrerURLChainSize" units="units"
-    expires_after="M85">
-  <owner>vakh@chromium.org</owner>
+    expires_after="M90">
+  <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     The length of referrer URL chain we get from referrer attribution. This is
