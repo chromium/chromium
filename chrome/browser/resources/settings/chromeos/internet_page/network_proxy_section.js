@@ -7,10 +7,6 @@
  * detail page. This element is responsible for setting 'Allow proxies for
  * shared networks'.
  */
-(function() {
-'use strict';
-
-const mojom = chromeos.networkConfig.mojom;
 
 Polymer({
   is: 'network-proxy-section',
@@ -63,12 +59,13 @@ Polymer({
    * @private
    */
   isShared_() {
+    const mojom = chromeos.networkConfig.mojom;
     return this.managedProperties.source == mojom.OncSource.kDevice ||
         this.managedProperties.source == mojom.OncSource.kDevicePolicy;
   },
 
   /**
-   * @return {!mojom.ManagedString|undefined}
+   * @return {!chromeos.networkConfig.mojom.ManagedString|undefined}
    * @private
    */
   getProxySettingsTypeProperty_() {
@@ -158,4 +155,3 @@ Polymer({
     this.$.allowShared.focus();
   },
 });
-})();

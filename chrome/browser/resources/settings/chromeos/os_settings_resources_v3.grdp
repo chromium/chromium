@@ -55,6 +55,11 @@
            use_base_dir="false"
            compress="false"
            type="BINDATA" />
+  <include name="IDR_OS_SETTINGS_NETWORK_PROXY_SECTION_M_JS"
+           file="${root_gen_dir}/chrome/browser/resources/settings/chromeos/internet_page/network_proxy_section.m.js"
+           use_base_dir="false"
+           compress="false"
+           type="BINDATA" />
   <include name="IDR_OS_SETTINGS_PERSONALIZATION_PAGE_M_JS"
            file="${root_gen_dir}/chrome/browser/resources/settings/chromeos/personalization_page/personalization_page.m.js"
            use_base_dir="false"
@@ -87,6 +92,11 @@
            use_base_dir="false"
            compress="false"
            type="BINDATA" />
+  <include name="IDR_OS_SETTINGS_EXTENSION_CONTROLLED_INDICATOR_M_JS"
+           file="${root_gen_dir}/chrome/browser/resources/settings/controls/extension_controlled_indicator.m.js"
+           use_base_dir="false"
+           compress="false"
+           type="BINDATA" />
   <include name="IDR_OS_SETTINGS_SETTINGS_RADIO_GROUP_M_JS"
            file="${root_gen_dir}/chrome/browser/resources/settings/controls/settings_radio_group.m.js"
            use_base_dir="false"
@@ -99,6 +109,11 @@
            type="BINDATA" />
   <include name="IDR_OS_SETTINGS_SETTINGS_DROPDOWN_MENU_M_JS"
            file="${root_gen_dir}/chrome/browser/resources/settings/controls/settings_dropdown_menu.m.js"
+           use_base_dir="false"
+           compress="false"
+           type="BINDATA" />
+  <include name="IDR_OS_SETTINGS_EXTENSION_CONTROL_BROWSER_PROXY_M_JS"
+           file="${root_gen_dir}/chrome/browser/resources/settings/extension_control_browser_proxy.m.js"
            use_base_dir="false"
            compress="false"
            type="BINDATA" />

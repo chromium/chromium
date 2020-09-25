@@ -189,7 +189,7 @@ js_type_check("closure_compile_module") {
     ":internet_page_browser_proxy.m",
     ":internet_shared_css.m",
 #    ":internet_subpage.m",
-#    ":network_proxy_section.m",
+    ":network_proxy_section.m",
 #    ":network_summary.m",
 #    ":network_summary_item.m",
 #    ":tether_connection_dialog.m"
@@ -285,7 +285,20 @@ js_library("internet_subpage.m") {
 js_library("network_proxy_section.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/internet_page/network_proxy_section.m.js" ]
   deps = [
-    # TODO: Fill those in.
+    ":internet_shared_css.m",
+    "//chrome/browser/resources/settings/chromeos:os_route.m",
+    "//chrome/browser/resources/settings/controls:extension_controlled_indicator.m",
+    "//chrome/browser/resources/settings/controls:settings_toggle_button.m",
+    "//chrome/browser/resources/settings/prefs:prefs_behavior.m",
+    "//chrome/browser/resources/settings:router.m",
+    "//third_party/polymer/v3_0/components-chromium/iron-flex-layout:iron-flex-layout-classes",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_components/chromeos/network:cr_policy_network_behavior_mojo.m",
+    "//ui/webui/resources/cr_components/chromeos/network:cr_policy_network_indicator_mojo.m",
+    "//ui/webui/resources/cr_components/chromeos/network:network_proxy.m",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
+    "//ui/webui/resources/js:i18n_behavior.m",
   ]
   extra_deps = [ ":network_proxy_section_module" ]
 }
@@ -377,6 +390,8 @@ polymer_modulizer("network_proxy_section") {
   js_file = "network_proxy_section.js"
   html_file = "network_proxy_section.html"
   html_type = "dom-module"
+  auto_imports = os_settings_auto_imports
+  namespace_rewrites = os_settings_namespace_rewrites
 }
 
 polymer_modulizer("network_summary") {
