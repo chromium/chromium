@@ -322,10 +322,6 @@ class BuildConfigGenerator extends DefaultTask {
             case 'androidx_test_uiautomator_uiautomator':
                 sb.append('  deps = [":androidx_test_runner_java"]\n')
                 break
-            case 'com_android_support_mediarouter_v7':
-                sb.append('  # https://crbug.com/1000382\n')
-                sb.append('  proguard_configs = ["support_mediarouter.flags"]\n')
-                break
             case 'androidx_mediarouter_mediarouter':
                 sb.append('  # https://crbug.com/1000382\n')
                 sb.append('  proguard_configs = ["androidx_mediarouter.flags"]\n')
@@ -350,7 +346,6 @@ class BuildConfigGenerator extends DefaultTask {
                 break
             case 'com_android_support_coordinatorlayout':
             case 'androidx_coordinatorlayout_coordinatorlayout':
-            case 'com_android_support_design':
                 sb.append('\n')
                 sb.append('  # Reduce binary size. https:crbug.com/954584\n')
                 sb.append('  ignore_proguard_configs = true\n')
@@ -460,8 +455,6 @@ class BuildConfigGenerator extends DefaultTask {
                 |  ]
                 |
                 |""".stripMargin())
-                // fallthrough
-            case 'com_android_support_preference_v7':
                 // Replace broad library -keep rules with a more limited set in
                 // chrome/android/java/proguard.flags instead.
                 sb.append('  ignore_proguard_configs = true\n')

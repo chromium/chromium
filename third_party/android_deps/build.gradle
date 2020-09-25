@@ -135,20 +135,7 @@ dependencies {
     compile "com.android.support:support-core-utils:${supportLibVersion}"
     compile "com.android.support:support-fragment:${supportLibVersion}"
 
-    // Support v7 libraries
-    compile "com.android.support:appcompat-v7:${supportLibVersion}"
-    compile "com.android.support:gridlayout-v7:${supportLibVersion}"
-    compile "com.android.support:mediarouter-v7:${supportLibVersion}"
-    compile "com.android.support:recyclerview-v7:${supportLibVersion}"
-    compile "com.android.support:cardview-v7:${supportLibVersion}"
-    compile "com.android.support:preference-v7:${supportLibVersion}"
-
-    compile "com.android.support:support-v13:${supportLibVersion}"
-
-    compile "com.android.support:preference-leanback-v17:${supportLibVersion}"
-
     compile "com.android.support:support-annotations:${supportLibVersion}"
-    compile "com.android.support:design:${supportLibVersion}"
 
     compile "com.android.support:asynclayoutinflater:${supportLibVersion}"
     compile "com.android.support:collections:${supportLibVersion}"

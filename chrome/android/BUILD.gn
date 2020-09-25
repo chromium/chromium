@@ -1154,12 +1154,6 @@ android_library("chrome_test_java") {
     "//third_party/android_deps:androidx_recyclerview_recyclerview_java",
     "//third_party/android_deps:androidx_test_runner_java",
     "//third_party/android_deps:androidx_viewpager_viewpager_java",
-    "//url:gurl_javatests",
-    "//url:origin_java",
-
-    # TODO (bjoyce): Remove recyclerview_v7 when espresso tests are migrated
-    # to androidx.
-    "//third_party/android_deps:com_android_support_recyclerview_v7_java",
     "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
     "//third_party/android_deps:espresso_java",
     "//third_party/android_deps:material_design_java",
@@ -1184,6 +1178,8 @@ android_library("chrome_test_java") {
     "//ui/android:ui_javatests",
     "//ui/base/mojom:mojom_java",
     "//url:gurl_java",
+    "//url:gurl_javatests",
+    "//url:origin_java",
     "//url/mojom:url_mojom_gurl_java",
   ]
 
