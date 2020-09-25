@@ -9,6 +9,7 @@
 
 #include "base/macros.h"
 #include "base/optional.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -41,6 +42,11 @@ class VIEWS_EXPORT Separator : public View {
 
   DISALLOW_COPY_AND_ASSIGN(Separator);
 };
+
+BEGIN_VIEW_BUILDER(VIEWS_EXPORT, Separator, View)
+VIEW_BUILDER_PROPERTY(SkColor, Color)
+VIEW_BUILDER_PROPERTY(int, PreferredHeight)
+END_VIEW_BUILDER(VIEWS_EXPORT, Separator)
 
 }  // namespace views
 

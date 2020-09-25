@@ -19,9 +19,7 @@ Separator::Separator() = default;
 Separator::~Separator() = default;
 
 SkColor Separator::GetColor() const {
-  if (overridden_color_ == true)
-    return overridden_color_.value();
-  return 0;
+  return overridden_color_.value_or(0);
 }
 
 void Separator::SetColor(SkColor color) {
