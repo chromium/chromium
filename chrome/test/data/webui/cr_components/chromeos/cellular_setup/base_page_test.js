@@ -16,8 +16,15 @@ suite('CrComponentsBasePageTest', function() {
     Polymer.dom.flush();
   });
 
-  test('Base test', function() {
+  test('Title is shown', function() {
+    basePage.title = 'Base page titile';
+    Polymer.dom.flush();
     const title = basePage.$$('#title');
     assertTrue(!!title);
+  });
+
+  test('Title is not shown', function() {
+    const title = basePage.$$('#title');
+    assertFalse(!!title);
   });
 });

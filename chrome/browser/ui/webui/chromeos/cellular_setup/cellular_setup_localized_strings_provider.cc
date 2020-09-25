@@ -21,7 +21,6 @@ constexpr webui::LocalizedString kLocalizedStringsWithoutPlaceholders[] = {
     {"activationCode", IDS_CELLULAR_SETUP_ESIM_PAGE_ACTIVATION_CODE},
     {"cancel", IDS_CANCEL},
     {"back", IDS_CELLULAR_SETUP_BACK_LABEL},
-    {"basePageTitle", IDS_CELLULAR_SETUP_BASE_PAGE_TITLE},
     {"done", IDS_CELLULAR_SETUP_DONE_LABEL},
     {"eSimFlowSetup", IDS_CELLULAR_SETUP_CELLULAR_SETUP_PAGE_ESIM_LABEL},
     {"eSimFlowSetupMessage",

@@ -315,9 +315,6 @@
   <message name="IDS_CELLULAR_SETUP_ESIM_PAGE_SCAN_QR_CODE" desc="Label for informing the user on ways to retrieve an eSim profile">
     Scan QR code using device camera or enter activation code provided by your carrier
   </message>
-  <message name="IDS_CELLULAR_SETUP_BASE_PAGE_TITLE" desc="Title for cellular setup flow dialog in ChromeOS settings">
-    Set up new network
-  </message>
   <message name="IDS_CELLULAR_SETUP_ESTABLISH_NETWORK_CONNECTION" desc="Message, informing user that a network connection is being established during cellular setup">
     Establishing network connection ...
   </message>

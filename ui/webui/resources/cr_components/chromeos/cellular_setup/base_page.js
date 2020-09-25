@@ -29,6 +29,14 @@ Polymer({
    * @private
    */
   getTitle_() {
-    return this.title || this.i18n('basePageTitle');
+    return this.title;
+  },
+
+  /**
+   * @returns {boolean}
+   * @private
+   */
+  isTitleShown_() {
+    return !!this.title;
   }
 });
