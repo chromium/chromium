@@ -1,21 +1,35 @@
 <style include="cr-hidden-style">
   :host {
     font-size: 12px;
-    max-width: 537px;
     white-space: pre;
+  }
+
+  :host([modules-enabled_]):host {
+    font-size: 13px;
+  }
+
+  :host(:not([modules-enabled_])):host {
+    max-width: 537px;
   }
 
   #container {
     align-items: center;
-    background-color: var(--cr-card-background-color);
-    border: 1px solid var(--ntp-border-color);
-    border-radius: 16px;
+    background-color: var(--ntp-background-override-color);
+    border: solid var(--ntp-border-color) 1px;
+    border-radius: 24px;
     box-sizing: border-box;
     color: var(--cr-primary-text-color);
     display: flex;
     flex-direction: row;
-    height: 32px;
-    padding: 0 16px;
+    height: 30px;
+    justify-content: center;
+    padding-inline-end: 8px;
+    padding-inline-start: 8px;
+  }
+
+  :host([modules-enabled_]) #container {
+    border-radius: 5px;
+    height: 48px;
   }
 
   a {
@@ -30,9 +44,12 @@
     outline: none;
   }
 
-  .image {
-    margin-inline-end: 8px;
-    margin-inline-start: -12px;
+  * + .image {
+    margin-inline-start: 8px;
+  }
+
+  .image + * {
+    margin-inline-start: 8px;
   }
 
   img {
@@ -40,6 +57,13 @@
     height: 24px;
     pointer-events: none;
     width: 24px;
+  }
+
+  :host([modules-enabled_]) img {
+    background-color: var(--google-grey-refresh-100);
+    height: 22px;
+    padding: 5px;
+    width: 22px;
   }
 
   @media (prefers-color-scheme: dark) {

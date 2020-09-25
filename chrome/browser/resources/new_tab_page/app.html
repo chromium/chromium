@@ -80,6 +80,15 @@
     width: var(--ntp-search-box-width);
   }
 
+  :host([modules-enabled_]) ntp-middle-slot-promo {
+    width: var(--ntp-search-box-width);
+  }
+
+  :host(:not([modules-enabled_])) ntp-middle-slot-promo {
+    bottom: 16px;
+    position: fixed;
+  }
+
   ntp-realbox {
     visibility: hidden;
   }
@@ -94,11 +103,7 @@
     --tile-hover-color: rgba(255, 255, 255, .1);
   }
 
-  ntp-middle-slot-promo {
-    bottom: 16px;
-    position: fixed;
-  }
-
+  ntp-middle-slot-promo + ntp-module-wrapper,
   ntp-module-wrapper + ntp-module-wrapper {
     margin-top: 24px;
   }

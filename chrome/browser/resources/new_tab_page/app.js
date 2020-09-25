@@ -191,6 +191,13 @@ class AppElement extends PolymerElement {
         computed: 'computeRealboxShown_(theme_)',
       },
 
+      /** @private */
+      modulesEnabled_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('modulesEnabled'),
+        reflectToAttribute: true,
+      },
+
       /**
        * If true, renders additional elements that were not deemed crucial to
        * to show up immediately on load.
@@ -732,6 +739,11 @@ class AppElement extends PolymerElement {
 
   /** @private */
   onMiddleSlotPromoLoaded_() {
+    // The promo is always shown when modules are enabled since it will not
+    // overlap with other elements.
+    if (this.modulesEnabled_) {
+      return;
+    }
     const onResize = () => {
       const promoElement = $$(this, 'ntp-middle-slot-promo');
       const hidePromo = this.$.mostVisited.getBoundingClientRect().bottom >=
