@@ -486,8 +486,7 @@ base::string16 PowerStatus::GetInlinedStatusString() const {
 }
 
 double PowerStatus::GetPreferredMinimumPower() const {
-  // TODO(b/160854398): Return the value from the proto once it's ready.
-  return 60.0;
+  return proto_.preferred_minimum_external_power();
 }
 
 PowerStatus::PowerStatus() {

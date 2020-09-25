@@ -283,4 +283,14 @@ TEST_F(PowerStatusTest, MissingBatteryTimeEstimates) {
   EXPECT_FALSE(time) << *time << " returned despite negative estimate";
 }
 
+TEST_F(PowerStatusTest, PreferredMinimumExternalPower) {
+  PowerSupplyProperties prop;
+  prop.set_external_power(PowerSupplyProperties::USB);
+  prop.set_battery_state(PowerSupplyProperties::NOT_PRESENT);
+  prop.set_preferred_minimum_external_power(23.45);
+  power_status_->SetProtoForTesting(prop);
+
+  EXPECT_EQ(23.45, power_status_->GetPreferredMinimumPower());
+}
+
 }  // namespace ash

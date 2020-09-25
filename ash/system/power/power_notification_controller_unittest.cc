@@ -271,6 +271,7 @@ TEST_F(PowerNotificationControllerTest,
       power_manager::PowerSupplyProperties_ExternalPower_AC);
   ac_connected.set_battery_state(
       power_manager::PowerSupplyProperties_BatteryState_NOT_PRESENT);
+  ac_connected.set_preferred_minimum_external_power(60.0);
   EXPECT_FALSE(MaybeShowUsbChargerNotification(ac_connected));
   EXPECT_EQ(0, message_center()->add_count());
   EXPECT_EQ(0, message_center()->remove_count());
@@ -281,6 +282,7 @@ TEST_F(PowerNotificationControllerTest,
       power_manager::PowerSupplyProperties_ExternalPower_USB);
   usb_connected.set_battery_state(
       power_manager::PowerSupplyProperties_BatteryState_NOT_PRESENT);
+  usb_connected.set_preferred_minimum_external_power(60.0);
   EXPECT_TRUE(MaybeShowUsbChargerNotification(usb_connected));
   EXPECT_EQ(1, message_center()->add_count());
   EXPECT_EQ(0, message_center()->remove_count());
