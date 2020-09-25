@@ -7,10 +7,13 @@
   await TestRunner.loadModule('sources_test_runner');
   await TestRunner.showPanel('sources');
 
+  const brokenSourceMap = {"version":3,"file":"a.js","sourceRoot":"","sources":["a.ts"],"names":[],"mappings":"AAAA;IACE,OAAO,CAAC,GAAG,CAAC,EAAE,CAAC,CAAC;AAClB,CAAC","sourcesContent":["function foo() {\n  console.log(42);\n}\n"]};
+  const sourceMapURL = 'data:application/json;base64,' + btoa(JSON.stringify(brokenSourceMap)+'\n');
+
   TestRunner.evaluateInPageAnonymously(`function foo() {
   console.log(42);
 }
-//# sourceMappingURL=${TestRunner.url('../resources/a.js.map')}
+//# sourceMappingURL=${sourceMapURL}
 //# sourceURL=foo.js`);
 
   let sourceFrame = await new Promise(resolve => SourcesTestRunner.showScriptSource('a.ts', resolve));
@@ -25,7 +28,7 @@
   let sourceMapRequested;
   let sourceMapRequest = new Promise(resolve => sourceMapRequested = resolve);
   Host.ResourceLoader.setLoadForTest(function(url, headers, callback){
-    if (url.endsWith('a.js.map')) {
+    if (url === sourceMapURL) {
       stopRequest = () => callback(false, [], "", {message:"<error message>"});
       sourceMapRequested();
       return;
@@ -36,7 +39,7 @@
   await TestRunner.evaluateInPageAnonymously(`function foo() {
   console.log(42);
 }
-//# sourceMappingURL=${TestRunner.url('../resources/a.js.map')}
+//# sourceMappingURL=${sourceMapURL}
 //# sourceURL=foo.js`);
 
   await Promise.all([SourcesTestRunner.waitBreakpointSidebarPane(true), sourceMapRequest]);
