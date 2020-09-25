@@ -531,6 +531,18 @@ Polymer({
   },
 
   /**
+   * Return the sorted devices based on the connected statuses, connected
+   * devices are first followed by non-connected devices.
+   *
+   * @param {!Array<!chrome.bluetooth.Device>} devices
+   * @return {!Array<!chrome.bluetooth.Device>}
+   * @private
+   */
+  sortDevices_(devices) {
+    return devices.sort((a, b) => a.connected ? -1 : (b.connected ? 1 : 0));
+  },
+
+  /**
    * Requests bluetooth device list from Chrome. Update deviceList_ once the
    * results are returned from chrome.
    * @private
@@ -541,7 +553,7 @@ Polymer({
       limit: MAX_NUMBER_DEVICE_SHOWN
     };
     this.bluetooth.getDevices(filter, devices => {
-      this.deviceList_ = devices;
+      this.deviceList_ = this.sortDevices_(devices);
 
       // Check if we have yet to focus a deep-linked element.
       if (!this.pendingSettingId_) {
