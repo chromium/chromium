@@ -13,10 +13,17 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "chrome/renderer/safe_browsing/features.h"
 #include "components/safe_browsing/content/password_protection/visual_utils.h"
 #include "components/safe_browsing/core/proto/client_model.pb.h"
+#include "components/safe_browsing/core/proto/csd.pb.h"
+#include "content/public/renderer/render_thread.h"
 #include "crypto/sha2.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+
+namespace safe_browsing {
 
 namespace {
 // Enum used to keep stats about the status of the Scorer creation.
@@ -35,9 +42,38 @@ void RecordScorerCreationStatus(ScorerCreationStatus status) {
                             status,
                             SCORER_STATUS_MAX);
 }
-}  // namespace
 
-namespace safe_browsing {
+std::unique_ptr<ClientPhishingRequest> GetMatchingVisualTargetsHelper(
+    const SkBitmap& bitmap,
+    const ClientSideModel& model,
+    std::unique_ptr<ClientPhishingRequest> request) {
+  DCHECK(!content::RenderThread::IsMainThread());
+  for (const VisualTarget& target : model.vision_model().targets()) {
+    base::Optional<VisionMatchResult> result =
+        visual_utils::IsVisualMatch(bitmap, target);
+    if (result.has_value()) {
+      *request->add_vision_match() = result.value();
+    }
+  }
+
+  if (model.has_vision_model()) {
+    // Populate these fields for telementry purposes. They will be filtered in
+    // the browser process if they are not needed.
+    VisualFeatures::BlurredImage blurred_image;
+    if (visual_utils::GetBlurredImage(bitmap, &blurred_image)) {
+      std::string raw_digest = crypto::SHA256HashString(blurred_image.data());
+      request->set_screenshot_digest(
+          base::HexEncode(raw_digest.data(), raw_digest.size()));
+      request->set_screenshot_phash(
+          visual_utils::GetHashFromBlurredImage(blurred_image));
+      request->set_phash_dimension_size(48);
+    }
+  }
+
+  return request;
+}
+
+}  // namespace
 
 // Helper function which converts log odds to a probability in the range
 // [0.0,1.0].
@@ -86,33 +122,19 @@ double Scorer::ComputeScore(const FeatureMap& features) const {
   return LogOdds2Prob(logodds);
 }
 
-bool Scorer::GetMatchingVisualTargets(const SkBitmap& bitmap,
-                                      ClientPhishingRequest* request) const {
-  bool has_match = false;
-  for (const VisualTarget& target : model_.vision_model().targets()) {
-    base::Optional<VisionMatchResult> result =
-        visual_utils::IsVisualMatch(bitmap, target);
-    if (result.has_value()) {
-      *request->add_vision_match() = result.value();
-      has_match = true;
-    }
-  }
+void Scorer::GetMatchingVisualTargets(
+    const SkBitmap& bitmap,
+    std::unique_ptr<ClientPhishingRequest> request,
+    base::OnceCallback<void(std::unique_ptr<ClientPhishingRequest>)> callback)
+    const {
+  DCHECK(content::RenderThread::IsMainThread());
 
-  if (model_.has_vision_model()) {
-    // Populate these fields for telementry purposes. They will be filtered in
-    // the browser process if they are not needed.
-    VisualFeatures::BlurredImage blurred_image;
-    if (visual_utils::GetBlurredImage(bitmap, &blurred_image)) {
-      std::string raw_digest = crypto::SHA256HashString(blurred_image.data());
-      request->set_screenshot_digest(
-          base::HexEncode(raw_digest.data(), raw_digest.size()));
-      request->set_screenshot_phash(
-          visual_utils::GetHashFromBlurredImage(blurred_image));
-      request->set_phash_dimension_size(48);
-    }
-  }
-
-  return has_match;
+  // Perform scoring off the main thread to avoid blocking.
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::WithBaseSyncPrimitives()},
+      base::BindOnce(&GetMatchingVisualTargetsHelper, bitmap, model_,
+                     std::move(request)),
+      std::move(callback));
 }
 
 int Scorer::model_version() const {

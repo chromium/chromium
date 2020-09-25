@@ -121,18 +121,23 @@ class PhishingClassifier {
   // non-phishy verdict.
   void VisualExtractionFinished(bool success);
 
+  // Callback when visual features have been scored and compared against the
+  // model.
+  void OnVisualTargetsMatched(std::unique_ptr<ClientPhishingRequest> verdict);
+
   // Helper method to run the DoneCallback and clear the state.
   void RunCallback(const ClientPhishingRequest& verdict);
 
   // Helper to run the DoneCallback when feature extraction has failed.
-  // This always signals a non-phishy verdict for the page, with kInvalidScore.
+  // This always signals a non-phishy verdict for the page, with
+  // |kInvalidScore|.
   void RunFailureCallback();
 
   // Clears the current state of the PhishingClassifier.
   void Clear();
 
   content::RenderFrame* render_frame_;  // owns us
-  const Scorer* scorer_;  // owned by the caller
+  const Scorer* scorer_;                // owned by the caller
   std::unique_ptr<PhishingUrlFeatureExtractor> url_extractor_;
   std::unique_ptr<PhishingDOMFeatureExtractor> dom_extractor_;
   std::unique_ptr<PhishingTermFeatureExtractor> term_extractor_;
@@ -143,6 +148,9 @@ class PhishingClassifier {
   const base::string16* page_text_;  // owned by the caller
   std::unique_ptr<SkBitmap> bitmap_;
   DoneCallback done_callback_;
+
+  // Used to record the duration of visual feature scoring.
+  base::TimeTicks visual_matching_start_;
 
   // Used in scheduling BeginFeatureExtraction tasks.
   // These pointers are invalidated if classification is cancelled.
