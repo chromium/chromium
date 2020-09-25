@@ -10,6 +10,7 @@
 #include "components/autofill/core/common/mojom/autofill_types.mojom-forward.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
 #include "ui/gfx/native_widget_types.h"
+#include "url/gurl.h"
 
 namespace password_manager {
 class PasswordManagerDriver;
@@ -62,6 +63,9 @@ class AllPasswordsBottomSheetController
   // Called from the view when the user dismisses the BottomSheet
   // consumes |dismissal_callback|.
   void OnDismiss();
+
+  // Returns the last committed URL of the frame from |driver_|.
+  const GURL& GetFrameUrl();
 
  private:
   // The controller takes |view_| ownership.

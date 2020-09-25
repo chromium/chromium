@@ -86,3 +86,7 @@ void AllPasswordsBottomSheetController::OnCredentialSelected(
 void AllPasswordsBottomSheetController::OnDismiss() {
   std::move(dismissal_callback_).Run();
 }
+
+const GURL& AllPasswordsBottomSheetController::GetFrameUrl() {
+  return driver_->GetLastCommittedURL();
+}

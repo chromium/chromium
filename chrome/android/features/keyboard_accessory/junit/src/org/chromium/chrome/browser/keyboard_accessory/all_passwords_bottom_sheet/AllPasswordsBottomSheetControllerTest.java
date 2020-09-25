@@ -26,6 +26,9 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.keyboard_accessory.all_passwords_bottom_sheet.AllPasswordsBottomSheetProperties.ItemType;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogProperties;
+import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonType;
 import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -49,16 +52,21 @@ public class AllPasswordsBottomSheetControllerTest {
     @Mock
     private AllPasswordsBottomSheetCoordinator.Delegate mMockDelegate;
 
+    @Mock
+    private ModalDialogManager mModalDialogManager;
+
     private AllPasswordsBottomSheetMediator mMediator;
     private PropertyModel mModel;
+    private PropertyModel mModalDialogModel;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mMediator = new AllPasswordsBottomSheetMediator();
+        mModalDialogModel = getModalDialogModel(mMediator);
         mModel = AllPasswordsBottomSheetProperties.createDefaultModel(
                 mMediator::onDismissed, mMediator::onQueryTextChange);
-        mMediator.initialize(mMockDelegate, mModel);
+        mMediator.initialize(mModalDialogManager, mModalDialogModel, mMockDelegate, mModel);
     }
 
     @Test
@@ -69,14 +77,32 @@ public class AllPasswordsBottomSheetControllerTest {
     }
 
     @Test
-    public void testShowCredentialsSetsVisibile() {
-        mMediator.showCredentials(TEST_CREDENTIALS, IS_PASSWORD_FIELD);
+    public void testWarningModalDialog() {
+        mMediator.setCredentials(TEST_CREDENTIALS, IS_PASSWORD_FIELD);
+        mMediator.warnAndShow();
+        verify(mModalDialogManager)
+                .showDialog(mModalDialogModel, ModalDialogManager.ModalDialogType.APP);
+    }
+
+    @Test
+    public void testBottomSheetIsShowingIfWarningAccepted() {
+        mMediator.setCredentials(TEST_CREDENTIALS, IS_PASSWORD_FIELD);
+        mMediator.onClick(mModalDialogModel, ModalDialogProperties.ButtonType.POSITIVE);
         assertThat(mModel.get(VISIBLE), is(true));
     }
 
     @Test
+    public void testBottomSheetNotShowingIfWarningDismissed() {
+        mMediator.setCredentials(TEST_CREDENTIALS, IS_PASSWORD_FIELD);
+        mMediator.onClick(mModalDialogModel, ButtonType.NEGATIVE);
+        assertThat(mModel.get(VISIBLE), is(false));
+    }
+
+    @Test
     public void testShowCredentialSetsCredentialListModel() {
-        mMediator.showCredentials(TEST_CREDENTIALS, IS_PASSWORD_FIELD);
+        mMediator.setCredentials(TEST_CREDENTIALS, IS_PASSWORD_FIELD);
+        mMediator.onClick(mModalDialogModel, ModalDialogProperties.ButtonType.POSITIVE);
+
         ListModel<ListItem> itemList = mModel.get(SHEET_ITEMS);
         assertThat(itemList.size(), is(3));
 
@@ -90,7 +116,8 @@ public class AllPasswordsBottomSheetControllerTest {
 
     @Test
     public void testOnCredentialSelected() {
-        mMediator.showCredentials(TEST_CREDENTIALS, IS_PASSWORD_FIELD);
+        mMediator.setCredentials(TEST_CREDENTIALS, IS_PASSWORD_FIELD);
+        mMediator.onClick(mModalDialogModel, ModalDialogProperties.ButtonType.POSITIVE);
         mMediator.onCredentialSelected(TEST_CREDENTIALS[1]);
         assertThat(mModel.get(VISIBLE), is(false));
         verify(mMockDelegate).onCredentialSelected(TEST_CREDENTIALS[1]);
@@ -98,7 +125,8 @@ public class AllPasswordsBottomSheetControllerTest {
 
     @Test
     public void testOnDismiss() {
-        mMediator.showCredentials(TEST_CREDENTIALS, IS_PASSWORD_FIELD);
+        mMediator.setCredentials(TEST_CREDENTIALS, IS_PASSWORD_FIELD);
+        mMediator.onClick(mModalDialogModel, ModalDialogProperties.ButtonType.POSITIVE);
         mMediator.onDismissed(BottomSheetController.StateChangeReason.BACK_PRESS);
         assertThat(mModel.get(VISIBLE), is(false));
         verify(mMockDelegate).onDismissed();
@@ -106,15 +134,24 @@ public class AllPasswordsBottomSheetControllerTest {
 
     @Test
     public void testSearchFilterByUsername() {
-        mMediator.showCredentials(TEST_CREDENTIALS, IS_PASSWORD_FIELD);
+        mMediator.setCredentials(TEST_CREDENTIALS, IS_PASSWORD_FIELD);
+        mMediator.onClick(mModalDialogModel, ModalDialogProperties.ButtonType.POSITIVE);
         mMediator.onQueryTextChange("Bob");
         assertThat(mModel.get(SHEET_ITEMS).size(), is(1));
     }
 
     @Test
     public void testSearchFilterByURL() {
-        mMediator.showCredentials(TEST_CREDENTIALS, IS_PASSWORD_FIELD);
+        mMediator.setCredentials(TEST_CREDENTIALS, IS_PASSWORD_FIELD);
+        mMediator.onClick(mModalDialogModel, ModalDialogProperties.ButtonType.POSITIVE);
         mMediator.onQueryTextChange("subdomain");
         assertThat(mModel.get(SHEET_ITEMS).size(), is(1));
+    }
+
+    private PropertyModel getModalDialogModel(AllPasswordsBottomSheetMediator mediator) {
+        return new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
+                .with(ModalDialogProperties.CONTROLLER, mediator)
+                .with(ModalDialogProperties.FILTER_TOUCH_FOR_SECURITY, true)
+                .build();
     }
 }

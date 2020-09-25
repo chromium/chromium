@@ -18,19 +18,20 @@ class AllPasswordsBottomSheetBridge implements AllPasswordsBottomSheetCoordinato
     private Credential[] mCredentials;
     private final AllPasswordsBottomSheetCoordinator mAllPasswordsBottomSheetCoordinator;
 
-    private AllPasswordsBottomSheetBridge(long nativeView, WindowAndroid windowAndroid) {
+    private AllPasswordsBottomSheetBridge(
+            long nativeView, WindowAndroid windowAndroid, String origin) {
         mNativeView = nativeView;
         assert (mNativeView != 0);
         assert (windowAndroid.getActivity().get() != null);
         mAllPasswordsBottomSheetCoordinator = new AllPasswordsBottomSheetCoordinator();
         mAllPasswordsBottomSheetCoordinator.initialize(windowAndroid.getActivity().get(),
-                BottomSheetControllerProvider.from(windowAndroid), this);
+                BottomSheetControllerProvider.from(windowAndroid), this, origin);
     }
 
     @CalledByNative
     private static AllPasswordsBottomSheetBridge create(
-            long nativeView, WindowAndroid windowAndroid) {
-        return new AllPasswordsBottomSheetBridge(nativeView, windowAndroid);
+            long nativeView, WindowAndroid windowAndroid, String origin) {
+        return new AllPasswordsBottomSheetBridge(nativeView, windowAndroid, origin);
     }
 
     @CalledByNative

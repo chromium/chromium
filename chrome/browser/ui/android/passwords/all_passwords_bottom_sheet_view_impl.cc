@@ -99,5 +99,7 @@ AllPasswordsBottomSheetViewImpl::GetOrCreateJavaObject() {
   }
   return java_object_internal_ = Java_AllPasswordsBottomSheetBridge_create(
              AttachCurrentThread(), reinterpret_cast<intptr_t>(this),
-             controller_->GetNativeView()->GetWindowAndroid()->GetJavaObject());
+             controller_->GetNativeView()->GetWindowAndroid()->GetJavaObject(),
+             ConvertUTF8ToJavaString(AttachCurrentThread(),
+                                     controller_->GetFrameUrl().spec()));
 }

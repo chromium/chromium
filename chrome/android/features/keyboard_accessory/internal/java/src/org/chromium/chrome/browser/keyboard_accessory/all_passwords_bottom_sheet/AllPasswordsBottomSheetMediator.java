@@ -7,6 +7,9 @@ package org.chromium.chrome.browser.keyboard_accessory.all_passwords_bottom_shee
 import static org.chromium.chrome.browser.keyboard_accessory.all_passwords_bottom_sheet.AllPasswordsBottomSheetProperties.SHEET_ITEMS;
 import static org.chromium.chrome.browser.keyboard_accessory.all_passwords_bottom_sheet.AllPasswordsBottomSheetProperties.VISIBLE;
 
+import org.chromium.ui.modaldialog.DialogDismissalCause;
+import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -17,19 +20,42 @@ import java.util.Locale;
  * Contains the logic for the AllPasswordsBottomSheet. It sets the state of the model and reacts to
  * events like clicks.
  */
-class AllPasswordsBottomSheetMediator {
+class AllPasswordsBottomSheetMediator implements ModalDialogProperties.Controller {
     private AllPasswordsBottomSheetCoordinator.Delegate mDelegate;
     private PropertyModel mModel;
     private Credential[] mCredentials;
     private boolean mIsPasswordField;
+    private ModalDialogManager mModalDialogManager;
+    private PropertyModel mDialogModel;
 
-    void initialize(AllPasswordsBottomSheetCoordinator.Delegate delegate, PropertyModel model) {
+    @Override
+    public void onClick(PropertyModel model, int buttonType) {
+        int dismissalCause = DialogDismissalCause.NEGATIVE_BUTTON_CLICKED;
+        if (buttonType == ModalDialogProperties.ButtonType.POSITIVE) {
+            showCredentials();
+            dismissalCause = DialogDismissalCause.POSITIVE_BUTTON_CLICKED;
+        }
+        mModalDialogManager.dismissDialog(mDialogModel, dismissalCause);
+    }
+
+    @Override
+    public void onDismiss(PropertyModel model, int dismissalCause) {
+        if (dismissalCause == DialogDismissalCause.NEGATIVE_BUTTON_CLICKED) {
+            mDelegate.onDismissed();
+        }
+    }
+
+    void initialize(ModalDialogManager modalDialogManager, PropertyModel dialogModel,
+            AllPasswordsBottomSheetCoordinator.Delegate delegate, PropertyModel model) {
         assert delegate != null;
+        assert dialogModel != null;
+        mModalDialogManager = modalDialogManager;
+        mDialogModel = dialogModel;
         mDelegate = delegate;
         mModel = model;
     }
 
-    void showCredentials(Credential[] credentials, boolean isPasswordField) {
+    void setCredentials(Credential[] credentials, boolean isPasswordField) {
         assert credentials != null;
         mCredentials = credentials;
         mIsPasswordField = isPasswordField;
@@ -41,11 +67,17 @@ class AllPasswordsBottomSheetMediator {
             if (credential.getPassword().isEmpty() && isPasswordField) continue;
             final PropertyModel model =
                     AllPasswordsBottomSheetProperties.CredentialProperties.createCredentialModel(
-                            credential, this::onCredentialSelected, isPasswordField);
+                            credential, this::onCredentialSelected, mIsPasswordField);
             sheetItems.add(
                     new ListItem(AllPasswordsBottomSheetProperties.ItemType.CREDENTIAL, model));
         }
+    }
 
+    void warnAndShow() {
+        mModalDialogManager.showDialog(mDialogModel, ModalDialogManager.ModalDialogType.APP);
+    }
+
+    private void showCredentials() {
         mModel.set(VISIBLE, true);
     }
 
