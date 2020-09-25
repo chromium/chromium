@@ -42,6 +42,7 @@
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/textfield/textfield_model.h"
 #include "ui/views/drag_controller.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/selection_controller.h"
 #include "ui/views/selection_controller_delegate.h"
 #include "ui/views/view.h"
@@ -736,6 +737,23 @@ class VIEWS_EXPORT Textfield : public View,
 
   DISALLOW_COPY_AND_ASSIGN(Textfield);
 };
+
+BEGIN_VIEW_BUILDER(VIEWS_EXPORT, Textfield, View)
+VIEW_BUILDER_PROPERTY(bool, ReadOnly)
+VIEW_BUILDER_PROPERTY(base::string16, Text)
+VIEW_BUILDER_PROPERTY(ui::TextInputType, TextInputType)
+VIEW_BUILDER_PROPERTY(int, TextInputFlags)
+VIEW_BUILDER_PROPERTY(SkColor, TextColor)
+VIEW_BUILDER_PROPERTY(SkColor, SelectionTextColor)
+VIEW_BUILDER_PROPERTY(SkColor, BackgroundColor)
+VIEW_BUILDER_PROPERTY(SkColor, SelectionBackgroundColor)
+VIEW_BUILDER_PROPERTY(bool, CursorEnabled)
+VIEW_BUILDER_PROPERTY(base::string16, PlaceholderText)
+VIEW_BUILDER_PROPERTY(bool, Invalid)
+VIEW_BUILDER_PROPERTY(gfx::HorizontalAlignment, HorizontalAlignment)
+VIEW_BUILDER_PROPERTY(gfx::Range, SelectedRange)
+VIEW_BUILDER_PROPERTY(base::string16, AccessibleName)
+END_VIEW_BUILDER(VIEWS_EXPORT, Textfield)
 
 }  // namespace views
 
