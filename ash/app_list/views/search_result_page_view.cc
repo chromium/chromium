@@ -179,7 +179,7 @@ SearchResultPageView::SearchResultPageView(SearchModel* search_model)
   view_shadow_ =
       std::make_unique<ViewShadow>(this, kSearchBoxSearchResultShadowElevation);
   view_shadow_->SetRoundedCornerRadius(
-      search_box::kSearchBoxBorderCornerRadiusSearchResult);
+      kSearchBoxBorderCornerRadiusSearchResult);
 
   // Hides this view behind the search box by using the same color and
   // background border corner radius. All child views' background should be

@@ -9,16 +9,16 @@
 #include "base/macros.h"
 #include "base/strings/string16.h"
 
-namespace search_box {
+namespace ash {
 class SearchBoxViewDelegate;
-}  // namespace search_box
+}  // namespace ash
 
 namespace keyboard_shortcut_viewer {
 
 // A search_box_SearchBoxViewBase implementation for KeyboardShortcutViewer.
-class KSVSearchBoxView : public search_box::SearchBoxViewBase {
+class KSVSearchBoxView : public ash::SearchBoxViewBase {
  public:
-  explicit KSVSearchBoxView(search_box::SearchBoxViewDelegate* delegate);
+  explicit KSVSearchBoxView(ash::SearchBoxViewDelegate* delegate);
   ~KSVSearchBoxView() override = default;
 
   // views::View:
@@ -32,7 +32,7 @@ class KSVSearchBoxView : public search_box::SearchBoxViewBase {
   void SetAccessibleValue(const base::string16& value);
 
  private:
-  // search_box::SearchBoxViewBase:
+  // SearchBoxViewBase:
   void UpdateBackgroundColor(SkColor color) override;
   void UpdateSearchBoxBorder() override;
   void SetupCloseButton() override;

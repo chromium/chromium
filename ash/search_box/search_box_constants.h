@@ -5,38 +5,36 @@
 #ifndef ASH_SEARCH_BOX_SEARCH_BOX_CONSTANTS_H_
 #define ASH_SEARCH_BOX_SEARCH_BOX_CONSTANTS_H_
 
-#include "ash/search_box/search_box_export.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/color_palette.h"
 
-namespace search_box {
+namespace ash {
 
 // Default color used when wallpaper customized color is not available for
 // searchbox, #000 at 87% opacity.
-SEARCH_BOX_EXPORT constexpr SkColor kDefaultSearchboxColor =
-    gfx::kGoogleGrey200;
+constexpr SkColor kDefaultSearchboxColor = gfx::kGoogleGrey200;
 
 // The horizontal padding of the box layout of the search box.
-SEARCH_BOX_EXPORT constexpr int kPadding = 12;
+constexpr int kSearchBoxPadding = 12;
 
 // The default background color of the search box.
-SEARCH_BOX_EXPORT constexpr SkColor kSearchBoxBackgroundDefault = SK_ColorWHITE;
+constexpr SkColor kSearchBoxBackgroundDefault = SK_ColorWHITE;
 
 // The background border corner radius of the search box.
-SEARCH_BOX_EXPORT constexpr int kSearchBoxBorderCornerRadius = 24;
+constexpr int kSearchBoxBorderCornerRadius = 24;
 
 // The background border corner radius of the expanded search box.
-SEARCH_BOX_EXPORT constexpr int kSearchBoxBorderCornerRadiusSearchResult = 20;
+constexpr int kSearchBoxBorderCornerRadiusSearchResult = 20;
 
 // Preferred height of search box.
-SEARCH_BOX_EXPORT constexpr int kSearchBoxPreferredHeight = 48;
+constexpr int kSearchBoxPreferredHeight = 48;
 
 // The size of the icon in the search box.
-SEARCH_BOX_EXPORT constexpr int kIconSize = 24;
+constexpr int kSearchBoxIconSize = 24;
 
 // The size of the image button in the search box.
-SEARCH_BOX_EXPORT constexpr int kButtonSizeDip = 40;
+constexpr int kSearchBoxButtonSizeDip = 40;
 
-}  // namespace search_box
+}  // namespace ash
 
 #endif  // ASH_SEARCH_BOX_SEARCH_BOX_CONSTANTS_H_

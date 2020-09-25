@@ -2077,7 +2077,7 @@ TEST_F(AppListViewTest, SearchBoxCornerRadiusDuringDragging) {
   view_->OnGestureEvent(&update_event);
 
   EXPECT_TRUE(IsStateShown(ash::AppListState::kStateApps));
-  EXPECT_EQ(search_box::kSearchBoxBorderCornerRadius,
+  EXPECT_EQ(kSearchBoxBorderCornerRadius,
             search_box_view()->GetSearchBoxBorderCornerRadiusForState(
                 ash::AppListState::kStateApps));
 
@@ -2085,7 +2085,7 @@ TEST_F(AppListViewTest, SearchBoxCornerRadiusDuringDragging) {
   // during drag.
   EXPECT_TRUE(SetAppListState(ash::AppListState::kStateSearchResults));
   EXPECT_TRUE(view_->is_in_drag());
-  EXPECT_EQ(search_box::kSearchBoxBorderCornerRadius,
+  EXPECT_EQ(kSearchBoxBorderCornerRadius,
             search_box_view()->GetSearchBoxBorderCornerRadiusForState(
                 ash::AppListState::kStateSearchResults));
   histogram_tester.ExpectTotalCount(
@@ -2105,7 +2105,7 @@ TEST_F(AppListViewTest, SearchBoxCornerRadiusDuringDragging) {
   // Search box should keep |kSearchBoxCornerRadiusFullscreen| corner radius
   // if launcher drag finished.
   EXPECT_FALSE(view_->is_in_drag());
-  EXPECT_EQ(search_box::kSearchBoxBorderCornerRadius,
+  EXPECT_EQ(kSearchBoxBorderCornerRadius,
             search_box_view()->GetSearchBoxBorderCornerRadiusForState(
                 ash::AppListState::kStateApps));
   histogram_tester.ExpectTotalCount(

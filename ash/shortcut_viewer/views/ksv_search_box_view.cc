@@ -30,8 +30,8 @@ constexpr int kBorderCornerRadius = 32;
 
 }  // namespace
 
-KSVSearchBoxView::KSVSearchBoxView(search_box::SearchBoxViewDelegate* delegate)
-    : search_box::SearchBoxViewBase(delegate) {
+KSVSearchBoxView::KSVSearchBoxView(ash::SearchBoxViewDelegate* delegate)
+    : ash::SearchBoxViewBase(delegate) {
   SetSearchBoxBackgroundCornerRadius(kBorderCornerRadius);
   UpdateBackgroundColor(kDefaultSearchBoxBackgroundColor);
   search_box()->SetBackgroundColor(SK_ColorTRANSPARENT);

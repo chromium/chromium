@@ -107,7 +107,7 @@ void AssistantMainView::OnUiVisibilityChanged(
 }
 
 void AssistantMainView::InitLayout() {
-  constexpr int radius = search_box::kSearchBoxBorderCornerRadiusSearchResult;
+  constexpr int radius = kSearchBoxBorderCornerRadiusSearchResult;
 
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);

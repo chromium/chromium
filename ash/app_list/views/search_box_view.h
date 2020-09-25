@@ -25,14 +25,14 @@ class AppListViewDelegate;
 class ContentsView;
 class SearchModel;
 
-// Subclass of search_box::SearchBoxViewBase. SearchBoxModel is its data model
+// Subclass of SearchBoxViewBase. SearchBoxModel is its data model
 // that controls what icon to display, what placeholder text to use for
 // Textfield. The text and selection model part could be set to change the
 // contents and selection model of the Textfield.
-class APP_LIST_EXPORT SearchBoxView : public search_box::SearchBoxViewBase,
+class APP_LIST_EXPORT SearchBoxView : public SearchBoxViewBase,
                                       public SearchBoxModelObserver {
  public:
-  SearchBoxView(search_box::SearchBoxViewDelegate* delegate,
+  SearchBoxView(SearchBoxViewDelegate* delegate,
                 AppListViewDelegate* view_delegate,
                 AppListView* app_list_view = nullptr);
   ~SearchBoxView() override;
@@ -48,7 +48,7 @@ class APP_LIST_EXPORT SearchBoxView : public search_box::SearchBoxViewBase,
   // Returns the total focus ring spacing for use in folders.
   static int GetFocusRingSpacing();
 
-  // Overridden from search_box::SearchBoxViewBase:
+  // Overridden from SearchBoxViewBase:
   void ClearSearch() override;
   views::View* GetSelectedViewInContentsView() override;
   void HandleSearchBoxEvent(ui::LocatedEvent* located_event) override;

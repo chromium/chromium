@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "ash/search_box/search_box_constants.h"
-#include "ash/search_box/search_box_export.h"
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/strings/string16.h"
@@ -29,7 +28,7 @@ class Textfield;
 class View;
 }  // namespace views
 
-namespace search_box {
+namespace ash {
 
 class SearchBoxViewDelegate;
 class SearchBoxImageButton;
@@ -51,9 +50,9 @@ enum class ActivationSource {
 // inputting queries and triggering callbacks. The icons include a search icon,
 // a close icon and a back icon for different functionalities. This class
 // provides common functions for the search box view across Chrome OS.
-class SEARCH_BOX_EXPORT SearchBoxViewBase : public views::WidgetDelegateView,
-                                            public views::TextfieldController,
-                                            public views::ButtonListener {
+class SearchBoxViewBase : public views::WidgetDelegateView,
+                          public views::TextfieldController,
+                          public views::ButtonListener {
  public:
   explicit SearchBoxViewBase(SearchBoxViewDelegate* delegate);
   ~SearchBoxViewBase() override;
@@ -218,6 +217,6 @@ class SEARCH_BOX_EXPORT SearchBoxViewBase : public views::WidgetDelegateView,
   DISALLOW_COPY_AND_ASSIGN(SearchBoxViewBase);
 };
 
-}  // namespace search_box
+}  // namespace ash
 
 #endif  // ASH_SEARCH_BOX_SEARCH_BOX_VIEW_BASE_H_

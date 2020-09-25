@@ -64,7 +64,7 @@ class KeyPressCounterView : public ContentsView {
 };
 
 class SearchBoxViewTest : public views::test::WidgetTest,
-                          public search_box::SearchBoxViewDelegate {
+                          public SearchBoxViewDelegate {
  public:
   SearchBoxViewTest() = default;
   ~SearchBoxViewTest() override = default;
@@ -168,15 +168,15 @@ class SearchBoxViewTest : public views::test::WidgetTest,
 
  private:
   // Overridden from SearchBoxViewDelegate:
-  void QueryChanged(search_box::SearchBoxViewBase* sender) override {
+  void QueryChanged(SearchBoxViewBase* sender) override {
     ++query_changed_count_;
     last_query_ = sender->search_box()->GetText();
   }
 
   void AssistantButtonPressed() override {}
   void BackButtonPressed() override {}
-  void ActiveChanged(search_box::SearchBoxViewBase* sender) override {}
-  void SearchBoxFocusChanged(search_box::SearchBoxViewBase* sender) override {}
+  void ActiveChanged(SearchBoxViewBase* sender) override {}
+  void SearchBoxFocusChanged(SearchBoxViewBase* sender) override {}
 
   AppListTestViewDelegate view_delegate_;
   views::Widget* widget_;
@@ -255,9 +255,8 @@ TEST_F(SearchBoxViewTest, SearchBoxInactiveByDefault) {
 TEST_F(SearchBoxViewTest, SearchBoxInactiveSearchBoxGoogle) {
   SetSearchEngineIsGoogle(true);
   SetSearchBoxActive(false, ui::ET_UNKNOWN);
-  const gfx::ImageSkia expected_icon =
-      gfx::CreateVectorIcon(kGoogleBlackIcon, search_box::kIconSize,
-                            search_box::kDefaultSearchboxColor);
+  const gfx::ImageSkia expected_icon = gfx::CreateVectorIcon(
+      kGoogleBlackIcon, kSearchBoxIconSize, kDefaultSearchboxColor);
   view()->ModelChanged();
 
   const gfx::ImageSkia actual_icon =
@@ -271,9 +270,8 @@ TEST_F(SearchBoxViewTest, SearchBoxInactiveSearchBoxGoogle) {
 TEST_F(SearchBoxViewTest, SearchBoxActiveSearchEngineGoogle) {
   SetSearchEngineIsGoogle(true);
   SetSearchBoxActive(true, ui::ET_MOUSE_PRESSED);
-  const gfx::ImageSkia expected_icon =
-      gfx::CreateVectorIcon(kGoogleColorIcon, search_box::kIconSize,
-                            search_box::kDefaultSearchboxColor);
+  const gfx::ImageSkia expected_icon = gfx::CreateVectorIcon(
+      kGoogleColorIcon, kSearchBoxIconSize, kDefaultSearchboxColor);
   view()->ModelChanged();
 
   const gfx::ImageSkia actual_icon =
@@ -287,9 +285,8 @@ TEST_F(SearchBoxViewTest, SearchBoxActiveSearchEngineGoogle) {
 TEST_F(SearchBoxViewTest, SearchBoxInactiveSearchEngineNotGoogle) {
   SetSearchEngineIsGoogle(false);
   SetSearchBoxActive(false, ui::ET_UNKNOWN);
-  const gfx::ImageSkia expected_icon =
-      gfx::CreateVectorIcon(kSearchEngineNotGoogleIcon, search_box::kIconSize,
-                            search_box::kDefaultSearchboxColor);
+  const gfx::ImageSkia expected_icon = gfx::CreateVectorIcon(
+      kSearchEngineNotGoogleIcon, kSearchBoxIconSize, kDefaultSearchboxColor);
   view()->ModelChanged();
 
   const gfx::ImageSkia actual_icon =
@@ -303,9 +300,8 @@ TEST_F(SearchBoxViewTest, SearchBoxInactiveSearchEngineNotGoogle) {
 TEST_F(SearchBoxViewTest, SearchBoxActiveSearchEngineNotGoogle) {
   SetSearchEngineIsGoogle(false);
   SetSearchBoxActive(true, ui::ET_UNKNOWN);
-  const gfx::ImageSkia expected_icon =
-      gfx::CreateVectorIcon(kSearchEngineNotGoogleIcon, search_box::kIconSize,
-                            search_box::kDefaultSearchboxColor);
+  const gfx::ImageSkia expected_icon = gfx::CreateVectorIcon(
+      kSearchEngineNotGoogleIcon, kSearchBoxIconSize, kDefaultSearchboxColor);
   view()->ModelChanged();
 
   const gfx::ImageSkia actual_icon =

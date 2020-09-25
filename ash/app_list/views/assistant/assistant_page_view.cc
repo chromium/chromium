@@ -427,7 +427,7 @@ void AssistantPageView::InitLayout() {
 
   view_shadow_ = std::make_unique<ViewShadow>(this, kShadowElevation);
   view_shadow_->SetRoundedCornerRadius(
-      search_box::kSearchBoxBorderCornerRadiusSearchResult);
+      kSearchBoxBorderCornerRadiusSearchResult);
 
   SetBackground(views::CreateSolidBackground(SK_ColorWHITE));
   SetLayoutManager(std::make_unique<AssistantPageViewLayout>(this));

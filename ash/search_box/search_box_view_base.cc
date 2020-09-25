@@ -33,7 +33,7 @@
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/widget/widget.h"
 
-namespace search_box {
+namespace ash {
 
 namespace {
 
@@ -95,7 +95,7 @@ class SearchBoxImageButton : public views::ImageButton {
     // InkDropState will reset after clicking.
     SetHasInkDropActionOnClick(true);
 
-    SetPreferredSize({kButtonSizeDip, kButtonSizeDip});
+    SetPreferredSize({kSearchBoxButtonSizeDip, kSearchBoxButtonSizeDip});
     SetImageHorizontalAlignment(ALIGN_CENTER);
     SetImageVerticalAlignment(ALIGN_MIDDLE);
 
@@ -244,7 +244,8 @@ SearchBoxViewBase::SearchBoxViewBase(SearchBoxViewDelegate* delegate)
 
   box_layout_ =
       content_container_->SetLayoutManager(std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kHorizontal, gfx::Insets(0, kPadding),
+          views::BoxLayout::Orientation::kHorizontal,
+          gfx::Insets(0, kSearchBoxPadding),
           kInnerPadding -
               views::LayoutProvider::Get()->GetDistanceMetric(
                   views::DISTANCE_TEXTFIELD_HORIZONTAL_TEXT_PADDING)));
@@ -274,7 +275,7 @@ SearchBoxViewBase::SearchBoxViewBase(SearchBoxViewDelegate* delegate)
 
   // An invisible space view to align |search_box_| to center.
   search_box_right_space_ = new views::View();
-  search_box_right_space_->SetPreferredSize(gfx::Size(kIconSize, 0));
+  search_box_right_space_->SetPreferredSize(gfx::Size(kSearchBoxIconSize, 0));
   content_container_->AddChildView(search_box_right_space_);
 
   assistant_button_ = new SearchBoxImageButton(this);
@@ -555,4 +556,4 @@ views::Background* SearchBoxViewBase::GetSearchBoxBackground() {
   return content_container_->background();
 }
 
-}  // namespace search_box
+}  // namespace ash

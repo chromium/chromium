@@ -307,7 +307,7 @@ void KeyboardShortcutView::OnPaint(gfx::Canvas* canvas) {
                                 weak_factory_.GetWeakPtr(), kAllCategories));
 }
 
-void KeyboardShortcutView::QueryChanged(search_box::SearchBoxViewBase* sender) {
+void KeyboardShortcutView::QueryChanged(ash::SearchBoxViewBase* sender) {
   const bool query_empty = sender->IsSearchBoxTrimmedQueryEmpty();
   if (is_search_box_empty_ != query_empty) {
     is_search_box_empty_ = query_empty;
@@ -333,8 +333,7 @@ void KeyboardShortcutView::BackButtonPressed() {
   search_box_view_->SetSearchBoxActive(false, ui::ET_UNKNOWN);
 }
 
-void KeyboardShortcutView::ActiveChanged(
-    search_box::SearchBoxViewBase* sender) {
+void KeyboardShortcutView::ActiveChanged(ash::SearchBoxViewBase* sender) {
   const bool is_search_box_active = sender->is_search_box_active();
   is_search_box_empty_ = sender->IsSearchBoxTrimmedQueryEmpty();
   sender->ShowBackOrGoogleIcon(is_search_box_active);

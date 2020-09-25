@@ -32,7 +32,7 @@ enum class ShortcutCategory;
 
 // The UI container for Ash and Chrome keyboard shortcuts.
 class KeyboardShortcutView : public views::WidgetDelegateView,
-                             public search_box::SearchBoxViewDelegate {
+                             public ash::SearchBoxViewDelegate {
  public:
   ~KeyboardShortcutView() override;
 
@@ -52,12 +52,12 @@ class KeyboardShortcutView : public views::WidgetDelegateView,
   gfx::Size CalculatePreferredSize() const override;
   void OnPaint(gfx::Canvas* canvas) override;
 
-  // search_box::SearchBoxViewDelegate:
-  void QueryChanged(search_box::SearchBoxViewBase* sender) override;
+  // SearchBoxViewDelegate:
+  void QueryChanged(ash::SearchBoxViewBase* sender) override;
   void AssistantButtonPressed() override {}
   void BackButtonPressed() override;
-  void ActiveChanged(search_box::SearchBoxViewBase* sender) override;
-  void SearchBoxFocusChanged(search_box::SearchBoxViewBase* sender) override {}
+  void ActiveChanged(ash::SearchBoxViewBase* sender) override;
+  void SearchBoxFocusChanged(ash::SearchBoxViewBase* sender) override {}
 
  private:
   friend class KeyboardShortcutViewTest;

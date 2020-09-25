@@ -5,13 +5,11 @@
 #ifndef ASH_SEARCH_BOX_SEARCH_BOX_VIEW_DELEGATE_H_
 #define ASH_SEARCH_BOX_SEARCH_BOX_VIEW_DELEGATE_H_
 
-#include "ash/search_box/search_box_export.h"
-
-namespace search_box {
+namespace ash {
 
 class SearchBoxViewBase;
 
-class SEARCH_BOX_EXPORT SearchBoxViewDelegate {
+class SearchBoxViewDelegate {
  public:
   // Invoked when query text has changed by the user.
   virtual void QueryChanged(SearchBoxViewBase* sender) = 0;
@@ -32,6 +30,6 @@ class SEARCH_BOX_EXPORT SearchBoxViewDelegate {
   virtual ~SearchBoxViewDelegate() {}
 };
 
-}  // namespace search_box
+}  // namespace ash
 
 #endif  // ASH_SEARCH_BOX_SEARCH_BOX_VIEW_DELEGATE_H_

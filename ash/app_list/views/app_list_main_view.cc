@@ -181,7 +181,7 @@ void AppListMainView::OnAppListStateChanged(AppListState new_state,
   }
 }
 
-void AppListMainView::QueryChanged(search_box::SearchBoxViewBase* sender) {
+void AppListMainView::QueryChanged(SearchBoxViewBase* sender) {
   base::string16 raw_query = search_model_->search_box()->text();
   base::string16 query;
   base::TrimWhitespace(raw_query, base::TRIM_ALL, &query);
@@ -194,7 +194,7 @@ void AppListMainView::QueryChanged(search_box::SearchBoxViewBase* sender) {
   delegate_->StartSearch(raw_query);
 }
 
-void AppListMainView::ActiveChanged(search_box::SearchBoxViewBase* sender) {
+void AppListMainView::ActiveChanged(SearchBoxViewBase* sender) {
   if (!app_list_features::IsZeroStateSuggestionsEnabled())
     return;
   // Do not update views on closing.
@@ -215,8 +215,7 @@ void AppListMainView::ActiveChanged(search_box::SearchBoxViewBase* sender) {
   }
 }
 
-void AppListMainView::SearchBoxFocusChanged(
-    search_box::SearchBoxViewBase* sender) {
+void AppListMainView::SearchBoxFocusChanged(SearchBoxViewBase* sender) {
   // A fake focus (highlight) is always set on the first search result. When the
   // user moves focus from the search box textfield (e.g. to close button or
   // last search result), the fake focus should be removed.
