@@ -5370,22 +5370,6 @@
             ]
         }
     ],
-    "PermissionPromptUIAndroidModal": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer"
-            ],
-            "experiments": [
-                {
-                    "name": "ModalToggleEnabled",
-                    "enable_features": [
-                        "ModalPermissionPrompts"
-                    ]
-                }
-            ]
-        }
-    ],
     "PermissionPromptUICocoa": [
         {
             "platforms": [
