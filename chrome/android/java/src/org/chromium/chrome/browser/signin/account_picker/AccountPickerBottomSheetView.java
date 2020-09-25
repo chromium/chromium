@@ -19,7 +19,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.signin.DisplayableProfileData;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.ui.widget.ButtonCompat;
-import org.chromium.ui.widget.TextViewWithLeading;
 
 /**
  * This class is the AccountPickerBottomsheet view for the web sign-in flow.
@@ -45,7 +44,7 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
     private final View mContentView;
     private final ImageView mLogoImage;
     private final TextView mAccountPickerTitle;
-    private final TextViewWithLeading mAccountPickerSubtitle;
+    private final TextView mAccountPickerSubtitle;
     private final View mHorizontalDivider;
     private final RecyclerView mAccountListView;
     private final View mSelectedAccountView;

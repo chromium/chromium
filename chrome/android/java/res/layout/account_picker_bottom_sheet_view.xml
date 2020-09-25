@@ -37,7 +37,7 @@
         android:textAppearance="@style/TextAppearance.TextLarge.Primary"
         android:text="@string/signin_account_picker_dialog_title" />
 
-    <org.chromium.ui.widget.TextViewWithLeading
+    <TextView
         android:id="@+id/account_picker_bottom_sheet_subtitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -46,8 +46,7 @@
         android:layout_marginBottom="16dp"
         android:gravity="center_horizontal"
         android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
-        android:text="@string/signin_account_picker_bottom_sheet_subtitle"
-        app:leading="@dimen/text_size_medium_leading" />
+        android:text="@string/signin_account_picker_bottom_sheet_subtitle" />
 
     <View
         android:id="@+id/account_picker_horizontal_divider"
