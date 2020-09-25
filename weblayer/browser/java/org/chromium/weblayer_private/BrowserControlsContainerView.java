@@ -61,6 +61,8 @@ class BrowserControlsContainerView extends FrameLayout {
 
     private static final long SYSTEM_UI_VIEWPORT_UPDATE_DELAY_MS = 500;
 
+    private static final int DEFAULT_LAST_SHOWN_AMOUNT = -1;
+
     /** Stores the state needed to reconstruct offsets after recreating this class. */
     /* package */ static class State {
         private final int mControlsOffset;
@@ -106,6 +108,12 @@ class BrowserControlsContainerView extends FrameLayout {
     // top-controls, the value ranges from 0 (completely shown) to -height (completely hidden). For
     // bottom-controls, the value ranges from 0 (completely shown) to height (completely hidden).
     private int mControlsOffset;
+
+    // Stores how much of the controls in pixels is visible when a view is set. This does NOT get
+    // set to 0 when you remove a view; it always stores the most recent control visibility amount
+    // as of the last time a view was actually set, or a default value. This is used to help mimic
+    // the positioning behavior of the renderer.
+    private int mLastShownAmountWithView = DEFAULT_LAST_SHOWN_AMOUNT;
 
     // The minimum height that the controls should collapse to. Only used for top controls.
     private int mMinHeight;
@@ -323,9 +331,9 @@ class BrowserControlsContainerView extends FrameLayout {
 
         if (mIsFullscreen) return;
         setControlsOffset(controlsOffsetY, contentOffsetY);
-        if (controlsOffsetY == 0
+        if (mControlsOffset == 0
                 || (mIsTop && getMinHeight() > 0
-                        && controlsOffsetY == -mLastHeight + getMinHeight())) {
+                        && mControlsOffset == -mLastHeight + getMinHeight())) {
             finishScroll();
         } else if (!mInScroll) {
             prepareForScroll();
@@ -359,7 +367,7 @@ class BrowserControlsContainerView extends FrameLayout {
         mLastHeight = height;
         if (mLastWidth > 0 && mLastHeight > 0 && mViewResourceAdapter == null) {
             createAdapterAndLayer();
-            if (prevHeight == 0 && mSavedState != null) {
+            if (mLastShownAmountWithView == DEFAULT_LAST_SHOWN_AMOUNT && mSavedState != null) {
                 // If there wasn't a View before and we have non-empty saved state from a previous
                 // BrowserControlsContainerView instance, apply those saved offsets now. We can't
                 // rely on BrowserControlsOffsetManager to notify us of the correct location as we
@@ -368,18 +376,30 @@ class BrowserControlsContainerView extends FrameLayout {
                 // because it thinks we already have the correct offsets.
                 onOffsetsChanged(mSavedState.mControlsOffset, mSavedState.mContentOffset);
             } else {
-                // Position the new controls so the same amount of them is visible as with the
-                // previous controls (which will be 0 if there weren't controls or they were
-                // hidden). Ideally we'd hide the controls and wait for BrowserControlsOffsetManager
+                // Ideally we'd leave the controls hidden and wait for BrowserControlsOffsetManager
                 // to tell us where it wants them, but it communicates with us via frame metadata
                 // that is generated when the renderer's compositor submits a frame to viz, which is
                 // paused during page loads. Because of this, we might not get positioning
                 // information from the renderer for several seconds during page loads, so we need
-                // to attempt to position the controls ourselves here. This could in theory cause a
-                // flicker if we decide on a different position than the renderer does, but this
-                // hasn't been an issue in practice.
-                int delta = mIsTop ? height - prevHeight : prevHeight - height;
-                onOffsetsChanged(mControlsOffset - delta, mContentOffset);
+                // to attempt to position the controls ourselves here.
+                int targetShownAmount;
+                if (mShouldAnimate) {
+                    // If animations are enabled, leave the amount of visible controls unchanged
+                    // (e.g. hide them if there weren't previously controls or if they were hidden
+                    // before).
+                    targetShownAmount = mIsTop ? (prevHeight + mControlsOffset)
+                                               : (prevHeight - mControlsOffset);
+                } else {
+                    // If animations are disabled, restore the positioning the controls had the last
+                    // time they were non-null. This mimics the behavior of
+                    // BrowserControlsOffsetManager in the renderer.
+                    targetShownAmount = (mLastShownAmountWithView == DEFAULT_LAST_SHOWN_AMOUNT)
+                            ? height
+                            : mLastShownAmountWithView;
+                }
+                onOffsetsChanged(
+                        mIsTop ? (targetShownAmount - height) : (height - targetShownAmount),
+                        mIsTop ? targetShownAmount : 0);
             }
             mSavedState = null;
         } else if (mViewResourceAdapter != null) {
@@ -460,6 +480,10 @@ class BrowserControlsContainerView extends FrameLayout {
         }
         mContentOffset = MathUtils.clamp(contentOffsetY, 0, mLastHeight);
 
+        if (mView != null) {
+            mLastShownAmountWithView =
+                    mIsTop ? (mLastHeight + mControlsOffset) : (mLastHeight - mControlsOffset);
+        }
         if (isCompletelyExpandedOrCollapsed()) {
             mDelegate.refreshPageHeight();
         }
