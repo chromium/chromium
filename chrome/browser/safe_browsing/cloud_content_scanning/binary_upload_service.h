@@ -22,7 +22,6 @@
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/safe_browsing/core/proto/csd.pb.h"
-#include "components/safe_browsing/core/proto/webprotect.pb.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 class Profile;
@@ -97,7 +96,6 @@ class BinaryUploadService : public KeyedService {
   class Request {
    public:
     // |callback| will run on the UI thread.
-    Request(Callback callback, GURL url);
     Request(ContentAnalysisCallback, GURL url);
     virtual ~Request();
     Request(const Request&) = delete;
@@ -132,11 +130,6 @@ class BinaryUploadService : public KeyedService {
     using DataCallback = base::OnceCallback<void(Result, const Data&)>;
     virtual void GetRequestData(DataCallback callback) = 0;
 
-    // Returns the metadata to upload, as a DeepScanningClientRequest.
-    const DeepScanningClientRequest& deep_scanning_request() const {
-      return deep_scanning_request_;
-    }
-
     // Returns the URL to send the request to.
     GURL GetUrlWithParams() const;
 
@@ -146,16 +139,8 @@ class BinaryUploadService : public KeyedService {
       return content_analysis_request_;
     }
 
-    bool use_legacy_proto() const { return use_legacy_proto_; }
-
     void set_tab_url(const GURL& tab_url);
     const GURL& tab_url() const;
-
-    // Methods for modifying the DeepScanningClientRequest.
-    void set_request_dlp_scan(DlpDeepScanningClientRequest dlp_request);
-    void set_request_malware_scan(
-        MalwareDeepScanningClientRequest malware_request);
-    void set_request_token(const std::string& token);
 
     // Methods for modifying the ContentAnalysisRequest.
     void set_analysis_connector(
@@ -164,15 +149,14 @@ class BinaryUploadService : public KeyedService {
     void set_csd(ClientDownloadRequest csd);
     void add_tag(const std::string& tag);
     void set_email(const std::string& email);
-
-    // Methods for modifying either internal proto requests.
+    void set_request_token(const std::string& token);
     void set_fcm_token(const std::string& token);
     void set_device_token(const std::string& token);
     void set_filename(const std::string& filename);
     void set_digest(const std::string& digest);
     void clear_dlp_scan_request();
 
-    // Methods for accessing either internal proto requests.
+    // Methods for accessing the ContentAnalysisRequest.
     const std::string& device_token() const;
     const std::string& request_token() const;
     const std::string& fcm_notification_token() const;
@@ -181,26 +165,19 @@ class BinaryUploadService : public KeyedService {
 
     // Finish the request, with the given |result| and |response| from the
     // server.
-    void FinishRequest(Result result);
-    void FinishConnectorRequest(
-        Result result,
-        enterprise_connectors::ContentAnalysisResponse response);
-    void FinishLegacyRequest(Result result,
-                             DeepScanningClientResponse response);
+    void FinishRequest(Result result,
+                       enterprise_connectors::ContentAnalysisResponse response);
 
     // Calls SerializeToString on the appropriate proto request.
     void SerializeToString(std::string* destination) const;
 
    private:
-    const bool use_legacy_proto_;
-
-    DeepScanningClientRequest deep_scanning_request_;
-    Callback callback_;
-
     enterprise_connectors::ContentAnalysisRequest content_analysis_request_;
     ContentAnalysisCallback content_analysis_callback_;
 
+    // The URL to send the data to for scanning.
     GURL url_;
+
     // The URL of the page that initially triggered the scan.
     GURL tab_url_;
   };
@@ -230,14 +207,9 @@ class BinaryUploadService : public KeyedService {
   static GURL GetUploadUrl(bool is_advanced_protection_request);
 
  protected:
-  void FinishRequest(Request* request, Result result);
-  void FinishConnectorRequest(
-      Request* request,
-      Result result,
-      enterprise_connectors::ContentAnalysisResponse response);
-  void FinishLegacyRequest(Request* request,
-                           Result result,
-                           DeepScanningClientResponse response);
+  void FinishRequest(Request* request,
+                     Result result,
+                     enterprise_connectors::ContentAnalysisResponse response);
 
  private:
   friend class BinaryUploadServiceTest;
@@ -257,14 +229,10 @@ class BinaryUploadService : public KeyedService {
                         bool success,
                         const std::string& response_data);
 
-  void OnGetConnectorResponse(
-      Request* request,
-      enterprise_connectors::ContentAnalysisResponse response);
-  void OnGetLegacyResponse(Request* request,
-                           DeepScanningClientResponse response);
+  void OnGetResponse(Request* request,
+                     enterprise_connectors::ContentAnalysisResponse response);
 
-  void MaybeFinishConnectorRequest(Request* request);
-  void MaybeFinishLegacyRequest(Request* request);
+  void MaybeFinishRequest(Request* request);
 
   void OnTimeout(Request* request);
 
@@ -292,7 +260,7 @@ class BinaryUploadService : public KeyedService {
                             Result result,
                             const DeepScanningClientResponse& response);
 
-  // Called at the end of either Finish{Connector|Legacy}Request methods.
+  // Called at the end of the FinishRequest method.
   void FinishRequestCleanup(Request* request, const std::string& instance_id);
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;

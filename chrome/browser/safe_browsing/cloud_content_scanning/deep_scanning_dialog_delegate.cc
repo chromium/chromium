@@ -73,9 +73,6 @@ class StringSourceRequest : public BinaryUploadService::Request {
  public:
   StringSourceRequest(GURL analysis_url,
                       std::string text,
-                      BinaryUploadService::Callback callback);
-  StringSourceRequest(GURL analysis_url,
-                      std::string text,
                       BinaryUploadService::ContentAnalysisCallback callback);
   ~StringSourceRequest() override;
 
@@ -90,17 +87,6 @@ class StringSourceRequest : public BinaryUploadService::Request {
   BinaryUploadService::Result result_ =
       BinaryUploadService::Result::FILE_TOO_LARGE;
 };
-
-StringSourceRequest::StringSourceRequest(GURL analysis_url,
-                                         std::string text,
-                                         BinaryUploadService::Callback callback)
-    : Request(std::move(callback), analysis_url) {
-  // Only remember strings less than the maximum allowed.
-  if (text.size() < BinaryUploadService::kMaxUploadSizeBytes) {
-    data_.contents = std::move(text);
-    result_ = BinaryUploadService::Result::SUCCESS;
-  }
-}
 
 StringSourceRequest::StringSourceRequest(
     GURL analysis_url,
@@ -632,7 +618,8 @@ void DeepScanningDialogDelegate::OnGotFileInfo(
   // property (too large, unsupported file type, encrypted, ...) that make its
   // upload pointless, so the request should finish early.
   if (result != BinaryUploadService::Result::SUCCESS) {
-    request->FinishRequest(result);
+    request->FinishRequest(result,
+                           enterprise_connectors::ContentAnalysisResponse());
     return;
   }
 

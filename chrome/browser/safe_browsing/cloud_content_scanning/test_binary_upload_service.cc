@@ -18,29 +18,15 @@ TestBinaryUploadService::TestBinaryUploadService()
 void TestBinaryUploadService::MaybeUploadForDeepScanning(
     std::unique_ptr<Request> request) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (request->use_legacy_proto()) {
-    content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(&Request::FinishLegacyRequest, std::move(request),
-                       saved_result_, saved_response_));
-  } else {
-    content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(&Request::FinishConnectorRequest, std::move(request),
-                       saved_result_, saved_content_analysis_response_));
-  }
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&Request::FinishRequest, std::move(request),
+                                saved_result_, saved_response_));
   was_called_ = true;
 }
 
 void TestBinaryUploadService::SetResponse(
     Result result,
     enterprise_connectors::ContentAnalysisResponse response) {
-  saved_result_ = result;
-  saved_content_analysis_response_ = response;
-}
-
-void TestBinaryUploadService::SetResponse(Result result,
-                                          DeepScanningClientResponse response) {
   saved_result_ = result;
   saved_response_ = response;
 }

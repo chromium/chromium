@@ -52,7 +52,8 @@ class FakeBinaryUploadService : public BinaryUploadService {
   // Finish the authentication request. Called after ShowForWebContents to
   // simulate an async callback.
   void ReturnAuthorizedResponse() {
-    FinishRequest(authorization_request_.get(), authorization_result_);
+    FinishRequest(authorization_request_.get(), authorization_result_,
+                  enterprise_connectors::ContentAnalysisResponse());
   }
 
   void SetResponseForText(
@@ -87,13 +88,12 @@ class FakeBinaryUploadService : public BinaryUploadService {
     } else {
       std::string file = request->filename();
       if (file.empty()) {
-        request->FinishConnectorRequest(prepared_text_result_,
-                                        prepared_text_response_);
+        request->FinishRequest(prepared_text_result_, prepared_text_response_);
       } else {
         ASSERT_TRUE(prepared_file_results_.count(file));
         ASSERT_TRUE(prepared_file_responses_.count(file));
-        request->FinishConnectorRequest(prepared_file_results_[file],
-                                        prepared_file_responses_[file]);
+        request->FinishRequest(prepared_file_results_[file],
+                               prepared_file_responses_[file]);
       }
     }
   }
