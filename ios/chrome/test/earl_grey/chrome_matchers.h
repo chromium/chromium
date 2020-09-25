@@ -47,6 +47,10 @@ id<GREYMatcher> HeaderWithAccessibilityLabelId(int message_id);
 // accessibility trait UIAccessibilityTraitHeader.
 id<GREYMatcher> HeaderWithAccessibilityLabel(NSString* label);
 
+// Matcher for navigation bar title element with accessibility label
+// corresponding to |label_id|.
+id<GREYMatcher> NavigationBarTitleWithAccessibilityLabelId(int label_id);
+
 // Matcher for text field of a cell with |message_id|.
 id<GREYMatcher> TextFieldForCellWithLabelId(int message_id);
 

@@ -43,7 +43,11 @@
 
 // Matcher for element with accessibility label corresponding to |messageID|
 // and accessibility trait UIAccessibilityTraitHeader.
-+ (id<GREYMatcher>)headerWithAccessibilityLabelID:(int)messageID;
++ (id<GREYMatcher>)headerWithAccessibilityLabelID:(int)labelID;
+
+// Matcher for navigation bar title element with accessibility label
+// corresponding to |titleID|.
++ (id<GREYMatcher>)navigationBarTitleWithAccessibilityLabelID:(int)titleID;
 
 // Matcher for text field of a cell with |messageID|.
 + (id<GREYMatcher>)textFieldForCellWithLabelID:(int)messageID;

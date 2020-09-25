@@ -55,6 +55,11 @@ id<GREYMatcher> HeaderWithAccessibilityLabel(NSString* label) {
   return [ChromeMatchersAppInterface headerWithAccessibilityLabel:label];
 }
 
+id<GREYMatcher> NavigationBarTitleWithAccessibilityLabelId(int label_id) {
+  return [ChromeMatchersAppInterface
+      navigationBarTitleWithAccessibilityLabelID:label_id];
+}
+
 id<GREYMatcher> TextFieldForCellWithLabelId(int message_id) {
   return [ChromeMatchersAppInterface textFieldForCellWithLabelID:message_id];
 }

@@ -214,6 +214,12 @@ UIView* SubviewWithAccessibilityIdentifier(NSString* accessibility_id,
                     grey_accessibilityTrait(UIAccessibilityTraitHeader), nil);
 }
 
++ (id<GREYMatcher>)navigationBarTitleWithAccessibilityLabelID:(int)labelID {
+  return grey_allOf(
+      grey_accessibilityID(l10n_util::GetNSStringWithFixup(labelID)),
+      grey_kindOfClass([UINavigationBar class]), nil);
+}
+
 + (id<GREYMatcher>)textFieldForCellWithLabelID:(int)messageID {
   return grey_allOf(grey_accessibilityID([l10n_util::GetNSStringWithFixup(
                         messageID) stringByAppendingString:@"_textField"]),

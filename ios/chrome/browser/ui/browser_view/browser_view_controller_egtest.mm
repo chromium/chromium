@@ -34,10 +34,6 @@
 // Tests that the NTP is interactable even when multiple NTP are opened during
 // the animation of the first NTP opening. See crbug.com/1032544.
 - (void)testPageInteractable {
-  // TODO(crbug.com/1129588): Test disabled in iOS14.
-  if (base::ios::IsRunningOnIOS14OrLater()) {
-    EARL_GREY_TEST_DISABLED(@"Fails on iOS14.");
-  }
   // Scope for the synchronization disabled.
   {
     ScopedSynchronizationDisabler syncDisabler;
@@ -61,9 +57,9 @@
       selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
                                    IDS_IOS_CONTENT_SUGGESTIONS_BOOKMARKS)]
       performAction:grey_tap()];
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::HeaderWithAccessibilityLabelId(
-                                   IDS_IOS_CONTENT_SUGGESTIONS_BOOKMARKS)]
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::NavigationBarTitleWithAccessibilityLabelId(
+                     IDS_IOS_CONTENT_SUGGESTIONS_BOOKMARKS)]
       assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::NavigationBarDoneButton()]
@@ -75,9 +71,9 @@
       selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
                                    IDS_IOS_CONTENT_SUGGESTIONS_BOOKMARKS)]
       performAction:grey_tap()];
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::HeaderWithAccessibilityLabelId(
-                                   IDS_IOS_CONTENT_SUGGESTIONS_BOOKMARKS)]
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::NavigationBarTitleWithAccessibilityLabelId(
+                     IDS_IOS_CONTENT_SUGGESTIONS_BOOKMARKS)]
       assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::NavigationBarDoneButton()]
