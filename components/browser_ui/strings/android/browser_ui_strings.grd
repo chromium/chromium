@@ -450,7 +450,9 @@
       <message name="IDS_PAGE_INFO_PERMISSIONS_SUMMARY_1_BLOCKED" desc="Summary page info permissions string for for one blocked permission.">
         <ph name="PERMISSION_1">%1$s<ex>Location</ex></ph> blocked
       </message>
-      <message name="IDS_PAGE_INFO_PERMISSIONS_SUMMARY_2_MIXED" desc="Summary page info permissions string for 2 permissions, with a mix of allowed/blocked.">
+      <message name="IDS_PAGE_INFO_PERMISSIONS_SUMMARY_2_MIXED" desc="Summary page info permissions string for 2 permissions, with a mix of allowed/blocked.
+      For the languages in which allowed/blocked have to agree with the gender of the permission, a translation of the string 'PERMISSION_1 and PERMISSION_2' should be used instead.
+      Refer to b/168814348 for more details.">
         <ph name="PERMISSION_1">%1$s<ex>Location</ex></ph> allowed, <ph name="PERMISSION_2">%2$s<ex>Sound</ex></ph> blocked
       </message>
       <message name="IDS_PAGE_INFO_PERMISSIONS_SUMMARY_2_ALLOWED" desc="Summary page info permissions string for 2 permissions, all allowed.">
