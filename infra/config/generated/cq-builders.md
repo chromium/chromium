@@ -369,6 +369,9 @@ as required builders.
   * [`//content/browser/tracing/.+`](https://cs.chromium.org/chromium/src/content/browser/tracing/)
   * [`//services/tracing/.+`](https://cs.chromium.org/chromium/src/services/tracing/)
 
+* [linux-rel-builderful](https://ci.chromium.org/p/chromium/builders/try/linux-rel-builderful) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+linux-rel-builderful)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+linux-rel-builderful))
+  * Experiment percentage: 10
+
 * [mac-coverage-rel](https://ci.chromium.org/p/chromium/builders/try/mac-coverage-rel) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+mac-coverage-rel)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+mac-coverage-rel))
   * Experiment percentage: 8
 

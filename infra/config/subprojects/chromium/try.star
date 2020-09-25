@@ -920,6 +920,7 @@ try_.chromium_linux_builder(
     name = "linux-rel-builderful",
     builderless = False,
     goma_jobs = goma.jobs.J150,
+    tryjob = try_.job(experiment_percentage = 10),
     use_clang_coverage = True,
 )
 
