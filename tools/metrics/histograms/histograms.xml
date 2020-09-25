@@ -132233,8 +132233,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Platform.Thermal.Temperature.Cpu.0" units="Celsius"
-    expires_after="2021-02-21">
-  <owner>mka@chromium.org</owner>
+    expires_after="2021-09-01">
+  <owner>julanhsu@google.com</owner>
+  <owner>caiz@google.com</owner>
   <summary>
     Temperature reading at sensor 0 of the CPU collected every few seconds (may
     vary between devices).
@@ -132256,6 +132257,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Platform.Thermal.Temperature.Wifi0" units="Celsius"
     expires_after="M85">
+  <obsolete>
+    Removed 09/2020
+  </obsolete>
   <owner>mka@chromium.org</owner>
   <summary>
     Temperature reading at wireless interface 0 collected every few seconds (may
@@ -132267,6 +132271,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Platform.Thermal.Temperature.Wifi1" units="Celsius"
     expires_after="M85">
+  <obsolete>
+    Removed 09/2020
+  </obsolete>
   <owner>mka@chromium.org</owner>
   <summary>
     Temperature reading at wireless interface 1 collected every few seconds (may
@@ -132278,6 +132285,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Platform.Thermal.Temperature.Wifi2" units="Celsius"
     expires_after="M85">
+  <obsolete>
+    Removed 09/2020
+  </obsolete>
   <owner>mka@chromium.org</owner>
   <summary>
     Temperature reading at wireless interface 2 collected every few seconds (may
@@ -132288,8 +132298,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Platform.Thermal.Zone.Cpu.States" units="Thermal state"
-    expires_after="M85">
-  <owner>mka@chromium.org</owner>
+    expires_after="2021-09-01">
+  <owner>julanhsu@google.com</owner>
+  <owner>caiz@google.com</owner>
   <summary>
     State of the thermal zone of the CPU collected every second. State depends
     on device, higher state corresponds to a higher temperature.
@@ -132300,6 +132311,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Platform.Thermal.Zone.Wifi0.States" units="Thermal state"
     expires_after="M85">
+  <obsolete>
+    Removed 09/2020
+  </obsolete>
   <owner>mka@chromium.org</owner>
   <summary>
     State of the thermal zone of wireless interface 0 collected every second.
@@ -132311,6 +132325,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Platform.Thermal.Zone.Wifi1.States" units="Thermal state"
     expires_after="M85">
+  <obsolete>
+    Removed 09/2020
+  </obsolete>
   <owner>mka@chromium.org</owner>
   <summary>
     State of the thermal zone of wireless interface 1 collected every second.
@@ -132322,6 +132339,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Platform.Thermal.Zone.Wifi2.States" units="Thermal state"
     expires_after="M85">
+  <obsolete>
+    Removed 09/2020
+  </obsolete>
   <owner>mka@chromium.org</owner>
   <summary>
     State of the thermal zone of wireless interface 2 collected every second.
