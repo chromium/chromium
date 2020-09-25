@@ -927,6 +927,7 @@
       'linux-viz-rel': 'release_trybot',
       'linux-wpt-fyi-rel': 'release_trybot',
       'linux-wpt-identity-fyi-rel': 'release_trybot',
+      'linux-wpt-payments-fyi-rel': 'release_trybot',
       'linux-webkit-msan-rel': 'msan_release_bot',
       'linux_chromium_archive_rel_ng': 'release_bot',
       'linux_chromium_asan_rel_ng': 'asan_lsan_release_trybot',
