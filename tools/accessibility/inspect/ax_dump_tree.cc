@@ -11,6 +11,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
 #include "tools/accessibility/inspect/ax_tree_server.h"
+#include "tools/accessibility/inspect/ax_utils.h"
 
 using TreeSelector = content::AccessibilityTreeFormatter::TreeSelector;
 
@@ -20,16 +21,9 @@ char kIdSwitch[] =
 #else
     "pid";
 #endif
-char kPatternSwitch[] = "pattern";
 char kFiltersSwitch[] = "filters";
 char kJsonSwitch[] = "json";
 char kHelpSwitch[] = "help";
-
-char kActiveTabSwitch[] = "active-tab";
-char kChromeSwitch[] = "chrome";
-char kChromiumSwitch[] = "chromium";
-char kFirefoxSwitch[] = "firefox";
-char kSafariSwitch[] = "safari";
 
 // Convert from string to int, whether in 0x hex format or decimal format.
 bool StringToInt(std::string str, unsigned* result) {
@@ -70,13 +64,7 @@ void PrintHelp() {
   printf(
       "  --pid\t\tprocess id of an application to dump accessible tree for\n");
 #endif
-  printf("  --pattern\ttitle of an application to dump accessible tree for\n");
-  printf("  pre-defined application selectors to dump accessible tree for:\n");
-  printf("    --chrome\tChrome browser\n");
-  printf("    --chromium\tChromium browser\n");
-  printf("    --firefox\tFirefox browser\n");
-  printf("    --safari\tSafari browser\n");
-  printf("    --active-tab\tActive tab of a choosen browser\n");
+  tools::PrintHelpForTreeSelectors();
   printf(
       "  --filters\tfile containing property filters used to filter out\n"
       "  \t\taccessible tree, see example-tree-filters.txt as an example\n");
@@ -116,24 +104,10 @@ int main(int argc, char** argv) {
     return 0;
   }
 
-  int selectors = TreeSelector::None;
-  if (command_line->HasSwitch(kChromeSwitch)) {
-    selectors = TreeSelector::Chrome;
-  } else if (command_line->HasSwitch(kChromiumSwitch)) {
-    selectors = TreeSelector::Chromium;
-  } else if (command_line->HasSwitch(kFirefoxSwitch)) {
-    selectors = TreeSelector::Firefox;
-  } else if (command_line->HasSwitch(kSafariSwitch)) {
-    selectors = TreeSelector::Safari;
-  }
-  if (command_line->HasSwitch(kActiveTabSwitch)) {
-    selectors |= TreeSelector::ActiveTab;
-  }
-
-  std::string pattern_str = command_line->GetSwitchValueASCII(kPatternSwitch);
-  if (selectors != TreeSelector::None || !pattern_str.empty()) {
-    std::unique_ptr<content::AXTreeServer> server(new content::AXTreeServer(
-        TreeSelector(selectors, pattern_str), filters_path, use_json));
+  TreeSelector selector = tools::TreeSelectorFromCommandLine(command_line);
+  if (!selector.empty()) {
+    std::unique_ptr<content::AXTreeServer> server(
+        new content::AXTreeServer(selector, filters_path, use_json));
     return 0;
   }
 

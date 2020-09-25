@@ -115,6 +115,8 @@ class CONTENT_EXPORT AccessibilityTreeFormatter
 
     TreeSelector(int types, const std::string& pattern)
         : types(types), pattern(pattern) {}
+
+    bool empty() const { return types == None && pattern.empty(); }
   };
 
   // Create the appropriate native subclass of AccessibilityTreeFormatter.

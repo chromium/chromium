@@ -27,6 +27,7 @@ executable("ax_dump_tree") {
   sources = [
     "ax_dump_tree.cc",
     "ax_tree_server.cc",
+    "ax_utils.cc",
   ]
 
   deps = [
