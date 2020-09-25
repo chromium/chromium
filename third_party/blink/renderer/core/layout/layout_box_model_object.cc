@@ -1101,22 +1101,23 @@ bool LayoutBoxModelObject::IsSlowRepaintConstrainedObject() const {
 }
 
 PhysicalRect LayoutBoxModelObject::ComputeStickyConstrainingRect() const {
-  LayoutBox* enclosing_clipping_box =
+  LayoutBox* scroll_container_box =
       Layer()->AncestorOverflowLayer()->GetLayoutBox();
-  DCHECK(enclosing_clipping_box);
+  DCHECK(scroll_container_box);
+  // That |scroll_container_box| is a scroll-container is ensured by
+  // Layer::AncestorOverflowLayer().
+  DCHECK(scroll_container_box->IsScrollContainer());
   PhysicalRect constraining_rect;
   constraining_rect =
-      PhysicalRect(enclosing_clipping_box->OverflowClipRect(LayoutPoint()));
-  constraining_rect.Move(
-      PhysicalOffset(-enclosing_clipping_box->BorderLeft() +
-                         enclosing_clipping_box->PaddingLeft(),
-                     -enclosing_clipping_box->BorderTop() +
-                         enclosing_clipping_box->PaddingTop()));
+      PhysicalRect(scroll_container_box->OverflowClipRect(LayoutPoint()));
+  constraining_rect.Move(PhysicalOffset(
+      -scroll_container_box->BorderLeft() + scroll_container_box->PaddingLeft(),
+      -scroll_container_box->BorderTop() + scroll_container_box->PaddingTop()));
   constraining_rect.ContractEdges(LayoutUnit(),
-                                  enclosing_clipping_box->PaddingLeft() +
-                                      enclosing_clipping_box->PaddingRight(),
-                                  enclosing_clipping_box->PaddingTop() +
-                                      enclosing_clipping_box->PaddingBottom(),
+                                  scroll_container_box->PaddingLeft() +
+                                      scroll_container_box->PaddingRight(),
+                                  scroll_container_box->PaddingTop() +
+                                      scroll_container_box->PaddingBottom(),
                                   LayoutUnit());
   return constraining_rect;
 }

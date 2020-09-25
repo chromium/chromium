@@ -95,8 +95,7 @@ void CompositingInputsUpdater::ApplyAncestorInfoToSelfAndAncestorsRecursively(
     geometry_map_->PushMappingsToAncestor(layer, layer->Parent());
   UpdateAncestorInfo(layer, update_type, info);
   if (layer != compositing_inputs_root_ &&
-      (layer->IsRootLayer() ||
-       layer->GetLayoutObject().HasNonVisibleOverflow()))
+      (layer->IsRootLayer() || layer->GetLayoutObject().IsScrollContainer()))
     info.last_overflow_clip_layer = layer;
 }
 
@@ -149,7 +148,7 @@ void CompositingInputsUpdater::UpdateSelfAndDescendantsRecursively(
       geometry_map_->PushMappingsToAncestor(layer, layer->Parent());
     UpdateAncestorInfo(layer, update_type, info);
   }
-  if (layer->IsRootLayer() || layout_object.HasNonVisibleOverflow())
+  if (layer->IsRootLayer() || layout_object.IsScrollContainer())
     info.last_overflow_clip_layer = layer;
 
   PaintLayerCompositor* compositor =
