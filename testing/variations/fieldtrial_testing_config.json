@@ -4791,6 +4791,34 @@
             ]
         }
     ],
+    "OmniboxButtonRowPedalsDesktop": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "ButtonRowWithPedals",
+                    "enable_features": [
+                        "OmniboxPedalSuggestions",
+                        "OmniboxSuggestionButtonRow"
+                    ]
+                },
+                {
+                    "name": "ButtonRowWithoutPedals",
+                    "enable_features": [
+                        "OmniboxSuggestionButtonRow"
+                    ],
+                    "disable_features": [
+                        "OmniboxPedalSuggestions"
+                    ]
+                }
+            ]
+        }
+    ],
     "OmniboxDocumentProviderNonDogfoodExperiments": [
         {
             "platforms": [
