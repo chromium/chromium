@@ -8,6 +8,7 @@
 #include "base/files/file_util.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/metrics/user_metrics.h"
+#include "base/strings/strcat.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -18,26 +19,24 @@
 namespace clipboard_util {
 namespace {
 
-const char kImageClipboardFormatPrefix[] = "<img src='data:image/png;base64,";
-const char kImageClipboardFormatSuffix[] = "'>";
-
 void CopyImageToClipboard(scoped_refptr<base::RefCountedString> png_data,
                           const SkBitmap& decoded_image) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  std::string encoded;
-  base::Base64Encode(png_data->data(), &encoded);
-  {
-    ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
+  ui::ScopedClipboardWriter clipboard_writer(ui::ClipboardBuffer::kCopyPaste);
 
-    // Send both HTML and and Image formats to clipboard. HTML format is needed
-    // by ARC, while Image is needed by Hangout.
-    std::string html(kImageClipboardFormatPrefix);
-    html += encoded;
-    html += kImageClipboardFormatSuffix;
-    scw.WriteHTML(base::UTF8ToUTF16(html), std::string());
-    scw.WriteImage(decoded_image);
-  }
+  // Send both HTML and and Image formats to clipboard. HTML format is needed
+  // by ARC, while Image is needed by Hangout.
+  static const char kImageClipboardFormatPrefix[] =
+      "<img src='data:image/png;base64,";
+  static const char kImageClipboardFormatSuffix[] = "'>";
+
+  std::string encoded =
+      base::Base64Encode(base::as_bytes(base::make_span(png_data->data())));
+  std::string html = base::StrCat(
+      {kImageClipboardFormatPrefix, encoded, kImageClipboardFormatSuffix});
+  clipboard_writer.WriteHTML(base::UTF8ToUTF16(html), std::string());
+  clipboard_writer.WriteImage(decoded_image);
 }
 
 }  // namespace
@@ -46,7 +45,7 @@ void ReadFileAndCopyToClipboardLocal(const base::FilePath& local_file) {
   DCHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::WILL_BLOCK);
-  scoped_refptr<base::RefCountedString> png_data(new base::RefCountedString());
+  auto png_data = base::MakeRefCounted<base::RefCountedString>();
   if (!base::ReadFileToString(local_file, &(png_data->data()))) {
     LOG(ERROR) << "Failed to read the screenshot file: " << local_file.value();
     return;
