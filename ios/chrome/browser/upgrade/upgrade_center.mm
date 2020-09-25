@@ -55,11 +55,6 @@
 
 namespace {
 
-// The user defaults key for the last time the update infobar was shown.
-NSString* const kLastInfobarDisplayTimeKey = @"UpdateInfobarLastDisplayTime";
-// The amount of time that must elapse before showing the infobar again.
-const NSTimeInterval kInfobarDisplayInterval = 24 * 60 * 60;  // One day.
-
 // The class controlling the look of the infobar displayed when an upgrade is
 // available.
 class UpgradeInfoBarDelegate : public ConfirmInfoBarDelegate {
@@ -264,8 +259,8 @@ class UpgradeInfoBarDismissObserver
   NSDate* lastDisplay = [defaults objectForKey:kLastInfobarDisplayTimeKey];
   // Absolute value is to ensure the infobar won't be suppressed forever if the
   // clock temporarily jumps to the distant future.
-  if (lastDisplay &&
-      fabs([lastDisplay timeIntervalSinceNow]) < kInfobarDisplayInterval) {
+  if (lastDisplay && fabs([lastDisplay timeIntervalSinceNow]) <
+                         kInfobarDisplayIntervalInSeconds) {
     return YES;
   }
   return NO;
@@ -435,6 +430,7 @@ class UpgradeInfoBarDismissObserver
   [defaults setValue:base::SysUTF8ToNSString(upgradeUrl.spec())
               forKey:kIOSChromeUpgradeURLKey];
   [defaults setValue:newVersionString forKey:kIOSChromeNextVersionKey];
+  [defaults setBool:details.is_up_to_date forKey:kIOSChromeUpToDateKey];
 
   if ([self shouldShowInfoBar])
     [self showUpgradeInfoBars];
@@ -446,12 +442,13 @@ class UpgradeInfoBarDismissObserver
   [defaults removeObjectForKey:kIOSChromeNextVersionKey];
   [defaults removeObjectForKey:kIOSChromeUpgradeURLKey];
   [defaults removeObjectForKey:kLastInfobarDisplayTimeKey];
+  [defaults removeObjectForKey:kIOSChromeUpToDateKey];
   [_clients removeAllObjects];
 }
 
 - (void)setLastDisplayToPast {
-  NSDate* pastDate =
-      [NSDate dateWithTimeIntervalSinceNow:-(kInfobarDisplayInterval + 1)];
+  NSDate* pastDate = [NSDate
+      dateWithTimeIntervalSinceNow:-(kInfobarDisplayIntervalInSeconds + 1)];
   [[NSUserDefaults standardUserDefaults] setObject:pastDate
                                             forKey:kLastInfobarDisplayTimeKey];
 }

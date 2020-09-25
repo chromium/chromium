@@ -18,6 +18,7 @@
 #include "ios/chrome/browser/application_context.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state_manager.h"
 #include "ios/chrome/browser/install_time_util.h"
+#include "ios/chrome/browser/upgrade/upgrade_recommended_details.h"
 #include "ios/chrome/common/channel_info.h"
 #include "ios/chrome/test/ios_chrome_scoped_testing_chrome_browser_state_manager.h"
 #include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
@@ -58,8 +59,16 @@ class OmahaServiceTest : public PlatformTest {
   }
 
   void OnNeedUpdate(const UpgradeRecommendedDetails& details) {
-    need_update_ = true;
+    was_one_off_ = false;
+    need_update_ = !details.is_up_to_date;
   }
+
+  void OneOffCheck(const UpgradeRecommendedDetails& details) {
+    was_one_off_ = true;
+    need_update_ = !details.is_up_to_date;
+  }
+
+  bool WasOneOff() { return was_one_off_; }
 
   bool NeedUpdate() {
     DCHECK_CURRENTLY_ON(web::WebThread::UI);
@@ -67,6 +76,16 @@ class OmahaServiceTest : public PlatformTest {
       base::RunLoop().RunUntilIdle();
     }
     return need_update_;
+  }
+
+  const std::string GetResponseSuccess() {
+    return std::string("<?xml version=\"1.0\"?><response protocol=\"3.0\" "
+                       "server=\"prod\">"
+                       "<daystart elapsed_days=\"4088\"/><app appid=\"") +
+           test_application_id() +
+           "\" status=\"ok\">"
+           "<updatecheck status=\"noupdate\"/><ping status=\"ok\"/>"
+           "</app></response>";
   }
 
   void CleanService(OmahaService* service,
@@ -94,7 +113,8 @@ class OmahaServiceTest : public PlatformTest {
       test_shared_url_loader_factory_;
 
  private:
-  bool need_update_;
+  bool need_update_ = false;
+  bool was_one_off_ = false;
   IOSChromeScopedTestingChromeBrowserStateManager scoped_browser_state_manager_;
   web::WebTaskEnvironment task_environment_;
 
@@ -227,17 +247,9 @@ TEST_F(OmahaServiceTest, SendPingSuccess) {
   EXPECT_GE(service.next_tries_time_, now + base::TimeDelta::FromMinutes(54));
   EXPECT_LE(service.next_tries_time_, now + base::TimeDelta::FromHours(7));
 
-  std::string response =
-      std::string(
-          "<?xml version=\"1.0\"?><response protocol=\"3.0\" server=\"prod\">"
-          "<daystart elapsed_days=\"4088\"/><app appid=\"") +
-      test_application_id() +
-      "\" status=\"ok\">"
-      "<updatecheck status=\"noupdate\"/><ping status=\"ok\"/>"
-      "</app></response>";
   auto* pending_request = test_url_loader_factory_.GetPendingRequest(0);
   test_url_loader_factory_.SimulateResponseForPendingRequest(
-      pending_request->request.url.spec(), response);
+      pending_request->request.url.spec(), GetResponseSuccess());
 
   EXPECT_EQ(0, service.number_of_tries_);
   EXPECT_FALSE(service.current_ping_time_.is_null());
@@ -245,6 +257,165 @@ TEST_F(OmahaServiceTest, SendPingSuccess) {
   EXPECT_GT(service.last_sent_time_, now);
   EXPECT_EQ(4088, service.last_server_date_);
   EXPECT_FALSE(NeedUpdate());
+}
+
+TEST_F(OmahaServiceTest, OneOffSuccess) {
+  base::Time now = base::Time::Now();
+  OmahaService service(false);
+  service.StartInternal();
+
+  service.set_upgrade_recommended_callback(
+      base::Bind(&OmahaServiceTest::OnNeedUpdate, base::Unretained(this)));
+  service.InitializeURLLoaderFactory(test_shared_url_loader_factory_);
+
+  service.one_off_check_callback_ =
+      base::BindOnce(^(UpgradeRecommendedDetails details) {
+        OmahaServiceTest::OneOffCheck(details);
+      });
+  CleanService(&service, version_info::GetVersionNumber());
+
+  service.SendPing();
+
+  EXPECT_EQ(1, service.number_of_tries_);
+  EXPECT_TRUE(service.current_ping_time_.is_null());
+  EXPECT_GE(service.next_tries_time_, now + base::TimeDelta::FromMinutes(54));
+  EXPECT_LE(service.next_tries_time_, now + base::TimeDelta::FromHours(7));
+
+  auto* pending_request = test_url_loader_factory_.GetPendingRequest(0);
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      pending_request->request.url.spec(), GetResponseSuccess());
+
+  EXPECT_EQ(0, service.number_of_tries_);
+  EXPECT_FALSE(service.current_ping_time_.is_null());
+  EXPECT_EQ(service.current_ping_time_, service.next_tries_time_);
+  EXPECT_GT(service.last_sent_time_, now);
+  EXPECT_EQ(4088, service.last_server_date_);
+  EXPECT_FALSE(NeedUpdate());
+  EXPECT_TRUE(WasOneOff());
+}
+
+TEST_F(OmahaServiceTest, OngoingPingOneOffCallbackUsed) {
+  base::Time now = base::Time::Now();
+  OmahaService service(false);
+  service.StartInternal();
+
+  service.set_upgrade_recommended_callback(
+      base::Bind(&OmahaServiceTest::OnNeedUpdate, base::Unretained(this)));
+  service.InitializeURLLoaderFactory(test_shared_url_loader_factory_);
+  CleanService(&service, version_info::GetVersionNumber());
+
+  service.SendPing();
+
+  EXPECT_EQ(1, service.number_of_tries_);
+  EXPECT_TRUE(service.current_ping_time_.is_null());
+  EXPECT_GE(service.next_tries_time_, now + base::TimeDelta::FromMinutes(54));
+  EXPECT_LE(service.next_tries_time_, now + base::TimeDelta::FromHours(7));
+
+  // One off callback set during ongoing ping, it should now be used for
+  // response.
+  service.one_off_check_callback_ =
+      base::BindOnce(^(UpgradeRecommendedDetails details) {
+        OmahaServiceTest::OneOffCheck(details);
+      });
+
+  auto* pending_request = test_url_loader_factory_.GetPendingRequest(0);
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      pending_request->request.url.spec(), GetResponseSuccess());
+
+  EXPECT_EQ(0, service.number_of_tries_);
+  EXPECT_FALSE(service.current_ping_time_.is_null());
+  EXPECT_EQ(service.current_ping_time_, service.next_tries_time_);
+  EXPECT_GT(service.last_sent_time_, now);
+  EXPECT_EQ(4088, service.last_server_date_);
+  EXPECT_FALSE(NeedUpdate());
+  EXPECT_TRUE(WasOneOff());
+}
+
+TEST_F(OmahaServiceTest, OneOffCallbackUsedOnlyOnce) {
+  base::Time now = base::Time::Now();
+  OmahaService service(false);
+  service.StartInternal();
+
+  service.set_upgrade_recommended_callback(
+      base::Bind(&OmahaServiceTest::OnNeedUpdate, base::Unretained(this)));
+  service.InitializeURLLoaderFactory(test_shared_url_loader_factory_);
+
+  service.one_off_check_callback_ =
+      base::BindOnce(^(UpgradeRecommendedDetails details) {
+        OmahaServiceTest::OneOffCheck(details);
+      });
+  CleanService(&service, version_info::GetVersionNumber());
+
+  service.SendPing();
+
+  EXPECT_EQ(1, service.number_of_tries_);
+  EXPECT_TRUE(service.current_ping_time_.is_null());
+  EXPECT_GE(service.next_tries_time_, now + base::TimeDelta::FromMinutes(54));
+  EXPECT_LE(service.next_tries_time_, now + base::TimeDelta::FromHours(7));
+
+  auto* pending_request = test_url_loader_factory_.GetPendingRequest(0);
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      pending_request->request.url.spec(), GetResponseSuccess());
+
+  EXPECT_EQ(0, service.number_of_tries_);
+  EXPECT_FALSE(service.current_ping_time_.is_null());
+  EXPECT_EQ(service.current_ping_time_, service.next_tries_time_);
+  EXPECT_GT(service.last_sent_time_, now);
+  EXPECT_EQ(4088, service.last_server_date_);
+  EXPECT_FALSE(NeedUpdate());
+  EXPECT_TRUE(WasOneOff());
+
+  service.SendPing();
+
+  pending_request = test_url_loader_factory_.GetPendingRequest(0);
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      pending_request->request.url.spec(), GetResponseSuccess());
+
+  EXPECT_FALSE(NeedUpdate());
+  EXPECT_FALSE(WasOneOff());
+}
+
+TEST_F(OmahaServiceTest, ScheduledPingDuringOneOffDropped) {
+  base::Time now = base::Time::Now();
+  OmahaService service(false);
+  service.StartInternal();
+
+  service.set_upgrade_recommended_callback(
+      base::Bind(&OmahaServiceTest::OnNeedUpdate, base::Unretained(this)));
+  service.InitializeURLLoaderFactory(test_shared_url_loader_factory_);
+
+  service.one_off_check_callback_ =
+      base::BindOnce(^(UpgradeRecommendedDetails details) {
+        OmahaServiceTest::OneOffCheck(details);
+      });
+  CleanService(&service, version_info::GetVersionNumber());
+
+  service.SendPing();
+
+  EXPECT_EQ(1, service.number_of_tries_);
+  EXPECT_TRUE(service.current_ping_time_.is_null());
+  EXPECT_GE(service.next_tries_time_, now + base::TimeDelta::FromMinutes(54));
+  EXPECT_LE(service.next_tries_time_, now + base::TimeDelta::FromHours(7));
+
+  service.SendPing();
+
+  // Ping during one-off should be dropped, nothing should change.
+  EXPECT_EQ(1, service.number_of_tries_);
+  EXPECT_TRUE(service.current_ping_time_.is_null());
+  EXPECT_GE(service.next_tries_time_, now + base::TimeDelta::FromMinutes(54));
+  EXPECT_LE(service.next_tries_time_, now + base::TimeDelta::FromHours(7));
+
+  auto* pending_request = test_url_loader_factory_.GetPendingRequest(0);
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      pending_request->request.url.spec(), GetResponseSuccess());
+
+  EXPECT_EQ(0, service.number_of_tries_);
+  EXPECT_FALSE(service.current_ping_time_.is_null());
+  EXPECT_EQ(service.current_ping_time_, service.next_tries_time_);
+  EXPECT_GT(service.last_sent_time_, now);
+  EXPECT_EQ(4088, service.last_server_date_);
+  EXPECT_FALSE(NeedUpdate());
+  EXPECT_TRUE(WasOneOff());
 }
 
 TEST_F(OmahaServiceTest, ParseAndEchoLastServerDate) {
@@ -258,17 +429,9 @@ TEST_F(OmahaServiceTest, ParseAndEchoLastServerDate) {
 
   service.SendPing();
 
-  std::string response =
-      std::string(
-          "<?xml version=\"1.0\"?><response protocol=\"3.0\" server=\"prod\">"
-          "<daystart elapsed_days=\"4088\"/><app appid=\"") +
-      test_application_id() +
-      "\" status=\"ok\">"
-      "<updatecheck status=\"noupdate\"/><ping status=\"ok\"/>"
-      "</app></response>";
   auto* pending_request = test_url_loader_factory_.GetPendingRequest(0);
   test_url_loader_factory_.SimulateResponseForPendingRequest(
-      pending_request->request.url.spec(), response);
+      pending_request->request.url.spec(), GetResponseSuccess());
 
   EXPECT_EQ(4088, service.last_server_date_);
 

@@ -35,7 +35,10 @@ class OmahaService {
  public:
   // Called when an upgrade is recommended.
   using UpgradeRecommendedCallback =
-      base::Callback<void(const UpgradeRecommendedDetails&)>;
+      base::RepeatingCallback<void(const UpgradeRecommendedDetails&)>;
+
+  // Called when a one-off Omaha check returns.
+  using OneOffCallback = base::OnceCallback<void(UpgradeRecommendedDetails)>;
 
   // Starts the service. Also set the |URLLoaderFactory| necessary to access the
   // Omaha server. This method should only be called once.  Does nothing if
@@ -43,6 +46,10 @@ class OmahaService {
   static void Start(std::unique_ptr<network::PendingSharedURLLoaderFactory>
                         pending_url_loader_factory,
                     const UpgradeRecommendedCallback& callback);
+
+  // Performs an immediate check to see if the device is up to date. Start must
+  // have been previously called.
+  void CheckNow(OneOffCallback callback);
 
   // Stops the service in preparation for browser shutdown.
   static void Stop();
@@ -61,6 +68,10 @@ class OmahaService {
   FRIEND_TEST_ALL_PREFIXES(OmahaServiceTest, InstallEventMessageTest);
   FRIEND_TEST_ALL_PREFIXES(OmahaServiceTest, SendPingFailure);
   FRIEND_TEST_ALL_PREFIXES(OmahaServiceTest, SendPingSuccess);
+  FRIEND_TEST_ALL_PREFIXES(OmahaServiceTest, OneOffSuccess);
+  FRIEND_TEST_ALL_PREFIXES(OmahaServiceTest, OngoingPingOneOffCallbackUsed);
+  FRIEND_TEST_ALL_PREFIXES(OmahaServiceTest, OneOffCallbackUsedOnlyOnce);
+  FRIEND_TEST_ALL_PREFIXES(OmahaServiceTest, ScheduledPingDuringOneOffDropped);
   FRIEND_TEST_ALL_PREFIXES(OmahaServiceTest, ParseAndEchoLastServerDate);
   FRIEND_TEST_ALL_PREFIXES(OmahaServiceTest, SendInstallEventSuccess);
   FRIEND_TEST_ALL_PREFIXES(OmahaServiceTest, SendPingReceiveUpdate);
@@ -209,8 +220,14 @@ class OmahaService {
   // Whether the ping currently being sent is an install (new or update) ping.
   bool sending_install_event_;
 
+  // If a scheduled ping was canceled.
+  bool scheduled_ping_canceled_ = false;
+
   // Called to notify that upgrade is recommended.
   UpgradeRecommendedCallback upgrade_recommended_callback_;
+
+  // Stores the callback for one off Omaha checks.
+  OneOffCallback one_off_check_callback_;
 
   DISALLOW_COPY_AND_ASSIGN(OmahaService);
 };
