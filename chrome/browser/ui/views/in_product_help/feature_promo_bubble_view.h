@@ -27,9 +27,12 @@ namespace views {
 class MdTextButton;
 }
 
+// NOTE: Avoid using this class directly. FeaturePromoController should
+// be used in almost all cases.
+//
 // The FeaturePromoBubbleView is a special BubbleDialogDelegateView for
-// in-product help which educates users about certain Chrome features in a
-// deferred context.
+// in-product help which educates users about certain Chrome features in
+// a deferred context.
 class FeaturePromoBubbleView : public views::BubbleDialogDelegateView {
  public:
   // Disallow copy and assign.
@@ -37,6 +40,9 @@ class FeaturePromoBubbleView : public views::BubbleDialogDelegateView {
   FeaturePromoBubbleView& operator=(const FeaturePromoBubbleView&) = delete;
   ~FeaturePromoBubbleView() override;
 
+  // NOTE: Please read comment above class. This method shouldn't be
+  // called in most cases.
+  //
   // Creates the promo. The returned pointer is only valid until the
   // widget is destroyed. It must not be manually deleted by the caller.
   static FeaturePromoBubbleView* Create(

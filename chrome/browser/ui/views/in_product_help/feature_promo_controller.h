@@ -23,6 +23,12 @@ class FeaturePromoController {
   // components/feature_engagement/public/feature_list.cc and registered
   // with |FeaturePromoRegistry|. Note that this is different than the
   // feature that the IPH is showing for.
+  //
+  // For users that can't register their parameters with
+  // FeaturePromoRegistry, see
+  // |FeaturePromoControllerViews::MaybeShowPromoWithParams()|. Prefer
+  // statically registering params with FeaturePromoRegistry and using
+  // this method when possible.
   virtual bool MaybeShowPromo(const base::Feature& iph_feature) = 0;
 
   // Returns whether a bubble is showing for the given IPH. Note that if
