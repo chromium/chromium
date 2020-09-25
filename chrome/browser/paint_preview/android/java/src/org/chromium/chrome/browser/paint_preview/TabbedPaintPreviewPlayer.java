@@ -15,6 +15,7 @@ import android.view.View;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.UserData;
+import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.paint_preview.TabbedPaintPreviewMetricsHelper.ExitCause;
 import org.chromium.chrome.browser.paint_preview.services.PaintPreviewTabService;
@@ -31,6 +32,7 @@ import org.chromium.components.paintpreview.player.PlayerManager;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.util.TokenHolder;
 import org.chromium.url.GURL;
 
 import java.util.concurrent.Callable;
@@ -61,6 +63,8 @@ public class TabbedPaintPreviewPlayer implements TabViewProvider, UserData {
     private boolean mFadingOut;
     private int mSnackbarShownCount;
     private TabbedPaintPreviewMetricsHelper mMetricsHelper;
+    private BrowserStateBrowserControlsVisibilityDelegate mBrowserVisibilityDelegate;
+    private int mPersistentToolbarToken = TokenHolder.INVALID_TOKEN;
 
     public static TabbedPaintPreviewPlayer get(Tab tab) {
         if (tab.getUserDataHost().getUserData(USER_DATA_KEY) == null) {
@@ -116,12 +120,19 @@ public class TabbedPaintPreviewPlayer implements TabViewProvider, UserData {
 
         @Override
         public void onHidden(Tab tab, @TabHidingType int hidingType) {
+            releasePersistentToolbar();
+
             if (mPlayerManager == null || !isShowingAndNeedsBadge()) return;
 
             // If the tab is hidden as a result of pausing the activity we shouldn't remove it.
             if (hidingType == TabHidingType.ACTIVITY_HIDDEN) return;
 
             removePaintPreview(ExitCause.TAB_HIDDEN);
+        }
+
+        @Override
+        public void onShown(Tab tab, int type) {
+            if (isShowingAndNeedsBadge()) showToolbarPersistent();
         }
     }
 
@@ -131,6 +142,11 @@ public class TabbedPaintPreviewPlayer implements TabViewProvider, UserData {
         mMetricsHelper = new TabbedPaintPreviewMetricsHelper();
         mObserver = new TabbedPaintPreviewObserver();
         mTab.addObserver(mObserver);
+    }
+
+    public void setBrowserVisibilityDelegate(
+            BrowserStateBrowserControlsVisibilityDelegate browserVisibilityDelegate) {
+        mBrowserVisibilityDelegate = browserVisibilityDelegate;
     }
 
     /**
@@ -207,11 +223,12 @@ public class TabbedPaintPreviewPlayer implements TabViewProvider, UserData {
      */
     private void removePaintPreview(@ExitCause int exitCause) {
         PaintPreviewCompositorUtils.stopWarmCompositor();
-        mOnDismissed = null;
         mInitializing = false;
         if (mTab == null || mPlayerManager == null || mFadingOut) return;
 
         mFadingOut = true;
+        if (mOnDismissed != null) mOnDismissed.run();
+        mOnDismissed = null;
         Point scrollPosition = mPlayerManager.getScrollPosition();
         if (mTab.getWebContents() != null && scrollPosition != null) {
             mTab.getWebContents().getEventForwarder().scrollTo(scrollPosition.x, scrollPosition.y);
@@ -276,6 +293,25 @@ public class TabbedPaintPreviewPlayer implements TabViewProvider, UserData {
         mTab.loadUrl(new LoadUrlParams(url.getSpec()));
     }
 
+    /**
+     * Persistently shows the toolbar and avoids hiding it on scrolling down.
+     */
+    private void showToolbarPersistent() {
+        if (mBrowserVisibilityDelegate == null
+                || mPersistentToolbarToken != TokenHolder.INVALID_TOKEN) {
+            return;
+        }
+
+        mPersistentToolbarToken = mBrowserVisibilityDelegate.showControlsPersistent();
+    }
+
+    private void releasePersistentToolbar() {
+        if (mBrowserVisibilityDelegate == null) return;
+
+        mBrowserVisibilityDelegate.releasePersistentShowingToken(mPersistentToolbarToken);
+        mPersistentToolbarToken = TokenHolder.INVALID_TOKEN;
+    }
+
     @Override
     public int getTabViewProviderType() {
         return Type.PAINT_PREVIEW;
@@ -287,8 +323,13 @@ public class TabbedPaintPreviewPlayer implements TabViewProvider, UserData {
     }
 
     @Override
+    public void onShown() {
+        showToolbarPersistent();
+    }
+
+    @Override
     public void onHidden() {
-        if (mOnDismissed != null) mOnDismissed.run();
+        releasePersistentToolbar();
     }
 
     @Override
