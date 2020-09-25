@@ -56,6 +56,10 @@ class WellKnownChangePasswordNavigationThrottle
   // Records the given UKM metric.
   void RecordMetric(password_manager::WellKnownChangePasswordResult result);
 
+  // Stores `navigation_handle()->GetURL()` if the first navigation was to
+  // .well-known/change-password. It is later used to derive the URL for the
+  // non-existing resource, and to provide fallback logic.
+  const GURL request_url_;
   password_manager::WellKnownChangePasswordState
       well_known_change_password_state_{this};
   password_manager::ChangePasswordUrlService* change_password_url_service_;

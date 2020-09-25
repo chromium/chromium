@@ -107,6 +107,7 @@ WellKnownChangePasswordNavigationThrottle::MaybeCreateThrottleFor(
 WellKnownChangePasswordNavigationThrottle::
     WellKnownChangePasswordNavigationThrottle(NavigationHandle* handle)
     : NavigationThrottle(handle),
+      request_url_(handle->GetURL()),
       change_password_url_service_(
           ChangePasswordUrlServiceFactory::GetForBrowserContext(
               handle->GetWebContents()->GetBrowserContext())),
@@ -135,7 +136,7 @@ WellKnownChangePasswordNavigationThrottle::WillStartRequest() {
       net::IsolationInfo::RedirectMode::kUpdateNothing,
       navigation_handle()->GetIsolationInfo().network_isolation_key());
   well_known_change_password_state_.FetchNonExistingResource(
-      url_loader_factory.get(), navigation_handle()->GetURL(),
+      url_loader_factory.get(), request_url_,
       navigation_handle()->GetInitiatorOrigin(), std::move(trusted_params));
   return NavigationThrottle::PROCEED;
 }
@@ -172,14 +173,14 @@ void WellKnownChangePasswordNavigationThrottle::OnProcessingFinished(
     Resume();
     return;
   }
-  GURL url = navigation_handle()->GetURL();
-  GURL redirect_url = change_password_url_service_->GetChangePasswordUrl(url);
+  GURL redirect_url =
+      change_password_url_service_->GetChangePasswordUrl(request_url_);
   if (redirect_url.is_valid()) {
     RecordMetric(WellKnownChangePasswordResult::kFallbackToOverrideUrl);
     Redirect(redirect_url);
   } else {
     RecordMetric(WellKnownChangePasswordResult::kFallbackToOriginUrl);
-    Redirect(url.GetOrigin());
+    Redirect(request_url_.GetOrigin());
   }
   CancelDeferredNavigation(NavigationThrottle::CANCEL);
 }
