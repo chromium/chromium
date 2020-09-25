@@ -46,7 +46,7 @@ class SecureDnsBridge {
         // Must match features::kDnsOverHttpsShowUiParam.
         final String showUiParam = "ShowUi";
         // Must match the default value for this param.
-        final boolean showUiParamDefault = false;
+        final boolean showUiParamDefault = true;
 
         return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                 ChromeFeatureList.DNS_OVER_HTTPS, showUiParam, showUiParamDefault);
