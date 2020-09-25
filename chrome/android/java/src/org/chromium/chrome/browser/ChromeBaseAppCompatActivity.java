@@ -41,10 +41,14 @@ public class ChromeBaseAppCompatActivity
         // https://crbug.com/834191
         config.fontScale = 0;
         if (applyOverrides(newBase, config)) applyOverrideConfiguration(config);
+    }
 
+    @Override
+    public Context createConfigurationContext(Configuration overrideConfiguration) {
+        Context newContext = super.createConfigurationContext(overrideConfiguration);
         // If the activity locale will be overridden enable using language splits.
-        // Must be called after applyOverrideConfiguration.
-        AppLocaleUtils.maybeInstallActivitySplitCompat(this);
+        AppLocaleUtils.maybeInstallActivitySplitCompat(newContext);
+        return newContext;
     }
 
     @Override
