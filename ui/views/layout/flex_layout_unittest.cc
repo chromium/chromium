@@ -2786,7 +2786,7 @@ Size StepwiseFlexRule(int step,
   return preferred;
 }
 
-}  // anonymous namespace
+}  // namespace
 
 // When a view does not take all of the space granted it when excess space is
 // being distributed (views flexing above their preferred size) the remaining

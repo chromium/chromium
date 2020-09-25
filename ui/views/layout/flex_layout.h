@@ -212,7 +212,7 @@ class VIEWS_EXPORT FlexLayout : public LayoutManagerBase {
 
   // Calculates available space along the main axis for non-flex views and
   // the values in |data.child_data|.
-  void CalculateNonFlexAvailableSpace(int available_space,
+  void CalculateNonFlexAvailableSpace(const SizeBound& available_space,
                                       const FlexOrderToViewIndexMap& flex_views,
                                       const ChildViewSpacing& child_spacing,
                                       FlexLayoutData& data) const;
@@ -258,16 +258,15 @@ class VIEWS_EXPORT FlexLayout : public LayoutManagerBase {
                               FlexOrderToViewIndexMap* expandable_views) const;
 
   // Tries to allocate all the views in |child_list| in the available |bounds|.
-  // If successful, returns true and updates |data| and |expandable_views|.
-  // |remaining_deficit| is set to the difference between the space needed by
-  // all of the views in |child_list| and the space provided by |bounds|.
-  bool TryAllocateAll(const NormalizedSizeBounds& bounds,
-                      int flex_order,
-                      const ChildIndices& child_list,
-                      FlexLayoutData& data,
-                      ChildViewSpacing& child_spacing,
-                      FlexOrderToViewIndexMap& expandable_views,
-                      int& remaining_deficit) const;
+  // If successful, updates |data| and |expandable_views|. Returns the
+  // difference between the space needed by all of the views in |child_list| and
+  // the space provided by |bounds|.
+  SizeBound TryAllocateAll(const NormalizedSizeBounds& bounds,
+                           int flex_order,
+                           const ChildIndices& child_list,
+                           FlexLayoutData& data,
+                           ChildViewSpacing& child_spacing,
+                           FlexOrderToViewIndexMap& expandable_views) const;
 
   // Allocates flex excess |to_allocate| for a list of child views at the same
   // priority order.
@@ -281,7 +280,7 @@ class VIEWS_EXPORT FlexLayout : public LayoutManagerBase {
   //
   // This method should be called repeatedly until |child_list| is empty.
   void AllocateFlexExcessAtOrder(const NormalizedSizeBounds& bounds,
-                                 int& to_allocate,
+                                 SizeBound& to_allocate,
                                  ChildIndices& child_list,
                                  FlexLayoutData& data,
                                  ChildViewSpacing& child_spacing) const;
@@ -297,7 +296,7 @@ class VIEWS_EXPORT FlexLayout : public LayoutManagerBase {
   //
   // This method should be called repeatedly until |child_list| is empty.
   void AllocateFlexShortageAtOrder(const NormalizedSizeBounds& bounds,
-                                   int deficit,
+                                   SizeBound deficit,
                                    ChildIndices& child_list,
                                    FlexLayoutData& data,
                                    ChildViewSpacing& child_spacing) const;
