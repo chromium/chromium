@@ -297,19 +297,6 @@ is_apple = is_ios || is_mac
 is_posix = !is_win && !is_fuchsia
 
 # =============================================================================
-# SOURCES FILTERS
-# =============================================================================
-#
-# Compatibility to allow incremental migration of BUILD.gn files away from
-# depending on global call of set_sources_assignment_filter. Will be removed
-# when all files that depend on the assignment have been converted to import
-# the file directly. See https://crbug.com/1018739#c69.
-
-import("//build/config/deprecated_default_sources_assignment_filter.gni")
-sources_assignment_filter = deprecated_default_sources_assignment_filter
-set_sources_assignment_filter(sources_assignment_filter)
-
-# =============================================================================
 # TARGET DEFAULTS
 # =============================================================================
 #
