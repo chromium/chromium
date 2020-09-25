@@ -353,7 +353,8 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
                             std::vector<std::string> actions_to_show) override;
   void SetDictationActive(bool is_active) override;
   void ToggleDictationFromSource(DictationToggleSource source) override;
-  void OnAutoclickScrollableBoundsFound(gfx::Rect& bounds_in_screen) override;
+  void HandleAutoclickScrollableBoundsFound(
+      gfx::Rect& bounds_in_screen) override;
   base::string16 GetBatteryDescription() const override;
   void SetVirtualKeyboardVisible(bool is_visible) override;
   void PerformAcceleratorAction(AcceleratorAction accelerator_action) override;

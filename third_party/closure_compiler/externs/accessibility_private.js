@@ -312,7 +312,7 @@ chrome.accessibilityPrivate.setSelectToSpeakState = function(state) {};
  * requested using onScrollableBoundsForPointRequested.
  * @param {!chrome.accessibilityPrivate.ScreenRect} rect
  */
-chrome.accessibilityPrivate.onScrollableBoundsForPointFound = function(rect) {};
+chrome.accessibilityPrivate.handleScrollableBoundsForPointFound = function(rect) {};
 
 /**
  * Toggles dictation between active and inactive states.

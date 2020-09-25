@@ -1311,7 +1311,8 @@ TEST_F(AutoclickTest, ScrollMenuBubblePostioning) {
 
   // Set the bounds to be the entire window.
   gfx::Rect display_bounds = gfx::Rect(0, 0, 800, 600);
-  GetAutoclickController()->OnAutoclickScrollableBoundsFound(display_bounds);
+  GetAutoclickController()->HandleAutoclickScrollableBoundsFound(
+      display_bounds);
 
   // The scroll bubble should start near the autoclick menu.
   gfx::Rect scroll_bounds = GetAutoclickScrollView()->GetBoundsInScreen();
@@ -1347,7 +1348,8 @@ TEST_F(AutoclickTest, ScrollMenuBubblePostioning) {
   gfx::Point scroll_point = gfx::Point(0, 0);
   GetEventGenerator()->MoveMouseTo(scroll_point);
   base::RunLoop().RunUntilIdle();
-  GetAutoclickController()->OnAutoclickScrollableBoundsFound(display_bounds);
+  GetAutoclickController()->HandleAutoclickScrollableBoundsFound(
+      display_bounds);
   scroll_bounds = GetAutoclickScrollView()->GetBoundsInScreen();
   EXPECT_GT(menu_bounds.ManhattanInternalDistance(scroll_bounds),
             kScrollToMenuBoundsBuffer);

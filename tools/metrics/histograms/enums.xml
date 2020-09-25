@@ -24450,7 +24450,7 @@ Called by update_extension_histograms.py.-->
   <int value="1350" label="ACTION_SETICON"/>
   <int value="1351" label="AUTOTESTPRIVATE_GETALLENTERPRISEPOLICIES"/>
   <int value="1352"
-      label="ACCESSIBILITY_PRIVATE_ONSCROLLABLEBOUNDSFORPOINTFOUND"/>
+      label="ACCESSIBILITY_PRIVATE_HANDLESCROLLABLEBOUNDSFORPOINTFOUND"/>
   <int value="1353" label="ACTION_GETPOPUP"/>
   <int value="1354" label="ACTION_SETPOPUP"/>
   <int value="1355" label="ACTION_GETTITLE"/>

@@ -396,15 +396,16 @@ AccessibilityPrivateSetSelectToSpeakStateFunction::Run() {
 }
 
 ExtensionFunction::ResponseAction
-AccessibilityPrivateOnScrollableBoundsForPointFoundFunction::Run() {
+AccessibilityPrivateHandleScrollableBoundsForPointFoundFunction::Run() {
   std::unique_ptr<
-      accessibility_private::OnScrollableBoundsForPointFound::Params>
-      params = accessibility_private::OnScrollableBoundsForPointFound::Params::
-          Create(*args_);
+      accessibility_private::HandleScrollableBoundsForPointFound::Params>
+      params = accessibility_private::HandleScrollableBoundsForPointFound::
+          Params::Create(*args_);
   EXTENSION_FUNCTION_VALIDATE(params);
   accessibility_private::ScreenRect rect = std::move(params->rect);
   gfx::Rect bounds(rect.left, rect.top, rect.width, rect.height);
-  ash::AccessibilityController::Get()->OnAutoclickScrollableBoundsFound(bounds);
+  ash::AccessibilityController::Get()->HandleAutoclickScrollableBoundsFound(
+      bounds);
   return RespondNow(NoArguments());
 }
 

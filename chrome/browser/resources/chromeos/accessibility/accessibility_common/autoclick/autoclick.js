@@ -166,7 +166,7 @@ class Autoclick {
         this.setFocusRings_([]);
       }, AUTOCLICK_FOCUS_RING_DISPLAY_TIME_MS * 5);
     }
-    chrome.accessibilityPrivate.onScrollableBoundsForPointFound(bounds);
+    chrome.accessibilityPrivate.handleScrollableBoundsForPointFound(bounds);
   }
 
   /**

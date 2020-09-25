@@ -1528,9 +1528,9 @@ void AccessibilityControllerImpl::UpdateAutoclickMenuBoundsIfNeeded() {
   Shell::Get()->autoclick_controller()->UpdateAutoclickMenuBoundsIfNeeded();
 }
 
-void AccessibilityControllerImpl::OnAutoclickScrollableBoundsFound(
+void AccessibilityControllerImpl::HandleAutoclickScrollableBoundsFound(
     gfx::Rect& bounds_in_screen) {
-  Shell::Get()->autoclick_controller()->OnAutoclickScrollableBoundsFound(
+  Shell::Get()->autoclick_controller()->HandleAutoclickScrollableBoundsFound(
       bounds_in_screen);
 }
 

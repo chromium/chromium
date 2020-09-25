@@ -87,7 +87,7 @@ class ASH_PUBLIC_EXPORT AccessibilityController {
   virtual void ToggleDictationFromSource(DictationToggleSource source) = 0;
 
   // Called when the Automatic Clicks extension finds scrollable bounds.
-  virtual void OnAutoclickScrollableBoundsFound(
+  virtual void HandleAutoclickScrollableBoundsFound(
       gfx::Rect& bounds_in_screen) = 0;
 
   // Retrieves a string description of the current battery status.

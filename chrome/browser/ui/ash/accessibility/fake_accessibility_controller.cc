@@ -52,7 +52,7 @@ void FakeAccessibilityController::SetDictationActive(bool is_active) {}
 void FakeAccessibilityController::ToggleDictationFromSource(
     ash::DictationToggleSource source) {}
 
-void FakeAccessibilityController::OnAutoclickScrollableBoundsFound(
+void FakeAccessibilityController::HandleAutoclickScrollableBoundsFound(
     gfx::Rect& bounds_in_screen) {}
 
 base::string16 FakeAccessibilityController::GetBatteryDescription() const {

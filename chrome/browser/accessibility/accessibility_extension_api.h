@@ -111,13 +111,13 @@ class AccessibilityPrivateSetSelectToSpeakStateFunction
 
 // API function that is called when the Accessibility Common extension finds
 // scrollable bounds.
-class AccessibilityPrivateOnScrollableBoundsForPointFoundFunction
+class AccessibilityPrivateHandleScrollableBoundsForPointFoundFunction
     : public ExtensionFunction {
-  ~AccessibilityPrivateOnScrollableBoundsForPointFoundFunction() override {}
+  ~AccessibilityPrivateHandleScrollableBoundsForPointFoundFunction() override {}
   ResponseAction Run() override;
   DECLARE_EXTENSION_FUNCTION(
-      "accessibilityPrivate.onScrollableBoundsForPointFound",
-      ACCESSIBILITY_PRIVATE_ONSCROLLABLEBOUNDSFORPOINTFOUND)
+      "accessibilityPrivate.handleScrollableBoundsForPointFound",
+      ACCESSIBILITY_PRIVATE_HANDLESCROLLABLEBOUNDSFORPOINTFOUND)
 };
 
 // API function that is called when a user toggles Dictation from another

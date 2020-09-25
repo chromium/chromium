@@ -396,7 +396,7 @@
         "platforms": ["chromeos"]
       },
       {
-        "name": "onScrollableBoundsForPointFound",
+        "name": "handleScrollableBoundsForPointFound",
         "type": "function",
         "description": "Called by the Accessibility Common extension when onScrollableBoundsForPointRequested has found a scrolling container. |rect| will be the bounds of the nearest scrollable ancestor of the node at the point requested using onScrollableBoundsForPointRequested.",
         "parameters": [
