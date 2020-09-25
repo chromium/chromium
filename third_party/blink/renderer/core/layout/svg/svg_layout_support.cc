@@ -436,12 +436,6 @@ FloatRect SVGLayoutSupport::ComputeVisualRectForText(
   return visual_rect;
 }
 
-bool SVGLayoutSupport::HasFilterResource(const LayoutObject& object) {
-  SVGResources* resources =
-      SVGResourcesCache::CachedResourcesForLayoutObject(object);
-  return resources && resources->Filter();
-}
-
 bool SVGLayoutSupport::IntersectsClipPath(const LayoutObject& object,
                                           const FloatRect& reference_box,
                                           const HitTestLocation& location) {

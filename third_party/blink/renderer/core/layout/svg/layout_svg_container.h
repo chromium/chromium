@@ -57,8 +57,6 @@ class LayoutSVGContainer : public LayoutSVGModelObject {
   }
   bool IsObjectBoundingBoxValid() const { return object_bounding_box_valid_; }
 
-  bool SelfWillPaint() const;
-
   bool HasNonIsolatedBlendingDescendants() const final;
 
   const char* GetName() const override { return "LayoutSVGContainer"; }

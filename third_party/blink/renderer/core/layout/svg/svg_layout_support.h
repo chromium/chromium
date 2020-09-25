@@ -77,9 +77,6 @@ class CORE_EXPORT SVGLayoutSupport {
                                             const FloatRect& text_bounds,
                                             const FloatRect& reference_box);
 
-  // Determine if the LayoutObject references a filter resource object.
-  static bool HasFilterResource(const LayoutObject&);
-
   // Determine whether the passed location intersects a clip path referenced by
   // the passed LayoutObject.
   // |reference_box| is used to resolve 'objectBoundingBox' units/percentages,

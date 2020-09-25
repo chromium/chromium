@@ -19,12 +19,16 @@
 
 namespace blink {
 
-void SVGContainerPainter::Paint(const PaintInfo& paint_info) {
-  // Spec: groups w/o children still may render filter content.
-  if (!layout_svg_container_.FirstChild() &&
-      !layout_svg_container_.SelfWillPaint())
-    return;
+namespace {
 
+bool HasReferenceFilterEffect(const ObjectPaintProperties& properties) {
+  return properties.Filter() &&
+         properties.Filter()->Filter().HasReferenceFilter();
+}
+
+}  // namespace
+
+void SVGContainerPainter::Paint(const PaintInfo& paint_info) {
   // Spec: An empty viewBox on the <svg> element disables rendering.
   DCHECK(layout_svg_container_.GetElement());
   auto* svg_svg_element =
@@ -37,12 +41,13 @@ void SVGContainerPainter::Paint(const PaintInfo& paint_info) {
     return;
   }
 
+  const auto* properties =
+      layout_svg_container_.FirstFragment().PaintProperties();
   PaintInfo paint_info_before_filtering(paint_info);
   if (SVGModelObjectPainter::ShouldUseInfiniteCullRect(
           layout_svg_container_.StyleRef())) {
     paint_info_before_filtering.ApplyInfiniteCullRect();
-  } else if (const auto* properties =
-                 layout_svg_container_.FirstFragment().PaintProperties()) {
+  } else if (properties) {
     if (const auto* transform = properties->Transform())
       paint_info_before_filtering.TransformCullRect(*transform);
   }
@@ -54,11 +59,6 @@ void SVGContainerPainter::Paint(const PaintInfo& paint_info) {
     base::Optional<ScopedPaintChunkProperties> scoped_paint_chunk_properties;
     if (layout_svg_container_.IsSVGViewportContainer() &&
         SVGLayoutSupport::IsOverflowHidden(layout_svg_container_)) {
-      const auto* fragment =
-          paint_info_before_filtering.FragmentToPaint(layout_svg_container_);
-      if (!fragment)
-        return;
-      const auto* properties = fragment->PaintProperties();
       // TODO(crbug.com/814815): The condition should be a DCHECK, but for now
       // we may paint the object for filters during PrePaint before the
       // properties are ready.
@@ -80,7 +80,7 @@ void SVGContainerPainter::Paint(const PaintInfo& paint_info) {
       // When a filter applies to the container we need to make sure
       // that it is applied even if nothing is painted.
       if (paint_state.GetPaintInfo().phase == PaintPhase::kForeground &&
-          layout_svg_container_.SelfWillPaint())
+          properties && HasReferenceFilterEffect(*properties))
         paint_state.GetPaintInfo().context.GetPaintController().EnsureChunk();
 
       for (LayoutObject* child = layout_svg_container_.FirstChild(); child;
@@ -95,8 +95,11 @@ void SVGContainerPainter::Paint(const PaintInfo& paint_info) {
     }
   }
 
-  SVGModelObjectPainter(layout_svg_container_)
-      .PaintOutline(paint_info_before_filtering);
+  // Only paint an outline if there are children.
+  if (layout_svg_container_.FirstChild()) {
+    SVGModelObjectPainter(layout_svg_container_)
+        .PaintOutline(paint_info_before_filtering);
+  }
 
   if (paint_info_before_filtering.ShouldAddUrlMetadata() &&
       paint_info_before_filtering.phase == PaintPhase::kForeground) {

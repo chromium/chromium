@@ -109,10 +109,6 @@ void LayoutSVGContainer::RemoveChild(LayoutObject* child) {
     DescendantIsolationRequirementsChanged(kDescendantIsolationNeedsUpdate);
 }
 
-bool LayoutSVGContainer::SelfWillPaint() const {
-  return SVGLayoutSupport::HasFilterResource(*this);
-}
-
 void LayoutSVGContainer::StyleDidChange(StyleDifference diff,
                                         const ComputedStyle* old_style) {
   LayoutSVGModelObject::StyleDidChange(diff, old_style);
