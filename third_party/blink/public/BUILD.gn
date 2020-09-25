@@ -209,7 +209,6 @@ source_set("blink_headers") {
     "platform/web_fetch_client_settings_object.h",
     "platform/web_file_system_type.h",
     "platform/web_float_rect.h",
-    "platform/web_float_size.h",
     "platform/web_font.h",
     "platform/web_font_description.h",
     "platform/web_font_render_style.h",

@@ -68,7 +68,6 @@
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom.h"
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom.h"
 #include "third_party/blink/public/platform/viewport_intersection_state.h"
-#include "third_party/blink/public/platform/web_float_size.h"
 #include "third_party/blink/public/web/web_frame_owner_properties.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -138,11 +137,6 @@ IPC_STRUCT_TRAITS_BEGIN(content::Impression)
   IPC_STRUCT_TRAITS_MEMBER(reporting_origin)
   IPC_STRUCT_TRAITS_MEMBER(impression_data)
   IPC_STRUCT_TRAITS_MEMBER(expiry)
-IPC_STRUCT_TRAITS_END()
-
-IPC_STRUCT_TRAITS_BEGIN(blink::WebFloatSize)
-  IPC_STRUCT_TRAITS_MEMBER(width)
-  IPC_STRUCT_TRAITS_MEMBER(height)
 IPC_STRUCT_TRAITS_END()
 
 IPC_STRUCT_TRAITS_BEGIN(content::UntrustworthyContextMenuParams)
