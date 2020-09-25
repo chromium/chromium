@@ -16,7 +16,9 @@
 #include "base/task/thread_pool.h"
 #include "base/version.h"
 #include "components/component_updater/component_updater_paths.h"
+#include "content/public/browser/network_service_instance.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/mojom/network_service.mojom.h"
 
 using component_updater::ComponentUpdateService;
 
@@ -153,8 +155,9 @@ void RegisterFirstPartySetsComponent(ComponentUpdateService* cus) {
       std::make_unique<FirstPartySetsComponentInstallerPolicy>(
           /*on_sets_ready=*/base::BindRepeating(
               [](const std ::string& raw_sets) {
-                // TODO(cfredric): forward to NetworkService here.
                 VLOG(1) << "Received Sets: \"" << raw_sets << "\"";
+                content::GetNetworkService()->SetPreloadedFirstPartySets(
+                    raw_sets);
               })));
   installer->Register(cus, base::OnceClosure());
 }

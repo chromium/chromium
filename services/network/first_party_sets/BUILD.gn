@@ -1,0 +1,102 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//services/network/public/cpp/features.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+source_set("first_party_sets") {
+  visibility = [
+    ":*",
+    "//services/network:network_service",
+    "//services/network:tests",
+  ]
+
+  defines = [ "IS_NETWORK_SERVICE_IMPL" ]
+
+  sources = [
+    "first_party_set_parser.cc",
+    "first_party_set_parser.h",
+    "preloaded_first_party_sets.cc",
+    "preloaded_first_party_sets.h",
+  ]
+
+  deps = [
+    "//base",
+    "//base/util/values:values_util",
+    "//components/cbor",
+    "//components/sqlite_proto",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
+    "//sql",
+    "//url",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+
+  defines = [ "IS_NETWORK_SERVICE_IMPL" ]
+
+  sources = []
+
+  deps = [
+    ":first_party_sets",
+    "//base",
+    "//base/test:test_support",
+    "//components/cbor",
+    "//net",
+    "//net:test_support",
+    "//net/traffic_annotation:test_support",
+    "//services/network/public/mojom",
+    "//testing/gtest",
+    "//url",
+  ]
+}
+
+source_set("tests") {
+  testonly = true
+
+  defines = [ "IS_NETWORK_SERVICE_IMPL" ]
+
+  sources = [ "first_party_set_parser_unittest.cc" ]
+
+  deps = [
+    ":first_party_sets",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//components/cbor",
+    "//components/sqlite_proto",
+    "//net",
+    "//net:test_support",
+    "//net/traffic_annotation:test_support",
+    "//services/network:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//url",
+  ]
+}
+
+fuzzer_test("first_party_set_parser_fuzzer") {
+  sources = [ "test/first_party_set_parser_fuzzer.cc" ]
+  deps = [
+    ":first_party_sets",
+    "//base",
+    "//net:net_fuzzer_test_support",
+  ]
+  dict = "test/first_party_set_parser_fuzzer.dict"
+  seed_corpus = "//third_party/grpc/src/test/core/json/corpus/"
+}
+
+fuzzer_test("first_party_set_parser_json_fuzzer") {
+  sources = [ "test/first_party_set_parser_json_fuzzer.cc" ]
+  deps = [
+    ":first_party_sets",
+    "//base",
+    "//testing/libfuzzer/proto:json_proto",
+    "//testing/libfuzzer/proto:json_proto_converter",
+    "//third_party/libprotobuf-mutator",
+  ]
+}

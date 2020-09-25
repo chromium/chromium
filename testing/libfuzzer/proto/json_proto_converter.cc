@@ -69,6 +69,11 @@ void JsonProtoConverter::AppendValue(const JsonValue& json_value) {
   }
 }
 
+std::string JsonProtoConverter::Convert(const JsonValue& json_value) {
+  AppendValue(json_value);
+  return data_.str();
+}
+
 std::string JsonProtoConverter::Convert(const JsonObject& json_object) {
   AppendObject(json_object);
   return data_.str();
