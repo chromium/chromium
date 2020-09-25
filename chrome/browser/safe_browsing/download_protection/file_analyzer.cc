@@ -208,10 +208,6 @@ void FileAnalyzer::OnRarAnalysisFinished(
                        &results_.archived_binaries);
 
   // Log metrics for Rar Analysis
-  if (results_.archived_executable) {
-    UMA_HISTOGRAM_COUNTS_100("SBClientDownload.RarFileArchivedBinariesCount",
-                             archive_results.archived_binary.size());
-  }
   UMA_HISTOGRAM_MEDIUM_TIMES("SBClientDownload.ExtractRarFeaturesTimeMedium",
                              base::TimeTicks::Now() - rar_analysis_start_time_);
 

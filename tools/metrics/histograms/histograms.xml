@@ -42772,7 +42772,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Download.DangerousFile.DownloadValidatedByType"
-    enum="SBClientDownloadExtensions" expires_after="M85">
+    enum="SBClientDownloadExtensions" expires_after="M90">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@chromium.org</owner>
   <summary>
@@ -44476,7 +44476,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Download.ShowedDownloadWarning" enum="DownloadItem.DangerType"
-    expires_after="M85">
+    expires_after="M90">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@chromium.org</owner>
   <summary>
@@ -44636,7 +44636,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Download.UserValidatedDangerousDownload"
-    enum="DownloadItem.DangerType" expires_after="M85">
+    enum="DownloadItem.DangerType" expires_after="M90">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-team@chromium.org</owner>
   <summary>
@@ -148606,6 +148606,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="SafeBrowsing.UnverifiedDownloads.Allowed"
     enum="SBClientDownloadExtensions" expires_after="M85">
+  <obsolete>
+    Removed 09-2020 since this is no longer recorded.
+  </obsolete>
   <owner>dtrainor@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -148616,6 +148619,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="SafeBrowsing.UnverifiedDownloads.AllowedByWhitelist"
     enum="SBClientDownloadExtensions" expires_after="M85">
+  <obsolete>
+    Removed 09-2020 since this is no longer recorded.
+  </obsolete>
   <owner>dtrainor@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -148628,6 +148634,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="SafeBrowsing.UnverifiedDownloads.AllowedDueToDisabledService"
     enum="SBClientDownloadExtensions" expires_after="M85">
+  <obsolete>
+    Removed 09-2020 since this is no longer recorded.
+  </obsolete>
   <owner>dtrainor@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -148640,6 +148649,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="SafeBrowsing.UnverifiedDownloads.AlternateExtensionCount"
     units="units" expires_after="M85">
+  <obsolete>
+    Removed 09-2020 since this is no longer recorded.
+  </obsolete>
   <owner>dtrainor@chromium.org</owner>
   <summary>
     Count of alternate extensions that were supplied when attempting to download
@@ -148650,6 +148662,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="SafeBrowsing.UnverifiedDownloads.Blocked"
     enum="SBClientDownloadExtensions" expires_after="M85">
+  <obsolete>
+    Removed 09-2020 since this is no longer recorded.
+  </obsolete>
   <owner>dtrainor@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -151197,8 +151212,8 @@ Safe Browsing lookups, which is critical for security. -->
 </histogram>
 
 <histogram name="SBClientDownload.CheckWhitelistResult"
-    enum="WhitelistedDownloadType" expires_after="M85">
-  <owner>vakh@chromium.org</owner>
+    enum="WhitelistedDownloadType" expires_after="M90">
+  <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     For each download supported by the SafeBrowsing download protection service,
@@ -151290,8 +151305,8 @@ Safe Browsing lookups, which is critical for security. -->
 </histogram>
 
 <histogram name="SBClientDownload.DmgFileSuccessByType"
-    enum="SBClientDownloadExtensions" expires_after="M85">
-  <owner>vakh@chromium.org</owner>
+    enum="SBClientDownloadExtensions" expires_after="M90">
+  <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     Counts of DMG-like file types that were successfully analyzed by the
@@ -151416,8 +151431,8 @@ Safe Browsing lookups, which is critical for security. -->
 </histogram>
 
 <histogram name="SBClientDownload.DownloadRequestPayloadSize" units="bytes"
-    expires_after="M85">
-  <owner>vakh@chromium.org</owner>
+    expires_after="M90">
+  <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <owner>mattm@chromium.org</owner>
   <summary>
@@ -151609,6 +151624,9 @@ Safe Browsing lookups, which is critical for security. -->
 
 <histogram name="SBClientDownload.RarFileArchivedBinariesCount" units="count"
     expires_after="M85">
+  <obsolete>
+    Removed 09-2020 due to lack of use.
+  </obsolete>
   <owner>vakh@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
