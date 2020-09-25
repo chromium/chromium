@@ -249,4 +249,34 @@ id<GREYMatcher> ToolsMenuTranslateButton() {
       assertWithMatcher:grey_notNil()];
 }
 
+// Test the chrome://management page when no machine level policy is set.
+- (void)testManagementPageUnmanaged {
+  // Open the management page and check if the content is expected.
+  [ChromeEarlGrey loadURL:GURL("chrome://management")];
+  [ChromeEarlGrey
+      waitForWebStateContainingText:l10n_util::GetStringUTF8(
+                                        IDS_IOS_MANAGEMENT_UI_UNMANAGED_DESC)];
+}
+
+// Test the chrome://management page when one or more machine level policies are
+// set.
+- (void)testManagementPageManaged {
+  // Setup a machine level policy.
+  SetPolicy(false, policy::key::kTranslateEnabled);
+
+  // Open the management page and check if the content is expected.
+  [ChromeEarlGrey loadURL:GURL("chrome://management")];
+  [ChromeEarlGrey
+      waitForWebStateContainingText:l10n_util::GetStringUTF8(
+                                        IDS_IOS_MANAGEMENT_UI_MESSAGE)];
+
+  // Open the "learn more" link in the web content.
+  [ChromeEarlGrey tapWebStateElementWithID:@"learn-more-link"];
+  [ChromeEarlGrey waitForPageToFinishLoading];
+  // Check the navigation.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxContainingText(
+                                          "support.google.com")]
+      assertWithMatcher:grey_notNil()];
+}
+
 @end
