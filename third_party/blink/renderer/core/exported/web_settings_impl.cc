@@ -259,17 +259,16 @@ void WebSettingsImpl::SetAvailablePointerTypes(int pointers) {
   dev_tools_emulator_->SetAvailablePointerTypes(pointers);
 }
 
-void WebSettingsImpl::SetPrimaryPointerType(PointerType pointer) {
-  dev_tools_emulator_->SetPrimaryPointerType(
-      static_cast<blink::PointerType>(pointer));
+void WebSettingsImpl::SetPrimaryPointerType(ui::PointerType pointer) {
+  dev_tools_emulator_->SetPrimaryPointerType(pointer);
 }
 
 void WebSettingsImpl::SetAvailableHoverTypes(int types) {
   dev_tools_emulator_->SetAvailableHoverTypes(types);
 }
 
-void WebSettingsImpl::SetPrimaryHoverType(HoverType type) {
-  dev_tools_emulator_->SetPrimaryHoverType(static_cast<blink::HoverType>(type));
+void WebSettingsImpl::SetPrimaryHoverType(ui::HoverType type) {
+  dev_tools_emulator_->SetPrimaryHoverType(type);
 }
 
 void WebSettingsImpl::SetPreferHiddenVolumeControls(bool enabled) {

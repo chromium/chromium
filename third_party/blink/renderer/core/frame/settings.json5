@@ -621,13 +621,13 @@
     // has pointerType coarse *and* fine).
     {
       name: "availablePointerTypes",
-      initial: "kPointerTypeNone",
+      initial: "ui::POINTER_TYPE_NONE",
       invalidate: "MediaQuery",
       type: "int",
     },
     {
       name: "availableHoverTypes",
-      initial: "kHoverTypeNone",
+      initial: "ui::HOVER_TYPE_NONE",
       invalidate: "MediaQuery",
       type: "int",
     },
@@ -635,15 +635,15 @@
     // These values specify properties of the user's primary pointing device only.
     {
       name: "primaryPointerType",
-      initial: "kPointerTypeNone",
+      initial: "ui::POINTER_TYPE_NONE",
       invalidate: "MediaQuery",
-      type: "PointerType",
+      type: "ui::PointerType",
     },
     {
       name: "primaryHoverType",
-      initial: "kHoverTypeNone",
+      initial: "ui::HOVER_TYPE_NONE",
       invalidate: "MediaQuery",
-      type: "HoverType",
+      type: "ui::HoverType",
     },
 
     // If true, the value in password fields is exposed to assistive technologies.

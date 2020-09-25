@@ -168,5 +168,13 @@ specific_include_rules = {
     "local_dom_window.cc" : [
         "+net/base/registry_controlled_domains/registry_controlled_domain.h",
     ],
-    "(computed_style|computed_style_test)\.cc" : [ "+ui/base/ui_base_features.h" ]
+    "(computed_style|computed_style_test)\.cc" : [
+        "+ui/base/ui_base_features.h"
+    ],
+    "media_query_evaluator.cc": [
+        "+ui/base/pointer/pointer_device.h",
+    ],
+    "media_values.h": [
+        "+ui/base/pointer/pointer_device.h",
+    ],
 }

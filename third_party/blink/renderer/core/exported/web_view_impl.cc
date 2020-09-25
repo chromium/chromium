@@ -1981,11 +1981,9 @@ void WebView::ApplyWebPreferences(const web_pref::WebPreferences& prefs,
       prefs.touch_event_feature_detection_enabled);
   settings->SetMaxTouchPoints(prefs.pointer_events_max_touch_points);
   settings->SetAvailablePointerTypes(prefs.available_pointer_types);
-  settings->SetPrimaryPointerType(
-      static_cast<blink::PointerType>(prefs.primary_pointer_type));
+  settings->SetPrimaryPointerType(prefs.primary_pointer_type);
   settings->SetAvailableHoverTypes(prefs.available_hover_types);
-  settings->SetPrimaryHoverType(
-      static_cast<blink::HoverType>(prefs.primary_hover_type));
+  settings->SetPrimaryHoverType(prefs.primary_hover_type);
   settings->SetBarrelButtonForDragEnabled(prefs.barrel_button_for_drag_enabled);
 
   settings->SetEditingBehavior(prefs.editing_behavior);

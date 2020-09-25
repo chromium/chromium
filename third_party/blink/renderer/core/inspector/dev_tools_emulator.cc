@@ -199,7 +199,7 @@ void DevToolsEmulator::SetAvailablePointerTypes(int types) {
     web_view_->GetPage()->GetSettings().SetAvailablePointerTypes(types);
 }
 
-void DevToolsEmulator::SetPrimaryPointerType(PointerType pointer_type) {
+void DevToolsEmulator::SetPrimaryPointerType(ui::PointerType pointer_type) {
   embedder_primary_pointer_type_ = pointer_type;
   if (!touch_event_emulation_enabled_)
     web_view_->GetPage()->GetSettings().SetPrimaryPointerType(pointer_type);
@@ -211,7 +211,7 @@ void DevToolsEmulator::SetAvailableHoverTypes(int types) {
     web_view_->GetPage()->GetSettings().SetAvailableHoverTypes(types);
 }
 
-void DevToolsEmulator::SetPrimaryHoverType(HoverType hover_type) {
+void DevToolsEmulator::SetPrimaryHoverType(ui::HoverType hover_type) {
   embedder_primary_hover_type_ = hover_type;
   if (!touch_event_emulation_enabled_)
     web_view_->GetPage()->GetSettings().SetPrimaryHoverType(hover_type);
@@ -456,13 +456,13 @@ void DevToolsEmulator::SetTouchEventEmulationEnabled(bool enabled,
   web_view_->GetPage()->GetSettings().SetMaxTouchPoints(
       enabled ? max_touch_points : original_max_touch_points_);
   web_view_->GetPage()->GetSettings().SetAvailablePointerTypes(
-      enabled ? kPointerTypeCoarse : embedder_available_pointer_types_);
+      enabled ? ui::POINTER_TYPE_COARSE : embedder_available_pointer_types_);
   web_view_->GetPage()->GetSettings().SetPrimaryPointerType(
-      enabled ? kPointerTypeCoarse : embedder_primary_pointer_type_);
+      enabled ? ui::POINTER_TYPE_COARSE : embedder_primary_pointer_type_);
   web_view_->GetPage()->GetSettings().SetAvailableHoverTypes(
-      enabled ? kHoverTypeNone : embedder_available_hover_types_);
+      enabled ? ui::HOVER_TYPE_NONE : embedder_available_hover_types_);
   web_view_->GetPage()->GetSettings().SetPrimaryHoverType(
-      enabled ? kHoverTypeNone : embedder_primary_hover_type_);
+      enabled ? ui::HOVER_TYPE_NONE : embedder_primary_hover_type_);
   WebLocalFrameImpl* frame = web_view_->MainFrameImpl();
   if (enabled && frame)
     frame->GetFrame()->GetEventHandler().ClearMouseEventManager();

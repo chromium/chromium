@@ -13,3 +13,9 @@ include_rules = [
     "+third_party/icu/source/common/unicode/locid.h",
     "+net/http/http_status_code.h",
 ]
+
+specific_include_rules = {
+  "dev_tools_emulator.h": [
+    "+ui/base/pointer/pointer_device.h",
+  ],
+}

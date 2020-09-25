@@ -175,7 +175,7 @@ TEST(SizesMathFunctionParserTest, Basic) {
   data.device_pixel_ratio = 2.0;
   data.color_bits_per_component = 24;
   data.monochrome_bits_per_component = 0;
-  data.primary_pointer_type = kPointerTypeFine;
+  data.primary_pointer_type = ui::POINTER_TYPE_FINE;
   data.default_font_size = 16;
   data.three_d_enabled = true;
   data.media_type = media_type_names::kScreen;

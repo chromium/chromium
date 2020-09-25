@@ -157,7 +157,6 @@ source_set("blink_headers") {
     "platform/modules/video_capture/web_video_capture_impl_manager.h",
     "platform/modules/webrtc/webrtc_logging.h",
     "platform/platform.h",
-    "platform/pointer_properties.h",
     "platform/scheduler/web_rail_mode_observer.h",
     "platform/scheduler/web_render_widget_scheduling_state.h",
     "platform/scheduler/web_renderer_process_type.h",

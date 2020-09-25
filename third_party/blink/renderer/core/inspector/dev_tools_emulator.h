@@ -9,11 +9,11 @@
 #include "base/optional.h"
 #include "third_party/blink/public/common/web_preferences/web_viewport_style.h"
 #include "third_party/blink/public/common/widget/device_emulation_params.h"
-#include "third_party/blink/public/platform/pointer_properties.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
+#include "ui/base/pointer/pointer_device.h"
 
 namespace gfx {
 class PointF;
@@ -42,9 +42,9 @@ class CORE_EXPORT DevToolsEmulator final
   void SetDoubleTapToZoomEnabled(bool);
   bool DoubleTapToZoomEnabled() const;
   void SetAvailablePointerTypes(int);
-  void SetPrimaryPointerType(PointerType);
+  void SetPrimaryPointerType(ui::PointerType);
   void SetAvailableHoverTypes(int);
-  void SetPrimaryHoverType(HoverType);
+  void SetPrimaryHoverType(ui::HoverType);
   void SetMainFrameResizesAreOrientationChanges(bool);
 
   // Enables and/or sets the parameters for emulation. Returns the emulation
@@ -125,9 +125,9 @@ class CORE_EXPORT DevToolsEmulator final
   web_pref::WebViewportStyle embedder_viewport_style_;
   bool embedder_plugins_enabled_;
   int embedder_available_pointer_types_;
-  PointerType embedder_primary_pointer_type_;
+  ui::PointerType embedder_primary_pointer_type_;
   int embedder_available_hover_types_;
-  HoverType embedder_primary_hover_type_;
+  ui::HoverType embedder_primary_hover_type_;
   bool embedder_main_frame_resizes_are_orientation_changes_;
 
   bool touch_event_emulation_enabled_;

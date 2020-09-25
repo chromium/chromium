@@ -38,7 +38,6 @@
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/common/web_preferences/web_viewport_style.h"
 #include "third_party/blink/public/mojom/v8_cache_options.mojom-forward.h"
-#include "third_party/blink/public/platform/pointer_properties.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_effective_connection_type.h"
 #include "third_party/blink/public/platform/web_size.h"
@@ -183,9 +182,9 @@ class WebSettings {
   virtual void SetPluginsEnabled(bool) = 0;
   virtual void SetPresentationReceiver(bool) = 0;
   virtual void SetAvailablePointerTypes(int) = 0;
-  virtual void SetPrimaryPointerType(PointerType) = 0;
+  virtual void SetPrimaryPointerType(ui::PointerType) = 0;
   virtual void SetAvailableHoverTypes(int) = 0;
-  virtual void SetPrimaryHoverType(HoverType) = 0;
+  virtual void SetPrimaryHoverType(ui::HoverType) = 0;
   virtual void SetPreferHiddenVolumeControls(bool) = 0;
   virtual void SetShouldProtectAgainstIpcFlooding(bool) = 0;
   virtual void SetRenderVSyncNotificationEnabled(bool) = 0;

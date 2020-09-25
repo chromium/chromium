@@ -100,7 +100,7 @@ int MediaValuesDynamic::MonochromeBitsPerComponent() const {
   return CalculateMonochromeBitsPerComponent(frame_);
 }
 
-PointerType MediaValuesDynamic::PrimaryPointerType() const {
+ui::PointerType MediaValuesDynamic::PrimaryPointerType() const {
   return CalculatePrimaryPointerType(frame_);
 }
 
@@ -108,7 +108,7 @@ int MediaValuesDynamic::AvailablePointerTypes() const {
   return CalculateAvailablePointerTypes(frame_);
 }
 
-HoverType MediaValuesDynamic::PrimaryHoverType() const {
+ui::HoverType MediaValuesDynamic::PrimaryHoverType() const {
   return CalculatePrimaryHoverType(frame_);
 }
 

@@ -34,7 +34,6 @@
 #include "third_party/blink/public/common/css/preferred_color_scheme.h"
 #include "third_party/blink/public/common/css/screen_spanning.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
-#include "third_party/blink/public/platform/pointer_properties.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_resolution_units.h"
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
@@ -56,6 +55,7 @@
 #include "third_party/blink/renderer/platform/graphics/color_space_gamut.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
+#include "ui/base/pointer/pointer_device.h"
 
 namespace blink {
 
@@ -661,16 +661,16 @@ static bool ImmersiveMediaFeatureEval(const MediaQueryExpValue& value,
 static bool HoverMediaFeatureEval(const MediaQueryExpValue& value,
                                   MediaFeaturePrefix,
                                   const MediaValues& media_values) {
-  HoverType hover = media_values.PrimaryHoverType();
+  ui::HoverType hover = media_values.PrimaryHoverType();
 
   if (!value.IsValid())
-    return hover != kHoverTypeNone;
+    return hover != ui::HOVER_TYPE_NONE;
 
   if (!value.is_id)
     return false;
 
-  return (hover == kHoverTypeNone && value.id == CSSValueID::kNone) ||
-         (hover == kHoverTypeHover && value.id == CSSValueID::kHover);
+  return (hover == ui::HOVER_TYPE_NONE && value.id == CSSValueID::kNone) ||
+         (hover == ui::HOVER_TYPE_HOVER && value.id == CSSValueID::kHover);
 }
 
 static bool AnyHoverMediaFeatureEval(const MediaQueryExpValue& value,
@@ -679,16 +679,16 @@ static bool AnyHoverMediaFeatureEval(const MediaQueryExpValue& value,
   int available_hover_types = media_values.AvailableHoverTypes();
 
   if (!value.IsValid())
-    return available_hover_types & ~kHoverTypeNone;
+    return available_hover_types & ~ui::HOVER_TYPE_NONE;
 
   if (!value.is_id)
     return false;
 
   switch (value.id) {
     case CSSValueID::kNone:
-      return available_hover_types & kHoverTypeNone;
+      return available_hover_types & ui::HOVER_TYPE_NONE;
     case CSSValueID::kHover:
-      return available_hover_types & kHoverTypeHover;
+      return available_hover_types & ui::HOVER_TYPE_HOVER;
     default:
       NOTREACHED();
       return false;
@@ -707,17 +707,18 @@ static bool OriginTrialTestMediaFeatureEval(const MediaQueryExpValue& value,
 static bool PointerMediaFeatureEval(const MediaQueryExpValue& value,
                                     MediaFeaturePrefix,
                                     const MediaValues& media_values) {
-  PointerType pointer = media_values.PrimaryPointerType();
+  ui::PointerType pointer = media_values.PrimaryPointerType();
 
   if (!value.IsValid())
-    return pointer != kPointerTypeNone;
+    return pointer != ui::POINTER_TYPE_NONE;
 
   if (!value.is_id)
     return false;
 
-  return (pointer == kPointerTypeNone && value.id == CSSValueID::kNone) ||
-         (pointer == kPointerTypeCoarse && value.id == CSSValueID::kCoarse) ||
-         (pointer == kPointerTypeFine && value.id == CSSValueID::kFine);
+  return (pointer == ui::POINTER_TYPE_NONE && value.id == CSSValueID::kNone) ||
+         (pointer == ui::POINTER_TYPE_COARSE &&
+          value.id == CSSValueID::kCoarse) ||
+         (pointer == ui::POINTER_TYPE_FINE && value.id == CSSValueID::kFine);
 }
 
 static bool PrefersReducedMotionMediaFeatureEval(
@@ -756,18 +757,18 @@ static bool AnyPointerMediaFeatureEval(const MediaQueryExpValue& value,
   int available_pointers = media_values.AvailablePointerTypes();
 
   if (!value.IsValid())
-    return available_pointers & ~kPointerTypeNone;
+    return available_pointers & ~ui::POINTER_TYPE_NONE;
 
   if (!value.is_id)
     return false;
 
   switch (value.id) {
     case CSSValueID::kCoarse:
-      return available_pointers & kPointerTypeCoarse;
+      return available_pointers & ui::POINTER_TYPE_COARSE;
     case CSSValueID::kFine:
-      return available_pointers & kPointerTypeFine;
+      return available_pointers & ui::POINTER_TYPE_FINE;
     case CSSValueID::kNone:
-      return available_pointers & kPointerTypeNone;
+      return available_pointers & ui::POINTER_TYPE_NONE;
     default:
       NOTREACHED();
       return false;

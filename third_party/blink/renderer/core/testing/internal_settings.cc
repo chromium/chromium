@@ -367,11 +367,11 @@ void InternalSettings::setAvailablePointerTypes(
     String token = split_token.StripWhiteSpace();
 
     if (token == "coarse") {
-      pointer_types |= kPointerTypeCoarse;
+      pointer_types |= ui::POINTER_TYPE_COARSE;
     } else if (token == "fine") {
-      pointer_types |= kPointerTypeFine;
+      pointer_types |= ui::POINTER_TYPE_FINE;
     } else if (token == "none") {
-      pointer_types |= kPointerTypeNone;
+      pointer_types |= ui::POINTER_TYPE_NONE;
     } else {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kSyntaxError,
@@ -412,13 +412,13 @@ void InternalSettings::setPrimaryPointerType(const String& pointer,
   InternalSettingsGuardForSettings();
   String token = pointer.StripWhiteSpace();
 
-  PointerType type = kPointerTypeNone;
+  ui::PointerType type = ui::POINTER_TYPE_NONE;
   if (token == "coarse") {
-    type = kPointerTypeCoarse;
+    type = ui::POINTER_TYPE_COARSE;
   } else if (token == "fine") {
-    type = kPointerTypeFine;
+    type = ui::POINTER_TYPE_FINE;
   } else if (token == "none") {
-    type = kPointerTypeNone;
+    type = ui::POINTER_TYPE_NONE;
   } else {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kSyntaxError,
@@ -442,9 +442,9 @@ void InternalSettings::setAvailableHoverTypes(const String& types,
   for (const String& split_token : tokens) {
     String token = split_token.StripWhiteSpace();
     if (token == "none") {
-      hover_types |= kHoverTypeNone;
+      hover_types |= ui::HOVER_TYPE_NONE;
     } else if (token == "hover") {
-      hover_types |= kHoverTypeHover;
+      hover_types |= ui::HOVER_TYPE_HOVER;
     } else {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kSyntaxError,
@@ -461,11 +461,11 @@ void InternalSettings::setPrimaryHoverType(const String& type,
   InternalSettingsGuardForSettings();
   String token = type.StripWhiteSpace();
 
-  HoverType hover_type = kHoverTypeNone;
+  ui::HoverType hover_type = ui::HOVER_TYPE_NONE;
   if (token == "none") {
-    hover_type = kHoverTypeNone;
+    hover_type = ui::HOVER_TYPE_NONE;
   } else if (token == "hover") {
-    hover_type = kHoverTypeHover;
+    hover_type = ui::HOVER_TYPE_HOVER;
   } else {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kSyntaxError,

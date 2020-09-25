@@ -9,7 +9,6 @@
 #include "build/build_config.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/v8_cache_options.mojom.h"
-#include "third_party/blink/public/web/web_settings.h"
 #include "ui/base/ui_base_switches_util.h"
 
 namespace {
@@ -29,17 +28,6 @@ namespace web_pref {
 
 // "Zyyy" is the ISO 15924 script code for undetermined script aka Common.
 const char kCommonScript[] = "Zyyy";
-
-#define STATIC_ASSERT_ENUM(a, b)                            \
-  static_assert(static_cast<int>(a) == static_cast<int>(b), \
-                "mismatching enums: " #a)
-
-STATIC_ASSERT_ENUM(ui::POINTER_TYPE_NONE, blink::kPointerTypeNone);
-STATIC_ASSERT_ENUM(ui::POINTER_TYPE_COARSE, blink::kPointerTypeCoarse);
-STATIC_ASSERT_ENUM(ui::POINTER_TYPE_FINE, blink::kPointerTypeFine);
-
-STATIC_ASSERT_ENUM(ui::HOVER_TYPE_NONE, blink::kHoverTypeNone);
-STATIC_ASSERT_ENUM(ui::HOVER_TYPE_HOVER, blink::kHoverTypeHover);
 
 WebPreferences::WebPreferences()
     : default_font_size(16),

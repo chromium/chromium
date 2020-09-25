@@ -149,7 +149,7 @@ bool MediaValues::CalculateInImmersiveMode(LocalFrame* frame) {
   return frame->GetSettings()->GetImmersiveModeEnabled();
 }
 
-PointerType MediaValues::CalculatePrimaryPointerType(LocalFrame* frame) {
+ui::PointerType MediaValues::CalculatePrimaryPointerType(LocalFrame* frame) {
   DCHECK(frame);
   DCHECK(frame->GetSettings());
   return frame->GetSettings()->GetPrimaryPointerType();
@@ -161,7 +161,7 @@ int MediaValues::CalculateAvailablePointerTypes(LocalFrame* frame) {
   return frame->GetSettings()->GetAvailablePointerTypes();
 }
 
-HoverType MediaValues::CalculatePrimaryHoverType(LocalFrame* frame) {
+ui::HoverType MediaValues::CalculatePrimaryHoverType(LocalFrame* frame) {
   DCHECK(frame);
   DCHECK(frame->GetSettings());
   return frame->GetSettings()->GetPrimaryHoverType();

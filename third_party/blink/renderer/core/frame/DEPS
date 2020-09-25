@@ -39,4 +39,7 @@ specific_include_rules = {
   "web_frame_widget_test.cc": [
     "+components/viz/common/surfaces/parent_local_surface_id_allocator.h",
   ],
+  "settings.h": [
+    "+ui/base/pointer/pointer_device.h",
+  ],
 }

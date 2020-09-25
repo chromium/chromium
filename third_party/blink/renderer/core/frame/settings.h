@@ -38,7 +38,6 @@
 #include "third_party/blink/public/common/web_preferences/web_viewport_style.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 #include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
-#include "third_party/blink/public/platform/pointer_properties.h"
 #include "third_party/blink/public/platform/web_effective_connection_type.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/events/add_event_listener_options_defaults.h"
@@ -54,6 +53,7 @@
 #include "third_party/blink/renderer/platform/graphics/dark_mode_settings.h"
 #include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
+#include "ui/base/pointer/pointer_device.h"
 
 namespace blink {
 

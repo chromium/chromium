@@ -37,9 +37,9 @@ class CORE_EXPORT MediaValuesDynamic : public MediaValues {
   float DevicePixelRatio() const override;
   int ColorBitsPerComponent() const override;
   int MonochromeBitsPerComponent() const override;
-  PointerType PrimaryPointerType() const override;
+  ui::PointerType PrimaryPointerType() const override;
   int AvailablePointerTypes() const override;
-  HoverType PrimaryHoverType() const override;
+  ui::HoverType PrimaryHoverType() const override;
   int AvailableHoverTypes() const override;
   bool ThreeDEnabled() const override;
   bool InImmersiveMode() const override;
