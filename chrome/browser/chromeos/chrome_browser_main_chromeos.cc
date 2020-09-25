@@ -58,6 +58,7 @@
 #include "chrome/browser/chromeos/dbus/machine_learning_decision_service_provider.h"
 #include "chrome/browser/chromeos/dbus/memory_pressure_service_provider.h"
 #include "chrome/browser/chromeos/dbus/metrics_event_service_provider.h"
+#include "chrome/browser/chromeos/dbus/mojo_connection_service_provider.h"
 #include "chrome/browser/chromeos/dbus/plugin_vm_service_provider.h"
 #include "chrome/browser/chromeos/dbus/printers_service_provider.h"
 #include "chrome/browser/chromeos/dbus/proxy_resolution_service_provider.h"
@@ -145,6 +146,7 @@
 #include "chromeos/audio/cras_audio_handler.h"
 #include "chromeos/components/drivefs/fake_drivefs_launcher_client.h"
 #include "chromeos/components/power/dark_resume_controller.h"
+#include "chromeos/components/sensors/sensor_hal_dispatcher.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/cryptohome/async_method_caller.h"
@@ -367,6 +369,14 @@ class DBusServices {
         CrosDBusService::CreateServiceProviderList(
             std::make_unique<MemoryPressureServiceProvider>()));
 
+    mojo_connection_service_ = CrosDBusService::Create(
+        system_bus,
+        ::mojo_connection_service::kMojoConnectionServiceServiceName,
+        dbus::ObjectPath(
+            ::mojo_connection_service::kMojoConnectionServiceServicePath),
+        CrosDBusService::CreateServiceProviderList(
+            std::make_unique<MojoConnectionServiceProvider>()));
+
     if (arc::IsArcVmEnabled()) {
       libvda_service_ = CrosDBusService::Create(
           system_bus, libvda::kLibvdaServiceName,
@@ -389,6 +399,8 @@ class DBusServices {
 
     NetworkHandler::Initialize();
 
+    sensors::SensorHalDispatcher::Initialize();
+
     DeviceSettingsService::Get()->SetSessionManager(
         SessionManagerClient::Get(),
         OwnerSettingsServiceChromeOSFactory::GetInstance()->GetOwnerKeyUtil());
@@ -408,6 +420,7 @@ class DBusServices {
   }
 
   ~DBusServices() {
+    sensors::SensorHalDispatcher::Shutdown();
     NetworkHandler::Shutdown();
     cryptohome::AsyncMethodCaller::Shutdown();
     disks::DiskMountManager::Shutdown();
@@ -428,6 +441,7 @@ class DBusServices {
     cryptohome_key_delegate_service_.reset();
     lock_to_single_user_service_.reset();
     memory_pressure_service_.reset();
+    mojo_connection_service_.reset();
     ProcessDataCollector::Shutdown();
     PowerDataCollector::Shutdown();
     PowerPolicyController::Shutdown();
@@ -458,6 +472,7 @@ class DBusServices {
   std::unique_ptr<CrosDBusService> smb_fs_service_;
   std::unique_ptr<CrosDBusService> lock_to_single_user_service_;
   std::unique_ptr<CrosDBusService> memory_pressure_service_;
+  std::unique_ptr<CrosDBusService> mojo_connection_service_;
 
   DISALLOW_COPY_AND_ASSIGN(DBusServices);
 };
