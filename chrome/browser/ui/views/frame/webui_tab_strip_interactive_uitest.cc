@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/frame/webui_tab_strip_container_view.h"
+#include "chrome/browser/ui/views/in_product_help/feature_promo_controller_views.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/toolbar/reload_button.h"
@@ -147,6 +148,9 @@ IN_PROC_BROWSER_TEST_F(WebUITabStripInteractiveTest, CanUseInImmersiveMode) {
 
   WebUITabStripContainerView* const container = browser_view->webui_tab_strip();
   ASSERT_NE(nullptr, container);
+
+  // IPH may cause a reveal. Stop it.
+  browser_view->feature_promo_controller()->BlockPromosForTesting();
 
   EXPECT_FALSE(immersive_mode_controller->IsRevealed());
 

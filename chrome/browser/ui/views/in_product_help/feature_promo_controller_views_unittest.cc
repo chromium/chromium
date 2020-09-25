@@ -264,3 +264,28 @@ TEST_F(FeaturePromoControllerViewsTest, GetsParamsFromRegistry) {
   EXPECT_EQ(browser_view()->toolbar()->app_menu_button(),
             controller_->promo_bubble_for_testing()->GetAnchorView());
 }
+
+TEST_F(FeaturePromoControllerViewsTest, TestCanBlockPromos) {
+  EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI(Ref(kTestIPHFeature)))
+      .Times(0)
+      .WillOnce(Return(true));
+
+  controller_->BlockPromosForTesting();
+  EXPECT_FALSE(controller_->MaybeShowPromoWithParams(kTestIPHFeature,
+                                                     DefaultBubbleParams()));
+  EXPECT_FALSE(controller_->BubbleIsShowing(kTestIPHFeature));
+  EXPECT_FALSE(controller_->promo_bubble_for_testing());
+}
+
+TEST_F(FeaturePromoControllerViewsTest, TestCanStopCurrentPromo) {
+  EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI(Ref(kTestIPHFeature)))
+      .Times(1)
+      .WillOnce(Return(true));
+
+  EXPECT_TRUE(controller_->MaybeShowPromoWithParams(kTestIPHFeature,
+                                                    DefaultBubbleParams()));
+
+  controller_->BlockPromosForTesting();
+  EXPECT_FALSE(controller_->BubbleIsShowing(kTestIPHFeature));
+  EXPECT_FALSE(controller_->promo_bubble_for_testing());
+}

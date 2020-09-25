@@ -71,13 +71,14 @@ class WebUITabStripContainerView : public TabStripUIEmbedder,
   // Control button. Must only be called once.
   std::unique_ptr<views::View> CreateTabCounter();
 
+  views::View* tab_counter() const { return tab_counter_; }
+
   // Clicking the tab counter button opens and closes the container with
   // an animation, so it is unsuitable for an interactive test. This
   // should be called instead. View::SetVisible() isn't sufficient since
   // the container's preferred size will change.
   void SetVisibleForTesting(bool visible);
   views::WebView* web_view_for_testing() const { return web_view_; }
-  views::View* tab_counter_for_testing() const { return tab_counter_; }
 
   // Finish the open or close animation if it's active.
   void FinishAnimationForTesting();
@@ -85,7 +86,6 @@ class WebUITabStripContainerView : public TabStripUIEmbedder,
  private:
   class AutoCloser;
   class DragToOpenHandler;
-  class IPHController;
 
   // Called as we are dragged open.
   bool CanStartDragToOpen(WebUITabStripDragDirection direction) const;
@@ -159,7 +159,6 @@ class WebUITabStripContainerView : public TabStripUIEmbedder,
 
   std::unique_ptr<AutoCloser> auto_closer_;
   std::unique_ptr<DragToOpenHandler> drag_to_open_handler_;
-  std::unique_ptr<IPHController> iph_controller_;
 
   std::unique_ptr<views::MenuRunner> context_menu_runner_;
   std::unique_ptr<ui::MenuModel> context_menu_model_;

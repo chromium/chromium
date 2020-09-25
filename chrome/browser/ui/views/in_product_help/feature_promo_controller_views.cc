@@ -44,6 +44,9 @@ FeaturePromoControllerViews::~FeaturePromoControllerViews() {
 bool FeaturePromoControllerViews::MaybeShowPromoWithParams(
     const base::Feature& iph_feature,
     const FeaturePromoBubbleParams& params) {
+  if (promos_blocked_for_testing_)
+    return false;
+
   if (snooze_service_->IsBlocked(iph_feature))
     return false;
 
@@ -122,6 +125,14 @@ FeaturePromoControllerViews::CloseBubbleAndContinuePromo(
     anchor_view_tracker_.view()->SetProperty(kHasInProductHelpPromoKey, false);
 
   return PromoHandle(weak_ptr_factory_.GetWeakPtr());
+}
+
+void FeaturePromoControllerViews::BlockPromosForTesting() {
+  promos_blocked_for_testing_ = true;
+
+  // If we own a bubble, stop the current promo.
+  if (promo_bubble_)
+    CloseBubble(*current_iph_feature_);
 }
 
 void FeaturePromoControllerViews::OnWidgetClosing(views::Widget* widget) {

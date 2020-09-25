@@ -57,6 +57,14 @@ class FeaturePromoControllerViews : public FeaturePromoController,
   void OnWidgetClosing(views::Widget* widget) override;
   void OnWidgetDestroying(views::Widget* widget) override;
 
+  // Gets the IPH backend. Provided for convenience.
+  feature_engagement::Tracker* feature_engagement_tracker() { return tracker_; }
+
+  // Blocks any further promos from showing. Additionally cancels the
+  // current promo unless an outstanding PromoHandle from
+  // CloseBubbleAndContinuePromo exists. Intended for browser tests.
+  void BlockPromosForTesting();
+
   FeaturePromoBubbleView* promo_bubble_for_testing() { return promo_bubble_; }
   const FeaturePromoBubbleView* promo_bubble_for_testing() const {
     return promo_bubble_;
@@ -97,6 +105,8 @@ class FeaturePromoControllerViews : public FeaturePromoController,
   // Stores the bubble anchor view so we can set/unset a highlight on
   // it.
   views::ViewTracker anchor_view_tracker_;
+
+  bool promos_blocked_for_testing_ = false;
 
   ScopedObserver<views::Widget, views::WidgetObserver> widget_observer_{this};
 
