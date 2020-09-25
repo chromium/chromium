@@ -263,11 +263,6 @@ class ExportDelegate {
     const variationInfo =
         await sendWithPromise('requestVariationInfo', true);
     const pathInfo = await sendWithPromise('requestPathInfo');
-    const loadTimeDataKeys = ['cl', 'command_line', 'executable_path',
-        'language', 'official', 'os_type', 'profile_path', 'useragent',
-        'version', 'version_bitsize', 'version_modifier'];
-    const versionDetails = Object.fromEntries(
-        loadTimeDataKeys.map(key => [key, loadTimeData.getValue(key)]));
 
     const now = new Date();
     const fileName = `omnibox_batch_${ExportDelegate.getTimeStamp(now)}.json`;
@@ -280,7 +275,7 @@ class ExportDelegate {
       description: '',
       authorTool: 'chrome://omnibox',
       batchName,
-      versionDetails,
+      versionDetails : ExportDelegate.getVersionDetails_(),
       variationInfo,
       pathInfo,
       appVersion: navigator.appVersion,
@@ -338,6 +333,7 @@ class ExportDelegate {
   /** @private @return {OmniboxExport} */
   get exportData_() {
     return {
+      versionDetails : ExportDelegate.getVersionDetails_(),
       queryInputs: this.omniboxInput_.queryInputs,
       displayInputs: this.omniboxInput_.displayInputs,
       responsesHistory: this.omniboxOutput_.responsesHistory,
@@ -369,6 +365,15 @@ class ExportDelegate {
     }
     const iso = date.toISOString();
     return iso.replace(/:/g, '').split('.')[0];
+  }
+
+  /** @private @return {Object} */
+  static getVersionDetails_() {
+    const loadTimeDataKeys = ['cl', 'command_line', 'executable_path',
+      'language', 'official', 'os_type', 'profile_path', 'useragent',
+      'version', 'version_processor_variation', 'version_modifier'];
+    return Object.fromEntries(
+        loadTimeDataKeys.map(key => [key, loadTimeData.getValue(key)]));
   }
 }
 
