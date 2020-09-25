@@ -3219,6 +3219,12 @@ test("base_unittests") {
       "strings/sys_string_conversions_mac_unittest.mm",
     ]
 
+    sources -= [
+      # The immediate crash tests require shared libraries, which we don't
+      # support loading on iOS.
+      "immediate_crash_unittest.cc",
+    ]
+
     if (use_allocator_shim) {
       sources += [
         "allocator/allocator_interception_mac_unittest.mm",
