@@ -34,7 +34,9 @@ static_library("child") {
     deps += [
       "//base",
       "//content/public/child",
+      "//content/public/common",
       "//pdf:buildflags",
+      "//sandbox/policy",
     ]
   }
 }
