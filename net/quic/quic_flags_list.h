@@ -421,7 +421,7 @@ QUIC_FLAG(bool,
 
 // If true, fix a potential out of order sending caused by handshake gets
 // confirmed while the coalescer is not empty.
-QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_fix_out_of_order_sending, true)
+QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_fix_out_of_order_sending2, true)
 
 // If true, remove processed undecryptable packets.
 QUIC_FLAG(bool,
@@ -461,3 +461,6 @@ QUIC_FLAG(bool,
 // If true, discard initial key right after a HANDSHAKE packet has been sent and
 // unify the fixes for missing initial keys.
 QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_fix_missing_initial_keys, true)
+
+// If true, check whether framer has the right key before writing data.
+QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_check_keys_before_writing, true)

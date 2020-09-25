@@ -383,6 +383,7 @@ const struct QuicErrorMapping {
      "quic.quic_http_goaway_id_larger_than_previous"},
     {quic::QUIC_SILENT_IDLE_TIMEOUT, "quic.silent_idle_timeout"},
     {quic::QUIC_HTTP_RECEIVE_SPDY_SETTING, "quic.http_receive_spdy_setting"},
+    {quic::QUIC_MISSING_WRITE_KEYS, "quic.missing_write_keys"},
 
     // QUIC_INVALID_APPLICATION_CLOSE_DATA was code 101. The code has been
     // deprecated, but to keep the assert below happy, there needs to be
