@@ -10,9 +10,12 @@
 #include "base/callback.h"
 #include "base/files/file_util.h"
 #include "base/guid.h"
+#include "base/hash/sha1.h"
 #include "base/json/json_writer.h"
 #include "base/macros.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -84,6 +87,7 @@
 #include "media/base/media_switches.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/net_errors.h"
+#include "net/cert/x509_certificate.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_access_result.h"
 #include "net/cookies/cookie_util.h"
@@ -94,6 +98,7 @@
 #include "net/test/spawned_test_server/spawned_test_server.h"
 #include "net/test/test_data_directory.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
+#include "third_party/boringssl/src/include/openssl/pool.h"
 
 namespace em = enterprise_management;
 
@@ -237,6 +242,21 @@ class ErrorScreenWatcher : public OobeUI::Observer {
 
   bool has_error_screen_been_shown_ = false;
 };
+
+std::string GetCertSha1Fingerprint(const std::string& cert_name) {
+  const std::string cert_file_name =
+      base::StringPrintf("%s.pem", cert_name.c_str());
+  scoped_refptr<net::X509Certificate> cert =
+      net::ImportCertFromFile(net::GetTestCertsDirectory(), cert_file_name);
+  if (!cert) {
+    ADD_FAILURE() << "Failed to read certificate " << cert_name;
+    return std::string();
+  }
+  unsigned char hash[base::kSHA1Length];
+  base::SHA1HashBytes(CRYPTO_BUFFER_data(cert->cert_buffer()),
+                      CRYPTO_BUFFER_len(cert->cert_buffer()), hash);
+  return base::ToLowerASCII(base::HexEncode(hash, base::kSHA1Length));
+}
 
 }  // namespace
 
@@ -862,8 +882,7 @@ IN_PROC_BROWSER_TEST_F(WebviewClientCertsLoginTest,
   const std::string https_reply_content =
       RequestClientCertTestPageInFrame({"gaia-signin", gaia_frame_parent_});
   EXPECT_EQ(
-      "got client cert with fingerprint: "
-      "c66145f49caca4d1325db96ace0f12f615ba4981",
+      "got client cert with fingerprint: " + GetCertSha1Fingerprint("client_1"),
       https_reply_content);
 }
 
@@ -886,8 +905,7 @@ IN_PROC_BROWSER_TEST_F(WebviewClientCertsLoginTest,
   const std::string https_reply_content =
       RequestClientCertTestPageInFrame({"gaia-signin", gaia_frame_parent_});
   EXPECT_EQ(
-      "got client cert with fingerprint: "
-      "c66145f49caca4d1325db96ace0f12f615ba4981",
+      "got client cert with fingerprint: " + GetCertSha1Fingerprint("client_1"),
       https_reply_content);
 }
 
@@ -929,8 +947,7 @@ IN_PROC_BROWSER_TEST_F(WebviewClientCertsLoginTest, SigninFrameAuthorityGiven) {
   const std::string https_reply_content =
       RequestClientCertTestPageInFrame({"gaia-signin", gaia_frame_parent_});
   EXPECT_EQ(
-      "got client cert with fingerprint: "
-      "c66145f49caca4d1325db96ace0f12f615ba4981",
+      "got client cert with fingerprint: " + GetCertSha1Fingerprint("client_1"),
       https_reply_content);
 }
 
@@ -1013,8 +1030,7 @@ IN_PROC_BROWSER_TEST_F(WebviewClientCertsLoginTest,
   const std::string https_reply_content =
       RequestClientCertTestPageInFrame({"gaia-signin", gaia_frame_parent_});
   EXPECT_EQ(
-      "got client cert with fingerprint: "
-      "c66145f49caca4d1325db96ace0f12f615ba4981",
+      "got client cert with fingerprint: " + GetCertSha1Fingerprint("client_1"),
       https_reply_content);
 }
 
@@ -1171,8 +1187,7 @@ IN_PROC_BROWSER_TEST_F(WebviewClientCertsTokenLoadingLoginTest,
   const std::string https_reply_content =
       RequestClientCertTestPageInFrame({"gaia-signin", gaia_frame_parent_});
   EXPECT_EQ(
-      "got client cert with fingerprint: "
-      "c66145f49caca4d1325db96ace0f12f615ba4981",
+      "got client cert with fingerprint: " + GetCertSha1Fingerprint("client_1"),
       https_reply_content);
 
   EXPECT_TRUE(IsTpmTokenReady());
