@@ -1,3 +1,4 @@
+git_revision=abc123
 linker_name=gold
 map_file_name=test.map
 tool_prefix=tools/binary_size/libsupersize/testdata/mock_toolchain/

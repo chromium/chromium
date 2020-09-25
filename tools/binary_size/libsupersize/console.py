@@ -331,7 +331,7 @@ class _Session(object):
           any_path_within_output_directory=elf_path)
     if output_directory_finder.Tentative():
       tool_prefix = path_util.ToolPrefixFinder(
-          output_directory_finder=output_directory_finder,
+          output_directory=output_directory_finder.Finalized(),
           linker_name='ld').Finalized()
 
     args = [
@@ -503,7 +503,7 @@ def Run(args, on_config_error):
   linker_name = size_infos[-1].build_config.get(models.BUILD_CONFIG_LINKER_NAME)
   tool_prefix_finder = path_util.ToolPrefixFinder(
       value=args.tool_prefix,
-      output_directory_finder=output_directory_finder,
+      output_directory=output_directory_finder.Tentative(),
       linker_name=linker_name)
   session = _Session(size_infos, output_directory_finder, tool_prefix_finder)
 

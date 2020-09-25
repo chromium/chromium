@@ -78,23 +78,24 @@ class OutputDirectoryFinder(_PathFinder):
 
   def Verify(self):
     if not self._value or not os.path.isdir(self._value):
-      raise Exception('Bad --%s. Path not found: %s' %
-                      (self._name, self._value))
+      raise Exception(
+          'Invalid --output-directory. Path not found: {}\n'
+          'Use --no-output-directory to disable features that rely on it.'.
+          format(self._value))
 
 
 class ToolPrefixFinder(_PathFinder):
-  def __init__(self, value=None, output_directory_finder=None,
-               linker_name=None):
+  def __init__(self, value=None, output_directory=None, linker_name=None):
     super(ToolPrefixFinder, self).__init__(
         name='tool-prefix', value=value)
-    self._output_directory_finder = output_directory_finder
+    self._output_directory = output_directory
     self._linker_name = linker_name;
 
   def IsLld(self):
     return self._linker_name.startswith('lld') if self._linker_name else True
 
   def Detect(self):
-    output_directory = self._output_directory_finder.Tentative()
+    output_directory = self._output_directory
     if output_directory:
       ret = None
       if self.IsLld():
