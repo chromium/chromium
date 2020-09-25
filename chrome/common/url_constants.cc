@@ -117,6 +117,9 @@ const char kContentSettingsExceptionsLearnMoreURL[] =
 const char kCookiesSettingsHelpCenterURL[] =
     "https://support.google.com/chrome?p=cpn_cookies";
 
+const char kCpuX86Sse2ObsoleteURL[] =
+    "https://support.google.com/chrome/?p=unsupported_cpu";
+
 const char kCrashReasonURL[] =
 #if defined(OS_CHROMEOS)
     "https://support.google.com/chromebook/?p=e_awsnap";
