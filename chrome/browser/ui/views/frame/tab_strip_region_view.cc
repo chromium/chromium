@@ -92,8 +92,8 @@ bool TabStripRegionView::IsRectInWindowCaption(const gfx::Rect& rect) {
   // Check to see if the rect intersects the non-button parts of the tab search
   // button. The enclosed button has a non-rectangular shape, so if it's not in
   // the visual portions of the buttons we treat it as a click to the caption.
-  if (tab_search_button_->GetLocalBounds().Intersects(
-          get_target_rect(tab_search_button_))) {
+  if (tab_search_button_ && tab_search_button_->GetLocalBounds().Intersects(
+                                get_target_rect(tab_search_button_))) {
     return !tab_search_button_->HitTestRect(
         get_target_rect(tab_search_button_));
   }
@@ -136,12 +136,13 @@ void TabStripRegionView::OnThemeChanged() {
 }
 
 int TabStripRegionView::CalculateTabStripAvailableWidth() {
-  Layout();
-  views::SizeBound available_width =
-      GetAvailableSize(tab_strip_container_).width();
-  // |available_width| might still be unbounded in cases where the tabstrip is
-  // hidden (e.g. presentation mode on MacOS). In these cases we don't care
-  // about the resulting layout, since the tabstrip is not visible, so we can
-  // substitute 0 to ensure that we relayout once the width is defined again.
-  return available_width.is_bounded() ? available_width.value() : 0;
+  // The tab strip can occupy the space not currently taken by its fixed-width
+  // sibling views.
+  int reserved_width = 0;
+  for (View* const child : children()) {
+    if (child != tab_strip_container_)
+      reserved_width += child->size().width();
+  }
+
+  return size().width() - reserved_width;
 }

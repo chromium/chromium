@@ -2200,10 +2200,6 @@ SkColor TabStrip::GetPaintedGroupColor(
 // TabStrip, views::AccessiblePaneView overrides:
 
 void TabStrip::Layout() {
-  if (is_doing_layout_)
-    return;
-  base::AutoReset<bool> layout_guard(&is_doing_layout_, true);
-
   if (IsAnimating()) {
     // Hide tabs that have animated at least partially out of the clip region.
     SetTabSlotVisibility();

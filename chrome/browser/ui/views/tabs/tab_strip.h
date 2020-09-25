@@ -747,9 +747,6 @@ class TabStrip : public views::AccessiblePaneView,
   // The width available for tabs at the time of last layout.
   int last_available_width_ = 0;
 
-  // Guard to protect against layout loops.
-  bool is_doing_layout_ = false;
-
   // See description above stacked_layout().
   bool stacked_layout_ = false;
 
