@@ -231,9 +231,6 @@ SK_API void SkDebugf_FileLine(const char* file,
 // Staging for Skia requiring GrDirectContext in SkImage::readPixels.
 #define SK_IMAGE_READ_PIXELS_LEGACY_API
 
-// Staging for Skia using a simpler clip stack implementation on GPU backends.
-#define SK_DISABLE_NEW_GR_CLIP_STACK
-
 ///////////////////////// Imported from BUILD.gn and skia_common.gypi
 
 /* In some places Skia can use static initializers for global initialization,
