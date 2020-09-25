@@ -47,7 +47,7 @@ class FileStreamReaderTest : public testing::Test {
   }
 
   void WriteTestFile() {
-    WriteFile(kTestFileName.data(), kTestData.data(), kTestData.size(),
+    WriteFile(std::string(kTestFileName), kTestData.data(), kTestData.size(),
               &test_file_modification_time_);
   }
 
@@ -101,8 +101,9 @@ TYPED_TEST_P(FileStreamReaderTypedTest, Empty) {
 }
 
 TYPED_TEST_P(FileStreamReaderTypedTest, GetLengthNormal) {
-  std::unique_ptr<FileStreamReader> reader(this->CreateFileReader(
-      this->kTestFileName.data(), 0, this->test_file_modification_time()));
+  std::unique_ptr<FileStreamReader> reader(
+      this->CreateFileReader(std::string(this->kTestFileName), 0,
+                             this->test_file_modification_time()));
   net::TestInt64CompletionCallback callback;
   int64_t result = reader->GetLength(callback.callback());
   if (result == net::ERR_IO_PENDING)
@@ -111,10 +112,12 @@ TYPED_TEST_P(FileStreamReaderTypedTest, GetLengthNormal) {
 }
 
 TYPED_TEST_P(FileStreamReaderTypedTest, GetLengthAfterModified) {
-  this->TouchFile(this->kTestFileName.data(), base::TimeDelta::FromSeconds(10));
+  this->TouchFile(std::string(this->kTestFileName),
+                  base::TimeDelta::FromSeconds(10));
 
-  std::unique_ptr<FileStreamReader> reader(this->CreateFileReader(
-      this->kTestFileName.data(), 0, this->test_file_modification_time()));
+  std::unique_ptr<FileStreamReader> reader(
+      this->CreateFileReader(std::string(this->kTestFileName), 0,
+                             this->test_file_modification_time()));
   net::TestInt64CompletionCallback callback1;
   int64_t result = reader->GetLength(callback1.callback());
   if (result == net::ERR_IO_PENDING)
@@ -122,7 +125,8 @@ TYPED_TEST_P(FileStreamReaderTypedTest, GetLengthAfterModified) {
   ASSERT_EQ(net::ERR_UPLOAD_FILE_CHANGED, result);
 
   // With nullptr expected modification time this should work.
-  reader = this->CreateFileReader(this->kTestFileName.data(), 0, base::Time());
+  reader =
+      this->CreateFileReader(std::string(this->kTestFileName), 0, base::Time());
   net::TestInt64CompletionCallback callback2;
   result = reader->GetLength(callback2.callback());
   if (result == net::ERR_IO_PENDING)
@@ -131,8 +135,8 @@ TYPED_TEST_P(FileStreamReaderTypedTest, GetLengthAfterModified) {
 }
 
 TYPED_TEST_P(FileStreamReaderTypedTest, GetLengthWithOffset) {
-  std::unique_ptr<FileStreamReader> reader(
-      this->CreateFileReader(this->kTestFileName.data(), 3, base::Time()));
+  std::unique_ptr<FileStreamReader> reader(this->CreateFileReader(
+      std::string(this->kTestFileName), 3, base::Time()));
   net::TestInt64CompletionCallback callback;
   int64_t result = reader->GetLength(callback.callback());
   if (result == net::ERR_IO_PENDING)
@@ -142,8 +146,9 @@ TYPED_TEST_P(FileStreamReaderTypedTest, GetLengthWithOffset) {
 }
 
 TYPED_TEST_P(FileStreamReaderTypedTest, ReadNormal) {
-  std::unique_ptr<FileStreamReader> reader(this->CreateFileReader(
-      this->kTestFileName.data(), 0, this->test_file_modification_time()));
+  std::unique_ptr<FileStreamReader> reader(
+      this->CreateFileReader(std::string(this->kTestFileName), 0,
+                             this->test_file_modification_time()));
   int result = 0;
   std::string data;
   ReadFromReader(reader.get(), &data, this->kTestData.size(), &result);
@@ -155,10 +160,12 @@ TYPED_TEST_P(FileStreamReaderTypedTest, ReadAfterModified) {
   // Touch file so that the file's modification time becomes different
   // from what we expect. Note that the resolution on some filesystems
   // is 1s so we can't test with deltas less than that.
-  this->TouchFile(this->kTestFileName.data(), base::TimeDelta::FromSeconds(-1));
+  this->TouchFile(std::string(this->kTestFileName),
+                  base::TimeDelta::FromSeconds(-1));
 
-  std::unique_ptr<FileStreamReader> reader(this->CreateFileReader(
-      this->kTestFileName.data(), 0, this->test_file_modification_time()));
+  std::unique_ptr<FileStreamReader> reader(
+      this->CreateFileReader(std::string(this->kTestFileName), 0,
+                             this->test_file_modification_time()));
   int result = 0;
   std::string data;
   ReadFromReader(reader.get(), &data, this->kTestData.size(), &result);
@@ -170,10 +177,11 @@ TYPED_TEST_P(FileStreamReaderTypedTest, ReadAfterModifiedLessThanThreshold) {
   // Due to precision loss converting int64_t->double->int64_t (e.g. through
   // Blink) the expected/actual time may vary by microseconds. With
   // modification time delta < 10us this should work.
-  this->TouchFile(this->kTestFileName.data(),
+  this->TouchFile(std::string(this->kTestFileName),
                   base::TimeDelta::FromMicroseconds(1));
-  std::unique_ptr<FileStreamReader> reader(this->CreateFileReader(
-      this->kTestFileName.data(), 0, this->test_file_modification_time()));
+  std::unique_ptr<FileStreamReader> reader(
+      this->CreateFileReader(std::string(this->kTestFileName), 0,
+                             this->test_file_modification_time()));
   int result = 0;
   std::string data;
 
@@ -183,9 +191,10 @@ TYPED_TEST_P(FileStreamReaderTypedTest, ReadAfterModifiedLessThanThreshold) {
 }
 
 TYPED_TEST_P(FileStreamReaderTypedTest, ReadAfterModifiedWithMatchingTimes) {
-  this->TouchFile(this->kTestFileName.data(), base::TimeDelta());
-  std::unique_ptr<FileStreamReader> reader(this->CreateFileReader(
-      this->kTestFileName.data(), 0, this->test_file_modification_time()));
+  this->TouchFile(std::string(this->kTestFileName), base::TimeDelta());
+  std::unique_ptr<FileStreamReader> reader(
+      this->CreateFileReader(std::string(this->kTestFileName), 0,
+                             this->test_file_modification_time()));
   int result = 0;
   std::string data;
 
@@ -195,9 +204,10 @@ TYPED_TEST_P(FileStreamReaderTypedTest, ReadAfterModifiedWithMatchingTimes) {
 }
 
 TYPED_TEST_P(FileStreamReaderTypedTest, ReadAfterModifiedWithoutExpectedTime) {
-  this->TouchFile(this->kTestFileName.data(), base::TimeDelta::FromSeconds(-1));
-  std::unique_ptr<FileStreamReader> reader(
-      this->CreateFileReader(this->kTestFileName.data(), 0, base::Time()));
+  this->TouchFile(std::string(this->kTestFileName),
+                  base::TimeDelta::FromSeconds(-1));
+  std::unique_ptr<FileStreamReader> reader(this->CreateFileReader(
+      std::string(this->kTestFileName), 0, base::Time()));
   int result = 0;
   std::string data;
 
@@ -207,8 +217,8 @@ TYPED_TEST_P(FileStreamReaderTypedTest, ReadAfterModifiedWithoutExpectedTime) {
 }
 
 TYPED_TEST_P(FileStreamReaderTypedTest, ReadWithOffset) {
-  std::unique_ptr<FileStreamReader> reader(
-      this->CreateFileReader(this->kTestFileName.data(), 3, base::Time()));
+  std::unique_ptr<FileStreamReader> reader(this->CreateFileReader(
+      std::string(this->kTestFileName), 3, base::Time()));
   int result = 0;
   std::string data;
   ReadFromReader(reader.get(), &data, this->kTestData.size(), &result);
@@ -218,8 +228,8 @@ TYPED_TEST_P(FileStreamReaderTypedTest, ReadWithOffset) {
 }
 
 TYPED_TEST_P(FileStreamReaderTypedTest, ReadWithNegativeOffset) {
-  std::unique_ptr<FileStreamReader> reader(
-      this->CreateFileReader(this->kTestFileName.data(), -1, base::Time()));
+  std::unique_ptr<FileStreamReader> reader(this->CreateFileReader(
+      std::string(this->kTestFileName), -1, base::Time()));
   int result = 0;
   std::string data;
   ReadFromReader(reader.get(), &data, 1, &result);
@@ -228,8 +238,9 @@ TYPED_TEST_P(FileStreamReaderTypedTest, ReadWithNegativeOffset) {
 }
 
 TYPED_TEST_P(FileStreamReaderTypedTest, ReadWithOffsetLargerThanFile) {
-  std::unique_ptr<FileStreamReader> reader(this->CreateFileReader(
-      this->kTestFileName.data(), this->kTestData.size() + 1, base::Time()));
+  std::unique_ptr<FileStreamReader> reader(
+      this->CreateFileReader(std::string(this->kTestFileName),
+                             this->kTestData.size() + 1, base::Time()));
   int result = 0;
   std::string data;
   ReadFromReader(reader.get(), &data, 1, &result);
@@ -238,8 +249,8 @@ TYPED_TEST_P(FileStreamReaderTypedTest, ReadWithOffsetLargerThanFile) {
 }
 
 TYPED_TEST_P(FileStreamReaderTypedTest, DeleteWithUnfinishedRead) {
-  std::unique_ptr<FileStreamReader> reader(
-      this->CreateFileReader(this->kTestFileName.data(), 0, base::Time()));
+  std::unique_ptr<FileStreamReader> reader(this->CreateFileReader(
+      std::string(this->kTestFileName), 0, base::Time()));
 
   net::TestCompletionCallback callback;
   scoped_refptr<net::IOBufferWithSize> buf =
