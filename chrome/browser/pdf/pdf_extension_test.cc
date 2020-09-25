@@ -30,6 +30,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/extension_apitest.h"
@@ -90,6 +91,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "pdf/pdf_features.h"
 #include "services/network/public/cpp/features.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/context_menu_data/media_type.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enum_util.h"
@@ -2608,6 +2610,19 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTestWithParam,
                        ui::GestureEventDetails(ui::ET_GESTURE_TAP));
   ellipsis_button->OnGestureEvent(&tap);
   context_menu_observer.WaitForMenuOpenAndClose();
+
+  // Verify that the expected context menu items are present.
+  //
+  // Note that the assertion below doesn't use exact matching via
+  // testing::ElementsAre, because some platforms may include unexpected extra
+  // elements (e.g. an extra separator and IDC=100 has been observed on some Mac
+  // bots).
+  EXPECT_THAT(
+      context_menu_observer.GetCapturedCommandIds(),
+      testing::IsSupersetOf(
+          {IDC_CONTENT_CONTEXT_COPY, IDC_CONTENT_CONTEXT_SEARCHWEBFOR,
+           IDC_PRINT, IDC_CONTENT_CONTEXT_ROTATECW,
+           IDC_CONTENT_CONTEXT_ROTATECCW, IDC_CONTENT_CONTEXT_INSPECTELEMENT}));
 }
 #endif  // defined(TOOLKIT_VIEWS) && defined(USE_AURA)
 
