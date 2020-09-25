@@ -365,6 +365,10 @@ bool BaseInitLoggingImpl(const LoggingSettings& settings) {
            0u);
 #endif
 
+#if defined(OS_CHROMEOS)
+  g_log_format = settings.log_format;
+#endif
+
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   // Don't bother initializing |g_vlog_info| unless we use one of the
   // vlog switches.
@@ -411,7 +415,6 @@ bool BaseInitLoggingImpl(const LoggingSettings& settings) {
   CloseLogFileUnlocked();
 
 #if defined(OS_CHROMEOS)
-  g_log_format = settings.log_format;
   if (settings.log_file) {
     DCHECK(!settings.log_file_path);
     g_log_file = settings.log_file;
