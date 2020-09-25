@@ -175,6 +175,13 @@ PreferredAppsList::PreferredApps ParseValueToPreferredApps(
       DVLOG(0) << "Fail to parse condition value. Cannot parse intent filter.";
       return PreferredAppsList::PreferredApps();
     }
+
+    // Do not show other browser apps when the user is already using this
+    // browser (matches Android behaviour).
+    if (apps_util::IsBrowserFilter(parsed_intent_filter)) {
+      continue;
+    }
+
     auto new_preferred_app = apps::mojom::PreferredApp::New(
         std::move(parsed_intent_filter), *app_id);
     preferred_apps.push_back(std::move(new_preferred_app));
