@@ -15,8 +15,9 @@ extern const WKNavigationActionPolicy
     kNavigationActionPolicyAllowAndBlockUniversalLinks;
 
 // Returns the WKNavigationActionPolicy for allowing navigations given the
-// |off_the_record| state for the associated BrowserState.
-WKNavigationActionPolicy GetAllowNavigationActionPolicy(bool off_the_record);
+// |block_universal_links| state for the associated WebState.
+WKNavigationActionPolicy GetAllowNavigationActionPolicy(
+    bool block_universal_links);
 
 }  // namespace web
 
