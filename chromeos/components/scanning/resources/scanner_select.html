@@ -10,7 +10,6 @@
     width: 300px;
   }
 </style>
-<!-- TODO(jschettler): Replace default option with i18n string. -->
 <span id="title">[[i18n('scannerDropdownLabel')]]</span>
 <div id="controls">
   <div class="throbber-container" hidden$="[[loaded]]">
@@ -24,7 +23,7 @@
         remove it from the dropdown. -->
     <template is="dom-if" if="[[!scanners.length]]" restamp>
       <option value="">
-        No available scanners
+        [[i18n('noScannersText')]]
       </option>
     </template>
     <template is="dom-repeat" items="[[scanners]]" as="scanner">

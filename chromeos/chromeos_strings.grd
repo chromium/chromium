@@ -460,8 +460,14 @@ Try tapping the mic to ask me anything.
       </message>
 
       <!-- Scanning App -->
+      <message name="IDS_SCANNING_APP_TITLE" desc="The title of the scanning app.">
+        Scan
+      </message>
       <message name="IDS_SCANNING_APP_SCANNER_DROPDOWN_LABEL" desc="The label for the dropdown that displays connected scanners.">
         Scanner
+      </message>
+      <message name="IDS_SCANNING_APP_NO_SCANNERS_TEXT" desc="The text displayed in the scanner dropdown when no scanners are available.">
+        No available scanners
       </message>
     </messages>
   </release>
