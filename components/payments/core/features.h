@@ -79,6 +79,12 @@ extern const base::Feature kAllowJITInstallationWhenAppIconIsMissing;
 // Used to reject the apps with partial delegation.
 extern const base::Feature kEnforceFullDelegation;
 
+// Browser-side feature flag for SecurePaymentConfirmation, which can be used to
+// disable the feature. The feature is also controlled by the Blink runtime
+// feature "SecurePaymentConfirmation". Both have to be enabled for
+// SecurePaymentConfirmation to be available.
+extern const base::Feature kSecurePaymentConfirmation;
+
 }  // namespace features
 }  // namespace payments
 

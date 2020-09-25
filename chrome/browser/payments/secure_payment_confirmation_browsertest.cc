@@ -15,6 +15,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string16.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
@@ -22,6 +23,7 @@
 #include "chrome/test/payments/payment_request_platform_browsertest_base.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/payments/content/payment_manifest_web_data_service.h"
+#include "components/payments/core/features.h"
 #include "components/payments/core/secure_payment_confirmation_instrument.h"
 #include "components/webdata/common/web_data_service_consumer.h"
 #include "content/public/browser/authenticator_environment.h"
@@ -101,6 +103,12 @@ class SecurePaymentConfirmationTest
     : public PaymentRequestPlatformBrowserTestBase,
       public WebDataServiceConsumer {
  public:
+  SecurePaymentConfirmationTest() {
+    // Enable the browser-side feature flag as it's disabled by default on
+    // non-origin trial platforms.
+    feature_list_.InitAndEnableFeature(features::kSecurePaymentConfirmation);
+  }
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     PaymentRequestPlatformBrowserTestBase::SetUpCommandLine(command_line);
     command_line->AppendSwitch(
@@ -124,6 +132,7 @@ class SecurePaymentConfirmationTest
 
   bool databse_write_responded_ = false;
   bool confirm_payment_ = false;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationTest, NoAuthenticator) {
@@ -276,6 +285,55 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationDisabledTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationDisabledTest,
+                       CannotMakePayment) {
+  test_controller()->SetHasAuthenticator(true);
+  NavigateTo("a.com", "/can_make_payment_checker.html");
+
+  {
+    std::string snippet =
+        base::StringPrintf("canMakePaymentForMethodData(%s)", kTestMethodData);
+    EXPECT_EQ("false", content::EvalJs(GetActiveWebContents(), snippet));
+  }
+  {
+    std::string snippet = base::StringPrintf(
+        "hasEnrolledInstrumentForMethodData(%s)", kTestMethodData);
+    EXPECT_EQ("false", content::EvalJs(GetActiveWebContents(), snippet));
+  }
+}
+
+// Test that the feature can be disabled by the browser-side Finch flag
+class SecurePaymentConfirmationDisabledByFinchTest
+    : public PaymentRequestPlatformBrowserTestBase {
+ public:
+  SecurePaymentConfirmationDisabledByFinchTest() {
+    // The feature should get disabled by the feature state despite experimental
+    // web platform features being enabled.
+    feature_list_.InitAndDisableFeature(features::kSecurePaymentConfirmation);
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    PaymentRequestPlatformBrowserTestBase::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(
+        switches::kEnableExperimentalWebPlatformFeatures);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationDisabledByFinchTest,
+                       PaymentMethodNotSupported) {
+  test_controller()->SetHasAuthenticator(true);
+  NavigateTo("a.com", "/payment_handler_status.html");
+
+  // EvalJs waits for JavaScript promise to resolve.
+  EXPECT_EQ(
+      "The payment method \"secure-payment-confirmation\" is not supported.",
+      content::EvalJs(GetActiveWebContents(),
+                      getInvokePaymentRequestSnippet()));
+}
+
+IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationDisabledByFinchTest,
                        CannotMakePayment) {
   test_controller()->SetHasAuthenticator(true);
   NavigateTo("a.com", "/can_make_payment_checker.html");
