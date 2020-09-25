@@ -45,6 +45,13 @@ export class LanguagesMetricsProxy {
    * @param {boolean} value
    */
   recordToggleTranslate(value) {}
+
+  /**
+   * Records when users check/uncheck "Offer to translate pages in this
+   * language" checkbox.
+   * @param {boolean} value
+   */
+  recordTranslateCheckboxChanged(value) {}
 }
 
 /** @implements {LanguagesMetricsProxy} */
@@ -72,6 +79,12 @@ export class LanguagesMetricsProxyImpl {
   recordToggleTranslate(value) {
     chrome.metricsPrivate.recordBoolean(
         'ChromeOS.Settings.Languages.Browser.Toggle.Translate', value);
+  }
+
+  /** @override */
+  recordTranslateCheckboxChanged(value) {
+    chrome.metricsPrivate.recordBoolean(
+        'ChromeOS.Settings.Languages.Browser.OfferToTranslateCheckbox', value);
   }
 }
 

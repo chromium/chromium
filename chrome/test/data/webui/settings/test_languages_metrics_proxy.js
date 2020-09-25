@@ -19,6 +19,7 @@ export class TestLanguagesMetricsProxy extends TestBrowserProxy {
       'recordAddLanguages',
       'recordToggleSpellCheck',
       'recordToggleTranslate',
+      'recordTranslateCheckboxChanged',
     ]);
   }
 
@@ -40,5 +41,10 @@ export class TestLanguagesMetricsProxy extends TestBrowserProxy {
   /** @override */
   recordToggleTranslate(value) {
     this.methodCalled('recordToggleTranslate', value);
+  }
+
+  /** @override */
+  recordTranslateCheckboxChanged(value) {
+    this.methodCalled('recordTranslateCheckboxChanged', value);
   }
 }

@@ -153,4 +153,30 @@ suite('LanguagesPageMetricsChromeOS', function() {
         LanguagesPageInteraction.RESTART,
         await languagesMetricsProxy.whenCalled('recordInteraction'));
   });
+
+  test('records when ticking translate checkbox', async () => {
+    const languagesCollapse = languagesPage.$$('#languagesCollapse');
+    languagesCollapse.opened = true;
+
+    const menuButtons = languagesCollapse.querySelectorAll(
+        '.list-item cr-icon-button.icon-more-vert');
+
+    // Chooses the second language to change translate checkbox
+    // as first language is the language used for translation.
+    menuButtons[1].click();
+    const actionMenu = languagesPage.$$('#menu').get();
+    assertTrue(actionMenu.open);
+    const menuItems = actionMenu.querySelectorAll('.dropdown-item');
+    for (const item of menuItems) {
+      if (item.id === 'offerTranslations') {
+        const checkedValue = item.checked;
+        item.click();
+        assertEquals(
+            await languagesMetricsProxy.whenCalled(
+                'recordTranslateCheckboxChanged'),
+            !checkedValue);
+        return;
+      }
+    }
+  });
 });

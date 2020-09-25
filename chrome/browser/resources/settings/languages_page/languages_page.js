@@ -531,6 +531,10 @@ Polymer({
       this.languageHelper.disableTranslateLanguage(
           this.detailLanguage_.language.code);
     }
+    // <if expr="chromeos">
+    this.languagesMetricsProxy_.recordTranslateCheckboxChanged(
+        e.target.checked);
+    // </if>
     this.closeMenuSoon_();
   },
 
