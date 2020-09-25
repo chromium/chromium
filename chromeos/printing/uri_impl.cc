@@ -97,14 +97,14 @@ Iter FindFirstOf(Iter begin, Iter end, const std::string& chars) {
 }  // namespace
 
 // static
-const std::map<std::string, int>& Uri::Pim::GetDefaultPorts() {
-  static const base::NoDestructor<std::map<std::string, int>> kDefaultPorts(
-      {{"ipp", 631},
-       {"ipps", 443},
-       {"http", 80},
-       {"https", 443},
-       {"lpd", 515},
-       {"socket", 9100}});
+const base::flat_map<std::string, int>& Uri::Pim::GetDefaultPorts() {
+  static const base::NoDestructor<base::flat_map<std::string, int>>
+      kDefaultPorts({{"ipp", 631},
+                     {"ipps", 443},
+                     {"http", 80},
+                     {"https", 443},
+                     {"lpd", 515},
+                     {"socket", 9100}});
   return *kDefaultPorts;
 }
 
