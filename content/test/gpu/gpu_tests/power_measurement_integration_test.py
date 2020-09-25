@@ -460,7 +460,7 @@ class PowerMeasurementIntegrationTest(gpu_integration_test.GpuIntegrationTest):
       self.RestartBrowserWithArgs([
           # All bots are connected with a power source, however, we want to to
           # test with the code path that's enabled with battery power.
-          cba.DISABLE_DIRECT_COMPOSITION_VP_SCALING,
+          cba.DISABLE_VP_SCALING,
           '--disable-features=' + ','.join(disabled_features)
       ])
 

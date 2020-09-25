@@ -226,6 +226,9 @@ bool IsProtectedVideo(const QuadList::Iterator& it) {
 }
 
 DCLayerResult IsUnderlayAllowed(const QuadList::Iterator& it) {
+  if (!base::FeatureList::IsEnabled(features::kDirectCompositionUnderlays)) {
+    return DC_LAYER_FAILED_OCCLUDED;
+  }
   if (it->ShouldDrawWithBlending()) {
     return DC_LAYER_FAILED_TRANSPARENT;
   }

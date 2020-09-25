@@ -195,7 +195,9 @@ void GetGpuDriverOverlayInfo(bool* supports_overlays,
     output3->CheckOverlaySupport(DXGI_FORMAT_R10G10B10A2_UNORM,
                                  d3d11_device.Get(),
                                  rgb10a2_overlay_support_flags);
-    if (FlagsSupportsOverlays(*nv12_overlay_support_flags)) {
+    if (FlagsSupportsOverlays(*nv12_overlay_support_flags) &&
+        base::FeatureList::IsEnabled(
+            features::kDirectCompositionPreferNV12Overlays)) {
       // NV12 format is preferred if it's supported.
 
       // Per Intel's request, use NV12 only when
@@ -299,23 +301,6 @@ void UpdateOverlaySupport() {
     supports_overlays = true;
     nv12_overlay_support_flags = DXGI_OVERLAY_SUPPORT_FLAG_SCALING;
     overlay_format_used = DXGI_FORMAT_NV12;
-  }
-
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kDirectCompositionVideoSwapChainFormat)) {
-    std::string override_format =
-        base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-            switches::kDirectCompositionVideoSwapChainFormat);
-    if (override_format == kSwapChainFormatNV12) {
-      overlay_format_used = DXGI_FORMAT_NV12;
-    } else if (override_format == kSwapChainFormatYUY2) {
-      overlay_format_used = DXGI_FORMAT_YUY2;
-    } else if (override_format == kSwapChainFormatBGRA) {
-      overlay_format_used = DXGI_FORMAT_B8G8R8A8_UNORM;
-    } else {
-      DLOG(ERROR) << "Invalid value for switch "
-                  << switches::kDirectCompositionVideoSwapChainFormat;
-    }
   }
 
   if (supports_overlays != SupportsOverlays() ||
@@ -442,7 +427,9 @@ bool DirectCompositionSurfaceWin::AreOverlaysSupported() {
 
 // static
 bool DirectCompositionSurfaceWin::IsDecodeSwapChainSupported() {
-  if (!g_decode_swap_chain_disabled) {
+  if (!g_decode_swap_chain_disabled &&
+      base::FeatureList::IsEnabled(
+          features::kDirectCompositionUseNV12DecodeSwapChain)) {
     UpdateOverlaySupport();
     return GetOverlayFormatUsedForSDR() == DXGI_FORMAT_NV12;
   }
@@ -473,13 +460,9 @@ bool DirectCompositionSurfaceWin::AreScaledOverlaysSupported() {
            (SupportsOverlays() &&
             base::FeatureList::IsEnabled(
                 features::kDirectCompositionSoftwareOverlays));
-  } else if (g_overlay_format_used == DXGI_FORMAT_YUY2) {
-    return !!(g_yuy2_overlay_support_flags & DXGI_OVERLAY_SUPPORT_FLAG_SCALING);
-  } else {
-    DCHECK_EQ(g_overlay_format_used, DXGI_FORMAT_B8G8R8A8_UNORM);
-    // Assume scaling is supported for BGRA overlays.
-    return true;
   }
+  DCHECK_EQ(DXGI_FORMAT_YUY2, g_overlay_format_used);
+  return !!(g_yuy2_overlay_support_flags & DXGI_OVERLAY_SUPPORT_FLAG_SCALING);
 }
 
 // static
@@ -536,8 +519,7 @@ void DirectCompositionSurfaceWin::SetScaledOverlaysSupportedForTesting(
 // static
 void DirectCompositionSurfaceWin::SetOverlayFormatUsedForTesting(
     DXGI_FORMAT format) {
-  DCHECK(format == DXGI_FORMAT_NV12 || format == DXGI_FORMAT_YUY2 ||
-         format == DXGI_FORMAT_B8G8R8A8_UNORM);
+  DCHECK(format == DXGI_FORMAT_NV12 || format == DXGI_FORMAT_YUY2);
   UpdateOverlaySupport();
   g_overlay_format_used = format;
   DCHECK_EQ(format, GetOverlayFormatUsedForSDR());

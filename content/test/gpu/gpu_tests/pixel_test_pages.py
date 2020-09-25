@@ -72,7 +72,7 @@ class PixelTestPage(object):
     self.restart_browser_after_test = restart_browser_after_test
     # These are used to pass additional arguments to the test harness.
     # VideoPathTraceTest and OverlayModeTest support the following boolean
-    # arguments: pixel_format, zero_copy, no_overlay, and presentation_mode.
+    # arguments: expect_yuy2, zero_copy, video_is_rotated, and no_overlay.
     self.other_args = other_args
     # This allows a newly added test to be exempted from failures for a
     # (hopefully) short period after being added. This is so that any slightly
@@ -658,26 +658,16 @@ class PixelTestPages(object):
   @staticmethod
   def DirectCompositionPages(base_name):
     browser_args = [
-        cba.ENABLE_DIRECT_COMPOSITION_VIDEO_OVERLAYS,
+        '--enable-direct-composition-video-overlays',
         # All bots are connected with a power source, however, we want to to
         # test with the code path that's enabled with battery power.
-        cba.DISABLE_DIRECT_COMPOSITION_VP_SCALING,
-    ]
-    browser_args_NV12 = browser_args + [
-        '--direct-composition-video-swap-chain-format=nv12'
+        cba.DISABLE_VP_SCALING,
     ]
     browser_args_YUY2 = browser_args + [
-        '--direct-composition-video-swap-chain-format=yuy2'
-    ]
-    browser_args_BGRA = browser_args + [
-        '--direct-composition-video-swap-chain-format=bgra'
+        '--disable-features=DirectCompositionPreferNV12Overlays'
     ]
     browser_args_DXVA = browser_args + [
         cba.DISABLE_FEATURES_D3D11_VIDEO_DECODER
-    ]
-    browser_args_vp_scaling = [
-        cba.ENABLE_DIRECT_COMPOSITION_VIDEO_OVERLAYS,
-        cba.ENABLE_DIRECT_COMPOSITION_VP_SCALING,
     ]
 
     # Most tests fall roughly into 3 tiers of noisiness.
@@ -719,30 +709,10 @@ class PixelTestPages(object):
                       other_args={'zero_copy': True},
                       matching_algorithm=strict_dc_sobel_algorithm),
         PixelTestPage('pixel_video_mp4.html',
-                      base_name + '_DirectComposition_Video_MP4_NV12',
-                      test_rect=[0, 0, 240, 135],
-                      browser_args=browser_args_NV12,
-                      other_args={'pixel_format': 'NV12'},
-                      matching_algorithm=permissive_dc_sobel_algorithm),
-        PixelTestPage('pixel_video_mp4.html',
                       base_name + '_DirectComposition_Video_MP4_YUY2',
                       test_rect=[0, 0, 240, 135],
                       browser_args=browser_args_YUY2,
-                      other_args={'pixel_format': 'YUY2'},
-                      matching_algorithm=permissive_dc_sobel_algorithm),
-        PixelTestPage('pixel_video_mp4.html',
-                      base_name + '_DirectComposition_Video_MP4_BGRA',
-                      test_rect=[0, 0, 240, 135],
-                      browser_args=browser_args_BGRA,
-                      other_args={
-                          'pixel_format': 'BGRA',
-                          'presentation_mode': 'COMPOSED'
-                      },
-                      matching_algorithm=permissive_dc_sobel_algorithm),
-        PixelTestPage('pixel_video_mp4.html',
-                      base_name + '_DirectComposition_Video_MP4_VP_SCALING',
-                      test_rect=[0, 0, 240, 135],
-                      browser_args=browser_args_vp_scaling,
+                      other_args={'expect_yuy2': True},
                       matching_algorithm=permissive_dc_sobel_algorithm),
         PixelTestPage('pixel_video_mp4_four_colors_aspect_4x3.html',
                       base_name +
@@ -755,21 +725,21 @@ class PixelTestPages(object):
                       '_DirectComposition_Video_MP4_FourColors_Rot_90',
                       test_rect=[0, 0, 270, 240],
                       browser_args=browser_args,
-                      other_args={'presentation_mode': 'COMPOSED'},
+                      other_args={'video_is_rotated': True},
                       matching_algorithm=strict_dc_sobel_algorithm),
         PixelTestPage('pixel_video_mp4_four_colors_rot_180.html',
                       base_name +
                       '_DirectComposition_Video_MP4_FourColors_Rot_180',
                       test_rect=[0, 0, 240, 135],
                       browser_args=browser_args,
-                      other_args={'presentation_mode': 'COMPOSED'},
+                      other_args={'video_is_rotated': True},
                       matching_algorithm=strict_dc_sobel_algorithm),
         PixelTestPage('pixel_video_mp4_four_colors_rot_270.html',
                       base_name +
                       '_DirectComposition_Video_MP4_FourColors_Rot_270',
                       test_rect=[0, 0, 270, 240],
                       browser_args=browser_args,
-                      other_args={'presentation_mode': 'COMPOSED'},
+                      other_args={'video_is_rotated': True},
                       matching_algorithm=strict_dc_sobel_algorithm),
         PixelTestPage('pixel_video_vp9.html',
                       base_name + '_DirectComposition_Video_VP9',
@@ -795,22 +765,10 @@ class PixelTestPages(object):
                 ignored_border_thickness=1,
             )),
         PixelTestPage('pixel_video_vp9.html',
-                      base_name + '_DirectComposition_Video_VP9_NV12',
-                      test_rect=[0, 0, 240, 135],
-                      browser_args=browser_args_NV12,
-                      other_args={'pixel_format': 'NV12'},
-                      matching_algorithm=very_permissive_dc_sobel_algorithm),
-        PixelTestPage('pixel_video_vp9.html',
                       base_name + '_DirectComposition_Video_VP9_YUY2',
                       test_rect=[0, 0, 240, 135],
                       browser_args=browser_args_YUY2,
-                      other_args={'pixel_format': 'YUY2'},
-                      matching_algorithm=very_permissive_dc_sobel_algorithm),
-        PixelTestPage('pixel_video_vp9.html',
-                      base_name + '_DirectComposition_Video_VP9_BGRA',
-                      test_rect=[0, 0, 240, 135],
-                      browser_args=browser_args_BGRA,
-                      other_args={'pixel_format': 'BGRA'},
+                      other_args={'expect_yuy2': True},
                       matching_algorithm=very_permissive_dc_sobel_algorithm),
         PixelTestPage('pixel_video_vp9_i420a.html',
                       base_name + '_DirectComposition_Video_VP9_I420A',
@@ -848,7 +806,7 @@ class PixelTestPages(object):
             'pixel_video_mp4.html',
             base_name + '_DirectComposition_Video_Disable_Overlays',
             test_rect=[0, 0, 240, 135],
-            browser_args=[cba.DISABLE_DIRECT_COMPOSITION_VIDEO_OVERLAYS],
+            browser_args=['--disable-direct-composition-video-overlays'],
             other_args={'no_overlay': True},
             matching_algorithm=very_permissive_dc_sobel_algorithm),
     ]
@@ -871,16 +829,14 @@ class PixelTestPages(object):
   @staticmethod
   def ForceFullDamagePages(base_name):
     return [
-        PixelTestPage(
-            'wait_for_compositing.html',
-            base_name + '_ForceFullDamage',
-            test_rect=[0, 0, 0, 0],
-            other_args={'full_damage': True},
-            browser_args=[cba.ENABLE_DIRECT_COMPOSITION_FORCE_FULL_DAMAGE]),
-        PixelTestPage(
-            'wait_for_compositing.html',
-            base_name + '_ForcePartialDamage',
-            test_rect=[0, 0, 0, 0],
-            other_args={'full_damage': False},
-            browser_args=[cba.DISABLE_DIRECT_COMPOSITION_FORCE_FULL_DAMAGE]),
+        PixelTestPage('wait_for_compositing.html',
+                      base_name + '_ForceFullDamage',
+                      test_rect=[0, 0, 0, 0],
+                      other_args={'full_damage': True},
+                      browser_args=[cba.ENABLE_FORCE_FULL_DAMAGE]),
+        PixelTestPage('wait_for_compositing.html',
+                      base_name + '_ForcePartialDamage',
+                      test_rect=[0, 0, 0, 0],
+                      other_args={'full_damage': False},
+                      browser_args=[cba.DISABLE_FORCE_FULL_DAMAGE]),
     ]
