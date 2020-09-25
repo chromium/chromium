@@ -148,7 +148,12 @@ export class TabSearchAppElement extends PolymerElement {
 
   /** @private */
   updateTabs_() {
+    const getTabsStartTimestamp = Date.now();
     this.apiProxy_.getProfileTabs().then(({profileTabs}) => {
+      chrome.metricsPrivate.recordTime(
+          'Tabs.TabSearch.WebUI.TabListDataReceived',
+          Math.round(Date.now() - getTabsStartTimestamp));
+
       // Prior to the first load |this.openTabs_| has not been set. Record the
       // time it takes for the initial list of tabs to render.
       if (!this.openTabs_) {
