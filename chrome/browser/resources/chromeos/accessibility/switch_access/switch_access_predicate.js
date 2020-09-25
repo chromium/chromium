@@ -38,7 +38,6 @@ const SwitchAccessPredicate = {
     const defaultActionVerb = node.defaultActionVerb;
     const loc = node.location;
     const parent = node.parent;
-    const root = node.root;
     const role = node.role;
     const state = node.state;
 
@@ -60,18 +59,9 @@ const SwitchAccessPredicate = {
       return false;
     }
 
-    if (parent) {
-      // crbug.com/710559
-      // Work around for browser tabs.
-      if (role === RoleType.TAB && parent.role === RoleType.TAB_LIST &&
-          root.role === RoleType.DESKTOP) {
-        cache.isActionable.set(node, true);
-        return true;
-      }
-    }
-
     // Check various indicators that the node is actionable.
-    if (role === RoleType.BUTTON || role === RoleType.SLIDER) {
+    if (role === RoleType.BUTTON || role === RoleType.SLIDER ||
+        role === RoleType.TAB) {
       cache.isActionable.set(node, true);
       return true;
     }

@@ -214,7 +214,10 @@ class BasicNode extends SAChildNode {
       case chrome.automation.RoleType.SLIDER:
         return new SliderNode(baseNode, parent);
       case chrome.automation.RoleType.TAB:
-        return TabNode.create(baseNode, parent);
+        if (baseNode.root.role === RoleType.DESKTOP) {
+          return TabNode.create(baseNode, parent);
+        }
+        // else, fall through to default case
       default:
         return new BasicNode(baseNode, parent);
     }
