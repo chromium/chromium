@@ -15,6 +15,11 @@
 #include "chrome/credential_provider/extension/os_service_manager.h"
 #include "chrome/credential_provider/extension/service.h"
 #include "chrome/credential_provider/gaiacp/logging.h"
+#include "chrome/credential_provider/gaiacp/mdm_utils.h"
+#include "chrome/credential_provider/gaiacp/reg_utils.h"
+
+using credential_provider::GetGlobalFlagOrDefault;
+using credential_provider::kRegEnableVerboseLogging;
 
 int APIENTRY wWinMain(HINSTANCE hInstance,
                       HINSTANCE /*hPrevInstance*/,
@@ -42,14 +47,17 @@ int APIENTRY wWinMain(HINSTANCE hInstance,
                        true,    // Enable timestamp.
                        false);  // Enable tickcount.
 
+  // Set the event logging source and category for GCPW Extension.
+  logging::SetEventSource("GCPW", GCPW_EXTENSION_CATEGORY, MSG_LOG_MESSAGE);
+
+  if (GetGlobalFlagOrDefault(kRegEnableVerboseLogging, 0))
+    logging::SetMinLogLevel(logging::LOG_VERBOSE);
+
   // Make sure the process exits cleanly on unexpected errors.
   base::EnableTerminationOnHeapCorruption();
   base::EnableTerminationOnOutOfMemory();
   base::win::RegisterInvalidParamHandler();
   base::win::SetupCRT(*base::CommandLine::ForCurrentProcess());
-
-  // Set the event logging source and category for GCPW Extension.
-  logging::SetEventSource("GCPW", GCPW_EXTENSION_CATEGORY, MSG_LOG_MESSAGE);
 
   credential_provider::extension::Service::Get()->Run();
 

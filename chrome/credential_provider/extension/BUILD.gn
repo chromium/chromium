@@ -49,6 +49,8 @@ source_set("extension_lib") {
     "task.h",
     "task_manager.cc",
     "task_manager.h",
+    "user_context_enumerator.cc",
+    "user_context_enumerator.h",
     "user_device_context.cc",
     "user_device_context.h",
   ]

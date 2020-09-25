@@ -4,11 +4,14 @@
 
 #include "chrome/credential_provider/extension/task_manager.h"
 
+#include <memory>
+
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/timer/timer.h"
 #include "chrome/credential_provider/extension/extension_strings.h"
 #include "chrome/credential_provider/extension/task.h"
+#include "chrome/credential_provider/extension/user_context_enumerator.h"
 #include "chrome/credential_provider/gaiacp/logging.h"
 #include "chrome/credential_provider/gaiacp/reg_utils.h"
 
@@ -19,6 +22,20 @@ namespace {
 // Specifies the period of executing tasks.
 constexpr auto kPollingInterval = base::TimeDelta::FromHours(3);
 }  // namespace
+
+LastPeriodicSyncUpdater::LastPeriodicSyncUpdater() {}
+
+LastPeriodicSyncUpdater::~LastPeriodicSyncUpdater() {
+  UpdateLastRunTimestamp();
+}
+
+void LastPeriodicSyncUpdater::UpdateLastRunTimestamp() {
+  const base::Time sync_time = base::Time::Now();
+  const base::string16 sync_time_millis = base::NumberToString16(
+      sync_time.ToDeltaSinceWindowsEpoch().InMilliseconds());
+
+  SetGlobalFlag(kLastPeriodicSyncTimeRegKey, sync_time_millis);
+}
 
 // static
 TaskManager** TaskManager::GetInstanceStorage() {
@@ -41,17 +58,20 @@ void TaskManager::ScheduleTasks() {
 }
 
 void TaskManager::RunTasksInternal() {
-  LOGFN(VERBOSE) << base::Time::Now();
+  LOGFN(VERBOSE);
+  LastPeriodicSyncUpdater last_periodic_sync_updater;
 
-  // TODO(yusufsn): Perform periodic tasks for each GCPW user on the device.
-}
+  for (auto it = task_list_.begin(); it != task_list_.end(); ++it) {
+    LOGFN(VERBOSE) << "Executing " << it->first;
 
-void TaskManager::UpdateLastRunTimestamp() {
-  const base::Time sync_time = base::Time::Now();
-  const base::string16 sync_time_millis = base::NumberToString16(
-      sync_time.ToDeltaSinceWindowsEpoch().InMilliseconds());
+    std::unique_ptr<Task> task((it->second).Run());
+    if (task == nullptr) {
+      LOGFN(ERROR) << it->first << " task is null";
+      continue;
+    }
 
-  SetGlobalFlag(kLastPeriodicSyncTimeRegKey, sync_time_millis);
+    UserContextEnumerator::Get()->PerformTask(it->first, *task.get());
+  }
 }
 
 void TaskManager::RunTasks(

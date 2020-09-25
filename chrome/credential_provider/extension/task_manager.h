@@ -8,6 +8,7 @@
 #include "chrome/credential_provider/extension/task.h"
 
 #include <map>
+#include <memory>
 #include <string>
 
 #include "base/callback.h"
@@ -17,7 +18,18 @@
 namespace credential_provider {
 namespace extension {
 
-using TaskCreator = base::OnceCallback<HRESULT(Task* task)>;
+using TaskCreator = base::RepeatingCallback<std::unique_ptr<Task>()>;
+
+// Utility to make sure the registry is updated with the last periodic sync.
+class LastPeriodicSyncUpdater {
+ public:
+  LastPeriodicSyncUpdater();
+  virtual ~LastPeriodicSyncUpdater();
+
+ private:
+  // Update the registry with the last time the periodic tasks are executed.
+  virtual void UpdateLastRunTimestamp();
+};
 
 class TaskManager {
  public:
@@ -45,13 +57,10 @@ class TaskManager {
   virtual void Quit();
 
  protected:
-  // Update the registry with the last time the periodic tasks are executed.
-  virtual void UpdateLastRunTimestamp();
-
- private:
   // Actual method which goes through registered tasks and runs them.
   virtual void RunTasksInternal();
 
+ private:
   // Schedules a RepeatingTimer with the period specified in TaskManagerConfig.
   virtual void ScheduleTasks();
 

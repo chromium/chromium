@@ -1389,7 +1389,7 @@ void FakeTaskManager::RunTasksInternal() {
   ASSERT_EQ(current - start_hour, (num_of_times_executed_ - 1) * 3)
       << (current - start_hour) << " hours since first run";
 
-  UpdateLastRunTimestamp();
+  TaskManager::RunTasksInternal();
 }
 
 }  // namespace credential_provider
