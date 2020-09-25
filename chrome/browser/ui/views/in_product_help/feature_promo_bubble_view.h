@@ -14,7 +14,6 @@
 #include "chrome/browser/ui/views/in_product_help/feature_promo_bubble_timeout.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
-#include "ui/views/controls/button/button.h"
 
 namespace gfx {
 class Rect;
@@ -31,8 +30,7 @@ class MdTextButton;
 // The FeaturePromoBubbleView is a special BubbleDialogDelegateView for
 // in-product help which educates users about certain Chrome features in a
 // deferred context.
-class FeaturePromoBubbleView : public views::BubbleDialogDelegateView,
-                               public views::ButtonListener {
+class FeaturePromoBubbleView : public views::BubbleDialogDelegateView {
  public:
   // Disallow copy and assign.
   FeaturePromoBubbleView(const FeaturePromoBubbleView&) = delete;
@@ -69,9 +67,6 @@ class FeaturePromoBubbleView : public views::BubbleDialogDelegateView,
   }
   gfx::Size CalculatePreferredSize() const override;
 
-  // ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
-
   // Determines if this bubble can be focused. If true, it will get
   // focus on creation.
   bool focusable_ = false;
@@ -94,9 +89,6 @@ class FeaturePromoBubbleView : public views::BubbleDialogDelegateView,
   base::Optional<int> preferred_width_;
 
   std::unique_ptr<FeaturePromoBubbleTimeout> feature_promo_bubble_timeout_;
-
-  base::RepeatingClosure snooze_callback_;
-  base::RepeatingClosure dismiss_callback_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_IN_PRODUCT_HELP_FEATURE_PROMO_BUBBLE_VIEW_H_

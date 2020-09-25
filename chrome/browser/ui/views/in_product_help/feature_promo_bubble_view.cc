@@ -7,6 +7,8 @@
 #include <memory>
 #include <utility>
 
+#include "base/bind.h"
+#include "base/callback_forward.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/themes/theme_properties.h"
@@ -65,10 +67,10 @@ namespace views {
 
 class MdIPHBubbleButton : public MdTextButton {
  public:
-  MdIPHBubbleButton(ButtonListener* listener,
+  MdIPHBubbleButton(PressedCallback callback,
                     const base::string16& text,
                     bool has_border)
-      : MdTextButton(listener,
+      : MdTextButton(callback,
                      text,
                      ChromeTextContext::CONTEXT_IPH_BUBBLE_BUTTON),
         has_border_(has_border) {
@@ -117,9 +119,7 @@ FeaturePromoBubbleView::FeaturePromoBubbleView(
       focusable_(params.allow_focus),
       persist_on_blur_(params.persist_on_blur),
       snoozable_(params.allow_snooze),
-      preferred_width_(params.preferred_width),
-      snooze_callback_(snooze_callback),
-      dismiss_callback_(dismiss_callback) {
+      preferred_width_(params.preferred_width) {
   DCHECK(params.anchor_view);
   DCHECK(!params.allow_snooze || params.allow_focus)
       << "A snoozable bubble must be focusable to allow keyboard "
@@ -216,10 +216,23 @@ FeaturePromoBubbleView::FeaturePromoBubbleView(
         l10n_util::GetStringUTF16(IDS_PROMO_DISMISS_BUTTON);
     bool dismiss_is_leading = views::PlatformStyle::kIsOkButtonLeading;
 
+    auto close_bubble_and_run_callback = [](FeaturePromoBubbleView* view,
+                                            base::RepeatingClosure callback,
+                                            const ui::Event& event) {
+      view->CloseBubble();
+      callback.Run();
+    };
+
     snooze_button_ = button_container->AddChildView(
-        std::make_unique<views::MdIPHBubbleButton>(this, snooze_text, false));
+        std::make_unique<views::MdIPHBubbleButton>(
+            base::BindRepeating(close_bubble_and_run_callback,
+                                base::Unretained(this), snooze_callback),
+            snooze_text, false));
     dismiss_button_ = button_container->AddChildViewAt(
-        std::make_unique<views::MdIPHBubbleButton>(this, dismiss_text, true),
+        std::make_unique<views::MdIPHBubbleButton>(
+            base::BindRepeating(close_bubble_and_run_callback,
+                                base::Unretained(this), dismiss_callback),
+            dismiss_text, true),
         dismiss_is_leading ? 0 : 1);
 
     auto* leading_button =
@@ -287,15 +300,6 @@ void FeaturePromoBubbleView::OnMouseEntered(const ui::MouseEvent& event) {
 void FeaturePromoBubbleView::OnMouseExited(const ui::MouseEvent& event) {
   if (feature_promo_bubble_timeout_)
     feature_promo_bubble_timeout_->OnMouseExited();
-}
-
-void FeaturePromoBubbleView::ButtonPressed(views::Button* sender,
-                                           const ui::Event& event) {
-  CloseBubble();
-  if (sender == snooze_button_)
-    snooze_callback_.Run();
-  else  // sender == dismiss_button_
-    dismiss_callback_.Run();
 }
 
 gfx::Rect FeaturePromoBubbleView::GetBubbleBounds() {
