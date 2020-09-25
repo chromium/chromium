@@ -346,6 +346,66 @@ suite('languages page', () => {
       });
     });
 
+    test('toggle translate checkbox for a language', async () => {
+      // Open options for 'sw'.
+      const languageOptionsDropdownTrigger =
+          languagesList.querySelectorAll('cr-icon-button')[1];
+      assertTrue(!!languageOptionsDropdownTrigger);
+      languageOptionsDropdownTrigger.click();
+      assertTrue(actionMenu.open);
+
+      // 'sw' supports translate to the target language ('en').
+      const translateOption = getMenuItem('offerToTranslateThisLanguage');
+      assertFalse(translateOption.disabled);
+      assertTrue(translateOption.checked);
+
+      // Toggle the translate option.
+      translateOption.click();
+      assertFalse(
+          await metricsProxy.whenCalled('recordTranslateCheckboxChanged'));
+      assertDeepEquals(
+          ['en-US', 'sw'],
+          languageHelper.prefs.translate_blocked_languages.value);
+
+      // Menu should stay open briefly.
+      assertTrue(actionMenu.open);
+
+      // Menu closes after delay
+      const kMenuCloseDelay = 100;
+      await new Promise(r => setTimeout(r, kMenuCloseDelay + 1));
+      assertFalse(actionMenu.open);
+    });
+
+    test('translate checkbox disabled for translate blocked language', () => {
+      // Open options for 'en-US'.
+      const languageOptionsDropdownTrigger =
+          languagesList.querySelectorAll('cr-icon-button')[0];
+      assertTrue(!!languageOptionsDropdownTrigger);
+      languageOptionsDropdownTrigger.click();
+      assertTrue(actionMenu.open);
+
+      // 'en-US' does not support checkbox.
+      const translateOption = getMenuItem('offerToTranslateThisLanguage');
+      assertTrue(translateOption.disabled);
+    });
+
+    test('disable translate hides language-specific option', () => {
+      // Disables translate.
+      languageHelper.setPrefValue('translate.enabled', false);
+
+      // Open options for 'sw'.
+      const languageOptionsDropdownTrigger =
+          languagesList.querySelectorAll('cr-icon-button')[1];
+      assertTrue(!!languageOptionsDropdownTrigger);
+      languageOptionsDropdownTrigger.click();
+      assertTrue(actionMenu.open);
+
+      // The language-specific translation option should be hidden.
+      const translateOption = actionMenu.querySelector('#offerTranslations');
+      assertTrue(!!translateOption);
+      assertTrue(translateOption.hidden);
+    });
+
     test('Deep link to add language', async () => {
       loadTimeData.overrideValues({
         isDeepLinkingEnabled: true,

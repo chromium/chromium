@@ -59,6 +59,13 @@ cr.define('settings', function() {
      * @param {boolean} value
      */
     recordToggleTranslate(value) {}
+
+    /**
+     * Records when users check/uncheck "Offer to translate pages in this
+     * language" checkbox.
+     * @param {boolean} value
+     */
+    recordTranslateCheckboxChanged(value) {}
   }
 
   /** @implements {settings.LanguagesMetricsProxy} */
@@ -104,6 +111,12 @@ cr.define('settings', function() {
     recordToggleTranslate(value) {
       chrome.metricsPrivate.recordBoolean(
           'ChromeOS.Settings.Languages.Toggle.Translate', value);
+    }
+
+    /** @override */
+    recordTranslateCheckboxChanged(value) {
+      chrome.metricsPrivate.recordBoolean(
+          'ChromeOS.Settings.Languages.OfferToTranslateCheckbox', value);
     }
   }
 

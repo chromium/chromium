@@ -7,6 +7,12 @@
  * for languages and inputs settings.
  */
 
+/**
+ * @type {number} Millisecond delay that can be used when closing an action
+ * menu to keep it briefly on-screen so users can see the changes.
+ */
+const kMenuCloseDelay = 100;
+
 Polymer({
   is: 'os-settings-languages-page-v2',
 
@@ -175,6 +181,61 @@ Polymer({
     return languages !== undefined && languages.supported.some(language => {
       return this.languageHelper.canEnableLanguage(language);
     });
+  },
+
+  /**
+   * @return {boolean} True if the translate checkbox should be disabled.
+   * @private
+   */
+  disableTranslateCheckbox_() {
+    if (!this.detailLanguage_ || !this.detailLanguage_.state) {
+      return true;
+    }
+
+    const languageState = this.detailLanguage_.state;
+    if (!languageState.language || !languageState.language.supportsTranslate) {
+      return true;
+    }
+
+    if (this.languageHelper.isOnlyTranslateBlockedLanguage(languageState)) {
+      return true;
+    }
+
+    return this.languageHelper.convertLanguageCodeForTranslate(
+               languageState.language.code) === this.languages.translateTarget;
+  },
+
+  /**
+   * Handler for changes to the translate checkbox.
+   * @param {!{target: !Element}} e
+   * @private
+   */
+  onTranslateCheckboxChange_(e) {
+    if (e.target.checked) {
+      this.languageHelper.enableTranslateLanguage(
+          this.detailLanguage_.state.language.code);
+    } else {
+      this.languageHelper.disableTranslateLanguage(
+          this.detailLanguage_.state.language.code);
+    }
+    this.languagesMetricsProxy_.recordTranslateCheckboxChanged(
+        e.target.checked);
+    settings.recordSettingChange();
+    this.closeMenuSoon_();
+  },
+
+  /**
+   * Closes the shared action menu after a short delay, so when a checkbox is
+   * clicked it can be seen to change state before disappearing.
+   * @private
+   */
+  closeMenuSoon_() {
+    const menu = /** @type {!CrActionMenuElement} */ (this.$$('#menu').get());
+    setTimeout(() => {
+      if (menu.open) {
+        menu.close();
+      }
+    }, kMenuCloseDelay);
   },
 
   /**

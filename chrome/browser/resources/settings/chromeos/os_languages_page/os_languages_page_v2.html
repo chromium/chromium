@@ -147,6 +147,15 @@
         <template>
           <cr-action-menu class="complex"
               role-description="$i18n{menu}">
+            <cr-checkbox id="offerTranslations"
+                class="dropdown-item"
+                checked="[[detailLanguage_.state.translateEnabled]]"
+                on-change="onTranslateCheckboxChange_"
+                hidden="[[!prefs.translate.enabled.value]]"
+                disabled="[[disableTranslateCheckbox_(
+                    detailLanguage_.state, languages.translateTarget)]]">
+              $i18n{offerToTranslateThisLanguage}
+            </cr-checkbox>
             <button class="dropdown-item" role="menuitem"
                 on-click="onMoveToTopClick_"
                 hidden="[[showMoveToTop_(detailLanguage_)]]">

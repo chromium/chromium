@@ -22,6 +22,7 @@ cr.define('settings', function() {
         'recordToggleSpellCheck',
         'recordToggleTranslate',
         'recordAddInputMethod',
+        'recordTranslateCheckboxChanged',
       ]);
     }
 
@@ -58,6 +59,11 @@ cr.define('settings', function() {
     /** @override */
     recordAddInputMethod(value) {
       this.methodCalled('recordAddInputMethod', value);
+    }
+
+    /** @override */
+    recordTranslateCheckboxChanged(value) {
+      this.methodCalled('recordTranslateCheckboxChanged', value);
     }
   }
   // #cr_define_end
