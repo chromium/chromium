@@ -1463,10 +1463,8 @@ TEST_F(InputMethodControllerTest,
 
   auto* styleable_marker =
       DynamicTo<StyleableMarker>(GetDocument().Markers().Markers()[0].Get());
-  Color background_color =
-      LayoutTheme::GetTheme().ActiveSelectionBackgroundColor(
-          GetFrame().GetPage()->GetVisualViewport().UsedColorScheme());
-  EXPECT_EQ(background_color, styleable_marker->BackgroundColor());
+  EXPECT_EQ(ImeTextSpanUnderlineStyle::kSolid,
+            styleable_marker->UnderlineStyle());
 }
 
 TEST_F(InputMethodControllerTest, CommitPlainTextWithIme_Text_SpanInsert) {
