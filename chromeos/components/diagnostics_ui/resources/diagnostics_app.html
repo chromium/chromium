@@ -1,4 +1,13 @@
 <style include="cr-shared-style diagnostics-shared diagnostics-fonts">
+  .diagonstics-cards-container {
+    display: flex;
+    flex-direction: column;
+  }
+
+  #diagnosticsContainer {
+    --cr-centered-card-max-width: 820px;
+  }
+
   #header {
    @apply --diagnostics-header-font;
     margin-bottom: 10px;
@@ -8,13 +17,15 @@
     margin-bottom: 10px;
   }
 </style>
-<div class="main-container">
+<div id="diagnosticsContainer"class="cr-centered-card-container">
   <!-- TODO(zentaro) Localize once strings are confirmed -->
   <div id="header">Diagnostics</div>
   <div class="overview-container">
     <overview-card id="overviewCard"></overview-card>
   </div>
-  <memory-card id="memoryCard"></memory-card>
-  <cpu-card id="cpuCard"></cpu-card>
-  <battery-status-card id="batteryStatusCard"></battery-status-card>
+  <div class="diagonstics-cards-container">
+    <memory-card id="memoryCard"></memory-card>
+    <cpu-card id="cpuCard"></cpu-card>
+    <battery-status-card id="batteryStatusCard"></battery-status-card>
+  </div>
 </div>
