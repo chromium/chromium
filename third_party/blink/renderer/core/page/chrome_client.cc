@@ -304,6 +304,12 @@ bool ChromeClient::Print(LocalFrame* frame) {
     return false;
   }
 
+  // Suspend pages in case the client method runs a new event loop that would
+  // otherwise cause the load to continue while we're in the middle of
+  // executing JavaScript.
+  // TODO(crbug.com/956832): Remove this when it is safe to do so.
+  ScopedPagePauser pauser;
+
   PrintDelegate(frame);
   return true;
 }

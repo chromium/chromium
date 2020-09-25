@@ -48,7 +48,6 @@ class DictionaryValue;
 
 namespace blink {
 class WebLocalFrame;
-class WebScopedPagePauser;
 class WebView;
 }  // namespace blink
 
@@ -298,8 +297,7 @@ class PrintRenderFrameHelper
   // WARNING: |this| may be gone after this method returns.
   void Print(blink::WebLocalFrame* frame,
              const blink::WebNode& node,
-             PrintRequestType print_request_type,
-             std::unique_ptr<blink::WebScopedPagePauser> pauser);
+             PrintRequestType print_request_type);
 
   // Notification when printing is done - signal tear-down/free resources.
   void DidFinishPrinting(PrintingResult result);
@@ -483,11 +481,6 @@ class PrintRenderFrameHelper
     void InitWithFrame(blink::WebLocalFrame* web_frame);
     void InitWithNode(const blink::WebNode& web_node);
 
-    // Manual control of pausing/unpausing for special situations.
-    bool IsPaused() const;
-    void Pause();
-    std::unique_ptr<blink::WebScopedPagePauser> TakePauser();
-
     // Dispatchs onbeforeprint/onafterprint events. Use these instead of calling
     // the WebLocalFrame version on source_frame().
     void DispatchBeforePrintEvent(
@@ -578,10 +571,6 @@ class PrintRenderFrameHelper
     blink::WebNode source_node_;
 
     std::unique_ptr<PrepareFrameAndViewForPrint> prep_frame_view_;
-
-    // Manages when to pause between onbeforeprint and onafterprint events.
-    // https://html.spec.whatwg.org/C/#printing-steps
-    std::unique_ptr<blink::WebScopedPagePauser> pauser_;
 
     // The typefaces encountered in the content during document serialization.
     ContentProxySet typeface_content_info_;
