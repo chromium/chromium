@@ -4,11 +4,10 @@
 
 #include "chrome/browser/chromeos/policy/dlp/enterprise_clipboard_dlp_controller.h"
 
-#include <vector>
-
 #include "ash/public/cpp/toast_data.h"
 #include "ash/public/cpp/toast_manager.h"
 #include "base/optional.h"
+#include "base/strings/string16.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/crostini/crostini_util.h"
 #include "chrome/browser/chromeos/plugin_vm/plugin_vm_util.h"
@@ -19,7 +18,6 @@
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_data_endpoint.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "url/gurl.h"
 
 namespace policy {
 
@@ -30,40 +28,12 @@ constexpr int kToastDurationMs = 2500;
 
 }  // namespace
 
-EnterpriseClipboardDlpController::EnterpriseClipboardDlpController() = default;
-
-EnterpriseClipboardDlpController::~EnterpriseClipboardDlpController() = default;
-
 bool EnterpriseClipboardDlpController::IsDataReadAllowed(
     const ui::ClipboardDataEndpoint* const data_src,
     const ui::ClipboardDataEndpoint* const data_dst) const {
-  if (!data_src) {
-    return true;
-  }
+  // TODO(crbug.com/1102332): all the policy logic should be added later.
 
   DlpRulesManager::Level level = DlpRulesManager::Level::kAllow;
-
-  if (!data_dst) {
-    // Passing empty URL will return restricted if there's a rule restricting
-    // the src against any dst (*), otherwise it will return ALLOW.
-    level = DlpRulesManager::Get()->IsRestrictedDestination(
-        data_src->origin()->GetURL(), GURL(),
-        DlpRulesManager::Restriction::kClipboard);
-  } else if (data_dst->IsUrlType()) {
-    level = DlpRulesManager::Get()->IsRestrictedDestination(
-        data_src->origin()->GetURL(), data_dst->origin()->GetURL(),
-        DlpRulesManager::Restriction::kClipboard);
-  } else if (data_dst->type() == ui::EndpointType::kGuestOs) {
-    level = DlpRulesManager::Get()->IsRestrictedAnyOfComponents(
-        data_src->origin()->GetURL(),
-        std::vector<DlpRulesManager::Component>{
-            DlpRulesManager::Component::kPluginVm,
-            DlpRulesManager::Component::kCrostini},
-        DlpRulesManager::Restriction::kClipboard);
-  } else {
-    NOTREACHED();
-  }
-  // TODO(crbug.com/1129345): Add a separate handling for ARC
 
   if (level == DlpRulesManager::Level::kBlock) {
     ShowBlockToast(GetToastText(data_dst));
