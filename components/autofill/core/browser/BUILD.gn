@@ -324,8 +324,6 @@ static_library("browser") {
 
   if (is_ios || is_android) {
     sources += [
-      "autofill_assistant.cc",
-      "autofill_assistant.h",
       "payments/autofill_credit_card_filling_infobar_delegate_mobile.cc",
       "payments/autofill_credit_card_filling_infobar_delegate_mobile.h",
       "payments/autofill_save_card_infobar_delegate_mobile.cc",
@@ -675,7 +673,6 @@ source_set("unit_tests") {
 
   if (is_ios || is_android) {
     sources += [
-      "autofill_assistant_unittest.cc",
       "ui/mobile_label_formatter_unittest.cc",
       "ui/payments/card_expiration_date_fix_flow_controller_impl_unittest.cc",
       "ui/payments/card_name_fix_flow_controller_impl_unittest.cc",

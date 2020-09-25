@@ -1588,9 +1588,6 @@ void AutofillManager::Reset() {
       personal_data_, client_));
   credit_card_access_manager_.reset(new CreditCardAccessManager(
       driver(), client_, personal_data_, credit_card_form_event_logger_.get()));
-#if defined(OS_ANDROID) || defined(OS_IOS)
-  autofill_assistant_.Reset();
-#endif
   has_logged_autofill_enabled_ = false;
   has_logged_address_suggestions_count_ = false;
   did_show_suggestions_ = false;
@@ -1638,9 +1635,6 @@ AutofillManager::AutofillManager(
               form_interactions_ukm_logger_.get(),
               personal_data_,
               client_)),
-#if defined(OS_ANDROID) || defined(OS_IOS)
-      autofill_assistant_(this),
-#endif
       is_rich_query_enabled_(IsRichQueryEnabled(client->GetChannel())) {
   DCHECK(driver);
   DCHECK(client_);
@@ -2119,21 +2113,6 @@ void AutofillManager::OnFormsParsed(const std::vector<const FormData*>& forms,
     KeyboardAccessoryMetricsLogger::OnFormsLoaded();
 #endif
   }
-
-#if defined(OS_ANDROID) || defined(OS_IOS)
-  // When a credit card form is parsed and conditions are met, show an infobar
-  // prompt for credit card assisted filling. Upon accepting the infobar, the
-  // form will automatically be filled with the user's information through this
-  // class' FillCreditCardForm().
-  if (autofill_assistant_.CanShowCreditCardAssist()) {
-    const std::vector<CreditCard*> cards =
-        credit_card_access_manager_->GetCreditCardsToSuggest();
-    // Expired cards are last in the sorted order, so if the first one is
-    // expired, they all are.
-    if (!cards.empty() && !cards.front()->IsExpired(AutofillClock::Now()))
-      autofill_assistant_.ShowAssistForCreditCard(*cards.front());
-  }
-#endif
 
   // Send the current type predictions to the renderer. For non-queryable forms
   // this is all the information about them that will ever be available. The

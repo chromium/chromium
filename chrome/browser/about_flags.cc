@@ -2955,11 +2955,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(USE_TCMALLOC)
 #endif  // OS_CHROMEOS
 #if defined(OS_ANDROID)
-    {"enable-credit-card-assist", flag_descriptions::kCreditCardAssistName,
-     flag_descriptions::kCreditCardAssistDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(autofill::features::kAutofillCreditCardAssist)},
-#endif  // OS_ANDROID
-#if defined(OS_ANDROID)
     {"enable-site-isolation-for-password-sites",
      flag_descriptions::kSiteIsolationForPasswordSitesName,
      flag_descriptions::kSiteIsolationForPasswordSitesDescription, kOsAndroid,

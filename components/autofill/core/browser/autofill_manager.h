@@ -41,10 +41,6 @@
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/signatures.h"
 
-#if defined(OS_ANDROID) || defined(OS_IOS)
-#include "components/autofill/core/browser/autofill_assistant.h"
-#endif
-
 namespace gfx {
 class RectF;
 }
@@ -710,10 +706,6 @@ class AutofillManager : public AutofillHandler,
 
   // Delegate used in test to get notifications on certain events.
   AutofillManagerTestDelegate* test_delegate_ = nullptr;
-
-#if defined(OS_ANDROID) || defined(OS_IOS)
-  AutofillAssistant autofill_assistant_;
-#endif
 
   // A map of form names to FillingContext instances used to make refill
   // attempts for dynamic forms.
