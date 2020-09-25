@@ -308,10 +308,13 @@ public class InstantStartTest {
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
     // clang-format off
     @EnableFeatures({ChromeFeatureList.TAB_SWITCHER_ON_RETURN + "<Study,",
-            ChromeFeatureList.START_SURFACE_ANDROID + "<Study"})
+            ChromeFeatureList.START_SURFACE_ANDROID + "<Study",
+            ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID + "<Study",
+            ChromeFeatureList.TAB_GROUPS_ANDROID,
+            ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
             "force-fieldtrials=Study/Group",
-            IMMEDIATE_RETURN_PARAMS + "/start_surface_variation/single"})
+            IMMEDIATE_RETURN_PARAMS + "/start_surface_variation/single/enable_launch_polish/true"})
     public void startSurfaceSinglePanePreNativeAndWithNativeTest() {
         // clang-format on
         startMainActivityFromLauncher();

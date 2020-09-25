@@ -180,6 +180,8 @@ public class TabSwitcherCoordinator
 
                 @Override
                 public void finishedShowing() {
+                    if (!mTabModelSelector.isTabStateInitialized()) return;
+
                     int selectedIndex = mTabModelSelector.getTabModelFilterProvider()
                                                 .getCurrentTabModelFilter()
                                                 .index();

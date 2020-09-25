@@ -274,9 +274,7 @@ public class TabListCoordinator implements Destroyable {
 
     private static void setThumbnailViewAspectRatio(View view) {
         float mExpectedThumbnailAspectRatio =
-                (float) ChromeFeatureList.getFieldTrialParamByFeatureAsDouble(
-                        ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID,
-                        TabUiFeatureUtilities.THUMBNAIL_ASPECT_RATIO_PARAM, 1.0);
+                (float) TabUiFeatureUtilities.THUMBNAIL_ASPECT_RATIO.getValue();
         mExpectedThumbnailAspectRatio = MathUtils.clamp(mExpectedThumbnailAspectRatio, 0.5f, 2.0f);
         TabGridThumbnailView thumbnailView =
                 (TabGridThumbnailView) view.findViewById(R.id.tab_thumbnail);
