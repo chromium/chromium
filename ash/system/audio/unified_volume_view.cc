@@ -112,15 +112,12 @@ class MoreButton : public views::Button {
   std::unique_ptr<views::InkDropRipple> CreateInkDropRipple() const override {
     return TrayPopupUtils::CreateInkDropRipple(
         TrayPopupInkDropStyle::FILL_BOUNDS, this,
-        GetInkDropCenterBasedOnLastEvent(),
-        UnifiedSystemTrayView::GetBackgroundColor());
+        GetInkDropCenterBasedOnLastEvent());
   }
 
   std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight()
       const override {
-    return TrayPopupUtils::CreateInkDropHighlight(
-        TrayPopupInkDropStyle::FILL_BOUNDS, this,
-        UnifiedSystemTrayView::GetBackgroundColor());
+    return TrayPopupUtils::CreateInkDropHighlight(this);
   }
 
   const char* GetClassName() const override { return "MoreButton"; }

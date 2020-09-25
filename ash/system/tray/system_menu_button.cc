@@ -9,7 +9,6 @@
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_popup_ink_drop_style.h"
 #include "ash/system/tray/tray_popup_utils.h"
-#include "ash/system/unified/unified_system_tray_view.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/animation/flood_fill_ink_drop_ripple.h"
@@ -71,15 +70,12 @@ std::unique_ptr<views::InkDropRipple> SystemMenuButton::CreateInkDropRipple()
     const {
   return TrayPopupUtils::CreateInkDropRipple(
       TrayPopupInkDropStyle::HOST_CENTERED, this,
-      GetInkDropCenterBasedOnLastEvent(),
-      UnifiedSystemTrayView::GetBackgroundColor());
+      GetInkDropCenterBasedOnLastEvent());
 }
 
 std::unique_ptr<views::InkDropHighlight>
 SystemMenuButton::CreateInkDropHighlight() const {
-  return TrayPopupUtils::CreateInkDropHighlight(
-      TrayPopupInkDropStyle::HOST_CENTERED, this,
-      UnifiedSystemTrayView::GetBackgroundColor());
+  return TrayPopupUtils::CreateInkDropHighlight(this);
 }
 
 const char* SystemMenuButton::GetClassName() const {

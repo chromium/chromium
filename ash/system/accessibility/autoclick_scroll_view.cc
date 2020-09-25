@@ -12,7 +12,6 @@
 #include "ash/system/accessibility/autoclick_menu_bubble_controller.h"
 #include "ash/system/unified/custom_shape_button.h"
 #include "ash/system/unified/top_shortcut_button.h"
-#include "ash/system/unified/unified_system_tray_view.h"
 #include "base/macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/timer/timer.h"
@@ -38,8 +37,7 @@ constexpr int kScrollPadIconPadding = 30;
 
 SkColor HoveredButtonColor() {
   const AshColorProvider::RippleAttributes attributes =
-      AshColorProvider::Get()->GetRippleAttributes(
-          UnifiedSystemTrayView::GetBackgroundColor());
+      AshColorProvider::Get()->GetRippleAttributes();
   return SkColorSetA(attributes.base_color, 255 * attributes.highlight_opacity);
 }
 

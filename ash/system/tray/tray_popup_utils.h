@@ -152,18 +152,14 @@ class TrayPopupUtils {
   static std::unique_ptr<views::InkDropRipple> CreateInkDropRipple(
       TrayPopupInkDropStyle ink_drop_style,
       const views::View* host,
-      const gfx::Point& center_point,
-      SkColor background_color);
+      const gfx::Point& center_point);
 
-  // Creates in InkDropHighlight instance for |host| according to the
-  // |ink_drop_style|.
+  // Creates in InkDropHighlight instance for |host|.
   //
   // All targetable views in the system menu should delegate
   // InkDropHost::CreateInkDropHighlight() calls here.
   static std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight(
-      TrayPopupInkDropStyle ink_drop_style,
-      const views::View* host,
-      SkColor background_color);
+      const views::View* host);
 
   // Installs a HighlightPathGenerator matching the TrayPopupInkDropStyle.
   static void InstallHighlightPathGenerator(

@@ -300,21 +300,18 @@ std::unique_ptr<views::InkDrop> TrayPopupUtils::CreateInkDrop(
 std::unique_ptr<views::InkDropRipple> TrayPopupUtils::CreateInkDropRipple(
     TrayPopupInkDropStyle ink_drop_style,
     const views::View* host,
-    const gfx::Point& center_point,
-    SkColor background_color) {
+    const gfx::Point& center_point) {
   const AshColorProvider::RippleAttributes ripple_attributes =
-      AshColorProvider::Get()->GetRippleAttributes(background_color);
+      AshColorProvider::Get()->GetRippleAttributes();
   return std::make_unique<views::FloodFillInkDropRipple>(
       host->size(), GetInkDropInsets(ink_drop_style), center_point,
       ripple_attributes.base_color, ripple_attributes.inkdrop_opacity);
 }
 
 std::unique_ptr<views::InkDropHighlight> TrayPopupUtils::CreateInkDropHighlight(
-    TrayPopupInkDropStyle ink_drop_style,
-    const views::View* host,
-    SkColor background_color) {
+    const views::View* host) {
   const AshColorProvider::RippleAttributes ripple_attributes =
-      AshColorProvider::Get()->GetRippleAttributes(background_color);
+      AshColorProvider::Get()->GetRippleAttributes();
   auto highlight = std::make_unique<views::InkDropHighlight>(
       gfx::SizeF(host->size()), ripple_attributes.base_color);
   highlight->set_visible_opacity(ripple_attributes.highlight_opacity);

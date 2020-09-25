@@ -161,7 +161,7 @@ TrayBackgroundView::TrayBackgroundView(Shelf* shelf)
   DCHECK(shelf_);
   SetNotifyEnterExitOnChild(true);
   AshColorProvider::RippleAttributes ripple_attributes =
-      ShelfConfig::Get()->GetInkDropRippleAttributes();
+      AshColorProvider::Get()->GetRippleAttributes();
 
   SetInkDropBaseColor(ripple_attributes.base_color);
   SetInkDropVisibleOpacity(ripple_attributes.inkdrop_opacity);
@@ -314,8 +314,7 @@ void TrayBackgroundView::ChildPreferredSizeChanged(views::View* child) {
 std::unique_ptr<views::InkDropRipple> TrayBackgroundView::CreateInkDropRipple()
     const {
   const AshColorProvider::RippleAttributes ripple_attributes =
-      AshColorProvider::Get()->GetRippleAttributes(
-          ShelfConfig::Get()->GetDefaultShelfColor());
+      AshColorProvider::Get()->GetRippleAttributes();
   return std::make_unique<views::FloodFillInkDropRipple>(
       size(), GetBackgroundInsets(), GetInkDropCenterBasedOnLastEvent(),
       ripple_attributes.base_color, ripple_attributes.inkdrop_opacity);
@@ -334,8 +333,7 @@ TrayBackgroundView::CreateInkDropHighlight() const {
   bounds.set_width(bounds.width() + 2 * icon_size);
   bounds.set_height(bounds.height() + 2 * icon_size);
   const AshColorProvider::RippleAttributes ripple_attributes =
-      AshColorProvider::Get()->GetRippleAttributes(
-          ShelfConfig::Get()->GetDefaultShelfColor());
+      AshColorProvider::Get()->GetRippleAttributes();
   auto highlight = std::make_unique<views::InkDropHighlight>(
       gfx::SizeF(bounds.size()), ripple_attributes.base_color);
   highlight->set_visible_opacity(ripple_attributes.highlight_opacity);

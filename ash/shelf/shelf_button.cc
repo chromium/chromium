@@ -8,6 +8,7 @@
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_button_delegate.h"
+#include "ash/style/ash_color_provider.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/views/animation/ink_drop_impl.h"
@@ -22,7 +23,7 @@ ShelfButton::ShelfButton(Shelf* shelf,
   DCHECK(shelf_button_delegate_);
   SetHideInkDropWhenShowingContextMenu(false);
   AshColorProvider::RippleAttributes ripple_attributes =
-      ShelfConfig::Get()->GetInkDropRippleAttributes();
+      AshColorProvider::Get()->GetRippleAttributes();
   SetInkDropBaseColor(ripple_attributes.base_color);
   SetInkDropVisibleOpacity(ripple_attributes.inkdrop_opacity);
   SetFocusBehavior(FocusBehavior::ALWAYS);

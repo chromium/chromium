@@ -147,15 +147,12 @@ std::unique_ptr<views::InkDropRipple>
 FeaturePodIconButton::CreateInkDropRipple() const {
   return TrayPopupUtils::CreateInkDropRipple(
       TrayPopupInkDropStyle::FILL_BOUNDS, this,
-      GetInkDropCenterBasedOnLastEvent(),
-      UnifiedSystemTrayView::GetBackgroundColor());
+      GetInkDropCenterBasedOnLastEvent());
 }
 
 std::unique_ptr<views::InkDropHighlight>
 FeaturePodIconButton::CreateInkDropHighlight() const {
-  return TrayPopupUtils::CreateInkDropHighlight(
-      TrayPopupInkDropStyle::FILL_BOUNDS, this,
-      UnifiedSystemTrayView::GetBackgroundColor());
+  return TrayPopupUtils::CreateInkDropHighlight(this);
 }
 
 void FeaturePodIconButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
@@ -268,15 +265,12 @@ std::unique_ptr<views::InkDropRipple>
 FeaturePodLabelButton::CreateInkDropRipple() const {
   return TrayPopupUtils::CreateInkDropRipple(
       TrayPopupInkDropStyle::FILL_BOUNDS, this,
-      GetInkDropCenterBasedOnLastEvent(),
-      UnifiedSystemTrayView::GetBackgroundColor());
+      GetInkDropCenterBasedOnLastEvent());
 }
 
 std::unique_ptr<views::InkDropHighlight>
 FeaturePodLabelButton::CreateInkDropHighlight() const {
-  return TrayPopupUtils::CreateInkDropHighlight(
-      TrayPopupInkDropStyle::FILL_BOUNDS, this,
-      UnifiedSystemTrayView::GetBackgroundColor());
+  return TrayPopupUtils::CreateInkDropHighlight(this);
 }
 
 const char* FeaturePodLabelButton::GetClassName() const {

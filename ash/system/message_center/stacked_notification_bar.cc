@@ -83,20 +83,21 @@ class StackingBarLabelButton : public views::LabelButton {
   }
 
   std::unique_ptr<views::InkDropRipple> CreateInkDropRipple() const override {
-    return TrayPopupUtils::CreateInkDropRipple(
-        TrayPopupInkDropStyle::FILL_BOUNDS, this,
-        GetInkDropCenterBasedOnLastEvent(), background_color_);
+    return std::make_unique<views::FloodFillInkDropRipple>(
+        size(), GetInkDropCenterBasedOnLastEvent(),
+        message_center_style::kInkRippleColor,
+        message_center_style::kInkRippleOpacity);
   }
 
   std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight()
       const override {
-    return TrayPopupUtils::CreateInkDropHighlight(
-        TrayPopupInkDropStyle::FILL_BOUNDS, this, background_color_);
+    auto highlight = std::make_unique<views::InkDropHighlight>(
+        gfx::SizeF(size()), message_center_style::kInkRippleColor);
+    highlight->set_visible_opacity(message_center_style::kInkRippleOpacity);
+    return highlight;
   }
 
  private:
-  SkColor background_color_ =
-      message_center_style::kNotificationBackgroundColor;
   UnifiedMessageCenterView* message_center_view_;
   DISALLOW_COPY_AND_ASSIGN(StackingBarLabelButton);
 };

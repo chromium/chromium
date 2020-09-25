@@ -111,14 +111,12 @@ class ToastOverlay::ToastDisplayObserver : public display::DisplayObserver {
 class ToastOverlayButton : public views::LabelButton {
  public:
   ToastOverlayButton(views::ButtonListener* listener,
-                     const base::string16& text,
-                     const SkColor toast_backgrond_color)
+                     const base::string16& text)
       : views::LabelButton(listener, text, CONTEXT_TOAST_OVERLAY) {
     SetInkDropMode(InkDropMode::ON);
     SetHasInkDropActionOnClick(true);
     const auto* color_provider = AshColorProvider::Get();
-    SetInkDropBaseColor(
-        color_provider->GetRippleAttributes(toast_backgrond_color).base_color);
+    SetInkDropBaseColor(color_provider->GetRippleAttributes().base_color);
     SetEnabledTextColors(color_provider->GetContentLayerColor(
         AshColorProvider::ContentLayerType::kButtonLabelColorBlue));
 
@@ -158,9 +156,9 @@ class ToastOverlayView : public views::View, public views::ButtonListener {
                    const base::Optional<base::string16>& dismiss_text)
       : overlay_(overlay) {
     SetPaintToLayer();
-    background_color_ = AshColorProvider::Get()->GetBaseLayerColor(
-        AshColorProvider::BaseLayerType::kTransparent80);
-    SetBackground(views::CreateSolidBackground(background_color_));
+    SetBackground(
+        views::CreateSolidBackground(AshColorProvider::Get()->GetBaseLayerColor(
+            AshColorProvider::BaseLayerType::kTransparent80)));
     layer()->SetFillsBoundsOpaquely(false);
     layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(kToastCornerRounding));
     layer()->SetBackgroundBlur(
@@ -177,11 +175,9 @@ class ToastOverlayView : public views::View, public views::ButtonListener {
       return;
 
     button_ = new ToastOverlayButton(
-        this,
-        dismiss_text.value().empty()
-            ? l10n_util::GetStringUTF16(IDS_ASH_TOAST_DISMISS_BUTTON)
-            : dismiss_text.value(),
-        background_color_);
+        this, dismiss_text.value().empty()
+                  ? l10n_util::GetStringUTF16(IDS_ASH_TOAST_DISMISS_BUTTON)
+                  : dismiss_text.value());
 
     const int button_width =
         std::min(button_->GetPreferredSize().width(), kToastButtonMaximumWidth);
@@ -215,7 +211,6 @@ class ToastOverlayView : public views::View, public views::ButtonListener {
 
   ToastOverlay* overlay_ = nullptr;       // weak
   ToastOverlayButton* button_ = nullptr;  // weak
-  SkColor background_color_ = gfx::kPlaceholderColor;
 
   DISALLOW_COPY_AND_ASSIGN(ToastOverlayView);
 };

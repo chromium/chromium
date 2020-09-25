@@ -9,6 +9,7 @@
 #include "ash/public/cpp/session/session_observer.h"
 #include "base/observer_list.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/gfx/color_palette.h"
 #include "ui/gfx/vector_icon_types.h"
 
 class PrefChangeRegistrar;
@@ -167,8 +168,12 @@ class ASH_EXPORT AshColorProvider : public SessionObserver {
   SkColor GetContentLayerColor(ContentLayerType type) const;
 
   // Gets the attributes of ripple on |bg_color|. |bg_color| is the background
-  // color of the UI element that wants to show inkdrop.
-  RippleAttributes GetRippleAttributes(SkColor bg_color) const;
+  // color of the UI element that wants to show inkdrop. Applies the color from
+  // GetBackgroundColor if |bg_color| is not given. This means the background
+  // color of the UI element is from Shiled or Base layer. See
+  // GetShieldLayerColor and GetBaseLayerColor.
+  RippleAttributes GetRippleAttributes(
+      SkColor bg_color = gfx::kPlaceholderColor) const;
 
   // Gets the background color that can be applied on any layer. The returned
   // color will be different based on color mode and color theme (see

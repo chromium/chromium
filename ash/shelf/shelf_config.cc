@@ -444,11 +444,6 @@ int ShelfConfig::GetShelfSize(bool ignore_in_app_state) const {
   return is_dense_ ? 48 : 56;
 }
 
-AshColorProvider::RippleAttributes ShelfConfig::GetInkDropRippleAttributes()
-    const {
-  return AshColorProvider::Get()->GetRippleAttributes(GetDefaultShelfColor());
-}
-
 SkColor ShelfConfig::GetShelfControlButtonColor() const {
   const session_manager::SessionState session_state =
       Shell::Get()->session_controller()->GetSessionState();

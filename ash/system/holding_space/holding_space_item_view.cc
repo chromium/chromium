@@ -7,6 +7,7 @@
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/shelf_config.h"
+#include "ash/style/ash_color_provider.h"
 #include "ash/system/holding_space/holding_space_item_view_delegate.h"
 #include "ui/base/class_property.h"
 #include "ui/gfx/color_palette.h"
@@ -70,7 +71,7 @@ HoldingSpaceItemView* HoldingSpaceItemView::Cast(views::View* view) {
 }
 
 SkColor HoldingSpaceItemView::GetInkDropBaseColor() const {
-  return ShelfConfig::Get()->GetInkDropRippleAttributes().base_color;
+  return AshColorProvider::Get()->GetRippleAttributes().base_color;
 }
 
 void HoldingSpaceItemView::OnGestureEvent(ui::GestureEvent* event) {

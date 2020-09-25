@@ -89,15 +89,12 @@ std::unique_ptr<views::InkDropRipple> TopShortcutButton::CreateInkDropRipple()
     const {
   return TrayPopupUtils::CreateInkDropRipple(
       TrayPopupInkDropStyle::FILL_BOUNDS, this,
-      GetInkDropCenterBasedOnLastEvent(),
-      UnifiedSystemTrayView::GetBackgroundColor());
+      GetInkDropCenterBasedOnLastEvent());
 }
 
 std::unique_ptr<views::InkDropHighlight>
 TopShortcutButton::CreateInkDropHighlight() const {
-  return TrayPopupUtils::CreateInkDropHighlight(
-      TrayPopupInkDropStyle::FILL_BOUNDS, this,
-      UnifiedSystemTrayView::GetBackgroundColor());
+  return TrayPopupUtils::CreateInkDropHighlight(this);
 }
 
 const char* TopShortcutButton::GetClassName() const {

@@ -15,7 +15,6 @@
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_popup_item_style.h"
 #include "ash/system/tray/tray_popup_utils.h"
-#include "ash/system/unified/unified_system_tray_view.h"
 #include "ash/system/user/rounded_image_view.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -52,14 +51,15 @@ HoldingSpaceItemChipView::HoldingSpaceItemChipView(
 
   AddPinButton();
 
+  const auto* color_provider = AshColorProvider::Get();
   SetBackground(views::CreateRoundedRectBackground(
-      AshColorProvider::Get()->GetControlsLayerColor(
+      color_provider->GetControlsLayerColor(
           AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive),
       kHoldingSpaceCornerRadius));
 
   SetInkDropMode(InkDropMode::ON_NO_GESTURE_HANDLER);
   SetInkDropVisibleOpacity(
-      ShelfConfig::Get()->GetInkDropRippleAttributes().inkdrop_opacity);
+      color_provider->GetRippleAttributes().inkdrop_opacity);
   SetNotifyEnterExitOnChild(true);
 
   // Subscribe to be notified of changes to `item_`'s image.

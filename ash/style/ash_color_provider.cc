@@ -231,6 +231,9 @@ SkColor AshColorProvider::GetContentLayerColor(ContentLayerType type) const {
 
 AshColorProvider::RippleAttributes AshColorProvider::GetRippleAttributes(
     SkColor bg_color) const {
+  if (bg_color == gfx::kPlaceholderColor)
+    bg_color = GetBackgroundColor();
+
   const bool is_dark = color_utils::IsDark(bg_color);
   const SkColor base_color = is_dark ? SK_ColorWHITE : SK_ColorBLACK;
   const float opacity =

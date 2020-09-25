@@ -186,7 +186,7 @@ class LoginShelfButton : public views::LabelButton {
     SetInkDropMode(InkDropMode::ON);
     SetHasInkDropActionOnClick(true);
     AshColorProvider::RippleAttributes ripple_attributes =
-        ShelfConfig::Get()->GetInkDropRippleAttributes();
+        AshColorProvider::Get()->GetRippleAttributes();
     SetInkDropBaseColor(ripple_attributes.base_color);
     SetInkDropVisibleOpacity(ripple_attributes.inkdrop_opacity);
 
@@ -308,7 +308,7 @@ class KioskAppsButton : public views::MenuButton,
     SetInkDropMode(InkDropMode::ON);
     SetHasInkDropActionOnClick(true);
     AshColorProvider::RippleAttributes ripple_attributes =
-        ShelfConfig::Get()->GetInkDropRippleAttributes();
+        AshColorProvider::Get()->GetRippleAttributes();
     SetInkDropBaseColor(ripple_attributes.base_color);
     SetInkDropVisibleOpacity(ripple_attributes.inkdrop_opacity);
 

@@ -13,7 +13,6 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
-#include "ash/system/unified/unified_system_tray_view.h"
 #include "base/i18n/number_formatting.h"
 #include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
@@ -54,8 +53,7 @@ class PageIndicatorView::PageIndicatorButton : public views::Button,
     SetInkDropMode(InkDropMode::ON);
 
     const AshColorProvider::RippleAttributes ripple_attributes =
-        AshColorProvider::Get()->GetRippleAttributes(
-            UnifiedSystemTrayView::GetBackgroundColor());
+        AshColorProvider::Get()->GetRippleAttributes();
     ripple_base_color_ = ripple_attributes.base_color;
     highlight_opacity_ = ripple_attributes.highlight_opacity;
     inkdrop_opacity_ = ripple_attributes.inkdrop_opacity;

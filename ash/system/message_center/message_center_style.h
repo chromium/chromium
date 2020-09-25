@@ -22,6 +22,8 @@ constexpr SkColor kCountLabelColor = gfx::kGoogleGrey900;
 constexpr SkColor kSeperatorColor = SkColorSetA(SK_ColorBLACK, 0x24);  // 14%
 constexpr SkColor kNotificationBackgroundColor = SK_ColorWHITE;
 constexpr SkColor kUnifiedMenuButtonColorActive = gfx::kGoogleBlueDark600;
+constexpr SkColor kInkRippleColor = SK_ColorBLACK;
+constexpr float kInkRippleOpacity = 0.06f;
 
 constexpr int kEmptyIconSize = 24;
 constexpr gfx::Insets kEmptyIconPadding(0, 0, 4, 0);
