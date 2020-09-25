@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 from six.moves.urllib import parse
+from mod_pywebsocket import stream
 import threading
 
 
@@ -27,7 +28,10 @@ def be_observed(request):
   with cv:
     connected = True
   # Wait for a Close frame
-  request.ws_stream.receive_message()
+  try:
+    request.ws_stream.receive_message()
+  except stream.ConnectionTerminatedException:
+    observe_close(1006)  # "Abnormal Closure"
 
 
 def be_observer(request):
@@ -60,9 +64,13 @@ def web_socket_transfer_data(request):
 
 
 def web_socket_passive_closing_handshake(request):
-  global close_code
   if get_role(request) == 'observed':
-    with cv:
-      close_code = request.ws_close_code
-      cv.notify()
+    observe_close(request.ws_close_code)
   return request.ws_close_code, request.ws_close_reason
+
+
+def observe_close(code):
+  global close_code
+  with cv:
+    close_code = code
+    cv.notify()

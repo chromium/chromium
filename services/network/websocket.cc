@@ -612,8 +612,11 @@ void WebSocket::AddChannel(
 void WebSocket::OnWritable(MojoResult result,
                            const mojo::HandleSignalsState& state) {
   if (result != MOJO_RESULT_OK) {
+    // MOJO_RESULT_FAILED_PRECONDITION (=9) is common when the other end of the
+    // pipe is closed.
     DVLOG(1) << "WebSocket::OnWritable mojo error=" << result;
-    Reset();
+
+    OnConnectionError(FROM_HERE);
     return;
   }
   wait_for_writable_ = false;
@@ -678,8 +681,11 @@ void WebSocket::SendDataFrame(base::span<const char>* payload) {
 void WebSocket::OnReadable(MojoResult result,
                            const mojo::HandleSignalsState& state) {
   if (result != MOJO_RESULT_OK) {
-    DVLOG(1) << "WebSocket::OnWritable mojo error=" << result;
-    Reset();
+    // MOJO_RESULT_FAILED_PRECONDITION (=9) is common when the other end of the
+    // pipe is closed.
+    DVLOG(1) << "WebSocket::OnReadable mojo error=" << result;
+
+    OnConnectionError(FROM_HERE);
     return;
   }
   wait_for_readable_ = false;
