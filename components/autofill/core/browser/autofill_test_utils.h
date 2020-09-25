@@ -320,8 +320,8 @@ void FillQueryField(AutofillPageQueryRequest_Form_Field* field,
 // FormStructure::ParseApiQueryResponse().
 //
 // Perhaps a neater way would be to move this to TestFormStructure.
-FormAndFieldSignatures GetEncodedSignatures(const FormStructure& form);
-FormAndFieldSignatures GetEncodedSignatures(
+std::vector<FormSignature> GetEncodedSignatures(const FormStructure& form);
+std::vector<FormSignature> GetEncodedSignatures(
     const std::vector<FormStructure*>& forms);
 
 // Calls the required functions on the given external delegate to cause the

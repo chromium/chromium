@@ -700,7 +700,7 @@ bool FormStructure::EncodeUploadRequest(
     const std::string& login_form_signature,
     bool observed_submission,
     AutofillUploadContents* upload,
-    FormAndFieldSignatures* encoded_signatures) const {
+    std::vector<FormSignature>* encoded_signatures) const {
   DCHECK(AllTypesCaptured(*this, available_field_types));
   encoded_signatures->clear();
 
@@ -758,10 +758,10 @@ bool FormStructure::EncodeUploadRequest(
 bool FormStructure::EncodeQueryRequest(
     const std::vector<FormStructure*>& forms,
     AutofillPageQueryRequest* query,
-    FormAndFieldSignatures* encoded_signatures) {
-  DCHECK(encoded_signatures);
-  encoded_signatures->clear();
-  encoded_signatures->reserve(forms.size());
+    std::vector<FormSignature>* queried_form_signatures) {
+  DCHECK(queried_form_signatures);
+  queried_form_signatures->clear();
+  queried_form_signatures->reserve(forms.size());
 
   query->set_client_version(kClientVersion);
 
@@ -781,17 +781,17 @@ bool FormStructure::EncodeQueryRequest(
     if (form->IsMalformed())
       continue;
 
-    form->EncodeFormForQuery(query->add_forms(), encoded_signatures);
+    form->EncodeFormForQuery(query->add_forms(), queried_form_signatures);
   }
 
-  return !encoded_signatures->empty();
+  return !queried_form_signatures->empty();
 }
 
 // static
 void FormStructure::ParseApiQueryResponse(
     base::StringPiece payload,
     const std::vector<FormStructure*>& forms,
-    const FormAndFieldSignatures& encoded_signatures,
+    const std::vector<FormSignature>& queried_form_signatures,
     AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger) {
   AutofillMetrics::LogServerQueryMetric(
       AutofillMetrics::QUERY_RESPONSE_RECEIVED);
@@ -810,7 +810,7 @@ void FormStructure::ParseApiQueryResponse(
   VLOG(1) << "Autofill query response from API was successfully parsed: "
           << response;
 
-  ProcessQueryResponse(response, forms, encoded_signatures,
+  ProcessQueryResponse(response, forms, queried_form_signatures,
                        form_interactions_ukm_logger);
 }
 
@@ -818,39 +818,27 @@ void FormStructure::ParseApiQueryResponse(
 void FormStructure::ProcessQueryResponse(
     const AutofillQueryResponse& response,
     const std::vector<FormStructure*>& forms,
-    const FormAndFieldSignatures& encoded_signatures,
+    const std::vector<FormSignature>& queried_form_signatures,
     AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger) {
   AutofillMetrics::LogServerQueryMetric(AutofillMetrics::QUERY_RESPONSE_PARSED);
 
   bool heuristics_detected_fillable_field = false;
   bool query_response_overrode_heuristics = false;
 
-  std::vector<AutofillQueryResponse::FormSuggestion::FieldSuggestion>
-      fields_in_response;
-  for (const auto& api_form : response.form_suggestions()) {
-    for (const auto& api_field : api_form.field_suggestions()) {
-      fields_in_response.push_back(api_field);
+  std::map<std::pair<FormSignature, FieldSignature>,
+           AutofillQueryResponse::FormSuggestion::FieldSuggestion>
+      field_types;
+  for (int form_idx = 0;
+       form_idx < std::min(response.form_suggestions_size(),
+                           static_cast<int>(queried_form_signatures.size()));
+       ++form_idx) {
+    FormSignature form_sig = queried_form_signatures.at(form_idx);
+    for (const auto& field :
+         response.form_suggestions(form_idx).field_suggestions()) {
+      FieldSignature field_sig(field.field_signature());
+      field_types[std::make_pair(form_sig, field_sig)] = field;
     }
   }
-
-  // Align the server response to the |encoded_signatures|.
-  auto field_types = [&fields_in_response, &encoded_signatures] {
-    std::map<std::pair<FormSignature, FieldSignature>,
-             AutofillQueryResponse::FormSuggestion::FieldSuggestion>
-        field_types;
-    auto current_field = fields_in_response.begin();
-    for (const auto& form_and_fields : encoded_signatures) {
-      FormSignature form = form_and_fields.first;
-      for (const auto& field : form_and_fields.second) {
-        // In some cases *successful* response does not return all the
-        // fields.
-        if (current_field == fields_in_response.end())
-          return field_types;
-        field_types[std::make_pair(form, field)] = *current_field++;
-      }
-    }
-    return field_types;
-  }();
 
   // Copy the field types into the actual form.
   for (FormStructure* form : forms) {
@@ -1964,12 +1952,11 @@ void FormStructure::RationalizeFieldTypePredictions() {
 
 void FormStructure::EncodeFormForQuery(
     AutofillPageQueryRequest::Form* query_form,
-    FormAndFieldSignatures* encoded_signatures) const {
+    std::vector<FormSignature>* queried_form_signatures) const {
   DCHECK(!IsMalformed());
 
   query_form->set_signature(form_signature().value());
-  encoded_signatures->emplace_back();
-  encoded_signatures->back().first = form_signature();
+  queried_form_signatures->push_back(form_signature());
 
   if (is_rich_query_enabled_) {
     EncodeFormMetadataForQuery(*this, query_form->mutable_metadata());
@@ -1982,7 +1969,6 @@ void FormStructure::EncodeFormForQuery(
     AutofillPageQueryRequest::Form::Field* added_field =
         query_form->add_fields();
     added_field->set_signature(field->GetFieldSignature().value());
-    encoded_signatures->back().second.push_back(field->GetFieldSignature());
 
     if (is_rich_query_enabled_) {
       EncodeFieldMetadataForQuery(*field, added_field->mutable_metadata());
@@ -1999,11 +1985,10 @@ void FormStructure::EncodeFormForQuery(
 
 void FormStructure::EncodeFormForUpload(
     AutofillUploadContents* upload,
-    FormAndFieldSignatures* encoded_signatures) const {
+    std::vector<FormSignature>* encoded_signatures) const {
   DCHECK(!IsMalformed());
 
-  encoded_signatures->emplace_back();
-  encoded_signatures->back().first = form_signature();
+  encoded_signatures->push_back(form_signature());
 
   if (randomized_encoder_) {
     PopulateRandomizedFormMetadata(*randomized_encoder_, *this,
@@ -2020,7 +2005,6 @@ void FormStructure::EncodeFormForUpload(
       continue;
 
     auto* added_field = upload->add_field();
-    encoded_signatures->back().second.push_back(field->GetFieldSignature());
 
     for (const auto& field_type : field->possible_types()) {
       added_field->add_autofill_type(field_type);

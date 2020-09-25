@@ -5055,6 +5055,18 @@ TEST_P(AutofillManagerStructuredProfileTest,
   autofill_manager_.reset();
 }
 
+namespace {
+void AddFieldSuggestionToForm(
+    ::autofill::AutofillQueryResponse_FormSuggestion* form_suggestion,
+    autofill::FormFieldData field_data,
+    ServerFieldType field_type) {
+  auto* field_suggestion = form_suggestion->add_field_suggestions();
+  field_suggestion->set_field_signature(
+      CalculateFieldSignatureForField(field_data).value());
+  field_suggestion->set_primary_type_prediction(field_type);
+}
+}  // namespace
+
 // Test that OnLoadedServerPredictions can obtain the FormStructure with the
 // signature of the queried form from the API and apply type predictions.
 // What we test here:
@@ -5108,26 +5120,21 @@ TEST_P(AutofillManagerStructuredProfileTest, OnLoadedServerPredictionsFromApi) {
   AutofillQueryResponse::FormSuggestion* form_suggestion;
   // Set suggestions for form 1.
   form_suggestion = response.add_form_suggestions();
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      ADDRESS_HOME_CITY);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      ADDRESS_HOME_STATE);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      ADDRESS_HOME_ZIP);
+  AddFieldSuggestionToForm(form_suggestion, form.fields[0], ADDRESS_HOME_CITY);
+  AddFieldSuggestionToForm(form_suggestion, form.fields[1], ADDRESS_HOME_STATE);
+  AddFieldSuggestionToForm(form_suggestion, form.fields[2], ADDRESS_HOME_ZIP);
   // Set suggestions for form 2.
   form_suggestion = response.add_form_suggestions();
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      NAME_LAST);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      NAME_MIDDLE);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      ADDRESS_HOME_ZIP);
+  AddFieldSuggestionToForm(form_suggestion, form2.fields[0], NAME_LAST);
+  AddFieldSuggestionToForm(form_suggestion, form2.fields[1], NAME_MIDDLE);
+  AddFieldSuggestionToForm(form_suggestion, form2.fields[2], ADDRESS_HOME_ZIP);
+
   std::string response_string;
   ASSERT_TRUE(response.SerializeToString(&response_string));
   std::string encoded_response_string;
   base::Base64Encode(response_string, &encoded_response_string);
 
-  FormAndFieldSignatures signatures =
+  std::vector<FormSignature> signatures =
       test::GetEncodedSignatures({form_structure, form_structure2});
 
   // Run method under test.
@@ -5171,7 +5178,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
   // |form_structure| will be owned by |autofill_manager_|.
   TestFormStructure* form_structure = new TestFormStructure(form);
   form_structure->DetermineHeuristicTypes();
-  FormAndFieldSignatures signatures =
+  std::vector<FormSignature> signatures =
       test::GetEncodedSignatures(*form_structure);
   autofill_manager_->AddSeenFormStructure(
       std::unique_ptr<TestFormStructure>(form_structure));
@@ -5236,16 +5243,15 @@ TEST_P(AutofillManagerStructuredProfileTest,
 
   AutofillQueryResponse response;
   auto* form_suggestion = response.add_form_suggestions();
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      CREDIT_CARD_NAME_FIRST);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      CREDIT_CARD_NAME_LAST);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      CREDIT_CARD_NUMBER);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      CREDIT_CARD_EXP_MONTH);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
-      CREDIT_CARD_EXP_4_DIGIT_YEAR);
+  AddFieldSuggestionToForm(form_suggestion, form.fields[0],
+                           CREDIT_CARD_NAME_FIRST);
+  AddFieldSuggestionToForm(form_suggestion, form.fields[1],
+                           CREDIT_CARD_NAME_LAST);
+  AddFieldSuggestionToForm(form_suggestion, form.fields[2], CREDIT_CARD_NUMBER);
+  AddFieldSuggestionToForm(form_suggestion, form.fields[3],
+                           CREDIT_CARD_EXP_MONTH);
+  AddFieldSuggestionToForm(form_suggestion, form.fields[4],
+                           CREDIT_CARD_EXP_4_DIGIT_YEAR);
 
   std::string response_string;
   ASSERT_TRUE(response.SerializeToString(&response_string));

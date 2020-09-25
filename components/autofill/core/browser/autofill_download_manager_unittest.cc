@@ -209,7 +209,7 @@ class AutofillDownloadManagerTest : public AutofillDownloadManager::Observer,
   // AutofillDownloadManager::Observer implementation.
   void OnLoadedServerPredictions(
       std::string response_xml,
-      const FormAndFieldSignatures& form_signatures) override {
+      const std::vector<FormSignature>& form_signatures) override {
     ResponseData response;
     response.response = std::move(response_xml);
     response.type_of_response = QUERY_SUCCESSFULL;
@@ -1382,7 +1382,7 @@ class AutofillServerCommunicationTest
   // AutofillDownloadManager::Observer implementation.
   void OnLoadedServerPredictions(
       std::string /* response_xml */,
-      const FormAndFieldSignatures& /*form_signatures */) override {
+      const std::vector<FormSignature>& /*form_signatures */) override {
     ASSERT_TRUE(run_loop_);
     run_loop_->QuitWhenIdle();
   }

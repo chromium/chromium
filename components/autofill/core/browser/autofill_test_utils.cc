@@ -902,26 +902,17 @@ std::string TenYearsFromNow() {
   return base::NumberToString(now.year + 10);
 }
 
-FormAndFieldSignatures GetEncodedSignatures(const FormStructure& form) {
-  FormAndFieldSignatures signatures;
-  signatures.emplace_back(form.form_signature(),
-                          std::vector<autofill::FieldSignature>{});
-  for (const auto& field : form) {
-    if (form.ShouldSkipFieldVisibleForTesting(*field))
-      continue;
-    signatures.back().second.push_back(field->GetFieldSignature());
-  }
+std::vector<FormSignature> GetEncodedSignatures(const FormStructure& form) {
+  std::vector<FormSignature> signatures;
+  signatures.push_back(form.form_signature());
   return signatures;
 }
 
-FormAndFieldSignatures GetEncodedSignatures(
+std::vector<FormSignature> GetEncodedSignatures(
     const std::vector<FormStructure*>& forms) {
-  FormAndFieldSignatures all_signatures;
-  for (const FormStructure* form : forms) {
-    FormAndFieldSignatures form_signatures = GetEncodedSignatures(*form);
-    std::move(form_signatures.begin(), form_signatures.end(),
-              std::back_inserter(all_signatures));
-  }
+  std::vector<FormSignature> all_signatures;
+  for (const FormStructure* form : forms)
+    all_signatures.push_back(form->form_signature());
   return all_signatures;
 }
 

@@ -1406,17 +1406,19 @@ void AutofillManager::SelectFieldOptionsDidChange(const FormData& form) {
 
 void AutofillManager::OnLoadedServerPredictions(
     std::string response,
-    const FormAndFieldSignatures& signatures) {
-  // Get the current valid FormStructures represented by |signatures|.
+    const std::vector<FormSignature>& queried_form_signatures) {
+  // Get the current valid FormStructures represented by
+  // |queried_form_signatures|.
   std::vector<FormStructure*> queried_forms;
-  queried_forms.reserve(signatures.size());
-  for (const auto& p : signatures) {
-    FindCachedFormsBySignature(p.first, &queried_forms);
+  queried_forms.reserve(queried_form_signatures.size());
+  for (const auto& form_signature : queried_form_signatures) {
+    FindCachedFormsBySignature(form_signature, &queried_forms);
   }
 
-  // Each form signature in |signatures| is supposed to be unique, and therefore
-  // appear only once. This ensures that FindCachedFormsBySignature() produces
-  // an output without duplicates in the forms.
+  // Each form signature in |queried_form_signatures| is supposed to be unique,
+  // and therefore appear only once. This ensures that
+  // FindCachedFormsBySignature() produces an output without duplicates in the
+  // forms.
   // TODO(crbug/1064709): |queried_forms| could be a set data structure; their
   // order should be irrelevant.
   DCHECK_EQ(queried_forms.size(),
@@ -1430,7 +1432,7 @@ void AutofillManager::OnLoadedServerPredictions(
 
   // Parse and store the server predictions.
   FormStructure::ParseApiQueryResponse(std::move(response), queried_forms,
-                                       signatures,
+                                       queried_form_signatures,
                                        form_interactions_ukm_logger_.get());
 
   // Will log quality metrics for each FormStructure based on the presence of

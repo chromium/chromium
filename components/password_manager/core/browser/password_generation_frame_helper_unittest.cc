@@ -297,8 +297,16 @@ TEST_F(PasswordGenerationFrameHelperTest, ProcessPasswordRequirements) {
     // ACCOUNT_CREATION_PASSWORD = 76
     autofill::AutofillQueryResponse response;
     auto* form_suggestion = response.add_form_suggestions();
-    form_suggestion->add_field_suggestions()->set_primary_type_prediction(9);
-    form_suggestion->add_field_suggestions()->set_primary_type_prediction(76);
+
+    auto* field_suggestion = form_suggestion->add_field_suggestions();
+    field_suggestion->set_field_signature(
+        CalculateFieldSignatureForField(username).value());
+    field_suggestion->set_primary_type_prediction(9);
+
+    field_suggestion = form_suggestion->add_field_suggestions();
+    field_suggestion->set_field_signature(
+        CalculateFieldSignatureForField(password).value());
+    field_suggestion->set_primary_type_prediction(76);
 
     if (test.has_field_requirements) {
       *form_suggestion->mutable_field_suggestions(1)

@@ -74,28 +74,30 @@ class FormStructure {
   // in |encoded_signatures|.
   // In some cases, a |login_form_signature| is included as part of the upload.
   // This field is empty when sending upload requests for non-login forms.
-  bool EncodeUploadRequest(const ServerFieldTypeSet& available_field_types,
-                           bool form_was_autofilled,
-                           const std::string& login_form_signature,
-                           bool observed_submission,
-                           autofill::AutofillUploadContents* upload,
-                           FormAndFieldSignatures* encoded_signatures) const;
+  bool EncodeUploadRequest(
+      const ServerFieldTypeSet& available_field_types,
+      bool form_was_autofilled,
+      const std::string& login_form_signature,
+      bool observed_submission,
+      autofill::AutofillUploadContents* upload,
+      std::vector<FormSignature>* encoded_signatures) const;
 
   // Encodes the proto |query| request for the list of |forms| and their fields
   // that are valid. The queried FormSignatures and FieldSignatures are stored
-  // in |encoded_signatures| in the same order as in |query|. In case multiple
-  // FormStructures have the same FormSignature, only the first one is included
-  // in |query| and |encoded_signatures|.
-  static bool EncodeQueryRequest(const std::vector<FormStructure*>& forms,
-                                 autofill::AutofillPageQueryRequest* query,
-                                 FormAndFieldSignatures* encoded_signatures);
+  // in |queried_form_signatures| in the same order as in |query|. In case
+  // multiple FormStructures have the same FormSignature, only the first one is
+  // included in |query| and |queried_form_signatures|.
+  static bool EncodeQueryRequest(
+      const std::vector<FormStructure*>& forms,
+      autofill::AutofillPageQueryRequest* query,
+      std::vector<FormSignature>* queried_form_signatures);
 
   // Parses `payload` as AutofillQueryResponse proto and calls
   // ProcessQueryResponse().
   static void ParseApiQueryResponse(
       base::StringPiece payload,
       const std::vector<FormStructure*>& forms,
-      const FormAndFieldSignatures& encoded_signatures,
+      const std::vector<FormSignature>& queried_form_signatures,
       AutofillMetrics::FormInteractionsUkmLogger*);
 
   // Returns predictions using the details from the given |form_structures| and
@@ -387,10 +389,10 @@ class FormStructure {
   static void ProcessQueryResponseForTesting(
       const AutofillQueryResponse& response,
       const std::vector<FormStructure*>& forms,
-      const FormAndFieldSignatures& encoded_signatures,
+      const std::vector<FormSignature>& queried_form_signatures,
       AutofillMetrics::FormInteractionsUkmLogger*
           form_interactions_ukm_logger) {
-    ProcessQueryResponse(response, forms, encoded_signatures,
+    ProcessQueryResponse(response, forms, queried_form_signatures,
                          form_interactions_ukm_logger);
   }
 
@@ -457,7 +459,7 @@ class FormStructure {
   static void ProcessQueryResponse(
       const AutofillQueryResponse& response,
       const std::vector<FormStructure*>& forms,
-      const FormAndFieldSignatures& encoded_signatures,
+      const std::vector<FormSignature>& queried_form_signatures,
       AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger);
 
   FormStructure(FormSignature form_signature,
@@ -524,11 +526,13 @@ class FormStructure {
   // when it considers necessary.
   void RationalizeFieldTypePredictions();
 
-  void EncodeFormForQuery(autofill::AutofillPageQueryRequest::Form* query_form,
-                          FormAndFieldSignatures* encoded_signatures) const;
+  void EncodeFormForQuery(
+      autofill::AutofillPageQueryRequest::Form* query_form,
+      std::vector<FormSignature>* queried_form_signatures) const;
 
-  void EncodeFormForUpload(autofill::AutofillUploadContents* upload,
-                           FormAndFieldSignatures* encoded_signatures) const;
+  void EncodeFormForUpload(
+      autofill::AutofillUploadContents* upload,
+      std::vector<FormSignature>* encoded_signatures) const;
 
   // Returns true if the form has no fields, or too many.
   bool IsMalformed() const;

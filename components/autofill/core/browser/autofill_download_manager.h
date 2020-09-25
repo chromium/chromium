@@ -46,17 +46,20 @@ struct ScopedActiveAutofillExperiments {
 // Handles getting and updating Autofill heuristics.
 class AutofillDownloadManager {
  public:
-  enum RequestType { REQUEST_QUERY, REQUEST_UPLOAD, };
+  enum RequestType {
+    REQUEST_QUERY,
+    REQUEST_UPLOAD,
+  };
 
   // An interface used to notify clients of AutofillDownloadManager.
   class Observer {
    public:
     // Called when field type predictions are successfully received from the
     // server. |response| contains the server response for the forms
-    // represented by |signatures|.
+    // represented by |queried_form_signatures|.
     virtual void OnLoadedServerPredictions(
         std::string response,
-        const FormAndFieldSignatures& signatures) = 0;
+        const std::vector<FormSignature>& queried_form_signatures) = 0;
 
     // These notifications are used to help with testing.
     // Called when heuristic either successfully considered for upload and
@@ -136,7 +139,7 @@ class AutofillDownloadManager {
   FRIEND_TEST_ALL_PREFIXES(AutofillDownloadManagerTest, RetryLimit_Query);
 
   struct FormRequestData;
-  typedef std::list<std::pair<FormAndFieldSignatures, std::string>>
+  typedef std::list<std::pair<std::vector<FormSignature>, std::string>>
       QueryRequestCache;
 
   // Returns the URL and request method to use when issuing the request
@@ -165,12 +168,13 @@ class AutofillDownloadManager {
 
   // Caches query request. |forms_in_query| is a vector of form signatures in
   // the query. |query_data| is the successful data returned over the wire.
-  void CacheQueryRequest(const FormAndFieldSignatures& forms_in_query,
+  void CacheQueryRequest(const std::vector<FormSignature>& forms_in_query,
                          const std::string& query_data);
   // Returns true if query is in the cache, while filling |query_data|, false
   // otherwise. |forms_in_query| is a vector of form signatures in the query.
-  bool CheckCacheForQueryRequest(const FormAndFieldSignatures& forms_in_query,
-                                 std::string* query_data) const;
+  bool CheckCacheForQueryRequest(
+      const std::vector<FormSignature>& forms_in_query,
+      std::string* query_data) const;
   // Concatenates |forms_in_query| into one signature.
   std::string GetCombinedSignature(
       const std::vector<std::string>& forms_in_query) const;
