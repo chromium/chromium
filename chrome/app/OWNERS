@@ -35,7 +35,7 @@ per-file printing_strings.grdp=file://printing/OWNERS
 
 per-file profiles_strings.grdp=file://chrome/browser/profiles/OWNERS
 
-per-file *settings*strings*=file://chrome/browser/resources/settings/OWNERS
+per-file *settings*strings*.grdp=file://chrome/browser/resources/settings/OWNERS
 
 per-file supervised_user_error_page_strings.grdp=file://chrome/browser/supervised_user/supervised_user_error_page/OWNERS
 
