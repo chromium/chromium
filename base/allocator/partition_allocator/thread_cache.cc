@@ -81,6 +81,28 @@ void ThreadCacheRegistry::DumpStats(bool my_thread_only,
   }
 }
 
+void ThreadCacheRegistry::PurgeAll() {
+  auto* current_thread_tcache = ThreadCache::Get();
+
+  {
+    AutoLock scoped_locker(GetLock());
+    ThreadCache* tcache = list_head_;
+    while (tcache) {
+      // Cannot purge directly, need to ask the other thread to purge "at some
+      // point".
+      // Note that this will not work if the other thread is sleeping forever.
+      // TODO(lizeb): Handle sleeping threads.
+      if (tcache != current_thread_tcache)
+        tcache->SetShouldPurge();
+      tcache = tcache->next_;
+    }
+  }
+
+  // May take a while, don't hold the lock while purging.
+  if (current_thread_tcache)
+    current_thread_tcache->Purge();
+}
+
 // static
 void ThreadCache::Init(PartitionRoot<ThreadSafe>* root) {
   bool ok = PartitionTlsCreate(&g_thread_cache_key, DeleteThreadCache);
@@ -154,6 +176,12 @@ void ThreadCache::AccumulateStats(ThreadCacheStats* stats) const {
   stats->metadata_overhead += sizeof(*this);
 }
 
+void ThreadCache::SetShouldPurge() {
+  // We don't need any synchronization, and don't really care if the purge is
+  // carried out "right away", hence relaxed atomics.
+  should_purge_.store(true, std::memory_order_relaxed);
+}
+
 void ThreadCache::Purge() {
   for (Bucket& bucket : buckets_) {
     size_t count = bucket.count;
@@ -168,6 +196,7 @@ void ThreadCache::Purge() {
     CHECK_EQ(0u, count);
     bucket.count = 0;
   }
+  should_purge_.store(false, std::memory_order_relaxed);
 }
 
 }  // namespace internal

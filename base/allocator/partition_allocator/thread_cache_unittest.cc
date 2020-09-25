@@ -4,6 +4,7 @@
 
 #include "base/allocator/partition_allocator/thread_cache.h"
 
+#include <atomic>
 #include <vector>
 
 #include "base/allocator/buildflags.h"
@@ -346,6 +347,56 @@ TEST_F(ThreadCacheTest, MultipleThreadCachesAccounting) {
 }
 
 #endif  // defined(PA_ENABLE_THREAD_CACHE_STATISTICS)
+
+TEST_F(ThreadCacheTest, PurgeAll) NO_THREAD_SAFETY_ANALYSIS {
+  std::atomic<bool> other_thread_started{false};
+  std::atomic<bool> purge_called{false};
+
+  const size_t kTestSize = 100;
+  size_t bucket_index = FillThreadCacheAndReturnIndex(kTestSize);
+  ThreadCache* this_thread_tcache = g_root->thread_cache_for_testing();
+  ThreadCache* other_thread_tcache = nullptr;
+
+  LambdaThreadDelegate delegate{
+      BindLambdaForTesting([&]() NO_THREAD_SAFETY_ANALYSIS {
+        FillThreadCacheAndReturnIndex(kTestSize);
+        other_thread_tcache = g_root->thread_cache_for_testing();
+
+        other_thread_started.store(true, std::memory_order_release);
+        while (!purge_called.load(std::memory_order_acquire)) {
+        }
+
+        // Purge() was not triggered from the other thread.
+        EXPECT_EQ(1u,
+                  other_thread_tcache->bucket_count_for_testing(bucket_index));
+        // Allocations do not trigger Purge().
+        void* data = g_root->Alloc(1, "");
+        EXPECT_EQ(1u,
+                  other_thread_tcache->bucket_count_for_testing(bucket_index));
+        // But deallocations do.
+        g_root->Free(data);
+        EXPECT_EQ(0u,
+                  other_thread_tcache->bucket_count_for_testing(bucket_index));
+      })};
+
+  PlatformThreadHandle thread_handle;
+  PlatformThread::Create(0, &delegate, &thread_handle);
+
+  while (!other_thread_started.load(std::memory_order_acquire)) {
+  }
+
+  EXPECT_EQ(1u, this_thread_tcache->bucket_count_for_testing(bucket_index));
+  EXPECT_EQ(1u, other_thread_tcache->bucket_count_for_testing(bucket_index));
+
+  ThreadCacheRegistry::Instance().PurgeAll();
+  // This thread is synchronously purged.
+  EXPECT_EQ(0u, this_thread_tcache->bucket_count_for_testing(bucket_index));
+  // Not the other one.
+  EXPECT_EQ(1u, other_thread_tcache->bucket_count_for_testing(bucket_index));
+
+  purge_called.store(true, std::memory_order_release);
+  PlatformThread::Join(thread_handle);
+}
 
 }  // namespace internal
 }  // namespace base

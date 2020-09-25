@@ -679,9 +679,8 @@ void PartitionRoot<thread_safe>::PurgeMemory(int flags) {
     }
   }
 
-  // Purges only this thread's cache.
-  if (with_thread_cache && internal::ThreadCache::Get())
-    internal::ThreadCache::Get()->Purge();
+  if (with_thread_cache)
+    internal::ThreadCacheRegistry::Instance().PurgeAll();
 }
 
 template <bool thread_safe>

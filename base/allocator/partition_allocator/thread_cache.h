@@ -63,6 +63,10 @@ class BASE_EXPORT ThreadCacheRegistry {
   void UnregisterThreadCache(ThreadCache* cache);
   // Prints statistics for all thread caches, or this thread's only.
   void DumpStats(bool my_thread_only, ThreadCacheStats* stats);
+  // Purge() this thread's cache, and asks the other ones to trigger Purge() at
+  // a later point (during a deallocation).
+  void PurgeAll();
+
   static Lock& GetLock() { return Instance().lock_; }
 
  private:
@@ -141,8 +145,12 @@ class BASE_EXPORT ThreadCache {
   // Has the same behavior as RawAlloc(), that is: no cookie nor tag handling.
   ALWAYS_INLINE void* GetFromCache(size_t bucket_index);
 
+  // Asks this cache to trigger |Purge()| at a later point. Can be called from
+  // any thread.
+  void SetShouldPurge();
   // Empties the cache.
   // The Partition lock must *not* be held when calling this.
+  // Must be called from the thread this cache is for.
   void Purge();
   void AccumulateStats(ThreadCacheStats* stats) const;
 
@@ -168,6 +176,7 @@ class BASE_EXPORT ThreadCache {
   // allocation patterns.
   static constexpr size_t kMaxCountPerBucket = 100;
 
+  std::atomic<bool> should_purge_;
   Bucket buckets_[kBucketCount];
   ThreadCacheStats stats_;
   PartitionRoot<ThreadSafe>* root_;
@@ -187,6 +196,9 @@ class BASE_EXPORT ThreadCache {
 
 ALWAYS_INLINE bool ThreadCache::MaybePutInCache(void* address,
                                                 size_t bucket_index) {
+  if (UNLIKELY(should_purge_.load(std::memory_order_relaxed)))
+    Purge();
+
   INCREMENT_COUNTER(stats_.cache_fill_count);
 
   if (bucket_index >= kBucketCount) {
