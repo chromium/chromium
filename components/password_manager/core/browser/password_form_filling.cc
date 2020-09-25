@@ -11,11 +11,11 @@
 #include "base/metrics/user_metrics.h"
 #include "build/build_config.h"
 #include "components/autofill/core/common/autofill_util.h"
-#include "components/autofill/core/common/password_form.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
 #include "components/password_manager/core/browser/password_feature_manager.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
@@ -23,7 +23,6 @@
 #include "components/password_manager/core/common/password_manager_features.h"
 
 using autofill::PasswordAndMetadata;
-using autofill::PasswordForm;
 using autofill::PasswordFormFillData;
 using Logger = autofill::SavePasswordProgressLogger;
 

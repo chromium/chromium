@@ -21,7 +21,6 @@
 namespace password_manager {
 namespace {
 
-using autofill::PasswordForm;
 using base::ASCIIToUTF16;
 using testing::_;
 using testing::ElementsAre;
@@ -47,10 +46,10 @@ PasswordForm CreateSaved() {
 }
 
 PasswordForm CreateSavedFederated() {
-  autofill::PasswordForm federated;
+  PasswordForm federated;
   federated.url = GURL(kURL);
   federated.signon_realm = "federation://example.in/google.com";
-  federated.type = autofill::PasswordForm::Type::kApi;
+  federated.type = PasswordForm::Type::kApi;
   federated.federation_origin =
       url::Origin::Create(GURL("https://google.com/"));
   federated.username_value = ASCIIToUTF16("federated_username");
@@ -77,7 +76,7 @@ PasswordForm CreateGenerated() {
   form.action = GURL("https://signup.example.org");
   form.username_value = ASCIIToUTF16("MyName");
   form.password_value = ASCIIToUTF16("Strong password");
-  form.type = autofill::PasswordForm::Type::kGenerated;
+  form.type = PasswordForm::Type::kGenerated;
   return form;
 }
 
@@ -397,7 +396,7 @@ TEST_F(PasswordGenerationManagerTest, PresaveGeneratedPassword_ThenUpdate) {
   unrelated_psl_password.password_value = ASCIIToUTF16("some password");
 
   EXPECT_CALL(store(), AddLogin(_));
-  const std::vector<const autofill::PasswordForm*> matches = {
+  const std::vector<const PasswordForm*> matches = {
       &related_password, &related_psl_password, &unrelated_password,
       &unrelated_psl_password};
   manager().PresaveGeneratedPassword(generated, matches, &form_saver());

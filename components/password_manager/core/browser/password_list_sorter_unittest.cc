@@ -7,7 +7,7 @@
 #include <vector>
 
 #include "base/strings/utf_string_conversions.h"
-#include "components/autofill/core/common/password_form.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -26,10 +26,10 @@ struct SortEntry {
 };
 
 void SortAndCheckPositions(const std::vector<SortEntry>& test_entries) {
-  std::vector<std::unique_ptr<autofill::PasswordForm>> list;
+  std::vector<std::unique_ptr<PasswordForm>> list;
   size_t expected_number_of_unique_entries = 0;
   for (const SortEntry& entry : test_entries) {
-    auto form = std::make_unique<autofill::PasswordForm>();
+    auto form = std::make_unique<PasswordForm>();
     form->signon_realm = entry.origin;
     form->url = GURL(entry.origin);
     form->blocked_by_user = entry.is_blocked;
@@ -190,14 +190,14 @@ TEST(PasswordListSorterTest, Sorting_SpecialCharacters) {
 }
 
 TEST(PasswordListSorterTest, EntriesDifferingByStoreShouldMapToSameKey) {
-  autofill::PasswordForm account_form;
+  PasswordForm account_form;
   account_form.signon_realm = "https://g.com/";
   account_form.url = GURL(account_form.signon_realm);
   account_form.blocked_by_user = false;
-  account_form.in_store = autofill::PasswordForm::Store::kAccountStore;
+  account_form.in_store = PasswordForm::Store::kAccountStore;
 
-  autofill::PasswordForm profile_form(account_form);
-  profile_form.in_store = autofill::PasswordForm::Store::kProfileStore;
+  PasswordForm profile_form(account_form);
+  profile_form.in_store = PasswordForm::Store::kProfileStore;
 
   EXPECT_EQ(CreateSortKey(account_form, IgnoreStore(true)),
             CreateSortKey(profile_form, IgnoreStore(true)));

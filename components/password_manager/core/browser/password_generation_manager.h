@@ -11,7 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/time/clock.h"
-#include "components/autofill/core/common/password_form.h"
+#include "components/password_manager/core/browser/password_form.h"
 
 namespace password_manager {
 
@@ -48,27 +48,25 @@ class PasswordGenerationManager {
   // - The user clicks 'Update'.
   // - The actual form submission doesn't succeed for some reason.
   void GeneratedPasswordAccepted(
-      autofill::PasswordForm generated,
-      const std::vector<const autofill::PasswordForm*>& non_federated_matches,
-      const std::vector<const autofill::PasswordForm*>& federated_matches,
+      PasswordForm generated,
+      const std::vector<const PasswordForm*>& non_federated_matches,
+      const std::vector<const PasswordForm*>& federated_matches,
       base::WeakPtr<PasswordManagerDriver> driver);
 
   // Called when generated password is accepted or changed by user.
-  void PresaveGeneratedPassword(
-      autofill::PasswordForm generated,
-      const std::vector<const autofill::PasswordForm*>& matches,
-      FormSaver* form_saver);
+  void PresaveGeneratedPassword(PasswordForm generated,
+                                const std::vector<const PasswordForm*>& matches,
+                                FormSaver* form_saver);
 
   // Signals that the user cancels password generation.
   void PasswordNoLongerGenerated(FormSaver* form_saver);
 
   // Finish the generation flow by saving the final credential |generated|.
   // |matches| and |old_password| have the same meaning as in FormSaver.
-  void CommitGeneratedPassword(
-      autofill::PasswordForm generated,
-      const std::vector<const autofill::PasswordForm*>& matches,
-      const base::string16& old_password,
-      FormSaver* form_saver);
+  void CommitGeneratedPassword(PasswordForm generated,
+                               const std::vector<const PasswordForm*>& matches,
+                               const base::string16& old_password,
+                               FormSaver* form_saver);
 
 #if defined(UNIT_TEST)
   void set_clock(std::unique_ptr<base::Clock> clock) {
@@ -79,12 +77,12 @@ class PasswordGenerationManager {
  private:
   void OnPresaveBubbleResult(const base::WeakPtr<PasswordManagerDriver>& driver,
                              bool accepted,
-                             const autofill::PasswordForm& pending);
+                             const PasswordForm& pending);
 
   // The client for the password form.
   PasswordManagerClient* const client_;
   // Stores the pre-saved credential.
-  base::Optional<autofill::PasswordForm> presaved_;
+  base::Optional<PasswordForm> presaved_;
   // Interface to get current time.
   std::unique_ptr<base::Clock> clock_;
   // Used to produce callbacks.

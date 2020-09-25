@@ -14,9 +14,9 @@
 #include "base/test/test_mock_time_task_runner.h"
 #include "build/build_config.h"
 #include "components/autofill/core/common/autofill_features.h"
-#include "components/autofill/core/common/password_form.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
 #include "components/autofill/core/common/renderer_id.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/browser/stub_password_manager_driver.h"
@@ -28,14 +28,13 @@
 using autofill::FieldRendererId;
 using autofill::FormData;
 using autofill::FormRendererId;
-using autofill::PasswordForm;
 using autofill::PasswordFormFillData;
 using base::ASCIIToUTF16;
 using base::UTF16ToASCII;
 using testing::_;
 using testing::Return;
 using testing::SaveArg;
-using Store = autofill::PasswordForm::Store;
+using Store = password_manager::PasswordForm::Store;
 
 namespace password_manager {
 namespace {

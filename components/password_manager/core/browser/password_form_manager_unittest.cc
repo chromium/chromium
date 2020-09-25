@@ -21,7 +21,6 @@
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/gaia_id_hash.h"
-#include "components/autofill/core/common/password_form.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
 #include "components/autofill/core/common/password_form_generation_data.h"
 #include "components/autofill/core/common/password_generation_util.h"
@@ -30,6 +29,7 @@
 #include "components/password_manager/core/browser/fake_form_fetcher.h"
 #include "components/password_manager/core/browser/field_info_manager.h"
 #include "components/password_manager/core/browser/multi_store_password_save_manager.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
@@ -62,7 +62,6 @@ using autofill::FormSignature;
 using autofill::FormStructure;
 using autofill::GaiaIdHash;
 using autofill::NOT_USERNAME;
-using autofill::PasswordForm;
 using autofill::PasswordFormFillData;
 using autofill::PasswordFormGenerationData;
 using autofill::ServerFieldType;
@@ -477,7 +476,7 @@ class PasswordFormManagerTest : public testing::Test,
   }
 
   void SetNonFederatedAndNotifyFetchCompleted(
-      const std::vector<const autofill::PasswordForm*>& non_federated) {
+      const std::vector<const PasswordForm*>& non_federated) {
     fetcher_->SetNonFederated(non_federated);
     fetcher_->NotifyFetchCompleted();
   }
@@ -2377,28 +2376,26 @@ class MockPasswordSaveManager : public PasswordSaveManager {
                     const FormFetcher*,
                     scoped_refptr<PasswordFormMetricsRecorder>,
                     VotesUploader*));
-  MOCK_CONST_METHOD0(GetPendingCredentials, const autofill::PasswordForm&());
+  MOCK_CONST_METHOD0(GetPendingCredentials, const PasswordForm&());
   MOCK_CONST_METHOD0(GetGeneratedPassword, const base::string16&());
   MOCK_CONST_METHOD0(GetFormSaver, FormSaver*());
   MOCK_METHOD5(CreatePendingCredentials,
-               void(const autofill::PasswordForm&,
+               void(const PasswordForm&,
                     const autofill::FormData*,
                     const autofill::FormData&,
                     bool,
                     bool));
   MOCK_METHOD0(ResetPendingCredentials, void());
-  MOCK_METHOD2(Save,
-               void(const autofill::FormData*, const autofill::PasswordForm&));
+  MOCK_METHOD2(Save, void(const autofill::FormData*, const PasswordForm&));
   MOCK_METHOD3(Update,
-               void(const autofill::PasswordForm&,
+               void(const PasswordForm&,
                     const autofill::FormData*,
-                    const autofill::PasswordForm&));
+                    const PasswordForm&));
   MOCK_METHOD1(PermanentlyBlacklist, void(const PasswordStore::FormDigest&));
   MOCK_METHOD1(Unblacklist, void(const PasswordStore::FormDigest&));
-  MOCK_METHOD1(PresaveGeneratedPassword, void(autofill::PasswordForm));
+  MOCK_METHOD1(PresaveGeneratedPassword, void(PasswordForm));
   MOCK_METHOD2(GeneratedPasswordAccepted,
-               void(autofill::PasswordForm,
-                    base::WeakPtr<PasswordManagerDriver>));
+               void(PasswordForm, base::WeakPtr<PasswordManagerDriver>));
   MOCK_METHOD0(PasswordNoLongerGenerated, void());
   MOCK_CONST_METHOD0(IsNewLogin, bool());
   MOCK_CONST_METHOD0(IsPasswordUpdate, bool());

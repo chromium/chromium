@@ -37,7 +37,7 @@ TEST(PasswordAccountStorageSettingsWatcherTest, NotifiesOnChanges) {
   // signed in).
   ASSERT_FALSE(feature_manager.IsOptedInForAccountStorage());
   ASSERT_EQ(feature_manager.GetDefaultPasswordStore(),
-            autofill::PasswordForm::Store::kProfileStore);
+            PasswordForm::Store::kProfileStore);
 
   // Sign in (but don't enable Sync-the-feature). Note that the TestSyncService
   // doesn't automatically notify observers of the change.
@@ -55,7 +55,7 @@ TEST(PasswordAccountStorageSettingsWatcherTest, NotifiesOnChanges) {
   EXPECT_CALL(change_callback, Run()).WillOnce([&]() {
     EXPECT_FALSE(feature_manager.IsOptedInForAccountStorage());
     EXPECT_EQ(feature_manager.GetDefaultPasswordStore(),
-              autofill::PasswordForm::Store::kAccountStore);
+              PasswordForm::Store::kAccountStore);
   });
   sync_service.FireStateChanged();
 
@@ -63,7 +63,7 @@ TEST(PasswordAccountStorageSettingsWatcherTest, NotifiesOnChanges) {
   EXPECT_CALL(change_callback, Run()).WillOnce([&]() {
     EXPECT_TRUE(feature_manager.IsOptedInForAccountStorage());
     EXPECT_EQ(feature_manager.GetDefaultPasswordStore(),
-              autofill::PasswordForm::Store::kAccountStore);
+              PasswordForm::Store::kAccountStore);
   });
   feature_manager.OptInToAccountStorage();
 
@@ -71,10 +71,9 @@ TEST(PasswordAccountStorageSettingsWatcherTest, NotifiesOnChanges) {
   EXPECT_CALL(change_callback, Run()).WillOnce([&]() {
     EXPECT_TRUE(feature_manager.IsOptedInForAccountStorage());
     EXPECT_EQ(feature_manager.GetDefaultPasswordStore(),
-              autofill::PasswordForm::Store::kProfileStore);
+              PasswordForm::Store::kProfileStore);
   });
-  feature_manager.SetDefaultPasswordStore(
-      autofill::PasswordForm::Store::kProfileStore);
+  feature_manager.SetDefaultPasswordStore(PasswordForm::Store::kProfileStore);
 }
 
 }  // namespace password_manager

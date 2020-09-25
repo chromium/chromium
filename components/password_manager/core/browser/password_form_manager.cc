@@ -20,13 +20,13 @@
 #include "base/stl_util.h"
 #include "build/build_config.h"
 #include "components/autofill/core/common/form_data.h"
-#include "components/autofill/core/common/password_form.h"
 #include "components/autofill/core/common/password_form_generation_data.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
 #include "components/password_manager/core/browser/field_info_manager.h"
 #include "components/password_manager/core/browser/form_fetcher_impl.h"
 #include "components/password_manager/core/browser/password_feature_manager.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_filling.h"
 #include "components/password_manager/core/browser/password_generation_manager.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
@@ -49,7 +49,6 @@ using autofill::FormSignature;
 using autofill::FormStructure;
 using autofill::GaiaIdHash;
 using autofill::NOT_USERNAME;
-using autofill::PasswordForm;
 using autofill::SINGLE_USERNAME;
 using autofill::ValueElementPair;
 using base::TimeDelta;
@@ -238,8 +237,8 @@ const std::vector<const PasswordForm*>& PasswordFormManager::GetBestMatches()
   return form_fetcher_->GetBestMatches();
 }
 
-std::vector<const autofill::PasswordForm*>
-PasswordFormManager::GetFederatedMatches() const {
+std::vector<const PasswordForm*> PasswordFormManager::GetFederatedMatches()
+    const {
   return form_fetcher_->GetFederatedMatches();
 }
 

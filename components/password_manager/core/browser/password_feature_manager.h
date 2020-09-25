@@ -6,7 +6,7 @@
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_FEATURE_MANAGER_H_
 
 #include "base/macros.h"
-#include "components/autofill/core/common/password_form.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 
 namespace password_manager {
@@ -58,13 +58,12 @@ class PasswordFeatureManager {
 
   // Sets the default password store selected by user in prefs. This store is
   // used for saving new credentials and adding blacking listing entries.
-  virtual void SetDefaultPasswordStore(
-      const autofill::PasswordForm::Store& store) = 0;
+  virtual void SetDefaultPasswordStore(const PasswordForm::Store& store) = 0;
 
   // Returns the default storage location for signed-in but non-syncing users
   // (i.e. will new passwords be saved to locally or to the account by default).
   // Always returns an actual value, never kNotSet.
-  virtual autofill::PasswordForm::Store GetDefaultPasswordStore() const = 0;
+  virtual PasswordForm::Store GetDefaultPasswordStore() const = 0;
 
   // Returns the "usage level" of the account-scoped password storage. See
   // definition of PasswordAccountStorageUsageLevel.

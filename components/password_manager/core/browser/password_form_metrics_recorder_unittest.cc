@@ -31,7 +31,6 @@
 using autofill::FieldPropertiesFlags;
 using autofill::FormData;
 using autofill::FormFieldData;
-using autofill::PasswordForm;
 using base::ASCIIToUTF16;
 
 namespace password_manager {

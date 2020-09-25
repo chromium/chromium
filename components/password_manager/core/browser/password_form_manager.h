@@ -102,8 +102,7 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   // If |submitted_form| is managed by *this then saves |submitted_form| to
   // |submitted_form_| field, sets |is_submitted| = true and returns true.
   // Otherwise returns false.
-  bool ProvisionallySaveHttpAuthForm(
-      const autofill::PasswordForm& submitted_form);
+  bool ProvisionallySaveHttpAuthForm(const PasswordForm& submitted_form);
 
   bool is_submitted() { return is_submitted_; }
   void set_not_submitted() { is_submitted_ = false; }
@@ -116,7 +115,7 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   bool IsCredentialAPISave() const;
 
   // Returns scheme of the observed form or http authentication.
-  autofill::PasswordForm::Scheme GetScheme() const;
+  PasswordForm::Scheme GetScheme() const;
 
   // Selects from |predictions| predictions that corresponds to
   // |observed_form()|, initiates filling and stores predictions in
@@ -145,11 +144,9 @@ class PasswordFormManager : public PasswordFormManagerForUI,
 
   // PasswordFormManagerForUI:
   const GURL& GetURL() const override;
-  const std::vector<const autofill::PasswordForm*>& GetBestMatches()
-      const override;
-  std::vector<const autofill::PasswordForm*> GetFederatedMatches()
-      const override;
-  const autofill::PasswordForm& GetPendingCredentials() const override;
+  const std::vector<const PasswordForm*>& GetBestMatches() const override;
+  std::vector<const PasswordForm*> GetFederatedMatches() const override;
+  const PasswordForm& GetPendingCredentials() const override;
   metrics_util::CredentialSourceType GetCredentialSource() const override;
   PasswordFormMetricsRecorder* GetMetricsRecorder() override;
   base::span<const InteractionsStats> GetInteractionsStats() const override;
@@ -160,7 +157,7 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   bool IsMovableToAccountStore() const override;
 
   void Save() override;
-  void Update(const autofill::PasswordForm& credentials_to_update) override;
+  void Update(const PasswordForm& credentials_to_update) override;
   void OnUpdateUsernameFromPrompt(const base::string16& new_username) override;
   void OnUpdatePasswordFromPrompt(const base::string16& new_password) override;
 
@@ -184,7 +181,7 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   bool IsPossibleChangePasswordFormWithoutUsername() const;
   bool IsPasswordUpdate() const;
   base::WeakPtr<PasswordManagerDriver> GetDriver() const;
-  const autofill::PasswordForm* GetSubmittedForm() const;
+  const PasswordForm* GetSubmittedForm() const;
 
   int driver_id() { return driver_id_; }
 
@@ -246,7 +243,7 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   // Constructor for Credentials API.
   PasswordFormManager(
       PasswordManagerClient* client,
-      std::unique_ptr<autofill::PasswordForm> saved_form,
+      std::unique_ptr<PasswordForm> saved_form,
       std::unique_ptr<FormFetcher> form_fetcher,
       std::unique_ptr<PasswordSaveManager> password_save_manager);
 
@@ -285,7 +282,7 @@ class PasswordFormManager : public PasswordFormManagerForUI,
 
   // Helper function for calling form parsing and logging results if logging is
   // active.
-  std::unique_ptr<autofill::PasswordForm> ParseFormAndMakeLogging(
+  std::unique_ptr<PasswordForm> ParseFormAndMakeLogging(
       const autofill::FormData& form,
       FormDataParser::Mode mode);
 
@@ -361,7 +358,7 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   // TODO(https://crubg.com/875768): Come up with a better name.
   bool is_submitted_ = false;
   autofill::FormData submitted_form_;
-  std::unique_ptr<autofill::PasswordForm> parsed_submitted_form_;
+  std::unique_ptr<PasswordForm> parsed_submitted_form_;
 
   // If Chrome has already autofilled a few times, it is probable that autofill
   // is triggered by programmatic changes in the page. We set a maximum number

@@ -35,9 +35,8 @@ class PasswordFeatureManagerImpl : public PasswordFeatureManager {
 
   bool ShouldShowAccountStorageBubbleUi() const override;
 
-  void SetDefaultPasswordStore(
-      const autofill::PasswordForm::Store& store) override;
-  autofill::PasswordForm::Store GetDefaultPasswordStore() const override;
+  void SetDefaultPasswordStore(const PasswordForm::Store& store) override;
+  PasswordForm::Store GetDefaultPasswordStore() const override;
   metrics_util::PasswordAccountStorageUsageLevel
   ComputePasswordAccountStorageUsageLevel() const override;
 

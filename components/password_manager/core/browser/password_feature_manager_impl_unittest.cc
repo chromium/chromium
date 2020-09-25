@@ -5,7 +5,7 @@
 #include "components/password_manager/core/browser/password_feature_manager_impl.h"
 
 #include "base/test/scoped_feature_list.h"
-#include "components/autofill/core/common/password_form.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"

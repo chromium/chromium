@@ -29,7 +29,6 @@
 using autofill::FieldPropertiesFlags;
 using autofill::FormData;
 using autofill::FormFieldData;
-using autofill::PasswordForm;
 
 namespace password_manager {
 

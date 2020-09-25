@@ -18,8 +18,6 @@
 namespace password_manager {
 namespace {
 
-using autofill::PasswordForm;
-
 std::vector<PasswordForm> DeepCopyVector(
     const std::vector<const PasswordForm*>& forms) {
   std::vector<PasswordForm> result;

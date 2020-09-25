@@ -8,8 +8,8 @@
 #include <tuple>
 
 #include "base/strings/utf_string_conversions.h"
-#include "components/autofill/core/common/password_form.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_utils.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "url/gurl.h"
@@ -27,8 +27,7 @@ constexpr char kSortKeyNoFederationSymbol = '-';
 
 }  // namespace
 
-std::string CreateSortKey(const autofill::PasswordForm& form,
-                          IgnoreStore ignore_store) {
+std::string CreateSortKey(const PasswordForm& form, IgnoreStore ignore_store) {
   std::string shown_origin;
   GURL link_url;
   std::tie(shown_origin, link_url) = GetShownOriginAndLinkUrl(form);
@@ -75,8 +74,7 @@ std::string CreateSortKey(const autofill::PasswordForm& form,
   // To separate HTTP/HTTPS credentials, add the scheme to the key.
   key += kSortKeyPartsSeparator + link_url.scheme();
 
-  if (!ignore_store &&
-      form.in_store == autofill::PasswordForm::Store::kAccountStore) {
+  if (!ignore_store && form.in_store == PasswordForm::Store::kAccountStore) {
     key += kSortKeyPartsSeparator + std::string("account");
   }
 
@@ -84,9 +82,9 @@ std::string CreateSortKey(const autofill::PasswordForm& form,
 }
 
 void SortEntriesAndHideDuplicates(
-    std::vector<std::unique_ptr<autofill::PasswordForm>>* list,
+    std::vector<std::unique_ptr<PasswordForm>>* list,
     DuplicatesMap* duplicates) {
-  std::vector<std::pair<std::string, std::unique_ptr<autofill::PasswordForm>>>
+  std::vector<std::pair<std::string, std::unique_ptr<PasswordForm>>>
       keys_to_forms;
   keys_to_forms.reserve(list->size());
   for (auto& form : *list) {

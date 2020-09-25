@@ -10,8 +10,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/sync/driver/sync_service.h"
 
-using autofill::PasswordForm;
-
 namespace password_manager {
 
 PasswordFeatureManagerImpl::PasswordFeatureManagerImpl(
