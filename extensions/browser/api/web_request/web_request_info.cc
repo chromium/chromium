@@ -167,7 +167,6 @@ WebRequestInfoInitParams::WebRequestInfoInitParams(
     base::UkmSourceId ukm_source_id)
     : id(request_id),
       url(request.url),
-      site_for_cookies(request.site_for_cookies),
       render_process_id(render_process_id),
       routing_id(routing_id),
       frame_id(render_frame_id),
@@ -232,7 +231,6 @@ void WebRequestInfoInitParams::InitializeWebViewAndFrameData(
 WebRequestInfo::WebRequestInfo(WebRequestInfoInitParams params)
     : id(params.id),
       url(std::move(params.url)),
-      site_for_cookies(std::move(params.site_for_cookies)),
       render_process_id(params.render_process_id),
       routing_id(params.routing_id),
       frame_id(params.frame_id),

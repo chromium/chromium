@@ -58,7 +58,6 @@ struct WebRequestInfoInitParams {
 
   uint64_t id = 0;
   GURL url;
-  net::SiteForCookies site_for_cookies;
   int render_process_id = -1;
   int routing_id = MSG_ROUTING_NONE;
   int frame_id = -1;
@@ -103,7 +102,6 @@ struct WebRequestInfo {
 
   // The URL of the request.
   const GURL url;
-  const net::SiteForCookies site_for_cookies;
 
   // The ID of the render process which initiated the request, or -1 of not
   // applicable (i.e. if initiated by the browser).

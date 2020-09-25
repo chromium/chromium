@@ -112,6 +112,35 @@ TEST(WebRequestConditionTest, IgnoreConditionFirstPartyForCookies) {
   ASSERT_TRUE(result.get());
 }
 
+TEST(WebRequestConditionTest, IgnoreConditionThirdPartForCookies) {
+  // thirdPartyForCookies is deprecated, but must still be accepted in
+  // parsing.
+  URLMatcher matcher;
+
+  std::string error;
+  std::unique_ptr<WebRequestCondition> result;
+
+  constexpr const char kConditionTrue[] = R"({
+    "thirdPartyForCookies": true,
+    "instanceType": "declarativeWebRequest.RequestMatcher",
+  })";
+  result = WebRequestCondition::Create(nullptr, matcher.condition_factory(),
+                                       base::test::ParseJson(kConditionTrue),
+                                       &error);
+  EXPECT_EQ("", error);
+  ASSERT_TRUE(result.get());
+
+  constexpr const char kConditionFalse[] = R"({
+    "thirdPartyForCookies": false,
+    "instanceType": "declarativeWebRequest.RequestMatcher",
+  })";
+  result = WebRequestCondition::Create(nullptr, matcher.condition_factory(),
+                                       base::test::ParseJson(kConditionFalse),
+                                       &error);
+  EXPECT_EQ("", error);
+  ASSERT_TRUE(result.get());
+}
+
 // Conditions without UrlFilter attributes need to be independent of URL
 // matching results. We test here that:
 //   1. A non-empty condition without UrlFilter attributes is fulfilled iff its
@@ -134,14 +163,13 @@ TEST(WebRequestConditionTest, NoUrlAttributes) {
   EXPECT_EQ("", error);
   ASSERT_TRUE(condition_empty.get());
 
-  // A condition without a UrlFilter attribute, which is always true.
+  // A condition without a UrlFilter attribute, which is true.
   error.clear();
   constexpr const char kTrueConditionWithoutUrlFilter[] = R"({
     "instanceType": "declarativeWebRequest.RequestMatcher",
 
-    // There is no "1st party for cookies" URL in the requests below,
-    // therefore all requests are considered first party for cookies.
-    "thirdPartyForCookies": false,
+    // This header is set on the WebRequestInfo below.
+    "requestHeaders": [{ "nameEquals": "foo" }],
   })";
   std::unique_ptr<WebRequestCondition> condition_no_url_true =
       WebRequestCondition::Create(
@@ -150,12 +178,12 @@ TEST(WebRequestConditionTest, NoUrlAttributes) {
   EXPECT_EQ("", error);
   ASSERT_TRUE(condition_no_url_true.get());
 
-  // A condition without a UrlFilter attribute, which is always false.
+  // A condition without a UrlFilter attribute, which is false.
   error.clear();
   constexpr const char kFalseConditionWithoutUrlFilter[] = R"({
     "instanceType": "declarativeWebRequest.RequestMatcher",
 
-    "thirdPartyForCookies": true,
+    "excludeRequestHeaders": [{ "nameEquals": "foo" }],
   })";
   std::unique_ptr<WebRequestCondition> condition_no_url_false =
       WebRequestCondition::Create(
@@ -166,23 +194,22 @@ TEST(WebRequestConditionTest, NoUrlAttributes) {
 
   WebRequestInfoInitParams params;
   params.url = GURL("https://www.example.com");
-  params.site_for_cookies =
-      net::SiteForCookies::FromUrl(GURL("https://www.example.com"));
+  params.extra_request_headers.SetHeader("foo", "bar");
   WebRequestInfo https_request_info(std::move(params));
 
   // 1. A non-empty condition without UrlFilter attributes is fulfilled iff its
   //    attributes are fulfilled.
-  WebRequestData data(&https_request_info, ON_BEFORE_REQUEST);
+  WebRequestData data(&https_request_info, ON_BEFORE_SEND_HEADERS);
   EXPECT_FALSE(
       condition_no_url_false->IsFulfilled(WebRequestDataWithMatchIds(&data)));
 
-  data = WebRequestData(&https_request_info, ON_BEFORE_REQUEST);
+  data = WebRequestData(&https_request_info, ON_BEFORE_SEND_HEADERS);
   EXPECT_TRUE(
       condition_no_url_true->IsFulfilled(WebRequestDataWithMatchIds(&data)));
 
   // 2. An empty condition (in particular, without UrlFilter attributes) is
   //    always fulfilled.
-  data = WebRequestData(&https_request_info, ON_BEFORE_REQUEST);
+  data = WebRequestData(&https_request_info, ON_BEFORE_SEND_HEADERS);
   EXPECT_TRUE(condition_empty->IsFulfilled(WebRequestDataWithMatchIds(&data)));
 }
 

@@ -31,17 +31,12 @@ struct WebRequestData;
 class WebRequestConditionAttribute
     : public base::RefCounted<WebRequestConditionAttribute> {
  public:
-  // These values are used in the
-  // Extensions.DeclarativeWebRequest.ConditionAttributeType histogram, so when
-  // adding/removing values, the numbering of existing values should not change.
   enum Type {
     CONDITION_RESOURCE_TYPE = 0,
     CONDITION_CONTENT_TYPE = 1,
     CONDITION_RESPONSE_HEADERS = 2,
-    CONDITION_THIRD_PARTY = 3,
-    CONDITION_REQUEST_HEADERS = 4,
-    CONDITION_STAGES = 5,
-    CONDITION_MAX = CONDITION_STAGES,
+    CONDITION_REQUEST_HEADERS = 3,
+    CONDITION_STAGES = 4,
   };
 
   WebRequestConditionAttribute();
@@ -212,33 +207,6 @@ class WebRequestConditionAttributeResponseHeaders
   const bool positive_;
 
   DISALLOW_COPY_AND_ASSIGN(WebRequestConditionAttributeResponseHeaders);
-};
-
-// This condition tests whether the request origin is third-party.
-class WebRequestConditionAttributeThirdParty
-    : public WebRequestConditionAttribute {
- public:
-  // Factory method, see WebRequestConditionAttribute::Create.
-  static scoped_refptr<const WebRequestConditionAttribute> Create(
-      const std::string& name,
-      const base::Value* value,
-      std::string* error,
-      bool* bad_message);
-
-  // Implementation of WebRequestConditionAttribute:
-  int GetStages() const override;
-  bool IsFulfilled(const WebRequestData& request_data) const override;
-  Type GetType() const override;
-  std::string GetName() const override;
-  bool Equals(const WebRequestConditionAttribute* other) const override;
-
- private:
-  explicit WebRequestConditionAttributeThirdParty(bool match_third_party);
-  ~WebRequestConditionAttributeThirdParty() override;
-
-  const bool match_third_party_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebRequestConditionAttributeThirdParty);
 };
 
 // This condition is used as a filter for request stages. It is true exactly in

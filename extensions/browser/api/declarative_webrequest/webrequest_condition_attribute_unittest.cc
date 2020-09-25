@@ -148,66 +148,6 @@ TEST(WebRequestConditionAttributeTest, ContentType) {
             attribute_unexcluded->GetName());
 }
 
-// Testing WebRequestConditionAttributeThirdParty.
-TEST(WebRequestConditionAttributeTest, ThirdParty) {
-  std::string error;
-  const Value value_true(true);
-  // This attribute matches only third party requests.
-  scoped_refptr<const WebRequestConditionAttribute> third_party_attribute =
-      WebRequestConditionAttribute::Create(keys::kThirdPartyKey,
-                                           &value_true,
-                                           &error);
-  ASSERT_EQ("", error);
-  ASSERT_TRUE(third_party_attribute.get());
-  EXPECT_EQ(std::string(keys::kThirdPartyKey),
-            third_party_attribute->GetName());
-  const Value value_false(false);
-  // This attribute matches only first party requests.
-  scoped_refptr<const WebRequestConditionAttribute> first_party_attribute =
-      WebRequestConditionAttribute::Create(keys::kThirdPartyKey,
-                                           &value_false,
-                                           &error);
-  ASSERT_EQ("", error);
-  ASSERT_TRUE(first_party_attribute.get());
-  EXPECT_EQ(std::string(keys::kThirdPartyKey),
-            first_party_attribute->GetName());
-
-  const GURL url_a("http://a.com");
-  const GURL url_b("http://b.com");
-
-  for (unsigned int i = 1; i <= kLastActiveStage; i <<= 1) {
-    if (!(kActiveStages & i))
-      continue;
-    const RequestStage stage = static_cast<RequestStage>(i);
-    WebRequestInfoInitParams empty_params;
-    empty_params.url = url_a;
-    empty_params.site_for_cookies = net::SiteForCookies();
-    WebRequestInfo request_info1(std::move(empty_params));
-    EXPECT_TRUE(third_party_attribute->IsFulfilled(
-        WebRequestData(&request_info1, stage)));
-    EXPECT_FALSE(first_party_attribute->IsFulfilled(
-        WebRequestData(&request_info1, stage)));
-
-    WebRequestInfoInitParams b_params;
-    b_params.url = url_a;
-    b_params.site_for_cookies = net::SiteForCookies::FromUrl(url_b);
-    WebRequestInfo request_info2(std::move(b_params));
-    EXPECT_TRUE(third_party_attribute->IsFulfilled(
-        WebRequestData(&request_info2, stage)));
-    EXPECT_FALSE(first_party_attribute->IsFulfilled(
-        WebRequestData(&request_info2, stage)));
-
-    WebRequestInfoInitParams a_params;
-    a_params.url = url_a;
-    a_params.site_for_cookies = net::SiteForCookies::FromUrl(url_a);
-    WebRequestInfo request_info3(std::move(a_params));
-    EXPECT_FALSE(third_party_attribute->IsFulfilled(
-        WebRequestData(&request_info3, stage)));
-    EXPECT_TRUE(first_party_attribute->IsFulfilled(
-        WebRequestData(&request_info3, stage)));
-  }
-}
-
 // Testing WebRequestConditionAttributeStages. This iterates over all stages,
 // and tests a couple of "stage" attributes -- one created with an empty set of
 // applicable stages, one for each stage applicable for that stage, and one

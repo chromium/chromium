@@ -146,7 +146,8 @@ std::unique_ptr<WebRequestCondition> WebRequestCondition::Create(
     const base::Value& condition_attribute_value = iter.value();
     if (condition_attribute_name == keys::kInstanceTypeKey ||
         condition_attribute_name ==
-            keys::kDeprecatedFirstPartyForCookiesUrlKey) {
+            keys::kDeprecatedFirstPartyForCookiesUrlKey ||
+        condition_attribute_name == keys::kDeprecatedThirdPartyKey) {
       // Skip this.
     } else if (condition_attribute_name == keys::kUrlKey) {
       const base::DictionaryValue* dict = NULL;

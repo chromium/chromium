@@ -237,6 +237,7 @@
           "thirdPartyForCookies": {
             "type": "boolean",
             "optional": true,
+            "deprecated": "Ignored since release 87.",
             "description": "If set to true, matches requests that are subject to third-party cookie policies. If set to false, matches all other requests."
           },
           "stages": {

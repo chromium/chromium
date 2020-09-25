@@ -54506,6 +54506,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Extensions.DeclarativeWebRequest.ConditionAttributeType"
     enum="WebRequestConditionAttributeType" expires_after="2020-10-30">
+  <obsolete>
+    Removed 09/2020.
+  </obsolete>
   <owner>karandeepb@chromium.org</owner>
   <owner>mmenke@chromium.org</owner>
   <summary>
