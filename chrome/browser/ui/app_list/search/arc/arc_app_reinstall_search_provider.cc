@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ui/app_list/search/common/url_icon_source.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/constants/chromeos_pref_names.h"
 #include "components/arc/arc_service_manager.h"
 #include "components/arc/session/arc_bridge_service.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -250,10 +251,21 @@ ash::AppListSearchResultType ArcAppReinstallSearchProvider::ResultType() {
 }
 
 void ArcAppReinstallSearchProvider::Start(const base::string16& query) {
-  if (query_is_empty_ == query.empty())
-    return;
-
   query_is_empty_ = query.empty();
+  if (!query_is_empty_) {
+    ClearResults();
+    return;
+  }
+
+  // Always check if suggested content is enabled before searching for
+  // reinstall recommendations.
+  PrefService* pref_service = profile_->GetPrefs();
+  if (pref_service &&
+      !pref_service->GetBoolean(chromeos::prefs::kSuggestedContentEnabled)) {
+    ClearResults();
+    return;
+  }
+
   UpdateResults();
 }
 
