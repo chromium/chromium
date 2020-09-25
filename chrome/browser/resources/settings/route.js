@@ -81,10 +81,7 @@ function addPrivacyChildRoutes(r) {
     r.SITE_SETTINGS_WINDOW_PLACEMENT =
         r.SITE_SETTINGS.createChild('windowPlacement');
   }
-  if (loadTimeData.getBoolean('enableFileSystemWriteContentSetting')) {
-    r.SITE_SETTINGS_FILE_SYSTEM_WRITE =
-        r.SITE_SETTINGS.createChild('filesystem');
-  }
+  r.SITE_SETTINGS_FILE_SYSTEM_WRITE = r.SITE_SETTINGS.createChild('filesystem');
   if (loadTimeData.getBoolean('enableFontAccessContentSetting')) {
     r.SITE_SETTINGS_FONT_ACCESS = r.SITE_SETTINGS.createChild('fontAccess');
   }

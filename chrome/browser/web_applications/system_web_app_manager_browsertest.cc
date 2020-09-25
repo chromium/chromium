@@ -401,9 +401,7 @@ class SystemWebAppManagerFileHandlingBrowserTestBase
     }
 
     scoped_feature_blink_api_.InitWithFeatures(
-        {blink::features::kNativeFileSystemAPI,
-         blink::features::kFileHandlingAPI},
-        {});
+        {blink::features::kFileHandlingAPI}, {});
 
     maybe_installation_ =
         TestSystemWebAppInstallation::SetUpAppThatReceivesLaunchFiles(

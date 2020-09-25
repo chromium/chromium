@@ -99,23 +99,21 @@ TEST_P(WebFileTasksTest, WebAppFileHandlingCanBeDisabledByFlag) {
   std::vector<FullTaskDescriptor> tasks;
 
   {
-    // Web Apps should not be able to handle files unless
-    // kNativeFileSystemAPI and kFileHandlingAPI are enabled.
+    // Web Apps should not be able to handle files unless kFileHandlingAPI is
+    // enabled.
     base::test::ScopedFeatureList scoped_feature_list;
     scoped_feature_list.InitWithFeatures({},
-                                         {blink::features::kNativeFileSystemAPI,
-                                          blink::features::kFileHandlingAPI});
+                                         {blink::features::kFileHandlingAPI});
     FindWebTasks(profile(), entries, &tasks);
     EXPECT_EQ(0u, tasks.size());
     tasks.clear();
   }
 
   {
-    // When the flags are enabled, it should be possible to handle files from
+    // When the flag is enabled, it should be possible to handle files from
     // bookmark apps.
     base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitWithFeatures({blink::features::kNativeFileSystemAPI,
-                                          blink::features::kFileHandlingAPI},
+    scoped_feature_list.InitWithFeatures({blink::features::kFileHandlingAPI},
                                          {});
 
     // Note: FileHandlers aren't enabled while the flag is off.
@@ -139,12 +137,10 @@ TEST_P(WebFileTasksTest, DisabledFileHandlersAreNotVisible) {
   const char kFooId[] = "foo-app-id";
   const char kFooAction[] = "https://foo.tld/csv";
 
-  // Web Apps should not be able to handle files unless
-  // kNativeFileSystemAPI and kFileHandlingAPI are enabled.
+  // Web Apps should not be able to handle files unless kFileHandlingAPI is
+  // enabled.
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({blink::features::kNativeFileSystemAPI,
-                                        blink::features::kFileHandlingAPI},
-                                       {});
+  scoped_feature_list.InitWithFeatures({blink::features::kFileHandlingAPI}, {});
 
   InstallFileHandler(kGraphrId, GURL(kGraphrAction), {{"text/csv", {".csv"}}});
   InstallFileHandler(kFooId, GURL(kFooAction), {{"text/csv", {".csv"}}});
@@ -171,9 +167,7 @@ TEST_P(WebFileTasksTest, DisabledFileHandlersAreNotVisible) {
 
 TEST_P(WebFileTasksTest, FindWebFileHandlerTasks) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({blink::features::kNativeFileSystemAPI,
-                                        blink::features::kFileHandlingAPI},
-                                       {});
+  scoped_feature_list.InitWithFeatures({blink::features::kFileHandlingAPI}, {});
   const char kFooId[] = "foo-app-id";
   const char kFooAction[] = "https://foo.tld/files";
 
@@ -221,9 +215,7 @@ TEST_P(WebFileTasksTest, FindWebFileHandlerTasks) {
 
 TEST_P(WebFileTasksTest, FindWebFileHandlerTask_Generic) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({blink::features::kNativeFileSystemAPI,
-                                        blink::features::kFileHandlingAPI},
-                                       {});
+  scoped_feature_list.InitWithFeatures({blink::features::kFileHandlingAPI}, {});
 
   const char kBarId[] = "bar-app-id";
   const char kBarAction[] = "https://bar.tld/files";

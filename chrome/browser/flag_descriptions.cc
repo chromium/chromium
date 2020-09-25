@@ -1417,11 +1417,6 @@ const char kMouseSubframeNoImplicitCaptureName[] =
 const char kMouseSubframeNoImplicitCaptureDescription[] =
     "When enable, mouse down does not implicit capture for iframe.";
 
-const char kNativeFileSystemAPIName[] = "Native File System API";
-const char kNativeFileSystemAPIDescription[] =
-    "Enables the experimental Native File System API, giving websites access "
-    "to the native file system";
-
 const char kNearbySharingName[] = "Nearby Sharing";
 const char kNearbySharingDescription[] =
     "Enables Nearby Sharing for sharing content between devices.";
