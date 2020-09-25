@@ -26,8 +26,8 @@ class TestOmniboxView : public OmniboxView {
 
   void SetModel(std::unique_ptr<OmniboxEditModel> model);
 
-  const base::string16& inline_autocomplete_text() const {
-    return inline_autocomplete_text_;
+  const base::string16& inline_autocompletion() const {
+    return inline_autocompletion_;
   }
 
   static State CreateState(std::string text,
@@ -82,7 +82,7 @@ class TestOmniboxView : public OmniboxView {
 
  private:
   base::string16 text_;
-  base::string16 inline_autocomplete_text_;
+  base::string16 inline_autocompletion_;
   gfx::Range selection_;
   gfx::Range saved_temporary_selection_;
 };

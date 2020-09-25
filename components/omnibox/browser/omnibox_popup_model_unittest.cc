@@ -52,12 +52,12 @@ class TestOmniboxEditModel : public OmniboxEditModel {
 
   void OnPopupDataChanged(const base::string16& text,
                           bool is_temporary_text,
-                          const base::string16& prefix_autocompletion_text,
+                          const base::string16& prefix_autocompletion,
                           const base::string16& keyword,
                           bool is_keyword_hint,
                           const base::string16& additional_text) override {
     OmniboxEditModel::OnPopupDataChanged(text, is_temporary_text,
-                                         prefix_autocompletion_text, keyword,
+                                         prefix_autocompletion, keyword,
                                          is_keyword_hint, additional_text);
     text_ = text;
     is_temporary_text_ = is_temporary_text;

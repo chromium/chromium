@@ -483,11 +483,11 @@ void AutocompleteControllerAndroid::NotifySuggestionsReceived(
                                autocomplete_result.hidden_group_ids());
 
   // Get the inline-autocomplete text.
-  base::string16 inline_autocomplete_text;
+  base::string16 inline_autocompletion;
   if (auto* default_match = autocomplete_result.default_match())
-    inline_autocomplete_text = default_match->inline_autocompletion;
+    inline_autocompletion = default_match->inline_autocompletion;
   ScopedJavaLocalRef<jstring> inline_text =
-      ConvertUTF16ToJavaString(env, inline_autocomplete_text);
+      ConvertUTF16ToJavaString(env, inline_autocompletion);
   jlong j_autocomplete_result_raw_ptr =
       reinterpret_cast<intptr_t>(&(autocomplete_result));
   Java_AutocompleteController_onSuggestionsReceived(

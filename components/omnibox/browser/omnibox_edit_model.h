@@ -361,7 +361,7 @@ class OmniboxEditModel {
   //     a different match, or the inline autocomplete text.
   //   |is_temporary_text| is true if |text| contains the temporary text for
   //     a match, and is false if |text| contains the inline autocomplete text.
-  //   |prefix_autocompletion_text| is the prefix autocomplete text.
+  //   |prefix_autocompletion| is the prefix autocomplete text.
   //   |destination_for_temporary_text_change| is NULL (if temporary text should
   //     not change) or the pre-change destination URL (if temporary text should
   //     change) so we can save it off to restore later.
@@ -371,13 +371,12 @@ class OmniboxEditModel {
   //   |additional_text| is additional omnibox text to be displayed adjacent to
   //   the omnibox view.
   // Virtual to allow testing.
-  virtual void OnPopupDataChanged(
-      const base::string16& text,
-      bool is_temporary_text,
-      const base::string16& prefix_autocompletion_text,
-      const base::string16& keyword,
-      bool is_keyword_hint,
-      const base::string16& additional_text);
+  virtual void OnPopupDataChanged(const base::string16& text,
+                                  bool is_temporary_text,
+                                  const base::string16& prefix_autocompletion,
+                                  const base::string16& keyword,
+                                  bool is_keyword_hint,
+                                  const base::string16& additional_text);
 
   // Called by the OmniboxView after something changes, with details about what
   // state changes occurred.  Updates internal state, updates the popup if
@@ -579,15 +578,15 @@ class OmniboxEditModel {
   base::string16 url_for_remembered_user_selection_;
 
   // Inline autocomplete is allowed if the user has not just deleted text, and
-  // no temporary text is showing.  In this case, inline_autocomplete_text_ is
+  // no temporary text is showing.  In this case, inline_autocompletion_ is
   // appended to the user_text_ and displayed selected (at least initially).
   //
   // NOTE: When the popup is closed there should never be inline autocomplete
   // text (actions that close the popup should either accept the text, convert
   // it to a normal selection, or change the edit entirely).
   bool just_deleted_text_;
-  base::string16 inline_autocomplete_text_;
-  base::string16 prefix_autocompletion_text_;
+  base::string16 inline_autocompletion_;
+  base::string16 prefix_autocompletion_;
 
   // Used by OnPopupDataChanged to keep track of whether there is currently a
   // temporary text.

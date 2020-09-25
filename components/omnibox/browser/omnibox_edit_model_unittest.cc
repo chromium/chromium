@@ -216,40 +216,40 @@ TEST_F(OmniboxEditModelTest, AdjustTextForCopyReaderMode) {
 
 TEST_F(OmniboxEditModelTest, DISABLED_InlineAutocompleteText) {
   // Test if the model updates the inline autocomplete text in the view.
-  EXPECT_EQ(base::string16(), view()->inline_autocomplete_text());
+  EXPECT_EQ(base::string16(), view()->inline_autocompletion());
   model()->SetUserText(base::ASCIIToUTF16("he"));
   model()->OnPopupDataChanged(base::ASCIIToUTF16("llo"),
                               /*is_temporary_text=*/false, base::string16(),
                               base::string16(), false, base::string16());
   EXPECT_EQ(base::ASCIIToUTF16("hello"), view()->GetText());
-  EXPECT_EQ(base::ASCIIToUTF16("llo"), view()->inline_autocomplete_text());
+  EXPECT_EQ(base::ASCIIToUTF16("llo"), view()->inline_autocompletion());
 
   base::string16 text_before = base::ASCIIToUTF16("he");
   base::string16 text_after = base::ASCIIToUTF16("hel");
   OmniboxView::StateChanges state_changes{
       &text_before, &text_after, 3, 3, false, true, false, false};
   model()->OnAfterPossibleChange(state_changes, true);
-  EXPECT_EQ(base::string16(), view()->inline_autocomplete_text());
+  EXPECT_EQ(base::string16(), view()->inline_autocompletion());
   model()->OnPopupDataChanged(base::ASCIIToUTF16("lo"),
                               /*is_temporary_text=*/false, base::string16(),
                               base::string16(), false, base::string16());
   EXPECT_EQ(base::ASCIIToUTF16("hello"), view()->GetText());
-  EXPECT_EQ(base::ASCIIToUTF16("lo"), view()->inline_autocomplete_text());
+  EXPECT_EQ(base::ASCIIToUTF16("lo"), view()->inline_autocompletion());
 
   model()->Revert();
   EXPECT_EQ(base::string16(), view()->GetText());
-  EXPECT_EQ(base::string16(), view()->inline_autocomplete_text());
+  EXPECT_EQ(base::string16(), view()->inline_autocompletion());
 
   model()->SetUserText(base::ASCIIToUTF16("he"));
   model()->OnPopupDataChanged(base::ASCIIToUTF16("llo"),
                               /*is_temporary_text=*/false, base::string16(),
                               base::string16(), false, base::string16());
   EXPECT_EQ(base::ASCIIToUTF16("hello"), view()->GetText());
-  EXPECT_EQ(base::ASCIIToUTF16("llo"), view()->inline_autocomplete_text());
+  EXPECT_EQ(base::ASCIIToUTF16("llo"), view()->inline_autocompletion());
 
   model()->AcceptTemporaryTextAsUserText();
   EXPECT_EQ(base::ASCIIToUTF16("hello"), view()->GetText());
-  EXPECT_EQ(base::string16(), view()->inline_autocomplete_text());
+  EXPECT_EQ(base::string16(), view()->inline_autocompletion());
 }
 
 // iOS doesn't use elisions in the Omnibox textfield.
@@ -269,7 +269,7 @@ TEST_F(OmniboxEditModelTest, RespectUnelisionInZeroSuggest) {
   EXPECT_TRUE(view()->IsSelectAll());
 
   // Test that we don't clobber the unelided text with inline autocomplete text.
-  EXPECT_EQ(base::string16(), view()->inline_autocomplete_text());
+  EXPECT_EQ(base::string16(), view()->inline_autocompletion());
   model()->StartZeroSuggestRequest();
   model()->OnPopupDataChanged(base::string16(), /*is_temporary_text=*/false,
                               base::string16(), base::string16(), false,

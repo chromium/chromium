@@ -76,7 +76,7 @@ void TestOmniboxView::OnInlineAutocompleteTextMaybeChanged(
     size_t user_text_length) {
   const bool text_changed = text_ != display_text;
   text_ = display_text;
-  inline_autocomplete_text_ = display_text.substr(user_text_length);
+  inline_autocompletion_ = display_text.substr(user_text_length);
 
   // Just like the Views control, only change the selection if the text has
   // actually changed.
@@ -85,7 +85,7 @@ void TestOmniboxView::OnInlineAutocompleteTextMaybeChanged(
 }
 
 void TestOmniboxView::OnInlineAutocompleteTextCleared() {
-  inline_autocomplete_text_.clear();
+  inline_autocompletion_.clear();
 }
 
 void TestOmniboxView::OnRevertTemporaryText(const base::string16& display_text,
