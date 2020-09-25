@@ -29,9 +29,6 @@ namespace ash {
 
 namespace {
 
-// The space between the starting and ending desks screenshots in dips.
-constexpr int kDesksSpacing = 50;
-
 // The maximum number of times to retry taking a screenshot for either the
 // starting or the ending desks. After this maximum number is reached, we ignore
 // a failed screenshot request and proceed with next phases.
@@ -49,12 +46,6 @@ constexpr base::TimeDelta kAnimationDuration =
 // In touchpad units, a touchpad swipe of this length will correspond to a full
 // desk change.
 constexpr int kTouchpadSwipeLengthForDeskChange = 100;
-
-// The animation layer has extra padding at its two edges. The width in dips is
-// a ratio of the root window width. This padding is to notify users there are
-// no more desks on that side by showing a black region as we swipe
-// continuously.
-constexpr float kEdgePaddingRatio = 0.15f;
 
 // The amount, by which the detached old layers of the removed desk's windows,
 // is translated vertically during the for-remove desk switch animation.
