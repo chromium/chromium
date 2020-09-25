@@ -14,8 +14,6 @@
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
 
-@protocol MainControllerGuts;
-
 // The controller object for a scene. Reacts to scene state changes.
 @interface SceneController : NSObject <SceneStateObserver,
                                        ApplicationCommands,
@@ -30,9 +28,6 @@
 
 // The state of the scene controlled by this object.
 @property(nonatomic, weak, readonly) SceneState* sceneState;
-
-// A temporary pointer to MainController.
-@property(nonatomic, weak) id<MainControllerGuts> mainController;
 
 // The interface provider for this scene.
 @property(nonatomic, strong, readonly) id<BrowserInterfaceProvider>

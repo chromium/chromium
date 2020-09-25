@@ -144,7 +144,6 @@ source_set("app_internal") {
     "main_application_delegate_testing.h",
     "main_controller.h",
     "main_controller.mm",
-    "main_controller_guts.h",
     "main_controller_private.h",
     "memory_monitor.h",
     "memory_monitor.mm",

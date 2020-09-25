@@ -393,17 +393,6 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   [self.appState.appCommandDispatcher
       startDispatchingToTarget:self
                    forProtocol:@protocol(BrowsingDataCommands)];
-
-  if (@available(iOS 13, *)) {
-    if (IsSceneStartupSupported()) {
-      // Subscribe for scene connection and disconnection notifications.
-      [[NSNotificationCenter defaultCenter]
-          addObserver:self
-             selector:@selector(sceneWillConnect:)
-                 name:UISceneWillConnectNotification
-               object:nil];
-    }
-  }
 }
 
 - (void)startUpBrowserBackgroundInitialization {
@@ -603,20 +592,6 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 
 - (void)appStateDidExitSafeMode:(AppState*)appState {
   [self startUpAfterFirstWindowCreated];
-}
-
-#pragma mark - Scene notifications
-
-// Handler for UISceneWillConnectNotification.
-- (void)sceneWillConnect:(NSNotification*)notification {
-  DCHECK(IsSceneStartupSupported());
-  if (@available(iOS 13, *)) {
-    UIWindowScene* scene =
-        base::mac::ObjCCastStrict<UIWindowScene>(notification.object);
-    SceneDelegate* sceneDelegate =
-        base::mac::ObjCCastStrict<SceneDelegate>(scene.delegate);
-    sceneDelegate.sceneController.mainController = self;
-  }
 }
 
 #pragma mark - Property implementation.
@@ -1060,7 +1035,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   }
 }
 
-- (void)prepareForFirstRunUI:(SceneState*)presentingScene {
+- (void)prepareForFirstRunUI {
   // Register for notification when First Run is completed.
   // Some initializations are held back until First Run modal dialog
   // is dismissed.

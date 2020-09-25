@@ -21,7 +21,6 @@
 #include "ios/chrome/app/application_mode.h"
 #import "ios/chrome/app/chrome_overlay_window.h"
 #import "ios/chrome/app/deferred_initialization_runner.h"
-#import "ios/chrome/app/main_controller_guts.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/browsing_data/browsing_data_remove_mask.h"
 #include "ios/chrome/browser/browsing_data/browsing_data_remover.h"
@@ -534,7 +533,6 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
     return;
   }
 
-  DCHECK(self.mainController);
   [self startUpChromeUI];
   self.hasInitializedUI = YES;
 }
@@ -543,7 +541,6 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 - (void)startUpChromeUI {
   DCHECK(!self.browserViewWrangler);
   DCHECK(self.sceneURLLoadingService);
-  DCHECK(self.mainController);
   DCHECK(self.sceneState.appState.mainBrowserState);
 
   self.browserViewWrangler = [[BrowserViewWrangler alloc]
@@ -673,7 +670,6 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   // If this isn't first run, check if the sign-in promo needs to display.
   if (firstRun && launchMode != ApplicationMode::INCOGNITO &&
       !self.sceneState.appState.startupInformation.isPresentingFirstRunUI) {
-    [self.mainController prepareForFirstRunUI:self.sceneState];
     [self showFirstRunUI];
     // Do not ever show the 'restore' infobar during first run.
     self.sceneState.appState.startupInformation.restoreHelper = nil;

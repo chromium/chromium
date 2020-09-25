@@ -10,7 +10,6 @@
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/browser_launcher.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
-#import "ios/chrome/app/main_controller_guts.h"
 #import "ios/chrome/browser/ui/commands/browsing_data_commands.h"
 
 @class AppState;
@@ -24,7 +23,6 @@
 // By design, it has no public API of its own. Anything interacting with
 // MainController should be doing so through a specific protocol.
 @interface MainController : NSObject <BrowserLauncher,
-                                      MainControllerGuts,
                                       StartupInformation,
                                       BrowsingDataCommands,
                                       AppStateObserver>
