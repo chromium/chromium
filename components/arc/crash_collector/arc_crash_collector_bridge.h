@@ -32,11 +32,17 @@ class ArcCrashCollectorBridge
   ArcCrashCollectorBridge(content::BrowserContext* context,
                           ArcBridgeService* bridge);
 
+  ArcCrashCollectorBridge(const ArcCrashCollectorBridge&) = delete;
+  ArcCrashCollectorBridge& operator=(const ArcCrashCollectorBridge&) = delete;
+
   ~ArcCrashCollectorBridge() override;
 
   // mojom::CrashCollectorHost overrides.
   void DumpCrash(const std::string& type, mojo::ScopedHandle pipe) override;
-
+  void DumpNativeCrash(const std::string& exec_name,
+                       int32_t pid,
+                       int64_t timestamp,
+                       mojo::ScopedHandle minidump_fd) override;
   void SetBuildProperties(
       const std::string& device,
       const std::string& board,
@@ -44,14 +50,14 @@ class ArcCrashCollectorBridge
       const base::Optional<std::string>& fingerprint) override;
 
  private:
+  std::vector<std::string> CreateCrashReporterArgs();
+
   ArcBridgeService* const arc_bridge_service_;  // Owned by ArcServiceManager.
 
   std::string device_;
   std::string board_;
   std::string cpu_abi_;
   base::Optional<std::string> fingerprint_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcCrashCollectorBridge);
 };
 
 }  // namespace arc

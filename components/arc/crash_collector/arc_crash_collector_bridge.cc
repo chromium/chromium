@@ -4,6 +4,7 @@
 
 #include "components/arc/crash_collector/arc_crash_collector_bridge.h"
 
+#include <inttypes.h>
 #include <sysexits.h>
 #include <unistd.h>
 
@@ -14,10 +15,12 @@
 #include "base/logging.h"
 #include "base/memory/singleton.h"
 #include "base/process/launch.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "components/arc/arc_browser_context_keyed_service_factory_base.h"
+#include "components/arc/arc_util.h"
 #include "components/arc/session/arc_bridge_service.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 
@@ -25,32 +28,47 @@ namespace {
 
 const char kCrashReporterPath[] = "/sbin/crash_reporter";
 
-// Runs crash_reporter to save the crash info provided via the pipe.
-void RunCrashReporter(const std::string& crash_type,
-                      const std::string& device,
-                      const std::string& board,
-                      const std::string& cpu_abi,
-                      const base::Optional<std::string>& fingerprint,
-                      base::ScopedFD pipe) {
+bool RunCrashReporter(const std::vector<std::string>& args, int stdin_fd) {
   base::LaunchOptions options;
-  options.fds_to_remap.emplace_back(pipe.get(), STDIN_FILENO);
+  options.fds_to_remap.emplace_back(stdin_fd, STDIN_FILENO);
 
-  std::vector<std::string> argv = {
-      kCrashReporterPath, "--arc_java_crash=" + crash_type,
-      "--arc_device=" + device, "--arc_board=" + board,
-      "--arc_cpu_abi=" + cpu_abi};
-
-  if (fingerprint)
-    argv.emplace_back("--arc_fingerprint=" + fingerprint.value());
-
-  auto process = base::LaunchProcess(argv, options);
+  auto process = base::LaunchProcess(args, options);
 
   int exit_code = 0;
   if (!process.WaitForExit(&exit_code)) {
     LOG(ERROR) << "Failed to wait for " << kCrashReporterPath;
-  } else if (exit_code != EX_OK) {
-    LOG(ERROR) << kCrashReporterPath << " failed with exit code " << exit_code;
+    return false;
   }
+  if (exit_code != EX_OK) {
+    LOG(ERROR) << kCrashReporterPath << " failed with exit code " << exit_code;
+    return false;
+  }
+  return true;
+}
+
+// Runs crash_reporter to save the java crash info provided via the pipe.
+void RunJavaCrashReporter(const std::string& crash_type,
+                          base::ScopedFD pipe,
+                          std::vector<std::string> args) {
+  args.push_back("--arc_java_crash=" + crash_type);
+
+  if (!RunCrashReporter(args, pipe.get()))
+    LOG(ERROR) << "Failed to run crash_reporter";
+}
+
+// Runs crash_reporter to save the native crash info provided via the files.
+void RunNativeCrashReporter(const std::string& exec_name,
+                            int32_t pid,
+                            int64_t timestamp,
+                            base::ScopedFD minidump_fd,
+                            std::vector<std::string> args) {
+  args.insert(args.end(),
+              {"--exe=" + exec_name, base::StringPrintf("--pid=%d", pid),
+               base::StringPrintf("--arc_native_time=%" PRId64, timestamp),
+               "--arc_native"});
+
+  if (!RunCrashReporter(args, minidump_fd.get()))
+    LOG(ERROR) << "Failed to run crash_reporter";
 }
 
 }  // namespace
@@ -100,9 +118,21 @@ void ArcCrashCollectorBridge::DumpCrash(const std::string& type,
                                         mojo::ScopedHandle pipe) {
   base::ThreadPool::PostTask(
       FROM_HERE, {base::WithBaseSyncPrimitives()},
-      base::BindOnce(&RunCrashReporter, type, device_, board_, cpu_abi_,
-                     fingerprint_,
-                     mojo::UnwrapPlatformHandle(std::move(pipe)).TakeFD()));
+      base::BindOnce(&RunJavaCrashReporter, type,
+                     mojo::UnwrapPlatformHandle(std::move(pipe)).TakeFD(),
+                     CreateCrashReporterArgs()));
+}
+
+void ArcCrashCollectorBridge::DumpNativeCrash(const std::string& exec_name,
+                                              int32_t pid,
+                                              int64_t timestamp,
+                                              mojo::ScopedHandle minidump_fd) {
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::WithBaseSyncPrimitives()},
+      base::BindOnce(
+          &RunNativeCrashReporter, exec_name, pid, timestamp,
+          mojo::UnwrapPlatformHandle(std::move(minidump_fd)).TakeFD(),
+          CreateCrashReporterArgs()));
 }
 
 void ArcCrashCollectorBridge::SetBuildProperties(
@@ -114,6 +144,22 @@ void ArcCrashCollectorBridge::SetBuildProperties(
   board_ = board;
   cpu_abi_ = cpu_abi;
   fingerprint_ = fingerprint;
+}
+
+std::vector<std::string> ArcCrashCollectorBridge::CreateCrashReporterArgs() {
+  std::vector<std::string> args = {
+      kCrashReporterPath,
+      "--arc_device=" + device_,
+      "--arc_board=" + board_,
+      "--arc_cpu_abi=" + cpu_abi_,
+  };
+  if (fingerprint_)
+    args.push_back("--arc_fingerprint=" + fingerprint_.value());
+
+  if (arc::IsArcVmEnabled())
+    args.emplace_back("--arc_is_arcvm");
+
+  return args;
 }
 
 }  // namespace arc
