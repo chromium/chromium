@@ -11,7 +11,7 @@
 #include <string>
 
 #include "base/test/task_environment.h"
-#include "components/autofill/core/common/password_form.h"
+#include "components/password_manager/core/browser/password_form_forward.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/driver/test_sync_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -27,10 +27,10 @@ class SyncUsernameTestBase : public testing::Test {
   void FakeSigninAs(const std::string& email);
 
   // Produce a sample PasswordForm.
-  static autofill::PasswordForm SimpleGaiaForm(const char* username);
-  static autofill::PasswordForm SimpleNonGaiaForm(const char* username);
-  static autofill::PasswordForm SimpleNonGaiaForm(const char* username,
-                                                  const char* origin);
+  static PasswordForm SimpleGaiaForm(const char* username);
+  static PasswordForm SimpleNonGaiaForm(const char* username);
+  static PasswordForm SimpleNonGaiaForm(const char* username,
+                                        const char* origin);
 
   // Instruct the sync service to pretend whether or not it is syncing
   // passwords.

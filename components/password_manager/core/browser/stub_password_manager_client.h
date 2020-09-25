@@ -41,14 +41,13 @@ class StubPasswordManagerClient : public PasswordManagerClient {
       password_manager::PasswordManagerDriver* driver,
       autofill::mojom::FocusedFieldType focused_field_type) override;
   bool PromptUserToChooseCredentials(
-      std::vector<std::unique_ptr<autofill::PasswordForm>> local_forms,
+      std::vector<std::unique_ptr<PasswordForm>> local_forms,
       const url::Origin& origin,
       CredentialsCallback callback) override;
   void NotifyUserAutoSignin(
-      std::vector<std::unique_ptr<autofill::PasswordForm>> local_forms,
+      std::vector<std::unique_ptr<PasswordForm>> local_forms,
       const url::Origin& origin) override;
-  void NotifyUserCouldBeAutoSignedIn(
-      std::unique_ptr<autofill::PasswordForm>) override;
+  void NotifyUserCouldBeAutoSignedIn(std::unique_ptr<PasswordForm>) override;
   void NotifySuccessfulLoginWithExistingPassword(
       std::unique_ptr<PasswordFormManagerForUI> submitted_manager) override;
   void NotifyStorePasswordCalled() override;

@@ -24,7 +24,7 @@ namespace password_manager {
 // A matcher that compares two PasswordForm instances but ignores the |in_store|
 // member.
 MATCHER_P(MatchesFormExceptStore, expected, "") {
-  autofill::PasswordForm arg_copy = arg;
+  PasswordForm arg_copy = arg;
   arg_copy.in_store = expected.in_store;
   return arg_copy == expected;
 }
@@ -42,7 +42,7 @@ class TestPasswordStore : public PasswordStore {
                                  password_manager::IsAccountStore(false));
 
   using PasswordMap = std::map<std::string /* signon_realm */,
-                               std::vector<autofill::PasswordForm>,
+                               std::vector<PasswordForm>,
                                std::less<>>;
 
   struct CompromisedCredentialsLess {
@@ -79,21 +79,19 @@ class TestPasswordStore : public PasswordStore {
       const override;
 
   // PasswordStore interface
-  PasswordStoreChangeList AddLoginImpl(const autofill::PasswordForm& form,
+  PasswordStoreChangeList AddLoginImpl(const PasswordForm& form,
                                        AddLoginError* error) override;
-  PasswordStoreChangeList UpdateLoginImpl(const autofill::PasswordForm& form,
+  PasswordStoreChangeList UpdateLoginImpl(const PasswordForm& form,
                                           UpdateLoginError* error) override;
-  PasswordStoreChangeList RemoveLoginImpl(
-      const autofill::PasswordForm& form) override;
-  std::vector<std::unique_ptr<autofill::PasswordForm>> FillMatchingLogins(
+  PasswordStoreChangeList RemoveLoginImpl(const PasswordForm& form) override;
+  std::vector<std::unique_ptr<PasswordForm>> FillMatchingLogins(
       const FormDigest& form) override;
-  std::vector<std::unique_ptr<autofill::PasswordForm>>
-  FillMatchingLoginsByPassword(
+  std::vector<std::unique_ptr<PasswordForm>> FillMatchingLoginsByPassword(
       const base::string16& plain_text_password) override;
   bool FillAutofillableLogins(
-      std::vector<std::unique_ptr<autofill::PasswordForm>>* forms) override;
+      std::vector<std::unique_ptr<PasswordForm>>* forms) override;
   bool FillBlacklistLogins(
-      std::vector<std::unique_ptr<autofill::PasswordForm>>* forms) override;
+      std::vector<std::unique_ptr<PasswordForm>>* forms) override;
   DatabaseCleanupResult DeleteUndecryptableLogins() override;
   std::vector<InteractionsStats> GetSiteStatsImpl(
       const GURL& origin_domain) override;

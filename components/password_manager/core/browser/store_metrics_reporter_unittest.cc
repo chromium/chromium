@@ -26,10 +26,10 @@ using ::testing::Return;
 namespace password_manager {
 namespace {
 
-autofill::PasswordForm CreateForm(const std::string& signon_realm,
-                                  const std::string& username,
-                                  const std::string& password) {
-  autofill::PasswordForm form;
+PasswordForm CreateForm(const std::string& signon_realm,
+                        const std::string& username,
+                        const std::string& password) {
+  PasswordForm form;
   form.signon_realm = signon_realm;
   form.username_value = base::ASCIIToUTF16(username);
   form.password_value = base::ASCIIToUTF16(password);

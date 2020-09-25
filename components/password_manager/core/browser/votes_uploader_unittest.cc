@@ -40,7 +40,6 @@ using autofill::NEW_PASSWORD;
 using autofill::NOT_USERNAME;
 using autofill::PASSWORD;
 using autofill::PasswordAttribute;
-using autofill::PasswordForm;
 using autofill::ServerFieldType;
 using autofill::ServerFieldTypeSet;
 using autofill::SINGLE_USERNAME;

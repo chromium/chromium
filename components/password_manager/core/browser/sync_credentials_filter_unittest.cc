@@ -17,9 +17,9 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "components/autofill/core/common/password_form.h"
 #include "components/password_manager/core/browser/fake_form_fetcher.h"
 #include "components/password_manager/core/browser/mock_password_store.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_save_manager_impl.h"
@@ -35,8 +35,6 @@
 #if defined(PASSWORD_REUSE_DETECTION_ENABLED)
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"  // nogncheck
 #endif  // PASSWORD_REUSE_DETECTION_ENABLED
-
-using autofill::PasswordForm;
 
 namespace password_manager {
 

@@ -19,23 +19,23 @@ namespace {
 
 class Consumer : public PasswordStoreConsumer {
  public:
-  explicit Consumer(PasswordStore* store,
-                    base::OnceCallback<void(
-                        std::vector<std::unique_ptr<autofill::PasswordForm>>)>
-                        results_callback)
+  explicit Consumer(
+      PasswordStore* store,
+      base::OnceCallback<void(std::vector<std::unique_ptr<PasswordForm>>)>
+          results_callback)
       : results_callback_(std::move(results_callback)) {
     store->GetAutofillableLogins(this);
   }
   ~Consumer() override = default;
 
   void OnGetPasswordStoreResults(
-      std::vector<std::unique_ptr<autofill::PasswordForm>> results) override {
+      std::vector<std::unique_ptr<PasswordForm>> results) override {
     std::move(results_callback_).Run(std::move(results));
     // Note: |this| might be destroyed now.
   }
 
  private:
-  base::OnceCallback<void(std::vector<std::unique_ptr<autofill::PasswordForm>>)>
+  base::OnceCallback<void(std::vector<std::unique_ptr<PasswordForm>>)>
       results_callback_;
 };
 
@@ -60,18 +60,17 @@ class StoreMetricsReporter::MultiStoreMetricsReporter {
   }
 
  private:
-  void ReceiveResults(
-      bool is_account_store,
-      std::vector<std::unique_ptr<autofill::PasswordForm>> results) {
+  void ReceiveResults(bool is_account_store,
+                      std::vector<std::unique_ptr<PasswordForm>> results) {
     if (is_account_store) {
-      for (const std::unique_ptr<autofill::PasswordForm>& form : results) {
+      for (const std::unique_ptr<PasswordForm>& form : results) {
         account_store_results_.insert(std::make_pair(
             std::make_pair(form->signon_realm, form->username_value),
             form->password_value));
       }
       account_store_consumer_.reset();
     } else {
-      for (const std::unique_ptr<autofill::PasswordForm>& form : results) {
+      for (const std::unique_ptr<PasswordForm>& form : results) {
         profile_store_results_.insert(std::make_pair(
             std::make_pair(form->signon_realm, form->username_value),
             form->password_value));

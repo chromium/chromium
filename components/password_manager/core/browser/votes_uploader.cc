@@ -35,7 +35,6 @@ using autofill::FieldSignature;
 using autofill::FormData;
 using autofill::FormFieldData;
 using autofill::FormStructure;
-using autofill::PasswordForm;
 using autofill::RandomizedEncoder;
 using autofill::ServerFieldType;
 using autofill::ServerFieldTypeSet;

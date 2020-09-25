@@ -11,8 +11,8 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "components/autofill/core/common/password_form.h"
 #include "components/password_manager/core/browser/credentials_filter.h"
+#include "components/password_manager/core/browser/password_form_forward.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/sync/driver/sync_service.h"
 
@@ -33,11 +33,10 @@ class SyncCredentialsFilter : public CredentialsFilter {
   ~SyncCredentialsFilter() override;
 
   // CredentialsFilter
-  bool ShouldSave(const autofill::PasswordForm& form) const override;
-  bool ShouldSaveGaiaPasswordHash(
-      const autofill::PasswordForm& form) const override;
+  bool ShouldSave(const PasswordForm& form) const override;
+  bool ShouldSaveGaiaPasswordHash(const PasswordForm& form) const override;
   bool ShouldSaveEnterprisePasswordHash(
-      const autofill::PasswordForm& form) const override;
+      const PasswordForm& form) const override;
   void ReportFormLoginSuccess(
       const PasswordFormManager& form_manager) const override;
   bool IsSyncAccountEmail(const std::string& username) const override;

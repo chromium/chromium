@@ -38,18 +38,18 @@ void StubPasswordManagerClient::FocusedInputChanged(
     autofill::mojom::FocusedFieldType focused_field_type) {}
 
 bool StubPasswordManagerClient::PromptUserToChooseCredentials(
-    std::vector<std::unique_ptr<autofill::PasswordForm>> local_forms,
+    std::vector<std::unique_ptr<PasswordForm>> local_forms,
     const url::Origin& origin,
     CredentialsCallback callback) {
   return false;
 }
 
 void StubPasswordManagerClient::NotifyUserAutoSignin(
-    std::vector<std::unique_ptr<autofill::PasswordForm>> local_forms,
+    std::vector<std::unique_ptr<PasswordForm>> local_forms,
     const url::Origin& origin) {}
 
 void StubPasswordManagerClient::NotifyUserCouldBeAutoSignedIn(
-    std::unique_ptr<autofill::PasswordForm> form) {}
+    std::unique_ptr<PasswordForm> form) {}
 
 void StubPasswordManagerClient::NotifySuccessfulLoginWithExistingPassword(
     std::unique_ptr<PasswordFormManagerForUI> submitted_manager) {}

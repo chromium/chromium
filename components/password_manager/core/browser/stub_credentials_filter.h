@@ -19,11 +19,10 @@ class StubCredentialsFilter : public CredentialsFilter {
   ~StubCredentialsFilter() override;
 
   // CredentialsFilter
-  bool ShouldSave(const autofill::PasswordForm& form) const override;
-  bool ShouldSaveGaiaPasswordHash(
-      const autofill::PasswordForm& form) const override;
+  bool ShouldSave(const PasswordForm& form) const override;
+  bool ShouldSaveGaiaPasswordHash(const PasswordForm& form) const override;
   bool ShouldSaveEnterprisePasswordHash(
-      const autofill::PasswordForm& form) const override;
+      const PasswordForm& form) const override;
   void ReportFormLoginSuccess(
       const PasswordFormManager& form_manager) const override;
   bool IsSyncAccountEmail(const std::string& username) const override;

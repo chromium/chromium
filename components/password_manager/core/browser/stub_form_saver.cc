@@ -6,9 +6,9 @@
 
 namespace password_manager {
 
-autofill::PasswordForm StubFormSaver::PermanentlyBlacklist(
+PasswordForm StubFormSaver::PermanentlyBlacklist(
     PasswordStore::FormDigest digest) {
-  return autofill::PasswordForm();
+  return PasswordForm();
 }
 
 void StubFormSaver::Unblacklist(const PasswordStore::FormDigest& digest) {}

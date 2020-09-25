@@ -6,10 +6,10 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/password_manager/core/browser/password_form.h"
 
 using autofill::FormData;
 using autofill::FormFieldData;
-using autofill::PasswordForm;
 using base::ASCIIToUTF16;
 
 namespace password_manager {
