@@ -199,6 +199,19 @@ public class ShareHelper {
 
         @Override
         public void onIntentCompleted(WindowAndroid window, int resultCode, Intent data) {
+            // NOTE: The validity of the returned |resultCode| is somewhat unexpected. For
+            // background, a sharing flow starts with a "Chooser" activity that enables the user
+            // to select the app to share to, and then when the user selects that application,
+            // the "Chooser" activity dispatches our "Share" intent to that chosen application.
+            //
+            // The |resultCode| is only valid if the user does not select an application to share
+            // with (e.g. only valid if the "Chooser" activity is the only activity shown). Once
+            // the user selects an app in the "Chooser", the |resultCode| received here will always
+            // be RESULT_CANCELED (because the "Share" intent specifies NEW_TASK which always
+            // returns CANCELED).
+            //
+            // Thus, this |resultCode| is only valid if we do not receive the EXTRA_CHOSEN_COMPONENT
+            // intent indicating the user selected an application in the "Chooser".
             if (resultCode == Activity.RESULT_CANCELED) {
                 cancel();
             }
@@ -317,7 +330,7 @@ public class ShareHelper {
                 isMultipleFileShare ? Intent.ACTION_SEND_MULTIPLE : Intent.ACTION_SEND;
         Intent intent = new Intent(action);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT | Intent.FLAG_ACTIVITY_FORWARD_RESULT
-                | Intent.FLAG_ACTIVITY_PREVIOUS_IS_TOP);
+                | Intent.FLAG_ACTIVITY_PREVIOUS_IS_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.putExtra(EXTRA_TASK_ID, params.getWindow().getActivity().get().getTaskId());
 
         Uri screenshotUri = params.getScreenshotUri();
