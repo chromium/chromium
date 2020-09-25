@@ -103,6 +103,14 @@ class WTF_EXPORT String {
   String(StringImpl* impl) : impl_(impl) {}
   String(scoped_refptr<StringImpl> impl) : impl_(std::move(impl)) {}
 
+  // Copying a String is a relatively inexpensive, since the underlying data is
+  // immutable and refcounted.
+  String(const String&) = default;
+  String& operator=(const String&) = default;
+
+  String(String&&) noexcept = default;
+  String& operator=(String&&) = default;
+
   void swap(String& o) { impl_.swap(o.impl_); }
 
   template <typename CharType>
