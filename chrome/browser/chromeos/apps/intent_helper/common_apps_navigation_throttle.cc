@@ -115,6 +115,15 @@ void CommonAppsNavigationThrottle::OnIntentPickerClosed(
   apps::AppServiceProxy* proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile);
 
+  // If the picker was closed without an app being chosen,
+  // e.g. due to the tab being closed. Keep count of this scenario so we can
+  // stop the UI from showing after 2+ dismissals.
+  if (entry_type == PickerEntryType::kUnknown &&
+      close_reason == IntentPickerCloseReason::DIALOG_DEACTIVATED) {
+    if (ui_auto_display_service)
+      ui_auto_display_service->IncrementCounter(url);
+  }
+
   if (should_persist)
     proxy->AddPreferredApp(launch_name, url);
 
