@@ -156,17 +156,28 @@ typedef NS_ENUM(NSInteger, CheckStartStates) {
 @property(nonatomic, assign)
     SafeBrowsingCheckRowStates safeBrowsingCheckRowState;
 
+// Previous on load or finished check state of the Safe Browsing check.
+@property(nonatomic, assign)
+    SafeBrowsingCheckRowStates previousSafeBrowsingCheckRowState;
+
 // SettingsCheckItem used to display the state of the update check.
 @property(nonatomic, strong) SettingsCheckItem* updateCheckItem;
 
 // Current state of the update check.
 @property(nonatomic, assign) UpdateCheckRowStates updateCheckRowState;
 
+// Previous on load or finished check state of the update check.
+@property(nonatomic, assign) UpdateCheckRowStates previousUpdateCheckRowState;
+
 // SettingsCheckItem used to display the state of the password check.
 @property(nonatomic, strong) SettingsCheckItem* passwordCheckItem;
 
 // Current state of the password check.
 @property(nonatomic, assign) PasswordCheckRowStates passwordCheckRowState;
+
+// Previous on load or finished check state of the password check.
+@property(nonatomic, assign)
+    PasswordCheckRowStates previousPasswordCheckRowState;
 
 // Row button to start the safety check.
 @property(nonatomic, strong) TableViewTextItem* checkStartItem;
@@ -257,6 +268,8 @@ typedef NS_ENUM(NSInteger, CheckStartStates) {
       _updateCheckRowState = UpdateCheckRowStateOutOfDate;
     }
 
+    _previousUpdateCheckRowState = _updateCheckRowState;
+
     _passwordCheckRowState = PasswordCheckRowStateDefault;
     _passwordCheckItem =
         [[SettingsCheckItem alloc] initWithType:PasswordItemType];
@@ -279,7 +292,10 @@ typedef NS_ENUM(NSInteger, CheckStartStates) {
       _passwordCheckRowState = PasswordCheckRowStateUnSafe;
     }
 
+    _previousPasswordCheckRowState = _passwordCheckRowState;
+
     _safeBrowsingCheckRowState = SafeBrowsingCheckRowStateDefault;
+    _previousSafeBrowsingCheckRowState = _safeBrowsingCheckRowState;
     _safeBrowsingCheckItem =
         [[SettingsCheckItem alloc] initWithType:SafeBrowsingItemType];
     _safeBrowsingCheckItem.text = l10n_util::GetNSString(
@@ -615,35 +631,48 @@ typedef NS_ENUM(NSInteger, CheckStartStates) {
 - (void)checkStartOrCancel {
   // If a check is already running cancel it.
   if (self.checksRemaining) {
-    // Reset check items to default.
-    self.updateCheckRowState = UpdateCheckRowStateDefault;
-    self.passwordCheckRowState = PasswordCheckRowStateDefault;
-    self.safeBrowsingCheckRowState = SafeBrowsingCheckRowStateDefault;
+    self.checkDidRun = NO;
+    // Revert checks that are still running to their previous state.
+    if (self.updateCheckRowState == UpdateCheckRowStateRunning) {
+      self.updateCheckRowState = self.previousUpdateCheckRowState;
+      [self reconfigureUpdateCheckItem];
+    }
+    if (self.passwordCheckRowState == PasswordCheckRowStateRunning) {
+      self.passwordCheckManager->StopPasswordCheck();
+      self.passwordCheckRowState = self.previousPasswordCheckRowState;
+      [self reconfigurePasswordCheckItem];
+    }
+    if (self.safeBrowsingCheckRowState == SafeBrowsingCheckRowStateRunning) {
+      self.safeBrowsingCheckRowState = self.previousSafeBrowsingCheckRowState;
+      [self reconfigureSafeBrowsingCheckItem];
+    }
 
     // Change checkStartItem to default state.
     self.checkStartState = CheckStartStateDefault;
+    [self reconfigureCheckStartSection];
 
-    // Stop any running checks.
-    self.passwordCheckManager->StopPasswordCheck();
-
-    self.checkDidRun = NO;
-
-  } else {
-    // Otherwise start a check.
-
-    // Set check items to spinning wheel.
-    self.updateCheckRowState = UpdateCheckRowStateRunning;
-    self.passwordCheckRowState = PasswordCheckRowStateRunning;
-    self.safeBrowsingCheckRowState = SafeBrowsingCheckRowStateRunning;
-
-    // Change checkStartItem to cancel state.
-    self.checkStartState = CheckStartStateCancel;
-
-    // Hide the timestamp while running.
-    [self.consumer setTimestampFooterItem:nil];
-
-    self.checkDidRun = YES;
+    return;
   }
+
+  // Otherwise start a check.
+
+  // Record the current state of the checks.
+  self.previousUpdateCheckRowState = self.updateCheckRowState;
+  self.previousPasswordCheckRowState = self.passwordCheckRowState;
+  self.previousSafeBrowsingCheckRowState = self.safeBrowsingCheckRowState;
+
+  // Set check items to spinning wheel.
+  self.updateCheckRowState = UpdateCheckRowStateRunning;
+  self.passwordCheckRowState = PasswordCheckRowStateRunning;
+  self.safeBrowsingCheckRowState = SafeBrowsingCheckRowStateRunning;
+
+  // Change checkStartItem to cancel state.
+  self.checkStartState = CheckStartStateCancel;
+
+  // Hide the timestamp while running.
+  [self.consumer setTimestampFooterItem:nil];
+
+  self.checkDidRun = YES;
 
   // Update the display.
   [self reconfigureUpdateCheckItem];
