@@ -45,6 +45,8 @@ namespace {
 
 using WebUIImplBrowserTest = ContentBrowserTest;
 
+// TODO(crbug.com/154571): Shared workers are not available on Android.
+#if !defined(OS_ANDROID)
 const char kLoadSharedWorkerScript[] = R"(
     new Promise((resolve) => {
       const sharedWorker = new SharedWorker($1);
@@ -54,6 +56,7 @@ const char kLoadSharedWorkerScript[] = R"(
       sharedWorker.port.postMessage('ping');
     });
   )";
+#endif  // !defined(OS_ANDROID)
 
 class TestWebUIMessageHandler : public WebUIMessageHandler {
  public:
@@ -548,18 +551,7 @@ class WebUIWorkerTest : public ContentBrowserTest {
 };
 
 // TODO(crbug.com/154571): Shared workers are not available on Android.
-#if defined(OS_ANDROID)
-#define MAYBE_CanCreateWebUISharedWorkerForWebUI \
-  DISABLED_CanCreateWebUISharedWorkerForWebUI
-#define MAYBE_CannotCreateWebUISharedWorkerForNonWebUI \
-  DISABLED_CannotCreateWebUISharedWorkerForNonWebUI
-#else
-#define MAYBE_CanCreateWebUISharedWorkerForWebUI \
-  CanCreateWebUISharedWorkerForWebUI
-#define MAYBE_CannotCreateWebUISharedWorkerForNonWebUI \
-  CannotCreateWebUISharedWorkerForNonWebUI
-#endif
-
+#if !defined(OS_ANDROID)
 // Verify that we can create SharedWorker with scheme "chrome://" under
 // WebUI page.
 IN_PROC_BROWSER_TEST_F(WebUIWorkerTest, CanCreateWebUISharedWorkerForWebUI) {
@@ -598,5 +590,6 @@ IN_PROC_BROWSER_TEST_F(WebUIWorkerTest,
 Error: Failed to construct 'SharedWorker')";
   EXPECT_THAT(result.error, ::testing::StartsWith(expected_failure));
 }
+#endif  // !defined(OS_ANDROID)
 
 }  // namespace content
