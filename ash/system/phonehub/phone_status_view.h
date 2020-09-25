@@ -48,6 +48,9 @@ class ASH_EXPORT PhoneStatusView
   void UpdateBatteryStatus();
   PowerStatus::BatteryImageInfo CalculateBatteryInfo();
 
+  // Clear the existing labels and icons for the phone status.
+  void ClearExistingStatus();
+
   void ConfigureTriViewContainer(TriView::Container container);
 
   chromeos::phonehub::PhoneModel* phone_model_ = nullptr;

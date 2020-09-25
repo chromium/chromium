@@ -6,7 +6,6 @@
 #define ASH_SYSTEM_PHONEHUB_INITIAL_CONNECTING_VIEW_H_
 
 #include "ash/ash_export.h"
-#include "ash/system/phonehub/phone_hub_interstitial_view.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/metadata/metadata_header_macros.h"
 

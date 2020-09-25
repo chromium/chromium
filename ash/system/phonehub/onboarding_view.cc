@@ -33,7 +33,7 @@ constexpr int kGetStartedTag = 2;
 OnboardingView::OnboardingView() {
   SetLayoutManager(std::make_unique<views::FillLayout>());
   content_view_ = AddChildView(
-      std::make_unique<PhoneHubInterstitialView>(/*show_progress=*/true));
+      std::make_unique<PhoneHubInterstitialView>(/*show_progress=*/false));
 
   // TODO(crbug.com/1127996): Replace PNG file with vector icon.
   gfx::ImageSkia* image =

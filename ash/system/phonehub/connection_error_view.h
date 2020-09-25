@@ -6,7 +6,6 @@
 #define ASH_SYSTEM_PHONEHUB_CONNECTION_ERROR_VIEW_H_
 
 #include "ash/ash_export.h"
-#include "ash/system/phonehub/phone_hub_interstitial_view.h"
 #include "ui/views/controls/button/button.h"
 
 namespace ash {

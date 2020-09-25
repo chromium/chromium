@@ -48,8 +48,8 @@ constexpr gfx::Insets kBubblePadding(4, 16);
 constexpr int kBubbleWidth = 400;
 constexpr int kPaddingBetweenTitleAndSeparator = 3;
 
-// A view of the Phone Hub panel, displaying phone status and utility actions
-// such as phone status, task continuation, etc.
+// A content view of the Phone Hub panel, displaying utility actions
+// such as quick actions, task continuation, etc.
 class PhoneHubView : public views ::View {
  public:
   explicit PhoneHubView(TrayBubbleView* bubble_view,
@@ -59,14 +59,6 @@ class PhoneHubView : public views ::View {
       view->SetPaintToLayer();
       view->layer()->SetFillsBoundsOpaquely(false);
     };
-
-    chromeos::phonehub::PhoneModel* phone_model =
-        phone_hub_manager->GetPhoneModel();
-
-    if (phone_model) {
-      setup_layered_view(bubble_view->AddChildView(
-          std::make_unique<PhoneStatusView>(phone_model)));
-    }
 
     AddSeparator();
 
@@ -82,6 +74,9 @@ class PhoneHubView : public views ::View {
         bubble_view_->AddChildView(std::make_unique<QuickActionsView>()));
 
     AddSeparator();
+
+    chromeos::phonehub::PhoneModel* phone_model =
+        phone_hub_manager->GetPhoneModel();
 
     if (phone_model) {
       setup_layered_view(bubble_view->AddChildView(
@@ -218,6 +213,20 @@ void PhoneHubTray::ShowBubble(bool show_by_click) {
   bubble_view->set_margins(GetSecondaryBubbleInsets());
   bubble_view->SetBorder(views::CreateEmptyBorder(kBubblePadding));
 
+  // We will always have this phone status view on top of the bubble view
+  // to display any available phone status and the settings icon.
+  chromeos::phonehub::PhoneModel* phone_model =
+      phone_hub_manager_->GetPhoneModel();
+  if (phone_model) {
+    auto* phone_status = bubble_view->AddChildView(
+        std::make_unique<PhoneStatusView>(phone_model));
+    phone_status->SetPaintToLayer();
+    phone_status->layer()->SetFillsBoundsOpaquely(false);
+  }
+
+  // Other contents, i.e. the connected view and the interstitial views,
+  // will be positioned underneath the phone status view and updated based
+  // on the current mode.
   bubble_view->AddChildView(
       std::make_unique<PhoneHubView>(bubble_view, phone_hub_manager_));
 

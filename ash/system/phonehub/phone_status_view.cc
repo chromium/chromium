@@ -13,9 +13,11 @@
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_popup_item_style.h"
 #include "base/i18n/number_formatting.h"
+#include "base/strings/string16.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -119,8 +121,12 @@ void PhoneStatusView::Update() {
   phone_name_label_->SetText(
       phone_model_->phone_name().value_or(base::string16()));
 
-  if (!phone_model_->phone_status_model())
+  // Clear the phone status if the status model returns null when the phone is
+  // disconnected.
+  if (!phone_model_->phone_status_model()) {
+    ClearExistingStatus();
     return;
+  }
 
   UpdateMobileStatus();
   UpdateBatteryStatus();
@@ -205,6 +211,16 @@ PowerStatus::BatteryImageInfo PhoneStatusView::CalculateBatteryInfo() {
   }
 
   return info;
+}
+
+void PhoneStatusView::ClearExistingStatus() {
+  // Clear mobile status.
+  signal_icon_->SetImage(gfx::ImageSkia());
+  mobile_provider_label_->SetText(base::string16());
+
+  // Clear battery status.
+  battery_icon_->SetImage(gfx::ImageSkia());
+  battery_label_->SetText(base::string16());
 }
 
 void PhoneStatusView::ConfigureTriViewContainer(TriView::Container container) {

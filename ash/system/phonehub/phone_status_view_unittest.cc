@@ -5,10 +5,12 @@
 #include "ash/system/phonehub/phone_status_view.h"
 
 #include "ash/test/ash_test_base.h"
+#include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/components/phonehub/mutable_phone_model.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 
 namespace ash {
@@ -113,6 +115,15 @@ TEST_F(PhoneStatusViewTest, PhoneStatusLabelsContent) {
   EXPECT_EQ(expected_provider_text,
             status_view()->mobile_provider_label_->GetText());
   EXPECT_EQ(expected_battery_text, status_view()->battery_label_->GetText());
+
+  // Simulate phone disconnected with a null |PhoneStatusModel| returned.
+  phone_model()->SetPhoneStatusModel(base::nullopt);
+
+  // Existing phone status will be cleared to reflect the model change.
+  EXPECT_TRUE(status_view()->mobile_provider_label_->GetText().empty());
+  EXPECT_TRUE(status_view()->battery_label_->GetText().empty());
+  EXPECT_TRUE(status_view()->battery_icon_->GetImage().isNull());
+  EXPECT_TRUE(status_view()->signal_icon_->GetImage().isNull());
 }
 
 }  // namespace ash
