@@ -24,7 +24,7 @@ callback DecodeSuccessCallback = void (AudioBuffer decodedData);
     readonly attribute double currentTime;
 
     // All AudioNodes in the context run at this sample-rate (sample-frames per second).
-    readonly attribute float sampleRate;
+    [HighEntropy=Direct, Measure] readonly attribute float sampleRate;
 
     // All panning is relative to this listener.
     readonly attribute AudioListener listener;

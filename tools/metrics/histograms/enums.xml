@@ -29342,7 +29342,7 @@ Called by update_use_counter_feature_enum.py.-->
       label="V8HIDReportItem_UnitFactorTimeExponent_AttributeGetter"/>
   <int value="3564" label="V8HIDReportItem_UsageMaximum_AttributeGetter"/>
   <int value="3565" label="V8HIDReportItem_UsageMinimum_AttributeGetter"/>
-  <int value="3566" label="IdentifiabilityStudyReserved3566"/>
+  <int value="3566" label="V8BaseAudioContext_SampleRate_AttributeGetter"/>
   <int value="3567" label="IdentifiabilityStudyReserved3567"/>
   <int value="3568" label="IdentifiabilityStudyReserved3568"/>
   <int value="3569" label="IdentifiabilityStudyReserved3569"/>

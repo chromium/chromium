@@ -2893,7 +2893,7 @@ enum WebFeature {
   kV8HIDReportItem_UnitFactorTimeExponent_AttributeGetter = 3563,
   kV8HIDReportItem_UsageMaximum_AttributeGetter = 3564,
   kV8HIDReportItem_UsageMinimum_AttributeGetter = 3565,
-  kIdentifiabilityStudyReserved3566 = 3566,
+  kV8BaseAudioContext_SampleRate_AttributeGetter = 3566,
   kIdentifiabilityStudyReserved3567 = 3567,
   kIdentifiabilityStudyReserved3568 = 3568,
   kIdentifiabilityStudyReserved3569 = 3569,
