@@ -17,7 +17,9 @@ namespace {
 const size_t kDefaultMaxEntries = 4000;
 
 const int kSlowMethodThresholdMs = 10;
-const int kVerySlowMethodThresholdMs = 50;
+// Loaded builders may perform badly, set this to a fairly high value to catch
+// extreme cases.
+const int kVerySlowMethodThresholdMs = 250;
 
 DeviceEventLogImpl* g_device_event_log = nullptr;
 

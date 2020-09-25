@@ -377,7 +377,7 @@ void NetworkPortalDetectorImpl::OnAttemptTimeout() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(is_checking_for_portal());
 
-  NET_LOG(ERROR) << "Portal detection timeout: "
+  NET_LOG(EVENT) << "Portal detection timeout: "
                  << " id=" << NetworkGuidId(default_network_id_);
 
   captive_portal_detector_->Cancel();

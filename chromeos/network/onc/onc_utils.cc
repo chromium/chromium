@@ -646,6 +646,11 @@ const char kEmptyUnencryptedConfiguration[] =
     "\"Certificates\":[]}";
 
 std::unique_ptr<base::Value> ReadDictionaryFromJson(const std::string& json) {
+  if (json.empty()) {
+    // Policy may contain empty values, just log a debug message.
+    NET_LOG(DEBUG) << "Empty json string";
+    return nullptr;
+  }
   base::JSONReader::ValueWithError parsed_json =
       base::JSONReader::ReadAndReturnValueWithError(
           json, base::JSON_ALLOW_TRAILING_COMMAS);
