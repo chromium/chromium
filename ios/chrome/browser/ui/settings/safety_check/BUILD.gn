@@ -27,10 +27,14 @@ source_set("safety_check_ui") {
 source_set("safety_check") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
+    "safety_check_constants.h",
+    "safety_check_constants.mm",
     "safety_check_coordinator.h",
     "safety_check_coordinator.mm",
     "safety_check_mediator.h",
     "safety_check_mediator.mm",
+    "safety_check_utils.h",
+    "safety_check_utils.mm",
   ]
   deps = [
     ":safety_check_ui",

@@ -23,6 +23,9 @@
 // Initializes the check start section with |item|.
 - (void)setCheckStartItem:(TableViewItem*)item;
 
+// Initializes the footer with timestamp of last completed run.
+- (void)setTimestampFooterItem:(TableViewLinkHeaderFooterItem*)item;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_SAFETY_CHECK_SAFETY_CHECK_CONSUMER_H_

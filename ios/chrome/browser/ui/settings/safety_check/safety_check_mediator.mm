@@ -8,6 +8,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "base/version.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -25,9 +26,11 @@
 #import "ios/chrome/browser/signin/authentication_service.h"
 #include "ios/chrome/browser/sync/sync_setup_service.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_check_item.h"
+#import "ios/chrome/browser/ui/settings/safety_check/safety_check_constants.h"
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_consumer.h"
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_navigation_commands.h"
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_table_view_controller.h"
+#import "ios/chrome/browser/ui/settings/safety_check/safety_check_utils.h"
 #import "ios/chrome/browser/ui/settings/utils/observable_boolean.h"
 #import "ios/chrome/browser/ui/settings/utils/pref_backed_boolean.h"
 #import "ios/chrome/browser/ui/settings/utils/settings_utils.h"
@@ -48,6 +51,7 @@
 #import "net/base/mac/url_conversions.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/l10n/time_format.h"
 #include "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -71,6 +75,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   HeaderItem,
   // CheckStart section.
   CheckStartItemType,
+  TimestampFooterItem,
 };
 
 // Enum with all possible states of the update check.
@@ -192,6 +197,9 @@ typedef NS_ENUM(NSInteger, CheckStartStates) {
 // Service to check if passwords are synced.
 @property(nonatomic, assign) SyncSetupService* syncService;
 
+// Whether or not a safety check just ran.
+@property(nonatomic, assign) BOOL checkDidRun;
+
 @end
 
 @implementation SafetyCheckMediator
@@ -243,11 +251,9 @@ typedef NS_ENUM(NSInteger, CheckStartStates) {
     _updateCheckItem.infoButtonHidden = YES;
     _updateCheckItem.trailingImage = nil;
 
-    // Show unsafe state if user already ran update check and the app is out of
-    // date.
-    // TODO(crbug.com/1078782): Add aditional check to make sure check has been
-    // run at least once.
-    if (!IsAppUpToDate()) {
+    // Show unsafe state if the app is out of date and safety check already
+    // found an issue.
+    if (!IsAppUpToDate() && PreviousSafetyCheckIssueFound()) {
       _updateCheckRowState = UpdateCheckRowStateOutOfDate;
     }
 
@@ -266,11 +272,10 @@ typedef NS_ENUM(NSInteger, CheckStartStates) {
     _passwordCheckItem.infoButtonHidden = YES;
     _passwordCheckItem.trailingImage = nil;
 
-    // Show unsafe state if user already ran password check and there are
+    // Show unsafe state if user already ran safety check and there are
     // compromised credentials.
-    // TODO(crbug.com/1078782): Add aditional check to make sure check has been
-    // run at least once.
-    if (!_passwordCheckManager->GetCompromisedCredentials().empty()) {
+    if (!_passwordCheckManager->GetCompromisedCredentials().empty() &&
+        PreviousSafetyCheckIssueFound()) {
       _passwordCheckRowState = PasswordCheckRowStateUnSafe;
     }
 
@@ -400,6 +405,7 @@ typedef NS_ENUM(NSInteger, CheckStartStates) {
       break;
     }
     case HeaderItem:
+    case TimestampFooterItem:
       break;
   }
 }
@@ -460,6 +466,7 @@ typedef NS_ENUM(NSInteger, CheckStartStates) {
       return [self updateCheckErrorInfoString];
     case CheckStartItemType:
     case HeaderItem:
+    case TimestampFooterItem:
       return nil;
   }
 }
@@ -619,6 +626,8 @@ typedef NS_ENUM(NSInteger, CheckStartStates) {
     // Stop any running checks.
     self.passwordCheckManager->StopPasswordCheck();
 
+    self.checkDidRun = NO;
+
   } else {
     // Otherwise start a check.
 
@@ -629,6 +638,11 @@ typedef NS_ENUM(NSInteger, CheckStartStates) {
 
     // Change checkStartItem to cancel state.
     self.checkStartState = CheckStartStateCancel;
+
+    // Hide the timestamp while running.
+    [self.consumer setTimestampFooterItem:nil];
+
+    self.checkDidRun = YES;
   }
 
   // Update the display.
@@ -688,9 +702,21 @@ typedef NS_ENUM(NSInteger, CheckStartStates) {
   if (self.checksRemaining) {
     return;
   }
+
+  // If a check has finished and issues were found, update the timestamp.
+  BOOL issuesFound =
+      (self.updateCheckRowState == UpdateCheckRowStateOutOfDate) ||
+      (self.passwordCheckRowState == PasswordCheckRowStateUnSafe);
+  if (self.checkDidRun && issuesFound) {
+    [self updateTimestampOfLastCheck];
+    self.checkDidRun = NO;
+  }
   // If no checks are still running, reset |checkStartItem|.
   self.checkStartState = CheckStartStateDefault;
   [self reconfigureCheckStartSection];
+
+  // Since no checks are running, attempt to show the timestamp.
+  [self showTimestampIfNeeded];
   return;
 }
 
@@ -955,6 +981,49 @@ typedef NS_ENUM(NSInteger, CheckStartStates) {
         GetNSString(IDS_IOS_CANCEL_PASSWORD_CHECK_BUTTON);
   }
   [self.consumer reconfigureCellsForItems:@[ self.checkStartItem ]];
+}
+
+// Updates the timestamp of when safety check last found an issue.
+- (void)updateTimestampOfLastCheck {
+  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+  [defaults setDouble:base::Time::Now().ToDoubleT()
+               forKey:kTimestampOfLastIssueFoundKey];
+}
+
+// Shows the timestamp if a safety check has previously found issues.
+- (void)showTimestampIfNeeded {
+  if (PreviousSafetyCheckIssueFound()) {
+    TableViewLinkHeaderFooterItem* footerItem =
+        [[TableViewLinkHeaderFooterItem alloc]
+            initWithType:TimestampFooterItem];
+    footerItem.text = [self formatElapsedTimeSinceLastCheck];
+    [self.consumer setTimestampFooterItem:footerItem];
+  } else {
+    // Hide the timestamp if safety check has never found issues.
+    [self.consumer setTimestampFooterItem:nil];
+  }
+}
+
+// Formats the last safety check issues found timestamp for display.
+- (NSString*)formatElapsedTimeSinceLastCheck {
+  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+  base::Time lastCompletedCheck = base::Time::FromDoubleT(
+      [defaults doubleForKey:kTimestampOfLastIssueFoundKey]);
+
+  base::TimeDelta elapsedTime = base::Time::Now() - lastCompletedCheck;
+
+  base::string16 timestamp;
+  // If check found issues less than 1 minuete ago.
+  if (elapsedTime < base::TimeDelta::FromMinutes(1)) {
+    timestamp = l10n_util::GetStringUTF16(IDS_IOS_CHECK_FINISHED_JUST_NOW);
+  } else {
+    timestamp = ui::TimeFormat::SimpleWithMonthAndYear(
+        ui::TimeFormat::FORMAT_ELAPSED, ui::TimeFormat::LENGTH_LONG,
+        elapsedTime, true);
+  }
+
+  return l10n_util::GetNSStringF(
+      IDS_IOS_SETTINGS_SAFETY_CHECK_ISSUES_FOUND_TIME, timestamp);
 }
 
 @end

@@ -65,7 +65,9 @@
 #import "ios/chrome/browser/ui/settings/language/language_settings_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_coordinator.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_coordinator.h"
+#import "ios/chrome/browser/ui/settings/safety_check/safety_check_constants.h"
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_coordinator.h"
+#import "ios/chrome/browser/ui/settings/safety_check/safety_check_utils.h"
 #import "ios/chrome/browser/ui/settings/search_engine_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
 #import "ios/chrome/browser/ui/settings/sync/utils/sync_util.h"
@@ -694,7 +696,7 @@ NSString* kDevViewSourceKey = @"DevViewSource";
   _safetyCheckItem.leadingImage = safetyCheckIcon;
 
   // Check if an issue state should be shown for updates.
-  if (!IsAppUpToDate()) {
+  if (!IsAppUpToDate() && PreviousSafetyCheckIssueFound()) {
     UIImage* unSafeIconImage = [[UIImage imageNamed:@"settings_unsafe_state"]
         imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     _safetyCheckItem.trailingImage = unSafeIconImage;
@@ -1146,9 +1148,7 @@ NSString* kDevViewSourceKey = @"DevViewSource";
 // Displays a red issue state on |_safetyCheckItem| if there is a reamining
 // issue for any of the checks.
 - (void)setSafetyCheckIssueStateUnsafe:(BOOL)isUnsafe {
-  // TODO(crbug.com/1078782): Add aditional check to make sure check has been
-  // run at least once.
-  if (isUnsafe) {
+  if (isUnsafe && PreviousSafetyCheckIssueFound()) {
     UIImage* unSafeIconImage = [[UIImage imageNamed:@"settings_unsafe_state"]
         imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     _safetyCheckItem.trailingImage = unSafeIconImage;
