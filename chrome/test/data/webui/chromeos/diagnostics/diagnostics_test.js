@@ -4,7 +4,11 @@
 
 // TODO(jimmyxgong): Use es6 module for mojo binding (crbug/1004256).
 import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
+import 'chrome://diagnostics/battery_status_card.js';
+import 'chrome://diagnostics/cpu_card.js';
 import 'chrome://diagnostics/diagnostics_app.js';
+import 'chrome://diagnostics/memory_card.js';
+import 'chrome://diagnostics/overview_card.js';
 
 import {SystemDataProviderInterface} from 'chrome://diagnostics/diagnostics_types.js';
 import {fakeBatteryChargeStatus, fakeBatteryHealth, fakeBatteryInfo, fakeCpuUsage, fakeMemoryUsage, fakeSystemInfo} from 'chrome://diagnostics/fake_data.js';
