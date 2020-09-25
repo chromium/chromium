@@ -309,10 +309,8 @@ UIView* SubviewWithAccessibilityIdentifier(NSString* accessibility_id,
 
 + (id<GREYMatcher>)omniboxContainingText:(NSString*)text {
   GREYElementMatcherBlock* matcher = [GREYElementMatcherBlock
-      matcherWithMatchesBlock:^BOOL(id element) {
-        OmniboxTextFieldIOS* omnibox =
-            base::mac::ObjCCast<OmniboxTextFieldIOS>(element);
-        return [omnibox.text containsString:text];
+      matcherWithMatchesBlock:^BOOL(UITextField* element) {
+        return [element.text containsString:text];
       }
       descriptionBlock:^void(id<GREYDescription> description) {
         [description
