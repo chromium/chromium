@@ -81,8 +81,10 @@ class BleMediumTest : public testing::Test {
     EXPECT_EQ(!scanning_service_ids_set_.empty(),
               fake_adapter_->IsDiscoverySessionActive());
     scanning_service_ids_set_.insert(service_id);
-    EXPECT_TRUE(ble_medium_->StartScanning(service_id,
-                                           discovered_peripheral_callback_));
+    EXPECT_TRUE(ble_medium_->StartScanning(
+        service_id,
+        /*fast_advertisement_service_uuid=*/std::string(),
+        discovered_peripheral_callback_));
     EXPECT_TRUE(fake_adapter_->IsDiscoverySessionActive());
   }
 

@@ -75,9 +75,14 @@ bool BleMedium::StopAdvertising(const std::string& service_id) {
   return success;
 }
 
-bool BleMedium::StartScanning(const std::string& service_id,
-                              api::BleMedium::DiscoveredPeripheralCallback
-                                  discovered_peripheral_callback) {
+bool BleMedium::StartScanning(
+    const std::string& service_id,
+    const std::string& fast_advertisement_service_uuid,
+    api::BleMedium::DiscoveredPeripheralCallback
+        discovered_peripheral_callback) {
+  // TODO(https://crbug.com/1132108): |fast_advertisement_service_uuid| is
+  // unused.
+
   auto service_uuid = device::BluetoothUUID(service_id);
   if (IsScanning() &&
       base::Contains(discovered_peripheral_callbacks_map_, service_uuid)) {

@@ -111,7 +111,7 @@ BluetoothClassicMedium::ListenForService(const std::string& service_name,
   return nullptr;
 }
 
-BluetoothDevice* BluetoothClassicMedium::FindRemoteDevice(
+BluetoothDevice* BluetoothClassicMedium::GetRemoteDevice(
     const std::string& mac_address) {
   auto it = discovered_bluetooth_devices_map_.find(mac_address);
   return it == discovered_bluetooth_devices_map_.end() ? nullptr : &it->second;

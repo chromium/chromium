@@ -37,6 +37,7 @@ class BleMedium : public api::BleMedium,
   bool StopAdvertising(const std::string& service_id) override;
   bool StartScanning(
       const std::string& service_id,
+      const std::string& fast_advertisement_service_uuid,
       DiscoveredPeripheralCallback discovered_peripheral_callback) override;
   bool StopScanning(const std::string& service_id) override;
   bool StartAcceptingConnections(
