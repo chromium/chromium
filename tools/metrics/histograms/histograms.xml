@@ -70942,8 +70942,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="IOS.CommittedNavigationHasContext" enum="Boolean"
-    expires_after="2020-08-01">
-  <owner>danyao@chromium.org</owner>
+    expires_after="2021-09-24">
+  <owner>ajuma@chromium.org</owner>
+  <owner>eugenebut@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
   <summary>
     When a navigation is committed, it should have a non-null NavigationContext.
     This histogram counts the frequency of this invariant holding at the time
@@ -70955,8 +70957,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="IOS.CommittedURLMatchesCurrentItem" enum="Boolean"
-    expires_after="M85">
-  <owner>danyao@chromium.org</owner>
+    expires_after="2021-09-24">
+  <owner>ajuma@chromium.org</owner>
+  <owner>eugenebut@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
   <summary>
     When a navigation is committed, the web view URL is expected to match that
     of the current back-forward item. WKWebView seems to break this assumption
@@ -71803,8 +71807,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="IOS.WKWebViewClobberedHistory" enum="Boolean"
-    expires_after="2020-05-03">
-  <owner>danyao@chromium.org</owner>
+    expires_after="2021-09-24">
+  <owner>ajuma@chromium.org</owner>
+  <owner>eugenebut@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
   <summary>
     Measures the number of main frame navigations in slim navigation manager
     that are affected by a WKWebView bug that corrupts back/forward history
