@@ -477,7 +477,7 @@ static_library("common") {
     deps += [ "//media/cdm:cdm_paths" ]  # Needed by chrome_content_client.cc
 
     if (enable_widevine) {
-      if (is_desktop_linux) {
+      if (is_linux) {
         sources += [
           "media/component_widevine_cdm_hint_file_linux.cc",
           "media/component_widevine_cdm_hint_file_linux.h",

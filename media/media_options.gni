@@ -196,7 +196,7 @@ if (is_chromecast) {
     "video_decoder",
   ]
   _default_mojo_media_host = "gpu"
-} else if (is_chromeos || is_mac || is_win || (is_desktop_linux && use_vaapi)) {
+} else if (is_chromeos || is_mac || is_win || (is_linux && use_vaapi)) {
   _default_mojo_media_services = [ "video_decoder" ]
   _default_mojo_media_host = "gpu"
 }

@@ -29,7 +29,7 @@ component_arch = "$current_cpu"
 # - |cdm_platform_specific_path| is exported as a BUILDFLAG to cdm_paths.cc.
 # - When updating the condition here, also update the condition on the define
 #   of CDM_USE_PLATFORM_SPECIFIC_PATH in cdm_paths_unittest.cc.
-if (is_win || is_mac || is_desktop_linux) {
+if (is_win || is_mac || is_linux) {
   cdm_platform_specific_path =
       "_platform_specific/$component_os" + "_" + "$component_arch"
 

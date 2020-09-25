@@ -34,7 +34,7 @@ if (bundle_widevine_cdm) {
     widevine_cdm_version_h_file =
         "chromeos/$widevine_arch/widevine_cdm_version.h"
     widevine_cdm_binary_files = [ "chromeos/$widevine_arch/libwidevinecdm.so" ]
-  } else if (is_desktop_linux) {
+  } else if (is_linux) {
     widevine_cdm_version_h_file = "linux/$widevine_arch/widevine_cdm_version.h"
     widevine_cdm_binary_files = [ "linux/$widevine_arch/libwidevinecdm.so" ]
     widevine_cdm_manifest_and_license_files = [
