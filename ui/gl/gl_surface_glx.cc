@@ -40,6 +40,7 @@
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_surface_presentation_helper.h"
 #include "ui/gl/gl_visual_picker_glx.h"
+#include "ui/gl/glx_util.h"
 #include "ui/gl/sync_control_vsync_provider.h"
 
 namespace gl {
@@ -66,64 +67,6 @@ x11::VisualId g_visual{};
 int g_depth = static_cast<int>(x11::WindowClass::CopyFromParent);
 x11::ColorMap g_colormap{};
 
-GLXFBConfig GetConfigForWindow(x11::Connection* connection,
-                               x11::Window window) {
-  DCHECK_NE(window, x11::Window::None);
-  auto* display = connection->display();
-
-  // This code path is expensive, but we only take it when
-  // attempting to use GLX_ARB_create_context_robustness, in which
-  // case we need a GLXFBConfig for the window in order to create a
-  // context for it.
-  //
-  // TODO(kbr): this is not a reliable code path. On platforms which
-  // support it, we should use glXChooseFBConfig in the browser
-  // process to choose the FBConfig and from there the X Visual to
-  // use when creating the window in the first place. Then we can
-  // pass that FBConfig down rather than attempting to reconstitute
-  // it.
-
-  XWindowAttributes attributes;
-  if (!XGetWindowAttributes(display, static_cast<uint32_t>(window),
-                            &attributes)) {
-    LOG(ERROR) << "XGetWindowAttributes failed for window "
-               << static_cast<uint32_t>(window) << ".";
-    return nullptr;
-  }
-
-  int visual_id = XVisualIDFromVisual(attributes.visual);
-
-  int num_elements = 0;
-  gfx::XScopedPtr<GLXFBConfig> configs(
-      glXGetFBConfigs(display, XDefaultScreen(display), &num_elements));
-  if (!configs.get()) {
-    LOG(ERROR) << "glXGetFBConfigs failed.";
-    return nullptr;
-  }
-  if (!num_elements) {
-    LOG(ERROR) << "glXGetFBConfigs returned 0 elements.";
-    return nullptr;
-  }
-  bool found = false;
-  int i;
-  for (i = 0; i < num_elements; ++i) {
-    int value;
-    if (glXGetFBConfigAttrib(display, configs.get()[i], GLX_VISUAL_ID,
-                             &value)) {
-      LOG(ERROR) << "glXGetFBConfigAttrib failed.";
-      return nullptr;
-    }
-    if (value == visual_id) {
-      found = true;
-      break;
-    }
-  }
-  if (found) {
-    return configs.get()[i];
-  }
-  return nullptr;
-}
-
 bool CreateDummyWindow(x11::Connection* conn) {
   DCHECK(conn);
   auto* display = conn->display();
@@ -136,7 +79,7 @@ bool CreateDummyWindow(x11::Connection* conn) {
       .height = 1,
       .c_class = x11::WindowClass::InputOutput,
   });
-  GLXFBConfig config = GetConfigForWindow(conn, window);
+  GLXFBConfig config = GetFbConfigForWindow(conn, window);
   if (!config) {
     LOG(ERROR) << "Failed to get GLXConfig";
     conn->DestroyWindow({window});
@@ -375,7 +318,7 @@ class SGIVideoSyncProviderThreadShim {
     }
     window_ = window;
 
-    GLXFBConfig config = GetConfigForWindow(connection, window_);
+    GLXFBConfig config = GetFbConfigForWindow(connection, window_);
     if (!config) {
       LOG(ERROR) << "video_sync: Failed to get GLXConfig";
       return;
@@ -689,17 +632,22 @@ NativeViewGLSurfaceGLX::NativeViewGLSurfaceGLX(gfx::AcceleratedWidget window)
       has_swapped_buffers_(false) {}
 
 bool NativeViewGLSurfaceGLX::Initialize(GLSurfaceFormat format) {
-  XWindowAttributes attributes;
-  if (!XGetWindowAttributes(gfx::GetXDisplay(),
-                            static_cast<uint32_t>(parent_window_),
-                            &attributes)) {
-    LOG(ERROR) << "XGetWindowAttributes failed for window "
+  auto* conn = x11::Connection::Get();
+
+  auto parent = static_cast<x11::Window>(parent_window_);
+  auto attributes_req = conn->GetWindowAttributes({parent});
+  auto geometry_req = conn->GetGeometry({parent});
+  conn->Flush();
+  auto attributes = attributes_req.Sync();
+  auto geometry = geometry_req.Sync();
+
+  if (!attributes || !geometry) {
+    LOG(ERROR) << "GetGeometry/GetWindowAttribues failed for window "
                << static_cast<uint32_t>(parent_window_) << ".";
     return false;
   }
-  size_ = gfx::Size(attributes.width, attributes.height);
+  size_ = gfx::Size(geometry->width, geometry->height);
 
-  auto* conn = x11::Connection::Get();
   window_ = conn->GenerateId<x11::Window>();
   x11::CreateWindowRequest req{
       .depth = g_depth,
@@ -714,9 +662,7 @@ bool NativeViewGLSurfaceGLX::Initialize(GLSurfaceFormat format) {
       .bit_gravity = x11::Gravity::NorthWest,
       .colormap = g_colormap,
   };
-  if (ui::IsCompositingManagerPresent() &&
-      XVisualIDFromVisual(attributes.visual) ==
-          static_cast<uint32_t>(g_visual)) {
+  if (ui::IsCompositingManagerPresent() && attributes->visual == g_visual) {
     // When parent and child are using the same visual, the back buffer will be
     // shared between parent and child. If WM compositing is enabled, we set
     // child's background pixel to ARGB(0,0,0,0), so ARGB(0,0,0,0) will be
@@ -840,7 +786,7 @@ bool NativeViewGLSurfaceGLX::SupportsPostSubBuffer() {
 
 void* NativeViewGLSurfaceGLX::GetConfig() {
   if (!config_)
-    config_ = GetConfigForWindow(x11::Connection::Get(), window_);
+    config_ = GetFbConfigForWindow(x11::Connection::Get(), window_);
   return config_;
 }
 
@@ -982,7 +928,7 @@ void* UnmappedNativeViewGLSurfaceGLX::GetHandle() {
 
 void* UnmappedNativeViewGLSurfaceGLX::GetConfig() {
   if (!config_)
-    config_ = GetConfigForWindow(x11::Connection::Get(), window_);
+    config_ = GetFbConfigForWindow(x11::Connection::Get(), window_);
   return config_;
 }
 

@@ -292,6 +292,8 @@ component("gl") {
       "gl_surface_glx.h",
       "gl_visual_picker_glx.cc",
       "gl_visual_picker_glx.h",
+      "glx_util.cc",
+      "glx_util.h",
     ]
 
     deps += [

@@ -154,61 +154,6 @@ using XRectangle = struct _XRectangle {
   unsigned short width, height;
 };
 
-using XExtData = struct _XExtData {
-  int number;
-  struct _XExtData* next;
-  int (*free_private)(struct _XExtData* extension);
-  XPointer private_data;
-};
-
-using Visual = struct _Visual {
-  XExtData* ext_data;
-  VisualID visualid;
-  int c_class;
-  unsigned long red_mask, green_mask, blue_mask;
-  int bits_per_rgb;
-  int map_entries;
-};
-
-using XVisualInfo = struct _XVisualInfo {
-  Visual* visual;
-  VisualID visualid;
-  int screen;
-  int depth;
-  int c_class;
-  unsigned long red_mask;
-  unsigned long green_mask;
-  unsigned long blue_mask;
-  int colormap_size;
-  int bits_per_rgb;
-};
-
-using Depth = struct {
-  int depth;
-  int nvisuals;
-  Visual* visuals;
-};
-
-using Screen = struct {
-  XExtData* ext_data;
-  struct _XDisplay* display;
-  Window root;
-  int width, height;
-  int mwidth, mheight;
-  int ndepths;
-  Depth* depths;
-  int root_depth;
-  Visual* root_visual;
-  GC default_gc;
-  Colormap cmap;
-  unsigned long white_pixel;
-  unsigned long black_pixel;
-  int max_maps, min_maps;
-  int backing_store;
-  Bool save_unders;
-  long root_input_mask;
-};
-
 using XSetWindowAttributes = struct {
   Pixmap background_pixmap;
   unsigned long background_pixel;
@@ -227,29 +172,6 @@ using XSetWindowAttributes = struct {
   Cursor cursor;
 };
 
-using XWindowAttributes = struct {
-  int x, y;
-  int width, height;
-  int border_width;
-  int depth;
-  Visual* visual;
-  Window root;
-  int c_class;
-  int bit_gravity;
-  int win_gravity;
-  int backing_store;
-  unsigned long backing_planes;
-  unsigned long backing_pixel;
-  Bool save_under;
-  Colormap colormap;
-  Bool map_installed;
-  int map_state;
-  long all_event_masks;
-  long your_event_mask;
-  long do_not_propagate_mask;
-  Bool override_redirect;
-  Screen* screen;
-};
 
 using XWindowChanges = struct {
   int x, y;
@@ -276,7 +198,6 @@ xcb_connection_t* XGetXCBConnection(Display* dpy);
 void XSetEventQueueOwner(Display* dpy, enum XEventQueueOwner owner);
 int XDefaultScreen(Display*);
 Window XDefaultRootWindow(Display*);
-Visual* XDefaultVisual(Display*, int);
 unsigned long XLastKnownRequestProcessed(Display*);
 int (*XSynchronize(Display*, Bool))(Display*);
 int XGetErrorDatabaseText(Display*,
@@ -297,8 +218,6 @@ int XGrabKey(Display*, int, unsigned int, Window, Bool, int, int);
 int XUngrabKey(Display*, int, unsigned int, Window);
 int XSelectInput(Display*, Window, long);
 int XSetWindowBackgroundPixmap(Display*, Window, Pixmap);
-Status XGetWindowAttributes(Display*, Window, XWindowAttributes*);
-VisualID XVisualIDFromVisual(Visual*);
 int XResizeWindow(Display*, Window, unsigned int, unsigned int);
 int XMapWindow(Display*, Window);
 KeyCode XKeysymToKeycode(Display*, KeySym);
@@ -311,31 +230,9 @@ unsigned long XBlackPixel(Display*, int);
 int XStoreName(Display*, Window, const char*);
 Status XIconifyWindow(Display*, Window, int);
 int XConfigureWindow(Display*, Window, unsigned int, XWindowChanges*);
-XVisualInfo* XGetVisualInfo(Display*, long, XVisualInfo*, int*);
-int XFree(void*);
 int XConvertSelection(Display*, Atom, Atom, Atom, Window, Time);
 Window XGetSelectionOwner(Display*, Atom);
 int XSetSelectionOwner(Display*, Atom, Window, Time);
-int XChangeProperty(Display*,
-                    Window,
-                    Atom,
-                    Atom,
-                    int,
-                    int,
-                    const unsigned char*,
-                    int);
-int XGetWindowProperty(Display*,
-                       Window,
-                       Atom,
-                       long,
-                       long,
-                       Bool,
-                       Atom,
-                       Atom*,
-                       int*,
-                       unsigned long*,
-                       unsigned long*,
-                       unsigned char**);
 Status XInternAtoms(Display*, char**, int, Bool, Atom*);
 int XDisplayKeycodes(Display*, int*, int*);
 KeySym* XGetKeyboardMapping(Display*, KeyCode, int, int*);

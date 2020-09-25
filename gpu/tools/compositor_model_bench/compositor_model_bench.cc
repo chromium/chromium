@@ -36,9 +36,11 @@
 #include "gpu/tools/compositor_model_bench/render_tree.h"
 #include "ui/base/x/x11_util.h"
 #include "ui/gfx/x/connection.h"
+#include "ui/gfx/x/glx.h"
 #include "ui/gfx/x/x11.h"
 #include "ui/gfx/x/xproto.h"
 #include "ui/gfx/x/xproto_util.h"
+#include "ui/gl/glx_util.h"
 #include "ui/gl/init/gl_factory.h"
 
 using base::DirectoryExists;
@@ -192,23 +194,17 @@ class Simulator {
       return false;
     }
 
-    XVisualInfo visual_info_template;
-    if (auto reply = connection_->GetWindowAttributes({window_}).Sync())
-      visual_info_template.visualid = static_cast<uint32_t>(reply->visual);
-    int visual_info_count = 0;
-    constexpr int kVisualIdMask = 1;
-    XVisualInfo* visual_info_list = XGetVisualInfo(
-        display_, kVisualIdMask, &visual_info_template, &visual_info_count);
-
-    for (int i = 0; i < visual_info_count && !gl_context_; ++i) {
-      gl_context_ = glXCreateContext(display_, visual_info_list + i, nullptr,
-                                     true /* Direct rendering */);
-    }
-
-    XFree(visual_info_list);
-    if (!gl_context_) {
+    auto* glx_config = gl::GetFbConfigForWindow(connection_.get(), window_);
+    if (!glx_config)
       return false;
-    }
+    auto* visual = glXGetVisualFromFBConfig(display_, glx_config);
+    DCHECK(visual);
+
+    gl_context_ = glXCreateContext(display_, visual, nullptr,
+                                   true /* Direct rendering */);
+
+    if (!gl_context_)
+      return false;
 
     if (!glXMakeCurrent(display_, static_cast<uint32_t>(window_),
                         gl_context_)) {

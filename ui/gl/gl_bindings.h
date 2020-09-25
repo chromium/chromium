@@ -45,6 +45,7 @@ using GLXPbuffer = XID;
 using GLXContextID = XID;
 using GLXContext = struct __GLXcontextRec*;
 using GLXFBConfig = struct __GLXFBConfigRec*;
+struct XVisualInfo;
 
 #include "ui/gfx/x/x11.h"
 

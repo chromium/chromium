@@ -19,6 +19,7 @@
 #include "ui/base/x/x11_util.h"
 #include "ui/gfx/gpu_fence.h"
 #include "ui/gfx/gpu_memory_buffer.h"
+#include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/x11.h"
 #include "ui/gfx/x/x11_types.h"
 
@@ -103,10 +104,11 @@ bool VulkanImplementationX11::GetPhysicalDevicePresentationSupport(
   // https://crbug.com/swiftshader/129
   if (use_swiftshader())
     return true;
-  XDisplay* display = gfx::GetXDisplay();
+  auto* connection = x11::Connection::Get();
+  auto* display = connection->display();
   return vkGetPhysicalDeviceXlibPresentationSupportKHR(
       device, queue_family_index, display,
-      XVisualIDFromVisual(XDefaultVisual(display, XDefaultScreen(display))));
+      static_cast<VisualID>(connection->default_root_visual().visual_id));
 }
 
 std::vector<const char*>
