@@ -13,6 +13,7 @@ js_library("modules") {
     ":module_registry",
     "dummy:module",
     "kaleidoscope:module",
+    "shopping_tasks:module",
   ]
 }
 
@@ -38,5 +39,6 @@ group("web_components") {
   public_deps = [
     ":web_components_local",
     "dummy:web_components",
+    "shopping_tasks:web_components",
   ]
 }

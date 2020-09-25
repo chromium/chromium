@@ -95,7 +95,7 @@ void ShoppingTasksService::OnDataLoaded(network::SimpleURLLoader* loader,
   });
 
   if (net_error != net::OK || !response) {
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(nullptr);
     return;
   }
 
@@ -114,7 +114,7 @@ void ShoppingTasksService::OnJsonParsed(
     ShoppingTaskCallback callback,
     data_decoder::DataDecoder::ValueOrError result) {
   if (!result.value) {
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(nullptr);
     return;
   }
   // We receive a list of shopping tasks ordered from highest to lowest
@@ -122,18 +122,19 @@ void ShoppingTasksService::OnJsonParsed(
   // first task.
   auto* shopping_tasks = result.value->FindListPath("update.shopping_tasks");
   if (!shopping_tasks || shopping_tasks->GetList().size() == 0) {
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(nullptr);
     return;
   }
   auto* title = shopping_tasks->GetList()[0].FindStringPath("title");
   auto* products = shopping_tasks->GetList()[0].FindListPath("products");
   auto* related_searches =
       shopping_tasks->GetList()[0].FindListPath("related_searches");
-  if (!title || !products || !related_searches) {
-    std::move(callback).Run(base::nullopt);
+  if (!title || !products || !related_searches ||
+      products->GetList().size() == 0) {
+    std::move(callback).Run(nullptr);
     return;
   }
-  std::vector<ShoppingTasksData::Product> products_list;
+  std::vector<shopping_tasks::mojom::ProductPtr> mojo_products;
   for (const auto& product : products->GetList()) {
     auto* name = product.FindStringPath("name");
     auto* image_url = product.FindStringPath("image_url");
@@ -141,33 +142,33 @@ void ShoppingTasksService::OnJsonParsed(
     auto* info = product.FindStringPath("info");
     auto* target_url = product.FindStringPath("target_url");
     if (!name || !image_url || !price || !info || !target_url) {
-      std::move(callback).Run(base::nullopt);
+      std::move(callback).Run(nullptr);
       return;
     }
-    ShoppingTasksData::Product product_struct;
-    product_struct.name = *name;
-    product_struct.image_url = GURL(*image_url);
-    product_struct.price = *price;
-    product_struct.info = *info;
-    product_struct.target_url = GURL(*target_url);
-    products_list.push_back(product_struct);
+    auto mojo_product = shopping_tasks::mojom::Product::New();
+    mojo_product->name = *name;
+    mojo_product->image_url = GURL(*image_url);
+    mojo_product->price = *price;
+    mojo_product->info = *info;
+    mojo_product->target_url = GURL(*target_url);
+    mojo_products.push_back(std::move(mojo_product));
   }
-  std::vector<ShoppingTasksData::RelatedSearch> related_searches_list;
+  std::vector<shopping_tasks::mojom::RelatedSearchPtr> mojo_related_searches;
   for (const auto& related_search : related_searches->GetList()) {
     auto* text = related_search.FindStringPath("text");
     auto* target_url = related_search.FindStringPath("target_url");
     if (!text || !target_url) {
-      std::move(callback).Run(base::nullopt);
+      std::move(callback).Run(nullptr);
       return;
     }
-    ShoppingTasksData::RelatedSearch related_search_struct;
-    related_search_struct.text = *text;
-    related_search_struct.target_url = GURL(*target_url);
-    related_searches_list.push_back(related_search_struct);
+    auto mojo_related_search = shopping_tasks::mojom::RelatedSearch::New();
+    mojo_related_search->text = *text;
+    mojo_related_search->target_url = GURL(*target_url);
+    mojo_related_searches.push_back(std::move(mojo_related_search));
   }
-  ShoppingTasksData data;
-  data.title = *title;
-  data.products = products_list;
-  data.related_searches = related_searches_list;
-  std::move(callback).Run(data);
+  auto mojo_shopping_task = shopping_tasks::mojom::ShoppingTask::New();
+  mojo_shopping_task->title = *title;
+  mojo_shopping_task->products = std::move(mojo_products);
+  mojo_shopping_task->related_searches = std::move(mojo_related_searches);
+  std::move(callback).Run(std::move(mojo_shopping_task));
 }

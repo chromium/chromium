@@ -14,9 +14,14 @@ import {dummyDescriptor, dummyDescriptor2} from './dummy/module.js';
 import {kaleidoscopeDescriptor} from './kaleidoscope/module.js';
 import {ModuleDescriptor} from './module_descriptor.js';
 import {ModuleRegistry} from './module_registry.js';
+import {shoppingTasksDescriptor} from './shopping_tasks/module.js';
 
 /** @type {!Array<!ModuleDescriptor>} */
 const descriptors = [];
+
+if (loadTimeData.getBoolean('shoppingTasksModuleEnabled')) {
+  descriptors.push(shoppingTasksDescriptor);
+}
 
 if (loadTimeData.getBoolean('kaleidoscopeModuleEnabled')) {
   descriptors.push(kaleidoscopeDescriptor);

@@ -9,6 +9,7 @@
 #include "chrome/browser/media/kaleidoscope/mojom/kaleidoscope.mojom.h"
 #include "chrome/browser/promo_browser_command/promo_browser_command.mojom-forward.h"
 #include "chrome/browser/search/instant_service_observer.h"
+#include "chrome/browser/search/shopping_tasks/shopping_tasks.mojom.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page.mojom.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -30,6 +31,7 @@ class KaleidoscopeDataProviderImpl;
 class NewTabPageHandler;
 class Profile;
 class PromoBrowserCommandHandler;
+class ShoppingTasksHandler;
 
 class NewTabPageUI
     : public ui::MojoWebUIController,
@@ -68,6 +70,13 @@ class NewTabPageUI
   // pending receiver that will be internally bound.
   void BindInterface(
       mojo::PendingReceiver<media::mojom::KaleidoscopeDataProvider>
+          pending_receiver);
+
+  // Instantiates the implementor of the
+  // shopping_tasks::mojom::ShoppingTasksHandler mojo interface passing the
+  // pending receiver that will be internally bound.
+  void BindInterface(
+      mojo::PendingReceiver<shopping_tasks::mojom::ShoppingTasksHandler>
           pending_receiver);
 
  private:
@@ -113,6 +122,7 @@ class NewTabPageUI
 
   // Mojo implementations for modules:
   std::unique_ptr<KaleidoscopeDataProviderImpl> kaleidoscope_data_provider_;
+  std::unique_ptr<ShoppingTasksHandler> shopping_tasks_handler_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 

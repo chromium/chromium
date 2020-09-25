@@ -86,35 +86,38 @@ TEST_F(ShoppingTasksServiceTest, GoodResponse) {
   }
 })");
 
-  base::Optional<ShoppingTasksData> result;
+  shopping_tasks::mojom::ShoppingTaskPtr result;
   base::MockCallback<ShoppingTasksService::ShoppingTaskCallback> callback;
   EXPECT_CALL(callback, Run(testing::_))
       .Times(1)
-      .WillOnce(testing::SaveArg<0>(&result));
+      .WillOnce(testing::Invoke(
+          [&result](shopping_tasks::mojom::ShoppingTaskPtr arg) {
+            result = std::move(arg);
+          }));
 
   service_->GetPrimaryShoppingTask(callback.Get());
   base::RunLoop().RunUntilIdle();
 
-  ASSERT_TRUE(result.has_value());
+  ASSERT_TRUE(result);
   EXPECT_EQ("hello world", result->title);
   EXPECT_EQ(2ul, result->products.size());
   EXPECT_EQ(2ul, result->related_searches.size());
-  EXPECT_EQ("foo", result->products[0].name);
-  EXPECT_EQ("https://foo.com/", result->products[0].image_url.spec());
-  EXPECT_EQ("$500", result->products[0].price);
-  EXPECT_EQ("visited 5 days ago", result->products[0].info);
-  EXPECT_EQ("https://google.com/bar", result->products[1].target_url.spec());
-  EXPECT_EQ("bar", result->products[1].name);
-  EXPECT_EQ("https://bar.com/", result->products[1].image_url.spec());
-  EXPECT_EQ("$400", result->products[1].price);
-  EXPECT_EQ("visited 1 day ago", result->products[1].info);
-  EXPECT_EQ("https://google.com/bar", result->products[1].target_url.spec());
-  EXPECT_EQ("baz", result->related_searches[0].text);
+  EXPECT_EQ("foo", result->products[0]->name);
+  EXPECT_EQ("https://foo.com/", result->products[0]->image_url.spec());
+  EXPECT_EQ("$500", result->products[0]->price);
+  EXPECT_EQ("visited 5 days ago", result->products[0]->info);
+  EXPECT_EQ("https://google.com/bar", result->products[1]->target_url.spec());
+  EXPECT_EQ("bar", result->products[1]->name);
+  EXPECT_EQ("https://bar.com/", result->products[1]->image_url.spec());
+  EXPECT_EQ("$400", result->products[1]->price);
+  EXPECT_EQ("visited 1 day ago", result->products[1]->info);
+  EXPECT_EQ("https://google.com/bar", result->products[1]->target_url.spec());
+  EXPECT_EQ("baz", result->related_searches[0]->text);
   EXPECT_EQ("https://google.com/baz",
-            result->related_searches[0].target_url.spec());
-  EXPECT_EQ("blub", result->related_searches[1].text);
+            result->related_searches[0]->target_url.spec());
+  EXPECT_EQ("blub", result->related_searches[1]->text);
   EXPECT_EQ("https://google.com/blub",
-            result->related_searches[1].target_url.spec());
+            result->related_searches[1]->target_url.spec());
 }
 
 // Verifies service can handle multiple in flight requests.
@@ -147,42 +150,88 @@ TEST_F(ShoppingTasksServiceTest, MultiRequest) {
   }
 })");
 
-  base::Optional<ShoppingTasksData> result1;
+  shopping_tasks::mojom::ShoppingTaskPtr result1;
   base::MockCallback<ShoppingTasksService::ShoppingTaskCallback> callback1;
   EXPECT_CALL(callback1, Run(testing::_))
       .Times(1)
-      .WillOnce(testing::SaveArg<0>(&result1));
+      .WillOnce(testing::Invoke(
+          [&result1](shopping_tasks::mojom::ShoppingTaskPtr arg) {
+            result1 = std::move(arg);
+          }));
   service_->GetPrimaryShoppingTask(callback1.Get());
 
-  base::Optional<ShoppingTasksData> result2;
+  shopping_tasks::mojom::ShoppingTaskPtr result2;
   base::MockCallback<ShoppingTasksService::ShoppingTaskCallback> callback2;
   EXPECT_CALL(callback2, Run(testing::_))
       .Times(1)
-      .WillOnce(testing::SaveArg<0>(&result2));
+      .WillOnce(testing::Invoke(
+          [&result2](shopping_tasks::mojom::ShoppingTaskPtr arg) {
+            result2 = std::move(arg);
+          }));
   service_->GetPrimaryShoppingTask(callback2.Get());
 
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_TRUE(result1.has_value());
-  EXPECT_TRUE(result2.has_value());
+  EXPECT_TRUE(result1);
+  EXPECT_TRUE(result2);
 }
 
-// Verifies error of JSON is malformed.
+// Verifies error if JSON is malformed.
 TEST_F(ShoppingTasksServiceTest, BadResponse) {
   test_url_loader_factory_.AddResponse(
       "https://www.google.com/async/newtab_shopping_tasks",
       ")]}'{\"update\":{\"promotions\":{}}}");
 
-  base::Optional<ShoppingTasksData> result;
+  shopping_tasks::mojom::ShoppingTaskPtr result;
   base::MockCallback<ShoppingTasksService::ShoppingTaskCallback> callback;
   EXPECT_CALL(callback, Run(testing::_))
       .Times(1)
-      .WillOnce(testing::SaveArg<0>(&result));
+      .WillOnce(testing::Invoke(
+          [&result](shopping_tasks::mojom::ShoppingTaskPtr arg) {
+            result = std::move(arg);
+          }));
 
   service_->GetPrimaryShoppingTask(callback.Get());
   base::RunLoop().RunUntilIdle();
 
-  ASSERT_FALSE(result.has_value());
+  ASSERT_FALSE(result);
+}
+
+// Verifies error if no products.
+TEST_F(ShoppingTasksServiceTest, NoProducts) {
+  test_url_loader_factory_.AddResponse(
+      "https://www.google.com/async/newtab_shopping_tasks",
+      R"()]}'
+{
+  "update": {
+    "shopping_tasks": [
+      {
+        "title": "hello world",
+        "products": [],
+        "related_searches": [
+          {
+            "text": "baz",
+            "target_url": "https://google.com/baz"
+          }
+        ]
+      }
+    ]
+  }
+})");
+
+  shopping_tasks::mojom::ShoppingTaskPtr result;
+  base::MockCallback<ShoppingTasksService::ShoppingTaskCallback> callback;
+  EXPECT_CALL(callback, Run(testing::_))
+      .Times(1)
+      .WillOnce(testing::Invoke(
+          [&result](shopping_tasks::mojom::ShoppingTaskPtr arg) {
+            result = std::move(arg);
+          }));
+
+  service_->GetPrimaryShoppingTask(callback.Get());
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_FALSE(result);
 }
 
 // Verifies error if download fails.
@@ -192,14 +241,17 @@ TEST_F(ShoppingTasksServiceTest, ErrorResponse) {
       network::mojom::URLResponseHead::New(), std::string(),
       network::URLLoaderCompletionStatus(net::HTTP_NOT_FOUND));
 
-  base::Optional<ShoppingTasksData> result;
+  shopping_tasks::mojom::ShoppingTaskPtr result;
   base::MockCallback<ShoppingTasksService::ShoppingTaskCallback> callback;
   EXPECT_CALL(callback, Run(testing::_))
       .Times(1)
-      .WillOnce(testing::SaveArg<0>(&result));
+      .WillOnce(testing::Invoke(
+          [&result](shopping_tasks::mojom::ShoppingTaskPtr arg) {
+            result = std::move(arg);
+          }));
 
   service_->GetPrimaryShoppingTask(callback.Get());
   base::RunLoop().RunUntilIdle();
 
-  ASSERT_FALSE(result.has_value());
+  ASSERT_FALSE(result);
 }

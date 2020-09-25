@@ -15,6 +15,7 @@
 #include "chrome/browser/search/instant_service.h"
 #include "chrome/browser/search/instant_service_factory.h"
 #include "chrome/browser/search/ntp_features.h"
+#include "chrome/browser/search/shopping_tasks/shopping_tasks_handler.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/search/ntp_user_data_logger.h"
 #include "chrome/browser/ui/search/omnibox_mojo_utils.h"
@@ -218,6 +219,9 @@ content::WebUIDataSource* CreateNewTabPageUiHtmlSource(Profile* profile) {
 #else
   source->AddBoolean("kaleidoscopeModuleEnabled", false);
 #endif  // BUILDFLAG(ENABLE_KALEIDOSCOPE)
+  source->AddBoolean(
+      "shoppingTasksModuleEnabled",
+      base::FeatureList::IsEnabled(ntp_features::kNtpShoppingTasksModule));
 
   source->AddResourcePath("new_tab_page.mojom-lite.js",
                           IDR_NEW_TAB_PAGE_MOJO_LITE_JS);
@@ -225,6 +229,9 @@ content::WebUIDataSource* CreateNewTabPageUiHtmlSource(Profile* profile) {
                           IDR_NEW_TAB_PAGE_OMNIBOX_MOJO_LITE_JS);
   source->AddResourcePath("promo_browser_command.mojom-lite.js",
                           IDR_NEW_TAB_PAGE_PROMO_BROWSER_COMMAND_MOJO_LITE_JS);
+  source->AddResourcePath(
+      "modules/shopping_tasks/shopping_tasks.mojom-lite.js",
+      IDR_NEW_TAB_PAGE_MODULES_SHOPPING_TASKS_SHOPPING_TASKS_MOJO_LITE_JS);
 #if BUILDFLAG(OPTIMIZE_WEBUI)
   source->AddResourcePath("new_tab_page.js", IDR_NEW_TAB_PAGE_NEW_TAB_PAGE_JS);
 #endif  // BUILDFLAG(OPTIMIZE_WEBUI)
@@ -339,6 +346,13 @@ void NewTabPageUI::BindInterface(
         pending_page_handler) {
   kaleidoscope_data_provider_ = std::make_unique<KaleidoscopeDataProviderImpl>(
       std::move(pending_page_handler), profile_, nullptr);
+}
+
+void NewTabPageUI::BindInterface(
+    mojo::PendingReceiver<shopping_tasks::mojom::ShoppingTasksHandler>
+        pending_receiver) {
+  shopping_tasks_handler_ = std::make_unique<ShoppingTasksHandler>(
+      std::move(pending_receiver), profile_);
 }
 
 void NewTabPageUI::CreatePageHandler(

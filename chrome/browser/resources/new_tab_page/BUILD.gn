@@ -269,6 +269,7 @@ if (optimize_webui) {
     deps = [
       "//chrome/browser/promo_browser_command:mojo_bindings_js",
       "//chrome/browser/resources/new_tab_page:web_components",
+      "//chrome/browser/search/shopping_tasks:mojo_bindings_js",
       "//chrome/browser/ui/webui/new_tab_page:mojo_bindings_js",
       "//skia/public/mojom:mojom_js",
     ]
@@ -295,6 +296,7 @@ if (optimize_webui) {
 
     excludes = [
       "../../promo_browser_command/promo_browser_command.mojom-lite.js",
+      "../../search/shopping_tasks/shopping_tasks.mojom-lite.js",
       "../../ui/webui/new_tab_page/new_tab_page.mojom-lite.js",
       "../../../common/search/omnibox.mojom-lite.js",
       "../../../../skia/public/mojom/skcolor.mojom-lite.js",
@@ -324,6 +326,7 @@ if (optimize_webui) {
       "new_tab_page.mojom-lite.js",
       "omnibox.mojom-lite.js",
       "promo_browser_command.mojom-lite.js",
+      "modules/shopping_tasks/shopping_tasks.mojom-lite.js",
     ]
   }
 }

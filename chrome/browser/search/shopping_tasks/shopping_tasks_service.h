@@ -11,7 +11,7 @@
 #include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/search/shopping_tasks/shopping_tasks_data.h"
+#include "chrome/browser/search/shopping_tasks/shopping_tasks.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 
@@ -34,11 +34,11 @@ class ShoppingTasksService : public KeyedService {
   void Shutdown() override;
 
   using ShoppingTaskCallback = base::OnceCallback<void(
-      const base::Optional<ShoppingTasksData>& shopping_tasks_data)>;
+      shopping_tasks::mojom::ShoppingTaskPtr shopping_task)>;
   // Downloads and parses shopping tasks and calls |callback| when done.
   // On success |callback| is called with a populated |ShoppingTasksData| object
   // of the highest priority shopping task. On failure, it is called with
-  // base::nullopt.
+  // nullptr.
   void GetPrimaryShoppingTask(ShoppingTaskCallback callback);
 
  private:

@@ -231,3 +231,16 @@ var NewTabPageMiddleSlotPromoTest = class extends NewTabPageBrowserTest {
 TEST_F('NewTabPageMiddleSlotPromoTest', 'All', function() {
   mocha.run();
 });
+
+// eslint-disable-next-line no-var
+var NewTabPageModulesShoppingTasksModuleTest =
+    class extends NewTabPageBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://new-tab-page/test_loader.html?module=new_tab_page/modules/shopping_tasks/module_test.js';
+  }
+};
+
+TEST_F('NewTabPageModulesShoppingTasksModuleTest', 'All', function() {
+  mocha.run();
+});

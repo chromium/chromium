@@ -61,4 +61,7 @@
       file="one_google_bar_api.js" type="BINDATA" compress="false" />
   <include name="IDR_NEW_TAB_PAGE_PROMO_BROWSER_COMMAND_PROXY_JS"
       file="promo_browser_command_proxy.js" type="BINDATA" compress="false" />
+  <include name="IDR_NEW_TAB_PAGE_MODULES_SHOPPING_TASKS_SHOPPING_TASKS_MOJO_LITE_JS"
+      file="${root_gen_dir}/chrome/browser/search/shopping_tasks/shopping_tasks.mojom-lite.js"
+      use_base_dir="false" type="BINDATA" />
 </grit-part>
