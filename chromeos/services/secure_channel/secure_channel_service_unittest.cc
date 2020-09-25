@@ -273,19 +273,36 @@ class FakeBleConnectionManagerFactory
 class FakeNearbyConnectionManagerFactory
     : public NearbyConnectionManagerImpl::Factory {
  public:
-  FakeNearbyConnectionManagerFactory() = default;
+  FakeNearbyConnectionManagerFactory(
+      FakeBleScannerFactory* fake_ble_scanner_factory,
+      FakeSecureChannelDisconnectorFactory*
+          fake_secure_channel_disconnector_factory)
+      : fake_ble_scanner_factory_(fake_ble_scanner_factory),
+        fake_secure_channel_disconnector_factory_(
+            fake_secure_channel_disconnector_factory) {}
+
   ~FakeNearbyConnectionManagerFactory() override = default;
 
   FakeNearbyConnectionManager* instance() { return instance_; }
 
  private:
   // NearbyConnectionManagerImpl::Factory:
-  std::unique_ptr<NearbyConnectionManager> CreateInstance() override {
+  std::unique_ptr<NearbyConnectionManager> CreateInstance(
+      BleScanner* ble_scanner,
+      SecureChannelDisconnector* secure_channel_disconnector) override {
+    EXPECT_EQ(fake_ble_scanner_factory_->instance(), ble_scanner);
+    EXPECT_EQ(fake_secure_channel_disconnector_factory_->instance(),
+              secure_channel_disconnector);
+
     EXPECT_FALSE(instance_);
     auto instance = std::make_unique<FakeNearbyConnectionManager>();
     instance_ = instance.get();
     return instance;
   }
+
+  FakeBleScannerFactory* fake_ble_scanner_factory_;
+  FakeSecureChannelDisconnectorFactory*
+      fake_secure_channel_disconnector_factory_;
 
   FakeNearbyConnectionManager* instance_ = nullptr;
 
@@ -519,7 +536,9 @@ class SecureChannelServiceTest : public testing::Test {
         fake_ble_connection_manager_factory_.get());
 
     fake_nearby_connection_manager_factory_ =
-        std::make_unique<FakeNearbyConnectionManagerFactory>();
+        std::make_unique<FakeNearbyConnectionManagerFactory>(
+            fake_ble_scanner_factory_.get(),
+            fake_secure_channel_disconnector_factory_.get());
     NearbyConnectionManagerImpl::Factory::SetFactoryForTesting(
         fake_nearby_connection_manager_factory_.get());
 

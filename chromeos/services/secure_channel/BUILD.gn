@@ -104,6 +104,8 @@ static_library("secure_channel") {
     "multiplexed_channel.h",
     "multiplexed_channel_impl.cc",
     "multiplexed_channel_impl.h",
+    "nearby_connection.cc",
+    "nearby_connection.h",
     "nearby_connection_manager.cc",
     "nearby_connection_manager.h",
     "nearby_connection_manager_impl.cc",

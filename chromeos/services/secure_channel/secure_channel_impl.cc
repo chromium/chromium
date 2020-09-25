@@ -85,8 +85,9 @@ SecureChannelImpl::SecureChannelImpl(
           ble_scanner_.get(),
           secure_channel_disconnector_.get(),
           timer_factory_.get())),
-      nearby_connection_manager_(
-          NearbyConnectionManagerImpl::Factory::Create()),
+      nearby_connection_manager_(NearbyConnectionManagerImpl::Factory::Create(
+          ble_scanner_.get(),
+          secure_channel_disconnector_.get())),
       pending_connection_manager_(PendingConnectionManagerImpl::Factory::Create(
           this /* delegate */,
           ble_connection_manager_.get(),
