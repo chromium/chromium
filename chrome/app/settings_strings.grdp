@@ -2380,10 +2380,10 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_ALLOWLISTED" desc="A subtitle for the ‘Allowlisted’ setting, shown if a WebUI's permission is internally allowlisted by Chrome.">
     Allowlisted internally
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_ADS_BLOCK_BLACKLISTED_SINGULAR" desc="A subtitle for the ‘Ads’ setting, shown if a website is known to show ads that have a poor user experience (intrusive, misleading) and is blocked from showing ads by Chrome.">
+  <message name="IDS_SETTINGS_SITE_SETTINGS_ADS_BLOCK_BLOCKLISTED_SINGULAR" desc="A subtitle for the ‘Ads’ setting, shown if a website is known to show ads that have a poor user experience (intrusive, misleading) and is blocked from showing ads by Chrome.">
     Site shows intrusive or misleading ads
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_ADS_BLOCK_NOT_BLACKLISTED_SINGULAR" desc="A subtitle for the ‘Ads’ setting, shown if user chooses to Block ads. ‘Block’ refers to the blocking of ads.">
+  <message name="IDS_SETTINGS_SITE_SETTINGS_ADS_BLOCK_NOT_BLOCKLISTED_SINGULAR" desc="A subtitle for the ‘Ads’ setting, shown if user chooses to Block ads. ‘Block’ refers to the blocking of ads.">
     Block if site shows intrusive or misleading ads
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_SOURCE_KILL_SWITCH" desc="A label shown when a permission on the Site Details page is temporarily blocked for the user's safety.">
