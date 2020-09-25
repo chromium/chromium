@@ -70,6 +70,7 @@
 <translation id="1589090746204042747">Энэ харилцан үйлдлийн бүх үйл ажиллагаандаа хандах</translation>
 <translation id="1611993646327628135">Асаалттай</translation>
 <translation id="1632985212731562677">Сэлгүүрийг Тохиргоо &gt; Хандалт хэсэгт идэвхгүй болгох боломжтой.</translation>
+<translation id="1651447046299738444">Таны Bluetooth эсвэл Wi-Fi Chromebook-д тань унтарсан бололтой. Phone Hub-г ашиглахын тулд холболтоо шалгана уу.</translation>
 <translation id="1654477262762802994">Дуут асуулга эхлүүлэх</translation>
 <translation id="1667964833127753507">Завсрын өнгөний горим нь ханын зургаас гаргаж авсан өнгийг ашигладаггүй тул завсрын цайвар эсвэл бараан өнгөөр орлуулдаг.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> үлдсэн</translation>
@@ -152,6 +153,7 @@
 <translation id="2435457462613246316">Нууц үг харуулах</translation>
 <translation id="2473177541599297363">Нягтралыг баталгаажуулах</translation>
 <translation id="2475982808118771221">Алдаа гарлаа</translation>
+<translation id="2479579251444854687">Тоймыг нээхийн тулд гурван хуруугаараа дээш, хаахын тулд доош шударна уу.</translation>
 <translation id="2482878487686419369">Мэдэгдэл</translation>
 <translation id="2484513351006226581">Гарын бүдүүвчийг солихын тулд <ph name="KEYBOARD_SHORTCUT" />-г дарна уу.</translation>
 <translation id="2501920221385095727">Холбогч түлхүүр</translation>
@@ -164,6 +166,7 @@
 <translation id="2595239820337756193">5 км милиэр</translation>
 <translation id="2617342710774726426">SIM карт түгжигдсэн</translation>
 <translation id="2621713457727696555">Хамгаалалттай</translation>
+<translation id="2640255526076764619">Өмнөх дэлгэц рүү сэлгэх мэдрэгч самбарын зангааг өөрчилсөн. Өмнөх дэлгэц рүү сэлгэхийн тулд дөрвөн хуруугаараа зүүн тийш шударна уу.</translation>
 <translation id="2653659639078652383">Илгээх</translation>
 <translation id="2658778018866295321">Товшоод чирэх</translation>
 <translation id="2700493154570097719">Гараа тохируулах</translation>
@@ -343,6 +346,7 @@
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> унтраалттай байна.</translation>
 <translation id="4421231901400348175">Remote Assistance ашиглан <ph name="HELPER_NAME" /> -тэй хамт өөрийн дэлгэцийн хяналтыг хуваалцах.</translation>
 <translation id="4430019312045809116">Хэмжээ</translation>
+<translation id="4444978951615977024">Алдаа гарлаа! Холболтоо шалгана уу</translation>
 <translation id="4450893287417543264">Дахиж бүү харуул</translation>
 <translation id="445864333228800152">Оройн мэнд,</translation>
 <translation id="4458688154122353284">Дэлгэцийн үйлдэл бичихийг зогсоох</translation>
@@ -352,6 +356,7 @@
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Хослоогүй төхөөрөмж</translation>
 <translation id="4505050298327493054">Идэвхтэй дэлгэц.</translation>
+<translation id="4506458088675900627">Тоймын мэдрэгч самбарын зангааг өөрчилсөн</translation>
 <translation id="4513946894732546136">Санал дүгнэлт</translation>
 <translation id="4527045527269911712">"<ph name="DEVICE_NAME" />" Bluetooth төхөөрөмж хослох зөвшөөрөл хүсч байна.</translation>
 <translation id="453661520163887813">Дүүртэл <ph name="TIME" /> үлдсэн</translation>
@@ -481,6 +486,7 @@
 <translation id="6018164090099858612">Толь горимоос гарч байна</translation>
 <translation id="602001110135236999">Зүүн тийш гүйлгэх</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, дохионы хүч <ph name="SIGNAL_STRENGTH" />, таны администратор удирддаг</translation>
+<translation id="6029337736376922061">Дараагийн дэлгэц рүү сэлгэх мэдрэгч самбарын зангааг өөрчилсөн. Дараагийн дэлгэц рүү сэлгэхийн тулд дөрвөн хуруугаараа баруун тийш шударна уу.</translation>
 <translation id="6030495522958826102">Цэсийг дэлгэцийн зүүн доод булан руу зөөсөн.</translation>
 <translation id="6040143037577758943">Хаах</translation>
 <translation id="6043212731627905357">Таны <ph name="DEVICE_TYPE" /> монитортой тохирохгүй байна (мониторыг дэмжээгүй).</translation>

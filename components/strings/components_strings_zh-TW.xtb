@@ -507,6 +507,7 @@
 <translation id="3080254622891793721">圖片</translation>
 <translation id="3086579638707268289">你的網路活動正遭到監控</translation>
 <translation id="3087734570205094154">置底</translation>
+<translation id="3094457892697649331">這份文件會在你編輯註解時重設為單頁檢視。</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3096100844101284527">新增取件地址</translation>
 <translation id="3105172416063519923">資產 ID：</translation>
@@ -739,6 +740,7 @@
 <translation id="4075941231477579656">Touch ID</translation>
 <translation id="4079302484614802869">Proxy 設定已設為使用 .pac 指令碼網址，而非固定的 Proxy 伺服器。</translation>
 <translation id="4082393374666368382">設定 - 管理</translation>
+<translation id="4084120443451129199">搜尋模式，按下 Enter 鍵即可搜尋「<ph name="KEYWORD_SUFFIX" />」</translation>
 <translation id="4088981014127559358">側邊 1 圖片 Y 批次</translation>
 <translation id="4098354747657067197">你要瀏覽的是詐騙網站</translation>
 <translation id="4101413244023615925">文字和圖片</translation>
@@ -930,6 +932,7 @@
 <translation id="4809079943450490359">來自裝置管理員的指示：</translation>
 <translation id="4813512666221746211">網路錯誤</translation>
 <translation id="4816492930507672669">依頁面大小自動調整</translation>
+<translation id="4819347708020428563">要在預設檢視中編輯註解嗎？</translation>
 <translation id="484462545196658690">自動</translation>
 <translation id="4850886885716139402">檢視</translation>
 <translation id="4854362297993841467">不支援所選的快遞方式，請改選其他方式。</translation>
@@ -1664,6 +1667,7 @@
 <translation id="7802523362929240268">網站合法</translation>
 <translation id="780301667611848630">不用了，謝謝</translation>
 <translation id="7805768142964895445">狀態</translation>
+<translation id="7811322735445742657">這份文件會在你編輯註解時重設為單頁檢視和原始顯示方向。</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">要從 Chrome 中移除建議嗎？</translation>
 <translation id="781440967107097262">要分享剪貼簿嗎？</translation>
@@ -1699,6 +1703,7 @@
 <translation id="7956713633345437162">行動版書籤</translation>
 <translation id="7961015016161918242">一律不要</translation>
 <translation id="7966803981046576691">工作帳戶類型</translation>
+<translation id="7976214039405368314">要求數量過多</translation>
 <translation id="7977538094055660992">輸出裝置</translation>
 <translation id="7977894662897852582">Edp</translation>
 <translation id="799149739215780103">裝訂</translation>
@@ -1780,6 +1785,7 @@
 <translation id="8289355894181816810">如果你不確定這代表什麼意思，請與網路管理員聯絡。</translation>
 <translation id="8293206222192510085">新增書籤</translation>
 <translation id="8294431847097064396">來源</translation>
+<translation id="8297398969342264569">這份文件會在你編輯註解時重設為原始顯示方向。</translation>
 <translation id="8298115750975731693">目前使用的 Wi-Fi 網路 (<ph name="WIFI_NAME" />) 可能會要求您造訪 <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />。</translation>
 <translation id="8303854710873047864">已顯示「<ph name="SECTION" />」區段</translation>
 <translation id="830498451218851433">對折</translation>

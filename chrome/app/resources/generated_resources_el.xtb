@@ -234,6 +234,7 @@
 <translation id="1260451001046713751">Να εμφανίζονται πάντα αναδυόμενα παράθυρα από <ph name="HOST" /></translation>
 <translation id="1261380933454402672">Μέτρια</translation>
 <translation id="126156426083987769">Παρουσιάστηκε ένα πρόβλημα με τις άδειες των συσκευών λειτουργίας επίδειξης.</translation>
+<translation id="1263231323834454256">Λίστα ανάγνωσης</translation>
 <translation id="1263490604593716556">Η διαχείριση του λογαριασμού γίνεται από <ph name="FIRST_PARENT_EMAIL" /> και <ph name="SECOND_PARENT_EMAIL" />. Για να αποσυνδεθείτε από τον κύριο λογαριασμό σε αυτήν τη συσκευή, κάντε κλικ στην ώρα που εμφανίζεται στην οθόνη. Στο μενού που θα εμφανιστεί, κάντε κλικ στην επιλογή Αποσύνδεση.</translation>
 <translation id="1263733306853729545">Χρησιμοποιήστε τα πλήκτρα <ph name="MINUS" /> και <ph name="EQUAL" /> για αλλαγή σελίδας σε μια λίστα υποψηφίων</translation>
 <translation id="126387934568812801">Συμπερίληψη αυτού του στιγμιότυπου οθόνης και των τίτλων ανοικτών καρτελών</translation>
@@ -1462,6 +1463,7 @@
 <translation id="2695749433451188613">Πρωτόκολλο εκτύπωσης στο διαδίκτυο (HTTPS)</translation>
 <translation id="2699911226086014512">Η λειτουργία του PIN απέτυχε με τον κωδικό <ph name="RETRIES" />.</translation>
 <translation id="2701737434167469065">Σύνδεση, <ph name="EMAIL" /></translation>
+<translation id="2702801445560668637">Λίστα ανάγνωσης</translation>
 <translation id="270358213449696159">Περιεχόμενα όρων Google Chrome OS</translation>
 <translation id="270414148003105978">Δίκτυα κινητής τηλεφωνίας</translation>
 <translation id="2704184184447774363">Microsoft Document Signing</translation>

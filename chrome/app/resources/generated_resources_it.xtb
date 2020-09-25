@@ -234,6 +234,7 @@
 <translation id="1260451001046713751">Consenti sempre popup e reindirizzamenti da <ph name="HOST" /></translation>
 <translation id="1261380933454402672">Media</translation>
 <translation id="126156426083987769">Si è verificato un problema con le licenze del dispositivo per la modalità demo.</translation>
+<translation id="1263231323834454256">Elenco di lettura</translation>
 <translation id="1263490604593716556">Account gestito da <ph name="FIRST_PARENT_EMAIL" /> e <ph name="SECOND_PARENT_EMAIL" />. Per uscire dall'account principale su questo dispositivo, fai clic sull'ora sullo schermo. Fai clic su "Esci" nel menu visualizzato.</translation>
 <translation id="1263733306853729545">Utilizza i tasti <ph name="MINUS" /> e <ph name="EQUAL" /> per il paging di un elenco di candidati</translation>
 <translation id="126387934568812801">Includi questo screenshot e i titoli delle schede aperte</translation>
@@ -1129,7 +1130,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="230927227160767054">Questa pagina vuole installare un gestore di servizi.</translation>
 <translation id="2309620859903500144">A questo sito è stato impedito l'accesso ai sensori di movimento o della luce.</translation>
 <translation id="2314165183524574721">L'attuale impostazione di visibilità è Nascosto</translation>
-<translation id="2314774579020744484">Lingua usata durante la traduzione delle pagine</translation>
+<translation id="2314774579020744484">Lingua usata per la traduzione delle pagine</translation>
 <translation id="2314873619957287124">Stabilisci delle regole di base relative all'utilizzo dei dispositivi digitali per aiutare tuo figlio imparare, giocare e navigare sul Web</translation>
 <translation id="2315414688463285945">Errore durante la configurazione dei file Linux. Riprova.</translation>
 <translation id="2315587498123194634">Invia link a <ph name="DEVICE_NAME" /></translation>
@@ -1461,6 +1462,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2695749433451188613">Protocollo di stampa Internet (HTTPS)</translation>
 <translation id="2699911226086014512">Operazione con PIN non riuscita. Codice <ph name="RETRIES" />.</translation>
 <translation id="2701737434167469065">Accedi, <ph name="EMAIL" /></translation>
+<translation id="2702801445560668637">Elenco di lettura</translation>
 <translation id="270358213449696159">Contenuti dei Termini di Google Chrome OS</translation>
 <translation id="270414148003105978">Reti mobili</translation>
 <translation id="2704184184447774363">Firma del documento Microsoft</translation>
@@ -3158,7 +3160,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="471880041731876836">Non sei autorizzato a visitare questo sito</translation>
 <translation id="4720113199587244118">Aggiungi dispositivi</translation>
 <translation id="4720185134442950733">Rete di dati mobili</translation>
-<translation id="4722483286922621738">In genere, i siti si connettono a più dispositivi per funzionalità di trasferimento dati come la configurazione della rete</translation>
+<translation id="4722483286922621738">In genere, i siti si connettono a dispositivi seriali per funzionalità di trasferimento dati come la configurazione della rete</translation>
 <translation id="4722735765955348426">Password di <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> sta condividendo il tuo schermo.</translation>
 <translation id="4723140812774948886">Scambia con elemento successivo</translation>
@@ -5177,7 +5179,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="7182791023900310535">Sposta la password</translation>
 <translation id="7186088072322679094">Mantieni in barra degli strumenti</translation>
 <translation id="7187428571767585875">Voci del registro da rimuovere o modificare:</translation>
-<translation id="7187855807420906517">Dopo aver lasciato la pagina o aver effettuato la disconnessione, in genere, i siti continuano a sincronizzarsi per terminare attività come il caricamento di foto o l'invio di un messaggio di chat</translation>
+<translation id="7187855807420906517">Quando torni online dopo aver lasciato o chiuso la pagina, in genere i siti continuano a sincronizzarsi per terminare attività come il caricamento di foto o l'invio di un messaggio di chat</translation>
 <translation id="7189234443051076392">Assicurati di avere spazio sufficiente sul dispositivo</translation>
 <translation id="7189451821249468368">Non disponi di licenze Upgrade sufficienti per registrare questo dispositivo. Contatta l'ufficio vendite per acquistarne altre. Se ritieni che questo messaggio sia stato visualizzato per sbaglio, contatta l'assistenza.</translation>
 <translation id="7189965711416741966">Impronta digitale aggiunta.</translation>
@@ -5633,7 +5635,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="7737115349420013392">Accoppiamento con "<ph name="DEVICE_NAME" />"…</translation>
 <translation id="7737238973539693982">Elimina Linux (beta)</translation>
 <translation id="7740996059027112821">Standard</translation>
-<translation id="7742706086992565332">Puoi decidere di quanto aumentare lo zoom in determinati siti web</translation>
+<translation id="7742706086992565332">Puoi decidere di quanto aumentare o diminuire lo zoom in determinati siti web</translation>
 <translation id="774377079771918250">Scegli dove salvare</translation>
 <translation id="7744047395460924128">Visualizzazione della cronologia di stampa</translation>
 <translation id="7744192722284567281">Rilevata in una violazione dei dati</translation>
@@ -5953,7 +5955,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8081989000209387414">Disattivare il debug ADB?</translation>
 <translation id="8082106343289440791">Vuoi eseguire l'accoppiamento con "<ph name="DEVICE_NAME" />"?</translation>
 <translation id="8082390128630131497">La disattivazione del debug ADB ripristinerà le impostazioni di fabbrica di questo <ph name="DEVICE_TYPE" />. Tutti gli account utente e i dati locali verranno resettati.</translation>
-<translation id="8083058154738359867">Crea sottotitoli per i tuoi contenuti multimediali attivando Sottotitoli in tempo reale nelle impostazioni</translation>
+<translation id="8083058154738359867">Aggiungi sottotitoli ai tuoi contenuti multimediali attivando Sottotitoli in tempo reale nelle impostazioni</translation>
 <translation id="8084114998886531721">Password salvata</translation>
 <translation id="8086015605808120405">Configurazione di <ph name="PRINTER_NAME" />…</translation>
 <translation id="8086442853986205778">Configura <ph name="PRINTER_NAME" /></translation>
@@ -6746,7 +6748,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="9019956081903586892">Impossibile scaricare il dizionario per il controllo ortografico</translation>
 <translation id="9020362265352758658">4x</translation>
 <translation id="9021662811137657072">Virus rilevato</translation>
-<translation id="902236149563113779">In genere, i siti monitorano la posizione della videocamera per funzionalità AR come i giochi o la posizione della testa</translation>
+<translation id="902236149563113779">In genere, i siti monitorano la posizione della videocamera per funzionalità AR come i giochi o le indicazioni fornite con la posizione della testa</translation>
 <translation id="9022847679183471841">L'account è già utilizzato su questo computer da <ph name="AVATAR_NAME" />.</translation>
 <translation id="9023009238991294202">Altri utenti del dispositivo possono usare questa rete.</translation>
 <translation id="9023015617655685412">Aggiungi questa scheda ai preferiti…</translation>

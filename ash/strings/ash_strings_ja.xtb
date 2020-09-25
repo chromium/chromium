@@ -70,6 +70,7 @@
 <translation id="1589090746204042747">このセッションのすべてのアクティビティにアクセスする</translation>
 <translation id="1611993646327628135">オン</translation>
 <translation id="1632985212731562677">スイッチ アクセスは [設定] &gt; [ユーザー補助機能] で無効にできます。</translation>
+<translation id="1651447046299738444">お使いの Chromebook では Bluetooth または Wi-Fi が無効になっているようです。Phone Hub を使用するには接続を確認してください。</translation>
 <translation id="1654477262762802994">音声検索を開始</translation>
 <translation id="1667964833127753507">壁紙から抽出した色の代わりに、ライトまたはダークな色調の中間色を使用します。</translation>
 <translation id="1677472565718498478">残り <ph name="TIME" /></translation>
@@ -152,6 +153,7 @@
 <translation id="2435457462613246316">パスワードを表示</translation>
 <translation id="2473177541599297363">解像度の確定</translation>
 <translation id="2475982808118771221">エラーが発生しました</translation>
+<translation id="2479579251444854687">概要を開くには 3 本の指で上にスワイプ、閉じるには 3 本の指で下にスワイプします。</translation>
 <translation id="2482878487686419369">通知</translation>
 <translation id="2484513351006226581">キーボード レイアウトを切り替えるには <ph name="KEYBOARD_SHORTCUT" /> キーを押します。</translation>
 <translation id="2501920221385095727">固定キー</translation>
@@ -164,6 +166,7 @@
 <translation id="2595239820337756193">5 km は何マイル</translation>
 <translation id="2617342710774726426">SIM カードはロックされています</translation>
 <translation id="2621713457727696555">保護あり</translation>
+<translation id="2640255526076764619">前のデスクに切り替えるタッチパッド操作が変わりました。前のデスクに切り替えるには 4 本の指で左にスワイプします。</translation>
 <translation id="2653659639078652383">送信</translation>
 <translation id="2658778018866295321">クリックしてドラッグ</translation>
 <translation id="2700493154570097719">キーボードを設定</translation>
@@ -342,6 +345,7 @@
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> はオフになっています。</translation>
 <translation id="4421231901400348175">リモート サポート経由で <ph name="HELPER_NAME" /> と画面の制御を共有しています。</translation>
 <translation id="4430019312045809116">音量</translation>
+<translation id="4444978951615977024">エラー: 接続を確認してください</translation>
 <translation id="4450893287417543264">次回から表示しない</translation>
 <translation id="445864333228800152">こんばんは</translation>
 <translation id="4458688154122353284">画面の録画を停止</translation>
@@ -351,6 +355,7 @@
 <translation id="4479639480957787382">イーサネット</translation>
 <translation id="4481530544597605423">ペア設定されていないデバイス</translation>
 <translation id="4505050298327493054">使用中のデスクです。</translation>
+<translation id="4506458088675900627">概要のタッチパッド操作が変わりました</translation>
 <translation id="4513946894732546136">フィードバック</translation>
 <translation id="4527045527269911712">Bluetooth デバイス「<ph name="DEVICE_NAME" />」がペア設定の権限をリクエストしています。</translation>
 <translation id="453661520163887813">あと <ph name="TIME" /> で充電完了</translation>
@@ -480,6 +485,7 @@
 <translation id="6018164090099858612">ミラーモードを終了しています</translation>
 <translation id="602001110135236999">左にスクロール</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />、<ph name="CONNECTION_STATUS" />、信号強度 <ph name="SIGNAL_STRENGTH" />、管理者によって管理</translation>
+<translation id="6029337736376922061">次のデスクに切り替えるタッチパッド操作が変わりました。次のデスクに切り替えるには 4 本の指で右にスワイプします。</translation>
 <translation id="6030495522958826102">メニューは画面左下に移動しました。</translation>
 <translation id="6040143037577758943">閉じる</translation>
 <translation id="6043212731627905357">このモニターは <ph name="DEVICE_TYPE" /> では使用できません（サポートされていません）。</translation>

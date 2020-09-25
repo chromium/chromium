@@ -507,6 +507,7 @@
 <translation id="3080254622891793721">グラフィック</translation>
 <translation id="3086579638707268289">ウェブでのアクティビティが監視されています</translation>
 <translation id="3087734570205094154">下</translation>
+<translation id="3094457892697649331">メモを編集すると、ドキュメントは単一ページ表示に戻ります。</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3096100844101284527">受け取り場所の住所を追加</translation>
 <translation id="3105172416063519923">アセット ID:</translation>
@@ -739,6 +740,7 @@
 <translation id="4075941231477579656">Touch ID</translation>
 <translation id="4079302484614802869">プロキシは固定プロキシ サーバーではなく .pac スクリプト URL を使用するように設定されています。</translation>
 <translation id="4082393374666368382">設定 - 管理</translation>
+<translation id="4084120443451129199">検索モードです。「<ph name="KEYWORD_SUFFIX" />」を検索するには Enter キーを押してください。</translation>
 <translation id="4088981014127559358">1 面の画像の Y 軸移動</translation>
 <translation id="4098354747657067197">偽のサイトにアクセスしようとしています</translation>
 <translation id="4101413244023615925">テキストとグラフィック</translation>
@@ -930,6 +932,7 @@
 <translation id="4809079943450490359">デバイス管理者からの指示:</translation>
 <translation id="4813512666221746211">ネットワーク エラー</translation>
 <translation id="4816492930507672669">ページサイズに合わせる</translation>
+<translation id="4819347708020428563">デフォルト表示でメモを編集しますか？</translation>
 <translation id="484462545196658690">自動</translation>
 <translation id="4850886885716139402">表示</translation>
 <translation id="4854362297993841467">この配達方法はご利用いただけません。別の方法を選択してください。</translation>
@@ -1664,6 +1667,7 @@
 <translation id="7802523362929240268">正規のサイトです</translation>
 <translation id="780301667611848630">いいえ</translation>
 <translation id="7805768142964895445">ステータス</translation>
+<translation id="7811322735445742657">メモを編集すると、ドキュメントは単一ページ表示で元の向きに戻ります。</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Chrome から候補を削除してもよろしいですか？</translation>
 <translation id="781440967107097262">クリップボードを共有しますか？</translation>
@@ -1699,6 +1703,7 @@
 <translation id="7956713633345437162">モバイルのブックマーク</translation>
 <translation id="7961015016161918242">使用しない</translation>
 <translation id="7966803981046576691">ジョブ管理タイプ</translation>
+<translation id="7976214039405368314">リクエストが多すぎます</translation>
 <translation id="7977538094055660992">出力デバイス</translation>
 <translation id="7977894662897852582">Edp</translation>
 <translation id="799149739215780103">製本</translation>
@@ -1780,6 +1785,7 @@
 <translation id="8289355894181816810">確認方法がわからない場合は、ネットワーク管理者までお問い合わせください。</translation>
 <translation id="8293206222192510085">ブックマークの追加</translation>
 <translation id="8294431847097064396">ソース</translation>
+<translation id="8297398969342264569">メモを編集すると、ドキュメントは元の向きに戻ります。</translation>
 <translation id="8298115750975731693">ご利用の Wi-Fi（<ph name="WIFI_NAME" />）では、<ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> へのアクセスが必要な可能性があります。</translation>
 <translation id="8303854710873047864">「<ph name="SECTION" />」セクションを表示しています</translation>
 <translation id="830498451218851433">2 つ折り</translation>

@@ -70,6 +70,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1589090746204042747">Acceder a toda a túa actividade nesta sesión</translation>
 <translation id="1611993646327628135">Activado</translation>
 <translation id="1632985212731562677">A función Acceso con interruptores pódese desactivar en Configuración &gt; Accesibilidade.</translation>
+<translation id="1651447046299738444">Parece que o Bluetooth ou a wifi están desactivados no Chromebook. Comproba a conexión para usar Phone Hub.</translation>
 <translation id="1654477262762802994">Iniciar unha consulta de voz</translation>
 <translation id="1667964833127753507">O modo de cor neutra non usa as cores extraídas dun fondo de pantalla, senón que as substitúe por un conxunto de cores claras ou escuras cun ton neutro.</translation>
 <translation id="1677472565718498478">Tempo restante: <ph name="TIME" /></translation>
@@ -152,6 +153,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="2435457462613246316">Mostrar contrasinal</translation>
 <translation id="2473177541599297363">Confirmar resolución</translation>
 <translation id="2475982808118771221">Produciuse un erro</translation>
+<translation id="2479579251444854687">Pasa tres dedos cara arriba para abrir o modo Descrición xeral. Se queres pechalo, pásaos cara abaixo.</translation>
 <translation id="2482878487686419369">Notificacións</translation>
 <translation id="2484513351006226581">Para cambiar o deseño de teclado, preme <ph name="KEYBOARD_SHORTCUT" />.</translation>
 <translation id="2501920221385095727">Teclas presas</translation>
@@ -164,6 +166,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="2595239820337756193">5 km en millas</translation>
 <translation id="2617342710774726426">A tarxeta SIM está bloqueada</translation>
 <translation id="2621713457727696555">Protexida</translation>
+<translation id="2640255526076764619">Modificouse o xesto do panel táctil para cambiar ao escritorio anterior: agora debes pasar catro dedos cara á esquerda.</translation>
 <translation id="2653659639078652383">Enviar</translation>
 <translation id="2658778018866295321">Facer clic e arrastrar</translation>
 <translation id="2700493154570097719">Definir teclado</translation>
@@ -343,6 +346,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="4412944820643904175">A función <ph name="FEATURE_NAME" /> está desactivada.</translation>
 <translation id="4421231901400348175">Control compartido da túa pantalla con <ph name="HELPER_NAME" /> a través de Asistencia remota.</translation>
 <translation id="4430019312045809116">Volume</translation>
+<translation id="4444978951615977024">Vaia! Comproba a conexión</translation>
 <translation id="4450893287417543264">Non mostrar outra vez</translation>
 <translation id="445864333228800152">Bo serán!</translation>
 <translation id="4458688154122353284">Deter gravación da pantalla</translation>
@@ -352,6 +356,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Dispositivos desincronizados</translation>
 <translation id="4505050298327493054">Escritorio activo.</translation>
+<translation id="4506458088675900627">Modificouse o xesto do panel táctil para acceder á descrición xeral</translation>
 <translation id="4513946894732546136">Dános a túa opinión</translation>
 <translation id="4527045527269911712">O dispositivo Bluetooth "<ph name="DEVICE_NAME" />" quere obter permiso para sincronizarse.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> para completar a carga</translation>
@@ -442,7 +447,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="5648021990716966815">Conector do micrófono</translation>
 <translation id="5669267381087807207">Activando</translation>
 <translation id="5673434351075758678">De "<ph name="FROM_LOCALE" />" a "<ph name="TO_LOCALE" />" tras sincronizar a configuración.</translation>
-<translation id="5679050765726761783">Conectouse un cargador de baixa potencia</translation>
+<translation id="5679050765726761783">Conectouse un adaptador de corrente de baixa potencia</translation>
 <translation id="5682642926269496722">O Asistente de Google non está dispoñible para a conta de usuario actual.</translation>
 <translation id="5689633613396158040">Luz nocturna fai que sexa máis fácil mirar a pantalla ou ler con pouca luz. Toca para cambiar a hora á que se activa a función mencionada ou para desactivala completamente.</translation>
 <translation id="5691772641933328258">Non se recoñeceu a impresión dixital</translation>
@@ -481,6 +486,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="6018164090099858612">Saíndo do modo de proxección</translation>
 <translation id="602001110135236999">Desprazarse á esquerda</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, intensidade do sinal do <ph name="SIGNAL_STRENGTH" />, xestionada polo teu administrador</translation>
+<translation id="6029337736376922061">Modificouse o xesto do panel táctil para cambiar ao escritorio seguinte: agora debes pasar catro dedos cara á dereita.</translation>
 <translation id="6030495522958826102">O menú moveuse á esquina inferior esquerda da pantalla.</translation>
 <translation id="6040143037577758943">Pechar</translation>
 <translation id="6043212731627905357">Este monitor non funciona co dispositivo <ph name="DEVICE_TYPE" /> (o monitor non é compatible).</translation>

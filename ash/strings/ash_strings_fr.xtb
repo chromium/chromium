@@ -70,6 +70,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1589090746204042747">Accéder à toutes vos activités dans cette session</translation>
 <translation id="1611993646327628135">Activé</translation>
 <translation id="1632985212731562677">Vous pouvez désactiver Switch Access en sélectionnant Paramètres &gt; Accessibilité.</translation>
+<translation id="1651447046299738444">Il semble que votre connexion Bluetooth ou Wi-Fi soit désactivée sur votre Chromebook. Veuillez vérifier votre connexion pour utiliser Phone Hub.</translation>
 <translation id="1654477262762802994">Soumettre une requête vocale</translation>
 <translation id="1667964833127753507">Le mode couleur neutre n'utilise pas des couleurs issues du fond d'écran : il les remplace par une gamme de tonalités neutres (claires ou sombres).</translation>
 <translation id="1677472565718498478">Temps restant : <ph name="TIME" /></translation>
@@ -152,6 +153,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2435457462613246316">Afficher le mot de passe</translation>
 <translation id="2473177541599297363">Confirmer la résolution</translation>
 <translation id="2475982808118771221">Une erreur s'est produite.</translation>
+<translation id="2479579251444854687">Balayez l'écran vers le haut avec trois doigts pour ouvrir l'aperçu, et vers le bas pour le fermer.</translation>
 <translation id="2482878487686419369">Notifications</translation>
 <translation id="2484513351006226581">Appuyez sur <ph name="KEYBOARD_SHORTCUT" /> pour changer la disposition du clavier.</translation>
 <translation id="2501920221385095727">Touches persistantes</translation>
@@ -164,6 +166,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2595239820337756193">5 km en miles</translation>
 <translation id="2617342710774726426">La carte SIM est verrouillée</translation>
 <translation id="2621713457727696555">Sécurisé</translation>
+<translation id="2640255526076764619">Le geste à effectuer sur le pavé tactile pour passer au bureau précédent a changé : vous devez à présent le balayer vers la gauche avec quatre doigts.</translation>
 <translation id="2653659639078652383">Envoyer</translation>
 <translation id="2658778018866295321">Cliquer et faire glisser</translation>
 <translation id="2700493154570097719">Définir votre clavier</translation>
@@ -342,6 +345,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="4412944820643904175">La fonctionnalité <ph name="FEATURE_NAME" /> est désactivée.</translation>
 <translation id="4421231901400348175">Partager le contrôle de votre écran avec <ph name="HELPER_NAME" /> via l'assistance à distance</translation>
 <translation id="4430019312045809116">Volume</translation>
+<translation id="4444978951615977024">Un problème est survenu. Vérifiez votre connexion</translation>
 <translation id="4450893287417543264">Ne plus afficher</translation>
 <translation id="445864333228800152">Bonsoir,</translation>
 <translation id="4458688154122353284">Arrêter l'enregistrement de l'écran</translation>
@@ -351,6 +355,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="4479639480957787382">Ethernet </translation>
 <translation id="4481530544597605423">Appareils dissociés</translation>
 <translation id="4505050298327493054">Bureau actif.</translation>
+<translation id="4506458088675900627">Le geste à effectuer sur le pavé tactile pour afficher l'aperçu a changé</translation>
 <translation id="4513946894732546136">Commentaires</translation>
 <translation id="4527045527269911712">L'appareil Bluetooth "<ph name="DEVICE_NAME" />" demande l'autorisation de s'associer.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> avant charge complète</translation>
@@ -480,6 +485,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="6018164090099858612">Sortie du mode Miroir…</translation>
 <translation id="602001110135236999">Vers la gauche</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" />, géré par votre administrateur</translation>
+<translation id="6029337736376922061">Le geste à effectuer sur le pavé tactile pour afficher le bureau suivant a changé : vous devez à présent le balayer vers la droite avec quatre doigts.</translation>
 <translation id="6030495522958826102">Le menu a été déplacé dans l'angle inférieur gauche de l'écran.</translation>
 <translation id="6040143037577758943">Fermer</translation>
 <translation id="6043212731627905357">Ce moniteur ne fonctionne pas avec votre <ph name="DEVICE_TYPE" /> (il n'est pas compatible).</translation>

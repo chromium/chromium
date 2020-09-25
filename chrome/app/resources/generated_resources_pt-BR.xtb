@@ -234,6 +234,7 @@
 <translation id="1260451001046713751">Sempre permitir pop-ups e redirecionamentos de <ph name="HOST" /></translation>
 <translation id="1261380933454402672">Moderada</translation>
 <translation id="126156426083987769">Ocorreu um problema com as licenças do dispositivo no modo de demonstração.</translation>
+<translation id="1263231323834454256">Lista de leitura</translation>
 <translation id="1263490604593716556">Conta gerenciada por <ph name="FIRST_PARENT_EMAIL" /> e <ph name="SECOND_PARENT_EMAIL" />. Para sair da conta principal deste dispositivo, clique no horário exibido na tela. No menu que aparece, clique em "Sair".</translation>
 <translation id="1263733306853729545">Usar as teclas <ph name="MINUS" /> e <ph name="EQUAL" /> para numerar uma lista de candidatos</translation>
 <translation id="126387934568812801">Incluir esta captura de tela e os títulos das guias abertas</translation>
@@ -1462,6 +1463,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2695749433451188613">Protocolo de impressão via Internet (HTTPS)</translation>
 <translation id="2699911226086014512">Falha na operação do PIN, código de erro: <ph name="RETRIES" />.</translation>
 <translation id="2701737434167469065">Faça login, <ph name="EMAIL" /></translation>
+<translation id="2702801445560668637">Lista de leitura</translation>
 <translation id="270358213449696159">Conteúdo dos Termos do Google Chrome OS</translation>
 <translation id="270414148003105978">Redes móveis</translation>
 <translation id="2704184184447774363">Assinatura de documentos da Microsoft</translation>

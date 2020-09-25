@@ -234,6 +234,7 @@
 <translation id="1260451001046713751">Uvek dozvoli iskačuće prozore i preusmeravanja sa <ph name="HOST" /></translation>
 <translation id="1261380933454402672">Umereno</translation>
 <translation id="126156426083987769">Došlo je do problema sa licencama za uređaj u režimu demonstracije.</translation>
+<translation id="1263231323834454256">Lista za čitanje</translation>
 <translation id="1263490604593716556">Nalogom upravljaju <ph name="FIRST_PARENT_EMAIL" /> i <ph name="SECOND_PARENT_EMAIL" />. Da biste se odjavili sa primarnog naloga na ovom uređaju, kliknite na vreme na ekranu. U meniju koji se pojavljuje kliknite na Odjavi me.</translation>
 <translation id="1263733306853729545">Koristite tastere <ph name="MINUS" /> i <ph name="EQUAL" /> da biste postavili listu kandidata</translation>
 <translation id="126387934568812801">Uvrstite ovaj snimak ekrana i naslove otvorenih kartica</translation>
@@ -1459,6 +1460,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2695749433451188613">Internet protokol za štampanje (HTTPS)</translation>
 <translation id="2699911226086014512">PIN operacija nije uspela, kôd greške <ph name="RETRIES" />.</translation>
 <translation id="2701737434167469065">Prijavite se, <ph name="EMAIL" /></translation>
+<translation id="2702801445560668637">Lista za čitanje</translation>
 <translation id="270358213449696159">Sadržaj uslova za Google Chrome OS</translation>
 <translation id="270414148003105978">Mobilne mreže</translation>
 <translation id="2704184184447774363">Microsoft potpisivanje dokumenata</translation>
@@ -4358,7 +4360,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6181431612547969857">Preuzimanje je blokirano</translation>
 <translation id="6184099524311454384">Kartice za pretragu</translation>
 <translation id="6185132558746749656">Lokacija uređaja</translation>
-<translation id="6186394437969115158">Sajtovi obično prikazuju oglase da bi mogli besplatno da pružaju sadržaj ili usluge. Ali, neki sajtovi su poznati po tome što prikazuju oglase koji ometaju aktivnosti ili obmanjujuće oglase.</translation>
+<translation id="6186394437969115158">Sajtovi obično prikazuju oglase da bi mogli besplatno da pružaju sadržaj ili usluge. Ali, ima i sajtova koji prikazuju oglase koji ometaju aktivnosti ili obmanjujuće oglase.</translation>
 <translation id="6191293864534840972">Serveri za imena su pogrešnog formata</translation>
 <translation id="6195446518998936840">Da biste podesili roditeljski nadzor, dete mora da ima Google nalog, kojim će upravljati uz vašu pomoć. Pomoću aplikacije Family Link možete da podesite ograničenja vremena ispred ekrana, odobrite ili blokirate veb-sajtove i drugo.</translation>
 <translation id="6195693561221576702">Ovaj uređaj ne može da se podesi u oflajn režimu demonstracije.</translation>
@@ -5835,7 +5837,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="7947962633355574091">K&amp;opiraj adresu videa</translation>
 <translation id="7950040156882184764">Internet protokol za štampanje (HTTP)</translation>
 <translation id="7951265006188088697">Da biste dodali Google Pay načine plaćanja ili upravljali njima, posetite <ph name="BEGIN_LINK" />Google nalog<ph name="END_LINK" /></translation>
-<translation id="7952708427581814389">Sajtovi mogu da traže da vide tekst i slike koji su u privremenoj memoriji</translation>
+<translation id="7952708427581814389">Sajtovi mogu da traže da vide tekst i slike u privremenoj memoriji</translation>
 <translation id="795282463722894016">Vraćanje je završeno</translation>
 <translation id="7952904276017482715">Očekivao se ID „<ph name="EXPECTED_ID" />“, ali ID je bio „<ph name="NEW_ID" />“</translation>
 <translation id="7953955868932471628">Upravljaj prečicama</translation>

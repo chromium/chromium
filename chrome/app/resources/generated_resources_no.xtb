@@ -234,6 +234,7 @@
 <translation id="1260451001046713751">Tillat alltid forgrunnsvinduer og viderekoblinger fra <ph name="HOST" /></translation>
 <translation id="1261380933454402672">Moderat</translation>
 <translation id="126156426083987769">Det oppsto et problem med enhetslisenser i demomodus.</translation>
+<translation id="1263231323834454256">Leseliste</translation>
 <translation id="1263490604593716556">Kontoen er administrert av <ph name="FIRST_PARENT_EMAIL" /> og <ph name="SECOND_PARENT_EMAIL" />. For å logge av primærkontoen på denne enheten, klikk på klokkeslettet på skjermen. I menyen som åpnes, klikker du på «Logg av».</translation>
 <translation id="1263733306853729545">Bruk tastene <ph name="MINUS" /> og <ph name="EQUAL" /> for å paginere en kandidatliste</translation>
 <translation id="126387934568812801">Inkluder denne skjermdumpen og titlene på åpne faner</translation>
@@ -859,7 +860,7 @@
 <translation id="197989455406964291">KDC støtter ikke krypteringstypen</translation>
 <translation id="1984417487208496350">Ingen beskyttelse (anbefales ikke)</translation>
 <translation id="1987317783729300807">Kontoer</translation>
-<translation id="1988494864246143197">Nettsteder bruker vanligvis Flash til å spille av lyd eller video eller tilby spill. Etter desember 2020 støttes ikke Flash Player lenger.</translation>
+<translation id="1988494864246143197">Nettsteder bruker vanligvis Flash til å spille av lyd eller video eller kjøre spill. Etter desember 2020 støttes ikke Flash Player lenger.</translation>
 <translation id="1989112275319619282">Bla gjennom</translation>
 <translation id="1990512225220753005">Ikke vis snarveier på denne siden</translation>
 <translation id="1992397118740194946">Ikke angitt</translation>
@@ -1459,6 +1460,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2695749433451188613">Internet Printing Protocol (HTTPS)</translation>
 <translation id="2699911226086014512">PIN-kodehandlingen mislyktes med koden <ph name="RETRIES" />.</translation>
 <translation id="2701737434167469065">Logg på, <ph name="EMAIL" /></translation>
+<translation id="2702801445560668637">Leseliste</translation>
 <translation id="270358213449696159">Innholdet i vilkårene for Google Chrome OS</translation>
 <translation id="270414148003105978">Mobilnettverk</translation>
 <translation id="2704184184447774363">Microsoft-dokumentsignering</translation>
@@ -4490,7 +4492,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="6331566915566907158">Bidra til å gjøre funksjonene og ytelsen til Chrome OS bedre</translation>
 <translation id="6331818708794917058">Nettsteder kan be om å få koble til MIDI-enheter</translation>
 <translation id="6333064448949140209">Filen sendes til Google for feilsøking</translation>
-<translation id="6338981933082930623">Alle nettsteder kan vise deg hvilke annonser som helst</translation>
+<translation id="6338981933082930623">Alle nettsteder kan vise deg alle slags annonser</translation>
 <translation id="6339668969738228384">Opprett en ny profil for <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6339995243416022850">Nettsteder kan be om å få bruke programtillegg for å få tilgang til datamaskinen din (anbefales)</translation>
 <translation id="6340017061976355871">Kunne ikke koble til tjeneren. Kontrollér nettverkstilkoblingen din, og prøv igjen. Start Chromebooken på nytt hvis problemet vedvarer.</translation>

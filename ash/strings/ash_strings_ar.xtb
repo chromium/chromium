@@ -70,6 +70,7 @@
 <translation id="1589090746204042747">الوصول إلى جميع أنشطتك في جلسة واحدة</translation>
 <translation id="1611993646327628135">مُفعَّل</translation>
 <translation id="1632985212731562677">يمكن إيقاف ميزة "الوصول عبر مفتاح التحويل" في "الإعدادات" &gt; "أدوات تمكين الوصول".</translation>
+<translation id="1651447046299738444">‏يبدو أنه تم إيقاف اتصال شبكة البلوتوث أو شبكة Wi-Fi على جهاز Chromebook. يُرجى التحقُّق من الاتصال لاستخدام Phone Hub.</translation>
 <translation id="1654477262762802994">بدء طلب بحث صوتي</translation>
 <translation id="1667964833127753507">لا يستخدم وضع "الألوان المحايدة" ألوانًا مُستخرَجة من الخلفية، ويستخدم بدلاً منها مجموعة من إضاءة معتدلة أو ألوان داكنة.</translation>
 <translation id="1677472565718498478">الوقت المتبقي <ph name="TIME" /></translation>
@@ -152,6 +153,7 @@
 <translation id="2435457462613246316">عرض كلمة المرور</translation>
 <translation id="2473177541599297363">تأكيد درجة الدقة</translation>
 <translation id="2475982808118771221">حدث خطأ</translation>
+<translation id="2479579251444854687">يمكنك التمرير سريعًا لأعلى الشاشة بثلاثة أصابع لفتح وضع "النظرة العامة" والتمرير للأسفل لإغلاقه.</translation>
 <translation id="2482878487686419369">الإشعارات</translation>
 <translation id="2484513351006226581">انقر على <ph name="KEYBOARD_SHORTCUT" /> لتبديل تنسيق لوحة المفاتيح.</translation>
 <translation id="2501920221385095727">مفاتيح الثبات</translation>
@@ -164,6 +166,7 @@
 <translation id="2595239820337756193">5 كيلومتر بالميل</translation>
 <translation id="2617342710774726426">‏تم قفل شريحة SIM</translation>
 <translation id="2621713457727696555">مؤمّنة</translation>
+<translation id="2640255526076764619">تم تغيير إيماءة لوحة اللمس الخاصة بالتبديل إلى سطح المكتب السابق. يمكنك التمرير سريعًا لليسار بأربعة أصابع للتبديل إلى سطح المكتب السابق.</translation>
 <translation id="2653659639078652383">إرسال</translation>
 <translation id="2658778018866295321">انقر واسحب</translation>
 <translation id="2700493154570097719">تعيين لوحة المفاتيح</translation>
@@ -342,6 +345,7 @@
 <translation id="4412944820643904175">ميزة <ph name="FEATURE_NAME" /> غير مُفعَّلة.</translation>
 <translation id="4421231901400348175">مشاركة التحكم في شاشتك مع <ph name="HELPER_NAME" /> عن طريق المساعدة عن بُعد.</translation>
 <translation id="4430019312045809116">مستوى الصوت</translation>
+<translation id="4444978951615977024">عذرًا. يُرجى التحقُّق من الاتصال</translation>
 <translation id="4450893287417543264">عدم الإظهار مرة أخرى</translation>
 <translation id="445864333228800152">مساء الخير،</translation>
 <translation id="4458688154122353284">إيقاف تسجيل الشاشة</translation>
@@ -351,6 +355,7 @@
 <translation id="4479639480957787382">إيثرنت</translation>
 <translation id="4481530544597605423">الأجهزة التي تم إلغاء إقرانها</translation>
 <translation id="4505050298327493054">مكتب نشط</translation>
+<translation id="4506458088675900627">تم تغيير إيماءة لوحة اللمس الخاصة بوضع "النظرة العامة"</translation>
 <translation id="4513946894732546136">تعليقات</translation>
 <translation id="4527045527269911712">يريد جهاز بلوتوث "<ph name="DEVICE_NAME" />" الحصول على إذن للإقران.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> حتى اكتمال الشحن</translation>
@@ -480,6 +485,7 @@
 <translation id="6018164090099858612">جارٍ الخروج من وضع المرآة</translation>
 <translation id="602001110135236999">التمرير لليسار</translation>
 <translation id="6025324406281560198">حالة الأمان <ph name="SECURITY_STATUS" />، حالة الاتصال <ph name="CONNECTION_STATUS" />، قوة الإشارة <ph name="SIGNAL_STRENGTH" />، يديرها المشرف</translation>
+<translation id="6029337736376922061">تم تغيير إيماءة لوحة اللمس الخاصة بالتبديل إلى سطح المكتب التالي. يمكنك التمرير سريعًا لليمين بأربعة أصابع للتبديل إلى سطح المكتب التالي.</translation>
 <translation id="6030495522958826102">تم نقل القائمة إلى أسفل يمين الشاشة.</translation>
 <translation id="6040143037577758943">إغلاق</translation>
 <translation id="6043212731627905357">لا تتوافق هذه الشاشة مع <ph name="DEVICE_TYPE" /> (هذه الشاشة غير مدعومة).</translation>

@@ -198,7 +198,7 @@
 <translation id="2494974097748878569">Google помоћник у Chrome-у</translation>
 <translation id="2496180316473517155">Историја прегледања</translation>
 <translation id="2497852260688568942">Администратор је онемогућио синхронизацију</translation>
-<translation id="250020030759455918">Видећете статус пријаве на <ph name="SITE_NAME" />, податке прегледања и податке о сајту у Chrome-у</translation>
+<translation id="250020030759455918">У Chrome-у ћете видети да ли сте пријављени, податке прегледања и податке о сајту за <ph name="SITE_NAME" /></translation>
 <translation id="2513403576141822879">Више подешавања у вези са приватношћу, безбедношћу и прикупљањем података потражите у одељку <ph name="BEGIN_LINK" />Синхронизација и Google услуге<ph name="END_LINK" /></translation>
 <translation id="2517472476991765520">Скенирај</translation>
 <translation id="2518590038762162553">У Lite режиму Chrome учитава странице брже и користи и до 60 процената мање података. Да би оптимизовао странице које посећујете, Chrome шаље Google-у ваш саобраћај на вебу. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
@@ -282,7 +282,7 @@
 <translation id="3207960819495026254">Обележено</translation>
 <translation id="3208584281581115441">Проверите</translation>
 <translation id="3211426585530211793">Ставка <ph name="ITEM_TITLE" /> је избрисана</translation>
-<translation id="3211503082155944789">Непрочитано страница: <ph name="READING_LIST_COUNT" /></translation>
+<translation id="3211503082155944789">Непрочитаних страница: <ph name="READING_LIST_COUNT" /></translation>
 <translation id="321773570071367578">Ако сте заборавили приступну фразу или желите да промените ово подешавање, <ph name="BEGIN_LINK" />ресетујте синхронизацију<ph name="END_LINK" /></translation>
 <translation id="3223655207402797071">Пријавите се на овај сајт, Google налог и у Chrome. Синхронизацију можете да укључите касније.</translation>
 <translation id="3232754137068452469">Веб-апликација</translation>

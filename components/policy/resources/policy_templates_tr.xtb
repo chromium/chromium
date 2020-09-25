@@ -1594,6 +1594,17 @@ Bu politika False (Yanlış) değerine ayarlanırsa <ph name="PRODUCT_NAME" /> y
 
       Bu politika ayarlanmadan bırakılırsa "DisabledPlugins"teki kalıplarla eşleşen eklentiler kilitlenip devre dışı bırakılır ve kullanıcı bunları etkinleştiremez.</translation>
 <translation id="3381968327636295719">Varsayılan olarak ana makine tarayıcısını kullan</translation>
+<translation id="3383794118443927579">Politikanın ayarlanması, varsayılan Yeni Sekme sayfasının URL'sini yapılandırır ve kullanıcıların değiştirmesini önler.
+
+      Yeni Sekme sayfası, yeni sekmeler ve pencerelerle açılır.
+
+      Bu politika başlangıçta hangi sayfaların açılacağını belirlemez. Bu sayfalar <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> politikaları ile kontrol edilir. Bu politika, Yeni Sekme sayfasını açacak şekilde ayarlanmışsa ana sayfayı etkiler. Aynı şekilde Yeni Sekme sayfasını açacak şekilde ayarlanmışsa başlangıç sayfasını da etkiler.
+
+      Tamamen standartlaştırılmış bir URL sağlamak en iyi uygulamadır. URL tamamen standartlaştırılmazsa <ph name="PRODUCT_NAME" /> ürünü, https:// URL'sini varsayılan olarak ayarlar.
+
+      Politika ayarlanmaz veya boş bırakılırsa varsayılan Yeni Sekme sayfası kullanılır.
+
+      <ph name="MS_WIN_NAME" /> işletim sisteminde bu işlev, yalnızca Windows 10 Pro üzerinde çalışan bir <ph name="MS_AD_NAME" /> alan adına katılmış veya <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" /> öğesine kaydolmuş örneklerde kullanılabilir. <ph name="MAC_OS_NAME" /> işletim sisteminde bu işlev, yalnızca MDM ile çalışan veya MCX aracılığıyla bir alan adına katılmış örneklerde kullanılabilir.</translation>
 <translation id="3391457705621770207">Politikanın ayarlanması, <ph name="DEVICE_LOCAL_ACCOUNT_AUTO_LOGIN_ID_POLICY_NAME" /> politikası tarafından belirtilen cihaz yerel hesabında otomatik oturum açılmadan önce kullanıcı etkinliği olmadan geçen süreyi milisaniye cinsinden belirler.
 
       Politika ayarlanmadan bırakılırsa zaman aşımı olarak 0 milisaniye kullanılır.

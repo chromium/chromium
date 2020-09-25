@@ -233,6 +233,7 @@
 <translation id="1260451001046713751">Всегда показывать всплывающие окна с сайта <ph name="HOST" /> и разрешить перенаправление с него</translation>
 <translation id="1261380933454402672">Умеренное</translation>
 <translation id="126156426083987769">Возникла проблема с лицензиями для устройств, работающих в демонстрационном режиме.</translation>
+<translation id="1263231323834454256">Список для чтения</translation>
 <translation id="1263490604593716556">Администраторы аккаунта: <ph name="FIRST_PARENT_EMAIL" /> и <ph name="SECOND_PARENT_EMAIL" />. Чтобы выйти из основного аккаунта на этом устройстве, нажмите на время в правой нижней части экрана. В появившемся меню выберите "Выйти".</translation>
 <translation id="1263733306853729545">Пролистывать список вариантов клавишами "<ph name="MINUS" />" и "<ph name="EQUAL" />"</translation>
 <translation id="126387934568812801">Добавить этот скриншот и заголовки открытых вкладок</translation>
@@ -1457,6 +1458,7 @@
 <translation id="2695749433451188613">Internet Printing Protocol (HTTPS)</translation>
 <translation id="2699911226086014512">Не удалось установить PIN-код (ошибка <ph name="RETRIES" />).</translation>
 <translation id="2701737434167469065">Войти в аккаунт <ph name="EMAIL" /></translation>
+<translation id="2702801445560668637">Список для чтения</translation>
 <translation id="270358213449696159">Полный текст Условий использования Google Chrome OS</translation>
 <translation id="270414148003105978">Мобильные сети</translation>
 <translation id="2704184184447774363">Подпись документов Microsoft</translation>

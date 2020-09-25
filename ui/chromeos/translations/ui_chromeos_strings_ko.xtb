@@ -364,6 +364,7 @@
 <translation id="5010406651457630570">컴퓨터</translation>
 <translation id="5011233892417813670">Chromebook</translation>
 <translation id="5024856940085636730">작업 시간이 예상보다 지연되고 있습니다. 중단하시겠습니까?</translation>
+<translation id="5026887030745057099">힌디어</translation>
 <translation id="5036159836254554629">Parallels Desktop 공유 관리</translation>
 <translation id="5038625366300922036">더보기...</translation>
 <translation id="5061708541166515394">대비</translation>
@@ -608,7 +609,7 @@
 <translation id="7649070708921625228">도움말</translation>
 <translation id="7654209398114106148">항목 <ph name="NUMBER_OF_ITEMS" />개 이동 중...</translation>
 <translation id="7658239707568436148">취소</translation>
-<translation id="7693909743393669729">드라이브를 포맷하면 저장된 모든 데이터가 삭제되고 보이지 않을 수 있는 파티션을 포함한 기존 파티션이 모두 삭제됩니다. 이 작업은 되돌릴 수 없습니다.</translation>
+<translation id="7693909743393669729">드라이브를 포맷하면 저장된 모든 데이터가 삭제되고 숨김 상태에 있는 파티션을 포함 기존 파티션이 모두 삭제됩니다. 이 작업은 되돌릴 수 없습니다.</translation>
 <translation id="7695430100978772476"><ph name="DRIVE_NAME" />을(를) 포맷할 수 없습니다.</translation>
 <translation id="770015031906360009">그리스어</translation>
 <translation id="7706319470528945664">포르투갈어 키보드</translation>

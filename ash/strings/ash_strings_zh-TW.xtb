@@ -70,6 +70,7 @@
 <translation id="1589090746204042747">存取你在這個工作階段內的所有活動</translation>
 <translation id="1611993646327628135">開啟</translation>
 <translation id="1632985212731562677">你可以依序點選 [設定] &gt; [無障礙設定] 來停用開關功能。</translation>
+<translation id="1651447046299738444">Chromebook 上的藍牙或 Wi-Fi 似乎已關閉。請檢查連線狀態以使用 Phone Hub。</translation>
 <translation id="1654477262762802994">啟動語音查詢</translation>
 <translation id="1667964833127753507">中間色模式不會使用從桌布擷取的色彩，而是改用一組中間色的亮色調或深色調。</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> 後用盡</translation>
@@ -152,6 +153,7 @@
 <translation id="2435457462613246316">顯示密碼</translation>
 <translation id="2473177541599297363">確認解析度</translation>
 <translation id="2475982808118771221">發生錯誤</translation>
+<translation id="2479579251444854687">以三指向上滑動可開啟「總覽」，向下滑動可關閉「總覽」。</translation>
 <translation id="2482878487686419369">通知</translation>
 <translation id="2484513351006226581">按下 <ph name="KEYBOARD_SHORTCUT" />可切換鍵盤配置。</translation>
 <translation id="2501920221385095727">相黏鍵</translation>
@@ -164,6 +166,7 @@
 <translation id="2595239820337756193">5 公里等於多少英里</translation>
 <translation id="2617342710774726426">SIM 卡已鎖定</translation>
 <translation id="2621713457727696555">已受到安全保護</translation>
+<translation id="2640255526076764619">切換至上一個桌面的觸控板手勢已變更，以四指向左滑動即可切換至上一個桌面。</translation>
 <translation id="2653659639078652383">提交</translation>
 <translation id="2658778018866295321">按住並拖曳</translation>
 <translation id="2700493154570097719">設定鍵盤</translation>
@@ -342,6 +345,7 @@
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" />功能已關閉。</translation>
 <translation id="4421231901400348175">透過遠端協助與<ph name="HELPER_NAME" />分享螢幕控制功能。</translation>
 <translation id="4430019312045809116">音量</translation>
+<translation id="4444978951615977024">糟糕！請檢查連線狀態</translation>
 <translation id="4450893287417543264">不要再顯示</translation>
 <translation id="445864333228800152">晚安，</translation>
 <translation id="4458688154122353284">停止錄製螢幕畫面</translation>
@@ -351,6 +355,7 @@
 <translation id="4479639480957787382">乙太網路</translation>
 <translation id="4481530544597605423">解除配對的裝置</translation>
 <translation id="4505050298327493054">使用中的桌面。</translation>
+<translation id="4506458088675900627">「總覽」觸控板手勢已變更</translation>
 <translation id="4513946894732546136">意見回饋</translation>
 <translation id="4527045527269911712">藍牙裝置「<ph name="DEVICE_NAME" />」要求配對權限。</translation>
 <translation id="453661520163887813"><ph name="TIME" /> 後充飽</translation>
@@ -480,6 +485,7 @@
 <translation id="6018164090099858612">退出鏡像模式</translation>
 <translation id="602001110135236999">向左捲動</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />，<ph name="CONNECTION_STATUS" />，訊號強度 <ph name="SIGNAL_STRENGTH" />，由系統管理員管理</translation>
+<translation id="6029337736376922061">切換至下一個桌面的觸控板手勢已變更，以四指向右滑動即可切換至下一個桌面。</translation>
 <translation id="6030495522958826102">已將選單移至畫面左下角。</translation>
 <translation id="6040143037577758943">關閉</translation>
 <translation id="6043212731627905357">這個顯示器與你的 <ph name="DEVICE_TYPE" /> 不相容 (這是不支援的顯示器)。</translation>

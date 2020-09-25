@@ -234,6 +234,7 @@
 <translation id="1260451001046713751"><ph name="HOST" /> ನಿಂದ ಪಾಪ್-ಅಪ್‍ಗಳು ಮತ್ತು ಮರುನಿರ್ದೇಶನಗಳನ್ನು ಯಾವಾಗಲೂ ಅನುಮತಿಸಿ</translation>
 <translation id="1261380933454402672">ಸಾಧಾರಣ</translation>
 <translation id="126156426083987769">ಡೆಮೊ ಮೋಡ್ ಸಾಧನದ ಪರವಾನಗಿಗಳಲ್ಲಿ ಸಮಸ್ಯೆ ಸಂಭವಿಸಿದೆ.</translation>
+<translation id="1263231323834454256">ಓದುವ ಪಟ್ಟಿ</translation>
 <translation id="1263490604593716556"><ph name="FIRST_PARENT_EMAIL" /> ಮತ್ತು <ph name="SECOND_PARENT_EMAIL" /> ಮೂಲಕ ಖಾತೆಯನ್ನು ನಿರ್ವಹಿಸಲಾಗಿದೆ. ಈ ಸಾಧನದಲ್ಲಿ ಪ್ರಾಥಮಿಕ ಖಾತೆಯಿಂದ ಸೈನ್ ಔಟ್ ಆಗಲು, ಸ್ಕ್ರೀನ್ ಮೇಲಿರುವ ಸಮಯವನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ. ನಂತರ ಕಾಣಿಸಿಕೊಳ್ಳುವ ಮೆನುವಿನಲ್ಲಿ "ಸೈನ್ ಔಟ್" ಅನ್ನು ಕ್ಲಿಕ್ ಮಾಡಿ.</translation>
 <translation id="1263733306853729545">ಕ್ಯಾಂಡಿಡೇಟ್ ಪಟ್ಟಿಯನ್ನು ವಿಭಾಗಿಸಲು <ph name="MINUS" /> ಮತ್ತು <ph name="EQUAL" /> ಕೀಗಳನ್ನು ಬಳಸಿ</translation>
 <translation id="126387934568812801">ಈ ಸ್ಕ್ರೀನ್‌ಶಾಟ್ ಮತ್ತು ತೆರೆದ ಟ್ಯಾಬ್‌ಗಳ ಶೀರ್ಷಿಕೆಗಳನ್ನು ಸೇರಿಸಿ</translation>
@@ -1462,6 +1463,7 @@
 <translation id="2695749433451188613">ಇಂಟರ್ನೆಟ್ ಮುದ್ರಿಸುವಿಕೆಯ ಪ್ರೊಟೊಕಾಲ್ (HTTPS)</translation>
 <translation id="2699911226086014512">ಪಿನ್ ಕಾರ್ಯಾಚರಣೆಯು ವಿಫಲವಾಗಿದೆ ಮತ್ತು <ph name="RETRIES" /> ಕೋಡ್ ಅನ್ನು ಮರಳಿಸಿದೆ.</translation>
 <translation id="2701737434167469065">ಸೈನ್ ಇನ್ ಮಾಡಿ, <ph name="EMAIL" /></translation>
+<translation id="2702801445560668637">ಓದುವ ಪಟ್ಟಿ</translation>
 <translation id="270358213449696159">Google Chromium OS ನಿಯಮಗಳ ವಿಷಯಗಳು</translation>
 <translation id="270414148003105978">ಮೊಬೈಲ್ ನೆಟ್‌ವರ್ಕ್‌ಗಳು</translation>
 <translation id="2704184184447774363">Microsoft Document Signing</translation>

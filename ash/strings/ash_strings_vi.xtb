@@ -70,6 +70,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1589090746204042747">Truy cập vào tất cả hoạt động của bạn trong phiên này</translation>
 <translation id="1611993646327628135">Bật</translation>
 <translation id="1632985212731562677">Bạn có thể tắt tính năng Tiếp cận bằng công tắc trong phần Cài đặt &gt; Hỗ trợ tiếp cận.</translation>
+<translation id="1651447046299738444">Có vẻ như Bluetooth hoặc Wi-Fi bị tắt trên Chromebook. Vui lòng kiểm tra kết nối của bạn để dùng Phone Hub.</translation>
 <translation id="1654477262762802994">Bắt đầu đặt câu hỏi bằng giọng nói</translation>
 <translation id="1667964833127753507">Chế độ màu trung tính không dùng màu được trích xuất từ hình nền mà thay các màu này bằng bộ màu sáng hoặc tối có sắc trung tính.</translation>
 <translation id="1677472565718498478">Còn <ph name="TIME" /></translation>
@@ -152,6 +153,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2435457462613246316">Hiển thị mật khẩu</translation>
 <translation id="2473177541599297363">Xác nhận độ phân giải</translation>
 <translation id="2475982808118771221">Đã xảy ra lôi</translation>
+<translation id="2479579251444854687">Hãy dùng 3 ngón tay vuốt lên/xuống để mở/đóng chế độ Tổng quan.</translation>
 <translation id="2482878487686419369">Thông báo</translation>
 <translation id="2484513351006226581">Hãy nhấn <ph name="KEYBOARD_SHORTCUT" /> để chuyển bố cục bàn phím.</translation>
 <translation id="2501920221385095727">Phím cố định</translation>
@@ -164,6 +166,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2595239820337756193">5.000 dặm</translation>
 <translation id="2617342710774726426">Thẻ SIM bị khóa</translation>
 <translation id="2621713457727696555">Đã bảo mật</translation>
+<translation id="2640255526076764619">Cử chỉ chuyển sang không gian làm việc trước bằng bàn di chuột đã thay đổi. Hãy vuốt sang trái bằng 4 ngón tay để chuyển sang không gian làm việc trước.</translation>
 <translation id="2653659639078652383">Gửi</translation>
 <translation id="2658778018866295321">Nhấp và kéo</translation>
 <translation id="2700493154570097719">Đặt bàn phím</translation>
@@ -342,6 +345,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> đang tắt.</translation>
 <translation id="4421231901400348175">Chia sẻ quyền kiểm soát màn hình của bạn với <ph name="HELPER_NAME" /> qua Trợ giúp từ xa.</translation>
 <translation id="4430019312045809116">Âm lượng</translation>
+<translation id="4444978951615977024">Rất tiếc! Hãy kiểm tra kết nối của bạn</translation>
 <translation id="4450893287417543264">Không hiển thị lại</translation>
 <translation id="445864333228800152">Xin chào!</translation>
 <translation id="4458688154122353284">Dừng ghi màn hình</translation>
@@ -351,6 +355,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Thiết bị được hủy ghép nối</translation>
 <translation id="4505050298327493054">Không gian làm việc đang hoạt động.</translation>
+<translation id="4506458088675900627">Cử chỉ mở/đóng chế độ Tổng quan bằng bàn di chuột đã thay đổi</translation>
 <translation id="4513946894732546136">Phản hồi</translation>
 <translation id="4527045527269911712">Thiết bị Bluetooth "<ph name="DEVICE_NAME" />"muốn được phép ghép nối.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> cho đến khi đầy</translation>
@@ -480,6 +485,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="6018164090099858612">Đang thoát chế độ phản chiếu</translation>
 <translation id="602001110135236999">Cuộn sang trái</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Cường độ tín hiệu <ph name="SIGNAL_STRENGTH" />, Do quản trị viên của bạn quản lý</translation>
+<translation id="6029337736376922061">Cử chỉ chuyển sang không gian làm việc tiếp theo bằng bàn di chuột đã thay đổi. Hãy vuốt sang phải bằng 4 ngón tay để chuyển sang không gian làm việc tiếp theo.</translation>
 <translation id="6030495522958826102">Đã di chuyển trình đơn vào góc dưới cùng bên trái màn hình.</translation>
 <translation id="6040143037577758943">Đóng</translation>
 <translation id="6043212731627905357">Màn hình này không tương thích với <ph name="DEVICE_TYPE" /> của bạn (màn hình không được hỗ trợ).</translation>
@@ -557,7 +563,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="6857811139397017780">Kích hoạt <ph name="NETWORKSERVICE" /></translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Còn lại một số}other{Còn lại # số}}</translation>
 <translation id="6878400149835617132">Đã tắt phím tắt</translation>
-<translation id="6886172995547742638"><ph name="DEVICE_TYPE" /> của bạn có thể có hiệu suất thấp hơn. Hãy dùng bộ sạc USB-C được chứng nhận có công suất <ph name="PREFERRED_MINIMUM_POWER" />W trở lên.</translation>
+<translation id="6886172995547742638">Hiệu suất của <ph name="DEVICE_TYPE" /> của bạn có thể bị giảm. Hãy dùng bộ sạc USB-C được chứng nhận có công suất <ph name="PREFERRED_MINIMUM_POWER" />W trở lên.</translation>
 <translation id="6896758677409633944">Sao chép</translation>
 <translation id="6910714959251846841">Bản cập nhật này yêu cầu phải powerwash (đặt lại toàn bộ) thiết bị của bạn. Hãy tìm hiểu thêm về bản cập nhật <ph name="SYSTEM_APP_NAME" /> mới nhất.</translation>
 <translation id="6919251195245069855">Không nhận dạng được thẻ thông minh của bạn. Vui lòng thử lại.</translation>

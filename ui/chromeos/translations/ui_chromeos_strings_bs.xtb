@@ -375,7 +375,7 @@
 <translation id="5098629044894065541">Hebrejska</translation>
 <translation id="5123433949759960244">Košarka</translation>
 <translation id="5129662217315786329">Poljska</translation>
-<translation id="5132435854979302863">filipinska</translation>
+<translation id="5132435854979302863">filipino</translation>
 <translation id="5144820558584035333">Hangul 3 Set (390)</translation>
 <translation id="5145331109270917438">Datum izmjene</translation>
 <translation id="515594325917491223">Šah</translation>
@@ -422,7 +422,7 @@
 <translation id="5464696796438641524">Poljska tastatura</translation>
 <translation id="5465122519792752163">Nepalska tastatura (InScript)</translation>
 <translation id="5469868506864199649">Italijanska</translation>
-<translation id="5484429245813572665">indonezijska</translation>
+<translation id="5484429245813572665">indonezijski</translation>
 <translation id="5494920125229734069">Odaberi sve</translation>
 <translation id="5500122897333236901">Islandska</translation>
 <translation id="5508696409934741614">Točke</translation>
@@ -609,7 +609,7 @@
 <translation id="7649070708921625228">Pomoć</translation>
 <translation id="7654209398114106148">Broj stavki koji se trenutno prebacuje: <ph name="NUMBER_OF_ITEMS" />...</translation>
 <translation id="7658239707568436148">Otkaži</translation>
-<translation id="7693909743393669729">Formatiranjem diska ćete izbrisati sve podatke koje ste na njega pohranili, a također ćete ukloniti sve postojeće particije, uključujući particije koje možda nisu vidljive. Nije moguće opozvati ovu radnju.</translation>
+<translation id="7693909743393669729">Formatiranjem diska ćete izbrisati sve podatke koje ste na njega pohranili, a također ćete ukloniti sve postojeće particije, uključujući particije koje možda nisu vidljive. Ovu radnju nije moguće opozvati.</translation>
 <translation id="7695430100978772476">Formatiranje diska <ph name="DRIVE_NAME" /> nije uspjelo</translation>
 <translation id="770015031906360009">Grčka</translation>
 <translation id="7706319470528945664">Portugalska tastatura</translation>
@@ -641,7 +641,7 @@
 <translation id="78946041517601018">Dijeljeni diskovi</translation>
 <translation id="7896906914454843592">Američka proširena tastatura</translation>
 <translation id="7898607018410277265">Gujarati tastatura (nova fonetska)</translation>
-<translation id="7908793776359722643">Formatiranjem particije ćete izbrisati sve podatke koji su pohranjeni na nju. Nije moguće opozvati ovu radnju.</translation>
+<translation id="7908793776359722643">Formatiranjem particije ćete izbrisati sve podatke koji su pohranjeni na nju. Ovu radnju nije moguće opozvati.</translation>
 <translation id="7917972308273378936">Litvanska tastatura</translation>
 <translation id="7925686952655276919">Nemoj koristiti prijenos podataka na mobilnoj mreži za sinhronizaciju</translation>
 <translation id="7928710562641958568">Izbaci uređaj</translation>
@@ -729,7 +729,7 @@
 <translation id="8900820606136623064">Mađarska</translation>
 <translation id="8901822611024316615">Češka QWERTY tastatura</translation>
 <translation id="8919081441417203123">danski</translation>
-<translation id="8941776146379310519">malajska</translation>
+<translation id="8941776146379310519">malajski</translation>
 <translation id="8960999352790021682">Bengalska tastatura (fonetska)</translation>
 <translation id="8965697826696209160">Nema dovoljno prostora.</translation>
 <translation id="9017798300203431059">Ruska fonetska</translation>

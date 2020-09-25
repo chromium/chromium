@@ -510,6 +510,7 @@
 <translation id="3080254622891793721">ഗ്രാഫിക്</translation>
 <translation id="3086579638707268289">വെബിലുള്ള നിങ്ങളുടെ ആക്റ്റിവിറ്റി നിരീക്ഷണത്തിലാണ്</translation>
 <translation id="3087734570205094154">താഴെ</translation>
+<translation id="3094457892697649331">നിങ്ങൾ കുറിപ്പുകൾ എഡിറ്റ് ചെയ്യുമ്പോൾ, ഈ ഡോക്യുമെന്റ് ഒറ്റ പേജ് കാഴ്ചയിലേക്ക് മടങ്ങുന്നു.</translation>
 <translation id="3095940652251934233">പ്രസ്‌താവന</translation>
 <translation id="3096100844101284527">പിക്കപ്പ് വിലാസം ചേർക്കുക</translation>
 <translation id="3105172416063519923">അസറ്റ് ഐഡി:</translation>
@@ -742,6 +743,7 @@
 <translation id="4075941231477579656">ടച്ച് ഐഡി</translation>
 <translation id="4079302484614802869">പ്രോക്‌സി കോൺഫിഗറേഷൻ .pac സ്‌ക്രിപ്റ്റ് URL ഉപയോഗിക്കുന്നതിനായി സജ്ജീകരിച്ചിരിക്കുന്നു, സ്ഥിരമായ പ്രോക്‌സി സെർവറുകൾ ഉപയോഗിക്കുന്നതിനായല്ല.</translation>
 <translation id="4082393374666368382">ക്രമീകരണം - മാനേജ്‌മെൻ്റ്</translation>
+<translation id="4084120443451129199">തിരയൽ മോഡ്, <ph name="KEYWORD_SUFFIX" /> എന്നത് തിരയാൻ 'Enter' അമർത്തുക</translation>
 <translation id="4088981014127559358">സൈഡ് 1 ചിത്രം Y ഷിഫ്റ്റ്</translation>
 <translation id="4098354747657067197">വഞ്ചനാപരമായ സൈറ്റ് ഉണ്ട്</translation>
 <translation id="4101413244023615925">ടെക്സ്റ്റും ഗ്രാഫിക്കും</translation>
@@ -935,6 +937,7 @@
 <translation id="4809079943450490359">നിങ്ങളുടെ ഉപകരണ അഡ്‌മിന്റെ നിർദ്ദേശങ്ങൾ:</translation>
 <translation id="4813512666221746211">നെറ്റ്‌വര്‍ക്ക് പിശക്</translation>
 <translation id="4816492930507672669">പേജിന് യുക്തമാക്കുക</translation>
+<translation id="4819347708020428563">ഡിഫോൾട്ട് കാഴ്‌ചയിൽ കുറിപ്പുകൾ എഡിറ്റ് ചെയ്യണോ?</translation>
 <translation id="484462545196658690">സ്വയമേവ</translation>
 <translation id="4850886885716139402">കാണുക</translation>
 <translation id="4854362297993841467">ഈ ഡെലിവറി രീതി ലഭ്യമല്ല. മറ്റൊരു രീതി പരീക്ഷിക്കുക.</translation>
@@ -1667,6 +1670,7 @@
 <translation id="7802523362929240268">സൈറ്റ് നിയമാനുസൃതമാണ്</translation>
 <translation id="780301667611848630">വേണ്ട നന്ദി</translation>
 <translation id="7805768142964895445">നില</translation>
+<translation id="7811322735445742657">നിങ്ങൾ കുറിപ്പുകൾ എഡിറ്റ് ചെയ്യുമ്പോൾ, ഈ ഡോക്യുമെന്റ് ഒറ്റ പേജ് കാഴ്ചയിലേക്കും അതിന്റെ ഒറിജിനൽ റൊട്ടേഷനിലേക്കും മടങ്ങുന്നു.</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Chrome-ൽ നിന്നുള്ള നിർദ്ദേശം നീക്കംചെയ്യണോ?</translation>
 <translation id="781440967107097262">ക്ലിപ്പ്ബോർഡ് പങ്കിടണോ?</translation>
@@ -1702,6 +1706,7 @@
 <translation id="7956713633345437162">മൊബൈൽ ബുക്ക്‌മാർക്കുകൾ</translation>
 <translation id="7961015016161918242">ഒരിക്കലും</translation>
 <translation id="7966803981046576691">ജോബ് അക്കൗണ്ട് തരം</translation>
+<translation id="7976214039405368314">നിരവധി അഭ്യർത്ഥനകൾ</translation>
 <translation id="7977538094055660992">ഔട്ട്പുട്ട് ഉപകരണം</translation>
 <translation id="7977894662897852582">Edp</translation>
 <translation id="799149739215780103">ബൈൻഡ് ചെയ്യുക</translation>
@@ -1783,6 +1788,7 @@
 <translation id="8289355894181816810">ഇത് അർത്ഥമാക്കുന്നത് എന്താണെന്ന് നിങ്ങൾക്ക് ഉറപ്പില്ലെങ്കിൽ നെറ്റ്‌വർക്ക് അഡ്‌മിനെ ബന്ധപ്പെടുക.</translation>
 <translation id="8293206222192510085">ബുക്ക്‌മാര്‍‌ക്ക് ചേര്‍‌ക്കുക</translation>
 <translation id="8294431847097064396">ഉറവിടം</translation>
+<translation id="8297398969342264569">നിങ്ങൾ കുറിപ്പുകൾ എഡിറ്റ് ചെയ്യുമ്പോൾ, ഈ ഡോക്യുമെന്റ് അതിന്റെ ഒറിജിനൽ റൊട്ടേഷനിലേക്ക് മടങ്ങുന്നു.</translation>
 <translation id="8298115750975731693">നിങ്ങൾ ഉപയോഗിക്കുന്ന Wi-Fi (<ph name="WIFI_NAME" />), <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> സന്ദർശിക്കാൻ നിങ്ങളോട് ആവശ്യപ്പെടാം.</translation>
 <translation id="8303854710873047864">"<ph name="SECTION" />" വിഭാഗം കാണിച്ചിരിക്കുന്നു</translation>
 <translation id="830498451218851433">പകുതിയായി മടക്കുക</translation>

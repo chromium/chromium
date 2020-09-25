@@ -70,6 +70,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="1589090746204042747">Atzitu saio honetan egin dituzun jarduera guztiak</translation>
 <translation id="1611993646327628135">Aktibatuta</translation>
 <translation id="1632985212731562677">Ezarpenak &gt; Erabilerraztasuna atalean desgai dezakezu erabilerraztasun-osagarria.</translation>
+<translation id="1651447046299738444">Bluetooth-a edo wifi-konexioa desaktibatuta dago Chromebook-ean. Egiaztatu konektatuta zaudela Phone Hub erabiltzeko.</translation>
 <translation id="1654477262762802994">Sortu ahozko kontsulta bat</translation>
 <translation id="1667964833127753507">Kolore neutroaren moduak ez ditu erabiltzen horma-paperetik ateratako koloreak, baizik eta tonu neutroko ñabardura argien edo ilunen multzo batekin ordezkatzen.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> geratzen dira</translation>
@@ -152,6 +153,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="2435457462613246316">Erakutsi pasahitza</translation>
 <translation id="2473177541599297363">Berretsi bereizmena</translation>
 <translation id="2475982808118771221">Errore bat gertatu da</translation>
+<translation id="2479579251444854687">Pasatu hiru hatz gora ikuspegi orokorra irekitzeko eta hiru hatz behera, berriz, ixteko.</translation>
 <translation id="2482878487686419369">Jakinarazpenak</translation>
 <translation id="2484513351006226581">Teklatuaren diseinua aldatzeko, sakatu <ph name="KEYBOARD_SHORTCUT" />.</translation>
 <translation id="2501920221385095727">Tekla itsaskorrak</translation>
@@ -164,6 +166,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="2595239820337756193">Zenbat da 5 km miliatan</translation>
 <translation id="2617342710774726426">Blokeatuta dago SIM txartela</translation>
 <translation id="2621713457727696555">Babestuta</translation>
+<translation id="2640255526076764619">Aldatu egin da aurreko lan-eremura itzultzeko ukipen-paneleko keinua. Aurreko lan-eremura itzultzeko, pasatu lau hatz ezkerrera.</translation>
 <translation id="2653659639078652383">Bidali</translation>
 <translation id="2658778018866295321">Sakatu eta arrastatu</translation>
 <translation id="2700493154570097719">Zehaztu teklatua</translation>
@@ -343,6 +346,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="4412944820643904175">Desaktibatuta dago <ph name="FEATURE_NAME" />.</translation>
 <translation id="4421231901400348175">Urruneko laguntzaren bidez <ph name="HELPER_NAME" /> laguntzailearekin pantailaren kontrola partekatzen.</translation>
 <translation id="4430019312045809116">Bolumena</translation>
+<translation id="4444978951615977024">Arazo bat izan da. Egiaztatu konektatuta zaudela.</translation>
 <translation id="4450893287417543264">Ez erakutsi berriro</translation>
 <translation id="445864333228800152">Arratsalde on:</translation>
 <translation id="4458688154122353284">Utzi pantaila grabatzeari</translation>
@@ -352,6 +356,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Desparekatutako gailuak</translation>
 <translation id="4505050298327493054">Mahaigain aktiboa.</translation>
+<translation id="4506458088675900627">Aldatu egin da ikuspegi orokorreko ukipen-panela erabiltzeko keinua</translation>
 <translation id="4513946894732546136">Iritzia</translation>
 <translation id="4527045527269911712">Bluetooth bidezko "<ph name="DEVICE_NAME" />" gailuak parekatzeko baimena nahi du.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> geratzen dira guztiz kargatu arte</translation>
@@ -442,7 +447,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="5648021990716966815">Mikrofonoaren konektorea</translation>
 <translation id="5669267381087807207">Aktibatzen</translation>
 <translation id="5673434351075758678">Ezarpenak sinkronizatu ondoren, "<ph name="FROM_LOCALE" />" ordez, "<ph name="TO_LOCALE" />" ezarri da hizkuntza gisa.</translation>
-<translation id="5679050765726761783">Potentzia gutxiko egokigailua konektatuta dago</translation>
+<translation id="5679050765726761783">Potentzia txikiko egokigailua konektatuta dago</translation>
 <translation id="5682642926269496722">Google-ren Laguntzailea ez dago erabilgarri uneko erabiltzaile-kontuan.</translation>
 <translation id="5689633613396158040">Gaueko argia eginbideari esker, ez zaizu egingo horren nekagarria argi gutxiko inguruetan pantailari begira egotea. Sakatu hau Gaueko argia aktibatzeko ordua aldatzeko, edo aukera hori erabat desaktibatzeko.</translation>
 <translation id="5691772641933328258">Ez da ezagutu hatz-marka</translation>
@@ -481,6 +486,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="6018164090099858612">Ispilu modutik irteten</translation>
 <translation id="602001110135236999">Egin ezkerrera</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />. <ph name="CONNECTION_STATUS" />. Seinalearen indarra: <ph name="SIGNAL_STRENGTH" />. Administratzaileak kudeatua.</translation>
+<translation id="6029337736376922061">Aldatu egin da hurrengo lan-eremura joateko ukipen-paneleko keinua. Hurrengo lan-eremura joateko, pasatu lau hatz eskuinera.</translation>
 <translation id="6030495522958826102">Pantailaren beheko ezkerreko izkinara eraman da menua.</translation>
 <translation id="6040143037577758943">Itxi</translation>
 <translation id="6043212731627905357">Monitore honek arazoak ditu <ph name="DEVICE_TYPE" /> gailuarekin (ez da bateragarria).</translation>

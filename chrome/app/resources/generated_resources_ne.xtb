@@ -230,6 +230,7 @@
 <translation id="1260451001046713751"><ph name="HOST" /> लाई पपअप देखाउन र रिडिरेक्ट गर्न अनुमति दिनुहोस्</translation>
 <translation id="1261380933454402672">सामान्य</translation>
 <translation id="126156426083987769">डेमो मोडका यन्त्रको इजाजतपत्रसम्बन्धी कुनै समस्या भयो।</translation>
+<translation id="1263231323834454256">पाठ्य सूची</translation>
 <translation id="1263490604593716556"><ph name="FIRST_PARENT_EMAIL" /> र <ph name="SECOND_PARENT_EMAIL" /> ले व्यवस्थापन गरेको खाता। यो यन्त्रमा साइन इन गरिएको प्राथमिक खाताबाट साइन आउट गर्न आफ्नो स्क्रिनमा देखिने समयमा क्लिक गर्नुहोस्। त्यसपछि देखिने मेनुमा "साइन आउट गर्नुहोस्" नामक बटनमा क्लिक गर्नुहोस्।</translation>
 <translation id="1263733306853729545">उम्मेदवारहरूको सूचीलाई पृष्ठमा ल्याउन <ph name="MINUS" /> र <ph name="EQUAL" /> कुञ्जीहरू प्रयोग गर्नुहोस्</translation>
 <translation id="126387934568812801">यो स्क्रिनसट तथा खुला रहेका ट्याबका शीर्षकहरू समावेश गर्नुहोस्</translation>
@@ -1439,6 +1440,7 @@
 <translation id="2695749433451188613">इन्टरनेट प्रिन्टिङ प्रोटोकोल (HTTPS)</translation>
 <translation id="2699911226086014512">कोडको त्रुटिका कारण PIN सेट गर्न सकिएन <ph name="RETRIES" />।</translation>
 <translation id="2701737434167469065">साइन इन गर्नुहोस्, <ph name="EMAIL" /></translation>
+<translation id="2702801445560668637">पाठ्य सूची</translation>
 <translation id="270358213449696159">Google Chrome OS का सामग्रीहरूका सर्तहरू</translation>
 <translation id="270414148003105978">मोबाइल नेटवर्कहरू</translation>
 <translation id="2704184184447774363">Microsoft दस्तावेज हस्ताक्षरित</translation>

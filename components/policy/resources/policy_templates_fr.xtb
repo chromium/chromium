@@ -1617,6 +1617,17 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
 
       Si cette règle n'est pas configurée, tous les plug-ins qui sont détectés par "DisabledPlugins" sont verrouillés/désactivés, et les utilisateurs ne sont pas en mesure de les activer</translation>
 <translation id="3381968327636295719">Utiliser le navigateur hôte par défaut</translation>
+<translation id="3383794118443927579">Permet de configurer l'URL de la page "Nouvel onglet" par défaut et d'empêcher les utilisateurs de la modifier.
+
+      La page "Nouvel onglet" s'affiche à l'ouverture de nouveaux onglets ou fenêtres.
+
+      Cette règle ne détermine pas quelles pages seront ouvertes au démarrage. Celles-ci sont en effet gérées par les règles <ph name="RESTORE_ON_STARTUP_POLICY_NAME" />. Cette règle s'applique à la page d'accueil et/ou à la page de démarrage si elle est configurée pour ouvrir la page "Nouvel onglet".
+
+      Une bonne pratique consiste à fournir l'URL canonique. Si l'URL n'est pas totalement canonique, <ph name="PRODUCT_NAME" /> utilise https:// par défaut.
+
+      Si cette règle n'est pas configurée, ou si elle est vide, la page "Nouvel onglet" par défaut est utilisée.
+
+      Sous <ph name="MS_WIN_NAME" />, cette règle n'est disponible que sur les instances associées à un domaine <ph name="MS_AD_NAME" />, exécutées sous Windows 10 Pro ou qui bénéficient de la <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />. Sous <ph name="MAC_OS_NAME" />, elle n'est disponible que sur les instances gérées via MDM ou associées à un domaine via MCX.</translation>
 <translation id="3391457705621770207">Permet de définir, en millisecondes, le délai de connexion automatique au compte local de l'appareil (spécifié dans la règle <ph name="DEVICE_LOCAL_ACCOUNT_AUTO_LOGIN_ID_POLICY_NAME" />) en l'absence d'action de l'utilisateur sur l'écran de connexion.
 
       Si cette règle n'est pas configurée, le délai est de 0 milliseconde.

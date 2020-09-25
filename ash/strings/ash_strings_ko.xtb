@@ -70,6 +70,7 @@
 <translation id="1589090746204042747">이 세션의 모든 활동에 액세스</translation>
 <translation id="1611993646327628135">켜짐</translation>
 <translation id="1632985212731562677">설정 &gt; 접근성에서 스위치 제어를 사용 중지할 수 있습니다.</translation>
+<translation id="1651447046299738444">Chromebook의 블루투스 또는 Wi-Fi가 꺼져 있는 것 같습니다. 휴대전화 허브를 사용하려면 연결 상태를 확인해 주세요.</translation>
 <translation id="1654477262762802994">음성 검색 시작</translation>
 <translation id="1667964833127753507">중성 색상 모드는 배경화면에서 추출한 색상을 사용하지 않고 밝거나 어두운 중성 색상으로 대체합니다.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> 남음</translation>
@@ -152,6 +153,7 @@
 <translation id="2435457462613246316">비밀번호 표시</translation>
 <translation id="2473177541599297363">해상도 확인</translation>
 <translation id="2475982808118771221">오류가 발생했습니다.</translation>
+<translation id="2479579251444854687">세 손가락을 사용해 위로 스와이프하여 개요를 열고 아래로 스와이프하여 닫습니다.</translation>
 <translation id="2482878487686419369">알림</translation>
 <translation id="2484513351006226581">키보드 레이아웃을 전환하려면 <ph name="KEYBOARD_SHORTCUT" />을(를) 누르세요.</translation>
 <translation id="2501920221385095727">고정키</translation>
@@ -164,6 +166,7 @@
 <translation id="2595239820337756193">5km를 마일로 변환</translation>
 <translation id="2617342710774726426">SIM 카드가 잠겨 있습니다.</translation>
 <translation id="2621713457727696555">보안</translation>
+<translation id="2640255526076764619">이전 데스크로 전환하는 터치패드 동작이 변경되었습니다. 네 손가락을 사용해 왼쪽으로 스와이프하면 이전 데스크로 전환됩니다.</translation>
 <translation id="2653659639078652383">제출</translation>
 <translation id="2658778018866295321">클릭하여 드래그</translation>
 <translation id="2700493154570097719">키보드 설정</translation>
@@ -342,6 +345,7 @@
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> 기능이 꺼져 있습니다.</translation>
 <translation id="4421231901400348175">원격 지원을 통해 <ph name="HELPER_NAME" />와(과) 화면 제어 공유</translation>
 <translation id="4430019312045809116">볼륨</translation>
+<translation id="4444978951615977024">문제 발생. 연결 상태를 확인하세요</translation>
 <translation id="4450893287417543264">다시 표시하지 않음</translation>
 <translation id="445864333228800152">편안한 저녁 보내세요</translation>
 <translation id="4458688154122353284">화면 녹화 중지</translation>
@@ -351,6 +355,7 @@
 <translation id="4479639480957787382">이더넷</translation>
 <translation id="4481530544597605423">페어링 해제된 기기</translation>
 <translation id="4505050298327493054">활성 데스크입니다.</translation>
+<translation id="4506458088675900627">개요 모드의 터치패드 동작이 변경됨</translation>
 <translation id="4513946894732546136">문제 신고</translation>
 <translation id="4527045527269911712">블루투스 기기 '<ph name="DEVICE_NAME" />'에서 페어링 허가를 요청합니다.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> 후 충전 완료</translation>
@@ -480,6 +485,7 @@
 <translation id="6018164090099858612">미러링 모드 종료 중</translation>
 <translation id="602001110135236999">왼쪽으로 스크롤</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, 신호 강도 <ph name="SIGNAL_STRENGTH" />, 관리자가 관리함</translation>
+<translation id="6029337736376922061">다음 데스크로 전환하는 터치패드 동작이 변경되었습니다. 네 손가락을 사용해 오른쪽으로 스와이프하면 다음 데스크로 전환됩니다.</translation>
 <translation id="6030495522958826102">메뉴가 화면 왼쪽 하단으로 이동했습니다.</translation>
 <translation id="6040143037577758943">닫기</translation>
 <translation id="6043212731627905357"><ph name="DEVICE_TYPE" />과(와) 호환되지 않는 모니터입니다(지원되지 않는 모니터임).</translation>

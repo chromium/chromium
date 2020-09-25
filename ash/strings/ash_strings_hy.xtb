@@ -70,6 +70,7 @@
 <translation id="1589090746204042747">Դիտեք այս աշխատաշրջանում ձեր գործողությունների վիճակագրությունը</translation>
 <translation id="1611993646327628135">Միացված է</translation>
 <translation id="1632985212731562677">Switch Access-ն անջատելու համար անցեք Կարգավորումներ &gt; Հատուկ գործառույթներ։</translation>
+<translation id="1651447046299738444">Bluetooth-ը կամ Wi-Fi-ը անջատված է ձեր Chromebook-ում։ Ստուգեք կապը՝ Phone Hub-ն օգտագործելու համար։</translation>
 <translation id="1654477262762802994">Հնչեցնել հարցում</translation>
 <translation id="1667964833127753507">Չեզոք գույների ռեժիմում ձեր պաստառների գույները չեն օգտագործվում։ Դրանց փոխարեն միջերեսը գունավորվում է չեզոք բաց կամ մուգ գույնի երանգներով։</translation>
 <translation id="1677472565718498478">Մնացել է <ph name="TIME" /></translation>
@@ -152,6 +153,7 @@
 <translation id="2435457462613246316">Ցույց տալ գաղտնաբառը</translation>
 <translation id="2473177541599297363">Լուծաչափի հաստատում</translation>
 <translation id="2475982808118771221">Սխալ առաջացավ</translation>
+<translation id="2479579251444854687">Համատեսքը բացելու/փակելու համար երեք մատով սահեցրեք վեր/վար։</translation>
 <translation id="2482878487686419369">Ծանուցումներ</translation>
 <translation id="2484513351006226581">Ստեղնաշարի դասավորությունը փոխելու համար սեղմեք <ph name="KEYBOARD_SHORTCUT" />։</translation>
 <translation id="2501920221385095727">Կպչուն ստեղներ</translation>
@@ -164,6 +166,7 @@
 <translation id="2595239820337756193">5 հազար մղոն</translation>
 <translation id="2617342710774726426">SIM քարտը կողպված է</translation>
 <translation id="2621713457727696555">Պաշտպանված է</translation>
+<translation id="2640255526076764619">Հպահարթակի միջոցով նախորդ աշխատասեղանին անցնելու ժեստը փոխվել է։ Նախորդ աշխատասեղանին անցնելու համար չորս մատով սահեցրեք ձախ։</translation>
 <translation id="2653659639078652383">Ուղարկել</translation>
 <translation id="2658778018866295321">Սեղմել և քաշել</translation>
 <translation id="2700493154570097719">Ընտրեք ստեղնաշարը</translation>
@@ -342,6 +345,7 @@
 <translation id="4412944820643904175">«<ph name="FEATURE_NAME" />» գործառույթն անջատված է։</translation>
 <translation id="4421231901400348175">Էկրանի կառավարման համօգտագործում <ph name="HELPER_NAME" />-ի հետ Հեռակա օգնության միջոցով:</translation>
 <translation id="4430019312045809116">Ձայնի ուժգնություն</translation>
+<translation id="4444978951615977024">Սխալ առաջացավ․ ստուգեք ձեր կապը</translation>
 <translation id="4450893287417543264">Այլևս ցույց չտալ</translation>
 <translation id="445864333228800152">Բարի երեկո,</translation>
 <translation id="4458688154122353284">Դադարեցնել էկրանի տեսագրումը</translation>
@@ -351,6 +355,7 @@
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Ապազուգակցված սարքեր</translation>
 <translation id="4505050298327493054">Ակտիվ աշխատանքային սեղան։</translation>
+<translation id="4506458088675900627">Համատեսքը հպահարթակի միջոցով բացելու ժեստը փոխվել է</translation>
 <translation id="4513946894732546136">Հետադարձ կապ</translation>
 <translation id="4527045527269911712">«<ph name="DEVICE_NAME" />» Bluetooth սարքը զուգավորվելու թույլտվություն է խնդրում:</translation>
 <translation id="453661520163887813">Լրիվ կլիցքավորվի <ph name="TIME" />-ից</translation>
@@ -480,6 +485,7 @@
 <translation id="6018164090099858612">Ելք հայելային ռեժիմից</translation>
 <translation id="602001110135236999">Ոլորել ձախ</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />, կառավարվում է ձեր ադմինիստրատորի կողմից</translation>
+<translation id="6029337736376922061">Հպահարթակի միջոցով հաջորդ աշխատասեղանին անցնելու ժեստը փոխվել է։ Հաջորդ աշխատասեղանին անցնելու համար չորս մատով սահեցրեք աջ։</translation>
 <translation id="6030495522958826102">Ընտրացանկը տեղափոխվեց էկրանի ներքևի ձախ անկյուն։</translation>
 <translation id="6040143037577758943">Փակել</translation>
 <translation id="6043212731627905357">Այս մոնիտորը համատեղելի չէ ձեր <ph name="DEVICE_TYPE" /> սարքի հետ (մոնիտորը չի աջակցվում):</translation>

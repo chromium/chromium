@@ -70,6 +70,7 @@
 <translation id="1589090746204042747">به همه فعالیت‌هایتان در این جلسه دسترسی پیدا کنید</translation>
 <translation id="1611993646327628135">روشن</translation>
 <translation id="1632985212731562677">می‌توانید «دسترسی کلیدی» را در «تنظیمات &gt; دسترس‌پذیری» غیرفعال کنید.</translation>
+<translation id="1651447046299738444">‏به‌نظر می‌رسد بلوتوث یا Wi-Fi در Chromebook خاموش باشد. برای استفاده از «مرکز تلفن» لطفاً اتصال را بررسی کنید.</translation>
 <translation id="1654477262762802994">شروع پُرسمان صوتی</translation>
 <translation id="1667964833127753507">حالت «رنگ خنثی» از رنگ‌های استخراج‌شده از کاغذدیواری استفاده نمی‌کند، بلکه آن‌ها را با مجموعه‌ای از ته‌رنگ‌های تیره و روشن خنثی جایگزین می‌کند.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> باقی‌مانده</translation>
@@ -152,6 +153,7 @@
 <translation id="2435457462613246316">نمایش گذرواژه</translation>
 <translation id="2473177541599297363">تأیید وضوح</translation>
 <translation id="2475982808118771221">یک خطا روی داد</translation>
+<translation id="2479579251444854687">برای باز کردن «مرور کلی»، با سه انگشت تند به بالا بکشید و برای بستن به پایین بکشید.</translation>
 <translation id="2482878487686419369">اعلان‌ها</translation>
 <translation id="2484513351006226581">برای تغییر جانمایی صفحه‌کلید، <ph name="KEYBOARD_SHORTCUT" /> را فشار دهید.</translation>
 <translation id="2501920221385095727">کلیدهای چسبان</translation>
@@ -164,6 +166,7 @@
 <translation id="2595239820337756193">‏5K in miles (‏۵ کیلومتر به مایل)</translation>
 <translation id="2617342710774726426">سیم‌کارت قفل است</translation>
 <translation id="2621713457727696555">ایمن شد</translation>
+<translation id="2640255526076764619">اشاره صفحه لمسی برای جابه‌جایی به میزکار قبلی تغییر کرده است. برای جابه‌جایی به میزکار قبلی، با چهار انگشت تند به چپ بکشید.</translation>
 <translation id="2653659639078652383">ارسال</translation>
 <translation id="2658778018866295321">کلیک کنید و بکشید</translation>
 <translation id="2700493154570097719">تنظیم صفحه‌کلید</translation>
@@ -342,6 +345,7 @@
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> خاموش است.</translation>
 <translation id="4421231901400348175">هم‌رسانی کنترل صفحه‌تان با <ph name="HELPER_NAME" /> از طریق راهنمایی ازراه‌دور.</translation>
 <translation id="4430019312045809116">میزان صدا</translation>
+<translation id="4444978951615977024">نه! اتصال خود را بررسی کنید</translation>
 <translation id="4450893287417543264">دیگر نشان داده نشود</translation>
 <translation id="445864333228800152">عصر به‌خیر،</translation>
 <translation id="4458688154122353284">توقف ضبط صفحه‌نمایش</translation>
@@ -351,6 +355,7 @@
 <translation id="4479639480957787382">اترنت</translation>
 <translation id="4481530544597605423">دستگاه‌های لغو ارتباط‌شده</translation>
 <translation id="4505050298327493054">میز فعال.</translation>
+<translation id="4506458088675900627">اشاره صفحه لمسی «مرور کلی» تغییر کرده است</translation>
 <translation id="4513946894732546136">بازخورد</translation>
 <translation id="4527045527269911712">دستگاه بلوتوث «<ph name="DEVICE_NAME" />» برای مرتبط‌سازی به مجوز نیاز دارد.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> مانده تا کامل شود</translation>
@@ -480,6 +485,7 @@
 <translation id="6018164090099858612">خروج از حالت آینه</translation>
 <translation id="602001110135236999">پیمایش به چپ</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />، <ph name="CONNECTION_STATUS" />، قدرت سیگنال <ph name="SIGNAL_STRENGTH" />، تحت‌مدیریت سرپرست</translation>
+<translation id="6029337736376922061">اشاره صفحه لمسی برای جابه‌جایی به میزکار بعدی تغییر کرده است. برای جابه‌جایی به میزکار بعدی، با ۴ انگشت تند به راست بکشید.</translation>
 <translation id="6030495522958826102">منو به گوشه راست پایین صفحه منتقل شد.</translation>
 <translation id="6040143037577758943">بستن</translation>
 <translation id="6043212731627905357">این نمایشگر با <ph name="DEVICE_TYPE" /> سازگار نیست (نمایشگر پشتیبانی نمی‌شود).</translation>

@@ -1573,6 +1573,17 @@
 
       如果不設定這項政策，系統將鎖定並停用任何與「DisabledPlugins」中模式相符的外掛程式，且使用者無法加以啟用。</translation>
 <translation id="3381968327636295719">根據預設使用主機瀏覽器</translation>
+<translation id="3383794118443927579">你可以透過這項政策，設定預設的「新分頁」網址並禁止使用者進行變更。
+
+          「新分頁」會在新的分頁和視窗中開啟。
+
+      這項政策不會決定瀏覽器啟動時開啟的頁面。這類設定是由 <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> 政策所控管。但如果將首頁或起始網頁設為開啟「新分頁」，就會受到這項政策的影響。
+
+      最佳做法是提供完整標準化的網址，如果不是完整標準化的網址，<ph name="PRODUCT_NAME" /> 會預設為 https://。
+
+      如果不設定這項政策或設為空白，系統就會使用預設的「新分頁」。
+
+      在 <ph name="MS_WIN_NAME" /> 上，這項功能僅適用於已加入 <ph name="MS_AD_NAME" /> 網域的執行個體、在 Windows 10 專業版上執行的執行個體，或是已註冊 <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />服務的執行個體。在 <ph name="MAC_OS_NAME" /> 上，這項功能僅適用於透過行動裝置管理 (MDM) 進行管理或透過 MCX 加入網域的執行個體。</translation>
 <translation id="3391457705621770207">你可以透過這項政策，決定使用者多久 (以毫秒為單位) 沒有執行活動，才會自動登入由 <ph name="DEVICE_LOCAL_ACCOUNT_AUTO_LOGIN_ID_POLICY_NAME" /> 政策所指定的裝置本機帳戶。
 
       如果不設定，系統會使用 0 毫秒做為逾時時間。

@@ -70,6 +70,7 @@
 <translation id="1589090746204042747">访问您在此次会话中的所有活动</translation>
 <translation id="1611993646327628135">开启</translation>
 <translation id="1632985212731562677">您可在“设置”&gt;“无障碍”中停用“开关控制”功能。</translation>
+<translation id="1651447046299738444">您的 Chromebook 好像关闭了蓝牙或 Wi-Fi。请检查您的网络连接状况，以便能够使用手机中心。</translation>
 <translation id="1654477262762802994">启动语音查询</translation>
 <translation id="1667964833127753507">中性颜色模式不会使用从壁纸中提取的颜色，而是会将其替换为一组中性的浅色调或深色调。</translation>
 <translation id="1677472565718498478">电量尚余 <ph name="TIME" /></translation>
@@ -152,6 +153,7 @@
 <translation id="2435457462613246316">显示密码</translation>
 <translation id="2473177541599297363">确认分辨率</translation>
 <translation id="2475982808118771221">出现错误</translation>
+<translation id="2479579251444854687">若要开启“概览”模式，请用三根手指向上滑动；若要关闭该模式，请用三根手指向下滑动。</translation>
 <translation id="2482878487686419369">通知</translation>
 <translation id="2484513351006226581">按 <ph name="KEYBOARD_SHORTCUT" />键可切换键盘布局。</translation>
 <translation id="2501920221385095727">粘滞键</translation>
@@ -164,6 +166,7 @@
 <translation id="2595239820337756193">5 公里是多少英里</translation>
 <translation id="2617342710774726426">SIM 卡已被锁定</translation>
 <translation id="2621713457727696555">受保护</translation>
+<translation id="2640255526076764619">用于切换到上一个桌面的触控板手势已更改。若要切换到上一个桌面，请用四根手指向左滑动。</translation>
 <translation id="2653659639078652383">提交</translation>
 <translation id="2658778018866295321">点击并拖动</translation>
 <translation id="2700493154570097719">设置键盘</translation>
@@ -342,6 +345,7 @@
 <translation id="4412944820643904175">“<ph name="FEATURE_NAME" />”功能已关闭。</translation>
 <translation id="4421231901400348175">正在通过远程协助与<ph name="HELPER_NAME" />共享您屏幕的控制权限。</translation>
 <translation id="4430019312045809116">音量</translation>
+<translation id="4444978951615977024">糟糕！请检查您的网络连接状况</translation>
 <translation id="4450893287417543264">不再显示</translation>
 <translation id="445864333228800152">晚上好！</translation>
 <translation id="4458688154122353284">停止屏幕录制</translation>
@@ -351,6 +355,7 @@
 <translation id="4479639480957787382">以太网</translation>
 <translation id="4481530544597605423">未配对的设备</translation>
 <translation id="4505050298327493054">处于活动状态的桌面。</translation>
+<translation id="4506458088675900627">用于开启/关闭“概览”模式的触控板手势已更改</translation>
 <translation id="4513946894732546136">反馈</translation>
 <translation id="4527045527269911712">蓝牙设备“<ph name="DEVICE_NAME" />”需要配对许可。</translation>
 <translation id="453661520163887813"><ph name="TIME" /> 后充满</translation>
@@ -480,6 +485,7 @@
 <translation id="6018164090099858612">正在退出镜像模式</translation>
 <translation id="602001110135236999">向左滚动</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />，<ph name="CONNECTION_STATUS" />，信号强度为 <ph name="SIGNAL_STRENGTH" />，由您的管理员管理</translation>
+<translation id="6029337736376922061">用于切换到下一个桌面的触控板手势已更改。若要切换到下一个桌面，请用四根手指向右滑动。</translation>
 <translation id="6030495522958826102">菜单已移至屏幕的左下角。</translation>
 <translation id="6040143037577758943">关闭</translation>
 <translation id="6043212731627905357">该显示器与您的<ph name="DEVICE_TYPE" />不兼容（系统不支持该显示器）。</translation>

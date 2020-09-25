@@ -7,7 +7,7 @@
 <translation id="1013742170491673792">recherche</translation>
 <translation id="1014370462248694370">Faites glisser deux doigts vers la droite</translation>
 <translation id="1016393160682012902">Appuyez sur une touche du clavier ou sur une touche braille actualisable, ou encore faites un geste tactile pour apprendre son fonctionnement. Appuyez sur les touches Commande et W à la fois, ou sur la touche Échappement, pour quitter.</translation>
-<translation id="1022586497894531524">Utilisez-vous la rétroaction vocale de ChromeVox pour la première fois? Ce didacticiel rapide explique les notions essentielles pour faire vos premiers pas avec ChromeVox.</translation>
+<translation id="1022586497894531524">Utilisez-vous la rétroaction vocale de ChromeVox pour la première fois? Ce tutoriel rapide explique les notions essentielles pour faire vos premiers pas avec ChromeVox.</translation>
 <translation id="1025074108959230262">Mode rémanent désactivé</translation>
 <translation id="1031961866430398710">puis</translation>
 <translation id="1038643060055067718">Lignes :</translation>
@@ -195,7 +195,7 @@
 <translation id="2490721194269245365">Brun rosé</translation>
 <translation id="249330843868392562">Ouvrir les paramètres de synthèse vocale</translation>
 <translation id="2497706219848005458">Jaune vert</translation>
-<translation id="2523609930580546572">Didacticiel de ChromeVox</translation>
+<translation id="2523609930580546572">Tutoriel de ChromeVox</translation>
 <translation id="2525706221823668172">Raccourcis clavier du Chromebook</translation>
 <translation id="2553108862507765288">faute de grammaire</translation>
 <translation id="257674075312929031">Groupe</translation>
@@ -214,7 +214,7 @@
 <translation id="2673280813984708147">modifie</translation>
 <translation id="267442004702508783">actualiser</translation>
 <translation id="2675533876313964202">Chartreuse</translation>
-<translation id="2684412629217766642">Fermer le didacticiel de ChromeVox</translation>
+<translation id="2684412629217766642">Fermer le tutoriel de ChromeVox</translation>
 <translation id="2697408785920771974">saisie semi-automatique alignement</translation>
 <translation id="2704429362613743330">{COUNT,plural, =1{parenthèse ouvrante}one{# parenthèse ouvrante}other{# parenthèses ouvrantes}}</translation>
 <translation id="2705875883745373140">Non appuyé</translation>
@@ -248,7 +248,7 @@
 <translation id="2894654529758326923">Information</translation>
 <translation id="2899328121302785497">{COUNT,plural, =1{accolade ouvrante}one{# accolade ouvrante}other{# accolades ouvrantes}}</translation>
 <translation id="2909584066358367921">Aucun bouton suivant</translation>
-<translation id="2911433807131383493">Ouvrir le didacticiel de ChromeVox</translation>
+<translation id="2911433807131383493">Ouvrir le tutoriel de ChromeVox</translation>
 <translation id="2912405967290226587">Faites glisser trois doigts vers la droite</translation>
 <translation id="2937799153569150791">Aucun en-tête de niveau 3 suivant</translation>
 <translation id="2942710183375260152">Bleu ardoise foncé</translation>
@@ -628,7 +628,7 @@
 <translation id="5850707923114094062">Panoramique arrière</translation>
 <translation id="5851548754964597211">Liste d'onglets</translation>
 <translation id="5866042630553435010">Partiellement vérifié</translation>
-<translation id="5867591286054666064">Au cours de ce didacticiel, appuyez sur n'importe quelle touche pour entendre son nom.</translation>
+<translation id="5867591286054666064">Au cours de ce tutoriel, appuyez sur n'importe quelle touche pour entendre son nom.</translation>
 <translation id="5869546221129391014">Grille</translation>
 <translation id="5876817486144482042">Diminuer le volume de la voix</translation>
 <translation id="5878908838135392163">Bleu poudre</translation>
@@ -855,7 +855,7 @@
 <translation id="7701196182766842984">liste remplissage automatique</translation>
 <translation id="7714340021005120797">Aucune zone de liste ou de texte suivante</translation>
 <translation id="772146615414628379">Félicitations! Vous avez appris les bases nécessaires pour utiliser ChromeVox. Rappelez-vous : vous pouvez ouvrir le menu de commande de ChromeVox en tout temps en appuyant sur les touches Rechercher+Point. Pour en apprendre encore plus sur ChromeVox et sur Chrome OS, consultez les articles suivants.
-    Si vous avez terminé le didacticiel, servez-vous de ChromeVox pour naviguer jusqu'au bouton Fermer et cliquez dessus.</translation>
+    Si vous avez terminé le tutoriel, servez-vous de ChromeVox pour naviguer jusqu'au bouton Fermer et cliquez dessus.</translation>
 <translation id="7724603315864178912">Couper</translation>
 <translation id="7731785449856576010">Aucun widget multimédia suivant</translation>
 <translation id="773906353055481349">Appuyez simultanément sur Recherche+Ctrl+Alt et sur les flèches pour naviguer entre les cellules</translation>

@@ -507,6 +507,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3080254622891793721">Gráfico</translation>
 <translation id="3086579638707268289">Se supervisa tu actividad en la Web</translation>
 <translation id="3087734570205094154">Inferior</translation>
+<translation id="3094457892697649331">Cuando editas anotaciones, se mostrará este documento con una vista de una sola página.</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3096100844101284527">Agregar dirección de retiro</translation>
 <translation id="3105172416063519923">ID de recurso:</translation>
@@ -740,6 +741,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4075941231477579656">Touch ID</translation>
 <translation id="4079302484614802869">El proxy está configurado para usar una URL de script .pac, no servidores proxy fijos.</translation>
 <translation id="4082393374666368382">Configuración - Administración</translation>
+<translation id="4084120443451129199">Modo búsqueda: presiona Intro para buscar <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="4088981014127559358">Cambio en el eje Y del lado 1 de la imagen</translation>
 <translation id="4098354747657067197">Sitio engañoso</translation>
 <translation id="4101413244023615925">Texto y gráficos</translation>
@@ -931,6 +933,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4809079943450490359">Instrucciones del administrador de tu dispositivo:</translation>
 <translation id="4813512666221746211">Error de red</translation>
 <translation id="4816492930507672669">Ajustar a la página</translation>
+<translation id="4819347708020428563">¿Quieres editar anotaciones en la vista predeterminada?</translation>
 <translation id="484462545196658690">Automático</translation>
 <translation id="4850886885716139402">Ver</translation>
 <translation id="4854362297993841467">Este método de entrega no está disponible. Prueba otro método.</translation>
@@ -1665,6 +1668,7 @@ Detalles adicionales:
 <translation id="7802523362929240268">El sitio es legítimo</translation>
 <translation id="780301667611848630">No, gracias</translation>
 <translation id="7805768142964895445">Estado</translation>
+<translation id="7811322735445742657">Cuando editas anotaciones, se mostrará este documento en una vista de una sola página y en su rotación original.</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">¿Confirmas que quieres quitar la sugerencia de formulario de Chrome?</translation>
 <translation id="781440967107097262">¿Quieres compartir el portapapeles?</translation>
@@ -1700,6 +1704,7 @@ Detalles adicionales:
 <translation id="7956713633345437162">Favoritos del celular</translation>
 <translation id="7961015016161918242">Nunca</translation>
 <translation id="7966803981046576691">Tipo de cuenta para el trabajo</translation>
+<translation id="7976214039405368314">Demasiadas solicitudes</translation>
 <translation id="7977538094055660992">Dispositivo de salida</translation>
 <translation id="7977894662897852582">Edp</translation>
 <translation id="799149739215780103">Encuadernado</translation>
@@ -1781,6 +1786,7 @@ Detalles adicionales:
 <translation id="8289355894181816810">Comunícate con el administrador de red si no entiendes bien lo que significa.</translation>
 <translation id="8293206222192510085">Agregar Marcador</translation>
 <translation id="8294431847097064396">Fuente</translation>
+<translation id="8297398969342264569">Cuando editas anotaciones, se mostrará este documento en su rotación original.</translation>
 <translation id="8298115750975731693">Es posible que la red Wi-Fi que estás usando (<ph name="WIFI_NAME" />) requiera que accedas a <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="8303854710873047864">Se muestra la sección "<ph name="SECTION" />"</translation>
 <translation id="830498451218851433">Plegado a la mitad</translation>

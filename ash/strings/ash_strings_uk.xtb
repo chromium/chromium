@@ -70,6 +70,7 @@
 <translation id="1589090746204042747">мати доступ до всіх ваших дій у цьому сеансі</translation>
 <translation id="1611993646327628135">Увімкнено</translation>
 <translation id="1632985212731562677">Щоб вимкнути кнопковий доступ, відкрийте "Налаштування" &gt; "Спеціальні можливості".</translation>
+<translation id="1651447046299738444">Схоже, на Chromebook вимкнено Bluetooth або Wi-Fi. Щоб скористатися функцією Phone Hub, перевірте з'єднання.</translation>
 <translation id="1654477262762802994">Ввести голосовий запит</translation>
 <translation id="1667964833127753507">У цьому режимі не використовуються кольори фонового малюнка, а підбираються нейтральні світлі або темні відтінки.</translation>
 <translation id="1677472565718498478">Залишилося <ph name="TIME" /></translation>
@@ -152,6 +153,7 @@
 <translation id="2435457462613246316">Показати пароль</translation>
 <translation id="2473177541599297363">Підтвердьте роздільну здатність</translation>
 <translation id="2475982808118771221">Сталася помилка</translation>
+<translation id="2479579251444854687">Проведіть трьома пальцями вгору, щоб відкрити режим огляду, або вниз, щоб закрити його.</translation>
 <translation id="2482878487686419369">Сповіщення</translation>
 <translation id="2484513351006226581">Натисніть комбінацію клавіш <ph name="KEYBOARD_SHORTCUT" />, щоб змінити розкладку клавіатури.</translation>
 <translation id="2501920221385095727">Залипання клавіш</translation>
@@ -164,6 +166,7 @@
 <translation id="2595239820337756193">Скільки миль у 5 км</translation>
 <translation id="2617342710774726426">SIM-карту заблоковано</translation>
 <translation id="2621713457727696555">Захищено</translation>
+<translation id="2640255526076764619">Змінився жест переходу на попередній робочий стіл. Тепер на сенсорній панелі потрібно проводити чотирма пальцями ліворуч.</translation>
 <translation id="2653659639078652383">Надіслати</translation>
 <translation id="2658778018866295321">Натиснути й перетягнути</translation>
 <translation id="2700493154570097719">Вибрати клавіатуру</translation>
@@ -342,6 +345,7 @@
 <translation id="4412944820643904175">Функцію "<ph name="FEATURE_NAME" />" вимкнено.</translation>
 <translation id="4421231901400348175">Спільний доступ до екрана для користувача <ph name="HELPER_NAME" /> через віддалену допомогу.</translation>
 <translation id="4430019312045809116">Гучність</translation>
+<translation id="4444978951615977024">Сталася помилка. Перевірте з'єднання</translation>
 <translation id="4450893287417543264">Більше не показувати</translation>
 <translation id="445864333228800152">Доброго вечора!</translation>
 <translation id="4458688154122353284">Зупинити запис екрана</translation>
@@ -351,6 +355,7 @@
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Відключені пристрої</translation>
 <translation id="4505050298327493054">Активний робочий стіл.</translation>
+<translation id="4506458088675900627">Змінився жест запуску режиму огляду й виходу з нього</translation>
 <translation id="4513946894732546136">Відгуки</translation>
 <translation id="4527045527269911712">Пристрою Bluetooth "<ph name="DEVICE_NAME" />" потрібен дозвіл на підключення.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> до повного заряду</translation>
@@ -480,6 +485,7 @@
 <translation id="6018164090099858612">Вихід із режиму віддзеркалення</translation>
 <translation id="602001110135236999">Прокрутити ліворуч</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, рівень сигналу –<ph name="SIGNAL_STRENGTH" />. Мережею керує адміністратор</translation>
+<translation id="6029337736376922061">Змінився жест переходу на наступний робочий стіл. Тепер на сенсорній панелі потрібно проводити чотирма пальцями праворуч.</translation>
 <translation id="6030495522958826102">Меню переміщено в нижній лівий кут екрана.</translation>
 <translation id="6040143037577758943">Закрити</translation>
 <translation id="6043212731627905357">Ваш пристрій <ph name="DEVICE_TYPE" /> не підтримує цей монітор.</translation>

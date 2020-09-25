@@ -70,6 +70,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1589090746204042747">Juurdepääs kõigile teie tegevustele selle seansi ajal</translation>
 <translation id="1611993646327628135">Sees</translation>
 <translation id="1632985212731562677">Lülitiga juurdepääsu saab keelata menüüs Seaded &gt; Juurdepääsetavus.</translation>
+<translation id="1651447046299738444">Näib, et Bluetooth või WiFi on teie Chromebookis välja lülitatud. Kontrollige oma ühendust või kasutage Phone Hubi.</translation>
 <translation id="1654477262762802994">Häälpäringu alustamine</translation>
 <translation id="1667964833127753507">Neutraalne värvirežiim ei kasuta taustapildist tuletatud värve, vaid asendab need neutraalsete heledate või tumedate toonidega.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> tühjenemiseni</translation>
@@ -152,6 +153,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="2435457462613246316">Kuva parool</translation>
 <translation id="2473177541599297363">Kinnitage eraldusvõime</translation>
 <translation id="2475982808118771221">Tekkis viga</translation>
+<translation id="2479579251444854687">Ülevaate avamiseks pühkige kolme sõrmega üles ja sulgemiseks kolme sõrmega alla.</translation>
 <translation id="2482878487686419369">Märguanded</translation>
 <translation id="2484513351006226581">Klaviatuuripaigutuse muutmiseks vajutage klahvikombinatsiooni <ph name="KEYBOARD_SHORTCUT" />.</translation>
 <translation id="2501920221385095727">Nakkeklahvid</translation>
@@ -164,6 +166,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="2595239820337756193">5 km miilides</translation>
 <translation id="2617342710774726426">SIM-kaart on lukustatud</translation>
 <translation id="2621713457727696555">Kaitstud</translation>
+<translation id="2640255526076764619">Puuteplaadi liigutus eelmisele töölauale lülitumiseks on muutunud. Eelmisele töölauale lülitumiseks pühkige nelja sõrmega vasakule.</translation>
 <translation id="2653659639078652383">Esita</translation>
 <translation id="2658778018866295321">Klõpsamine ja lohistamine</translation>
 <translation id="2700493154570097719">Valige klaviatuur</translation>
@@ -343,6 +346,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> on väljas.</translation>
 <translation id="4421231901400348175">Ekraani juhtimise jagamine isikuga <ph name="HELPER_NAME" /> kaugabi kaudu.</translation>
 <translation id="4430019312045809116">Helitugevus</translation>
+<translation id="4444978951615977024">Oih! Kontrollige ühendust.</translation>
 <translation id="4450893287417543264">Ära kuva uuesti</translation>
 <translation id="445864333228800152">Tere õhtust!</translation>
 <translation id="4458688154122353284">Peata ekraani salvestamine</translation>
@@ -352,6 +356,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Sidumata seadmed</translation>
 <translation id="4505050298327493054">Aktiivne töölaud.</translation>
+<translation id="4506458088675900627">Puuteplaadi liigutus Ülevaade on muutunud</translation>
 <translation id="4513946894732546136">Tagasiside</translation>
 <translation id="4527045527269911712">Bluetoothi seade „<ph name="DEVICE_NAME" />” küsib luba sidumiseks.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> täislaadimiseni</translation>
@@ -442,7 +447,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="5648021990716966815">Mikrofoni pistikupesa</translation>
 <translation id="5669267381087807207">Aktiveerimine</translation>
 <translation id="5673434351075758678">Pärast seadete sünkroonimist lokaadist „<ph name="FROM_LOCALE" />” lokaati „<ph name="TO_LOCALE" />”.</translation>
-<translation id="5679050765726761783">Ühendatud on madala toitevõimsusega adapter</translation>
+<translation id="5679050765726761783">Ühendatud on väikese toitevõimsusega adapter</translation>
 <translation id="5682642926269496722">Google'i assistent pole praeguse kasutajakonto jaoks saadaval.</translation>
 <translation id="5689633613396158040">Öövalgus muudab hämaras valguses ekraani vaatamise ja lugemise lihtsamaks. Puudutage, et muuta Öövalguse sisselülitumise aega või lülitada see täielikult välja.</translation>
 <translation id="5691772641933328258">Sõrmejälge ei tuntud ära</translation>
@@ -481,6 +486,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="6018164090099858612">Peeglirežiimist väljumine</translation>
 <translation id="602001110135236999">Keri vasakule</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signaalitugevus: <ph name="SIGNAL_STRENGTH" />, võrku haldab teie administraator</translation>
+<translation id="6029337736376922061">Puuteplaadi liigutus järgmisele töölauale lülitumiseks on muutunud. Järgmisele töölauale lülitumiseks pühkige nelja sõrmega paremale.</translation>
 <translation id="6030495522958826102">Menüü teisaldati ekraanikuva vasakusse alanurka.</translation>
 <translation id="6040143037577758943">Sulge</translation>
 <translation id="6043212731627905357">See monitor ei toimi teie seadmega <ph name="DEVICE_TYPE" /> (seda monitori ei toetata).</translation>
@@ -558,7 +564,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="6857811139397017780">Aktiveeri <ph name="NETWORKSERVICE" /></translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Üks number on jäänud}other{# numbrit on jäänud}}</translation>
 <translation id="6878400149835617132">Otsetee on välja lülitatud</translation>
-<translation id="6886172995547742638">Seadme <ph name="DEVICE_TYPE" /> jõudlus võib olla madalam. Kasutage sertifitseeritud <ph name="PREFERRED_MINIMUM_POWER" /> W või võimsamat USB-C-toiteadapterit.</translation>
+<translation id="6886172995547742638">Seadme <ph name="DEVICE_TYPE" /> jõudlus võib olla väiksem. Kasutage sertifitseeritud <ph name="PREFERRED_MINIMUM_POWER" /> W või võimsamat USB-C-toiteadapterit.</translation>
 <translation id="6896758677409633944">Kopeeri</translation>
 <translation id="6910714959251846841">Värskenduse jaoks on vajalik seadme powerwash. Vaadake lisateavet operatsioonisüsteemi <ph name="SYSTEM_APP_NAME" /> uusima värskenduse kohta.</translation>
 <translation id="6919251195245069855">Teie kiipkaarti ei õnnestunud tuvastada. Proovige uuesti.</translation>

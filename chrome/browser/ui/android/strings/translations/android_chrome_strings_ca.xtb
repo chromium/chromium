@@ -284,7 +284,7 @@ Mantén premuda qualsevol paraula per cercar-la. Per definir millor la cerca, se
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> s'ha suprimit</translation>
 <translation id="3211503082155944789"><ph name="READING_LIST_COUNT" /> pàgines no llegides</translation>
 <translation id="321773570071367578">Si oblideu la frase de contrasenya o voleu canviar aquesta configuració, <ph name="BEGIN_LINK" />restabliu la sincronització<ph name="END_LINK" /></translation>
-<translation id="3223655207402797071">Inicia la sessió a aquest lloc web, al teu Compte de Google i a Chrome. És possibles que puguis activar la sincronització més tard.</translation>
+<translation id="3223655207402797071">Inicia la sessió en aquest lloc web, al teu Compte de Google i a Chrome. És possible que puguis activar la sincronització més tard.</translation>
 <translation id="3232754137068452469">Aplicació web</translation>
 <translation id="3236059992281584593">Queda 1 minut</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -893,7 +893,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="7698359219371678927">Crea una adreça electrònica a <ph name="APP_NAME" /></translation>
 <translation id="7702724591845223485">Per esborrar la teva informació d'inici de sessió i altres dades de Chrome, tanca totes les pestanyes d'incògnit.
 
-En mode d'incògnit, és possible que la teva activitat continuï visible per a la teva empresa, el teu centre educatiu, el teu proveïdor d'Internet o els llocs web que visitis.</translation>
+En mode d'incògnit, és possible que la teva activitat continuï sent visible per a la teva empresa, el teu centre educatiu, el teu proveïdor d'Internet o els llocs web que visitis.</translation>
 <translation id="7704317875155739195">Completa automàticament les cerques i els URL</translation>
 <translation id="7725024127233776428">Les pàgines que afegeixis a les adreces d'interès es mostraran aquí</translation>
 <translation id="7732997068759397415">Kannada</translation>
@@ -1016,7 +1016,7 @@ En mode d'incògnit, és possible que la teva activitat continuï visible per a 
 <translation id="8555836665334561807">Amb Wi‑Fi</translation>
 <translation id="8558485628462305855">Per veure contingut en realitat augmentada, actualitza ARCore</translation>
 <translation id="8559990750235505898">Proposa traduir les pàgines en altres idiomes</translation>
-<translation id="8560602726703398413">Troba la teva llista de lectura a Adreces d'interès</translation>
+<translation id="8560602726703398413">Troba la teva llista de lectura a les adreces d'interès</translation>
 <translation id="8561196567344536112">1. Ves a Configuració\n2. Toca Aplicació de navegador\n3. Tria <ph name="APP_NAME" /></translation>
 <translation id="8562452229998620586">Les contrasenyes desades apareixeran aquí.</translation>
 <translation id="8569404424186215731">des del dia <ph name="DATE" /></translation>

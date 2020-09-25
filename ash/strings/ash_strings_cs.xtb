@@ -70,6 +70,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1589090746204042747">Získat přístup k veškeré vaší aktivitě v této relaci</translation>
 <translation id="1611993646327628135">Zap</translation>
 <translation id="1632985212731562677">Přístup pomocí přepínačů lze vypnout v Nastavení &gt; Přístupnost.</translation>
+<translation id="1651447046299738444">Zdá se, že je připojení Bluetooth nebo Wi-Fi v Chromebooku vypnuté. Pokud chcete používat funkci Phone Hub, zkontrolujte připojení.</translation>
 <translation id="1654477262762802994">Zahájit hlasový dotaz</translation>
 <translation id="1667964833127753507">Neutrální režim barvy nepoužívá barvy z tapety, ale nahrazuje je sadou neutrálních tónů ve světlých nebo tmavých odstínech.</translation>
 <translation id="1677472565718498478">zbývající čas: <ph name="TIME" /></translation>
@@ -152,6 +153,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="2435457462613246316">Zobrazit heslo</translation>
 <translation id="2473177541599297363">Potvrďte rozlišení</translation>
 <translation id="2475982808118771221">Došlo k chybě</translation>
+<translation id="2479579251444854687">Přehled otevřete přejetím třemi prsty nahoru. Přejetím třemi prsty dolů ho zavřete.</translation>
 <translation id="2482878487686419369">Oznámení</translation>
 <translation id="2484513351006226581">Rozložení klávesnice změníte stisknutím kláves <ph name="KEYBOARD_SHORTCUT" /></translation>
 <translation id="2501920221385095727">Jedním prstem</translation>
@@ -164,6 +166,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="2595239820337756193">5 km v mílích</translation>
 <translation id="2617342710774726426">SIM karta je uzamčena</translation>
 <translation id="2621713457727696555">Zabezpečeno</translation>
+<translation id="2640255526076764619">Gesto touchpadu k přepnutí na předchozí plochu se změnilo. Na předchozí plochu přejdete přejetím čtyřmi prsty doleva.</translation>
 <translation id="2653659639078652383">Odeslat</translation>
 <translation id="2658778018866295321">Kliknout a přetáhnout</translation>
 <translation id="2700493154570097719">Nastavit klávesnici</translation>
@@ -342,6 +345,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="4412944820643904175">Funkce <ph name="FEATURE_NAME" /> je vypnutá.</translation>
 <translation id="4421231901400348175">Ovládání obrazovky je prostřednictvím Vzdálené pomoci sdíleno s uživatelem <ph name="HELPER_NAME" />.</translation>
 <translation id="4430019312045809116">Hlasitost</translation>
+<translation id="4444978951615977024">A jéje. Zkontrolujte připojení</translation>
 <translation id="4450893287417543264">Tuto zprávu již nezobrazovat</translation>
 <translation id="445864333228800152">Dobrý večer,</translation>
 <translation id="4458688154122353284">Zastavit nahrávání obrazovky</translation>
@@ -351,6 +355,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Nespárovaná zařízení</translation>
 <translation id="4505050298327493054">Aktivní plocha.</translation>
+<translation id="4506458088675900627">Gesto touchpadu k zobrazení přehledu se změnilo</translation>
 <translation id="4513946894732546136">Zpětná vazba</translation>
 <translation id="4527045527269911712">Zařízení Bluetooth „<ph name="DEVICE_NAME" />“ žádá o povolení ke spárování.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> do úplného nabití</translation>
@@ -480,6 +485,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="6018164090099858612">Ukončování režimu zrcadlení</translation>
 <translation id="602001110135236999">Posunout doleva</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, síla signálu: <ph name="SIGNAL_STRENGTH" />, spravováno administrátorem</translation>
+<translation id="6029337736376922061">Gesto touchpadu k přepnutí na další plochu se změnilo. Na další plochu přejdete přejetím čtyřmi prsty doprava.</translation>
 <translation id="6030495522958826102">Nabídka byla přesunuta do levého dolního rohu obrazovky.</translation>
 <translation id="6040143037577758943">Zavřít</translation>
 <translation id="6043212731627905357">Tento monitor si se zařízením <ph name="DEVICE_TYPE" /> nerozumí (monitor není podporován).</translation>
