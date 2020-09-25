@@ -22,8 +22,8 @@ class PrintPreviewStickySettingsUnittest : public testing::Test {
   PrintPreviewStickySettings sticky_settings_;
 };
 
-TEST_F(PrintPreviewStickySettingsUnittest, GetPrinterRecentlyUsedRanks) {
-  std::string recently_used_ranks_str = R"({
+TEST_F(PrintPreviewStickySettingsUnittest, GetPrinterRecentlyUsed) {
+  const std::string kRecentlyUsedRanksStr = R"({
     "version": 2,
     "recentDestinations": [
       {
@@ -36,19 +36,22 @@ TEST_F(PrintPreviewStickySettingsUnittest, GetPrinterRecentlyUsedRanks) {
       }
     ]
   })";
-  sticky_settings_.StoreAppState(recently_used_ranks_str);
-  base::flat_map<std::string, int> recently_used_ranks =
-      sticky_settings_.GetPrinterRecentlyUsedRanks();
-  base::flat_map<std::string, int> expected_recently_used_ranks(
+  sticky_settings_.StoreAppState(kRecentlyUsedRanksStr);
+  const base::flat_map<std::string, int> kExpectedRecentlyUsedRanks(
       {{"id1", 0}, {"id2", 1}});
-  EXPECT_EQ(expected_recently_used_ranks, recently_used_ranks);
+  EXPECT_EQ(kExpectedRecentlyUsedRanks,
+            sticky_settings_.GetPrinterRecentlyUsedRanks());
+  const std::vector<std::string> kExpectedRecentlyUsedPrinters({"id1", "id2"});
+  EXPECT_EQ(kExpectedRecentlyUsedPrinters,
+            sticky_settings_.GetRecentlyUsedPrinters());
 }
 
 TEST_F(PrintPreviewStickySettingsUnittest,
-       GetPrinterRecentlyUsedRanks_NoRecentDestinations) {
-  std::string recently_used_ranks_str = R"({"version": 2})";
-  sticky_settings_.StoreAppState(recently_used_ranks_str);
+       GetPrinterRecentlyUsed_NoRecentDestinations) {
+  const std::string kRecentlyUsedRanksStr = R"({"version": 2})";
+  sticky_settings_.StoreAppState(kRecentlyUsedRanksStr);
   EXPECT_TRUE(sticky_settings_.GetPrinterRecentlyUsedRanks().empty());
+  EXPECT_TRUE(sticky_settings_.GetRecentlyUsedPrinters().empty());
 }
 
 }  // namespace printing
