@@ -42,7 +42,10 @@ class CommandRunner(object):
     self._port = port
 
   def _GetSshCommandLinePrefix(self):
-    return _SSH + ['-F', self._config_path, self._host, '-p', str(self._port)]
+    cmd_prefix = _SSH + ['-F', self._config_path, self._host]
+    if self._port:
+      cmd_prefix += ['-p', str(self._port)]
+    return cmd_prefix
 
   def RunCommand(self, command, silent, timeout_secs=None):
     """Executes an SSH command on the remote host and blocks until completion.
@@ -55,6 +58,7 @@ class CommandRunner(object):
     Returns the exit code from the remote command."""
 
     ssh_command = self._GetSshCommandLinePrefix() + command
+    logging.warning(ssh_command)
     _SSH_LOGGER.debug('ssh exec: ' + ' '.join(ssh_command))
     retval, _, _ = SubprocessCallWithTimeout(ssh_command, silent, timeout_secs)
     return retval
@@ -81,6 +85,7 @@ class CommandRunner(object):
       ssh_args = []
 
     ssh_command = self._GetSshCommandLinePrefix() + ssh_args + ['--'] + command
+    logging.warning(ssh_command)
     _SSH_LOGGER.debug(' '.join(ssh_command))
     return subprocess.Popen(ssh_command, stdout=stdout, stderr=stderr, **kwargs)
 
@@ -111,7 +116,9 @@ class CommandRunner(object):
     else:
       sources = ["%s:%s" % (host, source) for source in sources]
 
-    scp_command += ['-F', self._config_path, '-P', str(self._port)]
+    scp_command += ['-F', self._config_path]
+    if self._port:
+      scp_command += ['-P', str(self._port)]
     scp_command += sources
     scp_command += [dest]
 

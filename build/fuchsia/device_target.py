@@ -87,9 +87,9 @@ class DeviceTarget(target.Target):
 
     super(DeviceTarget, self).__init__(out_dir, target_cpu)
 
-    self._port = port if port else 22
     self._system_log_file = system_log_file
     self._host = host
+    self._port = port
     self._fuchsia_out_dir = None
     if fuchsia_out_dir:
       self._fuchsia_out_dir = os.path.expanduser(fuchsia_out_dir)
@@ -133,7 +133,7 @@ class DeviceTarget(target.Target):
     device_args.add_argument('--port',
                              '-p',
                              type=int,
-                             default=22,
+                             default=None,
                              help='The port of the SSH service running on the '
                              'device. Optional.')
     device_args.add_argument('--ssh-config',
