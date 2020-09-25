@@ -19,6 +19,28 @@ class CORE_EXPORT NGGridLayoutAlgorithm
                                NGBoxFragmentBuilder,
                                NGBlockBreakToken> {
  public:
+  enum class AutoPlacementType { kNotNeeded, kMajor, kMinor, kBoth };
+
+  struct GridItemData {
+    explicit GridItemData(const NGBlockNode node);
+
+    AutoPlacementType AutoPlacement(
+        GridTrackSizingDirection flow_direction) const;
+    wtf_size_t StartLine(GridTrackSizingDirection direction) const;
+    wtf_size_t EndLine(GridTrackSizingDirection direction) const;
+    const GridSpan& Span(GridTrackSizingDirection direction) const;
+    void SetSpan(const GridSpan& span, GridTrackSizingDirection direction);
+    const NGBlockNode node;
+    GridArea resolved_position;
+
+    NGBoxStrut margins;
+    LayoutUnit inline_size;
+    MinMaxSizes min_max_sizes;
+
+    bool is_spanning_flex_track : 1;
+    bool is_spanning_intrinsic_track : 1;
+  };
+
   explicit NGGridLayoutAlgorithm(const NGLayoutAlgorithmParams& params);
 
   scoped_refptr<const NGLayoutResult> Layout() override;
@@ -37,23 +59,6 @@ class CORE_EXPORT NGGridLayoutAlgorithm
     kResolvingBlockSize,
     kPlacingGridItems,
     kCompletedLayout
-  };
-
-  struct GridItemData {
-    explicit GridItemData(const NGBlockNode node);
-
-    wtf_size_t StartLine(GridTrackSizingDirection track_direction) const;
-    wtf_size_t EndLine(GridTrackSizingDirection track_direction) const;
-
-    const NGBlockNode node;
-    GridArea resolved_position;
-
-    NGBoxStrut margins;
-    LayoutUnit inline_size;
-    MinMaxSizes min_max_sizes;
-
-    bool is_spanning_flex_track : 1;
-    bool is_spanning_intrinsic_track : 1;
   };
 
   class ReorderedGridItems {
@@ -116,6 +121,8 @@ class CORE_EXPORT NGGridLayoutAlgorithm
   // Lays out and computes inline and block offsets for grid items.
   void PlaceGridItems();
 
+  GridTrackSizingDirection AutoFlowDirection() const;
+
   GridLayoutAlgorithmState state_;
   LogicalSize border_box_size_;
   LogicalSize child_percentage_size_;
@@ -131,6 +138,8 @@ class CORE_EXPORT NGGridLayoutAlgorithm
 
   wtf_size_t explicit_column_start_ = 0;
   wtf_size_t explicit_row_start_ = 0;
+  wtf_size_t column_count_ = 0;
+  wtf_size_t row_count_ = 0;
 
   wtf_size_t automatic_column_repetitions_ =
       NGGridBlockTrackCollection::kInvalidRangeIndex;

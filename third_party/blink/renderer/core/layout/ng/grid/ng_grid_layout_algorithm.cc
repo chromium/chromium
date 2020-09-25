@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_layout_algorithm.h"
 
 #include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_child_iterator.h"
+#include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_placement.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_length_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_out_of_flow_layout_part.h"
@@ -34,6 +35,18 @@ scoped_refptr<const NGLayoutResult> NGGridLayoutAlgorithm::Layout() {
         SetSpecifiedTracks();
         DetermineExplicitTrackStarts();
         ConstructAndAppendGridItems();
+        // TODO(janewman): Split placement into its own GridLayoutAlgorithmState
+        NGGridPlacement(
+            automatic_row_repetitions_, automatic_column_repetitions_,
+            explicit_row_start_, explicit_column_start_,
+            Style().IsGridAutoFlowAlgorithmSparse()
+                ? NGGridPlacement::PackingBehavior::kSparse
+                : NGGridPlacement::PackingBehavior::kDense,
+            AutoFlowDirection(), Style(),
+            AutoFlowDirection() == kForRows ? column_count_ : row_count_,
+            block_row_track_collection_, block_column_track_collection_, items_)
+            .RunAutoPlacementAlgorithm();
+
         block_column_track_collection_.FinalizeRanges();
         block_row_track_collection_.FinalizeRanges();
 
@@ -106,6 +119,24 @@ NGGridLayoutAlgorithm::RowTrackCollection() const {
 NGGridLayoutAlgorithm::GridItemData::GridItemData(const NGBlockNode node)
     : node(node) {}
 
+NGGridLayoutAlgorithm::AutoPlacementType
+NGGridLayoutAlgorithm::GridItemData::AutoPlacement(
+    GridTrackSizingDirection flow_direction) const {
+  bool is_major_indefinite = Span(flow_direction).IsIndefinite();
+  bool is_minor_indefinite =
+      Span(flow_direction == kForColumns ? kForRows : kForColumns)
+          .IsIndefinite();
+
+  if (is_minor_indefinite && is_major_indefinite)
+    return NGGridLayoutAlgorithm::AutoPlacementType::kBoth;
+  else if (is_minor_indefinite)
+    return NGGridLayoutAlgorithm::AutoPlacementType::kMinor;
+  else if (is_major_indefinite)
+    return NGGridLayoutAlgorithm::AutoPlacementType::kMajor;
+
+  return NGGridLayoutAlgorithm::AutoPlacementType::kNotNeeded;
+}
+
 wtf_size_t NGGridLayoutAlgorithm::GridItemData::StartLine(
     GridTrackSizingDirection track_direction) const {
   const GridSpan& span = (track_direction == kForColumns)
@@ -122,6 +153,25 @@ wtf_size_t NGGridLayoutAlgorithm::GridItemData::EndLine(
                              : resolved_position.rows;
   DCHECK(span.IsTranslatedDefinite());
   return span.EndLine();
+}
+
+const GridSpan& NGGridLayoutAlgorithm::GridItemData::Span(
+    GridTrackSizingDirection direction) const {
+  return (direction == kForColumns) ? resolved_position.columns
+                                    : resolved_position.rows;
+}
+
+void NGGridLayoutAlgorithm::GridItemData::SetSpan(
+    const GridSpan& span,
+    GridTrackSizingDirection track_direction) {
+  switch (track_direction) {
+    case kForColumns:
+      resolved_position.columns = span;
+      break;
+    case kForRows:
+      resolved_position.rows = span;
+      break;
+  }
 }
 
 NGGridLayoutAlgorithm::ReorderedGridItems::Iterator::Iterator(
@@ -177,8 +227,6 @@ void NGGridLayoutAlgorithm::ConstructAndAppendGridItems() {
   for (NGBlockNode child = iterator.NextChild(); child;
        child = iterator.NextChild()) {
     GridItemData grid_item = MeasureGridItem(child);
-    EnsureTrackCoverageForGridItem(kForColumns, grid_item);
-    EnsureTrackCoverageForGridItem(kForRows, grid_item);
     items_.emplace_back(grid_item);
   }
 
@@ -261,34 +309,11 @@ void NGGridLayoutAlgorithm::SetSpecifiedTracks() {
       &grid_style.GridAutoRows().NGTrackList(), automatic_row_repetitions_);
 }
 
-void NGGridLayoutAlgorithm::EnsureTrackCoverageForGridItem(
-    GridTrackSizingDirection track_direction,
-    GridItemData& grid_item) {
-  GridSpan span = GridPositionsResolver::ResolveGridPositionsFromStyle(
-      Style(), grid_item.node.Style(), track_direction,
-      AutoRepeatCountForDirection(track_direction));
-
-  // TODO(janewman): indefinite positions should be resolved with the auto
-  // placement algorithm.
-  if (span.IsIndefinite())
-    return;
-
-  if (track_direction == kForColumns) {
-    span.Translate(explicit_column_start_);
-    grid_item.resolved_position.columns = span;
-    block_column_track_collection_.EnsureTrackCoverage(span.StartLine(),
-                                                       span.IntegerSpan());
-  } else {
-    span.Translate(explicit_row_start_);
-    grid_item.resolved_position.rows = span;
-    block_row_track_collection_.EnsureTrackCoverage(span.StartLine(),
-                                                    span.IntegerSpan());
-  }
-}
-
 void NGGridLayoutAlgorithm::DetermineExplicitTrackStarts() {
   DCHECK_EQ(0u, explicit_column_start_);
   DCHECK_EQ(0u, explicit_row_start_);
+  DCHECK_EQ(0u, column_count_);
+  DCHECK_EQ(0u, row_count_);
 
   NGGridChildIterator iterator(Node());
   for (NGBlockNode child = iterator.NextChild(); child;
@@ -302,10 +327,21 @@ void NGGridLayoutAlgorithm::DetermineExplicitTrackStarts() {
     if (!column_span.IsIndefinite()) {
       explicit_column_start_ = std::max<int>(
           explicit_column_start_, -column_span.UntranslatedStartLine());
+      column_count_ =
+          std::max<int>(column_count_, column_span.UntranslatedEndLine());
+    } else {
+      column_count_ = std::max<int>(
+          column_count_, GridPositionsResolver::SpanSizeForAutoPlacedItem(
+                             child.Style(), kForColumns));
     }
     if (!row_span.IsIndefinite()) {
       explicit_row_start_ =
           std::max<int>(explicit_row_start_, -row_span.UntranslatedStartLine());
+      row_count_ = std::max<int>(row_count_, row_span.UntranslatedEndLine());
+    } else {
+      row_count_ = std::max<int>(
+          row_count_, GridPositionsResolver::SpanSizeForAutoPlacedItem(
+                          child.Style(), kForRows));
     }
   }
 }
@@ -433,6 +469,10 @@ wtf_size_t NGGridLayoutAlgorithm::AutoRepeatCountForDirection(
     GridTrackSizingDirection track_direction) const {
   return (track_direction == kForColumns) ? automatic_column_repetitions_
                                           : automatic_row_repetitions_;
+}
+
+GridTrackSizingDirection NGGridLayoutAlgorithm::AutoFlowDirection() const {
+  return Style().IsGridAutoFlowDirectionRow() ? kForRows : kForColumns;
 }
 
 void NGGridLayoutAlgorithm::PlaceGridItems() {

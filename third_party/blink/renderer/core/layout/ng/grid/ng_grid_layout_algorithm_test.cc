@@ -374,12 +374,22 @@ TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmRanges) {
 
   NGGridTrackCollectionBase::RangeRepeatIterator row_iterator(
       &algorithm.RowTrackCollection(), 0u);
-  EXPECT_RANGE(0u, 1000u, row_iterator);
+  EXPECT_RANGE(0u, 1u, row_iterator);
+  EXPECT_TRUE(row_iterator.MoveToNextRange());
+  EXPECT_RANGE(1u, 999u, row_iterator);
   EXPECT_FALSE(row_iterator.MoveToNextRange());
 
   NGGridTrackCollectionBase::RangeRepeatIterator column_iterator(
       &algorithm.ColumnTrackCollection(), 0u);
-  EXPECT_RANGE(0u, 8u, column_iterator);
+  EXPECT_RANGE(0u, 1u, column_iterator);
+  EXPECT_TRUE(column_iterator.MoveToNextRange());
+  EXPECT_RANGE(1u, 1u, column_iterator);
+  EXPECT_TRUE(column_iterator.MoveToNextRange());
+  EXPECT_RANGE(2u, 1u, column_iterator);
+  EXPECT_TRUE(column_iterator.MoveToNextRange());
+  EXPECT_RANGE(3u, 1u, column_iterator);
+  EXPECT_TRUE(column_iterator.MoveToNextRange());
+  EXPECT_RANGE(4u, 4u, column_iterator);
   EXPECT_FALSE(column_iterator.MoveToNextRange());
 }
 
@@ -420,7 +430,9 @@ TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmRangesWithAutoRepeater) {
 
   NGGridTrackCollectionBase::RangeRepeatIterator row_iterator(
       &algorithm.RowTrackCollection(), 0u);
-  EXPECT_RANGE(0u, 20u, row_iterator);
+  EXPECT_RANGE(0u, 1u, row_iterator);
+  EXPECT_TRUE(row_iterator.MoveToNextRange());
+  EXPECT_RANGE(1u, 19u, row_iterator);
   EXPECT_TRUE(row_iterator.MoveToNextRange());
 
   EXPECT_RANGE(20u, 1u, row_iterator);
@@ -434,12 +446,16 @@ TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmRangesWithAutoRepeater) {
   EXPECT_RANGE(0u, 1u, column_iterator);
   EXPECT_TRUE(column_iterator.MoveToNextRange());
 
-  EXPECT_RANGE(1u, 3u, column_iterator);
+  EXPECT_RANGE(1u, 1u, column_iterator);
   EXPECT_TRUE(column_iterator.MoveToNextRange());
 
+  EXPECT_RANGE(2u, 1u, column_iterator);
+  EXPECT_TRUE(column_iterator.MoveToNextRange());
+
+  EXPECT_RANGE(3u, 1u, column_iterator);
+  EXPECT_TRUE(column_iterator.MoveToNextRange());
   EXPECT_RANGE(4u, 1u, column_iterator);
   EXPECT_TRUE(column_iterator.MoveToNextRange());
-
   EXPECT_RANGE(5u, 1u, column_iterator);
   EXPECT_FALSE(column_iterator.MoveToNextRange());
 }
@@ -516,6 +532,200 @@ TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmRangesImplicit) {
   EXPECT_FALSE(row_iterator.MoveToNextRange());
 }
 
+TEST_F(NGGridLayoutAlgorithmTest,
+       NGGridLayoutAlgorithmRangesImplicitAutoColumns) {
+  if (!RuntimeEnabledFeatures::LayoutNGGridEnabled())
+    return;
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    #grid1 {
+      display: grid;
+    }
+    #cell1 {
+      grid-row: 1 / 2;
+      width: 50px;
+    }
+    #cell2 {
+      grid-row: 1 / 2;
+      width: 50px;
+    }
+    #cell3 {
+      grid-row: 2 / 3;
+      width: 50px;
+    }
+    #cell4 {
+      grid-row: 2 / 3;
+      width: 50px;
+    }
+    </style>
+    <div id="grid1">
+      <div id="cell1">Cell 1</div>
+      <div id="cell2">Cell 2</div>
+      <div id="cell3">Cell 3</div>
+      <div id="cell4">Cell 4</div>
+    </div>
+  )HTML");
+
+  NGBlockNode node(ToLayoutBox(GetLayoutObjectByElementId("grid1")));
+
+  NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
+      WritingMode::kHorizontalTb, TextDirection::kLtr,
+      LogicalSize(LayoutUnit(100), LayoutUnit(100)), false, true);
+
+  NGFragmentGeometry fragment_geometry =
+      CalculateInitialFragmentGeometry(space, node);
+
+  NGGridLayoutAlgorithm algorithm({node, fragment_geometry, space});
+  EXPECT_EQ(GridItemCount(algorithm), 0U);
+  SetAutoTrackRepeat(algorithm, 0, 0);
+  algorithm.Layout();
+  EXPECT_EQ(GridItemCount(algorithm), 4U);
+
+  NGGridTrackCollectionBase::RangeRepeatIterator column_iterator(
+      &algorithm.ColumnTrackCollection(), 0u);
+  EXPECT_RANGE(0u, 1u, column_iterator);
+  EXPECT_TRUE(column_iterator.MoveToNextRange());
+
+  EXPECT_RANGE(1u, 1u, column_iterator);
+  EXPECT_FALSE(column_iterator.MoveToNextRange());
+
+  NGGridTrackCollectionBase::RangeRepeatIterator row_iterator(
+      &algorithm.RowTrackCollection(), 0u);
+  EXPECT_RANGE(0u, 1u, row_iterator);
+  EXPECT_TRUE(row_iterator.MoveToNextRange());
+
+  EXPECT_RANGE(1u, 1u, row_iterator);
+  EXPECT_FALSE(row_iterator.MoveToNextRange());
+}
+
+TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmRangesImplicitAutoRows) {
+  if (!RuntimeEnabledFeatures::LayoutNGGridEnabled())
+    return;
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    #grid1 {
+      display: grid;
+    }
+    #cell1 {
+      grid-column: 1 / 2;
+      width: 50px;
+    }
+    #cell2 {
+      grid-column: 2 / 3;
+      width: 50px;
+    }
+    #cell3 {
+      grid-column: 1 / 2;
+      width: 50px;
+    }
+    #cell4 {
+      grid-column: 2 / 5;
+      width: 50px;
+    }
+    </style>
+    <div id="grid1">
+      <div id="cell1">Cell 1</div>
+      <div id="cell2">Cell 2</div>
+      <div id="cell3">Cell 3</div>
+      <div id="cell4">Cell 4</div>
+    </div>
+  )HTML");
+
+  NGBlockNode node(ToLayoutBox(GetLayoutObjectByElementId("grid1")));
+
+  NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
+      WritingMode::kHorizontalTb, TextDirection::kLtr,
+      LogicalSize(LayoutUnit(100), LayoutUnit(100)), false, true);
+
+  NGFragmentGeometry fragment_geometry =
+      CalculateInitialFragmentGeometry(space, node);
+
+  NGGridLayoutAlgorithm algorithm({node, fragment_geometry, space});
+  EXPECT_EQ(GridItemCount(algorithm), 0U);
+  SetAutoTrackRepeat(algorithm, 0, 0);
+  algorithm.Layout();
+  EXPECT_EQ(GridItemCount(algorithm), 4U);
+
+  NGGridTrackCollectionBase::RangeRepeatIterator column_iterator(
+      &algorithm.ColumnTrackCollection(), 0u);
+  EXPECT_RANGE(0u, 1u, column_iterator);
+  EXPECT_TRUE(column_iterator.MoveToNextRange());
+
+  EXPECT_RANGE(1u, 1u, column_iterator);
+  EXPECT_TRUE(column_iterator.MoveToNextRange());
+
+  EXPECT_RANGE(2u, 2u, column_iterator);
+  EXPECT_FALSE(column_iterator.MoveToNextRange());
+
+  NGGridTrackCollectionBase::RangeRepeatIterator row_iterator(
+      &algorithm.RowTrackCollection(), 0u);
+  EXPECT_RANGE(0u, 1u, row_iterator);
+  EXPECT_TRUE(row_iterator.MoveToNextRange());
+
+  EXPECT_RANGE(1u, 1u, row_iterator);
+  EXPECT_FALSE(row_iterator.MoveToNextRange());
+}
+
+TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmRangesImplicitMixed) {
+  if (!RuntimeEnabledFeatures::LayoutNGGridEnabled())
+    return;
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    #grid1 {
+      display: grid;
+    }
+    #cell1 {
+      grid-column: 2;
+      grid-row: 1;
+    }
+    </style>
+    <div id="grid1">
+      <div id="cell1">Cell 1</div>
+      <div id="cell2">Cell 2</div>
+      <div id="cell3">Cell 3</div>
+      <div id="cell4">Cell 4</div>
+      <div id="cell4">Cell 5</div>
+    </div>
+  )HTML");
+
+  NGBlockNode node(ToLayoutBox(GetLayoutObjectByElementId("grid1")));
+
+  NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
+      WritingMode::kHorizontalTb, TextDirection::kLtr,
+      LogicalSize(LayoutUnit(100), LayoutUnit(100)), false, true);
+
+  NGFragmentGeometry fragment_geometry =
+      CalculateInitialFragmentGeometry(space, node);
+
+  NGGridLayoutAlgorithm algorithm({node, fragment_geometry, space});
+  EXPECT_EQ(GridItemCount(algorithm), 0U);
+  SetAutoTrackRepeat(algorithm, 0, 0);
+  algorithm.Layout();
+  EXPECT_EQ(GridItemCount(algorithm), 5U);
+
+  NGGridTrackCollectionBase::RangeRepeatIterator column_iterator(
+      &algorithm.ColumnTrackCollection(), 0u);
+  EXPECT_RANGE(0u, 1u, column_iterator);
+  EXPECT_TRUE(column_iterator.MoveToNextRange());
+
+  EXPECT_RANGE(1u, 1u, column_iterator);
+  EXPECT_FALSE(column_iterator.MoveToNextRange());
+
+  NGGridTrackCollectionBase::RangeRepeatIterator row_iterator(
+      &algorithm.RowTrackCollection(), 0u);
+  EXPECT_RANGE(0u, 1u, row_iterator);
+  EXPECT_TRUE(row_iterator.MoveToNextRange());
+
+  EXPECT_RANGE(1u, 1u, row_iterator);
+  EXPECT_TRUE(row_iterator.MoveToNextRange());
+
+  EXPECT_RANGE(2u, 1u, row_iterator);
+  EXPECT_FALSE(row_iterator.MoveToNextRange());
+}
+
 TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmGridPositions) {
   if (!RuntimeEnabledFeatures::LayoutNGGridEnabled())
     return;
@@ -563,11 +773,15 @@ TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmGridPositions) {
   NGGridTrackCollectionBase::RangeRepeatIterator column_iterator(
       &algorithm.ColumnTrackCollection(), 0u);
   EXPECT_RANGE(0u, 1u, column_iterator);
+  EXPECT_TRUE(column_iterator.MoveToNextRange());
+  EXPECT_RANGE(1u, 1u, column_iterator);
   EXPECT_FALSE(column_iterator.MoveToNextRange());
 
   NGGridTrackCollectionBase::RangeRepeatIterator row_iterator(
       &algorithm.RowTrackCollection(), 0u);
-  EXPECT_RANGE(0u, 3u, row_iterator);
+  EXPECT_RANGE(0u, 1u, row_iterator);
+  EXPECT_TRUE(row_iterator.MoveToNextRange());
+  EXPECT_RANGE(1u, 2u, row_iterator);
   EXPECT_TRUE(row_iterator.MoveToNextRange());
   EXPECT_RANGE(3u, 1u, row_iterator);
   EXPECT_TRUE(row_iterator.MoveToNextRange());
@@ -747,6 +961,66 @@ TEST_F(NGGridLayoutAlgorithmTest, FixedSizePositioning) {
         <div class="grid_item">4</div>
       </div>
     </div>
+  )HTML");
+  String dump = DumpFragmentTree(GetElementById("wrapper"));
+
+  String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
+  offset:unplaced size:1000x200
+    offset:0,0 size:200x200
+      offset:0,0 size:100x100
+        offset:0,0 size:10x10
+      offset:100,0 size:100x100
+        offset:0,0 size:10x10
+      offset:0,100 size:100x100
+        offset:0,0 size:10x10
+      offset:100,100 size:100x100
+        offset:0,0 size:10x10
+)DUMP";
+  EXPECT_EQ(expectation, dump);
+}
+
+TEST_F(NGGridLayoutAlgorithmTest, FixedSizePositioningAutoRows) {
+  if (!RuntimeEnabledFeatures::LayoutNGGridEnabled())
+    return;
+
+  LoadAhem();
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    body {
+      font: 10px/1 Ahem;
+    }
+
+    #grid {
+      display: grid;
+      width: 200px;
+      height: 200px;
+      grid-auto-columns: 100px;
+      grid-auto-rows: 100px;
+    }
+
+    .grid_item {
+      width: 100px;
+      height: 100px;
+      background-color: gray;
+    }
+
+    .cell2 {
+      width: 100px;
+      height: 100px;
+      grid-column: 2;
+      background-color: gray;
+    }
+
+  </style>
+  <div id="wrapper">
+    <div id="grid">
+      <div class="grid_item">1</div>
+      <div class="cell2">2</div>
+      <div class="grid_item">3</div>
+      <div class="grid_item">4</div>
+    </div>
+  </div>
+
   )HTML");
   String dump = DumpFragmentTree(GetElementById("wrapper"));
 
