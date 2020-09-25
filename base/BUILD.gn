@@ -1285,7 +1285,6 @@ component("base") {
     ":logging_buildflags",
     ":orderfile_buildflags",
     ":partition_alloc_buildflags",
-    ":profiler_buildflags",
     ":sanitizer_buildflags",
     ":synchronization_buildflags",
     ":tracing_buildflags",
@@ -2255,6 +2254,7 @@ buildflag_header("debugging_buildflags") {
     "CAN_UNWIND_WITH_FRAME_POINTERS=$can_unwind_with_frame_pointers",
     "UNSAFE_DEVELOPER_BUILD=$is_unsafe_developer_build",
     "CAN_UNWIND_WITH_CFI_TABLE=$can_unwind_with_cfi_table",
+    "ENABLE_ARM_CFI_TABLE=$enable_arm_cfi_table",
     "EXCLUDE_UNWIND_TABLES=$exclude_unwind_tables",
     "ENABLE_GDBINIT_WARNING=$enable_gdbinit_warning",
     "ENABLE_LLDBINIT_WARNING=$enable_lldbinit_warning",
@@ -2334,13 +2334,6 @@ buildflag_header("tracing_buildflags") {
     "USE_PERFETTO_CLIENT_LIBRARY=$use_perfetto_client_library",
     "OPTIONAL_TRACE_EVENTS_ENABLED=$optional_trace_events_enabled",
   ]
-}
-
-buildflag_header("profiler_buildflags") {
-  header = "profiler_buildflags.h"
-  header_dir = "base/profiler"
-
-  flags = [ "ENABLE_ARM_CFI_TABLE=$enable_arm_cfi_table" ]
 }
 
 # This is the subset of files from base that should not be used with a dynamic

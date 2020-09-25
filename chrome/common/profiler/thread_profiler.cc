@@ -14,7 +14,6 @@
 #include "base/message_loop/work_id_provider.h"
 #include "base/no_destructor.h"
 #include "base/process/process.h"
-#include "base/profiler/profiler_buildflags.h"
 #include "base/profiler/sample_metadata.h"
 #include "base/profiler/sampling_profiler_thread_token.h"
 #include "base/rand_util.h"
