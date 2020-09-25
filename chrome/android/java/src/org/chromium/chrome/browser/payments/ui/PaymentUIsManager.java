@@ -233,6 +233,7 @@ public class PaymentUIsManager implements SettingsAutofillAndPaymentsObserver.Ob
     public PaymentUIsManager(Delegate delegate, PaymentRequestParams params,
             WebContents webContents, boolean isOffTheRecord, JourneyLogger journeyLogger,
             String topLevelOrigin, PaymentUIsObserver observer) {
+        assert !params.hasClosed();
         mDelegate = delegate;
         mParams = params;
 
@@ -560,6 +561,7 @@ public class PaymentUIsManager implements SettingsAutofillAndPaymentsObserver.Ob
     // Implement PaymentRequestLifecycleObserver:
     @Override
     public void onPaymentRequestParamsInitiated(PaymentRequestParams params) {
+        assert !params.hasClosed();
         for (PaymentMethodData method : params.getMethodData().values()) {
             mCardEditor.addAcceptedPaymentMethodIfRecognized(method);
         }
@@ -685,7 +687,7 @@ public class PaymentUIsManager implements SettingsAutofillAndPaymentsObserver.Ob
     /** Sets the modifier for the order summary based on the given app, if any. */
     public void updateOrderSummary(@Nullable PaymentApp app) {
         if (!PaymentFeatureList.isEnabled(PaymentFeatureList.WEB_PAYMENTS_MODIFIERS)) return;
-
+        if (mParams.hasClosed()) return;
         PaymentDetailsModifier modifier = getModifier(app);
         PaymentItem total = modifier == null ? null : modifier.total;
         if (total == null) total = mParams.getRawTotal();
@@ -704,6 +706,7 @@ public class PaymentUIsManager implements SettingsAutofillAndPaymentsObserver.Ob
     /** @return The first modifier that matches the given app, or null. */
     @Nullable
     private PaymentDetailsModifier getModifier(@Nullable PaymentApp app) {
+        if (mParams.hasClosed()) return null;
         Map<String, PaymentDetailsModifier> modifiers = mParams.getUnmodifiableModifiers();
         if (modifiers.isEmpty() || app == null) return null;
         // Makes a copy to ensure it is modifiable.
@@ -724,7 +727,7 @@ public class PaymentUIsManager implements SettingsAutofillAndPaymentsObserver.Ob
     /** Updates the modifiers for payment apps and order summary. */
     public void updateAppModifiedTotals() {
         if (!PaymentFeatureList.isEnabled(PaymentFeatureList.WEB_PAYMENTS_MODIFIERS)) return;
-        if (mParams.getMethodData().isEmpty()) return;
+        if (mParams.hasClosed() || mParams.getMethodData().isEmpty()) return;
         if (mPaymentMethodsSection == null) return;
 
         for (int i = 0; i < mPaymentMethodsSection.getSize(); i++) {
@@ -888,7 +891,7 @@ public class PaymentUIsManager implements SettingsAutofillAndPaymentsObserver.Ob
 
     /** Implements {@link PaymentRequestUI.Client.shouldShowShippingSection}. */
     public boolean shouldShowShippingSection() {
-        if (!mParams.getPaymentOptions().requestShipping) return false;
+        if (mParams.hasClosed() || !mParams.getPaymentOptions().requestShipping) return false;
 
         if (mPaymentMethodsSection == null) return true;
 
@@ -901,6 +904,7 @@ public class PaymentUIsManager implements SettingsAutofillAndPaymentsObserver.Ob
         PaymentApp selectedApp = (mPaymentMethodsSection == null)
                 ? null
                 : (PaymentApp) mPaymentMethodsSection.getSelectedItem();
+        if (mParams.hasClosed()) return false;
         PaymentOptions options = mParams.getPaymentOptions();
         if (options.requestPayerName && (selectedApp == null || !selectedApp.handlesPayerName())) {
             return true;
@@ -1101,6 +1105,8 @@ public class PaymentUIsManager implements SettingsAutofillAndPaymentsObserver.Ob
 
         // Only the currently selected tab is allowed to show the payment UI.
         if (!isWebContentsActive) return ErrorStrings.CANNOT_SHOW_IN_BACKGROUND_TAB;
+
+        if (mParams.hasClosed()) return ErrorStrings.PAYMENT_REQUEST_IS_ABORTING;
 
         // Catch any time the user switches tabs. Because the dialog is modal, a user shouldn't be
         // allowed to switch tabs, which can happen if the user receives an external Intent.
@@ -1394,6 +1400,7 @@ public class PaymentUIsManager implements SettingsAutofillAndPaymentsObserver.Ob
     public boolean onlySingleAppCanProvideAllRequiredInformation() {
         assert mPaymentMethodsSection != null;
 
+        if (mParams.hasClosed()) return false;
         if (!PaymentOptionsUtils.requestAnyInformation(mParams.getPaymentOptions())) {
             return mPaymentMethodsSection.getSize() == 1
                     && !((PaymentApp) mPaymentMethodsSection.getItem(0)).isAutofillInstrument();

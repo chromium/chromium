@@ -191,11 +191,11 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
     }
 
     private void findAppStoreBillingApp(List<ResolveInfo> allInstalledPaymentApps) {
+        assert !mFactoryDelegate.getParams().hasClosed();
         String twaPackageName = mFactoryDelegate.getParams().getTwaPackageName();
         if (TextUtils.isEmpty(twaPackageName)) return;
         ResolveInfo twaApp = findAppWithPackageName(allInstalledPaymentApps, twaPackageName);
         if (twaApp == null) return;
-
         List<String> agreedAppStoreMethods = new ArrayList<>();
         for (GURL appStoreUriMethod : mAppStores.values()) {
             assert appStoreUriMethod != null;
@@ -256,6 +256,7 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
      * that the merchant is using.
      */
     /* package */ void findAndroidPaymentApps() {
+        if (mFactoryDelegate.getParams().hasClosed()) return;
         // For non-URL payment method names, only names published by W3C should be supported. Keep
         // this in sync with manifest_verifier.cc.
         Set<String> supportedNonUriPaymentMethods = new HashSet<>();
@@ -580,7 +581,7 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
         assert mPendingVerifiersCount == 0;
 
         mFactoryDelegate.onCanMakePaymentCalculated(mValidApps.size() > 0);
-        if (mValidApps.isEmpty()) {
+        if (mValidApps.isEmpty() || mFactoryDelegate.getParams().hasClosed()) {
             mFactoryDelegate.onDoneCreatingPaymentApps(mFactory);
             return;
         }
@@ -642,6 +643,7 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
      * @param methodName  The method name that can be used by the app.
      */
     private void onValidPaymentAppForPaymentMethodName(ResolveInfo resolveInfo, String methodName) {
+        if (mFactoryDelegate.getParams().hasClosed()) return;
         String packageName = resolveInfo.activityInfo.packageName;
 
         SupportedDelegations appSupportedDelegations =

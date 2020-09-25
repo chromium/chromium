@@ -120,6 +120,12 @@ public class AndroidPaymentAppFinderTest
 
     // PaymentAppFactoryDelegate implementation.
     @Override
+    public boolean hasClosed() {
+        return false;
+    }
+
+    // PaymentAppFactoryDelegate implementation.
+    @Override
     public void onPaymentAppCreated(PaymentApp paymentApp) {
         mPaymentApps.add(paymentApp);
     }

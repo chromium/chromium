@@ -56,7 +56,9 @@ public class AutofillPaymentAppFactory implements PaymentAppFactoryInterface {
 
         /** @return Whether can make payments with basic card. */
         private boolean createPaymentApps() {
-            if (!mDelegate.getParams().getMethodData().containsKey(MethodStrings.BASIC_CARD)) {
+            if (mDelegate.getParams().hasClosed()
+                    || !mDelegate.getParams().getMethodData().containsKey(
+                            MethodStrings.BASIC_CARD)) {
                 return false;
             }
 
@@ -85,7 +87,7 @@ public class AutofillPaymentAppFactory implements PaymentAppFactoryInterface {
         @Override
         @Nullable
         public PaymentApp createPaymentAppForCard(CreditCard card) {
-            if (!mCanMakePayment) return null;
+            if (!mCanMakePayment || mDelegate.getParams().hasClosed()) return null;
 
             if (!mNetworks.contains(card.getBasicCardIssuerNetwork())) return null;
 
@@ -125,6 +127,11 @@ public class AutofillPaymentAppFactory implements PaymentAppFactoryInterface {
             @Override
             public Map<String, PaymentMethodData> getMethodData() {
                 return methodData;
+            }
+
+            @Override
+            public boolean hasClosed() {
+                return false;
             }
 
             @Override

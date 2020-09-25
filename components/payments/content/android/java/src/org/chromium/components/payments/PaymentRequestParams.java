@@ -15,6 +15,12 @@ import java.util.Map;
  * The parameters of PaymentRequest specified by the merchant.
  */
 public interface PaymentRequestParams {
+    /**
+     * @return Whether or not the payment request is being aborted. Other methods should not get
+     *         called when the payment request is being aborted.
+     */
+    boolean hasClosed();
+
     /** @return The PaymentOptions set by the merchant.  */
     PaymentOptions getPaymentOptions();
 

@@ -35,6 +35,7 @@ public class PaymentAppServiceBridge implements PaymentAppFactoryInterface {
     // PaymentAppFactoryInterface implementation.
     @Override
     public void create(PaymentAppFactoryDelegate delegate) {
+        if (delegate.getParams().hasClosed()) return;
         assert delegate.getParams().getPaymentRequestOrigin().equals(
                 UrlFormatter.formatUrlForSecurityDisplay(
                         delegate.getParams().getRenderFrameHost().getLastCommittedURL()));

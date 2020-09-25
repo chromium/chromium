@@ -1306,17 +1306,24 @@ public class PaymentRequestImpl
 
     // PaymentAppFactoryParams implementation.
     @Override
+    public boolean hasClosed() {
+        return mHasClosed;
+    }
+
+    // PaymentAppFactoryParams implementation.
+    @Override
     public Map<String, PaymentMethodData> getMethodData() {
-        // TODO(crbug.com/1130343): This should only get called while mSpec is not destroyed.
-        // uncomment the following assertion after fixing the issue.
-        // assert !mSpec.isDestroyed();
-        return mSpec.isDestroyed() ? new ArrayMap<String, PaymentMethodData>()
-                                   : mSpec.getMethodData();
+        // GetMethodData should not get called after PR is closed.
+        assert !mHasClosed;
+        assert !mSpec.isDestroyed();
+        return mSpec.getMethodData();
     }
 
     // PaymentAppFactoryParams implementation.
     @Override
     public String getId() {
+        assert !mHasClosed;
+        assert !mSpec.isDestroyed();
         return mSpec.getId();
     }
 
@@ -1348,12 +1355,16 @@ public class PaymentRequestImpl
     // PaymentAppFactoryParams implementation.
     @Override
     public Map<String, PaymentDetailsModifier> getUnmodifiableModifiers() {
+        assert !mHasClosed;
+        assert !mSpec.isDestroyed();
         return Collections.unmodifiableMap(mSpec.getModifiers());
     }
 
     // PaymentAppFactoryParams implementation.
     @Override
     public PaymentItem getRawTotal() {
+        assert !mHasClosed;
+        assert !mSpec.isDestroyed();
         return mSpec.getRawTotal();
     }
 
