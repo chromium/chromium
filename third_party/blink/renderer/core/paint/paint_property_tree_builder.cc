@@ -669,13 +669,34 @@ void FragmentPaintPropertyTreeBuilder::UpdateStickyTranslation() {
     context_.current.transform = properties_->StickyTranslation();
 }
 
+// TODO(crbug.com/900241): Remove this function and let the caller use
+// CompositingReason::kDirectReasonForTransformProperty directly.
+static CompositingReasons CompositingReasonsForTransformProperty() {
+  CompositingReasons reasons =
+      CompositingReason::kDirectReasonsForTransformProperty;
+  // TODO(crbug.com/900241): Check for nodes for each KeyframeModel target
+  // property instead of creating all nodes and only create a transform/
+  // effect/filter node if needed.
+  reasons |= CompositingReason::kComboActiveAnimation;
+  // We also need to create a transform node if will-change creates other nodes,
+  // to avoid raster invalidation caused by creating/deleting those nodes when
+  // starting/stopping an animation. See: https://crbug.com/942681.
+  reasons |= CompositingReason::kWillChangeOpacity;
+  reasons |= CompositingReason::kWillChangeFilter;
+  reasons |= CompositingReason::kWillChangeBackdropFilter;
+
+  if (RuntimeEnabledFeatures::TransformInteropEnabled())
+    reasons |= CompositingReason::kBackfaceInvisibility3DAncestor;
+
+  return reasons;
+}
+
 static bool NeedsTransformForSVGChild(
     const LayoutObject& object,
     CompositingReasons direct_compositing_reasons) {
   if (!object.IsSVGChild() || object.IsText())
     return false;
-  if (direct_compositing_reasons &
-      CompositingReasonFinder::DirectReasonsForSVGChildPaintProperties(object))
+  if (direct_compositing_reasons & CompositingReasonsForTransformProperty())
     return true;
   // TODO(pdr): Check for the presence of a transform instead of the value.
   // Checking for an identity matrix will cause the property tree structure
@@ -723,8 +744,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateTransformForSVGChild(
       if (RuntimeEnabledFeatures::CompositeSVGEnabled()) {
         state.direct_compositing_reasons =
             direct_compositing_reasons &
-            CompositingReasonFinder::DirectReasonsForSVGChildPaintProperties(
-                object_);
+            CompositingReasonsForTransformProperty();
         state.flags.flattens_inherited_transform =
             context_.current.should_flatten_inherited_transform;
         state.compositor_element_id = GetCompositorElementId(
@@ -773,28 +793,6 @@ static FloatPoint3D TransformOrigin(const LayoutBox& box) {
       FloatValueForLength(style.TransformOriginX(), border_box_size.Width()),
       FloatValueForLength(style.TransformOriginY(), border_box_size.Height()),
       style.TransformOriginZ());
-}
-
-// TODO(crbug.com/900241): Remove this function and let the caller use
-// CompositingReason::kDirectReasonForTransformProperty directly.
-static CompositingReasons CompositingReasonsForTransformProperty() {
-  CompositingReasons reasons =
-      CompositingReason::kDirectReasonsForTransformProperty;
-  // TODO(crbug.com/900241): Check for nodes for each KeyframeModel target
-  // property instead of creating all nodes and only create a transform/
-  // effect/filter node if needed.
-  reasons |= CompositingReason::kComboActiveAnimation;
-  // We also need to create a transform node if will-change creates other nodes,
-  // to avoid raster invalidation caused by creating/deleting those nodes when
-  // starting/stopping an animation. See: https://crbug.com/942681.
-  reasons |= CompositingReason::kWillChangeOpacity;
-  reasons |= CompositingReason::kWillChangeFilter;
-  reasons |= CompositingReason::kWillChangeBackdropFilter;
-
-  if (RuntimeEnabledFeatures::TransformInteropEnabled())
-    reasons |= CompositingReason::kBackfaceInvisibility3DAncestor;
-
-  return reasons;
 }
 
 static bool NeedsTransform(const LayoutObject& object,

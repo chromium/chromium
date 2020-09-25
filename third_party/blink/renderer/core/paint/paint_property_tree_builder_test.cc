@@ -6968,4 +6968,30 @@ TEST_P(PaintPropertyTreeBuilderTest, OutOfFlowContainedInMulticol) {
   }
 }
 
+TEST_P(PaintPropertyTreeBuilderTest, SVGChildBackdropFilter) {
+  SetBodyInnerHTML(R"HTML(
+    <svg id="svg">
+      <text id="text" style="backdrop-filter: blur(5px)">Text</text>
+    </svg>
+  )HTML");
+
+  auto* svg_properties = PaintPropertiesForElement("svg");
+  ASSERT_TRUE(svg_properties);
+  ASSERT_TRUE(svg_properties->PaintOffsetTranslation());
+  EXPECT_TRUE(
+      svg_properties->PaintOffsetTranslation()->HasDirectCompositingReasons());
+
+  auto* svg_text_properties = PaintPropertiesForElement("text");
+  ASSERT_TRUE(svg_text_properties);
+  ASSERT_TRUE(svg_text_properties->Effect());
+  EXPECT_TRUE(svg_text_properties->Effect()->HasDirectCompositingReasons());
+  // TODO(crbug.com/1131987): Backdrop-filter doesn't work in SVG yet.
+  EXPECT_TRUE(svg_text_properties->Effect()->BackdropFilter().IsEmpty());
+  EXPECT_FALSE(svg_text_properties->Transform());
+  EXPECT_FALSE(GetLayoutObjectByElementId("text")
+                   ->SlowFirstChild()
+                   ->FirstFragment()
+                   .PaintProperties());
+}
+
 }  // namespace blink
