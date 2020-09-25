@@ -2566,8 +2566,10 @@ IN_PROC_BROWSER_TEST_F(
   AssertMoveByUnitForMarkup(TextUnit_Format, html_markup, format_units);
 }
 
+// Flaky.
+// TODO(https://crbug.com/1132248): Re-enable.
 IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
-                       IframeSelect) {
+                       DISABLED_IframeSelect) {
   LoadInitialAccessibilityTreeFromHtmlFilePath(
       "/accessibility/html/iframe-cross-process.html");
 
