@@ -117,12 +117,14 @@ class TabAndroid {
       const base::android::JavaParamRef<jobject>& jweb_contents,
       jint jparent_tab_id,
       const base::android::JavaParamRef<jobject>& jweb_contents_delegate,
-      const base::android::JavaParamRef<jobject>& jcontext_menu_populator);
+      const base::android::JavaParamRef<jobject>&
+          jcontext_menu_populator_factory);
   void UpdateDelegates(
-        JNIEnv* env,
-        const base::android::JavaParamRef<jobject>& obj,
-        const base::android::JavaParamRef<jobject>& jweb_contents_delegate,
-        const base::android::JavaParamRef<jobject>& jcontext_menu_populator);
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& obj,
+      const base::android::JavaParamRef<jobject>& jweb_contents_delegate,
+      const base::android::JavaParamRef<jobject>&
+          jcontext_menu_populator_factory);
   void DestroyWebContents(JNIEnv* env,
                           const base::android::JavaParamRef<jobject>& obj);
   void ReleaseWebContents(JNIEnv* env,

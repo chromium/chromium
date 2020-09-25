@@ -243,7 +243,7 @@ void TabAndroid::InitWebContents(
     const JavaParamRef<jobject>& jweb_contents,
     jint jparent_tab_id,
     const JavaParamRef<jobject>& jweb_contents_delegate,
-    const JavaParamRef<jobject>& jcontext_menu_populator) {
+    const JavaParamRef<jobject>& jcontext_menu_populator_factory) {
   web_contents_.reset(content::WebContents::FromJavaWebContents(jweb_contents));
   DCHECK(web_contents_.get());
 
@@ -257,8 +257,8 @@ void TabAndroid::InitWebContents(
 
   SetWindowSessionID(session_window_id_);
 
-  ContextMenuHelper::FromWebContents(web_contents())->SetPopulator(
-      jcontext_menu_populator);
+  ContextMenuHelper::FromWebContents(web_contents())
+      ->SetPopulatorFactory(jcontext_menu_populator_factory);
 
   synced_tab_delegate_->SetWebContents(web_contents(), jparent_tab_id);
 
@@ -280,9 +280,9 @@ void TabAndroid::UpdateDelegates(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
     const JavaParamRef<jobject>& jweb_contents_delegate,
-    const JavaParamRef<jobject>& jcontext_menu_populator) {
-  ContextMenuHelper::FromWebContents(web_contents())->SetPopulator(
-      jcontext_menu_populator);
+    const JavaParamRef<jobject>& jcontext_menu_populator_factory) {
+  ContextMenuHelper::FromWebContents(web_contents())
+      ->SetPopulatorFactory(jcontext_menu_populator_factory);
   web_contents_delegate_ =
       std::make_unique<android::TabWebContentsDelegateAndroid>(
           env, jweb_contents_delegate);

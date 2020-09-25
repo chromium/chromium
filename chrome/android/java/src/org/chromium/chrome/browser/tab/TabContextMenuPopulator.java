@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.tab;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.util.Pair;
@@ -15,8 +14,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.ObserverList.RewindableIterator;
 import org.chromium.chrome.browser.contextmenu.ContextMenuImageFormat;
 import org.chromium.chrome.browser.contextmenu.ContextMenuPopulator;
-import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
-import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 
 import java.util.List;
@@ -48,10 +45,8 @@ public class TabContextMenuPopulator implements ContextMenuPopulator {
     }
 
     @Override
-    public List<Pair<Integer, ModelList>> buildContextMenu(
-            Context context, ContextMenuParams params, boolean isShoppyImage) {
-        List<Pair<Integer, ModelList>> itemGroups =
-                mPopulator.buildContextMenu(context, params, isShoppyImage);
+    public List<Pair<Integer, ModelList>> buildContextMenu(boolean isShoppyImage) {
+        List<Pair<Integer, ModelList>> itemGroups = mPopulator.buildContextMenu(isShoppyImage);
         RewindableIterator<TabObserver> observers = mTab.getTabObservers();
         while (observers.hasNext()) {
             observers.next().onContextMenuShown(mTab);
@@ -60,20 +55,18 @@ public class TabContextMenuPopulator implements ContextMenuPopulator {
     }
 
     @Override
-    public boolean onItemSelected(
-            ContextMenuParams params, RenderFrameHost renderFrameHost, int itemId) {
-        return mPopulator.onItemSelected(params, renderFrameHost, itemId);
+    public boolean onItemSelected(int itemId) {
+        return mPopulator.onItemSelected(itemId);
     }
 
     @Override
-    public void getThumbnail(RenderFrameHost renderFrameHost, final Callback<Bitmap> callback) {
-        mPopulator.getThumbnail(renderFrameHost, callback);
+    public void getThumbnail(final Callback<Bitmap> callback) {
+        mPopulator.getThumbnail(callback);
     }
 
     @Override
-    public void retrieveImage(RenderFrameHost renderFrameHost,
-            @ContextMenuImageFormat int imageFormat, Callback<Uri> callback) {
-        mPopulator.retrieveImage(renderFrameHost, imageFormat, callback);
+    public void retrieveImage(@ContextMenuImageFormat int imageFormat, Callback<Uri> callback) {
+        mPopulator.retrieveImage(imageFormat, callback);
     }
 
     @Override

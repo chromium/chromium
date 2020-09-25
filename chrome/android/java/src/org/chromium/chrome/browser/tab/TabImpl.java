@@ -30,7 +30,7 @@ import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.WebContentsFactory;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.content.ContentUtils;
-import org.chromium.chrome.browser.contextmenu.ContextMenuPopulator;
+import org.chromium.chrome.browser.contextmenu.ContextMenuPopulatorFactory;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.native_page.NativePageAssassin;
@@ -1252,8 +1252,8 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
             assert mNativeTabAndroid != 0;
             TabImplJni.get().initWebContents(mNativeTabAndroid, TabImpl.this, mIncognito,
                     isDetached(this), webContents, mSourceTabId, mWebContentsDelegate,
-                    new TabContextMenuPopulator(
-                            mDelegateFactory.createContextMenuPopulator(this), this));
+                    new TabContextMenuPopulatorFactory(
+                            mDelegateFactory.createContextMenuPopulatorFactory(this), this));
 
             mWebContents.notifyRendererPreferenceUpdate();
             TabHelpers.initWebContentsHelpers(this);
@@ -1316,8 +1316,8 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
         WebContents webContents = getWebContents();
         if (webContents != null) {
             TabImplJni.get().updateDelegates(mNativeTabAndroid, TabImpl.this, mWebContentsDelegate,
-                    new TabContextMenuPopulator(
-                            mDelegateFactory.createContextMenuPopulator(this), this));
+                    new TabContextMenuPopulatorFactory(
+                            mDelegateFactory.createContextMenuPopulatorFactory(this), this));
             webContents.notifyRendererPreferenceUpdate();
         }
     }
@@ -1501,10 +1501,10 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
         void initWebContents(long nativeTabAndroid, TabImpl caller, boolean incognito,
                 boolean isBackgroundTab, WebContents webContents, int parentTabId,
                 TabWebContentsDelegateAndroidImpl delegate,
-                ContextMenuPopulator contextMenuPopulator);
+                ContextMenuPopulatorFactory contextMenuPopulatorFactory);
         void updateDelegates(long nativeTabAndroid, TabImpl caller,
                 TabWebContentsDelegateAndroidImpl delegate,
-                ContextMenuPopulator contextMenuPopulator);
+                ContextMenuPopulatorFactory contextMenuPopulatorFactory);
         void destroyWebContents(long nativeTabAndroid, TabImpl caller);
         void releaseWebContents(long nativeTabAndroid, TabImpl caller);
         void onPhysicalBackingSizeChanged(long nativeTabAndroid, TabImpl caller,

@@ -10,6 +10,7 @@ android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/contextmenu/ContextMenuItemDelegate.java",
     "java/src/org/chromium/chrome/browser/contextmenu/ContextMenuPopulator.java",
+    "java/src/org/chromium/chrome/browser/contextmenu/ContextMenuPopulatorFactory.java",
   ]
 
   srcjar_deps = [ "//chrome:context_menu_image_format_enum_javagen" ]

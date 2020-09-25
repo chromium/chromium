@@ -75,9 +75,11 @@ void ContextMenuHelper::OnContextMenuClosed(
   web_contents_->NotifyContextMenuClosed(context_menu_params_.custom_context);
 }
 
-void ContextMenuHelper::SetPopulator(const JavaRef<jobject>& jpopulator) {
+void ContextMenuHelper::SetPopulatorFactory(
+    const JavaRef<jobject>& jpopulator_factory) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  Java_ContextMenuHelper_setPopulator(env, java_obj_, jpopulator);
+  Java_ContextMenuHelper_setPopulatorFactory(env, java_obj_,
+                                             jpopulator_factory);
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ContextMenuHelper)

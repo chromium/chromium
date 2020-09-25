@@ -8,6 +8,8 @@
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
+#include "content/public/browser/context_menu_params.h"
+#include "content/public/browser/render_frame_host.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 
 namespace content {
@@ -35,22 +37,20 @@ class ChromeContextMenuPopulator {
       const std::string& image_extension)>;
 
  public:
-  explicit ChromeContextMenuPopulator(content::WebContents* const web_contents);
+  explicit ChromeContextMenuPopulator(
+      content::WebContents* const web_contents,
+      content::ContextMenuParams* context_menu_params,
+      content::RenderFrameHost* const render_frame_host);
 
   void OnStartDownload(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj,
-      const base::android::JavaParamRef<jobject>& jcontext_menu_params,
       jboolean jis_link);
-  void SearchForImage(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
-      const base::android::JavaParamRef<jobject>& jrender_frame_host,
-      const base::android::JavaParamRef<jobject>& jcontext_menu_params);
+  void SearchForImage(JNIEnv* env,
+                      const base::android::JavaParamRef<jobject>& obj);
   void RetrieveImageForShare(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj,
-      const base::android::JavaParamRef<jobject>& jrender_frame_host,
       const base::android::JavaParamRef<jobject>& jcallback,
       jint max_width_px,
       jint max_height_px,
@@ -58,7 +58,6 @@ class ChromeContextMenuPopulator {
   void RetrieveImageForContextMenu(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj,
-      const base::android::JavaParamRef<jobject>& jrender_frame_host,
       const base::android::JavaParamRef<jobject>& jcallback,
       jint max_width_px,
       jint max_height_px);
@@ -67,13 +66,14 @@ class ChromeContextMenuPopulator {
   void RetrieveImageInternal(
       JNIEnv* env,
       ImageRetrieveCallback retrieve_callback,
-      const base::android::JavaParamRef<jobject>& jrender_frame_host,
       const base::android::JavaParamRef<jobject>& jcallback,
       jint max_width_px,
       jint max_height_px,
       chrome::mojom::ImageFormat image_format);
 
   content::WebContents* const web_contents_;
+  content::ContextMenuParams* const context_menu_params_;
+  content::RenderFrameHost* const render_frame_host_;
 };
 
 #endif  // CHROME_BROWSER_ANDROID_CONTEXT_MENU_CHROME_CONTEXT_MENU_POPULATOR_H_

@@ -102,78 +102,68 @@ void OnRetrieveImageForContextMenu(
 }  // namespace
 
 ChromeContextMenuPopulator::ChromeContextMenuPopulator(
-    content::WebContents* web_contents)
-    : web_contents_(web_contents) {}
+    content::WebContents* web_contents,
+    content::ContextMenuParams* context_menu_params,
+    content::RenderFrameHost* render_frame_host)
+    : web_contents_(web_contents),
+      context_menu_params_(context_menu_params),
+      render_frame_host_(render_frame_host) {}
 
 void ChromeContextMenuPopulator::OnStartDownload(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
-    const JavaParamRef<jobject>& jcontext_menu_params,
     jboolean jis_link) {
   std::string headers;
-  auto* context_menu_params =
-      context_menu::ContextMenuParamsFromJavaObject(jcontext_menu_params);
   DownloadControllerBase::Get()->StartContextMenuDownload(
-      *context_menu_params, web_contents_, jis_link, headers);
+      *context_menu_params_, web_contents_, jis_link, headers);
 }
 
 void ChromeContextMenuPopulator::SearchForImage(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
-    const JavaParamRef<jobject>& jrender_frame_host,
-    const JavaParamRef<jobject>& jcontext_menu_params) {
-  auto* render_frame_host =
-      content::RenderFrameHost::FromJavaRenderFrameHost(jrender_frame_host);
-  if (!render_frame_host)
+    const JavaParamRef<jobject>& obj) {
+  if (!render_frame_host_)
     return;
 
-  auto* context_menu_params =
-      context_menu::ContextMenuParamsFromJavaObject(jcontext_menu_params);
   CoreTabHelper::FromWebContents(web_contents_)
-      ->SearchByImageInNewTab(render_frame_host, context_menu_params->src_url);
+      ->SearchByImageInNewTab(render_frame_host_,
+                              context_menu_params_->src_url);
 }
 
 void ChromeContextMenuPopulator::RetrieveImageForShare(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
-    const JavaParamRef<jobject>& jrender_frame_host,
     const JavaParamRef<jobject>& jcallback,
     jint max_width_px,
     jint max_height_px,
     jint j_image_format) {
   RetrieveImageInternal(env, base::BindOnce(&OnRetrieveImageForShare),
-                        jrender_frame_host, jcallback, max_width_px,
-                        max_height_px,
+                        jcallback, max_width_px, max_height_px,
                         ToChromeMojomImageFormat(j_image_format));
 }
 
 void ChromeContextMenuPopulator::RetrieveImageForContextMenu(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
-    const JavaParamRef<jobject>& jrender_frame_host,
     const JavaParamRef<jobject>& jcallback,
     jint max_width_px,
     jint max_height_px) {
   // For context menu, Image needs to be PNG for receiving transparency pixels.
   RetrieveImageInternal(env, base::BindOnce(&OnRetrieveImageForContextMenu),
-                        jrender_frame_host, jcallback, max_width_px,
-                        max_height_px, chrome::mojom::ImageFormat::PNG);
+                        jcallback, max_width_px, max_height_px,
+                        chrome::mojom::ImageFormat::PNG);
 }
 
 void ChromeContextMenuPopulator::RetrieveImageInternal(
     JNIEnv* env,
     ImageRetrieveCallback retrieve_callback,
-    const JavaParamRef<jobject>& jrender_frame_host,
     const JavaParamRef<jobject>& jcallback,
     jint max_width_px,
     jint max_height_px,
     chrome::mojom::ImageFormat image_format) {
-  auto* render_frame_host =
-      content::RenderFrameHost::FromJavaRenderFrameHost(jrender_frame_host);
-  if (!render_frame_host)
+  if (!render_frame_host_)
     return;
   mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame> chrome_render_frame;
-  render_frame_host->GetRemoteAssociatedInterfaces()->GetInterface(
+  render_frame_host_->GetRemoteAssociatedInterfaces()->GetInterface(
       &chrome_render_frame);
 
   // Bind the InterfacePtr into the callback so that it's kept alive
@@ -189,11 +179,17 @@ void ChromeContextMenuPopulator::RetrieveImageInternal(
 
 static jlong JNI_ChromeContextMenuPopulator_Init(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jweb_contents) {
+    const JavaParamRef<jobject>& jweb_contents,
+    const JavaParamRef<jobject>& jcontext_menu_params,
+    const JavaParamRef<jobject>& jrender_frame_host) {
   if (jweb_contents.is_null())
     return reinterpret_cast<intptr_t>(nullptr);
   auto* web_contents = content::WebContents::FromJavaWebContents(jweb_contents);
   DCHECK(web_contents);
+  auto* params =
+      context_menu::ContextMenuParamsFromJavaObject(jcontext_menu_params);
+  auto* render_frame_host =
+      content::RenderFrameHost::FromJavaRenderFrameHost(jrender_frame_host);
   return reinterpret_cast<intptr_t>(
-      new ChromeContextMenuPopulator(web_contents));
+      new ChromeContextMenuPopulator(web_contents, params, render_frame_host));
 }

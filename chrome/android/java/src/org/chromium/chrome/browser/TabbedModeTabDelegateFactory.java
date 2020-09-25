@@ -9,7 +9,8 @@ import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.app.tab_activity_glue.ActivityTabWebContentsDelegateAndroid;
 import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTabCoordinator;
 import org.chromium.chrome.browser.contextmenu.ChromeContextMenuPopulator;
-import org.chromium.chrome.browser.contextmenu.ContextMenuPopulator;
+import org.chromium.chrome.browser.contextmenu.ChromeContextMenuPopulatorFactory;
+import org.chromium.chrome.browser.contextmenu.ContextMenuPopulatorFactory;
 import org.chromium.chrome.browser.externalnav.ExternalNavigationDelegateImpl;
 import org.chromium.chrome.browser.native_page.NativePageFactory;
 import org.chromium.chrome.browser.share.ShareDelegate;
@@ -59,8 +60,8 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
     }
 
     @Override
-    public ContextMenuPopulator createContextMenuPopulator(Tab tab) {
-        return new ChromeContextMenuPopulator(
+    public ContextMenuPopulatorFactory createContextMenuPopulatorFactory(Tab tab) {
+        return new ChromeContextMenuPopulatorFactory(
                 new TabContextMenuItemDelegate(
                         tab, mActivity.getTabModelSelector(), mEphemeralTabCoordinatorSupplier),
                 mShareDelegateSupplier, ChromeContextMenuPopulator.ContextMenuMode.NORMAL,

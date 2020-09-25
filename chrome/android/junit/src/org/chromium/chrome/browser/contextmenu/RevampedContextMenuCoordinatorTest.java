@@ -8,6 +8,9 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.contextmenu.RevampedContextMenuItemProperties.MENU_ID;
+import static org.chromium.chrome.browser.contextmenu.RevampedContextMenuItemProperties.TEXT;
+
 import android.app.Activity;
 import android.util.Pair;
 
@@ -35,7 +38,9 @@ import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
+import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -80,18 +85,16 @@ public class RevampedContextMenuCoordinatorTest {
         List<Pair<Integer, ModelList>> rawItems = new ArrayList<>();
         // Link items
         ModelList groupOne = new ModelList();
-        groupOne.add(ChromeContextMenuPopulator.createListItem(mActivity, Item.OPEN_IN_NEW_TAB));
-        groupOne.add(
-                ChromeContextMenuPopulator.createListItem(mActivity, Item.OPEN_IN_INCOGNITO_TAB));
-        groupOne.add(ChromeContextMenuPopulator.createListItem(mActivity, Item.SAVE_LINK_AS));
-        groupOne.add(ChromeContextMenuPopulator.createShareListItem(mActivity, Item.SHARE_LINK));
+        groupOne.add(createListItem(Item.OPEN_IN_NEW_TAB));
+        groupOne.add(createListItem(Item.OPEN_IN_INCOGNITO_TAB));
+        groupOne.add(createListItem(Item.SAVE_LINK_AS));
+        groupOne.add(createShareListItem(Item.SHARE_LINK));
         rawItems.add(new Pair<>(ContextMenuGroup.LINK, groupOne));
         // Image Items
         ModelList groupTwo = new ModelList();
-        groupTwo.add(
-                ChromeContextMenuPopulator.createListItem(mActivity, Item.OPEN_IMAGE_IN_NEW_TAB));
-        groupTwo.add(ChromeContextMenuPopulator.createListItem(mActivity, Item.SAVE_IMAGE));
-        groupTwo.add(ChromeContextMenuPopulator.createShareListItem(mActivity, Item.SHARE_IMAGE));
+        groupTwo.add(createListItem(Item.OPEN_IMAGE_IN_NEW_TAB));
+        groupTwo.add(createListItem(Item.SAVE_IMAGE));
+        groupTwo.add(createShareListItem(Item.SHARE_IMAGE));
         rawItems.add(new Pair<>(ContextMenuGroup.IMAGE, groupTwo));
 
         mCoordinator.initializeHeaderCoordinatorForTesting(mActivity, params, mProfile);
@@ -120,11 +123,10 @@ public class RevampedContextMenuCoordinatorTest {
         List<Pair<Integer, ModelList>> rawItems = new ArrayList<>();
         // Link items
         ModelList groupOne = new ModelList();
-        groupOne.add(ChromeContextMenuPopulator.createListItem(mActivity, Item.OPEN_IN_NEW_TAB));
-        groupOne.add(
-                ChromeContextMenuPopulator.createListItem(mActivity, Item.OPEN_IN_INCOGNITO_TAB));
-        groupOne.add(ChromeContextMenuPopulator.createListItem(mActivity, Item.SAVE_LINK_AS));
-        groupOne.add(ChromeContextMenuPopulator.createShareListItem(mActivity, Item.SHARE_LINK));
+        groupOne.add(createListItem(Item.OPEN_IN_NEW_TAB));
+        groupOne.add(createListItem(Item.OPEN_IN_INCOGNITO_TAB));
+        groupOne.add(createListItem(Item.SAVE_LINK_AS));
+        groupOne.add(createShareListItem(Item.SHARE_LINK));
         rawItems.add(new Pair<>(ContextMenuGroup.LINK, groupOne));
 
         mCoordinator.initializeHeaderCoordinatorForTesting(mActivity, params, mProfile);
@@ -145,7 +147,7 @@ public class RevampedContextMenuCoordinatorTest {
         List<Pair<Integer, ModelList>> rawItems = new ArrayList<>();
         // Video items
         ModelList groupOne = new ModelList();
-        groupOne.add(ChromeContextMenuPopulator.createListItem(mActivity, Item.SAVE_VIDEO));
+        groupOne.add(createListItem(Item.SAVE_VIDEO));
         rawItems.add(new Pair<>(ContextMenuGroup.LINK, groupOne));
 
         mCoordinator.initializeHeaderCoordinatorForTesting(mActivity, params, mProfile);
@@ -154,5 +156,23 @@ public class RevampedContextMenuCoordinatorTest {
         assertThat(itemList.get(0).type, equalTo(ListItemType.HEADER));
         assertThat(itemList.get(1).type, equalTo(ListItemType.DIVIDER));
         assertThat(itemList.get(2).type, equalTo(ListItemType.CONTEXT_MENU_ITEM));
+    }
+
+    private ListItem createListItem(@Item int item) {
+        final PropertyModel model =
+                new PropertyModel.Builder(RevampedContextMenuItemProperties.ALL_KEYS)
+                        .with(MENU_ID, ChromeContextMenuItem.getMenuId(item))
+                        .with(TEXT, ChromeContextMenuItem.getTitle(mActivity, item, false))
+                        .build();
+        return new ListItem(ListItemType.CONTEXT_MENU_ITEM, model);
+    }
+
+    private ListItem createShareListItem(@Item int item) {
+        final PropertyModel model =
+                new PropertyModel.Builder(RevampedContextMenuShareItemProperties.ALL_KEYS)
+                        .with(MENU_ID, ChromeContextMenuItem.getMenuId(item))
+                        .with(TEXT, ChromeContextMenuItem.getTitle(mActivity, item, false))
+                        .build();
+        return new ListItem(ListItemType.CONTEXT_MENU_SHARE_ITEM, model);
     }
 }

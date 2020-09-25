@@ -27,7 +27,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.WebContentsFactory;
 import org.chromium.chrome.browser.WindowDelegate;
-import org.chromium.chrome.browser.contextmenu.ContextMenuPopulator;
+import org.chromium.chrome.browser.contextmenu.ContextMenuPopulatorFactory;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
@@ -225,7 +225,7 @@ public class SearchActivity extends AsyncInitializationActivity
             }
 
             @Override
-            public ContextMenuPopulator createContextMenuPopulator(Tab tab) {
+            public ContextMenuPopulatorFactory createContextMenuPopulatorFactory(Tab tab) {
                 return null;
             }
 

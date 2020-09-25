@@ -33,7 +33,8 @@ class ContextMenuHelper
   void OnContextMenuClosed(JNIEnv* env,
                            const base::android::JavaParamRef<jobject>& obj);
 
-  void SetPopulator(const base::android::JavaRef<jobject>& jpopulator);
+  void SetPopulatorFactory(
+      const base::android::JavaRef<jobject>& jpopulator_factory);
 
  private:
   explicit ContextMenuHelper(content::WebContents* web_contents);

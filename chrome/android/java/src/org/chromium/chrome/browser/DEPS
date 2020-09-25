@@ -4,6 +4,7 @@ include_rules = [
   # chrome/android/DEPS. Exceptions can be found under "specific_include_rules" below. See
   # chrome/android/DEPS for more information.
   "-chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  "+chrome/browser/contextmenu/java/src/org/chromium/chrome/browser/contextmenu/ContextMenuPopulatorFactory.java",
 ]
 
 specific_include_rules = {

@@ -6,7 +6,7 @@ package org.chromium.chrome.browser.tab;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.chrome.browser.contextmenu.ContextMenuPopulator;
+import org.chromium.chrome.browser.contextmenu.ContextMenuPopulatorFactory;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
 import org.chromium.components.embedder_support.delegate.WebContentsDelegateAndroid;
@@ -33,11 +33,11 @@ public interface TabDelegateFactory {
     ExternalNavigationHandler createExternalNavigationHandler(Tab tab);
 
     /**
-     * Creates the {@link ContextMenuPopulator} the tab will be initialized with.
+     * Creates the {@link ContextMenuPopulatorFactory} the tab will be initialized with.
      * @param tab The associated {@link Tab}.
-     * @return The {@link ContextMenuPopulator} to be used for this tab.
+     * @return The {@link ContextMenuPopulatorFactory} to be used for this tab.
      */
-    ContextMenuPopulator createContextMenuPopulator(Tab tab);
+    ContextMenuPopulatorFactory createContextMenuPopulatorFactory(Tab tab);
 
     /**
      * Creates the {@link BrowserControlsVisibilityDelegate} the tab will be initialized with.
