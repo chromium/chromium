@@ -27,7 +27,6 @@ import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.MathUtils;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -314,9 +313,7 @@ class TabGridViewBinder {
 
         if (TabUiFeatureUtilities.isTabThumbnailAspectRatioNotOne()) {
             float expectedThumbnailAspectRatio =
-                    (float) ChromeFeatureList.getFieldTrialParamByFeatureAsDouble(
-                            ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID,
-                            TabUiFeatureUtilities.THUMBNAIL_ASPECT_RATIO_PARAM, 1.0);
+                    (float) TabUiFeatureUtilities.THUMBNAIL_ASPECT_RATIO.getValue();
             expectedThumbnailAspectRatio =
                     MathUtils.clamp(expectedThumbnailAspectRatio, 0.5f, 2.0f);
             int height = (int) (thumbnail.getWidth() * 1.0 / expectedThumbnailAspectRatio);

@@ -25,7 +25,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.MathUtils;
 import org.chromium.chrome.browser.app.ChromeActivity;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.Destroyable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -168,9 +167,7 @@ public class TabListCoordinator implements Destroyable {
 
                 if (TabUiFeatureUtilities.isTabThumbnailAspectRatioNotOne()) {
                     float expectedThumbnailAspectRatio =
-                            (float) ChromeFeatureList.getFieldTrialParamByFeatureAsDouble(
-                                    ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID,
-                                    TabUiFeatureUtilities.THUMBNAIL_ASPECT_RATIO_PARAM, 1.0);
+                            (float) TabUiFeatureUtilities.THUMBNAIL_ASPECT_RATIO.getValue();
                     expectedThumbnailAspectRatio =
                             MathUtils.clamp(expectedThumbnailAspectRatio, 0.5f, 2.0f);
                     int height = (int) (thumbnail.getWidth() * 1.0 / expectedThumbnailAspectRatio);
