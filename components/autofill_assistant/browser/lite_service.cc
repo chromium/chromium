@@ -20,11 +20,12 @@ LiteService::LiteService(
     const std::string& trigger_script_path,
     base::OnceCallback<void(Metrics::LiteScriptFinishedState)>
         notify_finished_callback,
-    base::OnceCallback<void()> notify_ui_shown_callback)
+    base::RepeatingCallback<void(bool)> notify_script_running_callback)
     : service_impl_(std::move(service_impl)),
       trigger_script_path_(trigger_script_path),
       notify_finished_callback_(std::move(notify_finished_callback)),
-      notify_ui_shown_callback_(std::move(notify_ui_shown_callback)) {}
+      notify_script_running_callback_(
+          std::move(notify_script_running_callback)) {}
 
 LiteService::~LiteService() {
   if (notify_finished_callback_) {
@@ -131,6 +132,7 @@ void LiteService::OnGetActions(ResponseCallback callback,
   std::string serialized_first_part;
   split_actions->first.SerializeToString(&serialized_first_part);
   std::move(callback).Run(result, serialized_first_part);
+  notify_script_running_callback_.Run(/*ui_shown = */ false);
 }
 
 void LiteService::GetNextActions(
@@ -177,9 +179,7 @@ void LiteService::GetNextActions(
         trigger_script_second_part_->SerializeToString(&serialized_second_part);
         trigger_script_second_part_.reset();
         std::move(callback).Run(true, serialized_second_part);
-        if (notify_ui_shown_callback_) {
-          std::move(notify_ui_shown_callback_).Run();
-        }
+        notify_script_running_callback_.Run(/*ui_shown = */ true);
         return;
     }
   } else {

@@ -29,7 +29,7 @@ class LiteService : public Service {
       const std::string& trigger_script_path,
       base::OnceCallback<void(Metrics::LiteScriptFinishedState)>
           notify_finished_callback,
-      base::OnceCallback<void()> notify_ui_shown_callback);
+      base::RepeatingCallback<void(bool)> notify_script_running_callback);
   // If the destructor is called before |GetNextActions|, the script was
   // terminated before finishing (user cancelled, closed the tab, etc.).
   ~LiteService() override;
@@ -96,8 +96,9 @@ class LiteService : public Service {
   // controller will terminate gracefully with an explicit stop action.
   base::OnceCallback<void(Metrics::LiteScriptFinishedState)>
       notify_finished_callback_;
-  // Notifies the java bridge that the UI was shown for the first time.
-  base::OnceCallback<void(void)> notify_ui_shown_callback_;
+  // Notifies the java bridge that the script is running. The bool parameter
+  // indicates whether the UI is being shown or not.
+  base::RepeatingCallback<void(bool)> notify_script_running_callback_;
 
   // The second part of the trigger script, i.e., the actions that should be run
   // after a successful prompt(browse) action in the first part of the script.

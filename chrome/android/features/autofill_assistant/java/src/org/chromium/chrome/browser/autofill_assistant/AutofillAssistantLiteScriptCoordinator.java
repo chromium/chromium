@@ -53,11 +53,13 @@ class AutofillAssistantLiteScriptCoordinator {
                     }
 
                     @Override
-                    public void onUiShown() {
-                        // The prompt was displayed on screen, hence we mark them as returning user
-                        // from now on.
-                        AutofillAssistantPreferencesUtil
-                                .setAutofillAssistantReturningLiteScriptUser();
+                    public void onScriptRunning(boolean uiShown) {
+                        if (uiShown) {
+                            // The prompt was displayed on screen, hence we mark them as returning
+                            // user from now on.
+                            AutofillAssistantPreferencesUtil
+                                    .setAutofillAssistantReturningLiteScriptUser();
+                        }
                     }
                 });
         AutofillAssistantServiceInjector.setServiceToInject(liteService);

@@ -19,8 +19,11 @@ public class AutofillAssistantLiteService
     interface Delegate {
         /** The lite script has finished with {@code state}. */
         void onFinished(@LiteScriptFinishedState int state);
-        /** The UI was shown for the first time to the user. */
-        void onUiShown();
+        /**
+         * The lite script has started and is now running. In the first stage of the script,
+         * @code{uiShown} is expected to be false, in the second stage, it is expected to be true.
+         */
+        void onScriptRunning(boolean uiShown);
     }
     private final WebContents mWebContents;
     private final String mTriggerScriptPath;
@@ -51,9 +54,9 @@ public class AutofillAssistantLiteService
     }
 
     @CalledByNative
-    private void onUiShown() {
+    private void onScriptRunning(boolean uiShown) {
         if (mDelegate != null) {
-            mDelegate.onUiShown();
+            mDelegate.onScriptRunning(uiShown);
         }
     }
 
