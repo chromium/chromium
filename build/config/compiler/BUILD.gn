@@ -602,8 +602,7 @@ config("compiler") {
   # TODO(pcc): Make this conditional on is_official_build rather than on gn
   # flags for specific features.
   if (!is_debug && use_thin_lto && is_a_target_toolchain) {
-    assert(use_lld || target_os == "chromeos",
-           "gold plugin only supported with ChromeOS")
+    assert(use_lld, "LTO is only supported with lld")
 
     cflags += [
       "-flto=thin",
@@ -638,33 +637,25 @@ config("compiler") {
       # Limit the parallelism to avoid too aggressive competition between
       # linker jobs. This is still suboptimal to a potential dynamic
       # resource allocation scheme, but should be good enough.
-      if (use_lld) {
-        ldflags += [ "-Wl,--thinlto-jobs=" + max_jobs_per_link ]
+      ldflags += [ "-Wl,--thinlto-jobs=" + max_jobs_per_link ]
 
-        # Limit the size of the ThinLTO cache to the lesser of 10% of
-        # available disk space, 10GB and 100000 files.
-        cache_policy =
-            "cache_size=10%:cache_size_bytes=10g:cache_size_files=100000"
-        ldflags += [
-          "-Wl,--thinlto-cache-dir=" +
-              rebase_path("$root_out_dir/thinlto-cache", root_build_dir),
-          "-Wl,--thinlto-cache-policy,$cache_policy",
-        ]
-      } else {
-        ldflags += [ "-Wl,-plugin-opt,jobs=" + max_jobs_per_link ]
-      }
+      # Limit the size of the ThinLTO cache to the lesser of 10% of
+      # available disk space, 10GB and 100000 files.
+      cache_policy =
+          "cache_size=10%:cache_size_bytes=10g:cache_size_files=100000"
+      ldflags += [
+        "-Wl,--thinlto-cache-dir=" +
+            rebase_path("$root_out_dir/thinlto-cache", root_build_dir),
+        "-Wl,--thinlto-cache-policy,$cache_policy",
+      ]
 
-      if (use_lld) {
-        ldflags += [ "-Wl,--lto-O" + lto_opt_level ]
-        if (thin_lto_enable_optimizations) {
-          if (is_android) {
-            # TODO(gbiv): We ideally shouldn't need to specify this; ThinLTO
-            # should be able to better manage binary size increases on its own.
-            ldflags += [ "-Wl,-mllvm,-import-instr-limit=5" ]
-          }
+      ldflags += [ "-Wl,--lto-O" + lto_opt_level ]
+      if (thin_lto_enable_optimizations) {
+        if (is_android) {
+          # TODO(gbiv): We ideally shouldn't need to specify this; ThinLTO
+          # should be able to better manage binary size increases on its own.
+          ldflags += [ "-Wl,-mllvm,-import-instr-limit=5" ]
         }
-      } else {
-        not_needed([ "lto_opt_level" ])
       }
     }
 
