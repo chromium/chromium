@@ -569,7 +569,7 @@ Additional details:
     This application has been blocked by your administrator
   </message>
 
-  <!-- Strings for Data Leak Prevetion -->
+  <!-- Strings for Data Leak Prevention -->
   <message name="IDS_POLICY_DLP_CLIPBOARD_BLOCKED_ON_PASTE" desc="A toast informing the user that paste is blocked.">
     Pasting to this location is blocked by your administrator
   </message>
@@ -578,6 +578,9 @@ Additional details:
   </message>
   <message name="IDS_POLICY_DLP_CLIPBOARD_BLOCKED_ON_COPY_TWO_VMS" desc="A toast informing the user that sharing clipboard data to VMs is blocked.">
     Your administrator has blocked sharing this content to <ph name="VM_NAME_1">$1<ex>Linux</ex></ph> and <ph name="VM_NAME_2">$2<ex>Parallels</ex></ph>
+  </message>
+  <message name="IDS_POLICY_DLP_PRINTING_BLOCKED" desc="A toast informing the user that printing is blocked.">
+    Printing of this content is blocked by your administrator
   </message>
 
 </grit-part>

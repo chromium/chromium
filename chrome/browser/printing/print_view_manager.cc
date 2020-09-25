@@ -30,6 +30,7 @@
 
 #if defined(OS_CHROMEOS)
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_manager.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_notification_helper.h"
 #endif
 
 using content::BrowserThread;
@@ -186,6 +187,9 @@ bool PrintViewManager::RejectPrintPreviewRequestIfRestricted(
   if (!IsPrintingRestricted())
     return false;
   GetPrintRenderFrame(rfh)->OnPrintPreviewDialogClosed();
+#if defined(OS_CHROMEOS)
+  policy::ShowDlpPrintDisabledToast();
+#endif
   return true;
 }
 
@@ -219,8 +223,12 @@ bool PrintViewManager::PrintPreview(
   if (IsCrashed())
     return false;
 
-  if (IsPrintingRestricted())
+  if (IsPrintingRestricted()) {
+#if defined(OS_CHROMEOS)
+    policy::ShowDlpPrintDisabledToast();
+#endif
     return false;
+  }
 
   GetPrintRenderFrame(rfh)->InitiatePrintPreview(std::move(print_renderer),
                                                  has_selection);

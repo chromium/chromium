@@ -2076,6 +2076,8 @@ source_set("chromeos") {
     "policy/dlp/dlp_content_restriction_set.h",
     "policy/dlp/dlp_content_tab_helper.cc",
     "policy/dlp/dlp_content_tab_helper.h",
+    "policy/dlp/dlp_notification_helper.cc",
+    "policy/dlp/dlp_notification_helper.h",
     "policy/dlp/dlp_rules_manager.cc",
     "policy/dlp/dlp_rules_manager.h",
     "policy/dlp/enterprise_clipboard_dlp_controller.cc",
