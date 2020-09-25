@@ -1074,7 +1074,6 @@ crbug.com/829028 virtual/layout_ng_block_frag/external/wpt/css/css-multicol/mult
 crbug.com/829028 virtual/layout_ng_block_frag/external/wpt/css/css-multicol/multicol-width-small-001.xht [ Failure ]
 crbug.com/1079031 virtual/layout_ng_block_frag/fast/multicol/abspos-after-break-after.html [ Failure ]
 crbug.com/1079031 virtual/layout_ng_block_frag/fast/multicol/abspos-new-width-rebalance.html [ Crash Failure ]
-crbug.com/829028 virtual/layout_ng_block_frag/fast/multicol/border-radius-clipped-layer.html [ Failure ]
 crbug.com/1066616 virtual/layout_ng_block_frag/fast/multicol/border-radius-clipped-layer-second-column.html [ Failure ]
 crbug.com/829028 virtual/layout_ng_block_frag/fast/multicol/break-before-first-line-in-first-child.html [ Failure ]
 crbug.com/829028 virtual/layout_ng_block_frag/fast/multicol/caret-range-anonymous-block.html [ Failure ]
