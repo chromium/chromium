@@ -15,7 +15,6 @@ import android.provider.Settings;
 import android.text.TextUtils;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.CommandLine;
@@ -254,8 +253,8 @@ public class DefaultBrowserPromoUtils {
 
     @VisibleForTesting
     @DefaultBrowserState
-    static int getCurrentDefaultBrowserState(@NonNull ResolveInfo info) {
-        if (info.match == 0) return DefaultBrowserState.NO_DEFAULT; // no default
+    static int getCurrentDefaultBrowserState(ResolveInfo info) {
+        if (info == null || info.match == 0) return DefaultBrowserState.NO_DEFAULT; // no default
         if (TextUtils.equals(ContextUtils.getApplicationContext().getPackageName(),
                     info.activityInfo.packageName)) {
             return DefaultBrowserState.CHROME_DEFAULT; // Already default
