@@ -213,9 +213,13 @@ const gfx::Point ImageButton::ComputeImagePaintPosition(
 // ToggleImageButton, public:
 
 ToggleImageButton::ToggleImageButton(ButtonListener* listener)
-    : ImageButton(listener), toggled_(false) {}
+    : ImageButton(listener) {}
 
 ToggleImageButton::~ToggleImageButton() = default;
+
+bool ToggleImageButton::GetToggled() const {
+  return toggled_;
+}
 
 void ToggleImageButton::SetToggled(bool toggled) {
   if (toggled == toggled_)
@@ -224,8 +228,8 @@ void ToggleImageButton::SetToggled(bool toggled) {
   for (int i = 0; i < STATE_COUNT; ++i)
     std::swap(images_[i], alternate_images_[i]);
   toggled_ = toggled;
-  SchedulePaint();
 
+  OnPropertyChanged(&toggled_, kPropertyEffectsPaint);
   NotifyAccessibilityEvent(ax::mojom::Event::kCheckedStateChanged, true);
 }
 
@@ -240,12 +244,26 @@ void ToggleImageButton::SetToggledImage(ButtonState image_state,
   }
 }
 
+base::string16 ToggleImageButton::GetToggledTooltipText() const {
+  return toggled_tooltip_text_;
+}
+
 void ToggleImageButton::SetToggledTooltipText(const base::string16& tooltip) {
+  if (tooltip == toggled_tooltip_text_)
+    return;
   toggled_tooltip_text_ = tooltip;
+  OnPropertyChanged(&toggled_tooltip_text_, kPropertyEffectsNone);
+}
+
+base::string16 ToggleImageButton::GetToggledAccessibleName() const {
+  return toggled_accessible_name_;
 }
 
 void ToggleImageButton::SetToggledAccessibleName(const base::string16& name) {
+  if (name == toggled_accessible_name_)
+    return;
   toggled_accessible_name_ = name;
+  OnPropertyChanged(&toggled_accessible_name_, kPropertyEffectsNone);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -318,6 +336,12 @@ BEGIN_METADATA(ImageButton, Button)
 ADD_PROPERTY_METADATA(HorizontalAlignment, ImageHorizontalAlignment)
 ADD_PROPERTY_METADATA(VerticalAlignment, ImageVerticalAlignment)
 ADD_PROPERTY_METADATA(gfx::Size, MinimumImageSize)
+END_METADATA
+
+BEGIN_METADATA(ToggleImageButton, ImageButton)
+ADD_PROPERTY_METADATA(bool, Toggled)
+ADD_PROPERTY_METADATA(base::string16, ToggledTooltipText)
+ADD_PROPERTY_METADATA(base::string16, ToggledAccessibleName)
 END_METADATA
 
 }  // namespace views

@@ -47,7 +47,7 @@ const char* CaptureModeToggleButton::GetClassName() const {
 }
 
 void CaptureModeToggleButton::OnPaintBackground(gfx::Canvas* canvas) {
-  if (!toggled())
+  if (!GetToggled())
     return;
 
   cc::PaintFlags flags;
@@ -62,8 +62,8 @@ void CaptureModeToggleButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   ImageButton::GetAccessibleNodeData(node_data);
   node_data->SetName(GetTooltipText(gfx::Point()));
   node_data->role = ax::mojom::Role::kToggleButton;
-  node_data->SetCheckedState(toggled() ? ax::mojom::CheckedState::kTrue
-                                       : ax::mojom::CheckedState::kFalse);
+  node_data->SetCheckedState(GetToggled() ? ax::mojom::CheckedState::kTrue
+                                          : ax::mojom::CheckedState::kFalse);
 }
 
 void CaptureModeToggleButton::SetIcon(const gfx::VectorIcon& icon) {

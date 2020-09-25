@@ -140,11 +140,11 @@ TEST_F(CaptureModeTest, StartWithMostRecentTypeAndSource) {
   controller->Start();
   EXPECT_TRUE(controller->IsActive());
 
-  EXPECT_FALSE(GetImageToggleButton()->toggled());
-  EXPECT_TRUE(GetVideoToggleButton()->toggled());
-  EXPECT_TRUE(GetFullscreenToggleButton()->toggled());
-  EXPECT_FALSE(GetRegionToggleButton()->toggled());
-  EXPECT_FALSE(GetWindowToggleButton()->toggled());
+  EXPECT_FALSE(GetImageToggleButton()->GetToggled());
+  EXPECT_TRUE(GetVideoToggleButton()->GetToggled());
+  EXPECT_TRUE(GetFullscreenToggleButton()->GetToggled());
+  EXPECT_FALSE(GetRegionToggleButton()->GetToggled());
+  EXPECT_FALSE(GetWindowToggleButton()->GetToggled());
 
   ClickOnView(GetCloseButton(), GetEventGenerator());
   EXPECT_FALSE(controller->IsActive());
@@ -155,24 +155,24 @@ TEST_F(CaptureModeTest, ChangeTypeAndSourceFromUI) {
   controller->Start();
   EXPECT_TRUE(controller->IsActive());
 
-  EXPECT_TRUE(GetImageToggleButton()->toggled());
-  EXPECT_FALSE(GetVideoToggleButton()->toggled());
+  EXPECT_TRUE(GetImageToggleButton()->GetToggled());
+  EXPECT_FALSE(GetVideoToggleButton()->GetToggled());
   auto* event_generator = GetEventGenerator();
   ClickOnView(GetVideoToggleButton(), event_generator);
-  EXPECT_FALSE(GetImageToggleButton()->toggled());
-  EXPECT_TRUE(GetVideoToggleButton()->toggled());
+  EXPECT_FALSE(GetImageToggleButton()->GetToggled());
+  EXPECT_TRUE(GetVideoToggleButton()->GetToggled());
   EXPECT_EQ(controller->type(), CaptureModeType::kVideo);
 
   ClickOnView(GetWindowToggleButton(), event_generator);
-  EXPECT_FALSE(GetFullscreenToggleButton()->toggled());
-  EXPECT_FALSE(GetRegionToggleButton()->toggled());
-  EXPECT_TRUE(GetWindowToggleButton()->toggled());
+  EXPECT_FALSE(GetFullscreenToggleButton()->GetToggled());
+  EXPECT_FALSE(GetRegionToggleButton()->GetToggled());
+  EXPECT_TRUE(GetWindowToggleButton()->GetToggled());
   EXPECT_EQ(controller->source(), CaptureModeSource::kWindow);
 
   ClickOnView(GetFullscreenToggleButton(), event_generator);
-  EXPECT_TRUE(GetFullscreenToggleButton()->toggled());
-  EXPECT_FALSE(GetRegionToggleButton()->toggled());
-  EXPECT_FALSE(GetWindowToggleButton()->toggled());
+  EXPECT_TRUE(GetFullscreenToggleButton()->GetToggled());
+  EXPECT_FALSE(GetRegionToggleButton()->GetToggled());
+  EXPECT_FALSE(GetWindowToggleButton()->GetToggled());
   EXPECT_EQ(controller->source(), CaptureModeSource::kFullscreen);
 }
 
