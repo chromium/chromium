@@ -2283,6 +2283,14 @@ PhysicalRect LayoutText::LocalSelectionVisualRect() const {
   return FlipForWritingMode(rect);
 }
 
+void LayoutText::InvalidateVisualOverflow() {
+  DCHECK(IsInLayoutNGInlineFormattingContext() &&
+         RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled());
+  NGInlineCursor cursor;
+  for (cursor.MoveTo(*this); cursor; cursor.MoveToNextForSameLayoutObject())
+    cursor.Current()->GetMutableForPainting().InvalidateInkOverflow();
+}
+
 const NGOffsetMapping* LayoutText::GetNGOffsetMapping() const {
   if (!RuntimeEnabledFeatures::LayoutNGEnabled())
     return nullptr;

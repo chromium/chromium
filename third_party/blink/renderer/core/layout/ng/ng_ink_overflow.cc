@@ -98,15 +98,15 @@ NGInkOverflow::NGInkOverflow(Type source_type, NGInkOverflow&& source) {
   SetType(source_type);
 }
 
-NGInkOverflow::Type NGInkOverflow::Reset(Type type) {
+NGInkOverflow::Type NGInkOverflow::Reset(Type type, Type new_type) {
   CheckType(type);
+  DCHECK(new_type == kNotSet || new_type == kNone);
   switch (type) {
     case kNotSet:
+    case kNone:
     case kSmallSelf:
     case kSmallContents:
       break;
-    case kNone:
-      return kNone;
     case kSelf:
     case kContents:
       delete single_;
@@ -115,7 +115,7 @@ NGInkOverflow::Type NGInkOverflow::Reset(Type type) {
       delete container_;
       break;
   }
-  return SetType(kNone);
+  return SetType(new_type);
 }
 
 PhysicalRect NGInkOverflow::FromOutsets(const PhysicalSize& size) const {

@@ -84,7 +84,9 @@ class CORE_EXPORT NGInkOverflow {
   PhysicalRect SelfAndContents(Type type, const PhysicalSize& size) const;
 
   // Reset to |kNone|.
-  Type Reset(Type type);
+  Type Reset(Type type) { return Reset(type, kNone); }
+  // Reset to |kNotSet|.
+  Type Invalidate(Type type) { return Reset(type, kNotSet); }
 
   // Set self ink overflow rect.
   // If |this| had contents ink overflow, it is cleared.
@@ -119,6 +121,8 @@ class CORE_EXPORT NGInkOverflow {
 
   void CheckType(Type type) const;
   Type SetType(Type type);
+
+  Type Reset(Type type, Type new_type);
 
   bool TrySetOutsets(Type type,
                      LayoutUnit left_outset,

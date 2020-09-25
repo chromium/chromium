@@ -247,6 +247,7 @@ class CORE_EXPORT NGFragmentItem {
     STACK_ALLOCATED();
 
    public:
+    void InvalidateInkOverflow() { return item_.InvalidateInkOverflow(); }
     void RecalcInkOverflow(const NGInlineCursor& cursor,
                            PhysicalRect* self_and_contents_rect_out) {
       return item_.RecalcInkOverflow(cursor, self_and_contents_rect_out);
@@ -383,6 +384,7 @@ class CORE_EXPORT NGFragmentItem {
 
  private:
   FRIEND_TEST_ALL_PREFIXES(NGFragmentItemTest, CopyMove);
+  FRIEND_TEST_ALL_PREFIXES(StyleChangeTest, NeedsCollectInlinesOnStyle);
 
   // Create a text item.
   NGFragmentItem(const NGInlineItem& inline_item,
@@ -408,6 +410,8 @@ class CORE_EXPORT NGFragmentItem {
   }
   const LayoutBox* InkOverflowOwnerBox() const;
   LayoutBox* MutableInkOverflowOwnerBox();
+
+  void InvalidateInkOverflow();
 
   // Re-compute the ink overflow for this item. |cursor| should be at |this|.
   void RecalcInkOverflow(const NGInlineCursor& cursor,

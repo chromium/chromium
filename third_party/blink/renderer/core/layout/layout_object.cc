@@ -2219,6 +2219,11 @@ void LayoutObject::SetStyle(scoped_refptr<const ComputedStyle> style,
       SetNeedsLayoutAndIntrinsicWidthsRecalc(
           layout_invalidation_reason::kStyleChange);
     } else {
+      if (IsInLayoutNGInlineFormattingContext() && !NeedsLayout() &&
+          RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled()) {
+        if (auto* text = ToLayoutTextOrNull(this))
+          text->InvalidateVisualOverflow();
+      }
       PaintingLayer()->SetNeedsVisualOverflowRecalc();
       SetShouldCheckForPaintInvalidation();
     }

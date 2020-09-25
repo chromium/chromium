@@ -502,6 +502,10 @@ PhysicalRect NGFragmentItem::LocalVisualRectFor(
   return visual_rect;
 }
 
+void NGFragmentItem::InvalidateInkOverflow() {
+  ink_overflow_type_ = ink_overflow_.Invalidate(InkOverflowType());
+}
+
 PhysicalRect NGFragmentItem::RecalcInkOverflowForCursor(
     NGInlineCursor* cursor) {
   DCHECK(cursor);

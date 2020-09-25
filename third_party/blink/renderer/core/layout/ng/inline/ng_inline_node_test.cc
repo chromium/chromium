@@ -598,6 +598,7 @@ struct StyleChangeData {
   };
   unsigned needs_collect_inlines;
   base::Optional<bool> is_line_dirty;
+  bool invalidate_ink_overflow = false;
 } style_change_data[] = {
     // Changing color, text-decoration, outline, etc. should not re-run
     // |CollectInlines()|.
@@ -605,7 +606,7 @@ struct StyleChangeData {
     // TODO(crbug.com/1128199): text-decorations, outline, etc. should not
     // require layout, only ink overflow, but they currently do.
     {"#parent.after { text-decoration-line: underline; }",
-     StyleChangeData::kNone, true},
+     StyleChangeData::kNone, true, true},
     {"#parent.after { outline: auto; }", StyleChangeData::kNone, true},
     // Changing fonts should re-run |CollectInlines()|.
     {"#parent.after { font-size: 200%; }", StyleChangeData::kAll, true},
@@ -687,6 +688,22 @@ TEST_P(StyleChangeTest, NeedsCollectInlinesOnStyle) {
       RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled()) {
     TestAnyItemsAreDirty(To<LayoutBlockFlow>(container->GetLayoutObject()),
                          *data.is_line_dirty);
+  }
+
+  if (data.invalidate_ink_overflow &&
+      RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled()) {
+    const LayoutObject* parent_layout_object = parent->GetLayoutObject();
+    for (const LayoutObject* child = parent_layout_object->SlowFirstChild();
+         child; child = child->NextInPreOrder(parent_layout_object)) {
+      if (child->IsText()) {
+        NGInlineCursor cursor;
+        for (cursor.MoveTo(*child); cursor;
+             cursor.MoveToNextForSameLayoutObject()) {
+          const NGFragmentItem* item = cursor.CurrentItem();
+          EXPECT_FALSE(item->IsInkOverflowComputed());
+        }
+      }
+    }
   }
 
   ForceLayout();  // Ensure running layout does not crash.

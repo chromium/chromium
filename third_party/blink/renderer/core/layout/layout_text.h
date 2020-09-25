@@ -189,6 +189,8 @@ class CORE_EXPORT LayoutText : public LayoutObject {
   // in containing block's physical coordinates with flipped blocks direction.
   PhysicalRect PhysicalVisualOverflowRect() const;
 
+  void InvalidateVisualOverflow();
+
   PhysicalOffset FirstLineBoxTopLeft() const;
 
   void SetTextIfNeeded(scoped_refptr<StringImpl>);
