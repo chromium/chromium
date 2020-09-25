@@ -35,6 +35,7 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
+#include "base/feature_list.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/util/type_safety/strong_alias.h"
@@ -80,6 +81,17 @@ enum WebSocketOpCode {
   kOpCodeText = 0x1,
   kOpCodeBinary = 0x2,
 };
+
+// When enabled, a page can be aggressively throttled even if it uses a
+// WebSocket. Aggressive throttling does not affect the execution of WebSocket
+// event handlers, so there is little reason to disable it on pages using a
+// WebSocket.
+//
+// TODO(crbug.com/1121725): Cleanup this feature once field experiments confirm
+// that the opt-out can be removed.
+const base::Feature kAllowAggressiveThrottlingWithWebSocket{
+    "AllowAggressiveThrottlingWithWebSocket",
+    base::FEATURE_DISABLED_BY_DEFAULT};
 
 }  // namespace
 
@@ -205,8 +217,12 @@ bool WebSocketChannelImpl::Connect(const KURL& url, const String& protocol) {
   if (auto* scheduler = execution_context_->GetScheduler()) {
     feature_handle_for_scheduler_ = scheduler->RegisterFeature(
         SchedulingPolicy::Feature::kWebSocket,
-        {SchedulingPolicy::DisableAggressiveThrottling(),
-         SchedulingPolicy::RecordMetricsForBackForwardCache()});
+        base::FeatureList::IsEnabled(kAllowAggressiveThrottlingWithWebSocket)
+            ? SchedulingPolicy{SchedulingPolicy::
+                                   RecordMetricsForBackForwardCache()}
+            : SchedulingPolicy{
+                  SchedulingPolicy::DisableAggressiveThrottling(),
+                  SchedulingPolicy::RecordMetricsForBackForwardCache()});
   }
 
   if (MixedContentChecker::IsMixedContent(
