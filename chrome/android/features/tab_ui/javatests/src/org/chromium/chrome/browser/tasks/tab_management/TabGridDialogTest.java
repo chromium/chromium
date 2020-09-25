@@ -748,7 +748,6 @@ public class TabGridDialogTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "Re-enable this when crbug.com/1116985 is resolved.")
     @Features.EnableFeatures({ChromeFeatureList.INSTANT_START})
     public void testSetup_WithInstantStart() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();

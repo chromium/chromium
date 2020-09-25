@@ -2420,7 +2420,11 @@ public class TabListMediatorUnitTest {
                 mTabContentManager::getTabThumbnailWithCallback, mTitleProvider,
                 mTabListFaviconProvider, actionOnRelatedTabs, null, null, handler,
                 getClass().getSimpleName(), uiType);
+
+        // TabGroupModelFilterObserver is registered when native is ready.
+        assertThat(mTabGroupModelFilterObserverCaptor.getAllValues().isEmpty(), equalTo(true));
         mMediator.initWithNative(mProfile);
+        assertThat(mTabGroupModelFilterObserverCaptor.getAllValues().isEmpty(), equalTo(false));
 
         // There are two TabModelObserver and two TabGroupModelFilter.Observer added when
         // initializing TabListMediator, one set from TabListMediator and the other from

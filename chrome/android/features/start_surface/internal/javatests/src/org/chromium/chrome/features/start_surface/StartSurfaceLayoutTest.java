@@ -38,6 +38,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.e
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.finishActivity;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.getSwipeToDismissAction;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.leaveTabSwitcher;
+import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.mergeAllNormalTabsToAGroup;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.rotateDeviceToOrientation;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.switchTabModel;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.verifyTabModelTabCount;
@@ -2080,6 +2081,14 @@ public class StartSurfaceLayoutTest {
         // closure.
         closeFirstTabInTabSwitcher();
         verifyTabSwitcherCardCount(cta, 0);
+
+        // Verify TabGroupModelFilter is correctly setup by checking if tab switcher changes with
+        // tab grouping.
+        createTabs(cta, false, 3);
+        enterTabSwitcher(cta);
+        verifyTabSwitcherCardCount(cta, 2);
+        mergeAllNormalTabsToAGroup(cta);
+        verifyTabSwitcherCardCount(cta, 1);
     }
 
     private void enterTabGroupManualSelection(ChromeTabbedActivity cta) {
