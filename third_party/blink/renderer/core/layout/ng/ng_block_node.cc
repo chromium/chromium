@@ -1198,6 +1198,14 @@ void NGBlockNode::PlaceChildrenInFlowThread(
     // relatively to the block-start of the flow thread.
     const auto* column = To<NGPhysicalBoxFragment>(child.get());
     PlaceChildrenInLayoutBox(*column, previous_break_token);
+
+    // If the multicol container has inline children, there may still be floats
+    // there, but they aren't stored as child fragments of |column| in that case
+    // (but rather inside fragment items). Make sure that they get positioned,
+    // too.
+    if (const NGFragmentItems* items = column->Items())
+      CopyFragmentItemsToLayoutBox(*column, *items);
+
     previous_break_token = To<NGBlockBreakToken>(column->BreakToken());
   }
 }
