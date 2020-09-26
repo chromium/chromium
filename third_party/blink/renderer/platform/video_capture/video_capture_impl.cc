@@ -185,9 +185,8 @@ struct VideoCaptureImpl::BufferContext
                                     const gpu::SyncToken& release_sync_token) {
     if (!buffer_context->media_task_runner_->BelongsToCurrentThread()) {
       buffer_context->media_task_runner_->PostTask(
-          FROM_HERE,
-          base::BindOnce(&BufferContext::MailboxHolderReleased,
-                         std::move(buffer_context), release_sync_token));
+          FROM_HERE, base::BindOnce(&BufferContext::MailboxHolderReleased,
+                                    buffer_context, release_sync_token));
       return;
     }
     buffer_context->gmb_resources_->release_sync_token = release_sync_token;
