@@ -19,6 +19,7 @@
 #include "ui/events/platform/platform_event_observer.h"
 
 #if defined(OS_CHROMEOS)
+#include "ash/ime/ime_controller_impl.h"
 #include "components/exo/ui_lock_controller.h"
 #endif
 
@@ -32,6 +33,7 @@ class DragDropOperation;
 class ScopedDataSource;
 class SeatObserver;
 class Surface;
+class XkbTracker;
 
 // The maximum number of different data types that we will write to the
 // clipboard (plain text, RTF, HTML, image)
@@ -43,6 +45,9 @@ class Seat : public aura::client::FocusChangeObserver,
              public ui::PlatformEventObserver,
              public ui::EventHandler,
              public ui::ClipboardObserver,
+#if defined(OS_CHROMEOS)
+             public ash::ImeControllerImpl::Observer,
+#endif
              public DataSourceObserver {
  public:
   Seat();
@@ -62,8 +67,9 @@ class Seat : public aura::client::FocusChangeObserver,
     return pressed_keys_;
   }
 
-  // Returns current set of modifier flags.
-  int modifier_flags() const { return modifier_flags_; }
+#if defined(OS_CHROMEOS)
+  const XkbTracker* xkb_tracker() const { return xkb_tracker_.get(); }
+#endif
 
   // Returns physical code for the currently processing event.
   ui::DomCode physical_code_for_currently_processing_event() const {
@@ -101,6 +107,12 @@ class Seat : public aura::client::FocusChangeObserver,
 
   // Overridden from DataSourceObserver:
   void OnDataSourceDestroying(DataSource* source) override;
+
+#if defined(OS_CHROMEOS)
+  // Overridden from ash::ImeControllerImpl::Observer:
+  void OnCapsLockChanged(bool enabled) override;
+  void OnKeyboardLayoutNameChanged(const std::string& layout_name) override;
+#endif
 
   void set_physical_code_for_currently_processing_event_for_testing(
       ui::DomCode physical_code_for_currently_processing_event) {
@@ -149,7 +161,6 @@ class Seat : public aura::client::FocusChangeObserver,
   // physical key press generated.
   base::flat_map<ui::DomCode, ui::DomCode> pressed_keys_;
   ui::DomCode physical_code_for_currently_processing_event_ = ui::DomCode::NONE;
-  int modifier_flags_ = 0;
 
   // Data source being used as a clipboard content.
   std::unique_ptr<ScopedDataSource> selection_source_;
@@ -165,6 +176,7 @@ class Seat : public aura::client::FocusChangeObserver,
 
 #if defined(OS_CHROMEOS)
   std::unique_ptr<UILockController> ui_lock_controller_;
+  std::unique_ptr<XkbTracker> xkb_tracker_;
 #endif  // defined(OS_CHROMEOS)
 
   base::WeakPtrFactory<Seat> weak_ptr_factory_{this};

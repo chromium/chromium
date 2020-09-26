@@ -16,18 +16,10 @@
 #include "ui/base/buildflags.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 
-#if BUILDFLAG(USE_XKBCOMMON)
-#include <xkbcommon/xkbcommon.h>
-#include "ui/events/keycodes/scoped_xkb.h"  // nogncheck
-#endif
-
 struct wl_client;
 struct wl_resource;
 
 namespace exo {
-
-class XkbTracker;
-
 namespace wayland {
 class SerialTracker;
 
@@ -50,11 +42,11 @@ class WaylandKeyboardDelegate : public WaylandInputDelegate,
   uint32_t OnKeyboardKey(base::TimeTicks time_stamp,
                          ui::DomCode key,
                          bool pressed) override;
-  void OnKeyboardModifiers(int modifier_flags) override;
+  void OnKeyboardModifiers(const KeyboardModifiers& modifiers) override;
   void OnKeyRepeatSettingsChanged(bool enabled,
                                   base::TimeDelta delay,
                                   base::TimeDelta interval) override;
-  void OnKeyboardLayoutUpdated(const std::string& layout_name) override;
+  void OnKeyboardLayoutUpdated(base::StringPiece keymap) override;
 
  private:
   // Returns the corresponding key given a dom code.
@@ -62,9 +54,6 @@ class WaylandKeyboardDelegate : public WaylandInputDelegate,
 
   // Sends the current modifiers to the client.
   void SendKeyboardModifiers();
-
-  // Send the current keyboard layout to the client.
-  void SendLayout();
 
   // The client who own this keyboard instance.
   wl_client* client() const;
@@ -74,10 +63,6 @@ class WaylandKeyboardDelegate : public WaylandInputDelegate,
 
   // Owned by Server, which always outlives this delegate.
   SerialTracker* const serial_tracker_;
-
-  // TODO(hidehiko): Move this to the server in order to share it with
-  // zwp_text_input.
-  std::unique_ptr<XkbTracker> xkb_tracker_;
 
   // Tracks the latest modifiers.
   KeyboardModifiers current_modifiers_{};
