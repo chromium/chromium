@@ -169,7 +169,7 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment, public TreeScope {
     available_to_element_internals_ = flag;
   }
   bool IsAvailableToElementInternals() const {
-    return available_to_element_internals_ || is_declarative_shadow_root_;
+    return available_to_element_internals_;
   }
 
   bool ContainsShadowRoots() const { return child_shadow_root_count_; }
