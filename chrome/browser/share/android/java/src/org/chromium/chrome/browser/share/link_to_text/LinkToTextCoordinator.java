@@ -22,6 +22,7 @@ import org.chromium.ui.widget.Toast;
  * Handles the Link To Text action in the Sharing Hub.
  */
 public class LinkToTextCoordinator extends EmptyTabObserver {
+    private static final String SHARE_TEXT_TEMPLATE = "\"%s\"\n";
     private static final String TEXT_FRAGMENT_PREFIX = ":~:text=";
     private static final String INVALID_SELECTOR = "";
     private final Context mContext;
@@ -53,7 +54,7 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
         ShareParams params =
                 new ShareParams
                         .Builder(mTab.getWindowAndroid(), /*title=*/"", getUrlToShare(selector))
-                        .setText(mSelectedText)
+                        .setText(String.format(SHARE_TEXT_TEMPLATE, mSelectedText))
                         .build();
         mChromeOptionShareCallback.showThirdPartyShareSheet(
                 params, new ChromeShareExtras.Builder().build(), System.currentTimeMillis());
