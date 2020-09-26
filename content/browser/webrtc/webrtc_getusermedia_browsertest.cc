@@ -786,6 +786,14 @@ IN_PROC_BROWSER_TEST_F(WebRtcGetUserMediaBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(WebRtcGetUserMediaBrowserTest,
+                       EnumerationAfterSameDocumentNavigation) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url(embedded_test_server()->GetURL("/media/getusermedia.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  ExecuteJavascriptAndWaitForOk("enumerationAfterSameDocumentNaviagtion()");
+}
+
+IN_PROC_BROWSER_TEST_F(WebRtcGetUserMediaBrowserTest,
                        RecoverFromCrashInAudioService) {
   // This test only makes sense with the audio service running out of process,
   // with or without sandbox.

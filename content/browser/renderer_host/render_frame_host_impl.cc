@@ -2434,12 +2434,14 @@ void RenderFrameHostImpl::DidNavigate(
   if (!params.url_is_unreachable)
     last_successful_url_ = params.url;
 
-  // Reset the salt so that media device IDs are reset after the new navigation
-  // if necessary.
-  media_device_id_salt_base_ = BrowserContext::CreateRandomMediaDeviceIDSalt();
-
-  if (did_create_new_document)
+  if (did_create_new_document) {
     DidCommitNewDocument(params, navigation_request);
+
+    // Reset the salt so that media device IDs are reset for the new document
+    // if necessary.
+    media_device_id_salt_base_ =
+        BrowserContext::CreateRandomMediaDeviceIDSalt();
+  }
 }
 
 void RenderFrameHostImpl::SetLastCommittedOrigin(const url::Origin& origin) {

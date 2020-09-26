@@ -964,6 +964,21 @@
     }
   }
 
+  async function enumerationAfterSameDocumentNaviagtion() {
+    let stream = await navigator.mediaDevices.getUserMedia({ audio:true, video:true });
+    stream.getTracks().forEach(t => t.stop());
+    let devices1 = await navigator.mediaDevices.enumerateDevices();
+
+    // Navigate within the same document and enumerate again.
+    window.location = "#navigate";
+    let devices2 = await navigator.mediaDevices.enumerateDevices();
+    assertEquals(devices1.length, devices2.length);
+    for (let i=0; i<devices1.length; i++) {
+      assertEquals(devices1[i].deviceId, devices2[i].deviceId);
+    }
+    reportTestSuccess();
+  }
+
   </script>
 </head>
 <body>
