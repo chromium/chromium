@@ -172,7 +172,7 @@ class CastExtensionURLLoader : public network::mojom::URLLoader,
 
 CastExtensionURLLoaderFactory::CastExtensionURLLoaderFactory(
     content::BrowserContext* browser_context,
-    std::unique_ptr<network::mojom::URLLoaderFactory> extension_factory)
+    mojo::PendingRemote<network::mojom::URLLoaderFactory> extension_factory)
     : extension_registry_(extensions::ExtensionRegistry::Get(browser_context)),
       extension_factory_(std::move(extension_factory)),
       network_factory_(

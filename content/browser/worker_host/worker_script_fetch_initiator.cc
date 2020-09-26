@@ -225,8 +225,7 @@ WorkerScriptFetchInitiator::CreateFactoryBundle(
       GetContentClient()
           ->browser()
           ->RegisterNonNetworkWorkerMainResourceURLLoaderFactories(
-              storage_partition->browser_context(),
-              &non_network_uniquely_owned_factories);
+              storage_partition->browser_context(), &non_network_factories);
       break;
     case LoaderType::kSubResource:
       GetContentClient()

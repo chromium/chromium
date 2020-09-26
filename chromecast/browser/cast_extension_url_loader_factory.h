@@ -5,12 +5,11 @@
 #ifndef CHROMECAST_BROWSER_CAST_EXTENSION_URL_LOADER_FACTORY_H_
 #define CHROMECAST_BROWSER_CAST_EXTENSION_URL_LOADER_FACTORY_H_
 
-#include <memory>
-
 #include "base/macros.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 
@@ -35,7 +34,7 @@ class CastExtensionURLLoaderFactory : public network::mojom::URLLoaderFactory {
   // the request isn't fetched from the web.
   CastExtensionURLLoaderFactory(
       content::BrowserContext* browser_context,
-      std::unique_ptr<network::mojom::URLLoaderFactory> extension_factory);
+      mojo::PendingRemote<network::mojom::URLLoaderFactory> extension_factory);
   ~CastExtensionURLLoaderFactory() override;
 
  private:
@@ -54,7 +53,7 @@ class CastExtensionURLLoaderFactory : public network::mojom::URLLoaderFactory {
 
   mojo::ReceiverSet<network::mojom::URLLoaderFactory> receivers_;
   extensions::ExtensionRegistry* extension_registry_;
-  std::unique_ptr<network::mojom::URLLoaderFactory> extension_factory_;
+  mojo::Remote<network::mojom::URLLoaderFactory> extension_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> network_factory_;
 
   DISALLOW_COPY_AND_ASSIGN(CastExtensionURLLoaderFactory);

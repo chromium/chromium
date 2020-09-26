@@ -760,12 +760,12 @@ void ContentBrowserClient::RegisterNonNetworkNavigationURLLoaderFactories(
 void ContentBrowserClient::
     RegisterNonNetworkWorkerMainResourceURLLoaderFactories(
         BrowserContext* browser_context,
-        NonNetworkURLLoaderFactoryDeprecatedMap* uniquely_owned_factories) {}
+        NonNetworkURLLoaderFactoryMap* factories) {}
 
 void ContentBrowserClient::
     RegisterNonNetworkServiceWorkerUpdateURLLoaderFactories(
         BrowserContext* browser_context,
-        NonNetworkURLLoaderFactoryDeprecatedMap* uniquely_owned_factories) {}
+        NonNetworkURLLoaderFactoryMap* factories) {}
 
 void ContentBrowserClient::RegisterNonNetworkSubresourceURLLoaderFactories(
     int render_process_id,

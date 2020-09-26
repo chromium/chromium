@@ -240,9 +240,12 @@ void ShellContentBrowserClient::RegisterNonNetworkNavigationURLLoaderFactories(
     base::UkmSourceId ukm_source_id,
     NonNetworkURLLoaderFactoryDeprecatedMap* uniquely_owned_factories,
     NonNetworkURLLoaderFactoryMap* factories) {
+  DCHECK(uniquely_owned_factories);
+  DCHECK(factories);
+
   content::WebContents* web_contents =
       content::WebContents::FromFrameTreeNodeId(frame_tree_node_id);
-  uniquely_owned_factories->emplace(
+  factories->emplace(
       extensions::kExtensionScheme,
       extensions::CreateExtensionNavigationURLLoaderFactory(
           web_contents->GetBrowserContext(), ukm_source_id,
@@ -252,9 +255,10 @@ void ShellContentBrowserClient::RegisterNonNetworkNavigationURLLoaderFactories(
 void ShellContentBrowserClient::
     RegisterNonNetworkWorkerMainResourceURLLoaderFactories(
         content::BrowserContext* browser_context,
-        NonNetworkURLLoaderFactoryDeprecatedMap* factories) {
+        NonNetworkURLLoaderFactoryMap* factories) {
   DCHECK(browser_context);
   DCHECK(factories);
+
   factories->emplace(
       extensions::kExtensionScheme,
       extensions::CreateExtensionWorkerMainResourceURLLoaderFactory(
@@ -264,9 +268,10 @@ void ShellContentBrowserClient::
 void ShellContentBrowserClient::
     RegisterNonNetworkServiceWorkerUpdateURLLoaderFactories(
         content::BrowserContext* browser_context,
-        NonNetworkURLLoaderFactoryDeprecatedMap* factories) {
+        NonNetworkURLLoaderFactoryMap* factories) {
   DCHECK(browser_context);
   DCHECK(factories);
+
   factories->emplace(
       extensions::kExtensionScheme,
       extensions::CreateExtensionServiceWorkerScriptURLLoaderFactory(
@@ -278,11 +283,12 @@ void ShellContentBrowserClient::RegisterNonNetworkSubresourceURLLoaderFactories(
     int render_frame_id,
     NonNetworkURLLoaderFactoryDeprecatedMap* uniquely_owned_factories,
     NonNetworkURLLoaderFactoryMap* factories) {
-  auto factory = extensions::CreateExtensionURLLoaderFactory(render_process_id,
-                                                             render_frame_id);
-  if (factory)
-    uniquely_owned_factories->emplace(extensions::kExtensionScheme,
-                                      std::move(factory));
+  DCHECK(uniquely_owned_factories);
+  DCHECK(factories);
+
+  factories->emplace(extensions::kExtensionScheme,
+                     extensions::CreateExtensionURLLoaderFactory(
+                         render_process_id, render_frame_id));
 }
 
 bool ShellContentBrowserClient::WillCreateURLLoaderFactory(

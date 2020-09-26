@@ -43,8 +43,10 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/file_url_loader.h"
 #include "content/public/browser/navigation_ui_data.h"
+#include "content/public/browser/non_network_url_loader_factory_base.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/common/child_process_host.h"
 #include "crypto/secure_hash.h"
 #include "crypto/sha2.h"
 #include "extensions/browser/content_verifier.h"
@@ -292,7 +294,7 @@ bool AllowExtensionResourceLoad(const GURL& url,
   // Service Worker and the imported scripts can be loaded with extension URLs
   // in browser process during update check when
   // ServiceWorkerImportedScriptUpdateCheck is enabled.
-  if (child_id == -1 &&
+  if (child_id == content::ChildProcessHost::kInvalidUniqueID &&
       (blink::IsResourceTypeFrame(resource_type) ||
        (base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker) &&
         resource_type == blink::mojom::ResourceType::kWorker) ||
@@ -449,39 +451,45 @@ class FileLoaderObserver : public content::FileURLLoaderObserver {
   DISALLOW_COPY_AND_ASSIGN(FileLoaderObserver);
 };
 
-class ExtensionURLLoaderFactory : public network::mojom::URLLoaderFactory {
+class ExtensionURLLoaderFactory
+    : public content::NonNetworkURLLoaderFactoryBase {
  public:
-  ExtensionURLLoaderFactory(int render_process_id, int render_frame_id)
-      : render_process_id_(render_process_id),
-        render_frame_id_(render_frame_id) {
-    content::RenderProcessHost* process_host =
-        content::RenderProcessHost::FromID(render_process_id);
-    browser_context_ = process_host->GetBrowserContext();
-    is_web_view_request_ = WebViewGuest::FromFrameID(
-                               render_process_id_, render_frame_id) != nullptr;
-    content::RenderFrameHost* rfh =
-        content::RenderFrameHost::FromID(render_process_id_, render_frame_id_);
-    if (rfh)
-      ukm_source_id_ = base::UkmSourceId::FromInt64(rfh->GetPageUkmSourceId());
+  static mojo::PendingRemote<network::mojom::URLLoaderFactory> Create(
+      content::BrowserContext* browser_context,
+      base::UkmSourceId ukm_source_id,
+      bool is_web_view_request,
+      int render_process_id) {
+    mojo::PendingRemote<network::mojom::URLLoaderFactory> pending_remote;
 
-    Init();
+    // Manages its own lifetime.
+    new ExtensionURLLoaderFactory(
+        browser_context, ukm_source_id, is_web_view_request, render_process_id,
+        pending_remote.InitWithNewPipeAndPassReceiver());
+
+    return pending_remote;
   }
 
-  ExtensionURLLoaderFactory(content::BrowserContext* browser_context,
-                            base::UkmSourceId ukm_source_id,
-                            bool is_web_view_request)
-      : browser_context_(browser_context),
+ private:
+  // Constructs ExtensionURLLoaderFactory bound to the |factory_receiver|.
+  //
+  // The factory is self-owned - it will delete itself once there are no more
+  // receivers (including the receiver associated with the returned
+  // mojo::PendingRemote and the receivers bound by the Clone method).  See also
+  // the NonNetworkURLLoaderFactoryBase::OnDisconnect method.
+  ExtensionURLLoaderFactory(
+      content::BrowserContext* browser_context,
+      base::UkmSourceId ukm_source_id,
+      bool is_web_view_request,
+      int render_process_id,
+      mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver)
+      : content::NonNetworkURLLoaderFactoryBase(std::move(factory_receiver)),
+        browser_context_(browser_context),
         is_web_view_request_(is_web_view_request),
         ukm_source_id_(ukm_source_id),
-        render_process_id_(-1),
-        render_frame_id_(-1) {
-    Init();
-  }
-
-  void Init() {
+        render_process_id_(render_process_id) {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     extension_info_map_ =
         extensions::ExtensionSystem::Get(browser_context_)->info_map();
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   }
 
   ~ExtensionURLLoaderFactory() override = default;
@@ -536,12 +544,6 @@ class ExtensionURLLoaderFactory : public network::mojom::URLLoaderFactory {
                   std::move(directory_path));
   }
 
-  void Clone(mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver)
-      override {
-    receivers_.Add(this, std::move(receiver));
-  }
-
- private:
   void LoadExtension(
       mojo::PendingReceiver<network::mojom::URLLoader> loader,
       const network::ResourceRequest& request,
@@ -729,9 +731,7 @@ class ExtensionURLLoaderFactory : public network::mojom::URLLoaderFactory {
   // avoid holding on to stale pointers if we get requests past the lifetime of
   // the objects.
   const int render_process_id_;
-  const int render_frame_id_;
   scoped_refptr<extensions::InfoMap> extension_info_map_;
-  mojo::ReceiverSet<network::mojom::URLLoaderFactory> receivers_;
 
   DISALLOW_COPY_AND_ASSIGN(ExtensionURLLoaderFactory);
 };
@@ -782,35 +782,50 @@ void SetExtensionProtocolTestHandler(ExtensionProtocolTestHandler* handler) {
   g_test_handler = handler;
 }
 
-std::unique_ptr<network::mojom::URLLoaderFactory>
+mojo::PendingRemote<network::mojom::URLLoaderFactory>
 CreateExtensionNavigationURLLoaderFactory(
     content::BrowserContext* browser_context,
     base::UkmSourceId ukm_source_id,
     bool is_web_view_request) {
-  return std::make_unique<ExtensionURLLoaderFactory>(
-      browser_context, ukm_source_id, is_web_view_request);
+  return ExtensionURLLoaderFactory::Create(
+      browser_context, ukm_source_id, is_web_view_request,
+      content::ChildProcessHost::kInvalidUniqueID);
 }
 
-std::unique_ptr<network::mojom::URLLoaderFactory>
+mojo::PendingRemote<network::mojom::URLLoaderFactory>
 CreateExtensionWorkerMainResourceURLLoaderFactory(
     content::BrowserContext* browser_context) {
-  return std::make_unique<ExtensionURLLoaderFactory>(
+  return ExtensionURLLoaderFactory::Create(
       browser_context, base::kInvalidUkmSourceId,
-      /*is_web_view_request=*/false);
+      /*is_web_view_request=*/false,
+      content::ChildProcessHost::kInvalidUniqueID);
 }
 
-std::unique_ptr<network::mojom::URLLoaderFactory>
+mojo::PendingRemote<network::mojom::URLLoaderFactory>
 CreateExtensionServiceWorkerScriptURLLoaderFactory(
     content::BrowserContext* browser_context) {
-  return std::make_unique<ExtensionURLLoaderFactory>(
+  return ExtensionURLLoaderFactory::Create(
       browser_context, base::kInvalidUkmSourceId,
-      /*is_web_view_request=*/false);
+      /*is_web_view_request=*/false,
+      content::ChildProcessHost::kInvalidUniqueID);
 }
 
-std::unique_ptr<network::mojom::URLLoaderFactory>
+mojo::PendingRemote<network::mojom::URLLoaderFactory>
 CreateExtensionURLLoaderFactory(int render_process_id, int render_frame_id) {
-  return std::make_unique<ExtensionURLLoaderFactory>(render_process_id,
-                                                     render_frame_id);
+  content::RenderProcessHost* process_host =
+      content::RenderProcessHost::FromID(render_process_id);
+  content::BrowserContext* browser_context = process_host->GetBrowserContext();
+  bool is_web_view_request =
+      WebViewGuest::FromFrameID(render_process_id, render_frame_id) != nullptr;
+
+  content::RenderFrameHost* rfh =
+      content::RenderFrameHost::FromID(render_process_id, render_frame_id);
+  base::UkmSourceId ukm_source_id = base::kInvalidUkmSourceId;
+  if (rfh)
+    ukm_source_id = base::UkmSourceId::FromInt64(rfh->GetPageUkmSourceId());
+
+  return ExtensionURLLoaderFactory::Create(
+      browser_context, ukm_source_id, is_web_view_request, render_process_id);
 }
 
 }  // namespace extensions

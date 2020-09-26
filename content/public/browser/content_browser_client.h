@@ -1265,13 +1265,9 @@ class CONTENT_EXPORT ContentBrowserClient {
   // initiated by the browser process for schemes not handled by the Network
   // Service. The resulting |factories| must be used only by the browser
   // process. The caller must not send any of |factories| to any other process.
-  //
-  // TODO(lukasza): https://crbug.com/1106995: Deprecate and remove the
-  // |uniquely_owned_factories| parameter - it results in incorrect factory
-  // lifetimes.
   virtual void RegisterNonNetworkWorkerMainResourceURLLoaderFactories(
       BrowserContext* browser_context,
-      NonNetworkURLLoaderFactoryDeprecatedMap* uniquely_owned_factories);
+      NonNetworkURLLoaderFactoryMap* factories);
 
   // Allows the embedder to register per-scheme URLLoaderFactory
   // implementations to handle service worker main/imported script requests
@@ -1280,13 +1276,9 @@ class CONTENT_EXPORT ContentBrowserClient {
   // ServiceWorkerImportedScriptUpdateCheck is enabled.
   // The resulting |factories| must be used only by the browser process. The
   // caller must not send any of |factories| to any other process.
-  //
-  // TODO(lukasza): https://crbug.com/1106995: Deprecate and remove the
-  // |uniquely_owned_factories| parameter - it results in incorrect factory
-  // lifetimes.
   virtual void RegisterNonNetworkServiceWorkerUpdateURLLoaderFactories(
       BrowserContext* browser_context,
-      NonNetworkURLLoaderFactoryDeprecatedMap* uniquely_owned_factories);
+      NonNetworkURLLoaderFactoryMap* factories);
 
   // Allows the embedder to register per-scheme URLLoaderFactory implementations
   // to handle subresource URL requests for schemes not handled by the Network

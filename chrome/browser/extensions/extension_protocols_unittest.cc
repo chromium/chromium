@@ -236,8 +236,8 @@ class ExtensionProtocolsTestBase : public testing::Test {
   }
 
   void SetProtocolHandler(bool is_incognito) {
-    loader_factory_ = extensions::CreateExtensionNavigationURLLoaderFactory(
-        browser_context(), test_ukm_id_, false);
+    loader_factory_.Bind(extensions::CreateExtensionNavigationURLLoaderFactory(
+        browser_context(), test_ukm_id_, false));
   }
 
   GetResult RequestOrLoad(const GURL& url, ResourceType resource_type) {
@@ -373,7 +373,7 @@ class ExtensionProtocolsTestBase : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<content::RenderViewHostTestEnabler> rvh_test_enabler_;
-  std::unique_ptr<network::mojom::URLLoaderFactory> loader_factory_;
+  mojo::Remote<network::mojom::URLLoaderFactory> loader_factory_;
   std::unique_ptr<TestingProfile> testing_profile_;
   std::unique_ptr<content::WebContents> contents_;
   const bool force_incognito_;

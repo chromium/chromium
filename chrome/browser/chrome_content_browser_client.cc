@@ -4470,7 +4470,7 @@ void ChromeContentBrowserClient::RegisterNonNetworkNavigationURLLoaderFactories(
   content::WebContents* web_contents =
       content::WebContents::FromFrameTreeNodeId(frame_tree_node_id);
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  uniquely_owned_factories->emplace(
+  factories->emplace(
       extensions::kExtensionScheme,
       extensions::CreateExtensionNavigationURLLoaderFactory(
           web_contents->GetBrowserContext(), ukm_source_id,
@@ -4490,10 +4490,11 @@ void ChromeContentBrowserClient::RegisterNonNetworkNavigationURLLoaderFactories(
 void ChromeContentBrowserClient::
     RegisterNonNetworkWorkerMainResourceURLLoaderFactories(
         content::BrowserContext* browser_context,
-        NonNetworkURLLoaderFactoryDeprecatedMap* factories) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+        NonNetworkURLLoaderFactoryMap* factories) {
   DCHECK(browser_context);
   DCHECK(factories);
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   factories->emplace(
       extensions::kExtensionScheme,
       extensions::CreateExtensionWorkerMainResourceURLLoaderFactory(
@@ -4504,10 +4505,11 @@ void ChromeContentBrowserClient::
 void ChromeContentBrowserClient::
     RegisterNonNetworkServiceWorkerUpdateURLLoaderFactories(
         content::BrowserContext* browser_context,
-        NonNetworkURLLoaderFactoryDeprecatedMap* factories) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+        NonNetworkURLLoaderFactoryMap* factories) {
   DCHECK(browser_context);
   DCHECK(factories);
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   factories->emplace(
       extensions::kExtensionScheme,
       extensions::CreateExtensionServiceWorkerScriptURLLoaderFactory(
@@ -4624,11 +4626,9 @@ void ChromeContentBrowserClient::
 #endif  // defined(OS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  auto factory = extensions::CreateExtensionURLLoaderFactory(render_process_id,
-                                                             render_frame_id);
-  if (factory)
-    uniquely_owned_factories->emplace(extensions::kExtensionScheme,
-                                      std::move(factory));
+  factories->emplace(extensions::kExtensionScheme,
+                     extensions::CreateExtensionURLLoaderFactory(
+                         render_process_id, render_frame_id));
 
   // This logic should match
   // ChromeExtensionWebContentsObserver::RenderFrameCreated.

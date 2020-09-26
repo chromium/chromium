@@ -465,10 +465,10 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       NonNetworkURLLoaderFactoryMap* factories) override;
   void RegisterNonNetworkWorkerMainResourceURLLoaderFactories(
       content::BrowserContext* browser_context,
-      NonNetworkURLLoaderFactoryDeprecatedMap* factories) override;
+      NonNetworkURLLoaderFactoryMap* factories) override;
   void RegisterNonNetworkServiceWorkerUpdateURLLoaderFactories(
       content::BrowserContext* browser_context,
-      NonNetworkURLLoaderFactoryDeprecatedMap* factories) override;
+      NonNetworkURLLoaderFactoryMap* factories) override;
   void RegisterNonNetworkSubresourceURLLoaderFactories(
       int render_process_id,
       int render_frame_id,
