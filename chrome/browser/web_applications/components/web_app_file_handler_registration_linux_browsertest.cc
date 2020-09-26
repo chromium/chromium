@@ -58,12 +58,14 @@ class WebAppFileHandlerRegistrationLinuxBrowserTest
   WebAppFileHandlerRegistrationLinuxBrowserTest() {
     if (GetParam() == ProviderType::kWebApps) {
       scoped_feature_list_.InitWithFeatures(
-          {blink::features::kFileHandlingAPI,
+          {blink::features::kNativeFileSystemAPI,
+           blink::features::kFileHandlingAPI,
            features::kDesktopPWAsWithoutExtensions},
           {});
     } else if (GetParam() == ProviderType::kBookmarkApps) {
       scoped_feature_list_.InitWithFeatures(
-          {blink::features::kFileHandlingAPI},
+          {blink::features::kNativeFileSystemAPI,
+           blink::features::kFileHandlingAPI},
           {features::kDesktopPWAsWithoutExtensions});
     }
   }

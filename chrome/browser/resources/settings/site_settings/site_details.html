@@ -181,11 +181,13 @@
             label="$i18n{siteSettingsBluetoothDevices}">
         </site-details-permission>
       </template>
-      <site-details-permission
-          category="[[ContentSettingsTypes.FILE_SYSTEM_WRITE]]"
-          icon="settings:save-original"
-          label="$i18n{siteSettingsFileSystemWrite}">
-      </site-details-permission>
+      <template is="dom-if" if="[[enableFileSystemWriteContentSetting_]]">
+        <site-details-permission
+            category="[[ContentSettingsTypes.FILE_SYSTEM_WRITE]]"
+            icon="settings:save-original"
+            label="$i18n{siteSettingsFileSystemWrite}">
+        </site-details-permission>
+      </template>
       <site-details-permission category="[[ContentSettingsTypes.HID_DEVICES]]"
           icon="settings:hid-device" label="$i18n{siteSettingsHidDevices}">
       </site-details-permission>

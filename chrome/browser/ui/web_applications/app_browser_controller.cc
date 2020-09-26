@@ -301,7 +301,8 @@ std::vector<PageActionIconType> AppBrowserController::GetTitleBarPageActions()
   types_enabled.push_back(PageActionIconType::kManagePasswords);
   types_enabled.push_back(PageActionIconType::kTranslate);
   types_enabled.push_back(PageActionIconType::kZoom);
-  types_enabled.push_back(PageActionIconType::kNativeFileSystemAccess);
+  if (base::FeatureList::IsEnabled(blink::features::kNativeFileSystemAPI))
+    types_enabled.push_back(PageActionIconType::kNativeFileSystemAccess);
   types_enabled.push_back(PageActionIconType::kCookieControls);
   types_enabled.push_back(PageActionIconType::kLocalCardMigration);
   types_enabled.push_back(PageActionIconType::kSaveCard);

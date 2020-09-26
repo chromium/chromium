@@ -6,6 +6,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "content/browser/native_file_system/file_system_chooser_test_helpers.h"
 #include "content/browser/native_file_system/fixed_native_file_system_permission_grant.h"
@@ -25,6 +26,7 @@
 #include "content/shell/browser/shell.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "storage/browser/file_system/external_mount_points.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/shell_dialogs/select_file_dialog_factory.h"
@@ -46,6 +48,8 @@ class FileSystemChooserBrowserTest : public ContentBrowserTest {
  public:
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+    scoped_feature_list_.InitAndEnableFeature(
+        blink::features::kNativeFileSystemAPI);
 
     // Register an external mount point to test support for virtual paths.
     // This maps the virtual path a native local path to make these tests work
@@ -103,6 +107,7 @@ class FileSystemChooserBrowserTest : public ContentBrowserTest {
   }
 
  protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
   base::ScopedTempDir temp_dir_;
 };
 

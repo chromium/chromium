@@ -270,7 +270,10 @@ void LocationBarView::Init() {
     params.types_enabled.push_back(PageActionIconType::kFind);
     params.types_enabled.push_back(PageActionIconType::kTranslate);
     params.types_enabled.push_back(PageActionIconType::kZoom);
-    params.types_enabled.push_back(PageActionIconType::kNativeFileSystemAccess);
+    if (base::FeatureList::IsEnabled(blink::features::kNativeFileSystemAPI)) {
+      params.types_enabled.push_back(
+          PageActionIconType::kNativeFileSystemAccess);
+    }
 
     if (dom_distiller::IsDomDistillerEnabled() && browser_->is_type_normal()) {
       params.types_enabled.push_back(PageActionIconType::kReaderMode);

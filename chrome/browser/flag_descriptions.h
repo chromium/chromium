@@ -827,6 +827,9 @@ extern const char kMobileIdentityConsistencyDescription[];
 extern const char kMouseSubframeNoImplicitCaptureName[];
 extern const char kMouseSubframeNoImplicitCaptureDescription[];
 
+extern const char kNativeFileSystemAPIName[];
+extern const char kNativeFileSystemAPIDescription[];
+
 extern const char kNearbySharingName[];
 extern const char kNearbySharingDescription[];
 

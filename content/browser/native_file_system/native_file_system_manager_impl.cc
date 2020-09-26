@@ -37,6 +37,7 @@
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/file_system/isolated_context.h"
 #include "storage/common/file_system/file_system_util.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/native_file_system/native_file_system_drag_drop_token.mojom.h"
 #include "third_party/blink/public/mojom/native_file_system/native_file_system_error.mojom.h"
 #include "url/origin.h"
@@ -195,6 +196,7 @@ NativeFileSystemManagerImpl::~NativeFileSystemManagerImpl() {
 void NativeFileSystemManagerImpl::BindReceiver(
     const BindingContext& binding_context,
     mojo::PendingReceiver<blink::mojom::NativeFileSystemManager> receiver) {
+  DCHECK(base::FeatureList::IsEnabled(blink::features::kNativeFileSystemAPI));
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!network::IsOriginPotentiallyTrustworthy(binding_context.origin)) {

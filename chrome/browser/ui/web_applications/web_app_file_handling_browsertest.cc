@@ -196,8 +196,10 @@ content::WebContents* LaunchApplication(
 class WebAppFileHandlingBrowserTest : public WebAppFileHandlingTestBase {
  public:
   WebAppFileHandlingBrowserTest() {
-    scoped_feature_list_.InitWithFeatures({blink::features::kFileHandlingAPI},
-                                          {});
+    scoped_feature_list_.InitWithFeatures(
+        {blink::features::kNativeFileSystemAPI,
+         blink::features::kFileHandlingAPI},
+        {});
   }
   content::WebContents* LaunchWithFiles(
       const std::string& app_id,
