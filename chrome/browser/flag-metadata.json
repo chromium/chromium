@@ -2005,11 +2005,6 @@
     "expiry_milestone": 88
   },
   {
-    "name": "enable-reopen-tab-in-product-help",
-    "owners": [ "collinbaker" ],
-    "expiry_milestone": 76
-  },
-  {
     "name": "enable-resampling-input-events",
     "owners": [ "eirage", "nzolghadr", "input-dev" ],
     "expiry_milestone": 85

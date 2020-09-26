@@ -4997,15 +4997,6 @@ const FeatureEntry kFeatureEntries[] = {
          chromeos::assistant::features::kEnableStereoAudioInput)},
 #endif  // defined(OS_CHROMEOS)
 
-#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
-    defined(OS_CHROMEOS)
-    {"enable-reopen-tab-in-product-help",
-     flag_descriptions::kReopenTabInProductHelpName,
-     flag_descriptions::kReopenTabInProductHelpDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(feature_engagement::kIPHReopenTabFeature)},
-#endif  // defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) ||
-        // defined(OS_CHROMEOS)
-
     {"enable-audio-focus-enforcement",
      flag_descriptions::kEnableAudioFocusEnforcementName,
      flag_descriptions::kEnableAudioFocusEnforcementDescription, kOsDesktop,

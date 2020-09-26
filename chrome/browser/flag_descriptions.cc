@@ -4433,11 +4433,6 @@ const char kTextfieldFocusOnTapUpDescription[] =
     "When enabled, Views-based text fields take focus on touch-up instead of "
     "touch-down. This includes the Omnibox.";
 
-const char kReopenTabInProductHelpName[] = "Reopen tab in-product help";
-const char kReopenTabInProductHelpDescription[] =
-    "Enable in-product help that guides a user to reopen a tab if it looks "
-    "like they accidentally closed it.";
-
 const char kEnableNewBadgeOnMenuItemsName[] =
     "Enable 'New' badge on menu items";
 const char kEnableNewBadgeOnMenuItemsDescription[] =

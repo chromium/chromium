@@ -44884,7 +44884,6 @@ from previous Chrome versions.
   <int value="2014629801" label="view-passwords:disabled"/>
   <int value="2015335629" label="shelf-hover-previews"/>
   <int value="2015547864" label="NetworkServiceInProcess:enabled"/>
-  <int value="2018386804" label="IPH_ReopenTab:disabled"/>
   <int value="2018956925" label="UseAAudioDriver:disabled"/>
   <int value="2020107447" label="AndroidPayIntegrationV1:enabled"/>
   <int value="2022294878" label="WifiSyncAndroid:enabled"/>
@@ -44897,7 +44896,6 @@ from previous Chrome versions.
   <int value="2037756154" label="enable-impl-side-painting"/>
   <int value="2038036881" label="NewShortcutMapping:enabled"/>
   <int value="2039276757" label="EnableOverviewRoundedCorners:enabled"/>
-  <int value="2040316611" label="IPH_ReopenTab:enabled"/>
   <int value="2041570184" label="UsePreferredIntervalForVideo:enabled"/>
   <int value="2043141918" label="DnsOverHttps:enabled"/>
   <int value="2043321329" label="OfflinePagesPrefetchingUI:disabled"/>
