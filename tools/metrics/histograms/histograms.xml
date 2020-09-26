@@ -27480,7 +27480,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentSettings.ExceptionScheme" enum="ContentSettingScheme"
-    expires_after="M87">
+    expires_after="M94">
   <owner>alexmos@chromium.org</owner>
   <owner>engedy@chromium.org</owner>
   <summary>
@@ -27490,7 +27490,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentSettings.ExceptionSchemeFile.HasPath"
-    enum="BooleanHasPath" expires_after="M87">
+    enum="BooleanHasPath" expires_after="M94">
   <owner>alexmos@chromium.org</owner>
   <owner>engedy@chromium.org</owner>
   <summary>
@@ -27500,7 +27500,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentSettings.ExceptionSchemeFile.Type.WithoutPath"
-    enum="ContentType" expires_after="M87">
+    enum="ContentType" expires_after="M94">
   <owner>alexmos@chromium.org</owner>
   <owner>engedy@chromium.org</owner>
   <summary>
@@ -27514,7 +27514,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentSettings.ExceptionSchemeFile.Type.WithPath"
-    enum="ContentType" expires_after="M87">
+    enum="ContentType" expires_after="M94">
   <owner>alexmos@chromium.org</owner>
   <owner>engedy@chromium.org</owner>
   <summary>
