@@ -155,17 +155,17 @@ void PostContextProviderToCallback(
                      unwanted_context_provider));
 }
 
-void LogRoughness(media::MediaLog* media_log,
-                  int size,
-                  base::TimeDelta duration,
-                  double roughness,
-                  int refresh_rate_hz,
-                  gfx::Size frame_size) {
+void LogRoughness(
+    media::MediaLog* media_log,
+    const cc::VideoPlaybackRoughnessReporter::Measurement& measurement) {
   // This function can be called from any thread. Don't do anything that assumes
   // a certain task runner.
-  double fps = std::round(size / duration.InSecondsF());
+  double fps =
+      std::round(measurement.frames / measurement.duration.InSecondsF());
   media_log->SetProperty<media::MediaLogProperty::kVideoPlaybackRoughness>(
-      roughness);
+      measurement.roughness);
+  media_log->SetProperty<media::MediaLogProperty::kVideoPlaybackFreezing>(
+      measurement.freezing);
   media_log->SetProperty<media::MediaLogProperty::kFramerate>(fps);
 
   // TODO(eugene@chromium.org) All of this needs to be moved away from
@@ -183,12 +183,16 @@ void LogRoughness(media::MediaLog* media_log,
   }
 
   // Only report known FPS buckets, on 60Hz displays and at least HD quality.
-  if (suffix != nullptr && refresh_rate_hz == 60 && frame_size.height() > 700) {
+  if (suffix != nullptr && measurement.refresh_rate_hz == 60 &&
+      measurement.frame_size.height() > 700) {
     base::UmaHistogramCustomTimes(
         base::JoinString({kRoughnessHistogramName, suffix}, "."),
-        base::TimeDelta::FromMillisecondsD(roughness),
+        base::TimeDelta::FromMillisecondsD(measurement.roughness),
         base::TimeDelta::FromMilliseconds(1),
         base::TimeDelta::FromMilliseconds(99), 100);
+    // TODO(liberato): Record freezing, once we're sure that we're computing the
+    // score we want.  For now, don't record anything so we don't have a mis-
+    // match of UMA values.
   }
 }
 

@@ -29,7 +29,8 @@ namespace blink {
 
 VideoFrameSubmitter::VideoFrameSubmitter(
     WebContextProviderCallback context_provider_callback,
-    cc::PlaybackRoughnessReportingCallback roughness_reporting_callback,
+    cc::VideoPlaybackRoughnessReporter::ReportingCallback
+        roughness_reporting_callback,
     std::unique_ptr<VideoFrameResourceProvider> resource_provider)
     : context_provider_callback_(context_provider_callback),
       resource_provider_(std::move(resource_provider)),
@@ -77,7 +78,6 @@ void VideoFrameSubmitter::StopRendering() {
   is_rendering_ = false;
 
   frame_trackers_.StopSequence(cc::FrameSequenceTrackerType::kVideo);
-  roughness_reporter_->Reset();
 
   UpdateSubmissionState();
 }
@@ -372,7 +372,13 @@ void VideoFrameSubmitter::UpdateSubmissionState() {
   if (!compositor_frame_sink_)
     return;
 
-  compositor_frame_sink_->SetNeedsBeginFrame(IsDrivingFrameUpdates());
+  const auto is_driving_frame_updates = IsDrivingFrameUpdates();
+  compositor_frame_sink_->SetNeedsBeginFrame(is_driving_frame_updates);
+  // If we're not driving frame updates, then we're paused / off-screen / etc.
+  // Roughness reporting should stop until we resume.  Since the current frame
+  // might be on-screen for a long time, we also discard the current window.
+  if (!is_driving_frame_updates)
+    roughness_reporter_->Reset();
 
   // These two calls are very important; they are responsible for significant
   // memory savings when content is off-screen.

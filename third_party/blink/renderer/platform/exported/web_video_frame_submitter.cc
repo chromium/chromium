@@ -26,7 +26,8 @@ namespace blink {
 
 std::unique_ptr<WebVideoFrameSubmitter> WebVideoFrameSubmitter::Create(
     WebContextProviderCallback context_provider_callback,
-    cc::PlaybackRoughnessReportingCallback roughness_reporting_callback,
+    cc::VideoPlaybackRoughnessReporter::ReportingCallback
+        roughness_reporting_callback,
     const cc::LayerTreeSettings& settings,
     bool use_sync_primitives) {
   return std::make_unique<VideoFrameSubmitter>(

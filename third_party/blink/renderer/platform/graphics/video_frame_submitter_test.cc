@@ -167,7 +167,8 @@ class VideoFrameSubmitterTest : public testing::Test {
 
   void MakeSubmitter() { MakeSubmitter(base::DoNothing()); }
 
-  void MakeSubmitter(cc::PlaybackRoughnessReportingCallback reporting_cb) {
+  void MakeSubmitter(
+      cc::VideoPlaybackRoughnessReporter::ReportingCallback reporting_cb) {
     resource_provider_ = new StrictMock<MockVideoFrameResourceProvider>(
         context_provider_.get(), nullptr);
     submitter_ = std::make_unique<VideoFrameSubmitter>(
@@ -956,10 +957,9 @@ TEST_F(VideoFrameSubmitterTest, ProcessTimingDetails) {
   WTF::HashMap<uint32_t, viz::FrameTimingDetails> timing_details;
 
   MakeSubmitter(base::BindLambdaForTesting(
-      [&](int frames, base::TimeDelta duration, double roughness, int hz,
-          gfx::Size frame_size) {
-        ASSERT_EQ(frame_size.width(), 8);
-        ASSERT_EQ(frame_size.height(), 8);
+      [&](const cc::VideoPlaybackRoughnessReporter::Measurement& measurement) {
+        ASSERT_EQ(measurement.frame_size.width(), 8);
+        ASSERT_EQ(measurement.frame_size.height(), 8);
         reports++;
       }));
   EXPECT_CALL(*sink_, SetNeedsBeginFrame(true));

@@ -45,7 +45,7 @@ class PLATFORM_EXPORT VideoFrameSubmitter
       public viz::mojom::blink::CompositorFrameSinkClient {
  public:
   VideoFrameSubmitter(WebContextProviderCallback,
-                      cc::PlaybackRoughnessReportingCallback,
+                      cc::VideoPlaybackRoughnessReporter::ReportingCallback,
                       std::unique_ptr<VideoFrameResourceProvider>);
   ~VideoFrameSubmitter() override;
 

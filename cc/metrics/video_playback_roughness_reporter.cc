@@ -34,7 +34,7 @@ constexpr int VideoPlaybackRoughnessReporter::kMinWindowsBeforeSubmit;
 constexpr int VideoPlaybackRoughnessReporter::kPercentileToSubmit;
 
 VideoPlaybackRoughnessReporter::VideoPlaybackRoughnessReporter(
-    PlaybackRoughnessReportingCallback reporting_cb)
+    ReportingCallback reporting_cb)
     : reporting_cb_(reporting_cb) {}
 
 VideoPlaybackRoughnessReporter::~VideoPlaybackRoughnessReporter() = default;
@@ -92,6 +92,7 @@ void VideoPlaybackRoughnessReporter::FramePresented(TokenType token,
         auto time_since_decode = timestamp - info.decode_time.value();
         UMA_HISTOGRAM_TIMES("Media.VideoFrameSubmitter", time_since_decode);
       }
+
       if (reliable_timestamp)
         info.presentation_time = timestamp;
       break;
@@ -111,20 +112,23 @@ void VideoPlaybackRoughnessReporter::SubmitPlaybackRoughness() {
   }
 
   auto it = worst_windows_.begin() + index_to_submit;
-  reporting_cb_.Run(it->size, it->intended_duration, it->roughness(),
-                    it->refresh_rate_hz, it->frame_size);
+
+  Measurement measurement;
+  measurement.frames = it->size;
+  measurement.duration = it->intended_duration;
+  measurement.roughness = it->roughness();
+  measurement.freezing = max_single_frame_error_;
+  measurement.refresh_rate_hz = it->refresh_rate_hz;
+  measurement.frame_size = it->frame_size;
+  reporting_cb_.Run(measurement);
 
   worst_windows_.clear();
   windows_seen_ = 0;
+  max_single_frame_error_ = base::TimeDelta();
 }
 
 void VideoPlaybackRoughnessReporter::ReportWindow(
     const ConsecutiveFramesWindow& win) {
-  if (win.max_single_frame_error >= win.intended_duration ||
-      win.root_mean_square_error >= win.intended_duration) {
-    // Most likely it's just an effect of the video being paused for some time.
-    return;
-  }
   worst_windows_.insert(win);
   if (worst_windows_.size() > max_worst_windows_size())
     worst_windows_.erase(std::prev(worst_windows_.end()));
@@ -193,8 +197,8 @@ void VideoPlaybackRoughnessReporter::ProcessFrameWindow() {
         win.intended_duration += frame.intended_duration.value();
       }
       total_error += error;
-      win.max_single_frame_error =
-          std::max(win.max_single_frame_error, error.magnitude());
+      max_single_frame_error_ =
+          std::max(max_single_frame_error_, error.magnitude());
       mean_square_error_ms2 +=
           total_error.InMillisecondsF() * total_error.InMillisecondsF();
     }
@@ -212,6 +216,7 @@ void VideoPlaybackRoughnessReporter::ProcessFrameWindow() {
       } else {
         worst_windows_.clear();
         windows_seen_ = 0;
+        max_single_frame_error_ = base::TimeDelta();
       }
     } else {
       ReportWindow(win);
@@ -237,6 +242,7 @@ void VideoPlaybackRoughnessReporter::Reset() {
   frames_.clear();
   worst_windows_.clear();
   windows_seen_ = 0;
+  max_single_frame_error_ = base::TimeDelta();
 }
 
 }  // namespace cc

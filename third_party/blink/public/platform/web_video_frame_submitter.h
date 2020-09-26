@@ -42,7 +42,7 @@ class BLINK_PLATFORM_EXPORT WebVideoFrameSubmitter
  public:
   static std::unique_ptr<WebVideoFrameSubmitter> Create(
       WebContextProviderCallback,
-      cc::PlaybackRoughnessReportingCallback,
+      cc::VideoPlaybackRoughnessReporter::ReportingCallback,
       const cc::LayerTreeSettings&,
       bool use_sync_primitives);
   ~WebVideoFrameSubmitter() override = default;

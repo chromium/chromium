@@ -17,34 +17,58 @@
 
 namespace cc {
 
-// Callback to report video playback roughness on a particularly bumpy interval.
-// |frames| - number of frames in the interval
-// |duration| - intended wallclock duration of the interval
-// |roughness| - roughness of the interval
-// |refresh_rate_hz| - display refresh rate, usually 60Hz
-// |frame_size| - size of the video frames in the interval
-using PlaybackRoughnessReportingCallback =
-    base::RepeatingCallback<void(int frames,
-                                 base::TimeDelta duration,
-                                 double roughness,
-                                 int refresh_rate_hz,
-                                 gfx::Size frame_size)>;
-
 // This class tracks moments when each frame was submitted
 // and when it was displayed. Then series of frames split into groups
 // of consecutive frames, where each group takes about one second of playback.
 // Such groups also called 'frame windows'. Each windows is assigned a roughness
 // score that measures how far playback smoothness was from the ideal playback.
+//
 // Information about several windows and their roughness score is aggregated
-// for a couple of playbackminutes and then a window with
-// 95-percentile-max-roughness is reported via the provided callback.
+// for a couple of playback minutes ("measurement interval") and then a window
+// with 95-percentile-max-roughness is reported via the provided callback.
+//
 // This sufficiently bad roughness window is deemed to represent overall
 // playback quality.
 class CC_EXPORT VideoPlaybackRoughnessReporter {
  public:
+  struct Measurement {
+    // 95%-worst window measurements ========
+    // These are taken from the |kPercentileToSubmit| worst window in a
+    // measurement interval.
+
+    // |frames| - number of video frames in the window
+    int frames = 0;
+
+    // |duration| - intended wallclock duration of the window (~1s)
+    base::TimeDelta duration;
+
+    // |roughness| - roughness of the window
+    double roughness = 0;
+
+    // Per-measurement interval measurements ========
+    // These are measured over all windows in the measurement interval, without
+    // regard to which window was chosen above.
+
+    // |frame_size| - size of the video frames in the window
+    gfx::Size frame_size;
+
+    // |freezing| maximum amount of time that any VideoFrame in measurement
+    // interval was on-screen beyond the amount of time it should have been.
+    //
+    // TODO(liberato): Should this be expressed in terms of the playback rate?
+    // As in, "twice as long as it should have been"?
+    base::TimeDelta freezing;
+
+    // |refresh_rate_hz| - display refresh rate, usually 60Hz
+    int refresh_rate_hz = 0;
+  };
+
+  // Callback to report video playback roughness on a particularly bumpy
+  // interval.
+  using ReportingCallback = base::RepeatingCallback<void(const Measurement&)>;
+
   using TokenType = uint32_t;
-  explicit VideoPlaybackRoughnessReporter(
-      PlaybackRoughnessReportingCallback reporting_cb);
+  explicit VideoPlaybackRoughnessReporter(ReportingCallback reporting_cb);
   VideoPlaybackRoughnessReporter(const VideoPlaybackRoughnessReporter&) =
       delete;
   VideoPlaybackRoughnessReporter& operator=(
@@ -102,10 +126,6 @@ class CC_EXPORT VideoPlaybackRoughnessReporter {
     int refresh_rate_hz = 60;
     gfx::Size frame_size;
 
-    // Worst case difference between a frame's intended duration and
-    // actual duration, calculated for all frames in the window.
-    base::TimeDelta max_single_frame_error;
-
     // Root-mean-square error of the differences between the intended
     // duration and the actual duration, calculated for all subwindows
     // starting at the beginning of the smoothness window
@@ -135,9 +155,13 @@ class CC_EXPORT VideoPlaybackRoughnessReporter {
 
   base::circular_deque<FrameInfo> frames_;
   base::flat_set<ConsecutiveFramesWindow> worst_windows_;
-  PlaybackRoughnessReportingCallback reporting_cb_;
+  ReportingCallback reporting_cb_;
   int windows_seen_ = 0;
   int frames_window_size_ = kMinWindowSize;
+
+  // Worst case difference between a frame's intended duration and
+  // actual duration, calculated for all frames in the reporting interval.
+  base::TimeDelta max_single_frame_error_;
 };
 
 }  // namespace cc
