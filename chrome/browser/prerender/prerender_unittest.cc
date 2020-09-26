@@ -410,18 +410,14 @@ class PrerenderTest : public testing::Test {
     clients_.Add(std::make_unique<DummyPrerenderHandleClient>(),
                  handle_client.InitWithNewPipeAndPassReceiver());
 
-    mojo::PendingRemote<blink::mojom::PrerenderHandle> handle;
-
     // This could delete an existing prerender as a side-effect.
-    bool added = prerender_link_manager()->OnAddPrerender(
-        render_process_id, render_view_id, std::move(attributes),
-        std::move(handle_client), handle.InitWithNewPipeAndPassReceiver());
-
-    // We don't care about retaining the |handle|, so just let it be discarded.
-    // The PrerenderLinkManager won't care.
+    base::Optional<int> prerender_id =
+        prerender_link_manager()->OnStartPrerender(
+            render_process_id, render_view_id, std::move(attributes),
+            std::move(handle_client));
 
     // Check if the new prerender request was added and running.
-    return added && LastPrerenderIsRunning();
+    return prerender_id && LastPrerenderIsRunning();
   }
 
   // Shorthand to add a simple prerender with a reasonable source. Returns
@@ -444,25 +440,25 @@ class PrerenderTest : public testing::Test {
   void AbandonFirstPrerender() {
     CHECK(!prerender_link_manager()->prerenders_.empty());
     prerender_link_manager()->OnAbandonPrerender(
-        prerender_link_manager()->prerenders_.front().get());
+        prerender_link_manager()->prerenders_.front()->prerender_id);
   }
 
   void AbandonLastPrerender() {
     CHECK(!prerender_link_manager()->prerenders_.empty());
     prerender_link_manager()->OnAbandonPrerender(
-        prerender_link_manager()->prerenders_.back().get());
+        prerender_link_manager()->prerenders_.back()->prerender_id);
   }
 
   void CancelFirstPrerender() {
     CHECK(!prerender_link_manager()->prerenders_.empty());
     prerender_link_manager()->OnCancelPrerender(
-        prerender_link_manager()->prerenders_.front().get());
+        prerender_link_manager()->prerenders_.front()->prerender_id);
   }
 
   void CancelLastPrerender() {
     CHECK(!prerender_link_manager()->prerenders_.empty());
     prerender_link_manager()->OnCancelPrerender(
-        prerender_link_manager()->prerenders_.back().get());
+        prerender_link_manager()->prerenders_.back()->prerender_id);
   }
 
   void DisablePrerender() {

@@ -28,15 +28,22 @@ class PrerenderProcessorImpl : public blink::mojom::PrerenderProcessor {
       std::unique_ptr<PrerenderProcessorImplDelegate> delegate);
 
   // blink::mojom::PrerenderProcessor implementation
-  void AddPrerender(
+  void Start(
       blink::mojom::PrerenderAttributesPtr attributes,
-      mojo::PendingRemote<blink::mojom::PrerenderHandleClient> client,
-      mojo::PendingReceiver<blink::mojom::PrerenderHandle> handle) override;
+      mojo::PendingRemote<blink::mojom::PrerenderHandleClient> client) override;
+  void Cancel() override;
+  void Abandon() override;
 
  private:
-  int render_process_id_;
-  int render_frame_id_;
-  std::unique_ptr<PrerenderProcessorImplDelegate> delegate_;
+  PrerenderLinkManager* GetPrerenderLinkManager();
+
+  const int render_process_id_;
+  const int render_frame_id_;
+  const std::unique_ptr<PrerenderProcessorImplDelegate> delegate_;
+
+  // The ID of PrerenderLinkManager::LinkPrerender. Used for canceling or
+  // abandoning prerendering.
+  base::Optional<int> prerender_id_;
 };
 
 }  // namespace prerender

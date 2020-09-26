@@ -39,79 +39,14 @@ using content::SessionStorageNamespace;
 
 namespace prerender {
 
-// Implementation of the interface used to control a requested prerender.
-class PrerenderLinkManager::PrerenderHandleProxy
-    : public blink::mojom::PrerenderHandle {
- public:
-  PrerenderHandleProxy(
-      PrerenderLinkManager* prerender_link_manager,
-      PrerenderLinkManager::LinkPrerender* link_prerender,
-      mojo::PendingReceiver<blink::mojom::PrerenderHandle> handle)
-      : prerender_link_manager_(prerender_link_manager),
-        link_prerender_(link_prerender),
-        receiver_(this, std::move(handle)) {}
-  ~PrerenderHandleProxy() override = default;
+namespace {
 
-  // blink::mojom::PrerenderHandle implementation
-  void Cancel() override {
-    prerender_link_manager_->OnCancelPrerender(link_prerender_);
-  }
-  void Abandon() override {
-    prerender_link_manager_->OnAbandonPrerender(link_prerender_);
-  }
+int GetNextPrerenderId() {
+  static int next_id = 1;
+  return next_id++;
+}
 
- private:
-  PrerenderLinkManager* prerender_link_manager_;
-  LinkPrerender* link_prerender_;
-  mojo::Receiver<blink::mojom::PrerenderHandle> receiver_;
-};
-
-// Used to store state about a requested prerender.
-class PrerenderLinkManager::LinkPrerender {
- public:
-  LinkPrerender(
-      int launcher_render_process_id,
-      int launcher_render_view_id,
-      blink::mojom::PrerenderAttributesPtr attributes,
-      mojo::PendingRemote<blink::mojom::PrerenderHandleClient> handle_client,
-      base::TimeTicks creation_time,
-      PrerenderContents* deferred_launcher);
-  ~LinkPrerender();
-
-  LinkPrerender(const LinkPrerender& other) = delete;
-  LinkPrerender& operator=(const LinkPrerender& other) = delete;
-
-  // Parameters from PrerenderLinkManager::OnAddPrerender():
-  int launcher_render_process_id;
-  int launcher_render_view_id;
-  GURL url;
-  blink::mojom::PrerenderRelType rel_type;
-  content::Referrer referrer;
-  url::Origin initiator_origin;
-  gfx::Size size;
-
-  // Notification interface back to the requestor of this prerender.
-  mojo::Remote<blink::mojom::PrerenderHandleClient> remote_handle_client;
-
-  // Control interface used by the requestor of this prerender. Owned by this
-  // class to ensure that it gets destroyed at the same time.
-  std::unique_ptr<PrerenderHandleProxy> handle_proxy;
-
-  // The time at which this Prerender was added to PrerenderLinkManager.
-  base::TimeTicks creation_time;
-
-  // If non-null, this link prerender was launched by an unswapped prerender,
-  // |deferred_launcher|. When |deferred_launcher| is swapped in, the field is
-  // set to null.
-  PrerenderContents* deferred_launcher;
-
-  // Initially null, |handle| is set once we start this prerender. It is owned
-  // by this struct, and must be deleted before destructing this struct.
-  std::unique_ptr<PrerenderHandle> handle;
-
-  // True if this prerender has been abandoned by its launcher.
-  bool has_been_abandoned;
-};
+}  // namespace
 
 PrerenderLinkManager::LinkPrerender::LinkPrerender(
     int launcher_render_process_id,
@@ -130,7 +65,8 @@ PrerenderLinkManager::LinkPrerender::LinkPrerender(
       remote_handle_client(std::move(handle_client)),
       creation_time(creation_time),
       deferred_launcher(deferred_launcher),
-      has_been_abandoned(false) {}
+      has_been_abandoned(false),
+      prerender_id(GetNextPrerenderId()) {}
 
 PrerenderLinkManager::LinkPrerender::~LinkPrerender() {
   DCHECK_EQ(nullptr, handle.get())
@@ -151,12 +87,11 @@ PrerenderLinkManager::~PrerenderLinkManager() {
   }
 }
 
-bool PrerenderLinkManager::OnAddPrerender(
+base::Optional<int> PrerenderLinkManager::OnStartPrerender(
     int launcher_render_process_id,
     int launcher_render_view_id,
     blink::mojom::PrerenderAttributesPtr attributes,
-    mojo::PendingRemote<blink::mojom::PrerenderHandleClient> handle_client,
-    mojo::PendingReceiver<blink::mojom::PrerenderHandle> handle) {
+    mojo::PendingRemote<blink::mojom::PrerenderHandleClient> handle_client) {
 // TODO(crbug.com/722453): Use a dedicated build flag for GuestView.
 #if !defined(OS_ANDROID) && !defined(OS_IOS) && !defined(OS_FUCHSIA)
   content::RenderViewHost* rvh = content::RenderViewHost::FromID(
@@ -166,7 +101,7 @@ bool PrerenderLinkManager::OnAddPrerender(
   // Guests inside <webview> do not support cross-process navigation and so we
   // do not allow guests to prerender content.
   if (guest_view::GuestViewBase::IsGuest(web_contents))
-    return false;
+    return base::nullopt;
 #endif
 
   // Check if the launcher is itself an unswapped prerender.
@@ -178,7 +113,7 @@ bool PrerenderLinkManager::OnAddPrerender(
     // The launcher is a prerender about to be destroyed asynchronously, but
     // its AddLinkRelPrerender message raced with shutdown. Ignore it.
     DCHECK_NE(FINAL_STATUS_USED, prerender_contents->final_status());
-    return false;
+    return base::nullopt;
   }
 
   auto prerender = std::make_unique<LinkPrerender>(
@@ -186,18 +121,12 @@ bool PrerenderLinkManager::OnAddPrerender(
       std::move(attributes), std::move(handle_client),
       manager_->GetCurrentTimeTicks(), prerender_contents);
 
-  // Setup implementation of blink::mojom::PrerenderHandle as a proxy to the
-  // real PrerenderHandle. The first two raw pointers are safe as the proxy is
-  // owned by |prerender| which is owned by |this|.
-  prerender->handle_proxy = std::make_unique<PrerenderHandleProxy>(
-      this, prerender.get(), std::move(handle));
-
   // Observe disconnect of the client and treat as equivalent to explicit
   // abandonment. Similar to above, the raw pointer to |this| is safe because
   // |prerender| is owned by |this|.
   prerender->remote_handle_client.set_disconnect_handler(
       base::BindOnce(&PrerenderLinkManager::OnAbandonPrerender,
-                     base::Unretained(this), prerender.get()));
+                     base::Unretained(this), prerender->prerender_id));
 
   // Stash pointer used only for comparison later.
   const LinkPrerender* prerender_ptr = prerender.get();
@@ -209,15 +138,24 @@ bool PrerenderLinkManager::OnAddPrerender(
 
   // Check if the prerender we added is still at the end of the list. It
   // may have been discarded by StartPrerenders().
-  return !prerenders_.empty() && prerenders_.back().get() == prerender_ptr;
+  if (!prerenders_.empty() && prerenders_.back().get() == prerender_ptr)
+    return prerender_ptr->prerender_id;
+  return base::nullopt;
 }
 
-void PrerenderLinkManager::OnCancelPrerender(LinkPrerender* prerender) {
+void PrerenderLinkManager::OnCancelPrerender(int prerender_id) {
+  LinkPrerender* prerender = FindByPrerenderId(prerender_id);
+  if (!prerender)
+    return;
   CancelPrerender(prerender);
   StartPrerenders();
 }
 
-void PrerenderLinkManager::OnAbandonPrerender(LinkPrerender* prerender) {
+void PrerenderLinkManager::OnAbandonPrerender(int prerender_id) {
+  LinkPrerender* prerender = FindByPrerenderId(prerender_id);
+  if (!prerender)
+    return;
+
   if (!prerender->handle) {
     RemovePrerender(prerender);
     return;
@@ -368,6 +306,15 @@ PrerenderLinkManager::FindByPrerenderHandle(PrerenderHandle* prerender_handle) {
   return nullptr;
 }
 
+PrerenderLinkManager::LinkPrerender* PrerenderLinkManager::FindByPrerenderId(
+    int prerender_id) {
+  for (auto& prerender : prerenders_) {
+    if (prerender->prerender_id == prerender_id)
+      return prerender.get();
+  }
+  return nullptr;
+}
+
 void PrerenderLinkManager::RemovePrerender(LinkPrerender* prerender) {
   for (auto it = prerenders_.begin(); it != prerenders_.end(); ++it) {
     LinkPrerender* current_prerender = it->get();
@@ -400,7 +347,8 @@ void PrerenderLinkManager::Shutdown() {
   has_shutdown_ = true;
 }
 
-// In practice, this is always called from PrerenderLinkManager::OnAddPrerender.
+// In practice, this is always called from
+// PrerenderLinkManager::OnStartPrerender().
 void PrerenderLinkManager::OnPrerenderStart(PrerenderHandle* prerender_handle) {
   LinkPrerender* prerender = FindByPrerenderHandle(prerender_handle);
   if (!prerender)

@@ -66,22 +66,20 @@ PrerenderHandle* PrerenderHandle::Create(
   attributes->view_size =
       gfx::Size(document.GetFrame()->GetMainFrameViewportSize());
 
-  mojo::Remote<mojom::blink::PrerenderProcessor> prerender_processor;
+  HeapMojoRemote<mojom::blink::PrerenderProcessor> prerender_processor(context);
   context->GetBrowserInterfaceBroker().GetInterface(
-      prerender_processor.BindNewPipeAndPassReceiver());
+      prerender_processor.BindNewPipeAndPassReceiver(
+          context->GetTaskRunner(TaskType::kMiscPlatformAPI)));
 
   mojo::PendingRemote<mojom::blink::PrerenderHandleClient>
       prerender_handle_client;
   auto receiver = prerender_handle_client.InitWithNewPipeAndPassReceiver();
 
-  HeapMojoRemote<mojom::blink::PrerenderHandle> remote_handle(context);
-  prerender_processor->AddPrerender(
-      std::move(attributes), std::move(prerender_handle_client),
-      remote_handle.BindNewPipeAndPassReceiver(
-          context->GetTaskRunner(TaskType::kMiscPlatformAPI)));
+  prerender_processor->Start(std::move(attributes),
+                             std::move(prerender_handle_client));
 
   return MakeGarbageCollected<PrerenderHandle>(PassKey(), context, client, url,
-                                               std::move(remote_handle),
+                                               std::move(prerender_processor),
                                                std::move(receiver));
 }
 
@@ -90,12 +88,12 @@ PrerenderHandle::PrerenderHandle(
     ExecutionContext* context,
     PrerenderClient* client,
     const KURL& url,
-    HeapMojoRemote<mojom::blink::PrerenderHandle> remote_handle,
+    HeapMojoRemote<mojom::blink::PrerenderProcessor> remote_processor,
     mojo::PendingReceiver<mojom::blink::PrerenderHandleClient> receiver)
     : ExecutionContextLifecycleObserver(context),
       url_(url),
       client_(client),
-      remote_handle_(std::move(remote_handle)),
+      remote_processor_(std::move(remote_processor)),
       receiver_(this, context) {
   receiver_.Bind(std::move(receiver),
                  context->GetTaskRunner(TaskType::kMiscPlatformAPI));
@@ -104,8 +102,11 @@ PrerenderHandle::PrerenderHandle(
 PrerenderHandle::~PrerenderHandle() = default;
 
 void PrerenderHandle::Dispose() {
-  if (remote_handle_.is_bound() && !GetExecutionContext()->IsContextDestroyed())
-    remote_handle_->Abandon();
+  // TODO(https://crbug.com/1130360): This condition is never satisfied and
+  // Abandon() is not called. See the issue for details. We should fix this.
+  if (remote_processor_.is_bound() &&
+      !GetExecutionContext()->IsContextDestroyed())
+    remote_processor_->Abandon();
   Detach();
 }
 
@@ -114,8 +115,8 @@ void PrerenderHandle::Cancel() {
   // case, the LinkLoader cancels the PrerenderHandle as the Document is
   // destroyed, even through the ExecutionContextLifecycleObserver has already
   // abandoned it.
-  if (remote_handle_.is_bound())
-    remote_handle_->Cancel();
+  if (remote_processor_.is_bound())
+    remote_processor_->Cancel();
   Detach();
 }
 
@@ -153,13 +154,13 @@ void PrerenderHandle::OnPrerenderStop() {
 
 void PrerenderHandle::Trace(Visitor* visitor) const {
   visitor->Trace(client_);
-  visitor->Trace(remote_handle_);
+  visitor->Trace(remote_processor_);
   visitor->Trace(receiver_);
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
 
 void PrerenderHandle::Detach() {
-  remote_handle_.reset();
+  remote_processor_.reset();
   receiver_.reset();
 }
 

@@ -9,35 +9,25 @@ import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
-// These are messages sent from the browser to the renderer in relation to
-// running prerenders.
+// This interface is used to notify of events on prerendering from the browser
+// process to a renderer process that requested prerendering. This is created
+// per prerender request, for example, when a new <link rel=prerender> element
+// is added, when the element's href is changed, etc.
+//
+// TODO(https://crbug.com/1126305): Rename this interface to
+// PrerenderProcessorClient.
 interface PrerenderHandleClient {
-  // Signals to launcher that a prerender is running.
+  // Notifies that a prerender started.
   OnPrerenderStart();
 
-  // Signals to launcher that a prerender has stopped loading.
+  // Notifies that a prerender has stopped loading.
   OnPrerenderStopLoading();
 
-  // Signals to launcher that a prerender has had it's 'domcontentloaded' event.
+  // Notifies that a prerender has had it's 'domcontentloaded' event.
   OnPrerenderDomContentLoaded();
 
-  // Signals to a launcher that a prerender is no longer running.
+  // Notifies that a prerender is no longer running.
   OnPrerenderStop();
-};
-
-// The renderer sends messages to the browser process over this interface. A
-// handle to a requested prerender. Dropping a connection to the handle is
-// treated equivalently to calling the Abandon method.
-interface PrerenderHandle {
-  // Notifies on removal of a <link rel=prerender> element from the document.
-  // This method does not trigger an OnPrerenderStop() call.
-  Cancel();
-
-  // A prerender is abandoned when it's navigated away from or suspended in the
-  // page cache. This is a weaker signal than Cancel(), since the launcher
-  // hasn't indicated that the prerender isn't wanted, and we may end up using
-  // it after, for instance, a short redirect chain.
-  Abandon();
 };
 
 enum PrerenderRelType {
@@ -56,16 +46,31 @@ struct PrerenderAttributes {
   gfx.mojom.Size view_size;
 };
 
-// The renderer sends messages to the browser process over this interface. Used
-// by a renderer loading a web page to process prerender / prefetch requests,
-// that are generally in the form of <link rel> tags that the web page author
-// provided as hints.
+// This interface is used to request prerendering from a renderer process to the
+// browser process. This is created per prerender request, for example, when a
+// new <link rel=prerender> element is added, when the element's href is
+// changed, etc.
 interface PrerenderProcessor {
-  // Called to add a prerender request to the queue for processing. The
-  // |prerender_handle_client| will be notified as the prerendering makes
-  // progress, and |prerender_handle| provides the caller with the ability to
-  // further control the prerender.
-  AddPrerender(PrerenderAttributes prerender_attribute,
-               pending_remote<PrerenderHandleClient> prerender_handle_client,
-               pending_receiver<PrerenderHandle> prerender_handle);
+  // Requests the browesr process to start prerendering with
+  // |prerender_attribute|. |prerender_handle_client| will be notified as the
+  // prerendering makes progress. This must be called only one time before any
+  // other functions.
+  Start(PrerenderAttributes prerender_attribute,
+        pending_remote<PrerenderHandleClient> prerender_handle_client);
+
+  // Cancels the ongoing prerendering. This is supposed to be called when the
+  // <link rel=prerender> element is removed, the element's href is changed,
+  // etc. This must be called after Start(). This does not trigger
+  // OnPrerenderStop() on PrerenderHandleClient.
+  Cancel();
+
+  // Abandons the ongoing prerendering. This is supposed to be called when the
+  // page navigates away or gets suspended. This is a weaker signal than
+  // Cancel(), since the requester hasn't indicated that the prerender isn't
+  // wanted, and we may end up using it after, for example, a short redirect
+  // chain. This must be called after Start().
+  //
+  // TODO(https://crbug.com/1130360): The actual behavior doesn't match this
+  // comment due to the issue. Fix the behavior or update this comment.
+  Abandon();
 };

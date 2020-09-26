@@ -64,7 +64,7 @@ class PrerenderHandle final : public GarbageCollected<PrerenderHandle>,
                   ExecutionContext*,
                   PrerenderClient*,
                   const KURL&,
-                  HeapMojoRemote<mojom::blink::PrerenderHandle>,
+                  HeapMojoRemote<mojom::blink::PrerenderProcessor>,
                   mojo::PendingReceiver<mojom::blink::PrerenderHandleClient>);
   ~PrerenderHandle() override;
   void Dispose();
@@ -88,7 +88,7 @@ class PrerenderHandle final : public GarbageCollected<PrerenderHandle>,
 
   KURL url_;
   WeakMember<PrerenderClient> client_;
-  HeapMojoRemote<mojom::blink::PrerenderHandle> remote_handle_;
+  HeapMojoRemote<mojom::blink::PrerenderProcessor> remote_processor_;
   HeapMojoReceiver<mojom::blink::PrerenderHandleClient, PrerenderHandle>
       receiver_;
 

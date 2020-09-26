@@ -36,32 +36,62 @@ void PrerenderProcessorImpl::Create(
       std::move(receiver));
 }
 
-void PrerenderProcessorImpl::AddPrerender(
+void PrerenderProcessorImpl::Start(
     blink::mojom::PrerenderAttributesPtr attributes,
-    mojo::PendingRemote<blink::mojom::PrerenderHandleClient> handle_client,
-    mojo::PendingReceiver<blink::mojom::PrerenderHandle> handle) {
+    mojo::PendingRemote<blink::mojom::PrerenderHandleClient> handle_client) {
   if (!attributes->initiator_origin.opaque() &&
       !content::ChildProcessSecurityPolicy::GetInstance()
            ->CanAccessDataForOrigin(render_process_id_,
                                     attributes->initiator_origin.GetURL())) {
-    mojo::ReportBadMessage("PMF_INVALID_INITIATOR_ORIGIN");
+    mojo::ReportBadMessage("PPI_INVALID_INITIATOR_ORIGIN");
     return;
   }
 
-  content::RenderFrameHost* render_frame_host =
+  // Start() must be called only one time.
+  if (prerender_id_) {
+    mojo::ReportBadMessage("PPI_START_TWICE");
+    return;
+  }
+
+  auto* render_frame_host =
       content::RenderFrameHost::FromID(render_process_id_, render_frame_id_);
   if (!render_frame_host)
     return;
 
-  PrerenderLinkManager* link_manager = delegate_->GetPrerenderLinkManager(
-      render_frame_host->GetProcess()->GetBrowserContext());
+  auto* link_manager = GetPrerenderLinkManager();
   if (!link_manager)
     return;
 
-  link_manager->OnAddPrerender(
+  DCHECK(!prerender_id_);
+  prerender_id_ = link_manager->OnStartPrerender(
       render_process_id_,
       render_frame_host->GetRenderViewHost()->GetRoutingID(),
-      std::move(attributes), std::move(handle_client), std::move(handle));
+      std::move(attributes), std::move(handle_client));
+}
+
+void PrerenderProcessorImpl::Cancel() {
+  if (!prerender_id_)
+    return;
+  auto* link_manager = GetPrerenderLinkManager();
+  if (link_manager)
+    link_manager->OnCancelPrerender(*prerender_id_);
+}
+
+void PrerenderProcessorImpl::Abandon() {
+  if (!prerender_id_)
+    return;
+  auto* link_manager = GetPrerenderLinkManager();
+  if (link_manager)
+    link_manager->OnAbandonPrerender(*prerender_id_);
+}
+
+PrerenderLinkManager* PrerenderProcessorImpl::GetPrerenderLinkManager() {
+  auto* render_frame_host =
+      content::RenderFrameHost::FromID(render_process_id_, render_frame_id_);
+  if (!render_frame_host)
+    return nullptr;
+  return delegate_->GetPrerenderLinkManager(
+      render_frame_host->GetProcess()->GetBrowserContext());
 }
 
 }  // namespace prerender

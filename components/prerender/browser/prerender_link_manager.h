@@ -13,6 +13,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/optional.h"
 #include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prerender/browser/prerender_handle.h"
@@ -36,14 +37,24 @@ class PrerenderLinkManager : public KeyedService,
   explicit PrerenderLinkManager(PrerenderManager* manager);
   ~PrerenderLinkManager() override;
 
-  // A <link rel=prerender ...> element has been inserted into the document.
-  // Returns true if a prerender was added.
-  bool OnAddPrerender(
+  // Called when a <link rel=prerender ...> element has been inserted into the
+  // document. Returns the prerender id that is used for canceling or abandoning
+  // prerendering. Returns base::nullopt if the prerender was not started.
+  base::Optional<int> OnStartPrerender(
       int launcher_render_process_id,
       int launcher_render_view_id,
       blink::mojom::PrerenderAttributesPtr attributes,
-      mojo::PendingRemote<blink::mojom::PrerenderHandleClient> handle_client,
-      mojo::PendingReceiver<blink::mojom::PrerenderHandle> handle);
+      mojo::PendingRemote<blink::mojom::PrerenderHandleClient> handle_client);
+
+  // Called when a <link rel=prerender ...> element has been explicitly removed
+  // from a document.
+  void OnCancelPrerender(int prerender_id);
+
+  // Called when a renderer launching <link rel=prerender ...> has navigated
+  // away from the launching page, the launching renderer process has crashed,
+  // or perhaps the renderer process was fast-closed when the last render view
+  // in it was closed.
+  void OnAbandonPrerender(int prerender_id);
 
  private:
   friend class PrerenderBrowserTest;
@@ -51,19 +62,53 @@ class PrerenderLinkManager : public KeyedService,
   // WebViewTest.NoPrerenderer needs to access the private IsEmpty() method.
   FRIEND_TEST_ALL_PREFIXES(::WebViewTest, NoPrerenderer);
 
-  class PrerenderHandleProxy;
-  class LinkPrerender;
   class PendingPrerenderManager;
 
-  // A <link rel=prerender ...> element has been explicitly removed from a
-  // document.
-  void OnCancelPrerender(LinkPrerender* link_prerender);
+  // Used to store state about a requested prerender.
+  struct LinkPrerender {
+    LinkPrerender(
+        int launcher_render_process_id,
+        int launcher_render_view_id,
+        blink::mojom::PrerenderAttributesPtr attributes,
+        mojo::PendingRemote<blink::mojom::PrerenderHandleClient> handle_client,
+        base::TimeTicks creation_time,
+        PrerenderContents* deferred_launcher);
+    ~LinkPrerender();
 
-  // A renderer launching <link rel=prerender ...> has navigated away from the
-  // launching page, the launching renderer process has crashed, or perhaps the
-  // renderer process was fast-closed when the last render view in it was
-  // closed.
-  void OnAbandonPrerender(LinkPrerender* link_prerender);
+    LinkPrerender(const LinkPrerender& other) = delete;
+    LinkPrerender& operator=(const LinkPrerender& other) = delete;
+
+    // Parameters from PrerenderLinkManager::OnStartPrerender():
+    const int launcher_render_process_id;
+    const int launcher_render_view_id;
+    const GURL url;
+    const blink::mojom::PrerenderRelType rel_type;
+    const content::Referrer referrer;
+    const url::Origin initiator_origin;
+    const gfx::Size size;
+
+    // Notification interface back to the requestor of this prerender.
+    mojo::Remote<blink::mojom::PrerenderHandleClient> remote_handle_client;
+
+    // The time at which this Prerender was added to PrerenderLinkManager.
+    const base::TimeTicks creation_time;
+
+    // If non-null, this link prerender was launched by an unswapped prerender,
+    // |deferred_launcher|. When |deferred_launcher| is swapped in, the field is
+    // set to null.
+    const PrerenderContents* deferred_launcher;
+
+    // Initially null, |handle| is set once we start this prerender. It is owned
+    // by this struct, and must be deleted before destructing this struct.
+    std::unique_ptr<PrerenderHandle> handle;
+
+    // True if this prerender has been abandoned by its launcher.
+    bool has_been_abandoned;
+
+    // The unique ID of this prerender. Used for canceling or abandoning
+    // prerendering.
+    const int prerender_id;
+  };
 
   bool IsEmpty() const;
 
@@ -77,6 +122,7 @@ class PrerenderLinkManager : public KeyedService,
   void StartPrerenders();
 
   LinkPrerender* FindByPrerenderHandle(PrerenderHandle* prerender_handle);
+  LinkPrerender* FindByPrerenderId(int prerender_id);
 
   // Removes |prerender| from the the prerender link manager. Deletes the
   // PrerenderHandle as needed.
