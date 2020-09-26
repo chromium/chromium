@@ -130,8 +130,9 @@ void SecurePaymentConfirmationAppFactory::Create(
 
       std::unique_ptr<autofill::InternalAuthenticator> authenticator =
           delegate->CreateInternalAuthenticator();
+      auto* authenticator_ptr = authenticator.get();
 
-      authenticator->IsUserVerifyingPlatformAuthenticatorAvailable(
+      authenticator_ptr->IsUserVerifyingPlatformAuthenticatorAvailable(
           base::BindOnce(&SecurePaymentConfirmationAppFactory::
                              OnIsUserVerifyingPlatformAuthenticatorAvailable,
                          weak_ptr_factory_.GetWeakPtr(), delegate,

@@ -58,13 +58,14 @@ void PaymentCredential::StorePaymentCredential(
     return;
   }
 
+  const GURL icon_url = instrument->icon;
   int request_id = web_contents()->DownloadImageInFrame(
       initiator_frame_routing_id_,
-      instrument->icon,  // source URL
-      true,              // is_favicon
-      0,                 // no preferred size
-      0,                 // no max size
-      false,             // normal cache policy (a.k.a. do not bypass cache)
+      icon_url,  // source URL
+      true,      // is_favicon
+      0,         // no preferred size
+      0,         // no max size
+      false,     // normal cache policy (a.k.a. do not bypass cache)
       base::BindOnce(&PaymentCredential::DidDownloadFavicon,
                      weak_ptr_factory_.GetWeakPtr(), std::move(instrument),
                      credential_id, rp_id, std::move(callback)));
