@@ -33,6 +33,7 @@ class ASH_EXPORT HoldingSpaceItemView : public views::InkDropHostView {
   void OnGestureEvent(ui::GestureEvent* event) override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
+  void OnMouseReleased(const ui::MouseEvent& event) override;
 
   const HoldingSpaceItem* item() const { return item_; }
 

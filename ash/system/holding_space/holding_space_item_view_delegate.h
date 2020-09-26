@@ -5,9 +5,9 @@
 #ifndef ASH_SYSTEM_HOLDING_SPACE_HOLDING_SPACE_ITEM_VIEW_DELEGATE_H_
 #define ASH_SYSTEM_HOLDING_SPACE_HOLDING_SPACE_ITEM_VIEW_DELEGATE_H_
 
-#include <map>
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "ash/ash_export.h"
 #include "ui/base/models/simple_menu_model.h"
@@ -28,7 +28,6 @@ namespace ash {
 
 class HoldingSpaceItemView;
 
-// TODO(dmblack): Implement multiple selection.
 // A delegate for `HoldingSpaceItemView`s which implements context menu,
 // drag-and-drop, and selection functionality. In order to support multiple
 // selections at a time, all `HoldingSpaceItemView`s must share the same
@@ -44,6 +43,12 @@ class ASH_EXPORT HoldingSpaceItemViewDelegate
       delete;
   ~HoldingSpaceItemViewDelegate() override;
 
+  // Invoked when `view` has been created.
+  void OnHoldingSpaceItemViewCreated(HoldingSpaceItemView* view);
+
+  // Invoked when `view` has been destroyed.
+  void OnHoldingSpaceItemViewDestroyed(HoldingSpaceItemView* view);
+
   // Invoked when `view` receives the specified gesture `event`.
   void OnHoldingSpaceItemViewGestureEvent(HoldingSpaceItemView* view,
                                           const ui::GestureEvent& event);
@@ -56,8 +61,9 @@ class ASH_EXPORT HoldingSpaceItemViewDelegate
   bool OnHoldingSpaceItemViewMousePressed(HoldingSpaceItemView* view,
                                           const ui::MouseEvent& event);
 
-  // Invoked when `view` has been destroyed.
-  void OnHoldingSpaceItemViewDestroyed(HoldingSpaceItemView* view);
+  // Invoked when `view` receives the specified mouse released `event`.
+  void OnHoldingSpaceItemViewMouseReleased(HoldingSpaceItemView* view,
+                                           const ui::MouseEvent& event);
 
  private:
   // views::ContextMenuController:
@@ -81,10 +87,21 @@ class ASH_EXPORT HoldingSpaceItemViewDelegate
   // Builds and returns a raw pointer to `context_menu_model_`.
   ui::SimpleMenuModel* BuildMenuModel();
 
+  // Returns the subset of `views_` which are currently selected.
+  std::vector<HoldingSpaceItemView*> GetSelection();
+
+  // Marks `view` as selected. All other `views_` are marked unselected.
+  void SetSelection(views::View* view);
+
   std::unique_ptr<ui::SimpleMenuModel> context_menu_model_;
   std::unique_ptr<views::MenuRunner> context_menu_runner_;
 
-  std::map<std::string, HoldingSpaceItemView*> selected_views_by_item_id_;
+  std::vector<HoldingSpaceItemView*> views_;
+
+  // Caches a view for which mouse released events should be temporarily
+  // ignored. This is to prevent us from selecting a view on mouse pressed but
+  // then unselecting that same view on mouse released.
+  HoldingSpaceItemView* ignore_mouse_released_ = nullptr;
 };
 
 }  // namespace ash

@@ -58,6 +58,8 @@ HoldingSpaceItemView::HoldingSpaceItemView(
   // radius of this view. Installation of a highlight path generator does this.
   views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
                                                 kHoldingSpaceCornerRadius);
+
+  delegate_->OnHoldingSpaceItemViewCreated(this);
 }
 
 HoldingSpaceItemView::~HoldingSpaceItemView() {
@@ -84,6 +86,10 @@ bool HoldingSpaceItemView::OnKeyPressed(const ui::KeyEvent& event) {
 
 bool HoldingSpaceItemView::OnMousePressed(const ui::MouseEvent& event) {
   return delegate_->OnHoldingSpaceItemViewMousePressed(this, event);
+}
+
+void HoldingSpaceItemView::OnMouseReleased(const ui::MouseEvent& event) {
+  delegate_->OnHoldingSpaceItemViewMouseReleased(this, event);
 }
 
 void HoldingSpaceItemView::SetSelected(bool selected) {

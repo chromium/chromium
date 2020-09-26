@@ -32,9 +32,20 @@ HoldingSpaceItemViewDelegate* instance = nullptr;
 
 // Helpers ---------------------------------------------------------------------
 
-// Attempts to open the specified holding space `item`.
-void OpenItem(const HoldingSpaceItem* item) {
-  HoldingSpaceController::Get()->client()->OpenItems({item}, base::DoNothing());
+// Returns the holding space items associated with the specified `views`.
+std::vector<const HoldingSpaceItem*> GetItems(
+    const std::vector<HoldingSpaceItemView*>& views) {
+  std::vector<const HoldingSpaceItem*> items;
+  for (HoldingSpaceItemView* view : views)
+    items.push_back(view->item());
+  return items;
+}
+
+// Attempts to open the holding space items associated with the given `views`.
+void OpenItems(const std::vector<HoldingSpaceItemView*>& views) {
+  DCHECK_GE(views.size(), 1u);
+  HoldingSpaceController::Get()->client()->OpenItems(GetItems(views),
+                                                     base::DoNothing());
 }
 
 }  // namespace
@@ -51,51 +62,119 @@ HoldingSpaceItemViewDelegate::~HoldingSpaceItemViewDelegate() {
   instance = nullptr;
 }
 
-// TODO(dmblack): Implement multiple selection.
-void HoldingSpaceItemViewDelegate::OnHoldingSpaceItemViewGestureEvent(
-    HoldingSpaceItemView* view,
-    const ui::GestureEvent& event) {
-  if (event.type() == ui::ET_GESTURE_TAP)
-    OpenItem(view->item());
-}
-
-// TODO(dmblack): Handle multiple selection.
-bool HoldingSpaceItemViewDelegate::OnHoldingSpaceItemViewKeyPressed(
-    HoldingSpaceItemView* view,
-    const ui::KeyEvent& event) {
-  if (event.key_code() == ui::KeyboardCode::VKEY_RETURN) {
-    OpenItem(view->item());
-    return true;
-  }
-  return false;
-}
-
-// TODO(dmblack): Handle multiple selection.
-bool HoldingSpaceItemViewDelegate::OnHoldingSpaceItemViewMousePressed(
-    HoldingSpaceItemView* view,
-    const ui::MouseEvent& event) {
-  if (event.flags() & ui::EF_IS_DOUBLE_CLICK) {
-    OpenItem(view->item());
-    return true;
-  }
-  return false;
+void HoldingSpaceItemViewDelegate::OnHoldingSpaceItemViewCreated(
+    HoldingSpaceItemView* view) {
+  views_.push_back(view);
 }
 
 void HoldingSpaceItemViewDelegate::OnHoldingSpaceItemViewDestroyed(
     HoldingSpaceItemView* view) {
-  selected_views_by_item_id_.erase(view->item()->id());
+  base::Erase(views_, view);
 }
 
-// TODO(dmblack): Handle multiple selection.
+void HoldingSpaceItemViewDelegate::OnHoldingSpaceItemViewGestureEvent(
+    HoldingSpaceItemView* view,
+    const ui::GestureEvent& event) {
+  // When a tap gesture occurs, we select and open only the item corresponding
+  // to the tapped `view`.
+  if (event.type() == ui::ET_GESTURE_TAP) {
+    SetSelection(view);
+    OpenItems(GetSelection());
+  }
+}
+
+bool HoldingSpaceItemViewDelegate::OnHoldingSpaceItemViewKeyPressed(
+    HoldingSpaceItemView* view,
+    const ui::KeyEvent& event) {
+  // The ENTER key should open all selected holding space items. If `view` isn't
+  // already part of the selection, it will become the entire selection.
+  if (event.key_code() == ui::KeyboardCode::VKEY_RETURN) {
+    if (!view->selected())
+      SetSelection(view);
+    OpenItems(GetSelection());
+    return true;
+  }
+  return false;
+}
+
+bool HoldingSpaceItemViewDelegate::OnHoldingSpaceItemViewMousePressed(
+    HoldingSpaceItemView* view,
+    const ui::MouseEvent& event) {
+  // Since we are starting a new mouse pressed/released sequence, we need to
+  // clear any view that we had cached to ignore mouse released events for.
+  ignore_mouse_released_ = nullptr;
+
+  // If the `view` is already selected, mouse press is a no-op. Actions taken on
+  // selected views are performed on mouse released in order to give drag/drop
+  // a chance to take effect (assuming that drag thresholds are met).
+  if (view->selected())
+    return true;
+
+  // If the right mouse button is pressed, we're going to be showing the context
+  // menu. Make sure that `view` is part of the current selection. If the SHIFT
+  // key is not down, it should be the entire selection.
+  if (event.IsRightMouseButton()) {
+    if (event.IsShiftDown())
+      view->SetSelected(true);
+    else
+      SetSelection(view);
+    return true;
+  }
+
+  // If the SHIFT key is down, we need to add `view` to the current selection.
+  // We're going to need to ignore the next mouse released event on `view` so
+  // that we don't unselect `view` accidentally right after having selected it.
+  if (event.IsShiftDown()) {
+    ignore_mouse_released_ = view;
+    view->SetSelected(true);
+    return true;
+  }
+
+  // In the absence of any modifiers, pressing an unselected `view` will cause
+  // `view` to become the current selection. Previous selections are cleared.
+  SetSelection(view);
+  return true;
+}
+
+void HoldingSpaceItemViewDelegate::OnHoldingSpaceItemViewMouseReleased(
+    HoldingSpaceItemView* view,
+    const ui::MouseEvent& event) {
+  // We should always clear `ignore_mouse_released_` after this method runs
+  // since that property should affect at most one press/release sequence.
+  base::ScopedClosureRunner clear_ignore_mouse_released(base::BindOnce(
+      [](HoldingSpaceItemView** ignore_mouse_released) {
+        *ignore_mouse_released = nullptr;
+      },
+      &ignore_mouse_released_));
+
+  // We might be ignoring mouse released events for `view` if it was just
+  // selected on mouse pressed. In this case, no-op here.
+  if (ignore_mouse_released_ == view)
+    return;
+
+  // If the right mouse button is released we're showing the context menu. In
+  // this case, no-op here.
+  if (event.IsRightMouseButton())
+    return;
+
+  // If the SHIFT key is down, mouse release should toggle the selected state of
+  // `view`. If `view` is the only selected view, this is a no-op.
+  if (event.IsShiftDown()) {
+    if (GetSelection().size() > 1u)
+      view->SetSelected(!view->selected());
+    return;
+  }
+
+  // If this mouse released `event` is part of a double click, we should open
+  // the items associated with the current selection.
+  if (event.flags() & ui::EF_IS_DOUBLE_CLICK)
+    OpenItems(GetSelection());
+}
+
 void HoldingSpaceItemViewDelegate::ShowContextMenuForViewImpl(
     views::View* source,
     const gfx::Point& point,
     ui::MenuSourceType source_type) {
-  selected_views_by_item_id_.clear();
-
-  HoldingSpaceItemView* selected_view = HoldingSpaceItemView::Cast(source);
-  selected_views_by_item_id_[selected_view->item()->id()] = selected_view;
-
   int run_types = views::MenuRunner::USE_TOUCHABLE_LAYOUT |
                   views::MenuRunner::CONTEXT_MENU |
                   views::MenuRunner::FIXED_ANCHOR;
@@ -109,17 +188,12 @@ void HoldingSpaceItemViewDelegate::ShowContextMenuForViewImpl(
       source_type);
 }
 
-// TODO(dmblack): Handle multiple selection.
 bool HoldingSpaceItemViewDelegate::CanStartDragForView(
     views::View* sender,
     const gfx::Point& press_pt,
     const gfx::Point& current_pt) {
-  selected_views_by_item_id_.clear();
-
-  HoldingSpaceItemView* selected_view = HoldingSpaceItemView::Cast(sender);
-  selected_views_by_item_id_[selected_view->item()->id()] = selected_view;
-
-  return true;
+  const gfx::Vector2d delta = current_pt - press_pt;
+  return views::View::ExceededDragThreshold(delta);
 }
 
 int HoldingSpaceItemViewDelegate::GetDragOperationsForView(
@@ -128,78 +202,95 @@ int HoldingSpaceItemViewDelegate::GetDragOperationsForView(
   return ui::DragDropTypes::DRAG_COPY;
 }
 
-// TODO(dmblack): Handle multiple selection.
 void HoldingSpaceItemViewDelegate::WriteDragDataForView(
     views::View* sender,
     const gfx::Point& press_pt,
     ui::OSExchangeData* data) {
-  DCHECK_EQ(1u, selected_views_by_item_id_.size());
-  auto* selected_view = selected_views_by_item_id_.begin()->second;
-  data->SetFilename(selected_view->item()->file_path());
+  std::vector<ui::FileInfo> filenames;
+  for (const HoldingSpaceItemView* view : GetSelection()) {
+    filenames.push_back(ui::FileInfo(view->item()->file_path(),
+                                     view->item()->file_path().BaseName()));
+  }
+  DCHECK_GE(filenames.size(), 1u);
+  data->SetFilenames(filenames);
 }
 
-// TODO(dmblack): Handle multiple selection.
 void HoldingSpaceItemViewDelegate::ExecuteCommand(int command_id,
                                                   int event_flags) {
-  DCHECK_EQ(1u, selected_views_by_item_id_.size());
-  auto* selected_view = selected_views_by_item_id_.begin()->second;
+  std::vector<HoldingSpaceItemView*> selection = GetSelection();
+  DCHECK_GE(selection.size(), 1u);
 
   switch (command_id) {
     case HoldingSpaceCommandId::kCopyImageToClipboard:
+      DCHECK_EQ(selection.size(), 1u);
       HoldingSpaceController::Get()->client()->CopyImageToClipboard(
-          *selected_view->item(), base::DoNothing());
+          *selection.front()->item(), base::DoNothing());
       break;
     case HoldingSpaceCommandId::kPinItem:
-      HoldingSpaceController::Get()->client()->PinItems(
-          {selected_view->item()});
+      HoldingSpaceController::Get()->client()->PinItems(GetItems(selection));
       break;
     case HoldingSpaceCommandId::kShowInFolder:
+      DCHECK_EQ(selection.size(), 1u);
       HoldingSpaceController::Get()->client()->ShowItemInFolder(
-          *selected_view->item(), base::DoNothing());
+          *selection.front()->item(), base::DoNothing());
       break;
     case HoldingSpaceCommandId::kUnpinItem:
-      HoldingSpaceController::Get()->client()->UnpinItems(
-          {selected_view->item()});
+      HoldingSpaceController::Get()->client()->UnpinItems(GetItems(selection));
       break;
   }
 }
 
-// TODO(dmblack): Handle multiple selection.
 ui::SimpleMenuModel* HoldingSpaceItemViewDelegate::BuildMenuModel() {
-  DCHECK_EQ(1u, selected_views_by_item_id_.size());
-  auto* selected_view = selected_views_by_item_id_.begin()->second;
-
   context_menu_model_ = std::make_unique<ui::SimpleMenuModel>(this);
-  context_menu_model_->AddItemWithIcon(
-      HoldingSpaceCommandId::kShowInFolder,
-      l10n_util::GetStringUTF16(
-          IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_SHOW_IN_FOLDER),
-      ui::ImageModel::FromVectorIcon(kFolderIcon));
 
-  std::string mime_type;
-  const bool is_image = net::GetMimeTypeFromFile(
-                            selected_view->item()->file_path(), &mime_type) &&
-                        net::MatchesMimeType(kMimeTypeImage, mime_type);
+  std::vector<HoldingSpaceItemView*> selection = GetSelection();
+  DCHECK_GE(selection.size(), 1u);
 
-  if (is_image) {
+  if (selection.size() == 1u) {
+    // The "Show in folder" command should only be present if there is only one
+    // holding space item selected.
     context_menu_model_->AddItemWithIcon(
-        HoldingSpaceCommandId::kCopyImageToClipboard,
+        HoldingSpaceCommandId::kShowInFolder,
         l10n_util::GetStringUTF16(
-            IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_COPY_IMAGE_TO_CLIPBOARD),
-        ui::ImageModel::FromVectorIcon(kCopyIcon));
+            IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_SHOW_IN_FOLDER),
+        ui::ImageModel::FromVectorIcon(kFolderIcon));
+
+    std::string mime_type;
+    const bool is_image =
+        net::GetMimeTypeFromFile(selection.front()->item()->file_path(),
+                                 &mime_type) &&
+        net::MatchesMimeType(kMimeTypeImage, mime_type);
+
+    if (is_image) {
+      // The "Copy image" command should only be present if there is only one
+      // holding space item selected and that item is backed by an image file.
+      context_menu_model_->AddItemWithIcon(
+          HoldingSpaceCommandId::kCopyImageToClipboard,
+          l10n_util::GetStringUTF16(
+              IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_COPY_IMAGE_TO_CLIPBOARD),
+          ui::ImageModel::FromVectorIcon(kCopyIcon));
+    }
   }
 
-  const bool is_pinned = HoldingSpaceController::Get()->model()->GetItem(
-      HoldingSpaceItem::GetFileBackedItemId(
-          HoldingSpaceItem::Type::kPinnedFile,
-          selected_view->item()->file_path()));
+  const bool is_any_unpinned = std::any_of(
+      selection.begin(), selection.end(), [](HoldingSpaceItemView* view) {
+        return !HoldingSpaceController::Get()->model()->GetItem(
+            HoldingSpaceItem::GetFileBackedItemId(
+                HoldingSpaceItem::Type::kPinnedFile,
+                view->item()->file_path()));
+      });
 
-  if (!is_pinned) {
+  if (is_any_unpinned) {
+    // The "Pin" command should be present if any selected holding space item is
+    // unpinned. When executing this command, any holding space items that are
+    // already pinned will be ignored.
     context_menu_model_->AddItemWithIcon(
         HoldingSpaceCommandId::kPinItem,
         l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_PIN),
         ui::ImageModel::FromVectorIcon(views::kPinIcon));
   } else {
+    // The "Unpin" command should be present only if all selected holding space
+    // items are already pinned.
     context_menu_model_->AddItemWithIcon(
         HoldingSpaceCommandId::kUnpinItem,
         l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_UNPIN),
@@ -207,6 +298,21 @@ ui::SimpleMenuModel* HoldingSpaceItemViewDelegate::BuildMenuModel() {
   }
 
   return context_menu_model_.get();
+}
+
+std::vector<HoldingSpaceItemView*>
+HoldingSpaceItemViewDelegate::GetSelection() {
+  std::vector<HoldingSpaceItemView*> selection;
+  for (HoldingSpaceItemView* view : views_) {
+    if (view->selected())
+      selection.push_back(view);
+  }
+  return selection;
+}
+
+void HoldingSpaceItemViewDelegate::SetSelection(views::View* selection) {
+  for (HoldingSpaceItemView* view : views_)
+    view->SetSelected(view == selection);
 }
 
 }  // namespace ash
