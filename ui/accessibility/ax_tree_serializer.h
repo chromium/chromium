@@ -178,6 +178,9 @@ class AXTreeSerializer {
       AXSourceNode node,
       AXTreeUpdateBase<AXNodeData, AXTreeData>* out_update);
 
+  // Visit all of the descendants of |node| once.
+  void WalkAllDescendants(AXSourceNode node);
+
   // Delete the entire client subtree but don't set the did_reset_ flag
   // like when Reset() is called.
   void InternalReset();
@@ -456,6 +459,12 @@ bool AXTreeSerializer<AXSourceNode, AXNodeData, AXTreeData>::SerializeChanges(
   if (!tree_->IsValid(lca))
     lca = tree_->GetRoot();
 
+  // Work around flaky source trees where nodes don't figure out their
+  // correct parent/child relationships until you walk the whole tree once.
+  // Covered by this test in the content_browsertests suite:
+  //     DumpAccessibilityTreeTest.AccessibilityAriaOwns.
+  WalkAllDescendants(lca);
+
   if (!SerializeChangedNodes(lca, out_update))
     return false;
 
@@ -583,17 +592,7 @@ bool AXTreeSerializer<AXSourceNode, AXNodeData, AXTreeData>::
 #if defined(ADDRESS_SANITIZER)
       // Wrapping this in ADDRESS_SANITIZER will cause it to run on
       // clusterfuzz, which should help us narrow down the issue.
-      // TODO(accessibility) Remove all cases where this occurs and re-add
-      // NOTREACHED(). This condition leads to performance problems. It will
-      // also reset virtual buffers, causing users to lose their place.
-      NOTREACHED() << "Illegal reparenting detected: "
-                   << "\nPassed-in parent: "
-                   << tree_->GetDebugString(tree_->GetFromId(client_node->id))
-                   << "\nChild: " << tree_->GetDebugString(child)
-                   << "\nChild's parent: "
-                   << tree_->GetDebugString(
-                          tree_->GetFromId(client_child->parent->id))
-                   << "\n-----------------------------------------\n\n\n";
+      NOTREACHED() << "Illegal reparenting detected";
 #endif
       Reset();
       return false;
@@ -673,10 +672,6 @@ bool AXTreeSerializer<AXSourceNode, AXNodeData, AXTreeData>::
       new_child->ignored = tree_->IsIgnored(child);
       new_child->invalid = false;
       client_node->children.push_back(new_child);
-      DCHECK(!ClientTreeNodeById(child_id))
-          << "Child id " << child_id << " already exists in map."
-          << "\nChild is " << tree_->GetDebugString(tree_->GetFromId(child_id))
-          << " of parent " << tree_->GetDebugString(node);
       client_id_map_[child_id] = new_child;
       if (!SerializeChangedNodes(child, out_update))
         return false;
@@ -689,6 +684,15 @@ bool AXTreeSerializer<AXSourceNode, AXNodeData, AXTreeData>::
       actual_serialized_node_child_ids);
 
   return true;
+}
+
+template <typename AXSourceNode, typename AXNodeData, typename AXTreeData>
+void AXTreeSerializer<AXSourceNode, AXNodeData, AXTreeData>::WalkAllDescendants(
+    AXSourceNode node) {
+  std::vector<AXSourceNode> children;
+  tree_->GetChildren(node, &children);
+  for (size_t i = 0; i < children.size(); ++i)
+    WalkAllDescendants(children[i]);
 }
 
 }  // namespace ui
