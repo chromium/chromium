@@ -2000,7 +2000,7 @@ config("default_stack_frames") {
 # Default "optimization on" config.
 config("optimize") {
   if (is_win) {
-    if (chrome_pgo_phase == 0) {
+    if (chrome_pgo_phase != 2) {
       # Favor size over speed, /O1 must be before the common flags.
       # /O1 implies /Os and /GF.
       cflags = [ "/O1" ] + common_optimize_on_cflags + [ "/Oi" ]
