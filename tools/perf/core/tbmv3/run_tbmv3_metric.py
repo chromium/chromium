@@ -7,6 +7,7 @@ from __future__ import print_function
 
 import argparse
 import json
+import logging
 import os
 import sys
 
@@ -52,7 +53,7 @@ def Main(cli_args):
   histograms = trace_processor.RunMetric(args.trace_processor_path,
                                          args.trace, args.metric)
   _WriteHistogramSetToFile(histograms, args.outfile)
-  print('JSON result created in file://%s' % (args.outfile))
+  logging.info('JSON result created in file://%s' % (args.outfile))
 
 
 if __name__ == '__main__':
