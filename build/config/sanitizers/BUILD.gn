@@ -148,6 +148,9 @@ config("default_sanitizer_ldflags") {
   visibility = [
     ":default_sanitizer_flags",
     ":deps",
+
+    # https://crbug.com/360158.
+    "//tools/ipc_fuzzer/fuzzer:ipc_fuzzer",
   ]
 
   if (is_posix || is_fuchsia) {
@@ -432,7 +435,8 @@ config("lsan_flags") {
 
 config("msan_flags") {
   if (is_msan) {
-    assert(is_linux || is_chromeos, "msan only supported on linux x86_64/ChromeOS")
+    assert(is_linux || is_chromeos,
+           "msan only supported on linux x86_64/ChromeOS")
     if (!defined(msan_blacklist_path)) {
       msan_blacklist_path =
           rebase_path("//tools/msan/blacklist.txt", root_build_dir)
