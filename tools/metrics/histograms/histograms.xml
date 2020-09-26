@@ -75128,9 +75128,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Audio.Capture.DetectedMissingCallbacks"
-    enum="BooleanMissingCallbacks" expires_after="2021-02-01">
+    enum="BooleanMissingCallbacks" expires_after="2021-06-01">
   <owner>guidou@chromium.org</owner>
-  <owner>armax@chromium.org</owner>
+  <owner>olka@chromium.org</owner>
   <summary>
     Whether missing callbacks where detected during audio capture. Logged when
     AudioInputDevice is stopped.
@@ -75171,9 +75171,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Audio.Capture.Glitches" units="glitches"
-    expires_after="2021-02-01">
+    expires_after="2021-06-01">
   <owner>guidou@chromium.org</owner>
-  <owner>armax@chromium.org</owner>
+  <owner>olka@chromium.org</owner>
   <summary>
     The number of glitches that were detected at the OS level while an audio
     stream was active. A glitch is detected if the OS has to skip providing a
@@ -75203,9 +75203,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Audio.Capture.LargestGlitchMs" units="ms"
-    expires_after="2021-02-01">
+    expires_after="2021-06-01">
   <owner>guidou@chromium.org</owner>
-  <owner>armax@chromium.org</owner>
+  <owner>olka@chromium.org</owner>
   <summary>
     The length in milliseconds of the largest audio glitch that was detected at
     the OS level. This value is logged when an audio input stream that has
@@ -75214,9 +75214,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Audio.Capture.LostFramesInMs" units="ms"
-    expires_after="2021-02-01">
+    expires_after="2021-06-01">
   <owner>guidou@chromium.org</owner>
-  <owner>armax@chromium.org</owner>
+  <owner>olka@chromium.org</owner>
   <summary>
     The combined length in milliseconds of audio glitches that was detected at
     the OS level. This is useful to know in particular for audio processing such
@@ -75912,7 +75912,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Audio.Render.Glitches" units="glitches"
-    expires_after="2021-04-05">
+    expires_after="2021-06-01">
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <summary>
@@ -75952,7 +75952,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Audio.Render.LargestGlitchMs" units="ms"
-    expires_after="2021-04-05">
+    expires_after="2021-06-01">
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <summary>
@@ -75963,7 +75963,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Audio.Render.LostFramesInMs" units="ms"
-    expires_after="2021-04-05">
+    expires_after="2021-06-01">
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <summary>
@@ -76272,9 +76272,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.AudioCapturerAudioGlitches" enum="AudioGlitchResult"
-    expires_after="2021-02-01">
+    expires_after="2021-06-01">
   <owner>guidou@chromium.org</owner>
-  <owner>armax@chromium.org</owner>
+  <owner>olka@chromium.org</owner>
   <summary>
     Whether there is input audio glitches due to dropped input audio data or
     not. Sampled when a low-latency input audio stream is destructed.
@@ -76282,9 +76282,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.AudioCapturerDroppedData" units="%"
-    expires_after="2021-02-01">
+    expires_after="2021-06-01">
   <owner>guidou@chromium.org</owner>
-  <owner>armax@chromium.org</owner>
+  <owner>olka@chromium.org</owner>
   <summary>
     The percentage of input audio data that was dropped at the browser/renderer
     boundary due to for example buffer overflow in the writer side buffer or in
@@ -76570,8 +76570,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.AudioRendererAudioGlitches" enum="AudioGlitchResult"
-    expires_after="2020-04-05">
+    expires_after="2021-06-01">
   <owner>henrika@chromium.org</owner>
+  <owner>olka@chromium.org</owner>
   <summary>
     Captures if render-side audio glitches are detected or not. Sampled when a
     low-latency output audio stream is destructed.
