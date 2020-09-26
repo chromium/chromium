@@ -23,6 +23,16 @@ void Dactyloscoper::Record(WebFeature feature) {
   // here over time.
 }
 
+namespace {
+
+bool IsStudyEnabled(WebFeature feature) {
+  return IdentifiabilityStudySettings::Get()->IsSurfaceAllowed(
+      IdentifiableSurface::FromTypeAndToken(
+          IdentifiableSurface::Type::kWebFeature, feature));
+}
+
+}  // namespace
+
 // static
 void Dactyloscoper::Record(ExecutionContext* context, WebFeature feature) {
   // TODO: Workers.
@@ -38,7 +48,7 @@ void Dactyloscoper::Record(ExecutionContext* context, WebFeature feature) {
 void Dactyloscoper::RecordDirectSurface(ExecutionContext* context,
                                         WebFeature feature,
                                         const IdentifiableToken& value) {
-  if (!IdentifiabilityStudySettings::Get()->IsActive() || !context)
+  if (!context || !IsStudyEnabled(feature))
     return;
   auto* window = DynamicTo<LocalDOMWindow>(context);
   if (!window)
@@ -53,7 +63,7 @@ void Dactyloscoper::RecordDirectSurface(ExecutionContext* context,
 void Dactyloscoper::RecordDirectSurface(ExecutionContext* context,
                                         WebFeature feature,
                                         const String& str) {
-  if (!IdentifiabilityStudySettings::Get()->IsActive() || !context)
+  if (!context || !IsStudyEnabled(feature))
     return;
   if (str.IsEmpty())
     return;
@@ -65,7 +75,7 @@ void Dactyloscoper::RecordDirectSurface(ExecutionContext* context,
 void Dactyloscoper::RecordDirectSurface(ExecutionContext* context,
                                         WebFeature feature,
                                         const Vector<String>& strs) {
-  if (!IdentifiabilityStudySettings::Get()->IsActive() || !context)
+  if (!context || !IsStudyEnabled(feature))
     return;
   if (strs.IsEmpty())
     return;
@@ -81,7 +91,7 @@ void Dactyloscoper::RecordDirectSurface(
     ExecutionContext* context,
     WebFeature feature,
     const NotShared<DOMFloat32Array>& buffer) {
-  if (!IdentifiabilityStudySettings::Get()->IsActive() || !context)
+  if (!context || !IsStudyEnabled(feature))
     return;
   if (buffer.IsNull() || buffer->lengthAsSizeT() == 0)
     return;
