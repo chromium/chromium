@@ -223,8 +223,11 @@ class ImportNotifier(object):
 
             description = prologue + failure_list + epilogue + commit_list
 
-            bug = MonorailIssue.new_chromium_issue(summary, description, cc,
-                                                   components)
+            bug = MonorailIssue.new_chromium_issue(summary,
+                                                   description,
+                                                   cc,
+                                                   components,
+                                                   labels=['Test-WebTest'])
             _log.info(unicode(bug))
 
             if is_wpt_notify_enabled:

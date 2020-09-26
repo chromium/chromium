@@ -66,22 +66,35 @@ class MonorailIssue(object):
         return self._body
 
     @staticmethod
-    def new_chromium_issue(summary, description='', cc=None, components=None):
+    def new_chromium_issue(summary,
+                           description='',
+                           cc=None,
+                           components=None,
+                           priority='3',
+                           type='Bug',
+                           labels=None):
         """Creates a minimal new Chromium issue.
+
+        Chromium requires at least summary, priority and type: you must provide
+        the summary, whereas priority defaults to 3 and type defaults to Bug.
 
         Args:
             summary: The summary line.
             description: The issue description.
             cc: A list of email addresses to CC.
             components: A list of components.
+            priority: A string, defaults to '3'.
+            type: A string, defaults to 'Bug'.
+            labels: A list of labels (strings).
         """
-        return MonorailIssue(
-            'chromium',
-            summary=summary,
-            description=description,
-            cc=cc or [],
-            components=components or [],
-            status='Untriaged')
+        return MonorailIssue('chromium',
+                             summary=summary,
+                             description=description,
+                             cc=cc or [],
+                             components=components or [],
+                             status='Untriaged',
+                             labels=['Pri-' + priority, 'Type-' + type] +
+                             (labels or []))
 
     @staticmethod
     def crbug_link(issue_id):

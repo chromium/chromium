@@ -80,16 +80,18 @@ class MonorailIssueTest(unittest.TestCase):
                 'chromium', summary='test', status='Untriaged', labels='Flaky')
 
     def test_new_chromium_issue(self):
-        issue = MonorailIssue.new_chromium_issue(
-            'test',
-            description='body',
-            cc=['foo@chromium.org'],
-            components=['Infra'])
+        issue = MonorailIssue.new_chromium_issue('test',
+                                                 description='body',
+                                                 cc=['foo@chromium.org'],
+                                                 components=['Infra'],
+                                                 labels=['Test-WebTest'])
         self.assertEqual(issue.project_id, 'chromium')
         self.assertEqual(issue.body['summary'], 'test')
         self.assertEqual(issue.body['description'], 'body')
         self.assertEqual(issue.body['cc'], ['foo@chromium.org'])
         self.assertEqual(issue.body['components'], ['Infra'])
+        self.assertEqual(issue.body['labels'],
+                         ['Pri-3', 'Type-Bug', 'Test-WebTest'])
 
     def test_crbug_link(self):
         self.assertEqual(
