@@ -36,7 +36,6 @@ _CROS_SI_FILE_ALLOWLIST = {
         'debugallocation_shim.cc',  # TODO(crbug.com/973552): Remove.
         'iostream.cpp',  # TODO(crbug.com/973554): Remove.
         'spinlock.cc',  # TODO(crbug.com/973556): Remove.
-        'crash_report_private_api.cc',  # TODO(crbug.com/537099): Remove.
         'dlcservice_client.cc',  # TODO(crbug.com/537099): Remove.
         'hud_display.cc',  # TODO(crbug.com/537099): Remove.
         'int256.cc',  # TODO(crbug.com/537099): Remove.

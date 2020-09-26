@@ -16,7 +16,10 @@ namespace {
 // Used for throttling the API calls.
 base::Time g_last_called_time;
 
-base::Clock* g_clock = base::DefaultClock::GetInstance();
+base::Clock*& GetClock() {
+  static base::Clock* clock = base::DefaultClock::GetInstance();
+  return clock;
+}
 
 }  // namespace
 
@@ -29,7 +32,7 @@ CrashReportPrivateReportErrorFunction::
 ExtensionFunction::ResponseAction CrashReportPrivateReportErrorFunction::Run() {
   // Ensure we don't send too many crash reports. Limit to one report per hour.
   if (!g_last_called_time.is_null() &&
-      g_clock->Now() - g_last_called_time < base::TimeDelta::FromHours(1)) {
+      GetClock()->Now() - g_last_called_time < base::TimeDelta::FromHours(1)) {
     return RespondNow(Error("Too many calls to this API"));
   }
   g_last_called_time = base::Time::Now();
@@ -75,7 +78,7 @@ void CrashReportPrivateReportErrorFunction::OnReportComplete() {
 }
 
 void SetClockForTesting(base::Clock* clock) {
-  g_clock = clock;
+  GetClock() = clock;
 }
 
 }  // namespace api
