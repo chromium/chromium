@@ -205,8 +205,7 @@ class HidServiceLinux::BlockingTaskRunnerHelper : public UdevWatcher::Observer {
   void Start() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-    watcher_ = UdevWatcher::StartWatching(
-        this, {UdevWatcher::Filter(kSubsystemHidraw, "")});
+    watcher_ = UdevWatcher::StartWatching(this);
     watcher_->EnumerateExistingDevices();
     task_runner_->PostTask(
         FROM_HERE,
@@ -225,11 +224,9 @@ class HidServiceLinux::BlockingTaskRunnerHelper : public UdevWatcher::Observer {
       return;
     HidPlatformDeviceId platform_device_id = device_path;
 
-#if DCHECK_IS_ON()
     const char* subsystem = udev_device_get_subsystem(device.get());
-    DCHECK(subsystem);
-    DCHECK_EQ(base::StringPiece(subsystem), kSubsystemHidraw);
-#endif
+    if (!subsystem || strcmp(subsystem, kSubsystemHidraw) != 0)
+      return;
 
     const char* str_property = udev_device_get_devnode(device.get());
     if (!str_property)
