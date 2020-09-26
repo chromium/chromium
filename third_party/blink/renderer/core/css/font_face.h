@@ -87,6 +87,9 @@ class CORE_EXPORT FontFace : public ScriptWrappable,
   String variant() const;
   String featureSettings() const;
   String display() const;
+  String ascentOverride() const;
+  String descentOverride() const;
+  String lineGapOverride() const;
 
   // FIXME: Changing these attributes should affect font matching.
   void setFamily(ExecutionContext*, const AtomicString& s, ExceptionState&) {
@@ -99,6 +102,9 @@ class CORE_EXPORT FontFace : public ScriptWrappable,
   void setVariant(ExecutionContext*, const String&, ExceptionState&);
   void setFeatureSettings(ExecutionContext*, const String&, ExceptionState&);
   void setDisplay(ExecutionContext*, const String&, ExceptionState&);
+  void setAscentOverride(ExecutionContext*, const String&, ExceptionState&);
+  void setDescentOverride(ExecutionContext*, const String&, ExceptionState&);
+  void setLineGapOverride(ExecutionContext*, const String&, ExceptionState&);
 
   String status() const;
   ScriptPromise loaded(ScriptState* script_state) {

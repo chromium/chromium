@@ -238,7 +238,14 @@ FontFace::FontFace(ExecutionContext* context,
                         AtRuleDescriptorID::FontFeatureSettings);
   SetPropertyFromString(context, descriptors->display(),
                         AtRuleDescriptorID::FontDisplay);
-  // TODO(xiaochengh): Add override descriptors to FontFaceDescriptors
+  if (RuntimeEnabledFeatures::CSSFontMetricsOverrideEnabled()) {
+    SetPropertyFromString(context, descriptors->ascentOverride(),
+                          AtRuleDescriptorID::AscentOverride);
+    SetPropertyFromString(context, descriptors->descentOverride(),
+                          AtRuleDescriptorID::DescentOverride);
+    SetPropertyFromString(context, descriptors->lineGapOverride(),
+                          AtRuleDescriptorID::LineGapOverride);
+  }
 }
 
 FontFace::~FontFace() = default;
@@ -269,6 +276,18 @@ String FontFace::featureSettings() const {
 
 String FontFace::display() const {
   return display_ ? display_->CssText() : "auto";
+}
+
+String FontFace::ascentOverride() const {
+  return ascent_override_ ? ascent_override_->CssText() : "normal";
+}
+
+String FontFace::descentOverride() const {
+  return descent_override_ ? descent_override_->CssText() : "normal";
+}
+
+String FontFace::lineGapOverride() const {
+  return line_gap_override_ ? line_gap_override_->CssText() : "normal";
 }
 
 void FontFace::setStyle(ExecutionContext* context,
@@ -317,6 +336,27 @@ void FontFace::setDisplay(ExecutionContext* context,
                           const String& s,
                           ExceptionState& exception_state) {
   SetPropertyFromString(context, s, AtRuleDescriptorID::FontDisplay,
+                        &exception_state);
+}
+
+void FontFace::setAscentOverride(ExecutionContext* context,
+                                 const String& s,
+                                 ExceptionState& exception_state) {
+  SetPropertyFromString(context, s, AtRuleDescriptorID::AscentOverride,
+                        &exception_state);
+}
+
+void FontFace::setDescentOverride(ExecutionContext* context,
+                                  const String& s,
+                                  ExceptionState& exception_state) {
+  SetPropertyFromString(context, s, AtRuleDescriptorID::DescentOverride,
+                        &exception_state);
+}
+
+void FontFace::setLineGapOverride(ExecutionContext* context,
+                                  const String& s,
+                                  ExceptionState& exception_state) {
+  SetPropertyFromString(context, s, AtRuleDescriptorID::LineGapOverride,
                         &exception_state);
 }
 

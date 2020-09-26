@@ -51,6 +51,9 @@ enum FontFaceLoadStatus {
     [RaisesException=Setter, SetterCallWith=ExecutionContext] attribute DOMString variant;
     [RaisesException=Setter, SetterCallWith=ExecutionContext] attribute DOMString featureSettings;
     [RaisesException=Setter, SetterCallWith=ExecutionContext] attribute DOMString display;
+    [RaisesException=Setter, SetterCallWith=ExecutionContext, RuntimeEnabled=CSSFontMetricsOverride] attribute DOMString ascentOverride;
+    [RaisesException=Setter, SetterCallWith=ExecutionContext, RuntimeEnabled=CSSFontMetricsOverride] attribute DOMString descentOverride;
+    [RaisesException=Setter, SetterCallWith=ExecutionContext, RuntimeEnabled=CSSFontMetricsOverride] attribute DOMString lineGapOverride;
 
     readonly attribute FontFaceLoadStatus status;
 

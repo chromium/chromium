@@ -12,4 +12,7 @@ dictionary FontFaceDescriptors {
     DOMString variant = "normal";
     DOMString featureSettings = "normal";
     DOMString display = "auto";
+    [RuntimeEnabled=CSSFontMetricsOverride] DOMString ascentOverride = "normal";
+    [RuntimeEnabled=CSSFontMetricsOverride] DOMString descentOverride = "normal";
+    [RuntimeEnabled=CSSFontMetricsOverride] DOMString lineGapOverride = "normal";
 };
