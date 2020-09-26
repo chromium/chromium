@@ -338,7 +338,7 @@ _WIN_10_LOW_END_BENCHMARK_CONFIGS = PerfSuite(
     ])
 _WIN_10_LOW_END_HP_CANDIDATE_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('v8.browsing_desktop'),
-    _GetBenchmarkConfig('system_health.common_desktop')
+    _GetBenchmarkConfig('rendering.desktop'),
 ])
 _WIN_7_BENCHMARK_CONFIGS = PerfSuite([
     'loading.desktop',
@@ -402,12 +402,15 @@ _ANDROID_PIXEL2_FYI_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('system_health.common_mobile'),
     _GetBenchmarkConfig('startup.mobile'),
     _GetBenchmarkConfig('speedometer2'),
+    _GetBenchmarkConfig('rendering.mobile'),
     _GetBenchmarkConfig('octane'),
-    _GetBenchmarkConfig('jetstream')])
+    _GetBenchmarkConfig('jetstream')
+])
 _CHROMEOS_KEVIN_FYI_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('rendering.desktop')])
 _LINUX_PERF_FYI_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('power.desktop'),
+    _GetBenchmarkConfig('rendering.desktop'),
     _GetBenchmarkConfig('system_health.common_desktop')
 ])
 

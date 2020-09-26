@@ -6,6 +6,9 @@
             },
             "system_health.common_desktop": {
                 "abridged": false
+            },
+            "rendering.desktop": {
+                "abridged": true
             }
         }
     },

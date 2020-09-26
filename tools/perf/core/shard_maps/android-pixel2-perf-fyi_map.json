@@ -48,6 +48,9 @@
             },
             "v8.browsing_mobile": {
                 "abridged": false
+            },
+            "rendering.mobile": {
+                "abridged": true
             }
         }
     },
