@@ -240,6 +240,8 @@ void TextFragmentFinder::FindMatch(Document& document) {
     EphemeralRangeInFlatTree ambiguous_match =
         FindMatchFromPosition(document, match.EndPosition());
     client_.DidFindMatch(match, match_metrics, ambiguous_match.IsNull());
+  } else {
+    client_.NoMatchFound();
   }
 }
 

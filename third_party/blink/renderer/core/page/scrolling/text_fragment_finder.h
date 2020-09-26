@@ -26,6 +26,7 @@ class CORE_EXPORT TextFragmentFinder final {
         const EphemeralRangeInFlatTree& range,
         const TextFragmentAnchorMetrics::Match match_metrics,
         bool is_unique) = 0;
+    virtual void NoMatchFound() = 0;
   };
 
   // Client must outlive the finder.

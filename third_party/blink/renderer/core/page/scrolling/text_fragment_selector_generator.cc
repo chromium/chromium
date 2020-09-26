@@ -289,6 +289,11 @@ void TextFragmentSelectorGenerator::DidFindMatch(
   }
 }
 
+void TextFragmentSelectorGenerator::NoMatchFound() {
+  NotifySelectorReady(
+      TextFragmentSelector(TextFragmentSelector::SelectorType::kInvalid));
+}
+
 void TextFragmentSelectorGenerator::NotifySelectorReady(
     const TextFragmentSelector& selector) {
   DCHECK(pending_generate_selector_callback_);

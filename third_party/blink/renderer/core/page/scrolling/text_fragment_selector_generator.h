@@ -53,6 +53,8 @@ class CORE_EXPORT TextFragmentSelectorGenerator final
                     const TextFragmentAnchorMetrics::Match match_metrics,
                     bool is_unique) override;
 
+  void NoMatchFound() override;
+
   // Notifies the results of |GenerateSelector|.
   void NotifySelectorReady(const TextFragmentSelector& selector);
 
