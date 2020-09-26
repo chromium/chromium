@@ -103,6 +103,7 @@ source_set("sandbox_linux_unittests_sources") {
     "syscall_broker/broker_file_permission_unittest.cc",
     "syscall_broker/broker_process_unittest.cc",
     "syscall_broker/broker_simple_message_unittest.cc",
+    "syscall_broker/remote_syscall_arg_handler_unittest.cc",
     "tests/main.cc",
     "tests/scoped_temporary_file.cc",
     "tests/scoped_temporary_file.h",
@@ -358,6 +359,8 @@ component("sandbox_services") {
     "syscall_broker/broker_process.h",
     "syscall_broker/broker_simple_message.cc",
     "syscall_broker/broker_simple_message.h",
+    "syscall_broker/remote_syscall_arg_handler.cc",
+    "syscall_broker/remote_syscall_arg_handler.h",
     "syscall_broker/syscall_dispatcher.cc",
     "syscall_broker/syscall_dispatcher.h",
   ]
@@ -409,6 +412,8 @@ component("sandbox_services") {
       "syscall_broker/broker_process.h",
       "syscall_broker/broker_simple_message.cc",
       "syscall_broker/broker_simple_message.h",
+      "syscall_broker/remote_syscall_arg_handler.cc",
+      "syscall_broker/remote_syscall_arg_handler.h",
       "syscall_broker/syscall_dispatcher.cc",
       "syscall_broker/syscall_dispatcher.h",
     ]
