@@ -7,6 +7,8 @@
 #include <algorithm>
 
 #include "base/check_op.h"
+#include "base/containers/flat_map.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "chromeos/printing/uri_impl.h"
@@ -101,6 +103,18 @@ bool HasNonASCII(const std::string& str) {
   });
 }
 
+// The map with pairs scheme -> default_port.
+const base::flat_map<std::string, int>& GetDefaultPorts() {
+  static const base::NoDestructor<base::flat_map<std::string, int>>
+      kDefaultPorts({{"ipp", 631},
+                     {"ipps", 443},
+                     {"http", 80},
+                     {"https", 443},
+                     {"lpd", 515},
+                     {"socket", 9100}});
+  return *kDefaultPorts;
+}
+
 }  //  namespace
 
 Uri::Pim::Pim() = default;
@@ -124,11 +138,10 @@ Uri::Uri(const std::string& uri) : pim_(std::make_unique<Pim>()) {
   pim_->parser_error().parsed_chars += prefix_size;
 }
 
+// static
 int Uri::GetDefaultPort(const std::string& scheme) {
-  auto it = Pim::GetDefaultPorts().find(scheme);
-  if (it == Pim::GetDefaultPorts().end())
-    return -1;
-  return it->second;
+  auto it = GetDefaultPorts().find(scheme);
+  return it != GetDefaultPorts().end() ? it->second : -1;
 }
 
 Uri::Uri(const Uri& uri) : pim_(std::make_unique<Pim>(*uri.pim_)) {}
@@ -412,8 +425,8 @@ bool Uri::ShouldPrintPort(bool always_print_port) const {
   if (always_print_port)
     return true;
 
-  auto it = Pim::GetDefaultPorts().find(pim_->scheme());
-  if (it == Pim::GetDefaultPorts().end())
+  auto it = GetDefaultPorts().find(pim_->scheme());
+  if (it == GetDefaultPorts().end())
     return true;
 
   return it->second != pim_->port();

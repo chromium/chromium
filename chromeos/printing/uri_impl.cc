@@ -6,12 +6,10 @@
 
 #include <algorithm>
 #include <array>
-#include <map>
 #include <set>
 
 #include "base/check_op.h"
 #include "base/i18n/streaming_utf8_validator.h"
-#include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversion_utils.h"
 #include "chromeos/printing/uri.h"
@@ -95,18 +93,6 @@ Iter FindFirstOf(Iter begin, Iter end, const std::string& chars) {
 }
 
 }  // namespace
-
-// static
-const base::flat_map<std::string, int>& Uri::Pim::GetDefaultPorts() {
-  static const base::NoDestructor<base::flat_map<std::string, int>>
-      kDefaultPorts({{"ipp", 631},
-                     {"ipps", 443},
-                     {"http", 80},
-                     {"https", 443},
-                     {"lpd", 515},
-                     {"socket", 9100}});
-  return *kDefaultPorts;
-}
 
 template <bool encoded, bool case_insensitive>
 bool Uri::Pim::ParseString(const Iter& begin,
@@ -195,9 +181,8 @@ bool Uri::Pim::SavePort(int value) {
     parser_error_.status = ParserStatus::kInvalidPortNumber;
     return false;
   }
-  if (value == kPortUnspecified && GetDefaultPorts().count(scheme_)) {
-    value = GetDefaultPorts().at(scheme_);
-  }
+  if (value == kPortUnspecified)
+    value = Uri::GetDefaultPort(scheme_);
   port_ = value;
   return true;
 }
@@ -307,8 +292,8 @@ bool Uri::Pim::ParseScheme(const Iter& begin, const Iter& end) {
   scheme_ = std::move(out);
   // If the current Port is unspecified and the new Scheme has default port
   // number, set the default port number.
-  if (port_ == kPortUnspecified && GetDefaultPorts().count(scheme_))
-    port_ = GetDefaultPorts().at(scheme_);
+  if (port_ == kPortUnspecified)
+    port_ = Uri::GetDefaultPort(scheme_);
   return true;
 }
 

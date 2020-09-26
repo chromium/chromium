@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/flat_map.h"
 #include "chromeos/printing/uri.h"
 
 // This file contains a declaration of struct used in the implementation of
@@ -22,9 +21,6 @@ using Iter = std::string::const_iterator;
 
 class Uri::Pim {
  public:
-  // The map with pairs scheme -> default_port.
-  static const base::flat_map<std::string, int>& GetDefaultPorts();
-
   Pim();
   Pim(const Pim&);
   ~Pim();
