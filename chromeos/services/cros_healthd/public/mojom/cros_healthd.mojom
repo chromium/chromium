@@ -316,6 +316,16 @@ interface CrosHealthdDiagnosticsService {
   // * |response| - contains a unique identifier and status for the created
   //                routine.
   RunLanConnectivityRoutine() => (RunRoutineResponse response);
+
+  // Requests that the SignalStrength routine is created and started on the
+  // platform. This routine checks whether there is an acceptable signal
+  // strength on wireless networks.  This routine is only available if
+  // GetAvailableRoutines returned kSignalStrength.
+  //
+  // The response:
+  // * |response| - contains a unique identifier and status for the created
+  //                routine.
+  RunSignalStrengthRoutine() => (RunRoutineResponse response);
 };
 
 // Event interface exposed by the cros_healthd daemon.

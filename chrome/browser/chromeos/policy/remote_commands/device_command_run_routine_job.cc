@@ -503,6 +503,15 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
               std::move(failed_callback)));
       break;
     }
+    case chromeos::cros_healthd::mojom::DiagnosticRoutineEnum::
+        kSignalStrength: {
+      chromeos::cros_healthd::ServiceConnection::GetInstance()
+          ->RunSignalStrengthRoutine(base::BindOnce(
+              &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
+              weak_ptr_factory_.GetWeakPtr(), std::move(succeeded_callback),
+              std::move(failed_callback)));
+      break;
+    }
   }
 }
 
