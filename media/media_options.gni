@@ -58,6 +58,13 @@ declare_args() {
     media_use_libvpx = false
   }
 
+  # Enable usage of libvpx within the media library. Used for software based
+  # encoding of H264 content.
+  media_use_openh264 = true
+  if (is_ios || is_android || !proprietary_codecs) {
+    media_use_openh264 = false
+  }
+
   # Override to dynamically link the cras (ChromeOS audio) library.
   use_cras = is_chromeos_device
 

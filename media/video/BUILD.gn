@@ -76,6 +76,14 @@ source_set("video") {
     ]
     deps += [ "//third_party/libvpx" ]
   }
+
+  if (proprietary_codecs && media_use_openh264) {
+    sources += [
+      "openh264_video_encoder.cc",
+      "openh264_video_encoder.h",
+    ]
+    deps += [ "//third_party/openh264:encoder" ]
+  }
 }
 
 # Note: This is a roll-up only target; do not expand the visibility. DEPS should

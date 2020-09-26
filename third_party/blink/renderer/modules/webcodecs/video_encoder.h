@@ -111,6 +111,8 @@ class MODULES_EXPORT VideoEncoder final : public ScriptWrappable {
   std::unique_ptr<ParsedConfig> ParseConfig(const VideoEncoderConfig*,
                                             ExceptionState&);
   bool VerifyCodecSupport(ParsedConfig*, ExceptionState&);
+  std::unique_ptr<media::VideoEncoder> CreateMediaVideoEncoder(
+      const ParsedConfig& config);
 
   std::unique_ptr<ParsedConfig> active_config_;
   std::unique_ptr<media::VideoEncoder> media_encoder_;

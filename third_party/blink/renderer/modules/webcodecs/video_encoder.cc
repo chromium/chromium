@@ -10,10 +10,14 @@
 #include "base/callback.h"
 #include "base/logging.h"
 #include "base/macros.h"
+#include "build/build_config.h"
 #include "media/base/mime_util.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_color_space.h"
 #include "media/base/video_encoder.h"
+#if BUILDFLAG(ENABLE_OPENH264)
+#include "media/video/openh264_video_encoder.h"
+#endif
 #if BUILDFLAG(ENABLE_LIBVPX)
 #include "media/video/vpx_video_encoder.h"
 #endif
@@ -47,6 +51,11 @@ namespace blink {
 
 namespace {
 std::unique_ptr<media::VideoEncoder> CreateAcceleratedVideoEncoder() {
+#if defined(OS_MAC) || defined(OS_LINUX)
+  // TODO(https://crbug.com/1110279) Flush() is not implemented on MacOS'
+  // accelerated video encoder, so we can't use it yet.
+  return nullptr;
+#else
   auto* gpu_factories = Platform::Current()->GetGpuFactories();
   if (!gpu_factories || !gpu_factories->IsGpuVideoAcceleratorEnabled())
     return nullptr;
@@ -56,6 +65,7 @@ std::unique_ptr<media::VideoEncoder> CreateAcceleratedVideoEncoder() {
       media::AsyncDestroyVideoEncoder<media::VideoEncodeAcceleratorAdapter>>(
       std::make_unique<media::VideoEncodeAcceleratorAdapter>(
           gpu_factories, std::move(task_runner)));
+#endif  // defined(OS_MAC) || defined(OS_LINUX)
 }
 
 std::unique_ptr<media::VideoEncoder> CreateVpxVideoEncoder() {
@@ -64,6 +74,14 @@ std::unique_ptr<media::VideoEncoder> CreateVpxVideoEncoder() {
 #else
   return nullptr;
 #endif  // BUILDFLAG(ENABLE_LIBVPX)
+}
+
+std::unique_ptr<media::VideoEncoder> CreateOpenH264VideoEncoder() {
+#if BUILDFLAG(ENABLE_OPENH264)
+  return std::make_unique<media::OpenH264VideoEncoder>();
+#else
+  return nullptr;
+#endif  // BUILDFLAG(ENABLE_OPENH264)
 }
 
 scoped_refptr<media::VideoFrame> ConvertToI420Frame(
@@ -220,11 +238,6 @@ bool VideoEncoder::VerifyCodecSupport(ParsedConfig* config,
       break;
 
     case media::kCodecH264:
-      if (config->acc_pref == AccelerationPreference::kDeny) {
-        exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                          "Software h264 is not supported yet");
-        return false;
-      }
       break;
 
     default:
@@ -234,6 +247,49 @@ bool VideoEncoder::VerifyCodecSupport(ParsedConfig* config,
   }
 
   return true;
+}
+
+std::unique_ptr<media::VideoEncoder> VideoEncoder::CreateMediaVideoEncoder(
+    const ParsedConfig& config) {
+  // TODO(https://crbug.com/1119636): Implement / call a proper method for
+  // detecting support of encoder configs.
+  switch (config.acc_pref) {
+    case AccelerationPreference::kRequire:
+      return CreateAcceleratedVideoEncoder();
+    case AccelerationPreference::kAllow: {
+      switch (config.codec) {
+        case media::kCodecVP8:
+        case media::kCodecVP9:
+          /* No acceleration supported yet. */
+          return CreateVpxVideoEncoder();
+
+        case media::kCodecH264:
+          if (auto result = CreateAcceleratedVideoEncoder())
+            return result;
+          return CreateOpenH264VideoEncoder();
+
+        default:
+          return nullptr;
+      }
+    }
+    case AccelerationPreference::kDeny: {
+      switch (config.codec) {
+        case media::kCodecVP8:
+        case media::kCodecVP9:
+          return CreateVpxVideoEncoder();
+
+        case media::kCodecH264:
+          return CreateOpenH264VideoEncoder();
+
+        default:
+          return nullptr;
+      }
+    }
+
+    default:
+      NOTREACHED();
+      return nullptr;
+  }
 }
 
 void VideoEncoder::configure(const VideoEncoderConfig* config,
@@ -462,26 +518,11 @@ void VideoEncoder::ProcessConfigure(Request* request) {
   DCHECK(active_config_);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  switch (active_config_->codec) {
-    case media::kCodecVP8:
-    case media::kCodecVP9:
-      media_encoder_ = CreateVpxVideoEncoder();
-      break;
-
-    case media::kCodecH264:
-      media_encoder_ = CreateAcceleratedVideoEncoder();
-      break;
-
-    default:
-      // This should already have been caught in ParseConfig() and
-      // VerifyCodecSupport().
-      NOTREACHED();
-      break;
-  }
-
+  media_encoder_ = CreateMediaVideoEncoder(*active_config_);
   if (!media_encoder_) {
-    // CreateAcceleratedVideoEncoder() can return a nullptr.
-    HandleError(DOMExceptionCode::kOperationError, "Encoder creation error.");
+    HandleError(DOMExceptionCode::kOperationError,
+                "Encoder creation error. Most likely unsupported "
+                "codec/acceleration requirement combination.");
     return;
   }
 

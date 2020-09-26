@@ -37,6 +37,7 @@ buildflag_header("media_buildflags") {
     "ENABLE_MEDIA_DRM_STORAGE=$enable_media_drm_storage",
     "ENABLE_MEDIA_REMOTING=$enable_media_remoting",
     "ENABLE_MEDIA_REMOTING_RPC=$enable_media_remoting_rpc",
+    "ENABLE_OPENH264=$media_use_openh264",
     "ENABLE_PLATFORM_MPEG_H_AUDIO=$enable_platform_mpeg_h_audio",
     "ENABLE_MSE_MPEG2TS_STREAM_PARSER=$enable_mse_mpeg2ts_stream_parser",
     "USE_CHROMEOS_MEDIA_ACCELERATION=$use_vaapi||$use_v4l2_codec",

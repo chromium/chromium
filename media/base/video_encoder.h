@@ -26,10 +26,10 @@ struct MEDIA_EXPORT VideoEncoderOutput {
   // Feel free take this buffer out and use underlying memory as is without
   // copying.
   std::unique_ptr<uint8_t[]> data;
-  size_t size;
+  size_t size = 0;
 
   base::TimeDelta timestamp;
-  bool key_frame;
+  bool key_frame = false;
 };
 
 class MEDIA_EXPORT VideoEncoder {
