@@ -42,7 +42,6 @@ using password_manager::PasswordStoreChange;
 using password_manager::PasswordStoreChangeList;
 using password_manager::PrimaryKeyToFormMap;
 using password_manager::UnorderedPasswordFormElementsAre;
-using password_manager::metrics_util::LinuxBackendMigrationStatus;
 using testing::ElementsAreArray;
 using testing::Field;
 using testing::IsEmpty;
@@ -160,8 +159,6 @@ TEST_F(PasswordStoreXTest, MigrationCompleted) {
   EXPECT_NE(kPassword, base::UTF16ToUTF8(stored_forms[0]->password_value));
   EXPECT_THAT(migration_step_pref_.GetValue(),
               PasswordStoreX::LOGIN_DB_REPLACED);
-  histogram_tester_.ExpectTotalCount(
-      "PasswordManager.LinuxBackendMigration.AttemptResult", 0);
 }
 
 TEST_F(PasswordStoreXTest, MigrationNotAttemptedEmptyDB) {
@@ -203,9 +200,6 @@ TEST_F(PasswordStoreXTest, MigrationNotAttemptedEmptyDB) {
   EXPECT_NE(kPassword, base::UTF16ToUTF8(stored_forms[0]->password_value));
   EXPECT_THAT(migration_step_pref_.GetValue(),
               PasswordStoreX::LOGIN_DB_REPLACED);
-  histogram_tester_.ExpectBucketCount(
-      "PasswordManager.LinuxBackendMigration.AttemptResult",
-      LinuxBackendMigrationStatus::kLoginDBReplaced, 1);
 }
 
 // If the login database contains unmigrated entries, they will be migrated into
@@ -273,7 +267,4 @@ TEST_F(PasswordStoreXTest, MigrationNotAttemptedNonEmptyDB) {
 
   EXPECT_THAT(migration_step_pref_.GetValue(),
               PasswordStoreX::LOGIN_DB_REPLACED);
-  histogram_tester_.ExpectBucketCount(
-      "PasswordManager.LinuxBackendMigration.AttemptResult",
-      LinuxBackendMigrationStatus::kLoginDBReplaced, 1);
 }

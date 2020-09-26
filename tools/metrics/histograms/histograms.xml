@@ -126447,6 +126447,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="PasswordManager.LinuxBackendMigration.Adoption"
     enum="LinuxPasswordsMigrationToEncryptionStatus" expires_after="2020-10-01">
+  <obsolete>
+    Removed as of Sept 2020.
+  </obsolete>
   <owner>cfroussios@chromium.org</owner>
   <owner>jdoerrie@chromium.org</owner>
   <summary>
@@ -126457,6 +126460,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="PasswordManager.LinuxBackendMigration.AttemptResult"
     enum="LinuxPasswordsMigrationToEncryptionStatus" expires_after="2020-10-01">
+  <obsolete>
+    Removed as of Sept 2020.
+  </obsolete>
   <owner>cfroussios@chromium.org</owner>
   <owner>jdoerrie@chromium.org</owner>
   <summary>

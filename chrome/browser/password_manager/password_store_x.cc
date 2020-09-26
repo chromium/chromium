@@ -32,40 +32,6 @@ using password_manager::PasswordStoreChangeList;
 using password_manager::PasswordStoreDefault;
 
 namespace {
-// Returns the password_manager::metrics_util::LinuxBackendMigrationStatus
-// equivalent for |step|.
-password_manager::metrics_util::LinuxBackendMigrationStatus StepForMetrics(
-    PasswordStoreX::MigrationToLoginDBStep step) {
-  using password_manager::metrics_util::LinuxBackendMigrationStatus;
-  switch (step) {
-    case PasswordStoreX::NOT_ATTEMPTED:
-      return LinuxBackendMigrationStatus::kNotAttempted;
-    case PasswordStoreX::DEPRECATED_FAILED:
-      return LinuxBackendMigrationStatus::kDeprecatedFailed;
-    case PasswordStoreX::DEPRECATED_COPIED_ALL:
-      return LinuxBackendMigrationStatus::kDeprecatedCopiedAll;
-    case PasswordStoreX::LOGIN_DB_REPLACED:
-      return LinuxBackendMigrationStatus::kLoginDBReplaced;
-    case PasswordStoreX::STARTED:
-      return LinuxBackendMigrationStatus::kStarted;
-    case PasswordStoreX::POSTPONED:
-      return LinuxBackendMigrationStatus::kPostponed;
-    case PasswordStoreX::DEPRECATED_FAILED_CREATE_ENCRYPTED:
-      return LinuxBackendMigrationStatus::kDeprecatedFailedCreatedEncrypted;
-    case PasswordStoreX::DEPRECATED_FAILED_ACCESS_NATIVE:
-      return LinuxBackendMigrationStatus::kDeprecatedFailedAccessNative;
-    case PasswordStoreX::FAILED_REPLACE:
-      return LinuxBackendMigrationStatus::kFailedReplace;
-    case PasswordStoreX::FAILED_INIT_ENCRYPTED:
-      return LinuxBackendMigrationStatus::kFailedInitEncrypted;
-    case PasswordStoreX::DEPRECATED_FAILED_RECREATE_ENCRYPTED:
-      return LinuxBackendMigrationStatus::kDeprecatedFailedRecreateEncrypted;
-    case PasswordStoreX::FAILED_WRITE_TO_ENCRYPTED:
-      return LinuxBackendMigrationStatus::kFailedWriteToEncrypted;
-  }
-  NOTREACHED();
-  return LinuxBackendMigrationStatus::kNotAttempted;
-}
 
 // Reads and rewrites every entry in |login_db|, reading unecrypted and writing
 // encrypted. This should run in a transaction. Returns LOGIN_DB_REPLACED on
@@ -128,10 +94,6 @@ PasswordStoreX::PasswordStoreX(
                             prefs);
   migration_to_login_db_step_ =
       static_cast<MigrationToLoginDBStep>(migration_step_pref_.GetValue());
-
-  base::UmaHistogramEnumeration(
-      "PasswordManager.LinuxBackendMigration.Adoption",
-      StepForMetrics(migration_to_login_db_step_));
 }
 
 PasswordStoreX::~PasswordStoreX() = default;
@@ -245,10 +207,6 @@ void PasswordStoreX::CheckMigration() {
     else
       login_db()->disable_encryption();
   }
-
-  base::UmaHistogramEnumeration(
-      "PasswordManager.LinuxBackendMigration.AttemptResult",
-      StepForMetrics(migration_to_login_db_step_));
 }
 
 void PasswordStoreX::UpdateMigrationToLoginDBStep(MigrationToLoginDBStep step) {
