@@ -9,18 +9,21 @@
 #include "base/test/bind_test_util.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "components/variations/variations_ids_provider.h"
+#include "content/public/browser/web_contents_observer.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "weblayer/browser/tab_impl.h"
 #include "weblayer/public/browser.h"
 #include "weblayer/public/navigation.h"
 #include "weblayer/public/navigation_controller.h"
 #include "weblayer/public/navigation_observer.h"
-#include "weblayer/public/tab.h"
 #include "weblayer/shell/browser/shell.h"
 #include "weblayer/test/interstitial_utils.h"
+#include "weblayer/test/test_navigation_observer.h"
 #include "weblayer/test/weblayer_browser_test_utils.h"
 
 namespace weblayer {
@@ -586,6 +589,63 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
   const std::string new_ua = response_2.http_request()->headers.at(
       net::HttpRequestHeaders::kUserAgent);
   EXPECT_EQ(custom_ua, new_ua);
+}
+
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, AutoPlayDefault) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL url(embedded_test_server()->GetURL("/autoplay.html"));
+  auto* tab = static_cast<TabImpl*>(shell()->tab());
+  NavigateAndWaitForCompletion(url, tab);
+
+  auto* web_contents = tab->web_contents();
+  bool playing = false;
+  // There's no notification to watch that would signal video wasn't autoplayed,
+  // so instead check once through javascript.
+  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
+      web_contents,
+      "window.domAutomationController.send(!document.getElementById('vid')."
+      "paused)",
+      &playing));
+  ASSERT_FALSE(playing);
+}
+
+namespace {
+
+class WaitForMediaPlaying : public content::WebContentsObserver {
+ public:
+  explicit WaitForMediaPlaying(content::WebContents* web_contents)
+      : WebContentsObserver(web_contents) {}
+
+  // WebContentsObserver override.
+  void MediaStartedPlaying(const MediaPlayerInfo& info,
+                           const content::MediaPlayerId&) final {
+    run_loop_.Quit();
+    CHECK(info.has_audio);
+    CHECK(info.has_video);
+  }
+
+  void Wait() { run_loop_.Run(); }
+
+ private:
+  base::RunLoop run_loop_;
+
+  DISALLOW_COPY_AND_ASSIGN(WaitForMediaPlaying);
+};
+
+}  // namespace
+
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, AutoPlayEnabled) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL url(embedded_test_server()->GetURL("/autoplay.html"));
+  NavigationController::NavigateParams params;
+  params.enable_auto_play = true;
+  GetNavigationController()->Navigate(url, params);
+
+  auto* tab = static_cast<TabImpl*>(shell()->tab());
+  WaitForMediaPlaying wait_for_media(tab->web_contents());
+  wait_for_media.Wait();
 }
 
 class NavigationBrowserTest2 : public NavigationBrowserTest {
