@@ -186,6 +186,7 @@ class FidlMessagePortClientAdapter : public MessagePortAdapter {
       return;
     }
 
+    OnDeliverMessageToFidlComplete();
     DeliverMessageToFidl();
   }
 
@@ -198,8 +199,6 @@ class FidlMessagePortClientAdapter : public MessagePortAdapter {
     port_->PostMessage(
         std::move(*message),
         fit::bind_member(this, &FidlMessagePortClientAdapter::OnMessagePosted));
-
-    OnDeliverMessageToFidlComplete();
   }
 
   fuchsia::web::MessagePortPtr port_;
