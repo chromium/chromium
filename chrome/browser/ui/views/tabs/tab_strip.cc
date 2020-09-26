@@ -67,7 +67,6 @@
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/effects/SkLayerDrawLooper.h"
 #include "third_party/skia/include/pathops/SkPathOps.h"
-#include "ui/accessibility/ax_node_data.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -1731,6 +1730,11 @@ views::View* TabStrip::GetTabViewForPromoAnchor(int index_hint) {
   return tab_at(base::ClampToRange(index_hint, 0, tab_count()));
 }
 
+views::View* TabStrip::GetDefaultFocusableChild() {
+  int active = controller_->GetActiveIndex();
+  return active != TabStripModel::kNoTab ? tab_at(active) : nullptr;
+}
+
 const ui::ListSelectionModel& TabStrip::GetSelectionModel() const {
   return controller_->GetSelectionModel();
 }
@@ -2410,10 +2414,6 @@ gfx::Size TabStrip::CalculatePreferredSize() const {
                    GetLayoutConstant(TAB_HEIGHT));
 }
 
-void TabStrip::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kTabList;
-}
-
 views::View* TabStrip::GetTooltipHandlerForPoint(const gfx::Point& point) {
   if (!HitTestPoint(point))
     return nullptr;
@@ -2440,13 +2440,6 @@ views::View* TabStrip::GetTooltipHandlerForPoint(const gfx::Point& point) {
       return ConvertPointToViewAndGetTooltipHandler(this, tab, point);
   }
   return this;
-}
-
-views::View* TabStrip::GetDefaultFocusableChild() {
-  int active = controller_->GetActiveIndex();
-  return active != TabStripModel::kNoTab
-             ? tab_at(active)
-             : AccessiblePaneView::GetDefaultFocusableChild();
 }
 
 BrowserRootView::DropIndex TabStrip::GetDropIndex(

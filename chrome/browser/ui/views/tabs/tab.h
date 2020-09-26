@@ -175,6 +175,10 @@ class Tab : public gfx::AnimationDelegate,
   static base::Optional<TabAlertState> GetAlertStateToShow(
       const std::vector<TabAlertState>& alert_states);
 
+  bool showing_close_button_for_testing() const {
+    return showing_close_button_;
+  }
+
  private:
   class TabCloseButtonObserver;
   friend class AlertIndicatorTest;

@@ -8,7 +8,9 @@
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/tabs/tab_search_button.h"
+#include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
 #include "chrome/grit/generated_resources.h"
+#include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/layout/flex_layout.h"
@@ -134,6 +136,16 @@ gfx::Size TabStripRegionView::GetMinimumSize() const {
 void TabStripRegionView::OnThemeChanged() {
   View::OnThemeChanged();
   FrameColorsChanged();
+}
+
+views::View* TabStripRegionView::GetDefaultFocusableChild() {
+  auto* focusable_child = tab_strip_->GetDefaultFocusableChild();
+  return focusable_child ? focusable_child
+                         : AccessiblePaneView::GetDefaultFocusableChild();
+}
+
+void TabStripRegionView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
+  node_data->role = ax::mojom::Role::kTabList;
 }
 
 int TabStripRegionView::CalculateTabStripAvailableWidth() {

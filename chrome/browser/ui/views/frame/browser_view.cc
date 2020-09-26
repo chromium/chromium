@@ -2681,8 +2681,8 @@ void BrowserView::GetAccessiblePanes(std::vector<views::View*>* panes) {
     panes->push_back(webui_tab_strip_);
 #endif
   panes->push_back(toolbar_button_provider_->GetAsAccessiblePaneView());
-  if (tabstrip_)
-    panes->push_back(tabstrip_);
+  if (tab_strip_region_view_)
+    panes->push_back(tab_strip_region_view_);
   if (toolbar_ && toolbar_->custom_tab_bar())
     panes->push_back(toolbar_->custom_tab_bar());
   if (bookmark_bar_view_.get())

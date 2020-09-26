@@ -6,13 +6,13 @@
 #define CHROME_BROWSER_UI_VIEWS_FRAME_TAB_STRIP_REGION_VIEW_H_
 
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
-#include "ui/views/view.h"
+#include "ui/views/accessible_pane_view.h"
 
 class TabSearchButton;
 
 // Container for the tabstrip, new tab button, and reserved grab handle space.
 // TODO (https://crbug.com/949660) Under construction.
-class TabStripRegionView final : public views::View {
+class TabStripRegionView final : public views::AccessiblePaneView {
  public:
   explicit TabStripRegionView(std::unique_ptr<TabStrip> tab_strip);
   ~TabStripRegionView() override;
@@ -32,11 +32,13 @@ class TabStripRegionView final : public views::View {
 
   TabSearchButton* tab_search_button() { return tab_search_button_; }
 
-  // views::View overrides:
+  // views::AccessiblePaneView:
   const char* GetClassName() const override;
   void ChildPreferredSizeChanged(views::View* child) override;
   gfx::Size GetMinimumSize() const override;
   void OnThemeChanged() override;
+  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+  views::View* GetDefaultFocusableChild() override;
 
   // TODO(958173): Override OnBoundsChanged to cancel tabstrip animations.
 
