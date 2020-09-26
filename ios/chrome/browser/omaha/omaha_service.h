@@ -49,7 +49,7 @@ class OmahaService {
 
   // Performs an immediate check to see if the device is up to date. Start must
   // have been previously called.
-  void CheckNow(OneOffCallback callback);
+  static void CheckNow(OneOffCallback callback);
 
   // Stops the service in preparation for browser shutdown.
   static void Stop();
