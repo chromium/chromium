@@ -43,6 +43,7 @@ namespace chrome_pdf {
 class Graphics;
 class PaintReadyRect;
 class PDFiumEngine;
+class Thumbnail;
 class UrlLoader;
 
 class OutOfProcessInstance : public PdfViewPluginBase,
@@ -188,6 +189,7 @@ class OutOfProcessInstance : public PdfViewPluginBase,
   void HandleGetNamedDestinationMessage(const pp::VarDictionary& dict);
   void HandleGetPasswordCompleteMessage(const pp::VarDictionary& dict);
   void HandleGetSelectedTextMessage(const pp::VarDictionary& dict);
+  void HandleGetThumbnailMessage(const pp::VarDictionary& dict);
   void HandleLoadPreviewPageMessage(const pp::VarDictionary& dict);
   void HandleResetPrintPreviewModeMessage(const pp::VarDictionary& dict);
   void HandleSaveAttachmentMessage(const pp::VarDictionary& dict);
@@ -286,6 +288,9 @@ class OutOfProcessInstance : public PdfViewPluginBase,
   // Send the loading progress, where |percentage| represents the progress, or
   // -1 for loading error.
   void SendLoadingProgress(double percentage);
+
+  // Sends the thumbnail image data.
+  void SendThumbnail(const std::string& message_id, Thumbnail thumbnail);
 
   // Bound the given scroll offset to the document.
   pp::FloatPoint BoundScrollOffsetToDocument(

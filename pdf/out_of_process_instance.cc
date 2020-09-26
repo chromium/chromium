@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <string.h>
 
 #include <algorithm>  // for min/max()
 #include <cmath>      // for log() and pow()
@@ -41,6 +42,7 @@
 #include "pdf/ppapi_migration/input_event_conversions.h"
 #include "pdf/ppapi_migration/url_loader.h"
 #include "pdf/ppapi_migration/value_conversions.h"
+#include "pdf/thumbnail.h"
 #include "ppapi/c/dev/ppb_cursor_control_dev.h"
 #include "ppapi/c/pp_errors.h"
 #include "ppapi/c/private/ppb_pdf.h"
@@ -224,6 +226,15 @@ constexpr char kJSFieldFocus[] = "focused";
 // Notify when document is focused (Plugin -> Page)
 constexpr char kJSDocumentFocusChangedType[] = "documentFocusChanged";
 constexpr char kJSDocumentHasFocus[] = "hasFocus";
+
+// Request the thumbnail image for a particular page (Page -> Plugin)
+constexpr char kJSGetThumbnailType[] = "getThumbnail";
+constexpr char kJSGetThumbnailPage[] = "page";
+// Reply with the image data of the requested thumbnail (Plugin -> Page)
+constexpr char kJSGetThumbnailReplyType[] = "getThumbnailReply";
+constexpr char kJSGetThumbnailImageData[] = "imageData";
+constexpr char kJSGetThumbnailWidth[] = "width";
+constexpr char kJSGetThumbnailHeight[] = "height";
 
 constexpr int kFindResultCooldownMs = 100;
 
@@ -618,6 +629,8 @@ void OutOfProcessInstance::HandleMessage(const pp::Var& message) {
     HandleGetSelectedTextMessage(dict);
   } else if (type == kJSGetNamedDestinationType) {
     HandleGetNamedDestinationMessage(dict);
+  } else if (type == kJSGetThumbnailType) {
+    HandleGetThumbnailMessage(dict);
   } else {
     NOTREACHED();
   }
@@ -1669,6 +1682,22 @@ void OutOfProcessInstance::HandleGetSelectedTextMessage(
   PostMessage(reply);
 }
 
+void OutOfProcessInstance::HandleGetThumbnailMessage(
+    const pp::VarDictionary& dict) {
+  if (!dict.Get(pp::Var(kJSGetThumbnailPage)).is_number() ||
+      !dict.Get(pp::Var(kJSMessageId)).is_string()) {
+    NOTREACHED();
+    return;
+  }
+
+  const int page_index = dict.Get(pp::Var(kJSGetThumbnailPage)).AsInt();
+  engine()->RequestThumbnail(
+      page_index, device_scale_,
+      base::BindOnce(&OutOfProcessInstance::SendThumbnail,
+                     weak_factory_.GetWeakPtr(),
+                     dict.Get(pp::Var(kJSMessageId)).AsString()));
+}
+
 void OutOfProcessInstance::HandleLoadPreviewPageMessage(
     const pp::VarDictionary& dict) {
   if (!(dict.Get(pp::Var(kJSPreviewPageUrl)).is_string() &&
@@ -2230,6 +2259,25 @@ void OutOfProcessInstance::SendLoadingProgress(double percentage) {
   progress_message.Set(pp::Var(kType), pp::Var(kJSLoadProgressType));
   progress_message.Set(pp::Var(kJSProgressPercentage), pp::Var(percentage));
   PostMessage(progress_message);
+}
+
+void OutOfProcessInstance::SendThumbnail(const std::string& message_id,
+                                         Thumbnail thumbnail) {
+  pp::VarDictionary reply;
+  reply.Set(pp::Var(kType), pp::Var(kJSGetThumbnailReplyType));
+  reply.Set(pp::Var(kJSMessageId), message_id);
+
+  const SkBitmap& bitmap = thumbnail.bitmap();
+  const size_t buffer_size = bitmap.computeByteSize();
+  pp::VarArrayBuffer buffer(buffer_size);
+  memcpy(buffer.Map(), bitmap.getPixels(), buffer_size);
+  reply.Set(pp::Var(kJSGetThumbnailImageData), buffer);
+  buffer.Unmap();
+
+  reply.Set(pp::Var(kJSGetThumbnailWidth), bitmap.width());
+  reply.Set(pp::Var(kJSGetThumbnailHeight), bitmap.height());
+
+  PostMessage(reply);
 }
 
 void OutOfProcessInstance::UserMetricsRecordAction(const std::string& action) {
