@@ -20,6 +20,7 @@
 #include "extensions/browser/extension_action.h"
 #include "extensions/browser/extension_action_manager.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/common/api/declarative/declarative_constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/value_builder.h"
@@ -35,6 +36,7 @@ namespace {
 
 using base::test::ParseJson;
 using testing::HasSubstr;
+using ContentActionType = declarative_content_constants::ContentActionType;
 
 std::unique_ptr<base::DictionaryValue> SimpleManifest() {
   return DictionaryBuilder()
@@ -71,18 +73,23 @@ TEST(DeclarativeContentActionTest, InvalidCreation) {
   std::string error;
   std::unique_ptr<const ContentAction> result;
   TestingProfile profile;
+  base::HistogramTester histogram_tester;
 
   // Test wrong data type passed.
   error.clear();
   result = ContentAction::Create(&profile, nullptr, ParseJson("[]"), &error);
   EXPECT_THAT(error, HasSubstr("missing instanceType"));
   EXPECT_FALSE(result.get());
+  histogram_tester.ExpectTotalCount(
+      "Extensions.DeclarativeContentActionCreated", 0);
 
   // Test missing instanceType element.
   error.clear();
   result = ContentAction::Create(&profile, nullptr, ParseJson("{}"), &error);
   EXPECT_THAT(error, HasSubstr("missing instanceType"));
   EXPECT_FALSE(result.get());
+  histogram_tester.ExpectTotalCount(
+      "Extensions.DeclarativeContentActionCreated", 0);
 
   // Test wrong instanceType element.
   error.clear();
@@ -93,6 +100,8 @@ TEST(DeclarativeContentActionTest, InvalidCreation) {
                                  &error);
   EXPECT_THAT(error, HasSubstr("invalid instanceType"));
   EXPECT_FALSE(result.get());
+  histogram_tester.ExpectTotalCount(
+      "Extensions.DeclarativeContentActionCreated", 0);
 }
 
 TEST(DeclarativeContentActionTest, ShowActionWithoutAction) {
@@ -113,6 +122,7 @@ TEST(DeclarativeContentActionTest, ShowActionWithoutAction) {
   env.GetExtensionService()->AddExtension(extension.get());
 
   TestingProfile profile;
+  base::HistogramTester histogram_tester;
   std::string error;
   std::unique_ptr<const ContentAction> result =
       ContentAction::Create(&profile, extension.get(), ParseJson(R"(
@@ -122,6 +132,8 @@ TEST(DeclarativeContentActionTest, ShowActionWithoutAction) {
                             &error);
   EXPECT_THAT(error, testing::HasSubstr("without an action"));
   ASSERT_FALSE(result.get());
+  histogram_tester.ExpectTotalCount(
+      "Extensions.DeclarativeContentActionCreated", 0);
 }
 
 class ParameterizedDeclarativeContentActionTest
@@ -141,12 +153,19 @@ TEST_P(ParameterizedDeclarativeContentActionTest, ShowAction) {
 
   std::string error;
   TestingProfile profile;
+  base::HistogramTester histogram_tester;
   std::unique_ptr<const ContentAction> result = ContentAction::Create(
       nullptr, extension.get(),
       ParseJson(R"({"instanceType": "declarativeContent.ShowAction"})"),
       &error);
   EXPECT_TRUE(error.empty()) << error;
   ASSERT_TRUE(result.get());
+
+  histogram_tester.ExpectUniqueSample(
+      "Extensions.DeclarativeContentActionCreated",
+      ContentActionType::kShowAction, 1);
+  histogram_tester.ExpectTotalCount(
+      "Extensions.DeclarativeContentActionCreated", 1);
 
   auto* action_manager = ExtensionActionManager::Get(env.profile());
   ExtensionAction* action = action_manager->GetExtensionAction(*extension);
@@ -231,6 +250,11 @@ TEST(DeclarativeContentActionTest, SetIcon) {
   EXPECT_THAT(histogram_tester.GetAllSamples(
                   "Extensions.DeclarativeSetIconWasVisibleRendered"),
               testing::ElementsAre(base::Bucket(1, 1)));
+  histogram_tester.ExpectUniqueSample(
+      "Extensions.DeclarativeContentActionCreated", ContentActionType::kSetIcon,
+      1);
+  histogram_tester.ExpectTotalCount(
+      "Extensions.DeclarativeContentActionCreated", 1);
 
   ExtensionAction* action = ExtensionActionManager::Get(env.profile())
                                 ->GetExtensionAction(*extension);
@@ -290,11 +314,14 @@ TEST(DeclarativeContentActionTest, SetInvisibleIcon) {
   EXPECT_THAT(histogram_tester.GetAllSamples(
                   "Extensions.DeclarativeSetIconWasVisibleRendered"),
               testing::ElementsAre(base::Bucket(0, 1)));
+  histogram_tester.ExpectTotalCount(
+      "Extensions.DeclarativeContentActionCreated", 0);
 }
 
 TEST_F(RequestContentScriptTest, MissingScripts) {
   Init();
   std::string error;
+  base::HistogramTester histogram_tester;
   std::unique_ptr<const ContentAction> result =
       ContentAction::Create(profile(), extension(), ParseJson(R"(
           {
@@ -305,11 +332,14 @@ TEST_F(RequestContentScriptTest, MissingScripts) {
                             &error);
   EXPECT_THAT(error, testing::HasSubstr("Missing parameter is required"));
   ASSERT_FALSE(result.get());
+  histogram_tester.ExpectTotalCount(
+      "Extensions.DeclarativeContentActionCreated", 0);
 }
 
 TEST_F(RequestContentScriptTest, CSS) {
   Init();
   std::string error;
+  base::HistogramTester histogram_tester;
   std::unique_ptr<const ContentAction> result =
       ContentAction::Create(profile(), extension(), ParseJson(R"(
           {
@@ -319,11 +349,17 @@ TEST_F(RequestContentScriptTest, CSS) {
                             &error);
   EXPECT_EQ("", error);
   ASSERT_TRUE(result.get());
+  histogram_tester.ExpectUniqueSample(
+      "Extensions.DeclarativeContentActionCreated",
+      ContentActionType::kRequestContentScript, 1);
+  histogram_tester.ExpectTotalCount(
+      "Extensions.DeclarativeContentActionCreated", 1);
 }
 
 TEST_F(RequestContentScriptTest, JS) {
   Init();
   std::string error;
+  base::HistogramTester histogram_tester;
   std::unique_ptr<const ContentAction> result =
       ContentAction::Create(profile(), extension(), ParseJson(R"(
           {
@@ -333,11 +369,17 @@ TEST_F(RequestContentScriptTest, JS) {
                             &error);
   EXPECT_EQ("", error);
   ASSERT_TRUE(result.get());
+  histogram_tester.ExpectUniqueSample(
+      "Extensions.DeclarativeContentActionCreated",
+      ContentActionType::kRequestContentScript, 1);
+  histogram_tester.ExpectTotalCount(
+      "Extensions.DeclarativeContentActionCreated", 1);
 }
 
 TEST_F(RequestContentScriptTest, CSSBadType) {
   Init();
   std::string error;
+  base::HistogramTester histogram_tester;
   std::unique_ptr<const ContentAction> result =
       ContentAction::Create(profile(), extension(), ParseJson(R"(
           {
@@ -346,11 +388,14 @@ TEST_F(RequestContentScriptTest, CSSBadType) {
           })"),
                             &error);
   ASSERT_FALSE(result.get());
+  histogram_tester.ExpectTotalCount(
+      "Extensions.DeclarativeContentActionCreated", 0);
 }
 
 TEST_F(RequestContentScriptTest, JSBadType) {
   Init();
   std::string error;
+  base::HistogramTester histogram_tester;
   std::unique_ptr<const ContentAction> result =
       ContentAction::Create(profile(), extension(), ParseJson(R"(
           {
@@ -359,11 +404,14 @@ TEST_F(RequestContentScriptTest, JSBadType) {
           })"),
                             &error);
   ASSERT_FALSE(result.get());
+  histogram_tester.ExpectTotalCount(
+      "Extensions.DeclarativeContentActionCreated", 0);
 }
 
 TEST_F(RequestContentScriptTest, AllFrames) {
   Init();
   std::string error;
+  base::HistogramTester histogram_tester;
   std::unique_ptr<const ContentAction> result =
       ContentAction::Create(profile(), extension(), ParseJson(R"(
           {
@@ -374,11 +422,17 @@ TEST_F(RequestContentScriptTest, AllFrames) {
                             &error);
   EXPECT_EQ("", error);
   ASSERT_TRUE(result.get());
+  histogram_tester.ExpectUniqueSample(
+      "Extensions.DeclarativeContentActionCreated",
+      ContentActionType::kRequestContentScript, 1);
+  histogram_tester.ExpectTotalCount(
+      "Extensions.DeclarativeContentActionCreated", 1);
 }
 
 TEST_F(RequestContentScriptTest, MatchAboutBlank) {
   Init();
   std::string error;
+  base::HistogramTester histogram_tester;
   std::unique_ptr<const ContentAction> result =
       ContentAction::Create(profile(), extension(), ParseJson(R"(
           {
@@ -389,11 +443,17 @@ TEST_F(RequestContentScriptTest, MatchAboutBlank) {
                             &error);
   EXPECT_EQ("", error);
   ASSERT_TRUE(result.get());
+  histogram_tester.ExpectUniqueSample(
+      "Extensions.DeclarativeContentActionCreated",
+      ContentActionType::kRequestContentScript, 1);
+  histogram_tester.ExpectTotalCount(
+      "Extensions.DeclarativeContentActionCreated", 1);
 }
 
 TEST_F(RequestContentScriptTest, AllFramesBadType) {
   Init();
   std::string error;
+  base::HistogramTester histogram_tester;
   std::unique_ptr<const ContentAction> result =
       ContentAction::Create(profile(), extension(), ParseJson(R"(
           {
@@ -403,11 +463,14 @@ TEST_F(RequestContentScriptTest, AllFramesBadType) {
           })"),
                             &error);
   ASSERT_FALSE(result.get());
+  histogram_tester.ExpectTotalCount(
+      "Extensions.DeclarativeContentActionCreated", 0);
 }
 
 TEST_F(RequestContentScriptTest, MatchAboutBlankBadType) {
   Init();
   std::string error;
+  base::HistogramTester histogram_tester;
   std::unique_ptr<const ContentAction> result =
       ContentAction::Create(profile(), extension(), ParseJson(R"(
           {
@@ -417,6 +480,8 @@ TEST_F(RequestContentScriptTest, MatchAboutBlankBadType) {
           })"),
                             &error);
   ASSERT_FALSE(result.get());
+  histogram_tester.ExpectTotalCount(
+      "Extensions.DeclarativeContentActionCreated", 0);
 }
 
 }  // namespace

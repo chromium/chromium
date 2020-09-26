@@ -15831,6 +15831,12 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="8" label="kDeclarativeWebRequestWebviewGetRules"/>
 </enum>
 
+<enum name="DeclarativeContentActionType">
+  <int value="0" label="kShowAction"/>
+  <int value="1" label="kSetIcon"/>
+  <int value="2" label="kRequestContentScript"/>
+</enum>
+
 <enum name="DecodedImageOrientation">
   <int value="0" label="Unknown"/>
   <int value="1" label="Top Left"/>

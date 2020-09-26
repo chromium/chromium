@@ -54112,6 +54112,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Extensions.DeclarativeContentActionCreated"
+    enum="DeclarativeContentActionType" expires_after="2021-09-20">
+  <owner>kelvinjiang@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    Number of times a declarative content action is created within an extension.
+    Emitted when a new declarative content action is created.
+  </summary>
+</histogram>
+
 <histogram name="Extensions.DeclarativeNetRequest.CreateVerifiedMatcherTime"
     units="ms" expires_after="2021-02-28">
   <owner>karandeepb@chromium.org</owner>

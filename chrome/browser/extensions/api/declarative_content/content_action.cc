@@ -9,7 +9,7 @@
 #include "base/lazy_instance.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/api/extension_action/extension_action_api.h"
@@ -52,6 +52,12 @@ const char kIconNotSufficientlyVisible[] =
 
 bool g_allow_invisible_icons_content_action = true;
 
+void RecordContentActionCreated(
+    declarative_content_constants::ContentActionType type) {
+  base::UmaHistogramEnumeration("Extensions.DeclarativeContentActionCreated",
+                                type);
+}
+
 //
 // The following are concrete actions.
 //
@@ -74,6 +80,9 @@ class ShowExtensionAction : public ContentAction {
       *error = kNoAction;
       return nullptr;
     }
+
+    RecordContentActionCreated(
+        declarative_content_constants::ContentActionType::kShowAction);
     return std::make_unique<ShowExtensionAction>();
   }
 
@@ -230,6 +239,8 @@ std::unique_ptr<ContentAction> RequestContentScript::Create(
   if (!InitScriptData(dict, error, &script_data))
     return std::unique_ptr<ContentAction>();
 
+  RecordContentActionCreated(
+      declarative_content_constants::ContentActionType::kRequestContentScript);
   return base::WrapUnique(
       new RequestContentScript(browser_context, extension, script_data));
 }
@@ -407,17 +418,20 @@ std::unique_ptr<ContentAction> SetIcon::Create(
   const SkBitmap bitmap = image.AsBitmap();
   const bool is_sufficiently_visible =
       extensions::image_util::IsIconSufficientlyVisible(bitmap);
-  UMA_HISTOGRAM_BOOLEAN("Extensions.DeclarativeSetIconWasVisible",
-                        is_sufficiently_visible);
+  base::UmaHistogramBoolean("Extensions.DeclarativeSetIconWasVisible",
+                            is_sufficiently_visible);
   const bool is_sufficiently_visible_rendered =
       extensions::ui_util::IsRenderedIconSufficientlyVisibleForBrowserContext(
           bitmap, browser_context);
-  UMA_HISTOGRAM_BOOLEAN("Extensions.DeclarativeSetIconWasVisibleRendered",
-                        is_sufficiently_visible_rendered);
+  base::UmaHistogramBoolean("Extensions.DeclarativeSetIconWasVisibleRendered",
+                            is_sufficiently_visible_rendered);
   if (!is_sufficiently_visible && !g_allow_invisible_icons_content_action) {
     *error = kIconNotSufficientlyVisible;
     return nullptr;
   }
+
+  RecordContentActionCreated(
+      declarative_content_constants::ContentActionType::kSetIcon);
   return std::make_unique<SetIcon>(image);
 }
 
