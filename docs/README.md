@@ -159,6 +159,7 @@ used when committed.
 
 ### Testing
 *   [Running and Debugging Web Tests](testing/web_tests.md)
+*   [On disabling tests](testing/disabling_tests.md)
 *   [Writing Web Tests](testing/writing_web_tests.md) - Web Tests using
     `content_shell`
 *   [Web Test Expectations and Baselines](testing/web_test_expectations.md) -
