@@ -87,13 +87,12 @@ void Dactyloscoper::RecordDirectSurface(ExecutionContext* context,
 }
 
 // static
-void Dactyloscoper::RecordDirectSurface(
-    ExecutionContext* context,
-    WebFeature feature,
-    const NotShared<DOMFloat32Array>& buffer) {
+void Dactyloscoper::RecordDirectSurface(ExecutionContext* context,
+                                        WebFeature feature,
+                                        const DOMArrayBufferView* buffer) {
   if (!context || !IsStudyEnabled(feature))
     return;
-  if (buffer.IsNull() || buffer->lengthAsSizeT() == 0)
+  if (!buffer || buffer->byteLengthAsSizeT() == 0)
     return;
   IdentifiableTokenBuilder builder(
       base::make_span(static_cast<uint8_t*>(buffer->BaseAddress()),

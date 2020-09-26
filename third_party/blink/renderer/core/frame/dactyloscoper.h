@@ -42,10 +42,22 @@ class CORE_EXPORT Dactyloscoper {
                                   const Vector<String>&);
   static void RecordDirectSurface(ExecutionContext*,
                                   WebFeature,
-                                  const NotShared<DOMFloat32Array>&);
+                                  const DOMArrayBufferView*);
   static void RecordDirectSurface(ExecutionContext*,
                                   WebFeature,
                                   SVGStringListTearOff*);
+  static void RecordDirectSurface(
+      ExecutionContext* context,
+      WebFeature feature,
+      const NotShared<DOMArrayBufferView>& not_shared) {
+    Dactyloscoper::RecordDirectSurface(context, feature, not_shared.Get());
+  }
+  static void RecordDirectSurface(
+      ExecutionContext* context,
+      WebFeature feature,
+      const MaybeShared<DOMArrayBufferView>& maybe_shared) {
+    Dactyloscoper::RecordDirectSurface(context, feature, maybe_shared.Get());
+  }
 
   template <typename T>
   static void RecordDirectSurface(ExecutionContext* context,
