@@ -1032,6 +1032,10 @@ void NearbySharingServiceImpl::OnGetBluetoothAdapter(
     scoped_refptr<device::BluetoothAdapter> adapter) {
   bluetooth_adapter_ = adapter;
   bluetooth_adapter_->AddObserver(this);
+
+  // TODO(crbug.com/1132469): This was added to fix an issue where advertising
+  // was not starting on sign-in. Add a unit test to cover this case.
+  InvalidateSurfaceState();
 }
 
 void NearbySharingServiceImpl::StartFastInitiationAdvertising() {
