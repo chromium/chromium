@@ -1178,13 +1178,27 @@ var OSSettingsNetworkProxySectionTest = class extends OSSettingsBrowserTest {
   /** @override */
   get extraLibraries() {
     return super.extraLibraries.concat([
-      BROWSER_SETTINGS_PATH + '../chromeos/fake_network_config_mojom.js',
       'network_proxy_section_test.js',
     ]);
   }
 };
 
 TEST_F('OSSettingsNetworkProxySectionTest', 'All', () => {
+  mocha.run();
+});
+
+// Test fixture for settings-internet-detail-page.
+// eslint-disable-next-line no-var
+var OSSettingsNetworkSummaryItemTest = class extends OSSettingsBrowserTest {
+  /** @override */
+  get extraLibraries() {
+    return super.extraLibraries.concat([
+      'network_summary_item_test.js',
+    ]);
+  }
+};
+
+TEST_F('OSSettingsNetworkSummaryItemTest', 'All', () => {
   mocha.run();
 });
 
