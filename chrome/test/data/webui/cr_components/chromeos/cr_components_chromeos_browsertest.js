@@ -56,13 +56,27 @@ GEN('#include "content/public/test/browser_test.h"');
 [
   ['BasePage', 'cellular_setup/base_page_test.js', []],
   ['ButtonBar', 'cellular_setup/button_bar_test.js',[]],
-  ['CellularSetup', 'cellular_setup/cellular_setup_test.js', []],
-  ['EsimFlowUi', 'cellular_setup/esim_flow_ui_test.js',[]],
-  ['FinalPage', 'cellular_setup/final_page_test.js', []],
-  ['ProvisioningPage', 'cellular_setup/provisioning_page_test.js',[]],
-  ['PsimFlowUi', 'cellular_setup/psim_flow_ui_test.js',[]],
-  ['SetupSelectionFlow', 'cellular_setup/setup_selection_flow_test.js',[]],
-  ['SimDetectPage', 'cellular_setup/sim_detect_page_test.js', []],
+  ['CellularSetup', 'cellular_setup/cellular_setup_test.js', [
+    './cellular_setup/fake_cellular_setup_delegate.js',
+  ]],
+  ['EsimFlowUi', 'cellular_setup/esim_flow_ui_test.js',[
+    './cellular_setup/fake_cellular_setup_delegate.js',
+  ]],
+  ['FinalPage', 'cellular_setup/final_page_test.js', [
+    './cellular_setup/fake_cellular_setup_delegate.js',
+  ]],
+  ['ProvisioningPage', 'cellular_setup/provisioning_page_test.js',[
+    './cellular_setup/fake_cellular_setup_delegate.js',
+  ]],
+  ['PsimFlowUi', 'cellular_setup/psim_flow_ui_test.js',[
+    './cellular_setup/fake_cellular_setup_delegate.js',
+  ]],
+  ['SetupSelectionFlow', 'cellular_setup/setup_selection_flow_test.js',[
+    './cellular_setup/fake_cellular_setup_delegate.js',
+  ]],
+  ['SimDetectPage', 'cellular_setup/sim_detect_page_test.js', [
+    './cellular_setup/fake_cellular_setup_delegate.js',
+  ]],
 ].forEach(test => registerTest('CellularSetup', 'cellular-setup', ...test));
 // clang-format on
 

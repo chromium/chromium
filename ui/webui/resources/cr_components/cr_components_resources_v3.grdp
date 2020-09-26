@@ -196,6 +196,10 @@
            file="${root_gen_dir}/ui/webui/resources/cr_components/chromeos/cellular_setup/cellular_types.m.js"
            use_base_dir="false"
            type="BINDATA" />
+    <include name="IDR_WEBUI_CHROMEOS_CELLULAR_SETUP_CELLULAR_SETUP_DELEGATE_M_JS"
+           file="${root_gen_dir}/ui/webui/resources/cr_components/chromeos/cellular_setup/cellular_setup_delegate.m.js"
+           use_base_dir="false"
+           type="BINDATA" />
     <include name="IDR_WEBUI_CHROMEOS_CELLULAR_SETUP_SUBFLOW_BEHAVIOR_M_JS"
            file="${root_gen_dir}/ui/webui/resources/cr_components/chromeos/cellular_setup/subflow_behavior.m.js"
            use_base_dir="false"

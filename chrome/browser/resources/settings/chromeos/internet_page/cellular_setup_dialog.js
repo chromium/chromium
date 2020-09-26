@@ -9,7 +9,18 @@
 Polymer({
   is: 'os-settings-cellular-setup-dialog',
 
-  properties: {},
+  properties: {
+
+    /**
+     * @private {!cellular_setup.CellularSetupDelegate}
+     */
+    delegate_: Object
+  },
+
+  /** @override */
+  created() {
+    this.delegate_ = new settings.CellularSetupSettingsDelegate();
+  },
 
   /** @override */
   attached() {

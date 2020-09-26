@@ -11,12 +11,14 @@
 // #import {CellularSetupPageName} from 'chrome://resources/cr_components/chromeos/cellular_setup/cellular_types.m.js';
 // #import {flush, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // #import {assertTrue} from '../../../chai_assert.js';
+// #import {FakeCellularSetupDelegate} from './fake_cellular_setup_delegate.m.js';
 // clang-format on
 
 suite('CrComponentsCellularSetupTest', function() {
   let cellularSetupPage;
   setup(function() {
     cellularSetupPage = document.createElement('cellular-setup');
+    cellularSetupPage.delegate = new cellular_setup.FakeCellularSetupDelegate();
     document.body.appendChild(cellularSetupPage);
     Polymer.dom.flush();
   });

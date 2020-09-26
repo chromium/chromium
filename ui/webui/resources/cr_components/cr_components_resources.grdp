@@ -152,6 +152,12 @@
     <structure name="IDR_WEBUI_CHROMEOS_CELLULAR_TYPES_HTML"
                file="cr_components/chromeos/cellular_setup/cellular_types.html"
                type="chrome_html" />
+    <structure name="IDR_WEBUI_CHROMEOS_CELLULAR_SETUP_DELEGATE_HTML"
+               file="cr_components/chromeos/cellular_setup/cellular_setup_delegate.html"
+               type="chrome_html" />
+    <structure name="IDR_WEBUI_CHROMEOS_CELLULAR_SETUP_DELEGATE_JS"
+               file="cr_components/chromeos/cellular_setup/cellular_setup_delegate.js"
+               type="chrome_html" />
     <structure name="IDR_WEBUI_CHROMEOS_CELLULAR_SETUP_MOJO_INTERFACE_PROVIDER_HTML"
                file="cr_components/chromeos/cellular_setup/mojo_interface_provider.html"
                type="chrome_html" />

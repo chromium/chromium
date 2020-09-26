@@ -14,6 +14,9 @@ Polymer({
   behaviors: [I18nBehavior],
 
   properties: {
+    /** @type {!cellular_setup.CellularSetupDelegate} */
+    delegate: Object,
+
     /**
      * Whether error state should be shown.
      * @type {boolean}
@@ -23,11 +26,14 @@ Polymer({
 
   /**
    * @param {boolean} showError
-   * @return {string}
+   * @return {?string}
    * @private
    */
   getTitle_(showError) {
-    return showError ? this.i18n('simDetectPageErrorTitle') : '';
+    if (this.delegate.shouldShowPageTitle() && showError) {
+      return this.i18n('simDetectPageErrorTitle');
+    }
+    return null;
   },
 
   /**

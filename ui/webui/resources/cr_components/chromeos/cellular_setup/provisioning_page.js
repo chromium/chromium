@@ -14,6 +14,9 @@ Polymer({
   behaviors: [I18nBehavior],
 
   properties: {
+    /** @type {!cellular_setup.CellularSetupDelegate} */
+    delegate: Object,
+
     /**
      * Whether error state should be shown.
      * @type {boolean}
@@ -55,10 +58,13 @@ Polymer({
   },
 
   /**
-   * @return {string}
+   * @return {?string}
    * @private
    */
   getPageTitle_() {
+    if (!this.delegate.shouldShowPageTitle()) {
+      return null;
+    }
     if (this.showError) {
       return this.i18n('provisioningPageErrorTitle', this.carrierName_);
     }
@@ -69,14 +75,14 @@ Polymer({
   },
 
   /**
-   * @return {string}
+   * @return {?string}
    * @private
    */
   getPageMessage_() {
     if (this.showError) {
       return this.i18n('provisioningPageErrorMessage', this.carrierName_);
     }
-    return '';
+    return null;
   },
 
   /**

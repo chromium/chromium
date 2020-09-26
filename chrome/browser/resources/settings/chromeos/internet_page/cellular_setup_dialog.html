@@ -1,10 +1,12 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
 <link rel="import" href="chrome://resources/cr_components/chromeos/cellular_setup/cellular_setup.html">
+<link rel="import" href="chrome://resources/cr_components/chromeos/cellular_setup/cellular_setup_delegate.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
 <link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
 <link rel="import" href="../../settings_shared_css.html">
+<link rel="import" href="cellular_setup_settings_delegate.html">
 
 <dom-module id="os-settings-cellular-setup-dialog">
   <template>
@@ -14,7 +16,7 @@
     <cr-dialog id="dialog">
       <div slot="title">$i18n{cellularSetupDialogTitle}</div>
       <div slot="body">
-        <cellular-setup></cellular-setup>
+        <cellular-setup delegate="[[delegate_]]"></cellular-setup>
       </div>
     </cr-dialog>
   </template>

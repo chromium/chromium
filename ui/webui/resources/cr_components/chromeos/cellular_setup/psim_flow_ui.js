@@ -67,6 +67,9 @@ cr.define('cellularSetup', function() {
     ],
 
     properties: {
+      /** @type {!cellular_setup.CellularSetupDelegate} */
+      delegate: Object,
+
       /**
        * @type {!cellularSetup.PSimUIState}
        * @private
@@ -126,7 +129,8 @@ cr.define('cellularSetup', function() {
        * Whether cancel button should be shown in the button bar.
        * @private {boolean}
        */
-      showCancelButton_: {type: Boolean, value: false}
+      showCancelButton_: {type: Boolean, value: false},
+
     },
 
     observers: [

@@ -4,6 +4,7 @@
 <link rel="import" href="psim_flow_ui.html">
 <link rel="import" href="esim_flow_ui.html">
 <link rel="import" href="cellular_types.html">
+<link rel="import" href="cellular_setup_delegate.html">
 <link rel="import" href="setup_selection_flow.html">
 <link rel="import" href="../../../html/i18n_behavior.html">
 
@@ -20,11 +21,19 @@
       </setup-selection-flow>
       <template is="dom-if"
           if="[[isPSimSelected_(currentPageName_)]]" restamp>
-        <psim-flow-ui button-state="{{buttonState_}}" id="psim-flow-ui"></psim-flow-ui>
+        <psim-flow-ui
+            button-state="{{buttonState_}}"
+            delegate="[[delegate]]"
+            id="psim-flow-ui">
+        </psim-flow-ui>
       </template>
       <template is="dom-if"
           if="[[isESimSelected_(currentPageName_)]]" restamp>
-        <esim-flow-ui button-state="{{buttonState_}}" id="esim-flow-ui"></esim-flow-ui>
+        <esim-flow-ui
+            button-state="{{buttonState_}}"
+            delegate="[[delegate]]" 
+            id="esim-flow-ui">
+        </esim-flow-ui>
       </template>
     </iron-pages>
     <button-bar button-state="[[buttonState_]]">

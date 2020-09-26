@@ -8,12 +8,15 @@
 
 // #import {flush, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // #import {assertTrue} from '../../../chai_assert.js';
+// #import {FakeCellularSetupDelegate} from './fake_cellular_setup_delegate.m.js';
 // clang-format on
 
 suite('CrComponentsSetupSelectionFlowTest', function() {
   let setupSelectionFlow;
   setup(function() {
     setupSelectionFlow = document.createElement('setup-selection-flow');
+    setupSelectionFlow.delegate =
+        new cellular_setup.FakeCellularSetupDelegate();
     document.body.appendChild(setupSelectionFlow);
     Polymer.dom.flush();
   });

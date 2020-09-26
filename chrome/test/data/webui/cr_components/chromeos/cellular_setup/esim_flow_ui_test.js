@@ -8,12 +8,14 @@
 
 // #import {flush, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // #import {assertTrue} from '../../../chai_assert.js';
+// #import {FakeCellularSetupDelegate} from './fake_cellular_setup_delegate.m.js';
 // clang-format on
 
 suite('CrComponentsEsimFlowUiTest', function() {
   let eSimPage;
   setup(function() {
     eSimPage = document.createElement('esim-flow-ui');
+    eSimPage.delegate = new cellular_setup.FakeCellularSetupDelegate();
     document.body.appendChild(eSimPage);
     Polymer.dom.flush();
   });

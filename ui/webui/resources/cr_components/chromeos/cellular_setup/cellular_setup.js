@@ -12,6 +12,9 @@ Polymer({
   behaviors: [I18nBehavior],
 
   properties: {
+    /** @type {!cellular_setup.CellularSetupDelegate} */
+    delegate: Object,
+
     /**
      * Name of the currently displayed sub-page.
      * @private {!cellularSetup.CellularSetupPageName|null}
@@ -48,7 +51,7 @@ Polymer({
     currentPage_: {
       type: Object,
       observer: 'onPageChange_',
-    }
+    },
   },
 
   listeners: {

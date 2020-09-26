@@ -8,12 +8,14 @@
 
 // #import {flush, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // #import {assertFalse, assertTrue} from '../../../chai_assert.js';
+// #import {FakeCellularSetupDelegate} from './fake_cellular_setup_delegate.m.js';
 // clang-format on
 
 suite('CrComponentsSimDetectPageTest', function() {
   let simDetectPage;
   setup(function() {
     simDetectPage = document.createElement('sim-detect-page');
+    simDetectPage.delegate = new cellular_setup.FakeCellularSetupDelegate();
     document.body.appendChild(simDetectPage);
     Polymer.dom.flush();
   });

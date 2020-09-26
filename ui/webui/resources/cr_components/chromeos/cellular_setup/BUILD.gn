@@ -14,6 +14,8 @@ js_type_check("closure_compile") {
     ":base_page",
     ":button_bar",
     ":cellular_setup",
+    ":cellular_setup_delegate",
+    ":cellular_types",
     ":final_page",
     ":mojo_interface_provider",
     ":provisioning_page",
@@ -36,7 +38,10 @@ js_library("base_page") {
 }
 
 js_library("sim_detect_page") {
-  deps = [ ":base_page" ]
+  deps = [
+    ":base_page",
+    ":cellular_setup_delegate",
+  ]
 }
 
 js_library("webview_post_util") {
@@ -50,6 +55,7 @@ js_library("webview_post_util") {
 js_library("provisioning_page") {
   deps = [
     ":base_page",
+    ":cellular_setup_delegate",
     ":webview_post_util",
   ]
   externs_list = [
@@ -64,6 +70,7 @@ js_library("final_page") {
 
 js_library("psim_flow_ui") {
   deps = [
+    ":cellular_setup_delegate",
     ":cellular_types",
     ":final_page",
     ":mojo_interface_provider",
@@ -78,6 +85,7 @@ js_library("psim_flow_ui") {
 
 js_library("esim_flow_ui") {
   deps = [
+    ":cellular_setup_delegate",
     ":cellular_types",
     ":subflow_behavior",
     "//ui/webui/resources/js:i18n_behavior",
@@ -103,9 +111,14 @@ js_library("cellular_types") {
   deps = [ "//ui/webui/resources/js:cr" ]
 }
 
+js_library("cellular_setup_delegate") {
+  deps = [ "//ui/webui/resources/js:cr" ]
+}
+
 js_library("cellular_setup") {
   deps = [
     ":button_bar",
+    ":cellular_setup_delegate",
     ":cellular_types",
     ":esim_flow_ui",
     ":psim_flow_ui",
@@ -129,6 +142,7 @@ js_type_check("closure_compile_module") {
     ":base_page.m",
     ":button_bar.m",
     ":cellular_setup.m",
+    ":cellular_setup_delegate.m",
     ":cellular_types.m",
     ":esim_flow_ui.m",
     ":final_page.m",
@@ -155,6 +169,7 @@ js_library("final_page.m") {
   sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/cellular_setup/final_page.m.js" ]
   deps = [
     ":base_page.m",
+    ":cellular_setup_delegate.m",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
   extra_deps = [ ":final_page_module" ]
@@ -181,7 +196,10 @@ js_library("webview_post_util.m") {
 
 js_library("sim_detect_page.m") {
   sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/cellular_setup/sim_detect_page.m.js" ]
-  deps = [ ":base_page.m" ]
+  deps = [
+    ":base_page.m",
+    ":cellular_setup_delegate.m",
+  ]
   extra_deps = [ ":sim_detect_page_module" ]
 }
 
@@ -189,6 +207,7 @@ js_library("provisioning_page.m") {
   sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/cellular_setup/provisioning_page.m.js" ]
   deps = [
     ":base_page.m",
+    ":cellular_setup_delegate.m",
     ":webview_post_util.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:assert.m",
@@ -216,6 +235,11 @@ js_library("cellular_types.m") {
   extra_deps = [ ":modulize" ]
 }
 
+js_library("cellular_setup_delegate.m") {
+  sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/cellular_setup/cellular_setup_delegate.m.js" ]
+  extra_deps = [ ":modulize" ]
+}
+
 js_library("subflow_behavior.m") {
   sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/cellular_setup/subflow_behavior.m.js" ]
   deps = [ ":cellular_types.m" ]
@@ -225,7 +249,7 @@ js_library("subflow_behavior.m") {
 js_library("psim_flow_ui.m") {
   sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/cellular_setup/psim_flow_ui.m.js" ]
   deps = [
-    ":cellular_types.m",
+    ":cellular_setup_delegate.m",
     ":cellular_types.m",
     ":final_page.m",
     ":mojo_interface_provider.m",
@@ -243,6 +267,7 @@ js_library("psim_flow_ui.m") {
 js_library("esim_flow_ui.m") {
   sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/cellular_setup/esim_flow_ui.m.js" ]
   deps = [
+    ":cellular_setup_delegate.m",
     ":cellular_types.m",
     ":subflow_behavior.m",
     "//ui/webui/resources/js:i18n_behavior.m",
@@ -264,6 +289,7 @@ js_library("cellular_setup.m") {
   sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/cellular_setup/cellular_setup.m.js" ]
   deps = [
     ":button_bar.m",
+    ":cellular_setup_delegate.m",
     ":cellular_types.m",
     ":esim_flow_ui.m",
     ":psim_flow_ui.m",
@@ -363,6 +389,7 @@ polymer_modulizer("cellular_setup") {
 js_modulizer("modulize") {
   input_files = [
     "cellular_types.js",
+    "cellular_setup_delegate.js",
     "mojo_interface_provider.js",
     "subflow_behavior.js",
     "webview_post_util.js",

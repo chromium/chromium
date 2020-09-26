@@ -1265,6 +1265,12 @@
       <structure name="IDR_OS_SETTINGS_INTERNET_PAGE_BROWSER_PROXY_JS"
                  file="chromeos/internet_page/internet_page_browser_proxy.js"
                  compress="false" type="chrome_html" />
+      <structure name="IDR_OS_SETTINGS_CELLULAR_SETUP_SETTINGS_DELEGATE_HTML"
+                 file="chromeos/internet_page/cellular_setup_settings_delegate.html"
+                 compress="false" type="chrome_html" />
+      <structure name="IDR_OS_SETTINGS_CELLULAR_SETUP_SETTINGS_DELEGATE_JS"
+                 file="chromeos/internet_page/cellular_setup_settings_delegate.js"
+                 compress="false" type="chrome_html" />
       <structure name="IDR_OS_SETTINGS_INTERNET_PAGE_HTML"
                  file="chromeos/internet_page/internet_page.html"
                  compress="false" type="chrome_html" />

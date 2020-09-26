@@ -15,6 +15,9 @@ Polymer({
   ],
 
   properties: {
+    /** @type {!cellular_setup.CellularSetupDelegate} */
+    delegate: Object,
+
     /**
      * @type {string}
      * @private

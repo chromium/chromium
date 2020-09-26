@@ -9,12 +9,14 @@
 // #import {PSimUIState} from 'chrome://resources/cr_components/chromeos/cellular_setup/psim_flow_ui.m.js';
 // #import {flush, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // #import {assertTrue} from '../../../chai_assert.js';
+// #import {FakeCellularSetupDelegate} from './fake_cellular_setup_delegate.m.js';
 // clang-format on
 
 suite('CrComponentsPsimFlowUiTest', function() {
   let pSimPage;
   setup(function() {
     pSimPage = document.createElement('psim-flow-ui');
+    pSimPage.delegate = new cellular_setup.FakeCellularSetupDelegate();
     document.body.appendChild(pSimPage);
     Polymer.dom.flush();
   });

@@ -16,6 +16,9 @@ js_modulizer("modulize") {
     "psim_flow_ui_test.js",
     "setup_selection_flow_test.js",
     "sim_detect_page_test.js",
+    "fake_cellular_setup_delegate.js",
   ]
-  namespace_rewrites = cr_components_chromeos_namespace_rewrites
+  namespace_rewrites =
+      cr_components_chromeos_namespace_rewrites +
+      [ "cellular_setup.FakeCellularSetupDelegate|FakeCellularSetupDelegate" ]
 }

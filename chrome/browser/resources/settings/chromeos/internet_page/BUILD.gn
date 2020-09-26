@@ -172,8 +172,17 @@ js_library("tether_connection_dialog") {
 
 js_library("cellular_setup_dialog") {
   deps = [
-    "//ui/webui/resources/cr_components/chromeos/cellular_setup",
+    ":cellular_setup_settings_delegate",
+    "//ui/webui/resources/cr_components/chromeos/cellular_setup:cellular_setup",
+    "//ui/webui/resources/cr_components/chromeos/cellular_setup:cellular_setup_delegate",
     "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog",
+  ]
+}
+
+js_library("cellular_setup_settings_delegate") {
+  deps = [
+    "//ui/webui/resources/cr_components/chromeos/cellular_setup:cellular_setup_delegate",
+    "//ui/webui/resources/js:cr",
   ]
 }
 
@@ -182,10 +191,13 @@ js_type_check("closure_compile_module") {
   is_polymer3 = true
   deps = [
     ":cellular_setup_dialog.m",
+    ":cellular_setup_settings_delegate.m",
     ":internet_config.m",
-#    ":internet_detail_page.m",
+
+    #    ":internet_detail_page.m",
     ":internet_known_networks_page.m",
-#    ":internet_page.m",
+
+    #    ":internet_page.m",
     ":internet_page_browser_proxy.m",
     ":internet_shared_css.m",
 #    ":internet_subpage.m",
@@ -201,6 +213,7 @@ js_library("cellular_setup_dialog.m") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_components/chromeos/cellular_setup:cellular_setup.m",
+    "//ui/webui/resources/cr_components/chromeos/cellular_setup:cellular_setup_delegate.m",
     "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
@@ -211,8 +224,8 @@ js_library("internet_config.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/internet_page/internet_config.m.js" ]
   deps = [
     ":internet_shared_css.m",
-    "//chrome/browser/resources/settings/chromeos:metrics_recorder.m",
     "//chrome/browser/resources/settings:router.m",
+    "//chrome/browser/resources/settings/chromeos:metrics_recorder.m",
     "//third_party/polymer/v3_0/components-chromium/iron-flex-layout:iron-flex-layout",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_components/chromeos/network:network_config.m",
@@ -236,10 +249,10 @@ js_library("internet_known_networks_page.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/internet_page/internet_known_networks_page.m.js" ]
   deps = [
     ":internet_shared_css.m",
+    "//chrome/browser/resources/settings:router.m",
     "//chrome/browser/resources/settings/chromeos:deep_linking_behavior.m",
     "//chrome/browser/resources/settings/chromeos:metrics_recorder.m",
     "//chrome/browser/resources/settings/chromeos:os_route.m",
-    "//chrome/browser/resources/settings:router.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_components/chromeos/network:cr_policy_network_behavior_mojo.m",
     "//ui/webui/resources/cr_components/chromeos/network:mojo_interface_provider.m",
@@ -265,6 +278,15 @@ js_library("internet_page_browser_proxy.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/internet_page/internet_page_browser_proxy.m.js" ]
   deps = [
     # TODO: Fill those in.
+  ]
+  extra_deps = [ ":modulize" ]
+}
+
+js_library("cellular_setup_settings_delegate.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/internet_page/internet_page_browser_proxy.m.js" ]
+  deps = [
+    "//ui/webui/resources/cr_components/chromeos/cellular_setup:cellular_setup_delegate.m",
+    "//ui/webui/resources/js:cr.m",
   ]
   extra_deps = [ ":modulize" ]
 }
@@ -416,9 +438,14 @@ polymer_modulizer("cellular_setup_dialog") {
   js_file = "cellular_setup_dialog.js"
   html_file = "cellular_setup_dialog.html"
   html_type = "dom-module"
+  auto_imports = os_settings_auto_imports
+  namespace_rewrites = os_settings_namespace_rewrites
 }
 
 js_modulizer("modulize") {
-  input_files = [ "internet_page_browser_proxy.js" ]
+  input_files = [
+    "internet_page_browser_proxy.js",
+    "cellular_setup_settings_delegate.js",
+  ]
   namespace_rewrites = os_settings_namespace_rewrites
 }
