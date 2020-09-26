@@ -3474,25 +3474,10 @@ void RenderFrameImpl::CommitFailedNavigation(
   navigation_params->http_method = WebString::FromASCII(common_params->method);
   navigation_params->error_code = error_code;
 
-  if (!ShouldDisplayErrorPageForFailedLoad(error_code, common_params->url)) {
-    // The browser expects this frame to be loading an error page. Inform it
-    // that the load stopped.
-    AbortCommitNavigation();
-    GetFrameHost()->DidStopLoading();
-    browser_side_navigation_pending_ = false;
-    browser_side_navigation_pending_url_ = GURL();
-
-    // Disarm AssertNavigationCommits and pretend that the commit actually
-    // happened. Signalling that the load stopped /should/ signal the browser to
-    // tear down the speculative RFH associated with |this|...
-    // TODO(dcheng): This is potentially buggy. This means that the browser
-    // asked the renderer to commit a failed navigation, but it declined. In the
-    // future, when speculative RFH management is refactored, this will likely
-    // have to self-discard if |this| is provisional.
-    navigation_commit_state_ = NavigationCommitState::kDidCommit;
-
-    return;
-  }
+  // This is already checked in `NavigationRequest::OnRequestFailedInternal` and
+  // `NavigationRequest::OnFailureChecksCompleted` on the browser side, so the
+  // renderer should never see this.
+  CHECK_NE(net::ERR_ABORTED, error_code);
 
   // On load failure, a frame can ask its owner to render fallback content.
   // When that happens, don't load an error page.
@@ -6355,24 +6340,6 @@ void RenderFrameImpl::SendUpdateState() {
 
   GetFrameHost()->UpdateState(
       SingleHistoryItemToPageState(current_history_item_));
-}
-
-bool RenderFrameImpl::ShouldDisplayErrorPageForFailedLoad(
-    int error_code,
-    const GURL& unreachable_url) {
-  // This is already checked in `NavigationRequest::OnRequestFailedInternal` and
-  // `NavigationRequest::OnFailureChecksCompleted` on the browser side, so the
-  // renderer should never see this.
-  if (error_code == net::ERR_ABORTED)
-    CHECK(false);
-
-  // Allow the embedder to suppress an error page.
-  if (GetContentClient()->renderer()->ShouldSuppressErrorPage(
-          this, unreachable_url, error_code)) {
-    return false;
-  }
-
-  return true;
 }
 
 GURL RenderFrameImpl::GetLoadingUrl() const {

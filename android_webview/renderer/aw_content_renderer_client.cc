@@ -181,20 +181,6 @@ bool AwContentRendererClient::HasErrorPage(int http_status_code) {
   return http_status_code >= 400;
 }
 
-bool AwContentRendererClient::ShouldSuppressErrorPage(
-    content::RenderFrame* render_frame,
-    const GURL& url,
-    int error_code) {
-  DCHECK(render_frame != nullptr);
-
-  AwRenderFrameExt* render_frame_ext =
-      AwRenderFrameExt::FromRenderFrame(render_frame);
-  if (render_frame_ext == nullptr)
-    return false;
-
-  return render_frame_ext->GetWillSuppressErrorPage();
-}
-
 void AwContentRendererClient::PrepareErrorPage(
     content::RenderFrame* render_frame,
     const blink::WebURLError& error,

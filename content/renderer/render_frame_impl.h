@@ -1064,9 +1064,6 @@ class CONTENT_EXPORT RenderFrameImpl
                      std::string* data,
                      GURL* base_url);
 
-  bool ShouldDisplayErrorPageForFailedLoad(int error_code,
-                                           const GURL& unreachable_url);
-
   // |transition_type| corresponds to the document which triggered this request.
   void WillSendRequestInternal(blink::WebURLRequest& request,
                                bool for_main_frame,

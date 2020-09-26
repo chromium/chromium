@@ -320,6 +320,7 @@ class CONTENT_EXPORT NavigationRequest
   bool IsServedFromBackForwardCache() override;
   void SetIsOverridingUserAgent(bool override_ua) override;
   bool GetIsOverridingUserAgent() override;
+  void SetSilentlyIgnoreErrors() override;
 
   // Called on the UI thread by the Navigator to start the navigation.
   // The NavigationRequest can be deleted while BeginNavigation() is called.
@@ -1460,6 +1461,13 @@ class CONTENT_EXPORT NavigationRequest
   // navigation.
   bool did_same_site_proactive_browsing_instance_swap_ = false;
 
+  // Controls whether or not an error page is displayed on error. If set to
+  // true, an error will be treated as if the user simply cancelled the
+  // navigation.
+  bool silently_ignore_errors_ = false;
+
+  // Similar but only suppresses the error page when the error code is
+  // net::ERR_BLOCKED_BY_CLIENT.
   bool silently_ignore_blocked_by_client_ = false;
 
   // Observers listening to cookie access notifications for the network requests

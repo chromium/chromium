@@ -1204,18 +1204,6 @@ bool ChromeContentRendererClient::HasErrorPage(int http_status_code) {
       error_page::Error::kHttpErrorDomain, http_status_code);
 }
 
-bool ChromeContentRendererClient::ShouldSuppressErrorPage(
-    content::RenderFrame* render_frame,
-    const GURL& url,
-    int error_code) {
-  // Do not flash an error page if the Instant new tab page fails to load.
-  bool is_instant_ntp = false;
-#if !defined(OS_ANDROID)
-  is_instant_ntp = SearchBouncer::GetInstance()->IsNewTabPage(url);
-#endif
-  return is_instant_ntp;
-}
-
 bool ChromeContentRendererClient::ShouldTrackUseCounter(const GURL& url) {
   bool is_instant_ntp = false;
 #if !defined(OS_ANDROID)

@@ -53,12 +53,6 @@ bool ContentRendererClient::HasErrorPage(int http_status_code) {
   return false;
 }
 
-bool ContentRendererClient::ShouldSuppressErrorPage(RenderFrame* render_frame,
-                                                    const GURL& url,
-                                                    int error_code) {
-  return false;
-}
-
 bool ContentRendererClient::ShouldTrackUseCounter(const GURL& url) {
   return true;
 }

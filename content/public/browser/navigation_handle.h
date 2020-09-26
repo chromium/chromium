@@ -409,6 +409,10 @@ class CONTENT_EXPORT NavigationHandle {
   virtual void SetIsOverridingUserAgent(bool override_ua) = 0;
   virtual bool GetIsOverridingUserAgent() = 0;
 
+  // Suppress any errors during a navigation and behave as if the user cancelled
+  // the navigation: no error page will commit.
+  virtual void SetSilentlyIgnoreErrors() = 0;
+
   // Testing methods ----------------------------------------------------------
   //
   // The following methods should be used exclusively for writing unit tests.

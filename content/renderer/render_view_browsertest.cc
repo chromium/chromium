@@ -2580,12 +2580,6 @@ class RendererErrorPageTest : public RenderViewImplTest {
  private:
   class TestContentRendererClient : public ContentRendererClient {
    public:
-    bool ShouldSuppressErrorPage(RenderFrame* render_frame,
-                                 const GURL& url,
-                                 int error_code) override {
-      return url == "http://example.com/suppress";
-    }
-
     void PrepareErrorPage(content::RenderFrame* render_frame,
                           const blink::WebURLError& error,
                           const std::string& http_method,
@@ -2607,40 +2601,10 @@ class RendererErrorPageTest : public RenderViewImplTest {
   };
 };
 
-#if defined(OS_ANDROID)
-// Crashing on Android: http://crbug.com/311341
-#define MAYBE_Suppresses DISABLED_Suppresses
-#else
-#define MAYBE_Suppresses Suppresses
-#endif
-
-TEST_F(RendererErrorPageTest, MAYBE_Suppresses) {
+TEST_F(RendererErrorPageTest, RegularError) {
   auto common_params = CreateCommonNavigationParams();
   common_params->navigation_type = mojom::NavigationType::DIFFERENT_DOCUMENT;
-  common_params->url = GURL("http://example.com/suppress");
-  TestRenderFrame* main_frame = static_cast<TestRenderFrame*>(frame());
-  main_frame->NavigateWithError(
-      std::move(common_params), CreateCommitNavigationParams(),
-      net::ERR_FILE_NOT_FOUND, net::ResolveErrorInfo(net::OK),
-      "A suffusion of yellow.");
-
-  const int kMaxOutputCharacters = 22;
-  EXPECT_EQ("", WebFrameContentDumper::DumpWebViewAsText(view()->GetWebView(),
-                                                         kMaxOutputCharacters)
-                    .Ascii());
-}
-
-#if defined(OS_ANDROID)
-// Crashing on Android: http://crbug.com/311341
-#define MAYBE_DoesNotSuppress DISABLED_DoesNotSuppress
-#else
-#define MAYBE_DoesNotSuppress DoesNotSuppress
-#endif
-
-TEST_F(RendererErrorPageTest, MAYBE_DoesNotSuppress) {
-  auto common_params = CreateCommonNavigationParams();
-  common_params->navigation_type = mojom::NavigationType::DIFFERENT_DOCUMENT;
-  common_params->url = GURL("http://example.com/dont-suppress");
+  common_params->url = GURL("http://example.com/error-page");
   TestRenderFrame* main_frame = static_cast<TestRenderFrame*>(frame());
   main_frame->NavigateWithError(
       std::move(common_params), CreateCommitNavigationParams(),
@@ -2656,14 +2620,7 @@ TEST_F(RendererErrorPageTest, MAYBE_DoesNotSuppress) {
                 .Ascii());
 }
 
-#if defined(OS_ANDROID)
-// Crashing on Android: http://crbug.com/311341
-#define MAYBE_HttpStatusCodeErrorWithEmptyBody \
-  DISABLED_HttpStatusCodeErrorWithEmptyBody
-#else
-#define MAYBE_HttpStatusCodeErrorWithEmptyBody HttpStatusCodeErrorWithEmptyBody
-#endif
-TEST_F(RendererErrorPageTest, MAYBE_HttpStatusCodeErrorWithEmptyBody) {
+TEST_F(RendererErrorPageTest, HttpStatusCodeErrorWithEmptyBody) {
   // Start a load that will reach provisional state synchronously,
   // but won't complete synchronously.
   auto common_params = CreateCommonNavigationParams();

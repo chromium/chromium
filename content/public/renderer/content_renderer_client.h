@@ -131,12 +131,6 @@ class CONTENT_EXPORT ContentRendererClient {
   // status code.
   virtual bool HasErrorPage(int http_status_code);
 
-  // Returns true if the embedder prefers not to show an error page for a failed
-  // navigation to |url| with |error_code| in |render_frame|.
-  virtual bool ShouldSuppressErrorPage(RenderFrame* render_frame,
-                                       const GURL& url,
-                                       int error_code);
-
   // Returns false for new tab page activities, which should be filtered out in
   // UseCounter; returns true otherwise.
   virtual bool ShouldTrackUseCounter(const GURL& url);

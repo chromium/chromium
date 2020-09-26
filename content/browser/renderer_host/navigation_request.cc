@@ -4810,6 +4810,10 @@ bool NavigationRequest::GetIsOverridingUserAgent() {
   return entry_overrides_ua_;
 }
 
+void NavigationRequest::SetSilentlyIgnoreErrors() {
+  silently_ignore_errors_ = true;
+}
+
 void NavigationRequest::ForceCSPForResponse(const std::string& csp) {
   commit_params_->forced_content_security_policies.push_back(csp);
 }
@@ -5091,6 +5095,8 @@ bool NavigationRequest::MaybeCancelFailedNavigation() {
   // If the request was canceled by the user, do not show an error page.
   if (net::ERR_ABORTED == net_error_ ||
       // Some embedders suppress error pages to allow custom error handling.
+      silently_ignore_errors_ ||
+      // <webview> guests suppress net::ERR_BLOCKED_BY_CLIENT.
       (net::ERR_BLOCKED_BY_CLIENT == net_error_ &&
        silently_ignore_blocked_by_client_)) {
     frame_tree_node_->ResetNavigationRequest(false);
