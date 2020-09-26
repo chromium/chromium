@@ -56,11 +56,17 @@ if (is_android) {
   android_library("java") {
     sources = [
       "android/java/src/org/chromium/chrome/browser/video_tutorials/Tutorial.java",
-      "android/java/src/org/chromium/chrome/browser/video_tutorials/VideoIPHCoordinator.java",
-      "android/java/src/org/chromium/chrome/browser/video_tutorials/VideoIPHProperties.java",
-      "android/java/src/org/chromium/chrome/browser/video_tutorials/VideoIPHView.java",
-      "android/java/src/org/chromium/chrome/browser/video_tutorials/VideoTutorialIPHUtils.java",
       "android/java/src/org/chromium/chrome/browser/video_tutorials/VideoTutorialService.java",
+      "android/java/src/org/chromium/chrome/browser/video_tutorials/iph/VideoIPHCoordinator.java",
+      "android/java/src/org/chromium/chrome/browser/video_tutorials/iph/VideoIPHProperties.java",
+      "android/java/src/org/chromium/chrome/browser/video_tutorials/iph/VideoIPHView.java",
+      "android/java/src/org/chromium/chrome/browser/video_tutorials/iph/VideoTutorialIPHUtils.java",
+      "android/java/src/org/chromium/chrome/browser/video_tutorials/languages/LanguageItemProperties.java",
+      "android/java/src/org/chromium/chrome/browser/video_tutorials/languages/LanguageItemViewHolder.java",
+      "android/java/src/org/chromium/chrome/browser/video_tutorials/languages/LanguagePickerCoordinator.java",
+      "android/java/src/org/chromium/chrome/browser/video_tutorials/languages/LanguagePickerProperties.java",
+      "android/java/src/org/chromium/chrome/browser/video_tutorials/languages/LanguagePickerView.java",
+      "android/java/src/org/chromium/chrome/browser/video_tutorials/languages/LanguageUtils.java",
     ]
 
     deps = [
@@ -70,6 +76,7 @@ if (is_android) {
       "//components/browser_ui/widget/android:java",
       "//components/feature_engagement/public:public_java",
       "//third_party/android_deps:androidx_annotation_annotation_java",
+      "//third_party/android_deps:androidx_recyclerview_recyclerview_java",
       "//ui/android:ui_java",
     ]
 
@@ -78,9 +85,21 @@ if (is_android) {
   }
 
   android_resources("java_resources") {
-    sources = [ "android/java/res/layout/video_tutorial_iph_card.xml" ]
+    create_srcjar = false
+    sources = [
+      "android/java/res/drawable/radio_button.xml",
+      "android/java/res/drawable/radio_button_default.xml",
+      "android/java/res/drawable/radio_button_selected.xml",
+      "android/java/res/layout/language_card.xml",
+      "android/java/res/layout/language_picker.xml",
+      "android/java/res/layout/video_tutorial_iph_card.xml",
+    ]
 
-    deps = [ "//ui/android:ui_java_resources" ]
+    deps = [
+      "//chrome/browser/ui/android/strings:ui_strings_grd",
+      "//components/browser_ui/widget/android:java_resources",
+      "//ui/android:ui_java_resources",
+    ]
   }
 
   java_cpp_enum("jni_enums") {

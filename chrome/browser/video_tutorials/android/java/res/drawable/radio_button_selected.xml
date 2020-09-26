@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2020 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+  <!-- Larger blue circle in background. -->
+  <item>
+    <shape android:shape="oval">
+      <solid android:color="@color/modern_blue_800"/>
+      <size
+          android:width="15dp"
+          android:height="15dp"/>
+    </shape>
+  </item>
+  <!-- Smaller white ring in front. -->
+  <item>
+    <shape
+        android:shape="ring"
+        android:thickness="1dp"
+        android:useLevel="false">
+      <size
+          android:width="5dp"
+          android:height="5dp"/>
+      <solid android:color="@color/modern_white"/>
+    </shape>
+  </item>
+</layer-list>

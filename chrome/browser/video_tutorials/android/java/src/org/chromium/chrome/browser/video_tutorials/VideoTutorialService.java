@@ -19,23 +19,24 @@ public interface VideoTutorialService {
     void getTutorials(Callback<List<Tutorial>> callback);
 
     /**
-     * Called to get the {@link Tutorial} associated with a feature. Returns null if a matching
-     * tutorial doesn't exist.
+     * Called to get the tutorial for a given feature.
      */
-    void getTutorial(@FeatureType int feature, Callback<Tutorial> callback);
+    void getTutorial(@FeatureType int featureType, Callback<Tutorial> callback);
 
     /**
-     * @return The list of locales in which video tutorials are available.
+     * Called to get the list of supported languages.
      */
-    List<String> getSupportedLocales();
+    List<String> getSupportedLanguages();
 
     /**
-     * @return The preferred locale to show the video tutorial.
+     * @return The user's language of choice for watching the video tutorials.
      */
     String getPreferredLocale();
 
     /**
-     * Called to set the preferred locale for showing the video tutorials.
+     * Called to set the user's preferred {@link locale} for watching the videos. The caller
+     * should make another getTutorial() method call immediately to get the new list of tutorials in
+     * the newly selected language.
      */
     void setPreferredLocale(String locale);
 }

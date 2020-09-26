@@ -45,7 +45,7 @@ public class VideoTutorialServiceBridge implements VideoTutorialService {
     }
 
     @Override
-    public List<String> getSupportedLocales() {
+    public List<String> getSupportedLanguages() {
         if (mNativeVideoTutorialServiceBridge == 0) return null;
         return VideoTutorialServiceBridgeJni.get().getSupportedLocales(
                 mNativeVideoTutorialServiceBridge, this);

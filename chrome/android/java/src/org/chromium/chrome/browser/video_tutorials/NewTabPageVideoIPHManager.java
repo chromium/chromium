@@ -12,6 +12,8 @@ import org.chromium.chrome.browser.image_fetcher.ImageFetcher;
 import org.chromium.chrome.browser.image_fetcher.ImageFetcherConfig;
 import org.chromium.chrome.browser.image_fetcher.ImageFetcherFactory;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.video_tutorials.iph.VideoIPHCoordinator;
+import org.chromium.chrome.browser.video_tutorials.iph.VideoTutorialIPHUtils;
 import org.chromium.components.browser_ui.util.GlobalDiscardableReferencePool;
 import org.chromium.components.feature_engagement.Tracker;
 

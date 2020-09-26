@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2018 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<selector xmlns:android="http://schemas.android.com/apk/res/android" >
+  <!-- TODO(crbug.com/1132112): Fix these states. -->
+  <item
+      android:drawable="@drawable/radio_button_selected"
+      android:state_pressed="true" />
+  <item
+      android:drawable="@drawable/radio_button_selected"
+      android:state_selected="true" />
+  <item
+      android:drawable="@drawable/radio_button_default" />
+</selector>

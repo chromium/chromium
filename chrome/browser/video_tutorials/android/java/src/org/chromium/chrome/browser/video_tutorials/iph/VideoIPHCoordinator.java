@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.video_tutorials;
+package org.chromium.chrome.browser.video_tutorials.iph;
 
 import android.view.ViewStub;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.image_fetcher.ImageFetcher;
+import org.chromium.chrome.browser.video_tutorials.Tutorial;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
