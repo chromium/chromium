@@ -46,27 +46,39 @@ class CORE_EXPORT LayoutSVGRoot final : public LayoutReplaced {
   void SlowLastChild() const = delete;
 
   LayoutObject* FirstChild() const {
+    NOT_DESTROYED();
     DCHECK_EQ(Children(), VirtualChildren());
     return Children()->FirstChild();
   }
   LayoutObject* LastChild() const {
+    NOT_DESTROYED();
     DCHECK_EQ(Children(), VirtualChildren());
     return Children()->LastChild();
   }
 
-  bool IsLayoutSizeChanged() const { return is_layout_size_changed_; }
+  bool IsLayoutSizeChanged() const {
+    NOT_DESTROYED();
+    return is_layout_size_changed_;
+  }
   bool DidScreenScaleFactorChange() const {
+    NOT_DESTROYED();
     return did_screen_scale_factor_change_;
   }
   void SetNeedsBoundariesUpdate() override {
+    NOT_DESTROYED();
     needs_boundaries_or_transform_update_ = true;
   }
   void SetNeedsTransformUpdate() override {
+    NOT_DESTROYED();
     needs_boundaries_or_transform_update_ = true;
   }
 
-  LayoutSize ContainerSize() const { return container_size_; }
+  LayoutSize ContainerSize() const {
+    NOT_DESTROYED();
+    return container_size_;
+  }
   void SetContainerSize(const LayoutSize& container_size) {
+    NOT_DESTROYED();
     // SVGImage::draw() does a view layout prior to painting,
     // and we need that layout to know of the new size otherwise
     // the layout may be incorrectly using the old size.
@@ -80,6 +92,7 @@ class CORE_EXPORT LayoutSVGRoot final : public LayoutReplaced {
   // localToBorderBoxTransform maps local SVG viewport coordinates to local CSS
   // box coordinates.
   const AffineTransform& LocalToBorderBoxTransform() const {
+    NOT_DESTROYED();
     return local_to_border_box_transform_;
   }
 
@@ -90,27 +103,43 @@ class CORE_EXPORT LayoutSVGRoot final : public LayoutReplaced {
   bool HasNonIsolatedBlendingDescendants() const final;
 
   bool HasDescendantCompositingReasons() const {
+    NOT_DESTROYED();
     return AdditionalCompositingReasons() != CompositingReason::kNone;
   }
   void NotifyDescendantCompositingReasonsChanged();
 
-  const char* GetName() const override { return "LayoutSVGRoot"; }
+  const char* GetName() const override {
+    NOT_DESTROYED();
+    return "LayoutSVGRoot";
+  }
 
  private:
   bool ComputeShouldClipOverflow() const override {
+    NOT_DESTROYED();
     return LayoutBox::ComputeShouldClipOverflow() || ShouldApplyViewportClip();
   }
   LayoutRect ComputeContentsVisualOverflow() const;
 
-  const LayoutObjectChildList* Children() const { return &children_; }
-  LayoutObjectChildList* Children() { return &children_; }
+  const LayoutObjectChildList* Children() const {
+    NOT_DESTROYED();
+    return &children_;
+  }
+  LayoutObjectChildList* Children() {
+    NOT_DESTROYED();
+    return &children_;
+  }
 
-  LayoutObjectChildList* VirtualChildren() override { return Children(); }
+  LayoutObjectChildList* VirtualChildren() override {
+    NOT_DESTROYED();
+    return Children();
+  }
   const LayoutObjectChildList* VirtualChildren() const override {
+    NOT_DESTROYED();
     return Children();
   }
 
   bool IsOfType(LayoutObjectType type) const override {
+    NOT_DESTROYED();
     return type == kLayoutObjectSVG || type == kLayoutObjectSVGRoot ||
            LayoutReplaced::IsOfType(type);
   }
@@ -136,9 +165,16 @@ class CORE_EXPORT LayoutSVGRoot final : public LayoutReplaced {
 
   AffineTransform LocalToSVGParentTransform() const override;
 
-  FloatRect ObjectBoundingBox() const override { return object_bounding_box_; }
-  FloatRect StrokeBoundingBox() const override { return stroke_bounding_box_; }
+  FloatRect ObjectBoundingBox() const override {
+    NOT_DESTROYED();
+    return object_bounding_box_;
+  }
+  FloatRect StrokeBoundingBox() const override {
+    NOT_DESTROYED();
+    return stroke_bounding_box_;
+  }
   FloatRect VisualRectInLocalSVGCoordinates() const override {
+    NOT_DESTROYED();
     return visual_rect_in_local_svg_coordinates_;
   }
 
@@ -154,7 +190,10 @@ class CORE_EXPORT LayoutSVGRoot final : public LayoutReplaced {
       const LayoutBoxModelObject* ancestor_to_stop_at,
       LayoutGeometryMap&) const override;
 
-  bool CanHaveChildren() const override { return true; }
+  bool CanHaveChildren() const override {
+    NOT_DESTROYED();
+    return true;
+  }
 
   void DescendantIsolationRequirementsChanged(DescendantIsolationState) final;
 
@@ -171,7 +210,10 @@ class CORE_EXPORT LayoutSVGRoot final : public LayoutReplaced {
   double LogicalSizeScaleFactorForPercentageLengths() const;
 
   PaintLayerType LayerTypeRequired() const override;
-  bool CanHaveAdditionalCompositingReasons() const override { return true; }
+  bool CanHaveAdditionalCompositingReasons() const override {
+    NOT_DESTROYED();
+    return true;
+  }
   CompositingReasons AdditionalCompositingReasons() const override;
   bool HasDescendantWithCompositingReason() const;
 

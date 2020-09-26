@@ -49,10 +49,19 @@ class LayoutSVGBlock : public LayoutBlockFlow {
       const LayoutBoxModelObject* ancestor_to_stop_at,
       LayoutGeometryMap&) const final;
 
-  AffineTransform LocalSVGTransform() const final { return local_transform_; }
-  void SetNeedsTransformUpdate() override { needs_transform_update_ = true; }
+  AffineTransform LocalSVGTransform() const final {
+    NOT_DESTROYED();
+    return local_transform_;
+  }
+  void SetNeedsTransformUpdate() override {
+    NOT_DESTROYED();
+    needs_transform_update_ = true;
+  }
 
-  PaintLayerType LayerTypeRequired() const override { return kNoPaintLayer; }
+  PaintLayerType LayerTypeRequired() const override {
+    NOT_DESTROYED();
+    return kNoPaintLayer;
+  }
 
   SVGElement* GetElement() const;
 
@@ -71,6 +80,7 @@ class LayoutSVGBlock : public LayoutBlockFlow {
   bool transform_uses_reference_box_ : 1;
 
   bool IsOfType(LayoutObjectType type) const override {
+    NOT_DESTROYED();
     return type == kLayoutObjectSVG || LayoutBlockFlow::IsOfType(type);
   }
 

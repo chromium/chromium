@@ -42,27 +42,32 @@ LayoutSVGPath::~LayoutSVGPath() = default;
 
 void LayoutSVGPath::StyleDidChange(StyleDifference diff,
                                    const ComputedStyle* old_style) {
+  NOT_DESTROYED();
   LayoutSVGShape::StyleDidChange(diff, old_style);
   SVGResources::UpdateMarkers(*GetElement(), old_style, StyleRef());
 }
 
 void LayoutSVGPath::WillBeDestroyed() {
+  NOT_DESTROYED();
   SVGResources::ClearMarkers(*GetElement(), Style());
   LayoutSVGShape::WillBeDestroyed();
 }
 
 void LayoutSVGPath::UpdateShapeFromElement() {
+  NOT_DESTROYED();
   LayoutSVGShape::UpdateShapeFromElement();
   UpdateMarkers();
 }
 
 const StylePath* LayoutSVGPath::GetStylePath() const {
+  NOT_DESTROYED();
   if (!IsA<SVGPathElement>(*GetElement()))
     return nullptr;
   return StyleRef().SvgStyle().D();
 }
 
 void LayoutSVGPath::UpdateMarkers() {
+  NOT_DESTROYED();
   marker_positions_.clear();
 
   if (!StyleRef().SvgStyle().HasMarkers() ||

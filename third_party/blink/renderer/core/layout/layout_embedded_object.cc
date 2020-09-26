@@ -68,6 +68,7 @@ static String LocalizedUnavailablePluginReplacementText(
 
 void LayoutEmbeddedObject::SetPluginAvailability(
     PluginAvailability availability) {
+  NOT_DESTROYED();
   DCHECK_EQ(kPluginAvailable, plugin_availability_);
   plugin_availability_ = availability;
 
@@ -80,16 +81,19 @@ void LayoutEmbeddedObject::SetPluginAvailability(
 }
 
 bool LayoutEmbeddedObject::ShowsUnavailablePluginIndicator() const {
+  NOT_DESTROYED();
   return plugin_availability_ != kPluginAvailable;
 }
 
 void LayoutEmbeddedObject::PaintReplaced(
     const PaintInfo& paint_info,
     const PhysicalOffset& paint_offset) const {
+  NOT_DESTROYED();
   EmbeddedObjectPainter(*this).PaintReplaced(paint_info, paint_offset);
 }
 
 void LayoutEmbeddedObject::UpdateLayout() {
+  NOT_DESTROYED();
   DCHECK(NeedsLayout());
   LayoutAnalyzer::Scope analyzer(*this);
 
@@ -109,6 +113,7 @@ void LayoutEmbeddedObject::UpdateLayout() {
 
 void LayoutEmbeddedObject::ComputeIntrinsicSizingInfo(
     IntrinsicSizingInfo& intrinsic_sizing_info) const {
+  NOT_DESTROYED();
   DCHECK(!ShouldApplySizeContainment());
   FrameView* frame_view = ChildFrameView();
   if (frame_view && frame_view->GetIntrinsicSizingInfo(intrinsic_sizing_info)) {
@@ -132,6 +137,7 @@ void LayoutEmbeddedObject::ComputeIntrinsicSizingInfo(
 }
 
 bool LayoutEmbeddedObject::NeedsPreferredWidthsRecalculation() const {
+  NOT_DESTROYED();
   if (LayoutEmbeddedContent::NeedsPreferredWidthsRecalculation())
     return true;
   FrameView* frame_view = ChildFrameView();

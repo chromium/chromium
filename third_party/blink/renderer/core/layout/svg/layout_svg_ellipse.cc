@@ -39,6 +39,7 @@ LayoutSVGEllipse::LayoutSVGEllipse(SVGGeometryElement* node)
 LayoutSVGEllipse::~LayoutSVGEllipse() = default;
 
 void LayoutSVGEllipse::UpdateShapeFromElement() {
+  NOT_DESTROYED();
   // Before creating a new object we need to clear the cached bounding box
   // to avoid using garbage.
   fill_bounding_box_ = FloatRect();
@@ -79,6 +80,7 @@ void LayoutSVGEllipse::UpdateShapeFromElement() {
 }
 
 void LayoutSVGEllipse::CalculateRadiiAndCenter() {
+  NOT_DESTROYED();
   DCHECK(GetElement());
   SVGLengthContext length_context(GetElement());
   const ComputedStyle& style = StyleRef();
@@ -102,6 +104,7 @@ void LayoutSVGEllipse::CalculateRadiiAndCenter() {
 
 bool LayoutSVGEllipse::ShapeDependentStrokeContains(
     const HitTestLocation& location) {
+  NOT_DESTROYED();
   if (radii_.Width() < 0 || radii_.Height() < 0)
     return false;
 
@@ -121,6 +124,7 @@ bool LayoutSVGEllipse::ShapeDependentStrokeContains(
 bool LayoutSVGEllipse::ShapeDependentFillContains(
     const HitTestLocation& location,
     const WindRule fill_rule) const {
+  NOT_DESTROYED();
   const FloatPoint& point = location.TransformedPoint();
   const FloatPoint center =
       FloatPoint(center_.X() - point.X(), center_.Y() - point.Y());
@@ -133,6 +137,7 @@ bool LayoutSVGEllipse::ShapeDependentFillContains(
 }
 
 bool LayoutSVGEllipse::HasContinuousStroke() const {
+  NOT_DESTROYED();
   const SVGComputedStyle& svg_style = StyleRef().SvgStyle();
   return svg_style.StrokeDashArray()->data.IsEmpty();
 }

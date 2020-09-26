@@ -49,11 +49,17 @@ class LayoutVideo final : public LayoutMedia {
 
   HTMLVideoElement* VideoElement() const;
 
-  const char* GetName() const override { return "LayoutVideo"; }
+  const char* GetName() const override {
+    NOT_DESTROYED();
+    return "LayoutVideo";
+  }
 
   void IntrinsicSizeChanged() override;
 
-  bool ComputeShouldClipOverflow() const final { return true; }
+  bool ComputeShouldClipOverflow() const final {
+    NOT_DESTROYED();
+    return true;
+  }
 
  private:
   void UpdateFromElement() override;
@@ -64,6 +70,7 @@ class LayoutVideo final : public LayoutMedia {
   void ImageChanged(WrappedImagePtr, CanDeferInvalidation) override;
 
   bool IsOfType(LayoutObjectType type) const override {
+    NOT_DESTROYED();
     return type == kLayoutObjectVideo || LayoutMedia::IsOfType(type);
   }
 
@@ -78,7 +85,10 @@ class LayoutVideo final : public LayoutMedia {
       LayoutUnit estimated_used_width = LayoutUnit()) const override;
   LayoutUnit MinimumReplacedHeight() const override;
 
-  bool CanHaveAdditionalCompositingReasons() const override { return true; }
+  bool CanHaveAdditionalCompositingReasons() const override {
+    NOT_DESTROYED();
+    return true;
+  }
   CompositingReasons AdditionalCompositingReasons() const override;
 
   void UpdatePlayer(bool is_in_layout);

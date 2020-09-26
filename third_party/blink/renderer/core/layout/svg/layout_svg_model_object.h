@@ -51,6 +51,7 @@ class LayoutSVGModelObject : public LayoutObject {
       VisualRectFlags = kDefaultVisualRectFlags) const override;
 
   FloatRect VisualRectInLocalSVGCoordinates() const override {
+    NOT_DESTROYED();
     return local_visual_rect_;
   }
 
@@ -70,10 +71,12 @@ class LayoutSVGModelObject : public LayoutObject {
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
 
   SVGElement* GetElement() const {
+    NOT_DESTROYED();
     return To<SVGElement>(LayoutObject::GetNode());
   }
 
   bool IsOfType(LayoutObjectType type) const override {
+    NOT_DESTROYED();
     return type == kLayoutObjectSVG || LayoutObject::IsOfType(type);
   }
 

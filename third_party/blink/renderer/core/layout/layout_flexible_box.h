@@ -48,11 +48,23 @@ class CORE_EXPORT LayoutFlexibleBox : public LayoutBlock {
   explicit LayoutFlexibleBox(Element*);
   ~LayoutFlexibleBox() override;
 
-  const char* GetName() const override { return "LayoutFlexibleBox"; }
+  const char* GetName() const override {
+    NOT_DESTROYED();
+    return "LayoutFlexibleBox";
+  }
 
-  bool IsFlexibleBox() const final { return true; }
-  bool IsFlexibleBoxIncludingNG() const final { return true; }
-  bool IsFlexibleBoxIncludingDeprecatedAndNG() const final { return true; }
+  bool IsFlexibleBox() const final {
+    NOT_DESTROYED();
+    return true;
+  }
+  bool IsFlexibleBoxIncludingNG() const final {
+    NOT_DESTROYED();
+    return true;
+  }
+  bool IsFlexibleBoxIncludingDeprecatedAndNG() const final {
+    NOT_DESTROYED();
+    return true;
+  }
   void UpdateBlockLayout(bool relayout_children) final;
 
   bool IsChildAllowed(LayoutObject* object,
@@ -76,7 +88,10 @@ class CORE_EXPORT LayoutFlexibleBox : public LayoutBlock {
 
   bool IsHorizontalFlow() const;
 
-  const OrderIterator& GetOrderIterator() const { return order_iterator_; }
+  const OrderIterator& GetOrderIterator() const {
+    NOT_DESTROYED();
+    return order_iterator_;
+  }
 
   // These three functions are used when resolving percentages against a
   // flex item's logical height. In flexbox, sometimes a logical height

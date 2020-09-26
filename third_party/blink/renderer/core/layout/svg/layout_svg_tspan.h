@@ -31,7 +31,10 @@ class LayoutSVGTSpan final : public LayoutSVGInline {
 
   bool IsChildAllowed(LayoutObject*, const ComputedStyle&) const override;
 
-  const char* GetName() const override { return "LayoutSVGTSpan"; }
+  const char* GetName() const override {
+    NOT_DESTROYED();
+    return "LayoutSVGTSpan";
+  }
 };
 }
 

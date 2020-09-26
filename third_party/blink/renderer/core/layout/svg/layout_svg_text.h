@@ -37,9 +37,13 @@ class LayoutSVGText final : public LayoutSVGBlock {
   bool IsChildAllowed(LayoutObject*, const ComputedStyle&) const override;
 
   void SetNeedsPositioningValuesUpdate() {
+    NOT_DESTROYED();
     needs_positioning_values_update_ = true;
   }
-  void SetNeedsTextMetricsUpdate() { needs_text_metrics_update_ = true; }
+  void SetNeedsTextMetricsUpdate() {
+    NOT_DESTROYED();
+    needs_text_metrics_update_ = true;
+  }
   FloatRect VisualRectInLocalSVGCoordinates() const override;
   FloatRect ObjectBoundingBox() const override;
   FloatRect StrokeBoundingBox() const override;
@@ -55,19 +59,30 @@ class LayoutSVGText final : public LayoutSVGBlock {
   static void NotifySubtreeStructureChanged(LayoutObject*,
                                             LayoutInvalidationReasonForTracing);
 
-  bool NeedsReordering() const { return needs_reordering_; }
+  bool NeedsReordering() const {
+    NOT_DESTROYED();
+    return needs_reordering_;
+  }
   const Vector<LayoutSVGInlineText*>& DescendantTextNodes() const {
+    NOT_DESTROYED();
     return descendant_text_nodes_;
   }
 
   void RecalcVisualOverflow() override;
 
-  const char* GetName() const override { return "LayoutSVGText"; }
+  const char* GetName() const override {
+    NOT_DESTROYED();
+    return "LayoutSVGText";
+  }
 
  private:
-  bool AllowsNonVisibleOverflow() const override { return false; }
+  bool AllowsNonVisibleOverflow() const override {
+    NOT_DESTROYED();
+    return false;
+  }
 
   bool IsOfType(LayoutObjectType type) const override {
+    NOT_DESTROYED();
     return type == kLayoutObjectSVGText || LayoutSVGBlock::IsOfType(type);
   }
 

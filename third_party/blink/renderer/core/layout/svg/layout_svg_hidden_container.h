@@ -32,27 +32,35 @@ class LayoutSVGHiddenContainer : public LayoutSVGContainer {
  public:
   explicit LayoutSVGHiddenContainer(SVGElement*);
 
-  const char* GetName() const override { return "LayoutSVGHiddenContainer"; }
+  const char* GetName() const override {
+    NOT_DESTROYED();
+    return "LayoutSVGHiddenContainer";
+  }
 
  protected:
   void UpdateLayout() override;
 
   bool IsOfType(LayoutObjectType type) const override {
+    NOT_DESTROYED();
     return type == kLayoutObjectSVGHiddenContainer ||
            LayoutSVGContainer::IsOfType(type);
   }
 
  private:
   // LayoutSVGHiddenContainer paints nothing.
-  void Paint(const PaintInfo&) const final {}
+  void Paint(const PaintInfo&) const final { NOT_DESTROYED(); }
   PhysicalRect VisualRectInDocument(VisualRectFlags) const final {
+    NOT_DESTROYED();
     return PhysicalRect();
   }
   FloatRect VisualRectInLocalSVGCoordinates() const final {
+    NOT_DESTROYED();
     return FloatRect();
   }
   void AbsoluteQuads(Vector<FloatQuad>&,
-                     MapCoordinatesFlags mode = 0) const final {}
+                     MapCoordinatesFlags mode = 0) const final {
+    NOT_DESTROYED();
+  }
 
   bool NodeAtPoint(HitTestResult&,
                    const HitTestLocation&,

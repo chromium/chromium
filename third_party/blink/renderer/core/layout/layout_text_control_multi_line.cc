@@ -41,6 +41,7 @@ bool LayoutTextControlMultiLine::NodeAtPoint(
     const HitTestLocation& hit_test_location,
     const PhysicalOffset& accumulated_offset,
     HitTestAction hit_test_action) {
+  NOT_DESTROYED();
   if (!LayoutTextControl::NodeAtPoint(result, hit_test_location,
                                       accumulated_offset, hit_test_action))
     return false;
@@ -58,6 +59,7 @@ bool LayoutTextControlMultiLine::NodeAtPoint(
 
 LayoutUnit LayoutTextControlMultiLine::PreferredContentLogicalWidth(
     float char_width) const {
+  NOT_DESTROYED();
   int factor = To<HTMLTextAreaElement>(GetNode())->cols();
   return static_cast<LayoutUnit>(ceilf(char_width * factor)) +
          ScrollbarThickness();
@@ -66,6 +68,7 @@ LayoutUnit LayoutTextControlMultiLine::PreferredContentLogicalWidth(
 LayoutUnit LayoutTextControlMultiLine::ComputeControlLogicalHeight(
     LayoutUnit line_height,
     LayoutUnit non_content_height) const {
+  NOT_DESTROYED();
   return line_height * To<HTMLTextAreaElement>(GetNode())->rows() +
          non_content_height;
 }
@@ -75,6 +78,7 @@ LayoutUnit LayoutTextControlMultiLine::BaselinePosition(
     bool first_line,
     LineDirectionMode direction,
     LinePositionMode line_position_mode) const {
+  NOT_DESTROYED();
   return LayoutBox::BaselinePosition(baseline_type, first_line, direction,
                                      line_position_mode);
 }
@@ -82,6 +86,7 @@ LayoutUnit LayoutTextControlMultiLine::BaselinePosition(
 LayoutObject* LayoutTextControlMultiLine::LayoutSpecialExcludedChild(
     bool relayout_children,
     SubtreeLayoutScope& layout_scope) {
+  NOT_DESTROYED();
   LayoutObject* placeholder_layout_object =
       LayoutTextControl::LayoutSpecialExcludedChild(relayout_children,
                                                     layout_scope);
@@ -97,6 +102,7 @@ LayoutObject* LayoutTextControlMultiLine::LayoutSpecialExcludedChild(
 }
 
 LayoutUnit LayoutTextControlMultiLine::ScrollWidth() const {
+  NOT_DESTROYED();
   // If in preview state, fake the scroll width to prevent that any information
   // about the suggested content can be derived from the size.
   if (!GetTextControlElement()->SuggestedValue().IsEmpty())
@@ -105,6 +111,7 @@ LayoutUnit LayoutTextControlMultiLine::ScrollWidth() const {
 }
 
 LayoutUnit LayoutTextControlMultiLine::ScrollHeight() const {
+  NOT_DESTROYED();
   // If in preview state, fake the scroll height to prevent that any information
   // about the suggested content can be derived from the size.
   if (!GetTextControlElement()->SuggestedValue().IsEmpty())

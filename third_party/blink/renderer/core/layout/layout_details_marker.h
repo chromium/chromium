@@ -33,12 +33,19 @@ class LayoutDetailsMarker final : public LayoutBlockFlow {
 
   Orientation GetOrientation() const;
 
-  bool CreatesNewFormattingContext() const override { return true; }
+  bool CreatesNewFormattingContext() const override {
+    NOT_DESTROYED();
+    return true;
+  }
 
-  const char* GetName() const override { return "LayoutDetailsMarker"; }
+  const char* GetName() const override {
+    NOT_DESTROYED();
+    return "LayoutDetailsMarker";
+  }
 
  private:
   bool IsOfType(LayoutObjectType type) const override {
+    NOT_DESTROYED();
     return type == kLayoutObjectDetailsMarker ||
            LayoutBlockFlow::IsOfType(type);
   }

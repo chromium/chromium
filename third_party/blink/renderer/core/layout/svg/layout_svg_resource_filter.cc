@@ -38,26 +38,31 @@ LayoutSVGResourceFilter::~LayoutSVGResourceFilter() = default;
 
 bool LayoutSVGResourceFilter::IsChildAllowed(LayoutObject* child,
                                              const ComputedStyle&) const {
+  NOT_DESTROYED();
   return child->IsSVGFilterPrimitive();
 }
 
 void LayoutSVGResourceFilter::RemoveAllClientsFromCache() {
+  NOT_DESTROYED();
   MarkAllClientsForInvalidation(SVGResourceClient::kLayoutInvalidation |
                                 SVGResourceClient::kBoundariesInvalidation);
 }
 
 FloatRect LayoutSVGResourceFilter::ResourceBoundingBox(
     const FloatRect& reference_box) const {
+  NOT_DESTROYED();
   const auto* filter_element = To<SVGFilterElement>(GetElement());
   return SVGLengthContext::ResolveRectangle(filter_element, FilterUnits(),
                                             reference_box);
 }
 
 SVGUnitTypes::SVGUnitType LayoutSVGResourceFilter::FilterUnits() const {
+  NOT_DESTROYED();
   return To<SVGFilterElement>(GetElement())->filterUnits()->CurrentEnumValue();
 }
 
 SVGUnitTypes::SVGUnitType LayoutSVGResourceFilter::PrimitiveUnits() const {
+  NOT_DESTROYED();
   return To<SVGFilterElement>(GetElement())
       ->primitiveUnits()
       ->CurrentEnumValue();
@@ -65,6 +70,7 @@ SVGUnitTypes::SVGUnitType LayoutSVGResourceFilter::PrimitiveUnits() const {
 
 bool LayoutSVGResourceFilter::FindCycleFromSelf(
     SVGResourcesCycleSolver& solver) const {
+  NOT_DESTROYED();
   // Traverse and check all <feImage> 'href' element references.
   for (auto& feimage_element :
        Traversal<SVGFEImageElement>::ChildrenOf(*GetElement())) {

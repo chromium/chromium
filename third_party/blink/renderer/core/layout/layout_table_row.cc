@@ -47,21 +47,25 @@ LayoutTableRow::LayoutTableRow(Element* element)
 }
 
 void LayoutTableRow::WillBeRemovedFromTree() {
+  NOT_DESTROYED();
   LayoutTableBoxComponent::WillBeRemovedFromTree();
 
   Section()->SetNeedsCellRecalc();
 }
 
 LayoutNGTableCellInterface* LayoutTableRow::FirstCellInterface() const {
+  NOT_DESTROYED();
   return FirstCell();
 }
 
 LayoutNGTableCellInterface* LayoutTableRow::LastCellInterface() const {
+  NOT_DESTROYED();
   return LastCell();
 }
 
 void LayoutTableRow::StyleDidChange(StyleDifference diff,
                                     const ComputedStyle* old_style) {
+  NOT_DESTROYED();
   DCHECK_EQ(StyleRef().Display(), EDisplay::kTableRow);
 
   // Legacy tables cannont handle relative/fixed rows.
@@ -136,6 +140,7 @@ void LayoutTableRow::StyleDidChange(StyleDifference diff,
 
 void LayoutTableRow::InvalidatePaint(
     const PaintInvalidatorContext& context) const {
+  NOT_DESTROYED();
   LayoutTableBoxComponent::InvalidatePaint(context);
   if (Table()->HasCollapsedBorders()) {
     // Repaint the painting layer of the table. The table's composited backing
@@ -146,6 +151,7 @@ void LayoutTableRow::InvalidatePaint(
 }
 
 void LayoutTableRow::AddChild(LayoutObject* child, LayoutObject* before_child) {
+  NOT_DESTROYED();
   if (!child->IsTableCell()) {
     LayoutObject* last = before_child;
     if (!last)
@@ -222,6 +228,7 @@ void LayoutTableRow::AddChild(LayoutObject* child, LayoutObject* before_child) {
 }
 
 void LayoutTableRow::UpdateLayout() {
+  NOT_DESTROYED();
   DCHECK(NeedsLayout());
   LayoutAnalyzer::Scope analyzer(*this);
   bool paginated = View()->GetLayoutState()->IsPaginated();
@@ -267,6 +274,7 @@ bool LayoutTableRow::NodeAtPoint(HitTestResult& result,
                                  const HitTestLocation& hit_test_location,
                                  const PhysicalOffset& accumulated_offset,
                                  HitTestAction action) {
+  NOT_DESTROYED();
   // The row and the cells are all located in the section.
   const auto* section = Section();
   PhysicalOffset section_accumulated_offset =
@@ -292,6 +300,7 @@ bool LayoutTableRow::NodeAtPoint(HitTestResult& result,
 
 LayoutBox::PaginationBreakability LayoutTableRow::GetPaginationBreakability(
     FragmentationEngine engine) const {
+  NOT_DESTROYED();
   PaginationBreakability breakability =
       LayoutTableBoxComponent::GetPaginationBreakability(engine);
   if (breakability == kAllowAnyBreaks) {
@@ -304,6 +313,7 @@ LayoutBox::PaginationBreakability LayoutTableRow::GetPaginationBreakability(
 }
 
 void LayoutTableRow::Paint(const PaintInfo& paint_info) const {
+  NOT_DESTROYED();
   TableRowPainter(*this).Paint(paint_info);
 }
 
@@ -315,16 +325,19 @@ LayoutTableRow* LayoutTableRow::CreateAnonymous(Document* document) {
 
 LayoutBox* LayoutTableRow::CreateAnonymousBoxWithSameTypeAs(
     const LayoutObject* parent) const {
+  NOT_DESTROYED();
   return LayoutObjectFactory::CreateAnonymousTableRowWithParent(*parent);
 }
 
 void LayoutTableRow::ComputeLayoutOverflow() {
+  NOT_DESTROYED();
   ClearLayoutOverflow();
   for (LayoutTableCell* cell = FirstCell(); cell; cell = cell->NextCell())
     AddLayoutOverflowFromCell(cell);
 }
 
 void LayoutTableRow::RecalcVisualOverflow() {
+  NOT_DESTROYED();
   unsigned n_cols = Section()->NumCols(RowIndex());
   for (unsigned c = 0; c < n_cols; c++) {
     auto* cell = Section()->OriginatingCellAt(RowIndex(), c);
@@ -338,6 +351,7 @@ void LayoutTableRow::RecalcVisualOverflow() {
 }
 
 void LayoutTableRow::ComputeVisualOverflow() {
+  NOT_DESTROYED();
   const auto& old_visual_rect = VisualOverflowRect();
   ClearVisualOverflow();
   AddVisualEffectOverflow();
@@ -350,6 +364,7 @@ void LayoutTableRow::ComputeVisualOverflow() {
 }
 
 void LayoutTableRow::AddLayoutOverflowFromCell(const LayoutTableCell* cell) {
+  NOT_DESTROYED();
   LayoutRect cell_layout_overflow_rect =
       cell->LayoutOverflowRectForPropagation(this);
 
@@ -363,6 +378,7 @@ void LayoutTableRow::AddLayoutOverflowFromCell(const LayoutTableCell* cell) {
 }
 
 void LayoutTableRow::AddVisualOverflowFromCell(const LayoutTableCell* cell) {
+  NOT_DESTROYED();
   // Note: we include visual overflow of even self-painting cells,
   // because the row needs to expand to contain their area in order to paint
   // background and collapsed borders. This is different than any other

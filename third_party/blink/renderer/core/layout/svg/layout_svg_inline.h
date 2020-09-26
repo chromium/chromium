@@ -29,9 +29,16 @@ class LayoutSVGInline : public LayoutInline {
  public:
   explicit LayoutSVGInline(Element*);
 
-  const char* GetName() const override { return "LayoutSVGInline"; }
-  PaintLayerType LayerTypeRequired() const final { return kNoPaintLayer; }
+  const char* GetName() const override {
+    NOT_DESTROYED();
+    return "LayoutSVGInline";
+  }
+  PaintLayerType LayerTypeRequired() const final {
+    NOT_DESTROYED();
+    return kNoPaintLayer;
+  }
   bool IsOfType(LayoutObjectType type) const override {
+    NOT_DESTROYED();
     return type == kLayoutObjectSVG || type == kLayoutObjectSVGInline ||
            LayoutInline::IsOfType(type);
   }

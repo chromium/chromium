@@ -38,37 +38,55 @@ class CORE_EXPORT LayoutTableBoxComponent : public LayoutBox {
         : LayoutObject::MutableForPainting(box) {}
   };
   MutableForPainting GetMutableForPainting() const {
+    NOT_DESTROYED();
     return MutableForPainting(*this);
   }
 
   // Should use TableStyle() instead of own style to determine cell order.
-  const ComputedStyle& TableStyle() const { return Table()->StyleRef(); }
+  const ComputedStyle& TableStyle() const {
+    NOT_DESTROYED();
+    return Table()->StyleRef();
+  }
 
   BorderValue BorderStartInTableDirection() const {
+    NOT_DESTROYED();
     return StyleRef().BorderStartUsing(TableStyle());
   }
   BorderValue BorderEndInTableDirection() const {
+    NOT_DESTROYED();
     return StyleRef().BorderEndUsing(TableStyle());
   }
   BorderValue BorderBeforeInTableDirection() const {
+    NOT_DESTROYED();
     return StyleRef().BorderBeforeUsing(TableStyle());
   }
   BorderValue BorderAfterInTableDirection() const {
+    NOT_DESTROYED();
     return StyleRef().BorderAfterUsing(TableStyle());
   }
 
  protected:
   explicit LayoutTableBoxComponent(Element* element)
-      : LayoutBox(element), last_paint_result_(kFullyPainted) {}
+      : LayoutBox(element), last_paint_result_(kFullyPainted) {
+    NOT_DESTROYED();
+  }
 
-  const LayoutObjectChildList* Children() const { return &children_; }
-  LayoutObjectChildList* Children() { return &children_; }
+  const LayoutObjectChildList* Children() const {
+    NOT_DESTROYED();
+    return &children_;
+  }
+  LayoutObjectChildList* Children() {
+    NOT_DESTROYED();
+    return &children_;
+  }
 
   LayoutObject* FirstChild() const {
+    NOT_DESTROYED();
     DCHECK_EQ(Children(), VirtualChildren());
     return Children()->FirstChild();
   }
   LayoutObject* LastChild() const {
+    NOT_DESTROYED();
     DCHECK_EQ(Children(), VirtualChildren());
     return Children()->LastChild();
   }
@@ -78,14 +96,21 @@ class CORE_EXPORT LayoutTableBoxComponent : public LayoutBox {
   // elements. For example, column's visibility:hidden doesn't apply; row's
   // visibility:hidden shouldn't hide row's background painted behind visible
   // cells, etc.
-  bool VisualRectRespectsVisibility() const final { return false; }
+  bool VisualRectRespectsVisibility() const final {
+    NOT_DESTROYED();
+    return false;
+  }
 
   // If you have a LayoutTableBoxComponent, use firstChild or lastChild instead.
   void SlowFirstChild() const = delete;
   void SlowLastChild() const = delete;
 
-  LayoutObjectChildList* VirtualChildren() override { return Children(); }
+  LayoutObjectChildList* VirtualChildren() override {
+    NOT_DESTROYED();
+    return Children();
+  }
   const LayoutObjectChildList* VirtualChildren() const override {
+    NOT_DESTROYED();
     return Children();
   }
 

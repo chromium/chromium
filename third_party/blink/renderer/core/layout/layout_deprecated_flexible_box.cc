@@ -188,6 +188,7 @@ static LayoutUnit MarginWidthForChild(LayoutBox* child) {
 }
 
 MinMaxSizes LayoutDeprecatedFlexibleBox::ComputeIntrinsicLogicalWidths() const {
+  NOT_DESTROYED();
   MinMaxSizes sizes;
   for (LayoutBox* child = FirstChildBox(); child;
        child = child->NextSiblingBox()) {
@@ -207,6 +208,7 @@ MinMaxSizes LayoutDeprecatedFlexibleBox::ComputeIntrinsicLogicalWidths() const {
 }
 
 void LayoutDeprecatedFlexibleBox::UpdateBlockLayout(bool relayout_children) {
+  NOT_DESTROYED();
   DCHECK(NeedsLayout());
   DCHECK_EQ(StyleRef().BoxOrient(), EBoxOrient::kVertical);
   DCHECK(StyleRef().HasLineClamp());
@@ -250,6 +252,7 @@ void LayoutDeprecatedFlexibleBox::UpdateBlockLayout(bool relayout_children) {
 }
 
 void LayoutDeprecatedFlexibleBox::LayoutVerticalBox(bool relayout_children) {
+  NOT_DESTROYED();
   LayoutUnit to_add =
       BorderBottom() + PaddingBottom() + ComputeScrollbars().bottom;
 
@@ -338,6 +341,7 @@ void LayoutDeprecatedFlexibleBox::LayoutVerticalBox(bool relayout_children) {
 }
 
 void LayoutDeprecatedFlexibleBox::ApplyLineClamp(bool relayout_children) {
+  NOT_DESTROYED();
   int max_line_count = 0;
   for (LayoutBox* child = FirstChildBox(); child;
        child = child->NextSiblingBox()) {

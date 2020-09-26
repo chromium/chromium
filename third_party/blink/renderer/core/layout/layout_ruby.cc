@@ -61,12 +61,14 @@ LayoutRubyAsInline::~LayoutRubyAsInline() = default;
 
 void LayoutRubyAsInline::StyleDidChange(StyleDifference diff,
                                         const ComputedStyle* old_style) {
+  NOT_DESTROYED();
   LayoutInline::StyleDidChange(diff, old_style);
   PropagateStyleToAnonymousChildren();
 }
 
 void LayoutRubyAsInline::AddChild(LayoutObject* child,
                                   LayoutObject* before_child) {
+  NOT_DESTROYED();
   // If the child is a ruby run, just add it normally.
   if (child->IsRubyRun()) {
     LayoutInline::AddChild(child, before_child);
@@ -101,6 +103,7 @@ void LayoutRubyAsInline::AddChild(LayoutObject* child,
 }
 
 void LayoutRubyAsInline::RemoveChild(LayoutObject* child) {
+  NOT_DESTROYED();
   // If the child's parent is *this (must be a ruby run), just use the normal
   // remove method.
   if (child->Parent() == this) {
@@ -126,12 +129,14 @@ LayoutRubyAsBlock::~LayoutRubyAsBlock() = default;
 
 void LayoutRubyAsBlock::StyleDidChange(StyleDifference diff,
                                        const ComputedStyle* old_style) {
+  NOT_DESTROYED();
   LayoutBlockFlow::StyleDidChange(diff, old_style);
   PropagateStyleToAnonymousChildren();
 }
 
 void LayoutRubyAsBlock::AddChild(LayoutObject* child,
                                  LayoutObject* before_child) {
+  NOT_DESTROYED();
   // If the child is a ruby run, just add it normally.
   if (child->IsRubyRun()) {
     LayoutBlockFlow::AddChild(child, before_child);
@@ -166,6 +171,7 @@ void LayoutRubyAsBlock::AddChild(LayoutObject* child,
 }
 
 void LayoutRubyAsBlock::RemoveChild(LayoutObject* child) {
+  NOT_DESTROYED();
   // If the child's parent is *this (must be a ruby run), just use the normal
   // remove method.
   if (child->Parent() == this) {

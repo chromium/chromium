@@ -12,12 +12,14 @@ LayoutNGInsideListMarker::LayoutNGInsideListMarker(Element* element)
     : LayoutInline(element) {}
 
 bool LayoutNGInsideListMarker::IsOfType(LayoutObjectType type) const {
+  NOT_DESTROYED();
   return type == kLayoutObjectNGInsideListMarker ||
          LayoutInline::IsOfType(type);
 }
 
 PositionWithAffinity LayoutNGInsideListMarker::PositionForPoint(
     const PhysicalOffset&) const {
+  NOT_DESTROYED();
   return CreatePositionWithAffinity(0);
 }
 

@@ -77,13 +77,19 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
   // http://www.w3.org/TR/CSS2/visudet.html#inline-replaced-width
   static const int kDefaultWidth;
   static const int kDefaultHeight;
-  bool CanHaveChildren() const override { return false; }
+  bool CanHaveChildren() const override {
+    NOT_DESTROYED();
+    return false;
+  }
   virtual void PaintReplaced(const PaintInfo&,
-                             const PhysicalOffset& paint_offset) const {}
+                             const PhysicalOffset& paint_offset) const {
+    NOT_DESTROYED();
+  }
 
   PhysicalRect LocalSelectionVisualRect() const final;
 
   bool HasObjectFit() const {
+    NOT_DESTROYED();
     return StyleRef().GetObjectFit() !=
            ComputedStyleInitialValues::InitialObjectFit();
   }
@@ -108,10 +114,12 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
   void UpdateLayout() override;
 
   LayoutSize IntrinsicSize() const final {
+    NOT_DESTROYED();
     return LayoutSize(IntrinsicWidth(), IntrinsicHeight());
   }
 
   LayoutUnit IntrinsicWidth() const {
+    NOT_DESTROYED();
     if (HasOverrideIntrinsicContentWidth())
       return OverrideIntrinsicContentWidth();
     else if (ShouldApplySizeContainment())
@@ -119,6 +127,7 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
     return intrinsic_size_.Width();
   }
   LayoutUnit IntrinsicHeight() const {
+    NOT_DESTROYED();
     if (HasOverrideIntrinsicContentHeight())
       return OverrideIntrinsicContentHeight();
     else if (ShouldApplySizeContainment())
@@ -140,20 +149,26 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
       const LayoutSize* overridden_intrinsic_size = nullptr) const;
 
   LayoutUnit IntrinsicContentLogicalHeight() const override {
+    NOT_DESTROYED();
     return IntrinsicLogicalHeight();
   }
 
-  virtual LayoutUnit MinimumReplacedHeight() const { return LayoutUnit(); }
+  virtual LayoutUnit MinimumReplacedHeight() const {
+    NOT_DESTROYED();
+    return LayoutUnit();
+  }
 
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
 
   void SetIntrinsicSize(const LayoutSize& intrinsic_size) {
+    NOT_DESTROYED();
     intrinsic_size_ = intrinsic_size;
   }
 
   PositionWithAffinity PositionForPoint(const PhysicalOffset&) const override;
 
   bool IsOfType(LayoutObjectType type) const override {
+    NOT_DESTROYED();
     return type == kLayoutObjectLayoutReplaced || LayoutBox::IsOfType(type);
   }
 

@@ -96,6 +96,7 @@ LayoutCustomScrollbarPart* LayoutCustomScrollbarPart::CreateAnonymous(
 int LayoutCustomScrollbarPart::ComputeSize(SizeType size_type,
                                            const Length& length,
                                            int container_size) const {
+  NOT_DESTROYED();
   if (!length.IsIntrinsicOrAuto() || (size_type == kMinSize && length.IsAuto()))
     return MinimumValueForLength(length, LayoutUnit(container_size)).ToInt();
   return CustomScrollbarTheme::GetCustomScrollbarTheme()->ScrollbarThickness(
@@ -103,6 +104,7 @@ int LayoutCustomScrollbarPart::ComputeSize(SizeType size_type,
 }
 
 int LayoutCustomScrollbarPart::ComputeWidth(int container_width) const {
+  NOT_DESTROYED();
   if (StyleRef().Display() == EDisplay::kNone)
     return 0;
 
@@ -117,6 +119,7 @@ int LayoutCustomScrollbarPart::ComputeWidth(int container_width) const {
 }
 
 int LayoutCustomScrollbarPart::ComputeHeight(int container_height) const {
+  NOT_DESTROYED();
   if (StyleRef().Display() == EDisplay::kNone)
     return 0;
 
@@ -132,6 +135,7 @@ int LayoutCustomScrollbarPart::ComputeHeight(int container_height) const {
 }
 
 int LayoutCustomScrollbarPart::ComputeThickness() const {
+  NOT_DESTROYED();
   DCHECK_EQ(kScrollbarBGPart, part_);
 
   // Use 0 for container width/height, so percentage size will be ignored.
@@ -142,6 +146,7 @@ int LayoutCustomScrollbarPart::ComputeThickness() const {
 }
 
 int LayoutCustomScrollbarPart::ComputeLength() const {
+  NOT_DESTROYED();
   DCHECK_NE(kScrollbarBGPart, part_);
 
   IntRect visible_content_rect =
@@ -158,30 +163,35 @@ static LayoutUnit ComputeMargin(const Length& style_margin) {
 }
 
 LayoutUnit LayoutCustomScrollbarPart::MarginTop() const {
+  NOT_DESTROYED();
   if (scrollbar_->Orientation() == kHorizontalScrollbar)
     return LayoutUnit();
   return ComputeMargin(StyleRef().MarginTop());
 }
 
 LayoutUnit LayoutCustomScrollbarPart::MarginBottom() const {
+  NOT_DESTROYED();
   if (scrollbar_->Orientation() == kHorizontalScrollbar)
     return LayoutUnit();
   return ComputeMargin(StyleRef().MarginBottom());
 }
 
 LayoutUnit LayoutCustomScrollbarPart::MarginLeft() const {
+  NOT_DESTROYED();
   if (scrollbar_->Orientation() == kVerticalScrollbar)
     return LayoutUnit();
   return ComputeMargin(StyleRef().MarginLeft());
 }
 
 LayoutUnit LayoutCustomScrollbarPart::MarginRight() const {
+  NOT_DESTROYED();
   if (scrollbar_->Orientation() == kVerticalScrollbar)
     return LayoutUnit();
   return ComputeMargin(StyleRef().MarginRight());
 }
 
 void LayoutCustomScrollbarPart::UpdateFromStyle() {
+  NOT_DESTROYED();
   LayoutReplaced::UpdateFromStyle();
   SetInline(false);
   ClearPositionedState();
@@ -190,6 +200,7 @@ void LayoutCustomScrollbarPart::UpdateFromStyle() {
 
 void LayoutCustomScrollbarPart::StyleDidChange(StyleDifference diff,
                                                const ComputedStyle* old_style) {
+  NOT_DESTROYED();
   LayoutReplaced::StyleDidChange(diff, old_style);
   if (old_style && (diff.NeedsPaintInvalidation() || diff.NeedsLayout()))
     SetNeedsPaintInvalidation();
@@ -197,6 +208,7 @@ void LayoutCustomScrollbarPart::StyleDidChange(StyleDifference diff,
 }
 
 void LayoutCustomScrollbarPart::RecordPercentLengthStats() const {
+  NOT_DESTROYED();
   if (!scrollbar_)
     return;
 
@@ -222,11 +234,13 @@ void LayoutCustomScrollbarPart::RecordPercentLengthStats() const {
 
 void LayoutCustomScrollbarPart::ImageChanged(WrappedImagePtr image,
                                              CanDeferInvalidation defer) {
+  NOT_DESTROYED();
   SetNeedsPaintInvalidation();
   LayoutReplaced::ImageChanged(image, defer);
 }
 
 void LayoutCustomScrollbarPart::SetNeedsPaintInvalidation() {
+  NOT_DESTROYED();
   if (scrollbar_) {
     scrollbar_->SetNeedsPaintInvalidation(kAllParts);
     return;

@@ -34,6 +34,7 @@ namespace blink {
 
 bool LayoutSVGInline::IsChildAllowed(LayoutObject* child,
                                      const ComputedStyle& style) const {
+  NOT_DESTROYED();
   if (child->IsText())
     return SVGLayoutSupport::IsLayoutableTextNode(child);
 
@@ -55,12 +56,14 @@ LayoutSVGInline::LayoutSVGInline(Element* element) : LayoutInline(element) {
 }
 
 InlineFlowBox* LayoutSVGInline::CreateInlineFlowBox() {
+  NOT_DESTROYED();
   InlineFlowBox* box = new SVGInlineFlowBox(LineLayoutItem(this));
   box->SetHasVirtualLogicalHeight();
   return box;
 }
 
 FloatRect LayoutSVGInline::ObjectBoundingBox() const {
+  NOT_DESTROYED();
   FloatRect bounds;
   for (InlineFlowBox* box : *LineBoxes())
     bounds.Unite(FloatRect(box->FrameRect()));
@@ -68,12 +71,14 @@ FloatRect LayoutSVGInline::ObjectBoundingBox() const {
 }
 
 FloatRect LayoutSVGInline::StrokeBoundingBox() const {
+  NOT_DESTROYED();
   if (!FirstLineBox())
     return FloatRect();
   return SVGLayoutSupport::ExtendTextBBoxWithStroke(*this, ObjectBoundingBox());
 }
 
 FloatRect LayoutSVGInline::VisualRectInLocalSVGCoordinates() const {
+  NOT_DESTROYED();
   if (!FirstLineBox())
     return FloatRect();
   const LayoutSVGText* text_root =
@@ -86,24 +91,28 @@ FloatRect LayoutSVGInline::VisualRectInLocalSVGCoordinates() const {
 
 PhysicalRect LayoutSVGInline::VisualRectInDocument(
     VisualRectFlags flags) const {
+  NOT_DESTROYED();
   return SVGLayoutSupport::VisualRectInAncestorSpace(*this, *View(), flags);
 }
 
 void LayoutSVGInline::MapLocalToAncestor(const LayoutBoxModelObject* ancestor,
                                          TransformState& transform_state,
                                          MapCoordinatesFlags flags) const {
+  NOT_DESTROYED();
   SVGLayoutSupport::MapLocalToAncestor(this, ancestor, transform_state, flags);
 }
 
 const LayoutObject* LayoutSVGInline::PushMappingToContainer(
     const LayoutBoxModelObject* ancestor_to_stop_at,
     LayoutGeometryMap& geometry_map) const {
+  NOT_DESTROYED();
   return SVGLayoutSupport::PushMappingToContainer(this, ancestor_to_stop_at,
                                                   geometry_map);
 }
 
 void LayoutSVGInline::AbsoluteQuads(Vector<FloatQuad>& quads,
                                     MapCoordinatesFlags mode) const {
+  NOT_DESTROYED();
   for (InlineFlowBox* box : *LineBoxes()) {
     FloatRect box_rect(box->FrameRect());
     quads.push_back(LocalToAbsoluteQuad(
@@ -112,6 +121,7 @@ void LayoutSVGInline::AbsoluteQuads(Vector<FloatQuad>& quads,
 }
 
 void LayoutSVGInline::WillBeDestroyed() {
+  NOT_DESTROYED();
   SVGResourcesCache::ClientDestroyed(*this);
   SVGResources::ClearClipPathFilterMask(To<SVGElement>(*GetNode()), Style());
   SVGResources::ClearPaints(To<SVGElement>(*GetNode()), Style());
@@ -120,6 +130,7 @@ void LayoutSVGInline::WillBeDestroyed() {
 
 void LayoutSVGInline::StyleDidChange(StyleDifference diff,
                                      const ComputedStyle* old_style) {
+  NOT_DESTROYED();
   // Since layout depends on the bounds of the filter, we need to force layout
   // when the filter changes.
   if (diff.FilterChanged())
@@ -140,6 +151,7 @@ void LayoutSVGInline::StyleDidChange(StyleDifference diff,
 
 void LayoutSVGInline::AddChild(LayoutObject* child,
                                LayoutObject* before_child) {
+  NOT_DESTROYED();
   LayoutInline::AddChild(child, before_child);
   SVGResourcesCache::ClientWasAddedToTree(*child);
   LayoutSVGText::NotifySubtreeStructureChanged(
@@ -147,6 +159,7 @@ void LayoutSVGInline::AddChild(LayoutObject* child,
 }
 
 void LayoutSVGInline::RemoveChild(LayoutObject* child) {
+  NOT_DESTROYED();
   SVGResourcesCache::ClientWillBeRemovedFromTree(*child);
   LayoutSVGText::NotifySubtreeStructureChanged(
       this, layout_invalidation_reason::kChildChanged);
@@ -154,6 +167,7 @@ void LayoutSVGInline::RemoveChild(LayoutObject* child) {
 }
 
 void LayoutSVGInline::InsertedIntoTree() {
+  NOT_DESTROYED();
   LayoutInline::InsertedIntoTree();
   if (CompositingReasonFinder::DirectReasonsForSVGChildPaintProperties(*this) !=
       CompositingReason::kNone) {
@@ -162,6 +176,7 @@ void LayoutSVGInline::InsertedIntoTree() {
 }
 
 void LayoutSVGInline::WillBeRemovedFromTree() {
+  NOT_DESTROYED();
   LayoutInline::WillBeRemovedFromTree();
   if (CompositingReasonFinder::DirectReasonsForSVGChildPaintProperties(*this) !=
       CompositingReason::kNone) {

@@ -53,6 +53,7 @@ LayoutSVGResourcePattern::LayoutSVGResourcePattern(SVGPatternElement* node)
       pattern_map_(MakeGarbageCollected<PatternMap>()) {}
 
 void LayoutSVGResourcePattern::RemoveAllClientsFromCache() {
+  NOT_DESTROYED();
   pattern_map_->clear();
   should_collect_pattern_attributes_ = true;
   MarkAllClientsForInvalidation(SVGResourceClient::kPaintInvalidation);
@@ -60,6 +61,7 @@ void LayoutSVGResourcePattern::RemoveAllClientsFromCache() {
 
 bool LayoutSVGResourcePattern::RemoveClientFromCache(
     SVGResourceClient& client) {
+  NOT_DESTROYED();
   auto entry = pattern_map_->find(&client);
   if (entry == pattern_map_->end())
     return false;
@@ -69,6 +71,7 @@ bool LayoutSVGResourcePattern::RemoveClientFromCache(
 
 std::unique_ptr<PatternData> LayoutSVGResourcePattern::BuildPatternData(
     const FloatRect& object_bounding_box) {
+  NOT_DESTROYED();
   auto pattern_data = std::make_unique<PatternData>();
 
   DCHECK(GetElement());
@@ -135,6 +138,7 @@ std::unique_ptr<PatternData> LayoutSVGResourcePattern::BuildPatternData(
 SVGPaintServer LayoutSVGResourcePattern::PreparePaintServer(
     const SVGResourceClient& client,
     const FloatRect& object_bounding_box) {
+  NOT_DESTROYED();
   ClearInvalidationMask();
 
   std::unique_ptr<PatternData>& pattern_data =
@@ -150,6 +154,7 @@ SVGPaintServer LayoutSVGResourcePattern::PreparePaintServer(
 
 const LayoutSVGResourceContainer*
 LayoutSVGResourcePattern::ResolveContentElement() const {
+  NOT_DESTROYED();
   DCHECK(Attributes().PatternContentElement());
   LayoutSVGResourceContainer* expected_layout_object =
       ToLayoutSVGResourceContainer(
@@ -179,6 +184,7 @@ LayoutSVGResourcePattern::ResolveContentElement() const {
 sk_sp<PaintRecord> LayoutSVGResourcePattern::AsPaintRecord(
     const FloatSize& size,
     const AffineTransform& tile_transform) const {
+  NOT_DESTROYED();
   DCHECK(!should_collect_pattern_attributes_);
 
   AffineTransform content_transform;

@@ -47,26 +47,31 @@ LayoutTextControlSingleLine::LayoutTextControlSingleLine(
 LayoutTextControlSingleLine::~LayoutTextControlSingleLine() = default;
 
 inline Element* LayoutTextControlSingleLine::ContainerElement() const {
+  NOT_DESTROYED();
   return InputElement()->UserAgentShadowRoot()->getElementById(
       shadow_element_names::kIdTextFieldContainer);
 }
 
 inline Element* LayoutTextControlSingleLine::EditingViewPortElement() const {
+  NOT_DESTROYED();
   return InputElement()->UserAgentShadowRoot()->getElementById(
       shadow_element_names::kIdEditingViewPort);
 }
 
 inline HTMLElement* LayoutTextControlSingleLine::InnerSpinButtonElement()
     const {
+  NOT_DESTROYED();
   return To<HTMLElement>(InputElement()->UserAgentShadowRoot()->getElementById(
       shadow_element_names::kIdSpinButton));
 }
 
 void LayoutTextControlSingleLine::Paint(const PaintInfo& paint_info) const {
+  NOT_DESTROYED();
   TextControlSingleLinePainter(*this).Paint(paint_info);
 }
 
 void LayoutTextControlSingleLine::UpdateLayout() {
+  NOT_DESTROYED();
   LayoutAnalyzer::Scope analyzer(*this);
 
   LayoutBlockFlow::UpdateBlockLayout(true);
@@ -141,6 +146,7 @@ bool LayoutTextControlSingleLine::NodeAtPoint(
     const HitTestLocation& hit_test_location,
     const PhysicalOffset& accumulated_offset,
     HitTestAction hit_test_action) {
+  NOT_DESTROYED();
   if (!LayoutTextControl::NodeAtPoint(result, hit_test_location,
                                       accumulated_offset, hit_test_action))
     return false;
@@ -174,6 +180,7 @@ bool LayoutTextControlSingleLine::NodeAtPoint(
 }
 
 void LayoutTextControlSingleLine::CapsLockStateMayHaveChanged() {
+  NOT_DESTROYED();
   if (!GetNode())
     return;
 
@@ -199,6 +206,7 @@ void LayoutTextControlSingleLine::CapsLockStateMayHaveChanged() {
 
 LayoutUnit LayoutTextControlSingleLine::PreferredContentLogicalWidth(
     float char_width) const {
+  NOT_DESTROYED();
   int factor;
   bool includes_decoration =
       InputElement()->SizeShouldIncludeDecoration(factor);
@@ -235,10 +243,12 @@ LayoutUnit LayoutTextControlSingleLine::PreferredContentLogicalWidth(
 LayoutUnit LayoutTextControlSingleLine::ComputeControlLogicalHeight(
     LayoutUnit line_height,
     LayoutUnit non_content_height) const {
+  NOT_DESTROYED();
   return line_height + non_content_height;
 }
 
 LayoutUnit LayoutTextControlSingleLine::ScrollWidth() const {
+  NOT_DESTROYED();
   // If in preview state, fake the scroll width to prevent that any information
   // about the suggested content can be derived from the size.
   if (!GetTextControlElement()->SuggestedValue().IsEmpty())
@@ -256,6 +266,7 @@ LayoutUnit LayoutTextControlSingleLine::ScrollWidth() const {
 }
 
 LayoutUnit LayoutTextControlSingleLine::ScrollHeight() const {
+  NOT_DESTROYED();
   // If in preview state, fake the scroll height to prevent that any information
   // about the suggested content can be derived from the size.
   if (!GetTextControlElement()->SuggestedValue().IsEmpty())
@@ -273,11 +284,12 @@ LayoutUnit LayoutTextControlSingleLine::ScrollHeight() const {
 }
 
 HTMLInputElement* LayoutTextControlSingleLine::InputElement() const {
+  NOT_DESTROYED();
   return To<HTMLInputElement>(GetNode());
 }
 
-void LayoutTextControlSingleLine::ComputeVisualOverflow(
-    bool recompute_floats) {
+void LayoutTextControlSingleLine::ComputeVisualOverflow(bool recompute_floats) {
+  NOT_DESTROYED();
   LayoutRect previous_visual_overflow_rect = VisualOverflowRect();
   ClearVisualOverflow();
   AddVisualOverflowFromChildren();

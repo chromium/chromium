@@ -38,14 +38,21 @@ class LayoutListItem final : public LayoutBlockFlow {
   bool IsEmpty() const;
 
   LayoutObject* Marker() const {
+    NOT_DESTROYED();
     Element* list_item = To<Element>(GetNode());
     return list_item->PseudoElementLayoutObject(kPseudoIdMarker);
   }
 
-  ListItemOrdinal& Ordinal() { return ordinal_; }
+  ListItemOrdinal& Ordinal() {
+    NOT_DESTROYED();
+    return ordinal_;
+  }
   void OrdinalValueChanged();
 
-  const char* GetName() const override { return "LayoutListItem"; }
+  const char* GetName() const override {
+    NOT_DESTROYED();
+    return "LayoutListItem";
+  }
 
   void RecalcVisualOverflow() override;
 
@@ -53,6 +60,7 @@ class LayoutListItem final : public LayoutBlockFlow {
 
  private:
   bool IsOfType(LayoutObjectType type) const override {
+    NOT_DESTROYED();
     return type == kLayoutObjectListItem || LayoutBlockFlow::IsOfType(type);
   }
 

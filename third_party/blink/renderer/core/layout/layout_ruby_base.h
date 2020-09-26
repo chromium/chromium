@@ -45,9 +45,13 @@ class LayoutRubyBase : public LayoutBlockFlow {
   static LayoutRubyBase* CreateAnonymous(Document*,
                                          const LayoutRubyRun& ruby_run);
 
-  const char* GetName() const override { return "LayoutRubyBase"; }
+  const char* GetName() const override {
+    NOT_DESTROYED();
+    return "LayoutRubyBase";
+  }
 
   bool IsOfType(LayoutObjectType type) const override {
+    NOT_DESTROYED();
     return type == kLayoutObjectRubyBase || LayoutBlockFlow::IsOfType(type);
   }
 

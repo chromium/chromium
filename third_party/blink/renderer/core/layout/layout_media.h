@@ -39,10 +39,12 @@ class LayoutMedia : public LayoutImage {
   ~LayoutMedia() override;
 
   LayoutObject* FirstChild() const {
+    NOT_DESTROYED();
     DCHECK_EQ(Children(), VirtualChildren());
     return Children()->FirstChild();
   }
   LayoutObject* LastChild() const {
+    NOT_DESTROYED();
     DCHECK_EQ(Children(), VirtualChildren());
     return Children()->LastChild();
   }
@@ -51,38 +53,62 @@ class LayoutMedia : public LayoutImage {
   void SlowFirstChild() const = delete;
   void SlowLastChild() const = delete;
 
-  const LayoutObjectChildList* Children() const { return &children_; }
-  LayoutObjectChildList* Children() { return &children_; }
+  const LayoutObjectChildList* Children() const {
+    NOT_DESTROYED();
+    return &children_;
+  }
+  LayoutObjectChildList* Children() {
+    NOT_DESTROYED();
+    return &children_;
+  }
 
   HTMLMediaElement* MediaElement() const;
 
-  const char* GetName() const override { return "LayoutMedia"; }
+  const char* GetName() const override {
+    NOT_DESTROYED();
+    return "LayoutMedia";
+  }
 
  protected:
   void UpdateLayout() override;
 
   bool IsOfType(LayoutObjectType type) const override {
+    NOT_DESTROYED();
     return type == kLayoutObjectMedia || LayoutImage::IsOfType(type);
   }
 
  private:
-  LayoutObjectChildList* VirtualChildren() final { return Children(); }
+  LayoutObjectChildList* VirtualChildren() final {
+    NOT_DESTROYED();
+    return Children();
+  }
   const LayoutObjectChildList* VirtualChildren() const final {
+    NOT_DESTROYED();
     return Children();
   }
 
   PaintLayerType LayerTypeRequired() const override {
+    NOT_DESTROYED();
     return kNormalPaintLayer;
   }
 
-  bool CanHaveChildren() const final { return true; }
+  bool CanHaveChildren() const final {
+    NOT_DESTROYED();
+    return true;
+  }
   bool IsChildAllowed(LayoutObject*, const ComputedStyle&) const final;
 
-  bool IsImage() const final { return false; }
+  bool IsImage() const final {
+    NOT_DESTROYED();
+    return false;
+  }
   void PaintReplaced(const PaintInfo&,
                      const PhysicalOffset& paint_offset) const override;
 
-  bool BackgroundShouldAlwaysBeClipped() const final { return false; }
+  bool BackgroundShouldAlwaysBeClipped() const final {
+    NOT_DESTROYED();
+    return false;
+  }
 
   LayoutUnit ComputePanelWidth(const LayoutRect& media_width) const;
 

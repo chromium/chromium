@@ -64,13 +64,21 @@ class LayoutTableCol final : public LayoutTableBoxComponent {
 
   // The 'span' attribute in HTML.
   // For CSS table columns or colgroups, this is always 1.
-  unsigned Span() const { return span_; }
+  unsigned Span() const {
+    NOT_DESTROYED();
+    return span_;
+  }
 
-  bool IsTableColumnGroupWithColumnChildren() { return FirstChild(); }
+  bool IsTableColumnGroupWithColumnChildren() {
+    NOT_DESTROYED();
+    return FirstChild();
+  }
   bool IsTableColumn() const {
+    NOT_DESTROYED();
     return StyleRef().Display() == EDisplay::kTableColumn;
   }
   bool IsTableColumnGroup() const {
+    NOT_DESTROYED();
     return StyleRef().Display() == EDisplay::kTableColumnGroup;
   }
 
@@ -79,19 +87,25 @@ class LayoutTableCol final : public LayoutTableBoxComponent {
   // Returns the next column or column-group.
   LayoutTableCol* NextColumn() const;
 
-  const char* GetName() const override { return "LayoutTableCol"; }
+  const char* GetName() const override {
+    NOT_DESTROYED();
+    return "LayoutTableCol";
+  }
 
  private:
   bool IsOfType(LayoutObjectType type) const override {
+    NOT_DESTROYED();
     return type == kLayoutObjectLayoutTableCol || LayoutBox::IsOfType(type);
   }
   void UpdateFromElement() override;
 
   MinMaxSizes PreferredLogicalWidths() const override {
+    NOT_DESTROYED();
     NOTREACHED();
     return MinMaxSizes();
   }
   MinMaxSizes ComputeIntrinsicLogicalWidths() const final {
+    NOT_DESTROYED();
     NOTREACHED();
     return MinMaxSizes();
   }
@@ -101,7 +115,10 @@ class LayoutTableCol final : public LayoutTableBoxComponent {
 
   bool IsChildAllowed(LayoutObject*, const ComputedStyle&) const override;
   bool CanHaveChildren() const override;
-  PaintLayerType LayerTypeRequired() const override { return kNoPaintLayer; }
+  PaintLayerType LayerTypeRequired() const override {
+    NOT_DESTROYED();
+    return kNoPaintLayer;
+  }
 
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
 

@@ -144,10 +144,17 @@ class CORE_EXPORT LayoutTable final : public LayoutBlock,
   // 'border-spacing' property represent spacing between columns and rows
   // respectively, not necessarily the horizontal and vertical spacing
   // respectively".
-  int16_t HBorderSpacing() const final { return h_spacing_; }
-  int16_t VBorderSpacing() const final { return v_spacing_; }
+  int16_t HBorderSpacing() const final {
+    NOT_DESTROYED();
+    return h_spacing_;
+  }
+  int16_t VBorderSpacing() const final {
+    NOT_DESTROYED();
+    return v_spacing_;
+  }
 
   bool ShouldCollapseBorders() const final {
+    NOT_DESTROYED();
     return StyleRef().BorderCollapse() == EBorderCollapse::kCollapse;
   }
 
@@ -167,17 +174,21 @@ class CORE_EXPORT LayoutTable final : public LayoutBlock,
   };
 
   void ForceSectionsRecalc() final {
+    NOT_DESTROYED();
     SetNeedsSectionRecalc();
     RecalcSections();
   }
 
   const Vector<ColumnStruct>& EffectiveColumns() const {
+    NOT_DESTROYED();
     return effective_columns_;
   }
   const Vector<int>& EffectiveColumnPositions() const {
+    NOT_DESTROYED();
     return effective_column_positions_;
   }
   void SetEffectiveColumnPosition(unsigned index, int position) {
+    NOT_DESTROYED();
     // Note that if our horizontal border-spacing changed, our position will
     // change but not our column's width. In practice, horizontal border-spacing
     // won't change often.
@@ -187,29 +198,36 @@ class CORE_EXPORT LayoutTable final : public LayoutBlock,
   }
 
   LayoutTableSection* Header() const {
+    NOT_DESTROYED();
     DCHECK(!NeedsSectionRecalc());
     return head_;
   }
   LayoutTableSection* Footer() const {
+    NOT_DESTROYED();
     DCHECK(!NeedsSectionRecalc());
     return foot_;
   }
   LayoutTableSection* FirstBody() const {
+    NOT_DESTROYED();
     DCHECK(!NeedsSectionRecalc());
     return first_body_;
   }
 
   void SetRowOffsetFromRepeatingHeader(LayoutUnit offset) {
+    NOT_DESTROYED();
     row_offset_from_repeating_header_ = offset;
   }
   LayoutUnit RowOffsetFromRepeatingHeader() const final {
+    NOT_DESTROYED();
     return row_offset_from_repeating_header_;
   }
 
   void SetRowOffsetFromRepeatingFooter(LayoutUnit offset) {
+    NOT_DESTROYED();
     row_offset_from_repeating_footer_ = offset;
   }
   LayoutUnit RowOffsetFromRepeatingFooter() const final {
+    NOT_DESTROYED();
     return row_offset_from_repeating_footer_;
   }
 
@@ -222,18 +240,24 @@ class CORE_EXPORT LayoutTable final : public LayoutBlock,
   LayoutTableSection* BottomNonEmptySection() const;
 
   unsigned LastEffectiveColumnIndex() const {
+    NOT_DESTROYED();
     return NumEffectiveColumns() - 1;
   }
 
   void SplitEffectiveColumn(unsigned index, unsigned first_span);
   void AppendEffectiveColumn(unsigned span);
-  unsigned NumEffectiveColumns() const { return effective_columns_.size(); }
+  unsigned NumEffectiveColumns() const {
+    NOT_DESTROYED();
+    return effective_columns_.size();
+  }
   unsigned SpanOfEffectiveColumn(unsigned effective_column_index) const {
+    NOT_DESTROYED();
     return effective_columns_[effective_column_index].span;
   }
 
   unsigned AbsoluteColumnToEffectiveColumn(
       unsigned absolute_column_index) const final {
+    NOT_DESTROYED();
     if (absolute_column_index < no_cell_colspan_at_least_)
       return absolute_column_index;
 
@@ -250,6 +274,7 @@ class CORE_EXPORT LayoutTable final : public LayoutBlock,
 
   unsigned EffectiveColumnToAbsoluteColumn(
       unsigned effective_column_index) const {
+    NOT_DESTROYED();
     if (effective_column_index < no_cell_colspan_at_least_)
       return effective_column_index;
 
@@ -261,6 +286,7 @@ class CORE_EXPORT LayoutTable final : public LayoutBlock,
   }
 
   LayoutUnit BorderSpacingInRowDirection() const {
+    NOT_DESTROYED();
     if (unsigned effective_column_count = NumEffectiveColumns())
       return static_cast<LayoutUnit>(effective_column_count + 1) *
              HBorderSpacing();
@@ -277,6 +303,7 @@ class CORE_EXPORT LayoutTable final : public LayoutBlock,
   LayoutUnit PaddingRight() const override;
 
   LayoutUnit BordersPaddingAndSpacingInRowDirection() const {
+    NOT_DESTROYED();
     // 'border-spacing' only applies to separate borders (see 17.6.1 The
     // separated borders model).
     return BorderStart() + BorderEnd() +
@@ -302,16 +329,24 @@ class CORE_EXPORT LayoutTable final : public LayoutBlock,
   };
   ColAndColGroup ColElementAtAbsoluteColumn(
       unsigned absolute_column_index) const {
+    NOT_DESTROYED();
     // The common case is to not have col/colgroup elements, make that case
     // fast.
     if (!has_col_elements_)
       return ColAndColGroup();
     return SlowColElementAtAbsoluteColumn(absolute_column_index);
   }
-  bool HasColElements() const final { return has_col_elements_; }
+  bool HasColElements() const final {
+    NOT_DESTROYED();
+    return has_col_elements_;
+  }
 
-  bool NeedsSectionRecalc() const { return needs_section_recalc_; }
+  bool NeedsSectionRecalc() const {
+    NOT_DESTROYED();
+    return needs_section_recalc_;
+  }
   void SetNeedsSectionRecalc() {
+    NOT_DESTROYED();
     if (DocumentBeingDestroyed())
       return;
     // For all we know, sections may have been deleted at this point. Don't
@@ -351,17 +386,23 @@ class CORE_EXPORT LayoutTable final : public LayoutBlock,
   void InvalidateCollapsedBordersForAllCellsIfNeeded();
 
   bool HasCollapsedBorders() const final {
+    NOT_DESTROYED();
     DCHECK(collapsed_borders_valid_);
     return has_collapsed_borders_;
   }
   bool NeedsAdjustCollapsedBorderJoints() const {
+    NOT_DESTROYED();
     DCHECK(collapsed_borders_valid_);
     return needs_adjust_collapsed_border_joints_;
   }
 
-  bool HasSections() const { return Header() || Footer() || FirstBody(); }
+  bool HasSections() const {
+    NOT_DESTROYED();
+    return Header() || Footer() || FirstBody();
+  }
 
   void RecalcSectionsIfNeeded() const final {
+    NOT_DESTROYED();
     if (needs_section_recalc_)
       RecalcSections();
   }
@@ -385,13 +426,17 @@ class CORE_EXPORT LayoutTable final : public LayoutBlock,
 
   bool IsLogicalWidthAuto() const;
 
-  const char* GetName() const override { return "LayoutTable"; }
+  const char* GetName() const override {
+    NOT_DESTROYED();
+    return "LayoutTable";
+  }
 
   // Whether a table has opaque foreground depends on many factors, e.g. border
   // spacing, missing cells, etc. For simplicity, just conservatively assume
   // foreground of all tables are not opaque.
   bool ForegroundIsKnownToBeOpaqueInRect(const PhysicalRect&,
                                          unsigned) const override {
+    NOT_DESTROYED();
     return false;
   }
 
@@ -401,6 +446,7 @@ class CORE_EXPORT LayoutTable final : public LayoutBlock,
   bool IsAbsoluteColumnCollapsed(unsigned absolute_column_index) const;
 
   bool IsAnyColumnEverCollapsed() const {
+    NOT_DESTROYED();
     return is_any_column_ever_collapsed_;
   }
 
@@ -417,11 +463,19 @@ class CORE_EXPORT LayoutTable final : public LayoutBlock,
   // LayoutNGTableInterface methods start.
 
   const LayoutNGTableInterface* ToLayoutNGTableInterface() const final {
+    NOT_DESTROYED();
     return this;
   }
-  const LayoutObject* ToLayoutObject() const final { return this; }
-  LayoutObject* ToMutableLayoutObject() final { return this; }
+  const LayoutObject* ToLayoutObject() const final {
+    NOT_DESTROYED();
+    return this;
+  }
+  LayoutObject* ToMutableLayoutObject() final {
+    NOT_DESTROYED();
+    return this;
+  }
   bool IsFixedTableLayout() const final {
+    NOT_DESTROYED();
     return StyleRef().IsFixedTableLayout();
   }
   LayoutNGTableSectionInterface* FirstBodyInterface() const final;
@@ -438,6 +492,7 @@ class CORE_EXPORT LayoutTable final : public LayoutBlock,
 
  private:
   bool IsOfType(LayoutObjectType type) const override {
+    NOT_DESTROYED();
     return type == kLayoutObjectTable || LayoutBlock::IsOfType(type);
   }
 
@@ -502,7 +557,10 @@ class CORE_EXPORT LayoutTable final : public LayoutBlock,
 
   void DistributeExtraLogicalHeight(int extra_logical_height);
 
-  void SetIsAnyColumnEverCollapsed() { is_any_column_ever_collapsed_ = true; }
+  void SetIsAnyColumnEverCollapsed() {
+    NOT_DESTROYED();
+    is_any_column_ever_collapsed_ = true;
+  }
 
   // TODO(layout-dev): All mutables in this class are lazily updated by
   // recalcSections() which is called by various getter methods (e.g.
@@ -574,6 +632,7 @@ class CORE_EXPORT LayoutTable final : public LayoutBlock,
   mutable bool column_layout_objects_valid_ : 1;
   mutable unsigned no_cell_colspan_at_least_;
   unsigned CalcNoCellColspanAtLeast() const {
+    NOT_DESTROYED();
     for (unsigned c = 0; c < NumEffectiveColumns(); c++) {
       if (effective_columns_[c].span > 1)
         return c;
@@ -582,6 +641,7 @@ class CORE_EXPORT LayoutTable final : public LayoutBlock,
   }
 
   LogicalToPhysical<unsigned> LogicalCollapsedOuterBorderToPhysical() const {
+    NOT_DESTROYED();
     return LogicalToPhysical<unsigned>(
         StyleRef().GetWritingMode(), StyleRef().Direction(),
         collapsed_outer_border_start_, collapsed_outer_border_end_,

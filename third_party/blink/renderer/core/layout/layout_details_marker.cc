@@ -32,6 +32,7 @@ LayoutDetailsMarker::LayoutDetailsMarker(Element* element)
     : LayoutBlockFlow(element) {}
 
 LayoutDetailsMarker::Orientation LayoutDetailsMarker::GetOrientation() const {
+  NOT_DESTROYED();
   // TODO(layout-dev): Sideways-lr and sideways-rl are not yet supported.
   const auto mode = StyleRef().GetWritingMode();
   DCHECK(mode != WritingMode::kSidewaysRl && mode != WritingMode::kSidewaysLr);
@@ -47,10 +48,12 @@ LayoutDetailsMarker::Orientation LayoutDetailsMarker::GetOrientation() const {
 }
 
 void LayoutDetailsMarker::Paint(const PaintInfo& paint_info) const {
+  NOT_DESTROYED();
   DetailsMarkerPainter(*this).Paint(paint_info);
 }
 
 bool LayoutDetailsMarker::IsOpen() const {
+  NOT_DESTROYED();
   for (LayoutObject* layout_object = Parent(); layout_object;
        layout_object = layout_object->Parent()) {
     const auto* node = layout_object->GetNode();

@@ -50,17 +50,20 @@ LayoutQuote::~LayoutQuote() {
 }
 
 void LayoutQuote::WillBeDestroyed() {
+  NOT_DESTROYED();
   DetachQuote();
   LayoutInline::WillBeDestroyed();
 }
 
 void LayoutQuote::WillBeRemovedFromTree() {
+  NOT_DESTROYED();
   LayoutInline::WillBeRemovedFromTree();
   DetachQuote();
 }
 
 void LayoutQuote::StyleDidChange(StyleDifference diff,
                                  const ComputedStyle* old_style) {
+  NOT_DESTROYED();
   LayoutInline::StyleDidChange(diff, old_style);
   UpdateText();
 }
@@ -275,6 +278,7 @@ static const QuotesData* BasicQuotesData() {
 }
 
 void LayoutQuote::UpdateText() {
+  NOT_DESTROYED();
   String text = ComputeText();
   if (text_ == text)
     return;
@@ -296,6 +300,7 @@ void LayoutQuote::UpdateText() {
 }
 
 LayoutTextFragment* LayoutQuote::FindFragmentChild() const {
+  NOT_DESTROYED();
   // We walk from the end of the child list because, if we've had a first-letter
   // LayoutObject inserted then the remaining text will be at the end.
   while (LayoutObject* child = LastChild()) {
@@ -307,6 +312,7 @@ LayoutTextFragment* LayoutQuote::FindFragmentChild() const {
 }
 
 String LayoutQuote::ComputeText() const {
+  NOT_DESTROYED();
   switch (type_) {
     case QuoteType::kNoOpen:
     case QuoteType::kNoClose:
@@ -321,6 +327,7 @@ String LayoutQuote::ComputeText() const {
 }
 
 const QuotesData* LayoutQuote::GetQuotesData() const {
+  NOT_DESTROYED();
   if (const QuotesData* custom_quotes = StyleRef().Quotes())
     return custom_quotes;
 
@@ -331,6 +338,7 @@ const QuotesData* LayoutQuote::GetQuotesData() const {
 }
 
 void LayoutQuote::AttachQuote() {
+  NOT_DESTROYED();
   DCHECK(View());
   DCHECK(!attached_);
   DCHECK(!next_);
@@ -375,6 +383,7 @@ void LayoutQuote::AttachQuote() {
 }
 
 void LayoutQuote::DetachQuote() {
+  NOT_DESTROYED();
   DCHECK(!next_ || next_->attached_);
   DCHECK(!previous_ || previous_->attached_);
   if (!attached_)
@@ -401,6 +410,7 @@ void LayoutQuote::DetachQuote() {
 }
 
 void LayoutQuote::UpdateDepth() {
+  NOT_DESTROYED();
   DCHECK(attached_);
   int old_depth = depth_;
   depth_ = 0;

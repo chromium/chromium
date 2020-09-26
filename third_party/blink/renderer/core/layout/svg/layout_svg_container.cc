@@ -45,6 +45,7 @@ LayoutSVGContainer::LayoutSVGContainer(SVGElement* node)
 LayoutSVGContainer::~LayoutSVGContainer() = default;
 
 void LayoutSVGContainer::UpdateLayout() {
+  NOT_DESTROYED();
   DCHECK(NeedsLayout());
   LayoutAnalyzer::Scope analyzer(*this);
 
@@ -88,6 +89,7 @@ void LayoutSVGContainer::UpdateLayout() {
 
 void LayoutSVGContainer::AddChild(LayoutObject* child,
                                   LayoutObject* before_child) {
+  NOT_DESTROYED();
   LayoutSVGModelObject::AddChild(child, before_child);
   SVGResourcesCache::ClientWasAddedToTree(*child);
 
@@ -99,6 +101,7 @@ void LayoutSVGContainer::AddChild(LayoutObject* child,
 }
 
 void LayoutSVGContainer::RemoveChild(LayoutObject* child) {
+  NOT_DESTROYED();
   SVGResourcesCache::ClientWillBeRemovedFromTree(*child);
   LayoutSVGModelObject::RemoveChild(child);
 
@@ -111,6 +114,7 @@ void LayoutSVGContainer::RemoveChild(LayoutObject* child) {
 
 void LayoutSVGContainer::StyleDidChange(StyleDifference diff,
                                         const ComputedStyle* old_style) {
+  NOT_DESTROYED();
   LayoutSVGModelObject::StyleDidChange(diff, old_style);
 
   bool had_isolation =
@@ -136,6 +140,7 @@ void LayoutSVGContainer::StyleDidChange(StyleDifference diff,
 }
 
 bool LayoutSVGContainer::HasNonIsolatedBlendingDescendants() const {
+  NOT_DESTROYED();
   if (has_non_isolated_blending_descendants_dirty_) {
     has_non_isolated_blending_descendants_ =
         SVGLayoutSupport::ComputeHasNonIsolatedBlendingDescendants(this);
@@ -146,6 +151,7 @@ bool LayoutSVGContainer::HasNonIsolatedBlendingDescendants() const {
 
 void LayoutSVGContainer::DescendantIsolationRequirementsChanged(
     DescendantIsolationState state) {
+  NOT_DESTROYED();
   switch (state) {
     case kDescendantIsolationRequired:
       has_non_isolated_blending_descendants_ = true;
@@ -166,10 +172,12 @@ void LayoutSVGContainer::DescendantIsolationRequirementsChanged(
 }
 
 void LayoutSVGContainer::Paint(const PaintInfo& paint_info) const {
+  NOT_DESTROYED();
   SVGContainerPainter(*this).Paint(paint_info);
 }
 
 void LayoutSVGContainer::UpdateCachedBoundaries() {
+  NOT_DESTROYED();
   auto old_object_bounding_box = object_bounding_box_;
 
   SVGLayoutSupport::ComputeContainerBoundingBoxes(
@@ -188,6 +196,7 @@ bool LayoutSVGContainer::NodeAtPoint(HitTestResult& result,
                                      const HitTestLocation& hit_test_location,
                                      const PhysicalOffset& accumulated_offset,
                                      HitTestAction hit_test_action) {
+  NOT_DESTROYED();
   DCHECK_EQ(accumulated_offset, PhysicalOffset());
   TransformedHitTestLocation local_location(hit_test_location,
                                             LocalToSVGParentTransform());
@@ -224,6 +233,7 @@ bool LayoutSVGContainer::NodeAtPoint(HitTestResult& result,
 
 SVGTransformChange LayoutSVGContainer::CalculateLocalTransform(
     bool bounds_changed) {
+  NOT_DESTROYED();
   return SVGTransformChange::kNone;
 }
 

@@ -58,7 +58,10 @@ class LayoutGrid final : public LayoutBlock {
   ~LayoutGrid() override;
 
   static LayoutGrid* CreateAnonymous(Document*);
-  const char* GetName() const override { return "LayoutGrid"; }
+  const char* GetName() const override {
+    NOT_DESTROYED();
+    return "LayoutGrid";
+  }
 
   void UpdateBlockLayout(bool relayout_children) override;
 
@@ -67,11 +70,13 @@ class LayoutGrid final : public LayoutBlock {
   Vector<LayoutUnit> TrackSizesForComputedStyle(GridTrackSizingDirection) const;
 
   const Vector<LayoutUnit>& ColumnPositions() const {
+    NOT_DESTROYED();
     DCHECK(!grid_->NeedsItemsPlacement());
     return column_positions_;
   }
 
   const Vector<LayoutUnit>& RowPositions() const {
+    NOT_DESTROYED();
     DCHECK(!grid_->NeedsItemsPlacement());
     return row_positions_;
   }
@@ -79,6 +84,7 @@ class LayoutGrid final : public LayoutBlock {
   // TODO(svillar): rename this method as this does not return a
   // GridCell but its contents.
   const GridItemList& GetGridCell(int row, int column) const {
+    NOT_DESTROYED();
     SECURITY_DCHECK(!grid_->NeedsItemsPlacement());
     return grid_->Cell(row, column);
   }
@@ -123,11 +129,15 @@ class LayoutGrid final : public LayoutBlock {
   size_t ExplicitGridEndForDirection(GridTrackSizingDirection) const;
 
   // Exposed for testing *ONLY*.
-  Grid* InternalGrid() const { return grid_.get(); }
+  Grid* InternalGrid() const {
+    NOT_DESTROYED();
+    return grid_.get();
+  }
 
  protected:
   ItemPosition SelfAlignmentNormalBehavior(
       const LayoutBox* child = nullptr) const override {
+    NOT_DESTROYED();
     DCHECK(child);
     return child->IsLayoutReplaced() ? ItemPosition::kStart
                                      : ItemPosition::kStretch;
@@ -135,6 +145,7 @@ class LayoutGrid final : public LayoutBlock {
 
  private:
   bool IsOfType(LayoutObjectType type) const override {
+    NOT_DESTROYED();
     return type == kLayoutObjectLayoutGrid || LayoutBlock::IsOfType(type);
   }
   MinMaxSizes ComputeIntrinsicLogicalWidths() const override;
@@ -260,18 +271,22 @@ class LayoutGrid final : public LayoutBlock {
   bool DefaultAlignmentIsStretchOrNormal(GridAxis, const ComputedStyle&) const;
   void ApplyStretchAlignmentToChildIfNeeded(LayoutBox&);
   bool HasAutoSizeInColumnAxis(const LayoutBox& child) const {
+    NOT_DESTROYED();
     return IsHorizontalWritingMode() ? child.StyleRef().Height().IsAuto()
                                      : child.StyleRef().Width().IsAuto();
   }
   bool HasAutoSizeInRowAxis(const LayoutBox& child) const {
+    NOT_DESTROYED();
     return IsHorizontalWritingMode() ? child.StyleRef().Width().IsAuto()
                                      : child.StyleRef().Height().IsAuto();
   }
   bool AllowedToStretchChildAlongColumnAxis(const LayoutBox& child) const {
+    NOT_DESTROYED();
     return AlignSelfForChild(child).GetPosition() == ItemPosition::kStretch &&
            HasAutoSizeInColumnAxis(child) && !HasAutoMarginsInColumnAxis(child);
   }
   bool AllowedToStretchChildAlongRowAxis(const LayoutBox& child) const {
+    NOT_DESTROYED();
     return JustifySelfForChild(child).GetPosition() == ItemPosition::kStretch &&
            HasAutoSizeInRowAxis(child) && !HasAutoMarginsInRowAxis(child);
   }

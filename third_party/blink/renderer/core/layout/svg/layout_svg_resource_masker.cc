@@ -39,6 +39,7 @@ LayoutSVGResourceMasker::LayoutSVGResourceMasker(SVGMaskElement* node)
 LayoutSVGResourceMasker::~LayoutSVGResourceMasker() = default;
 
 void LayoutSVGResourceMasker::RemoveAllClientsFromCache() {
+  NOT_DESTROYED();
   cached_paint_record_.reset();
   mask_content_boundaries_ = FloatRect();
   MarkAllClientsForInvalidation(SVGResourceClient::kLayoutInvalidation |
@@ -48,6 +49,7 @@ void LayoutSVGResourceMasker::RemoveAllClientsFromCache() {
 sk_sp<const PaintRecord> LayoutSVGResourceMasker::CreatePaintRecord(
     const AffineTransform& content_transformation,
     GraphicsContext& context) {
+  NOT_DESTROYED();
   if (cached_paint_record_)
     return cached_paint_record_;
 
@@ -74,6 +76,7 @@ sk_sp<const PaintRecord> LayoutSVGResourceMasker::CreatePaintRecord(
 }
 
 void LayoutSVGResourceMasker::CalculateMaskContentVisualRect() {
+  NOT_DESTROYED();
   for (const SVGElement& child_element :
        Traversal<SVGElement>::ChildrenOf(*GetElement())) {
     const LayoutObject* layout_object = child_element.GetLayoutObject();
@@ -87,10 +90,12 @@ void LayoutSVGResourceMasker::CalculateMaskContentVisualRect() {
 }
 
 SVGUnitTypes::SVGUnitType LayoutSVGResourceMasker::MaskUnits() const {
+  NOT_DESTROYED();
   return To<SVGMaskElement>(GetElement())->maskUnits()->CurrentEnumValue();
 }
 
 SVGUnitTypes::SVGUnitType LayoutSVGResourceMasker::MaskContentUnits() const {
+  NOT_DESTROYED();
   return To<SVGMaskElement>(GetElement())
       ->maskContentUnits()
       ->CurrentEnumValue();
@@ -99,6 +104,7 @@ SVGUnitTypes::SVGUnitType LayoutSVGResourceMasker::MaskContentUnits() const {
 FloatRect LayoutSVGResourceMasker::ResourceBoundingBox(
     const FloatRect& reference_box,
     float reference_box_zoom) {
+  NOT_DESTROYED();
   auto* mask_element = To<SVGMaskElement>(GetElement());
   DCHECK(mask_element);
 

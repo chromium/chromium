@@ -35,6 +35,7 @@ LayoutSVGResourceRadialGradient::LayoutSVGResourceRadialGradient(
 LayoutSVGResourceRadialGradient::~LayoutSVGResourceRadialGradient() = default;
 
 void LayoutSVGResourceRadialGradient::CollectGradientAttributes() {
+  NOT_DESTROYED();
   DCHECK(GetElement());
   attributes_wrapper_->Set(RadialGradientAttributes());
   To<SVGRadialGradientElement>(GetElement())
@@ -43,6 +44,7 @@ void LayoutSVGResourceRadialGradient::CollectGradientAttributes() {
 
 FloatPoint LayoutSVGResourceRadialGradient::CenterPoint(
     const RadialGradientAttributes& attributes) const {
+  NOT_DESTROYED();
   return SVGLengthContext::ResolvePoint(GetElement(),
                                         attributes.GradientUnits(),
                                         *attributes.Cx(), *attributes.Cy());
@@ -50,6 +52,7 @@ FloatPoint LayoutSVGResourceRadialGradient::CenterPoint(
 
 FloatPoint LayoutSVGResourceRadialGradient::FocalPoint(
     const RadialGradientAttributes& attributes) const {
+  NOT_DESTROYED();
   return SVGLengthContext::ResolvePoint(GetElement(),
                                         attributes.GradientUnits(),
                                         *attributes.Fx(), *attributes.Fy());
@@ -57,17 +60,20 @@ FloatPoint LayoutSVGResourceRadialGradient::FocalPoint(
 
 float LayoutSVGResourceRadialGradient::Radius(
     const RadialGradientAttributes& attributes) const {
+  NOT_DESTROYED();
   return SVGLengthContext::ResolveLength(
       GetElement(), attributes.GradientUnits(), *attributes.R());
 }
 
 float LayoutSVGResourceRadialGradient::FocalRadius(
     const RadialGradientAttributes& attributes) const {
+  NOT_DESTROYED();
   return SVGLengthContext::ResolveLength(
       GetElement(), attributes.GradientUnits(), *attributes.Fr());
 }
 
 scoped_refptr<Gradient> LayoutSVGResourceRadialGradient::BuildGradient() const {
+  NOT_DESTROYED();
   const RadialGradientAttributes& attributes = Attributes();
   scoped_refptr<Gradient> gradient = Gradient::CreateRadial(
       FocalPoint(attributes), FocalRadius(attributes), CenterPoint(attributes),

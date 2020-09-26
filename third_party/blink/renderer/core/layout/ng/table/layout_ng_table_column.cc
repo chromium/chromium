@@ -17,6 +17,7 @@ LayoutNGTableColumn::LayoutNGTableColumn(Element* element)
 
 void LayoutNGTableColumn::StyleDidChange(StyleDifference diff,
                                          const ComputedStyle* old_style) {
+  NOT_DESTROYED();
   if (diff.NeedsPaintInvalidation() && old_style) {
     if (LayoutNGTable* table = Table()) {
       if (NGTableBorders::HasBorder(old_style) ||
@@ -28,6 +29,7 @@ void LayoutNGTableColumn::StyleDidChange(StyleDifference diff,
 }
 
 void LayoutNGTableColumn::ImageChanged(WrappedImagePtr, CanDeferInvalidation) {
+  NOT_DESTROYED();
   if (LayoutNGTable* table = Table()) {
     table->SetShouldDoFullPaintInvalidationWithoutGeometryChange(
         PaintInvalidationReason::kImage);
@@ -36,15 +38,18 @@ void LayoutNGTableColumn::ImageChanged(WrappedImagePtr, CanDeferInvalidation) {
 
 bool LayoutNGTableColumn::IsChildAllowed(LayoutObject* child,
                                          const ComputedStyle& style) const {
+  NOT_DESTROYED();
   return child->IsLayoutTableCol() && style.Display() == EDisplay::kTableColumn;
 }
 
 bool LayoutNGTableColumn::CanHaveChildren() const {
+  NOT_DESTROYED();
   // <col> cannot have children.
   return IsColumnGroup();
 }
 
 void LayoutNGTableColumn::ClearNeedsLayoutForChildren() const {
+  NOT_DESTROYED();
   LayoutObject* child = children_.FirstChild();
   while (child) {
     child->ClearNeedsLayout();
@@ -53,6 +58,7 @@ void LayoutNGTableColumn::ClearNeedsLayoutForChildren() const {
 }
 
 LayoutNGTable* LayoutNGTableColumn::Table() const {
+  NOT_DESTROYED();
   LayoutObject* table = Parent();
   if (table && !table->IsTable())
     table = table->Parent();
@@ -64,6 +70,7 @@ LayoutNGTable* LayoutNGTableColumn::Table() const {
 }
 
 void LayoutNGTableColumn::UpdateFromElement() {
+  NOT_DESTROYED();
   unsigned old_span = span_;
   if (const auto* tc = DynamicTo<HTMLTableColElement>(GetNode())) {
     span_ = tc->span();

@@ -37,14 +37,19 @@ class LayoutSVGEllipse final : public LayoutSVGShape {
   ~LayoutSVGEllipse() override;
 
   ShapeGeometryCodePath GeometryCodePath() const override {
+    NOT_DESTROYED();
     return use_path_fallback_ ? kPathGeometry : kEllipseGeometryFastPath;
   }
 
-  const char* GetName() const override { return "LayoutSVGEllipse"; }
+  const char* GetName() const override {
+    NOT_DESTROYED();
+    return "LayoutSVGEllipse";
+  }
 
  private:
   void UpdateShapeFromElement() override;
   bool IsShapeEmpty() const override {
+    NOT_DESTROYED();
     return use_path_fallback_ ? LayoutSVGShape::IsShapeEmpty()
                               : fill_bounding_box_.IsEmpty();
   }
