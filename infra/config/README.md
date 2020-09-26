@@ -36,6 +36,8 @@ directories are consumed by the configuration:
 * validators - Definitions of lucicfg generators that perform additional
   validation on the the LUCI configuration (e.g. ensure all builders are added
   to at least one console).
+* outages - Definitions of config settings for operations common when handling
+  outages.
 
 The configuration rooted at [dev.star](dev.star) defines the LUCI services
 configuration for the chromium project on the dev instance of LUCI. This

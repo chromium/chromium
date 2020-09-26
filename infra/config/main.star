@@ -150,3 +150,7 @@ exec("//generators/scheduler-noop-jobs.star")
 exec("//generators/sort-consoles.star")
 
 exec("//validators/builders-in-consoles.star")
+
+# Execute this file last so that any configuration changes needed for handling
+# outages gets final say
+exec("//outages/outages.star")
