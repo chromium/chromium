@@ -214,15 +214,13 @@ suite('CpuCardTest', () => {
 
   test('CpuCardPopulated', () => {
     return initializeCpuCard(fakeCpuUsage).then(() => {
+      const dataPoints =
+          diagnostics_test_utils.getDataPointElements(cpuElement);
+
       assertEquals(
-          fakeCpuUsage[0].cpu_temp_degrees_celcius.toString(),
-          cpuElement.$$('#cpuTemp').textContent);
-      assertEquals(
-          fakeCpuUsage[0].percent_usage_user.toString(),
-          cpuElement.$$('#cpuUsageUser').textContent);
-      assertEquals(
-          fakeCpuUsage[0].percent_usage_system.toString(),
-          cpuElement.$$('#cpuUsageSystem').textContent);
+          fakeCpuUsage[0].cpu_temp_degrees_celcius, dataPoints[0].value);
+      assertEquals(fakeCpuUsage[0].percent_usage_user, dataPoints[1].value);
+      assertEquals(fakeCpuUsage[0].percent_usage_system, dataPoints[2].value);
     });
   });
 });

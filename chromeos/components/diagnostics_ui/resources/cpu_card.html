@@ -1,4 +1,4 @@
-<style include="diagnostics-shared">
+<style include="diagnostics-shared diagnostics-fonts">
 </style>
 
 <diagnostics-card>
@@ -6,9 +6,13 @@
     <!-- TODO(zentaro) Localize once strings are confirmed -->
     <div id="cardTitle">CPU</div>
   </div>
-  <div slot="body">
-    <div id="cpuTemp">[[cpuUsage_.cpu_temp_degrees_celcius]]</div>
-    <div id="cpuUsageUser">[[cpuUsage_.percent_usage_user]]</div>
-    <div id="cpuUsageSystem">[[cpuUsage_.percent_usage_system]]</div>
-  </div>
+  <data-point slot="body" id="cpuTemp"
+    value="[[cpuUsage_.cpu_temp_degrees_celcius]]">
+  </data-point>
+  <data-point slot="body" id="cpuUsageUser"
+    value="[[cpuUsage_.percent_usage_user]]">
+  </data-point>
+  <data-point slot="body" id="cpuUsageSystem"
+    value="[[cpuUsage_.percent_usage_system]]">
+  </data-point>
 </diagnostics-card>
