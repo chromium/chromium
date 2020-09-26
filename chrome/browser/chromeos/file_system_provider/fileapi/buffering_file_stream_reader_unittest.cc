@@ -61,7 +61,7 @@ class FakeFileStreamReader : public storage::FileStreamReader {
       return net::ERR_IO_PENDING;
     }
 
-    const std::string fake_data('X', buf_len);
+    const std::string fake_data(buf_len, 'X');
     memcpy(buf->data(), fake_data.c_str(), buf_len);
 
     base::ThreadTaskRunnerHandle::Get()->PostTask(
