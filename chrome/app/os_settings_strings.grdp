@@ -241,14 +241,14 @@
   </message>
 
   <!-- Languages and Inputs (OS settings) -->
-  <message name="IDS_OS_SETTINGS_LANGUAGES_AND_INPUT_PAGE_TITLE" desc="Name of the OS settings page which displays language method preferences.">
-    Languages and input
+  <message name="IDS_OS_SETTINGS_LANGUAGES_AND_INPUT_PAGE_TITLE" desc="Name of the OS settings page which displays language and input method preferences.">
+    Languages and inputs
   </message>
-  <message name="IDS_OS_SETTINGS_LANGUAGES_LANGUAGES_PAGE_TITLE" translateable="false" desc="A page under “Languages and input” section in the OS settings page that users can set system display language, web content language fallback and translation preference.">
+  <message name="IDS_OS_SETTINGS_LANGUAGES_LANGUAGES_PAGE_TITLE" desc="A page under “Languages and inputs” section in the OS settings page that users can set system display language, web content language fallback and translation preference.">
     Languages
   </message>
-  <message name="IDS_OS_SETTINGS_LANGUAGES_INPUT_PAGE_TITLE" translateable="false" desc="A page under “Languages and input” section in the OS settings page that users can add, remove and manage input methods.">
-    Input
+  <message name="IDS_OS_SETTINGS_LANGUAGES_INPUT_PAGE_TITLE" desc="A page under “Languages and inputs” section in the OS settings page that users can add, remove and manage input methods.">
+    Inputs
   </message>
   <message name="IDS_OS_SETTINGS_LANGUAGES_DEVICE_LANGUAGE_TITLE" desc="The label for the section where users can see their device language. This language will be used for system surfaces (launcher, shelf, and notifications etc.).">
     Device language
@@ -292,13 +292,13 @@
   <message name="IDS_OS_SETTINGS_LANGUAGES_OFFER_TRANSLATION_SUBLABEL" desc="Description for setting that allows the system to offer to translate websites that appear in other languages.">
     Offer to translate websites in other languages
   </message>
-  <message name="IDS_OS_SETTINGS_LANGUAGES_INPUT_METHOD_LIST_TITLE" translateable="false" desc="Title for the current input method in the header for the collapsible list of enabled input methods (keyboard layouts and input method editors).">
+  <message name="IDS_OS_SETTINGS_LANGUAGES_INPUT_METHOD_LIST_TITLE" desc="Title for the list of enabled input methods (keyboard layouts and input method editors).">
     Input methods
   </message>
-  <message name="IDS_OS_SETTINGS_LANGUAGES_OPEN_OPTIONS_PAGE_LABEL" translateable="false" desc="Title for the button to open the options page for a input method (keyboard layout and input method editor).">
-    Open options page for <ph name="INPUT_METHOD_NAME">$1<ex>US keyboard</ex></ph>
+  <message name="IDS_OS_SETTINGS_LANGUAGES_OPEN_OPTIONS_PAGE_LABEL" desc="Description read by screenreader for the button to open the settings page for a input method (keyboard layout and input method editor).">
+    Open settings page for <ph name="INPUT_METHOD_NAME">$1<ex>US keyboard</ex></ph>
   </message>
-  <message name="IDS_OS_SETTINGS_LANGUAGES_ADD_INPUT_METHOD_LABEL" translateable="false" desc="Button under the list of input methods which opens a dialog that lets the user add keyboard layouts and input method editors.">
+  <message name="IDS_OS_SETTINGS_LANGUAGES_ADD_INPUT_METHOD_LABEL" desc="Button under the list of input methods which opens a dialog that lets the user add keyboard layouts and input method editors.">
     Add input methods
   </message>
   <message name="IDS_OS_SETTINGS_LANGUAGES_REMOVE_INPUT_METHOD_TOOLTIP" desc="Tooltip of the button that lets the user remove a given keyboard layout or input method editor.">
@@ -310,10 +310,10 @@
   <message name="IDS_OS_SETTINGS_LANGUAGES_ALL_INPUT_METHODS_LABEL" desc="Title of the list of all keyboard layouts or input method editors.">
     All input methods
   </message>
-  <message name="IDS_OS_SETTINGS_LANGUAGES_SEARCH_INPUT_METHODS_LABEL" desc="Placeholder in the input field to search keyboard layouts or input method editors.">
-    Search by languages or input names
+  <message name="IDS_OS_SETTINGS_LANGUAGES_SEARCH_INPUT_METHODS_LABEL" desc="Placeholder in the input field to search keyboard layouts or input method editors, users can search by language or input method name.">
+    Search by language or input name
   </message>
-  <message name="IDS_OS_SETTINGS_LANGUAGES_INPUT_METHOD_NOT_ALLOWED" translateable="false" desc="Tooltip for policy icon when an keyboard layout or input method editor is not allowed.">
+  <message name="IDS_OS_SETTINGS_LANGUAGES_INPUT_METHOD_NOT_ALLOWED" desc="Tooltip for policy icon when an keyboard layout or input method editor is not allowed.">
     Your administrator doesn't allow this input method
   </message>
   <message name="IDS_OS_SETTINGS_LANGUAGES_SPELL_CHECK_TITLE" desc="Title for the section containing all the options for spell check settings. The options include picking between using the system's spell check or using Google's web service and a list of the enabled languages which support spell checking.">
@@ -326,7 +326,7 @@
     Spell check languages
   </message>
   <message name="IDS_OS_SETTINGS_LANGUAGES_SPELL_CHECK_LANGUAGES_LIST_DESCRIPTION" desc="Description for the list of languages that support spell check, from which users can enable or disable spell check for.">
-    Languages available for spell check is based on your languages settings
+    Languages for spell check are based on your language preference
   </message>
   <message name="IDS_OS_SETTINGS_LANGUAGES_DICTIONARY_DOWNLOAD_FAILED" desc="Error message when spell check dictionary download fails.">
     Couldn’t download spell check dictionary

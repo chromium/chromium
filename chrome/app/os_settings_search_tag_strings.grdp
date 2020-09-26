@@ -866,13 +866,13 @@
 
   <!-- Languages and Input section. -->
   <message name="IDS_OS_SETTINGS_TAG_LANGUAGES_INPUT" desc="Text for search result item which, when clicked, navigates the user to languages and input settings.">
-    Languages and input
+    Languages and inputs
   </message>
-  <message name="IDS_OS_SETTINGS_TAG_LANGUAGES" translateable="false" desc="Text for search result item which, when clicked, navigates the user to languages settings.">
+  <message name="IDS_OS_SETTINGS_TAG_LANGUAGES" desc="Text for search result item which, when clicked, navigates the user to languages settings.">
     Languages
   </message>
-  <message name="IDS_OS_SETTINGS_TAG_INPUT" translateable="false" desc="Text for search result item which, when clicked, navigates the user to input settings.">
-    Input
+  <message name="IDS_OS_SETTINGS_TAG_INPUT" desc="Text for search result item which, when clicked, navigates the user to input settings.">
+    Inputs
   </message>
   <message name="IDS_OS_SETTINGS_TAG_LANGUAGES_CHANGE_DEVICE_LANGUAGE" desc="Text for search result item which, when clicked, navigates the user to languages and input settings, with allows users to change device language.">
     Change device language
@@ -883,7 +883,7 @@
   <message name="IDS_OS_SETTINGS_TAG_LANGUAGES_INPUT_ADD_LANGUAGE" desc="Text for search result item which, when clicked, navigates the user to languages and input settings, with an option to add a new language.">
     Add languages
   </message>
-  <message name="IDS_OS_SETTINGS_TAG_LANGUAGES_ADD_INPUT_METHOD" translateable="false" desc="Text for search result item which, when clicked, navigates the user to input settings, with the option to add input methods (keyboard layouts and input method editors).">
+  <message name="IDS_OS_SETTINGS_TAG_LANGUAGES_ADD_INPUT_METHOD" desc="Text for search result item which, when clicked, navigates the user to input settings, with the option to add input methods (keyboard layouts and input method editors).">
     Add input methods
   </message>
   <message name="IDS_OS_SETTINGS_TAG_LANGUAGES_SPELL_CHECK" desc="Text for search result item which, when clicked, navigates the user to input settings, with all the options for spell check settings">
