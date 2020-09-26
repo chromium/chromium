@@ -7,6 +7,7 @@
 #include "base/base64.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/task_environment.h"
 #include "base/values.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/safe_browsing/core/common/test_task_environment.h"
@@ -23,7 +24,8 @@ class VerdictCacheManagerTest : public ::testing::Test {
 
   void SetUp() override {
     HostContentSettingsMap::RegisterProfilePrefs(test_pref_service_.registry());
-    task_environment_ = CreateTestTaskEnvironment();
+    task_environment_ = CreateTestTaskEnvironment(
+        base::test::TaskEnvironment::TimeSource::MOCK_TIME);
     content_setting_map_ = new HostContentSettingsMap(
         &test_pref_service_, false /* is_off_the_record */,
         false /* store_last_modified */,
@@ -74,9 +76,9 @@ class VerdictCacheManagerTest : public ::testing::Test {
  protected:
   std::unique_ptr<VerdictCacheManager> cache_manager_;
   scoped_refptr<HostContentSettingsMap> content_setting_map_;
+  std::unique_ptr<base::test::TaskEnvironment> task_environment_;
 
  private:
-  std::unique_ptr<base::test::TaskEnvironment> task_environment_;
   sync_preferences::TestingPrefServiceSyncable test_pref_service_;
 };
 
@@ -342,7 +344,7 @@ TEST_F(VerdictCacheManagerTest, TestCleanUpExpiredVerdict) {
   cache_manager_->CacheRealTimeUrlVerdict(GURL("https://www.example.com/"),
                                           response, base::Time::Now(),
                                           /* store_old_cache */ false);
-  ASSERT_EQ(2, cache_manager_->stored_verdict_count_real_time_url_check());
+  ASSERT_EQ(2u, cache_manager_->GetStoredRealTimeUrlCheckVerdictCount());
 
   cache_manager_->CleanUpExpiredVerdicts();
 
@@ -350,7 +352,7 @@ TEST_F(VerdictCacheManagerTest, TestCleanUpExpiredVerdict) {
                     LoginReputationClientRequest::PASSWORD_REUSE_EVENT));
   ASSERT_EQ(1u, cache_manager_->GetStoredPhishGuardVerdictCount(
                     LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE));
-  ASSERT_EQ(1, cache_manager_->stored_verdict_count_real_time_url_check());
+  ASSERT_EQ(1u, cache_manager_->GetStoredRealTimeUrlCheckVerdictCount());
   LoginReputationClientResponse actual_verdict;
   password_type.set_account_type(ReusedPasswordAccountType::GSUITE);
   // Has cached PASSWORD_REUSE_EVENT verdict for foo.com/abc/.
@@ -565,7 +567,7 @@ TEST_F(VerdictCacheManagerTest,
 
   cache_manager_->RemoveContentSettingsOnURLsDeleted(false /* all_history */,
                                                      deleted_urls);
-  EXPECT_EQ(0, cache_manager_->stored_verdict_count_real_time_url_check());
+  EXPECT_EQ(0u, cache_manager_->GetStoredRealTimeUrlCheckVerdictCount());
   EXPECT_EQ(RTLookupResponse::ThreatInfo::VERDICT_TYPE_UNSPECIFIED,
             cache_manager_->GetCachedRealTimeUrlVerdict(url, &out_verdict));
 }
@@ -713,6 +715,44 @@ TEST_F(VerdictCacheManagerTest, TestReadOldRealTimeUrlCheckCacheNotCrash) {
   // Should be able to read the new cache.
   EXPECT_EQ(RTLookupResponse::ThreatInfo::SAFE,
             cache_manager_->GetCachedRealTimeUrlVerdict(url, &out_verdict));
+}
+
+TEST_F(VerdictCacheManagerTest, TestCleanUpExpiredVerdictInBackground) {
+  RTLookupResponse response;
+  AddThreatInfoToResponse(response, RTLookupResponse::ThreatInfo::DANGEROUS,
+                          RTLookupResponse::ThreatInfo::SOCIAL_ENGINEERING, 0,
+                          "www.example.com/",
+                          RTLookupResponse::ThreatInfo::EXACT_MATCH);
+
+  cache_manager_->CacheRealTimeUrlVerdict(GURL("https://www.example.com/"),
+                                          response, base::Time::Now(),
+                                          /* store_old_cache */ false);
+  ASSERT_EQ(1u, cache_manager_->GetStoredRealTimeUrlCheckVerdictCount());
+  task_environment_->FastForwardBy(base::TimeDelta::FromSeconds(119));
+  ASSERT_EQ(1u, cache_manager_->GetStoredRealTimeUrlCheckVerdictCount());
+  // The first cleanup task should happen at 120 seconds after construction.
+  task_environment_->FastForwardBy(base::TimeDelta::FromSeconds(2));
+  ASSERT_EQ(0u, cache_manager_->GetStoredRealTimeUrlCheckVerdictCount());
+
+  cache_manager_->CacheRealTimeUrlVerdict(GURL("https://www.example.com/"),
+                                          response, base::Time::Now(),
+                                          /* store_old_cache */ false);
+  task_environment_->FastForwardBy(base::TimeDelta::FromSeconds(1798));
+  ASSERT_EQ(1u, cache_manager_->GetStoredRealTimeUrlCheckVerdictCount());
+  // The second cleanup task should happen at 120 + 1800 seconds after
+  // construction.
+  task_environment_->FastForwardBy(base::TimeDelta::FromSeconds(2));
+  ASSERT_EQ(0u, cache_manager_->GetStoredRealTimeUrlCheckVerdictCount());
+
+  cache_manager_->CacheRealTimeUrlVerdict(GURL("https://www.example.com/"),
+                                          response, base::Time::Now(),
+                                          /* store_old_cache */ false);
+  task_environment_->FastForwardBy(base::TimeDelta::FromSeconds(1798));
+  ASSERT_EQ(1u, cache_manager_->GetStoredRealTimeUrlCheckVerdictCount());
+  // The third cleanup task should happen at 120 + 1800 + 1800 seconds after
+  // construction.
+  task_environment_->FastForwardBy(base::TimeDelta::FromSeconds(2));
+  ASSERT_EQ(0u, cache_manager_->GetStoredRealTimeUrlCheckVerdictCount());
 }
 
 }  // namespace safe_browsing

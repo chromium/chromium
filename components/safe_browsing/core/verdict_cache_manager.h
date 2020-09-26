@@ -10,6 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observer.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "base/values.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/history/core/browser/history_service.h"
@@ -96,6 +97,8 @@ class VerdictCacheManager : public history::HistoryServiceObserver,
   void HistoryServiceBeingDeleted(
       history::HistoryService* history_service) override;
 
+  void StopCleanUpTimerForTesting();
+
  private:
   FRIEND_TEST_ALL_PREFIXES(VerdictCacheManagerTest, TestCleanUpExpiredVerdict);
   FRIEND_TEST_ALL_PREFIXES(VerdictCacheManagerTest,
@@ -105,6 +108,10 @@ class VerdictCacheManager : public history::HistoryServiceObserver,
   FRIEND_TEST_ALL_PREFIXES(
       VerdictCacheManagerTest,
       TestRemoveRealTimeUrlCheckCachedVerdictOnURLsDeleted);
+  FRIEND_TEST_ALL_PREFIXES(VerdictCacheManagerTest,
+                           TestCleanUpExpiredVerdictInBackground);
+
+  void ScheduleNextCleanUpAfterInterval(base::TimeDelta interval);
 
   // Removes all the expired verdicts from cache.
   void CleanUpExpiredVerdicts();
@@ -118,20 +125,17 @@ class VerdictCacheManager : public history::HistoryServiceObserver,
                                           const history::URLRows& deleted_rows);
   bool RemoveExpiredPhishGuardVerdicts(
       LoginReputationClientRequest::TriggerType trigger_type,
-      base::DictionaryValue* cache_dictionary);
-  bool RemoveExpiredRealTimeUrlCheckVerdicts(
-      base::DictionaryValue* cache_dictionary);
+      base::Value* cache_dictionary);
+  bool RemoveExpiredRealTimeUrlCheckVerdicts(base::Value* cache_dictionary);
 
   size_t GetPhishGuardVerdictCountForURL(
       const GURL& url,
       LoginReputationClientRequest::TriggerType trigger_type);
   // This method is only used for testing.
   size_t GetRealTimeUrlCheckVerdictCountForURL(const GURL& url);
-
-  // This method is only used for testing and logging metrics.
-  int stored_verdict_count_real_time_url_check() {
-    return stored_verdict_count_real_time_url_check_;
-  }
+  // Gets the total number of RealTimeUrlCheck verdicts we cached
+  // for this profile. This counts both expired and active verdicts.
+  size_t GetStoredRealTimeUrlCheckVerdictCount();
 
   // Number of verdict stored for this profile for password on focus pings.
   base::Optional<size_t> stored_verdict_count_password_on_focus_;
@@ -141,14 +145,15 @@ class VerdictCacheManager : public history::HistoryServiceObserver,
   base::Optional<size_t> stored_verdict_count_password_entry_;
 
   // Number of verdict stored for this profile for real time url check pings.
-  // This is used for testing, logging metrics and cleaning up during shutdown.
-  int stored_verdict_count_real_time_url_check_ = 0;
+  base::Optional<size_t> stored_verdict_count_real_time_url_check_;
 
   ScopedObserver<history::HistoryService, history::HistoryServiceObserver>
       history_service_observer_{this};
 
   // Content settings maps associated with this instance.
   scoped_refptr<HostContentSettingsMap> content_settings_;
+
+  base::OneShotTimer cleanup_timer_;
 
   base::WeakPtrFactory<VerdictCacheManager> weak_factory_{this};
 };
