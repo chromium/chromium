@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import '../../img.js';
 
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {ModuleDescriptor} from '../module_descriptor.js';
 import {ShoppingTasksHandlerProxy} from './shopping_tasks_handler_proxy.js';
 
@@ -22,25 +23,34 @@ class ShoppingTasksModuleElement extends PolymerElement {
     return html`{__html_template__}`;
   }
 
-  constructor() {
-    super();
-    ShoppingTasksHandlerProxy.getInstance()
-        .handler.getPrimaryShoppingTask()
-        .then(data => {
-          // TODO(crbug.com/1130855): Do something useful with the data.
-          console.log(data);
-        });
+  static get properties() {
+    return {
+      /** @type {shoppingTasks.mojom.ShoppingTask} */
+      shoppingTask: Object,
+    };
   }
 }
 
 customElements.define(
     ShoppingTasksModuleElement.is, ShoppingTasksModuleElement);
 
+/** @return {!Promise<?{element: !HTMLElement, title: string}>} */
+async function createModule() {
+  const {shoppingTask} = await ShoppingTasksHandlerProxy.getInstance()
+                             .handler.getPrimaryShoppingTask();
+  if (!shoppingTask) {
+    return null;
+  }
+  const element = new ShoppingTasksModuleElement();
+  element.shoppingTask = shoppingTask;
+  return {
+    element: element,
+    title: shoppingTask.title,
+  };
+}
+
 /** @type {!ModuleDescriptor} */
 export const shoppingTasksDescriptor = new ModuleDescriptor(
     /*id=*/ 'shopping_tasks',
     /*name=*/ 'Shopping Tasks',
-    /*heightPx=*/ 260, () => Promise.resolve({
-      element: new ShoppingTasksModuleElement(),
-      title: 'Shopping Tasks',
-    }));
+    /*heightPx=*/ 270, createModule);
