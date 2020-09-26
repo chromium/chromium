@@ -41,31 +41,6 @@
             ]
         }
     ],
-    "AlignFontDisplayAutoTimeoutWithLCPGoal": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "android_webview",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledWithSwapModeAndTimeout1000ms",
-                    "params": {
-                        "intervention-mode": "swap",
-                        "lcp-limit-in-ms": "1000"
-                    },
-                    "enable_features": [
-                        "AlignFontDisplayAutoTimeoutWithLCPGoal"
-                    ]
-                }
-            ]
-        }
-    ],
     "AllPassiveMixedContentAutoupgrade": [
         {
             "platforms": [
