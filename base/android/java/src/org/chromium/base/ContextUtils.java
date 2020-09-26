@@ -75,7 +75,11 @@ public class ContextUtils {
      */
     @SuppressWarnings("DefaultSharedPreferencesCheck")
     private static SharedPreferences fetchAppSharedPreferences() {
-        return PreferenceManager.getDefaultSharedPreferences(sApplicationContext);
+        // This may need to create the prefs directory if we've never used shared prefs before, so
+        // allow disk writes. This is rare but can happen if code used early in startup reads prefs.
+        try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
+            return PreferenceManager.getDefaultSharedPreferences(sApplicationContext);
+        }
     }
 
     /**
