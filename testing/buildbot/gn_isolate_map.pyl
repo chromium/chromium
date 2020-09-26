@@ -173,6 +173,11 @@
     "script": "//testing/scripts/run_performance_tests.py",
     "type": "script",
   },
+  "angle_restricted_trace_gold_tests": {
+    "type": "script",
+    "label": "//third_party/angle/src/tests/restricted_traces:angle_restricted_trace_gold_tests",
+    "script": "//third_party/angle/src/tests/restricted_traces/restricted_trace_gold_tests.py",
+  },
   "angle_unittests": {
     "label": "//third_party/angle/src/tests:angle_unittests",
     "type": "console_test_launcher",

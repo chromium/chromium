@@ -1989,6 +1989,22 @@
       },
     },
 
+    'gpu_angle_restricted_trace_gold_isolated_scripts': {
+      'angle_restricted_trace_gold_tests': {
+        'android_args': [
+          '-v',
+        ],
+        'args': [
+          '--test-machine-name',
+          '${buildername}',
+        ],
+        'mixins': [
+          'angle_skia_gold_test',
+          'chrome-gpu-gold-service-account',
+        ],
+      }
+    },
+
     'gpu_angle_unit_gtests': {
       'angle_unittests': {
         'desktop_args': [
@@ -5025,6 +5041,7 @@
 
     'gpu_angle_isolated_scripts': [
       'gpu_angle_perf_smoke_isolated_scripts',
+      'gpu_angle_restricted_trace_gold_isolated_scripts',
       'gpu_standalone_angle_unittests_isolated_scripts',
     ],
 
