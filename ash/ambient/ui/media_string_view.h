@@ -5,22 +5,24 @@
 #ifndef ASH_AMBIENT_UI_MEDIA_STRING_VIEW_H_
 #define ASH_AMBIENT_UI_MEDIA_STRING_VIEW_H_
 
-#include <string>
-#include "ash/app_menu/notification_item_view.h"
-#include "ash/public/cpp/ambient/ambient_ui_model.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/media_session/public/mojom/media_controller.mojom.h"
-#include "ui/views/controls/image_view.h"
-#include "ui/views/controls/label.h"
+#include "ui/compositor/layer_animation_observer.h"
+#include "ui/views/view.h"
+
+namespace views {
+class Label;
+}  // namespace views
 
 namespace ash {
 
 // Container for displaying ongoing media information, including the name of the
 // media and the artist, formatted with a proceding music note symbol and a
 // middle dot separator.
-class MediaStringView : public views::Label,
-                        public media_session::mojom::MediaControllerObserver {
+class MediaStringView : public views::View,
+                        public media_session::mojom::MediaControllerObserver,
+                        public ui::ImplicitAnimationObserver {
  public:
   MediaStringView();
   MediaStringView(const MediaStringView&) = delete;
@@ -29,6 +31,7 @@ class MediaStringView : public views::Label,
 
   // views::Label:
   const char* GetClassName() const override;
+  void VisibilityChanged(View* starting_from, bool is_visible) override;
 
   // media_session::mojom::MediaControllerObserver:
   void MediaSessionInfoChanged(
@@ -43,15 +46,44 @@ class MediaStringView : public views::Label,
   void MediaSessionPositionChanged(
       const base::Optional<media_session::MediaPosition>& position) override {}
 
+  // ui::ImplicitAnimationObserver:
+  void OnImplicitAnimationsCompleted() override;
+
  private:
+  friend class AmbientAshTestBase;
+
   void InitLayout();
 
   void BindMediaControllerObserver();
+
+  bool NeedToAnimate() const;
+
+  // Get the transform of |media_text_| for scrolling animation.
+  gfx::Transform GetMediaTextTransform(bool is_initial);
+  void ScheduleScrolling(bool is_initial);
+  void StartScrolling(bool is_initial);
+
+  views::View* media_text_container_for_testing() {
+    return media_text_container_;
+  }
+
+  views::Label* media_text_label_for_testing() { return media_text_; }
+
+  // Music eighth note.
+  views::Label* icon_ = nullptr;
+
+  // Container of media info text.
+  views::View* media_text_container_ = nullptr;
+
+  // With an extra copy of media info text for scrolling animation.
+  views::Label* media_text_ = nullptr;
 
   // Used to receive updates to the active media controller.
   mojo::Remote<media_session::mojom::MediaController> media_controller_remote_;
   mojo::Receiver<media_session::mojom::MediaControllerObserver>
       observer_receiver_{this};
+
+  base::WeakPtrFactory<MediaStringView> weak_factory_{this};
 };
 
 }  // namespace ash

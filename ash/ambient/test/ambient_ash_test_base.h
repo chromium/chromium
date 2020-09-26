@@ -19,6 +19,10 @@
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "ui/views/widget/widget.h"
 
+namespace views {
+class Label;
+}  // namespace views
+
 namespace ash {
 
 class AmbientAccessTokenController;
@@ -61,6 +65,10 @@ class AmbientAshTestBase : public AshTestBase {
   // Wait until the event has been processed.
   void SimulateSystemSuspendAndWait(
       power_manager::SuspendImminent::Reason reason);
+
+  views::View* GetMediaStringViewTextContainer();
+
+  views::Label* GetMediaStringViewTextLabel();
 
   // Simulates the system starting to resume.
   // Wait until the event has been processed.

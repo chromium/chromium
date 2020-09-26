@@ -49,6 +49,9 @@ constexpr base::TimeDelta kTokenUsageTimeBuffer =
 // Spacing between two portrait images.
 constexpr int kMarginLeftOfRelatedImageDip = 8;
 
+// Media string related.
+constexpr int kMediaStringMaxWidthDip = 280;
+
 }  // namespace ash
 
 #endif  // ASH_AMBIENT_AMBIENT_CONSTANTS_H_

@@ -32,6 +32,7 @@
 #include "chromeos/dbus/power_manager/idle.pb.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_unittest_util.h"
+#include "ui/views/controls/label.h"
 
 namespace ash {
 
@@ -195,6 +196,14 @@ void AmbientAshTestBase::SetScreenBrightnessAndWait(double percent) {
 
   chromeos::FakePowerManagerClient::Get()->SendScreenBrightnessChanged(change);
   base::RunLoop().RunUntilIdle();
+}
+
+views::View* AmbientAshTestBase::GetMediaStringViewTextContainer() {
+  return GetMediaStringView()->media_text_container_for_testing();
+}
+
+views::Label* AmbientAshTestBase::GetMediaStringViewTextLabel() {
+  return GetMediaStringView()->media_text_label_for_testing();
 }
 
 void AmbientAshTestBase::SimulateMediaMetadataChanged(

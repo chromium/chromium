@@ -37,9 +37,8 @@ namespace {
 using chromeos::assistant::features::IsAmbientAssistantEnabled;
 
 // Appearance.
-constexpr int kHorizontalMarginDip = 16;
 constexpr int kAssistantPreferredHeightDip = 128;
-constexpr int kMediaStringTopMarginDip = 25;
+constexpr int kMediaStringMarginDip = 32;
 
 // A tolerance threshold used to ignore spurious mouse move.
 constexpr int kMouseMoveErrorTolerancePx = 3;
@@ -185,12 +184,9 @@ void AmbientContainerView::LayoutMediaStringView() {
 
   // The media string view is positioned on the right-top corner of the
   // container.
-  // TODO(meilinw): without a maximum width limit, media string can grow too
-  // long or even overflow the screen. Revisit here to polish the UI once the
-  // spec is available. See b/163398805.
   int x =
-      container_size.width() - kHorizontalMarginDip - preferred_size.width();
-  int y = kMediaStringTopMarginDip;
+      container_size.width() - kMediaStringMarginDip - preferred_size.width();
+  int y = kMediaStringMarginDip;
   media_string_view_->SetBoundsRect(
       gfx::Rect(x, y, preferred_size.width(), preferred_size.height()));
 }

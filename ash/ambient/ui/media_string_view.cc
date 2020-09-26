@@ -5,8 +5,8 @@
 #include "ash/ambient/ui/media_string_view.h"
 
 #include <memory>
-#include <string>
 
+#include "ash/ambient/ambient_constants.h"
 #include "ash/ambient/util/ambient_util.h"
 #include "ash/assistant/ui/assistant_view_ids.h"
 #include "ash/public/cpp/ash_pref_names.h"
@@ -15,23 +15,29 @@
 #include "ash/shell_delegate.h"
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "components/prefs/pref_service.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "services/media_session/public/mojom/media_session_service.mojom.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/compositor/layer.h"
+#include "ui/compositor/scoped_layer_animation_settings.h"
+#include "ui/gfx/shadow_value.h"
+#include "ui/gfx/text_constants.h"
+#include "ui/gfx/transform.h"
+#include "ui/views/border.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/flex_layout.h"
+#include "ui/views/layout/flex_layout_types.h"
 
 namespace ash {
 
 namespace {
 
 // Typography.
-constexpr SkColor kTextColor = SK_ColorWHITE;
 constexpr char kMiddleDotSeparator[] = " \u00B7 ";
 constexpr char kPreceedingEighthNoteSymbol[] = "\u266A ";
-constexpr int kDefaultFontSizeDip = 64;
-constexpr int kMediaStringFontSizeDip = 16;
 
 // Returns true if we should show media string for ambient mode on lock-screen
 // based on user pref. We should keep the same user policy here as the
@@ -56,6 +62,10 @@ MediaStringView::~MediaStringView() = default;
 
 const char* MediaStringView::GetClassName() const {
   return "MediaStringView";
+}
+
+void MediaStringView::VisibilityChanged(View* starting_from, bool is_visible) {
+  media_text_->layer()->GetAnimator()->StopAnimating();
 }
 
 void MediaStringView::MediaSessionInfoChanged(
@@ -85,18 +95,38 @@ void MediaStringView::MediaSessionMetadataChanged(
       metadata.value_or(media_session::MediaMetadata());
 
   base::string16 media_string;
+  base::string16 middle_dot = base::UTF8ToUTF16(kMiddleDotSeparator);
   if (!session_metadata.title.empty() && !session_metadata.artist.empty()) {
-    media_string = session_metadata.title +
-                   base::UTF8ToUTF16(kMiddleDotSeparator) +
-                   session_metadata.artist;
+    media_string =
+        session_metadata.title + middle_dot + session_metadata.artist;
   } else if (!session_metadata.title.empty()) {
     media_string = session_metadata.title;
   } else {
     media_string = session_metadata.artist;
   }
 
-  // Formats the media string with a preceding music eighth note.
-  SetText(base::UTF8ToUTF16(kPreceedingEighthNoteSymbol) + media_string);
+  // Reset text and stop any ongoing animation.
+  media_text_->SetText(base::string16());
+  media_text_->layer()->GetAnimator()->StopAnimating();
+
+  media_text_->SetText(media_string);
+  media_text_->layer()->SetTransform(gfx::Transform());
+  const auto& text_size = media_text_->GetPreferredSize();
+  const int text_width = text_size.width();
+  media_text_container_->SetPreferredSize(gfx::Size(
+      std::min(kMediaStringMaxWidthDip, text_width), text_size.height()));
+
+  if (NeedToAnimate()) {
+    media_text_->SetText(media_string + middle_dot + media_string + middle_dot);
+    ScheduleScrolling(/*is_initial=*/true);
+  }
+}
+
+void MediaStringView::OnImplicitAnimationsCompleted() {
+  if (!NeedToAnimate())
+    return;
+
+  ScheduleScrolling(/*is_initial=*/false);
 }
 
 void MediaStringView::InitLayout() {
@@ -105,12 +135,44 @@ void MediaStringView::InitLayout() {
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
 
+  auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kHorizontal));
+  layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kStart);
+  layout->set_cross_axis_alignment(
+      views::BoxLayout::CrossAxisAlignment::kCenter);
+
+  icon_ = AddChildView(std::make_unique<views::Label>(
+      base::UTF8ToUTF16(kPreceedingEighthNoteSymbol)));
+
+  media_text_container_ = AddChildView(std::make_unique<views::View>());
+  media_text_container_->SetPaintToLayer();
+  media_text_container_->layer()->SetFillsBoundsOpaquely(false);
+  media_text_container_->layer()->SetMasksToBounds(true);
+  auto* text_layout = media_text_container_->SetLayoutManager(
+      std::make_unique<views::FlexLayout>());
+  text_layout->SetOrientation(views::LayoutOrientation::kHorizontal);
+  text_layout->SetMainAxisAlignment(views::LayoutAlignment::kStart);
+  text_layout->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
+
+  media_text_ =
+      media_text_container_->AddChildView(std::make_unique<views::Label>());
+  media_text_->SetPaintToLayer();
+  media_text_->layer()->SetFillsBoundsOpaquely(false);
+
   // Defines the appearance.
-  SetAutoColorReadabilityEnabled(false);
-  SetEnabledColor(kTextColor);
-  SetFontList(ambient::util::GetDefaultFontlist().DeriveWithSizeDelta(
-      kMediaStringFontSizeDip - kDefaultFontSizeDip));
-  SetShadows(ambient::util::GetTextShadowValues());
+  constexpr SkColor kTextColor = SK_ColorWHITE;
+  constexpr int kDefaultFontSizeDip = 64;
+  constexpr int kMediaStringFontSizeDip = 18;
+  for (auto* view : {icon_, media_text_}) {
+    view->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_TO_HEAD);
+    view->SetVerticalAlignment(gfx::VerticalAlignment::ALIGN_BOTTOM);
+    view->SetAutoColorReadabilityEnabled(false);
+    view->SetEnabledColor(kTextColor);
+    view->SetFontList(ambient::util::GetDefaultFontlist().DeriveWithSizeDelta(
+        kMediaStringFontSizeDip - kDefaultFontSizeDip));
+    view->SetShadows(ambient::util::GetTextShadowValues());
+    view->SetElideBehavior(gfx::ElideBehavior::NO_ELIDE);
+  }
 
   BindMediaControllerObserver();
 }
@@ -134,6 +196,58 @@ void MediaStringView::BindMediaControllerObserver() {
   // Observe the active media controller for changes.
   media_controller_remote_->AddObserver(
       observer_receiver_.BindNewPipeAndPassRemote());
+}
+
+bool MediaStringView::NeedToAnimate() const {
+  return media_text_->GetPreferredSize().width() >
+         media_text_container_->GetPreferredSize().width();
+}
+
+gfx::Transform MediaStringView::GetMediaTextTransform(bool is_initial) {
+  gfx::Transform transform;
+  if (is_initial) {
+    // Start animation half way of |media_text_container_|.
+    transform.Translate(kMediaStringMaxWidthDip / 2, 0);
+  }
+  return transform;
+}
+
+void MediaStringView::ScheduleScrolling(bool is_initial) {
+  if (!GetVisible())
+    return;
+
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(&MediaStringView::StartScrolling,
+                                weak_factory_.GetWeakPtr(), is_initial));
+}
+
+void MediaStringView::StartScrolling(bool is_initial) {
+  ui::Layer* text_layer = media_text_->layer();
+  text_layer->SetTransform(GetMediaTextTransform(is_initial));
+  {
+    // Desired speed is 10 seconds for kMediaStringMaxWidthDip.
+    const int text_width = media_text_->GetPreferredSize().width();
+    const int shadow_width =
+        gfx::ShadowValue::GetMargin(ambient::util::GetTextShadowValues())
+            .width();
+    const int start_x = text_layer->GetTargetTransform().To2dTranslation().x();
+    const int end_x = -(text_width + shadow_width) / 2;
+    const int transform_distance = start_x - end_x;
+    const base::TimeDelta kScrollingDuration =
+        base::TimeDelta::FromSeconds(10) * transform_distance /
+        kMediaStringMaxWidthDip;
+
+    ui::ScopedLayerAnimationSettings animation(text_layer->GetAnimator());
+    animation.SetTransitionDuration(kScrollingDuration);
+    animation.SetTweenType(gfx::Tween::LINEAR);
+    animation.SetPreemptionStrategy(
+        ui::LayerAnimator::IMMEDIATELY_SET_NEW_TARGET);
+    animation.AddObserver(this);
+
+    gfx::Transform transform;
+    transform.Translate(end_x, 0);
+    text_layer->SetTransform(transform);
+  }
 }
 
 }  // namespace ash
