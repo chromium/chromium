@@ -327,6 +327,7 @@ class VIEWS_EXPORT WidgetDelegate {
   bool ShouldCenterWindowTitleText() const;
 
   bool focus_traverses_out() const { return params_.focus_traverses_out; }
+  bool owned_by_widget() const { return params_.owned_by_widget; }
 
  private:
   friend class Widget;

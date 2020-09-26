@@ -6,12 +6,14 @@
 #define UI_VIEWS_TEST_WIDGET_TEST_H_
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/scoped_observer.h"
+#include "base/test/bind_test_util.h"
 #include "build/build_config.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/test/views_test_base.h"
@@ -27,6 +29,7 @@ class EventSink;
 
 namespace views {
 
+class View;
 class Widget;
 
 namespace internal {
@@ -36,6 +39,25 @@ class RootView;
 }  // namespace internal
 
 namespace test {
+
+// These functions return an arbitrary view v such that:
+//
+// 1) v is a descendant of the root view of the provided widget, and
+// 2) predicate.Run(v) returned true
+//
+// They are *not* guaranteed to return first child matching the predicate for
+// any specific ordering of the children. In fact, these methods deliberately
+// randomly choose a child to return, so make sure your predicate matches
+// *only* the view you want!
+using ViewPredicate = base::RepeatingCallback<bool(const View*)>;
+View* AnyViewMatchingPredicate(Widget* widget, const ViewPredicate& predicate);
+template <typename Pred>
+View* AnyViewMatchingPredicate(Widget* widget, Pred predicate) {
+  return AnyViewMatchingPredicate(widget,
+                                  base::BindLambdaForTesting(predicate));
+}
+
+View* AnyViewWithClassName(Widget* widget, const std::string& classname);
 
 class WidgetTest : public ViewsTestBase {
  public:

@@ -61,6 +61,15 @@ Widget* DialogDelegate::CreateDialogWidget(WidgetDelegate* delegate,
 }
 
 // static
+Widget* DialogDelegate::CreateDialogWidget(
+    std::unique_ptr<WidgetDelegate> delegate,
+    gfx::NativeWindow context,
+    gfx::NativeView parent) {
+  DCHECK(delegate->owned_by_widget());
+  return CreateDialogWidget(delegate.release(), context, parent);
+}
+
+// static
 bool DialogDelegate::CanSupportCustomFrame(gfx::NativeView parent) {
 #if (defined(OS_LINUX) || defined(OS_CHROMEOS)) && \
     BUILDFLAG(ENABLE_DESKTOP_AURA)

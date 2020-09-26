@@ -25,6 +25,15 @@ bool IsDeviceChooserShowingForTesting() {
   NOTIMPLEMENTED();
   return false;
 }
+
+void ShowWindowNamePrompt(Browser* browser) {
+  NOTIMPLEMENTED();
+}
+
+void ShowWindowNamePromptForTesting(Browser* browser,
+                                    gfx::NativeWindow context) {
+  NOTIMPLEMENTED();
+}
 #endif
 
 }  // namespace chrome

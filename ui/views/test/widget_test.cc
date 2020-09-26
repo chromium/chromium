@@ -4,6 +4,8 @@
 
 #include "ui/views/test/widget_test.h"
 
+#include "base/rand_util.h"
+#include "base/test/bind_test_util.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/native_widget_types.h"
@@ -12,6 +14,41 @@
 
 namespace views {
 namespace test {
+
+namespace {
+
+View::Views ShuffledChildren(View* view) {
+  View::Views children(view->children());
+  base::RandomShuffle(children.begin(), children.end());
+  return children;
+}
+
+View* AnyViewMatchingPredicate(View* view, const ViewPredicate& predicate) {
+  if (predicate.Run(view))
+    return view;
+  // Note that we randomize the order of the children, to avoid this function
+  // always choosing the same View to return out of a set of possible Views.
+  // If we didn't do this, client code could accidentally depend on a specific
+  // search order.
+  for (auto* child : ShuffledChildren(view)) {
+    auto* found = AnyViewMatchingPredicate(child, predicate);
+    if (found)
+      return found;
+  }
+  return nullptr;
+}
+
+}  // namespace
+
+View* AnyViewMatchingPredicate(Widget* widget, const ViewPredicate& predicate) {
+  return AnyViewMatchingPredicate(widget->GetRootView(), predicate);
+}
+
+View* AnyViewWithClassName(Widget* widget, const std::string& classname) {
+  return AnyViewMatchingPredicate(widget, [&](const View* view) {
+    return view->GetClassName() == classname;
+  });
+}
 
 void WidgetTest::WidgetCloser::operator()(Widget* widget) const {
   widget->CloseNow();

@@ -455,6 +455,9 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
     case IDC_MOVE_TAB_TO_NEW_WINDOW:
       MoveActiveTabToNewWindow(browser_);
       break;
+    case IDC_NAME_WINDOW:
+      PromptToNameWindow(browser_);
+      break;
 
 #if defined(OS_CHROMEOS)
     case IDC_VISIT_DESKTOP_OF_LRU_USER_2:
@@ -915,6 +918,7 @@ void BrowserCommandController::InitCommandState() {
   UpdateTabRestoreCommandState();
   command_updater_.UpdateCommandEnabled(IDC_EXIT, true);
   command_updater_.UpdateCommandEnabled(IDC_DEBUG_FRAME_TOGGLE, true);
+  command_updater_.UpdateCommandEnabled(IDC_NAME_WINDOW, true);
 #if defined(OS_CHROMEOS)
   command_updater_.UpdateCommandEnabled(IDC_MINIMIZE_WINDOW, true);
   // The VisitDesktop command is only supported for up to 5 logged in users

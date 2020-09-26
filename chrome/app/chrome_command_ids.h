@@ -59,6 +59,7 @@
 #define IDC_MINIMIZE_WINDOW             34046
 #define IDC_MAXIMIZE_WINDOW             34047
 #define IDC_ALL_WINDOWS_FRONT           34048
+#define IDC_NAME_WINDOW                 34049
 
 #if defined(OS_LINUX) && !defined(OS_CHROMEOS)
 #define IDC_USE_SYSTEM_TITLE_BAR        34051

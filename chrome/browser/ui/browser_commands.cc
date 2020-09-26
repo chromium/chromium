@@ -1562,6 +1562,10 @@ void ToggleCaretBrowsing(Browser* browser) {
   }
 }
 
+void PromptToNameWindow(Browser* browser) {
+  chrome::ShowWindowNamePrompt(browser);
+}
+
 #if !defined(TOOLKIT_VIEWS)
 base::Optional<int> GetKeyboardFocusedTabIndex(const Browser* browser) {
   return base::nullopt;

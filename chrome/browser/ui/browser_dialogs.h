@@ -359,6 +359,12 @@ base::OnceClosure ShowDeviceChooserDialog(
     std::unique_ptr<ChooserController> controller);
 bool IsDeviceChooserShowingForTesting(Browser* browser);
 
+// Show the prompt to set a window name for browser's window, optionally with
+// the given context.
+void ShowWindowNamePrompt(Browser* browser);
+void ShowWindowNamePromptForTesting(Browser* browser,
+                                    gfx::NativeWindow context);
+
 }  // namespace chrome
 
 void ShowFolderUploadConfirmationDialog(

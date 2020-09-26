@@ -41497,6 +41497,7 @@ from previous Chrome versions.
   <int value="-1454397907" label="OptimizationHints:disabled"/>
   <int value="-1454264660" label="ProminentDarkModeActiveTabTitle:disabled"/>
   <int value="-1453647118" label="PasswordLeakDetection:disabled"/>
+  <int value="-1452010225" label="WindowNaming:disabled"/>
   <int value="-1451644187" label="OverviewSwipeToClose:enabled"/>
   <int value="-1450576851" label="OmniboxUIExperimentVerticalLayout:enabled"/>
   <int value="-1449590570" label="RestrictGamepadAccess:enabled"/>
@@ -41778,6 +41779,7 @@ from previous Chrome versions.
       label="ContextualSuggestionsIPHReverseScroll:enabled"/>
   <int value="-1198304634"
       label="ProcessSharingWithDefaultSiteInstances:disabled"/>
+  <int value="-1197916855" label="WindowNaming:enabled"/>
   <int value="-1197245070" label="CookieDeprecationMessages:disabled"/>
   <int value="-1197035323" label="ZeroSuggestRedirectToChrome:disabled"/>
   <int value="-1195194959" label="XGEOVisibleNetworks:disabled"/>

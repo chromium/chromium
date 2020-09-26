@@ -1455,6 +1455,9 @@ extern const char kWebXrMultiGpuDescription[];
 extern const char kWellKnownChangePasswordName[];
 extern const char kWellKnownChangePasswordDescription[];
 
+extern const char kWindowNamingName[];
+extern const char kWindowNamingDescription[];
+
 extern const char kZeroCopyName[];
 extern const char kZeroCopyDescription[];
 

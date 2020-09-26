@@ -898,6 +898,8 @@ source_set("test_support") {
     "test/combobox_test_api.cc",
     "test/combobox_test_api.h",
     "test/desktop_test_views_delegate.h",
+    "test/dialog_test.cc",
+    "test/dialog_test.h",
     "test/focus_manager_test.cc",
     "test/focus_manager_test.h",
     "test/layout_test_utils.cc",

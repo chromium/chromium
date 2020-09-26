@@ -6383,6 +6383,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kWellKnownChangePasswordDescription, kOsAll,
      FEATURE_VALUE_TYPE(password_manager::features::kWellKnownChangePassword)},
 
+    {"window-naming", flag_descriptions::kWindowNamingName,
+     flag_descriptions::kWindowNamingDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kWindowNaming)},
+
 #if defined(OS_MAC)
     {"videotoolbox-vp9-decoding",
      flag_descriptions::kVideoToolboxVp9DecodingName,

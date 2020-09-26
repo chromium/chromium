@@ -4669,6 +4669,11 @@
     "expiry_milestone": 88
   },
   {
+    "name": "window-naming",
+    "owners": [ "ellyjones" ],
+    "expiry_milestone": 89
+  },
+  {
     "name": "zero-copy-video-capture",
     "owners": [
       "chromeos-camera-eng@google.com",

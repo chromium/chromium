@@ -2528,6 +2528,10 @@ const char kWellKnownChangePasswordDescription[] =
     ".well-known/change-password it is checked if a fallback url is available. "
     "Otherwise the user is redirected to the origin.";
 
+const char kWindowNamingName[] = "Window Naming";
+const char kWindowNamingDescription[] =
+    "Whether the window naming UI is enabled.";
+
 const char kZeroCopyName[] = "Zero-copy rasterizer";
 const char kZeroCopyDescription[] =
     "Raster threads write directly to GPU memory associated with tiles.";

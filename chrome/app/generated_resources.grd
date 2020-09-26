@@ -1192,6 +1192,9 @@ are declared in tools/grit/grit_rule.gni.
         <message name="IDS_RESTORE_WINDOW" desc="The text label of the Restore Window menu item">
           R&amp;eopen closed window
         </message>
+        <message name="IDS_NAME_WINDOW" desc="The text label of the Name Window menu item, used to give a user-specified name to a window.">
+          &amp;Name window...
+        </message>
       </if>
       <if expr="use_titlecase">
         <message name="IDS_VIEW_SOURCE" desc="In Title Case: The text label of the View Page Source menu item">
@@ -1223,6 +1226,9 @@ are declared in tools/grit/grit_rule.gni.
         </message>
         <message name="IDS_RESTORE_WINDOW" desc="In Title Case: The text label of the Restore Window menu item">
           R&amp;eopen Closed Window
+        </message>
+        <message name="IDS_NAME_WINDOW" desc="In Title Case: The text label of the Name Window menu item, used to give a user-specified name to a window.">
+          &amp;Name Window...
         </message>
       </if>
 
@@ -10957,6 +10963,11 @@ Please help our engineers fix this problem. Tell us what happened right before y
         https://support.google.com/chrome/?p=mac_ARM
       </message>
     </if>
+
+    <message name="IDS_NAME_WINDOW_PROMPT_TITLE"
+             desc="Title of the prompt to choose a new name for a window.">
+      Set Window Name
+    </message>
   </messages>
 </release>
 </grit>

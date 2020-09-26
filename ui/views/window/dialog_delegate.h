@@ -75,6 +75,19 @@ class VIEWS_EXPORT DialogDelegate : public WidgetDelegate {
   ~DialogDelegate() override;
 
   // Creates a widget at a default location.
+  // There are two variant of this method. The newer one is the unique_ptr
+  // method, which simply takes ownership of the WidgetDelegate and passes it to
+  // the created Widget. When using the unique_ptr version, it is required that
+  // delegate->owned_by_widget(). Unless you have a good reason, you should use
+  // this variant.
+  //
+  // If !delegate->owned_by_widget() *or* if your WidgetDelegate subclass has a
+  // custom override of WidgetDelegate::DeleteDelegate, use the raw pointer
+  // variant instead, and please talk to one of the //ui/views owners about
+  // your use case.
+  static Widget* CreateDialogWidget(std::unique_ptr<WidgetDelegate> delegate,
+                                    gfx::NativeWindow context,
+                                    gfx::NativeView parent);
   static Widget* CreateDialogWidget(WidgetDelegate* delegate,
                                     gfx::NativeWindow context,
                                     gfx::NativeView parent);

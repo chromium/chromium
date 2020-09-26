@@ -208,6 +208,7 @@ void CopyURL(Browser* browser);
 Browser* OpenInChrome(Browser* hosted_app_browser);
 bool CanViewSource(const Browser* browser);
 void ToggleCaretBrowsing(Browser* browser);
+void PromptToNameWindow(Browser* browser);
 
 base::Optional<int> GetKeyboardFocusedTabIndex(const Browser* browser);
 
