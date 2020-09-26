@@ -40,6 +40,7 @@
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/gfx/shadow_value.h"
+#include "ui/gfx/skia_paint_util.h"
 #include "ui/gfx/transform_util.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/background.h"
@@ -96,7 +97,12 @@ constexpr int kIconShadowBlur = 10;
 // The shadow color of icon.
 constexpr SkColor kIconShadowColor = SkColorSetA(SK_ColorBLACK, 31);
 
-constexpr int kNotificationIndicatorRadiusDip = 7;
+// The size of the notification indicator circle over the size of the icon.
+constexpr float kNotificationIndicatorWidthRatio = 14.0f / 64.0f;
+
+// The size of the notification indicator circle padding over the size of the
+// icon.
+constexpr float kNotificationIndicatorPaddingRatio = 4.0f / 64.0f;
 
 constexpr SkColor kDefaultIndicatorColor = SK_ColorWHITE;
 
@@ -160,7 +166,8 @@ class ClippedFolderIconImageSource : public gfx::CanvasImageSource {
 class AppListItemView::AppNotificationIndicatorView : public views::View {
  public:
   explicit AppNotificationIndicatorView(SkColor indicator_color)
-      : indicator_color_(indicator_color) {}
+      : shadow_values_(gfx::ShadowValue::MakeMdShadowValues(2)),
+        indicator_color_(indicator_color) {}
   AppNotificationIndicatorView(const AppNotificationIndicatorView& other) =
       delete;
   AppNotificationIndicatorView& operator=(
@@ -173,25 +180,22 @@ class AppListItemView::AppNotificationIndicatorView : public views::View {
     canvas->SaveLayerAlpha(SK_AlphaOPAQUE);
 
     DCHECK_EQ(width(), height());
-    DCHECK_EQ(kNotificationIndicatorRadiusDip, width() / 2);
     const float dsf = canvas->UndoDeviceScaleFactor();
-    const int kStrokeWidthPx = 1;
-    gfx::PointF center = gfx::RectF(GetLocalBounds()).CenterPoint();
+
+    int radius = width() * kNotificationIndicatorWidthRatio / 2.0f;
+    int padding = width() * kNotificationIndicatorPaddingRatio;
+
+    int center_x = width() - radius - padding;
+    int center_y = padding + radius;
+    gfx::PointF center = gfx::PointF(center_x, center_y);
     center.Scale(dsf);
 
     // Fill the center.
     cc::PaintFlags flags;
+    flags.setLooper(gfx::CreateShadowDrawLooper(shadow_values_));
     flags.setColor(indicator_color_);
     flags.setAntiAlias(true);
-    canvas->DrawCircle(
-        center, dsf * kNotificationIndicatorRadiusDip - kStrokeWidthPx, flags);
-
-    // Stroke the border.
-    flags.setColor(SkColorSetA(SK_ColorBLACK, 0x4D));
-    flags.setStyle(cc::PaintFlags::kStroke_Style);
-    canvas->DrawCircle(
-        center, dsf * kNotificationIndicatorRadiusDip - kStrokeWidthPx / 2.0f,
-        flags);
+    canvas->DrawCircle(center, dsf * radius, flags);
   }
 
   void SetColor(SkColor new_color) {
@@ -202,6 +206,7 @@ class AppListItemView::AppNotificationIndicatorView : public views::View {
   SkColor GetColorForTest() { return indicator_color_; }
 
  private:
+  const gfx::ShadowValues shadow_values_;
   SkColor indicator_color_;
 };
 
@@ -780,12 +785,8 @@ void AppListItemView::Layout() {
     title_bounds.Inset(title_shadow_margins_);
   title_->SetBoundsRect(title_bounds);
 
-  if (is_notification_indicator_enabled_ && notification_indicator_) {
-    notification_indicator_->SetBoundsRect(
-        gfx::Rect(icon_bounds.right() - 2 * kNotificationIndicatorRadiusDip - 1,
-                  icon_bounds.y() + 1, kNotificationIndicatorRadiusDip * 2,
-                  kNotificationIndicatorRadiusDip * 2));
-  }
+  if (is_notification_indicator_enabled_ && notification_indicator_)
+    notification_indicator_->SetBoundsRect(icon_bounds);
 }
 
 gfx::Size AppListItemView::CalculatePreferredSize() const {
