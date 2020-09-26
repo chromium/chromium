@@ -59,6 +59,9 @@ class MultiDeviceSection
   void OnHostStatusChanged(
       const multidevice_setup::MultiDeviceSetupClient::HostStatusWithDevice&
           host_status_with_device) override;
+  void OnFeatureStatesChanged(
+      const multidevice_setup::MultiDeviceSetupClient::FeatureStatesMap&
+          feature_states_map) override;
 
   // Nearby Share enabled pref change observer.
   void OnNearbySharingEnabledChanged();

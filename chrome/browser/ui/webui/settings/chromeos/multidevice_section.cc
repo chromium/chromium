@@ -37,13 +37,7 @@ namespace {
 
 const std::vector<SearchConcept>& GetMultiDeviceOptedInSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags(
-      {{IDS_OS_SETTINGS_TAG_MULTIDEVICE_SMART_LOCK_OPTIONS,
-        mojom::kSmartLockSubpagePath,
-        mojom::SearchResultIcon::kLock,
-        mojom::SearchResultDefaultRank::kMedium,
-        mojom::SearchResultType::kSetting,
-        {.setting = mojom::Setting::kSmartLockUnlockOrSignIn}},
-       {IDS_OS_SETTINGS_TAG_MULTIDEVICE_FORGET,
+      {{IDS_OS_SETTINGS_TAG_MULTIDEVICE_FORGET,
         mojom::kMultiDeviceFeaturesSubpagePath,
         mojom::SearchResultIcon::kPhone,
         mojom::SearchResultDefaultRank::kMedium,
@@ -72,6 +66,17 @@ const std::vector<SearchConcept>& GetMultiDeviceOptedInSearchConcepts() {
         mojom::SearchResultDefaultRank::kMedium,
         mojom::SearchResultType::kSetting,
         {.setting = mojom::Setting::kSmartLockOnOff}}});
+  return *tags;
+}
+
+const std::vector<SearchConcept>& GetSmartLockOptionsSearchConcepts() {
+  static const base::NoDestructor<std::vector<SearchConcept>> tags(
+      {{IDS_OS_SETTINGS_TAG_MULTIDEVICE_SMART_LOCK_OPTIONS,
+        mojom::kSmartLockSubpagePath,
+        mojom::SearchResultIcon::kLock,
+        mojom::SearchResultDefaultRank::kMedium,
+        mojom::SearchResultType::kSetting,
+        {.setting = mojom::Setting::kSmartLockUnlockOrSignIn}}});
   return *tags;
 }
 
@@ -247,6 +252,7 @@ MultiDeviceSection::MultiDeviceSection(
 
   multidevice_setup_client_->AddObserver(this);
   OnHostStatusChanged(multidevice_setup_client_->GetHostStatus());
+  OnFeatureStatesChanged(multidevice_setup_client_->GetFeatureStates());
 }
 
 MultiDeviceSection::~MultiDeviceSection() {
@@ -485,6 +491,18 @@ void MultiDeviceSection::OnHostStatusChanged(
       updater.AddSearchTags(GetMultiDeviceOptedInWifiSyncSearchConcepts());
   } else {
     updater.AddSearchTags(GetMultiDeviceOptedOutSearchConcepts());
+  }
+}
+
+void MultiDeviceSection::OnFeatureStatesChanged(
+    const multidevice_setup::MultiDeviceSetupClient::FeatureStatesMap&
+        feature_states_map) {
+  SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
+  updater.RemoveSearchTags(GetSmartLockOptionsSearchConcepts());
+
+  if (feature_states_map.at(multidevice_setup::mojom::Feature::kSmartLock) ==
+      multidevice_setup::mojom::FeatureState::kEnabledByUser) {
+    updater.AddSearchTags(GetSmartLockOptionsSearchConcepts());
   }
 }
 
