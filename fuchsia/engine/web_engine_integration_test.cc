@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <fuchsia/mediacodec/cpp/fidl.h>
 #include <fuchsia/sys/cpp/fidl.h>
 #include <fuchsia/web/cpp/fidl.h>
 #include <lib/fdio/directory.h>
@@ -570,8 +571,6 @@ TEST_F(WebEngineIntegrationTest, PlayAudio_NoFlag) {
 TEST_F(WebEngineIntegrationTest, PlayVideo) {
   CreateContextAndFrame(ContextParamsWithAudioAndTestData());
 
-  frame_->SetBlockMediaLoading(false);
-
   LoadUrlWithUserActivation("fuchsia-dir://testdata/play_video.html?autoplay");
 
   navigation_listener_->RunUntilTitleEquals("ended");
@@ -744,4 +743,56 @@ TEST_F(WebEngineIntegrationTestBase, CameraNoVideoCaptureProcess) {
   command_line.AppendSwitchASCII("disable-features", "MojoVideoCapture");
   StartWebEngine(std::move(command_line));
   RunCameraTest(/*grant_permission=*/true);
+}
+
+// Check that when the ContextFeatureFlag HARDWARE_VIDEO_DECODER is
+// provided that the CodecFactory service is connected to.
+TEST_F(MAYBE_VulkanWebEngineIntegrationTest,
+       HardwareVideoDecoderFlag_Provided) {
+  fuchsia::web::CreateContextParams create_params =
+      ContextParamsWithAudioAndTestData();
+
+  // The VULKAN flag is required for hardware video decoders to be available.
+  create_params.set_features(
+      fuchsia::web::ContextFeatureFlags::VULKAN |
+      fuchsia::web::ContextFeatureFlags::HARDWARE_VIDEO_DECODER |
+      fuchsia::web::ContextFeatureFlags::AUDIO);
+  CreateContextAndFrame(std::move(create_params));
+
+  // Check that the CodecFactory service is requested.
+  bool is_requested = false;
+  filtered_service_directory_->outgoing_directory()->AddPublicService(
+      std::make_unique<vfs::Service>(
+          [&is_requested](zx::channel channel, async_dispatcher_t* dispatcher) {
+            is_requested = true;
+          }),
+      fuchsia::mediacodec::CodecFactory::Name_);
+
+  LoadUrlWithUserActivation("fuchsia-dir://testdata/play_video.html?autoplay");
+  navigation_listener_->RunUntilTitleEquals("ended");
+
+  EXPECT_TRUE(is_requested);
+}
+
+// Check that the CodecFactory service is not requested when
+// HARDWARE_VIDEO_DECODER is not provided.
+// The video should use software decoders and still play.
+TEST_F(WebEngineIntegrationTest, HardwareVideoDecoderFlag_NotProvided) {
+  fuchsia::web::CreateContextParams create_params =
+      ContextParamsWithAudioAndTestData();
+  CreateContextAndFrame(std::move(create_params));
+
+  bool is_requested = false;
+  filtered_service_directory_->outgoing_directory()->AddPublicService(
+      std::make_unique<vfs::Service>(
+          [&is_requested](zx::channel channel, async_dispatcher_t* dispatcher) {
+            is_requested = true;
+          }),
+      fuchsia::mediacodec::CodecFactory::Name_);
+
+  LoadUrlWithUserActivation("fuchsia-dir://testdata/play_video.html?autoplay");
+
+  navigation_listener_->RunUntilTitleEquals("ended");
+
+  EXPECT_FALSE(is_requested);
 }

@@ -361,6 +361,7 @@ test("web_engine_integration_tests") {
     "//media",
     "//media/fuchsia/audio:test_support",
     "//media/fuchsia/camera:test_support",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mediacodec",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sys",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web",
   ]

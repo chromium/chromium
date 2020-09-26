@@ -476,13 +476,22 @@ void ContextProviderImpl::Create(
         base::FilePath(kCdmDataPath), cdm_data_directory_channel.get()});
   }
 
+  bool enable_hardware_video_decoder =
+      (features & fuchsia::web::ContextFeatureFlags::HARDWARE_VIDEO_DECODER) ==
+      fuchsia::web::ContextFeatureFlags::HARDWARE_VIDEO_DECODER;
+  if (!enable_hardware_video_decoder)
+    launch_command.AppendSwitch(switches::kDisableAcceleratedVideoDecode);
+
+  if (enable_hardware_video_decoder && !enable_vulkan) {
+    DLOG(ERROR) << "HARDWARE_VIDEO_DECODER requires VULKAN.";
+    context_request.Close(ZX_ERR_NOT_SUPPORTED);
+    return;
+  }
+
   bool disable_software_video_decoder =
       (features &
        fuchsia::web::ContextFeatureFlags::HARDWARE_VIDEO_DECODER_ONLY) ==
       fuchsia::web::ContextFeatureFlags::HARDWARE_VIDEO_DECODER_ONLY;
-  bool enable_hardware_video_decoder =
-      (features & fuchsia::web::ContextFeatureFlags::HARDWARE_VIDEO_DECODER) ==
-      fuchsia::web::ContextFeatureFlags::HARDWARE_VIDEO_DECODER;
   if (disable_software_video_decoder) {
     if (!enable_hardware_video_decoder) {
       LOG(ERROR) << "Software video decoding may only be disabled if hardware "

@@ -237,7 +237,9 @@ fuchsia::web::CreateContextParams CastRunner::GetCommonContextParams() {
   if (disable_vulkan_for_test_) {
     *params.mutable_features() &=
         ~(fuchsia::web::ContextFeatureFlags::WIDEVINE_CDM |
-          fuchsia::web::ContextFeatureFlags::VULKAN);
+          fuchsia::web::ContextFeatureFlags::VULKAN |
+          fuchsia::web::ContextFeatureFlags::HARDWARE_VIDEO_DECODER |
+          fuchsia::web::ContextFeatureFlags::HARDWARE_VIDEO_DECODER_ONLY);
     params.clear_playready_key_system();
   }
 

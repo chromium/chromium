@@ -24,6 +24,8 @@
 #endif
 
 #if defined(OS_FUCHSIA)
+// TODO(crbug.com/1117629): Remove this dependency and update include_rules
+// that allow it.
 #include "fuchsia/engine/switches.h"
 #include "media/filters/fuchsia/fuchsia_video_decoder.h"
 #endif
@@ -119,7 +121,8 @@ void DefaultDecoderFactory::CreateVideoDecoders(
   }
 
 #if defined(OS_FUCHSIA)
-  if (gpu_factories) {
+  // TODO(crbug.com/1122116): Minimize Fuchsia-specific code paths.
+  if (gpu_factories && gpu_factories->IsGpuVideoAcceleratorEnabled()) {
     auto* context_provider = gpu_factories->GetMediaContextProvider();
 
     // GetMediaContextProvider() may return nullptr when the context was lost
@@ -135,7 +138,7 @@ void DefaultDecoderFactory::CreateVideoDecoders(
                                     context_provider->ContextSupport()));
     } else {
       DLOG(ERROR)
-          << "Can't created FuchsiaVideoDecoder due to GPU context loss.";
+          << "Can't create FuchsiaVideoDecoder due to GPU context loss.";
     }
   }
 
