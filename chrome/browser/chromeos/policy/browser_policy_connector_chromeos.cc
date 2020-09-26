@@ -371,6 +371,13 @@ std::string BrowserPolicyConnectorChromeOS::GetEnterpriseDisplayDomain() const {
   return GetEnterpriseEnrollmentDomain();
 }
 
+std::string BrowserPolicyConnectorChromeOS::GetEnterpriseDomainManager() const {
+  const em::PolicyData* policy = GetDevicePolicy();
+  if (policy && policy->has_managed_by())
+    return policy->managed_by();
+  return GetEnterpriseDisplayDomain();
+}
+
 std::string BrowserPolicyConnectorChromeOS::GetRealm() const {
   return chromeos::InstallAttributes::Get()->GetRealm();
 }

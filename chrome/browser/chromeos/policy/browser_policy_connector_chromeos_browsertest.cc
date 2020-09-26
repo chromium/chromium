@@ -22,6 +22,7 @@ namespace policy {
 
 const char kCustomDisplayDomain[] = "acme.corp";
 const char kMachineName[] = "machine_name";
+const char kCustomManager[] = "user@acme.corp";
 
 void WaitUntilPolicyLoaded() {
   BrowserPolicyConnectorChromeOS* connector =
@@ -59,12 +60,18 @@ IN_PROC_BROWSER_TEST_F(BrowserPolicyConnectorChromeOSTest, EnterpriseDomains) {
   // display domain defaults to enrollment domain.
   EXPECT_EQ(PolicyBuilder::kFakeDomain,
             connector->GetEnterpriseDisplayDomain());
+  // If no manager set, EnterpriseDomainManager is equal to
+  // EnterpriseDisplayDomain
+  EXPECT_EQ(connector->GetEnterpriseDisplayDomain(),
+            connector->GetEnterpriseDomainManager());
   device_policy()->policy_data().set_display_domain(kCustomDisplayDomain);
+  device_policy()->policy_data().set_managed_by(kCustomManager);
   RefreshDevicePolicy();
   WaitUntilPolicyLoaded();
   // At this point custom display domain is set and policy is loaded so expect
   // to see the custom display domain.
   EXPECT_EQ(kCustomDisplayDomain, connector->GetEnterpriseDisplayDomain());
+  EXPECT_EQ(kCustomManager, connector->GetEnterpriseDomainManager());
   // Make sure that enrollment domain stays the same.
   EXPECT_EQ(PolicyBuilder::kFakeDomain,
             connector->GetEnterpriseEnrollmentDomain());
