@@ -6,6 +6,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/buildflags.h"
 #include "components/omnibox/browser/omnibox_client.h"
@@ -100,6 +101,17 @@ class OmniboxPedalTranslate : public OmniboxPedal {
 
   void Execute(ExecutionContext& context) const override {
     context.client_.PromptPageTranslation();
+  }
+  bool IsReadyToTrigger(
+      const AutocompleteInput& input,
+      const AutocompleteProviderClient& client) const override {
+    // Built-in chrome:// URLs do not generally support translation, and the
+    // translate UI does not yet inform users with a clear helpful error message
+    // when requesting translation for a page that doesn't support translation,
+    // so this is a quick early-out to prevent bad message crashes.
+    // See: https://crbug.com/1131136
+    return !input.current_url().SchemeIs(
+        client.GetEmbedderRepresentationOfAboutScheme());
   }
 };
 

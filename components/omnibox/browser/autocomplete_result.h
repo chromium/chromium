@@ -92,7 +92,8 @@ class AutocompleteResult {
   void GroupAndDemoteMatchesWithHeaders();
 
   // Sets |pedal| in matches that have Pedal-triggering text.
-  void ConvertInSuggestionPedalMatches(AutocompleteProviderClient* client);
+  void AttachPedalsToMatches(const AutocompleteInput& input,
+                             const AutocompleteProviderClient& client);
 
   // Sets |has_tab_match| in matches whose URL matches an open tab's URL.
   // Also, fixes up the description if not using another UI element to

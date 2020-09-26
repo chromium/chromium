@@ -445,9 +445,10 @@ void AutocompleteResult::DemoteOnDeviceSearchSuggestions() {
   }
 }
 
-void AutocompleteResult::ConvertInSuggestionPedalMatches(
-    AutocompleteProviderClient* client) {
-  OmniboxPedalProvider* provider = client->GetPedalProvider();
+void AutocompleteResult::AttachPedalsToMatches(
+    const AutocompleteInput& input,
+    const AutocompleteProviderClient& client) {
+  OmniboxPedalProvider* provider = client.GetPedalProvider();
   // Used to ensure we keep only one Pedal of each kind.
   std::unordered_set<OmniboxPedal*> pedals_found;
 
@@ -460,7 +461,7 @@ void AutocompleteResult::ConvertInSuggestionPedalMatches(
       continue;
     }
 
-    OmniboxPedal* const pedal = provider->FindPedalMatch(match.contents);
+    OmniboxPedal* const pedal = provider->FindPedalMatch(input, match.contents);
     if (pedal) {
       const auto result = pedals_found.insert(pedal);
       if (result.second)

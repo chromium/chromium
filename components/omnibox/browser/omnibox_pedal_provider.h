@@ -16,8 +16,12 @@
 #include "components/omnibox/browser/omnibox_pedal_implementations.h"
 
 class OmniboxPedal;
+class AutocompleteInput;
 class AutocompleteProviderClient;
 
+// Note: This is not an autocomplete provider; it doesn't produce suggestions
+// but rather "annotates" suggestions by attaching pedals to matches from other
+// providers (search in particular).
 class OmniboxPedalProvider {
  public:
   explicit OmniboxPedalProvider(AutocompleteProviderClient& client);
@@ -26,8 +30,9 @@ class OmniboxPedalProvider {
   OmniboxPedalProvider& operator=(const OmniboxPedalProvider&) = delete;
 
   // Returns the Pedal triggered by given |match_text| or nullptr if none
-  // trigger.
-  OmniboxPedal* FindPedalMatch(const base::string16& match_text);
+  // trigger. The |input| is used to determine suitability for current context.
+  OmniboxPedal* FindPedalMatch(const AutocompleteInput& input,
+                               const base::string16& match_text);
 
   // "Fake" implementation of AutocompleteProvider AddProviderInfo, though this
   // class is not a true subclass of AutocompleteProvider. This is used

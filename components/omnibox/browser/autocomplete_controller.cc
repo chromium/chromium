@@ -690,7 +690,7 @@ void AutocompleteController::UpdateResult(
   result_.SortAndCull(input_, template_url_service_, preserve_default_match);
 
   if (OmniboxFieldTrial::IsPedalSuggestionsEnabled()) {
-    result_.ConvertInSuggestionPedalMatches(provider_client_.get());
+    result_.AttachPedalsToMatches(input_, *provider_client_);
   }
 
   // Need to validate before invoking CopyOldMatches as the old matches are not

@@ -22,6 +22,7 @@ struct VectorIcon;
 }
 #endif
 
+class AutocompleteInput;
 class AutocompleteProviderClient;
 class OmniboxEditController;
 class OmniboxClient;
@@ -139,7 +140,8 @@ class OmniboxPedal {
   // Returns true if this Pedal is ready to be used now, or false if
   // it does not apply under current conditions. (Example: the UpdateChrome
   // Pedal may not be ready to trigger if no update is available.)
-  virtual bool IsReadyToTrigger(const AutocompleteProviderClient& client) const;
+  virtual bool IsReadyToTrigger(const AutocompleteInput& input,
+                                const AutocompleteProviderClient& client) const;
 
 #if (!defined(OS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !defined(OS_IOS)
   // Returns the vector icon to represent this Pedal's action in suggestion.

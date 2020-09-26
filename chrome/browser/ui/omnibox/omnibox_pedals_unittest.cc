@@ -4,6 +4,7 @@
 
 #include "base/environment.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/mock_autocomplete_provider_client.h"
 #include "components/omnibox/browser/omnibox_pedal_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -548,6 +549,8 @@ TEST(OmniboxPedals, DataLoadsForAllLocales) {
       },
       // clang-format on
   };
+  AutocompleteInput input;
+  input.set_current_url(GURL("https://example.com"));
   for (const TestCase& test_case : test_cases) {
     // Prepare the shared ResourceBundle with data for tested locale.
     env->SetVar("LANG", test_case.locale);
@@ -557,22 +560,25 @@ TEST(OmniboxPedals, DataLoadsForAllLocales) {
     // Instantiating the provider loads concept data from shared ResourceBundle.
     OmniboxPedalProvider provider(client);
 
-    EXPECT_EQ(provider.FindPedalMatch(base::UTF8ToUTF16("")), nullptr);
+    EXPECT_EQ(provider.FindPedalMatch(input, base::UTF8ToUTF16("")), nullptr);
 #if defined(OS_CHROMEOS)
     // TODO(orinj): Get ChromeOS to use the right dataset, but for now make this
     //  a soft failure so as to not block all other platforms. To ensure this
     //  is not going to cause failure in production, still test that English
     //  triggering functions. Data is there; it works; but warn about locale.
-    if (!provider.FindPedalMatch(base::UTF8ToUTF16(test_case.triggers[0]))) {
-      EXPECT_NE(provider.FindPedalMatch(base::UTF8ToUTF16("clear history")),
-                nullptr);
+    if (!provider.FindPedalMatch(input,
+                                 base::UTF8ToUTF16(test_case.triggers[0]))) {
+      EXPECT_NE(
+          provider.FindPedalMatch(input, base::UTF8ToUTF16("clear history")),
+          nullptr);
       LOG(WARNING) << "ChromeOS using English for locale " << test_case.locale;
       continue;
     }
 #endif
 
     for (const std::string& trigger : test_case.triggers) {
-      EXPECT_NE(provider.FindPedalMatch(base::UTF8ToUTF16(trigger)), nullptr)
+      EXPECT_NE(provider.FindPedalMatch(input, base::UTF8ToUTF16(trigger)),
+                nullptr)
           << "locale: " << test_case.locale << std::endl
           << "trigger: " << trigger;
     }

@@ -121,6 +121,7 @@ void OmniboxPedal::Execute(OmniboxPedal::ExecutionContext& context) const {
 }
 
 bool OmniboxPedal::IsReadyToTrigger(
+    const AutocompleteInput& input,
     const AutocompleteProviderClient& client) const {
   return true;
 }

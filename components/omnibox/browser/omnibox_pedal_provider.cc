@@ -11,6 +11,7 @@
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_pedal.h"
@@ -37,6 +38,12 @@ OmniboxPedalProvider::~OmniboxPedalProvider() {}
 void OmniboxPedalProvider::AddProviderInfo(ProvidersInfo* provider_info) const {
   provider_info->push_back(metrics::OmniboxEventProto_ProviderInfo());
   metrics::OmniboxEventProto_ProviderInfo& new_entry = provider_info->back();
+  // Note: SEARCH is used here because the suggestions that Pedals attach to are
+  // almost exclusively coming from search suggestions (they could in theory
+  // attach to others if the match content were a concept match, but in practice
+  // only search suggestions have the relevant text). PEDAL is not used because
+  // Pedals are not themselves suggestions produced by an autocomplete provider.
+  // This may change. See http://cl/327103601 for context and discussion.
   new_entry.set_provider(metrics::OmniboxEventProto::SEARCH);
   new_entry.set_provider_done(true);
 
@@ -58,6 +65,7 @@ void OmniboxPedalProvider::ResetSession() {
 }
 
 OmniboxPedal* OmniboxPedalProvider::FindPedalMatch(
+    const AutocompleteInput& input,
     const base::string16& match_text) {
   OmniboxPedal::Tokens match_tokens = Tokenize(match_text);
   if (match_tokens.empty()) {
@@ -72,7 +80,7 @@ OmniboxPedal* OmniboxPedalProvider::FindPedalMatch(
 
   for (const auto& pedal : pedals_) {
     if (pedal.second->IsTriggerMatch(match_tokens) &&
-        pedal.second->IsReadyToTrigger(client_)) {
+        pedal.second->IsReadyToTrigger(input, client_)) {
       field_trial_triggered_ = true;
       field_trial_triggered_in_session_ = true;
 

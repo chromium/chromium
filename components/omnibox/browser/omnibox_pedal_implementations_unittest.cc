@@ -7,6 +7,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/mock_autocomplete_provider_client.h"
 #include "components/omnibox/browser/omnibox_pedal_provider.h"
 #include "components/omnibox/browser/test_omnibox_client.h"
@@ -26,9 +27,10 @@ class OmniboxPedalImplementationsTest : public testing::Test {
 
 TEST_F(OmniboxPedalImplementationsTest, PedalClearBrowsingDataExecutes) {
   MockAutocompleteProviderClient client;
+  AutocompleteInput input;
   OmniboxPedalProvider provider(client);
   const OmniboxPedal* pedal =
-      provider.FindPedalMatch(base::ASCIIToUTF16("clear browser data"));
+      provider.FindPedalMatch(input, base::ASCIIToUTF16("clear browser data"));
   base::TimeTicks match_selection_timestamp;
   OmniboxPedal::ExecutionContext context(
       *omnibox_client_, *omnibox_edit_controller_, match_selection_timestamp);

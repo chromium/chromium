@@ -1715,6 +1715,9 @@ TEST_F(AutocompleteResultTest, AttachesPedals) {
   EXPECT_NE(nullptr, client.GetPedalProvider());
 
   AutocompleteResult result;
+  AutocompleteInput input(base::ASCIIToUTF16("a"),
+                          metrics::OmniboxEventProto::OTHER,
+                          TestSchemeClassifier());
 
   // Populate result with test matches.
   {
@@ -1750,15 +1753,11 @@ TEST_F(AutocompleteResultTest, AttachesPedals) {
     for (size_t i = 0; i < base::size(data); i++) {
       matches[i].contents = base::UTF8ToUTF16(data[i].contents);
     }
-
-    AutocompleteInput input(base::ASCIIToUTF16("a"),
-                            metrics::OmniboxEventProto::OTHER,
-                            TestSchemeClassifier());
     result.AppendMatches(input, matches);
   }
 
   // Attach |pedal| to result matches where appropriate.
-  result.ConvertInSuggestionPedalMatches(&client);
+  result.AttachPedalsToMatches(input, client);
 
   // Ensure the entity suggestion doesn't get a pedal even though its contents
   // form a concept match.
