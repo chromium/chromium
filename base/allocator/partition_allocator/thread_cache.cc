@@ -105,6 +105,8 @@ void ThreadCacheRegistry::PurgeAll() {
 
 // static
 void ThreadCache::Init(PartitionRoot<ThreadSafe>* root) {
+  PA_CHECK(root->buckets[kBucketCount - 1].slot_size == kSizeThreshold);
+
   bool ok = PartitionTlsCreate(&g_thread_cache_key, DeleteThreadCache);
   PA_CHECK(ok);
 

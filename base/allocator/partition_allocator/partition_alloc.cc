@@ -272,16 +272,6 @@ void PartitionRoot<thread_safe>::Init(PartitionOptions opts) {
   // If alignment needs to be enforced, disallow adding cookies and/or tags at
   // the beginning of the slot.
   allow_extras = (opts.alignment != PartitionOptions::Alignment::kAlignedAlloc);
-#if !defined(OS_POSIX)
-  // TLS in ThreadCache not supported on other OSes.
-  with_thread_cache = false;
-#else
-  with_thread_cache =
-      (opts.thread_cache == PartitionOptions::ThreadCache::kEnabled);
-
-  if (with_thread_cache)
-    internal::ThreadCache::Init(this);
-#endif  // !defined(OS_POSIX)
 
   // We mark the sentinel bucket/page as free to make sure it is skipped by our
   // logic to find a new active page.
@@ -319,6 +309,17 @@ void PartitionRoot<thread_safe>::Init(PartitionOptions opts) {
   // times, even though the indices are shared between all PartitionRoots, but
   // this operation is idempotent, so there is no harm.
   InitBucketIndexLookup(this);
+
+#if !defined(OS_POSIX)
+  // TLS in ThreadCache not supported on other OSes.
+  with_thread_cache = false;
+#else
+  with_thread_cache =
+      (opts.thread_cache == PartitionOptions::ThreadCache::kEnabled);
+
+  if (with_thread_cache)
+    internal::ThreadCache::Init(this);
+#endif  // !defined(OS_POSIX)
 
   initialized = true;
 }

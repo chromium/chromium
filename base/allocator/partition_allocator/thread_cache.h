@@ -17,6 +17,7 @@
 #include "base/no_destructor.h"
 #include "base/partition_alloc_buildflags.h"
 #include "base/synchronization/lock.h"
+#include "build/build_config.h"
 
 namespace base {
 
@@ -166,9 +167,15 @@ class BASE_EXPORT ThreadCache {
     PartitionFreelistEntry* freelist_head;
   };
 
-  // TODO(lizeb): Optimize the threshold, and define it as an allocation size
-  // rather than a bucket index.
-  static constexpr size_t kBucketCount = 40;
+  // TODO(lizeb): Optimize the threshold.
+#if defined(ARCH_CPU_64_BITS)
+  static constexpr size_t kBucketCount = 41;
+#else
+  static constexpr size_t kBucketCount = 49;
+#endif
+  // Checked in ThreadCache::Init(), not with static_assert() as the size is not
+  // set at compile-time.
+  static constexpr size_t kSizeThreshold = 512;
   static_assert(
       kBucketCount < kNumBuckets,
       "Cannot have more cached buckets than what the allocator supports");
