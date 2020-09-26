@@ -611,11 +611,19 @@ enum TrustTokenRedemptionPolicy {
 };
 
 struct URLLoaderFactoryParams {
-  // Process requesting the URLLoaderFactory.
-  // Set to kBrowserProcessId to indicate the browser process.
+  // Process that will be using the URLLoaderFactory to initiate HTTP requests.
+  // (This is *not* necessarily the same process that creates the factory,
+  // since only the Browser process should be able to call
+  // NetworkContext::CreateURLLoaderFactory.)
   //
+  // Set to kBrowserProcessId to indicate the browser process.
   // SECURITY NOTE: Factories with kBrowserProcessId should not be sent
   // to untrustworthy processes.
+  //
+  // Set to RenderProcessHost::GetID() to indicate a renderer process.
+  // SECURITY NOTE: Factories should not be shared among multiple renderer
+  // processes (e.g. |request_initiator_origin_lock| is specific to a single
+  // renderer process).
   int32 process_id = kInvalidProcessId;
 
   // If specified, then |request_initiator_origin_lock| locks
