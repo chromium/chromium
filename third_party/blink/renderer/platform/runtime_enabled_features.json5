@@ -568,7 +568,7 @@
       // Perform partial layout invalidation on web font loading.
       // See https://crbug.com/441925 and https://bit.ly/35JjPmq for details.
       name: "CSSReducedFontLoadingLayoutInvalidations",
-      status: "test",
+      status: "stable",
     },
     {
       name: "CSSRevert",
