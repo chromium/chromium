@@ -276,9 +276,7 @@ const gfx::FontList& Combobox::GetFontList() const {
 }
 
 void Combobox::SetSelectedIndex(int index) {
-  if (selected_index_ == index)
-    return;
-
+  // TODO(http://crbug.com/1132465): No-op when selected_index_ == index.
   selected_index_ = index;
   if (size_to_largest_label_) {
     OnPropertyChanged(&selected_index_, kPropertyEffectsPaint);
