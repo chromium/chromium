@@ -464,3 +464,6 @@ QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_fix_missing_initial_keys, true)
 
 // If true, check whether framer has the right key before writing data.
 QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_check_keys_before_writing, true)
+
+// If true, check for NULL before sending a fallback config.
+QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_check_fallback_null, true)
