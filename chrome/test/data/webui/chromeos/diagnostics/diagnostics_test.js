@@ -78,9 +78,6 @@ suite('DiagnosticsAppTest', () => {
   });
 
   test('LandingPageLoaded', () => {
-    // TODO(zentaro): Update when strings are finalized and localized.
-    assertEquals('Diagnostics', page.$$('#header').textContent);
-
     // Verify the overview card is in the page.
     const overview = page.$$('#overviewCard');
     assertTrue(!!overview);
@@ -150,10 +147,6 @@ suite('BatteryStatusCardTest', () => {
     return initializeBatteryStatusCard(
                fakeBatteryInfo, fakeBatteryChargeStatus, fakeBatteryHealth)
         .then(() => {
-          // TODO(zentaro): Update when strings are finalized.
-          assertEquals(
-              'Battery Status',
-              batteryStatusElement.$$('#cardTitle').textContent);
           assertEquals(
               fakeBatteryInfo.manufacturer,
               batteryStatusElement.$$('#manufacturer').textContent);
@@ -221,9 +214,6 @@ suite('CpuCardTest', () => {
 
   test('CpuCardPopulated', () => {
     return initializeCpuCard(fakeCpuUsage).then(() => {
-      // TODO(zentaro): Update when strings are finalized.
-      assertEquals('CPU', cpuElement.$$('#cardTitle').textContent);
-
       assertEquals(
           fakeCpuUsage[0].cpu_temp_degrees_celcius.toString(),
           cpuElement.$$('#cpuTemp').textContent);
@@ -336,9 +326,6 @@ suite('MemoryCardTest', () => {
 
   test('MemoryCardPopulated', () => {
     return initializeMemoryCard(fakeMemoryUsage).then(() => {
-      // TODO(zentaro): Update when strings are finalized.
-      assertEquals('Memory', memoryElement.$$('#cardTitle').textContent);
-
       assertEquals(
           fakeMemoryUsage[0].total_memory_kib.toString(),
           memoryElement.$$('#memoryTotal').textContent);
