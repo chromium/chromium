@@ -63741,6 +63741,19 @@
        ],
        {}
       ]
+     ],
+     "fontface-override-descriptors.html": [
+      "40de722981221ff08a4c8f381de8a69e75598979",
+      [
+       null,
+       [
+        [
+         "/css/css-font-loading/fontface-override-descriptors-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
      ]
     },
     "css-fonts": {
@@ -177851,22 +177864,6 @@
       "8c390de08d10d1e9591c5885d355514b9412aab1",
       []
      ],
-     "image-as-flexitem-size-003-expected.txt": [
-      "4b4d219cf9e2cb977f33d3a21df99aa55226610f",
-      []
-     ],
-     "image-as-flexitem-size-003v-expected.txt": [
-      "4b4d219cf9e2cb977f33d3a21df99aa55226610f",
-      []
-     ],
-     "image-as-flexitem-size-004-expected.txt": [
-      "f88cc075e583ae4fddb0bd5a76be0b037f24bdb6",
-      []
-     ],
-     "image-as-flexitem-size-004v-expected.txt": [
-      "f88cc075e583ae4fddb0bd5a76be0b037f24bdb6",
-      []
-     ],
      "order": {
       "order-with-column-reverse-ref.html": [
        "c8b9be7c4ec9d7238a45db8d7b06fc93eb92c889",
@@ -178433,6 +178430,10 @@
      ],
      "fontface-descriptor-updates-ref.html": [
       "513867b3503042886e51312bcfec20967f7384d4",
+      []
+     ],
+     "fontface-override-descriptors-ref.html": [
+      "4a6d26ead980c5cfb7e25e5eb4266638a3f5c1eb",
       []
      ],
      "idlharness.https-expected.txt": [
@@ -227280,7 +227281,7 @@
     ]
    },
    "lint.ignore": [
-    "64684fa8b82cd5714b07fc7e9233e87a64098db3",
+    "ae6c07b877cb8040d653b164438ce5408ae09136",
     []
    ],
    "loading": {
@@ -244416,7 +244417,7 @@
       []
      ],
      "browser.py": [
-      "6f9da16c50bea6f073421c99e5050ed9eedb71b8",
+      "35f60d1620beab37f93a43da72a927d3ea8ea1eb",
       []
      ],
      "commands.json": [
@@ -244452,7 +244453,7 @@
       []
      ],
      "run.py": [
-      "8edaa60ab03bf19339aa0773789dd8bdf3755b54",
+      "f289e097753f40767c8d3c28848e6ac8a428f2c5",
       []
      ],
      "testfiles.py": [
@@ -280961,28 +280962,28 @@
       ]
      ],
      "image-as-flexitem-size-003.html": [
-      "03a9a6e3547ee9a4421d4624efd1371a237c8ad7",
+      "21a63069ed120df876948a8eb406f84074ed1bb0",
       [
        null,
        {}
       ]
      ],
      "image-as-flexitem-size-003v.html": [
-      "fd728027e0cfb78162df586320bcb8cb284105a2",
+      "4b957e586a2ba067b862f4622d698fee1bc9fbd0",
       [
        null,
        {}
       ]
      ],
      "image-as-flexitem-size-004.html": [
-      "15e9f729271aecf945896a0af3263ee42415f0c3",
+      "36cb048e2ec2fbaa698022f2f90660afe6936eec",
       [
        null,
        {}
       ]
      ],
      "image-as-flexitem-size-004v.html": [
-      "10e871a1c0eacf00a45aed2e594c14daa6b685e2",
+      "16cadce4b96cdf9d06c28e718b72274393698ef9",
       [
        null,
        {}
@@ -281568,6 +281569,13 @@
      ],
      "fontface-load-in-modal-dialog.html": [
       "8838e05eaf4c3df6d1bc85f782421b15b1e3db76",
+      [
+       null,
+       {}
+      ]
+     ],
+     "fontface-override-descriptor-getter-setter.html": [
+      "a674c22285af20e24a26cfcd3fb590d9663b8c25",
       [
        null,
        {}
