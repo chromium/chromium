@@ -148,8 +148,8 @@ void RecordLaunchModeHistogram(LaunchMode mode) {
         {base::TaskPriority::BEST_EFFORT,
          base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
         base::BindOnce([]() {
-          base::UmaHistogramEnumeration(kLaunchModesHistogram,
-                                        GetLaunchModeSlow());
+          base::UmaHistogramSparse(kLaunchModesHistogram,
+                                   static_cast<int>(GetLaunchModeSlow()));
         }));
   } else {
     base::UmaHistogramSparse(kLaunchModesHistogram, static_cast<int>(mode));
