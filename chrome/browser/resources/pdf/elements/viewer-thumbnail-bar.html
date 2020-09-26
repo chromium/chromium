@@ -3,12 +3,17 @@
     box-sizing: border-box;
     height: 100%;
     overflow: auto;
-    padding-bottom: 24px;
+    padding: 24px 0;
     text-align: center;
+  }
+
+  viewer-thumbnail + viewer-thumbnail {
+    padding-top: 24px;
   }
 </style>
 <div id="thumbnails">
-  <template is="dom-repeat" items="[[pageNumbers_]]">
+  <template is="dom-repeat" items="[[pageNumbers_]]"
+      on-dom-change="onDomChange_">
     <viewer-thumbnail is-active="[[isActivePage_(item, activePage)]]"
         page-number="[[item]]">
     </viewer-thumbnail>

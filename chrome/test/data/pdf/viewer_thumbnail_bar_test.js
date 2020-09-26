@@ -59,6 +59,75 @@ const tests = [
       }
     });
   },
+  function testTriggerPaint() {
+    // Create a viewer-thumbnail element to get the standard height.
+    document.body.innerHTML = '';
+    const sizerThumbnail = document.createElement('viewer-thumbnail');
+    document.body.appendChild(sizerThumbnail);
+    // Add 24 to cover padding between thumbnails.
+    const thumbnailBarHeight = sizerThumbnail.offsetHeight + 24;
+
+    // Clear HTML for just the thumbnail bar.
+    const testDocLength = 4;
+    const thumbnailBar = createThumbnailBar();
+    thumbnailBar.docLength = testDocLength;
+
+    // Set the height to one thumbnail. One thumbnail should be visible and
+    // another should be hidden by intersecting the observer.
+    thumbnailBar.style.height = `${thumbnailBarHeight}px`;
+    thumbnailBar.style.display = 'block';
+
+    flush();
+
+    const thumbnails =
+        /** @type {!NodeList<!ViewerThumbnailElement>} */ (
+            thumbnailBar.shadowRoot.querySelectorAll('viewer-thumbnail'));
+
+    /**
+     * @param {!ViewerThumbnailElement} thumbnail
+     * @return {!Promise}
+     */
+    function paintThumbnailToPromise(thumbnail) {
+      return new Promise(resolve => {
+        const eventType = 'paint-thumbnail';
+        thumbnailBar.addEventListener(eventType, function f(e) {
+          if (e.detail === thumbnail) {
+            thumbnailBar.removeEventListener(eventType, f);
+            resolve(e);
+          }
+        });
+      });
+    }
+
+    const whenRequestedPaintingFirst = [
+      paintThumbnailToPromise(thumbnails[0]),
+      paintThumbnailToPromise(thumbnails[1]),
+    ];
+
+    testAsync(async () => {
+      await Promise.all(whenRequestedPaintingFirst);
+
+      // Only two thumbnails should be pending.
+      for (let i = 0; i < thumbnails.length; i++) {
+        chrome.test.assertEq(i < 2, thumbnails[i].hasAttribute('pending'));
+      }
+
+      // Test that scrolling to the bottom triggers 'paint-thumbnail' events for
+      // the remaining thumbnails.
+      const whenRequestedPaintingLast = [
+        paintThumbnailToPromise(thumbnails[2]),
+        paintThumbnailToPromise(thumbnails[3]),
+      ];
+
+      thumbnailBar.shadowRoot.querySelector('#thumbnails').scrollTop =
+          2 * thumbnailBarHeight;
+      await Promise.all(whenRequestedPaintingLast);
+
+      for (const thumbnail of thumbnails) {
+        chrome.test.assertTrue(thumbnail.hasAttribute('pending'));
+      }
+    });
+  }
 ];
 
 chrome.test.runTests(tests);
