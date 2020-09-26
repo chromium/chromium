@@ -346,6 +346,8 @@ Still reading?
     <ignore regexp="The resource `R.string.iph_download_indicator_text` appears to be unused"/>
     <!--TODO(crbug.com/1106109): Remove this suppression once Most Visited Tiles header is implemented.-->
     <ignore regexp="The resource `R.string.most_visited_tiles_header` appears to be unused"/>
+    <ignore regexp="The resource `R.string.accessibility_omnibox_showing_suggestions_for_website` appears to be unused"/>
+    <ignore regexp="The resource `R.string.accessibility_omnibox_most_visited_tile` appears to be unused"/>
     <!-- 1: Some strings in components_strings_grd are not used in other targets. -->
     <ignore regexp="webview_.*__lint.*components_strings_grd"/>
     <!-- 6: Temporarily suppress until implementation is ready, see https://crbug.com/1116201-->
