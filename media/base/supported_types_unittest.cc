@@ -156,28 +156,6 @@ TEST(SupportedTypesTest, IsSupportedVideoType_VP9Matrix) {
   EXPECT_EQ(kSupportedMatrix.size(), num_found);
 }
 
-TEST(SupportedTypesTest, IsSupportedVideoType_VP9Profiles) {
-  // Default to common 709.
-  const VideoColorSpace kColorSpace = VideoColorSpace::REC709();
-
-  // Some codecs do not have a notion of level.
-  const int kUnspecifiedLevel = 0;
-
-  EXPECT_TRUE(IsSupportedVideoType(
-      {kCodecVP9, VP9PROFILE_PROFILE0, kUnspecifiedLevel, kColorSpace}));
-  EXPECT_TRUE(IsSupportedVideoType(
-      {kCodecVP9, VP9PROFILE_PROFILE1, kUnspecifiedLevel, kColorSpace}));
-
-// VP9 Profile2 are supported on x86, ChromeOS on ARM and Mac/Win on ARM64.
-// See third_party/libvpx/BUILD.gn.
-#if defined(ARCH_CPU_X86_FAMILY) ||                           \
-    (defined(ARCH_CPU_ARM_FAMILY) && defined(OS_CHROMEOS)) || \
-    (defined(ARCH_CPU_ARM64) && (defined(OS_MAC) || defined(OS_WIN)))
-  EXPECT_TRUE(IsSupportedVideoType(
-      {kCodecVP9, VP9PROFILE_PROFILE2, kUnspecifiedLevel, kColorSpace}));
-#endif
-}
-
 TEST(SupportedTypesTest, IsSupportedAudioTypeWithSpatialRenderingBasics) {
   const bool is_spatial_rendering = true;
   // Dolby Atmos = E-AC3 (Dolby Digital Plus) + spatialRendering. Currently not
