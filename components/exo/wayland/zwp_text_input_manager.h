@@ -7,22 +7,26 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
-
 struct wl_client;
 
 namespace exo {
+class XkbTracker;
+
 namespace wayland {
 class SerialTracker;
 
 struct WaylandTextInputManager {
-  WaylandTextInputManager(SerialTracker* serial_tracker)
-      : serial_tracker(serial_tracker) {}
+  WaylandTextInputManager(const XkbTracker* xkb_tracker,
+                          SerialTracker* serial_tracker)
+      : xkb_tracker(xkb_tracker), serial_tracker(serial_tracker) {}
+  WaylandTextInputManager(const WaylandTextInputManager&) = delete;
+  WaylandTextInputManager& operator=(const WaylandTextInputManager&) = delete;
+
+  // Owned by Seat, which also always outlives zwp_text_input_manager.
+  const XkbTracker* const xkb_tracker;
 
   // Owned by Server, which always outlives zwp_text_input_manager.
   SerialTracker* const serial_tracker;
-
-  DISALLOW_COPY_AND_ASSIGN(WaylandTextInputManager);
 };
 
 void bind_text_input_manager(wl_client* client,

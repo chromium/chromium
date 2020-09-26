@@ -14,6 +14,7 @@
 #include "components/exo/text_input.h"
 #include "components/exo/wayland/serial_tracker.h"
 #include "components/exo/wayland/server_util.h"
+#include "components/exo/xkb_tracker.h"
 #include "ui/events/event.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 
@@ -29,8 +30,11 @@ namespace {
 class WaylandTextInputDelegate : public TextInput::Delegate {
  public:
   WaylandTextInputDelegate(wl_resource* text_input,
+                           const XkbTracker* xkb_tracker,
                            SerialTracker* serial_tracker)
-      : text_input_(text_input), serial_tracker_(serial_tracker) {}
+      : text_input_(text_input),
+        xkb_tracker_(xkb_tracker),
+        serial_tracker_(serial_tracker) {}
   ~WaylandTextInputDelegate() override = default;
 
   void set_surface(wl_resource* surface) { surface_ = surface; }
@@ -113,7 +117,8 @@ class WaylandTextInputDelegate : public TextInput::Delegate {
   }
 
   void SendKey(const ui::KeyEvent& event) override {
-    uint32_t code = ui::KeycodeConverter::DomCodeToNativeKeycode(event.code());
+    uint32_t keysym = xkb_tracker_->GetKeysym(
+        ui::KeycodeConverter::DomCodeToNativeKeycode(event.code()));
     bool pressed = (event.type() == ui::ET_KEY_PRESSED);
     // TODO(mukai): consolidate the definition of this modifiers_mask with other
     // similar ones in components/exo/keyboard.cc or arc_ime_service.cc.
@@ -127,7 +132,7 @@ class WaylandTextInputDelegate : public TextInput::Delegate {
     zwp_text_input_v1_send_keysym(
         text_input_, TimeTicksToMilliseconds(event.time_stamp()),
         serial_tracker_->GetNextSerial(SerialTracker::EventType::OTHER_EVENT),
-        code,
+        keysym,
         pressed ? WL_KEYBOARD_KEY_STATE_PRESSED
                 : WL_KEYBOARD_KEY_STATE_RELEASED,
         modifiers);
@@ -156,10 +161,12 @@ class WaylandTextInputDelegate : public TextInput::Delegate {
   wl_resource* text_input_;
   wl_resource* surface_ = nullptr;
 
+  // Owned by Seat, which is updated before calling the callbacks of this
+  // class.
+  const XkbTracker* const xkb_tracker_;
+
   // Owned by Server, which always outlives this delegate.
   SerialTracker* const serial_tracker_;
-
-  DISALLOW_COPY_AND_ASSIGN(WaylandTextInputDelegate);
 };
 
 void text_input_activate(wl_client* client,
@@ -353,7 +360,7 @@ void text_input_manager_create_text_input(wl_client* client,
   SetImplementation(
       text_input_resource, &text_input_v1_implementation,
       std::make_unique<TextInput>(std::make_unique<WaylandTextInputDelegate>(
-          text_input_resource, data->serial_tracker)));
+          text_input_resource, data->xkb_tracker, data->serial_tracker)));
 }
 
 const struct zwp_text_input_manager_v1_interface
