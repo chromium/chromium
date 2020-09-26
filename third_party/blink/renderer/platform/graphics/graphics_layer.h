@@ -246,6 +246,7 @@ class PLATFORM_EXPORT GraphicsLayer : public DisplayItemClient,
   size_t GetApproximateUnsharedMemoryUsage() const final;
 
   void UpdateShouldCreateLayersAfterPaint();
+  bool ComputeShouldCreateLayersAfterPaint() const;
 
   // Returns true if PaintController::PaintArtifact() changed and needs commit.
   bool PaintWithoutCommit(const IntRect* interest_rect = nullptr);

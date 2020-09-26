@@ -320,15 +320,29 @@ bool GraphicsLayer::Paint() {
 }
 
 void GraphicsLayer::UpdateShouldCreateLayersAfterPaint() {
-  should_create_layers_after_paint_ = false;
+  bool new_create_layers_after_paint = ComputeShouldCreateLayersAfterPaint();
+  if (new_create_layers_after_paint != should_create_layers_after_paint_) {
+    should_create_layers_after_paint_ = new_create_layers_after_paint;
+    // Depending on |should_create_layers_after_paint_|, raster invalidation
+    // will happen in via two different code paths. When it changes we need to
+    // fully invalidate because the incremental raster invalidations of these
+    // code paths will not work. Nor calling this->SetNeedsDisplay() because it
+    // will also clear PaintController which contains what we have just painted.
+    CcLayer().SetNeedsDisplay();
+    if (raster_invalidator_)
+      raster_invalidator_->ClearOldStates();
+  }
+}
+
+bool GraphicsLayer::ComputeShouldCreateLayersAfterPaint() const {
   if (!RuntimeEnabledFeatures::CompositeSVGEnabled())
-    return;
+    return false;
   if (!PaintsContentOrHitTest())
-    return;
+    return false;
   // Only layerize content under SVG for now. This requires that the SVG root
   // has a GraphicsLayer.
   if (!client_.IsSVGRoot())
-    return;
+    return false;
   const PaintChunkSubset paint_chunks =
       PaintChunkSubset(GetPaintController().PaintChunks());
   for (const auto& paint_chunk : paint_chunks) {
@@ -337,11 +351,10 @@ void GraphicsLayer::UpdateShouldCreateLayersAfterPaint() {
       continue;
     // TODO(pdr): Check for direct compositing reasons along the chain from
     // this state to the layer state.
-    if (chunk_state.HasDirectCompositingReasons()) {
-      should_create_layers_after_paint_ = true;
-      return;
-    }
+    if (chunk_state.HasDirectCompositingReasons())
+      return true;
   }
+  return false;
 }
 
 bool GraphicsLayer::PaintWithoutCommitForTesting(
