@@ -430,9 +430,6 @@ crbug.com/1050993 [ Linux ] virtual/gpu-rasterization/images/drag-image-descenda
 # Flaky test.
 crbug.com/1054894 [ Mac ] http/tests/images/image-decode-in-frame.html [ Pass Failure ]
 
-# Regression from crbug.com/109224.
-crbug.com/1128962 svg/filters/feDisplacementMap.svg [ Failure ]
-
 # Disabled for Skia roll (https://crbug.com/skia/10744).
 paint/invalidation/svg/feImage-multiple-targets-id-change.svg [ Skip ]
 paint/invalidation/svg/feImage-reference-invalidation.svg [ Skip ]
