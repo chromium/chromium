@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -15,6 +16,7 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/strings/grit/ui_strings.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/button.h"
@@ -39,6 +41,24 @@ constexpr int kLeftPaddingDip = 14;
 constexpr int kRightPaddingDip = 4;
 constexpr int kCellSpacingDip = 18;
 constexpr int kIconSizeDip = 20;
+
+// Link view used inside the privacy notice.
+class PrivacyLinkView : public views::Link {
+ public:
+  explicit PrivacyLinkView(const base::string16& title) : Link(title) {}
+
+  // views::View:
+  bool HandleAccessibleAction(const ui::AXActionData& action_data) override {
+    switch (action_data.action) {
+      case ax::mojom::Action::kFocus:
+        // Do nothing because the search box needs to keep focus.
+        return true;
+      default:
+        break;
+    }
+    return views::Link::HandleAccessibleAction(action_data);
+  }
+};
 
 }  // namespace
 
@@ -258,6 +278,11 @@ void PrivacyInfoView::InitText() {
       l10n_util::GetStringFUTF16(info_string_id_, link, &offset);
   text_view_ = AddChildView(std::make_unique<views::StyledLabel>());
   text_view_->SetText(text);
+  text_view_->SetAutoColorReadabilityEnabled(false);
+  // Assign a container role to the text view so that ChromeVox focuses on
+  // the inner text elements individually.
+  text_view_->GetViewAccessibility().OverrideRole(
+      ax::mojom::Role::kGenericContainer);
 
   views::StyledLabel::RangeStyleInfo style;
   style.override_color = gfx::kGoogleGrey900;
@@ -266,10 +291,9 @@ void PrivacyInfoView::InitText() {
   // Create a custom view for the link portion of the text. This allows an
   // underline font style to be applied when the link is focused. This is done
   // manually because default focus handling remains on the search box.
-  // TODO(crbug.com/1112714): Make ChromeVox recognise text_view as a link.
   views::StyledLabel::RangeStyleInfo link_style;
   link_style.disable_line_wrapping = true;
-  auto custom_view = std::make_unique<views::Link>(link);
+  auto custom_view = std::make_unique<PrivacyLinkView>(link);
   custom_view->set_callback(base::BindRepeating(&PrivacyInfoView::LinkClicked,
                                                 base::Unretained(this)));
   custom_view->SetEnabledColor(gfx::kGoogleBlue700);
@@ -278,9 +302,6 @@ void PrivacyInfoView::InitText() {
   text_view_->AddCustomView(std::move(custom_view));
   text_view_->AddStyleRange(gfx::Range(offset, offset + link.length()),
                             link_style);
-
-  text_view_->SetFocusBehavior(FocusBehavior::ALWAYS);
-  text_view_->SetAutoColorReadabilityEnabled(false);
 }
 
 void PrivacyInfoView::InitCloseButton() {

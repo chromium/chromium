@@ -43,6 +43,9 @@ class PrivacyInfoView : public SearchResultBaseView {
   bool SelectNextResultAction(bool reverse_tab_order) override;
   void NotifyA11yResultSelected() override;
 
+  virtual void LinkClicked() = 0;
+  virtual void CloseButtonPressed() = 0;
+
  protected:
   PrivacyInfoView(int info_string_id, int link_string_id);
 
@@ -54,9 +57,6 @@ class PrivacyInfoView : public SearchResultBaseView {
   void InitText();
   void InitCloseButton();
 
-  virtual void LinkClicked() = 0;
-  virtual void CloseButtonPressed() = 0;
-
   void UpdateLinkStyle();
 
   views::ImageView* info_icon_ = nullptr;       // Owned by view hierarchy.
@@ -65,7 +65,7 @@ class PrivacyInfoView : public SearchResultBaseView {
 
   const int info_string_id_;
   const int link_string_id_;
-  views::Link* link_view_;  // Not owned.
+  views::Link* link_view_ = nullptr;  // Not owned.
 
   // Indicates which of the privacy notice's actions is selected for keyboard
   // navigation.
