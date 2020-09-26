@@ -42,6 +42,7 @@ public class MockTabModel extends EmptyTabModel implements IncognitoTabModel {
     private final ArrayList<Tab> mTabs = new ArrayList<Tab>();
     private final boolean mIncognito;
     private final MockTabModelDelegate mDelegate;
+    private boolean mIsCurrentModel;
 
     public MockTabModel(boolean incognito, MockTabModelDelegate delegate) {
         mIncognito = incognito;
@@ -122,4 +123,13 @@ public class MockTabModel extends EmptyTabModel implements IncognitoTabModel {
 
     @Override
     public void removeIncognitoObserver(IncognitoTabModelObserver observer) {}
+
+    @Override
+    public boolean isCurrentModel() {
+        return mIsCurrentModel;
+    }
+
+    public void setAsCurrentModelForTesting() {
+        mIsCurrentModel = true;
+    }
 }

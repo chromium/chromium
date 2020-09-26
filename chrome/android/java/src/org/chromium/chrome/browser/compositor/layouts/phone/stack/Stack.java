@@ -24,6 +24,7 @@ import org.chromium.chrome.browser.compositor.layouts.components.LayoutTab;
 import org.chromium.chrome.browser.compositor.layouts.eventfilter.ScrollDirection;
 import org.chromium.chrome.browser.compositor.layouts.phone.StackLayoutBase;
 import org.chromium.chrome.browser.compositor.layouts.phone.stack.StackAnimation.OverviewAnimationType;
+import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabList;
@@ -450,6 +451,8 @@ public abstract class Stack {
      * @return Whether or not the TabList represented by this TabStackState should be displayed.
      */
     public boolean isDisplayable() {
+        if (mTabList == null) return false;
+
         return !mTabList.isIncognito() || (!mIsDying && mTabList.getCount() > 0);
     }
 
@@ -1714,6 +1717,8 @@ public abstract class Stack {
      *                     restored if we're calling this while the switcher is already visible.
      */
     private void createStackTabs(boolean restoreState) {
+        if (mTabList == null) return;
+
         final int count = mTabList.getCount();
         if (count == 0) {
             cleanupTabs();
@@ -2027,7 +2032,7 @@ public abstract class Stack {
     }
 
     protected void updateCurrentMode(@Orientation int orientation) {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.HORIZONTAL_TAB_SWITCHER_ANDROID)) {
+        if (CachedFeatureFlags.isEnabled(ChromeFeatureList.HORIZONTAL_TAB_SWITCHER_ANDROID)) {
             mCurrentMode = Orientation.LANDSCAPE;
         } else {
             mCurrentMode = orientation;

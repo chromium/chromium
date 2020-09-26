@@ -43,6 +43,7 @@ import org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack;
 import org.chromium.chrome.browser.compositor.layouts.phone.stack.StackTab;
 import org.chromium.chrome.browser.compositor.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.compositor.scene_layer.TabListSceneLayer;
+import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.tab.Tab;
@@ -226,7 +227,6 @@ public abstract class StackLayoutBase extends Layout {
     private final ViewGroup mViewContainer;
 
     private final GestureEventFilter mGestureEventFilter;
-    private final TabListSceneLayer mSceneLayer;
 
     private StackLayoutGestureHandler mGestureHandler;
 
@@ -236,6 +236,8 @@ public abstract class StackLayoutBase extends Layout {
     private final ObservableSupplier<BrowserControlsStateProvider> mBrowserControlsSupplier;
     private final BrowserControlsStateProvider.Observer mBrowserControlsObserver;
     private Callback<BrowserControlsStateProvider> mBrowserControlsSupplierObserver;
+    private TabListSceneLayer mSceneLayer;
+    private boolean mShowPending;
 
     private class StackLayoutGestureHandler implements GestureHandler {
         @Override
@@ -394,7 +396,7 @@ public abstract class StackLayoutBase extends Layout {
         mStacks = new ArrayList<Stack>();
         mStackRects = new ArrayList<RectF>();
         mViewContainer = new FrameLayout(getContext());
-        mSceneLayer = new TabListSceneLayer();
+
         mDpToPx = context.getResources().getDisplayMetrics().density;
         mBrowserControlsSupplier = browserControlsStateProviderSupplier;
         mBrowserControlsObserver = new BrowserControlsStateProvider.Observer() {
@@ -411,6 +413,14 @@ public abstract class StackLayoutBase extends Layout {
         mBrowserControlsSupplierObserver = (browserControlsStateProvider)
                 -> browserControlsStateProvider.addObserver(mBrowserControlsObserver);
         mBrowserControlsSupplier.addObserver(mBrowserControlsSupplierObserver);
+    }
+
+    public void initWithNative() {
+        ensureSceneLayerCreated();
+        if (mShowPending) {
+            mShowPending = false;
+            show(LayoutManager.time(), false);
+        }
     }
 
     @Override
@@ -441,7 +451,7 @@ public abstract class StackLayoutBase extends Layout {
      * switcher in both portrait and landscape mode) is enabled.
      */
     protected boolean isHorizontalTabSwitcherFlagEnabled() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.HORIZONTAL_TAB_SWITCHER_ANDROID);
+        return CachedFeatureFlags.isEnabled(ChromeFeatureList.HORIZONTAL_TAB_SWITCHER_ANDROID);
     }
 
     /**
@@ -526,7 +536,9 @@ public abstract class StackLayoutBase extends Layout {
     @Override
     public void setTabModelSelector(TabModelSelector modelSelector, TabContentManager manager) {
         super.setTabModelSelector(modelSelector, manager);
-        mSceneLayer.setTabModelSelector(modelSelector);
+        if (mSceneLayer != null) {
+            mSceneLayer.setTabModelSelector(modelSelector);
+        }
         resetScrollData();
 
         new TabModelSelectorTabModelObserver(mTabModelSelector) {
@@ -713,6 +725,10 @@ public abstract class StackLayoutBase extends Layout {
         super.onTabRestored(time, tabId);
         // Call show() so that new stack tabs and potentially new stacks get created.
         // TODO(twellington): add animation for showing the restored tab.
+        if (mSceneLayer == null) {
+            mShowPending = true;
+            return;
+        }
         show(time, false);
     }
 
@@ -1321,6 +1337,8 @@ public abstract class StackLayoutBase extends Layout {
 
     @Override
     protected void updateLayout(long time, long dt) {
+        if (mStacks.size() == 0) return;
+
         super.updateLayout(time, dt);
         boolean needUpdate = false;
 
@@ -1641,10 +1659,16 @@ public abstract class StackLayoutBase extends Layout {
         return mSceneLayer;
     }
 
+    private void ensureSceneLayerCreated() {
+        if (mSceneLayer != null) return;
+        mSceneLayer = new TabListSceneLayer();
+    }
+
     @Override
     protected void updateSceneLayer(RectF viewport, RectF contentViewport,
             LayerTitleCache layerTitleCache, TabContentManager tabContentManager,
             ResourceManager resourceManager, BrowserControlsStateProvider browserControls) {
+        ensureSceneLayerCreated();
         super.updateSceneLayer(viewport, contentViewport, layerTitleCache, tabContentManager,
                 resourceManager, browserControls);
         assert mSceneLayer != null;

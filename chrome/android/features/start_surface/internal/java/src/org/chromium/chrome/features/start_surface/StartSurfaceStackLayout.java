@@ -35,6 +35,7 @@ public class StartSurfaceStackLayout extends StackLayout {
         mIsInitialized = true;
 
         super.onFinishNativeInitialization();
+        super.initWithNative();
         mCoordinator.initWithNative();
     }
 
@@ -44,6 +45,9 @@ public class StartSurfaceStackLayout extends StackLayout {
         mCoordinator.initialize();
 
         mController.showOverview(false);
+        if (!mIsInitialized) {
+            return;
+        }
         super.show(time, animate);
     }
 

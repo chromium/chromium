@@ -56,6 +56,7 @@ public class ChromeCachedFlags {
                 ChromeFeatureList.CONDITIONAL_TAB_STRIP_ANDROID,
                 ChromeFeatureList.DOWNLOADS_AUTO_RESUMPTION_NATIVE,
                 ChromeFeatureList.HOMEPAGE_LOCATION_POLICY,
+                ChromeFeatureList.HORIZONTAL_TAB_SWITCHER_ANDROID,
                 ChromeFeatureList.IMMERSIVE_UI_MODE,
                 ChromeFeatureList.INSTANT_START,
                 ChromeFeatureList.INTEREST_FEED_CONTENT_SUGGESTIONS,
