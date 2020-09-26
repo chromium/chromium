@@ -7,6 +7,7 @@
     Exposed=Window,
     RuntimeEnabled=WebXRDepth
 ] interface XRDepthInformation {
+  [SameObject, MeasureAs=XRDepthInformationDataAttribute]
   readonly attribute Uint16Array data;
 
   readonly attribute unsigned long width;
@@ -14,6 +15,6 @@
 
   [SameObject] readonly attribute XRRigidTransform normTextureFromNormView;
 
-  [RaisesException]
+  [RaisesException, MeasureAs=XRDepthInformationGetDepth]
   float getDepth(unsigned long column, unsigned long row);
 };

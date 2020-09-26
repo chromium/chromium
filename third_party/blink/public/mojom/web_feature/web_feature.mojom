@@ -3010,6 +3010,10 @@ enum WebFeature {
   kIdentifiabilityStudyReserved3680 = 3680,
   kIdentifiabilityStudyReserved3681 = 3681,
   kUndeferrableThirdPartySubresourceRequestWithCookie = 3682,
+  kXRDepthSensing = 3683,
+  kXRFrameGetDepthInformation = 3684,
+  kXRDepthInformationGetDepth = 3685,
+  kXRDepthInformationDataAttribute = 3686,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

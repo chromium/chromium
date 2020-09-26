@@ -28814,6 +28814,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3047" label="PluginElementLoadedImage"/>
   <int value="3048" label="PluginElementLoadedExternal"/>
   <int value="3049" label="RenderSubtreeAttribute"/>
+  <int value="3050" label="ARIAAnnotations"/>
   <int value="3051" label="IntersectionObserverV2"/>
   <int value="3052" label="HeavyAdIntervention"/>
   <int value="3053" label="UserTimingL3"/>
@@ -29463,6 +29464,10 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3680" label="IdentifiabilityStudyReserved3680"/>
   <int value="3681" label="IdentifiabilityStudyReserved3681"/>
   <int value="3682" label="UndeferrableThirdPartySubresourceRequestWithCookie"/>
+  <int value="3683" label="XRDepthSensing"/>
+  <int value="3684" label="XRFrameGetDepthInformation"/>
+  <int value="3685" label="XRDepthInformationGetDepth"/>
+  <int value="3686" label="XRDepthInformationDataAttribute"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

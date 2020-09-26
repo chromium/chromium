@@ -254,6 +254,18 @@ const char* GetConsoleMessage(device::mojom::RequestSessionError error) {
   }
 }
 
+bool IsFeatureRequested(
+    device::mojom::XRSessionFeatureRequestStatus requestStatus) {
+  switch (requestStatus) {
+    case device::mojom::XRSessionFeatureRequestStatus::kOptionalAccepted:
+    case device::mojom::XRSessionFeatureRequestStatus::kRequired:
+      return true;
+    case device::mojom::XRSessionFeatureRequestStatus::kNotRequested:
+    case device::mojom::XRSessionFeatureRequestStatus::kOptionalRejected:
+      return false;
+  }
+}
+
 }  // namespace
 
 // Ensure that the inline session request is allowed, if not
@@ -484,6 +496,8 @@ void XRSystem::PendingRequestSessionQuery::ReportRequestSessionResult(
       GetFeatureRequestStatus(XRSessionFeature::REF_SPACE_UNBOUNDED, session);
   auto feature_request_dom_overlay =
       GetFeatureRequestStatus(XRSessionFeature::DOM_OVERLAY, session);
+  auto feature_request_depth_sensing =
+      GetFeatureRequestStatus(XRSessionFeature::DEPTH, session);
 
   ukm::builders::XR_WebXR_SessionRequest(ukm_source_id_)
       .SetMode(static_cast<int64_t>(mode_))
@@ -499,10 +513,20 @@ void XRSystem::PendingRequestSessionQuery::ReportRequestSessionResult(
   // If the session was successfully created and DOM overlay was requested,
   // count this as a use of the DOM overlay feature.
   if (session && status == SessionRequestStatus::kSuccess &&
-      feature_request_dom_overlay !=
-          device::mojom::XRSessionFeatureRequestStatus::kNotRequested) {
+      IsFeatureRequested(feature_request_dom_overlay)) {
+    DVLOG(2) << __func__ << ": DOM overlay was requested, logging a UseCounter";
     UseCounter::Count(session->GetExecutionContext(),
                       WebFeature::kXRDOMOverlay);
+  }
+
+  // If the session was successfully created and depth-sensing was requested,
+  // count this as a use of depth sensing feature.
+  if (session && status == SessionRequestStatus::kSuccess &&
+      IsFeatureRequested(feature_request_depth_sensing)) {
+    DVLOG(2) << __func__
+             << ": depth sensing was requested, logging a UseCounter";
+    UseCounter::Count(session->GetExecutionContext(),
+                      WebFeature::kXRDepthSensing);
   }
 
   if (session && metrics_recorder) {
