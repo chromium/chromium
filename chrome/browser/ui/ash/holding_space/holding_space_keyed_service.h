@@ -51,6 +51,9 @@ class HoldingSpaceKeyedService : public KeyedService,
   // Registers profile preferences for holding space.
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
+  // Get the time when holding space was first enabled.
+  static base::Time GetFirstEnabledTime(Profile* profile);
+
   // Adds a pinned file item identified by the provided file system URL.
   void AddPinnedFile(const storage::FileSystemURL& file_system_url);
 

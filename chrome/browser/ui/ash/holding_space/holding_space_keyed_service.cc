@@ -19,11 +19,17 @@
 #include "chrome/browser/ui/ash/holding_space/holding_space_persistence_delegate.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_util.h"
 #include "components/account_id/account_id.h"
+#include "components/pref_registry/pref_registry_syncable.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "storage/browser/file_system/file_system_url.h"
 
 namespace ash {
 
 namespace {
+
+// Preference path at which we store when holding space was enabled for the
+// first time.
+constexpr char kPrefPathFirstEnabledTime[] = "ash.holding_space.first_enabled";
 
 ProfileManager* GetProfileManager() {
   return g_browser_process->profile_manager();
@@ -62,7 +68,13 @@ HoldingSpaceKeyedService::~HoldingSpaceKeyedService() = default;
 // static
 void HoldingSpaceKeyedService::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
+  registry->RegisterTimePref(kPrefPathFirstEnabledTime, base::Time::Now());
   HoldingSpacePersistenceDelegate::RegisterProfilePrefs(registry);
+}
+
+// static
+base::Time HoldingSpaceKeyedService::GetFirstEnabledTime(Profile* profile) {
+  return profile->GetPrefs()->GetTime(kPrefPathFirstEnabledTime);
 }
 
 void HoldingSpaceKeyedService::AddPinnedFile(

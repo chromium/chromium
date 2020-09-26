@@ -723,6 +723,8 @@ TEST_F(HoldingSpaceKeyedServiceTest, RetrieveHistory) {
 
   content::MockDownloadManager* mock_download_manager = download_manager();
 
+  base::Time initial_testing_time = base::Time::Now();
+
   for (int i = 0; i < 3; ++i) {
     const base::FilePath download_item_virtual_path(
         "Download " + base::NumberToString(i) + ".png");
@@ -745,11 +747,16 @@ TEST_F(HoldingSpaceKeyedServiceTest, RetrieveHistory) {
     } else {
       EXPECT_CALL(*item, GetState())
           .WillOnce(testing::Return(download::DownloadItem::COMPLETE));
+      EXPECT_CALL(*item, GetEndTime())
+          .WillOnce(testing::Return(initial_testing_time +
+                                    base::TimeDelta::FromHours(1)));
     }
     download_items_mock.push_back(item.release());
   }
   EXPECT_CALL(*mock_download_manager, GetAllDownloads(testing::_))
       .WillOnce(testing::SetArgPointee<0>(download_items_mock));
+
+  holding_space_util::SetNowForTesting(initial_testing_time);
 
   TestingProfile* secondary_profile = CreateSecondaryProfile();
   ActivateSecondaryProfile();
@@ -846,41 +853,83 @@ TEST_F(HoldingSpaceKeyedServiceTest, RemoveOlderDownloads) {
   ScopedDownloadsMountPoint downloads_mount(GetProfile());
   ASSERT_TRUE(downloads_mount.IsValid());
 
-  std::vector<base::FilePath> virtual_paths;
-  std::vector<base::FilePath> full_paths;
   content::DownloadManager::DownloadVector download_items_mock;
+  base::Time initial_testing_time = base::Time::Now();
 
   content::MockDownloadManager* mock_download_manager = download_manager();
 
-  for (int i = 0; i < 3; ++i) {
-    const base::FilePath download_item_virtual_path(
-        "Download " + base::NumberToString(i) + ".png");
-    virtual_paths.push_back(download_item_virtual_path);
-    const base::FilePath download_item_full_path =
-        CreateFile(downloads_mount, download_item_virtual_path,
-                   "download " + base::NumberToString(i));
-    full_paths.push_back(download_item_full_path);
-    std::unique_ptr<download::MockDownloadItem> item(
-        CreateMockDownloadItem(download_item_full_path));
-    EXPECT_CALL(*item, GetState())
-        .WillOnce(testing::Return(download::DownloadItem::COMPLETE));
-    download_items_mock.push_back(item.release());
-  }
+  const base::FilePath download_item_virtual_path("Download.png");
+  const base::FilePath download_item_full_path =
+      CreateFile(downloads_mount, download_item_virtual_path, "download ");
+  std::unique_ptr<download::MockDownloadItem> item(
+      CreateMockDownloadItem(download_item_full_path));
+  EXPECT_CALL(*item, GetState())
+      .WillOnce(testing::Return(download::DownloadItem::COMPLETE));
+
+  // Set an end time one hour from before kMaxFileAge is met, so it is
+  // considered an older download.
+  EXPECT_CALL(*item, GetEndTime())
+      .WillOnce(testing::Return(initial_testing_time - kMaxFileAge -
+                                base::TimeDelta::FromHours(1)));
+  download_items_mock.push_back(item.get());
   EXPECT_CALL(*mock_download_manager, GetAllDownloads(testing::_))
       .WillOnce(testing::SetArgPointee<0>(download_items_mock));
 
-  // Set time to kMaxFileAge from current time, no downloads should be added.
-  holding_space_util::SetNowForTesting(base::Time::Now() + kMaxFileAge);
-
-  TestingProfile* secondary_profile = CreateSecondaryProfile();
+  // Set holding space first enabled time to 1 day before kMaxFileAge is met
+  // from now, so we can make sure downloads are being excluded due to file age
+  // limit, and not due to the holding space first enabled time.
+  TestingProfile* const secondary_profile = CreateSecondaryProfile(
+      base::BindLambdaForTesting([&](TestingPrefStore* pref_store) {
+        base::Time holding_space_start_time =
+            initial_testing_time - kMaxFileAge - base::TimeDelta::FromDays(1);
+        auto time_value = std::make_unique<base::Value>(base::NumberToString(
+            holding_space_start_time.ToDeltaSinceWindowsEpoch()
+                .InMicroseconds()));
+        pref_store->SetValueSilently(
+            "ash.holding_space.first_enabled", std::move(time_value),
+            PersistentPrefStore::DEFAULT_PREF_WRITE_FLAGS);
+      }));
   ActivateSecondaryProfile();
   HoldingSpaceModelAttachedWaiter(secondary_profile).Wait();
 
   HoldingSpaceModel* const model = HoldingSpaceController::Get()->model();
   ASSERT_EQ(0u, model->items().size());
+}
 
-  for (int i = 0; i < 3; ++i)
-    delete download_items_mock[i];
+TEST_F(HoldingSpaceKeyedServiceTest,
+       RemoveDownloadsBeforeHoldingSpaceFirstEnabled) {
+  // Create a test downloads mount point.
+  ScopedDownloadsMountPoint downloads_mount(GetProfile());
+  ASSERT_TRUE(downloads_mount.IsValid());
+
+  const base::FilePath download_item_virtual_path("Download.png");
+  const base::FilePath download_item_full_path =
+      CreateFile(downloads_mount, download_item_virtual_path, "download ");
+  std::unique_ptr<download::MockDownloadItem> item(
+      CreateMockDownloadItem(download_item_full_path));
+  EXPECT_CALL(*item, GetState())
+      .WillOnce(testing::Return(download::DownloadItem::COMPLETE));
+
+  // Create a file with a download time set to one hour before current time. The
+  // download will be older than holding space.
+  EXPECT_CALL(*item, GetEndTime())
+      .WillOnce(
+          testing::Return(base::Time::Now() - base::TimeDelta::FromHours(1)));
+          
+  content::DownloadManager::DownloadVector download_items_mock;
+  download_items_mock.push_back(item.get());
+
+  content::MockDownloadManager* mock_download_manager = download_manager();
+
+  EXPECT_CALL(*mock_download_manager, GetAllDownloads(testing::_))
+      .WillOnce(testing::SetArgPointee<0>(download_items_mock));
+
+  TestingProfile* const secondary_profile = CreateSecondaryProfile();
+  ActivateSecondaryProfile();
+  HoldingSpaceModelAttachedWaiter(secondary_profile).Wait();
+
+  HoldingSpaceModel* const model = HoldingSpaceController::Get()->model();
+  ASSERT_EQ(0u, model->items().size());
 }
 
 }  // namespace ash
