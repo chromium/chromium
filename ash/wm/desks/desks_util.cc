@@ -5,8 +5,10 @@
 #include "ash/wm/desks/desks_util.h"
 
 #include "ash/public/cpp/tablet_mode.h"
+#include "ash/shell.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_controller.h"
+#include "ash/wm/window_util.h"
 #include "ui/aura/window.h"
 
 namespace ash {
@@ -120,6 +122,17 @@ aura::Window* GetDeskContainerForContext(aura::Window* context) {
 bool ShouldDesksBarBeCreated() {
   return !TabletMode::Get()->InTabletMode() ||
          DesksController::Get()->desks().size() > 1;
+}
+
+ui::Compositor* GetSelectedCompositorForPerformanceMetrics() {
+  // Favor the compositor associated with the active window's root window (if
+  // any), or that of the primary root window.
+  auto* active_window = window_util::GetActiveWindow();
+  auto* selected_root = active_window && active_window->GetRootWindow()
+                            ? active_window->GetRootWindow()
+                            : Shell::GetPrimaryRootWindow();
+  DCHECK(selected_root);
+  return selected_root->layer()->GetCompositor();
 }
 
 }  // namespace desks_util

@@ -12,6 +12,7 @@
 namespace ash {
 
 class DesksController;
+class PresentationTimeRecorder;
 
 class DeskActivationAnimation : public DeskAnimationBase {
  public:
@@ -39,6 +40,9 @@ class DeskActivationAnimation : public DeskAnimationBase {
 
   // The switch source that requested this animation.
   const DesksSwitchSource switch_source_;
+
+  // Used to measure the presentation time of a continuous gesture swipe.
+  std::unique_ptr<PresentationTimeRecorder> presentation_time_recorder_;
 };
 
 class DeskRemovalAnimation : public DeskAnimationBase {

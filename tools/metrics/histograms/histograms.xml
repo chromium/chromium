@@ -10260,6 +10260,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Ash.Desks.AnimationSmoothness.DeskEndGesture" units="%"
+    expires_after="2021-09-16">
+  <owner>afakhry@chromium.org</owner>
+  <owner>sammiequon@chromium.org</owner>
+  <owner>tclaiborne@chromium.org</owner>
+  <summary>
+    When a four finger touchpad swipe has ended, an animation to the nearest
+    desk will occur. This histogram is emitted when that animation finishes.
+    100% represents ideally smooth 60 frames per second.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Desks.AnimationSmoothness.DeskRemoval" units="%"
     expires_after="M89">
   <owner>afakhry@chromium.org</owner>
@@ -10381,6 +10393,35 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     The number of windows on the fourth desk. Emitted when a desk is removed, or
     a window is moved to another desk.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Desks.PresentationTime.UpdateGesture" units="ms"
+    expires_after="2021-09-16">
+  <owner>afakhry@chromium.org</owner>
+  <owner>sammiequon@chromium.org</owner>
+  <owner>tclaiborne@chromium.org</owner>
+  <summary>
+    Presentation time in ms when a four finger swipe is being used to change
+    desks. One full swipe results in multiple emissions of this metric; once
+    everytime the fingers change location on the trackpad. Presentation time is
+    the time it takes from when the software recognizes the touchpad swipe to
+    when the next frame is displayed on the screen.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Desks.PresentationTime.UpdateGesture.MaxLatency"
+    units="ms" expires_after="2021-09-16">
+  <owner>afakhry@chromium.org</owner>
+  <owner>sammiequon@chromium.org</owner>
+  <owner>tclaiborne@chromium.org</owner>
+  <summary>
+    The largest presentation time value in ms for a single four finger swipe to
+    change desks. One full swipe results in one emission of this metric; its the
+    largest value of Ash.Desks.PresentationTime.UpdateGesture which is emitted
+    multiple times during a single full swipe. Presentation time is the time it
+    takes from when the software recognizes the touchpad swipe to when the next
+    frame is displayed on the frame.
   </summary>
 </histogram>
 

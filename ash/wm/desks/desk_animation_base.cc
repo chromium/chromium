@@ -7,27 +7,11 @@
 #include "ash/shell.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_controller.h"
-#include "ash/wm/window_util.h"
+#include "ash/wm/desks/desks_util.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/compositor/compositor.h"
 
 namespace ash {
-
-namespace {
-
-// Selects and returns the compositor to measure the animation smoothness.
-ui::Compositor* GetSelectedCompositorForAnimationSmoothness() {
-  // Favor the compositor associated with the active window's root window (if
-  // any), or that of the primary root window.
-  auto* active_window = window_util::GetActiveWindow();
-  auto* selected_root = active_window && active_window->GetRootWindow()
-                            ? active_window->GetRootWindow()
-                            : Shell::GetPrimaryRootWindow();
-  DCHECK(selected_root);
-  return selected_root->layer()->GetCompositor();
-}
-
-}  // namespace
 
 DeskAnimationBase::DeskAnimationBase(DesksController* controller,
                                      int ending_desk_index,
@@ -35,8 +19,9 @@ DeskAnimationBase::DeskAnimationBase(DesksController* controller,
     : controller_(controller),
       ending_desk_index_(ending_desk_index),
       is_continuous_gesture_animation_(is_continuous_gesture_animation),
-      throughput_tracker_(GetSelectedCompositorForAnimationSmoothness()
-                              ->RequestNewThroughputTracker()) {
+      throughput_tracker_(
+          desks_util::GetSelectedCompositorForPerformanceMetrics()
+              ->RequestNewThroughputTracker()) {
   DCHECK(controller_);
   DCHECK_LE(ending_desk_index_, int{controller_->desks().size()});
   DCHECK_GE(ending_desk_index_, 0);

@@ -10,10 +10,15 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ui/compositor/compositor.h"
 
 namespace aura {
 class Window;
 }  // namespace aura
+
+namespace ui {
+class Compositor;
+}  // namespace ui
 
 namespace ash {
 
@@ -50,6 +55,9 @@ ASH_EXPORT aura::Window* GetDeskContainerForContext(aura::Window* context);
 
 // Returns true if the DesksBar widget should be created in overview mode.
 ASH_EXPORT bool ShouldDesksBarBeCreated();
+
+// Selects and returns the compositor to measure performance metrics.
+ui::Compositor* GetSelectedCompositorForPerformanceMetrics();
 
 }  // namespace desks_util
 

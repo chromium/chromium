@@ -104,4 +104,4 @@ many windows. The windows are usually large textures and on top of that, we may
 need supporting UI (i.e. indicators, phantoms) which may also be large and need
 to be animated. This can lead to poor performance on low end devices. If the
 feature has many large moving parts, consider adding metrics (`ThroughputTracker` ,
-`PresentationRecorder`), adding a tast test and monitoring the dashboards.
+`PresentationTimeRecorder`), adding a tast test and monitoring the dashboards.

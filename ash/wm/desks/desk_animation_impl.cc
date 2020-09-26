@@ -5,10 +5,12 @@
 #include "ash/wm/desks/desk_animation_impl.h"
 
 #include "ash/public/cpp/ash_features.h"
+#include "ash/public/cpp/presentation_time_recorder.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_histogram_enums.h"
+#include "ash/wm/desks/desks_util.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/window_util.h"
@@ -22,6 +24,19 @@ constexpr char kDeskActivationSmoothnessHistogramName[] =
     "Ash.Desks.AnimationSmoothness.DeskActivation";
 constexpr char kDeskRemovalSmoothnessHistogramName[] =
     "Ash.Desks.AnimationSmoothness.DeskRemoval";
+
+// Measures the presentation time during a continuous gesture animation. This is
+// the time from when we receive an Update request to the time the next frame is
+// presented.
+constexpr char kDeskUpdateGestureHistogramName[] =
+    "Ash.Desks.PresentationTime.UpdateGesture";
+constexpr char kDeskUpdateGestureMaxLatencyHistogramName[] =
+    "Ash.Desks.PresentationTime.UpdateGesture.MaxLatency";
+
+// The user ends a gesture swipe and triggers an animation to the closest desk.
+// This histogram measures the smoothness of that animation.
+constexpr char kDeskEndGestureSmoothnessHistogramName[] =
+    "Ash.Desks.AnimationSmoothness.DeskEndGesture";
 
 bool IsForContinuousGestures(DesksSwitchSource source) {
   return source == DesksSwitchSource::kDeskSwitchTouchpad &&
@@ -40,7 +55,11 @@ DeskActivationAnimation::DeskActivationAnimation(DesksController* controller,
     : DeskAnimationBase(controller,
                         ending_desk_index,
                         IsForContinuousGestures(source)),
-      switch_source_(source) {
+      switch_source_(source),
+      presentation_time_recorder_(CreatePresentationTimeHistogramRecorder(
+          desks_util::GetSelectedCompositorForPerformanceMetrics(),
+          kDeskUpdateGestureHistogramName,
+          kDeskUpdateGestureMaxLatencyHistogramName)) {
   for (auto* root : Shell::GetAllRootWindows()) {
     desk_switch_animators_.emplace_back(
         std::make_unique<RootWindowDeskSwitchAnimator>(
@@ -104,6 +123,12 @@ bool DeskActivationAnimation::UpdateSwipeAnimation(float scroll_delta_x) {
   if (!is_continuous_gesture_animation_)
     return false;
 
+  // Do not log any EndSwipeAnimation smoothness metrics if the animation has
+  // been canceled midway by an UpdateSwipeAnimation call.
+  throughput_tracker_.Cancel();
+
+  presentation_time_recorder_->RequestNext();
+
   // List of animators that need a screenshot. It should be either empty or
   // match the size of |desk_switch_animators_| as all the animations should be
   // in sync.
@@ -131,6 +156,14 @@ bool DeskActivationAnimation::UpdateSwipeAnimation(float scroll_delta_x) {
 bool DeskActivationAnimation::EndSwipeAnimation() {
   if (!is_continuous_gesture_animation_)
     return false;
+
+  // Start tracking the animation smoothness after the continuous gesture swipe
+  // has ended.
+  throughput_tracker_.Start(
+      metrics_util::ForSmoothness(base::BindRepeating([](int smoothness) {
+        UMA_HISTOGRAM_PERCENTAGE(kDeskEndGestureSmoothnessHistogramName,
+                                 smoothness);
+      })));
 
   // End the animation. The animator will determine which desk to animate to,
   // and update their ending desk index. When the animation is finished we will

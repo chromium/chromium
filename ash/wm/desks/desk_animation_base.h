@@ -46,7 +46,7 @@ class DeskAnimationBase : public RootWindowDeskSwitchAnimator::Delegate {
   virtual bool UpdateSwipeAnimation(float scroll_delta_x);
 
   // Ends a current animation, animating to a desk determined by the
-  // implementatiaion. Returns false if the animation does not support ending.
+  // implementation. Returns false if the animation does not support ending.
   virtual bool EndSwipeAnimation();
 
   // RootWindowDeskSwitchAnimator::Delegate:
@@ -84,7 +84,6 @@ class DeskAnimationBase : public RootWindowDeskSwitchAnimator::Delegate {
   // OnEndingDeskScreenshotTaken is called.
   const bool is_continuous_gesture_animation_;
 
- private:
   // ThroughputTracker used for measuring this animation smoothness.
   ui::ThroughputTracker throughput_tracker_;
 };
