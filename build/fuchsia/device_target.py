@@ -140,10 +140,6 @@ class DeviceTarget(target.Target):
                              '-F',
                              help='The path to the SSH configuration used for '
                              'connecting to the target device.')
-    device_args.add_argument('--fuchsia-out-dir',
-                             help='Path to a Fuchsia build output directory. '
-                             'Equivalent to setting --ssh_config and '
-                             '--os-check=ignore')
     device_args.add_argument(
         '--os-check',
         choices=['check', 'update', 'ignore'],

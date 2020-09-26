@@ -107,6 +107,11 @@ def AddCommonArgs(arg_parser):
   common_args.add_argument('--verbose', '-v', default=False,
                            action='store_true',
                            help='Enable debug-level logging.')
+  common_args.add_argument('--fuchsia-out-dir',
+                           nargs='+',
+                           help='Path to a Fuchsia build output directory. '
+                           'If more than one outdir is supplied, the last one '
+                           'in the sequence will be used.')
 
 
 def ConfigureLogging(args):
