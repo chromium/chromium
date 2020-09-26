@@ -90,7 +90,7 @@ const char kBasicPrintShortcut[] = "(Ctrl+Shift+P)";
 
 #if !BUILDFLAG(OPTIMIZE_WEBUI)
 constexpr char kGeneratedPath[] =
-    "@out_folder@/gen/chrome/browser/resources/print_preview/";
+    "@out_folder@/gen/chrome/browser/resources/print_preview/preprocessed/";
 #endif
 
 PrintPreviewUI::TestDelegate* g_test_delegate = nullptr;

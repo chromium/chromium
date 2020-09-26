@@ -26,5 +26,13 @@ template("preprocess_grit") {
              rebase_path(invoker.out_folder, root_build_dir),
              "--in-files",
            ] + invoker.in_files + grit_defines
+
+    if (defined(invoker.out_manifest)) {
+      args += [
+        "--out-manifest",
+        rebase_path(invoker.out_manifest, root_build_dir),
+      ]
+      outputs += [ invoker.out_manifest ]
+    }
   }
 }

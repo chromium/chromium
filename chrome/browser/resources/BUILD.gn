@@ -574,15 +574,20 @@ if (enable_print_preview) {
       "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
     ]
 
+    defines = chrome_grit_defines
     if (optimize_webui) {
       source = "print_preview/print_preview_resources_vulcanized.grd"
       deps = [ "//chrome/browser/resources/print_preview:build" ]
     } else {
-      source = "print_preview/print_preview_resources.grd"
-      deps = [ "//chrome/browser/resources/print_preview/ui:web_components" ]
+      # These arguments are needed since the grd is generated at build time.
+      enable_input_discovery_for_gn_analyze = false
+      defines += [ "SHARED_INTERMEDIATE_DIR=" +
+                   rebase_path(root_gen_dir, root_build_dir) ]
+      print_gen_dir = "$root_gen_dir/chrome/browser/resources/print_preview"
+      source = "$print_gen_dir/print_preview_resources.grd"
+      deps = [ "//chrome/browser/resources/print_preview:build_grd" ]
     }
 
-    defines = chrome_grit_defines
     outputs = [
       "grit/print_preview_resources.h",
       "grit/print_preview_resources_map.cc",

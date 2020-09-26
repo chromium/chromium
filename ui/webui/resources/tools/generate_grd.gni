@@ -1,0 +1,26 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+template("generate_grd") {
+  action(target_name) {
+    script = "//ui/webui/resources/tools/generate_grd.py"
+
+    if (defined(invoker.deps)) {
+      deps = invoker.deps
+    }
+
+    inputs = invoker.manifest_files
+    outputs = [ invoker.out_grd ]
+
+    args = [
+             "--out-grd",
+             rebase_path(invoker.out_grd, root_build_dir),
+             "--grd-prefix",
+             invoker.grd_prefix,
+             "--root-gen-dir",
+             rebase_path(root_gen_dir, root_build_dir),
+             "--manifest-files",
+           ] + rebase_path(invoker.manifest_files, root_build_dir)
+  }
+}

@@ -5,6 +5,7 @@
 import argparse
 import errno
 import io
+import json
 import os
 import sys
 
@@ -51,6 +52,7 @@ def main(argv):
   parser = argparse.ArgumentParser()
   parser.add_argument('--in-folder', required=True)
   parser.add_argument('--out-folder', required=True)
+  parser.add_argument('--out-manifest')
   parser.add_argument('--in-files', required=True, nargs="*")
   parser.add_argument('-D', '--defines', nargs="*", action='append')
   parser.add_argument('-E', '--environment')
@@ -67,6 +69,7 @@ def main(argv):
     defines[name] = val
 
   node = PreprocessNode.Construct(defines, args.target)
+
   for input_file in args.in_files:
     output = node.ProcessFile(os.path.join(in_folder, input_file))
 
@@ -83,6 +86,14 @@ def main(argv):
         raise
     with io.open(out_path, mode='wb') as f:
       f.write(output.encode('utf-8'))
+
+  if args.out_manifest:
+    manifest_data = {}
+    manifest_data['base_dir'] = '%s' % args.out_folder
+    manifest_data['files'] = args.in_files
+    manifest_file = open(
+        os.path.normpath(os.path.join(_CWD, args.out_manifest)), 'wb')
+    json.dump(manifest_data, manifest_file)
   return
 
 

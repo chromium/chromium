@@ -171,9 +171,9 @@
   "chrome/browser/resources/print_preview/print_preview_resources_vulcanized.grd": {
     "includes": [1700],
   },
-  "chrome/browser/resources/print_preview/print_preview_resources.grd": {
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/print_preview/print_preview_resources.grd": {
+    "META": {"sizes": {"includes": [500],}},
     "includes": [1720],
-    "structures": [1740],
   },
   "chrome/browser/resources/print_preview/print_preview_pdf_resources.grd": {
     "includes": [1750],
