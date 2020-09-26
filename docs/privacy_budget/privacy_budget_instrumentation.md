@@ -4,7 +4,7 @@ Refer to [Privacy Budget: Code Locations](privacy_budget_code_locations.md) for
 details on where the code is located.
 
 All instrumentation for the identifiability study is done via the API exposed in
-[`third_party/blink/public/common/privacy_budget`](../third_party/blink/public/common/privacy_budget).
+[`third_party/blink/public/common/privacy_budget`](../../third_party/blink/public/common/privacy_budget).
 
 Follow the instructions below for adding instrumentation for an API.
 
@@ -333,17 +333,17 @@ alters the observed characteristics of the API from what it really is.
 ***
 
 <!-- Sort (case insensitive), but don't line-wrap -->
-[`blink::Document`]: ../third_party/blink/renderer/core/dom/document.h
-[`blink::ExecutionContext`]: ../third_party/blink/renderer/core/execution_context/execution_context.h
-[`blink::IdentifiabilityStudySettings`]: ../third_party/blink/public/common/privacy_budget/identifiability_study_settings.h
-[`blink::IdentifiableSurface::Type`]: ../third_party/blink/public/common/privacy_budget/identifiable_surface.h
-[`blink::IdentifiableSurface`]: ../third_party/blink/public/common/privacy_budget/identifiable_surface.h
-[`identifiability_digest_helpers.h`]: ../third_party/blink/renderer/platform/privacy_budget/identifiability_digest_helpers.h
-[`identifiable_surface.h`]: ../third_party/blink/public/common/privacy_budget/identifiable_surface.h
-[`identifiable_token.h`]: ../third_party/blink/public/common/privacy_budget/identifiable_token.h
-[`Plugin`]: ../third_party/blink/renderer/modules/plugins/plugin.idl
-[`Screen`]: ../third_party/blink/renderer/core/frame/screen.idl
+[`blink::Document`]: ../../third_party/blink/renderer/core/dom/document.h
+[`blink::ExecutionContext`]: ../../third_party/blink/renderer/core/execution_context/execution_context.h
+[`blink::IdentifiabilityStudySettings`]: ../../third_party/blink/public/common/privacy_budget/identifiability_study_settings.h
+[`blink::IdentifiableSurface::Type`]: ../../third_party/blink/public/common/privacy_budget/identifiable_surface.h
+[`blink::IdentifiableSurface`]: ../../third_party/blink/public/common/privacy_budget/identifiable_surface.h
+[`identifiability_digest_helpers.h`]: ../../third_party/blink/renderer/platform/privacy_budget/identifiability_digest_helpers.h
+[`identifiable_surface.h`]: ../../third_party/blink/public/common/privacy_budget/identifiable_surface.h
+[`identifiable_token.h`]: ../../third_party/blink/public/common/privacy_budget/identifiable_token.h
+[`Plugin`]: ../../third_party/blink/renderer/modules/plugins/plugin.idl
+[`Screen`]: ../../third_party/blink/renderer/core/frame/screen.idl
 [direct surface]: privacy_budget_glossary.md#directsurface
 [volatile surface]: privacy_budget_glossary.md#volatilesurface
-[`HighEntropy`]: ../third_party/blink/renderer/bindings/IDLExtendedAttributes.md#HighEntropy_m_a_c
-[`Measure`]: ../third_party/blink/renderer/bindings/IDLExtendedAttributes.md#Measure_i_m_a_c
+[`HighEntropy`]: ../../third_party/blink/renderer/bindings/IDLExtendedAttributes.md#HighEntropy_m_a_c
+[`Measure`]: ../../third_party/blink/renderer/bindings/IDLExtendedAttributes.md#Measure_i_m_a_c

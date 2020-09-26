@@ -47,5 +47,5 @@ but whose change events can be correlated to join identities across browsing
 contexts.
 
 <!-- References go here. Keep them sorted. -->
-[`identifiable_surface.h`]: ../third_party/blink/public/common/privacy_budget/identifiable_surface.h
+[`identifiable_surface.h`]: ../../third_party/blink/public/common/privacy_budget/identifiable_surface.h
 [Surface Types]: privacy_budget_instrumentation.md#surface-types

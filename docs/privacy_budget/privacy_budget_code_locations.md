@@ -15,8 +15,8 @@ TODO(asanka): Link to study documents once they are checked in.
 
 Locations:
 
-* [`third_party/blink/public/common/privacy_budget`](../third_party/blink/public/common/privacy_budget)
-* [`third_party/blink/common/privacy_budget`](../third_party/blink/common/privacy_budget)
+* [`third_party/blink/public/common/privacy_budget`](../../third_party/blink/public/common/privacy_budget)
+* [`third_party/blink/common/privacy_budget`](../../third_party/blink/common/privacy_budget)
 
 Includes:
 
@@ -42,7 +42,7 @@ metrics so that they can be efficiently communicated across process boundaries.
 
 Locations:
 
-* [`third_party/blink/renderer/platform/privacy_budget`](../third_party/blink/renderer/platform/privacy_budget)
+* [`third_party/blink/renderer/platform/privacy_budget`](../../third_party/blink/renderer/platform/privacy_budget)
 
 Functions for constructing [`blink::IdentifiableToken`] values from
 `platform/wtf` types. E.g. `WTF::String`.
@@ -56,8 +56,8 @@ component can depend on. In particular:
   So it would be possible to add support for types in `platform/` in this
   directory.
 
-[`blink::IdentifiableToken`]: ../third_party/blink/public/common/privacy_budget/identifiable_token.h
-[platform/pb/deps]: ../third_party/blink/renderer/platform/privacy_budget/DEPS
+[`blink::IdentifiableToken`]: ../../third_party/blink/public/common/privacy_budget/identifiable_token.h
+[platform/pb/deps]: ../../third_party/blink/renderer/platform/privacy_budget/DEPS
 
 ## Metrics calculation for types used in bindings based instrumentation
 
@@ -67,18 +67,18 @@ WebIDL Bindings](privacy_budget_instrumentation.md#annotating-direct-surfaces).
 The generated bindings invoke `Dactyloscoper::RecordDirectSurface()` overrides
 for sampling and reporting. Hence support for types visible to
 `renderer/core/frame` lives in
-[`dactyloscoper.cc`/`.h`](../third_party/blink/renderer/core/frame/dactyloscoper.h)
+[`dactyloscoper.cc`/`.h`](../../third_party/blink/renderer/core/frame/dactyloscoper.h)
 
 ## Static study settings
 
 Locations:
 
-* [`chrome/common/privacy_budget`](../chrome/common/privacy_budget)
+* [`chrome/common/privacy_budget`](../../chrome/common/privacy_budget)
 
 Logic for accessing per-session settings based on externally supplied field
 trial configurations. The full set of externally controlled settings are
 in
-[`privacy_budget_features.h`](../chrome/common/privacy_budget/privacy_budget_features.h).
+[`privacy_budget_features.h`](../../chrome/common/privacy_budget/privacy_budget_features.h).
 
 At a high level, these settings control such things as:
 
@@ -94,8 +94,8 @@ reasons.
 ## Persistent study state and reporting
 
 Locations:
-* [`chrome/browser/privacy_budget`](../chrome/browser/privacy_budget)
-* [`chrome/test/data/privacy_budget`](../chrome/test/data/privacy_budget): Test data
+* [`chrome/browser/privacy_budget`](../../chrome/browser/privacy_budget)
+* [`chrome/test/data/privacy_budget`](../../chrome/test/data/privacy_budget): Test data
 
 Per-client state is primarily used and exposed by `IdentifiabilityStudyState`
-([Source](../chrome/browser/privacy_budget/identifiability_study_state.h)).
+([Source](../../chrome/browser/privacy_budget/identifiability_study_state.h)).
