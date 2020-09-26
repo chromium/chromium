@@ -153,6 +153,8 @@ template("generate_runner_script") {
 
     if (cros_is_vm) {
       args += [ "--use-vm" ]
+    } else {
+      args += [ "--flash" ]
     }
 
     # If we have public Chromium builds, use public Chromium OS images when
