@@ -4,7 +4,6 @@
 
 import("//build/config/ui.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
-import("//ui/ozone/ozone.gni")
 
 component("util") {
   output_name = "display_util"

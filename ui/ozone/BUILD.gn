@@ -129,11 +129,11 @@ component("ozone_base") {
     # Everyone should depend on //ui/ozone instead except a handful of
     # things that would otherwise create a cycle.
     "//chromeos/system:system",
+    "//ui/base/ime/chromeos/*",
     "//ui/events/ozone/*",
     "//ui/ozone/common/*",
-    "//ui/ozone/public/mojom",
     "//ui/ozone/platform/*",
-    "//ui/base/ime/chromeos/*",
+    "//ui/ozone/public/mojom",
   ]
 
   configs += [ "//third_party/khronos:khronos_headers" ]
@@ -315,4 +315,22 @@ if (ozone_platform_x11) {
 buildflag_header("buildflags") {
   header = "buildflags.h"
   flags = [ "OZONE_PLATFORM_X11=$ozone_platform_x11" ]
+}
+
+group("unittests") {
+  testonly = true
+
+  visibility += [ "*" ]
+
+  deps = [
+    ":ozone_unittests",
+    "//ui/ozone/gl:ozone_gl_unittests",
+  ]
+
+  if (ozone_platform_x11) {
+    deps += [
+      "//ui/ozone:ozone_x11_unittests",
+      "//ui/platform_window/x11:x11_unittests",
+    ]
+  }
 }

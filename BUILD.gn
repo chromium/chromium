@@ -29,7 +29,6 @@ import("//third_party/openh264/openh264_args.gni")
 import("//tools/ipc_fuzzer/ipc_fuzzer.gni")
 import("//ui/base/ui_features.gni")
 import("//ui/gl/features.gni")
-import("//ui/ozone/ozone.gni")
 import("//v8/gni/snapshot_toolchain.gni")
 import("//v8/gni/v8.gni")
 
@@ -294,17 +293,12 @@ group("gn_all") {
   if (use_ozone) {
     deps += [
       "//ui/ozone",
-      "//ui/ozone:ozone_unittests",
+      "//ui/ozone:unittests",
       "//ui/ozone/demo",
-      "//ui/ozone/gl:ozone_gl_unittests",
     ]
-
-    if (ozone_platform_x11) {
-      deps += [ "//ui/ozone:ozone_x11_unittests" ]
-    }
   }
 
-  if (use_x11 || ozone_platform_x11) {
+  if (use_x11) {
     deps += [ "//ui/platform_window/x11:x11_unittests" ]
   }
 

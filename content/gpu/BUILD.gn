@@ -5,7 +5,6 @@
 import("//build/config/ui.gni")
 import("//gpu/vulkan/features.gni")
 import("//media/media_options.gni")
-import("//ui/ozone/ozone.gni")
 
 # This file depends on the legacy global sources assignment filter. It should
 # be converted to check target platform before assigning source files to the

@@ -5,7 +5,6 @@
 import("//build/config/ui.gni")
 import("//gpu/vulkan/features.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
-import("//ui/ozone/ozone.gni")
 
 group("common") {
   if (is_component_build) {

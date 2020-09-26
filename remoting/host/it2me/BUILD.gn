@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/features.gni")
+import("//build/config/ui.gni")
 import("//remoting/remoting_locales.gni")
 import("//remoting/remoting_options.gni")
 import("//remoting/remoting_version.gni")
@@ -13,9 +14,6 @@ if (is_win) {
 if (is_mac) {
   import("//build/config/mac/rules.gni")
   import("//third_party/icu/config.gni")
-}
-if (is_chromeos) {
-  import("//ui/ozone/ozone.gni")
 }
 
 # This file depends on the legacy global sources assignment filter. It should

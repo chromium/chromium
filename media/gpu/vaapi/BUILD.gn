@@ -8,7 +8,6 @@ import("//media/gpu/args.gni")
 import("//testing/test.gni")
 import("//tools/generate_stubs/rules.gni")
 import("//ui/gl/features.gni")
-import("//ui/ozone/ozone.gni")
 
 assert(is_linux || is_chromeos)
 assert(use_vaapi)
@@ -173,7 +172,7 @@ source_set("common") {
     "//ui/gfx:memory_buffer",
     "//ui/gl",
   ]
-  if (ozone_platform_drm) {
+  if (use_ozone) {
     deps += [ "//ui/ozone" ]
   }
 

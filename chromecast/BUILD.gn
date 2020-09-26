@@ -10,7 +10,6 @@ import("//chromecast/build/tests/cast_test.gni")
 import("//chromecast/chromecast.gni")
 import("//media/media_options.gni")
 import("//tools/grit/repack.gni")
-import("//ui/ozone/ozone.gni")
 import("//v8/gni/v8.gni")
 
 if (chromecast_branding != "public") {
