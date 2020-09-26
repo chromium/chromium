@@ -4545,6 +4545,11 @@
     "expiry_milestone": 85
   },
   {
+    "name": "use-serial-bus-enumerator",
+    "owners": [ "reillyg" ],
+    "expiry_milestone": 89
+  },
+  {
     "name": "use-sync-sandbox",
     "owners": [ "//components/sync/OWNERS" ],
     // This flag is required for testing with the related

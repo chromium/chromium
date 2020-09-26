@@ -9,6 +9,7 @@
 #define SERVICES_DEVICE_PUBLIC_CPP_DEVICE_FEATURES_H_
 
 #include "base/feature_list.h"
+#include "build/build_config.h"
 #include "services/device/public/cpp/device_features_export.h"
 
 namespace features {
@@ -21,6 +22,10 @@ DEVICE_FEATURES_EXPORT extern const base::Feature
     kWinrtGeolocationImplementation;
 DEVICE_FEATURES_EXPORT extern const base::Feature
     kMacCoreLocationImplementation;
+
+#if defined(OS_WIN)
+DEVICE_FEATURES_EXPORT extern const base::Feature kUseSerialBusEnumerator;
+#endif  // defined(OS_WIN)
 
 }  // namespace features
 

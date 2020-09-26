@@ -3425,6 +3425,11 @@ const char kUseAngleD3D11[] = "D3D11";
 const char kUseAngleD3D9[] = "D3D9";
 const char kUseAngleD3D11on12[] = "D3D11on12";
 
+const char kUseSerialBusEnumeratorName[] = "Use system serial port enumerator";
+const char kUseSerialBusEnumeratorDescription[] =
+    "Use the system-supplied enumerator for serial port devices instead of "
+    "enumerating devices implementing the COM port interface.";
+
 const char kUseWinrtMidiApiName[] = "Use Windows Runtime MIDI API";
 const char kUseWinrtMidiApiDescription[] =
     "Use Windows Runtime MIDI API for WebMIDI (effective only on Windows 10 or "

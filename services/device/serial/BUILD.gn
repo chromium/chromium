@@ -62,6 +62,7 @@ if (is_win || ((is_linux || is_chromeos) && use_udev) || is_mac) {
       "//device/bluetooth/public/cpp",
       "//mojo/public/cpp/bindings",
       "//net",
+      "//services/device/public/cpp:device_features",
       "//services/device/public/cpp/bluetooth:bluetooth",
       "//services/device/public/cpp/serial:switches",
     ]
