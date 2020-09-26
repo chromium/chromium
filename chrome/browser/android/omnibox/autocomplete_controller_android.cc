@@ -55,6 +55,8 @@
 #include "components/open_from_clipboard/clipboard_recent_content.h"
 #include "components/prefs/pref_service.h"
 #include "components/query_tiles/android/tile_conversion_bridge.h"
+#include "components/query_tiles/switches.h"
+#include "components/query_tiles/tile_service.h"
 #include "components/search_engines/omnibox_focus_type.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/sessions/content/session_tab_helper.h"
@@ -203,8 +205,14 @@ void AutocompleteControllerAndroid::Start(
   input_.set_prefer_keyword(prefer_keyword);
   input_.set_allow_exact_keyword_match(allow_exact_keyword_match);
   input_.set_want_asynchronous_matches(want_asynchronous_matches);
-  if (!j_query_tile_id.is_null())
-    input_.set_query_tile_id(ConvertJavaStringToUTF8(env, j_query_tile_id));
+  if (!j_query_tile_id.is_null()) {
+    std::string tile_id = ConvertJavaStringToUTF8(env, j_query_tile_id);
+    input_.set_query_tile_id(tile_id);
+    if (base::FeatureList::IsEnabled(
+            query_tiles::features::kQueryTilesLocalOrdering)) {
+      provider_client_->GetQueryTileService()->OnTileClicked(tile_id);
+    }
+  }
   is_query_started_from_tiles_ = is_query_started_from_tiles;
   autocomplete_controller_->Start(input_);
 }
@@ -364,6 +372,18 @@ ScopedJavaLocalRef<jobject> AutocompleteControllerAndroid::
       match.search_terms_args.reset(new TemplateURLRef::SearchTermsArgs(query));
     } else {
       match.search_terms_args->search_terms = query;
+    }
+    if (match.type == AutocompleteMatchType::TILE_SUGGESTION &&
+        base::FeatureList::IsEnabled(
+            query_tiles::features::kQueryTilesLocalOrdering)) {
+      // If the search is from clicking on a tile, report the click
+      // so that we can adjust the ordering of the tiles later.
+      // Because we don't have tile Id here, pass parent tile's Id
+      // and the full query string to TileService to locate the Id.
+      // In future, we could simplify this by passing the last tile
+      // Id to native.
+      provider_client_->GetQueryTileService()->OnQuerySelected(
+          input_.query_tile_id(), query);
     }
   }
 

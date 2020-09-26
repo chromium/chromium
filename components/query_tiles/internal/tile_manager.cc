@@ -11,6 +11,7 @@
 #include "base/bind_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_split.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -242,6 +243,31 @@ class TileManagerImpl : public TileManager {
     // It's fine if |tile_stats_group_| is not saved, so no callback needs to
     // be passed to Update().
     store_->Update(kTileStatsGroup, *tile_stats_group_, base::DoNothing());
+  }
+
+  void OnQuerySelected(const base::Optional<std::string>& parent_tile_id,
+                       const base::string16& query_text) override {
+    if (!tile_group_)
+      return;
+
+    // Find the parent tile first. If it cannot be found, that's fine as the
+    // old tile score will be used.
+    std::vector<std::unique_ptr<Tile>>* tiles = &tile_group_->tiles;
+    if (parent_tile_id.has_value()) {
+      for (const auto& tile : tile_group_->tiles) {
+        if (tile->id == parent_tile_id.value()) {
+          tiles = &tile->sub_tiles;
+          break;
+        }
+      }
+    }
+    // Now check if a tile has the same query text.
+    for (const auto& tile : *tiles) {
+      if (query_text == base::UTF8ToUTF16(tile->query_text)) {
+        OnTileClicked(tile->id);
+        break;
+      }
+    }
   }
 
   // Indicates if the db is fully initialized, rejects calls if not.

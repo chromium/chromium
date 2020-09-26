@@ -239,7 +239,9 @@ class AutocompleteInput {
 
   // Returns the ID of the query tile selected by the user, if any.
   // If no tile was selected, returns base::nullopt.
-  base::Optional<std::string> query_tile_id() const { return query_tile_id_; }
+  const base::Optional<std::string>& query_tile_id() const {
+    return query_tile_id_;
+  }
 
   // Called to indicate that the query tile represented by |tile_id| was
   // clicked by the user. In the absence of a |query_tile_id_|, top level tiles

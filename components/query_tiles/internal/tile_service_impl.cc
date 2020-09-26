@@ -145,6 +145,12 @@ void TileServiceImpl::OnTileClicked(const std::string& tile_id) {
   tile_manager_->OnTileClicked(tile_id);
 }
 
+void TileServiceImpl::OnQuerySelected(
+    const base::Optional<std::string>& parent_tile_id,
+    const base::string16& query_text) {
+  tile_manager_->OnQuerySelected(std::move(parent_tile_id), query_text);
+}
+
 Logger* TileServiceImpl::GetLogger() {
   return logger_.get();
 }

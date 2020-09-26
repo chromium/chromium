@@ -56,6 +56,12 @@ class TileManager {
   // Called when a tile is clicked.
   virtual void OnTileClicked(const std::string& tile_id) = 0;
 
+  // Called when the final query is formed. |parent_tile_id| is the parent
+  // Id of the last tile, if it exists.
+  virtual void OnQuerySelected(
+      const base::Optional<std::string>& parent_tile_id,
+      const base::string16& query_text) = 0;
+
   TileManager();
   virtual ~TileManager() = default;
 

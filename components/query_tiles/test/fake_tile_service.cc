@@ -105,6 +105,10 @@ void FakeTileService::SetServerUrl(const std::string& url) {}
 
 void FakeTileService::OnTileClicked(const std::string& url) {}
 
+void FakeTileService::OnQuerySelected(
+    const base::Optional<std::string>& parent_tile_id,
+    const base::string16& query_text) {}
+
 Logger* FakeTileService::GetLogger() {
   return nullptr;
 }
