@@ -71,7 +71,6 @@ class PLATFORM_EXPORT FontFallbackList : public RefCounted<FontFallbackList> {
   // revalidate a FontFallbackList, but create a new FontFallbackList instead.
   void RevalidateDeprecated();
 
-  bool LoadingCustomFonts() const;
   bool ShouldSkipDrawing() const;
 
   FontSelector* GetFontSelector() const { return font_selector_.Get(); }

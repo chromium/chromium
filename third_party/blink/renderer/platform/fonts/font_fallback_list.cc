@@ -80,13 +80,6 @@ void FontFallbackList::ReleaseFontData() {
   shape_cache_.reset();  // Clear the weak pointer to the cache instance.
 }
 
-bool FontFallbackList::LoadingCustomFonts() const {
-  // This function is only used for style and layout invalidation purposes. We
-  // don't need it for invalidation when the feature below is enabled.
-  // TODO(xiaochengh): Remove this function.
-  return false;
-}
-
 bool FontFallbackList::ShouldSkipDrawing() const {
   // The DCHECK hit will be fixed by the runtime enabled feature below, so we
   // don't fix it in the legacy code paths.

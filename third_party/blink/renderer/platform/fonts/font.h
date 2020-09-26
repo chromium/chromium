@@ -232,7 +232,6 @@ class PLATFORM_EXPORT Font {
 
   void WillUseFontData(const String& text) const;
 
-  bool LoadingCustomFonts() const;
   bool IsFallbackValid() const;
 
   bool ShouldSkipDrawing() const {

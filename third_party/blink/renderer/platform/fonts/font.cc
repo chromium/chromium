@@ -615,10 +615,6 @@ LayoutUnit Font::TabWidth(const TabSize& tab_size, LayoutUnit position) const {
   return distance_to_tab_stop;
 }
 
-bool Font::LoadingCustomFonts() const {
-  return font_fallback_list_ && font_fallback_list_->LoadingCustomFonts();
-}
-
 bool Font::IsFallbackValid() const {
   return !font_fallback_list_ || font_fallback_list_->IsValid();
 }

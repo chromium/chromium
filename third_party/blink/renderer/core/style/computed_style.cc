@@ -292,8 +292,7 @@ ComputedStyle::ComputeDifferenceIgnoringInheritedFirstLineStyle(
     return Difference::kDisplayAffectingDescendantStyles;
   if (!old_style.NonIndependentInheritedEqual(new_style))
     return Difference::kInherited;
-  if (!old_style.LoadingCustomFontsEqual(new_style) ||
-      old_style.JustifyItems() != new_style.JustifyItems())
+  if (old_style.JustifyItems() != new_style.JustifyItems())
     return Difference::kInherited;
   bool non_inherited_equal = old_style.NonInheritedEqual(new_style);
   if (!non_inherited_equal && old_style.ChildHasExplicitInheritance()) {
@@ -561,10 +560,6 @@ bool ComputedStyle::NonIndependentInheritedEqual(
     const ComputedStyle& other) const {
   return ComputedStyleBase::NonIndependentInheritedEqual(other) &&
          svg_style_->InheritedEqual(*other.svg_style_);
-}
-
-bool ComputedStyle::LoadingCustomFontsEqual(const ComputedStyle& other) const {
-  return GetFont().LoadingCustomFonts() == other.GetFont().LoadingCustomFonts();
 }
 
 bool ComputedStyle::NonInheritedEqual(const ComputedStyle& other) const {

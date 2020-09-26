@@ -48,10 +48,6 @@
         fields_to_diff: ["font"],
         methods_to_diff: [
           {
-            method: "FontInternal().LoadingCustomFonts()",
-            field_dependencies: ["font"]
-          },
-          {
             method: "TextTransform()",
             field_dependencies: ["text-transform"]
           },
