@@ -168,8 +168,6 @@ void OpenXrRenderLoop::InitializeDisplayInfo() {
     current_display_info_->left_eye = mojom::VREyeParameters::New();
   }
 
-  current_display_info_->id = device::mojom::XRDeviceId::OPENXR_DEVICE_ID;
-
   gfx::Size view_size = openxr_->GetViewSize();
   current_display_info_->left_eye->render_width = view_size.width();
   current_display_info_->right_eye->render_width = view_size.width();

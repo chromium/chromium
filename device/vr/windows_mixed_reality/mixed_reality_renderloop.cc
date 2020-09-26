@@ -671,8 +671,6 @@ bool MixedRealityRenderLoop::UpdateDisplayInfo() {
 
   if (!current_display_info_) {
     current_display_info_ = mojom::VRDisplayInfo::New();
-    current_display_info_->id =
-        device::mojom::XRDeviceId::WINDOWS_MIXED_REALITY_ID;
     changed = true;
   }
 

@@ -27,9 +27,8 @@ namespace {
 // However our mojo interface expects display info right away to support WebVR.
 // We create a fake display info to use, then notify the client that the display
 // info changed when we get real data.
-mojom::VRDisplayInfoPtr CreateFakeVRDisplayInfo(device::mojom::XRDeviceId id) {
+mojom::VRDisplayInfoPtr CreateFakeVRDisplayInfo() {
   mojom::VRDisplayInfoPtr display_info = mojom::VRDisplayInfo::New();
-  display_info->id = id;
 
   display_info->left_eye = mojom::VREyeParameters::New();
   display_info->right_eye = mojom::VREyeParameters::New();
@@ -56,7 +55,7 @@ mojom::VRDisplayInfoPtr CreateFakeVRDisplayInfo(device::mojom::XRDeviceId id) {
 
 MixedRealityDevice::MixedRealityDevice()
     : VRDeviceBase(device::mojom::XRDeviceId::WINDOWS_MIXED_REALITY_ID) {
-  SetVRDisplayInfo(CreateFakeVRDisplayInfo(GetId()));
+  SetVRDisplayInfo(CreateFakeVRDisplayInfo());
 }
 
 MixedRealityDevice::~MixedRealityDevice() {

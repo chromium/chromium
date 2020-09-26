@@ -27,12 +27,6 @@ using gfx::Vector3dF;
 namespace {
 static constexpr int kDefaultPumpFrequencyHz = 60;
 
-mojom::VRDisplayInfoPtr CreateVRDisplayInfo(mojom::XRDeviceId id) {
-  mojom::VRDisplayInfoPtr display_info = mojom::VRDisplayInfo::New();
-  display_info->id = id;
-  return display_info;
-}
-
 display::Display::Rotation GetRotation() {
   display::Screen* screen = display::Screen::GetScreen();
   if (!screen) {
@@ -54,7 +48,7 @@ VROrientationDevice::VROrientationDevice(mojom::SensorProvider* sensor_provider,
                              base::BindOnce(&VROrientationDevice::SensorReady,
                                             base::Unretained(this)));
 
-  SetVRDisplayInfo(CreateVRDisplayInfo(GetId()));
+  SetVRDisplayInfo(mojom::VRDisplayInfo::New());
 }
 
 VROrientationDevice::~VROrientationDevice() {

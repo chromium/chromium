@@ -98,13 +98,10 @@ mojom::VREyeParametersPtr CreateEyeParamater(
   return eye_params;
 }
 
-mojom::VRDisplayInfoPtr CreateVRDisplayInfo(gvr::GvrApi* gvr_api,
-                                            mojom::XRDeviceId device_id) {
+mojom::VRDisplayInfoPtr CreateVRDisplayInfo(gvr::GvrApi* gvr_api) {
   TRACE_EVENT0("input", "GvrDelegate::CreateVRDisplayInfo");
 
   mojom::VRDisplayInfoPtr device = mojom::VRDisplayInfo::New();
-
-  device->id = device_id;
 
   gvr::BufferViewportList gvr_buffer_viewports =
       gvr_api->CreateEmptyBufferViewportList();
@@ -270,7 +267,7 @@ GvrDelegateProvider* GvrDevice::GetGvrDelegateProvider() {
 void GvrDevice::OnDisplayConfigurationChanged(JNIEnv* env,
                                               const JavaRef<jobject>& obj) {
   DCHECK(gvr_api_);
-  SetVRDisplayInfo(CreateVRDisplayInfo(gvr_api_.get(), GetId()));
+  SetVRDisplayInfo(CreateVRDisplayInfo(gvr_api_.get()));
 }
 
 void GvrDevice::Init(base::OnceCallback<void(bool)> on_finished) {
@@ -294,7 +291,7 @@ void GvrDevice::CreateNonPresentingContext() {
   jlong context = Java_NonPresentingGvrContext_getNativeGvrContext(
       env, non_presenting_context_);
   gvr_api_ = gvr::GvrApi::WrapNonOwned(reinterpret_cast<gvr_context*>(context));
-  SetVRDisplayInfo(CreateVRDisplayInfo(gvr_api_.get(), GetId()));
+  SetVRDisplayInfo(CreateVRDisplayInfo(gvr_api_.get()));
 
   if (paused_) {
     PauseTracking();
