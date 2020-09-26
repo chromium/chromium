@@ -797,9 +797,7 @@ def add_common_args(*parsers):
         'this dir will be added onto PATH in the device. WARNING: The '
         'arch of the device might not match the arch of the host, so '
         'avoid using "${platform}" when downloading vpython via CIPD.')
-    # TODO(bpastene): Switch all uses of "--vm-logs-dir" to "--logs-dir".
     parser.add_argument(
-        '--vm-logs-dir',
         '--logs-dir',
         type=str,
         dest='logs_dir',
