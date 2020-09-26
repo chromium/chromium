@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
-import {BrowserTabsModel, FeatureStatus, Notification, PhoneStatusModel} from './types.js';
+
+import {BrowserTabsModel, FeatureStatus, FindMyDeviceStatus, Notification, PhoneStatusModel, TetherStatus} from './types.js';
 
 /**
  * JavaScript hooks into the native WebUI handler for Phonehub tab.
@@ -23,6 +24,14 @@ export class MultidevicePhoneHubBrowserProxy {
    */
   setFeatureStatus(featureStatus) {
     chrome.send('setFeatureStatus', [featureStatus]);
+  }
+
+  /**
+   * Causes the onboarding flow to show if enabled.
+   * @param {boolean} shouldShowOnboardingFlow Whether to show onboarding flow.
+   */
+  setShowOnboardingFlow(shouldShowOnboardingFlow) {
+    chrome.send('setShowOnboardingFlow', [shouldShowOnboardingFlow]);
   }
 
   /**
@@ -65,6 +74,30 @@ export class MultidevicePhoneHubBrowserProxy {
    */
   removeNotification(notificationId) {
     chrome.send('removeNotification', [notificationId]);
+  }
+
+  /**
+   * Enables phone do not disturb.
+   * @param {boolean} enabled
+   */
+  enableDnd(enabled) {
+    chrome.send('enableDnd', [enabled]);
+  }
+
+  /**
+   * Enables phone ringing.
+   * @param {!FindMyDeviceStatus} findMyDeviceStatus
+   */
+  setFindMyDeviceStatus(findMyDeviceStatus) {
+    chrome.send('setFindMyDeviceStatus', [findMyDeviceStatus]);
+  }
+
+  /**
+   * Sets tether status.
+   * @param {!TetherStatus} tetherStatus
+   */
+  setTetherStatus(tetherStatus) {
+    chrome.send('setTetherStatus', [tetherStatus]);
   }
 }
 

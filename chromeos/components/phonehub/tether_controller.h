@@ -16,29 +16,31 @@ namespace phonehub {
 // Exposes Instant Tethering functionality to Phone Hub.
 class TetherController {
  public:
+  // Note: Numerical values should stay in sync with JS enums within the debug
+  // UI at //chrome/browser/resources/chromeos/multidevice_internals/types.js.
   enum class Status {
     // The device is ineligible for Instant Tethering, potentially due to the
     // flag being disabled (on Chrome OS or on the phone) or due to an
     // enterprise policy.
-    kIneligibleForFeature,
+    kIneligibleForFeature = 0,
 
     // Instant Tethering is available for use, but currently a connection is
     // unavailable. There are a variety of reasons why this may be the case:
     // the feature could have been disabled in settings, the phone may not have
     // cellular reception, or the phone may not have Google Play Services
     // notifications enabled, which are required for the feature.
-    kConnectionUnavailable,
+    kConnectionUnavailable = 1,
 
     // It is possible to connect, but no connection is active or in progress.
     // This state can occur if a previously-active connection has been
     // disconnected.
-    kConnectionAvailable,
+    kConnectionAvailable = 2,
 
     // Initiating an Instant Tethering connection.
-    kConnecting,
+    kConnecting = 3,
 
     // Connected via Instant Tethering.
-    kConnected
+    kConnected = 4
   };
 
   class Observer : public base::CheckedObserver {

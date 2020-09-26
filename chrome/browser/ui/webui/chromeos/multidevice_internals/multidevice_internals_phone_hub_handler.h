@@ -6,7 +6,10 @@
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_MULTIDEVICE_INTERNALS_MULTIDEVICE_INTERNALS_PHONE_HUB_HANDLER_H_
 
 #include "base/scoped_observer.h"
+#include "chromeos/components/phonehub/do_not_disturb_controller.h"
+#include "chromeos/components/phonehub/find_my_device_controller.h"
 #include "chromeos/components/phonehub/notification_manager.h"
+#include "chromeos/components/phonehub/tether_controller.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
 namespace chromeos {
@@ -20,7 +23,10 @@ namespace multidevice {
 // WebUIMessageHandler for chrome://multidevice-internals PhoneHub section.
 class MultidevicePhoneHubHandler
     : public content::WebUIMessageHandler,
-      public phonehub::NotificationManager::Observer {
+      public phonehub::NotificationManager::Observer,
+      public phonehub::DoNotDisturbController::Observer,
+      public phonehub::FindMyDeviceController::Observer,
+      public phonehub::TetherController::Observer {
  public:
   MultidevicePhoneHubHandler();
   MultidevicePhoneHubHandler(const MultidevicePhoneHubHandler&) = delete;
@@ -38,22 +44,45 @@ class MultidevicePhoneHubHandler
   void OnNotificationsRemoved(
       const base::flat_set<int64_t>& notification_ids) override;
 
+  // DoNotDisturbController::Observer
+  void OnDndStateChanged() override;
+
+  // FindMyDeviceController::Observer
+  void OnPhoneRingingStateChanged() override;
+
+  // TetherController::Observer
+  void OnTetherStatusChanged() override;
+
   void EnableRealPhoneHubManager();
   void EnableFakePhoneHubManager();
   void HandleEnableFakePhoneHubManager(const base::ListValue* args);
   void HandleSetFeatureStatus(const base::ListValue* args);
+  void HandleSetShowOnboardingFlow(const base::ListValue* args);
   void HandleSetFakePhoneName(const base::ListValue* args);
   void HandleSetFakePhoneStatus(const base::ListValue* args);
   void HandleSetBrowserTabs(const base::ListValue* args);
   void HandleSetNotification(const base::ListValue* args);
   void HandleRemoveNotification(const base::ListValue* args);
+  void HandleEnableDnd(const base::ListValue* args);
+  void HandleSetFindMyDeviceStatus(const base::ListValue* args);
+  void HandleSetTetherStatus(const base::ListValue* args);
 
+  void AddObservers();
   void RemoveObservers();
 
   std::unique_ptr<phonehub::FakePhoneHubManager> fake_phone_hub_manager_;
   ScopedObserver<phonehub::NotificationManager,
                  phonehub::NotificationManager::Observer>
       notification_manager_observer_{this};
+  ScopedObserver<phonehub::DoNotDisturbController,
+                 phonehub::DoNotDisturbController::Observer>
+      do_not_disturb_controller_observer_{this};
+  ScopedObserver<phonehub::FindMyDeviceController,
+                 phonehub::FindMyDeviceController::Observer>
+      find_my_device_controller_oberserver_{this};
+  ScopedObserver<phonehub::TetherController,
+                 phonehub::TetherController::Observer>
+      tether_controller_observer_{this};
 };
 
 }  // namespace multidevice

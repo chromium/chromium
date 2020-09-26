@@ -202,3 +202,50 @@ export let AppMetadata;
  * }}
  */
 export let Notification;
+
+/**
+ * Numerical values should not be changed because they must stay in sync with
+ * TetherController::Status in chromeos/components/phonehub/tether_controller.h.
+ * @enum{number}
+ */
+export const TetherStatus = {
+  INELIGIBLE_FOR_FEATURE: 0,
+  CONNETION_UNAVAILABLE: 1,
+  CONNECTION_AVAILABLE: 2,
+  CONNECTING: 3,
+  CONNECTED: 4,
+};
+
+/**
+ * Maps an TetherStatus to its title label in the dropdown.
+ * @type {!Map<TetherStatus, String>}
+ */
+export const tetherStatusToString = new Map([
+  [TetherStatus.INELIGIBLE_FOR_FEATURE, 'Ineligible for feature'],
+  [TetherStatus.CONNETION_UNAVAILABLE, 'Connection unavailable'],
+  [TetherStatus.CONNECTION_AVAILABLE, 'Connection available'],
+  [TetherStatus.CONNECTING, 'Connecting'],
+  [TetherStatus.CONNECTED, 'Connected'],
+]);
+
+/**
+ * Numerical values should not be changed because they must stay in sync with
+ * FindMyDeviceController::Status (TBA) in
+ * chromeos/components/phonehub/find_my_device_controller.h.
+ * @enum{number}
+ */
+export const FindMyDeviceStatus = {
+  NOT_AVAILABLE: 0,
+  OFF: 1,
+  ON: 2,
+};
+
+/**
+ * Maps an FindMyDeviceStatus to its title label in the dropdown.
+ * @type {!Map<FindMyDeviceStatus, String>}
+ */
+export const findMyDeviceStatusToString = new Map([
+  [FindMyDeviceStatus.NOT_AVAILABLE, 'Not Available'],
+  [FindMyDeviceStatus.OFF, 'Off'],
+  [FindMyDeviceStatus.ON, 'On'],
+]);

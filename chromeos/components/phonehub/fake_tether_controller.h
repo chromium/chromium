@@ -17,9 +17,10 @@ class FakeTetherController : public TetherController {
 
   void SetStatus(Status status);
 
- private:
   // TetherController:
   Status GetStatus() const override;
+
+ private:
   void ScanForAvailableConnection() override;
   void AttemptConnection() override;
   void Disconnect() override;

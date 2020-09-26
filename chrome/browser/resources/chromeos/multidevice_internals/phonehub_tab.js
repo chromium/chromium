@@ -12,6 +12,7 @@ import './phone_name_form.js';
 import './phone_status_model_form.js';
 import './notification_manager.js';
 import './shared_style.js';
+import './quick_action_controller_form.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush, html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -59,6 +60,13 @@ Polymer({
       observer: 'onShouldEnableFakePhoneHubManagerChanged_'
     },
 
+    /** @private */
+    shouldShowOnboardingFlow_: {
+      type: Boolean,
+      value: false,
+      observer: 'onShouldShowOnboardingFlowChanged_'
+    },
+
     /**
      * Must stay in order with FeatureStatus.
      * @private
@@ -93,6 +101,12 @@ Polymer({
     },
 
     /** @private */
+    canOnboardingFlowBeShown_: {
+      type: Boolean,
+      computed: 'canOnboardingFlowBeShownComputed_(featureStatus_)',
+    },
+
+    /** @private */
     isFeatureEnabledAndConnected_: {
       type: Boolean,
       computed: 'isFeatureEnabledAndConnectedComputed_(featureStatus_)',
@@ -105,6 +119,18 @@ Polymer({
   /** @override */
   created() {
     this.browserProxy_ = MultidevicePhoneHubBrowserProxy.getInstance();
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  canOnboardingFlowBeShownComputed_() {
+    if (this.featureStatus_ === FeatureStatus.DISABLED ||
+        this.featureStatus_ === FeatureStatus.ELIGIBLE_PHONE_BUT_NOT_SETUP) {
+      return true;
+    }
+    return false;
   },
 
   /**
@@ -140,6 +166,7 @@ Polymer({
     // Propgagate default values to fake PhoneHub manager.
     flush();
     this.onFeatureStatusSelected_();
+    this.onShouldShowOnboardingFlowChanged_();
   },
 
   /** @private */
@@ -161,6 +188,14 @@ Polymer({
   /** @private */
   onPhoneHubFlagButtonClick_() {
     window.open('chrome://flags/#enable-phone-hub');
+  },
+
+  /** @private */
+  onShouldShowOnboardingFlowChanged_() {
+    if (!this.shouldEnableFakePhoneHubManager_) {
+      return;
+    }
+    this.browserProxy_.setShowOnboardingFlow(this.shouldShowOnboardingFlow_);
   },
 
   /**

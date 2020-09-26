@@ -42,12 +42,24 @@
         <span class="emphasize">ENABLED_AND_CONNECTED</span>.
       </div>
     </div>
+    <template is="dom-if" if="[[canOnboardingFlowBeShown_]]" restamp>
+      <div class="cr-row">
+        <div class="cr-padded-text">
+          Toggle on to show Onboarding flow.
+        </div>
+        <cr-toggle checked="{{shouldShowOnboardingFlow_}}">
+        </cr-toggle>
+      </div>
+    </template>
     <template is="dom-if" if="[[isPhoneSetUp_]]" restamp>
       <div class="cr-row">
         <phone-name-form></phone-name-form>
       </div>
     </template>
     <template is="dom-if" if="[[isFeatureEnabledAndConnected_]]" restamp>
+      <div class="cr-row">
+        <quick-action-controller-form></quick-action-controller-form>
+      </div>
       <div class="cr-row">
         <phone-status-model-form></phone-status-model-form>
       </div>

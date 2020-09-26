@@ -139,6 +139,12 @@ void MultidevicePhoneHubHandler::RegisterMessages() {
                           base::Unretained(this)));
 
   web_ui()->RegisterMessageCallback(
+      "setShowOnboardingFlow",
+      base::BindRepeating(
+          &MultidevicePhoneHubHandler::HandleSetShowOnboardingFlow,
+          base::Unretained(this)));
+
+  web_ui()->RegisterMessageCallback(
       "setFakePhoneName",
       base::BindRepeating(&MultidevicePhoneHubHandler::HandleSetFakePhoneName,
                           base::Unretained(this)));
@@ -162,17 +168,65 @@ void MultidevicePhoneHubHandler::RegisterMessages() {
       "removeNotification",
       base::BindRepeating(&MultidevicePhoneHubHandler::HandleRemoveNotification,
                           base::Unretained(this)));
+
+  web_ui()->RegisterMessageCallback(
+      "enableDnd",
+      base::BindRepeating(&MultidevicePhoneHubHandler::HandleEnableDnd,
+                          base::Unretained(this)));
+
+  web_ui()->RegisterMessageCallback(
+      "setFindMyDeviceStatus",
+      base::BindRepeating(
+          &MultidevicePhoneHubHandler::HandleSetFindMyDeviceStatus,
+          base::Unretained(this)));
+
+  web_ui()->RegisterMessageCallback(
+      "setTetherStatus",
+      base::BindRepeating(&MultidevicePhoneHubHandler::HandleSetTetherStatus,
+                          base::Unretained(this)));
 }
 
 void MultidevicePhoneHubHandler::OnJavascriptDisallowed() {
   RemoveObservers();
 }
 
+void MultidevicePhoneHubHandler::AddObservers() {
+  notification_manager_observer_.Add(
+      fake_phone_hub_manager_->fake_notification_manager());
+  do_not_disturb_controller_observer_.Add(
+      fake_phone_hub_manager_->fake_do_not_disturb_controller());
+  find_my_device_controller_oberserver_.Add(
+      fake_phone_hub_manager_->fake_find_my_device_controller());
+  tether_controller_observer_.Add(
+      fake_phone_hub_manager_->fake_tether_controller());
+}
+
 void MultidevicePhoneHubHandler::RemoveObservers() {
-  auto* fake_notification_manager =
+  phonehub::FakeNotificationManager* fake_notification_manager =
       fake_phone_hub_manager_->fake_notification_manager();
   if (notification_manager_observer_.IsObserving(fake_notification_manager)) {
     notification_manager_observer_.Remove(fake_notification_manager);
+  }
+
+  phonehub::FakeDoNotDisturbController* fake_do_not_disturb_controller =
+      fake_phone_hub_manager_->fake_do_not_disturb_controller();
+  if (do_not_disturb_controller_observer_.IsObserving(
+          fake_do_not_disturb_controller)) {
+    do_not_disturb_controller_observer_.Remove(fake_do_not_disturb_controller);
+  }
+
+  phonehub::FakeFindMyDeviceController* fake_find_my_device_controller =
+      fake_phone_hub_manager_->fake_find_my_device_controller();
+  if (find_my_device_controller_oberserver_.IsObserving(
+          fake_find_my_device_controller)) {
+    find_my_device_controller_oberserver_.Remove(
+        fake_find_my_device_controller);
+  }
+
+  phonehub::FakeTetherController* fake_tether_controller =
+      fake_phone_hub_manager_->fake_tether_controller();
+  if (tether_controller_observer_.IsObserving(fake_tether_controller)) {
+    tether_controller_observer_.Remove(fake_tether_controller);
   }
 }
 
@@ -184,6 +238,57 @@ void MultidevicePhoneHubHandler::OnNotificationsRemoved(
   }
   FireWebUIListener("removed-notification-ids",
                     removed_notification_id_js_list);
+}
+
+void MultidevicePhoneHubHandler::OnDndStateChanged() {
+  bool is_dnd_enabled =
+      fake_phone_hub_manager_->fake_do_not_disturb_controller()->IsDndEnabled();
+  FireWebUIListener("is-dnd-enabled-changed", base::Value(is_dnd_enabled));
+}
+
+void MultidevicePhoneHubHandler::OnPhoneRingingStateChanged() {
+  // TODO(jimmyxgong): Change to casting the enum TBA to int.
+  bool is_ringing = fake_phone_hub_manager_->fake_find_my_device_controller()
+                        ->IsPhoneRinging();
+  int status_as_int = is_ringing ? 2 : 1;
+  FireWebUIListener("find-my-device-status-changed",
+                    base::Value(status_as_int));
+}
+
+void MultidevicePhoneHubHandler::OnTetherStatusChanged() {
+  int status_as_int = static_cast<int>(
+      fake_phone_hub_manager_->fake_tether_controller()->GetStatus());
+  FireWebUIListener("tether-status-changed", base::Value(status_as_int));
+}
+
+void MultidevicePhoneHubHandler::HandleEnableDnd(const base::ListValue* args) {
+  bool enabled = false;
+  CHECK(args->GetBoolean(0, &enabled));
+  PA_LOG(VERBOSE) << "Setting Do Not Disturb state to " << enabled;
+  fake_phone_hub_manager_->fake_do_not_disturb_controller()
+      ->SetDoNotDisturbState(enabled);
+}
+
+void MultidevicePhoneHubHandler::HandleSetFindMyDeviceStatus(
+    const base::ListValue* args) {
+  int status_as_int = 0;
+  CHECK(args->GetInteger(0, &status_as_int));
+
+  // TODO(jimmyxgong): Change to casting the enum TBA to int.
+  bool is_ringing = status_as_int == 2;
+  PA_LOG(VERBOSE) << "Setting phone ringing status to " << is_ringing;
+  fake_phone_hub_manager_->fake_find_my_device_controller()
+      ->SetPhoneRingingState(is_ringing);
+}
+
+void MultidevicePhoneHubHandler::HandleSetTetherStatus(
+    const base::ListValue* args) {
+  int status_as_int = 0;
+  CHECK(args->GetInteger(0, &status_as_int));
+
+  auto status = static_cast<phonehub::TetherController::Status>(status_as_int);
+  PA_LOG(VERBOSE) << "Setting tether status to " << status;
+  fake_phone_hub_manager_->fake_tether_controller()->SetStatus(status);
 }
 
 void MultidevicePhoneHubHandler::EnableRealPhoneHubManager() {
@@ -207,8 +312,7 @@ void MultidevicePhoneHubHandler::EnableFakePhoneHubManager() {
   PA_LOG(VERBOSE) << "Setting fake Phone Hub Manager";
   fake_phone_hub_manager_ = std::make_unique<phonehub::FakePhoneHubManager>();
   ash::SystemTray::Get()->SetPhoneHubManager(fake_phone_hub_manager_.get());
-  notification_manager_observer_.Add(
-      fake_phone_hub_manager_->fake_notification_manager());
+  AddObservers();
 }
 
 void MultidevicePhoneHubHandler::HandleEnableFakePhoneHubManager(
@@ -231,6 +335,15 @@ void MultidevicePhoneHubHandler::HandleSetFeatureStatus(
   auto feature = static_cast<phonehub::FeatureStatus>(feature_as_int);
   PA_LOG(VERBOSE) << "Setting feature status to " << feature;
   fake_phone_hub_manager_->fake_feature_status_provider()->SetStatus(feature);
+}
+
+void MultidevicePhoneHubHandler::HandleSetShowOnboardingFlow(
+    const base::ListValue* args) {
+  bool show_onboarding_flow = false;
+  CHECK(args->GetBoolean(0, &show_onboarding_flow));
+  PA_LOG(VERBOSE) << "Setting show onboarding flow to " << show_onboarding_flow;
+  fake_phone_hub_manager_->fake_onboarding_ui_tracker()
+      ->SetShouldShowOnboardingUi(show_onboarding_flow);
 }
 
 void MultidevicePhoneHubHandler::HandleSetFakePhoneName(

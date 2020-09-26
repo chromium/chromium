@@ -27,12 +27,6 @@
     flex: 4;
   }
 
-  .dropdown {
-    display: flex;
-    flex-direction: column;
-    padding: 5px;
-  }
-
   cr-input {
     padding: 5px;
   }
@@ -74,7 +68,7 @@
     <cr-input label="Package Name"
         value="{{notification.appMetadata.packageName}}" id="packageName">
     </cr-input>
-    <div class="dropdown">
+    <div class="label-top">
       <label>Icon Image Type</label>
       <select id="iconImageTypeSelector" class="md-select"
           on-change="onIconImageTypeSelected_">
@@ -85,7 +79,7 @@
         </template>
       </select>
     </div>
-    <div class="dropdown">
+    <div class="label-top">
       <label>Importance</label>
       <select id="importanceSelector" class="md-select"
           on-change="onImportanceSelected_">
@@ -110,7 +104,7 @@
     <cr-input label="Text Content (Optional)"
         value="{{notification.textContent}}" id="textContent">
     </cr-input>
-    <div class="dropdown">
+    <div class="label-top">
       <label>
         Shared Image Type (Optional)
       </label>
@@ -123,7 +117,7 @@
         </template>
       </select>
     </div>
-    <div class="dropdown">
+    <div class="label-top">
       <label>Contact Image Type (Optional)</label>
       <select id="contactImageSelector" class="md-select"
         on-change="onContactImageTypeSelected_">

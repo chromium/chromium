@@ -64,6 +64,10 @@
                file="${root_gen_dir}\chrome\browser\resources\chromeos\multidevice_internals\phone_status_model_form.js"
                use_base_dir="false"
                type="BINDATA"/>
+      <include name="IDR_MULTIDEVICE_INTERNALS_QUICK_ACTION_CONTROLLER_FORM_JS"
+               file="${root_gen_dir}\chrome\browser\resources\chromeos\multidevice_internals\quick_action_controller_form.js"
+               use_base_dir="false"
+               type="BINDATA"/>
       <include name="IDR_MULTIDEVICE_INTERNALS_SHARED_STYLE_JS"
                file="${root_gen_dir}\chrome\browser\resources\chromeos\multidevice_internals\shared_style.js"
                use_base_dir="false"

@@ -20,6 +20,7 @@ js_type_check("closure_compile") {
     ":phone_name_form",
     ":phone_status_model_form",
     ":phonehub_tab",
+    ":quick_action_controller_form",
     ":types",
   ]
 }
@@ -108,6 +109,14 @@ js_library("phone_status_model_form") {
   ]
 }
 
+js_library("quick_action_controller_form") {
+  deps = [
+    ":multidevice_phonehub_browser_proxy",
+    ":types",
+    "//ui/webui/resources/js:web_ui_listener_behavior.m",
+  ]
+}
+
 js_library("phonehub_tab") {
   deps = [
     ":browser_tabs_model_form",
@@ -115,6 +124,7 @@ js_library("phonehub_tab") {
     ":multidevice_phonehub_browser_proxy",
     ":notification_manager",
     ":phone_status_model_form",
+    ":quick_action_controller_form",
     ":types",
     "//ui/webui/resources/js:load_time_data.m",
   ]
@@ -133,6 +143,7 @@ html_to_js("web_components") {
     "multidevice_internals.js",
     "phonehub_tab.js",
     "phone_name_form.js",
+    "quick_action_controller_form.js",
     "phone_status_model_form.js",
     "shared_style.js",
     "browser_tabs_metadata_form.js",
