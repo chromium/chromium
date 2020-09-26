@@ -4,10 +4,7 @@
 
 #include "remoting/signaling/ftl_services_context.h"
 
-#include <utility>
-
 #include "base/guid.h"
-#include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "google_apis/google_api_keys.h"
 #include "remoting/base/service_urls.h"
@@ -18,32 +15,6 @@ namespace {
 
 constexpr char kChromotingAppIdentifier[] = "CRD";
 
-const net::BackoffEntry::Policy kBackoffPolicy = {
-    // Number of initial errors (in sequence) to ignore before applying
-    // exponential back-off rules.
-    0,
-
-    // Initial delay for exponential back-off in ms.
-    FtlServicesContext::kBackoffInitialDelay.InMilliseconds(),
-
-    // Factor by which the waiting time will be multiplied.
-    2,
-
-    // Fuzzing percentage. ex: 10% will spread requests randomly
-    // between 90%-100% of the calculated time.
-    0.5,
-
-    // Maximum amount of time we are willing to delay our request in ms.
-    FtlServicesContext::kBackoffMaxDelay.InMilliseconds(),
-
-    // Time to keep an entry from being discarded even when it
-    // has no significant state, -1 to never discard.
-    -1,
-
-    // Starts with initial delay.
-    false,
-};
-
 }  // namespace
 
 constexpr base::TimeDelta FtlServicesContext::kBackoffInitialDelay;
@@ -51,6 +22,32 @@ constexpr base::TimeDelta FtlServicesContext::kBackoffMaxDelay;
 
 // static
 const net::BackoffEntry::Policy& FtlServicesContext::GetBackoffPolicy() {
+  static const net::BackoffEntry::Policy kBackoffPolicy = {
+      // Number of initial errors (in sequence) to ignore before applying
+      // exponential back-off rules.
+      0,
+
+      // Initial delay for exponential back-off in ms.
+      kBackoffInitialDelay.InMilliseconds(),
+
+      // Factor by which the waiting time will be multiplied.
+      2,
+
+      // Fuzzing percentage. ex: 10% will spread requests randomly
+      // between 90%-100% of the calculated time.
+      0.5,
+
+      // Maximum amount of time we are willing to delay our request in ms.
+      kBackoffMaxDelay.InMilliseconds(),
+
+      // Time to keep an entry from being discarded even when it
+      // has no significant state, -1 to never discard.
+      -1,
+
+      // Starts with initial delay.
+      false,
+  };
+
   return kBackoffPolicy;
 }
 

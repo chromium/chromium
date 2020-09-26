@@ -38,7 +38,6 @@ _CROS_SI_FILE_ALLOWLIST = {
         'spinlock.cc',  # TODO(crbug.com/973556): Remove.
         'crash_report_private_api.cc',  # TODO(crbug.com/537099): Remove.
         'dlcservice_client.cc',  # TODO(crbug.com/537099): Remove.
-        'ftl_services_context.cc',  # TODO(crbug.com/537099): Remove.
         'hud_display.cc',  # TODO(crbug.com/537099): Remove.
         'int256.cc',  # TODO(crbug.com/537099): Remove.
         'native_message_host_chromeos.cc',  # TODO(crbug.com/537099): Remove.

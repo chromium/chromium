@@ -5,10 +5,9 @@
 #ifndef REMOTING_SIGNALING_FTL_SERVICES_CONTEXT_H_
 #define REMOTING_SIGNALING_FTL_SERVICES_CONTEXT_H_
 
-#include <memory>
 #include <string>
 
-#include "base/macros.h"
+#include "base/time/time.h"
 #include "net/base/backoff_entry.h"
 #include "remoting/proto/ftl/v1/ftl_messages.pb.h"
 
@@ -18,6 +17,7 @@ namespace remoting {
 // to FTL backend.
 class FtlServicesContext final {
  public:
+  // Exposed for testing.
   static constexpr base::TimeDelta kBackoffInitialDelay =
       base::TimeDelta::FromSeconds(1);
   static constexpr base::TimeDelta kBackoffMaxDelay =
@@ -30,8 +30,9 @@ class FtlServicesContext final {
   static ftl::RequestHeader CreateRequestHeader(
       const std::string& ftl_auth_token = {});
 
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(FtlServicesContext);
+  FtlServicesContext() = delete;
+  FtlServicesContext(const FtlServicesContext&) = delete;
+  FtlServicesContext& operator=(const FtlServicesContext&) = delete;
 };
 
 }  // namespace remoting
