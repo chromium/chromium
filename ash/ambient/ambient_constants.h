@@ -52,6 +52,8 @@ constexpr int kMarginLeftOfRelatedImageDip = 8;
 // Media string related.
 constexpr int kMediaStringMaxWidthDip = 280;
 
+constexpr int kMediaStringGradientWidthDip = 20;
+
 }  // namespace ash
 
 #endif  // ASH_AMBIENT_AMBIENT_CONSTANTS_H_

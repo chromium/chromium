@@ -21,8 +21,10 @@
 #include "services/media_session/public/mojom/media_session_service.mojom.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/paint_recorder.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/shadow_value.h"
+#include "ui/gfx/skia_paint_util.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/gfx/transform.h"
 #include "ui/views/border.h"
@@ -34,6 +36,63 @@
 namespace ash {
 
 namespace {
+
+// A layer delegate used for mask layer, with left and right gradient fading out
+// zones.
+class FadeoutLayerDelegate : public ui::LayerDelegate {
+ public:
+  explicit FadeoutLayerDelegate() : layer_(ui::LAYER_TEXTURED) {
+    layer_.set_delegate(this);
+    layer_.SetFillsBoundsOpaquely(false);
+  }
+
+  ~FadeoutLayerDelegate() override { layer_.set_delegate(nullptr); }
+
+  ui::Layer* layer() { return &layer_; }
+
+ private:
+  // ui::LayerDelegate:
+  void OnPaintLayer(const ui::PaintContext& context) override {
+    const gfx::Size& size = layer()->size();
+    gfx::Rect left_rect(0, 0, kMediaStringGradientWidthDip, size.height());
+    gfx::Rect right_rect(size.width() - kMediaStringGradientWidthDip, 0,
+                         kMediaStringGradientWidthDip, size.height());
+
+    views::PaintInfo paint_info =
+        views::PaintInfo::CreateRootPaintInfo(context, size);
+    const auto& prs = paint_info.paint_recording_size();
+
+    // Pass the scale factor when constructing PaintRecorder so the MaskLayer
+    // size is not incorrectly rounded (see https://crbug.com/921274).
+    ui::PaintRecorder recorder(context, paint_info.paint_recording_size(),
+                               static_cast<float>(prs.width()) / size.width(),
+                               static_cast<float>(prs.height()) / size.height(),
+                               nullptr);
+
+    gfx::Canvas* canvas = recorder.canvas();
+    // Clear the canvas.
+    canvas->DrawColor(SK_ColorBLACK, SkBlendMode::kSrc);
+    // Draw left gradient zone.
+    cc::PaintFlags flags;
+    flags.setBlendMode(SkBlendMode::kSrc);
+    flags.setAntiAlias(false);
+    flags.setShader(gfx::CreateGradientShader(
+        gfx::Point(), gfx::Point(kMediaStringGradientWidthDip, 0),
+        SK_ColorTRANSPARENT, SK_ColorBLACK));
+    canvas->DrawRect(left_rect, flags);
+
+    // Draw right gradient zone.
+    flags.setShader(gfx::CreateGradientShader(
+        gfx::Point(size.width() - kMediaStringGradientWidthDip, 0),
+        gfx::Point(size.width(), 0), SK_ColorBLACK, SK_ColorTRANSPARENT));
+    canvas->DrawRect(right_rect, flags);
+  }
+
+  void OnDeviceScaleFactorChanged(float old_device_scale_factor,
+                                  float new_device_scale_factor) override {}
+
+  ui::Layer layer_;
+};
 
 // Typography.
 constexpr char kMiddleDotSeparator[] = " \u00B7 ";
@@ -66,6 +125,10 @@ const char* MediaStringView::GetClassName() const {
 
 void MediaStringView::VisibilityChanged(View* starting_from, bool is_visible) {
   media_text_->layer()->GetAnimator()->StopAnimating();
+}
+
+void MediaStringView::OnViewBoundsChanged(views::View* observed_view) {
+  UpdateMaskLayer();
 }
 
 void MediaStringView::MediaSessionInfoChanged(
@@ -153,6 +216,7 @@ void MediaStringView::InitLayout() {
   text_layout->SetOrientation(views::LayoutOrientation::kHorizontal);
   text_layout->SetMainAxisAlignment(views::LayoutAlignment::kStart);
   text_layout->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
+  observed_view_.Add(media_text_container_);
 
   media_text_ =
       media_text_container_->AddChildView(std::make_unique<views::Label>());
@@ -196,6 +260,21 @@ void MediaStringView::BindMediaControllerObserver() {
   // Observe the active media controller for changes.
   media_controller_remote_->AddObserver(
       observer_receiver_.BindNewPipeAndPassRemote());
+}
+
+void MediaStringView::UpdateMaskLayer() {
+  if (!NeedToAnimate()) {
+    media_text_container_->layer()->SetMaskLayer(nullptr);
+    return;
+  }
+
+  if (!fadeout_layer_delegate_) {
+    fadeout_layer_delegate_ = std::make_unique<FadeoutLayerDelegate>();
+    fadeout_layer_delegate_->layer()->SetBounds(
+        media_text_container_->layer()->bounds());
+  }
+  media_text_container_->layer()->SetMaskLayer(
+      fadeout_layer_delegate_->layer());
 }
 
 bool MediaStringView::NeedToAnimate() const {

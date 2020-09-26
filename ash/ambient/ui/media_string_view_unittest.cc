@@ -251,6 +251,81 @@ TEST_F(MediaStringViewTest, PauseMediaWillStopAnimationWithLongText) {
       GetMediaStringViewTextLabel()->layer()->GetAnimator()->is_animating());
 }
 
+TEST_F(MediaStringViewTest, HasNoMaskLayerWithShortText) {
+  ShowAmbientScreen();
+
+  // Sets metadata for current session.
+  media_session::MediaMetadata metadata;
+  metadata.title = base::ASCIIToUTF16("title");
+  metadata.artist = base::ASCIIToUTF16("artist");
+
+  SimulateMediaMetadataChanged(metadata);
+  // Wait for layout.
+  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(100));
+
+  EXPECT_LT(GetMediaStringViewTextLabel()->GetPreferredSize().width(),
+            kMediaStringMaxWidthDip);
+  EXPECT_FALSE(GetMediaStringViewTextContainer()->layer()->layer_mask_layer());
+}
+
+TEST_F(MediaStringViewTest, HasMaskLayerWithLongText) {
+  ShowAmbientScreen();
+
+  // Sets metadata for current session.
+  media_session::MediaMetadata metadata;
+  metadata.title = base::ASCIIToUTF16("A super duper long title");
+  metadata.artist = base::ASCIIToUTF16("A super duper long artist name");
+
+  SimulateMediaMetadataChanged(metadata);
+  // Wait for layout.
+  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(100));
+
+  EXPECT_GT(GetMediaStringViewTextLabel()->GetPreferredSize().width(),
+            kMediaStringMaxWidthDip);
+  EXPECT_TRUE(GetMediaStringViewTextContainer()->layer()->layer_mask_layer());
+}
+
+TEST_F(MediaStringViewTest, MaskLayerShouldUpdate) {
+  ShowAmbientScreen();
+
+  // Sets metadata for current session.
+  media_session::MediaMetadata metadata;
+  metadata.title = base::ASCIIToUTF16("title");
+  metadata.artist = base::ASCIIToUTF16("artist");
+
+  SimulateMediaMetadataChanged(metadata);
+  // Wait for layout.
+  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(100));
+
+  EXPECT_LT(GetMediaStringViewTextLabel()->GetPreferredSize().width(),
+            kMediaStringMaxWidthDip);
+  EXPECT_FALSE(GetMediaStringViewTextContainer()->layer()->layer_mask_layer());
+
+  // Change to long text.
+  metadata.title = base::ASCIIToUTF16("A super duper long title");
+  metadata.artist = base::ASCIIToUTF16("A super duper long artist name");
+
+  SimulateMediaMetadataChanged(metadata);
+  // Wait for layout.
+  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(100));
+
+  EXPECT_GT(GetMediaStringViewTextLabel()->GetPreferredSize().width(),
+            kMediaStringMaxWidthDip);
+  EXPECT_TRUE(GetMediaStringViewTextContainer()->layer()->layer_mask_layer());
+
+  // Change to short text.
+  metadata.title = base::ASCIIToUTF16("title");
+  metadata.artist = base::ASCIIToUTF16("artist");
+
+  SimulateMediaMetadataChanged(metadata);
+  // Wait for layout.
+  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(100));
+
+  EXPECT_LT(GetMediaStringViewTextLabel()->GetPreferredSize().width(),
+            kMediaStringMaxWidthDip);
+  EXPECT_FALSE(GetMediaStringViewTextContainer()->layer()->layer_mask_layer());
+}
+
 TEST_F(MediaStringViewTest, ShowWhenMediaIsPlaying) {
   ShowAmbientScreen();
   EXPECT_FALSE(GetMediaStringView()->GetVisible());
