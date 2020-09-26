@@ -11,6 +11,7 @@
 #include "ash/system/holding_space/holding_space_item_view_delegate.h"
 #include "ash/system/tray/tray_background_view.h"
 #include "base/memory/weak_ptr.h"
+#include "ui/views/widget/widget_observer.h"
 
 namespace gfx {
 class Point;
@@ -29,7 +30,8 @@ class TrayBubbleWrapper;
 // The HoldingSpaceTray shows the tray button in the bottom area of the screen.
 // This class also controls the lifetime for all of the tools available in the
 // palette. HoldingSpaceTray has one instance per-display.
-class ASH_EXPORT HoldingSpaceTray : public TrayBackgroundView {
+class ASH_EXPORT HoldingSpaceTray : public TrayBackgroundView,
+                                    public views::WidgetObserver {
  public:
   explicit HoldingSpaceTray(Shelf* shelf);
   HoldingSpaceTray(const HoldingSpaceTray& other) = delete;
@@ -58,6 +60,9 @@ class ASH_EXPORT HoldingSpaceTray : public TrayBackgroundView {
   base::string16 GetAccessibleNameForBubble() override;
   bool ShouldEnableExtraKeyboardAccessibility() override;
   void HideBubble(const TrayBubbleView* bubble_view) override;
+
+  // views::WidgetObserver:
+  void OnWidgetDestroying(views::Widget* widget) override;
 
   // The singleton delegate for `HoldingSpaceItemView`s that implements support
   // for context menu, drag-and-drop, and multiple selection.
