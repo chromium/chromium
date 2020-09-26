@@ -60757,7 +60757,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     WARNING: The list of actions used to identify new tasks hasn't been
     attentively updated for several years (as of 2017). Some actions that should
     likely be considered new tasks are probably missing. Take this histogram
-    with a grain of salt. Was expired for M77-M86.
+    with a grain of salt. Was expired for M82-M86.
 
     On tablets, the type of the first user action performed after the app was
     started or unbackgrounded.
