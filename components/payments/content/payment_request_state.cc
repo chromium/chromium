@@ -61,7 +61,7 @@ PaymentRequestState::PaymentRequestState(
     const GURL& top_level_origin,
     const GURL& frame_origin,
     const url::Origin& frame_security_origin,
-    PaymentRequestSpec* spec,
+    base::WeakPtr<PaymentRequestSpec> spec,
     base::WeakPtr<Delegate> delegate,
     const std::string& app_locale,
     autofill::PersonalDataManager* personal_data_manager,
@@ -73,7 +73,7 @@ PaymentRequestState::PaymentRequestState(
       frame_origin_(frame_origin),
       frame_security_origin_(frame_security_origin),
       app_locale_(app_locale),
-      spec_(spec->GetWeakPtr()),
+      spec_(spec),
       delegate_(delegate),
       personal_data_manager_(personal_data_manager),
       journey_logger_(journey_logger),
@@ -107,8 +107,8 @@ void PaymentRequestState::ShowProcessingSpinner() {
   GetPaymentRequestDelegate()->ShowProcessingSpinner();
 }
 
-PaymentRequestSpec* PaymentRequestState::GetSpec() const {
-  return spec_.get();
+base::WeakPtr<PaymentRequestSpec> PaymentRequestState::GetSpec() const {
+  return spec_;
 }
 
 std::string PaymentRequestState::GetTwaPackageName() const {
@@ -387,8 +387,9 @@ void PaymentRequestState::GeneratePaymentResponse() {
 
   // Once the response is ready, will call back into OnPaymentResponseReady.
   response_helper_ = std::make_unique<PaymentResponseHelper>(
-      app_locale_, spec_.get(), selected_app_, payment_request_delegate_,
-      selected_shipping_profile_, selected_contact_profile_, this);
+      app_locale_, spec_, selected_app_, payment_request_delegate_,
+      selected_shipping_profile_, selected_contact_profile_,
+      weak_ptr_factory_.GetWeakPtr());
 }
 
 void PaymentRequestState::OnPaymentAppWindowClosed() {

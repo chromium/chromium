@@ -36,12 +36,12 @@ class PaymentResponseHelper
 
   // The spec, selected_app and delegate cannot be null.
   PaymentResponseHelper(const std::string& app_locale,
-                        PaymentRequestSpec* spec,
+                        base::WeakPtr<PaymentRequestSpec> spec,
                         PaymentApp* selected_app,
                         PaymentRequestDelegate* payment_request_delegate,
                         autofill::AutofillProfile* selected_shipping_profile,
                         autofill::AutofillProfile* selected_contact_profile,
-                        Delegate* delegate);
+                        base::WeakPtr<Delegate> delegate);
   ~PaymentResponseHelper() override;
 
   // PaymentApp::Delegate
@@ -66,9 +66,8 @@ class PaymentResponseHelper
   bool is_waiting_for_instrument_details_;
 
   base::WeakPtr<PaymentRequestSpec> spec_;
-
+  base::WeakPtr<Delegate> delegate_;
   // Not owned, cannot be null.
-  Delegate* delegate_;
   PaymentApp* selected_app_;
   PaymentRequestDelegate* payment_request_delegate_;
 

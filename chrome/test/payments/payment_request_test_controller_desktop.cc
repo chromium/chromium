@@ -112,7 +112,7 @@ class PaymentRequestTestController::ObserverConverter
       auto* description = &descriptions[i++];
       description->label = base::UTF16ToUTF8(app->GetLabel());
       description->sublabel = base::UTF16ToUTF8(app->GetSublabel());
-      auto* spec = payment_request->spec();
+      base::WeakPtr<PaymentRequestSpec> spec = payment_request->spec();
       const auto& total = spec->GetTotal(app.get());
       description->total = total->amount->currency + " " + total->amount->value;
     }

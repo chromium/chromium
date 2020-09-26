@@ -61,7 +61,7 @@ class PaymentAppFactory {
 
     // Returns the merchant provided information, or null if the payment is
     // being aborted.
-    virtual PaymentRequestSpec* GetSpec() const = 0;
+    virtual base::WeakPtr<PaymentRequestSpec> GetSpec() const = 0;
 
     // Returns the Android package name of the Trusted Web Activity that invoked
     // this browser, if any. Otherwise, an empty string.

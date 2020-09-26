@@ -21,7 +21,7 @@ TestSecurePaymentConfirmationPaymentRequestDelegate::
     ~TestSecurePaymentConfirmationPaymentRequestDelegate() = default;
 
 void TestSecurePaymentConfirmationPaymentRequestDelegate::ShowDialog(
-    PaymentRequest* request) {
+    base::WeakPtr<PaymentRequest> request) {
   dialog_view_->ShowDialog(web_contents_, model_->GetWeakPtr(),
                            base::DoNothing(), base::DoNothing());
 }

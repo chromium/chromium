@@ -25,7 +25,7 @@ std::unique_ptr<PaymentRequestSpec> BuildSpec() {
 
 class TestListItem : public PaymentRequestItemList::Item {
  public:
-  TestListItem(PaymentRequestSpec* spec,
+  TestListItem(base::WeakPtr<PaymentRequestSpec> spec,
                PaymentRequestItemList* list,
                bool selected)
       : PaymentRequestItemList::Item(spec,
@@ -75,10 +75,14 @@ TEST(PaymentRequestItemListTest, TestAddItem) {
 
   std::unique_ptr<PaymentRequestSpec> spec = BuildSpec();
   std::vector<std::unique_ptr<TestListItem>> items;
-  items.push_back(std::make_unique<TestListItem>(spec.get(), &list, false));
-  items.push_back(std::make_unique<TestListItem>(spec.get(), &list, true));
-  items.push_back(std::make_unique<TestListItem>(spec.get(), &list, false));
-  items.push_back(std::make_unique<TestListItem>(spec.get(), &list, true));
+  items.push_back(
+      std::make_unique<TestListItem>(spec->AsWeakPtr(), &list, false));
+  items.push_back(
+      std::make_unique<TestListItem>(spec->AsWeakPtr(), &list, true));
+  items.push_back(
+      std::make_unique<TestListItem>(spec->AsWeakPtr(), &list, false));
+  items.push_back(
+      std::make_unique<TestListItem>(spec->AsWeakPtr(), &list, true));
 
   // The unique_ptr objects will become owned by |list|, but the underlying
   // pointers will be needed for assertions after the unique_ptr is moved.
@@ -104,9 +108,12 @@ TEST(PaymentRequestItemListTest, TestSelectItemResultsInSingleItemSelected) {
 
   std::unique_ptr<PaymentRequestSpec> spec = BuildSpec();
   std::vector<std::unique_ptr<TestListItem>> items;
-  items.push_back(std::make_unique<TestListItem>(spec.get(), &list, false));
-  items.push_back(std::make_unique<TestListItem>(spec.get(), &list, false));
-  items.push_back(std::make_unique<TestListItem>(spec.get(), &list, false));
+  items.push_back(
+      std::make_unique<TestListItem>(spec->AsWeakPtr(), &list, false));
+  items.push_back(
+      std::make_unique<TestListItem>(spec->AsWeakPtr(), &list, false));
+  items.push_back(
+      std::make_unique<TestListItem>(spec->AsWeakPtr(), &list, false));
 
   // The unique_ptr objects will become owned by |list|, but the underlying
   // pointers will be needed for assertions after the unique_ptr is moved.

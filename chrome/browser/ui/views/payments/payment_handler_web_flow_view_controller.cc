@@ -182,9 +182,9 @@ class ReadOnlyOriginView : public views::View {
 };
 
 PaymentHandlerWebFlowViewController::PaymentHandlerWebFlowViewController(
-    PaymentRequestSpec* spec,
-    PaymentRequestState* state,
-    PaymentRequestDialogView* dialog,
+    base::WeakPtr<PaymentRequestSpec> spec,
+    base::WeakPtr<PaymentRequestState> state,
+    base::WeakPtr<PaymentRequestDialogView> dialog,
     content::WebContents* payment_request_web_contents,
     Profile* profile,
     GURL target,
@@ -203,8 +203,7 @@ PaymentHandlerWebFlowViewController::PaymentHandlerWebFlowViewController(
       dialog_manager_delegate_(
           static_cast<web_modal::WebContentsModalDialogManagerDelegate*>(
               chrome::FindBrowserWithWebContents(payment_request_web_contents))
-              ->GetWebContentsModalDialogHost()) {
-}
+              ->GetWebContentsModalDialogHost()) {}
 
 PaymentHandlerWebFlowViewController::~PaymentHandlerWebFlowViewController() {
   state()->OnPaymentAppWindowClosed();

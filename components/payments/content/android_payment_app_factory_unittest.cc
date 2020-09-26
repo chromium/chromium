@@ -71,7 +71,9 @@ class MockPaymentAppFactoryDelegate : public PaymentAppFactory::Delegate {
                      scoped_refptr<PaymentManifestWebDataService>());
   MOCK_METHOD0(MayCrawlForInstallablePaymentApps, bool());
   bool IsOffTheRecord() const override { return is_off_the_record_; }
-  PaymentRequestSpec* GetSpec() const override { return spec_.get(); }
+  base::WeakPtr<PaymentRequestSpec> GetSpec() const override {
+    return spec_->AsWeakPtr();
+  }
   MOCK_CONST_METHOD0(GetTwaPackageName, std::string());
   MOCK_METHOD0(ShowProcessingSpinner, void());
   MOCK_METHOD0(GetBillingProfiles,

@@ -30,7 +30,8 @@ TestContentPaymentRequestDelegate::GetDisplayManager() {
   return nullptr;
 }
 
-void TestContentPaymentRequestDelegate::ShowDialog(PaymentRequest* request) {
+void TestContentPaymentRequestDelegate::ShowDialog(
+    base::WeakPtr<PaymentRequest> request) {
   core_delegate_.ShowDialog(request);
 }
 

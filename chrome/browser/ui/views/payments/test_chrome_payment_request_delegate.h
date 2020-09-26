@@ -39,7 +39,7 @@ class TestChromePaymentRequestDelegate : public ChromePaymentRequestDelegate {
   }
 
   // ChromePaymentRequestDelegate.
-  void ShowDialog(PaymentRequest* request) override;
+  void ShowDialog(base::WeakPtr<PaymentRequest> request) override;
   bool IsOffTheRecord() const override;
   autofill::RegionDataLoader* GetRegionDataLoader() override;
   PrefService* GetPrefService() override;

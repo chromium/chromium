@@ -25,7 +25,8 @@ TestChromePaymentRequestDelegate::TestChromePaymentRequestDelegate(
       is_browser_window_active_(is_browser_window_active),
       skip_ui_for_basic_card_(skip_ui_for_basic_card) {}
 
-void TestChromePaymentRequestDelegate::ShowDialog(PaymentRequest* request) {
+void TestChromePaymentRequestDelegate::ShowDialog(
+    base::WeakPtr<PaymentRequest> request) {
   shown_dialog_ = PaymentRequestDialogView::Create(request, observer_);
   shown_dialog_->ShowDialog();
 }

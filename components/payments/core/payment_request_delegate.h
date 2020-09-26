@@ -25,7 +25,7 @@ class PaymentRequestDelegate : public PaymentRequestBaseDelegate {
   void set_dialog_type(DialogType dialog_type) { dialog_type_ = dialog_type; }
 
   // Shows the Payment Request dialog for the given |request|.
-  virtual void ShowDialog(PaymentRequest* request) = 0;
+  virtual void ShowDialog(base::WeakPtr<PaymentRequest> request) = 0;
 
   virtual void RetryDialog() = 0;
 

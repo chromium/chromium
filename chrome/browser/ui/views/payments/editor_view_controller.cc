@@ -74,9 +74,9 @@ std::unique_ptr<views::View> CreateErrorLabelView(
 }  // namespace
 
 EditorViewController::EditorViewController(
-    PaymentRequestSpec* spec,
-    PaymentRequestState* state,
-    PaymentRequestDialogView* dialog,
+    base::WeakPtr<PaymentRequestSpec> spec,
+    base::WeakPtr<PaymentRequestState> state,
+    base::WeakPtr<PaymentRequestDialogView> dialog,
     BackNavigationType back_navigation_type,
     bool is_incognito)
     : PaymentRequestSheetController(spec, state, dialog),

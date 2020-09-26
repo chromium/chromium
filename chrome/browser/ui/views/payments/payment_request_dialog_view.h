@@ -93,7 +93,7 @@ class PaymentRequestDialogView : public views::DialogDelegateView,
   // be notified of dialog events as they happen (but may be NULL) and should
   // outlive this object.
   static base::WeakPtr<PaymentRequestDialogView> Create(
-      PaymentRequest* request,
+      base::WeakPtr<PaymentRequest> request,
       PaymentRequestDialogView::ObserverForTest* observer);
 
   // views::View
@@ -196,7 +196,7 @@ class PaymentRequestDialogView : public views::DialogDelegateView,
   // The browsertest validates the calculated dialog size.
   friend class PaymentHandlerWindowSizeTest;
 
-  PaymentRequestDialogView(PaymentRequest* request,
+  PaymentRequestDialogView(base::WeakPtr<PaymentRequest> request,
                            PaymentRequestDialogView::ObserverForTest* observer);
   ~PaymentRequestDialogView() override;
 
@@ -211,11 +211,8 @@ class PaymentRequestDialogView : public views::DialogDelegateView,
   void ViewHierarchyChanged(
       const views::ViewHierarchyChangedDetails& details) override;
 
-  // Non-owned reference to the PaymentRequest that initiated this dialog. Since
-  // the PaymentRequest object always outlives this one, the pointer should
-  // always be valid even though there is no direct ownership relationship
-  // between the two.
-  PaymentRequest* request_;
+  // The PaymentRequest object that initiated this dialog.
+  base::WeakPtr<PaymentRequest> request_;
   ControllerMap controller_map_;
   ViewStack* view_stack_;
 

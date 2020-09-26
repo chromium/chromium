@@ -55,7 +55,7 @@ void RunCallbackWithError(const std::string& error,
 }  // namespace
 
 PaymentHandlerHost::PaymentHandlerHost(content::WebContents* web_contents,
-                                       Delegate* delegate)
+                                       base::WeakPtr<Delegate> delegate)
     : WebContentsObserver(web_contents), delegate_(delegate) {
   DCHECK(web_contents);
   DCHECK(delegate_);

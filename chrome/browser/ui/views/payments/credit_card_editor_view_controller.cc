@@ -156,9 +156,9 @@ class ExpirationDateValidationDelegate : public ValidationDelegate {
 }  // namespace
 
 CreditCardEditorViewController::CreditCardEditorViewController(
-    PaymentRequestSpec* spec,
-    PaymentRequestState* state,
-    PaymentRequestDialogView* dialog,
+    base::WeakPtr<PaymentRequestSpec> spec,
+    base::WeakPtr<PaymentRequestState> state,
+    base::WeakPtr<PaymentRequestDialogView> dialog,
     BackNavigationType back_navigation,
     int next_ui_tag,
     base::OnceClosure on_edited,
@@ -269,13 +269,13 @@ CreditCardEditorViewController::CreateHeaderView() {
     edit_link->AddStyleRange(
         gfx::Range(0, link_text.size()),
         views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
-            [](PaymentRequestDialogView* dialog) {
+            [](base::WeakPtr<PaymentRequestDialogView> dialog) {
               chrome::ScopedTabbedBrowserDisplayer displayer(
                   dialog->GetProfile());
               ShowSingletonTab(displayer.browser(),
                                autofill::payments::GetManageAddressesUrl());
             },
-            base::Unretained(dialog()))));
+            dialog())));
     edit_link->SizeToFit(0);
     data_source->AddChildView(edit_link.release());
 

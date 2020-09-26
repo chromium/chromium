@@ -59,7 +59,7 @@ class PaymentRequestWebContentsManager
       PaymentRequest::ObserverForTest* observer_for_testing);
 
   // Destroys the given `request`.
-  void DestroyRequest(PaymentRequest* request);
+  void DestroyRequest(base::WeakPtr<PaymentRequest> request);
 
   // Creates the mojo IPC endpoint that will receive requests from the renderer
   // to store payment credential in user's profile.

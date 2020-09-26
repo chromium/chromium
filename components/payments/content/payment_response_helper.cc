@@ -24,16 +24,16 @@ namespace payments {
 
 PaymentResponseHelper::PaymentResponseHelper(
     const std::string& app_locale,
-    PaymentRequestSpec* spec,
+    base::WeakPtr<PaymentRequestSpec> spec,
     PaymentApp* selected_app,
     PaymentRequestDelegate* payment_request_delegate,
     autofill::AutofillProfile* selected_shipping_profile,
     autofill::AutofillProfile* selected_contact_profile,
-    Delegate* delegate)
+    base::WeakPtr<Delegate> delegate)
     : app_locale_(app_locale),
       is_waiting_for_shipping_address_normalization_(false),
       is_waiting_for_instrument_details_(false),
-      spec_(spec->GetWeakPtr()),
+      spec_(spec),
       delegate_(delegate),
       selected_app_(selected_app),
       payment_request_delegate_(payment_request_delegate),

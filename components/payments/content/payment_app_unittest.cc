@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
@@ -86,7 +87,7 @@ class PaymentAppTest : public testing::TestWithParam<RequiredPaymentOptions>,
 
     return std::make_unique<ServiceWorkerPaymentApp>(
         web_contents_, GURL("https://testmerchant.com"),
-        GURL("https://testmerchant.com/bobpay"), spec_.get(),
+        GURL("https://testmerchant.com/bobpay"), spec_->AsWeakPtr(),
         std::move(stored_app), /*is_incognito=*/false,
         /*show_processing_spinner=*/base::DoNothing());
   }
@@ -115,7 +116,7 @@ class PaymentAppTest : public testing::TestWithParam<RequiredPaymentOptions>,
 
     return std::make_unique<ServiceWorkerPaymentApp>(
         web_contents_, GURL("https://merchant.example"),
-        GURL("https://merchant.example/iframe"), spec_.get(),
+        GURL("https://merchant.example/iframe"), spec_->AsWeakPtr(),
         std::move(installable_app), "https://pay.example",
         /*is_incognito=*/false, /*show_processing_spinner=*/base::DoNothing());
   }
@@ -163,7 +164,7 @@ class PaymentAppTest : public testing::TestWithParam<RequiredPaymentOptions>,
     }
     spec_ = std::make_unique<PaymentRequestSpec>(
         std::move(payment_options), mojom::PaymentDetails::New(),
-        std::move(method_data), this, "en-US");
+        std::move(method_data), weak_ptr_factory_.GetWeakPtr(), "en-US");
   }
 
   content::BrowserTaskEnvironment task_environment_;
@@ -175,6 +176,7 @@ class PaymentAppTest : public testing::TestWithParam<RequiredPaymentOptions>,
   std::vector<autofill::AutofillProfile*> billing_profiles_;
   RequiredPaymentOptions required_options_;
   std::unique_ptr<PaymentRequestSpec> spec_;
+  base::WeakPtrFactory<PaymentAppTest> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PaymentAppTest);
 };

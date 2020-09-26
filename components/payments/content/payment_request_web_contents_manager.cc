@@ -75,9 +75,13 @@ void PaymentRequestWebContentsManager::RenderFrameDeleted(
   }
 }
 
-void PaymentRequestWebContentsManager::DestroyRequest(PaymentRequest* request) {
+void PaymentRequestWebContentsManager::DestroyRequest(
+    base::WeakPtr<PaymentRequest> request) {
+  if (!request)
+    return;
+
   request->HideIfNecessary();
-  payment_requests_.erase(request);
+  payment_requests_.erase(request.get());
 }
 
 void PaymentRequestWebContentsManager::CreatePaymentCredential(

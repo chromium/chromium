@@ -28,7 +28,7 @@ class TestSecurePaymentConfirmationPaymentRequestDelegate
   ~TestSecurePaymentConfirmationPaymentRequestDelegate() override;
 
   // ChromePaymentRequestDelegate:
-  void ShowDialog(PaymentRequest* request) override;
+  void ShowDialog(base::WeakPtr<PaymentRequest> request) override;
   void CloseDialog() override;
 
   SecurePaymentConfirmationDialogView* dialog_view() {

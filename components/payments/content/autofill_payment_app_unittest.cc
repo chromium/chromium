@@ -73,7 +73,7 @@ class FakePaymentRequestDelegate : public PaymentRequestDelegate {
         full_card_request_(&autofill_client_,
                            &payments_client_,
                            &personal_data_) {}
-  void ShowDialog(PaymentRequest* request) override {}
+  void ShowDialog(base::WeakPtr<PaymentRequest> request) override {}
 
   void CloseDialog() override {}
 

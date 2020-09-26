@@ -102,7 +102,7 @@ class PaymentRequestState : public PaymentAppFactory::Delegate,
                       const GURL& top_level_origin,
                       const GURL& frame_origin,
                       const url::Origin& frame_security_origin,
-                      PaymentRequestSpec* spec,
+                      base::WeakPtr<PaymentRequestSpec> spec,
                       base::WeakPtr<Delegate> delegate,
                       const std::string& app_locale,
                       autofill::PersonalDataManager* personal_data_manager,
@@ -114,7 +114,7 @@ class PaymentRequestState : public PaymentAppFactory::Delegate,
   content::WebContents* GetWebContents() override;
   ContentPaymentRequestDelegate* GetPaymentRequestDelegate() const override;
   void ShowProcessingSpinner() override;
-  PaymentRequestSpec* GetSpec() const override;
+  base::WeakPtr<PaymentRequestSpec> GetSpec() const override;
   std::string GetTwaPackageName() const override;
   const GURL& GetTopOrigin() override;
   const GURL& GetFrameOrigin() override;

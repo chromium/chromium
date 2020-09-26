@@ -52,7 +52,7 @@ class PaymentRequestSpec : public PaymentOptionsProvider,
 
   // Any class call add itself as Observer via AddObserver() and receive
   // notification about spec events.
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
     // Called when the website is notified that the user selected shipping
     // options or a shipping address. This will be followed by a call to
@@ -63,13 +63,13 @@ class PaymentRequestSpec : public PaymentOptionsProvider,
     virtual void OnSpecUpdated() = 0;
 
    protected:
-    virtual ~Observer() {}
+    ~Observer() override = default;
   };
 
   PaymentRequestSpec(mojom::PaymentOptionsPtr options,
                      mojom::PaymentDetailsPtr details,
                      std::vector<mojom::PaymentMethodDataPtr> method_data,
-                     PaymentRequestSpec::Observer* observer,
+                     base::WeakPtr<PaymentRequestSpec::Observer> observer,
                      const std::string& app_locale);
   ~PaymentRequestSpec() override;
 
@@ -207,7 +207,7 @@ class PaymentRequestSpec : public PaymentOptionsProvider,
 
   bool IsSecurePaymentConfirmationRequested() const;
 
-  base::WeakPtr<PaymentRequestSpec> GetWeakPtr();
+  base::WeakPtr<PaymentRequestSpec> AsWeakPtr();
 
  private:
   // Returns the first applicable modifier in the Payment Request for the
@@ -284,7 +284,7 @@ class PaymentRequestSpec : public PaymentOptionsProvider,
 
   // The |observer_for_testing_| will fire after all the |observers_| have been
   // notified.
-  base::ObserverList<Observer>::Unchecked observers_;
+  base::ObserverList<Observer> observers_;
 
   base::string16 retry_error_message_;
   mojom::PayerErrorsPtr payer_errors_;

@@ -26,9 +26,9 @@ class ContactInfoEditorViewController : public EditorViewController {
   // Passing nullptr as |profile| indicates that we are editing a new profile;
   // other arguments should never be null.
   ContactInfoEditorViewController(
-      PaymentRequestSpec* spec,
-      PaymentRequestState* state,
-      PaymentRequestDialogView* dialog,
+      base::WeakPtr<PaymentRequestSpec> spec,
+      base::WeakPtr<PaymentRequestState> state,
+      base::WeakPtr<PaymentRequestDialogView> dialog,
       BackNavigationType back_navigation_type,
       base::OnceClosure on_edited,
       base::OnceCallback<void(const autofill::AutofillProfile&)> on_added,

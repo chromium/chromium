@@ -55,10 +55,10 @@ class PaymentMethodListItem : public PaymentRequestItemList::Item {
   // outlive this object. |list| is the PaymentRequestItemList object that will
   // own this.
   PaymentMethodListItem(PaymentApp* app,
-                        PaymentRequestSpec* spec,
-                        PaymentRequestState* state,
+                        base::WeakPtr<PaymentRequestSpec> spec,
+                        base::WeakPtr<PaymentRequestState> state,
                         PaymentRequestItemList* list,
-                        PaymentRequestDialogView* dialog,
+                        base::WeakPtr<PaymentRequestDialogView> dialog,
                         bool selected)
       : PaymentRequestItemList::Item(
             spec,
@@ -169,7 +169,7 @@ class PaymentMethodListItem : public PaymentRequestItemList::Item {
   void EditButtonPressed() override { ShowEditor(); }
 
   PaymentApp* app_;
-  PaymentRequestDialogView* dialog_;
+  base::WeakPtr<PaymentRequestDialogView> dialog_;
 
   DISALLOW_COPY_AND_ASSIGN(PaymentMethodListItem);
 };
@@ -177,9 +177,9 @@ class PaymentMethodListItem : public PaymentRequestItemList::Item {
 }  // namespace
 
 PaymentMethodViewController::PaymentMethodViewController(
-    PaymentRequestSpec* spec,
-    PaymentRequestState* state,
-    PaymentRequestDialogView* dialog)
+    base::WeakPtr<PaymentRequestSpec> spec,
+    base::WeakPtr<PaymentRequestState> state,
+    base::WeakPtr<PaymentRequestDialogView> dialog)
     : PaymentRequestSheetController(spec, state, dialog),
       payment_method_list_(dialog),
       enable_add_card_(!state->is_retry_called() &&

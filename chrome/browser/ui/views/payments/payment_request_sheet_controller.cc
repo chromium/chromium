@@ -196,10 +196,10 @@ class BorderedScrollView : public views::ScrollView {
 }  // namespace
 
 PaymentRequestSheetController::PaymentRequestSheetController(
-    PaymentRequestSpec* spec,
-    PaymentRequestState* state,
-    PaymentRequestDialogView* dialog)
-    : spec_(spec->GetWeakPtr()), state_(state), dialog_(dialog) {}
+    base::WeakPtr<PaymentRequestSpec> spec,
+    base::WeakPtr<PaymentRequestState> state,
+    base::WeakPtr<PaymentRequestDialogView> dialog)
+    : spec_(spec), state_(state), dialog_(dialog) {}
 
 PaymentRequestSheetController::~PaymentRequestSheetController() = default;
 
