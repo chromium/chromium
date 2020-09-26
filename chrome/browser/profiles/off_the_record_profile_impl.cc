@@ -182,6 +182,9 @@ void OffTheRecordProfileImpl::Init() {
   AccessibilityLabelsService::InitOffTheRecordPrefs(this);
 
   HeavyAdServiceFactory::GetForBrowserContext(this)->InitializeOffTheRecord();
+
+  key_->SetProtoDatabaseProvider(
+      GetDefaultStoragePartition(this)->GetProtoDatabaseProvider());
 }
 
 OffTheRecordProfileImpl::~OffTheRecordProfileImpl() {
