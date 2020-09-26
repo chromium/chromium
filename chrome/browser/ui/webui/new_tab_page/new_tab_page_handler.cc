@@ -1198,6 +1198,7 @@ void NewTabPageHandler::OnCollectionImagesAvailable() {
   std::vector<new_tab_page::mojom::CollectionImagePtr> images;
   if (ntp_background_service_->collection_images().empty()) {
     std::move(background_images_callback_).Run(std::move(images));
+    return;
   }
   auto collection_id =
       ntp_background_service_->collection_images()[0].collection_id;
