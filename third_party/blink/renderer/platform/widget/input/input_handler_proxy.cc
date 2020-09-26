@@ -432,9 +432,7 @@ void InputHandlerProxy::ContinueScrollBeginAfterMainThreadHitTest(
 void InputHandlerProxy::DispatchSingleInputEvent(
     std::unique_ptr<EventWithCallback> event_with_callback,
     const base::TimeTicks now) {
-  const ui::LatencyInfo& original_latency_info =
-      event_with_callback->latency_info();
-  ui::LatencyInfo monitored_latency_info = original_latency_info;
+  ui::LatencyInfo monitored_latency_info = event_with_callback->latency_info();
   std::unique_ptr<cc::SwapPromiseMonitor> latency_info_swap_promise_monitor =
       input_handler_->CreateLatencyInfoSwapPromiseMonitor(
           &monitored_latency_info);
@@ -444,7 +442,7 @@ void InputHandlerProxy::DispatchSingleInputEvent(
     // TODO(crbug.com/1079116): For now, we use data from `LatencyInfo` to
     // determine whether a scroll-update is the first one in a sequence or not.
     // This should be determined independent of `LatencyInfo`.
-    if (original_latency_info.FindLatency(
+    if (event_with_callback->latency_info().FindLatency(
             ui::INPUT_EVENT_LATENCY_FIRST_SCROLL_UPDATE_ORIGINAL_COMPONENT,
             nullptr)) {
       scroll_update_type = cc::EventMetrics::ScrollUpdateType::kStarted;
@@ -462,8 +460,8 @@ void InputHandlerProxy::DispatchSingleInputEvent(
 
   WebInputEventAttribution attribution =
       PerformEventAttribution(event_with_callback->event());
-  InputHandlerProxy::EventDisposition disposition = RouteToTypeSpecificHandler(
-      event_with_callback.get(), original_latency_info, attribution);
+  InputHandlerProxy::EventDisposition disposition =
+      RouteToTypeSpecificHandler(event_with_callback.get(), attribution);
 
   const WebInputEvent& event = event_with_callback->event();
   const WebGestureEvent::Type type = event.GetType();
@@ -622,7 +620,6 @@ bool HasScrollbarJumpKeyModifier(const WebInputEvent& event) {
 InputHandlerProxy::EventDisposition
 InputHandlerProxy::RouteToTypeSpecificHandler(
     EventWithCallback* event_with_callback,
-    const ui::LatencyInfo& original_latency_info,
     const WebInputEventAttribution& original_attribution) {
   DCHECK(input_handler_);
 
@@ -680,13 +677,13 @@ InputHandlerProxy::RouteToTypeSpecificHandler(
     }
 
     case WebInputEvent::Type::kTouchStart:
-      return HandleTouchStart(event_with_callback, original_latency_info);
+      return HandleTouchStart(event_with_callback);
 
     case WebInputEvent::Type::kTouchMove:
-      return HandleTouchMove(event_with_callback, original_latency_info);
+      return HandleTouchMove(event_with_callback);
 
     case WebInputEvent::Type::kTouchEnd:
-      return HandleTouchEnd(event_with_callback, original_latency_info);
+      return HandleTouchEnd(event_with_callback);
 
     case WebInputEvent::Type::kMouseDown: {
       // Only for check scrollbar captured
@@ -698,9 +695,7 @@ InputHandlerProxy::RouteToTypeSpecificHandler(
         // TODO(arakeri): Pass in the modifier instead of a bool once the
         // refactor (crbug.com/1022097) is done. For details, see
         // crbug.com/1016955.
-        HandlePointerDown(mouse_event.PositionInWidget(), original_latency_info,
-                          HasScrollbarJumpKeyModifier(event),
-                          mouse_event.TimeStamp(), event_with_callback);
+        HandlePointerDown(event_with_callback, mouse_event.PositionInWidget());
       }
 
       return DID_NOT_HANDLE;
@@ -710,10 +705,8 @@ InputHandlerProxy::RouteToTypeSpecificHandler(
       const WebMouseEvent& mouse_event =
           static_cast<const WebMouseEvent&>(event);
       CHECK(input_handler_);
-      if (mouse_event.button == WebMouseEvent::Button::kLeft) {
-        HandlePointerUp(mouse_event.PositionInWidget(), original_latency_info,
-                        mouse_event.TimeStamp(), event_with_callback);
-      }
+      if (mouse_event.button == WebMouseEvent::Button::kLeft)
+        HandlePointerUp(event_with_callback, mouse_event.PositionInWidget());
       return DID_NOT_HANDLE;
     }
     case WebInputEvent::Type::kMouseMove: {
@@ -722,8 +715,7 @@ InputHandlerProxy::RouteToTypeSpecificHandler(
       // TODO(davemoore): This should never happen, but bug #326635 showed some
       // surprising crashes.
       CHECK(input_handler_);
-      HandlePointerMove(mouse_event.PositionInWidget(), original_latency_info,
-                        mouse_event.TimeStamp(), event_with_callback);
+      HandlePointerMove(event_with_callback, mouse_event.PositionInWidget());
       return DID_NOT_HANDLE;
     }
     case WebInputEvent::Type::kMouseLeave: {
@@ -1252,8 +1244,7 @@ InputHandlerProxy::EventDisposition InputHandlerProxy::HitTestTouchEvent(
 }
 
 InputHandlerProxy::EventDisposition InputHandlerProxy::HandleTouchStart(
-    EventWithCallback* event_with_callback,
-    const ui::LatencyInfo& original_latency_info) {
+    EventWithCallback* event_with_callback) {
   TRACE_EVENT0("input", "InputHandlerProxy::HandleTouchStart");
   const auto& touch_event =
       static_cast<const WebTouchEvent&>(event_with_callback->event());
@@ -1269,9 +1260,7 @@ InputHandlerProxy::EventDisposition InputHandlerProxy::HandleTouchStart(
       touch_event.touches_length == 1) {
     DCHECK(touch_event.touches[0].state == WebTouchPoint::State::kStatePressed);
     cc::InputHandlerPointerResult pointer_result = HandlePointerDown(
-        touch_event.touches[0].PositionInWidget(), original_latency_info,
-        HasScrollbarJumpKeyModifier(event_with_callback->event()),
-        touch_event.TimeStamp(), event_with_callback);
+        event_with_callback, touch_event.touches[0].PositionInWidget());
     if (pointer_result.type == cc::PointerResultType::kScrollbarScroll) {
       client_->SetAllowedTouchAction(
           allowed_touch_action, touch_event.unique_touch_event_id, DID_HANDLE);
@@ -1318,8 +1307,7 @@ InputHandlerProxy::EventDisposition InputHandlerProxy::HandleTouchStart(
 }
 
 InputHandlerProxy::EventDisposition InputHandlerProxy::HandleTouchMove(
-    EventWithCallback* event_with_callback,
-    const ui::LatencyInfo& original_latency_info) {
+    EventWithCallback* event_with_callback) {
   const auto& touch_event =
       static_cast<const WebTouchEvent&>(event_with_callback->event());
   TRACE_EVENT2("input", "InputHandlerProxy::HandleTouchMove", "touch_result",
@@ -1328,8 +1316,7 @@ InputHandlerProxy::EventDisposition InputHandlerProxy::HandleTouchMove(
                touch_event.touch_start_or_first_touch_move);
   if (touch_event.touches_length == 1) {
     cc::InputHandlerPointerResult pointer_result = HandlePointerMove(
-        touch_event.touches[0].PositionInWidget(), original_latency_info,
-        touch_event.TimeStamp(), event_with_callback);
+        event_with_callback, touch_event.touches[0].PositionInWidget());
     if (pointer_result.type == cc::PointerResultType::kScrollbarScroll) {
       return DID_HANDLE;
     }
@@ -1353,16 +1340,14 @@ InputHandlerProxy::EventDisposition InputHandlerProxy::HandleTouchMove(
 }
 
 InputHandlerProxy::EventDisposition InputHandlerProxy::HandleTouchEnd(
-    EventWithCallback* event_with_callback,
-    const ui::LatencyInfo& original_latency_info) {
+    EventWithCallback* event_with_callback) {
   const auto& touch_event =
       static_cast<const WebTouchEvent&>(event_with_callback->event());
   TRACE_EVENT1("input", "InputHandlerProxy::HandleTouchEnd", "num_touches",
                touch_event.touches_length);
   if (touch_event.touches_length == 1) {
     cc::InputHandlerPointerResult pointer_result = HandlePointerUp(
-        touch_event.touches[0].PositionInWidget(), original_latency_info,
-        touch_event.TimeStamp(), event_with_callback);
+        event_with_callback, touch_event.touches[0].PositionInWidget());
     if (pointer_result.type == cc::PointerResultType::kScrollbarScroll) {
       return DID_HANDLE;
     }
@@ -1520,17 +1505,14 @@ void InputHandlerProxy::SetTickClockForTesting(
 }
 
 const cc::InputHandlerPointerResult InputHandlerProxy::HandlePointerDown(
-    const gfx::PointF& position,
-    const ui::LatencyInfo& original_latency_info,
-    bool has_modifier,
-    base::TimeTicks timestamp,
-    EventWithCallback* event_with_callback) {
+    EventWithCallback* event_with_callback,
+    const gfx::PointF& position) {
   CHECK(input_handler_);
   // TODO(arakeri): Pass in the modifier instead of a bool once the
   // refactor (crbug.com/1022097) is done. For details, see
   // crbug.com/1016955.
-  cc::InputHandlerPointerResult pointer_result =
-      input_handler_->MouseDown(gfx::PointF(position), has_modifier);
+  cc::InputHandlerPointerResult pointer_result = input_handler_->MouseDown(
+      position, HasScrollbarJumpKeyModifier(event_with_callback->event()));
   if (pointer_result.type == cc::PointerResultType::kScrollbarScroll) {
     // Since a kScrollbarScroll is about to commence, ensure that any
     // existing ongoing scroll is ended.
@@ -1557,14 +1539,16 @@ const cc::InputHandlerPointerResult InputHandlerProxy::HandlePointerDown(
     // currently empty.
     InjectScrollbarGestureScroll(WebInputEvent::Type::kGestureScrollBegin,
                                  position, pointer_result,
-                                 original_latency_info, timestamp);
+                                 event_with_callback->latency_info(),
+                                 event_with_callback->event().TimeStamp());
 
     // Don't need to inject GSU if the scroll offset is zero (this can
     // be the case where mouse down occurs on the thumb).
     if (!pointer_result.scroll_offset.IsZero()) {
       InjectScrollbarGestureScroll(WebInputEvent::Type::kGestureScrollUpdate,
                                    position, pointer_result,
-                                   original_latency_info, timestamp);
+                                   event_with_callback->latency_info(),
+                                   event_with_callback->event().TimeStamp());
     }
 
     if (event_with_callback) {
@@ -1576,10 +1560,8 @@ const cc::InputHandlerPointerResult InputHandlerProxy::HandlePointerDown(
 }
 
 const cc::InputHandlerPointerResult InputHandlerProxy::HandlePointerMove(
-    const gfx::PointF& position,
-    const ui::LatencyInfo& original_latency_info,
-    base::TimeTicks timestamp,
-    EventWithCallback* event_with_callback) {
+    EventWithCallback* event_with_callback,
+    const gfx::PointF& position) {
   cc::InputHandlerPointerResult pointer_result =
       input_handler_->MouseMoveAt(gfx::Point(position.x(), position.y()));
   if (pointer_result.type == cc::PointerResultType::kScrollbarScroll) {
@@ -1588,7 +1570,8 @@ const cc::InputHandlerPointerResult InputHandlerProxy::HandlePointerMove(
     if (!pointer_result.scroll_offset.IsZero()) {
       InjectScrollbarGestureScroll(WebInputEvent::Type::kGestureScrollUpdate,
                                    position, pointer_result,
-                                   original_latency_info, timestamp);
+                                   event_with_callback->latency_info(),
+                                   event_with_callback->event().TimeStamp());
     }
     if (event_with_callback) {
       event_with_callback->SetScrollbarManipulationHandledOnCompositorThread();
@@ -1598,17 +1581,16 @@ const cc::InputHandlerPointerResult InputHandlerProxy::HandlePointerMove(
 }
 
 const cc::InputHandlerPointerResult InputHandlerProxy::HandlePointerUp(
-    const gfx::PointF& position,
-    const ui::LatencyInfo& original_latency_info,
-    base::TimeTicks timestamp,
-    EventWithCallback* event_with_callback) {
+    EventWithCallback* event_with_callback,
+    const gfx::PointF& position) {
   cc::InputHandlerPointerResult pointer_result =
       input_handler_->MouseUp(position);
   if (pointer_result.type == cc::PointerResultType::kScrollbarScroll) {
     // Generate a GSE and add it to the CompositorThreadEventQueue.
     InjectScrollbarGestureScroll(WebInputEvent::Type::kGestureScrollEnd,
                                  position, pointer_result,
-                                 original_latency_info, timestamp);
+                                 event_with_callback->latency_info(),
+                                 event_with_callback->event().TimeStamp());
     if (event_with_callback) {
       event_with_callback->SetScrollbarManipulationHandledOnCompositorThread();
     }
