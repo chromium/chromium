@@ -15,6 +15,7 @@
 #include "chromeos/components/phonehub/fake_phone_hub_manager.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/events/event.h"
 
 namespace ash {
 
@@ -86,26 +87,26 @@ class PhoneHubTrayTest : public AshTestBase {
  protected:
   PhoneHubTray* phone_hub_tray_ = nullptr;
   chromeos::phonehub::FakePhoneHubManager phone_hub_manager_;
-  MockNewWindowDelegate new_window_delegate_;
   base::test::ScopedFeatureList feature_list_;
+  MockNewWindowDelegate new_window_delegate_;
 };
 
 TEST_F(PhoneHubTrayTest, SetPhoneHubManager) {
   // Set a new manager.
   chromeos::phonehub::FakePhoneHubManager new_manager;
   new_manager.fake_feature_status_provider()->SetStatus(
-      chromeos::phonehub::FeatureStatus::kEligiblePhoneButNotSetUp);
+      chromeos::phonehub::FeatureStatus::kEnabledAndConnected);
   phone_hub_tray_->SetPhoneHubManager(&new_manager);
   EXPECT_TRUE(phone_hub_tray_->GetVisible());
 
   // Changing the old manager should have no effect.
   GetFeatureStatusProvider()->SetStatus(
-      chromeos::phonehub::FeatureStatus::kDisabled);
+      chromeos::phonehub::FeatureStatus::kNotEligibleForFeature);
   EXPECT_TRUE(phone_hub_tray_->GetVisible());
 
   // Only the new manager should work.
   new_manager.fake_feature_status_provider()->SetStatus(
-      chromeos::phonehub::FeatureStatus::kDisabled);
+      chromeos::phonehub::FeatureStatus::kNotEligibleForFeature);
   EXPECT_FALSE(phone_hub_tray_->GetVisible());
 
   // Set no manager.
@@ -164,6 +165,35 @@ TEST_F(PhoneHubTrayTest, StartNotificationSetUpFlow) {
       });
 
   ClickOnAndWait(notification_opt_in_view()->set_up_button_for_testing());
+}
+
+TEST_F(PhoneHubTrayTest, HideTrayItemOnUiStateChange) {
+  ClickTrayButton();
+  EXPECT_TRUE(phone_hub_tray_->is_active());
+
+  GetFeatureStatusProvider()->SetStatus(
+      chromeos::phonehub::FeatureStatus::kNotEligibleForFeature);
+
+  EXPECT_FALSE(phone_hub_tray_->is_active());
+  EXPECT_FALSE(phone_hub_tray_->GetVisible());
+}
+
+TEST_F(PhoneHubTrayTest, TransitionContentView) {
+  ClickTrayButton();
+  EXPECT_TRUE(phone_hub_tray_->is_active());
+
+  auto* content_view = phone_hub_tray_->content_view_for_testing();
+  EXPECT_TRUE(content_view);
+  // TODO(tengs) Test the actual view id.
+  EXPECT_EQ(0, content_view->GetID());
+
+  GetFeatureStatusProvider()->SetStatus(
+      chromeos::phonehub::FeatureStatus::kEnabledButDisconnected);
+
+  content_view = phone_hub_tray_->content_view_for_testing();
+  EXPECT_TRUE(content_view);
+  // TODO(tengs) Test the actual view id.
+  EXPECT_EQ(0, content_view->GetID());
 }
 
 }  // namespace ash

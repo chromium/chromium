@@ -4,15 +4,12 @@
 
 #include "ash/system/phonehub/phone_hub_tray.h"
 
-#include <memory>
-
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
-#include "ash/system/phonehub/notification_opt_in_view.h"
 #include "ash/system/phonehub/phone_status_view.h"
 #include "ash/system/phonehub/quick_actions_view.h"
 #include "ash/system/phonehub/task_continuation_view.h"
@@ -24,7 +21,6 @@
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/tray/tray_utils.h"
 #include "base/bind.h"
-#include "chromeos/components/phonehub/notification_access_manager.h"
 #include "chromeos/components/phonehub/phone_hub_manager.h"
 #include "chromeos/components/phonehub/phone_model.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -33,8 +29,6 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/image_view.h"
-#include "ui/views/controls/label.h"
-#include "ui/views/controls/separator.h"
 
 namespace ash {
 
@@ -46,67 +40,13 @@ constexpr int kTrayIconCrossAxisInset = 0;
 
 constexpr gfx::Insets kBubblePadding(4, 16);
 constexpr int kBubbleWidth = 400;
-constexpr int kPaddingBetweenTitleAndSeparator = 3;
-
-// A content view of the Phone Hub panel, displaying utility actions
-// such as quick actions, task continuation, etc.
-class PhoneHubView : public views ::View {
- public:
-  explicit PhoneHubView(TrayBubbleView* bubble_view,
-                        chromeos::phonehub::PhoneHubManager* phone_hub_manager)
-      : bubble_view_(bubble_view) {
-    auto setup_layered_view = [](views::View* view) {
-      view->SetPaintToLayer();
-      view->layer()->SetFillsBoundsOpaquely(false);
-    };
-
-    AddSeparator();
-
-    // TODO(meilinw): handle the case when the user has dismissed this opt in
-    // view once, we shouldn't show it again.
-    if (!phone_hub_manager->GetNotificationAccessManager()
-             ->HasAccessBeenGranted()) {
-      bubble_view_->AddChildView(
-          std::make_unique<NotificationOptInView>(bubble_view_));
-    }
-
-    setup_layered_view(
-        bubble_view_->AddChildView(std::make_unique<QuickActionsView>()));
-
-    AddSeparator();
-
-    chromeos::phonehub::PhoneModel* phone_model =
-        phone_hub_manager->GetPhoneModel();
-
-    if (phone_model) {
-      setup_layered_view(bubble_view->AddChildView(
-          std::make_unique<TaskContinuationView>(phone_model)));
-    }
-  }
-  ~PhoneHubView() override = default;
-
-  // views::View:
-  const char* GetClassName() const override { return "PhoneHubView"; }
-
- private:
-  void AddSeparator() {
-    auto* separator =
-        bubble_view_->AddChildView(std::make_unique<views::Separator>());
-    separator->SetPaintToLayer();
-    separator->layer()->SetFillsBoundsOpaquely(false);
-    separator->SetColor(AshColorProvider::Get()->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kSeparatorColor));
-    separator->SetBorder(views::CreateEmptyBorder(
-        gfx::Insets(kPaddingBetweenTitleAndSeparator, 0,
-                    kMenuSeparatorVerticalPadding, 0)));
-  }
-
-  TrayBubbleView* bubble_view_ = nullptr;
-};
 
 }  // namespace
 
-PhoneHubTray::PhoneHubTray(Shelf* shelf) : TrayBackgroundView(shelf) {
+PhoneHubTray::PhoneHubTray(Shelf* shelf)
+    : TrayBackgroundView(shelf), ui_controller_(new PhoneHubUiController()) {
+  observed_phone_hub_ui_controller_.Add(ui_controller_.get());
+
   // TODO(tengs): Update icon to spec.
   auto icon = std::make_unique<views::ImageView>();
   icon->SetTooltipText(
@@ -123,21 +63,11 @@ PhoneHubTray::PhoneHubTray(Shelf* shelf) : TrayBackgroundView(shelf) {
 PhoneHubTray::~PhoneHubTray() {
   if (bubble_)
     bubble_->bubble_view()->ResetDelegate();
-  CleanUpPhoneHubManager();
 }
 
 void PhoneHubTray::SetPhoneHubManager(
     chromeos::phonehub::PhoneHubManager* phone_hub_manager) {
-  if (phone_hub_manager == phone_hub_manager_)
-    return;
-
-  CleanUpPhoneHubManager();
-
-  phone_hub_manager_ = phone_hub_manager;
-  if (phone_hub_manager_)
-    phone_hub_manager_->GetFeatureStatusProvider()->AddObserver(this);
-
-  OnFeatureStatusChanged();
+  ui_controller_->SetPhoneHubManager(phone_hub_manager);
 }
 
 void PhoneHubTray::ClickedOutsideBubble() {
@@ -170,6 +100,27 @@ void PhoneHubTray::HideBubble(const TrayBubbleView* bubble_view) {
   HideBubbleWithView(bubble_view);
 }
 
+void PhoneHubTray::OnPhoneHubUiStateChanged() {
+  UpdateVisibility();
+
+  if (!bubble_)
+    return;
+  TrayBubbleView* bubble_view = bubble_->bubble_view();
+
+  DCHECK(ui_controller_.get());
+  std::unique_ptr<views::View> content_view =
+      ui_controller_->CreateContentView(bubble_view);
+  if (!content_view.get()) {
+    CloseBubble();
+    return;
+  }
+
+  if (content_view_)
+    bubble_view->RemoveChildView(content_view_);
+  content_view_ = content_view.get();
+  bubble_view->AddChildView(std::move(content_view));
+}
+
 void PhoneHubTray::AnchorUpdated() {
   if (bubble_)
     bubble_->bubble_view()->UpdateBubble();
@@ -194,8 +145,6 @@ void PhoneHubTray::ShowBubble(bool show_by_click) {
   if (bubble_)
     return;
 
-  DCHECK(phone_hub_manager_);
-
   TrayBubbleView::InitParams init_params;
   init_params.delegate = this;
   init_params.parent_window = GetBubbleWindowContainer();
@@ -215,23 +164,25 @@ void PhoneHubTray::ShowBubble(bool show_by_click) {
 
   // We will always have this phone status view on top of the bubble view
   // to display any available phone status and the settings icon.
-  chromeos::phonehub::PhoneModel* phone_model =
-      phone_hub_manager_->GetPhoneModel();
-  if (phone_model) {
-    auto* phone_status = bubble_view->AddChildView(
-        std::make_unique<PhoneStatusView>(phone_model));
+  std::unique_ptr<views::View> phone_status =
+      ui_controller_->CreateStatusHeaderView();
+  if (phone_status) {
     phone_status->SetPaintToLayer();
     phone_status->layer()->SetFillsBoundsOpaquely(false);
+    bubble_view->AddChildView(std::move(phone_status));
   }
 
   // Other contents, i.e. the connected view and the interstitial views,
   // will be positioned underneath the phone status view and updated based
   // on the current mode.
-  bubble_view->AddChildView(
-      std::make_unique<PhoneHubView>(bubble_view, phone_hub_manager_));
+  auto content_view = ui_controller_->CreateContentView(bubble_view);
+  content_view_ = content_view.get();
+  if (content_view_)
+    bubble_view->AddChildView(std::move(content_view));
 
   bubble_ = std::make_unique<TrayBubbleWrapper>(this, bubble_view,
                                                 false /* is_persistent */);
+
   SetIsActive(true);
 }
 
@@ -244,43 +195,16 @@ const char* PhoneHubTray::GetClassName() const {
 }
 
 void PhoneHubTray::CloseBubble() {
+  content_view_ = nullptr;
   bubble_.reset();
   SetIsActive(false);
   shelf()->UpdateAutoHideState();
 }
 
-void PhoneHubTray::OnFeatureStatusChanged() {
-  UpdateVisibility();
-}
-
 void PhoneHubTray::UpdateVisibility() {
-  if (!phone_hub_manager_) {
-    SetVisiblePreferred(false);
-    return;
-  }
-
-  auto feature_status =
-      phone_hub_manager_->GetFeatureStatusProvider()->GetStatus();
-  bool is_visible;
-  switch (feature_status) {
-    case chromeos::phonehub::FeatureStatus::kNotEligibleForFeature:
-      FALLTHROUGH;
-    case chromeos::phonehub::FeatureStatus::kDisabled:
-      is_visible = false;
-      break;
-    default:
-      is_visible = true;
-      break;
-  }
-
-  SetVisiblePreferred(is_visible);
-}
-
-void PhoneHubTray::CleanUpPhoneHubManager() {
-  if (!phone_hub_manager_)
-    return;
-
-  phone_hub_manager_->GetFeatureStatusProvider()->RemoveObserver(this);
+  DCHECK(ui_controller_.get());
+  auto ui_state = ui_controller_->ui_state();
+  SetVisiblePreferred(ui_state != PhoneHubUiController::UiState::kHidden);
 }
 
 }  // namespace ash
