@@ -205,6 +205,7 @@ base::flat_map<SystemAppType, SystemAppInfo> CreateSystemWebApps() {
         SystemAppInfo("File Manager", GURL("chrome://file-manager"),
                       base::BindRepeating(&CreateWebAppInfoForFileManager)));
     infos.at(SystemAppType::FILE_MANAGER).capture_navigations = true;
+    infos.at(SystemAppType::FILE_MANAGER).single_window = false;
   }
 
   infos.emplace(
