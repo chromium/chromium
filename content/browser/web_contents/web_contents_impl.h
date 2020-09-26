@@ -310,6 +310,10 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // frame. Otherwise, returns this WebContents.
   WebContentsImpl* GetFocusedWebContents();
 
+  // TODO(lukasza): Maybe this method can be removed altogether (so that the
+  // focus of the location bar is only set in the //chrome layer).
+  void SetFocusToLocationBar();
+
   // Returns a vector containing this WebContents and all inner WebContents
   // within it (recursively).
   std::vector<WebContentsImpl*> GetWebContentsAndAllInner();
@@ -973,7 +977,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
       RenderFrameHost* new_frame) override;
   NavigationControllerImpl& GetControllerForRenderManager() override;
   bool FocusLocationBarByDefault() override;
-  void SetFocusToLocationBar() override;
   bool IsHidden() override;
   int GetOuterDelegateFrameTreeNodeId() override;
   RenderWidgetHostImpl* GetFullscreenRenderWidgetHost() const override;

@@ -2812,19 +2812,9 @@ void RenderFrameHostManager::CommitPending(
   RenderWidgetHostView* old_view = render_frame_host_->GetView();
   bool is_main_frame = frame_tree_node_->IsMainFrame();
 
-  // First check whether we're going to want to focus the location bar after
-  // this commit.  We do this now because the navigation hasn't formally
-  // committed yet, so if we've already cleared the pending WebUI the call chain
-  // this triggers won't be able to figure out what's going on.  Note that
-  // subframe commits should not be allowed to steal focus from the main frame
-  // by focusing the location bar (see https://crbug.com/700124).
-  bool will_focus_location_bar =
-      is_main_frame && delegate_->FocusLocationBarByDefault();
-
   // Remember if the page was focused so we can focus the new renderer in
   // that case.
-  bool focus_render_view =
-      !will_focus_location_bar && old_view && old_view->HasFocus();
+  bool focus_render_view = old_view && old_view->HasFocus();
 
   // Remove the current frame and its descendants from the set of fullscreen
   // frames immediately. They can stay in pending deletion for some time.
@@ -2918,9 +2908,7 @@ void RenderFrameHostManager::CommitPending(
 
   RenderWidgetHostView* new_view = render_frame_host_->GetView();
 
-  if (will_focus_location_bar) {
-    delegate_->SetFocusToLocationBar();
-  } else if (focus_render_view && new_view) {
+  if (focus_render_view && new_view) {
     if (is_main_frame) {
       new_view->Focus();
     } else {

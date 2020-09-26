@@ -364,4 +364,143 @@ IN_PROC_BROWSER_TEST_F(OmniboxFocusInteractiveTest, OmniboxFocusStealing) {
   EXPECT_FALSE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_TAB_CONTAINER));
 }
 
+// Tab focus should not be stolen by the omnibox - https://crbug.com/1127220.
+IN_PROC_BROWSER_TEST_F(OmniboxFocusInteractiveTest, TabFocusStealingFromOopif) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // CSP of the NTP page enforces that only HTTPS subframes may be used.
+  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
+  https_server.AddDefaultHandlers(GetChromeTestDataDir());
+  https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
+  ASSERT_TRUE(https_server.Start());
+
+  // Open the new tab, focus should be on the location bar.
+  chrome::NewTab(browser());
+  ASSERT_NO_FATAL_FAILURE(EXPECT_TRUE(content::WaitForLoadStop(
+      browser()->tab_strip_model()->GetActiveWebContents())));
+  EXPECT_TRUE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));
+  EXPECT_FALSE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_TAB_CONTAINER));
+
+  // Focus the tab contents.
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  web_contents->Focus();
+  EXPECT_FALSE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));
+  EXPECT_TRUE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_TAB_CONTAINER));
+
+  // Inject a cross-site subframe into the NTP (simulating opening a
+  // menu of Google applications from the NTP).
+  const char kFrameInjectionScriptTemplate[] = R"(
+      f = document.createElement('iframe');
+      f.src = $1;
+      document.body.appendChild(f);
+  )";
+  GURL subframe_url = https_server.GetURL("/title1.html");
+  {
+    content::TestNavigationObserver nav_observer(web_contents);
+    ASSERT_TRUE(content::ExecuteScript(
+        web_contents,
+        content::JsReplace(kFrameInjectionScriptTemplate, subframe_url)));
+    nav_observer.Wait();
+  }
+
+  // Verify that the subframe has a different scheme and a different process
+  // from the main frame.  This ensures that in the next step the navigation
+  // will not be triggered by the regular BeginNavigation path, but instead
+  // will go through content::RenderFrameProxyHost::OpenURL.
+  size_t number_of_frames = web_contents->GetAllFrames().size();
+  ASSERT_LE(2u, number_of_frames);
+  content::RenderFrameHost* subframe =
+      web_contents->GetAllFrames()[number_of_frames - 1];
+  content::RenderFrameHost* main_frame = web_contents->GetMainFrame();
+  EXPECT_EQ(subframe_url, subframe->GetLastCommittedURL());
+  EXPECT_NE(subframe->GetLastCommittedURL().scheme(),
+            main_frame->GetLastCommittedURL().scheme());
+  EXPECT_NE(subframe->GetProcess()->GetID(), main_frame->GetProcess()->GetID());
+
+  // Trigger a subframe-initiated navigation of the main frame.
+  const char kLinkClickingScriptTemplate[] = R"(
+      a = document.createElement('a');
+      a.href = $1;
+      a.innerText = 'test link';
+      a.target = '_top';
+      document.body.appendChild(a)
+      a.click();
+  )";
+  GURL target_url = embedded_test_server()->GetURL("/title2.html");
+  {
+    content::TestNavigationObserver nav_observer(web_contents);
+    ASSERT_TRUE(content::ExecuteScript(
+        subframe, content::JsReplace(kLinkClickingScriptTemplate, target_url)));
+    nav_observer.Wait();
+  }
+  EXPECT_EQ(target_url, web_contents->GetLastCommittedURL());
+
+  // Verify that during the navigation, the tab contents stayed focused.
+  EXPECT_FALSE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));
+  EXPECT_TRUE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_TAB_CONTAINER));
+
+  // Secondary verification: Focus should move to the Omnibox after pressing the
+  // Home button.
+  {
+    content::TestNavigationObserver nav_observer(web_contents);
+    chrome::Home(browser(), WindowOpenDisposition::CURRENT_TAB);
+    nav_observer.Wait();
+  }
+  EXPECT_TRUE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));
+  EXPECT_FALSE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_TAB_CONTAINER));
+}
+
+// Tab focus should not be stolen by the omnibox - https://crbug.com/1127220.
+IN_PROC_BROWSER_TEST_F(OmniboxFocusInteractiveTest,
+                       TabFocusStealingFromMainFrame) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Open the new tab, focus should be on the location bar.
+  chrome::NewTab(browser());
+  ASSERT_NO_FATAL_FAILURE(EXPECT_TRUE(content::WaitForLoadStop(
+      browser()->tab_strip_model()->GetActiveWebContents())));
+  EXPECT_TRUE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));
+  EXPECT_FALSE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_TAB_CONTAINER));
+
+  // Focus the tab contents.
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  web_contents->Focus();
+  EXPECT_FALSE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));
+  EXPECT_TRUE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_TAB_CONTAINER));
+
+  // Trigger a renderer-initiated navigation of the main frame.
+  const char kLinkClickingScriptTemplate[] = R"(
+      a = document.createElement('a');
+      a.href = $1;
+      a.innerText = 'test link';
+      document.body.appendChild(a)
+      a.click();
+  )";
+  GURL target_url = embedded_test_server()->GetURL("/title2.html");
+  {
+    content::TestNavigationObserver nav_observer(web_contents);
+    ASSERT_TRUE(content::ExecuteScript(
+        web_contents,
+        content::JsReplace(kLinkClickingScriptTemplate, target_url)));
+    nav_observer.Wait();
+  }
+  EXPECT_EQ(target_url, web_contents->GetLastCommittedURL());
+
+  // Verify that during the navigation, the tab contents stayed focused.
+  EXPECT_FALSE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));
+  EXPECT_TRUE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_TAB_CONTAINER));
+
+  // Secondary verification: Focus should move to the Omnibox after pressing the
+  // Home button.
+  {
+    content::TestNavigationObserver nav_observer(web_contents);
+    chrome::Home(browser(), WindowOpenDisposition::CURRENT_TAB);
+    nav_observer.Wait();
+  }
+  EXPECT_TRUE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));
+  EXPECT_FALSE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_TAB_CONTAINER));
+}
+
 }  // namespace extensions
