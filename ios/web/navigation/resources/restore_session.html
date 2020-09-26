@@ -109,16 +109,29 @@
      * go backwards.
      */
     function _crFinishSessionRestoration(offset) {
-      try {
-        history.go(offset);
-        // Queue a reload to redirect to the target URL after history.go
-        // is processed.
-        setTimeout(() => {
-          location.reload();
-        });
-      } catch (e) {
-        handleError(e.name + ": " + e.message + " offset: " + offset);
-      }
+      // Webkit indirectly forces a user gesture on the final restore
+      // navigations because this method is called from native code via
+      // ExecuteJavaScript. This has unintended consequences (such as triggering
+      // universal app links). Instead, discard the gesture by calling the same
+      // setInterval twice as WebKit won't propagate the gesture the second
+      // time.
+      var skipped_first_interval = false;
+      var finalizeInterval = setInterval(() => {
+        if (skipped_first_interval) {
+          try {
+            window.clearInterval(finalizeInterval);
+            history.go(offset);
+            // Queue a reload to redirect to the target URL after history.go
+            // is processed.
+            setTimeout(() => {
+              location.reload();
+            });
+          } catch (e) {
+            handleError(e.name + ": " + e.message + " offset: " + offset);
+          }
+        }
+        skipped_first_interval = true;
+      }, 0)
     }
 
     /**
