@@ -19,6 +19,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
+#include "base/format_macros.h"
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
@@ -711,17 +712,6 @@ class ArcVmClientAdapter : public ArcClientAdapter,
         JobDesc{
             kArcVmMountRemovableMediaJobName, UpstartOperation::JOB_START, {}},
     };
-    if (ShouldStartAdbd(*is_dev_mode_, is_host_on_vm_,
-                        file_system_status.has_adbd_json(),
-                        *is_adb_over_usb_disabled_) ||
-        g_enable_adb_over_usb_for_testing) {
-      // Start the daemon for supporting adb-over-usb.
-      std::vector<std::string> environment_for_adbd = {"SERIALNUMBER=" +
-                                                       serial_number_};
-      jobs.emplace_back(JobDesc{kArcVmAdbdJobName,
-                                UpstartOperation::JOB_STOP_AND_START,
-                                std::move(environment_for_adbd)});
-    }
     ConfigureUpstartJobs(
         std::move(jobs),
         base::BindOnce(&ArcVmClientAdapter::OnConfigureUpstartJobsOnUpgradeArc,
@@ -752,10 +742,15 @@ class ArcVmClientAdapter : public ArcClientAdapter,
         user_id_hash_, cpus, params.demo_session_apps_path, file_system_status,
         std::move(kernel_cmdline));
 
+    const bool should_start_adbd =
+        ShouldStartAdbd(*is_dev_mode_, is_host_on_vm_,
+                        file_system_status.has_adbd_json(),
+                        *is_adb_over_usb_disabled_) ||
+        g_enable_adb_over_usb_for_testing;
     GetConciergeClient()->StartArcVm(
-        start_request,
-        base::BindOnce(&ArcVmClientAdapter::OnStartArcVmReply,
-                       weak_factory_.GetWeakPtr(), std::move(callback)));
+        start_request, base::BindOnce(&ArcVmClientAdapter::OnStartArcVmReply,
+                                      weak_factory_.GetWeakPtr(),
+                                      should_start_adbd, std::move(callback)));
 
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
@@ -769,6 +764,7 @@ class ArcVmClientAdapter : public ArcClientAdapter,
   }
 
   void OnStartArcVmReply(
+      bool should_start_adbd,
       chromeos::VoidDBusMethodCallback callback,
       base::Optional<vm_tools::concierge::StartVmResponse> reply) {
     if (!reply.has_value()) {
@@ -785,9 +781,37 @@ class ArcVmClientAdapter : public ArcClientAdapter,
       return;
     }
     current_cid_ = response.vm_info().cid();
-
     VLOG(1) << "ARCVM started cid=" << current_cid_;
-    std::move(callback).Run(true);
+
+    if (!should_start_adbd) {
+      // No need to start arcvm-adbd. Run the |callback| now.
+      std::move(callback).Run(true);
+      return;
+    }
+
+    // Start the daemon for supporting adb-over-usb.
+    VLOG(1) << "Starting arcvm-adbd";
+    std::vector<std::string> environment_for_adbd = {
+        "SERIALNUMBER=" + serial_number_,
+        base::StringPrintf("ARCVM_CID=%" PRId64, current_cid_)};
+    std::deque<JobDesc> jobs{JobDesc{kArcVmAdbdJobName,
+                                     UpstartOperation::JOB_STOP_AND_START,
+                                     std::move(environment_for_adbd)}};
+    ConfigureUpstartJobs(
+        std::move(jobs),
+        base::BindOnce(&ArcVmClientAdapter::OnConfigureUpstartJobsAfterVmStart,
+                       weak_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
+  void OnConfigureUpstartJobsAfterVmStart(
+      chromeos::VoidDBusMethodCallback callback,
+      bool result) {
+    if (!result) {
+      LOG(ERROR) << "ConfigureUpstartJobs (after starting ARCVM) failed. "
+                    "Stopping the VM..";
+      StopArcInstanceInternal();
+    }
+    std::move(callback).Run(result);
   }
 
   void OnArcInstanceStopped() {

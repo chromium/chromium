@@ -751,6 +751,7 @@ TEST_F(ArcVmClientAdapterTest, UpgradeArc_StartArcVmProxyFailure) {
 }
 
 // Tests that UpgradeArc() handles arcvm-adbd stop failures properly.
+// Note that arcvm-adbd is restarted AFTER ARCVM is started.
 TEST_F(ArcVmClientAdapterTest, UpgradeArc_StopArcVmAdbdFailure) {
   SetValidUserInfo();
   StartMiniArc();
@@ -762,9 +763,13 @@ TEST_F(ArcVmClientAdapterTest, UpgradeArc_StopArcVmAdbdFailure) {
   UpgradeArc(true);
   EXPECT_TRUE(GetTestConciergeClient()->start_arc_vm_called());
   EXPECT_FALSE(arc_instance_stopped_called());
+
+  // Make sure StopVm() is not called.
+  EXPECT_FALSE(GetTestConciergeClient()->stop_vm_called());
 }
 
 // Tests that UpgradeArc() handles arcvm-adbd startup failures properly.
+// Note that arcvm-adbd is restarted AFTER ARCVM is started.
 TEST_F(ArcVmClientAdapterTest, UpgradeArc_StartArcVmAdbdFailure) {
   SetValidUserInfo();
   StartMiniArc();
@@ -774,18 +779,14 @@ TEST_F(ArcVmClientAdapterTest, UpgradeArc_StartArcVmAdbdFailure) {
 
   EnableAdbOverUsbForTesting();
   UpgradeArc(false);
-  EXPECT_FALSE(GetTestConciergeClient()->start_arc_vm_called());
+  EXPECT_TRUE(GetTestConciergeClient()->start_arc_vm_called());
   EXPECT_FALSE(arc_instance_stopped_called());
 
-  // Try to stop the VM. StopVm will fail in this case because
-  // no VM is running.
-  vm_tools::concierge::StopVmResponse response;
-  response.set_success(false);
-  GetTestConciergeClient()->set_stop_vm_response(response);
-  adapter()->StopArcInstance(/*on_shutdown=*/false,
-                             /*should_backup_log=*/false);
-  run_loop()->Run();
+  // Make sure StopVm() *is* called.
   EXPECT_TRUE(GetTestConciergeClient()->stop_vm_called());
+  // Run the loop and make sure the VM is stopped.
+  SendVmStoppedSignal();
+  run_loop()->Run();
   EXPECT_TRUE(arc_instance_stopped_called());
 }
 
