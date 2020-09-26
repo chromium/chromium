@@ -5,8 +5,12 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROMEOS_ACCESSIBILITY_SECTION_H_
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROMEOS_ACCESSIBILITY_SECTION_H_
 
+#include "base/scoped_observer.h"
 #include "chrome/browser/ui/webui/settings/chromeos/os_settings_section.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "content/public/browser/tts_controller.h"
+#include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extension_registry_observer.h"
 
 class PrefService;
 
@@ -20,7 +24,9 @@ namespace settings {
 class SearchTagRegistry;
 
 // Provides UI strings and search tags for Accessibility settings.
-class AccessibilitySection : public OsSettingsSection {
+class AccessibilitySection : public OsSettingsSection,
+                             public content::VoicesChangedDelegate,
+                             public extensions::ExtensionRegistryObserver {
  public:
   AccessibilitySection(Profile* profile,
                        SearchTagRegistry* search_tag_registry,
@@ -37,10 +43,23 @@ class AccessibilitySection : public OsSettingsSection {
   std::string GetSectionPath() const override;
   void RegisterHierarchy(HierarchyGenerator* generator) const override;
 
+  // content::VoicesChangedDelegate:
+  void OnVoicesChanged() override;
+
+  // extensions::ExtensionRegistryObserver:
+  void OnExtensionLoaded(content::BrowserContext* browser_context,
+                         const extensions::Extension* extension) override;
+  void OnExtensionUnloaded(content::BrowserContext* browser_context,
+                           const extensions::Extension* extension,
+                           extensions::UnloadedExtensionReason reason) override;
+
   void UpdateSearchTags();
+  void UpdateTextToSpeechVoiceSearchTags();
+  void UpdateTextToSpeechEnginesSearchTags();
 
   PrefService* pref_service_;
   PrefChangeRegistrar pref_change_registrar_;
+  extensions::ExtensionRegistry* extension_registry_ = nullptr;
 };
 
 }  // namespace settings
