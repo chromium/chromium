@@ -58,6 +58,28 @@ FlocIdProviderImpl::FlocIdProviderImpl(
 
 FlocIdProviderImpl::~FlocIdProviderImpl() = default;
 
+std::string FlocIdProviderImpl::GetInterestCohortForJsApi(
+    const url::Origin& requesting_origin,
+    const net::SiteForCookies& site_for_cookies) const {
+  // These checks could be / become unnecessary, as we are planning on
+  // invalidating the |floc_id_| whenever a setting is disabled. Check them
+  // anyway to be safe.
+  if (!IsSyncHistoryEnabled() || !AreThirdPartyCookiesAllowed())
+    return std::string();
+
+  // Only allow floc access if cookie access is allowed.
+  if (!cookie_settings_->IsCookieAccessAllowed(
+          requesting_origin.GetURL(), site_for_cookies.RepresentativeUrl(),
+          base::nullopt)) {
+    return std::string();
+  }
+
+  if (!floc_id_.IsValid())
+    return std::string();
+
+  return floc_id_.ToString();
+}
+
 void FlocIdProviderImpl::NotifyFlocUpdated(ComputeFlocTrigger trigger) {
   if (!base::FeatureList::IsEnabled(features::kFlocIdComputedEventLogging))
     return;
@@ -93,7 +115,7 @@ void FlocIdProviderImpl::NotifyFlocUpdated(ComputeFlocTrigger trigger) {
   user_event_service_->RecordUserEvent(std::move(specifics));
 }
 
-bool FlocIdProviderImpl::IsSyncHistoryEnabled() {
+bool FlocIdProviderImpl::IsSyncHistoryEnabled() const {
   syncer::SyncUserSettings* setting = sync_service_->GetUserSettings();
   DCHECK(setting);
 
@@ -102,7 +124,7 @@ bool FlocIdProviderImpl::IsSyncHistoryEnabled() {
              syncer::HISTORY_DELETE_DIRECTIVES);
 }
 
-bool FlocIdProviderImpl::AreThirdPartyCookiesAllowed() {
+bool FlocIdProviderImpl::AreThirdPartyCookiesAllowed() const {
   return !cookie_settings_->ShouldBlockThirdPartyCookies();
 }
 

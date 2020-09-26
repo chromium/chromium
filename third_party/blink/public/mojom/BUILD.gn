@@ -54,6 +54,7 @@ mojom("mojom_platform") {
     "feature_policy/feature_policy_feature.mojom",
     "feature_policy/policy_disposition.mojom",
     "feature_policy/policy_value.mojom",
+    "federated_learning/floc.mojom",
     "fetch/fetch_api_request.mojom",
     "fetch/fetch_api_response.mojom",
     "file/file_utilities.mojom",

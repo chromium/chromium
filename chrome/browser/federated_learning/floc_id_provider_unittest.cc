@@ -13,12 +13,14 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/history/core/browser/history_database_params.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/test/test_history_database.h"
 #include "components/sync/driver/test_sync_service.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/sync_user_events/fake_user_event_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
@@ -46,6 +48,39 @@ class FakeFlocRemotePermissionService : public FlocRemotePermissionService {
   bool swaa_nac_account_enabled_ = true;
 };
 
+class FakeCookieSettings : public content_settings::CookieSettings {
+ public:
+  using content_settings::CookieSettings::CookieSettings;
+
+  void GetCookieSettingInternal(const GURL& url,
+                                const GURL& first_party_url,
+                                bool is_third_party_request,
+                                content_settings::SettingSource* source,
+                                ContentSetting* cookie_setting) const override {
+    *cookie_setting =
+        allow_cookies_internal_ ? CONTENT_SETTING_ALLOW : CONTENT_SETTING_BLOCK;
+  }
+
+  bool ShouldBlockThirdPartyCookies() const override {
+    return should_block_third_party_cookies_;
+  }
+
+  void set_should_block_third_party_cookies(
+      bool should_block_third_party_cookies) {
+    should_block_third_party_cookies_ = should_block_third_party_cookies;
+  }
+
+  void set_allow_cookies_internal(bool allow_cookies_internal) {
+    allow_cookies_internal_ = allow_cookies_internal;
+  }
+
+ private:
+  ~FakeCookieSettings() override = default;
+
+  bool should_block_third_party_cookies_ = false;
+  bool allow_cookies_internal_ = true;
+};
+
 class MockFlocIdProvider : public FlocIdProviderImpl {
  public:
   using FlocIdProviderImpl::FlocIdProviderImpl;
@@ -56,21 +91,12 @@ class MockFlocIdProvider : public FlocIdProviderImpl {
     FlocIdProviderImpl::NotifyFlocUpdated(trigger);
   }
 
-  bool AreThirdPartyCookiesAllowed() override {
-    return third_party_cookies_allowed_;
-  }
-
   size_t floc_update_notification_count() const {
     return floc_update_notification_count_;
   }
 
-  void set_third_party_cookies_allowed(bool allowed) {
-    third_party_cookies_allowed_ = allowed;
-  }
-
  private:
   size_t floc_update_notification_count_ = 0u;
-  bool third_party_cookies_allowed_ = true;
 };
 
 }  // namespace
@@ -85,6 +111,13 @@ class FlocIdProviderUnitTest : public testing::Test {
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
 
+    content_settings::ContentSettingsRegistry::GetInstance()->ResetForTest();
+    content_settings::CookieSettings::RegisterProfilePrefs(prefs_.registry());
+    HostContentSettingsMap::RegisterProfilePrefs(prefs_.registry());
+    settings_map_ = new HostContentSettingsMap(
+        &prefs_, /*is_off_the_record=*/false, /*store_last_modified=*/false,
+        /*restore_session=*/false);
+
     TestingBrowserProcess::GetGlobal()->SetFlocBlocklistService(
         std::make_unique<FlocBlocklistService>());
 
@@ -97,12 +130,16 @@ class FlocIdProviderUnitTest : public testing::Test {
         syncer::SyncService::TransportState::DISABLED);
 
     fake_user_event_service_ = std::make_unique<syncer::FakeUserEventService>();
+
     fake_floc_remote_permission_service_ =
         std::make_unique<FakeFlocRemotePermissionService>(
             /*url_loader_factory=*/nullptr);
 
+    fake_cookie_settings_ = base::MakeRefCounted<FakeCookieSettings>(
+        settings_map_.get(), &prefs_, false, "chrome-extension");
+
     floc_id_provider_ = std::make_unique<MockFlocIdProvider>(
-        test_sync_service_.get(), /*cookie_settings=*/nullptr,
+        test_sync_service_.get(), fake_cookie_settings_,
         fake_floc_remote_permission_service_.get(), history_service_.get(),
         fake_user_event_service_.get());
 
@@ -110,6 +147,7 @@ class FlocIdProviderUnitTest : public testing::Test {
   }
 
   void TearDown() override {
+    settings_map_->ShutdownOnUIThread();
     history_service_->RemoveObserver(floc_id_provider_.get());
   }
 
@@ -171,6 +209,10 @@ class FlocIdProviderUnitTest : public testing::Test {
     floc_id_provider_->first_floc_computation_triggered_ = triggered;
   }
 
+  void set_floc_id(const FlocId& floc_id) {
+    floc_id_provider_->floc_id_ = floc_id;
+  }
+
   void SetRemoteSwaaNacAccountEnabled(bool enabled) {
     fake_floc_remote_permission_service_->set_swaa_nac_account_enabled(enabled);
   }
@@ -183,11 +225,15 @@ class FlocIdProviderUnitTest : public testing::Test {
  protected:
   content::BrowserTaskEnvironment task_environment_;
 
+  sync_preferences::TestingPrefServiceSyncable prefs_;
+  scoped_refptr<HostContentSettingsMap> settings_map_;
+
   std::unique_ptr<history::HistoryService> history_service_;
   std::unique_ptr<syncer::TestSyncService> test_sync_service_;
   std::unique_ptr<syncer::FakeUserEventService> fake_user_event_service_;
   std::unique_ptr<FakeFlocRemotePermissionService>
       fake_floc_remote_permission_service_;
+  scoped_refptr<FakeCookieSettings> fake_cookie_settings_;
   std::unique_ptr<MockFlocIdProvider> floc_id_provider_;
 
   base::ScopedTempDir temp_dir_;
@@ -398,7 +444,7 @@ TEST_F(FlocIdProviderUnitTest,
   test_sync_service_->SetTransportState(
       syncer::SyncService::TransportState::ACTIVE);
 
-  floc_id_provider_->set_third_party_cookies_allowed(false);
+  fake_cookie_settings_->set_should_block_third_party_cookies(true);
 
   base::OnceCallback<void(bool)> cb = base::BindOnce(
       [](bool can_compute_floc) { ASSERT_FALSE(can_compute_floc); });
@@ -796,6 +842,60 @@ TEST_F(FlocIdProviderUnitTest, TurnSyncOffAndOn) {
   ASSERT_EQ(3u, floc_id_provider_->floc_update_notification_count());
   ASSERT_EQ(FlocId::CreateFromHistory({domain}).ToDebugHeaderValue(),
             floc_id().ToDebugHeaderValue());
+}
+
+TEST_F(FlocIdProviderUnitTest, GetInterestCohortForJsApiMethod) {
+  test_sync_service_->SetTransportState(
+      syncer::SyncService::TransportState::ACTIVE);
+  set_floc_id(FlocId(123));
+
+  EXPECT_EQ(FlocId(123).ToString(),
+            floc_id_provider_->GetInterestCohortForJsApi(
+                /*requesting_origin=*/{}, /*site_for_cookies=*/{}));
+}
+
+TEST_F(FlocIdProviderUnitTest,
+       GetInterestCohortForJsApiMethod_SyncHistoryDisabled) {
+  set_floc_id(FlocId(123));
+  EXPECT_EQ(std::string(),
+            floc_id_provider_->GetInterestCohortForJsApi(
+                /*requesting_origin=*/{}, /*site_for_cookies=*/{}));
+}
+
+TEST_F(FlocIdProviderUnitTest,
+       GetInterestCohortForJsApiMethod_ThirdPartyCookiesDisabled) {
+  test_sync_service_->SetTransportState(
+      syncer::SyncService::TransportState::ACTIVE);
+  set_floc_id(FlocId(123));
+
+  fake_cookie_settings_->set_should_block_third_party_cookies(true);
+
+  EXPECT_EQ(std::string(),
+            floc_id_provider_->GetInterestCohortForJsApi(
+                /*requesting_origin=*/{}, /*site_for_cookies=*/{}));
+}
+
+TEST_F(FlocIdProviderUnitTest,
+       GetInterestCohortForJsApiMethod_CookiesContentSettingsDisallowed) {
+  test_sync_service_->SetTransportState(
+      syncer::SyncService::TransportState::ACTIVE);
+  set_floc_id(FlocId(123));
+
+  fake_cookie_settings_->set_allow_cookies_internal(false);
+
+  EXPECT_EQ(std::string(),
+            floc_id_provider_->GetInterestCohortForJsApi(
+                /*requesting_origin=*/{}, /*site_for_cookies=*/{}));
+}
+
+TEST_F(FlocIdProviderUnitTest,
+       GetInterestCohortForJsApiMethod_FlocUnavailable) {
+  test_sync_service_->SetTransportState(
+      syncer::SyncService::TransportState::ACTIVE);
+
+  EXPECT_EQ(std::string(),
+            floc_id_provider_->GetInterestCohortForJsApi(
+                /*requesting_origin=*/{}, /*site_for_cookies=*/{}));
 }
 
 }  // namespace federated_learning

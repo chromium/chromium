@@ -887,6 +887,8 @@ source_set("browser") {
     "eye_dropper_chooser_impl.h",
     "feature_observer.cc",
     "feature_observer.h",
+    "federated_learning/floc_service_impl.cc",
+    "federated_learning/floc_service_impl.h",
     "field_trial_recorder.cc",
     "field_trial_recorder.h",
     "field_trial_synchronizer.cc",

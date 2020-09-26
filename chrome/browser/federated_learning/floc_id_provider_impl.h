@@ -69,11 +69,15 @@ class FlocIdProviderImpl : public FlocIdProvider,
   FlocIdProviderImpl(const FlocIdProviderImpl&) = delete;
   FlocIdProviderImpl& operator=(const FlocIdProviderImpl&) = delete;
 
+  std::string GetInterestCohortForJsApi(
+      const url::Origin& requesting_origin,
+      const net::SiteForCookies& site_for_cookies) const override;
+
  protected:
   // protected virtual for testing.
   virtual void NotifyFlocUpdated(ComputeFlocTrigger trigger);
-  virtual bool IsSyncHistoryEnabled();
-  virtual bool AreThirdPartyCookiesAllowed();
+  virtual bool IsSyncHistoryEnabled() const;
+  virtual bool AreThirdPartyCookiesAllowed() const;
   virtual void IsSwaaNacAccountEnabled(CanComputeFlocCallback callback);
 
  private:

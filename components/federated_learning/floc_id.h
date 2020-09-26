@@ -36,11 +36,15 @@ class FlocId {
   bool IsValid() const;
   uint64_t ToUint64() const;
 
+  // The id followed by a version number. "null" if |id_| is invalid. To be
+  // deprecated soon.
   std::string ToDebugHeaderValue() const;
 
- private:
-  std::string ToHeaderValue() const;
+  // The id followed by a version number, which is the format be exposed to HTTP
+  // headers or JS API. Precondition: |id_| must be valid.
+  std::string ToString() const;
 
+ private:
   base::Optional<uint64_t> id_;
 };
 

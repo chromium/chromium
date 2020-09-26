@@ -6312,6 +6312,40 @@ ScriptPromise Document::hasTrustToken(ScriptState* script_state,
   return promise;
 }
 
+mojom::blink::FlocService* Document::GetFlocService(
+    ExecutionContext* execution_context) {
+  if (!data_->floc_service_.is_bound()) {
+    execution_context->GetBrowserInterfaceBroker().GetInterface(
+        data_->floc_service_.BindNewPipeAndPassReceiver(
+            execution_context->GetTaskRunner(TaskType::kMiscPlatformAPI)));
+  }
+  return data_->floc_service_.get();
+}
+
+ScriptPromise Document::interestCohort(ScriptState* script_state) {
+  ScriptPromiseResolver* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+
+  ScriptPromise promise = resolver->Promise();
+
+  GetFlocService(ExecutionContext::From(script_state))
+      ->GetInterestCohort(WTF::Bind(
+          [](ScriptPromiseResolver* resolver, Document* document,
+             const String& interest_cohort) {
+            DCHECK(resolver);
+            DCHECK(document);
+
+            if (interest_cohort.IsEmpty()) {
+              resolver->Reject();
+            } else {
+              resolver->Resolve(interest_cohort);
+            }
+          },
+          WrapPersistent(resolver), WrapPersistent(this)));
+
+  return promise;
+}
+
 void Document::HasTrustTokensAnswererConnectionError() {
   data_->has_trust_tokens_answerer_.reset();
   for (const auto& resolver : data_->pending_has_trust_tokens_resolvers_) {

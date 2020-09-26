@@ -284,6 +284,10 @@ const base::Feature kStopNonTimersInBackground{
 const base::Feature kStorageAccessAPI{"StorageAccessAPI",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enable the Interest Cohort API. https://crbug.com/1062736.
+const base::Feature kInterestCohortAPI{"InterestCohortAPI",
+                                       base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enable text snippets in URL fragments. https://crbug.com/919204.
 const base::Feature kTextFragmentAnchor{"TextFragmentAnchor",
                                         base::FEATURE_ENABLED_BY_DEFAULT};

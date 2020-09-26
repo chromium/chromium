@@ -1054,6 +1054,13 @@ void ContentBrowserClient::AugmentNavigationDownloadPolicy(
     bool user_gesture,
     NavigationDownloadPolicy* download_policy) {}
 
+std::string ContentBrowserClient::GetInterestCohortForJsApi(
+    content::BrowserContext* browser_context,
+    const url::Origin& requesting_origin,
+    const net::SiteForCookies& site_for_cookies) {
+  return std::string();
+}
+
 bool ContentBrowserClient::IsBluetoothScanningBlocked(
     content::BrowserContext* browser_context,
     const url::Origin& requesting_origin,

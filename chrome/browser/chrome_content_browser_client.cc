@@ -60,6 +60,8 @@
 #include "chrome/browser/engagement/site_engagement_service.h"
 #include "chrome/browser/extensions/chrome_extension_cookies.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
+#include "chrome/browser/federated_learning/floc_id_provider.h"
+#include "chrome/browser/federated_learning/floc_id_provider_factory.h"
 #include "chrome/browser/font_family_cache.h"
 #include "chrome/browser/gpu/chrome_browser_main_extra_parts_gpu.h"
 #include "chrome/browser/hid/chrome_hid_delegate.h"
@@ -5625,6 +5627,21 @@ void ChromeContentBrowserClient::AugmentNavigationDownloadPolicy(
       }
     }
   }
+}
+
+std::string ChromeContentBrowserClient::GetInterestCohortForJsApi(
+    content::BrowserContext* browser_context,
+    const url::Origin& requesting_origin,
+    const net::SiteForCookies& site_for_cookies) {
+  federated_learning::FlocIdProvider* floc_id_provider =
+      federated_learning::FlocIdProviderFactory::GetForProfile(
+          Profile::FromBrowserContext(browser_context));
+
+  if (!floc_id_provider)
+    return std::string();
+
+  return floc_id_provider->GetInterestCohortForJsApi(requesting_origin,
+                                                     site_for_cookies);
 }
 
 bool ChromeContentBrowserClient::IsBluetoothScanningBlocked(

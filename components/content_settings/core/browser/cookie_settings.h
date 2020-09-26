@@ -119,8 +119,8 @@ class CookieSettings : public CookieSettingsBase,
 
   // Returns true if third party cookies should be blocked.
   //
-  // This method may be called on any thread.
-  bool ShouldBlockThirdPartyCookies() const;
+  // This method may be called on any thread. Virtual for testing.
+  virtual bool ShouldBlockThirdPartyCookies() const;
 
   // content_settings::CookieSettingsBase:
   void GetSettingForLegacyCookieAccess(const std::string& cookie_domain,
@@ -140,10 +140,10 @@ class CookieSettings : public CookieSettingsBase,
 
   void RemoveObserver(Observer* obs) { observers_.RemoveObserver(obs); }
 
-
- private:
+ protected:
   ~CookieSettings() override;
 
+ private:
   // Returns whether third-party cookie blocking should be bypassed (i.e. always
   // allow the cookie regardless of cookie content settings and third-party
   // cookie blocking settings.

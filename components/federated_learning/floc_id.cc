@@ -61,10 +61,10 @@ uint64_t FlocId::ToUint64() const {
 std::string FlocId::ToDebugHeaderValue() const {
   if (!id_.has_value())
     return "null";
-  return ToHeaderValue();
+  return ToString();
 }
 
-std::string FlocId::ToHeaderValue() const {
+std::string FlocId::ToString() const {
   DCHECK(id_.has_value());
   return base::StrCat({base::NumberToString(id_.value()), ".", kFlocVersion});
 }

@@ -3014,6 +3014,7 @@ enum WebFeature {
   kXRFrameGetDepthInformation = 3684,
   kXRDepthInformationGetDepth = 3685,
   kXRDepthInformationDataAttribute = 3686,
+  kInterestCohortAPI_interestCohort_Method = 3687,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

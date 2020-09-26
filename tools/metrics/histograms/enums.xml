@@ -29474,6 +29474,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3684" label="XRFrameGetDepthInformation"/>
   <int value="3685" label="XRDepthInformationGetDepth"/>
   <int value="3686" label="XRDepthInformationDataAttribute"/>
+  <int value="3687" label="InterestCohortAPI_interestCohort_Method"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

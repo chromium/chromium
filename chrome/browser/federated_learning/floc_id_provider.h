@@ -7,6 +7,8 @@
 
 #include "components/federated_learning/floc_id.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "net/cookies/site_for_cookies.h"
+#include "url/origin.h"
 
 namespace federated_learning {
 
@@ -14,6 +16,12 @@ namespace federated_learning {
 // components about the updated id.
 class FlocIdProvider : public KeyedService {
  public:
+  // Get the interest cohort. Use |requesting_origin| and first-party
+  // context |site_for_cookies| for access permission check.
+  virtual std::string GetInterestCohortForJsApi(
+      const url::Origin& requesting_origin,
+      const net::SiteForCookies& site_for_cookies) const = 0;
+
   ~FlocIdProvider() override = default;
 };
 

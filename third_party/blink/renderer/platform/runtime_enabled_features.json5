@@ -950,6 +950,10 @@
       status: "stable",
     },
     {
+      // Enabled when blink::features::kInterestCohortAPI is enabled.
+      name: "InterestCohortAPI",
+    },
+    {
       name: "IntersectionObserverDocumentScrollingElementRoot",
       status: "stable",
     },

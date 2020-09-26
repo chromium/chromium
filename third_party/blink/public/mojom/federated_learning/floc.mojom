@@ -1,0 +1,16 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+// The Floc service provides a method to request the interest cohort. It is
+// a per-frame interface hosted in the browser process.
+// https://github.com/jkarlin/floc
+interface FlocService {
+
+  // Asynchronously get the interest cohort as a string. Empty string means
+  // permissions errors (e.g. cookies not allowed, etc.) or that the interest
+  // cohort is unavailable.
+  GetInterestCohort() => (string interest_cohort);
+};

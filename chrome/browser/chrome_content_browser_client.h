@@ -623,6 +623,11 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       bool user_gesture,
       content::NavigationDownloadPolicy* download_policy) override;
 
+  std::string GetInterestCohortForJsApi(
+      content::BrowserContext* browser_context,
+      const url::Origin& requesting_origin,
+      const net::SiteForCookies& site_for_cookies) override;
+
   bool IsBluetoothScanningBlocked(content::BrowserContext* browser_context,
                                   const url::Origin& requesting_origin,
                                   const url::Origin& embedding_origin) override;
