@@ -31,6 +31,7 @@ export const FittingType = {
 /**
  * @typedef {{
  *   messageId: string,
+ *   namedDestinationView: (string|undefined),
  *   pageNumber: number,
  * }}
  */

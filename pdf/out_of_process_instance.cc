@@ -211,6 +211,7 @@ constexpr char kJSGetNamedDestination[] = "namedDestination";
 // Reply with the page number of the named destination (Plugin -> Page)
 constexpr char kJSGetNamedDestinationReplyType[] = "getNamedDestinationReply";
 constexpr char kJSNamedDestinationPageNumber[] = "pageNumber";
+constexpr char kJSNamedDestinationView[] = "namedDestinationView";
 
 // Selecting text in document (Plugin -> Page)
 constexpr char kJSSetIsSelectingType[] = "setIsSelecting";
@@ -1652,6 +1653,16 @@ void OutOfProcessInstance::HandleGetNamedDestinationMessage(
   reply.Set(pp::Var(kJSNamedDestinationPageNumber),
             named_destination ? static_cast<int>(named_destination->page) : -1);
   reply.Set(pp::Var(kJSMessageId), dict.Get(pp::Var(kJSMessageId)).AsString());
+
+  // Handle named destination view.
+  if (named_destination && !named_destination->view.empty()) {
+    std::ostringstream view_stream;
+    view_stream << named_destination->view;
+    for (unsigned long i = 0; i < named_destination->num_params; ++i)
+      view_stream << "," << named_destination->params[i];
+
+    reply.Set(pp::Var(kJSNamedDestinationView), view_stream.str());
+  }
   PostMessage(reply);
 }
 

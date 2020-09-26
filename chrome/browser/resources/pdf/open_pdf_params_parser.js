@@ -10,7 +10,8 @@ import {FittingType, NamedDestinationMessageData, Point} from './constants.js';
  *   url: (string|undefined),
  *   zoom: (number|undefined),
  *   view: (!FittingType|undefined),
- *   viewPosition: (!Point|undefined)
+ *   viewPosition: (!Point|undefined),
+ *   position: (!Object|undefined),
  * }}
  */
 let OpenPdfParams;
@@ -100,6 +101,42 @@ export class OpenPdfParamsParser {
   }
 
   /**
+   * Parse view parameters which come from nameddest.
+   * @param {string} paramValue view value.
+   * @return {!OpenPdfParams} Map with view parameters.
+   * @private
+   */
+  parseNameddestViewParam_(paramValue) {
+    const viewModeComponents = paramValue.toLowerCase().split(',');
+    const viewMode = viewModeComponents[0];
+    const params = {};
+
+    if (viewMode === 'xyz' && viewModeComponents.length === 4) {
+      const x = parseFloat(viewModeComponents[1]);
+      const y = parseFloat(viewModeComponents[2]);
+      const zoom = parseFloat(viewModeComponents[3]);
+      // If |x|, |y| or |zoom| is NaN, the values of the current positions and
+      // zoom level are retained.
+      if (!Number.isNaN(x) && !Number.isNaN(y) && !Number.isNaN(zoom)) {
+        params['position'] = {x: x, y: y};
+        // A zoom of 0 should be treated as a zoom of null (See table 151 in ISO
+        // 32000-1 standard for more details about syntax of "XYZ".
+        if (zoom !== 0) {
+          params['zoom'] = zoom;
+        }
+      }
+      return params;
+    }
+
+    if (viewMode === 'fitr' && viewModeComponents.length === 5) {
+      // TODO(crbug.com/535978): Add support for fit type "FitR" in nameddest.
+      return params;
+    }
+
+    return this.parseViewParam_(paramValue);
+  }
+
+  /**
    * Parse the parameters encoded in the fragment of a URL.
    * @param {string} url to parse
    * @return {!URLSearchParams}
@@ -172,6 +209,12 @@ export class OpenPdfParamsParser {
           .then(data => {
             if (data.pageNumber !== -1) {
               params.page = data.pageNumber;
+            }
+            if (data.namedDestinationView) {
+              Object.assign(
+                  params,
+                  this.parseNameddestViewParam_(
+                      /** @type {string} */ (data.namedDestinationView)));
             }
             callback(params);
           });
