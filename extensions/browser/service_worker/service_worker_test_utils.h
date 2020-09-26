@@ -8,6 +8,7 @@
 #include "base/run_loop.h"
 #include "base/scoped_observer.h"
 #include "content/public/browser/service_worker_context_observer.h"
+#include "content/public/browser/storage_partition.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/process_manager_observer.h"
 #include "extensions/common/extension_id.h"
@@ -15,6 +16,7 @@
 
 namespace content {
 class ServiceWorkerContext;
+class BrowserContext;
 }
 
 namespace extensions {
@@ -25,7 +27,7 @@ class TestRegistrationObserver : public content::ServiceWorkerContextObserver {
  public:
   using RegistrationsMap = std::map<GURL, int>;
 
-  explicit TestRegistrationObserver(content::ServiceWorkerContext* context);
+  explicit TestRegistrationObserver(content::BrowserContext* browser_context);
   ~TestRegistrationObserver() override;
 
   TestRegistrationObserver(const TestRegistrationObserver&) = delete;

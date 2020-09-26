@@ -1650,13 +1650,9 @@ class TestWorkerObserver : public content::ServiceWorkerContextObserver {
 
 IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
                        EventsToStoppedWorker) {
-  content::StoragePartition* storage_partition =
-      content::BrowserContext::GetDefaultStoragePartition(browser()->profile());
-  content::ServiceWorkerContext* context =
-      storage_partition->GetServiceWorkerContext();
-
   // Set up an observer to wait for the registration to be stored.
-  service_worker_test_utils::TestRegistrationObserver observer(context);
+  service_worker_test_utils::TestRegistrationObserver observer(
+      browser()->profile());
 
   ExtensionTestMessageListener event_listener_added("ready", false);
   event_listener_added.set_failure_message("ERROR");
@@ -1674,6 +1670,10 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
   // Stop the service worker.
   {
     base::RunLoop run_loop;
+    content::ServiceWorkerContext* context =
+        content::BrowserContext::GetDefaultStoragePartition(
+            browser()->profile())
+            ->GetServiceWorkerContext();
     // The service worker is registered at the root scope.
     content::StopServiceWorkerForScope(context, extension->url(),
                                        run_loop.QuitClosure());
@@ -1913,15 +1913,11 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
 // Tests the restriction on registering service worker scripts at root scope.
 IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
                        ServiceWorkerScriptRootScope) {
-  content::StoragePartition* storage_partition =
-      content::BrowserContext::GetDefaultStoragePartition(browser()->profile());
-  content::ServiceWorkerContext* context =
-      storage_partition->GetServiceWorkerContext();
-
   // Set up an observer to track all SW registrations. We expect only
   // one for the extension's root scope. This test attempts to register
   // an additional service worker, which will fail.
-  service_worker_test_utils::TestRegistrationObserver observer(context);
+  service_worker_test_utils::TestRegistrationObserver observer(
+      browser()->profile());
   ExtensionTestMessageListener registration_listener("REGISTRATION_FAILED",
                                                      false);
   registration_listener.set_failure_message("WORKER_STARTED");
@@ -2207,13 +2203,9 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, TabsOnCreated) {
 #endif
 IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
                        MAYBE_PRE_FilteredEventsAfterRestart) {
-  content::StoragePartition* storage_partition =
-      content::BrowserContext::GetDefaultStoragePartition(browser()->profile());
-  content::ServiceWorkerContext* context =
-      storage_partition->GetServiceWorkerContext();
-
   // Set up an observer to wait for the registration to be stored.
-  service_worker_test_utils::TestRegistrationObserver observer(context);
+  service_worker_test_utils::TestRegistrationObserver observer(
+      browser()->profile());
 
   ExtensionTestMessageListener listener_added("ready", false);
   base::FilePath test_dir =

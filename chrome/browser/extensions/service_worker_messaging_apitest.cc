@@ -8,7 +8,6 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/version_info/version_info.h"
-#include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/service_worker_test_helpers.h"
 #include "extensions/browser/service_worker/service_worker_test_utils.h"
@@ -340,11 +339,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTest,
   // stopping the service worker doesn't cause message port in
   // |message_port_extension| to crash.
   ExtensionTestMessageListener worker_running_listener("worker_running", false);
-  content::ServiceWorkerContext* service_worker_context =
-      content::BrowserContext::GetDefaultStoragePartition(browser()->profile())
-          ->GetServiceWorkerContext();
   service_worker_test_utils::TestRegistrationObserver registration_observer(
-      service_worker_context);
+      browser()->profile());
 
   TestExtensionDir worker_extension_dir;
   const Extension* service_worker_extension =

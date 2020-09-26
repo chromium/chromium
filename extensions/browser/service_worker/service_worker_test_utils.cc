@@ -4,6 +4,7 @@
 
 #include "extensions/browser/service_worker/service_worker_test_utils.h"
 
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/service_worker_context.h"
 #include "extensions/common/constants.h"
 
@@ -13,8 +14,10 @@ namespace service_worker_test_utils {
 // TestRegistrationObserver ----------------------------------------------------
 
 TestRegistrationObserver::TestRegistrationObserver(
-    content::ServiceWorkerContext* context)
-    : context_(context) {
+    content::BrowserContext* browser_context)
+    : context_(
+          content::BrowserContext::GetDefaultStoragePartition(browser_context)
+              ->GetServiceWorkerContext()) {
   context_->AddObserver(this);
 }
 
