@@ -686,7 +686,7 @@ void TracingSamplerProfiler::StartTracing(
   // On Android the sampling profiler is implemented by tracing service and is
   // not yet supported by base::StackSamplingProfiler. So, only check this if
   // service does not support unwinding in current platform.
-  if (!base::StackSamplingProfiler::IsSupportedForCurrentPlatform())
+  if (!base::StackSamplingProfiler::IsSupported())
     return;
 #endif  // !(ANDROID_ARM64_UNWINDING_SUPPORTED ||
         // ANDROID_CFI_UNWINDING_SUPPORTED)

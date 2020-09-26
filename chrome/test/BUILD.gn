@@ -3771,7 +3771,6 @@ test("unit_tests") {
     "../common/mac/mock_launchd.mm",
     "../common/net/safe_search_util_unittest.cc",
     "../common/pref_names_util_unittest.cc",
-    "../common/profiler/thread_profiler_platform_configuration_unittest.cc",
     "../common/profiler/thread_profiler_unittest.cc",
     "../common/qr_code_generator/qr_code_generator_unittest.cc",
     "../renderer/chrome_content_renderer_client_unittest.cc",
