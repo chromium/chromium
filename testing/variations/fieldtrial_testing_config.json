@@ -4730,11 +4730,14 @@
                     "name": "DesktopExperiments",
                     "params": {
                         "MaxZeroSuggestMatches": "10",
+                        "OmniboxLocalZeroSuggestAgeThreshold": "7",
                         "OmniboxMaxURLMatches": "7",
                         "UIMaxAutocompleteMatches": "8"
                     },
                     "enable_features": [
                         "OmniboxDisplayTitleForCurrentUrl",
+                        "OmniboxLocalZeroSuggestAgeThreshold",
+                        "OmniboxLocalZeroSuggestFrecencyRanking",
                         "OmniboxMaxURLMatches",
                         "OmniboxMaxZeroSuggestMatches",
                         "OmniboxReactiveZeroSuggestionsOnNTPOmnibox",
