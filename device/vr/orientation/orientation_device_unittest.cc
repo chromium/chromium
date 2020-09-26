@@ -164,10 +164,6 @@ class VROrientationDeviceTest : public testing::Test {
     }
   }
 
-  void SetInlinePosesEnabled(bool enabled) {
-    device_->SetInlinePosesEnabled(enabled);
-  }
-
   std::unique_ptr<VROrientationSession> MakeDisplay() {
     mojo::PendingRemote<mojom::XRFrameDataProvider> data_provider;
     mojo::PendingRemote<mojom::XRSessionController> controller;
@@ -381,14 +377,6 @@ TEST_F(VROrientationDeviceTest, OrientationLandscape270Test) {
                    EXPECT_NEAR(ptr->orientation->z(), 0, 0.001);
                    EXPECT_NEAR(ptr->orientation->w(), 0.924, 0.001);
                  }));
-}
-
-TEST_F(VROrientationDeviceTest, NoMagicWindowPosesWhileBrowsing) {
-  InitializeDevice(FakeInitParams());
-
-  AssertInlineFrameDataAvailable(true);
-  SetInlinePosesEnabled(false);
-  AssertInlineFrameDataAvailable(false);
 }
 
 TEST_F(VROrientationDeviceTest, GetFrameDataHelper) {

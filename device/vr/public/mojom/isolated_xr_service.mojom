@@ -74,8 +74,6 @@ interface XRRuntime {
   ListenToDeviceChanges(
       pending_associated_remote<XRRuntimeEventListener> listener) =>
           (VRDisplayInfo? display_info);
-
-  SetInlinePosesEnabled(bool enable);
 };
 
 // Information required for rendering, used by ImmersiveOverlay.

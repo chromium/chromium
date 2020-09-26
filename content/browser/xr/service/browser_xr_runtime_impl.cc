@@ -538,10 +538,6 @@ void BrowserXRRuntimeImpl::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void BrowserXRRuntimeImpl::SetInlinePosesEnabled(bool enabled) {
-  runtime_->SetInlinePosesEnabled(enabled);
-}
-
 void BrowserXRRuntimeImpl::BeforeRuntimeRemoved() {
   DVLOG(1) << __func__ << ": id=" << id_;
 

@@ -93,10 +93,6 @@ mojo::PendingRemote<mojom::XRRuntime> VRDeviceBase::BindXRRuntime() {
   return runtime_receiver_.BindNewPipeAndPassRemote();
 }
 
-void VRDeviceBase::SetInlinePosesEnabled(bool enable) {
-  inline_poses_enabled_ = enable;
-}
-
 void LogViewerType(VrViewerType type) {
   base::UmaHistogramSparse("VRViewerType", static_cast<int>(type));
 }

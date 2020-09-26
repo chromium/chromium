@@ -80,7 +80,6 @@ class BrowserXRRuntimeImpl : public content::BrowserXRRuntime,
   // BrowserXRRuntime
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
-  void SetInlinePosesEnabled(bool enabled) override;
 
   // Called to allow the runtime to conduct any cleanup it needs to do before it
   // is removed.

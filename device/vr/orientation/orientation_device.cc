@@ -170,10 +170,6 @@ void VROrientationDevice::GetInlineFrameData(
     mojom::XRFrameDataProvider::GetFrameDataCallback callback) {
   // Orientation sessions should never be exclusive or presenting.
   DCHECK(!HasExclusiveSession());
-  if (!inline_poses_enabled_) {
-    std::move(callback).Run(nullptr);
-    return;
-  }
 
   mojom::VRPosePtr pose = mojom::VRPose::New();
 

@@ -36,7 +36,6 @@ class CONTENT_EXPORT BrowserXRRuntime {
 
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;
-  virtual void SetInlinePosesEnabled(bool enabled) = 0;
 };
 
 }  // namespace content

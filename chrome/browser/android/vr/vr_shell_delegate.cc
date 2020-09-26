@@ -32,15 +32,6 @@ namespace vr {
 
 namespace {
 
-void SetInlineVrEnabled(content::XRRuntimeManager& runtime_manager,
-                        bool enable) {
-  runtime_manager.ForEachRuntime(base::BindRepeating(
-      [](bool enable, content::BrowserXRRuntime* runtime) {
-        runtime->SetInlinePosesEnabled(enable);
-      },
-      enable));
-}
-
 class VrShellDelegateProviderFactory
     : public device::GvrDelegateProviderFactory {
  public:
@@ -63,12 +54,10 @@ VrShellDelegate::VrShellDelegate(JNIEnv* env, jobject obj)
     : task_runner_(base::ThreadTaskRunnerHandle::Get()) {
   DVLOG(1) << __FUNCTION__ << "=" << this;
   j_vr_shell_delegate_.Reset(env, obj);
-  content::XRRuntimeManager::AddObserver(this);
 }
 
 VrShellDelegate::~VrShellDelegate() {
   DVLOG(1) << __FUNCTION__ << "=" << this;
-  content::XRRuntimeManager::RemoveObserver(this);
   device::GvrDevice* gvr_device = GetGvrDevice();
   if (gvr_device)
     gvr_device->OnExitPresent();
@@ -94,17 +83,6 @@ VrShellDelegate* VrShellDelegate::GetNativeVrShellDelegate(
 void VrShellDelegate::SetDelegate(VrShell* vr_shell) {
   vr_shell_ = vr_shell;
 
-  // When VrShell is created, we disable magic window mode as the user is inside
-  // the headset. As currently implemented, orientation-based magic window
-  // doesn't make sense when the window is fixed and the user is moving.
-  auto* xr_runtime_manager = content::XRRuntimeManager::GetInstanceIfCreated();
-  if (xr_runtime_manager) {
-    // If the XRRuntimeManager singleton currently exists, this will disable
-    // inline VR. Otherwise, the callback for 'XRRuntimeManager::Observer'
-    // ('OnRuntimeAdded') will take care of it.
-    SetInlineVrEnabled(*xr_runtime_manager, false);
-  }
-
   if (pending_successful_present_request_) {
     CHECK(!on_present_result_callback_.is_null());
     pending_successful_present_request_ = false;
@@ -118,11 +96,6 @@ void VrShellDelegate::RemoveDelegate() {
     CHECK(!on_present_result_callback_.is_null());
     pending_successful_present_request_ = false;
     std::move(on_present_result_callback_).Run(false);
-  }
-
-  auto* xr_runtime_manager = content::XRRuntimeManager::GetInstanceIfCreated();
-  if (xr_runtime_manager) {
-    SetInlineVrEnabled(*xr_runtime_manager, true);
   }
 
   device::GvrDevice* gvr_device = GetGvrDevice();
@@ -228,15 +201,6 @@ void VrShellDelegate::ExitWebVRPresent() {
   device::GvrDevice* gvr_device = GetGvrDevice();
   if (gvr_device)
     gvr_device->OnExitPresent();
-}
-
-void VrShellDelegate::OnRuntimeAdded(content::BrowserXRRuntime* runtime) {
-  if (vr_shell_) {
-    // See comment in VrShellDelegate::SetDelegate. This handles the case where
-    // VrShell is created before the device code is initialized (like when
-    // entering VR browsing on a non-webVR page).
-    runtime->SetInlinePosesEnabled(false);
-  }
 }
 
 device::GvrDevice* VrShellDelegate::GetGvrDevice() {
