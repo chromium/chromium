@@ -4,13 +4,22 @@
 
 #include "ui/display/display_features.h"
 
+#include "build/build_config.h"
+
 namespace display {
 namespace features {
 
 #if defined(OS_CHROMEOS)
 // Enables using HDR transfer function if the monitor says it supports it.
-const base::Feature kUseHDRTransferFunction{"UseHDRTransferFunction",
-                                            base::FEATURE_ENABLED_BY_DEFAULT};
+const base::Feature kUseHDRTransferFunction {
+  "UseHDRTransferFunction",
+  // TODO(b/168843009): Temporarily disable on ARM while investigating.
+#if defined(ARCH_CPU_ARM_FAMILY)
+      base::FEATURE_DISABLED_BY_DEFAULT
+#else
+      base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+};
 #endif
 
 // This features allows listing all display modes of external displays in the
