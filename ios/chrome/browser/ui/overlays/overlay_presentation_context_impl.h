@@ -138,10 +138,15 @@ class OverlayPresentationContextImpl : public OverlayPresentationContext {
   // Called when the UI for |request_| has finished being dismissed.
   void OverlayUIWasDismissed();
 
+  // Called when the Browser is being destroyed.
+  void BrowserDestroyed();
+
   // Helper object that detaches the UI delegate for Browser shudown.
   class BrowserShutdownHelper : public BrowserObserver {
    public:
-    BrowserShutdownHelper(Browser* browser, OverlayPresenter* presenter);
+    BrowserShutdownHelper(Browser* browser,
+                          OverlayPresenter* presenter,
+                          OverlayPresentationContextImpl* presentation_context);
     ~BrowserShutdownHelper() override;
 
     // BrowserObserver:
@@ -150,6 +155,8 @@ class OverlayPresentationContextImpl : public OverlayPresentationContext {
    private:
     // The presenter whose delegate needs to be reset.
     OverlayPresenter* presenter_ = nullptr;
+    // OverlayPresentationContextImpl reference.
+    OverlayPresentationContextImpl* presentation_context_ = nullptr;
   };
 
   // Helper object that listens for UI dismissal events.

@@ -102,11 +102,16 @@
   self.bannerTransitionDriver.bannerPositioner = self;
   self.bannerViewController.transitioningDelegate = self.bannerTransitionDriver;
   self.bannerViewController.interactionDelegate = self.bannerTransitionDriver;
-  [self.baseViewController presentViewController:self.viewController
-                                        animated:animated
-                                      completion:^{
-                                        [self finishPresentation];
-                                      }];
+  __weak InfobarBannerOverlayCoordinator* weakSelf = self;
+  [self.baseViewController
+      presentViewController:self.viewController
+                   animated:animated
+                 completion:^{
+                   InfobarBannerOverlayCoordinator* strongSelf = weakSelf;
+                   if (strongSelf) {
+                     [strongSelf finishPresentation];
+                   }
+                 }];
   self.started = YES;
 
   if (!UIAccessibilityIsVoiceOverRunning()) {
@@ -128,10 +133,16 @@
   // Mark started as NO before calling dismissal callback to prevent dup
   // stopAnimated: executions.
   self.started = NO;
-  [self.baseViewController dismissViewControllerAnimated:animated
-                                              completion:^{
-                                                [self finishDismissal];
-                                              }];
+  __weak InfobarBannerOverlayCoordinator* weakSelf = self;
+  [self.baseViewController
+      dismissViewControllerAnimated:animated
+                         completion:^{
+                           InfobarBannerOverlayCoordinator* strongSelf =
+                               weakSelf;
+                           if (strongSelf) {
+                             [strongSelf finishDismissal];
+                           }
+                         }];
 }
 
 - (UIViewController*)viewController {
@@ -145,7 +156,9 @@
   // Notify the presentation context that the presentation has finished.  This
   // is necessary to synchronize OverlayPresenter scheduling logic with the UI
   // layer.
-  self.delegate->OverlayUIDidFinishPresentation(self.request);
+  if (self.delegate) {
+    self.delegate->OverlayUIDidFinishPresentation(self.request);
+  }
   UpdateBannerAccessibilityForPresentation(self.baseViewController,
                                            self.viewController.view);
 }
@@ -160,7 +173,9 @@
   // Notify the presentation context that the dismissal has finished.  This
   // is necessary to synchronize OverlayPresenter scheduling logic with the UI
   // layer.
-  self.delegate->OverlayUIDidFinishDismissal(self.request);
+  if (self.delegate) {
+    self.delegate->OverlayUIDidFinishDismissal(self.request);
+  }
   UpdateBannerAccessibilityForDismissal(self.baseViewController);
 }
 

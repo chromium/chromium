@@ -38,7 +38,7 @@ class OverlayRequest;
 // communicate when the overlay UI is finished being presented and dismissed.
 // Overlay UI presentation and dismissal may occur after |-start| and |-stop|,
 // even if the overlay is stopped without animation.
-@property(nonatomic, readonly) OverlayRequestCoordinatorDelegate* delegate;
+@property(nonatomic, assign) OverlayRequestCoordinatorDelegate* delegate;
 
 // The request used to configure the overlay UI.
 @property(nonatomic, readonly) OverlayRequest* request;
