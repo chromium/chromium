@@ -172,6 +172,10 @@ class NET_EXPORT TCPClientSocket : public TransportClientSocket,
   // disconnected.
   void EmitTCPMetricsHistogramsOnDisconnect();
 
+  // Emits histograms for the TCP connect attempt that just completed with
+  // |result|.
+  void EmitConnectAttemptHistograms(int result);
+
   std::unique_ptr<TCPSocket> socket_;
 
   // Local IP address and port we are bound to. Set to NULL if Bind()
@@ -210,6 +214,13 @@ class NET_EXPORT TCPClientSocket : public TransportClientSocket,
   // Once set, read/write operations return ERR_NETWORK_IO_SUSPENDED, until
   // Connect() or Disconnect() is called.
   bool was_disconnected_on_suspend_;
+
+  // The time when the latest connect attempt was started.
+  base::Optional<base::TimeTicks> start_connect_attempt_;
+
+  // The NetworkQualityEstimator for the context this socket is associated with.
+  // Can be nullptr.
+  NetworkQualityEstimator* network_quality_estimator_;
 
   base::WeakPtrFactory<TCPClientSocket> weak_ptr_factory_{this};
 
