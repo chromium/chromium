@@ -1,4 +1,4 @@
-# tags: [ android
+# tags: [ android android-pie
 #         chromeos
 #         linux
 #         mac highsierra mojave sierra catalina
@@ -881,6 +881,13 @@ crbug.com/951628 [ android no-passthrough ] conformance/rendering/blending.html 
 crbug.com/1000354 [ android no-passthrough ] conformance2/extensions/ext-texture-norm16.html [ Skip ]
 
 # Qualcomm (Pixel 2) failures
+
+# TODO(kbr): flakiness is seen on this configuration with the
+# passthrough command decoder across many different WebGL conformance
+# tests. Limit this blanket suppression to Android P in case this is
+# caused by driver bugs.
+crbug.com/1132297 [ android-pie qualcomm-adreno-(tm)-540 passthrough ] * [ RetryOnFailure ]
+
 crbug.com/906737 [ android qualcomm ] conformance/extensions/webgl-compressed-texture-astc.html [ Failure ]
 crbug.com/906742 [ android qualcomm no-passthrough ] conformance2/glsl3/compare-structs-containing-arrays.html [ Failure ]
 crbug.com/1008535 [ android qualcomm-adreno-(tm)-540 passthrough ] conformance2/textures/misc/tex-image-with-bad-args-from-dom-elements.html [ Skip ]
