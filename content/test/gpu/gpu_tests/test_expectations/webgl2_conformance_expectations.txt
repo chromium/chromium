@@ -235,9 +235,9 @@ crbug.com/905003 [ opengl win passthrough nvidia        ] conformance2/textures/
 crbug.com/887578 [ opengl win passthrough nvidia        ] deqp/data/gles3/shaders/conversions.html [ RetryOnFailure ]
 crbug.com/965648 [ opengl win passthrough nvidia-0x1cb3 ] deqp/functional/gles3/shaderstruct.html [ RetryOnFailure ]
 crbug.com/822733 [ opengl win nvidia-0x1cb3             ] deqp/functional/gles3/transformfeedback/* [ RetryOnFailure ]
-crbug.com/1060024 [ opengl win passthrough nvidia-0x1cb3 ] deqp/functional/gles3/shaderloop_do_while.html [ RetryOnFailure ]
-crbug.com/1060024 [ opengl win passthrough nvidia-0x1cb3 ] deqp/functional/gles3/shaderloop_for.html [ RetryOnFailure ]
-crbug.com/1060024 [ opengl win passthrough nvidia-0x1cb3 ] deqp/functional/gles3/shaderloop_while.html [ RetryOnFailure ]
+crbug.com/1060024 [ opengl win passthrough nvidia ] deqp/functional/gles3/shaderloop_do_while.html [ RetryOnFailure ]
+crbug.com/1060024 [ opengl win passthrough nvidia ] deqp/functional/gles3/shaderloop_for.html [ RetryOnFailure ]
+crbug.com/1060024 [ opengl win passthrough nvidia ] deqp/functional/gles3/shaderloop_while.html [ RetryOnFailure ]
 crbug.com/angleproject/4555 [ win opengl passthrough nvidia ] conformance/misc/type-conversion-test.html [ Skip ]
 
 
