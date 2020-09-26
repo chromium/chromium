@@ -12,7 +12,6 @@
 #include "ui/views/widget/widget.h"
 
 namespace {
-constexpr int kIconSize = 20;
 
 TabSearchOpenAction GetActionForEvent(const ui::Event& event) {
   if (event.IsMouseEvent()) {
@@ -46,9 +45,8 @@ void TabSearchButton::FrameColorsChanged() {
   // Icon color needs to be updated here as this is called when the hosting
   // window switches between active and inactive states. In each state the
   // foreground color of the tab controls is expected to change.
-  SetImage(
-      Button::STATE_NORMAL,
-      gfx::CreateVectorIcon(kCaretDownIcon, kIconSize, GetForegroundColor()));
+  SetImage(Button::STATE_NORMAL,
+           gfx::CreateVectorIcon(kTabSearchIcon, GetForegroundColor()));
 }
 
 void TabSearchButton::ButtonPressed(views::Button* sender,

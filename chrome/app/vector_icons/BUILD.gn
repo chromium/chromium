@@ -116,6 +116,7 @@ aggregate_vector_icons("chrome_vector_icons") {
     "tab_media_capturing.icon",
     "tab_media_capturing_with_arrow.icon",
     "tab_media_recording.icon",
+    "tab_search.icon",
     "tab_usb_connected.icon",
     "tablet.icon",
     "translate.icon",
