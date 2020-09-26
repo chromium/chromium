@@ -877,10 +877,9 @@ void CastContentBrowserClient::RegisterNonNetworkNavigationURLLoaderFactories(
       extensions::CreateExtensionNavigationURLLoaderFactory(
           browser_context, ukm_source_id,
           !!extensions::WebViewGuest::FromWebContents(web_contents));
-  uniquely_owned_factories->emplace(
-      extensions::kExtensionScheme,
-      std::make_unique<CastExtensionURLLoaderFactory>(
-          browser_context, std::move(extension_factory)));
+  factories->emplace(extensions::kExtensionScheme,
+                     CastExtensionURLLoaderFactory::Create(
+                         browser_context, std::move(extension_factory)));
 #endif
 }
 
@@ -900,10 +899,9 @@ void CastContentBrowserClient::RegisterNonNetworkSubresourceURLLoaderFactories(
   auto* browser_context = frame_host->GetProcess()->GetBrowserContext();
   auto extension_factory = extensions::CreateExtensionURLLoaderFactory(
       render_process_id, render_frame_id);
-  uniquely_owned_factories->emplace(
-      extensions::kExtensionScheme,
-      std::make_unique<CastExtensionURLLoaderFactory>(
-          browser_context, std::move(extension_factory)));
+  factories->emplace(extensions::kExtensionScheme,
+                     CastExtensionURLLoaderFactory::Create(
+                         browser_context, std::move(extension_factory)));
 #endif
 
   factories->emplace(

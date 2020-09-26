@@ -6,6 +6,7 @@
 #define CHROMECAST_BROWSER_CAST_EXTENSION_URL_LOADER_FACTORY_H_
 
 #include "base/macros.h"
+#include "content/public/browser/non_network_url_loader_factory_base.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -28,16 +29,31 @@ namespace shell {
 // extension scheme. Cast uses its own factory that resues the extensions
 // URLLoader implementation because Cast sometimes loads extension resources
 // from the web.
-class CastExtensionURLLoaderFactory : public network::mojom::URLLoaderFactory {
+class CastExtensionURLLoaderFactory
+    : public content::NonNetworkURLLoaderFactoryBase {
  public:
+  // Returns mojo::PendingRemote to a newly constructed
+  // CastExtensionURLLoaderFactory.  The factory is self-owned - it will delete
+  // itself once there are no more receivers (including the receiver associated
+  // with the returned mojo::PendingRemote and the receivers bound by the Clone
+  // method).
+  //
+  // |extension_factory| is the default extension factory that will be used if
+  // the request isn't fetched from the web.
+  static mojo::PendingRemote<network::mojom::URLLoaderFactory> Create(
+      content::BrowserContext* browser_context,
+      mojo::PendingRemote<network::mojom::URLLoaderFactory> extension_factory);
+
+ private:
+  ~CastExtensionURLLoaderFactory() override;
+
   // |extension_factory| is the default extension factory that will be used if
   // the request isn't fetched from the web.
   CastExtensionURLLoaderFactory(
       content::BrowserContext* browser_context,
-      mojo::PendingRemote<network::mojom::URLLoaderFactory> extension_factory);
-  ~CastExtensionURLLoaderFactory() override;
+      mojo::PendingRemote<network::mojom::URLLoaderFactory> extension_factory,
+      mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver);
 
- private:
   // network::mojom::URLLoaderFactory:
   void CreateLoaderAndStart(
       mojo::PendingReceiver<network::mojom::URLLoader> loader_receiver,
@@ -48,10 +64,7 @@ class CastExtensionURLLoaderFactory : public network::mojom::URLLoaderFactory {
       mojo::PendingRemote<network::mojom::URLLoaderClient> client,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation)
       override;
-  void Clone(mojo::PendingReceiver<network::mojom::URLLoaderFactory>
-                 factory_receiver) override;
 
-  mojo::ReceiverSet<network::mojom::URLLoaderFactory> receivers_;
   extensions::ExtensionRegistry* extension_registry_;
   mojo::Remote<network::mojom::URLLoaderFactory> extension_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> network_factory_;
