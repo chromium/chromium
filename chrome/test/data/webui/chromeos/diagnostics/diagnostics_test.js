@@ -147,25 +147,27 @@ suite('BatteryStatusCardTest', () => {
     return initializeBatteryStatusCard(
                fakeBatteryInfo, fakeBatteryChargeStatus, fakeBatteryHealth)
         .then(() => {
+          const dataPoints =
+            diagnostics_test_utils.getDataPointElements(batteryStatusElement);
           assertEquals(
               fakeBatteryInfo.manufacturer,
-              batteryStatusElement.$$('#manufacturer').textContent);
+              dataPoints[0].value);
           assertEquals(
-              fakeBatteryHealth[0].charge_full_design_milliamp_hours.toString(),
-              batteryStatusElement.$$('#chargeFullDesign').textContent);
+              fakeBatteryHealth[0].charge_full_design_milliamp_hours,
+              dataPoints[1].value);
           assertEquals(
               fakeBatteryChargeStatus[0]
-                  .charge_full_now_milliamp_hours.toString(),
-              batteryStatusElement.$$('#chargeFullNow').textContent);
+                  .charge_full_now_milliamp_hours,
+                  dataPoints[2].value);
           assertEquals(
-              fakeBatteryChargeStatus[0].charge_now_milliamp_hours.toString(),
-              batteryStatusElement.$$('#chargeNow').textContent);
+              fakeBatteryChargeStatus[0].charge_now_milliamp_hours,
+              dataPoints[3].value);
           assertEquals(
               fakeBatteryChargeStatus[0].power_time,
-              batteryStatusElement.$$('#powerTime').textContent);
+              dataPoints[4].value);
           assertEquals(
-              fakeBatteryChargeStatus[0].power_adapter_status.toString(),
-              batteryStatusElement.$$('#adapterStatus').textContent);
+              fakeBatteryChargeStatus[0].power_adapter_status,
+              dataPoints[5].value);
         });
   });
 });

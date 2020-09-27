@@ -6,12 +6,22 @@
     <!-- TODO(zentaro) Localize once strings are confirmed -->
     <div id="cardTitle">Battery Status</div>
   </div>
-  <div slot="body">
-    <div id="manufacturer">[[batteryInfo_.manufacturer]]</div>
-    <div id="chargeFullDesign">[[batteryHealth_.charge_full_design_milliamp_hours]]</div>
-    <div id="chargeFullNow">[[batteryChargeStatus_.charge_full_now_milliamp_hours]]</div>
-    <div id="chargeNow">[[batteryChargeStatus_.charge_now_milliamp_hours]]</div>
-    <div id="powerTime">[[batteryChargeStatus_.power_time]]</div>
-    <div id="adapterStatus">[[batteryChargeStatus_.power_adapter_status]]</div>
-  </div>
+  <data-point slot="body" id="manufacturer"
+    value="[[batteryInfo_.manufacturer]]">
+  </data-point>
+  <data-point slot="body" id="chargeFullDesign"
+    value="[[batteryHealth_.charge_full_design_milliamp_hours]]">
+  </data-point>
+  <data-point slot="body" id="chargeFullNow"
+    value="[[batteryChargeStatus_.charge_full_now_milliamp_hours]]">
+  </data-point>
+  <data-point slot="body" id="chargeNow"
+    value="[[batteryChargeStatus_.charge_now_milliamp_hours]]">
+  </data-point>
+  <data-point slot="body" id="powerTime"
+    value="[[batteryChargeStatus_.power_time]]">
+  </data-point>
+  <data-point slot="body" id="adapterStatus"
+    value="[[batteryChargeStatus_.power_adapter_status]]">
+  </data-point>
 </diagnostics-card>

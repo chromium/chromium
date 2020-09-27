@@ -28,6 +28,7 @@ js_type_check("closure_compile_module") {
 
 js_library("battery_status_card") {
   deps = [
+    ":data_point",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
