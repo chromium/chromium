@@ -38,6 +38,10 @@ constexpr double kPartialMatchPenaltyRate = 0.9;
 
 double FuzzyMatchRelevance(const TokenizedString& title,
                            const TokenizedString& query) {
+  if (title.text().empty() || query.text().empty()) {
+    return kDefaultRelevance;
+  }
+
   FuzzyTokenizedStringMatch match;
   match.IsRelevant(query, title, kRelevanceThreshold, kUsePrefixOnly,
                    kUseWeightedRatio, kUseEditDistance,
@@ -73,6 +77,10 @@ void LauncherSearchProvider::Start(const base::string16& query) {
 
   // Clear previously added search results.
   ClearResults();
+
+  // LauncherSearchProvider only handles query searches.
+  if (query.empty())
+    return;
 
   last_tokenized_query_.emplace(query, TokenizedString::Mode::kWords);
   DelayQuery(base::Bind(&LauncherSearchProvider::StartInternal,
