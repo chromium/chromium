@@ -9,7 +9,9 @@
 #include "base/strings/strcat.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "components/drive/drive_pref_names.h"
 #include "components/google/core/common/google_util.h"
+#include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/consent_level.h"
@@ -51,7 +53,12 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
       policy {
         cookies_allowed: NO
         setting:
-          "This cannot be disabled."
+          "This cannot be disabled except by policy."
+        chrome_policy {
+          DriveDisabled {
+            DriveDisabled: true
+          }
+        }
       })");
 
 // The scope required for an access token in order to query ItemSuggest.
@@ -68,26 +75,29 @@ constexpr char kRequestBody[] = R"({
           'scenario_type': 'QUICK_ACCESS'
       }})";
 
+bool IsDisabledByPolicy(const Profile* profile) {
+  return profile->GetPrefs()->GetBoolean(drive::prefs::kDisableDrive);
+}
+
 //----------------
 // Error utilities
 //----------------
 
-// Possible error states of the item suggest cache. These values persist to
-// logs. Entries should not be renumbered and numeric values should never be
-// reused.
+// Possible error states of the item suggest cache.
 enum class Error {
-  kDisabled = 1,
-  kInvalidServerUrl = 2,
-  kNoIdentityManager = 3,
-  kGoogleAuthError = 4,
-  kNetError = 5,
-  k3xxError = 6,
-  k4xxError = 7,
-  k5xxError = 8,
-  kEmptyResponse = 9,
-  kNoResultsInResponse = 10,
-  kJsonParseFailure = 11,
-  kJsonConversionFailure = 12,
+  kDisabledByExperiment = 1,
+  kDisabledByPolicy = 2,
+  kInvalidServerUrl = 3,
+  kNoIdentityManager = 4,
+  kGoogleAuthError = 5,
+  kNetError = 6,
+  k3xxError = 7,
+  k4xxError = 8,
+  k5xxError = 9,
+  kEmptyResponse = 10,
+  kNoResultsInResponse = 11,
+  kJsonParseFailure = 12,
+  kJsonConversionFailure = 13,
   kMaxValue = kJsonConversionFailure,
 };
 
@@ -204,15 +214,18 @@ void ItemSuggestCache::UpdateCache() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // TODO(crbug.com/1034842): Add rate-limiting for cache updates.
 
-  // Make no requests and exit in four cases:
-  // - item suggest has been disabled via experiment
-  // - the server url is not https
-  // - the server url is not trusted by Google
+  // Make no requests and exit in these cases:
   // - another request is in-flight (url_loader_ is non-null)
+  // - item suggest has been disabled via experiment
+  // - item suggest has been disabled by policy
+  // - the server url is not https or not trusted by Google
   if (url_loader_) {
     return;
   } else if (!enabled_) {
-    LogError(Error::kDisabled);
+    LogError(Error::kDisabledByExperiment);
+    return;
+  } else if (IsDisabledByPolicy(profile_)) {
+    LogError(Error::kDisabledByPolicy);
     return;
   } else if (!server_url_.SchemeIs(url::kHttpsScheme) ||
              !google_util::IsGoogleAssociatedDomainUrl(server_url_)) {
