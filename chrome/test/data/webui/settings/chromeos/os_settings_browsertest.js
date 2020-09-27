@@ -1714,7 +1714,8 @@ var OSSettingsLanguagesPageV2Test = class extends OSSettingsBrowserTest {
   }
 };
 
-TEST_F('OSSettingsLanguagesPageV2Test', 'AllJsTests', () => {
+// TODO(https://crbug.com/1132577): Reenable flaky test.
+TEST_F('OSSettingsLanguagesPageV2Test', 'DISABLED_AllJsTests', () => {
   mocha.run();
 });
 
