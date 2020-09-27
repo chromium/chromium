@@ -7,6 +7,9 @@ declare_args() {
   # If this flag is set, we assume Chrome runs on Chrome OS devices, using
   # Wayland (instead of X11).
   # TODO(crbug.com/1052397): After the clean up, this should be
-  # replaced with 'target_os = "chromeos" && ui_mode == "browser"'.
+  # replaced with is_lacros = chromeos_product == "browser".
   chromeos_is_browser_only = false
 }
+
+# TODO(crbug.com/1052397): Replace this with chromeos_product == "ash".
+is_ash = is_chromeos && !chromeos_is_browser_only
