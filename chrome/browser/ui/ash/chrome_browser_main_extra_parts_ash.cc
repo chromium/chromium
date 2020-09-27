@@ -40,6 +40,7 @@
 #include "chrome/browser/ui/ash/network/mobile_data_notifications.h"
 #include "chrome/browser/ui/ash/network/network_connect_delegate_chromeos.h"
 #include "chrome/browser/ui/ash/network/network_portal_notification_controller.h"
+#include "chrome/browser/ui/ash/quick_answers/quick_answers_browser_client_impl.h"
 #include "chrome/browser/ui/ash/screen_orientation_delegate_chromeos.h"
 #include "chrome/browser/ui/ash/session_controller_client_impl.h"
 #include "chrome/browser/ui/ash/system_tray_client.h"
@@ -124,6 +125,11 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
   // Needed by AmbientController in ash.
   if (chromeos::features::IsAmbientModeEnabled())
     ambient_client_ = std::make_unique<AmbientClientImpl>();
+
+  if (chromeos::features::IsQuickAnswersEnabled()) {
+    quick_answers_browser_client_ =
+        std::make_unique<QuickAnswersBrowserClientImpl>();
+  }
 
   media_notification_provider_ =
       std::make_unique<MediaNotificationProviderImpl>();

@@ -241,6 +241,8 @@ component("cpp") {
     "presentation_time_recorder.h",
     "privacy_screen_dlp_helper.cc",
     "privacy_screen_dlp_helper.h",
+    "quick_answers/controller/quick_answers_browser_client.cc",
+    "quick_answers/controller/quick_answers_browser_client.h",
     "quick_answers/controller/quick_answers_controller.cc",
     "quick_answers/controller/quick_answers_controller.h",
     "rounded_corner_decorator.cc",
