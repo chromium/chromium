@@ -83,6 +83,7 @@ js_library("fake_system_data_provider") {
 
 js_library("memory_card") {
   deps = [
+    ":data_point",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }

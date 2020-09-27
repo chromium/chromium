@@ -6,9 +6,13 @@
     <!-- TODO(zentaro) Localize once strings are confirmed -->
     <div id="cardTitle">Memory</div>
   </div>
-  <div slot="body">
-    <div id="memoryTotal">[[memoryUsage_.total_memory_kib]]</div>
-    <div id="memoryAvailable">[[memoryUsage_.available_memory_kib]]</div>
-    <div id="memoryFree">[[memoryUsage_.free_memory_kib]]</div>
-  </div>
+  <data-point slot="body" id="memoryTotal"
+    value="[[memoryUsage_.total_memory_kib]]">
+  </data-point>
+  <data-point slot="body" id="memoryAvailable"
+    value="[[memoryUsage_.available_memory_kib]]">
+  </data-point>
+  <data-point slot="body" id="memoryFree"
+    value="[[memoryUsage_.free_memory_kib]]">
+  </data-point>
 </diagnostics-card>

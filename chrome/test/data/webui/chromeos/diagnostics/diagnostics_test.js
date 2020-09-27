@@ -324,15 +324,12 @@ suite('MemoryCardTest', () => {
 
   test('MemoryCardPopulated', () => {
     return initializeMemoryCard(fakeMemoryUsage).then(() => {
+      const dataPoints =
+          diagnostics_test_utils.getDataPointElements(memoryElement);
+      assertEquals(fakeMemoryUsage[0].total_memory_kib, dataPoints[0].value);
       assertEquals(
-          fakeMemoryUsage[0].total_memory_kib.toString(),
-          memoryElement.$$('#memoryTotal').textContent);
-      assertEquals(
-          fakeMemoryUsage[0].available_memory_kib.toString(),
-          memoryElement.$$('#memoryAvailable').textContent);
-      assertEquals(
-          fakeMemoryUsage[0].free_memory_kib.toString(),
-          memoryElement.$$('#memoryFree').textContent);
+          fakeMemoryUsage[0].available_memory_kib, dataPoints[1].value);
+      assertEquals(fakeMemoryUsage[0].free_memory_kib, dataPoints[2].value);
     });
   });
 });
