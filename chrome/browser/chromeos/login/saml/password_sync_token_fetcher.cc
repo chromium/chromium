@@ -24,6 +24,8 @@
 #include "google_apis/gaia/gaia_auth_fetcher.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/google_service_auth_error.h"
+#include "google_apis/google_api_keys.h"
+#include "net/base/escape.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_status_code.h"
 #include "net/url_request/url_request_context_getter.h"
@@ -52,28 +54,34 @@ const char kTokenTypeValue[] = "SAML_PASSWORD";
 const char kAcceptValue[] =
     "Accept=text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8";
 
-const char kPasswordSyncTokenCreateEndPoint[] =
+const char kPasswordSyncTokenBaseEndPoint[] =
     "https://chromedevicetoken.googleapis.com/v1/tokens";
 
-const char kPasswordSyncTokenGetEndPoint[] =
-    "https://chromedevicetoken.googleapis.com/v1/"
-    "tokens?token_type=SAML_PASSWORD";
+const char kPasswordSyncTokenCreateEndPoint[] = "";
+
+const char kPasswordSyncTokenGetEndPoint[] = "?token_type=SAML_PASSWORD";
 
 const char kPasswordSyncTokenVerifyEndPoint[] =
-    "https://chromedevicetoken.googleapis.com/v1/tokens/"
-    "%s:verify?token_type=SAML_PASSWORD";
+    "/%s:verify?token_type=SAML_PASSWORD&key=%s";
 
-GURL sync_token_create_url() {
-  return GURL(kPasswordSyncTokenCreateEndPoint);
+std::string GetBaseEndPoint() {
+  return kPasswordSyncTokenBaseEndPoint;
 }
 
-GURL sync_token_get_url() {
-  return GURL(kPasswordSyncTokenGetEndPoint);
+GURL GetSyncTokenCreateUrl() {
+  return GURL(GetBaseEndPoint() +
+              std::string(kPasswordSyncTokenCreateEndPoint));
 }
 
-GURL sync_token_verify_url(const std::string& sync_token) {
-  return GURL(
-      base::StringPrintf(kPasswordSyncTokenVerifyEndPoint, sync_token.c_str()));
+GURL GetSyncTokenGetUrl() {
+  return GURL(GetBaseEndPoint() + std::string(kPasswordSyncTokenGetEndPoint));
+}
+
+GURL GetSyncTokenVerifyUrl(const std::string& sync_token,
+                           const std::string& escaped_api_key) {
+  return GURL(GetBaseEndPoint() +
+              base::StringPrintf(kPasswordSyncTokenVerifyEndPoint,
+                                 sync_token.c_str(), escaped_api_key.c_str()));
 }
 
 }  // namespace
@@ -112,7 +120,7 @@ void PasswordSyncTokenFetcher::StartTokenVerify(const std::string& sync_token) {
   DCHECK_EQ(request_type_, RequestType::kNone);
   request_type_ = RequestType::kVerifyToken;
   sync_token_ = sync_token;
-  StartAccessTokenFetch();
+  FetchSyncToken(/*access_token=*/std::string());
 }
 
 void PasswordSyncTokenFetcher::StartAccessTokenFetch() {
@@ -179,13 +187,15 @@ void PasswordSyncTokenFetcher::FetchSyncToken(const std::string& access_token) {
   auto resource_request = std::make_unique<network::ResourceRequest>();
   switch (request_type_) {
     case RequestType::kCreateToken:
-      resource_request->url = sync_token_create_url();
+      resource_request->url = GetSyncTokenCreateUrl();
       break;
     case RequestType::kGetToken:
-      resource_request->url = sync_token_get_url();
+      resource_request->url = GetSyncTokenGetUrl();
       break;
     case RequestType::kVerifyToken:
-      resource_request->url = sync_token_verify_url(sync_token_);
+      resource_request->url = GetSyncTokenVerifyUrl(
+          sync_token_, net::EscapeQueryParamValue(google_apis::GetAPIKey(),
+                                                  /*use_plus=*/true));
       break;
     case RequestType::kNone:
       // Error: request type needs to be already set.
@@ -199,9 +209,11 @@ void PasswordSyncTokenFetcher::FetchSyncToken(const std::string& access_token) {
   } else {
     resource_request->method = net::HttpRequestHeaders::kGetMethod;
   }
-  resource_request->headers.SetHeader(
-      net::HttpRequestHeaders::kAuthorization,
-      base::StringPrintf(kAuthorizationHeaderFormat, access_token.c_str()));
+  if (request_type_ != RequestType::kVerifyToken) {
+    resource_request->headers.SetHeader(
+        net::HttpRequestHeaders::kAuthorization,
+        base::StringPrintf(kAuthorizationHeaderFormat, access_token.c_str()));
+  }
   resource_request->headers.SetHeader(net::HttpRequestHeaders::kContentType,
                                       kContentTypeJSON);
   resource_request->headers.SetHeader(net::HttpRequestHeaders::kAccept,

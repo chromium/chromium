@@ -51,8 +51,13 @@ void PasswordSyncTokenVerifier::RecheckAfter(base::TimeDelta delay) {
 
 void PasswordSyncTokenVerifier::CreateTokenAsync() {
   DCHECK(!password_sync_token_fetcher_);
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
+      primary_profile_->GetURLLoaderFactory();
+  if (!url_loader_factory.get())
+    return;
+
   password_sync_token_fetcher_ = std::make_unique<PasswordSyncTokenFetcher>(
-      primary_profile_->GetURLLoaderFactory(), primary_profile_, this);
+      url_loader_factory, primary_profile_, this);
   password_sync_token_fetcher_->StartTokenCreate();
 }
 
@@ -63,17 +68,23 @@ void PasswordSyncTokenVerifier::CheckForPasswordNotInSync() {
   if (!prefs->GetBoolean(prefs::kSamlInSessionPasswordChangeEnabled)) {
     return;
   }
+  DCHECK(!password_sync_token_fetcher_);
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
+      primary_profile_->GetURLLoaderFactory();
+  // url_loader_factory is nullptr in unit tests so constructing
+  // PasswordSyncTokenFetcher does not make sense there.
+  if (!url_loader_factory.get())
+    return;
+  password_sync_token_fetcher_ = std::make_unique<PasswordSyncTokenFetcher>(
+      url_loader_factory, primary_profile_, this);
+
   // Get current sync token for primary_user_.
   std::string sync_token = prefs->GetString(prefs::kSamlPasswordSyncToken);
-
   // No local sync token on the device - create it by sending user through the
   // online re-auth.
   if (sync_token.empty())
     sync_token = dummy_token;
 
-  DCHECK(!password_sync_token_fetcher_);
-  password_sync_token_fetcher_ = std::make_unique<PasswordSyncTokenFetcher>(
-      primary_profile_->GetURLLoaderFactory(), primary_profile_, this);
   password_sync_token_fetcher_->StartTokenVerify(sync_token);
 }
 
@@ -84,8 +95,14 @@ void PasswordSyncTokenVerifier::FetchSyncTokenOnReauth() {
   }
 
   DCHECK(!password_sync_token_fetcher_);
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
+      primary_profile_->GetURLLoaderFactory();
+  // No url_loader_factory in unit tests.
+  if (!url_loader_factory.get())
+    return;
+
   password_sync_token_fetcher_ = std::make_unique<PasswordSyncTokenFetcher>(
-      primary_profile_->GetURLLoaderFactory(), primary_profile_, this);
+      url_loader_factory, primary_profile_, this);
   password_sync_token_fetcher_->StartTokenGet();
 }
 

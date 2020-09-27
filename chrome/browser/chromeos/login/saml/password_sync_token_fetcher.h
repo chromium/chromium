@@ -66,6 +66,9 @@ class PasswordSyncTokenFetcher final {
       Consumer* consumer);
   ~PasswordSyncTokenFetcher();
 
+  // StartTokenCreate() and StartTokenGet() require fetching OAuth access_token
+  // to authorize the operation, StartTokenVerify is authenticated with API key
+  // and proceeds with an empty access_token.
   void StartTokenCreate();
   void StartTokenGet();
   void StartTokenVerify(const std::string& sync_token);
