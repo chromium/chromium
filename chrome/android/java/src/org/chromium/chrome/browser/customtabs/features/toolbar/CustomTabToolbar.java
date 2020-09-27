@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.toolbar.top;
+package org.chromium.chrome.browser.customtabs.features.toolbar;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.animation.ValueAnimator.AnimatorUpdateListener;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
@@ -68,6 +69,9 @@ import org.chromium.chrome.browser.toolbar.ToolbarColors;
 import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
 import org.chromium.chrome.browser.toolbar.ToolbarTabController;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
+import org.chromium.chrome.browser.toolbar.top.ToolbarActionModeCallback;
+import org.chromium.chrome.browser.toolbar.top.ToolbarLayout;
+import org.chromium.chrome.browser.toolbar.top.ToolbarPhone;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
@@ -124,6 +128,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         }
 
         @Override
+        @SuppressLint("ClickableViewAccessibility")
         public boolean onTouchEvent(MotionEvent event) {
             mGestureDetector.onTouchEvent(event);
             return super.onTouchEvent(event);
@@ -211,8 +216,8 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     }
 
     @Override
-    void initialize(ToolbarDataProvider toolbarDataProvider, ToolbarTabController tabController,
-            MenuButtonCoordinator menuButtonCoordinator) {
+    protected void initialize(ToolbarDataProvider toolbarDataProvider,
+            ToolbarTabController tabController, MenuButtonCoordinator menuButtonCoordinator) {
         super.initialize(toolbarDataProvider, tabController, menuButtonCoordinator);
         mLocationBar.setToolbarDataProvider(toolbarDataProvider);
         mLocationBar.updateVisualsForState();
@@ -225,7 +230,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     }
 
     @Override
-    void setCloseButtonImageResource(Drawable drawable) {
+    protected void setCloseButtonImageResource(Drawable drawable) {
         mCloseButton.setVisibility(drawable != null ? View.VISIBLE : View.GONE);
         mCloseButton.setImageDrawable(drawable);
         if (drawable != null) {
@@ -234,12 +239,13 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     }
 
     @Override
-    void setCustomTabCloseClickHandler(OnClickListener listener) {
+    protected void setCustomTabCloseClickHandler(OnClickListener listener) {
         mCloseButton.setOnClickListener(listener);
     }
 
     @Override
-    void addCustomActionButton(Drawable drawable, String description, OnClickListener listener) {
+    protected void addCustomActionButton(
+            Drawable drawable, String description, OnClickListener listener) {
         ImageButton button = (ImageButton) LayoutInflater.from(getContext())
                                      .inflate(R.layout.custom_tabs_toolbar_button, null);
         button.setOnLongClickListener(this);
@@ -253,7 +259,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     }
 
     @Override
-    void updateCustomActionButton(int index, Drawable drawable, String description) {
+    protected void updateCustomActionButton(int index, Drawable drawable, String description) {
         ImageButton button = (ImageButton) mCustomActionButtons.getChildAt(
                 mCustomActionButtons.getChildCount() - 1 - index);
         assert button != null;
@@ -292,7 +298,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     }
 
     @Override
-    int getTabStripHeight() {
+    protected int getTabStripHeight() {
         return 0;
     }
 
@@ -336,7 +342,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     }
 
     @Override
-    String getContentPublisher() {
+    protected String getContentPublisher() {
         Tab tab = getToolbarDataProvider().getTab();
         if (tab == null) return null;
 
@@ -350,7 +356,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     }
 
     @Override
-    void onNavigatedToDifferentPage() {
+    protected void onNavigatedToDifferentPage() {
         super.onNavigatedToDifferentPage();
         mLocationBar.setTitleToPageTitle();
         if (mState == STATE_TITLE_ONLY) {
@@ -406,7 +412,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
      * for the current tab changing.
      */
     @Override
-    void onPrimaryColorChanged(boolean shouldAnimate) {
+    protected void onPrimaryColorChanged(boolean shouldAnimate) {
         if (mBrandColorTransitionActive) mBrandColorTransitionAnimation.cancel();
 
         final ColorDrawable background = getBackground();
@@ -559,7 +565,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     }
 
     @Override
-    void onMenuButtonDisabled() {
+    protected void onMenuButtonDisabled() {
         super.onMenuButtonDisabled();
         // In addition to removing the menu button, we also need to remove the margin on the custom
         // action button.

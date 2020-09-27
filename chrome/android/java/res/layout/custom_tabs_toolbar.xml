@@ -3,7 +3,7 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
-<org.chromium.chrome.browser.toolbar.top.CustomTabToolbar
+<org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/toolbar"
@@ -29,7 +29,7 @@
             android:visibility="invisible"
             app:tint="@color/default_icon_color_tint_list" />
         <view
-            class="org.chromium.chrome.browser.toolbar.top.CustomTabToolbar$InterceptTouchLayout"
+            class="org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar$InterceptTouchLayout"
             android:id="@+id/title_url_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -117,4 +117,4 @@
             app:tint="@color/default_icon_color_tint_list" />
 
     </org.chromium.chrome.browser.toolbar.menu_button.MenuButton>
-</org.chromium.chrome.browser.toolbar.top.CustomTabToolbar>
+</org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar>

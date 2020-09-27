@@ -452,7 +452,7 @@ public class ToolbarPhone extends ToolbarLayout
      * Sets up click and key listeners once we have native library available to handle clicks.
      */
     @Override
-    void onNativeLibraryReady() {
+    protected void onNativeLibraryReady() {
         super.onNativeLibraryReady();
 
         getLocationBar().onNativeLibraryReady();

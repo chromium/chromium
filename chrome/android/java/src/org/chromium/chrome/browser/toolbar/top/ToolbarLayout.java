@@ -112,8 +112,8 @@ public abstract class ToolbarLayout
      * @param menuButtonCoordinator Coordinator for interacting with the MenuButton.
      */
     @CallSuper
-    void initialize(ToolbarDataProvider toolbarDataProvider, ToolbarTabController tabController,
-            MenuButtonCoordinator menuButtonCoordinator) {
+    protected void initialize(ToolbarDataProvider toolbarDataProvider,
+            ToolbarTabController tabController, MenuButtonCoordinator menuButtonCoordinator) {
         mToolbarDataProvider = toolbarDataProvider;
         mToolbarTabController = tabController;
         mMenuButtonCoordinator = menuButtonCoordinator;
@@ -202,7 +202,7 @@ public abstract class ToolbarLayout
      * TODO comment
      */
     @CallSuper
-    void onMenuButtonDisabled() {}
+    protected void onMenuButtonDisabled() {}
 
     @Override
     protected void onFinishInflate() {
@@ -330,7 +330,7 @@ public abstract class ToolbarLayout
     /**
      *  This function handles native dependent initialization for this class.
      */
-    void onNativeLibraryReady() {
+    protected void onNativeLibraryReady() {
         mNativeLibraryReady = true;
         if (mProgressBar.getParent() != null) mProgressBar.initializeAnimation();
     }
@@ -359,7 +359,7 @@ public abstract class ToolbarLayout
     /**
      * @return The {@link ProgressBar} this layout uses.
      */
-    ToolbarProgressBar getProgressBar() {
+    protected ToolbarProgressBar getProgressBar() {
         return mProgressBar;
     }
 
@@ -457,18 +457,18 @@ public abstract class ToolbarLayout
      * Sets the OnClickListener to notify when the close button is pressed in a custom tab.
      * @param listener The callback that will be notified when the close button is pressed.
      */
-    void setCustomTabCloseClickHandler(OnClickListener listener) {}
+    protected void setCustomTabCloseClickHandler(OnClickListener listener) {}
 
     /**
      * Sets whether the urlbar should be hidden on first page load.
      */
-    void setUrlBarHidden(boolean hide) {}
+    protected void setUrlBarHidden(boolean hide) {}
 
     /**
      * @return The name of the publisher of the content if it can be reliably extracted, or null
      *         otherwise.
      */
-    String getContentPublisher() {
+    protected String getContentPublisher() {
         return null;
     }
 
@@ -545,13 +545,13 @@ public abstract class ToolbarLayout
      * For extending classes to override and carry out the changes related with the primary color
      * for the current tab changing.
      */
-    void onPrimaryColorChanged(boolean shouldAnimate) {}
+    protected void onPrimaryColorChanged(boolean shouldAnimate) {}
 
     /**
      * Sets the icon drawable that the close button in the toolbar (if any) should show, or hides
      * it if {@code drawable} is {@code null}.
      */
-    void setCloseButtonImageResource(@Nullable Drawable drawable) {}
+    protected void setCloseButtonImageResource(@Nullable Drawable drawable) {}
 
     /**
      * Adds a custom action button to the toolbar layout, if it is supported.
@@ -559,7 +559,8 @@ public abstract class ToolbarLayout
      * @param description The content description for the button.
      * @param listener The {@link OnClickListener} to use for clicks to the button.
      */
-    void addCustomActionButton(Drawable drawable, String description, OnClickListener listener) {
+    protected void addCustomActionButton(
+            Drawable drawable, String description, OnClickListener listener) {
         // This method should only be called for subclasses that override it.
         assert false;
     }
@@ -571,7 +572,7 @@ public abstract class ToolbarLayout
      * @param drawable The icon for the button.
      * @param description The content description for the button.
      */
-    void updateCustomActionButton(int index, Drawable drawable, String description) {
+    protected void updateCustomActionButton(int index, Drawable drawable, String description) {
         // This method should only be called for subclasses that override it.
         assert false;
     }
@@ -579,7 +580,7 @@ public abstract class ToolbarLayout
     /**
      * @return The height of the tab strip. Return 0 for toolbars that do not have a tabstrip.
      */
-    int getTabStripHeight() {
+    protected int getTabStripHeight() {
         return getResources().getDimensionPixelSize(R.dimen.tab_strip_height);
     }
 
@@ -700,7 +701,7 @@ public abstract class ToolbarLayout
     /**
      * Notified when a navigation to a different page has occurred.
      */
-    void onNavigatedToDifferentPage() {}
+    protected void onNavigatedToDifferentPage() {}
 
     /**
      * Starts load progress.
@@ -752,7 +753,7 @@ public abstract class ToolbarLayout
     /**
      * @return Whether or not the toolbar is incognito.
      */
-    boolean isIncognito() {
+    protected boolean isIncognito() {
         return mToolbarDataProvider.isIncognito();
     }
 

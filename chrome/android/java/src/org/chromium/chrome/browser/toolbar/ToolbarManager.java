@@ -81,7 +81,6 @@ import org.chromium.chrome.browser.toolbar.load_progress.LoadProgressCoordinator
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.top.ActionModeController;
 import org.chromium.chrome.browser.toolbar.top.ActionModeController.ActionBarDelegate;
-import org.chromium.chrome.browser.toolbar.top.CustomTabToolbar;
 import org.chromium.chrome.browser.toolbar.top.TabSwitcherActionMenuCoordinator;
 import org.chromium.chrome.browser.toolbar.top.Toolbar;
 import org.chromium.chrome.browser.toolbar.top.ToolbarActionModeCallback;
@@ -310,8 +309,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                         -> setUrlBarFocus(focus, type),
                 mActivity.getCompositorViewHolder()::requestFocus, shouldShowUpdateBadge,
                 mActivity::isInOverviewMode,
-                toolbarLayout instanceof CustomTabToolbar ? mAppThemeColorProvider
-                                                          : browsingModeThemeColorProvider,
+                mActivity.isCustomTab() ? mAppThemeColorProvider : browsingModeThemeColorProvider,
                 R.id.menu_button_wrapper);
         MenuButtonCoordinator startSurfaceMenuButtonCoordinator = new MenuButtonCoordinator(
                 appMenuCoordinatorSupplier, mControlsVisibilityDelegate, mActivity,
