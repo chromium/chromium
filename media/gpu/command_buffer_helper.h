@@ -137,6 +137,9 @@ class MEDIA_GPU_EXPORT CommandBufferHelper
   // Is the backing command buffer passthrough (versus validating).
   virtual bool IsPassthrough() const = 0;
 
+  // Does this command buffer support ARB_texture_rectangle.
+  virtual bool SupportsTextureRectangle() const = 0;
+
  protected:
   explicit CommandBufferHelper(
       scoped_refptr<base::SequencedTaskRunner> task_runner);

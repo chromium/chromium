@@ -101,6 +101,10 @@ GLenum VideoDecodeAccelerator::GetSurfaceInternalFormat() const {
   return GL_RGBA;
 }
 
+bool VideoDecodeAccelerator::SupportsSharedImagePictureBuffers() const {
+  return false;
+}
+
 VideoDecodeAccelerator::SupportedProfile::SupportedProfile()
     : profile(media::VIDEO_CODEC_PROFILE_UNKNOWN), encrypted_only(false) {}
 
