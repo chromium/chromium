@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import androidx.test.espresso.Espresso;
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
@@ -538,6 +539,7 @@ public class TabSelectionEditorTest {
         assertEquals("Group 2 selected tabs", actionButton.getContentDescription());
     }
 
+    // This is a regression test for crbug.com/1132478.
     @Test
     @MediumTest
     // clang-format off
@@ -569,6 +571,24 @@ public class TabSelectionEditorTest {
 
         assertEquals("Hide multi-select mode",
                 mTabSelectionEditorLayout.getToolbar().getNavigationContentDescription());
+    }
+
+    @Test
+    @MediumTest
+    // clang-format off
+    @EnableFeatures({ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID + "<Study"})
+    @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
+        "force-fieldtrial-params=Study.Group:enable_launch_polish/true"})
+    public void testEditorHideCorrectly() {
+        // clang-format on
+        prepareBlankTab(2, false);
+        List<Tab> tabs = getTabsInCurrentTabModel();
+        TestThreadUtils.runOnUiThreadBlocking(() -> mTabSelectionEditorController.show(tabs));
+        mRobot.resultRobot.verifyTabSelectionEditorIsVisible();
+
+        Espresso.pressBack();
+        TestThreadUtils.runOnUiThreadBlocking(() -> mTabSelectionEditorController.show(tabs));
+        mRobot.resultRobot.verifyTabSelectionEditorIsVisible();
     }
 
     private List<Tab> getTabsInCurrentTabModel() {
