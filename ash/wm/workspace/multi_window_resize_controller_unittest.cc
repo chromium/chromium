@@ -5,7 +5,6 @@
 #include "ash/wm/workspace/multi_window_resize_controller.h"
 
 #include "ash/frame/non_client_frame_view_ash.h"
-#include "ash/public/cpp/ash_constants.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/shell.h"
@@ -21,6 +20,7 @@
 #include "ash/wm/workspace_controller_test_api.h"
 #include "base/memory/ptr_util.h"
 #include "base/stl_util.h"
+#include "chromeos/ui/chromeos_ui_constants.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/aura/window.h"
@@ -29,6 +29,9 @@
 #include "ui/events/test/event_generator.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
+
+using chromeos::kResizeInsideBoundsSize;
+using chromeos::kResizeOutsideBoundsSize;
 
 namespace ash {
 

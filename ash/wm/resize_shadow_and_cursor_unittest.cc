@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "ash/frame/non_client_frame_view_ash.h"
-#include "ash/public/cpp/ash_constants.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/cursor_manager_test_api.h"
@@ -11,6 +10,7 @@
 #include "ash/wm/resize_shadow_controller.h"
 #include "ash/wm/window_state.h"
 #include "base/bind.h"
+#include "chromeos/ui/chromeos_ui_constants.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
@@ -18,6 +18,9 @@
 #include "ui/events/test/event_generator.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
+
+using chromeos::kResizeInsideBoundsSize;
+using chromeos::kResizeOutsideBoundsSize;
 
 namespace ash {
 

@@ -4,7 +4,6 @@
 
 #include <string>
 
-#include "ash/public/cpp/ash_constants.h"
 #include "ash/public/cpp/ash_switches.h"
 #include "ash/public/cpp/caption_buttons/frame_caption_button_container_view.h"
 #include "ash/public/cpp/default_frame_header.h"
@@ -74,6 +73,7 @@
 #include "chrome/common/web_application_info.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chromeos/ui/chromeos_ui_constants.h"
 #include "components/account_id/account_id.h"
 #include "components/autofill/core/common/password_form.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
@@ -287,7 +287,7 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewAshTestNoWebUiTabStrip,
   EXPECT_EQ(HTTOP, frame_view->NonClientHitTest(top_edge));
 
   // Click just below the resize handle hits the caption.
-  gfx::Point below_resize(kWindowWidth / 2, ash::kResizeInsideBoundsSize);
+  gfx::Point below_resize(kWindowWidth / 2, chromeos::kResizeInsideBoundsSize);
   EXPECT_EQ(HTCAPTION, frame_view->NonClientHitTest(below_resize));
 
   // Click in the top edge of a maximized window now hits the client area,

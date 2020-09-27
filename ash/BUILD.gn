@@ -1690,6 +1690,7 @@ component("ash") {
     "//chromeos/components/phonehub",
     "//chromeos/components/quick_answers",
     "//chromeos/components/quick_answers/public/cpp:prefs",
+    "//chromeos/ui",
     "//services/viz/public/mojom",
 
     # TODO(https://crbug.com/644336): Make CrasAudioHandler Chrome or Ash only.
@@ -2285,6 +2286,7 @@ test("ash_unittests") {
     "//build:branding_buildflags",
     "//chromeos:test_support",
     "//chromeos/strings:strings_grit",
+    "//chromeos/ui",
     "//chromeos/ui/vector_icons",
 
     # TODO(https://crbug.com/644336): Make CrasAudioHandler Chrome or Ash only.

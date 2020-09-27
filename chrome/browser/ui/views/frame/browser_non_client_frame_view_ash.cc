@@ -7,7 +7,6 @@
 #include <algorithm>
 
 #include "ash/public/cpp/app_types.h"
-#include "ash/public/cpp/ash_constants.h"
 #include "ash/public/cpp/caption_buttons/frame_caption_button_container_view.h"
 #include "ash/public/cpp/default_frame_header.h"
 #include "ash/public/cpp/frame_utils.h"
@@ -39,6 +38,7 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "chromeos/ui/chromeos_ui_constants.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -216,7 +216,7 @@ SkColor BrowserNonClientFrameViewAsh::GetCaptionColor(
   bool active = ShouldPaintAsActive(active_state);
 
   SkColor active_color =
-      views::FrameCaptionButton::GetButtonColor(ash::kDefaultFrameColor);
+      views::FrameCaptionButton::GetButtonColor(chromeos::kDefaultFrameColor);
 
   // Web apps apply a theme color if specified by the extension.
   Browser* browser = browser_view()->browser();

@@ -330,6 +330,7 @@ component("cpp") {
     "//chromeos/services/assistant/public/cpp",
     "//chromeos/services/cellular_setup:in_process_esim_manager",
     "//chromeos/services/network_config:in_process_instance",
+    "//chromeos/ui",
     "//chromeos/ui/vector_icons",
     "//components/prefs",
     "//components/sync:rest_of_sync",

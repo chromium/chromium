@@ -4,8 +4,8 @@
 
 #include "ash/public/cpp/frame_utils.h"
 
-#include "ash/public/cpp/ash_constants.h"
 #include "ash/public/cpp/window_properties.h"
+#include "chromeos/ui/chromeos_ui_constants.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
 #include "ui/base/hit_test.h"
@@ -22,10 +22,10 @@ using WindowOpacity = views::Widget::InitParams::WindowOpacity;
 int FrameBorderNonClientHitTest(views::NonClientFrameView* view,
                                 const gfx::Point& point_in_widget) {
   gfx::Rect expanded_bounds = view->bounds();
-  int outside_bounds = kResizeOutsideBoundsSize;
+  int outside_bounds = chromeos::kResizeOutsideBoundsSize;
 
   if (aura::Env::GetInstance()->is_touch_down())
-    outside_bounds *= kResizeOutsideBoundsScaleForTouch;
+    outside_bounds *= chromeos::kResizeOutsideBoundsScaleForTouch;
   expanded_bounds.Inset(-outside_bounds, -outside_bounds);
 
   if (!expanded_bounds.Contains(point_in_widget))
@@ -37,14 +37,15 @@ int FrameBorderNonClientHitTest(views::NonClientFrameView* view,
   bool can_ever_resize = widget->widget_delegate()->CanResize();
   // Don't allow overlapping resize handles when the window is maximized or
   // fullscreen, as it can't be resized in those states.
-  int resize_border = kResizeInsideBoundsSize;
+  int resize_border = chromeos::kResizeInsideBoundsSize;
   if (widget->IsMaximized() || widget->IsFullscreen()) {
     resize_border = 0;
     can_ever_resize = false;
   }
   int frame_component = view->GetHTComponentForFrame(
-      point_in_widget, resize_border, resize_border, kResizeAreaCornerSize,
-      kResizeAreaCornerSize, can_ever_resize);
+      point_in_widget, resize_border, resize_border,
+      chromeos::kResizeAreaCornerSize, chromeos::kResizeAreaCornerSize,
+      can_ever_resize);
   if (frame_component != HTNOWHERE)
     return frame_component;
 

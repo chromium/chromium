@@ -47,7 +47,7 @@
 #include "url/gurl.h"
 
 #if defined(OS_CHROMEOS)
-#include "ash/public/cpp/ash_constants.h"
+#include "chromeos/ui/chromeos_ui_constants.h"
 #else
 #include "chrome/browser/themes/theme_properties.h"
 #endif
@@ -460,7 +460,7 @@ bool CustomTabBarView::IsShowingOriginForTesting() const {
 SkColor CustomTabBarView::GetDefaultFrameColor() const {
 #if defined(OS_CHROMEOS)
   // Ash system frames differ from ChromeOS browser frames.
-  return ash::kDefaultFrameColor;
+  return chromeos::kDefaultFrameColor;
 #else
   return ThemeProperties::GetDefaultColor(
       ThemeProperties::COLOR_FRAME_ACTIVE, false,

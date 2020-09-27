@@ -17,18 +17,6 @@ namespace ash {
 // Radius of the header's top corners when the window is restored.
 constexpr int kTopCornerRadiusWhenRestored = 2;
 
-// In the window corners, the resize areas don't actually expand bigger, but the
-// 16 px at the end of each edge triggers diagonal resizing.
-constexpr int kResizeAreaCornerSize = 16;
-
-// Ash windows do not have a traditional visible window frame. Window content
-// extends to the edge of the window. We consider a small region outside the
-// window bounds and an even smaller region overlapping the window to be the
-// "non-client" area and use it for resizing.
-constexpr int kResizeOutsideBoundsSize = 6;
-constexpr int kResizeOutsideBoundsScaleForTouch = 5;
-constexpr int kResizeInsideBoundsSize = 1;
-
 // Background color used for the Chrome OS boot splash screen.
 constexpr SkColor kChromeOsBootColor = SkColorSetRGB(0xfe, 0xfe, 0xfe);
 
@@ -65,9 +53,6 @@ constexpr FloatingMenuPosition kDefaultAutoclickMenuPosition =
 // The default floating accessibility menu position.
 constexpr FloatingMenuPosition kDefaultFloatingMenuPosition =
     FloatingMenuPosition::kSystemDefault;
-
-// The default frame color.
-constexpr SkColor kDefaultFrameColor = SkColorSetRGB(0xFD, 0xFE, 0xFF);
 
 // Whether keyboard auto repeat is enabled by default.
 constexpr bool kDefaultKeyAutoRepeatEnabled = true;

@@ -2622,6 +2622,7 @@ static_library("ui") {
       "//chromeos/settings",
       "//chromeos/strings",
       "//chromeos/system",
+      "//chromeos/ui",
       "//chromeos/ui/vector_icons",
       "//components/arc",
       "//components/assist_ranker",

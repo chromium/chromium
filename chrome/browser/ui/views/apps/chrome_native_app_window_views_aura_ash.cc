@@ -9,7 +9,6 @@
 #include "apps/ui/views/app_window_frame_view.h"
 #include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/public/cpp/app_types.h"
-#include "ash/public/cpp/ash_constants.h"
 #include "ash/public/cpp/ash_switches.h"
 #include "ash/public/cpp/immersive/immersive_fullscreen_controller.h"
 #include "ash/public/cpp/shelf_types.h"
@@ -32,6 +31,7 @@
 #include "chrome/browser/ui/views/exclusive_access_bubble_views.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/extension_constants.h"
+#include "chromeos/ui/chromeos_ui_constants.h"
 #include "components/session_manager/core/session_manager.h"
 #include "extensions/browser/app_window/app_delegate.h"
 #include "extensions/common/constants.h"
@@ -151,9 +151,9 @@ ChromeNativeAppWindowViewsAuraAsh::CreateNonStandardAppFrame() {
 
   // For Aura windows on the Ash desktop the sizes are different and the user
   // can resize the window from slightly outside the bounds as well.
-  frame->SetResizeSizes(ash::kResizeInsideBoundsSize,
-                        ash::kResizeOutsideBoundsSize,
-                        ash::kResizeAreaCornerSize);
+  frame->SetResizeSizes(chromeos::kResizeInsideBoundsSize,
+                        chromeos::kResizeOutsideBoundsSize,
+                        chromeos::kResizeAreaCornerSize);
   return frame;
 }
 

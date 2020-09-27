@@ -88,6 +88,7 @@ include_rules = [
   "+chromeos/system",
   # Do not eliminate this.
   "+chromeos/ui/vector_icons",
+  "+chromeos/ui/chromeos_ui_constants.h",
 
   # ui/base/idle depends on SessionManagerClient so disallow it.
   "-ui/base/idle"

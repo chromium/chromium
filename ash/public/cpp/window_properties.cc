@@ -4,12 +4,12 @@
 
 #include "ash/public/cpp/window_properties.h"
 
-#include "ash/public/cpp/ash_constants.h"
 #include "ash/public/cpp/immersive/immersive_fullscreen_controller.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/window_backdrop.h"
 #include "ash/public/cpp/window_pin_type.h"
 #include "ash/public/cpp/window_state_type.h"
+#include "chromeos/ui/chromeos_ui_constants.h"
 #include "third_party/skia/include/core/SkRegion.h"
 #include "ui/aura/window.h"
 #include "ui/wm/core/window_properties.h"
@@ -70,10 +70,12 @@ DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(SkRegion,
 DEFINE_UI_CLASS_PROPERTY_KEY(aura::Window*,
                              kTabDraggingSourceWindowKey,
                              nullptr)
-DEFINE_UI_CLASS_PROPERTY_KEY(SkColor, kFrameActiveColorKey, kDefaultFrameColor)
+DEFINE_UI_CLASS_PROPERTY_KEY(SkColor,
+                             kFrameActiveColorKey,
+                             chromeos::kDefaultFrameColor)
 DEFINE_UI_CLASS_PROPERTY_KEY(SkColor,
                              kFrameInactiveColorKey,
-                             kDefaultFrameColor)
+                             chromeos::kDefaultFrameColor)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kFrameRestoreLookKey, false)
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(base::string16,
                                    kWindowOverviewTitleKey,

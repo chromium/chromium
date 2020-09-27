@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "ash/public/cpp/app_types.h"
-#include "ash/public/cpp/ash_constants.h"
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
@@ -27,6 +26,7 @@
 #include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
+#include "chromeos/ui/chromeos_ui_constants.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/capture_client.h"
 #include "ui/aura/client/focus_client.h"
@@ -58,7 +58,7 @@ namespace {
 class InteriorResizeHandleTargeter : public aura::WindowTargeter {
  public:
   InteriorResizeHandleTargeter() {
-    SetInsets(gfx::Insets(kResizeInsideBoundsSize));
+    SetInsets(gfx::Insets(chromeos::kResizeInsideBoundsSize));
   }
 
   ~InteriorResizeHandleTargeter() override = default;
@@ -188,11 +188,11 @@ int GetNonClientComponent(aura::Window* window, const gfx::Point& location) {
 }
 
 void SetChildrenUseExtendedHitRegionForWindow(aura::Window* window) {
-  gfx::Insets mouse_extend(-kResizeOutsideBoundsSize, -kResizeOutsideBoundsSize,
-                           -kResizeOutsideBoundsSize,
-                           -kResizeOutsideBoundsSize);
+  gfx::Insets mouse_extend(
+      -chromeos::kResizeOutsideBoundsSize, -chromeos::kResizeOutsideBoundsSize,
+      -chromeos::kResizeOutsideBoundsSize, -chromeos::kResizeOutsideBoundsSize);
   gfx::Insets touch_extend =
-      mouse_extend.Scale(kResizeOutsideBoundsScaleForTouch);
+      mouse_extend.Scale(chromeos::kResizeOutsideBoundsScaleForTouch);
   window->SetEventTargeter(std::make_unique<::wm::EasyResizeWindowTargeter>(
       mouse_extend, touch_extend));
 }

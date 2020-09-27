@@ -7,12 +7,12 @@
 
 #include <memory>
 
-#include "ash/public/cpp/ash_constants.h"
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/frame_header.h"
 #include "base/compiler_specific.h"  // override
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "chromeos/ui/chromeos_ui_constants.h"
 
 namespace ash {
 
@@ -49,8 +49,8 @@ class ASH_PUBLIC_EXPORT DefaultFrameHeader : public FrameHeader {
 
   SkColor GetActiveFrameColorForPaintForTest();
 
-  SkColor active_frame_color_ = kDefaultFrameColor;
-  SkColor inactive_frame_color_ = kDefaultFrameColor;
+  SkColor active_frame_color_ = chromeos::kDefaultFrameColor;
+  SkColor inactive_frame_color_ = chromeos::kDefaultFrameColor;
 
   int width_in_pixels_ = -1;
 
