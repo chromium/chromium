@@ -178450,7 +178450,7 @@
       []
      ],
      "idlharness.https-expected.txt": [
-      "5bb806a415b30cc2605df2ac1a1142610a322859",
+      "c686ebd811f621ce591a29fad9a45782ac8cfd2e",
       []
      ],
      "resources": {
@@ -226495,7 +226495,7 @@
      []
     ],
     "css-font-loading.idl": [
-     "31d247e9df25e143c939275abd310745eb57de72",
+     "c047b855b1fe1f6db6248d669c3b3dd96d35f40c",
      []
     ],
     "css-fonts.idl": [
@@ -226888,6 +226888,10 @@
     ],
     "selection-api.idl": [
      "b6626292183422e7961f53e757e062448ae3df72",
+     []
+    ],
+    "serial.idl": [
+     "b376bac1ed7a851baff2bde6010944bb7b1c644e",
      []
     ],
     "server-timing.idl": [
@@ -233722,6 +233726,14 @@
     ]
    },
    "serial": {
+    "idlharness.https.any-expected.txt": [
+     "6db775ca238a4c51758ae9dc152334690424b005",
+     []
+    ],
+    "idlharness.https.any.worker-expected.txt": [
+     "bf15faac24d2faefc8fe8addec7749c195fde7ad",
+     []
+    ],
     "resources": {
      "serial-allowed-by-feature-policy-worker.js": [
       "46c338e9a33a9ee0148ca48d09fc9c3bec37736b",
@@ -390503,6 +390515,39 @@
     ]
    },
    "serial": {
+    "idlharness.https.any.js": [
+     "b240da933ade1595d3b1965c3ca6613c91c8318f",
+     [
+      "serial/idlharness.https.any.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/resources/WebIDLParser.js"
+        ],
+        [
+         "script",
+         "/resources/idlharness.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "serial/idlharness.https.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/resources/WebIDLParser.js"
+        ],
+        [
+         "script",
+         "/resources/idlharness.js"
+        ]
+       ]
+      }
+     ]
+    ],
     "serial-allowed-by-feature-policy-attribute-redirect-on-load.https.sub.html": [
      "7c3a88dd51f93d74dc86882c12aab6bd2c25afb0",
      [

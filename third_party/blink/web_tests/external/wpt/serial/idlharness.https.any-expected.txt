@@ -1,0 +1,60 @@
+This is a testharness.js-based test.
+Found 56 tests; 47 PASS, 9 FAIL, 0 TIMEOUT, 0 NOTRUN.
+PASS idl_test setup
+PASS idl_test validation
+PASS Partial interface Navigator: original interface defined
+PASS Partial interface Navigator: valid exposure set
+PASS Partial interface Navigator: member names are unique
+PASS Partial interface WorkerNavigator: original interface defined
+PASS Partial interface WorkerNavigator: valid exposure set
+PASS Partial interface WorkerNavigator: member names are unique
+PASS Partial interface mixin NavigatorID: member names are unique
+PASS Navigator includes NavigatorID: member names are unique
+PASS Navigator includes NavigatorLanguage: member names are unique
+PASS Navigator includes NavigatorOnLine: member names are unique
+PASS Navigator includes NavigatorContentUtils: member names are unique
+PASS Navigator includes NavigatorCookies: member names are unique
+PASS Navigator includes NavigatorPlugins: member names are unique
+PASS Navigator includes NavigatorConcurrentHardware: member names are unique
+PASS WorkerNavigator includes NavigatorID: member names are unique
+PASS WorkerNavigator includes NavigatorLanguage: member names are unique
+PASS WorkerNavigator includes NavigatorOnLine: member names are unique
+PASS WorkerNavigator includes NavigatorConcurrentHardware: member names are unique
+PASS Serial interface: existence and properties of interface object
+PASS Serial interface object length
+PASS Serial interface object name
+PASS Serial interface: existence and properties of interface prototype object
+PASS Serial interface: existence and properties of interface prototype object's "constructor" property
+PASS Serial interface: existence and properties of interface prototype object's @@unscopables property
+PASS Serial interface: attribute onconnect
+PASS Serial interface: attribute ondisconnect
+PASS Serial interface: operation getPorts()
+PASS Serial interface: operation requestPort(optional SerialOptions)
+PASS Serial must be primary interface of navigator.serial
+PASS Stringification of navigator.serial
+PASS Serial interface: navigator.serial must inherit property "onconnect" with the proper type
+PASS Serial interface: navigator.serial must inherit property "ondisconnect" with the proper type
+PASS Serial interface: navigator.serial must inherit property "getPorts()" with the proper type
+PASS Serial interface: navigator.serial must inherit property "requestPort(optional SerialOptions)" with the proper type
+PASS Serial interface: calling requestPort(optional SerialOptions) on navigator.serial with too few arguments must throw TypeError
+PASS SerialPort interface: existence and properties of interface object
+PASS SerialPort interface object length
+PASS SerialPort interface object name
+PASS SerialPort interface: existence and properties of interface prototype object
+PASS SerialPort interface: existence and properties of interface prototype object's "constructor" property
+PASS SerialPort interface: existence and properties of interface prototype object's @@unscopables property
+FAIL SerialPort interface: operation open(optional SerialOptions) assert_equals: property has wrong .length expected 0 but got 1
+FAIL SerialPort interface: attribute in assert_true: The prototype object must have a property "in" expected true got false
+FAIL SerialPort interface: attribute out assert_true: The prototype object must have a property "out" expected true got false
+PASS SerialPort interface: operation getInfo()
+FAIL SerialPortInfo interface: existence and properties of interface object assert_own_property: self does not have own property "SerialPortInfo" expected property "SerialPortInfo" missing
+FAIL SerialPortInfo interface object length assert_own_property: self does not have own property "SerialPortInfo" expected property "SerialPortInfo" missing
+FAIL SerialPortInfo interface object name assert_own_property: self does not have own property "SerialPortInfo" expected property "SerialPortInfo" missing
+FAIL SerialPortInfo interface: existence and properties of interface prototype object assert_own_property: self does not have own property "SerialPortInfo" expected property "SerialPortInfo" missing
+FAIL SerialPortInfo interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "SerialPortInfo" expected property "SerialPortInfo" missing
+FAIL SerialPortInfo interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "SerialPortInfo" expected property "SerialPortInfo" missing
+PASS Navigator interface: attribute serial
+PASS Navigator interface: navigator must inherit property "serial" with the proper type
+PASS WorkerNavigator interface: existence and properties of interface object
+Harness: the test ran to completion.
+

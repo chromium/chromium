@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 89 tests; 70 PASS, 19 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 95 tests; 76 PASS, 19 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Document: member names are unique
@@ -27,6 +27,9 @@ PASS FontFace interface: attribute variant
 PASS FontFace interface: attribute featureSettings
 FAIL FontFace interface: attribute variationSettings assert_true: The prototype object must have a property "variationSettings" expected true got false
 PASS FontFace interface: attribute display
+PASS FontFace interface: attribute ascentOverride
+PASS FontFace interface: attribute descentOverride
+PASS FontFace interface: attribute lineGapOverride
 PASS FontFace interface: attribute status
 PASS FontFace interface: operation load()
 PASS FontFace interface: attribute loaded
@@ -41,6 +44,9 @@ PASS FontFace interface: fontFace must inherit property "variant" with the prope
 PASS FontFace interface: fontFace must inherit property "featureSettings" with the proper type
 FAIL FontFace interface: fontFace must inherit property "variationSettings" with the proper type assert_inherits: property "variationSettings" not found in prototype chain
 PASS FontFace interface: fontFace must inherit property "display" with the proper type
+PASS FontFace interface: fontFace must inherit property "ascentOverride" with the proper type
+PASS FontFace interface: fontFace must inherit property "descentOverride" with the proper type
+PASS FontFace interface: fontFace must inherit property "lineGapOverride" with the proper type
 PASS FontFace interface: fontFace must inherit property "status" with the proper type
 PASS FontFace interface: fontFace must inherit property "load()" with the proper type
 PASS FontFace interface: fontFace must inherit property "loaded" with the proper type
