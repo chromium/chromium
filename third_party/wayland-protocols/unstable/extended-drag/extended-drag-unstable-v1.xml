@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<protocol name="extended_drag_unstable_v1">
+
+  <copyright>
+    Copyright 2020 The Chromium Authors.
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice (including the next
+    paragraph) shall be included in all copies or substantial portions of the
+    Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+  </copyright>
+
+  <interface name="zcr_extended_drag_v1" version="1">
+    <description summary="extends DnD protocol with some advanced features">
+      The zcr_extended_drag_v1 interface extends the Wayland drag-and-drop with
+      features unsurpported by the core protocol. Such as, making toplevel shell
+      surfaces "draggable", as well as making them "snappable" into and out of
+      other surfaces as they are dragged around.
+
+      A common use case for this is a Chromium-like tab/window dragging UX,
+      where the user is able to drag a tab (or any other kind of UI piece) out
+      of its original window, into a new surface anchored to the pointer cursor,
+      similar to a regular drag icon but with enhanced and more configurable
+      capabilities.
+
+      Warning! The protocol described in this file is experimental and
+      backward incompatible changes may be made. Backward compatible changes
+      may be added together with the corresponding uinterface version bump.
+      Backward incompatible changes are done by bumping the version number in
+      the protocol and uinterface names and resetting the interface version.
+      Once the protocol is to be declared stable, the 'z' prefix and the
+      version number in the protocol and interface names are removed and the
+      interface version number is reset.
+    </description>
+
+    <enum name="options" bitfield="true">
+      <description summary="extended drag configuration flags.">
+        Bitmask flags that can be used to configure how the drag session will
+        operate. By default no additional option is set.
+
+        Source client might set allow_swallow option to tell the compositor that
+        the dragged UI item can be snapped out and into other surfaces
+        (swallowed/unswallowed), eg: Chromium's tab dragging UX.
+
+        allow_drop_no_target controls how source and destination clients are
+        notified when the drop happens, if it is set the DnD operation is
+        considered successfully finished regardless the drop location (eg:
+        outside any shell surface or there is no target that can accept it).
+
+        lock_cursor might be used to keep the cursor shape locked during the
+        extended drag session, regardless current the mime types, dnd action
+        negotiation status.
+      </description>
+      <entry name="default" value="0"/>
+      <entry name="allow_swallow" value="1"/>
+      <entry name="allow_drop_no_target" value="2"/>
+      <entry name="lock_cursor" value="4"/>
+    </enum>
+
+    <request name="get_extended_drag_source">
+      <description summary="get an extended_drag_source for a wl_data_source">
+        Create an extended drag source object. See zcr_extended_drag_source_v1
+        interface for details.
+      </description>
+      <arg name="id" type="new_id" interface="zcr_extended_drag_source_v1"/>
+      <arg name="data_source" type="object" interface="wl_data_source"/>
+      <arg name="options" type="uint" enum="zcr_extended_drag_v1.options"/>
+    </request>
+
+    <request name="get_extended_drag_offer">
+      <description summary="get an extended_drag_offer for a wl_data_offer">
+        Create an extended drag offer object. See zcr_extended_drag_offer_v1
+        interface for details.
+      </description>
+      <arg name="id" type="new_id" interface="zcr_extended_drag_offer_v1"/>
+      <arg name="data_offer" type="object" interface="wl_data_offer"/>
+    </request>
+  </interface>
+
+  <interface name="zcr_extended_drag_source_v1" version="1">
+    <description summary="extensions for the standard drag data source">
+      The zcr_extended_drag_source_v1 interface extends the wl_data_source with
+      features unsurpported by the standard drag-and-drop protocol.
+    </description>
+
+    <request name="destroy" type="destructor">
+      <description summary="destroy the extended drag source object"/>
+    </request>
+
+    <request name="drag">
+      <description summary="Update the dragged surface">
+        Update the dragged surface. If null is passed, the dragged surface gets
+        unset, making it to not being moved anymore under the pointer cursor.
+        Otherwise, it will be set as the dragged surface, making it to be visually
+        anchored to the pointer cursor. surface is expected to have a toplevel
+        shell surface role assigned, which allows it to be dropped smoothly into
+        an arbitrary location of the shell, so turning it instantly into a
+        regular toplevel window, which not possible with the standard DND
+        protocol.
+
+        x and y offsets are described in surface-local coordinates, with no
+        scale applied, that determine how the surface must be positioned
+        relative to the cursor location, similar to drag icon offsets in
+        standard DND operations.
+      </description>
+      <arg name="surface" type="object" interface="wl_surface" allow-null="true" summary="drag icon surface"/>
+      <arg name="x_offset" type="int" summary="dragged surface x offset"/>
+      <arg name="y_offset" type="int" summary="dragged surface y offset"/>
+    </request>
+
+    <event name="swallow">
+      <description summary="the receiving client requested to swallow the drag.">
+        The receiving client has requested to swallow the dragged surface.
+        Which, in a drag operation involving 2 or more clients, can be used to
+        negotiate when the dragged surface is incorporated (aka: merged) into
+        its UI. See zcr_extended_drag_offer_v1::swallow request for more
+        details.
+      </description>
+      <arg name="mime_type" type="string" summary="mime type to be swallowed by the client"/>
+    </event>
+
+    <event name="unswallow">
+      <description summary="the receiving client requested to unswallow the drag.">
+        The receiving client has requested to unswallow the dragged surface.
+        Which, in a drag operation involving more than a single client, can be
+        used to negotiate when the dragged surface is snapped out of the
+        receiving client's UI.
+
+        X and Y offsets are expressed in surface-local coordinates, with no
+        scale applied, and describe how the surface must be positioned relative
+        to the cursor location, similar to drag icon offsets in standard DND
+        operations. Note that these coordinates are local to the unswallowed
+        surface, created and owned by the source client, so it can be used
+        rightaway to call drag(surface, x_offset, y_offset) in response to
+        receiving client's request.
+      </description>
+      <arg name="mime_type" type="string" allow-null="true" summary="mime type accepted by the client"/>
+      <arg name="x_offset" type="int" summary="dragged surface x offset"/>
+      <arg name="y_offset" type="int" summary="dragged surface y offset"/>
+    </event>
+  </interface>
+
+  <interface name="zcr_extended_drag_offer_v1" version="1">
+    <description summary="extensions for the standard drag data offer.">
+      The zcr_extended_drag_offer_v1 interface extends the wl_data_offer with
+      features unsurpported by the standard drag-and-drop protocol.
+    </description>
+
+    <request name="destroy" type="destructor">
+      <description summary="destroy the extended drag offer object"/>
+    </request>
+
+    <request name="swallow">
+      <description summary="Requests the drag source to swallow the drag.">
+        Requests the drag source to swallow the dragged surface. This means the
+        receiving client accepts and will incorporate the dragged surface into
+        its UI. For example, a browser tab is dragged and snapped to an icon\
+        grid.
+      </description>
+      <arg name="serial" type="uint" summary="serial number of the swallow request"/>
+      <arg name="mime_type" type="string" allow-null="true" summary="mime type being swallowed"/>
+    </request>
+
+    <request name="unswallow">
+      <description summary="Requests the drag source to unswallow the drag.">
+        Requests the drag source to unswallow the dragged surface. Which means
+        that the receiving client wants to undo a previously swallowed dragged
+        surface, i.e: detach it from its UI.
+
+        X and Y offsets are expressed in surface-local coordinates, with no
+        scale applied and describe how the surface must be positioned relative
+        to the cursor location, similar to drag icon offsets in standard DND
+        operations. Note that these coordinates are local to the currently
+        focused surface, owned by the receiving client, which may differ from
+        corresponding offsets at source side (which owns the unswallowed
+        surface), for instance, when the receiving surface is on a wl_output
+        with different scale value. Compositor handles such conversion before
+        delivering the zcr_extended_drag_source_v1::swallow event counterpart
+        to the source client.
+      </description>
+      <arg name="serial" type="uint" summary="serial number of the unswallow request"/>
+      <arg name="mime_type" type="string" summary="mime type being unswallowed"/>
+      <arg name="x_offset" type="int" summary="dragged surface x offset"/>
+      <arg name="y_offset" type="int" summary="dragged surface y offset"/>
+    </request>
+  </interface>
+</protocol>

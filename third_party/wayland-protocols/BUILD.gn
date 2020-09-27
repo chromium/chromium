@@ -123,3 +123,7 @@ wayland_protocol("color_space_protocol") {
 wayland_protocol("xdg_foreign") {
   sources = [ "src/unstable/xdg-foreign/xdg-foreign-unstable-v1.xml" ]
 }
+
+wayland_protocol("extended_drag") {
+  sources = [ "unstable/extended-drag/extended-drag-unstable-v1.xml" ]
+}
