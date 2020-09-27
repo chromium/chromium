@@ -24,6 +24,8 @@ class RefCountedClass : public base::RefCounted<RefCountedClass> {
       : did_delete_instance_(did_delete_instance) {
     DCHECK(!*did_delete_instance_);
   }
+  RefCountedClass(const RefCountedClass&) = delete;
+  RefCountedClass& operator=(const RefCountedClass&) = delete;
 
   void PerformTask() { did_perform_task_ = true; }
   bool did_perform_task() const { return did_perform_task_; }
@@ -36,8 +38,6 @@ class RefCountedClass : public base::RefCounted<RefCountedClass> {
   bool* const did_delete_instance_;  // Not owned.
 
   bool did_perform_task_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(RefCountedClass);
 };
 
 TEST(OneShotEventTest, RecordsSignal) {

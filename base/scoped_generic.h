@@ -9,9 +9,11 @@
 #include <ostream>
 
 #include <algorithm>
+#include <utility>
 
 #include "base/check.h"
-#include "base/compiler_specific.h"
+// TODO(crbug.com/1010217) Remove once no #includers are getting base/macros.h
+// by including this header.
 #include "base/macros.h"
 
 namespace base {
@@ -119,6 +121,8 @@ class ScopedGeneric {
       : data_(rvalue.release(), rvalue.get_traits()) {
     TrackAcquire(data_.generic);
   }
+  ScopedGeneric(const ScopedGeneric&) = delete;
+  ScopedGeneric& operator=(const ScopedGeneric&) = delete;
 
   virtual ~ScopedGeneric() {
     CHECK(!receiving_) << "ScopedGeneric destroyed with active receiver";
@@ -215,15 +219,8 @@ class ScopedGeneric {
              "Receiver";
       scoped_generic_->receiving_ = true;
     }
-
-    ~Receiver() {
-      if (scoped_generic_) {
-        CHECK(scoped_generic_->receiving_);
-        scoped_generic_->reset(value_);
-        scoped_generic_->receiving_ = false;
-      }
-    }
-
+    Receiver(const Receiver&) = delete;
+    Receiver& operator=(const Receiver&) = delete;
     Receiver(Receiver&& move) {
       CHECK(!used_) << "moving into already-used Receiver";
       CHECK(!move.used_) << "moving from already-used Receiver";
@@ -237,7 +234,13 @@ class ScopedGeneric {
       scoped_generic_ = move.scoped_generic_;
       move.scoped_generic_ = nullptr;
     }
-
+    ~Receiver() {
+      if (scoped_generic_) {
+        CHECK(scoped_generic_->receiving_);
+        scoped_generic_->reset(value_);
+        scoped_generic_->receiving_ = false;
+      }
+    }
     // We hand out a pointer to a field in Receiver instead of directly to
     // ScopedGeneric's internal storage in order to make it so that users can't
     // accidentally silently break ScopedGeneric's invariants. This way, an
@@ -253,8 +256,6 @@ class ScopedGeneric {
     T value_ = Traits::InvalidValue();
     ScopedGeneric* scoped_generic_;
     bool used_ = false;
-
-    DISALLOW_COPY_AND_ASSIGN(Receiver);
   };
 
   const element_type& get() const { return data_.generic; }
@@ -324,8 +325,6 @@ class ScopedGeneric {
 
   Data data_;
   bool receiving_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedGeneric);
 };
 
 template<class T, class Traits>

@@ -12,7 +12,6 @@
 
 #include "base/base_export.h"
 #include "base/check_op.h"
-#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
@@ -136,12 +135,12 @@ class BASE_EXPORT Pickle {
   class BASE_EXPORT Attachment : public RefCountedThreadSafe<Attachment> {
    public:
     Attachment();
+    Attachment(const Attachment&) = delete;
+    Attachment& operator=(const Attachment&) = delete;
 
    protected:
     friend class RefCountedThreadSafe<Attachment>;
     virtual ~Attachment();
-
-    DISALLOW_COPY_AND_ASSIGN(Attachment);
   };
 
   // Initialize a Pickle object using the default header size.

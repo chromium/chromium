@@ -8,8 +8,6 @@
 #include <memory>
 
 #include "base/base_export.h"
-#include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 
@@ -26,7 +24,6 @@ namespace base {
 class LOCKABLE BASE_EXPORT SequenceCheckerImpl {
  public:
   SequenceCheckerImpl();
-  ~SequenceCheckerImpl();
 
   // Allow move construct/assign. This must be called on |other|'s associated
   // sequence and assignment can only be made into a SequenceCheckerImpl which
@@ -36,6 +33,9 @@ class LOCKABLE BASE_EXPORT SequenceCheckerImpl {
   // will be bound to the current sequence and |other| will be detached.
   SequenceCheckerImpl(SequenceCheckerImpl&& other);
   SequenceCheckerImpl& operator=(SequenceCheckerImpl&& other);
+  SequenceCheckerImpl(const SequenceCheckerImpl&) = delete;
+  SequenceCheckerImpl& operator=(const SequenceCheckerImpl&) = delete;
+  ~SequenceCheckerImpl();
 
   // Returns true if called in sequence with previous calls to this method and
   // the constructor.
@@ -54,8 +54,6 @@ class LOCKABLE BASE_EXPORT SequenceCheckerImpl {
 
   mutable Lock lock_;
   mutable std::unique_ptr<Core> core_ GUARDED_BY(lock_);
-
-  DISALLOW_COPY_AND_ASSIGN(SequenceCheckerImpl);
 };
 
 }  // namespace base

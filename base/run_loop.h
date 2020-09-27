@@ -5,6 +5,7 @@
 #ifndef BASE_RUN_LOOP_H_
 #define BASE_RUN_LOOP_H_
 
+#include <stack>
 #include <utility>
 #include <vector>
 
@@ -12,7 +13,6 @@
 #include "base/callback.h"
 #include "base/containers/stack.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -74,7 +74,9 @@ class BASE_EXPORT RunLoop {
     kNestableTasksAllowed,
   };
 
-  RunLoop(Type type = Type::kDefault);
+  explicit RunLoop(Type type = Type::kDefault);
+  RunLoop(const RunLoop&) = delete;
+  RunLoop& operator=(const RunLoop&) = delete;
   ~RunLoop();
 
   // Run the current RunLoop::Delegate. This blocks until Quit is called
@@ -176,6 +178,8 @@ class BASE_EXPORT RunLoop {
   class BASE_EXPORT Delegate {
    public:
     Delegate();
+    Delegate(const Delegate&) = delete;
+    Delegate& operator=(const Delegate&) = delete;
     virtual ~Delegate();
 
     // Used by RunLoop to inform its Delegate to Run/Quit. Implementations are
@@ -231,8 +235,6 @@ class BASE_EXPORT RunLoop {
 
     // Thread-affine per its use of TLS.
     THREAD_CHECKER(bound_thread_checker_);
-
-    DISALLOW_COPY_AND_ASSIGN(Delegate);
   };
 
   // Registers |delegate| on the current thread. Must be called once and only
@@ -261,6 +263,10 @@ class BASE_EXPORT RunLoop {
   class BASE_EXPORT ScopedDisallowRunningForTesting {
    public:
     ScopedDisallowRunningForTesting();
+    ScopedDisallowRunningForTesting(const ScopedDisallowRunningForTesting&) =
+        delete;
+    ScopedDisallowRunningForTesting& operator=(
+        const ScopedDisallowRunningForTesting&) = delete;
     ~ScopedDisallowRunningForTesting();
 
    private:
@@ -268,8 +274,6 @@ class BASE_EXPORT RunLoop {
     Delegate* current_delegate_;
     const bool previous_run_allowance_;
 #endif  // DCHECK_IS_ON()
-
-    DISALLOW_COPY_AND_ASSIGN(ScopedDisallowRunningForTesting);
   };
 
   // Support for //base/test/scoped_run_loop_timeout.h.
@@ -344,8 +348,6 @@ class BASE_EXPORT RunLoop {
 
   // WeakPtrFactory for QuitClosure safety.
   WeakPtrFactory<RunLoop> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RunLoop);
 };
 
 }  // namespace base

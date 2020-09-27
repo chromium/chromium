@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/base_export.h"
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 
 namespace logging {
@@ -40,6 +39,8 @@ class BASE_EXPORT VlogInfo {
   VlogInfo(const std::string& v_switch,
            const std::string& vmodule_switch,
            int* min_log_level);
+  VlogInfo(const VlogInfo&) = delete;
+  VlogInfo& operator=(const VlogInfo&) = delete;
   ~VlogInfo();
 
   // Returns the vlog level for a given file (usually taken from
@@ -55,8 +56,6 @@ class BASE_EXPORT VlogInfo {
   struct VmodulePattern;
   std::vector<VmodulePattern> vmodule_levels_;
   int* min_log_level_;
-
-  DISALLOW_COPY_AND_ASSIGN(VlogInfo);
 };
 
 // Returns true if the string passed in matches the vlog pattern.  The

@@ -7,13 +7,13 @@
 
 #include <unordered_map>
 #include <utility>
+#include <vector>
 
 #include "base/base_export.h"
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/lazy_instance.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "base/sequenced_task_runner.h"
@@ -55,6 +55,9 @@ class BASE_EXPORT ObserverListThreadSafeBase
     : public RefCountedThreadSafe<ObserverListThreadSafeBase> {
  public:
   ObserverListThreadSafeBase() = default;
+  ObserverListThreadSafeBase(const ObserverListThreadSafeBase&) = delete;
+  ObserverListThreadSafeBase& operator=(const ObserverListThreadSafeBase&) =
+      delete;
 
  protected:
   template <typename ObserverType, typename Method>
@@ -84,8 +87,6 @@ class BASE_EXPORT ObserverListThreadSafeBase
 
  private:
   friend class RefCountedThreadSafe<ObserverListThreadSafeBase>;
-
-  DISALLOW_COPY_AND_ASSIGN(ObserverListThreadSafeBase);
 };
 
 }  // namespace internal
@@ -96,6 +97,8 @@ class ObserverListThreadSafe : public internal::ObserverListThreadSafeBase {
   ObserverListThreadSafe() = default;
   explicit ObserverListThreadSafe(ObserverListPolicy policy)
       : policy_(policy) {}
+  ObserverListThreadSafe(const ObserverListThreadSafe&) = delete;
+  ObserverListThreadSafe& operator=(const ObserverListThreadSafe&) = delete;
 
   // Adds |observer| to the list. |observer| must not already be in the list.
   void AddObserver(ObserverType* observer) {
@@ -260,8 +263,6 @@ class ObserverListThreadSafe : public internal::ObserverListThreadSafeBase {
   // be notified.
   std::unordered_map<ObserverType*, scoped_refptr<SequencedTaskRunner>>
       observers_ GUARDED_BY(lock_);
-
-  DISALLOW_COPY_AND_ASSIGN(ObserverListThreadSafe);
 };
 
 }  // namespace base

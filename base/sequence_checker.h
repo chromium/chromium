@@ -6,7 +6,6 @@
 #define BASE_SEQUENCE_CHECKER_H_
 
 #include "base/check.h"
-#include "base/compiler_specific.h"
 #include "base/sequence_checker_impl.h"
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
@@ -100,12 +99,11 @@ class LOCKABLE SequenceCheckerDoNothing {
   SequenceCheckerDoNothing(SequenceCheckerDoNothing&& other) = default;
   SequenceCheckerDoNothing& operator=(SequenceCheckerDoNothing&& other) =
       default;
+  SequenceCheckerDoNothing(const SequenceCheckerDoNothing&) = delete;
+  SequenceCheckerDoNothing& operator=(const SequenceCheckerDoNothing&) = delete;
 
   bool CalledOnValidSequence() const WARN_UNUSED_RESULT { return true; }
   void DetachFromSequence() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SequenceCheckerDoNothing);
 };
 
 #if DCHECK_IS_ON()

@@ -4,7 +4,6 @@
 
 #include "base/sync_socket.h"
 
-#include "base/macros.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/simple_thread.h"
@@ -30,6 +29,8 @@ class HangingReceiveThread : public DelegateSimpleThread::Delegate {
     thread_.Start();
   }
 
+  HangingReceiveThread(const HangingReceiveThread&) = delete;
+  HangingReceiveThread& operator=(const HangingReceiveThread&) = delete;
   ~HangingReceiveThread() override = default;
 
   void Run() override {
@@ -61,8 +62,6 @@ class HangingReceiveThread : public DelegateSimpleThread::Delegate {
   bool with_timeout_;
   WaitableEvent started_event_;
   WaitableEvent done_event_;
-
-  DISALLOW_COPY_AND_ASSIGN(HangingReceiveThread);
 };
 
 // Tests sending data between two SyncSockets. Uses ASSERT() and thus will exit

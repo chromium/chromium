@@ -36,7 +36,6 @@
 #include "base/containers/checked_range.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
-#include "base/macros.h"
 #include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
 #include "base/value_iterators.h"
@@ -151,6 +150,8 @@ class BASE_EXPORT Value {
   explicit Value(ListStorage&& in_list) noexcept;
 
   Value& operator=(Value&& that) noexcept;
+  Value(const Value&) = delete;
+  Value& operator=(const Value&) = delete;
 
   ~Value();
 
@@ -571,8 +572,6 @@ class BASE_EXPORT Value {
                 DictStorage,
                 ListStorage>
       data_;
-
-  DISALLOW_COPY_AND_ASSIGN(Value);
 };
 
 // DictionaryValue provides a key-value dictionary with (optional) "path"

@@ -12,9 +12,7 @@
 #include <stddef.h>
 
 #include "base/base_export.h"
-#include "base/compiler_specific.h"
 #include "base/files/platform_file.h"
-#include "base/macros.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -41,6 +39,8 @@ class BASE_EXPORT SyncSocket {
   // Creates a SyncSocket from a Handle.
   explicit SyncSocket(Handle handle);
   explicit SyncSocket(ScopedHandle handle);
+  SyncSocket(const SyncSocket&) = delete;
+  SyncSocket& operator=(const SyncSocket&) = delete;
   virtual ~SyncSocket();
 
   // Initializes and connects a pair of sockets.
@@ -89,9 +89,6 @@ class BASE_EXPORT SyncSocket {
 
  protected:
   ScopedHandle handle_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SyncSocket);
 };
 
 // Derives from SyncSocket and adds support for shutting down the socket from
@@ -102,6 +99,8 @@ class BASE_EXPORT CancelableSyncSocket : public SyncSocket {
   CancelableSyncSocket();
   explicit CancelableSyncSocket(Handle handle);
   explicit CancelableSyncSocket(ScopedHandle handle);
+  CancelableSyncSocket(const CancelableSyncSocket&) = delete;
+  CancelableSyncSocket& operator=(const CancelableSyncSocket&) = delete;
   ~CancelableSyncSocket() override = default;
 
   // Initializes a pair of cancelable sockets.  See documentation for
@@ -139,7 +138,6 @@ class BASE_EXPORT CancelableSyncSocket : public SyncSocket {
   WaitableEvent shutdown_event_;
   WaitableEvent file_operation_;
 #endif
-  DISALLOW_COPY_AND_ASSIGN(CancelableSyncSocket);
 };
 
 }  // namespace base

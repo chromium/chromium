@@ -23,6 +23,8 @@ class FlagOnDelete {
                scoped_refptr<SequencedTaskRunner> expected_deletion_sequence)
       : deleted_(deleted),
         expected_deletion_sequence_(std::move(expected_deletion_sequence)) {}
+  FlagOnDelete(const FlagOnDelete&) = delete;
+  FlagOnDelete& operator=(const FlagOnDelete&) = delete;
 
  private:
   friend class DeleteHelper<FlagOnDelete>;
@@ -38,11 +40,13 @@ class FlagOnDelete {
 
   bool* deleted_;
   const scoped_refptr<SequencedTaskRunner> expected_deletion_sequence_;
-
-  DISALLOW_COPY_AND_ASSIGN(FlagOnDelete);
 };
 
 class SequencedTaskRunnerTest : public testing::Test {
+ public:
+  SequencedTaskRunnerTest(const SequencedTaskRunnerTest&) = delete;
+  SequencedTaskRunnerTest& operator=(const SequencedTaskRunnerTest&) = delete;
+
  protected:
   SequencedTaskRunnerTest() : foreign_thread_("foreign") {}
 
@@ -57,8 +61,6 @@ class SequencedTaskRunnerTest : public testing::Test {
 
  private:
   test::TaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(SequencedTaskRunnerTest);
 };
 
 using SequenceBoundUniquePtr =

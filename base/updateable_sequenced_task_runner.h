@@ -13,6 +13,9 @@ namespace base {
 // A SequencedTaskRunner whose posted tasks' priorities can be updated.
 class BASE_EXPORT UpdateableSequencedTaskRunner : public SequencedTaskRunner {
  public:
+  UpdateableSequencedTaskRunner(const UpdateableSequencedTaskRunner&) = delete;
+  UpdateableSequencedTaskRunner& operator=(
+      const UpdateableSequencedTaskRunner&) = delete;
   // Updates the priority for tasks posted through this TaskRunner to
   // |priority|.
   virtual void UpdatePriority(TaskPriority priority) = 0;
@@ -20,8 +23,6 @@ class BASE_EXPORT UpdateableSequencedTaskRunner : public SequencedTaskRunner {
  protected:
   UpdateableSequencedTaskRunner() = default;
   ~UpdateableSequencedTaskRunner() override = default;
-
-  DISALLOW_COPY_AND_ASSIGN(UpdateableSequencedTaskRunner);
 };
 
 }  // namespace base

@@ -4,6 +4,8 @@
 
 #include "base/sequence_checker_impl.h"
 
+#include <utility>
+
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
 #include "base/sequence_token.h"

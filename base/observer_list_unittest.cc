@@ -4,6 +4,8 @@
 
 #include "base/observer_list.h"
 
+#include <memory>
+
 #include "base/strings/string_piece.h"
 #include "base/test/gtest_util.h"
 #include "base/threading/simple_thread.h"
@@ -143,7 +145,9 @@ class ObserverListCreator : public DelegateSimpleThread::Delegate {
 
 class ObserverListTestBase {
  public:
-  ObserverListTestBase() {}
+  ObserverListTestBase() = default;
+  ObserverListTestBase(const ObserverListTestBase&) = delete;
+  ObserverListTestBase& operator=(const ObserverListTestBase&) = delete;
 
   template <class T>
   const decltype(T::list_.get()) list(const T& iter) {
@@ -163,9 +167,6 @@ class ObserverListTestBase {
     EXPECT_DCHECK_DEATH(return iter->GetCurrent());
     return nullptr;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ObserverListTestBase);
 };
 
 // Templatized test fixture that can pick between CheckedBase and UncheckedBase.
@@ -179,10 +180,9 @@ class ObserverListTest : public ObserverListTestBase, public ::testing::Test {
   using iterator = typename ObserverList<ObserverType>::iterator;
   using const_iterator = typename ObserverList<ObserverType>::const_iterator;
 
-  ObserverListTest() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ObserverListTest);
+  ObserverListTest() = default;
+  ObserverListTest(const ObserverListTest&) = delete;
+  ObserverListTest& operator=(const ObserverListTest&) = delete;
 };
 
 using ObserverTypes = ::testing::Types<CheckedBase, UncheckedBase>;
@@ -200,10 +200,10 @@ TYPED_TEST_SUITE(ObserverListTest, ObserverTypes);
   using Disrupter = DisrupterT<ObserverListFoo>;                            \
   using const_iterator = typename TestFixture::const_iterator;              \
   using iterator = typename TestFixture::iterator;                          \
-  (void)(Disrupter*)(0);                                                    \
-  (void)(Adder*)(0);                                                        \
-  (void)(const_iterator*)(0);                                               \
-  (void)(iterator*)(0)
+  (void)reinterpret_cast<Disrupter*>(0);                                    \
+  (void)reinterpret_cast<Adder*>(0);                                        \
+  (void)reinterpret_cast<const_iterator*>(0);                               \
+  (void)reinterpret_cast<iterator*>(0)
 
 TYPED_TEST(ObserverListTest, BasicTest) {
   DECLARE_TYPES;
@@ -950,26 +950,26 @@ TYPED_TEST(ObserverListTest, ReentrantObserverList) {
 class TestCheckedObserver : public CheckedObserver {
  public:
   explicit TestCheckedObserver(int* count) : count_(count) {}
+  TestCheckedObserver(const TestCheckedObserver&) = delete;
+  TestCheckedObserver& operator=(const TestCheckedObserver&) = delete;
 
   void Observe() { ++(*count_); }
 
  private:
   int* count_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestCheckedObserver);
 };
 
 // A second, identical observer, used to test multiple inheritance.
 class TestCheckedObserver2 : public CheckedObserver {
  public:
   explicit TestCheckedObserver2(int* count) : count_(count) {}
+  TestCheckedObserver2(const TestCheckedObserver2&) = delete;
+  TestCheckedObserver2& operator=(const TestCheckedObserver2&) = delete;
 
   void Observe() { ++(*count_); }
 
  private:
   int* count_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestCheckedObserver2);
 };
 
 using CheckedObserverListTest = ::testing::Test;

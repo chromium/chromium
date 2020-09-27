@@ -8,11 +8,11 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/bind_helpers.h"
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/sequence_token.h"
 #include "base/single_thread_task_runner.h"
 #include "base/task/post_task.h"
@@ -36,14 +36,14 @@ class RunCallbackThread : public SimpleThread {
     Start();
     Join();
   }
+  RunCallbackThread(const RunCallbackThread&) = delete;
+  RunCallbackThread& operator=(const RunCallbackThread&) = delete;
 
  private:
   // SimpleThread:
   void Run() override { std::move(callback_).Run(); }
 
   OnceClosure callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(RunCallbackThread);
 };
 
 void ExpectCalledOnValidSequence(SequenceCheckerImpl* sequence_checker) {
@@ -259,12 +259,12 @@ TEST(SequenceCheckerMacroTest, Macros) {
 class SequenceCheckerOwner {
  public:
   SequenceCheckerOwner() = default;
+  SequenceCheckerOwner(const SequenceCheckerOwner&) = delete;
+  SequenceCheckerOwner& operator=(const SequenceCheckerOwner&) = delete;
   ~SequenceCheckerOwner() { EXPECT_TRUE(checker_.CalledOnValidSequence()); }
 
  private:
   SequenceCheckerImpl checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(SequenceCheckerOwner);
 };
 
 // Verifies SequenceCheckerImpl::CalledOnValidSequence() returns true if called

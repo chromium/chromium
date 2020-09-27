@@ -5,13 +5,13 @@
 #include "base/run_loop.h"
 
 #include <functional>
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/bind_helpers.h"
 #include "base/containers/queue.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/single_thread_task_runner.h"
@@ -62,6 +62,9 @@ void RunNestedLoopTask(int* counter) {
 class SimpleSingleThreadTaskRunner : public SingleThreadTaskRunner {
  public:
   SimpleSingleThreadTaskRunner() = default;
+  SimpleSingleThreadTaskRunner(const SimpleSingleThreadTaskRunner&) = delete;
+  SimpleSingleThreadTaskRunner& operator=(const SimpleSingleThreadTaskRunner&) =
+      delete;
 
   bool PostDelayedTask(const Location& from_here,
                        OnceClosure task,
@@ -108,8 +111,6 @@ class SimpleSingleThreadTaskRunner : public SingleThreadTaskRunner {
   // ThreadCheckerImpl to be able to reliably provide that signal even in
   // non-dcheck builds.
   ThreadCheckerImpl origin_thread_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(SimpleSingleThreadTaskRunner);
 };
 
 // The basis of all TestDelegates, allows safely injecting a OnceClosure to be
@@ -209,7 +210,7 @@ enum class RunLoopTestType {
 // so it can be instantiated on the stack in the RunLoopTest fixture.
 class RunLoopTestEnvironment {
  public:
-  RunLoopTestEnvironment(RunLoopTestType type) {
+  explicit RunLoopTestEnvironment(RunLoopTestType type) {
     switch (type) {
       case RunLoopTestType::kRealEnvironment: {
         task_environment_ = std::make_unique<test::TaskEnvironment>();
@@ -231,14 +232,15 @@ class RunLoopTestEnvironment {
 };
 
 class RunLoopTest : public testing::TestWithParam<RunLoopTestType> {
+ public:
+  RunLoopTest(const RunLoopTest&) = delete;
+  RunLoopTest& operator=(const RunLoopTest&) = delete;
+
  protected:
   RunLoopTest() : test_environment_(GetParam()) {}
 
   RunLoopTestEnvironment test_environment_;
   RunLoop run_loop_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RunLoopTest);
 };
 
 }  // namespace
@@ -470,22 +472,21 @@ namespace {
 class MockNestingObserver : public RunLoop::NestingObserver {
  public:
   MockNestingObserver() = default;
+  MockNestingObserver(const MockNestingObserver&) = delete;
+  MockNestingObserver& operator=(const MockNestingObserver&) = delete;
 
   // RunLoop::NestingObserver:
   MOCK_METHOD0(OnBeginNestedRunLoop, void());
   MOCK_METHOD0(OnExitNestedRunLoop, void());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockNestingObserver);
 };
 
 class MockTask {
  public:
   MockTask() = default;
-  MOCK_METHOD0(Task, void());
+  MockTask(const MockTask&) = delete;
+  MockTask& operator=(const MockTask&) = delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockTask);
+  MOCK_METHOD0(Task, void());
 };
 
 }  // namespace

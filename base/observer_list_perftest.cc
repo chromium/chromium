@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/check_op.h"
-#include "base/observer_list.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -34,12 +33,11 @@ perf_test::PerfResultReporter SetUpReporter(const std::string& story_name) {
 
 class ObserverInterface {
  public:
-  ObserverInterface() {}
-  virtual ~ObserverInterface() {}
+  ObserverInterface() = default;
+  ObserverInterface(const ObserverInterface&) = delete;
+  ObserverInterface& operator=(const ObserverInterface&) = delete;
+  virtual ~ObserverInterface() = default;
   virtual void Observe() const { ++g_observer_list_perf_test_counter; }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ObserverInterface);
 };
 
 class UnsafeObserver : public ObserverInterface {};
@@ -64,10 +62,9 @@ class ObserverListPerfTest : public ::testing::Test {
  public:
   using ObserverListType = typename Pick<ObserverType>::ObserverListType;
 
-  ObserverListPerfTest() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ObserverListPerfTest);
+  ObserverListPerfTest() = default;
+  ObserverListPerfTest(const ObserverListPerfTest&) = delete;
+  ObserverListPerfTest& operator=(const ObserverListPerfTest&) = delete;
 };
 
 typedef ::testing::Types<UnsafeObserver, TestCheckedObserver> ObserverTypes;

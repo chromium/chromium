@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/macros.h"
 #include "base/stl_util.h"
 
 // ScopedObserver is used to keep track of the set of sources an object has
@@ -43,7 +42,8 @@ template <class Source,
 class ScopedObserver {
  public:
   explicit ScopedObserver(Observer* observer) : observer_(observer) {}
-
+  ScopedObserver(const ScopedObserver&) = delete;
+  ScopedObserver& operator=(const ScopedObserver&) = delete;
   ~ScopedObserver() {
     RemoveAll();
   }
@@ -80,8 +80,6 @@ class ScopedObserver {
   Observer* observer_;
 
   std::vector<Source*> sources_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedObserver);
 };
 
 #endif  // BASE_SCOPED_OBSERVER_H_
