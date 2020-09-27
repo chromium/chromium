@@ -151,6 +151,13 @@ export class TabSearchAppElement extends PolymerElement {
           // The initial rendered tab list must be non-zero.
           assert(event.detail.value > 0);
 
+          // Chunking is used to bound the time to interactive for users
+          // irrespective of the number of tabs they have open. This is no longer
+          // needed after the initial list render and can cause flickering on
+          // updates so disable it here.
+          // TODO(tluk): Investigate a more efficient way to handle this.
+          this.chunkingItemCount_ = 0;
+
           // Push showUI() to the event loop to allow reflow to occur following
           // the DOM update.
           setTimeout(() => {
@@ -160,13 +167,6 @@ export class TabSearchAppElement extends PolymerElement {
               Math.round(window.performance.now()));
           }, 0);
         });
-      } else {
-        // Chunking is used to bound the time to interactive for users
-        // irrespective of the number of tabs they have open. This is no longer
-        // needed after the initial list render and can cause flickering on
-        // updates so disable it here.
-        // TODO(tluk): Investigate a more efficient way to handle this.
-        this.chunkingItemCount_ = 0;
       }
       this.openTabs_ = profileTabs.windows;
     });
