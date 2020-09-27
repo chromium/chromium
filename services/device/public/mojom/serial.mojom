@@ -9,11 +9,6 @@ import "mojo/public/mojom/base/unguessable_token.mojom";
 
 struct SerialPortInfo {
   mojo_base.mojom.UnguessableToken token;
-
-  // This platform-specific identifier, if present, can be used to identify the
-  // device across restarts of the application and operating system.
-  string? persistent_id;
-
   mojo_base.mojom.FilePath path;
 
   // This member is used to identify whether the SerialPortInfo object is
@@ -26,11 +21,27 @@ struct SerialPortInfo {
   // the dial-in device is the only option its path will be in |path|.
   [EnableIf=is_mac] mojo_base.mojom.FilePath? alternate_path;
 
+  // On macOS a single serial port can be enumerated by multiple drivers. This
+  // field permits disambiguation.
+  [EnableIf=is_mac] string? usb_driver_name;
+
+  // On Windows the "device instance ID" provides a stable identifier that can
+  // be used for device permissions.
+  [EnableIf=is_win] string device_instance_id;
+
+  // The USB device vendor and product IDs.
   uint16 vendor_id;
   bool has_vendor_id = false;
   uint16 product_id;
   bool has_product_id = false;
+
+  // A string suitable for display to the user for describing this device. May
+  // be, for example, the USB device product name string.
   string? display_name;
+
+  // The USB device serial number.
+  // Note: This field is not populated on Windows nor for non-USB devices.
+  string? serial_number;
 };
 
 enum SerialSendError {

@@ -286,11 +286,17 @@ void SerialDeviceEnumeratorWin::EnumeratePort(HDEVINFO dev_info,
   if (!instance_id)
     return;
 
+  // Some versions of Windows pad this string with a variable number of NUL
+  // bytes for no discernible reason.
+  instance_id = base::TrimString(*instance_id, base::StringPiece("\0", 1),
+                                 base::TRIM_TRAILING)
+                    .as_string();
+
   base::UnguessableToken token = base::UnguessableToken::Create();
   auto info = mojom::SerialPortInfo::New();
   info->token = token;
   info->path = *path;
-  info->persistent_id = instance_id;
+  info->device_instance_id = *instance_id;
 
   // TODO(https://crbug.com/1015074): Read the real USB strings here.
   std::string display_name;
@@ -299,14 +305,22 @@ void SerialDeviceEnumeratorWin::EnumeratePort(HDEVINFO dev_info,
 
   // The instance ID looks like "FTDIBUS\VID_0403+PID_6001+A703X87GA\0000".
   uint32_t vendor_id, product_id;
+  base::Optional<std::string> vendor_id_str, product_id_str;
   if (GetVendorID(*instance_id, &vendor_id)) {
     info->has_vendor_id = true;
     info->vendor_id = vendor_id;
+    vendor_id_str = base::StringPrintf("%04X", vendor_id);
   }
   if (GetProductID(*instance_id, &product_id)) {
     info->has_product_id = true;
     info->product_id = product_id;
+    product_id_str = base::StringPrintf("%04X", product_id);
   }
+
+  VLOG(1) << "Found serial device: path=" << info->path
+          << " instance_id=" << info->device_instance_id
+          << " vid=" << vendor_id_str.value_or("(none)")
+          << " pid=" << product_id_str.value_or("(none)");
 
   paths_.insert(std::make_pair(*path, token));
   AddPort(std::move(info));

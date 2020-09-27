@@ -165,31 +165,30 @@ void SerialDeviceEnumeratorLinux::CreatePort(ScopedUdevDevicePtr device,
   info->path = base::FilePath(path);
   info->token = token;
 
+  uint32_t int_value;
   const char* vendor_id =
       udev_device_get_property_value(device.get(), "ID_VENDOR_ID");
-  const char* product_id =
-      udev_device_get_property_value(device.get(), "ID_MODEL_ID");
-  const char* product_name_enc =
-      udev_device_get_property_value(device.get(), "ID_MODEL_ENC");
-  const char* serial_number =
-      udev_device_get_property_value(device.get(), "ID_SERIAL_SHORT");
-
-  uint32_t int_value;
   if (vendor_id && base::HexStringToUInt(vendor_id, &int_value)) {
     info->vendor_id = int_value;
     info->has_vendor_id = true;
   }
+
+  const char* product_id =
+      udev_device_get_property_value(device.get(), "ID_MODEL_ID");
   if (product_id && base::HexStringToUInt(product_id, &int_value)) {
     info->product_id = int_value;
     info->has_product_id = true;
   }
+
+  const char* product_name_enc =
+      udev_device_get_property_value(device.get(), "ID_MODEL_ENC");
   if (product_name_enc)
     info->display_name = device::UdevDecodeString(product_name_enc);
 
-  if (info->has_vendor_id && info->has_product_id && serial_number) {
-    info->persistent_id = base::StringPrintf("%04X-%04X-%s", info->vendor_id,
-                                             info->product_id, serial_number);
-  }
+  const char* serial_number =
+      udev_device_get_property_value(device.get(), "ID_SERIAL_SHORT");
+  if (serial_number)
+    info->serial_number = serial_number;
 
   paths_.insert(std::make_pair(syspath, token));
   AddPort(std::move(info));

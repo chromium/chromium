@@ -93,6 +93,33 @@ base::Optional<uint16_t> GetUInt16Property(io_service_t service,
   return base::nullopt;
 }
 
+// Finds the name of the USB driver for |device| by walking up the
+// IORegistry tree to find the first entry provided by the IOUSBInterface
+// class. For drivers compiled for macOS 10.11 and later this was renamed
+// to IOUSBHostInterface.
+base::Optional<std::string> GetUsbDriverName(
+    base::mac::ScopedIOObject<io_object_t> device) {
+  base::mac::ScopedIOObject<io_iterator_t> iterator;
+  kern_return_t kr = IORegistryEntryCreateIterator(
+      device.get(), kIOServicePlane,
+      kIORegistryIterateRecursively | kIORegistryIterateParents,
+      iterator.InitializeInto());
+  if (kr != KERN_SUCCESS)
+    return base::nullopt;
+
+  base::mac::ScopedIOObject<io_service_t> ancestor;
+  while (ancestor.reset(IOIteratorNext(iterator)), ancestor) {
+    base::Optional<std::string> provider_class =
+        GetStringProperty(ancestor.get(), CFSTR(kIOProviderClassKey));
+    if (provider_class && (*provider_class == "IOUSBInterface" ||
+                           *provider_class == "IOUSBHostInterface")) {
+      return GetStringProperty(ancestor.get(), kCFBundleIdentifierKey);
+    }
+  }
+
+  return base::nullopt;
+}
+
 }  // namespace
 
 SerialDeviceEnumeratorMac::SerialDeviceEnumeratorMac() {
@@ -159,27 +186,27 @@ void SerialDeviceEnumeratorMac::AddDevices() {
     auto info = mojom::SerialPortInfo::New();
     base::Optional<uint16_t> vendor_id =
         GetUInt16Property(device.get(), CFSTR(kUSBVendorID));
+    base::Optional<std::string> vendor_id_str;
     if (vendor_id) {
       info->has_vendor_id = true;
       info->vendor_id = *vendor_id;
+      vendor_id_str = base::StringPrintf("%04X", *vendor_id);
     }
 
     base::Optional<uint16_t> product_id =
         GetUInt16Property(device.get(), CFSTR(kUSBProductID));
+    base::Optional<std::string> product_id_str;
     if (product_id) {
       info->has_product_id = true;
       info->product_id = *product_id;
+      product_id_str = base::StringPrintf("%04X", *product_id);
     }
 
     info->display_name =
         GetStringProperty(device.get(), CFSTR(kUSBProductString));
-
-    base::Optional<std::string> serial_number =
+    info->serial_number =
         GetStringProperty(device.get(), CFSTR(kUSBSerialNumberString));
-    if (vendor_id && product_id && serial_number) {
-      info->persistent_id = base::StringPrintf(
-          "%04X-%04X-%s", *vendor_id, *product_id, serial_number->c_str());
-    }
+    info->usb_driver_name = GetUsbDriverName(device);
 
     // Each serial device has two paths associated with it: a "dialin" path
     // starting with "tty" and a "callout" path starting with "cu". The
@@ -202,6 +229,14 @@ void SerialDeviceEnumeratorMac::AddDevices() {
 
     auto token = base::UnguessableToken::Create();
     info->token = token;
+
+    VLOG(1) << "Found serial device: dialin="
+            << dialin_device.value_or("(none)")
+            << " callout=" << callout_device.value_or("(none)")
+            << " vid=" << vendor_id_str.value_or("(none)")
+            << " pid=" << product_id_str.value_or("(none)")
+            << " usb_serial=" << info->serial_number.value_or("(none)")
+            << " usb_driver=" << info->usb_driver_name.value_or("(none)");
 
     entries_.insert({entry_id, token});
     AddPort(std::move(info));

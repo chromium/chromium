@@ -8,6 +8,7 @@
 #include "base/run_loop.h"
 #include "base/scoped_observer.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/serial/serial_chooser_context_factory.h"
 #include "chrome/browser/serial/serial_chooser_histograms.h"
@@ -35,6 +36,27 @@ class MockPortObserver : public SerialChooserContext::PortObserver {
   MOCK_METHOD1(OnPortRemoved, void(const device::mojom::SerialPortInfo&));
   MOCK_METHOD0(OnPortManagerConnectionError, void());
 };
+
+device::mojom::SerialPortInfoPtr CreatePersistentPort(
+    base::Optional<std::string> name,
+    const std::string& persistent_id) {
+  auto port = device::mojom::SerialPortInfo::New();
+  port->token = base::UnguessableToken::Create();
+  port->display_name = std::move(name);
+#if defined(OS_WIN)
+  port->device_instance_id = persistent_id;
+#else
+  port->has_vendor_id = true;
+  port->vendor_id = 0;
+  port->has_product_id = true;
+  port->product_id = 0;
+  port->serial_number = persistent_id;
+#if defined(OS_MAC)
+  port->usb_driver_name = "AppleUSBCDC";
+#endif
+#endif  // defined(OS_WIN)
+  return port;
+}
 
 class SerialChooserContextTest : public testing::Test {
  public:
@@ -139,10 +161,8 @@ TEST_F(SerialChooserContextTest, GrantAndRevokePersistentPermission) {
 
   const auto origin = url::Origin::Create(GURL("https://google.com"));
 
-  auto port = device::mojom::SerialPortInfo::New();
-  port->token = base::UnguessableToken::Create();
-  port->display_name = "Persistent Port";
-  port->persistent_id = "ABC123";
+  device::mojom::SerialPortInfoPtr port =
+      CreatePersistentPort("Persistent Port", "ABC123");
 
   EXPECT_FALSE(context()->HasPortPermission(origin, origin, *port));
 
@@ -229,10 +249,8 @@ TEST_F(SerialChooserContextTest, EphemeralPermissionRevokedOnDisconnect) {
 TEST_F(SerialChooserContextTest, PersistenceRequiresDisplayName) {
   const auto origin = url::Origin::Create(GURL("https://google.com"));
 
-  auto port = device::mojom::SerialPortInfo::New();
-  port->token = base::UnguessableToken::Create();
-  // port->display_name is left unset.
-  port->persistent_id = "ABC123";
+  device::mojom::SerialPortInfoPtr port =
+      CreatePersistentPort(/*name=*/base::nullopt, "ABC123");
   port_manager().AddPort(port.Clone());
 
   context()->GrantPortPermission(origin, origin, *port);
@@ -269,10 +287,8 @@ TEST_F(SerialChooserContextTest, PersistentPermissionNotRevokedOnDisconnect) {
   const auto origin = url::Origin::Create(GURL("https://google.com"));
   const char persistent_id[] = "ABC123";
 
-  auto port = device::mojom::SerialPortInfo::New();
-  port->token = base::UnguessableToken::Create();
-  port->display_name = "Persistent Port";
-  port->persistent_id = persistent_id;
+  device::mojom::SerialPortInfoPtr port =
+      CreatePersistentPort("Persistent Port", persistent_id);
   port_manager().AddPort(port.Clone());
 
   context()->GrantPortPermission(origin, origin, *port);
@@ -307,9 +323,7 @@ TEST_F(SerialChooserContextTest, PersistentPermissionNotRevokedOnDisconnect) {
 
   // Simulate reconnection of the port. It gets a new token but the same
   // persistent ID. This SerialPortInfo should still match the old permission.
-  port = device::mojom::SerialPortInfo::New();
-  port->token = base::UnguessableToken::Create();
-  port->persistent_id = persistent_id;
+  port = CreatePersistentPort("Persistent Port", persistent_id);
   port_manager().AddPort(port.Clone());
 
   EXPECT_TRUE(context()->HasPortPermission(origin, origin, *port));

@@ -67,7 +67,7 @@ TEST_F(SerialDeviceEnumeratorLinuxTest, Enumerate) {
   std::unique_ptr<SerialDeviceEnumeratorLinux> enumerator = CreateEnumerator();
   std::vector<mojom::SerialPortInfoPtr> devices = enumerator->GetDevices();
   ASSERT_EQ(devices.size(), 1u);
-  EXPECT_EQ(devices[0]->persistent_id, "2341-0043-000001");
+  EXPECT_EQ(devices[0]->serial_number, "000001");
   EXPECT_EQ(devices[0]->path, base::FilePath("/dev/ttyACM0"));
   EXPECT_TRUE(devices[0]->has_vendor_id);
   EXPECT_EQ(devices[0]->vendor_id, 0x2341);

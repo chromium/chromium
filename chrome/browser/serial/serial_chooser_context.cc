@@ -10,6 +10,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/serial/serial_chooser_histograms.h"
@@ -19,8 +20,17 @@
 namespace {
 
 constexpr char kPortNameKey[] = "name";
-constexpr char kPersistentIdKey[] = "persistent_id";
 constexpr char kTokenKey[] = "token";
+#if defined(OS_WIN)
+constexpr char kDeviceInstanceIdKey[] = "device_instance_id";
+#else
+constexpr char kVendorIdKey[] = "vendor_id";
+constexpr char kProductIdKey[] = "product_id";
+constexpr char kSerialNumberKey[] = "serial_number";
+#if defined(OS_MAC)
+constexpr char kUsbDriverKey[] = "usb_driver";
+#endif  // defined(OS_MAC)
+#endif  // defined(OS_WIN)
 
 std::string EncodeToken(const base::UnguessableToken& token) {
   const uint64_t data[2] = {token.GetHighForSerialization(),
@@ -49,10 +59,29 @@ base::Value PortInfoToValue(const device::mojom::SerialPortInfo& port) {
     value.SetStringKey(kPortNameKey, *port.display_name);
   else
     value.SetStringKey(kPortNameKey, port.path.LossyDisplayName());
-  if (SerialChooserContext::CanStorePersistentEntry(port))
-    value.SetStringKey(kPersistentIdKey, port.persistent_id.value());
-  else
+
+  if (!SerialChooserContext::CanStorePersistentEntry(port)) {
     value.SetStringKey(kTokenKey, EncodeToken(port.token));
+    return value;
+  }
+
+#if defined(OS_WIN)
+  // Windows provides a handy device identifier which we can rely on to be
+  // sufficiently stable for identifying devices across restarts.
+  value.SetStringKey(kDeviceInstanceIdKey, port.device_instance_id);
+#else
+  DCHECK(port.has_vendor_id);
+  value.SetIntKey(kVendorIdKey, port.vendor_id);
+  DCHECK(port.has_product_id);
+  value.SetIntKey(kProductIdKey, port.product_id);
+  DCHECK(port.serial_number);
+  value.SetStringKey(kSerialNumberKey, *port.serial_number);
+
+#if defined(OS_MAC)
+  DCHECK(port.usb_driver_name && !port.usb_driver_name->empty());
+  value.SetStringKey(kUsbDriverKey, *port.usb_driver_name);
+#endif  // defined(OS_MAC)
+#endif  // defined(OS_WIN)
   return value;
 }
 
@@ -71,11 +100,26 @@ SerialChooserContext::SerialChooserContext(Profile* profile)
 SerialChooserContext::~SerialChooserContext() = default;
 
 bool SerialChooserContext::IsValidObject(const base::Value& object) {
+  if (!object.is_dict() || !object.FindStringKey(kPortNameKey))
+    return false;
+
   const std::string* token = object.FindStringKey(kTokenKey);
-  return object.is_dict() && object.DictSize() == 2 &&
-         object.FindStringKey(kPortNameKey) &&
-         ((token && DecodeToken(*token)) ||
-          object.FindStringKey(kPersistentIdKey));
+  if (token)
+    return object.DictSize() == 2 && DecodeToken(*token);
+
+#if defined(OS_WIN)
+  return object.DictSize() == 2 && object.FindStringKey(kDeviceInstanceIdKey);
+#else
+  if (!object.FindIntKey(kVendorIdKey) || !object.FindIntKey(kProductIdKey) ||
+      !object.FindStringKey(kSerialNumberKey)) {
+    return false;
+  }
+#if defined(OS_MAC)
+  return object.DictSize() == 5 && object.FindStringKey(kUsbDriverKey);
+#else
+  return object.DictSize() == 4;
+#endif  // defined(OS_MAC)
+#endif  // defined(OS_WIN)
 }
 
 base::string16 SerialChooserContext::GetObjectDisplayName(
@@ -193,15 +237,46 @@ bool SerialChooserContext::HasPortPermission(
       return true;
   }
 
+  if (!CanStorePersistentEntry(port)) {
+    return false;
+  }
+
   std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>
       object_list = GetGrantedObjects(requesting_origin, embedding_origin);
   for (const auto& object : object_list) {
     const base::Value& device = object->value;
+
+    // This check guarantees that the keys referenced below will be found.
     DCHECK(IsValidObject(device));
 
-    const std::string* persistent_id = device.FindStringKey(kPersistentIdKey);
-    if (port.persistent_id == *persistent_id)
+#if defined(OS_WIN)
+    const std::string& device_instance_id =
+        *device.FindStringKey(kDeviceInstanceIdKey);
+    if (port.device_instance_id == device_instance_id)
       return true;
+#else
+    const int vendor_id = *device.FindIntKey(kVendorIdKey);
+    const int product_id = *device.FindIntKey(kProductIdKey);
+    const std::string& serial_number = *device.FindStringKey(kSerialNumberKey);
+
+    // Guaranteed by the CanStorePersistentEntry() check above.
+    DCHECK(port.has_vendor_id);
+    DCHECK(port.has_product_id);
+    DCHECK(port.serial_number && !port.serial_number->empty());
+    if (port.vendor_id != vendor_id || port.product_id != product_id ||
+        port.serial_number != serial_number) {
+      continue;
+    }
+
+#if defined(OS_MAC)
+    const std::string& usb_driver_name = *device.FindStringKey(kUsbDriverKey);
+    if (port.usb_driver_name != usb_driver_name) {
+      continue;
+    }
+#endif  // defined(OS_MAC)
+
+    return true;
+#endif  // defined(OS_WIN)
   }
   return false;
 }
@@ -216,7 +291,28 @@ bool SerialChooserContext::CanStorePersistentEntry(
   if (!port.display_name || port.display_name->empty())
     return false;
 
-  return port.persistent_id && !port.persistent_id->empty();
+#if defined(OS_WIN)
+  return !port.device_instance_id.empty();
+#else
+  if (!port.has_vendor_id || !port.has_product_id || !port.serial_number ||
+      port.serial_number->empty()) {
+    return false;
+  }
+
+#if defined(OS_MAC)
+  // The combination of the standard USB vendor ID, product ID and serial
+  // number properties should be enough to uniquely identify a device
+  // however recent versions of macOS include built-in drivers for common
+  // types of USB-to-serial adapters while their manufacturers still
+  // recommend installing their custom drivers. When both are loaded two
+  // IOSerialBSDClient instances are found for each device. Including the
+  // USB driver name allows us to distinguish between the two.
+  if (!port.usb_driver_name || port.usb_driver_name->empty())
+    return false;
+#endif  // defined(OS_MAC)
+
+  return true;
+#endif  // defined(OS_WIN)
 }
 
 device::mojom::SerialPortManager* SerialChooserContext::GetPortManager() {
