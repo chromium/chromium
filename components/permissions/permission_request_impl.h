@@ -7,6 +7,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/optional.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -41,7 +42,7 @@ class PermissionRequestImpl : public PermissionRequest {
   base::string16 GetQuietMessageText() const override;
 #endif
 #if !defined(OS_ANDROID)
-  base::string16 GetChipText() const override;
+  base::Optional<base::string16> GetChipText() const override;
 #endif
   base::string16 GetMessageTextFragment() const override;
   GURL GetOrigin() const override;

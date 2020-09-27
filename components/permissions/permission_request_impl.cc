@@ -253,7 +253,7 @@ base::string16 PermissionRequestImpl::GetMessageTextFragment() const {
 }
 
 #if !defined(OS_ANDROID)
-base::string16 PermissionRequestImpl::GetChipText() const {
+base::Optional<base::string16> PermissionRequestImpl::GetChipText() const {
   int message_id;
   switch (content_settings_type_) {
     case ContentSettingsType::GEOLOCATION:
@@ -284,8 +284,10 @@ base::string16 PermissionRequestImpl::GetChipText() const {
       message_id = IDS_IDLE_DETECTION_PERMISSION_CHIP;
       break;
     default:
-      NOTREACHED();
-      return base::string16();
+      // TODO(bsep): We don't actually want to support having no string in the
+      // long term, but writing them takes time. In the meantime, we fall back
+      // to the existing UI when the string is missing.
+      return base::nullopt;
   }
   return l10n_util::GetStringUTF16(message_id);
 }

@@ -259,7 +259,7 @@ base::string16 PermissionChip::GetPermissionMessage() {
   auto requests = delegate_->Requests();
 
   return requests.size() == 1
-             ? requests[0]->GetChipText()
+             ? requests[0]->GetChipText().value()
              : l10n_util::GetStringUTF16(
                    IDS_MEDIA_CAPTURE_VIDEO_AND_AUDIO_PERMISSION_CHIP);
 }

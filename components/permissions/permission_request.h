@@ -6,6 +6,7 @@
 #define COMPONENTS_PERMISSIONS_PERMISSION_REQUEST_H_
 
 #include "base/macros.h"
+#include "base/optional.h"
 #include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -115,7 +116,7 @@ class PermissionRequest {
 
 #if !defined(OS_ANDROID)
   // Returns the short text for the chip button related to this permission.
-  virtual base::string16 GetChipText() const;
+  virtual base::Optional<base::string16> GetChipText() const;
 #endif
 
   // Returns the shortened prompt text for this permission. The permission
