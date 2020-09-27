@@ -8,6 +8,8 @@
 #import "ios/chrome/browser/ui/coordinators/chrome_coordinator.h"
 
 class Browser;
+@protocol PopupMenuLongPressDelegate;
+@class TabStripViewController;
 
 // Coordinator for the tab strip.
 @interface TabStripCoordinator : ChromeCoordinator
@@ -18,6 +20,12 @@ class Browser;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;
+
+// The TabStrip view controller owned by this coordinator.
+@property(nonatomic, strong) UIViewController* viewController;
+
+// Delegate for the long press gesture recognizer triggering popup menu.
+@property(nonatomic, weak) id<PopupMenuLongPressDelegate> longPressDelegate;
 
 @end
 

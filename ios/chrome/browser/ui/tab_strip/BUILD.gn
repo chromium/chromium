@@ -10,7 +10,23 @@ source_set("tab_strip") {
   ]
   deps = [
     "//base",
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
+    "//ios/chrome/browser/ui/tab_strip:tab_strip_ui",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("tab_strip_ui") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "tab_strip_view_controller.h",
+    "tab_strip_view_controller.mm",
+  ]
+  deps = [
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/main:public",
   ]
   frameworks = [ "UIKit.framework" ]
 }
