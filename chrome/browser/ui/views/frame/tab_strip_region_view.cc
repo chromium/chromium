@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/tabs/tab_search_button.h"
+#include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -47,7 +48,8 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip) {
                                     tab_strip_container_flex_spec);
 
   if (base::FeatureList::IsEnabled(features::kTabSearch) &&
-      base::FeatureList::IsEnabled(features::kTabSearchFixedEntrypoint)) {
+      base::FeatureList::IsEnabled(features::kTabSearchFixedEntrypoint) &&
+      !tab_strip_->controller()->GetProfile()->IsIncognitoProfile()) {
     // TODO(tluk): |tab_search_container| is only needed here so the tab search
     // button can be vertically centered. This can be removed if FlexLayout is
     // updated to support per-child cross-axis alignment.

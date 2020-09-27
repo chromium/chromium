@@ -9,6 +9,7 @@
 #include "ui/views/accessible_pane_view.h"
 
 class TabSearchButton;
+class TabStrip;
 
 // Container for the tabstrip, new tab button, and reserved grab handle space.
 // TODO (https://crbug.com/949660) Under construction.
