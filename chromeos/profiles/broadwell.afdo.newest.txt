@@ -1,1 +1,1 @@
-chromeos-chrome-amd64-broadwell-86-4240.27-1600682337-benchmark-86.0.4240.59-r1-redacted.afdo.xz
+chromeos-chrome-amd64-broadwell-86-4240.27-1600682337-benchmark-86.0.4240.61-r1-redacted.afdo.xz
