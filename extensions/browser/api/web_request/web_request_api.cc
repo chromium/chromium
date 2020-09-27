@@ -746,9 +746,8 @@ bool WebRequestAPI::MaybeProxyURLLoaderFactory(
          (browser_context->IsOffTheRecord() &&
           ExtensionsBrowserClient::Get()->GetOriginalContext(browser_context) ==
               browser_context_));
-  const int frame_id = frame ? frame->GetRoutingID() : MSG_ROUTING_NONE;
   WebRequestProxyingURLLoaderFactory::StartProxying(
-      browser_context, is_navigation ? -1 : render_process_id, frame_id,
+      browser_context, is_navigation ? -1 : render_process_id,
       &request_id_generator_, std::move(navigation_ui_data),
       std::move(navigation_id), ukm_source_id, std::move(proxied_receiver),
       std::move(target_factory_remote), std::move(header_client_receiver),

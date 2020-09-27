@@ -1080,7 +1080,6 @@ bool WebRequestProxyingURLLoaderFactory::InProgressRequest::IsRedirectSafe(
 WebRequestProxyingURLLoaderFactory::WebRequestProxyingURLLoaderFactory(
     content::BrowserContext* browser_context,
     int render_process_id,
-    int frame_id,
     WebRequestAPI::RequestIDGenerator* request_id_generator,
     std::unique_ptr<ExtensionNavigationUIData> navigation_ui_data,
     base::Optional<int64_t> navigation_id,
@@ -1093,7 +1092,6 @@ WebRequestProxyingURLLoaderFactory::WebRequestProxyingURLLoaderFactory(
     content::ContentBrowserClient::URLLoaderFactoryType loader_factory_type)
     : browser_context_(browser_context),
       render_process_id_(render_process_id),
-      frame_id_(frame_id),
       request_id_generator_(request_id_generator),
       navigation_ui_data_(std::move(navigation_ui_data)),
       navigation_id_(std::move(navigation_id)),
@@ -1126,7 +1124,6 @@ WebRequestProxyingURLLoaderFactory::WebRequestProxyingURLLoaderFactory(
 void WebRequestProxyingURLLoaderFactory::StartProxying(
     content::BrowserContext* browser_context,
     int render_process_id,
-    int frame_id,
     WebRequestAPI::RequestIDGenerator* request_id_generator,
     std::unique_ptr<ExtensionNavigationUIData> navigation_ui_data,
     base::Optional<int64_t> navigation_id,
@@ -1140,7 +1137,7 @@ void WebRequestProxyingURLLoaderFactory::StartProxying(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   auto proxy = std::make_unique<WebRequestProxyingURLLoaderFactory>(
-      browser_context, render_process_id, frame_id, request_id_generator,
+      browser_context, render_process_id, request_id_generator,
       std::move(navigation_ui_data), std::move(navigation_id), ukm_source_id,
       std::move(loader_receiver), std::move(target_factory_remote),
       std::move(header_client_receiver), proxies, loader_factory_type);
@@ -1157,20 +1154,6 @@ void WebRequestProxyingURLLoaderFactory::CreateLoaderAndStart(
     mojo::PendingRemote<network::mojom::URLLoaderClient> client,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  // Sanity check the plumbed |ukm_source_id_|.
-#if DCHECK_IS_ON()
-  auto* frame = content::RenderFrameHost::FromID(render_process_id_, frame_id_);
-  using FactoryType = content::ContentBrowserClient::URLLoaderFactoryType;
-  if ((ukm_source_id_ != base::kInvalidUkmSourceId) && frame &&
-      (frame->GetPageUkmSourceId() != ukm::kInvalidSourceId) &&
-      (loader_factory_type_ == FactoryType::kDocumentSubResource ||
-       loader_factory_type_ == FactoryType::kWorkerSubResource)) {
-    DCHECK_EQ(ukm_source_id_.ToInt64(), frame->GetPageUkmSourceId());
-  }
-#else
-  (void)frame_id_;  // avoid compile trouble due to unused.
-#endif
 
   // Make sure we are not proxying a browser initiated non-navigation
   // request except for loading service worker scripts.
