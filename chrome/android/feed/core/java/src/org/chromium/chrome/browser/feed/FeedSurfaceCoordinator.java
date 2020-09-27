@@ -251,7 +251,8 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
         // Mediator should be created before any Stream changes.
         mMediator = new FeedSurfaceMediator(this, snapScrollHelper, mPageNavigationDelegate);
 
-        mUserEducationHelper = new UserEducationHelper(mActivity, mHandler);
+        mUserEducationHelper =
+                new UserEducationHelper(mActivity, mHandler, TrackerFactory::getTrackerForProfile);
     }
 
     @Override

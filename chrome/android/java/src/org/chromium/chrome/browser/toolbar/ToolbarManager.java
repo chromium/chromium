@@ -47,6 +47,7 @@ import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior.OverviewModeObserver;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeState;
 import org.chromium.chrome.browser.compositor.layouts.SceneChangeObserver;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.findinpage.FindToolbarManager;
 import org.chromium.chrome.browser.findinpage.FindToolbarObserver;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
@@ -322,7 +323,6 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         mToolbar = createTopToolbarCoordinator(controlContainer, toolbarLayout, buttonDataProviders,
                 browsingModeThemeColorProvider, startSurfaceMenuButtonCoordinator, invalidator,
                 identityDiscController);
-
         mActionModeController =
                 new ActionModeController(mActivity, mActionBarDelegate, toolbarActionModeCallback);
 
@@ -633,8 +633,8 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             IdentityDiscController identityDiscController) {
         TopToolbarCoordinator toolbar = new TopToolbarCoordinator(controlContainer, toolbarLayout,
                 mLocationBarModel, mToolbarTabController,
-                new UserEducationHelper(mActivity, mHandler), buttonDataProviders,
-                mOverviewModeBehaviorSupplier, browsingModeThemeColorProvider,
+                new UserEducationHelper(mActivity, mHandler, TrackerFactory::getTrackerForProfile),
+                buttonDataProviders, mOverviewModeBehaviorSupplier, browsingModeThemeColorProvider,
                 mAppThemeColorProvider, mMenuButtonCoordinator, startSurfaceMenuButtonCoordinator,
                 mMenuButtonCoordinator.getMenuButtonHelperSupplier(), mTabModelSelectorSupplier,
                 mHomeButtonVisibilitySupplier, mIdentityDiscStateSupplier, (client) -> {

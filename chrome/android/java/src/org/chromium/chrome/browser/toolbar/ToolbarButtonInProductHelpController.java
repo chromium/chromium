@@ -54,7 +54,8 @@ public class ToolbarButtonInProductHelpController
             AppMenuCoordinator appMenuCoordinator, ActivityLifecycleDispatcher lifecycleDispatcher,
             ActivityTabProvider tabProvider) {
         mActivity = activity;
-        mUserEducationHelper = new UserEducationHelper(mActivity, mHandler);
+        mUserEducationHelper =
+                new UserEducationHelper(mActivity, mHandler, TrackerFactory::getTrackerForProfile);
         mScreenshotMonitor = new ScreenshotMonitor(this);
         lifecycleDispatcher.register(this);
         mPageLoadObserver = new ActivityTabTabObserver(tabProvider) {

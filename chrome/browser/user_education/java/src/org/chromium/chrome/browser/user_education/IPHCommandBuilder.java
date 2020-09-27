@@ -10,7 +10,6 @@ import android.view.View;
 
 import androidx.annotation.StringRes;
 
-import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.widget.textbubble.TextBubble;
 import org.chromium.ui.widget.ViewRectProvider;
 
@@ -177,7 +176,7 @@ public class IPHCommandBuilder {
 
         if (mInsetRect == null) {
             int yInsetPx =
-                    mResources.getDimensionPixelOffset(R.dimen.text_bubble_menu_anchor_y_inset);
+                    mResources.getDimensionPixelOffset(R.dimen.iph_text_bubble_menu_anchor_y_inset);
             mInsetRect = new Rect(0, 0, 0, yInsetPx);
         }
 
