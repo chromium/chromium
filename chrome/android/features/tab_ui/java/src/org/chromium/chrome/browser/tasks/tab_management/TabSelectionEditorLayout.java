@@ -33,6 +33,7 @@ class TabSelectionEditorLayout extends SelectableListLayout<Integer> {
     private ViewTreeObserver.OnGlobalLayoutListener mParentLayoutListener;
     private @Nullable Rect mPositionRect;
     private boolean mIsInitialized;
+    private Runnable mEditorHideController;
 
     // TODO(meiliang): inflates R.layout.tab_selection_editor_layout in
     // TabSelectionEditorCoordinator.
@@ -46,6 +47,9 @@ class TabSelectionEditorLayout extends SelectableListLayout<Integer> {
             // up the TalkBack. Focusable PopupWindow always focuses the first item in the content
             // view and announces the first item twice under Talkback mode.
             mWindow.setFocusable(true);
+            mWindow.setOnDismissListener(() -> {
+                if (mEditorHideController != null) mEditorHideController.run();
+            });
         }
     }
 
@@ -148,5 +152,11 @@ class TabSelectionEditorLayout extends SelectableListLayout<Integer> {
     @VisibleForTesting
     Rect getPositionRectForTesting() {
         return mPositionRect;
+    }
+
+    void setEditorHideController(Runnable hideController) {
+        if (!TabUiFeatureUtilities.isLaunchPolishEnabled()) return;
+
+        mEditorHideController = hideController;
     }
 }
