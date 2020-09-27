@@ -12,6 +12,7 @@
 #include "chromeos/services/multidevice_setup/host_status_provider.h"
 #include "chromeos/services/multidevice_setup/public/cpp/android_sms_pairing_state_tracker.h"
 #include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
+#include "chromeos/services/multidevice_setup/wifi_sync_feature_manager.h"
 #include "components/prefs/pref_change_registrar.h"
 
 class PrefService;
@@ -36,7 +37,8 @@ class FeatureStateManagerImpl : public FeatureStateManager,
         PrefService* pref_service,
         HostStatusProvider* host_status_provider,
         device_sync::DeviceSyncClient* device_sync_client,
-        AndroidSmsPairingStateTracker* android_sms_pairing_state_tracker);
+        AndroidSmsPairingStateTracker* android_sms_pairing_state_tracker,
+        WifiSyncFeatureManager* wifi_sync_feature_manager);
     static void SetFactoryForTesting(Factory* test_factory);
 
    protected:
@@ -45,7 +47,8 @@ class FeatureStateManagerImpl : public FeatureStateManager,
         PrefService* pref_service,
         HostStatusProvider* host_status_provider,
         device_sync::DeviceSyncClient* device_sync_client,
-        AndroidSmsPairingStateTracker* android_sms_pairing_state_tracker) = 0;
+        AndroidSmsPairingStateTracker* android_sms_pairing_state_tracker,
+        WifiSyncFeatureManager* wifi_sync_feature_manager) = 0;
 
    private:
     static Factory* test_factory_;
@@ -58,7 +61,8 @@ class FeatureStateManagerImpl : public FeatureStateManager,
       PrefService* pref_service,
       HostStatusProvider* host_status_provider,
       device_sync::DeviceSyncClient* device_sync_client,
-      AndroidSmsPairingStateTracker* android_sms_pairing_state_tracker);
+      AndroidSmsPairingStateTracker* android_sms_pairing_state_tracker,
+      WifiSyncFeatureManager* wifi_sync_feature_manager);
 
   // FeatureStateManager:
   FeatureStatesMap GetFeatureStates() override;
@@ -91,10 +95,7 @@ class FeatureStateManagerImpl : public FeatureStateManager,
   HostStatusProvider* host_status_provider_;
   device_sync::DeviceSyncClient* device_sync_client_;
   AndroidSmsPairingStateTracker* android_sms_pairing_state_tracker_;
-  // TODO(cvandermerwe) Remove once HostBackendDelegate tracks Wifi feature
-  // state. Always initialized to true at the start of each user session for
-  // now.
-  bool wifi_sync_enabled_ = true;
+  WifiSyncFeatureManager* wifi_sync_feature_manager_;
 
   // Map from feature to the pref name which indicates the enabled/disabled
   // boolean state for the feature.

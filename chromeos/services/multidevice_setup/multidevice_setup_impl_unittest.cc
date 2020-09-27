@@ -28,6 +28,7 @@
 #include "chromeos/services/multidevice_setup/fake_host_status_observer.h"
 #include "chromeos/services/multidevice_setup/fake_host_status_provider.h"
 #include "chromeos/services/multidevice_setup/fake_host_verifier.h"
+#include "chromeos/services/multidevice_setup/fake_wifi_sync_feature_manager.h"
 #include "chromeos/services/multidevice_setup/feature_state_manager_impl.h"
 #include "chromeos/services/multidevice_setup/grandfathered_easy_unlock_host_disabler.h"
 #include "chromeos/services/multidevice_setup/host_backend_delegate_impl.h"
@@ -40,6 +41,7 @@
 #include "chromeos/services/multidevice_setup/public/cpp/fake_auth_token_validator.h"
 #include "chromeos/services/multidevice_setup/public/cpp/oobe_completion_tracker.h"
 #include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
+#include "chromeos/services/multidevice_setup/wifi_sync_feature_manager_impl.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -239,6 +241,49 @@ class FakeHostStatusProviderFactory : public HostStatusProviderImpl::Factory {
   DISALLOW_COPY_AND_ASSIGN(FakeHostStatusProviderFactory);
 };
 
+class FakeWifiSyncFeatureManagerFactory
+    : public WifiSyncFeatureManagerImpl::Factory {
+ public:
+  FakeWifiSyncFeatureManagerFactory(
+      FakeHostStatusProviderFactory* fake_host_status_provider_factory,
+      sync_preferences::TestingPrefServiceSyncable*
+          expected_testing_pref_service,
+      device_sync::FakeDeviceSyncClient* expected_device_sync_client)
+      : fake_host_status_provider_factory_(fake_host_status_provider_factory),
+        expected_testing_pref_service_(expected_testing_pref_service),
+        expected_device_sync_client_(expected_device_sync_client) {}
+
+  ~FakeWifiSyncFeatureManagerFactory() override = default;
+
+  FakeWifiSyncFeatureManager* instance() { return instance_; }
+
+ private:
+  // WifiSyncFeatureManagerImpl::Factory:
+  std::unique_ptr<WifiSyncFeatureManager> CreateInstance(
+      HostStatusProvider* host_status_provider,
+      PrefService* pref_service,
+      device_sync::DeviceSyncClient* device_sync_client,
+      std::unique_ptr<base::OneShotTimer> timer) override {
+    EXPECT_FALSE(instance_);
+    EXPECT_EQ(fake_host_status_provider_factory_->instance(),
+              host_status_provider);
+    EXPECT_EQ(expected_testing_pref_service_, pref_service);
+    EXPECT_EQ(expected_device_sync_client_, device_sync_client);
+
+    auto instance = std::make_unique<FakeWifiSyncFeatureManager>();
+    instance_ = instance.get();
+    return instance;
+  }
+
+  FakeHostStatusProviderFactory* fake_host_status_provider_factory_;
+  sync_preferences::TestingPrefServiceSyncable* expected_testing_pref_service_;
+  device_sync::FakeDeviceSyncClient* expected_device_sync_client_;
+
+  FakeWifiSyncFeatureManager* instance_ = nullptr;
+
+  DISALLOW_COPY_AND_ASSIGN(FakeWifiSyncFeatureManagerFactory);
+};
+
 class FakeGrandfatheredEasyUnlockHostDisablerFactory
     : public GrandfatheredEasyUnlockHostDisabler::Factory {
  public:
@@ -301,8 +346,8 @@ class FakeFeatureStateManagerFactory : public FeatureStateManagerImpl::Factory {
       PrefService* pref_service,
       HostStatusProvider* host_status_provider,
       device_sync::DeviceSyncClient* device_sync_client,
-      AndroidSmsPairingStateTracker* android_sms_pairing_state_tracker)
-      override {
+      AndroidSmsPairingStateTracker* android_sms_pairing_state_tracker,
+      WifiSyncFeatureManager* wifi_sync_feature_manager) override {
     EXPECT_FALSE(instance_);
     EXPECT_EQ(expected_testing_pref_service_, pref_service);
     EXPECT_EQ(fake_host_status_provider_factory_->instance(),
@@ -544,6 +589,13 @@ class MultiDeviceSetupImplTest : public ::testing::TestWithParam<bool> {
     HostStatusProviderImpl::Factory::SetFactoryForTesting(
         fake_host_status_provider_factory_.get());
 
+    fake_wifi_sync_feature_manager_factory_ =
+        std::make_unique<FakeWifiSyncFeatureManagerFactory>(
+            fake_host_status_provider_factory_.get(), test_pref_service_.get(),
+            fake_device_sync_client_.get());
+    WifiSyncFeatureManagerImpl::Factory::SetFactoryForTesting(
+        fake_wifi_sync_feature_manager_factory_.get());
+
     fake_grandfathered_easy_unlock_host_disabler_factory_ =
         std::make_unique<FakeGrandfatheredEasyUnlockHostDisablerFactory>(
             fake_host_backend_delegate_factory_.get(),
@@ -609,6 +661,7 @@ class MultiDeviceSetupImplTest : public ::testing::TestWithParam<bool> {
     DeviceReenroller::Factory::SetFactoryForTesting(nullptr);
     AndroidSmsAppInstallingStatusObserver::Factory::SetFactoryForTesting(
         nullptr);
+    WifiSyncFeatureManagerImpl::Factory::SetFactoryForTesting(nullptr);
   }
 
   bool IsV1DeviceSyncEnabled() { return GetParam(); }
@@ -929,6 +982,8 @@ class MultiDeviceSetupImplTest : public ::testing::TestWithParam<bool> {
   std::unique_ptr<FakeHostVerifierFactory> fake_host_verifier_factory_;
   std::unique_ptr<FakeHostStatusProviderFactory>
       fake_host_status_provider_factory_;
+  std::unique_ptr<FakeWifiSyncFeatureManagerFactory>
+      fake_wifi_sync_feature_manager_factory_;
   std::unique_ptr<FakeGrandfatheredEasyUnlockHostDisablerFactory>
       fake_grandfathered_easy_unlock_host_disabler_factory_;
   std::unique_ptr<FakeFeatureStateManagerFactory>

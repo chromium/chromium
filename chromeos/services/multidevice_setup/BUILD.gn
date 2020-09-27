@@ -113,6 +113,8 @@ static_library("test_support") {
     "fake_host_status_provider.h",
     "fake_host_verifier.cc",
     "fake_host_verifier.h",
+    "fake_wifi_sync_feature_manager.cc",
+    "fake_wifi_sync_feature_manager.h",
   ]
 
   deps = [

@@ -13,6 +13,8 @@
 #include "chromeos/services/multidevice_setup/host_status_provider.h"
 #include "chromeos/services/multidevice_setup/multidevice_setup_base.h"
 #include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
+#include "chromeos/services/multidevice_setup/wifi_sync_feature_manager.h"
+#include "chromeos/services/multidevice_setup/wifi_sync_feature_manager_impl.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "url/gurl.h"
@@ -142,6 +144,7 @@ class MultiDeviceSetupImpl : public MultiDeviceSetupBase,
   std::unique_ptr<HostStatusProvider> host_status_provider_;
   std::unique_ptr<GrandfatheredEasyUnlockHostDisabler>
       grandfathered_easy_unlock_host_disabler_;
+  std::unique_ptr<WifiSyncFeatureManager> wifi_sync_feature_manager_;
   std::unique_ptr<FeatureStateManager> feature_state_manager_;
   std::unique_ptr<HostDeviceTimestampManager> host_device_timestamp_manager_;
   std::unique_ptr<AccountStatusChangeDelegateNotifier> delegate_notifier_;

@@ -26,6 +26,7 @@
 #include "chromeos/services/multidevice_setup/public/cpp/android_sms_pairing_state_tracker.h"
 #include "chromeos/services/multidevice_setup/public/cpp/auth_token_validator.h"
 #include "chromeos/services/multidevice_setup/public/cpp/oobe_completion_tracker.h"
+#include "chromeos/services/multidevice_setup/wifi_sync_feature_manager_impl.h"
 
 namespace chromeos {
 
@@ -116,11 +117,16 @@ MultiDeviceSetupImpl::MultiDeviceSetupImpl(
               host_backend_delegate_.get(),
               device_sync_client,
               pref_service)),
+      wifi_sync_feature_manager_(WifiSyncFeatureManagerImpl::Factory::Create(
+          host_status_provider_.get(),
+          pref_service,
+          device_sync_client)),
       feature_state_manager_(FeatureStateManagerImpl::Factory::Create(
           pref_service,
           host_status_provider_.get(),
           device_sync_client,
-          android_sms_pairing_state_tracker)),
+          android_sms_pairing_state_tracker,
+          wifi_sync_feature_manager_.get())),
       host_device_timestamp_manager_(
           HostDeviceTimestampManagerImpl::Factory::Create(
               host_status_provider_.get(),
