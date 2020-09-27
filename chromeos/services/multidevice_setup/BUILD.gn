@@ -52,6 +52,9 @@ static_library("multidevice_setup") {
     "privileged_host_device_setter_base.h",
     "privileged_host_device_setter_impl.cc",
     "privileged_host_device_setter_impl.h",
+    "wifi_sync_feature_manager.h",
+    "wifi_sync_feature_manager_impl.cc",
+    "wifi_sync_feature_manager_impl.h",
   ]
 
   deps = [
@@ -139,6 +142,7 @@ source_set("unit_tests") {
     "multidevice_setup_impl_unittest.cc",
     "multidevice_setup_service_unittest.cc",
     "privileged_host_device_setter_impl_unittest.cc",
+    "wifi_sync_feature_manager_impl_unittest.cc",
   ]
 
   deps = [
