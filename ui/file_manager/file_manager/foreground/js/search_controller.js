@@ -88,6 +88,16 @@ class SearchController {
   }
 
   /**
+   * Sets search query on the search box and performs a search.
+   * @param {string} searchQuery Search query string to be searched with.
+   */
+  setSearchQuery(searchQuery) {
+    this.searchBox_.inputElement.focus();
+    this.searchBox_.inputElement.value = searchQuery;
+    this.onTextChange_();
+  }
+
+  /**
    * Handles text change event.
    * @private
    */

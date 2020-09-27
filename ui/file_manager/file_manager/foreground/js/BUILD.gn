@@ -30,6 +30,7 @@ js_type_check("closure_compile_module") {
     ":closure_compile_externs",
     ":column_visibility_controller",
     ":constants",
+    ":crossover_search_utils",
     ":crostini_controller",
     ":dialog_action_controller",
     ":dialog_type",
@@ -233,6 +234,9 @@ js_library("column_visibility_controller") {
 }
 
 js_library("constants") {
+}
+
+js_library("crossover_search_utils") {
 }
 
 js_library("crostini_controller") {

@@ -81,6 +81,12 @@ class LaunchParam {
         };
 
     /**
+     * @type {string}
+     * @const
+     */
+    this.searchQuery = unformatted['searchQuery'] || '';
+
+    /**
      * @type {boolean}
      * @const
      */

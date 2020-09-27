@@ -88,6 +88,7 @@
 // <include src="../../common/js/importer_common.js">
 //
 // <include src="constants.js">
+// <include src="crossover_search_utils.js">
 // <include src="web_store_utils.js">
 // <include src="ui/multi_menu.js">
 // <include src="ui/multi_menu_button.js">
