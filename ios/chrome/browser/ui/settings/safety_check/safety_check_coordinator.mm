@@ -88,7 +88,7 @@
 - (void)start {
   SafetyCheckTableViewController* viewController =
       [[SafetyCheckTableViewController alloc]
-          initWithStyle:UITableViewStylePlain];
+          initWithStyle:UITableViewStyleGrouped];
   self.viewController = viewController;
 
   scoped_refptr<IOSChromePasswordCheckManager> passwordCheckManager =

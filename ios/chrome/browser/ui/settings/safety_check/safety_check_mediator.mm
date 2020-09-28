@@ -795,8 +795,6 @@ typedef NS_ENUM(NSInteger, CheckStartStates) {
       self.safeBrowsingPreferenceManaged) {
     self.safeBrowsingCheckRowState = SafeBrowsingCheckRowStateManaged;
   }
-  // See if this was the last test.
-  [self resetsCheckStartItemIfNeeded];
 
   [self reconfigureSafeBrowsingCheckItem];
 }

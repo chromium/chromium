@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/settings/safety_check/safety_check_table_view_controller.h"
+#import "ios/chrome/browser/ui/settings/safety_check/safety_check_mediator.h"
 
 #include <memory>
 
@@ -25,23 +25,6 @@
 
 namespace {
 
-class SafetyCheckTableViewControllerTest
-    : public ChromeTableViewControllerTest {
- protected:
-  ChromeTableViewController* InstantiateController() override {
-    return [[SafetyCheckTableViewController alloc]
-        initWithStyle:UITableViewStylePlain];
-  }
-};
-
-// Tests PrivacyTableViewController is set up with all appropriate items
-// and sections.
-TEST_F(SafetyCheckTableViewControllerTest, TestModel) {
-  CreateController();
-  CheckController();
-  EXPECT_EQ(1, NumberOfSections());
-
-  EXPECT_EQ(3, NumberOfItemsInSection(0));
-}
+// TODO(crbug.com/1078782): Add tests.
 
 }  // namespace

@@ -80,9 +80,9 @@ source_set("safety_check") {
 source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
-  sources = [ "safety_check_table_view_controller_unittest.mm" ]
+  sources = [ "safety_check_mediator_unittest.mm" ]
   deps = [
-    ":safety_check_ui",
+    ":safety_check",
     "//base/test:test_support",
     "//components/strings",
     "//ios/chrome/app/strings",
