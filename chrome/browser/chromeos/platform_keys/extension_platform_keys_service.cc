@@ -354,6 +354,7 @@ class ExtensionPlatformKeysService::SignTask : public Task {
                     platform_keys::Status::kErrorKeyNotAllowedForSigning);
       next_step_ = Step::DONE;
       DoStep();
+      return;
     }
 
     DoStep();
