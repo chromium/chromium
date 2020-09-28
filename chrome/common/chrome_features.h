@@ -474,9 +474,6 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kSysInternals;
 #endif
 
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::Feature kSystemWebApps;
-
 #if defined(OS_CHROMEOS)
 COMPONENT_EXPORT(CHROME_FEATURES) extern const base::Feature kTPMFirmwareUpdate;
 #endif

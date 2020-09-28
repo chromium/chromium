@@ -679,11 +679,6 @@ const char kDesktopPWAsRunOnOsLoginDescription[] =
     "Enable installed PWAs to be configured to automatically start when the OS "
     "user logs in.";
 
-const char kEnableSystemWebAppsName[] = "System Web Apps";
-const char kEnableSystemWebAppsDescription[] =
-    "Experimental system for using the Desktop PWA framework for running System"
-    "Apps (e.g Settings, Discover).";
-
 const char kEnableMigrateDefaultChromeAppToWebAppsGSuiteName[] =
     "Migrate default G Suite Chrome apps to web apps";
 const char kEnableMigrateDefaultChromeAppToWebAppsGSuiteDescription[] =

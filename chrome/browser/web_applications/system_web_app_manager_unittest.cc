@@ -170,8 +170,7 @@ class SystemWebAppManagerTest : public WebAppTest {
  public:
   SystemWebAppManagerTest() {
     scoped_feature_list_.InitWithFeatures(
-        {features::kSystemWebApps, features::kDesktopPWAsWithoutExtensions},
-        {});
+        {features::kDesktopPWAsWithoutExtensions}, {});
   }
 
   ~SystemWebAppManagerTest() override = default;
@@ -382,29 +381,6 @@ class SystemWebAppManagerTest : public WebAppTest {
   DISALLOW_COPY_AND_ASSIGN(SystemWebAppManagerTest);
 };
 
-// Test that System Apps are uninstalled with the feature disabled.
-TEST_F(SystemWebAppManagerTest, Disabled) {
-  base::test::ScopedFeatureList disable_feature_list;
-  disable_feature_list.InitAndDisableFeature(features::kSystemWebApps);
-
-  InitRegistrarWithSystemApps(
-      {{AppUrl1(), AppIconUrl1(), ExternalInstallSource::kSystemInstalled}});
-
-  base::flat_map<SystemAppType, SystemAppInfo> system_apps;
-  system_apps.emplace(SystemAppType::SETTINGS,
-                      SystemAppInfo(kSettingsAppInternalName, AppUrl1()));
-
-  system_web_app_manager().SetSystemAppsForTesting(std::move(system_apps));
-  StartAndWaitForAppsToSynchronize();
-
-  EXPECT_TRUE(pending_app_manager().install_requests().empty());
-
-  // We should try to uninstall the app that is no longer in the System App
-  // list.
-  EXPECT_EQ(std::vector<GURL>({AppUrl1()}),
-            pending_app_manager().uninstall_requests());
-}
-
 // Test that System Apps do install with the feature enabled.
 TEST_F(SystemWebAppManagerTest, Enabled) {
   InitEmptyRegistrar();
@@ -511,24 +487,6 @@ TEST_F(SystemWebAppManagerTest, AlwaysUpdate) {
   StartAndWaitForAppsToSynchronize();
 
   EXPECT_EQ(3u, pending_app_manager().install_requests().size());
-
-  {
-    // Disabling System Web Apps uninstalls without a version change.
-    base::test::ScopedFeatureList disable_feature_list;
-    disable_feature_list.InitWithFeatures({}, {features::kSystemWebApps});
-
-    StartAndWaitForAppsToSynchronize();
-
-    EXPECT_EQ(2u, pending_app_manager().uninstall_requests().size());
-  }
-
-  // Re-enabling System Web Apps installs without a version change.
-  PrepareSystemAppDataToRetrieve(
-      {{AppUrl1(), AppIconUrl1()}, {AppUrl2(), AppIconUrl2()}});
-  PrepareLoadUrlResults({AppUrl1(), AppUrl2()});
-  StartAndWaitForAppsToSynchronize();
-
-  EXPECT_EQ(5u, pending_app_manager().install_requests().size());
 }
 
 TEST_F(SystemWebAppManagerTest, UpdateOnVersionChange) {
@@ -584,30 +542,6 @@ TEST_F(SystemWebAppManagerTest, UpdateOnVersionChange) {
   EXPECT_TRUE(IsInstalled(AppUrl1()));
   EXPECT_TRUE(IsInstalled(AppUrl2()));
 
-  {
-    // Disabling System Web Apps uninstalls even without a version change.
-    base::test::ScopedFeatureList disable_feature_list;
-    disable_feature_list.InitWithFeatures({}, {features::kSystemWebApps});
-
-    StartAndWaitForAppsToSynchronize();
-
-    EXPECT_EQ(2u, pending_app_manager().uninstall_requests().size());
-    EXPECT_FALSE(IsInstalled(AppUrl1()));
-    EXPECT_FALSE(IsInstalled(AppUrl2()));
-  }
-
-  // Re-enabling System Web Apps installs even without a version change.
-  PrepareSystemAppDataToRetrieve(
-      {{AppUrl1(), AppIconUrl1()}, {AppUrl2(), AppIconUrl2()}});
-  PrepareLoadUrlResults({AppUrl1(), AppUrl2()});
-  StartAndWaitForAppsToSynchronize();
-
-  EXPECT_EQ(7u, install_requests.size());
-  EXPECT_FALSE(install_requests[5].force_reinstall);
-  EXPECT_FALSE(install_requests[6].force_reinstall);
-  EXPECT_TRUE(IsInstalled(AppUrl1()));
-  EXPECT_TRUE(IsInstalled(AppUrl2()));
-
   // Changing the install URL of a system app propagates even without a
   // version change.
   PrepareSystemAppDataToRetrieve({{AppUrl3(), AppIconUrl3()}});
@@ -616,9 +550,9 @@ TEST_F(SystemWebAppManagerTest, UpdateOnVersionChange) {
   system_web_app_manager().SetSystemAppsForTesting(system_apps);
   StartAndWaitForAppsToSynchronize();
 
-  EXPECT_EQ(9u, install_requests.size());
-  EXPECT_FALSE(install_requests[7].force_reinstall);
-  EXPECT_FALSE(install_requests[8].force_reinstall);
+  EXPECT_EQ(7u, install_requests.size());
+  EXPECT_FALSE(install_requests[5].force_reinstall);
+  EXPECT_FALSE(install_requests[6].force_reinstall);
   EXPECT_FALSE(IsInstalled(AppUrl1()));
   EXPECT_TRUE(IsInstalled(AppUrl2()));
   EXPECT_TRUE(IsInstalled(AppUrl3()));

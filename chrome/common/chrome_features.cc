@@ -728,10 +728,6 @@ const base::Feature kSysInternals{"SysInternals",
                                   base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
-// Enables or disables the System Web App manager.
-const base::Feature kSystemWebApps{"SystemWebApps",
-                                   base::FEATURE_ENABLED_BY_DEFAULT};
-
 #if defined(OS_CHROMEOS)
 // Enables or disables TPM firmware update capability on Chrome OS.
 const base::Feature kTPMFirmwareUpdate{"TPMFirmwareUpdate",

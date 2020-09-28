@@ -3097,9 +3097,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDesktopPWAsRunOnOsLoginName,
      flag_descriptions::kDesktopPWAsRunOnOsLoginDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kDesktopPWAsRunOnOsLogin)},
-    {"enable-system-webapps", flag_descriptions::kEnableSystemWebAppsName,
-     flag_descriptions::kEnableSystemWebAppsDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kSystemWebApps)},
     {"use-sync-sandbox", flag_descriptions::kSyncSandboxName,
      flag_descriptions::kSyncSandboxDescription, kOsAll,
      SINGLE_VALUE_TYPE_AND_VALUE(

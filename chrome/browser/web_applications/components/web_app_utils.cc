@@ -21,11 +21,11 @@ constexpr base::FilePath::CharType kManifestResourcesDirectoryName[] =
 constexpr base::FilePath::CharType kTempDirectoryName[] =
     FILE_PATH_LITERAL("Temp");
 
-bool AreWebAppsEnabled(Profile* profile) {
+bool AreWebAppsEnabled(const Profile* profile) {
   if (!profile)
     return false;
 
-  Profile* original_profile = profile->GetOriginalProfile();
+  const Profile* original_profile = profile->GetOriginalProfile();
   DCHECK(!original_profile->IsOffTheRecord());
 
   if (original_profile->IsSystemProfile())

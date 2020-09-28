@@ -27,9 +27,7 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/webui/chromeos/login/discover/discover_window_manager.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
-#include "chrome/browser/web_applications/system_web_app_manager.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
@@ -47,31 +45,6 @@ namespace {
 
 // The tab-index flag for browser window menu items that do not specify a tab.
 constexpr int kNoTab = std::numeric_limits<int>::max();
-
-bool IsManagedBrowser(Browser* browser) {
-  // System Web Apps use the chrome://scheme and rely on the Bookmark App path
-  // to associate WebContents with ShelfIDs.
-  if (web_app::SystemWebAppManager::IsEnabled())
-    return false;
-
-  // Normally this test is sufficient. TODO(stevenjb): Replace this with a
-  // better mechanism (Settings WebUI or Browser type).
-  if (chrome::IsTrustedPopupWindowWithScheme(browser, content::kChromeUIScheme))
-    return true;
-
-  if (chromeos::DiscoverWindowManager::GetInstance()->IsDiscoverBrowser(
-          browser)) {
-    return true;
-  }
-
-  // If a settings window navigates away from a kChromeUIScheme (e.g. after a
-  // crash), the above may not be true, so also test against the known list
-  // of settings browsers (which will not be valid during chrome::Navigate
-  // which is why we still need the above test).
-  if (chrome::SettingsWindowManager::GetInstance()->IsSettingsBrowser(browser))
-    return true;
-  return false;
-}
 
 // Returns true when the given |browser| is listed in the browser application
 // list.
@@ -93,9 +66,7 @@ bool IsBrowserRepresentedInBrowserList(Browser* browser) {
       return false;
   }
 
-  // Settings and Discover browsers have their own item; all others should be
-  // represented.
-  return !IsManagedBrowser(browser);
+  return true;
 }
 
 // Gets a list of active browsers.
@@ -176,8 +147,7 @@ void BrowserShortcutLauncherItemController::SetShelfIDForBrowserWindowContents(
   // content which might change and as such change the application type.
   // The browser window may not exist in unit tests.
   if (!browser || !browser->window() || !browser->window()->GetNativeWindow() ||
-      !multi_user_util::IsProfileFromActiveUser(browser->profile()) ||
-      IsManagedBrowser(browser)) {
+      !multi_user_util::IsProfileFromActiveUser(browser->profile())) {
     return;
   }
 

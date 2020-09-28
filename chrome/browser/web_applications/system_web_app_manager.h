@@ -162,8 +162,6 @@ class SystemWebAppManager {
 
   void Start();
 
-  static bool IsEnabled();
-
   // The SystemWebAppManager is disabled in browser tests by default because it
   // pollutes the startup state (several tests expect the Extensions state to be
   // clean).

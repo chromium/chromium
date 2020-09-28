@@ -29,6 +29,10 @@ class SettingsWindowManager {
  public:
   static SettingsWindowManager* GetInstance();
 
+  // See https://crbug.com/1067073.
+  static void ForceDeprecatedSettingsWindowForTesting();
+  static bool UseDeprecatedSettingsWindow(const Profile* profile);
+
   void AddObserver(SettingsWindowManagerObserver* observer);
   void RemoveObserver(SettingsWindowManagerObserver* observer);
 

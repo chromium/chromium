@@ -27,7 +27,7 @@ namespace web_app {
 // Returns false if |profile| is nullptr.
 //
 // Is main WebApp System allowed (WebAppProvider exists):
-bool AreWebAppsEnabled(Profile* profile);
+bool AreWebAppsEnabled(const Profile* profile);
 // Is user allowed to install web apps from UI:
 bool AreWebAppsUserInstallable(Profile* profile);
 

@@ -81,7 +81,6 @@ namespace web_app {
 
 SystemWebAppManagerBrowserTestBase::SystemWebAppManagerBrowserTestBase(
     bool install_mock) {
-  scoped_feature_list_.InitWithFeatures({features::kSystemWebApps}, {});
 }
 
 SystemWebAppManagerBrowserTestBase::~SystemWebAppManagerBrowserTestBase() =

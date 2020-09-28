@@ -63,11 +63,11 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/settings/chromeos/app_management/app_management_uma.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
-#include "chrome/browser/web_applications/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
@@ -213,7 +213,7 @@ ChromeLauncherController::ChromeLauncherController(Profile* profile,
 
   DCHECK(model_);
 
-  if (!web_app::SystemWebAppManager::IsEnabled()) {
+  if (chrome::SettingsWindowManager::UseDeprecatedSettingsWindow(profile)) {
     settings_window_observer_ = std::make_unique<SettingsWindowObserver>();
     discover_window_observer_ = std::make_unique<DiscoverWindowObserver>();
   }

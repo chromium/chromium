@@ -438,15 +438,13 @@ void SystemWebAppManager::Start() {
   if (should_force_install_apps) {
     UpdateLastAttemptedInfo();
   }
-  if (IsEnabled()) {
-    const auto disabled_system_apps = GetDisabledSystemWebApps();
 
-    // Skipping this will uninstall all System Apps currently installed.
-    for (const auto& app : system_app_infos_) {
-      install_options_list.push_back(CreateInstallOptionsForSystemApp(
-          app.second, should_force_install_apps,
-          base::Contains(disabled_system_apps, app.first)));
-    }
+  const auto disabled_system_apps = GetDisabledSystemWebApps();
+
+  for (const auto& app : system_app_infos_) {
+    install_options_list.push_back(CreateInstallOptionsForSystemApp(
+        app.second, should_force_install_apps,
+        base::Contains(disabled_system_apps, app.first)));
   }
 
   const bool exceeded_retries = CheckAndIncrementRetryAttempts();
@@ -650,11 +648,6 @@ void SystemWebAppManager::SetUpdatePolicyForTesting(UpdatePolicy policy) {
 
 void SystemWebAppManager::ResetOnAppsSynchronizedForTesting() {
   on_apps_synchronized_ = std::make_unique<base::OneShotEvent>();
-}
-
-// static
-bool SystemWebAppManager::IsEnabled() {
-  return base::FeatureList::IsEnabled(features::kSystemWebApps);
 }
 
 // static

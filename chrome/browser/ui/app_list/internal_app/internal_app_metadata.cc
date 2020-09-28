@@ -29,7 +29,6 @@
 #include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
 #include "chrome/browser/ui/extensions/app_launch_params.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
-#include "chrome/browser/web_applications/system_web_app_manager.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -101,8 +100,7 @@ const std::vector<InternalApp>& GetInternalAppListImpl(bool get_all,
          /*show_in_launcher=*/true, apps::BuiltInAppName::kDiscover,
          /*searchable_string_resource_id=*/IDS_INTERNAL_APP_DISCOVER});
   }
-
-  if (!web_app::SystemWebAppManager::IsEnabled()) {
+  if (chrome::SettingsWindowManager::UseDeprecatedSettingsWindow(profile)) {
     internal_app_list->push_back(
         {ash::kInternalAppIdSettings, IDS_INTERNAL_APP_SETTINGS,
          IDR_SETTINGS_LOGO_192,
