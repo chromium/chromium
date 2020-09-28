@@ -20,6 +20,7 @@ class NavigationController {
   struct NavigateParams {
     bool should_replace_current_entry = false;
     bool disable_network_error_auto_reload = false;
+    bool enable_auto_play = false;
   };
 
   virtual ~NavigationController() = default;

@@ -36,16 +36,18 @@ public final class NavigationControllerImpl extends INavigationController.Stub {
         if (WebLayerFactoryImpl.getClientMajorVersion() < 83) {
             assert params == null;
         }
-        navigate2(uri, params == null ? false : params.mShouldReplaceCurrentEntry, false, false);
+        navigate2(uri, params == null ? false : params.mShouldReplaceCurrentEntry, false, false,
+                false);
     }
 
     @Override
     public void navigate2(String uri, boolean shouldReplaceCurrentEntry,
-            boolean disableIntentProcessing, boolean disableNetworkErrorAutoReload)
-            throws RemoteException {
+            boolean disableIntentProcessing, boolean disableNetworkErrorAutoReload,
+            boolean enableAutoPlay) throws RemoteException {
         StrictModeWorkaround.apply();
         NavigationControllerImplJni.get().navigate(mNativeNavigationController, uri,
-                shouldReplaceCurrentEntry, disableIntentProcessing, disableNetworkErrorAutoReload);
+                shouldReplaceCurrentEntry, disableIntentProcessing, disableNetworkErrorAutoReload,
+                enableAutoPlay);
     }
 
     @Override
@@ -183,7 +185,7 @@ public final class NavigationControllerImpl extends INavigationController.Stub {
         long getNavigationController(long tab);
         void navigate(long nativeNavigationControllerImpl, String uri,
                 boolean shouldReplaceCurrentEntry, boolean disableIntentProcessing,
-                boolean disableNetworkErrorAutoReload);
+                boolean disableNetworkErrorAutoReload, boolean enableAutoPlay);
         void goBack(long nativeNavigationControllerImpl);
         void goForward(long nativeNavigationControllerImpl);
         boolean canGoBack(long nativeNavigationControllerImpl);

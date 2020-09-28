@@ -41,5 +41,6 @@ interface INavigationController {
   void navigate2(in String uri,
                  in boolean shouldReplaceEntry,
                  in boolean disableIntentProcessing,
-                 in boolean disableNetworkErrorAutoReload) = 14;
+                 in boolean disableNetworkErrorAutoReload,
+                 in boolean enableAutoPlay) = 14;
 }

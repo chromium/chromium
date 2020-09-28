@@ -53,7 +53,8 @@ class NavigationControllerImpl : public NavigationController,
                 const base::android::JavaParamRef<jstring>& url,
                 jboolean should_replace_current_entry,
                 jboolean disable_intent_processing,
-                jboolean disable_network_error_auto_reload);
+                jboolean disable_network_error_auto_reload,
+                jboolean enable_auto_play);
   void GoBack(JNIEnv* env) { GoBack(); }
   void GoForward(JNIEnv* env) { GoForward(); }
   bool CanGoBack(JNIEnv* env) { return CanGoBack(); }
