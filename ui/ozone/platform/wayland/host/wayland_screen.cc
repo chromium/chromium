@@ -46,8 +46,11 @@ WaylandScreen::WaylandScreen(WaylandConnection* connection)
     // crbug.com/1127558.
     if (format == gfx::BufferFormat::RGBA_8888)
       image_format_alpha_ = gfx::BufferFormat::RGBA_8888;
-    if (format == gfx::BufferFormat::RGBX_8888)
-      image_format_no_alpha_ = format;
+
+      // TODO(1128997): |image_format_no_alpha_| should use RGBX_8888 when it's
+      // available, but for some reason Chromium gets broken when it's used.
+      // Though,  we can import RGBX_8888 dma buffer to EGLImage successfully.
+      // Enable that back when the issue is resolved.
 #endif  // !BUILDFLAG(IS_LACROS)
 
     if (!image_format_alpha_ && format == gfx::BufferFormat::BGRA_8888)
