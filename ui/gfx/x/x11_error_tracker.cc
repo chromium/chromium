@@ -22,7 +22,7 @@ int X11ErrorHandler(Display* display, XErrorEvent* error) {
 namespace gfx {
 
 X11ErrorTracker::X11ErrorTracker() {
-  XSync(GetXDisplay(), false);
+  x11::Connection::Get()->Sync();
   old_handler_ = reinterpret_cast<void*>(XSetErrorHandler(X11ErrorHandler));
   g_x11_error_code = 0;
 }
@@ -32,7 +32,7 @@ X11ErrorTracker::~X11ErrorTracker() {
 }
 
 bool X11ErrorTracker::FoundNewError() {
-  XSync(GetXDisplay(), false);
+  x11::Connection::Get()->Sync();
   unsigned char error = g_x11_error_code;
   g_x11_error_code = 0;
   return error != 0;

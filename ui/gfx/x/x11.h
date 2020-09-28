@@ -19,15 +19,6 @@ extern "C" {
 
 static constexpr auto GrabModeAsync = 1;
 
-static constexpr auto ShiftMask = 1 << 0;
-static constexpr auto LockMask = 1 << 1;
-static constexpr auto ControlMask = 1 << 2;
-static constexpr auto Mod1Mask = 1 << 3;
-static constexpr auto Mod2Mask = 1 << 4;
-static constexpr auto Mod3Mask = 1 << 5;
-static constexpr auto Mod4Mask = 1 << 6;
-static constexpr auto Mod5Mask = 1 << 7;
-
 static constexpr auto NoEventMask = 0L;
 static constexpr auto KeyPressMask = 1L << 0;
 static constexpr auto KeyReleaseMask = 1L << 1;
@@ -207,15 +198,11 @@ int XGetErrorDatabaseText(Display*,
                           char*,
                           int);
 int XGetErrorText(Display*, int, char*, int);
-Bool XQueryExtension(Display*, const char*, int*, int*, int*);
-int XSync(Display*, Bool);
 XErrorHandler XSetErrorHandler(XErrorHandler);
 XIOErrorHandler XSetIOErrorHandler(XIOErrorHandler);
 void XLockDisplay(Display*);
 extern void XUnlockDisplay(Display*);
 int XConnectionNumber(Display*);
-int XGrabKey(Display*, int, unsigned int, Window, Bool, int, int);
-int XUngrabKey(Display*, int, unsigned int, Window);
 int XSelectInput(Display*, Window, long);
 int XSetWindowBackgroundPixmap(Display*, Window, Pixmap);
 int XResizeWindow(Display*, Window, unsigned int, unsigned int);

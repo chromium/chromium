@@ -20,6 +20,7 @@
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/gfx/x/x11.h"
 #include "ui/gfx/x/xkb.h"
+#include "ui/gfx/x/xproto.h"
 #include "ui/gfx/x/xproto_types.h"
 
 namespace remoting {
@@ -191,9 +192,9 @@ void GdkLayoutMonitorOnGtkThread::DispatchXEvent(x11::Event* event) {
 void GdkLayoutMonitorOnGtkThread::QueryLayout() {
   protocol::KeyboardLayout layout_message;
 
-  unsigned int shift_modifier = ShiftMask;
-  unsigned int numlock_modifier = Mod2Mask;
-  unsigned int altgr_modifier = Mod5Mask;
+  auto shift_modifier = x11::KeyButMask::Shift;
+  auto numlock_modifier = x11::KeyButMask::Mod2;
+  auto altgr_modifier = x11::KeyButMask::Mod5;
 
   bool have_altgr = false;
 
@@ -224,9 +225,9 @@ void GdkLayoutMonitorOnGtkThread::QueryLayout() {
       }
 
       // Always consider NumLock set and CapsLock unset for now.
-      unsigned int modifiers = numlock_modifier |
-                               (shift_level & 1 ? shift_modifier : 0) |
-                               (shift_level & 2 ? altgr_modifier : 0);
+      auto modifiers = numlock_modifier |
+                       (shift_level & 1 ? shift_modifier : x11::KeyButMask{}) |
+                       (shift_level & 2 ? altgr_modifier : x11::KeyButMask{});
       guint keyval = 0;
       gdk_keymap_translate_keyboard_state(
           keymap_, keycode, static_cast<GdkModifierType>(modifiers),

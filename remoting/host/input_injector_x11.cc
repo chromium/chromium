@@ -592,11 +592,10 @@ void InputInjectorX11::Core::InitMouseButtonMap() {
       LOG(ERROR) << "Global pointer mapping does not support button " << i + 1;
   }
 
-  int opcode, event, error;
-  if (!XQueryExtension(display_, "XInputExtension", &opcode, &event, &error)) {
+  if (!connection_.QueryExtension({"XInputExtension"}).Sync()) {
     // If XInput is not available, we're done. But it would be very unusual to
     // have a server that supports XTest but not XInput, so log it as an error.
-    LOG(ERROR) << "X Input extension not available: " << error;
+    LOG(ERROR) << "X Input extension not available";
     return;
   }
 

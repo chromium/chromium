@@ -40,8 +40,8 @@ class GL_EXPORT GLContextGLX : public GLContextReal {
  private:
   void Destroy();
 
-  void* context_;
-  XDisplay* display_;
+  void* context_ = nullptr;
+  x11::Connection* connection_ = nullptr;
   unsigned int graphics_reset_status_ = 0;  // GL_NO_ERROR
 
   DISALLOW_COPY_AND_ASSIGN(GLContextGLX);

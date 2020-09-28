@@ -41,7 +41,7 @@ void InitButtonEvent(x11::Event* event,
                      bool is_press,
                      const gfx::Point& location,
                      int button,
-                     int state) {
+                     x11::KeyButMask state) {
   xcb_generic_event_t generic_event;
   memset(&generic_event, 0, sizeof(generic_event));
   auto* button_event =
@@ -54,18 +54,18 @@ void InitButtonEvent(x11::Event* event,
   button_event->event_x = location.x();
   button_event->event_y = location.y();
   button_event->detail = button;
-  button_event->state = state;
+  button_event->state = static_cast<uint16_t>(state);
 
   *event = x11::Event(&generic_event, x11::Connection::Get());
 }
 
 #if !defined(OS_CHROMEOS)
-// Initializes the passed-in Xlib event.
+// Initializes the passed-in x11::Event.
 void InitKeyEvent(Display* display,
                   x11::Event* event,
                   bool is_press,
                   int keycode,
-                  int state) {
+                  x11::KeyButMask state) {
   xcb_generic_event_t generic_event;
   memset(&generic_event, 0, sizeof(generic_event));
   auto* key_event = reinterpret_cast<xcb_key_press_event_t*>(&generic_event);
@@ -75,7 +75,7 @@ void InitKeyEvent(Display* display,
   key_event->response_type =
       is_press ? x11::KeyEvent::Press : x11::KeyEvent::Release;
   key_event->detail = keycode;
-  key_event->state = state;
+  key_event->state = static_cast<uint16_t>(state);
 
   *event = x11::Event(&generic_event, x11::Connection::Get());
 }
@@ -118,14 +118,15 @@ TEST_F(EventsXTest, ButtonEvents) {
   gfx::Point location(5, 10);
   gfx::Vector2d offset;
 
-  InitButtonEvent(&event, true, location, 1, 0);
+  InitButtonEvent(&event, true, location, 1, {});
   EXPECT_EQ(ui::ET_MOUSE_PRESSED, ui::EventTypeFromXEvent(event));
   EXPECT_EQ(ui::EF_LEFT_MOUSE_BUTTON, ui::EventFlagsFromXEvent(event));
   EXPECT_EQ(ui::EF_LEFT_MOUSE_BUTTON,
             ui::GetChangedMouseButtonFlagsFromXEvent(event));
   EXPECT_EQ(location, ui::EventLocationFromXEvent(event));
 
-  InitButtonEvent(&event, true, location, 2, Button1Mask | ShiftMask);
+  InitButtonEvent(&event, true, location, 2,
+                  x11::KeyButMask::Button1 | x11::KeyButMask::Shift);
   EXPECT_EQ(ui::ET_MOUSE_PRESSED, ui::EventTypeFromXEvent(event));
   EXPECT_EQ(
       ui::EF_LEFT_MOUSE_BUTTON | ui::EF_MIDDLE_MOUSE_BUTTON | ui::EF_SHIFT_DOWN,
@@ -134,7 +135,7 @@ TEST_F(EventsXTest, ButtonEvents) {
             ui::GetChangedMouseButtonFlagsFromXEvent(event));
   EXPECT_EQ(location, ui::EventLocationFromXEvent(event));
 
-  InitButtonEvent(&event, false, location, 3, 0);
+  InitButtonEvent(&event, false, location, 3, {});
   EXPECT_EQ(ui::ET_MOUSE_RELEASED, ui::EventTypeFromXEvent(event));
   EXPECT_EQ(ui::EF_RIGHT_MOUSE_BUTTON, ui::EventFlagsFromXEvent(event));
   EXPECT_EQ(ui::EF_RIGHT_MOUSE_BUTTON,
@@ -142,7 +143,7 @@ TEST_F(EventsXTest, ButtonEvents) {
   EXPECT_EQ(location, ui::EventLocationFromXEvent(event));
 
   // Scroll up.
-  InitButtonEvent(&event, true, location, 4, 0);
+  InitButtonEvent(&event, true, location, 4, {});
   EXPECT_EQ(ui::ET_MOUSEWHEEL, ui::EventTypeFromXEvent(event));
   EXPECT_EQ(0, ui::EventFlagsFromXEvent(event));
   EXPECT_EQ(ui::EF_NONE, ui::GetChangedMouseButtonFlagsFromXEvent(event));
@@ -152,7 +153,7 @@ TEST_F(EventsXTest, ButtonEvents) {
   EXPECT_EQ(0, offset.x());
 
   // Scroll down.
-  InitButtonEvent(&event, true, location, 5, 0);
+  InitButtonEvent(&event, true, location, 5, {});
   EXPECT_EQ(ui::ET_MOUSEWHEEL, ui::EventTypeFromXEvent(event));
   EXPECT_EQ(0, ui::EventFlagsFromXEvent(event));
   EXPECT_EQ(ui::EF_NONE, ui::GetChangedMouseButtonFlagsFromXEvent(event));
@@ -162,7 +163,7 @@ TEST_F(EventsXTest, ButtonEvents) {
   EXPECT_EQ(0, offset.x());
 
   // Scroll left.
-  InitButtonEvent(&event, true, location, 6, 0);
+  InitButtonEvent(&event, true, location, 6, {});
   EXPECT_EQ(ui::ET_MOUSEWHEEL, ui::EventTypeFromXEvent(event));
   EXPECT_EQ(0, ui::EventFlagsFromXEvent(event));
   EXPECT_EQ(ui::EF_NONE, ui::GetChangedMouseButtonFlagsFromXEvent(event));
@@ -172,7 +173,7 @@ TEST_F(EventsXTest, ButtonEvents) {
   EXPECT_GT(offset.x(), 0);
 
   // Scroll right.
-  InitButtonEvent(&event, true, location, 7, 0);
+  InitButtonEvent(&event, true, location, 7, {});
   EXPECT_EQ(ui::ET_MOUSEWHEEL, ui::EventTypeFromXEvent(event));
   EXPECT_EQ(0, ui::EventFlagsFromXEvent(event));
   EXPECT_EQ(ui::EF_NONE, ui::GetChangedMouseButtonFlagsFromXEvent(event));
@@ -188,12 +189,12 @@ TEST_F(EventsXTest, AvoidExtraEventsOnWheelRelease) {
   x11::Event event;
   gfx::Point location(5, 10);
 
-  InitButtonEvent(&event, true, location, 4, 0);
+  InitButtonEvent(&event, true, location, 4, {});
   EXPECT_EQ(ui::ET_MOUSEWHEEL, ui::EventTypeFromXEvent(event));
 
   // We should return ET_UNKNOWN for the release event instead of returning
   // ET_MOUSEWHEEL; otherwise we'll scroll twice for each scrollwheel step.
-  InitButtonEvent(&event, false, location, 4, 0);
+  InitButtonEvent(&event, false, location, 4, {});
   EXPECT_EQ(ui::ET_UNKNOWN, ui::EventTypeFromXEvent(event));
 
   // TODO(derat): Test XInput code.
@@ -237,7 +238,7 @@ TEST_F(EventsXTest, ClickCount) {
   base::TimeDelta time_stamp = base::TimeTicks::Now().since_origin() -
                                base::TimeDelta::FromMilliseconds(10);
   for (int i = 1; i <= 3; ++i) {
-    InitButtonEvent(&event, true, location, 1, 0);
+    InitButtonEvent(&event, true, location, 1, {});
     {
       uint32_t time = time_stamp.InMilliseconds() & UINT32_MAX;
       event.As<x11::ButtonEvent>()->time = static_cast<x11::Time>(time);
@@ -246,7 +247,7 @@ TEST_F(EventsXTest, ClickCount) {
       EXPECT_EQ(i, mouseev->GetClickCount());
     }
 
-    InitButtonEvent(&event, false, location, 1, 0);
+    InitButtonEvent(&event, false, location, 1, {});
     {
       uint32_t time = time_stamp.InMilliseconds() & UINT32_MAX;
       event.As<x11::ButtonEvent>()->time = static_cast<x11::Time>(time);
@@ -475,13 +476,13 @@ TEST_F(EventsXTest, DisableMouse) {
 TEST_F(EventsXTest, ImeFabricatedKeyEvents) {
   Display* display = gfx::GetXDisplay();
 
-  unsigned int state_to_be_fabricated[] = {
-      0,
-      ShiftMask,
-      LockMask,
-      ShiftMask | LockMask,
+  x11::KeyButMask state_to_be_fabricated[] = {
+      {},
+      x11::KeyButMask::Shift,
+      x11::KeyButMask::Lock,
+      x11::KeyButMask::Shift | x11::KeyButMask::Lock,
   };
-  for (unsigned int state : state_to_be_fabricated) {
+  for (auto state : state_to_be_fabricated) {
     for (int is_char = 0; is_char < 2; ++is_char) {
       x11::Event x_event;
       InitKeyEvent(display, &x_event, true, 0, state);
@@ -494,13 +495,13 @@ TEST_F(EventsXTest, ImeFabricatedKeyEvents) {
     }
   }
 
-  unsigned int state_to_be_not_fabricated[] = {
-      ControlMask,
-      Mod1Mask,
-      Mod2Mask,
-      ShiftMask | ControlMask,
+  x11::KeyButMask state_to_be_not_fabricated[] = {
+      x11::KeyButMask::Control,
+      x11::KeyButMask::Mod1,
+      x11::KeyButMask::Mod2,
+      x11::KeyButMask::Shift | x11::KeyButMask::Control,
   };
-  for (unsigned int state : state_to_be_not_fabricated) {
+  for (auto state : state_to_be_not_fabricated) {
     for (int is_char = 0; is_char < 2; ++is_char) {
       x11::Event x_event;
       InitKeyEvent(display, &x_event, true, 0, state);
@@ -539,7 +540,7 @@ base::TimeTicks TimeTicksFromMillis(int64_t millis) {
 
 TEST_F(EventsXTest, TimestampRolloverAndAdjustWhenDecreasing) {
   x11::Event event;
-  InitButtonEvent(&event, true, gfx::Point(5, 10), 1, 0);
+  InitButtonEvent(&event, true, gfx::Point(5, 10), 1, {});
 
   test::ScopedEventTestTickClock clock;
   clock.SetNowTicks(TimeTicksFromMillis(0x100000001));
@@ -558,7 +559,7 @@ TEST_F(EventsXTest, TimestampRolloverAndAdjustWhenDecreasing) {
 
 TEST_F(EventsXTest, NoTimestampRolloverWhenMonotonicIncreasing) {
   x11::Event event;
-  InitButtonEvent(&event, true, gfx::Point(5, 10), 1, 0);
+  InitButtonEvent(&event, true, gfx::Point(5, 10), 1, {});
 
   test::ScopedEventTestTickClock clock;
   clock.SetNowTicks(TimeTicksFromMillis(10));

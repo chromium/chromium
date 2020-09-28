@@ -616,6 +616,9 @@ KeySym Connection::KeyCodetoKeySym(KeyCode keycode, int column) const {
 // Ported from _XTranslateKey:
 // https://gitlab.freedesktop.org/xorg/lib/libx11/-/blob/2b7598221d87049d03e9a95fcb541c37c8728184/src/KeyBind.c#L761
 KeySym Connection::TranslateKey(uint32_t key, unsigned int modifiers) const {
+  constexpr auto kShiftMask = static_cast<unsigned int>(x11::ModMask::Shift);
+  constexpr auto kLockMask = static_cast<unsigned int>(x11::ModMask::Lock);
+
   uint8_t min_key = static_cast<uint8_t>(setup_.min_keycode);
   uint8_t max_key = static_cast<uint8_t>(setup_.max_keycode);
   if (key < min_key || key > max_key)
@@ -635,8 +638,8 @@ KeySym Connection::TranslateKey(uint32_t key, unsigned int modifiers) const {
   if ((modifiers & num_lock_) &&
       (n_keysyms > 1 &&
        (IsXKeypadKey(syms[1]) || IsPrivateXKeypadKey(syms[1])))) {
-    if ((modifiers & ShiftMask) ||
-        ((modifiers & LockMask) && (lock_meaning_ == XK_Shift_Lock))) {
+    if ((modifiers & kShiftMask) ||
+        ((modifiers & kLockMask) && (lock_meaning_ == XK_Shift_Lock))) {
       return syms[0];
     }
     return syms[1];
@@ -644,8 +647,8 @@ KeySym Connection::TranslateKey(uint32_t key, unsigned int modifiers) const {
 
   KeySym lower;
   KeySym upper;
-  if (!(modifiers & ShiftMask) &&
-      (!(modifiers & LockMask) || (lock_meaning_ == NoSymbol))) {
+  if (!(modifiers & kShiftMask) &&
+      (!(modifiers & kLockMask) || (lock_meaning_ == NoSymbol))) {
     if ((n_keysyms == 1) || (syms[1] == kNoSymbol)) {
       ConvertCase(syms[0], &lower, &upper);
       return lower;
@@ -653,7 +656,7 @@ KeySym Connection::TranslateKey(uint32_t key, unsigned int modifiers) const {
     return syms[0];
   }
 
-  if (!(modifiers & LockMask) || (lock_meaning_ != XK_Caps_Lock)) {
+  if (!(modifiers & kLockMask) || (lock_meaning_ != XK_Caps_Lock)) {
     if ((n_keysyms == 1) || ((upper = syms[1]) == kNoSymbol))
       ConvertCase(syms[0], &lower, &upper);
     return upper;
@@ -663,7 +666,7 @@ KeySym Connection::TranslateKey(uint32_t key, unsigned int modifiers) const {
   if ((n_keysyms == 1) || ((sym = syms[1]) == kNoSymbol))
     sym = syms[0];
   ConvertCase(sym, &lower, &upper);
-  if (!(modifiers & ShiftMask) && (sym != syms[0]) &&
+  if (!(modifiers & kShiftMask) && (sym != syms[0]) &&
       ((sym != upper) || (lower == upper)))
     ConvertCase(syms[0], &lower, &upper);
   return upper;

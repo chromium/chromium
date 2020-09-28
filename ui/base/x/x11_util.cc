@@ -1134,13 +1134,10 @@ bool IsVulkanSurfaceSupported() {
       "ATIFGLRXDRI",  // AMD proprietary driver.
       "NV-CONTROL",   // NVidia proprietary driver.
   };
-  auto* display = gfx::GetXDisplay();
-  int ext_code, first_event, first_error;
+  auto* connection = x11::Connection::Get();
   for (const auto* extension : extensions) {
-    if (XQueryExtension(display, extension, &ext_code, &first_event,
-                        &first_error)) {
+    if (connection->QueryExtension({extension}).Sync())
       return true;
-    }
   }
   return false;
 }

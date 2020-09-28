@@ -23,18 +23,22 @@
 namespace {
 
 // Converts ui::EventType to state for X*Events.
-unsigned int XEventState(int flags) {
-  return ((flags & ui::EF_SHIFT_DOWN) ? ShiftMask : 0) |
-         ((flags & ui::EF_CAPS_LOCK_ON) ? LockMask : 0) |
-         ((flags & ui::EF_CONTROL_DOWN) ? ControlMask : 0) |
-         ((flags & ui::EF_ALT_DOWN) ? Mod1Mask : 0) |
-         ((flags & ui::EF_NUM_LOCK_ON) ? Mod2Mask : 0) |
-         ((flags & ui::EF_MOD3_DOWN) ? Mod3Mask : 0) |
-         ((flags & ui::EF_COMMAND_DOWN) ? Mod4Mask : 0) |
-         ((flags & ui::EF_ALTGR_DOWN) ? Mod5Mask : 0) |
-         ((flags & ui::EF_LEFT_MOUSE_BUTTON) ? Button1Mask : 0) |
-         ((flags & ui::EF_MIDDLE_MOUSE_BUTTON) ? Button2Mask : 0) |
-         ((flags & ui::EF_RIGHT_MOUSE_BUTTON) ? Button3Mask : 0);
+x11::KeyButMask XEventState(int flags) {
+  constexpr auto kNoMask = x11::KeyButMask{};
+  return ((flags & ui::EF_SHIFT_DOWN) ? x11::KeyButMask::Shift : kNoMask) |
+         ((flags & ui::EF_CAPS_LOCK_ON) ? x11::KeyButMask::Lock : kNoMask) |
+         ((flags & ui::EF_CONTROL_DOWN) ? x11::KeyButMask::Control : kNoMask) |
+         ((flags & ui::EF_ALT_DOWN) ? x11::KeyButMask::Mod1 : kNoMask) |
+         ((flags & ui::EF_NUM_LOCK_ON) ? x11::KeyButMask::Mod2 : kNoMask) |
+         ((flags & ui::EF_MOD3_DOWN) ? x11::KeyButMask::Mod3 : kNoMask) |
+         ((flags & ui::EF_COMMAND_DOWN) ? x11::KeyButMask::Mod4 : kNoMask) |
+         ((flags & ui::EF_ALTGR_DOWN) ? x11::KeyButMask::Mod5 : kNoMask) |
+         ((flags & ui::EF_LEFT_MOUSE_BUTTON) ? x11::KeyButMask::Button1
+                                             : kNoMask) |
+         ((flags & ui::EF_MIDDLE_MOUSE_BUTTON) ? x11::KeyButMask::Button2
+                                               : kNoMask) |
+         ((flags & ui::EF_RIGHT_MOUSE_BUTTON) ? x11::KeyButMask::Button3
+                                              : kNoMask);
 }
 
 // Converts EventType to XKeyEvent type.
@@ -185,7 +189,7 @@ void ScopedXI2Event::InitGenericKeyEvent(int deviceid,
                                          int flags) {
   event_ = CreateXInput2Event(deviceid, XIKeyEventType(type), 0, gfx::Point());
   auto* dev_event = event_.As<x11::Input::DeviceEvent>();
-  dev_event->mods.effective = XEventState(flags);
+  dev_event->mods.effective = static_cast<uint32_t>(XEventState(flags));
   dev_event->detail =
       XKeyCodeForWindowsKeyCode(key_code, flags, x11::Connection::Get());
   dev_event->sourceid = static_cast<x11::Input::DeviceId>(sourceid);
@@ -199,7 +203,7 @@ void ScopedXI2Event::InitGenericButtonEvent(int deviceid,
       CreateXInput2Event(deviceid, XIButtonEventType(type), 0, gfx::Point());
 
   auto* dev_event = event_.As<x11::Input::DeviceEvent>();
-  dev_event->mods.effective = XEventState(flags);
+  dev_event->mods.effective = static_cast<uint32_t>(XEventState(flags));
   dev_event->detail = XButtonEventButton(type, flags);
   dev_event->event_x = ToFp1616(location.x()),
   dev_event->event_y = ToFp1616(location.y()),

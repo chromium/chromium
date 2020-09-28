@@ -284,7 +284,7 @@ class SGIVideoSyncProviderThreadShim {
         vsync_lock_() {
     // This ensures that creation of |parent_window_| has occured when this shim
     // is executing in the same thread as the call to create |parent_window_|.
-    XSync(gfx::GetXDisplay(), false);
+    x11::Connection::Get()->Sync();
   }
 
   ~SGIVideoSyncProviderThreadShim() {

@@ -46,25 +46,25 @@ class XModifierStateWatcher {
     return base::Singleton<XModifierStateWatcher>::get();
   }
 
-  int StateFromKeyboardCode(ui::KeyboardCode keyboard_code) {
+  x11::KeyButMask StateFromKeyboardCode(ui::KeyboardCode keyboard_code) {
     switch (keyboard_code) {
       case ui::VKEY_CONTROL:
-        return ControlMask;
+        return x11::KeyButMask::Control;
       case ui::VKEY_SHIFT:
-        return ShiftMask;
+        return x11::KeyButMask::Shift;
       case ui::VKEY_MENU:
-        return Mod1Mask;
+        return x11::KeyButMask::Mod1;
       case ui::VKEY_CAPITAL:
-        return LockMask;
+        return x11::KeyButMask::Lock;
       default:
-        return 0;
+        return {};
     }
   }
 
   void UpdateStateFromXEvent(const x11::Event& xev) {
     ui::KeyboardCode keyboard_code = ui::KeyboardCodeFromXKeyEvent(xev);
-    unsigned int mask = StateFromKeyboardCode(keyboard_code);
-    // Floating device can't access the modifer state from master device.
+    auto mask = static_cast<int>(StateFromKeyboardCode(keyboard_code));
+    // Floating device can't access the modifier state from master device.
     // We need to track the states of modifier keys in a singleton for
     // floating devices such as touch screen. Issue 106426 is one example
     // of why we need the modifier states for floating device.
@@ -81,7 +81,7 @@ class XModifierStateWatcher {
     }
   }
 
-  // Returns the current modifer state in master device. It only contains the
+  // Returns the current modifier state in master device. It only contains the
   // state of ctrl, shift, alt and caps lock keys.
   unsigned int state() { return state_; }
 
@@ -785,7 +785,8 @@ bool GetFlingDataFromXEvent(const x11::Event& xev,
 }
 
 bool IsAltPressed() {
-  return XModifierStateWatcher::GetInstance()->state() & Mod1Mask;
+  return XModifierStateWatcher::GetInstance()->state() &
+         static_cast<int>(x11::KeyButMask::Mod1);
 }
 
 int GetModifierKeyState() {

@@ -10,6 +10,7 @@
 #include "ui/gfx/x/x11.h"
 #include "ui/gfx/x/x11_types.h"
 #include "ui/gfx/x/xkb.h"
+#include "ui/gfx/x/xproto.h"
 #include "ui/gfx/x/xtest.h"
 
 namespace {
@@ -20,24 +21,25 @@ bool FindKeycodeForKeySym(Display* display,
                           uint32_t* modifiers) {
   uint32_t found_keycode = XKeysymToKeycode(display, key_sym);
 
-  const uint32_t kModifiersToTry[] = {
-      0,
-      ShiftMask,
-      Mod2Mask,
-      Mod3Mask,
-      Mod4Mask,
-      ShiftMask | Mod2Mask,
-      ShiftMask | Mod3Mask,
-      ShiftMask | Mod4Mask,
+  const x11::KeyButMask kModifiersToTry[] = {
+      {},
+      x11::KeyButMask::Shift,
+      x11::KeyButMask::Mod2,
+      x11::KeyButMask::Mod3,
+      x11::KeyButMask::Mod4,
+      x11::KeyButMask::Shift | x11::KeyButMask::Mod2,
+      x11::KeyButMask::Shift | x11::KeyButMask::Mod3,
+      x11::KeyButMask::Shift | x11::KeyButMask::Mod4,
   };
 
   // TODO(sergeyu): Is there a better way to find modifiers state?
   for (auto i : kModifiersToTry) {
+    int mods = static_cast<int>(i);
     unsigned long key_sym_with_mods;
-    if (XkbLookupKeySym(display, found_keycode, i, nullptr,
-                        &key_sym_with_mods) &&
+    if (XkbLookupKeySym(display, found_keycode, mods,
+                        nullptr, &key_sym_with_mods) &&
         key_sym_with_mods == key_sym) {
-      *modifiers = i;
+      *modifiers = mods;
       *keycode = found_keycode;
       return true;
     }
@@ -123,7 +125,7 @@ void X11KeyboardImpl::Flush() {
 }
 
 void X11KeyboardImpl::Sync() {
-  XSync(display_, false);
+  connection_->Sync();
 }
 
 }  // namespace remoting

@@ -632,8 +632,8 @@ KeyboardCode KeyboardCodeFromXKeyEvent(const x11::Event& xev) {
   // If |xkey| has modifiers set, other than NumLock, then determine the
   // un-modified KeySym and use that to map, so that e.g. Ctrl+D correctly
   // generates VKEY_D.
-  if (modifiers & 0xFF & ~Mod2Mask) {
-    modifiers &= (~0xFF | Mod2Mask);
+  if (modifiers & 0xFF & ~static_cast<int>(x11::KeyButMask::Mod2)) {
+    modifiers &= (~0xFF | static_cast<int>(x11::KeyButMask::Mod2));
     keysym = TranslateKey(xkeycode, modifiers);
   }
 
@@ -659,7 +659,7 @@ KeyboardCode KeyboardCodeFromXKeyEvent(const x11::Event& xev) {
       return keycode;
 
     KeySym keysym_shift = NoSymbol;
-    modifiers |= ShiftMask;
+    modifiers |= static_cast<int>(x11::KeyButMask::Shift);
     keysym_shift = TranslateKey(xkeycode, modifiers);
     MAP2 key2 = {keysym & 0xFFFF, xkeycode, keysym_shift & 0xFFFF, 0};
     keycode = FindVK(key2, map2, base::size(map2));
@@ -667,8 +667,8 @@ KeyboardCode KeyboardCodeFromXKeyEvent(const x11::Event& xev) {
       return keycode;
 
     KeySym keysym_altgr = NoSymbol;
-    modifiers &= ~ShiftMask;
-    modifiers |= Mod1Mask;
+    modifiers &= ~static_cast<int>(x11::KeyButMask::Shift);
+    modifiers |= static_cast<int>(x11::KeyButMask::Mod1);
     keysym_altgr = TranslateKey(xkeycode, modifiers);
     MAP3 key3 = {keysym & 0xFFFF, xkeycode, keysym_shift & 0xFFFF,
                  keysym_altgr & 0xFFFF, 0};
@@ -1016,7 +1016,7 @@ DomKey GetDomKeyFromXEvent(const x11::Event& xev) {
   // The solution is to take out ctrl modifier directly, as according to XKB map
   // no keyboard combinations with ctrl key are mapped to printable character.
   // https://crbug.com/633838
-  modifiers &= ~ControlMask;
+  modifiers &= ~static_cast<int>(x11::KeyButMask::Control);
   KeySym keysym = TranslateKey(xkeycode, modifiers);
   base::char16 ch = GetUnicodeCharacterFromXKeySym(keysym);
   return XKeySymToDomKey(keysym, ch);

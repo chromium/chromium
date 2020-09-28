@@ -99,7 +99,8 @@ TEST(WebInputEventTest, TestMakeWebKeyboardEvent) {
   }
   {
     // Release Ctrl.
-    xev.InitKeyEvent(ET_KEY_RELEASED, VKEY_CONTROL, ControlMask);
+    xev.InitKeyEvent(ET_KEY_RELEASED, VKEY_CONTROL,
+                     static_cast<uint32_t>(x11::KeyButMask::Control));
     auto event = ui::BuildKeyEventFromXEvent(*xev);
     blink::WebKeyboardEvent webkit_event = MakeWebKeyboardEvent(*event);
     // However, modifier bit for Control in |webkit_event| shouldn't be set.

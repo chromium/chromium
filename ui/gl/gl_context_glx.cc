@@ -10,6 +10,7 @@
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/trace_event/trace_event.h"
+#include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/x11.h"
 #include "ui/gl/GL/glextchromium.h"
 #include "ui/gl/gl_bindings.h"
@@ -26,7 +27,7 @@ static int IgnoreX11Errors(Display*, XErrorEvent*) {
 
 using GLVersion = std::pair<int, int>;
 
-GLXContext CreateContextAttribs(Display* display,
+GLXContext CreateContextAttribs(x11::Connection* connection,
                                 GLXFBConfig config,
                                 GLXContext share,
                                 GLVersion version,
@@ -57,16 +58,17 @@ GLXContext CreateContextAttribs(Display* display,
   // errors can be generated. To prevent these errors from crashing our process,
   // we simply ignore them and only look if the GLXContext was created.
   // Sync to ensure any errors generated are processed.
-  XSync(display, false);
+
+  connection->Sync();
   auto old_error_handler = XSetErrorHandler(IgnoreX11Errors);
-  GLXContext context =
-      glXCreateContextAttribsARB(display, config, share, true, attribs.data());
+  GLXContext context = glXCreateContextAttribsARB(connection->display(), config,
+                                                  share, true, attribs.data());
   XSetErrorHandler(old_error_handler);
 
   return context;
 }
 
-GLXContext CreateHighestVersionContext(Display* display,
+GLXContext CreateHighestVersionContext(x11::Connection* connection,
                                        GLXFBConfig config,
                                        GLXContext share) {
   // The only way to get a core profile context of the highest version using
@@ -79,7 +81,8 @@ GLXContext CreateHighestVersionContext(Display* display,
   // Also try to get any Desktop GL context, but if that fails fallback to
   // asking for OpenGL ES contexts.
 
-  std::string client_vendor = glXGetClientString(display, GLX_VENDOR);
+  std::string client_vendor =
+      glXGetClientString(connection->display(), GLX_VENDOR);
   bool is_mesa = client_vendor.find("Mesa") != std::string::npos;
 
   struct ContextCreationInfo {
@@ -135,7 +138,7 @@ GLXContext CreateHighestVersionContext(Display* display,
         info.profileFlag == GLX_CONTEXT_ES2_PROFILE_BIT_EXT) {
       continue;
     }
-    GLXContext context = CreateContextAttribs(display, config, share,
+    GLXContext context = CreateContextAttribs(connection, config, share,
                                               info.version, info.profileFlag);
     if (context != nullptr) {
       return context;
@@ -144,16 +147,14 @@ GLXContext CreateHighestVersionContext(Display* display,
 
   return nullptr;
 }
-}
+
+}  // namespace
 
 GLContextGLX::GLContextGLX(GLShareGroup* share_group)
-  : GLContextReal(share_group),
-    context_(nullptr),
-    display_(nullptr) {
-}
+    : GLContextReal(share_group) {}
 
 XDisplay* GLContextGLX::display() {
-  return display_;
+  return connection_->display();
 }
 
 bool GLContextGLX::Initialize(GLSurface* compatible_surface,
@@ -163,7 +164,7 @@ bool GLContextGLX::Initialize(GLSurface* compatible_surface,
   DCHECK(!attribs.webgl_compatibility_context &&
          attribs.bind_generates_resource);
 
-  display_ = static_cast<XDisplay*>(compatible_surface->GetDisplay());
+  connection_ = x11::Connection::Get();
 
   GLXContext share_handle = static_cast<GLXContext>(
       share_group() ? share_group()->GetHandle() : nullptr);
@@ -171,7 +172,7 @@ bool GLContextGLX::Initialize(GLSurface* compatible_surface,
   if (GLSurfaceGLX::IsCreateContextSupported()) {
     DVLOG(1) << "GLX_ARB_create_context supported.";
     context_ = CreateHighestVersionContext(
-        display_, static_cast<GLXFBConfig>(compatible_surface->GetConfig()),
+        connection_, static_cast<GLXFBConfig>(compatible_surface->GetConfig()),
         share_handle);
     if (!context_) {
       LOG(ERROR) << "Failed to create GL context with "
@@ -181,7 +182,7 @@ bool GLContextGLX::Initialize(GLSurface* compatible_surface,
   } else {
     DVLOG(1) << "GLX_ARB_create_context not supported.";
     context_ = glXCreateNewContext(
-        display_, static_cast<GLXFBConfig>(compatible_surface->GetConfig()),
+        display(), static_cast<GLXFBConfig>(compatible_surface->GetConfig()),
         GLX_RGBA_TYPE, share_handle, true);
     if (!context_) {
       LOG(ERROR) << "Failed to create GL context with glXCreateNewContext.";
@@ -190,15 +191,14 @@ bool GLContextGLX::Initialize(GLSurface* compatible_surface,
   }
   DCHECK(context_);
   DVLOG(1) << "  Successfully allocated "
-           << (compatible_surface->IsOffscreen() ?
-               "offscreen" : "onscreen")
+           << (compatible_surface->IsOffscreen() ? "offscreen" : "onscreen")
            << " GL context with LOSE_CONTEXT_ON_RESET_ARB";
 
   DVLOG(1) << (compatible_surface->IsOffscreen() ? "Offscreen" : "Onscreen")
            << " context was "
-           << (glXIsDirect(display_,
-                           static_cast<GLXContext>(context_))
-                   ? "direct" : "indirect")
+           << (glXIsDirect(display(), static_cast<GLXContext>(context_))
+                   ? "direct"
+                   : "indirect")
            << ".";
 
   return true;
@@ -206,8 +206,7 @@ bool GLContextGLX::Initialize(GLSurface* compatible_surface,
 
 void GLContextGLX::Destroy() {
   if (context_) {
-    glXDestroyContext(display_,
-                      static_cast<GLXContext>(context_));
+    glXDestroyContext(display(), static_cast<GLXContext>(context_));
     context_ = nullptr;
   }
 }
@@ -220,10 +219,9 @@ bool GLContextGLX::MakeCurrentImpl(GLSurface* surface) {
   ScopedReleaseCurrent release_current;
   TRACE_EVENT0("gpu", "GLContextGLX::MakeCurrent");
   if (!glXMakeContextCurrent(
-      display_,
-      reinterpret_cast<GLXDrawable>(surface->GetHandle()),
-      reinterpret_cast<GLXDrawable>(surface->GetHandle()),
-      static_cast<GLXContext>(context_))) {
+          display(), reinterpret_cast<GLXDrawable>(surface->GetHandle()),
+          reinterpret_cast<GLXDrawable>(surface->GetHandle()),
+          static_cast<GLXContext>(context_))) {
     LOG(ERROR) << "Couldn't make context current with X drawable.";
     return false;
   }
@@ -248,7 +246,7 @@ void GLContextGLX::ReleaseCurrent(GLSurface* surface) {
     return;
 
   SetCurrent(nullptr);
-  if (!glXMakeContextCurrent(display_, 0, 0, 0))
+  if (!glXMakeContextCurrent(display(), 0, 0, 0))
     LOG(ERROR) << "glXMakeCurrent failed in ReleaseCurrent";
 }
 

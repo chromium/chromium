@@ -47,7 +47,7 @@ class GlobalShortcutListenerX11 : public GlobalShortcutListener,
   bool is_listening_;
 
   // The x11 default display and the native root window.
-  ::Display* x_display_;
+  x11::Connection* connection_;
   x11::Window x_root_window_;
 
   // A set of registered accelerators.

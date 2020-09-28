@@ -50,13 +50,13 @@ bool UIControlsX11::SendKeyPressNotifyWhenDone(gfx::NativeWindow window,
   xevent.detail = {};
   xevent.opcode = x11::KeyEvent::Press;
   if (control)
-    SetKeycodeAndSendThenMask(&xevent, XK_Control_L, ControlMask);
+    SetKeycodeAndSendThenMask(&xevent, XK_Control_L, x11::KeyButMask::Control);
   if (shift)
-    SetKeycodeAndSendThenMask(&xevent, XK_Shift_L, ShiftMask);
+    SetKeycodeAndSendThenMask(&xevent, XK_Shift_L, x11::KeyButMask::Shift);
   if (alt)
-    SetKeycodeAndSendThenMask(&xevent, XK_Alt_L, Mod1Mask);
+    SetKeycodeAndSendThenMask(&xevent, XK_Alt_L, x11::KeyButMask::Mod1);
   if (command)
-    SetKeycodeAndSendThenMask(&xevent, XK_Meta_L, Mod4Mask);
+    SetKeycodeAndSendThenMask(&xevent, XK_Meta_L, x11::KeyButMask::Mod4);
   xevent.detail = x11::Connection::Get()->KeysymToKeycode(
       static_cast<x11::KeySym>(ui::XKeysymForWindowsKeyCode(key, shift)));
   PostEventToWindowTreeHost(host_, &xevent);
@@ -65,13 +65,14 @@ bool UIControlsX11::SendKeyPressNotifyWhenDone(gfx::NativeWindow window,
   xevent.opcode = x11::KeyEvent::Release;
   PostEventToWindowTreeHost(host_, &xevent);
   if (alt)
-    UnmaskAndSetKeycodeThenSend(&xevent, Mod1Mask, XK_Alt_L);
+    UnmaskAndSetKeycodeThenSend(&xevent, x11::KeyButMask::Mod1, XK_Alt_L);
   if (shift)
-    UnmaskAndSetKeycodeThenSend(&xevent, ShiftMask, XK_Shift_L);
+    UnmaskAndSetKeycodeThenSend(&xevent, x11::KeyButMask::Shift, XK_Shift_L);
   if (control)
-    UnmaskAndSetKeycodeThenSend(&xevent, ControlMask, XK_Control_L);
+    UnmaskAndSetKeycodeThenSend(&xevent, x11::KeyButMask::Control,
+                                XK_Control_L);
   if (command)
-    UnmaskAndSetKeycodeThenSend(&xevent, Mod4Mask, XK_Meta_L);
+    UnmaskAndSetKeycodeThenSend(&xevent, x11::KeyButMask::Mod4, XK_Meta_L);
   DCHECK_EQ(xevent.state, x11::KeyButMask{});
   RunClosureAfterAllPendingUIEvents(std::move(closure));
   return true;
@@ -189,18 +190,18 @@ void UIControlsX11::RunClosureAfterAllPendingUIEvents(
 
 void UIControlsX11::SetKeycodeAndSendThenMask(x11::KeyEvent* xevent,
                                               KeySym keysym,
-                                              unsigned int mask) {
+                                              x11::KeyButMask mask) {
   xevent->detail =
       x11::Connection::Get()->KeysymToKeycode(static_cast<x11::KeySym>(keysym));
   PostEventToWindowTreeHost(host_, xevent);
-  xevent->state = xevent->state | static_cast<x11::KeyButMask>(mask);
+  xevent->state = xevent->state | mask;
 }
 
 void UIControlsX11::UnmaskAndSetKeycodeThenSend(x11::KeyEvent* xevent,
-                                                unsigned int mask,
+                                                x11::KeyButMask mask,
                                                 KeySym keysym) {
-  xevent->state =
-      static_cast<x11::KeyButMask>(static_cast<uint32_t>(xevent->state) ^ mask);
+  xevent->state = static_cast<x11::KeyButMask>(
+      static_cast<uint32_t>(xevent->state) ^ static_cast<uint32_t>(mask));
   xevent->detail =
       x11::Connection::Get()->KeysymToKeycode(static_cast<x11::KeySym>(keysym));
   PostEventToWindowTreeHost(host_, xevent);

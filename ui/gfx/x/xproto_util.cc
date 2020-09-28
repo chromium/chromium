@@ -38,10 +38,9 @@ void LogErrorEventDescription(unsigned long serial,
   } else {
     if (auto response = conn->ListExtensions({}).Sync()) {
       for (const auto& str : response->names) {
-        int ext_code, first_event, first_error;
         const char* name = str.name.c_str();
-        XQueryExtension(dpy, name, &ext_code, &first_event, &first_error);
-        if (request_code == ext_code) {
+        auto query = conn->QueryExtension({name}).Sync();
+        if (query && request_code == query->major_opcode) {
           std::string msg = base::StringPrintf("%s.%d", name, minor_code);
           XGetErrorDatabaseText(dpy, "XRequest", msg.c_str(), "Unknown",
                                 request_str, sizeof(request_str));

@@ -82,12 +82,14 @@ class UIControlsDesktopX11 : public UIControlsAura {
     x11::KeyEvent xevent;
     xevent.opcode = x11::KeyEvent::Press;
     if (control) {
-      SetKeycodeAndSendThenMask(host, &xevent, XK_Control_L, ControlMask);
+      SetKeycodeAndSendThenMask(host, &xevent, XK_Control_L,
+                                x11::KeyButMask::Control);
     }
     if (shift)
-      SetKeycodeAndSendThenMask(host, &xevent, XK_Shift_L, ShiftMask);
+      SetKeycodeAndSendThenMask(host, &xevent, XK_Shift_L,
+                                x11::KeyButMask::Shift);
     if (alt)
-      SetKeycodeAndSendThenMask(host, &xevent, XK_Alt_L, Mod1Mask);
+      SetKeycodeAndSendThenMask(host, &xevent, XK_Alt_L, x11::KeyButMask::Mod1);
     xevent.detail = x11::Connection::Get()->KeysymToKeycode(
         static_cast<x11::KeySym>(ui::XKeysymForWindowsKeyCode(key, shift)));
     aura::test::PostEventToWindowTreeHost(host, &xevent);
@@ -95,12 +97,18 @@ class UIControlsDesktopX11 : public UIControlsAura {
     // Send key release events.
     xevent.opcode = x11::KeyEvent::Release;
     aura::test::PostEventToWindowTreeHost(host, &xevent);
-    if (alt)
-      UnmaskAndSetKeycodeThenSend(host, &xevent, Mod1Mask, XK_Alt_L);
-    if (shift)
-      UnmaskAndSetKeycodeThenSend(host, &xevent, ShiftMask, XK_Shift_L);
-    if (control)
-      UnmaskAndSetKeycodeThenSend(host, &xevent, ControlMask, XK_Control_L);
+    if (alt) {
+      UnmaskAndSetKeycodeThenSend(host, &xevent, x11::KeyButMask::Mod1,
+                                  XK_Alt_L);
+    }
+    if (shift) {
+      UnmaskAndSetKeycodeThenSend(host, &xevent, x11::KeyButMask::Shift,
+                                  XK_Shift_L);
+    }
+    if (control) {
+      UnmaskAndSetKeycodeThenSend(host, &xevent, x11::KeyButMask::Control,
+                                  XK_Control_L);
+    }
     DCHECK_EQ(xevent.state, x11::KeyButMask{});
     RunClosureAfterAllPendingUIEvents(std::move(closure));
     return true;
@@ -239,19 +247,19 @@ class UIControlsDesktopX11 : public UIControlsAura {
   void SetKeycodeAndSendThenMask(aura::WindowTreeHost* host,
                                  x11::KeyEvent* xevent,
                                  KeySym keysym,
-                                 unsigned int mask) {
+                                 x11::KeyButMask mask) {
     xevent->detail = x11::Connection::Get()->KeysymToKeycode(
         static_cast<x11::KeySym>(keysym));
     aura::test::PostEventToWindowTreeHost(host, xevent);
-    xevent->state = xevent->state | static_cast<x11::KeyButMask>(mask);
+    xevent->state = xevent->state | mask;
   }
 
   void UnmaskAndSetKeycodeThenSend(aura::WindowTreeHost* host,
                                    x11::KeyEvent* xevent,
-                                   unsigned int mask,
+                                   x11::KeyButMask mask,
                                    KeySym keysym) {
     xevent->state = static_cast<x11::KeyButMask>(
-        static_cast<uint32_t>(xevent->state) ^ mask);
+        static_cast<uint32_t>(xevent->state) ^ static_cast<uint32_t>(mask));
     xevent->detail = x11::Connection::Get()->KeysymToKeycode(
         static_cast<x11::KeySym>(keysym));
     aura::test::PostEventToWindowTreeHost(host, xevent);
