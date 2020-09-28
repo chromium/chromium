@@ -4671,9 +4671,11 @@ class _PropEntryOperationGroup(_PropEntryBase):
         self.no_alloc_direct_callback_name = no_alloc_direct_callback_name
 
 
-def _make_property_entries_and_callback_defs(
-        cg_context, attribute_entries, constant_entries, constructor_entries,
-        exposed_construct_entries, operation_entries):
+def make_property_entries_and_callback_defs(cg_context, attribute_entries,
+                                            constant_entries,
+                                            constructor_entries,
+                                            exposed_construct_entries,
+                                            operation_entries):
     """
     Creates intermediate objects to help property installation and also makes
     code nodes of callback functions.
@@ -4692,8 +4694,9 @@ def _make_property_entries_and_callback_defs(
     assert isinstance(exposed_construct_entries, list)
     assert isinstance(operation_entries, list)
 
+    class_like = cg_context.class_like
     interface = cg_context.interface
-    global_names = interface.extended_attributes.values_of("Global")
+    global_names = class_like.extended_attributes.values_of("Global")
 
     callback_def_nodes = ListNode()
 
@@ -4911,22 +4914,24 @@ def _make_property_entries_and_callback_defs(
                 op_callback_name=op_callback_name,
                 op_func_length=0))
 
-    iterate(interface.attributes, process_attribute)
-    iterate(interface.constants, process_constant)
-    iterate(interface.constructor_groups, process_constructor_group)
-    iterate(interface.exposed_constructs, process_exposed_construct)
-    iterate(interface.legacy_window_aliases, process_exposed_construct)
-    named_constructor_groups = [
-        group for construct in interface.exposed_constructs
-        for group in construct.named_constructor_groups
-        if construct.named_constructor_groups
-    ]
-    iterate(named_constructor_groups, process_named_constructor_group)
-    iterate(interface.operation_groups, process_operation_group)
-    if interface.stringifier:
+    iterate(class_like.attributes, process_attribute)
+    iterate(class_like.constants, process_constant)
+    if interface:
+        iterate(interface.constructor_groups, process_constructor_group)
+        iterate(interface.exposed_constructs, process_exposed_construct)
+        iterate(interface.legacy_window_aliases, process_exposed_construct)
+        named_constructor_groups = [
+            group for construct in interface.exposed_constructs
+            for group in construct.named_constructor_groups
+            if construct.named_constructor_groups
+        ]
+        iterate(named_constructor_groups, process_named_constructor_group)
+    if not class_like.is_callback_interface:
+        iterate(class_like.operation_groups, process_operation_group)
+    if interface and interface.stringifier:
         iterate([interface.stringifier.operation], process_stringifier)
-    collectionlike = (interface.iterable or interface.maplike
-                      or interface.setlike)
+    collectionlike = interface and (interface.iterable or interface.maplike
+                                    or interface.setlike)
     if collectionlike:
 
         def should_define(target):
@@ -5150,6 +5155,12 @@ def make_install_interface_template(cg_context, function_name, class_name,
             assert False
         body.append(EmptyNode())
 
+    if cg_context.callback_interface:
+        body.extend([
+            T("${interface_template}->RemovePrototype();"),
+            EmptyNode(),
+        ])
+
     body.extend([
         supplemental_install_node,
         EmptyNode(),
@@ -5301,8 +5312,8 @@ ${prototype_template}->SetIntrinsicDataProperty(
 ${instance_template}->SetImmutableProto();
 ${prototype_template}->SetImmutableProto();
 """))
-    elif any("Global" in derived.extended_attributes
-             for derived in class_like.deriveds):
+    elif interface and any("Global" in derived.extended_attributes
+                           for derived in interface.deriveds):
         body.append(
             TextNode("""\
 // [Global] - prototype object in the prototype chain of global objects
@@ -6219,16 +6230,17 @@ const WrapperTypeInfo ${class_name}::wrapper_type_info_{{
             "InstallContextDependentPropertiesAdapter")
     else:
         install_context_dependent_func = "nullptr"
-    if class_like.inherited:
+    if class_like.is_interface and class_like.inherited:
         wrapper_type_info_of_inherited = "{}::GetWrapperTypeInfo()".format(
             v8_bridge_class_name(class_like.inherited))
     else:
         wrapper_type_info_of_inherited = "nullptr"
     wrapper_type_prototype = ("WrapperTypeInfo::kWrapperTypeObjectPrototype"
-                              if isinstance(class_like, web_idl.Interface) else
+                              if class_like.is_interface else
                               "WrapperTypeInfo::kWrapperTypeNoPrototype")
     wrapper_class_id = ("WrapperTypeInfo::kNodeClassId"
-                        if class_like.does_implement("Node") else
+                        if class_like.is_interface
+                        and class_like.does_implement("Node") else
                         "WrapperTypeInfo::kObjectClassId")
     active_script_wrappable_inheritance = (
         "WrapperTypeInfo::kInheritFromActiveScriptWrappable"
@@ -6243,12 +6255,13 @@ const WrapperTypeInfo ${class_name}::wrapper_type_info_{{
           active_script_wrappable_inheritance=(
               active_script_wrappable_inheritance)))
 
-    blink_class = blink_class_name(class_like)
-    pattern = """\
+    if class_like.is_interface:
+        blink_class = blink_class_name(class_like)
+        pattern = """\
 const WrapperTypeInfo& {blink_class}::wrapper_type_info_ =
     ${class_name}::wrapper_type_info_;
 """
-    wrapper_type_info_def.append(F(pattern, blink_class=blink_class))
+        wrapper_type_info_def.append(F(pattern, blink_class=blink_class))
 
     if class_like.code_generator_info.is_active_script_wrappable:
         pattern = """\
@@ -6274,7 +6287,8 @@ static_assert(
                  decltype(&ScriptWrappable::HasPendingActivity)>::value,
     "{blink_class} is overriding hasPendingActivity() without "
     "[ActiveScriptWrappable] extended attribute.");"""
-    wrapper_type_info_def.append(F(pattern, blink_class=blink_class))
+    if class_like.is_interface:
+        wrapper_type_info_def.append(F(pattern, blink_class=blink_class))
 
     return func_def, member_var_def, wrapper_type_info_def
 
@@ -6721,7 +6735,7 @@ def generate_interface(interface_identifier):
     constructor_entries = []
     exposed_construct_entries = []
     operation_entries = []
-    callback_defs = _make_property_entries_and_callback_defs(
+    callback_defs = make_property_entries_and_callback_defs(
         cg_context,
         attribute_entries=attribute_entries,
         constant_entries=constant_entries,

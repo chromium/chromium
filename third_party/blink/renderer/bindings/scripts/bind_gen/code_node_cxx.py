@@ -8,10 +8,12 @@ code_node.CodeNode.
 
 from .code_node import CodeNode
 from .code_node import CompositeNode
+from .code_node import EmptyNode
 from .code_node import Likeliness
 from .code_node import ListNode
 from .code_node import SymbolScopeNode
 from .code_node import TextNode
+from .code_node import WeakDependencyNode
 from .codegen_expr import CodeGenExpr
 from .codegen_format import format_template
 
@@ -210,6 +212,30 @@ switch (${{{cond}}}) {{
                 self._Clause(case, body, should_add_break))
 
 
+class CxxForLoopNode(CompositeNode):
+    def __init__(self, cond, body, weak_dep_syms=None):
+        assert weak_dep_syms is None or isinstance(weak_dep_syms,
+                                                   (list, tuple))
+
+        if weak_dep_syms is None:
+            weak_deps = EmptyNode()
+        else:
+            weak_deps = WeakDependencyNode(weak_dep_syms)
+
+        template_format = (
+            "{weak_deps}"  #
+            "for ({cond}) {{\n"
+            "  {body}\n"
+            "}}\n")
+
+        CompositeNode.__init__(self,
+                               template_format,
+                               weak_deps=weak_deps,
+                               cond=_to_conditional_node(cond),
+                               body=_to_symbol_scope_node(
+                                   body, Likeliness.LIKELY))
+
+
 class CxxBreakableBlockNode(CompositeNode):
     def __init__(self, body, likeliness=Likeliness.LIKELY):
         template_format = ("do {{  // Dummy loop for use of 'break'.\n"
@@ -234,7 +260,8 @@ class CxxFuncDeclNode(CompositeNode):
                  const=False,
                  override=False,
                  default=False,
-                 delete=False):
+                 delete=False,
+                 warn_unused_result=False):
         """
         Args:
             name: Function name.
@@ -248,6 +275,7 @@ class CxxFuncDeclNode(CompositeNode):
             override: True makes this an overriding function.
             default: True makes this have the default implementation.
             delete: True makes this function be deleted.
+            warn_unused_result: True adds WARN_UNUSED_RESULT annotation.
         """
         assert isinstance(name, str)
         assert isinstance(static, bool)
@@ -258,6 +286,7 @@ class CxxFuncDeclNode(CompositeNode):
         assert isinstance(default, bool)
         assert isinstance(delete, bool)
         assert not (default and delete)
+        assert isinstance(warn_unused_result, bool)
 
         template_format = ("{template}"
                            "{static}{explicit}{constexpr}"
@@ -266,40 +295,42 @@ class CxxFuncDeclNode(CompositeNode):
                            "{const}"
                            "{override}"
                            "{default_or_delete}"
+                           "{warn_unused_result}"
                            ";")
 
         if template_params is None:
             template = ""
         else:
             template = "template <{}>\n".format(", ".join(template_params))
-
         static = "static " if static else ""
         explicit = "explicit " if explicit else ""
         constexpr = "constexpr " if constexpr else ""
         const = " const" if const else ""
         override = " override" if override else ""
-
         if default:
             default_or_delete = " = default"
         elif delete:
             default_or_delete = " = delete"
         else:
             default_or_delete = ""
+        warn_unused_result = (" WARN_UNUSED_RESULT"
+                              if warn_unused_result else "")
 
-        CompositeNode.__init__(
-            self,
-            template_format,
-            name=_to_maybe_text_node(name),
-            arg_decls=ListNode(
-                map(_to_maybe_text_node, arg_decls), separator=", "),
-            return_type=_to_maybe_text_node(return_type),
-            template=template,
-            static=static,
-            explicit=explicit,
-            constexpr=constexpr,
-            const=const,
-            override=override,
-            default_or_delete=default_or_delete)
+        CompositeNode.__init__(self,
+                               template_format,
+                               name=_to_maybe_text_node(name),
+                               arg_decls=ListNode(map(_to_maybe_text_node,
+                                                      arg_decls),
+                                                  separator=", "),
+                               return_type=_to_maybe_text_node(return_type),
+                               template=template,
+                               static=static,
+                               explicit=explicit,
+                               constexpr=constexpr,
+                               const=const,
+                               override=override,
+                               default_or_delete=default_or_delete,
+                               warn_unused_result=warn_unused_result)
 
 
 class CxxFuncDefNode(CompositeNode):

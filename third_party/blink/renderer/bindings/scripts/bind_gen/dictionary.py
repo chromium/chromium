@@ -7,6 +7,7 @@ import web_idl
 from . import name_style
 from .blink_v8_bridge import blink_class_name
 from .blink_v8_bridge import blink_type_info
+from .blink_v8_bridge import make_blink_to_v8_value
 from .blink_v8_bridge import make_default_value_expr
 from .blink_v8_bridge import make_v8_to_blink_value
 from .blink_v8_bridge import native_value_tag
@@ -59,7 +60,7 @@ def _blink_member_name(member):
             # C++ data member that shows the presence of the IDL member.
             self.presence_var = name_style.member_var("has", blink_name)
             # C++ data member that holds the value of the IDL member.
-            self.value_var = name_style.member_var(blink_name)
+            self.value_var = name_style.member_var_f("member_{}", blink_name)
             # Migration Adapters
             self.get_non_null_api = name_style.api_func(blink_name, "non_null")
             self.has_non_null_api = name_style.api_func(
@@ -97,7 +98,7 @@ def bind_member_iteration_local_vars(code_node):
             "current_context", "v8::Local<v8::Context> ${current_context} = "
             "${isolate}->GetCurrentContext();"),
         SymbolNode(
-            "member_names", "const auto* ${member_names} = "
+            "v8_member_names", "const auto* ${v8_member_names} = "
             "GetV8MemberNames(${isolate}).data();"),
         SymbolNode(
             "is_in_secure_context", "const bool ${is_in_secure_context} = "
@@ -776,43 +777,32 @@ def make_fill_with_own_dict_members_func(cg_context):
     func_def.set_base_template_vars(cg_context.template_bindings())
     body = func_def.body
     body.add_template_var("isolate", "isolate")
+    body.add_template_var("creation_context", "creation_context")
+    body.add_template_var("v8_dictionary", "v8_dictionary")
     bind_member_iteration_local_vars(body)
 
-    def to_v8_expr(member):
-        get_api = _blink_member_name(member).get_api
-        member_type = member.idl_type.unwrap(typedef=True)
-        expr = _format("ToV8({}(), creation_context, isolate)", get_api)
-        if member_type.is_nullable and member_type.unwrap().is_string:
-            expr = _format(
-                "({get_api}().IsNull() ? v8::Null(isolate).As<v8::Value>() "
-                ": {to_v8})",
-                get_api=get_api,
-                to_v8=expr)
-        return expr
-
-    for key_index, member in enumerate(own_members):
-        pattern = """\
-if ({has_api}()) {{
-  if (!v8_dictionary
-           ->CreateDataProperty(
-               ${current_context},
-               ${member_names}[{index}].Get(isolate),
-               {to_v8_expr})
-           .ToChecked()) {{
-    return false;
-  }}
-}}\
-"""
-        node = TextNode(
-            _format(pattern,
-                    has_api=_blink_member_name(member).has_api,
-                    index=key_index,
-                    to_v8_expr=to_v8_expr(member)))
-
+    for index, member in enumerate(own_members):
+        member_name = _blink_member_name(member)
+        v8_member_name = name_style.local_var_f("v8_member_{}",
+                                                member.identifier)
+        body.register_code_symbol(
+            make_blink_to_v8_value(v8_member_name,
+                                   "{}()".format(member_name.get_api),
+                                   member.idl_type, "${creation_context}"))
+        node = CxxLikelyIfNode(
+            cond="{}()".format(member_name.has_api),
+            body=TextNode(
+                _format(
+                    "${v8_dictionary}->CreateDataProperty("
+                    "${current_context}, "
+                    "${v8_member_names}[{index}].Get(${isolate}), "
+                    "${{{v8_member_name}}}"
+                    ").ToChecked();",
+                    index=index,
+                    v8_member_name=v8_member_name)))
         conditional = expr_from_exposure(member.exposure)
         if not conditional.is_always_true:
             node = CxxLikelyIfNode(cond=conditional, body=node)
-
         body.append(node)
 
     body.append(TextNode("return true;"))
@@ -944,7 +934,7 @@ if (!bindings::ConvertDictionaryMember<{nvt_tag}, {is_required}>(
         ${isolate},
         ${current_context},
         v8_dictionary,
-        ${member_names}[{key_index}].Get(${isolate}),
+        ${v8_member_names}[{key_index}].Get(${isolate}),
         "${{dictionary.identifier}}",
         "{member_name}",
         {value_var},

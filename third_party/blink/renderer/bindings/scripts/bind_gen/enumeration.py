@@ -317,13 +317,14 @@ def generate_enumeration(enumeration_identifier):
         make_forward_declarations(source_node.accumulator),
         EmptyNode(),
     ])
+
+    # Assemble the parts.
     header_node.accumulator.add_include_headers([
         component_export_header(api_component, for_testing),
         "third_party/blink/renderer/bindings/core/v8/generated_code_helper.h",
         "third_party/blink/renderer/platform/bindings/enumeration_base.h",
     ])
 
-    # Assemble the parts.
     header_blink_ns.body.append(class_def)
     header_blink_ns.body.append(EmptyNode())
 
