@@ -64,16 +64,14 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 // The scope required for an access token in order to query ItemSuggest.
 constexpr char kDriveScope[] = "https://www.googleapis.com/auth/drive.readonly";
 
-// TODO(crbug.com/1034842): Check this is correct. Also consider:
-//  - controlling at least the scenario type by experiment param.
-//  - whether we can filter the response to certain fields
 constexpr char kRequestBody[] = R"({
-      'max_suggestions': 5,
       'client_info': {
-          'platform_type': 'CHROMEOS',
-          'application_type': 'GOOGLE_DRIVE',
-          'scenario_type': 'QUICK_ACCESS'
-      }})";
+        'platform_type': 'CHROME_OS',
+        'scenario_type': 'CHROME_OS_ZSS_FILES'
+      },
+      'max_suggestions': 10,
+      'type_detail_fields': []
+    })";
 
 bool IsDisabledByPolicy(const Profile* profile) {
   return profile->GetPrefs()->GetBoolean(drive::prefs::kDisableDrive);
