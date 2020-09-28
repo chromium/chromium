@@ -1573,6 +1573,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Extensions.ForceInstalledReadyTime" units="ms"
+    expires_after="2021-01-24">
+  <owner>snijhara@google.com</owner>
+  <owner>burunduk@chromium.org</owner>
+  <owner>swapnilgupta@google.com</owner>
+  <owner>managed-devices@google.com</owner>
+  <summary>
+    The amount of time elapsed for enterprise policy forced extensions to become
+    ready for use.
+  </summary>
+</histogram>
+
 <histogram
     name="Extensions.ForceInstalledSessionsWithNonMisconfigurationFailureOccured"
     enum="Boolean" expires_after="2021-01-24">

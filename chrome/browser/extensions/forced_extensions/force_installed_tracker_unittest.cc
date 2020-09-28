@@ -161,4 +161,18 @@ TEST_F(ForceInstalledTrackerTest, ExtensionsInstallationCancelled) {
   EXPECT_FALSE(ready_called_);
 }
 
+// This test verifies that READY state observer is called when each force
+// installed extension is either ready for use or failed.
+TEST_F(ForceInstalledTrackerTest, AllExtensionsReady) {
+  SetupForceList();
+  auto ext1 = ExtensionBuilder(kExtensionName1).SetID(kExtensionId1).Build();
+  force_installed_tracker()->OnExtensionLoaded(profile(), ext1.get());
+  force_installed_tracker()->OnExtensionReady(profile(), ext1.get());
+  force_installed_tracker()->OnExtensionInstallationFailed(
+      kExtensionId2, InstallStageTracker::FailureReason::INVALID_ID);
+  EXPECT_TRUE(loaded_called_);
+  EXPECT_TRUE(ready_called_);
+  EXPECT_TRUE(force_installed_tracker()->IsDoneLoading());
+}
+
 }  // namespace extensions

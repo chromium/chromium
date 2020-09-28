@@ -285,6 +285,15 @@ void ForceInstalledMetrics::ReportDisableReason(
                            disable_reasons);
 }
 
+void ForceInstalledMetrics::ReportMetricsOnExtensionsReady() {
+  for (const auto& extension : tracker_->extensions()) {
+    if (extension.second.status != ExtensionStatus::READY)
+      return;
+  }
+  base::UmaHistogramLongTimes("Extensions.ForceInstalledReadyTime",
+                              base::Time::Now() - start_time_);
+}
+
 void ForceInstalledMetrics::ReportMetrics() {
   base::UmaHistogramCounts100("Extensions.ForceInstalledTotalCandidateCount",
                               tracker_->extensions().size());
@@ -305,7 +314,7 @@ void ForceInstalledMetrics::ReportMetrics() {
                                 base::Time::Now() - start_time_);
     // TODO(burunduk): Remove VLOGs after resolving crbug/917700 and
     // crbug/904600.
-    VLOG(2) << "All forced extensions seems to be installed";
+    VLOG(2) << "All forced extensions seem to be installed";
     return;
   }
   size_t enabled_missing_count = missing_forced_extensions.size();
@@ -385,13 +394,22 @@ void ForceInstalledMetrics::ReportMetrics() {
 }
 
 void ForceInstalledMetrics::OnForceInstalledExtensionsLoaded() {
-  if (reported_)
+  if (load_reported_)
     return;
   // Report only if there was non-empty list of force-installed extensions.
   if (!tracker_->extensions().empty())
     ReportMetrics();
-  reported_ = true;
+  load_reported_ = true;
   timer_->Stop();
+}
+
+void ForceInstalledMetrics::OnForceInstalledExtensionsReady() {
+  if (ready_reported_)
+    return;
+  // Report only if there was non-empty list of force-installed extensions.
+  if (!tracker_->extensions().empty())
+    ReportMetricsOnExtensionsReady();
+  ready_reported_ = true;
 }
 
 void ForceInstalledMetrics::OnExtensionDownloadCacheStatusRetrieved(

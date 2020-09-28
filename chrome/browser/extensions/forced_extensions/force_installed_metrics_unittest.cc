@@ -49,6 +49,7 @@ const int kFetchTries = 5;
 const int kResponseCode = 401;
 
 constexpr char kLoadTimeStats[] = "Extensions.ForceInstalledLoadTime";
+constexpr char kReadyTimeStats[] = "Extensions.ForceInstalledReadyTime";
 constexpr char kTimedOutStats[] = "Extensions.ForceInstalledTimedOutCount";
 constexpr char kTimedOutNotInstalledStats[] =
     "Extensions.ForceInstalledTimedOutAndNotInstalledCount";
@@ -181,6 +182,7 @@ TEST_F(ForceInstalledMetricsTest, EmptyForcelist) {
   EXPECT_FALSE(fake_timer_->IsRunning());
   // Don't report metrics when the Forcelist is empty.
   histogram_tester_.ExpectTotalCount(kLoadTimeStats, 0);
+  histogram_tester_.ExpectTotalCount(kReadyTimeStats, 0);
   histogram_tester_.ExpectTotalCount(kTimedOutStats, 0);
   histogram_tester_.ExpectTotalCount(kTimedOutNotInstalledStats, 0);
   histogram_tester_.ExpectTotalCount(kFailureReasonsCWS, 0);
@@ -201,6 +203,7 @@ TEST_F(ForceInstalledMetricsTest, ExtensionsInstalled) {
   force_installed_tracker()->OnExtensionLoaded(profile(), ext2.get());
 
   histogram_tester_.ExpectTotalCount(kLoadTimeStats, 1);
+  histogram_tester_.ExpectTotalCount(kReadyTimeStats, 0);
   histogram_tester_.ExpectTotalCount(kTimedOutStats, 0);
   histogram_tester_.ExpectTotalCount(kTimedOutNotInstalledStats, 0);
   histogram_tester_.ExpectTotalCount(kFailureReasonsCWS, 0);
@@ -573,7 +576,8 @@ TEST_F(ForceInstalledMetricsTest,
 }
 
 // Regression test to check if the metrics are collected properly for the
-// extensions which are in state READY.
+// extensions which are in state READY. Also verifies that the failure reported
+// after READY state is not reflected in the statistics.
 TEST_F(ForceInstalledMetricsTest, ExtensionsReady) {
   SetupForceList();
   auto ext1 = ExtensionBuilder(kExtensionName1).SetID(kExtensionId1).Build();
@@ -588,8 +592,28 @@ TEST_F(ForceInstalledMetricsTest, ExtensionsReady) {
   // loaded or failed.
   EXPECT_FALSE(fake_timer_->IsRunning());
   histogram_tester_.ExpectTotalCount(kLoadTimeStats, 1);
+  histogram_tester_.ExpectTotalCount(kReadyTimeStats, 1);
   histogram_tester_.ExpectTotalCount(kTimedOutStats, 0);
   histogram_tester_.ExpectTotalCount(kTimedOutNotInstalledStats, 0);
+  histogram_tester_.ExpectTotalCount(kFailureReasonsCWS, 0);
+}
+
+// Regression test to check if no metrics are reported for READY state when some
+// extensions are failed.
+TEST_F(ForceInstalledMetricsTest, AllExtensionsNotReady) {
+  SetupForceList();
+  auto ext1 = ExtensionBuilder(kExtensionName1).SetID(kExtensionId1).Build();
+  force_installed_tracker()->OnExtensionLoaded(profile(), ext1.get());
+  force_installed_tracker()->OnExtensionReady(profile(), ext1.get());
+  install_stage_tracker()->ReportFailure(
+      kExtensionId2, InstallStageTracker::FailureReason::INVALID_ID);
+  // ForceInstalledMetrics shuts down timer because all extension are either
+  // loaded or failed.
+  EXPECT_FALSE(fake_timer_->IsRunning());
+  histogram_tester_.ExpectTotalCount(kLoadTimeStats, 0);
+  histogram_tester_.ExpectTotalCount(kReadyTimeStats, 0);
+  histogram_tester_.ExpectBucketCount(
+      kFailureReasonsCWS, InstallStageTracker::FailureReason::INVALID_ID, 1);
 }
 
 // Verifies that the installation stage is not overwritten by a previous stage.
@@ -1068,6 +1092,7 @@ TEST_F(ForceInstalledMetricsTest, NoExtensionsConfigured) {
   EXPECT_TRUE(fake_timer_->IsRunning());
   fake_timer_->Fire();
   histogram_tester_.ExpectTotalCount(kLoadTimeStats, 0);
+  histogram_tester_.ExpectTotalCount(kReadyTimeStats, 0);
   histogram_tester_.ExpectTotalCount(kTimedOutStats, 0);
   histogram_tester_.ExpectTotalCount(kTimedOutNotInstalledStats, 0);
   histogram_tester_.ExpectTotalCount(kFailureReasonsCWS, 0);
