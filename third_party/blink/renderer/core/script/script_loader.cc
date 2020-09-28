@@ -976,10 +976,10 @@ void ScriptLoader::PendingScriptFinished(PendingScript* pending_script) {
              ScriptSchedulingType::kInOrder);
   // Historically we clear |resource_keep_alive_| when the scheduling type is
   // kAsync or kInOrder (crbug.com/778799). But if the script resource was
-  // served via signed exchange, the script may not be in the HTTPCache,
+  // served via signed exchange, the script may not be in the HTTPCache, and
   // therefore will need to be refetched over network if it's evicted from the
-  // memory cache not be in the HTTPCache. So we keep |resource_keep_alive_| to
-  // keep the resource in the memory cache.
+  // memory cache. So we keep |resource_keep_alive_| to keep the resource in the
+  // memory cache.
   if (resource_keep_alive_ &&
       !resource_keep_alive_->GetResponse().IsSignedExchangeInnerResponse() &&
       !base::FeatureList::IsEnabled(

@@ -9,14 +9,14 @@ namespace blink {
 
 // Type of <script>'s scheduling.
 //
-// In the spec, this is determined which clause of Step 25 of
-// https://html.spec.whatwg.org/C/#prepare-a-script
-// is taken.
+// <specdef href="https://html.spec.whatwg.org/C/#prepare-a-script">
+// This is determined by which clause of <spec step="28">Then, follow the first
+// of the following options that describes the situation:</spec> is taken.
 //
 // The enum values are used in histograms and thus do not change existing
 // enum values when modifying.
 enum class ScriptSchedulingType {
-  // Because the sheduling type is determined slightly after PendingScript
+  // Because the scheduling type is determined slightly after PendingScript
   // creation, it is set to kNotSet before ScriptLoader::TakePendingScript()
   // is called. kNotSet should not be observed.
   kNotSet,
@@ -66,14 +66,16 @@ enum class ScriptSchedulingType {
 
   // Force deferred scripts controlled by HTMLParserScriptRunner.
   // These are otherwise parser-blocking scripts that are being forced to
-  // execute after parsing completes (due to a ForceDeferScriptIntervention).
+  // execute after parsing completes (due to ForceDeferScriptIntervention).
   //
   // Spec: not yet spec'ed. https://crbug.com/976061
   kForceDefer
+
+  // When adding a new value, update kLastScriptSchedulingType.
 };
 
 static const int kLastScriptSchedulingType =
-    static_cast<int>(ScriptSchedulingType::kImmediate);
+    static_cast<int>(ScriptSchedulingType::kForceDefer);
 
 }  // namespace blink
 
