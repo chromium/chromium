@@ -95,6 +95,7 @@ const char* const kDesktopSwitches[] = {
     // After completion of the migration, we should remove this.
     // See crbug.com/911943 for detail.
     "enable-blink-features=ShadowDOMV0",
+    "no-service-autorun",
 };
 
 const char* const kAndroidSwitches[] = {
