@@ -12,7 +12,6 @@
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/profile_sync_service_factory.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webui/signin/sync_confirmation_handler.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/browser_resources.h"
@@ -121,12 +120,7 @@ SyncConfirmationUI::~SyncConfirmationUI() {}
 
 void SyncConfirmationUI::InitializeMessageHandlerWithBrowser(Browser* browser) {
   web_ui()->AddMessageHandler(std::make_unique<SyncConfirmationHandler>(
-      browser->profile(), js_localized_string_to_ids_map_, browser));
-}
-
-void SyncConfirmationUI::InitializeMessageHandlerWithProfile(Profile* profile) {
-  web_ui()->AddMessageHandler(std::make_unique<SyncConfirmationHandler>(
-      profile, js_localized_string_to_ids_map_));
+      browser, js_localized_string_to_ids_map_));
 }
 
 void SyncConfirmationUI::AddStringResource(content::WebUIDataSource* source,

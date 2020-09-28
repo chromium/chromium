@@ -45,9 +45,7 @@ class TestingSyncConfirmationHandler : public SyncConfirmationHandler {
       Browser* browser,
       content::WebUI* web_ui,
       std::unordered_map<std::string, int> string_to_grd_id_map)
-      : SyncConfirmationHandler(browser->profile(),
-                                string_to_grd_id_map,
-                                browser) {
+      : SyncConfirmationHandler(browser, string_to_grd_id_map) {
     set_web_ui(web_ui);
   }
 

@@ -2774,8 +2774,6 @@ static_library("ui") {
       "views/profiles/badged_profile_photo.h",
       "views/profiles/profile_picker_view.cc",
       "views/profiles/profile_picker_view.h",
-      "views/profiles/profile_picker_view_sync_delegate.cc",
-      "views/profiles/profile_picker_view_sync_delegate.h",
       "views/profiles/user_manager_view.cc",
       "views/profiles/user_manager_view.h",
       "webui/app_launcher_page_ui.cc",
