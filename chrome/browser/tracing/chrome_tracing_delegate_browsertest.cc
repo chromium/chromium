@@ -76,8 +76,9 @@ class ChromeTracingDelegateBrowserTest : public InProcessBrowserTest {
   }
 
   void TriggerPreemptiveScenario(
-      const base::Closure& on_started_finalization_callback) {
-    on_started_finalization_callback_ = on_started_finalization_callback;
+      base::OnceClosure on_started_finalization_callback) {
+    on_started_finalization_callback_ =
+        std::move(on_started_finalization_callback);
     trigger_handle_ =
         content::BackgroundTracingManager::GetInstance()->RegisterTriggerType(
             "test");
@@ -131,12 +132,12 @@ class ChromeTracingDelegateBrowserTest : public InProcessBrowserTest {
 
     if (!on_started_finalization_callback_.is_null()) {
       content::GetUIThreadTaskRunner({})->PostTask(
-          FROM_HERE, on_started_finalization_callback_);
+          FROM_HERE, std::move(on_started_finalization_callback_));
     }
   }
 
   std::unique_ptr<base::RunLoop> wait_for_upload_;
-  base::Closure on_started_finalization_callback_;
+  base::OnceClosure on_started_finalization_callback_;
   int receive_count_;
   int started_finalizations_count_;
   content::BackgroundTracingManager::TriggerHandle trigger_handle_;
@@ -148,7 +149,7 @@ IN_PROC_BROWSER_TEST_F(ChromeTracingDelegateBrowserTest,
   EXPECT_TRUE(StartPreemptiveScenario(
       content::BackgroundTracingManager::NO_DATA_FILTERING));
 
-  TriggerPreemptiveScenario(base::Closure());
+  TriggerPreemptiveScenario(base::OnceClosure());
 
   WaitForUpload();
 
@@ -181,7 +182,7 @@ IN_PROC_BROWSER_TEST_F(ChromeTracingDelegateBrowserTest,
   EXPECT_TRUE(StartPreemptiveScenario(
       content::BackgroundTracingManager::NO_DATA_FILTERING));
 
-  TriggerPreemptiveScenario(base::Closure());
+  TriggerPreemptiveScenario(base::OnceClosure());
 
   WaitForUpload();
 
