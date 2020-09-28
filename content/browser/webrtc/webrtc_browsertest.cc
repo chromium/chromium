@@ -264,10 +264,8 @@ IN_PROC_BROWSER_TEST_F(
 #if defined(OS_ANDROID) && BUILDFLAG(USE_PROPRIETARY_CODECS)
 // This test is to make sure HW H264 work normally on supported devices, since
 // there is no SW H264 fallback available on Android.
-// TODO(crbug.com/1047994): Disabled due to flakiness caused by timing issue
-// in blink HW codec factories.
 IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcBrowserTest,
-                       DISABLED_CanSetupH264VideoCallOnSupportedDevice) {
+                       CanSetupH264VideoCallOnSupportedDevice) {
   MakeTypicalPeerConnectionCall("CanSetupH264VideoCallOnSupportedDevice();");
 }
 #endif
