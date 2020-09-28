@@ -72,8 +72,14 @@ class VRDeviceTest : public testing::Test {
   std::unique_ptr<VRDeviceBaseForTesting> MakeVRDevice() {
     std::unique_ptr<VRDeviceBaseForTesting> device =
         std::make_unique<VRDeviceBaseForTesting>();
-    device->SetVRDisplayInfoForTest(mojom::VRDisplayInfo::New());
+    device->SetVRDisplayInfoForTest(MakeVRDisplayInfo(device->GetId()));
     return device;
+  }
+
+  mojom::VRDisplayInfoPtr MakeVRDisplayInfo(mojom::XRDeviceId device_id) {
+    mojom::VRDisplayInfoPtr display_info = mojom::VRDisplayInfo::New();
+    display_info->id = device_id;
+    return display_info;
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_;
@@ -93,7 +99,7 @@ TEST_F(VRDeviceTest, DeviceChangedDispatched) {
       base::DoNothing());  // TODO: consider getting initial info
   base::RunLoop().RunUntilIdle();
   EXPECT_CALL(listener, DoOnChanged(testing::_)).Times(1);
-  device->SetVRDisplayInfoForTest(mojom::VRDisplayInfo::New());
+  device->SetVRDisplayInfoForTest(MakeVRDisplayInfo(device->GetId()));
   base::RunLoop().RunUntilIdle();
 }
 

@@ -27,8 +27,10 @@ constexpr unsigned int kRenderHeight = 1024;
 // However our mojo interface expects display info right away to support WebVR.
 // We create a fake display info to use, then notify the client that the display
 // info changed when we get real data.
-mojom::VRDisplayInfoPtr CreateFakeVRDisplayInfo() {
+mojom::VRDisplayInfoPtr CreateFakeVRDisplayInfo(device::mojom::XRDeviceId id) {
   mojom::VRDisplayInfoPtr display_info = mojom::VRDisplayInfo::New();
+
+  display_info->id = id;
 
   display_info->left_eye = mojom::VREyeParameters::New();
   display_info->right_eye = mojom::VREyeParameters::New();
@@ -59,7 +61,7 @@ OpenXrDevice::OpenXrDevice(OpenXrStatics* openxr_statics)
     : VRDeviceBase(device::mojom::XRDeviceId::OPENXR_DEVICE_ID),
       instance_(openxr_statics->GetXrInstance()),
       weak_ptr_factory_(this) {
-  mojom::VRDisplayInfoPtr display_info = CreateFakeVRDisplayInfo();
+  mojom::VRDisplayInfoPtr display_info = CreateFakeVRDisplayInfo(GetId());
   SetVRDisplayInfo(std::move(display_info));
 
 #if defined(OS_WIN)

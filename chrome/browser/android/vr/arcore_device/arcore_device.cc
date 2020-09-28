@@ -33,8 +33,10 @@ namespace device {
 
 namespace {
 
-mojom::VRDisplayInfoPtr CreateVRDisplayInfo(const gfx::Size& frame_size) {
+mojom::VRDisplayInfoPtr CreateVRDisplayInfo(mojom::XRDeviceId device_id,
+                                            const gfx::Size& frame_size) {
   mojom::VRDisplayInfoPtr device = mojom::VRDisplayInfo::New();
+  device->id = device_id;
   device->webxr_default_framebuffer_scale = 1.0;
   device->left_eye = mojom::VREyeParameters::New();
   device->right_eye = nullptr;
@@ -78,7 +80,7 @@ ArCoreDevice::ArCoreDevice(
   // if initialization fails. Use an arbitrary but really low resolution to make
   // it obvious if we're using this data instead of the actual values we get
   // from the output drawing surface.
-  SetVRDisplayInfo(CreateVRDisplayInfo({16, 16}));
+  SetVRDisplayInfo(CreateVRDisplayInfo(GetId(), {16, 16}));
 }
 
 ArCoreDevice::ArCoreDevice()
@@ -175,7 +177,7 @@ void ArCoreDevice::OnDrawingSurfaceReady(gfx::AcceleratedWidget window,
            << frame_size.height() << " rotation=" << static_cast<int>(rotation);
   DCHECK(!session_state_->is_arcore_gl_initialized_);
 
-  auto display_info = CreateVRDisplayInfo(frame_size);
+  auto display_info = CreateVRDisplayInfo(GetId(), frame_size);
   SetVRDisplayInfo(std::move(display_info));
 
   RequestArCoreGlInitialization(window, rotation, frame_size);

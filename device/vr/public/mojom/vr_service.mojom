@@ -298,6 +298,7 @@ struct VRStageParameters {
 };
 
 struct VRDisplayInfo {
+  XRDeviceId id;
   VRStageParameters? stage_parameters;
   // Parameters required to distort a scene for viewing in a VR headset. Only
   // required for devices which have the can_present capability.

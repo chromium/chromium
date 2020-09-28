@@ -66,6 +66,7 @@ void VRDeviceBase::ListenToDeviceChanges(
 
 void VRDeviceBase::SetVRDisplayInfo(mojom::VRDisplayInfoPtr display_info) {
   DCHECK(display_info);
+  DCHECK(display_info->id == id_);
   display_info_ = std::move(display_info);
 
   if (listener_)
