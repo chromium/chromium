@@ -464,8 +464,11 @@
       depends_on: ["CSSFontMetricsOverride"],
     },
     {
+      // @font-face descriptors ascent-override, descent-override and
+      // line-gap-override.
+      // https://drafts.csswg.org/css-fonts-4/#font-metrics-override-desc
       name: "CSSFontMetricsOverride",
-      status: "test",
+      status: "stable",
     },
     {
       name: "CSSFontSizeAdjust",

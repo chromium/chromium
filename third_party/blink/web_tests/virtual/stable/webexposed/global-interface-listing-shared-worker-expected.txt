@@ -480,9 +480,12 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method write
 [Worker] interface FontFace
 [Worker]     attribute @@toStringTag
+[Worker]     getter ascentOverride
+[Worker]     getter descentOverride
 [Worker]     getter display
 [Worker]     getter family
 [Worker]     getter featureSettings
+[Worker]     getter lineGapOverride
 [Worker]     getter loaded
 [Worker]     getter status
 [Worker]     getter stretch
@@ -492,9 +495,12 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter weight
 [Worker]     method constructor
 [Worker]     method load
+[Worker]     setter ascentOverride
+[Worker]     setter descentOverride
 [Worker]     setter display
 [Worker]     setter family
 [Worker]     setter featureSettings
+[Worker]     setter lineGapOverride
 [Worker]     setter stretch
 [Worker]     setter style
 [Worker]     setter unicodeRange

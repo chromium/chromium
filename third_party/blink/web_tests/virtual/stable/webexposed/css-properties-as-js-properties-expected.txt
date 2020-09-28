@@ -16,6 +16,7 @@ animationName
 animationPlayState
 animationTimingFunction
 appearance
+ascentOverride
 backdropFilter
 backfaceVisibility
 background
@@ -132,6 +133,7 @@ cursor
 cx
 cy
 d
+descentOverride
 direction
 display
 dominantBaseline
@@ -211,6 +213,7 @@ length
 letterSpacing
 lightingColor
 lineBreak
+lineGapOverride
 lineHeight
 listStyle
 listStyleImage
