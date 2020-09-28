@@ -8620,9 +8620,9 @@
       'id': 119,
       'caption': '''Report OS and firmware version''',
       'tags': ['admin-sharing'],
-      'desc': '''Report OS and firmware version of enrolled devices.
+      'desc': '''Setting the policy to Enabled or leaving it unset has enrolled devices periodically report their OS and firmware version.
 
-      If this setting is not set or set to True, enrolled devices will report the OS and firmware version periodically. If this setting is set to False, version info will not be reported.''',
+      Setting the policy to Disabled means enrolled devices don't report version info.''',
       'arc_support': 'This policy has no effect on the logging done by Android.',
     },
     {
@@ -8640,9 +8640,9 @@
       'id': 120,
       'caption': '''Report device activity times''',
       'tags': ['admin-sharing'],
-      'desc': '''Report device activity times.
+      'desc': '''Setting the policy to Enabled or leaving it unset has enrolled devices report time periods when a user is active on the device.
 
-      If this setting is not set or set to True, enrolled devices will report time periods when a user is active on the device. If this setting is set to False, device activity times will not be recorded or reported.''',
+      Setting the policy to Disabled means enrolled devices don't record or report activity times.''',
       'arc_support': 'This policy has no effect on the logging done by Android.',
     },
     {
@@ -8660,9 +8660,9 @@
       'id': 121,
       'caption': '''Report device boot mode''',
       'tags': ['admin-sharing'],
-      'desc': '''Report the state of the device's dev switch at boot.
+      'desc': '''Setting the policy to Enabled or leaving it unset has enrolled devices report the state of the device's dev switch when the machine booted.
 
-      If the policy is set to false, the state of the dev switch will not be reported.''',
+      Setting the policy to Disabled means enrolled devices don't report the state of the dev switch.''',
       'arc_support': 'This policy has no effect on the logging done by Android.',
     },
     {
@@ -8701,9 +8701,9 @@
       'id': 224,
       'caption': '''Report device network interfaces''',
       'tags': ['admin-sharing'],
-      'desc': '''Report list of network interfaces with their types and hardware addresses to the server.
+      'desc': '''Setting the policy to Enabled or leaving it unset has enrolled devices report the list of network interfaces with their types and hardware addresses.
 
-      If the policy is set to false, the interface list will not be reported.''',
+      Setting the policy to Disabled means enrolled devices don't report the network interface.''',
       'arc_support': 'This policy has no effect on the logging done by Android.',
     },
     {
@@ -8721,9 +8721,9 @@
       'id': 248,
       'caption': '''Report device users''',
       'tags': ['admin-sharing'],
-      'desc': '''Report list of device users that have recently logged in.
+      'desc': '''Setting the policy to Enabled or leaving it unset has enrolled devices report the list of device users that signed in recently.
 
-      If the policy is set to false, the users will not be reported.''',
+      Setting the policy to Disabled means enrolled devices don't report the list of users.''',
       'arc_support': 'This policy has no effect on the logging done by Android.',
     },
     {
@@ -8741,10 +8741,9 @@
       'id': 290,
       'caption': '''Report hardware status''',
       'tags': ['admin-sharing'],
-      'desc': '''Report hardware statistics such as CPU/RAM usage.
+      'desc': '''Setting the policy to Enabled or leaving it unset has enrolled devices report hardware statistics such as CPU/RAM usage.
 
-      If the policy is set to false, the statistics will not be reported.
-      If set to true or left unset, statistics will be reported.''',
+      Setting the policy to Disabled means enrolled devices don't report the hardware statistics.''',
       'arc_support': 'This policy has no effect on the logging done by Android.',
     },
     {
@@ -8762,12 +8761,9 @@
       'id': 291,
       'caption': '''Report information about active kiosk sessions''',
       'tags': ['admin-sharing'],
-      'desc': '''Report information about the active kiosk session, such as
-      application ID and version.
+      'desc': '''Setting the policy to Enabled or leaving it unset has enrolled devices report the active kiosk session information such as application ID and version.
 
-      If the policy is set to false, the kiosk session information will not be
-      reported. If set to true or left unset, kiosk session information will be
-      reported.''',
+      Setting the policy to Disabled means enrolled devices don't report kiosk session information.''',
       'arc_support': 'This policy has no effect on the logging done by Android.',
     },
     {
@@ -8853,10 +8849,9 @@
       'id': 512,
       'caption': '''Report power status''',
       'tags': ['admin-sharing'],
-      'desc': '''Report hardware statistics and identifiers related to power.
+      'desc': '''Setting the policy to Enabled has enrolled devices report hardware statistics and identifiers related to power.
 
-      If the policy is set to false or left unset, the statistics will not be reported.
-      If set to true, statistics will be reported.''',
+      Setting the policy to Disabled or leaving it unset means enrolled devices don't report power statistics.''',
       'arc_support': 'This policy has no effect on the logging done by Android.',
     },
     {
@@ -8874,10 +8869,9 @@
       'id': 513,
       'caption': '''Report storage status''',
       'tags': ['admin-sharing'],
-      'desc': '''Report hardware statistics and identifiers for storage devices.
+      'desc': '''Setting the policy to Enabled has enrolled devices report hardware statistics and identifiers for storage devices.
 
-      If the policy is set to false or left unset, the statistics will not be reported.
-      If set to true, statistics will be reported.''',
+      Setting the policy to Disabled or leaving it unset means enrolled devices don't report storage statistics.''',
       'arc_support': 'This policy has no effect on the logging done by Android.',
     },
     {
@@ -8895,10 +8889,9 @@
       'id': 514,
       'caption': '''Report board status''',
       'tags': ['admin-sharing'],
-      'desc': '''Report hardware statistics for SoC components.
+      'desc': '''Setting the policy to Enabled has enrolled devices report hardware statistics for SoC components.
 
-      If the policy is set to false or left unset, the statistics will not be reported.
-      If set to true, statistics will be reported.''',
+      Setting the policy to Disabled or leaving it unset means enrolled devices don't report the statistics.''',
       'arc_support': 'This policy has no effect on the logging done by Android.',
     },
     {
@@ -9107,10 +9100,9 @@
       'id': 292,
       'caption': '''Frequency of device status report uploads''',
       'tags': ['admin-sharing'],
-      'desc': '''How frequently device status uploads are sent, in milliseconds.
+      'desc': '''Setting the policy determines how frequently to send device status uploads, in milliseconds. The minimum allowed is 60 seconds.
 
-      If this policy is unset, the default frequency is 3 hours. The minimum
-      allowed frequency is 60 seconds.''',
+      If not set, the default interval of 3 hours applies.''',
       'arc_support': 'This policy has no effect on the logging done by Android.',
     },
     {
@@ -9128,13 +9120,9 @@
       'id': 349,
       'caption': '''Report information about status of Android''',
       'tags': ['admin-sharing'],
-      'desc': '''Information about the status of Android is sent back to the
-      server.
+      'desc': '''If Android apps are on, then setting the policy to True has enrolled devices report Android status information.
 
-      If the policy is set to false or left unset, no status information is reported.
-      If set to true, status information is reported.
-
-      This policy only applies if Android apps are enabled.''',
+      Setting the policy to Disabled or leaving it unset means enrolled devices don't report Android status information''',
     },
     {
       'name': 'ReportCrostiniUsageEnabled',
@@ -9174,11 +9162,9 @@
       'id': 293,
       'caption': '''Send network packets to the management server to monitor online status''',
       'tags': ['admin-sharing'],
-      'desc': '''Send network packets to the management server to monitor online status, to allow
-      the server to detect if the device is offline.
+      'desc': '''Setting the policy to Enabled sends monitoring network packets (<ph name="HEARTBEATS_TERM">heartbeats</ph>) to the management server to monitor online status, to allow the server to detect if the device is offline.
 
-      If this policy is set to true, monitoring network packets (so-called <ph name="HEARTBEATS_TERM">heartbeats</ph>) will be sent.
-      If set to false or unset, no packets will be sent.''',
+      Setting the policy to Disabled or leaving it unset sends no packets.''',
       'arc_support': 'This policy has no effect on the logging done by Android.',
     },
     {
@@ -9196,11 +9182,9 @@
       'id': 294,
       'caption': '''Frequency of monitoring network packets''',
       'tags': [],
-      'desc': '''How frequently monitoring network packets are sent, in milliseconds.
+      'desc': '''Setting the policy determines how frequently to send monitoring network packets, in milliseconds. Intervals range from 30 seconds to 24 hours. Values outside this range are clamped to this range.
 
-      If this policy is unset, the default interval is 3 minutes. The minimum
-      interval is 30 seconds and the maximum interval is 24 hours - values
-      outside of this range will be clamped to this range.''',
+      If not set, the default interval of 3 minutes applies.''',
       'arc_support': 'This policy has no effect on the logging done by Android.',
     },
     {
@@ -9218,11 +9202,9 @@
       'id': 306,
       'caption': '''Send system logs to the management server''',
       'tags': [],
-      'desc': '''Send system logs to the management server, to allow
-      admins to monitor system logs.
+      'desc': '''Setting the policy to Enabled sends system logs to the management server, to allow admins to monitor system logs.
 
-      If this policy is set to true, system logs will be sent. If set
-      to false or unset, then no system logs will be sent.''',
+      Setting the policy to Disabled or leaving it unset reports no system logs.''',
       'arc_support': 'This policy has no effect on the logging done by Android.',
     },
     {
