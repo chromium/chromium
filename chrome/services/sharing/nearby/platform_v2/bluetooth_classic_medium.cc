@@ -73,15 +73,7 @@ bool BluetoothClassicMedium::StopDiscovery() {
 std::unique_ptr<api::BluetoothSocket> BluetoothClassicMedium::ConnectToService(
     api::BluetoothDevice& remote_device,
     const std::string& service_uuid) {
-  // TODO(hansberry): This currently assumes that the device was discovered via
-  // Bluetooth Classic (the remote device is in high visibility mode), meaning
-  // this address is the expected permanent BT MAC address. Once an
-  // implementation is in place to scan for devices over BLE, a new mechanism
-  // to query for the remote device's permanent BT MAC address from stored
-  // certificates will be needed.
-  // We provided this |remote_device|, so we can safely downcast it.
-  const std::string& address =
-      static_cast<chrome::BluetoothDevice&>(remote_device).GetAddress();
+  const std::string& address = remote_device.GetMacAddress();
 
   bluetooth::mojom::ConnectToServiceResultPtr result;
   bool success = adapter_->ConnectToServiceInsecurely(
@@ -114,7 +106,18 @@ BluetoothClassicMedium::ListenForService(const std::string& service_name,
 BluetoothDevice* BluetoothClassicMedium::GetRemoteDevice(
     const std::string& mac_address) {
   auto it = discovered_bluetooth_devices_map_.find(mac_address);
-  return it == discovered_bluetooth_devices_map_.end() ? nullptr : &it->second;
+  if (it != discovered_bluetooth_devices_map_.end())
+    return &it->second;
+
+  // If a device with |mac_address| has not been found, Nearby Connections
+  // is attempting to connect to a device with |mac_adress| which is not
+  // discoverable. Create a placeholder BluetoothDevice to be used by
+  // ConnectToService().
+  bluetooth::mojom::DeviceInfoPtr device = bluetooth::mojom::DeviceInfo::New();
+  device->address = mac_address;
+  return &discovered_bluetooth_devices_map_
+              .emplace(mac_address, std::move(device))
+              .first->second;
 }
 
 void BluetoothClassicMedium::PresentChanged(bool present) {
