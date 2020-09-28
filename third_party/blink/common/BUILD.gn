@@ -71,8 +71,6 @@ source_set("common") {
     "associated_interfaces/associated_interface_registry.cc",
     "blob/blob_utils.cc",
     "bluetooth/web_bluetooth_device_id.cc",
-    "bluetooth/web_bluetooth_device_id.h",
-    "bluetooth/web_bluetooth_device_id_mojom_traits.h",
     "browser_interface_broker_proxy.cc",
     "cache_storage/cache_storage_utils.cc",
     "client_hints/client_hints.cc",
@@ -183,7 +181,9 @@ source_set("common") {
     "//services/metrics/public/cpp:ukm_builders",
     "//services/metrics/public/mojom:mojom",
     "//services/network/public/cpp:cpp",
+    "//ui/base:base",
     "//ui/events:events_base",
+    "//ui/latency/mojom:shared_mojom_traits",
   ]
 
   # iOS doesn't use and must not depend on //media
@@ -264,8 +264,11 @@ source_set("common_unittests_sources") {
   deps = [
     "//base",
     "//base/test:test_support",
+    "//media/capture:capture_base",
     "//mojo/core/embedder",
+    "//mojo/public/cpp/test_support:test_utils",
     "//net",
+    "//net:test_support",
     "//services/device:test_support",
     "//services/network:test_support",
     "//skia/public/mojom",
