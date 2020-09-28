@@ -13,11 +13,11 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import android.app.Activity;
-import android.app.FragmentManager;
 import android.graphics.Bitmap;
 
 import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -47,7 +47,7 @@ import org.chromium.components.module_installer.engine.InstallListener;
 public class ScreenshotCoordinatorTest {
     // clang-format on
     @Mock
-    private Activity mActivity;
+    private FragmentActivity mActivity;
 
     @Mock
     private FragmentManager mFragmentManagerMock;
@@ -56,7 +56,7 @@ public class ScreenshotCoordinatorTest {
     private ChromeOptionShareCallback mChromeOptionShareCallback;
 
     // FakeEditorScreenshotTask abstracts taking a screenshot; it always succeeds and
-    // returns mBimap from the test class.
+    // returns mBitmap from the test class.
     private final class FakeEditorScreenshotTask implements EditorScreenshotSource {
         public FakeEditorScreenshotTask() {}
 
@@ -98,7 +98,6 @@ public class ScreenshotCoordinatorTest {
             return mImageEditorDialogCoordinatorMock;
         }
     }
-    private FakeImageEditorProviderImpl mFakeImageEditorProvider;
 
     // Bitmap used for successful screenshot capture requests.
     private Bitmap mBitmap;
@@ -110,11 +109,10 @@ public class ScreenshotCoordinatorTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        when(mActivity.getFragmentManager()).thenReturn(mFragmentManagerMock);
+        when(mActivity.getSupportFragmentManager()).thenReturn(mFragmentManagerMock);
 
-        mFakeImageEditorProvider = new FakeImageEditorProviderImpl();
         when(mImageEditorModuleProviderMock.getImageEditorProvider())
-                .thenReturn(mFakeImageEditorProvider);
+                .thenReturn(new FakeImageEditorProviderImpl());
         doNothing()
                 .when(mImageEditorDialogCoordinatorMock)
                 .launchEditor(mActivity, mBitmap, mTab, mChromeOptionShareCallback);

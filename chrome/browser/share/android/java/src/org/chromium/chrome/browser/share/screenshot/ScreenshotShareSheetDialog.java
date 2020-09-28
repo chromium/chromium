@@ -5,12 +5,12 @@
 package org.chromium.chrome.browser.share.screenshot;
 
 import android.app.Dialog;
-import android.app.DialogFragment;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.DialogFragment;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.R;
@@ -22,7 +22,6 @@ import org.chromium.chrome.browser.tab.Tab;
  */
 public class ScreenshotShareSheetDialog extends DialogFragment {
     private Context mContext;
-    private ScreenshotShareSheetView mDialogView;
     private Bitmap mScreenshot;
     private Tab mTab;
     private ChromeOptionShareCallback mChromeOptionShareCallback;
@@ -64,9 +63,8 @@ public class ScreenshotShareSheetDialog extends DialogFragment {
                         R.layout.screenshot_share_sheet, null);
         builder.setView(screenshotShareSheetView);
 
-        ScreenshotShareSheetCoordinator shareCoordinator = new ScreenshotShareSheetCoordinator(
-                mContext, mScreenshot, this::dismiss, screenshotShareSheetView, mTab,
-                mChromeOptionShareCallback, mInstallCallback);
+        new ScreenshotShareSheetCoordinator(mContext, mScreenshot, this::dismiss,
+                screenshotShareSheetView, mTab, mChromeOptionShareCallback, mInstallCallback);
         return builder.create();
     }
 }

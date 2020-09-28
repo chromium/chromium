@@ -117,6 +117,6 @@ class ScreenshotShareSheetMediator {
 
     protected void generateTemporaryUriFromBitmap(
             Context context, String fileName, Bitmap bitmap, Callback<Uri> callback) {
-        ShareImageFileUtils.generateTemporaryUriFromBitmap(mContext, fileName, bitmap, callback);
+        ShareImageFileUtils.generateTemporaryUriFromBitmap(context, fileName, bitmap, callback);
     }
 }

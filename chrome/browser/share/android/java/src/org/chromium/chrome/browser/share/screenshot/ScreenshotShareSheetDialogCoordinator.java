@@ -5,10 +5,11 @@
 package org.chromium.chrome.browser.share.screenshot;
 
 import android.app.Activity;
-import android.app.FragmentManager;
 import android.graphics.Bitmap;
 
 import androidx.annotation.VisibleForTesting;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
@@ -34,7 +35,7 @@ public class ScreenshotShareSheetDialogCoordinator {
     public ScreenshotShareSheetDialogCoordinator(Activity activity,
             ScreenshotShareSheetDialog dialog, Bitmap screenshot, Tab tab,
             ChromeOptionShareCallback shareCallback, Callback<Runnable> installCallback) {
-        mFragmentManager = activity.getFragmentManager();
+        mFragmentManager = ((FragmentActivity) activity).getSupportFragmentManager();
         mDialog = dialog;
         mScreenshot = screenshot;
         mDialog.init(mScreenshot, tab, shareCallback, installCallback);
