@@ -592,6 +592,10 @@ suite('languages page', () => {
 });
 
 suite('change device language button', () => {
+  setup(() => {
+    document.body.innerHTML = '';
+  });
+
   test('is hidden for guest users', () => {
     loadTimeData.overrideValues({
       isGuest: true,

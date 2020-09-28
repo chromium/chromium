@@ -72,9 +72,7 @@ var OSSettingsOsLanguagesPageV2V3Test = class extends OSSettingsV3BrowserTest {
   }
 };
 
-
-// Flaky on Debug and Release builds: https://crbug.com/1132259
-TEST_F('OSSettingsOsLanguagesPageV2V3Test', 'DISABLED_All', () => mocha.run());
+TEST_F('OSSettingsOsLanguagesPageV2V3Test', 'All', () => mocha.run());
 
 // eslint-disable-next-line no-var
 var OSSettingsNearbyShareSubPageV3Test = class extends OSSettingsV3BrowserTest {
