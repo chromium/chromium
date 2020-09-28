@@ -147,6 +147,11 @@ base::string16 show_other_passwords_str() {
       IDS_PASSWORD_MANAGER_ACCESSORY_USE_OTHER_PASSWORD);
 }
 
+base::string16 show_other_username_str() {
+  return l10n_util::GetStringUTF16(
+      IDS_PASSWORD_MANAGER_ACCESSORY_USE_OTHER_USERNAME);
+}
+
 base::string16 manage_passwords_str() {
   return l10n_util::GetStringUTF16(
       IDS_PASSWORD_MANAGER_ACCESSORY_ALL_PASSWORDS_LINK);
@@ -648,6 +653,25 @@ TEST_F(PasswordAccessoryControllerTest, AddsShowOtherPasswordsIfEnabled) {
 
   controller()->RefreshSuggestionsForField(
       FocusedFieldType::kFillablePasswordField,
+      /*is_manual_generation_available=*/false);
+}
+
+TEST_F(PasswordAccessoryControllerTest, AddsShowOtherUsername) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      password_manager::features::kFillingPasswordsFromAnyOrigin);
+  AccessorySheetData::Builder data_builder(AccessoryTabType::PASSWORDS,
+                                           passwords_empty_str(kExampleDomain));
+  data_builder
+      .AppendFooterCommand(show_other_username_str(),
+                           autofill::AccessoryAction::USE_OTHER_PASSWORD)
+      .AppendFooterCommand(manage_passwords_str(),
+                           autofill::AccessoryAction::MANAGE_PASSWORDS);
+  EXPECT_CALL(mock_manual_filling_controller_,
+              RefreshSuggestions(std::move(data_builder).Build()));
+
+  controller()->RefreshSuggestionsForField(
+      FocusedFieldType::kFillableUsernameField,
       /*is_manual_generation_available=*/false);
 }
 

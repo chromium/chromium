@@ -273,13 +273,16 @@ void PasswordAccessoryControllerImpl::RefreshSuggestionsForField(
 
   if (base::FeatureList::IsEnabled(
           password_manager::features::kFillingPasswordsFromAnyOrigin)) {
-    // TODO(crbug.com/1104132): Disable the feature in insecure websites and on
-    // cross-origin iframes (https://crbug.com/1117015).
-    base::string16 use_other_password_title = l10n_util::GetStringUTF16(
-        IDS_PASSWORD_MANAGER_ACCESSORY_USE_OTHER_PASSWORD);
-    footer_commands_to_add.push_back(
-        FooterCommand(use_other_password_title,
-                      autofill::AccessoryAction::USE_OTHER_PASSWORD));
+    // TODO(crbug.com/1104132): Disable the feature in insecure websites.
+    base::string16 button_title =
+        is_password_field
+            ? l10n_util::GetStringUTF16(
+                  IDS_PASSWORD_MANAGER_ACCESSORY_USE_OTHER_PASSWORD)
+            : l10n_util::GetStringUTF16(
+                  IDS_PASSWORD_MANAGER_ACCESSORY_USE_OTHER_USERNAME);
+
+    footer_commands_to_add.push_back(FooterCommand(
+        button_title, autofill::AccessoryAction::USE_OTHER_PASSWORD));
   }
 
   if (is_password_field && is_manual_generation_available) {

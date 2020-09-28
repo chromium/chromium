@@ -74,7 +74,12 @@ class AllPasswordsBottomSheetMediator implements ModalDialogProperties.Controlle
     }
 
     void warnAndShow() {
-        mModalDialogManager.showDialog(mDialogModel, ModalDialogManager.ModalDialogType.APP);
+        // Shows the warning dialog only if the user is about to fill a password field.
+        if (mIsPasswordField) {
+            mModalDialogManager.showDialog(mDialogModel, ModalDialogManager.ModalDialogType.APP);
+        } else {
+            showCredentials();
+        }
     }
 
     private void showCredentials() {
