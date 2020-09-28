@@ -106,22 +106,61 @@ def _ParsePublicMethodsSignatureTypes(clazz):
   types = set()
   for method in clazz.methods:
     if 'public' in method.modifiers:
-      types.update([p.type.name for p in method.parameters])
-      # If return type is void return_type will be none.
-      if method.return_type:
-        types.add(method.return_type.name)
+      for p in method.parameters:
+        types.update(_GetNames(p.type))
+      types.update(_GetNames(method.return_type))
   return types
+
+
+def _GetNames(type_node):
+  # Void methods have None as its return_type, taking care of this here makes
+  # calling code more readable.
+  if type_node is None:
+    return []
+  if isinstance(type_node, javalang.tree.ReferenceType):
+    # TODO: Support sub_type if someone wants to use it.
+    names = [type_node.name]
+    if type_node.arguments:
+      for arg in type_node.arguments:
+        names.extend(_GetNames(arg))
+    return names
+  if isinstance(type_node, javalang.tree.TypeArgument):
+    # TODO: Support pattern_type if someone wants to use it.
+    return _GetNames(type_node.type)
+  if isinstance(type_node, javalang.tree.BasicType):
+    # TODO: Support dimensions if someone wants to use it.
+    return [type_node.name]
+  assert False, 'Unknown type_node={}'.format(type_node)
+
+
+def _FormatType(type_node):
+  if type_node is None:
+    return 'void'
+  if isinstance(type_node, javalang.tree.ReferenceType):
+    # TODO: Support sub_type if someone wants to use it.
+    if not type_node.arguments:
+      return type_node.name
+    formatted_args = (_FormatType(arg) for arg in type_node.arguments)
+    return '{name}<{arguments}>'.format(
+      name=type_node.name, arguments=','.join(formatted_args))
+  if isinstance(type_node, javalang.tree.TypeArgument):
+    # TODO: Support pattern_type if someone wants to use it.
+    return _FormatType(type_node.type)
+  if isinstance(type_node, javalang.tree.BasicType):
+    # TODO: Support dimensions if someone wants to use it.
+    return type_node.name
+  assert False, 'Type node {node} cannot be formatted.'.format(node=type_node)
 
 
 def _FormatMethod(method):
   params = []
   for param in method.parameters:
     param_dict = {
-        'TYPE': param.type.name,
+        'TYPE': _FormatType(param.type),
         'NAME': param.name,
     }
     params.append(_PARAM_TEMPLATE.format(**param_dict))
-  return_type = method.return_type.name if method.return_type else 'void'
+  return_type = _FormatType(method.return_type)
   method_dict = {
       'MODIFIERS': ' '.join(method.modifiers),
       'RETURN_TYPE': return_type,
