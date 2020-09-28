@@ -18,6 +18,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
+#include "ui/base/class_property.h"
 #include "ui/events/event_target.h"
 #include "ui/events/event_target_iterator.h"
 #include "ui/gfx/geometry/rect.h"
@@ -91,6 +92,10 @@ T MaybeReverse(const T& list, FlexAllocationOrder order) {
 }  // anonymous namespace
 
 // Private implementation ------------------------------------------------------
+
+// These definitions are required due to the C++ spec.
+constexpr LayoutAlignment FlexLayout::kDefaultMainAxisAlignment;
+constexpr LayoutAlignment FlexLayout::kDefaultCrossAxisAlignment;
 
 // Calculates and maintains 1D spacing between a sequence of child views.
 class FlexLayout::ChildViewSpacing {
@@ -303,7 +308,11 @@ void FlexLayout::PropertyHandler::AfterPropertyChange(const void* key,
 // FlexLayout
 // -------------------------------------------------------------------
 
-FlexLayout::FlexLayout() = default;
+FlexLayout::FlexLayout() {
+  // Ensure this property is always set and is never null.
+  SetDefault(kCrossAxisAlignmentKey, kDefaultCrossAxisAlignment);
+}
+
 FlexLayout::~FlexLayout() = default;
 
 FlexLayout& FlexLayout::SetOrientation(LayoutOrientation orientation) {
@@ -344,11 +353,7 @@ FlexLayout& FlexLayout::SetMainAxisAlignment(
 
 FlexLayout& FlexLayout::SetCrossAxisAlignment(
     LayoutAlignment cross_axis_alignment) {
-  if (cross_axis_alignment_ != cross_axis_alignment) {
-    cross_axis_alignment_ = cross_axis_alignment;
-    InvalidateHost(true);
-  }
-  return *this;
+  return SetDefault(kCrossAxisAlignmentKey, cross_axis_alignment);
 }
 
 FlexLayout& FlexLayout::SetInteriorMargin(const gfx::Insets& interior_margin) {
@@ -485,7 +490,9 @@ NormalizedSize FlexLayout::GetPreferredSizeForRule(
   // vertical layouts. (We don't do this in horizontal layouts for aesthetic
   // reasons.)
   if (orientation() == LayoutOrientation::kVertical) {
-    if (cross_axis_alignment() == LayoutAlignment::kStretch)
+    const LayoutAlignment cross_align =
+        GetViewProperty(child, layout_defaults_, kCrossAxisAlignmentKey);
+    if (cross_align == LayoutAlignment::kStretch)
       return stretch_size;
     size.set_main(std::max(size.main(), stretch_size.main()));
   }
@@ -784,7 +791,10 @@ void FlexLayout::UpdateLayoutFromChildren(
     const int starting_cross_size = std::min(flex_child.current_size.cross(),
                                              flex_child.preferred_size.cross());
     flex_child.actual_bounds.set_size_cross(starting_cross_size);
-    flex_child.actual_bounds.AlignCross(cross_span, cross_axis_alignment(),
+    const LayoutAlignment cross_align =
+        GetViewProperty(data.layout.child_layouts[i].child_view,
+                        layout_defaults_, kCrossAxisAlignmentKey);
+    flex_child.actual_bounds.AlignCross(cross_span, cross_align,
                                         cross_spacings[i]);
   }
 }

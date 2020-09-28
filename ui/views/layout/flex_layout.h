@@ -20,6 +20,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/layout_manager_base.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/views_export.h"
 
 namespace views {
@@ -80,6 +81,8 @@ class VIEWS_EXPORT FlexLayout : public LayoutManagerBase {
   // layout.SetMainAxisAlignment()
   //       .SetCrossAxisAlignment()
   //       .SetDefaultFlex(...);
+  // Note that cross-axis alignment can be overridden per-child using:
+  //   child->SetProperty(kCrossAxisAlignmentKey, <value>);
   FlexLayout& SetOrientation(LayoutOrientation orientation);
   FlexLayout& SetMainAxisAlignment(LayoutAlignment main_axis_alignment);
   FlexLayout& SetCrossAxisAlignment(LayoutAlignment cross_axis_alignment);
@@ -94,7 +97,9 @@ class VIEWS_EXPORT FlexLayout : public LayoutManagerBase {
   LayoutOrientation orientation() const { return orientation_; }
   bool collapse_margins() const { return collapse_margins_; }
   LayoutAlignment main_axis_alignment() const { return main_axis_alignment_; }
-  LayoutAlignment cross_axis_alignment() const { return cross_axis_alignment_; }
+  LayoutAlignment cross_axis_alignment() const {
+    return *GetDefault(kCrossAxisAlignmentKey);
+  }
   const gfx::Insets& interior_margin() const { return interior_margin_; }
   int minimum_cross_axis_size() const { return minimum_cross_axis_size_; }
   bool include_host_insets_in_layout() const {
@@ -153,6 +158,14 @@ class VIEWS_EXPORT FlexLayout : public LayoutManagerBase {
   // to the indices of child views within that order that can flex.
   // See FlexSpecification::order().
   using FlexOrderToViewIndexMap = std::map<int, ChildIndices>;
+
+  // Alignment used when the main-axis alignment is not specified.
+  static constexpr LayoutAlignment kDefaultMainAxisAlignment =
+      LayoutAlignment::kStart;
+
+  // Layout used when the cross-axis alignment is not specified.
+  static constexpr LayoutAlignment kDefaultCrossAxisAlignment =
+      LayoutAlignment::kStretch;
 
   // Returns the preferred size for a given |rule| and |child| given unbounded
   // space, with the caveat that for vertical layouts the horizontal axis is
@@ -309,17 +322,8 @@ class VIEWS_EXPORT FlexLayout : public LayoutManagerBase {
   // if the property is not set on a child view being laid out (e.g.
   // kMarginsKey).
   template <class T>
-  T* GetDefault(const ui::ClassProperty<T>* key) const {
+  T* GetDefault(const ui::ClassProperty<T*>* key) const {
     return layout_defaults_.GetProperty(key);
-  }
-
-  // Clears the default value for a particular layout property, which will be
-  // used if the property is not set on a child view being laid out (e.g.
-  // kMarginsKey).
-  template <class T>
-  FlexLayout& ClearDefault(const ui::ClassProperty<T>* key) {
-    layout_defaults_.ClearProperty(key);
-    return *this;
   }
 
   static gfx::Size DefaultFlexRuleImpl(const FlexLayout* flex_layout,
@@ -335,10 +339,7 @@ class VIEWS_EXPORT FlexLayout : public LayoutManagerBase {
   gfx::Insets interior_margin_;
 
   // The alignment of children in the main axis. This is start by default.
-  LayoutAlignment main_axis_alignment_ = LayoutAlignment::kStart;
-
-  // The alignment of children in the cross axis. This is stretch by default.
-  LayoutAlignment cross_axis_alignment_ = LayoutAlignment::kStretch;
+  LayoutAlignment main_axis_alignment_ = kDefaultMainAxisAlignment;
 
   // The minimum cross axis size for the layout.
   int minimum_cross_axis_size_ = 0;

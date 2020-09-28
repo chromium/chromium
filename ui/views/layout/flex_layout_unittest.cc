@@ -2865,6 +2865,148 @@ TEST_F(FlexLayoutTest, Advanced_PreferredSizeZero_AllOrNothing) {
   EXPECT_EQ(expected, GetChildBounds());
 }
 
+// Individual cross-axis alignment test ----------------------------------------
+
+TEST_F(FlexLayoutTest, IndividualCrossAxisAlignmentInHorizontalLayoutTest) {
+  layout_->SetOrientation(LayoutOrientation::kHorizontal)
+      .SetDefault(kMarginsKey, gfx::Insets(5));
+  View* const v1 = AddChild(gfx::Size(10, 10));
+  v1->SetProperty(kCrossAxisAlignmentKey, LayoutAlignment::kStart);
+  View* const v2 = AddChild(gfx::Size(10, 10));
+  v2->SetProperty(kCrossAxisAlignmentKey, LayoutAlignment::kCenter);
+  View* const v3 = AddChild(gfx::Size(10, 10));
+  v3->SetProperty(kCrossAxisAlignmentKey, LayoutAlignment::kEnd);
+  View* const v4 = AddChild(gfx::Size(10, 10));
+  v4->SetProperty(kCrossAxisAlignmentKey, LayoutAlignment::kStretch);
+  View* const v5 = AddChild(gfx::Size(10, 10));
+  // v5 uses default
+
+  host_->SizeToPreferredSize();
+  EXPECT_EQ(5, v1->y());
+  EXPECT_EQ(10, v1->height());
+  EXPECT_EQ(5, v2->y());
+  EXPECT_EQ(10, v2->height());
+  EXPECT_EQ(5, v3->y());
+  EXPECT_EQ(10, v3->height());
+  EXPECT_EQ(5, v4->y());
+  EXPECT_EQ(10, v4->height());
+  EXPECT_EQ(5, v5->y());
+  EXPECT_EQ(10, v5->height());
+
+  // Next try a larger view.
+  host_->SetSize(gfx::Size(100, 30));
+  EXPECT_EQ(5, v1->y());
+  EXPECT_EQ(10, v1->height());
+  EXPECT_EQ(10, v2->y());
+  EXPECT_EQ(10, v2->height());
+  EXPECT_EQ(15, v3->y());
+  EXPECT_EQ(10, v3->height());
+  EXPECT_EQ(5, v4->y());
+  EXPECT_EQ(20, v4->height());
+  EXPECT_EQ(5, v5->y());
+  EXPECT_EQ(20, v5->height());
+
+  // Move to a smaller view.
+  host_->SetSize(gfx::Size(100, 12));
+  EXPECT_EQ(5, v1->y());
+  EXPECT_EQ(10, v1->height());
+  EXPECT_EQ(1, v2->y());
+  EXPECT_EQ(10, v2->height());
+  EXPECT_EQ(-3, v3->y());
+  EXPECT_EQ(10, v3->height());
+  EXPECT_EQ(5, v4->y());
+  EXPECT_EQ(2, v4->height());
+  EXPECT_EQ(5, v5->y());
+  EXPECT_EQ(2, v5->height());
+
+  // Change default cross-axis alignment.
+  layout_->SetCrossAxisAlignment(LayoutAlignment::kCenter);
+  host_->Layout();
+  // v1-v4 should remain unchanged.
+  EXPECT_EQ(5, v1->y());
+  EXPECT_EQ(10, v1->height());
+  EXPECT_EQ(1, v2->y());
+  EXPECT_EQ(10, v2->height());
+  EXPECT_EQ(-3, v3->y());
+  EXPECT_EQ(10, v3->height());
+  EXPECT_EQ(5, v4->y());
+  EXPECT_EQ(2, v4->height());
+  // Since v5 doesn't have its own alignment set, it should pick up the new
+  // default.
+  EXPECT_EQ(1, v5->y());
+  EXPECT_EQ(10, v5->height());
+}
+
+TEST_F(FlexLayoutTest, IndividualCrossAxisAlignmentInVerticalLayoutTest) {
+  layout_->SetOrientation(LayoutOrientation::kVertical)
+      .SetDefault(kMarginsKey, gfx::Insets(5));
+  View* const v1 = AddChild(gfx::Size(10, 10));
+  v1->SetProperty(kCrossAxisAlignmentKey, LayoutAlignment::kStart);
+  View* const v2 = AddChild(gfx::Size(10, 10));
+  v2->SetProperty(kCrossAxisAlignmentKey, LayoutAlignment::kCenter);
+  View* const v3 = AddChild(gfx::Size(10, 10));
+  v3->SetProperty(kCrossAxisAlignmentKey, LayoutAlignment::kEnd);
+  View* const v4 = AddChild(gfx::Size(10, 10));
+  v4->SetProperty(kCrossAxisAlignmentKey, LayoutAlignment::kStretch);
+  View* const v5 = AddChild(gfx::Size(10, 10));
+  // v5 uses default
+
+  host_->SizeToPreferredSize();
+  EXPECT_EQ(5, v1->x());
+  EXPECT_EQ(10, v1->width());
+  EXPECT_EQ(5, v2->x());
+  EXPECT_EQ(10, v2->width());
+  EXPECT_EQ(5, v3->x());
+  EXPECT_EQ(10, v3->width());
+  EXPECT_EQ(5, v4->x());
+  EXPECT_EQ(10, v4->width());
+  EXPECT_EQ(5, v5->x());
+  EXPECT_EQ(10, v5->width());
+
+  // Next try a larger view.
+  host_->SetSize(gfx::Size(30, 100));
+  EXPECT_EQ(5, v1->x());
+  EXPECT_EQ(10, v1->width());
+  EXPECT_EQ(10, v2->x());
+  EXPECT_EQ(10, v2->width());
+  EXPECT_EQ(15, v3->x());
+  EXPECT_EQ(10, v3->width());
+  EXPECT_EQ(5, v4->x());
+  EXPECT_EQ(20, v4->width());
+  EXPECT_EQ(5, v5->x());
+  EXPECT_EQ(20, v5->width());
+
+  // Move to a smaller view.
+  host_->SetSize(gfx::Size(12, 100));
+  EXPECT_EQ(5, v1->x());
+  EXPECT_EQ(10, v1->width());
+  EXPECT_EQ(1, v2->x());
+  EXPECT_EQ(10, v2->width());
+  EXPECT_EQ(-3, v3->x());
+  EXPECT_EQ(10, v3->width());
+  EXPECT_EQ(5, v4->x());
+  EXPECT_EQ(2, v4->width());
+  EXPECT_EQ(5, v5->x());
+  EXPECT_EQ(2, v5->width());
+
+  // Change default cross-axis alignment.
+  layout_->SetCrossAxisAlignment(LayoutAlignment::kCenter);
+  host_->Layout();
+  // v1-v4 should remain unchanged.
+  EXPECT_EQ(5, v1->x());
+  EXPECT_EQ(10, v1->width());
+  EXPECT_EQ(1, v2->x());
+  EXPECT_EQ(10, v2->width());
+  EXPECT_EQ(-3, v3->x());
+  EXPECT_EQ(10, v3->width());
+  EXPECT_EQ(5, v4->x());
+  EXPECT_EQ(2, v4->width());
+  // Since v5 doesn't have its own alignment set, it should pick up the new
+  // default.
+  EXPECT_EQ(1, v5->x());
+  EXPECT_EQ(10, v5->width());
+}
+
 // Cross-axis Fit Tests --------------------------------------------------------
 
 // Tests for cross-axis alignment that checks three different conditions:

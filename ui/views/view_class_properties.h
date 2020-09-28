@@ -6,6 +6,7 @@
 #define UI_VIEWS_VIEW_CLASS_PROPERTIES_H_
 
 #include "ui/base/class_property.h"
+#include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/views_export.h"
 
 namespace gfx {
@@ -54,6 +55,9 @@ VIEWS_EXPORT extern const ui::ClassProperty<HighlightPathGenerator*>* const
 VIEWS_EXPORT extern const ui::ClassProperty<FlexSpecification*>* const
     kFlexBehaviorKey;
 
+VIEWS_EXPORT extern const ui::ClassProperty<LayoutAlignment*>* const
+    kCrossAxisAlignmentKey;
+
 }  // namespace views
 
 // Declaring the template specialization here to make sure that the
@@ -67,6 +71,7 @@ DECLARE_EXPORTED_UI_CLASS_PROPERTY_TYPE(VIEWS_EXPORT,
 DECLARE_EXPORTED_UI_CLASS_PROPERTY_TYPE(VIEWS_EXPORT,
                                         views::HighlightPathGenerator*)
 DECLARE_EXPORTED_UI_CLASS_PROPERTY_TYPE(VIEWS_EXPORT, views::FlexSpecification*)
+DECLARE_EXPORTED_UI_CLASS_PROPERTY_TYPE(VIEWS_EXPORT, views::LayoutAlignment*)
 DECLARE_EXPORTED_UI_CLASS_PROPERTY_TYPE(VIEWS_EXPORT, bool)
 
 #endif  // UI_VIEWS_VIEW_CLASS_PROPERTIES_H_
