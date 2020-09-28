@@ -9,8 +9,8 @@
 
 namespace switches {
 
-// If enabled, interested data types will be sent to the Sync Server as part of
-// DeviceInfo.
+// If enabled, interested data types, excluding Wallet and Offer, will be sent
+// to the Sync Server as part of DeviceInfo.
 extern const base::Feature kSyncSendInterestedDataTypes;
 
 // If enabled, the device will register with FCM and listen to new
@@ -18,6 +18,12 @@ extern const base::Feature kSyncSendInterestedDataTypes;
 // the server that device listens to new invalidations.
 // SyncSendInterestedDataTypes must be enabled for this to take effect.
 extern const base::Feature kUseSyncInvalidations;
+
+// If enabled, types related to Wallet and Offer will be included in interested
+// data types, and the device will listen to new invalidations for those types
+// (if they are enabled).
+// UseSyncInvalidations must be enabled for this to take effect.
+extern const base::Feature kUseSyncInvalidationsForWalletAndOffer;
 
 }  // namespace switches
 

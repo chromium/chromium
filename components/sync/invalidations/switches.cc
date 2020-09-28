@@ -12,4 +12,7 @@ const base::Feature kSyncSendInterestedDataTypes = {
 const base::Feature kUseSyncInvalidations = {"UseSyncInvalidations",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kUseSyncInvalidationsForWalletAndOffer = {
+    "UseSyncInvalidationsForWalletAndOffer", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace switches

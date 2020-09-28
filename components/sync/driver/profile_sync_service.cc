@@ -46,6 +46,7 @@
 #include "components/sync/engine/net/http_post_provider_factory.h"
 #include "components/sync/engine/polling_constants.h"
 #include "components/sync/engine/sync_encryption_handler.h"
+#include "components/sync/invalidations/switches.h"
 #include "components/sync/invalidations/sync_invalidations_service.h"
 #include "components/sync/model/sync_error.h"
 #include "components/version_info/version_info_values.h"
@@ -1462,6 +1463,11 @@ void ProfileSyncService::UpdateDataTypesForInvalidations() {
   ModelTypeSet types = Difference(GetDataTypesToConfigure(), CommitOnlyTypes());
   if (!sessions_invalidations_enabled_) {
     types.Remove(SESSIONS);
+  }
+  if (!(base::FeatureList::IsEnabled(switches::kUseSyncInvalidations) &&
+        base::FeatureList::IsEnabled(
+            switches::kUseSyncInvalidationsForWalletAndOffer))) {
+    types.RemoveAll({AUTOFILL_WALLET_DATA, AUTOFILL_WALLET_OFFER});
   }
   invalidations_service->SetInterestedDataTypes(
       types, base::BindRepeating(&ProfileSyncService::TriggerRefresh,
