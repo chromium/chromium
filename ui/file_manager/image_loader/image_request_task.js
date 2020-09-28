@@ -336,7 +336,9 @@ ImageRequestTask.prototype.downloadOriginal_ = function(onSuccess, onFailure) {
             function(data) {
               this.request_.orientation =
                   ImageOrientation.fromExifOrientation(data.orientation);
-              this.request_.colorSpace = data.colorSpace;
+              const isAdobeRgb = data.colorSpace === 'adobeRgb';
+              this.request_.colorSpace =
+                  isAdobeRgb ? ColorSpace.ADOBE_RGB : ColorSpace.SRGB;
               this.ifd_ = data.ifd;
               this.contentType_ = data.mimeType;
               const blob = new Blob([data.thumbnail], {type: data.mimeType});

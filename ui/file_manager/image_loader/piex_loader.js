@@ -64,7 +64,7 @@ function piexModuleFailed() {
  *  thumbnail: !ArrayBuffer,
  *  mimeType: (string|undefined),
  *  orientation: number,
- *  colorSpace: ColorSpace,
+ *  colorSpace: string,
  *  ifd: ?string
  * }}
  */
@@ -96,7 +96,8 @@ function PiexLoaderResponse(data) {
   this.orientation = data.orientation;
 
   /**
-   * @public {ColorSpace}
+   * JEITA EXIF image color space: 'sRgb' or 'adobeRgb'.
+   * @public {string}
    * @const
    */
   this.colorSpace = data.colorSpace;
@@ -179,7 +180,7 @@ function readSourceData(source) {
  *
  * @typedef {{
  *  format:number,
- *  colorSpace:ColorSpace,
+ *  colorSpace:string,
  *  orientation:number,
  *  width:?number,
  *  height:?number,
@@ -298,7 +299,7 @@ class ImageBuffer {
     if (!thumbnail) {
       return {
         thumbnail: new ArrayBuffer(0),
-        colorSpace: ColorSpace.SRGB,
+        colorSpace: 'sRgb',
         orientation: 1,
         ifd: null,
       };
@@ -338,7 +339,7 @@ class ImageBuffer {
     if (!thumbnail || thumbnail.format !== 1) {
       return {
         thumbnail: new ArrayBuffer(0),
-        colorSpace: ColorSpace.SRGB,
+        colorSpace: 'sRgb',
         orientation: 1,
         ifd: null,
       };
