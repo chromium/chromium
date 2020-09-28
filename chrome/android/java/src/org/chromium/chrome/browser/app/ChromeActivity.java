@@ -56,12 +56,12 @@ import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.ChromeActivitySessionTracker;
 import org.chromium.chrome.browser.ChromeApplication;
-import org.chromium.chrome.browser.ChromeVersionInfo;
 import org.chromium.chrome.browser.ChromeWindow;
 import org.chromium.chrome.browser.DeferredStartupHandler;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.IntentHandler.IntentHandlerDelegate;
 import org.chromium.chrome.browser.IntentHandler.TabOpenType;
+import org.chromium.chrome.browser.PlayServicesVersionInfo;
 import org.chromium.chrome.browser.TabbedModeTabDelegateFactory;
 import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.accessibility.FontSizePrefs;
@@ -1081,7 +1081,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             }
 
             recordDisplayDimensions();
-            int playServicesVersion = ChromeVersionInfo.getPlayServicesApkVersionNumber(this);
+            int playServicesVersion = PlayServicesVersionInfo.getApkVersionNumber(this);
             RecordHistogram.recordBooleanHistogram(
                     "Android.PlayServices.Installed", playServicesVersion > 0);
             RecordHistogram.recordSparseHistogram(
