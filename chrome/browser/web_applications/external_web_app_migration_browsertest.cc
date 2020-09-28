@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/files/file_path.h"
+#include "base/json/json_reader.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind_test_util.h"
@@ -176,9 +177,9 @@ class ExternalWebAppMigrationBrowserTest : public InProcessBrowserTest {
           run_loop.Quit();
         });
 
-    std::vector<std::string> configs;
+    std::vector<base::Value> app_configs;
     if (pass_config) {
-      std::string external_web_app_config = base::ReplaceStringPlaceholders(
+      std::string app_config_string = base::ReplaceStringPlaceholders(
           R"({
             "app_url": "$1",
             "launch_container": "window",
@@ -187,15 +188,17 @@ class ExternalWebAppMigrationBrowserTest : public InProcessBrowserTest {
             "uninstall_and_replace": ["$3"]
           })",
           {GetWebAppUrl().spec(), kMigrationFlag, kExtensionId}, nullptr);
-      configs.push_back(std::move(external_web_app_config));
+      app_configs.push_back(*base::JSONReader::Read(app_config_string));
     }
+    ExternalWebAppManager::SetConfigsForTesting(&app_configs);
 
     WebAppProvider::Get(profile())
         ->external_web_app_manager_for_testing()
-        .SynchronizeAppsForTesting(std::make_unique<FileUtilsWrapper>(),
-                                   configs, std::move(callback));
+        .LoadAndSynchronizeForTesting(std::move(callback));
 
     run_loop.Run();
+
+    ExternalWebAppManager::SetConfigsForTesting(nullptr);
   }
 
   bool IsWebAppInstalled() {
@@ -444,15 +447,12 @@ IN_PROC_BROWSER_TEST_F(ExternalWebAppMigrationBrowserTest,
     EXPECT_FALSE(IsWebAppInstalled());
     EXPECT_TRUE(IsExtensionAppInstalled());
 
-    // TODO(crbug.com/1128801): Use the normal LoadInstallOptions() code path
-    // such that metrics are recorded.
-    // histograms.ExpectUniqueSample(
-    //     ExternalWebAppManager::kHistogramEnabledCount,
-    //     0, 1);
-    // histograms.ExpectUniqueSample(
-    //     ExternalWebAppManager::kHistogramDisabledCount, 1, 1);
-    // histograms.ExpectUniqueSample(
-    //     ExternalWebAppManager::kHistogramConfigErrorCount, 0, 1);
+    histograms.ExpectUniqueSample(ExternalWebAppManager::kHistogramEnabledCount,
+                                  0, 1);
+    histograms.ExpectUniqueSample(
+        ExternalWebAppManager::kHistogramDisabledCount, 1, 1);
+    histograms.ExpectUniqueSample(
+        ExternalWebAppManager::kHistogramConfigErrorCount, 0, 1);
   }
 
   // Migrate extension app to web app.
@@ -481,14 +481,12 @@ IN_PROC_BROWSER_TEST_F(ExternalWebAppMigrationBrowserTest,
       EXPECT_EQ(uninstalled_app->id(), kExtensionId);
       EXPECT_FALSE(IsExtensionAppInstalled());
 
-      // TODO(crbug.com/1128801): Use the normal LoadInstallOptions() code path
-      // such that metrics are recorded.
-      // histograms.ExpectUniqueSample(
-      //     ExternalWebAppManager::kHistogramEnabledCount, 1, 1);
-      // histograms.ExpectUniqueSample(
-      //     ExternalWebAppManager::kHistogramDisabledCount, 0, 1);
-      // histograms.ExpectUniqueSample(
-      //     ExternalWebAppManager::kHistogramConfigErrorCount, 0, 1);
+      histograms.ExpectUniqueSample(
+          ExternalWebAppManager::kHistogramEnabledCount, 1, 1);
+      histograms.ExpectUniqueSample(
+          ExternalWebAppManager::kHistogramDisabledCount, 0, 1);
+      histograms.ExpectUniqueSample(
+          ExternalWebAppManager::kHistogramConfigErrorCount, 0, 1);
     }
   }
 }

@@ -53,29 +53,27 @@ const base::FilePath::CharType kWebAppsSubDirectory[] =
 #endif
 
 bool g_skip_startup_for_testing_ = false;
+const base::FilePath* g_config_dir_for_testing = nullptr;
+const std::vector<base::Value>* g_configs_for_testing = nullptr;
+const FileUtilsWrapper* g_file_utils_for_testing = nullptr;
 
-std::vector<ExternalInstallOptions> LoadInstallOptionsBlocking(
-    std::unique_ptr<FileUtilsWrapper> file_utils,
-    const base::FilePath& dir,
-    const std::string& user_type) {
-  std::vector<ExternalInstallOptions> install_options_list;
-  if (!base::FeatureList::IsEnabled(features::kDefaultWebAppInstallation))
-    return install_options_list;
+struct LoadedConfig {
+  base::Value contents;
+  base::FilePath file;
+};
 
-  int disabled_count = 0;
+struct LoadedConfigs {
+  std::vector<LoadedConfig> configs;
   int error_count = 0;
+};
 
-  // Load hard coded apps.
-  PreinstalledWebApps preinstalled_web_apps = GetPreinstalledWebApps();
-  for (ExternalInstallOptions& options : preinstalled_web_apps.options)
-    install_options_list.push_back(std::move(options));
-  disabled_count += preinstalled_web_apps.disabled_count;
-
-  // Load JSON config apps.
+LoadedConfigs LoadConfigsBlocking(const base::FilePath& config_dir) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
+
+  LoadedConfigs result;
   base::FilePath::StringType extension(FILE_PATH_LITERAL(".json"));
-  base::FileEnumerator json_files(dir,
+  base::FileEnumerator json_files(config_dir,
                                   false,  // Recursive.
                                   base::FileEnumerator::FILES);
   for (base::FilePath file = json_files.Next(); !file.empty();
@@ -90,91 +88,49 @@ std::vector<ExternalInstallOptions> LoadInstallOptionsBlocking(
         deserializer.Deserialize(nullptr, &error_msg);
     if (!app_config) {
       LOG(ERROR) << file.value() << " was not valid JSON: " << error_msg;
-      ++error_count;
+      ++result.error_count;
       continue;
     }
+    result.configs.push_back(
+        {.contents = std::move(*app_config), .file = file});
+  }
+  return result;
+}
 
-    ExternalConfigParseResult result =
-        ParseConfig(*file_utils, dir, file, user_type, *app_config);
-    switch (result.type) {
+struct ParsedConfigs {
+  std::vector<ExternalInstallOptions> options_list;
+  int disabled_count = 0;
+  int error_count = 0;
+};
+
+ParsedConfigs ParseConfigsBlocking(const base::FilePath& config_dir,
+                                   const std::string& user_type,
+                                   LoadedConfigs loaded_configs) {
+  ParsedConfigs result;
+  result.error_count = loaded_configs.error_count;
+
+  auto file_utils = g_file_utils_for_testing
+                        ? g_file_utils_for_testing->Clone()
+                        : std::make_unique<FileUtilsWrapper>();
+
+  for (const LoadedConfig& loaded_config : loaded_configs.configs) {
+    ExternalConfigParseResult parse_result =
+        ParseConfig(*file_utils, config_dir, loaded_config.file, user_type,
+                    loaded_config.contents);
+    switch (parse_result.type) {
       case ExternalConfigParseResult::kEnabled:
-        install_options_list.push_back(std::move(result.options.value()));
+        result.options_list.push_back(std::move(parse_result.options.value()));
         break;
       case ExternalConfigParseResult::kDisabled:
-        ++disabled_count;
+        ++result.disabled_count;
         break;
       case ExternalConfigParseResult::kError:
-        ++error_count;
+        ++result.error_count;
         break;
     }
   }
 
-  base::UmaHistogramCounts100(ExternalWebAppManager::kHistogramEnabledCount,
-                              install_options_list.size());
-  base::UmaHistogramCounts100(ExternalWebAppManager::kHistogramDisabledCount,
-                              disabled_count);
-  base::UmaHistogramCounts100(ExternalWebAppManager::kHistogramConfigErrorCount,
-                              error_count);
-
-  return install_options_list;
-}
-
-base::FilePath DetermineLoadDir(const Profile* profile) {
-  base::FilePath dir;
-#if defined(OS_CHROMEOS)
-  // As of mid 2018, only Chrome OS has default/external web apps, and
-  // chrome::DIR_STANDALONE_EXTERNAL_EXTENSIONS is only defined for OS_LINUX,
-  // which includes OS_CHROMEOS.
-
-  if (chromeos::ProfileHelper::IsPrimaryProfile(profile)) {
-    // For manual testing, you can change s/STANDALONE/USER/, as writing to
-    // "$HOME/.config/chromium/test-user/.config/chromium/External
-    // Extensions/web_apps" does not require root ACLs, unlike
-    // "/usr/share/chromium/extensions/web_apps".
-    if (!base::PathService::Get(chrome::DIR_STANDALONE_EXTERNAL_EXTENSIONS,
-                                &dir)) {
-      LOG(ERROR) << "ExternalWebAppManager::LoadInstallOptions: "
-                    "base::PathService::Get failed";
-    } else {
-      dir = dir.Append(kWebAppsSubDirectory);
-    }
-  }
-
-#endif
-  return dir;
-}
-
-void OnExternalWebAppsSynchronized(
-    std::map<GURL, InstallResultCode> install_results,
-    std::map<GURL, bool> uninstall_results) {
-  RecordExternalAppInstallResultCode("Webapp.InstallResult.Default",
-                                     install_results);
-}
-
-std::vector<ExternalInstallOptions> SynchronizeAppsBlockingForTesting(
-    std::unique_ptr<FileUtilsWrapper> file_utils,
-    std::vector<std::string> app_configs,
-    const std::string& user_type) {
-  std::vector<ExternalInstallOptions> install_options_list;
-
-  for (const std::string& app_config_string : app_configs) {
-    base::Optional<base::Value> app_config =
-        base::JSONReader::Read(app_config_string);
-    DCHECK(app_config);
-
-    ExternalConfigParseResult result =
-        ParseConfig(*file_utils, base::FilePath(FILE_PATH_LITERAL("test_dir")),
-                    base::FilePath(FILE_PATH_LITERAL("test_dir/test.json")),
-                    user_type, *app_config);
-    if (result.type == ExternalConfigParseResult::kEnabled)
-      install_options_list.push_back(std::move(*result.options));
-  }
-
-  // TODO(crbug.com/1128801): Dedupe this with LoadInstallOptionsBlocking().
-  for (ExternalInstallOptions& options : GetPreinstalledWebApps().options)
-    install_options_list.push_back(std::move(options));
-
-  return install_options_list;
+  return result;
 }
 
 }  // namespace
@@ -185,6 +141,25 @@ const char* ExternalWebAppManager::kHistogramDisabledCount =
     "WebApp.Preinstalled.DisabledCount";
 const char* ExternalWebAppManager::kHistogramConfigErrorCount =
     "WebApp.Preinstalled.ConfigErrorCount";
+
+void ExternalWebAppManager::SkipStartupForTesting() {
+  g_skip_startup_for_testing_ = true;
+}
+
+void ExternalWebAppManager::SetConfigDirForTesting(
+    const base::FilePath* config_dir) {
+  g_config_dir_for_testing = config_dir;
+}
+
+void ExternalWebAppManager::SetConfigsForTesting(
+    const std::vector<base::Value>* configs) {
+  g_configs_for_testing = configs;
+}
+
+void ExternalWebAppManager::SetFileUtilsForTesting(
+    const FileUtilsWrapper* file_utils) {
+  g_file_utils_for_testing = file_utils;
+}
 
 ExternalWebAppManager::ExternalWebAppManager(Profile* profile)
     : profile_(profile) {}
@@ -197,71 +172,135 @@ void ExternalWebAppManager::SetSubsystems(
 }
 
 void ExternalWebAppManager::Start() {
-  if (!g_skip_startup_for_testing_) {
-    LoadInstallOptions(base::BindOnce(
-        &ExternalWebAppManager::SynchronizeExternalInstallOptions,
-        weak_ptr_factory_.GetWeakPtr(),
-        base::BindOnce(&OnExternalWebAppsSynchronized)));
+  if (!g_skip_startup_for_testing_)
+    LoadAndSynchronize({});
+}
+
+void ExternalWebAppManager::LoadForTesting(ConsumeInstallOptions callback) {
+  Load(std::move(callback));
+}
+
+void ExternalWebAppManager::LoadAndSynchronizeForTesting(
+    SynchronizeCallback callback) {
+  LoadAndSynchronize(std::move(callback));
+}
+
+void ExternalWebAppManager::LoadAndSynchronize(SynchronizeCallback callback) {
+  Load(base::BindOnce(&ExternalWebAppManager::Synchronize,
+                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void ExternalWebAppManager::Load(ConsumeInstallOptions callback) {
+  if (!base::FeatureList::IsEnabled(features::kDefaultWebAppInstallation)) {
+    std::move(callback).Run({});
+    return;
   }
+
+  LoadConfigs(base::BindOnce(
+      &ExternalWebAppManager::ParseConfigs, weak_ptr_factory_.GetWeakPtr(),
+      base::BindOnce(&ExternalWebAppManager::PostProcessConfigs,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback))));
 }
 
-// static
-std::vector<ExternalInstallOptions>
-ExternalWebAppManager::ReloadInstallOptionsForTesting(
-    std::unique_ptr<FileUtilsWrapper> file_utils,
-    const base::FilePath& dir,
-    Profile* profile) {
-  return LoadInstallOptionsBlocking(std::move(file_utils), dir,
-                                    apps::DetermineUserType(profile));
-}
+void ExternalWebAppManager::LoadConfigs(ConsumeLoadedConfigs callback) {
+  if (g_configs_for_testing) {
+    LoadedConfigs loaded_configs;
+    for (const base::Value& config : *g_configs_for_testing) {
+      loaded_configs.configs.push_back(
+          {.contents = config.Clone(),
+           .file = base::FilePath(FILE_PATH_LITERAL("test.json"))});
+    }
+    std::move(callback).Run(std::move(loaded_configs));
+    return;
+  }
 
-void ExternalWebAppManager::LoadInstallOptions(LoadCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  // Do a two-part callback dance, across different TaskRunners.
-  //
-  // 1. Schedule LoadInstallOptionsBlocking to happen on a background thread, so
-  // that we don't block the UI thread. When that's done,
-  // base::PostTaskAndReplyWithResult will bounce us back to the originating
-  // thread (the UI thread).
-  //
-  // 2. In |callback|, forward the vector of ExternalInstallOptions on to the
-  // pending_app_manager_, which can only be called on the UI thread.
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-      base::BindOnce(
-          &LoadInstallOptionsBlocking, std::make_unique<FileUtilsWrapper>(),
-          DetermineLoadDir(profile_), apps::DetermineUserType(profile_)),
+      base::BindOnce(&LoadConfigsBlocking, GetConfigDir()),
       std::move(callback));
 }
 
-void ExternalWebAppManager::SkipStartupForTesting() {
-  g_skip_startup_for_testing_ = true;
-}
-
-void ExternalWebAppManager::SynchronizeAppsForTesting(
-    std::unique_ptr<FileUtilsWrapper> file_utils,
-    std::vector<std::string> app_configs,
-    PendingAppManager::SynchronizeCallback callback) {
+void ExternalWebAppManager::ParseConfigs(ConsumeParsedConfigs callback,
+                                         LoadedConfigs loaded_configs) {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-      base::BindOnce(&SynchronizeAppsBlockingForTesting, std::move(file_utils),
-                     std::move(app_configs), apps::DetermineUserType(profile_)),
-      base::BindOnce(&ExternalWebAppManager::SynchronizeExternalInstallOptions,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+      base::BindOnce(&ParseConfigsBlocking, GetConfigDir(),
+                     apps::DetermineUserType(profile_),
+                     std::move(loaded_configs)),
+      std::move(callback));
 }
 
-void ExternalWebAppManager::SynchronizeExternalInstallOptions(
+void ExternalWebAppManager::PostProcessConfigs(ConsumeInstallOptions callback,
+                                               ParsedConfigs parsed_configs) {
+  PreinstalledWebApps preinstalled_web_apps = GetPreinstalledWebApps();
+  for (ExternalInstallOptions& options : preinstalled_web_apps.options)
+    parsed_configs.options_list.push_back(std::move(options));
+  parsed_configs.disabled_count += preinstalled_web_apps.disabled_count;
+
+  base::UmaHistogramCounts100(ExternalWebAppManager::kHistogramEnabledCount,
+                              parsed_configs.options_list.size());
+  base::UmaHistogramCounts100(ExternalWebAppManager::kHistogramDisabledCount,
+                              parsed_configs.disabled_count);
+  base::UmaHistogramCounts100(ExternalWebAppManager::kHistogramConfigErrorCount,
+                              parsed_configs.error_count);
+
+  std::move(callback).Run(std::move(parsed_configs.options_list));
+}
+
+void ExternalWebAppManager::Synchronize(
     PendingAppManager::SynchronizeCallback callback,
     std::vector<ExternalInstallOptions> desired_apps_install_options) {
   DCHECK(pending_app_manager_);
 
   pending_app_manager_->SynchronizeInstalledApps(
       std::move(desired_apps_install_options),
-      ExternalInstallSource::kExternalDefault, std::move(callback));
+      ExternalInstallSource::kExternalDefault,
+      base::BindOnce(&ExternalWebAppManager::OnExternalWebAppsSynchronized,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void ExternalWebAppManager::OnExternalWebAppsSynchronized(
+    PendingAppManager::SynchronizeCallback callback,
+    std::map<GURL, InstallResultCode> install_results,
+    std::map<GURL, bool> uninstall_results) {
+  RecordExternalAppInstallResultCode("Webapp.InstallResult.Default",
+                                     install_results);
+  if (callback) {
+    std::move(callback).Run(std::move(install_results),
+                            std::move(uninstall_results));
+  }
+}
+
+base::FilePath ExternalWebAppManager::GetConfigDir() {
+  base::FilePath dir;
+
+#if defined(OS_CHROMEOS)
+  // As of mid 2018, only Chrome OS has default/external web apps, and
+  // chrome::DIR_STANDALONE_EXTERNAL_EXTENSIONS is only defined for OS_LINUX,
+  // which includes OS_CHROMEOS.
+  if (chromeos::ProfileHelper::IsPrimaryProfile(profile_)) {
+    if (g_config_dir_for_testing) {
+      dir = *g_config_dir_for_testing;
+    } else {
+      // For manual testing, you can change s/STANDALONE/USER/, as writing to
+      // "$HOME/.config/chromium/test-user/.config/chromium/External
+      // Extensions/web_apps" does not require root ACLs, unlike
+      // "/usr/share/chromium/extensions/web_apps".
+      if (!base::PathService::Get(chrome::DIR_STANDALONE_EXTERNAL_EXTENSIONS,
+                                  &dir)) {
+        LOG(ERROR) << "base::PathService::Get failed";
+      } else {
+        dir = dir.Append(kWebAppsSubDirectory);
+      }
+    }
+  }
+#endif
+
+  return dir;
 }
 
 }  //  namespace web_app
