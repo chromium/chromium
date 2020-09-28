@@ -154,10 +154,7 @@ PhysicalRect NGInkOverflow::SelfAndContents(Type type,
   switch (type) {
     case kNotSet:
 #if DCHECK_IS_ON()
-      if (!read_unset_as_none_ &&
-          // TODO(crbug.com/1132619): Should compute all ink overflow when
-          // NGBlockFragmentation is enabled.
-          !RuntimeEnabledFeatures::LayoutNGBlockFragmentationEnabled())
+      if (!read_unset_as_none_)
         NOTREACHED();
       FALLTHROUGH;
 #endif
