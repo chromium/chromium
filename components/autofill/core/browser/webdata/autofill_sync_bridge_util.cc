@@ -499,12 +499,6 @@ bool IsOfferSpecificsValid(const sync_pb::AutofillOfferSpecifics specifics) {
   if (!specifics.has_id())
     return false;
 
-  // A valid offer has a non-empty offer details url and the url must be valid.
-  if (!specifics.has_offer_details_url() ||
-      !GURL(specifics.offer_details_url()).is_valid()) {
-    return false;
-  }
-
   // A valid offer has at least one merchant domain.
   if (specifics.merchant_domain().size() == 0) {
     return false;

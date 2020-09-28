@@ -318,15 +318,6 @@ TEST_F(AutofillSyncBridgeUtilTest, IsOfferSpecificsValid) {
 
   SetAutofillOfferSpecificsFromOfferData(test::GetCardLinkedOfferData1(),
                                          &specifics);
-  specifics.set_offer_details_url("invalid url");
-  // Expects specifics with invalid offer_details_url to be invalid.
-  EXPECT_FALSE(IsOfferSpecificsValid(specifics));
-  specifics.clear_offer_details_url();
-  // Expects specifics without offer_details_url to be invalid.
-  EXPECT_FALSE(IsOfferSpecificsValid(specifics));
-
-  SetAutofillOfferSpecificsFromOfferData(test::GetCardLinkedOfferData1(),
-                                         &specifics);
   specifics.clear_merchant_domain();
   // Expects specifics without merchant domain to be invalid.
   EXPECT_FALSE(IsOfferSpecificsValid(specifics));
