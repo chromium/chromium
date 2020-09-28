@@ -14,6 +14,7 @@
 #include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/chromeos/input_method/assistive_window_properties.h"
+#include "chrome/browser/chromeos/input_method/input_host_helper.h"
 #include "chrome/browser/chromeos/input_method/input_method_engine.h"
 #include "chrome/browser/chromeos/input_method/native_input_method_engine.h"
 #include "chrome/browser/chromeos/login/lock/screen_locker.h"
@@ -298,6 +299,12 @@ class ImeObserverChromeOS : public ui::ImeObserver {
       input_context.should_do_learning = context.should_do_learning;
       input_context.focus_reason = input_method_private::ParseFocusReason(
           ConvertInputContextFocusReason(context));
+
+      // Populate app key for private OnFocus.
+      // TODO(b/163645900): Add app type later.
+      chromeos::input_host_helper::InputAssociatedHost host;
+      chromeos::input_host_helper::PopulateInputHost(&host);
+      input_context.app_key = std::make_unique<std::string>(host.app_key);
 
       std::unique_ptr<base::ListValue> args(
           input_method_private::OnFocus::Create(input_context));
