@@ -16,7 +16,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.widget.AppCompatImageView;
 
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.omnibox.suggestions.basic.SuggestionViewDelegate;
+import org.chromium.chrome.browser.omnibox.suggestions.SuggestionViewDelegate;
 import org.chromium.chrome.browser.util.KeyNavigationUtil;
 import org.chromium.components.browser_ui.widget.RoundedCornerImageView;
 

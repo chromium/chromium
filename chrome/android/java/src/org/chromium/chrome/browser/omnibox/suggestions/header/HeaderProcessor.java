@@ -10,8 +10,8 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.omnibox.suggestions.DropdownItemProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionUiType;
+import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.UrlBarDelegate;
-import org.chromium.chrome.browser.omnibox.suggestions.basic.SuggestionHost;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** A class that handles model and view creation for the suggestion headers. */
