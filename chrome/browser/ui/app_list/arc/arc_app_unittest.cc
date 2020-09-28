@@ -534,7 +534,7 @@ class ArcAppModelBuilderTest
       ChromeAppListItem* item = model_updater_->ItemAtForTest(i);
       if (item->GetItemType() == AppServiceAppItem::kItemType) {
         if (arc_count++ == index) {
-          arc_item = reinterpret_cast<AppServiceAppItem*>(item);
+          arc_item = static_cast<AppServiceAppItem*>(item);
           break;
         }
       }
