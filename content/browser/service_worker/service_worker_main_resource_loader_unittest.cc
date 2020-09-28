@@ -105,10 +105,18 @@ class FetchEventServiceWorker : public FakeServiceWorker {
  public:
   FetchEventServiceWorker(
       EmbeddedWorkerTestHelper* helper,
-      FakeEmbeddedWorkerInstanceClient* embedded_worker_instance_client)
+      FakeEmbeddedWorkerInstanceClient* embedded_worker_instance_client,
+      BrowserTaskEnvironment* task_environment)
       : FakeServiceWorker(helper),
+        task_environment_(task_environment),
         embedded_worker_instance_client_(embedded_worker_instance_client) {}
   ~FetchEventServiceWorker() override = default;
+
+  // Tells this worker to dispatch a fetch event 1s after the fetch event is
+  // received.
+  void DispatchAfter1sDelay() {
+    response_mode_ = ResponseMode::kDispatchAfter1sDelay;
+  }
 
   // Tells this worker to respond to fetch events with the specified blob.
   void RespondWithBlob(blink::mojom::SerializedBlobPtr blob) {
@@ -243,6 +251,12 @@ class FetchEventServiceWorker : public FakeServiceWorker {
             std::move(params), response_callback.Unbind(),
             std::move(finish_callback));
         break;
+      case ResponseMode::kDispatchAfter1sDelay:
+        task_environment_->AdvanceClock(base::TimeDelta::FromSeconds(1));
+        FakeServiceWorker::DispatchFetchEventForMainResource(
+            std::move(params), response_callback.Unbind(),
+            std::move(finish_callback));
+        break;
       case ResponseMode::kBlob:
         response_callback->OnResponse(
             OkResponse(std::move(blob_body_), response_source_, response_time_,
@@ -320,6 +334,7 @@ class FetchEventServiceWorker : public FakeServiceWorker {
  private:
   enum class ResponseMode {
     kDefault,
+    kDispatchAfter1sDelay,
     kBlob,
     kStream,
     kFallbackResponse,
@@ -330,6 +345,8 @@ class FetchEventServiceWorker : public FakeServiceWorker {
     kRedirect,
     kHeaders
   };
+
+  BrowserTaskEnvironment* const task_environment_;
 
   ResponseMode response_mode_ = ResponseMode::kDefault;
   scoped_refptr<network::ResourceRequestBody> request_body_;
@@ -391,7 +408,8 @@ const char kHistogramMainResourceFetchEvent[] =
 class ServiceWorkerMainResourceLoaderTest : public testing::Test {
  public:
   ServiceWorkerMainResourceLoaderTest()
-      : task_environment_(BrowserTaskEnvironment::IO_MAINLOOP) {}
+      : task_environment_(BrowserTaskEnvironment::IO_MAINLOOP,
+                          base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   ~ServiceWorkerMainResourceLoaderTest() override = default;
 
   void SetUp() override {
@@ -433,7 +451,7 @@ class ServiceWorkerMainResourceLoaderTest : public testing::Test {
             helper_.get());
     service_worker_ =
         helper_->AddNewPendingServiceWorker<FetchEventServiceWorker>(
-            helper_.get(), client);
+            helper_.get(), client, &task_environment_);
 
     // Wait for main script response is set to |version| because
     // ServiceWorkerMainResourceLoader needs the main script response to
@@ -1055,6 +1073,28 @@ TEST_F(ServiceWorkerMainResourceLoaderTest, CancelNavigationDuringFetchEvent) {
 
   client_.RunUntilComplete();
   EXPECT_EQ(net::ERR_ABORTED, client_.completion_status().error_code);
+}
+
+TEST_F(ServiceWorkerMainResourceLoaderTest, TimingInfo) {
+  service_worker_->DispatchAfter1sDelay();
+
+  // Perform the request.
+  StartRequest(CreateRequest());
+  client_.RunUntilComplete();
+
+  // The response header's timing is recorded appropriately.
+  auto& info = client_.response_head();
+  EXPECT_EQ(200, info->headers->response_code());
+  ExpectResponseInfo(*info, *CreateResponseInfoFromServiceWorker());
+  EXPECT_EQ(base::TimeDelta::FromSeconds(1),
+            info->load_timing.service_worker_ready_time -
+                info->load_timing.service_worker_start_time);
+  EXPECT_EQ(base::TimeDelta::FromSeconds(1),
+            info->load_timing.service_worker_fetch_start -
+                info->load_timing.service_worker_start_time);
+  EXPECT_EQ(base::TimeDelta::FromSeconds(1),
+            info->load_timing.service_worker_respond_with_settled -
+                info->load_timing.service_worker_start_time);
 }
 
 }  // namespace service_worker_main_resource_loader_unittest
