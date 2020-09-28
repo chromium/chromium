@@ -975,6 +975,12 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
 
 // Called when the table is empty.
 - (void)tableIsEmpty {
+  // It is necessary to reloadData now, before modifying the view which will
+  // force a layout.
+  // If the window is not displayed (e.g. in an inactive scene) the number of
+  // elements may be outdated and the layout triggered by this function will
+  // generate access non-existing items.
+  [self.tableView reloadData];
   if (base::FeatureList::IsEnabled(kIllustratedEmptyStates)) {
     UIImage* emptyImage = [UIImage imageNamed:@"reading_list_empty"];
     NSString* title =
