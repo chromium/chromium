@@ -107,14 +107,11 @@ void BuildBackdropTopicDetails(
     const backdrop::ScreenUpdate::Topic& backdrop_topic,
     AmbientModeTopic& ambient_topic) {
   switch (backdrop_topic.topic_type()) {
-    case backdrop::TopicSource::CURATED:
-      ambient_topic.details = BuildCuratedTopicDetails(backdrop_topic);
-      break;
     case backdrop::TopicSource::PERSONAL_PHOTO:
       ambient_topic.details = BuildPersonalTopicDetails(backdrop_topic);
       break;
     default:
-      ambient_topic.details = std::string();
+      ambient_topic.details = BuildCuratedTopicDetails(backdrop_topic);
       break;
   }
 }
