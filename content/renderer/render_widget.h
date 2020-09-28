@@ -73,9 +73,10 @@ class WebPagePopup;
 namespace gfx {
 struct PresentationFeedback;
 class Range;
-}
+}  // namespace gfx
 
 namespace content {
+class AgentSchedulingGroup;
 class CompositorDependencies;
 class PepperPluginInstanceImpl;
 class RenderFrameImpl;
@@ -106,7 +107,8 @@ class CONTENT_EXPORT RenderWidget
       public IPC::Sender,
       public blink::WebPagePopupClient {  // Is-a WebWidgetClient also
  public:
-  RenderWidget(int32_t widget_routing_id,
+  RenderWidget(AgentSchedulingGroup& agent_scheduling_group,
+               int32_t widget_routing_id,
                CompositorDependencies* compositor_deps);
 
   ~RenderWidget() override;
@@ -125,7 +127,8 @@ class CONTENT_EXPORT RenderWidget
   // Convenience type for creation method taken by InstallCreateForFrameHook().
   // The method signature matches the RenderWidget constructor.
   using CreateRenderWidgetFunction =
-      std::unique_ptr<RenderWidget> (*)(int32_t routing_id,
+      std::unique_ptr<RenderWidget> (*)(AgentSchedulingGroup&,
+                                        int32_t routing_id,
                                         CompositorDependencies*);
   // Overrides the implementation of CreateForFrame() function below. Used by
   // web tests to return a partial fake of RenderWidget.
@@ -136,6 +139,7 @@ class CONTENT_EXPORT RenderWidget
   // Testing infrastructure, such as test_runner, can override this function
   // by calling InstallCreateForFrameHook().
   static std::unique_ptr<RenderWidget> CreateForFrame(
+      AgentSchedulingGroup& agent_scheduling_group,
       int32_t widget_routing_id,
       CompositorDependencies* compositor_deps);
 
@@ -144,8 +148,10 @@ class CONTENT_EXPORT RenderWidget
   // A RenderWidget popup is owned by the browser process. The object will be
   // destroyed by the WidgetMsg_Close message. The object can request its own
   // destruction via ClosePopupWidgetSoon().
-  static RenderWidget* CreateForPopup(int32_t widget_routing_id,
-                                      CompositorDependencies* compositor_deps);
+  static RenderWidget* CreateForPopup(
+      AgentSchedulingGroup& agent_scheduling_group,
+      int32_t widget_routing_id,
+      CompositorDependencies* compositor_deps);
 
   // Initialize a new RenderWidget for a popup. The |show_callback| is called
   // when RenderWidget::Show() happens. The |opener_widget| is the local root
@@ -302,7 +308,8 @@ class CONTENT_EXPORT RenderWidget
 
   // Request the window to close from the renderer by sending the request to the
   // browser.
-  static void DoDeferredClose(int widget_routing_id);
+  static void DoDeferredClose(AgentSchedulingGroup* agent_scheduling_group,
+                              int widget_routing_id);
 
   // RenderWidget IPC message handlers.
   void OnClose();
@@ -348,6 +355,9 @@ class CONTENT_EXPORT RenderWidget
   // a frame (eg popups, pepper), but includes both the main frame
   // (via delegate_) and subframes (via for_child_local_root_frame_).
   bool for_frame() const { return delegate_ || for_child_local_root_frame_; }
+
+  // The `AgentSchedulingGroup` this widget is associated with.
+  AgentSchedulingGroup& agent_scheduling_group_;
 
   // Routing ID that allows us to communicate to the parent browser process
   // RenderWidgetHost.

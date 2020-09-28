@@ -65,6 +65,7 @@ struct WebWindowFeatures;
 }  // namespace blink
 
 namespace content {
+class AgentSchedulingGroup;
 class RenderViewImplTest;
 class RenderViewObserver;
 class RenderViewTest;
@@ -109,6 +110,7 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
   // The opener should provide a non-null value for |show_callback| if it needs
   // to send an additional IPC to finish making this view visible.
   static RenderViewImpl* Create(
+      AgentSchedulingGroup& agent_scheduling_group,
       CompositorDependencies* compositor_deps,
       mojom::CreateViewParamsPtr params,
       RenderWidget::ShowCallback show_callback,
@@ -121,7 +123,8 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
 
   // Used by web_test_support to hook into the creation of RenderViewImpls.
   static void InstallCreateHook(RenderViewImpl* (*create_render_view_impl)(
-      CompositorDependencies* compositor_deps,
+      AgentSchedulingGroup&,
+      CompositorDependencies*,
       const mojom::CreateViewParams&));
 
   // Returns the RenderViewImpl for the given routing ID.
@@ -246,7 +249,8 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
   }
 
  protected:
-  RenderViewImpl(CompositorDependencies* compositor_deps,
+  RenderViewImpl(AgentSchedulingGroup& agent_scheduling_group,
+                 CompositorDependencies* compositor_deps,
                  const mojom::CreateViewParams& params);
   ~RenderViewImpl() override;
 
@@ -480,6 +484,9 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
   blink::WebView* webview_ = nullptr;
 
   // Helper objects ------------------------------------------------------------
+
+  // The `AgentSchedulingGroup` this view is associated with.
+  AgentSchedulingGroup& agent_scheduling_group_;
 
   RenderFrameImpl* main_render_frame_ = nullptr;
 

@@ -15,6 +15,7 @@
 #include "base/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "content/app/mojo/mojo_init.h"
+#include "content/common/agent_scheduling_group.mojom.h"
 #include "content/common/frame_messages.h"
 #include "content/common/input_messages.h"
 #include "content/common/renderer.mojom.h"
@@ -29,6 +30,7 @@
 #include "content/public/renderer/render_view_visitor.h"
 #include "content/public/test/fake_render_widget_host.h"
 #include "content/public/test/frame_load_waiter.h"
+#include "content/renderer/agent_scheduling_group.h"
 #include "content/renderer/history_serialization.h"
 #include "content/renderer/loader/resource_dispatcher.h"
 #include "content/renderer/render_process.h"
@@ -223,6 +225,20 @@ bool GetWindowsKeyCode(char ascii_character, int* key_code) {
   }
 }
 
+std::unique_ptr<AgentSchedulingGroup> CreateAgentSchedulingGroup(
+    RenderThread& render_thread) {
+  mojo::PendingAssociatedRemote<mojom::AgentSchedulingGroupHost>
+      agent_scheduling_group_host;
+  ignore_result(
+      agent_scheduling_group_host.InitWithNewEndpointAndPassReceiver());
+  mojo::PendingAssociatedReceiver<mojom::AgentSchedulingGroup>
+      agent_scheduling_group_mojo;
+  return std::make_unique<AgentSchedulingGroup>(
+      render_thread, std::move(agent_scheduling_group_host),
+      std::move(agent_scheduling_group_mojo),
+      base::OnceCallback<void(const AgentSchedulingGroup*)>());
+}
+
 }  // namespace
 
 class RendererBlinkPlatformImplTestOverrideImpl
@@ -408,6 +424,7 @@ void RenderViewTest::SetUp() {
   if (!render_thread_)
     render_thread_ = std::make_unique<MockRenderThread>();
 
+  agent_scheduling_group_ = CreateAgentSchedulingGroup(*render_thread_);
   render_widget_host_ = CreateRenderWidgetHost();
 
   // Blink needs to be initialized before calling CreateContentRendererClient()
@@ -501,7 +518,7 @@ void RenderViewTest::SetUp() {
       render_widget_host_->BindNewFrameWidgetInterfaces();
 
   RenderViewImpl* view = RenderViewImpl::Create(
-      compositor_deps_.get(), std::move(view_params),
+      *agent_scheduling_group_, compositor_deps_.get(), std::move(view_params),
       RenderWidget::ShowCallback(), base::ThreadTaskRunnerHandle::Get());
 
   RenderFrameWasShownWaiter waiter(view->GetMainRenderFrame());

@@ -148,6 +148,7 @@ class Origin;
 
 namespace content {
 
+class AgentSchedulingGroup;
 class BlinkInterfaceRegistryImpl;
 class CompositorDependencies;
 class DocumentState;
@@ -177,6 +178,7 @@ class CONTENT_EXPORT RenderFrameImpl
  public:
   // Creates a new RenderFrame as the main frame of |render_view|.
   static RenderFrameImpl* CreateMainFrame(
+      AgentSchedulingGroup& agent_scheduling_group,
       RenderViewImpl* render_view,
       CompositorDependencies* compositor_deps,
       blink::WebFrame* opener,
@@ -206,6 +208,7 @@ class CONTENT_EXPORT RenderFrameImpl
   // to IPC message from the browser process. All other frame creation is driven
   // through Blink and Create.
   static void CreateFrame(
+      AgentSchedulingGroup& agent_scheduling_group,
       int routing_id,
       mojo::PendingRemote<service_manager::mojom::InterfaceProvider>
           interface_provider,
@@ -231,7 +234,8 @@ class CONTENT_EXPORT RenderFrameImpl
 
   // Constructor parameters are bundled into a struct.
   struct CONTENT_EXPORT CreateParams {
-    CreateParams(RenderViewImpl* render_view,
+    CreateParams(AgentSchedulingGroup& agent_scheduling_group,
+                 RenderViewImpl* render_view,
                  int32_t routing_id,
                  mojo::PendingRemote<service_manager::mojom::InterfaceProvider>
                      interface_provider,
@@ -243,6 +247,7 @@ class CONTENT_EXPORT RenderFrameImpl
     CreateParams(CreateParams&&);
     CreateParams& operator=(CreateParams&&);
 
+    AgentSchedulingGroup* agent_scheduling_group;
     RenderViewImpl* render_view;
     int32_t routing_id;
     mojo::PendingRemote<service_manager::mojom::InterfaceProvider>
@@ -913,6 +918,7 @@ class CONTENT_EXPORT RenderFrameImpl
   // BrowserInterfaceBroker through which services are exposed to the
   // RenderFrame.
   static RenderFrameImpl* Create(
+      AgentSchedulingGroup& agent_scheduling_group,
       RenderViewImpl* render_view,
       int32_t routing_id,
       mojo::PendingRemote<service_manager::mojom::InterfaceProvider>
@@ -1209,6 +1215,9 @@ class CONTENT_EXPORT RenderFrameImpl
   // FrameDetached() is called until destruction (which is asynchronous in the
   // case of the main frame, but not subframes).
   blink::WebNavigationControl* frame_ = nullptr;
+
+  // The `AgentSchedulingGroup` this frame is associated with.
+  AgentSchedulingGroup& agent_scheduling_group_;
 
   // Boolean value indicating whether this RenderFrameImpl object is for the
   // main frame or not. It remains accurate during destruction, even when

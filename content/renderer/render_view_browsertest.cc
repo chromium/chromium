@@ -49,6 +49,7 @@
 #include "content/public/test/test_utils.h"
 #include "content/renderer/accessibility/render_accessibility_impl.h"
 #include "content/renderer/accessibility/render_accessibility_manager.h"
+#include "content/renderer/agent_scheduling_group.h"
 #include "content/renderer/history_entry.h"
 #include "content/renderer/history_serialization.h"
 #include "content/renderer/loader/request_extra_data.h"
@@ -162,12 +163,12 @@ int ConvertMockKeyboardModifier(MockKeyboard::Modifiers modifiers) {
     MockKeyboard::Modifiers src;
     int dst;
   } kModifierMap[] = {
-    { MockKeyboard::LEFT_SHIFT, ui::EF_SHIFT_DOWN },
-    { MockKeyboard::RIGHT_SHIFT, ui::EF_SHIFT_DOWN },
-    { MockKeyboard::LEFT_CONTROL, ui::EF_CONTROL_DOWN },
-    { MockKeyboard::RIGHT_CONTROL, ui::EF_CONTROL_DOWN },
-    { MockKeyboard::LEFT_ALT,  ui::EF_ALT_DOWN },
-    { MockKeyboard::RIGHT_ALT, ui::EF_ALT_DOWN },
+      {MockKeyboard::LEFT_SHIFT, ui::EF_SHIFT_DOWN},
+      {MockKeyboard::RIGHT_SHIFT, ui::EF_SHIFT_DOWN},
+      {MockKeyboard::LEFT_CONTROL, ui::EF_CONTROL_DOWN},
+      {MockKeyboard::RIGHT_CONTROL, ui::EF_CONTROL_DOWN},
+      {MockKeyboard::LEFT_ALT, ui::EF_ALT_DOWN},
+      {MockKeyboard::RIGHT_ALT, ui::EF_ALT_DOWN},
   };
   int flags = 0;
   for (size_t i = 0; i < base::size(kModifierMap); ++i) {
@@ -286,9 +287,7 @@ class RenderViewImplTest : public RenderViewTest {
 
   ~RenderViewImplTest() override {}
 
-  RenderViewImpl* view() {
-    return static_cast<RenderViewImpl*>(view_);
-  }
+  RenderViewImpl* view() { return static_cast<RenderViewImpl*>(view_); }
 
   RenderWidget* main_widget() {
     return view()->GetMainRenderFrame()->GetLocalRootRenderWidget();
@@ -357,7 +356,7 @@ class RenderViewImplTest : public RenderViewTest {
     FrameLoadWaiter(frame()).Wait();
   }
 
-  template<class T>
+  template <class T>
   typename T::Param ProcessAndReadIPC() {
     base::RunLoop().RunUntilIdle();
     const IPC::Message* message =
@@ -527,9 +526,7 @@ class RenderViewImplTest : public RenderViewTest {
 
 class RenderViewImplBlinkSettingsTest : public RenderViewImplTest {
  public:
-  virtual void DoSetUp() {
-    RenderViewImplTest::SetUp();
-  }
+  virtual void DoSetUp() { RenderViewImplTest::SetUp(); }
 
   blink::WebSettings* settings() { return view()->GetWebView()->GetSettings(); }
 
@@ -577,7 +574,9 @@ class RenderViewImplScaleFactorTest : public RenderViewImplTest {
     return visual_properties;
   }
 
-  void TestEmulatedSizeDprDsf(int width, int height, float dpr,
+  void TestEmulatedSizeDprDsf(int width,
+                              int height,
+                              float dpr,
                               float compositor_dsf) {
     static base::string16 get_width =
         base::ASCIIToUTF16("Number(window.innerWidth)");
@@ -594,8 +593,8 @@ class RenderViewImplScaleFactorTest : public RenderViewImplTest {
     ReceiveEnableDeviceEmulation(view(), params);
     EXPECT_TRUE(ExecuteJavaScriptAndReturnIntValue(get_width, &emulated_width));
     EXPECT_EQ(width, emulated_width);
-    EXPECT_TRUE(ExecuteJavaScriptAndReturnIntValue(get_height,
-                                                   &emulated_height));
+    EXPECT_TRUE(
+        ExecuteJavaScriptAndReturnIntValue(get_height, &emulated_height));
     EXPECT_EQ(height, emulated_height);
     EXPECT_TRUE(ExecuteJavaScriptAndReturnIntValue(get_dpr, &emulated_dpr));
     EXPECT_EQ(static_cast<int>(dpr * 10), emulated_dpr);
@@ -1279,7 +1278,7 @@ TEST_F(RenderViewImplEnableZoomForDSFTest,
   widget_params->frame_widget_host = blink_frame_widget_host.Unbind();
 
   RenderFrameImpl::CreateFrame(
-      routing_id, std::move(stub_interface_provider),
+      *agent_scheduling_group_, routing_id, std::move(stub_interface_provider),
       std::move(stub_browser_interface_broker), kProxyRoutingId, base::nullopt,
       MSG_ROUTING_NONE, MSG_ROUTING_NONE, base::UnguessableToken::Create(),
       base::UnguessableToken::Create(), replication_state,
@@ -1347,7 +1346,7 @@ TEST_F(RenderViewImplTest, DetachingProxyAlsoDestroysProvisionalFrame) {
   ignore_result(stub_browser_interface_broker.InitWithNewPipeAndPassReceiver());
 
   RenderFrameImpl::CreateFrame(
-      routing_id, std::move(stub_interface_provider),
+      *agent_scheduling_group_, routing_id, std::move(stub_interface_provider),
       std::move(stub_browser_interface_broker), kProxyRoutingId, base::nullopt,
       frame()->GetRoutingID(), MSG_ROUTING_NONE,
       base::UnguessableToken::Create(), base::UnguessableToken::Create(),
@@ -1503,9 +1502,8 @@ TEST_F(RenderViewImplTextInputStateChanged, OnImeTypeChanged) {
 
     for (size_t i = 0; i < base::size(kInputModeTestCases); i++) {
       const InputModeTestCase* test_case = &kInputModeTestCases[i];
-      std::string javascript =
-          base::StringPrintf("document.getElementById('%s').focus();",
-                             test_case->input_id);
+      std::string javascript = base::StringPrintf(
+          "document.getElementById('%s').focus();", test_case->input_id);
       // Move the input focus to the target <input> element, where we should
       // activate IMEs.
       ExecuteJavaScriptAndReturnIntValue(base::ASCIIToUTF16(javascript),
@@ -1973,13 +1971,14 @@ TEST_F(RenderViewImplTest, ImeComposition) {
         // Load an HTML page consisting of a content-editable <div> element,
         // and move the input focus to the <div> element, where we can use
         // IMEs.
-        LoadHTML("<html>"
-                "<head>"
-                "</head>"
-                "<body>"
-                "<div id=\"test1\" contenteditable=\"true\"></div>"
-                "</body>"
-                "</html>");
+        LoadHTML(
+            "<html>"
+            "<head>"
+            "</head>"
+            "<body>"
+            "<div id=\"test1\" contenteditable=\"true\"></div>"
+            "</body>"
+            "</html>");
         ExecuteJavaScriptForTests("document.getElementById('test1').focus();");
         break;
 
@@ -2041,14 +2040,15 @@ TEST_F(RenderViewImplTest, OnSetTextDirection) {
   // This test changes the text direction of the <textarea> element, and
   // writes the values of its 'dir' attribute and its 'direction' property to
   // verify that the text direction is changed.
-  LoadHTML("<html>"
-           "<head>"
-           "</head>"
-           "<body>"
-           "<textarea id=\"test\"></textarea>"
-           "<div id=\"result\" contenteditable=\"true\"></div>"
-           "</body>"
-           "</html>");
+  LoadHTML(
+      "<html>"
+      "<head>"
+      "</head>"
+      "<body>"
+      "<textarea id=\"test\"></textarea>"
+      "<div id=\"result\" contenteditable=\"true\"></div>"
+      "</body>"
+      "</html>");
   render_thread_->sink().ClearMessages();
 
   static const struct {
@@ -2178,17 +2178,15 @@ TEST_F(RenderViewImplTest, TestBackForward) {
   LoadHTML("<div id=pagename>Page A</div>");
   PageState page_a_state = GetCurrentPageState();
   int was_page_a = -1;
-  base::string16 check_page_a =
-      base::ASCIIToUTF16(
-          "Number(document.getElementById('pagename').innerHTML == 'Page A')");
+  base::string16 check_page_a = base::ASCIIToUTF16(
+      "Number(document.getElementById('pagename').innerHTML == 'Page A')");
   EXPECT_TRUE(ExecuteJavaScriptAndReturnIntValue(check_page_a, &was_page_a));
   EXPECT_EQ(1, was_page_a);
 
   LoadHTML("<div id=pagename>Page B</div>");
   int was_page_b = -1;
-  base::string16 check_page_b =
-      base::ASCIIToUTF16(
-          "Number(document.getElementById('pagename').innerHTML == 'Page B')");
+  base::string16 check_page_b = base::ASCIIToUTF16(
+      "Number(document.getElementById('pagename').innerHTML == 'Page B')");
   EXPECT_TRUE(ExecuteJavaScriptAndReturnIntValue(check_page_b, &was_page_b));
   EXPECT_EQ(1, was_page_b);
 
@@ -2196,9 +2194,8 @@ TEST_F(RenderViewImplTest, TestBackForward) {
 
   LoadHTML("<div id=pagename>Page C</div>");
   int was_page_c = -1;
-  base::string16 check_page_c =
-      base::ASCIIToUTF16(
-          "Number(document.getElementById('pagename').innerHTML == 'Page C')");
+  base::string16 check_page_c = base::ASCIIToUTF16(
+      "Number(document.getElementById('pagename').innerHTML == 'Page C')");
   EXPECT_TRUE(ExecuteJavaScriptAndReturnIntValue(check_page_c, &was_page_c));
   EXPECT_EQ(1, was_page_c);
 
@@ -2296,8 +2293,8 @@ TEST_F(RenderViewImplTest, GetCompositionCharacterBoundsTest) {
       surrogate_pair_char + base::UTF8ToUTF16("\xE3\x81\x82") +
       surrogate_pair_char + base::UTF8ToUTF16("b") + surrogate_pair_char;
   const size_t utf16_length = 8UL;
-  const bool is_surrogate_pair_empty_rect[8] = {
-    false, true, false, false, true, false, false, true };
+  const bool is_surrogate_pair_empty_rect[8] = {false, true,  false, false,
+                                                true,  false, false, true};
   widget_input_handler->ImeSetComposition(surrogate_pair_mixed_composition,
                                           empty_ime_text_span,
                                           gfx::Range::InvalidRange(), 0, 0);
@@ -2318,13 +2315,14 @@ TEST_F(RenderViewImplTest, GetCompositionCharacterBoundsTest) {
 
 TEST_F(RenderViewImplTest, SetEditableSelectionAndComposition) {
   // Load an HTML page consisting of an input field.
-  LoadHTML("<html>"
-           "<head>"
-           "</head>"
-           "<body>"
-           "<input id=\"test1\" value=\"some test text hello\"></input>"
-           "</body>"
-           "</html>");
+  LoadHTML(
+      "<html>"
+      "<head>"
+      "</head>"
+      "<body>"
+      "<input id=\"test1\" value=\"some test text hello\"></input>"
+      "</body>"
+      "</html>");
   auto* frame_widget_input_handler = GetFrameWidgetInputHandler();
   ExecuteJavaScriptForTests("document.getElementById('test1').focus();");
   frame_widget_input_handler->SetEditableSelectionOffsets(4, 8);
@@ -2348,13 +2346,14 @@ TEST_F(RenderViewImplTest, SetEditableSelectionAndComposition) {
 
 TEST_F(RenderViewImplTest, OnExtendSelectionAndDelete) {
   // Load an HTML page consisting of an input field.
-  LoadHTML("<html>"
-           "<head>"
-           "</head>"
-           "<body>"
-           "<input id=\"test1\" value=\"abcdefghijklmnopqrstuvwxyz\"></input>"
-           "</body>"
-           "</html>");
+  LoadHTML(
+      "<html>"
+      "<head>"
+      "</head>"
+      "<body>"
+      "<input id=\"test1\" value=\"abcdefghijklmnopqrstuvwxyz\"></input>"
+      "</body>"
+      "</html>");
   auto* frame_widget_input_handler = GetFrameWidgetInputHandler();
   ExecuteJavaScriptForTests("document.getElementById('test1').focus();");
   frame_widget_input_handler->SetEditableSelectionOffsets(10, 10);
@@ -2569,9 +2568,7 @@ class RendererErrorPageTest : public RenderViewImplTest {
     return new TestContentRendererClient;
   }
 
-  RenderViewImpl* view() {
-    return static_cast<RenderViewImpl*>(view_);
-  }
+  RenderViewImpl* view() { return static_cast<RenderViewImpl*>(view_); }
 
   RenderFrameImpl* frame() {
     return static_cast<RenderFrameImpl*>(view()->GetMainRenderFrame());
@@ -3261,9 +3258,9 @@ static const uint8_t kOriginTrialPublicKey[] = {
 class TestOriginTrialPolicy : public blink::OriginTrialPolicy {
  public:
   TestOriginTrialPolicy() {
-    public_keys_.push_back(base::StringPiece(
+    public_keys_.emplace_back(
         reinterpret_cast<const char*>(kOriginTrialPublicKey),
-        base::size(kOriginTrialPublicKey)));
+        base::size(kOriginTrialPublicKey));
   }
   bool IsOriginTrialsSupported() const override { return true; }
   std::vector<base::StringPiece> GetPublicKeys() const override {

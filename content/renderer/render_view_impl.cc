@@ -62,6 +62,7 @@
 #include "content/public/renderer/render_view_observer.h"
 #include "content/public/renderer/render_view_visitor.h"
 #include "content/public/renderer/window_features_converter.h"
+#include "content/renderer/agent_scheduling_group.h"
 #include "content/renderer/history_serialization.h"
 #include "content/renderer/internal_document_state_data.h"
 #include "content/renderer/loader/request_extra_data.h"
@@ -233,7 +234,8 @@ const int kDelaySecondsForContentStateSyncHidden = 5;
 const int kDelaySecondsForContentStateSync = 1;
 
 static RenderViewImpl* (*g_create_render_view_impl)(
-    CompositorDependencies* compositor_deps,
+    AgentSchedulingGroup&,
+    CompositorDependencies*,
     const mojom::CreateViewParams&) = nullptr;
 
 // static
@@ -252,9 +254,9 @@ WindowOpenDisposition RenderViewImpl::NavigationPolicyToDisposition(
       return WindowOpenDisposition::NEW_WINDOW;
     case blink::kWebNavigationPolicyNewPopup:
       return WindowOpenDisposition::NEW_POPUP;
-  default:
-    NOTREACHED() << "Unexpected WebNavigationPolicy";
-    return WindowOpenDisposition::IGNORE_ACTION;
+    default:
+      NOTREACHED() << "Unexpected WebNavigationPolicy";
+      return WindowOpenDisposition::IGNORE_ACTION;
   }
 }
 
@@ -276,13 +278,15 @@ content::mojom::WindowContainerType WindowFeaturesToContainerType(
 
 }  // namespace
 
-RenderViewImpl::RenderViewImpl(CompositorDependencies* compositor_deps,
+RenderViewImpl::RenderViewImpl(AgentSchedulingGroup& agent_scheduling_group,
+                               CompositorDependencies* compositor_deps,
                                const mojom::CreateViewParams& params)
     : routing_id_(params.view_id),
       renderer_wide_named_frame_lookup_(
           params.renderer_wide_named_frame_lookup),
       widgets_never_composited_(params.never_composited),
       compositor_deps_(compositor_deps),
+      agent_scheduling_group_(agent_scheduling_group),
       session_storage_namespace_id_(params.session_storage_namespace_id) {
   DCHECK(!session_storage_namespace_id_.empty())
       << "Session storage namespace must be populated.";
@@ -296,7 +300,7 @@ void RenderViewImpl::Initialize(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
   DCHECK(RenderThread::IsMainThread());
 
-  RenderThread::Get()->AddRoute(routing_id_, this);
+  agent_scheduling_group_.AddRoute(routing_id_, this);
 
 #if defined(OS_ANDROID)
   bool has_show_callback = !!show_callback;
@@ -323,7 +327,8 @@ void RenderViewImpl::Initialize(
 
   if (local_main_frame) {
     main_render_frame_ = RenderFrameImpl::CreateMainFrame(
-        this, compositor_deps, opener_frame, &params, std::move(show_callback));
+        agent_scheduling_group_, this, compositor_deps, opener_frame, &params,
+        std::move(show_callback));
   } else {
     RenderFrameProxy::CreateFrameProxy(
         params->proxy_routing_id, GetRoutingID(), params->opener_frame_token,
@@ -357,7 +362,7 @@ RenderViewImpl::~RenderViewImpl() {
   DCHECK(destroying_);  // Always deleted through Destroy().
 
   g_routing_id_view_map.Get().erase(routing_id_);
-  RenderThread::Get()->RemoveRoute(routing_id_);
+  agent_scheduling_group_.RemoveRoute(routing_id_);
 
 #ifndef NDEBUG
   // Make sure we are no longer referenced by the ViewMap or RoutingIDViewMap.
@@ -414,6 +419,7 @@ void RenderView::ForEach(RenderViewVisitor* visitor) {
 
 /*static*/
 RenderViewImpl* RenderViewImpl::Create(
+    AgentSchedulingGroup& agent_scheduling_group,
     CompositorDependencies* compositor_deps,
     mojom::CreateViewParamsPtr params,
     RenderWidget::ShowCallback show_callback,
@@ -428,9 +434,11 @@ RenderViewImpl* RenderViewImpl::Create(
 
   RenderViewImpl* render_view;
   if (g_create_render_view_impl) {
-    render_view = g_create_render_view_impl(compositor_deps, *params);
+    render_view = g_create_render_view_impl(agent_scheduling_group,
+                                            compositor_deps, *params);
   } else {
-    render_view = new RenderViewImpl(compositor_deps, *params);
+    render_view =
+        new RenderViewImpl(agent_scheduling_group, compositor_deps, *params);
   }
 
   render_view->Initialize(compositor_deps, std::move(params),
@@ -452,7 +460,8 @@ void RenderViewImpl::Destroy() {
 
 // static
 void RenderViewImpl::InstallCreateHook(RenderViewImpl* (
-    *create_render_view_impl)(CompositorDependencies* compositor_deps,
+    *create_render_view_impl)(AgentSchedulingGroup&,
+                              CompositorDependencies*,
                               const mojom::CreateViewParams&)) {
   CHECK(!g_create_render_view_impl);
   g_create_render_view_impl = create_render_view_impl;
@@ -723,7 +732,8 @@ WebView* RenderViewImpl::CreateView(
                      base::Unretained(creator_frame), was_consumed);
 
   RenderViewImpl* view = RenderViewImpl::Create(
-      compositor_deps_, std::move(view_params), std::move(show_callback),
+      agent_scheduling_group_, compositor_deps_, std::move(view_params),
+      std::move(show_callback),
       creator->GetTaskRunner(blink::TaskType::kInternalDefault));
 
   if (reply->wait_for_debugger) {
@@ -763,8 +773,9 @@ blink::WebPagePopup* RenderViewImpl::CreatePopup(
   RenderWidget* opener_render_widget =
       RenderFrameImpl::FromWebFrame(creator)->GetLocalRootRenderWidget();
 
-  RenderWidget* popup_widget = RenderWidget::CreateForPopup(
-      widget_routing_id, opener_render_widget->compositor_deps());
+  RenderWidget* popup_widget =
+      RenderWidget::CreateForPopup(agent_scheduling_group_, widget_routing_id,
+                                   opener_render_widget->compositor_deps());
 
   // The returned WebPagePopup is self-referencing, so the pointer here is not
   // an owning pointer. It is de-referenced by calling Close().
@@ -939,7 +950,8 @@ bool RenderViewImpl::Send(IPC::Message* message) {
   // No messages sent through RenderView come without a routing id, yay. Let's
   // keep that up.
   CHECK_NE(message->routing_id(), MSG_ROUTING_NONE);
-  return RenderThread::Get()->Send(message);
+
+  return agent_scheduling_group_.Send(message);
 }
 
 RenderFrameImpl* RenderViewImpl::GetMainRenderFrame() {

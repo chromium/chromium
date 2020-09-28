@@ -63,7 +63,6 @@ class FullscreenMouseLockDispatcher : public MouseLockDispatcher {
 };
 
 WebMouseEvent WebMouseEventFromGestureEvent(const WebGestureEvent& gesture) {
-
   // Only convert touch screen gesture events, do not convert
   // touchpad/mouse wheel gesture events. (crbug.com/620974)
   if (gesture.SourceDevice() != blink::WebGestureDevice::kTouchscreen)
@@ -105,11 +104,10 @@ WebMouseEvent WebMouseEventFromGestureEvent(const WebGestureEvent& gesture) {
 }
 
 FullscreenMouseLockDispatcher::FullscreenMouseLockDispatcher(
-    RenderWidgetFullscreenPepper* widget) : widget_(widget) {
-}
+    RenderWidgetFullscreenPepper* widget)
+    : widget_(widget) {}
 
-FullscreenMouseLockDispatcher::~FullscreenMouseLockDispatcher() {
-}
+FullscreenMouseLockDispatcher::~FullscreenMouseLockDispatcher() = default;
 
 void FullscreenMouseLockDispatcher::SendLockMouseRequest(
     blink::WebLocalFrame* requester_frame,
@@ -169,6 +167,7 @@ class PepperExternalWidgetClient : public blink::WebExternalWidgetClient {
 
 // static
 RenderWidgetFullscreenPepper* RenderWidgetFullscreenPepper::Create(
+    AgentSchedulingGroup& agent_scheduling_group,
     int32_t routing_id,
     RenderWidget::ShowCallback show_callback,
     CompositorDependencies* compositor_deps,
@@ -181,8 +180,9 @@ RenderWidgetFullscreenPepper* RenderWidgetFullscreenPepper::Create(
   DCHECK(show_callback);
   RenderWidgetFullscreenPepper* render_widget =
       new RenderWidgetFullscreenPepper(
-          routing_id, compositor_deps, plugin, std::move(blink_widget_host),
-          std::move(blink_widget), local_main_frame_url);
+          agent_scheduling_group, routing_id, compositor_deps, plugin,
+          std::move(blink_widget_host), std::move(blink_widget),
+          local_main_frame_url);
   render_widget->InitForPepperFullscreen(std::move(show_callback),
                                          render_widget->blink_widget_.get(),
                                          screen_info);
@@ -190,13 +190,14 @@ RenderWidgetFullscreenPepper* RenderWidgetFullscreenPepper::Create(
 }
 
 RenderWidgetFullscreenPepper::RenderWidgetFullscreenPepper(
+    AgentSchedulingGroup& agent_scheduling_group,
     int32_t routing_id,
     CompositorDependencies* compositor_deps,
     PepperPluginInstanceImpl* plugin,
     mojo::PendingAssociatedRemote<blink::mojom::WidgetHost> mojo_widget_host,
     mojo::PendingAssociatedReceiver<blink::mojom::Widget> mojo_widget,
     blink::WebURL main_frame_url)
-    : RenderWidget(routing_id, compositor_deps),
+    : RenderWidget(agent_scheduling_group, routing_id, compositor_deps),
       plugin_(plugin),
       mouse_lock_dispatcher_(
           std::make_unique<FullscreenMouseLockDispatcher>(this)),

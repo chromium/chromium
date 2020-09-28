@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "build/build_config.h"
+#include "content/renderer/agent_scheduling_group.h"
 #include "content/renderer/render_view_impl.h"
 #include "content/web_test/common/web_test.mojom.h"
 #include "content/web_test/renderer/accessibility_controller.h"
@@ -57,7 +58,8 @@ class TextInputController;
 // architecture should be revisited.
 class WebViewTestProxy : public RenderViewImpl {
  public:
-  explicit WebViewTestProxy(CompositorDependencies* compositor_deps,
+  explicit WebViewTestProxy(AgentSchedulingGroup& agent_scheduling_group,
+                            CompositorDependencies* compositor_deps,
                             const mojom::CreateViewParams& params,
                             TestRunner* test_runner);
 

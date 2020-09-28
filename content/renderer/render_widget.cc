@@ -6,6 +6,7 @@
 
 #include <cmath>
 #include <limits>
+#include <memory>
 #include <utility>
 
 #include "base/base_switches.h"
@@ -48,6 +49,7 @@
 #include "content/public/common/use_zoom_for_dsf_policy.h"
 #include "content/public/renderer/content_renderer_client.h"
 #include "content/public/renderer/render_thread.h"
+#include "content/renderer/agent_scheduling_group.h"
 #include "content/renderer/pepper/pepper_plugin_instance_impl.h"
 #include "content/renderer/render_frame_impl.h"
 #include "content/renderer/render_frame_proxy.h"
@@ -220,24 +222,32 @@ void RenderWidget::InstallCreateForFrameHook(
 }
 
 std::unique_ptr<RenderWidget> RenderWidget::CreateForFrame(
+    AgentSchedulingGroup& agent_scheduling_group,
     int32_t widget_routing_id,
     CompositorDependencies* compositor_deps) {
   if (g_create_render_widget_for_frame) {
-    return g_create_render_widget_for_frame(widget_routing_id, compositor_deps);
+    return g_create_render_widget_for_frame(agent_scheduling_group,
+                                            widget_routing_id, compositor_deps);
   }
 
-  return std::make_unique<RenderWidget>(widget_routing_id, compositor_deps);
+  return std::make_unique<RenderWidget>(agent_scheduling_group,
+                                        widget_routing_id, compositor_deps);
 }
 
 RenderWidget* RenderWidget::CreateForPopup(
+    AgentSchedulingGroup& agent_scheduling_group,
     int32_t widget_routing_id,
     CompositorDependencies* compositor_deps) {
-  return new RenderWidget(widget_routing_id, compositor_deps);
+  return new RenderWidget(agent_scheduling_group, widget_routing_id,
+                          compositor_deps);
 }
 
-RenderWidget::RenderWidget(int32_t widget_routing_id,
+RenderWidget::RenderWidget(AgentSchedulingGroup& agent_scheduling_group,
+                           int32_t widget_routing_id,
                            CompositorDependencies* compositor_deps)
-    : routing_id_(widget_routing_id), compositor_deps_(compositor_deps) {
+    : agent_scheduling_group_(agent_scheduling_group),
+      routing_id_(widget_routing_id),
+      compositor_deps_(compositor_deps) {
   DCHECK_NE(routing_id_, MSG_ROUTING_NONE);
   DCHECK(RenderThread::IsMainThread());
   DCHECK(compositor_deps_);
@@ -295,10 +305,11 @@ void RenderWidget::Initialize(ShowCallback show_callback,
 
   show_callback_ = std::move(show_callback);
 
-  webwidget_mouse_lock_target_.reset(new WebWidgetLockTarget(this));
-  mouse_lock_dispatcher_.reset(new RenderWidgetMouseLockDispatcher(this));
+  webwidget_mouse_lock_target_ = std::make_unique<WebWidgetLockTarget>(this);
+  mouse_lock_dispatcher_ =
+      std::make_unique<RenderWidgetMouseLockDispatcher>(this);
 
-  RenderThread::Get()->AddRoute(routing_id_, this);
+  agent_scheduling_group_.AddRoute(routing_id_, this);
 
   webwidget_ = web_widget;
   if (auto* scheduler_state = GetWebWidget()->RendererWidgetSchedulingState())
@@ -345,7 +356,7 @@ bool RenderWidget::Send(IPC::Message* message) {
   if (message->routing_id() == MSG_ROUTING_NONE)
     message->set_routing_id(routing_id_);
 
-  return RenderThread::Get()->Send(message);
+  return agent_scheduling_group_.Send(message);
 }
 
 void RenderWidget::OnClose() {
@@ -523,12 +534,13 @@ void RenderWidget::InitCompositing(const blink::ScreenInfo& screen_info) {
 }
 
 // static
-void RenderWidget::DoDeferredClose(int widget_routing_id) {
-  // DoDeferredClose() was a posted task, which means the RenderWidget may have
-  // been destroyed in the meantime. So break the dependency on RenderWidget
-  // here, by making this method static and going to RenderThread directly to
-  // send.
-  RenderThread::Get()->Send(new WidgetHostMsg_Close(widget_routing_id));
+void RenderWidget::DoDeferredClose(AgentSchedulingGroup* agent_scheduling_group,
+                                   int widget_routing_id) {
+  // `DoDeferredClose()` was a posted task, which means the `RenderWidget` may
+  // have been destroyed in the meantime. So break the dependency on
+  // `RenderWidget` here, by making this method static and going passing in the
+  // `AgentSchedulingGroup` explicitly.
+  agent_scheduling_group->Send(new WidgetHostMsg_Close(widget_routing_id));
 }
 
 void RenderWidget::ClosePopupWidgetSoon() {
@@ -552,7 +564,8 @@ void RenderWidget::CloseWidgetSoon() {
   // message back to the message loop, which won't run until the JS is
   // complete, and then the Close request can be sent.
   compositor_deps_->GetCleanupTaskRunner()->PostTask(
-      FROM_HERE, base::BindOnce(&RenderWidget::DoDeferredClose, routing_id_));
+      FROM_HERE, base::BindOnce(&RenderWidget::DoDeferredClose,
+                                &agent_scheduling_group_, routing_id_));
 }
 
 void RenderWidget::Close(std::unique_ptr<RenderWidget> widget) {
@@ -565,7 +578,7 @@ void RenderWidget::Close(std::unique_ptr<RenderWidget> widget) {
 
   // Browser correspondence is no longer needed at this point.
   if (routing_id_ != MSG_ROUTING_NONE) {
-    RenderThread::Get()->RemoveRoute(routing_id_);
+    agent_scheduling_group_.RemoveRoute(routing_id_);
   }
 
   webwidget_->Close(compositor_deps_->GetCleanupTaskRunner());
@@ -577,7 +590,7 @@ void RenderWidget::Close(std::unique_ptr<RenderWidget> widget) {
   layer_tree_host_ = nullptr;
 
   // Note the ACK is a control message going to the RenderProcessHost.
-  RenderThread::Get()->Send(new WidgetHostMsg_Close_ACK(routing_id()));
+  agent_scheduling_group_.Send(new WidgetHostMsg_Close_ACK(routing_id()));
 }
 
 blink::WebFrameWidget* RenderWidget::GetFrameWidget() const {

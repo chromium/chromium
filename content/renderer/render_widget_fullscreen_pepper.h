@@ -24,6 +24,7 @@ class Layer;
 }
 
 namespace content {
+class AgentSchedulingGroup;
 class CompositorDependencies;
 class PepperPluginInstanceImpl;
 class PepperExternalWidgetClient;
@@ -37,6 +38,7 @@ class RenderWidgetFullscreenPepper : public RenderWidget,
   // The created object is owned by the browser process. The browser process
   // is responsible for destroying it with an IPC message.
   static RenderWidgetFullscreenPepper* Create(
+      AgentSchedulingGroup& agent_scheduling_group,
       int32_t routing_id,
       RenderWidget::ShowCallback show_callback,
       CompositorDependencies* compositor_deps,
@@ -60,6 +62,7 @@ class RenderWidgetFullscreenPepper : public RenderWidget,
 
  protected:
   RenderWidgetFullscreenPepper(
+      AgentSchedulingGroup& agent_scheduling_group,
       int32_t routing_id,
       CompositorDependencies* compositor_deps,
       PepperPluginInstanceImpl* plugin,

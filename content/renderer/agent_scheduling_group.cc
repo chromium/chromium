@@ -6,9 +6,12 @@
 
 #include "base/feature_list.h"
 #include "content/public/common/content_features.h"
+#include "content/public/renderer/render_thread.h"
+#include "content/renderer/render_thread_impl.h"
 
 namespace content {
 
+using ::IPC::Listener;
 using ::mojo::AssociatedReceiver;
 using ::mojo::AssociatedRemote;
 using ::mojo::PendingAssociatedReceiver;
@@ -17,6 +20,14 @@ using ::mojo::PendingReceiver;
 using ::mojo::PendingRemote;
 using ::mojo::Receiver;
 using ::mojo::Remote;
+
+namespace {
+RenderThreadImpl& ToImpl(RenderThread& render_thread) {
+  DCHECK(RenderThreadImpl::current());
+  return static_cast<RenderThreadImpl&>(render_thread);
+}
+
+}  // namespace
 
 // MaybeAssociatedReceiver:
 AgentSchedulingGroup::MaybeAssociatedReceiver::MaybeAssociatedReceiver(
@@ -63,40 +74,68 @@ AgentSchedulingGroup::MaybeAssociatedRemote::~MaybeAssociatedRemote() = default;
 
 // AgentSchedulingGroup:
 AgentSchedulingGroup::AgentSchedulingGroup(
-    RenderThreadImpl* render_thread,
+    RenderThread& render_thread,
     PendingRemote<mojom::AgentSchedulingGroupHost> host_remote,
     PendingReceiver<mojom::AgentSchedulingGroup> receiver,
     base::OnceCallback<void(const AgentSchedulingGroup*)>
         mojo_disconnect_handler)
     // TODO(crbug.com/1111231): Mojo interfaces should be associated with
     // per-ASG task runners instead of default.
-    : render_thread_(*render_thread),
+    : render_thread_(render_thread),
       receiver_(*this,
                 std::move(receiver),
-                base::BindOnce(std::move(mojo_disconnect_handler), this)),
+                mojo_disconnect_handler
+                    ? base::BindOnce(std::move(mojo_disconnect_handler), this)
+                    : base::OnceClosure()),
       host_remote_(std::move(host_remote)) {
   DCHECK(base::FeatureList::IsEnabled(
       features::kMbiDetachAgentSchedulingGroupFromChannel));
 }
 
 AgentSchedulingGroup::AgentSchedulingGroup(
-    RenderThreadImpl* render_thread,
+    RenderThread& render_thread,
     PendingAssociatedRemote<mojom::AgentSchedulingGroupHost> host_remote,
     PendingAssociatedReceiver<mojom::AgentSchedulingGroup> receiver,
     base::OnceCallback<void(const AgentSchedulingGroup*)>
         mojo_disconnect_handler)
     // TODO(crbug.com/1111231): Mojo interfaces should be associated with
     // per-ASG task runners instead of default.
-    : render_thread_(*render_thread),
+    : render_thread_(render_thread),
       receiver_(*this,
                 std::move(receiver),
-                base::BindOnce(std::move(mojo_disconnect_handler), this)),
+                mojo_disconnect_handler
+                    ? base::BindOnce(std::move(mojo_disconnect_handler), this)
+                    : base::OnceClosure()),
       host_remote_(std::move(host_remote)) {
   DCHECK(!base::FeatureList::IsEnabled(
       features::kMbiDetachAgentSchedulingGroupFromChannel));
 }
 
 AgentSchedulingGroup::~AgentSchedulingGroup() = default;
+
+// IPC messages to be forwarded to the `RenderThread`, for now. In the future
+// they will be handled directly by the `AgentSchedulingGroup`.
+bool AgentSchedulingGroup::Send(IPC::Message* message) {
+  // TODO(crbug.com/1111231): For some reason, changing this to use
+  // render_thread_ causes trybots to time out (not specific tests).
+  return RenderThread::Get()->Send(message);
+}
+
+// IPC messages to be forwarded to the `RenderThread`, for now. In the future
+// they will be handled directly by the `AgentSchedulingGroup`.
+void AgentSchedulingGroup::AddRoute(int32_t routing_id, Listener* listener) {
+  // TODO(crbug.com/1111231): For some reason, changing this to use
+  // render_thread_ causes trybots to time out (not specific tests).
+  RenderThread::Get()->AddRoute(routing_id, listener);
+}
+
+// IPC messages to be forwarded to the `RenderThread`, for now. In the future
+// they will be handled directly by the `AgentSchedulingGroup`.
+void AgentSchedulingGroup::RemoveRoute(int32_t routing_id) {
+  // TODO(crbug.com/1111231): For some reason, changing this to use
+  // render_thread_ causes trybots to time out (not specific tests).
+  RenderThread::Get()->RemoveRoute(routing_id);
+}
 
 void AgentSchedulingGroup::GetRoute(
     int32_t routing_id,
@@ -105,7 +144,7 @@ void AgentSchedulingGroup::GetRoute(
   // TODO(crbug.com/1111231): Make AgentSchedulingGroup a fully-fledged
   // RouteProvider, so we can start registering routes directly with an
   // AgentSchedulingGroup rather than ChildThreadImpl.
-  render_thread_.GetRoute(routing_id, std::move(receiver));
+  ToImpl(render_thread_).GetRoute(routing_id, std::move(receiver));
 }
 
 void AgentSchedulingGroup::GetAssociatedInterface(
@@ -115,7 +154,7 @@ void AgentSchedulingGroup::GetAssociatedInterface(
   // TODO(crbug.com/1111231): Make AgentSchedulingGroup a fully-fledged
   // AssociatedInterfaceProvider, so we can start associating interfaces
   // directly with the AgentSchedulingGroup interface.
-  render_thread_.GetAssociatedInterface(name, std::move(receiver));
+  ToImpl(render_thread_).GetAssociatedInterface(name, std::move(receiver));
 }
 
 }  // namespace content

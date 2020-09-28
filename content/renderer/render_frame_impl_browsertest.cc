@@ -32,6 +32,7 @@
 #include "content/public/test/local_frame_host_interceptor.h"
 #include "content/public/test/render_view_test.h"
 #include "content/public/test/test_utils.h"
+#include "content/renderer/agent_scheduling_group.h"
 #include "content/renderer/loader/web_url_loader_impl.h"
 #include "content/renderer/mojo/blink_interface_registry_impl.h"
 #include "content/renderer/navigation_state.h"
@@ -141,7 +142,8 @@ class RenderFrameImplTest : public RenderViewTest {
         stub_browser_interface_broker.InitWithNewPipeAndPassReceiver());
 
     RenderFrameImpl::CreateFrame(
-        kSubframeRouteId, std::move(stub_interface_provider),
+        *agent_scheduling_group_, kSubframeRouteId,
+        std::move(stub_interface_provider),
         std::move(stub_browser_interface_broker), MSG_ROUTING_NONE,
         base::nullopt, kFrameProxyRouteId, MSG_ROUTING_NONE,
         base::UnguessableToken::Create(), base::UnguessableToken::Create(),
@@ -156,11 +158,11 @@ class RenderFrameImplTest : public RenderViewTest {
 
   void TearDown() override {
 #if defined(LEAK_SANITIZER)
-     // Do this before shutting down V8 in RenderViewTest::TearDown().
-     // http://crbug.com/328552
-     __lsan_do_leak_check();
+    // Do this before shutting down V8 in RenderViewTest::TearDown().
+    // http://crbug.com/328552
+    __lsan_do_leak_check();
 #endif
-     RenderViewTest::TearDown();
+    RenderViewTest::TearDown();
   }
 
   TestRenderFrame* GetMainRenderFrame() {
@@ -822,15 +824,14 @@ void ExpectPendingInterfaceReceiversFromSources(
   ASSERT_TRUE(interface_provider_receiver.is_valid());
   TestSimpleInterfaceProviderImpl provider(
       mojom::FrameHostTestInterface::Name_,
-      base::BindLambdaForTesting(
-          [&sources](mojo::ScopedMessagePipeHandle handle) {
-            FrameHostTestInterfaceImpl impl;
-            impl.BindAndFlush(
-                mojo::PendingReceiver<mojom::FrameHostTestInterface>(
-                    std::move(handle)));
-            ASSERT_TRUE(impl.ping_source().has_value());
-            sources.push_back(impl.ping_source().value());
-          }));
+      base::BindLambdaForTesting([&sources](
+                                     mojo::ScopedMessagePipeHandle handle) {
+        FrameHostTestInterfaceImpl impl;
+        impl.BindAndFlush(mojo::PendingReceiver<mojom::FrameHostTestInterface>(
+            std::move(handle)));
+        ASSERT_TRUE(impl.ping_source().has_value());
+        sources.push_back(impl.ping_source().value());
+      }));
   provider.BindAndFlush(std::move(interface_provider_receiver));
   EXPECT_THAT(sources, ::testing::ElementsAreArray(expected_sources));
 

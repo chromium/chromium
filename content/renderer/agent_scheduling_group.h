@@ -9,7 +9,6 @@
 #include "content/common/agent_scheduling_group.mojom.h"
 #include "content/common/associated_interfaces.mojom.h"
 #include "content/common/content_export.h"
-#include "content/renderer/render_thread_impl.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -17,7 +16,14 @@
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/mojom/associated_interfaces/associated_interfaces.mojom.h"
 
+namespace IPC {
+class Listener;
+class Message;
+}  // namespace IPC
+
 namespace content {
+
+class RenderThread;
 
 // Renderer-side representation of AgentSchedulingGroup, used for communication
 // with the (browser-side) AgentSchedulingGroupHost. AgentSchedulingGroup is
@@ -29,16 +35,16 @@ class CONTENT_EXPORT AgentSchedulingGroup
       public mojom::RouteProvider,
       public blink::mojom::AssociatedInterfaceProvider {
  public:
-  // |mojo_disconnect_handler| will be called with |this| when |receiver| is
-  // disconnected.
+  // |mojo_disconnect_handler| is an optional callback that will be called with
+  // |this| when |receiver| is disconnected.
   AgentSchedulingGroup(
-      RenderThreadImpl* render_thread,
+      RenderThread& render_thread,
       mojo::PendingRemote<mojom::AgentSchedulingGroupHost> host_remote,
       mojo::PendingReceiver<mojom::AgentSchedulingGroup> receiver,
       base::OnceCallback<void(const AgentSchedulingGroup*)>
           mojo_disconnect_handler);
   AgentSchedulingGroup(
-      RenderThreadImpl* render_thread,
+      RenderThread& render_thread,
       mojo::PendingAssociatedRemote<mojom::AgentSchedulingGroupHost>
           host_remote,
       mojo::PendingAssociatedReceiver<mojom::AgentSchedulingGroup> receiver,
@@ -50,6 +56,10 @@ class CONTENT_EXPORT AgentSchedulingGroup
   AgentSchedulingGroup(const AgentSchedulingGroup&&) = delete;
   AgentSchedulingGroup& operator=(const AgentSchedulingGroup&) = delete;
   AgentSchedulingGroup& operator=(const AgentSchedulingGroup&&) = delete;
+
+  bool Send(IPC::Message* message);
+  void AddRoute(int32_t routing_id, IPC::Listener* listener);
+  void RemoveRoute(int32_t routing_id);
 
  private:
   // `MaybeAssociatedReceiver` and `MaybeAssociatedRemote` are temporary helper
@@ -106,7 +116,7 @@ class CONTENT_EXPORT AgentSchedulingGroup
       mojo::PendingAssociatedReceiver<blink::mojom::AssociatedInterface>
           receiver) override;
 
-  RenderThreadImpl& render_thread_;
+  RenderThread& render_thread_;
 
   // Implementation of `mojom::AgentSchedulingGroup`, used for responding to
   // calls from the (browser-side) `AgentSchedulingGroupHost`.

@@ -22,10 +22,12 @@
 
 namespace content {
 
-WebViewTestProxy::WebViewTestProxy(CompositorDependencies* compositor_deps,
+WebViewTestProxy::WebViewTestProxy(AgentSchedulingGroup& agent_scheduling_group,
+                                   CompositorDependencies* compositor_deps,
                                    const mojom::CreateViewParams& params,
                                    TestRunner* test_runner)
-    : RenderViewImpl(compositor_deps, params), test_runner_(test_runner) {
+    : RenderViewImpl(agent_scheduling_group, compositor_deps, params),
+      test_runner_(test_runner) {
   test_runner_->AddRenderView(this);
 }
 

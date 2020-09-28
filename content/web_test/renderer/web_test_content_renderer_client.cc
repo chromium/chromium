@@ -49,17 +49,21 @@ namespace content {
 
 namespace {
 
-RenderViewImpl* CreateWebViewTestProxy(CompositorDependencies* compositor_deps,
-                                       const mojom::CreateViewParams& params) {
+RenderViewImpl* CreateWebViewTestProxy(
+    AgentSchedulingGroup& agent_scheduling_group,
+    CompositorDependencies* compositor_deps,
+    const mojom::CreateViewParams& params) {
   return new WebViewTestProxy(
-      compositor_deps, params,
+      agent_scheduling_group, compositor_deps, params,
       WebTestRenderThreadObserver::GetInstance()->test_runner());
 }
 
 std::unique_ptr<RenderWidget> CreateWebWidgetTestProxy(
+    AgentSchedulingGroup& agent_scheduling_group,
     int32_t routing_id,
     CompositorDependencies* compositor_deps) {
-  return std::make_unique<WebWidgetTestProxy>(routing_id, compositor_deps);
+  return std::make_unique<WebWidgetTestProxy>(agent_scheduling_group,
+                                              routing_id, compositor_deps);
 }
 
 RenderFrameImpl* CreateWebFrameTestProxy(RenderFrameImpl::CreateParams params) {

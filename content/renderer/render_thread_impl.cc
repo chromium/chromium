@@ -1808,9 +1808,15 @@ gpu::GpuChannelHost* RenderThreadImpl::GetGpuChannel() {
 void RenderThreadImpl::CreateView(mojom::CreateViewParamsPtr params) {
   CompositorDependencies* compositor_deps = this;
   is_scroll_animator_enabled_ = params->web_preferences.enable_scroll_animator;
-  // When bringing in render_view, also bring in webkit's glue and jsbindings.
-  RenderViewImpl::Create(compositor_deps, std::move(params),
-                         RenderWidget::ShowCallback(),
+  // TODO(crbug.com/1111231): For as long as views are created via the
+  // `Renderer` interface (as opposed to `AgentSchedulingGroup`), we will always
+  // have *exactly one* `AgentSchedulingGroup` in the process.
+  DCHECK_EQ(agent_scheduling_groups_.size(), 1ul);
+  AgentSchedulingGroup& agent_scheduling_group =
+      *agent_scheduling_groups_.begin()->get();
+
+  RenderViewImpl::Create(agent_scheduling_group, compositor_deps,
+                         std::move(params), RenderWidget::ShowCallback(),
                          GetWebMainThreadScheduler()->DefaultTaskRunner());
 }
 
@@ -1836,8 +1842,15 @@ void RenderThreadImpl::CreateFrame(mojom::CreateFrameParamsPtr params) {
   mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
       browser_interface_broker(
           std::move(params->interface_bundle->browser_interface_broker));
+  // TODO(crbug.com/1111231): For as long as frames are created via the
+  // `Renderer` interface (as opposed to `AgentSchedulingGroup`), we will always
+  // have *exactly one* `AgentSchedulingGroup` in the process.
+  DCHECK_EQ(agent_scheduling_groups_.size(), 1ul);
+  AgentSchedulingGroup& agent_scheduling_group =
+      *agent_scheduling_groups_.begin()->get();
+
   RenderFrameImpl::CreateFrame(
-      params->routing_id, std::move(interface_provider),
+      agent_scheduling_group, params->routing_id, std::move(interface_provider),
       std::move(browser_interface_broker), params->previous_routing_id,
       params->opener_frame_token, params->parent_routing_id,
       params->previous_sibling_routing_id, params->frame_token,
@@ -1860,7 +1873,7 @@ void RenderThreadImpl::CreateAgentSchedulingGroup(
         agent_scheduling_group_host,
     mojo::PendingReceiver<mojom::AgentSchedulingGroup> agent_scheduling_group) {
   agent_scheduling_groups_.emplace(std::make_unique<AgentSchedulingGroup>(
-      this, std::move(agent_scheduling_group_host),
+      *this, std::move(agent_scheduling_group_host),
       std::move(agent_scheduling_group),
       remove_agent_scheduling_group_callback_));
 }
@@ -1871,7 +1884,7 @@ void RenderThreadImpl::CreateAssociatedAgentSchedulingGroup(
     mojo::PendingAssociatedReceiver<mojom::AgentSchedulingGroup>
         agent_scheduling_group) {
   agent_scheduling_groups_.emplace(std::make_unique<AgentSchedulingGroup>(
-      this, std::move(agent_scheduling_group_host),
+      *this, std::move(agent_scheduling_group_host),
       std::move(agent_scheduling_group),
       remove_agent_scheduling_group_callback_));
 }
