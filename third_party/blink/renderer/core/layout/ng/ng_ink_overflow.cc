@@ -130,12 +130,7 @@ PhysicalRect NGInkOverflow::FromOutsets(const PhysicalSize& size) const {
 
 PhysicalRect NGInkOverflow::Self(Type type, const PhysicalSize& size) const {
   CheckType(type);
-#if DCHECK_IS_ON()
-  // TODO(crbug.com/1132619): Should compute all ink overflow when
-  // NGBlockFragmentation is enabled.
-  if (!RuntimeEnabledFeatures::LayoutNGBlockFragmentationEnabled())
-    DCHECK_NE(type, kNotSet);
-#endif
+  DCHECK_NE(type, kNotSet);
   switch (type) {
     case kNotSet:
     case kNone:

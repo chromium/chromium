@@ -4645,9 +4645,13 @@ void LayoutBlockFlow::RecalcInlineChildrenVisualOverflow() {
       if (const NGFragmentItems* items = fragment.Items()) {
         NGInlineCursor cursor(*items);
         NGFragmentItem::RecalcInkOverflowForCursor(&cursor);
-      } else if (fragment.HasFloatingDescendantsForPaint()) {
-        RecalcFloatingDescendantsVisualOverflow(fragment);
       }
+      // Even if this turned out to be an inline formatting context with
+      // fragment items (handled above), we need to handle floating descendants.
+      // If a float is block-fragmented, it is resumed as a regular box fragment
+      // child, rather than becoming a fragment item.
+      if (fragment.HasFloatingDescendantsForPaint())
+        RecalcFloatingDescendantsVisualOverflow(fragment);
     }
     return;
   }
