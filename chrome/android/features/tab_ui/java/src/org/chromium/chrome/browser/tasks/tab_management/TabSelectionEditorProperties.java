@@ -59,10 +59,13 @@ public class TabSelectionEditorProperties {
             .WritableIntPropertyKey TOOLBAR_ACTION_BUTTON_DESCRIPTION_RESOURCE_ID =
             new PropertyModel.WritableIntPropertyKey();
 
+    public static final PropertyModel.WritableObjectPropertyKey<Runnable> DISMISS_HANDLER =
+            new PropertyModel.WritableObjectPropertyKey();
+
     public static final PropertyKey[] ALL_KEYS = new PropertyKey[] {IS_VISIBLE,
             TOOLBAR_ACTION_BUTTON_LISTENER, TOOLBAR_ACTION_BUTTON_TEXT,
             TOOLBAR_ACTION_BUTTON_ENABLING_THRESHOLD, TOOLBAR_NAVIGATION_LISTENER, PRIMARY_COLOR,
             TOOLBAR_BACKGROUND_COLOR, TOOLBAR_GROUP_BUTTON_TINT, TOOLBAR_TEXT_APPEARANCE,
             SELECTION_EDITOR_POSITION_RECT, SELECTION_EDITOR_GLOBAL_LAYOUT_LISTENER,
-            TOOLBAR_ACTION_BUTTON_DESCRIPTION_RESOURCE_ID};
+            TOOLBAR_ACTION_BUTTON_DESCRIPTION_RESOURCE_ID, DISMISS_HANDLER};
 }

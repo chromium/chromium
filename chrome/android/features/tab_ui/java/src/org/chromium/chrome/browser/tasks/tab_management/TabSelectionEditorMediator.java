@@ -178,6 +178,10 @@ class TabSelectionEditorMediator
                                     TabSelectionEditorProperties.SELECTION_EDITOR_POSITION_RECT,
                                     mPositionProvider.getSelectionEditorPositionRect()));
         }
+
+        if (TabUiFeatureUtilities.isLaunchPolishEnabled()) {
+            mModel.set(TabSelectionEditorProperties.DISMISS_HANDLER, this::hide);
+        }
     }
 
     private boolean isEditorVisible() {
