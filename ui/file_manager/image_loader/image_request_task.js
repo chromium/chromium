@@ -334,7 +334,8 @@ ImageRequestTask.prototype.downloadOriginal_ = function(onSuccess, onFailure) {
     this.piexLoader_.load(this.request_.url, chrome.runtime.reload)
         .then(
             function(data) {
-              this.request_.orientation = data.orientation;
+              this.request_.orientation =
+                  ImageOrientation.fromExifOrientation(data.orientation);
               this.request_.colorSpace = data.colorSpace;
               this.ifd_ = data.ifd;
               this.contentType_ = data.mimeType;

@@ -89,11 +89,11 @@ function PiexLoaderResponse(data) {
   this.mimeType = data.mimeType || 'image/jpeg';
 
   /**
-   * @public {!ImageOrientation}
+   * JEITA EXIF image orientation being an integer in [1..8].
+   * @public {number}
    * @const
    */
-  this.orientation =
-      ImageOrientation.fromExifOrientation(data.orientation);
+  this.orientation = data.orientation;
 
   /**
    * @public {ColorSpace}
