@@ -13,6 +13,7 @@ class Insets;
 class Point;
 class PointF;
 class Rect;
+class RectF;
 class Size;
 class SizeF;
 
@@ -52,11 +53,14 @@ GEOMETRY_EXPORT gfx::SizeF ConvertSizeToPixels(const gfx::Size& size_in_dips,
 GEOMETRY_EXPORT gfx::SizeF ConvertSizeToPixels(const gfx::SizeF& size_in_dips,
                                                float device_scale_factor);
 
+GEOMETRY_EXPORT gfx::RectF ConvertRectToDips(const gfx::Rect& rect_in_pixels,
+                                             float scale_factor);
+GEOMETRY_EXPORT gfx::RectF ConvertRectToDips(const gfx::RectF& rect_in_pixels,
+                                             float scale_factor);
+
 GEOMETRY_EXPORT gfx::Insets ConvertInsetsToDIP(
     float scale_factor,
     const gfx::Insets& insets_in_pixel);
-GEOMETRY_EXPORT gfx::Rect ConvertRectToDIP(float scale_factor,
-                                           const gfx::Rect& rect_in_pixel);
 
 GEOMETRY_EXPORT gfx::Insets ConvertInsetsToPixel(
     float scale_factor,

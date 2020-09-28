@@ -46,7 +46,7 @@ class X11ScreenOzone : public PlatformScreen,
   display::Display GetDisplayNearestPoint(
       const gfx::Point& point) const override;
   display::Display GetDisplayMatching(
-      const gfx::Rect& match_rect) const override;
+      const gfx::Rect& match_rect_in_pixels) const override;
   void AddObserver(display::DisplayObserver* observer) override;
   void RemoveObserver(display::DisplayObserver* observer) override;
   std::string GetCurrentWorkspace() override;

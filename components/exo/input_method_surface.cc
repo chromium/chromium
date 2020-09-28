@@ -10,6 +10,7 @@
 #include "ui/base/class_property.h"
 #include "ui/gfx/geometry/dip_util.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/views/accessibility/view_accessibility.h"
 
 DEFINE_UI_CLASS_PROPERTY_KEY(exo::InputMethodSurface*,
@@ -69,10 +70,16 @@ void InputMethodSurface::OnSurfaceCommit() {
     manager_->AddSurface(this);
   }
 
-  const gfx::Rect new_bounds = gfx::ConvertRectToDIP(
-      GetScale(), root_surface()->hit_test_region().bounds());
-  if (input_method_bounds_ != new_bounds) {
-    input_method_bounds_ = new_bounds;
+  gfx::RectF new_bounds_in_dips = gfx::ConvertRectToDips(
+      root_surface()->hit_test_region().bounds(), GetScale());
+  // TODO(crbug.com/1131682): We should avoid dropping precision to integers
+  // here if we want to know the true rectangle bounds in DIPs. If not, we
+  // should use ToEnclosingRect() if we want to include DIPs that partly overlap
+  // the physical pixel bounds, or ToEnclosedRect() if we do not.
+  gfx::Rect int_bounds_in_dips =
+      gfx::ToFlooredRectDeprecated(new_bounds_in_dips);
+  if (input_method_bounds_ != int_bounds_in_dips) {
+    input_method_bounds_ = int_bounds_in_dips;
     manager_->OnTouchableBoundsChanged(this);
 
     GetViewAccessibility().OverrideBounds(gfx::RectF(input_method_bounds_));

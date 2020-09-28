@@ -11,6 +11,7 @@
 #include "ui/gfx/font_render_params.h"
 #include "ui/gfx/geometry/dip_util.h"
 #include "ui/gfx/geometry/point_conversions.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/platform_window/x11/x11_topmost_window_finder.h"
 #include "ui/platform_window/x11/x11_window.h"
@@ -110,11 +111,12 @@ display::Display X11ScreenOzone::GetDisplayNearestPoint(
 }
 
 display::Display X11ScreenOzone::GetDisplayMatching(
-    const gfx::Rect& match_rect) const {
+    const gfx::Rect& match_rect_in_pixels) const {
+  gfx::Rect match_rect = gfx::ToEnclosingRect(
+      gfx::ConvertRectToDips(match_rect_in_pixels, GetDeviceScaleFactor()));
   const display::Display* matching_display =
       display::FindDisplayWithBiggestIntersection(
-          x11_display_manager_->displays(),
-          gfx::ConvertRectToDIP(GetDeviceScaleFactor(), match_rect));
+          x11_display_manager_->displays(), match_rect);
   return matching_display ? *matching_display : GetPrimaryDisplay();
 }
 

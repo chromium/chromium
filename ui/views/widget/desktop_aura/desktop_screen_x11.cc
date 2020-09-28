@@ -22,6 +22,7 @@
 #include "ui/gfx/font_render_params.h"
 #include "ui/gfx/geometry/dip_util.h"
 #include "ui/gfx/geometry/point_conversions.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/switches.h"
 #include "ui/platform_window/x11/x11_topmost_window_finder.h"
@@ -121,9 +122,10 @@ display::Display DesktopScreenX11::GetDisplayNearestWindow(
         DesktopWindowTreeHostLinux::GetHostForWidget(
             host->GetAcceleratedWidget());
     if (desktop_host) {
-      const gfx::Rect pixel_rect = desktop_host->GetBoundsInPixels();
-      return GetDisplayMatching(
-          gfx::ConvertRectToDIP(GetXDisplayScaleFactor(), pixel_rect));
+      gfx::Rect match_rect_in_pixels = desktop_host->GetBoundsInPixels();
+      gfx::Rect match_rect = gfx::ToEnclosingRect(gfx::ConvertRectToDips(
+          match_rect_in_pixels, GetXDisplayScaleFactor()));
+      return GetDisplayMatching(match_rect);
     }
   }
 

@@ -95,6 +95,23 @@ SizeF ConvertSizeToPixels(const SizeF& size_in_dips,
   return ScaleSize(size_in_dips, device_scale_factor);
 }
 
+RectF ConvertRectToDips(const Rect& rect_in_pixels, float device_scale_factor) {
+#if defined(OS_MAC)
+  // Device scale factor on MacOSX is always an integer.
+  DCHECK(IsIntegerInFloat(device_scale_factor));
+#endif
+  return ScaleRect(RectF(rect_in_pixels), 1.f / device_scale_factor);
+}
+
+RectF ConvertRectToDips(const RectF& rect_in_pixels,
+                        float device_scale_factor) {
+#if defined(OS_MAC)
+  // Device scale factor on MacOSX is always an integer.
+  DCHECK(IsIntegerInFloat(device_scale_factor));
+#endif
+  return ScaleRect(rect_in_pixels, 1.f / device_scale_factor);
+}
+
 Insets ConvertInsetsToDIP(float scale_factor,
                           const gfx::Insets& insets_in_pixel) {
 #if defined(OS_MAC)
@@ -104,17 +121,6 @@ Insets ConvertInsetsToDIP(float scale_factor,
   if (scale_factor == 1.f)
     return insets_in_pixel;
   return insets_in_pixel.Scale(1.f / scale_factor);
-}
-
-Rect ConvertRectToDIP(float scale_factor, const Rect& rect_in_pixel) {
-#if defined(OS_MAC)
-  // Device scale factor on MacOSX is always an integer.
-  DCHECK(IsIntegerInFloat(scale_factor));
-#endif
-  if (scale_factor == 1.f)
-    return rect_in_pixel;
-  return ToFlooredRectDeprecated(
-      ScaleRect(RectF(rect_in_pixel), 1.f / scale_factor));
 }
 
 Insets ConvertInsetsToPixel(float scale_factor,

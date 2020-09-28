@@ -4,13 +4,17 @@
 
 #include "components/viz/service/frame_sinks/video_detector.h"
 
+#include <memory>
+#include <utility>
+#include <vector>
+
 #include "base/time/time.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/service/surfaces/surface.h"
 #include "components/viz/service/surfaces/surface_manager.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "ui/gfx/geometry/dip_util.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 
 namespace viz {
 
@@ -38,8 +42,8 @@ class VideoDetector::ClientInfo {
     const CompositorFrame& frame = surface->GetActiveFrame();
 
     gfx::Rect damage =
-        gfx::ConvertRectToDIP(frame.device_scale_factor(),
-                              frame.render_pass_list.back()->damage_rect);
+        gfx::ScaleToEnclosingRect(frame.render_pass_list.back()->damage_rect,
+                                  1.f / frame.device_scale_factor());
 
     if (damage.width() < kMinDamageWidth || damage.height() < kMinDamageHeight)
       return false;

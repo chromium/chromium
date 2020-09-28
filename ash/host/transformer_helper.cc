@@ -10,13 +10,14 @@
 #include "ash/host/root_window_transformer.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
-#include "ui/compositor/dip_util.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_element.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/gfx/geometry/dip_util.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/size_conversions.h"
@@ -43,10 +44,12 @@ class SimpleRootWindowTransformer : public RootWindowTransformer {
   }
 
   gfx::Rect GetRootWindowBounds(const gfx::Size& host_size) const override {
-    gfx::Rect bounds(host_size);
-    gfx::RectF new_bounds(ui::ConvertRectToDIP(root_window_->layer(), bounds));
-    GetInverseTransform().TransformRect(&new_bounds);
-    return gfx::Rect(gfx::ToFlooredSize(new_bounds.size()));
+    gfx::Rect host_bounds_in_pixels(host_size);
+    gfx::RectF host_bounds_in_dips = gfx::ConvertRectToDips(
+        host_bounds_in_pixels, root_window_->layer()->device_scale_factor());
+    gfx::RectF root_window_bounds = host_bounds_in_dips;
+    GetInverseTransform().TransformRect(&root_window_bounds);
+    return gfx::Rect(gfx::ToFlooredSize(root_window_bounds.size()));
   }
 
   gfx::Insets GetHostInsets() const override { return gfx::Insets(); }

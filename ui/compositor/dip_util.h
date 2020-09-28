@@ -6,7 +6,6 @@
 #define UI_COMPOSITOR_DIP_UTIL_H_
 
 #include "ui/compositor/compositor_export.h"
-#include "ui/gfx/geometry/point_f.h"
 
 namespace gfx {
 class Rect;
@@ -15,11 +14,6 @@ class Rect;
 namespace ui {
 class Layer;
 
-// Utility functions that convert point/size/rect between
-// DIP and pixel coordinates system.
-COMPOSITOR_EXPORT gfx::Rect ConvertRectToDIP(
-    const Layer* layer,
-    const gfx::Rect& rect_in_pixel);
 COMPOSITOR_EXPORT gfx::Rect ConvertRectToPixel(
     const Layer* layer,
     const gfx::Rect& rect_in_dip);
