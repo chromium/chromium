@@ -705,7 +705,7 @@ TEST_F(StaleHostResolverTest, CreatedByContext) {
   std::unique_ptr<net::URLRequestContext> context(builder.Build());
 
   // Experimental options ensure context's resolver is a StaleHostResolver.
-  SetResolver(reinterpret_cast<StaleHostResolver*>(context->host_resolver()),
+  SetResolver(static_cast<StaleHostResolver*>(context->host_resolver()),
               context.get());
   // Note: Experimental config above sets 0ms stale delay.
   CreateCacheEntry(kAgeExpiredSec, net::OK);
