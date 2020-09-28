@@ -384,6 +384,7 @@ class CORE_EXPORT NGFragmentItem {
 
  private:
   FRIEND_TEST_ALL_PREFIXES(NGFragmentItemTest, CopyMove);
+  FRIEND_TEST_ALL_PREFIXES(NGFragmentItemTest, SelfPaintingInlineBox);
   FRIEND_TEST_ALL_PREFIXES(StyleChangeTest, NeedsCollectInlinesOnStyle);
 
   // Create a text item.

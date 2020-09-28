@@ -2762,4 +2762,18 @@ const base::span<NGInlineItem>& LayoutText::InlineItems() const {
   return *GetNGInlineItems();
 }
 
+#if DCHECK_IS_ON()
+void LayoutText::RecalcVisualOverflow() {
+  // We should never reach here, because |PaintLayer| calls
+  // |RecalcVisualOverflow| for each layer, and the containing |LayoutObject|
+  // should recalculate its |NGFragmentItem|s without traversing descendant
+  // |LayoutObject|s.
+  if (IsInline() && IsInLayoutNGInlineFormattingContext() &&
+      RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled())
+    NOTREACHED();
+
+  LayoutObject::RecalcVisualOverflow();
+}
+#endif
+
 }  // namespace blink

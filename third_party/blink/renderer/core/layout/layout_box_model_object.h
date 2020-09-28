@@ -574,6 +574,8 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
   // public only for NGOutOfFlowLayoutPart, otherwise protected.
   LayoutBoxModelObject* Continuation() const;
 
+  void RecalcVisualOverflow() override;
+
  protected:
   // Compute absolute quads for |this|, but not any continuations. May only be
   // called for objects which can be or have continuations, i.e. LayoutInline or

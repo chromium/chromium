@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/core/layout/layout_geometry_map.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/ng/legacy_layout_tree_walking.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
@@ -645,6 +646,22 @@ void LayoutBoxModelObject::AddOutlineRectsForDescendant(
   }
 
   descendant.AddOutlineRects(rects, additional_offset, include_block_overflows);
+}
+
+void LayoutBoxModelObject::RecalcVisualOverflow() {
+  // |PaintLayer| calls this function when |HasSelfPaintingLayer|. When |this|
+  // is an inline box or an atomic inline, its ink overflow is stored in
+  // |NGFragmentItem| in the inline formatting context.
+  if (IsInline() && IsInLayoutNGInlineFormattingContext() &&
+      RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled()) {
+    DCHECK(HasSelfPaintingLayer());
+    NGInlineCursor cursor;
+    for (cursor.MoveTo(*this); cursor; cursor.MoveToNextForSameLayoutObject())
+      cursor.Current().RecalcInkOverflow(cursor);
+    return;
+  }
+
+  LayoutObject::RecalcVisualOverflow();
 }
 
 void LayoutBoxModelObject::AbsoluteQuadsForSelf(

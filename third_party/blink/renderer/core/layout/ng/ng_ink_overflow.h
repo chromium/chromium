@@ -116,6 +116,16 @@ class CORE_EXPORT NGInkOverflow {
       const ComputedStyle& style,
       const PhysicalSize& size);
 
+#if DCHECK_IS_ON()
+  struct ReadUnsetAsNoneScope {
+    STACK_ALLOCATED();
+
+   public:
+    ReadUnsetAsNoneScope() { ++read_unset_as_none_; }
+    ~ReadUnsetAsNoneScope() { --read_unset_as_none_; }
+  };
+#endif
+
  private:
   PhysicalRect FromOutsets(const PhysicalSize& size) const;
 
@@ -160,6 +170,8 @@ class CORE_EXPORT NGInkOverflow {
 
 #if DCHECK_IS_ON()
   Type type_ = Type::kNotSet;
+
+  static unsigned read_unset_as_none_;
 #endif
 };
 

@@ -428,6 +428,10 @@ class CORE_EXPORT LayoutText : public LayoutObject {
     return {LayoutUnit::Max(), LayoutUnit::Max()};
   }
 
+#if DCHECK_IS_ON()
+  void RecalcVisualOverflow() override;
+#endif
+
  protected:
   void WillBeDestroyed() override;
 

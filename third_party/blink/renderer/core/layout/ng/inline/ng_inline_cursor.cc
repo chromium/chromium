@@ -573,6 +573,15 @@ const PhysicalRect NGInlineCursorPosition::SelfInkOverflow() const {
   return PhysicalRect();
 }
 
+void NGInlineCursorPosition::RecalcInkOverflow(
+    const NGInlineCursor& cursor) const {
+  DCHECK(item_);
+  DCHECK_EQ(item_, cursor.Current().Item());
+  PhysicalRect self_and_contents_rect;
+  item_->GetMutableForPainting().RecalcInkOverflow(cursor,
+                                                   &self_and_contents_rect);
+}
+
 TextDirection NGInlineCursorPosition::ResolvedDirection() const {
   if (paint_fragment_)
     return paint_fragment_->PhysicalFragment().ResolvedDirection();

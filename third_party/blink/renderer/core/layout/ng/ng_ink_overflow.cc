@@ -33,6 +33,8 @@ inline bool HasOverflow(const PhysicalRect& rect, const PhysicalSize& size) {
 }  // namespace
 
 #if DCHECK_IS_ON()
+unsigned NGInkOverflow::read_unset_as_none_ = 0;
+
 NGInkOverflow::~NGInkOverflow() {
   // Because |Type| is kept outside of the instance, callers must call |Reset|
   // before destructing.
@@ -129,7 +131,7 @@ PhysicalRect NGInkOverflow::FromOutsets(const PhysicalSize& size) const {
 PhysicalRect NGInkOverflow::Self(Type type, const PhysicalSize& size) const {
   CheckType(type);
 #if DCHECK_IS_ON()
-  // TODO(crbug.com/829028): Should compute all ink overflow when
+  // TODO(crbug.com/1132619): Should compute all ink overflow when
   // NGBlockFragmentation is enabled.
   if (!RuntimeEnabledFeatures::LayoutNGBlockFragmentationEnabled())
     DCHECK_NE(type, kNotSet);
@@ -156,9 +158,14 @@ PhysicalRect NGInkOverflow::SelfAndContents(Type type,
   CheckType(type);
   switch (type) {
     case kNotSet:
-      // It is fine to read |kNotSet|, because
-      // |PaintLayer::UpdateDescendantDependentFlags| needs to know the old
-      // value before it computes ink overflow.
+#if DCHECK_IS_ON()
+      if (!read_unset_as_none_ &&
+          // TODO(crbug.com/1132619): Should compute all ink overflow when
+          // NGBlockFragmentation is enabled.
+          !RuntimeEnabledFeatures::LayoutNGBlockFragmentationEnabled())
+        NOTREACHED();
+      FALLTHROUGH;
+#endif
     case kNone:
       return {PhysicalOffset(), size};
     case kSmallSelf:

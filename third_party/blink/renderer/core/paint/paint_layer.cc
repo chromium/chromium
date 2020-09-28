@@ -129,6 +129,14 @@ struct SameSizeAsPaintLayer : DisplayItemClient {
 ASSERT_SIZE(PaintLayer, SameSizeAsPaintLayer);
 #endif
 
+inline PhysicalRect PhysicalVisualOverflowRectAllowingUnset(
+    const LayoutBoxModelObject& layout_object) {
+#if DCHECK_IS_ON()
+  NGInkOverflow::ReadUnsetAsNoneScope read_unset_as_none;
+#endif
+  return layout_object.PhysicalVisualOverflowRect();
+}
+
 }  // namespace
 
 PaintLayerRareData::PaintLayerRareData()
@@ -683,7 +691,8 @@ void PaintLayer::UpdateDescendantDependentFlags() {
     needs_descendant_dependent_flags_update_ = false;
 
     if (IsSelfPaintingLayer() && needs_visual_overflow_recalc_) {
-      auto old_visual_rect = GetLayoutObject().PhysicalVisualOverflowRect();
+      PhysicalRect old_visual_rect =
+          PhysicalVisualOverflowRectAllowingUnset(GetLayoutObject());
       GetLayoutObject().RecalcVisualOverflow();
       if (old_visual_rect != GetLayoutObject().PhysicalVisualOverflowRect()) {
         SetNeedsCompositingInputsUpdateInternal();

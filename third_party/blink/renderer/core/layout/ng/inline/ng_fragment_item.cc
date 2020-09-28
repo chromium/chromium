@@ -520,11 +520,11 @@ PhysicalRect NGFragmentItem::RecalcInkOverflowForCursor(
       NOTREACHED();
       continue;
     }
+    if (UNLIKELY(item->HasSelfPaintingLayer()))
+      continue;
 
     PhysicalRect child_rect;
     item->GetMutableForPainting().RecalcInkOverflow(*cursor, &child_rect);
-    if (item->HasSelfPaintingLayer())
-      continue;
     if (!child_rect.IsEmpty()) {
       child_rect.offset += item->OffsetInContainerBlock();
       contents_ink_overflow.Unite(child_rect);

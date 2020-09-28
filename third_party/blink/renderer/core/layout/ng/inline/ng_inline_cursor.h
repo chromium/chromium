@@ -132,6 +132,8 @@ class CORE_EXPORT NGInlineCursorPosition {
   const PhysicalRect InkOverflow() const;
   const PhysicalRect SelfInkOverflow() const;
 
+  void RecalcInkOverflow(const NGInlineCursor& cursor) const;
+
   // Returns start/end of offset in text content of current text fragment.
   // It is error when this cursor doesn't point to text fragment.
   NGTextOffset TextOffset() const;

@@ -67,6 +67,7 @@
 #include "third_party/blink/renderer/core/mathml/mathml_scripts_element.h"
 #include "third_party/blink/renderer/core/mathml/mathml_space_element.h"
 #include "third_party/blink/renderer/core/mathml/mathml_under_over_element.h"
+#include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/writing_mode.h"
@@ -1319,6 +1320,8 @@ void NGBlockNode::CopyFragmentItemsToLayoutBox(
         }
         layout_box->SetLocationAndUpdateOverflowControlsIfNeeded(
             maybe_flipped_offset.ToLayoutPoint());
+        if (UNLIKELY(layout_box->HasSelfPaintingLayer()))
+          layout_box->Layer()->SetNeedsVisualOverflowRecalc();
         continue;
       }
 
@@ -1330,6 +1333,8 @@ void NGBlockNode::CopyFragmentItemsToLayoutBox(
             layout_inline->Continuation()) {
           box_->SetContainsInlineWithOutlineAndContinuation(true);
         }
+        if (UNLIKELY(layout_inline->HasSelfPaintingLayer()))
+          layout_inline->Layer()->SetNeedsVisualOverflowRecalc();
       }
     }
   }
