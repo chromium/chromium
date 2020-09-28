@@ -184,7 +184,7 @@ class TranslateLanguageBrowserTest : public InProcessBrowserTest {
 
   void Revert() { test_utils::PressRevert(browser_); }
 
-  LanguageState& GetLanguageState() {
+  const LanguageState& GetLanguageState() {
     auto* const client = ChromeTranslateClient::FromWebContents(
         browser_->tab_strip_model()->GetActiveWebContents());
     CHECK(client);

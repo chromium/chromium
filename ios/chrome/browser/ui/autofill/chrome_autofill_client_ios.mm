@@ -199,7 +199,7 @@ const translate::LanguageState* ChromeAutofillClientIOS::GetLanguageState() {
   if (translate_client) {
     auto* translate_manager = translate_client->GetTranslateManager();
     if (translate_manager)
-      return &translate_manager->GetLanguageState();
+      return translate_manager->GetLanguageState();
   }
   return nullptr;
 }

@@ -69,7 +69,7 @@ class TranslateUIDelegateTest : public ::testing::Test {
     language_model_ = std::make_unique<MockLanguageModel>();
     manager_ = std::make_unique<TranslateManager>(client_.get(), ranker_.get(),
                                                   language_model_.get());
-    manager_->GetLanguageState().set_translation_declined(false);
+    manager_->GetLanguageState()->set_translation_declined(false);
 
     delegate_ = std::make_unique<TranslateUIDelegate>(manager_->GetWeakPtr(),
                                                       "ar", "fr");
@@ -110,7 +110,7 @@ TEST_F(TranslateUIDelegateTest, CheckDeclinedFalse) {
   EXPECT_EQ(denied_count, prefs->GetTranslationDeniedCount("ar"));
   EXPECT_EQ(ignored_count + 1, prefs->GetTranslationIgnoredCount("ar"));
   EXPECT_FALSE(prefs->IsTooOftenDenied("ar"));
-  EXPECT_FALSE(manager_->GetLanguageState().translation_declined());
+  EXPECT_FALSE(manager_->GetLanguageState()->translation_declined());
 }
 
 TEST_F(TranslateUIDelegateTest, CheckDeclinedTrue) {
@@ -131,7 +131,7 @@ TEST_F(TranslateUIDelegateTest, CheckDeclinedTrue) {
   EXPECT_EQ(0, prefs->GetTranslationAcceptedCount("ar"));
   EXPECT_EQ(denied_count + 1, prefs->GetTranslationDeniedCount("ar"));
   EXPECT_EQ(ignored_count, prefs->GetTranslationIgnoredCount("ar"));
-  EXPECT_TRUE(manager_->GetLanguageState().translation_declined());
+  EXPECT_TRUE(manager_->GetLanguageState()->translation_declined());
 }
 
 TEST_F(TranslateUIDelegateTest, SetLanguageBlocked) {
@@ -142,7 +142,7 @@ TEST_F(TranslateUIDelegateTest, SetLanguageBlocked) {
       .Times(1);
 
   std::unique_ptr<TranslatePrefs> prefs(client_->GetTranslatePrefs());
-  manager_->GetLanguageState().SetTranslateEnabled(true);
+  manager_->GetLanguageState()->SetTranslateEnabled(true);
   prefs->UnblockLanguage("ar");
   EXPECT_FALSE(prefs->IsBlockedLanguage("ar"));
 

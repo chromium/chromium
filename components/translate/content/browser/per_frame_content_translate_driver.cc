@@ -223,7 +223,7 @@ void PerFrameContentTranslateDriver::NavigationEntryCommitted(
   }
 
   if (!load_details.is_main_frame &&
-      translate_manager()->GetLanguageState().translation_declined()) {
+      translate_manager()->GetLanguageState()->translation_declined()) {
     // Some sites (such as Google map) may trigger sub-frame navigations
     // when the user interacts with the page.  We don't want to show a new
     // infobar if the user already dismissed one in that case.
@@ -249,7 +249,7 @@ void PerFrameContentTranslateDriver::NavigationEntryCommitted(
     return;
   }
 
-  if (!translate_manager()->GetLanguageState().page_needs_translation())
+  if (!translate_manager()->GetLanguageState()->page_needs_translation())
     return;
 
   // Note that we delay it as the ordering of the processing of this callback
@@ -261,7 +261,7 @@ void PerFrameContentTranslateDriver::NavigationEntryCommitted(
       base::BindOnce(
           &PerFrameContentTranslateDriver::InitiateTranslation,
           weak_pointer_factory_.GetWeakPtr(),
-          translate_manager()->GetLanguageState().original_language(), 0));
+          translate_manager()->GetLanguageState()->original_language(), 0));
 }
 
 void PerFrameContentTranslateDriver::DidFinishNavigation(
@@ -287,7 +287,7 @@ void PerFrameContentTranslateDriver::DidFinishNavigation(
                                       google_util::ALLOW_NON_STANDARD_PORTS) ||
        IsAutoHrefTranslateAllOriginsEnabled());
 
-  translate_manager()->GetLanguageState().DidNavigate(
+  translate_manager()->GetLanguageState()->DidNavigate(
       navigation_handle->IsSameDocument(), navigation_handle->IsInMainFrame(),
       reload, navigation_handle->GetHrefTranslate(), navigation_from_google);
 }
@@ -354,7 +354,7 @@ void PerFrameContentTranslateDriver::OnPageLanguageDetermined(
     language_histogram()->OnPageVisited(details.cld_language);
 
   if (translate_manager() && web_contents()) {
-    translate_manager()->GetLanguageState().LanguageDetermined(
+    translate_manager()->GetLanguageState()->LanguageDetermined(
         details.adopted_language, page_needs_translation);
     translate_manager()->InitiateTranslation(details.adopted_language);
   }

@@ -48,7 +48,7 @@ class ChromeTranslateClient
   ~ChromeTranslateClient() override;
 
   // Gets the LanguageState associated with the page.
-  translate::LanguageState& GetLanguageState();
+  const translate::LanguageState& GetLanguageState();
 
   // Returns the ContentTranslateDriver instance associated with this
   // WebContents.
@@ -79,10 +79,6 @@ class ChromeTranslateClient
 
   // Gets the associated TranslateManager.
   translate::TranslateManager* GetTranslateManager();
-
-  // Gets the associated WebContents. Returns NULL if the WebContents is being
-  // destroyed.
-  content::WebContents* GetWebContents();
 
   // TranslateClient implementation.
   translate::TranslateDriver* GetTranslateDriver() override;

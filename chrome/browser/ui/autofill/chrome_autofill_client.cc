@@ -200,7 +200,7 @@ const translate::LanguageState* ChromeAutofillClient::GetLanguageState() {
   auto* translate_manager =
       ChromeTranslateClient::GetManagerFromWebContents(web_contents());
   if (translate_manager)
-    return &translate_manager->GetLanguageState();
+    return translate_manager->GetLanguageState();
   return nullptr;
 }
 

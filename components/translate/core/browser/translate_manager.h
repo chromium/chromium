@@ -158,7 +158,7 @@ class TranslateManager {
   RegisterTranslateInitCallback(const TranslateInitCallback& callback);
 
   // Gets the LanguageState associated with the TranslateManager
-  LanguageState& GetLanguageState();
+  LanguageState* GetLanguageState();
 
   // Record an event of the given |event_type| using the currently saved
   // |translate_event_| as context. |event_type| must be one of the values

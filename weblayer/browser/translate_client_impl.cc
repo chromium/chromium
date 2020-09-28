@@ -66,8 +66,8 @@ TranslateClientImpl::TranslateClientImpl(content::WebContents* web_contents)
 
 TranslateClientImpl::~TranslateClientImpl() = default;
 
-translate::LanguageState& TranslateClientImpl::GetLanguageState() {
-  return translate_manager_->GetLanguageState();
+const translate::LanguageState& TranslateClientImpl::GetLanguageState() {
+  return *translate_manager_->GetLanguageState();
 }
 
 bool TranslateClientImpl::ShowTranslateUI(

@@ -542,8 +542,8 @@ std::string TranslateManager::GetAutoTargetLanguage(
   return std::string();
 }
 
-LanguageState& TranslateManager::GetLanguageState() {
-  return language_state_;
+LanguageState* TranslateManager::GetLanguageState() {
+  return &language_state_;
 }
 
 bool TranslateManager::ignore_missing_key_for_testing_ = false;

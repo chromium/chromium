@@ -78,7 +78,7 @@ void ContentTranslateDriver::RemoveObserver(Observer* observer) {
 
 void ContentTranslateDriver::InitiateTranslation(const std::string& page_lang,
                                                  int attempt) {
-  if (translate_manager_->GetLanguageState().translation_pending())
+  if (translate_manager_->GetLanguageState()->translation_pending())
     return;
 
   // During a reload we need web content to be available before the
@@ -200,7 +200,7 @@ void ContentTranslateDriver::NavigationEntryCommitted(
   }
 
   if (!load_details.is_main_frame &&
-      translate_manager_->GetLanguageState().translation_declined()) {
+      translate_manager_->GetLanguageState()->translation_declined()) {
     // Some sites (such as Google map) may trigger sub-frame navigations
     // when the user interacts with the page.  We don't want to show a new
     // infobar if the user already dismissed one in that case.
@@ -226,7 +226,7 @@ void ContentTranslateDriver::NavigationEntryCommitted(
     return;
   }
 
-  if (!translate_manager_->GetLanguageState().page_needs_translation())
+  if (!translate_manager_->GetLanguageState()->page_needs_translation())
     return;
 
   // Note that we delay it as the ordering of the processing of this callback
@@ -235,10 +235,10 @@ void ContentTranslateDriver::NavigationEntryCommitted(
   // an infobar, it must be done after that.
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
-      base::BindOnce(&ContentTranslateDriver::InitiateTranslation,
-                     weak_pointer_factory_.GetWeakPtr(),
-                     translate_manager_->GetLanguageState().original_language(),
-                     0));
+      base::BindOnce(
+          &ContentTranslateDriver::InitiateTranslation,
+          weak_pointer_factory_.GetWeakPtr(),
+          translate_manager_->GetLanguageState()->original_language(), 0));
 }
 
 void ContentTranslateDriver::DidFinishNavigation(
@@ -264,7 +264,7 @@ void ContentTranslateDriver::DidFinishNavigation(
                                       google_util::ALLOW_NON_STANDARD_PORTS) ||
        IsAutoHrefTranslateAllOriginsEnabled());
 
-  translate_manager_->GetLanguageState().DidNavigate(
+  translate_manager_->GetLanguageState()->DidNavigate(
       navigation_handle->IsSameDocument(), navigation_handle->IsInMainFrame(),
       reload, navigation_handle->GetHrefTranslate(), navigation_from_google);
 }
@@ -301,7 +301,7 @@ void ContentTranslateDriver::RegisterPage(
                      base::Unretained(this), next_page_seq_no_));
   translate_manager_->set_current_seq_no(next_page_seq_no_);
 
-  translate_manager_->GetLanguageState().LanguageDetermined(
+  translate_manager_->GetLanguageState()->LanguageDetermined(
       details.adopted_language, page_needs_translation);
 
   if (web_contents()) {

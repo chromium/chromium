@@ -150,7 +150,7 @@ void TranslateUIDelegate::OnErrorShown(TranslateErrors::Type error_type) {
 }
 
 const LanguageState& TranslateUIDelegate::GetLanguageState() {
-  return translate_manager_->GetLanguageState();
+  return *translate_manager_->GetLanguageState();
 }
 
 size_t TranslateUIDelegate::GetNumberOfLanguages() const {
@@ -272,7 +272,7 @@ void TranslateUIDelegate::TranslationDeclined(bool explicitly_closed) {
         explicitly_closed ? metrics::TranslateEventProto::USER_DECLINE
                           : metrics::TranslateEventProto::USER_IGNORE);
     if (explicitly_closed)
-      translate_manager_->GetLanguageState().set_translation_declined(true);
+      translate_manager_->GetLanguageState()->set_translation_declined(true);
   }
 
   if (explicitly_closed) {

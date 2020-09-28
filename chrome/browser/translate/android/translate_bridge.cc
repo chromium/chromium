@@ -79,7 +79,8 @@ static jboolean JNI_TranslateBridge_ShouldShowManualTranslateIPH(
   translate::TranslateManager* manager = client->GetTranslateManager();
   DCHECK(manager);
 
-  const std::string page_lang = manager->GetLanguageState().original_language();
+  const std::string page_lang =
+      manager->GetLanguageState()->original_language();
   std::unique_ptr<translate::TranslatePrefs> translate_prefs(
       client->GetTranslatePrefs());
 
@@ -87,7 +88,7 @@ static jboolean JNI_TranslateBridge_ShouldShowManualTranslateIPH(
                           base::CompareCase::INSENSITIVE_ASCII) &&
          !language::ShouldForceTriggerTranslateOnEnglishPages(
              translate_prefs->GetForceTriggerOnEnglishPagesCount()) &&
-         !manager->GetLanguageState().translate_enabled();
+         !manager->GetLanguageState()->translate_enabled();
 }
 
 static void JNI_TranslateBridge_SetPredefinedTargetLanguage(

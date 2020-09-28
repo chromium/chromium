@@ -127,8 +127,8 @@ ChromeTranslateClient::~ChromeTranslateClient() {
   }
 }
 
-translate::LanguageState& ChromeTranslateClient::GetLanguageState() {
-  return translate_manager_->GetLanguageState();
+const translate::LanguageState& ChromeTranslateClient::GetLanguageState() {
+  return *translate_manager_->GetLanguageState();
 }
 
 translate::ContentTranslateDriver* ChromeTranslateClient::translate_driver() {

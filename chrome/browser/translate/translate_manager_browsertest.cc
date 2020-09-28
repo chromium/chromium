@@ -1125,7 +1125,8 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest,
 
   // Set target language manually
   manager->SetPredefinedTargetLanguage("ru");
-  EXPECT_EQ("ru", manager->GetLanguageState().GetPredefinedTargetLanguage());
+  EXPECT_EQ("ru", chrome_translate_client->GetLanguageState()
+                      .GetPredefinedTargetLanguage());
 
   SetTranslateScript(kTestValidScript);
 
@@ -1876,7 +1877,8 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerWithSubFrameSupportBrowserTest,
 
   // Set target language manually
   manager->SetPredefinedTargetLanguage("ru");
-  EXPECT_EQ("ru", manager->GetLanguageState().GetPredefinedTargetLanguage());
+  EXPECT_EQ("ru", chrome_translate_client->GetLanguageState()
+                      .GetPredefinedTargetLanguage());
 
   SetTranslateScript(kTestValidScript);
 

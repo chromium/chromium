@@ -93,7 +93,7 @@ void IOSTranslateDriver::OnLanguageDetermined(
     const translate::LanguageDetectionDetails& details) {
   if (!translate_manager_)
     return;
-  translate_manager_->GetLanguageState().LanguageDetermined(
+  translate_manager_->GetLanguageState()->LanguageDetermined(
       details.adopted_language, true);
 
   if (web_state_)
@@ -124,7 +124,7 @@ void IOSTranslateDriver::DidFinishNavigation(
   // TODO(crbug.com/925320): support navigation types, like content/ does.
   const bool reload = ui::PageTransitionCoreTypeIs(
       navigation_context->GetPageTransition(), ui::PAGE_TRANSITION_RELOAD);
-  translate_manager_->GetLanguageState().DidNavigate(
+  translate_manager_->GetLanguageState()->DidNavigate(
       navigation_context->IsSameDocument(), true, reload, std::string(), false);
 }
 
