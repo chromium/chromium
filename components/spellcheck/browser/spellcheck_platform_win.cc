@@ -27,20 +27,20 @@ bool SpellCheckerAvailable() {
 void PlatformSupportsLanguage(PlatformSpellChecker* spell_checker_instance,
                               const std::string& lang_tag,
                               base::OnceCallback<void(bool)> callback) {
-  reinterpret_cast<WindowsSpellChecker*>(spell_checker_instance)
+  static_cast<WindowsSpellChecker*>(spell_checker_instance)
       ->IsLanguageSupported(lang_tag, std::move(callback));
 }
 
 void SetLanguage(PlatformSpellChecker* spell_checker_instance,
                  const std::string& lang_to_set,
                  base::OnceCallback<void(bool)> callback) {
-  reinterpret_cast<WindowsSpellChecker*>(spell_checker_instance)
+  static_cast<WindowsSpellChecker*>(spell_checker_instance)
       ->CreateSpellChecker(lang_to_set, std::move(callback));
 }
 
 void DisableLanguage(PlatformSpellChecker* spell_checker_instance,
                      const std::string& lang_to_disable) {
-  reinterpret_cast<WindowsSpellChecker*>(spell_checker_instance)
+  static_cast<WindowsSpellChecker*>(spell_checker_instance)
       ->DisableSpellChecker(lang_to_disable);
 }
 
@@ -57,7 +57,7 @@ void RequestTextCheck(PlatformSpellChecker* spell_checker_instance,
                       int document_tag,
                       const base::string16& text,
                       TextCheckCompleteCallback callback) {
-  reinterpret_cast<WindowsSpellChecker*>(spell_checker_instance)
+  static_cast<WindowsSpellChecker*>(spell_checker_instance)
       ->RequestTextCheck(document_tag, text, std::move(callback));
 }
 
@@ -65,26 +65,26 @@ void RequestTextCheck(PlatformSpellChecker* spell_checker_instance,
 void GetPerLanguageSuggestions(PlatformSpellChecker* spell_checker_instance,
                                const base::string16& word,
                                GetSuggestionsCallback callback) {
-  reinterpret_cast<WindowsSpellChecker*>(spell_checker_instance)
+  static_cast<WindowsSpellChecker*>(spell_checker_instance)
       ->GetPerLanguageSuggestions(word, std::move(callback));
 }
 #endif  // defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 
 void AddWord(PlatformSpellChecker* spell_checker_instance,
              const base::string16& word) {
-  reinterpret_cast<WindowsSpellChecker*>(spell_checker_instance)
+  static_cast<WindowsSpellChecker*>(spell_checker_instance)
       ->AddWordForAllLanguages(word);
 }
 
 void RemoveWord(PlatformSpellChecker* spell_checker_instance,
                 const base::string16& word) {
-  reinterpret_cast<WindowsSpellChecker*>(spell_checker_instance)
+  static_cast<WindowsSpellChecker*>(spell_checker_instance)
       ->RemoveWordForAllLanguages(word);
 }
 
 void IgnoreWord(PlatformSpellChecker* spell_checker_instance,
                 const base::string16& word) {
-  reinterpret_cast<WindowsSpellChecker*>(spell_checker_instance)
+  static_cast<WindowsSpellChecker*>(spell_checker_instance)
       ->IgnoreWordForAllLanguages(word);
 }
 
@@ -95,14 +95,14 @@ void GetAvailableLanguages(std::vector<std::string>* spellcheck_languages) {
 void RetrieveSpellcheckLanguages(
     PlatformSpellChecker* spell_checker_instance,
     RetrieveSpellcheckLanguagesCompleteCallback callback) {
-  reinterpret_cast<WindowsSpellChecker*>(spell_checker_instance)
+  static_cast<WindowsSpellChecker*>(spell_checker_instance)
       ->RetrieveSpellcheckLanguages(std::move(callback));
 }
 
 void AddSpellcheckLanguagesForTesting(
     PlatformSpellChecker* spell_checker_instance,
     const std::vector<std::string>& languages) {
-  reinterpret_cast<WindowsSpellChecker*>(spell_checker_instance)
+  static_cast<WindowsSpellChecker*>(spell_checker_instance)
       ->AddSpellcheckLanguagesForTesting(languages);
 }
 
@@ -134,7 +134,7 @@ void RecordChromeLocalesStats(PlatformSpellChecker* spell_checker_instance,
                               const std::vector<std::string> chrome_locales,
                               SpellCheckHostMetrics* metrics) {
   if (spellcheck::WindowsVersionSupportsSpellchecker()) {
-    reinterpret_cast<WindowsSpellChecker*>(spell_checker_instance)
+    static_cast<WindowsSpellChecker*>(spell_checker_instance)
         ->RecordChromeLocalesStats(std::move(chrome_locales), metrics);
   }
 }
@@ -144,7 +144,7 @@ void RecordSpellcheckLocalesStats(
     const std::vector<std::string> spellcheck_locales,
     SpellCheckHostMetrics* metrics) {
   if (spellcheck::WindowsVersionSupportsSpellchecker()) {
-    reinterpret_cast<WindowsSpellChecker*>(spell_checker_instance)
+    static_cast<WindowsSpellChecker*>(spell_checker_instance)
         ->RecordSpellcheckLocalesStats(std::move(spellcheck_locales), metrics);
   }
 }
