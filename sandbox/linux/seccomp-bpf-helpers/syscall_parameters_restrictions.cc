@@ -28,6 +28,7 @@
 #include "sandbox/linux/seccomp-bpf-helpers/sigsys_handlers.h"
 #include "sandbox/linux/seccomp-bpf/sandbox_bpf.h"
 #include "sandbox/linux/system_headers/linux_futex.h"
+#include "sandbox/linux/system_headers/linux_prctl.h"
 #include "sandbox/linux/system_headers/linux_syscalls.h"
 #include "sandbox/linux/system_headers/linux_time.h"
 
@@ -49,19 +50,6 @@
 
 #if !defined(F_DUPFD_CLOEXEC)
 #define F_DUPFD_CLOEXEC (F_LINUX_SPECIFIC_BASE + 6)
-#endif
-
-#if !defined(PR_SET_TIMERSLACK)
-#define PR_SET_TIMERSLACK 29
-#endif
-
-// https://android.googlesource.com/platform/bionic/+/lollipop-release/libc/private/bionic_prctl.h
-#if !defined(PR_SET_VMA)
-#define PR_SET_VMA 0x53564d41
-#endif
-
-#ifndef PR_SET_PTRACER
-#define PR_SET_PTRACER 0x59616d61
 #endif
 
 #endif  // defined(OS_ANDROID)
