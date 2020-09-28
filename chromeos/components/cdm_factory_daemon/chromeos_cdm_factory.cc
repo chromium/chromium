@@ -187,10 +187,16 @@ void ChromeOsCdmFactory::CreateCdm(
               session_closed_cb, session_keys_change_cb,
               session_expiration_update_cb));
 
+  // Create the OutputProtection interface to pass to the CDM.
+  mojo::PendingRemote<cdm::mojom::OutputProtection> output_protection_remote;
+  GetCdmFactoryDaemonRemote()->GetOutputProtection(
+      output_protection_remote.InitWithNewPipeAndPassReceiver());
+
   // Now create the remote CDM instance that links everything up.
   remote_factory_->CreateCdm(cdm->GetClientInterface(),
                              std::move(storage_remote),
-                             std::move(cros_cdm_pending_receiver));
+                             std::move(cros_cdm_pending_receiver),
+                             std::move(output_protection_remote));
 
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(cdm_created_cb), std::move(cdm), ""));

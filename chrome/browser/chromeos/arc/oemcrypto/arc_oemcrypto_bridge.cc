@@ -104,8 +104,14 @@ void ArcOemCryptoBridge::Connect(
 void ArcOemCryptoBridge::ConnectToDaemon(
     mojo::PendingReceiver<mojom::OemCryptoService> receiver,
     mojo::PendingRemote<mojom::ProtectedBufferManager> gpu_buffer_manager) {
+  // Create the OutputProtection interface to pass to the CDM.
+  mojo::PendingRemote<chromeos::cdm::mojom::OutputProtection> output_protection;
+  chromeos::CdmFactoryDaemonProxy::GetInstance().GetOutputProtection(
+      output_protection.InitWithNewPipeAndPassReceiver());
+
   chromeos::CdmFactoryDaemonProxy::GetInstance().ConnectOemCrypto(
-      std::move(receiver), std::move(gpu_buffer_manager));
+      std::move(receiver), std::move(gpu_buffer_manager),
+      std::move(output_protection));
 }
 
 }  // namespace arc

@@ -1,6 +1,14 @@
 include_rules = [
   "+components/arc/mojom",
   "+content/public/browser",
+  "+content/public/test",
   "+media/base",
   "+media/mojo/mojom",
+  "+ui/display",
 ]
+
+specific_include_rules = {
+  "output_protection_impl.cc": [
+    "+ash/shell.h",
+  ]
+}

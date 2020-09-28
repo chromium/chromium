@@ -8,13 +8,17 @@ component("cdm_factory_daemon_browser") {
   sources = [
     "cdm_factory_daemon_proxy.cc",
     "cdm_factory_daemon_proxy.h",
+    "output_protection_impl.cc",
+    "output_protection_impl.h",
   ]
   public_deps = [ "//chromeos/components/cdm_factory_daemon/mojom" ]
   deps = [
+    "//ash",
     "//base",
     "//chromeos/dbus/cdm_factory_daemon",
     "//content/public/browser",
     "//mojo/public/cpp/bindings",
+    "//ui/display/manager",
   ]
   defines = [ "IS_CDM_FACTORY_DAEMON_IMPL" ]
 }
@@ -44,17 +48,21 @@ source_set("unit_tests") {
   sources = [
     "cdm_storage_adapter_unittest.cc",
     "content_decryption_module_adapter_unittest.cc",
+    "output_protection_impl_unittest.cc",
   ]
 
   deps = [
+    ":cdm_factory_daemon_browser",
     ":cdm_factory_daemon_gpu",
     "//base",
     "//base/test:test_support",
     "//chromeos/components/cdm_factory_daemon/mojom",
     "//chromeos/components/cdm_factory_daemon/mojom:unit_tests",
+    "//content/test:test_support",
     "//media:test_support",
     "//mojo/public/cpp/bindings",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/display/fake",
   ]
 }

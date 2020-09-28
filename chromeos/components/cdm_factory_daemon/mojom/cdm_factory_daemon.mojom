@@ -9,24 +9,36 @@
 // interface can also be used to connect directly to the OEMCrypto
 // implementation for ARC.
 
+// Next MinVersion: 2
+
 module chromeos.cdm.mojom;
 
 import "chromeos/components/cdm_factory_daemon/mojom/cdm_storage.mojom";
 import "chromeos/components/cdm_factory_daemon/mojom/content_decryption_module.mojom";
+import "chromeos/components/cdm_factory_daemon/mojom/output_protection.mojom";
 import "components/arc/mojom/oemcrypto.mojom";
 import "components/arc/mojom/protected_buffer_manager.mojom";
 
-// Next Method ID: 1
+// Next Method ID: 2
 interface CdmFactory {
+  // Deprecated, do not use.
+  CreateCdmDeprecated@0(
+      pending_associated_remote<ContentDecryptionModuleClient> client,
+      pending_associated_remote<CdmStorage> storage,
+      pending_associated_receiver<ContentDecryptionModule> cdm);
+
   // Creates a new ContentDecryptionModule instance with the corresponding
-  // client and remote storage implementation. Use an associated interface to
-  // ensure ordering and that all become invalidated at the same time.
-  CreateCdm@0(pending_associated_remote<ContentDecryptionModuleClient> client,
+  // client, remote storage implementation and output protection. Use an
+  // associated interface to ensure ordering and that all become invalidated at
+  // the same time.
+  [MinVersion=1]
+  CreateCdm@1(pending_associated_remote<ContentDecryptionModuleClient> client,
               pending_associated_remote<CdmStorage> storage,
-              pending_associated_receiver<ContentDecryptionModule> cdm);
+              pending_associated_receiver<ContentDecryptionModule> cdm,
+              pending_remote<OutputProtection> output_protection);
 };
 
-// Next Method ID: 2
+// Next Method ID: 4
 // Used for bootstrapping the connection between Chrome and the daemon, then
 // methods can be invoked to obtain interfaces to perform CDM or OEMCrypto
 // operations.
@@ -37,10 +49,22 @@ interface CdmFactoryDaemon {
   // get the interface from the daemon.
   CreateFactory@0(string key_system) => (pending_remote<CdmFactory>? factory);
 
-  // Used to establish a connection to the OEMCrypto implementation to provide
-  // that service to ARC.
-  ConnectOemCrypto@1(
+  // Deprecated, do not use.
+  ConnectOemCryptoDeprecated@1(
       pending_receiver<arc.mojom.OemCryptoService> oemcryptor,
       pending_remote<arc.mojom.ProtectedBufferManager>
           protected_buffer_manager);
+
+  // Used to establish a connection to the OEMCrypto implementation to provide
+  // that service to ARC.
+  [MinVersion=1] ConnectOemCrypto@2(
+      pending_receiver<arc.mojom.OemCryptoService> oemcryptor,
+      pending_remote<arc.mojom.ProtectedBufferManager>
+          protected_buffer_manager,
+      pending_remote<OutputProtection> output_protection);
+
+  // Creates a new OutputProtection interface to be used for passing into the
+  // CreateCdm call in CdmFactory.
+  [MinVersion=1]
+  GetOutputProtection@3(pending_receiver<OutputProtection> output_protection);
 };
