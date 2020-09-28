@@ -13,6 +13,7 @@
 #include "base/macros.h"
 #include "components/arc/mojom/video_encode_accelerator.mojom.h"
 #include "components/arc/video_accelerator/video_frame_plane.h"
+#include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_preferences.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "media/video/video_encode_accelerator.h"
@@ -28,7 +29,8 @@ class GpuArcVideoEncodeAccelerator
       public media::VideoEncodeAccelerator::Client {
  public:
   explicit GpuArcVideoEncodeAccelerator(
-      const gpu::GpuPreferences& gpu_preferences);
+      const gpu::GpuPreferences& gpu_preferences,
+      const gpu::GpuDriverBugWorkarounds& gpu_workarounds);
   ~GpuArcVideoEncodeAccelerator() override;
 
  private:
@@ -87,6 +89,7 @@ class GpuArcVideoEncodeAccelerator
                           EncodeCallback callback);
 
   gpu::GpuPreferences gpu_preferences_;
+  gpu::GpuDriverBugWorkarounds gpu_workarounds_;
   std::unique_ptr<media::VideoEncodeAccelerator> accelerator_;
   mojo::Remote<::arc::mojom::VideoEncodeClient> client_;
   gfx::Size coded_size_;

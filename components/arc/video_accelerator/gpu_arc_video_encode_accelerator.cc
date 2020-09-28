@@ -64,8 +64,10 @@ base::Optional<media::VideoFrameLayout> CreateVideoFrameLayout(
 }  // namespace
 
 GpuArcVideoEncodeAccelerator::GpuArcVideoEncodeAccelerator(
-    const gpu::GpuPreferences& gpu_preferences)
+    const gpu::GpuPreferences& gpu_preferences,
+    const gpu::GpuDriverBugWorkarounds& gpu_workarounds)
     : gpu_preferences_(gpu_preferences),
+      gpu_workarounds_(gpu_workarounds),
       input_storage_type_(
           media::VideoEncodeAccelerator::Config::StorageType::kShmem),
       bitstream_buffer_serial_(0) {}
@@ -109,7 +111,7 @@ void GpuArcVideoEncodeAccelerator::GetSupportedProfiles(
     GetSupportedProfilesCallback callback) {
   std::move(callback).Run(
       media::GpuVideoEncodeAcceleratorFactory::GetSupportedProfiles(
-          gpu_preferences_));
+          gpu_preferences_, gpu_workarounds_));
 }
 
 void GpuArcVideoEncodeAccelerator::Initialize(
@@ -142,7 +144,7 @@ GpuArcVideoEncodeAccelerator::InitializeTask(
   input_storage_type_ = *config.storage_type;
   visible_size_ = config.input_visible_size;
   accelerator_ = media::GpuVideoEncodeAcceleratorFactory::CreateVEA(
-      config, this, gpu_preferences_);
+      config, this, gpu_preferences_, gpu_workarounds_);
   if (accelerator_ == nullptr) {
     DLOG(ERROR) << "Failed to create a VideoEncodeAccelerator.";
     return mojom::VideoEncodeAccelerator::Result::kPlatformFailureError;

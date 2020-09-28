@@ -30,18 +30,22 @@ namespace {
 void CreateArcVideoDecodeAccelerator(
     ChromeContentGpuClient* client,
     const gpu::GpuPreferences& gpu_preferences,
+    const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
     mojo::PendingReceiver<::arc::mojom::VideoDecodeAccelerator> receiver) {
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<arc::GpuArcVideoDecodeAccelerator>(
-          gpu_preferences, client->GetProtectedBufferManager()),
+          gpu_preferences, gpu_workarounds,
+          client->GetProtectedBufferManager()),
       std::move(receiver));
 }
 
 void CreateArcVideoEncodeAccelerator(
     const gpu::GpuPreferences& gpu_preferences,
+    const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
     mojo::PendingReceiver<::arc::mojom::VideoEncodeAccelerator> receiver) {
   mojo::MakeSelfOwnedReceiver(
-      std::make_unique<arc::GpuArcVideoEncodeAccelerator>(gpu_preferences),
+      std::make_unique<arc::GpuArcVideoEncodeAccelerator>(gpu_preferences,
+                                                          gpu_workarounds),
       std::move(receiver));
 }
 
@@ -73,14 +77,15 @@ void CreateProtectedBufferManager(
 void ExposeChromeGpuInterfacesToBrowser(
     ChromeContentGpuClient* client,
     const gpu::GpuPreferences& gpu_preferences,
+    const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
     mojo::BinderMap* binders) {
 #if defined(OS_CHROMEOS)
   binders->Add(base::BindRepeating(&CreateArcVideoDecodeAccelerator, client,
-                                   gpu_preferences),
+                                   gpu_preferences, gpu_workarounds),
                base::ThreadTaskRunnerHandle::Get());
-  binders->Add(
-      base::BindRepeating(&CreateArcVideoEncodeAccelerator, gpu_preferences),
-      base::ThreadTaskRunnerHandle::Get());
+  binders->Add(base::BindRepeating(&CreateArcVideoEncodeAccelerator,
+                                   gpu_preferences, gpu_workarounds),
+               base::ThreadTaskRunnerHandle::Get());
   binders->Add(
       base::BindRepeating(&CreateArcVideoProtectedBufferAllocator, client),
       base::ThreadTaskRunnerHandle::Get());

@@ -34,7 +34,8 @@ std::unique_ptr<VideoEncodeAccelerator> CreateAndInitializeFakeVEA(
     bool will_initialization_succeed,
     const VideoEncodeAccelerator::Config& config,
     VideoEncodeAccelerator::Client* client,
-    const gpu::GpuPreferences& gpu_preferences) {
+    const gpu::GpuPreferences& gpu_preferences,
+    const gpu::GpuDriverBugWorkarounds& gpu_workarounds) {
   // Use FakeVEA as scoped_ptr to guarantee proper destruction via Destroy().
   auto vea = std::make_unique<FakeVideoEncodeAccelerator>(
       base::ThreadTaskRunnerHandle::Get());

@@ -11,6 +11,7 @@
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
+#include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_preferences.h"
 #include "gpu/ipc/service/gpu_memory_buffer_factory.h"
 #include "media/base/bind_to_current_loop.h"
@@ -416,8 +417,8 @@ void VideoEncoderClient::CreateEncoderTask(const Video* video,
       VideoEncodeAccelerator::Config::ContentType::kCamera,
       CreateSpatialLayersConfig(video_->Resolution(), encoder_client_config_));
 
-  encoder_ = GpuVideoEncodeAcceleratorFactory::CreateVEA(config, this,
-                                                         gpu::GpuPreferences());
+  encoder_ = GpuVideoEncodeAcceleratorFactory::CreateVEA(
+      config, this, gpu::GpuPreferences(), gpu::GpuDriverBugWorkarounds());
   *success = (encoder_ != nullptr);
 
   // Initialization is continued once the encoder notifies us of the coded size

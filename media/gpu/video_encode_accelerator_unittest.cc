@@ -44,6 +44,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
+#include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_preferences.h"
 #include "gpu/ipc/service/gpu_memory_buffer_factory.h"
 #include "media/base/bind_to_current_loop.h"
@@ -1828,7 +1829,8 @@ VEAClient::VEAClient(TestStream* test_stream,
 static std::unique_ptr<VideoEncodeAccelerator> CreateVideoEncodeAccelerator(
     const VideoEncodeAccelerator::Config& config,
     VideoEncodeAccelerator::Client* client,
-    const gpu::GpuPreferences& gpu_preferences) {
+    const gpu::GpuPreferences& gpu_preferences,
+    const gpu::GpuDriverBugWorkarounds& gpu_workarounds) {
   if (g_fake_encoder) {
     std::unique_ptr<VideoEncodeAccelerator> encoder(
         new FakeVideoEncodeAccelerator(
@@ -1838,8 +1840,8 @@ static std::unique_ptr<VideoEncodeAccelerator> CreateVideoEncodeAccelerator(
       return encoder;
     return nullptr;
   } else {
-    return GpuVideoEncodeAcceleratorFactory::CreateVEA(config, client,
-                                                       gpu_preferences);
+    return GpuVideoEncodeAcceleratorFactory::CreateVEA(
+        config, client, gpu_preferences, gpu_workarounds);
   }
 }
 
@@ -1855,7 +1857,8 @@ void VEAClient::CreateEncoder() {
       test_stream_->pixel_format, encoded_visible_size_,
       test_stream_->requested_profile, requested_bitrate_, requested_framerate_,
       keyframe_period_, test_stream_->requested_level, false, storage_type);
-  encoder_ = CreateVideoEncodeAccelerator(config, this, gpu::GpuPreferences());
+  encoder_ = CreateVideoEncodeAccelerator(config, this, gpu::GpuPreferences(),
+                                          gpu::GpuDriverBugWorkarounds());
   if (!encoder_) {
     LOG(ERROR) << "Failed creating a VideoEncodeAccelerator.";
     SetState(CS_ERROR);
@@ -2531,7 +2534,8 @@ void SimpleVEAClientBase::CreateEncoder() {
   const VideoEncodeAccelerator::Config config(
       g_env->test_streams_[0]->pixel_format, visible_size,
       g_env->test_streams_[0]->requested_profile, bitrate_, fps_);
-  encoder_ = CreateVideoEncodeAccelerator(config, this, gpu::GpuPreferences());
+  encoder_ = CreateVideoEncodeAccelerator(config, this, gpu::GpuPreferences(),
+                                          gpu::GpuDriverBugWorkarounds());
   if (!encoder_) {
     LOG(ERROR) << "Failed creating a VideoEncodeAccelerator.";
     SetState(CS_ERROR);

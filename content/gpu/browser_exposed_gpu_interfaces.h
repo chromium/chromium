@@ -7,6 +7,7 @@
 
 namespace gpu {
 struct GpuPreferences;
+class GpuDriverBugWorkarounds;
 }
 
 namespace mojo {
@@ -22,8 +23,10 @@ namespace content {
 // Embedder-specific GPU interfaces can be exposed to the browser via
 // |ContentGpuClient::ExposeInterfacesToBrowser()| or embedder-specific helper
 // functions.
-void ExposeGpuInterfacesToBrowser(const gpu::GpuPreferences& gpu_preferences,
-                                  mojo::BinderMap* binders);
+void ExposeGpuInterfacesToBrowser(
+    const gpu::GpuPreferences& gpu_preferences,
+    const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
+    mojo::BinderMap* binders);
 
 }  // namespace content
 

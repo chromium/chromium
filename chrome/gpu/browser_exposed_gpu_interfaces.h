@@ -7,6 +7,7 @@
 
 namespace gpu {
 struct GpuPreferences;
+class GpuDriverBugWorkarounds;
 }
 
 namespace mojo {
@@ -21,6 +22,7 @@ class ChromeContentGpuClient;
 void ExposeChromeGpuInterfacesToBrowser(
     ChromeContentGpuClient* client,
     const gpu::GpuPreferences& gpu_preferences,
+    const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
     mojo::BinderMap* binders);
 
 #endif  // CHROME_GPU_BROWSER_EXPOSED_GPU_INTERFACES_H_

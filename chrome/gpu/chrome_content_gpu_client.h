@@ -27,8 +27,10 @@ class ChromeContentGpuClient : public content::ContentGpuClient {
 
   // content::ContentGpuClient:
   void GpuServiceInitialized() override;
-  void ExposeInterfacesToBrowser(const gpu::GpuPreferences& gpu_preferences,
-                                 mojo::BinderMap* binders) override;
+  void ExposeInterfacesToBrowser(
+      const gpu::GpuPreferences& gpu_preferences,
+      const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
+      mojo::BinderMap* binders) override;
   void PostIOThreadCreated(
       base::SingleThreadTaskRunner* io_task_runner) override;
   void PostCompositorThreadCreated(

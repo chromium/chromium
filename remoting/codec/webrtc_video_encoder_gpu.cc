@@ -13,6 +13,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "build/build_config.h"
+#include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_preferences.h"
 #include "media/gpu/gpu_video_encode_accelerator_factory.h"
 #include "remoting/base/constants.h"
@@ -51,6 +52,11 @@ gpu::GpuPreferences CreateGpuPreferences() {
   gpu_preferences.enable_media_foundation_vea_on_windows7 = true;
 #endif
   return gpu_preferences;
+}
+
+gpu::GpuDriverBugWorkarounds CreateGpuWorkarounds() {
+  gpu::GpuDriverBugWorkarounds gpu_workarounds;
+  return gpu_workarounds;
 }
 
 }  // namespace
@@ -230,7 +236,7 @@ void WebrtcVideoEncoderGpu::BeginInitialization() {
       input_format, input_visible_size_, codec_profile_, initial_bitrate);
   video_encode_accelerator_ =
       media::GpuVideoEncodeAcceleratorFactory::CreateVEA(
-          config, this, CreateGpuPreferences());
+          config, this, CreateGpuPreferences(), CreateGpuWorkarounds());
 
   if (!video_encode_accelerator_) {
     LOG(ERROR) << "Could not create VideoEncodeAccelerator";
@@ -271,7 +277,7 @@ bool WebrtcVideoEncoderGpu::IsSupportedByH264(
     const WebrtcVideoEncoderSelector::Profile& profile) {
   media::VideoEncodeAccelerator::SupportedProfiles profiles =
       media::GpuVideoEncodeAcceleratorFactory::GetSupportedProfiles(
-          CreateGpuPreferences());
+          CreateGpuPreferences(), CreateGpuWorkarounds());
   for (const auto& supported_profile : profiles) {
     if (supported_profile.profile != kH264Profile) {
       continue;

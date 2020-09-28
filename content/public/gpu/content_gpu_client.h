@@ -15,6 +15,7 @@
 
 namespace gpu {
 struct GpuPreferences;
+class GpuDriverBugWorkarounds;
 class SharedImageManager;
 class SyncPointManager;
 }
@@ -38,6 +39,7 @@ class CONTENT_EXPORT ContentGpuClient {
   // has received a |CreateGpuService()| call from the browser.
   virtual void ExposeInterfacesToBrowser(
       const gpu::GpuPreferences& gpu_preferences,
+      const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
       mojo::BinderMap* binders) {}
 
   // Called right after the IO/compositor thread is created.

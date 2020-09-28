@@ -85,8 +85,8 @@ void MojoVideoEncodeAcceleratorService::Initialize(
     return;
   }
 
-  encoder_ =
-      std::move(create_vea_callback_).Run(config, this, gpu_preferences_);
+  encoder_ = std::move(create_vea_callback_)
+                 .Run(config, this, gpu_preferences_, gpu_workarounds_);
   if (!encoder_) {
     DLOG(ERROR) << __func__ << " Error creating or initializing VEA";
     std::move(success_callback).Run(false);

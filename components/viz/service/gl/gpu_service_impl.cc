@@ -648,7 +648,8 @@ void GpuServiceImpl::CreateArcVideoDecodeAcceleratorOnMainThread(
   DCHECK(main_runner_->BelongsToCurrentThread());
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<arc::GpuArcVideoDecodeAccelerator>(
-          gpu_preferences_, protected_buffer_manager_),
+          gpu_preferences_, gpu_channel_manager_->gpu_driver_bug_workarounds(),
+          protected_buffer_manager_),
       std::move(vda_receiver));
 }
 
@@ -656,7 +657,8 @@ void GpuServiceImpl::CreateArcVideoEncodeAcceleratorOnMainThread(
     mojo::PendingReceiver<arc::mojom::VideoEncodeAccelerator> vea_receiver) {
   DCHECK(main_runner_->BelongsToCurrentThread());
   mojo::MakeSelfOwnedReceiver(
-      std::make_unique<arc::GpuArcVideoEncodeAccelerator>(gpu_preferences_),
+      std::make_unique<arc::GpuArcVideoEncodeAccelerator>(
+          gpu_preferences_, gpu_channel_manager_->gpu_driver_bug_workarounds()),
       std::move(vea_receiver));
 }
 
@@ -704,14 +706,10 @@ void GpuServiceImpl::CreateVideoEncodeAcceleratorProvider(
     mojo::PendingReceiver<media::mojom::VideoEncodeAcceleratorProvider>
         vea_provider_receiver) {
   DCHECK(io_runner_->BelongsToCurrentThread());
-
-  gpu::GpuDriverBugWorkarounds gpu_workarounds(
-      gpu_feature_info_.enabled_gpu_driver_bug_workarounds);
-
   media::MojoVideoEncodeAcceleratorProvider::Create(
       std::move(vea_provider_receiver),
       base::BindRepeating(&media::GpuVideoEncodeAcceleratorFactory::CreateVEA),
-      gpu_preferences_, gpu_workarounds);
+      gpu_preferences_, gpu_channel_manager_->gpu_driver_bug_workarounds());
 }
 
 void GpuServiceImpl::CreateGpuMemoryBuffer(

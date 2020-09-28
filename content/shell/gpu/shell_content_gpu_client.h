@@ -19,8 +19,10 @@ class ShellContentGpuClient : public ContentGpuClient {
   ~ShellContentGpuClient() override;
 
   // ContentGpuClient:
-  void ExposeInterfacesToBrowser(const gpu::GpuPreferences& gpu_preferences,
-                                 mojo::BinderMap* binders) override;
+  void ExposeInterfacesToBrowser(
+      const gpu::GpuPreferences& gpu_preferences,
+      const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
+      mojo::BinderMap* binders) override;
 
   DISALLOW_COPY_AND_ASSIGN(ShellContentGpuClient);
 };

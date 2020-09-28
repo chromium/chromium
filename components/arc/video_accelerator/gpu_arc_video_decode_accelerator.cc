@@ -79,8 +79,10 @@ size_t GpuArcVideoDecodeAccelerator::client_count_ = 0;
 
 GpuArcVideoDecodeAccelerator::GpuArcVideoDecodeAccelerator(
     const gpu::GpuPreferences& gpu_preferences,
+    const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
     scoped_refptr<ProtectedBufferManager> protected_buffer_manager)
     : gpu_preferences_(gpu_preferences),
+      gpu_workarounds_(gpu_workarounds),
       protected_buffer_manager_(std::move(protected_buffer_manager)) {}
 
 GpuArcVideoDecodeAccelerator::~GpuArcVideoDecodeAccelerator() {
@@ -320,8 +322,8 @@ GpuArcVideoDecodeAccelerator::InitializeTask(
 
   auto vda_factory = media::GpuVideoDecodeAcceleratorFactory::Create(
       media::GpuVideoDecodeGLClient());
-  vda_ = vda_factory->CreateVDA(
-      this, vda_config, gpu::GpuDriverBugWorkarounds(), gpu_preferences_);
+  vda_ = vda_factory->CreateVDA(this, vda_config, gpu_workarounds_,
+                                gpu_preferences_);
   if (!vda_) {
     VLOGF(1) << "Failed to create VDA.";
     return mojom::VideoDecodeAccelerator::Result::PLATFORM_FAILURE;

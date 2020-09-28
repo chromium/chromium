@@ -25,11 +25,10 @@ class MEDIA_GPU_EXPORT GpuVideoEncodeAcceleratorFactory {
   static std::unique_ptr<VideoEncodeAccelerator> CreateVEA(
       const VideoEncodeAccelerator::Config& config,
       VideoEncodeAccelerator::Client* client,
-      const gpu::GpuPreferences& gpu_perferences);
+      const gpu::GpuPreferences& gpu_perferences,
+      const gpu::GpuDriverBugWorkarounds& gpu_workarounds);
 
   // Gets the supported codec profiles for video encoding on the platform.
-  static VideoEncodeAccelerator::SupportedProfiles GetSupportedProfiles(
-      const gpu::GpuPreferences& gpu_preferences);
   static VideoEncodeAccelerator::SupportedProfiles GetSupportedProfiles(
       const gpu::GpuPreferences& gpu_preferences,
       const gpu::GpuDriverBugWorkarounds& gpu_workarounds);

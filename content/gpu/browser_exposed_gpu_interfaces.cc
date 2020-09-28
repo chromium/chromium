@@ -15,11 +15,13 @@
 
 namespace content {
 
-void ExposeGpuInterfacesToBrowser(const gpu::GpuPreferences& gpu_preferences,
-                                  mojo::BinderMap* binders) {
+void ExposeGpuInterfacesToBrowser(
+    const gpu::GpuPreferences& gpu_preferences,
+    const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
+    mojo::BinderMap* binders) {
   if (GetContentClient()->gpu()) {  // May be null in tests.
-    GetContentClient()->gpu()->ExposeInterfacesToBrowser(gpu_preferences,
-                                                         binders);
+    GetContentClient()->gpu()->ExposeInterfacesToBrowser(
+        gpu_preferences, gpu_workarounds, binders);
   }
 
 #if defined(USE_OZONE)
