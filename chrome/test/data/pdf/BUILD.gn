@@ -39,6 +39,7 @@ js_type_check("closure_compile") {
     ":viewer_pdf_sidenav_test",
     ":viewer_pdf_toolbar_new_test",
     ":viewer_thumbnail_bar_test",
+    ":viewer_thumbnail_test",
     ":viewport_test",
     ":whitespace_title_test",
 
@@ -194,6 +195,14 @@ js_library("viewer_thumbnail_bar_test") {
   deps = [
     "//chrome/browser/resources/pdf/elements:viewer-thumbnail",
     "//chrome/browser/resources/pdf/elements:viewer-thumbnail-bar",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+  externs_list = [ "$externs_path/test.js" ]
+}
+
+js_library("viewer_thumbnail_test") {
+  deps = [
+    "//chrome/browser/resources/pdf/elements:viewer-thumbnail",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
   externs_list = [ "$externs_path/test.js" ]

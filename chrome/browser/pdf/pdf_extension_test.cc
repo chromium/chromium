@@ -905,6 +905,12 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionJSUpdatesEnabledTest, ViewerThumbnailBar) {
   RunTestsInJsModule("viewer_thumbnail_bar_test.js", "test.pdf");
 }
 
+IN_PROC_BROWSER_TEST_F(PDFExtensionJSUpdatesEnabledTest, ViewerThumbnail) {
+  // Although this test file does not require a PDF to be loaded, loading the
+  // elements without loading a PDF is difficult.
+  RunTestsInJsModule("viewer_thumbnail_test.js", "test.pdf");
+}
+
 class PDFExtensionJSTest : public PDFExtensionJSTestBase,
                            public testing::WithParamInterface<bool> {
  public:
