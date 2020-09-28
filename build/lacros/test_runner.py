@@ -125,8 +125,10 @@ def _remove_unused_ash_chrome_versions(version_to_skip):
       # them to keep the directory clean.
       os.remove(p)
       continue
-
-    age = time.time() - os.path.getatime(os.path.join(p, 'chrome'))
+    chrome_path = os.path.join(p, 'chrome')
+    if not os.path.exists(chrome_path):
+      chrome_path = p
+    age = time.time() - os.path.getatime(chrome_path)
     if age > expiration_duration:
       logging.info(
           'Removing ash-chrome: "%s" as it hasn\'t been used in the '
