@@ -816,6 +816,11 @@ void GetEGLInitDisplays(bool supports_angle_d3d,
     AddInitDisplay(init_displays, ANGLE_OPENGLES);
   }
 
+  if (supports_angle_metal && use_angle_default &&
+      base::FeatureList::IsEnabled(features::kDefaultANGLEMetal)) {
+    AddInitDisplay(init_displays, ANGLE_METAL);
+  }
+
   if (supports_angle_d3d) {
     if (use_angle_default) {
       // Default mode for ANGLE - try D3D11, else try D3D9
