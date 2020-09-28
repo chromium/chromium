@@ -144,7 +144,12 @@ source_set("unit_tests") {
     "multidevice_setup_impl_unittest.cc",
     "multidevice_setup_service_unittest.cc",
     "privileged_host_device_setter_impl_unittest.cc",
-    "wifi_sync_feature_manager_impl_unittest.cc",
+
+    # TODO(crbug/1117619): Unit tests fail with asan/lsan:
+    # is_asan = true
+    # is_lsan = true
+    # is_debug = false
+    #"wifi_sync_feature_manager_impl_unittest.cc",
   ]
 
   deps = [
