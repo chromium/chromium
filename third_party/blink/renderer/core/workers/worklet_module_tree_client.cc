@@ -70,7 +70,7 @@ void WorkletModuleTreeClient::NotifyModuleTreeLoadFinished(
   }
 
   // Step 5: "Run a module script given script."
-  ModuleEvaluationResult result =
+  ScriptEvaluationResult result =
       Modulator::From(script_state_)
           ->ExecuteModule(module_script,
                           Modulator::CaptureEvalErrorFlag::kReport);
@@ -78,7 +78,8 @@ void WorkletModuleTreeClient::NotifyModuleTreeLoadFinished(
   auto* global_scope =
       To<WorkletGlobalScope>(ExecutionContext::From(script_state_));
 
-  global_scope->ReportingProxy().DidEvaluateTopLevelScript(result.IsSuccess());
+  global_scope->ReportingProxy().DidEvaluateTopLevelScript(
+      result.GetResultType() == ScriptEvaluationResult::ResultType::kSuccess);
 
   // Step 6: "Queue a task on outsideSettings's responsible event loop to run
   // these steps:"

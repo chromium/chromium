@@ -20,51 +20,6 @@
 
 namespace blink {
 
-// static
-ModuleEvaluationResult ModuleEvaluationResult::Empty() {
-  return ModuleEvaluationResult(true, {});
-}
-
-// static
-ModuleEvaluationResult ModuleEvaluationResult::FromResult(
-    v8::Local<v8::Value> promise) {
-  DCHECK(base::FeatureList::IsEnabled(features::kTopLevelAwait) ||
-         promise.IsEmpty());
-  DCHECK(!base::FeatureList::IsEnabled(features::kTopLevelAwait) ||
-         promise->IsPromise());
-  return ModuleEvaluationResult(true, promise);
-}
-
-// static
-ModuleEvaluationResult ModuleEvaluationResult::FromException(
-    v8::Local<v8::Value> exception) {
-  DCHECK(!exception.IsEmpty());
-  return ModuleEvaluationResult(false, exception);
-}
-
-ModuleEvaluationResult& ModuleEvaluationResult::Escape(
-    ScriptState::EscapableScope* scope) {
-  value_ = scope->Escape(value_);
-  return *this;
-}
-
-v8::Local<v8::Value> ModuleEvaluationResult::GetException() const {
-  DCHECK(IsException());
-  DCHECK(!value_.IsEmpty());
-  return value_;
-}
-
-ScriptPromise ModuleEvaluationResult::GetPromise(
-    ScriptState* script_state) const {
-  DCHECK(base::FeatureList::IsEnabled(features::kTopLevelAwait));
-  DCHECK(!value_.IsEmpty());
-  if (IsSuccess()) {
-    return ScriptPromise(script_state, value_);
-  } else {
-    return ScriptPromise::Reject(script_state, value_);
-  }
-}
-
 ModuleRecordProduceCacheData::ModuleRecordProduceCacheData(
     v8::Isolate* isolate,
     SingleCachedMetadataHandler* cache_handler,
@@ -168,7 +123,7 @@ ScriptValue ModuleRecord::Instantiate(ScriptState* script_state,
   return ScriptValue();
 }
 
-ModuleEvaluationResult ModuleRecord::Evaluate(ScriptState* script_state,
+ScriptEvaluationResult ModuleRecord::Evaluate(ScriptState* script_state,
                                               v8::Local<v8::Module> record,
                                               const KURL& source_url) {
   v8::Isolate* isolate = script_state->GetIsolate();
@@ -192,13 +147,9 @@ ModuleEvaluationResult ModuleRecord::Evaluate(ScriptState* script_state,
   if (!V8ScriptRunner::EvaluateModule(isolate, execution_context, record,
                                       script_state->GetContext())
            .ToLocal(&result)) {
-    return ModuleEvaluationResult::FromException(try_catch.Exception());
+    return ScriptEvaluationResult::FromModuleException(try_catch.Exception());
   }
-  if (base::FeatureList::IsEnabled(features::kTopLevelAwait)) {
-    return ModuleEvaluationResult::FromResult(result);
-  } else {
-    return ModuleEvaluationResult::Empty();
-  }
+  return ScriptEvaluationResult::FromModuleSuccess(result);
 }
 
 void ModuleRecord::ReportException(ScriptState* script_state,

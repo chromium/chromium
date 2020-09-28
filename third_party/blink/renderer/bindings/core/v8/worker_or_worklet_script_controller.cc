@@ -312,13 +312,14 @@ void WorkerOrWorkletScriptController::DisableEvalInternal(
 }
 
 // https://html.spec.whatwg.org/C/#run-a-classic-script
-ClassicEvaluationResult WorkerOrWorkletScriptController::EvaluateAndReturnValue(
+ScriptEvaluationResult WorkerOrWorkletScriptController::EvaluateAndReturnValue(
     const ScriptSourceCode& source_code,
     SanitizeScriptErrors sanitize_script_errors,
     mojom::blink::V8CacheOptions v8_cache_options,
     RethrowErrorsOption rethrow_errors) {
-  if (IsExecutionForbidden())
-    return ClassicEvaluationResult();
+  if (IsExecutionForbidden()) {
+    return ScriptEvaluationResult::FromClassicNotRun();
+  }
 
   // Scope for |TRACE_EVENT1| and |v8::TryCatch| below.
   {
@@ -368,7 +369,7 @@ ClassicEvaluationResult WorkerOrWorkletScriptController::EvaluateAndReturnValue(
     // script evaluation code paths.
     if (!block.CanContinue()) {
       ForbidExecution();
-      return ClassicEvaluationResult();
+      return ScriptEvaluationResult::FromClassicAborted();
     }
 
     CHECK(!IsExecutionForbidden());
@@ -377,10 +378,8 @@ ClassicEvaluationResult WorkerOrWorkletScriptController::EvaluateAndReturnValue(
       // Step 10. If evaluationStatus is a normal completion, then return
       // evaluationStatus. [spec text]
       v8::Local<v8::Value> result;
-      if (!maybe_result.ToLocal(&result))
-        return ClassicEvaluationResult();
-
-      return ClassicEvaluationResult(result);
+      DCHECK(maybe_result.ToLocal(&result));
+      return ScriptEvaluationResult::FromClassicSuccess(result);
     }
 
     DCHECK(maybe_result.IsEmpty());
@@ -398,7 +397,7 @@ ClassicEvaluationResult WorkerOrWorkletScriptController::EvaluateAndReturnValue(
       // reported to WorkerGlobalScope.onerror via `TryCatch::SetVerbose(true)`
       // called at top-level worker script evaluation.
       block.ReThrow();
-      return ClassicEvaluationResult();
+      return ScriptEvaluationResult::FromClassicException();
     }
   }
   // |v8::TryCatch| is (and should be) exited, before ThrowException() below.
@@ -418,12 +417,12 @@ ClassicEvaluationResult WorkerOrWorkletScriptController::EvaluateAndReturnValue(
         isolate_, V8ThrowDOMException::CreateOrEmpty(
                       isolate_, DOMExceptionCode::kNetworkError,
                       rethrow_errors.Message()));
-    return ClassicEvaluationResult();
+    return ScriptEvaluationResult::FromClassicException();
   }
 
   // #report-the-error for rethrow errors == true is already handled via
   // |TryCatch::SetVerbose(true)| above.
-  return ClassicEvaluationResult();
+  return ScriptEvaluationResult::FromClassicException();
 }
 
 void WorkerOrWorkletScriptController::ForbidExecution() {
