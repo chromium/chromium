@@ -198,7 +198,7 @@ Tests name sources in invisible nodes.
                         [4] : {
                             idref : 3e
                             nodeResult : tr#3e
-                            text : 5
+                            text : 
                         }
                         [5] : {
                             idref : 3f
@@ -217,7 +217,7 @@ Tests name sources in invisible nodes.
                 type : relatedElement
                 value : {
                     type : computedString
-                    value : 1 2 3 4 5 6 7
+                    value : 1 2 3 4 6 7
                 }
             }
             [1] : {
@@ -247,7 +247,7 @@ Tests name sources in invisible nodes.
             }
         ]
         type : computedString
-        value : 1 2 3 4 5 6 7
+        value : 1 2 3 4 6 7
     }
     nodeId : <string>
     properties : [
@@ -327,7 +327,7 @@ Tests name sources in invisible nodes.
                     [4] : {
                         idref : 3e
                         nodeResult : tr#3e
-                        text : 5
+                        text : 
                     }
                     [5] : {
                         idref : 3f

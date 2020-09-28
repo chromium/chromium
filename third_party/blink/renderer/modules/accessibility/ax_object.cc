@@ -510,17 +510,6 @@ HTMLDialogElement* GetActiveDialogElement(Node* node) {
   return node->GetDocument().ActiveModalDialog();
 }
 
-bool HasUninheritedHiddenVisibility(const ComputedStyle* style, Node* node) {
-  // Is this the root of a visibility:hidden or visibility:collapsed subtree?
-  if (style->Visibility() == EVisibility::kVisible)
-    return false;
-  Node* parent = node->parentNode();
-  if (!parent)
-    return true;
-  return !parent->GetComputedStyle() ||
-         parent->GetComputedStyle()->Visibility() == EVisibility::kVisible;
-}
-
 }  // namespace
 
 unsigned AXObject::number_of_live_ax_objects_ = 0;
@@ -1260,19 +1249,6 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded() const {
 #endif
 
   last_modification_count_ = cache.ModificationCount();
-
-  if (GetElement() && !GetLayoutObject() &&
-      !DisplayLockUtilities::NearestLockedExclusiveAncestor(*GetNode())) {
-    // While it's safe to do so, ensure the computed style for display:none
-    // nodes, so that IsHiddenForTextAlternativeCalculation() can determine
-    // whether the node is directly styled as display:none vs hidden because
-    // of display:none on an ancestor.
-    // If there is no computed style, assume that it may be display:none,
-    // since we can't prove otherwise.
-    const ComputedStyle* style = GetElement()->GetComputedStyle();
-    if (!style || style->IsEnsuredInDisplayNone())
-      GetElement()->EnsureComputedStyle();
-  }
   cached_background_color_ = ComputeBackgroundColor();
   cached_is_inert_or_aria_hidden_ = ComputeIsInertOrAriaHidden();
   cached_is_descendant_of_leaf_node_ = !!LeafNodeAncestor();
@@ -2011,12 +1987,18 @@ String AXObject::GetName(ax::mojom::blink::NameFrom& name_from,
                          AXObject::AXObjectVector* name_objects) const {
   HeapHashSet<Member<const AXObject>> visited;
   AXRelatedObjectVector related_objects;
-
+  // For purposes of computing a text alternative, if an ignored node is
+  // included in the tree, assume that it is the target of aria-labelledby or
+  // aria-describedby, since we can't tell yet whether that's the case. If it
+  // isn't exposed, the AT will never see the name anyways.
+  bool hidden_and_ignored_but_included_in_tree =
+      IsHiddenForTextAlternativeCalculation() &&
+      AccessibilityIsIgnoredButIncludedInTree();
   // Initialize |name_from|, as TextAlternative() might never set it in some
   // cases.
   name_from = ax::mojom::blink::NameFrom::kNone;
-  String text = TextAlternative(false, false, visited, name_from,
-                                &related_objects, nullptr);
+  String text = TextAlternative(false, hidden_and_ignored_but_included_in_tree,
+                                visited, name_from, &related_objects, nullptr);
 
   ax::mojom::blink::Role role = RoleValue();
   if (!GetNode() || (!IsA<HTMLBRElement>(GetNode()) &&
@@ -2037,8 +2019,16 @@ String AXObject::GetName(NameSources* name_sources) const {
   AXObjectSet visited;
   ax::mojom::blink::NameFrom tmp_name_from;
   AXRelatedObjectVector tmp_related_objects;
-  String text = TextAlternative(false, false, visited, tmp_name_from,
-                                &tmp_related_objects, name_sources);
+  // For purposes of computing a text alternative, if an ignored node is
+  // included in the tree, assume that it is the target of aria-labelledby or
+  // aria-describedby, since we can't tell yet whether that's the case. If it
+  // isn't exposed, the AT will never see the name anyways.
+  bool hidden_and_ignored_but_included_in_tree =
+      IsHiddenForTextAlternativeCalculation() &&
+      AccessibilityIsIgnoredButIncludedInTree();
+  String text =
+      TextAlternative(false, hidden_and_ignored_but_included_in_tree, visited,
+                      tmp_name_from, &tmp_related_objects, name_sources);
   text = text.SimplifyWhiteSpace(IsHTMLSpace<UChar>);
   return text;
 }
@@ -2083,15 +2073,6 @@ bool AXObject::IsHiddenViaStyle() const {
   return false;
 }
 
-// Return true if this should be removed from accessible name computations,
-// unless it is reached by following an aria-labelledby. When that happens, this
-// is not checked, because aria-labelledby can use hidden subtrees.
-// Because aria-labelledby can use hidden subtrees, when it has entered a hidden
-// subtree, it is not enough to check if the element was hidden by an ancestor.
-// In this case, return true only if the hiding style targeted the node
-// directly, as opposed to having inherited the hiding style. Using inherited
-// hiding styles is problematic because it would prevent name contributions from
-// deeper nodes in hidden aria-labelledby subtrees.
 bool AXObject::IsHiddenForTextAlternativeCalculation() const {
   if (AOMPropertyOrARIAAttributeIsFalse(AOMBooleanProperty::kHidden))
     return false;
@@ -2104,31 +2085,30 @@ bool AXObject::IsHiddenForTextAlternativeCalculation() const {
   if (DisplayLockUtilities::NearestLockedExclusiveAncestor(*node))
     return false;
 
-  Document* document = GetDocument();
-  if (!document || !document->GetFrame())
-    return false;
+  if (GetLayoutObject())
+    return GetLayoutObject()->Style()->Visibility() != EVisibility::kVisible;
 
-  if (GetLayoutObject()) {
-    return HasUninheritedHiddenVisibility(GetLayoutObject()->Style(),
-                                          GetNode());
-  } else if (GetNode() && IsA<HTMLNoScriptElement>(GetNode())) {
+  if (IsA<HTMLNoScriptElement>(node))
     return true;
-  }
 
-  // This is an important corner case: if a node has no LayoutObject, that means
+  // This is an obscure corner case: if a node has no LayoutObject, that means
   // it's not rendered, but we still may be exploring it as part of a text
   // alternative calculation, for example if it was explicitly referenced by
   // aria-labelledby. So we need to explicitly call the style resolver to check
   // whether it's invisible or display:none, rather than relying on the style
   // cached in the LayoutObject.
+  Document* document = GetDocument();
+  if (!document || !document->GetFrame())
+    return false;
+
   auto* element = DynamicTo<Element>(node);
   if (element && node->isConnected()) {
-    const ComputedStyle* style = element->GetComputedStyle();
+    const ComputedStyle* style = element->EnsureComputedStyle();
     if (!style)
       return false;
 
     if (style->Display() == EDisplay::kNone ||
-        HasUninheritedHiddenVisibility(style, GetNode())) {
+        style->Visibility() != EVisibility::kVisible) {
       return true;
     }
 

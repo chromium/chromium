@@ -258,10 +258,6 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityCSSFontSize) {
   RunCSSTest(FILE_PATH_LITERAL("font-size.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityCSSDisplayNone) {
-  RunCSSTest(FILE_PATH_LITERAL("display-none.html"));
-}
-
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityCSSDisplayToNone) {
   RunCSSTest(FILE_PATH_LITERAL("display-to-none.html"));
