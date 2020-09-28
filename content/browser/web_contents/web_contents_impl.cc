@@ -5191,6 +5191,12 @@ bool WebContentsImpl::FocusLocationBarByDefault() {
   return delegate_ && delegate_->ShouldFocusLocationBarByDefault(this);
 }
 
+void WebContentsImpl::SetFocusToLocationBar() {
+  OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::SetFocusToLocationBar");
+  if (delegate_)
+    delegate_->SetFocusToLocationBar();
+}
+
 void WebContentsImpl::DidStartNavigation(NavigationHandle* navigation_handle) {
   TRACE_EVENT1("navigation", "WebContentsImpl::DidStartNavigation",
                "navigation_handle", navigation_handle);
@@ -6939,12 +6945,6 @@ WebContentsImpl* WebContentsImpl::GetResponsibleWebContents() {
 
 WebContentsImpl* WebContentsImpl::GetFocusedWebContents() {
   return GetOutermostWebContents()->node_.focused_web_contents();
-}
-
-void WebContentsImpl::SetFocusToLocationBar() {
-  OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::SetFocusToLocationBar");
-  if (delegate_)
-    delegate_->SetFocusToLocationBar();
 }
 
 bool WebContentsImpl::ContainsOrIsFocusedWebContents() {

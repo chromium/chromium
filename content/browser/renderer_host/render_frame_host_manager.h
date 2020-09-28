@@ -150,6 +150,9 @@ class CONTENT_EXPORT RenderFrameHostManager
     // to see what it should do.
     virtual bool FocusLocationBarByDefault() = 0;
 
+    // Focuses the location bar.
+    virtual void SetFocusToLocationBar() = 0;
+
     // Returns true if views created for this delegate should be created in a
     // hidden state.
     virtual bool IsHidden() = 0;
