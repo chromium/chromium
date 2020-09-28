@@ -1,0 +1,403 @@
+<!--
+Copyright 2020 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of Storage histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please send CLs to chromium-metrics-reviews@google.com rather than to specific
+individuals. These CLs will be automatically reassigned to a reviewer within
+about 5 minutes. This approach helps the metrics team to load-balance incoming
+reviews. Googlers can read more about this at go/gwsq-gerrit.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="Storage.BlacklistedImportantSites.Reason"
+    enum="ClearDataSiteBlacklistCrossedReason" expires_after="M95">
+  <owner>dmurph@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    This is recorded for every site that the user blacklists when they when they
+    clear browsing data. It indicates which signals were used to show the given
+    site to the user that the user then chose to exclude from clearing.
+  </summary>
+</histogram>
+
+<histogram name="Storage.Blob.BlobUrlLoader.FailureType" enum="NetErrorCodes"
+    expires_after="M95">
+  <owner>mek@chromium.org</owner>
+  <owner>dmurph@chromium.org</owner>
+  <owner>enne@chromium.org</owner>
+  <summary>
+    Recorded when an error occurs in the BlobUrlLoader, which is used to load
+    blobs from urls in the Renderer.
+  </summary>
+</histogram>
+
+<histogram name="Storage.Blob.Broken" enum="BooleanBroken" expires_after="M95">
+  <owner>mek@chromium.org</owner>
+  <owner>dmurph@chromium.org</owner>
+  <summary>
+    If a newly constructed blob is broken. See Storage.Blob.BrokenReason for a
+    the broken reasons.
+  </summary>
+</histogram>
+
+<histogram name="Storage.Blob.BrokenReason" enum="BlobBrokenReason"
+    expires_after="M95">
+  <owner>mek@chromium.org</owner>
+  <owner>dmurph@chromium.org</owner>
+  <summary>
+    The reason a blob is broken, reported only for broken blobs upon
+    construction. See Storage.Blob.Broken for the breakdown of blobs broken vs
+    unbroken.
+  </summary>
+</histogram>
+
+<histogram name="Storage.Blob.BuildFromStreamResult"
+    enum="BlobBuildFromStreamResult" expires_after="M87">
+  <owner>mek@chromium.org</owner>
+  <summary>
+    The result of constructing a blob using the BlobRegistry.RegisterFromStream
+    API.
+  </summary>
+</histogram>
+
+<histogram name="Storage.Blob.CleanupSuccess" enum="Boolean"
+    expires_after="M95">
+  <owner>mek@chromium.org</owner>
+  <owner>dmurph@chromium.org</owner>
+  <summary>
+    Recorded when the old blob storage directories are cleared. This occurs on
+    storage partition initialization, and is not recorded if there are no
+    directories to clear. The value indicates if the file operations were a
+    success.
+  </summary>
+</histogram>
+
+<histogram name="Storage.Blob.FileReaderLoader.FailureType"
+    enum="FileReaderLoaderFailureType" expires_after="M95">
+  <owner>mek@chromium.org</owner>
+  <owner>dmurph@chromium.org</owner>
+  <summary>
+    Recorded when an error occurs in the FileReaderLoader, which is used to load
+    blobs in the Renderer. FileReaderUser is mostly used for Javascript's
+    'FileReader', but can also be used to read blobs for the IndexedDB
+    renderer-side implementation. For the read error category, see
+    Storage.Blob.FileReaderLoader.ReadError for a breakdown of the specific read
+    error reasons.
+  </summary>
+</histogram>
+
+<histogram name="Storage.Blob.FileReaderLoader.ReadError" enum="NetErrorCodes"
+    expires_after="M95">
+  <owner>mek@chromium.org</owner>
+  <owner>dmurph@chromium.org</owner>
+  <summary>
+    The error code reported by the blob system while trying to read a blob in
+    the FileReaderLoader. Compare with the
+    Storage.Blob.IDBRequestLoader.ReadError histogram to eliminate IndexedDB
+    large-value blobs.
+  </summary>
+</histogram>
+
+<histogram name="Storage.Blob.GetBlobFromUUIDTime" units="ms"
+    expires_after="M85">
+  <owner>mek@chromium.org</owner>
+  <summary>
+    The amount of time taken to complete the synchronous
+    BlobRegistry.GetBlobFromUUID mojo call.
+  </summary>
+</histogram>
+
+<histogram name="Storage.Blob.IDBRequestLoader.ReadError" enum="NetErrorCodes"
+    expires_after="M95">
+  <owner>mek@chromium.org</owner>
+  <owner>dmurph@chromium.org</owner>
+  <summary>
+    The error code reported by the blob system while trying to read an IndexedDB
+    large-value blob in the IDBRequestLoader. These blobs are automatically
+    created in Blink when a website writes a large value to IndexedDB.
+  </summary>
+</histogram>
+
+<histogram name="Storage.Blob.InvalidReference" enum="RefcountOperation"
+    expires_after="M95">
+  <owner>mek@chromium.org</owner>
+  <owner>dmurph@chromium.org</owner>
+  <summary>
+    Counts the number of times we have an invalid refcount operation. An invalid
+    increment means the blob didn't exist, and an invalid decrement means we
+    don't have any record of the blob in our host.
+  </summary>
+</histogram>
+
+<histogram name="Storage.Blob.InvalidURLRegister" enum="RefcountOperation"
+    expires_after="M95">
+  <owner>mek@chromium.org</owner>
+  <owner>dmurph@chromium.org</owner>
+  <summary>
+    Counts the number of times we have an invalid url registration operation. An
+    invalid increment means the blob isn't in use by the host yet or the url is
+    already mapped. An invalid decrement means the url isn't registered.
+  </summary>
+</histogram>
+
+<histogram name="Storage.Blob.MaxDiskSpace2" units="MB" expires_after="M95">
+  <owner>mek@chromium.org</owner>
+  <owner>dmurph@chromium.org</owner>
+  <summary>
+    Records the calculated max disk space the blob storage system can use.
+    Recorded on storage partition initialization, and only if the disk is
+    enabled.
+  </summary>
+</histogram>
+
+<histogram name="Storage.Blob.MaxDiskSpaceAdjustment"
+    enum="BlobStorageDiskSpaceAdjustment" expires_after="M95">
+  <owner>mek@chromium.org</owner>
+  <owner>dmurph@chromium.org</owner>
+  <summary>
+    Recorded when the blob system changes adjustment types on its disk size. The
+    disk can either be Frozen, Adjusted (near min external available disk
+    space), or Normal. We record when we transition between these states, which
+    can happen after any file operations in the blob system (paging data to disk
+    or saving a new blob directly to disk).
+  </summary>
+</histogram>
+
+<histogram name="Storage.Blob.PageFileSize" units="KB" expires_after="M95">
+  <owner>mek@chromium.org</owner>
+  <owner>dmurph@chromium.org</owner>
+  <summary>
+    Size of a page file created for blob data by the blob storage system.
+    Recorded before we create the file and write the blob items. We page blob
+    data to files when we get close to our maximum blob memory usage.
+  </summary>
+</histogram>
+
+<histogram name="Storage.Blob.PagingDisabled" enum="PlatformFileError"
+    expires_after="M95">
+  <owner>mek@chromium.org</owner>
+  <owner>dmurph@chromium.org</owner>
+  <summary>
+    Recorded when we disable paging blobs to file in the blob storage system.
+    This occurs when we experience a filesystem error during writing blob data
+    to disk. We write blob data to files when either we have a new blob that's
+    larger than our memory limit, or we're approaching our in-memory limit for
+    blob storage. The relevant error is recorded here.
+  </summary>
+</histogram>
+
+<histogram name="Storage.Blob.RegisterBlobTime" units="ms" expires_after="M95">
+  <owner>mek@chromium.org</owner>
+  <owner>dmurph@chromium.org</owner>
+  <summary>
+    The amount of time taken to complete the synchronous mojo call
+    BlobRegistry.Regsiter
+  </summary>
+</histogram>
+
+<histogram name="Storage.Blob.RegisterPublicURLTime" units="ms"
+    expires_after="M95">
+  <owner>mek@chromium.org</owner>
+  <owner>dmurph@chromium.org</owner>
+  <summary>
+    The amount of time taken to complete the synchronous mojo call
+    BlobURLStore.Register IPC.
+  </summary>
+</histogram>
+
+<histogram name="Storage.Blob.RendererFileSeekFailed" enum="Boolean"
+    expires_after="M95">
+  <owner>mek@chromium.org</owner>
+  <owner>dmurph@chromium.org</owner>
+  <summary>
+    Whether seeking within a file (in order to write a part of a blob) failed in
+    the renderer.
+  </summary>
+</histogram>
+
+<histogram name="Storage.Blob.RendererFileWriteFailed" enum="Boolean"
+    expires_after="M95">
+  <owner>mek@chromium.org</owner>
+  <owner>dmurph@chromium.org</owner>
+  <summary>
+    Whether writing part of a blob to a file failed in the renderer.
+  </summary>
+</histogram>
+
+<histogram name="Storage.Blob.ReusedItem" enum="BooleanReused"
+    expires_after="M95">
+  <owner>mek@chromium.org</owner>
+  <owner>dmurph@chromium.org</owner>
+  <summary>
+    True if we reuse an item for a blob created from using Blob.slice, recorded
+    in BlobStorageContext on blob creation.
+  </summary>
+</histogram>
+
+<histogram base="true" name="Storage.Blob.SizeEvictedToDiskInKB" units="KB"
+    expires_after="2020-07-06">
+  <owner>ssid@chromium.org</owner>
+  <owner>mek@chromium.org</owner>
+  <summary>Records the total size of in-memory blobs evicted to disk.</summary>
+</histogram>
+
+<histogram name="Storage.Blob.TotalSize" units="KB" expires_after="M95">
+  <owner>mek@chromium.org</owner>
+  <owner>dmurph@chromium.org</owner>
+  <summary>
+    The total in-memory size in KB of finished blobs. Recorded in
+    BlobStorageContext when the blob is finished being created. This can include
+    memory that is shared with other blobs or memory from repeated internal
+    items.
+  </summary>
+</histogram>
+
+<histogram name="Storage.Blob.TotalUnsharedSize" units="KB" expires_after="M95">
+  <owner>mek@chromium.org</owner>
+  <owner>dmurph@chromium.org</owner>
+  <summary>
+    The total amount of unique memory used to create a blob. Recorded in
+    BlobStorageContext when the blob is finished being created. This does not
+    include memory that is shared with other blobs. If multiple of the same blob
+    item is present, then this number will reflect the size of the single item.
+  </summary>
+</histogram>
+
+<histogram name="Storage.BlobItemSize.File.Unknown" enum="BooleanUnknown"
+    expires_after="M87">
+  <owner>mek@chromium.org</owner>
+  <owner>dmurph@chromium.org</owner>
+  <summary>
+    True if the file size on blob append is unknown (which means the full file),
+    or false if a specific file length was populated. Recorded in
+    BlobStorageContext when we are adding a file item to a blob.
+  </summary>
+</histogram>
+
+<histogram name="Storage.ImportantSites.CBDChosenReason"
+    enum="ImportantSitesReason" expires_after="M95">
+  <owner>dmurph@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    When a user chooses to blacklist one or more sites when they clear browsing
+    data, this is recorded for every reason each chosen site was marked as
+    important. It indicates which signals were used to show the given site to
+    the user that the user then chose to exclude from clearing.
+  </summary>
+</histogram>
+
+<histogram name="Storage.ImportantSites.CBDChosenReasonCount" units="count"
+    expires_after="M95">
+  <owner>dmurph@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    This records the number of reasons each important site had that the user
+    chose to blacklist when clearing browsing data.
+  </summary>
+</histogram>
+
+<histogram name="Storage.ImportantSites.CBDIgnoredReason"
+    enum="ImportantSitesReason" expires_after="M95">
+  <owner>dmurph@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    When a user chooses to blacklist one or more sites when they clear browsing
+    data, this is recorded for every reason each unchosen site was marked as
+    important. It indicates which signals were used to show the given site to
+    the user, which the user then ignored and did not select to blacklist from
+    clearing data.
+  </summary>
+</histogram>
+
+<histogram name="Storage.ImportantSites.CBDIgnoredReasonCount" units="count"
+    expires_after="M95">
+  <owner>dmurph@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    This records the number of reasons each important site had that the user
+    chose to NOT blacklist when clearing browsing data.
+  </summary>
+</histogram>
+
+<histogram name="Storage.ImportantSites.GeneratedReason"
+    enum="ImportantSitesReason" expires_after="M95">
+  <owner>dmurph@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Recorded when we generate a list of important sites. This can happen when
+    the user opens the Clear Browsing Data dialog on Android, views the Storage
+    tab in Site Settings on Android, or launches 'Manage Storage' from Android
+    System Settings for Chrome. We record every reason each site was chosen in
+    this metric. This means that we can report this metric multiple times for a
+    single site.
+  </summary>
+</histogram>
+
+<histogram name="Storage.ImportantSites.GeneratedReasonCount" units="count"
+    expires_after="M95">
+  <owner>dmurph@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    This records the number of reasons qualifying a site for being 'important'.
+    We record this for every site when we generate a list of important sites,
+    described in &quot;Storage.ImportantSites.GeneratedReason&quot;.
+  </summary>
+</histogram>
+
+<histogram name="Storage.ImportantSites.GenerationTime" units="ms"
+    expires_after="M95">
+  <owner>dmurph@chromium.org</owner>
+  <owner>pwnall@chromium.org</owner>
+  <summary>
+    The time it takes to generate the list of 'important' sites. This list is
+    generated when the user enters the 'Clear Browsing Dialog' or the 'Manage
+    Space' screens for Chrome, both of which are on Android.
+  </summary>
+</histogram>
+
+<histogram name="Storage.IndexedDB.PutBlobSizeKB" units="KB"
+    expires_after="M95">
+  <owner>dmurph@chromium.org</owner>
+  <owner>pwnall@chromium.org</owner>
+  <summary>
+    Records the size of a blob used in an IndexedDB add/put operation. Recorded
+    for every put operation that contains a blob.
+  </summary>
+</histogram>
+
+<histogram name="Storage.IndexedDB.PutValidBlob" enum="Boolean"
+    expires_after="M95">
+  <owner>dmurph@chromium.org</owner>
+  <owner>pwnall@chromium.org</owner>
+  <summary>
+    Records if a blob intended to be used in an IndexedDB add/put operation is a
+    valid blob. Recorded for every put operation that contains a blob.
+  </summary>
+</histogram>
+
+<histogram name="Storage.StoragePressure.Bubble"
+    enum="StoragePressureBubbleUserAction" expires_after="2021-03-17">
+  <owner>jarrydg@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    How did the user interact with the StoragePressure Bubble? Ignored means the
+    user did not click on the positive button before the bubble is closed
+    (either manually closed or when the browser closes).
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

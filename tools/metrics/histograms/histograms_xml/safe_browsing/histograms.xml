@@ -1,0 +1,1572 @@
+<!--
+Copyright 2020 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of SafeBrowsing histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please send CLs to chromium-metrics-reviews@google.com rather than to specific
+individuals. These CLs will be automatically reassigned to a reviewer within
+about 5 minutes. This approach helps the metrics team to load-balance incoming
+reviews. Googlers can read more about this at go/gwsq-gerrit.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="SafeBrowsing.AdvancedProtection.APTokenFetchStatus"
+    enum="GoogleServiceAuthError" expires_after="M90">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    For users known to be already enrolled in Advanced Proection, records the
+    service error of refreshing OAuth2 access token during fetching the user's
+    advanced protection status. Logged once a day and will retry on transient
+    failures. This is a subset of
+    SafeBrowsing.AdvancedProtection.TokenFetchStatus.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.AdvancedProtection.TokenFetchStatus"
+    enum="GoogleServiceAuthError" expires_after="M90">
+  <owner>drubey@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records the service error of refreshing OAuth2 access token during fetching
+    the user's advanced protection status. Logged at startup for all users, once
+    a day for AP users, and will retry on transient failures.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.AndroidTelemetry.ApkDownload.IncompleteReason"
+    enum="ApkDownloadTelemetryIncompleteReason" expires_after="2021-07-01">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records if the telemetry ping sent for APK download contained a full
+    referrer chain, or if there was an error collecting the referrer chain.
+    Logged each time a user opted into extended reporting downloads an APK file
+    from a normal window on Android.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.AndroidTelemetry.ApkDownload.Outcome"
+    enum="ApkDownloadTelemetryOutcome" expires_after="2021-07-01">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records whether a telemetry ping for APK download was sent, or if not, then
+    why not. Logged each time a user downloads an APK file on Android.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.BlockingPage.ResourceType"
+    enum="ContentResourceType2" expires_after="2021-03-27">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Logs the resource type that triggers the safe browsing blocking page. Logged
+    each time a safe browsing blocking page is created. This metric is useful to
+    show the priority of checking each resource type in real time. Note that
+    this metric may be bias towards mainframe, because the default resource type
+    is set to mainframe.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.CheckBrowseUrl.HasLocalMatch"
+    enum="BooleanMatched" expires_after="2021-08-05">
+  <owner>vakh@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Logs whether the Safe Browsing check via CheckBrowseUrl method matched any
+    local hash prefixes. Logged each time the Safe Browsing reputation of a URL
+    is checked using local blocklists.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.CheckUrl.Timeout" enum="BooleanTimedOut"
+    expires_after="2021-08-05">
+  <owner>vakh@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Counts the number of times the Safe Browsing reputation lookup timeout
+    happens. Logged each time the Safe Browsing reputation of a URL is checked.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.DeepScan.Download.BypassedByUser.Duration"
+    units="ms" expires_after="M90">
+  <owner>domfc@chromium.org</owner>
+  <owner>webprotect-team@google.com</owner>
+  <summary>
+    This records the duration from the time the binary is uploaded for deep
+    scanning of a download request until the time the user decides to bypass the
+    verdict. It is logged once for each binary upload when the user bypasses the
+    verdict.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.DeepScan.Download.BytesPerSeconds" units="bytes"
+    expires_after="M90">
+  <owner>domfc@chromium.org</owner>
+  <owner>webprotect-team@google.com</owner>
+  <summary>
+    This records the bytes/sec from the size of a download request divided by
+    the duration of a successful deep scanning upload request. It is logged once
+    for each successful binary upload.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.DeepScan.Download.Duration" units="ms"
+    expires_after="M90">
+  <owner>domfc@chromium.org</owner>
+  <owner>webprotect-team@google.com</owner>
+  <summary>
+    This records the deep scanning duration of a user download request. It is
+    logged once for each binary upload.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.DeepScan.Download.FailedToGetToken.Duration"
+    units="ms" expires_after="M90">
+  <owner>domfc@chromium.org</owner>
+  <owner>webprotect-team@google.com</owner>
+  <summary>
+    This records the deep scanning duration of a user download request with a
+    FailedToGetToken result. It is logged once for each binary upload with that
+    result.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.DeepScan.Download.FailedToGetVerdict.Duration"
+    units="ms" expires_after="M90">
+  <owner>domfc@chromium.org</owner>
+  <owner>webprotect-team@google.com</owner>
+  <summary>
+    This records the deep scanning duration of a user download request with a
+    non-successful scan verdict. It is logged once for each binary upload with
+    that result.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.DeepScan.Download.FileEncrypted.Duration"
+    units="ms" expires_after="M90">
+  <owner>rogerta@chromium.org</owner>
+  <owner>webprotect-team@google.com</owner>
+  <summary>
+    This records the deep scanning duration of a user download request with a
+    FileEncrypted result. It is logged once for each binary upload with that
+    result.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.DeepScan.Download.FileTooLarge.Duration"
+    units="ms" expires_after="M90">
+  <owner>domfc@chromium.org</owner>
+  <owner>webprotect-team@google.com</owner>
+  <summary>
+    This records the deep scanning duration of a user download request with a
+    FileTooLarge result. It is logged once for each binary upload with that
+    result.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.DeepScan.Download.Success.Duration" units="ms"
+    expires_after="M90">
+  <owner>domfc@chromium.org</owner>
+  <owner>webprotect-team@google.com</owner>
+  <summary>
+    This records the deep scanning duration of a user download request with a
+    Success result. It is logged once for each binary upload with that result.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.DeepScan.Download.Timeout.Duration" units="ms"
+    expires_after="M90">
+  <owner>domfc@chromium.org</owner>
+  <owner>webprotect-team@google.com</owner>
+  <summary>
+    SB.This records the deep scanning duration of a user download request with a
+    Timeout result. It is logged once for each binary upload with that result.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.DeepScan.Download.Unknown.Duration" units="ms"
+    expires_after="M90">
+  <owner>domfc@chromium.org</owner>
+  <owner>webprotect-team@google.com</owner>
+  <summary>
+    This records the deep scanning duration of a user download request with an
+    Unknown result. It is logged once for each binary upload with that result.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.DeepScan.Download.UnsupportedFileType.Duration"
+    units="ms" expires_after="M90">
+  <owner>domfc@chromium.org</owner>
+  <owner>webprotect-team@google.com</owner>
+  <summary>
+    This records the deep scanning duration of a user download request with a
+    UnsupportedFileType result. It is logged once for each binary upload with
+    that result.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.DeepScan.DragAndDrop.BytesPerSeconds"
+    units="bytes" expires_after="M90">
+  <owner>domfc@chromium.org</owner>
+  <owner>webprotect-team@google.com</owner>
+  <summary>
+    This records the bytes/sec from the size of an upload request caused by a
+    &quot;drag and drop&quot; from the user divided by the duration of a
+    successful deep scanning upload request. It is logged once for each
+    successful binary upload.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.DeepScan.DragAndDrop.CancelledByUser.Duration"
+    units="ms" expires_after="M90">
+  <owner>domfc@chromium.org</owner>
+  <owner>webprotect-team@google.com</owner>
+  <summary>
+    This records the duration from the time the binary is uploaded for deep
+    scanning of a &quot;drag and drop&quot; until the time the user decides to
+    cancel the upload. It is logged once for each binary upload when the user
+    bypasses the verdict.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.DeepScan.DragAndDrop.Duration" units="ms"
+    expires_after="M90">
+  <owner>domfc@chromium.org</owner>
+  <owner>webprotect-team@google.com</owner>
+  <summary>
+    This records the deep scanning duration of a user &quot;drag and drop&quot;
+    request. It is logged once for each binary upload.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.DeepScan.DragAndDrop.FailedToGetToken.Duration"
+    units="ms" expires_after="M90">
+  <owner>domfc@chromium.org</owner>
+  <owner>webprotect-team@google.com</owner>
+  <summary>
+    This records the deep scanning duration of a user &quot;drag and drop&quot;
+    request with a FailedToGetToken result. It is logged once for each binary
+    upload with that result.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.DeepScan.DragAndDrop.FailedToGetVerdict.Duration"
+    units="ms" expires_after="M90">
+  <owner>domfc@chromium.org</owner>
+  <owner>webprotect-team@google.com</owner>
+  <summary>
+    This records the deep scanning duration of a user &quot;drag and drop&quot;
+    request with a non-successful scan verdict. It is logged once for each
+    binary upload with that result.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.DeepScan.DragAndDrop.FileEncrypted.Duration"
+    units="ms" expires_after="M90">
+  <owner>rogerta@chromium.org</owner>
+  <owner>webprotect-team@google.com</owner>
+  <summary>
+    This records the deep scanning duration of a user &quot;drag and drop&quot;
+    request with a FileEncrypted result. It is logged once for each binary
+    upload with that result.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.DeepScan.DragAndDrop.FileTooLarge.Duration"
+    units="ms" expires_after="M90">
+  <owner>domfc@chromium.org</owner>
+  <owner>webprotect-team@google.com</owner>
+  <summary>
+    This records the deep scanning duration of a user &quot;drag and drop&quot;
+    request with a FileTooLarge result. It is logged once for each binary upload
+    with that result.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.DeepScan.DragAndDrop.Success.Duration" units="ms"
+    expires_after="M90">
+  <owner>domfc@chromium.org</owner>
+  <owner>webprotect-team@google.com</owner>
+  <summary>
+    This records the deep scanning duration of a user &quot;drag and drop&quot;
+    request with a Success result. It is logged once for each binary upload with
+    that result.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.DeepScan.DragAndDrop.Timeout.Duration" units="ms"
+    expires_after="M90">
+  <owner>domfc@chromium.org</owner>
+  <owner>webprotect-team@google.com</owner>
+  <summary>
+    SB.This records the deep scanning duration of a user &quot;drag and
+    drop&quot; request with a Timeout result. It is logged once for each binary
+    upload with that result.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.DeepScan.DragAndDrop.Unknown.Duration" units="ms"
+    expires_after="M90">
+  <owner>domfc@chromium.org</owner>
+  <owner>webprotect-team@google.com</owner>
+  <summary>
+    This records the deep scanning duration of a user &quot;drag and drop&quot;
+    request with an Unknown result. It is logged once for each binary upload
+    with that result.
+  </summary>
+</histogram>
+
+<histogram
+    name="SafeBrowsing.DeepScan.DragAndDrop.UnsupportedFileType.Duration"
+    units="ms" expires_after="M90">
+  <owner>domfc@chromium.org</owner>
+  <owner>webprotect-team@google.com</owner>
+  <summary>
+    This records the deep scanning duration of a user &quot;drag and drop&quot;
+    request with a UnsupportedFileType result. It is logged once for each binary
+    upload with that result.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.DeepScan.Paste.BytesPerSeconds" units="bytes"
+    expires_after="M90">
+  <owner>domfc@chromium.org</owner>
+  <owner>webprotect-team@google.com</owner>
+  <summary>
+    This records the bytes/sec from the size of a user paste request divided by
+    the duration of a successful deep scanning upload request. It is logged once
+    for each successful binary upload.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.DeepScan.Paste.CancelledByUser.Duration"
+    units="ms" expires_after="M90">
+  <owner>domfc@chromium.org</owner>
+  <owner>webprotect-team@google.com</owner>
+  <summary>
+    This records the duration from the time the binary is uploaded for deep
+    scanning of a paste until the time the user decides to cancel the upload. It
+    is logged once for each binary upload when the user bypasses the verdict.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.DeepScan.Paste.Duration" units="ms"
+    expires_after="M90">
+  <owner>domfc@chromium.org</owner>
+  <owner>webprotect-team@google.com</owner>
+  <summary>
+    This records the deep scanning duration of a user paste request. It is
+    logged once for each binary upload.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.DeepScan.Paste.FailedToGetToken.Duration"
+    units="ms" expires_after="M90">
+  <owner>domfc@chromium.org</owner>
+  <owner>webprotect-team@google.com</owner>
+  <summary>
+    This records the deep scanning duration of a user paste request with a
+    FailedToGetToken result. It is logged once for each binary upload with that
+    result.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.DeepScan.Paste.FailedToGetVerdict.Duration"
+    units="ms" expires_after="M90">
+  <owner>domfc@chromium.org</owner>
+  <owner>webprotect-team@google.com</owner>
+  <summary>
+    This records the deep scanning duration of a user paste request with a
+    non-successful scan verdict. It is logged once for each binary upload with
+    that result.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.DeepScan.Paste.FileTooLarge.Duration" units="ms"
+    expires_after="M90">
+  <owner>domfc@chromium.org</owner>
+  <owner>webprotect-team@google.com</owner>
+  <summary>
+    This records the deep scanning duration of a user paste request with a
+    FileTooLarge result. It is logged once for each binary upload with that
+    result.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.DeepScan.Paste.Success.Duration" units="ms"
+    expires_after="M90">
+  <owner>domfc@chromium.org</owner>
+  <owner>webprotect-team@google.com</owner>
+  <summary>
+    This records the deep scanning duration of a user paste request with a
+    Success result. It is logged once for each binary upload with that result.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.DeepScan.Paste.Timeout.Duration" units="ms"
+    expires_after="M90">
+  <owner>domfc@chromium.org</owner>
+  <owner>webprotect-team@google.com</owner>
+  <summary>
+    This records the deep scanning duration of a user paste request with a
+    Timeout result. It is logged once for each binary upload with that result.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.DeepScan.Paste.Unknown.Duration" units="ms"
+    expires_after="M90">
+  <owner>domfc@chromium.org</owner>
+  <owner>webprotect-team@google.com</owner>
+  <summary>
+    This records the deep scanning duration of a user paste request with an
+    Unknown result. It is logged once for each binary upload with that result.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.DeepScan.Paste.UnsupportedFileType.Duration"
+    units="ms" expires_after="M90">
+  <owner>domfc@chromium.org</owner>
+  <owner>webprotect-team@google.com</owner>
+  <summary>
+    This records the deep scanning duration of a user paste request with a
+    UnsupportedFileType result. It is logged once for each binary upload with
+    that result.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.DeepScan.Upload.BytesPerSeconds" units="bytes"
+    expires_after="M90">
+  <owner>domfc@chromium.org</owner>
+  <owner>webprotect-team@google.com</owner>
+  <summary>
+    This records the bytes/sec from the size of an upload request divided by the
+    duration of a successful deep scanning upload request. It is logged once for
+    each successful binary upload.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.DeepScan.Upload.CancelledByUser.Duration"
+    units="ms" expires_after="M90">
+  <owner>domfc@chromium.org</owner>
+  <owner>webprotect-team@google.com</owner>
+  <summary>
+    This records the duration from the time the binary is uploaded for deep
+    scanning of an upload until the time the user decides to cancel the upload.
+    It is logged once for each binary upload when the user bypasses the verdict.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.DeepScan.Upload.Duration" units="ms"
+    expires_after="M90">
+  <owner>domfc@chromium.org</owner>
+  <owner>webprotect-team@google.com</owner>
+  <summary>
+    This records the deep scanning duration of a user upload request. It is
+    logged once for each binary upload.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.DeepScan.Upload.FailedToGetToken.Duration"
+    units="ms" expires_after="M90">
+  <owner>domfc@chromium.org</owner>
+  <owner>webprotect-team@google.com</owner>
+  <summary>
+    This records the deep scanning duration of a user upload request with a
+    FailedToGetToken result. It is logged once for each binary upload with that
+    result.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.DeepScan.Upload.FailedToGetVerdict.Duration"
+    units="ms" expires_after="M90">
+  <owner>domfc@chromium.org</owner>
+  <owner>webprotect-team@google.com</owner>
+  <summary>
+    This records the deep scanning duration of a user upload request with a
+    non-successful scan verdict. It is logged once for each binary upload with
+    that result.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.DeepScan.Upload.FileEncrypted.Duration"
+    units="ms" expires_after="M90">
+  <owner>rogerta@chromium.org</owner>
+  <owner>webprotect-team@google.com</owner>
+  <summary>
+    This records the deep scanning duration of a user upload request with a
+    FileEncrypted result. It is logged once for each binary upload with that
+    result.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.DeepScan.Upload.FileTooLarge.Duration" units="ms"
+    expires_after="M90">
+  <owner>domfc@chromium.org</owner>
+  <owner>webprotect-team@google.com</owner>
+  <summary>
+    This records the deep scanning duration of a user upload request with a
+    FileTooLarge result. It is logged once for each binary upload with that
+    result.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.DeepScan.Upload.Success.Duration" units="ms"
+    expires_after="M90">
+  <owner>domfc@chromium.org</owner>
+  <owner>webprotect-team@google.com</owner>
+  <summary>
+    This records the deep scanning duration of a user upload request with a
+    Success result. It is logged once for each binary upload with that result.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.DeepScan.Upload.Timeout.Duration" units="ms"
+    expires_after="M90">
+  <owner>domfc@chromium.org</owner>
+  <owner>webprotect-team@google.com</owner>
+  <summary>
+    SB.This records the deep scanning duration of a user upload request with a
+    Timeout result. It is logged once for each binary upload with that result.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.DeepScan.Upload.Unknown.Duration" units="ms"
+    expires_after="M90">
+  <owner>domfc@chromium.org</owner>
+  <owner>webprotect-team@google.com</owner>
+  <summary>
+    This records the deep scanning duration of a user upload request with an
+    Unknown result. It is logged once for each binary upload with that result.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.DeepScan.Upload.UnsupportedFileType.Duration"
+    units="ms" expires_after="M90">
+  <owner>domfc@chromium.org</owner>
+  <owner>webprotect-team@google.com</owner>
+  <summary>
+    This records the deep scanning duration of a user upload request with a
+    UnsupportedFileType result. It is logged once for each binary upload with
+    that result.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.DelayedWarnings.Event"
+    enum="SafeBrowsingDelayedWarningEvent" expires_after="M89">
+  <owner>meacer@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records when a user in the Delayed Warnings experiment group visits a page
+    with a delayed SafeBrowsing phishing warning, triggers the delayed warning
+    (via keypress), or leaves the page without interacting. Only recorded when
+    user has not disabled URL elision via &quot;Always Show Full URLs&quot;
+    context menu item, or by installing the Suspicious Site Reporter extension.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.DelayedWarnings.Event_UrlElisionDisabled"
+    enum="SafeBrowsingDelayedWarningEvent" expires_after="M89">
+  <owner>meacer@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Same as SafeBrowsing.DelayedWarnings.Event but only recorded when user has
+    disabled URL elision via &quot;Always Show Full URLs&quot; context menu
+    item, or by installing the Suspicious Site Reporter extension.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.DelayedWarnings.TimeOnPage" units="seconds"
+    expires_after="M89">
+  <owner>meacer@chromium.org</owner>
+  <owner>estark@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records how long a user in the Delayed Warnings experiment group spends on a
+    page with a delayed SafeBrowsing phishing warning. The time is recorded from
+    when the page loads to when the warning is shown or the user leaves the
+    page, whichever comes first. Only recorded when user has not disabled URL
+    elision via &quot;Always Show Full URLs&quot; context menu item, or by
+    installing the Suspicious Site Reporter extension.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.DelayedWarnings.TimeOnPage_UrlElisionDisabled"
+    units="seconds" expires_after="M89">
+  <owner>meacer@chromium.org</owner>
+  <owner>estark@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Same as SafeBrowsing.DelayedWarnings.TimeOnPage but only recorded when user
+    has disabled URL elision via &quot;Always Show Full URLs&quot; context menu
+    item, or by installing the Suspicious Site Reporter extension.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.FileTypeUpdate.DynamicUpdateResult"
+    enum="SBFileTypeUpdateResult" expires_after="M86">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    The result of reading/parsing/accepting a new proto for the FileTypePolices
+    repo of file extensions and their meta data.
+
+    This is for the file types loaded from the component-update system. This
+    includes both those loaded from disk shortly after startup, and those
+    received over the network when the component version changes
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.FileTypeUpdate.DynamicUpdateVersion"
+    units="FileTypePolicies Version" expires_after="M86">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Integer version number citing which version of the proto data chrome just
+    loaded. Latest version is in download_file_types.asciipb.
+
+    This is for the file types loaded from the component-update system. This
+    includes both those loaded from disk shortly after startup, and those
+    received over the network when the component version changes
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.FileTypeUpdate.ResourceBundleResult"
+    enum="SBFileTypeUpdateResult" expires_after="M86">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    The result of reading/parsing/accepting a new proto for the FileTypePolices
+    repo of file extensions and their meta data.
+
+    This is for the file types loaded from the resource bundle packaged with
+    Chrome, which is always loaded at startup.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.FileTypeUpdate.ResourceBundleVersion"
+    units="FileTypePolicies Version" expires_after="M86">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Integer version number citing which version of the proto data chrome just
+    loaded. Latest version is in download_file_types.asciipb.
+
+    This is for the file types loaded from the resource bundle packaged with
+    Chrome, which is always loaded at startup.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.Interstitial.Type" enum="InterstitialTypeEnum"
+    expires_after="2021-07-07">
+  <owner>ntfschr@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Which interstitial type is being displayed to the user? This currently
+    applies only to WebView (where we show Loud vs. Quiet interstitials).
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.NavigationObserver.NavigationEventCleanUpCount"
+    units="NavigationEvents" expires_after="2021-01-27">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Count of how many NavigationEvents get removed in each periodic clean up.
+    This is a rough estimation of the number of navigations every two minutes.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.Pref.Enhanced" enum="BooleanEnabled"
+    expires_after="2021-01-30">
+  <owner>bdea@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Whether the Safe Browsing enhanced protection service is currently enabled.
+    Recorded for all non-Incognito profiles on profile startup.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.Pref.Extended" enum="BooleanEnabled"
+    expires_after="2021-01-30">
+  <owner>vakh@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Whether the Safe Browsing extended reporting service is currently enabled.
+    Recorded for all non-Incognito profiles on profile startup.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.Pref.General" enum="BooleanEnabled"
+    expires_after="2021-01-30">
+  <owner>vakh@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Whether the Safe Browsing service is currently enabled. Recorded for all
+    non-Incognito profiles on profile startup.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.Pref.SawInterstitial" enum="Boolean"
+    expires_after="2021-01-30">
+  <owner>vakh@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Whether the current user has ever seen a security interstitial. Recorded for
+    all non-Incognito profiles on profile startup.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.ReferrerAttributionResult"
+    enum="SafeBrowsingAttributionResultTypes" expires_after="M90">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    The result of referrer attribution, including different types of success or
+    failure. This is incremented each time a safe browsing ping or download ping
+    is generated.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.ReferrerHasInvalidTabID" enum="BooleanInvalid"
+    expires_after="M90">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Number of times referrer attribution encounters an invalid tab ID. This is
+    incremented a safe browsing ping or download ping is generated and an
+    invalid tab ID is encountered during attribution.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.ReferrerURLChainSize" units="units"
+    expires_after="M90">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    The length of referrer URL chain we get from referrer attribution. This is
+    logged each time a safe browsing ping or download ping is generated.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.RT.AllStoresAvailable" enum="BooleanAvailable"
+    expires_after="2021-08-17">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Logs whether the local Safe Browsing stores are available. If not, all URLs
+    are marked as safe during real time URL lookup. Logged each time a top frame
+    URL navigation happens for users who have the real time URL lookups enabled.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.RT.Backoff.State" enum="BooleanEnabled"
+    expires_after="2021-02-07">
+  <owner>vakh@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Logs if the real time URL lookup service is currently in backoff state due
+    to previous errors. Logged each time a top frame URL navigation happens in
+    non-incognito mode for users who have real time URL lookups enabled.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.RT.CacheManager.CleanUpTime" units="ms"
+    expires_after="2021-09-17">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Logs the time it takes to run a cleanup task in cache manager. Logged each
+    time a cleanup task is run.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.RT.CacheManager.RealTimeVerdictCount"
+    units="entries" expires_after="2021-06-19">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records the number of real time URL verdicts stored for this profile. Logged
+    each time a new real time url verdict is cached.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.RT.CanCheckDatabase" enum="BooleanEnabled"
+    expires_after="2021-03-05">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Logs whether Safe Browsing database can be checked in Safe Browsing URL
+    checker. Logged each time a URL is checked by Safe Browsing URL checker.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.RT.GetCache.Time" units="ms"
+    expires_after="2021-02-21">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Logs the latency between the start of getting a result from the cache and
+    when the cache is actually obtained. The time includes bouncing between IO
+    and UI threads. This is an indicator of the efficiency of loading the cache.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.RT.GetCacheResult"
+    enum="SafeBrowsingRTLookupResponseVerdictType" expires_after="2021-02-21">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Logs the result of real time URL cache lookup. If the result is
+    VERDICT_TYPE_UNSPECIFIED, that means cache miss and a ping will be sent
+    afterwards. Otherwise, ping won't be sent. This is an indicator of cache hit
+    rate.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.RT.GetToken.Time" units="ms"
+    expires_after="2021-03-05">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Logs the latency between the start of a token request and when the token is
+    actually obtained. Logged each time a user performs a real-time Safe
+    Browsing check with token.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.RT.HasTokenFromFetcher" enum="BooleanHasToken"
+    expires_after="2021-03-05">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Logs whether a token received from the token fetcher is nonempty. Logged
+    each time a response is received from the token fetcher. It shows the
+    validity of the tokens received from the token fetcher.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.RT.HasTokenInRequest" enum="BooleanHasToken"
+    expires_after="2021-03-05">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Logs whether a token is attached when a URL lookup request is sent. Logged
+    each time a URL lookup request is sent. It shows the percentage of URL
+    lookup requests that are attached with tokens.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.RT.HasValidCacheManager" enum="BooleanValid"
+    expires_after="2021-02-21">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Logs if cache manager is valid when real time URL check is enabled. Logged
+    each time if the URL doesn't match the high confidence allowlist. Ideally,
+    cache manager should be valid whenever real time URL check is enabled.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.RT.IsLookupServiceAvailable"
+    enum="BooleanAvailable" expires_after="2021-03-10">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Logs whether the real time lookup service is available when a real time URL
+    check is needed. The real time lookup service is available if it is not
+    nullptr and it is not in backoff mode. Logged when real time URL check is
+    enabled and the URL doesn't match the allowlist.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.RT.IsLookupSuccessful" enum="BooleanSuccess"
+    expires_after="2021-03-05">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Logs whether the response of the real time URL lookup is successful. Logged
+    on each resource check for which a lookup request is sent to the server. A
+    failure can be either a network error or a parsing error.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.RT.LocalMatch.Result"
+    enum="SafeBrowsingAllowlistAsyncMatch" expires_after="2021-08-05">
+  <owner>vakh@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Logs the result of checking the URL against the local Safe Browsing high
+    confidence allowlist. Logged each time a top frame URL navigation happens
+    for users who have the real time URL lookups enabled.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.RT.Network.Result"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2021-08-05">
+  <owner>vakh@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Response or error codes from SafeBrowsing real time URL lookups. Logged on
+    each resource check for which a lookup request is sent to the server.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.RT.Network.Time" units="ms"
+    expires_after="2021-08-05">
+  <owner>vakh@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Logs the roundtrip time it took to perform a Safe Browsing real time URL
+    lookup. Logged on each resource check for which a lookup request is sent to
+    the server.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.RT.Request.UserPopulation"
+    enum="SafeBrowsingUserPopulation" expires_after="2021-05-11">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Logs the user population that was checked by Safe Browsing real time URL
+    lookup. Logged on each resource check for which a lookup request is sent to
+    the server.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.RT.ResourceTypes.Checked"
+    enum="ContentResourceType2" expires_after="2021-08-05">
+  <owner>vakh@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Logs the resource type that was checked by Safe Browsing real time URL
+    lookup. Logged on each resource check that is eligible for real time checks.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.RT.ResourceTypes.Requested"
+    enum="ContentResourceType2" expires_after="2021-08-05">
+  <owner>vakh@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Logs the resource type that was requested to be checked by Safe Browsing
+    real time URL lookup. Logged on each resource check.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.RT.ThreatInfoSize" units="verdicts"
+    expires_after="2021-03-20">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Logs the number of verdicts received in the real time URL check response.
+    Logged on each resource check for which a lookup request is sent to the
+    server.
+  </summary>
+</histogram>
+
+<histogram base="true" name="SafeBrowsing.Settings.UserAction"
+    enum="SafeBrowsingSettingsUserAction" expires_after="2021-08-14">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Logs the user action performed on the Safe Browsing settings page. Depending
+    on the enum value, logged when the page is showned to the user or when the
+    user performs an action on the page.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.TokenFetcher.ErrorType"
+    enum="GoogleServiceAuthError" expires_after="2021-04-06">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Logs the error type from the token fetcher. Logs each time safe browsing
+    gets a response from the token fetcher. When the error type is none, it
+    means the token is obtained successfully.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.Triggers.AdPopup.Action"
+    enum="AdPopupTriggerAction" expires_after="2021-07-01">
+  <owner>vakh@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Tracks the actions taken by the Ad Popup trigger whenever it is executed.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.Triggers.AdRedirect.Action"
+    enum="AdPopupTriggerAction" expires_after="2021-07-01">
+  <owner>vakh@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Tracks the actions taken by the Ad Redirect trigger whenever it is executed.
+    It is logged when we detect a blocked redirect attempt caused by an ad.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.Triggers.AdSampler.Action"
+    enum="AdSamplerTriggerAction" expires_after="2021-07-01">
+  <owner>vakh@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Tracks the actions taken by the Ad Sampling trigger whenever it is executed.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.Triggers.SuspiciousSite.DelayTimerState"
+    enum="SuspiciousSiteTriggerState" expires_after="2021-07-01">
+  <owner>vakh@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Tracks the state of the Suspicious Site trigger when its report delay timer
+    fires. Used to investigate variance in event order.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.Triggers.SuspiciousSite.Event"
+    enum="SuspiciousSiteTriggerEvent" expires_after="2021-07-01">
+  <owner>vakh@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Tracks the events occurring in the Suspicious Site trigger whenever it is
+    executed.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.Triggers.SuspiciousSite.ReportRejectionReason"
+    enum="TriggerManagerReason" expires_after="2021-07-01">
+  <owner>vakh@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Tracks the reasons that a report requested by the Suspicious Site trigger is
+    rejected by the Trigger Manager.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.V4Database.Size" units="KB"
+    expires_after="2021-07-31">
+  <owner>vakh@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    The size of the SafeBrowsing database or file on disk in kilobytes, after
+    reading it from disk on startup and after a database update has occurred.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.V4DatabaseOpen.Time" units="ms"
+    expires_after="M77">
+  <owner>vakh@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    The time it takes to parse and load the SafeBrowsing database from disk, in
+    milliseconds.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.V4GetHash.CacheHit.Result"
+    enum="SafeBrowsingV4FullHashCacheResult" expires_after="2021-07-31">
+  <owner>vakh@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>Track cache hits for V4 full hashes.</summary>
+</histogram>
+
+<histogram name="SafeBrowsing.V4GetHash.Check.Result"
+    enum="SafeBrowsingV4GetHashCheckResult" expires_after="never">
+<!-- expires-never: This is critical to track the health of Safe Browsing full hash requests. -->
+
+  <owner>vakh@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>Track get hash response hits for V4 full hash requests.</summary>
+</histogram>
+
+<histogram name="SafeBrowsing.V4GetHash.CountOfPrefixes" units="prefixes"
+    expires_after="2020-12-03">
+  <owner>vakh@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    The number of prefixes included in a full hash request sent to the Google
+    Safe Browsing servers.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.V4GetHash.Network.Result"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="M85">
+  <owner>vakh@google.com</owner>
+  <owner>kcarattini@google.com</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Response or error codes from the SafeBrowsing Pver4 service. Logged after a
+    GetHash or request finishes to capture the response code or error code for
+    that call.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.V4GetHash.Network.Time" units="ms"
+    expires_after="2021-07-31">
+  <owner>vakh@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    The time that it took to receive a response from the Google SafeBrowsing
+    servers for a full hash request.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.V4GetHash.Parse.Result"
+    enum="SafeBrowsingParseV4HashResult" expires_after="never">
+<!-- expires-never: This reports the reason for the failure to parse the response
+from Safe Browsing. Keeping track of these errors is critical to ensure that
+Safe Browsing lookup mechanism is working as expected -->
+
+  <owner>vakh@chromium.org</owner>
+  <owner>kcarattini@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Track the parsing results of a status 200 GetV4Hash request.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.V4GetHash.Result"
+    enum="SafeBrowsingV4OperationResult" expires_after="2021-07-31">
+  <owner>vakh@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Track return status from V4 GetHash attempts. The buckets of this histogram
+    overlap, so the counts cannot be used as percentages.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.V4LocalDatabaseManager.AreAllStoresAvailableNow"
+    enum="SafeBrowsingStoreAvailabilityResult" expires_after="2021-09-04">
+  <owner>vakh@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records the outcome of a check to AreAllStoresAvailableNow. This will be
+    logged whenever the database is queried (several times in the process of a
+    download, and once when a potentially dangerous subresource is loaded).
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.V4LocalDatabaseManager.HasReceivedUpdateResponse"
+    enum="BooleanUpdateReceived" expires_after="2021-03-04">
+  <owner>ajuma@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records whether a network response has been received for a request to update
+    the Safe Browsing local database, since the browser was launched. This will
+    be logged whenever the database is queried.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.V4LocalDatabaseManager.ThreatInfoSize"
+    units="verdicts" expires_after="2021-03-20">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records the number of verdicts received in the full hash check. Logged each
+    time a full hash check response is received.
+  </summary>
+</histogram>
+
+<histogram
+    name="SafeBrowsing.V4LocalDatabaseManager.TimeSinceLastUpdateResponse"
+    units="ms" expires_after="2021-03-04">
+  <owner>ajuma@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records the time since the last network response was received for a request
+    to udpate the Safe Browsing local database. This will be logged whenever the
+    database is queried, but only if at least one such network response has been
+    received since the browser was launched.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.V4ProcessFullUpdate.AdditionsHashesCount"
+    units="entries" expires_after="2021-04-29">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records the number of additions hashes in a SafeBrowsing list full update.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.V4ProcessFullUpdate.ApplyUpdate.Result"
+    enum="SafeBrowsingV4ApplyUpdateResult" expires_after="2021-07-01">
+  <owner>vakh@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Track the result of applying a full update for a store received from PVer4
+    SafeBrowsing service.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.V4ProcessFullUpdate.DecodeAdditions.Result"
+    enum="SafeBrowsingV4DecodeResult" expires_after="never">
+<!-- expires-never: This reports the outcome of decoding the latest update
+received from reason Safe Browsing to apply to the local Safe Browsing
+database. It is crucial to know that the Safe Browsing updates are being parsed
+and applied correctly. -->
+
+  <owner>vakh@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Track the result of decoding the Rice-encoded list of additions of 4-byte
+    hash prefixes. This is logged once per store, per update containing
+    Rice-encoded additions. This histogram is specific to processing full
+    updates received from the server.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.V4ProcessFullUpdate.RemovalsHashesCount"
+    units="entries" expires_after="2021-04-29">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records the number of removals hashes in a SafeBrowsing list full update.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.V4ProcessPartialUpdate.AdditionsHashesCount"
+    units="entries" expires_after="2021-04-29">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records the number of additions hashes in a SafeBrowsing list partial
+    update.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.V4ProcessPartialUpdate.ApplyUpdate.Result"
+    enum="SafeBrowsingV4ApplyUpdateResult" expires_after="2021-07-01">
+  <owner>vakh@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Track the result of applying a partial update for a store received from
+    PVer4 SafeBrowsing service.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.V4ProcessPartialUpdate.DecodeAdditions.Result"
+    enum="SafeBrowsingV4DecodeResult" expires_after="never">
+<!-- expires-never: This reports the outcome of decoding the latest update
+received from reason Safe Browsing to apply to the local Safe Browsing
+database. It is crucial to know that the Safe Browsing updates are being parsed
+and applied correctly. -->
+
+  <owner>vakh@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Track the result of decoding the Rice-encoded list of additions of 4-byte
+    hash prefixes. This is logged once per store, per update containing
+    Rice-encoded additions. This histogram is specific to processing partial
+    updates received from the server.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.V4ProcessPartialUpdate.DecodeRemovals.Result"
+    enum="SafeBrowsingV4DecodeResult" expires_after="never">
+<!-- expires-never: This reports the outcome of decoding the latest update
+received from reason Safe Browsing to apply to the local Safe Browsing
+database. It is crucial to know that the Safe Browsing updates are being parsed
+and applied correctly. -->
+
+  <owner>vakh@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Track the result of decoding the Rice-encoded list of indexes of hash
+    prefixes to remove since the last update. This is logged once per store, per
+    update containing Rice-encoded removals.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.V4ProcessPartialUpdate.RemovalsHashesCount"
+    units="entries" expires_after="2021-04-29">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records the number of removals hashes in a SafeBrowsing list partial update.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.V4ReadFromDisk.ApplyUpdate.Result"
+    enum="SafeBrowsingV4ApplyUpdateResult" expires_after="never">
+<!-- expires-never: This reports the reason for the failure to use the Safe
+Browsing database present on user's disk upon launch. Having this information
+is crucial to know that the Safe Browsing updates are being read, applied, and
+parsed correctly. -->
+
+  <owner>vakh@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Track the result of applying an ListUpdateResponse read from disk after
+    parsing it successfully as a protobuf.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.V4ReadFromDisk.DecodeAdditions.Result"
+    enum="SafeBrowsingV4DecodeResult" expires_after="never">
+<!-- expires-never: This reports the outcome of decoding the latest update
+received from reason Safe Browsing to apply to the local Safe Browsing
+database. It is crucial to know that the Safe Browsing updates are being parsed
+and applied correctly. -->
+
+  <owner>vakh@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Track the result of decoding the Rice-encoded list of additions of 4-byte
+    hash prefixes. This is logged once per store, per Chrome launch. It is
+    specific to processing V4StoreFileFormat proto read from disk.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.V4Store.IsStoreValid" enum="BooleanValid"
+    expires_after="2021-08-05">
+  <owner>vakh@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records whether a store has valid data, when it is queried. This is logged
+    each time a store is checked (a few times for each download, and once when a
+    potentially dangerous subresource is loaded).
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.V4StoreRead.Result"
+    enum="SafeBrowsingV4StoreReadResult" expires_after="2021-07-30">
+  <owner>vakh@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Track the parsing results of reading the SafeBrowsing V4 store file from
+    disk. Recorded every time a store is read from disk.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.V4StoreWrite.Result"
+    enum="SafeBrowsingV4StoreWriteResult" expires_after="2021-07-30">
+  <owner>vakh@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Track the results of writing the SafeBrowsing V4 store file to disk.
+    Recorded every time a store is written to disk.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.V4Update.Network.Result"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2021-07-28">
+  <owner>vakh@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Response or error codes when fetching updates from the SafeBrowsing PVer4
+    service.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.V4Update.Parse.Result"
+    enum="SafeBrowsingParseV4UpdateResult" expires_after="never">
+<!-- expires-never: This reports the reason for the failure to parse the Safe
+Browsing database update received from the API backend. It is crucial to detect
+if we ever start failing to parse the updates which puts users' security at
+risk. -->
+
+  <owner>vakh@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Track the parsing results of a status 200 GetV4Update request.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.V4Update.ResponseSizeKB" units="KB"
+    expires_after="2021-07-28">
+  <owner>vakh@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    The size of the response sent by the SafeBrowsing PVer4 service, in KB.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.V4Update.Result"
+    enum="SafeBrowsingV4OperationResult" expires_after="never">
+<!-- expires-never: This reports the outcome of fetching the Safe Browsing
+database update from the API backend. It is crucial to detect if we ever start
+failing to fetch the updates which puts users' security at risk. -->
+
+  <owner>vakh@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Track return status from V4 update attempts. The buckets of this histogram
+    overlap, so the counts cannot be used as percentages.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.WebView.AppOptIn" enum="SafeBrowsingAppOptIn"
+    expires_after="2021-07-07">
+  <owner>ntfschr@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records whether the application has explicitly opted in or out of Safe
+    Browsing by manifest tag, or if they're relying on the default behavior.
+    This is recorded once during startup.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.WebView.UserOptIn" enum="SafeBrowsingUserOptIn"
+    expires_after="2021-07-07">
+  <owner>ntfschr@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records whether the user has explicitly opted in or out of Safe Browsing
+    (determined by the Google Play Protect Verify Apps setting in GMS). This
+    also captures when WebView cannot determine user preference due to a GMS API
+    failure. This is recorded once during startup.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.WebView.Viewable" enum="BooleanVisible"
+    expires_after="2021-07-07">
+  <owner>ntfschr@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    When encountering an unsafe resource, this indicates whether the WebView is
+    considered to be viewable or not. Currently, we define &quot;viewable&quot;
+    as getVisibility() == View.VISIBLE and attached to the Android View
+    hierarchy.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsingBinaryUploadRequest.AdvancedProtectionScanVerdict"
+    enum="SafeBrowsingMalwareDeepScanningVerdict" expires_after="2021-01-14">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    This records the verdict of deep scanning for Advanced Protection users. It
+    can be used to determine how often we warn the user about malware after they
+    upload a file for deep scanning. It is recorded after every Advanced
+    Protection deep scan.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsingBinaryUploadRequest.DlpResult"
+    enum="BooleanSuccess" expires_after="M90">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    This records whether DLP scanning succeeded or not. It is logged once for
+    each binary upload with DLP scanning enabled (file download or upload with
+    the appropriate enterprise policies enabled).
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsingBinaryUploadRequest.Duration" units="ms"
+    expires_after="M90">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    This records the duration of each binary upload request. It is logged once
+    for each binary upload (file download or upload with the appropriate
+    enterprise policies enabled).
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsingBinaryUploadRequest.MalwareResult"
+    enum="BooleanSuccess" expires_after="M90">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    This records whether the malware deep scanning succeeded or not. It is
+    logged once for each binary upload with malware scanning enabled (file
+    download or upload with the appropriate enterprise policies enabled).
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsingBinaryUploadRequest.MalwareScanVerdict"
+    enum="SafeBrowsingMalwareDeepScanningVerdict" expires_after="2021-01-14">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    This records the verdict of deep scanning for enterprise users. It can be
+    used to determine how often we warn the user about malware after they upload
+    a file for deep scanning. It is recorded after every enterprise malware deep
+    scan.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsingBinaryUploadRequest.Result"
+    enum="SafeBrowsingBinaryUploadResult" expires_after="M90">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    This records the outcome of each binary upload request. It is logged once
+    for each binary upload (file download or upload with the appropriate
+    enterprise policies enabled).
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsingBinaryUploadRequest.TimeToGetFCMToken" units="ms"
+    expires_after="M90">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    This record how long it took for the request to get the FCM token. It is
+    logged every time a deep scanning request successfully gets a token.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsingFCMService.IncomingMessageHasKey" enum="Boolean"
+    expires_after="M90">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Whether the incoming message has the expected key. Recorded on every FCM
+    message received by the Safe Browsing FCM handler.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsingFCMService.IncomingMessageHasValidToken"
+    enum="Boolean" expires_after="M90">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Whether the incoming message has a token that was previously registered with
+    the FCM handler. Recorded on every FCM message received by the Safe Browsing
+    FCM handler.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsingFCMService.IncomingMessageParsedBase64"
+    enum="BooleanSuccess" expires_after="M90">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Whether the incoming message was successfully parsed as valid base64-encoded
+    data. Recorded on every FCM message received by the Safe Browsing FCM
+    handler.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsingFCMService.IncomingMessageParsedProto"
+    enum="BooleanSuccess" expires_after="M90">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Whether the incoming message was successfully parsed as a valid
+    base64-encoded serialized proto. Recorded on every FCM message received by
+    the Safe Browsing FCM handler.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

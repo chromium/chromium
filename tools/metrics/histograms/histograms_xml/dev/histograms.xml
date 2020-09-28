@@ -1,0 +1,278 @@
+<!--
+Copyright 2020 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of Dev histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please send CLs to chromium-metrics-reviews@google.com rather than to specific
+individuals. These CLs will be automatically reassigned to a reviewer within
+about 5 minutes. This approach helps the metrics team to load-balance incoming
+reviews. Googlers can read more about this at go/gwsq-gerrit.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="DevTools.ActionTaken" enum="DevToolsAction"
+    expires_after="2021-07-31">
+  <owner>alph@chromium.org</owner>
+  <owner>yangguo@chromium.org</owner>
+  <owner>bmeurer@chromium.org</owner>
+  <summary>Specified DevTools action has been taken.</summary>
+</histogram>
+
+<histogram name="DevTools.BackgroundService.ClearEvents"
+    enum="ServiceWorkerStatusCode" expires_after="M87">
+  <owner>yangguo@chromium.org</owner>
+  <owner>rayankans@chromium.org</owner>
+  <owner>bmeurer@chromium.org</owner>
+  <summary>
+    The result of clearing all stored events for a Background Service feature.
+    This is called if a developer clicks on a delete button in a Background
+    Service DevTools panel.
+  </summary>
+</histogram>
+
+<histogram name="DevTools.BackgroundService.GetEvents"
+    enum="ServiceWorkerStatusCode" expires_after="M87">
+  <owner>rayankans@chromium.org</owner>
+  <owner>yangguo@chromium.org</owner>
+  <owner>bmeurer@chromium.org</owner>
+  <summary>
+    The result of loading all stored events for a Background Service feature.
+    This is called when the a Bakground Service DevTools panel is opened.
+  </summary>
+</histogram>
+
+<histogram name="DevTools.BackgroundService.LogEvent"
+    enum="ServiceWorkerStatusCode" expires_after="M87">
+  <owner>rayankans@chromium.org</owner>
+  <owner>yangguo@chromium.org</owner>
+  <owner>bmeurer@chromium.org</owner>
+  <summary>
+    The result of logging a Background Service event. An event is logged if
+    `Recording` mode is on and a relevant Background Service event is taking
+    place.
+  </summary>
+</histogram>
+
+<histogram name="DevTools.BackgroundService.StartRecording"
+    enum="DevToolsBackgroundService" expires_after="M87">
+  <owner>yangguo@chromium.org</owner>
+  <owner>bmeurer@chromium.org</owner>
+  <owner>rayankans@chromium.org</owner>
+  <summary>
+    Records the Background Service for which `Recording` mode was enabled. This
+    is called if the developer toggles the record button in the relevant
+    Bakground Service DevTools panel.
+  </summary>
+</histogram>
+
+<histogram name="DevTools.ColorPicker.FixedColor"
+    enum="DevToolsColorPickerFixedColor" expires_after="2021-03-17">
+  <owner>yangguo@chromium.org</owner>
+  <owner>mathias@chromium.org</owner>
+  <owner>alexrudenko@chromium.org</owner>
+  <summary>
+    Records which color contrast threshold was fixed by the user in the Color
+    Picker.
+  </summary>
+</histogram>
+
+<histogram name="DevTools.ComputedStyleGrouping"
+    enum="DevToolsComputedStyleGrouping" expires_after="M87">
+  <owner>changhaohan@chromium.org</owner>
+  <owner>yangguo@chromium.org</owner>
+  <owner>mathias@chromium.org</owner>
+  <summary>
+    Records state changes for DevTools computed style grouping toggled from the
+    Computed pane.
+  </summary>
+</histogram>
+
+<histogram name="DevTools.CSSGridSettings2" enum="DevtoolsGridSettingChanged2"
+    expires_after="M88">
+  <owner>yangguo@chromium.org</owner>
+  <owner>brgoddar@microsoft.com</owner>
+  <owner>leo.lee@microsoft.com</owner>
+  <summary>
+    DevTools settings for CSS grid recorded on launch of the DevTools.
+  </summary>
+</histogram>
+
+<histogram name="DevTools.DualScreenDeviceEmulated"
+    enum="DevToolsDualScreenDeviceEmulated" expires_after="M87">
+  <owner>yangguo@chromium.org</owner>
+  <owner>soxia@microsoft.com</owner>
+  <owner>leo.lee@microsoft.com</owner>
+  <summary>
+    Records the usage of dual screen device emulation: a dual screen or fold
+    device is selected for emulation; the span button is hit; or the platform
+    support of dual screen is utilized.
+  </summary>
+</histogram>
+
+<histogram name="DevTools.ExperimentDisabled" enum="DevtoolsExperiments"
+    expires_after="2021-07-31">
+  <owner>yangguo@chromium.org</owner>
+  <owner>brgoddar@microsoft.com</owner>
+  <owner>shanejc@microsoft.com</owner>
+  <summary>
+    Fired when a devtools experiment is disabled from the experiments tab.
+  </summary>
+</histogram>
+
+<histogram name="DevTools.ExperimentEnabled" enum="DevtoolsExperiments"
+    expires_after="2021-07-31">
+  <owner>yangguo@chromium.org</owner>
+  <owner>brgoddar@microsoft.com</owner>
+  <owner>shanejc@microsoft.com</owner>
+  <summary>
+    Fired when a devtools experiment is enabled from the experiments tab.
+  </summary>
+</histogram>
+
+<histogram name="DevTools.ExperimentEnabledAtLaunch" enum="DevtoolsExperiments"
+    expires_after="2021-07-31">
+  <owner>yangguo@chromium.org</owner>
+  <owner>brgoddar@microsoft.com</owner>
+  <owner>shanejc@microsoft.com</owner>
+  <summary>
+    Fires for each experiment that is enabled at the time of Devtools Launch.
+  </summary>
+</histogram>
+
+<histogram name="DevTools.GridOverlayOpenedFrom"
+    enum="DevToolsGridOverlayOpenedFrom" expires_after="M88">
+  <owner>changhaohan@chromium.org</owner>
+  <owner>yangguo@chromium.org</owner>
+  <owner>mathias@chromium.org</owner>
+  <summary>
+    Records which UI element is being used to open Grid overlays.
+  </summary>
+</histogram>
+
+<histogram name="DevTools.HighlightedPersistentCSSGridCount"
+    enum="DevToolsHighlightedPersistentCSSGridCount" expires_after="M88">
+  <owner>yangguo@chromium.org</owner>
+  <owner>patrick.brosset@microsoft.com</owner>
+  <owner>leo.lee@microsoft.com</owner>
+  <summary>
+    Number of simultaneous persistent CSS grid overlays in DevTools, recorded
+    after each change.
+  </summary>
+</histogram>
+
+<histogram name="DevTools.InspectElement" units="ms" expires_after="2021-07-31">
+  <owner>alph@chromium.org</owner>
+  <owner>yangguo@chromium.org</owner>
+  <owner>bmeurer@chromium.org</owner>
+  <summary>
+    Time to load Developer Tools when user clicks Inspect Element in the context
+    menu.
+  </summary>
+</histogram>
+
+<histogram name="DevTools.IssuesPanelIssueExpanded"
+    enum="DevToolsIssuesPanelIssueExpanded" expires_after="2021-08-27">
+  <owner>yangguo@chromium.org</owner>
+  <owner>jegarc@microsoft.com</owner>
+  <summary>
+    Records which type of issue is expanded in the issues panel.
+  </summary>
+</histogram>
+
+<histogram name="DevTools.IssuesPanelOpenedFrom"
+    enum="DevToolsIssuesPanelOpenedFrom" expires_after="2021-01-24">
+  <owner>yangguo@chromium.org</owner>
+  <owner>bmeurer@chromium.org</owner>
+  <summary>
+    Records which UI element is being used to open the Issues Panel.
+  </summary>
+</histogram>
+
+<histogram name="DevTools.IssuesPanelResourceOpened"
+    enum="DevToolsIssuesPanelResourceOpened" expires_after="2021-08-27">
+  <owner>yangguo@chromium.org</owner>
+  <owner>jegarc@microsoft.com</owner>
+  <summary>
+    Records which resource from what issue category is opened in the issue
+    panel.
+  </summary>
+</histogram>
+
+<histogram name="DevTools.KeybindSetSettingChanged" enum="DevToolsKeybindSets"
+    expires_after="2020-10-31">
+  <owner>yangguo@chromium.org</owner>
+  <owner>jalyn@microsoft.com</owner>
+  <owner>leo.lee@microsoft.com</owner>
+  <summary>
+    Recorded when the user changes which keyboard shortcut presets they are
+    using in the DevTools.
+  </summary>
+</histogram>
+
+<histogram name="DevTools.KeyboardShortcutFired"
+    enum="DevToolsKeyboardShortcutAction" expires_after="2020-10-31">
+  <owner>yangguo@chromium.org</owner>
+  <owner>jalyn@microsoft.com</owner>
+  <owner>leo.lee@microsoft.com</owner>
+  <summary>
+    Recorded when a DevTools keyboard shortcut has been processed and
+    successfully executed its action.
+  </summary>
+</histogram>
+
+<histogram base="true" name="DevTools.Launch" units="ms" expires_after="M85">
+<!-- Name completed by histogram_suffixes name="DevToolsLaunchPanels" -->
+
+  <owner>yangguo@chromium.org</owner>
+  <owner>bmeurer@chromium.org</owner>
+  <summary>
+    Measures the time until a given tool is interactive during a cold start of
+    the DevTools.
+  </summary>
+</histogram>
+
+<histogram name="DevTools.PanelClosed" enum="DevToolsPanel" expires_after="M94">
+  <owner>yangguo@chromium.org</owner>
+  <owner>joselea@microsoft.com</owner>
+  <owner>shanejc@microsoft.com</owner>
+  <summary>Specified DevTools panel was closed.</summary>
+</histogram>
+
+<histogram name="DevTools.PanelShown" enum="DevToolsPanel"
+    expires_after="2021-07-31">
+  <owner>alph@chromium.org</owner>
+  <owner>yangguo@chromium.org</owner>
+  <owner>bmeurer@chromium.org</owner>
+  <summary>Specified DevTools panel was shown.</summary>
+</histogram>
+
+<histogram name="DevTools.SettingChanged" enum="DevToolsSetting"
+    expires_after="2021-07-31">
+  <owner>alph@chromium.org</owner>
+  <owner>yangguo@chromium.org</owner>
+  <owner>bmeurer@chromium.org</owner>
+  <summary>Specified DevTools setting was changed.</summary>
+</histogram>
+
+<histogram name="DevTools.SidebarPaneShown" enum="DevToolsSidebarPane"
+    expires_after="2021-07-31">
+  <owner>changhaohan@chromium.org</owner>
+  <owner>yangguo@chromium.org</owner>
+  <owner>bmeurer@chromium.org</owner>
+  <summary>Specified DevTools sidebar pane was shown.</summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

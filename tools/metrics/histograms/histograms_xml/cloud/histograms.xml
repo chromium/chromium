@@ -1,0 +1,156 @@
+<!--
+Copyright 2020 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of Cloud histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please send CLs to chromium-metrics-reviews@google.com rather than to specific
+individuals. These CLs will be automatically reassigned to a reviewer within
+about 5 minutes. This approach helps the metrics team to load-balance incoming
+reviews. Googlers can read more about this at go/gwsq-gerrit.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="CloudPrint.AuthEvent" enum="CloudPrintAuthEventType"
+    expires_after="M90">
+  <owner>thestig@chromium.org</owner>
+  <summary>Event counts in CloudPrintAuth.</summary>
+</histogram>
+
+<histogram name="CloudPrint.AvailablePrinters" units="units"
+    expires_after="M90">
+  <owner>thestig@chromium.org</owner>
+  <summary>The number of printers available for registration.</summary>
+</histogram>
+
+<histogram name="CloudPrint.AvailablePrintersList" units="units"
+    expires_after="M90">
+  <owner>thestig@chromium.org</owner>
+  <summary>
+    The number of printers available for registration in Windows Service.
+  </summary>
+</histogram>
+
+<histogram name="CloudPrint.JobHandlerEvent"
+    enum="CloudPrintJobHandlerEventType" expires_after="M90">
+  <owner>thestig@chromium.org</owner>
+  <summary>Event counts in PrinterJobHandler.</summary>
+</histogram>
+
+<histogram name="CloudPrint.JobsDonePerInterval" units="units"
+    expires_after="M90">
+  <owner>thestig@chromium.org</owner>
+  <summary>The number of jobs successfully completed per hour.</summary>
+</histogram>
+
+<histogram name="CloudPrint.JobsStartedPerInterval" units="units"
+    expires_after="M90">
+  <owner>thestig@chromium.org</owner>
+  <summary>The number of jobs started per hour.</summary>
+</histogram>
+
+<histogram name="CloudPrint.JobStatus" enum="CloudPrintJobStatusType"
+    expires_after="M90">
+  <owner>thestig@chromium.org</owner>
+  <summary>Then number of job completion statuses.</summary>
+</histogram>
+
+<histogram name="CloudPrint.NativeJobStatus"
+    enum="CloudPrintNativeJobStatusType" expires_after="M90">
+  <owner>thestig@chromium.org</owner>
+  <summary>Event counts in PrintSystem.</summary>
+</histogram>
+
+<histogram name="CloudPrint.PrepareTime" units="ms" expires_after="M90">
+  <owner>thestig@chromium.org</owner>
+  <summary>The amount of time needed to prepare job for spooling.</summary>
+</histogram>
+
+<histogram name="CloudPrint.PrinterBlacklistSize" units="units"
+    expires_after="M90">
+  <owner>thestig@chromium.org</owner>
+  <summary>The number of printers user has blacklisted.</summary>
+</histogram>
+
+<histogram name="CloudPrint.PrinterWhitelistSize" units="units"
+    expires_after="M90">
+  <owner>thestig@chromium.org</owner>
+  <summary>The number of printers user has whitelisted.</summary>
+</histogram>
+
+<histogram name="CloudPrint.PrintingTime" units="ms" expires_after="M90">
+  <owner>thestig@chromium.org</owner>
+  <summary>The amount of time needed to finish print job.</summary>
+</histogram>
+
+<histogram name="CloudPrint.ServiceEvents" enum="ServiceProcessEventType"
+    expires_after="M90">
+  <owner>thestig@chromium.org</owner>
+  <summary>Event counts in ServiceProcessControl.</summary>
+</histogram>
+
+<histogram name="CloudPrint.ServiceUtilityProcessHostEvent"
+    enum="ServiceUtilityProcessHostEventType" expires_after="M90">
+  <owner>thestig@chromium.org</owner>
+  <summary>Event counts in ServiceUtilityProcessHost.</summary>
+</histogram>
+
+<histogram name="CloudPrint.SpoolingTime" units="ms" expires_after="M90">
+  <owner>thestig@chromium.org</owner>
+  <summary>The amount of time needed to spool print job.</summary>
+</histogram>
+
+<histogram name="CloudPrint.UnregisterPrinters" units="units"
+    expires_after="M90">
+  <owner>thestig@chromium.org</owner>
+  <summary>The number of printers to unregister.</summary>
+</histogram>
+
+<histogram name="CloudPrint.UrlFetcherDownloadSize" units="KB"
+    expires_after="M90">
+  <owner>thestig@chromium.org</owner>
+  <summary>The amount of data downloaded on cloud print request.</summary>
+</histogram>
+
+<histogram name="CloudPrint.UrlFetcherRequestTime" units="ms"
+    expires_after="M90">
+  <owner>thestig@chromium.org</owner>
+  <summary>The amount of time needed for cloud print request.</summary>
+</histogram>
+
+<histogram name="CloudPrint.UrlFetcherRequestType"
+    enum="CloudPrintUrlFetcherRequestType" expires_after="M90">
+  <owner>thestig@chromium.org</owner>
+  <summary>Request counts to cloud print service.</summary>
+</histogram>
+
+<histogram name="CloudPrint.UrlFetcherRetries" units="units"
+    expires_after="M90">
+  <owner>thestig@chromium.org</owner>
+  <summary>The number of retries used to complete cloud print request.</summary>
+</histogram>
+
+<histogram name="CloudPrint.UrlFetcherUploadSize" units="KB"
+    expires_after="M90">
+  <owner>thestig@chromium.org</owner>
+  <summary>The amount of data uploaded with cloud print request.</summary>
+</histogram>
+
+<histogram name="CloudPrint.XmppPingTry" units="units" expires_after="M90">
+  <owner>thestig@chromium.org</owner>
+  <summary>Number of tries before successful ping. 99 means giving up.</summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

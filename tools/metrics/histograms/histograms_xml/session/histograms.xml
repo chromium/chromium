@@ -1,0 +1,713 @@
+<!--
+Copyright 2020 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of Session histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please send CLs to chromium-metrics-reviews@google.com rather than to specific
+individuals. These CLs will be automatically reassigned to a reviewer within
+about 5 minutes. This approach helps the metrics team to load-balance incoming
+reviews. Googlers can read more about this at go/gwsq-gerrit.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="Session.Background.TotalDuration" units="ms"
+    expires_after="2021-03-15">
+  <owner>asvitkine@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Sum of this metric yields the total time Chrome was running in the
+    background. A single session may be represented by multiple values, so that
+    this histogram is always present in an uploaded log that represents
+    background activity.
+
+    Android-only.
+  </summary>
+</histogram>
+
+<histogram name="Session.ClosedTabCounts" units="operations"
+    expires_after="2021-04-19">
+  <owner>rohitrao@chromium.org</owner>
+  <owner>marq@chromium.org</owner>
+  <summary>
+    The number of tabs closed by the user during the current session
+    (launch/foregrounding to backgrounding).
+
+    This histogram is only logged on iOS when the application is backgrounded.
+  </summary>
+</histogram>
+
+<histogram name="Session.NewTabCounts" units="operations"
+    expires_after="2021-04-19">
+  <owner>rohitrao@chromium.org</owner>
+  <owner>marq@chromium.org</owner>
+  <summary>
+    The number of tabs created by the user during the current session
+    (launch/foregrounding to backgrounding).
+
+    This histogram is only logged on iOS when the application is backgrounded.
+  </summary>
+</histogram>
+
+<histogram name="Session.OpenedTabCounts" units="operations"
+    expires_after="2021-04-19">
+  <owner>rohitrao@chromium.org</owner>
+  <owner>marq@chromium.org</owner>
+  <summary>
+    The number of times the user changed the active tab (this can happen when
+    manually selecting a new tab, when a pre-rendered tab is made active, when
+    closing the current tab and the next one is selected) during the current
+    session (launch/foregrounding to backgrounding).
+
+    This histogram is only logged on iOS when the application is backgrounded.
+  </summary>
+</histogram>
+
+<histogram name="Session.TimeSpentInFocusMode" units="s" expires_after="M80">
+  <owner>yiningwang@google.com</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    Time spent in focus mode browser. This is recorded when the focus mode
+    window closes. This metric is only recorded on Win/Mac/Linux/ChromeOS.
+  </summary>
+</histogram>
+
+<histogram name="Session.TotalDuration" units="ms" expires_after="never">
+<!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->
+
+  <owner>asvitkine@chromium.org</owner>
+  <owner>chrisha@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
+  <summary>
+    The length of a session (launch/foregrounding to quitting/backgrounding) in
+    milliseconds, recorded at the end of the session. See
+    Session.TotalDurationMax1Day for the same histogram with a higher maximum
+    value. (The one's maximum is 1 hour.)
+
+    Windows/Mac/Linux: A session ends (i) when the user puts another app in the
+    foreground, unless audio is playing. (The Chrome windows can still be shown.
+    What matters is that a different app has focus.) (ii) when Chrome quits.
+    (iii) when the screensaver turns on (again, unless audio is playing). (iv)
+    when the user is inactive for five minutes (again, unless audio is playing).
+    In this case (starting in M-55), that five minutes is not included in the
+    sesson length. (v) when audio stops playing, if the user has been inactive
+    for five minutes or Chrome is not in the foreground. Also, until M69, there
+    was a bug that caused double-counting of some sessions.
+
+    ChromeOS: not implemented. The ChromeOS histogram Platform.DailyUseTime is
+    somewhat similar.
+
+    Android: Session boundaries are wonky. Thus, only look at total duration for
+    a client over a day; don't look at individual durations. A session ends (i)
+    when the Chrome app leaves the foreground. This sounds obvious yet there are
+    many subtle though common edge cases here. Going to the Android Home screen
+    via the Home button is an obvious case. Yet, merely pressing the Recents
+    button, even if the user reselects the Chrome app (i.e., doesn't leave the
+    app) also ends a session. Another set of cases is the screen time-out
+    (blanking the screen) or the lock screen. Either will cause Chrome to be
+    considered to leave the foreground, ending the session. (ii) some in-app
+    actions. Yes, some in-app events trigger the end of a session.
+
+    Android continued: These in-app actions that trigger the end of a session
+    can mostly be considered bugs. Cases: (a) switching to viewing Bookmarks,
+    History, Downloads, or Settings causes the session to end. Note that
+    switching out of those modes does not cause the end of a session, only
+    switching in. Oddly, though the interface looks similar, switching to Recent
+    Tabs does not trigger the end of a session. Nor does going into the tab
+    switcher view. (b) modal pop-ups. JavaScript dialogs and other things that
+    take focus away from the Chrome activity can cause this metric to record a
+    session end prematurely. See: crbug.com/678276. (c) switching Chrome from as
+    a single app in the foreground into multi-window mode. (d) switching Chrome
+    from being one of a set of multi-window apps that are displayed to be the
+    only app displayed.
+
+    iOS: A session starts when Chrome is launched to the foreground and ends
+    when Chrome leaves the screen. This is generally straightforward. Chrome
+    leaves the screen when the screen goes blank or shows the lock screen, when
+    Chrome clicks a link that opens in another app, or when the user switches to
+    the app switcher. Note that, unlike on desktop, even if Chrome is playing
+    media in the background, the session is still terminated when Chrome leaves
+    the screen.
+
+    iOS continued: These are some edge cases to be aware of: (i) OS overlays.
+    These can appear, for examples, when a link is clicked that could go to a
+    non-Google app that has not yet been set to default and the OS asks whether
+    to open the link in the app by default, or when a user has set the OS to
+    block certain sites or types of sites by default and require authentication
+    to access them. This authentication prompt is an OS overlay. At the time of
+    writing this description, we're not sure if displaying an overlay will end
+    the session. (ii) full-screen media playing. Because media is played through
+    iOS's technology stack, if the user takes media that's playing within Chrome
+    and displayed it full-screen, the session ends because no part of Chrome is
+    on the screen anymore. (iii) multi-window support. Not yet launched as of
+    M-85. Sessions end and immediately restart when a user switches from a
+    single-window to a multi-window view and vice versa, and also ends when
+    resizing the Chrome window. The end is because Chrome is considered no
+    longer active during the time the OS animates the windows to change their
+    sizes.
+
+    This histogram is of special interest to the chrome-analysis-team@. Do not
+    change its semantics or retire it without talking to them first.
+  </summary>
+</histogram>
+
+<histogram name="Session.TotalDuration.NotOptedInToSyncWithAccount" units="ms"
+    expires_after="never">
+<!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->
+
+  <owner>bsazonov@chromium.org</owner>
+  <owner>droger@chromium.org</owner>
+  <owner>msarda@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <owner>tschumann@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
+  <summary>
+    The amount of active browsing time that was spent not being opted in to sync
+    but while having a refresh token for a user's account.
+
+    This time is measured from when the user starts interacting with the browser
+    until either they stopped interacting with the browser or their signin or
+    sync status changes. These end-points are when the metric is emitted. For
+    details on how &quot;stopped interacting with the browser&quot; is decided,
+    see the description of Session.TotalDuration.
+
+    Because a duration can end either because the user became inactive or
+    because their status changed, the distribution of individual durations
+    measured are unlikely to be helpful. Instead, please compare total
+    durations.
+
+    This metric is only recorded on Win/Mac/Linux.
+
+    One caveat with this metric is that if the user has multiple profiles open
+    at the same time, their session activity will be logged from all the
+    profiles, instead of only from the profile that the user is using at that
+    moment.
+
+    This histogram is of special interest to the chrome-analysis-team@. Do not
+    change its semantics or retire it without talking to them first.
+  </summary>
+</histogram>
+
+<histogram name="Session.TotalDuration.NotOptedInToSyncWithoutAccount"
+    units="ms" expires_after="never">
+<!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->
+
+  <owner>bsazonov@chromium.org</owner>
+  <owner>droger@chromium.org</owner>
+  <owner>msarda@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <owner>tschumann@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
+  <summary>
+    The amount of active browsing time that was spent not being opted in to sync
+    and not having a refresh token for a user's account.
+
+    This time is measured from when the user starts interacting with the browser
+    until either they stopped interacting with the browser or their signin or
+    sync status changes. These end-points are when the metric is emitted. For
+    details on how &quot;stopped interacting with the browser&quot; is decided,
+    see the description of Session.TotalDuration.
+
+    Because a duration can end either because the user became inactive or
+    because their status changed, the distribution of individual durations
+    measured are unlikely to be helpful. Instead, please compare total
+    durations.
+
+    This metric is only recorded on Win/Mac/Linux.
+
+    One caveat with this metric is that if the user has multiple profiles open
+    at the same time, their session activity will be logged from all the
+    profiles, instead of only from the profile that the user is using at that
+    moment.
+
+    This histogram is of special interest to the chrome-analysis-team@. Do not
+    change its semantics or retire it without talking to them first.
+  </summary>
+</histogram>
+
+<histogram name="Session.TotalDuration.OptedInToSyncWithAccount" units="ms"
+    expires_after="never">
+<!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->
+
+  <owner>bsazonov@chromium.org</owner>
+  <owner>droger@chromium.org</owner>
+  <owner>msarda@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <owner>tschumann@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
+  <summary>
+    The total session duration (see Session.TotalDuration) that was spent being
+    opted in to sync while having a valid refresh token for the account.
+
+    This time is measured from when the user starts interacting with the browser
+    until either they stopped interacting with the browser or their signin or
+    sync status changes. These end-points are when the metric is emitted. For
+    details on how &quot;stopped interacting with the browser&quot; is decided,
+    see the description of Session.TotalDuration.
+
+    Because a duration can end either because the user became inactive or
+    because their status changed, the distribution of individual durations
+    measured are unlikely to be helpful. Instead, please compare total
+    durations.
+
+    This metric is only recorded on Win/Mac/Linux.
+
+    One caveat with this metric is that if the user has multiple profiles open
+    at the same time, their session activity will be logged from all the
+    profiles, instead of only from the profile that the user is using at that
+    moment.
+
+    This histogram is of special interest to the chrome-analysis-team@. Do not
+    change its semantics or retire it without talking to them first.
+  </summary>
+</histogram>
+
+<histogram name="Session.TotalDuration.OptedInToSyncWithoutAccount" units="ms"
+    expires_after="never">
+<!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->
+
+  <owner>bsazonov@chromium.org</owner>
+  <owner>droger@chromium.org</owner>
+  <owner>msarda@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <owner>tschumann@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
+  <summary>
+    The total session duration (see Session.TotalDuration) that was spent being
+    opted in to sync without a having a valid refresh token for the account.
+
+    This can for example be the case if the user signed out of the web, changed
+    their password, or otherwise invalidated their signin.
+
+    This time is measured from when the user starts interacting with the browser
+    until either they stopped interacting with the browser or their signin or
+    sync status changes. These end-points are when the metric is emitted. For
+    details on how &quot;stopped interacting with the browser&quot; is decided,
+    see the description of Session.TotalDuration.
+
+    Because a duration can end either because the user became inactive or
+    because their status changed, the distribution of individual durations
+    measured are unlikely to be helpful. Instead, please compare total
+    durations.
+
+    This metric is only recorded on Win/Mac/Linux.
+
+    One caveat with this metric is that if the user has multiple profiles open
+    at the same time, their session activity will be logged from all the
+    profiles, instead of only from the profile that the user is using at that
+    moment.
+
+    This histogram is of special interest to the chrome-analysis-team@. Do not
+    change its semantics or retire it without talking to them first.
+  </summary>
+</histogram>
+
+<histogram name="Session.TotalDuration.TouchMode" units="times"
+    expires_after="2021-03-07">
+  <owner>collinbaker@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    Time spent in touch mode in each session (as defined by
+    DesktopSessionDurationTracker). Samples correspond one-to-one with
+    Session.TotalDuration samples.
+
+    This histogram should be analyzed with Session.TotalDuration. For example,
+    the sum of this histogram divided by the sum of Session.TotalDuration is the
+    total proportion of active browsing time spent in touch mode.
+  </summary>
+</histogram>
+
+<histogram name="Session.TotalDuration.WithAccount" units="ms"
+    expires_after="never">
+<!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->
+
+  <owner>bsazonov@chromium.org</owner>
+  <owner>droger@chromium.org</owner>
+  <owner>msarda@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <owner>tschumann@chromium.org</owner>
+  <summary>
+    The total session duration (see Session.TotalDuration) that was spent with
+    an account signed into the content area.
+
+    The difference between the With(out)Account measurements and the
+    Opted(In/Out)ToSyncWith(out)Account measurements is that these metrics are
+    derived from the user's cookies, not their refresh tokens.
+
+    This time is measured from when the user starts interacting with the browser
+    until either they stopped interacting with the browser or their signin
+    status changes. These end-points are when the metric is emitted. For details
+    on how &quot;stopped interacting with the browser&quot; is decided, see the
+    description of Session.TotalDuration.
+
+    Because a duration can end either because the user became inactive or
+    because their status changed, the distribution of individual durations
+    measured are unlikely to be helpful. Instead, please compare total
+    durations.
+
+    This metric is only recorded on Win/Mac/Linux.
+
+    One caveat with this metric is that if the user has multiple profiles open
+    at the same time, their session activity will be logged from all the
+    profiles, instead of only from the profile that the user is using at that
+    moment.
+  </summary>
+</histogram>
+
+<histogram name="Session.TotalDuration.WithoutAccount" units="ms"
+    expires_after="never">
+<!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->
+
+  <owner>bsazonov@chromium.org</owner>
+  <owner>droger@chromium.org</owner>
+  <owner>msarda@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <owner>tschumann@chromium.org</owner>
+  <summary>
+    The total session duration (see Session.TotalDuration) that was spent
+    without an account signed into the content area.
+
+    The difference between the With(out)Account measurements and the
+    Opted(In/Out)ToSyncWith(out)Account measurements is that these metrics are
+    derived from the user's cookies, not their refresh tokens.
+
+    This time is measured from when the user starts interacting with the browser
+    until either they stopped interacting with the browser or their signin
+    status changes. These end-points are when the metric is emitted. For details
+    on how &quot;stopped interacting with the browser&quot; is decided, see the
+    description of Session.TotalDuration.
+
+    Because a duration can end either because the user became inactive or
+    because their status changed, the distribution of individual durations
+    measured are unlikely to be helpful. Instead, please compare total
+    durations.
+
+    This metric is only recorded on Win/Mac/Linux.
+
+    One caveat with this metric is that if the user has multiple profiles open
+    at the same time, their session activity will be logged from all the
+    profiles, instead of only from the profile that the user is using at that
+    moment.
+  </summary>
+</histogram>
+
+<histogram name="Session.TotalDurationMax1Day" units="ms" expires_after="never">
+<!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->
+
+  <owner>asvitkine@chromium.org</owner>
+  <owner>chrisha@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
+  <summary>
+    The length of a session (launch/foregrounding to quitting/backgrounding) in
+    milliseconds, recorded at the end of the session. See Session.TotalDuration
+    for details on how the end of a session is decided. The histogram
+    Session.TotalDuration records exactly the same values as this histogram,
+    just with a smaller maximum value. (That one's maximum is 1 hour.)
+
+    This histogram is of special interest to the chrome-analysis-team@. Do not
+    change its semantics or retire it without talking to them first.
+  </summary>
+</histogram>
+
+<histogram name="Session.WebStates.ForwardItemsCountAfterNavigation"
+    units="items" expires_after="2020-12-01">
+  <owner>ajuma@chromium.org</owner>
+  <owner>eugenebut@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
+  <summary>
+    Number of forward navigation items when navigation was committed/finished.
+    Recorded when main frame navigation was finished and there is at least one
+    navigation item. In conjunction with
+    Session.WebStates.HasForwardItemsAfterNavigation this metric will help to
+    understand how many navigation items Chrome should restore after relaunch.
+  </summary>
+</histogram>
+
+<histogram name="Session.WebStates.HasForwardItemsAfterNavigation"
+    enum="BooleanPresent" expires_after="2020-12-01">
+  <owner>ajuma@chromium.org</owner>
+  <owner>eugenebut@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
+  <summary>
+    True if navigation manager has forward navigation items when navigation was
+    committed/finished. Recorded when main frame navigation was finished. Can be
+    used to understand how often the users load items in the middle of
+    back-forward list. In conjunction with
+    Session.WebStates.ForwardItemsCountAfterNavigation this metric will help to
+    understand how many navigation items Chrome should restore after relaunch.
+  </summary>
+</histogram>
+
+<histogram base="true" name="Session.WebStates.NavigationItem" units="KB"
+    expires_after="2021-05-01">
+  <owner>eugenebut@chromium.org</owner>
+  <owner>sdefresne@chromium.org</owner>
+  <summary>
+    Recorded when CRWNavigationItemStorage encodes the data, which happens on
+    page loads, tab changes and app backgrounding. Estimated size, the actual
+    size can be larger than recorded number.
+  </summary>
+</histogram>
+
+<histogram name="Session.WebStates.ReadFromFileTime" units="ms"
+    expires_after="2021-06-10">
+  <owner>justincohen@chromium.org</owner>
+  <owner>rohitrao@chromium.org</owner>
+  <summary>
+    The time needed to read iOS session webState data from a file. It's recorded
+    every time a webState is restored, typically on app startup.
+  </summary>
+</histogram>
+
+<histogram name="Session.WebStates.SerializedSize" units="KB"
+    expires_after="2021-06-10">
+  <owner>justincohen@chromium.org</owner>
+  <owner>rohitrao@chromium.org</owner>
+  <summary>
+    The size of the file used to persist iOS session history. It's recorded
+    every time the file is written to storage, which happens on page loads, tab
+    changes and app backgrounding.
+  </summary>
+</histogram>
+
+<histogram name="Session.WebStates.WriteToFileTime" units="ms"
+    expires_after="2021-06-10">
+  <owner>justincohen@chromium.org</owner>
+  <owner>rohitrao@chromium.org</owner>
+  <summary>
+    The time needed to write iOS session webState data to a file. It's recorded
+    every time the file is written to storage, which happens on page loads, tab
+    changes and app backgrounding.
+  </summary>
+</histogram>
+
+<histogram name="SessionCrashed.Bubble" enum="SessionCrashedBubbleUserAction"
+    expires_after="M77">
+  <owner>yiyaoliu@chromium.org</owner>
+  <summary>How did the user interact with the SessionCrashed Bubble?</summary>
+</histogram>
+
+<histogram name="SessionRestore.BackgroundUseCaseTabCount.Restored"
+    units="tabs" expires_after="2019-11-30">
+  <owner>chrisha@chromium.org</owner>
+  <summary>
+    The number of tabs involved in a single session restore that were observed
+    to have historically made use of background communication mechanisms
+    (favicon and tab title changes, notifications, etc).
+  </summary>
+</histogram>
+
+<histogram name="SessionRestore.BackgroundUseCaseTabCount.Total" units="tabs"
+    expires_after="2019-11-30">
+  <owner>chrisha@chromium.org</owner>
+  <summary>
+    The number of tabs involved in a single session restore that were observed
+    to have historically made use of background communication mechanisms
+    (favicon and tab title changes, notifications, etc) and that were actually
+    loaded.
+  </summary>
+</histogram>
+
+<histogram name="SessionRestore.ForegroundTabFirstPaint4" units="ms"
+    expires_after="never">
+<!-- expires-never: "heartbeat" metric (internal: go/uma-heartbeats) -->
+
+  <owner>chrisha@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    The time from SessionRestore start until a restored tab's first paint.
+    Recorded when a restored tab stays visible from the beginning of session
+    restore until its first paint, and no non-restored tab is painted during
+    that time. See SessionRestore.ForegroundTabFirstPaint4.FinishReason for when
+    this is not recorded.
+  </summary>
+</histogram>
+
+<histogram name="SessionRestore.ForegroundTabFirstPaint4.FinishReason"
+    enum="SessionRestoreFinishReason" expires_after="never">
+<!-- expires-never: "heartbeat" metric (internal: go/uma-heartbeats) -->
+
+  <owner>chrisha@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    The reason for which attempt to record
+    SessionRestore.ForegroundTabFirstPaint4 was deemed complete. Logged once per
+    session restore.
+  </summary>
+</histogram>
+
+<histogram name="SessionRestore.RestoredTab.TimeSinceActive" units="ms"
+    expires_after="M85">
+  <owner>chrisha@chromium.org</owner>
+  <summary>
+    The time since a restored tab was last active. This is the cumulative amount
+    of time that has passed since the tab was last visible. Time accrues while a
+    browser is active and the tab remains inactive. If the tab is restored and
+    remains inactive in a subsequent browsing session the time continues to
+    accrue. Visible tabs report a value of 0 for this. This is recorded at the
+    moment the tab is restored during a session restore.
+  </summary>
+</histogram>
+
+<histogram name="SessionStorageContext.CachePurgedInKB" units="KB"
+    expires_after="M95">
+  <owner>mek@chromium.org</owner>
+  <owner>dmurph@chromium.org</owner>
+  <summary>
+    Total size of the HTML5 SessionStorage browser-side cache purged in KB when
+    memory pressure signal was triggered or cache size hit the limits.
+  </summary>
+</histogram>
+
+<histogram name="SessionStorageContext.CacheSizeInKB" units="KB"
+    expires_after="M95">
+  <owner>mek@chromium.org</owner>
+  <owner>dmurph@chromium.org</owner>
+  <summary>
+    Total size of the HTML5 SessionStorage databases in KB in the browser-side
+    cache. Recorded each time a new database is opened in memory.
+  </summary>
+</histogram>
+
+<histogram name="SessionStorageContext.CommitResult" enum="LevelDBStatus"
+    expires_after="M95">
+  <owner>mek@chromium.org</owner>
+  <owner>dmurph@chromium.org</owner>
+  <summary>
+    The result of an attempt to commit SessionStorage data to the database.
+  </summary>
+</histogram>
+
+<histogram name="SessionStorageContext.DatabaseOpenError" enum="LevelDBStatus"
+    expires_after="M95">
+  <owner>mek@chromium.org</owner>
+  <owner>dmurph@chromium.org</owner>
+  <summary>
+    The result of a failed attempt to open a LevelDB database for
+    SessionStorage.
+  </summary>
+</histogram>
+
+<histogram name="SessionStorageContext.DatabaseOpenError.Disk"
+    enum="LevelDBStatus" expires_after="M95">
+  <owner>mek@chromium.org</owner>
+  <owner>dmurph@chromium.org</owner>
+  <summary>
+    The result of a failed attempt to open a LevelDB database for SessionStorage
+    on disk.
+  </summary>
+</histogram>
+
+<histogram name="SessionStorageContext.DatabaseOpenError.Memory"
+    enum="LevelDBStatus" expires_after="M95">
+  <owner>mek@chromium.org</owner>
+  <owner>dmurph@chromium.org</owner>
+  <summary>
+    The result of a failed attempt to open a LevelDB database for SessionStorage
+    in memory.
+  </summary>
+</histogram>
+
+<histogram name="SessionStorageContext.DestroyDBResult" enum="LevelDBStatus"
+    expires_after="M95">
+  <owner>mek@chromium.org</owner>
+  <owner>dmurph@chromium.org</owner>
+  <summary>
+    The result of attempting to delete the SessionStorage database.
+  </summary>
+</histogram>
+
+<histogram name="SessionStorageContext.DirectoryOpenError"
+    enum="PlatformFileError" expires_after="M95">
+  <owner>mek@chromium.org</owner>
+  <owner>dmurph@chromium.org</owner>
+  <summary>
+    The reason opening a directory for the LevelDB database that backs
+    LocalStorage failed.
+  </summary>
+</histogram>
+
+<histogram name="SessionStorageContext.OnConnectionDestroyed" enum="Boolean"
+    expires_after="M95">
+  <owner>mek@chromium.org</owner>
+  <owner>dmurph@chromium.org</owner>
+  <owner>dullweber@chromium.org</owner>
+  <summary>
+    Recorded when the database connection is closed unexpectedly.
+  </summary>
+</histogram>
+
+<histogram name="SessionStorageContext.OpenError" enum="LocalStorageOpenError"
+    expires_after="M95">
+  <owner>mek@chromium.org</owner>
+  <owner>dmurph@chromium.org</owner>
+  <summary>
+    The reason opening the LevelDB database that backs SessionStorage failed.
+  </summary>
+</histogram>
+
+<histogram base="true" name="SessionStorageContext.OpenResultAfter"
+    enum="LocalStorageOpenError" expires_after="M95">
+<!-- Name completed by histogram_suffixes name="SessionStorageContextOpenReasons" -->
+
+  <owner>mek@chromium.org</owner>
+  <owner>dmurph@chromium.org</owner>
+  <summary>
+    The result of opening the LevelDB database that backs SessionStorage.
+  </summary>
+</histogram>
+
+<histogram name="SessionStorageContext.ReadNamespacesError"
+    enum="LevelDBStatus" expires_after="M95">
+  <owner>mek@chromium.org</owner>
+  <owner>dmurph@chromium.org</owner>
+  <summary>
+    The reason reading the namespaces metadata of the SessionStorage database
+    failed.
+  </summary>
+</histogram>
+
+<histogram name="SessionStorageContext.ReadNextMapIdError" enum="LevelDBStatus"
+    expires_after="M95">
+  <owner>mek@chromium.org</owner>
+  <owner>dmurph@chromium.org</owner>
+  <summary>
+    The reason reading the next data map id metadata of the SessionStorage
+    database failed.
+  </summary>
+</histogram>
+
+<histogram name="SessionStorageContext.ReadVersionError" enum="LevelDBStatus"
+    expires_after="M95">
+  <owner>mek@chromium.org</owner>
+  <owner>dmurph@chromium.org</owner>
+  <summary>
+    The reason reading the schema version of the SessionStorage database failed.
+  </summary>
+</histogram>
+
+<histogram name="SessionStorageDatabase.Open" enum="SessionStorageDatabaseOpen"
+    expires_after="never">
+<!-- expires-never: core storage metric; consumed in separate dashboard (go/chrome-storage-dashboard) -->
+
+  <owner>mek@chromium.org</owner>
+  <owner>dmurph@chromium.org</owner>
+  <summary>
+    The result (success, failure, or database recreated) of trying to open the
+    LevelDB database for sessionStorage.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

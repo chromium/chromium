@@ -1,0 +1,582 @@
+<!--
+Copyright 2020 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of Simple histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please send CLs to chromium-metrics-reviews@google.com rather than to specific
+individuals. These CLs will be automatically reassigned to a reviewer within
+about 5 minutes. This approach helps the metrics team to load-balance incoming
+reviews. Googlers can read more about this at go/gwsq-gerrit.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram base="true" name="SimpleCache.CacheSizeOnInit" units="KB"
+    expires_after="M85">
+  <owner>jkarlin@chromium.org</owner>
+  <summary>
+    The size of the cache at the time that the index has finished initializing.
+  </summary>
+</histogram>
+
+<histogram base="true" name="SimpleCache.CheckCRCResult" enum="CheckCRCResult"
+    expires_after="2021-07-01">
+  <owner>morlovich@chromium.org</owner>
+  <owner>wanderview@chromium.org</owner>
+  <summary>
+    Whether or not the CRC was checked at the moment when the last reference to
+    a read-only entry stream is closed.
+  </summary>
+</histogram>
+
+<histogram base="true" name="SimpleCache.ConsistencyResult"
+    enum="SimpleCacheConsistencyResult" expires_after="2021-06-08">
+  <owner>wanderview@chromium.org</owner>
+  <owner>morlovich@chromium.org</owner>
+  <summary>
+    Record the outcome of the simple DiskCache consistency check. The
+    consistency check is executed every time a simple DiskCache is initialized.
+    This check includes both inspecting the schema on disk and upgrading the
+    schema to the latest version if necessary.
+  </summary>
+</histogram>
+
+<histogram base="true"
+    name="SimpleCache.ConsistencyResultAfterIndexFilesDeleted"
+    enum="SimpleCacheConsistencyResult" expires_after="2021-06-08">
+  <owner>wanderview@chromium.org</owner>
+  <owner>morlovich@chromium.org</owner>
+  <summary>
+    Record the final consistency check value after index files have been deleted
+    from an empty simple DiskCache. This histogram will tell us how often the
+    index deletion code results in a functioning cache. It will also tell us
+    what kind of consistency failures cannot be recovered due to index file
+    deletion.
+  </summary>
+</histogram>
+
+<histogram base="true" name="SimpleCache.CreationToIndex" units="ms"
+    expires_after="2021-07-01">
+  <owner>morlovich@chromium.org</owner>
+  <owner>wanderview@chromium.org</owner>
+  <summary>
+    The time from the creation of the simple cache backend until the index has
+    been loaded from disk.
+  </summary>
+</histogram>
+
+<histogram base="true" name="SimpleCache.CreationToIndexFail" units="ms"
+    expires_after="2021-07-01">
+  <owner>morlovich@chromium.org</owner>
+  <owner>wanderview@chromium.org</owner>
+  <summary>
+    The time from the creation of the simple cache backend until the index fails
+    to load.
+  </summary>
+</histogram>
+
+<histogram base="true"
+    name="SimpleCache.DidDeleteIndexFilesAfterFailedConsistency" enum="Boolean"
+    expires_after="2021-06-08">
+  <owner>wanderview@chromium.org</owner>
+  <owner>morlovich@chromium.org</owner>
+  <summary>
+    Record if any simple DiskCache index files were deleted from an otherwise
+    empty cache after the cache failed the initialization consistency check.
+    This histogram will tell us how often the deletion code is triggering and
+    modifying the disk.
+  </summary>
+</histogram>
+
+<histogram base="true" name="SimpleCache.DiskCloseLatency" units="ms"
+    expires_after="2021-07-01">
+  <owner>morlovich@chromium.org</owner>
+  <owner>wanderview@chromium.org</owner>
+  <summary>
+    The time to close (write out footers and close the file) the cache entry on
+    disk. Includes only successful operations.
+  </summary>
+</histogram>
+
+<histogram base="true" name="SimpleCache.DiskCreateLatency" units="ms"
+    expires_after="2021-07-01">
+  <owner>morlovich@chromium.org</owner>
+  <owner>wanderview@chromium.org</owner>
+  <summary>
+    The time to access (open for creation and write initial headers) the cache
+    entry on disk. Includes only successful operations.
+  </summary>
+</histogram>
+
+<histogram base="true" name="SimpleCache.DiskDoomLatency" units="ms"
+    expires_after="2021-07-01">
+  <owner>morlovich@chromium.org</owner>
+  <owner>wanderview@chromium.org</owner>
+  <summary>
+    The time to remove the cache entry on disk. Includes only individually
+    doomed entries, not entries bulk-erased during eviction.
+  </summary>
+</histogram>
+
+<histogram base="true" name="SimpleCache.DiskOpenLatency" units="ms"
+    expires_after="2021-07-01">
+  <owner>morlovich@chromium.org</owner>
+  <owner>wanderview@chromium.org</owner>
+  <summary>
+    The time to access (open and read headers from all files) the cache entry on
+    disk. Includes only successful operations.
+  </summary>
+</histogram>
+
+<histogram base="true" name="SimpleCache.DiskWriteLatency" units="ms"
+    expires_after="2021-07-01">
+  <owner>morlovich@chromium.org</owner>
+  <owner>wanderview@chromium.org</owner>
+  <summary>
+    The time to write a chunk to the cache entry on disk. Includes only
+    successful operations.
+  </summary>
+</histogram>
+
+<histogram base="true" name="SimpleCache.EntryCreationTime" units="ms"
+    expires_after="2021-07-01">
+  <owner>morlovich@chromium.org</owner>
+  <owner>wanderview@chromium.org</owner>
+  <summary>
+    The time, in ms, spent creating a new entry on disk. This measures time from
+    when the method got removed from SimpleEntryImpl's operation queue till when
+    the callback is about to be invoked, and includes all Open and Create
+    operations, despite what the name may suggest.
+  </summary>
+</histogram>
+
+<histogram base="true" name="SimpleCache.EntryTrailerPrefetchDelta"
+    units="bytes" expires_after="2021-06-08">
+  <owner>wanderview@chromium.org</owner>
+  <owner>morlovich@chromium.org</owner>
+  <summary>
+    The difference between EntryTrailerPrefetchSize and EntryTrailerSize in
+    bytes within a single ReadAndValidateStream0AndMaybe1() method call. If the
+    prefetch read too many bytes then this will be a positive value. If the
+    prefetch did not read enough bytes, then this will be a negative value.
+  </summary>
+</histogram>
+
+<histogram base="true" name="SimpleCache.EntryTrailerPrefetchSize"
+    units="bytes" expires_after="2021-06-08">
+  <owner>wanderview@chromium.org</owner>
+  <owner>morlovich@chromium.org</owner>
+  <summary>
+    The number of bytes prefetched from the end of the entry file in an attempt
+    read the EOF footer and the stream 0 data in a single file operation.
+    Ideally this value should match the EntryTrailerSize histogram indicating
+    the actual trailer size on disk was.
+  </summary>
+</histogram>
+
+<histogram base="true" name="SimpleCache.Eviction.CacheSizeOnStart2" units="KB"
+    expires_after="M85">
+  <owner>morlovich@chromium.org</owner>
+  <summary>The size of the cache at the beginning of an eviction.</summary>
+</histogram>
+
+<histogram base="true" name="SimpleCache.Eviction.EntryCount" units="units"
+    expires_after="M85">
+  <owner>morlovich@chromium.org</owner>
+  <summary>The number of entries to be erased in an eviction.</summary>
+</histogram>
+
+<histogram base="true" name="SimpleCache.Eviction.MaxCacheSizeOnStart2"
+    units="KB" expires_after="M85">
+  <owner>morlovich@chromium.org</owner>
+  <summary>
+    The maximum allowed size of the cache at the beginning of an eviction.
+  </summary>
+</histogram>
+
+<histogram base="true" name="SimpleCache.Eviction.Result" enum="BooleanSuccess"
+    expires_after="2021-07-01">
+  <owner>morlovich@chromium.org</owner>
+  <owner>wanderview@chromium.org</owner>
+  <summary>The result of an eviction.</summary>
+</histogram>
+
+<histogram base="true" name="SimpleCache.Eviction.SizeOfEvicted2" units="KB"
+    expires_after="2021-07-01">
+  <owner>morlovich@chromium.org</owner>
+  <owner>wanderview@chromium.org</owner>
+  <summary>The amount of memory freed in an eviction.</summary>
+</histogram>
+
+<histogram base="true" name="SimpleCache.Eviction.SizeWhenDone2" units="KB"
+    expires_after="2021-07-01">
+  <owner>morlovich@chromium.org</owner>
+  <owner>wanderview@chromium.org</owner>
+  <summary>The size of the cache after running an eviction.</summary>
+</histogram>
+
+<histogram base="true" name="SimpleCache.Eviction.TimeToDone" units="ms"
+    expires_after="2021-07-01">
+  <owner>morlovich@chromium.org</owner>
+  <owner>wanderview@chromium.org</owner>
+  <summary>Time spent completing an eviction.</summary>
+</histogram>
+
+<histogram base="true" name="SimpleCache.Eviction.TimeToSelectEntries"
+    units="ms" expires_after="2021-07-01">
+  <owner>morlovich@chromium.org</owner>
+  <owner>wanderview@chromium.org</owner>
+  <summary>Time spent selecting entries for eviction.</summary>
+</histogram>
+
+<histogram name="SimpleCache.FileDescriptorLimiterAction"
+    enum="SimpleCache.FileDescriptorLimiterOp" expires_after="2021-07-01">
+  <owner>morlovich@chromium.org</owner>
+  <owner>wanderview@chromium.org</owner>
+  <summary>
+    This even is emitted when SimpleCache is forced to either close some files
+    due to being over FD limit, or reopen files it had to close due to such
+    limit earlier.
+  </summary>
+</histogram>
+
+<histogram base="true" name="SimpleCache.HeaderSize" units="bytes"
+    expires_after="2021-07-01">
+  <owner>morlovich@chromium.org</owner>
+  <owner>wanderview@chromium.org</owner>
+  <summary>
+    The size of the header stream of a Simple Cache entry, emitted every time
+    the headers are written or rewritten.
+  </summary>
+</histogram>
+
+<histogram base="true" name="SimpleCache.IndexCreatedEntryCount" units="units"
+    expires_after="2021-07-01">
+  <owner>morlovich@chromium.org</owner>
+  <owner>wanderview@chromium.org</owner>
+  <summary>The number of entries in a newly created index file.</summary>
+</histogram>
+
+<histogram base="true" name="SimpleCache.IndexFileStateOnLoad"
+    enum="SimpleIndexState" expires_after="2021-07-01">
+  <owner>morlovich@chromium.org</owner>
+  <owner>wanderview@chromium.org</owner>
+  <summary>
+    The state the index file is at when an attempt is made to load from it.
+  </summary>
+</histogram>
+
+<histogram base="true" name="SimpleCache.IndexInitializeMethod"
+    enum="SimpleCacheIndexInitializeMethod" expires_after="2021-07-01">
+  <owner>wanderview@chromium.org</owner>
+  <owner>morlovich@chromium.org</owner>
+  <summary>The method used to initialize the simple cache index.</summary>
+</histogram>
+
+<histogram base="true" name="SimpleCache.IndexNumEntriesOnInit" units="entries"
+    expires_after="M85">
+  <owner>jkarlin@chromium.org</owner>
+  <summary>
+    The number of entries in the index at the time that the index has finished
+    initializing.
+  </summary>
+</histogram>
+
+<histogram base="true" name="SimpleCache.IndexNumEntriesOnWrite" units="units"
+    expires_after="2021-07-01">
+  <owner>morlovich@chromium.org</owner>
+  <owner>wanderview@chromium.org</owner>
+  <summary>The number of entries written to the index on a flush.</summary>
+</histogram>
+
+<histogram base="true" name="SimpleCache.IndexRestoreTime" units="ms"
+    expires_after="2021-07-01">
+  <owner>morlovich@chromium.org</owner>
+  <owner>wanderview@chromium.org</owner>
+  <summary>
+    Time (as measured on the worker pool) spent restoring the index file by
+    iterating directory entries.
+  </summary>
+</histogram>
+
+<histogram base="true" name="SimpleCache.IndexWriteReason"
+    enum="SimpleCacheIndexWriteReason" expires_after="2021-07-01">
+  <owner>morlovich@chromium.org</owner>
+  <owner>wanderview@chromium.org</owner>
+  <summary>
+    The reason an index was written to disk. Recorded every time an index is
+    saved.
+  </summary>
+</histogram>
+
+<histogram base="true" name="SimpleCache.IndexWriteReasonAtLoad"
+    enum="SimpleCacheIndexWriteReason" expires_after="2021-07-01">
+  <owner>morlovich@chromium.org</owner>
+  <owner>wanderview@chromium.org</owner>
+  <summary>
+    Recorded immediately after loading a fresh index (INDEX_STATE_FRESH or
+    INDEX_STATE_FRESH_CONCURRENT_UPDATES), the reason the loaded index was
+    written to disk.
+  </summary>
+</histogram>
+
+<histogram base="true" name="SimpleCache.MaxCacheSizeOnInit" units="KB"
+    expires_after="M85">
+  <owner>jkarlin@chromium.org</owner>
+  <summary>
+    The maximum allowed size of the cache at the time that the index has
+    finished initializing.
+  </summary>
+</histogram>
+
+<histogram base="true" name="SimpleCache.OpenEntryIndexState"
+    enum="SimpleCacheOpenEntryIndexState" expires_after="2021-07-01">
+  <owner>morlovich@chromium.org</owner>
+  <owner>wanderview@chromium.org</owner>
+  <summary>
+    At the time that an entry is opened, the state of that entry in the index.
+  </summary>
+</histogram>
+
+<histogram base="true"
+    name="SimpleCache.OriginalConsistencyResultBeforeSuccessfulRetry"
+    enum="SimpleCacheConsistencyResult" expires_after="2021-06-08">
+  <owner>wanderview@chromium.org</owner>
+  <owner>morlovich@chromium.org</owner>
+  <summary>
+    Record the original consistency error produced by a simple DiskCache before
+    a retry was attempted and succeeded. This histogram will tell us what kind
+    consistency errors can be recovered from in practice.
+  </summary>
+</histogram>
+
+<histogram base="true" name="SimpleCache.PercentFullOnInit" units="%"
+    expires_after="M85">
+  <owner>jkarlin@chromium.org</owner>
+  <summary>
+    The fullness (in percent) of the cache at the time that the index has
+    finished initializing. The percentage is calculated as (cache_size * 100) /
+    max_cache_size.
+  </summary>
+</histogram>
+
+<histogram base="true" name="SimpleCache.RetryConsistencyResult"
+    enum="SimpleCacheConsistencyResult" expires_after="2021-06-08">
+  <owner>wanderview@chromium.org</owner>
+  <owner>morlovich@chromium.org</owner>
+  <summary>
+    Record the outcome of the simple DiskCache consistency check after retrying
+    initialization on an empty cache directory. The retry may occur after
+    corrupt index files were deleted from an empty cache. The retry may also
+    occur if the original failed initialization left an empty directory without
+    any index files. This histogram will tell us how often the retry succeeds in
+    recovering caches and also which consistency checks cannot be recovered.
+  </summary>
+</histogram>
+
+<histogram base="true" name="SimpleCache.StaleIndexExtraEntryCount"
+    units="entries" expires_after="2021-07-01">
+  <owner>morlovich@chromium.org</owner>
+  <owner>wanderview@chromium.org</owner>
+  <summary>
+    Count of the number of entries recorded in the index, but not actually
+    present in the cache. Recorded each time a stale index is found and a
+    directory rescan is required.
+  </summary>
+</histogram>
+
+<histogram base="true" name="SimpleCache.StaleIndexMissedEntryCount"
+    units="entries" expires_after="2021-07-01">
+  <owner>morlovich@chromium.org</owner>
+  <owner>wanderview@chromium.org</owner>
+  <summary>
+    Count of the number of entries present in a cache, but not recorded in the
+    index. Recorded each time a stale index is found and a directory rescan is
+    required.
+  </summary>
+</histogram>
+
+<histogram base="true" name="SimpleCache.StaleIndexQuality"
+    enum="SimpleCacheStaleIndexQuality" expires_after="2021-07-01">
+  <owner>morlovich@chromium.org</owner>
+  <owner>wanderview@chromium.org</owner>
+  <summary>
+    The quality of a &quot;stale&quot; index compared to a full directory
+    rescan. Recorded immediately after every directory scan for stale indexes.
+  </summary>
+</histogram>
+
+<histogram base="true" name="SimpleCache.SyncCheckEOFResult"
+    enum="SimpleCacheSyncCheckEOFResult" expires_after="2021-07-01">
+  <owner>morlovich@chromium.org</owner>
+  <owner>wanderview@chromium.org</owner>
+  <summary>
+    The result, at the synchronous layer, of checking the EOF record of a cache
+    entry.
+  </summary>
+</histogram>
+
+<histogram base="true" name="SimpleCache.SyncCloseResult"
+    enum="SimpleCacheSyncCloseResult" expires_after="2021-07-01">
+  <owner>morlovich@chromium.org</owner>
+  <owner>wanderview@chromium.org</owner>
+  <summary>
+    The result, at the synchronous layer, of closing a cache entry.
+  </summary>
+</histogram>
+
+<histogram base="true" name="SimpleCache.SyncCreatePlatformFileError"
+    enum="PlatformFileError" expires_after="2021-07-01">
+  <owner>morlovich@chromium.org</owner>
+  <owner>wanderview@chromium.org</owner>
+  <summary>
+    The platform error reported when attempting to create a new cache entry at
+    the synchronous layer.
+  </summary>
+</histogram>
+
+<histogram base="true" name="SimpleCache.SyncOpenPlatformFileError"
+    enum="PlatformFileError" expires_after="2021-07-01">
+  <owner>morlovich@chromium.org</owner>
+  <owner>wanderview@chromium.org</owner>
+  <summary>
+    The platform error reported when attempting to create a new cache entry at
+    the synchronous layer.
+  </summary>
+</histogram>
+
+<histogram base="true" name="SimpleCache.SyncOpenPrefetchMode"
+    enum="SimpleCachePrefetchMode" expires_after="2021-06-10">
+  <owner>wanderview@chromium.org</owner>
+  <owner>morlovich@chromium.org</owner>
+  <summary>
+    The kind of prefetching performed, if any, when executing
+    SimpleSynchronousEntry::ReadAndValidateStream0AndMaybe1().
+  </summary>
+</histogram>
+
+<histogram base="true" name="SimpleCache.SyncOpenResult"
+    enum="SimpleCacheSyncOpenResult" expires_after="2021-07-01">
+  <owner>morlovich@chromium.org</owner>
+  <owner>wanderview@chromium.org</owner>
+  <summary>
+    The result, at the synchronous layer, reported when attempting to open a new
+    cache entry.
+  </summary>
+</histogram>
+
+<histogram base="true" name="SimpleCache.SyncWriteResult"
+    enum="SimpleCacheSyncWriteResult" expires_after="2021-07-01">
+  <owner>morlovich@chromium.org</owner>
+  <owner>wanderview@chromium.org</owner>
+  <summary>
+    The result, at the synchronous layer, of writing to a cache entry.
+  </summary>
+</histogram>
+
+<histogram name="SimpleGeolocation.Request.Event"
+    enum="SimpleGeolocationRequestEvent" expires_after="never">
+<!-- expires-never: This reports external location provider health status and
+should be kept until we use this API.  -->
+
+  <owner>alemate@chromium.org</owner>
+  <owner>michaelpg@chromium.org</owner>
+  <summary>Events in reqests processing of IP-based SimpleGeolocation.</summary>
+</histogram>
+
+<histogram name="SimpleGeolocation.Request.HasCellTowers"
+    enum="SimpleGeolocationRequestHasCellTowers" expires_after="never">
+<!-- expires-never: This reports external location provider health status and
+should be kept until we use this API.  -->
+
+  <owner>alemate@chromium.org</owner>
+  <owner>michaelpg@chromium.org</owner>
+  <owner>skylarc@chromium.org</owner>
+  <summary>
+    This boolean histogram counts SimpleGeolocationRequests carrying a nonzero
+    number of cell towers.
+  </summary>
+</histogram>
+
+<histogram name="SimpleGeolocation.Request.HasWiFiAccessPoints"
+    enum="SimpleGeolocationRequestHasWiFiAccessPoints" expires_after="never">
+<!-- expires-never: This reports external location provider health status and
+should be kept until we use this API.  -->
+
+  <owner>alemate@chromium.org</owner>
+  <owner>michaelpg@chromium.org</owner>
+  <summary>
+    This boolean histogram counts SimpleGeolocationRequests carrying nonzero
+    number of WiFi access points.
+  </summary>
+</histogram>
+
+<histogram name="SimpleGeolocation.Request.ResponseCode"
+    enum="HttpResponseCode" expires_after="never">
+<!-- expires-never: This reports external location provider health status and
+should be kept until we use this API.  -->
+
+  <owner>alemate@chromium.org</owner>
+  <owner>michaelpg@chromium.org</owner>
+  <summary>Http response codes in IP-based SimpleGeolocation.</summary>
+</histogram>
+
+<histogram name="SimpleGeolocation.Request.ResponseFailureTime" units="ms"
+    expires_after="never">
+<!-- expires-never: This reports external location provider health status and
+should be kept until we use this API.  -->
+
+  <owner>alemate@chromium.org</owner>
+  <owner>michaelpg@chromium.org</owner>
+  <summary>
+    The time elapsed between the sending of the first API request and the time
+    the final (failed) response was recorded. Includes all retries.
+  </summary>
+</histogram>
+
+<histogram name="SimpleGeolocation.Request.ResponseSuccessTime" units="ms"
+    expires_after="never">
+<!-- expires-never: This reports external location provider health status and
+should be kept until we use this API.  -->
+
+  <owner>alemate@chromium.org</owner>
+  <owner>michaelpg@chromium.org</owner>
+  <summary>
+    The time elapsed between the sending of the first API request and the time
+    the final (successfull) response was recorded. Includes all retries.
+  </summary>
+</histogram>
+
+<histogram name="SimpleGeolocation.Request.Result"
+    enum="SimpleGeolocationRequestResult" expires_after="never">
+<!-- expires-never: This reports external location provider health status and
+should be kept until we use this API.  -->
+
+  <owner>alemate@chromium.org</owner>
+  <owner>michaelpg@chromium.org</owner>
+  <summary>Result of SimpleGeolocationRequest.</summary>
+</histogram>
+
+<histogram name="SimpleGeolocation.Request.Retries" units="units"
+    expires_after="never">
+<!-- expires-never: This reports external location provider health status and
+should be kept until we use this API.  -->
+
+  <owner>alemate@chromium.org</owner>
+  <owner>michaelpg@chromium.org</owner>
+  <summary>Number of retries until the final response was recorded.</summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

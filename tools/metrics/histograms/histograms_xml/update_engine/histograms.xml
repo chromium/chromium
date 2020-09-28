@@ -1,0 +1,743 @@
+<!--
+Copyright 2020 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of UpdateEngine histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please send CLs to chromium-metrics-reviews@google.com rather than to specific
+individuals. These CLs will be automatically reassigned to a reviewer within
+about 5 minutes. This approach helps the metrics team to load-balance incoming
+reviews. Googlers can read more about this at go/gwsq-gerrit.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="UpdateEngine.Attempt.ConnectionType"
+    enum="UpdateEngineConnectionType" expires_after="2021-12-29">
+  <owner>ahassani@chromium.org</owner>
+  <owner>chromeos-core-services@google.com</owner>
+  <summary>
+    The network connection type when the attempt begins. Possible values include
+    &quot;Unknown&quot;, &quot;Ethernet&quot;, &quot;Wifi&quot;,
+    &quot;Wimax&quot;, &quot;Bluetooth&quot;, &quot;Cellular&quot;,
+    &quot;Tethered Ethernet&quot;, &quot;Tethered Wifi&quot;.
+
+    This is reported when an update attempt ends.
+
+    This metric is specific to Chrome OS.
+  </summary>
+</histogram>
+
+<histogram name="UpdateEngine.Attempt.DownloadErrorCode"
+    enum="UpdateEngineDownloadErrorCode" expires_after="2021-12-29">
+  <owner>ahassani@chromium.org</owner>
+  <owner>chromeos-core-services@google.com</owner>
+  <summary>
+    A more detailed description of the last Payload transfer error when
+    downloading the payload.
+
+    This is reported when an attempt ends with the &quot;Payload Download
+    Error&quot; result.
+
+    This metric is specific to Chrome OS.
+  </summary>
+</histogram>
+
+<histogram name="UpdateEngine.Attempt.DownloadSource"
+    enum="UpdateEngineDownloadSource" expires_after="2021-12-29">
+  <owner>ahassani@chromium.org</owner>
+  <owner>chromeos-core-services@google.com</owner>
+  <summary>
+    The download source used, possible values include &quot;HTTPS Server&quot;,
+    &quot;HTTP Server&quot; and &quot;HTTP Peer&quot;.
+
+    This is reported when an update attempt ends.
+
+    This metric is specific to Chrome OS.
+  </summary>
+</histogram>
+
+<histogram name="UpdateEngine.Attempt.DurationMinutes" units="minutes"
+    expires_after="2021-12-29">
+  <owner>ahassani@chromium.org</owner>
+  <owner>chromeos-core-services@google.com</owner>
+  <summary>
+    The number of minutes the update attempt took including the time the device
+    spent sleeping.
+
+    This is reported when an update attempt ends.
+
+    This metric is specific to Chrome OS.
+  </summary>
+</histogram>
+
+<histogram name="UpdateEngine.Attempt.DurationUptimeMinutes" units="minutes"
+    expires_after="2021-12-29">
+  <owner>ahassani@chromium.org</owner>
+  <owner>chromeos-core-services@google.com</owner>
+  <summary>
+    The number of minutes the update attempt took excluding the time the device
+    spent sleeping.
+
+    This is reported when an update attempt ends.
+
+    This metric is specific to Chrome OS.
+  </summary>
+</histogram>
+
+<histogram name="UpdateEngine.Attempt.InternalErrorCode"
+    enum="UpdateEngineErrorCode" expires_after="2021-12-29">
+  <owner>ahassani@chromium.org</owner>
+  <owner>chromeos-core-services@google.com</owner>
+  <summary>
+    A more detailed description of the last internal error. The possible values
+    correspond to the ErrorCode enumeration in the update_engine source code.
+
+    This is reported when an attempt ends with the InternalError result.
+
+    This metric is specific to Chrome OS.
+  </summary>
+</histogram>
+
+<histogram name="UpdateEngine.Attempt.Number" units="count"
+    expires_after="2021-12-29">
+  <owner>ahassani@chromium.org</owner>
+  <owner>chromeos-core-services@google.com</owner>
+  <summary>
+    The attempt number which starts at 0 for the initial attempt and keeps
+    increasing for subsequent attempts.
+
+    This is reported when an update attempt ends.
+
+    This metric is specific to Chrome OS.
+  </summary>
+</histogram>
+
+<histogram name="UpdateEngine.Attempt.PayloadBytesDownloadedMiB" units="MiB"
+    expires_after="2021-12-29">
+  <owner>ahassani@chromium.org</owner>
+  <owner>chromeos-core-services@google.com</owner>
+  <summary>
+    The number of payload mebibytes (1048576 bytes) actually download.
+
+    This is reported when an update attempt ends.
+
+    This metric is specific to Chrome OS.
+  </summary>
+</histogram>
+
+<histogram name="UpdateEngine.Attempt.PayloadDownloadSpeedKBps" units="KBps"
+    expires_after="2021-12-29">
+  <owner>ahassani@chromium.org</owner>
+  <owner>chromeos-core-services@google.com</owner>
+  <summary>
+    The payload download speed, in kilobytes per second (1000 bytes/second).
+    This is calculated as the number of bytes downloaded divided by the duration
+    of the attempt (excluding time spent sleeping).
+
+    This is reported when an update attempt ends.
+
+    This metric is specific to Chrome OS.
+  </summary>
+</histogram>
+
+<histogram name="UpdateEngine.Attempt.PayloadSizeMiB" units="MiB"
+    expires_after="2021-12-29">
+  <owner>ahassani@chromium.org</owner>
+  <owner>chromeos-core-services@google.com</owner>
+  <summary>
+    The payload size, in mebibytes (1048576 bytes).
+
+    This is reported when an update attempt ends.
+
+    This metric is specific to Chrome OS.
+  </summary>
+</histogram>
+
+<histogram name="UpdateEngine.Attempt.PayloadType"
+    enum="UpdateEnginePayloadFormat" expires_after="2021-12-29">
+  <owner>ahassani@chromium.org</owner>
+  <owner>chromeos-core-services@google.com</owner>
+  <summary>
+    The payload type, possible values include &quot;Delta&quot; (if Omaha
+    specified to download a delta payload); and &quot;Full&quot; (if Omaha
+    specified to download a full payload); and &quot;ForcedFull&quot; (if the
+    client specified that it would only accept a full payload).
+
+    This is reported when an update attempt ends.
+
+    This metric is specific to Chrome OS.
+  </summary>
+</histogram>
+
+<histogram name="UpdateEngine.Attempt.Result" enum="UpdateEngineAttemptResult"
+    expires_after="2021-12-29">
+  <owner>ahassani@chromium.org</owner>
+  <owner>chromeos-core-services@google.com</owner>
+  <summary>
+    The result of the update attempt.
+
+    This is reported when an update attempt ends.
+
+    This metric is specific to Chrome OS.
+  </summary>
+</histogram>
+
+<histogram name="UpdateEngine.Attempt.TimeSinceLastAttemptMinutes"
+    units="minutes" expires_after="2021-12-29">
+  <owner>ahassani@chromium.org</owner>
+  <owner>chromeos-core-services@google.com</owner>
+  <summary>
+    The number of minutes since the last attempt including the time the device
+    spent sleeping.
+
+    This is reported when an update attempt ends but only if there was a
+    previous attempt for the same update.
+
+    This metric is specific to Chrome OS.
+  </summary>
+</histogram>
+
+<histogram name="UpdateEngine.Attempt.TimeSinceLastAttemptUptimeMinutes"
+    units="minutes" expires_after="2021-12-29">
+  <owner>ahassani@chromium.org</owner>
+  <owner>chromeos-core-services@google.com</owner>
+  <summary>
+    The number of minutes since the last attempt excluding the time the device
+    spent sleeping.
+
+    This is reported when an update attempt ends but only if there was a
+    previous attempt for the same update.
+
+    This metric is specific to Chrome OS.
+  </summary>
+</histogram>
+
+<histogram name="UpdateEngine.CertificateCheck.Download"
+    enum="UpdateEngineCertificateCheckStatus" expires_after="2021-12-29">
+  <owner>ahassani@chromium.org</owner>
+  <owner>chromeos-core-services@google.com</owner>
+  <summary>
+    The status of the certificate check done when downloading a payload over
+    HTTPS. Note that most downloads are done over HTTP.
+
+    This is reported on every HTTPS connection to the payload download server.
+    Connection drops on the same payload may report different values.
+
+    This metric is specific to Chrome OS.
+  </summary>
+</histogram>
+
+<histogram name="UpdateEngine.CertificateCheck.UpdateCheck"
+    enum="UpdateEngineCertificateCheckStatus" expires_after="2021-12-29">
+  <owner>ahassani@chromium.org</owner>
+  <owner>chromeos-core-services@google.com</owner>
+  <summary>
+    The status of the certificate check done when querying Omaha for a new
+    version.
+
+    This is reported on every update check.
+
+    This metric is specific to Chrome OS.
+  </summary>
+</histogram>
+
+<histogram name="UpdateEngine.Check.DownloadErrorCode"
+    enum="UpdateEngineDownloadErrorCode" expires_after="2021-12-29">
+  <owner>ahassani@chromium.org</owner>
+  <owner>chromeos-core-services@google.com</owner>
+  <summary>
+    If unable to download a response from Omaha, a more detailed error code is
+    reported in this metric.
+
+    This is reported on every update check resulting in &quot;Download
+    error&quot;.
+
+    This metric is specific to Chrome OS.
+  </summary>
+</histogram>
+
+<histogram name="UpdateEngine.Check.Reaction" enum="UpdateEngineCheckReaction"
+    expires_after="2021-12-29">
+  <owner>ahassani@chromium.org</owner>
+  <owner>chromeos-core-services@google.com</owner>
+  <summary>
+    If there is an update available, this metric will track what the device does
+    with the information. Possible values include &quot;Applying update&quot;,
+    &quot;Deferring update&quot;, &quot;Ignoring update&quot;, and &quot;Backing
+    off&quot;.
+
+    This is reported on update checks resulting in &quot;Update available&quot;.
+
+    This metric is specific to Chrome OS.
+  </summary>
+</histogram>
+
+<histogram name="UpdateEngine.Check.Result" enum="UpdateEngineCheckResult"
+    expires_after="2021-12-29">
+  <owner>ahassani@chromium.org</owner>
+  <owner>chromeos-core-services@google.com</owner>
+  <summary>
+    The response from Omaha. Possible values include &quot;No update
+    available&quot;, &quot;Update available&quot;, &quot;Download error&quot;,
+    &quot;Response parsing error&quot;, and &quot;Reboot pending&quot;.
+
+    This is reported on every update check.
+
+    This metric is specific to Chrome OS.
+  </summary>
+</histogram>
+
+<histogram name="UpdateEngine.Check.RollbackTargetVersion"
+    enum="UpdateEngineChromeOsVersionPrefix" expires_after="2021-03-15">
+  <owner>mpolzer@google.com</owner>
+  <owner>managed-platforms@google.com</owner>
+  <summary>
+    First section of the Chrome OS target version set by device policy and sent
+    to Omaha if rollback is also allowed. This is a sparse histogram, since the
+    possible valid values are stable Chrome OS version prefixes (usually one per
+    milestone).
+
+    Example value: 10323 (meaning M65 stable).
+
+    This is reported on every update check if the TargetVersionPrefix device
+    policy is set and the value of the RollbackToTargetVersion device policy is
+    one of the values allowing rollback.
+
+    This metric is specific to Chrome OS.
+  </summary>
+</histogram>
+
+<histogram name="UpdateEngine.Check.TargetVersion"
+    enum="UpdateEngineChromeOsVersionPrefix" expires_after="2021-03-15">
+  <owner>mpolzer@google.com</owner>
+  <owner>managed-platforms@google.com</owner>
+  <summary>
+    First section of the Chrome OS target version set by device policy and sent
+    to Omaha. This is a sparse histogram, since the possible valid values are
+    stable Chrome OS version prefixes (usually one per milestone).
+
+    Example value: 10323 (meaning M65 stable).
+
+    This is reported on every update check if the TargetVersionPrefix device
+    policy is set.
+
+    This metric is specific to Chrome OS.
+  </summary>
+</histogram>
+
+<histogram name="UpdateEngine.Check.TimeSinceLastCheckMinutes" units="minutes"
+    expires_after="2021-12-29">
+  <owner>ahassani@chromium.org</owner>
+  <owner>chromeos-core-services@google.com</owner>
+  <summary>
+    The number of minutes since the last check including the time the device
+    spent sleeping.
+
+    This is reported on every update check except for the first one.
+
+    This metric is specific to Chrome OS.
+  </summary>
+</histogram>
+
+<histogram name="UpdateEngine.Check.TimeSinceLastCheckUptimeMinutes"
+    units="minutes" expires_after="2021-12-29">
+  <owner>ahassani@chromium.org</owner>
+  <owner>chromeos-core-services@google.com</owner>
+  <summary>
+    The number of minutes since the last check excluding the time the device
+    spent sleeping.
+
+    This is reported on every update check except for the first one.
+
+    This metric is specific to Chrome OS.
+  </summary>
+</histogram>
+
+<histogram name="UpdateEngine.Daily.OSAgeDays" units="days"
+    expires_after="2021-12-29">
+  <owner>ahassani@chromium.org</owner>
+  <owner>chromeos-core-services@google.com</owner>
+  <summary>
+    The age of the OS in days, defined as the age of the /etc/lsb-release file.
+
+    This is reported on every update check but at most once a day.
+
+    This metric is specific to Chrome OS.
+  </summary>
+</histogram>
+
+<histogram name="UpdateEngine.EnterpriseRollback.Failure"
+    enum="UpdateEngineChromeOsVersionPrefix" expires_after="2021-01-01">
+  <owner>mpolzer@google.com</owner>
+  <owner>managed-platforms@google.com</owner>
+  <summary>
+    First section of the Chrome OS version to which an enterprise rollback
+    (rollback initiated by the admin of the device) has failed. This is a sparse
+    histogram, since the possible valid values are stable Chrome OS version
+    prefixes (usually one per milestone).
+
+    Example value: 10323 (meaning M65 stable).
+
+    This is reported after a rollback image has failed installing.
+
+    This metric is specific to Chrome OS.
+  </summary>
+</histogram>
+
+<histogram name="UpdateEngine.EnterpriseRollback.Success"
+    enum="UpdateEngineChromeOsVersionPrefix" expires_after="2021-01-01">
+  <owner>mpolzer@google.com</owner>
+  <owner>managed-platforms@google.com</owner>
+  <summary>
+    First section of the Chrome OS version to which an enterprise rollback
+    (rollback initiated by the admin of the device) has succeeded. This is a
+    sparse histogram, since the possible valid values are stable Chrome OS
+    version prefixes (usually one per milestone).
+
+    Example value: 10323 (meaning M65 stable).
+
+    This is reported after a rollback image has been successfully installed.
+
+    This metric is specific to Chrome OS.
+  </summary>
+</histogram>
+
+<histogram name="UpdateEngine.FailedUpdateCount" units="count"
+    expires_after="2021-12-29">
+  <owner>ahassani@chromium.org</owner>
+  <owner>chromeos-core-services@google.com</owner>
+  <summary>
+    The number of consecutive times a device has failed to boot an update that
+    successfully applied.
+
+    This is reported every time the firmware fails to boot the slot with the
+    update and fell back to the slot it originally updated from.
+
+    This metric is specific to Chrome OS.
+  </summary>
+</histogram>
+
+<histogram name="UpdateEngine.InstallDateProvisioningSource"
+    enum="UpdateEngineInstallDateProvisioningSource" expires_after="2021-12-29">
+  <owner>ahassani@chromium.org</owner>
+  <owner>chromeos-core-services@google.com</owner>
+  <summary>
+    The source used to provision the install-date-days value sent to Omaha with
+    every request.
+
+    This is reported when OOBE (Out Of Box Experience) completes (M34 or later)
+    or when upgrading to a version with install-date-days support.
+
+    This metric is specific to Chrome OS.
+  </summary>
+</histogram>
+
+<histogram name="UpdateEngine.KernelKey.MaxRollforwardSetSuccess"
+    enum="BooleanSuccess" expires_after="2021-12-29">
+  <owner>poromov@chromium.org</owner>
+  <summary>
+    Whether setting the MaxKernelKeyRollforward value in the TPM succeeded.
+
+    This is reported every time an update check happens. This is a bool value.
+
+    This metric is specific to Chrome OS.
+  </summary>
+</histogram>
+
+<histogram name="UpdateEngine.KernelKey.MaxRollforwardVersion" units="units"
+    expires_after="2021-12-29">
+  <owner>poromov@chromium.org</owner>
+  <summary>
+    Maximum value the device can roll forward the minimum kernel key version
+    value in the TPM during the next boot.
+
+    This value is set to infinity (0xfffffffe) for devices which doesn't allow
+    rollback.
+
+    Otherwise, the value is the kernel key version of the earliest image to
+    which the device is allowed to roll back.
+
+    This is reported every time an update check happens. This is a sparse value.
+
+    This metric is specific to Chrome OS.
+  </summary>
+</histogram>
+
+<histogram name="UpdateEngine.KernelKey.MinVersion" units="units"
+    expires_after="2021-12-29">
+  <owner>poromov@chromium.org</owner>
+  <summary>
+    Minimum kernel key version already set in the TPM. This value specifies
+    which images can be booted up with verified boot.
+
+    This is reported every time an update check happens. This is a sparse value.
+
+    This metric is specific to Chrome OS.
+  </summary>
+</histogram>
+
+<histogram name="UpdateEngine.Rollback.Result" enum="BooleanSuccess"
+    expires_after="2021-12-29">
+  <owner>ahassani@chromium.org</owner>
+  <owner>chromeos-core-services@google.com</owner>
+  <summary>
+    Whether rollback worked.
+
+    This is reported every time there's a rollback request.
+
+    This metric is specific to Chrome OS.
+  </summary>
+</histogram>
+
+<histogram name="UpdateEngine.SuccessfulUpdate.AttemptCount" units="count"
+    expires_after="2021-12-29">
+  <owner>ahassani@chromium.org</owner>
+  <owner>chromeos-core-services@google.com</owner>
+  <summary>
+    The total number of update attempts required to update the device.
+
+    This is reported on every successful update.
+
+    This metric is specific to Chrome OS.
+  </summary>
+</histogram>
+
+<histogram name="UpdateEngine.SuccessfulUpdate.BytesDownloadedMiB" units="MiB"
+    expires_after="2021-12-29">
+  <owner>ahassani@chromium.org</owner>
+  <owner>chromeos-core-services@google.com</owner>
+  <summary>
+    The total number of bytes downloaded in mebibytes (1048576 bytes) using all
+    available sources (e.g. HTTP, HTTPS, HTTP Peer).
+
+    This is reported on every successful update.
+
+    This metric is specific to Chrome OS.
+  </summary>
+</histogram>
+
+<histogram name="UpdateEngine.SuccessfulUpdate.BytesDownloadedMiBHttpPeer"
+    units="MiB" expires_after="2021-12-29">
+  <owner>ahassani@chromium.org</owner>
+  <owner>chromeos-core-services@google.com</owner>
+  <summary>
+    The total number of bytes downloaded in mebibytes (1048576 bytes) using HTTP
+    from a local peer.
+
+    This is reported on every successful update.
+
+    This metric is specific to Chrome OS.
+  </summary>
+</histogram>
+
+<histogram name="UpdateEngine.SuccessfulUpdate.BytesDownloadedMiBHttpServer"
+    units="MiB" expires_after="2021-12-29">
+  <owner>ahassani@chromium.org</owner>
+  <owner>chromeos-core-services@google.com</owner>
+  <summary>
+    The total number of bytes downloaded in mebibytes (1048576 bytes) using
+    HTTP.
+
+    This is reported on every successful update.
+
+    This metric is specific to Chrome OS.
+  </summary>
+</histogram>
+
+<histogram name="UpdateEngine.SuccessfulUpdate.BytesDownloadedMiBHttpsServer"
+    units="MiB" expires_after="2021-12-29">
+  <owner>ahassani@chromium.org</owner>
+  <owner>chromeos-core-services@google.com</owner>
+  <summary>
+    The total number of bytes downloaded in mebibytes (1048576 bytes) using
+    HTTPS.
+
+    This is reported on every successful update.
+
+    This metric is specific to Chrome OS.
+  </summary>
+</histogram>
+
+<histogram name="UpdateEngine.SuccessfulUpdate.DownloadOverheadPercentage"
+    units="%" expires_after="2021-12-29">
+  <owner>ahassani@chromium.org</owner>
+  <owner>chromeos-core-services@google.com</owner>
+  <summary>
+    The ratio between bytes downloaded and payload size minus 100.
+
+    This is reported on every successful update.
+
+    This metric is specific to Chrome OS.
+  </summary>
+</histogram>
+
+<histogram name="UpdateEngine.SuccessfulUpdate.DownloadSourcesUsed"
+    enum="UpdateEngineDownloadSources" expires_after="2021-12-29">
+  <owner>ahassani@chromium.org</owner>
+  <owner>chromeos-core-services@google.com</owner>
+  <summary>
+    The various download sources used - this is a combination of the values
+    &quot;HTTPS Server&quot;, &quot;HTTP Server&quot; and &quot;HTTP Peer&quot;.
+
+    This is reported on every successful update.
+
+    This metric is specific to Chrome OS.
+  </summary>
+</histogram>
+
+<histogram
+    name="UpdateEngine.SuccessfulUpdate.DurationFromSeenDays.NoTimeRestriction"
+    units="days" expires_after="2021-01-01">
+  <owner>mpolzer@google.com</owner>
+  <owner>managed-platforms@google.com</owner>
+  <summary>
+    The total number of days from when an update is first seen to when an update
+    is finished downloading (but before rebooting). This metric is recorded on
+    enterprise-enrolled devices that do not have the
+    DeviceAutoUpdateTimeRestrictions policy enabled.
+
+    This metric is specific to Chrome OS.
+  </summary>
+</histogram>
+
+<histogram
+    name="UpdateEngine.SuccessfulUpdate.DurationFromSeenDays.TimeRestricted"
+    units="days" expires_after="2021-01-01">
+  <owner>mpolzer@google.com</owner>
+  <owner>managed-platforms@google.com</owner>
+  <summary>
+    The total number of days from when an update is first seen to when an update
+    is finished downloading (but before rebooting). This metric is recorded on
+    devices that have the DeviceAutoUpdateTimeRestrictions policy enabled.
+
+    This metric is specific to Chrome OS.
+  </summary>
+</histogram>
+
+<histogram name="UpdateEngine.SuccessfulUpdate.PayloadSizeMiB" units="MiB"
+    expires_after="2021-12-29">
+  <owner>ahassani@chromium.org</owner>
+  <owner>chromeos-core-services@google.com</owner>
+  <summary>
+    The size of the payload, in mebibytes (1048576 bytes).
+
+    This is reported on every successful update.
+
+    This metric is specific to Chrome OS.
+  </summary>
+</histogram>
+
+<histogram name="UpdateEngine.SuccessfulUpdate.PayloadType"
+    enum="UpdateEnginePayloadFormat" expires_after="2021-12-29">
+  <owner>ahassani@chromium.org</owner>
+  <owner>chromeos-core-services@google.com</owner>
+  <summary>
+    The payload type (&quot;Delta&quot;, &quot;Full&quot;,
+    &quot;ForcedFull&quot;) used.
+
+    This is reported on every successful update.
+
+    This metric is specific to Chrome OS.
+  </summary>
+</histogram>
+
+<histogram name="UpdateEngine.SuccessfulUpdate.RebootCount" units="count"
+    expires_after="2021-12-29">
+  <owner>ahassani@chromium.org</owner>
+  <owner>chromeos-core-services@google.com</owner>
+  <summary>
+    The total number of reboots during the update.
+
+    This is reported on every successful update.
+
+    This metric is specific to Chrome OS.
+  </summary>
+</histogram>
+
+<histogram name="UpdateEngine.SuccessfulUpdate.TotalDurationMinutes"
+    units="minutes" expires_after="2021-12-29">
+  <owner>ahassani@chromium.org</owner>
+  <owner>chromeos-core-services@google.com</owner>
+  <summary>
+    The total number of minutes from when an update was detected until an update
+    (possibly another update) was applied. This includes the time waiting for
+    update checks and time the device spent sleeping.
+
+    This is reported on every successful update.
+
+    This metric is specific to Chrome OS.
+  </summary>
+</histogram>
+
+<histogram name="UpdateEngine.SuccessfulUpdate.TotalDurationUptimeMinutes"
+    units="minutes" expires_after="2021-12-29">
+  <owner>ahassani@chromium.org</owner>
+  <owner>chromeos-core-services@google.com</owner>
+  <summary>
+    The total number of minutes from when an update was detected until an update
+    (possibly another update) was applied. This does not include the time
+    waiting for update checks and time the device spent sleeping.
+
+    This is reported on every successful update.
+
+    This metric is specific to Chrome OS.
+  </summary>
+</histogram>
+
+<histogram name="UpdateEngine.SuccessfulUpdate.UpdatesAbandonedCount"
+    units="count" expires_after="2021-12-29">
+  <owner>ahassani@chromium.org</owner>
+  <owner>chromeos-core-services@google.com</owner>
+  <summary>
+    The total number of updates that were abandoned since the last successful
+    update.
+
+    This is reported on every successful update.
+
+    This metric is specific to Chrome OS.
+  </summary>
+</histogram>
+
+<histogram name="UpdateEngine.SuccessfulUpdate.UrlSwitchCount" units="count"
+    expires_after="2021-12-29">
+  <owner>ahassani@chromium.org</owner>
+  <owner>chromeos-core-services@google.com</owner>
+  <summary>
+    The total number of times the URL was switched (from e.g. HTTPS to HTTP)
+    because of failures.
+
+    This is reported on every successful update.
+
+    This metric is specific to Chrome OS.
+  </summary>
+</histogram>
+
+<histogram name="UpdateEngine.TimeToRebootMinutes" units="minutes"
+    expires_after="2021-12-29">
+  <owner>ahassani@chromium.org</owner>
+  <owner>chromeos-core-services@google.com</owner>
+  <summary>
+    The duration between when an update has successfully completed and the user
+    is presented with the &quot;reboot arrow&quot; and when the system has
+    booted into the new update.
+
+    This is reported every time the device is rebooted after an update has been
+    applied.
+
+    This metric is specific to Chrome OS.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

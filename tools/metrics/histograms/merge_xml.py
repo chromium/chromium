@@ -128,8 +128,8 @@ def MakeNodeWithChildren(doc, tag, children):
   """
   node = doc.createElement(tag)
   for child in children:
-    if child.tagName == 'histograms':
-      expand_owners.ExpandHistogramsOWNERS(child)
+    # if child.tagName == 'histograms':
+    #   expand_owners.ExpandHistogramsOWNERS(child)
     node.appendChild(child)
   return node
 

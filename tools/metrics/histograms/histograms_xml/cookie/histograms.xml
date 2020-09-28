@@ -1,0 +1,397 @@
+<!--
+Copyright 2020 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of Cookie histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please send CLs to chromium-metrics-reviews@google.com rather than to specific
+individuals. These CLs will be automatically reassigned to a reviewer within
+about 5 minutes. This approach helps the metrics team to load-balance incoming
+reviews. Googlers can read more about this at go/gwsq-gerrit.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="Cookie.BackingStoreUpdateResults" enum="BackingStoreResults"
+    expires_after="M82">
+  <owner>morlovich@chromium.org</owner>
+  <summary>
+    Whether or not updates to the backing store succeeded or failed, recorded
+    every update.
+  </summary>
+</histogram>
+
+<histogram name="Cookie.CommitProblem" enum="CookieCommitProblem"
+    expires_after="2021-02-07">
+  <owner>morlovich@chromium.org</owner>
+  <summary>
+    Recorded when a problem occurs trying to commit changes to the cookie store
+    back to disk, in the SQLite store.
+  </summary>
+</histogram>
+
+<histogram name="Cookie.CookiePrefix" enum="CookiePrefix"
+    expires_after="2021-02-14">
+  <owner>estark@chromium.org</owner>
+  <summary>
+    Number of times a cookie was set with a name prefixed by
+    &quot;__Secure-&quot; or &quot;__Host-&quot; (prefixes reserved by
+    https://tools.ietf.org/html/draft-west-cookie-prefixes).
+  </summary>
+</histogram>
+
+<histogram name="Cookie.CookiePrefixBlocked" enum="CookiePrefix"
+    expires_after="2020-03-08">
+  <owner>estark@chromium.org</owner>
+  <summary>
+    Number of times a cookie was set with a name prefixed by
+    &quot;__Secure-&quot; or &quot;__Host-&quot; that violate cookie prefix
+    rules. That is, a __Secure- cookie must be set over a secure connection with
+    the Secure attribute, and a __Host- cookie must be set over a secure
+    connection, with the Secure attribute, with no Domain attribute, and with a
+    Path attribute of &quot;/&quot;. (As defined in
+    https://tools.ietf.org/html/draft-west-cookie-prefixes.)
+  </summary>
+</histogram>
+
+<histogram name="Cookie.CookieSchemeRequestScheme" enum="CookieRequestScheme"
+    expires_after="M90">
+  <owner>bingler@chromium.org</owner>
+  <owner>chlily@chromium.org</owner>
+  <summary>
+    The scheme a cookie was set by and the scheme of the request that the cookie
+    was sent to. This is recorded once per cookie each time a URL request has
+    its headers set.
+  </summary>
+</histogram>
+
+<histogram name="Cookie.CookieSourceScheme" enum="CookieSourceScheme"
+    expires_after="2021-02-14">
+  <owner>estark@chromium.org</owner>
+  <summary>
+    For each cookie added to the store, record whether its source URL has a
+    cryptographic scheme, broken down by Secure and not Secure.
+  </summary>
+</histogram>
+
+<histogram name="Cookie.CorruptMetaTable" units="units"
+    expires_after="2021-06-25">
+  <owner>chlily@chromium.org</owner>
+  <owner>tnagel@chromium.org</owner>
+  <summary>
+    Records the detection of a corrupted meta table. See http://crbug.com/111376
+    .
+  </summary>
+</histogram>
+
+<histogram name="Cookie.CorruptMetaTableRecoveryFailed" units="units"
+    expires_after="2021-06-25">
+  <owner>chlily@chromium.org</owner>
+  <owner>morlovich@chromium.org</owner>
+  <summary>
+    Records a failure to recover a corrupted meta table. See
+    http://crbug.com/111376 .
+  </summary>
+</histogram>
+
+<histogram name="Cookie.Count" units="units" expires_after="2021-03-21">
+  <owner>battre@chromium.org</owner>
+  <summary>
+    Number of cookies in the store (recorded every 10 minutes of active browsing
+    time)
+  </summary>
+</histogram>
+
+<histogram name="Cookie.ExpirationDurationMinutes" units="minutes"
+    expires_after="M85">
+  <owner>battre@chromium.org</owner>
+  <summary>Number of minutes until cookie expires when set.</summary>
+</histogram>
+
+<histogram name="Cookie.HeaderLength" units="bytes" expires_after="2020-09-13">
+  <owner>mkwst@chromium.org</owner>
+  <summary>
+    The size of each outgoing request's 'Cookie' header field's value, in bytes.
+  </summary>
+</histogram>
+
+<histogram name="Cookie.IncludedRequestEffectiveSameSite"
+    enum="CookieEffectiveSameSite" expires_after="M90">
+  <owner>bingler@chromium.org</owner>
+  <owner>chlily@chromium.org</owner>
+  <summary>
+    The value of the effective samesite for cookies that will be included in a
+    request. Logged once per successful inclusion.
+  </summary>
+</histogram>
+
+<histogram name="Cookie.IncludedResponseEffectiveSameSite"
+    enum="CookieEffectiveSameSite" expires_after="M90">
+  <owner>bingler@chromium.org</owner>
+  <owner>chlily@chromium.org</owner>
+  <summary>
+    The value of the effective samesite for cookies that will be accepted from a
+    response. Logged once per successful inclusion.
+  </summary>
+</histogram>
+
+<histogram name="Cookie.KillDatabaseResult" enum="BooleanSuccess"
+    expires_after="2020-11-08">
+  <owner>morlovich@chromium.org</owner>
+  <owner>chlily@chromium.org</owner>
+  <summary>
+    Whether killing the database because it was corrupted beyond repair
+    succeeded.
+  </summary>
+</histogram>
+
+<histogram name="Cookie.LoadProblem" enum="CookieLoadProblem"
+    expires_after="2021-02-07">
+  <owner>morlovich@chromium.org</owner>
+  <summary>
+    Recorded when a problem is recorded when loading the persistent cookie
+    store.
+  </summary>
+</histogram>
+
+<histogram name="Cookie.NumDomainPurgedKeys" units="keys"
+    expires_after="2021-05-29">
+  <owner>chlily@chromium.org</owner>
+  <owner>kaustubhag@chromium.org</owner>
+  <summary>
+    Records the number of distinct keys (eTLD+1's) that have experienced
+    eviction of a non-expired cookie due to reaching the max number of cookies
+    per key. This is not persisted across network service restarts, so it
+    represents the number of such eTLD+1's that have relatively recently added
+    new cookies that went over the limit (since the last browser restart, crash,
+    etc). Recorded every 10 minutes of active browsing time.
+  </summary>
+</histogram>
+
+<histogram name="Cookie.NumKeys" units="keys" expires_after="2021-05-29">
+  <owner>chlily@chromium.org</owner>
+  <owner>kaustubhag@chromium.org</owner>
+  <summary>
+    Records the number of distinct keys (eTLD+1's) that have any stored cookies
+    (which may or may not be expired). Recorded every 10 minutes of active
+    browsing time.
+  </summary>
+</histogram>
+
+<histogram name="Cookie.PriorityBlockingTime" units="ms"
+    expires_after="2020-05-10">
+  <owner>pwnall@chromium.org</owner>
+  <summary>
+    This histogram records the total duration of time during which at least one
+    web request was blocked waiting for the cookie store to load. If no requests
+    were affected, the value is 0. If two requests are simultaneously blocked
+    for 1 second, the value is 1 second. If two requests are consecutively
+    blocked for 1 second each, the value is two seconds.
+  </summary>
+</histogram>
+
+<histogram name="Cookie.PriorityLoadCount" units="units" expires_after="M77">
+  <owner>pwnall@chromium.org</owner>
+  <summary>
+    The number of distinct Effective Top-Level Domains Plus One (ETLD+1, i.e.,
+    google.com, bbc.co.uk) for which a priority cookie load occurred.
+  </summary>
+</histogram>
+
+<histogram name="Cookie.RequestSameSiteContext" enum="SameSiteCookieContext"
+    expires_after="M90">
+  <owner>chlily@chromium.org</owner>
+  <owner>morlovich@chromium.org</owner>
+  <summary>
+    The same-site context of a request, i.e. the relationship between the
+    request and the navigational environment. Logged on every request to access
+    a cookie.
+  </summary>
+</histogram>
+
+<histogram name="Cookie.SameSiteAttributeValue" enum="CookieSameSiteString"
+    expires_after="M90">
+  <owner>chlily@chromium.org</owner>
+  <owner>bingler@chromium.org</owner>
+  <summary>
+    The value of the cookie's SameSite attribute, if any. This is logged once
+    per created cookie, upon parsing of the SameSite attribute from a string.
+  </summary>
+</histogram>
+
+<histogram name="Cookie.SameSiteContextDowngradeRequest"
+    enum="SameSiteCookieContextBreakingDowngradeWithSecureness"
+    expires_after="2021-05-04">
+  <owner>bingler@chromium.org</owner>
+  <owner>kaustubhag@chromium.org</owner>
+  <summary>
+    The type of breaking same-site context downgrade a cookie is experiencing
+    along with the secureness of the origin that we're attempting to send the
+    cookie to. Logged once per included cookie or if the cookie was excluded
+    only due to insufficient same-site context.
+
+    For more information on breaking context downgrades please see the comment
+    block above
+    net::CanonicalCookie::CookieInclusionStatus::WARN_STRICT_LAX_DOWNGRADE_STRICT_SAMESITE.
+  </summary>
+</histogram>
+
+<histogram name="Cookie.SameSiteContextDowngradeResponse"
+    enum="SameSiteCookieContextBreakingDowngradeWithSecureness"
+    expires_after="2021-05-04">
+  <owner>bingler@chromium.org</owner>
+  <owner>kaustubhag@chromium.org</owner>
+  <summary>
+    The type of breaking same-site context downgrade a cookie is experiencing
+    along with the secureness of the origin that is attempting to set the
+    cookie. Logged once per included cookie or if the cookie was excluded only
+    due to insufficient same-site context.
+
+    For more information on breaking context downgrades please see the comment
+    block above
+    net::CanonicalCookie::CookieInclusionStatus::WARN_STRICT_LAX_DOWNGRADE_STRICT_SAMESITE.
+  </summary>
+</histogram>
+
+<histogram name="Cookie.SameSiteNoneIsSecure" enum="Boolean"
+    expires_after="M90">
+  <owner>chlily@chromium.org</owner>
+  <owner>morlovich@chromium.org</owner>
+  <summary>
+    If a cookie was SameSite=None, this records whether or not it was Secure.
+    Logged once per attempt to set a SameSite=None cookie.
+  </summary>
+</histogram>
+
+<histogram name="Cookie.SameSiteUnspecifiedEffective"
+    enum="CookieEffectiveSameSite" expires_after="M90">
+  <owner>chlily@chromium.org</owner>
+  <owner>morlovich@chromium.org</owner>
+  <summary>
+    If a cookie had an unspecified SameSite attribute, this records what mode it
+    was treated as, i.e. what the effective SameSite mode is. Logged once per
+    attempt to determine SameSite inclusion/exclusion for an
+    unspecified-SameSite cookie.
+  </summary>
+</histogram>
+
+<histogram name="Cookie.Startup.NumberOfCookiesDeleted" units="units"
+    expires_after="2021-03-07">
+  <owner>erikchen@chromium.org</owner>
+  <summary>
+    The number of session cookies deleted on startup. This metric is emitted
+    even if no cookies are deleted. This metric is not emitted if session
+    cookies are restored, rather than deleted on startup.
+  </summary>
+</histogram>
+
+<histogram name="Cookie.Startup.TimeSpentDeletingCookies" units="ms"
+    expires_after="2020-03-08">
+  <owner>erikchen@chromium.org</owner>
+  <summary>
+    The amount of time required to delete session cookies on startup. This
+    metric is emitted even if no cookies are deleted. This metric is not emitted
+    if session cookies are restored, rather than deleted on startup.
+  </summary>
+</histogram>
+
+<histogram name="Cookie.TimeBlockedOnLoad" units="ms"
+    expires_after="2021-04-25">
+  <owner>nharper@chromium.org</owner>
+  <summary>
+    The amount of time (ms) between the cookie store load starting and
+    completing.
+  </summary>
+</histogram>
+
+<histogram name="Cookie.TimeDatabaseMigrationToV10" units="ms"
+    expires_after="2020-04-05">
+  <owner>pwnall@chromium.org</owner>
+  <summary>
+    The amount of time (ms) to migrate a v9 cookie database to v10.
+  </summary>
+</histogram>
+
+<histogram name="Cookie.TimeDatabaseMigrationToV11" units="ms"
+    expires_after="2020-10-17">
+  <owner>chlily@chromium.org</owner>
+  <owner>morlovich@chromium.org</owner>
+  <summary>
+    The amount of time (ms) to migrate a v10 cookie database to v11. Migration
+    occurs upon first startup of a browser version with v11 database code.
+  </summary>
+</histogram>
+
+<histogram name="Cookie.TimeDatabaseMigrationToV12" units="ms"
+    expires_after="2020-11-20">
+  <owner>chlily@chromium.org</owner>
+  <owner>morlovich@chromium.org</owner>
+  <summary>
+    The amount of time (ms) to migrate a v11 cookie database to v12. Migration
+    occurs upon first startup of a browser version with v12 database code.
+  </summary>
+</histogram>
+
+<histogram name="Cookie.TimeDatabaseMigrationToV9" units="ms"
+    expires_after="2018-08-30">
+  <owner>erikchen@chromium.org</owner>
+  <summary>The amount of time (ms) to migrate a v8 database to v9.</summary>
+</histogram>
+
+<histogram name="Cookie.TimeInitializeDB" units="ms" expires_after="2021-01-03">
+  <owner>nyquist@chromium.org</owner>
+  <summary>The amount of time (ms) to initialize the cookies database.</summary>
+</histogram>
+
+<histogram name="Cookie.TimeKeyLoadDBQueueWait" units="ms" expires_after="M81">
+  <owner>pwnall@chromium.org</owner>
+  <summary>
+    This histogram records the wall-clock delay between a priority load task
+    being posted to the DB-thread and its execution.
+  </summary>
+</histogram>
+
+<histogram name="Cookie.TimeKeyLoadTotalWait" units="ms"
+    expires_after="2020-05-17">
+  <owner>erikchen@chromium.org</owner>
+  <summary>
+    This histogram records the the total amount of time spent fetching the
+    cookies associated with an eTLD+1 from disk, including time spent waiting in
+    task queues.
+  </summary>
+</histogram>
+
+<histogram name="Cookie.TimeLoad" units="ms" expires_after="2020-11-01">
+  <owner>pwnall@chromium.org</owner>
+  <summary>
+    This histogram records the sum of the durations of all initial tasks loading
+    cookies from the database.
+  </summary>
+</histogram>
+
+<histogram name="Cookie.TimeLoadDBQueueWait" units="ms"
+    expires_after="2018-08-30">
+  <owner>erikchen@chromium.org</owner>
+  <summary>
+    This histogram records the wall-clock delay between the Load task being
+    posted to the DB-thread and its execution.
+  </summary>
+</histogram>
+
+<histogram name="Cookie.Type" enum="CookieType" expires_after="2021-02-07">
+  <owner>mkwst@chromium.org</owner>
+  <summary>For each cookie added to the store, record it's type(s).</summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

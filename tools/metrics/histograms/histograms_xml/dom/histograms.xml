@@ -1,0 +1,251 @@
+<!--
+Copyright 2020 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of Dom histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please send CLs to chromium-metrics-reviews@google.com rather than to specific
+individuals. These CLs will be automatically reassigned to a reviewer within
+about 5 minutes. This approach helps the metrics team to load-balance incoming
+reviews. Googlers can read more about this at go/gwsq-gerrit.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="DomDistiller.DistillabilityRejection" enum="DistillRejection"
+    expires_after="M85">
+  <owner>wychen@chromium.org</owner>
+  <summary>
+    The reason to reject distillability at PageDistillableAfterParsing time.
+  </summary>
+</histogram>
+
+<histogram name="DomDistiller.DistillabilityScoreNMF.Negative" units="score"
+    expires_after="M77">
+  <owner>wychen@chromium.org</owner>
+  <summary>
+    Score of distillability from AdaBoost model, non-mobile-friendly only. The
+    score shown here is multiplied by 100.
+  </summary>
+</histogram>
+
+<histogram name="DomDistiller.DistillabilityScoreNMF.Positive" units="score"
+    expires_after="M77">
+  <owner>wychen@chromium.org</owner>
+  <summary>
+    Score of distillability from AdaBoost model, non-mobile-friendly only. The
+    score shown here is multiplied by 100.
+  </summary>
+</histogram>
+
+<histogram name="DomDistiller.InfoBarUsage" enum="BooleanUsage"
+    expires_after="M77">
+  <owner>mdjones@chromium.org</owner>
+  <summary>
+    &quot;Used&quot; is recorded when the user clicks the infobar to enter
+    Reader Mode. &quot;Not Used&quot; is recorded when the user clicks the close
+    button. If there's no user action, nothing is recorded.
+  </summary>
+</histogram>
+
+<histogram name="DomDistiller.LongArticleScoreNMF.Negative" units="score"
+    expires_after="M85">
+  <owner>wychen@chromium.org</owner>
+  <summary>
+    Score of long article from AdaBoost model, distillable and
+    non-mobile-friendly only. The score shown here is multiplied by 100.
+  </summary>
+</histogram>
+
+<histogram name="DomDistiller.LongArticleScoreNMF.Positive" units="score"
+    expires_after="M85">
+  <owner>wychen@chromium.org</owner>
+  <summary>
+    Score of long article from AdaBoost model, distillable and
+    non-mobile-friendly only. The score shown here is multiplied by 100.
+  </summary>
+</histogram>
+
+<histogram name="DomDistiller.PageDistillableAfterLoading"
+    enum="DistillableType2" expires_after="M85">
+  <owner>wychen@chromium.org</owner>
+  <summary>
+    Records the &quot;Distillable Type&quot; (mobile-friendly not distillable,
+    mobile-friendly distillable, non-mobile-friendly not distillable,
+    non-mobile-friendly distillable) for each analyzed page after loading.
+  </summary>
+</histogram>
+
+<histogram name="DomDistiller.PageDistillableAfterParsing"
+    enum="DistillableType2" expires_after="M85">
+  <owner>wychen@chromium.org</owner>
+  <summary>
+    Records the &quot;Distillable Type&quot; (mobile-friendly not distillable,
+    mobile-friendly distillable, non-mobile-friendly not distillable,
+    non-mobile-friendly distillable) for each analyzed page after parsing.
+  </summary>
+</histogram>
+
+<histogram name="DomDistiller.PageHasDistilledData"
+    enum="BooleanHasDistilledData" expires_after="M85">
+  <owner>kuan@chromium.org</owner>
+  <summary>Records whether a page has distilled data.</summary>
+</histogram>
+
+<histogram name="DomDistiller.ReaderMode.EntryPoint"
+    enum="ReaderModeEntryPoint" expires_after="2021-02-01">
+  <owner>katie@chromium.org</owner>
+  <owner>gilmanmh@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>The method a user used to enter reader mode on an article.</summary>
+</histogram>
+
+<histogram name="DomDistiller.ReaderMode.ExitPoint" enum="ReaderModeEntryPoint"
+    expires_after="2021-02-01">
+  <owner>katie@chromium.org</owner>
+  <owner>gilmanmh@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    The method a user used to exit reader mode and return to the original
+    article.
+  </summary>
+</histogram>
+
+<histogram name="DomDistiller.ReaderShownForPageLoad" enum="Boolean"
+    expires_after="M77">
+  <owner>mdjones@chromium.org</owner>
+  <summary>
+    Records if the panel became visible at any point after a page was navigated.
+  </summary>
+</histogram>
+
+<histogram name="DomDistiller.Statistics.FirstPageWordCount" units="words"
+    expires_after="M85">
+  <owner>mdjones@chromium.org</owner>
+  <summary>
+    Records the number of words in a distilled page. This only records the first
+    page of a multi-page article.
+  </summary>
+</histogram>
+
+<histogram name="DomDistiller.Statistics.WordCount" units="words"
+    expires_after="M85">
+  <owner>nyquist@chromium.org</owner>
+  <summary>
+    Records the number of words in a distilled page. For articles with multiple
+    pages, each page is counted separately.
+  </summary>
+</histogram>
+
+<histogram name="DomDistiller.Time.ActivelyViewingArticleBeforeDistilling"
+    units="ms" expires_after="2021-02-01">
+  <owner>katie@chromium.org</owner>
+  <owner>chrome-a11y-core@chromium.org</owner>
+  <summary>
+    Records the amount of active time a user spent on a distillable page before
+    switching that page to Reader Mode. Active time is time that the article was
+    visible, not total time the page was open: the timer is paused when the page
+    is not visible. This is not recorded when the user opens a distillable page
+    but does not switch to Reader Mode from that page (via the omnibox icon or
+    menu option).
+  </summary>
+</histogram>
+
+<histogram name="DomDistiller.Time.ActivelyViewingReaderModePage" units="ms"
+    expires_after="2021-02-01">
+  <owner>katie@chromium.org</owner>
+  <owner>chrome-a11y-core@chromium.org</owner>
+  <summary>
+    Records the amount of active time a user spent on a Reader Mode page. Active
+    time is the time the Reader Mode page was visible, not the total time the
+    page was open: the timer is paused when the page is not visible. This is
+    recorded regardless of how a user enters the page: e.g. using the
+    forward/back buttons, entering the URL directly, or coming from a
+    distillable page all start the timer equally.
+  </summary>
+</histogram>
+
+<histogram name="DomDistiller.Time.ArticleProcessing" units="ms"
+    expires_after="M77">
+  <owner>yfriedman@chromium.org</owner>
+  <summary>
+    Time spent in DomDistiller's identification of text content.
+  </summary>
+</histogram>
+
+<histogram name="DomDistiller.Time.DistillationTotal" units="ms"
+    expires_after="M85">
+  <owner>yfriedman@chromium.org</owner>
+  <summary>Complete time spent in DomDistiller's processing of a page.</summary>
+</histogram>
+
+<histogram name="DomDistiller.Time.DistillPage" units="ms" expires_after="M77">
+  <owner>wychen@chromium.org</owner>
+  <summary>
+    Time spent in DistillPageImpl(), mostly ExecuteJavaScript(), including
+    compilation and execution.
+  </summary>
+</histogram>
+
+<histogram name="DomDistiller.Time.DocumentConstruction" units="ms"
+    expires_after="M77">
+  <owner>yfriedman@chromium.org</owner>
+  <summary>
+    Time spent in creating DomDistiller's internal representation of the HTML
+    document.
+  </summary>
+</histogram>
+
+<histogram name="DomDistiller.Time.Formatting" units="ms" expires_after="M77">
+  <owner>yfriedman@chromium.org</owner>
+  <summary>
+    Time spent in DomDistiller's final processing of article content/formatting.
+  </summary>
+</histogram>
+
+<histogram name="DomDistiller.Time.MarkupParsing" units="ms"
+    expires_after="M77">
+  <owner>yfriedman@chromium.org</owner>
+  <summary>
+    Time spent in DomDistiller's processing of article metadata.
+  </summary>
+</histogram>
+
+<histogram name="DomDistiller.Time.RunJavaScript" units="ms"
+    expires_after="M77">
+  <owner>wychen@chromium.org</owner>
+  <summary>
+    Time spent in ExecuteJavaScript() in DomDistiller. It includes JavaScript
+    code transmission through IPC, parsing, compilation, execution, and
+    returning the JSON back through IPC.
+  </summary>
+</histogram>
+
+<histogram name="DomDistiller.Time.ViewerLoading" units="ms"
+    expires_after="M77">
+  <owner>wychen@chromium.org</owner>
+  <summary>
+    Records the time from the Reader Mode panel opening to the viewer loaded.
+  </summary>
+</histogram>
+
+<histogram name="DomDistiller.Time.ViewingReaderModePage" units="ms"
+    expires_after="M77">
+  <owner>mdjones@chromium.org</owner>
+  <summary>
+    Records the amount of time a user spent on a Reader Mode Page.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

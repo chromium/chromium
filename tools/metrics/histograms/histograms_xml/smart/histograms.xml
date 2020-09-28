@@ -1,0 +1,312 @@
+<!--
+Copyright 2020 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of Smart histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please send CLs to chromium-metrics-reviews@google.com rather than to specific
+individuals. These CLs will be automatically reassigned to a reviewer within
+about 5 minutes. This approach helps the metrics team to load-balance incoming
+reviews. Googlers can read more about this at go/gwsq-gerrit.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="SmartLock.AuthMethodChoice.SignIn"
+    enum="SmartLockAuthMethodChoice" expires_after="2021-02-02">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>Records the user's sign in method choice.</summary>
+</histogram>
+
+<histogram name="SmartLock.AuthMethodChoice.SignIn.PasswordState"
+    enum="SmartLockAuthEventPasswordState" expires_after="2021-02-02">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    The state Smart Lock was in when the user chose to use their password to
+    sign into their device.
+  </summary>
+</histogram>
+
+<histogram name="SmartLock.AuthMethodChoice.Unlock"
+    enum="SmartLockAuthMethodChoice" expires_after="2021-02-02">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>Records the user's unlock method choice.</summary>
+</histogram>
+
+<histogram name="SmartLock.AuthMethodChoice.Unlock.PasswordState"
+    enum="SmartLockAuthEventPasswordState" expires_after="2021-02-02">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    An enumerated histogram that breaks down what state Smart Lock was in when
+    the user chose to use their password to unlock their device.
+  </summary>
+</histogram>
+
+<histogram name="SmartLock.AuthResult.SignIn" enum="BooleanSuccess"
+    expires_after="2021-02-02">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Count of successful and failed attempts to sign in the Chromebook, after the
+    user selects their profile photo.
+  </summary>
+</histogram>
+
+<histogram name="SmartLock.AuthResult.SignIn.Failure"
+    enum="SmartLockAuthResultFailureReason" expires_after="2021-02-02">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Shows why a sign in attempt failed during the authentication phase. Breaks
+    down the failure bucket of SmartLock.AuthResult.SignIn.
+  </summary>
+</histogram>
+
+<histogram name="SmartLock.AuthResult.SignIn.Failure.UserControllerAuth"
+    enum="LoginFailureReason" expires_after="2021-02-02">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    An enumerated histogram that breaks down why the UserController could not
+    decrypt the account.
+  </summary>
+</histogram>
+
+<histogram name="SmartLock.AuthResult.Unlock" enum="BooleanSuccess"
+    expires_after="2021-02-02">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Count of successful and failed attempts to unlock the Chromebook, after the
+    user selects their profile photo.
+  </summary>
+</histogram>
+
+<histogram name="SmartLock.AuthResult.Unlock.Failure"
+    enum="SmartLockAuthResultFailureReason" expires_after="2021-02-02">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Shows why an unlock attempt failed during the authentication phase. Breaks
+    down the failure bucket of SmartLock.AuthResult.Unlock.
+  </summary>
+</histogram>
+
+<histogram name="SmartLock.EligibleDevicesCount" units="devices"
+    expires_after="2021-02-02">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    A count of the number of eligible SmartLock devices which can be used to
+    unlock the user's Chromebook. Logged each time the list of eligible devices
+    is updated. TODO(jhawkins): Log this again once we send this data from
+    eligible phones.
+  </summary>
+</histogram>
+
+<histogram name="SmartLock.EnabledDevicesCount" units="devices"
+    expires_after="2021-02-02">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    A count of the number of SmartLock devices which the user has enabled to
+    unlock the user's Chromebook, i.e., the device connected to in the SmartLock
+    setup flow. Logged each time the list of eligible devices is updated.
+  </summary>
+</histogram>
+
+<histogram name="SmartLock.EnabledState" enum="SmartLockEnabledState"
+    expires_after="2021-02-02">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    The state of the SmartLock feature for the current user, set at login. The
+    value is 'enabled' if the user has successfully enabled SmartLock via setup,
+    disabled if the user has explicitly disabled the feature after it has been
+    enabled, and unset if the feature is passively disabled, i.e., has never
+    been enabled by the user.
+  </summary>
+</histogram>
+
+<histogram name="SmartLock.FindAndConnectToHostResult.SignIn"
+    enum="SmartLockFindAndConnectToHostResult" expires_after="2021-02-02">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    The resolution of Smart Lock trying to find the host device during the
+    initial scan window at the signin screen.
+  </summary>
+</histogram>
+
+<histogram name="SmartLock.FindAndConnectToHostResult.Unlock"
+    enum="SmartLockFindAndConnectToHostResult" expires_after="2021-02-02">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    The resolution of Smart Lock trying to find the host device during the
+    initial scan window at the lock screen.
+  </summary>
+</histogram>
+
+<histogram name="SmartLock.GetRemoteStatus.SignIn" enum="BooleanSuccess"
+    expires_after="2021-02-02">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Count of successful and failed attempts to get the 'remote status' of the
+    host device, i.e., determine if the Chromebook can be signed into.
+  </summary>
+</histogram>
+
+<histogram name="SmartLock.GetRemoteStatus.SignIn.Failure"
+    enum="SmartLockGetRemoteStatusResultFailureReason"
+    expires_after="2021-02-02">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Shows why a sign in attempt failed during the connection phase. Breaks down
+    the failure bucket of SmartLock.ConnectionResult.
+  </summary>
+</histogram>
+
+<histogram name="SmartLock.GetRemoteStatus.Unlock" enum="BooleanSuccess"
+    expires_after="2021-02-02">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Count of successful and failed attempts to get the 'remote status' of the
+    host device, i.e., determine if the Chromebook can be unlocked.
+  </summary>
+</histogram>
+
+<histogram name="SmartLock.GetRemoteStatus.Unlock.Failure"
+    enum="SmartLockGetRemoteStatusResultFailureReason"
+    expires_after="2021-02-02">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Shows why an unlock attempt failed during the connection phase. Breaks down
+    the failure bucket of SmartLock.ConnectionResult.
+  </summary>
+</histogram>
+
+<histogram name="SmartLock.MultiDeviceFeatureState"
+    enum="MultiDevice_FeatureState" expires_after="2021-02-02">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Indicates the feature state of the SmartLock feature. This metric is emitted
+    to at the creation of the user session (when the user logs in), and when
+    feature state updates occur.
+  </summary>
+</histogram>
+
+<histogram
+    name="SmartLock.Performance.AuthenticationToReceiveFirstRemoteStatusDuration.Unlock"
+    units="ms" expires_after="2021-02-02">
+<!-- Name completed by histogram_suffixes name="SmartLockStatusTypes" -->
+
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    The duration of time between when Smart Lock successfully establishes a
+    secure channel connection to the host device, and receives the initial
+    remote status from it -- this informs if the device can be unlocked on the
+    first remote status (i.e., if the Smart Lock icon is yellow or green).
+
+    Suffixed by the type of remote status which was the first to be received.
+    View the base histogram to see results for all remote status types
+    aggregated together, and suffixed histograms for the results of just that
+    particular remote status type.
+
+    See SmartLock.GetRemoteStatus.Unlock for the success rate of fetching the
+    remote status from the host.
+  </summary>
+</histogram>
+
+<histogram
+    name="SmartLock.Performance.ShowLockScreenToShowFirstStatusToUserDuration.Unlock"
+    units="ms" expires_after="2021-02-02">
+<!-- Name completed by histogram_suffixes name="SmartLockStatusTypes" -->
+
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    The duration of time between when the user locks their screen or wakes their
+    device (either opening a clamshell device or waking up a tablet), and when
+    the user is first provided a visible indication of Smart Lock's status (the
+    Smart Lock icon presents as either yellow or green, with a tooltip
+    explaining the status).
+
+    Suffixed by the type of status which the user is first presented with. View
+    the base histogram to see results for all status types aggregated together,
+    and suffixed histograms for the results of just that particular remote
+    status type.
+
+    See SmartLock.GetRemoteStatus.Unlock for the success rate of fetching the
+    remote status from the host.
+  </summary>
+</histogram>
+
+<histogram
+    name="SmartLock.Performance.StartScanToReceiveFirstRemoteStatusDuration.Unlock"
+    units="ms" expires_after="2021-02-02">
+<!-- Name completed by histogram_suffixes name="SmartLockStatusTypes" -->
+
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    The duration of time between when Smart Lock begins to try to find the host
+    device, and receives the initial remote status from it -- this informs if
+    the device can be unlocked on the first remote status (i.e., if the Smart
+    Lock icon is yellow or green).
+
+    Suffixed by the type of remote status which was the first to be received.
+    View the base histogram to see results for all remote status types
+    aggregated together, and suffixed histograms for the results of just that
+    particular remote status type.
+
+    See
+    MultiDevice.SecureChannel.BLE.Performance.StartScanToAuthenticationDuration.Background
+    and
+    SmartLock.Performance.AuthenticationToReceiveFirstRemoteStatus.Unlock.Duration
+    for breakdowns of this metric.
+
+    See SmartLock.GetRemoteStatus.Unlock for the success rate of fetching the
+    remote status from the host.
+  </summary>
+</histogram>
+
+<histogram name="SmartLock.ToggleFeature" enum="BooleanEnabled"
+    expires_after="2021-02-02">
+  <owner>jhawkins@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    The number of times the user actively enabled or disabled the SmartLock
+    feature via Settings.
+  </summary>
+</histogram>
+
+<histogram name="SmartLock.ToggleFeature.Disable.Result" enum="BooleanSuccess"
+    expires_after="2021-02-02">
+  <owner>jhawkins@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>The result of the operation to disable SmartLock.</summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

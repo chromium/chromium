@@ -1,0 +1,513 @@
+<!--
+Copyright 2020 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of Subresource histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please send CLs to chromium-metrics-reviews@google.com rather than to specific
+individuals. These CLs will be automatically reassigned to a reviewer within
+about 5 minutes. This approach helps the metrics team to load-balance incoming
+reviews. Googlers can read more about this at go/gwsq-gerrit.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="SubresourceFilter.Actions2" enum="SubresourceFilterActions2"
+    expires_after="2021-02-14">
+  <owner>csharrison@chromium.org</owner>
+  <owner>jkarlin@chromium.org</owner>
+  <summary>
+    Counts of various UI and user action events related to the
+    SubresourceFilter. This will be triggered when portions of the UI are shown
+    or interacted with.
+  </summary>
+</histogram>
+
+<histogram name="SubresourceFilter.DocumentLoad.Activation.CPUDuration"
+    units="microseconds" expires_after="M77">
+  <owner>pkalinnikov@chromium.org</owner>
+  <summary>
+    Records how much thread CPU time it takes to decide whether subresource
+    filtering should be activated for a main frame or subframe.
+
+    Warning: This metric may include reports from clients with low-resolution
+    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
+    will cause this metric to have an abnormal distribution. When considering
+    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
+    solution.
+  </summary>
+</histogram>
+
+<histogram name="SubresourceFilter.DocumentLoad.Activation.WallDuration"
+    units="microseconds" expires_after="M77">
+  <owner>pkalinnikov@chromium.org</owner>
+  <summary>
+    Records how long it takes to decide whether subresource filtering should be
+    activated for a main frame or subframe.
+
+    Warning: This metric may include reports from clients with low-resolution
+    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
+    will cause this metric to have an abnormal distribution. When considering
+    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
+    solution.
+  </summary>
+</histogram>
+
+<histogram name="SubresourceFilter.DocumentLoad.ActivationState"
+    enum="SubresourceFilterActivationState" expires_after="2020-10-04">
+  <owner>engedy@chromium.org</owner>
+  <summary>
+    Whenever a document load is committed in a main frame or subframe, records
+    whether subresource filtering should be activated for that load.
+  </summary>
+</histogram>
+
+<histogram name="SubresourceFilter.DocumentLoad.RulesetIsAvailable"
+    enum="BooleanAvailable" expires_after="M77">
+  <owner>engedy@chromium.org</owner>
+  <summary>
+    Whenever a document load is committed in a main frame or subframe and
+    subresource filtering should be activated, records whether the filtering
+    rules are available.
+  </summary>
+</histogram>
+
+<histogram name="SubresourceFilter.DocumentLoad.SubframeFilteringDelay.Allowed"
+    units="microseconds" expires_after="M87">
+  <owner>csharrison@chromium.org</owner>
+  <summary>
+    Records the total time a subframe navigation was delayed while calculating
+    whether it should be disallowed or not. Logged for all navigations that were
+    allowed.
+
+    Warning: This metric may include reports from clients with low-resolution
+    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
+    will cause this metric to have an abnormal distribution. When considering
+    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
+    solution.
+  </summary>
+</histogram>
+
+<histogram
+    name="SubresourceFilter.DocumentLoad.SubframeFilteringDelay.Disallowed2"
+    units="microseconds" expires_after="M87">
+  <owner>csharrison@chromium.org</owner>
+  <owner>justinmiron@google.com</owner>
+  <summary>
+    Records the total time a subframe navigation was delayed while calculating
+    whether it should be disallowed or not. Logged for all navigations with the
+    disallowed load policy.
+  </summary>
+</histogram>
+
+<histogram
+    name="SubresourceFilter.DocumentLoad.SubframeFilteringDelay.WouldDisallow"
+    units="microseconds" expires_after="M87">
+  <owner>csharrison@chromium.org</owner>
+  <owner>justinmiron@google.com</owner>
+  <summary>
+    Records the total time a subframe navigation was delayed while calculating
+    whether it should be disallowed or not. Logged for all navigations with the
+    would_disallow load policy.
+  </summary>
+</histogram>
+
+<histogram name="SubresourceFilter.IndexRuleset.CPUDuration" units="ms"
+    expires_after="2020-02-02">
+  <owner>pkalinnikov@chromium.org</owner>
+  <summary>
+    The total CPU time it took to parse and index all rules. Does not include
+    time when the indexing thread was not doing actual work, e.g. waiting for
+    I/O or being descheduled. Recorded every time the RulesetService kicks off a
+    ruleset indexing process.
+  </summary>
+</histogram>
+
+<histogram name="SubresourceFilter.IndexRuleset.NumUnsupportedRules"
+    units="rules" expires_after="M90">
+  <owner>csharrison@chromium.org</owner>
+  <owner>jkarlin@chromium.org</owner>
+  <summary>
+    The number of rules that could be not be successfully indexed and therefore
+    have been ignored. Recorded every time the RulesetService kicks off a
+    ruleset indexing process and it reaches the point where rules are getting
+    indexed.
+  </summary>
+</histogram>
+
+<histogram name="SubresourceFilter.IndexRuleset.Verify.Status"
+    enum="SubresourceFilterVerifyStatus" expires_after="2021-02-01">
+  <owner>ericrobinson@chromium.org</owner>
+  <owner>csharrison@chromium.org</owner>
+  <summary>
+    The result of the IndexRulesetMatcher Verify method. Either pass if both the
+    checksum and verifier succeeded, or a value indicating which combination of
+    them failed. Note that a zero checksum indicates that the checksum has not
+    yet been stored during indexing (for rulesets indexed prior to the
+    checksumming code).
+  </summary>
+</histogram>
+
+<histogram name="SubresourceFilter.IndexRuleset.Verify2.WallDuration"
+    units="ms" expires_after="M85">
+  <owner>csharrison@chromium.org</owner>
+  <summary>
+    The total time it took to verify the indexed ruleset in the browser process.
+    Logged every time verification occurs, which usually occurs when the first
+    page with activation is navigated to.
+  </summary>
+</histogram>
+
+<histogram name="SubresourceFilter.IndexRuleset.WallDuration" units="ms"
+    expires_after="M90">
+  <owner>csharrison@chromium.org</owner>
+  <owner>jkarlin@chromium.org</owner>
+  <summary>
+    The total time it took to read and index all rules. Includes I/O time for
+    reading the unindexed rules, but not for writing the indexed ruleset.
+    Recorded every time the RulesetService kicks off a ruleset indexing process.
+  </summary>
+</histogram>
+
+<histogram
+    name="SubresourceFilter.MainFrameLoad.RulesetIsAvailableAnyActivationLevel"
+    enum="BooleanAvailable" expires_after="2021-03-15">
+  <owner>alexmt@chromium.org</owner>
+  <owner>jkarlin@chromium.org</owner>
+  <summary>
+    Whenever a document load is committed in the main frame, records whether the
+    filtering rules are available. This is independent of whether or not
+    subresource filtering should be activated.
+  </summary>
+</histogram>
+
+<histogram name="SubresourceFilter.PageLoad.Activation.CPUDuration"
+    units="microseconds" expires_after="2018-08-30">
+  <owner>csharrison@chromium.org</owner>
+  <summary>
+    Records how much thread CPU time it takes to decide whether subresource
+    filtering should be activated for a main frame.
+
+    Warning: This metric may include reports from clients with low-resolution
+    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
+    will cause this metric to have an abnormal distribution. When considering
+    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
+    solution.
+  </summary>
+</histogram>
+
+<histogram
+    name="SubresourceFilter.PageLoad.Activation.RedirectPosition2.Enforcement"
+    enum="RedirectPosition" expires_after="M78">
+  <owner>ericrobinson@chromium.org</owner>
+  <owner>csharrison@chromium.org</owner>
+  <summary>
+    For pages that match a given subresource_filter activation list, records the
+    position in the redirect chain of the latest non-NONE list.
+  </summary>
+</histogram>
+
+<histogram name="SubresourceFilter.PageLoad.Activation.WallDuration"
+    units="microseconds" expires_after="2018-08-30">
+  <owner>csharrison@chromium.org</owner>
+  <summary>
+    Records how long it takes to decide whether subresource filtering should be
+    activated for a main frame.
+
+    Warning: This metric may include reports from clients with low-resolution
+    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
+    will cause this metric to have an abnormal distribution. When considering
+    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
+    solution.
+  </summary>
+</histogram>
+
+<histogram name="SubresourceFilter.PageLoad.ActivationDecision"
+    enum="SubresourceFilterActivationDecision" expires_after="M90">
+  <owner>csharrison@chromium.org</owner>
+  <owner>jkarlin@chromium.org</owner>
+  <summary>
+    Records the policy decision to activate subresource filtering for a page
+    load. 'Activated' indicates that subresource filtering was activated. All
+    other reasons indicate that subresource filtering was not activated.
+  </summary>
+</histogram>
+
+<histogram name="SubresourceFilter.PageLoad.ActivationList"
+    enum="ActivationList" expires_after="2021-03-07">
+  <owner>csharrison@chromium.org</owner>
+  <summary>
+    The ActivationList or NONE that the main frame navigation matched with.
+    Recorded at WillProcessResponse time for a main frame navigation.
+  </summary>
+</histogram>
+
+<histogram name="SubresourceFilter.PageLoad.ActivationState"
+    enum="SubresourceFilterActivationState" expires_after="2021-03-07">
+  <owner>csharrison@chromium.org</owner>
+  <summary>
+    Whenever a document load is committed in a main frame, records whether
+    subresource filtering should be activated for that load.
+  </summary>
+</histogram>
+
+<histogram name="SubresourceFilter.PageLoad.NumSubresourceLoads.Disallowed"
+    units="resource loads" expires_after="M85">
+  <owner>csharrison@chromium.org</owner>
+  <owner>jkarlin@chromium.org</owner>
+  <summary>
+    Whenever a page load is finished with subresource filtering activated,
+    records the total number of subresource loads that have been disallowed.
+    This only differs from `MatchedRules` when filtering is performed in dry-run
+    mode.
+  </summary>
+</histogram>
+
+<histogram name="SubresourceFilter.PageLoad.NumSubresourceLoads.Evaluated"
+    units="resource loads" expires_after="M85">
+  <owner>csharrison@chromium.org</owner>
+  <owner>jkarlin@chromium.org</owner>
+  <summary>
+    Whenever a page load is finished with subresource filtering activated,
+    records the total number of subresource loads that have been evaluated. This
+    only differs from 'Total' when some of subdocuments is subject to a
+    deactivating rule with DOCUMENT activation type.
+  </summary>
+</histogram>
+
+<histogram name="SubresourceFilter.PageLoad.NumSubresourceLoads.MatchedRules"
+    units="resource loads" expires_after="M85">
+  <owner>csharrison@chromium.org</owner>
+  <owner>jkarlin@chromium.org</owner>
+  <summary>
+    Whenever a page load is finished with subresource filtering activated,
+    records the total number of subresource loads that have matched filtering
+    rules. This only differs from `Disallowed` when filtering is performed in
+    dry-run mode.
+  </summary>
+</histogram>
+
+<histogram name="SubresourceFilter.PageLoad.NumSubresourceLoads.Total"
+    units="resource loads" expires_after="M85">
+  <owner>csharrison@chromium.org</owner>
+  <owner>jkarlin@chromium.org</owner>
+  <summary>
+    Whenever a page load is finished with subresource filtering activated,
+    records the total number of subresource loads that have gone through the
+    subresource filtering pipeline.
+  </summary>
+</histogram>
+
+<histogram name="SubresourceFilter.PageLoad.SafeBrowsingDelay" units="ms"
+    expires_after="M81">
+  <owner>csharrison@chromium.org</owner>
+  <summary>
+    The navigation delay imposed by the subresource filter on a given navigation
+    due to Safe Browsing checks.
+  </summary>
+</histogram>
+
+<histogram
+    name="SubresourceFilter.PageLoad.SubresourceEvaluation.TotalCPUDuration"
+    units="microseconds" expires_after="2020-01-26">
+  <owner>pkalinnikov@chromium.org</owner>
+  <summary>
+    Whenever a page load is finished with subresource filtering activated,
+    records the total thread CPU time spent on evaluating subresource requests,
+    aggregated across all frames.
+
+    Note: this histogram is emitted for all clients, both ones which have
+    high-resolution timer available and those which don't.
+  </summary>
+</histogram>
+
+<histogram
+    name="SubresourceFilter.PageLoad.SubresourceEvaluation.TotalWallDuration"
+    units="microseconds" expires_after="M78">
+  <owner>pkalinnikov@chromium.org</owner>
+  <summary>
+    Whenever a page load is finished with subresource filtering activated,
+    records the total real time spent on evaluating subresource requests,
+    aggregated across all frames. This includes the time spent on waiting or
+    being descheduled.
+
+    Note: this histogram is emitted for all clients, both ones which have
+    high-resolution timer available and those which don't.
+  </summary>
+</histogram>
+
+<histogram name="SubresourceFilter.RulesetVerificationStatus"
+    enum="RulesetVerificationStatus" expires_after="M77">
+  <owner>yaoxia@chromium.org</owner>
+  <summary>
+    Records the ruleset verification status at some point in a browsing session.
+    If AdTagging is disabled, this happens when the user first visits a site
+    that is failing the Better Ads Standard, and gets ads blocked on that site;
+    if AdTagging is enabled, this happens immediately on startup. Note that this
+    is recorded only once per browsing session (the lifetime of the browser
+    process).
+  </summary>
+</histogram>
+
+<histogram name="SubresourceFilter.SafeBrowsing.TotalCheckTime" units="ms"
+    expires_after="M81">
+  <owner>csharrison@chromium.org</owner>
+  <owner>ericrobinson@chromium.org</owner>
+  <summary>
+    The time an individual Safe Browsing URL check took before finishing,
+    including posting tasks to and from the IO thread. Measured on the UI
+    thread.
+  </summary>
+</histogram>
+
+<histogram name="SubresourceFilter.SubresourceLoad.Evaluation.CPUDuration"
+    units="microseconds" expires_after="2020-01-26">
+  <owner>pkalinnikov@chromium.org</owner>
+  <summary>
+    Whenever a subresource of a document is evaluated against the ruleset,
+    records the thread CPU time spent on calculating whether it should be
+    allowed to load.
+
+    Warning: This metric may include reports from clients with low-resolution
+    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
+    will cause this metric to have an abnormal distribution. When considering
+    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
+    solution.
+  </summary>
+</histogram>
+
+<histogram name="SubresourceFilter.SubresourceLoad.Evaluation.WallDuration"
+    units="microseconds" expires_after="M85">
+  <owner>pkalinnikov@chromium.org</owner>
+  <summary>
+    Whenever a subresource of a document is evaluated against the ruleset,
+    records how much time was spent on calculating whether it should be allowed
+    to load.
+
+    Warning: This metric may include reports from clients with low-resolution
+    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
+    will cause this metric to have an abnormal distribution. When considering
+    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
+    solution.
+  </summary>
+</histogram>
+
+<histogram name="SubresourceFilter.WriteRuleset.ReplaceFileError"
+    enum="PlatformFileError" expires_after="M90">
+  <owner>csharrison@chromium.org</owner>
+  <owner>jkarlin@chromium.org</owner>
+  <summary>
+    Records the exact error whenever writing a ruleset fails at the step where
+    the ruleset would be moved from the scratch directory to its final location.
+  </summary>
+</histogram>
+
+<histogram name="SubresourceFilter.WriteRuleset.Result"
+    enum="SubresourceFilterWriteRulesetResult" expires_after="M88">
+  <owner>ericrobinson@chromium.org</owner>
+  <owner>csharrison@chromium.org</owner>
+  <summary>
+    Whether indexing a version of the ruleset and writing it to disk succeeded,
+    or failed at a particular step. Recorded every time the RulesetService kicks
+    off a ruleset indexing process.
+  </summary>
+</histogram>
+
+<histogram name="SubresourceRedirect.BypassDuration" units="ms"
+    expires_after="M90">
+  <owner>rajendrant@chromium.org</owner>
+  <owner>mcrouse@chromium.org</owner>
+  <summary>
+    Records the duration that the subresource redirect feature was stopped due
+    to fetch failure. When such a redirected fetch times out or fails with 503
+    (loadshed failure), subresource redirect is disabled for subsequent
+    pageloads for a random duration or duration mentioned in the Retry-After
+    response header. Recorded for each fetch failure.
+  </summary>
+</histogram>
+
+<histogram name="SubresourceRedirect.CompressionAttempt.ResponseCode"
+    enum="HttpResponseCode" expires_after="M90">
+  <owner>robertogden@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <summary>
+    The server response code of an attempt to compress an image subresource. The
+    initial redirect to the compression server will always be logged as a
+    HTTP_TEMPORARY_REDIRECT, in addition to logging the return code from the
+    compression server.
+  </summary>
+</histogram>
+
+<histogram name="SubresourceRedirect.CompressionAttempt.ServerResponded"
+    enum="Boolean" expires_after="M90">
+  <owner>robertogden@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <summary>
+    Whether or not the request to the compression server succeeded at the
+    network layer. Records true if there was no error at the network layer,
+    otherwise false.
+  </summary>
+</histogram>
+
+<histogram name="SubresourceRedirect.CompressionFetchTimeout" enum="Boolean"
+    expires_after="M90">
+  <owner>rajendrant@chromium.org</owner>
+  <owner>mcrouse@chromium.org</owner>
+  <summary>
+    Recorded whenever the subresource redirect times out, and leads to a random
+    bypass of 1-5 minutes.
+  </summary>
+</histogram>
+
+<histogram name="SubresourceRedirect.DidCompress.BytesSaved" units="bytes"
+    expires_after="M90">
+  <owner>robertogden@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <summary>
+    The bytes of data saved from the SubresourceRedirect. Recorded every time a
+    SubresourceRedirect returns with a 200 HTTP response code.
+  </summary>
+</histogram>
+
+<histogram name="SubresourceRedirect.DidCompress.CompressionPercent" units="%"
+    expires_after="M90">
+  <owner>robertogden@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <summary>
+    The percent of data saved from the SubresourceRedirect. Recorded every time
+    a SubresourceRedirect returns with a 200 HTTP response code.
+  </summary>
+</histogram>
+
+<histogram name="SubresourceRedirect.ImageCompressionNotificationInfoBar"
+    enum="HttpsImageCompressionInfoBarAction" expires_after="2021-01-30">
+  <owner>rajendrant@chromium.org</owner>
+  <owner>src/components/data_reduction_proxy/OWNERS</owner>
+  <summary>
+    Records the user interaction with the HTTPS Image compression notification
+    InfoBar. Recorded when the one-time InfoBar is shown.
+  </summary>
+</histogram>
+
+<histogram name="SubresourceRedirect.PageLoad.BypassResult" enum="Boolean"
+    expires_after="M90">
+  <owner>rajendrant@chromium.org</owner>
+  <owner>mcrouse@chromium.org</owner>
+  <summary>
+    Records whether the subresource redirect was bypassed or not for a pageload.
+    Recorded once per pageload.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

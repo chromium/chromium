@@ -1,0 +1,293 @@
+<!--
+Copyright 2020 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of Extension histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please send CLs to chromium-metrics-reviews@google.com rather than to specific
+individuals. These CLs will be automatically reassigned to a reviewer within
+about 5 minutes. This approach helps the metrics team to load-balance incoming
+reviews. Googlers can read more about this at go/gwsq-gerrit.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="ExtensionActivity.Google.CreatedIframe" units="units"
+    expires_after="M85">
+  <owner>felt@chromium.org</owner>
+  <summary>
+    For each www.google.com pageload, the number of extensions that create
+    iframes to add to the page.
+  </summary>
+</histogram>
+
+<histogram name="ExtensionBlacklist.BlacklistInstalled"
+    enum="ExtensionLocation" expires_after="M86">
+  <owner>rdevlin.cronin@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    The number of extensions that were blacklisted when already installed,
+    grouped by Extension::Location. Logged when ExtensionService blackists and
+    unloads an installed extension.
+  </summary>
+</histogram>
+
+<histogram name="ExtensionBlacklist.BlockCRX" enum="ExtensionLocation"
+    expires_after="M86">
+  <owner>rdevlin.cronin@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    The number of extensions that have been blocked from installing grouped by
+    Extension::Location. Logged when ExtensionService refuses to install a
+    blacklisted extension.
+  </summary>
+</histogram>
+
+<histogram name="ExtensionBlacklist.SilentInstall" enum="ExtensionLocation"
+    expires_after="M86">
+  <owner>rdevlin.cronin@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    The number of extensions that have been silently installed in a blacklisted
+    state, grouped by Extension::Location. Logged when ExtensionService installs
+    a blacklisted extension without blocking it (ExtensionBlacklist.BlockCRX
+    would be logged otherwise). Typically this will be when a user has a
+    blacklisted extension synced.
+  </summary>
+</histogram>
+
+<histogram name="ExtensionBlacklist.UnblacklistInstalled"
+    enum="ExtensionLocation" expires_after="M86">
+  <owner>rdevlin.cronin@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    The number of extensions that were unblacklisted when installed, grouped by
+    Extension::Location. Logged when ExtensionService unblacklists and loads a
+    blacklisted extension.
+  </summary>
+</histogram>
+
+<histogram name="ExtensionBubble.DevModeUserSelection"
+    enum="ExtensionBubbleAction" expires_after="2021-04-01">
+  <owner>rdevlin.cronin@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    The action taken by the user when seeing the bubble, logged right after the
+    action is taken.
+  </summary>
+</histogram>
+
+<histogram name="ExtensionBubble.ExtensionsInDevModeCount"
+    units="Developer Mode Extensions" expires_after="2021-04-01">
+  <owner>rdevlin.cronin@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    The total number of extensions found to be loaded under Developer Mode,
+    logged when the devmode bubble is shown (once per startup per profile, if
+    any devmode extension is found).
+  </summary>
+</histogram>
+
+<histogram name="ExtensionBubble.ExtensionWipeoutCount" units="Extensions"
+    expires_after="2021-01-31">
+  <owner>rdevlin.cronin@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    The total number of extensions found to be wiped by SideloadWipeout, logged
+    when the wipeout bubble is shown, which is once per startup per profile.
+  </summary>
+</histogram>
+
+<histogram name="ExtensionContentHashFetcher.CreateHashesTime" units="ms"
+    expires_after="never">
+<!-- expires-never: Used for monitoring extension content verification latency. -->
+
+  <owner>lazyboy@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    The time taken to create the computed_hashes.json file for an extension.
+    This happens once for each extension after we get signed values of the
+    expected root node of a tree hashes for each file from the webstore; we then
+    compute the individual block level hashes of the actual files and cache them
+    in computed_hashes.json (assuming we don't detect any mismatches).
+  </summary>
+</histogram>
+
+<histogram name="ExtensionContentHashReader.InitLatency" units="ms"
+    expires_after="M85">
+  <owner>lazyboy@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    The time taken to initialize the ContentHashReader for an extension resource
+    load. (The work done is to read in the verified contents and computed hashes
+    data, and compare them to make sure they agree.)
+  </summary>
+</histogram>
+
+<histogram name="ExtensionContentVerifyJob.TimeSpentUS" units="microseconds"
+    expires_after="2020-11-30">
+  <owner>lazyboy@chromium.org</owner>
+  <summary>
+    The time taken in computation (hashing actual bytes read and comparing
+    against expected computed hashes values) during an extension resource load.
+
+    Warning: This metric may include reports from clients with low-resolution
+    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
+    will cause this metric to have an abnormal distribution. When considering
+    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
+    solution.
+  </summary>
+</histogram>
+
+<histogram name="ExtensionInstallVerifier.GetSignatureResult"
+    enum="ExtensionInstallVerifierGetSignatureResult"
+    expires_after="2020-06-30">
+  <owner>rdevlin.cronin@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>The result of the verifier trying to get a new signature.</summary>
+</histogram>
+
+<histogram name="ExtensionInstallVerifier.InitResult"
+    enum="ExtensionInstallVerifierInitResult" expires_after="2020-06-30">
+  <owner>rdevlin.cronin@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    The result of initialization for the extension install verifier.
+  </summary>
+</histogram>
+
+<histogram name="ExtensionOverrideBubble.NtpOverriddenUserSelection"
+    enum="ExtensionBubbleAction" expires_after="2021-04-01">
+  <owner>rdevlin.cronin@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    The action taken by the user when seeing the bubble, notifing them of an
+    extension overriding their new tab page. Logged right after the action is
+    taken.
+  </summary>
+</histogram>
+
+<histogram name="ExtensionOverrideBubble.SettingsApiUserSelectionHomePage"
+    enum="ExtensionBubbleAction" expires_after="2021-04-01">
+  <owner>rdevlin.cronin@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    The action taken by the user when seeing the bubble, notifing them of an
+    extension overriding their homepage. Logged right after the action is taken.
+  </summary>
+</histogram>
+
+<histogram name="ExtensionOverrideBubble.SettingsApiUserSelectionSearchEngine"
+    enum="ExtensionBubbleAction" expires_after="2021-04-01">
+  <owner>rdevlin.cronin@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    The action taken by the user when seeing the bubble, notifing them of an
+    extension overriding their search engine. Logged right after the action is
+    taken.
+  </summary>
+</histogram>
+
+<histogram name="ExtensionOverrideBubble.SettingsApiUserSelectionStartupPage"
+    enum="ExtensionBubbleAction" expires_after="2021-04-01">
+  <owner>rdevlin.cronin@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    The action taken by the user when seeing the bubble, notifing them of an
+    extension overriding their startup page. Logged right after the action is
+    taken.
+  </summary>
+</histogram>
+
+<histogram name="ExtensionService.AddVerified" enum="BooleanSuccess"
+    expires_after="2018-08-30">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    Records whether adding a new/updated extension to the install verifier
+    succeeded.
+  </summary>
+</histogram>
+
+<histogram name="ExtensionService.VerifyAllSuccess"
+    enum="ExtensionServiceVerifyAllSuccess" expires_after="2018-08-30">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    The outcome of a call to ExtensionService::VerifyAllExtensions, whether it
+    was called for bootstrapping or another reason (extension
+    installed/uninstalled, etc.).
+  </summary>
+</histogram>
+
+<histogram name="ExtensionSettings.ShouldDoVerificationCheck" enum="Boolean"
+    expires_after="2018-08-30">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    When loading the chrome://extensions page, this records whether we decided
+    to do a verification check against the server (because the user had one or
+    more extensions disabled due to verification failure).
+  </summary>
+</histogram>
+
+<histogram name="ExtensionToolbarModel.BrowserActionsCount" units="units"
+    expires_after="2020-12-01">
+  <owner>rdevlin.cronin@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    The number of icons the Browser Actions Container knows about (visible or in
+    the overflow bucket). Does not count icons that have been permanently hidden
+    by the user. Measured once per startup per (non-incognito) profile.
+  </summary>
+</histogram>
+
+<histogram name="ExtensionToolbarModel.BrowserActionsVisible" units="units"
+    expires_after="2020-12-01">
+  <owner>rdevlin.cronin@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    The number of visible icons in the Browser Actions Container (visible as in
+    number of icons not in the overflow bucket). 0 means all icons are in the
+    overflow bucket. MAX_INT means the toolbar is always showing all icons.
+    Measured once per startup per (non-incognito) profile but only for those
+    profiles that have one or more browser actions showing in the toolbar.
+  </summary>
+</histogram>
+
+<histogram name="ExtensionUrlRequest.Latency" units="ms"
+    expires_after="2020-11-30">
+  <owner>lazyboy@chromium.org</owner>
+  <summary>The time taken to complete an extension url request.</summary>
+</histogram>
+
+<histogram name="ExtensionUrlRequest.SeekPosition" units="units"
+    expires_after="2020-11-30">
+  <owner>lazyboy@chromium.org</owner>
+  <summary>
+    When fetching a chrome-extension:// URL, this indicates the first byte
+    position we read from. This will be greater than 0 in cases such as XHR's
+    with a Range header, but will normally be 0 in the typical case of reading
+    the entire file. This helps identify how frequently partial file reads are
+    taking place.
+  </summary>
+</histogram>
+
+<histogram name="ExtensionUrlRequest.TotalKbRead" units="KB"
+    expires_after="2020-11-30">
+  <owner>lazyboy@chromium.org</owner>
+  <summary>
+    The total number of bytes read for a chrome-extension:// URL, logged when
+    the job is finished (either successfully or not).
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

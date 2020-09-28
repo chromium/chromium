@@ -1,0 +1,307 @@
+<!--
+Copyright 2020 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of CustomTabs histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please send CLs to chromium-metrics-reviews@google.com rather than to specific
+individuals. These CLs will be automatically reassigned to a reviewer within
+about 5 minutes. This approach helps the metrics team to load-balance incoming
+reviews. Googlers can read more about this at go/gwsq-gerrit.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram base="true" name="CustomTab.SessionDuration" units="ms"
+    expires_after="2020-10-18">
+  <owner>ranj@chromium.org</owner>
+  <owner>yfriedman@chromium.org</owner>
+<!-- Name completed by histogram_suffixes name="CustomTabOpenSource" -->
+
+  <summary>
+    Records the time duration in CustomTab Activity from onStart/onResume to
+    onStop/onPause, if that activity is opened by Webapp/WebApk/Trusted Web
+    Activity.
+  </summary>
+</histogram>
+
+<histogram name="CustomTabs.ClientAppId" enum="ClientAppId"
+    expires_after="2021-03-07">
+  <owner>yusufo@chromium.org</owner>
+  <summary>
+    Android: AppId declared by the launching application in EXTRA_APPLICATION_ID
+    in a custom tab. This histogram is used as a means to count the total
+    instances of custom tabs created meanwhile binning them across launching
+    apps that have identified themselves. Starting with M84 this is is also
+    recorded for webapps/WebAPKs. Filter the platform for just CCT/TWA data.
+  </summary>
+</histogram>
+
+<histogram name="CustomTabs.CloseButton.ChildTab.ScopeAlgorithm.ClosesOneTab"
+    enum="BooleanCloseJustCurrentTab" expires_after="2021-02-01">
+  <owner>peconn@chromium.org</owner>
+  <owner>
+    src/chrome/android/java/src/org/chromium/chrome/browser/browserservices/OWNERS
+  </owner>
+  <summary>
+    Records whether the CustomTab/TrustedWebActivity &quot;navigate to landing
+    page&quot; algorithm for child tabs - e.g. tabs opened via window.open() -
+    produces the same behaviour (closes the current tab) as the webapp
+    &quot;close current tab&quot; algorithm. Recorded when the user clicks the
+    CustomTab/TrustedWebActivity close button on a child tab. Starting with M84
+    this is is also recorded for webapps/WebAPKs. Filter the platform for just
+    CCT/TWA data.
+  </summary>
+</histogram>
+
+<histogram name="CustomTabs.ConnectionStatusOnReturn.GSA"
+    enum="CustomTabsConnection" expires_after="M88">
+  <owner>peconn@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>
+    Android: Recorded whenever user closes the custom tab by hitting the close
+    button or back to return to the caller app. Keeps track of the connection
+    status and whether the app was using a KeepAlive connection. Recorded only
+    for AGSA. Starting with M84 this is is also recorded for webapps/WebAPKs.
+    Filter the platform for just CCT/TWA data.
+  </summary>
+</histogram>
+
+<histogram name="CustomTabs.ConnectionStatusOnReturn.NonGSA"
+    enum="CustomTabsConnection" expires_after="M88">
+  <owner>peconn@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>
+    Android: Recorded whenever user closes the custom tab by hitting the close
+    button or back to return to the caller app. Keeps track of the connection
+    status and whether the app was using a KeepAlive connection. Recorded for
+    all apps other than AGSA. Starting with M84 this is is also recorded for
+    webapps/WebAPKs. Filter the platform for just CCT/TWA data.
+  </summary>
+</histogram>
+
+<histogram base="true" name="CustomTabs.DetachedResourceRequest.Duration"
+    units="ms" expires_after="M87">
+  <owner>lizeb@chromium.org</owner>
+  <owner>cct-team@google.com</owner>
+  <summary>
+    Time between the start of a detached resource request and its completion
+    (failure or success). Android only. Starting with M84 this is is also
+    recorded for webapps/WebAPKs. Filter the platform for just CCT/TWA data.
+  </summary>
+</histogram>
+
+<histogram name="CustomTabs.DetachedResourceRequest.FinalStatus"
+    enum="NetErrorCodes" expires_after="M87">
+  <owner>lizeb@chromium.org</owner>
+  <owner>cct-team@google.com</owner>
+  <summary>
+    Reports the final status of the detached request, including success.
+    Recorded once per detached resource request. Android only. Starting with M84
+    this is is also recorded for webapps/WebAPKs. Filter the platform for just
+    CCT/TWA data.
+  </summary>
+</histogram>
+
+<histogram base="true" name="CustomTabs.DetachedResourceRequest.RedirectsCount"
+    units="redirects" expires_after="M87">
+  <owner>lizeb@chromium.org</owner>
+  <owner>cct-team@google.com</owner>
+  <summary>
+    Number of redirects followed by a detached resource request until success or
+    failure. Android only. Starting with M84 this is is also recorded for
+    webapps/WebAPKs. Filter the platform for just CCT/TWA data.
+  </summary>
+</histogram>
+
+<histogram name="CustomTabs.IntentToFirstCommitNavigationTime3" units="ms"
+    expires_after="M81">
+  <owner>lizeb@chromium.org</owner>
+  <summary>
+    Time between the intent arrival to a Custom Tab and the first navigation
+    commit. Recorded for every custom tabs intent when the page has finished
+    loading.
+  </summary>
+</histogram>
+
+<histogram name="CustomTabs.IntentToFirstNavigationStartTime" units="ms"
+    expires_after="M81">
+  <owner>lizeb@chromium.org</owner>
+  <summary>
+    Time between the intent arrival to a Custom Tab and the navigation start.
+    Recorded when the page has finished loading. Non-&quot;Herb&quot; mode.
+  </summary>
+</histogram>
+
+<histogram name="CustomTabs.IntentToPageLoadedTime" units="ms"
+    expires_after="M77">
+  <owner>lizeb@chromium.org</owner>
+  <summary>
+    Time between the intent arrival in Chrome and the first &quot;page
+    loaded&quot; event, if the navigation is successful. Non-&quot;Herb&quot;
+    mode.
+  </summary>
+</histogram>
+
+<histogram name="CustomTabs.MayLaunchUrlType" enum="MayLaunchUrlType"
+    expires_after="M77">
+  <owner>lizeb@chromium.org</owner>
+  <summary>
+    Android only. Which flavors of mayLaunchUrl() were used before a tab launch.
+    Can be low and/or high confidence. Recorded at the same time as
+    CustomTabs.WarmupStateOnLaunch for the buckets &quot;Session, No Warmup,
+    Warmup called from another UID&quot;, &quot;Session, No Warmup&quot; and
+    &quot;Session, Warmup&quot;.
+  </summary>
+</histogram>
+
+<histogram name="CustomTabs.ParallelRequestStatusOnStart"
+    enum="CustomTabsParallelRequestStatusOnStart" expires_after="M87">
+  <owner>lizeb@chromium.org</owner>
+  <owner>cct-team@google.com</owner>
+  <summary>
+    Recorded only on Android. Whether a parallel request was requested by the
+    calling application, and if so its initial status. Recorded once per handled
+    intent, when the request is initiated. Starting with M84 this is is also
+    recorded for webapps/WebAPKs. Filter the platform for just CCT/TWA data.
+  </summary>
+</histogram>
+
+<histogram name="CustomTabs.PredictionStatus" enum="PredictionStatus"
+    expires_after="2020-03-01">
+  <owner>lizeb@chromium.org</owner>
+  <summary>
+    For Custom Tabs, records whether mayLaunchUrl() has been called, and if so,
+    whether the call was later matched by a URL launch.
+  </summary>
+</histogram>
+
+<histogram name="CustomTabs.PredictionToLaunch" units="ms"
+    expires_after="2020-03-01">
+  <owner>lizeb@chromium.org</owner>
+  <summary>
+    When a URL prediction succeeds, time in ms between the prediction and the
+    actual launch.
+  </summary>
+</histogram>
+
+<histogram base="true" name="CustomTabs.ResourcePrefetch.Duration" units="ms"
+    expires_after="M73">
+  <owner>alexilin@chromium.org</owner>
+  <summary>
+    Time between the start of a detached resource request for resource prefetch
+    and its completion (failure or success). Android only.
+  </summary>
+</histogram>
+
+<histogram name="CustomTabs.ResourcePrefetch.FinalStatus" enum="NetErrorCodes"
+    expires_after="M73">
+  <owner>alexilin@chromium.org</owner>
+  <summary>
+    Reports the final status of the detached request for resource prefetch,
+    including success. Recorded once per resource prefetch request. Android
+    only.
+  </summary>
+</histogram>
+
+<histogram name="CustomTabs.SpareWebContents.Status2"
+    enum="SpareWebContentsStatus2" expires_after="2020-12-20">
+  <owner>lizeb@chromium.org</owner>
+  <owner>mthiesse@chromium.org</owner>
+  <summary>
+    Android: When a spare WebContents is created from Custom Tabs, record
+    creation, and whether it was used by CCT, stolen by another Chrome Activity,
+    killed or destroyed. Creation is recorded to get the &quot;abandoned&quot;
+    case, that is when Chrome is killed before the renderer. Starting with M84
+    this is is also recorded for webapps/WebAPKs. Filter the platform for just
+    CCT/TWA data.
+  </summary>
+</histogram>
+
+<histogram name="CustomTabs.SpareWebContents.TimeBeforeDeath" units="ms"
+    expires_after="2020-05-10">
+  <owner>lizeb@chromium.org</owner>
+  <summary>
+    Android: When a spare WebContents is created from Custom Tabs, record how
+    long is took before the render process was killed. Starting with M84 this is
+    is also recorded for webapps/WebAPKs. Filter the platform for just CCT/TWA
+    data.
+  </summary>
+</histogram>
+
+<histogram name="CustomTabs.SpeculationStatusOnStart"
+    enum="CustomTabsSpeculationStatusOnStart" expires_after="2021-02-14">
+  <owner>lizeb@chromium.org</owner>
+  <summary>
+    Recorded only for Android. How a speculation was started or why it was
+    disallowed. This is recorded when a speculation of any kind is requested,
+    with either a &quot;Speculation allowed&quot; value, or a reason why it was
+    not allowed. If the speculation is allowed and is attempted to be started,
+    the status on start will be counted in addition: one of
+    &quot;Prefetch&quot;, &quot;Prerender&quot;, &quot;Background Tab&quot; or
+    &quot;Prerender not started&quot;. The last case is when a prerender is
+    abandoned during start. Starting with M84 this is is also recorded for
+    webapps/WebAPKs. Filter the platform for just CCT/TWA data.
+  </summary>
+</histogram>
+
+<histogram name="CustomTabs.SpeculationStatusOnSwap"
+    enum="CustomTabsSpeculationStatusOnSwap" expires_after="2020-07-26">
+  <owner>lizeb@chromium.org</owner>
+  <summary>
+    Recorded only for Android. Recorded when a speculation is requesting to swap
+    into a visible tab. Starting with M84 this is is also recorded for
+    webapps/WebAPKs. Filter the platform for just CCT/TWA data.
+  </summary>
+</histogram>
+
+<histogram name="CustomTabs.Visible" enum="VisibleTab" expires_after="never">
+<!-- expires-never: Used to classify UMA reports by the dashboards. -->
+
+  <owner>yusufo@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Recorded only for Android. Records on every metrics upload whether the
+    currently visible tab is a custom tab. The custom tab is launched by a
+    client app with customized UI. Some metrics like page load time will behave
+    differently for these tabs since it will be possible to warm up the browser
+    process and prepare resources for specific urls ahead of time via a service
+    connection. This histogram can be used to cluster these metric differently.
+
+    As of M87, this histogram is logged on a log start, rather than log end to
+    tag more logs.
+  </summary>
+</histogram>
+
+<histogram name="CustomTabs.WarmupStateOnLaunch" enum="WarmupStateOnLaunch"
+    expires_after="2021-02-28">
+  <owner>lizeb@chromium.org</owner>
+  <summary>
+    Recorded only on Android. Reports whether warmup() has been called when a
+    Custom Tabs Intent is received from an application, and if so, whether the
+    call could be matched with a session. Starting with M84 this is is also
+    recorded for webapps/WebAPKs. Filter the platform for just CCT/TWA data.
+  </summary>
+</histogram>
+
+<histogram name="CustomTabs.WebContentsStateOnLaunch" enum="WebContentsState"
+    expires_after="M77">
+  <owner>lizeb@chromium.org</owner>
+  <summary>
+    Android: When a CustomTabActivity creates its Tab, whether we use a
+    prerendered WebContents, a spare renderer or create a new WebContents.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

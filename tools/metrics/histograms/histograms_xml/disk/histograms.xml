@@ -1,0 +1,1773 @@
+<!--
+Copyright 2020 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of Disk histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please send CLs to chromium-metrics-reviews@google.com rather than to specific
+individuals. These CLs will be automatically reassigned to a reviewer within
+about 5 minutes. This approach helps the metrics team to load-balance incoming
+reviews. Googlers can read more about this at go/gwsq-gerrit.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="DiskCache.0.AsyncIOTime" units="ms" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    The time for an async IO operation to complete. This covers content Writes
+    and Reads, measured from the cache thread.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.0.AsyncReadDispatchTime" units="ms"
+    expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>The synchronous portion of an async read.</summary>
+</histogram>
+
+<histogram name="DiskCache.0.AsyncWriteDispatchTime" units="ms"
+    expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>The synchronous portion of an async write.</summary>
+</histogram>
+
+<histogram name="DiskCache.0.AverageOpenEntries2" units="entries"
+    expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    The average number of open disk cache entries at any given time.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.0.BufferBytes" units="KB" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>The total size of all the internal buffers.</summary>
+</histogram>
+
+<histogram name="DiskCache.0.ByteIORate" units="KB" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    The number of KB accessed from the cache in a 30 seconds interval.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.0.CreateTime" units="ms" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>The time spent creating a new entry on the cache.</summary>
+</histogram>
+
+<histogram name="DiskCache.0.DeletedAge" units="hours" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>The age of the last entry on the queue of deleted entries.</summary>
+</histogram>
+
+<histogram name="DiskCache.0.DeleteData" units="bytes" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    The size of the data portion of a given entry by the time it is deleted.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.0.DeletedRatio" units="%" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>The percentage of the deleted entries.</summary>
+</histogram>
+
+<histogram name="DiskCache.0.DeleteFailed" units="files" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>Number of external files that we were unable to delete.</summary>
+</histogram>
+
+<histogram name="DiskCache.0.DeleteHeader" units="bytes" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    The size of the HTML headers of a given entry by the time it is deleted.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.0.Entries" units="entries" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>The number of entries currently stored on the cache.</summary>
+</histogram>
+
+<histogram name="DiskCache.0.EntriesFull" units="entries" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    The number of entries currently stored on the cache, after it is full.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.0.EntryAccessRate" units="entries"
+    expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    The number of entries accessed by the cache in a 30 seconds interval.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.0.EntrySize" units="?" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    The average size of an entry. It is only measured after the cache is full,
+    so evictions are taking place.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.0.Error" enum="DiskCacheError" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>Critical error ids.</summary>
+</histogram>
+
+<histogram name="DiskCache.0.FillupAge" units="hours" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    The age of the cache (in hours) by the time we reach the size limit.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.0.FillupTime" units="hours" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    The number of hours required to fill up the cache, as measured by the cache
+    being running.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.0.FirstByteIORate" units="KB" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    The average number of KB accessed from the cache in a 30 seconds interval,
+    by the time we reach the cache size limit.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.0.FirstEntryAccessRate" units="entries"
+    expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    The average number of entries accessed by the cache in a 30 seconds
+    interval, by the time we reach the cache size limit.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.0.FirstEntrySize" units="?" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    The average size of an entry by the time we reach the cache size limit.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.0.FirstHighUseRatio" units="%" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    The percentage of the entries that are highly reused, by the time we fill up
+    the cache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.0.FirstHitRatio" units="?" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    The hit ratio by the time we fill up the cache. Of course, we started with
+    an empty cache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.0.FirstLargeEntriesRatio" units="%"
+    expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    The percentage of the cache used by entries of more than 512 KB, by the time
+    we reach the cache size limit.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.0.FirstLowUseRatio" units="%" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    The percentage of the entries that have been reused a few times, by the time
+    we fill up the cache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.0.FirstNoUseRatio" units="%" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    The percentage of the entries that have never been reused, by the time we
+    fill up the cache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.0.FirstResurrectRatio" units="%" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    The percentage of re-created deleted entries versus entries that we really
+    don't know about.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.0.GetRankings" units="ms" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>The time spent reading the LRU-related portion of an entry.</summary>
+</histogram>
+
+<histogram name="DiskCache.0.HighUseAge" units="hours" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    The age of the last entry on the queue of highly used entries.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.0.HighUseRatio" units="%" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>The percentage of the entries that are highly reused.</summary>
+</histogram>
+
+<histogram name="DiskCache.0.HitRatio" units="?" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    The current hit ratio. It is only measured after the cache is full, so
+    evictions are taking place, and data from the fill-up period is not
+    considered.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.0.HitRatioBySize2" units="MB" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    The hit ratio for each size. To calculate the hit ratio of caches of a
+    certain size, take the ratio of a bin in this histogram to the same bin in
+    DiskCache.0.Size2.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.0.HitRatioByTotalTime" units="hours"
+    expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    The hit ratio for each total time. To calculate the hit ratio of caches of a
+    certain age, take the ratio of a bin in this histogram to the same bin in
+    DiskCache.0.TotalTime.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.0.HitRatioByUseTime" units="hours"
+    expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    The hit ratio for each use time. To calculate the hit ratio of caches of a
+    certain age, take the ratio of a bin in this histogram to the same bin in
+    DiskCache.0.UseTime.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.0.IndexLoad" units="%" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    Percentage of the index table that is currently used (the cache is full).
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.0.KeySize" units="bytes" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>The size of each key.</summary>
+</histogram>
+
+<histogram name="DiskCache.0.LargeEntriesRatio" units="%" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    Percentage of the cache used by entries of more than 512 KB. It is only
+    measured after the cache is full, so evictions are taking place.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.0.LoadTime" units="ms" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    The time to load the main entry data from disk, with a &quot;loaded&quot;
+    system.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.0.LowUseAge" units="hours" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    The age of the last entry on the queue of entries reused a few times.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.0.LowUseRatio" units="%" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    The percentage of the entries that have been reused a few times.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.0.MaxOpenEntries2" units="?" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    The maximum number of simultaneously open disk cache entries.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.0.MaxSize2" units="MB" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>The maximum size of the cache.</summary>
+</histogram>
+
+<histogram name="DiskCache.0.NoUseAge" units="hours" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    The age of the next entry to be evicted that has never been reused.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.0.NoUseRatio" units="%" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>The percentage of the entries that have never been reused.</summary>
+</histogram>
+
+<histogram name="DiskCache.0.NumberOfReferences" units="?" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>The number of open entry references at any given moment.</summary>
+  <details>
+    Closely related to AverageOpenEntries, but this one is not the average per
+    client but instead a direct histogram updated every 30 secs.
+  </details>
+</histogram>
+
+<histogram name="DiskCache.0.OpenTime" units="ms" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    The time spent opening an entry already on the cache (cache hit).
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.0.PendingIO" units="operations" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>The number of pending IO operations (Async IO).</summary>
+</histogram>
+
+<histogram name="DiskCache.0.ReadTime" units="ms" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>The time spent reading from an entry.</summary>
+</histogram>
+
+<histogram name="DiskCache.0.ResurrectRatio" units="%" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    The percentage of re-created deleted entries versus entries that we really
+    don't know about.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.0.ShortReport" enum="ShortReportReason"
+    expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>The reason for not sending a full report.</summary>
+</histogram>
+
+<histogram name="DiskCache.0.Size2" units="MB" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>The current size of the cache.</summary>
+</histogram>
+
+<histogram name="DiskCache.0.SparseReadTime" units="ms" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>The time spent reading from an sparse entry.</summary>
+</histogram>
+
+<histogram name="DiskCache.0.SparseWriteTime" units="ms" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>The time spent writing to an sparse entry.</summary>
+</histogram>
+
+<histogram name="DiskCache.0.TotalClearTimeV1" units="ms" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>The time spent deleting the cache. (Clear browsing data).</summary>
+</histogram>
+
+<histogram name="DiskCache.0.TotalClearTimeV2" units="ms" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>The time spent deleting the cache. (Clear browsing data).</summary>
+</histogram>
+
+<histogram name="DiskCache.0.TotalDoomCache" units="?" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    The number of times that this cache has been deleted by the user.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.0.TotalDoomRecentEntries" units="?"
+    expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    The number of times that the user has deleted new entries from this cache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.0.TotalEvictionsGaJs" units="?" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>The number of times that ga.js was evicted.</summary>
+</histogram>
+
+<histogram name="DiskCache.0.TotalFatalErrors" units="?" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    The number of fatal errors detected for this cache (so we delete
+    everything).
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.0.TotalIOTime" units="ms" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    The total time it takes to perform a payload IO operation (AKA, directed to
+    an entry). This is measured from the IO thread.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.0.TotalTime" units="hours" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>Number of hours that the cache has been used.</summary>
+</histogram>
+
+<histogram name="DiskCache.0.TotalTimeNotFull" units="hours"
+    expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    The number of hours that the cache has been in use, for users that still
+    have available space.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.0.TotalTrimDeletedTime" units="ms"
+    expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>The time spent removing deleted entries from the cache.</summary>
+</histogram>
+
+<histogram name="DiskCache.0.TotalTrimTime" units="ms" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>The time spent removing old entries from the cache.</summary>
+</histogram>
+
+<histogram name="DiskCache.0.TotalTrimTimeV1" units="ms" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>The time spent removing old entries from the cache.</summary>
+</histogram>
+
+<histogram name="DiskCache.0.TotalTrimTimeV2" units="ms" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    The time spent evicting entries from the cache (moving them to the deleted
+    list).
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.0.TrimAge" units="hours" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    The time that an entry lives in the cache without being accessed until it is
+    finally purged.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.0.TrimDeletedItems" units="?" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    The number of entries that are deleted on a single iteration.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.0.TrimItemsV1" units="?" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    The number of entries that are evicted on a single iteration.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.0.TrimItemsV2" units="?" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    The number of entries that are evicted (moved to the deleted list) on a
+    single iteration.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.0.TrimRate" units="?" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>The number of entries that are evicted per hour of use.</summary>
+</histogram>
+
+<histogram name="DiskCache.0.UpdateRank" units="ms" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    The time spent moving an entry to the front of the LRU list.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.0.UsedSpace" units="%" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    The percentage of the allowed disk space that we are currently using.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.0.UseTime" units="hours" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    Number of hours that the cache has been used since last week.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.0.WriteTime" units="ms" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>The time spent writing to an entry.</summary>
+</histogram>
+
+<histogram name="DiskCache.2.AsyncIOTime" units="ms" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    The time for an async IO operation to complete. This covers content Writes
+    and Reads, measured from the cache thread. Media-specific cache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.2.AsyncReadDispatchTime" units="ms"
+    expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    The synchronous portion of an async read. Media-specific cache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.2.AsyncWriteDispatchTime" units="ms"
+    expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    The synchronous portion of an async write. Media-specific cache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.2.AverageOpenEntries2" units="entries"
+    expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    The average number of open disk cache entries at any given time.
+    Media-specific cache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.2.BufferBytes" units="KB" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    The total size of all the internal buffers. Media-specific cache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.2.ByteIORate" units="KB" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    The number of KB accessed from the cache in a 30 seconds interval.
+    Media-specific cache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.2.CreateTime" units="ms" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    The time spent creating a new entry on the cache. Media-specific cache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.2.DeleteData" units="bytes" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    The size of the data portion of a given entry by the time it is deleted.
+    Media-specific cache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.2.DeleteFailed" units="files" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    Number of external files that we were unable to delete. Media-specific
+    cache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.2.DeleteHeader" units="bytes" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    The size of the HTML headers of a given entry by the time it is deleted.
+    Media-specific cache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.2.Entries" units="?" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    The number of entries currently stored on the cache. Media-specific cache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.2.EntriesFull" units="?" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    The number of entries currently stored on the cache, after it is full.
+    Media-specific cache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.2.EntryAccessRate" units="entries"
+    expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    The number of entries accessed by the cache in a 30 seconds interval.
+    Media-specific cache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.2.EntrySize" units="?" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    The average size of an entry. It is only measured after the cache is full,
+    so evictions are taking place. Media-specific cache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.2.Error" enum="DiskCacheError" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>Critical error ids. Media-specific cache.</summary>
+</histogram>
+
+<histogram name="DiskCache.2.FillupAge" units="hours" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    The age of the cache (in hours) by the time we reach the size limit.
+    Media-specific cache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.2.FillupTime" units="hours" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    The number of hours required to fill up the cache, as measured by the cache
+    being running. Media-specific cache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.2.FirstByteIORate" units="KB" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    The average number of KB accessed from the cache in a 30 seconds interval,
+    by the time we reach the cache size limit. Media-specific cache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.2.FirstEntryAccessRate" units="entries"
+    expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    The average number of entries accessed by the cache in a 30 seconds
+    interval, by the time we reach the cache size limit. Media-specific cache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.2.FirstEntrySize" units="?" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    The average size of an entry by the time we reach the cache size limit.
+    Media-specific cache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.2.FirstHitRatio" units="?" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    The hit ratio by the time we fill up the cache. Of course, we started with
+    an empty cache. Media-specific cache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.2.FirstLargeEntriesRatio" units="%"
+    expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    The percentage of the cache used by entries of more than 512 KB, by the time
+    we reach the cache size limit. Media-specific cache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.2.GetRankings" units="ms" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    The time spent reading the LRU-related portion of an entry. Media-specific
+    cache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.2.HitRatio" units="?" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    The current hit ratio. It is only measured after the cache is full, so
+    evictions are taking place, and data from the fill-up period is not
+    considered. Media-specific cache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.2.HitRatioBySize2" units="MB" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    The hit ratio for each size. To calculate the hit ratio of caches of a
+    certain size, take the ratio of a bin in this histogram to the same bin in
+    DiskCache.2.Size2. Media-specific cache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.2.HitRatioByTotalTime" units="hours"
+    expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    The hit ratio for each total time. To calculate the hit ratio of caches of a
+    certain age, take the ratio of a bin in this histogram to the same bin in
+    DiskCache.2.TotalTime. Media-specific cache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.2.HitRatioByUseTime" units="hours"
+    expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    The hit ratio for each use time. To calculate the hit ratio of caches of a
+    certain age, take the ratio of a bin in this histogram to the same bin in
+    DiskCache.2.UseTime. Media-specific cache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.2.IndexLoad" units="%" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    Percentage of the index table that is currently used (the cache is full).
+    Media-specific cache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.2.KeySize" units="bytes" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>The size of each key. Media-specific cache.</summary>
+</histogram>
+
+<histogram name="DiskCache.2.LargeEntriesRatio" units="%" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    Percentage of the cache used by entries of more than 512 KB. It is only
+    measured after the cache is full, so evictions are taking place.
+    Media-specific cache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.2.LoadTime" units="ms" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    The time to load the main entry data from disk, with a &quot;loaded&quot;
+    system. Media-specific cache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.2.MaxOpenEntries2" units="?" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    The maximum number of simultaneously open disk cache entries. Media-specific
+    cache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.2.MaxSize2" units="MB" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>The maximum size of the cache. Media-specific cache.</summary>
+</histogram>
+
+<histogram name="DiskCache.2.NumberOfReferences" units="?" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    The number of open entry references at any given moment. Closely related to
+    AverageOpenEntries, but this one is not the average per client but instead a
+    direct histogram updated every 30 secs. Media-specific cache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.2.OpenTime" units="ms" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    The time spent opening an entry already on the cache (cache hit).
+    Media-specific cache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.2.PendingIO" units="operations" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    The number of pending IO operations (Async IO). Media-specific cache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.2.ReadTime" units="ms" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>The time spent reading from an entry. Media-specific cache.</summary>
+</histogram>
+
+<histogram name="DiskCache.2.ResurrectRatio" units="%" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    The percentage of re-created deleted entries versus entries that we really
+    don't know about. Media-specific cache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.2.ShortReport" enum="ShortReportReason"
+    expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    The reason for not sending a full report. Media-specific cache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.2.Size2" units="MB" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>The current size of the cache. Media-specific cache.</summary>
+</histogram>
+
+<histogram name="DiskCache.2.TotalClearTimeV1" units="ms" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    The time spent deleting the cache. (Clear browsing data). Media-specific
+    cache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.2.TotalClearTimeV2" units="ms" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    The time spent deleting the cache. (Clear browsing data). Media-specific
+    cache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.2.TotalIOTime" units="ms" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    The total time it takes to perform a payload IO operation (AKA, directed to
+    an entry). This is measured from the IO thread. Media-specific cache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.2.TotalTime" units="hours" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    Number of hours that the cache has been used. Media-specific cache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.2.TotalTrimDeletedTime" units="ms"
+    expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    The time spent removing deleted entries from the cache. Media-specific
+    cache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.2.TotalTrimTime" units="ms" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    The time spent removing old entries from the cache. Media-specific cache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.2.TotalTrimTimeV1" units="ms" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    The time spent removing old entries from the cache. Media-specific cache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.2.TotalTrimTimeV2" units="ms" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    The time spent evicting entries from the cache (moving them to the deleted
+    list). Media-specific cache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.2.TrimAge" units="hours" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    The time that an entry lives in the cache without being accessed until it is
+    finally purged. Media-specific cache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.2.TrimDeletedItems" units="?" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    The number of entries that are deleted on a single iteration. Media-specific
+    cache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.2.TrimItemsV1" units="?" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    The number of entries that are evicted on a single iteration. Media-specific
+    cache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.2.TrimItemsV2" units="?" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    The number of entries that are evicted (moved to the deleted list) on a
+    single iteration. Media-specific cache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.2.TrimRate" units="?" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    The number of entries that are evicted per hour of use. Media-specific
+    cache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.2.UpdateRank" units="ms" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    The time spent moving an entry to the front of the LRU list. Media-specific
+    cache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.2.UsedSpace" units="%" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    The percentage of the allowed disk space that we are currently using.
+    Media-specific cache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.2.UseTime" units="hours" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>
+    Number of hours that the cache has been used since last week. Media-specific
+    cache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.2.WriteTime" units="ms" expires_after="M85">
+  <owner>rvargas@chromium.org</owner>
+  <summary>The time spent writing to an entry. Media-specific cache.</summary>
+</histogram>
+
+<histogram name="DiskCache.3.AsyncIOTime" units="ms" expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    The time for an async IO operation to complete. This covers content Writes
+    and Reads, measured from the cache thread. AppCache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.3.AsyncReadDispatchTime" units="ms"
+    expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>The synchronous portion of an async read. AppCache.</summary>
+</histogram>
+
+<histogram name="DiskCache.3.AsyncWriteDispatchTime" units="ms"
+    expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>The synchronous portion of an async write. AppCache.</summary>
+</histogram>
+
+<histogram name="DiskCache.3.AverageOpenEntries2" units="entries"
+    expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    The average number of open disk cache entries at any given time. AppCache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.3.BufferBytes" units="KB" expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>The total size of all the internal buffers. AppCache.</summary>
+</histogram>
+
+<histogram name="DiskCache.3.ByteIORate" units="KB" expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    The number of KB accessed from the cache in a 30 seconds interval. AppCache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.3.CreateTime" units="ms" expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>The time spent creating a new entry on the cache. AppCache.</summary>
+</histogram>
+
+<histogram name="DiskCache.3.DeleteData" units="bytes" expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    The size of the data portion of a given entry by the time it is deleted.
+    AppCache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.3.DeleteFailed" units="files" expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    Number of external files that we were unable to delete. AppCache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.3.Entries" units="entries" expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    The number of entries currently stored on the cache. AppCache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.3.EntriesFull" units="entries" expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    The number of entries currently stored on the cache, after it is full.
+    AppCache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.3.EntryAccessRate" units="entries"
+    expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    The number of entries accessed by the cache in a 30 seconds interval.
+    AppCache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.3.EntrySize" units="?" expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    The average size of an entry. It is only measured after the cache is full,
+    so evictions are taking place. AppCache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.3.Error" enum="DiskCacheError" expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>Critical error ids. AppCache.</summary>
+</histogram>
+
+<histogram name="DiskCache.3.FillupAge" units="hours" expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    The age of the cache (in hours) by the time we reach the size limit.
+    AppCache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.3.FillupTime" units="hours" expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    The number of hours required to fill up the cache, as measured by the cache
+    being running. AppCache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.3.FirstByteIORate" units="KB" expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    The average number of KB accessed from the cache in a 30 seconds interval,
+    by the time we reach the cache size limit. AppCache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.3.FirstEntryAccessRate" units="entries"
+    expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    The average number of entries accessed by the cache in a 30 seconds
+    interval, by the time we reach the cache size limit. AppCache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.3.FirstEntrySize" units="?" expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    The average size of an entry by the time we reach the cache size limit.
+    AppCache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.3.FirstHitRatio" units="?" expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    The hit ratio by the time we fill up the cache. Of course, we started with
+    an empty cache. AppCache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.3.FirstLargeEntriesRatio" units="%"
+    expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    The percentage of the cache used by entries of more than 512 KB, by the time
+    we reach the cache size limit. AppCache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.3.GetRankings" units="ms" expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    The time spent reading the LRU-related portion of an entry. AppCache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.3.HitRatio" units="?" expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    The current hit ratio. It is only measured after the cache is full, so
+    evictions are taking place, and data from the fill-up period is not
+    considered. AppCache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.3.HitRatioBySize2" units="MB" expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    The hit ratio for each size. To calculate the hit ratio of caches of a
+    certain size, take the ratio of a bin in this histogram to the same bin in
+    DiskCache.3.Size2. AppCache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.3.HitRatioByTotalTime" units="hours"
+    expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    The hit ratio for each total time. To calculate the hit ratio of caches of a
+    certain age, take the ratio of a bin in this histogram to the same bin in
+    DiskCache.3.TotalTime. AppCache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.3.HitRatioByUseTime" units="hours"
+    expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    The hit ratio for each use time. To calculate the hit ratio of caches of a
+    certain age, take the ratio of a bin in this histogram to the same bin in
+    DiskCache.3.UseTime. AppCache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.3.IndexLoad" units="%" expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    Percentage of the index table that is currently used (the cache is full).
+    AppCache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.3.KeySize" units="bytes" expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>The size of each key. AppCache.</summary>
+</histogram>
+
+<histogram name="DiskCache.3.LargeEntriesRatio" units="%" expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    Percentage of the cache used by entries of more than 512 KB. It is only
+    measured after the cache is full, so evictions are taking place. AppCache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.3.LoadTime" units="ms" expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    The time to load the main entry data from disk, with a &quot;loaded&quot;
+    system. AppCache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.3.MaxOpenEntries2" units="entries"
+    expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    The maximum number of simultaneously open disk cache entries. AppCache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.3.MaxSize2" units="MB" expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>The maximum size of the cache. AppCache.</summary>
+</histogram>
+
+<histogram name="DiskCache.3.OpenTime" units="ms" expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    The time spent opening an entry already on the cache (cache hit). AppCache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.3.PendingIO" units="operations" expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>The number of pending IO operations (Async IO). AppCache.</summary>
+</histogram>
+
+<histogram name="DiskCache.3.ReadTime" units="ms" expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>The time spent reading from an entry. AppCache.</summary>
+</histogram>
+
+<histogram name="DiskCache.3.ResurrectRatio" units="%" expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    The percentage of re-created deleted entries versus entries that we really
+    don't know about. AppCache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.3.ShortReport" enum="ShortReportReason"
+    expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>The reason for not sending a full report. AppCache.</summary>
+</histogram>
+
+<histogram name="DiskCache.3.Size" units="MB" expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>The current size of the cache. AppCache.</summary>
+</histogram>
+
+<histogram name="DiskCache.3.TotalIOTime" units="ms" expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    The total time it takes to perform a payload IO operation (AKA, directed to
+    an entry). This is measured from the IO thread. AppCache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.3.TotalTime" units="hours" expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>Number of hours that the cache has been used. AppCache.</summary>
+</histogram>
+
+<histogram name="DiskCache.3.TotalTrimDeletedTime" units="ms"
+    expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    The time spent removing deleted entries from the cache. AppCache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.3.TotalTrimTimeV1" units="ms" expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    The time spent removing old entries from the cache. AppCache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.3.TotalTrimTimeV2" units="ms" expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    The time spent evicting entries from the cache (moving them to the deleted
+    list). AppCache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.3.TrimAge" units="hours" expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    The time that an entry lives in the cache without being accessed until it is
+    finally purged. AppCache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.3.TrimDeletedItems" units="?" expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    The number of entries that are deleted on a single iteration. AppCache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.3.TrimItemsV1" units="?" expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    The number of entries that are evicted on a single iteration. AppCache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.3.TrimItemsV2" units="?" expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    The number of entries that are evicted (moved to the deleted list) on a
+    single iteration. AppCache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.3.TrimRate" units="?" expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    The number of entries that are evicted per hour of use. AppCache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.3.UpdateRank" units="ms" expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    The time spent moving an entry to the front of the LRU list. AppCache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.3.UsedSpace" units="%" expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    The percentage of the allowed disk space that we are currently using.
+    AppCache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.3.UseTime" units="hours" expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    Number of hours that the cache has been used since last week. AppCache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.3.WriteTime" units="ms" expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>The time spent writing to an entry. AppCache.</summary>
+</histogram>
+
+<histogram name="DiskCache.4.AsyncIOTime" units="ms" expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    The time for an async IO operation to complete. This covers content Writes
+    and Reads, measured from the cache thread. ShaderCache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.4.AsyncReadDispatchTime" units="ms"
+    expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>The synchronous portion of an async read. ShaderCache.</summary>
+</histogram>
+
+<histogram name="DiskCache.4.AsyncWriteDispatchTime" units="ms"
+    expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>The synchronous portion of an async write. ShaderCache.</summary>
+</histogram>
+
+<histogram name="DiskCache.4.AverageOpenEntries2" units="entries"
+    expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    The average number of open disk cache entries at any given time.
+    ShaderCache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.4.BufferBytes" units="KB" expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>The total size of all the internal buffers. ShaderCache.</summary>
+</histogram>
+
+<histogram name="DiskCache.4.ByteIORate" units="KB" expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    The number of KB accessed from the cache in a 30 seconds interval.
+    ShaderCache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.4.CreateTime" units="ms" expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    The time spent creating a new entry on the cache. ShaderCache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.4.DeleteData" units="bytes" expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    The size of the data portion of a given entry by the time it is deleted.
+    ShaderCache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.4.DeleteFailed" units="files" expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    Number of external files that we were unable to delete. ShaderCache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.4.DeleteHeader" units="bytes" expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    The size of the HTML headers of a given entry by the time it is deleted.
+    ShaderCache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.4.Entries" units="entries" expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    The number of entries currently stored on the cache. ShaderCache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.4.EntriesFull" units="entries" expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    The number of entries currently stored on the cache, after it is full.
+    ShaderCache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.4.EntryAccessRate" units="entries"
+    expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    The number of entries accessed by the cache in a 30 seconds interval.
+    ShaderCache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.4.EntrySize" units="?" expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    The average size of an entry. It is only measured after the cache is full,
+    so evictions are taking place. ShaderCache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.4.Error" enum="DiskCacheError" expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>Critical error ids. ShaderCache.</summary>
+</histogram>
+
+<histogram name="DiskCache.4.FillupAge" units="hours" expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    The age of the cache (in hours) by the time we reach the size limit.
+    ShaderCache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.4.FillupTime" units="hours" expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    The number of hours required to fill up the cache, as measured by the cache
+    being running. ShaderCache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.4.FirstByteIORate" units="KB" expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    The average number of KB accessed from the cache in a 30 seconds interval,
+    by the time we reach the cache size limit. ShaderCache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.4.FirstEntryAccessRate" units="entries"
+    expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    The average number of entries accessed by the cache in a 30 seconds
+    interval, by the time we reach the cache size limit. ShaderCache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.4.FirstEntrySize" units="?" expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    The average size of an entry by the time we reach the cache size limit.
+    ShaderCache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.4.FirstHitRatio" units="?" expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    The hit ratio by the time we fill up the cache. Of course, we started with
+    an empty cache. ShaderCache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.4.FirstLargeEntriesRatio" units="%"
+    expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    The percentage of the cache used by entries of more than 512 KB, by the time
+    we reach the cache size limit. ShaderCache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.4.GetRankings" units="ms" expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    The time spent reading the LRU-related portion of an entry. ShaderCache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.4.HitRatio" units="?" expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    The current hit ratio. It is only measured after the cache is full, so
+    evictions are taking place, and data from the fill-up period is not
+    considered. ShaderCache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.4.HitRatioBySize2" units="MB" expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    The hit ratio for each size. To calculate the hit ratio of caches of a
+    certain size, take the ratio of a bin in this histogram to the same bin in
+    DiskCache.4.Size2. ShaderCache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.4.HitRatioByTotalTime" units="hours"
+    expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    The hit ratio for each total time. To calculate the hit ratio of caches of a
+    certain age, take the ratio of a bin in this histogram to the same bin in
+    DiskCache.4.TotalTime. ShaderCache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.4.HitRatioByUseTime" units="hours"
+    expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    The hit ratio for each use time. To calculate the hit ratio of caches of a
+    certain age, take the ratio of a bin in this histogram to the same bin in
+    DiskCache.4.UseTime. ShaderCache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.4.IndexLoad" units="%" expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    Percentage of the index table that is currently used (the cache is full).
+    ShaderCache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.4.KeySize" units="bytes" expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>The size of each key. ShaderCache.</summary>
+</histogram>
+
+<histogram name="DiskCache.4.LargeEntriesRatio" units="%" expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    Percentage of the cache used by entries of more than 512 KB. It is only
+    measured after the cache is full, so evictions are taking place.
+    ShaderCache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.4.LoadTime" units="ms" expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    The time to load the main entry data from disk, with a &quot;loaded&quot;
+    system. ShaderCache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.4.MaxOpenEntries2" units="?" expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    The maximum number of simultaneously open disk cache entries. ShaderCache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.4.MaxSize2" units="MB" expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>The maximum size of the cache. ShaderCache.</summary>
+</histogram>
+
+<histogram name="DiskCache.4.OpenTime" units="ms" expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    The time spent opening an entry already on the cache (cache hit).
+    ShaderCache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.4.PendingIO" units="?" expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    The number of pending IO operations (Async IO). ShaderCache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.4.ReadTime" units="ms" expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>The time spent reading from an entry. ShaderCache.</summary>
+</histogram>
+
+<histogram name="DiskCache.4.ShortReport" enum="ShortReportReason"
+    expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>The reason for not sending a full report. ShaderCache.</summary>
+</histogram>
+
+<histogram name="DiskCache.4.Size" units="MB" expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>The current size of the cache. ShaderCache.</summary>
+</histogram>
+
+<histogram name="DiskCache.4.TotalIOTime" units="ms" expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    The total time it takes to perform a payload IO operation (AKA, directed to
+    an entry). This is measured from the IO thread. ShaderCache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.4.TotalTime" units="hours" expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>Number of hours that the cache has been used. ShaderCache.</summary>
+</histogram>
+
+<histogram name="DiskCache.4.TotalTrimTimeV1" units="ms" expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    The time spent removing old entries from the cache. ShaderCache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.4.TrimAge" units="hours" expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    The time that an entry lives in the cache without being accessed until it is
+    finally purged. ShaderCache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.4.TrimItemsV1" units="?" expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    The number of entries that are evicted on a single iteration. ShaderCache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.4.TrimRate" units="?" expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    The number of entries that are evicted per hour of use. ShaderCache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.4.UpdateRank" units="ms" expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    The time spent moving an entry to the front of the LRU list. ShaderCache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.4.UsedSpace" units="%" expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    The percentage of the allowed disk space that we are currently using.
+    ShaderCache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.4.UseTime" units="hours" expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    Number of hours that the cache has been used since last week. ShaderCache.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.4.WriteTime" units="ms" expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>The time spent writing to an entry. ShaderCache.</summary>
+</histogram>
+
+<histogram name="DiskCache.BlockLoad_0" units="%" expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>The percentage of use for blocks of type 0 (links).</summary>
+</histogram>
+
+<histogram name="DiskCache.BlockLoad_1" units="%" expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>The percentage of use for blocks of type 1 (256 bytes).</summary>
+</histogram>
+
+<histogram name="DiskCache.BlockLoad_2" units="%" expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>The percentage of use for blocks of type 2 (1024 bytes).</summary>
+</histogram>
+
+<histogram name="DiskCache.BlockLoad_3" units="%" expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>The percentage of use for blocks of type 3 (4096 bytes).</summary>
+</histogram>
+
+<histogram name="DiskCache.Blocks_0" units="blocks" expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>The number of used blocks of type 0 (links).</summary>
+</histogram>
+
+<histogram name="DiskCache.Blocks_1" units="blocks" expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>The number of used blocks of type 1 (256 bytes).</summary>
+</histogram>
+
+<histogram name="DiskCache.Blocks_2" units="blocks" expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>The number of used blocks of type 2 (1024 bytes).</summary>
+</histogram>
+
+<histogram name="DiskCache.Blocks_3" units="blocks" expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>The number of used blocks of type 3 (4096 bytes).</summary>
+</histogram>
+
+<histogram name="DiskCache.DeleteFailed2" units="files" expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>Number of block-files that we were unable to delete.</summary>
+</histogram>
+
+<histogram name="DiskCache.Experiment" units="group" expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>The experiment group for this user.</summary>
+</histogram>
+
+<histogram name="DiskCache.SizeStats" units="?" expires_after="M85">
+  <owner>dmikurube@chromium.org</owner>
+  <summary>The size distribution of data stored on the cache.</summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

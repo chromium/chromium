@@ -1,0 +1,446 @@
+<!--
+Copyright 2020 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of Optimization histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please send CLs to chromium-metrics-reviews@google.com rather than to specific
+individuals. These CLs will be automatically reassigned to a reviewer within
+about 5 minutes. This approach helps the metrics team to load-balance incoming
+reviews. Googlers can read more about this at go/gwsq-gerrit.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram base="true" name="OptimizationGuide.ApplyDecision"
+    enum="OptimizationGuideOptimizationTypeDecision" expires_after="2021-01-31">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>mcrouse@chromium.org</owner>
+  <summary>
+    The decision made for whether the optimization type can be applied on the
+    page load.
+  </summary>
+</histogram>
+
+<histogram base="true" name="OptimizationGuide.ApplyDecisionAsync"
+    enum="OptimizationGuideOptimizationTypeDecision" expires_after="2021-01-31">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>mcrouse@chromium.org</owner>
+  <summary>
+    Records the decision made for whether the optimization type can be applied
+    on a page load when all information for that page load has been sufficiently
+    gathered. This will be recorded once per callback registered, so if two
+    callbacks were registered for the same optimization type and page load, this
+    will be recorded twice for that case.
+  </summary>
+</histogram>
+
+<histogram name="OptimizationGuide.ClearFetchedHints.StoreAvailable"
+    units="BooleanAvailable" expires_after="2021-01-31">
+  <owner>mcrouse@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    Records whether the optimization guide store was available when fetched
+    hints are cleared from the store after browser history is cleared.
+  </summary>
+</histogram>
+
+<histogram name="OptimizationGuide.ClearHostModelFeatures.StoreAvailable"
+    units="BooleanAvailable" expires_after="2020-11-30">
+  <owner>mcrouse@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    Records whether the optimization guide store was available when host model
+    features are cleared from the store after browser history is cleared.
+  </summary>
+</histogram>
+
+<histogram name="OptimizationGuide.HintCache.HintType.Loaded"
+    enum="HintCacheStoreEntryType" expires_after="2020-11-30">
+  <owner>mcrouse@chromium.org</owner>
+  <owner>dougarnett@chromium.org</owner>
+  <summary>
+    Records the store entry type of a hint when it is loaded from the hint cache
+    store.
+  </summary>
+</histogram>
+
+<histogram name="OptimizationGuide.HintCacheLevelDBStore.LoadMetadataResult"
+    enum="OptimizationGuideHintCacheLevelDBStoreLoadMetadataResult"
+    expires_after="2020-11-30">
+  <owner>dougarnett@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    Records the result of loading the metadata while initializing the
+    HintCacheLevelDBStore.
+  </summary>
+</histogram>
+
+<histogram name="OptimizationGuide.HintCacheLevelDBStore.Status"
+    enum="OptimizationGuideHintCacheLevelDBStoreStatus"
+    expires_after="2021-02-14">
+  <owner>dougarnett@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    Records each status change within the HintCacheLevelDBStore.
+  </summary>
+</histogram>
+
+<histogram base="true"
+    name="OptimizationGuide.HintsFetcher.GetHintsRequest.ActiveRequestCanceled"
+    units="counts" expires_after="2020-11-30">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>mcrouse@chromium.org</owner>
+  <summary>
+    Records when an in-flight hints request was canceled before it finished.
+  </summary>
+</histogram>
+
+<histogram name="OptimizationGuide.HintsFetcher.GetHintsRequest.FetchLatency"
+    units="ms" expires_after="2021-01-31">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>mcrouse@chromium.org</owner>
+  <summary>
+    The duration of a request to fetch hints from the remote Optimization Guide
+    Service starts until it completes. Recorded every time hints are fetched and
+    parsed successfully.
+  </summary>
+</histogram>
+
+<histogram name="OptimizationGuide.HintsFetcher.GetHintsRequest.HintCount"
+    units="units" expires_after="2021-01-31">
+  <owner>mcrouse@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    Records the number of hints received from the remote Optimization Guide
+    Service for every successful HintsFetch request.
+  </summary>
+</histogram>
+
+<histogram name="OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount"
+    units="total host count" expires_after="2021-03-15">
+  <owner>mcrouse@chromium.org</owner>
+  <owner>dougarnett@chromium.org</owner>
+  <summary>
+    Records the number of hosts selected for sending a hint request. This will
+    be captured when any hint request is initiated.
+  </summary>
+</histogram>
+
+<histogram name="OptimizationGuide.HintsFetcher.GetHintsRequest.NetErrorCode"
+    enum="NetErrorCodes" expires_after="2021-01-31">
+  <owner>mcrouse@chromium.org</owner>
+  <owner>dougarnett@chromium.org</owner>
+  <summary>
+    Net error codes for HintsFetch requests to the Optimization Guide Service on
+    success and failure.
+  </summary>
+</histogram>
+
+<histogram name="OptimizationGuide.HintsFetcher.GetHintsRequest.Status"
+    enum="HttpResponseCode" expires_after="2021-01-31">
+  <owner>mcrouse@chromium.org</owner>
+  <owner>dougarnett@chromium.org</owner>
+  <summary>
+    For each HintsFetch request to the Optimization Guide Service, log the HTTP
+    response code on success and failure.
+  </summary>
+</histogram>
+
+<histogram name="OptimizationGuide.HintsFetcher.GetHintsRequest.UrlCount"
+    units="total url count" expires_after="2021-01-31">
+  <owner>mcrouse@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    Records the number of URLs selected for sending a hint request. This will be
+    captured when any hint request is initiated.
+  </summary>
+</histogram>
+
+<histogram name="OptimizationGuide.HintsFetcher.RequestStatus.BatchUpdate"
+    enum="OptimizationGuideHintsFetcherRequestStatus"
+    expires_after="2021-01-31">
+  <owner>mcrouse@chromium.org</owner>
+  <owner>dougarnett@chromium.org</owner>
+  <summary>
+    The status of making a Batch Update context request of the OptmizationGuide
+    HintsFetcher. This includes whether a network request was actually sent or
+    not.
+  </summary>
+</histogram>
+
+<histogram name="OptimizationGuide.HintsFetcher.RequestStatus.PageNavigation"
+    enum="OptimizationGuideHintsFetcherRequestStatus"
+    expires_after="2021-01-31">
+  <owner>mcrouse@chromium.org</owner>
+  <owner>dougarnett@chromium.org</owner>
+  <summary>
+    The status of making a Page Navigation context request of the
+    OptmizationGuide HintsFetcher. This includes whether a network request was
+    actually sent or not.
+  </summary>
+</histogram>
+
+<histogram
+    name="OptimizationGuide.HintsFetcher.TopHostProvider.BlacklistSize.OnInitialize"
+    units="total host count" expires_after="2020-11-30">
+  <owner>mcrouse@chromium.org</owner>
+  <owner>dougarnett@chromium.org</owner>
+  <summary>
+    Records the number of hosts placed on the HintsFetcherTopHostBlacklist when
+    it is initialized.
+  </summary>
+</histogram>
+
+<histogram
+    name="OptimizationGuide.HintsFetcher.TopHostProvider.BlacklistSize.OnRequest"
+    units="total host count" expires_after="2020-11-30">
+  <owner>mcrouse@chromium.org</owner>
+  <owner>dougarnett@chromium.org</owner>
+  <summary>
+    Records the number of hosts on the HintsFetcherTopHostBlacklist when top
+    hosts are requested.
+  </summary>
+</histogram>
+
+<histogram
+    name="OptimizationGuide.HintsManager.ConcurrentPageNavigationFetches"
+    units="counts" expires_after="2020-11-30">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>mcrouse@chromium.org</owner>
+  <summary>
+    The number of active hints fetches initiated by the hints manager. Recorded
+    when a fetch is initiated to the remote Optimization Guide Service at
+    navigation start.
+  </summary>
+</histogram>
+
+<histogram
+    name="OptimizationGuide.HintsManager.RaceNavigationFetchAttemptStatus"
+    enum="OptimizationGuideRaceNavigationFetchAttemptStatus"
+    expires_after="2021-01-31">
+  <owner>mcrouse@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    Status of a fetch attempt being raced against the current navigation start
+    and whether it includes hosts and urls. Recorded on navigation start
+    (including client redirects) by the hints manager.
+  </summary>
+</histogram>
+
+<histogram name="OptimizationGuide.IsPredictionModelValid" units="BooleanValid"
+    expires_after="2020-11-30">
+  <owner>mcrouse@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    Records whether the prediction model being constructed for an optimization
+    target is valid or not. Recorded when prediction models are loaded into
+    memory by the prediction manager.
+  </summary>
+</histogram>
+
+<histogram base="true" name="OptimizationGuide.OptimizationFilterStatus"
+    enum="OptimizationGuideOptimizationFilterStatus" expires_after="2021-01-31">
+  <owner>dougarnett@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    Status of processing OptimizationFilter configurations for server-provided
+    blacklists. Recorded when the OptimizationGuideService receives a
+    notification to process hints.
+  </summary>
+</histogram>
+
+<histogram name="OptimizationGuide.OptimizationHintsComponent.MajorVersion"
+    units="major version number" expires_after="2020-11-30">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>mcrouse@chromium.org</owner>
+  <summary>
+    Records the major version of the Optimization Hints component that was
+    pushed to the client. This will be recorded at startup and when a new
+    component is received.
+  </summary>
+</histogram>
+
+<histogram
+    name="OptimizationGuide.PredictionManager.HasHostModelFeaturesForHost"
+    enum="Boolean" expires_after="2021-01-31">
+  <owner>mcrouse@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    Whether the PredictionManager had HostModelFeatures for the host of the
+    navigation. Recorded when ShouldTargetNavigation is called.
+  </summary>
+</histogram>
+
+<histogram name="OptimizationGuide.PredictionManager.HostModelFeaturesMapSize"
+    units="total host count" expires_after="2020-11-30">
+  <owner>mcrouse@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    Records the number of host model features loaded into the map used by the
+    PredictionManager. This is recorded when the host model features are loaded
+    from the store.
+  </summary>
+</histogram>
+
+<histogram base="true"
+    name="OptimizationGuide.PredictionModelEvaluationLatency" units="ms"
+    expires_after="2021-01-31">
+  <owner>mcrouse@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    The duration of evaluating a prediction model for a registered optimization
+    target. Recorded every time a prediction model is successfuly evaluated by
+    the prediction manager. Not recorded if a cached decision is used or if the
+    evaluation fails.
+  </summary>
+</histogram>
+
+<histogram
+    name="OptimizationGuide.PredictionModelFetcher.GetModelsRequest.HostCount"
+    units="total host count" expires_after="2021-01-31">
+  <owner>mcrouse@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    Records the number of hosts included in a remote Optimization Guide Service
+    client model request. This will be captured when any GetModelsRequest is
+    initiated.
+  </summary>
+</histogram>
+
+<histogram
+    name="OptimizationGuide.PredictionModelFetcher.GetModelsResponse.HostModelFeatureCount"
+    units="units" expires_after="2020-11-30">
+  <owner>mcrouse@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    Records the number of host model features received from the remote
+    Optimization Guide Service for every successful GetModelsRequest.
+  </summary>
+</histogram>
+
+<histogram
+    name="OptimizationGuide.PredictionModelFetcher.GetModelsResponse.NetErrorCode"
+    enum="NetErrorCodes" expires_after="2021-01-31">
+  <owner>mcrouse@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    Net error codes for GetModelsRequest to the Optimization Guide Service on
+    success and failure.
+  </summary>
+</histogram>
+
+<histogram
+    name="OptimizationGuide.PredictionModelFetcher.GetModelsResponse.Status"
+    enum="HttpResponseCode" expires_after="2021-01-31">
+  <owner>mcrouse@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    For each GetModelsRequest to the Optimization Guide Service, log the HTTP
+    response code on success and failure.
+  </summary>
+</histogram>
+
+<histogram name="OptimizationGuide.PredictionModelLoadedVersion"
+    units="version number" expires_after="2020-11-30">
+  <owner>mcrouse@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    Records the version of the prediction model that was loaded from the store
+    and used until updated by a fetch. Recorded only if the loaded model was
+    valid.
+  </summary>
+</histogram>
+
+<histogram
+    name="OptimizationGuide.PredictionModelStore.HostModelFeaturesLoadMetadataResult"
+    enum="BooleanLoaded" expires_after="2020-11-30">
+  <owner>mcrouse@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    Records the result of loading the host model features metadata while
+    initializing the OptimizationGuideStore.
+  </summary>
+</histogram>
+
+<histogram name="OptimizationGuide.PredictionModelUpdateVersion"
+    units="version number" expires_after="2021-01-31">
+  <owner>mcrouse@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    Records the version of the prediction model that was fetched as an update.
+    Recorded only if a model returned was valid and is available for use.
+  </summary>
+</histogram>
+
+<histogram name="OptimizationGuide.PredictionModelValidationLatency" units="ms"
+    expires_after="2021-01-31">
+  <owner>mcrouse@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    Records the duration of construction and validation of a prediction model
+    when the prediction manager loads it into memory for a given optimization
+    target. Recorded only if the model is valid and successfully loaded into
+    memory for use.
+  </summary>
+</histogram>
+
+<histogram name="OptimizationGuide.ProcessHintsResult"
+    enum="OptimizationGuideProcessHintsResult" expires_after="2021-01-31">
+  <owner>dougarnett@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    Whether processing the hints succeeded or failed at a particular step.
+    Recorded when the OptimizationGuideService receives a notification to
+    process hints.
+  </summary>
+</histogram>
+
+<histogram name="OptimizationGuide.RemoteFetchingEnabled"
+    units="BooleanEnabled" expires_after="2021-01-31">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>mcrouse@chromium.org</owner>
+  <summary>
+    Whether the session is enabled for fetching information from the remote
+    Optimization Guide Service. Recorded when the profile is initialized for the
+    session if Optimization Hints are enabled and the profile is a non-incognito
+    profile.
+  </summary>
+</histogram>
+
+<histogram
+    name="OptimizationGuide.ShouldTargetNavigation.PredictionModelStatus"
+    enum="OptimizationGuidePredictionManagerModelStatus"
+    expires_after="2021-01-31">
+  <owner>mcrouse@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    The status of the prediction model for an optimization target within the
+    prediction manager. Recorded when the manager is asked if a navigation
+    should be targeted and the decision for the navigation has not already been
+    made.
+  </summary>
+</histogram>
+
+<histogram base="true" name="OptimizationGuide.TargetDecision"
+    enum="OptimizationGuideOptimizationTargetDecision"
+    expires_after="2021-01-31">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>mcrouse@chromium.org</owner>
+  <summary>
+    The decision made for whether the page load matches the optimization target.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

@@ -1,0 +1,822 @@
+<!--
+Copyright 2020 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of IOS histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please send CLs to chromium-metrics-reviews@google.com rather than to specific
+individuals. These CLs will be automatically reassigned to a reviewer within
+about 5 minutes. This approach helps the metrics team to load-balance incoming
+reviews. Googlers can read more about this at go/gwsq-gerrit.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="IOS.CommittedNavigationHasContext" enum="Boolean"
+    expires_after="2021-09-24">
+  <owner>ajuma@chromium.org</owner>
+  <owner>eugenebut@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
+  <summary>
+    When a navigation is committed, it should have a non-null NavigationContext.
+    This histogram counts the frequency of this invariant holding at the time
+    when a new navigation is committed. It is used to verify the effectiveness
+    of code fixes because this issue is not currently reproducible in testing
+    (http://crbug.com/864769). True means a non-null NavigationContext is
+    present.
+  </summary>
+</histogram>
+
+<histogram name="IOS.CommittedURLMatchesCurrentItem" enum="Boolean"
+    expires_after="2021-09-24">
+  <owner>ajuma@chromium.org</owner>
+  <owner>eugenebut@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
+  <summary>
+    When a navigation is committed, the web view URL is expected to match that
+    of the current back-forward item. WKWebView seems to break this assumption
+    at times. This histogram counts the frequency of this invariant violation at
+    the time when a new navigation is committed. True means the URL matches the
+    current back-forward item.
+  </summary>
+</histogram>
+
+<histogram name="IOS.ContentExtension.DisplayCount" units="count"
+    expires_after="2021-02-28">
+  <owner>javierrobles@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <summary>
+    The number of times the Content Extension was displayed since last Chrome
+    foregrounding. Reported when Chrome is put in foregrounded.
+  </summary>
+</histogram>
+
+<histogram name="IOS.ContentExtension.Index" units="index"
+    expires_after="2020-12-25">
+  <owner>javierrobles@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <summary>
+    The index of the URL selected by the user in the Content Extension.
+  </summary>
+</histogram>
+
+<histogram name="IOS.ContentRuleListProviderUpdateSuccess"
+    enum="BooleanSuccess" expires_after="2020-12-31">
+  <owner>rkgibson@google.com</owner>
+  <owner>gambard@chromium.org</owner>
+  <summary>
+    When the content rule list provider updates its lists, this can succeed or
+    fail. Failure occurs when the rule lists are updated again before the first
+    update finishes.
+  </summary>
+</histogram>
+
+<histogram name="IOS.Cookies.GetCookiesForURLCallResult"
+    enum="IOSGetCookiesForURLCallResult" expires_after="2021-08-01">
+  <owner>mrefaat@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    Recorded to indicate whether the GetCookiesForURL call found cookies or not
+    when called on a specific system cookie store implementation. Most of the
+    cookies fetching on iOS Chromium is done by the WKWebView and doesn't
+    involve calling GetCookiesForURL. The method is only called when a request
+    is made by the UrlRequestFetcher for cases that are not handled by WKWebView
+    (eg. Downloads, Auto Suggestions and NTP tiles).
+  </summary>
+</histogram>
+
+<histogram name="IOS.Cookies.GetCookiesForURLCallStoreType"
+    enum="IOSGetCookiesForURLCallCookieStoreType" expires_after="2021-08-01">
+  <owner>mrefaat@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    The system cookie store type used when GetCookiesForURL method is called.
+    Most of the cookies fetching on iOS Chromium is done by the WKWebView and
+    doesn't involve calling GetCookiesForURL. The method is only called when a
+    request is made by the UrlRequestFetcher for cases that are not handled by
+    WKWebView (eg. Downloads, Auto Suggestions and NTP tiles).
+  </summary>
+</histogram>
+
+<histogram name="IOS.CredentialExtension.CopyPasswordCount" units="count"
+    expires_after="2021-01-31">
+  <owner>javierrobles@chromium.org</owner>
+  <owner>djean@chromium.org</owner>
+  <summary>
+    The number of times the Credential Extension user copied a Password since
+    last Chrome foregrounding. Reported when Chrome is put in foreground.
+  </summary>
+</histogram>
+
+<histogram name="IOS.CredentialExtension.CopyURLCount" units="count"
+    expires_after="2021-01-31">
+  <owner>javierrobles@chromium.org</owner>
+  <owner>djean@chromium.org</owner>
+  <summary>
+    The number of times the Credential Extension user copied a URL since last
+    Chrome foregrounding. Reported when Chrome is put in foreground.
+  </summary>
+</histogram>
+
+<histogram name="IOS.CredentialExtension.CopyUsernameCount" units="count"
+    expires_after="2021-01-31">
+  <owner>javierrobles@chromium.org</owner>
+  <owner>djean@chromium.org</owner>
+  <summary>
+    The number of times the Credential Extension user copied a Username since
+    last Chrome foregrounding. Reported when Chrome is put in foreground.
+  </summary>
+</histogram>
+
+<histogram name="IOS.CredentialExtension.DisplayCount" units="count"
+    expires_after="2021-01-31">
+  <owner>javierrobles@chromium.org</owner>
+  <owner>djean@chromium.org</owner>
+  <summary>
+    The number of times the Credential Extension was displayed since last Chrome
+    foregrounding. Reported when Chrome is put in foreground.
+  </summary>
+</histogram>
+
+<histogram name="IOS.CredentialExtension.FetchPasswordFailure" units="count"
+    expires_after="2021-01-31">
+  <owner>javierrobles@chromium.org</owner>
+  <owner>djean@chromium.org</owner>
+  <summary>
+    The number of times the Credential Extension password util failed to look up
+    for a password since last Chrome foregrounding. Reported when Chrome is put
+    in foreground.
+  </summary>
+</histogram>
+
+<histogram name="IOS.CredentialExtension.FetchPasswordNilArgument"
+    units="count" expires_after="2021-01-31">
+  <owner>javierrobles@chromium.org</owner>
+  <owner>djean@chromium.org</owner>
+  <summary>
+    The number of times the Credential Extension pasword util was queried with a
+    nil argument since last Chrome foregrounding. Reported when Chrome is put in
+    foreground.
+  </summary>
+</histogram>
+
+<histogram name="IOS.CredentialExtension.PasswordUseCount" units="count"
+    expires_after="2021-01-31">
+  <owner>javierrobles@chromium.org</owner>
+  <owner>djean@chromium.org</owner>
+  <summary>
+    The number of times the Credential Extension user selected for a Password
+    since last Chrome foregrounding. Reported when Chrome is put in foreground.
+  </summary>
+</histogram>
+
+<histogram name="IOS.CredentialExtension.QuickPasswordUseCount" units="count"
+    expires_after="2021-01-31">
+  <owner>javierrobles@chromium.org</owner>
+  <owner>djean@chromium.org</owner>
+  <summary>
+    The number of times the Credential Extension selected a Password without
+    user intervention since last Chrome foregrounding. Reported when Chrome is
+    put in foreground.
+  </summary>
+</histogram>
+
+<histogram name="IOS.CredentialExtension.ReauthCount" units="count"
+    expires_after="2021-01-31">
+  <owner>javierrobles@chromium.org</owner>
+  <owner>djean@chromium.org</owner>
+  <summary>
+    The number of times the Credential Extension needed user reauthentication
+    since last Chrome foregrounding. Reported when Chrome is put in foreground.
+  </summary>
+</histogram>
+
+<histogram name="IOS.CredentialExtension.SearchCount" units="count"
+    expires_after="2021-01-31">
+  <owner>javierrobles@chromium.org</owner>
+  <owner>djean@chromium.org</owner>
+  <summary>
+    The number of times the Credential Extension user searched for a Password
+    since last Chrome foregrounding. Reported when Chrome is put in foreground.
+  </summary>
+</histogram>
+
+<histogram
+    name="IOS.CredentialExtension.Service.Error.ReplaceCredentialIdentitiesWithIdentities"
+    enum="iOSCredentialIdentityStoreErrorForReporting"
+    expires_after="2021-06-22">
+  <owner>javierrobles@chromium.org</owner>
+  <owner>djean@chromium.org</owner>
+  <summary>
+    Recorded when a request to replace identities in ASCredentialIdentityStore
+    fails.
+  </summary>
+</histogram>
+
+<histogram name="IOS.CredentialExtension.ShowPasswordCount" units="count"
+    expires_after="2021-01-31">
+  <owner>javierrobles@chromium.org</owner>
+  <owner>djean@chromium.org</owner>
+  <summary>
+    The number of times the Credential Extension user unobfuscated a Password
+    since last Chrome foregrounding. Reported when Chrome is put in foreground.
+  </summary>
+</histogram>
+
+<histogram name="IOS.CriticalActionBackgroundTimeRemaining" units="ms"
+    expires_after="2020-11-30">
+  <owner>justincohen@chromium.org</owner>
+  <owner>eugenebut@chromium.org</owner>
+  <summary>
+    Recorded when app is running in the background and posted a background task.
+    This time is obtained by calling UIApplication.backgroundTimeRemaining. When
+    backgroundTimeRemaining reaches 0 and there is at least one running
+    background task, then iOS terminates the app instead of suspending it. The
+    lower recorded value is, the higher chances that posted task will keep
+    running when backgroundTimeRemaining reaches 0, causing the app termination.
+    When app is relaunched after termination the app starts cold which is slower
+    and does not fully restore the prior UI state, so terminations are worse
+    than suspensions.
+  </summary>
+</histogram>
+
+<histogram name="IOS.CRWWKNavigationStatesRemoveOldPending" enum="Boolean"
+    expires_after="2021-06-14">
+  <owner>justincohen@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
+  <summary>
+    Workaround for a WKWebView bug where WKNavigations can leak, leaving a
+    permanent pending URL, thus breaking the omnibox. While it is possible for
+    navigations to finish out-of-order, it's an edge case that should be handled
+    gracefully, as last committed will appear in the omnibox instead of the
+    pending URL. This metric records whether there are old navigations to clean
+    up each time a navigation finishes. See crbug.com/1010765 for details.
+  </summary>
+</histogram>
+
+<histogram name="IOS.DefaultBrowserFullscreenPromo"
+    enum="IOSDefaultBrowserFullscreenPromoAction" expires_after="2021-03-01">
+  <owner>thegreenfrog@chromium.org</owner>
+  <owner>rohitrao@chromium.org</owner>
+  <summary>
+    The action taken by the user in response to the default browser promo.
+  </summary>
+</histogram>
+
+<histogram name="IOS.Dialogs.JavaScriptDialogClosed"
+    enum="IOSJavaScriptDialogDismissalCause" expires_after="M80">
+  <owner>kkhorimoto@chromium.org</owner>
+  <owner>michaeldo@chromium.org</owner>
+  <summary>Tracks the way JavaScript dialogs are closed on iOS.</summary>
+</histogram>
+
+<histogram name="IOS.DragAndDrop.DragContent" enum="DragContent"
+    expires_after="2020-03-01">
+  <owner>jif@chromium.org</owner>
+  <summary>
+    The type of content that the user is dragging into Chrome. Because a drag
+    can contain multiple types of objects, multiple DragContent values may be
+    recorded for a single drag event.
+  </summary>
+</histogram>
+
+<histogram name="IOS.EnterTabSwitcherSnapshotResult"
+    enum="EnterTabSwitcherSnapshotResult" expires_after="2021-08-01">
+  <owner>edchin@chromium.org</owner>
+  <owner>justincohen@chromium.org</owner>
+  <summary>
+    Tracks the result of snapshotting when the user enters the tab switcher.
+    Recorded whenever the user enters the tab switcher.
+  </summary>
+</histogram>
+
+<histogram name="IOS.FinishedNavigationHasContext" enum="Boolean"
+    expires_after="2019-05-01">
+  <owner>danyao@chromium.org</owner>
+  <summary>
+    When a navigation is finished, it should have a non-null NavigationContext.
+    This histogram counts the frequency of this invariant holding at the time
+    when a new navigation is finished. It is used to verify the effectiveness of
+    code fixes because this issue is not currently reproducible in testing
+    (http://crbug.com/864769). True means a non-null NavigationContext is
+    present.
+  </summary>
+</histogram>
+
+<histogram name="IOS.FinishedNavigationHasItem" enum="Boolean"
+    expires_after="2019-05-01">
+  <owner>danyao@chromium.org</owner>
+  <summary>
+    When a navigation is finished, it should have a non-null NavigationItem.
+    This histogram counts the frequency of this invariant holding at the time
+    when a new navigation is finished. It is used to verify the effectiveness of
+    code fixes because this issue is not currently reproducible in testing
+    (http://crbug.com/864769). True means a non-null NavigationItem is present.
+  </summary>
+</histogram>
+
+<histogram name="IOS.FinishedURLMatchesCurrentItem" enum="Boolean"
+    expires_after="2021-10-26">
+  <owner>ajuma@chromium.org</owner>
+  <owner>eugenebut@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
+  <summary>
+    When a navigation is finished, the web view URL is expected to match that of
+    the current back-forward item. WKWebView seems to break this assumption at
+    times. This histogram counts the frequency of this invariant violation at
+    the time when a new navigation is finished. True means the URL matches the
+    current back-forward item.
+  </summary>
+</histogram>
+
+<histogram name="IOS.FormInputAccessory.ExecuteFormAssistActionException"
+    enum="FormInputAccessoryAction" expires_after="2021-06-01">
+  <owner>javierrobles@chromium.org</owner>
+  <owner>eugenebut@chromium.org</owner>
+  <summary>
+    Reports exceptions when trying to send a form input accessory action to the
+    virtual keyboard.
+  </summary>
+</histogram>
+
+<histogram name="IOS.Handoff.Origin" enum="IOSHandoffOrigin"
+    expires_after="M77">
+  <owner>erikchen@chromium.org</owner>
+  <summary>
+    This event is recorded each time a Handoff is received by Chrome on iOS. The
+    enumeration indicates the source of the Handoff.
+  </summary>
+</histogram>
+
+<histogram name="IOS.IPHBubbleDismissalReason" enum="BubbleDismissalReason"
+    expires_after="M77">
+  <owner>pkl@chromium.org</owner>
+  <summary>
+    Tracks the reason for why the In Product Help bubble was dismissed.
+  </summary>
+</histogram>
+
+<histogram name="IOS.IsDefaultBrowser" enum="Boolean"
+    expires_after="2021-03-21">
+  <owner>thegreenfrog@chromium.org</owner>
+  <owner>rohitrao@chromium.org</owner>
+  <summary>
+    As of iOS14, users will be able to set a default browser other than Safari.
+    When Chrome is the default browser, it will receive all URL opens, which is
+    likely to change certain stability metrics. Thus, it will be good to filter
+    those metrics by default browser status. This metrics records whether the
+    user was deemed to have set Chrome as the device's default browser. This
+    metric will be logged with ever histogram upload.
+  </summary>
+</histogram>
+
+<histogram name="IOS.JavascriptContentBlockFailure"
+    enum="IOSJavascriptContentBlockType" expires_after="2020-12-31">
+  <owner>rkgibson@google.com</owner>
+  <owner>gambard@chromium.org</owner>
+  <summary>
+    IOS Content Blocking uses special injected Javascript to block access to
+    things like cookies and local storage. Future changes to iOS/WebKit could
+    cause these blocks to break. This logs that occurrence.
+  </summary>
+</histogram>
+
+<histogram name="IOS.MainThreadFreezeDetection.RecoveredAfter" units="ms"
+    expires_after="2020-12-25">
+  <owner>eugenebut@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <summary>
+    The time during which main thread was not responding. 0 if application was
+    killed before recovering. Logged after an action posted on the main thread
+    is not executed immediately. The histogram is sent when the task is finally
+    executed or on next application startup.
+  </summary>
+</histogram>
+
+<histogram name="IOS.MetricKit.ApplicationHangTime" units="ms"
+    expires_after="2021-03-15">
+  <owner>eugenebut@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <summary>
+    The durations of time in which the app is too busy to handle user
+    interaction responsively. Logged when a MXMetricPayload is received (one per
+    day).
+  </summary>
+</histogram>
+
+<histogram name="IOS.MetricKit.ApplicationResumeTime" units="ms"
+    expires_after="2021-03-07">
+  <owner>eugenebut@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <summary>
+    The amount of time taken to resume the app from the background. Logged when
+    a MXMetricPayload is received (one per day).
+  </summary>
+</histogram>
+
+<histogram name="IOS.MetricKit.AverageSuspendedMemory" units="MB"
+    expires_after="2021-01-06">
+  <owner>eugenebut@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <summary>
+    The average amount of memory in use by the app when it's suspended. Logged
+    when a MXMetricPayload is received (one per day).
+  </summary>
+</histogram>
+
+<histogram name="IOS.MetricKit.BackgroundExitData" enum="MetricKitExitData"
+    expires_after="2021-03-07">
+  <owner>eugenebut@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <summary>
+    The reason for the application termination in background. Logged when a
+    MXMetricPayload is received (one per day).
+  </summary>
+</histogram>
+
+<histogram name="IOS.MetricKit.BackgroundTimePerDay" units="ms"
+    expires_after="2021-03-15">
+  <owner>eugenebut@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <summary>
+    The total time the app is in the background. Logged when a MXMetricPayload
+    is received (one per day). Note: The date the data is reported is later than
+    the day it account for.
+  </summary>
+</histogram>
+
+<histogram name="IOS.MetricKit.ForegroundExitData" enum="MetricKitExitData"
+    expires_after="2021-03-15">
+  <owner>eugenebut@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <summary>
+    The reason for the application termination in background. Logged when a
+    MXMetricPayload is received (one per day).
+  </summary>
+</histogram>
+
+<histogram name="IOS.MetricKit.ForegroundTimePerDay" units="s"
+    expires_after="2021-03-15">
+  <owner>eugenebut@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <summary>
+    The total time the app is in the foreground. Logged when a MXMetricPayload
+    is received (one per day). Note: The date the data is reported is later than
+    the day it account for.
+  </summary>
+</histogram>
+
+<histogram name="IOS.MetricKit.PeakMemoryUsage" units="MB"
+    expires_after="2021-03-15">
+  <owner>eugenebut@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <summary>
+    The largest amount of memory used by the app. Logged when a MXMetricPayload
+    is received (one per day).
+  </summary>
+</histogram>
+
+<histogram name="IOS.MetricKit.TimeToFirstDraw" units="ms"
+    expires_after="2021-03-15">
+  <owner>eugenebut@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <summary>
+    The amount of time taken to launch the app. Logged when a MXMetricPayload is
+    received (one per day).
+  </summary>
+</histogram>
+
+<histogram name="IOS.MultiWindow.OpenInNewWindow" enum="WindowActivityOrigin"
+    expires_after="2021-06-30">
+  <owner>marq@chromium.org</owner>
+  <owner>djean@chromium.org</owner>
+  <summary>
+    The source of &quot;Open in new Window&quot; user requests. Recorded when a
+    newly created window is added to a session.
+  </summary>
+</histogram>
+
+<histogram name="IOS.NSString.stringByReplacingCharactersInRange.NilArgument"
+    enum="Boolean" expires_after="2021-07-31">
+  <owner>javierrobles@chromium.org</owner>
+  <owner>eugenebut@chromium.org</owner>
+  <summary>
+    NSString API: stringByReplacingCharactersInRange:withString: was invoked
+    with a nil argument.
+  </summary>
+</histogram>
+
+<histogram name="IOS.NTP.Impression" enum="IOSNTPImpression"
+    expires_after="2021-03-07">
+  <owner>gambard@chromium.org</owner>
+  <summary>
+    The type of NTP impressions on iOS, split by type of suggestions shown
+    (local vs remote vs remote_collapsed).
+  </summary>
+</histogram>
+
+<histogram name="IOS.OpenIn.DownloadResult" enum="IOSOpenInDownloadResult"
+    expires_after="2021-08-01">
+  <owner>mrefaat@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    The result of the download operation done when the user taps &quot;open
+    in&quot; button to open a file by a different application.
+  </summary>
+</histogram>
+
+<histogram name="IOS.OpenIn.MimeType" enum="IOSOpenInMimeType"
+    expires_after="M93">
+  <owner>ewannpv@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    The MIME type of the previwed file when the &quot;Open In&quot; toolbar is
+    presented.
+  </summary>
+</histogram>
+
+<histogram name="IOS.PageLoadCount.Counts"
+    enum="IOSPageLoadCountNavigationType" expires_after="2021-02-07">
+  <owner>danyao@chromium.org</owner>
+  <summary>The number of navigation started events by navigation type.</summary>
+</histogram>
+
+<histogram name="IOS.PageLoadCount.LoadingStarted" units="units"
+    expires_after="2020-12-20">
+  <owner>danyao@chromium.org</owner>
+  <summary>
+    The &quot;true&quot; value of this boolean histogram counts the number of
+    page loading started events. The &quot;false&quot; value will never be seen.
+  </summary>
+</histogram>
+
+<histogram name="IOS.PageLoadedSnapshotResult" enum="PageLoadedSnapshotResult"
+    expires_after="2021-08-01">
+  <owner>edchin@chromium.org</owner>
+  <owner>justincohen@chromium.org</owner>
+  <summary>
+    Tracks the result of snapshotting when the page has been loaded.
+  </summary>
+</histogram>
+
+<histogram name="IOS.PageLoadTiming.OmnibarToPageLoaded" units="ms"
+    expires_after="2021-09-22">
+  <owner>ajuma@chromium.org</owner>
+  <owner>eugenebut@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
+  <summary>
+    Measures the time from the end of user input in the omnibox to when the page
+    is fully loaded. Only measures page loads initiated by user typing a URL or
+    selecting a suggested entry from the URL bar.
+  </summary>
+</histogram>
+
+<histogram name="IOS.Reauth.Password.Autofill" enum="ReauthenticationEvent"
+    expires_after="2021-02-01">
+  <owner>javierrobles@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    Tracks the results and attempts of reauthentication when using password
+    Autofill suggestions.
+  </summary>
+</histogram>
+
+<histogram name="IOS.Reauth.Password.ManualFallback"
+    enum="ReauthenticationEvent" expires_after="2021-02-01">
+  <owner>javierrobles@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    Tracks the results and attempts of reauthentication when using a password in
+    Manual Fallback.
+  </summary>
+</histogram>
+
+<histogram name="IOS.RepeatedExternalAppPromptResponse"
+    enum="IOSRepeatedExternalAppPromptResponse" expires_after="2021-08-01">
+  <owner>mrefaat@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    The user reaction to the prompt that appears when a website tries to open an
+    external application repeatedly.
+  </summary>
+</histogram>
+
+<histogram name="IOS.RestoreNavigationItemCount" units="rank"
+    expires_after="2021-03-01">
+  <owner>eugenebut@chromium.org</owner>
+  <owner>justincohen@chromium.org</owner>
+  <summary>
+    [iOS] The number of items Navigation Manager was requested to restore. 100
+    is logged when the number of navigation items is greater than 100. This is
+    just a requested count and actual number of restored items can be smaller.
+    Restoration is triggered in the following cases (the list is not
+    exhaustive): app cold start, remote tab was open, cookie were cleared,
+    recently closed tab was restored.
+  </summary>
+</histogram>
+
+<histogram name="IOS.RestoreNavigationTime" units="ms"
+    expires_after="2021-03-01">
+  <owner>eugenebut@chromium.org</owner>
+  <owner>justincohen@chromium.org</owner>
+  <summary>
+    [iOS] Time spent on restoring committed Navigation Manager's items. Recorded
+    once per restoration, as a cumulative time across all items. Restoration is
+    triggered in the following cases (the list is not exhaustive): app cold
+    start, remote tab was open, cookies were cleared, recently closed tab was
+    restored. This metric will be used for monitoring session restoration
+    performance which relies on system's WKWebView.
+  </summary>
+</histogram>
+
+<histogram name="IOS.SearchExtension.Action" enum="IOSSearchExtensionAction"
+    expires_after="2021-03-07">
+  <owner>javierrobles@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <summary>The action selected by the user in the Search Extension.</summary>
+</histogram>
+
+<histogram name="IOS.SearchExtension.DisplayCount" units="count"
+    expires_after="2021-02-28">
+  <owner>javierrobles@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <summary>
+    The number of times the Search Extension was displayed since last Chrome
+    foregrounding. Reported when Chrome is put in foreground.
+  </summary>
+</histogram>
+
+<histogram name="IOS.ShareExtension.ReceivedEntriesCount" units="files"
+    expires_after="2020-12-25">
+  <owner>javierrobles@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <summary>
+    The number of items received simultaneously in Chrome from the IOS share
+    extension.
+  </summary>
+</histogram>
+
+<histogram name="IOS.ShareExtension.ReceivedEntry"
+    enum="IOSShareExtensionReceivedEntryType" expires_after="2020-12-25">
+  <owner>javierrobles@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <summary>Type of the item received from the iOS share extension.</summary>
+</histogram>
+
+<histogram name="IOS.ShareExtension.ReceivedEntryDelay" units="ms"
+    expires_after="2020-12-25">
+  <owner>javierrobles@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <summary>
+    The delay in milliseconds between the item creation in the extension and its
+    processing in Chrome.
+  </summary>
+</histogram>
+
+<histogram name="IOS.ShareExtension.Source"
+    enum="IOSShareExtensionReceivedEntrySource" expires_after="2020-12-25">
+  <owner>javierrobles@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <summary>
+    The source application that sent the external command to Chrome.
+  </summary>
+</histogram>
+
+<histogram name="IOS.SharePageLatency" units="ms" expires_after="M77">
+  <owner>pkl@chromium.org</owner>
+  <summary>
+    The latency in milliseconds between the start of the Share Page operation
+    and when the UI is ready to be presented.
+  </summary>
+</histogram>
+
+<histogram name="IOS.Spotlight.Action" enum="IOSSpotlightAction"
+    expires_after="2021-02-28">
+  <owner>eugenebut@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <summary>The Spotlight Action pressed by the user.</summary>
+</histogram>
+
+<histogram name="IOS.Spotlight.Availability" enum="IOSSpotlightAvailability"
+    expires_after="2020-12-25">
+  <owner>eugenebut@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <summary>
+    Tracks the availability of the Spotlight indexation on the device. It is
+    logged once at each cold start. Note: Spotlight may be available on the
+    device but disabled by the user.
+  </summary>
+</histogram>
+
+<histogram name="IOS.Spotlight.BookmarksIndexingDuration" units="ms"
+    expires_after="2020-12-25">
+  <owner>eugenebut@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <summary>Time spent in Spotlight initial indexation of bookmarks.</summary>
+</histogram>
+
+<histogram name="IOS.Spotlight.BookmarksInitialIndexSize" units="units"
+    expires_after="2020-12-25">
+  <owner>eugenebut@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <summary>Number of bookmarks indexed during initial indexation.</summary>
+</histogram>
+
+<histogram name="IOS.Spotlight.Origin" enum="IOSSpotlightOrigin"
+    expires_after="2021-02-28">
+  <owner>eugenebut@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <summary>
+    This event is recorded each time a Chrome Spotlight entry is selected by the
+    user. The enumeration indicates the nature of the Spotlight entry.
+  </summary>
+</histogram>
+
+<histogram name="IOS.StoreKit.ITunesURLsHandlingResult"
+    enum="IOSITunesURLsStoreKitHandlingResult" expires_after="2021-06-23">
+  <owner>mrefaat@chromium.org</owner>
+  <owner>eugenebut@chromium.org</owner>
+  <summary>
+    The result of StoreKit handling for a specific iTunes URL. Not Handled will
+    be logged when the LinksHandler didn't handle a specific URL on purpose (not
+    supported), and Failure will be logged when a URL that should have been
+    handled wasn't handled.
+  </summary>
+</histogram>
+
+<histogram name="IOS.StoreKitLoadedSuccessfully" enum="BooleanSuccess"
+    expires_after="2021-08-01">
+  <owner>mrefaat@chromium.org</owner>
+  <owner>bling-team@google.org</owner>
+  <summary>
+    Whether the StoreKit loaded the required iTunes product successfully or not.
+  </summary>
+</histogram>
+
+<histogram name="IOS.TabSwitcher.PageChangeInteraction"
+    enum="IOSTabSwitcherPageChangeInteraction" expires_after="M85">
+  <owner>marq@chromium.org</owner>
+  <summary>
+    The UI interaction by which the user changed the visible page in the tab
+    switcher.
+  </summary>
+</histogram>
+
+<histogram name="IOS.Web.URLDidChangeToEmptyURL" enum="BooleanHit"
+    expires_after="2020-12-30">
+  <owner>gambard@chromium.org</owner>
+  <owner>justincohen@chromium.org</owner>
+  <summary>
+    A boolean that is used to indicate that the URL property of the WKWebView
+    has changed to a nil or empty URL. Recorded on the KVO of the URL of the
+    WKWebView.
+  </summary>
+</histogram>
+
+<histogram name="IOS.WKWebViewClobberedHistory" enum="Boolean"
+    expires_after="2021-09-24">
+  <owner>ajuma@chromium.org</owner>
+  <owner>eugenebut@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
+  <summary>
+    Measures the number of main frame navigations in slim navigation manager
+    that are affected by a WKWebView bug that corrupts back/forward history
+    (http://crbug.com/887497). This is recorded during WKWebView's
+    decidePolicyForNavigationAction callback. True means the bug is triggered.
+    False means the bug is not triggered.
+  </summary>
+</histogram>
+
+<histogram name="IOS.WKWebViewFinishBeforeCommit" enum="Boolean"
+    expires_after="M77">
+  <owner>danyao@chromium.org</owner>
+  <summary>
+    WKWebView should notify navigation commit before navigation finish, but
+    exceptions have been observed. This histogram counts the frequency of this
+    invariant violation at the time when a new navigation is finished. True
+    means navigation finish callback happened before navigation commit.
+  </summary>
+</histogram>
+
+<histogram name="IOS.WKWebViewLinkPreview" enum="IOSWKWebViewLinkPreviewAction"
+    expires_after="M73">
+  <owner>kkhorimoto@chromium.org</owner>
+  <owner>pkl@chromium.org</owner>
+  <summary>
+    Records the user actions related to the WKWebView 3D touch link preview API.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

@@ -1,0 +1,438 @@
+<!--
+Copyright 2020 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of DataReductionProxy histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please send CLs to chromium-metrics-reviews@google.com rather than to specific
+individuals. These CLs will be automatically reassigned to a reviewer within
+about 5 minutes. This approach helps the metrics team to load-balance incoming
+reviews. Googlers can read more about this at go/gwsq-gerrit.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="DataReductionProxy.BypassedBytes" units="bytes"
+    expires_after="M85">
+  <owner>bengr@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <summary>
+    Counts the response bytes that did not go through the data reduction proxy
+    as the result of a bypass event.
+  </summary>
+</histogram>
+
+<histogram name="DataReductionProxy.BypassedBytes.NotBypassed" units="bytes"
+    expires_after="M85">
+  <owner>bengr@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <summary>
+    Counts the response bytes that went through the data reduction proxy and
+    were not bypassed.
+  </summary>
+</histogram>
+
+<histogram name="DataReductionProxy.ConfigService.AuthExpired"
+    enum="BooleanExpired" expires_after="M90">
+  <owner>robertogden@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <summary>
+    Total number of authentication required responses received from the Data
+    Reduction Proxy.
+
+    An &quot;Unexpired&quot; value is recorded every time a new client config is
+    fetched and parsed successfully. An &quot;Expired&quot; value is recorded
+    every time Chrome receives an authentication failure from the data saver
+    proxy.
+  </summary>
+</histogram>
+
+<histogram name="DataReductionProxy.ConfigService.ConnectionSetupTime"
+    units="ms" expires_after="M90">
+  <owner>robertogden@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <summary>
+    The time delta between connectStart and connectEnd of the client config
+    request. This is recorded only on successful requests when connectStart and
+    connectEnd were non-null.
+  </summary>
+</histogram>
+
+<histogram
+    name="DataReductionProxy.ConfigService.FetchFailedAttemptsBeforeSuccess"
+    units="units" expires_after="M90">
+  <owner>robertogden@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <summary>
+    The number of failed attempts when retrieving the configuration from the
+    Data Reduction Proxy API before a successful attempt took place.
+
+    Recorded every time a new client config is fetched and parsed successfully.
+    If the device has a valid connection type but no Internet connectivity, this
+    count will keep increasing.
+  </summary>
+</histogram>
+
+<histogram name="DataReductionProxy.ConfigService.FetchLatency" units="ms"
+    expires_after="M90">
+  <owner>robertogden@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <summary>
+    Time from when the Data Reduction Proxy configuration request starts until
+    it completes.
+
+    Recorded every time a new client config is fetched and parsed successfully.
+  </summary>
+</histogram>
+
+<histogram name="DataReductionProxy.ConfigService.FetchResponseCode"
+    enum="HttpResponseCode" expires_after="M90">
+  <owner>robertogden@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <summary>
+    Count per HttpResponseCode when attempting to retrieve the Data Reduction
+    Proxy configuration from the Data Reduction Proxy API.
+  </summary>
+</histogram>
+
+<histogram name="DataReductionProxy.ConfigService.HttpRequestRTT" units="ms"
+    expires_after="M90">
+  <owner>robertogden@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <summary>
+    The time delta between requestStart and requestEnd of the client config
+    request. This is recorded only on successful requests.
+  </summary>
+</histogram>
+
+<histogram name="DataReductionProxy.ConfigService.HTTPRequests"
+    enum="DataReductionProxyConfigServiceHTTPRequests" expires_after="M90">
+  <owner>robertogden@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <summary>
+    Upper bound on the count of HTTP requests that did or did not go through the
+    data saver proxy.
+
+    An HTTP request may not go through data saver proxy if the config was
+    unavailable, due to local bypass rules, or due to server side bypasses. If
+    data saver is turned on, this metric is recorded every time proxy is
+    resolved for an HTTP request.
+  </summary>
+</histogram>
+
+<histogram name="DataReductionProxy.ConfigService.MainFrames"
+    enum="DataReductionProxyConfigServiceMainFrames" expires_after="M90">
+  <owner>robertogden@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <summary>
+    Upper bound on the count of main frame requests that did or did not go
+    through the data saver proxy.
+
+    A main frame request may not go through data saver proxy if the config was
+    unavailable, due to local bypass rules, or due to server side bypasses. If
+    data saver is turned on, this metric is recorded every time proxy is
+    resolved for an HTTP request.
+  </summary>
+</histogram>
+
+<histogram name="DataReductionProxy.DaysSinceEnabled" units="days"
+    expires_after="2021-03-10">
+  <owner>rajendrant@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <summary>
+    Records the number of days since data reduction proxy was last enabled by
+    the user. Recorded only if the data reduction proxy was last enabled since
+    this metric was added to Chromium (M-56). Recorded at Chrome startup if data
+    reduction proxy is already enabled, and when the user enables the data
+    reduction proxy.
+  </summary>
+</histogram>
+
+<histogram name="DataReductionProxy.DeleteBrowsingHistory.NumBuckets"
+    units="units" expires_after="M77">
+  <owner>robertogden@chromium.org</owner>
+  <owner>bengr@chromium.org</owner>
+  <summary>
+    When the data savings are cleared because the user deletes their browsing
+    history, record how many buckets were deleted. See also
+    DataReductionProxy.SavingsCleared.Reason/User action - cleared browsing
+    history.
+  </summary>
+</histogram>
+
+<histogram name="DataReductionProxy.EnabledState"
+    enum="DataReductionProxyEnabledState" expires_after="2021-03-10">
+  <owner>rajendrant@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <summary>
+    Samples of user interactions with the Data Saver settings menu across all
+    platforms (android, IOS, desktop extension). Data is collected whenever user
+    toggles the ON/OFF switch in the settings menu for reducing data usage.
+
+    For desktop, Off-to-On/On-to-Off histogram count will increment when the
+    data saver extension is installed/uninstalled respectively as well.
+  </summary>
+</histogram>
+
+<histogram name="DataReductionProxy.HistoricalDataUsageLoadTime" units="ms"
+    expires_after="M77">
+  <owner>kundaji@chromium.org</owner>
+  <summary>
+    Time taken to load historical data usage from Level DB into memory. This UMA
+    is reported each time the method to load historical data usage is called,
+    which happens when user views data usage history.
+  </summary>
+</histogram>
+
+<histogram name="DataReductionProxy.LastWeekAggregateKB.Services"
+    enum="DataUseServicesHash" expires_after="M90">
+  <owner>rajendrant@chromium.org</owner>
+  <owner>bengr@chromium.org</owner>
+  <summary>
+    Records the aggregate data use of services for the last week. Different
+    conditions are added as suffixes to this histogram. Recorded when Chrome is
+    started, so this does not include the current session. The aggregation
+    happens when requests complete. The current week calculation is based on
+    week starting from the Epoch day(Thursday, January 1, 1970), and every 7
+    days is treated as a week.
+  </summary>
+</histogram>
+
+<histogram
+    name="DataReductionProxy.LastWeekAggregateKB.UserTraffic.Downstream.ContentType"
+    enum="DataUseContentType" expires_after="M90">
+  <owner>rajendrant@chromium.org</owner>
+  <owner>bengr@chromium.org</owner>
+  <summary>
+    Records the aggregate data use for the last week. This is the downstream
+    data use of all user-initiated traffic. Recorded when Chrome is started, so
+    this does not include the current session. The aggregation happens when
+    requests complete. The current week calculation is based on week starting
+    from the Epoch day(Thursday, January 1, 1970), and every 7 days is treated
+    as a week.
+  </summary>
+</histogram>
+
+<histogram name="DataReductionProxy.LevelDBOpenStatus"
+    enum="DataReductionProxyStoreStatus" expires_after="M77">
+  <owner>kundaji@chromium.org</owner>
+  <summary>Status of calling Open() on Data Reduction Proxy LevelDB.</summary>
+</histogram>
+
+<histogram name="DataReductionProxy.LevelDBSize" units="KB" expires_after="M77">
+  <owner>kundaji@chromium.org</owner>
+  <summary>Size of Data Reduction Proxy LevelDB measured at startup.</summary>
+</histogram>
+
+<histogram name="DataReductionProxy.ProxyPrefMigrationResult"
+    enum="DataReductionProxyProxyPrefMigrationResult"
+    expires_after="2021-04-27">
+  <owner>sclittle@chromium.org</owner>
+  <owner>src/components/data_reduction_proxy/OWNERS</owner>
+  <summary>
+    Records the result of migrating the Data Reduction Proxy away from being
+    configured via a proxy preference, including cases when no migration action
+    was taken.
+  </summary>
+</histogram>
+
+<histogram name="DataReductionProxy.ReportSaveDataSavings.ParseResult"
+    enum="Boolean" expires_after="2021-04-01">
+  <owner>rajendrant@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <summary>
+    Whether the save-data savings JSON retrieved from field trial was parsed as
+    a dictionary. Recorded on startup.
+  </summary>
+</histogram>
+
+<histogram name="DataReductionProxy.SavingsCleared.Reason"
+    enum="DataReductionProxySavingsClearedReason" expires_after="M77">
+  <owner>robertogden@chromium.org</owner>
+  <owner>bengr@chromium.org</owner>
+  <summary>
+    Records why the data reduction savings were cleared. See also
+    DataReductionProxy.DeleteBrowsingHistory.NumBuckets.
+  </summary>
+</histogram>
+
+<histogram name="DataReductionProxy.SnackbarPromo.DataSavings" units="MB"
+    expires_after="M85">
+  <owner>bengr@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <summary>
+    Logs the data savings in MB of the data reduction proxy snackbar promo that
+    was shown. The snackbar promo shows the user the amount of data Chrome has
+    saved them using Data Saver.
+  </summary>
+</histogram>
+
+<histogram name="DataReductionProxy.StartupNegativeSavingsPercent" units="%"
+    expires_after="2021-04-27">
+  <owner>rajendrant@chromium.org</owner>
+  <owner>mcrouse@chromium.org</owner>
+  <summary>
+    Records the negative data savings percentage at Chrome startup for data
+    saver enabled users who have browsed a reasonable amount (at least 10MB
+    since data saver was enabled).
+  </summary>
+</histogram>
+
+<histogram name="DataReductionProxy.StartupSavingsPercent" units="%"
+    expires_after="2021-04-27">
+  <owner>rajendrant@chromium.org</owner>
+  <owner>mcrouse@chromium.org</owner>
+  <summary>
+    Records the data savings percentage at Chrome startup for data saver enabled
+    users who have browsed a reasonable amount (at least 10MB since data saver
+    was enabled). Negative savings are not recorded.
+  </summary>
+</histogram>
+
+<histogram name="DataReductionProxy.StartupState"
+    enum="DataReductionProxyStartupState" expires_after="2021-03-10">
+  <owner>rajendrant@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <summary>
+    Samples of the state of the data reduction proxy on Chrome startup. The
+    proxy will either be unavailable (the feature hasn't been rolled out to this
+    user yet), not enabled (the feature is available but the user doesn't have
+    it turned on), or enabled (the feature is enabled and turned on).
+  </summary>
+</histogram>
+
+<histogram name="DataReductionProxy.ThisWeekAggregateKB.Services"
+    enum="DataUseServicesHash" expires_after="M90">
+  <owner>rajendrant@chromium.org</owner>
+  <owner>mcrouse@chromium.org</owner>
+  <summary>
+    Records the aggregate data use of services for the current week. Different
+    conditions are added as suffixes to this histogram. Recorded when Chrome is
+    started, so this does not include the current session. The aggregation
+    happens when requests complete. The current week calculation is based on
+    week starting from the Epoch day(Thursday, January 1, 1970), and every 7
+    days is treated as a week.
+  </summary>
+</histogram>
+
+<histogram
+    name="DataReductionProxy.ThisWeekAggregateKB.UserTraffic.Downstream.ContentType"
+    enum="DataUseContentType" expires_after="M90">
+  <owner>rajendrant@chromium.org</owner>
+  <owner>mcrouse@chromium.org</owner>
+  <summary>
+    Records the aggregate data use for the current week. This is the downstream
+    data use of all user-initiated traffic. Recorded when Chrome is started, so
+    this does not include the current session. The aggregation happens when
+    requests complete. The current week calculation is based on week starting
+    from the Epoch day(Thursday, January 1, 1970), and every 7 days is treated
+    as a week.
+  </summary>
+</histogram>
+
+<histogram name="DataReductionProxy.UIAction" enum="DataReductionProxyUIAction"
+    expires_after="2021-04-27">
+  <owner>bengr@chromium.org</owner>
+  <owner>mcrouse@chromium.org</owner>
+  <summary>
+    Samples of user interactions with the Data Reduction Proxy promos, First Run
+    Experience, main menu footer, and settings menu. All samples are mutually
+    exclusive. These samples include:
+
+    The user interactions with the First Run Experience. On Android when the
+    user sees the FRE card, the Data Reduction Proxy defaults to ON. The user
+    can disable the proxy via a switch on the card. The state of the proxy is
+    sampled when the First Run Experience is completed and only reported if the
+    Data Reduction Proxy card was shown.
+
+    The user interactions with the second run promo. On Android, there are two
+    actions that dismiss this promo (enable or dismiss). This is sampled when
+    the promo leaves view.
+
+    The user interactions with the Infobar promo. On Android, there are two
+    actions that dismiss the promo (enable, dismiss). This is sampled when the
+    promo leaves view.
+
+    The user interactions with the Snackbar promo. The user can either ignore
+    the promo or click the action to the settings menu. From the settings menu,
+    the user may enable or disable the proxy.
+
+    The user interactions with the main menu footer. The user can click the
+    footer to enter the settings menu. From the settings menu, the user may
+    enable or disable the proxy.
+
+    Any other user interaction with the ON/OFF switch in the settings menu for
+    reducing data usage. Only the setting changes between entering the reducing
+    data usage setting menu and leaving the menu will be sampled regardless of
+    how many times they toggle the ON/OFF switch. Other samples that report
+    ON/OFF settings menu changes are not also reported here.
+
+    The views of and user interactions with the site breakdown in the settings
+    menu. The site breakdown can be sorted by data saved descending or data used
+    descending, and expanded to view more sites. The Data Reduction statistics
+    can also be reset.
+  </summary>
+</histogram>
+
+<histogram name="DataReductionProxy.UserViewedOriginalSize" units="KB"
+    expires_after="2021-02-28">
+  <owner>rajendrant@chromium.org</owner>
+  <owner>robertogden@chromium.org</owner>
+  <owner>src/components/data_reduction_proxy/OWNERS</owner>
+  <summary>
+    The total original content size displayed to the user. Computed over the
+    last 30 days. Recorded when the user views the data savings in the UI.
+  </summary>
+</histogram>
+
+<histogram name="DataReductionProxy.UserViewedSavingsDifferenceWithBreakdown"
+    units="%" expires_after="2021-03-15">
+  <owner>rajendrant@chromium.org</owner>
+  <owner>robertogden@chromium.org</owner>
+  <owner>src/components/data_reduction_proxy/OWNERS</owner>
+  <summary>
+    The difference between the total data savings as displayed to the user and
+    the sum of the data savings for all hosts in the data use breakdown.
+    Calculated as a percentage of `abs(summedSavingsTotal -
+    displayedSavingsTotal) / (summedSavingsTotal + displayedSavingsTotal)`.
+    Recorded when the user views the data savings in the UI.
+  </summary>
+</histogram>
+
+<histogram name="DataReductionProxy.UserViewedSavingsSize" units="KB"
+    expires_after="2021-02-28">
+  <owner>rajendrant@chromium.org</owner>
+  <owner>robertogden@chromium.org</owner>
+  <owner>src/components/data_reduction_proxy/OWNERS</owner>
+  <summary>
+    The total data saved displayed to the user. Computed over the last 30 days.
+    Recorded when the user views the data savings in the UI.
+  </summary>
+</histogram>
+
+<histogram name="DataReductionProxy.UserViewedUsageDifferenceWithBreakdown"
+    units="%" expires_after="2021-03-15">
+  <owner>rajendrant@chromium.org</owner>
+  <owner>robertogden@chromium.org</owner>
+  <owner>src/components/data_reduction_proxy/OWNERS</owner>
+  <summary>
+    The difference between the total data usage as displayed to the user and the
+    sum of the data usage for all hosts in the data use breakdown. Calculated as
+    a percentage of `abs(summedUsageTotal - displayedUsageTotal) /
+    (summedUsageTotal + displayedUsageTotal)`. Recorded when the user views the
+    data savings in the UI.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

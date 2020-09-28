@@ -1,0 +1,275 @@
+<!--
+Copyright 2020 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of Login histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please send CLs to chromium-metrics-reviews@google.com rather than to specific
+individuals. These CLs will be automatically reassigned to a reviewer within
+about 5 minutes. This approach helps the metrics team to load-balance incoming
+reviews. Googlers can read more about this at go/gwsq-gerrit.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="Login.ArcBugReportBackupTime" units="ms"
+    expires_after="2021-01-31">
+  <owner>mhasank@google.com</owner>
+  <owner>arc-core@google.com</owner>
+  <summary>
+    Tracks the time to backup ARC bug report when starting ARC fails.
+  </summary>
+</histogram>
+
+<histogram name="Login.BrowserShutdownTime" units="ms"
+    expires_after="2021-03-15">
+  <owner>xiyuan@chromium.org</owner>
+  <summary>
+    Tracks the browser process shutdown time from when SIGTERM is sent to the
+    browser process to when the browser process group exits (or gets killed by
+    SIGABRT).
+  </summary>
+</histogram>
+
+<histogram name="Login.ConsumerNewUsersAllowed" enum="LoginConsumerWhitelist"
+    expires_after="M77">
+  <owner>cmasone@chromium.org</owner>
+  <owner>sumit@chromium.org</owner>
+  <summary>
+    Chrome OS histogram tracking, per consumer sign-in, whether the device owner
+    is allowing arbitrary accounts to be used on the device, or only those on a
+    specific whitelist.
+  </summary>
+</histogram>
+
+<histogram name="Login.CustomFlags" enum="LoginCustomFlags"
+    expires_after="never">
+<!-- expires-never: monitors 'black screen on login' user experience. -->
+
+  <owner>alemate@chromium.org</owner>
+  <owner>rsorokin@chromium.org</owner>
+  <summary>
+    A set of chrome flags that triggered browser restart on Chrome OS after user
+    sign in. Chrome needs to be restarted if the device owner set of flags is
+    different from the user flags. Which means that there is a flag difference
+    which led to this restart. This difference is reported by this metric.
+  </summary>
+</histogram>
+
+<histogram name="Login.FailureReason" enum="LoginFailureReason"
+    expires_after="2021-02-07">
+  <owner>achuith@chromium.org</owner>
+  <summary>Chrome OS login failure reason.</summary>
+</histogram>
+
+<histogram name="Login.LeastUsedAccountDays" units="days" expires_after="M77">
+  <owner>achuith@chromium.org</owner>
+  <owner>omrilio@chromium.org</owner>
+  <summary>
+    Chrome OS histogram that keeps track of the days since the least frequently
+    used account signed in. Reported on every boot and once a day after that.
+  </summary>
+</histogram>
+
+<histogram name="Login.MountNamespaceCreationSuccess" enum="Boolean"
+    expires_after="2021-01-31">
+  <owner>betuls@chromium.org</owner>
+  <owner>jorgelo@chromium.org</owner>
+  <owner>chromeos-security-core@google.com</owner>
+  <summary>
+    Mount Namespace creation success status. Reported every time user signs in.
+  </summary>
+</histogram>
+
+<histogram name="Login.NewUserPriorityPrefsSyncResult"
+    enum="NewUserPriorityPrefsSyncResult" expires_after="M85">
+  <owner>alemate@chromium.org</owner>
+  <summary>Records whether a new user's priority prefs sync timed out.</summary>
+</histogram>
+
+<histogram name="Login.NewUserPriorityPrefsSyncTime" units="ms"
+    expires_after="M85">
+  <owner>alemate@chromium.org</owner>
+  <summary>
+    Time spent waiting for priority preferences to sync after new user sign in.
+    The operation will time out after 10s.
+  </summary>
+</histogram>
+
+<histogram name="Login.OfflineFailure.IsKnownUser" enum="LoginIsKnownUser"
+    expires_after="2021-02-07">
+  <owner>glevin@chromium.org</owner>
+  <summary>
+    On offline login failure, records whether it is for an existing user.
+  </summary>
+</histogram>
+
+<histogram name="Login.OfflineSuccess.Attempts" units="units"
+    expires_after="2021-02-28">
+  <owner>glevin@chromium.org</owner>
+  <summary>
+    On offline login success, records number of attempts, including success.
+  </summary>
+</histogram>
+
+<histogram name="Login.PasswordChanged.ReauthReason" enum="LoginReauthReasons"
+    expires_after="2021-03-15">
+  <owner>rsorokin@chromium.org</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    Tracks the reason why a user was sent through the GAIA re-auth flow which
+    caused the local password change.
+  </summary>
+</histogram>
+
+<histogram name="Login.PasswordChangeFlow" enum="LoginPasswordChangeFlow"
+    expires_after="2021-01-31">
+  <owner>xiyuan@chromium.org</owner>
+  <owner>omrilio@chromium.org</owner>
+  <summary>
+    Records the UI flow after a possible password change is detected.
+  </summary>
+</histogram>
+
+<histogram name="Login.PasswordNotChanged.ReauthReason"
+    enum="LoginReauthReasons" expires_after="2021-03-15">
+  <owner>rsorokin@chromium.org</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    Tracks the reason why a user was sent through the GAIA re-auth flow which
+    did not cause the local password change.
+  </summary>
+</histogram>
+
+<histogram name="Login.PolicyFilesStatePerBoot" enum="LoginPolicyFilesState"
+    expires_after="M81">
+  <owner>cmasone@chromium.org</owner>
+  <summary>The state of Chrome OS owner key and device policy files.</summary>
+</histogram>
+
+<histogram name="Login.PromptToCompleteLoginTime" units="ms"
+    expires_after="2021-03-07">
+  <owner>rsorokin@chromium.org</owner>
+  <owner>achuith@chromium.org</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    Time from first display of the login prompt until the user completes signing
+    in.
+  </summary>
+</histogram>
+
+<histogram name="Login.PromptToLoginTime" units="ms" expires_after="2021-03-15">
+  <owner>elijahtaylor@google.com</owner>
+  <owner>yusukes@chromium.org</owner>
+  <owner>rsorokin@chromium.org</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    Time from first display of the login prompt until the existing user
+    completes signing in.
+  </summary>
+</histogram>
+
+<histogram name="Login.SessionExitType" enum="LoginSessionExitType"
+    expires_after="2021-02-14">
+  <owner>iby@chromium.org</owner>
+  <summary>
+    Tracks whether a ChromeOS user was logged out because Chrome repeatedly
+    crashed.
+  </summary>
+</histogram>
+
+<histogram name="Login.StateKeyGenerationStatus"
+    enum="LoginStateKeyGenerationStatus" expires_after="M77">
+  <owner>mnissler@chromium.org</owner>
+  <summary>Result of a state key generation operation.</summary>
+</histogram>
+
+<histogram name="Login.SuccessReason" enum="LoginSuccessReason"
+    expires_after="2021-02-14">
+  <owner>achuith@chromium.org</owner>
+  <summary>Chrome OS login success reason.</summary>
+</histogram>
+
+<histogram name="Login.TokenCheckResponseTime" units="ms"
+    expires_after="2020-11-01">
+  <owner>glevin@chromium.org</owner>
+  <summary>
+    Time between sending a request to, and receiving a reply from, GAIA token
+    endpoint to validate TokenInfo.
+  </summary>
+</histogram>
+
+<histogram name="Login.TokenObtainResponseTime" units="ms"
+    expires_after="2021-04-01">
+  <owner>raleksandrov@google.com</owner>
+  <owner>antrim@chromium.org</owner>
+  <owner>rsorokin@chromium.org</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    Time between sending a request to, and receiving a reply from, GAIA token
+    endpoint to obtain TokenInfo.
+  </summary>
+</histogram>
+
+<histogram name="Login.UsersActive28Days" units="users"
+    expires_after="2021-02-28">
+  <owner>alemate@chromium.org</owner>
+  <owner>achuith@chromium.org</owner>
+  <summary>
+    Chrome OS histogram that keeps track of number of users who have logged in
+    in the last 28 days. Reported on every boot and once a day after that.
+  </summary>
+</histogram>
+
+<histogram name="Login.UsersActiveDaily" units="users"
+    expires_after="2021-02-28">
+  <owner>alemate@chromium.org</owner>
+  <owner>achuith@chromium.org</owner>
+  <summary>
+    Chrome OS histogram that keeps track of number of users who have logged in
+    in the last day. Reported on every boot and once a day after that.
+  </summary>
+</histogram>
+
+<histogram name="Login.UsersActiveWeekly" units="users"
+    expires_after="2021-01-31">
+  <owner>alemate@chromium.org</owner>
+  <owner>achuith@chromium.org</owner>
+  <summary>
+    Chrome OS histogram that keeps track of number of users who have logged in
+    in the last 7 days. Reported on every boot and once a day after that.
+  </summary>
+</histogram>
+
+<histogram name="Login.UsersActiveWeekly.Percent" units="%"
+    expires_after="2020-12-01">
+  <owner>alemate@chromium.org</owner>
+  <owner>achuith@chromium.org</owner>
+  <summary>
+    Chrome OS histogram that keeps track of percentage of local users who have
+    logged in in the last 7 days. Reported on every boot and once a day after
+    that.
+  </summary>
+</histogram>
+
+<histogram name="Login.UserType" enum="LoginUserType"
+    expires_after="2021-02-07">
+  <owner>cmasone@chromium.org</owner>
+  <summary>
+    Chrome OS histogram that keeps track of the way a user logs in and whether
+    Chrome OS is running normal or developer mode.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

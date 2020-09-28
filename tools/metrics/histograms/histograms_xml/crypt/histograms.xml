@@ -1,0 +1,966 @@
+<!--
+Copyright 2020 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of Crypt histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please send CLs to chromium-metrics-reviews@google.com rather than to specific
+individuals. These CLs will be automatically reassigned to a reviewer within
+about 5 minutes. This approach helps the metrics team to load-balance incoming
+reviews. Googlers can read more about this at go/gwsq-gerrit.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="CryptAuth.ClientAppMetadata.IsManufacturerEmpty"
+    enum="BooleanEmpty" expires_after="2021-02-02">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Indicates whether or not the device manufacturer name returned in the
+    hardware info is empty. Recored during the construction of a
+    ClientAppMetadata proto.
+  </summary>
+</histogram>
+
+<histogram name="CryptAuth.ClientAppMetadata.IsModelEmpty" enum="BooleanEmpty"
+    expires_after="2021-02-02">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Indicates whether or not the device model name returned in the hardware info
+    is empty. Recored during the construction of a ClientAppMetadata proto.
+  </summary>
+</histogram>
+
+<histogram name="CryptAuth.ClientAppMetadataInstanceIdTokenFetch.Result"
+    enum="InstanceIDResult" expires_after="2021-02-02">
+  <owner>khorimoto@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Indicates the result of fetching an InstanceId token during the construction
+    of a ClientAppMetadata proto messages.
+  </summary>
+</histogram>
+
+<histogram name="CryptAuth.ClientAppMetadataInstanceIdTokenFetch.Retries"
+    units="retries" expires_after="2021-02-02">
+  <owner>khorimoto@chromium.org</owner>
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Counts the number of times the InstanceId token fetch got retried because it
+    did not match with the expected InstanceId. Logged during the construction
+    of a ClientAppMetadata proto message.
+  </summary>
+</histogram>
+
+<histogram name="CryptAuth.DeviceSync.Result" enum="BooleanSuccess"
+    expires_after="2021-02-02">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>Indicates success of performing a DeviceSync.</summary>
+</histogram>
+
+<histogram
+    name="CryptAuth.DeviceSyncService.ClientAppMetadataFetch.AsyncTaskResult"
+    enum="CryptAuthAsyncTaskResult" expires_after="2021-02-02">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the result of the async ClientAppMetadata retrieval performed during
+    initialization of the DeviceSync service. Recorded when the async callback
+    is invoked or when the call times out.
+  </summary>
+</histogram>
+
+<histogram
+    name="CryptAuth.DeviceSyncService.ClientAppMetadataFetch.ExecutionTime"
+    units="ms" expires_after="2021-02-02">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the execution time of the async ClientAppMetadata retrieval
+    performed during initialization of the DeviceSync service. Recorded when the
+    async callback is invoked or when the call times out.
+  </summary>
+</histogram>
+
+<histogram name="CryptAuth.DeviceSyncService.GcmRegistration.ExecutionTime"
+    units="ms" expires_after="2021-02-02">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the execution time of GCM registration performed during
+    initialization of the DeviceSync service. Recorded when the async callback
+    is invoked.
+  </summary>
+</histogram>
+
+<histogram name="CryptAuth.DeviceSyncService.GcmRegistration.Success"
+    enum="BooleanSuccess" expires_after="2021-02-02">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the result of GCM registration performed during initialization of
+    the DeviceSync service. Recorded when the async callback is invoked.
+  </summary>
+</histogram>
+
+<histogram name="CryptAuth.DeviceSyncService.Initialization.ExecutionTime"
+    units="ms" expires_after="2021-02-02">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the execution time of the DeviceSync service initialization.
+    Recorded each time the DeviceSync service starts up, after initialization
+    succeeds.
+  </summary>
+</histogram>
+
+<histogram name="CryptAuth.DeviceSyncSoftwareFeaturesResult"
+    enum="BooleanSuccess" expires_after="2021-02-02">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Indicates that there was no issue retrieving supported and enabled software
+    features, or that there were enabled features which were not in the
+    supported feature set. See the histogram
+    &quot;CryptAuth.DeviceSyncSoftwareFeaturesResult.Failures&quot; for a
+    breakdown of failures by feature type.
+  </summary>
+</histogram>
+
+<histogram name="CryptAuth.DeviceSyncSoftwareFeaturesResult.Failures"
+    enum="CryptAuthSoftwareFeature" expires_after="2021-02-02">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Breaks down by feature type
+    &quot;CryptAuth.DeviceSyncSoftwareFeaturesResult&quot;'s count of enabled
+    features which were not in the supported feature set.
+  </summary>
+</histogram>
+
+<histogram
+    name="CryptAuth.DeviceSyncV2.DeviceActivityGetter.ApiCallResult.GetDevicesActivityStatus"
+    enum="CryptAuthApiCallResult" expires_after="2021-02-02">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the result of the async GetDevicesActivityStatus API call to
+    CryptAuth during multi-device setup. Recorded when the async callback is
+    invoked or when the call times out.
+  </summary>
+</histogram>
+
+<histogram
+    name="CryptAuth.DeviceSyncV2.DeviceActivityGetter.ExecutionTime.GetDevicesActivityStatus"
+    units="ms" expires_after="2021-02-02">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the execution time of the async GetDevicesActivityStatus API call
+    during multi-device setup. Recorded when the async callback is invoked or
+    when the call times out.
+  </summary>
+</histogram>
+
+<histogram
+    name="CryptAuth.DeviceSyncV2.DeviceNotifier.ApiCallResult.NotifyGroupDevices"
+    enum="CryptAuthApiCallResult" expires_after="2021-02-02">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the result of the async BatchNotifyGroupDevices API call to
+    CryptAuth. Recorded when the async callback is invoked or when the call
+    times out.
+  </summary>
+</histogram>
+
+<histogram
+    name="CryptAuth.DeviceSyncV2.DeviceNotifier.ExecutionTime.NotifyGroupDevices"
+    units="ms" expires_after="2021-02-02">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the execution time of the async BatchNotifyGroupDevices API call to
+    CryptAuth. Recorded when the async callback is invoked or when the call
+    times out.
+  </summary>
+</histogram>
+
+<histogram
+    name="CryptAuth.DeviceSyncV2.DeviceSyncer.AsyncTaskResult.DeviceMetadataDecryption"
+    enum="CryptAuthAsyncTaskResult" expires_after="2021-02-02">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the result of the async device metadata decryption during the
+    CryptAuth v2 DeviceSync flow. Records a success if the operation did not
+    timeout; a separate metric,
+    CryptAuth.DeviceSyncV2.DeviceSyncer.MetadataDecryptionSuccess, tracks
+    individual encryption failures.Recorded when the async callback is invoked
+    or when the call times out.
+  </summary>
+</histogram>
+
+<histogram
+    name="CryptAuth.DeviceSyncV2.DeviceSyncer.AsyncTaskResult.GroupPrivateKeyDecryption"
+    enum="CryptAuthAsyncTaskResult" expires_after="2021-02-02">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the result of the async group private key decryption during the
+    CryptAuth v2 DeviceSync flow. Recorded when the async callback is invoked or
+    when the call times out.
+  </summary>
+</histogram>
+
+<histogram
+    name="CryptAuth.DeviceSyncV2.DeviceSyncer.ExecutionTime.DeviceMetadataDecryption"
+    units="ms" expires_after="2021-02-02">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the execution time of the async device metadata decryption during
+    the CryptAuth v2 DeviceSync flow. Recorded when the async callback is
+    invoked or when the call times out.
+  </summary>
+</histogram>
+
+<histogram
+    name="CryptAuth.DeviceSyncV2.DeviceSyncer.ExecutionTime.GroupPrivateKeyDecryption"
+    units="ms" expires_after="2021-02-02">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the execution time of the async group private key decryption during
+    the CryptAuth v2 DeviceSync flow. Recorded when the async callback is
+    invoked or when the call times out.
+  </summary>
+</histogram>
+
+<histogram
+    name="CryptAuth.DeviceSyncV2.DeviceSyncer.IsGroupPrivateKeyConsistent"
+    enum="BooleanConsistent" expires_after="2021-02-02">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records whether or not the group private key sent by CryptAuth matches the
+    existing group private key when they are expected to agree. Emitted during a
+    CryptAuth v2 DeviceSync if the group private key is not being rotated.
+  </summary>
+</histogram>
+
+<histogram
+    name="CryptAuth.DeviceSyncV2.DeviceSyncer.IsLocalDeviceMetadataConsistent"
+    enum="BooleanConsistent" expires_after="2021-02-02">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records whether or not the local device metadata agrees with that sent by
+    CryptAuth in the SyncMetadata response. Emitted during the CryptAuth v2
+    DeviceSync flow, after device metadata is decrypted.
+  </summary>
+</histogram>
+
+<histogram name="CryptAuth.DeviceSyncV2.DeviceSyncer.MetadataDecryptionSuccess"
+    enum="BooleanSuccess" expires_after="2021-02-02">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records whether or not device metadata sent by CryptAuth in the SyncMetadata
+    response was able to be decrypted. Emitted during the CryptAuth v2
+    DeviceSync flow for each device metadata packet.
+  </summary>
+</histogram>
+
+<histogram name="CryptAuth.DeviceSyncV2.DeviceSyncer.MetadataParsingSuccess"
+    enum="BooleanSuccess" expires_after="2021-02-02">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records whether or not device metadata sent by CryptAuth in the SyncMetadata
+    response was able to be parsed from a decrypted serialized byte string into
+    a proto. Emitted during the CryptAuth v2 DeviceSync flow for each device
+    metadata packet.
+  </summary>
+</histogram>
+
+<histogram
+    name="CryptAuth.DeviceSyncV2.FeatureStatusGetter.ApiCallResult.GetFeatureStatuses"
+    enum="CryptAuthApiCallResult" expires_after="2021-02-02">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the result of the async BatchGetFeatureStatuses API call during the
+    CryptAuth v2 DeviceSync flow. Recorded when the async callback is invoked or
+    when the call times out.
+  </summary>
+</histogram>
+
+<histogram
+    name="CryptAuth.DeviceSyncV2.FeatureStatusGetter.CorrectNumberOfDevicesInResponse"
+    enum="BooleanExpected" expires_after="2021-02-02">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records whether or not the expected number of devices were sent in the
+    BatchGetFeatureStatuses response. Emitted when a BatchGetFeatureStatuses
+    response is received from the CryptAuth server.
+  </summary>
+</histogram>
+
+<histogram
+    name="CryptAuth.DeviceSyncV2.FeatureStatusGetter.ExecutionTime.GetFeatureStatuses"
+    units="ms" expires_after="2021-02-02">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the execution time of the async BatchGetFeatureStatuses API call
+    during the CryptAuth v2 DeviceSync flow. Recorded when the async callback is
+    invoked or when the call times out.
+  </summary>
+</histogram>
+
+<histogram
+    name="CryptAuth.DeviceSyncV2.FeatureStatusGetter.IsDuplicateDeviceId"
+    enum="BooleanDuplicate" expires_after="2021-02-02">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records whether or not a device ID in the BatchGetFeatureStatuses response
+    has been seen already in the same response. Emitted for each device in the
+    BatchGetFeatureStatuses response. Emitted when a BatchGetFeatureStatuses
+    response is received from the CryptAuth server.
+  </summary>
+</histogram>
+
+<histogram name="CryptAuth.DeviceSyncV2.FeatureStatusGetter.IsKnownFeatureType"
+    enum="BooleanKnown" expires_after="2021-02-02">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records whether or not the feature type strings returned in the
+    BatchGetFeatureStatuses response are known feature types. Emitted for each
+    feature type for each device in the BatchGetFeatureStatuses response.
+    Emitted when a BatchGetFeatureStatuses response is received from the
+    CryptAuth server.
+  </summary>
+</histogram>
+
+<histogram
+    name="CryptAuth.DeviceSyncV2.FeatureStatusGetter.IsUnsupportedFeatureMarkedEnabled"
+    enum="Boolean" expires_after="2021-02-02">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records whether or not a feature is marked as enabled even though it is
+    listed as unsupported. This should never happen. Emitted for all feature
+    types, for each device in the BatchGetFeatureStatuses response. Emitted when
+    a BatchGetFeatureStatuses response is received from the CryptAuth server.
+  </summary>
+</histogram>
+
+<histogram
+    name="CryptAuth.DeviceSyncV2.FeatureStatusGetter.WasDeviceInResponseRequested"
+    enum="BooleanRequested" expires_after="2021-02-02">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records whether or not a device in the BatchGetFeatureStatuses response was
+    included in the BatchGetFeatureStatuses request. Emitted for each device in
+    the BatchGetFeatureStatuses response.
+  </summary>
+</histogram>
+
+<histogram
+    name="CryptAuth.DeviceSyncV2.FeatureStatusSetter.ApiCallResult.SetFeatureStatuses"
+    enum="CryptAuthApiCallResult" expires_after="2021-02-02">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the result of the async BatchSetFeatureStatuses API call to
+    CryptAuth. Recorded when the async callback is invoked or when the call
+    times out.
+  </summary>
+</histogram>
+
+<histogram
+    name="CryptAuth.DeviceSyncV2.FeatureStatusSetter.ExecutionTime.SetFeatureStatuses"
+    units="ms" expires_after="2021-02-02">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the execution time of the async BatchSetFeatureStatuses API call to
+    CryptAuth. Recorded when the async callback is invoked or when the call
+    times out.
+  </summary>
+</histogram>
+
+<histogram
+    name="CryptAuth.DeviceSyncV2.GroupPrivateKeySharer.ApiCallResult.ShareGroupPrivateKey"
+    enum="CryptAuthApiCallResult" expires_after="2021-02-02">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the result of the async ShareGroupPrivateKey API call during the
+    CryptAuth v2 DeviceSync flow. Recorded when the async callback is invoked or
+    when the call times out.
+  </summary>
+</histogram>
+
+<histogram
+    name="CryptAuth.DeviceSyncV2.GroupPrivateKeySharer.AsyncTaskResult.GroupPrivateKeyEncryption"
+    enum="CryptAuthAsyncTaskResult" expires_after="2021-02-02">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the result of the async group private key encryption during the
+    CryptAuth v2 DeviceSync flow. Records a success if the operation did not
+    timeout; a separate metric,
+    CryptAuth.DeviceSyncV2.GroupPrivateKeySharer.EncryptionSuccess, tracks
+    individual encryption failures. Recorded when the async callback is invoked
+    or when the call times out.
+  </summary>
+</histogram>
+
+<histogram
+    name="CryptAuth.DeviceSyncV2.GroupPrivateKeySharer.EncryptionSuccess"
+    enum="BooleanSuccess" expires_after="2021-02-02">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records whether or not the group private key was able to be encrypted using
+    a device's encrypting key. Recorded during the ShareGroupPrivateKey phase of
+    the CryptAuth v2 DeviceSync flow. Recorded for each device with whom we
+    intend to share the group private key.
+  </summary>
+</histogram>
+
+<histogram
+    name="CryptAuth.DeviceSyncV2.GroupPrivateKeySharer.ExecutionTime.GroupPrivateKeyEncryption"
+    units="ms" expires_after="2021-02-02">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the execution time of the async group private key encryption during
+    the CryptAuth v2 DeviceSync flow. Recorded when the async callback is
+    invoked or when the call times out.
+  </summary>
+</histogram>
+
+<histogram
+    name="CryptAuth.DeviceSyncV2.GroupPrivateKeySharer.ExecutionTime.ShareGroupPrivateKey"
+    units="ms" expires_after="2021-02-02">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the execution time of the async ShareGroupPrivateKey API call during
+    the CryptAuth v2 DeviceSync flow. Recorded when the async callback is
+    invoked or when the call times out.
+  </summary>
+</histogram>
+
+<histogram
+    name="CryptAuth.DeviceSyncV2.GroupPrivateKeySharer.IsEncryptingKeyEmpty"
+    enum="Boolean" expires_after="2021-02-02">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records whether or not a device's key used to encrypt the group private key
+    is empty. If the key is empty, the group private key cannot be encrypted and
+    shared with the device. Recorded during the ShareGroupPrivateKey phase of
+    the CryptAuth v2 DeviceSync flow. Recorded for each device with whom we
+    intend to share the group private key.
+  </summary>
+</histogram>
+
+<histogram name="CryptAuth.DeviceSyncV2.InvocationReason"
+    enum="CryptAuthV2InvocationReason" expires_after="2021-02-02">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    The clients' reasons for making CryptAuth v2 DeviceSync requests. Recorded
+    when a DeviceSync is requested.
+  </summary>
+</histogram>
+
+<histogram
+    name="CryptAuth.DeviceSyncV2.MetadataSyncer.ApiCallResult.FirstSyncMetadata"
+    enum="CryptAuthApiCallResult" expires_after="2021-02-02">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the result of the first async SyncMetadata API call during the
+    CryptAuth v2 DeviceSync flow. Recorded when the async callback is invoked or
+    when the call times out.
+  </summary>
+</histogram>
+
+<histogram
+    name="CryptAuth.DeviceSyncV2.MetadataSyncer.ApiCallResult.SecondSyncMetadata"
+    enum="CryptAuthApiCallResult" expires_after="2021-02-02">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the result of the second async SyncMetadata API call during the
+    CryptAuth v2 DeviceSync flow. Recorded when the async callback is invoked or
+    when the call times out.
+  </summary>
+</histogram>
+
+<histogram
+    name="CryptAuth.DeviceSyncV2.MetadataSyncer.AsyncTaskResult.GroupKeyCreation"
+    enum="CryptAuthAsyncTaskResult" expires_after="2021-02-02">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the result of the async group key creation during the CryptAuth v2
+    DeviceSync flow. Recorded when the async callback is invoked or when the
+    call times out.
+  </summary>
+</histogram>
+
+<histogram
+    name="CryptAuth.DeviceSyncV2.MetadataSyncer.AsyncTaskResult.LocalDeviceMetadataEncryption"
+    enum="CryptAuthAsyncTaskResult" expires_after="2021-02-02">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the result of the async local device metadata encryption during the
+    CryptAuth v2 DeviceSync flow. Recorded when the async callback is invoked or
+    when the call times out.
+  </summary>
+</histogram>
+
+<histogram
+    name="CryptAuth.DeviceSyncV2.MetadataSyncer.ExecutionTime.FirstSyncMetadata"
+    units="ms" expires_after="2021-02-02">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the execution time of the first async SyncMetadata API call during
+    the CryptAuth v2 DeviceSync flow. Recorded when the async callback is
+    invoked or when the call times out.
+  </summary>
+</histogram>
+
+<histogram
+    name="CryptAuth.DeviceSyncV2.MetadataSyncer.ExecutionTime.GroupKeyCreation"
+    units="ms" expires_after="2021-02-02">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the execution time of the async group key creation during the
+    CryptAuth v2 DeviceSync flow. Recorded when the async callback is invoked or
+    when the call times out.
+  </summary>
+</histogram>
+
+<histogram
+    name="CryptAuth.DeviceSyncV2.MetadataSyncer.ExecutionTime.LocalDeviceMetadataEncryption"
+    units="ms" expires_after="2021-02-02">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the execution time of the async local device metadata encryption
+    during the CryptAuth v2 DeviceSync flow. Recorded when the async callback is
+    invoked or when the call times out.
+  </summary>
+</histogram>
+
+<histogram
+    name="CryptAuth.DeviceSyncV2.MetadataSyncer.ExecutionTime.SecondSyncMetadata"
+    units="ms" expires_after="2021-02-02">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the execution time of the second async SyncMetadata API call during
+    the CryptAuth v2 DeviceSync flow. Recorded when the async callback is
+    invoked or when the call times out.
+  </summary>
+</histogram>
+
+<histogram
+    name="CryptAuth.DeviceSyncV2.MetadataSyncer.IsDeviceMetadataPacketValid"
+    enum="Boolean" expires_after="2021-02-02">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records whether or not the device metadata packets sent by CryptAuth have
+    all of the necessary fields populated. Emitted for each device metadata
+    packet during the SyncMetadata phase of the CryptAuth v2 DeviceSync flow.
+  </summary>
+</histogram>
+
+<histogram name="CryptAuth.DeviceSyncV2.MetadataSyncer.IsDuplicateDeviceId"
+    enum="Boolean" expires_after="2021-02-02">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records whether or not the device ID from a device metadata packet sent by
+    CryptAuth in the SyncMetadata response has the same ID as a packet from the
+    same response. Emitted for each device metadata packet during the
+    SyncMetadata phase of the CryptAuth v2 DeviceSync flow.
+  </summary>
+</histogram>
+
+<histogram name="CryptAuth.DeviceSyncV2.RemoteDeviceProvider.NumV1Devices"
+    units="count" expires_after="2021-02-02">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the number of devices returned by a v1 DeviceSync. Only recorded
+    when v1 and v2 DeviceSync are running in parallel. Only recorded if a v1 and
+    v2 DeviceSync has ever previously occurred. Emitted when v1 and v2 devices
+    are merged together, which occurs after either a v1 or v2 DeviceSync.
+  </summary>
+</histogram>
+
+<histogram name="CryptAuth.DeviceSyncV2.RemoteDeviceProvider.NumV2Devices"
+    units="count" expires_after="2021-02-02">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the number of devices returned by a v2 DeviceSync. Only recorded
+    when v1 and v2 DeviceSync are running in parallel. Only recorded if a v1 and
+    v2 DeviceSync has ever previously occurred. Emitted when v1 and v2 devices
+    are merged together, which occurs after either a v1 or v2 DeviceSync.
+  </summary>
+</histogram>
+
+<histogram
+    name="CryptAuth.DeviceSyncV2.RemoteDeviceProvider.PercentageOfV1DevicesReplacedByV2Devices"
+    units="%" expires_after="2021-02-02">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the percentage of devices returned by a v2 DeviceSync that replace
+    their v1 counterparts. This will only occur if the v2 device has a decrypted
+    public key that matches a v1 device. Only recorded when v1 and v2 DeviceSync
+    are running in parallel. Only recorded if a v1 and v2 DeviceSync has ever
+    previously occurred. Emitted when v1 and v2 devices are merged together,
+    which occurs after either a v1 or v2 DeviceSync.
+  </summary>
+</histogram>
+
+<histogram
+    name="CryptAuth.DeviceSyncV2.RemoteDeviceProvider.PercentageOfV2DevicesWithDecryptedPublicKey"
+    units="%" expires_after="2021-02-02">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the percentage of devices returned by a v2 DeviceSync that have a
+    decrypted user public key. Only recorded when v1 and v2 DeviceSync are
+    running in parallel. Only recorded if a v1 and v2 DeviceSync has ever
+    previously occurred. Emitted when v1 and v2 devices are merged together,
+    which occurs after either a v1 or v2 DeviceSync.
+  </summary>
+</histogram>
+
+<histogram
+    name="CryptAuth.DeviceSyncV2.RemoteDeviceProvider.RatioOfV2ToV1Devices"
+    units="%" expires_after="2021-02-02">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the ratio of the number of devices returned by a v2 DeviceSync to
+    the number returned by a v1 DeviceSync. Devices returned by a v2 DeviceSync
+    should be a subset of the devices returned by a v1 DeviceSync, barring any
+    race conditions. This ratio should be greater than or equal to
+    PercentageOfV1DevicesReplacedByV2Devices because a v2 device can only
+    replace its v1 counterpart if it has a decrypted public key. Only recorded
+    when v1 and v2 DeviceSync are running in parallel. Only recorded if a v1 and
+    v2 DeviceSync has ever previously occurred. Emitted when v1 and v2 devices
+    are merged together, which occurs after either a v1 or v2 DeviceSync.
+  </summary>
+</histogram>
+
+<histogram name="CryptAuth.DeviceSyncV2.Result.DidDeviceRegistryChange"
+    enum="BooleanChanged" expires_after="2021-02-02">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Indicates whether or not any device data in the device registry changed as a
+    result of the CryptAuth v2 DeviceSync attempt. Recorded when a DeviceSync
+    attempt finishes.
+  </summary>
+</histogram>
+
+<histogram name="CryptAuth.DeviceSyncV2.Result.ResultCode"
+    enum="CryptAuthV2DeviceSyncResultCode" expires_after="2021-02-02">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    The CryptAuth v2 DeviceSync attempt results broken down by result code.
+    Recorded when a DeviceSync attempt finishes.
+  </summary>
+</histogram>
+
+<histogram name="CryptAuth.DeviceSyncV2.Result.ResultType"
+    enum="CryptAuthV2DeviceSyncResultType" expires_after="2021-02-02">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Indicates whether the CryptAuth v2 DeviceSync attempt succeeded, failed, or
+    finished with non-fatal errors. Recorded when a DeviceSync attempt finishes.
+  </summary>
+</histogram>
+
+<histogram name="CryptAuth.Enrollment.Result" enum="BooleanSuccess"
+    expires_after="2021-02-02">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    The top-level result of the CryptAuth device enrollment process.
+  </summary>
+</histogram>
+
+<histogram name="CryptAuth.EnrollmentV2.ApiCallResult.EnrollKeys"
+    enum="CryptAuthApiCallResult" expires_after="2021-02-02">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the result of the async EnrollKeys API call to CryptAuth during the
+    CryptAuth v2 Enrollment flow. Recorded when the async callback is invoked or
+    when the call times out.
+  </summary>
+</histogram>
+
+<histogram name="CryptAuth.EnrollmentV2.ApiCallResult.SyncKeys"
+    enum="CryptAuthApiCallResult" expires_after="2021-02-02">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the result of the async SyncKeys API call to CryptAuth during the
+    CryptAuth v2 Enrollment flow. Recorded when the async callback is invoked or
+    when the call times out.
+  </summary>
+</histogram>
+
+<histogram name="CryptAuth.EnrollmentV2.AsyncTaskResult.KeyCreation"
+    enum="CryptAuthAsyncTaskResult" expires_after="2021-02-02">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the result of the async key creation call during the CryptAuth v2
+    Enrollment flow. Recorded when the async callback is invoked or when the
+    call times out.
+  </summary>
+</histogram>
+
+<histogram name="CryptAuth.EnrollmentV2.ExecutionTime.EnrollKeys" units="ms"
+    expires_after="2021-02-02">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the execution time of the async EnrollKeys API call to CryptAuth
+    during the CryptAuth v2 Enrollment flow. Recorded when the async callback is
+    invoked or when the call times out.
+  </summary>
+</histogram>
+
+<histogram name="CryptAuth.EnrollmentV2.ExecutionTime.KeyCreation" units="ms"
+    expires_after="2021-02-02">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the execution time of the async key creation call during the
+    CryptAuth v2 Enrollment flow. Recorded when the async callback is invoked or
+    when the call times out.
+  </summary>
+</histogram>
+
+<histogram name="CryptAuth.EnrollmentV2.ExecutionTime.SyncKeys" units="ms"
+    expires_after="2021-02-02">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the execution time of the async SyncKeys API call to CryptAuth
+    during the CryptAuth v2 Enrollment flow. Recorded when the async callback is
+    invoked or when the call times out.
+  </summary>
+</histogram>
+
+<histogram name="CryptAuth.EnrollmentV2.InvocationReason"
+    enum="CryptAuthV2InvocationReason" expires_after="2021-02-02">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    The clients' reasons for making CryptAuth v2 Enrollment requests. Recorded
+    when an enrollment is requested.
+  </summary>
+</histogram>
+
+<histogram name="CryptAuth.EnrollmentV2.Result.ResultCode"
+    enum="CryptAuthV2EnrollmentResult" expires_after="2021-02-02">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    The CryptAuth v2 Enrollment attempt results broken down by result code.
+    Recorded when an enrollment attempt finishes.
+  </summary>
+</histogram>
+
+<histogram name="CryptAuth.EnrollmentV2.Result.Success" enum="BooleanSuccess"
+    expires_after="2021-02-02">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    The success or failure of CryptAuth v2 Enrollment requests. Recorded when an
+    enrollment attempt finishes.
+  </summary>
+</histogram>
+
+<histogram name="CryptAuth.EnrollmentV2.UserKeyPairState"
+    enum="CryptAuthV2EnrollmentUserKeyPairState" expires_after="2021-02-02">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    The state--at system start time--of persisted user key pairs, generated
+    during CryptAuth v1 and/or v2 Enrollment: whether they exist and if they
+    agree. Recorded on CryptAuth v2 Enrollment manager construction.
+  </summary>
+</histogram>
+
+<histogram name="CryptAuth.Gcm.Message.FeatureType" enum="CryptAuthFeatureType"
+    expires_after="2020-12-15">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the multi-device feature type sent in a GCM message from CryptAuth
+    v2. Emitted when a GCM message with a feature type key/value pair is
+    received from CryptAuth.
+  </summary>
+</histogram>
+
+<histogram name="CryptAuth.Gcm.Message.IsDeviceSyncGroupNameValid"
+    enum="Boolean" expires_after="2020-12-15">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records whether or not the DeviceSync group name sent in a GCM message from
+    CryptAuth is valid. Currently the only valid group name is
+    &quot;DeviceSync:BetterTogether&quot;. Emitted when a GCM message with a
+    DeviceSync group name key/value pair is received from CryptAuth.
+  </summary>
+</histogram>
+
+<histogram name="CryptAuth.Gcm.Message.IsKnownFeatureType" enum="Boolean"
+    expires_after="2020-12-15">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records whether or not the multi-device feature type sent in a GCM message
+    from CryptAuth v2 is recognized by the Chrome OS client. Emitted when a GCM
+    message with a feature type key/value pair is received from CryptAuth.
+  </summary>
+</histogram>
+
+<histogram
+    name="CryptAuth.Gcm.Message.TargetService.AreTickleTypeAndTargetServiceBothSpecified"
+    enum="Boolean" expires_after="2020-12-15">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records whether or not the CryptAuth TargetService was specified in a GCM
+    message by both the CryptAuth v1 registration tickle type key/value pair as
+    well as the CryptAuth v2 target service key/value pair. Both key/value pairs
+    should not exist in same GCM message. Emitted when a GCM message is received
+    from CryptAuth.
+  </summary>
+</histogram>
+
+<histogram
+    name="CryptAuth.Gcm.Message.TargetService.FromRegistrationTickleType"
+    enum="CryptAuthTargetService" expires_after="2020-12-15">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    The CryptAuth TargetService--Enrollment or DeviceSync--indicated by the
+    registration tickle type key/value pair of an incoming GCM message. The
+    registration tickle type is used in GCM messages sent by CryptAuth v1.
+    Emitted when a GCM message from CryptAuth is received.
+  </summary>
+</histogram>
+
+<histogram name="CryptAuth.Gcm.Message.TargetService.FromTargetServiceValue"
+    enum="CryptAuthTargetService" expires_after="2020-12-15">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    The CryptAuth TargetService--Enrollment or DeviceSync--indicated by the
+    target service key/value pair of an incoming GCM message. This key/value
+    pair is used in GCM messages sent by CryptAuth v2. Emitted when a GCM
+    message from CryptAuth is received.
+  </summary>
+</histogram>
+
+<histogram name="CryptAuth.Gcm.Registration.AttemptTimeWithRetries" units="ms"
+    expires_after="2021-02-02">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    The time it takes the GCM driver to return the result of a GCM registration
+    request made by the CryptAuth GCM manager. CryptAuth registration with GCM
+    is only performed once, if successful, for a given user on a device as the
+    first step in CryptAuth v1 or v2 Enrollment. Recorded when the CryptAuth GCM
+    manager is notified by the GCM driver that the registration attempt
+    finished, successfully or not. The GCM driver might quietly retry failures
+    before notifying the CryptAuth GCM manager. The time recorded here
+    encompasses the possible retry attempts and delays from the GCM driver.
+  </summary>
+</histogram>
+
+<histogram name="CryptAuth.Gcm.Registration.Result" enum="GCMClientResult"
+    expires_after="2021-02-02">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    The result code from a GCM registration request made by the CryptAuth GCM
+    manager. CryptAuth registration with GCM is only performed once, if
+    successful, for a given user on a device as the first step in CryptAuth v1
+    or v2 Enrollment. Recorded when the CryptAuth GCM manager is notified by the
+    GCM driver that the registration attempt finished, successfully or not. The
+    GCM driver might quietly retry failures before notifying the CryptAuth GCM
+    manager. This metric will not include results codes that were quietly
+    retried by the GCM driver.
+  </summary>
+</histogram>
+
+<histogram name="CryptAuth.InstanceId.DidInstanceIdChange"
+    enum="BooleanChanged" expires_after="2021-02-02">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Indicates whether or not the Instance ID used by the CryptAuth client
+    differs from the previously retrieved ID. Recorded while fetching client app
+    metadata if a previous ID has been set.
+  </summary>
+</histogram>
+
+<histogram name="CryptAuth.InstanceId.DidInstanceIdTokenChange"
+    enum="BooleanChanged" expires_after="2021-02-02">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Indicates whether or not the Instance ID token used by the CryptAuth client
+    differs from the previously retrieved token. Recorded while fetching client
+    app metadata if a previous token has been set.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

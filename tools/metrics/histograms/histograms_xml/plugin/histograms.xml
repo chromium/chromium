@@ -1,0 +1,214 @@
+<!--
+Copyright 2020 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of Plugin histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please send CLs to chromium-metrics-reviews@google.com rather than to specific
+individuals. These CLs will be automatically reassigned to a reviewer within
+about 5 minutes. This approach helps the metrics team to load-balance incoming
+reviews. Googlers can read more about this at go/gwsq-gerrit.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="Plugin.FlashNavigateUsage" enum="FlashNavigateUsageType"
+    expires_after="2018-08-30">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>Record usage of PPB_Flash.Navigate() Pepper API.</summary>
+</histogram>
+
+<histogram name="Plugin.FlashUsage" enum="FlashUsage"
+    expires_after="2021-01-31">
+  <owner>yzshen@chromium.org</owner>
+  <owner>thestig@chromium.org</owner>
+  <summary>Collects Flash usage data.</summary>
+</histogram>
+
+<histogram name="Plugin.PowerSaver.Unthrottle"
+    enum="PluginPowerSaverUnthrottleMethod" expires_after="2020-03-29">
+  <owner>tommycli@chromium.org</owner>
+  <summary>
+    Record how many throttled plugins are unthrottled, and by what method.
+  </summary>
+</histogram>
+
+<histogram name="Plugin.PpapiBrokerLoadErrorCode" enum="WinGetLastError"
+    expires_after="M88">
+  <owner>xhwang@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>
+    The error code of a PPAPI broker load failure. Only reported on Windows.
+  </summary>
+</histogram>
+
+<histogram name="Plugin.PpapiBrokerLoadResult" enum="PluginLoadResult"
+    expires_after="M88">
+  <owner>xhwang@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>The result from an attempt to load a PPAPI broker.</summary>
+</histogram>
+
+<histogram name="Plugin.PpapiBrokerLoadTime" units="ms" expires_after="M88">
+  <owner>xhwang@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>The time spent to load a PPAPI broker.</summary>
+</histogram>
+
+<histogram name="Plugin.PpapiPluginLoadErrorCode" enum="WinGetLastError"
+    expires_after="M88">
+  <owner>xhwang@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>
+    The error code of a PPAPI plugin load failure. Only reported on Windows.
+  </summary>
+</histogram>
+
+<histogram name="Plugin.PpapiPluginLoadResult" enum="PluginLoadResult"
+    expires_after="M88">
+  <owner>xhwang@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>The result from an attempt to load a PPAPI plugin.</summary>
+</histogram>
+
+<histogram name="Plugin.PpapiPluginLoadTime" units="ms" expires_after="M88">
+  <owner>xhwang@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>The time spent to load a PPAPI plugin.</summary>
+</histogram>
+
+<histogram name="Plugin.PpapiSyncIPCTime" units="ms" expires_after="2018-08-30">
+  <owner>gab@chromium.org</owner>
+  <summary>
+    The time it took to complete a synchronous IPC made from the PPAPI process.
+  </summary>
+</histogram>
+
+<histogram name="PluginVm.AppsInstalledAtLogin" units="apps"
+    expires_after="2021-02-14">
+  <owner>timloh@google.com</owner>
+  <owner>joelhockey@google.com</owner>
+  <summary>
+    Records the number of Plugin VM apps in the registry at login time. This
+    only logs if Plugin VM has already benn enabled for the current user.
+  </summary>
+</histogram>
+
+<histogram name="PluginVm.DlcUseResult" units="PluginVmDlcUseResult"
+    expires_after="2021-02-21">
+  <owner>kimjae@google.com</owner>
+  <owner>timloh@google.com</owner>
+  <summary>Recorded at each time PluginVM DLC is installed.</summary>
+</histogram>
+
+<histogram name="PluginVm.EngagementTime.Background" units="ms"
+    expires_after="2021-02-14">
+  <owner>timloh@google.com</owner>
+  <owner>joelhockey@google.com</owner>
+  <summary>
+    Times when user is engaged and Plugin VM apps are running in the background,
+    but the user isn't focusing on an Plugin VM app window. See
+    PluginVm.EngagementTime.Total for further details.
+  </summary>
+</histogram>
+
+<histogram name="PluginVm.EngagementTime.Foreground" units="ms"
+    expires_after="2021-02-14">
+  <owner>timloh@google.com</owner>
+  <owner>joelhockey@google.com</owner>
+  <summary>
+    Times when user is engaged and focuses on a Plugin VM window. See
+    PluginVm.EngagementTime.Total for further details.
+  </summary>
+</histogram>
+
+<histogram name="PluginVm.EngagementTime.PluginVmTotal" units="ms"
+    expires_after="2021-02-14">
+  <owner>timloh@google.com</owner>
+  <owner>joelhockey@google.com</owner>
+  <summary>
+    Total of PluginVm.EngagementTime.Background and .Foreground, which is the
+    time the user is engaged and Plugin VM is running either in the foreground
+    or background. See PluginVm.EngagementTime.Total for further details.
+  </summary>
+</histogram>
+
+<histogram name="PluginVm.EngagementTime.Total" units="ms"
+    expires_after="2021-02-14">
+  <owner>timloh@google.com</owner>
+  <owner>joelhockey@google.com</owner>
+  <summary>
+    Total CrOS user session time (from login to logout) excluding times when
+    user &quot;disengages&quot;: screen is locked or dims down due to user idle.
+    Engagement time metrics, along with foreground and background time, are only
+    collected on users with Plugin VM enabled. All four metrics are accumulated
+    and recorded to UMA once a day. For Total Plugin VM engagement time, see
+    PluginVm.EngagementTime.PluginVmTotal.
+  </summary>
+</histogram>
+
+<histogram name="PluginVm.Image.DownloadedSize" units="MB"
+    expires_after="2020-12-31">
+  <owner>aoldemeier@chromium.org</owner>
+  <owner>okalitova@chromium.org</owner>
+  <owner>timloh@chromium.org</owner>
+  <summary>
+    The size of the PluginVm image downloaded in MB. Recorded each time PluginVm
+    image is sucessfully downloaded.
+  </summary>
+</histogram>
+
+<histogram name="PluginVm.LaunchResult" enum="PluginVmLaunchResult"
+    expires_after="2020-12-31">
+  <owner>aoldemeier@chromium.org</owner>
+  <owner>okalitova@chromium.org</owner>
+  <owner>timloh@chromium.org</owner>
+  <summary>
+    Recorded at each attempt to launch PluginVm, recording whether this attempt
+    is successful or not.
+  </summary>
+</histogram>
+
+<histogram name="PluginVm.SetupFailureReason" enum="PluginVmSetupFailureReason"
+    expires_after="2021-03-15">
+  <owner>timloh@chromium.org</owner>
+  <owner>chromeos-core-services@google.com</owner>
+  <summary>Recorded when the Plugin VM installer fails.</summary>
+</histogram>
+
+<histogram name="PluginVm.SetupResult" enum="PluginVmSetupResult"
+    expires_after="2021-03-15">
+  <owner>aoldemeier@chromium.org</owner>
+  <owner>okalitova@chromium.org</owner>
+  <owner>timloh@chromium.org</owner>
+  <summary>
+    Recorded at each attempt to set up PluginVm, recording the setup result. As
+    of M83, errors are grouped together here and broken down in
+    PluginVm.SetupFailureReason.
+  </summary>
+</histogram>
+
+<histogram name="PluginVm.SetupTime" units="ms" expires_after="2020-12-31">
+  <owner>aoldemeier@chromium.org</owner>
+  <owner>okalitova@chromium.org</owner>
+  <owner>timloh@chromium.org</owner>
+  <summary>
+    Recorded at each successful attempt to set up PluginVm, recording the time
+    that user spent waiting for setup to be finished. When error occurs during
+    setup and user clicks retry button - time between pressing retry button and
+    setup being finished is recorded.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

@@ -1,0 +1,681 @@
+<!--
+Copyright 2020 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of Startup histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please send CLs to chromium-metrics-reviews@google.com rather than to specific
+individuals. These CLs will be automatically reassigned to a reviewer within
+about 5 minutes. This approach helps the metrics team to load-balance incoming
+reviews. Googlers can read more about this at go/gwsq-gerrit.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="Startup.AfterStartupTaskCount" units="units"
+    expires_after="2021-02-28">
+  <owner>michaeln@chromium.org</owner>
+  <summary>
+    The number of after-startup tasks that were queued prior to startup
+    completion and deferred until that time.
+  </summary>
+</histogram>
+
+<histogram name="Startup.AfterStartupTaskDelayedUntilTime" units="ms"
+    expires_after="2021-03-15">
+  <owner>michaeln@chromium.org</owner>
+  <summary>
+    Time from the process creation until deferred after-startup tasks began
+    running.
+  </summary>
+</histogram>
+
+<histogram name="Startup.Android.CachedFeedVisibilityConsistency"
+    enum="BooleanConsistent" expires_after="2021-06-10">
+  <owner>hanxi@chromium.org</owner>
+  <owner>spdonghao@chromium.org</owner>
+  <owner>wychen@chromium.org</owner>
+  <summary>
+    Records whether or not the cached Feed visibility in the SharedPreferences
+    is consistent with the Feed visibility user preference on the disk. It's
+    recorded when overview mode is shown because of Return to Tab Switcher, and
+    only on cold start. By recording this histogram, the number of mismatches
+    between the criteria of whether the Feed placeholder of Instant Start
+    pre-native is shown and the criteria of whether Feed articles after native
+    initialization are shown is recorded.
+  </summary>
+</histogram>
+
+<histogram base="true" name="Startup.Android.Cold.TimeToFirstContentfulPaint"
+    units="ms" expires_after="2021-03-07">
+  <owner>pasko@chromium.org</owner>
+  <owner>alexilin@chromium.org</owner>
+  <summary>
+    Android: The time from the activity creation point to the first contentful
+    paint of the first loaded page. It's not recorded when the first loaded page
+    is non http(s) page like a chrome error page, a new tab page, a blank page.
+    It's also not recorded if the application wasn't in the foreground since the
+    start till the end of event.
+  </summary>
+</histogram>
+
+<histogram base="true" name="Startup.Android.Cold.TimeToFirstNavigationCommit"
+    units="ms" expires_after="2021-03-07">
+  <owner>pasko@chromium.org</owner>
+  <owner>alexilin@chromium.org</owner>
+  <summary>
+    Android: The time from the activity creation point to the moment the first
+    navigation is committed, i.e. when renderer gets the first byte of the
+    document. It's not recorded when the first loaded page is non http(s) page
+    like a chrome error page, a new tab page, a blank page. It's also not
+    recorded if the application wasn't in the foreground since the start till
+    the end of event.
+  </summary>
+</histogram>
+
+<histogram base="true" name="Startup.Android.FeedContentFirstLoadedTime"
+    units="ms" expires_after="2021-06-10">
+<!-- Name completed by histogram_suffixes name="JavaStartMode" -->
+
+  <owner>hanxi@chromium.org</owner>
+  <owner>spdonghao@chromium.org</owner>
+  <owner>wychen@chromium.org</owner>
+  <summary>
+    Records the time duration from a cold start till the Feeds articles are
+    first loaded on the StartSurface. This histogram is only recorded when
+    StartSurface is shown at launch due to &quot;return to tab switcher&quot;
+    feature.
+  </summary>
+</histogram>
+
+<histogram name="Startup.Android.FeedsLoadingPlaceholderShown.Instant"
+    units="ms" expires_after="2021-06-10">
+  <owner>hanxi@chromium.org</owner>
+  <owner>spdonghao@chromium.org</owner>
+  <owner>wychen@chromium.org</owner>
+  <summary>
+    Records the time duration from a cold start till the Feeds loading
+    placeholder is shown on the StartSurface. This placeholder is only shown
+    when the feature flag InstantStart is enabled and StartSurface is shown at
+    launch due to &quot;return to tab switcher&quot; feature.
+  </summary>
+</histogram>
+
+<histogram base="true" name="Startup.Android.FeedStreamCreatedTime" units="ms"
+    expires_after="2021-06-10">
+<!-- Name completed by histogram_suffixes name="JavaStartMode" -->
+
+  <owner>hanxi@chromium.org</owner>
+  <owner>spdonghao@chromium.org</owner>
+  <owner>wychen@chromium.org</owner>
+  <summary>
+    Records the time duration from a cold start till the Feeds stream is created
+    on the StartSurface. This histogram is only recorded when StartSurface is
+    shown at launch due to &quot;return to tab switcher&quot; feature.
+  </summary>
+</histogram>
+
+<histogram base="true" name="Startup.Android.FirstDrawCompletedTime" units="ms"
+    expires_after="2021-06-10">
+<!-- Name completed by histogram_suffixes name="JavaStartMode" -->
+
+  <owner>hanxi@chromium.org</owner>
+  <owner>spdonghao@chromium.org</owner>
+  <owner>wychen@chromium.org</owner>
+  <summary>
+    Records the time duration from a cold start till the first draw completes.
+  </summary>
+</histogram>
+
+<histogram name="Startup.Android.GURLEnsureMainDexInitialized" units="ms"
+    expires_after="2021-01-31">
+  <owner>mthiesse@chromium.org</owner>
+  <owner>yfriedman@chromium.org</owner>
+  <summary>
+    Measures the amount of time startup has likely been delayed due to GURL
+    waiting on the native library to be initialized.
+  </summary>
+</histogram>
+
+<histogram base="true" name="Startup.Android.SingleTabTitleAvailableTime"
+    units="ms" expires_after="2021-06-10">
+<!-- Name completed by histogram_suffixes name="JavaStartMode" -->
+
+  <owner>hanxi@chromium.org</owner>
+  <owner>spdonghao@chromium.org</owner>
+  <owner>wychen@chromium.org</owner>
+  <summary>
+    Records the time duration from a cold start till the title of the single Tab
+    is shown on the StartSurface. This histogram is only recorded when
+    StartSurface is shown at launch due to &quot;return to tab switcher&quot;
+    feature.
+  </summary>
+</histogram>
+
+<histogram name="Startup.Android.StartupTabPreloader.TabLoaded" units="Boolean"
+    expires_after="2021-02-14">
+  <owner>skyostil@chromium.org</owner>
+  <summary>
+    Android: Whether or not creation of a profile lead to the
+    StartupTabPreloader speculatively created a tab. Recorded when a profile is
+    created, assuming a StartupTabPreloader has been constructed for intents
+    with a url and either regular Chrome or a Custom Tab will be loaded.
+  </summary>
+</histogram>
+
+<histogram name="Startup.Android.StartupTabPreloader.TabTaken" units="Boolean"
+    expires_after="2020-11-08">
+  <owner>skyostil@chromium.org</owner>
+  <summary>
+    Android: Whether or not a tab speculatively created by the
+    StartupTabPreloader was subsequently adopted by ChromeTabCreator. Recorded
+    when a tab is loaded, assuming a StartupTabPreloader has been constructed
+    for intents with a url for either regular Chrome or a Custom Tab will be
+    loaded.
+  </summary>
+</histogram>
+
+<histogram name="Startup.Android.ThumbnailFetchedForGTSFirstMeaningfulPaint"
+    units="thumbnails" expires_after="2020-08-02">
+  <owner>yusufo@chromium.org</owner>
+  <owner>yfriedman@chromium.org</owner>
+  <summary>
+    Android: The number of thumbnails fetched for the first meaningful paint of
+    the Grid Tab Switcher. First meaningful paint is defined as having all the
+    thumbnails shown. This is recorded at most once per activity lifecycle. This
+    is gated by feature &quot;TabSwitcherOnReturn&quot;.
+  </summary>
+</histogram>
+
+<histogram name="Startup.Android.TimeToGTSFirstMeaningfulPaint" units="ms"
+    expires_after="2021-02-14">
+  <owner>yusufo@chromium.org</owner>
+  <owner>yfriedman@chromium.org</owner>
+  <summary>
+    Android: The elapsed time from the activity creation point to the first
+    meaningful paint of the Grid Tab Switcher. First meaningful paint is defined
+    as having all the thumbnails shown. This is recorded at most once per
+    activity lifecycle. This is gated by feature
+    &quot;TabSwitcherOnReturn&quot;.
+  </summary>
+</histogram>
+
+<histogram name="Startup.Android.TimeToGTSFirstMeaningfulPaint.Cold" units="ms"
+    expires_after="2021-02-21">
+  <owner>yusufo@chromium.org</owner>
+  <owner>yfriedman@chromium.org</owner>
+  <summary>
+    Android: The elapsed time from the activity creation point to the first
+    meaningful paint of the Grid Tab Switcher. First meaningful paint is defined
+    as having all the thumbnails shown. This is recorded at most once per
+    activity lifecycle. This is gated by feature
+    &quot;TabSwitcherOnReturn&quot;. It's only recorded on cold startup.
+  </summary>
+</histogram>
+
+<histogram name="Startup.Android.TimeToGTSFirstMeaningfulPaint.Warm" units="ms"
+    expires_after="2021-02-14">
+  <owner>yusufo@chromium.org</owner>
+  <owner>yfriedman@chromium.org</owner>
+  <summary>
+    Android: The elapsed time from the activity creation point to the first
+    meaningful paint of the Grid Tab Switcher. First meaningful paint is defined
+    as having all the thumbnails shown. This is recorded at most once per
+    activity lifecycle. This is gated by feature
+    &quot;TabSwitcherOnReturn&quot;. It's only recorded on warm startup.
+  </summary>
+</histogram>
+
+<histogram name="Startup.BlockForCrashpadHandlerStartupTime" units="ms"
+    expires_after="M85">
+  <owner>mark@chromium.org</owner>
+  <owner>crashpad-dev@chromium.org</owner>
+  <summary>
+    The amount of time that elapsed during in
+    crash_report::BlockUntilHandlerStarted().
+  </summary>
+</histogram>
+
+<histogram name="Startup.BringToForegroundReason"
+    enum="BooleanBringToForegroundReason" expires_after="2021-03-15">
+  <owner>peter@chromium.org</owner>
+  <summary>
+    Records the cause, each time Chrome is brought to the foreground. Currently
+    only checks if a NotificationUIManager notification was shown in the last 5
+    seconds (includes Web Notifications, but not media or Cast).
+  </summary>
+</histogram>
+
+<histogram name="Startup.BrowserMainRunnerImplInitializeLongTime" units="ms"
+    expires_after="2021-02-14">
+  <owner>robliao@chromium.org</owner>
+  <summary>
+    The amount of time that elapsed during BrowserMainRunnerImpl::Initialize.
+  </summary>
+</histogram>
+
+<histogram name="Startup.BrowserMainRunnerImplInitializeStep1Time" units="ms"
+    expires_after="M77">
+  <owner>robliao@chromium.org</owner>
+  <summary>
+    The amount of time that elapsed during the first section of
+    BrowserMainRunnerImpl::Initialize.
+  </summary>
+</histogram>
+
+<histogram name="Startup.BrowserMainRunnerImplInitializeStep2Time" units="ms"
+    expires_after="M77">
+  <owner>robliao@chromium.org</owner>
+  <summary>
+    The amount of time that elapsed during the second section of
+    BrowserMainRunnerImpl::Initialize.
+  </summary>
+</histogram>
+
+<histogram name="Startup.BrowserMessageLoopStart.To.NonEmptyPaint2" units="ms"
+    expires_after="2021-03-07">
+  <owner>asvitkine@chromium.org</owner>
+  <summary>
+    Time between Startup.BrowserMessageLoopStartTime and
+    Startup.FirstWebContents.NonEmptyPaint2. Recorded explicitly to allow easy
+    breakdown of Startup.FirstWebContents.NonEmptyPaint2 when diagnosing issues.
+  </summary>
+</histogram>
+
+<histogram name="Startup.BrowserMessageLoopStartHardFaultCount" units="faults"
+    expires_after="never">
+<!-- expires-never: calibration metric for StartupTemperature, see
+     kColdStartHardFaultCountThreshold and WarmStartHardFaultCountThreshold in
+     startup_metric_utils.cc for details -->
+
+  <owner>chrisha@chromium.org</owner>
+  <owner>fdoray@chromium.org</owner>
+  <summary>
+    The number of hard faults incurred in the browser process from startup to
+    start of the main thread's message loop, not including first runs of the
+    browser.
+  </summary>
+</histogram>
+
+<histogram name="Startup.BrowserMessageLoopStartTime" units="ms"
+    expires_after="never">
+<!-- expires-never: used to diagnose regressions to Startup.FirstWebContents.NonEmptyPaint3 -->
+
+  <owner>fdoray@chromium.org</owner>
+  <owner>gab@chromium.org</owner>
+  <summary>
+    Time from application start to the start of the main thread's message loop.
+    Not recorded for first run.
+
+    April 8, 2020: Changed the reference from process creation to application
+    start. See Startup.FirstWebContents.NonEmptyPaint3 for a definition of
+    application start.
+  </summary>
+</histogram>
+
+<histogram name="Startup.BrowserMessageLoopStartTime.FirstRun" units="ms"
+    expires_after="never">
+<!-- expires-never: only metric to ensure that first run doesn't regress -->
+
+  <owner>fdoray@chromium.org</owner>
+  <owner>gab@chromium.org</owner>
+  <summary>
+    Time from application start to the start of the main thread's message loop.
+    Recorded for a first run of the browser.
+
+    April 8, 2020: Changed the reference from process creation to application
+    start. See Startup.FirstWebContents.NonEmptyPaint3 for a definition of
+    application start.
+  </summary>
+</histogram>
+
+<histogram name="Startup.BrowserProcessImpl_PreMainMessageLoopRunTime"
+    units="ms" expires_after="M85">
+  <owner>rkaplow@chromium.org</owner>
+  <summary>
+    The amount of time that elapsed during
+    BrowserProcessImpl::PreMainMessageLoopRun.
+  </summary>
+</histogram>
+
+<histogram name="Startup.BrowserWindow.FirstPaint" units="ms"
+    expires_after="2021-03-15">
+  <owner>sebmarchand@chromium.org</owner>
+  <owner>mblsha@yandex-team.ru</owner>
+  <summary>
+    Time from application start to the time the first Browser window has
+    finished painting its children.
+
+    April 8, 2020: Changed the reference from process creation to application
+    start. See Startup.FirstWebContents.NonEmptyPaint3 for a definition of
+    application start.
+  </summary>
+</histogram>
+
+<histogram name="Startup.BrowserWindow.FirstPaint.CompositingEnded" units="ms"
+    expires_after="2020-04-26">
+  <owner>sebmarchand@chromium.org</owner>
+  <owner>mblsha@yandex-team.ru</owner>
+  <summary>
+    Time from application start to the time the GPU has finished compositing
+    after first Browser window has finished painting its children. At this point
+    the Browser interface is visible on screen. Measures how much time does it
+    take for GPU to actually paint the first time.
+
+    April 8, 2020: Changed the reference from process creation to application
+    start. See Startup.FirstWebContents.NonEmptyPaint3 for a definition of
+    application start.
+  </summary>
+</histogram>
+
+<histogram name="Startup.BrowserWindowDisplay" units="ms" expires_after="never">
+<!-- expires-never: used to diagnose regressions to Startup.FirstWebContents.NonEmptyPaint3 -->
+
+  <owner>fdoray@chromium.org</owner>
+  <owner>gab@chromium.org</owner>
+  <summary>
+    Time from application start to the time the browser window initially becomes
+    visible.
+
+    April 8, 2020: Changed the reference from process creation to application
+    start. See Startup.FirstWebContents.NonEmptyPaint3 for a definition of
+    application start.
+  </summary>
+</histogram>
+
+<histogram name="Startup.ColdStartFromProcessCreationTime" units="ms"
+    expires_after="2021-02-14">
+  <owner>djean@chromium.org</owner>
+  <owner>eugenebut@chromium.org</owner>
+  <summary>
+    The duration of all initializations from process creation time to UI ready.
+    This includes code loading, static initializers and the execution time
+    contained in Startup.ColdStartWithExternalURLTime and
+    Startup.ColdStartWithoutExternalURLTime metrics. iOS specific.
+  </summary>
+</histogram>
+
+<histogram name="Startup.ColdStartWithExternalURLTime" units="ms"
+    expires_after="2021-01-24">
+  <owner>jif@chromium.org</owner>
+  <summary>
+    The duration of all initializations in a cold start triggered by an external
+    URL.
+  </summary>
+</histogram>
+
+<histogram name="Startup.ColdStartWithoutExternalURLTime" units="ms"
+    expires_after="M82">
+  <owner>jif@chromium.org</owner>
+  <summary>
+    The duration of all initializations in a cold start not triggered by an
+    external URL.
+  </summary>
+</histogram>
+
+<histogram name="Startup.CreateFirstProfile" units="ms" expires_after="never">
+<!-- expires-never: used to diagnose regressions to Startup.FirstWebContents.NonEmptyPaint3 -->
+
+  <owner>fdoray@chromium.org</owner>
+  <owner>gab@chromium.org</owner>
+  <summary>
+    How long it takes to load the original profile synchronously on the UI
+    thread.
+  </summary>
+</histogram>
+
+<histogram name="Startup.FirstWebContents.FinishReason"
+    enum="StartupProfilingFinishReason" expires_after="never">
+<!-- expires-never: used to understand user behavior shifts when Startup.FirstWebContents.NonEmptyPaint3 regresses -->
+
+  <owner>fdoray@chromium.org</owner>
+  <owner>gab@chromium.org</owner>
+  <summary>
+    [Desktop] The reason for which startup profiling was deemed complete. Logged
+    once per session on startup.
+  </summary>
+</histogram>
+
+<histogram name="Startup.FirstWebContents.MainNavigationFinished" units="ms"
+    expires_after="never">
+<!-- expires-never: used to diagnose regressions to Startup.FirstWebContents.NonEmptyPaint3 -->
+
+  <owner>fdoray@chromium.org</owner>
+  <owner>gab@chromium.org</owner>
+  <summary>
+    [Desktop] Measure the elapsed time from application start to the moment when
+    the navigation is committed (first bytes received) in the first web
+    contents' main frame.
+
+    April 8, 2020: Changed the reference from process creation to application
+    start. See Startup.FirstWebContents.NonEmptyPaint3 for a definition of
+    application start.
+  </summary>
+</histogram>
+
+<histogram name="Startup.FirstWebContents.MainNavigationStart" units="ms"
+    expires_after="never">
+<!-- expires-never: used to diagnose regressions to Startup.FirstWebContents.NonEmptyPaint3 -->
+
+  <owner>fdoray@chromium.org</owner>
+  <owner>gab@chromium.org</owner>
+  <summary>
+    [Desktop] Measure the elapsed time from application start to the beginning
+    of navigation in the first web contents' main frame.
+
+    April 8, 2020: Changed the reference from process creation to application
+    start. See Startup.FirstWebContents.NonEmptyPaint3 for a definition of
+    application start.
+  </summary>
+</histogram>
+
+<histogram name="Startup.FirstWebContents.NonEmptyPaint3" units="ms"
+    expires_after="never">
+<!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->
+
+  <owner>etiennep@chromium.org</owner>
+  <owner>fdoray@chromium.org</owner>
+  <owner>gab@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
+  <summary>
+    Measure the elapsed time from the application start to the first non empty
+    paint of the first web contents. Only comprised of cases where the initial
+    foreground tab gets to complete its rendering task unimpeded (an improvement
+    over Startup.FirstWebContents.NonEmptyPaint).
+
+    Application start is a time recorded as early as possible in the startup
+    process. On Android, the application start is the time at which the Java
+    code starts. On Windows, application start is when chrome.exe:main starts,
+    before chrome.dll is loaded. On other platforms, it is when
+    ChromeMainDelegate is constructed.
+  </summary>
+</histogram>
+
+<histogram
+    name="Startup.FirstWebContents.RenderProcessHostInit.ToNonEmptyPaint"
+    units="ms" expires_after="M78">
+  <owner>hans@chromium.org</owner>
+  <summary>
+    Time between RenderFrameHostImpl::Init and
+    Startup.FirstWebContents.NonEmptyPaint2.
+  </summary>
+</histogram>
+
+<histogram name="Startup.LoadTime.ApplicationStartToChromeMain" units="ms"
+    expires_after="never">
+<!-- expires-never: used to diagnose regressions to Startup.FirstWebContents.NonEmptyPaint3 -->
+
+  <owner>fdoray@chromium.org</owner>
+  <owner>etiennep@chromium.org</owner>
+  <owner>gab@chromium.org</owner>
+  <summary>
+    Time from the application start to the C++ ChromeMain() function being
+    invoked.
+  </summary>
+</histogram>
+
+<histogram name="Startup.LoadTime.ProcessCreateToApplicationStart" units="ms"
+    expires_after="never">
+<!-- expires-never: used to diagnose regressions to Startup.FirstWebContents.NonEmptyPaint3 -->
+
+  <owner>fdoray@chromium.org</owner>
+  <owner>etiennep@chromium.org</owner>
+  <owner>gab@chromium.org</owner>
+  <summary>
+    Time from the process creation to application start, i.e. time recorded as
+    early as possible in the startup process.
+  </summary>
+</histogram>
+
+<histogram name="Startup.MobileSessionStartAction"
+    enum="MobileSessionStartAction" expires_after="2021-02-28">
+  <owner>eugenebut@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <summary>
+    The action requested on the application startup when called from another app
+    or the OS.
+  </summary>
+</histogram>
+
+<histogram name="Startup.MobileSessionStartFromApps"
+    enum="MobileSessionCallerApp" expires_after="2021-02-28">
+  <owner>eugenebut@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <summary>The calling application (if any).</summary>
+</histogram>
+
+<histogram name="Startup.OSX.AwakeFromNib" units="ms"
+    expires_after="2018-08-30">
+  <owner>erikchen@chromium.org</owner>
+  <summary>
+    The amount of time that elapsed between main entry and the invocation of
+    -[AppControllerMac awakeFromNib].
+  </summary>
+</histogram>
+
+<histogram name="Startup.OSX.DockIconWillFinishBouncing" units="ms"
+    expires_after="M77">
+  <owner>erikchen@chromium.org</owner>
+  <summary>
+    The amount of time that elapsed between main entry and the invocation of
+    -[AppControllerMac didFinishLaunching:]. At that point, the dock icon will
+    finish its current animation and stop bouncing.
+  </summary>
+</histogram>
+
+<histogram name="Startup.OSX.PostMainMessageLoopStart" units="ms"
+    expires_after="M85">
+  <owner>erikchen@chromium.org</owner>
+  <summary>
+    The amount of time that elapsed between main entry and the invocation of
+    ChromeBrowserMainPartsMac::PostMainMessageLoopStart.
+  </summary>
+</histogram>
+
+<histogram name="Startup.OSX.PostProfileInit" units="ms" expires_after="M77">
+  <owner>erikchen@chromium.org</owner>
+  <summary>
+    The amount of time that elapsed between main entry and the invocation of
+    ChromeBrowserMainPartsMac::PostProfileInit.
+  </summary>
+</histogram>
+
+<histogram name="Startup.OSX.PreMainMessageLoopStart" units="ms"
+    expires_after="2018-08-30">
+  <owner>erikchen@chromium.org</owner>
+  <summary>
+    The amount of time that elapsed between main entry and the invocation of
+    ChromeBrowserMainPartsMac::PreMainMessageLoopStart.
+  </summary>
+</histogram>
+
+<histogram name="Startup.OSX.PreProfileInit" units="ms"
+    expires_after="2018-08-30">
+  <owner>erikchen@chromium.org</owner>
+  <summary>
+    The amount of time that elapsed between main entry and the invocation of
+    ChromeBrowserMainPartsMac::PreProfileInit.
+  </summary>
+</histogram>
+
+<histogram name="Startup.OSX.WillFinishLaunching" units="ms"
+    expires_after="2018-08-30">
+  <owner>erikchen@chromium.org</owner>
+  <summary>
+    The amount of time that elapsed between main entry and the invocation of
+    -[AppControllerMac willFinishLaunching:].
+  </summary>
+</histogram>
+
+<histogram name="Startup.PreMainMessageLoopRunImplLongTime" units="ms"
+    expires_after="M90">
+  <owner>rkaplow@chromium.org</owner>
+  <summary>
+    The amount of time that elapsed during
+    ChromeBrowserMainParts::PreMainMessageLoopRunImpl.
+  </summary>
+</histogram>
+
+<histogram name="Startup.StartupBrowserCreator_Start" units="ms"
+    expires_after="M77">
+  <owner>rkaplow@chromium.org</owner>
+  <summary>
+    The amount of time that elapsed during StartupBrowserCreator::Start().
+  </summary>
+</histogram>
+
+<histogram name="Startup.Temperature" enum="StartupTemperature"
+    expires_after="2021-01-31">
+<!-- expires-after: Diagnosis metric for changes in StartupTemperature suffix.
+     Shouldn't truly expire but kColdStartHardFaultCountThreshold should be
+     surveyed yearly. -->
+
+  <owner>chrisha@chromium.org</owner>
+  <owner>fdoray@chromium.org</owner>
+  <summary>
+    Indicates whether or not the given startup was warm, cold or unable to be
+    determined. This is based off observing the number of hard faults that occur
+    during startup prior to Startup.BrowserMessageLoopStartTime. The threshold
+    for cold startup was updated Jan 2020, a bump in the metric is expected.
+  </summary>
+</histogram>
+
+<histogram name="Startup.WebFooterExperiment.DidFirstVisuallyNonEmptyPaint"
+    units="ms" expires_after="M89">
+  <owner>pbos@chromium.org</owner>
+  <owner>robliao@chromium.org</owner>
+  <summary>
+    Time from application start until the first web footer finishes painting.
+
+    April 8, 2020: Changed the reference from process creation to application
+    start. See Startup.FirstWebContents.NonEmptyPaint3 for a definition of
+    application start.
+  </summary>
+</histogram>
+
+<histogram name="Startup.WebFooterExperiment.WebFooterCreation" units="ms"
+    expires_after="M89">
+  <owner>pbos@chromium.org</owner>
+  <owner>robliao@chromium.org</owner>
+  <summary>
+    Time from application start until the first WebView used to display a web
+    footer is created.
+
+    April 8, 2020: Changed the reference from process creation to application
+    start. See Startup.FirstWebContents.NonEmptyPaint3 for a definition of
+    application start.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

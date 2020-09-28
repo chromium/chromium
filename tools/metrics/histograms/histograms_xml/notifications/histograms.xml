@@ -1,0 +1,812 @@
+<!--
+Copyright 2020 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of Notifications histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please send CLs to chromium-metrics-reviews@google.com rather than to specific
+individuals. These CLs will be automatically reassigned to a reviewer within
+about 5 minutes. This approach helps the metrics team to load-balance incoming
+reviews. Googlers can read more about this at go/gwsq-gerrit.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="Notifications.Actions" enum="NotificationActionType"
+    expires_after="M85">
+  <owner>dewittj@chromium.org</owner>
+  <summary>
+    The actions taken on notifications, recorded every time they happen. This
+    histogram will record every single event that happens separately.
+  </summary>
+</histogram>
+
+<histogram name="Notifications.Android.JobStartDelay" units="ms"
+    expires_after="M90">
+  <owner>peter@chromium.org</owner>
+  <summary>
+    Records the delay between scheduling a job with the JobScheduler (with a
+    desired latency of 0ms, in response to a notification click) and receiving
+    the onStartJob callback. Only measured on Android N and above.
+  </summary>
+</histogram>
+
+<histogram name="Notifications.Android.SitesChannel" enum="BooleanUsage"
+    expires_after="M90">
+  <owner>peter@chromium.org</owner>
+  <summary>
+    Recorded when the Sites channel (which we hope to deprecate) is used as a
+    fallback, when a site-specific notification channel is expected to exist but
+    does not. Note, we only log when the sites channel is *used*, not when it is
+    not used.
+  </summary>
+</histogram>
+
+<histogram name="Notifications.Announcement.Events"
+    enum="AnnouncementNotificationEvent" expires_after="2020-10-30">
+  <owner>dtrainor@chromium.org</owner>
+  <owner>xingliu@chromium.org</owner>
+  <summary>
+    Records the events when the announcement notification is shown, clicked, or
+    closed.
+  </summary>
+</histogram>
+
+<histogram name="Notifications.AppNotificationStatus"
+    enum="NotificationAppStatus" expires_after="never">
+<!-- expires-never: Indicates whether Chrome has notification permission. -->
+
+  <owner>peter@chromium.org</owner>
+  <summary>
+    Records whether notifications are enabled for Chrome, as the Android app,
+    for each Web Notification that is being shown to the user.
+  </summary>
+</histogram>
+
+<histogram name="Notifications.AuthorDataSize" units="bytes"
+    expires_after="2018-08-30">
+  <owner>peter@chromium.org</owner>
+  <summary>
+    The size, in bytes, of the author-provided data associated with a Web
+    Notification. Recorded when a persistent Web Notification is being shown by
+    the developer.
+  </summary>
+</histogram>
+
+<histogram name="Notifications.Chime.Android.Events" enum="ChimeEvent"
+    expires_after="never">
+  <owner>hesen@chromium.org</owner>
+  <owner>xingliu@chromium.org</owner>
+<!-- expires-never: Monitors Chime notification stability. -->
+
+  <summary>
+    Various events when Chrome interacts with Chime notification platform.
+    Recorded when Chrome registers to Chime service, receives notifications, and
+    the user interacts with the notification.
+  </summary>
+</histogram>
+
+<histogram name="Notifications.Chime.Android.Registration"
+    enum="BooleanSuccess" expires_after="never">
+  <owner>hesen@chromium.org</owner>
+  <owner>xingliu@chromium.org</owner>
+<!-- expires-never: Monitors Chime notification stability. -->
+
+  <summary>
+    Records the result of Chime notification platform registration. Each device
+    may have multiple accounts registered. The registration happens right after
+    opening Chrome.
+  </summary>
+</histogram>
+
+<histogram name="Notifications.Cros.Actions" enum="NotificationTypeDetailed"
+    expires_after="2021-03-15">
+  <owner>tengs@chromium.org</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    Records the notification type when a notification interaction occurs. See
+    suffixes for all event types. ChromeOS only.
+  </summary>
+</histogram>
+
+<histogram name="Notifications.Database.DeleteAllForOriginsResult"
+    enum="NotificationDatabaseStatus" expires_after="M90">
+  <owner>knollr@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>
+    Records the result status codes of deleting all notification data for given
+    origins. This happens when notification permissions are revoked for a site.
+  </summary>
+</histogram>
+
+<histogram name="Notifications.Database.DeleteBeforeWriteResult"
+    enum="NotificationDatabaseStatus" expires_after="M88">
+  <owner>knollr@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>
+    Records the result status codes of deleting notification data from the Web
+    Notification database that share their tag (replacement identifier) with a
+    notification that's about to be shown.
+  </summary>
+</histogram>
+
+<histogram name="Notifications.Database.DeleteResult"
+    enum="NotificationDatabaseStatus" expires_after="M88">
+  <owner>knollr@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>
+    Records the result status codes of deleting notification data from the Web
+    Notification database.
+  </summary>
+</histogram>
+
+<histogram name="Notifications.Database.DeleteServiceWorkerRegistrationResult"
+    enum="NotificationDatabaseStatus" expires_after="M88">
+  <owner>knollr@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>
+    Records the result status codes of deleting all notification data associated
+    with a Service Worker registration ID.
+  </summary>
+</histogram>
+
+<histogram name="Notifications.Database.DestroyResult"
+    enum="NotificationDatabaseStatus" expires_after="M88">
+  <owner>knollr@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>
+    Records the result status codes of destroying the Web Notification database
+    altogether.
+  </summary>
+</histogram>
+
+<histogram name="Notifications.Database.OldestNotificationTimeInMinutes"
+    units="minutes" expires_after="M90">
+  <owner>knollr@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <owner>adelm@google.com</owner>
+  <summary>
+    Records the age of the oldest notification for an origin. Logged after
+    handling a push event for that origin.
+  </summary>
+</histogram>
+
+<histogram name="Notifications.Database.OpenAfterCorruptionResult"
+    enum="NotificationDatabaseStatus" expires_after="M88">
+  <owner>knollr@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>
+    Records the result status codes of opening the Web Notification database
+    after it has been destroyed in response to data corruption.
+  </summary>
+</histogram>
+
+<histogram name="Notifications.Database.OpenResult"
+    enum="NotificationDatabaseStatus" expires_after="never">
+<!-- expires-never: core storage metric; consumed in separate dashboard (go/chrome-storage-dashboard) -->
+
+  <owner>knollr@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>
+    Records the result status codes of opening the Web Notification database.
+  </summary>
+</histogram>
+
+<histogram name="Notifications.Database.ReadForServiceWorkerResult"
+    enum="NotificationDatabaseStatus" expires_after="M88">
+  <owner>knollr@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>
+    Records the result status codes of reading data of all notifications
+    associated with a Service Worker from the Web Notification database.
+  </summary>
+</histogram>
+
+<histogram name="Notifications.Database.ReadResourcesForTriggeredResult"
+    enum="NotificationDatabaseStatus" expires_after="M90">
+  <owner>knollr@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>
+    Records the result status codes of reading resources for a notification from
+    the Web Notification database. This happens when a previously scheduled
+    notification has triggered.
+  </summary>
+</histogram>
+
+<histogram name="Notifications.Database.ReadResourcesResult"
+    enum="NotificationDatabaseStatus" expires_after="M90">
+  <owner>knollr@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>
+    Records the result status codes of reading resources for a notification from
+    the Web Notification database. This happens when a scheduled notification is
+    read from the database.
+  </summary>
+</histogram>
+
+<histogram name="Notifications.Database.ReadResult"
+    enum="NotificationDatabaseStatus" expires_after="M90">
+  <owner>knollr@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>
+    Records the result status codes of reading data of a single notification
+    from the Web Notification database.
+  </summary>
+</histogram>
+
+<histogram name="Notifications.Database.WriteResult"
+    enum="NotificationDatabaseStatus" expires_after="M90">
+  <owner>knollr@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>
+    Records the result status codes of writing data for a notification to the
+    Web Notification database.
+  </summary>
+</histogram>
+
+<histogram name="Notifications.Database.WriteTriggeredResult"
+    enum="NotificationDatabaseStatus" expires_after="M90">
+  <owner>knollr@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>
+    Records the result status codes of updating the triggered flag for a
+    notification in the Web Notification database. This happens after fetching
+    data and resources for a triggered notification, just before displaying it.
+  </summary>
+</histogram>
+
+<histogram base="true" name="Notifications.Freedesktop.Capabilities"
+    enum="BooleanSupported" expires_after="M90">
+<!-- Name completed by histogram_suffixes name="FreedesktopNotificationCapabilitiesId" -->
+
+  <owner>thomasanderson@chromium.org</owner>
+  <summary>
+    Whether the notification server supports the capability in question. (Linux
+    only) Logged when the proxy to /org/Freedesktop/Notifications is set up
+    successfully, which happens at most once on startup.
+  </summary>
+</histogram>
+
+<histogram name="Notifications.Linux.BridgeInitializationStatus"
+    enum="LinuxNotificationBridgeStatusCode" expires_after="M77">
+  <owner>thomasanderson@chromium.org</owner>
+  <summary>
+    The status code for initializing NotificationPlatformBridgeLinux. (Linux
+    only) Logged on each start up.
+  </summary>
+</histogram>
+
+<histogram name="Notifications.NotificationHelper.ComServerModuleStatus"
+    enum="NotificationHelperComServerModuleStatus" expires_after="M87">
+  <owner>finnur@chromium.org</owner>
+  <summary>
+    The execute status of a ComServerModule class instance. Logged whenever a
+    notification_helper process is launched by Windows.
+  </summary>
+</histogram>
+
+<histogram
+    name="Notifications.NotificationHelper.NotificationActivatorPrimaryStatus"
+    enum="NotificationHelperNotificationActivatorPrimaryStatus"
+    expires_after="M85">
+  <owner>chengx@chromium.org</owner>
+  <owner>finnur@chromium.org</owner>
+  <summary>
+    The primary execute status of NotificationActivator::Activate. Logged
+    whenever a notification_helper process is launched by Windows.
+  </summary>
+</histogram>
+
+<histogram
+    name="Notifications.NotificationHelper.NotificationActivatorSecondaryStatus"
+    enum="NotificationHelperNotificationActivatorSecondaryStatus"
+    expires_after="M85">
+  <owner>chengx@chromium.org</owner>
+  <owner>finnur@chromium.org</owner>
+  <summary>
+    The secondary execute status of NotificationActivator::Activate. Logged
+    whenever a notification_helper process is launched by Windows.
+  </summary>
+</histogram>
+
+<histogram name="Notifications.NotificationHelper.ServerRuntime" units="ms"
+    expires_after="M87">
+  <owner>finnur@chromium.org</owner>
+  <summary>
+    The runtime of the notification_helper server process. This process is
+    created when a notification is activated from the Windows Action Center.
+    Once created, this process does some COM class registration work, so that
+    Windows can call certain APIs to handle the notification activation. Upon
+    finishing the API calls, Windows signals this process to exit.
+  </summary>
+</histogram>
+
+<histogram name="Notifications.NotifierType" enum="NotifierType"
+    expires_after="M85">
+  <owner>tengs@chromium.org</owner>
+  <summary>
+    The number of times a notification was added for the various types of
+    sources.
+  </summary>
+</histogram>
+
+<histogram name="Notifications.Permissions.RevokeDeleteCount" units="units"
+    expires_after="M90">
+  <owner>knollr@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>
+    The number of notifications that got deleted from the NotificationDatabase
+    after the notification permissions got revoked.
+  </summary>
+</histogram>
+
+<histogram name="Notifications.PerNotificationActions"
+    enum="NotificationActionType" expires_after="M85">
+  <owner>dewittj@chromium.org</owner>
+  <summary>
+    The actions taken on notifications, recorded once per notification, when it
+    is closed. This differs from the Notifications.Actions histogram in that
+    multiple events of the same type on a single notification will only record a
+    single UMA event.
+  </summary>
+</histogram>
+
+<histogram name="Notifications.PersistentNotificationActionCount"
+    units="buttons" expires_after="M90">
+  <owner>peter@chromium.org</owner>
+  <summary>
+    The number of action buttons the developer provided for a persistent Web
+    Notification. Logged whenever showNotification is called.
+  </summary>
+</histogram>
+
+<histogram name="Notifications.PersistentWebNotificationClickResult"
+    enum="PlatformNotificationStatus" expires_after="M90">
+  <owner>peter@chromium.org</owner>
+  <owner>deepak.m1@samsung.com</owner>
+  <summary>
+    Recorded delivery status for persistent notification clicks to a Service
+    Worker when handling a click on a persistent WebNotification has finished.
+  </summary>
+</histogram>
+
+<histogram name="Notifications.PersistentWebNotificationCloseResult"
+    enum="PlatformNotificationStatus" expires_after="M90">
+  <owner>peter@chromium.org</owner>
+  <owner>knollr@chromium.org</owner>
+  <summary>
+    Records delivery status for persistent notification close events sent to a
+    Service Worker when the event has been handled.
+  </summary>
+</histogram>
+
+<histogram name="Notifications.Scheduler.BackgroundTask.Event"
+    enum="NotificationSchedulerBackgroundTaskEvent" expires_after="2021-07-01">
+  <owner>xingliu@chromium.org</owner>
+  <owner>hesen@chromium.org</owner>
+  <summary>
+    Records the various events when running the background task in notification
+    scheduling system.
+  </summary>
+</histogram>
+
+<histogram name="Notifications.Scheduler.BackgroundTask.NotificationShown"
+    units="notifications" expires_after="2021-07-01">
+  <owner>xingliu@chromium.org</owner>
+  <owner>hesen@chromium.org</owner>
+  <summary>
+    Records the number of notifications shown in each background task run.
+  </summary>
+</histogram>
+
+<histogram name="Notifications.Scheduler.BackgroundTask.Start" units="hours"
+    expires_after="2021-07-01">
+  <owner>xingliu@chromium.org</owner>
+  <owner>hesen@chromium.org</owner>
+  <summary>
+    Records the hour (0-23) when the notification scheduler background task
+    starts.
+  </summary>
+</histogram>
+
+<histogram name="Notifications.Scheduler.IconDb.InitResult"
+    enum="BooleanSuccess" expires_after="2021-07-01">
+  <owner>xingliu@chromium.org</owner>
+  <owner>hesen@chromium.org</owner>
+  <summary>
+    Records the initialization result of icon database for the notification
+    scheduling system.
+  </summary>
+</histogram>
+
+<histogram name="Notifications.Scheduler.IconDb.OperationResult"
+    enum="BooleanSuccess" expires_after="2021-07-01">
+  <owner>xingliu@chromium.org</owner>
+  <owner>hesen@chromium.org</owner>
+  <summary>
+    Records the database operation result (except initialization) of icon
+    database for the notification scheduling system.
+  </summary>
+</histogram>
+
+<histogram name="Notifications.Scheduler.IconDb.RecordCount" units="records"
+    expires_after="2021-07-01">
+  <owner>xingliu@chromium.org</owner>
+  <owner>hesen@chromium.org</owner>
+  <summary>
+    Records the number of records of icon database for the notification
+    scheduling system when the icon database is initialized.
+  </summary>
+</histogram>
+
+<histogram name="Notifications.Scheduler.IhnrActionButtonEvent"
+    enum="NotificationSchedulerActionButtonEvent" expires_after="2021-07-01">
+<!-- Name completed by histogram_suffixes name="NotificationSchedulerClientType" -->
+
+  <owner>xingliu@chromium.org</owner>
+  <owner>hesen@chromium.org</owner>
+  <summary>
+    Records events for inline helpful/unhelpful action buttons on the
+    notification when the buttons are shown or clicked.
+  </summary>
+</histogram>
+
+<histogram name="Notifications.Scheduler.Impression.Count" units="records"
+    expires_after="2021-07-01">
+<!-- Name completed by histogram_suffixes name="NotificationSchedulerClientType" -->
+
+  <owner>xingliu@chromium.org</owner>
+  <owner>hesen@chromium.org</owner>
+  <summary>
+    Records the number of impression records in impression db right after the
+    impression database is initialized.
+  </summary>
+</histogram>
+
+<histogram name="Notifications.Scheduler.Impression.Event"
+    enum="NotificationSchedulerImpressionEvent" expires_after="2021-07-01">
+  <owner>xingliu@chromium.org</owner>
+  <owner>hesen@chromium.org</owner>
+  <summary>
+    Records various events in impression history tracker in notification
+    scheduling system when the user interacts with the notification.
+  </summary>
+</histogram>
+
+<histogram name="Notifications.Scheduler.ImpressionDb.InitResult"
+    enum="BooleanSuccess" expires_after="2021-07-01">
+  <owner>xingliu@chromium.org</owner>
+  <owner>hesen@chromium.org</owner>
+  <summary>
+    Records the initialization result of impression database for the
+    notification scheduling system.
+  </summary>
+</histogram>
+
+<histogram name="Notifications.Scheduler.ImpressionDb.OperationResult"
+    enum="BooleanSuccess" expires_after="2021-07-01">
+  <owner>xingliu@chromium.org</owner>
+  <owner>hesen@chromium.org</owner>
+  <summary>
+    Records the database operation result (except initialization) of impression
+    database for the notification scheduling system.
+  </summary>
+</histogram>
+
+<histogram name="Notifications.Scheduler.ImpressionDb.RecordCount"
+    units="records" expires_after="2021-07-01">
+  <owner>xingliu@chromium.org</owner>
+  <owner>hesen@chromium.org</owner>
+  <summary>
+    Records the number of records of impression database for the notification
+    scheduling system when the impression database is initialized.
+  </summary>
+</histogram>
+
+<histogram name="Notifications.Scheduler.NotificationDb.InitResult"
+    enum="BooleanSuccess" expires_after="2021-07-01">
+  <owner>xingliu@chromium.org</owner>
+  <owner>hesen@chromium.org</owner>
+  <summary>
+    Records the initialization result of notification database for the
+    notification scheduling system.
+  </summary>
+</histogram>
+
+<histogram name="Notifications.Scheduler.NotificationDb.OperationResult"
+    enum="BooleanSuccess" expires_after="2021-07-01">
+  <owner>xingliu@chromium.org</owner>
+  <owner>hesen@chromium.org</owner>
+  <summary>
+    Records the database operation result (except initialization) of
+    notification database for the notification scheduling system.
+  </summary>
+</histogram>
+
+<histogram name="Notifications.Scheduler.NotificationDb.RecordCount"
+    units="records" expires_after="2021-07-01">
+  <owner>xingliu@chromium.org</owner>
+  <owner>hesen@chromium.org</owner>
+  <summary>
+    Records the number of records of notification database for the notification
+    scheduling system when the notification database is initialized.
+  </summary>
+</histogram>
+
+<histogram name="Notifications.Scheduler.NotificationLifeCycleEvent"
+    enum="NotificationSchedulerNotificationLifeCycleEvent"
+    expires_after="2021-07-01">
+<!-- Name completed by histogram_suffixes name="NotificationSchedulerClientType" -->
+
+  <owner>xingliu@chromium.org</owner>
+  <owner>hesen@chromium.org</owner>
+  <summary>
+    Records life cycle events for a scheduled notification, when notification is
+    scheduled, shown or encountering any error.
+  </summary>
+</histogram>
+
+<histogram name="Notifications.Scheduler.PngIconConverter.DecodeResult"
+    enum="BooleanSuccess" expires_after="2021-07-01">
+  <owner>xingliu@chromium.org</owner>
+  <owner>hesen@chromium.org</owner>
+  <summary>
+    Records the result of png icon converter decoding process in icon store for
+    the notification scheduling system. It will be logged typically when
+    scheduling system trying to display the notification to the client - the
+    icon store will load entries, and decode icons to PNG format for delivery.
+  </summary>
+</histogram>
+
+<histogram name="Notifications.Scheduler.PngIconConverter.EncodeResult"
+    enum="BooleanSuccess" expires_after="2021-07-01">
+  <owner>xingliu@chromium.org</owner>
+  <owner>hesen@chromium.org</owner>
+  <summary>
+    Records the result of png icon converter encoding process in icon store for
+    the notification scheduling system. It will be logged typically when the
+    client scheduled notification with icons - the icon store will then encode
+    icons to string and store them in protodb.
+  </summary>
+</histogram>
+
+<histogram name="Notifications.Scheduler.UserAction"
+    enum="NotificationSchedulerUserActionType" expires_after="2021-07-01">
+<!-- Name completed by histogram_suffixes name="NotificationSchedulerClientType" -->
+
+  <owner>xingliu@chromium.org</owner>
+  <owner>dtrainor@chromium.org</owner>
+  <summary>
+    Records the type of user action when the user interacts with notification
+    sent from notification scheduler system.
+  </summary>
+</histogram>
+
+<histogram name="Notifications.Triggers.DisplayDelay" units="ms"
+    expires_after="M82">
+  <owner>knollr@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>
+    Delay between the expected and actual display time of a notification.
+    Recorded just before displaying a notification with a show trigger.
+  </summary>
+</histogram>
+
+<histogram name="Notifications.UsingNativeNotificationCenter"
+    enum="BooleanNativeNotifications" expires_after="never">
+<!-- expires-never: core to the notification user experience. -->
+
+  <owner>peter@chromium.org</owner>
+  <owner>knollr@chromium.org</owner>
+  <owner>thomasanderson@chromium.org</owner>
+  <summary>
+    Indicates if Chrome is using system notifications or the Chrome notification
+    center. Logged on each start up.
+  </summary>
+</histogram>
+
+<histogram name="Notifications.Windows.ActivationStatus"
+    enum="WindowsNotificationActivationStatus" expires_after="M90">
+  <owner>finnur@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <owner>chengx@chromium.org</owner>
+  <summary>
+    The status of Activation requests in NotificationPlatformBridgeWin (Windows
+    only). Logged whenever an activation from a notification occurs.
+  </summary>
+</histogram>
+
+<histogram name="Notifications.Windows.CloseStatus"
+    enum="WindowsNotificationCloseStatus" expires_after="M90">
+  <owner>finnur@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>
+    The status of Close requests in NotificationPlatformBridgeWin (Windows
+    only). Logged whenever a notification is closed.
+  </summary>
+</histogram>
+
+<histogram name="Notifications.Windows.CreateToastManagerErrorCode"
+    enum="Hresult" expires_after="M87">
+  <owner>finnur@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>
+    The HRESULT returned by the Windows Action Center, when trying to create a
+    toast manager fails. This provides a more detailed error in the cases the
+    histogram Notifications.Windows.DisplayStatus reported
+    CREATE_TOAST_NOTIFIER_WITH_ID_FAILED.
+  </summary>
+</histogram>
+
+<histogram name="Notifications.Windows.DisplayFailure" enum="Hresult"
+    expires_after="M87">
+  <owner>finnur@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>
+    The HRESULT returned by the Windows Action Center, when showing a
+    notification fails.
+  </summary>
+</histogram>
+
+<histogram name="Notifications.Windows.DisplayStatus"
+    enum="WindowsNotificationDisplayStatus" expires_after="M90">
+  <owner>finnur@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>
+    The status of Display requests in NotificationPlatformBridgeWin (Windows
+    only). Logged whenever a notification is displayed. For a more detailed
+    error about CREATE_TOAST_NOTIFIER_WITH_ID_FAILED and SHOWING_TOAST_FAILED,
+    see Notification.Windows histograms CreateToastManagerErrorCode and
+    ShowFailedErrorCode (respectively).
+  </summary>
+</histogram>
+
+<histogram name="Notifications.Windows.GetDisplayedLaunchIdStatus"
+    enum="WindowsNotificationGetDisplayedLaunchIdStatus" expires_after="M87">
+  <owner>finnur@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>
+    The status of decoding launch ids while processing a GetDisplayed requests
+    in NotificationPlatformBridgeWin (Windows only). Logged whenever a request
+    to retrieve all displayed notifications comes in.
+  </summary>
+</histogram>
+
+<histogram name="Notifications.Windows.GetDisplayedStatus"
+    enum="WindowsNotificationGetDisplayedStatus" expires_after="M87">
+  <owner>finnur@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>
+    The status of GetDisplayedStatus requests in NotificationPlatformBridgeWin
+    (Windows only). Logged whenever a request to retrieve all displayed
+    notifications comes in.
+  </summary>
+</histogram>
+
+<histogram name="Notifications.Windows.GetNotificationLaunchIdStatus"
+    enum="WindowsNotificationGetNotificationLaunchIdStatus" expires_after="M87">
+  <owner>finnur@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>
+    The status of GetNotificationLaunchId requests in
+    NotificationPlatformBridgeWin (Windows only). Logged whenever a request to
+    decode the GetNotificationLaunchId comes in.
+  </summary>
+</histogram>
+
+<histogram name="Notifications.Windows.GetSettingPolicy"
+    enum="WindowsNotificationGetSettingPolicy" expires_after="M90">
+  <owner>finnur@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>
+    The policy value provided by get_Setting in NotificationPlatformBridgeWin
+    (Windows only). Logged whenever a request to show a notification comes in.
+  </summary>
+</histogram>
+
+<histogram name="Notifications.Windows.GetSettingStatus"
+    enum="WindowsNotificationGetSettingStatus" expires_after="M87">
+  <owner>finnur@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>
+    The return value of get_Setting calls in NotificationPlatformBridgeWin
+    (Windows only). Logged whenever a request to show a notification comes in.
+  </summary>
+</histogram>
+
+<histogram name="Notifications.Windows.HandleEventStatus"
+    enum="WindowsNotificationHandleEventStatus" expires_after="M87">
+  <owner>finnur@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>
+    The status of HandleEvent requests in NotificationPlatformBridgeWin (Windows
+    only). Logged whenever a notification event is being handled.
+  </summary>
+</histogram>
+
+<histogram name="Notifications.Windows.HistoryStatus"
+    enum="WindowsNotificationHistoryStatus" expires_after="M87">
+  <owner>finnur@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>
+    The status of History requests in NotificationPlatformBridgeWin (Windows
+    only). Logged whenever history is requested for notifications.
+  </summary>
+</histogram>
+
+<histogram name="Notifications.Windows.LaunchIdDecodeStatus"
+    enum="WindowsNotificationLaunchIdDecodeStatus" expires_after="M87">
+  <owner>chengx@chromium.org</owner>
+  <owner>finnur@chromium.org</owner>
+  <summary>
+    Used to indicate the status of decoding an input launch id string (Windows
+    only). Logged whenever a notification event is being handled.
+  </summary>
+</histogram>
+
+<histogram name="Notifications.Windows.OnFailedStatus"
+    enum="WindowsNotificationOnFailedStatus" expires_after="M87">
+  <owner>chengx@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>
+    The status of OnFailed requests in NotificationPlatformBridgeWin (Windows
+    only). Logged whenever a failed event is handled.
+  </summary>
+</histogram>
+
+<histogram name="Notifications.Windows.SetReadyCallbackStatus2"
+    enum="WindowsNotificationSetReadyCallbackStatus2" expires_after="M90">
+  <owner>chengx@chromium.org</owner>
+  <owner>finnur@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>
+    The status of SetReadyCallback requests in NotificationPlatformBridgeWin
+    (Windows only). Logged once at startup.
+  </summary>
+</histogram>
+
+<histogram name="Notifications.Windows.ShowFailedErrorCode" enum="Hresult"
+    expires_after="M87">
+  <owner>finnur@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>
+    The HRESULT returned by the Windows Action Center, when trying to create a
+    toast manager fails. This provides a more detailed error in the cases the
+    histogram Notifications.Windows.DisplayStatus reported SHOWING_TOAST_FAILED.
+  </summary>
+</histogram>
+
+<histogram name="Notifications.Windows.StartMenuShortcutStatus"
+    enum="WindowsNotificationStartMenuShortcutStatus" expires_after="M90">
+  <owner>chengx@chromium.org</owner>
+  <owner>finnur@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>
+    Used to indicate the status of start menu shortcut (Windows only). Logged
+    whenever a notification display attempt is made.
+  </summary>
+</histogram>
+
+<histogram name="Notifications.XPCConnectionEvent" enum="XPCConnectionEvent"
+    expires_after="M87">
+  <owner>peter@chromium.org</owner>
+  <owner>rsesek@chromium.org</owner>
+  <summary>
+    Mac only. Records the different events of a Notification XPC connection.
+    These are recorded by monitoring the different error callbacks provided by
+    the XPC connection object.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

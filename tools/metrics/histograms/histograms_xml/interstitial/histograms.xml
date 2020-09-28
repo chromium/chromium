@@ -1,0 +1,260 @@
+<!--
+Copyright 2020 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of interstitial histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please send CLs to chromium-metrics-reviews@google.com rather than to specific
+individuals. These CLs will be automatically reassigned to a reviewer within
+about 5 minutes. This approach helps the metrics team to load-balance incoming
+reviews. Googlers can read more about this at go/gwsq-gerrit.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="interstitial.captive_portal"
+    enum="CaptivePortalBlockingPageEvent" expires_after="M85">
+  <owner>meacer@chromium.org</owner>
+  <summary>
+    User action when the user is shown a captive portal error page.
+  </summary>
+</histogram>
+
+<histogram name="interstitial.decision" enum="SecurityInterstitialDecision"
+    expires_after="M89">
+  <owner>estark@chromium.org</owner>
+  <owner>carlosil@chromium.org</owner>
+  <summary>
+    User decision when presented with a security interstitial. As of M44,
+    subresource interstitials were split into their own entries. As of M52,
+    social_engineering_ads* and social_engineering_landing* interstitial reasons
+    are split into their own entries from phishing*.
+  </summary>
+</histogram>
+
+<histogram name="interstitial.decision.repeat_visit"
+    enum="SecurityInterstitialDecision" expires_after="M89">
+  <owner>felt@chromium.org</owner>
+  <owner>carlosil@chromium.org</owner>
+  <summary>
+    User decision when presented with a security interstitial, on a site that
+    the user had previously visited. As of M44, subresource interstitials were
+    split into their own entries. As of M52, social_engineering_ads* and
+    social_engineering_landing* interstitial reasons are split into their own
+    entries from phishing*.
+  </summary>
+</histogram>
+
+<histogram name="interstitial.interaction"
+    enum="SecurityInterstitialInteraction" expires_after="M89">
+  <owner>estark@chromium.org</owner>
+  <owner>carlosil@chromium.org</owner>
+  <summary>
+    User interactions with a security interstitial. As of M44, subresource
+    interstitials were split into their own entries. As of M52,
+    social_engineering_ads* and social_engineering_landing* interstitial reasons
+    are split into their own entries from phishing*.
+  </summary>
+</histogram>
+
+<histogram name="interstitial.ssl.captive_portal" enum="SSLCaptivePortal"
+    expires_after="M85">
+  <owner>meacer@chromium.org</owner>
+  <summary>
+    Record possible states of captive portals. This histogram is emitted
+    (possibly multiple times to different buckets) whenever a ssl interstitial
+    page is displayed and captive portal detection is enabled. The captive
+    portal technique forces a client on a network to see a special web page
+    (usually for authentication purposes) before using the internet normally.
+  </summary>
+</histogram>
+
+<histogram name="interstitial.ssl.cause.nonoverridable" enum="SSLErrorCauses"
+    expires_after="M90">
+  <owner>estark@chromium.org</owner>
+  <owner>carlosil@chromium.org</owner>
+  <summary>
+    Possible non-attack causes of the non-overridable SSL interstitial. Many
+    errors are not reported in this histogram and new errors may be added over
+    time, therefore one should not look at the breakdown of this histogram (one
+    bucket divided by the sum) because that will be inaccurate. Instead, one
+    should look at each bucket count divided by the count of the ssl errors of
+    that type. E.g. WWW mismatch is recorded only when the ssl error is
+    CERT_COMMON_NAME_INVALID, so one should look at the bucket count of WWW
+    mismatch divided by the bucket count of CERT_COMMON_NAME_INVALID in the
+    histogram interstitial.ssl_error_type.
+  </summary>
+</histogram>
+
+<histogram name="interstitial.ssl.cause.overridable" enum="SSLErrorCauses"
+    expires_after="M89">
+  <owner>estark@chromium.org</owner>
+  <owner>carlosil@chromium.org</owner>
+  <summary>
+    Possible non-attack causes of the overridable SSL interstitial. Many errors
+    are not reported in this histogram and new errors may be added over time,
+    therefore one should not look at the breakdown of this histogram (one bucket
+    divided by the sum) because that will be inaccurate. Instead, one should
+    look at each bucket count divided by the count of the ssl errors of that
+    type. E.g. WWW mismatch is recorded only when the ssl error is
+    CERT_COMMON_NAME_INVALID, so one should look at the bucket count of WWW
+    mismatch divided by the bucket count of CERT_COMMON_NAME_INVALID in the
+    histogram interstitial.ssl_error_type.
+  </summary>
+</histogram>
+
+<histogram name="interstitial.ssl.clockstate.build_time" enum="ClockStates"
+    expires_after="M85">
+  <owner>mab@chromium.org</owner>
+  <summary>
+    State of the system clock, as inferred from the build timestamp, when an SSL
+    CERT_INVALID_DATE error is seen.
+  </summary>
+</histogram>
+
+<histogram name="interstitial.ssl.clockstate.network3"
+    enum="NetworkClockStates" expires_after="M85">
+  <owner>estark@chromium.org</owner>
+  <owner>mab@chromium.org</owner>
+  <summary>
+    State of the system clock, relative to network time, when an SSL
+    CERT_INVALID_DATE error is seen.
+  </summary>
+</histogram>
+
+<histogram name="interstitial.ssl.connection_type"
+    enum="ResourcePrefetchPredictorNetworkType" expires_after="M77">
+  <owner>felt@chromium.org</owner>
+  <owner>carlosil@chromium.org</owner>
+  <summary>
+    The histogram shows the connection types associated with SSL warnings. E.g.,
+    do more warnings occur on WiFi?
+  </summary>
+</histogram>
+
+<histogram name="interstitial.ssl.did_user_revoke_decisions2"
+    enum="BooleanRevoked" expires_after="M89">
+  <owner>carlosil@chromium.org</owner>
+  <summary>
+    Specifies when a user enters the page info menu whether or not the user
+    pressed the SSL decisions revoke button. This is logged when the page info
+    UI is closed, only if the button was visible in the page info.
+  </summary>
+</histogram>
+
+<histogram name="interstitial.ssl.visited_site_after_warning" enum="Boolean"
+    expires_after="M77">
+  <owner>carlosil@chromium.org</owner>
+  <summary>
+    Records when a user visits a site after clicking through a certificate
+    warning.
+  </summary>
+</histogram>
+
+<histogram name="interstitial.ssl_error_handler" enum="SSLErrorHandlerEvent"
+    expires_after="M89">
+  <owner>meacer@chromium.org</owner>
+  <owner>carlosil@chromium.org</owner>
+  <owner>estark@chromium.org</owner>
+  <summary>The type of action that the SSL error handler takes.</summary>
+</histogram>
+
+<histogram name="interstitial.ssl_error_handler.cert_date_error_delay"
+    units="ms" expires_after="M77">
+  <owner>estark@chromium.org</owner>
+  <summary>
+    When handling a certificate date error, Chrome (under certain Variations
+    Service experiments) will delay displaying the warning interstitial for up
+    to 3 seconds while querying a network time service. This histogram records
+    the amount of time for which the interstitial was delayed on this check. The
+    histogram is recorded even when a time query is not sent (for example,
+    because Chrome already had an up-to-date network timestamp that it could
+    use, or because the client is not in the experimental group that enables
+    network time queries).
+  </summary>
+</histogram>
+
+<histogram name="interstitial.ssl_error_type" enum="SSLErrorTypes"
+    expires_after="M89">
+  <owner>estark@chromium.org</owner>
+  <owner>carlosil@chromium.org</owner>
+  <summary>
+    The type of SSL error that the user encounters. This is recorded for all SSL
+    warnings, regardless of whether they are overridable.
+  </summary>
+</histogram>
+
+<histogram name="interstitial.ssl_nonoverridable.is_recurrent_error"
+    enum="BooleanRecurrentError" expires_after="M72">
+  <owner>estark@chromium.org</owner>
+  <summary>
+    Recorded when a non-overridable SSL interstitial is shown. The value is true
+    if the user has seen the same error multiple times (in which case a special
+    message is added to the interstitial).
+  </summary>
+</histogram>
+
+<histogram name="interstitial.ssl_nonoverridable.is_recurrent_error.ct_error"
+    enum="BooleanRecurrentError" expires_after="M72">
+  <owner>estark@chromium.org</owner>
+  <summary>
+    Recorded when a non-overridable SSL interstitial is shown for a Certificate
+    Transparency error. The value is true if the user has seen the same error
+    multiple times (in which case a special message is added to the
+    interstitial).
+  </summary>
+</histogram>
+
+<histogram name="interstitial.ssl_overridable.is_recurrent_error"
+    enum="BooleanRecurrentError" expires_after="M72">
+  <owner>estark@chromium.org</owner>
+  <summary>
+    Recorded when an overridable SSL interstitial is shown. The value is true if
+    the user has seen the same error multiple times (in which case a special
+    message is added to the interstitial).
+  </summary>
+</histogram>
+
+<histogram name="interstitial.ssl_overridable.is_recurrent_error.ct_error"
+    enum="BooleanRecurrentError" expires_after="M72">
+  <owner>estark@chromium.org</owner>
+  <summary>
+    Recorded when an overridable SSL interstitial is shown for a Certificate
+    Transparency error. The value is true if the user has seen the same error
+    multiple times (in which case a special message is added to the
+    interstitial).
+  </summary>
+</histogram>
+
+<histogram name="interstitial.ssl_recurrent_error.action"
+    enum="RecurrentErrorAction" expires_after="M72">
+  <owner>estark@chromium.org</owner>
+  <summary>
+    Recorded whenever the user sees or proceeds through an SSL interstitial for
+    an error that the user has seen multiple times (in which case a special
+    message is added to the interstitial).
+  </summary>
+</histogram>
+
+<histogram name="interstitial.ssl_recurrent_error.ct_error.action"
+    enum="RecurrentErrorAction" expires_after="M72">
+  <owner>estark@chromium.org</owner>
+  <summary>
+    Recorded whenever the user sees or proceeds through an SSL interstitial for
+    a Certificate Transparency error that the user has seen multiple times (in
+    which case a special message is added to the interstitial).
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

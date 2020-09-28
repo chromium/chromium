@@ -1,0 +1,220 @@
+<!--
+Copyright 2020 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of Google histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please send CLs to chromium-metrics-reviews@google.com rather than to specific
+individuals. These CLs will be automatically reassigned to a reviewer within
+about 5 minutes. This approach helps the metrics team to load-balance incoming
+reviews. Googlers can read more about this at go/gwsq-gerrit.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="GoogleUpdate.ErrorHresult" enum="Hresult" expires_after="M85">
+  <owner>grt@chromium.org</owner>
+  <summary>The HRESULT for a failed on-demand update check.</summary>
+</histogram>
+
+<histogram name="GoogleUpdate.InfoBar.DeviceFreeSpace" units="MB"
+    expires_after="M85">
+  <owner>shaktisahu@chromium.org</owner>
+  <summary>
+    (Android-only) The amount of internal memory storage that is free on the
+    file system and available to the applications when the InfoBar or update
+    menu item is shown.
+  </summary>
+</histogram>
+
+<histogram name="GoogleUpdate.Inline.AppUpdateInfo.InstallStatus"
+    enum="InlineUpdateInstallStatus" expires_after="2020-10-15">
+  <owner>dtrainor@chromium.org</owner>
+  <owner>nyquist@chromium.org</owner>
+  <summary>
+    (Android-only) Records the instances where Play update API returned the
+    current install status of inline updates.
+  </summary>
+</histogram>
+
+<histogram name="GoogleUpdate.Inline.AppUpdateInfo.UpdateAvailability"
+    enum="InlineUpdateAvailability" expires_after="2020-10-15">
+  <owner>dtrainor@chromium.org</owner>
+  <owner>nyquist@chromium.org</owner>
+  <summary>
+    (Android-only) Records the instances where Play update API returned the
+    current availability of inline updates.
+  </summary>
+</histogram>
+
+<histogram name="GoogleUpdate.Inline.CallFailure"
+    enum="InlineUpdateCallFailure" expires_after="2020-10-15">
+  <owner>dtrainor@chromium.org</owner>
+  <owner>nyquist@chromium.org</owner>
+  <summary>
+    (Android-only) Records the instances where Play update API calls failed.
+  </summary>
+</histogram>
+
+<histogram name="GoogleUpdate.Inline.StateChange.Error"
+    enum="InlineUpdateErrorCodes" expires_after="2020-10-15">
+<!-- Name completed by histogram_suffixes name="GoogleUpdate.Inline.InstallStatus" -->
+
+  <owner>dtrainor@chromium.org</owner>
+  <owner>nyquist@chromium.org</owner>
+  <summary>
+    (Android-only) Records the instances where Play update API notified us of an
+    install error during an update. This is keyed on the specific state so we
+    can tell which states are seeing which errors.
+  </summary>
+</histogram>
+
+<histogram name="GoogleUpdate.Inline.UI.Install.Source"
+    enum="UpdateInteractionSource" expires_after="2020-10-15">
+  <owner>dtrainor@chromium.org</owner>
+  <owner>nyquist@chromium.org</owner>
+  <summary>
+    (Android-only) The UI component that triggered an inline update to finish
+    and install.
+  </summary>
+</histogram>
+
+<histogram name="GoogleUpdate.Inline.UI.Retry.Source"
+    enum="UpdateInteractionSource" expires_after="2020-10-15">
+  <owner>dtrainor@chromium.org</owner>
+  <owner>nyquist@chromium.org</owner>
+  <summary>
+    (Android-only) The UI component that triggered an inline update to retry.
+  </summary>
+</histogram>
+
+<histogram name="GoogleUpdate.Inline.UI.Start.Source"
+    enum="UpdateInteractionSource" expires_after="2020-10-15">
+  <owner>dtrainor@chromium.org</owner>
+  <owner>nyquist@chromium.org</owner>
+  <summary>
+    (Android-only) The UI component that triggered an inline update to start.
+  </summary>
+</histogram>
+
+<histogram name="GoogleUpdate.InstallDetails.UpdateCohort" units="units"
+    expires_after="2019-06-01">
+  <owner>nikunjb@chromium.org</owner>
+  <owner>chrome-metrics-team@google.com</owner>
+  <summary>
+    Store the hash of update cohort name as reported by Chrome Updater on
+    Windows. Recorded at the start of metrics service.
+  </summary>
+</histogram>
+
+<histogram name="GoogleUpdate.InstallerExitCode" enum="InstallStatus"
+    expires_after="M85">
+  <owner>grt@chromium.org</owner>
+  <summary>
+    The exit code from Chrome's installer following a failed on-demand update
+    check. All values reported for this histogram fall in the
+    GOOGLE_UPDATE_ERROR_UPDATING bucket of the GoogleUpdate.UpdateErrorCode
+    histogram and the GOOPDATEINSTALL_E_INSTALLER_FAILED bucket of the
+    GoogleUpdate.ErrorHresult histogram.
+  </summary>
+</histogram>
+
+<histogram name="GoogleUpdate.MenuItem.ActionTakenAfterItemClicked"
+    enum="GoogleUpdateAfterItemClickedActions" expires_after="M85">
+  <owner>twellington@chromium.org</owner>
+  <summary>
+    (Android-only) Records whether Chrome was updated after the update menu item
+    was clicked.
+  </summary>
+</histogram>
+
+<histogram name="GoogleUpdate.MenuItem.ActionTakenOnMenuOpen"
+    enum="GoogleUpdateMenuItemActions" expires_after="M85">
+  <owner>twellington@chromium.org</owner>
+  <summary>
+    (Android-only) Records whether the update menu item was clicked when the app
+    menu was opened.
+  </summary>
+</histogram>
+
+<histogram name="GoogleUpdate.Result.Session" enum="BooleanSuccess"
+    expires_after="2020-10-15">
+<!-- Name completed by histogram_suffixes name="GoogleUpdate.Result.UpdateType" -->
+
+  <owner>dtrainor@chromium.org</owner>
+  <owner>nyquist@chromium.org</owner>
+  <summary>
+    (Android-only) Whether or not an update was successful when looking at the
+    Chrome version on the next session where there is no update in progress.
+  </summary>
+</histogram>
+
+<histogram name="GoogleUpdate.Result.TimeWindow" enum="BooleanSuccess"
+    expires_after="2020-10-15">
+<!-- Name completed by histogram_suffixes name="GoogleUpdate.Result.UpdateType" -->
+
+  <owner>dtrainor@chromium.org</owner>
+  <owner>nyquist@chromium.org</owner>
+  <summary>
+    (Android-only) Whether or not an update was successful within a specific
+    server-configured window of time (e.g. an update may not occur right after
+    the user attempts to start it, but if they update sometime in the next X
+    days, we can possibly attribute it to the update flow we started). An
+    example window value could be on the order of days (e.g. 2 days since an
+    update started).
+  </summary>
+</histogram>
+
+<histogram name="GoogleUpdate.StartingUpdateState"
+    enum="BooleanAlreadyUpdating" expires_after="2020-10-15">
+  <owner>dtrainor@chromium.org</owner>
+  <owner>nyquist@chromium.org</owner>
+  <summary>
+    (Android-only) Whether or not an update was being tracked as 'in progress'
+    when another update was started.
+  </summary>
+</histogram>
+
+<histogram name="GoogleUpdate.StartUp.State" enum="UpdateState"
+    expires_after="2020-10-15">
+  <owner>dtrainor@chromium.org</owner>
+  <owner>nyquist@chromium.org</owner>
+  <summary>
+    (Android-only) The state of any in-progress updates when the process first
+    starts and queries for it.
+  </summary>
+</histogram>
+
+<histogram name="GoogleUpdate.UnexpectedState" units="units"
+    expires_after="M85">
+  <owner>grt@chromium.org</owner>
+  <summary>
+    An unrecognized CurrentState value received from Google Update while polling
+    for the status of an on-demand update check.
+  </summary>
+</histogram>
+
+<histogram name="GoogleUpdate.UpdateErrorCode" enum="GoogleUpdateErrorCode"
+    expires_after="M85">
+  <owner>grt@chromium.org</owner>
+  <summary>The error code for a failed on-demand update check.</summary>
+</histogram>
+
+<histogram name="GoogleUpdate.UpgradeResult" enum="GoogleUpdateUpgradeStatus"
+    expires_after="M85">
+  <owner>grt@chromium.org</owner>
+  <summary>The result of an on-demand update check.</summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

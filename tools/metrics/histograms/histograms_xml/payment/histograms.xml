@@ -1,0 +1,234 @@
+<!--
+Copyright 2020 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of Payment histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please send CLs to chromium-metrics-reviews@google.com rather than to specific
+individuals. These CLs will be automatically reassigned to a reviewer within
+about 5 minutes. This approach helps the metrics team to load-balance incoming
+reviews. Googlers can read more about this at go/gwsq-gerrit.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="PaymentRequest.CheckoutFunnel"
+    enum="PaymentRequestCheckoutFunnelSteps" expires_after="M90">
+  <owner>danyao@chromium.org</owner>
+  <owner>web-payments-team@google.com</owner>
+  <summary>
+    Counts the number of Payment Requests (PR) that go through each checkout
+    step. A single PR may be counted in multiple buckets depending on its final
+    status. e.g. A completed PR will be counted in all of the following buckets
+    1- Initiated, 2- show() called 3- Payment request triggered 4- Payment
+    handler invoked, 5- Completed.
+  </summary>
+</histogram>
+
+<histogram name="PaymentRequest.CheckoutFunnel.Aborted"
+    enum="PaymentRequestAbortReason" expires_after="M85">
+  <owner>danyao@chromium.org</owner>
+  <owner>web-payments-team@google.com</owner>
+  <summary>The reason that lead to an abort of the Payment Request.</summary>
+</histogram>
+
+<histogram name="PaymentRequest.CheckoutFunnel.NoShow"
+    enum="PaymentRequestNoShowReason" expires_after="2020-05-24">
+  <owner>danyao@chromium.org</owner>
+  <owner>web-payments-team@google.com</owner>
+  <summary>
+    The reason that leads to the Payment Request not being shown to the user.
+  </summary>
+</histogram>
+
+<histogram name="PaymentRequest.Events" units="bitfield value"
+    expires_after="2021-01-31">
+  <owner>danyao@chromium.org</owner>
+  <owner>web-payments-team@google.com</owner>
+  <summary>
+    A bitfield representing the different events that happened during the
+    Payment Request.
+  </summary>
+</histogram>
+
+<histogram name="PaymentRequest.JourneyLoggerHasRecorded" enum="Boolean"
+    expires_after="2021-01-31">
+  <owner>sahel@chromium.org</owner>
+  <owner>web-payments-team@google.com</owner>
+  <summary>
+    Whether a journey logger has recorded an events bit field or not.
+  </summary>
+</histogram>
+
+<histogram name="PaymentRequest.JourneyLoggerHasRecordedMultipleTimes"
+    enum="Boolean" expires_after="M85">
+  <owner>sahel@chromium.org</owner>
+  <owner>web-payments-team@google.com</owner>
+  <summary>
+    When a journey logger attempts to record multiple events bit fields.
+  </summary>
+</histogram>
+
+<histogram name="PaymentRequest.MissingContactFields"
+    enum="PaymentRequestMissingContactFields" expires_after="2021-03-01">
+  <owner>sahel@chromium.org</owner>
+  <owner>web-payments-team@google.com</owner>
+  <summary>
+    A bitfield representing different missing fields of the contact section in
+    payment sheet. This only gets recorded when no complete contact profile is
+    available. In case of multiple partially complete profiles, this is only
+    recorded for the most complete one which is also the first profile in the
+    suggestion list.
+  </summary>
+</histogram>
+
+<histogram name="PaymentRequest.MissingPaymentFields"
+    enum="PaymentRequestMissingPaymentFields" expires_after="2021-03-01">
+  <owner>sahel@chromium.org</owner>
+  <owner>web-payments-team@google.com</owner>
+  <summary>
+    A bitfield representing different missing fields of the payment info section
+    in the payment sheet. This only gets recorded when no complete payment
+    instrument is available (SW based instruments are always considered as
+    complete). In case of multiple partially complete cards this is only
+    recorded for the first card in the suggestion list.
+  </summary>
+</histogram>
+
+<histogram name="PaymentRequest.MissingShippingFields"
+    enum="PaymentRequestMissingShippingFields" expires_after="2021-03-01">
+  <owner>sahel@chromium.org</owner>
+  <owner>web-payments-team@google.com</owner>
+  <summary>
+    A bitfield representing different missing fields of the shipping section in
+    the payment sheet. This only gets recorded when no complete shipping profile
+    is available. In case of multiple partially complete profiles, this is only
+    recorded for the most complete one which is also the first profile in the
+    suggestion list.
+  </summary>
+</histogram>
+
+<histogram name="PaymentRequest.NumberOfSuggestionsShown" units="units"
+    expires_after="2021-01-24">
+  <owner>danyao@chromium.org</owner>
+  <owner>web-payments-team@google.com</owner>
+  <summary>
+    The number of suggestions shown to the user during a payment request.
+  </summary>
+</histogram>
+
+<histogram name="PaymentRequest.RefetchIconForInstalledApp" enum="Boolean"
+    expires_after="2021-06-24">
+  <owner>sahel@chromium.org</owner>
+  <owner>web-payments-team@google.com</owner>
+  <summary>
+    True when chrome crawls to refetch the missing icon of an already installed
+    payment app.
+  </summary>
+</histogram>
+
+<histogram
+    name="PaymentRequest.SecurePaymentConfirmationCredentialIdSizeInBytes"
+    units="bytes" expires_after="M93">
+  <owner>danyao@chromium.org</owner>
+  <owner>web-payments-team@google.com</owner>
+  <summary>
+    Records the size of Credential ID for secure-payment-confirmation method in
+    bytes.
+  </summary>
+</histogram>
+
+<histogram name="PaymentRequest.ServiceWorkerStatusCodeTimeout" enum="Boolean"
+    expires_after="2021-05-24">
+  <owner>sahel@chromium.org</owner>
+  <owner>web-payments-team@google.com</owner>
+  <summary>True when a service worker times out 5 mins after request.</summary>
+</histogram>
+
+<histogram name="PaymentRequest.TimeToCheckout.Completed" units="ms"
+    expires_after="2021-01-31">
+  <owner>sahel@chromium.org</owner>
+  <owner>web-payments-team@google.com</owner>
+  <summary>
+    Records the time between a payment request .show() and its completion.
+  </summary>
+</histogram>
+
+<histogram name="PaymentRequest.TimeToCheckout.Completed.Shown" units="ms"
+    expires_after="2021-01-31">
+<!-- Name completed by histogram_suffixes name="PaymentRequestCompletedInstrument" -->
+
+  <owner>sahel@chromium.org</owner>
+  <owner>web-payments-team@google.com</owner>
+  <summary>
+    Records the time between a payment request .show() and its completion when
+    payment sheet is shown.
+  </summary>
+</histogram>
+
+<histogram name="PaymentRequest.TimeToCheckout.Completed.SkippedShow"
+    units="ms" expires_after="2021-01-31">
+<!-- Name completed by histogram_suffixes name="PaymentRequestCompletedInstrument" -->
+
+  <owner>sahel@chromium.org</owner>
+  <owner>web-payments-team@google.com</owner>
+  <summary>
+    Records the time between a payment request .show() and its completion when
+    payment sheet is skipped.
+  </summary>
+</histogram>
+
+<histogram name="PaymentRequest.TimeToCheckout.OtherAborted" units="ms"
+    expires_after="2021-01-31">
+  <owner>sahel@chromium.org</owner>
+  <owner>web-payments-team@google.com</owner>
+  <summary>
+    Records the time between a payment request .show() and its termination by
+    any factors other than the user (e.g. merchant).
+  </summary>
+</histogram>
+
+<histogram name="PaymentRequest.TimeToCheckout.UserAborted" units="ms"
+    expires_after="2021-01-31">
+<!-- Name completed by histogram_suffixes name="PaymentRequestPaymentSheetShowStatus" -->
+
+  <owner>sahel@chromium.org</owner>
+  <owner>web-payments-team@google.com</owner>
+  <summary>
+    Records the time between a payment request .show() and its termination by
+    user.
+  </summary>
+</histogram>
+
+<histogram name="PaymentRequest.TransactionAmount.Completed"
+    enum="PaymentRequestTransactionSize" expires_after="2021-01-24">
+  <owner>sahel@chromium.org</owner>
+  <owner>web-payments-team@google.com</owner>
+  <summary>
+    Records the transaction amounts completed using payment request API after
+    converting to USD.
+  </summary>
+</histogram>
+
+<histogram name="PaymentRequest.TransactionAmount.Triggered"
+    enum="PaymentRequestTransactionSize" expires_after="2021-01-31">
+  <owner>sahel@chromium.org</owner>
+  <owner>web-payments-team@google.com</owner>
+  <summary>
+    Records the transaction amounts triggered using payment request API after
+    converting to USD.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

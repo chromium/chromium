@@ -1,0 +1,234 @@
+<!--
+Copyright 2020 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of Print histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please send CLs to chromium-metrics-reviews@google.com rather than to specific
+individuals. These CLs will be automatically reassigned to a reviewer within
+about 5 minutes. This approach helps the metrics team to load-balance incoming
+reviews. Googlers can read more about this at go/gwsq-gerrit.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="PrintPreview.DestinationAction"
+    enum="PrintPreviewPrintDestinationBuckets" expires_after="2021-07-01">
+  <owner>rbpotter@chromium.org</owner>
+  <owner>thestig@chromium.org</owner>
+  <summary>
+    Actions performed by the user when the print destination search widget is
+    shown to the user.
+  </summary>
+</histogram>
+
+<histogram name="PrintPreview.InitialDisplayTime" units="ms"
+    expires_after="2021-05-10">
+  <owner>thestig@chromium.org</owner>
+  <owner>dhoss@chromium.org</owner>
+  <summary>
+    Time from when print preview is initiated until the initial preview is sent
+    to the preview tab for rendering.
+  </summary>
+</histogram>
+
+<histogram name="PrintPreview.InitializationTime" units="ms"
+    expires_after="never">
+<!-- expires-never: Monitors printing system health. -->
+
+  <owner>thestig@chromium.org</owner>
+  <owner>dhoss@chromium.org</owner>
+  <summary>
+    Time from when print preview is initiated until the preview PDF generation
+    is started.
+  </summary>
+</histogram>
+
+<histogram name="PrintPreview.ManagePrinters" units="units"
+    expires_after="2020-02-23">
+  <owner>thestig@chromium.org</owner>
+  <summary>
+    Count the number of requests received to show the manage printers dialog.
+  </summary>
+</histogram>
+
+<histogram name="PrintPreview.NumberOfPrinters" units="units"
+    expires_after="2021-04-30">
+  <owner>thestig@chromium.org</owner>
+  <owner>dhoss@chromium.org</owner>
+  <summary>
+    Count the total number of printers shown in destination drop down list.
+  </summary>
+</histogram>
+
+<histogram name="PrintPreview.PrintDocumentSize.HTML" units="KB"
+    expires_after="2021-03-07">
+  <owner>thestig@chromium.org</owner>
+  <owner>dmazzoni@chromium.org</owner>
+  <summary>
+    The average size of a page in the printed document when the source is HTML.
+  </summary>
+</histogram>
+
+<histogram name="PrintPreview.PrintDocumentSize.PDF" units="KB"
+    expires_after="2020-12-31">
+  <owner>thestig@chromium.org</owner>
+  <owner>dhoss@chromium.org</owner>
+  <summary>
+    The average size of a page in the printed document when the source is PDF.
+  </summary>
+</histogram>
+
+<histogram name="PrintPreview.PrintDocumentType"
+    enum="PrintPreviewPrintDocumentTypeBuckets" expires_after="2021-03-21">
+  <owner>rbpotter@chromium.org</owner>
+  <summary>
+    Track type of documents printed (HTML vs PDF). Recorded immediately after a
+    user requests that a document be printed.
+  </summary>
+</histogram>
+
+<histogram name="PrintPreview.PrinterStatus.AttemptedPrintWithErrorStatus"
+    enum="Boolean" expires_after="2021-08-17">
+  <owner>gavinwill@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records true if the user printed, or false if the user canceled, while being
+    shown a red/error status for their selected printer on Chrome OS.
+  </summary>
+</histogram>
+
+<histogram name="PrintPreview.PrinterStatus.AttemptedPrintWithGoodStatus"
+    enum="Boolean" expires_after="2021-08-17">
+  <owner>gavinwill@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records true if the user printed, or false if the user canceled, while being
+    shown a green/good status for their selected printer on Chrome OS.
+  </summary>
+</histogram>
+
+<histogram name="PrintPreview.PrinterStatus.AttemptedPrintWithUnknownStatus"
+    enum="Boolean" expires_after="2021-08-17">
+  <owner>gavinwill@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records true if the user printed, or false if the user canceled, while being
+    shown a grey/unknown status for their selected printer on Chrome OS.
+  </summary>
+</histogram>
+
+<histogram name="PrintPreview.PrintSettings" enum="PrintSettings"
+    expires_after="2021-03-07">
+  <owner>thestig@chromium.org</owner>
+  <summary>
+    Track the popularity of print settings. (Settings when printing to PDF are
+    excluded from this statistic.)
+  </summary>
+</histogram>
+
+<histogram name="PrintPreview.PrintSettingsUi"
+    enum="PrintPreviewPrintSettingsUiBuckets" expires_after="2021-07-01">
+  <owner>rbpotter@chromium.org</owner>
+  <owner>thestig@chromium.org</owner>
+  <summary>
+    Actions performed by the user interacting with print settings UI elements.
+  </summary>
+</histogram>
+
+<histogram name="PrintPreview.RegeneratePreviewRequest.BeforeCancel"
+    units="units" expires_after="M77">
+  <owner>thestig@chromium.org</owner>
+  <summary>
+    The number of times regenerate preview requests received before the user
+    clicked the cancel button.
+  </summary>
+</histogram>
+
+<histogram name="PrintPreview.RegeneratePreviewRequest.BeforeFirstData"
+    units="units" expires_after="2020-02-23">
+  <owner>thestig@chromium.org</owner>
+  <summary>
+    The number of times regenerate preview requests received before the first
+    preview data is available.
+  </summary>
+</histogram>
+
+<histogram name="PrintPreview.RegeneratePreviewRequest.BeforePrint"
+    units="units" expires_after="2021-05-10">
+  <owner>thestig@chromium.org</owner>
+  <owner>dhoss@chromium.org</owner>
+  <summary>
+    The number of times regenerate preview requests received before the user
+    clicked the print button.
+  </summary>
+</histogram>
+
+<histogram name="PrintPreview.RenderAndGeneratePDFTime" units="ms"
+    expires_after="never">
+<!-- expires-never: Monitors printing system health. -->
+
+  <owner>thestig@chromium.org</owner>
+  <owner>dhoss@chromium.org</owner>
+  <summary>
+    Time taken to render and generate PDF for print preview. (Includes time to
+    reflow the page back to normal, but not the time to reflow the page to
+    prepare for printing.)
+  </summary>
+</histogram>
+
+<histogram name="PrintPreview.RenderAndGeneratePDFTimeAvgPerPage" units="ms"
+    expires_after="never">
+<!-- expires-never: Monitors printing system health. -->
+
+  <owner>thestig@chromium.org</owner>
+  <owner>dhoss@chromium.org</owner>
+  <summary>
+    Time taken to render and generate PDF for print preview divided by the
+    number of pages. (Includes time to reflow the page back to normal, but not
+    the time to reflow the page to prepare for printing.)
+  </summary>
+</histogram>
+
+<histogram name="PrintPreview.RendererError" enum="PrintPreviewFailureType"
+    expires_after="2021-05-10">
+  <owner>thestig@chromium.org</owner>
+  <owner>dhoss@chromium.org</owner>
+  <summary>
+    Count how frequently a set of pre-defined print preview errors occur.
+  </summary>
+</histogram>
+
+<histogram name="PrintPreview.RenderPDFPageTime" units="ms"
+    expires_after="2021-02-21">
+  <owner>thestig@chromium.org</owner>
+  <summary>Time taken to render each PDF page for print preview.</summary>
+</histogram>
+
+<histogram name="PrintPreview.RenderToPDFTime" units="ms"
+    expires_after="2021-01-24">
+  <owner>thestig@chromium.org</owner>
+  <summary>Time taken to render to PDF for print preview.</summary>
+</histogram>
+
+<histogram name="PrintPreview.UserAction" enum="PrintPreviewUserActionType"
+    expires_after="2021-01-31">
+  <owner>thestig@chromium.org</owner>
+  <summary>
+    Action taken by the user in the preview tab such as print, cancel, print to
+    pdf and show advanced print settings dialog.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

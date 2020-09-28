@@ -1,0 +1,679 @@
+<!--
+Copyright 2020 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of Navigation histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please send CLs to chromium-metrics-reviews@google.com rather than to specific
+individuals. These CLs will be automatically reassigned to a reviewer within
+about 5 minutes. This approach helps the metrics team to load-balance incoming
+reviews. Googlers can read more about this at go/gwsq-gerrit.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="Navigation.BackForward.AllBackTargetsSkippable" enum="Boolean"
+    expires_after="2019-12-31">
+  <owner>shivanisha@chromium.org</owner>
+  <owner>csharrison@chromium.org</owner>
+  <summary>
+    This metric logs true if all the previous entries are marked to be skipped
+    on back/forward button via the history manipulation intervention. This is
+    logged when back button is pressed (see crbug.com/907167). The goal of the
+    intervention is to intervene against pages that manipulate browser history
+    such that the user is not able to use the back button to go to the previous
+    site they interacted with.
+  </summary>
+</histogram>
+
+<histogram name="Navigation.BackForward.BackTargetSkipped" units="units"
+    expires_after="M85">
+  <owner>shivanisha@chromium.org</owner>
+  <owner>csharrison@chromium.org</owner>
+  <summary>
+    This metric counts the number of entries the history manipulation
+    intervention would have skipped when the user presses the back button (see
+    crbug.com/907167). The goal of the intervention is to intervene against
+    pages that manipulate browser history such that the user is not able to use
+    the back button to go to the previous site they interacted with.
+  </summary>
+</histogram>
+
+<histogram name="Navigation.BackForward.CacheFlags" enum="NavigationCacheEnum"
+    expires_after="M85">
+  <owner>clamy@chromium.org</owner>
+  <summary>The cache flags set on back-forward navigations.</summary>
+</histogram>
+
+<histogram name="Navigation.BackForward.ForwardTargetSkipped" units="units"
+    expires_after="M85">
+  <owner>shivanisha@chromium.org</owner>
+  <owner>csharrison@chromium.org</owner>
+  <summary>
+    This metric counts the number of entries the history manipulation
+    intervention would have skipped when the user presses the forward button
+    (see crbug.com/907167). The goal of the intervention is to intervene against
+    pages that manipulate browser history such that the user is not able to use
+    the back button to go to the previous site they interacted with.
+  </summary>
+</histogram>
+
+<histogram name="Navigation.BackForward.NavigatingToEntryMarkedToBeSkipped"
+    enum="Boolean" expires_after="2019-12-31">
+  <owner>shivanisha@chromium.org</owner>
+  <owner>csharrison@chromium.org</owner>
+  <summary>
+    This metric logs true if the existing entry being navigated to is marked to
+    be skipped on back/forward UI. This is logged at the start of navigation
+    initiated using long-press back/forward button.
+  </summary>
+</histogram>
+
+<histogram name="Navigation.BackForward.SetShouldSkipOnBackForwardUI"
+    enum="Boolean" expires_after="M85">
+  <owner>shivanisha@chromium.org</owner>
+  <owner>csharrison@chromium.org</owner>
+  <summary>
+    Whether an entry in the back-forward list is marked to be skipped on
+    subsequent back/forward button clicks as part of the history manipulation
+    intervention. This is logged when the entry is navigated away from. The goal
+    is to intervene against pages that manipulate browser history such that the
+    user is not able to use the back button to go to the previous site they
+    interacted with.
+  </summary>
+</histogram>
+
+<histogram name="Navigation.BackForward.WasCached"
+    enum="NavigationWasServedFromCache" expires_after="M85">
+  <owner>clamy@chromium.org</owner>
+  <summary>Whether the back-forward navigation was served from cache.</summary>
+</histogram>
+
+<histogram name="Navigation.ClearSiteData.Duration" units="ms"
+    expires_after="M77">
+  <owner>msramek@chromium.org</owner>
+  <summary>
+    Recorded when a navigation is deferred while clearing site data. Indicates
+    how much time the clearing took.
+  </summary>
+</histogram>
+
+<histogram name="Navigation.ClearSiteData.Parameters"
+    enum="ClearSiteDataParameters" expires_after="M77">
+  <owner>msramek@chromium.org</owner>
+  <summary>
+    The parameters of the Clear-Site-Data header. Recorded when the header is
+    successfully parsed.
+  </summary>
+</histogram>
+
+<histogram name="Navigation.CommitTimeout.ErrorCode" enum="NetErrorCodes"
+    expires_after="M82">
+  <owner>cduvall@chromium.org</owner>
+  <owner>cmumford@chromium.org</owner>
+  <summary>
+    Logs the error code for each navigation commit timeout. This will be used to
+    debug http://crbug.com/934317.
+  </summary>
+</histogram>
+
+<histogram name="Navigation.CommitTimeout.IsMainFrame" enum="BooleanMainFrame"
+    expires_after="M82">
+  <owner>cduvall@chromium.org</owner>
+  <owner>cmumford@chromium.org</owner>
+  <summary>
+    Logs whether this was a main frame navigation for each navigation commit
+    timeout. This will be used to debug http://crbug.com/934317.
+  </summary>
+</histogram>
+
+<histogram name="Navigation.CommitTimeout.IsRendererProcessReady"
+    enum="BooleanReady" expires_after="M82">
+  <owner>cduvall@chromium.org</owner>
+  <owner>cmumford@chromium.org</owner>
+  <summary>
+    Logged with the status of the renderer process for each navigation commit
+    timeout. This will be used to debug http://crbug.com/934317.
+  </summary>
+</histogram>
+
+<histogram name="Navigation.CommitTimeout.NetworkServiceAvailability"
+    enum="NetworkServiceAvailability" expires_after="M82">
+  <owner>cduvall@chromium.org</owner>
+  <owner>cmumford@chromium.org</owner>
+  <summary>
+    Logged with the status of the network service for each navigation commit
+    timeout. This will be used to debug http://crbug.com/934317.
+  </summary>
+</histogram>
+
+<histogram name="Navigation.CommitTimeout.NetworkServiceLastCrashTime"
+    units="ms" expires_after="M82">
+  <owner>cduvall@chromium.org</owner>
+  <owner>cmumford@chromium.org</owner>
+  <summary>
+    Logged with the time since the last network service crash if available for
+    each navigation commit timeout. This will be used to debug
+    http://crbug.com/934317.
+  </summary>
+</histogram>
+
+<histogram name="Navigation.CommitTimeout.NetworkServicePingTime" units="ms"
+    expires_after="M82">
+  <owner>cduvall@chromium.org</owner>
+  <owner>cmumford@chromium.org</owner>
+  <summary>
+    Logs the time it takes to make a round trip call to the network service for
+    each navigation commit timeout. This will be used to debug
+    http://crbug.com/934317.
+  </summary>
+</histogram>
+
+<histogram name="Navigation.CommitTimeout.Scheme" enum="NavigationURLScheme"
+    expires_after="M82">
+  <owner>cduvall@chromium.org</owner>
+  <owner>cmumford@chromium.org</owner>
+  <summary>
+    Logged with the navigation URL scheme for each navigation commit timeout.
+    This will be used to debug http://crbug.com/934317.
+  </summary>
+</histogram>
+
+<histogram name="Navigation.DownloadPolicy.LogArbitraryPolicyPerDownload"
+    enum="NavigationDownloadPolicy" expires_after="2020-11-01">
+  <owner>csharrison@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <summary>
+    When a navigation results in a download, logs the download policy applied to
+    that navigation. This is logged once per download and when multiple policies
+    exist, an arbitrary one will be chosen.
+  </summary>
+</histogram>
+
+<histogram name="Navigation.DownloadPolicy.LogPerPolicyApplied"
+    enum="NavigationDownloadPolicy" expires_after="2020-11-01">
+  <owner>csharrison@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <summary>
+    When a navigation results in a download, for each download policy applied to
+    that navigation, logs the policy.
+  </summary>
+</histogram>
+
+<histogram name="Navigation.EngagementTime.HTTP" units="ms" expires_after="M89">
+  <owner>estark@chromium.org</owner>
+  <owner>security-enamel@chromium.org</owner>
+  <summary>
+    The amount of time that an HTTP page was in the foreground. Recorded on
+    every page close/transition.
+  </summary>
+</histogram>
+
+<histogram name="Navigation.EngagementTime.HTTPS" units="ms"
+    expires_after="M89">
+  <owner>estark@chromium.org</owner>
+  <owner>security-enamel@chromium.org</owner>
+  <summary>
+    The amount of time that an HTTPS page was in the foreground. Recorded on
+    every page close/transition.
+  </summary>
+</histogram>
+
+<histogram name="Navigation.EngagementTime.Ratio" units="%" expires_after="M89">
+  <owner>estark@chromium.org</owner>
+  <owner>security-enamel@chromium.org</owner>
+  <summary>
+    The percentage of time that HTTPS pages were in the foreground, as compared
+    to total foreground time. Recorded whenever user metrics are uploaded.
+  </summary>
+</histogram>
+
+<histogram name="Navigation.Home.IsChromeInternal" enum="Boolean"
+    expires_after="never">
+<!-- expires-never: part of top-line metric (internal: go/chrome-browser-nsm) -->
+
+  <owner>mpearson@chromium.org</owner>
+  <owner>amaralp@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
+  <summary>
+    Emitted every time a user uses a Home button to go to their home page.
+    Records whether the page is chrome-internal (most likely the New Tab Page or
+    about:blank) or not (most likely an actual web site). For the purpose of
+    this histogram, about:, chrome: and chrome-native: are considered
+    chrome-internal; everything else is not.
+
+    This histogram is of special interest to the chrome-analysis-team@. Do not
+    change its semantics or retire it without talking to them first.
+  </summary>
+</histogram>
+
+<histogram name="Navigation.IOSNullContextInDidFailProvisionalNavigation"
+    enum="Boolean" expires_after="M85">
+  <owner>ajuma@chromium.org</owner>
+  <owner>eugenebut@chromium.org</owner>
+  <summary>
+    Logged when NavigationContext is null inside -[WKNavigationDelegate
+    webView:didFailProvisionalNavigation]. If Chrome stopped logging this metric
+    it means that it is now safe to remove workaround for
+    https://bugs.webkit.org/show_bug.cgi?id=198794.
+  </summary>
+</histogram>
+
+<histogram name="Navigation.IsLockedProcess" enum="NavigationIsLockedProcess"
+    expires_after="2021-03-07">
+  <owner>alexmos@chromium.org</owner>
+  <owner>lukasza@chromium.org</owner>
+  <summary>
+    Whether the navigation commits in a process that is locked to an origin.
+    Logged at ready-to-commit time for every navigation excluding same-document
+    navigations and errors.
+  </summary>
+</histogram>
+
+<histogram name="Navigation.IsLockedProcess.HTTPOrHTTPS"
+    enum="NavigationIsLockedProcess" expires_after="2020-12-31">
+  <owner>alexmos@chromium.org</owner>
+  <owner>lukasza@chromium.org</owner>
+  <summary>
+    Whether the navigation commits in a process that is locked to an origin.
+    Logged at ready-to-commit time for every navigation that commits with a HTTP
+    or HTTPS URL scheme, excluding same-document navigations and errors.
+  </summary>
+</histogram>
+
+<histogram name="Navigation.IsSameBrowsingInstance"
+    enum="NavigationIsSameBrowsingInstance" expires_after="2021-03-07">
+  <owner>arthursonzogni@chromium.org</owner>
+  <owner>clamy@chromium.org</owner>
+  <owner>nasko@chromium.org</owner>
+  <summary>
+    Whether a main frame navigation led to a change of BrowsingInstance or not.
+  </summary>
+</histogram>
+
+<histogram name="Navigation.IsSameProcess" enum="NavigationIsSameProcess"
+    expires_after="M85">
+  <owner>clamy@chromium.org</owner>
+  <owner>nasko@chromium.org</owner>
+  <summary>Whether the navigation led to a change of process or not.</summary>
+</histogram>
+
+<histogram name="Navigation.IsSameSiteInstance"
+    enum="NavigationIsSameSiteInstance" expires_after="2021-03-07">
+  <owner>arthursonzogni@chromium.org</owner>
+  <owner>clamy@chromium.org</owner>
+  <owner>nasko@chromium.org</owner>
+  <summary>
+    Whether the navigation led to a change of SiteInstance or not.
+  </summary>
+</histogram>
+
+<histogram name="Navigation.LoadIfNecessaryType"
+    enum="NavigationNeedsReloadType" expires_after="never">
+<!-- expires-never: Generally useful metric on Android that tracks number of automatic tab reloads and their cause.  -->
+
+  <owner>boliu@chromium.org</owner>
+  <owner>alexmos@chromium.org</owner>
+  <owner>src/base/android/OWNERS</owner>
+  <summary>
+    The type of the source of a load from LoadIfNecessary. Recorded when
+    LoadIfNecessary starts a page load. For example, on Android,
+    kRequestedByClient is recorded when user switch back to a tab with a dead
+    renderer, which causes the tab to reload.
+  </summary>
+</histogram>
+
+<histogram name="Navigation.MainFrame.FrameCount" units="frames"
+    expires_after="2021-08-01">
+  <owner>michaelpg@chromium.org</owner>
+  <owner>yilkal@chromium.org</owner>
+  <owner>cros-families-eng@google.com</owner>
+  <summary>
+    The number of frames that are present in a WebContents. Recorded once when
+    the main frame finishes loading.
+  </summary>
+</histogram>
+
+<histogram name="Navigation.MainFrame.MaxFrameCount" units="frames"
+    expires_after="2021-08-01">
+  <owner>michaelpg@chromium.org</owner>
+  <owner>yilkal@chromium.org</owner>
+  <owner>cros-families-eng@google.com</owner>
+  <summary>
+    The maximum number of loaded frames that are present in a WebContents.
+    Recorded once when the main frame is moving away from current page. This can
+    be when the WebContents is being destroyed or when it starts loading new
+    content.
+  </summary>
+</histogram>
+
+<histogram name="Navigation.MainFrame.SiteEngagementLevel"
+    enum="SiteEngagementLevel" expires_after="2021-01-31">
+  <owner>meacer@chromium.org</owner>
+  <owner>security-enamel@chromium.org</owner>
+  <summary>
+    Site engagement level of the URL of the top frame of a navigation. Only
+    counts HTTP or HTTPS URLs and ignores downloads.
+  </summary>
+</histogram>
+
+<histogram name="Navigation.MainFrameFormSubmission.SiteEngagementLevel"
+    enum="SiteEngagementLevel" expires_after="2020-12-01">
+  <owner>meacer@chromium.org</owner>
+  <owner>security-enamel@chromium.org</owner>
+  <summary>
+    Site engagement level of the URL of the top frame of a form submission. This
+    is a subset of Navigation.MainFrame.SiteEngagementLevel.
+  </summary>
+</histogram>
+
+<histogram name="Navigation.MainFrameHasRTLDomain2" enum="Boolean"
+    expires_after="M88">
+  <owner>cthomp@chromium.org</owner>
+  <owner>security-enamel@chromium.org</owner>
+  <summary>
+    Whether the main-frame navigation was to a URL with an RTL domain name. This
+    is only recorded for finished navigations and not attempts.
+  </summary>
+</histogram>
+
+<histogram name="Navigation.MainFrameHasRTLDomainDifferentPage2" enum="Boolean"
+    expires_after="M88">
+  <owner>cthomp@chromium.org</owner>
+  <owner>security-enamel@chromium.org</owner>
+  <summary>
+    Whether the main-frame navigation was to a URL with an RTL domain name,
+    recorded for each main-frame avigation that replaces a document object. This
+    is not reported for reference fragment navigations, pushState/replaceState
+    or same page history navigation. This is only recorded for finished
+    navigations and not attempts.
+  </summary>
+</histogram>
+
+<histogram name="Navigation.MainFrameProfileType2" enum="BrowserProfileType"
+    expires_after="2021-06-01">
+  <owner>rhalavati@chromium.org</owner>
+  <owner>chrome-privacy-core@google.com</owner>
+  <summary>
+    The browser profile type for each main-frame navigation, recorded after
+    navigation completion, including NTP.
+  </summary>
+</histogram>
+
+<histogram name="Navigation.MainFrameScheme2" enum="NavigationScheme"
+    expires_after="2021-06-01">
+  <owner>elawrence@chromium.org</owner>
+  <owner>estark@chromium.org</owner>
+  <summary>
+    The scheme of the URL for each main-frame navigation. This is only recorded
+    for finished navigations and not attempts.
+  </summary>
+</histogram>
+
+<histogram name="Navigation.MainFrameSchemeDifferentPage2"
+    enum="NavigationScheme" expires_after="2021-06-01">
+  <owner>elawrence@chromium.org</owner>
+  <owner>estark@chromium.org</owner>
+  <summary>
+    The scheme of the URL for each main-frame navigation that replaces a
+    document object. This is not reported for reference fragment navigations,
+    pushState/replaceState or same page history navigation. This is only
+    recorded for finished navigations and not attempts.
+  </summary>
+</histogram>
+
+<histogram name="Navigation.MainFrameSchemeDifferentPageOTR2"
+    enum="NavigationScheme" expires_after="2021-06-01">
+  <owner>elawrence@chromium.org</owner>
+  <owner>estark@chromium.org</owner>
+  <summary>
+    The scheme of the URL for each main-frame navigation that replaces a
+    document object while in incognito. This is not reported for reference
+    fragment navigations, pushState/replaceState or same page history
+    navigation. This is only recorded for finished navigations and not attempts.
+  </summary>
+</histogram>
+
+<histogram name="Navigation.MainFrameSchemeOTR2" enum="NavigationScheme"
+    expires_after="2021-06-01">
+  <owner>elawrence@chromium.org</owner>
+  <owner>estark@chromium.org</owner>
+  <summary>
+    The scheme of the URL for each main-frame navigation while in incognito.
+    This is only recorded for finished navigations and not attempts.
+  </summary>
+</histogram>
+
+<histogram name="Navigation.NavigationURLLoaderImplIOPostTime"
+    units="microseconds" expires_after="M79">
+  <owner>jam@chromium.org</owner>
+  <owner>kinuko@chromium.org</owner>
+  <summary>
+    The sum of all the times spent posting tasks between the UI and IO threads
+    inside NavigationURLLoaderImpl. Recorded when each frame navigation gets the
+    response.
+
+    Note: This metric drops reports on clients with low-resolution clocks, which
+    means these reports will be biased against a portion of the population on
+    Windows. See Windows.HasHighResolutionTimeTicks for the affected sample.
+  </summary>
+</histogram>
+
+<histogram name="Navigation.OnBeforeUnloadOverheadTime" units="ms"
+    expires_after="M89">
+  <owner>clamy@chromium.org</owner>
+  <owner>nasko@chromium.org</owner>
+  <summary>
+    Overhead time spent handling the OnBeforeUnload event from the browser
+    standpoint. More precisely, it is the total time between dispatch and
+    acknowledgment of the BeforeUnload event on the browser side, minus the
+    actual time spent executing the BeforeUnload handlers on the renderer side.
+  </summary>
+</histogram>
+
+<histogram name="Navigation.OnReceiveResponseToOnStartLoadingResponseBody"
+    units="ms" expires_after="M85">
+  <owner>falken@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Time between the two messages OnReceiveResponse and
+    OnStartLoadingResponseBody as observed by the browser process during a
+    navigation by NavigationURLLoader::URLLoaderRequestController. The idea is
+    to see whether there is a performance cost in having two separate messages,
+    as the plan is to combine them into one.
+  </summary>
+</histogram>
+
+<histogram name="Navigation.ReadyToCommitUntilCommit2" units="ms"
+    expires_after="M85">
+  <owner>clamy@chromium.org</owner>
+  <owner>nasko@chromium.org</owner>
+  <summary>
+    The time needed to commit a navigation once it is ready to commit. This is
+    the time between ReadyToCommit and DidFinishNavigation (for a navigation
+    that commits).
+  </summary>
+</histogram>
+
+<histogram name="Navigation.RequiresDedicatedProcess"
+    enum="NavigationRequiresDedicatedProcess" expires_after="2021-03-07">
+  <owner>alexmos@chromium.org</owner>
+  <owner>lukasza@chromium.org</owner>
+  <summary>
+    Whether the navigation commits in a SiteInstance that requires a dedicated
+    process. Logged at ready-to-commit time for every navigation excluding
+    same-document navigations and errors.
+  </summary>
+</histogram>
+
+<histogram name="Navigation.RequiresDedicatedProcess.HTTPOrHTTPS"
+    enum="NavigationRequiresDedicatedProcess" expires_after="2020-12-31">
+  <owner>alexmos@chromium.org</owner>
+  <owner>lukasza@chromium.org</owner>
+  <summary>
+    Whether the navigation commits in a SiteInstance that requires a dedicated
+    process. Logged at ready-to-commit time for every navigation that commits
+    with a HTTP or HTTPS URL scheme, excluding same-document navigations and
+    errors.
+  </summary>
+</histogram>
+
+<histogram name="Navigation.SecureSchemeHasSSLStatus" enum="BooleanPresent"
+    expires_after="M85">
+  <owner>jam@chromium.org</owner>
+  <summary>
+    True counts the events when a https URL commits with a SSL certificate.
+    False is when the certificate is missing. This should be at 100%, anything
+    less is probably a bug.
+  </summary>
+</histogram>
+
+<histogram name="Navigation.StartToCommit" units="ms" expires_after="M85">
+  <owner>nasko@chromium.org</owner>
+  <owner>csharrison@chromium.org</owner>
+  <summary>
+    The time delta between the start of a navigation and the time it is
+    committed.
+  </summary>
+</histogram>
+
+<histogram name="Navigation.TimeToReadyToCommit2" units="ms"
+    expires_after="M85">
+  <owner>clamy@chromium.org</owner>
+  <owner>nasko@chromium.org</owner>
+  <summary>
+    The time delta between the start of a navigation and the time it is ready to
+    commit.
+  </summary>
+</histogram>
+
+<histogram name="Navigation.TimeToURLJobStart" units="ms" expires_after="M85">
+  <owner>carlosk@chromium.org</owner>
+  <summary>
+    Time between the start of a browser-started navigation request and the
+    reception of a corresponding ResourceRequest in the network stack.
+  </summary>
+</histogram>
+
+<histogram
+    name="Navigation.URLLoaderNetworkService.OnCompleteCertificateChainsSize"
+    units="KB" expires_after="M78">
+  <owner>estark@chromium.org</owner>
+  <summary>
+    When the navigation URL loader receives an OnComplete message from the
+    network service that contains certificate chains, this histogram records the
+    size in KB of those pickled certificate chains. This histogram is recorded
+    by the navigation URLLoader for navigations that fetch from network, for
+    every request which contains an SSLInfo in its OnComplete notification.
+  </summary>
+</histogram>
+
+<histogram name="Navigation.URLLoaderNetworkService.OnCompleteHasSSLInfo"
+    enum="BooleanPresent" expires_after="M77">
+  <owner>estark@chromium.org</owner>
+  <summary>
+    Whether the network service's OnComplete message to the navigation URL
+    loader contains an SSLInfo, which should only be present for main-frame
+    requests with certificate errors. This histogram is recorded for every
+    request completion by the navigation URL loader that fetches from network.
+  </summary>
+</histogram>
+
+<histogram base="true" name="NavigationPredictor.ActionTaken"
+    enum="NavigationPredictorActionTaken" expires_after="M85">
+  <owner>tbansal@chromium.org</owner>
+  <summary>
+    Tracks action taken by navigation predictor. Recorded at the time of page
+    load.
+  </summary>
+</histogram>
+
+<histogram base="true" name="NavigationPredictor.CountOfStartedPrerenders"
+    units="count" expires_after="M85">
+  <owner>tbansal@chromium.org</owner>
+  <owner>ryansturm@chromium.org</owner>
+  <summary>
+    Reports data about the clicked link with regards to whether it was
+    prerendered by the Navigation Predictor. Recorded when the page is navigated
+    away from.
+  </summary>
+</histogram>
+
+<histogram base="true" name="NavigationPredictor.CountOfURLsAboveThreshold"
+    units="count" expires_after="M85">
+  <owner>tbansal@chromium.org</owner>
+  <owner>ryansturm@chromium.org</owner>
+  <summary>
+    Reports data about the clicked link with regards to whether it was
+    prerendered by the Navigation Predictor. Recorded when the page is navigated
+    away from.
+  </summary>
+</histogram>
+
+<histogram base="true" name="NavigationPredictor.CountOfURLsInPredictedSet"
+    units="count" expires_after="M89">
+  <owner>tbansal@chromium.org</owner>
+  <owner>ryansturm@chromium.org</owner>
+  <summary>
+    Reports data about the clicked link with regards to whether it was
+    prerendered by the Navigation Predictor. Recorded when the page is navigated
+    away from.
+  </summary>
+</histogram>
+
+<histogram name="NavigationPredictor.ExternalAndroidApp.CountPredictedURLs"
+    units="Count" expires_after="2021-07-26">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <summary>
+    Count of likely URLs for the next navigation as reported by an external
+    Android app via mayLaunchUrl() Android API. Recorded at the time the
+    prediction was received by Chrome.
+  </summary>
+</histogram>
+
+<histogram name="NavigationPredictor.IsPubliclyRoutable" enum="Boolean"
+    expires_after="M90">
+  <owner>tbansal@chromium.org</owner>
+  <owner>ryansturm@chromium.org</owner>
+  <summary>
+    Set to true if the IP address of the origin of the main frame URL is
+    publically routable. Recorded everytime a preconnect attempt is made by the
+    navigation predictor.
+  </summary>
+</histogram>
+
+<histogram base="true" name="NavigationPredictor.LinkClickedPrerenderResult"
+    enum="NavigationPredictorLinkClickedPrerenderResult" expires_after="M85">
+  <owner>ryansturm@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <summary>
+    Reports data about the clicked link with regards to whether it was
+    prerendered by the Navigation Predictor. Recorded when the user clicks a
+    link.
+  </summary>
+</histogram>
+
+<histogram name="NavigationSuggestion.Event" enum="NavigationSuggestionEvent"
+    expires_after="M89">
+  <owner>meacer@chromium.org</owner>
+  <owner>security-enamel@chromium.org</owner>
+  <summary>
+    Tracks events when the currently navigated domain name is a lookalike to one
+    of the top 10K domains or a domain that the user interacted with, resulting
+    in a navigation suggestion interstitial.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

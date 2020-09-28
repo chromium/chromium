@@ -1,0 +1,429 @@
+<!--
+Copyright 2020 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of Diagnostics histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please send CLs to chromium-metrics-reviews@google.com rather than to specific
+individuals. These CLs will be automatically reassigned to a reviewer within
+about 5 minutes. This approach helps the metrics team to load-balance incoming
+reviews. Googlers can read more about this at go/gwsq-gerrit.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="Diagnostics.Recovery.DiskSpace" enum="DiagnosticsResult"
+    expires_after="2018-08-30">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    Shows the success and failure rates of the DiskSpace recovery step that runs
+    on recovery startups. The recovery step attempts to guarantee the DiskSpace
+    test, which checks that the disk space in the volume where the user data
+    directory normally lives is not dangerously low, would pass on the next
+    startup.
+  </summary>
+</histogram>
+
+<histogram name="Diagnostics.Recovery.InstallType" enum="DiagnosticsResult"
+    expires_after="2018-08-30">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    TBD - Not run automatically yet, so this is just a placeholder for future
+    metrics collection. Any samples collected here represent users running
+    diagnostics manually.
+  </summary>
+</histogram>
+
+<histogram name="Diagnostics.Recovery.JSONBookmarks" enum="DiagnosticsResult"
+    expires_after="2018-08-30">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    Shows the success and failure rates of the JSONBookmarks recovery step that
+    runs on recovery startups. The recovery step attempts to guarantee the
+    JSONBookmarks test, which makes sure that the JSON-encoded Bookmarks file is
+    properly formed, would pass on the next startup.
+  </summary>
+</histogram>
+
+<histogram name="Diagnostics.Recovery.JSONLocalState" enum="DiagnosticsResult"
+    expires_after="2018-08-30">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    Shows the success and failure rates of the JSONLocalState recovery step that
+    runs on recovery startups. The recovery step attempts to guarantee the
+    JSONLocalState test, which makes sure that the JSON-encoded Local State file
+    is properly formed, would pass on the next startup.
+  </summary>
+</histogram>
+
+<histogram name="Diagnostics.Recovery.JSONPreferences" enum="DiagnosticsResult"
+    expires_after="2018-08-30">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    Shows the success and failure rates of the JSONPreferences recovery step
+    that runs on recovery startups. The recovery step attempts to guarantee the
+    JSONPreferences test, which makes sure that the JSON-encoded Preferences
+    file is properly formed, would pass on the next startup.
+  </summary>
+</histogram>
+
+<histogram name="Diagnostics.Recovery.PathDictionaries"
+    enum="DiagnosticsResult" expires_after="2018-08-30">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    Shows the success and failure rates of the PathDictionaries recovery step
+    that runs on recovery startups. The recovery step attempts to guarantee the
+    PathDictionaries test, which makes sure that the path to the Dictionaries
+    directory exists and has the right permissions, would pass on the next
+    startup.
+  </summary>
+</histogram>
+
+<histogram name="Diagnostics.Recovery.PathLocalState" enum="DiagnosticsResult"
+    expires_after="2018-08-30">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    Shows the success and failure rates of the PathLocalState recovery step that
+    runs on recovery startups. The recovery step attempts to guarantee the
+    PathLocalState test, which makes sure that the path to the Local State file
+    exists and has the right permissions, would pass on the next startup.
+  </summary>
+</histogram>
+
+<histogram name="Diagnostics.Recovery.PathResources" enum="DiagnosticsResult"
+    expires_after="2018-08-30">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    Shows the success and failure rates of the PathResources recovery step that
+    runs on recovery startups. The recovery step attempts to guarantee the
+    PathResources test, which makes sure that the path to the Resources
+    directory exists and has the right permissions, would pass on the next
+    startup.
+  </summary>
+</histogram>
+
+<histogram name="Diagnostics.Recovery.PathUserData" enum="DiagnosticsResult"
+    expires_after="2018-08-30">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    Shows the success and failure rates of the PathUserData recovery step that
+    runs on recovery startups. The recovery step attempts to guarantee the
+    PathUserData test, which makes sure that the path to the User Data directory
+    exists and has the right permissions, would pass on the next startup.
+  </summary>
+</histogram>
+
+<histogram name="Diagnostics.Recovery.SQLiteIntegrityCookie"
+    enum="DiagnosticsResult" expires_after="M77">
+  <owner>shess@chromium.org</owner>
+  <summary>
+    Shows the success and failure rates of the SQLiteIntegrityCookie recovery
+    step that runs on recovery startups. The recovery step attempts to guarantee
+    the SQLiteIntegrityCookie test, which checks the integrity of the Cookie
+    database, would pass on the next startup.
+  </summary>
+</histogram>
+
+<histogram name="Diagnostics.Recovery.SQLiteIntegrityDatabaseTracker"
+    enum="DiagnosticsResult" expires_after="M77">
+  <owner>shess@chromium.org</owner>
+  <summary>
+    Shows the success and failure rates of the SQLiteIntegrityDatabaseTracker
+    recovery step that runs on recovery startups. The recovery step attempts to
+    guarantee the SQLiteIntegrityDatabaseTracker test, which checks the
+    integrity of the Database Tracker database, would pass on the next startup.
+  </summary>
+</histogram>
+
+<histogram name="Diagnostics.Recovery.SQLiteIntegrityFavicons"
+    enum="DiagnosticsResult" expires_after="M77">
+  <owner>shess@chromium.org</owner>
+  <summary>
+    Shows the success and failure rates of the SQLiteIntegrityFavicons recovery
+    step that runs on recovery startups. The recovery step attempts to guarantee
+    the SQLiteIntegrityFavicons test, which checks the integrity of the Favicons
+    database, would pass on the next startup.
+  </summary>
+</histogram>
+
+<histogram name="Diagnostics.Recovery.SQLiteIntegrityHistory"
+    enum="DiagnosticsResult" expires_after="M77">
+  <owner>shess@chromium.org</owner>
+  <summary>
+    Shows the success and failure rates of the SQLiteIntegrityHistory recovery
+    step that runs on recovery startups. The recovery step attempts to guarantee
+    the SQLiteIntegrityHistory test, which checks the integrity of the History
+    database, would pass on the next startup.
+  </summary>
+</histogram>
+
+<histogram name="Diagnostics.Recovery.SQLiteIntegrityNSSCert"
+    enum="DiagnosticsResult" expires_after="2018-08-30">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    Shows the success and failure rates of the SQLiteIntegrityNSSCert recovery
+    step that runs on recovery startups. The recovery step attempts to guarantee
+    the SQLiteIntegrityNSSCert test, which checks the integrity of the NSS
+    Certificate database, would pass on the next startup.
+  </summary>
+</histogram>
+
+<histogram name="Diagnostics.Recovery.SQLiteIntegrityNSSKey"
+    enum="DiagnosticsResult" expires_after="2018-08-30">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    Shows the success and failure rates of the SQLiteIntegrityNSSKey recovery
+    step that runs on recovery startups. The recovery step attempts to guarantee
+    the SQLiteIntegrityNSSKey test, which checks the integrity of the NSS Key
+    database, would pass on the next startup.
+  </summary>
+</histogram>
+
+<histogram name="Diagnostics.Recovery.SQLiteIntegrityTopSites"
+    enum="DiagnosticsResult" expires_after="M77">
+  <owner>shess@chromium.org</owner>
+  <summary>
+    Shows the success and failure rates of the SQLiteIntegrityTopSites recovery
+    step that runs on recovery startups. The recovery step attempts to guarantee
+    the SQLiteIntegrityTopSites test, which checks the integrity of the TopSites
+    database, would pass on the next startup.
+  </summary>
+</histogram>
+
+<histogram name="Diagnostics.Recovery.SQLiteIntegrityWebData"
+    enum="DiagnosticsResult" expires_after="M85">
+  <owner>shess@chromium.org</owner>
+  <summary>
+    Shows the success and failure rates of the SQLiteIntegrityWebData recovery
+    step that runs on recovery startups. The recovery step attempts to guarantee
+    the SQLiteIntegrityWebData test, which checks the integrity of the Web Data
+    database, would pass on the next startup.
+  </summary>
+</histogram>
+
+<histogram name="Diagnostics.Recovery.Version" enum="DiagnosticsResult"
+    expires_after="2018-08-30">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    TBD - Not run automatically yet, so this is just a placeholder for future
+    metrics collection. Any samples collected here represent users running
+    diagnostics manually.
+  </summary>
+</histogram>
+
+<histogram name="Diagnostics.RecoveryRun" enum="DiagnosticsRecoveryRun"
+    expires_after="M77">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    Count of the number of times diagnostics recovery is invoked or not, and how
+    it was invoked. A sample is added to this histogram once for each startup of
+    Chrome.
+  </summary>
+</histogram>
+
+<histogram name="Diagnostics.Test.DiskSpace" enum="DiagnosticsResult"
+    expires_after="2018-08-30">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    Shows the success and failure rates of diagnostics for the DiskSpace test
+    that runs on recovery startups. The DiskSpace test checks that the disk
+    space in the volume where the user data directory normally lives is not
+    dangerously low.
+  </summary>
+</histogram>
+
+<histogram name="Diagnostics.Test.InstallType" enum="DiagnosticsResult"
+    expires_after="2018-08-30">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    TBD - Not run automatically yet, so this is just a placeholder for future
+    metrics collection. Any samples collected here represent users running
+    diagnostics manually.
+  </summary>
+</histogram>
+
+<histogram name="Diagnostics.Test.JSONBookmarks" enum="DiagnosticsResult"
+    expires_after="2018-08-30">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    Shows the success and failure rates of diagnostics for the JSONBookmarks
+    test that runs on recovery startups. The JSONBookmarks test checks to make
+    sure that the JSON encoded bookmarks file is properly formed.
+  </summary>
+</histogram>
+
+<histogram name="Diagnostics.Test.JSONLocalState" enum="DiagnosticsResult"
+    expires_after="2018-08-30">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    Shows the success and failure rates of diagnostics for the JSONLocalState
+    test that runs on recovery startups. The JSONLocalState test checks to make
+    sure that the JSON encoded Local State file is properly formed.
+  </summary>
+</histogram>
+
+<histogram name="Diagnostics.Test.JSONPreferences" enum="DiagnosticsResult"
+    expires_after="2018-08-30">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    Shows the success and failure rates of diagnostics for the JSONPreferences
+    test that runs on recovery startups. The JSONPreferences test checks to make
+    sure that the Preferences file is properly formed.
+  </summary>
+</histogram>
+
+<histogram name="Diagnostics.Test.PathDictionaries" enum="DiagnosticsResult"
+    expires_after="2018-08-30">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    Shows the success and failure rates of diagnostics for the PathDictionaries
+    test that runs on recovery startups. The PathDictionaries test checks makes
+    sure that the path to the Dictionaries folder exists and has the right
+    permissions.
+  </summary>
+</histogram>
+
+<histogram name="Diagnostics.Test.PathLocalState" enum="DiagnosticsResult"
+    expires_after="2018-08-30">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    Shows the success and failure rates of diagnostics for the PathLocalState
+    test that runs on recovery startups. The PathLocalState test checks makes
+    sure that the path to the Local State folder exists and has the right
+    permissions.
+  </summary>
+</histogram>
+
+<histogram name="Diagnostics.Test.PathResources" enum="DiagnosticsResult"
+    expires_after="2018-08-30">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    Shows the success and failure rates of diagnostics for the PathResources
+    test that runs on recovery startups. The PathResources test checks makes
+    sure that the path to the Resources folder exists and has the right
+    permissions.
+  </summary>
+</histogram>
+
+<histogram name="Diagnostics.Test.PathUserData" enum="DiagnosticsResult"
+    expires_after="2018-08-30">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    Shows the success and failure rates of diagnostics for the PathUserData test
+    that runs on recovery startups. The PathUserData test checks makes sure that
+    the path to the User Data folder exists and has the right permissions.
+  </summary>
+</histogram>
+
+<histogram name="Diagnostics.Test.SQLiteIntegrityCookie"
+    enum="DiagnosticsResult" expires_after="M77">
+  <owner>shess@chromium.org</owner>
+  <summary>
+    Shows the success and failure rates of the SQLiteIntegrityCookie test that
+    runs on recovery startups. The test checks the integrity of the Cookie
+    database.
+  </summary>
+</histogram>
+
+<histogram name="Diagnostics.Test.SQLiteIntegrityDatabaseTracker"
+    enum="DiagnosticsResult" expires_after="M77">
+  <owner>shess@chromium.org</owner>
+  <summary>
+    Shows the success and failure rates of the SQLiteIntegrityDatabaseTracker
+    test that runs on recovery startups. The test checks the integrity of the
+    Database Tracker database.
+  </summary>
+</histogram>
+
+<histogram name="Diagnostics.Test.SQLiteIntegrityFavicons"
+    enum="DiagnosticsResult" expires_after="M77">
+  <owner>shess@chromium.org</owner>
+  <summary>
+    Shows the success and failure rates of the SQLiteIntegrityFavicons test that
+    runs on recovery startups. The test checks the integrity of the Favicons
+    database.
+  </summary>
+</histogram>
+
+<histogram name="Diagnostics.Test.SQLiteIntegrityHistory"
+    enum="DiagnosticsResult" expires_after="M77">
+  <owner>shess@chromium.org</owner>
+  <summary>
+    Shows the success and failure rates of the SQLiteIntegrityHistory test that
+    runs on recovery startups. The test checks the integrity of the History
+    database.
+  </summary>
+</histogram>
+
+<histogram name="Diagnostics.Test.SQLiteIntegrityNSSCert"
+    enum="DiagnosticsResult" expires_after="2018-08-30">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    Shows the success and failure rates of the SQLiteIntegrityNSSCert test that
+    runs on recovery startups. The test checks the integrity of the NSS
+    Certificate database.
+  </summary>
+</histogram>
+
+<histogram name="Diagnostics.Test.SQLiteIntegrityNSSKey"
+    enum="DiagnosticsResult" expires_after="2018-08-30">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    Shows the success and failure rates of the SQLiteIntegrityNSSKey test that
+    runs on recovery startups. The test checks the integrity of the NSS Key
+    database.
+  </summary>
+</histogram>
+
+<histogram name="Diagnostics.Test.SQLiteIntegrityTopSites"
+    enum="DiagnosticsResult" expires_after="M77">
+  <owner>shess@chromium.org</owner>
+  <summary>
+    Shows the success and failure rates of the SQLiteIntegrityTopSites test that
+    runs on recovery startups. The test checks the integrity of the TopSites
+    database.
+  </summary>
+</histogram>
+
+<histogram name="Diagnostics.Test.SQLiteIntegrityWebData"
+    enum="DiagnosticsResult" expires_after="M77">
+  <owner>shess@chromium.org</owner>
+  <summary>
+    Shows the success and failure rates of the SQLiteIntegrityWebData test that
+    runs on recovery startups. The test checks the integrity of the Web Data
+    database.
+  </summary>
+</histogram>
+
+<histogram name="Diagnostics.Test.Version" enum="DiagnosticsResult"
+    expires_after="2018-08-30">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    TBD - Not run automatically yet, so this is just a placeholder for future
+    metrics collection. Any samples collected here represent users running
+    diagnostics manually.
+  </summary>
+</histogram>
+
+<histogram name="Diagnostics.TestFailures" enum="DiagnosticsTestName"
+    expires_after="M77">
+  <owner>shess@chromium.org</owner>
+  <summary>
+    Histogram comparing the various types of diagnostic test failures when
+    diagnostic tests are run. Note that some types of test failures cause the
+    rest of the tests to be skipped.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>
