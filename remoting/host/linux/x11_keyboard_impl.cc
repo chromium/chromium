@@ -36,8 +36,8 @@ bool FindKeycodeForKeySym(Display* display,
   for (auto i : kModifiersToTry) {
     int mods = static_cast<int>(i);
     unsigned long key_sym_with_mods;
-    if (XkbLookupKeySym(display, found_keycode, mods,
-                        nullptr, &key_sym_with_mods) &&
+    if (XkbLookupKeySym(display, found_keycode, mods, nullptr,
+                        &key_sym_with_mods) &&
         key_sym_with_mods == key_sym) {
       *modifiers = mods;
       *keycode = found_keycode;
@@ -105,17 +105,18 @@ bool X11KeyboardImpl::FindKeycode(uint32_t code_point,
 }
 
 bool X11KeyboardImpl::ChangeKeyMapping(uint32_t keycode, uint32_t code_point) {
-  KeySym sym = NoSymbol;
+  x11::KeySym sym{};
   if (code_point > 0) {
     std::string sym_hex = base::StringPrintf("U%x", code_point);
-    sym = XStringToKeysym(sym_hex.c_str());
-    if (sym == NoSymbol) {
+    sym = static_cast<x11::KeySym>(XStringToKeysym(sym_hex.c_str()));
+    if (sym == x11::KeySym{}) {
       // The server may not support Unicode-to-KeySym translation.
       return false;
     }
   }
 
-  KeySym syms[2]{sym, sym};  // {lower-case, upper-case}
+  KeySym syms[2]{static_cast<KeySym>(sym) /* lower-case */,
+                 static_cast<KeySym>(sym) /* upper-case */};
   XChangeKeyboardMapping(display_, keycode, 2, syms, 1);
   return true;
 }

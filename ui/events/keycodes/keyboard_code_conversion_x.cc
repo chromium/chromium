@@ -658,7 +658,7 @@ KeyboardCode KeyboardCodeFromXKeyEvent(const x11::Event& xev) {
     if (keycode != VKEY_UNKNOWN)
       return keycode;
 
-    KeySym keysym_shift = NoSymbol;
+    KeySym keysym_shift{};
     modifiers |= static_cast<int>(x11::KeyButMask::Shift);
     keysym_shift = TranslateKey(xkeycode, modifiers);
     MAP2 key2 = {keysym & 0xFFFF, xkeycode, keysym_shift & 0xFFFF, 0};
@@ -666,7 +666,7 @@ KeyboardCode KeyboardCodeFromXKeyEvent(const x11::Event& xev) {
     if (keycode != VKEY_UNKNOWN)
       return keycode;
 
-    KeySym keysym_altgr = NoSymbol;
+    KeySym keysym_altgr{};
     modifiers &= ~static_cast<int>(x11::KeyButMask::Shift);
     modifiers |= static_cast<int>(x11::KeyButMask::Mod1);
     keysym_altgr = TranslateKey(xkeycode, modifiers);

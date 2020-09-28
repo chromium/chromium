@@ -34,7 +34,7 @@ X11WorkspaceHandler::X11WorkspaceHandler(Delegate* delegate)
     ui::X11EventSource::GetInstance()->AddXEventDispatcher(this);
 
   x_root_window_events_ = std::make_unique<ui::XScopedEventSelector>(
-      x_root_window_, PropertyChangeMask);
+      x_root_window_, x11::EventMask::PropertyChange);
 }
 
 X11WorkspaceHandler::~X11WorkspaceHandler() {

@@ -232,7 +232,8 @@ bool SelectionOwner::ProcessTarget(x11::Atom target,
           base::TimeDelta::FromMilliseconds(kIncrementalTransferTimeoutMs);
       incremental_transfers_.emplace_back(
           requestor, target, property,
-          std::make_unique<XScopedEventSelector>(requestor, PropertyChangeMask),
+          std::make_unique<XScopedEventSelector>(
+              requestor, x11::EventMask::PropertyChange),
           it->second, 0, timeout);
 
       // Start a timer to abort the data transfer in case that the selection

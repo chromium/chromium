@@ -165,12 +165,10 @@ TEST(XEventTranslationTest, ChangedMouseButtonFlags) {
   EXPECT_EQ(0, mouseev2->changed_button_flags());
 
   // Taking in a EnterNotify XEvent
-  xcb_generic_event_t ge;
-  memset(&ge, 0, sizeof(ge));
-  auto* enter = reinterpret_cast<xcb_enter_notify_event_t*>(&ge);
-  enter->response_type = x11::CrossingEvent::EnterNotify;
-  enter->detail = NotifyVirtual;
-  x11::Event enter_event(&ge, x11::Connection::Get());
+  x11::Event enter_event(x11::CrossingEvent{
+      .opcode = x11::CrossingEvent::EnterNotify,
+      .detail = x11::NotifyDetail::Virtual,
+  });
 
   auto mouseev3 = ui::BuildMouseEventFromXEvent(enter_event);
   EXPECT_TRUE(mouseev3);

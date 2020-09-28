@@ -271,8 +271,8 @@ ClipboardX11::X11Details::X11Details()
       primary_owner_(connection_, x_window_, x11::Atom::PRIMARY) {
   SetStringProperty(x_window_, x11::Atom::WM_NAME, x11::Atom::STRING,
                     "Chromium clipboard");
-  x_window_events_ =
-      std::make_unique<XScopedEventSelector>(x_window_, PropertyChangeMask);
+  x_window_events_ = std::make_unique<XScopedEventSelector>(
+      x_window_, x11::EventMask::PropertyChange);
 
   if (X11EventSource::GetInstance())
     X11EventSource::GetInstance()->AddXEventDispatcher(this);

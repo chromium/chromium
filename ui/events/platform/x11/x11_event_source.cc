@@ -177,7 +177,7 @@ x11::Time X11EventSource::GetCurrentServerTime() {
     });
     dummy_atom_ = gfx::GetAtom("CHROMIUM_TIMESTAMP");
     dummy_window_events_ = std::make_unique<XScopedEventSelector>(
-        dummy_window_, PropertyChangeMask);
+        dummy_window_, x11::EventMask::PropertyChange);
     dummy_initialized_ = true;
   }
 

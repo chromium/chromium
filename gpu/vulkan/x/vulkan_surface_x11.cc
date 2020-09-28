@@ -19,8 +19,9 @@ class VulkanSurfaceX11::ExposeEventForwarder : public ui::XEventDispatcher {
  public:
   explicit ExposeEventForwarder(VulkanSurfaceX11* surface) : surface_(surface) {
     if (auto* event_source = ui::X11EventSource::GetInstance()) {
-      XSelectInput(gfx::GetXDisplay(), static_cast<uint32_t>(surface_->window_),
-                   ExposureMask);
+      x11::Connection::Get()->ChangeWindowAttributes(
+          {.window = static_cast<x11::Window>(surface_->window_),
+           .event_mask = x11::EventMask::Exposure});
       event_source->AddXEventDispatcher(this);
     }
   }

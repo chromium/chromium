@@ -162,13 +162,13 @@ class X11TopmostWindowFinderTest : public test::DesktopWidgetTestInteractive {
   void ShowAndSetXWindowBounds(x11::Window window, const gfx::Rect& bounds) {
     XMapWindow(xdisplay(), static_cast<uint32_t>(window));
 
-    XWindowChanges changes = {0};
-    changes.x = bounds.x();
-    changes.y = bounds.y();
-    changes.width = bounds.width();
-    changes.height = bounds.height();
-    XConfigureWindow(xdisplay(), static_cast<uint32_t>(window),
-                     CWX | CWY | CWWidth | CWHeight, &changes);
+    connection()->ConfigureWindow({
+        .window = window,
+        .x = bounds.x(),
+        .y = bounds.y(),
+        .width = bounds.width(),
+        .height = bounds.height(),
+    });
   }
 
   x11::Connection* connection() { return x11::Connection::Get(); }

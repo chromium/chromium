@@ -40,7 +40,7 @@ void TestCompositorHostX11::Show() {
       .override_redirect = x11::Bool32(true),
   });
   window_events_ =
-      std::make_unique<XScopedEventSelector>(window_, ExposureMask);
+      std::make_unique<XScopedEventSelector>(window_, x11::EventMask::Exposure);
   connection->MapWindow({window_});
   // Since this window is override-redirect, syncing is sufficient
   // to ensure the map is complete.

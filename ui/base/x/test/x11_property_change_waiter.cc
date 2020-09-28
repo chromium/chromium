@@ -22,8 +22,8 @@ X11PropertyChangeWaiter::X11PropertyChangeWaiter(x11::Window window,
     : x_window_(window), property_(property), wait_(true) {
   // Ensure that we are listening to PropertyNotify events for |window|. This
   // is not the case for windows which were not created by X11Window.
-  x_window_events_ =
-      std::make_unique<XScopedEventSelector>(x_window_, PropertyChangeMask);
+  x_window_events_ = std::make_unique<XScopedEventSelector>(
+      x_window_, x11::EventMask::PropertyChange);
 
   // Override the dispatcher so that we get events before X11Window does. We
   // must do this because X11Window stops propagation.

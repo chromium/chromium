@@ -648,7 +648,8 @@ KeySym Connection::TranslateKey(uint32_t key, unsigned int modifiers) const {
   KeySym lower;
   KeySym upper;
   if (!(modifiers & kShiftMask) &&
-      (!(modifiers & kLockMask) || (lock_meaning_ == NoSymbol))) {
+      (!(modifiers & kLockMask) ||
+       (static_cast<x11::KeySym>(lock_meaning_) == kNoSymbol))) {
     if ((n_keysyms == 1) || (syms[1] == kNoSymbol)) {
       ConvertCase(syms[0], &lower, &upper);
       return lower;

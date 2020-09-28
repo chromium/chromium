@@ -290,11 +290,13 @@ void XWindow::Init(const Configuration& config) {
 
   // TODO(erg): Maybe need to set a ViewProp here like in RWHL::RWHL().
 
-  long event_mask = ButtonPressMask | ButtonReleaseMask | FocusChangeMask |
-                    KeyPressMask | KeyReleaseMask | EnterWindowMask |
-                    LeaveWindowMask | ExposureMask | VisibilityChangeMask |
-                    StructureNotifyMask | PropertyChangeMask |
-                    PointerMotionMask;
+  auto event_mask =
+      x11::EventMask::ButtonPress | x11::EventMask::ButtonRelease |
+      x11::EventMask::FocusChange | x11::EventMask::KeyPress |
+      x11::EventMask::KeyRelease | x11::EventMask::EnterWindow |
+      x11::EventMask::LeaveWindow | x11::EventMask::Exposure |
+      x11::EventMask::VisibilityChange | x11::EventMask::StructureNotify |
+      x11::EventMask::PropertyChange | x11::EventMask::PointerMotion;
   xwindow_events_ =
       std::make_unique<XScopedEventSelector>(xwindow_, event_mask);
   connection_->Flush();

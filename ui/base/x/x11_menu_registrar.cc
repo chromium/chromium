@@ -37,7 +37,8 @@ X11MenuRegistrar::X11MenuRegistrar() {
     ui::X11EventSource::GetInstance()->AddXEventDispatcher(this);
 
   x_root_window_events_ = std::make_unique<ui::XScopedEventSelector>(
-      ui::GetX11RootWindow(), StructureNotifyMask | SubstructureNotifyMask);
+      ui::GetX11RootWindow(),
+      x11::EventMask::StructureNotify | x11::EventMask::SubstructureNotify);
 }
 
 X11MenuRegistrar::~X11MenuRegistrar() {

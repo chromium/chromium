@@ -364,7 +364,7 @@ TEST_F(X11WindowTest, WindowManagerTogglesFullscreen) {
   if (!WmSupportsHint(gfx::GetAtom("_NET_WM_STATE_FULLSCREEN")))
     return;
 
-  Display* display = gfx::GetXDisplay();
+  auto* connection = x11::Connection::Get();
 
   TestPlatformWindowDelegate delegate;
   ShapedX11ExtensionDelegate x11_extension_delegate;
@@ -407,11 +407,11 @@ TEST_F(X11WindowTest, WindowManagerTogglesFullscreen) {
   // fullscreen mode and ensure bounds are tracked correctly.
   initial_bounds.set_size({400, 400});
   {
-    XWindowChanges changes = {0};
-    changes.width = initial_bounds.width();
-    changes.height = initial_bounds.height();
-    XConfigureWindow(display, static_cast<uint32_t>(x11_window),
-                     CWHeight | CWWidth, &changes);
+    connection->ConfigureWindow({
+        .window = x11_window,
+        .width = initial_bounds.width(),
+        .height = initial_bounds.height(),
+    });
     // Ensure that the task which is posted when a window is resized is run.
     base::RunLoop().RunUntilIdle();
   }

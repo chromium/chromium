@@ -883,8 +883,8 @@ void X11Window::UpdateCursor(
 }
 
 void X11Window::OnBeginForeignDrag(x11::Window window) {
-  source_window_events_ =
-      std::make_unique<ui::XScopedEventSelector>(window, PropertyChangeMask);
+  source_window_events_ = std::make_unique<ui::XScopedEventSelector>(
+      window, x11::EventMask::PropertyChange);
 }
 
 void X11Window::OnEndForeignDrag() {

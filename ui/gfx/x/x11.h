@@ -17,99 +17,6 @@
 
 extern "C" {
 
-static constexpr auto GrabModeAsync = 1;
-
-static constexpr auto NoEventMask = 0L;
-static constexpr auto KeyPressMask = 1L << 0;
-static constexpr auto KeyReleaseMask = 1L << 1;
-static constexpr auto ButtonPressMask = 1L << 2;
-static constexpr auto ButtonReleaseMask = 1L << 3;
-static constexpr auto EnterWindowMask = 1L << 4;
-static constexpr auto LeaveWindowMask = 1L << 5;
-static constexpr auto PointerMotionMask = 1L << 6;
-static constexpr auto PointerMotionHintMask = 1L << 7;
-static constexpr auto Button1MotionMask = 1L << 8;
-static constexpr auto Button2MotionMask = 1L << 9;
-static constexpr auto Button3MotionMask = 1L << 10;
-static constexpr auto Button4MotionMask = 1L << 11;
-static constexpr auto Button5MotionMask = 1L << 12;
-static constexpr auto ButtonMotionMask = 1L << 13;
-static constexpr auto KeymapStateMask = 1L << 14;
-static constexpr auto ExposureMask = 1L << 15;
-static constexpr auto VisibilityChangeMask = 1L << 16;
-static constexpr auto StructureNotifyMask = 1L << 17;
-static constexpr auto ResizeRedirectMask = 1L << 18;
-static constexpr auto SubstructureNotifyMask = 1L << 19;
-static constexpr auto SubstructureRedirectMask = 1L << 20;
-static constexpr auto FocusChangeMask = 1L << 21;
-static constexpr auto PropertyChangeMask = 1L << 22;
-static constexpr auto ColormapChangeMask = 1L << 23;
-static constexpr auto OwnerGrabButtonMask = 1L << 24;
-
-static constexpr auto CWBackPixmap = 1L << 0;
-static constexpr auto CWBackPixel = 1L << 1;
-static constexpr auto CWBorderPixmap = 1L << 2;
-static constexpr auto CWBorderPixel = 1L << 3;
-static constexpr auto CWBitGravity = 1L << 4;
-static constexpr auto CWWinGravity = 1L << 5;
-static constexpr auto CWBackingStore = 1L << 6;
-static constexpr auto CWBackingPlanes = 1L << 7;
-static constexpr auto CWBackingPixel = 1L << 8;
-static constexpr auto CWOverrideRedirect = 1L << 9;
-static constexpr auto CWSaveUnder = 1L << 10;
-static constexpr auto CWEventMask = 1L << 11;
-static constexpr auto CWDontPropagate = 1L << 12;
-static constexpr auto CWColormap = 1L << 13;
-static constexpr auto CWCursor = 1L << 14;
-
-static constexpr auto ForgetGravity = 0;
-static constexpr auto NorthWestGravity = 1;
-static constexpr auto NorthGravity = 2;
-static constexpr auto NorthEastGravity = 3;
-static constexpr auto WestGravity = 4;
-static constexpr auto CenterGravity = 5;
-static constexpr auto EastGravity = 6;
-static constexpr auto SouthWestGravity = 7;
-static constexpr auto SouthGravity = 8;
-static constexpr auto SouthEastGravity = 9;
-static constexpr auto StaticGravity = 10;
-
-static constexpr auto Button1Mask = 1 << 8;
-static constexpr auto Button2Mask = 1 << 9;
-static constexpr auto Button3Mask = 1 << 10;
-static constexpr auto Button4Mask = 1 << 11;
-static constexpr auto Button5Mask = 1 << 12;
-
-static constexpr auto CWX = 1 << 0;
-static constexpr auto CWY = 1 << 1;
-static constexpr auto CWWidth = 1 << 2;
-static constexpr auto CWHeight = 1 << 3;
-static constexpr auto CWBorderWidth = 1 << 4;
-static constexpr auto CWSibling = 1 << 5;
-static constexpr auto CWStackMode = 1 << 6;
-
-static constexpr auto NotifyNormal = 0;
-static constexpr auto NotifyGrab = 1;
-static constexpr auto NotifyUngrab = 2;
-static constexpr auto NotifyWhileGrabbed = 3;
-
-static constexpr auto NotifyAncestor = 0;
-static constexpr auto NotifyVirtual = 1;
-static constexpr auto NotifyInferior = 2;
-static constexpr auto NotifyNonlinear = 3;
-static constexpr auto NotifyNonlinearVirtual = 4;
-static constexpr auto NotifyPointer = 5;
-static constexpr auto NotifyPointerRoot = 6;
-static constexpr auto NotifyDetailNone = 7;
-
-static constexpr auto PropModeReplace = 0;
-static constexpr auto PropModePrepend = 1;
-static constexpr auto PropModeAppend = 2;
-
-static constexpr auto AnyPropertyType = 0L;
-
-static constexpr auto NoSymbol = 0L;
-
 using Status = int;
 using Bool = int;
 using XID = unsigned long;
@@ -163,15 +70,6 @@ using XSetWindowAttributes = struct {
   Cursor cursor;
 };
 
-
-using XWindowChanges = struct {
-  int x, y;
-  int width, height;
-  int border_width;
-  Window sibling;
-  int stack_mode;
-};
-
 using XModifierKeymap = struct {
   int max_keypermod;
   KeyCode* modifiermap;
@@ -216,7 +114,6 @@ int XUngrabServer(Display*);
 unsigned long XBlackPixel(Display*, int);
 int XStoreName(Display*, Window, const char*);
 Status XIconifyWindow(Display*, Window, int);
-int XConfigureWindow(Display*, Window, unsigned int, XWindowChanges*);
 int XConvertSelection(Display*, Atom, Atom, Atom, Window, Time);
 Window XGetSelectionOwner(Display*, Atom);
 int XSetSelectionOwner(Display*, Atom, Window, Time);
