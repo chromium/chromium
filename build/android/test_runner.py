@@ -227,7 +227,7 @@ def AddCommonOptions(parser):
       dest='run_disabled', action='store_true',
       help='Also run disabled tests if applicable.')
 
-  # This is currently only implemented for gtests.
+  # These are currently only implemented for gtests.
   parser.add_argument('--isolated-script-test-output',
                       help='If present, store test results on this path.')
   parser.add_argument('--isolated-script-test-perf-output',
@@ -378,6 +378,9 @@ def AddGTestOptions(parser):
       '--gs-test-artifacts-bucket',
       help=('If present, test artifacts will be uploaded to this Google '
             'Storage bucket.'))
+  parser.add_argument(
+      '--render-test-output-dir',
+      help='If present, store rendering artifacts in this path.')
   parser.add_argument(
       '--runtime-deps-path',
       dest='runtime_deps_path', type=os.path.realpath,

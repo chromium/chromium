@@ -581,6 +581,24 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
           return link
     return None
 
+  def _PullRenderTestOutput(self, device, render_test_output_device_dir):
+    # We pull the render tests into a temp directory then copy them over
+    # individually. Otherwise we end up with a temporary directory name
+    # in the host output directory.
+    with tempfile_ext.NamedTemporaryDirectory() as tmp_host_dir:
+      try:
+        device.PullFile(render_test_output_device_dir, tmp_host_dir)
+      except device_errors.CommandFailedError:
+        logging.exception('Failed to pull render test output dir %s',
+                          render_test_output_device_dir)
+      temp_host_dir = os.path.join(
+          tmp_host_dir, os.path.basename(render_test_output_device_dir))
+      for output_file in os.listdir(temp_host_dir):
+        src_path = os.path.join(temp_host_dir, output_file)
+        dst_path = os.path.join(self._test_instance.render_test_output_dir,
+                                output_file)
+        shutil.move(src_path, dst_path)
+
   @contextlib.contextmanager
   def _ArchiveLogcat(self, device, test):
     if isinstance(test, str):
@@ -638,59 +656,72 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
             device_temp_file.DeviceTempFile(
                 adb=device.adb, dir=self._delegate.ResultsDirectory(device)),
             test_perf_output_filename)) as isolated_script_test_perf_output:
+          with contextlib_ext.Optional(
+              device_temp_file.NamedDeviceTemporaryDirectory(adb=device.adb,
+                                                             dir='/sdcard/'),
+              self._test_instance.render_test_output_dir
+          ) as render_test_output_dir:
 
-          flags = list(self._test_instance.flags)
-          if self._test_instance.enable_xml_result_parsing:
-            flags.append('--gtest_output=xml:%s' % device_tmp_results_file.name)
+            flags = list(self._test_instance.flags)
+            if self._test_instance.enable_xml_result_parsing:
+              flags.append('--gtest_output=xml:%s' %
+                           device_tmp_results_file.name)
 
-          if self._test_instance.gs_test_artifacts_bucket:
-            flags.append('--test_artifacts_dir=%s' % test_artifacts_dir.name)
+            if self._test_instance.gs_test_artifacts_bucket:
+              flags.append('--test_artifacts_dir=%s' % test_artifacts_dir.name)
 
-          if self._test_instance.isolated_script_test_output:
-            flags.append('--isolated-script-test-output=%s' %
-                         device_tmp_results_file.name)
+            if self._test_instance.isolated_script_test_output:
+              flags.append('--isolated-script-test-output=%s' %
+                           device_tmp_results_file.name)
 
-          if test_perf_output_filename:
-            flags.append('--isolated_script_test_perf_output=%s' %
-                         isolated_script_test_perf_output.name)
+            if test_perf_output_filename:
+              flags.append('--isolated_script_test_perf_output=%s' %
+                           isolated_script_test_perf_output.name)
 
-          logging.info('flags:')
-          for f in flags:
-            logging.info('  %s', f)
+            if self._test_instance.render_test_output_dir:
+              flags.append('--render-test-output-dir=%s' %
+                           render_test_output_dir.name)
 
-          with self._ArchiveLogcat(device, test) as logcat_file:
-            output = self._delegate.Run(test,
-                                        device,
-                                        flags=' '.join(flags),
-                                        timeout=timeout,
-                                        retries=0)
+            logging.info('flags:')
+            for f in flags:
+              logging.info('  %s', f)
 
-          if self._test_instance.enable_xml_result_parsing:
-            try:
-              gtest_xml = device.ReadFile(device_tmp_results_file.name)
-            except device_errors.CommandFailedError:
-              logging.exception('Failed to pull gtest results XML file %s',
-                                device_tmp_results_file.name)
-              gtest_xml = None
+            with self._ArchiveLogcat(device, test) as logcat_file:
+              output = self._delegate.Run(test,
+                                          device,
+                                          flags=' '.join(flags),
+                                          timeout=timeout,
+                                          retries=0)
 
-          if self._test_instance.isolated_script_test_output:
-            try:
-              gtest_json = device.ReadFile(device_tmp_results_file.name)
-            except device_errors.CommandFailedError:
-              logging.exception('Failed to pull gtest results JSON file %s',
-                                device_tmp_results_file.name)
-              gtest_json = None
+            if self._test_instance.enable_xml_result_parsing:
+              try:
+                gtest_xml = device.ReadFile(device_tmp_results_file.name)
+              except device_errors.CommandFailedError:
+                logging.exception('Failed to pull gtest results XML file %s',
+                                  device_tmp_results_file.name)
+                gtest_xml = None
 
-          if test_perf_output_filename:
-            try:
-              device.PullFile(isolated_script_test_perf_output.name,
-                              test_perf_output_filename)
-            except device_errors.CommandFailedError:
-              logging.exception('Failed to pull chartjson results %s',
-                                isolated_script_test_perf_output.name)
+            if self._test_instance.isolated_script_test_output:
+              try:
+                gtest_json = device.ReadFile(device_tmp_results_file.name)
+              except device_errors.CommandFailedError:
+                logging.exception('Failed to pull gtest results JSON file %s',
+                                  device_tmp_results_file.name)
+                gtest_json = None
 
-          test_artifacts_url = self._UploadTestArtifacts(device,
-                                                         test_artifacts_dir)
+            if test_perf_output_filename:
+              try:
+                device.PullFile(isolated_script_test_perf_output.name,
+                                test_perf_output_filename)
+              except device_errors.CommandFailedError:
+                logging.exception('Failed to pull chartjson results %s',
+                                  isolated_script_test_perf_output.name)
+
+            test_artifacts_url = self._UploadTestArtifacts(
+                device, test_artifacts_dir)
+
+            if render_test_output_dir:
+              self._PullRenderTestOutput(device, render_test_output_dir.name)
 
     for s in self._servers[str(device)]:
       s.Reset()

@@ -308,6 +308,7 @@ class GtestTestInstance(test_instance.TestInstance):
     self._isolated_script_test_output = args.isolated_script_test_output
     self._isolated_script_test_perf_output = (
         args.isolated_script_test_perf_output)
+    self._render_test_output_dir = args.render_test_output_dir
     self._shard_timeout = args.shard_timeout
     self._store_tombstones = args.store_tombstones
     self._suite = args.suite_name[0]
@@ -459,6 +460,10 @@ class GtestTestInstance(test_instance.TestInstance):
   @property
   def isolated_script_test_perf_output(self):
     return self._isolated_script_test_perf_output
+
+  @property
+  def render_test_output_dir(self):
+    return self._render_test_output_dir
 
   @property
   def package(self):
