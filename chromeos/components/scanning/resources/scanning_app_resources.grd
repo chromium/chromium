@@ -18,6 +18,8 @@
       <include name="IDR_SCANNING_APP_JS" file="${root_gen_dir}/chromeos/components/scanning/resources/scanning_app.js" use_base_dir="false" compress="gzip" type="BINDATA"/>
       <include name="IDR_SCANNING_APP_SCANNER_SELECT_HTML" file="scanner_select.html" compress="gzip" type="BINDATA"/>
       <include name="IDR_SCANNING_APP_SCANNER_SELECT_JS" file="${root_gen_dir}/chromeos/components/scanning/resources/scanner_select.js" use_base_dir="false" compress="gzip" type="BINDATA"/>
+      <include name="IDR_SCANNING_APP_SOURCE_SELECT_HTML" file="source_select.html" compress="gzip" type="BINDATA"/>
+      <include name="IDR_SCANNING_APP_SOURCE_SELECT_JS" file="${root_gen_dir}/chromeos/components/scanning/resources/source_select.js" use_base_dir="false" compress="gzip" type="BINDATA"/>
       <include name="IDR_SCANNING_APP_THROBBER_CSS_JS" file="${root_gen_dir}/chromeos/components/scanning/resources/throbber_css.js" use_base_dir="false" type="BINDATA"/>
       <include name="IDR_SCANNING_APP_ICON" file="app_icon_192.png" type="BINDATA" />
     </includes>

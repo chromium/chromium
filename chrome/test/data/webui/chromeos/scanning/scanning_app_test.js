@@ -9,7 +9,13 @@ import 'chrome://scanning/scanning_app.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {setScanServiceForTesting} from 'chrome://scanning/mojo_interface_provider.js';
 import {ScannerArr} from 'chrome://scanning/scanning_app_types.js';
-import {tokenToString} from 'chrome://scanning/scanning_app_util.js';
+import {getSourceTypeString, tokenToString} from 'chrome://scanning/scanning_app_util.js';
+
+const SourceType = {
+  FLATBED: chromeos.scanning.mojom.SourceType.kFlatbed,
+  ADF_SIMPLEX: chromeos.scanning.mojom.SourceType.kAdfSimplex,
+  ADF_DUPLEX: chromeos.scanning.mojom.SourceType.kAdfDuplex,
+};
 
 /**
  * @param {!mojoBase.mojom.UnguessableToken} id
@@ -22,6 +28,19 @@ function createScanner(id, displayName) {
     'displayName': strToMojoString16(displayName),
   };
   return scanner;
+}
+
+/**
+ * @param {number} type
+ * @param {!string} name
+ * @return {!chromeos.scanning.mojom.ScanSource}
+ */
+function createSource(type, name) {
+  let source = {
+    'type': type,
+    'name': name,
+  };
+  return source;
 }
 
 /**
@@ -215,5 +234,68 @@ suite('ScannerSelectTest', () => {
     assertEquals(1, select.length);
     assertEquals('No available scanners', select.options[0].textContent.trim());
     assertTrue(select.disabled);
+  });
+});
+
+suite('SourceSelectTest', () => {
+  /** @type {!SourceSelectElement} */
+  let sourceSelect;
+
+  setup(() => {
+    sourceSelect = document.createElement('source-select');
+    assertTrue(!!sourceSelect);
+    document.body.appendChild(sourceSelect);
+  });
+
+  teardown(() => {
+    sourceSelect.remove();
+    sourceSelect = null;
+  });
+
+  test('initializeSourceSelect', () => {
+    // Before options are added, the dropdown should be disabled.
+    const select = sourceSelect.$$('select');
+    assertTrue(!!select);
+    assertTrue(select.disabled);
+
+    const firstSource = createSource(SourceType.FLATBED, 'platen');
+    const secondSource = createSource(SourceType.ADF_SIMPLEX, 'adf simplex');
+    const sourceArr = [firstSource, secondSource];
+    sourceSelect.sources = sourceArr;
+    flush();
+
+    // Verify that adding more than one source results in the dropdown becoming
+    // enabled with the correct options.
+    assertFalse(select.disabled);
+    assertEquals(2, select.length);
+    assertEquals(
+        getSourceTypeString(firstSource.type),
+        select.options[0].textContent.trim());
+    assertEquals(
+        getSourceTypeString(secondSource.type),
+        select.options[1].textContent.trim());
+    assertEquals(firstSource.name, select.value);
+  });
+
+  test('sourceSelectDisabled', () => {
+    const select = sourceSelect.$$('select');
+    assertTrue(!!select);
+
+    let sourceArr = [createSource(SourceType.FLATBED, 'flatbed')];
+    sourceSelect.sources = sourceArr;
+    flush();
+
+    // Verify the dropdown is disabled when there's only one option.
+    assertEquals(1, select.length);
+    assertTrue(select.disabled);
+
+    sourceArr =
+        sourceArr.concat([createSource(SourceType.ADF_DUPLEX, 'adf duplex')]);
+    sourceSelect.sources = sourceArr;
+    flush();
+
+    // Verify the dropdown is enabled when there's more than one option.
+    assertEquals(2, select.length);
+    assertFalse(select.disabled);
   });
 });

@@ -1,0 +1,33 @@
+<style>
+  #title {
+    height: 32px;
+    padding-inline-end: 10px;
+  }
+
+  #controls {
+    display: inline-block;
+    height: 32px;
+    width: 300px;
+  }
+</style>
+<span id="title">[[i18n('sourceDropdownLabel')]]</span>
+<div id="controls">
+  <!-- TODO(jschettler): Verify this meets a11y expecations (e.g. ChromeVox
+      should announce when a new option is focused). -->
+  <select class="md-select" on-change="onSelectedSourceChange_"
+      disabled="[[disabled_]]">
+    <!-- TODO(jschettler): Figure out why hiding/disabling the option doesn't
+        remove it from the dropdown. -->
+    <template is="dom-if" if="[[!sources.length]]" restamp>
+      <!-- TODO(jschettler): Replace default option with finalized i18n
+          string. -->
+      <option value="">No sources</option>
+    </template>
+    <!-- TODO(jschettler): Determine how the sources should be sorted. -->
+    <template is="dom-repeat" items="[[sources]]" as="source">
+      <option value="[[source.name]]">
+        [[getSourceTypeString_(source.type)]]
+      </option>
+    </template>
+  </select>
+</div>

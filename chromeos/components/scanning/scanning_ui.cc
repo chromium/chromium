@@ -50,7 +50,8 @@ void AddScanningAppStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"appTitle", IDS_SCANNING_APP_TITLE},
       {"scannerDropdownLabel", IDS_SCANNING_APP_SCANNER_DROPDOWN_LABEL},
-      {"noScannersText", IDS_SCANNING_APP_NO_SCANNERS_TEXT}};
+      {"noScannersText", IDS_SCANNING_APP_NO_SCANNERS_TEXT},
+      {"sourceDropdownLabel", IDS_SCANNING_APP_SOURCE_DROPDOWN_LABEL}};
 
   for (const auto& str : kLocalizedStrings)
     html_source->AddLocalizedString(str.name, str.id);
