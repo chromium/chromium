@@ -17,7 +17,9 @@ if BLINK_TOOLS_DIR not in sys.path:
     sys.path.append(BLINK_TOOLS_DIR)
 
 from blinkpy.common.host import Host
+from blinkpy.common.html_diff import html_diff
 from blinkpy.common.system.filesystem import FileSystem
+from blinkpy.common.unified_diff import unified_diff
 from blinkpy.web_tests.models import test_failures
 
 class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
@@ -114,15 +116,38 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
                 return
             log_artifact = root_node["artifacts"].pop("log", None)
             if log_artifact:
-                artifact_subpath = self._write_log_artifact(
+                # Note that the log_artifact is a list of strings, so we join
+                # them on new lines when writing to file.
+                actual_text = "\n".join(log_artifact)
+                actual_subpath = self._write_text_artifact(
                     test_failures.FILENAME_SUFFIX_ACTUAL,
-                    results_dir, path_so_far, log_artifact)
-                root_node["artifacts"]["actual_text"] = [artifact_subpath]
+                    results_dir, path_so_far, actual_text)
+                root_node["artifacts"]["actual_text"] = [actual_subpath]
                 # Try to locate the expected output of this test, if it exists.
-                expected_subpath = self._maybe_write_expected_output(
-                    results_dir, path_so_far)
+                expected_subpath, expected_text = \
+                    self._maybe_write_expected_output(results_dir, path_so_far)
                 if expected_subpath:
                     root_node["artifacts"]["expected_text"] = [expected_subpath]
+
+                diff_content = unified_diff(expected_text, actual_text,
+                                            expected_subpath, actual_subpath)
+                diff_subpath = self._write_text_artifact(
+                    test_failures.FILENAME_SUFFIX_DIFF, results_dir,
+                    path_so_far, diff_content)
+                root_node["artifacts"]["text_diff"] = [diff_subpath]
+                # We pass the text as bytes here because the html_diff library
+                # requires that but the file contents is read-in as unicode.
+                html_diff_content = html_diff(expected_text.encode('utf-8'),
+                                              actual_text.encode('utf-8'))
+                # Ensure the diff itself is properly decoded, to avoid
+                # UnicodeDecodeErrors when writing to file. This can happen if
+                # the diff contains unicode characters but the file is written
+                # as ascii because of the default system-level encoding.
+                html_diff_content = unicode(html_diff_content, 'utf-8')
+                html_diff_subpath = self._write_text_artifact(
+                    test_failures.FILENAME_SUFFIX_HTML_DIFF, results_dir,
+                    path_so_far, html_diff_content, extension=".html")
+                root_node["artifacts"]["pretty_text_diff"] = [html_diff_subpath]
 
             screenshot_artifact = root_node["artifacts"].pop("screenshots",
                                                              None)
@@ -135,9 +160,11 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
             crashlog_artifact = root_node["artifacts"].pop("wpt_crash_log",
                                                            None)
             if crashlog_artifact:
-                artifact_subpath = self._write_log_artifact(
+                # Note that the crashlog_artifact is a list of strings, so we
+                # join them on new lines when writing to file.
+                artifact_subpath = self._write_text_artifact(
                     test_failures.FILENAME_SUFFIX_CRASH_LOG,
-                    results_dir, path_so_far, crashlog_artifact)
+                    results_dir, path_so_far, "\n".join(crashlog_artifact))
                 if artifact_subpath:
                     root_node["artifacts"]["crash_log"] = [artifact_subpath]
 
@@ -163,9 +190,13 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
             test_name: str name of the test to write expected output for
 
         Returns:
-            string path to the artifact file that the expected output was
-            written to, relative to the directory that the original output is
-            located. Returns None if there is no expected output for this test.
+            two strings:
+            - first is the path to the artifact file that the expected output
+              was written to, relative to the directory that the original output
+              is located. Returns None if there is no expected output for this
+              test.
+            - second is the text that is written to the file, or empty string if
+              there is no expected output for this test.
         """
         test_file_subpath = self.wpt_manifest.file_path_for_test_url(test_name)
         if not test_file_subpath:
@@ -174,52 +205,54 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
             # manifest) or .any.js tests (which appear in the output even though
             # they do not actually run - they have corresponding tests like
             # .any.worker.html which are covered here).
-            return None
+            return None, ""
 
         test_file_path = os.path.join(EXTERNAL_WPT_TESTS_DIR, test_file_subpath)
         expected_ini_path = test_file_path + ".ini"
         if not self.fs.exists(expected_ini_path):
-            return None
+            return None, ""
 
         # This test has checked-in expected output. It needs to be copied to the
         # results viewer directory and renamed from <test>.ini to
         # <test>-expected.txt
-        # Note: Here we read-in the checked-in ini file and pass its contents to
-        # |_write_log_artifact| to reuse code. This is probably less efficient
-        # than just copying, but makes for cleaner code.
         contents = self.fs.read_text_file(expected_ini_path)
-        return self._write_log_artifact(test_failures.FILENAME_SUFFIX_EXPECTED,
-                                        results_dir, test_name, [contents])
+        artifact_subpath = self._write_text_artifact(
+            test_failures.FILENAME_SUFFIX_EXPECTED, results_dir, test_name,
+            contents)
+        return artifact_subpath, contents
 
-    def _write_log_artifact(self, suffix, results_dir, test_name, log_artifact):
-        """Writes a log artifact to disk.
+    def _write_text_artifact(self, suffix, results_dir, test_name, artifact,
+                             extension=".txt"):
+        """Writes a text artifact to disk.
 
-        A log artifact contains some form of output for a test. It is written to
-        a txt file with a suffix generated from the log type.
+        A text artifact contains some form of text output for a test, such as
+        the actual test output, or a diff of the actual and expected outputs.
+        It is written to a txt file with a suffix generated from the log type.
 
         Args:
             suffix: str suffix of the artifact to write, e.g.
                 test_failures.FILENAME_SUFFIX_ACTUAL
             results_dir: str path to the directory that results live in
             test_name: str name of the test that this artifact is for
-            log_artifact: list of strings, the log entries for this test from
-                the json output.
+            artifact: string, the text to write for this test.
+            extension: str the filename extension to use. Defaults to ".txt" but
+                can be changed if needed (eg: to ".html" for pretty-diff)
 
         Returns:
-            string path to the artifact file that the log was written to,
-            relative to the directory that the original output is located.
+            string, the path to the artifact file that was written relative
+              to the |results_dir|.
         """
         log_artifact_sub_path = (
             os.path.join("layout-test-results",
-                         self.port.output_filename(test_name, suffix, ".txt"))
+                         self.port.output_filename(
+                             test_name, suffix, extension))
         )
         log_artifact_full_path = os.path.join(results_dir,
                                               log_artifact_sub_path)
         if not self.fs.exists(os.path.dirname(log_artifact_full_path)):
             self.fs.maybe_make_directory(
                 os.path.dirname(log_artifact_full_path))
-        self.fs.write_text_file(log_artifact_full_path,
-                                "\n".join(log_artifact))
+        self.fs.write_text_file(log_artifact_full_path, artifact)
 
         return log_artifact_sub_path
 

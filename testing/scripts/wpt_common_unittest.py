@@ -111,6 +111,21 @@ class BaseWptScriptAdapterTest(unittest.TestCase):
             ["layout-test-results/test-actual.txt"],
             updated_json["tests"]["test.html"]["artifacts"]["actual_text"])
 
+        # Ensure that a diff was also generated. Since there's no expected
+        # output, the actual text is all new. We don't validate the entire diff
+        # files to avoid checking line numbers/markup.
+        self.assertIn("+test.html actual text",
+                      written_files["/layout-test-results/test-diff.txt"])
+        self.assertEqual(
+            ["layout-test-results/test-diff.txt"],
+            updated_json["tests"]["test.html"]["artifacts"]["text_diff"])
+        self.assertIn(
+            "test.html actual text",
+            written_files["/layout-test-results/test-pretty-diff.html"])
+        self.assertEqual(
+            ["layout-test-results/test-pretty-diff.html"],
+            updated_json["tests"]["test.html"]["artifacts"]["pretty_text_diff"])
+
     def test_write_crashlog_artifact(self):
         # Ensure that crash log artifacts are written to the correct location.
         json_dict = {
@@ -223,6 +238,26 @@ class BaseWptScriptAdapterTest(unittest.TestCase):
         self.assertEqual(
             ["layout-test-results/test-expected.txt"],
             updated_json["tests"]["test.html"]["artifacts"]["expected_text"])
+
+        # Ensure that a diff was also generated. There should be both additions
+        # and deletions for this test since we have expected output. We don't
+        # validate the entire diff files to avoid checking line numbers/markup.
+        self.assertIn("-test.html checked-in metadata",
+                      written_files["/layout-test-results/test-diff.txt"])
+        self.assertIn("+test.html actual text",
+                      written_files["/layout-test-results/test-diff.txt"])
+        self.assertEqual(
+            ["layout-test-results/test-diff.txt"],
+            updated_json["tests"]["test.html"]["artifacts"]["text_diff"])
+        self.assertIn(
+            "test.html checked-in metadata",
+            written_files["/layout-test-results/test-pretty-diff.html"])
+        self.assertIn(
+            "test.html actual text",
+            written_files["/layout-test-results/test-pretty-diff.html"])
+        self.assertEqual(
+            ["layout-test-results/test-pretty-diff.html"],
+            updated_json["tests"]["test.html"]["artifacts"]["pretty_text_diff"])
 
     def test_expected_output_for_variant(self):
         # Check that an -expected.txt file is created from a checked-in metadata
