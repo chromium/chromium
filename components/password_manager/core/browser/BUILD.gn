@@ -201,6 +201,8 @@ static_library("browser") {
     "psl_matching_helper.cc",
     "psl_matching_helper.h",
     "reauth_purpose.h",
+    "site_affiliation/affiliation_fetcher_base.cc",
+    "site_affiliation/affiliation_fetcher_base.h",
     "site_affiliation/affiliation_fetcher_factory.h",
     "site_affiliation/affiliation_fetcher_factory_impl.cc",
     "site_affiliation/affiliation_fetcher_factory_impl.h",
