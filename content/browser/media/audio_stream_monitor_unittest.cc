@@ -52,7 +52,7 @@ class AudioStreamMonitorTest : public RenderViewHostTestHarness {
   void SetUp() override {
     RenderViewHostTestHarness::SetUp();
 
-    WebContentsImpl* web_contents = reinterpret_cast<WebContentsImpl*>(
+    WebContentsImpl* web_contents = static_cast<WebContentsImpl*>(
         RenderViewHostTestHarness::web_contents());
     web_contents->SetDelegate(&mock_web_contents_delegate_);
 
