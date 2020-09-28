@@ -648,8 +648,14 @@ void GlassBrowserFrameView::LayoutTitleBar() {
     window_icon_->SetVisible(show_icon);
   if (window_title_)
     window_title_->SetVisible(show_title);
-  if (!show_icon && !show_title && !web_app_frame_toolbar())
+  if (!show_icon && !show_title &&
+      (!web_app_frame_toolbar() || frame()->IsFullscreen())) {
+    // TODO(crbug.com/1132767): The "frame()->IsFullscreen()" term is required
+    // because we cannot currently lay out the toolbar in fullscreen mode
+    // without breaking a bunch of bubble anchoring. Please remove when the
+    // issue is resolved.
     return;
+  }
 
   const int icon_size =
       display::win::ScreenWin::GetSystemMetricsInDIP(SM_CYSMICON);
