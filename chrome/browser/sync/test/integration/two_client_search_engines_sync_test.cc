@@ -10,6 +10,7 @@
 #include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
+#include "chrome/test/base/search_test_utils.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/test/browser_test.h"
@@ -21,6 +22,22 @@ class TwoClientSearchEnginesSyncTest : public SyncTest {
   TwoClientSearchEnginesSyncTest() : SyncTest(TWO_CLIENT) {}
 
   ~TwoClientSearchEnginesSyncTest() override {}
+
+  bool SetupClients() override {
+    if (!SyncTest::SetupClients()) {
+      return false;
+    }
+
+    // Wait for models to load.
+    search_test_utils::WaitForTemplateURLServiceToLoad(
+        TemplateURLServiceFactory::GetForProfile(verifier()));
+    search_test_utils::WaitForTemplateURLServiceToLoad(
+        TemplateURLServiceFactory::GetForProfile(GetProfile(0)));
+    search_test_utils::WaitForTemplateURLServiceToLoad(
+        TemplateURLServiceFactory::GetForProfile(GetProfile(1)));
+
+    return true;
+  }
 
  private:
   DISALLOW_COPY_AND_ASSIGN(TwoClientSearchEnginesSyncTest);
