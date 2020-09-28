@@ -130,14 +130,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementApiTest, NoPermission) {
   ASSERT_TRUE(RunExtensionSubtest("management/no_permission", "test.html"));
 }
 
-// Disabled: http://crbug.com/174411
-#if defined(OS_WIN)
-#define MAYBE_Uninstall DISABLED_Uninstall
-#else
-#define MAYBE_Uninstall Uninstall
-#endif
-
-IN_PROC_BROWSER_TEST_F(ExtensionManagementApiTest, MAYBE_Uninstall) {
+IN_PROC_BROWSER_TEST_F(ExtensionManagementApiTest, Uninstall) {
   LoadExtensions();
   // Confirmation dialog will be shown for uninstallations except for self.
   extensions::ScopedTestDialogAutoConfirm auto_confirm(
