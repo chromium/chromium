@@ -85,7 +85,7 @@ sk_sp<SkSurface> ExternalVkImageSkiaRepresentation::BeginWriteAccess(
   // VkImage to VK_QUEUE_FAMILY_EXTERNAL before calling EndAccess().
   if (backing_impl()->need_synchronization()) {
     *end_state = std::make_unique<GrBackendSurfaceMutableState>(
-        VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_QUEUE_FAMILY_EXTERNAL);
+        VK_IMAGE_LAYOUT_UNDEFINED, VK_QUEUE_FAMILY_EXTERNAL);
   }
 
   return surface;
@@ -125,7 +125,7 @@ sk_sp<SkPromiseImageTexture> ExternalVkImageSkiaRepresentation::BeginReadAccess(
   // VK_QUEUE_FAMILY_EXTERNAL before calling EndAccess().
   if (!backing_impl()->use_separate_gl_texture()) {
     *end_state = std::make_unique<GrBackendSurfaceMutableState>(
-        VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_QUEUE_FAMILY_EXTERNAL);
+        VK_IMAGE_LAYOUT_UNDEFINED, VK_QUEUE_FAMILY_EXTERNAL);
   }
 
   access_mode_ = kRead;
