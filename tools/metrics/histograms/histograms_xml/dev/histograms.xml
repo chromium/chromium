@@ -210,7 +210,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="DevTools.KeybindSetSettingChanged" enum="DevToolsKeybindSets"
-    expires_after="2020-10-31">
+    expires_after="2021-10-31">
   <owner>yangguo@chromium.org</owner>
   <owner>jalyn@microsoft.com</owner>
   <owner>leo.lee@microsoft.com</owner>
@@ -221,7 +221,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="DevTools.KeyboardShortcutFired"
-    enum="DevToolsKeyboardShortcutAction" expires_after="2020-10-31">
+    enum="DevToolsKeyboardShortcutAction" expires_after="2021-10-31">
   <owner>yangguo@chromium.org</owner>
   <owner>jalyn@microsoft.com</owner>
   <owner>leo.lee@microsoft.com</owner>
