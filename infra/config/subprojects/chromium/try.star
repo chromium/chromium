@@ -265,7 +265,7 @@ try_.chromium_android_builder(
     goma_jobs = goma.jobs.J300,
     ssd = True,
     tryjob = try_.job(
-        experiment_percentage = 20,
+        experiment_percentage = 5,
     ),
 )
 
