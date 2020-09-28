@@ -904,7 +904,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.LoadCompletedTime" units="ms"
-    expires_after="2020-10-04">
+    expires_after="2021-06-01">
   <owner>jamescook@chromium.org</owner>
   <owner>cros-system-services@google.com</owner>
   <summary>
@@ -915,7 +915,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.LoadDocumentTime" units="ms"
-    expires_after="2020-12-01">
+    expires_after="2021-06-01">
   <owner>jamescook@chromium.org</owner>
   <owner>cros-system-services@google.com</owner>
   <summary>
