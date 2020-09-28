@@ -75,6 +75,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Event.BrowserVerifiedUserActivation" enum="BooleanSuccess"
+    expires_after="2020-12-31">
+  <owner>liviutinta@chromium.org</owner>
+  <owner>mustaq@chromium.org</owner>
+  <owner>input-dev@chromium.org</owner>
+  <summary>
+    Records whether Browser User Activation Verification is successful or not.
+    We are interested in how many times the Browser User Activation Verification
+    fails vs how many times it succeeds.
+  </summary>
+</histogram>
+
 <histogram name="Event.ClickNotFiredDueToDomManipulation" enum="BooleanHit"
     expires_after="M82">
   <owner>nzolghadr@chromium.org</owner>

@@ -13,6 +13,7 @@
 #include "base/feature_list.h"
 #include "base/lazy_instance.h"
 #include "base/macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
@@ -656,8 +657,12 @@ bool FrameTreeNode::UpdateUserActivationState(
       update_result = NotifyUserActivation(notification_type);
       break;
     case blink::mojom::UserActivationUpdateType::
-        kNotifyActivationPendingBrowserVerification:
-      if (VerifyUserActivation()) {
+        kNotifyActivationPendingBrowserVerification: {
+      const bool user_activation_verified = VerifyUserActivation();
+      // Add UMA metric for when browser user activation verification succeeds
+      base::UmaHistogramBoolean("Event.BrowserVerifiedUserActivation",
+                                user_activation_verified);
+      if (user_activation_verified) {
         update_result = NotifyUserActivation(
             blink::mojom::UserActivationNotificationType::kNone);
         update_type = blink::mojom::UserActivationUpdateType::kNotifyActivation;
@@ -667,7 +672,7 @@ bool FrameTreeNode::UpdateUserActivationState(
         // unrelated tests that inject event to renderer fail.
         return false;
       }
-      break;
+    } break;
     case blink::mojom::UserActivationUpdateType::kClearActivation:
       update_result = ClearUserActivation();
       break;
