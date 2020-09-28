@@ -7,12 +7,14 @@ import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {TabSearchAppElement} from 'chrome://tab-search/app.js';
 import {TabSearchApiProxy, TabSearchApiProxyImpl} from 'chrome://tab-search/tab_search_api_proxy.js'
+import {TabSearchItem} from 'chrome://tab-search/tab_search_item.js';
 import {TabSearchSearchField} from 'chrome://tab-search/tab_search_search_field.js';
 
-import {assertEquals} from '../../chai_assert.js';
+import {assertEquals, assertGT} from '../../chai_assert.js';
 import {flushTasks} from '../../test_util.m.js';
 
-import {sampleData} from './tab_search_test_data.js';
+import {generateSampleDataFromSiteNames, sampleData, sampleSiteNames} from './tab_search_test_data.js';
+import {assertTabItemAndNeighborsInViewBounds, disableScrollIntoViewAnimations} from './tab_search_test_helper.js';
 import {TestTabSearchApiProxy} from './test_tab_search_api_proxy.js';
 
 suite('TabSearchAppFocusTest', () => {
@@ -21,21 +23,32 @@ suite('TabSearchAppFocusTest', () => {
   /** @type {!TestTabSearchApiProxy} */
   let testProxy;
 
-  setup(async () => {
+  disableScrollIntoViewAnimations(TabSearchItem);
+
+  /**
+   * @param {tabSearch.mojom.ProfileTabs} sampleData
+   * @param {Object=} loadTimeOverridenData
+   */
+  async function setupTest(sampleData, loadTimeOverridenData) {
     testProxy = new TestTabSearchApiProxy();
-    testProxy.setProfileTabs(sampleData());
+    testProxy.setProfileTabs(sampleData);
     TabSearchApiProxyImpl.instance_ = testProxy;
 
-    loadTimeData.overrideValues({'submitFeedbackEnabled': true});
+    if (loadTimeOverridenData) {
+      loadTimeData.overrideValues(loadTimeOverridenData);
+    }
+
     tabSearchApp = /** @type {!TabSearchAppElement} */
         (document.createElement('tab-search-app'));
 
     document.body.innerHTML = '';
     document.body.appendChild(tabSearchApp);
     await flushTasks();
-  });
+  }
 
   test('KeyNavigation', async () => {
+    await setupTest(sampleData(), {'submitFeedbackEnabled': true});
+
     // Initially, the search input should have focus.
     const searchField = /** @type {!TabSearchSearchField} */
         (tabSearchApp.shadowRoot.querySelector('#searchField'));
@@ -74,6 +87,8 @@ suite('TabSearchAppFocusTest', () => {
   });
 
   test('KeyPress', async () => {
+    await setupTest(sampleData());
+
     const tabSearchItem = /** @type {!HTMLElement} */
         (tabSearchApp.shadowRoot.querySelector('tab-search-item'));
     tabSearchItem.focus();
@@ -86,5 +101,23 @@ suite('TabSearchAppFocusTest', () => {
         tabSearchItem.shadowRoot.querySelector('#closeButton'));
     keyDownOn(closeButton, 0, [], 'Enter');
     assertEquals(1, testProxy.getCallCount('closeTab'));
+  });
+
+  test('ViewScrolling', async () => {
+    await setupTest(generateSampleDataFromSiteNames(sampleSiteNames()));
+
+    const tabsDiv = /** @type {!HTMLElement} */
+        (tabSearchApp.shadowRoot.querySelector('#tabs'));
+    // Assert that the tabs are in a overflowing state.
+    assertGT(tabsDiv.scrollHeight, tabsDiv.clientHeight);
+
+    const tabItems = /** @type {!NodeList<HTMLElement>} */
+        (tabSearchApp.shadowRoot.querySelectorAll('tab-search-item'));
+    for (let i = 0; i < tabItems.length; i++) {
+      tabItems[i].focus();
+
+      assertEquals(i, tabSearchApp.getSelectedIndex());
+      assertTabItemAndNeighborsInViewBounds(tabsDiv, tabItems, i);
+    }
   });
 });

@@ -6,12 +6,14 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {TabSearchAppElement} from 'chrome://tab-search/app.js';
 import {TabSearchApiProxy, TabSearchApiProxyImpl} from 'chrome://tab-search/tab_search_api_proxy.js'
+import {TabSearchItem} from 'chrome://tab-search/tab_search_item.js';
 import {TabSearchSearchField} from 'chrome://tab-search/tab_search_search_field.js';
 
-import {assertEquals, assertFalse, assertNotEquals, assertTrue} from '../../chai_assert.js';
+import {assertEquals, assertFalse, assertGT, assertNotEquals, assertTrue} from '../../chai_assert.js';
 import {flushTasks, waitAfterNextRender} from '../../test_util.m.js';
 
-import {sampleData} from './tab_search_test_data.js';
+import {generateSampleDataFromSiteNames, sampleData, sampleSiteNames} from './tab_search_test_data.js';
+import {assertTabItemAndNeighborsInViewBounds, assertTabItemInViewBounds, disableScrollIntoViewAnimations} from './tab_search_test_helper.js';
 import {TestTabSearchApiProxy} from './test_tab_search_api_proxy.js';
 
 suite('TabSearchAppTest', () => {
@@ -19,6 +21,8 @@ suite('TabSearchAppTest', () => {
   let tabSearchApp;
   /** @type {!TestTabSearchApiProxy} */
   let testProxy;
+
+  disableScrollIntoViewAnimations(TabSearchItem);
 
   /**
    * @param {!NodeList<!Element>} rows
@@ -386,5 +390,40 @@ suite('TabSearchAppTest', () => {
     }
 
     assertEquals(4, testProxy.getCallCount('closeUI'));
+  });
+
+  test('Scrollbar updates show previous and following list items', async () => {
+    await setupTest(generateSampleDataFromSiteNames(sampleSiteNames()));
+
+    const tabsDiv = /** @type {!HTMLElement} */
+        (tabSearchApp.shadowRoot.querySelector('#tabs'));
+    // Assert that the tabs are in a overflowing state.
+    assertGT(tabsDiv.scrollHeight, tabsDiv.clientHeight);
+
+    const tabItems = /** @type {!NodeList<!HTMLElement>}*/ (queryRows());
+    const searchField = /** @type {!TabSearchSearchField} */
+        (tabSearchApp.shadowRoot.querySelector('#searchField'));
+
+    for (let i = 0; i < tabItems.length; i++) {
+      keyDownOn(searchField, 0, [], 'ArrowDown');
+      const selectedIndex = ((i + 1) % tabItems.length);
+
+      assertEquals(selectedIndex, tabSearchApp.getSelectedIndex());
+      assertTabItemAndNeighborsInViewBounds(tabsDiv, tabItems, selectedIndex);
+    }
+
+    keyDownOn(searchField, 0, [], 'End');
+    assertTabItemInViewBounds(tabsDiv, tabItems[tabItems.length - 1]);
+
+    for (let i = tabItems.length - 1; i >= 0; i--) {
+      keyDownOn(searchField, 0, [], 'ArrowUp');
+      const selectedIndex = (i - 1 + tabItems.length) % tabItems.length;
+
+      assertEquals(selectedIndex, tabSearchApp.getSelectedIndex());
+      assertTabItemAndNeighborsInViewBounds(tabsDiv, tabItems, selectedIndex);
+    }
+
+    keyDownOn(searchField, 0, [], 'Home');
+    assertTabItemInViewBounds(tabsDiv, tabItems[0]);
   });
 });

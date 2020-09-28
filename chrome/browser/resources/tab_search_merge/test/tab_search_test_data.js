@@ -25,7 +25,7 @@ export function sampleData() {
             tabId: 6,
             title: 'Apple',
             url: 'https://www.apple.com',
-          }
+          },
         ],
       },
       {
@@ -49,10 +49,42 @@ export function sampleData() {
             title: 'Apple',
             url: 'https://www.apple.com/',
           },
-        ]
+        ],
       }
     ]
   };
 
   return profileTabs;
+}
+
+export function sampleSiteNames() {
+  return [
+    'Google',
+    'Amazon',
+    'Apple',
+    'Bing',
+    'Yahoo',
+    'PayPal',
+    'Square',
+    'Youtube',
+    'Facebook',
+    'Twitter',
+  ];
+}
+
+/**
+ * Generates profile data for a window with a series of tabs.
+ * @param {!Array} siteNames
+ */
+export function generateSampleDataFromSiteNames(siteNames) {
+  const tabs = siteNames.map((siteName, i) => {
+    return {
+      index: i,
+      tabId: i + 1,
+      title: siteName,
+      url: 'https://www.' + siteName.toLowerCase() + '.com',
+    };
+  });
+
+  return {windows: [{active: true, tabs: tabs}]};
 }
