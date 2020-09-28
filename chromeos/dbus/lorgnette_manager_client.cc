@@ -74,10 +74,7 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
                      progress_callback) override {
     lorgnette::StartScanRequest request;
     request.set_device_name(device_name);
-    request.mutable_settings()->set_color_mode(settings.color_mode());
-    request.mutable_settings()->set_resolution(settings.resolution());
-    lorgnette::DocumentSource source = settings.source();
-    request.mutable_settings()->set_allocated_source(&source);
+    *request.mutable_settings() = settings;
 
     dbus::MethodCall method_call(lorgnette::kManagerServiceInterface,
                                  lorgnette::kStartScanMethod);
