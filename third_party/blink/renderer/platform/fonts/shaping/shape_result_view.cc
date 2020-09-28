@@ -202,8 +202,14 @@ void ShapeResultView::CreateViewsForResult(const ShapeResultType* other,
       // of |RunInfo| could be different from |part_start| for ShapeResultView.
       DCHECK_GE(part_start, run->OffsetToRunStartIndex());
       unsigned run_start = part_start - run->OffsetToRunStartIndex();
+      // TODO(jfernandez): Give a first part of 1 char (offset=2), a
+      // second part, with part_start=3 (1 + 2), this run_start will
+      // be 0. Hence, the way we are computing the adjusted_start
+      // seems incorrect.
       unsigned adjusted_start =
-          start_index > run_start ? start_index - run_start : 0;
+          start_index > run_start
+              ? std::max(start_index, part_start) - run_start
+              : 0;
       unsigned adjusted_end = std::min(end_index, run_end) - run_start;
       DCHECK(adjusted_end > adjusted_start);
       unsigned part_characters = adjusted_end - adjusted_start;
