@@ -4,12 +4,12 @@
 
 import("//components/vector_icons/vector_icons.gni")
 
-aggregate_vector_icons("vr_vector_icons") {
+aggregate_vector_icons2("vr_vector_icons") {
   icon_directory = "."
 
-  icons = [
-    "daydream_controller_home_button.icon",
+  sources = [
     "daydream_controller_app_button.icon",
+    "daydream_controller_home_button.icon",
     "file_download_done.icon",
     "more_vert.icon",
     "my_location.icon",
