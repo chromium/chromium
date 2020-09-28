@@ -457,19 +457,27 @@ class PTZDeviceState {
     return pan_set_.IsEmpty() || tilt_set_.IsEmpty() || zoom_set_.IsEmpty();
   }
 
-  double Fitness(const MediaTrackConstraintSetPlatform& basic_set) const {
-    return NumericRangeFitness(basic_set.pan, pan_set_) +
+  double Fitness(const MediaTrackConstraintSetPlatform& basic_set,
+                 bool pan_tilt_zoom_supported) const {
+    double initial_fitness =
+        ((basic_set.pan.IsPresent() || basic_set.tilt.IsPresent() ||
+          basic_set.zoom.IsPresent()) &&
+         !pan_tilt_zoom_supported)
+            ? 1.0
+            : 0.0;
+
+    return initial_fitness + NumericRangeFitness(basic_set.pan, pan_set_) +
            NumericRangeFitness(basic_set.tilt, tilt_set_) +
            NumericRangeFitness(basic_set.zoom, zoom_set_);
   }
 
   const char* FailedConstraintName() const {
     MediaTrackConstraintSetPlatform dummy;
-    if (!pan_set_.IsEmpty())
+    if (pan_set_.IsEmpty())
       return dummy.pan.GetName();
-    if (!tilt_set_.IsEmpty())
+    if (tilt_set_.IsEmpty())
       return dummy.tilt.GetName();
-    if (!zoom_set_.IsEmpty())
+    if (zoom_set_.IsEmpty())
       return dummy.zoom.GetName();
 
     // No failed constraint.
@@ -557,17 +565,17 @@ bool DeviceSatisfiesConstraintSet(
     return false;
   }
 
-  if (constraint_set.pan.IsPresent() && !device.pan_tilt_zoom_supported) {
+  if (constraint_set.pan.HasMandatory() && !device.pan_tilt_zoom_supported) {
     UpdateFailedConstraintName(constraint_set.pan, failed_constraint_name);
     return false;
   }
 
-  if (constraint_set.tilt.IsPresent() && !device.pan_tilt_zoom_supported) {
+  if (constraint_set.tilt.HasMandatory() && !device.pan_tilt_zoom_supported) {
     UpdateFailedConstraintName(constraint_set.tilt, failed_constraint_name);
     return false;
   }
 
-  if (constraint_set.zoom.IsPresent() && !device.pan_tilt_zoom_supported) {
+  if (constraint_set.zoom.HasMandatory() && !device.pan_tilt_zoom_supported) {
     UpdateFailedConstraintName(constraint_set.zoom, failed_constraint_name);
     return false;
   }
@@ -614,7 +622,7 @@ double CandidateFitness(const DeviceInfo& device,
                         const MediaTrackConstraintSetPlatform& constraint_set,
                         VideoTrackAdapterSettings* track_settings) {
   return DeviceFitness(device, constraint_set) +
-         ptz_state.Fitness(constraint_set) +
+         ptz_state.Fitness(constraint_set, device.pan_tilt_zoom_supported) +
          candidate_format.Fitness(constraint_set, track_settings) +
          OptionalBoolFitness(noise_reduction,
                              constraint_set.goog_noise_reduction);
