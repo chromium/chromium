@@ -108,11 +108,8 @@ public abstract class PathUtils {
             if (sCacheSubDirectory == null) {
                 paths[CACHE_DIRECTORY] = appContext.getCacheDir().getPath();
             } else {
-                File cacheDir = new File(appContext.getCacheDir(), sCacheSubDirectory);
-                assert cacheDir.mkdir();
-                paths[CACHE_DIRECTORY] = cacheDir.getPath();
-                // Set to rwx--S--- as the Android cache dir has a distinct gid and is setgid.
-                chmod(paths[CACHE_DIRECTORY], 02700);
+                paths[CACHE_DIRECTORY] =
+                        new File(appContext.getCacheDir(), sCacheSubDirectory).getPath();
             }
         }
         return paths;
