@@ -25,6 +25,7 @@
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/devtools/render_frame_devtools_agent_host.h"
 #include "content/browser/net/cross_origin_opener_policy_reporter.h"
+#include "content/browser/renderer_host/agent_scheduling_group_host.h"
 #include "content/browser/renderer_host/debug_urls.h"
 #include "content/browser/renderer_host/frame_navigation_entry.h"
 #include "content/browser/renderer_host/frame_tree.h"
@@ -2488,7 +2489,7 @@ bool RenderFrameHostManager::InitRenderView(
     RenderFrameProxyHost* proxy) {
   // Ensure the renderer process is initialized before creating the
   // RenderView.
-  if (!render_view_host->InitProcessAndAgentSchedulingGroup())
+  if (!render_view_host->GetAgentSchedulingGroup().InitProcessAndMojos())
     return false;
 
   // We may have initialized this RenderViewHost for another RenderFrameHost.

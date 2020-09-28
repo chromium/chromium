@@ -176,7 +176,9 @@ class CONTENT_EXPORT RenderViewHostImpl
   // https://crbug.com/763548.
   void DispatchRenderViewCreated();
 
-  bool InitProcessAndAgentSchedulingGroup();
+  // Returns the `AgentSchedulingGroupHost` this view is associated with (via
+  // the widget).
+  AgentSchedulingGroupHost& GetAgentSchedulingGroup();
 
   // Tells the renderer process to request a page-scale animation based on the
   // specified point/rect.
@@ -354,10 +356,6 @@ class CONTENT_EXPORT RenderViewHostImpl
   void ClosePageTimeout();
 
   void OnPageClosed();
-
-  // Returns the `AgentSchedulingGroupHost` this view is associated with (via
-  // the widget).
-  AgentSchedulingGroupHost& GetAgentSchedulingGroup();
 
   // TODO(creis): Move to a private namespace on RenderFrameHostImpl.
   // Delay to wait on closing the WebContents for a beforeunload/unload handler

@@ -624,10 +624,6 @@ void RenderViewHostImpl::DispatchRenderViewCreated() {
   has_notified_about_creation_ = true;
 }
 
-bool RenderViewHostImpl::InitProcessAndAgentSchedulingGroup() {
-  return GetAgentSchedulingGroup().InitProcessAndMojos();
-}
-
 void RenderViewHostImpl::ClosePage() {
   is_waiting_for_page_close_completion_ = true;
 
