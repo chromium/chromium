@@ -39,6 +39,8 @@ dpsl_internal.Message = {
       'DiagnosticsService.RunPrimeSearchRoutine',
   DIAGNOSTICS_RUN_BATTERY_DISCHARGE_ROUTINE:
       'DiagnosticsService.RunBatteryDischargeRoutine',
+  DIAGNOSTICS_RUN_BATTERY_CHARGE_ROUTINE:
+      'DiagnosticsService.RunBatteryChargeRoutine',
   PROBE_TELEMETRY_INFO: 'ProbeService.ProbeTelemetryInfo',
 };
 
@@ -159,6 +161,15 @@ dpsl_internal.DiagnosticsRunPrimeSearchRoutineRequest;
  * maximumDischargePercentAllowed: !number}}
  */
 dpsl_internal.DiagnosticsRunBatteryDischargeRoutineRequest;
+
+/**
+ * Request message sent by the unprivileged context to the privileged
+ * context to run battery charge routine.
+ * @typedef {{
+ * lengthSeconds: !number,
+ * minimumChargePercentRequired: !number}}
+ */
+dpsl_internal.DiagnosticsRunBatteryChargeRoutineRequest;
 
 /**
  * Response message sent by the privileged context containing routine

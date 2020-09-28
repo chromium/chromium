@@ -346,6 +346,40 @@ UNTRUSTED_TEST(
       assertDeepEquals(response, {id: 123456789, status: 'ready'});
     });
 
+// Tests that runBatteryChargeRoutine throws the correct error when invalid
+// enum is passed as input.
+UNTRUSTED_TEST(
+    'UntrustedDiagnosticsRequestRunBatteryChargeRoutineInvalidInput',
+    async () => {
+      let caughtError1;
+      try {
+        await chromeos.diagnostics.runBatteryChargeRoutine(0, 23);
+      } catch (error) {
+        caughtError1 = error;
+      }
+
+      assertEquals(caughtError1.name, 'RangeError');
+      assertEquals(caughtError1.message, `Parameter must be positive.`);
+
+      let caughtError2;
+      try {
+        await chromeos.diagnostics.runBatteryChargeRoutine(-2147483648, 1);
+      } catch (error) {
+        caughtError2 = error;
+      }
+
+      assertEquals(caughtError2.name, 'RangeError');
+      assertEquals(caughtError2.message, `Parameter must be positive.`);
+    });
+
+// Tests that runBatteryChargeRoutine returns the correct Object.
+UNTRUSTED_TEST(
+    'UntrustedDiagnosticsRequestRunBatteryChargeRoutine', async () => {
+      const response =
+          await chromeos.diagnostics.runBatteryChargeRoutine(12, 5);
+      assertDeepEquals(response, {id: 123456789, status: 'ready'});
+    });
+
 // Tests that TelemetryInfo throws an error if category is unknown.
 UNTRUSTED_TEST('UntrustedRequestTelemetryInfoUnknownCategory', async () => {
   let caughtError = {};

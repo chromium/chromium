@@ -506,6 +506,22 @@ class DiagnosticsProxy {
     return await getOrCreateDiagnosticsService().runBatteryDischargeRoutine(
         request.lengthSeconds, request.maximumDischargePercentAllowed);
   };
+
+  /**
+   * Runs battery charge routine.
+   * @param { !Object } message
+   * @return { !RunRoutineResponsePromise }
+   */
+  async handleRunBatteryChargeRoutine(message) {
+    const request =
+        /**
+           @type {!dpsl_internal.DiagnosticsRunBatteryChargeRoutineRequest}
+             */
+        (message);
+    this.assertNumberIsPositive(request.lengthSeconds);
+    return await getOrCreateDiagnosticsService().runBatteryChargeRoutine(
+        request.lengthSeconds, request.minimumChargePercentRequired);
+  };
 };
 
 const diagnosticsProxy = new DiagnosticsProxy();
@@ -850,6 +866,12 @@ untrustedMessagePipe.registerHandler(
     dpsl_internal.Message.DIAGNOSTICS_RUN_BATTERY_DISCHARGE_ROUTINE,
     (message) => diagnosticsProxy.genericRunRoutineHandler(
         (message) => diagnosticsProxy.handleRunBatteryDischargeRoutine(message),
+        message));
+
+untrustedMessagePipe.registerHandler(
+    dpsl_internal.Message.DIAGNOSTICS_RUN_BATTERY_CHARGE_ROUTINE,
+    (message) => diagnosticsProxy.genericRunRoutineHandler(
+        (message) => diagnosticsProxy.handleRunBatteryChargeRoutine(message),
         message));
 
 untrustedMessagePipe.registerHandler(

@@ -70,6 +70,10 @@ class DiagnosticsService : public health::mojom::DiagnosticsService {
       uint32_t length_seconds,
       uint32_t maximum_discharge_percent_allowed,
       RunBatteryDischargeRoutineCallback callback) override;
+  void RunBatteryChargeRoutine(
+      uint32_t length_seconds,
+      uint32_t minimum_charge_percent_required,
+      RunBatteryChargeRoutineCallback callback) override;
 
   // Pointer to real implementation.
   mojo::Remote<cros_healthd::mojom::CrosHealthdDiagnosticsService> service_;

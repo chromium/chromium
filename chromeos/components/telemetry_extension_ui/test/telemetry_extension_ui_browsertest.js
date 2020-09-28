@@ -395,6 +395,8 @@ const untrustedTests = [
   ['UntrustedDiagnosticsRequestRunPrimeSearchRoutine'],
   ['UntrustedDiagnosticsRequestRunBatteryDischargeRoutineInvalidInput'],
   ['UntrustedDiagnosticsRequestRunBatteryDischargeRoutine'],
+  ['UntrustedDiagnosticsRequestRunBatteryChargeRoutineInvalidInput'],
+  ['UntrustedDiagnosticsRequestRunBatteryChargeRoutine'],
   ['UntrustedRequestTelemetryInfoUnknownCategory'],
   ['UntrustedRequestTelemetryInfo'],
   [

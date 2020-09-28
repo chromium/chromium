@@ -316,6 +316,32 @@ chromeos.test_support = {};
       }
       return response;
     }
+
+    /**
+     * Requests battery charge routine to be run.
+     * @param { !number } lengthSeconds
+     * @param { !number } minimumChargePercentRequired
+     * @return { !Promise<!Object> }
+     * @public
+     */
+    async runBatteryChargeRoutine(lengthSeconds, minimumChargePercentRequired) {
+      const message =
+          /**
+             @type {!dpsl_internal.DiagnosticsRunBatteryChargeRoutineRequest}
+           */
+          ({
+            lengthSeconds: lengthSeconds,
+            minimumChargePercentRequired: minimumChargePercentRequired
+          });
+      const response =
+          /** @type {!Object} */ (await messagePipe.sendMessage(
+              dpsl_internal.Message.DIAGNOSTICS_RUN_BATTERY_CHARGE_ROUTINE,
+              message));
+      if (response instanceof Error) {
+        throw response;
+      }
+      return response;
+    }
   };
 
   /**
