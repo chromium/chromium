@@ -15,6 +15,24 @@
 
 namespace extensions {
 
+namespace {
+// Returns true if the |current_stage| should be overridden by the
+// |new_stage|.
+bool ShouldOverrideCurrentStage(
+    base::Optional<InstallStageTracker::Stage> current_stage,
+    InstallStageTracker::Stage new_stage) {
+  if (!current_stage)
+    return true;
+  // If CRX was from the cache and was damaged as a file, we would try to
+  // download the CRX after reporting the INSTALLING stage.
+  if (current_stage == InstallStageTracker::Stage::INSTALLING &&
+      new_stage == InstallStageTracker::Stage::DOWNLOADING)
+    return true;
+  return new_stage > current_stage;
+}
+
+}  // namespace
+
 #if defined(OS_CHROMEOS)
 InstallStageTracker::UserInfo::UserInfo(const UserInfo&) = default;
 InstallStageTracker::UserInfo::UserInfo(user_manager::UserType user_type,
@@ -164,6 +182,8 @@ void InstallStageTracker::ReportInstallCreationStage(
 void InstallStageTracker::ReportInstallationStage(const ExtensionId& id,
                                                   Stage stage) {
   InstallationData& data = installation_data_map_[id];
+  if (!ShouldOverrideCurrentStage(data.install_stage, stage))
+    return;
   data.install_stage = stage;
   for (auto& observer : observers_) {
     observer.OnExtensionInstallationStageChanged(id, stage);
