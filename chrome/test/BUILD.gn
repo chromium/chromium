@@ -319,6 +319,8 @@ static_library("test_support") {
       "../browser/webshare/win/fake_data_transfer_manager.h",
       "../browser/webshare/win/fake_data_transfer_manager_interop.cc",
       "../browser/webshare/win/fake_data_transfer_manager_interop.h",
+      "../browser/webshare/win/scoped_fake_data_transfer_manager_interop.cc",
+      "../browser/webshare/win/scoped_fake_data_transfer_manager_interop.h",
       "//chrome/app/chrome_crash_reporter_client_win.cc",
     ]
     public_deps += [
@@ -5660,6 +5662,7 @@ test("unit_tests") {
       "../browser/ui/views/uninstall_view_unittest.cc",
       "../browser/webshare/win/fake_data_transfer_manager_interop_unittest.cc",
       "../browser/webshare/win/fake_data_transfer_manager_unittest.cc",
+      "../browser/webshare/win/show_share_ui_for_window_operation_unittest.cc",
     ]
     deps += [
       "//chrome:other_version",
