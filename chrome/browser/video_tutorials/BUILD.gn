@@ -55,26 +55,11 @@ source_set("factory") {
 if (is_android) {
   android_library("java") {
     sources = [
-      "android/java/src/org/chromium/chrome/browser/video_tutorials/PlaybackStateObserver.java",
       "android/java/src/org/chromium/chrome/browser/video_tutorials/Tutorial.java",
       "android/java/src/org/chromium/chrome/browser/video_tutorials/VideoTutorialService.java",
-      "android/java/src/org/chromium/chrome/browser/video_tutorials/VideoTutorialUtils.java",
       "android/java/src/org/chromium/chrome/browser/video_tutorials/iph/VideoIPHCoordinator.java",
-      "android/java/src/org/chromium/chrome/browser/video_tutorials/iph/VideoIPHProperties.java",
-      "android/java/src/org/chromium/chrome/browser/video_tutorials/iph/VideoIPHView.java",
       "android/java/src/org/chromium/chrome/browser/video_tutorials/iph/VideoTutorialIPHUtils.java",
-      "android/java/src/org/chromium/chrome/browser/video_tutorials/languages/LanguageItemProperties.java",
-      "android/java/src/org/chromium/chrome/browser/video_tutorials/languages/LanguageItemViewHolder.java",
-      "android/java/src/org/chromium/chrome/browser/video_tutorials/languages/LanguagePickerCoordinator.java",
-      "android/java/src/org/chromium/chrome/browser/video_tutorials/languages/LanguagePickerProperties.java",
-      "android/java/src/org/chromium/chrome/browser/video_tutorials/languages/LanguagePickerView.java",
-      "android/java/src/org/chromium/chrome/browser/video_tutorials/languages/LanguageUtils.java",
       "android/java/src/org/chromium/chrome/browser/video_tutorials/player/VideoPlayerCoordinator.java",
-      "android/java/src/org/chromium/chrome/browser/video_tutorials/player/VideoPlayerMediator.java",
-      "android/java/src/org/chromium/chrome/browser/video_tutorials/player/VideoPlayerProperties.java",
-      "android/java/src/org/chromium/chrome/browser/video_tutorials/player/VideoPlayerURLBuilder.java",
-      "android/java/src/org/chromium/chrome/browser/video_tutorials/player/VideoPlayerView.java",
-      "android/java/src/org/chromium/chrome/browser/video_tutorials/player/VideoPlayerViewBinder.java",
     ]
 
     deps = [
@@ -82,15 +67,9 @@ if (is_android) {
       "//base:base_java",
       "//chrome/browser/image_fetcher:java",
       "//components/browser_ui/widget/android:java",
-      "//components/embedder_support/android:content_view_java",
-      "//components/embedder_support/android:web_contents_delegate_java",
       "//components/feature_engagement/public:public_java",
-      "//components/thin_webview:factory_java",
-      "//components/thin_webview:java",
       "//content/public/android:content_java",
-      "//services/media_session/public/cpp/android:media_session_java",
       "//third_party/android_deps:androidx_annotation_annotation_java",
-      "//third_party/android_deps:androidx_recyclerview_recyclerview_java",
       "//ui/android:ui_java",
     ]
 
@@ -100,16 +79,7 @@ if (is_android) {
 
   android_resources("java_resources") {
     create_srcjar = false
-    sources = [
-      "android/java/res/drawable/radio_button.xml",
-      "android/java/res/drawable/radio_button_default.xml",
-      "android/java/res/drawable/radio_button_selected.xml",
-      "android/java/res/layout/language_card.xml",
-      "android/java/res/layout/language_picker.xml",
-      "android/java/res/layout/video_player_controls.xml",
-      "android/java/res/layout/video_player_loading.xml",
-      "android/java/res/layout/video_tutorial_iph_card.xml",
-    ]
+    sources = [ "android/java/res/layout/video_tutorial_iph_card.xml" ]
 
     deps = [
       "//chrome/browser/ui/android/strings:ui_strings_grd",
@@ -128,7 +98,10 @@ if (is_android) {
     # These deps will be inherited by the resulting android_library target.
     deps = [
       ":java",
+      "//base:base_java",
+      "//chrome/browser/image_fetcher:java",
       "//chrome/browser/profiles/android:java",
+      "//content/public/android:content_java",
     ]
 
     # This internal file will be replaced by a generated file so the resulting

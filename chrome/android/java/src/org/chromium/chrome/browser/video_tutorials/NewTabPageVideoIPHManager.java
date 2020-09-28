@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.video_tutorials;
 
 import android.view.ViewStub;
 
+import org.chromium.base.Callback;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.image_fetcher.ImageFetcher;
@@ -42,8 +43,10 @@ public class NewTabPageVideoIPHManager {
         ImageFetcher imageFetcher =
                 ImageFetcherFactory.createImageFetcher(ImageFetcherConfig.IN_MEMORY_WITH_DISK_CACHE,
                         profile, GlobalDiscardableReferencePool.getReferencePool());
-        mVideoIPHCoordinator = new VideoIPHCoordinator(
-                viewStub, imageFetcher, this::onClickIPH, this::onDismissIPH);
+        Callback<Tutorial> clickListener = this::onClickIPH;
+        Callback<Tutorial> dismissListener = this::onDismissIPH;
+        mVideoIPHCoordinator = VideoTutorialServiceFactory.createVideoIPHCoordinator(
+                viewStub, imageFetcher, clickListener, dismissListener);
 
         mVideoTutorialService = VideoTutorialServiceFactory.getForProfile(profile);
         mVideoTutorialService.getTutorials(this::onFetchTutorials);

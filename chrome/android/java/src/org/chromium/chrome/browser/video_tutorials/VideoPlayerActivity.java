@@ -38,7 +38,7 @@ public class VideoPlayerActivity extends Activity {
         VideoTutorialService videoTutorialService =
                 VideoTutorialServiceFactory.getForProfile(Profile.getLastUsedRegularProfile());
         mWindowAndroid = new ActivityWindowAndroid(this);
-        mCoordinator = new VideoPlayerCoordinator(
+        mCoordinator = VideoTutorialServiceFactory.createVideoPlayerCoordinator(
                 this, videoTutorialService, this::createWebContents, this::finish);
         setContentView(mCoordinator.getView());
 
