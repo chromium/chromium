@@ -623,6 +623,39 @@ class GetAttributeForKeyState : public NSSOperationState {
   GetAttributeForKeyCallback callback_;
 };
 
+class IsKeyOnTokenState : public NSSOperationState {
+ public:
+  IsKeyOnTokenState(ServiceWeakPtr weak_ptr,
+                    const std::string& public_key_spki_der,
+                    IsKeyOnTokenCallback callback);
+  ~IsKeyOnTokenState() override = default;
+
+  void OnError(const base::Location& from, Status status) override {
+    CallBack(from, /*on_token=*/base::nullopt, status);
+  }
+
+  void OnSuccess(const base::Location& from, bool on_token) {
+    CallBack(from, on_token, Status::kSuccess);
+  }
+
+  // Must be a DER encoding of a SubjectPublicKeyInfo.
+  const std::string public_key_spki_der_;
+
+ private:
+  void CallBack(const base::Location& from,
+                base::Optional<bool> on_token,
+                Status status) {
+    auto bound_callback =
+        base::BindOnce(std::move(callback_), on_token, status);
+    origin_task_runner_->PostTask(
+        from, base::BindOnce(&NSSOperationState::RunCallback,
+                             std::move(bound_callback), service_weak_ptr_));
+  }
+
+  // Must be called on origin thread, therefore use CallBack().
+  IsKeyOnTokenCallback callback_;
+};
+
 NSSOperationState::NSSOperationState(ServiceWeakPtr weak_ptr)
     : service_weak_ptr_(weak_ptr),
       origin_task_runner_(base::ThreadTaskRunnerHandle::Get()) {}
@@ -727,6 +760,13 @@ GetAttributeForKeyState::GetAttributeForKeyState(
     : NSSOperationState(weak_ptr),
       public_key_spki_der_(public_key_spki_der),
       attribute_type_(attribute_type),
+      callback_(std::move(callback)) {}
+
+IsKeyOnTokenState::IsKeyOnTokenState(ServiceWeakPtr weak_ptr,
+                                     const std::string& public_key_spki_der,
+                                     IsKeyOnTokenCallback callback)
+    : NSSOperationState(weak_ptr),
+      public_key_spki_der_(public_key_spki_der),
       callback_(std::move(callback)) {}
 
 // Returns the private key corresponding to the der-encoded
@@ -1418,6 +1458,16 @@ void GetAttributeForKeyWithDb(std::unique_ptr<GetAttributeForKeyState> state,
   state->OnSuccess(FROM_HERE, attribute_value_str);
 }
 
+void IsKeyOnTokenWithDb(std::unique_ptr<IsKeyOnTokenState> state,
+                        net::NSSCertDatabase* cert_db) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK(state->slot_.get());
+
+  bool key_on_slot =
+      GetPrivateKey(state->public_key_spki_der_, state->slot_.get()) != nullptr;
+  state->OnSuccess(FROM_HERE, key_on_slot);
+}
+
 }  // namespace
 
 void PlatformKeysServiceImpl::GenerateRSAKey(TokenId token_id,
@@ -1880,6 +1930,29 @@ void PlatformKeysServiceImpl::GetAttributeForKey(
   GetCertDatabase(
       token_id, base::BindOnce(&GetAttributeForKeyWithDb, base::Passed(&state)),
       delegate_.get(), state_ptr);
+}
+
+void PlatformKeysServiceImpl::IsKeyOnToken(
+    TokenId token_id,
+    const std::string& public_key_spki_der,
+    IsKeyOnTokenCallback callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  auto state = std::make_unique<IsKeyOnTokenState>(
+      weak_factory_.GetWeakPtr(), public_key_spki_der, std::move(callback));
+  if (delegate_->IsShutDown()) {
+    state->OnError(FROM_HERE, Status::kErrorShutDown);
+    return;
+  }
+
+  // Get the pointer to |state| before base::Passed releases |state|.
+  NSSOperationState* state_ptr = state.get();
+
+  // The NSSCertDatabase object is not required. Only setting the state slot is
+  // required.
+  GetCertDatabase(token_id,
+                  base::BindOnce(&IsKeyOnTokenWithDb, base::Passed(&state)),
+                  delegate_.get(), state_ptr);
 }
 
 void PlatformKeysServiceImpl::SetMapToSoftokenAttrsForTesting(

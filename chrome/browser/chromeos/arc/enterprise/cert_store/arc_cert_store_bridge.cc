@@ -6,15 +6,22 @@
 
 #include <cert.h>
 
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/callback_forward.h"
+#include "base/containers/queue.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
+#include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_service_factory.h"
 #include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_service_impl.h"
+#include "chrome/browser/chromeos/platform_keys/platform_keys.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys_service.h"
+#include "chrome/browser/chromeos/platform_keys/platform_keys_service_factory.h"
 #include "chrome/browser/net/nss_context.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
@@ -24,6 +31,8 @@
 #include "components/arc/session/arc_bridge_service.h"
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/policy_constants.h"
+#include "content/public/browser/browser_context.h"
+#include "net/cert/scoped_nss_types.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util_nss.h"
 
@@ -72,22 +81,53 @@ scoped_refptr<net::X509Certificate> FindCertificateByAlias(
   return x509_cert;
 }
 
-// Returns true if the certificate is allowed to be used by ARC. |cert| must be
-// non-null.
-// WARNING: Doesn't check the certificate slot, relies only on pref.
-bool IsCertificateAllowed(const scoped_refptr<net::X509Certificate>& cert,
-                          const PrefService* prefs) {
+using IsCertificateAllowedCallback = base::OnceCallback<void(bool allowed)>;
+
+void CheckKeyLocationAndCorporateFlag(
+    IsCertificateAllowedCallback callback,
+    const std::string& public_key_spki_der,
+    content::BrowserContext* const context,
+    base::Optional<bool> key_on_user_token,
+    chromeos::platform_keys::Status is_key_on_token_status) {
+  if (is_key_on_token_status != chromeos::platform_keys::Status::kSuccess) {
+    LOG(WARNING) << "Error while checking key location: "
+                 << chromeos::platform_keys::StatusToString(
+                        is_key_on_token_status);
+    std::move(callback).Run(/*allowed=*/false);
+    return;
+  }
+
+  DCHECK(key_on_user_token.has_value());
+
+  if (!key_on_user_token.value_or(false)) {
+    std::move(callback).Run(/*allowed=*/false);
+    return;
+  }
+
+  // Check if the key is marked for corporate usage.
+  chromeos::platform_keys::KeyPermissionsServiceFactory::GetForBrowserContext(
+      context)
+      ->IsCorporateKey(public_key_spki_der, std::move(callback));
+}
+
+// Returns true if the certificate is allowed to be used by ARC. The certificate
+// is allowed to be used by ARC if its key is marked for corporate usage and
+// resides on a user token. |cert| must be non-null.
+void IsCertificateAllowed(IsCertificateAllowedCallback callback,
+                          scoped_refptr<net::X509Certificate> cert,
+                          content::BrowserContext* const context) {
   DCHECK(cert);
 
-  std::string spki_der = chromeos::platform_keys::GetSubjectPublicKeyInfo(cert);
-  std::string public_key_spki_der_b64;
-  base::Base64Encode(spki_der, &public_key_spki_der_b64);
-  if (!chromeos::platform_keys::KeyPermissionsServiceImpl::
-          IsCorporateKeyForProfile(public_key_spki_der_b64, prefs)) {
-    DVLOG(1) << "Certificate is not allowed to be used by ARC.";
-    return false;
-  }
-  return true;
+  const std::string public_key_spki_der =
+      chromeos::platform_keys::GetSubjectPublicKeyInfo(cert);
+
+  // Check if the key is on the user token.
+  chromeos::platform_keys::PlatformKeysServiceFactory::GetForBrowserContext(
+      context)
+      ->IsKeyOnToken(
+          chromeos::platform_keys::TokenId::kUser, public_key_spki_der,
+          base::BindOnce(&CheckKeyLocationAndCorporateFlag, std::move(callback),
+                         public_key_spki_der, context));
 }
 
 }  // namespace
@@ -165,8 +205,7 @@ void ArcCertStoreBridge::GetKeyCharacteristics(
   }
 
   scoped_refptr<net::X509Certificate> cert = FindCertificateByAlias(alias);
-  if (!cert || !IsCertificateAllowed(
-                   cert, Profile::FromBrowserContext(context_)->GetPrefs())) {
+  if (!cert) {
     std::move(callback).Run(mojom::KeymasterError::ERROR_INVALID_KEY_BLOB,
                             base::nullopt);
     return;
@@ -188,8 +227,8 @@ void ArcCertStoreBridge::Begin(const std::string& alias,
   }
 
   scoped_refptr<net::X509Certificate> cert = FindCertificateByAlias(alias);
-  if (!cert || !IsCertificateAllowed(
-                   cert, Profile::FromBrowserContext(context_)->GetPrefs())) {
+
+  if (!cert) {
     std::move(callback).Run(mojom::KeymasterError::ERROR_INVALID_KEY_BLOB, 0);
     return;
   }
@@ -280,24 +319,82 @@ void ArcCertStoreBridge::OnGetNSSCertDatabaseForProfile(
 void ArcCertStoreBridge::OnCertificatesListed(
     ListCertificatesCallback callback,
     net::ScopedCERTCertificateList cert_list) {
-  std::vector<mojom::CertificatePtr> permitted_certs;
-  for (const auto& cert : cert_list) {
+  base::queue<net::ScopedCERTCertificate> cert_queue;
+  for (auto& cert : cert_list) {
+    cert_queue.push(std::move(cert));
+  }
+
+  net::ScopedCERTCertificateList allowed_certs;
+
+  FilterAllowedCertificatesRecursively(
+      base::BindOnce(&ArcCertStoreBridge::OnFilteredAllowedCertificates,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
+      std::move(cert_queue), std::move(allowed_certs));
+}
+
+void ArcCertStoreBridge::FilterAllowedCertificatesRecursively(
+    FilterAllowedCertificatesCallback callback,
+    base::queue<net::ScopedCERTCertificate> cert_queue,
+    net::ScopedCERTCertificateList allowed_certs) const {
+  if (cert_queue.empty()) {
+    std::move(callback).Run(std::move(allowed_certs));
+    return;
+  }
+
+  net::ScopedCERTCertificate cert = std::move(cert_queue.front());
+  cert_queue.pop();
+
+  scoped_refptr<net::X509Certificate> x509_cert =
+      net::x509_util::CreateX509CertificateFromCERTCertificate(cert.get());
+
+  if (!x509_cert) {
+    FilterAllowedCertificatesRecursively(
+        std::move(callback), std::move(cert_queue), std::move(allowed_certs));
+    return;
+  }
+
+  IsCertificateAllowed(
+      base::BindOnce(&ArcCertStoreBridge::FilterAllowedCertificateAndRecurse,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     std::move(cert_queue), std::move(allowed_certs),
+                     std::move(cert)),
+      std::move(x509_cert), context_);
+}
+
+void ArcCertStoreBridge::FilterAllowedCertificateAndRecurse(
+    FilterAllowedCertificatesCallback callback,
+    base::queue<net::ScopedCERTCertificate> cert_queue,
+    net::ScopedCERTCertificateList allowed_certs,
+    net::ScopedCERTCertificate cert,
+    bool certificate_allowed) const {
+  if (certificate_allowed) {
+    allowed_certs.push_back(std::move(cert));
+  }
+
+  FilterAllowedCertificatesRecursively(
+      std::move(callback), std::move(cert_queue), std::move(allowed_certs));
+}
+
+void ArcCertStoreBridge::OnFilteredAllowedCertificates(
+    ListCertificatesCallback callback,
+    net::ScopedCERTCertificateList allowed_certs) {
+  std::vector<mojom::CertificatePtr> certificate_ptr_list;
+
+  for (const auto& cert : allowed_certs) {
+    mojom::CertificatePtr certificate = mojom::Certificate::New();
+    certificate->alias = cert->nickname;
+
     scoped_refptr<net::X509Certificate> x509_cert =
         net::x509_util::CreateX509CertificateFromCERTCertificate(cert.get());
     if (!x509_cert) {
       DVLOG(1) << "x509_util::CreateX509CertificateFromCERTCertificate failed";
       continue;
     }
-    if (IsCertificateAllowed(
-            x509_cert, Profile::FromBrowserContext(context_)->GetPrefs())) {
-      mojom::CertificatePtr certificate = mojom::Certificate::New();
-      certificate->alias = cert->nickname;
-      net::X509Certificate::GetPEMEncoded(x509_cert->cert_buffer(),
-                                          &certificate->cert);
-      permitted_certs.emplace_back(std::move(certificate));
-    }
+    net::X509Certificate::GetPEMEncoded(x509_cert->cert_buffer(),
+                                        &certificate->cert);
+    certificate_ptr_list.emplace_back(std::move(certificate));
   }
-  std::move(callback).Run(std::move(permitted_certs));
+  std::move(callback).Run(std::move(certificate_ptr_list));
 }
 
 void ArcCertStoreBridge::UpdateFromKeyPermissionsPolicy() {

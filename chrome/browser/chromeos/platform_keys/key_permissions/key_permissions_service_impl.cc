@@ -28,6 +28,8 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "extensions/browser/state_store.h"
+#include "net/cert/scoped_nss_types.h"
+#include "net/cert/x509_util_nss.h"
 
 namespace chromeos {
 namespace platform_keys {
@@ -611,7 +613,6 @@ void KeyPermissionsServiceImpl::IsCorporateKeyWithLocations(
   if (status != Status::kSuccess) {
     LOG(ERROR) << "Key locations retrieval failed: " << StatusToString(status);
     std::move(callback).Run(/*corporate=*/false);
-    return;
   }
 
   std::string public_key_spki_der_b64;
@@ -620,7 +621,7 @@ void KeyPermissionsServiceImpl::IsCorporateKeyWithLocations(
   for (const auto key_location : key_locations) {
     switch (key_location) {
       case TokenId::kUser:
-        if (IsCorporateKeyForProfile(public_key_spki_der_b64, profile_prefs_)) {
+        if (IsUserKeyCorporate(public_key_spki_der_b64)) {
           std::move(callback).Run(/*corporate=*/true);
           return;
         }
@@ -688,21 +689,6 @@ void KeyPermissionsServiceImpl::SetCorporateKeyWithLocations(
 }
 
 // static
-bool KeyPermissionsServiceImpl::IsCorporateKeyForProfile(
-    const std::string& public_key_spki_der_b64,
-    const PrefService* const profile_prefs) {
-  const base::DictionaryValue* prefs_entry =
-      GetPrefsEntry(public_key_spki_der_b64, profile_prefs);
-  if (prefs_entry) {
-    const base::Value* key_usage = prefs_entry->FindKey(kPrefKeyUsage);
-    if (!key_usage || !key_usage->is_string())
-      return false;
-    return key_usage->GetString() == kPrefKeyUsageCorporate;
-  }
-  return false;
-}
-
-// static
 std::vector<std::string>
 KeyPermissionsServiceImpl::GetCorporateKeyUsageAllowedAppIds(
     policy::PolicyService* const profile_policies) {
@@ -740,6 +726,19 @@ void KeyPermissionsServiceImpl::SetPlatformKeysOfExtension(
     std::unique_ptr<base::Value> value) {
   extensions_state_store_->SetExtensionValue(
       extension_id, kStateStorePlatformKeys, std::move(value));
+}
+
+bool KeyPermissionsServiceImpl::IsUserKeyCorporate(
+    const std::string& public_key_spki_der_b64) const {
+  const base::DictionaryValue* prefs_entry =
+      GetPrefsEntry(public_key_spki_der_b64, profile_prefs_);
+  if (prefs_entry) {
+    const base::Value* key_usage = prefs_entry->FindKey(kPrefKeyUsage);
+    if (!key_usage || !key_usage->is_string())
+      return false;
+    return key_usage->GetString() == kPrefKeyUsageCorporate;
+  }
+  return false;
 }
 
 }  // namespace platform_keys

@@ -169,13 +169,6 @@ class KeyPermissionsServiceImpl : public KeyPermissionsService {
   void SetCorporateKey(const std::string& public_key_spki_der,
                        SetCorporateKeyCallback callback) const override;
 
-  // Returns true if |public_key_spki_der_b64| is a corporate usage key.
-  // TOOD(http://crbug.com/1127284): Remove this and migrate callers to
-  // IsCorporateKey().
-  static bool IsCorporateKeyForProfile(
-      const std::string& public_key_spki_der_b64,
-      const PrefService* const profile_prefs);
-
   // Returns the list of apps and extensions ids allowed to use corporate usage
   // keys by policy in |profile_policies|.
   static std::vector<std::string> GetCorporateKeyUsageAllowedAppIds(
@@ -192,6 +185,10 @@ class KeyPermissionsServiceImpl : public KeyPermissionsService {
   // Writes |value| to the state store of the extension with id |extension_id|.
   void SetPlatformKeysOfExtension(const std::string& extension_id,
                                   std::unique_ptr<base::Value> value);
+
+  // Returns true if |public_key_spki_der_b64| (which is located only on a user
+  // token) is marked for corporate usage.
+  bool IsUserKeyCorporate(const std::string& public_key_spki_der_b64) const;
 
   void CanUserGrantPermissionForKeyWithLocations(
       const std::string& public_key_spki_der,

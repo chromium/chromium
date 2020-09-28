@@ -272,6 +272,18 @@ class GetAllKeysExecutionWaiter
     return std::get<0>(result_callback_args());
   }
 };
+
+class IsKeyOnTokenExecutionWaiter
+    : public ExecutionWaiter<base::Optional<bool>> {
+ public:
+  IsKeyOnTokenExecutionWaiter() = default;
+  ~IsKeyOnTokenExecutionWaiter() = default;
+
+  base::Optional<bool> on_slot() const {
+    return std::get<0>(result_callback_args());
+  }
+};
+
 }  // namespace
 
 class PlatformKeysServiceBrowserTestBase
@@ -526,6 +538,28 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerProfileBrowserTest,
   }
 }
 
+IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerProfileBrowserTest,
+                       IsKeyOnTokenWhenNot) {
+  // More than one available token are needed to test this.
+  if (GetParam().token_ids.size() < 2) {
+    return;
+  }
+
+  const TokenId token_id_1 = GetParam().token_ids[0];
+  const TokenId token_id_2 = GetParam().token_ids[1];
+
+  const std::string public_key = GenerateKeyPair(token_id_1);
+
+  IsKeyOnTokenExecutionWaiter is_key_on_token_waiter;
+  platform_keys_service()->IsKeyOnToken(token_id_2, public_key,
+                                        is_key_on_token_waiter.GetCallback());
+  is_key_on_token_waiter.Wait();
+
+  EXPECT_EQ(is_key_on_token_waiter.status(), Status::kSuccess);
+  ASSERT_TRUE(is_key_on_token_waiter.on_slot().has_value());
+  EXPECT_FALSE(is_key_on_token_waiter.on_slot().value());
+}
+
 INSTANTIATE_TEST_SUITE_P(
     AllSupportedProfileTypes,
     PlatformKeysServicePerProfileBrowserTest,
@@ -534,7 +568,9 @@ INSTANTIATE_TEST_SUITE_P(
         TestConfigPerProfile{ProfileToUse::kUnaffiliatedUserProfile,
                              {TokenId::kUser}},
         TestConfigPerProfile{ProfileToUse::kAffiliatedUserProfile,
-                             {TokenId::kUser, TokenId::kSystem}}));
+                             {TokenId::kUser, TokenId::kSystem}},
+        TestConfigPerProfile{ProfileToUse::kAffiliatedUserProfile,
+                             {TokenId::kSystem, TokenId::kUser}}));
 
 class PlatformKeysServicePerTokenBrowserTest
     : public PlatformKeysServiceBrowserTestBase,
@@ -748,6 +784,34 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
   EXPECT_TRUE(public_keys.empty());
 }
 
+IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest, IsKeyOnToken) {
+  const TokenId token_id = GetParam().token_id;
+  const std::string public_key = GenerateKeyPair(token_id);
+
+  IsKeyOnTokenExecutionWaiter is_key_on_token_waiter;
+  platform_keys_service()->IsKeyOnToken(token_id, public_key,
+                                        is_key_on_token_waiter.GetCallback());
+  is_key_on_token_waiter.Wait();
+
+  EXPECT_EQ(is_key_on_token_waiter.status(), Status::kSuccess);
+  ASSERT_TRUE(is_key_on_token_waiter.on_slot().has_value());
+  EXPECT_TRUE(is_key_on_token_waiter.on_slot().value());
+}
+
+IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
+                       IsKeyOnTokenWhenNoKeysGenerated) {
+  const TokenId token_id = GetParam().token_id;
+
+  IsKeyOnTokenExecutionWaiter is_key_on_token_waiter;
+  platform_keys_service()->IsKeyOnToken(token_id, "test_public_key",
+                                        is_key_on_token_waiter.GetCallback());
+  is_key_on_token_waiter.Wait();
+
+  EXPECT_EQ(is_key_on_token_waiter.status(), Status::kSuccess);
+  ASSERT_TRUE(is_key_on_token_waiter.on_slot().has_value());
+  EXPECT_FALSE(is_key_on_token_waiter.on_slot().value());
+}
+
 INSTANTIATE_TEST_SUITE_P(
     AllSupportedProfilesAndTokensTypes,
     PlatformKeysServicePerTokenBrowserTest,
@@ -779,6 +843,19 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerUnavailableTokenBrowserTest,
                                           generate_key_waiter.GetCallback());
   generate_key_waiter.Wait();
   EXPECT_NE(generate_key_waiter.status(), Status::kSuccess);
+}
+
+IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerUnavailableTokenBrowserTest,
+                       IsKeyOnToken) {
+  const TokenId token_id = GetParam().token_id;
+
+  IsKeyOnTokenExecutionWaiter is_key_on_token_waiter;
+  platform_keys_service()->IsKeyOnToken(token_id, "test_public_key",
+                                        is_key_on_token_waiter.GetCallback());
+  is_key_on_token_waiter.Wait();
+
+  EXPECT_NE(is_key_on_token_waiter.status(), Status::kSuccess);
+  EXPECT_FALSE(is_key_on_token_waiter.on_slot().has_value());
 }
 
 INSTANTIATE_TEST_SUITE_P(

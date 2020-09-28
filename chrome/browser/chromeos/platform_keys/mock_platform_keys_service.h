@@ -138,6 +138,13 @@ class MockPlatformKeysService : public PlatformKeysService {
               (override));
 
   MOCK_METHOD(void,
+              IsKeyOnToken,
+              (TokenId token_id,
+               const std::string& public_key_spki_der,
+               IsKeyOnTokenCallback callback),
+              (override));
+
+  MOCK_METHOD(void,
               SetMapToSoftokenAttrsForTesting,
               (bool map_to_softoken_attrs_for_testing),
               (override));

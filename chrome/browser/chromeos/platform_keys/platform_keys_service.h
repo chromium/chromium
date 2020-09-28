@@ -90,6 +90,12 @@ using GetAttributeForKeyCallback =
     base::OnceCallback<void(const base::Optional<std::string>& attribute_value,
                             Status status)>;
 
+// If the availability of the key on the provided token has been successfully
+// determined, |on_token| will contain the result. If an error occurs,
+// |on_token| will be empty and an error |status| will be returned.
+using IsKeyOnTokenCallback =
+    base::OnceCallback<void(base::Optional<bool> on_token, Status status)>;
+
 // An observer that gets notified when the PlatformKeysService is being shut
 // down.
 class PlatformKeysServiceObserver : public base::CheckedObserver {
@@ -250,6 +256,13 @@ class PlatformKeysService : public KeyedService {
                                   KeyAttributeType attribute_type,
                                   GetAttributeForKeyCallback callback) = 0;
 
+  // Determines if |public_key_spki_der| resides on |token_id|. |callback| will
+  // be invoked on the UI thread with the result. If an error occurred, an error
+  // |status| will be returned and base::nullopt |on_token| will be returned.
+  virtual void IsKeyOnToken(TokenId token_id,
+                            const std::string& public_key_spki_der,
+                            IsKeyOnTokenCallback callback) = 0;
+
   // Softoken NSS PKCS11 module (used for testing) allows only predefined key
   // attributes to be set and retrieved. Chaps supports setting and retrieving
   // custom attributes.
@@ -358,6 +371,9 @@ class PlatformKeysServiceImpl final : public PlatformKeysService {
                           const std::string& public_key_spki_der,
                           KeyAttributeType attribute_type,
                           GetAttributeForKeyCallback callback) override;
+  void IsKeyOnToken(TokenId token_id,
+                    const std::string& public_key_spki_der,
+                    IsKeyOnTokenCallback callback) override;
   void SetMapToSoftokenAttrsForTesting(
       bool map_to_softoken_attrs_for_testing) override;
   bool IsSetMapToSoftokenAttrsForTesting();
