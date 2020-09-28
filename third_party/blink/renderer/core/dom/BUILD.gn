@@ -309,13 +309,6 @@ blink_core_sources("dom") {
     "xml_document.h",
   ]
 
-  # TODO(pavel.iliin) hot path functions separtion into "dom_hotpath" is not
-  # required anymore. Combine them with "dom" sources.
-  if (is_android && !is_debug) {
-    configs -= [ "//build/config/compiler:default_optimization" ]
-    configs += [ "//build/config/compiler:optimize_max" ]
-  }
-
   public_deps = [
     "//third_party/blink/public/mojom:mojom_core_blink",
 

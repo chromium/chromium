@@ -594,10 +594,6 @@ blink_core_sources("css") {
     "vision_deficiency.h",
     "zoom_adjusted_pixel_value.h",
   ]
-  if (is_android && !is_debug) {
-    configs -= [ "//build/config/compiler:default_optimization" ]
-    configs += [ "//build/config/compiler:optimize_max" ]
-  }
 }
 
 blink_core_tests("unit_tests") {
