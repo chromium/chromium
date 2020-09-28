@@ -203,6 +203,32 @@ class ActionSequence(object):
             self.key_up(c)
         return self
 
+    def scroll(self, x, y, delta_x, delta_y, duration=None, origin=None):
+        """Queue a scroll action.
+
+        :param x: Destination x-axis coordinate of pointer in CSS pixels.
+        :param y: Destination y-axis coordinate of pointer in CSS pixels.
+        :param delta_x: scroll delta on x-axis in CSS pixels.
+        :param delta_y: scroll delta on y-axis in CSS pixels.
+        :param duration: Number of milliseconds over which to distribute the
+                         scroll. If None, remote end defaults to 0.
+        :param origin: Origin of coordinates, either "viewport" or an Element.
+                       If None, remote end defaults to "viewport".
+        """
+        action = {
+            "type": "scroll",
+            "x": x,
+            "y": y,
+            "deltaX": delta_x,
+            "deltaY": delta_y
+        }
+        if duration is not None:
+            action["duration"] = duration
+        if origin is not None:
+            action["origin"] = origin
+        self._actions.append(action)
+        return self
+
 
 class Actions(object):
     def __init__(self, session):
@@ -218,10 +244,6 @@ class Actions(object):
         """
         body = {"actions": [] if actions is None else actions}
         actions = self.session.send_session_command("POST", "actions", body)
-        """WebDriver window should be set to the top level window when wptrunner
-        processes the next event.
-        """
-        self.session.switch_frame(None)
         return actions
 
     @command
@@ -321,9 +343,7 @@ class Find(object):
         self.session = session
 
     @command
-    def css(self, element_selector, all=True, frame="window"):
-        if (frame != "window"):
-            self.session.switch_frame(frame)
+    def css(self, element_selector, all=True):
         elements = self._find_element("css selector", element_selector, all)
         return elements
 

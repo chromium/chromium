@@ -656,8 +656,32 @@ class Chrome(Browser):
         self.logger.warning("Unable to find the browser binary.")
         return None
 
-    def find_webdriver(self, channel=None):
+    def find_webdriver(self, channel=None, browser_binary=None):
         return find_executable("chromedriver")
+
+    def webdriver_supports_browser(self, webdriver_binary, browser_binary):
+        chromedriver_version = self.webdriver_version(webdriver_binary)
+        if not chromedriver_version:
+            self.logger.warning(
+                "Unable to get version for ChromeDriver %s, rejecting it" %
+                webdriver_binary)
+            return False
+
+        browser_version = self.version(browser_binary)
+        if not browser_version:
+            # If we can't get the browser version, we just have to assume the
+            # ChromeDriver is good.
+            return True
+
+        # Check that the ChromeDriver version matches the Chrome version.
+        chromedriver_major = chromedriver_version.split('.')[0]
+        browser_major = browser_version.split('.')[0]
+        if chromedriver_major != browser_major:
+            self.logger.warning(
+                "ChromeDriver %s does not match Chrome/Chromium %s" %
+                (chromedriver_version, browser_version))
+            return False
+        return True
 
     def _official_chromedriver_url(self, chrome_version):
         # http://chromedriver.chromium.org/downloads/version-selection
@@ -700,6 +724,17 @@ class Chrome(Browser):
     def install_webdriver_by_version(self, version, dest=None):
         if dest is None:
             dest = os.pwd
+
+        # There may be an existing chromedriver binary from a previous install.
+        # To provide a clean install experience, remove the old binary - this
+        # avoids tricky issues like unzipping over a read-only file.
+        existing_binary_path = find_executable("chromedriver", dest)
+        if existing_binary_path:
+            self.logger.info("Removing existing ChromeDriver binary: %s" %
+                existing_binary_path)
+            os.chmod(existing_binary_path, stat.S_IWUSR)
+            os.remove(existing_binary_path)
+
         url = self._latest_chromedriver_url(version) if version \
             else self._chromium_chromedriver_url(None)
         self.logger.info("Downloading ChromeDriver from %s" % url)
@@ -744,6 +779,21 @@ class Chrome(Browser):
             self.logger.warning("Failed to call %s" % binary)
             return None
         m = re.match(r"(?:Google Chrome|Chromium) (.*)", version_string)
+        if not m:
+            self.logger.warning("Failed to extract version from: %s" % version_string)
+            return None
+        return m.group(1)
+
+    def webdriver_version(self, webdriver_binary):
+        if uname[0] == "Windows":
+            return _get_fileversion(webdriver_binary, self.logger)
+
+        try:
+            version_string = call(webdriver_binary, "--version").strip()
+        except subprocess.CalledProcessError:
+            self.logger.warning("Failed to call %s" % webdriver_binary)
+            return None
+        m = re.match(r"ChromeDriver ([0-9][0-9.]*)", version_string)
         if not m:
             self.logger.warning("Failed to extract version from: %s" % version_string)
             return None
@@ -1016,6 +1066,29 @@ class EdgeChromium(Browser):
     def find_webdriver(self, channel=None):
         return find_executable("msedgedriver")
 
+    def webdriver_supports_browser(self, webdriver_binary, browser_binary):
+        edgedriver_version = self.webdriver_version(webdriver_binary)
+        if not edgedriver_version:
+            self.logger.warning(
+                "Unable to get version for EdgeDriver %s, rejecting it" %
+                webdriver_binary)
+            return False
+
+        browser_version = self.version(browser_binary)
+        if not browser_version:
+            # If we can't get the browser version, we just have to assume the
+            # EdgeDriver is good.
+            return True
+
+        # Check that the EdgeDriver version matches the Edge version.
+        edgedriver_major = edgedriver_version.split('.')[0]
+        browser_major = browser_version.split('.')[0]
+        if edgedriver_major != browser_major:
+            self.logger.warning("EdgeDriver %s does not match Edge %s" %
+                                (edgedriver_version, browser_version))
+            return False
+        return True
+
     def install_webdriver(self, dest=None, channel=None, browser_binary=None):
         if self.platform != "win" and self.platform != "macos":
             raise ValueError("Only Windows and Mac platforms are currently supported")
@@ -1073,6 +1146,21 @@ class EdgeChromium(Browser):
                 return _get_fileversion(binary, self.logger)
             self.logger.warning("Failed to find Edge binary.")
             return None
+
+    def webdriver_version(self, webdriver_binary):
+        if self.platform == "win":
+            return _get_fileversion(webdriver_binary, self.logger)
+
+        try:
+            version_string = call(webdriver_binary, "--version").strip()
+        except subprocess.CalledProcessError:
+            self.logger.warning("Failed to call %s" % webdriver_binary)
+            return None
+        m = re.match(r"MSEdgeDriver ([0-9][0-9.]*)", version_string)
+        if not m:
+            self.logger.warning("Failed to extract version from: %s" % version_string)
+            return None
+        return m.group(1)
 
 
 class Edge(Browser):

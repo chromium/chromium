@@ -334,16 +334,19 @@ class Chrome(BrowserSetup):
                 logger.info("MojoJS enabled")
             except Exception as e:
                 logger.error("Cannot enable MojoJS: %s" % e)
+
         if kwargs["webdriver_binary"] is None:
             webdriver_binary = None
             if not kwargs["install_webdriver"]:
                 webdriver_binary = self.browser.find_webdriver()
+                if webdriver_binary and not self.browser.webdriver_supports_browser(
+                        webdriver_binary, kwargs["binary"]):
+                    webdriver_binary = None
 
             if webdriver_binary is None:
                 install = self.prompt_install("chromedriver")
 
                 if install:
-                    logger.info("Downloading chromedriver")
                     webdriver_binary = self.browser.install_webdriver(
                         dest=self.venv.bin_path,
                         channel=browser_channel,
@@ -355,7 +358,7 @@ class Chrome(BrowserSetup):
             if webdriver_binary:
                 kwargs["webdriver_binary"] = webdriver_binary
             else:
-                raise WptrunError("Unable to locate or install chromedriver binary")
+                raise WptrunError("Unable to locate or install matching ChromeDriver binary")
         if browser_channel in self.experimental_channels:
             logger.info("Automatically turning on experimental features for Chrome Dev/Canary or Chromium trunk")
             kwargs["binary_args"].append("--enable-experimental-web-platform-features")
@@ -513,13 +516,16 @@ class EdgeChromium(BrowserSetup):
                 kwargs["binary"] = binary
             else:
                 raise WptrunError("Unable to locate Edge binary")
+
         if kwargs["webdriver_binary"] is None:
             webdriver_binary = None
             if not kwargs["install_webdriver"]:
                 webdriver_binary = self.browser.find_webdriver()
+                if (webdriver_binary and not self.browser.webdriver_supports_browser(
+                    webdriver_binary, kwargs["binary"])):
+                    webdriver_binary = None
 
-            # Install browser if none are found or if it's found in venv path
-            if webdriver_binary is None or webdriver_binary in self.venv.bin_path:
+            if webdriver_binary is None:
                 install = self.prompt_install("msedgedriver")
 
                 if install:
