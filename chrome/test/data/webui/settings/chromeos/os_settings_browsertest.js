@@ -1203,6 +1203,20 @@ TEST_F('OSSettingsNetworkSummaryItemTest', 'All', () => {
 });
 
 // eslint-disable-next-line no-var
+var OSSettingsNetworkSummaryTest = class extends OSSettingsBrowserTest {
+  /** @override */
+  get extraLibraries() {
+    return super.extraLibraries.concat([
+      'network_summary_test.js',
+    ]);
+  }
+};
+
+TEST_F('OSSettingsNetworkSummaryTest', 'All', () => {
+  mocha.run();
+});
+
+// eslint-disable-next-line no-var
 var OSSettingsPeoplePageAccountManagerTest =
     class extends OSSettingsBrowserTest {
   /** @override */

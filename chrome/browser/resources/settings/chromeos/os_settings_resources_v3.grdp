@@ -65,6 +65,11 @@
            use_base_dir="false"
            compress="false"
            type="BINDATA" />
+  <include name="IDR_OS_SETTINGS_NETWORK_SUMMARY_M_JS"
+           file="${root_gen_dir}/chrome/browser/resources/settings/chromeos/internet_page/network_summary.m.js"
+           use_base_dir="false"
+           compress="false"
+           type="BINDATA" />
   <include name="IDR_OS_SETTINGS_NETWORK_SUMMARY_ITEM_M_JS"
            file="${root_gen_dir}/chrome/browser/resources/settings/chromeos/internet_page/network_summary_item.m.js"
            use_base_dir="false"

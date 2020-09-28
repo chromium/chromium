@@ -304,6 +304,7 @@ if (include_js_tests) {
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/nearby_share_subpage_tests.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/network_proxy_section_test.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/network_summary_item_test.m.js",
+        "$root_gen_dir/chrome/test/data/webui/settings/chromeos/network_summary_test.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/os_edit_dictionary_page_test.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/os_languages_page_tests.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/os_languages_page_v2_tests.m.js",
