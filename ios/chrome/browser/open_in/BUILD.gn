@@ -38,6 +38,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [ "open_in_tab_helper_unittest.mm" ]
   deps = [
+    ":features",
     ":open_in",
     "//base",
     "//base/test:test_support",

@@ -25,45 +25,34 @@
 #error "This file requires ARC support."
 #endif
 
-namespace {
+namespace content_type {
 
-// .pptx extension.
 const char kMimeTypeMicrosoftPowerPointOpenXML[] =
     "application/vnd.openxmlformats-officedocument.presentationml.presentation";
 
-// .docx extension.
 const char kMimeTypeMicrosoftWordOpenXML[] =
     "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
 
-// .xlsx extension.
 const char kMimeTypeMicrosoftExcelOpenXML[] =
     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
 
-// .pdf extension.
 const char kMimeTypePDF[] = "application/pdf";
 
-// .doc extension.
 const char kMimeTypeMicrosoftWord[] = "application/msword";
 
-// .jpeg or .jpg extension.
 const char kMimeTypeJPEG[] = "image/jpeg";
 
-// .png extension.
 const char kMimeTypePNG[] = "image/png";
 
-// .ppt extension.
 const char kMimeTypeMicrosoftPowerPoint[] = "application/vnd.ms-powerpoint";
 
-// .rtf extension.
 const char kMimeTypeRTF[] = "application/rtf";
 
-// .svg extension.
 const char kMimeTypeSVG[] = "image/svg+xml";
 
-// .xls extension.
 const char kMimeTypeMicrosoftExcel[] = "application/vnd.ms-excel";
 
-}  // namespace
+}  // namespace content_type
 
 // static
 void OpenInTabHelper::CreateForWebState(web::WebState* web_state) {
@@ -89,27 +78,27 @@ OpenInTabHelper::~OpenInTabHelper() {
 
 OpenInMimeType OpenInTabHelper::GetUmaResult(
     const std::string& mime_type) const {
-  if (mime_type == kMimeTypePDF)
+  if (mime_type == content_type::kMimeTypePDF)
     return OpenInMimeType::kMimeTypePDF;
-  if (mime_type == kMimeTypeMicrosoftWord)
+  if (mime_type == content_type::kMimeTypeMicrosoftWord)
     return OpenInMimeType::kMimeTypeMicrosoftWord;
-  if (mime_type == kMimeTypeMicrosoftWordOpenXML)
+  if (mime_type == content_type::kMimeTypeMicrosoftWordOpenXML)
     return OpenInMimeType::kMimeTypeMicrosoftWordOpenXML;
-  if (mime_type == kMimeTypeJPEG)
+  if (mime_type == content_type::kMimeTypeJPEG)
     return OpenInMimeType::kMimeTypeJPEG;
-  if (mime_type == kMimeTypePNG)
+  if (mime_type == content_type::kMimeTypePNG)
     return OpenInMimeType::kMimeTypePNG;
-  if (mime_type == kMimeTypeMicrosoftPowerPoint)
+  if (mime_type == content_type::kMimeTypeMicrosoftPowerPoint)
     return OpenInMimeType::kMimeTypeMicrosoftPowerPoint;
-  if (mime_type == kMimeTypeMicrosoftPowerPointOpenXML)
+  if (mime_type == content_type::kMimeTypeMicrosoftPowerPointOpenXML)
     return OpenInMimeType::kMimeTypeMicrosoftPowerPointOpenXML;
-  if (mime_type == kMimeTypeRTF)
+  if (mime_type == content_type::kMimeTypeRTF)
     return OpenInMimeType::kMimeTypeRTF;
-  if (mime_type == kMimeTypeSVG)
+  if (mime_type == content_type::kMimeTypeSVG)
     return OpenInMimeType::kMimeTypeSVG;
-  if (mime_type == kMimeTypeMicrosoftExcel)
+  if (mime_type == content_type::kMimeTypeMicrosoftExcel)
     return OpenInMimeType::kMimeTypeMicrosoftExcel;
-  if (mime_type == kMimeTypeMicrosoftExcelOpenXML)
+  if (mime_type == content_type::kMimeTypeMicrosoftExcelOpenXML)
     return OpenInMimeType::kMimeTypeMicrosoftExcelOpenXML;
   return OpenInMimeType::kMimeTypeNotHandled;
 }

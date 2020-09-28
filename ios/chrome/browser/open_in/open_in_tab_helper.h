@@ -14,6 +14,43 @@ namespace net {
 class HttpResponseHeaders;
 }  //  namespace net
 
+namespace content_type {
+
+// .pptx extension.
+extern const char kMimeTypeMicrosoftPowerPointOpenXML[];
+
+// .docx extension.
+extern const char kMimeTypeMicrosoftWordOpenXML[];
+
+// .xlsx extension.
+extern const char kMimeTypeMicrosoftExcelOpenXML[];
+
+// .pdf extension.
+extern const char kMimeTypePDF[];
+
+// .doc extension.
+extern const char kMimeTypeMicrosoftWord[];
+
+// .jpeg or .jpg extension.
+extern const char kMimeTypeJPEG[];
+
+// .png extension.
+extern const char kMimeTypePNG[];
+
+// .ppt extension.
+extern const char kMimeTypeMicrosoftPowerPoint[];
+
+// .rtf extension.
+extern const char kMimeTypeRTF[];
+
+// .svg extension.
+extern const char kMimeTypeSVG[];
+
+// .xls extension.
+extern const char kMimeTypeMicrosoftExcel[];
+
+}  // namespace content_type
+
 // Enum used to determine the MIME type of a previewed file. Entries should
 // always keep synced with the IOS.OpenIn.MimeType UMA histogram.
 enum class OpenInMimeType {
