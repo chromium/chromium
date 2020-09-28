@@ -65,10 +65,10 @@ import java.util.concurrent.ExecutionException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @EnableFeatures({ChromeFeatureList.PASSWORD_CHECK})
 public class PasswordCheckEditViewTest {
-    private static final CompromisedCredential ANA =
-            new CompromisedCredential("https://some-url.com/signin",
-                    new GURL("https://some-url.com/"), "Ana", "some-url.com", "Ana", "password",
-                    "https://some-url.com/.well-known/change-password", "", 1, true, false, false);
+    private static final CompromisedCredential ANA = new CompromisedCredential(
+            "https://some-url.com/signin", new GURL("https://some-url.com/"), "Ana", "some-url.com",
+            "Ana", "password", "https://some-url.com/.well-known/change-password", "", 1, true,
+            false, false, false);
 
     private PasswordCheckEditFragmentView mPasswordCheckEditView;
 

@@ -90,7 +90,7 @@ void PasswordCheckBridge::GetCompromisedCredentials(
          password_manager::InsecureCredentialTypeFlags::kCredentialLeaked),
         (credential.insecure_type ==
          password_manager::InsecureCredentialTypeFlags::kCredentialPhished),
-        credential.has_auto_change_button);
+        credential.has_script, credential.has_auto_change_button);
   }
 }
 

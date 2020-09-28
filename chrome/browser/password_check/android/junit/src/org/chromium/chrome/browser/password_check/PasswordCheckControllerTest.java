@@ -84,10 +84,11 @@ import org.chromium.url.GURL;
 public class PasswordCheckControllerTest {
     private static final CompromisedCredential ANA =
             new CompromisedCredential("https://m.a.xyz/signin", mock(GURL.class), "Ana", "m.a.xyz",
-                    "Ana", "password", "", "xyz.a.some.package", 2, true, false, false);
-    private static final CompromisedCredential BOB = new CompromisedCredential(
-            "http://www.b.ch/signin", mock(GURL.class), "", "http://www.b.ch", "(No username)",
-            "DoneSth", "http://www.b.ch/.well-known/change-password", "", 1, true, false, true);
+                    "Ana", "password", "", "xyz.a.some.package", 2, true, false, false, false);
+    private static final CompromisedCredential BOB =
+            new CompromisedCredential("http://www.b.ch/signin", mock(GURL.class), "",
+                    "http://www.b.ch", "(No username)", "DoneSth",
+                    "http://www.b.ch/.well-known/change-password", "", 1, true, false, true, true);
     private static final Pair<Integer, Integer> PROGRESS_UPDATE = new Pair<>(2, 19);
     private static final String PASSWORD_CHECK_REFERRER_HISTOGRAM =
             "PasswordManager.BulkCheck.PasswordCheckReferrerAndroid";
@@ -616,7 +617,7 @@ public class PasswordCheckControllerTest {
     private CompromisedCredential makeCredential(
             String origin, String username, long creationTime, boolean leaked, boolean phished) {
         return new CompromisedCredential(origin, mock(GURL.class), username, origin, username,
-                "password", origin, new String(), creationTime, leaked, phished, false);
+                "password", origin, new String(), creationTime, leaked, phished, false, false);
     }
 
     private PropertyModel getHeaderModel() {
