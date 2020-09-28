@@ -278,9 +278,17 @@ void OpaqueBrowserFrameViewLayout::LayoutTitleBar() {
   int size = delegate_->GetIconSize();
   bool should_show_icon = delegate_->ShouldShowWindowIcon() && window_icon_;
   bool should_show_title = delegate_->ShouldShowWindowTitle() && window_title_;
+  // TODO(crbug.com/1132767): fullscreen check is required only because we
+  // cannot allow toolbar to lay out in fullscreen mode without breaking some
+  // bubble anchoring because of how e.g. the zoom bubble anchors. If this
+  // issue is resolved, all of the references to |should_show_toolbar| can
+  // potentially be replaced with checks that |web_app_frame_toolbar_| is
+  // non-null.
+  bool should_show_toolbar =
+      !delegate_->IsFullscreen() && web_app_frame_toolbar_;
   base::Optional<int> icon_spacing;
 
-  if (should_show_icon || should_show_title || web_app_frame_toolbar_) {
+  if (should_show_icon || should_show_title || should_show_toolbar) {
     use_hidden_icon_location = false;
 
     // Our frame border has a different "3D look" than Windows'.  Theirs has
@@ -305,7 +313,7 @@ void OpaqueBrowserFrameViewLayout::LayoutTitleBar() {
     // first element in the frame. We'll use this spacing again to ensure
     // appropriate spacing between icon and title.
     icon_spacing = y;
-    if (web_app_frame_toolbar_ && leading_buttons_.empty())
+    if (should_show_toolbar && leading_buttons_.empty())
       available_space_leading_x_ = FrameSideThickness(false) + *icon_spacing;
     else
       available_space_leading_x_ += kIconLeftSpacing;
@@ -314,7 +322,7 @@ void OpaqueBrowserFrameViewLayout::LayoutTitleBar() {
     available_space_leading_x_ += size;
     minimum_size_for_buttons_ += size;
 
-    if (web_app_frame_toolbar_) {
+    if (should_show_toolbar) {
       std::pair<int, int> remaining_bounds =
           web_app_frame_toolbar_->LayoutInContainer(available_space_leading_x_,
                                                     available_space_trailing_x_,

@@ -433,6 +433,10 @@ bool OpaqueBrowserFrameView::IsMinimized() const {
   return frame()->IsMinimized();
 }
 
+bool OpaqueBrowserFrameView::IsFullscreen() const {
+  return frame()->IsFullscreen();
+}
+
 bool OpaqueBrowserFrameView::IsTabStripVisible() const {
   return browser_view()->IsTabStripVisible();
 }

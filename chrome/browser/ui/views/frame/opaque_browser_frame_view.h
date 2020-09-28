@@ -95,6 +95,7 @@ class OpaqueBrowserFrameView : public BrowserNonClientFrameView,
   bool IsRegularOrGuestSession() const override;
   bool IsMaximized() const override;
   bool IsMinimized() const override;
+  bool IsFullscreen() const override;
   bool IsTabStripVisible() const override;
   int GetTabStripHeight() const override;
   bool IsToolbarVisible() const override;
