@@ -23,3 +23,5 @@ const CGFloat kTableViewLabelVerticalTopSpacing = 13.0;
 const CGFloat kTableViewAccessoryWidth = 40;
 
 NSString* const kMaskedPassword = @"••••••••";
+NSString* const kTableViewCellInfoButtonViewId =
+    @"kTableViewCellInfoButtonViewId";

@@ -50,4 +50,8 @@ extern const CGFloat kTableViewAccessoryWidth;
 // A masked password string(e.g. "••••••••").
 extern NSString* const kMaskedPassword;
 
+// The accessibility identifier of the info button of the
+// TableViewInfoButtonCell.
+extern NSString* const kTableViewCellInfoButtonViewId;
+
 #endif  // IOS_CHROME_BROWSER_UI_TABLE_VIEW_CELLS_TABLE_VIEW_CELLS_CONSTANTS_H_

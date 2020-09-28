@@ -6,6 +6,7 @@
 
 #include "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/ui/settings/elements/elements_constants.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/elements/popover_label_view_controller.h"
@@ -100,6 +101,13 @@ NSAttributedString* SecondaryMessage(NSString* enterpriseName) {
   return
       [super initWithPrimaryAttributedString:PrimaryMessage()
                    secondaryAttributedString:SecondaryMessage(enterpriseName)];
+}
+
+#pragma mark - UIViewController
+
+- (void)viewDidLoad {
+  [super viewDidLoad];
+  self.view.accessibilityIdentifier = kEnterpriseInfoBubbleViewId;
 }
 
 #pragma mark - UIPopoverPresentationControllerDelegate

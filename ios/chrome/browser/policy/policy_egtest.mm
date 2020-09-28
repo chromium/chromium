@@ -14,6 +14,9 @@
 #include "ios/chrome/browser/pref_names.h"
 #import "ios/chrome/browser/translate/translate_app_interface.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
+#import "ios/chrome/browser/ui/settings/elements/elements_constants.h"
+#import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
 #include "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -121,11 +124,34 @@ id<GREYMatcher> ToolsMenuTranslateButton() {
 }
 
 // Tests for the DefaultSearchProviderEnabled policy.
+// 1. Test if the policy can be properly set.
+// 2. Test the managed UI item and clicking action.
 - (void)testDefaultSearchProviderEnabled {
   // Disable default search provider via policy and make sure it does not crash
   // the omnibox UI.
   SetPolicy(false, policy::key::kDefaultSearchProviderEnabled);
   [ChromeEarlGrey loadURL:GURL("chrome://policy")];
+  [EarlGrey dismissKeyboardWithError:nil];
+
+  // Open settings menu and check if the settings UI is a managed UI.
+  [ChromeEarlGreyUI openSettingsMenu];
+
+  // Click on the info button of the managed item.
+  [ChromeEarlGreyUI tapSettingsMenuButton:grey_accessibilityID(
+                                              kTableViewCellInfoButtonViewId)];
+
+  // Check if the contextual bubble is shown.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kEnterpriseInfoBubbleViewId)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Tap outside of the bubble.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsDoneButton()]
+      performAction:grey_tap()];
+  // Check if the contextual bubble is hidden.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kEnterpriseInfoBubbleViewId)]
+      assertWithMatcher:grey_notVisible()];
 }
 
 // Tests for the PasswordManagerEnabled policy.
