@@ -480,6 +480,12 @@
 + (void)simulatePhysicalKeyboardEvent:(NSString*)input
                                 flags:(UIKeyModifierFlags)flags;
 
+#pragma mark - Pasteboard utilities
+
+// Retrieves the currently stored string on the pasteboard from the tested app's
+// perspective.
++ (NSString*)pasteboardString;
+
 @end
 
 #endif  // IOS_CHROME_TEST_EARL_GREY_CHROME_EARL_GREY_APP_INTERFACE_H_

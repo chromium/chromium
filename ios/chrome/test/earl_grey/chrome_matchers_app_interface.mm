@@ -972,4 +972,12 @@ UIView* SubviewWithAccessibilityIdentifier(NSString* accessibility_id,
   return grey_allOf(classMatcher, parentMatcher, nil);
 }
 
++ (id<GREYMatcher>)activityViewHeaderWithTitle:(NSString*)pageTitle {
+  return grey_allOf(grey_accessibilityLabel(pageTitle),
+                    grey_ancestor(grey_allOf(
+                        grey_accessibilityTrait(UIAccessibilityTraitHeader),
+                        grey_kindOfClassName(@"LPLinkView"), nil)),
+                    nil);
+}
+
 @end

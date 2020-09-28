@@ -498,6 +498,9 @@ id<GREYMatcher> ManualFallbackAddCreditCardsMatcher();
 // Returns a matcher for the CreditCardTableView window.
 id<GREYMatcher> ManualFallbackCreditCardTableViewWindowMatcher();
 
+// Returns the matcher for the iOS 13+ Activity View header.
+id<GREYMatcher> ActivityViewHeader(NSString* page_title);
+
 }  // namespace chrome_test_util
 
 #endif  // IOS_CHROME_TEST_EARL_GREY_CHROME_MATCHERS_H_

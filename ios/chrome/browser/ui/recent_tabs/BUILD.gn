@@ -77,6 +77,7 @@ source_set("recent_tabs_ui") {
     "//components/sessions",
     "//components/strings",
     "//components/sync",
+    "//ios/chrome/app:tests_hook",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/drag_and_drop",

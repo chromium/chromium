@@ -565,6 +565,27 @@ id ExecuteJavaScript(NSString* javascript, NSError* __autoreleasing* out_error);
 // clearing Browsing data.
 - (void)resetBrowsingDataPrefs;
 
+#pragma mark - Pasteboard Utilities (EG2)
+
+// Verifies that |text| was copied to the pasteboard.
+- (void)verifyStringCopied:(NSString*)text;
+
+#pragma mark - Context Menus Utilities (EG2)
+
+// Taps on the Copy Link context menu action and verifies that the |text| has
+// been copied to the pasteboard. |useNewString| determines which action string
+// to use.
+- (void)verifyCopyLinkActionWithText:(NSString*)text
+                        useNewString:(BOOL)useNewString;
+
+// Taps on the Open in New Tab context menu action and waits for the |URL| to be
+// present in the omnibox.
+- (void)verifyOpenInNewTabActionWithURL:(const std::string&)URL;
+
+// Taps on the Share context menu action and validates that the ActivityView
+// was brought up with |pageTitle| in its header.
+- (void)verifyShareActionWithPageTitle:(NSString*)pageTitle;
+
 #pragma mark - Unified Consent utilities
 
 // Enables or disables URL-keyed anonymized data collection.

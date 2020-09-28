@@ -16,6 +16,8 @@
 #error "This file requires ARC support."
 #endif
 
+using chrome_test_util::TabGridOtherDevicesPanelButton;
+
 namespace {
 char kURL1[] = "http://firstURL";
 char kURL2[] = "http://secondURL";
@@ -134,6 +136,73 @@ char kResponse3[] = "Test Page 3 content";
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
+// Tests that Clear Browsing Data can be successfully done from tab grid.
+- (void)DISABLED_testClearBrowsingData {
+  // Load history
+  [self loadTestURLs];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::ShowTabsButton()]
+      performAction:grey_tap()];
+
+  // Switch over to Recent Tabs.
+  [[EarlGrey selectElementWithMatcher:TabGridOtherDevicesPanelButton()]
+      performAction:grey_tap()];
+
+  // Tap on "Show History"
+  // Undo is available after close all action.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::TabGridSelectShowHistoryCell()]
+      performAction:grey_tap()];
+  [ChromeEarlGreyUI openAndClearBrowsingDataFromHistory];
+  [ChromeEarlGreyUI assertHistoryHasNoEntries];
+}
+
+// Tests the Copy Link action on a recent tab's context menu.
+- (void)testRecentTabsContextMenuCopyLink {
+  if (![ChromeEarlGrey isNativeContextMenusEnabled]) {
+    EARL_GREY_TEST_SKIPPED(@"Test disabled on when feature flag is off.");
+  }
+
+  [self prepareRecentTabWithURL:_URL1 response:kResponse1];
+  [self longPressRecentTabWithTitle:[NSString stringWithUTF8String:kTitle1]];
+
+  [ChromeEarlGrey
+      verifyCopyLinkActionWithText:[NSString stringWithUTF8String:_URL1.spec()
+                                                                      .c_str()]
+                      useNewString:YES];
+}
+
+// Tests the Open in New Tab action on a recent tab's context menu.
+- (void)testRecentTabsContextMenuOpenInNewTab {
+  if (![ChromeEarlGrey isNativeContextMenusEnabled]) {
+    EARL_GREY_TEST_SKIPPED(@"Test disabled on when feature flag is off.");
+  }
+
+  [self prepareRecentTabWithURL:_URL1 response:kResponse1];
+  [self longPressRecentTabWithTitle:[NSString stringWithUTF8String:kTitle1]];
+
+  [ChromeEarlGrey verifyOpenInNewTabActionWithURL:_URL1.GetContent()];
+
+  // Verify that the Tab Grid is closed.
+  [[EarlGrey selectElementWithMatcher:TabGridOtherDevicesPanelButton()]
+      assertWithMatcher:grey_notVisible()];
+}
+
+// Tests the Share action on a recent tab's context menu.
+- (void)testRecentTabsContextMenuShare {
+  if (![ChromeEarlGrey isNativeContextMenusEnabled]) {
+    EARL_GREY_TEST_SKIPPED(@"Test disabled on when feature flag is off.");
+  }
+
+  [self prepareRecentTabWithURL:_URL1 response:kResponse1];
+  [self longPressRecentTabWithTitle:[NSString stringWithUTF8String:kTitle1]];
+
+  [ChromeEarlGrey
+      verifyShareActionWithPageTitle:[NSString stringWithUTF8String:kTitle1]];
+}
+
+#pragma mark - Helper Methods
+
 - (void)loadTestURLs {
   [ChromeEarlGrey loadURL:_URL1];
   [ChromeEarlGrey waitForWebStateContainingText:kResponse1];
@@ -145,27 +214,25 @@ char kResponse3[] = "Test Page 3 content";
   [ChromeEarlGrey waitForWebStateContainingText:kResponse3];
 }
 
-// Test that Clear Browsing Data can be successfully done from tab grid.
-- (void)DISABLED_testClearBrowsingData {
-  // Load history
-  [self loadTestURLs];
+// Loads a URL in a new tab and deletes it to populate Recent Tabs. Then,
+// navigates to the Recent tabs via tab grid.
+- (void)prepareRecentTabWithURL:(const GURL&)URL
+                       response:(const char*)response {
+  [ChromeEarlGrey loadURL:URL];
+  [ChromeEarlGrey waitForWebStateContainingText:response];
 
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::ShowTabsButton()]
-      performAction:grey_tap()];
+  // Close the tab, making it appear in Recent Tabs.
+  [ChromeEarlGrey closeCurrentTab];
 
   // Switch over to Recent Tabs.
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(
-                                   kTabGridRemoteTabsPageButtonIdentifier)]
+  [[EarlGrey selectElementWithMatcher:TabGridOtherDevicesPanelButton()]
       performAction:grey_tap()];
+}
 
-  // Tap on "Show History"
-  // Undo is available after close all action.
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::TabGridSelectShowHistoryCell()]
-      performAction:grey_tap()];
-  [ChromeEarlGreyUI openAndClearBrowsingDataFromHistory];
-  [ChromeEarlGreyUI assertHistoryHasNoEntries];
+- (void)longPressRecentTabWithTitle:(NSString*)title {
+  // The test page may be there multiple times.
+  [[[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(title)]
+      atIndex:0] performAction:grey_longPress()];
 }
 
 @end

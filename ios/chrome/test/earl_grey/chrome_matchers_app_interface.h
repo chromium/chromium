@@ -500,6 +500,9 @@
 // Returns a matcher for the CreditCardTableView window.
 + (id<GREYMatcher>)manualFallbackCreditCardTableViewWindowMatcher;
 
+// Returns the matcher for the Activity View header.
++ (id<GREYMatcher>)activityViewHeaderWithTitle:(NSString*)pageTitle;
+
 @end
 
 #endif  // IOS_CHROME_TEST_EARL_GREY_CHROME_MATCHERS_APP_INTERFACE_H_

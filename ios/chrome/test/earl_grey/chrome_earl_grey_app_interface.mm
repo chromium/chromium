@@ -838,4 +838,10 @@ NSString* SerializedPref(const PrefService::Preference* pref) {
   chrome_test_util::SimulatePhysicalKeyboardEvent(flags, input);
 }
 
+#pragma mark - Pasteboard utilities
+
++ (NSString*)pasteboardString {
+  return [UIPasteboard generalPasteboard].string;
+}
+
 @end

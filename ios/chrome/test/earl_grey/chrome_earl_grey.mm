@@ -38,6 +38,10 @@ using base::test::ios::kWaitForJSCompletionTimeout;
 using base::test::ios::kWaitForPageLoadTimeout;
 using base::test::ios::kWaitForUIElementTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;
+using chrome_test_util::ActivityViewHeader;
+using chrome_test_util::CopyLinkButton;
+using chrome_test_util::OpenLinkInNewTabButton;
+using chrome_test_util::ShareButton;
 
 namespace {
 NSString* const kWaitForPageToStartLoadingError = @"Page did not start to load";
@@ -1036,6 +1040,47 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeEarlGreyAppInterface)
 
 - (void)resetBrowsingDataPrefs {
   return [ChromeEarlGreyAppInterface resetBrowsingDataPrefs];
+}
+
+#pragma mark - Pasteboard Utilities (EG2)
+
+- (void)verifyStringCopied:(NSString*)text {
+  ConditionBlock condition = ^{
+    return !![[ChromeEarlGreyAppInterface pasteboardString]
+        containsString:text];
+  };
+  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(kWaitForActionTimeout,
+                                                          condition),
+             @"Waiting for '%@' to be copied to pasteboard.", text);
+}
+
+#pragma mark - Context Menus Utilities (EG2)
+
+- (void)verifyCopyLinkActionWithText:(NSString*)text
+                        useNewString:(BOOL)useNewString {
+  [[EarlGrey selectElementWithMatcher:CopyLinkButton(useNewString)]
+      performAction:grey_tap()];
+  [self verifyStringCopied:text];
+}
+
+- (void)verifyOpenInNewTabActionWithURL:(const std::string&)URL {
+  // Check tab count prior to execution.
+  NSUInteger oldTabCount = [ChromeEarlGreyAppInterface mainTabCount];
+
+  [[EarlGrey selectElementWithMatcher:OpenLinkInNewTabButton()]
+      performAction:grey_tap()];
+
+  [self waitForMainTabCount:oldTabCount + 1];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxText(URL)]
+      assertWithMatcher:grey_notNil()];
+}
+
+- (void)verifyShareActionWithPageTitle:(NSString*)pageTitle {
+  [[EarlGrey selectElementWithMatcher:ShareButton()] performAction:grey_tap()];
+
+  // Page title is added asynchronously, so wait for its appearance.
+  [self waitForMatcher:grey_allOf(ActivityViewHeader(pageTitle),
+                                  grey_sufficientlyVisible(), nil)];
 }
 
 #pragma mark - Unified consent utilities

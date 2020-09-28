@@ -624,4 +624,8 @@ id<GREYMatcher> ManualFallbackCreditCardTableViewWindowMatcher() {
       manualFallbackCreditCardTableViewWindowMatcher];
 }
 
+id<GREYMatcher> ActivityViewHeader(NSString* page_title) {
+  return [ChromeMatchersAppInterface activityViewHeaderWithTitle:page_title];
+}
+
 }  // namespace chrome_test_util

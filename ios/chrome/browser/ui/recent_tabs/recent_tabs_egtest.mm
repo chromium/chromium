@@ -63,13 +63,22 @@ void OpenRecentTabsPanel() {
   [ChromeEarlGreyUI tapToolsMenuButton:RecentTabsMenuButton()];
 }
 
+// Returns the matcher for the Recent Tabs table.
+id<GREYMatcher> RecentTabsTable() {
+  return grey_accessibilityID(
+      kRecentTabsTableViewControllerAccessibilityIdentifier);
+}
+
 // Returns the matcher for the entry of the page in the recent tabs panel.
 id<GREYMatcher> TitleOfTestPage() {
   return grey_allOf(
-      grey_ancestor(grey_accessibilityID(
-          kRecentTabsTableViewControllerAccessibilityIdentifier)),
+      grey_ancestor(RecentTabsTable()),
       chrome_test_util::StaticTextWithAccessibilityLabel(kTitleOfTestPage),
       grey_sufficientlyVisible(), nil);
+}
+
+GURL TestPageURL() {
+  return web::test::HttpServer::MakeUrl(kURLOfTestPage);
 }
 
 }  // namespace
@@ -84,25 +93,16 @@ id<GREYMatcher> TitleOfTestPage() {
   [super setUp];
   [ChromeEarlGrey clearBrowsingHistory];
   web::test::SetUpSimpleHttpServer(std::map<GURL, std::string>{{
-      web::test::HttpServer::MakeUrl(kURLOfTestPage),
+      TestPageURL(),
       std::string(kHTMLOfTestPage),
   }});
   [RecentTabsAppInterface clearCollapsedListViewSectionStates];
 }
 
-// Closes the recent tabs panel.
-- (void)closeRecentTabs {
-  id<GREYMatcher> exitMatcher =
-      grey_accessibilityID(kTableViewNavigationDismissButtonId);
-  [[EarlGrey selectElementWithMatcher:exitMatcher] performAction:grey_tap()];
-  // Wait until the recent tabs panel is dismissed.
-  [ChromeEarlGreyUI waitForAppToIdle];
-}
-
 // Tests that a closed tab appears in the Recent Tabs panel, and that tapping
 // the entry in the Recent Tabs panel re-opens the closed tab.
 - (void)testClosedTabAppearsInRecentTabsPanel {
-  const GURL testPageURL = web::test::HttpServer::MakeUrl(kURLOfTestPage);
+  const GURL testPageURL = TestPageURL();
 
   // Open the test page in a new tab.
   [ChromeEarlGrey loadURL:testPageURL];
@@ -170,10 +170,8 @@ id<GREYMatcher> TitleOfTestPage() {
 
   // Scroll to sign-in promo, if applicable.
   [[EarlGrey
-      selectElementWithMatcher:
-          grey_allOf(grey_accessibilityID(
-                         kRecentTabsTableViewControllerAccessibilityIdentifier),
-                     grey_sufficientlyVisible(), nil)]
+      selectElementWithMatcher:grey_allOf(RecentTabsTable(),
+                                          grey_sufficientlyVisible(), nil)]
       performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
 
   // Sign-in promo should be visible with cold state.
@@ -197,10 +195,8 @@ id<GREYMatcher> TitleOfTestPage() {
 
   // Scroll to sign-in promo, if applicable
   [[EarlGrey
-      selectElementWithMatcher:
-          grey_allOf(grey_accessibilityID(
-                         kRecentTabsTableViewControllerAccessibilityIdentifier),
-                     grey_sufficientlyVisible(), nil)]
+      selectElementWithMatcher:grey_allOf(RecentTabsTable(),
+                                          grey_sufficientlyVisible(), nil)]
       performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
 
   [SigninEarlGreyUI
@@ -226,10 +222,8 @@ id<GREYMatcher> TitleOfTestPage() {
       performAction:grey_tap()];
   // Scroll to sign-in promo, if applicable
   [[EarlGrey
-      selectElementWithMatcher:
-          grey_allOf(grey_accessibilityID(
-                         kRecentTabsTableViewControllerAccessibilityIdentifier),
-                     grey_sufficientlyVisible(), nil)]
+      selectElementWithMatcher:grey_allOf(RecentTabsTable(),
+                                          grey_sufficientlyVisible(), nil)]
       performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
   [SigninEarlGreyUI
       verifySigninPromoVisibleWithMode:SigninPromoViewModeWarmState
@@ -253,9 +247,7 @@ id<GREYMatcher> TitleOfTestPage() {
   OpenRecentTabsPanel();
 
   id<GREYMatcher> recentTabsViewController =
-      grey_allOf(grey_accessibilityID(
-                     kRecentTabsTableViewControllerAccessibilityIdentifier),
-                 grey_sufficientlyVisible(), nil);
+      grey_allOf(RecentTabsTable(), grey_sufficientlyVisible(), nil);
 
   // Check that the TableView is presented.
   [[EarlGrey selectElementWithMatcher:recentTabsViewController]
@@ -298,7 +290,7 @@ id<GREYMatcher> TitleOfTestPage() {
   }
 }
 
-// Test that the Cold Mode Signin promo is visible in the Other Devices section
+// Tests that the Cold Mode Signin promo is visible in the Other Devices section
 // (and with illustrated-empty-states enabled, there is the illustrated cell)
 - (void)testOtherDevicesDefaultEmptyState {
   OpenRecentTabsPanel();
@@ -317,15 +309,91 @@ id<GREYMatcher> TitleOfTestPage() {
 
   // Scroll to sign-in promo, if applicable
   [[EarlGrey
-      selectElementWithMatcher:
-          grey_allOf(grey_accessibilityID(
-                         kRecentTabsTableViewControllerAccessibilityIdentifier),
-                     grey_sufficientlyVisible(), nil)]
+      selectElementWithMatcher:grey_allOf(RecentTabsTable(),
+                                          grey_sufficientlyVisible(), nil)]
       performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
 
   [SigninEarlGreyUI
       verifySigninPromoVisibleWithMode:SigninPromoViewModeColdState
                            closeButton:NO];
+}
+
+// Tests the Copy Link action on a recent tab's context menu.
+- (void)testContextMenuCopyLink {
+  if (![ChromeEarlGrey isNativeContextMenusEnabled]) {
+    EARL_GREY_TEST_SKIPPED(@"Test disabled on when feature flag is off.");
+  }
+
+  [self loadTestURL];
+  OpenRecentTabsPanel();
+  [self longPressTestURLTab];
+
+  GURL testURL = TestPageURL();
+  [ChromeEarlGrey
+      verifyCopyLinkActionWithText:[NSString stringWithUTF8String:testURL.spec()
+                                                                      .c_str()]
+                      useNewString:YES];
+}
+
+// Tests the Open in New Tab action on a recent tab's context menu.
+- (void)testContextMenuOpenInNewTab {
+  if (![ChromeEarlGrey isNativeContextMenusEnabled]) {
+    EARL_GREY_TEST_SKIPPED(@"Test disabled on when feature flag is off.");
+  }
+
+  [self loadTestURL];
+  OpenRecentTabsPanel();
+  [self longPressTestURLTab];
+
+  [ChromeEarlGrey verifyOpenInNewTabActionWithURL:TestPageURL().GetContent()];
+
+  // Verify that Recent Tabs closed.
+  [[EarlGrey selectElementWithMatcher:RecentTabsTable()]
+      assertWithMatcher:grey_notVisible()];
+}
+
+// Tests the Share action on a recent tab's context menu.
+- (void)testContextMenuShare {
+  if (![ChromeEarlGrey isNativeContextMenusEnabled]) {
+    EARL_GREY_TEST_SKIPPED(@"Test disabled on when feature flag is off.");
+  }
+
+  [self loadTestURL];
+  OpenRecentTabsPanel();
+  [self longPressTestURLTab];
+
+  [ChromeEarlGrey verifyShareActionWithPageTitle:kTitleOfTestPage];
+}
+
+#pragma mark Helper Methods
+
+// Opens a new tab and closes it, to make sure it appears as a recently closed
+// tab.
+- (void)loadTestURL {
+  const GURL testPageURL = web::test::HttpServer::MakeUrl(kURLOfTestPage);
+
+  // Open the test page in a new tab.
+  [ChromeEarlGrey loadURL:testPageURL];
+  [ChromeEarlGrey waitForWebStateContainingText:"hello"];
+
+  // Close the tab, making it appear in Recent Tabs.
+  [ChromeEarlGrey closeCurrentTab];
+}
+
+// Long-presses on a recent tab entry.
+- (void)longPressTestURLTab {
+  // The test page may be there multiple times.
+  [[[EarlGrey selectElementWithMatcher:TitleOfTestPage()] atIndex:0]
+      performAction:grey_longPress()];
+}
+
+// Closes the recent tabs panel.
+- (void)closeRecentTabs {
+  id<GREYMatcher> exitMatcher =
+      grey_accessibilityID(kTableViewNavigationDismissButtonId);
+  [[EarlGrey selectElementWithMatcher:exitMatcher] performAction:grey_tap()];
+  // Wait until the recent tabs panel is dismissed.
+  [ChromeEarlGreyUI waitForAppToIdle];
 }
 
 @end
