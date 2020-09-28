@@ -26,6 +26,7 @@ constexpr int kHoldingSpaceColumnSpacing = 8;
 constexpr int kHoldingSpaceColumnWidth = 160;
 constexpr int kHoldingSpaceCornerRadius = 8;
 constexpr int kHoldingSpaceRowSpacing = 8;
+constexpr gfx::Insets kHoldingSpaceScreenshotPadding(8);
 constexpr int kHoldingSpaceScreenshotSpacing = 8;
 constexpr gfx::Size kHoldingSpaceScreenshotSize(104, 80);
 constexpr gfx::Insets kHoldingSpaceScreenshotsContainerPadding(8, 0);

@@ -10,12 +10,10 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/holding_space/holding_space_image.h"
 #include "ash/system/holding_space/holding_space_item_view.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/metadata/metadata_header_macros.h"
 
 namespace views {
 class Label;
-class ToggleImageButton;
 }  // namespace views
 
 namespace ash {
@@ -29,8 +27,7 @@ class RoundedImageView;
 
 // A button with an image derived from a file's thumbnail and file's name as the
 // label.
-class ASH_EXPORT HoldingSpaceItemChipView : public HoldingSpaceItemView,
-                                            public views::ButtonListener {
+class ASH_EXPORT HoldingSpaceItemChipView : public HoldingSpaceItemView {
  public:
   METADATA_HEADER(HoldingSpaceItemChipView);
 
@@ -40,24 +37,13 @@ class ASH_EXPORT HoldingSpaceItemChipView : public HoldingSpaceItemView,
   HoldingSpaceItemChipView& operator=(const HoldingSpaceItemChipView&) = delete;
   ~HoldingSpaceItemChipView() override;
 
-  // HoldingSpaceItemView:
-  void OnMouseEvent(ui::MouseEvent* event) override;
-
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
-
  private:
-  void AddPinButton();
   void UpdateImage();
-  void UpdatePin();
 
   tray::RoundedImageView* image_ = nullptr;
   views::Label* label_ = nullptr;
-  views::ToggleImageButton* pin_ = nullptr;
 
   std::unique_ptr<HoldingSpaceImage::Subscription> image_subscription_;
-
-  base::WeakPtrFactory<HoldingSpaceItemChipView> weak_factory_{this};
 };
 
 }  // namespace ash

@@ -4,28 +4,21 @@
 
 #include "ash/system/holding_space/holding_space_item_chip_view.h"
 
-#include "ash/public/cpp/holding_space/holding_space_client.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
-#include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
-#include "ash/public/cpp/holding_space/holding_space_model.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/holding_space/holding_space_item_view.h"
-#include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_popup_item_style.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/user/rounded_image_view.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
-#include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/animation/flood_fill_ink_drop_ripple.h"
 #include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/background.h"
-#include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
-#include "ui/views/vector_icons.h"
 
 namespace ash {
 
@@ -49,8 +42,6 @@ HoldingSpaceItemChipView::HoldingSpaceItemChipView(
   TrayPopupItemStyle style(TrayPopupItemStyle::FontStyle::HOLDING_SPACE_TITLE);
   style.SetupLabel(label_);
 
-  AddPinButton();
-
   const auto* color_provider = AshColorProvider::Get();
   SetBackground(views::CreateRoundedRectBackground(
       color_provider->GetControlsLayerColor(
@@ -60,7 +51,6 @@ HoldingSpaceItemChipView::HoldingSpaceItemChipView(
   SetInkDropMode(InkDropMode::ON_NO_GESTURE_HANDLER);
   SetInkDropVisibleOpacity(
       color_provider->GetRippleAttributes().inkdrop_opacity);
-  SetNotifyEnterExitOnChild(true);
 
   // Subscribe to be notified of changes to `item_`'s image.
   image_subscription_ =
@@ -68,74 +58,16 @@ HoldingSpaceItemChipView::HoldingSpaceItemChipView(
           &HoldingSpaceItemChipView::UpdateImage, base::Unretained(this)));
 
   UpdateImage();
+
+  AddPin(this /*parent*/);
 }
 
 HoldingSpaceItemChipView::~HoldingSpaceItemChipView() = default;
-
-void HoldingSpaceItemChipView::OnMouseEvent(ui::MouseEvent* event) {
-  switch (event->type()) {
-    case ui::ET_MOUSE_ENTERED:
-    case ui::ET_MOUSE_EXITED:
-      UpdatePin();
-      break;
-    default:
-      break;
-  }
-  views::InkDropHostView::OnMouseEvent(event);
-}
-
-void HoldingSpaceItemChipView::ButtonPressed(views::Button* sender,
-                                             const ui::Event& event) {
-  DCHECK_EQ(sender, pin_);
-  const bool is_item_pinned = HoldingSpaceController::Get()->model()->GetItem(
-      HoldingSpaceItem::GetFileBackedItemId(HoldingSpaceItem::Type::kPinnedFile,
-                                            item()->file_path()));
-
-  // Unpinning `item()` may result in the destruction of this view.
-  auto weak_ptr = weak_factory_.GetWeakPtr();
-  if (is_item_pinned)
-    HoldingSpaceController::Get()->client()->UnpinItems({item()});
-  else
-    HoldingSpaceController::Get()->client()->PinItems({item()});
-
-  if (weak_ptr)
-    UpdatePin();
-}
-
-void HoldingSpaceItemChipView::AddPinButton() {
-  pin_ = AddChildView(std::make_unique<views::ToggleImageButton>(this));
-  pin_->SetVisible(false);
-
-  const SkColor icon_color = AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kSystemMenuIconColor);
-
-  const gfx::ImageSkia unpinned_icon =
-      gfx::CreateVectorIcon(views::kUnpinIcon, icon_color);
-  const gfx::ImageSkia pinned_icon =
-      gfx::CreateVectorIcon(views::kPinIcon, icon_color);
-
-  pin_->SetImage(views::Button::STATE_NORMAL, unpinned_icon);
-  pin_->SetToggledImage(views::Button::STATE_NORMAL, &pinned_icon);
-}
 
 void HoldingSpaceItemChipView::UpdateImage() {
   image_->SetImage(
       item()->image().image_skia(),
       gfx::Size(kHoldingSpaceChipIconSize, kHoldingSpaceChipIconSize));
-}
-
-void HoldingSpaceItemChipView::UpdatePin() {
-  if (!IsMouseHovered()) {
-    pin_->SetVisible(false);
-    return;
-  }
-
-  const bool is_item_pinned = HoldingSpaceController::Get()->model()->GetItem(
-      HoldingSpaceItem::GetFileBackedItemId(HoldingSpaceItem::Type::kPinnedFile,
-                                            item()->file_path()));
-
-  pin_->SetToggled(!is_item_pinned);
-  pin_->SetVisible(true);
 }
 
 BEGIN_METADATA(HoldingSpaceItemChipView, HoldingSpaceItemView)

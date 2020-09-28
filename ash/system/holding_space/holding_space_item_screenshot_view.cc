@@ -10,6 +10,7 @@
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/user/rounded_image_view.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
 
@@ -19,6 +20,7 @@ HoldingSpaceItemScreenshotView::HoldingSpaceItemScreenshotView(
     HoldingSpaceItemViewDelegate* delegate,
     const HoldingSpaceItem* item)
     : HoldingSpaceItemView(delegate, item) {
+  SetPreferredSize(kHoldingSpaceScreenshotSize);
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
   image_ = AddChildView(
@@ -30,6 +32,16 @@ HoldingSpaceItemScreenshotView::HoldingSpaceItemScreenshotView(
                           base::Unretained(this)));
 
   UpdateImage();
+
+  views::View* pin_button_container =
+      AddChildView(std::make_unique<views::View>());
+
+  auto* layout =
+      pin_button_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kHorizontal,
+          kHoldingSpaceScreenshotPadding));
+  layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kEnd);
+  AddPin(pin_button_container);
 }
 
 HoldingSpaceItemScreenshotView::~HoldingSpaceItemScreenshotView() = default;

@@ -9,6 +9,10 @@
 #include "ui/views/animation/ink_drop_host_view.h"
 #include "ui/views/metadata/metadata_header_macros.h"
 
+namespace views {
+class ToggleImageButton;
+}  // namespace views
+
 namespace ash {
 
 class HoldingSpaceItem;
@@ -32,20 +36,30 @@ class ASH_EXPORT HoldingSpaceItemView : public views::InkDropHostView {
   SkColor GetInkDropBaseColor() const override;
   void OnGestureEvent(ui::GestureEvent* event) override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;
+  void OnMouseEvent(ui::MouseEvent* event) override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
   void OnMouseReleased(const ui::MouseEvent& event) override;
-
-  const HoldingSpaceItem* item() const { return item_; }
 
   void SetSelected(bool selected);
   bool selected() const { return selected_; }
 
+  const HoldingSpaceItem* item() const { return item_; }
+
+ protected:
+  void AddPin(views::View* parent);
+
  private:
-  HoldingSpaceItemViewDelegate* delegate_;
+  void OnPinPressed();
+  void UpdatePin();
+
+  HoldingSpaceItemViewDelegate* const delegate_;
   const HoldingSpaceItem* const item_;
+  views::ToggleImageButton* pin_ = nullptr;
 
   // Whether or not this view is selected.
   bool selected_ = false;
+
+  base::WeakPtrFactory<HoldingSpaceItemView> weak_factory_{this};
 };
 
 }  // namespace ash
