@@ -8,45 +8,44 @@ See http://dev.chromium.org/developers/how-tos/depottools/presubmit-scripts
 for more details on the presubmit API built into depot_tools.
 """
 
+PRESUBMIT_VERSION = '2.0.0'
 
-def _CommonChecks(input_api, output_api):
-  commands = []
 
+def CheckLintLuciMilo(input_api, output_api):
   if ('infra/config/generated/luci-milo.cfg' in input_api.LocalPaths() or
       'infra/config/lint-luci-milo.py' in input_api.LocalPaths()):
-    commands.append(
-      input_api.Command(
-          name='lint-luci-milo',
-          cmd=[input_api.python_executable, 'lint-luci-milo.py'],
-          kwargs={},
-          message=output_api.PresubmitError))
+    return input_api.RunTests([
+        input_api.Command(
+            name='lint-luci-milo',
+            cmd=[input_api.python_executable, 'lint-luci-milo.py'],
+            kwargs={},
+            message=output_api.PresubmitError),
+    ])
+  return []
+
+def CheckTestingBuildbot(input_api, output_api):
   if ('infra/config/generated/luci-milo.cfg' in input_api.LocalPaths() or
       'infra/config/generated/luci-milo-dev.cfg' in input_api.LocalPaths()):
-    commands.append(
-      input_api.Command(
-        name='testing/buildbot config checks',
-        cmd=[input_api.python_executable, input_api.os_path.join(
+    return input_api.RunTests([
+        input_api.Command(
+            name='testing/buildbot config checks',
+            cmd=[input_api.python_executable, input_api.os_path.join(
                 '..', '..', 'testing', 'buildbot',
                 'generate_buildbot_json.py',),
-            '--check'],
-        kwargs={}, message=output_api.PresubmitError))
+                 '--check'],
+            kwargs={},
+            message=output_api.PresubmitError),
+    ])
+  return []
 
-  commands.extend(input_api.canned_checks.CheckLucicfgGenOutput(
+def CheckLucicfgGenOutputMain(input_api, output_api):
+  return input_api.RunTests(input_api.canned_checks.CheckLucicfgGenOutput(
       input_api, output_api, 'main.star'))
-  commands.extend(input_api.canned_checks.CheckLucicfgGenOutput(
+
+def CheckLucicfgGenOutputDev(input_api, output_api):
+  return input_api.RunTests(input_api.canned_checks.CheckLucicfgGenOutput(
       input_api, output_api, 'dev.star'))
 
-  results = []
-
-  results.extend(input_api.RunTests(commands))
-  results.extend(input_api.canned_checks.CheckChangedLUCIConfigs(
-      input_api, output_api))
-
-  return results
-
-
-def CheckChangeOnUpload(input_api, output_api):
-  return _CommonChecks(input_api, output_api)
-
-def CheckChangeOnCommit(input_api, output_api):
-  return _CommonChecks(input_api, output_api)
+def CheckChangedLUCIConfigs(input_api, output_api):
+  return input_api.canned_checks.CheckChangedLUCIConfigs(
+      input_api, output_api)
