@@ -137,6 +137,15 @@ public class CastWebContentsComponent {
                 context, webContents, enableTouch, isRemoteControlMode, turnOnScreen, mSessionId);
         if (DEBUG) Log.d(TAG, "start activity by intent: " + intent);
         ResumeIntents.addResumeIntent(mSessionId, intent);
+
+        CastAudioManager audioManager =
+                CastAudioManager.getAudioManager(ContextUtils.getApplicationContext());
+        Observable<CastAudioManager.AudioFocusLoss> focusLoss =
+                audioManager.requestAudioFocusWhen(mAudioFocusRequestState)
+                        .filter(state -> state == CastAudioManager.AudioFocusLoss.NORMAL);
+        mAudioFocusRequestState.andThen(focusLoss).subscribe(
+                Observers.onEnter(x -> mComponentClosedHandler.onComponentClosed()));
+
         context.startActivity(intent);
     }
 
@@ -209,13 +218,6 @@ public class CastWebContentsComponent {
         mSurfaceEventHandler = surfaceEventHandler;
         mIsRemoteControlMode = isRemoteControlMode;
         mTurnOnScreen = turnOnScreen;
-        CastAudioManager audioManager =
-                CastAudioManager.getAudioManager(ContextUtils.getApplicationContext());
-        Observable<CastAudioManager.AudioFocusLoss> focusLoss =
-                audioManager.requestAudioFocusWhen(mAudioFocusRequestState)
-                        .filter(state -> state == CastAudioManager.AudioFocusLoss.NORMAL);
-        mAudioFocusRequestState.andThen(focusLoss).subscribe(
-                Observers.onEnter(x -> mComponentClosedHandler.onComponentClosed()));
 
         if (BuildConfig.DISPLAY_WEB_CONTENTS_IN_SERVICE || isHeadless) {
             if (DEBUG) Log.d(TAG, "Creating service delegate...");
