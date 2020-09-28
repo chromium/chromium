@@ -59,6 +59,10 @@ class ItemSuggestCache {
   ItemSuggestCache(const ItemSuggestCache&) = delete;
   ItemSuggestCache& operator=(const ItemSuggestCache&) = delete;
 
+  // Returns the results currently in the cache.
+  base::Optional<ItemSuggestCache::Results> GetResults();
+
+  // Updates the cache by calling ItemSuggest.
   void UpdateCache();
 
   static base::Optional<ItemSuggestCache::Results> ConvertJsonForTest(

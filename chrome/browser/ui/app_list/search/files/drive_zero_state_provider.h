@@ -15,8 +15,10 @@
 #include "base/time/time.h"
 #include "chrome/browser/chromeos/drive/drive_integration_service.h"
 #include "chrome/browser/chromeos/file_manager/file_tasks_notifier.h"
+#include "chrome/browser/ui/app_list/search/files/file_result.h"
 #include "chrome/browser/ui/app_list/search/files/item_suggest_cache.h"
 #include "chrome/browser/ui/app_list/search/search_provider.h"
+#include "chromeos/components/drivefs/mojom/drivefs.mojom.h"
 
 class Profile;
 
@@ -36,19 +38,32 @@ class DriveZeroStateProvider : public SearchProvider,
   DriveZeroStateProvider(const DriveZeroStateProvider&) = delete;
   DriveZeroStateProvider& operator=(const DriveZeroStateProvider&) = delete;
 
-  // SearchProvider:
-  void Start(const base::string16& query) override;
-  void AppListShown() override;
-  ash::AppListSearchResultType ResultType() override;
-
   // drive::DriveIntegrationServiceObserver:
   void OnFileSystemMounted() override;
 
+  // SearchProvider:
+  void AppListShown() override;
+  ash::AppListSearchResultType ResultType() override;
+  void Start(const base::string16& query) override;
+
  private:
+  void OnFilePathsLocated(
+      base::Optional<std::vector<drivefs::mojom::FilePathOrErrorPtr>> paths);
+
+  std::unique_ptr<FileResult> MakeResult(const base::FilePath& filepath,
+                                         const float relevance,
+                                         const bool is_chip);
+
   Profile* const profile_;
   drive::DriveIntegrationService* const drive_service_;
+  file_manager::file_tasks::FileTasksNotifier* const file_tasks_notifier_;
 
   ItemSuggestCache item_suggest_cache_;
+
+  // The most recent results retrieved from |item_suggested_cache_|. This is
+  // updated on a call to Start and is used only to store the results until
+  // OnFilePathsLocated has finished.
+  base::Optional<ItemSuggestCache::Results> cache_results_;
 
   // Whether the suggested files experiment is enabled.
   const bool suggested_files_enabled_;

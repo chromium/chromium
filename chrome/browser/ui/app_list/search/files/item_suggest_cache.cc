@@ -208,6 +208,12 @@ ItemSuggestCache::ItemSuggestCache(
 
 ItemSuggestCache::~ItemSuggestCache() = default;
 
+base::Optional<ItemSuggestCache::Results> ItemSuggestCache::GetResults() {
+  // Return a copy because a pointer to |results_| will become invalid whenever
+  // the cache is updated.
+  return results_;
+}
+
 void ItemSuggestCache::UpdateCache() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // TODO(crbug.com/1034842): Add rate-limiting for cache updates.
