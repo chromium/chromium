@@ -24,6 +24,12 @@
 #include "ui/platform_window/extensions/wayland_extension.h"
 #include "ui/platform_window/wm/wm_drop_handler.h"
 
+#if BUILDFLAG(IS_LACROS)
+// TODO(jamescook): The nogncheck is to work around false-positive failures on
+// the code search bot. Remove after https://crrev.com/c/2432137 lands.
+#include "chromeos/crosapi/cpp/crosapi_constants.h"  // nogncheck
+#endif
+
 namespace ui {
 
 WaylandToplevelWindow::WaylandToplevelWindow(PlatformWindowDelegate* delegate,
@@ -338,7 +344,8 @@ bool WaylandToplevelWindow::OnInitialize(
     PlatformWindowInitProperties properties) {
 #if BUILDFLAG(IS_LACROS)
   auto token = base::UnguessableToken::Create();
-  window_unique_id_ = "org.chromium.lacros." + token.ToString();
+  window_unique_id_ =
+      std::string(crosapi::kLacrosAppIdPrefix) + token.ToString();
 #else
   wm_class_class_ = properties.wm_class_class;
 #endif
