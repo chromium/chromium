@@ -318,7 +318,7 @@ aggregate_vector_icons2("ash_vector_icons") {
   ]
 
   if (is_chrome_branded) {
-    icons += [
+    sources += [
       "system_menu_cast_device.icon",
       "system_menu_cast_education.icon",
       "system_menu_cast_hangout.icon",
