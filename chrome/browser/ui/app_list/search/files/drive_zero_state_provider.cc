@@ -64,7 +64,6 @@ void DriveZeroStateProvider::OnFileSystemMounted() {
 void DriveZeroStateProvider::AppListShown() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   item_suggest_cache_.UpdateCache();
-  // TODO(crbug.com/1034842): Query ItemSuggest, consider rate-limiting.
 }
 
 ash::AppListSearchResultType DriveZeroStateProvider::ResultType() {

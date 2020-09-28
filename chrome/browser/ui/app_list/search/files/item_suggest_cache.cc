@@ -178,6 +178,7 @@ const base::Feature ItemSuggestCache::kExperiment{
     "LauncherItemSuggest", base::FEATURE_DISABLED_BY_DEFAULT};
 constexpr base::FeatureParam<bool> ItemSuggestCache::kEnabled;
 constexpr base::FeatureParam<std::string> ItemSuggestCache::kServerUrl;
+constexpr base::FeatureParam<int> ItemSuggestCache::kMinMinutesBetweenUpdates;
 
 ItemSuggestCache::Result::Result(const std::string& id,
                                  const std::string& title)
@@ -201,6 +202,8 @@ ItemSuggestCache::ItemSuggestCache(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : enabled_(kEnabled.Get()),
       server_url_(kServerUrl.Get()),
+      min_time_between_updates_(
+          base::TimeDelta::FromMinutes(kMinMinutesBetweenUpdates.Get())),
       profile_(profile),
       url_loader_factory_(std::move(url_loader_factory)) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -216,7 +219,11 @@ base::Optional<ItemSuggestCache::Results> ItemSuggestCache::GetResults() {
 
 void ItemSuggestCache::UpdateCache() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(crbug.com/1034842): Add rate-limiting for cache updates.
+
+  const auto& now = base::Time::Now();
+  if (now - time_of_last_update_ < min_time_between_updates_)
+    return;
+  time_of_last_update_ = now;
 
   // Make no requests and exit in these cases:
   // - another request is in-flight (url_loader_ is non-null)
