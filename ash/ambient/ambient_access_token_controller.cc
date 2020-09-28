@@ -92,7 +92,8 @@ void AmbientAccessTokenController::AccessTokenRefreshed(
     return;
   }
 
-  VLOG(1) << "Access token fetched.";
+  DVLOG(1) << "Access token fetched.";
+  DCHECK(gaia_id_.empty() || gaia_id_ == gaia_id);
   refresh_token_retry_backoff_.Reset();
   gaia_id_ = gaia_id;
   access_token_ = access_token;

@@ -229,10 +229,16 @@ AmbientPhotoController::~AmbientPhotoController() = default;
 
 void AmbientPhotoController::StartScreenUpdate() {
   FetchTopics();
+  FetchWeather();
+  weather_refresh_timer_.Start(
+      FROM_HERE, kWeatherRefreshInterval,
+      base::BindRepeating(&AmbientPhotoController::FetchWeather,
+                          weak_factory_.GetWeakPtr()));
 }
 
 void AmbientPhotoController::StopScreenUpdate() {
   photo_refresh_timer_.Stop();
+  weather_refresh_timer_.Stop();
   topic_index_ = 0;
   image_refresh_started_ = false;
   retries_to_read_from_cache_ = kMaxNumberOfCachedImages;
@@ -260,6 +266,15 @@ void AmbientPhotoController::FetchTopics() {
           kTopicsBatchSize,
           base::BindOnce(&AmbientPhotoController::OnScreenUpdateInfoFetched,
                          weak_factory_.GetWeakPtr()));
+}
+
+void AmbientPhotoController::FetchWeather() {
+  Shell::Get()
+      ->ambient_controller()
+      ->ambient_backend_controller()
+      ->FetchWeather(base::BindOnce(
+          &AmbientPhotoController::StartDownloadingWeatherConditionIcon,
+          weak_factory_.GetWeakPtr()));
 }
 
 void AmbientPhotoController::ClearCache() {
@@ -427,9 +442,9 @@ void AmbientPhotoController::OnPhotoRawDataAvailable(
     base::RepeatingClosure on_done,
     std::unique_ptr<std::string> details,
     std::unique_ptr<std::string> data) {
-  if (is_related_image)
+  if (is_related_image) {
     related_image_data_ = std::move(data);
-  else {
+  } else {
     image_data_ = std::move(data);
     image_details_ = std::move(details);
   }

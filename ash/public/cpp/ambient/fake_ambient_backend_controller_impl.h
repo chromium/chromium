@@ -40,6 +40,7 @@ class ASH_PUBLIC_EXPORT FakeAmbientBackendControllerImpl
       int num_albums,
       OnSettingsAndAlbumsFetchedCallback callback) override;
   void SetPhotoRefreshInterval(base::TimeDelta interval) override;
+  void FetchWeather(FetchWeatherCallback callback) override;
 
   // Simulate to reply the request of FetchSettingsAndAlbums().
   // If |success| is true, will return fake data.
@@ -55,10 +56,16 @@ class ASH_PUBLIC_EXPORT FakeAmbientBackendControllerImpl
   // Whether there is a pending UpdateSettings() request.
   bool IsUpdateSettingsPending() const;
 
+  // Sets the weather info that will be returned in subsequent calls to
+  // `FetchWeather`.
+  void SetWeatherInfo(base::Optional<WeatherInfo> info);
+
  private:
   OnSettingsAndAlbumsFetchedCallback pending_fetch_settings_albums_callback_;
 
   UpdateSettingsCallback pending_update_callback_;
+
+  base::Optional<WeatherInfo> weather_info_;
 };
 
 }  // namespace ash

@@ -48,6 +48,7 @@ class AmbientBackendControllerImpl : public AmbientBackendController {
       int num_albums,
       OnSettingsAndAlbumsFetchedCallback callback) override;
   void SetPhotoRefreshInterval(base::TimeDelta interval) override;
+  void FetchWeather(FetchWeatherCallback callback) override;
 
  private:
   using BackdropClientConfig = chromeos::ambient::BackdropClientConfig;

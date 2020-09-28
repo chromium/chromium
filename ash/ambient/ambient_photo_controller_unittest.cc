@@ -12,6 +12,7 @@
 #include "ash/ambient/model/ambient_backend_model.h"
 #include "ash/ambient/test/ambient_ash_test_base.h"
 #include "ash/public/cpp/ambient/ambient_backend_controller.h"
+#include "ash/public/cpp/ambient/fake_ambient_backend_controller_impl.h"
 #include "ash/shell.h"
 #include "base/barrier_closure.h"
 #include "base/base_paths.h"
@@ -343,6 +344,35 @@ TEST_F(AmbientPhotoControllerTest, ShouldResumWhenHaveMoreTopics) {
 
   // Clean up.
   base::DeletePathRecursively(ambient_image_path);
+}
+
+TEST_F(AmbientPhotoControllerTest, ShouldStartToRefreshWeather) {
+  auto* model = photo_controller()->ambient_backend_model();
+  EXPECT_FALSE(model->show_celsius());
+  EXPECT_TRUE(model->weather_condition_icon().isNull());
+
+  WeatherInfo info;
+  info.show_celsius = true;
+  info.condition_icon_url = "https://fake-icon-url";
+  info.temp_f = 70.0f;
+  backend_controller()->SetWeatherInfo(info);
+
+  // Start to refresh weather as screen update starts.
+  photo_controller()->StartScreenUpdate();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(model->show_celsius());
+  EXPECT_FALSE(model->weather_condition_icon().isNull());
+  EXPECT_GT(info.temp_f, 0);
+
+  // Refresh weather again after time passes.
+  info.show_celsius = false;
+  info.temp_f = -70.0f;
+  backend_controller()->SetWeatherInfo(info);
+
+  FastForwardToRefreshWeather();
+  EXPECT_FALSE(model->show_celsius());
+  EXPECT_LT(info.temp_f, 0);
 }
 
 }  // namespace ash

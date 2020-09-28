@@ -28,6 +28,7 @@ namespace ash {
 class AmbientAccessTokenController;
 class AmbientContainerView;
 class AmbientPhotoController;
+class FakeAmbientBackendControllerImpl;
 class MediaStringView;
 
 // The base class to test the Ambient Mode in Ash.
@@ -95,6 +96,9 @@ class AmbientAshTestBase : public AshTestBase {
   // Advance the task environment timer to load the next photo.
   void FastForwardToNextImage();
 
+  // Advance the task environment timer to load the weather info.
+  void FastForwardToRefreshWeather();
+
   // Returns the number of active wake locks of type |type|.
   int GetNumOfActiveWakeLocks(device::mojom::WakeLockType type);
 
@@ -119,6 +123,8 @@ class AmbientAshTestBase : public AshTestBase {
   AmbientContainerView* container_view();
 
   AmbientAccessTokenController* token_controller();
+
+  FakeAmbientBackendControllerImpl* backend_controller();
 
   void FetchTopics();
 

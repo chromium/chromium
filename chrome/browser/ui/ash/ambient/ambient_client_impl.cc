@@ -19,6 +19,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/access_token_fetcher.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/scope_set.h"
@@ -121,7 +122,6 @@ void AmbientClientImpl::RequestAccessToken(GetAccessTokenCallback callback) {
 
   CoreAccountInfo account_info = identity_manager->GetPrimaryAccountInfo(
       signin::ConsentLevel::kNotRequired);
-
   const signin::ScopeSet scopes{kPhotosOAuthScope, kBackdropOAuthScope};
   // TODO(b/148463064): Handle retry refresh token and multiple requests.
   // Currently only one request is allowed.
@@ -148,6 +148,15 @@ void AmbientClientImpl::RequestWakeLockProvider(
   content::GetDeviceService().BindWakeLockProvider(std::move(receiver));
 }
 
+bool AmbientClientImpl::ShouldUseProdServer() {
+  if (chromeos::features::IsAmbientModeDevUseProdEnabled())
+    return true;
+
+  auto channel = chrome::GetChannel();
+  return channel == version_info::Channel::STABLE ||
+         channel == version_info::Channel::BETA;
+}
+
 void AmbientClientImpl::GetAccessToken(
     GetAccessTokenCallback callback,
     const std::string& gaia_id,
@@ -167,11 +176,3 @@ void AmbientClientImpl::GetAccessToken(
   }
 }
 
-bool AmbientClientImpl::ShouldUseProdServer() {
-  if (chromeos::features::IsAmbientModeDevUseProdEnabled())
-    return true;
-
-  auto channel = chrome::GetChannel();
-  return channel == version_info::Channel::STABLE ||
-         channel == version_info::Channel::BETA;
-}

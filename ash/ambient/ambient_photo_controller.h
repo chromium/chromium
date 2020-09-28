@@ -106,6 +106,8 @@ class ASH_EXPORT AmbientPhotoController : public AmbientBackendModelObserver {
 
   void FetchTopics();
 
+  void FetchWeather();
+
   void ScheduleFetchTopics(bool backoff);
 
   void ScheduleRefreshImage();
@@ -180,6 +182,9 @@ class ASH_EXPORT AmbientPhotoController : public AmbientBackendModelObserver {
 
   // The timer to refresh photos.
   base::OneShotTimer photo_refresh_timer_;
+
+  // The timer to refresh weather information.
+  base::RepeatingTimer weather_refresh_timer_;
 
   // The index of a topic to download.
   size_t topic_index_ = 0;

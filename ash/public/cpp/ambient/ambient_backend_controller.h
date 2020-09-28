@@ -108,6 +108,8 @@ class ASH_PUBLIC_EXPORT AmbientBackendController {
   using OnSettingsAndAlbumsFetchedCallback =
       base::OnceCallback<void(const base::Optional<AmbientSettings>& settings,
                               PersonalAlbums personal_albums)>;
+  using FetchWeatherCallback =
+      base::OnceCallback<void(const base::Optional<WeatherInfo>& weather_info)>;
 
   static AmbientBackendController* Get();
 
@@ -154,6 +156,9 @@ class ASH_PUBLIC_EXPORT AmbientBackendController {
 
   // Set the photo refresh interval in ambient mode.
   virtual void SetPhotoRefreshInterval(base::TimeDelta interval) = 0;
+
+  // Fetch the weather information.
+  virtual void FetchWeather(FetchWeatherCallback) = 0;
 };
 
 }  // namespace ash

@@ -85,14 +85,17 @@ void FakeAmbientBackendControllerImpl::FetchScreenUpdateInfo(
   topic.related_image_url = kFakeUrl;
   topic.topic_type = AmbientModeTopicType::kCulturalInstitute;
 
-  ash::WeatherInfo weather_info;
-  weather_info.temp_f = .0f;
-  weather_info.condition_icon_url = kFakeUrl;
-  weather_info.show_celsius = true;
-
   ash::ScreenUpdate update;
   update.next_topics.emplace_back(topic);
-  update.weather_info = weather_info;
+
+  // Only respond weather info when there is no active weather testing.
+  if (!weather_info_) {
+    ash::WeatherInfo weather_info;
+    weather_info.temp_f = .0f;
+    weather_info.condition_icon_url = kFakeUrl;
+    weather_info.show_celsius = true;
+    update.weather_info = weather_info;
+  }
 
   // Pretend to respond asynchronously.
   base::SequencedTaskRunnerHandle::Get()->PostTask(
@@ -153,6 +156,11 @@ void FakeAmbientBackendControllerImpl::SetPhotoRefreshInterval(
   NOTIMPLEMENTED();
 }
 
+void FakeAmbientBackendControllerImpl::FetchWeather(
+    FetchWeatherCallback callback) {
+  std::move(callback).Run(weather_info_);
+}
+
 void FakeAmbientBackendControllerImpl::ReplyFetchSettingsAndAlbums(
     bool success) {
   if (!pending_fetch_settings_albums_callback_)
@@ -180,6 +188,11 @@ void FakeAmbientBackendControllerImpl::ReplyUpdateSettings(bool success) {
 
 bool FakeAmbientBackendControllerImpl::IsUpdateSettingsPending() const {
   return !pending_update_callback_.is_null();
+}
+
+void FakeAmbientBackendControllerImpl::SetWeatherInfo(
+    base::Optional<WeatherInfo> info) {
+  weather_info_ = std::move(info);
 }
 
 }  // namespace ash

@@ -249,6 +249,10 @@ void AmbientAshTestBase::FastForwardToNextImage() {
   task_environment()->FastForwardBy(1.2 * kPhotoRefreshInterval);
 }
 
+void AmbientAshTestBase::FastForwardToRefreshWeather() {
+  task_environment()->FastForwardBy(1.2 * kWeatherRefreshInterval);
+}
+
 int AmbientAshTestBase::GetNumOfActiveWakeLocks(
     device::mojom::WakeLockType type) {
   base::RunLoop run_loop;
@@ -291,6 +295,11 @@ AmbientContainerView* AmbientAshTestBase::container_view() {
 
 AmbientAccessTokenController* AmbientAshTestBase::token_controller() {
   return ambient_controller()->access_token_controller_for_testing();
+}
+
+FakeAmbientBackendControllerImpl* AmbientAshTestBase::backend_controller() {
+  return static_cast<FakeAmbientBackendControllerImpl*>(
+      ambient_controller()->ambient_backend_controller());
 }
 
 void AmbientAshTestBase::FetchTopics() {

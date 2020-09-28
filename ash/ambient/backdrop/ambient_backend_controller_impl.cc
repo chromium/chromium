@@ -25,9 +25,11 @@
 #include "chromeos/assistant/internal/proto/google3/backdrop/backdrop.pb.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_manager/user_manager.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -140,6 +142,30 @@ AmbientModeTopicType ToAmbientModeTopicType(
     default:
       return AmbientModeTopicType::kOther;
   }
+}
+
+WeatherInfo ToWeatherInfo(const base::Value& result) {
+  DCHECK(result.is_list());
+
+  WeatherInfo weather_info;
+  const auto& list_result = result.GetList();
+
+  const base::Value& condition_icon_url_value =
+      list_result[backdrop::WeatherInfo::kConditionIconUrlFieldNumber - 1];
+  if (!condition_icon_url_value.is_none())
+    weather_info.condition_icon_url = condition_icon_url_value.GetString();
+
+  const base::Value& temp_f_value =
+      list_result[backdrop::WeatherInfo::kTempFFieldNumber - 1];
+  if (!temp_f_value.is_none())
+    weather_info.temp_f = temp_f_value.GetDouble();
+
+  const base::Value& show_celsius_value =
+      list_result[backdrop::WeatherInfo::kShowCelsiusFieldNumber - 1];
+  if (!show_celsius_value.is_none())
+    weather_info.show_celsius = show_celsius_value.GetBool();
+
+  return weather_info;
 }
 
 // Helper function to save the information we got from the backdrop server to a
@@ -356,6 +382,47 @@ void AmbientBackendControllerImpl::SetPhotoRefreshInterval(
       ->ambient_controller()
       ->GetAmbientBackendModel()
       ->SetPhotoRefreshInterval(interval);
+}
+
+void AmbientBackendControllerImpl::FetchWeather(FetchWeatherCallback callback) {
+  auto response_handler =
+      [](FetchWeatherCallback callback,
+         std::unique_ptr<BackdropURLLoader> backdrop_url_loader,
+         std::unique_ptr<std::string> response) {
+        if (response && !response->empty()) {
+          auto json_handler =
+              [](FetchWeatherCallback callback,
+                 data_decoder::DataDecoder::ValueOrError result) {
+                if (result.value) {
+                  std::move(callback).Run(ToWeatherInfo(result.value.value()));
+                } else {
+                  DVLOG(1) << "Failed to parse weather json.";
+                  std::move(callback).Run(base::nullopt);
+                }
+              };
+
+          constexpr char kJsonPrefix[] = ")]}'\n";
+          data_decoder::DataDecoder::ParseJsonIsolated(
+              response->substr(strlen(kJsonPrefix)),
+              base::BindOnce(json_handler, std::move(callback)));
+        } else {
+          std::move(callback).Run(base::nullopt);
+        }
+      };
+
+  const auto* user = user_manager::UserManager::Get()->GetActiveUser();
+  DCHECK(user->HasGaiaAccount());
+  BackdropClientConfig::Request request =
+      backdrop_client_config_.CreateFetchWeatherInfoRequest(
+          user->GetAccountId().GetGaiaId(), GetClientId());
+  std::unique_ptr<network::ResourceRequest> resource_request =
+      CreateResourceRequest(request);
+  auto backdrop_url_loader = std::make_unique<BackdropURLLoader>();
+  auto* loader_ptr = backdrop_url_loader.get();
+  loader_ptr->Start(std::move(resource_request), /*request_body=*/base::nullopt,
+                    NO_TRAFFIC_ANNOTATION_YET,
+                    base::BindOnce(response_handler, std::move(callback),
+                                   std::move(backdrop_url_loader)));
 }
 
 void AmbientBackendControllerImpl::FetchScreenUpdateInfoInternal(
