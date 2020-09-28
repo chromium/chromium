@@ -209,7 +209,7 @@
   web::WebState* webState =
       self.browser->GetWebStateList()->GetActiveWebState();
   if (webState && IsVisibleURLNewTabPage(webState)) {
-    self.viewController.view.hidden = IsSplitToolbarMode();
+    self.viewController.view.hidden = IsSplitToolbarMode(self.viewController);
   }
 }
 

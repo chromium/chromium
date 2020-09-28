@@ -103,7 +103,7 @@ const CGFloat kButtonLength = 44;
                                      forAxis:UILayoutConstraintAxisHorizontal];
 
   const CGFloat closeButtonTrailingPadding =
-      ShouldShowCompactToolbar() ? kPadding : kIPadButtonEdgeSpacing;
+      ShouldShowCompactToolbar(self) ? kPadding : kIPadButtonEdgeSpacing;
 
   [NSLayoutConstraint activateConstraints:@[
     // Input Field.

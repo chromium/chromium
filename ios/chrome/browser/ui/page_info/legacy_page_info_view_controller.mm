@@ -161,7 +161,9 @@ const CGFloat kButtonXOffset = kTextXPosition;
 
     UIInterfaceOrientation orientation =
         [[UIApplication sharedApplication] statusBarOrientation];
-    _viewWidth = IsCompactWidth() ? kViewWidthCompact : kViewWidthRegular;
+    _viewWidth = IsCompactWidth([UIApplication sharedApplication].keyWindow)
+                     ? kViewWidthCompact
+                     : kViewWidthRegular;
     // Special case iPhone landscape.
     if (!IsIPadIdiom() && UIInterfaceOrientationIsLandscape(orientation))
       _viewWidth = kViewWidthiPhoneLandscape;

@@ -409,7 +409,7 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 }
 
 - (UIFont*)currentFont {
-  return IsCompactWidth() ? self.normalFont : self.largerFont;
+  return IsCompactWidth(self) ? self.normalFont : self.largerFont;
 }
 
 #pragma mark - Private methods

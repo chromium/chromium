@@ -61,7 +61,7 @@
 }
 
 - (NSArray*)layoutAttributesForElementsInRect:(CGRect)rect {
-  if (IsRegularXRegularSizeClass())
+  if (IsRegularXRegularSizeClass(self.collectionView))
     return [super layoutAttributesForElementsInRect:rect];
 
   NSMutableArray* layoutAttributes =
@@ -103,7 +103,7 @@ layoutAttributesForSupplementaryViewOfKind:(NSString*)kind
   UICollectionViewLayoutAttributes* attributes =
       [super layoutAttributesForSupplementaryViewOfKind:kind
                                             atIndexPath:indexPath];
-  if (!IsSplitToolbarMode())
+  if (!IsSplitToolbarMode(self.collectionView))
     return attributes;
 
   if ([kind isEqualToString:UICollectionElementKindSectionHeader] &&
@@ -131,7 +131,7 @@ layoutAttributesForSupplementaryViewOfKind:(NSString*)kind
 }
 
 - (BOOL)shouldInvalidateLayoutForBoundsChange:(CGRect)newBound {
-  if (IsRegularXRegularSizeClass())
+  if (IsRegularXRegularSizeClass(self.collectionView))
     return [super shouldInvalidateLayoutForBoundsChange:newBound];
   return YES;
 }

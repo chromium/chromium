@@ -212,45 +212,24 @@ bool IsCompactWidth(id<UITraitEnvironment> environment);
 // Whether the |traitCollection| has a compact horizontal size class.
 bool IsCompactWidth(UITraitCollection* traitCollection);
 
-// Whether the main application window's rootViewController has a compact
-// horizontal size class.
-bool IsCompactWidth();
-
-// Whether the |environment| has a compact iPad horizontal size class.
-bool IsCompactTablet(id<UITraitEnvironment> environment);
-
-// Whether the main application window's rootViewController has a compact
-// iPad horizontal size class.
-bool IsCompactTablet();
-
-// Whether the main application window's rootViewController has a compact
-// vertical size class.
-bool IsCompactHeight();
-
 // Whether the |environment| has a compact vertical size class.
 bool IsCompactHeight(id<UITraitEnvironment> environment);
 
 // Whether the |traitCollection| has a compact vertical size class.
 bool IsCompactHeight(UITraitCollection* traitCollection);
 
-// Whether toolbar should be shown in compact mode.
-bool ShouldShowCompactToolbar();
+// Whether toolbar should be shown in compact mode in |environment|.
+bool ShouldShowCompactToolbar(id<UITraitEnvironment> environment);
+
 // Whether toolbar should be shown in compact mode in |traitCollection|.
 bool ShouldShowCompactToolbar(UITraitCollection* traitCollection);
 
-// Whether the the main application window's rootViewController has a regular
-// vertical and regular horizontal size class.
-bool IsRegularXRegularSizeClass();
 // Whether the |environment| has a regular vertical and regular horizontal
 // size class.
 bool IsRegularXRegularSizeClass(id<UITraitEnvironment> environment);
 // Whether the |traitCollection| has a regular vertical and regular horizontal
 // size class.
 bool IsRegularXRegularSizeClass(UITraitCollection* traitCollection);
-
-// Returns whether the toolbar is split between top and bottom toolbar or if it
-// is displayed as only one toolbar.
-bool IsSplitToolbarMode();
 
 // Returns whether the |environment|'s toolbar is split between top and bottom
 // toolbar or if it is displayed as only one toolbar.

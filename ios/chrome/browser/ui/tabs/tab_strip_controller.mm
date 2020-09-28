@@ -1768,7 +1768,7 @@ UIColor* BackgroundColor() {
 #pragma mark - Tab Stacking
 
 - (BOOL)shouldUseTabStacking {
-  BOOL useTabStacking = !IsCompactTablet();
+  BOOL useTabStacking = !IsIPadIdiom() || !IsCompactWidth(self.view);
   if (base::FeatureList::IsEnabled(kVoiceOverUnstackedTabstrip) &&
       UIAccessibilityIsVoiceOverRunning()) {
     useTabStacking = NO;

@@ -83,7 +83,7 @@ const CGFloat kAnimationDuration = 0.15;
   [self.baseViewController addChildViewController:self.presentedViewController];
   [self.baseViewController.view addSubview:self.backgroundView];
 
-  if (ShouldShowCompactToolbar()) {
+  if (ShouldShowCompactToolbar(self.baseViewController)) {
     [self prepareForPresentationOnIPhone];
   } else {
     [self prepareForPresentationOnIPad];
@@ -96,7 +96,7 @@ const CGFloat kAnimationDuration = 0.15;
     [self.baseViewController.view layoutIfNeeded];
   }
 
-  if (ShouldShowCompactToolbar()) {
+  if (ShouldShowCompactToolbar(self.baseViewController)) {
     [self setupFinalConstraintsOnIPhone];
   } else {
     [self setupFinalConstraintsOnIPad];
@@ -140,7 +140,7 @@ const CGFloat kAnimationDuration = 0.15;
   };
   if (animated) {
     void (^animation)();
-    if (ShouldShowCompactToolbar()) {
+    if (ShouldShowCompactToolbar(self.baseViewController)) {
       CGRect oldFrame = self.backgroundView.frame;
       self.backgroundView.layer.anchorPoint = CGPointMake(0.5, 0);
       self.backgroundView.frame = oldFrame;

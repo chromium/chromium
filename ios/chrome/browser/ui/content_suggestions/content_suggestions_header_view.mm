@@ -362,7 +362,7 @@ CGFloat ToolbarHeight() {
 
   // Calculate the amount to shrink the width and height of background so that
   // it's where the focused adapative toolbar focuses.
-  CGFloat inset = !IsSplitToolbarMode() ? kBackgroundLandscapeInset : 0;
+  CGFloat inset = !IsSplitToolbarMode(self) ? kBackgroundLandscapeInset : 0;
   self.fakeLocationBarLeadingConstraint.constant =
       (safeAreaInsets.left + kExpandedLocationBarHorizontalMargin + inset) *
       percent;

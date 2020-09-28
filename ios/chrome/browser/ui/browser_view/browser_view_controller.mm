@@ -1617,7 +1617,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   // mode accordingly. Hide the findbar here and it will be reshown in [self
   // updateToobar];
   if (ShouldShowCompactToolbar(previousTraitCollection) !=
-      ShouldShowCompactToolbar()) {
+      ShouldShowCompactToolbar(self)) {
     [self.dispatcher hideFindUI];
     [self.textZoomHandler hideTextZoomUI];
   }
@@ -1636,7 +1636,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
       // If tabstrip is coming back due to a window resize or screen rotation,
       // reset the full screen controller to adjust the tabstrip position.
       if (ShouldShowCompactToolbar(previousTraitCollection) &&
-          !ShouldShowCompactToolbar()) {
+          !ShouldShowCompactToolbar(self)) {
         [self updateForFullscreenProgress:self.fullscreenController
                                               ->GetProgress()];
       }
@@ -2001,7 +2001,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 - (CGFloat)primaryToolbarHeightWithInset {
   UIView* primaryToolbar = self.primaryToolbarCoordinator.viewController.view;
   CGFloat intrinsicHeight = primaryToolbar.intrinsicContentSize.height;
-  if (!IsSplitToolbarMode()) {
+  if (!IsSplitToolbarMode(self)) {
     // When the adaptive toolbar is unsplit, add a margin.
     intrinsicHeight += kTopToolbarUnsplitMargin;
   }
@@ -2488,7 +2488,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   DCHECK(NTPHelper && NTPHelper->IsActive());
   // NTP is laid out only in the visible part of the screen.
   UIEdgeInsets viewportInsets = UIEdgeInsetsZero;
-  if (!IsRegularXRegularSizeClass())
+  if (!IsRegularXRegularSizeClass(self))
     viewportInsets.bottom = [self bottomToolbarHeight];
   if (!IsSplitToolbarMode(self))
     viewportInsets.top = [self expandedTopToolbarHeight];

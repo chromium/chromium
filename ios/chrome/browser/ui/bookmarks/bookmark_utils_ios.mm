@@ -105,10 +105,6 @@ CGFloat StatusBarHeight() {
   }
 }
 
-BOOL bookmarkMenuIsInSlideInPanel() {
-  return !IsIPadIdiom() || IsCompactTablet();
-}
-
 #pragma mark - Updating Bookmarks
 
 // Deletes all subnodes of |node|, including |node|, that are in |bookmarks|.

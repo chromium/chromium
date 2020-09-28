@@ -139,7 +139,7 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
         // Fake Tap button only needs to work in portrait. Disable the button
         // in landscape because in landscape the button covers logoView (which
         // need to handle taps).
-        self.fakeTapButton.userInteractionEnabled = IsSplitToolbarMode();
+        self.fakeTapButton.userInteractionEnabled = IsSplitToolbarMode(self);
       };
 
   [coordinator animateAlongsideTransition:transition completion:nil];
@@ -156,7 +156,7 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
                     safeAreaInsets:(UIEdgeInsets)safeAreaInsets {
   if (self.isShowing) {
     CGFloat progress =
-        self.logoIsShowing || !IsRegularXRegularSizeClass()
+        self.logoIsShowing || !IsRegularXRegularSizeClass(self)
             ? [self.headerView searchFieldProgressForOffset:offset
                                              safeAreaInsets:safeAreaInsets]
             // RxR with no logo hides the fakebox, so always show the omnibox.
@@ -357,7 +357,7 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
   UIView* toolbar = [[UIView alloc] init];
   toolbar.translatesAutoresizingMaskIntoConstraints = NO;
   self.fakeTapButton = [[UIButton alloc] init];
-  self.fakeTapButton.userInteractionEnabled = IsSplitToolbarMode();
+  self.fakeTapButton.userInteractionEnabled = IsSplitToolbarMode(self);
   self.fakeTapButton.isAccessibilityElement = NO;
   self.fakeTapButton.translatesAutoresizingMaskIntoConstraints = NO;
   [toolbar addSubview:self.fakeTapButton];
@@ -523,7 +523,7 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
 }
 
 - (void)shiftTilesDown {
-  if (IsSplitToolbarMode()) {
+  if (IsSplitToolbarMode(self)) {
     [self.dispatcher onFakeboxBlur];
   }
   [self.collectionSynchronizer shiftTilesDown];
@@ -594,7 +594,7 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
           // it's possible (and difficult) to unfocus the omnibox and initiate a
           // -shiftTilesDown before the animation here completes.
           [self.dispatcher fakeboxFocused];
-          if (IsSplitToolbarMode()) {
+          if (IsSplitToolbarMode(self)) {
             [self.dispatcher onFakeboxAnimationComplete];
           }
         }

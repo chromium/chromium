@@ -593,34 +593,12 @@ bool IsCompactWidth(UITraitCollection* traitCollection) {
   return traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassCompact;
 }
 
-bool IsCompactWidth() {
-  UIWindow* keyWindow = [UIApplication sharedApplication].keyWindow;
-  return IsCompactWidth(keyWindow);
-}
-
-bool IsCompactTablet(id<UITraitEnvironment> environment) {
-  return IsIPadIdiom() && IsCompactWidth(environment);
-}
-
-bool IsCompactTablet() {
-  return IsIPadIdiom() && IsCompactWidth();
-}
-
-bool IsCompactHeight() {
-  return IsCompactHeight([UIApplication sharedApplication].keyWindow);
-}
-
 bool IsCompactHeight(id<UITraitEnvironment> environment) {
   return IsCompactHeight(environment.traitCollection);
 }
 
 bool IsCompactHeight(UITraitCollection* traitCollection) {
   return traitCollection.verticalSizeClass == UIUserInterfaceSizeClassCompact;
-}
-
-bool IsRegularXRegularSizeClass() {
-  UIWindow* keyWindow = [UIApplication sharedApplication].keyWindow;
-  return IsRegularXRegularSizeClass(keyWindow);
 }
 
 bool IsRegularXRegularSizeClass(id<UITraitEnvironment> environment) {
@@ -632,17 +610,12 @@ bool IsRegularXRegularSizeClass(UITraitCollection* traitCollection) {
          traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassRegular;
 }
 
+bool ShouldShowCompactToolbar(id<UITraitEnvironment> environment) {
+  return ShouldShowCompactToolbar(environment.traitCollection);
+}
+
 bool ShouldShowCompactToolbar(UITraitCollection* traitCollection) {
   return !IsRegularXRegularSizeClass(traitCollection);
-}
-
-bool ShouldShowCompactToolbar() {
-  return !IsRegularXRegularSizeClass();
-}
-
-bool IsSplitToolbarMode() {
-  return IsSplitToolbarMode(
-      [UIApplication sharedApplication].keyWindow.traitCollection);
 }
 
 bool IsSplitToolbarMode(id<UITraitEnvironment> environment) {

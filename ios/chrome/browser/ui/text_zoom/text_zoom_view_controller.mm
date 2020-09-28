@@ -68,7 +68,7 @@ const CGFloat kDividerWidth = 1;
   [self.view addSubview:self.closeButton];
 
   const CGFloat buttonEdgeSpacing =
-      ShouldShowCompactToolbar() ? kPadding : kIPadButtonEdgeSpacing;
+      ShouldShowCompactToolbar(self) ? kPadding : kIPadButtonEdgeSpacing;
 
   [NSLayoutConstraint activateConstraints:@[
     // Reset button.

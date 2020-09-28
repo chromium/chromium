@@ -42,9 +42,6 @@ NSString* subtitleForBookmarkNode(const bookmarks::BookmarkNode* node);
 // Returns the current status bar height.
 CGFloat StatusBarHeight();
 
-// Returns whether the bookmark menu should be presented in a slide in panel.
-BOOL bookmarkMenuIsInSlideInPanel();
-
 #pragma mark - Updating Bookmarks
 
 // Creates the bookmark if |node| is NULL. Otherwise updates |node|.
