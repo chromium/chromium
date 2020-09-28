@@ -75,6 +75,8 @@ class InternetSection
   base::Optional<std::string> connected_tether_guid_;
   base::Optional<std::string> connected_vpn_guid_;
 
+  bool does_ethernet_device_exist_ = false;
+
   mojo::Receiver<network_config::mojom::CrosNetworkConfigObserver> receiver_{
       this};
   mojo::Remote<network_config::mojom::CrosNetworkConfig> cros_network_config_;

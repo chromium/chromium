@@ -88,6 +88,18 @@ const std::vector<SearchConcept>& GetEthernetConnectedSearchConcepts() {
   return *tags;
 }
 
+const std::vector<SearchConcept>& GetEthernetNotConnectedSearchConcepts() {
+  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+      {IDS_OS_SETTINGS_TAG_ETHERNET,
+       mojom::kNetworkSectionPath,
+       mojom::SearchResultIcon::kEthernet,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSection,
+       {.section = mojom::Section::kNetwork}},
+  });
+  return *tags;
+}
+
 const std::vector<SearchConcept>& GetWifiSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_WIFI,
@@ -871,6 +883,10 @@ void InternetSection::OnDeviceList(
   updater.RemoveSearchTags(GetInstantTetheringOnSearchConcepts());
   updater.RemoveSearchTags(GetInstantTetheringOffSearchConcepts());
 
+  // Keep track of ethernet devices to handle an edge case where Ethernet device
+  // is present but no network is connected.
+  does_ethernet_device_exist_ = false;
+
   for (const auto& device : devices) {
     switch (device->type) {
       case NetworkType::kWiFi:
@@ -899,6 +915,10 @@ void InternetSection::OnDeviceList(
           updater.AddSearchTags(GetInstantTetheringOffSearchConcepts());
         break;
 
+      case NetworkType::kEthernet:
+        does_ethernet_device_exist_ = true;
+        break;
+
       default:
         // Note: Ethernet and VPN only show search tags when connected, and
         // categories such as Mobile/Wireless do not have search tags.
@@ -923,6 +943,7 @@ void InternetSection::OnNetworkList(
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
 
   updater.RemoveSearchTags(GetEthernetConnectedSearchConcepts());
+  updater.RemoveSearchTags(GetEthernetNotConnectedSearchConcepts());
   updater.RemoveSearchTags(GetWifiConnectedSearchConcepts());
   updater.RemoveSearchTags(GetWifiMeteredSearchConcepts());
   updater.RemoveSearchTags(GetCellularSearchConcepts());
@@ -989,6 +1010,12 @@ void InternetSection::OnNetworkList(
         // Note: Category types such as Mobile/Wireless do not have search tags.
         break;
     }
+  }
+
+  // Edge case where Ethernet device is present but no network is connected,
+  // i.e. on Chromeboxes. http://crbug.com/1096768
+  if (does_ethernet_device_exist_ && !connected_ethernet_guid_.has_value()) {
+    updater.AddSearchTags(GetEthernetNotConnectedSearchConcepts());
   }
 }
 
