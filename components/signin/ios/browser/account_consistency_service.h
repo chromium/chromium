@@ -78,10 +78,9 @@ class AccountConsistencyService : public KeyedService,
   // |GetAllCookies| calls on the cookie manager.
   void SetGaiaCookiesIfDeleted();
 
-  // Enqueues a request to set the CHROME_CONNECTED cookie for |domain|.
-  // The cookie is set if it is not already on |domain|.
-  void SetChromeConnectedCookieWithDomains(
-      const std::vector<std::string>& domains);
+  // Enqueues a request to set the CHROME_CONNECTED cookie for the domain of the
+  // |url|. The cookie is set if it is not already on the domain.
+  void SetChromeConnectedCookieWithUrls(const std::vector<const GURL>& urls);
 
   // Notifies the AccountConsistencyService that browsing data has been removed
   // for any time period.
@@ -96,8 +95,8 @@ class AccountConsistencyService : public KeyedService,
   // KeyedService implementation.
   void Shutdown() override;
 
-  // Sets the pending CHROME_CONNECTED cookie for the given |domain|.
-  void SetChromeConnectedCookieWithDomain(const std::string& domain);
+  // Sets the pending CHROME_CONNECTED cookie for the given |url|.
+  void SetChromeConnectedCookieWithUrl(const GURL& url);
 
   // Called when the request to set CHROME_CONNECTED cookie is done.
   void OnChromeConnectedCookieFinished(
@@ -117,11 +116,11 @@ class AccountConsistencyService : public KeyedService,
       const std::string& domain,
       const base::TimeDelta& cookie_refresh_interval);
 
-  // Enqueues a request to set the CHROME_CONNECTED cookie for |domain|.
-  // The cookie is set if it is not already on |domain| or if it is too old
-  // compared to the given |cookie_refresh_interval|.
-  void SetChromeConnectedCookieWithDomains(
-      const std::vector<std::string>& domains,
+  // Enqueues a request to set the CHROME_CONNECTED cookie for the |url|'s
+  // domain. The cookie is set if it is not already on domain or if it is too
+  // old compared to the given |cookie_refresh_interval|.
+  void SetChromeConnectedCookieWithUrls(
+      const std::vector<const GURL>& urls,
       const base::TimeDelta& cookie_refresh_interval);
 
   // Adds CHROME_CONNECTED cookies on all the main Google domains.

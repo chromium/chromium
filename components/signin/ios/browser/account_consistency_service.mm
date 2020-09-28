@@ -49,8 +49,15 @@ constexpr base::TimeDelta kDelayThresholdToUpdateChromeConnectedCookie =
 constexpr base::TimeDelta kDelayThresholdToUpdateGaiaCookie =
     base::TimeDelta::FromHours(1);
 
-const char* kGoogleDomain = "google.com";
-const char* kYoutubeDomain = "youtube.com";
+const char* kGoogleUrl = "https://google.com";
+const char* kYoutubeUrl = "https://youtube.com";
+
+// Returns the registered, organization-identifying host, but no subdomains,
+// from the given GURL. Returns an empty string if the GURL is invalid.
+static std::string GetDomainFromUrl(const GURL& url) {
+  return net::registry_controlled_domains::GetDomainAndRegistry(
+      url, net::registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES);
+}
 
 // WebStatePolicyDecider that monitors the HTTP headers on Gaia responses,
 // reacting on the X-Chrome-Manage-Accounts header and notifying its delegate.
@@ -101,13 +108,13 @@ void AccountConsistencyHandler::ShouldAllowResponse(
   }
 
   GURL url = net::GURLWithNSURL(http_response.URL);
-  // Logged-in user is showing intent to navigate to a Google domain where we
-  // will need to set a CHROME_CONNECTED cookie if it is not already set.
+  // User is showing intent to navigate to a Google-owned domain. Set GAIA and
+  // CHROME_CONNECTED cookies if the user is signed in or if they are not signed
+  // in and navigating to a GAIA sign-on (this is filtered in
+  // ChromeConnectedHelper).
   if (signin::IsUrlEligibleForMirrorCookie(url)) {
-    std::string domain = net::registry_controlled_domains::GetDomainAndRegistry(
-        url, net::registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES);
-    account_consistency_service_->SetChromeConnectedCookieWithDomains(
-        {domain, kGoogleDomain});
+    account_consistency_service_->SetChromeConnectedCookieWithUrls(
+        {url, GURL(kGoogleUrl)});
     account_consistency_service_->SetGaiaCookiesIfDeleted();
   }
 
@@ -298,22 +305,23 @@ void AccountConsistencyService::OnDeleteCookiesFinished(
   }
 }
 
-void AccountConsistencyService::SetChromeConnectedCookieWithDomains(
-    const std::vector<std::string>& domains) {
-  SetChromeConnectedCookieWithDomains(
-      domains, kDelayThresholdToUpdateChromeConnectedCookie);
+void AccountConsistencyService::SetChromeConnectedCookieWithUrls(
+    const std::vector<const GURL>& urls) {
+  SetChromeConnectedCookieWithUrls(
+      urls, kDelayThresholdToUpdateChromeConnectedCookie);
 }
 
-void AccountConsistencyService::SetChromeConnectedCookieWithDomains(
-    const std::vector<std::string>& domains,
+void AccountConsistencyService::SetChromeConnectedCookieWithUrls(
+    const std::vector<const GURL>& urls,
     const base::TimeDelta& cookie_refresh_interval) {
-  for (const std::string& domain : domains) {
+  for (const GURL& url : urls) {
+    const std::string domain = GetDomainFromUrl(url);
     if (!ShouldSetChromeConnectedCookieToDomain(domain,
                                                 cookie_refresh_interval)) {
       continue;
     }
     last_cookie_update_map_[domain] = base::Time::Now();
-    SetChromeConnectedCookieWithDomain(domain);
+    SetChromeConnectedCookieWithUrl(url);
   }
 }
 
@@ -339,9 +347,9 @@ void AccountConsistencyService::Shutdown() {
   web_state_handlers_.clear();
 }
 
-void AccountConsistencyService::SetChromeConnectedCookieWithDomain(
-    const std::string& domain) {
-  const GURL url("https://" + domain);
+void AccountConsistencyService::SetChromeConnectedCookieWithUrl(
+    const GURL& url) {
+  const std::string domain = GetDomainFromUrl(url);
   std::string cookie_value = signin::BuildMirrorRequestCookieIfPossible(
       url, identity_manager_->GetPrimaryAccountInfo().gaia,
       signin::AccountConsistencyMethod::kMirror, cookie_settings_.get(),
@@ -355,7 +363,7 @@ void AccountConsistencyService::SetChromeConnectedCookieWithDomain(
       net::CanonicalCookie::CreateSanitizedCookie(
           url,
           /*name=*/kChromeConnectedCookieName, cookie_value,
-          /*domain=*/url.host(),
+          /*domain=*/domain,
           /*path=*/std::string(),
           /*creation_time=*/base::Time::Now(),
           // Create expiration date of Now+2y to roughly follow the SAPISID
@@ -398,8 +406,8 @@ void AccountConsistencyService::AddChromeConnectedCookies() {
   DCHECK(!browser_state_->IsOffTheRecord());
   // These cookie requests are preventive and not a strong signal (unlike
   // navigation to a domain). Don't force update the old cookies in this case.
-  SetChromeConnectedCookieWithDomains({kGoogleDomain, kYoutubeDomain},
-                                      base::TimeDelta::Max());
+  SetChromeConnectedCookieWithUrls({GURL(kGoogleUrl), GURL(kYoutubeUrl)},
+                                   base::TimeDelta::Max());
 }
 
 void AccountConsistencyService::ResetInternalState() {

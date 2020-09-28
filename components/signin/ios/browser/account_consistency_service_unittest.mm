@@ -78,8 +78,7 @@ bool ContainsCookie(const std::vector<net::CanonicalCookie>& cookies,
                     const std::string& name,
                     const std::string& domain) {
   for (const auto& cookie : cookies) {
-    if (cookie.Name() ==
-        AccountConsistencyService::kChromeConnectedCookieName) {
+    if (cookie.Name() == name) {
       if (domain.empty() || cookie.Domain() == domain)
         return true;
     }
@@ -289,8 +288,8 @@ class AccountConsistencyServiceTest : public PlatformTest {
   // Simulates setting the CHROME_CONNECTED cookie for the Google domain at the
   // designated time interval. Returns the time at which the cookie was updated.
   void SimulateSetChromeConnectedCookieForGoogleDomain() {
-    account_consistency_service_->SetChromeConnectedCookieWithDomains(
-        {kGoogleDomain});
+    account_consistency_service_->SetChromeConnectedCookieWithUrls(
+        {GURL("https://google.com")});
     WaitUntilAllCookieRequestsAreApplied();
   }
 
@@ -624,8 +623,9 @@ TEST_F(AccountConsistencyServiceTest, DeleteChromeConnectedCookiesAfterSet) {
   // |kGoogleDomain| or |kYouTubeDomain| otherwise they will not be reset since
   // it is before the update time. Add multiple URLs to test for race conditions
   // with remove call.
-  account_consistency_service_->SetChromeConnectedCookieWithDomains(
-      {"google.ca", "google.fr", kCountryGoogleDomain});
+  account_consistency_service_->SetChromeConnectedCookieWithUrls(
+      {GURL("https://google.ca"), GURL("https://google.fr"),
+       GURL("https://google.de")});
   SimulateGaiaCookieManagerServiceLogout();
 
   WaitUntilAllCookieRequestsAreApplied();
@@ -641,12 +641,44 @@ TEST_F(AccountConsistencyServiceTest, SetChromeConnectedCookiesAfterDelete) {
   // |kGoogleDomain| or |kYouTubeDomain| otherwise they will not be reset since
   // it is before the update time. Add multiple URLs to test for race conditions
   // with remove call.
-  account_consistency_service_->SetChromeConnectedCookieWithDomains(
-      {"google.ca", "google.fr", kCountryGoogleDomain});
+  account_consistency_service_->SetChromeConnectedCookieWithUrls(
+      {GURL("https://google.ca"), GURL("https://google.fr"),
+       GURL("https://google.de")});
   SimulateGaiaCookieManagerServiceLogout();
-  account_consistency_service_->SetChromeConnectedCookieWithDomains(
-      {"google.ca"});
+  account_consistency_service_->SetChromeConnectedCookieWithUrls(
+      {GURL("https://google.ca")});
 
   WaitUntilAllCookieRequestsAreApplied();
   CheckDomainHasChromeConnectedCookie("google.ca");
+}
+
+// Ensures that CHROME_CONNECTED cookies are only set on GAIA urls when the user
+// is signed out for |kMobileIdentityConsistency| experiment.
+TEST_F(AccountConsistencyServiceTest,
+       SetMiceChromeConnectedCookiesSignedOutUser) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(signin::kMobileIdentityConsistency);
+
+  id delegate =
+      [OCMockObject mockForProtocol:@protocol(ManageAccountsDelegate)];
+  NSDictionary* headers = [NSDictionary dictionary];
+  NSHTTPURLResponse* responseGoogle = [[NSHTTPURLResponse alloc]
+       initWithURL:[NSURL URLWithString:@"https://google.com/"]
+        statusCode:200
+       HTTPVersion:@"HTTP/1.1"
+      headerFields:headers];
+  account_consistency_service_->SetWebStateHandler(&web_state_, delegate);
+
+  EXPECT_TRUE(web_state_.ShouldAllowResponse(responseGoogle,
+                                             /* for_main_frame = */ true));
+  CheckNoChromeConnectedCookies();
+
+  NSHTTPURLResponse* responseGaia = [[NSHTTPURLResponse alloc]
+       initWithURL:[NSURL URLWithString:@"https://accounts.google.com/"]
+        statusCode:200
+       HTTPVersion:@"HTTP/1.1"
+      headerFields:headers];
+  EXPECT_TRUE(web_state_.ShouldAllowResponse(responseGaia,
+                                             /* for_main_frame = */ true));
+  CheckDomainHasChromeConnectedCookie("google.com");
 }
