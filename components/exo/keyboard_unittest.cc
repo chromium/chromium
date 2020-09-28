@@ -16,7 +16,6 @@
 #include "components/exo/buffer.h"
 #include "components/exo/keyboard_delegate.h"
 #include "components/exo/keyboard_device_configuration_delegate.h"
-#include "components/exo/keyboard_modifiers.h"
 #include "components/exo/keyboard_observer.h"
 #include "components/exo/seat.h"
 #include "components/exo/shell_surface.h"
@@ -36,12 +35,6 @@
 namespace exo {
 namespace {
 
-// XKB mod masks for the default keymap.
-constexpr uint32_t kShiftMask = 1 << 0;
-constexpr uint32_t kControlMask = 1 << 2;
-constexpr uint32_t kAltMask = 1 << 3;
-constexpr uint32_t kNumLockMask = 1 << 4;
-
 using KeyboardTest = test::ExoTestBase;
 
 class MockKeyboardDelegate : public KeyboardDelegate {
@@ -55,11 +48,11 @@ class MockKeyboardDelegate : public KeyboardDelegate {
               (Surface*, (const base::flat_map<ui::DomCode, ui::DomCode>&)));
   MOCK_METHOD(void, OnKeyboardLeave, (Surface*));
   MOCK_METHOD(uint32_t, OnKeyboardKey, (base::TimeTicks, ui::DomCode, bool));
-  MOCK_METHOD(void, OnKeyboardModifiers, (const KeyboardModifiers&));
+  MOCK_METHOD(void, OnKeyboardModifiers, (int));
   MOCK_METHOD(void,
               OnKeyRepeatSettingsChanged,
               (bool, base::TimeDelta, base::TimeDelta));
-  MOCK_METHOD(void, OnKeyboardLayoutUpdated, (base::StringPiece));
+  MOCK_METHOD(void, OnKeyboardLayoutUpdated, (const std::string&));
 };
 using NiceMockKeyboardDelegate = ::testing::NiceMock<MockKeyboardDelegate>;
 
@@ -172,11 +165,9 @@ TEST_F(KeyboardTest, OnKeyboardEnter) {
   Keyboard keyboard(std::move(delegate), &seat);
   testing::Mock::VerifyAndClearExpectations(delegate_ptr);
 
-  // Set up expectation for the key release.
   EXPECT_CALL(*delegate_ptr, CanAcceptKeyboardEventsForSurface(surface.get()))
       .WillOnce(testing::Return(true));
-  EXPECT_CALL(*delegate_ptr, OnKeyboardModifiers(KeyboardModifiers{
-                                 kShiftMask | kNumLockMask, 0, 0, 0}));
+  EXPECT_CALL(*delegate_ptr, OnKeyboardModifiers(ui::EF_SHIFT_DOWN));
   EXPECT_CALL(*delegate_ptr,
               OnKeyboardEnter(surface.get(),
                               base::flat_map<ui::DomCode, ui::DomCode>(
@@ -194,8 +185,7 @@ TEST_F(KeyboardTest, OnKeyboardEnter) {
   // Key should no longer be pressed when focus returns.
   EXPECT_CALL(*delegate_ptr, CanAcceptKeyboardEventsForSurface(surface.get()))
       .WillOnce(testing::Return(true));
-  EXPECT_CALL(*delegate_ptr, OnKeyboardModifiers(KeyboardModifiers{
-                                 kShiftMask | kNumLockMask, 0, 0, 0}));
+  EXPECT_CALL(*delegate_ptr, OnKeyboardModifiers(ui::EF_SHIFT_DOWN));
   EXPECT_CALL(*delegate_ptr,
               OnKeyboardEnter(surface.get(),
                               base::flat_map<ui::DomCode, ui::DomCode>()));
@@ -223,8 +213,7 @@ TEST_F(KeyboardTest, OnKeyboardLeave) {
   ON_CALL(*delegate_ptr, CanAcceptKeyboardEventsForSurface(surface.get()))
       .WillByDefault(testing::Return(true));
 
-  EXPECT_CALL(*delegate_ptr,
-              OnKeyboardModifiers(KeyboardModifiers{kNumLockMask, 0, 0, 0}));
+  EXPECT_CALL(*delegate_ptr, OnKeyboardModifiers(0));
   EXPECT_CALL(*delegate_ptr,
               OnKeyboardEnter(surface.get(),
                               base::flat_map<ui::DomCode, ui::DomCode>()));
@@ -235,8 +224,7 @@ TEST_F(KeyboardTest, OnKeyboardLeave) {
   focus_client->FocusWindow(nullptr);
   testing::Mock::VerifyAndClearExpectations(delegate_ptr);
 
-  EXPECT_CALL(*delegate_ptr,
-              OnKeyboardModifiers(KeyboardModifiers{kNumLockMask, 0, 0, 0}));
+  EXPECT_CALL(*delegate_ptr, OnKeyboardModifiers(0));
   EXPECT_CALL(*delegate_ptr,
               OnKeyboardEnter(surface.get(),
                               base::flat_map<ui::DomCode, ui::DomCode>()));
@@ -271,8 +259,7 @@ TEST_F(KeyboardTest, OnKeyboardKey) {
 
   EXPECT_CALL(*delegate_ptr, CanAcceptKeyboardEventsForSurface(surface.get()))
       .WillOnce(testing::Return(true));
-  EXPECT_CALL(*delegate_ptr,
-              OnKeyboardModifiers(KeyboardModifiers{kNumLockMask, 0, 0, 0}));
+  EXPECT_CALL(*delegate_ptr, OnKeyboardModifiers(0));
   EXPECT_CALL(*delegate_ptr,
               OnKeyboardEnter(surface.get(),
                               base::flat_map<ui::DomCode, ui::DomCode>()));
@@ -301,8 +288,7 @@ TEST_F(KeyboardTest, OnKeyboardKey) {
   // Test key event rewriting. In this case, ARROW_DOWN is rewritten to KEY_END
   // as a result of ALT being pressed.
   EXPECT_CALL(*delegate_ptr, OnKeyboardKey(testing::_, ui::DomCode::END, true));
-  EXPECT_CALL(*delegate_ptr, OnKeyboardModifiers(KeyboardModifiers{
-                                 kAltMask | kNumLockMask, 0, 0, 0}));
+  EXPECT_CALL(*delegate_ptr, OnKeyboardModifiers(ui::EF_ALT_DOWN));
   seat.set_physical_code_for_currently_processing_event_for_testing(
       ui::DomCode::ARROW_DOWN);
   generator.PressKey(ui::VKEY_END, ui::EF_ALT_DOWN);
@@ -312,8 +298,7 @@ TEST_F(KeyboardTest, OnKeyboardKey) {
   // associated with the key press.
   EXPECT_CALL(*delegate_ptr,
               OnKeyboardKey(testing::_, ui::DomCode::END, false));
-  EXPECT_CALL(*delegate_ptr,
-              OnKeyboardModifiers(KeyboardModifiers{kNumLockMask, 0, 0, 0}));
+  EXPECT_CALL(*delegate_ptr, OnKeyboardModifiers(0));
   generator.ReleaseKey(ui::VKEY_DOWN, 0);
   testing::Mock::VerifyAndClearExpectations(delegate_ptr);
 
@@ -328,8 +313,7 @@ TEST_F(KeyboardTest, OnKeyboardKey) {
   // Key should be pressed when focus returns.
   EXPECT_CALL(*delegate_ptr, CanAcceptKeyboardEventsForSurface(surface.get()))
       .WillOnce(testing::Return(true));
-  EXPECT_CALL(*delegate_ptr, OnKeyboardModifiers(KeyboardModifiers{
-                                 kControlMask | kNumLockMask, 0, 0, 0}));
+  EXPECT_CALL(*delegate_ptr, OnKeyboardModifiers(ui::EF_CONTROL_DOWN));
   EXPECT_CALL(*delegate_ptr,
               OnKeyboardEnter(surface.get(),
                               base::flat_map<ui::DomCode, ui::DomCode>(
@@ -391,8 +375,7 @@ TEST_F(KeyboardTest, OnKeyboardKey_NotSendKeyIfConsumedByIme) {
 
   EXPECT_CALL(*delegate_ptr, CanAcceptKeyboardEventsForSurface(surface.get()))
       .WillOnce(testing::Return(true));
-  EXPECT_CALL(*delegate_ptr,
-              OnKeyboardModifiers(KeyboardModifiers{kNumLockMask, 0, 0, 0}));
+  EXPECT_CALL(*delegate_ptr, OnKeyboardModifiers(0));
   EXPECT_CALL(*delegate_ptr,
               OnKeyboardEnter(surface.get(),
                               base::flat_map<ui::DomCode, ui::DomCode>()));
@@ -476,8 +459,7 @@ TEST_F(KeyboardTest, OnKeyboardModifiers) {
 
   EXPECT_CALL(*delegate_ptr, CanAcceptKeyboardEventsForSurface(surface.get()))
       .WillOnce(testing::Return(true));
-  EXPECT_CALL(*delegate_ptr,
-              OnKeyboardModifiers(KeyboardModifiers{kNumLockMask, 0, 0, 0}));
+  EXPECT_CALL(*delegate_ptr, OnKeyboardModifiers(0));
   EXPECT_CALL(*delegate_ptr,
               OnKeyboardEnter(surface.get(),
                               base::flat_map<ui::DomCode, ui::DomCode>()));
@@ -488,8 +470,7 @@ TEST_F(KeyboardTest, OnKeyboardModifiers) {
   // This should generate a modifier event.
   EXPECT_CALL(*delegate_ptr,
               OnKeyboardKey(testing::_, ui::DomCode::US_A, true));
-  EXPECT_CALL(*delegate_ptr, OnKeyboardModifiers(KeyboardModifiers{
-                                 kShiftMask | kNumLockMask, 0, 0, 0}));
+  EXPECT_CALL(*delegate_ptr, OnKeyboardModifiers(ui::EF_SHIFT_DOWN));
   seat.set_physical_code_for_currently_processing_event_for_testing(
       ui::DomCode::US_A);
   generator.PressKey(ui::VKEY_A, ui::EF_SHIFT_DOWN);
@@ -499,8 +480,7 @@ TEST_F(KeyboardTest, OnKeyboardModifiers) {
   EXPECT_CALL(*delegate_ptr,
               OnKeyboardKey(testing::_, ui::DomCode::US_B, true));
   EXPECT_CALL(*delegate_ptr,
-              OnKeyboardModifiers(KeyboardModifiers{
-                  kShiftMask | kAltMask | kNumLockMask, 0, 0, 0}));
+              OnKeyboardModifiers(ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN));
   seat.set_physical_code_for_currently_processing_event_for_testing(
       ui::DomCode::US_B);
   generator.PressKey(ui::VKEY_B, ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN);
@@ -509,8 +489,7 @@ TEST_F(KeyboardTest, OnKeyboardModifiers) {
   // This should generate a third modifier event.
   EXPECT_CALL(*delegate_ptr,
               OnKeyboardKey(testing::_, ui::DomCode::US_B, false));
-  EXPECT_CALL(*delegate_ptr,
-              OnKeyboardModifiers(KeyboardModifiers{kNumLockMask, 0, 0, 0}));
+  EXPECT_CALL(*delegate_ptr, OnKeyboardModifiers(0));
   generator.ReleaseKey(ui::VKEY_B, 0);
   // Verify before destroying keyboard to make sure the expected call
   // is made on the methods above, rather than in the destructor.
@@ -813,12 +792,10 @@ TEST_F(KeyboardTest, AckKeyboardKey) {
   auto* delegate_ptr = delegate.get();
   Seat seat;
   Keyboard keyboard(std::move(delegate), &seat);
-  testing::Mock::VerifyAndClearExpectations(delegate_ptr);
 
   EXPECT_CALL(*delegate_ptr, CanAcceptKeyboardEventsForSurface(surface.get()))
       .WillOnce(testing::Return(true));
-  EXPECT_CALL(*delegate_ptr,
-              OnKeyboardModifiers(KeyboardModifiers{kNumLockMask, 0, 0, 0}));
+  EXPECT_CALL(*delegate_ptr, OnKeyboardModifiers(0));
   EXPECT_CALL(*delegate_ptr,
               OnKeyboardEnter(surface.get(),
                               base::flat_map<ui::DomCode, ui::DomCode>()));
@@ -829,8 +806,7 @@ TEST_F(KeyboardTest, AckKeyboardKey) {
   // to ShellSurface.
   ui::test::EventGenerator generator(ash::Shell::GetPrimaryRootWindow());
   // Press KEY_W with Ctrl.
-  EXPECT_CALL(*delegate_ptr, OnKeyboardModifiers(KeyboardModifiers{
-                                 kControlMask | kNumLockMask, 0, 0, 0}));
+  EXPECT_CALL(*delegate_ptr, OnKeyboardModifiers(4));
   EXPECT_CALL(*shell_surface.get(), AcceleratorPressed(ui::Accelerator(
                                         ui::VKEY_W, ui::EF_CONTROL_DOWN,
                                         ui::Accelerator::KeyState::PRESSED)))
@@ -901,8 +877,7 @@ TEST_F(KeyboardTest, AckKeyboardKey) {
   testing::Mock::VerifyAndClearExpectations(shell_surface.get());
 
   // Release the key and reset modifier_flags.
-  EXPECT_CALL(*delegate_ptr,
-              OnKeyboardModifiers(KeyboardModifiers{kNumLockMask, 0, 0, 0}));
+  EXPECT_CALL(*delegate_ptr, OnKeyboardModifiers(0));
   EXPECT_CALL(*delegate_ptr,
               OnKeyboardKey(testing::_, ui::DomCode::US_W, false));
   generator.ReleaseKey(ui::VKEY_W, 0);
@@ -931,8 +906,7 @@ TEST_F(KeyboardTest, AckKeyboardKeyMoveFocus) {
 
   EXPECT_CALL(*delegate_ptr, CanAcceptKeyboardEventsForSurface(surface.get()))
       .WillOnce(testing::Return(true));
-  EXPECT_CALL(*delegate_ptr,
-              OnKeyboardModifiers(KeyboardModifiers{kNumLockMask, 0, 0, 0}));
+  EXPECT_CALL(*delegate_ptr, OnKeyboardModifiers(0)).Times(1);
   EXPECT_CALL(*delegate_ptr,
               OnKeyboardEnter(surface.get(),
                               base::flat_map<ui::DomCode, ui::DomCode>()));
@@ -943,9 +917,7 @@ TEST_F(KeyboardTest, AckKeyboardKeyMoveFocus) {
   keyboard.SetNeedKeyboardKeyAcks(true);
 
   // Press KEY_W with Ctrl.
-  EXPECT_CALL(*delegate_ptr, OnKeyboardModifiers(KeyboardModifiers{
-                                 kControlMask | kNumLockMask, 0, 0, 0}))
-      .Times(1);
+  EXPECT_CALL(*delegate_ptr, OnKeyboardModifiers(4)).Times(1);
   EXPECT_CALL(*delegate_ptr, OnKeyboardKey(testing::_, ui::DomCode::US_W, true))
       .WillOnce(testing::Return(1));
   seat.set_physical_code_for_currently_processing_event_for_testing(
@@ -982,8 +954,7 @@ TEST_F(KeyboardTest, AckKeyboardKeyExpired) {
 
   EXPECT_CALL(*delegate_ptr, CanAcceptKeyboardEventsForSurface(surface.get()))
       .WillOnce(testing::Return(true));
-  EXPECT_CALL(*delegate_ptr,
-              OnKeyboardModifiers(KeyboardModifiers{kNumLockMask, 0, 0, 0}));
+  EXPECT_CALL(*delegate_ptr, OnKeyboardModifiers(0));
   EXPECT_CALL(*delegate_ptr,
               OnKeyboardEnter(surface.get(),
                               base::flat_map<ui::DomCode, ui::DomCode>()));
@@ -994,8 +965,7 @@ TEST_F(KeyboardTest, AckKeyboardKeyExpired) {
   keyboard.SetNeedKeyboardKeyAcks(true);
 
   // Press KEY_W with Ctrl.
-  EXPECT_CALL(*delegate_ptr, OnKeyboardModifiers(KeyboardModifiers{
-                                 kControlMask | kNumLockMask, 0, 0, 0}));
+  EXPECT_CALL(*delegate_ptr, OnKeyboardModifiers(4));
   EXPECT_CALL(*delegate_ptr, OnKeyboardKey(testing::_, ui::DomCode::US_W, true))
       .WillOnce(testing::Return(1));
   seat.set_physical_code_for_currently_processing_event_for_testing(
@@ -1026,8 +996,7 @@ TEST_F(KeyboardTest, AckKeyboardKeyExpired) {
   keyboard.AckKeyboardKey(1, false /* handled */);
 
   // Release the key and reset modifier_flags.
-  EXPECT_CALL(*delegate_ptr,
-              OnKeyboardModifiers(KeyboardModifiers{kNumLockMask, 0, 0, 0}));
+  EXPECT_CALL(*delegate_ptr, OnKeyboardModifiers(0));
   EXPECT_CALL(*delegate_ptr,
               OnKeyboardKey(testing::_, ui::DomCode::US_W, false));
   generator.ReleaseKey(ui::VKEY_W, 0);
@@ -1075,8 +1044,7 @@ TEST_F(KeyboardTest, AckKeyboardKeyExpiredWithMovingFocusAccelerator) {
 
   EXPECT_CALL(*delegate_ptr, CanAcceptKeyboardEventsForSurface(surface.get()))
       .WillOnce(testing::Return(true));
-  EXPECT_CALL(*delegate_ptr,
-              OnKeyboardModifiers(KeyboardModifiers{kNumLockMask, 0, 0, 0}));
+  EXPECT_CALL(*delegate_ptr, OnKeyboardModifiers(0));
   EXPECT_CALL(*delegate_ptr,
               OnKeyboardEnter(surface.get(),
                               base::flat_map<ui::DomCode, ui::DomCode>()));
@@ -1087,8 +1055,7 @@ TEST_F(KeyboardTest, AckKeyboardKeyExpiredWithMovingFocusAccelerator) {
   keyboard.SetNeedKeyboardKeyAcks(true);
 
   // Press KEY_W with Ctrl.
-  EXPECT_CALL(*delegate_ptr, OnKeyboardModifiers(KeyboardModifiers{
-                                 kControlMask | kNumLockMask, 0, 0, 0}));
+  EXPECT_CALL(*delegate_ptr, OnKeyboardModifiers(4));
   EXPECT_CALL(*delegate_ptr, OnKeyboardKey(testing::_, ui::DomCode::US_W, true))
       .WillOnce(testing::Return(1));
   seat.set_physical_code_for_currently_processing_event_for_testing(

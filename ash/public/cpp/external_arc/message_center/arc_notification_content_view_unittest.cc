@@ -29,7 +29,6 @@
 #include "components/exo/buffer.h"
 #include "components/exo/keyboard.h"
 #include "components/exo/keyboard_delegate.h"
-#include "components/exo/keyboard_modifiers.h"
 #include "components/exo/notification_surface.h"
 #include "components/exo/seat.h"
 #include "components/exo/surface.h"
@@ -76,15 +75,15 @@ class MockKeyboardDelegate : public exo::KeyboardDelegate {
               OnKeyboardKey,
               (base::TimeTicks, ui::DomCode, bool),
               (override));
-  MOCK_METHOD(void,
-              OnKeyboardModifiers,
-              (const exo::KeyboardModifiers&),
-              (override));
+  MOCK_METHOD(void, OnKeyboardModifiers, (int), (override));
   MOCK_METHOD(void,
               OnKeyRepeatSettingsChanged,
               (bool, base::TimeDelta, base::TimeDelta),
               (override));
-  MOCK_METHOD(void, OnKeyboardLayoutUpdated, (base::StringPiece), (override));
+  MOCK_METHOD(void,
+              OnKeyboardLayoutUpdated,
+              (const std::string& layout_name),
+              (override));
 };
 
 class FakeNotificationSurface : public exo::NotificationSurface {

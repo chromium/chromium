@@ -10,12 +10,10 @@
 #include <wayland-server-protocol-core.h>
 
 #include "base/containers/flat_map.h"
+#include "components/exo/keyboard_modifiers.h"
 #include "components/exo/wayland/serial_tracker.h"
+#include "components/exo/xkb_tracker.h"
 #include "ui/events/keycodes/dom/dom_code.h"
-
-#if BUILDFLAG(USE_XKBCOMMON)
-#include <xkbcommon/xkbcommon.h>
-#endif
 
 namespace exo {
 namespace wayland {
@@ -24,7 +22,9 @@ namespace wayland {
 
 WaylandKeyboardDelegate::WaylandKeyboardDelegate(wl_resource* keyboard_resource,
                                                  SerialTracker* serial_tracker)
-    : keyboard_resource_(keyboard_resource), serial_tracker_(serial_tracker) {}
+    : keyboard_resource_(keyboard_resource),
+      serial_tracker_(serial_tracker),
+      xkb_tracker_(std::make_unique<XkbTracker>()) {}
 
 WaylandKeyboardDelegate::~WaylandKeyboardDelegate() = default;
 
@@ -88,9 +88,11 @@ uint32_t WaylandKeyboardDelegate::OnKeyboardKey(base::TimeTicks time_stamp,
   return serial;
 }
 
-void WaylandKeyboardDelegate::OnKeyboardModifiers(
-    const KeyboardModifiers& modifiers) {
+void WaylandKeyboardDelegate::OnKeyboardModifiers(int modifier_flags) {
+  xkb_tracker_->UpdateKeyboardModifiers(modifier_flags);
+
   // Send the update only when they're different.
+  const KeyboardModifiers modifiers = xkb_tracker_->GetModifiers();
   if (current_modifiers_ == modifiers)
     return;
   current_modifiers_ = modifiers;
@@ -98,23 +100,9 @@ void WaylandKeyboardDelegate::OnKeyboardModifiers(
 }
 
 void WaylandKeyboardDelegate::OnKeyboardLayoutUpdated(
-    base::StringPiece keymap) {
-  // Sent the content of |keymap| with trailing '\0' termination via shared
-  // memory.
-  base::UnsafeSharedMemoryRegion shared_keymap_region =
-      base::UnsafeSharedMemoryRegion::Create(keymap.size() + 1);
-  base::WritableSharedMemoryMapping shared_keymap = shared_keymap_region.Map();
-  base::subtle::PlatformSharedMemoryRegion platform_shared_keymap =
-      base::UnsafeSharedMemoryRegion::TakeHandleForSerialization(
-          std::move(shared_keymap_region));
-  DCHECK(shared_keymap.IsValid());
-
-  std::memcpy(shared_keymap.memory(), keymap.data(), keymap.size());
-  static_cast<uint8_t*>(shared_keymap.memory())[keymap.size()] = '\0';
-  wl_keyboard_send_keymap(keyboard_resource_, WL_KEYBOARD_KEYMAP_FORMAT_XKB_V1,
-                          platform_shared_keymap.GetPlatformHandle().fd,
-                          keymap.size() + 1);
-  wl_client_flush(client());
+    const std::string& layout_name) {
+  xkb_tracker_->UpdateKeyboardLayout(layout_name);
+  SendLayout();
 }
 
 uint32_t WaylandKeyboardDelegate::DomCodeToKey(ui::DomCode code) const {
@@ -133,6 +121,25 @@ void WaylandKeyboardDelegate::SendKeyboardModifiers() {
       serial_tracker_->GetNextSerial(SerialTracker::EventType::OTHER_EVENT),
       current_modifiers_.depressed, current_modifiers_.locked,
       current_modifiers_.latched, current_modifiers_.group);
+  wl_client_flush(client());
+}
+
+void WaylandKeyboardDelegate::SendLayout() {
+  auto keymap = xkb_tracker_->GetKeymap();
+  size_t keymap_size = strlen(keymap.get()) + 1;
+
+  base::UnsafeSharedMemoryRegion shared_keymap_region =
+      base::UnsafeSharedMemoryRegion::Create(keymap_size);
+  base::WritableSharedMemoryMapping shared_keymap = shared_keymap_region.Map();
+  base::subtle::PlatformSharedMemoryRegion platform_shared_keymap =
+      base::UnsafeSharedMemoryRegion::TakeHandleForSerialization(
+          std::move(shared_keymap_region));
+  DCHECK(shared_keymap.IsValid());
+
+  std::memcpy(shared_keymap.memory(), keymap.get(), keymap_size);
+  wl_keyboard_send_keymap(keyboard_resource_, WL_KEYBOARD_KEYMAP_FORMAT_XKB_V1,
+                          platform_shared_keymap.GetPlatformHandle().fd,
+                          keymap_size);
   wl_client_flush(client());
 }
 

@@ -7,7 +7,6 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 
 namespace ui {
@@ -15,7 +14,6 @@ enum class DomCode;
 }
 
 namespace exo {
-struct KeyboardModifiers;
 class Surface;
 
 // Handles events on keyboards in context-specific ways.
@@ -44,7 +42,7 @@ class KeyboardDelegate {
                                  bool pressed) = 0;
 
   // Called when keyboard modifier state changed.
-  virtual void OnKeyboardModifiers(const KeyboardModifiers& modifiers) = 0;
+  virtual void OnKeyboardModifiers(int modifier_flags) = 0;
 
   // Called when key repeat settings are changed.
   virtual void OnKeyRepeatSettingsChanged(bool enabled,
@@ -52,7 +50,9 @@ class KeyboardDelegate {
                                           base::TimeDelta interval) = 0;
 
   // Called when keyboard layout is updated.
-  virtual void OnKeyboardLayoutUpdated(base::StringPiece keymap) = 0;
+  // TODO(hidehiko): Update the argument to pass the keymap
+  // when XkbTracker is moved out from WaylandKeyboardDelegate.
+  virtual void OnKeyboardLayoutUpdated(const std::string& layout_name) = 0;
 };
 
 }  // namespace exo

@@ -14,13 +14,11 @@
 #include "components/exo/input_trace.h"
 #include "components/exo/keyboard_delegate.h"
 #include "components/exo/keyboard_device_configuration_delegate.h"
-#include "components/exo/keyboard_modifiers.h"
 #include "components/exo/seat.h"
 #include "components/exo/shell_surface.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/surface.h"
 #include "components/exo/wm_helper.h"
-#include "components/exo/xkb_tracker.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/focus_client.h"
 #include "ui/aura/window.h"
@@ -171,7 +169,7 @@ Keyboard::Keyboard(std::unique_ptr<KeyboardDelegate> delegate, Seat* seat)
   ash::ImeControllerImpl* ime_controller = ash::Shell::Get()->ime_controller();
   ime_controller->AddObserver(this);
 
-  delegate_->OnKeyboardLayoutUpdated(seat_->xkb_tracker()->GetKeymap().get());
+  delegate_->OnKeyboardLayoutUpdated(ime_controller->keyboard_layout_name());
   OnSurfaceFocused(seat_->GetFocusedSurface());
   OnKeyRepeatSettingsChanged(
       ash::KeyboardController::Get()->GetKeyRepeatSettings());
@@ -280,9 +278,7 @@ void Keyboard::OnKeyEvent(ui::KeyEvent* event) {
       ConsumedByIme(focus_, event);
 
   // Always update modifiers.
-  // XkbTracker must be updated in the Seat, before calling this method.
-  // Ensured by the observer registration order.
-  delegate_->OnKeyboardModifiers(seat_->xkb_tracker()->GetModifiers());
+  delegate_->OnKeyboardModifiers(event->flags());
 
   // TODO(yhanada): This is a quick fix for https://crbug.com/859071. Remove
   // ARC-specific code path once we can find a way to manage press/release
@@ -405,9 +401,7 @@ void Keyboard::OnKeyRepeatSettingsChanged(
 void Keyboard::OnCapsLockChanged(bool enabled) {}
 
 void Keyboard::OnKeyboardLayoutNameChanged(const std::string& layout_name) {
-  // XkbTracker must be updated in the Seat, before calling this method.
-  // Ensured by the observer registration order.
-  delegate_->OnKeyboardLayoutUpdated(seat_->xkb_tracker()->GetKeymap().get());
+  delegate_->OnKeyboardLayoutUpdated(layout_name);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -422,7 +416,7 @@ void Keyboard::SetFocus(Surface* surface) {
   }
   if (surface) {
     pressed_keys_ = seat_->pressed_keys();
-    delegate_->OnKeyboardModifiers(seat_->xkb_tracker()->GetModifiers());
+    delegate_->OnKeyboardModifiers(seat_->modifier_flags());
     delegate_->OnKeyboardEnter(surface, pressed_keys_);
     focus_ = surface;
     focus_->AddSurfaceObserver(this);

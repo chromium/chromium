@@ -5,6 +5,7 @@
 #include "components/exo/wayland/fuzzer/harness.h"
 
 #include "base/files/scoped_temp_dir.h"
+#include "base/macros.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
 #include "components/exo/display.h"
@@ -12,36 +13,20 @@
 #include "components/exo/wayland/fuzzer/actions.pb.h"
 #include "components/exo/wayland/server.h"
 
-#if defined(OS_CHROMEOS)
-#include "components/exo/test/exo_test_base.h"
-#endif
-
 namespace exo {
 namespace wayland_fuzzer {
 namespace {
 
-// Use ExoTestBase on Chrome OS because Server starts to depends on ash::Shell,
-// which is unavailable on other platforms so then ExoTestBaseViews instead.
-using TestBase =
-#if defined(OS_CHROMEOS)
-    test::ExoTestBase
-#else
-    test::ExoTestBaseViews
-#endif
-    ;
-
-class WaylandFuzzerTest : public TestBase {
+class WaylandFuzzerTest : public test::ExoTestBaseViews {
  protected:
   WaylandFuzzerTest() = default;
-  WaylandFuzzerTest(const WaylandFuzzerTest&) = delete;
-  WaylandFuzzerTest& operator=(const WaylandFuzzerTest&) = delete;
   ~WaylandFuzzerTest() override = default;
 
   void SetUp() override {
     ASSERT_TRUE(xdg_temp_dir_.CreateUniqueTempDir());
     setenv("XDG_RUNTIME_DIR", xdg_temp_dir_.GetPath().MaybeAsASCII().c_str(),
            1 /* overwrite */);
-    TestBase::SetUp();
+    test::ExoTestBaseViews::SetUp();
     display_ = std::make_unique<exo::Display>();
     server_ = wayland::Server::Create(display_.get());
   }
@@ -49,12 +34,15 @@ class WaylandFuzzerTest : public TestBase {
   void TearDown() override {
     server_.reset();
     display_.reset();
-    TestBase::TearDown();
+    test::ExoTestBaseViews::TearDown();
   }
 
   base::ScopedTempDir xdg_temp_dir_;
   std::unique_ptr<exo::Display> display_;
   std::unique_ptr<wayland::Server> server_;
+
+ private:
+  DISALLOW_COPY_AND_ASSIGN(WaylandFuzzerTest);
 };
 
 void RunHarness(Harness* harness, base::WaitableEvent* event) {
