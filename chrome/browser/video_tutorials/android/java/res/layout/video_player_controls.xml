@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2020 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/player_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/transparent">
+
+    <org.chromium.ui.widget.ChromeImageButton
+        android:id="@+id/close_button"
+        android:layout_height="24dp"
+        android:layout_width="24dp"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="16dp"
+        android:background="?attr/selectableItemBackground"
+        android:contentDescription="@string/close"
+        android:src="@drawable/btn_close" />
+
+    <org.chromium.ui.widget.ChromeImageButton
+        android:id="@+id/share_button"
+        android:layout_height="24dp"
+        android:layout_width="24dp"
+        android:layout_toStartOf="@id/close_button"
+        android:layout_marginEnd="16dp"
+        android:background="?attr/selectableItemBackground"
+        android:contentDescription="@string/share"
+        android:src="@drawable/ic_share_white_24dp" />
+
+    <View
+        android:id="@+id/dummy_center"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_centerInParent="true" />
+
+    <org.chromium.ui.widget.ButtonCompat
+        android:id="@+id/try_now"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/dummy_center"
+        android:layout_marginTop="60dp"
+        android:text="@string/video_tutorials_try_now"
+        style="@style/FilledButton.Flat" />
+
+    <TextView
+        android:id="@+id/watch_next"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/try_now"
+        android:layout_marginTop="28dp"
+        android:textAppearance="@style/TextAppearance.TextMedium.Primary.Light"
+        android:text="@string/video_tutorials_watch_next_video" />
+
+    <TextView
+        android:id="@+id/change_language"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/watch_next"
+        android:layout_marginTop="28dp"
+        android:textAppearance="@style/TextAppearance.TextMedium.Primary.Light" />
+
+</RelativeLayout>
