@@ -140,8 +140,8 @@ class COMPONENT_EXPORT(CHROMEOS_ATTESTATION) AttestationFlow {
   void WaitForAttestationPrepared(base::TimeTicks end_time,
                                   base::OnceCallback<void(bool)> callback);
 
-  // Handles the result of a call to TpmAttestationIsPrepared. Starts enrollment
-  // on success and retries after |retry_delay_| if not.
+  // Handles the result of a call to GetEnrollmentPreparations. Starts
+  // enrollment on success and retries after |retry_delay_| if not.
   //
   // Parameters
   //   end_time - Time after which preparation should time out.
