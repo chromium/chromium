@@ -21,7 +21,6 @@ suite('NewTabPageModulesModuleWrapperTest', () => {
     // Act.
     moduleWrapper.descriptor = {
       id: 'foo',
-      name: 'Foo',
       heightPx: 100,
       title: 'Foo Title',
       element: moduleElement,
@@ -29,7 +28,6 @@ suite('NewTabPageModulesModuleWrapperTest', () => {
 
     // Assert.
     assertEquals('Foo Title', moduleWrapper.$.title.textContent);
-    assertEquals(' • Foo', moduleWrapper.$.name.textContent);
     assertEquals(100, $$(moduleWrapper, '#moduleElement').offsetHeight);
     assertDeepEquals(
         moduleElement, $$(moduleWrapper, '#moduleElement').children[0]);

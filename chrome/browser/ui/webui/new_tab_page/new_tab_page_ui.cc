@@ -181,11 +181,8 @@ content::WebUIDataSource* CreateNewTabPageUiHtmlSource(Profile* profile) {
       {"themeCreatedBy", IDS_NEW_TAB_ATTRIBUTION_INTRO},
 
       // Modules.
-      {"modulesDummyName", IDS_NTP_MODULES_DUMMY_NAME},
       {"modulesDummyTitle", IDS_NTP_MODULES_DUMMY_TITLE},
-      {"modulesDummy2Name", IDS_NTP_MODULES_DUMMY2_NAME},
       {"modulesDummy2Title", IDS_NTP_MODULES_DUMMY2_TITLE},
-      {"modulesKaleidoscopeName", IDS_NTP_MODULES_KALEIDOSCOPE_NAME},
       {"modulesKaleidoscopeTitle", IDS_NTP_MODULES_KALEIDOSCOPE_TITLE},
   };
   AddLocalizedStringsBulk(source, kStrings);

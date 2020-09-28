@@ -88,7 +88,7 @@ customElements.define(DummyModuleElement.is, DummyModuleElement);
 
 /** @type {!ModuleDescriptor} */
 export const dummyDescriptor = new ModuleDescriptor(
-    /*id=*/ 'dummy', /*name=*/ loadTimeData.getString('modulesDummyName'),
+    /*id=*/ 'dummy',
     /*heightPx=*/ 260, () => Promise.resolve({
       element: new DummyModuleElement(),
       title: loadTimeData.getString('modulesDummyTitle'),
@@ -96,7 +96,7 @@ export const dummyDescriptor = new ModuleDescriptor(
 
 /** @type {!ModuleDescriptor} */
 export const dummyDescriptor2 = new ModuleDescriptor(
-    /*id=*/ 'dummy2', /*name=*/ loadTimeData.getString('modulesDummy2Name'),
+    /*id=*/ 'dummy2',
     /*heightPx=*/ 260, () => Promise.resolve({
       element: new DummyModuleElement(),
       title: loadTimeData.getString('modulesDummy2Title'),

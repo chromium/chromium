@@ -52,5 +52,4 @@ async function createModule() {
 /** @type {!ModuleDescriptor} */
 export const shoppingTasksDescriptor = new ModuleDescriptor(
     /*id=*/ 'shopping_tasks',
-    /*name=*/ 'Shopping Tasks',
     /*heightPx=*/ 270, createModule);

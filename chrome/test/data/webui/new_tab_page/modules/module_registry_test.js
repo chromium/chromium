@@ -12,12 +12,12 @@ suite('NewTabPageModulesModuleRegistryTest', () => {
     const bazModule = document.createElement('div');
     const bazModuleResolver = new PromiseResolver();
     ModuleRegistry.getInstance().registerModules([
-      new ModuleDescriptor('foo', 'Foo', 100, () => Promise.resolve({
+      new ModuleDescriptor('foo', 100, () => Promise.resolve({
         element: fooModule,
         title: 'Foo Title',
       })),
-      new ModuleDescriptor('bar', 'Bar', 200, () => null),
-      new ModuleDescriptor('baz', 'Baz', 300, () => bazModuleResolver.promise),
+      new ModuleDescriptor('bar', 200, () => null),
+      new ModuleDescriptor('baz', 300, () => bazModuleResolver.promise),
     ]);
 
     // Act.
@@ -32,12 +32,10 @@ suite('NewTabPageModulesModuleRegistryTest', () => {
     // Assert.
     assertEquals(2, modules.length);
     assertEquals('foo', modules[0].id);
-    assertEquals('Foo', modules[0].name);
     assertEquals(100, modules[0].heightPx);
     assertEquals('Foo Title', modules[0].title);
     assertDeepEquals(fooModule, modules[0].element);
     assertEquals('baz', modules[1].id);
-    assertEquals('Baz', modules[1].name);
     assertEquals(300, modules[1].heightPx);
     assertEquals('Baz Title', modules[1].title);
     assertDeepEquals(bazModule, modules[1].element);

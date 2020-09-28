@@ -5623,20 +5623,11 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_COLORS_DARK_PURPLE" desc="A color option in the customization menu on the New Tab Page.">
         Dark purple
       </message>
-      <message name="IDS_NTP_MODULES_DUMMY_NAME" translateable="false" desc="Name shown in the header of the dummy module.">
-        Dummy
-      </message>
       <message name="IDS_NTP_MODULES_DUMMY_TITLE" translateable="false" desc="Title shown in the header of the dummy module.">
         Super Duper Module
       </message>
-      <message name="IDS_NTP_MODULES_DUMMY2_NAME" translateable="false" desc="Name shown in the header of the dummy 2 module.">
-        Dummy 2
-      </message>
       <message name="IDS_NTP_MODULES_DUMMY2_TITLE" translateable="false" desc="Title shown in the header of the dummy 2 module.">
         Even Better Module
-      </message>
-      <message name="IDS_NTP_MODULES_KALEIDOSCOPE_NAME" translateable="false" desc="Name shown in the header of the Kaleidoscope module.">
-        Kaleidoscope
       </message>
       <message name="IDS_NTP_MODULES_KALEIDOSCOPE_TITLE" desc="Title shown in the header of the Kaleidoscope module.">
         Top picks for you
