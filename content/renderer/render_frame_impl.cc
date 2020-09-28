@@ -2388,7 +2388,8 @@ void RenderFrameImpl::OnUnload(
   // so its routing id is registered for receiving IPC messages.
   CHECK_NE(proxy_routing_id, MSG_ROUTING_NONE);
   RenderFrameProxy* proxy = RenderFrameProxy::CreateProxyToReplaceFrame(
-      this, proxy_routing_id, replicated_frame_state.scope, frame_token);
+      agent_scheduling_group_, this, proxy_routing_id,
+      replicated_frame_state.scope, frame_token);
 
   RenderViewImpl* render_view = render_view_;
   bool is_main_frame = is_main_frame_;
@@ -4090,8 +4091,8 @@ RenderFrameImpl::CreatePortal(
                                &initial_replicated_state, &portal_token,
                                &frame_token, &devtools_frame_token);
   RenderFrameProxy* proxy = RenderFrameProxy::CreateProxyForPortal(
-      this, proxy_routing_id, frame_token, devtools_frame_token,
-      portal_element);
+      agent_scheduling_group_, this, proxy_routing_id, frame_token,
+      devtools_frame_token, portal_element);
   proxy->SetReplicatedState(initial_replicated_state);
   return std::make_pair(proxy->web_frame(), portal_token);
 }
@@ -4108,8 +4109,8 @@ blink::WebRemoteFrame* RenderFrameImpl::AdoptPortal(
                               &replicated_state, &frame_token,
                               &devtools_frame_token);
   RenderFrameProxy* proxy = RenderFrameProxy::CreateProxyForPortal(
-      this, proxy_routing_id, frame_token, devtools_frame_token,
-      portal_element);
+      agent_scheduling_group_, this, proxy_routing_id, frame_token,
+      devtools_frame_token, portal_element);
   proxy->FrameSinkIdChanged(frame_sink_id);
   proxy->SetReplicatedState(replicated_state);
   return proxy->web_frame();

@@ -24,6 +24,7 @@
 #include "content/public/common/impression.h"
 #include "content/public/common/use_zoom_for_dsf_policy.h"
 #include "content/public/renderer/content_renderer_client.h"
+#include "content/renderer/agent_scheduling_group.h"
 #include "content/renderer/child_frame_compositing_helper.h"
 #include "content/renderer/impression_conversions.h"
 #include "content/renderer/loader/web_url_request_util.h"
@@ -65,13 +66,15 @@ base::LazyInstance<FrameProxyMap>::DestructorAtExit g_frame_proxy_map =
 
 // static
 RenderFrameProxy* RenderFrameProxy::CreateProxyToReplaceFrame(
+    AgentSchedulingGroup& agent_scheduling_group,
     RenderFrameImpl* frame_to_replace,
     int routing_id,
     blink::mojom::TreeScopeType scope,
     const base::UnguessableToken& proxy_frame_token) {
   CHECK_NE(routing_id, MSG_ROUTING_NONE);
 
-  std::unique_ptr<RenderFrameProxy> proxy(new RenderFrameProxy(routing_id));
+  std::unique_ptr<RenderFrameProxy> proxy(
+      new RenderFrameProxy(agent_scheduling_group, routing_id));
   proxy->devtools_frame_token_ = frame_to_replace->GetDevToolsFrameToken();
 
   // When a RenderFrame is replaced by a RenderProxy, the WebRemoteFrame should
@@ -109,6 +112,7 @@ RenderFrameProxy* RenderFrameProxy::CreateProxyToReplaceFrame(
 
 // static
 RenderFrameProxy* RenderFrameProxy::CreateFrameProxy(
+    AgentSchedulingGroup& agent_scheduling_group,
     int routing_id,
     int render_view_routing_id,
     const base::Optional<base::UnguessableToken>& opener_frame_token,
@@ -126,7 +130,8 @@ RenderFrameProxy* RenderFrameProxy::CreateFrameProxy(
       return nullptr;
   }
 
-  std::unique_ptr<RenderFrameProxy> proxy(new RenderFrameProxy(routing_id));
+  std::unique_ptr<RenderFrameProxy> proxy(
+      new RenderFrameProxy(agent_scheduling_group, routing_id));
   proxy->devtools_frame_token_ = devtools_frame_token;
   RenderViewImpl* render_view = nullptr;
   RenderWidget* ancestor_widget = nullptr;
@@ -177,12 +182,14 @@ RenderFrameProxy* RenderFrameProxy::CreateFrameProxy(
 }
 
 RenderFrameProxy* RenderFrameProxy::CreateProxyForPortal(
+    AgentSchedulingGroup& agent_scheduling_group,
     RenderFrameImpl* parent,
     int proxy_routing_id,
     const base::UnguessableToken& frame_token,
     const base::UnguessableToken& devtools_frame_token,
     const blink::WebElement& portal_element) {
-  auto proxy = base::WrapUnique(new RenderFrameProxy(proxy_routing_id));
+  auto proxy = base::WrapUnique(
+      new RenderFrameProxy(agent_scheduling_group, proxy_routing_id));
   proxy->devtools_frame_token_ = devtools_frame_token;
   blink::WebRemoteFrame* web_frame = blink::WebRemoteFrame::CreateForPortal(
       blink::mojom::TreeScopeType::kDocument, proxy.get(),
@@ -219,8 +226,10 @@ RenderFrameProxy* RenderFrameProxy::FromWebFrame(
   return nullptr;
 }
 
-RenderFrameProxy::RenderFrameProxy(int routing_id)
-    : routing_id_(routing_id),
+RenderFrameProxy::RenderFrameProxy(AgentSchedulingGroup& agent_scheduling_group,
+                                   int routing_id)
+    : agent_scheduling_group_(agent_scheduling_group),
+      routing_id_(routing_id),
       provisional_frame_routing_id_(MSG_ROUTING_NONE),
       // TODO(samans): Investigate if it is safe to delay creation of this
       // object until a FrameSinkId is provided.
@@ -229,14 +238,14 @@ RenderFrameProxy::RenderFrameProxy(int routing_id)
   std::pair<RoutingIDProxyMap::iterator, bool> result =
       g_routing_id_proxy_map.Get().insert(std::make_pair(routing_id_, this));
   CHECK(result.second) << "Inserting a duplicate item.";
-  RenderThread::Get()->AddRoute(routing_id_, this);
-  blink_interface_registry_.reset(new BlinkInterfaceRegistryImpl(
-      binder_registry_.GetWeakPtr(), associated_interfaces_.GetWeakPtr()));
+  agent_scheduling_group_.AddRoute(routing_id_, this);
+  blink_interface_registry_ = std::make_unique<BlinkInterfaceRegistryImpl>(
+      binder_registry_.GetWeakPtr(), associated_interfaces_.GetWeakPtr());
 }
 
 RenderFrameProxy::~RenderFrameProxy() {
   CHECK(!web_frame_);
-  RenderThread::Get()->RemoveRoute(routing_id_);
+  agent_scheduling_group_.RemoveRoute(routing_id_);
   g_routing_id_proxy_map.Get().erase(routing_id_);
 }
 
@@ -444,7 +453,7 @@ void RenderFrameProxy::OnAssociatedInterfaceRequest(
 }
 
 bool RenderFrameProxy::Send(IPC::Message* message) {
-  return RenderThread::Get()->Send(message);
+  return agent_scheduling_group_.Send(message);
 }
 
 void RenderFrameProxy::OnDeleteProxy() {

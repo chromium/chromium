@@ -1897,9 +1897,17 @@ void RenderThreadImpl::CreateFrameProxy(
     const FrameReplicationState& replicated_state,
     const base::UnguessableToken& frame_token,
     const base::UnguessableToken& devtools_frame_token) {
-  RenderFrameProxy::CreateFrameProxy(
-      routing_id, render_view_routing_id, opener_frame_token, parent_routing_id,
-      replicated_state, frame_token, devtools_frame_token);
+  // TODO(crbug.com/1111231): For as long as frame proxies are created via the
+  // `Renderer` interface (as opposed to `AgentSchedulingGroup`), we will always
+  // have *exactly one* `AgentSchedulingGroup` in the process.
+  DCHECK_EQ(agent_scheduling_groups_.size(), 1ul);
+  AgentSchedulingGroup& agent_scheduling_group =
+      *agent_scheduling_groups_.begin()->get();
+
+  RenderFrameProxy::CreateFrameProxy(agent_scheduling_group, routing_id,
+                                     render_view_routing_id, opener_frame_token,
+                                     parent_routing_id, replicated_state,
+                                     frame_token, devtools_frame_token);
 }
 
 void RenderThreadImpl::OnNetworkConnectionChanged(

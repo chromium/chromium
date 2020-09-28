@@ -37,6 +37,7 @@ struct WebRect;
 
 namespace content {
 
+class AgentSchedulingGroup;
 class BlinkInterfaceRegistryImpl;
 class ChildFrameCompositingHelper;
 class RenderFrameImpl;
@@ -76,6 +77,7 @@ class CONTENT_EXPORT RenderFrameProxy : public IPC::Listener,
   // created RenderFrameProxy. |frame_to_replace| is the frame that the new
   // proxy will eventually swap places with.
   static RenderFrameProxy* CreateProxyToReplaceFrame(
+      AgentSchedulingGroup& agent_scheduling_group,
       RenderFrameImpl* frame_to_replace,
       int routing_id,
       blink::mojom::TreeScopeType scope,
@@ -95,6 +97,7 @@ class CONTENT_EXPORT RenderFrameProxy : public IPC::Listener,
   // RenderFrame) because a new child of a local frame should always start out
   // as a frame, not a proxy.
   static RenderFrameProxy* CreateFrameProxy(
+      AgentSchedulingGroup& agent_scheduling_group,
       int routing_id,
       int render_view_routing_id,
       const base::Optional<base::UnguessableToken>& opener_frame_token,
@@ -106,6 +109,7 @@ class CONTENT_EXPORT RenderFrameProxy : public IPC::Listener,
   // Creates a RenderFrameProxy to be used with a portal owned by |parent|.
   // |routing_id| is the routing id of this new RenderFrameProxy.
   static RenderFrameProxy* CreateProxyForPortal(
+      AgentSchedulingGroup& agent_scheduling_group,
       RenderFrameImpl* parent,
       int proxy_routing_id,
       const base::UnguessableToken& frame_token,
@@ -209,7 +213,8 @@ class CONTENT_EXPORT RenderFrameProxy : public IPC::Listener,
   void FrameSinkIdChanged(const viz::FrameSinkId& frame_sink_id);
 
  private:
-  RenderFrameProxy(int routing_id);
+  RenderFrameProxy(AgentSchedulingGroup& agent_scheduling_group,
+                   int routing_id);
 
   void Init(blink::WebRemoteFrame* frame,
             RenderViewImpl* render_view,
@@ -243,6 +248,11 @@ class CONTENT_EXPORT RenderFrameProxy : public IPC::Listener,
   SkBitmap* GetSadPageBitmap() override;
 
   const viz::LocalSurfaceId& GetLocalSurfaceId() const;
+
+  // The |AgentSchedulingGroup| this proxy is associated with. NOTE: This is
+  // different than the |AgentSchedulingGroup| associated with the frame being
+  // proxied.
+  AgentSchedulingGroup& agent_scheduling_group_;
 
   // The routing ID by which this RenderFrameProxy is known.
   const int routing_id_;

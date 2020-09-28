@@ -331,9 +331,10 @@ void RenderViewImpl::Initialize(
         std::move(show_callback));
   } else {
     RenderFrameProxy::CreateFrameProxy(
-        params->proxy_routing_id, GetRoutingID(), params->opener_frame_token,
-        MSG_ROUTING_NONE, params->replicated_frame_state,
-        params->main_frame_frame_token, params->devtools_main_frame_token);
+        agent_scheduling_group_, params->proxy_routing_id, GetRoutingID(),
+        params->opener_frame_token, MSG_ROUTING_NONE,
+        params->replicated_frame_state, params->main_frame_frame_token,
+        params->devtools_main_frame_token);
   }
 
   // TODO(davidben): Move this state from Blink into content.
