@@ -17,10 +17,10 @@ config("flags") {
   defines = [ "TOOLKIT_VIEWS=1" ]
 }
 
-aggregate_vector_icons("views_vector_icons") {
+aggregate_vector_icons2("views_vector_icons") {
   icon_directory = "vector_icons"
 
-  icons = [
+  sources = [
     "checkbox_active.icon",
     "checkbox_normal.icon",
     "close.icon",

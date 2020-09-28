@@ -4,18 +4,18 @@
 
 import("//components/vector_icons/vector_icons.gni")
 
-aggregate_vector_icons("media_vector_icons") {
+aggregate_vector_icons2("media_vector_icons") {
   icon_directory = "."
 
-  icons = [
+  sources = [
     "media_enter_pip.icon",
     "media_exit_pip.icon",
     "media_next_track.icon",
     "media_previous_track.icon",
-    "media_seek_forward.icon",
     "media_seek_backward.icon",
-    "play_arrow.icon",
+    "media_seek_forward.icon",
     "pause.icon",
+    "play_arrow.icon",
   ]
 }
 

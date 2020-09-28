@@ -4,15 +4,10 @@
 
 import("//components/vector_icons/vector_icons.gni")
 
-aggregate_vector_icons("ksv_vector_icons") {
+aggregate_vector_icons2("ksv_vector_icons") {
   icon_directory = "."
 
-  icons = [
-    "ksv_search_back.icon",
-    "ksv_search_bar.icon",
-    "ksv_search_close.icon",
-    "ksv_search_no_result.icon",
-    "ksv_separator_plus.icon",
+  sources = [
     "ksv_arrow_down.icon",
     "ksv_arrow_left.icon",
     "ksv_arrow_right.icon",
@@ -26,6 +21,11 @@ aggregate_vector_icons("ksv_vector_icons") {
     "ksv_overview.icon",
     "ksv_privacy_screen_toggle.icon",
     "ksv_reload.icon",
+    "ksv_search_back.icon",
+    "ksv_search_bar.icon",
+    "ksv_search_close.icon",
+    "ksv_search_no_result.icon",
+    "ksv_separator_plus.icon",
     "ksv_volume_down.icon",
     "ksv_volume_up.icon",
   ]

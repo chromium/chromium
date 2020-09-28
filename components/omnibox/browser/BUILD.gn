@@ -18,10 +18,10 @@ buildflag_header("buildflags") {
   flags = [ "ENABLE_VR=$enable_vr" ]
 }
 
-aggregate_vector_icons("omnibox_vector_icons") {
+aggregate_vector_icons2("omnibox_vector_icons") {
   icon_directory = "vector_icons"
 
-  icons = [
+  sources = [
     "answer_calculator.icon",
     "answer_currency.icon",
     "answer_default.icon",
@@ -59,8 +59,8 @@ aggregate_vector_icons("omnibox_vector_icons") {
     "pedal.icon",
     "plus.icon",
     "product.icon",
-    "star_active.icon",
     "star.icon",
+    "star_active.icon",
     "switch.icon",
     "tab.icon",
     "trending_up.icon",
