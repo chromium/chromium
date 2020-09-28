@@ -4064,11 +4064,6 @@ const FeatureEntry kFeatureEntries[] = {
      SINGLE_VALUE_TYPE(extensions::switches::kForceEmptyCorbAllowlist)},
 #endif
 
-    {"cross-origin-opener-policy",
-     flag_descriptions::kCrossOriginOpenerPolicyName,
-     flag_descriptions::kCrossOriginOpenerPolicyDescription, kOsAll,
-     FEATURE_VALUE_TYPE(network::features::kCrossOriginOpenerPolicy)},
-
     {"cross-origin-opener-policy-reporting",
      flag_descriptions::kCrossOriginOpenerPolicyReportingName,
      flag_descriptions::kCrossOriginOpenerPolicyReportingDescription, kOsAll,

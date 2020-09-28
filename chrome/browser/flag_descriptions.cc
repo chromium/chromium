@@ -868,10 +868,6 @@ const char kForceEmptyCorbAndCorsAllowlistDescription[] =
     "https://www.chromium.org/Home/chromium-security/"
     "extension-content-script-fetches";
 
-const char kCrossOriginOpenerPolicyName[] = "Cross Origin Opener Policy";
-const char kCrossOriginOpenerPolicyDescription[] =
-    "Enables Cross Origin Opener Policy.";
-
 const char kCrossOriginOpenerPolicyReportingName[] =
     "Cross Origin Opener Policy reporting";
 const char kCrossOriginOpenerPolicyReportingDescription[] =

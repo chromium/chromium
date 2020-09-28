@@ -672,11 +672,6 @@
     "expiry_milestone": 88
   },
   {
-    "name": "cross-origin-opener-policy",
-    "owners": [ "ahemery", "clamy", "pmeuleman" ],
-    "expiry_milestone": 85
-  },
-  {
     "name": "cross-origin-opener-policy-access-reporting",
     "owners": [ "ahemery", "arthursonzogni", "clamy", "pmeuleman" ],
     "expiry_milestone": 88
