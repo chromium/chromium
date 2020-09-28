@@ -13,7 +13,9 @@
 #include "ash/system/tray/tray_bubble_wrapper.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_utils.h"
-#include "ui/views/controls/separator.h"
+#include "ash/wm/work_area_insets.h"
+#include "ui/aura/window.h"
+#include "ui/views/layout/box_layout.h"
 
 namespace ash {
 
@@ -29,11 +31,32 @@ void SetupViewLayer(views::View* view) {
   layer->SetFillsBoundsOpaquely(false);
   layer->SetIsFastRoundedCorner(true);
 }
+
+class HoldingSpaceBubbleContainerView : public views::View {
+ public:
+  HoldingSpaceBubbleContainerView() {
+    layout_ = SetLayoutManager(std::make_unique<views::BoxLayout>(
+        views::BoxLayout::Orientation::kVertical, gfx::Insets(),
+        kHoldingSpaceContainerSpacing));
+  }
+
+  void SetFlexForChild(views::View* child, int flex) {
+    layout_->SetFlexForView(child, flex);
+  }
+
+  void ChildPreferredSizeChanged(views::View* child) override {
+    PreferredSizeChanged();
+  }
+
+ private:
+  views::BoxLayout* layout_ = nullptr;
+};
 }  // namespace
 
 HoldingSpaceTrayBubble::HoldingSpaceTrayBubble(
     HoldingSpaceTray* holding_space_tray,
-    bool show_by_click) {
+    bool show_by_click)
+    : holding_space_tray_(holding_space_tray) {
   TrayBubbleView::InitParams init_params;
   init_params.delegate = holding_space_tray;
   init_params.parent_window = holding_space_tray->GetBubbleWindowContainer();
@@ -50,18 +73,21 @@ HoldingSpaceTrayBubble::HoldingSpaceTrayBubble(
       holding_space_tray->GetBubbleAnchorInsets());
   bubble_view->set_margins(GetSecondaryBubbleInsets());
 
+  bubble_view->SetMaxHeight(CalculateMaxHeight());
+
+  HoldingSpaceBubbleContainerView* bubble_container_view =
+      bubble_view->AddChildView(
+          std::make_unique<HoldingSpaceBubbleContainerView>());
+
   // Add pinned files container.
-  pinned_files_container_ = bubble_view->AddChildView(
+  pinned_files_container_ = bubble_container_view->AddChildView(
       std::make_unique<PinnedFilesContainer>(&delegate_));
+  bubble_container_view->SetFlexForChild(pinned_files_container_, 1);
+
   SetupViewLayer(pinned_files_container_);
 
-  // Separator between the two containers, gives illusion of 2 separate bubbles.
-  auto* separator =
-      bubble_view->AddChildView(std::make_unique<views::Separator>());
-  separator->SetBorder(views::CreateEmptyBorder(
-      gfx::Insets(kHoldingSpaceContainerSpacing, 0, 0, 0)));
-
-  recent_files_container_ = bubble_view->AddChildView(
+  // Add recent files container.
+  recent_files_container_ = bubble_container_view->AddChildView(
       std::make_unique<RecentFilesContainer>(&delegate_));
   SetupViewLayer(recent_files_container_);
 
@@ -91,6 +117,22 @@ TrayBubbleView* HoldingSpaceTrayBubble::GetBubbleView() {
 
 views::Widget* HoldingSpaceTrayBubble::GetBubbleWidget() {
   return bubble_wrapper_->GetBubbleWidget();
+}
+
+int HoldingSpaceTrayBubble::CalculateMaxHeight() const {
+  gfx::Rect anchor_bounds =
+      holding_space_tray_->GetBubbleAnchor()->GetBoundsInScreen();
+  int bottom = holding_space_tray_->shelf()->IsHorizontalAlignment()
+                   ? anchor_bounds.y() - kHoldingSpaceTrayIconMainAxisMargin
+                   : anchor_bounds.bottom();
+  WorkAreaInsets* work_area = WorkAreaInsets::ForWindow(
+      holding_space_tray_->shelf()->GetWindow()->GetRootWindow());
+  int free_space_height_above_anchor =
+      bottom - work_area->user_work_area_bounds().y();
+
+  int bubble_vertical_margin = GetSecondaryBubbleInsets().bottom() * 2;
+
+  return free_space_height_above_anchor - bubble_vertical_margin;
 }
 
 }  // namespace ash

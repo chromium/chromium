@@ -30,6 +30,7 @@ constexpr gfx::Insets kHoldingSpaceScreenshotPadding(8);
 constexpr int kHoldingSpaceScreenshotSpacing = 8;
 constexpr gfx::Size kHoldingSpaceScreenshotSize(104, 80);
 constexpr gfx::Insets kHoldingSpaceScreenshotsContainerPadding(8, 0);
+constexpr int kHoldingSpaceTrayIconMainAxisMargin = 6;
 
 // Context menu commands.
 enum HoldingSpaceCommandId {

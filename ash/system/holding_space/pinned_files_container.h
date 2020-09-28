@@ -29,6 +29,7 @@ class PinnedFilesContainer : public HoldingSpaceItemViewsContainer {
 
  private:
   HoldingSpaceItemViewDelegate* const delegate_;
+
   HoldingSpaceItemChipsContainer* item_chips_container_ = nullptr;
 
   std::map<std::string, views::View*> views_by_item_id_;

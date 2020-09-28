@@ -31,6 +31,12 @@ class ASH_EXPORT HoldingSpaceTrayBubble {
   views::Widget* GetBubbleWidget();
 
  private:
+  // Return the maximum height available for the holding space bubble.
+  int CalculateMaxHeight() const;
+
+  // The owner of this class.
+  HoldingSpaceTray* const holding_space_tray_;
+
   // The singleton delegate for `HoldingSpaceItemView`s that implements support
   // for context menu, drag-and-drop, and multiple selection.
   HoldingSpaceItemViewDelegate delegate_;

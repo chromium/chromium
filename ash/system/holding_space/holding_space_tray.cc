@@ -24,11 +24,6 @@
 
 namespace ash {
 
-namespace {
-// Padding for tray icon (dp; the button that shows the palette menu).
-constexpr int kTrayIconMainAxisInset = 6;
-}  // namespace
-
 HoldingSpaceTray::HoldingSpaceTray(Shelf* shelf) : TrayBackgroundView(shelf) {
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
@@ -37,7 +32,7 @@ HoldingSpaceTray::HoldingSpaceTray(Shelf* shelf) : TrayBackgroundView(shelf) {
   icon_->SetImage(CreateVectorIcon(kHoldingSpaceIcon,
                                    ShelfConfig::Get()->shelf_icon_color()));
 
-  tray_container()->SetMargin(kTrayIconMainAxisInset, 0);
+  tray_container()->SetMargin(kHoldingSpaceTrayIconMainAxisMargin, 0);
 }
 
 HoldingSpaceTray::~HoldingSpaceTray() = default;
