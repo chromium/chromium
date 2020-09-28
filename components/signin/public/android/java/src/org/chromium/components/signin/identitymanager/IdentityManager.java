@@ -46,11 +46,6 @@ public class IdentityManager {
          * the settings.
          */
         default void onAccountsCookieDeletedByUserAction() {}
-
-        /**
-         * Called after an account is updated.
-         */
-        default void onExtendedAccountInfoUpdated(AccountInfo accountInfo) {}
     }
     /**
      * A simple callback for getAccessToken.
@@ -128,16 +123,6 @@ public class IdentityManager {
     public void onAccountsCookieDeletedByUserAction() {
         for (Observer observer : mObservers) {
             observer.onAccountsCookieDeletedByUserAction();
-        }
-    }
-
-    /**
-     * Called after an account is updated.
-     */
-    @CalledByNative
-    private void onExtendedAccountInfoUpdated(AccountInfo accountInfo) {
-        for (Observer observer : mObservers) {
-            observer.onExtendedAccountInfoUpdated(accountInfo);
         }
     }
 

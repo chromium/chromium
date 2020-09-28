@@ -636,13 +636,6 @@ void IdentityManager::OnAccountUpdated(const AccountInfo& info) {
   for (auto& observer : observer_list_) {
     observer.OnExtendedAccountInfoUpdated(info);
   }
-#if defined(OS_ANDROID)
-  if (java_identity_manager_) {
-    JNIEnv* env = base::android::AttachCurrentThread();
-    Java_IdentityManager_onExtendedAccountInfoUpdated(
-        env, java_identity_manager_, ConvertToJavaAccountInfo(env, info));
-  }
-#endif
 }
 
 void IdentityManager::OnAccountRemoved(const AccountInfo& info) {
