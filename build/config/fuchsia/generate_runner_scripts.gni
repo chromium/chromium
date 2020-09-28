@@ -16,6 +16,10 @@ declare_args() {
   # generated installation scripts. If not specified, then no default directory
   # will be used.
   default_fuchsia_build_dir_for_installation = ""
+
+  # Architecture of the host tools included in Fuchsia test targets.
+  # Defaults to target_cpu.
+  fuchsia_override_host_tool_arch_for_isolated_testing = target_cpu
 }
 
 # Generates a script which deploys and optionally executes a package on a
@@ -90,6 +94,9 @@ template("fuchsia_package_runner") {
       "//build/fuchsia/",
       "//build/util/lib/",
       "//third_party/fuchsia-sdk/sdk/.build-id/",
+      "//third_party/fuchsia-sdk/sdk/bin/fpave.sh",
+      "//third_party/fuchsia-sdk/sdk/bin/fuchsia-common.sh",
+      "//third_party/fuchsia-sdk/sdk/meta/manifest.json",
       "${boot_image_root}/qemu/qemu-kernel.kernel",
       "${boot_image_root}/qemu/storage-full.blk",
       "${boot_image_root}/qemu/zircon-a.zbi",
@@ -99,26 +106,19 @@ template("fuchsia_package_runner") {
       data += [ "${aemu_root}/" ]
     }
 
-    # Ensure that the host tools required by runner scripts are in runtime deps.
-    # Note that these must be provided for the test host architecture, which
-    # currently always matches the |target_cpu|, rather than for the build host
-    # architecture.
     data += [
-      "//third_party/fuchsia-sdk/sdk/tools/${target_cpu}/device-finder",
-      "//third_party/fuchsia-sdk/sdk/tools/${target_cpu}/fvm",
-      "//third_party/fuchsia-sdk/sdk/tools/${target_cpu}/merkleroot",
-      "//third_party/fuchsia-sdk/sdk/tools/${target_cpu}/pm",
-      "//third_party/fuchsia-sdk/sdk/tools/${target_cpu}/symbolize",
-      "//third_party/fuchsia-sdk/sdk/tools/${target_cpu}/zbi",
+      "//third_party/fuchsia-sdk/sdk/tools/${fuchsia_override_host_tool_arch_for_isolated_testing}/device-finder",
+      "//third_party/fuchsia-sdk/sdk/tools/${fuchsia_override_host_tool_arch_for_isolated_testing}/fvm",
+      "//third_party/fuchsia-sdk/sdk/tools/${fuchsia_override_host_tool_arch_for_isolated_testing}/merkleroot",
+      "//third_party/fuchsia-sdk/sdk/tools/${fuchsia_override_host_tool_arch_for_isolated_testing}/pm",
+      "//third_party/fuchsia-sdk/sdk/tools/${fuchsia_override_host_tool_arch_for_isolated_testing}/symbolize",
+      "//third_party/fuchsia-sdk/sdk/tools/${fuchsia_override_host_tool_arch_for_isolated_testing}/zbi",
     ]
     if (target_cpu == "arm64") {
       data += [ "${qemu_arm64_root}/" ]
     } else {
       data += [
         "${qemu_root}/",
-        "//third_party/fuchsia-sdk/sdk/bin/fpave.sh",
-        "//third_party/fuchsia-sdk/sdk/bin/fuchsia-common.sh",
-        "//third_party/fuchsia-sdk/sdk/meta/manifest.json",
         "//third_party/llvm-build/Release+Asserts/bin/llvm-symbolizer",
       ]
     }
