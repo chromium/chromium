@@ -376,6 +376,9 @@ void VP9Encoder::SetFrameHeader(
   if (temporal_layers_) {
     // Reference frame settings for temporal layer stream.
     temporal_layers_->FillUsedRefFramesAndMetadata(picture, ref_frames_used);
+    // Enable error resilient mode so that the syntax of a frame can be decoded
+    // independently of previous frames.
+    picture->frame_hdr->error_resilient_mode = true;
   } else {
     // Reference frame settings for simple stream.
     if (keyframe) {
