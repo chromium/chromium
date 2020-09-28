@@ -479,7 +479,7 @@ TEST_F(CertProvisioningWorkerTest, Success) {
     EXPECT_CALL(state_change_callback_observer_, StateChangeCallback());
 
     EXPECT_CALL(*key_permissions_service_,
-                SetCorporateKey(GetPublicKey(), platform_keys::TokenId::kUser));
+                SetCorporateKey(GetPublicKey(), /*callback=*/_));
 
     EXPECT_SET_ATTRIBUTE_FOR_KEY_OK(SetAttributeForKey(
         platform_keys::TokenId::kUser, GetPublicKey(),
@@ -555,7 +555,7 @@ TEST_F(CertProvisioningWorkerTest, NoVaSuccess) {
         /*callback=*/_));
 
     EXPECT_CALL(*key_permissions_service_,
-                SetCorporateKey(GetPublicKey(), platform_keys::TokenId::kUser));
+                SetCorporateKey(GetPublicKey(), /*callback=*/_));
 
     EXPECT_SET_ATTRIBUTE_FOR_KEY_OK(SetAttributeForKey(
         platform_keys::TokenId::kUser, GetPublicKey(),
@@ -751,7 +751,7 @@ TEST_F(CertProvisioningWorkerTest, TryLaterWait) {
     EXPECT_REGISTER_KEY_OK(*mock_tpm_challenge_key, StartRegisterKeyStep);
 
     EXPECT_CALL(*key_permissions_service_,
-                SetCorporateKey(GetPublicKey(), platform_keys::TokenId::kUser));
+                SetCorporateKey(GetPublicKey(), /*callback=*/_));
 
     EXPECT_SET_ATTRIBUTE_FOR_KEY_OK(SetAttributeForKey(
         platform_keys::TokenId::kUser, GetPublicKey(),
@@ -1053,7 +1053,7 @@ TEST_F(CertProvisioningWorkerTest, RemoveRegisteredKey) {
     EXPECT_REGISTER_KEY_OK(*mock_tpm_challenge_key, StartRegisterKeyStep);
 
     EXPECT_CALL(*key_permissions_service_,
-                SetCorporateKey(GetPublicKey(), platform_keys::TokenId::kUser));
+                SetCorporateKey(GetPublicKey(), /*callback=*/_));
 
     EXPECT_SET_ATTRIBUTE_FOR_KEY_FAIL(SetAttributeForKey(
         platform_keys::TokenId::kUser, GetPublicKey(),
@@ -1210,8 +1210,8 @@ TEST_F(CertProvisioningWorkerTest, SerializationSuccess) {
 
     EXPECT_REGISTER_KEY_OK(*mock_tpm_challenge_key, StartRegisterKeyStep);
 
-    EXPECT_CALL(*key_permissions_service_,
-                SetCorporateKey(GetPublicKey(), platform_keys::TokenId::kUser));
+    EXPECT_CALL(*key_permissions_service_, SetCorporateKey(GetPublicKey(),
+                                                           /*callback=*/_));
 
     EXPECT_SET_ATTRIBUTE_FOR_KEY_OK(SetAttributeForKey(
         platform_keys::TokenId::kUser, GetPublicKey(),

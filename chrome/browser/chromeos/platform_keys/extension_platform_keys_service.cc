@@ -147,17 +147,31 @@ class ExtensionPlatformKeysService::GenerateKeyTask : public Task {
   // Gets the permissions for the extension with id |extension_id|.
   void GetExtensionPermissions() {
     service_->key_permissions_service_->GetPermissionsForExtension(
-        extension_id_,
-        base::Bind(&GenerateKeyTask::GotPermissions, base::Unretained(this)));
+        extension_id_, base::BindOnce(&GenerateKeyTask::GotPermissions,
+                                      base::Unretained(this)));
+  }
+
+  void OnKeyRegisteredForCorporateUsage(platform_keys::Status status) {
+    if (status == platform_keys::Status::kSuccess) {
+      callback_.Run(public_key_spki_der_, status);
+      DoStep();
+      return;
+    }
+
+    // TODO(crbug.com/1131436): Delete public key if corporate registration
+    // failed.
+    LOG(ERROR) << "Corporate key registration failed: "
+               << platform_keys::StatusToString(status);
+    next_step_ = Step::DONE;
+    callback_.Run(std::string() /* no public key */, status);
+    DoStep();
   }
 
   void UpdatePermissionsAndCallBack() {
-    std::vector<platform_keys::TokenId> key_locations = {token_id_};
-    extension_permissions_->RegisterKeyForCorporateUsage(public_key_spki_der_,
-                                                         key_locations);
-    callback_.Run(public_key_spki_der_, platform_keys::Status::kSuccess);
-    DoStep();
-    return;
+    extension_permissions_->RegisterKeyForCorporateUsage(
+        public_key_spki_der_,
+        base::BindOnce(&GenerateKeyTask::OnKeyRegisteredForCorporateUsage,
+                       base::Unretained(this)));
   }
 
   void GotPermissions(
@@ -230,8 +244,9 @@ class ExtensionPlatformKeysService::SignTask : public Task {
  public:
   enum class Step {
     GET_EXTENSION_PERMISSIONS,
-    GET_KEY_LOCATIONS,
-    SIGN_OR_ABORT,
+    CHECK_SIGN_PERMISSIONS,
+    UPDATE_SIGN_PERMISSIONS,
+    SIGN,
     DONE,
   };
 
@@ -274,33 +289,21 @@ class ExtensionPlatformKeysService::SignTask : public Task {
   void DoStep() {
     switch (next_step_) {
       case Step::GET_EXTENSION_PERMISSIONS:
-        next_step_ = Step::GET_KEY_LOCATIONS;
+        next_step_ = Step::CHECK_SIGN_PERMISSIONS;
         GetExtensionPermissions();
         return;
-      case Step::GET_KEY_LOCATIONS:
-        next_step_ = Step::SIGN_OR_ABORT;
-        GetKeyLocations();
+      case Step::CHECK_SIGN_PERMISSIONS:
+        next_step_ = Step::UPDATE_SIGN_PERMISSIONS;
+        CheckSignPermissions();
         return;
-      case Step::SIGN_OR_ABORT: {
+      case Step::UPDATE_SIGN_PERMISSIONS:
+        next_step_ = Step::SIGN;
+        UpdateSignPermissions();
+        return;
+      case Step::SIGN:
         next_step_ = Step::DONE;
-        const extensions::Extension* extension =
-            extensions::ExtensionRegistry::Get(service_->browser_context_)
-                ->GetExtensionById(extension_id_,
-                                   extensions::ExtensionRegistry::ENABLED);
-        bool sign_granted = extension_permissions_->CanUseKeyForSigning(
-                                public_key_spki_der_, key_locations_) ||
-                            (service_->IsUsingSigninProfile() &&
-                             IsExtensionAllowlisted(extension));
-
-        if (sign_granted) {
-          Sign();
-        } else {
-          callback_.Run(std::string() /* no signature */,
-                        platform_keys::Status::kErrorKeyNotAllowedForSigning);
-          DoStep();
-        }
+        Sign();
         return;
-      }
       case Step::DONE:
         service_->TaskFinished(this);
         // |this| might be invalid now.
@@ -311,7 +314,7 @@ class ExtensionPlatformKeysService::SignTask : public Task {
   void GetExtensionPermissions() {
     service_->key_permissions_service_->GetPermissionsForExtension(
         extension_id_,
-        base::Bind(&SignTask::GotPermissions, base::Unretained(this)));
+        base::BindOnce(&SignTask::GotPermissions, base::Unretained(this)));
   }
 
   void GotPermissions(
@@ -322,32 +325,57 @@ class ExtensionPlatformKeysService::SignTask : public Task {
     DoStep();
   }
 
-  void GetKeyLocations() {
-    service_->platform_keys_service_->GetKeyLocations(
+  void CheckSignPermissions() {
+    const extensions::Extension* extension =
+        extensions::ExtensionRegistry::Get(service_->browser_context_)
+            ->GetExtensionById(extension_id_,
+                               extensions::ExtensionRegistry::ENABLED);
+    if (service_->IsUsingSigninProfile() && IsExtensionAllowlisted(extension)) {
+      DoStep();
+      return;
+    }
+
+    extension_permissions_->CanUseKeyForSigning(
         public_key_spki_der_,
-        base::BindRepeating(&SignTask::GotKeyLocation, base::Unretained(this)));
+        base::BindOnce(&SignTask::OnCanUseKeyForSigningKnown,
+                       base::Unretained(this)));
   }
 
-  void GotKeyLocation(const std::vector<platform_keys::TokenId>& token_ids,
-                      platform_keys::Status status) {
+  void OnCanUseKeyForSigningKnown(bool allowed) {
+    if (!allowed) {
+      callback_.Run(std::string() /* no signature */,
+                    platform_keys::Status::kErrorKeyNotAllowedForSigning);
+      next_step_ = Step::DONE;
+      DoStep();
+    }
+
+    DoStep();
+  }
+
+  // Updates the signing permissions for |public_key_spki_der_|.
+  void UpdateSignPermissions() {
+    extension_permissions_->SetKeyUsedForSigning(
+        public_key_spki_der_,
+        base::BindOnce(&SignTask::OnSetKeyUsedForSigningDone,
+                       base::Unretained(this)));
+  }
+
+  void OnSetKeyUsedForSigningDone(platform_keys::Status status) {
     if (status != platform_keys::Status::kSuccess) {
+      LOG(ERROR) << "Marking a key used for signing failed: "
+                 << platform_keys::StatusToString(status);
       next_step_ = Step::DONE;
       callback_.Run(std::string() /* no signature */, status);
       DoStep();
       return;
     }
 
-    key_locations_ = token_ids;
     DoStep();
   }
 
-  // Updates the permissions for |public_key_spki_der_|, starts the actual
-  // signing operation and afterwards passes the signature (or error) to
-  // |callback_|.
+  // Starts the actual signing operation and afterwards passes the signature (or
+  // error) to |callback_|.
   void Sign() {
-    extension_permissions_->SetKeyUsedForSigning(public_key_spki_der_,
-                                                 key_locations_);
-
     switch (key_type_) {
       case platform_keys::KeyType::kRsassaPkcs1V15: {
         if (raw_pkcs1_) {
@@ -392,7 +420,6 @@ class ExtensionPlatformKeysService::SignTask : public Task {
   const SignCallback callback_;
   std::unique_ptr<platform_keys::KeyPermissionsService::PermissionsForExtension>
       extension_permissions_;
-  std::vector<platform_keys::TokenId> key_locations_;
   ExtensionPlatformKeysService* const service_;
   base::WeakPtrFactory<SignTask> weak_factory_{this};
 
@@ -404,11 +431,11 @@ class ExtensionPlatformKeysService::SelectTask : public Task {
   enum class Step {
     GET_EXTENSION_PERMISSIONS,
     GET_MATCHING_CERTS,
-    GET_KEY_LOCATIONS,
+    CHECK_KEY_PERMISSIONS,
     INTERSECT_WITH_INPUT_CERTS,
     SELECT_CERTS,
     UPDATE_PERMISSION,
-    FILTER_BY_PERMISSIONS,
+    PASS_RESULTING_CERTS,
     DONE,
   };
 
@@ -450,20 +477,20 @@ class ExtensionPlatformKeysService::SelectTask : public Task {
         GetExtensionPermissions();
         return;
       case Step::GET_MATCHING_CERTS:
-        next_step_ = Step::GET_KEY_LOCATIONS;
+        next_step_ = Step::CHECK_KEY_PERMISSIONS;
         GetMatchingCerts();
         return;
-      case Step::GET_KEY_LOCATIONS:
-        // Don't advance to the next step yet - GetKeyLocations is repeated for
-        // all matching certs. The next step will be selected in
-        // GetKeyLocations.
-        GetKeyLocations(Step::INTERSECT_WITH_INPUT_CERTS /* next_step */);
+      case Step::CHECK_KEY_PERMISSIONS:
+        // Don't advance to the next step yet - CheckKeyPermissions is repeated
+        // for all matching certs. The next step will be selected in
+        // CheckKeyPermissions.
+        CheckKeyPermissions(Step::INTERSECT_WITH_INPUT_CERTS /* next_step */);
         return;
       case Step::INTERSECT_WITH_INPUT_CERTS:
         if (interactive_)
           next_step_ = Step::SELECT_CERTS;
         else  // Skip SelectCerts and UpdatePermission if not interactive.
-          next_step_ = Step::FILTER_BY_PERMISSIONS;
+          next_step_ = Step::PASS_RESULTING_CERTS;
         IntersectWithInputCerts();
         return;
       case Step::SELECT_CERTS:
@@ -471,12 +498,12 @@ class ExtensionPlatformKeysService::SelectTask : public Task {
         SelectCerts();
         return;
       case Step::UPDATE_PERMISSION:
-        next_step_ = Step::FILTER_BY_PERMISSIONS;
+        next_step_ = Step::PASS_RESULTING_CERTS;
         UpdatePermission();
         return;
-      case Step::FILTER_BY_PERMISSIONS:
+      case Step::PASS_RESULTING_CERTS:
         next_step_ = Step::DONE;
-        FilterSelectionByPermission();
+        PassResultingCerts();
         return;
       case Step::DONE:
         service_->TaskFinished(this);
@@ -488,7 +515,7 @@ class ExtensionPlatformKeysService::SelectTask : public Task {
   void GetExtensionPermissions() {
     service_->key_permissions_service_->GetPermissionsForExtension(
         extension_id_,
-        base::Bind(&SelectTask::GotPermissions, base::Unretained(this)));
+        base::BindOnce(&SelectTask::GotPermissions, base::Unretained(this)));
   }
 
   void GotPermissions(
@@ -539,57 +566,59 @@ class ExtensionPlatformKeysService::SelectTask : public Task {
           continue;
       }
 
-      matches_pending_key_locations_.push_back(std::move(certificate));
+      matches_pending_permissions_check_.push_back(std::move(certificate));
     }
     DoStep();
   }
 
   // This is called once for each certificate in
-  // |matches_pending_key_locations_|.  Each invocation processes the first
+  // |matches_pending_permissions_check_|. Each invocation processes the first
   // element and removes it from the deque. Each processed certificate is added
-  // to |matches_| and |key_locations_for_matches_| if it is selectable
-  // according to KeyPermissionsService. When all certificates have been
-  // processed, advances the SignTask state machine to |next_step|.
-  void GetKeyLocations(Step next_step) {
-    if (matches_pending_key_locations_.empty()) {
+  // to |matches_| if it is selectable according to KeyPermissionsService. When
+  // all certificates have been processed, advances the SignTask state machine
+  // to |next_step|.
+  void CheckKeyPermissions(Step next_step) {
+    if (matches_pending_permissions_check_.empty()) {
       next_step_ = next_step;
       DoStep();
       return;
     }
 
     scoped_refptr<net::X509Certificate> certificate =
-        std::move(matches_pending_key_locations_.front());
-    matches_pending_key_locations_.pop_front();
+        std::move(matches_pending_permissions_check_.front());
+    matches_pending_permissions_check_.pop_front();
     const std::string public_key_spki_der(
         platform_keys::GetSubjectPublicKeyInfo(certificate));
 
-    service_->platform_keys_service_->GetKeyLocations(
+    extension_permissions_->CanUseKeyForSigning(
         public_key_spki_der,
-        base::BindRepeating(&SelectTask::GotKeyLocations,
-                            base::Unretained(this), certificate));
+        base::BindOnce(&SelectTask::OnKeySigningPermissionKnown,
+                       base::Unretained(this), public_key_spki_der,
+                       certificate));
   }
 
-  void GotKeyLocations(const scoped_refptr<net::X509Certificate>& certificate,
-                       const std::vector<platform_keys::TokenId>& token_ids,
-                       platform_keys::Status status) {
-    if (status != platform_keys::Status::kSuccess) {
-      next_step_ = Step::DONE;
-      callback_.Run(nullptr /* no certificates */, status);
-      DoStep();
-      return;
-    }
-
-    const std::string public_key_spki_der(
-        platform_keys::GetSubjectPublicKeyInfo(certificate));
-
-    // Use this key if the user can use it for signing or can grant permission
-    // for it.
-    if (service_->key_permissions_service_->CanUserGrantPermissionFor(
-            public_key_spki_der, token_ids) ||
-        extension_permissions_->CanUseKeyForSigning(public_key_spki_der,
-                                                    token_ids)) {
+  void OnKeySigningPermissionKnown(
+      const std::string& public_key_spki_der,
+      const scoped_refptr<net::X509Certificate>& certificate,
+      bool allowed) {
+    if (allowed) {
       matches_.push_back(certificate);
-      key_locations_for_matches_[public_key_spki_der] = token_ids;
+      DoStep();
+    } else if (interactive_) {
+      service_->key_permissions_service_->CanUserGrantPermissionForKey(
+          public_key_spki_der,
+          base::BindOnce(&SelectTask::OnAbilityToGrantPermissionKnown,
+                         base::Unretained(this), std::move(certificate)));
+    } else {
+      DoStep();
+    }
+  }
+
+  void OnAbilityToGrantPermissionKnown(
+      const scoped_refptr<net::X509Certificate>& certificate,
+      bool allowed) {
+    if (allowed) {
+      matches_.push_back(certificate);
     }
     DoStep();
   }
@@ -644,18 +673,22 @@ class ExtensionPlatformKeysService::SelectTask : public Task {
     }
     const std::string public_key_spki_der(
         platform_keys::GetSubjectPublicKeyInfo(selected_cert_));
-    auto key_locations_iter =
-        key_locations_for_matches_.find(public_key_spki_der);
-    CHECK(key_locations_iter != key_locations_for_matches_.end());
     extension_permissions_->SetUserGrantedPermission(
-        public_key_spki_der, key_locations_iter->second);
+        public_key_spki_der, base::BindOnce(&SelectTask::OnPermissionsUpdated,
+                                            base::Unretained(this)));
+  }
+
+  void OnPermissionsUpdated(platform_keys::Status status) {
+    if (status != platform_keys::Status::kSuccess) {
+      LOG(WARNING) << "Error while updating permissions: "
+                   << platform_keys::StatusToString(status);
+    }
+
     DoStep();
   }
 
-  // Filters from all matches (if not interactive) or from the selection (if
-  // interactive), the certificates that the extension has unlimited sign
-  // permission for. Passes the filtered certs to |callback_|.
-  void FilterSelectionByPermission() {
+  // Passes the filtered certs to |callback_|.
+  void PassResultingCerts() {
     std::unique_ptr<net::CertificateList> selection(new net::CertificateList);
     if (interactive_) {
       if (selected_cert_)
@@ -664,39 +697,15 @@ class ExtensionPlatformKeysService::SelectTask : public Task {
       selection->assign(matches_.begin(), matches_.end());
     }
 
-    std::unique_ptr<net::CertificateList> filtered_certs(
-        new net::CertificateList);
-    for (scoped_refptr<net::X509Certificate> selected_cert : *selection) {
-      const std::string public_key_spki_der(
-          platform_keys::GetSubjectPublicKeyInfo(selected_cert));
-
-      auto key_locations_iter =
-          key_locations_for_matches_.find(public_key_spki_der);
-      CHECK(key_locations_iter != key_locations_for_matches_.end());
-      if (!extension_permissions_->CanUseKeyForSigning(
-              public_key_spki_der, key_locations_iter->second))
-        continue;
-
-      filtered_certs->push_back(selected_cert);
-    }
-    // Note: In the interactive case this should have filtered exactly the
-    // one selected cert. Checking the permissions again is not striclty
-    // necessary but this ensures that the permissions were updated correctly.
-    CHECK(!selected_cert_ || (filtered_certs->size() == 1 &&
-                              filtered_certs->front() == selected_cert_));
-    callback_.Run(std::move(filtered_certs), platform_keys::Status::kSuccess);
+    callback_.Run(std::move(selection), platform_keys::Status::kSuccess);
     DoStep();
   }
 
   Step next_step_ = Step::GET_EXTENSION_PERMISSIONS;
 
   std::deque<scoped_refptr<net::X509Certificate>>
-      matches_pending_key_locations_;
+      matches_pending_permissions_check_;
   net::CertificateList matches_;
-  // Mapping of DER-encoded Subject Public Key Info to the TokenIds determined
-  // for the corresponding private key.
-  base::flat_map<std::string, std::vector<platform_keys::TokenId>>
-      key_locations_for_matches_;
   scoped_refptr<net::X509Certificate> selected_cert_;
   platform_keys::ClientCertificateRequest request_;
   std::unique_ptr<net::CertificateList> input_client_certificates_;

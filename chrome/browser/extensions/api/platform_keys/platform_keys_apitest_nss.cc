@@ -164,15 +164,27 @@ class PlatformKeysTest : public PlatformKeysTestBase {
     crypto::SetPrivateSoftwareSlotForChromeOSUserForTesting(std::move(slot));
   }
 
+  void OnKeyRegisteredForCorporateUsage(
+      std::unique_ptr<chromeos::platform_keys::KeyPermissionsService::
+                          PermissionsForExtension> permissions_for_ext,
+      const base::Closure& done_callback,
+      chromeos::platform_keys::Status status) {
+    ASSERT_EQ(status, chromeos::platform_keys::Status::kSuccess);
+    done_callback.Run();
+  }
+
   void GotPermissionsForExtension(
       const base::Closure& done_callback,
       std::unique_ptr<chromeos::platform_keys::KeyPermissionsService::
                           PermissionsForExtension> permissions_for_ext) {
+    auto* permissions_for_ext_unowned = permissions_for_ext.get();
     std::string client_cert1_spki =
         chromeos::platform_keys::GetSubjectPublicKeyInfo(client_cert1_);
-    permissions_for_ext->RegisterKeyForCorporateUsage(
-        client_cert1_spki, {chromeos::platform_keys::TokenId::kUser});
-    done_callback.Run();
+    permissions_for_ext_unowned->RegisterKeyForCorporateUsage(
+        client_cert1_spki,
+        base::BindOnce(&PlatformKeysTest::OnKeyRegisteredForCorporateUsage,
+                       base::Unretained(this), std::move(permissions_for_ext),
+                       done_callback));
   }
 
   void SetupTestCerts(const base::Closure& done_callback,

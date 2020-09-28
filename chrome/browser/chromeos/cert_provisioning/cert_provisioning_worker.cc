@@ -114,6 +114,12 @@ int GetStateOrderedIndex(CertProvisioningWorkerState state) {
   return res;
 }
 
+void OnSetCoporateKeyDone(platform_keys::Status status) {
+  if (status != platform_keys::Status::kSuccess) {
+    LOG(ERROR) << "Cannot mark key corporate: "
+               << platform_keys::StatusToString(status);
+  }
+}
 // Marks the key |public_key_spki_der| as corporate. |profile| can be nullptr if
 // |scope| is CertScope::kDevice.
 void MarkKeyAsCorporate(CertScope scope,
@@ -129,7 +135,8 @@ void MarkKeyAsCorporate(CertScope scope,
   DCHECK(profile);
 
   platform_keys::KeyPermissionsServiceFactory::GetForBrowserContext(profile)
-      ->SetCorporateKey(public_key_spki_der, GetPlatformKeysTokenId(scope));
+      ->SetCorporateKey(public_key_spki_der,
+                        base::BindOnce(&OnSetCoporateKeyDone));
 }
 
 }  // namespace

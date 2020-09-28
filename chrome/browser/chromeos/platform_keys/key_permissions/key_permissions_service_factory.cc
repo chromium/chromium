@@ -50,7 +50,8 @@ KeyedService* KeyPermissionsServiceFactory::BuildServiceInstanceFor(
   return new KeyPermissionsServiceImpl(
       profile->GetProfilePolicyConnector()->IsManaged(), profile->GetPrefs(),
       profile->GetProfilePolicyConnector()->policy_service(),
-      extensions::ExtensionSystem::Get(profile)->state_store());
+      extensions::ExtensionSystem::Get(profile)->state_store(),
+      PlatformKeysServiceFactory::GetForBrowserContext(profile));
 }
 
 void KeyPermissionsServiceFactory::RegisterProfilePrefs(

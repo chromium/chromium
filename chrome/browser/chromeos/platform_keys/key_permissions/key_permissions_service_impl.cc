@@ -6,16 +6,19 @@
 
 #include <memory>
 #include <string>
+#include <type_traits>
 #include <utility>
 #include <vector>
 
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/callback_forward.h"
 #include "base/logging.h"
 #include "base/stl_util.h"
 #include "base/values.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
+#include "chrome/browser/chromeos/platform_keys/platform_keys_service.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/common/pref_names.h"
 #include "components/policy/core/common/policy_map.h"
@@ -197,11 +200,33 @@ KeyPermissionsServiceImpl::PermissionsForExtensionImpl::
 KeyPermissionsServiceImpl::PermissionsForExtensionImpl::
     ~PermissionsForExtensionImpl() = default;
 
-bool KeyPermissionsServiceImpl::PermissionsForExtensionImpl::
+void KeyPermissionsServiceImpl::PermissionsForExtensionImpl::
     CanUseKeyForSigning(const std::string& public_key_spki_der,
-                        const std::vector<TokenId>& key_locations) {
-  if (key_locations.empty())
-    return false;
+                        CanUseKeyForSigningCallback callback) {
+  key_permissions_service_->platform_keys_service_->GetKeyLocations(
+      public_key_spki_der,
+      base::BindOnce(
+          &PermissionsForExtensionImpl::CanUseKeyForSigningWithLocations,
+          weak_factory_.GetWeakPtr(), public_key_spki_der,
+          std::move(callback)));
+}
+
+void KeyPermissionsServiceImpl::PermissionsForExtensionImpl::
+    CanUseKeyForSigningWithLocations(const std::string& public_key_spki_der,
+                                     CanUseKeyForSigningCallback callback,
+                                     const std::vector<TokenId>& key_locations,
+                                     Status key_locations_retrieval_status) {
+  if (key_locations_retrieval_status != Status::kSuccess) {
+    LOG(ERROR) << "PlatformKeysService error on requesting key locations: "
+               << StatusToString(key_locations_retrieval_status);
+    std::move(callback).Run(/*allowed=*/false);
+    return;
+  }
+
+  if (key_locations.empty()) {
+    std::move(callback).Run(/*allowed=*/false);
+    return;
+  }
 
   std::string public_key_spki_der_b64;
   base::Base64Encode(public_key_spki_der, &public_key_spki_der_b64);
@@ -215,49 +240,100 @@ bool KeyPermissionsServiceImpl::PermissionsForExtensionImpl::
   // That means, once a certificate authority generated a certificate for the
   // key, the generating extension doesn't have access to the key anymore,
   // except if explicitly permitted by the administrator.
-  if (matching_entry->sign_once)
-    return true;
+  if (matching_entry->sign_once) {
+    std::move(callback).Run(/*allowed=*/true);
+    return;
+  }
 
+  auto bound_callback =
+      base::BindOnce(&KeyPermissionsServiceImpl::PermissionsForExtensionImpl::
+                         CanUseKeyForSigningWithFlags,
+                     weak_factory_.GetWeakPtr(), std::move(callback),
+                     matching_entry->sign_unlimited);
+  key_permissions_service_->IsCorporateKeyWithLocations(
+      public_key_spki_der, std::move(bound_callback), key_locations,
+      key_locations_retrieval_status);
+}
+
+void KeyPermissionsServiceImpl::PermissionsForExtensionImpl::
+    CanUseKeyForSigningWithFlags(CanUseKeyForSigningCallback callback,
+                                 bool sign_unlimited_allowed,
+                                 bool is_corporate_key) {
   // Usage of corporate keys is solely determined by policy. The user must not
   // circumvent this decision.
-  if (key_permissions_service_->IsCorporateKey(public_key_spki_der,
-                                               key_locations))
-    return PolicyAllowsCorporateKeyUsage();
+  if (is_corporate_key) {
+    std::move(callback).Run(/*allowed=*/PolicyAllowsCorporateKeyUsage());
+    return;
+  }
 
   // Only permissions for keys that are not designated for corporate usage are
   // determined by user decisions.
-  return matching_entry->sign_unlimited;
+  std::move(callback).Run(sign_unlimited_allowed);
 }
 
 void KeyPermissionsServiceImpl::PermissionsForExtensionImpl::
     SetKeyUsedForSigning(const std::string& public_key_spki_der,
-                         const std::vector<TokenId>& key_locations) {
-  if (key_locations.empty())
+                         SetKeyUsedForSigningCallback callback) {
+  key_permissions_service_->platform_keys_service_->GetKeyLocations(
+      public_key_spki_der,
+      base::BindOnce(
+          &PermissionsForExtensionImpl::SetKeyUsedForSigningWithLocations,
+          weak_factory_.GetWeakPtr(), public_key_spki_der,
+          std::move(callback)));
+}
+
+void KeyPermissionsServiceImpl::PermissionsForExtensionImpl::
+    SetKeyUsedForSigningWithLocations(const std::string& public_key_spki_der,
+                                      SetKeyUsedForSigningCallback callback,
+                                      const std::vector<TokenId>& key_locations,
+                                      Status key_locations_retrieval_status) {
+  if (key_locations_retrieval_status != Status::kSuccess) {
+    std::move(callback).Run(key_locations_retrieval_status);
     return;
+  }
+
+  if (key_locations.empty()) {
+    std::move(callback).Run(Status::kErrorKeyNotFound);
+    return;
+  }
 
   std::string public_key_spki_der_b64;
   base::Base64Encode(public_key_spki_der, &public_key_spki_der_b64);
 
   KeyEntry* matching_entry = GetStateStoreEntry(public_key_spki_der_b64);
-
-  if (!matching_entry->sign_once) {
-    if (!CanUseKeyForSigning(public_key_spki_der, key_locations))
-      LOG(ERROR) << "Key was not allowed for signing.";
-    return;
-  }
-
   matching_entry->sign_once = false;
   WriteToStateStore();
+
+  std::move(callback).Run(Status::kSuccess);
 }
 
 void KeyPermissionsServiceImpl::PermissionsForExtensionImpl::
-    RegisterKeyForCorporateUsage(const std::string& public_key_spki_der,
-                                 const std::vector<TokenId>& key_locations) {
-  if (key_locations.empty()) {
-    NOTREACHED();
+    RegisterKeyForCorporateUsage(
+        const std::string& public_key_spki_der,
+        RegisterKeyForCorporateUsageCallback callback) {
+  key_permissions_service_->platform_keys_service_->GetKeyLocations(
+      public_key_spki_der,
+      base::BindOnce(&PermissionsForExtensionImpl::
+                         RegisterKeyForCorporateUsageWithLocations,
+                     weak_factory_.GetWeakPtr(), public_key_spki_der,
+                     std::move(callback)));
+}
+
+void KeyPermissionsServiceImpl::PermissionsForExtensionImpl::
+    RegisterKeyForCorporateUsageWithLocations(
+        const std::string& public_key_spki_der,
+        RegisterKeyForCorporateUsageCallback callback,
+        const std::vector<TokenId>& key_locations,
+        Status key_locations_retrieval_status) {
+  if (key_locations_retrieval_status != Status::kSuccess) {
+    std::move(callback).Run(key_locations_retrieval_status);
     return;
   }
 
+  if (key_locations.empty()) {
+    std::move(callback).Run(Status::kErrorKeyNotFound);
+    return;
+  }
   std::string public_key_spki_der_b64;
   base::Base64Encode(public_key_spki_der, &public_key_spki_der_b64);
 
@@ -265,6 +341,7 @@ void KeyPermissionsServiceImpl::PermissionsForExtensionImpl::
 
   if (matching_entry->sign_once) {
     VLOG(1) << "Key is already allowed for signing, skipping.";
+    std::move(callback).Run(Status::kSuccess);
     return;
   }
 
@@ -276,21 +353,57 @@ void KeyPermissionsServiceImpl::PermissionsForExtensionImpl::
   // stored the sign_once permission, so the enrolling extension in the same
   // profile can use the key for signing once in order to build a CSR even if it
   // doesn't have permission to use corporate keys.
-  if (!IsKeyOnUserSlot(key_locations))
+  if (!IsKeyOnUserSlot(key_locations)) {
+    std::move(callback).Run(Status::kSuccess);
     return;
+  }
 
-  key_permissions_service_->SetCorporateKey(public_key_spki_der,
-                                            TokenId::kUser);
+  key_permissions_service_->SetCorporateKeyWithLocations(
+      public_key_spki_der, std::move(callback), key_locations,
+      /*key_locations_retrieval_status=*/Status::kSuccess);
 }
 
 void KeyPermissionsServiceImpl::PermissionsForExtensionImpl::
     SetUserGrantedPermission(const std::string& public_key_spki_der,
-                             const std::vector<TokenId>& key_locations) {
-  if (!key_permissions_service_->CanUserGrantPermissionFor(public_key_spki_der,
-                                                           key_locations)) {
-    LOG(WARNING) << "Tried to grant permission for a key although prohibited "
-                    "(either key is a corporate key or this account is "
-                    "managed).";
+                             SetUserGrantedPermissionCallback callback) {
+  key_permissions_service_->platform_keys_service_->GetKeyLocations(
+      public_key_spki_der,
+      base::BindOnce(
+          &PermissionsForExtensionImpl::SetUserGrantedPermissionWithLocations,
+          weak_factory_.GetWeakPtr(), public_key_spki_der,
+          std::move(callback)));
+}
+
+void KeyPermissionsServiceImpl::PermissionsForExtensionImpl::
+    SetUserGrantedPermissionWithLocations(
+        const std::string& public_key_spki_der,
+        SetUserGrantedPermissionCallback callback,
+        const std::vector<TokenId>& key_locations,
+        Status key_locations_retrieval_status) {
+  key_permissions_service_->CanUserGrantPermissionForKeyWithLocations(
+      public_key_spki_der,
+      base::BindOnce(&PermissionsForExtensionImpl::
+                         SetUserGrantedPermissionWithLocationsAndFlag,
+                     weak_factory_.GetWeakPtr(), public_key_spki_der,
+                     std::move(callback), key_locations,
+                     key_locations_retrieval_status),
+      key_locations, key_locations_retrieval_status);
+}
+
+void KeyPermissionsServiceImpl::PermissionsForExtensionImpl::
+    SetUserGrantedPermissionWithLocationsAndFlag(
+        const std::string& public_key_spki_der,
+        SetUserGrantedPermissionCallback callback,
+        const std::vector<TokenId>& key_locations,
+        Status key_locations_retrieval_status,
+        bool can_user_grant_permission) {
+  if (key_locations_retrieval_status != Status::kSuccess) {
+    std::move(callback).Run(key_locations_retrieval_status);
+    return;
+  }
+
+  if (!can_user_grant_permission) {
+    std::move(callback).Run(Status::kErrorGrantKeyPermissionForExtension);
     return;
   }
 
@@ -305,11 +418,13 @@ void KeyPermissionsServiceImpl::PermissionsForExtensionImpl::
 
   if (matching_entry->sign_unlimited) {
     VLOG(1) << "Key is already allowed for signing, skipping.";
+    std::move(callback).Run(Status::kSuccess);
     return;
   }
 
   matching_entry->sign_unlimited = true;
   WriteToStateStore();
+  std::move(callback).Run(Status::kSuccess);
 }
 
 bool KeyPermissionsServiceImpl::PermissionsForExtensionImpl::
@@ -399,13 +514,16 @@ KeyPermissionsServiceImpl::KeyPermissionsServiceImpl(
     bool profile_is_managed,
     PrefService* profile_prefs,
     policy::PolicyService* profile_policies,
-    extensions::StateStore* extensions_state_store)
+    extensions::StateStore* extensions_state_store,
+    PlatformKeysService* platform_keys_service)
     : profile_is_managed_(profile_is_managed),
       profile_prefs_(profile_prefs),
       profile_policies_(profile_policies),
-      extensions_state_store_(extensions_state_store) {
+      extensions_state_store_(extensions_state_store),
+      platform_keys_service_(platform_keys_service) {
   DCHECK(profile_prefs_);
   DCHECK(extensions_state_store_);
+  DCHECK(platform_keys_service_);
   DCHECK(!profile_is_managed_ || profile_policies_);
 }
 
@@ -413,68 +531,160 @@ KeyPermissionsServiceImpl::~KeyPermissionsServiceImpl() = default;
 
 void KeyPermissionsServiceImpl::GetPermissionsForExtension(
     const std::string& extension_id,
-    const PermissionsCallback& callback) {
+    GetPermissionsForExtensionCallback callback) {
   extensions_state_store_->GetExtensionValue(
       extension_id, kStateStorePlatformKeys,
       base::BindOnce(
           &KeyPermissionsServiceImpl::CreatePermissionObjectAndPassToCallback,
-          weak_factory_.GetWeakPtr(), extension_id, callback));
+          weak_factory_.GetWeakPtr(), extension_id, std::move(callback)));
 }
 
-bool KeyPermissionsServiceImpl::CanUserGrantPermissionFor(
+void KeyPermissionsServiceImpl::CanUserGrantPermissionForKey(
     const std::string& public_key_spki_der,
-    const std::vector<TokenId>& key_locations) const {
-  if (key_locations.empty())
-    return false;
+    CanUserGrantPermissionForKeyCallback callback) const {
+  platform_keys_service_->GetKeyLocations(
+      public_key_spki_der,
+      base::BindOnce(
+          &KeyPermissionsServiceImpl::CanUserGrantPermissionForKeyWithLocations,
+          weak_factory_.GetWeakPtr(), public_key_spki_der,
+          std::move(callback)));
+}
+
+void KeyPermissionsServiceImpl::CanUserGrantPermissionForKeyWithLocations(
+    const std::string& public_key_spki_der,
+    CanUserGrantPermissionForKeyCallback callback,
+    const std::vector<TokenId>& key_locations,
+    Status key_locations_retrieval_status) const {
+  auto bound_callback = base::BindOnce(
+      &KeyPermissionsServiceImpl::
+          CanUserGrantPermissionForKeyWithLocationsAndFlag,
+      weak_factory_.GetWeakPtr(), public_key_spki_der, std::move(callback),
+      key_locations, key_locations_retrieval_status);
+  IsCorporateKeyWithLocations(public_key_spki_der, std::move(bound_callback),
+                              key_locations, key_locations_retrieval_status);
+}
+
+void KeyPermissionsServiceImpl::
+    CanUserGrantPermissionForKeyWithLocationsAndFlag(
+        const std::string& public_key_spki_der,
+        CanUserGrantPermissionForKeyCallback callback,
+        const std::vector<TokenId>& key_locations,
+        Status status,
+        bool corporate_key) {
+  if (status != Status::kSuccess) {
+    std::move(callback).Run(/*allowed=*/false);
+    return;
+  }
+
+  if (key_locations.empty()) {
+    std::move(callback).Run(/*allowed=*/false);
+    return;
+  }
 
   // As keys cannot be tagged for non-corporate usage, the user can currently
   // not grant any permissions if the profile is managed.
-  if (profile_is_managed_)
-    return false;
+  if (profile_is_managed_) {
+    std::move(callback).Run(/*allowed=*/false);
+    return;
+  }
 
   // If this profile is not managed but we find a corporate key, don't allow
   // the user to grant permissions.
-  return !IsCorporateKey(public_key_spki_der, key_locations);
+  std::move(callback).Run(/*allowed=*/!corporate_key);
 }
 
-bool KeyPermissionsServiceImpl::IsCorporateKey(
+void KeyPermissionsServiceImpl::IsCorporateKey(
     const std::string& public_key_spki_der,
-    const std::vector<TokenId>& key_locations) const {
-  std::string public_key_spki_der_b64;
-  base::Base64Encode(public_key_spki_der, &public_key_spki_der_b64);
-
-  for (const auto key_location : key_locations) {
-    switch (key_location) {
-      case TokenId::kUser:
-        if (IsCorporateKeyForProfile(public_key_spki_der_b64, profile_prefs_))
-          return true;
-        break;
-      case TokenId::kSystem:
-        return true;
-    }
-  }
-  return false;
+    IsCorporateKeyCallback callback) const {
+  platform_keys_service_->GetKeyLocations(
+      public_key_spki_der,
+      base::BindOnce(&KeyPermissionsServiceImpl::IsCorporateKeyWithLocations,
+                     weak_factory_.GetWeakPtr(), public_key_spki_der,
+                     std::move(callback)));
 }
 
-void KeyPermissionsServiceImpl::SetCorporateKey(
+void KeyPermissionsServiceImpl::IsCorporateKeyWithLocations(
     const std::string& public_key_spki_der,
-    TokenId key_location) const {
-  if (key_location == TokenId::kSystem) {
-    // Nothing to do - all system-token keys are currently implicitly corporate.
+    IsCorporateKeyCallback callback,
+    const std::vector<TokenId>& key_locations,
+    Status status) const {
+  if (status != Status::kSuccess) {
+    LOG(ERROR) << "Key locations retrieval failed: " << StatusToString(status);
+    std::move(callback).Run(/*corporate=*/false);
     return;
   }
 
   std::string public_key_spki_der_b64;
   base::Base64Encode(public_key_spki_der, &public_key_spki_der_b64);
 
-  DictionaryPrefUpdate update(profile_prefs_, prefs::kPlatformKeys);
+  for (const auto key_location : key_locations) {
+    switch (key_location) {
+      case TokenId::kUser:
+        if (IsCorporateKeyForProfile(public_key_spki_der_b64, profile_prefs_)) {
+          std::move(callback).Run(/*corporate=*/true);
+          return;
+        }
+        break;
+      case TokenId::kSystem:
+        std::move(callback).Run(/*corporate=*/true);
+        return;
+    }
+  }
+  std::move(callback).Run(/*corporate=*/false);
+}
 
-  std::unique_ptr<base::DictionaryValue> new_pref_entry(
-      new base::DictionaryValue);
-  new_pref_entry->SetKey(kPrefKeyUsage, base::Value(kPrefKeyUsageCorporate));
+void KeyPermissionsServiceImpl::SetCorporateKey(
+    const std::string& public_key_spki_der,
+    SetCorporateKeyCallback callback) const {
+  platform_keys_service_->GetKeyLocations(
+      public_key_spki_der,
+      base::BindOnce(&KeyPermissionsServiceImpl::SetCorporateKeyWithLocations,
+                     weak_factory_.GetWeakPtr(), public_key_spki_der,
+                     std::move(callback)));
+}
 
-  update->SetWithoutPathExpansion(public_key_spki_der_b64,
-                                  std::move(new_pref_entry));
+void KeyPermissionsServiceImpl::SetCorporateKeyWithLocations(
+    const std::string& public_key_spki_der,
+    SetCorporateKeyCallback callback,
+    const std::vector<TokenId>& key_locations,
+    Status key_locations_retrieval_status) const {
+  if (key_locations_retrieval_status != Status::kSuccess) {
+    std::move(callback).Run(key_locations_retrieval_status);
+    return;
+  }
+
+  if (key_locations.empty()) {
+    std::move(callback).Run(Status::kErrorKeyNotFound);
+    return;
+  }
+
+  // A single key location is expected because this is intended for usage after
+  // key generation / import, when exactly one location is relevant.
+  DCHECK_EQ(key_locations.size(), 1U);
+
+  switch (key_locations[0]) {
+    case TokenId::kSystem:
+      // Nothing to do - all system-token keys are currently implicitly
+      // corporate.
+      std::move(callback).Run(Status::kSuccess);
+      return;
+    case TokenId::kUser: {
+      std::string public_key_spki_der_b64;
+      base::Base64Encode(public_key_spki_der, &public_key_spki_der_b64);
+
+      DictionaryPrefUpdate update(profile_prefs_, prefs::kPlatformKeys);
+
+      std::unique_ptr<base::DictionaryValue> new_pref_entry(
+          new base::DictionaryValue);
+      new_pref_entry->SetKey(kPrefKeyUsage,
+                             base::Value(kPrefKeyUsageCorporate));
+
+      update->SetWithoutPathExpansion(public_key_spki_der_b64,
+                                      std::move(new_pref_entry));
+      std::move(callback).Run(Status::kSuccess);
+      return;
+    }
+  }
 }
 
 // static
@@ -519,9 +729,9 @@ KeyPermissionsServiceImpl::GetCorporateKeyUsageAllowedAppIds(
 
 void KeyPermissionsServiceImpl::CreatePermissionObjectAndPassToCallback(
     const std::string& extension_id,
-    const PermissionsCallback& callback,
+    GetPermissionsForExtensionCallback callback,
     std::unique_ptr<base::Value> value) {
-  callback.Run(std::make_unique<PermissionsForExtensionImpl>(
+  std::move(callback).Run(std::make_unique<PermissionsForExtensionImpl>(
       extension_id, std::move(value), profile_prefs_, profile_policies_, this));
 }
 

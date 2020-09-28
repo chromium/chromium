@@ -215,8 +215,8 @@ class ArcCertStoreBridgeTest : public MixinBasedInProcessBrowserTest {
       base::RunLoop run_loop;
       key_permissions_service->GetPermissionsForExtension(
           kFakeExtensionId,
-          base::Bind(&ArcCertStoreBridgeTest::GotPermissionsForExtension,
-                     base::Unretained(this), run_loop.QuitClosure()));
+          base::BindOnce(&ArcCertStoreBridgeTest::GotPermissionsForExtension,
+                         base::Unretained(this), run_loop.QuitClosure()));
       run_loop.Run();
     }
   }
@@ -261,11 +261,24 @@ class ArcCertStoreBridgeTest : public MixinBasedInProcessBrowserTest {
       const base::Closure& done_callback,
       std::unique_ptr<chromeos::platform_keys::KeyPermissionsService::
                           PermissionsForExtension> permissions_for_ext) {
+    auto* permissions_for_ext_unowned = permissions_for_ext.get();
     std::string client_cert1_spki(
         client_cert1_->derPublicKey.data,
         client_cert1_->derPublicKey.data + client_cert1_->derPublicKey.len);
-    permissions_for_ext->RegisterKeyForCorporateUsage(
-        client_cert1_spki, {chromeos::platform_keys::TokenId::kUser});
+    permissions_for_ext_unowned->RegisterKeyForCorporateUsage(
+        client_cert1_spki,
+        base::BindOnce(
+            &ArcCertStoreBridgeTest::OnKeyRegisteredForCorporateUsage,
+            base::Unretained(this), std::move(permissions_for_ext),
+            done_callback));
+  }
+
+  void OnKeyRegisteredForCorporateUsage(
+      std::unique_ptr<chromeos::platform_keys::KeyPermissionsService::
+                          PermissionsForExtension> permissions_for_ext,
+      const base::Closure& done_callback,
+      chromeos::platform_keys::Status status) {
+    ASSERT_EQ(status, chromeos::platform_keys::Status::kSuccess);
     done_callback.Run();
   }
 

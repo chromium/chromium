@@ -32,6 +32,10 @@ class PolicyService;
 namespace chromeos {
 namespace platform_keys {
 
+class PlatformKeysService;
+
+// TODO(crbug.com/1130949): Convert KeyPermissionsServiceImpl operations into
+// classes.
 class KeyPermissionsServiceImpl : public KeyPermissionsService {
  public:
   // Implementation of PermissionsForExtension.
@@ -54,21 +58,19 @@ class KeyPermissionsServiceImpl : public KeyPermissionsService {
         const PermissionsForExtensionImpl& other) = delete;
     ~PermissionsForExtensionImpl() override;
 
-    bool CanUseKeyForSigning(
-        const std::string& public_key_spki_der,
-        const std::vector<platform_keys::TokenId>& key_locations) override;
+    void CanUseKeyForSigning(const std::string& public_key_spki_der,
+                             CanUseKeyForSigningCallback callback) override;
+
+    void SetKeyUsedForSigning(const std::string& public_key_spki_der,
+                              SetKeyUsedForSigningCallback callback) override;
 
     void RegisterKeyForCorporateUsage(
         const std::string& public_key_spki_der,
-        const std::vector<platform_keys::TokenId>& key_locations) override;
+        RegisterKeyForCorporateUsageCallback callback) override;
 
     void SetUserGrantedPermission(
         const std::string& public_key_spki_der,
-        const std::vector<platform_keys::TokenId>& key_locations) override;
-
-    void SetKeyUsedForSigning(
-        const std::string& public_key_spki_der,
-        const std::vector<platform_keys::TokenId>& key_locations) override;
+        SetUserGrantedPermissionCallback callback) override;
 
    private:
     struct KeyEntry;
@@ -95,11 +97,44 @@ class KeyPermissionsServiceImpl : public KeyPermissionsService {
 
     bool PolicyAllowsCorporateKeyUsage() const;
 
+    void CanUseKeyForSigningWithLocations(
+        const std::string& public_key_spki_der,
+        CanUseKeyForSigningCallback callback,
+        const std::vector<TokenId>& key_locations,
+        Status key_locations_retrieval_status);
+    void CanUseKeyForSigningWithFlags(CanUseKeyForSigningCallback callback,
+                                      bool sign_unlimited_allowed,
+                                      bool is_corporate_key);
+
+    void SetKeyUsedForSigningWithLocations(
+        const std::string& public_key_spki_der,
+        SetKeyUsedForSigningCallback callback,
+        const std::vector<TokenId>& key_locations,
+        Status key_locations_retrieval_status);
+    void RegisterKeyForCorporateUsageWithLocations(
+        const std::string& public_key_spki_der,
+        RegisterKeyForCorporateUsageCallback callback,
+        const std::vector<TokenId>& key_locations,
+        Status key_locations_retrieval_status);
+
+    void SetUserGrantedPermissionWithLocations(
+        const std::string& public_key_spki_der,
+        SetUserGrantedPermissionCallback callback,
+        const std::vector<TokenId>& key_locations,
+        Status key_locations_retrieval_status);
+    void SetUserGrantedPermissionWithLocationsAndFlag(
+        const std::string& public_key_spki_der,
+        SetUserGrantedPermissionCallback callback,
+        const std::vector<TokenId>& key_locations,
+        Status key_locations_retrieval_status,
+        bool can_user_grant_permission);
+
     const std::string extension_id_;
     std::vector<KeyEntry> state_store_entries_;
     PrefService* const profile_prefs_;
     policy::PolicyService* const profile_policies_;
     KeyPermissionsServiceImpl* const key_permissions_service_;
+    base::WeakPtrFactory<PermissionsForExtensionImpl> weak_factory_{this};
   };
 
   // |profile_prefs| and |extensions_state_store| must not be null and must
@@ -111,7 +146,8 @@ class KeyPermissionsServiceImpl : public KeyPermissionsService {
   KeyPermissionsServiceImpl(bool profile_is_managed,
                             PrefService* profile_prefs,
                             policy::PolicyService* profile_policies,
-                            extensions::StateStore* extensions_state_store);
+                            extensions::StateStore* extensions_state_store,
+                            PlatformKeysService* platform_keys_service);
 
   ~KeyPermissionsServiceImpl() override;
 
@@ -119,19 +155,19 @@ class KeyPermissionsServiceImpl : public KeyPermissionsService {
   KeyPermissionsServiceImpl& operator=(const KeyPermissionsServiceImpl& other) =
       delete;
 
-  void GetPermissionsForExtension(const std::string& extension_id,
-                                  const PermissionsCallback& callback) override;
+  void GetPermissionsForExtension(
+      const std::string& extension_id,
+      GetPermissionsForExtensionCallback callback) override;
 
-  bool CanUserGrantPermissionFor(
+  void CanUserGrantPermissionForKey(
       const std::string& public_key_spki_der,
-      const std::vector<platform_keys::TokenId>& key_locations) const override;
+      CanUserGrantPermissionForKeyCallback callback) const override;
 
-  bool IsCorporateKey(
-      const std::string& public_key_spki_der,
-      const std::vector<platform_keys::TokenId>& key_locations) const override;
+  void IsCorporateKey(const std::string& public_key_spki_der,
+                      IsCorporateKeyCallback callback) const override;
 
   void SetCorporateKey(const std::string& public_key_spki_der,
-                       platform_keys::TokenId key_location) const override;
+                       SetCorporateKeyCallback callback) const override;
 
   // Returns true if |public_key_spki_der_b64| is a corporate usage key.
   // TOOD(http://crbug.com/1127284): Remove this and migrate callers to
@@ -150,17 +186,41 @@ class KeyPermissionsServiceImpl : public KeyPermissionsService {
   // and passes the object to |callback|.
   void CreatePermissionObjectAndPassToCallback(
       const std::string& extension_id,
-      const PermissionsCallback& callback,
+      GetPermissionsForExtensionCallback callback,
       std::unique_ptr<base::Value> value);
 
   // Writes |value| to the state store of the extension with id |extension_id|.
   void SetPlatformKeysOfExtension(const std::string& extension_id,
                                   std::unique_ptr<base::Value> value);
 
+  void CanUserGrantPermissionForKeyWithLocations(
+      const std::string& public_key_spki_der,
+      CanUserGrantPermissionForKeyCallback callback,
+      const std::vector<TokenId>& key_locations,
+      Status key_locations_retrieval_status) const;
+  void CanUserGrantPermissionForKeyWithLocationsAndFlag(
+      const std::string& public_key_spki_der,
+      CanUserGrantPermissionForKeyCallback callback,
+      const std::vector<TokenId>& key_locations,
+      Status key_locations_retrieval_status,
+      bool is_corporate_key);
+
+  void IsCorporateKeyWithLocations(const std::string& public_key_spki_der,
+                                   IsCorporateKeyCallback callback,
+                                   const std::vector<TokenId>& key_locations,
+                                   Status key_locations_retrieval_status) const;
+
+  void SetCorporateKeyWithLocations(
+      const std::string& public_key_spki_der,
+      SetCorporateKeyCallback callback,
+      const std::vector<TokenId>& key_locations,
+      Status key_locations_retrieval_status) const;
+
   const bool profile_is_managed_;
   PrefService* const profile_prefs_;
   policy::PolicyService* const profile_policies_;
   extensions::StateStore* const extensions_state_store_;
+  PlatformKeysService* const platform_keys_service_;
   base::WeakPtrFactory<KeyPermissionsServiceImpl> weak_factory_{this};
 };
 

@@ -43,6 +43,7 @@ enum class Status {
   kSuccess,
   kErrorAlgorithmNotSupported,
   kErrorCertificateNotFound,
+  kErrorGrantKeyPermissionForExtension,
   kErrorInternal,
   kErrorKeyAttributeRetrievalFailed,
   kErrorKeyAttributeSettingFailed,
