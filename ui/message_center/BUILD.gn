@@ -15,10 +15,10 @@ import("//ui/base/ui_features.gni")
 import("//build/config/deprecated_default_sources_assignment_filter.gni")
 set_sources_assignment_filter(deprecated_default_sources_assignment_filter)
 
-aggregate_vector_icons2("message_center_vector_icons") {
+aggregate_vector_icons("message_center_vector_icons") {
   icon_directory = "vector_icons"
 
-  sources = [
+  icons = [
     "notification_close_button.icon",
     "notification_expand_less.icon",
     "notification_expand_more.icon",

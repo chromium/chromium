@@ -7,12 +7,11 @@ import("//components/vector_icons/vector_icons.gni")
 import("//device/vr/buildflags/buildflags.gni")
 import("//ui/webui/webui_features.gni")
 
-aggregate_vector_icons2("chrome_vector_icons") {
+aggregate_vector_icons("chrome_vector_icons") {
   icon_directory = "."
 
   # Keep sorted alphabetically.
-  sources = [
-    "${branding_path_component}/product.icon",
+  icons = [
     "account_box.icon",
     "account_child.icon",
     "account_child_circle.icon",
@@ -43,8 +42,6 @@ aggregate_vector_icons2("chrome_vector_icons") {
     "default_touch_favicon_mask.icon",
     "eol.icon",
     "extension_crashed.icon",
-    "eye.icon",
-    "eye_crossed.icon",
     "file_download_shelf.icon",
     "fingerprint.icon",
     "forward_arrow_touch.icon",
@@ -78,8 +75,8 @@ aggregate_vector_icons2("chrome_vector_icons") {
     "person_filled_padded_large.icon",
     "person_filled_padded_small.icon",
     "photo_camera.icon",
-    "picture_in_picture_alt.icon",
     "picture_in_picture_control_background.icon",
+    "picture_in_picture_alt.icon",
     "qrcode_generator.icon",
     "read_later.icon",
     "read_later_add.icon",
@@ -92,8 +89,10 @@ aggregate_vector_icons2("chrome_vector_icons") {
     "sad_tab.icon",
     "security.icon",
     "send_tab_to_self.icon",
-    "sign_out.icon",
+    "eye_crossed.icon",
+    "eye.icon",
     "signin_button_drop_down_arrow.icon",
+    "sign_out.icon",
     "smartphone.icon",
     "speaker.icon",
     "speaker_group.icon",
@@ -145,17 +144,18 @@ aggregate_vector_icons2("chrome_vector_icons") {
     "webauthn/webauthn_welcome_dark.icon",
     "zoom_minus.icon",
     "zoom_plus.icon",
+    "${branding_path_component}/product.icon",
   ]
 
   if (is_mac) {
-    sources += [
+    icons += [
       "default_favicon.icon",
       "new_tab_mac_touchbar.icon",
     ]
   }
 
   if (is_win) {
-    sources += [
+    icons += [
       "back_arrow_windows.icon",
       "back_arrow_windows_touch.icon",
       "inactive_toast_arrow.icon",
@@ -170,10 +170,10 @@ aggregate_vector_icons2("chrome_vector_icons") {
   }
 
   if (is_chromeos) {
-    sources += [
+    icons += [
       "autocorrect_undo.icon",
-      "notification_battery.icon",
       "notification_captive_portal.icon",
+      "notification_battery.icon",
       "notification_cellular_alert.icon",
       "notification_download.icon",
       "notification_end_of_support.icon",
@@ -191,8 +191,8 @@ aggregate_vector_icons2("chrome_vector_icons") {
       "notification_printing_warning.icon",
       "notification_storage_full.icon",
       "notification_vpn.icon",
-      "notification_wifi.icon",
       "notification_wifi_off.icon",
+      "notification_wifi.icon",
       "person_add.icon",
       "shutdown_guest_os.icon",
       "warning_badge_circle.icon",
@@ -200,27 +200,27 @@ aggregate_vector_icons2("chrome_vector_icons") {
   }
 
   if (!is_android) {
-    sources += [ "nearby_share.icon" ]
+    icons += [ "nearby_share.icon" ]
   }
 
   if (enable_vr && !is_android) {
     # Used on desktop VR headsets and Linux unit tests.
-    sources += [ "open_in_browser.icon" ]
+    icons += [ "open_in_browser.icon" ]
   }
 
   if (enable_webui_tab_strip) {
-    sources += [ "new_tab_toolbar_button.icon" ]
+    icons += [ "new_tab_toolbar_button.icon" ]
   }
 
   if (is_chrome_branded) {
-    sources += [
+    icons += [
       "google_chrome/google_g_logo.icon",
       "google_chrome/google_pay_logo.icon",
     ]
   }
 
   if (is_chrome_branded && is_chromeos) {
-    sources += [ "google_chrome/assistant.icon" ]
+    icons += [ "google_chrome/assistant.icon" ]
   }
 }
 

@@ -4,10 +4,10 @@
 
 import("//components/vector_icons/vector_icons.gni")
 
-aggregate_vector_icons2("components_vector_icons") {
+aggregate_vector_icons("components_vector_icons") {
   icon_directory = "."
 
-  sources = [
+  icons = [
     "accessibility.icon",
     "ads.icon",
     "back_arrow.icon",
