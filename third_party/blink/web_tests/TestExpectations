@@ -1536,8 +1536,6 @@ crbug.com/770028 external/wpt/dom/events/document-level-touchmove-event-listener
 crbug.com/936891 fast/scrolling/document-level-touchmove-event-listener-passive-by-default.html [ Failure ]
 crbug.com/936891 virtual/threaded-prefer-compositing/fast/scrolling/document-level-touchmove-event-listener-passive-by-default.html [ Pass ]
 
-crbug.com/597221 fast/dom/Window/window-postmessage-clone-deep-array.html [ Failure ]
-
 crbug.com/498539 http/tests/devtools/tracing/timeline-misc/timeline-bound-function.js [ Pass Failure ]
 
 crbug.com/498539 crbug.com/794869 crbug.com/798548 crbug.com/946716 http/tests/devtools/elements/styles-4/styles-update-from-js.js [ Crash Pass Failure Timeout ]

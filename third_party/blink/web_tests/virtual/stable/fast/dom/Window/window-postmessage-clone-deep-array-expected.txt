@@ -1,4 +1,0 @@
-Tests that we support cloning deep(ish) arrays.
-FAIL: 'postMessage(deepArray)' should not throw but threw RangeError: Maximum call stack size exceeded
-PASS: eventData is done of type string
-
