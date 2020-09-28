@@ -10,13 +10,14 @@
 
 #include <stddef.h>
 
+#include "base/base_export.h"
 #include "base/compiler_specific.h"
 #include "build/build_config.h"
 
 namespace base {
 namespace internal {
 
-NOINLINE void PartitionExcessiveAllocationSize(size_t size);
+BASE_EXPORT NOINLINE void PartitionExcessiveAllocationSize(size_t size);
 
 #if !defined(ARCH_CPU_64_BITS)
 NOINLINE void PartitionOutOfMemoryWithLotsOfUncommitedPages(size_t size);

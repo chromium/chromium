@@ -67,6 +67,7 @@
 #include "base/allocator/partition_allocator/partition_cookie.h"
 #include "base/allocator/partition_allocator/partition_direct_map_extent.h"
 #include "base/allocator/partition_allocator/partition_lock.h"
+#include "base/allocator/partition_allocator/partition_oom.h"
 #include "base/allocator/partition_allocator/partition_page.h"
 #include "base/allocator/partition_allocator/partition_ref_count.h"
 #include "base/allocator/partition_allocator/partition_tag.h"
@@ -1110,6 +1111,16 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AlignedAllocFlags(
         << (sizeof(size_t) * 8 - base::bits::CountLeadingZeroBits(size - 1));
   }
 
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  if (requested_size > MaxDirectMapped()) {
+    if (flags & PartitionAllocReturnNull)
+      return nullptr;
+    // OutOfMemoryDeathTest.AlignedAlloc requires base::OnNoMemoryInternal
+    // (invoked by PartitionExcessiveAllocationSize).
+    internal::PartitionExcessiveAllocationSize(size);
+    IMMEDIATE_CRASH();  // Not required, kept as documentation.
+  }
+#endif
   PA_CHECK(requested_size >= size);  // Overflow check.
   bool no_hooks = flags & PartitionAllocNoHooks;
   void* ptr = no_hooks ? AllocFlagsNoHooks(0, requested_size)
