@@ -120,6 +120,12 @@ SANDBOX_EXPORT ResultExpr
 SANDBOX_EXPORT ResultExpr
     UnsafeTrap(TrapRegistry::TrapFnc trap_func, const void* aux);
 
+// UserNotify specifies that the kernel shall notify a listening process that a
+// syscall occurred. The listening process may perform the system call on
+// behalf of the sandboxed process, or may instruct the sandboxed process to
+// continue the system call.
+SANDBOX_EXPORT ResultExpr UserNotify();
+
 // BoolConst converts a bool value into a BoolExpr.
 SANDBOX_EXPORT BoolExpr BoolConst(bool value);
 

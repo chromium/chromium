@@ -453,6 +453,10 @@ TEST(BPFDSL, IsAllowDeny) {
   EXPECT_FALSE(trap->IsAllow());
   EXPECT_TRUE(trap->IsDeny());
 
+  ResultExpr user_notify = UserNotify();
+  EXPECT_FALSE(user_notify->IsAllow());
+  EXPECT_TRUE(user_notify->IsDeny());
+
   const Arg<int> arg(0);
   ResultExpr maybe = If(arg == 0, Allow()).Else(Error(EPERM));
   EXPECT_FALSE(maybe->IsAllow());
@@ -468,6 +472,9 @@ TEST(BPFDSL, HasUnsafeTraps) {
 
   ResultExpr unsafe = UnsafeTrap(DummyTrap, nullptr);
   EXPECT_TRUE(unsafe->HasUnsafeTraps());
+
+  ResultExpr user_notify = UserNotify();
+  EXPECT_FALSE(allow->HasUnsafeTraps());
 
   const Arg<int> arg(0);
   ResultExpr maybe = If(arg == 0, allow).Else(unsafe);
