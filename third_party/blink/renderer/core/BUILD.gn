@@ -1266,6 +1266,7 @@ source_set("unit_tests") {
     "layout/svg/layout_svg_text_test.cc",
     "layout/text_autosizer_test.cc",
     "layout/visual_rect_mapping_test.cc",
+    "loader/address_space_feature_test.cc",
     "loader/alternate_signed_exchange_resource_info_test.cc",
     "loader/base_fetch_context_test.cc",
     "loader/document_load_timing_test.cc",

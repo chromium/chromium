@@ -30,8 +30,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
-#include "services/network/public/cpp/ip_address_space_util.h"
-#include "services/network/public/mojom/ip_address_space.mojom-blink.h"
+#include "base/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/security_context/insecure_request_policy.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-blink.h"
@@ -47,6 +46,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/core/loader/address_space_feature.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/frame_fetch_context.h"
 #include "third_party/blink/renderer/core/loader/worker_fetch_context.h"
@@ -791,20 +791,17 @@ void MixedContentChecker::CheckMixedPrivatePublic(
     return;
 
   LocalDOMWindow* window = frame->DomWindow();
-  if (!network::IsLessPublicAddressSpace(response.AddressSpace(),
-                                         window->AddressSpace())) {
-    return;  // Not a private network request.
+  base::Optional<WebFeature> feature =
+      AddressSpaceFeature(window->AddressSpace(), window->IsSecureContext(),
+                          response.AddressSpace());
+  if (!feature.has_value()) {
+    return;
   }
 
+  // This WebFeature encompasses all private network requests.
   UseCounter::Count(window,
                     WebFeature::kMixedContentPrivateHostnameInPublicHostname);
-
-  if (response.AddressSpace() == network::mojom::IPAddressSpace::kLocal) {
-    UseCounter::Count(window,
-                      window->IsSecureContext()
-                          ? WebFeature::kLoopbackEmbeddedInSecureContext
-                          : WebFeature::kLoopbackEmbeddedInNonSecureContext);
-  }
+  UseCounter::Count(window, *feature);
 }
 
 void MixedContentChecker::HandleCertificateError(

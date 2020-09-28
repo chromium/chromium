@@ -1136,8 +1136,6 @@ enum WebFeature {
   kRTCPeerConnectionCreateDataChannelMaxRetransmits = 1649,
   kAudioContextCreateConstantSource = 1650,
   kWebAudioConstantSourceNode = 1651,
-  kLoopbackEmbeddedInSecureContext = 1652,
-  kLoopbackEmbeddedInNonSecureContext = 1653,
   kBlinkMacSystemFont = 1654,
   kRTCIceServerURL = 1656,
   kRTCIceServerURLs = 1657,
@@ -3015,6 +3013,16 @@ enum WebFeature {
   kXRDepthInformationGetDepth = 3685,
   kXRDepthInformationDataAttribute = 3686,
   kInterestCohortAPI_interestCohort_Method = 3687,
+  kAddressSpaceLocalEmbeddedInPrivateSecureContext = 3688,
+  kAddressSpaceLocalEmbeddedInPrivateNonSecureContext = 3689,
+  kAddressSpaceLocalEmbeddedInPublicSecureContext = 3690,
+  kAddressSpaceLocalEmbeddedInPublicNonSecureContext = 3691,
+  kAddressSpaceLocalEmbeddedInUnknownSecureContext = 3692,
+  kAddressSpaceLocalEmbeddedInUnknownNonSecureContext = 3693,
+  kAddressSpacePrivateEmbeddedInPublicSecureContext = 3694,
+  kAddressSpacePrivateEmbeddedInPublicNonSecureContext = 3695,
+  kAddressSpacePrivateEmbeddedInUnknownSecureContext = 3696,
+  kAddressSpacePrivateEmbeddedInUnknownNonSecureContext = 3697,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

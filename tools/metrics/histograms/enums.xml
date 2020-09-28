@@ -27335,8 +27335,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="1649" label="RTCPeerConnectionCreateDataChannelMaxRetransmits"/>
   <int value="1650" label="AudioContextCreateConstantSource"/>
   <int value="1651" label="WebAudioConstantSourceNode"/>
-  <int value="1652" label="LoopbackEmbeddedInSecureContext"/>
-  <int value="1653" label="LoopbackEmbeddedInNonSecureContext"/>
+  <int value="1652" label="OBSOLETE_LoopbackEmbeddedInSecureContext"/>
+  <int value="1653" label="OBSOLETE_LoopbackEmbeddedInNonSecureContext"/>
   <int value="1654" label="BlinkMacSystemFont"/>
   <int value="1655" label="RTCConfigurationIceTransportsNone"/>
   <int value="1656" label="RTCIceServerURL"/>
@@ -29475,6 +29475,18 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3685" label="XRDepthInformationGetDepth"/>
   <int value="3686" label="XRDepthInformationDataAttribute"/>
   <int value="3687" label="InterestCohortAPI_interestCohort_Method"/>
+  <int value="3688" label="AddressSpaceLocalEmbeddedInPrivateSecureContext"/>
+  <int value="3689" label="AddressSpaceLocalEmbeddedInPrivateNonSecureContext"/>
+  <int value="3690" label="AddressSpaceLocalEmbeddedInPublicSecureContext"/>
+  <int value="3691" label="AddressSpaceLocalEmbeddedInPublicNonSecureContext"/>
+  <int value="3692" label="AddressSpaceLocalEmbeddedInUnknownSecureContext"/>
+  <int value="3693" label="AddressSpaceLocalEmbeddedInUnknownNonSecureContext"/>
+  <int value="3694" label="AddressSpacePrivateEmbeddedInPublicSecureContext"/>
+  <int value="3695"
+      label="AddressSpacePrivateEmbeddedInPublicNonSecureContext"/>
+  <int value="3696" label="AddressSpacePrivateEmbeddedInUnknownSecureContext"/>
+  <int value="3697"
+      label="AddressSpacePrivateEmbeddedInUnknownNonSecureContext"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

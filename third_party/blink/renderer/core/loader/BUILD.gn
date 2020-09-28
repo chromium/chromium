@@ -6,6 +6,8 @@ import("//third_party/blink/renderer/core/core.gni")
 
 blink_core_sources("loader") {
   sources = [
+    "address_space_feature.cc",
+    "address_space_feature.h",
     "alternate_signed_exchange_resource_info.cc",
     "alternate_signed_exchange_resource_info.h",
     "appcache/application_cache.cc",
