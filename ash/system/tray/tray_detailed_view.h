@@ -97,14 +97,9 @@ class ASH_EXPORT TrayDetailedView : public views::View,
   void SetupConnectedScrollListItem(HoverHighlightView* view);
 
   // Adds connected sub label with the device's battery percentage to the |view|
-  // with appropriate style and updates accessibility label. Exclusively used
-  // for Bluetooth since its Connected state also contains the battery charge
-  // value and the color needs to be gray (neutral for all battery values).
-  // TODO(b/167556800): Remove this Bluetooth-specific view once the battery
-  // indicator has been re-implemented as an icon with its separate color.
-  void SetupNeutralColorConnectedScrollListItem(
-      HoverHighlightView* view,
-      base::Optional<uint8_t> battery_percentage);
+  // with appropriate style and updates accessibility label.
+  void SetupConnectedScrollListItem(HoverHighlightView* view,
+                                    base::Optional<uint8_t> battery_percentage);
 
   // Adds connecting sub label to the |view| with appropriate style and updates
   // accessibility label.

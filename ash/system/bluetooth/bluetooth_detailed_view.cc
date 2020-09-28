@@ -254,7 +254,7 @@ void BluetoothDetailedView::AppendSameTypeDevicesToScrollList(
         SetupConnectingScrollListItem(container);
         break;
       case BluetoothDeviceInfo::ConnectionState::kConnected:
-        SetupNeutralColorConnectedScrollListItem(
+        SetupConnectedScrollListItem(
             container, device->battery_info
                            ? base::make_optional<uint8_t>(
                                  device->battery_info->battery_percentage)

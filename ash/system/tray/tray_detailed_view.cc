@@ -353,19 +353,10 @@ HoverHighlightView* TrayDetailedView::AddScrollListCheckableItem(
 }
 
 void TrayDetailedView::SetupConnectedScrollListItem(HoverHighlightView* view) {
-  DCHECK(view->is_populated());
-
-  base::string16 status;
-
-  view->SetSubText(
-      l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_NETWORK_STATUS_CONNECTED));
-
-  TrayPopupItemStyle style(TrayPopupItemStyle::FontStyle::CAPTION);
-  style.set_color_style(TrayPopupItemStyle::ColorStyle::CONNECTED);
-  style.SetupLabel(view->sub_text_label());
+  SetupConnectedScrollListItem(view, base::nullopt /* battery_percentage */);
 }
 
-void TrayDetailedView::SetupNeutralColorConnectedScrollListItem(
+void TrayDetailedView::SetupConnectedScrollListItem(
     HoverHighlightView* view,
     base::Optional<uint8_t> battery_percentage) {
   DCHECK(view->is_populated());
@@ -382,14 +373,7 @@ void TrayDetailedView::SetupNeutralColorConnectedScrollListItem(
   }
 
   TrayPopupItemStyle style(TrayPopupItemStyle::FontStyle::CAPTION);
-  // The subtext is used for the "Connected" status and also the battery
-  // indicator percentage value. Using fixed green color may give the impression
-  // that the battery is in good state even though the charge value is low. In
-  // the future the UI will be re-implemented using a battery icon and different
-  // colors depending on the charge value (b/167556800). For now, we use the
-  // neutral gray color for both the "Connected" text and the battery value to
-  // avoid this confusion.
-  style.set_color_style(TrayPopupItemStyle::ColorStyle::INACTIVE);
+  style.set_color_style(TrayPopupItemStyle::ColorStyle::CONNECTED);
   style.SetupLabel(view->sub_text_label());
 }
 
