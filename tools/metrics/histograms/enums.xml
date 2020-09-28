@@ -29348,7 +29348,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3564" label="IdentifiabilityStudyReserved3564"/>
   <int value="3565" label="IdentifiabilityStudyReserved3565"/>
   <int value="3566" label="V8BaseAudioContext_SampleRate_AttributeGetter"/>
-  <int value="3567" label="IdentifiabilityStudyReserved3567"/>
+  <int value="3567" label="WindowScreenId"/>
   <int value="3568" label="IdentifiabilityStudyReserved3568"/>
   <int value="3569" label="IdentifiabilityStudyReserved3569"/>
   <int value="3570" label="IdentifiabilityStudyReserved3570"/>
