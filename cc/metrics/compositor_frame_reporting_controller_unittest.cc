@@ -30,7 +30,8 @@ class TestCompositorFrameReportingController
     : public CompositorFrameReportingController {
  public:
   TestCompositorFrameReportingController()
-      : CompositorFrameReportingController(/*should_report_metrics=*/true) {}
+      : CompositorFrameReportingController(/*should_report_metrics=*/true,
+                                           /*layer_tree_host_id=*/1) {}
 
   TestCompositorFrameReportingController(
       const TestCompositorFrameReportingController& controller) = delete;

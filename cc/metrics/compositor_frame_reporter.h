@@ -14,6 +14,7 @@
 #include "base/optional.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
+#include "cc/base/devtools_instrumentation.h"
 #include "cc/cc_export.h"
 #include "cc/metrics/begin_main_frame_metrics.h"
 #include "cc/metrics/event_metrics.h"
@@ -147,7 +148,8 @@ class CC_EXPORT CompositorFrameReporter {
                           const viz::BeginFrameArgs& args,
                           LatencyUkmReporter* latency_ukm_reporter,
                           bool should_report_metrics,
-                          SmoothThread smooth_thread);
+                          SmoothThread smooth_thread,
+                          int layer_tree_host_id);
   ~CompositorFrameReporter();
 
   CompositorFrameReporter(const CompositorFrameReporter& reporter) = delete;
@@ -324,6 +326,7 @@ class CC_EXPORT CompositorFrameReporter {
   bool has_partial_update_ = false;
 
   const SmoothThread smooth_thread_;
+  const int layer_tree_host_id_;
 
   // If this is a cloned pointer, then |cloned_from_| is a weak pointer to the
   // original reporter this was cloned from.

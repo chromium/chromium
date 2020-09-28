@@ -45,7 +45,8 @@ class FrameSequenceTrackerTest : public testing::Test {
   FrameSequenceTrackerTest()
       : compositor_frame_reporting_controller_(
             std::make_unique<CompositorFrameReportingController>(
-                /*should_report_metrics=*/true)),
+                /*should_report_metrics=*/true,
+                /*layer_tree_host_id=*/1)),
         collection_(/*is_single_threaded=*/false,
                     compositor_frame_reporting_controller_.get()) {
     tracker_ = collection_.StartScrollSequence(

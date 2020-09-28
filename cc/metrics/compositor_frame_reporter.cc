@@ -294,12 +294,14 @@ CompositorFrameReporter::CompositorFrameReporter(
     const viz::BeginFrameArgs& args,
     LatencyUkmReporter* latency_ukm_reporter,
     bool should_report_metrics,
-    SmoothThread smooth_thread)
+    SmoothThread smooth_thread,
+    int layer_tree_host_id)
     : should_report_metrics_(should_report_metrics),
       args_(args),
       active_trackers_(active_trackers),
       latency_ukm_reporter_(latency_ukm_reporter),
-      smooth_thread_(smooth_thread) {}
+      smooth_thread_(smooth_thread),
+      layer_tree_host_id_(layer_tree_host_id) {}
 
 std::unique_ptr<CompositorFrameReporter>
 CompositorFrameReporter::CopyReporterAtBeginImplStage() {
@@ -311,7 +313,7 @@ CompositorFrameReporter::CopyReporterAtBeginImplStage() {
   }
   auto new_reporter = std::make_unique<CompositorFrameReporter>(
       active_trackers_, args_, latency_ukm_reporter_, should_report_metrics_,
-      smooth_thread_);
+      smooth_thread_, layer_tree_host_id_);
   new_reporter->did_finish_impl_frame_ = did_finish_impl_frame_;
   new_reporter->impl_frame_finish_time_ = impl_frame_finish_time_;
   new_reporter->main_frame_abort_time_ = main_frame_abort_time_;
@@ -843,6 +845,11 @@ void CompositorFrameReporter::ReportEventLatencyHistogram(
 void CompositorFrameReporter::ReportCompositorLatencyTraceEvents() const {
   if (stage_history_.empty())
     return;
+
+  if (IsDroppedFrameAffectingSmoothness()) {
+    devtools_instrumentation::DidDropSmoothnessFrame(layer_tree_host_id_,
+                                                     args_.frame_time);
+  }
 
   const auto trace_track = perfetto::Track(reinterpret_cast<uint64_t>(this));
   TRACE_EVENT_BEGIN(

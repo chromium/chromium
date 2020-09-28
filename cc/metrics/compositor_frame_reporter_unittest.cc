@@ -33,7 +33,8 @@ class CompositorFrameReporterTest : public testing::Test {
             viz::BeginFrameArgs(),
             nullptr,
             /*should_report_metrics=*/true,
-            CompositorFrameReporter::SmoothThread::kSmoothBoth)) {
+            CompositorFrameReporter::SmoothThread::kSmoothBoth,
+            /*layer_tree_host_id=*/1)) {
     pipeline_reporter_->set_tick_clock(&test_tick_clock_);
     AdvanceNowByMs(1);
   }

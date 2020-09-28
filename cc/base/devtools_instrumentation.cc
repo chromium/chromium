@@ -43,6 +43,7 @@ const char kBeginFrame[] = "BeginFrame";
 const char kNeedsBeginFrameChanged[] = "NeedsBeginFrameChanged";
 const char kActivateLayerTree[] = "ActivateLayerTree";
 const char kRequestMainThreadFrame[] = "RequestMainThreadFrame";
+const char kDroppedFrame[] = "DroppedFrame";
 const char kBeginMainThreadFrame[] = "BeginMainThreadFrame";
 const char kDrawFrame[] = "DrawFrame";
 const char kCompositeLayers[] = "CompositeLayers";

@@ -389,8 +389,8 @@ LayerTreeHostImpl::LayerTreeHostImpl(
       current_begin_frame_tracker_(FROM_HERE),
       compositor_frame_reporting_controller_(
           std::make_unique<CompositorFrameReportingController>(
-              /*should_report_metrics=*/!settings
-                  .single_thread_proxy_scheduler)),
+              /*should_report_metrics=*/!settings.single_thread_proxy_scheduler,
+              id)),
       settings_(settings),
       is_synchronous_single_threaded_(!task_runner_provider->HasImplThread() &&
                                       !settings_.single_thread_proxy_scheduler),

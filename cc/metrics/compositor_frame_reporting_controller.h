@@ -41,7 +41,8 @@ class CC_EXPORT CompositorFrameReportingController {
     kNumPipelineStages
   };
 
-  explicit CompositorFrameReportingController(bool should_report_metrics);
+  CompositorFrameReportingController(bool should_report_metrics,
+                                     int layer_tree_host_id);
   virtual ~CompositorFrameReportingController();
 
   CompositorFrameReportingController(
@@ -119,6 +120,8 @@ class CC_EXPORT CompositorFrameReportingController {
   CompositorFrameReporter::SmoothThread GetSmoothThread() const;
 
   const bool should_report_metrics_;
+  const int layer_tree_host_id_;
+
   viz::BeginFrameId last_submitted_frame_id_;
 
   bool next_activate_has_invalidation_ = false;

@@ -38,6 +38,7 @@ CC_BASE_EXPORT extern const char kBeginFrame[];
 CC_BASE_EXPORT extern const char kNeedsBeginFrameChanged[];
 CC_BASE_EXPORT extern const char kActivateLayerTree[];
 CC_BASE_EXPORT extern const char kRequestMainThreadFrame[];
+CC_BASE_EXPORT extern const char kDroppedFrame[];
 CC_BASE_EXPORT extern const char kBeginMainThreadFrame[];
 CC_BASE_EXPORT extern const char kDrawFrame[];
 CC_BASE_EXPORT extern const char kCompositeLayers[];
@@ -190,6 +191,15 @@ inline void CC_BASE_EXPORT DidRequestMainThreadFrame(int layer_tree_host_id) {
   TRACE_EVENT_INSTANT1(
       internal::CategoryName::kTimelineFrame, internal::kRequestMainThreadFrame,
       TRACE_EVENT_SCOPE_THREAD, internal::kLayerTreeId, layer_tree_host_id);
+}
+
+inline void CC_BASE_EXPORT
+DidDropSmoothnessFrame(int layer_tree_host_id,
+                       base::TimeTicks dropped_frame_timestamp) {
+  TRACE_EVENT_INSTANT_WITH_TIMESTAMP1(
+      internal::CategoryName::kTimelineFrame, internal::kDroppedFrame,
+      TRACE_EVENT_SCOPE_THREAD, dropped_frame_timestamp, internal::kLayerTreeId,
+      layer_tree_host_id);
 }
 
 inline std::unique_ptr<base::trace_event::ConvertableToTraceFormat>

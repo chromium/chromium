@@ -20,8 +20,10 @@ using FrameTerminationStatus = CompositorFrameReporter::FrameTerminationStatus;
 }  // namespace
 
 CompositorFrameReportingController::CompositorFrameReportingController(
-    bool should_report_metrics)
+    bool should_report_metrics,
+    int layer_tree_host_id)
     : should_report_metrics_(should_report_metrics),
+      layer_tree_host_id_(layer_tree_host_id),
       latency_ukm_reporter_(std::make_unique<LatencyUkmReporter>()) {}
 
 CompositorFrameReportingController::~CompositorFrameReportingController() {
@@ -71,7 +73,7 @@ void CompositorFrameReportingController::WillBeginImplFrame(
   }
   auto reporter = std::make_unique<CompositorFrameReporter>(
       active_trackers_, args, latency_ukm_reporter_.get(),
-      should_report_metrics_, GetSmoothThread());
+      should_report_metrics_, GetSmoothThread(), layer_tree_host_id_);
   reporter->set_tick_clock(tick_clock_);
   reporter->StartStage(StageType::kBeginImplFrameToSendBeginMainFrame,
                        begin_time);
@@ -98,7 +100,7 @@ void CompositorFrameReportingController::WillBeginMainFrame(
     // deadline yet). So will start a new reporter at BeginMainFrame.
     auto reporter = std::make_unique<CompositorFrameReporter>(
         active_trackers_, args, latency_ukm_reporter_.get(),
-        should_report_metrics_, GetSmoothThread());
+        should_report_metrics_, GetSmoothThread(), layer_tree_host_id_);
     reporter->set_tick_clock(tick_clock_);
     reporter->StartStage(StageType::kSendBeginMainFrameToCommit, Now());
     reporter->SetDroppedFrameCounter(dropped_frame_counter_);
