@@ -2745,7 +2745,7 @@ In Incognito, your activity might still be visible to websites that you visit, y
         Watch next video
       </message>
       <message name="IDS_VIDEO_TUTORIALS_CHANGE_LANGUAGE" desc="Button text in the video player prompting user to change the language.">
-        Change <ph name="LANGUAGE">%1$s<ex>Hindi</ex></ph>?
+        Change
       </message>
       <message name="IDS_VIDEO_TUTORIALS_ACCESSIBILITY_SHARE" desc="Accessibility text in the video player describing that users can tap on this icon to share the video.">
         Share

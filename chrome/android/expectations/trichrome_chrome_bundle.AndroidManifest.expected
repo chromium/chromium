@@ -487,11 +487,6 @@
         android:noHistory="true"
         android:theme="@style/Theme.AppCompat">
     </activity>  # DIFF-ANCHOR: 43bfa5de
-    <activity  # DIFF-ANCHOR: bf27023e
-        android:exported="false"
-        android:name="org.chromium.chrome.browser.video_tutorials.VideoPlayerActivity"
-        android:theme="@style/Theme.Chromium.Activity.Fullscreen">
-    </activity>  # DIFF-ANCHOR: bf27023e
     <activity  # DIFF-ANCHOR: b007dcaa
         android:enableVrMode="@string/gvr_vr_mode_component"
         android:excludeFromRecents="true"
