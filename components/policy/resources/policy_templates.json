@@ -10405,7 +10405,11 @@
       'owners': ['szym@chromium.org', 'pmarko@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
-      'supported_on': ['chrome.*:25-'],
+      'supported_on': [
+        'android:73-',
+        'chrome.*:25-',
+        'chrome_os:73-',
+      ],
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
@@ -10417,6 +10421,8 @@
       'desc': '''Controls whether the built-in DNS client is used in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>.
 
       This does not affect which DNS servers are used; just the software stack which is used to communicate with them. For example if the operating system is configured to use an enterprise DNS server, that same server would be used by the built-in DNS client. It is however possible that the built-in DNS client will address servers in different ways by using more modern DNS-related protocols such as DNS-over-TLS.
+
+      This policy has no effect on DNS-over-HTTPS. Please see the <ph name="DNS_OVER_HTTPS_MODE_POLICY_NAME">DnsOverHttpsMode</ph> policy to change that behavior.
 
       If this policy is set to true, the built-in DNS client will be used, if available.
 
@@ -10453,7 +10459,11 @@
           'caption': '''Enable DNS-over-HTTPS without insecure fallback''',
         }
       ],
-      'supported_on': ['chrome_os:78-', 'chrome.*:78-'],
+      'supported_on': [
+        'android:85-',
+        'chrome_os:78-',
+        'chrome.*:78-',
+      ],
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
@@ -10480,7 +10490,11 @@
       'owners': ['dalyk@chromium.org', 'ericorth@chromium.org', 'bingler@chromium.org'],
       'type': 'string',
       'schema': { 'type': 'string' },
-      'supported_on': ['chrome_os:80-', 'chrome.*:80-'],
+      'supported_on': [
+        'android:85-',
+        'chrome_os:80-',
+        'chrome.*:80-',
+      ],
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
