@@ -12,6 +12,7 @@
 namespace ash {
 
 // Appearance.
+constexpr int kHoldingSpaceBubbleWidth = 360;
 constexpr gfx::Insets kHoldingSpaceContainerPadding(16);
 constexpr int kHoldingSpaceContainerChildSpacing = 16;
 constexpr int kHoldingSpaceContainerSpacing = 8;
