@@ -7,12 +7,6 @@
 namespace chromeos {
 namespace platform_keys {
 
-KeyPermissionsService::PermissionsForExtension::PermissionsForExtension() =
-    default;
-
-KeyPermissionsService::PermissionsForExtension::~PermissionsForExtension() =
-    default;
-
 KeyPermissionsService::KeyPermissionsService() = default;
 
 KeyPermissionsService::~KeyPermissionsService() = default;

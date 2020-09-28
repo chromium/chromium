@@ -15,7 +15,8 @@
 #include "chrome/browser/chromeos/arc/enterprise/cert_store/arc_cert_store_bridge.h"
 #include "chrome/browser/chromeos/arc/session/arc_service_launcher.h"
 #include "chrome/browser/chromeos/login/test/local_policy_test_server_mixin.h"
-#include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_service.h"
+#include "chrome/browser/chromeos/platform_keys/key_permissions/extension_key_permissions_service.h"
+#include "chrome/browser/chromeos/platform_keys/key_permissions/extension_key_permissions_service_factory.h"
 #include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_service_factory.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
 #include "chrome/browser/chromeos/policy/user_policy_test_helper.h"
@@ -213,10 +214,12 @@ class ArcCertStoreBridgeTest : public MixinBasedInProcessBrowserTest {
 
     {
       base::RunLoop run_loop;
-      key_permissions_service->GetPermissionsForExtension(
-          kFakeExtensionId,
-          base::BindOnce(&ArcCertStoreBridgeTest::GotPermissionsForExtension,
-                         base::Unretained(this), run_loop.QuitClosure()));
+      chromeos::platform_keys::ExtensionKeyPermissionsServiceFactory::
+          GetForBrowserContextAndExtension(
+              base::BindOnce(
+                  &ArcCertStoreBridgeTest::GotPermissionsForExtension,
+                  base::Unretained(this), run_loop.QuitClosure()),
+              browser()->profile(), kFakeExtensionId, key_permissions_service);
       run_loop.Run();
     }
   }
@@ -255,31 +258,32 @@ class ArcCertStoreBridgeTest : public MixinBasedInProcessBrowserTest {
   net::ScopedCERTCertificate client_cert2_;
 
  private:
-  // Register only client_cert1_ for corporate usage to test that
-  // client_cert2_ is not allowed.
-  void GotPermissionsForExtension(
-      const base::Closure& done_callback,
-      std::unique_ptr<chromeos::platform_keys::KeyPermissionsService::
-                          PermissionsForExtension> permissions_for_ext) {
-    auto* permissions_for_ext_unowned = permissions_for_ext.get();
-    std::string client_cert1_spki(
-        client_cert1_->derPublicKey.data,
-        client_cert1_->derPublicKey.data + client_cert1_->derPublicKey.len);
-    permissions_for_ext_unowned->RegisterKeyForCorporateUsage(
-        client_cert1_spki,
-        base::BindOnce(
-            &ArcCertStoreBridgeTest::OnKeyRegisteredForCorporateUsage,
-            base::Unretained(this), std::move(permissions_for_ext),
-            done_callback));
-  }
-
   void OnKeyRegisteredForCorporateUsage(
-      std::unique_ptr<chromeos::platform_keys::KeyPermissionsService::
-                          PermissionsForExtension> permissions_for_ext,
+      std::unique_ptr<chromeos::platform_keys::ExtensionKeyPermissionsService>
+          extension_key_permissions_service,
       const base::Closure& done_callback,
       chromeos::platform_keys::Status status) {
     ASSERT_EQ(status, chromeos::platform_keys::Status::kSuccess);
     done_callback.Run();
+  }
+
+  // Register only client_cert1_ for corporate usage to test that
+  // client_cert2_ is not allowed.
+  void GotPermissionsForExtension(
+      const base::Closure& done_callback,
+      std::unique_ptr<chromeos::platform_keys::ExtensionKeyPermissionsService>
+          extension_key_permissions_service) {
+    auto* extension_key_permissions_service_unowned =
+        extension_key_permissions_service.get();
+    std::string client_cert1_spki(
+        client_cert1_->derPublicKey.data,
+        client_cert1_->derPublicKey.data + client_cert1_->derPublicKey.len);
+    extension_key_permissions_service_unowned->RegisterKeyForCorporateUsage(
+        client_cert1_spki,
+        base::BindOnce(
+            &ArcCertStoreBridgeTest::OnKeyRegisteredForCorporateUsage,
+            base::Unretained(this),
+            std::move(extension_key_permissions_service), done_callback));
   }
 
   void SetUpTestClientCerts(const base::Closure& done_callback,

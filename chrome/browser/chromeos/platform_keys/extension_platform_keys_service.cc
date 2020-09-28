@@ -16,6 +16,8 @@
 #include "base/optional.h"
 #include "base/stl_util.h"
 #include "base/values.h"
+#include "chrome/browser/chromeos/platform_keys/key_permissions/extension_key_permissions_service.h"
+#include "chrome/browser/chromeos/platform_keys/key_permissions/extension_key_permissions_service_factory.h"
 #include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_service.h"
 #include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_service_factory.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
@@ -103,8 +105,8 @@ class ExtensionPlatformKeysService::GenerateKeyTask : public Task {
   std::string public_key_spki_der_;
   const std::string extension_id_;
   GenerateKeyCallback callback_;
-  std::unique_ptr<platform_keys::KeyPermissionsService::PermissionsForExtension>
-      extension_permissions_;
+  std::unique_ptr<platform_keys::ExtensionKeyPermissionsService>
+      extension_key_permissions_service_;
   ExtensionPlatformKeysService* const service_;
 
  private:
@@ -146,9 +148,12 @@ class ExtensionPlatformKeysService::GenerateKeyTask : public Task {
 
   // Gets the permissions for the extension with id |extension_id|.
   void GetExtensionPermissions() {
-    service_->key_permissions_service_->GetPermissionsForExtension(
-        extension_id_, base::BindOnce(&GenerateKeyTask::GotPermissions,
-                                      base::Unretained(this)));
+    platform_keys::ExtensionKeyPermissionsServiceFactory::
+        GetForBrowserContextAndExtension(
+            base::BindOnce(&GenerateKeyTask::GotPermissions,
+                           base::Unretained(this)),
+            service_->browser_context_, extension_id_,
+            service_->key_permissions_service_);
   }
 
   void OnKeyRegisteredForCorporateUsage(platform_keys::Status status) {
@@ -168,17 +173,17 @@ class ExtensionPlatformKeysService::GenerateKeyTask : public Task {
   }
 
   void UpdatePermissionsAndCallBack() {
-    extension_permissions_->RegisterKeyForCorporateUsage(
+    extension_key_permissions_service_->RegisterKeyForCorporateUsage(
         public_key_spki_der_,
         base::BindOnce(&GenerateKeyTask::OnKeyRegisteredForCorporateUsage,
                        base::Unretained(this)));
   }
 
   void GotPermissions(
-      std::unique_ptr<
-          platform_keys::KeyPermissionsService::PermissionsForExtension>
-          extension_permissions) {
-    extension_permissions_ = std::move(extension_permissions);
+      std::unique_ptr<platform_keys::ExtensionKeyPermissionsService>
+          extension_key_permissions_service) {
+    extension_key_permissions_service_ =
+        std::move(extension_key_permissions_service);
     DoStep();
   }
 
@@ -312,16 +317,18 @@ class ExtensionPlatformKeysService::SignTask : public Task {
   }
 
   void GetExtensionPermissions() {
-    service_->key_permissions_service_->GetPermissionsForExtension(
-        extension_id_,
-        base::BindOnce(&SignTask::GotPermissions, base::Unretained(this)));
+    platform_keys::ExtensionKeyPermissionsServiceFactory::
+        GetForBrowserContextAndExtension(
+            base::BindOnce(&SignTask::GotPermissions, base::Unretained(this)),
+            service_->browser_context_, extension_id_,
+            service_->key_permissions_service_);
   }
 
   void GotPermissions(
-      std::unique_ptr<
-          platform_keys::KeyPermissionsService::PermissionsForExtension>
-          extension_permissions) {
-    extension_permissions_ = std::move(extension_permissions);
+      std::unique_ptr<platform_keys::ExtensionKeyPermissionsService>
+          extension_key_permissions_service) {
+    extension_key_permissions_service_ =
+        std::move(extension_key_permissions_service);
     DoStep();
   }
 
@@ -335,7 +342,7 @@ class ExtensionPlatformKeysService::SignTask : public Task {
       return;
     }
 
-    extension_permissions_->CanUseKeyForSigning(
+    extension_key_permissions_service_->CanUseKeyForSigning(
         public_key_spki_der_,
         base::BindOnce(&SignTask::OnCanUseKeyForSigningKnown,
                        base::Unretained(this)));
@@ -354,7 +361,7 @@ class ExtensionPlatformKeysService::SignTask : public Task {
 
   // Updates the signing permissions for |public_key_spki_der_|.
   void UpdateSignPermissions() {
-    extension_permissions_->SetKeyUsedForSigning(
+    extension_key_permissions_service_->SetKeyUsedForSigning(
         public_key_spki_der_,
         base::BindOnce(&SignTask::OnSetKeyUsedForSigningDone,
                        base::Unretained(this)));
@@ -418,8 +425,8 @@ class ExtensionPlatformKeysService::SignTask : public Task {
   const platform_keys::HashAlgorithm hash_algorithm_;
   const std::string extension_id_;
   const SignCallback callback_;
-  std::unique_ptr<platform_keys::KeyPermissionsService::PermissionsForExtension>
-      extension_permissions_;
+  std::unique_ptr<platform_keys::ExtensionKeyPermissionsService>
+      extension_key_permissions_service_;
   ExtensionPlatformKeysService* const service_;
   base::WeakPtrFactory<SignTask> weak_factory_{this};
 
@@ -513,16 +520,18 @@ class ExtensionPlatformKeysService::SelectTask : public Task {
   }
 
   void GetExtensionPermissions() {
-    service_->key_permissions_service_->GetPermissionsForExtension(
-        extension_id_,
-        base::BindOnce(&SelectTask::GotPermissions, base::Unretained(this)));
+    platform_keys::ExtensionKeyPermissionsServiceFactory::
+        GetForBrowserContextAndExtension(
+            base::BindOnce(&SelectTask::GotPermissions, base::Unretained(this)),
+            service_->browser_context_, extension_id_,
+            service_->key_permissions_service_);
   }
 
   void GotPermissions(
-      std::unique_ptr<
-          platform_keys::KeyPermissionsService::PermissionsForExtension>
-          extension_permissions) {
-    extension_permissions_ = std::move(extension_permissions);
+      std::unique_ptr<platform_keys::ExtensionKeyPermissionsService>
+          extension_key_permissions_service) {
+    extension_key_permissions_service_ =
+        std::move(extension_key_permissions_service);
     DoStep();
   }
 
@@ -590,7 +599,7 @@ class ExtensionPlatformKeysService::SelectTask : public Task {
     const std::string public_key_spki_der(
         platform_keys::GetSubjectPublicKeyInfo(certificate));
 
-    extension_permissions_->CanUseKeyForSigning(
+    extension_key_permissions_service_->CanUseKeyForSigning(
         public_key_spki_der,
         base::BindOnce(&SelectTask::OnKeySigningPermissionKnown,
                        base::Unretained(this), public_key_spki_der,
@@ -605,7 +614,10 @@ class ExtensionPlatformKeysService::SelectTask : public Task {
       matches_.push_back(certificate);
       DoStep();
     } else if (interactive_) {
-      service_->key_permissions_service_->CanUserGrantPermissionForKey(
+      platform_keys::KeyPermissionsService* const key_permissions_service =
+          platform_keys::KeyPermissionsServiceFactory::GetForBrowserContext(
+              service_->browser_context_);
+      key_permissions_service->CanUserGrantPermissionForKey(
           public_key_spki_der,
           base::BindOnce(&SelectTask::OnAbilityToGrantPermissionKnown,
                          base::Unretained(this), std::move(certificate)));
@@ -673,7 +685,7 @@ class ExtensionPlatformKeysService::SelectTask : public Task {
     }
     const std::string public_key_spki_der(
         platform_keys::GetSubjectPublicKeyInfo(selected_cert_));
-    extension_permissions_->SetUserGrantedPermission(
+    extension_key_permissions_service_->SetUserGrantedPermission(
         public_key_spki_der, base::BindOnce(&SelectTask::OnPermissionsUpdated,
                                             base::Unretained(this)));
   }
@@ -713,8 +725,8 @@ class ExtensionPlatformKeysService::SelectTask : public Task {
   const std::string extension_id_;
   const SelectCertificatesCallback callback_;
   content::WebContents* const web_contents_;
-  std::unique_ptr<platform_keys::KeyPermissionsService::PermissionsForExtension>
-      extension_permissions_;
+  std::unique_ptr<platform_keys::ExtensionKeyPermissionsService>
+      extension_key_permissions_service_;
   ExtensionPlatformKeysService* const service_;
   base::WeakPtrFactory<SelectTask> weak_factory_{this};
 
@@ -739,7 +751,6 @@ ExtensionPlatformKeysService::ExtensionPlatformKeysService(
           chromeos::platform_keys::KeyPermissionsServiceFactory::
               GetForBrowserContext(browser_context)) {
   DCHECK(platform_keys_service_);
-  DCHECK(key_permissions_service_);
   DCHECK(browser_context);
   DCHECK(state_store);
 }

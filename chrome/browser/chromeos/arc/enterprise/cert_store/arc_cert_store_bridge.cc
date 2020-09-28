@@ -17,6 +17,7 @@
 #include "base/containers/queue.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
+#include "chrome/browser/chromeos/platform_keys/key_permissions/extension_key_permissions_service.h"
 #include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_service_factory.h"
 #include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_service_impl.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
@@ -401,7 +402,7 @@ void ArcCertStoreBridge::UpdateFromKeyPermissionsPolicy() {
   DVLOG(1) << "ArcCertStoreBridge::UpdateFromKeyPermissionsPolicy";
 
   std::vector<std::string> app_ids =
-      chromeos::platform_keys::KeyPermissionsServiceImpl::
+      chromeos::platform_keys::ExtensionKeyPermissionsService::
           GetCorporateKeyUsageAllowedAppIds(policy_service_);
   std::vector<std::string> permissions;
   for (const auto& app_id : app_ids) {
