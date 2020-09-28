@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-console.log('[PiexLoader] wasm mode loaded');
+console.log('[PiexLoader] loaded');
 
 /**
  * Declares the piex-wasm Module interface. The Module has many interfaces
@@ -25,33 +25,33 @@ let PiexWasmModule;
 const PiexModule = window['Module'] || {};
 
 /**
- * Set true only if the wasm Module.onAbort() handler is called.
+ * Set true only if the Module.onAbort() handler is called.
  * @type {boolean}
  */
-let wasmFailed = false;
+let piexFailed = false;
 
 /**
- * Installs an (Emscripten) wasm Module.onAbort handler, that records that
- * the Module has failed and re-throws the error.
+ * Installs an (Emscripten) Module.onAbort handler. Record that the Module
+ * has failed and re-throw the error.
  * @throws {!Error|string}
  */
 PiexModule.onAbort = (error) => {
-  wasmFailed = true;
+  piexFailed = true;
   throw error;
 };
 
 /**
- * Module failure recovery: if wasmFailed is set via onAbort due to OOM in
+ * Module failure recovery: if piexFailed is set via onAbort due to OOM in
  * the C++ for example, or the Module failed to load or call run, then the
- * wasm Module is in a broken, non-functional state.
+ * Module is in a broken, non-functional state.
  *
- * Re-loading the page is the only reliable way to attempt to recover from
- * broken Module state.
+ * Loading the entire page is the only reliable way to recover from broken
+ * Module state. Log the error, and return true to tell caller to initiate
+ * failure recovery steps.
  */
-function wasmModuleFailed() {
-  if (wasmFailed || !PiexModule.calledRun) {
-    console.error('[PiexLoader] wasmModuleFailed');
-    setTimeout(chrome.runtime.reload, 0);
+function piexModuleFailed() {
+  if (piexFailed || !PiexModule.calledRun) {
+    console.error('[PiexLoader] piex wasm module failed');
     return true;
   }
 }
@@ -104,15 +104,6 @@ function PiexLoaderResponse(data) {
    * @const
    */
   this.ifd = data.ifd || null;
-}
-
-/**
- * Creates a PiexLoader for reading RAW image file information.
- * @constructor
- * @struct
- */
-function PiexLoader() {
-  // TODO(crbug.com/1039141): make this an ES6 class.
 }
 
 /**
@@ -468,16 +459,32 @@ class ImageBuffer {
 }
 
 /**
- * Starts to load RAW image.
+ * Creates a PiexLoader.
+ * @constructor
+ * @struct
+ */
+function PiexLoader() {}
+
+/**
+ * Loads a RAW image. Returns the image metadata and the image thumbnail in a
+ * PiexLoaderResponse.
+ *
+ * piexModuleFailed() returns true if the Module is in an unrecoverable error
+ * state. This is rare, but possible, and the only reliable way to recover is
+ * to reload the page. Callback |onPiexModuleFailed| is used to indicate that
+ * the caller should initiate failure recovery steps.
+ *
  * @param {string} url
+ * @param {!function()} onPiexModuleFailed
  * @return {!Promise<!PiexLoaderResponse>}
  */
-PiexLoader.prototype.load = function(url) {
+PiexLoader.prototype.load = function(url, onPiexModuleFailed) {
   let imageBuffer;
 
   return readFromFileSystem(url)
       .then((buffer) => {
-        if (wasmModuleFailed() === true) {
+        if (piexModuleFailed() === true) {
+          // Just reject here: handle in the .catch() clause below.
           return Promise.reject('piex wasm module failed');
         }
         imageBuffer = new ImageBuffer(buffer);
@@ -488,7 +495,8 @@ PiexLoader.prototype.load = function(url) {
         return new PiexLoaderResponse(imageBuffer.preview(result));
       })
       .catch((error) => {
-        if (wasmModuleFailed() === true) {
+        if (piexModuleFailed() === true) {
+          setTimeout(onPiexModuleFailed, 0);
           return Promise.reject('piex wasm module failed');
         }
         imageBuffer && imageBuffer.close();

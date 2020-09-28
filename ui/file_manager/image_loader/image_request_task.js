@@ -287,13 +287,16 @@ ImageRequestTask.prototype.getExternalThumbnail = function(url, onFailure) {
 };
 
 /**
- * Downloads an image directly or for remote resources using the XmlHttpRequest.
+ * Loads |this.image_| with the |this.request_.url| source or the thumbnail
+ * image of the source.
  *
  * @param {function()} onSuccess Success callback.
  * @param {function()} onFailure Failure callback.
  * @private
  */
 ImageRequestTask.prototype.downloadOriginal_ = function(onSuccess, onFailure) {
+  // Load methods below set |this.image_.src|. Call revokeObjectURL(src) to
+  // release resources if the image src was created with createObjectURL().
   this.image_.onload = function() {
     URL.revokeObjectURL(this.image_.src);
     onSuccess();
@@ -303,18 +306,22 @@ ImageRequestTask.prototype.downloadOriginal_ = function(onSuccess, onFailure) {
     onFailure();
   }.bind(this);
 
-  // Download data urls directly since they are not supported by XmlHttpRequest.
+  // Load dataURL sources directly.
   const dataUrlMatches = this.request_.url.match(/^data:([^,;]*)[,;]/);
   if (dataUrlMatches) {
     this.image_.src = this.request_.url;
     this.contentType_ = dataUrlMatches[1];
     return;
   }
+
+  // Load Drive source thumbnail.
   const drivefsUrlMatches = this.request_.url.match(/^drivefs:(.*)/);
   if (drivefsUrlMatches) {
     this.getExternalThumbnail(drivefsUrlMatches[1], onFailure);
     return;
   }
+
+  // Load PDF source thumbnail.
   if (this.request_.url.endsWith('.pdf')) {
     this.getExternalThumbnail(this.request_.url, onFailure);
     return;
@@ -322,9 +329,9 @@ ImageRequestTask.prototype.downloadOriginal_ = function(onSuccess, onFailure) {
 
   const fileType = FileType.getTypeForName(this.request_.url);
 
-  // Load RAW images by using Piex loader instead of XHR.
+  // Load RAW image source thumbnail.
   if (fileType.type === 'raw') {
-    this.piexLoader_.load(this.request_.url)
+    this.piexLoader_.load(this.request_.url, chrome.runtime.reload)
         .then(
             function(data) {
               this.request_.orientation = data.orientation;
@@ -335,13 +342,13 @@ ImageRequestTask.prototype.downloadOriginal_ = function(onSuccess, onFailure) {
               this.image_.src = URL.createObjectURL(blob);
             }.bind(this),
             function() {
-              // The error has already been logged in PiexLoader.
+              // PiexLoader calls console.error on errors.
               onFailure();
             });
     return;
   }
 
-  // Load video thumbnails by using video tag instead of XHR.
+  // Load video source thumbnail.
   if (fileType.type === 'video') {
     this.createVideoThumbnailUrl_(this.request_.url)
         .then(function(url) {
@@ -354,16 +361,11 @@ ImageRequestTask.prototype.downloadOriginal_ = function(onSuccess, onFailure) {
     return;
   }
 
-  // Fetch the image via XHR and parse it.
-  const parseImage = function(contentType, blob) {
-    if (contentType) {
-      this.contentType_ = contentType;
-    }
-    this.image_.src = URL.createObjectURL(blob);
-  }.bind(this);
-
-  // Request raw data via XHR.
-  this.load(this.request_.url, parseImage, onFailure);
+  // Load the source directly.
+  this.load(this.request_.url, (contentType, blob) => {
+    this.image_.src = blob ? URL.createObjectURL(blob) : '!';
+    this.contentType_ = contentType || null;
+  }, onFailure);
 };
 
 /**
