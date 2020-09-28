@@ -336,6 +336,27 @@ TEST_F(PasswordManagerPresenterTest,
 }
 
 TEST_F(PasswordManagerPresenterTest,
+       ChangeSavedPasswordBySortKey_ChangeUsernameAndPasswordForAllEntities) {
+  char kMobileExampleCom[] = "https://m.example.com/";
+  AddPasswordEntry(GURL(kExampleCom), kUsername, kPassword);
+  AddPasswordEntry(GURL(kMobileExampleCom), kUsername, kPassword);
+  EXPECT_CALL(GetUIController(), SetPasswordList(SizeIs(1)));
+  EXPECT_CALL(GetUIController(), SetPasswordExceptionList(IsEmpty()));
+  UpdatePasswordLists();
+  EXPECT_THAT(GetUsernamesAndPasswords(GetStoredPasswordsForRealm(kExampleCom)),
+              ElementsAre(Pair(kUsername, kPassword)));
+  testing::Mock::VerifyAndClearExpectations(&GetUIController());
+
+  ChangeSavedPasswordBySortKey(kExampleCom, kUsername, kPassword, kNewUser,
+                               kNewPass);
+  EXPECT_THAT(GetUsernamesAndPasswords(GetStoredPasswordsForRealm(kExampleCom)),
+              ElementsAre(Pair(kNewUser, kNewPass)));
+  EXPECT_THAT(
+      GetUsernamesAndPasswords(GetStoredPasswordsForRealm(kMobileExampleCom)),
+      ElementsAre(Pair(kNewUser, kNewPass)));
+}
+
+TEST_F(PasswordManagerPresenterTest,
        ChangeSavedPasswordBySortKey_RejectSameUsernameForSameRealm) {
   AddPasswordEntry(GURL(kExampleCom), kUsername, kPassword);
   AddPasswordEntry(GURL(kExampleCom), kUsername2, kPassword2);

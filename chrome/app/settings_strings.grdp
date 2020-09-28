@@ -482,6 +482,9 @@
   <message name="IDS_SETTINGS_PASSWORD_EDIT_FOOTNOTE" desc="A footnote for the dialog which allows the user to edit a saved password.">
     Make sure the password you are saving matches your password for <ph name="WEBSITE">$1<ex>airbnb.com</ex></ph>
   </message>
+  <message name="IDS_SETTINGS_PASSWORD_USERNAME_ALREADY_USED" desc="An error message when user tried editing the username to a value which is already used for the same site.">
+    You already saved this username for this site
+  </message>
   <message name="IDS_SETTINGS_PASSWORD_COPY" desc="Label for a context menu item that allows to copy the selected password into clipboard.">
     Copy password
   </message>

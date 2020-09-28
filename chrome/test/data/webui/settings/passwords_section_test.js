@@ -193,7 +193,7 @@ function detailsDialogPartsAreShownCorrectly(passwordDialog) {
 async function changeSavedPasswordTestHelper(
     editDialog, entryIds, passwordManager) {
   const PASSWORD1 = 'hello_world';
-
+  const USERNAME1 = 'new_username';
   editDialog.set('entry.password', PASSWORD1);
   assertEquals(PASSWORD1, editDialog.$.passwordInput.value);
 
@@ -203,6 +203,7 @@ async function changeSavedPasswordTestHelper(
   assertTrue(editDialog.$.actionButton.disabled);
 
   const PASSWORD2 = 'hello_world_2';
+  editDialog.$.usernameInput.value = USERNAME1;
   editDialog.$.passwordInput.value = PASSWORD2;
   assertFalse(editDialog.$.passwordInput.invalid);
   assertFalse(editDialog.$.actionButton.disabled);
@@ -210,8 +211,9 @@ async function changeSavedPasswordTestHelper(
   editDialog.$.actionButton.click();
 
   // Check that the changeSavedPassword is called with the right arguments.
-  const {ids, newPassword} =
+  const {ids, newUsername, newPassword} =
       await passwordManager.whenCalled('changeSavedPassword');
+  assertEquals(USERNAME1, newUsername);
   assertEquals(PASSWORD2, newPassword);
 
   assertEquals(entryIds.length, ids.length);
@@ -1158,6 +1160,26 @@ suite('PasswordsSection', function() {
     changeSavedPasswordTestHelper(
         editDialog, [multiEntry.accountId, multiEntry.deviceId],
         passwordManager);
+  });
+
+  test('editDialogChangeUsernameFailsWhenReused', async function() {
+    loadTimeData.overrideValues({editPasswordsInSettings: true});
+
+    const accountEntry = createMultiStorePasswordEntry(
+        {url: 'goo.gl', username: 'bart', accountId: 0});
+    const editDialog = elementFactory.createPasswordEditDialog(accountEntry);
+    editDialog.usernamesForSameOrigin = new Set(['mark', 'bart']);
+
+    editDialog.$.usernameInput.value = 'mark';
+    assertTrue(editDialog.$.usernameInput.invalid);
+    assertTrue(editDialog.$.actionButton.disabled);
+
+    editDialog.$.usernameInput.value = 'new_mark';
+    assertFalse(editDialog.$.usernameInput.invalid);
+    assertFalse(editDialog.$.actionButton.disabled);
+
+    changeSavedPasswordTestHelper(
+        editDialog, [accountEntry.accountId], passwordManager);
   });
 
   // Test verifies that the edit dialog informs the password is stored in the

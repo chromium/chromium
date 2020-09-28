@@ -28,6 +28,7 @@ import {SyncBrowserProxyImpl} from '../people_page/sync_browser_proxy.m.js';
 
 // <if expr="chromeos">
 import {BlockingRequestManager} from './blocking_request_manager.js';
+import {MultiStorePasswordUiEntry} from './multi_store_password_ui_entry.js';
 // </if>
 import {PasswordMoreActionsClickedEvent} from './password_list_item.js';
 import {PasswordManagerImpl, PasswordManagerProxy} from './password_manager_proxy.js';
@@ -39,6 +40,15 @@ Polymer({
   _template: html`{__html_template__}`,
 
   properties: {
+    /**
+     * Saved passwords after deduplicating versions that are repeated in the
+     * account and on the device.
+     * @type {!Array<!MultiStorePasswordUiEntry>}
+     */
+    savedPasswords: {
+      type: Array,
+      value: () => [],
+    },
 
     /**
      * The model for any active menus or dialogs. The value is reset to null

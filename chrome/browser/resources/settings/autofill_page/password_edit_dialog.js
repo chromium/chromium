@@ -22,6 +22,7 @@ import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
+import {MultiStorePasswordUiEntry} from './multi_store_password_ui_entry.js';
 
 import {PasswordManagerImpl} from './password_manager_proxy.js';
 import {ShowPasswordBehavior} from './show_password_behavior.js';
@@ -35,6 +36,27 @@ Polymer({
 
   properties: {
     shouldShowStorageDetails: {type: Boolean, value: false},
+
+    /**
+     * Saved passwords after deduplicating versions that are repeated in the
+     * account and on the device.
+     * @type {!Array<!MultiStorePasswordUiEntry>}
+     */
+    savedPasswords: {
+      type: Array,
+      value: () => [],
+    },
+
+    /**
+     * Usernames for the same website. Used for the fast check whether edited
+     * username is already used.
+     * @private {?Set<string>}
+     */
+    usernamesForSameOrigin: {
+      type: Object,
+      value: null,
+    },
+
 
     /** @private */
     editPasswordsInSettings_: {
@@ -64,15 +86,36 @@ Polymer({
     },
 
     /**
-     * Whether the input is invalid.
+     * Whether the username input is invalid.
      * @private
      */
-    inputInvalid_: Boolean,
+    usernameInputInvalid_: Boolean,
+
+    /**
+     * Whether the password input is invalid.
+     * @private
+     */
+    passwordInputInvalid_: Boolean,
+
+    /**
+     * If either username or password entered incorrectly the save button will
+     * be disabled.
+     * @private
+     * */
+    isSaveButtonDisabled_: {
+      type: Boolean,
+      computed:
+          'computeIsSaveButtonDisabled_(usernameInputInvalid_, passwordInputInvalid_)'
+    }
   },
 
   /** @override */
   attached() {
     this.$.dialog.showModal();
+    this.usernamesForSameOrigin =
+        new Set(this.savedPasswords
+                    .filter(item => item.urls.shown === this.entry.urls.shown)
+                    .map(item => item.username));
   },
 
   /**
@@ -241,5 +284,29 @@ Polymer({
    */
   getFootnote_() {
     return this.i18n('editPasswordFootnote', this.entry.urls.shown);
-  }
+  },
+
+  /**
+   * Helper function that checks if save button should be disabled.
+   * @return {boolean}
+   * @private
+   */
+  computeIsSaveButtonDisabled_() {
+    return this.usernameInputInvalid_ || this.passwordInputInvalid_;
+  },
+
+  /**
+   * Helper function that checks whether edited username is not used for the
+   * same website.
+   * @private
+   */
+  validateUsername_() {
+    if (this.entry.username !== this.$.usernameInput.value) {
+      this.usernameInputInvalid_ =
+          this.usernamesForSameOrigin.has(this.$.usernameInput.value);
+    } else {
+      this.usernameInputInvalid_ = false;
+    }
+  },
+
 });
