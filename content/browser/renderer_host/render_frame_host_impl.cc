@@ -1226,19 +1226,18 @@ void RenderFrameHostImpl::DidEnterBackForwardCache() {
 
   if (service_worker_container_hosts_.empty())
     return;
-  std::vector<base::WeakPtr<ServiceWorkerContainerHost>> hosts;
-  for (auto host : service_worker_container_hosts_)
-    hosts.push_back(host.second);
   RunOrPostTaskOnThread(
       FROM_HERE, ServiceWorkerContext::GetCoreThreadId(),
       base::BindOnce(
-          [](std::vector<base::WeakPtr<ServiceWorkerContainerHost>> hosts) {
+          [](const std::map<std::string,
+                            base::WeakPtr<ServiceWorkerContainerHost>>& hosts) {
             for (auto host : hosts) {
-              if (host)
-                host->OnEnterBackForwardCache();
+              if (host.second) {
+                host.second->OnEnterBackForwardCache();
+              }
             }
           },
-          std::move(hosts)));
+          service_worker_container_hosts_));
 }
 
 // The frame as been restored from the BackForwardCache.
@@ -1253,19 +1252,17 @@ void RenderFrameHostImpl::WillLeaveBackForwardCache() {
 
   if (service_worker_container_hosts_.empty())
     return;
-  std::vector<base::WeakPtr<ServiceWorkerContainerHost>> hosts;
-  for (auto host : service_worker_container_hosts_)
-    hosts.push_back(host.second);
   RunOrPostTaskOnThread(
       FROM_HERE, ServiceWorkerContext::GetCoreThreadId(),
       base::BindOnce(
-          [](std::vector<base::WeakPtr<ServiceWorkerContainerHost>> hosts) {
+          [](const std::map<std::string,
+                            base::WeakPtr<ServiceWorkerContainerHost>>& hosts) {
             for (auto host : hosts) {
-              if (host)
-                host->OnRestoreFromBackForwardCache();
+              if (host.second)
+                host.second->OnRestoreFromBackForwardCache();
             }
           },
-          std::move(hosts)));
+          service_worker_container_hosts_));
 }
 
 std::unique_ptr<FrameHostMsg_DidCommitProvisionalLoad_Params>
@@ -8949,13 +8946,21 @@ void RenderFrameHostImpl::AddServiceWorkerContainerHost(
             kEnteredBackForwardCacheBeforeServiceWorkerHostAdded);
   }
   DCHECK(!base::Contains(service_worker_container_hosts_, uuid));
+  last_committed_service_worker_host_ = host;
   service_worker_container_hosts_[uuid] = std::move(host);
 }
 
 void RenderFrameHostImpl::RemoveServiceWorkerContainerHost(
     const std::string& uuid) {
+  DCHECK(!service_worker_container_hosts_.empty());
   DCHECK(base::Contains(service_worker_container_hosts_, uuid));
   service_worker_container_hosts_.erase(uuid);
+}
+
+base::WeakPtr<ServiceWorkerContainerHost>
+RenderFrameHostImpl::GetLastCommittedServiceWorkerHost() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  return last_committed_service_worker_host_;
 }
 
 bool RenderFrameHostImpl::MaybeInterceptCommitCallback(

@@ -1173,6 +1173,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
       const std::string& uuid,
       base::WeakPtr<ServiceWorkerContainerHost> host);
   void RemoveServiceWorkerContainerHost(const std::string& uuid);
+  // Returns the last committed ServiceWorkerContainerHost of this frame.
+  // The function is called on the UI thread, but the returned pointer can only
+  // be dereferenced on the thread identified by
+  // ServiceWorkerContext::GetCoreThreadId().
+  base::WeakPtr<ServiceWorkerContainerHost> GetLastCommittedServiceWorkerHost();
 
   // Called to taint |this| so the pages which have requested MediaStream
   // (audio/video/etc capture stream) access would not enter BackForwardCache.
@@ -3120,6 +3125,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // vector, and the old container host is destroyed shortly after navigation.
   std::map<std::string, base::WeakPtr<ServiceWorkerContainerHost>>
       service_worker_container_hosts_;
+  // Keeps the track of the latest ServiceWorkerContainerHost.
+  base::WeakPtr<ServiceWorkerContainerHost> last_committed_service_worker_host_;
 
   // The reason why the last attempted navigation in the frame didn't use a new
   // BrowsingInstance.
