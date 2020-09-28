@@ -8,10 +8,15 @@
 
 namespace device {
 
-#if defined(OS_MAC) || defined(OS_WIN)
+#if defined(OS_MAC)
 const base::Feature kNewUsbBackend{"NewUsbBackend",
                                    base::FEATURE_DISABLED_BY_DEFAULT};
-#endif  // defined(OS_MAC) || defined(OS_WIN)
+#endif  // defined(OS_MAC)
+
+#if defined(OS_WIN)
+const base::Feature kNewUsbBackend{"NewUsbBackend",
+                                   base::FEATURE_ENABLED_BY_DEFAULT};
+#endif  // defined(OS_WIN)
 
 #if defined(OS_WIN)
 const base::Feature kNewBLEWinImplementation{"NewBLEWinImplementation",
