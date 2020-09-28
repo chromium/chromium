@@ -14,8 +14,21 @@ determining if any compile or test failures are due to an upstream compiler
 change, filing bugs upstream, and often reverting bad changes in LLVM. This
 document describes some of the processes and techniques for doing that.
 
-https://sheriff-o-matic.appspot.com/chromium.clang is the sheriff-o-matic
-view of that waterfall, which can be easier to work with.
+Some may find the [sheriff-o-matic]
+(https://sheriff-o-matic.appspot.com/chromium.clang) view of the waterfall
+easier to work with.
+
+To keep others informed, [file a bug]
+(https://bugs.chromium.org/p/chromium/issues/entry) .
+earlier rather than later for build breaks likely caused by changes in
+clang or the rest fo the toolchain. Make sure to set the component field to
+`Tools > LLVM`, which will include the entire Chrome toolchain (Lexan) team.
+
+At the beginning of your sheriff rotation, it may be
+useful to [search for recent bot breaks]
+(https://bugs.chromium.org/p/chromium/issues/list?q=component%3ATools%3ELLVM&can=2&sort=-modified).
+We prefer searching like this to having sheriffs compose status email at the
+end of their week.
 
 In addition to the waterfall, make sure
 [dry run attempts at updating clang](https://chromium-review.googlesource.com/q/owner:thakis%2540chromium.org+%2522roll+clang%2522)
@@ -24,8 +37,12 @@ Ideally these tests are covered by upstream LLVM bots and breakages are
 quickly noticed and fixed by the original author of a breaking commit,
 but that is sadly not always the case.
 
-We try to update Clang (roughly) weekly. Time permitting, try to [update the
-compiler](updating_clang.md) when bots are green enough.
+Each sheriff should attempt to update the compiler by performing
+[a Clang roll](updating_clang.md) during their week, assuming the bots are
+green enough.
+
+The Sheriff is also responsible for taking notes during the weekly Chrome toolchain
+(Lexan) status sync-up meeting.
 
 [TOC]
 
