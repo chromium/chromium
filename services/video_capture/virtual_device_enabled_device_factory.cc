@@ -13,6 +13,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/video_capture/device_factory.h"
+#include "services/video_capture/gpu_memory_buffer_virtual_device_mojo_adapter.h"
 #include "services/video_capture/shared_memory_virtual_device_mojo_adapter.h"
 #include "services/video_capture/texture_virtual_device_mojo_adapter.h"
 
@@ -40,6 +41,16 @@ class VirtualDeviceEnabledDeviceFactory::VirtualDeviceEntry {
         texture_device_(std::move(device)),
         texture_producer_receiver_(std::move(producer_receiver)) {}
 
+  VirtualDeviceEntry(
+      const media::VideoCaptureDeviceInfo& device_info,
+      std::unique_ptr<GpuMemoryBufferVirtualDeviceMojoAdapter> device,
+      std::unique_ptr<mojo::Receiver<mojom::GpuMemoryBufferVirtualDevice>>
+          producer_receiver)
+      : device_info_(device_info),
+        device_type_(DeviceType::kGpuMemoryBuffer),
+        gmb_device_(std::move(device)),
+        gmb_producer_receiver_(std::move(producer_receiver)) {}
+
   VirtualDeviceEntry(VirtualDeviceEntry&& other) = default;
   VirtualDeviceEntry& operator=(VirtualDeviceEntry&& other) = default;
 
@@ -57,6 +68,10 @@ class VirtualDeviceEnabledDeviceFactory::VirtualDeviceEntry {
         consumer_receiver_ = std::make_unique<mojo::Receiver<mojom::Device>>(
             texture_device_.get(), std::move(device_receiver));
         break;
+      case DeviceType::kGpuMemoryBuffer:
+        consumer_receiver_ = std::make_unique<mojo::Receiver<mojom::Device>>(
+            gmb_device_.get(), std::move(device_receiver));
+        break;
     }
     consumer_receiver_->set_disconnect_handler(
         std::move(connection_error_handler));
@@ -67,14 +82,16 @@ class VirtualDeviceEnabledDeviceFactory::VirtualDeviceEntry {
   void StopDevice() {
     if (shared_memory_device_)
       shared_memory_device_->Stop();
-    else
+    else if (texture_device_)
       texture_device_->Stop();
+    else
+      gmb_device_->Stop();
   }
 
   media::VideoCaptureDeviceInfo device_info() const { return device_info_; }
 
  private:
-  enum class DeviceType { kSharedMemory, kTexture };
+  enum class DeviceType { kSharedMemory, kTexture, kGpuMemoryBuffer };
 
   media::VideoCaptureDeviceInfo device_info_;
   DeviceType device_type_;
@@ -88,6 +105,11 @@ class VirtualDeviceEnabledDeviceFactory::VirtualDeviceEntry {
   std::unique_ptr<TextureVirtualDeviceMojoAdapter> texture_device_;
   std::unique_ptr<mojo::Receiver<mojom::TextureVirtualDevice>>
       texture_producer_receiver_;
+
+  // Only valid for |device_type_ == kGpuMemoryBuffer|
+  std::unique_ptr<GpuMemoryBufferVirtualDeviceMojoAdapter> gmb_device_;
+  std::unique_ptr<mojo::Receiver<mojom::GpuMemoryBufferVirtualDevice>>
+      gmb_producer_receiver_;
 
   std::unique_ptr<mojo::Receiver<mojom::Device>> consumer_receiver_;
 };
@@ -184,6 +206,33 @@ void VirtualDeviceEnabledDeviceFactory::AddTextureVirtualDevice(
   auto device = std::make_unique<TextureVirtualDeviceMojoAdapter>();
   auto producer_receiver =
       std::make_unique<mojo::Receiver<mojom::TextureVirtualDevice>>(
+          device.get(), std::move(virtual_device_receiver));
+  producer_receiver->set_disconnect_handler(
+      base::BindOnce(&VirtualDeviceEnabledDeviceFactory::
+                         OnVirtualDeviceProducerConnectionErrorOrClose,
+                     base::Unretained(this), device_id));
+  VirtualDeviceEntry device_entry(device_info, std::move(device),
+                                  std::move(producer_receiver));
+  virtual_devices_by_id_.insert(
+      std::make_pair(device_id, std::move(device_entry)));
+  EmitDevicesChangedEvent();
+}
+
+void VirtualDeviceEnabledDeviceFactory::AddGpuMemoryBufferVirtualDevice(
+    const media::VideoCaptureDeviceInfo& device_info,
+    mojo::PendingReceiver<mojom::GpuMemoryBufferVirtualDevice>
+        virtual_device_receiver) {
+  auto device_id = device_info.descriptor.device_id;
+  auto virtual_device_iter = virtual_devices_by_id_.find(device_id);
+  if (virtual_device_iter != virtual_devices_by_id_.end()) {
+    // Revoke the access for the current producer and consumer by
+    // removing it from the list.
+    virtual_devices_by_id_.erase(virtual_device_iter);
+  }
+
+  auto device = std::make_unique<GpuMemoryBufferVirtualDeviceMojoAdapter>();
+  auto producer_receiver =
+      std::make_unique<mojo::Receiver<mojom::GpuMemoryBufferVirtualDevice>>(
           device.get(), std::move(virtual_device_receiver));
   producer_receiver->set_disconnect_handler(
       base::BindOnce(&VirtualDeviceEnabledDeviceFactory::

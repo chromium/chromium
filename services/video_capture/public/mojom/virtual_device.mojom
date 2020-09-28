@@ -8,6 +8,7 @@ import "media/capture/mojom/video_capture_types.mojom";
 import "services/video_capture/public/mojom/producer.mojom";
 import "services/video_capture/public/mojom/scoped_access_permission.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
+import "ui/gfx/mojom/buffer_types.mojom";
 
 // Interface for a producer to feed video frames into a virtual
 // device. These frames will appear to the consumer of the device
@@ -64,5 +65,26 @@ interface TextureVirtualDevice {
   // Unregisters a set of mailbox holders previously registered via
   // OnNewMailboxHolderBufferHandle(). Note, that this should not be called
   // while the corresponding buffer is still in use via OnFrameReadyInBuffer().
+  OnBufferRetired(int32 buffer_id);
+};
+
+// Virtual capture device with video frames backed by GpuMemoryBuffer.
+interface GpuMemoryBufferVirtualDevice {
+  // Registers a GpuMemoryBufferHandle for subsequent transport of frames.
+  OnNewGpuMemoryBufferHandle(
+      int32 buffer_id, gfx.mojom.GpuMemoryBufferHandle gmb_handle);
+
+  // The invoker must guarantee that the GpuMemoryBufferHandle with |buffer_id|
+  // stay valid until |access_permission| is released by the invocation target.
+  // In |frame_info|, |visible_rect| must be equivalent to the full |coded_size|
+  // of the frame, i.e. using |visible_rect| to crop to subregions of the frame
+  // is not supported.
+  OnFrameReadyInBuffer(int32 buffer_id,
+                       pending_remote<ScopedAccessPermission> access_permission,
+                       media.mojom.VideoFrameInfo frame_info);
+
+  // Unregisters a GpuMemoryBufferHandle previously registered via
+  // OnNewGpuMemoryBufferHandle(). Note, that this should not be called while
+  // the corresponding buffer is still in use via OnFrameReadyInBuffer().
   OnBufferRetired(int32 buffer_id);
 };

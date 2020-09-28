@@ -156,6 +156,13 @@ void DeviceFactoryMediaToMojoAdapter::AddTextureVirtualDevice(
   NOTIMPLEMENTED();
 }
 
+void DeviceFactoryMediaToMojoAdapter::AddGpuMemoryBufferVirtualDevice(
+    const media::VideoCaptureDeviceInfo& device_info,
+    mojo::PendingReceiver<mojom::GpuMemoryBufferVirtualDevice>
+        virtual_device_receiver) {
+  NOTIMPLEMENTED();
+}
+
 void DeviceFactoryMediaToMojoAdapter::RegisterVirtualDevicesChangedObserver(
     mojo::PendingRemote<mojom::DevicesChangedObserver> observer,
     bool raise_event_if_virtual_devices_already_present) {

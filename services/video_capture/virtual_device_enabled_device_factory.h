@@ -40,6 +40,10 @@ class VirtualDeviceEnabledDeviceFactory : public DeviceFactory {
       const media::VideoCaptureDeviceInfo& device_info,
       mojo::PendingReceiver<mojom::TextureVirtualDevice>
           virtual_device_receiver) override;
+  void AddGpuMemoryBufferVirtualDevice(
+      const media::VideoCaptureDeviceInfo& device_info,
+      mojo::PendingReceiver<mojom::GpuMemoryBufferVirtualDevice>
+          virtual_device_receiver) override;
   void RegisterVirtualDevicesChangedObserver(
       mojo::PendingRemote<mojom::DevicesChangedObserver> observer,
       bool raise_event_if_virtual_devices_already_present) override;
