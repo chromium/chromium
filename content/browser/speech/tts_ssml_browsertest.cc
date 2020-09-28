@@ -4,17 +4,12 @@
 
 #include "content/browser/speech/tts_controller_impl.h"
 
+#include <memory>
+
 #include "base/callback_helpers.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
-
-// TODO(crbug.com/961029): Fix memory leaks in tests and re-enable on LSAN.
-#ifdef LEAK_SANITIZER
-#define MAYBE_TestStripSSML DISABLED_TestStripSSML
-#else
-#define MAYBE_TestStripSSML TestStripSSML
-#endif
 
 namespace content {
 
@@ -33,7 +28,8 @@ class TtsSsmlBrowserTest : public ContentBrowserTest {
   void RunNoStripSSMLTest(std::string input) { RunSSMLStripTest(input, input); }
 
   void RunSSMLStripTest(std::string input, std::string expected_string) {
-    MockTtsControllerImpl* controller = new MockTtsControllerImpl();
+    std::unique_ptr<MockTtsControllerImpl> controller =
+        std::make_unique<MockTtsControllerImpl>();
 
     std::unique_ptr<TtsUtterance> utterance = TtsUtterance::Create(nullptr);
     utterance->SetText(input);
@@ -45,8 +41,6 @@ class TtsSsmlBrowserTest : public ContentBrowserTest {
                        base::Unretained(this), run_loop.QuitClosure(),
                        expected_string));
     run_loop.Run();
-
-    delete controller;
   }
 
   // Passed as callback to StripSSML.
@@ -60,7 +54,7 @@ class TtsSsmlBrowserTest : public ContentBrowserTest {
 
 }  // namespace
 
-IN_PROC_BROWSER_TEST_F(TtsSsmlBrowserTest, MAYBE_TestStripSSML) {
+IN_PROC_BROWSER_TEST_F(TtsSsmlBrowserTest, TestStripSSML) {
   // No SSML should be stripped.
   RunNoStripSSMLTest("");
   RunNoStripSSMLTest("What if I told you that 5 < 4?");
