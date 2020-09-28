@@ -5,6 +5,7 @@
 #include "ash/app_list/views/folder_header_view.h"
 
 #include <algorithm>
+#include <memory>
 
 #include "ash/app_list/app_list_util.h"
 #include "ash/app_list/model/app_list_folder_item.h"

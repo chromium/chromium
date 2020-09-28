@@ -5,6 +5,7 @@
 #include "ash/app_list/views/app_list_folder_view.h"
 
 #include <algorithm>
+#include <utility>
 #include <vector>
 
 #include "ash/app_list/app_list_metrics.h"
