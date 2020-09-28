@@ -186,7 +186,7 @@ FontUniqueNameLookupAndroid::MatchUniqueNameFromDownloadableFonts(
 
   sk_sp<SkData> font_data = SkData::MakeFromFD(font_file.GetPlatformFile());
 
-  if (font_data->isEmpty()) {
+  if (!font_data || font_data->isEmpty()) {
     LOG(ERROR) << "Received file descriptor has 0 size.";
     lookup_latency_histogram_failure.CountMicroseconds(elapsed_timer.Elapsed());
     return nullptr;
