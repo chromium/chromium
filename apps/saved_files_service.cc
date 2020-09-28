@@ -147,6 +147,8 @@ std::vector<SavedFileEntry> GetSavedFileEntries(
 class SavedFilesService::SavedFiles {
  public:
   SavedFiles(content::BrowserContext* context, const std::string& extension_id);
+  SavedFiles(const SavedFiles&) = delete;
+  SavedFiles& operator=(const SavedFiles&) = delete;
   ~SavedFiles();
 
   void RegisterFileEntry(const std::string& id,
@@ -176,8 +178,6 @@ class SavedFilesService::SavedFiles {
   // sequence_number. Values are a subset of values in registered_file_entries_.
   // This should be kept in sync with file entries stored in extension prefs.
   std::map<int, SavedFileEntry*> saved_file_lru_;
-
-  DISALLOW_COPY_AND_ASSIGN(SavedFiles);
 };
 
 // static

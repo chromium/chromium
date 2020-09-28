@@ -31,6 +31,8 @@ class AppRestoreService : public KeyedService,
   static bool ShouldRestoreApps(bool is_browser_restart);
 
   explicit AppRestoreService(content::BrowserContext* context);
+  AppRestoreService(const AppRestoreService&) = delete;
+  AppRestoreService& operator=(const AppRestoreService&) = delete;
 
   // Restart apps that need to be restarted and clear the "running" preference
   // from apps to prevent them being restarted in subsequent restarts.
@@ -69,8 +71,6 @@ class AppRestoreService : public KeyedService,
   void StopObservingAppLifetime();
 
   content::BrowserContext* context_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppRestoreService);
 };
 
 }  // namespace apps

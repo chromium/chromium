@@ -47,6 +47,8 @@ class AppWindowFrameView : public views::NonClientFrameView {
                      bool draw_frame,
                      const SkColor& active_frame_color,
                      const SkColor& inactive_frame_color);
+  AppWindowFrameView(const AppWindowFrameView&) = delete;
+  AppWindowFrameView& operator=(const AppWindowFrameView&) = delete;
   ~AppWindowFrameView() override;
 
   void Init();
@@ -101,8 +103,6 @@ class AppWindowFrameView : public views::NonClientFrameView {
 
   // Size in pixels of the lower-right corner resize handle.
   int resize_area_corner_size_ = 16;
-
-  DISALLOW_COPY_AND_ASSIGN(AppWindowFrameView);
 };
 
 }  // namespace apps

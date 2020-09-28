@@ -41,6 +41,8 @@ class SavedFilesService : public extensions::SavedFilesServiceInterface,
                           public content::NotificationObserver {
  public:
   explicit SavedFilesService(content::BrowserContext* context);
+  SavedFilesService(const SavedFilesService&) = delete;
+  SavedFilesService& operator=(const SavedFilesService&) = delete;
   ~SavedFilesService() override;
 
   static SavedFilesService* Get(content::BrowserContext* context);
@@ -105,8 +107,6 @@ class SavedFilesService : public extensions::SavedFilesServiceInterface,
       extension_id_to_saved_files_;
   content::NotificationRegistrar registrar_;
   content::BrowserContext* context_;
-
-  DISALLOW_COPY_AND_ASSIGN(SavedFilesService);
 };
 
 }  // namespace apps

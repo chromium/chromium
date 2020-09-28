@@ -119,6 +119,8 @@ class PlatformAppPathLauncher
     if (!file_path.empty())
       entry_paths_.push_back(file_path);
   }
+  PlatformAppPathLauncher(const PlatformAppPathLauncher&) = delete;
+  PlatformAppPathLauncher& operator=(const PlatformAppPathLauncher&) = delete;
 
   void set_action_data(std::unique_ptr<app_runtime::ActionData> action_data) {
     action_data_ = std::move(action_data);
@@ -358,8 +360,6 @@ class PlatformAppPathLauncher
   extensions::app_file_handler_util::MimeTypeCollector mime_type_collector_;
   extensions::app_file_handler_util::IsDirectoryCollector
       is_directory_collector_;
-
-  DISALLOW_COPY_AND_ASSIGN(PlatformAppPathLauncher);
 };
 
 }  // namespace

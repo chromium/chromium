@@ -145,8 +145,14 @@ namespace {
 // TestFixture that appends --load-and-launch-app with an app before calling
 // BrowserMain.
 class LoadAndLaunchPlatformAppBrowserTest : public PlatformAppBrowserTest {
+ public:
+  LoadAndLaunchPlatformAppBrowserTest(
+      const LoadAndLaunchPlatformAppBrowserTest&) = delete;
+  LoadAndLaunchPlatformAppBrowserTest& operator=(
+      const LoadAndLaunchPlatformAppBrowserTest&) = delete;
+
  protected:
-  LoadAndLaunchPlatformAppBrowserTest() {}
+  LoadAndLaunchPlatformAppBrowserTest() = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     PlatformAppBrowserTest::SetUpCommandLine(command_line);
@@ -163,16 +169,19 @@ class LoadAndLaunchPlatformAppBrowserTest : public PlatformAppBrowserTest {
     // window.
     CreateBrowser(ProfileManager::GetActiveUserProfile());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LoadAndLaunchPlatformAppBrowserTest);
 };
 
 // TestFixture that appends --load-and-launch-app with an extension before
 // calling BrowserMain.
 class LoadAndLaunchExtensionBrowserTest : public PlatformAppBrowserTest {
+ public:
+  LoadAndLaunchExtensionBrowserTest(const LoadAndLaunchExtensionBrowserTest&) =
+      delete;
+  LoadAndLaunchExtensionBrowserTest& operator=(
+      const LoadAndLaunchExtensionBrowserTest&) = delete;
+
  protected:
-  LoadAndLaunchExtensionBrowserTest() {}
+  LoadAndLaunchExtensionBrowserTest() = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     PlatformAppBrowserTest::SetUpCommandLine(command_line);
@@ -189,8 +198,6 @@ class LoadAndLaunchExtensionBrowserTest : public PlatformAppBrowserTest {
     // Skip showing the error message box to avoid freezing the main thread.
     chrome::internal::g_should_skip_message_box_for_test = true;
   }
-
-  DISALLOW_COPY_AND_ASSIGN(LoadAndLaunchExtensionBrowserTest);
 };
 
 }  // namespace

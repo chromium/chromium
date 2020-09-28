@@ -44,10 +44,12 @@ class AppLifetimeMonitor : public KeyedService,
                            const std::string& app_id) {}
 
    protected:
-    virtual ~Observer() {}
+    virtual ~Observer() = default;
   };
 
   explicit AppLifetimeMonitor(content::BrowserContext* context);
+  AppLifetimeMonitor(const AppLifetimeMonitor&) = delete;
+  AppLifetimeMonitor& operator=(const AppLifetimeMonitor&) = delete;
   ~AppLifetimeMonitor() override;
 
   void AddObserver(Observer* observer);
@@ -78,8 +80,6 @@ class AppLifetimeMonitor : public KeyedService,
   content::NotificationRegistrar registrar_;
   content::BrowserContext* context_;
   base::ObserverList<Observer>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppLifetimeMonitor);
 };
 
 }  // namespace apps
