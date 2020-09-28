@@ -14,6 +14,7 @@
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_notification_permission.h"
 #include "third_party/blink/renderer/core/frame/frame.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -102,8 +103,14 @@ void NotificationManager::OnPermissionRequestComplete(
     V8NotificationPermissionCallback* deprecated_callback,
     mojom::blink::PermissionStatus status) {
   String status_string = Notification::PermissionString(status);
-  if (deprecated_callback)
+  if (deprecated_callback) {
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_CALLBACK_FUNCTION)
+    deprecated_callback->InvokeAndReportException(
+        nullptr, V8NotificationPermission::Create(status_string).value());
+#else
     deprecated_callback->InvokeAndReportException(nullptr, status_string);
+#endif
+  }
 
   resolver->Resolve(status_string);
 }

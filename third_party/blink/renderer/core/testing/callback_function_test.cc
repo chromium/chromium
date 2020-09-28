@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/testing/callback_function_test.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_internal_enum.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_test_callback.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_test_enum_callback.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_test_interface_callback.h"
@@ -72,7 +73,12 @@ Vector<String> CallbackFunctionTest::testSequenceCallback(
 void CallbackFunctionTest::testEnumCallback(V8TestEnumCallback* callback,
                                             const String& enum_value,
                                             ExceptionState& exception_state) {
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_CALLBACK_FUNCTION)
+  callback->InvokeAndReportException(
+      nullptr, V8InternalEnum::Create(enum_value).value());
+#else
   callback->InvokeAndReportException(nullptr, enum_value);
+#endif
 }
 
 }  // namespace blink
