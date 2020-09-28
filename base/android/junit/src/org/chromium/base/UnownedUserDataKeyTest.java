@@ -843,14 +843,17 @@ public class UnownedUserDataKeyTest {
 
     @Test
     public void testNullKeyOrDataShouldBeDisallowed() {
-        assertThrows(IllegalArgumentException.class, () -> Foo.KEY.attachToHost(null, null));
-        assertThrows(IllegalArgumentException.class, () -> Foo.KEY.attachToHost(mHost1, null));
-        assertThrows(IllegalArgumentException.class, () -> Foo.KEY.attachToHost(null, mFoo));
+        assertThrows(NullPointerException.class, () -> Foo.KEY.attachToHost(null, null));
+        assertThrows(NullPointerException.class, () -> Foo.KEY.attachToHost(mHost1, null));
+        assertThrows(NullPointerException.class, () -> Foo.KEY.attachToHost(null, mFoo));
 
-        assertThrows(IllegalArgumentException.class, () -> Foo.KEY.retrieveDataFromHost(null));
+        // Need a non-empty registry to avoid no-op.
+        Foo.KEY.attachToHost(mHost1, mFoo);
+        assertThrows(NullPointerException.class, () -> Foo.KEY.retrieveDataFromHost(null));
 
-        assertThrows(IllegalArgumentException.class, () -> Foo.KEY.detachFromHost(null));
-        assertThrows(IllegalArgumentException.class, () -> Foo.KEY.detachFromAllHosts(null));
+        assertThrows(NullPointerException.class, () -> Foo.KEY.detachFromHost(null));
+        assertThrows(NullPointerException.class, () -> Foo.KEY.detachFromAllHosts(null));
+        Foo.KEY.detachFromAllHosts(mFoo);
     }
 
     @Test
