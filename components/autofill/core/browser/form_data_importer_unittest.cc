@@ -235,11 +235,13 @@ class FormDataImporterTestBase {
 // TODO(crbug.com/1103421): Clean legacy implementation once structured names
 // are fully launched. Here, the changes applied in CL 2339350 must be reverted
 // by removing the parameterization.
-class FormDataImporterTest : public FormDataImporterTestBase,
-                             public testing::Test,
-                             public testing::WithParamInterface<bool> {
+class FormDataImporterTest
+    : public FormDataImporterTestBase,
+      public testing::Test,
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
  protected:
   bool StructuredNames() const { return structured_names_enabled_; }
+  bool StructuredAddresses() const { return structured_addresses_enabled_; }
 
  private:
   void SetUp() override {
@@ -283,17 +285,32 @@ class FormDataImporterTest : public FormDataImporterTestBase,
   }
 
   void InitializeFeatures() {
-    structured_names_enabled_ = GetParam();
+    structured_names_enabled_ = std::get<0>(GetParam());
+    structured_addresses_enabled_ = std::get<1>(GetParam());
+
+    std::vector<base::Feature> enabled_features;
+    std::vector<base::Feature> disabled_features;
+
     if (structured_names_enabled_) {
-      scoped_feature_list_.InitAndEnableFeature(
+      enabled_features.push_back(
           features::kAutofillEnableSupportForMoreStructureInNames);
     } else {
-      scoped_feature_list_.InitAndDisableFeature(
+      disabled_features.push_back(
           features::kAutofillEnableSupportForMoreStructureInNames);
     }
+
+    if (structured_addresses_enabled_) {
+      enabled_features.push_back(
+          features::kAutofillEnableSupportForMoreStructureInAddresses);
+    } else {
+      disabled_features.push_back(
+          features::kAutofillEnableSupportForMoreStructureInAddresses);
+    }
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
   bool structured_names_enabled_;
+  bool structured_addresses_enabled_;
 };
 
 // ImportAddressProfiles tests.
@@ -1261,8 +1278,7 @@ TEST_P(FormDataImporterTest, ImportAddressProfiles_SameProfileWithConflict) {
                        "theprez@gmail.com", nullptr, "1600 Pennsylvania Avenue",
                        "Suite A", "San Francisco", "California", "94102",
                        nullptr, "(650) 555-6666");
-  if (StructuredNames())
-    expected.FinalizeAfterImport();
+  expected.FinalizeAfterImport();
   const std::vector<AutofillProfile*>& results1 =
       personal_data_manager_->GetProfiles();
   ASSERT_EQ(1U, results1.size());
@@ -1312,7 +1328,9 @@ TEST_P(FormDataImporterTest, ImportAddressProfiles_SameProfileWithConflict) {
     expected.SetRawInfo(NAME_FULL, base::ASCIIToUTF16("George Washington"));
   expected.SetRawInfo(PHONE_HOME_WHOLE_NUMBER,
                       base::ASCIIToUTF16("+1 650-555-6666"));
-  expected.SetRawInfo(ADDRESS_HOME_COUNTRY, base::ASCIIToUTF16("US"));
+  expected.SetRawInfoWithVerificationStatus(
+      ADDRESS_HOME_COUNTRY, base::ASCIIToUTF16("US"),
+      structured_address::VerificationStatus::kObserved);
   ASSERT_EQ(1U, results2.size());
   EXPECT_EQ(0, expected.Compare(*results2[0]));
 }
@@ -3811,8 +3829,10 @@ TEST_P(FormDataImporterTest, ImportUpiIdIgnoreNonUpiId) {
   EXPECT_FALSE(imported_upi_id.has_value());
 }
 
-// Runs the suite with the feature |kAutofillSupportForMoreStructuredNames|
-// enabled and disabled.
-INSTANTIATE_TEST_SUITE_P(, FormDataImporterTest, testing::Bool());
+// Runs the suite with the feature |kAutofillSupportForMoreStructuredNames| and
+// |kAutofillSupportForMoreStructuredAddresses| enabled and disabled.
+INSTANTIATE_TEST_SUITE_P(,
+                         FormDataImporterTest,
+                         testing::Combine(testing::Bool(), testing::Bool()));
 
 }  // namespace autofill

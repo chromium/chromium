@@ -449,9 +449,8 @@ int AutofillProfile::Compare(const AutofillProfile& profile) const {
 
   for (ServerFieldType type : types) {
     int comparison = GetRawInfo(type).compare(profile.GetRawInfo(type));
-    if (comparison != 0) {
+    if (comparison != 0)
       return comparison;
-    }
   }
 
   for (ServerFieldType type : types) {
@@ -475,9 +474,8 @@ int AutofillProfile::Compare(const AutofillProfile& profile) const {
     };
     for (ServerFieldType type : new_types) {
       int comparison = GetRawInfo(type).compare(profile.GetRawInfo(type));
-      if (comparison != 0) {
+      if (comparison != 0)
         return comparison;
-      }
     }
 
     for (ServerFieldType type : new_types) {
