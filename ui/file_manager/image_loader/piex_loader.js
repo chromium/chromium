@@ -7,32 +7,35 @@ console.log('[PiexLoader] loaded');
 /**
  * Declares the piex-wasm Module interface. The Module has many interfaces
  * but only declare the parts required for PIEX work.
+ *
  * @typedef {{
  *  calledRun: boolean,
  *  onAbort: function((!Error|string)):undefined,
  *  HEAP8: !Uint8Array,
  *  _malloc: function(number):number,
  *  _free: function(number):undefined,
- *  image: function(number, number):PiexWasmImageResult
+ *  image: function(number, number):!PiexWasmImageResult
  * }}
  */
 let PiexWasmModule;
 
 /**
  * |window| var Module defined in page <script src='piex/piex.js.wasm'>.
- * @type {PiexWasmModule}
+ * @type {!PiexWasmModule}
  */
-const PiexModule = window['Module'] || {};
+const PiexModule = /** @type {!PiexWasmModule} */ (window['Module']) || {};
 
 /**
- * Set true only if the Module.onAbort() handler is called.
+ * Set true if the Module.onAbort() handler is called.
  * @type {boolean}
  */
 let piexFailed = false;
 
 /**
  * Installs an (Emscripten) Module.onAbort handler. Record that the Module
- * has failed and re-throw the error.
+ * has failed in piexFailed and re-throw the error.
+ *
+ * @param {!Error|string} error
  * @throws {!Error|string}
  */
 PiexModule.onAbort = (error) => {
@@ -65,10 +68,10 @@ function piexModuleFailed() {
  *  ifd: ?string
  * }}
  */
-let ImagePreviewResponseData;
+let PiexPreviewImageData;
 
 /**
- * @param {!ImagePreviewResponseData} data The preview image data.
+ * @param {!PiexPreviewImageData} data The extracted preview image data.
  * @constructor
  * @struct
  */
@@ -163,12 +166,12 @@ function readSourceData(source) {
 }
 
 /**
- * Piex wasm extacts the preview image metadata from a raw image. The preview
- * image |format| is either 0 (JPEG) or 1 (RGB), and has a |colorSpace| (sRGB
- * or AdobeRGB1998) and a JEITA EXIF image |orientation|.
+ * Piex-wasm extracts the "preview image" from a RAW image. The preview image
+ * |format| is either 0 (JPEG), or 1 (RGB), and has a JEITA EXIF |colorSpace|
+ * (sRGB or AdobeRGB1998) and a JEITA EXIF image |orientation|.
  *
  * An RGB format preview image has both |width| and |height|, but JPEG format
- * previews have neither (piex wasm C++ does not parse/decode JPEG).
+ * previews have neither (piex-wasm C++ does not parse/decode JPEG).
  *
  * The |offset| to, and |length| of, the preview image relative to the source
  * data is indicated by those fields. They are positive > 0. Note: the values
@@ -187,7 +190,7 @@ function readSourceData(source) {
 let PiexWasmPreviewImageMetadata;
 
 /**
- * The piex wasm Module.image(<raw image source>,...) API returns |error|, or
+ * The piex-wasm Module.image(<RAW image source>,...) API returns |error|, or
  * else the source |preview| and/or |thumbnail| image metadata along with the
  * photographic |details| derived from the RAW image EXIF.
  *
@@ -204,23 +207,21 @@ let PiexWasmPreviewImageMetadata;
 let PiexWasmImageResult;
 
 /**
- * Piex wasm raw image preview image extractor.
+ * Preview Image EXtractor (PIEX).
  */
 class ImageBuffer {
   /**
-   * @param {!ArrayBuffer} buffer - raw image source data.
+   * @param {!ArrayBuffer} buffer - RAW image source data.
    */
   constructor(buffer) {
     /**
-     * @type {!Uint8Array}
-     * @const
+     * @const {!Uint8Array}
      * @private
      */
     this.source = new Uint8Array(buffer);
 
     /**
-     * @type {number}
-     * @const
+     * @const {number}
      * @private
      */
     this.length = buffer.byteLength;
@@ -258,10 +259,8 @@ class ImageBuffer {
    * the thumbnail image.
    *
    * @param {!PiexWasmImageResult} result
-   *
    * @throws {!Error} Data access security error.
-   *
-   * @return {!ImagePreviewResponseData}
+   * @return {!PiexPreviewImageData}
    */
   preview(result) {
     const preview = result.preview;
@@ -279,7 +278,7 @@ class ImageBuffer {
     return {
       thumbnail: new Uint8Array(view).buffer,
       mimeType: 'image/jpeg',
-      ifd: this.details(result, preview.orientation),
+      ifd: this.details_(result, preview.orientation),
       orientation: preview.orientation,
       colorSpace: preview.colorSpace,
     };
@@ -289,11 +288,10 @@ class ImageBuffer {
    * Returns the thumbnail image. If no thumbnail image was found, returns
    * an empty thumbnail image.
    *
+   * @private
    * @param {!PiexWasmImageResult} result
-   *
    * @throws {!Error} Data access security error.
-   *
-   * @return {!ImagePreviewResponseData}
+   * @return {!PiexPreviewImageData}
    */
   thumbnail_(result) {
     const thumbnail = result.thumbnail;
@@ -320,7 +318,7 @@ class ImageBuffer {
     return {
       thumbnail: new Uint8Array(view).buffer,
       mimeType: 'image/jpeg',
-      ifd: this.details(result, thumbnail.orientation),
+      ifd: this.details_(result, thumbnail.orientation),
       orientation: thumbnail.orientation,
       colorSpace: thumbnail.colorSpace,
     };
@@ -330,11 +328,10 @@ class ImageBuffer {
    * Returns the RGB thumbnail. If no RGB thumbnail was found, returns
    * an empty thumbnail image.
    *
+   * @private
    * @param {!PiexWasmImageResult} result
-   *
    * @throws {!Error} Data access security error.
-   *
-   * @return {!ImagePreviewResponseData}
+   * @return {!PiexPreviewImageData}
    */
   rgb_(result) {
     const thumbnail = result.thumbnail;
@@ -414,7 +411,7 @@ class ImageBuffer {
     return {
       thumbnail: bitmap.buffer,
       mimeType: 'image/bmp',
-      ifd: this.details(result, thumbnail.orientation),
+      ifd: this.details_(result, thumbnail.orientation),
       orientation: thumbnail.orientation,
       colorSpace: thumbnail.colorSpace,
     };
@@ -430,7 +427,7 @@ class ImageBuffer {
    * @param {number} orientation - image EXIF orientation
    * @return {?string}
    */
-  details(result, orientation) {
+  details_(result, orientation) {
     const details = result.details;
     if (!details) {
       return null;
