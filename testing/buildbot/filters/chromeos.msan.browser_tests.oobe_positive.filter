@@ -59,6 +59,9 @@ EnterpriseEnrollmentTest.*
 EnterpriseEnrollmentTestBase.*
 EulaOfflineTest.*
 EulaTest.*
+FamilyLinkNoticeScreenChildTest.*
+FamilyLinkNoticeScreenManagedTest.*
+FamilyLinkNoticeScreenTest.*
 FingerprintSetupTest.*
 ForceMaximizeOnFirstRunTest.*
 ForceMaximizePolicyFalseTest.*
@@ -124,6 +127,9 @@ TermsOfServiceScreenTest.*
 UpdateRequiredScreenTest.*
 UpdateScreenTest.*
 UserCloudExternalDataManagerTest.*
+UserCreationScreenEnrolledTest.*
+UserCreationScreenLoginTest.*
+UserCreationScreenTest.*
 WebKioskTest.*
 WebviewClientCertsLoginTest.*
 WebviewClientCertsLoginTestBase.*
