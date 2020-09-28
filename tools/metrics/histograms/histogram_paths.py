@@ -13,17 +13,18 @@ import path_util
 
 def _FindHistogramsXmlFiles():
   """Gets a list relative path to all histograms xmls under histograms_xml/."""
-  file_list = []
-  for dirName, _, fileList in os.walk(PATH_TO_HISTOGRAMS_XML_DIR):
-    for filename in fileList:
+  files = []
+  for dir_name, _, file_list in os.walk(PATH_TO_HISTOGRAMS_XML_DIR):
+    for filename in file_list:
       if (filename == 'histograms.xml'
           or filename == 'histogram_suffixes_list.xml'):
         # Compute the relative path of the histograms xml file.
-        file_path = os.path.relpath(os.path.join(dirName, filename),
+        file_path = os.path.relpath(os.path.join(dir_name, filename),
                                     PATH_TO_HISTOGRAMS_XML_DIR)
-        file_list.append(
-            os.path.join('tools/metrics/histograms/histograms_xml', file_path))
-  return sorted(file_list)
+        files.append(
+            os.path.join('tools/metrics/histograms/histograms_xml',
+                         file_path).replace(os.sep, '/').lower())
+  return sorted(files)
 
 
 ENUMS_XML_RELATIVE = 'tools/metrics/histograms/enums.xml'
