@@ -154,6 +154,12 @@ void GlsRunnerTestBase::SetUp() {
   ASSERT_TRUE(scoped_temp_program_files_dir_.CreateUniqueTempDir());
   program_files_override_.reset(new base::ScopedPathOverride(
       base::DIR_PROGRAM_FILES, scoped_temp_program_files_dir_.GetPath()));
+
+  // Also override location of "ProgramData" system folder as we store user
+  // policies there.
+  ASSERT_TRUE(scoped_temp_progdata_dir_.CreateUniqueTempDir());
+  programdata_override_.reset(new base::ScopedPathOverride(
+      base::DIR_COMMON_APP_DATA, scoped_temp_progdata_dir_.GetPath()));
 }
 
 void GlsRunnerTestBase::TearDown() {

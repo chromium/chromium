@@ -9,6 +9,7 @@
 #include "base/json/json_writer.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_path_override.h"
+#include "chrome/credential_provider/extension/user_device_context.h"
 #include "chrome/credential_provider/gaiacp/gcpw_strings.h"
 #include "chrome/credential_provider/gaiacp/mdm_utils.h"
 #include "chrome/credential_provider/gaiacp/reg_utils.h"
@@ -30,6 +31,28 @@ TEST_F(GcpUserPoliciesBaseTest, NonExistentUser) {
       UserPoliciesManager::Get()->GetUserPolicies(L"not-valid", &policies));
 }
 
+TEST_F(GcpUserPoliciesBaseTest, NoAccessToken) {
+  // Create a fake user associated to a gaia id.
+  CComBSTR sid_str;
+  ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
+                      kDefaultUsername, L"password", L"Full Name", L"comment",
+                      base::UTF8ToUTF16(kDefaultGaiaId), L"user@company.com",
+                      &sid_str));
+  base::string16 sid = OLE2W(sid_str);
+
+  ASSERT_TRUE(FAILED(
+      UserPoliciesManager::Get()->FetchAndStoreCloudUserPolicies(sid, "")));
+  UserPolicies policies;
+  ASSERT_FALSE(UserPoliciesManager::Get()->GetUserPolicies(sid, &policies));
+}
+
+// Tests effective user policy under various scenarios of cloud policy values.
+// Params:
+// bool : Whether device management enabled.
+// bool : Whether automatic updated enabled.
+// string : Pinned version of GCPW to use if any.
+// bool : Whether multiple users can login.
+// int : Number of days user can remain offline.
 class GcpUserPoliciesFetchAndReadTest
     : public GcpUserPoliciesBaseTest,
       public ::testing::WithParamInterface<
@@ -88,8 +111,10 @@ TEST_P(GcpUserPoliciesFetchAndReadTest, CloudPoliciesWin) {
                     policies_.validity_period_days + 100);
 
   base::Value policies_value = policies_.ToValue();
+  base::Value expected_response_value(base::Value::Type::DICTIONARY);
+  expected_response_value.SetKey("policies", std::move(policies_value));
   std::string expected_response;
-  base::JSONWriter::Write(policies_value, &expected_response);
+  base::JSONWriter::Write(expected_response_value, &expected_response);
 
   GURL user_policies_url =
       UserPoliciesManager::Get()->GetGcpwServiceUserPoliciesUrl(sid_);
@@ -120,12 +145,14 @@ TEST_P(GcpUserPoliciesFetchAndReadTest, RegistryValuesWin) {
 
   // Only set values for cloud policies for those not already set in registry.
   base::Value policies_value(base::Value::Type::DICTIONARY);
-  policies_value.SetBoolKey("enable_gcpw_auto_update",
+  policies_value.SetBoolKey("enableGcpwAutoUpdate",
                             policies_.enable_gcpw_auto_update);
-  policies_value.SetStringKey("gcpw_pinned_version",
+  policies_value.SetStringKey("gcpwPinnedVersion",
                               policies_.gcpw_pinned_version.ToString());
+  base::Value expected_response_value(base::Value::Type::DICTIONARY);
+  expected_response_value.SetKey("policies", std::move(policies_value));
   std::string expected_response;
-  base::JSONWriter::Write(policies_value, &expected_response);
+  base::JSONWriter::Write(expected_response_value, &expected_response);
 
   fake_http_url_fetcher_factory()->SetFakeResponse(
       UserPoliciesManager::Get()->GetGcpwServiceUserPoliciesUrl(sid_),
@@ -157,6 +184,102 @@ INSTANTIATE_TEST_SUITE_P(All,
                                             ::testing::Values("", "110.2.33.2"),
                                             ::testing::Bool(),
                                             ::testing::Values(0, 30)));
+
+// Tests user policy fetch by ESA service.
+// Params:
+// string : The specified device resource ID.
+// bool : Whether a valid user sid is present.
+// string : The specified DM token.
+class GcpUserPoliciesExtensionTest
+    : public GcpUserPoliciesBaseTest,
+      public ::testing::WithParamInterface<
+          std::tuple<const wchar_t*, bool, const wchar_t*>> {
+ public:
+  GcpUserPoliciesExtensionTest();
+
+ protected:
+  extension::TaskCreator fetch_policy_task_creator_;
+};
+
+GcpUserPoliciesExtensionTest::GcpUserPoliciesExtensionTest() {
+  fetch_policy_task_creator_ =
+      UserPoliciesManager::GetFetchPoliciesTaskCreator();
+}
+
+TEST_P(GcpUserPoliciesExtensionTest, WithUserDeviceContext) {
+  const base::string16 device_resource_id(std::get<0>(GetParam()));
+  bool has_valid_sid = std::get<1>(GetParam());
+  const base::string16 dm_token(std::get<2>(GetParam()));
+
+  const bool request_can_succeed =
+      has_valid_sid && !device_resource_id.empty() && !dm_token.empty();
+
+  base::string16 user_sid = L"invalid-user-sid";
+  if (has_valid_sid) {
+    // Create a fake user associated to a gaia id.
+    CComBSTR sid_str;
+    ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
+                        kDefaultUsername, L"password", L"Full Name", L"comment",
+                        base::UTF8ToUTF16(kDefaultGaiaId), L"user@company.com",
+                        &sid_str));
+    user_sid = OLE2W(sid_str);
+  }
+
+  UserPolicies policies;
+  policies.gcpw_pinned_version = GcpwVersion("1.2.3.4");
+  base::Value policies_value = policies.ToValue();
+  base::Value expected_response_value(base::Value::Type::DICTIONARY);
+  expected_response_value.SetKey("policies", std::move(policies_value));
+  std::string expected_response;
+  base::JSONWriter::Write(expected_response_value, &expected_response);
+
+  GURL user_policies_url =
+      UserPoliciesManager::Get()->GetGcpwServiceUserPoliciesUrl(
+          user_sid, device_resource_id, dm_token);
+
+  if (request_can_succeed) {
+    ASSERT_TRUE(user_policies_url.is_valid());
+    ASSERT_NE(std::string::npos, user_policies_url.spec().find(kDefaultGaiaId));
+    ASSERT_NE(std::string::npos, user_policies_url.spec().find(
+                                     base::UTF16ToUTF8(device_resource_id)));
+    ASSERT_NE(std::string::npos,
+              user_policies_url.spec().find(base::UTF16ToUTF8(dm_token)));
+  } else {
+    ASSERT_FALSE(user_policies_url.is_valid());
+  }
+
+  // Set cloud policy fetch server response.
+  fake_http_url_fetcher_factory()->SetFakeResponse(
+      user_policies_url, FakeWinHttpUrlFetcher::Headers(), expected_response);
+
+  extension::UserDeviceContext context(device_resource_id, L"", L"", user_sid,
+                                       dm_token);
+
+  auto task(fetch_policy_task_creator_.Run());
+  ASSERT_TRUE(task);
+
+  ASSERT_TRUE(SUCCEEDED(task->SetContext({context})));
+  HRESULT status = task->Execute();
+
+  UserPolicies fetched_policies;
+  if (!has_valid_sid || device_resource_id.empty() || dm_token.empty()) {
+    ASSERT_TRUE(FAILED(status));
+    ASSERT_FALSE(UserPoliciesManager::Get()->GetUserPolicies(
+        user_sid, &fetched_policies));
+  } else {
+    ASSERT_TRUE(SUCCEEDED(status));
+    ASSERT_TRUE(UserPoliciesManager::Get()->GetUserPolicies(user_sid,
+                                                            &fetched_policies));
+    ASSERT_EQ(policies, fetched_policies);
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    GcpUserPoliciesExtensionTest,
+    ::testing::Combine(::testing::Values(L"", L"valid-device-resource-id"),
+                       ::testing::Bool(),
+                       ::testing::Values(L"", L"valid-dm-token")));
 
 }  // namespace testing
 }  // namespace credential_provider

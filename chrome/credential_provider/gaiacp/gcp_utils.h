@@ -60,6 +60,9 @@ constexpr int kInitialDuplicateUsernameIndex = 2;
 // does not have a file extension.
 extern const wchar_t kDefaultProfilePictureFileExtension[];
 
+// Name of the sub-folder under which all files for GCPW are stored.
+extern const base::FilePath::CharType kCredentialProviderFolder[];
+
 // Because of some strange dependency problems with windows header files,
 // define STATUS_SUCCESS here instead of including ntstatus.h or SubAuth.h
 #define STATUS_SUCCESS ((NTSTATUS)0x00000000L)

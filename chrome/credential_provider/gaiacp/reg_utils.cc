@@ -8,6 +8,7 @@
 
 #include <atlbase.h>
 
+#include "base/base64.h"
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -43,6 +44,9 @@ const wchar_t kLogonUiUserTileRegKey[] =
 const wchar_t kMicrosoftCryptographyRegKey[] =
     L"SOFTWARE\\Microsoft\\Cryptography";
 const wchar_t kMicrosoftCryptographyMachineGuidRegKey[] = L"MachineGuid";
+
+constexpr wchar_t kRegUserDeviceResourceId[] = L"device_resource_id";
+constexpr wchar_t kRegGlsPath[] = L"gls_path";
 
 namespace {
 
@@ -491,11 +495,29 @@ HRESULT SetMachineGuidForTesting(const base::string16& machine_guid) {
                              machine_guid);
 }
 
+base::string16 GetUserDeviceResourceId(const base::string16& sid) {
+  wchar_t known_resource_id[512];
+  ULONG known_resource_id_size = base::size(known_resource_id);
+  HRESULT hr = GetUserProperty(sid, kRegUserDeviceResourceId, known_resource_id,
+                               &known_resource_id_size);
+
+  if (SUCCEEDED(hr) && known_resource_id_size > 0)
+    return base::string16(known_resource_id, known_resource_id_size - 1);
+
+  return base::string16();
+}
+
 HRESULT GetDmToken(std::string* dm_token) {
   DCHECK(dm_token);
 
-  return GetMachineRegBinaryInternal(kEnrollmentRegKey, kDmTokenRegKey,
-                                     dm_token, KEY_READ | KEY_WOW64_32KEY);
+  std::string binary_dm_token;
+  HRESULT hr =
+      GetMachineRegBinaryInternal(kEnrollmentRegKey, kDmTokenRegKey,
+                                  &binary_dm_token, KEY_READ | KEY_WOW64_32KEY);
+  if (SUCCEEDED(hr)) {
+    base::Base64Encode(binary_dm_token, dm_token);
+  }
+  return hr;
 }
 
 HRESULT SetDmTokenForTesting(const std::string& dm_token) {

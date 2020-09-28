@@ -27,6 +27,7 @@ source_set("common") {
   deps = [
     "../extension:common",
     "../gaiacp:common",
+    "../gaiacp:util",
     "//chrome/installer/util:with_no_strings",
   ]
 }
@@ -69,6 +70,7 @@ executable("gcp_setup") {
     "../eventlog:gcp_eventlog_messages",
     "../extension:common",
     "../gaiacp:common",
+    "../gaiacp:util",
     "//build:branding_buildflags",
     "//chrome/common:version_header",
     "//components/crash/core/app:app",

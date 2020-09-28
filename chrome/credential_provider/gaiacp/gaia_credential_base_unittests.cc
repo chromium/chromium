@@ -3305,7 +3305,9 @@ TEST_P(GcpGaiaCredentialBaseFetchCloudPoliciesTest, FetchAndStore) {
     } else {
       UserPolicies policies;
       base::Value policies_value = policies.ToValue();
-      base::JSONWriter::Write(policies_value, &expected_response);
+      base::Value expected_response_value(base::Value::Type::DICTIONARY);
+      expected_response_value.SetKey("policies", std::move(policies_value));
+      base::JSONWriter::Write(expected_response_value, &expected_response);
     }
 
     fake_http_url_fetcher_factory()->SetFakeResponse(

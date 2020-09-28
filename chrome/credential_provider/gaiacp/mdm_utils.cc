@@ -50,10 +50,8 @@ constexpr wchar_t kRegDeviceDetailsUploadStatus[] =
     L"device_details_upload_status";
 constexpr wchar_t kRegDeviceDetailsUploadFailures[] =
     L"device_details_upload_failures";
-constexpr wchar_t kRegGlsPath[] = L"gls_path";
 constexpr wchar_t kRegUpdateCredentialsOnChange[] =
     L"update_credentials_on_change";
-constexpr wchar_t kRegUserDeviceResourceId[] = L"device_resource_id";
 constexpr wchar_t kRegUseShorterAccountName[] = L"use_shorter_account_name";
 constexpr wchar_t kUserPasswordLsaStoreKeyPrefix[] =
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -509,18 +507,6 @@ base::string16 GetUserPasswordLsaStoreKey(const base::string16& sid) {
   DCHECK(sid.size());
 
   return kUserPasswordLsaStoreKeyPrefix + sid;
-}
-
-base::string16 GetUserDeviceResourceId(const base::string16& sid) {
-  wchar_t known_resource_id[512];
-  ULONG known_resource_id_size = base::size(known_resource_id);
-  HRESULT hr = GetUserProperty(sid, kRegUserDeviceResourceId, known_resource_id,
-                               &known_resource_id_size);
-
-  if (SUCCEEDED(hr) && known_resource_id_size > 0)
-    return base::string16(known_resource_id, known_resource_id_size - 1);
-
-  return base::string16();
 }
 
 base::string16 GetDevelopmentUrl(const base::string16& url,

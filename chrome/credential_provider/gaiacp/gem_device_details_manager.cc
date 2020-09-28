@@ -13,7 +13,6 @@
 #define _NTDEF_  // Prevent redefition errors, must come after <winternl.h>
 #include <ntsecapi.h>  // For POLICY_ALL_ACCESS types
 
-#include "base/base64.h"
 #include "base/containers/span.h"
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -129,15 +128,12 @@ HRESULT GemDeviceDetailsManager::UploadDeviceDetails(
   for (const std::string& mac_address : mac_addresses)
     mac_address_value_list.Append(base::Value(mac_address));
 
-  std::string dm_token = "";
-  std::string encoded_dm_token = "";
+  std::string dm_token;
   hr = GetDmToken(&dm_token);
   if (FAILED(hr)) {
     LOGFN(WARNING) << "DM token is required to execute periodic tasks hr="
                  << putHR(hr);
     hr = S_OK;
-  } else {
-    base::Base64Encode(dm_token, &encoded_dm_token);
   }
 
   request_dict_.reset(new base::Value(base::Value::Type::DICTIONARY));
@@ -161,7 +157,7 @@ HRESULT GemDeviceDetailsManager::UploadDeviceDetails(
   request_dict_->SetStringKey(kBuiltInAdminNameParameterName,
                               built_in_admin_name);
   request_dict_->SetStringKey(kAdminGroupNameParameterName, admin_group_name);
-  request_dict_->SetStringKey(kDmToken, encoded_dm_token);
+  request_dict_->SetStringKey(kDmToken, dm_token);
 
   base::string16 known_resource_id = GetUserDeviceResourceId(sid);
   if (!known_resource_id.empty()) {

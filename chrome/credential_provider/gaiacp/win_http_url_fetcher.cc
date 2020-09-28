@@ -194,8 +194,11 @@ HttpServiceRequest* HttpServiceRequest::Create(
   }
 
   url_fetcher->SetRequestHeader("Content-Type", "application/json");
-  url_fetcher->SetRequestHeader("Authorization",
-                                ("Bearer " + access_token).c_str());
+  if (!access_token.empty()) {
+    url_fetcher->SetRequestHeader("Authorization",
+                                  ("Bearer " + access_token).c_str());
+  }
+
   for (auto& header : headers)
     url_fetcher->SetRequestHeader(header.first.c_str(), header.second.c_str());
 

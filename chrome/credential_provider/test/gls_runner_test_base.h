@@ -240,7 +240,9 @@ class GlsRunnerTestBase : public ::testing::Test {
   std::string default_token_handle_response_;
 
   base::ScopedTempDir scoped_temp_program_files_dir_;
+  base::ScopedTempDir scoped_temp_progdata_dir_;
   std::unique_ptr<base::ScopedPathOverride> program_files_override_;
+  std::unique_ptr<base::ScopedPathOverride> programdata_override_;
 };
 
 }  // namespace testing

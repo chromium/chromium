@@ -56,12 +56,6 @@ extern const wchar_t kRegDeviceDetailsUploadStatus[];
 // Number of consecutive failures encountered when uploading device details.
 extern const wchar_t kRegDeviceDetailsUploadFailures[];
 
-// Specifies custom Chrome path to use for GLS.
-extern const wchar_t kRegGlsPath[];
-
-// Registry key where user device resource ID is stored.
-extern const wchar_t kRegUserDeviceResourceId[];
-
 // Maximum number of consecutive Upload device details failures for which we do
 // enforce auth.
 extern const int kMaxNumConsecutiveUploadDeviceFailures;
@@ -143,10 +137,6 @@ HRESULT EnrollToGoogleMdmIfNeeded(const base::Value& properties);
 
 // Constructs the password lsa store key for the given |sid|.
 base::string16 GetUserPasswordLsaStoreKey(const base::string16& sid);
-
-// Get device resource ID for the user with given |sid|. Returns an empty string
-// if one has not been set for the user.
-base::string16 GetUserDeviceResourceId(const base::string16& sid);
 
 // Converts the |url| in the form of http://xxxxx.googleapis.com/...
 // to a form that points to a development URL as specified with |dev|

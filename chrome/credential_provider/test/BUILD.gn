@@ -39,6 +39,7 @@ test("gcp_unittests") {
     "../gaiacp:gaia_credential_provider_idl",
     "../gaiacp:gaiacp_lib",
     "../gaiacp:string_resources",
+    "../gaiacp:util",
     "../gaiacp:version",
     "../setup:common",
     "//base",

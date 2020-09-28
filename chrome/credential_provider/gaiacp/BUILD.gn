@@ -24,23 +24,15 @@ source_set("common") {
     "gcp_crash_reporter_client.h",
     "gcp_crash_reporting_utils.cc",
     "gcp_crash_reporting_utils.h",
-    "gcp_utils.cc",
-    "gcp_utils.h",
     "gcpw_strings.cc",
     "gcpw_strings.h",
     "gcpw_version.cc",
     "gcpw_version.h",
-    "logging.cc",
-    "logging.h",
     "mdm_utils.cc",
     "mdm_utils.h",
     "os_user_manager.cc",
     "os_user_manager.h",
-    "reg_utils.cc",
-    "reg_utils.h",
     "scoped_handle.h",
-    "scoped_lsa_policy.cc",
-    "scoped_lsa_policy.h",
     "user_policies.cc",
     "user_policies.h",
     "user_policies_manager.cc",
@@ -53,6 +45,8 @@ source_set("common") {
   deps = [
     ":gaia_credential_provider_idl",
     ":string_resources",
+    ":util",
+    "../extension:extension_lib",
     "//base",
     "//build:branding_buildflags",
     "//chrome/common:version_header",
@@ -77,6 +71,39 @@ config("common_config") {
     "netapi32.lib",  # For NetUserXXX()
     "iphlpapi.lib",  # For GetAdaptersInfo
     "userenv.lib",  # For GetUserProfileDirectoryW()
+  ]
+}
+
+# This utility library is shared with the GCPW extension.
+source_set("util") {
+  sources = [
+    "gcp_utils.cc",
+    "gcp_utils.h",
+    "logging.cc",
+    "logging.h",
+    "reg_utils.cc",
+    "reg_utils.h",
+    "scoped_lsa_policy.cc",
+    "scoped_lsa_policy.h",
+  ]
+  public_configs = [ ":util_config" ]
+  public_deps = [ "//chrome/credential_provider/common:common_constants" ]
+  deps = [
+    ":gaia_credential_provider_idl",
+    ":string_resources",
+    "//base",
+    "//build:branding_buildflags",
+    "//chrome/common:version_header",
+    "//chrome/installer/launcher_support",
+    "//google_apis:google_apis",
+    "//url:url",
+  ]
+}
+
+config("util_config") {
+  defines = [
+    # Needed in order to include the win32 header security.h.
+    "SECURITY_WIN32",
   ]
 }
 
@@ -131,6 +158,7 @@ source_set("gaiacp_lib") {
     ":gaia_credential_provider_idl",
     ":static_resources",
     ":string_resources",
+    ":util",
     "../eventlog:gcp_eventlog_messages",
     "//build:branding_buildflags",
     "//chrome/common:non_code_constants",
@@ -241,6 +269,7 @@ shared_library("gaia1_0") {
   deps = [
     ":common",
     ":gaiacp_lib",
+    ":util",
     ":version",
     "//base",
     "//build:branding_buildflags",

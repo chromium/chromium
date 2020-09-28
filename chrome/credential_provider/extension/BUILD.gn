@@ -56,7 +56,7 @@ source_set("extension_lib") {
   ]
   deps = [
     ":common",
-    "../gaiacp:common",
+    "../gaiacp:util",
     "//base:base",
   ]
   configs += [ "//build/config/win:windowed" ]
@@ -71,6 +71,7 @@ executable("gcpw_extension") {
     ":version",
     "../eventlog:gcp_eventlog_messages",
     "../gaiacp:common",
+    "../gaiacp:util",
     "//base",
     "//components/crash/core/app:crash_export_thunks",
     "//components/crash/core/app:run_as_crashpad_handler",

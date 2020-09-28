@@ -18,11 +18,11 @@ namespace credential_provider {
 namespace {
 
 // Parameter names that are used in the JSON payload of the response.
-const char kGcpwPolicyDmEnrollmentParameterName[] = "enable_dm_enrollment";
-const char kGcpwPolicyAutoUpdateParameterName[] = "enable_gcpw_auto_update";
-const char kGcpwPolicyPinnerVersionParameterName[] = "gcpw_pinned_version";
-const char kGcpwPolicMultiUserLoginParameterName[] = "enable_multi_user_login";
-const char kGcpwPolicyValidityPeriodParameterName[] = "validity_period_days";
+const char kGcpwPolicyDmEnrollmentParameterName[] = "enableDmEnrollment";
+const char kGcpwPolicyAutoUpdateParameterName[] = "enableGcpwAutoUpdate";
+const char kGcpwPolicyPinnerVersionParameterName[] = "gcpwPinnedVersion";
+const char kGcpwPolicMultiUserLoginParameterName[] = "enableMultiUserLogin";
+const char kGcpwPolicyValidityPeriodParameterName[] = "validityPeriodDays";
 
 // Default value of each user policy.
 constexpr bool kUserPolicyDefaultDeviceEnrollment = true;

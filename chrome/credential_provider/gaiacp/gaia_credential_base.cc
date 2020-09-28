@@ -2477,9 +2477,17 @@ HRESULT CGaiaCredentialBase::OnUserAuthenticated(BSTR authentication_info,
   if (UserPoliciesManager::Get()->CloudPoliciesEnabled() &&
       UserPoliciesManager::Get()->GetTimeDeltaSinceLastPolicyFetch(sid) >
           kMaxTimeDeltaSinceLastUserPolicyRefresh) {
+    // Save gaia id since it is needed for the cloud policies server request.
+    base::string16 gaia_id = GetDictString(*authentication_results_, kKeyId);
+    HRESULT hr = SetUserProperty(sid, kUserId, gaia_id);
+    if (FAILED(hr)) {
+      LOGFN(ERROR) << "SetUserProperty(id) hr=" << putHR(hr);
+    }
+
     // TODO(crbug.com/976744) Use downscoped token here.
-    base::string16 access_token = GetDictString(*properties, kKeyAccessToken);
-    HRESULT hr = UserPoliciesManager::Get()->FetchAndStoreCloudUserPolicies(
+    base::string16 access_token =
+        GetDictString(*authentication_results_, kKeyAccessToken);
+    hr = UserPoliciesManager::Get()->FetchAndStoreCloudUserPolicies(
         sid, base::UTF16ToUTF8(access_token));
     SecurelyClearString(access_token);
     if (FAILED(hr)) {

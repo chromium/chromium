@@ -51,7 +51,6 @@
 #include "chrome/credential_provider/common/gcp_strings.h"
 #include "chrome/credential_provider/gaiacp/gaia_resources.h"
 #include "chrome/credential_provider/gaiacp/logging.h"
-#include "chrome/credential_provider/gaiacp/mdm_utils.h"
 #include "chrome/credential_provider/gaiacp/reg_utils.h"
 #include "chrome/installer/launcher_support/chrome_launcher_support.h"
 #include "google_apis/gaia/gaia_auth_util.h"
@@ -61,6 +60,9 @@
 namespace credential_provider {
 
 const wchar_t kDefaultProfilePictureFileExtension[] = L".jpg";
+
+const base::FilePath::CharType kCredentialProviderFolder[] =
+    L"Credential Provider";
 
 // Overridden in tests to fake serial number extraction.
 bool g_use_test_serial_number = false;
@@ -87,8 +89,6 @@ namespace {
 constexpr char kMinimumSupportedChromeVersionStr[] = "77.0.3865.65";
 
 constexpr char kSentinelFilename[] = "gcpw_startup.sentinel";
-constexpr base::FilePath::CharType kCredentialProviderFolder[] =
-    L"Credential Provider";
 constexpr int64_t kMaxConsecutiveCrashCount = 5;
 
 constexpr base::win::i18n::LanguageSelector::LangToOffset

@@ -8,6 +8,7 @@
 #include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "base/win/windows_types.h"
+#include "chrome/credential_provider/extension/task_manager.h"
 #include "chrome/credential_provider/gaiacp/user_policies.h"
 #include "url/gurl.h"
 
@@ -19,6 +20,10 @@ class UserPoliciesManager {
   // Get the user policies manager instance.
   static UserPoliciesManager* Get();
 
+  // Provides the GCPW extension with a TaskCreator which can be used to create
+  // a task for fetching user policies.
+  static extension::TaskCreator GetFetchPoliciesTaskCreator();
+
   // Return true if cloud policies feature is enabled.
   bool CloudPoliciesEnabled() const;
 
@@ -29,13 +34,26 @@ class UserPoliciesManager {
       const base::string16& sid,
       const std::string& access_token);
 
+  // Fetch the policies for the user-device |context| provided by the GCPW
+  // extension service from the GCPW backend and saves it in file storage
+  // replacing any previously fetched versions.
+  virtual HRESULT FetchAndStoreCloudUserPolicies(
+      const extension::UserDeviceContext& context);
+
   // Return the elapsed time delta since the last time the policies were
   // successfully fetched for the user with |sid|.
   base::TimeDelta GetTimeDeltaSinceLastPolicyFetch(
       const base::string16& sid) const;
 
-  // Get the URL of GCPW service for HTTP request for fetching user policies.
+  // Get the URL of GCPW service for HTTP request for fetching user policies
+  // when the caller has a valid OAuth token for authentication.
   GURL GetGcpwServiceUserPoliciesUrl(const base::string16& sid);
+
+  // Get the URL of GCPW service for HTTP request for fetching user policies
+  // when the caller only has a DM token.
+  GURL GetGcpwServiceUserPoliciesUrl(const base::string16& sid,
+                                     const base::string16& device_resource_id,
+                                     const base::string16& dm_token);
 
   // Retrieves the policies for the user with |sid| from local storage. Returns
   // the default user policy if policy not fetched or on any error.
@@ -51,6 +69,12 @@ class UserPoliciesManager {
  protected:
   // Returns the storage used for the instance pointer.
   static UserPoliciesManager** GetInstanceStorage();
+
+  // Fetch the user policies using the given backend url and access token if
+  // specified.
+  HRESULT FetchAndStorePolicies(const base::string16& sid,
+                                GURL user_policies_url,
+                                const std::string& access_token);
 
   UserPoliciesManager();
   virtual ~UserPoliciesManager();

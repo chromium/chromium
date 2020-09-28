@@ -120,9 +120,11 @@ TEST_F(TaskManagerTest, TaskExecuted) {
   base::string16 serial_number = L"1234";
   GoogleRegistrationDataForTesting g_registration_data(serial_number);
   base::string16 machine_guid = L"machine_guid";
-  std::string dm_token = "dm_token";
   SetMachineGuidForTesting(machine_guid);
-  SetDmTokenForTesting(dm_token);
+  ASSERT_EQ(S_OK, SetDmTokenForTesting("dmtoken"));
+  std::string dm_token;
+  // DM token gets Base64 encoded so get the encoded value here.
+  ASSERT_EQ(S_OK, GetDmToken(&dm_token));
 
   // Create a fake user associated to a gaia id.
   CComBSTR sid1;

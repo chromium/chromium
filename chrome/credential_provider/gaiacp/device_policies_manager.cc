@@ -106,10 +106,10 @@ void DevicePoliciesManager::EnforceGcpwUpdatePolicy() {
 
   base::string16 update_channel;  // Empty value indicates the stable channel.
   std::wstring ap_value;
-  status = key.ReadValue(kRegUpdateTracksName, &ap_value);
+  LONG ap_status = key.ReadValue(kRegUpdateTracksName, &ap_value);
   GcpwVersion current_pinned_version(base::UTF16ToUTF8(ap_value));
 
-  if (status == ERROR_SUCCESS && !current_pinned_version.IsValid()) {
+  if (ap_status == ERROR_SUCCESS && !current_pinned_version.IsValid()) {
     std::vector<base::string16> ap_components =
         base::SplitString(ap_value, kChannelAndVersionSeparator,
                           base::WhitespaceHandling::TRIM_WHITESPACE,
@@ -124,7 +124,7 @@ void DevicePoliciesManager::EnforceGcpwUpdatePolicy() {
     // pinned to a version, remove the registry entry if device was on the
     // stable channel or restore the previous channel.
 
-    if (update_channel.empty()) {
+    if (ap_status == ERROR_SUCCESS && update_channel.empty()) {
       status = key.DeleteValue(kRegUpdateTracksName);
       if (status != ERROR_SUCCESS) {
         LOGFN(ERROR) << "Unable to delete " << kRegUpdateTracksName
