@@ -7,6 +7,10 @@
 
 #include "third_party/skia/include/core/SkColor.h"
 
+namespace views {
+class WebView;
+}
+
 class ProfilePicker {
  public:
   // An entry point that triggers the profile picker window to open.
@@ -26,17 +30,24 @@ class ProfilePicker {
 
   // Starts the sign-in flow. The layout of the window gets updated for the
   // sign-in flow. At the same time, the new profile is created (with
-  // |profile_color|) and the sign-in page is rendered using the new profile.
-  // If the creation of the new profile fails, |switch_failure_callback| gets
+  // `profile_color`) and the sign-in page is rendered using the new profile.
+  // If the creation of the new profile fails, `switch_failure_callback` gets
   // called.
   static void SwitchToSignIn(SkColor profile_color,
                              base::OnceClosure switch_failure_callback);
+
+  // Finishes the sign-in flow by moving to the sync confirmation screen. It
+  // uses the same new profile created by `SwitchToSignIn()`.
+  static void SwitchToSyncConfirmation();
 
   // Hides the profile picker.
   static void Hide();
 
   // Returns whether the profile picker is currently open.
   static bool IsOpen();
+
+  // Returns the global profile picker instance for testing.
+  static views::WebView* GetWebViewForTesting();
 
  private:
   DISALLOW_COPY_AND_ASSIGN(ProfilePicker);

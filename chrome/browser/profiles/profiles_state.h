@@ -16,6 +16,7 @@
 #include "chrome/browser/profiles/avatar_menu.h"
 #endif
 
+struct AccountInfo;
 class Browser;
 class PrefRegistrySimple;
 class Profile;
@@ -108,6 +109,14 @@ bool IsPublicSession();
 
 // Returns whether public session restrictions are enabled.
 bool ArePublicSessionRestrictionsEnabled();
+
+#if !defined(OS_CHROMEOS)
+// Returns the default name for a new signed-in profile, based on
+// `account_info`.
+base::string16 GetDefaultNameForNewSignedInProfile(
+    const AccountInfo& account_info);
+#endif  // !defined(OS_CHROMEOS)
+
 #endif  // !defined(OS_ANDROID)
 
 }  // namespace profiles

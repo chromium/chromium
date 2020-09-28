@@ -3060,6 +3060,11 @@ if (!is_android) {
           [ "../browser/site_isolation/spellcheck_per_process_browsertest.cc" ]
     }
 
+    if (is_win || is_mac || (is_desktop_linux && !chromeos_is_browser_only)) {
+      sources +=
+          [ "../browser/ui/views/profiles/profile_picker_view_browsertest.cc" ]
+    }
+
     sources += metric_integration_sources
   }
 }

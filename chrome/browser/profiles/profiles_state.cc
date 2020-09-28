@@ -274,6 +274,20 @@ bool ArePublicSessionRestrictionsEnabled() {
 #endif
   return false;
 }
+
+#if !defined(OS_CHROMEOS)
+base::string16 GetDefaultNameForNewSignedInProfile(
+    const AccountInfo& account_info) {
+  DCHECK(account_info.IsValid());
+  bool is_consumer = account_info.hosted_domain.empty() ||
+                     account_info.hosted_domain == kNoHostedDomainFound;
+  if (is_consumer)
+    return base::UTF8ToUTF16(account_info.given_name);
+  return l10n_util::GetStringUTF16(
+      IDS_SIGNIN_DICE_WEB_INTERCEPT_ENTERPRISE_PROFILE_NAME);
+}
+#endif  // !defined(OS_CHROMEOS)
+
 #endif  // !defined(OS_ANDROID)
 
 }  // namespace profiles

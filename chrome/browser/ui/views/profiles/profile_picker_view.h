@@ -9,9 +9,13 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/profile_picker.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/window/dialog_delegate.h"
+
+struct AccountInfo;
+class Browser;
 
 namespace content {
 struct ContextMenuParams;
@@ -20,7 +24,11 @@ class RenderFrameHost;
 
 // Dialog widget that contains the Desktop Profile picker webui.
 class ProfilePickerView : public views::DialogDelegateView,
-                          public content::WebContentsDelegate {
+                          public content::WebContentsDelegate,
+                          public signin::IdentityManager::Observer {
+ public:
+  using BrowserOpenedCallback = base::OnceCallback<void(Browser*)>;
+
  private:
   friend class ProfilePicker;
 
@@ -54,6 +62,8 @@ class ProfilePickerView : public views::DialogDelegateView,
   void OnProfileForSigninCreated(SkColor profile_color,
                                  Profile* new_profile,
                                  Profile::CreateStatus status);
+  // Switches the layout to the sync confirmation screen.
+  void SwitchToSyncConfirmation();
 
   // views::DialogDelegateView:
   gfx::Size CalculatePreferredSize() const override;
@@ -66,12 +76,35 @@ class ProfilePickerView : public views::DialogDelegateView,
   bool HandleContextMenu(content::RenderFrameHost* render_frame_host,
                          const content::ContextMenuParams& params) override;
 
+  // IdentityManager::Observer:
+  void OnRefreshTokenUpdatedForAccount(
+      const CoreAccountInfo& account_info) override;
+  void OnExtendedAccountInfoUpdated(const AccountInfo& account_info) override;
+
+  // Finishes the creation flow by marking `profile` as fully created, opening a
+  // browser window for `profile` and calling `callback`.
+  void FinishSignedInCreationFlow(Profile* profile,
+                                  BrowserOpenedCallback callback);
+  void FinishSignedInCreationFlowImpl(Profile* profile,
+                                      BrowserOpenedCallback callback);
+
+  // Internal callback to finish the last steps of the signed-in creation flow.
+  void OnBrowserOpened(BrowserOpenedCallback finish_flow_callback,
+                       Profile* profile,
+                       Profile::CreateStatus profile_create_status);
+
   ScopedKeepAlive keep_alive_;
   views::WebView* web_view_ = nullptr;
   InitState initialized_ = InitState::kNotInitialized;
+  Profile* profile_being_created_ = nullptr;
+
+  AccountInfo account_info_;
+  base::OnceClosure on_account_info_available_;
 
   // Not null iff switching to sign-in is in progress.
   base::OnceClosure switch_failure_callback_;
+  ScopedObserver<signin::IdentityManager, signin::IdentityManager::Observer>
+      identity_manager_observer_{this};
 
   // Creation time of the picker, to measure performance on startup. Only set
   // when the picker is shown on startup.
