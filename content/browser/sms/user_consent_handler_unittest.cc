@@ -34,7 +34,7 @@ class PromptBasedUserConsentHandlerTest : public RenderViewHostTestHarness {
   void SetUp() override {
     RenderViewHostTestHarness::SetUp();
     WebContentsImpl* web_contents_impl =
-        reinterpret_cast<WebContentsImpl*>(web_contents());
+        static_cast<WebContentsImpl*>(web_contents());
     web_contents_impl->SetDelegate(&delegate_);
   }
 
@@ -136,7 +136,7 @@ TEST_F(PromptBasedUserConsentHandlerTest, CancelsWhenNoDelegate) {
       web_contents()->GetMainFrame()->GetLastCommittedOrigin();
 
   WebContentsImpl* web_contents_impl =
-      reinterpret_cast<WebContentsImpl*>(web_contents());
+      static_cast<WebContentsImpl*>(web_contents());
   web_contents_impl->SetDelegate(nullptr);
 
   ExpectNoSmsPrompt();
