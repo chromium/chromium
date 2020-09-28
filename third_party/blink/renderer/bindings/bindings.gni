@@ -16,6 +16,8 @@ bindings_core_v8_files =
                     "core/v8/binding_security.cc",
                     "core/v8/binding_security.h",
                     "core/v8/boxed_v8_module.h",
+                    "core/v8/callback_invoke_helper.cc",
+                    "core/v8/callback_invoke_helper.h",
                     "core/v8/callback_promise_adapter.h",
                     "core/v8/classic_evaluation_result.h",
                     "core/v8/custom/v8_custom_xpath_ns_resolver.cc",

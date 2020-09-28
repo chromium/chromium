@@ -56,6 +56,8 @@ def main():
     options, tasks = parse_options()
 
     dispatch_table = {
+        'callback_function': bind_gen.generate_callback_functions,
+        'callback_interface': bind_gen.generate_callback_interfaces,
         'dictionary': bind_gen.generate_dictionaries,
         'enumeration': bind_gen.generate_enumerations,
         'interface': bind_gen.generate_interfaces,

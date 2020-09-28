@@ -27,6 +27,8 @@
 ../../build/scripts/blinkbuild/name_style_converter.py
 bind_gen/__init__.py
 bind_gen/blink_v8_bridge.py
+bind_gen/callback_function.py
+bind_gen/callback_interface.py
 bind_gen/code_node.py
 bind_gen/code_node_cxx.py
 bind_gen/codegen_accumulator.py

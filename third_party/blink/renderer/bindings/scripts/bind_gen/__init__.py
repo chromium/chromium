@@ -33,6 +33,8 @@ def _setup_sys_path():
 
 _setup_sys_path()
 
+from .callback_function import generate_callback_functions
+from .callback_interface import generate_callback_interfaces
 from .dictionary import generate_dictionaries
 from .enumeration import generate_enumerations
 from .interface import generate_interfaces
