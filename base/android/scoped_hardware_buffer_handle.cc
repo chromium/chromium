@@ -58,8 +58,8 @@ void ScopedHardwareBufferHandle::reset() {
 }
 
 AHardwareBuffer* ScopedHardwareBufferHandle::Take() {
-  AHardwareBuffer* buffer = nullptr;
-  std::swap(buffer, buffer_);
+  AHardwareBuffer* buffer = buffer_;
+  buffer_ = nullptr;
   return buffer;
 }
 
