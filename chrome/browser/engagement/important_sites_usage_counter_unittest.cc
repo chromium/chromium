@@ -75,7 +75,7 @@ class ImportantSitesUsageCounterTest : public testing::Test {
         profile()->GetPath().AppendASCII("Local Storage");
     base::CreateDirectory(storage_path);
 
-    std::string data(' ', length);
+    std::string data(length, ' ');
     // Write file to local storage.
     base::FilePath file_path = storage_path.Append(storage_origin);
     base::WriteFile(file_path, data.c_str(), length);
