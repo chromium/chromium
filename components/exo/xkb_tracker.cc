@@ -46,10 +46,6 @@ void XkbTracker::UpdateKeyboardModifiers(int modifier_flags) {
   UpdateKeyboardModifiersInternal();
 }
 
-uint32_t XkbTracker::GetKeysym(uint32_t xkb_keycode) const {
-  return xkb_state_key_get_one_sym(xkb_state_.get(), xkb_keycode);
-}
-
 std::unique_ptr<char, base::FreeDeleter> XkbTracker::GetKeymap() const {
   return std::unique_ptr<char, base::FreeDeleter>(
       xkb_keymap_get_as_string(xkb_keymap_.get(), XKB_KEYMAP_FORMAT_TEXT_V1));

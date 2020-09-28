@@ -41,10 +41,6 @@ class XkbTracker {
   // ui::EventFlags.
   void UpdateKeyboardModifiers(int modifier_flags);
 
-  // Returns the keysym for the given XKB keycode, based on the current
-  // keymap and its modifier state.
-  uint32_t GetKeysym(uint32_t xkb_keycode) const;
-
   // Returns the XKB keymap data.
   std::unique_ptr<char, base::FreeDeleter> GetKeymap() const;
 
