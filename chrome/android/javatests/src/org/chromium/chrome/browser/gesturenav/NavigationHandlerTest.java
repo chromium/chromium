@@ -71,11 +71,7 @@ public class NavigationHandlerTest {
         mActivityTestRule.getActivity().getWindowManager().getDefaultDisplay().getMetrics(
                 displayMetrics);
         mEdgeWidthPx = displayMetrics.density * NavigationHandler.EDGE_WIDTH_DP;
-        TabbedRootUiCoordinator uiCoordinator =
-                (TabbedRootUiCoordinator) mActivityTestRule.getActivity()
-                        .getRootUiCoordinatorForTesting();
-        HistoryNavigationCoordinator coordinator =
-                uiCoordinator.getHistoryNavigationCoordinatorForTesting();
+        HistoryNavigationCoordinator coordinator = getNavigationCoordinator();
         mNavigationLayout = coordinator.getLayoutForTesting();
         mNavigationHandler = coordinator.getNavigationHandlerForTesting();
     }
@@ -83,6 +79,13 @@ public class NavigationHandlerTest {
     @After
     public void tearDown() {
         if (mTestServer != null) mTestServer.stopAndDestroyServer();
+    }
+
+    private HistoryNavigationCoordinator getNavigationCoordinator() {
+        TabbedRootUiCoordinator uiCoordinator =
+                (TabbedRootUiCoordinator) mActivityTestRule.getActivity()
+                        .getRootUiCoordinatorForTesting();
+        return uiCoordinator.getHistoryNavigationCoordinatorForTesting();
     }
 
     private Tab currentTab() {
@@ -234,6 +237,24 @@ public class NavigationHandlerTest {
         Assert.assertEquals(oldTab, currentTab());
         Assert.assertEquals("Chrome should remain in foreground", ActivityState.RESUMED,
                 ApplicationStatus.getStateForActivity(mActivityTestRule.getActivity()));
+    }
+
+    @Test
+    @SmallTest
+    public void testSwipeAfterDestroy() {
+        mTestServer = EmbeddedTestServer.createAndStartServer(
+                InstrumentationRegistry.getInstrumentation().getContext());
+        mActivityTestRule.loadUrl(mTestServer.getURL(RENDERED_PAGE));
+        getNavigationCoordinator().destroy();
+
+        // |triggerUi| can be invoked by SwipeRefreshHandler on the rendered
+        // page. Make sure this won't crash after the coordinator (and also
+        // handler action delegate) is destroyed.
+        assert !mNavigationHandler.triggerUi(LEFT_EDGE, 0, 0);
+
+        // Just check we're still on the same URL.
+        Assert.assertEquals(mTestServer.getURL(RENDERED_PAGE),
+                ChromeTabUtils.getUrlStringOnUiThread(currentTab()));
     }
 
     @Test
