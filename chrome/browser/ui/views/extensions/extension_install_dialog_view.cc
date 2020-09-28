@@ -243,6 +243,7 @@ ExtensionInstallDialogView::ExtensionInstallDialogView(
   SetButtonLabel(ui::DIALOG_BUTTON_OK, prompt_->GetAcceptButtonLabel());
   SetButtonLabel(ui::DIALOG_BUTTON_CANCEL, prompt_->GetAbortButtonLabel());
   set_close_on_deactivate(false);
+  SetShowCloseButton(false);
   CreateContents();
 
   UMA_HISTOGRAM_ENUMERATION("Extensions.InstallPrompt.Type2", prompt_->type(),
@@ -394,10 +395,6 @@ bool ExtensionInstallDialogView::IsDialogButtonEnabled(
     ui::DialogButton button) const {
   if (button == ui::DIALOG_BUTTON_OK)
     return install_button_enabled_;
-  return true;
-}
-
-bool ExtensionInstallDialogView::ShouldShowCloseButton() const {
   return true;
 }
 

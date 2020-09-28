@@ -232,6 +232,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewTest, NotifyDelegate) {
     // cancel.
     ExtensionInstallPromptTestHelper helper;
     ExtensionInstallDialogView* delegate_view = CreateAndShowPrompt(&helper);
+    // Note that the close button isn't present, but the dialog can still be
+    // closed this way via Esc.
+    EXPECT_FALSE(delegate_view->ShouldShowCloseButton());
     CloseAndWait(delegate_view->GetWidget());
     // TODO(devlin): Should this be ABORTED?
     EXPECT_EQ(ExtensionInstallPrompt::Result::USER_CANCELED, helper.result());
