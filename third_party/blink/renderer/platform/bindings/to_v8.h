@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/platform/bindings/callback_interface_base.h"
 #include "third_party/blink/renderer/platform/bindings/dictionary_base.h"
 #include "third_party/blink/renderer/platform/bindings/dom_data_store.h"
+#include "third_party/blink/renderer/platform/bindings/enumeration_base.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/bindings/union_base.h"
@@ -84,6 +85,14 @@ inline v8::Local<v8::Value> ToV8(CallbackInterfaceBase* callback,
           &ScriptState::From(creation_context->CreationContext())->World()));
   return callback ? callback->CallbackObject().As<v8::Value>()
                   : v8::Null(isolate).As<v8::Value>();
+}
+
+// Enumeration
+
+inline v8::Local<v8::Value> ToV8(const bindings::EnumerationBase& enumeration,
+                                 v8::Local<v8::Object> creation_context,
+                                 v8::Isolate* isolate) {
+  return V8String(isolate, enumeration.AsCStr());
 }
 
 // Union type

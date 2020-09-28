@@ -63,6 +63,8 @@ class PLATFORM_EXPORT CallbackFunctionBase
       const char* interface_name,
       const char* operation_name);
 
+  ScriptState* IncumbentScriptState() { return incumbent_script_state_; }
+
   DOMWrapperWorld& GetWorld() const { return incumbent_script_state_->World(); }
 
   // Returns true if the ES function has a [[Construct]] internal method.
@@ -92,8 +94,6 @@ class PLATFORM_EXPORT CallbackFunctionBase
   v8::Local<v8::Function> CallbackFunction() const {
     return callback_function_.NewLocal(GetIsolate()).As<v8::Function>();
   }
-
-  ScriptState* IncumbentScriptState() { return incumbent_script_state_; }
 
  private:
   // The "callback function type" value.

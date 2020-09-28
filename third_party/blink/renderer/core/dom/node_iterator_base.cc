@@ -80,9 +80,8 @@ unsigned NodeIteratorBase::AcceptNode(Node* node,
 
   UseCounter::Count(
       ExecutionContext::From(filter_->CallbackRelevantScriptState()),
-      filter_->IsCallbackObjectCallableForNodeIteratorBase()
-          ? WebFeature::kNodeFilterIsFunction
-          : WebFeature::kNodeFilterIsObject);
+      filter_->IsCallbackObjectCallable() ? WebFeature::kNodeFilterIsFunction
+                                          : WebFeature::kNodeFilterIsObject);
 
   // 7. Unset the active flag.
   // 8. Return result.
