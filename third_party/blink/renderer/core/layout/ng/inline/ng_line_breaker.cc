@@ -824,6 +824,7 @@ bool NGLineBreaker::BreakTextAtPreviousBreakOpportunity(
   DCHECK_EQ(item.Type(), NGInlineItem::kText);
   DCHECK(item.Style() && item.Style()->AutoWrap());
 
+  // TODO(jfernandez): Should we use the non-hangable-run-end instead ?
   unsigned break_opportunity = break_iterator_.PreviousBreakOpportunity(
       item_result->EndOffset() - 1, item_result->StartOffset());
   if (break_opportunity <= item_result->StartOffset())
@@ -836,6 +837,12 @@ bool NGLineBreaker::BreakTextAtPreviousBreakOpportunity(
   item_result->inline_size =
       item_result->shape_result->SnappedWidth().ClampNegativeToZero();
   item_result->can_break_after = true;
+
+  if (trailing_collapsible_space_.has_value() ||
+      trailing_collapsible_space_->item_result == item_result) {
+    trailing_collapsible_space_.reset();
+  }
+
   return true;
 }
 
