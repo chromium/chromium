@@ -8826,7 +8826,8 @@ class LayerTreeHostCustomThrougputTrackerTest : public LayerTreeHostTest {
         break;
     }
 
-    PostSetNeedsCommitWithForcedRedrawToMainThread();
+    if (!TestEnded())
+      PostSetNeedsCommitWithForcedRedrawToMainThread();
   }
 
   void NotifyThroughputTrackerResults(CustomTrackerResults results) override {
