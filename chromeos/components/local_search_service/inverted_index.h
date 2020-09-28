@@ -95,6 +95,9 @@ class InvertedIndex {
   // Builds the inverted index.
   void BuildInvertedIndex();
 
+  // Clears all the data from the inverted index.
+  void ClearInvertedIndex();
+
   // Checks if the inverted index has been built: returns |true| if the inverted
   // index is up to date, returns |false| if there are some modified document
   // since the last time the index has been built.
@@ -118,6 +121,9 @@ class InvertedIndex {
   // Called on the main thread after UpdateDocuments is completed.
   void OnUpdateDocumentsComplete(
       DocumentStateVariables&& document_state_variables);
+
+  void OnDataCleared(
+      std::pair<DocumentStateVariables, TfidfCache>&& inverted_index_data);
 
   base::RepeatingCallback<void()> on_index_built_;
 
@@ -145,6 +151,7 @@ class InvertedIndex {
   bool request_to_build_index_ = false;
   bool update_in_progress_ = false;
   bool index_building_in_progress_ = false;
+  bool request_to_clear_index_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

@@ -109,6 +109,10 @@ uint32_t LinearMapSearch::Delete(const std::vector<std::string>& ids) {
   return num_deleted;
 }
 
+void LinearMapSearch::ClearIndex() {
+  data_.clear();
+}
+
 ResponseStatus LinearMapSearch::Find(const base::string16& query,
                                      uint32_t max_results,
                                      std::vector<Result>* results) {

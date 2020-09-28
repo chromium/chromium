@@ -41,6 +41,7 @@ class LinearMapSearch : public Index {
   uint64_t GetSize() override;
   void AddOrUpdate(const std::vector<Data>& data) override;
   uint32_t Delete(const std::vector<std::string>& ids) override;
+  void ClearIndex() override;
   // For each data in the index, we return the 1st search tag that matches
   // the query (i.e. above the threshold). Client should put the most
   // important search tag first when registering the data in the index.

@@ -170,6 +170,24 @@ TEST_F(InvertedIndexSearchTest, Delete) {
   }
 }
 
+TEST_F(InvertedIndexSearchTest, ClearIndex) {
+  const std::map<std::string, std::vector<ContentWithId>> data_to_register = {
+      {"id1",
+       {{"cid_1", "This is a help wi-fi article"},
+        {"cid_2", "Another help help wi-fi"}}},
+      {"id2", {{"cid_3", "help article on wi-fi"}}}};
+
+  const std::vector<Data> data = CreateTestData(data_to_register);
+
+  search_->AddOrUpdate(data);
+  Wait();
+  EXPECT_EQ(search_->GetSize(), 2u);
+
+  search_->ClearIndex();
+  Wait();
+  EXPECT_EQ(search_->GetSize(), 0u);
+}
+
 TEST_F(InvertedIndexSearchTest, Find) {
   const std::map<std::string, std::vector<WeightedContentWithId>>
       data_to_register = {{"id1",

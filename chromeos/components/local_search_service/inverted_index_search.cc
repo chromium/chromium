@@ -94,6 +94,10 @@ uint32_t InvertedIndexSearch::Delete(const std::vector<std::string>& ids) {
   return num_deleted;
 }
 
+void InvertedIndexSearch::ClearIndex() {
+  inverted_index_->ClearInvertedIndex();
+}
+
 ResponseStatus InvertedIndexSearch::Find(const base::string16& query,
                                          uint32_t max_results,
                                          std::vector<Result>* results) {

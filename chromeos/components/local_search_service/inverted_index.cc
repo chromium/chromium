@@ -138,6 +138,25 @@ DocumentStateVariables UpdateDocuments(DocumentToUpdate&& documents_to_update,
   return std::make_tuple(std::move(new_doc_length), std::move(dictionary),
                          std::move(terms_to_be_updated));
 }
+
+// Given the index variables, clear all the data.
+std::pair<DocumentStateVariables, TfidfCache> ClearData(
+    DocumentToUpdate&& documents_to_update,
+    const DocLength& doc_length,
+    Dictionary&& dictionary,
+    TermSet&& terms_to_be_updated,
+    TfidfCache&& tfidf_cache) {
+  DCHECK(!::content::BrowserThread::CurrentlyOn(::content::BrowserThread::UI));
+  DocLength new_doc_length;
+  documents_to_update.clear();
+  dictionary.clear();
+  terms_to_be_updated.clear();
+  tfidf_cache.clear();
+  return std::make_pair(
+      std::make_tuple(std::move(new_doc_length), std::move(dictionary),
+                      std::move(terms_to_be_updated)),
+      std::move(tfidf_cache));
+}
 }  // namespace
 
 InvertedIndex::InvertedIndex() = default;
@@ -252,10 +271,31 @@ void InvertedIndex::BuildInvertedIndex() {
   InvertedIndexController();
 }
 
+void InvertedIndex::ClearInvertedIndex() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  request_to_clear_index_ = true;
+  InvertedIndexController();
+}
+
 void InvertedIndex::InvertedIndexController() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // TODO(thanhdng): A clear-index call should ideally cancel all other update
+  // operations. Need to update the code to reflect this.
   if (update_in_progress_)
     return;
+
+  if (request_to_clear_index_) {
+    update_in_progress_ = true;
+    request_to_clear_index_ = false;
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+        base::BindOnce(&ClearData, std::move(documents_to_update_), doc_length_,
+                       std::move(dictionary_), std::move(terms_to_be_updated_),
+                       std::move(tfidf_cache_)),
+        base::BindOnce(&InvertedIndex::OnDataCleared,
+                       weak_ptr_factory_.GetWeakPtr()));
+    return;
+  }
 
   if (documents_to_update_.empty()) {
     if (request_to_build_index_) {
@@ -307,6 +347,19 @@ void InvertedIndex::OnUpdateDocumentsComplete(
   dictionary_ = std::move(std::get<1>(document_state_variables));
   terms_to_be_updated_ = std::move(std::get<2>(document_state_variables));
 
+  update_in_progress_ = false;
+  InvertedIndexController();
+}
+
+void InvertedIndex::OnDataCleared(
+    std::pair<DocumentStateVariables, TfidfCache>&& inverted_index_data) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  doc_length_ = std::move(std::get<0>(inverted_index_data.first));
+  dictionary_ = std::move(std::get<1>(inverted_index_data.first));
+  terms_to_be_updated_ = std::move(std::get<2>(inverted_index_data.first));
+  tfidf_cache_ = std::move(inverted_index_data.second);
+
+  num_docs_from_last_update_ = 0;
   update_in_progress_ = false;
   InvertedIndexController();
 }

@@ -40,6 +40,7 @@ class InvertedIndexSearch : public Index {
   // TODO(jiameng): we always build the index after documents are deleted. May
   // revise this strategy if there is a different use case.
   uint32_t Delete(const std::vector<std::string>& ids) override;
+  void ClearIndex() override;
   // Returns matching results for a given query by approximately matching the
   // query with terms in the documents. Documents are ranked by TF-IDF scores.
   // Scores in results are positive but not guaranteed to be in any particular

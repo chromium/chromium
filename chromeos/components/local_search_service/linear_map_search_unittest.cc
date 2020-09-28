@@ -185,5 +185,19 @@ TEST_F(LinearMapSearchTest, ResultFound) {
                       /*max_results=*/-1, ResponseStatus::kSuccess, {});
 }
 
+TEST_F(LinearMapSearchTest, ClearIndex) {
+  const std::map<std::string, std::vector<ContentWithId>> data_to_register = {
+      {"id1", {{"cid1", "id1"}, {"cid2", "tag1a"}, {"cid3", "tag1b"}}},
+      {"xyz", {{"cid4", "xyz"}}}};
+  std::vector<Data> data = CreateTestData(data_to_register);
+  EXPECT_EQ(data.size(), 2u);
+
+  index_->AddOrUpdate(data);
+  EXPECT_EQ(index_->GetSize(), 2u);
+
+  index_->ClearIndex();
+  EXPECT_EQ(index_->GetSize(), 0u);
+}
+
 }  // namespace local_search_service
 }  // namespace chromeos

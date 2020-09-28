@@ -47,6 +47,9 @@ class Index {
   // IDs should not be empty.
   virtual uint32_t Delete(const std::vector<std::string>& ids) = 0;
 
+  // Clears all data in the index.
+  virtual void ClearIndex() = 0;
+
   // Returns matching results for a given query.
   // Zero |max_results| means no max.
   // Search behaviour depends on the implementation.

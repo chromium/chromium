@@ -103,6 +103,8 @@ class InvertedIndexTest : public ::testing::Test {
     index_.RemoveDocuments(doc_ids);
   }
 
+  void ClearInvertedIndex() { index_.ClearInvertedIndex(); }
+
   std::vector<TfidfResult> GetTfidf(const base::string16& term) {
     return index_.GetTfidf(term);
   }
@@ -465,6 +467,37 @@ TEST_F(InvertedIndexTest, UpdateIndexTest) {
       100;
   EXPECT_THAT(GetScoresFromTfidfResult(results),
               testing::UnorderedElementsAre(expected_tfidf_D_doc1));
+}
+
+TEST_F(InvertedIndexTest, ClearInvertedIndexTest) {
+  EXPECT_EQ(GetTfidfCache().size(), 0u);
+  BuildInvertedIndex();
+  Wait();
+  EXPECT_EQ(NumBuilt(), 1);
+  EXPECT_TRUE(BuildIndexCompleted());
+
+  EXPECT_TRUE(IsInvertedIndexBuilt());
+  EXPECT_EQ(GetTfidfCache().size(), 3u);
+
+  // Add a document and clear the index simultaneously.
+  const base::string16 a_utf16(base::UTF8ToUTF16("A"));
+  const base::string16 d_utf16(base::UTF8ToUTF16("D"));
+  AddDocuments({{"doc3",
+                 {{a_utf16,
+                   {{kDefaultWeight, {"header", 1, 1}},
+                    {kDefaultWeight / 2, {"body", 2, 1}},
+                    {kDefaultWeight, {"header", 4, 1}}}},
+                  {d_utf16,
+                   {{kDefaultWeight, {"header", 3, 1}},
+                    {kDefaultWeight / 2, {"body", 5, 1}}}}}}});
+  ClearInvertedIndex();
+  Wait();
+
+  EXPECT_EQ(GetTfidfCache().size(), 0u);
+  EXPECT_EQ(GetTermToBeUpdated().size(), 0u);
+  EXPECT_EQ(GetDocLength().size(), 0u);
+  EXPECT_EQ(GetDictionary().size(), 0u);
+  EXPECT_EQ(GetDocumentsToUpdate().size(), 0u);
 }
 
 TEST_F(InvertedIndexTest, FindMatchingDocumentsApproximatelyTest) {
