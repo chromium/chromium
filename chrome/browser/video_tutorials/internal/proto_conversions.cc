@@ -47,6 +47,22 @@ proto::FeatureType FromFeatureType(FeatureType type) {
 
 }  // namespace
 
+void LanguageToProto(Language* language, LanguageProto* proto) {
+  DCHECK(language);
+  DCHECK(proto);
+  proto->set_locale(language->locale);
+  proto->set_name(language->name);
+  proto->set_native_name(language->native_name);
+}
+
+void LanguageFromProto(LanguageProto* proto, Language* language) {
+  DCHECK(language);
+  DCHECK(proto);
+  language->locale = proto->locale();
+  language->name = proto->name();
+  language->native_name = proto->native_name();
+}
+
 void TutorialToProto(Tutorial* tutorial, TutorialProto* proto) {
   DCHECK(tutorial);
   DCHECK(proto);
@@ -74,7 +90,7 @@ void TutorialFromProto(TutorialProto* proto, Tutorial* tutorial) {
 void TutorialGroupToProto(TutorialGroup* group, TutorialGroupProto* proto) {
   DCHECK(group);
   DCHECK(proto);
-  proto->set_locale(group->locale);
+  LanguageToProto(&group->language, proto->mutable_language());
   proto->clear_tutorials();
   for (auto& tutorial : group->tutorials)
     TutorialToProto(&tutorial, proto->add_tutorials());
@@ -83,7 +99,7 @@ void TutorialGroupToProto(TutorialGroup* group, TutorialGroupProto* proto) {
 void TutorialGroupFromProto(TutorialGroupProto* proto, TutorialGroup* group) {
   DCHECK(group);
   DCHECK(proto);
-  group->locale = proto->locale();
+  LanguageFromProto(proto->mutable_language(), &group->language);
   group->tutorials.clear();
   for (auto tutorial_proto : proto->tutorials()) {
     Tutorial tutorial;

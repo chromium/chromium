@@ -7,11 +7,13 @@
 
 #include "chrome/browser/video_tutorials/internal/tutorial_manager.h"
 
+#include <deque>
 #include <memory>
 #include <string>
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
+#include "base/optional.h"
 #include "chrome/browser/video_tutorials/internal/store.h"
 
 class PrefService;
@@ -26,32 +28,38 @@ class TutorialManagerImpl : public TutorialManager {
 
  private:
   // TutorialManager implementation.
-  void Init(SuccessCallback callback) override;
   void GetTutorials(GetTutorialsCallback callback) override;
-  const std::vector<std::string>& GetSupportedLocales() override;
+  const std::vector<Language>& GetSupportedLanguages() override;
   std::string GetPreferredLocale() override;
   void SetPreferredLocale(const std::string& locale) override;
-  void SaveGroups(std::vector<std::unique_ptr<TutorialGroup>> groups,
+  void SaveGroups(std::unique_ptr<std::vector<TutorialGroup>> groups,
                   SuccessCallback callback) override;
 
-  void OnInitCompleted(
-      SuccessCallback callback,
+  void Initialize();
+  void OnInitCompleted(bool success);
+  void OnInitialDataLoaded(
       bool success,
-      std::unique_ptr<std::vector<std::string>> supported_locales);
-
+      std::unique_ptr<std::vector<TutorialGroup>> all_groups);
+  void MaybeCacheApiCall(base::OnceClosure api_call);
   void OnTutorialsLoaded(
       GetTutorialsCallback callback,
       bool success,
-      std::vector<std::unique_ptr<TutorialGroup>> loaded_group);
+      std::unique_ptr<std::vector<TutorialGroup>> loaded_groups);
 
   std::unique_ptr<TutorialStore> store_;
   PrefService* prefs_;
 
-  // List of locales for which we have tutorials.
-  std::vector<std::string> supported_locales_;
+  // List of languages for which we have tutorials.
+  std::vector<Language> supported_languages_;
 
   // We only keep the tutorials for the preferred locale.
-  std::unique_ptr<TutorialGroup> tutorial_group_;
+  base::Optional<TutorialGroup> tutorial_group_;
+
+  // The initialization result of the database.
+  base::Optional<bool> init_success_;
+
+  // Caches the API calls in case initialization is not completed.
+  std::deque<base::OnceClosure> cached_api_calls_;
 
   base::WeakPtrFactory<TutorialManagerImpl> weak_ptr_factory_{this};
 };

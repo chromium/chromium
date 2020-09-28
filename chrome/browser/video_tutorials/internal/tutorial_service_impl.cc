@@ -63,8 +63,8 @@ void TutorialServiceImpl::OnFetchFinished(
   // TODO(shaktisahu): Save tutorials to the database.
 }
 
-std::vector<std::string> TutorialServiceImpl::GetSupportedLocales() {
-  return tutorial_manager_->GetSupportedLocales();
+const std::vector<Language>& TutorialServiceImpl::GetSupportedLanguages() {
+  return tutorial_manager_->GetSupportedLanguages();
 }
 
 std::string TutorialServiceImpl::GetPreferredLocale() {

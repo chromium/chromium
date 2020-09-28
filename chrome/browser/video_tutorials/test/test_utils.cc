@@ -17,7 +17,9 @@ void BuildTestEntry(Tutorial* entry) {
 }
 
 void BuildTestGroup(TutorialGroup* group) {
-  *group = TutorialGroup("en");
+  Language language;
+  language.locale = "en";
+  *group = TutorialGroup(language);
   group->tutorials.clear();
   Tutorial entry1;
   BuildTestEntry(&entry1);

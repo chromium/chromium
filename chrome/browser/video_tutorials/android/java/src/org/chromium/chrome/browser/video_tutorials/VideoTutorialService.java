@@ -26,7 +26,7 @@ public interface VideoTutorialService {
     /**
      * Called to get the list of supported languages.
      */
-    List<String> getSupportedLanguages();
+    List<Language> getSupportedLanguages();
 
     /**
      * @return The user's language of choice for watching the video tutorials.

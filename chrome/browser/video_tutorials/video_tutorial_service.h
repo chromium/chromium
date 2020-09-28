@@ -33,7 +33,7 @@ class VideoTutorialService : public KeyedService,
                            SingleItemCallback callback) = 0;
 
   // Called to retrieve all the supported locales.
-  virtual std::vector<std::string> GetSupportedLocales() = 0;
+  virtual const std::vector<Language>& GetSupportedLanguages() = 0;
 
   // Called to retrieve the preferred locale.
   virtual std::string GetPreferredLocale() = 0;

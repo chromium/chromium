@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/logging.h"
 #include "base/stl_util.h"
 
 namespace leveldb_proto {
@@ -28,7 +29,7 @@ TutorialStore::TutorialStore(TutorialProtoDb db) : db_(std::move(db)) {}
 
 TutorialStore::~TutorialStore() = default;
 
-void TutorialStore::InitAndLoadKeys(LoadKeysCallback callback) {
+void TutorialStore::Initialize(SuccessCallback callback) {
   db_->Init(base::BindOnce(&TutorialStore::OnDbInitialized,
                            weak_ptr_factory_.GetWeakPtr(),
                            std::move(callback)));
@@ -36,14 +37,19 @@ void TutorialStore::InitAndLoadKeys(LoadKeysCallback callback) {
 
 void TutorialStore::LoadEntries(const std::vector<std::string>& keys,
                                 LoadEntriesCallback callback) {
+  if (keys.empty()) {
+    // Load all entries.
+    db_->LoadEntries(std::move(callback));
+    return;
+  }
+
   db_->LoadEntriesWithFilter(
       base::BindRepeating(
           [](const std::vector<std::string>& key_dict, const std::string& key) {
             return base::Contains(key_dict, key);
           },
           keys),
-      base::BindOnce(&TutorialStore::OnEntriesLoaded,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+      std::move(callback));
 }
 
 void TutorialStore::UpdateAll(
@@ -62,36 +68,9 @@ void TutorialStore::UpdateAll(
                      std::move(callback));
 }
 
-void TutorialStore::OnDbInitialized(LoadKeysCallback callback,
+void TutorialStore::OnDbInitialized(SuccessCallback callback,
                                     leveldb_proto::Enums::InitStatus status) {
-  if (status != leveldb_proto::Enums::InitStatus::kOK) {
-    std::move(callback).Run(false, Keys());
-    return;
-  }
-
-  db_->LoadKeys(base::BindOnce(&TutorialStore::OnKeysLoaded,
-                               weak_ptr_factory_.GetWeakPtr(),
-                               std::move(callback)));
-}
-
-void TutorialStore::OnKeysLoaded(LoadKeysCallback callback,
-                                 bool success,
-                                 std::unique_ptr<KeyVector> keys) {
-  std::move(callback).Run(success, success ? std::move(keys) : Keys());
-}
-
-void TutorialStore::OnEntriesLoaded(
-    LoadEntriesCallback callback,
-    bool success,
-    std::unique_ptr<std::vector<TutorialGroup>> loaded_entries) {
-  if (!success || !loaded_entries) {
-    std::move(callback).Run(success, Entries());
-    return;
-  }
-  Entries entries;
-  for (auto& loaded_entry : *loaded_entries)
-    entries.emplace_back(std::make_unique<TutorialGroup>(loaded_entry));
-  std::move(callback).Run(true, std::move(entries));
+  std::move(callback).Run(status == leveldb_proto::Enums::InitStatus::kOK);
 }
 
 }  // namespace video_tutorials
