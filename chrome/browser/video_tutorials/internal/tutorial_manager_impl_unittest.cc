@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "chrome/browser/video_tutorials/prefs.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -26,7 +27,7 @@ std::vector<TutorialGroup> CreateSampleGroups(
   std::vector<TutorialGroup> groups;
   for (const auto& locale : locales) {
     TutorialGroup group;
-    group.locale = locale;
+    group.language.locale = locale;
     group.tutorials.emplace_back(Tutorial());
     group.tutorials.emplace_back(Tutorial());
     groups.emplace_back(group);
@@ -35,11 +36,11 @@ std::vector<TutorialGroup> CreateSampleGroups(
   return groups;
 }
 
-std::vector<std::unique_ptr<TutorialGroup>> CreateSampleFetchData(
+std::unique_ptr<std::vector<TutorialGroup>> CreateSampleFetchData(
     const std::vector<std::string>& locales) {
-  std::vector<std::unique_ptr<TutorialGroup>> groups;
+  auto groups = std::make_unique<std::vector<TutorialGroup>>();
   for (const auto& group : CreateSampleGroups(locales)) {
-    groups.emplace_back(std::make_unique<TutorialGroup>(group));
+    groups->emplace_back(group);
   }
 
   return groups;
@@ -50,29 +51,30 @@ class TestStore : public Store<TutorialGroup> {
   TestStore() = default;
   ~TestStore() override = default;
 
-  void InitAndLoadKeys(LoadKeysCallback callback) override {
-    std::vector<std::string> keys;
-    for (const TutorialGroup& group : groups_)
-      keys.emplace_back(group.locale);
-
-    std::move(callback).Run(true,
-                            std::make_unique<std::vector<std::string>>(keys));
+  void Initialize(SuccessCallback callback) override {
+    std::move(callback).Run(true);
   }
 
   void LoadEntries(const std::vector<std::string>& keys,
                    LoadEntriesCallback callback) override {
-    std::vector<std::unique_ptr<TutorialGroup>> entries;
+    auto entries = std::make_unique<std::vector<TutorialGroup>>();
     for (const TutorialGroup& group : groups_) {
-      if (group.locale != locale_)
-        continue;
-      entries.emplace_back(std::make_unique<TutorialGroup>(group));
+      if (keys.empty()) {
+        entries->emplace_back(group);
+      } else {
+        for (auto& key : keys) {
+          if (key == group.language.locale) {
+            entries->emplace_back(group);
+          }
+        }
+      }
     }
 
     std::move(callback).Run(true, std::move(entries));
   }
 
-  void Initialize(const std::string& locale,
-                  const std::vector<TutorialGroup>& groups) {
+  void InitStoreData(const std::string& locale,
+                     const std::vector<TutorialGroup>& groups) {
     locale_ = locale;
     groups_ = groups;
   }
@@ -101,8 +103,9 @@ class TutorialManagerTest : public testing::Test {
   TutorialManagerTest(const TutorialManagerTest& other) = delete;
   TutorialManagerTest& operator=(const TutorialManagerTest& other) = delete;
 
-  void SetUp() override {
-    auto tutorial_store = std::make_unique<StrictMock<TestStore>>();
+  void SetUp() override { video_tutorials::RegisterPrefs(prefs_.registry()); }
+
+  void CreateTutorialManager(std::unique_ptr<TestStore> tutorial_store) {
     tutorial_store_ = tutorial_store.get();
     manager_ = std::make_unique<TutorialManagerImpl>(std::move(tutorial_store),
                                                      &prefs_);
@@ -110,33 +113,25 @@ class TutorialManagerTest : public testing::Test {
 
   // Run GetTutorials call from manager_, compare the |expected| to the actual
   // returned tutorials.
-  void GetTutorials(std::vector<Tutorial> expected) {
+  void GetTutorials() {
     base::RunLoop loop;
-    manager()->GetTutorials(base::BindOnce(
-        &TutorialManagerTest::OnGetTutorials, base::Unretained(this),
-        loop.QuitClosure(), std::move(expected)));
+    manager()->GetTutorials(base::BindOnce(&TutorialManagerTest::OnGetTutorials,
+                                           base::Unretained(this),
+                                           loop.QuitClosure()));
     loop.Run();
   }
 
   void OnGetTutorials(base::RepeatingClosure closure,
-                      std::vector<Tutorial> expected,
                       std::vector<Tutorial> tutorials) {
-    EXPECT_TRUE(expected.size() == tutorials.size());
+    last_results_ = tutorials;
     std::move(closure).Run();
-  }
-
-  void Init() {
-    base::RunLoop loop;
-    manager()->Init(base::BindOnce(&TutorialManagerTest::OnComplete,
-                                   base::Unretained(this), loop.QuitClosure()));
-    loop.Run();
   }
 
   void OnComplete(base::RepeatingClosure closure, bool success) {
     std::move(closure).Run();
   }
 
-  void SaveGroups(std::vector<std::unique_ptr<TutorialGroup>> groups) {
+  void SaveGroups(std::unique_ptr<std::vector<TutorialGroup>> groups) {
     base::RunLoop loop;
     manager()->SaveGroups(
         std::move(groups),
@@ -148,35 +143,45 @@ class TutorialManagerTest : public testing::Test {
  protected:
   TutorialManager* manager() { return manager_.get(); }
   TestStore* tutorial_store() { return tutorial_store_; }
+  std::vector<Tutorial> last_results() { return last_results_; }
 
  private:
   base::test::TaskEnvironment task_environment_;
   TestingPrefServiceSimple prefs_;
   std::unique_ptr<TutorialManager> manager_;
   TestStore* tutorial_store_;
+  std::vector<Tutorial> last_results_;
 };
 
 TEST_F(TutorialManagerTest, InitAndGetTutorials) {
   auto groups = CreateSampleGroups({"hi", "kn"});
-  tutorial_store()->Initialize("hi", groups);
-  Init();
+  auto tutorial_store = std::make_unique<StrictMock<TestStore>>();
+  tutorial_store->InitStoreData("hi", groups);
+  CreateTutorialManager(std::move(tutorial_store));
 
-  auto locales = manager()->GetSupportedLocales();
-  EXPECT_EQ(locales.size(), 2u);
-  GetTutorials(groups[0].tutorials);
+  auto languages = manager()->GetSupportedLanguages();
+  EXPECT_EQ(languages.size(), 2u);
+  GetTutorials();
+  EXPECT_EQ(last_results().size(), 2u);
 }
 
 TEST_F(TutorialManagerTest, SaveNewData) {
   auto groups = CreateSampleGroups({"hi", "kn"});
-  tutorial_store()->Initialize("hi", groups);
-  Init();
+  auto tutorial_store = std::make_unique<StrictMock<TestStore>>();
+  tutorial_store->InitStoreData("hi", groups);
+  CreateTutorialManager(std::move(tutorial_store));
 
-  auto locales = manager()->GetSupportedLocales();
-  EXPECT_EQ(locales.size(), 2u);
-  GetTutorials(groups[0].tutorials);
+  auto languages = manager()->GetSupportedLanguages();
+  EXPECT_EQ(languages.size(), 2u);
+  GetTutorials();
+  EXPECT_EQ(last_results().size(), groups[0].tutorials.size());
 
   auto new_groups = CreateSampleFetchData({"hi", "tl", "ar"});
+  auto new_group = new_groups->at(0);
   SaveGroups(std::move(new_groups));
+  manager()->SetPreferredLocale("ar");
+  GetTutorials();
+  EXPECT_EQ(last_results().size(), new_group.tutorials.size());
 }
 
 }  // namespace

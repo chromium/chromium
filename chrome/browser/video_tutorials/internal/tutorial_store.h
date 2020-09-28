@@ -47,7 +47,7 @@ class TutorialStore : public Store<TutorialGroup> {
   using EntryVector = std::vector<TutorialGroup>;
 
   // Store<TutorialGroup> implementation.
-  void InitAndLoadKeys(LoadKeysCallback callback) override;
+  void Initialize(SuccessCallback callback) override;
   void LoadEntries(const std::vector<std::string>& keys,
                    LoadEntriesCallback callback) override;
   void UpdateAll(
@@ -56,19 +56,8 @@ class TutorialStore : public Store<TutorialGroup> {
       UpdateCallback callback) override;
 
   // Called when db is initialized.
-  void OnDbInitialized(LoadKeysCallback callback,
+  void OnDbInitialized(SuccessCallback callback,
                        leveldb_proto::Enums::InitStatus status);
-
-  // Called when keys are loaded after initialization.
-  void OnKeysLoaded(LoadKeysCallback callback,
-                    bool success,
-                    std::unique_ptr<std::vector<std::string>> loaded_keys);
-
-  // Called when entries are loaded from db.
-  void OnEntriesLoaded(
-      LoadEntriesCallback callback,
-      bool success,
-      std::unique_ptr<std::vector<TutorialGroup>> loaded_entries);
 
   TutorialProtoDb db_;
 

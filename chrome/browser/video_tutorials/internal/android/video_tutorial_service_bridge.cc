@@ -90,12 +90,11 @@ void VideoTutorialServiceBridge::GetTutorial(
                      ScopedJavaGlobalRef<jobject>(jcallback)));
 }
 
-ScopedJavaLocalRef<jobject> VideoTutorialServiceBridge::GetSupportedLocales(
+ScopedJavaLocalRef<jobject> VideoTutorialServiceBridge::GetSupportedLanguages(
     JNIEnv* env,
     const JavaParamRef<jobject>& jcaller) {
-  std::vector<std::string> locales =
-      video_tutorial_service_->GetSupportedLocales();
-  return base::android::ToJavaArrayOfStrings(env, locales);
+  return TutorialConversionBridge::CreateJavaLanguages(
+      env, video_tutorial_service_->GetSupportedLanguages());
 }
 
 ScopedJavaLocalRef<jstring> VideoTutorialServiceBridge::GetPreferredLocale(

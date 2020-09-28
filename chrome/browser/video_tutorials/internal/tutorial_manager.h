@@ -17,16 +17,12 @@ class TutorialManager {
   using SuccessCallback = base::OnceCallback<void(bool)>;
   using GetTutorialsCallback = base::OnceCallback<void(std::vector<Tutorial>)>;
 
-  // Initialization method that reads the database and loads video tutorials
-  // into in-memory.
-  virtual void Init(SuccessCallback callback) = 0;
-
   // Loads video tutorials. Must be called again if the locale was changed by
   // the user.
   virtual void GetTutorials(GetTutorialsCallback callback) = 0;
 
-  // Returns a list of locales for which video tutorials are available.
-  virtual const std::vector<std::string>& GetSupportedLocales() = 0;
+  // Returns a list of languages for which video tutorials are available.
+  virtual const std::vector<Language>& GetSupportedLanguages() = 0;
 
   // Returns the preferred locale for the video tutorials.
   virtual std::string GetPreferredLocale() = 0;
@@ -38,7 +34,7 @@ class TutorialManager {
 
   // Saves a fresh set of video tutorials into database. Called after a network
   // fetch.
-  virtual void SaveGroups(std::vector<std::unique_ptr<TutorialGroup>> groups,
+  virtual void SaveGroups(std::unique_ptr<std::vector<TutorialGroup>> groups,
                           SuccessCallback callback) = 0;
 
   virtual ~TutorialManager() = default;
