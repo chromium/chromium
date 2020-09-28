@@ -64,8 +64,7 @@ class ProfileSyncServiceBundle {
   }
 
   MockSyncInvalidationsService* sync_invalidations_service() {
-    if (base::FeatureList::IsEnabled(
-            switches::kSubscribeForSyncInvalidations)) {
+    if (base::FeatureList::IsEnabled(switches::kSyncSendInterestedDataTypes)) {
       return &sync_invalidations_service_;
     } else {
       return nullptr;

@@ -9,7 +9,15 @@
 
 namespace switches {
 
-extern const base::Feature kSubscribeForSyncInvalidations;
+// If enabled, interested data types will be sent to the Sync Server as part of
+// DeviceInfo.
+extern const base::Feature kSyncSendInterestedDataTypes;
+
+// If enabled, the device will register with FCM and listen to new
+// invalidations. Also, FCM token will be set in DeviceInfo, which signals to
+// the server that device listens to new invalidations.
+// SyncSendInterestedDataTypes must be enabled for this to take effect.
+extern const base::Feature kUseSyncInvalidations;
 
 }  // namespace switches
 

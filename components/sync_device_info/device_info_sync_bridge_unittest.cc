@@ -19,7 +19,6 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/time.h"
-#include "components/sync/invalidations/switches.h"
 #include "components/sync/model/data_batch.h"
 #include "components/sync/model/data_type_activation_request.h"
 #include "components/sync/model/data_type_error_handler_mock.h"
@@ -234,17 +233,11 @@ sync_pb::SharingSpecificFields::EnabledFeatures SharingEnabledFeaturesForSuffix(
 }
 
 std::string SyncInvalidationsInstanceIdTokenForSuffix(int suffix) {
-  if (base::FeatureList::IsEnabled(switches::kSubscribeForSyncInvalidations)) {
-    return base::StringPrintf("instance id token %d", suffix);
-  }
-  return std::string();
+  return base::StringPrintf("instance id token %d", suffix);
 }
 
 ModelTypeSet SyncInvalidationsInterestedDataTypes() {
-  if (base::FeatureList::IsEnabled(switches::kSubscribeForSyncInvalidations)) {
-    return ModelTypeSet(BOOKMARKS);
-  }
-  return ModelTypeSet();
+  return ModelTypeSet(BOOKMARKS);
 }
 
 DataTypeActivationRequest TestDataTypeActivationRequest(SyncMode sync_mode) {
@@ -284,12 +277,8 @@ DeviceInfoSpecifics CreateSpecifics(
   specifics.mutable_sharing_fields()->add_enabled_features(
       SharingEnabledFeaturesForSuffix(suffix));
 
-  const std::string sync_invalidations_instance_id_token =
-      SyncInvalidationsInstanceIdTokenForSuffix(suffix);
-  if (!sync_invalidations_instance_id_token.empty()) {
-    specifics.mutable_invalidation_fields()->set_instance_id_token(
-        sync_invalidations_instance_id_token);
-  }
+  specifics.mutable_invalidation_fields()->set_instance_id_token(
+      SyncInvalidationsInstanceIdTokenForSuffix(suffix));
   for (const ModelType type : SyncInvalidationsInterestedDataTypes()) {
     specifics.mutable_invalidation_fields()->add_interested_data_type_ids(
         GetSpecificsFieldNumberFromModelType(type));
@@ -1298,10 +1287,6 @@ TEST_F(DeviceInfoSyncBridgeTest, RefreshLocalDeviceNameForSyncModeToggle) {
 }
 
 TEST_F(DeviceInfoSyncBridgeTest, ShouldSendInvalidationFields) {
-  base::test::ScopedFeatureList override_features;
-  override_features.InitAndEnableFeature(
-      switches::kSubscribeForSyncInvalidations);
-
   EXPECT_CALL(*processor(),
               Put(_,
                   HasSpecifics(

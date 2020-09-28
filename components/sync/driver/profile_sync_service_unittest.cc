@@ -360,15 +360,16 @@ class ProfileSyncServiceTestWithStopSyncInPausedState
   base::test::ScopedFeatureList override_features_;
 };
 
-class ProfileSyncServiceTestWithSubscribeForSyncInvalidations
+class ProfileSyncServiceTestWithSyncInvalidationsServiceCreated
     : public ProfileSyncServiceTest {
  public:
-  ProfileSyncServiceTestWithSubscribeForSyncInvalidations() {
+  ProfileSyncServiceTestWithSyncInvalidationsServiceCreated() {
     override_features_.InitAndEnableFeature(
-        switches::kSubscribeForSyncInvalidations);
+        switches::kSyncSendInterestedDataTypes);
   }
 
-  ~ProfileSyncServiceTestWithSubscribeForSyncInvalidations() override = default;
+  ~ProfileSyncServiceTestWithSyncInvalidationsServiceCreated() override =
+      default;
 
  private:
   base::test::ScopedFeatureList override_features_;
@@ -1621,7 +1622,7 @@ TEST_F(ProfileSyncServiceTest,
   EXPECT_EQ(signin::GetTestGaiaIdForEmail(kTestUser), sync_prefs.GetGaiaId());
 }
 
-TEST_F(ProfileSyncServiceTestWithSubscribeForSyncInvalidations,
+TEST_F(ProfileSyncServiceTestWithSyncInvalidationsServiceCreated,
        ShouldSendDataTypesToSyncInvalidationsService) {
   CreateService(ProfileSyncService::AUTO_START);
   SignIn();
@@ -1633,7 +1634,7 @@ MATCHER(ContainsSessions, "") {
   return arg.Has(SESSIONS);
 }
 
-TEST_F(ProfileSyncServiceTestWithSubscribeForSyncInvalidations,
+TEST_F(ProfileSyncServiceTestWithSyncInvalidationsServiceCreated,
        ShouldEnableAndDisableInvalidationsForSessions) {
   CreateService(ProfileSyncService::AUTO_START,
                 ModelTypeSet(SESSIONS, TYPED_URLS));
@@ -1648,7 +1649,7 @@ TEST_F(ProfileSyncServiceTestWithSubscribeForSyncInvalidations,
   service()->SetInvalidationsForSessionsEnabled(false);
 }
 
-TEST_F(ProfileSyncServiceTestWithSubscribeForSyncInvalidations,
+TEST_F(ProfileSyncServiceTestWithSyncInvalidationsServiceCreated,
        ShouldActivateSyncInvalidationsServiceWhenSyncIsInitialized) {
   CreateService(ProfileSyncService::AUTO_START);
   EXPECT_CALL(*sync_invalidations_service(), SetActive(true)).Times(0);
@@ -1657,7 +1658,7 @@ TEST_F(ProfileSyncServiceTestWithSubscribeForSyncInvalidations,
   InitializeForFirstSync();
 }
 
-TEST_F(ProfileSyncServiceTestWithSubscribeForSyncInvalidations,
+TEST_F(ProfileSyncServiceTestWithSyncInvalidationsServiceCreated,
        ShouldActivateSyncInvalidationsServiceOnSignIn) {
   CreateService(ProfileSyncService::AUTO_START);
   EXPECT_CALL(*sync_invalidations_service(), SetActive(false));
@@ -1668,7 +1669,7 @@ TEST_F(ProfileSyncServiceTestWithSubscribeForSyncInvalidations,
 
 // CrOS does not support signout.
 #if !defined(OS_CHROMEOS)
-TEST_F(ProfileSyncServiceTestWithSubscribeForSyncInvalidations,
+TEST_F(ProfileSyncServiceTestWithSyncInvalidationsServiceCreated,
        ShouldDectivateSyncInvalidationsServiceOnSignOut) {
   CreateService(ProfileSyncService::AUTO_START);
   SignIn();

@@ -7,7 +7,6 @@
 #include "base/bind.h"
 #include "components/sync/base/sync_prefs.h"
 #include "components/sync/base/sync_util.h"
-#include "components/sync/invalidations/switches.h"
 #include "components/sync_device_info/device_info_sync_client.h"
 #include "components/sync_device_info/device_info_util.h"
 #include "components/sync_device_info/local_device_info_util.h"
@@ -41,13 +40,10 @@ const DeviceInfo* LocalDeviceInfoProviderImpl::GetLocalDeviceInfo() const {
   local_device_info_->set_send_tab_to_self_receiving_enabled(
       sync_client_->GetSendTabToSelfReceivingEnabled());
   local_device_info_->set_sharing_info(sync_client_->GetLocalSharingInfo());
-
-  if (base::FeatureList::IsEnabled(switches::kSubscribeForSyncInvalidations)) {
-    local_device_info_->set_fcm_registration_token(
-        sync_client_->GetFCMRegistrationToken());
-    local_device_info_->set_interested_data_types(
-        sync_client_->GetInterestedDataTypes());
-  }
+  local_device_info_->set_fcm_registration_token(
+      sync_client_->GetFCMRegistrationToken());
+  local_device_info_->set_interested_data_types(
+      sync_client_->GetInterestedDataTypes());
 
   return local_device_info_.get();
 }

@@ -14,6 +14,7 @@
 #include "components/gcm_driver/instance_id/instance_id_driver.h"
 #include "components/sync/invalidations/fcm_registration_token_observer.h"
 #include "components/sync/invalidations/invalidations_listener.h"
+#include "components/sync/invalidations/switches.h"
 
 namespace syncer {
 
@@ -39,6 +40,7 @@ FCMHandler::~FCMHandler() {
 void FCMHandler::StartListening() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!IsListening());
+  DCHECK(base::FeatureList::IsEnabled(switches::kUseSyncInvalidations));
   gcm_driver_->AddAppHandler(app_id_, this);
   StartTokenFetch(base::BindOnce(&FCMHandler::DidRetrieveToken,
                                  weak_ptr_factory_.GetWeakPtr()));
@@ -101,6 +103,7 @@ void FCMHandler::OnMessage(const std::string& app_id,
                            const gcm::IncomingMessage& message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(app_id, app_id_);
+  DCHECK(base::FeatureList::IsEnabled(switches::kUseSyncInvalidations));
 
   auto it = message.data.find(kPayloadKey);
   std::string payload;

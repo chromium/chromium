@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "components/sync/invalidations/fcm_handler.h"
+#include "components/sync/invalidations/switches.h"
 
 namespace syncer {
 
@@ -28,7 +29,8 @@ SyncInvalidationsServiceImpl::SyncInvalidationsServiceImpl(
 SyncInvalidationsServiceImpl::~SyncInvalidationsServiceImpl() = default;
 
 void SyncInvalidationsServiceImpl::SetActive(bool active) {
-  if (fcm_handler_->IsListening() == active) {
+  if (!base::FeatureList::IsEnabled(switches::kUseSyncInvalidations) ||
+      fcm_handler_->IsListening() == active) {
     return;
   }
 

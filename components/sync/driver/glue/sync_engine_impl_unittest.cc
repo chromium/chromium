@@ -325,8 +325,10 @@ class SyncEngineImplTest : public testing::Test {
 class SyncEngineImplWithSyncInvalidationsTest : public SyncEngineImplTest {
  public:
   SyncEngineImplWithSyncInvalidationsTest() {
-    override_features_.InitAndEnableFeature(
-        switches::kSubscribeForSyncInvalidations);
+    override_features_.InitWithFeatures(
+        /*enabled_features=*/{switches::kSyncSendInterestedDataTypes,
+                              switches::kUseSyncInvalidations},
+        /*disabled_features=*/{});
   }
 
  protected:

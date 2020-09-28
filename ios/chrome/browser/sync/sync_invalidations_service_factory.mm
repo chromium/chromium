@@ -45,7 +45,7 @@ SyncInvalidationsServiceFactory::~SyncInvalidationsServiceFactory() = default;
 std::unique_ptr<KeyedService>
 SyncInvalidationsServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  if (!base::FeatureList::IsEnabled(switches::kSubscribeForSyncInvalidations)) {
+  if (!base::FeatureList::IsEnabled(switches::kSyncSendInterestedDataTypes)) {
     return nullptr;
   }
 

@@ -8,7 +8,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/sync_util.h"
-#include "components/sync/invalidations/switches.h"
 #include "components/sync_device_info/device_info_sync_client.h"
 #include "components/version_info/version_string.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -78,18 +77,6 @@ class LocalDeviceInfoProviderImplTest : public testing::Test {
 
   testing::NiceMock<MockDeviceInfoSyncClient> device_info_sync_client_;
   std::unique_ptr<LocalDeviceInfoProviderImpl> provider_;
-};
-
-class LocalDeviceInfoProviderImplWithSyncInvalidationsTest
-    : public LocalDeviceInfoProviderImplTest {
- public:
-  LocalDeviceInfoProviderImplWithSyncInvalidationsTest() {
-    override_features_.InitAndEnableFeature(
-        switches::kSubscribeForSyncInvalidations);
-  }
-
- protected:
-  base::test::ScopedFeatureList override_features_;
 };
 
 TEST_F(LocalDeviceInfoProviderImplTest, GetLocalDeviceInfo) {
@@ -183,8 +170,7 @@ TEST_F(LocalDeviceInfoProviderImplTest, SharingInfo) {
   EXPECT_EQ(enabled_features, local_sharing_info->enabled_features);
 }
 
-TEST_F(LocalDeviceInfoProviderImplWithSyncInvalidationsTest,
-       ShouldPopulateFCMRegistrationToken) {
+TEST_F(LocalDeviceInfoProviderImplTest, ShouldPopulateFCMRegistrationToken) {
   InitializeProvider();
   ASSERT_THAT(provider_->GetLocalDeviceInfo(), NotNull());
   EXPECT_TRUE(
@@ -198,8 +184,7 @@ TEST_F(LocalDeviceInfoProviderImplWithSyncInvalidationsTest,
             kFCMRegistrationToken);
 }
 
-TEST_F(LocalDeviceInfoProviderImplWithSyncInvalidationsTest,
-       ShouldPopulateInterestedDataTypes) {
+TEST_F(LocalDeviceInfoProviderImplTest, ShouldPopulateInterestedDataTypes) {
   InitializeProvider();
   ASSERT_THAT(provider_->GetLocalDeviceInfo(), NotNull());
   EXPECT_TRUE(provider_->GetLocalDeviceInfo()->interested_data_types().Empty());
