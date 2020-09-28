@@ -8,6 +8,7 @@
 #include "ash/clipboard/clipboard_history_util.h"
 #include "ash/clipboard/views/clipboard_history_item_view.h"
 #include "ash/public/cpp/clipboard_image_model_factory.h"
+#include "base/metrics/histogram_macros.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/rect.h"
@@ -39,12 +40,19 @@ void ClipboardHistoryMenuModelAdapter::Run(
   DCHECK(model_);
   DCHECK(item_snapshots_.empty());
 
+  menu_open_time_ = base::TimeTicks::Now();
+
   int command_id = ClipboardHistoryUtil::kFirstItemCommandId;
-  for (const auto& item : clipboard_history_->GetItems()) {
+  const auto& items = clipboard_history_->GetItems();
+  // Do not include the final kDeleteCommandId item in histograms, because it is
+  // not shown.
+  UMA_HISTOGRAM_COUNTS_100(
+      "Ash.ClipboardHistory.ContextMenu.NumberOfItemsShown", items.size());
+  for (const auto& item : items) {
     model_->AddItem(command_id, base::string16());
 
     // Enable or disable the command depending on whether its corresponding
-    // clipboard history item is allowed to read or not.
+    // clipboard history item is allowed to be read or not.
     const auto* dlp_controller =
         ui::Clipboard::GetForCurrentThread()->GetClipboardDlpController();
     model_->SetEnabledAt(model_->GetIndexOfCommandId(command_id),
@@ -159,6 +167,10 @@ views::MenuItemView* ClipboardHistoryMenuModelAdapter::AppendMenuItem(
 
 void ClipboardHistoryMenuModelAdapter::OnMenuClosed(views::MenuItemView* menu) {
   ClipboardImageModelFactory::Get()->Deactivate();
+  const base::TimeDelta user_journey_time =
+      base::TimeTicks::Now() - menu_open_time_;
+  UMA_HISTOGRAM_TIMES("Ash.ClipboardHistory.ContextMenu.UserJourneyTime",
+                      user_journey_time);
   views::MenuModelAdapter::OnMenuClosed(menu);
 }
 

@@ -9,6 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "base/optional.h"
+#include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/views/controls/menu/menu_model_adapter.h"
@@ -94,6 +95,9 @@ class ASH_EXPORT ClipboardHistoryMenuModelAdapter : views::MenuModelAdapter {
   views::MenuItemView* root_view_ = nullptr;
   // Responsible for showing |root_view_|.
   std::unique_ptr<views::MenuRunner> menu_runner_;
+
+  // The timestamp taken when the menu is opened. Used in metrics.
+  base::TimeTicks menu_open_time_;
 
   // The mapping between the command ids and items that are copied from
   // `clipboard_history_` when the menu is created. It is used to solve the

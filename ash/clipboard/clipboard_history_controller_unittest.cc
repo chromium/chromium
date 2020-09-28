@@ -13,6 +13,7 @@
 #include "base/location.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/unguessable_token.h"
@@ -103,41 +104,66 @@ class ClipboardHistoryControllerTest : public AshTestBase {
 
 // Tests that search + v with no history fails to show a menu.
 TEST_F(ClipboardHistoryControllerTest, NoHistoryNoMenu) {
+  base::HistogramTester histogram_tester;
   ShowMenu();
 
   EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
+  histogram_tester.ExpectTotalCount(
+      "Ash.ClipboardHistory.ContextMenu.NumberOfItemsShown", 0);
+  histogram_tester.ExpectTotalCount(
+      "Ash.ClipboardHistory.ContextMenu.UserJourneyTime", 0);
 }
 
 // Tests that search + v shows a menu when there is something to show.
 TEST_F(ClipboardHistoryControllerTest, MultiShowMenu) {
+  base::HistogramTester histogram_tester;
   // Copy something to enable the clipboard history menu.
   WriteToClipboard("test");
 
   ShowMenu();
 
   EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
+  histogram_tester.ExpectBucketCount(
+      "Ash.ClipboardHistory.ContextMenu.NumberOfItemsShown", 1, 1);
+  // No UserJourneyTime should be recorded as the menu is still showing.
+  histogram_tester.ExpectTotalCount(
+      "Ash.ClipboardHistory.ContextMenu.UserJourneyTime", 0);
 
   // Hide the menu.
   GetEventGenerator()->PressKey(ui::VKEY_ESCAPE, /*flags=*/0);
   GetEventGenerator()->ReleaseKey(ui::VKEY_ESCAPE, /*flags=*/0);
 
   EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
+  histogram_tester.ExpectBucketCount(
+      "Ash.ClipboardHistory.ContextMenu.NumberOfItemsShown", 1, 1);
+  histogram_tester.ExpectTotalCount(
+      "Ash.ClipboardHistory.ContextMenu.UserJourneyTime", 1);
 
   // Reshow the menu.
   ShowMenu();
 
   EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
+  histogram_tester.ExpectBucketCount(
+      "Ash.ClipboardHistory.ContextMenu.NumberOfItemsShown", 1, 2);
+
+  // No new UserJourneyTime histogram should be recorded as the menu is still
+  // showing.
+  histogram_tester.ExpectTotalCount(
+      "Ash.ClipboardHistory.ContextMenu.UserJourneyTime", 1);
 
   // Hide the menu.
   GetEventGenerator()->PressKey(ui::VKEY_ESCAPE, /*flags=*/0);
   GetEventGenerator()->ReleaseKey(ui::VKEY_ESCAPE, /*flags=*/0);
 
   EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
+  histogram_tester.ExpectTotalCount(
+      "Ash.ClipboardHistory.ContextMenu.UserJourneyTime", 2);
 }
 
 // Tests that backspace deletes an item, and if it is the last item, the menu is
 // closed.
 TEST_F(ClipboardHistoryControllerTest, BasicShowMenu) {
+  base::HistogramTester histogram_tester;
   WriteToClipboard("test");
   WriteToClipboard("test");
 
@@ -164,6 +190,14 @@ TEST_F(ClipboardHistoryControllerTest, BasicShowMenu) {
   GetEventGenerator()->ReleaseKey(ui::VKEY_BACK, /*flags=*/0);
 
   EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
+
+  // This histogram is only recorded when the menu is initially built, so this
+  // should not be recorded more than once in one show, regardless of the menu
+  // contents changing.
+  histogram_tester.ExpectBucketCount(
+      "Ash.ClipboardHistory.ContextMenu.NumberOfItemsShown", 2, 1);
+  histogram_tester.ExpectTotalCount(
+      "Ash.ClipboardHistory.ContextMenu.UserJourneyTime", 1);
 }
 
 // Verifies that the clipboard history is disabled in some user modes, which
