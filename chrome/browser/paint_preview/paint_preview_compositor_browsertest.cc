@@ -39,14 +39,14 @@ std::unique_ptr<PaintPreviewCompositorServiceImpl> ToCompositorServiceImpl(
     std::unique_ptr<PaintPreviewCompositorService, base::OnTaskRunnerDeleter>
         service) {
   return std::unique_ptr<PaintPreviewCompositorServiceImpl>(
-      reinterpret_cast<PaintPreviewCompositorServiceImpl*>(service.release()));
+      static_cast<PaintPreviewCompositorServiceImpl*>(service.release()));
 }
 
 std::unique_ptr<PaintPreviewCompositorClientImpl> ToCompositorClientImpl(
     std::unique_ptr<PaintPreviewCompositorClient, base::OnTaskRunnerDeleter>
         client) {
   return std::unique_ptr<PaintPreviewCompositorClientImpl>(
-      reinterpret_cast<PaintPreviewCompositorClientImpl*>(client.release()));
+      static_cast<PaintPreviewCompositorClientImpl*>(client.release()));
 }
 
 bool IsBoundAndConnected(PaintPreviewCompositorClientImpl* compositor) {
