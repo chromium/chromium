@@ -59,6 +59,7 @@ class QuicSimpleClientFactory : public quic::QuicToyClient::ClientFactory {
   std::unique_ptr<quic::QuicSpdyClientBase> CreateClient(
       std::string host_for_handshake,
       std::string host_for_lookup,
+      int address_family_for_lookup,
       uint16_t port,
       quic::ParsedQuicVersionVector versions,
       const quic::QuicConfig& config,

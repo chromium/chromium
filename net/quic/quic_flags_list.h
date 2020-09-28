@@ -458,9 +458,17 @@ QUIC_FLAG(bool,
           FLAGS_quic_reloadable_flag_quic_deallocate_message_right_after_sent,
           false)
 
-// If true, discard initial key right after a HANDSHAKE packet has been sent and
-// unify the fixes for missing initial keys.
-QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_fix_missing_initial_keys, true)
+// If true, drop initial keys at the end of writing and unify the fixes for
+// missing initial keys.
+QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_fix_missing_initial_keys2, true)
 
 // If true, check whether framer has the right key before writing data.
 QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_check_keys_before_writing, true)
+
+// If true, received error codes larger than QUIC_LAST_ERROR are preserved.
+QUIC_FLAG(bool,
+          FLAGS_quic_reloadable_flag_quic_do_not_clip_received_error_code,
+          false)
+
+// If true, check for NULL before sending a fallback config.
+QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_check_fallback_null, true)
