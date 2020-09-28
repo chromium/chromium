@@ -565,4 +565,44 @@ TEST_F(ExtensionInstallEventLogCollectorTest, DownloadingStageChanged) {
             delegate()->last_request().event.downloading_stage());
 }
 
+// Verifies that a new event is created when the install creation stage is
+// changed.
+TEST_F(ExtensionInstallEventLogCollectorTest, InstallCreationStageChanged) {
+  std::unique_ptr<ExtensionInstallEventLogCollector> collector =
+      std::make_unique<ExtensionInstallEventLogCollector>(
+          registry(), delegate(), profile());
+
+  auto ext = extensions::ExtensionBuilder(kExtensionName1)
+                 .SetID(kExtensionId1)
+                 .Build();
+  collector->OnExtensionInstallCreationStageChanged(
+      kExtensionId1, extensions::InstallStageTracker::InstallCreationStage::
+                         CREATION_INITIATED);
+  ASSERT_TRUE(VerifyEventAddedSuccessfully(1 /*expected_add_count*/,
+                                           0 /*expected_add_all_count*/));
+  EXPECT_EQ(em::ExtensionInstallReportLogEvent::CREATION_INITIATED,
+            delegate()->last_request().event.install_creation_stage());
+  collector->OnExtensionInstallCreationStageChanged(
+      kExtensionId1, extensions::InstallStageTracker::InstallCreationStage::
+                         NOTIFIED_FROM_MANAGEMENT);
+  ASSERT_TRUE(VerifyEventAddedSuccessfully(2 /*expected_add_count*/,
+                                           0 /*expected_add_all_count*/));
+  EXPECT_EQ(em::ExtensionInstallReportLogEvent::NOTIFIED_FROM_MANAGEMENT,
+            delegate()->last_request().event.install_creation_stage());
+  collector->OnExtensionInstallCreationStageChanged(
+      kExtensionId1, extensions::InstallStageTracker::InstallCreationStage::
+                         SEEN_BY_POLICY_LOADER);
+  ASSERT_TRUE(VerifyEventAddedSuccessfully(3 /*expected_add_count*/,
+                                           0 /*expected_add_all_count*/));
+  EXPECT_EQ(em::ExtensionInstallReportLogEvent::SEEN_BY_POLICY_LOADER,
+            delegate()->last_request().event.install_creation_stage());
+  collector->OnExtensionInstallCreationStageChanged(
+      kExtensionId1, extensions::InstallStageTracker::InstallCreationStage::
+                         SEEN_BY_EXTERNAL_PROVIDER);
+  ASSERT_TRUE(VerifyEventAddedSuccessfully(4 /*expected_add_count*/,
+                                           0 /*expected_add_all_count*/));
+  EXPECT_EQ(em::ExtensionInstallReportLogEvent::SEEN_BY_EXTERNAL_PROVIDER,
+            delegate()->last_request().event.install_creation_stage());
+}
+
 }  // namespace policy

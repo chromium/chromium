@@ -132,8 +132,6 @@ em::ExtensionInstallReportLogEvent_FailureReason ConvertFailureReasonToProto(
 }
 
 // Helper method to convert InstallStageTracker::Stage to the Stage proto.
-// TODO(crbug/1124808): Add an event for the stages that are used for
-// investigating CREATED stage.
 em::ExtensionInstallReportLogEvent_InstallationStage
 ConvertInstallationStageToProto(extensions::InstallStageTracker::Stage stage) {
   using Stage = extensions::InstallStageTracker::Stage;
@@ -213,6 +211,34 @@ ConvertDownloadingStageToProto(
     default:
       NOTREACHED();
       return em::ExtensionInstallReportLogEvent::DOWNLOADING_STAGE_UNKNOWN;
+  }
+}
+
+em::ExtensionInstallReportLogEvent_InstallCreationStage
+ConvertInstallCreationStageToProto(
+    extensions::InstallStageTracker::InstallCreationStage stage) {
+  using Stage = extensions::InstallStageTracker::InstallCreationStage;
+  switch (stage) {
+    case Stage::CREATION_INITIATED:
+      return em::ExtensionInstallReportLogEvent::CREATION_INITIATED;
+    case Stage::NOTIFIED_FROM_MANAGEMENT_INITIAL_CREATION_FORCED:
+      return em::ExtensionInstallReportLogEvent::
+          NOTIFIED_FROM_MANAGEMENT_INITIAL_CREATION_FORCED;
+    case Stage::NOTIFIED_FROM_MANAGEMENT_INITIAL_CREATION_NOT_FORCED:
+      return em::ExtensionInstallReportLogEvent::
+          NOTIFIED_FROM_MANAGEMENT_INITIAL_CREATION_NOT_FORCED;
+    case Stage::NOTIFIED_FROM_MANAGEMENT:
+      return em::ExtensionInstallReportLogEvent::NOTIFIED_FROM_MANAGEMENT;
+    case Stage::NOTIFIED_FROM_MANAGEMENT_NOT_FORCED:
+      return em::ExtensionInstallReportLogEvent::
+          NOTIFIED_FROM_MANAGEMENT_NOT_FORCED;
+    case Stage::SEEN_BY_POLICY_LOADER:
+      return em::ExtensionInstallReportLogEvent::SEEN_BY_POLICY_LOADER;
+    case Stage::SEEN_BY_EXTERNAL_PROVIDER:
+      return em::ExtensionInstallReportLogEvent::SEEN_BY_EXTERNAL_PROVIDER;
+    default:
+      NOTREACHED();
+      return em::ExtensionInstallReportLogEvent::INSTALL_CREATION_STAGE_UNKNOWN;
   }
 }
 
@@ -339,6 +365,16 @@ void ExtensionInstallEventLogCollector::OnExtensionDownloadingStageChanged(
   auto event = std::make_unique<em::ExtensionInstallReportLogEvent>();
   event->set_downloading_stage(ConvertDownloadingStageToProto(stage));
   delegate_->Add(id, true /* gather_disk_space_info */, std::move(event));
+}
+
+void ExtensionInstallEventLogCollector::OnExtensionInstallCreationStageChanged(
+    const extensions::ExtensionId& id,
+    extensions::InstallStageTracker::InstallCreationStage stage) {
+  if (!delegate_->IsExtensionPending(id))
+    return;
+  auto event = std::make_unique<em::ExtensionInstallReportLogEvent>();
+  event->set_install_creation_stage(ConvertInstallCreationStageToProto(stage));
+  delegate_->Add(id, false /* gather_disk_space_info */, std::move(event));
 }
 
 void ExtensionInstallEventLogCollector::OnExtensionLoaded(

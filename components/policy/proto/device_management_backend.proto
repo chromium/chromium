@@ -3006,6 +3006,28 @@ message ExtensionInstallReportLogEvent {
     FINISHED = 10;
   }
 
+  // Current stage of the extension creation process. See
+  // InstallStageTracker::InstallCreationStage for more details.
+  // InstallStageTracker::InstallCreationStage is the main enum and this is a
+  // copy used for reporting purposes.
+  enum InstallCreationStage {
+    INSTALL_CREATION_STAGE_UNKNOWN = 0;
+
+    CREATION_INITIATED = 1;
+
+    NOTIFIED_FROM_MANAGEMENT_INITIAL_CREATION_FORCED = 2;
+
+    NOTIFIED_FROM_MANAGEMENT_INITIAL_CREATION_NOT_FORCED = 3;
+
+    NOTIFIED_FROM_MANAGEMENT = 4;
+
+    NOTIFIED_FROM_MANAGEMENT_NOT_FORCED = 5;
+
+    SEEN_BY_POLICY_LOADER = 6;
+
+    SEEN_BY_EXTERNAL_PROVIDER = 7;
+  }
+
   // Timestamp, in microseconds since epoch. Set for all log
   // events.
   optional int64 timestamp = 1;
@@ -3047,6 +3069,9 @@ message ExtensionInstallReportLogEvent {
   // Whether the current failure is a admin side miconfiguration failure. Set
   // for event type INSTALLATION_FAILED.
   optional bool is_misconfiguration_failure = 13;
+
+  // Stage of install creation process.
+  optional InstallCreationStage install_creation_stage = 14;
 }
 
 // A single entry in the push-install log for an app.
