@@ -612,9 +612,9 @@ void OnMakePublicKeyCredentialForPaymentComplete(
     auto* payment_credential_remote =
         CredentialManagerProxy::From(resolver->GetScriptState())
             ->PaymentCredential();
+    auto credential_id = credential->info->raw_id;
     payment_credential_remote->StorePaymentCredential(
-        std::move(payment_instrument), credential->info->raw_id,
-        options->rp()->id(),
+        std::move(payment_instrument), credential_id, options->rp()->id(),
         WTF::Bind(
             &OnPaymentCredentialCreationComplete,
             WTF::Passed(std::make_unique<ScopedPromiseResolver>(resolver)),
