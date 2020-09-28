@@ -5,7 +5,6 @@
 #ifndef CHROMEOS_SERVICES_MACHINE_LEARNING_PUBLIC_CPP_HANDWRITING_MODEL_LOADER_H_
 #define CHROMEOS_SERVICES_MACHINE_LEARNING_PUBLIC_CPP_HANDWRITING_MODEL_LOADER_H_
 
-#include "base/memory/weak_ptr.h"
 #include "chromeos/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/services/machine_learning/public/mojom/handwriting_recognizer.mojom.h"
 #include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"

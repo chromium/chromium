@@ -3,9 +3,12 @@
 // found in the LICENSE file.
 
 #include "chromeos/services/machine_learning/public/cpp/handwriting_model_loader.h"
+
+#include <string>
+#include <utility>
+
 #include "base/command_line.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/no_destructor.h"
 #include "chromeos/services/machine_learning/public/cpp/service_connection.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 

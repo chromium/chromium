@@ -4,6 +4,8 @@
 
 #include "chromeos/services/machine_learning/public/cpp/handwriting_model_loader.h"
 
+#include <string>
+
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/run_loop.h"
@@ -16,7 +18,10 @@
 
 namespace chromeos {
 namespace machine_learning {
-using chromeos::machine_learning::mojom::LoadHandwritingModelResult;
+
+using ::base::test::ScopedCommandLine;
+using ::base::test::TaskEnvironment;
+using mojom::LoadHandwritingModelResult;
 
 constexpr char kOndeviceHandwritingSwitch[] = "ondevice_handwriting";
 constexpr char kLibHandwritingDlcId[] = "libhandwriting";
@@ -74,10 +79,10 @@ class HandwritingModelLoaderTest : public testing::Test {
   }
 
  private:
-  base::test::TaskEnvironment task_environment_{
-      base::test::TaskEnvironment::MainThreadType::DEFAULT,
-      base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED};
-  base::test::ScopedCommandLine scoped_command_line_;
+  TaskEnvironment task_environment_{
+      TaskEnvironment::MainThreadType::DEFAULT,
+      TaskEnvironment::ThreadPoolExecutionMode::QUEUED};
+  ScopedCommandLine scoped_command_line_;
   FakeDlcserviceClient fake_client_;
   FakeServiceConnectionImpl fake_service_connection_;
   LoadHandwritingModelResult result_;
