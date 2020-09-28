@@ -8064,25 +8064,5 @@
                 }
             ]
         }
-    ],
-    "use-new-media-cache": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "use-new-media-cache"
-                    ]
-                }
-            ]
-        }
     ]
 }

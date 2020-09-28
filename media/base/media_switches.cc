@@ -411,10 +411,6 @@ const base::Feature kSpecCompliantCanPlayThrough{
 const base::Feature kSuspendMutedAudio{"SuspendMutedAudio",
                                        base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Use shared block-based buffering for media.
-const base::Feature kUseNewMediaCache{"use-new-media-cache",
-                                      base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enables using the media history store to store media engagement metrics.
 const base::Feature kUseMediaHistoryStore{"UseMediaHistoryStore",
                                           base::FEATURE_ENABLED_BY_DEFAULT};
