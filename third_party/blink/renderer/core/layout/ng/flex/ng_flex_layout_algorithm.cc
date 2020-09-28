@@ -463,6 +463,76 @@ LayoutUnit ComputeIntrinsicInlineSizeForAspectRatioElement(
       .ClampNegativeToZero();
 }
 
+// The value produced by this function will be available via
+// replaced_node.Layout()->IntrinsicBlockSize(), once NGReplacedLayoutAlgorithm
+// exists.
+LayoutUnit ComputeIntrinsicBlockSizeForAspectRatioElement(
+    const NGBlockNode& node,
+    const NGConstraintSpace& space,
+    const MinMaxSizes& used_min_max_inline_sizes) {
+  DCHECK(node.HasAspectRatio());
+  LogicalSize aspect_ratio = node.GetAspectRatio();
+  const ComputedStyle& style = node.Style();
+  NGBoxStrut border_padding =
+      ComputeBorders(space, node) + ComputePadding(space, style);
+
+  DCHECK_NE(style.LogicalWidth().GetType(), Length::Type::kFixed)
+      << "Flex will not use this function if the inline size of the replaced "
+         "element is definite.";
+
+  base::Optional<LayoutUnit> intrinsic_inline;
+  base::Optional<LayoutUnit> intrinsic_block;
+  node.IntrinsicSize(&intrinsic_inline, &intrinsic_block);
+
+  // intrinsic_inline and intrinsic_block can be empty independent of each
+  // other.
+  if (intrinsic_inline) {
+    LayoutUnit intrinsic_inline_border_box =
+        *intrinsic_inline + border_padding.InlineSum();
+    intrinsic_inline_border_box =
+        used_min_max_inline_sizes.ClampSizeToMinAndMax(
+            intrinsic_inline_border_box);
+    return BlockSizeFromAspectRatio(border_padding, aspect_ratio,
+                                    EBoxSizing::kContentBox,
+                                    intrinsic_inline_border_box);
+  }
+
+  if (intrinsic_block) {
+    MinMaxSizes block_min_max = {LayoutUnit(), LayoutUnit::Max()};
+    if (used_min_max_inline_sizes.min_size > LayoutUnit()) {
+      block_min_max.min_size = BlockSizeFromAspectRatio(
+          border_padding, aspect_ratio, EBoxSizing::kContentBox,
+          used_min_max_inline_sizes.min_size);
+    }
+    if (used_min_max_inline_sizes.max_size != LayoutUnit::Max()) {
+      block_min_max.max_size = BlockSizeFromAspectRatio(
+          border_padding, aspect_ratio, EBoxSizing::kContentBox,
+          used_min_max_inline_sizes.max_size);
+    }
+    // Minimum size wins over maximum size.
+    block_min_max.max_size =
+        std::max(block_min_max.max_size, block_min_max.min_size);
+    LayoutUnit intrinsic_block_border_box =
+        *intrinsic_block + border_padding.BlockSum();
+    return block_min_max.ClampSizeToMinAndMax(intrinsic_block_border_box);
+  }
+
+  // If control flow reaches here, the item has aspect ratio only, no natural
+  // sizes. Spec says:
+  // * If the available space is definite in the inline axis, use the stretch
+  // fit into that size for the inline size and calculate the block size using
+  // the aspect ratio.
+  // https://drafts.csswg.org/css-sizing-3/#intrinsic-sizes
+  DCHECK_NE(space.AvailableSize().inline_size, kIndefiniteSize);
+  NGBoxStrut margins = ComputeMarginsForSelf(space, style);
+  LayoutUnit stretch_into_available_inline_size(
+      (space.AvailableSize().inline_size - margins.InlineSum())
+          .ClampNegativeToZero());
+  return BlockSizeFromAspectRatio(border_padding, aspect_ratio,
+                                  EBoxSizing::kContentBox,
+                                  stretch_into_available_inline_size);
+}
+
 }  // namespace
 
 void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems() {
@@ -650,12 +720,15 @@ void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems() {
         }
       } else {
         // Parts C, D, and E for what are usually column flex containers.
-        //
-        // This is the post-layout height for aspect-ratio items, which matches
-        // legacy but isn't always correct.
-        // TODO(dgrogan): Replace with a variant of ComputeReplacedSize that
-        // ignores min-height, height, max-height.
-        flex_base_border_box = IntrinsicBlockSizeFunc();
+        if (child.HasAspectRatio() && child.IsReplaced() &&
+            RuntimeEnabledFeatures::FlexAspectRatioEnabled()) {
+          // Legacy uses the post-layout size for this case, which isn't always
+          // correct.
+          flex_base_border_box = ComputeIntrinsicBlockSizeForAspectRatioElement(
+              child, flex_basis_space, min_max_sizes_in_cross_axis_direction);
+        } else {
+          flex_base_border_box = IntrinsicBlockSizeFunc();
+        }
       }
     } else {
       // Part A of 9.2.3 https://drafts.csswg.org/css-flexbox/#algo-main-item

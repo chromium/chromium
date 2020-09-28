@@ -487,6 +487,8 @@ crbug.com/704294 external/wpt/css/css-flexbox/flex-aspect-ratio-img-row-006.html
 crbug.com/704294 external/wpt/css/css-flexbox/canvas-dynamic-change-001.html [ Failure ]
 crbug.com/987000 external/wpt/css/css-flexbox/flex-aspect-ratio-img-row-007.html [ Failure ]
 crbug.com/987000 external/wpt/css/css-flexbox/flex-aspect-ratio-img-row-010.html [ Failure ]
+crbug.com/987000 external/wpt/css/css-flexbox/flex-aspect-ratio-img-column-012.html [ Failure ]
+crbug.com/987000 external/wpt/css/css-flexbox/flex-aspect-ratio-img-column-015.html [ Failure ]
 crbug.com/987000 external/wpt/css/css-flexbox/svg-root-as-flex-item-002.html [ Failure ]
 
 # These would need a rebaseline back from LayoutNGBlockFlow to LayoutBlockFlow
