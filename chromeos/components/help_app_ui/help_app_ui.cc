@@ -32,7 +32,6 @@ content::WebUIDataSource* CreateHostDataSource() {
   // TODO(crbug.com/1012578): This is a placeholder only, update with the
   // actual app content.
   source->SetDefaultResource(IDR_HELP_APP_HOST_INDEX_HTML);
-  source->AddResourcePath("pwa.html", IDR_HELP_APP_PWA_HTML);
   source->AddResourcePath("app_icon_192.png", IDR_HELP_APP_ICON_192);
   source->AddResourcePath("app_icon_512.png", IDR_HELP_APP_ICON_512);
   source->AddResourcePath("help_app_index_scripts.js",
@@ -44,8 +43,6 @@ content::WebUIDataSource* CreateHostDataSource() {
   source->AddResourcePath("local_search_service_proxy.mojom-lite.js",
                           IDR_HELP_APP_LOCAL_SEARCH_SERVICE_PROXY_MOJOM_JS);
   source->AddLocalizedString("appTitle", IDS_HELP_APP_EXPLORE);
-  web_app::SetManifestRequestFilter(source, IDR_HELP_APP_MANIFEST,
-                                    IDS_HELP_APP_EXPLORE);
   return source;
 }
 }  // namespace
