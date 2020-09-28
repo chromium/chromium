@@ -16,28 +16,6 @@ namespace video_tutorials {
 using base::android::ConvertUTF8ToJavaString;
 using base::android::ToJavaArrayOfStrings;
 
-ScopedJavaLocalRef<jobject> CreateJavaLanguageAndMaybeAddToList(
-    JNIEnv* env,
-    ScopedJavaLocalRef<jobject> jlist,
-    const Language& language) {
-  return Java_TutorialConversionBridge_createLanguageAndMaybeAddToList(
-      env, jlist, ConvertUTF8ToJavaString(env, language.locale),
-      ConvertUTF8ToJavaString(env, language.name),
-      ConvertUTF8ToJavaString(env, language.native_name));
-}
-
-ScopedJavaLocalRef<jobject> TutorialConversionBridge::CreateJavaLanguages(
-    JNIEnv* env,
-    const std::vector<Language>& languages) {
-  ScopedJavaLocalRef<jobject> jlist =
-      Java_TutorialConversionBridge_createLanguageList(env);
-
-  for (const auto& language : languages)
-    CreateJavaLanguageAndMaybeAddToList(env, jlist, language);
-
-  return jlist;
-}
-
 ScopedJavaLocalRef<jobject> CreateJavaTutorialAndMaybeAddToList(
     JNIEnv* env,
     ScopedJavaLocalRef<jobject> jlist,
@@ -56,7 +34,7 @@ ScopedJavaLocalRef<jobject> TutorialConversionBridge::CreateJavaTutorials(
     JNIEnv* env,
     const std::vector<Tutorial>& tutorials) {
   ScopedJavaLocalRef<jobject> jlist =
-      Java_TutorialConversionBridge_createTutorialList(env);
+      Java_TutorialConversionBridge_createList(env);
 
   for (const auto& tutorial : tutorials)
     CreateJavaTutorialAndMaybeAddToList(env, jlist, tutorial);

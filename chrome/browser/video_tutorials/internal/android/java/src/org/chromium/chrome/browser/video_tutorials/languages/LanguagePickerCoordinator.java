@@ -9,7 +9,6 @@ import android.content.res.Resources;
 import android.text.TextUtils;
 import android.view.View;
 
-import org.chromium.chrome.browser.video_tutorials.Language;
 import org.chromium.chrome.browser.video_tutorials.VideoTutorialService;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -62,9 +61,9 @@ public class LanguagePickerCoordinator {
         populateList(mVideoTutorialService.getSupportedLanguages());
     }
 
-    private void populateList(List<Language> supportedLanguages) {
+    private void populateList(List<String> supportedLocales) {
         List<ListItem> listItems = new ArrayList<>();
-        for (Language locale : supportedLanguages) {
+        for (String locale : supportedLocales) {
             ListItem listItem = new ListItem(
                     LanguageItemProperties.ITEM_VIEW_TYPE, buildListItemModelFromLocale(locale));
             listItems.add(listItem);
@@ -72,15 +71,16 @@ public class LanguagePickerCoordinator {
         mListModel.set(listItems);
     }
 
-    private PropertyModel buildListItemModelFromLocale(Language language) {
+    private PropertyModel buildListItemModelFromLocale(String locale) {
         Resources resources = mContext.getResources();
         String preferredLocale = mVideoTutorialService.getPreferredLocale();
         return new PropertyModel.Builder(LanguageItemProperties.ALL_KEYS)
-                .with(LanguageItemProperties.LOCALE, language.locale)
-                .with(LanguageItemProperties.NAME, language.name)
-                .with(LanguageItemProperties.NATIVE_NAME, language.nativeName)
-                .with(LanguageItemProperties.IS_SELECTED,
-                        TextUtils.equals(language.locale, preferredLocale))
+                .with(LanguageItemProperties.LOCALE, locale)
+                .with(LanguageItemProperties.NAME,
+                        LanguageUtils.getLanguageForLocale(resources, locale))
+                .with(LanguageItemProperties.NATIVE_NAME,
+                        LanguageUtils.getLanguageForLocaleInNativeText(resources, locale))
+                .with(LanguageItemProperties.IS_SELECTED, TextUtils.equals(locale, preferredLocale))
                 .with(LanguageItemProperties.SELECTION_CALLBACK, this::onLanguageSelected)
                 .build();
     }

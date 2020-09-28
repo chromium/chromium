@@ -55,7 +55,6 @@ source_set("factory") {
 if (is_android) {
   android_library("java") {
     sources = [
-      "android/java/src/org/chromium/chrome/browser/video_tutorials/Language.java",
       "android/java/src/org/chromium/chrome/browser/video_tutorials/Tutorial.java",
       "android/java/src/org/chromium/chrome/browser/video_tutorials/VideoTutorialService.java",
       "android/java/src/org/chromium/chrome/browser/video_tutorials/iph/VideoIPHCoordinator.java",

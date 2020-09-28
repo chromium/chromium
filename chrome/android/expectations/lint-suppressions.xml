@@ -246,6 +246,16 @@ Still reading?
     <ignore regexp="The resource `R.string.video_tutorials_change_language` appears to be unused"/>
     <ignore regexp="The resource `R.string.video_tutorials_iph_tap_here_to_start` appears to be unused"/>
     <ignore regexp="The resource `R.string.video_tutorials_iph_tap_voice_icon_to_start` appears to be unused"/>
+    <ignore regexp="The resource `R.string.video_tutorials_language_english` appears to be unused"/>
+    <ignore regexp="The resource `R.string.video_tutorials_language_hindi` appears to be unused"/>
+    <ignore regexp="The resource `R.string.video_tutorials_language_kannada` appears to be unused"/>
+    <ignore regexp="The resource `R.string.video_tutorials_language_tamil` appears to be unused"/>
+    <ignore regexp="The resource `R.string.video_tutorials_language_telugu` appears to be unused"/>
+    <ignore regexp="The resource `R.string.video_tutorials_language_english_native_text` appears to be unused"/>
+    <ignore regexp="The resource `R.string.video_tutorials_language_hindi_native_text` appears to be unused"/>
+    <ignore regexp="The resource `R.string.video_tutorials_language_kannada_native_text` appears to be unused"/>
+    <ignore regexp="The resource `R.string.video_tutorials_language_tamil_native_text` appears to be unused"/>
+    <ignore regexp="The resource `R.string.video_tutorials_language_telugu_native_text` appears to be unused"/>
     <ignore regexp="The resource `R.string.video_tutorials_language_picker_title` appears to be unused"/>
     <ignore regexp="The resource `R.string.video_tutorials_learn_chrome` appears to be unused"/>
     <ignore regexp="The resource `R.string.video_tutorials_popular_videos` appears to be unused"/>

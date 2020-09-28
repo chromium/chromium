@@ -19,10 +19,6 @@ namespace video_tutorials {
 // and Java.
 class TutorialConversionBridge {
  public:
-  static ScopedJavaLocalRef<jobject> CreateJavaLanguages(
-      JNIEnv* env,
-      const std::vector<Language>& languages);
-
   static ScopedJavaLocalRef<jobject> CreateJavaTutorials(
       JNIEnv* env,
       const std::vector<Tutorial>& tutorials);

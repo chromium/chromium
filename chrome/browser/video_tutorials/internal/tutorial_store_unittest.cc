@@ -9,7 +9,6 @@
 #include <string>
 #include <utility>
 
-#include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/video_tutorials/test/test_utils.h"
 #include "components/leveldb_proto/public/proto_database.h"
@@ -27,43 +26,46 @@ class TutorialStoreTest : public testing::Test {
   using EntriesMap = std::map<std::string, std::unique_ptr<TutorialGroup>>;
   using ProtoMap = std::map<std::string, TutorialGroupProto>;
   using KeysAndEntries = std::map<std::string, TutorialGroup>;
+  using TestEntries = std::vector<TutorialGroup>;
+  using TestKeys = std::vector<std::string>;
 
-  TutorialStoreTest() : db_(nullptr) {}
+  TutorialStoreTest() : load_result_(false), db_(nullptr) {}
   ~TutorialStoreTest() override = default;
 
   TutorialStoreTest(const TutorialStoreTest& other) = delete;
   TutorialStoreTest& operator=(const TutorialStoreTest& other) = delete;
 
  protected:
-  void Init(std::vector<TutorialGroup> input,
-            InitStatus status,
-            bool expected_success) {
+  void Init(TestEntries input, InitStatus status) {
     CreateTestDbEntries(std::move(input));
     auto db = std::make_unique<FakeDB<TutorialGroupProto, TutorialGroup>>(
         &db_entries_);
     db_ = db.get();
     store_ = std::make_unique<TutorialStore>(std::move(db));
-    store_->Initialize(base::BindOnce(&TutorialStoreTest::OnInitCompleted,
-                                      base::Unretained(this),
-                                      expected_success));
+    store_->InitAndLoadKeys(base::BindOnce(&TutorialStoreTest::OnKeysLoaded,
+                                           base::Unretained(this)));
     db_->InitStatusCallback(status);
   }
 
-  void OnInitCompleted(bool expected_success, bool success) {
-    EXPECT_EQ(expected_success, success);
+  void OnKeysLoaded(bool success,
+                    std::unique_ptr<std::vector<std::string>> loaded_keys) {
+    load_result_ = success;
+    loaded_keys_.clear();
+    if (success && loaded_keys)
+      loaded_keys_ = *loaded_keys;
   }
 
-  void CreateTestDbEntries(std::vector<TutorialGroup> input) {
+  void CreateTestDbEntries(TestEntries input) {
     for (auto& entry : input) {
       TutorialGroupProto proto;
       TutorialGroupToProto(&entry, &proto);
-      db_entries_.emplace(entry.language.locale, proto);
+      db_entries_.emplace(entry.locale, proto);
     }
   }
 
-  void LoadEntriesAndVerify(const std::vector<std::string>& keys,
-                            bool expected_success,
-                            std::vector<TutorialGroup> expected_entries) {
+  void VerifyLoadEntries(const TestKeys& keys,
+                         bool expected_success,
+                         TestEntries expected_entries) {
     store_->LoadEntries(keys,
                         base::BindOnce(&TutorialStoreTest::OnEntriesLoaded,
                                        base::Unretained(this), expected_success,
@@ -73,14 +75,14 @@ class TutorialStoreTest : public testing::Test {
 
   void OnEntriesLoaded(
       bool expected_success,
-      std::vector<TutorialGroup> expected_entries,
+      TestEntries expected_entries,
       bool success,
-      std::unique_ptr<std::vector<TutorialGroup>> loaded_entries) {
+      std::vector<std::unique_ptr<TutorialGroup>> loaded_entries) {
     EXPECT_EQ(expected_success, success);
-    EXPECT_EQ(loaded_entries->size(), expected_entries.size());
-    std::vector<TutorialGroup> actual_loaded_entries;
-    for (auto& loaded_entry : *loaded_entries.get()) {
-      actual_loaded_entries.emplace_back(loaded_entry);
+    EXPECT_EQ(loaded_entries.size(), expected_entries.size());
+    TestEntries actual_loaded_entries;
+    for (auto& loaded_entry : loaded_entries) {
+      actual_loaded_entries.emplace_back(*loaded_entry.get());
     }
     EXPECT_EQ(expected_entries, actual_loaded_entries);
   }
@@ -107,14 +109,18 @@ class TutorialStoreTest : public testing::Test {
     }
   }
 
+  bool load_result() const { return load_result_; }
   const EntriesMap& loaded_keys_and_entries() const {
     return loaded_keys_and_entries_;
   }
+  const std::vector<std::string>& loaded_keys() const { return loaded_keys_; }
   FakeDB<TutorialGroupProto, TutorialGroup>* db() { return db_; }
   Store<TutorialGroup>* store() { return store_.get(); }
 
  private:
   base::test::TaskEnvironment task_environment_;
+  bool load_result_{false};
+  TestKeys loaded_keys_;
   EntriesMap loaded_keys_and_entries_;
   ProtoMap db_entries_;
   FakeDB<TutorialGroupProto, TutorialGroup>* db_{nullptr};
@@ -122,63 +128,62 @@ class TutorialStoreTest : public testing::Test {
 };
 
 // Test loading keys from a non-empty database in initialization successfully.
-TEST_F(TutorialStoreTest, InitSuccess) {
+TEST_F(TutorialStoreTest, LoadedKeysSuccess) {
+  auto test_data = TestEntries();
   TutorialGroup test_group;
   test::BuildTestGroup(&test_group);
-  std::vector<TutorialGroup> test_data;
+  std::string locale = test_group.locale;
   test_data.emplace_back(std::move(test_group));
-
-  Init(std::move(test_data), InitStatus::kOK, true /* expected */);
+  Init(std::move(test_data), InitStatus::kOK);
+  db()->LoadKeysCallback(true);
+  EXPECT_EQ(load_result(), true);
+  EXPECT_EQ(loaded_keys().size(), 1u);
+  EXPECT_EQ(loaded_keys().front(), locale);
 }
 
-// Test loading all entries from a non-empty database in initialization
-// successfully.
-TEST_F(TutorialStoreTest, LoadAllEntries) {
+// Test loading keys from a non-empty database failed.
+TEST_F(TutorialStoreTest, LoadKeysFailed) {
+  auto test_data = TestEntries();
   TutorialGroup test_group;
   test::BuildTestGroup(&test_group);
-  std::vector<TutorialGroup> test_data;
+  std::string locale = test_group.locale;
   test_data.emplace_back(std::move(test_group));
-  auto expected_test_data = test_data;
-
-  Init(std::move(test_data), InitStatus::kOK, true /* expected */);
-  LoadEntriesAndVerify(std::vector<std::string>(), true, expected_test_data);
+  Init(std::move(test_data), InitStatus::kOK);
+  db()->LoadKeysCallback(false);
+  EXPECT_EQ(load_result(), false);
+  EXPECT_TRUE(loaded_keys().empty());
 }
 
-// Test loading keys from a non-empty database in initialization successfully.
-TEST_F(TutorialStoreTest, LoadSpecificEntries) {
+// Test loading entries with loaded keys successfully.
+TEST_F(TutorialStoreTest, LoadedEntriesSuccess) {
+  auto test_data = TestEntries();
   TutorialGroup test_group;
   test::BuildTestGroup(&test_group);
-  std::vector<TutorialGroup> test_data;
+  std::string locale = test_group.locale;
   test_data.emplace_back(std::move(test_group));
-  auto expected_test_data = test_data;
+  Init(test_data, InitStatus::kOK);
+  db()->LoadKeysCallback(true);
+  EXPECT_EQ(load_result(), true);
+  EXPECT_EQ(loaded_keys().size(), 1u);
+  EXPECT_EQ(loaded_keys().front(), locale);
 
-  Init(std::move(test_data), InitStatus::kOK, true /* expected */);
-  std::vector<std::string> keys;
-  keys.emplace_back("en");
-  LoadEntriesAndVerify(keys, true, expected_test_data);
-}
-
-TEST_F(TutorialStoreTest, LoadEntryThatDoesntExist) {
-  std::vector<TutorialGroup> test_data;
-  auto expected_test_data = test_data;
-
-  Init(std::move(test_data), InitStatus::kOK, true /* expected */);
-  std::vector<std::string> keys;
-  keys.emplace_back("en");
-  LoadEntriesAndVerify(keys, true, expected_test_data);
+  VerifyLoadEntries(loaded_keys() /*keys*/, true /*expected_success*/,
+                    test_data /*expected_loaded_entries*/);
 }
 
 // Test adding and updating data successfully.
 TEST_F(TutorialStoreTest, AddAndUpdateDataSuccess) {
-  std::vector<TutorialGroup> test_data;
-  Init(std::move(test_data), InitStatus::kOK, true /* expected */);
+  auto test_data = TestEntries();
+  Init(std::move(test_data), InitStatus::kOK);
+  db()->LoadKeysCallback(true);
+  EXPECT_EQ(load_result(), true);
+  EXPECT_TRUE(loaded_keys().empty());
 
   // Add a group successfully.
   TutorialGroup test_group;
   test::BuildTestGroup(&test_group);
   std::vector<std::pair<std::string, TutorialGroup>> entries_to_save;
-  entries_to_save.emplace_back(
-      std::make_pair(test_group.language.locale, test_group));
+  entries_to_save.emplace_back(std::make_pair(test_group.locale, test_group));
   std::vector<std::string> keys_to_delete;
   store()->UpdateAll(
       entries_to_save, keys_to_delete,
@@ -186,19 +191,22 @@ TEST_F(TutorialStoreTest, AddAndUpdateDataSuccess) {
   db()->UpdateCallback(true);
 
   auto expected = std::make_unique<KeysAndEntries>();
-  expected->emplace(test_group.language.locale, std::move(test_group));
+  expected->emplace(test_group.locale, std::move(test_group));
   VerifyDataInDb(std::move(expected));
 }
 
 // Test deleting entries with keys .
 TEST_F(TutorialStoreTest, Delete) {
+  auto test_data = TestEntries();
   TutorialGroup test_group;
   test::BuildTestGroup(&test_group);
-  std::string locale = test_group.language.locale;
-  std::vector<TutorialGroup> test_data;
+  std::string locale = test_group.locale;
   test_data.emplace_back(std::move(test_group));
-  Init(test_data, InitStatus::kOK, true /* expected */);
-
+  Init(test_data, InitStatus::kOK);
+  db()->LoadKeysCallback(true);
+  EXPECT_EQ(load_result(), true);
+  EXPECT_EQ(loaded_keys().size(), 1u);
+  EXPECT_EQ(loaded_keys().front(), locale);
   std::vector<std::string> keys{locale};
   std::vector<std::pair<std::string, TutorialGroup>> entries_to_save;
 

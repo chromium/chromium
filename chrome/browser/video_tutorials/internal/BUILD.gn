@@ -70,6 +70,7 @@ if (is_android) {
       "android/java/src/org/chromium/chrome/browser/video_tutorials/languages/LanguagePickerCoordinator.java",
       "android/java/src/org/chromium/chrome/browser/video_tutorials/languages/LanguagePickerProperties.java",
       "android/java/src/org/chromium/chrome/browser/video_tutorials/languages/LanguagePickerView.java",
+      "android/java/src/org/chromium/chrome/browser/video_tutorials/languages/LanguageUtils.java",
       "android/java/src/org/chromium/chrome/browser/video_tutorials/player/VideoPlayerCoordinatorImpl.java",
       "android/java/src/org/chromium/chrome/browser/video_tutorials/player/VideoPlayerMediator.java",
       "android/java/src/org/chromium/chrome/browser/video_tutorials/player/VideoPlayerProperties.java",

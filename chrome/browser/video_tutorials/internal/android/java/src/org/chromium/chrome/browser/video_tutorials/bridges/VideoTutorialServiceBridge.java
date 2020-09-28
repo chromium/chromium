@@ -9,7 +9,6 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.video_tutorials.FeatureType;
-import org.chromium.chrome.browser.video_tutorials.Language;
 import org.chromium.chrome.browser.video_tutorials.Tutorial;
 import org.chromium.chrome.browser.video_tutorials.VideoTutorialService;
 
@@ -46,9 +45,9 @@ public class VideoTutorialServiceBridge implements VideoTutorialService {
     }
 
     @Override
-    public List<Language> getSupportedLanguages() {
+    public List<String> getSupportedLanguages() {
         if (mNativeVideoTutorialServiceBridge == 0) return null;
-        return VideoTutorialServiceBridgeJni.get().getSupportedLanguages(
+        return VideoTutorialServiceBridgeJni.get().getSupportedLocales(
                 mNativeVideoTutorialServiceBridge, this);
     }
 
@@ -77,7 +76,7 @@ public class VideoTutorialServiceBridge implements VideoTutorialService {
                 Callback<List<Tutorial>> callback);
         void getTutorial(long nativeVideoTutorialServiceBridge, VideoTutorialServiceBridge caller,
                 int feature, Callback<Tutorial> callback);
-        List<Language> getSupportedLanguages(
+        List<String> getSupportedLocales(
                 long nativeVideoTutorialServiceBridge, VideoTutorialServiceBridge caller);
         String getPreferredLocale(
                 long nativeVideoTutorialServiceBridge, VideoTutorialServiceBridge caller);

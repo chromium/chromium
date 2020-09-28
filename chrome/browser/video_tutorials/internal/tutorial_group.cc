@@ -8,10 +8,10 @@ namespace video_tutorials {
 
 TutorialGroup::TutorialGroup() = default;
 
-TutorialGroup::TutorialGroup(const Language& language) : language(language) {}
+TutorialGroup::TutorialGroup(const std::string& locale) : locale(locale) {}
 
 bool TutorialGroup::operator==(const TutorialGroup& other) const {
-  return language == other.language && tutorials == other.tutorials;
+  return locale == other.locale && tutorials == other.tutorials;
 }
 
 bool TutorialGroup::operator!=(const TutorialGroup& other) const {

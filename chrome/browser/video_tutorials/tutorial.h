@@ -23,27 +23,6 @@ enum class FeatureType {
   kMaxValue = kSearch,
 };
 
-// In memory struct representing a language.
-struct Language {
-  Language() = default;
-  ~Language() = default;
-
-  Language(const Language& other) = default;
-  Language& operator=(const Language& other) = default;
-
-  bool operator==(const Language& other) const;
-  bool operator!=(const Language& other) const;
-
-  // The locale associated with the language.
-  std::string locale;
-
-  // The name of the language.
-  std::string name;
-
-  // The name of the language in native text.
-  std::string native_name;
-};
-
 // In memory struct of a video tutorial entry.
 // Represents the metadata required to play a video tutorial.
 struct Tutorial {

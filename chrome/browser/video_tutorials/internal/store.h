@@ -20,16 +20,16 @@ namespace video_tutorials {
 template <typename T>
 class Store {
  public:
-  using Entries = std::unique_ptr<std::vector<T>>;
-  using SuccessCallback = base::OnceCallback<void(bool)>;
+  using Keys = std::unique_ptr<std::vector<std::string>>;
+  using Entries = std::vector<std::unique_ptr<T>>;
+  using LoadKeysCallback = base::OnceCallback<void(bool, Keys)>;
   using LoadEntriesCallback = base::OnceCallback<void(bool, Entries)>;
   using UpdateCallback = base::OnceCallback<void(bool)>;
 
-  // Initialize the db and load entries into memory.
-  virtual void Initialize(SuccessCallback callback) = 0;
+  // Initialize the db and load keys into memory.
+  virtual void InitAndLoadKeys(LoadKeysCallback callback) = 0;
 
-  // Load entries with the given keys into memory. If |keys| is empty, load all
-  // the entries.
+  // Load entries with the given keys into memory.
   virtual void LoadEntries(const std::vector<std::string>& keys,
                            LoadEntriesCallback callback) = 0;
 

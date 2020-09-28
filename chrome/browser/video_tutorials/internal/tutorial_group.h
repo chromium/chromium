@@ -12,7 +12,7 @@ namespace video_tutorials {
 // In memory struct of a group of video tutorials with same language .
 struct TutorialGroup {
   TutorialGroup();
-  explicit TutorialGroup(const Language& language);
+  explicit TutorialGroup(const std::string& locale);
   ~TutorialGroup();
 
   bool operator==(const TutorialGroup& other) const;
@@ -22,7 +22,7 @@ struct TutorialGroup {
   TutorialGroup& operator=(const TutorialGroup& other);
 
   // Language of this group.
-  Language language;
+  std::string locale;
 
   // A list of tutorials.
   std::vector<Tutorial> tutorials;

@@ -18,22 +18,10 @@ enum FeatureType {
   TEST = 9999999;
 }
 
-// Metadata about a language.
-message Language {
-  // The locale associated with the lnaguage.
-  string locale = 1;
-
-  // Name of the language.
-  string name = 2;
-
-  // Name of the language in native text.
-  string native_name = 3;
-}
-
 // A group of video tutorials with same language.
 message VideoTutorialGroup {
-  // Language of the video.
-  Language language = 1;
+  // Language of the video, in ISO-639-1 two character format. Eg: en, pl, hi.
+  string locale = 1;
 
   // A list of video tutorials metadata.
   repeated VideoTutorial tutorials = 2;
