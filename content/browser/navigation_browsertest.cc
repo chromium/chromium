@@ -205,6 +205,23 @@ class EmbedderVisibleUrlTracker : public WebContentsDelegate {
   base::OnceClosure on_url_invalidated_;
 };
 
+// Helper class. Immediately run a callback when a navigation starts.
+class DidStartNavigationCallback : public WebContentsObserver {
+ public:
+  explicit DidStartNavigationCallback(
+      WebContents* web_contents,
+      base::OnceCallback<void(NavigationHandle*)> callback)
+      : WebContentsObserver(web_contents), callback_(std::move(callback)) {}
+  ~DidStartNavigationCallback() final = default;
+
+ private:
+  void DidStartNavigation(NavigationHandle* navigation_handle) final {
+    if (callback_)
+      std::move(callback_).Run(navigation_handle);
+  }
+  base::OnceCallback<void(NavigationHandle*)> callback_;
+};
+
 const char* non_cacheable_html_response =
     "HTTP/1.1 200 OK\n"
     "cache-control: no-cache, no-store, must-revalidate\n"
@@ -3396,6 +3413,143 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
       shell(), GURL(embedded_test_server()->GetURL("/virtual-url.html"))));
   EXPECT_EQ("/title2.html", observer.last_navigation_url().path());
   EXPECT_EQ(2, rewrite_count);
+}
+
+// Create two windows. When the second is deleted, it initiates a navigation in
+// the first.
+// This is a situation where the navigation has an initiator routing ID, but no
+// corresponding RenderFrameHost.
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
+                       RendererInitiatedCrossWindowNavigationInUnload) {
+  GURL url(embedded_test_server()->GetURL("/empty.html"));
+
+  // Setup the opener window.
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  // Setup the openee window;
+  ShellAddedObserver new_shell_observer;
+  EXPECT_TRUE(ExecJs(shell(), JsReplace("window.open($1);", url)));
+  Shell* openee_shell = new_shell_observer.GetShell();
+
+  // When deleted, the openee will initiate a navigation in its opener.
+  EXPECT_TRUE(ExecJs(openee_shell, R"(
+    window.addEventListener("unload", () => {
+      opener.location.href = "about:blank";
+    })
+  )"));
+
+  RenderFrameHost* openee_rfh =
+      static_cast<WebContentsImpl*>(openee_shell->web_contents())
+          ->GetFrameTree()
+          ->root()
+          ->current_frame_host();
+  GlobalFrameRoutingId openee_routing_id(openee_rfh->GetProcess()->GetID(),
+                                         openee_rfh->GetRoutingID());
+  base::RunLoop loop;
+  DidStartNavigationCallback callback(
+      shell()->web_contents(),
+      base::BindLambdaForTesting([&](NavigationHandle* handle) {
+        auto* request = NavigationRequest::From(handle);
+        GlobalFrameRoutingId initiator_id = request->GetInitiatorRoutingId();
+        ASSERT_EQ(openee_routing_id, initiator_id);
+        auto* initiator_rfh = RenderFrameHostImpl::FromID(initiator_id);
+        ASSERT_FALSE(initiator_rfh);
+        loop.Quit();
+      }));
+
+  // Delete the openee, which trigger the navigation in the opener.
+  openee_shell->Close();
+  loop.Run();
+}
+
+// A document initiates a form submission in another frame, then deletes itself.
+// Check the initiator_routing_id.
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, FormSubmissionThenDeleteFrame) {
+  GURL url(embedded_test_server()->GetURL("/empty.html"));
+
+  // Setup the opener window.
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  // Setup the openee window;
+  ShellAddedObserver new_shell_observer;
+  EXPECT_TRUE(ExecJs(shell(), JsReplace("window.open($1);", url)));
+  Shell* openee_shell = new_shell_observer.GetShell();
+
+  // Create a 'named' iframe in the first window. This will be the target of the
+  // form submission.
+  EXPECT_TRUE(ExecJs(shell(), R"(
+    new Promise(resolve => {
+      let iframe = document.createElement("iframe");
+      iframe.onload = resolve;
+      iframe.name = 'form-submission-target';
+      iframe.src = location.href;
+      console.log(location.href);
+      document.body.appendChild(iframe);
+    });
+  )"));
+
+  // Create an iframe in the second window. It will be initiating a form
+  // submission and removing itself before the scheduled form navigation occurs.
+  EXPECT_TRUE(WaitForLoadStop(openee_shell->web_contents()));
+  EXPECT_TRUE(ExecJs(openee_shell, R"(
+    new Promise(resolve => {
+      let iframe = document.createElement("iframe");
+      iframe.onload = resolve;
+      iframe.src = location.href;
+      document.body.appendChild(iframe);
+    });
+  )"));
+  EXPECT_TRUE(WaitForLoadStop(openee_shell->web_contents()));
+
+  RenderFrameHost* initiator_rfh =
+      static_cast<WebContentsImpl*>(openee_shell->web_contents())
+          ->GetMainFrame()
+          ->child_at(0)
+          ->current_frame_host();
+  GlobalFrameRoutingId initiator_id(initiator_rfh->GetProcess()->GetID(),
+                                    initiator_rfh->GetRoutingID());
+  base::RunLoop loop;
+  DidStartNavigationCallback callback(
+      shell()->web_contents(),
+      base::BindLambdaForTesting([&](NavigationHandle* handle) {
+        auto* request = NavigationRequest::From(handle);
+        ASSERT_TRUE(request->IsPost());
+
+        GlobalFrameRoutingId id = request->GetInitiatorRoutingId();
+        // TODO(https://crbug.com/1059959): The initiator routing ID should be
+        // set, even if the |initiator_rfh| has already been deleted.
+        EXPECT_FALSE(id);
+        EXPECT_NE(initiator_id, id);
+
+        auto* initiator_rfh = RenderFrameHostImpl::FromID(id);
+        ASSERT_FALSE(initiator_rfh);
+
+        loop.Quit();
+      }));
+
+  // Initiate a form submission into the first window and delete the initiator.
+  EXPECT_TRUE(WaitForLoadStop(openee_shell->web_contents()));
+  ExecuteScriptAsync(initiator_rfh, R"(
+    let input = document.createElement("input");
+    input.setAttribute("type", "hidden");
+    input.setAttribute("name", "my_token");
+    input.setAttribute("value", "my_value");
+
+    // Schedule a form submission navigation (which will occur in a separate
+    // task).
+    let form = document.createElement('form');
+    form.appendChild(input);
+    form.setAttribute("method", "POST");
+    form.setAttribute("action", location.href);
+    form.setAttribute("target", "form-submission-target");
+    document.body.appendChild(form);
+    form.submit();
+
+    // Delete this frame before the scheduled navigation occurs in the target
+    // frame.
+    parent.document.querySelector("iframe").remove();
+  )");
+  loop.Run();
 }
 
 class DocumentPolicyBrowserTest : public NavigationBaseBrowserTest {
