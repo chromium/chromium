@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/optional.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/exo/input_trace.h"
 #include "components/exo/pointer_constraint_delegate.h"
@@ -33,7 +34,9 @@
 #include "ui/display/manager/managed_display_info.h"
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
+#include "ui/events/event_constants.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/gfx/transform_util.h"
 #include "ui/views/widget/widget.h"
 
@@ -409,9 +412,23 @@ void Pointer::OnMouseEvent(ui::MouseEvent* event) {
                              ? SameLocation(location_in_root, location_)
                              : gfx::ToFlooredPoint(location_in_root) ==
                                    gfx::ToFlooredPoint(location_);
+
+    // Ordinal motion is sent only on platforms that support it, which is
+    // indicated by the presence of a flag.
+    //
+    // TODO(b/161755250): the ifdef is only necessary because of the feature
+    // flag. This code should work fine on non-cros.
+    base::Optional<gfx::Vector2dF> ordinal_motion = base::nullopt;
+#if defined(OS_CHROMEOS)
+    if (event->flags() & ui::EF_UNADJUSTED_MOUSE &&
+        base::FeatureList::IsEnabled(chromeos::features::kExoOrdinalMotion)) {
+      ordinal_motion = event->movement();
+    }
+#endif
+
     if (!same_location) {
-      bool needs_frame =
-          HandleRelativePointerMotion(event->time_stamp(), location_in_root);
+      bool needs_frame = HandleRelativePointerMotion(
+          event->time_stamp(), location_in_root, ordinal_motion);
       if (capture_window_) {
         if (ShouldMoveToCenter())
           MoveCursorToCenterOfActiveDisplay();
@@ -803,8 +820,10 @@ void Pointer::MoveCursorToCenterOfActiveDisplay() {
   root->MoveCursorTo(p);
 }
 
-bool Pointer::HandleRelativePointerMotion(base::TimeTicks time_stamp,
-                                          gfx::PointF location_in_root) {
+bool Pointer::HandleRelativePointerMotion(
+    base::TimeTicks time_stamp,
+    gfx::PointF location_in_root,
+    const base::Optional<gfx::Vector2dF>& ordinal_motion) {
   if (!relative_pointer_delegate_)
     return false;
 
@@ -821,9 +840,10 @@ bool Pointer::HandleRelativePointerMotion(base::TimeTicks time_stamp,
     }
   }
 
-  gfx::PointF delta(location_in_root.x() - location_.x(),
-                    location_in_root.y() - location_.y());
-  relative_pointer_delegate_->OnPointerRelativeMotion(time_stamp, delta);
+  gfx::Vector2dF delta = location_in_root - location_;
+  relative_pointer_delegate_->OnPointerRelativeMotion(
+      time_stamp, delta,
+      ordinal_motion.has_value() ? ordinal_motion.value() : delta);
   return true;
 }
 

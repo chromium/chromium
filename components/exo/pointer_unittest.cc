@@ -32,8 +32,12 @@
 #include "ui/aura/client/focus_client.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
+#include "ui/events/base_event_utils.h"
+#include "ui/events/event.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/events/types/event_type.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/views/widget/widget.h"
 
 #if defined(OS_CHROMEOS)
@@ -67,8 +71,10 @@ class MockRelativePointerDelegate : public RelativePointerDelegate {
 
   // Overridden from RelativePointerDelegate:
   MOCK_METHOD1(OnPointerDestroying, void(Pointer*));
-  MOCK_METHOD2(OnPointerRelativeMotion,
-               void(base::TimeTicks, const gfx::PointF&));
+  MOCK_METHOD3(OnPointerRelativeMotion,
+               void(base::TimeTicks,
+                    const gfx::Vector2dF&,
+                    const gfx::Vector2dF&));
 };
 
 class MockPointerConstraintDelegate : public PointerConstraintDelegate {
@@ -987,14 +993,16 @@ TEST_F(PointerTest, OnPointerRelativeMotion) {
   generator.MoveMouseTo(surface->window()->GetBoundsInScreen().origin());
 
   EXPECT_CALL(delegate, OnPointerMotion(testing::_, gfx::PointF(1, 1)));
-  EXPECT_CALL(relative_delegate,
-              OnPointerRelativeMotion(testing::_, gfx::PointF(1, 1)));
+  EXPECT_CALL(
+      relative_delegate,
+      OnPointerRelativeMotion(testing::_, gfx::Vector2dF(1, 1), testing::_));
   generator.MoveMouseTo(surface->window()->GetBoundsInScreen().origin() +
                         gfx::Vector2d(1, 1));
 
   EXPECT_CALL(delegate, OnPointerMotion(testing::_, gfx::PointF(2, 2)));
-  EXPECT_CALL(relative_delegate,
-              OnPointerRelativeMotion(testing::_, gfx::PointF(1, 1)));
+  EXPECT_CALL(
+      relative_delegate,
+      OnPointerRelativeMotion(testing::_, gfx::Vector2dF(1, 1), testing::_));
   generator.MoveMouseTo(surface->window()->GetBoundsInScreen().origin() +
                         gfx::Vector2d(2, 2));
 
@@ -1016,13 +1024,15 @@ TEST_F(PointerTest, OnPointerRelativeMotion) {
   // OnPointerMotion will not be called, because the pointer location is already
   // sent with OnPointerEnter, but we should still receive
   // OnPointerRelativeMotion.
-  EXPECT_CALL(relative_delegate,
-              OnPointerRelativeMotion(testing::_, gfx::PointF(3, 3)));
+  EXPECT_CALL(
+      relative_delegate,
+      OnPointerRelativeMotion(testing::_, gfx::Vector2dF(3, 3), testing::_));
   generator.MoveMouseTo(sub_surface->window()->GetBoundsInScreen().origin());
 
   EXPECT_CALL(delegate, OnPointerMotion(testing::_, gfx::PointF(1, 1)));
-  EXPECT_CALL(relative_delegate,
-              OnPointerRelativeMotion(testing::_, gfx::PointF(1, 1)));
+  EXPECT_CALL(
+      relative_delegate,
+      OnPointerRelativeMotion(testing::_, gfx::Vector2dF(1, 1), testing::_));
   generator.MoveMouseTo(sub_surface->window()->GetBoundsInScreen().origin() +
                         gfx::Vector2d(1, 1));
 
@@ -1049,19 +1059,75 @@ TEST_F(PointerTest, OnPointerRelativeMotion) {
   // OnPointerMotion will not be called, because the pointer location is already
   // sent with OnPointerEnter, but we should still receive
   // OnPointerRelativeMotion.
-  EXPECT_CALL(relative_delegate,
-              OnPointerRelativeMotion(testing::_, gfx::PointF(9, 9)));
+  EXPECT_CALL(
+      relative_delegate,
+      OnPointerRelativeMotion(testing::_, gfx::Vector2dF(9, 9), testing::_));
   generator.MoveMouseTo(child_surface->window()->GetBoundsInScreen().origin());
 
   EXPECT_CALL(delegate, OnPointerMotion(testing::_, gfx::PointF(10, 10)));
-  EXPECT_CALL(relative_delegate,
-              OnPointerRelativeMotion(testing::_, gfx::PointF(10, 10)));
+  EXPECT_CALL(
+      relative_delegate,
+      OnPointerRelativeMotion(testing::_, gfx::Vector2dF(10, 10), testing::_));
   generator.MoveMouseTo(child_surface->window()->GetBoundsInScreen().origin() +
                         gfx::Vector2d(10, 10));
 
   EXPECT_CALL(delegate, OnPointerDestroying(pointer.get()));
   EXPECT_CALL(relative_delegate, OnPointerDestroying(pointer.get()));
   pointer.reset();
+}
+
+TEST_F(PointerTest, OrdinalMotionOverridesRelativeMotion) {
+  auto surface = std::make_unique<Surface>();
+  auto shell_surface = std::make_unique<ShellSurface>(surface.get());
+  gfx::Size buffer_size(10, 10);
+  std::unique_ptr<Buffer> buffer(
+      new Buffer(exo_test_helper()->CreateGpuMemoryBuffer(buffer_size)));
+  surface->Attach(buffer.get());
+  surface->Commit();
+
+  // Set up the pointer and move it to the origin.
+  testing::NiceMock<MockPointerDelegate> delegate;
+  Seat seat;
+  auto pointer = std::make_unique<Pointer>(&delegate, &seat);
+  ui::test::EventGenerator generator(ash::Shell::GetPrimaryRootWindow());
+  EXPECT_CALL(delegate, CanAcceptPointerEventsForSurface(surface.get()))
+      .WillRepeatedly(testing::Return(true));
+  gfx::Point origin = surface->window()->GetBoundsInScreen().origin();
+  generator.MoveMouseTo(origin);
+
+  // Start sending relative motion events.
+  testing::StrictMock<MockRelativePointerDelegate> relative_delegate;
+  pointer->RegisterRelativePointerDelegate(&relative_delegate);
+
+  // By default, ordinal and relative are the same.
+  gfx::Point new_location = origin + gfx::Vector2d(1, 1);
+  ui::MouseEvent ev1(ui::ET_MOUSE_MOVED, new_location, new_location,
+                     ui::EventTimeForNow(), generator.flags(), 0);
+  EXPECT_CALL(relative_delegate,
+              OnPointerRelativeMotion(testing::_, gfx::Vector2dF(1, 1),
+                                      gfx::Vector2dF(1, 1)));
+  generator.Dispatch(&ev1);
+
+  // When set, ordinal overrides the relative motion.
+  //
+  // TODO(b/161755250): the ifdef is only necessary because of the feature
+  // flag. This code should work fine on non-cros.
+#if defined(OS_CHROMEOS)
+  new_location = new_location + gfx::Vector2d(1, 1);
+  ui::MouseEvent ev2(ui::ET_MOUSE_MOVED, new_location, new_location,
+                     ui::EventTimeForNow(), generator.flags(), 0);
+  ui::MouseEvent::DispatcherApi(&ev2).set_movement(gfx::Vector2dF(99, 99));
+  EXPECT_CALL(relative_delegate,
+              OnPointerRelativeMotion(testing::_, gfx::Vector2dF(1, 1),
+                                      gfx::Vector2dF(99, 99)));
+  // This feature is gated behind a flag.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      chromeos::features::kExoOrdinalMotion);
+  generator.Dispatch(&ev2);
+#endif
+
+  pointer->UnregisterRelativePointerDelegate(&relative_delegate);
 }
 
 #if defined(OS_CHROMEOS)

@@ -154,9 +154,13 @@ class Pointer : public SurfaceTreeHost,
   void MoveCursorToCenterOfActiveDisplay();
 
   // Process the delta for relative pointer motion. Returns true if relative
-  // motion was sent to the delegate, false otherwise.
-  bool HandleRelativePointerMotion(base::TimeTicks time_stamp,
-                                   gfx::PointF location_in_target);
+  // motion was sent to the delegate, false otherwise. If |ordinal_motion| is
+  // supplied, it will be used for determining physical motion, otherwise
+  // physical motion will be the relative delta.
+  bool HandleRelativePointerMotion(
+      base::TimeTicks time_stamp,
+      gfx::PointF location_in_target,
+      const base::Optional<gfx::Vector2dF>& ordinal_motion);
 
   // The delegate instance that all events are dispatched to.
   PointerDelegate* const delegate_;
