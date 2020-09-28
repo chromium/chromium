@@ -2089,11 +2089,6 @@
     "expiry_milestone": 85
   },
   {
-    "name": "enable-streamlined-usb-printer-setup",
-    "owners": [ "baileyberro" ],
-    "expiry_milestone": 77
-  },
-  {
     "name": "enable-subresource-redirect",
     "owners": [ "rajendrant", "mcrouse", "tbansal" ],
     "expiry_milestone": 87

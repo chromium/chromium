@@ -16,7 +16,6 @@
 #include "base/containers/flat_set.h"
 #include "base/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/chromeos/printing/enterprise_printers_provider.h"
@@ -345,8 +344,6 @@ class CupsPrintersManagerTest : public testing::Test,
                                 public CupsPrintersManager::Observer {
  public:
   CupsPrintersManagerTest() : ppd_provider_(new FakePpdProvider) {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kStreamlinedUsbPrinterSetup);
     // Zeroconf and usb detector ownerships are taken by the manager, so we have
     // to keep raw pointers to them.
     auto zeroconf_detector = std::make_unique<FakePrinterDetector>();
@@ -399,7 +396,6 @@ class CupsPrintersManagerTest : public testing::Test,
 
  protected:
   base::test::TaskEnvironment task_environment_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 
   // Captured printer lists from observer callbacks.
   base::flat_map<PrinterClass, std::vector<Printer>> observed_printers_;

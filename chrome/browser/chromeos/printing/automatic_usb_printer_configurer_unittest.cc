@@ -10,12 +10,10 @@
 
 #include "base/containers/flat_set.h"
 #include "base/optional.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/chromeos/printing/cups_printers_manager.h"
 #include "chrome/browser/chromeos/printing/printers_map.h"
 #include "chrome/browser/chromeos/printing/test_printer_configurer.h"
 #include "chrome/browser/chromeos/printing/usb_printer_notification_controller.h"
-#include "chrome/common/chrome_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
@@ -143,8 +141,6 @@ class FakeUsbPrinterNotificationController
 class AutomaticUsbPrinterConfigurerTest : public testing::Test {
  public:
   AutomaticUsbPrinterConfigurerTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kStreamlinedUsbPrinterSetup);
     fake_installation_manager_ =
         std::make_unique<FakePrinterInstallationManager>();
     auto printer_configurer = std::make_unique<TestPrinterConfigurer>();
@@ -170,9 +166,6 @@ class AutomaticUsbPrinterConfigurerTest : public testing::Test {
   std::unique_ptr<FakeUsbPrinterNotificationController>
       fake_notification_controller_;
   std::unique_ptr<AutomaticUsbPrinterConfigurer> auto_usb_printer_configurer_;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 
   DISALLOW_COPY_AND_ASSIGN(AutomaticUsbPrinterConfigurerTest);
 };

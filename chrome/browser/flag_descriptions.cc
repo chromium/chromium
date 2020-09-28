@@ -4309,12 +4309,6 @@ const char kSplitSettingsSyncDescription[] =
     "OS settings UI to provide controls for OS data types. Requires "
     "#split-settings to be enabled.";
 
-const char kStreamlinedUsbPrinterSetupName[] =
-    "Streamlined USB Printer Setup Flow";
-const char kStreamlinedUsbPrinterSetupDescription[] =
-    "Automatically sets up capable USB printers when plugged in. Shows a "
-    "notification with the setup result.";
-
 const char kSyncWifiConfigurationsName[] = "Sync Wi-Fi network configurations";
 const char kSyncWifiConfigurationsDescription[] =
     "Enables the option to sync Wi-Fi network configurations with Chrome Sync.";

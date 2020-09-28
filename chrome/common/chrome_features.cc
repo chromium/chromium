@@ -726,10 +726,6 @@ const base::Feature kSoundContentSetting{"SoundContentSetting",
                                          base::FEATURE_ENABLED_BY_DEFAULT};
 
 #if defined(OS_CHROMEOS)
-// Enables or disables automatic setup of USB printers.
-const base::Feature kStreamlinedUsbPrinterSetup{
-    "StreamlinedUsbPrinterSetup", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enables or disables chrome://sys-internals.
 const base::Feature kSysInternals{"SysInternals",
                                   base::FEATURE_DISABLED_BY_DEFAULT};

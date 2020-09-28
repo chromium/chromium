@@ -5150,11 +5150,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAllowScrollSettingsDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kAllowScrollSettings)},
 
-    {"enable-streamlined-usb-printer-setup",
-     flag_descriptions::kStreamlinedUsbPrinterSetupName,
-     flag_descriptions::kStreamlinedUsbPrinterSetupDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(features::kStreamlinedUsbPrinterSetup)},
-
     {"enable-media-session-notifications",
      flag_descriptions::kMediaSessionNotificationsName,
      flag_descriptions::kMediaSessionNotificationsDescription, kOsCrOS,

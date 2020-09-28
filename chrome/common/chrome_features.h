@@ -473,9 +473,6 @@ extern const base::Feature kSoundContentSetting;
 
 #if defined(OS_CHROMEOS)
 COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::Feature kStreamlinedUsbPrinterSetup;
-
-COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kSysInternals;
 #endif
 

@@ -4,11 +4,9 @@
 
 #include "chrome/browser/chromeos/printing/usb_printer_notification_controller.h"
 
-#include "base/feature_list.h"
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/chrome_features.h"
 
 namespace chromeos {
 
@@ -47,10 +45,6 @@ class UsbPrinterNotificationControllerImpl
  private:
   void ShowNotification(const Printer& printer,
                         UsbPrinterNotification::Type type) {
-    if (!base::FeatureList::IsEnabled(features::kStreamlinedUsbPrinterSetup)) {
-      return;
-    }
-
     if (base::Contains(notifications_, printer.id())) {
       return;
     }

@@ -2510,9 +2510,6 @@ extern const char kSmbfsFileSharesDescription[];
 extern const char kSplitSettingsSyncName[];
 extern const char kSplitSettingsSyncDescription[];
 
-extern const char kStreamlinedUsbPrinterSetupName[];
-extern const char kStreamlinedUsbPrinterSetupDescription[];
-
 extern const char kSyncWifiConfigurationsName[];
 extern const char kSyncWifiConfigurationsDescription[];
 
