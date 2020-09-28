@@ -1216,8 +1216,7 @@ class NearbyConnectionsManagerImplTestMediums
     : public NearbyConnectionsManagerImplTest,
       public testing::WithParamInterface<MediumsTestParam> {};
 
-TEST_P(NearbyConnectionsManagerImplTestMediums,
-       StartAdvertising_MediumSelection) {
+TEST_P(NearbyConnectionsManagerImplTestMediums, StartAdvertising_Options) {
   const MediumsTestParam& param = GetParam();
   PowerLevel power_level = std::get<0>(param);
   DataUsage data_usage = std::get<1>(param);
@@ -1255,6 +1254,7 @@ TEST_P(NearbyConnectionsManagerImplTestMediums,
                     NearbyConnectionsMojom::StartAdvertisingCallback callback) {
         EXPECT_EQ(is_high_power, options->auto_upgrade_bandwidth);
         EXPECT_EQ(expected_mediums, options->allowed_mediums);
+        EXPECT_EQ(!is_high_power, options->enable_bluetooth_listening);
         std::move(callback).Run(Status::kSuccess);
       });
   EXPECT_CALL(callback, Run(testing::Eq(Status::kSuccess)));

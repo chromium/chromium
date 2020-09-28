@@ -47,14 +47,16 @@ const char kPayload[] = {0x0f, 0x0a, 0x0c, 0x0e};
 const char kBluetoothMacAddress[] = {0x00, 0x00, 0xe6, 0x88, 0x64, 0x13};
 
 mojom::AdvertisingOptionsPtr CreateAdvertisingOptions() {
+  bool use_ble = false;
   auto allowed_mediums = mojom::MediumSelection::New(/*bluetooth=*/true,
-                                                     /*ble=*/false,
+                                                     /*ble=*/use_ble,
                                                      /*web_rtc=*/false,
                                                      /*wifi_lan=*/true);
   return mojom::AdvertisingOptions::New(
       mojom::Strategy::kP2pPointToPoint, std::move(allowed_mediums),
       /*auto_upgrade_bandwidth=*/true,
       /*enforce_topology_constraints=*/true,
+      /*enable_bluetooth_listening=*/use_ble,
       /*fast_advertisement_service_uuid=*/
       device::BluetoothUUID(kFastAdvertisementServiceUuid));
 }

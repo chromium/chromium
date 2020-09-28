@@ -82,8 +82,9 @@ void NearbyConnectionsManagerImpl::StartAdvertising(
   }
 
   bool is_high_power = power_level == PowerLevel::kHighPower;
+  bool use_ble = !is_high_power;
   auto allowed_mediums = MediumSelection::New(
-      /*bluetooth=*/is_high_power, /*ble=*/!is_high_power,
+      /*bluetooth=*/is_high_power, /*ble=*/use_ble,
       ShouldEnableWebRtc(data_usage, power_level),
       /*wifi_lan=*/is_high_power && kIsWifiLanSupported);
 
@@ -98,6 +99,7 @@ void NearbyConnectionsManagerImpl::StartAdvertising(
           kStrategy, std::move(allowed_mediums),
           /*auto_upgrade_bandwidth=*/is_high_power,
           /*enforce_topology_constraints=*/true,
+          /*enable_bluetooth_listening=*/use_ble,
           /*fast_advertisement_service_uuid=*/
           device::BluetoothUUID(kFastAdvertisementServiceUuid)),
       std::move(lifecycle_listener), std::move(callback));

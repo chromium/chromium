@@ -134,6 +134,9 @@ struct AdvertisingOptions {
   // you can initially connect as a kP2pCluster and then trim connections until
   // you match kP2pStar or kP2pPointToPoint before upgrading the bandwidth.
   bool enforce_topology_constraints = true;
+  // By default, this option is false. If true, this allows listening on
+  // incoming Bluetooth Classic connections while BLE advertising.
+  bool enable_bluetooth_listening = false;
   // Optional. If set, BLE advertisements will be in their "fast advertisement"
   // form, use this UUID, and non-connectable; if empty, BLE advertisements
   // will otherwise be normal and connectable.
