@@ -128,8 +128,10 @@ bool BrowserCompositorMac::UpdateSurfaceFromNSView(
 
   dfh_display_ = new_display;
   dfh_size_dip_ = new_size_dip;
-  dfh_size_pixels_ = gfx::ConvertSizeToPixel(dfh_display_.device_scale_factor(),
-                                             dfh_size_dip_);
+  // The device scale factor is always an integer, so the result here is also
+  // an integer.
+  dfh_size_pixels_ = gfx::ToRoundedSize(gfx::ConvertSizeToPixels(
+      dfh_size_dip_, dfh_display_.device_scale_factor()));
   root_layer_->SetBounds(gfx::Rect(dfh_size_dip_));
 
   if (needs_new_surface_id) {

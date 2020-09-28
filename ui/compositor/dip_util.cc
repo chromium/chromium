@@ -28,11 +28,6 @@ gfx::Rect ConvertRectToDIP(const Layer* layer,
   return gfx::ConvertRectToDIP(layer->device_scale_factor(), rect_in_pixel);
 }
 
-gfx::Size ConvertSizeToPixel(const Layer* layer,
-                             const gfx::Size& size_in_dip) {
-  return gfx::ConvertSizeToPixel(layer->device_scale_factor(), size_in_dip);
-}
-
 gfx::Rect ConvertRectToPixel(const Layer* layer,
                              const gfx::Rect& rect_in_dip) {
   return gfx::ConvertRectToPixel(layer->device_scale_factor(), rect_in_dip);

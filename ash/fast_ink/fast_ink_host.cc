@@ -29,6 +29,7 @@
 #include "ui/aura/window_tree_host.h"
 #include "ui/gfx/geometry/dip_util.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 
 namespace fast_ink {
@@ -287,8 +288,12 @@ void FastInkHost::SubmitCompositorFrame() {
                damage_rect_.ToString());
 
   float device_scale_factor = host_window_->layer()->device_scale_factor();
-  gfx::Rect output_rect(gfx::ConvertSizeToPixel(
-      device_scale_factor, host_window_->GetBoundsInScreen().size()));
+
+  gfx::Size window_size_in_dip = host_window_->GetBoundsInScreen().size();
+  // TODO(crbug.com/1131619): Should this be ceil? Why do we choose floor?
+  gfx::Size window_size_in_pixel = gfx::ToFlooredSize(
+      gfx::ConvertSizeToPixels(window_size_in_dip, device_scale_factor));
+  gfx::Rect output_rect(window_size_in_pixel);
 
   gfx::Rect quad_rect;
   gfx::Rect damage_rect;

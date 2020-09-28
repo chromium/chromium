@@ -30,6 +30,7 @@
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/dip_util.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 #include "ui/views/widget/widget.h"
 
@@ -385,7 +386,11 @@ void ViewTreeHostRootView::SubmitCompositorFrame() {
 
   float device_scale_factor =
       GetWidget()->GetCompositor()->device_scale_factor();
-  gfx::Rect output_rect(gfx::ConvertSizeToPixel(device_scale_factor, size()));
+
+  // TODO(crbug.com/1131623): Should this be ceil? Why do we choose floor?
+  gfx::Size size_in_pixel =
+      gfx::ToFlooredSize(gfx::ConvertSizeToPixels(size(), device_scale_factor));
+  gfx::Rect output_rect(size_in_pixel);
 
   gfx::Rect quad_rect;
   quad_rect = gfx::Rect(buffer_size_);

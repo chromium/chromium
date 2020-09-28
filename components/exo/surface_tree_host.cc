@@ -34,6 +34,7 @@
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/dip_util.h"
+#include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/presentation_feedback.h"
 
 namespace exo {
@@ -365,8 +366,10 @@ viz::CompositorFrame SurfaceTreeHost::PrepareToSubmitCompositorFrame() {
   // because  the size is different.
   const float device_scale_factor =
       host_window()->layer()->device_scale_factor();
-  gfx::Size output_surface_size_in_pixels = gfx::ConvertSizeToPixel(
-      device_scale_factor, host_window_->bounds().size());
+  // TODO(crbug.com/1131628): Should this be ceil? Why do we choose floor?
+  gfx::Size output_surface_size_in_pixels =
+      gfx::ToFlooredSize(gfx::ConvertSizeToPixels(host_window_->bounds().size(),
+                                                  device_scale_factor));
   // Viz will crash if the frame size is empty. Ensure it's not empty.
   // crbug.com/1041932.
   if (output_surface_size_in_pixels.IsEmpty())

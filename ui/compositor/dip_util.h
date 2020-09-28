@@ -9,7 +9,6 @@
 #include "ui/gfx/geometry/point_f.h"
 
 namespace gfx {
-class Size;
 class Rect;
 }  // namespace gfx
 
@@ -21,9 +20,6 @@ class Layer;
 COMPOSITOR_EXPORT gfx::Rect ConvertRectToDIP(
     const Layer* layer,
     const gfx::Rect& rect_in_pixel);
-COMPOSITOR_EXPORT gfx::Size ConvertSizeToPixel(
-    const Layer* layer,
-    const gfx::Size& size_in_dip);
 COMPOSITOR_EXPORT gfx::Rect ConvertRectToPixel(
     const Layer* layer,
     const gfx::Rect& rect_in_dip);

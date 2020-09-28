@@ -1510,18 +1510,17 @@ crbug.com/421283 html/marquee/marquee-scrollamount.html [ Pass Failure ]
 # TODO(oshima): Mac Android are currently not supported.
 crbug.com/567837 [ Mac ] virtual/scalefactor200withzoom/fast/hidpi/static/* [ Skip ]
 
-# Mac does not support fractional scale factor.
-crbug.com/567837 [ Mac ] virtual/scalefactor150/fast/hidpi/static/* [ Skip ]
-
 # TODO(oshima): Move the event scaling code to eventSender and remove this.
 crbug.com/567837 virtual/scalefactor200/fast/hidpi/static/mousewheel-scroll-amount.html [ Skip ]
 crbug.com/567837 virtual/scalefactor200/fast/hidpi/static/gesture-scroll-amount.html [ Skip ]
-crbug.com/567837 virtual/scalefactor150/fast/hidpi/static/mousewheel-scroll-amount.html [ Skip ]
-crbug.com/567837 virtual/scalefactor150/fast/hidpi/static/gesture-scroll-amount.html [ Skip ]
-
-crbug.com/567837 virtual/scalefactor150/fast/hidpi/static/popup-menu-with-scrollbar-appearance.html [ Timeout Failure ]
 crbug.com/567837 virtual/scalefactor200/fast/hidpi/static/popup-menu-with-scrollbar-appearance.html [ Timeout Failure ]
 crbug.com/567837 virtual/scalefactor200withzoom/fast/hidpi/static/popup-menu-with-scrollbar-appearance.html [ Timeout Failure ]
+crbug.com/567837 [ Linux ] virtual/scalefactor150/fast/hidpi/static/mousewheel-scroll-amount.html [ Skip ]
+crbug.com/567837 [ Win ] virtual/scalefactor150/fast/hidpi/static/mousewheel-scroll-amount.html [ Skip ]
+crbug.com/567837 [ Linux ] virtual/scalefactor150/fast/hidpi/static/gesture-scroll-amount.html [ Skip ]
+crbug.com/567837 [ Win ] virtual/scalefactor150/fast/hidpi/static/gesture-scroll-amount.html [ Skip ]
+crbug.com/567837 [ Linux ] virtual/scalefactor150/fast/hidpi/static/popup-menu-with-scrollbar-appearance.html [ Timeout Failure ]
+crbug.com/567837 [ Win ] virtual/scalefactor150/fast/hidpi/static/popup-menu-with-scrollbar-appearance.html [ Timeout Failure ]
 
 # TODO(ojan): These tests aren't flaky. See crbug.com/517144.
 # Release trybots run asserts, but the main waterfall ones don't. So, even
@@ -5486,7 +5485,8 @@ crbug.com/922951 http/tests/security/cookies/basic.html [ Failure Pass Timeout C
 crbug.com/922951 http/tests/webaudio/autoplay-crossorigin.html [ Failure Pass Timeout Crash ]
 crbug.com/922951 media/controls/overflow-menu-hide-on-click-outside-stoppropagation.html [ Failure Pass Timeout Crash ]
 crbug.com/922951 virtual/prefer_compositing_to_lcd_text/scrollbars/resize-scales-with-dpi-150.html [ Failure Pass Timeout Crash ]
-crbug.com/922951 virtual/scalefactor150/fast/events/synthetic-events/tap-on-scaled-screen.html [ Failure Pass Timeout Crash ]
+crbug.com/922951 [ Linux ] virtual/scalefactor150/fast/events/synthetic-events/tap-on-scaled-screen.html [ Failure Pass Timeout Crash ]
+crbug.com/922951 [ Win ] virtual/scalefactor150/fast/events/synthetic-events/tap-on-scaled-screen.html [ Failure Pass Timeout Crash ]
 crbug.com/922951 virtual/threaded/http/tests/devtools/tracing/frame-model-instrumentation.js [ Failure Pass Timeout Crash ]
 crbug.com/922951 virtual/threaded/http/tests/devtools/tracing/timeline-layout/timeline-layout-reason.js [ Failure Pass Timeout Crash ]
 crbug.com/922951 virtual/threaded/http/tests/devtools/tracing/timeline-layout/timeline-layout-with-invalidations.js [ Failure Pass Timeout Crash ]

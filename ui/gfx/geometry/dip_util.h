@@ -47,6 +47,11 @@ GEOMETRY_EXPORT gfx::SizeF ConvertSizeToDips(const gfx::Size& size_in_pixels,
 GEOMETRY_EXPORT gfx::SizeF ConvertSizeToDips(const gfx::SizeF& size_in_pixels,
                                              float device_scale_factor);
 
+GEOMETRY_EXPORT gfx::SizeF ConvertSizeToPixels(const gfx::Size& size_in_dips,
+                                               float device_scale_factor);
+GEOMETRY_EXPORT gfx::SizeF ConvertSizeToPixels(const gfx::SizeF& size_in_dips,
+                                               float device_scale_factor);
+
 GEOMETRY_EXPORT gfx::Insets ConvertInsetsToDIP(
     float scale_factor,
     const gfx::Insets& insets_in_pixel);
@@ -56,8 +61,6 @@ GEOMETRY_EXPORT gfx::Rect ConvertRectToDIP(float scale_factor,
 GEOMETRY_EXPORT gfx::Insets ConvertInsetsToPixel(
     float scale_factor,
     const gfx::Insets& insets_in_dip);
-GEOMETRY_EXPORT gfx::Size ConvertSizeToPixel(float scale_factor,
-                                             const gfx::Size& size_in_dip);
 GEOMETRY_EXPORT gfx::Rect ConvertRectToPixel(float scale_factor,
                                              const gfx::Rect& rect_in_dip);
 }  // gfx

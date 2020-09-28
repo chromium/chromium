@@ -2054,9 +2054,13 @@ virtual/trust-tokens/http/tests/inspector-protocol/trust-tokens/* [ Pass ]
 virtual/trust-tokens/http/tests/loading/trust-tokens/* [ Pass ]
 virtual/trust-tokens/external/wpt/trust-tokens/end-to-end/* [ Pass ]
 
+# Mac does not ever have fractional device scale factor.
+[ Mac ] virtual/scalefactor150/* [ Skip ]
+
 # Run these tests with under virtual/scalefactor... only.
 crbug.com/567837 fast/hidpi/static/* [ Skip ]
-virtual/scalefactor150/fast/hidpi/static/* [ Pass ]
+[ Linux ] virtual/scalefactor150/fast/hidpi/static/* [ Pass ]
+[ Win ] virtual/scalefactor150/fast/hidpi/static/* [ Pass ]
 virtual/scalefactor200/fast/hidpi/static/* [ Pass ]
 virtual/scalefactor200withzoom/fast/hidpi/static/* [ Pass ]
 

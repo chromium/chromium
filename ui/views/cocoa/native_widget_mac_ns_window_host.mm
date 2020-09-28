@@ -25,6 +25,7 @@
 #include "ui/display/screen.h"
 #include "ui/events/cocoa/cocoa_event_utils.h"
 #include "ui/gfx/geometry/dip_util.h"
+#include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/mac/coordinate_conversion.h"
 #include "ui/native_theme/native_theme_mac.h"
 #include "ui/views/cocoa/text_input_host.h"
@@ -524,11 +525,15 @@ void NativeWidgetMacNSWindowHost::CreateCompositor(
 void NativeWidgetMacNSWindowHost::UpdateCompositorProperties() {
   if (!compositor_)
     return;
-  gfx::Size surface_size_in_dip = content_bounds_in_screen_.size();
-  layer()->SetBounds(gfx::Rect(surface_size_in_dip));
-  compositor_->UpdateSurface(
-      ConvertSizeToPixel(display_.device_scale_factor(), surface_size_in_dip),
-      display_.device_scale_factor(), display_.color_spaces());
+  layer()->SetBounds(gfx::Rect(content_bounds_in_screen_.size()));
+  // Mac device scale factor is always an integer so the result here is an
+  // integer pixel size.
+  gfx::Size content_bounds_in_pixels =
+      gfx::ToRoundedSize(gfx::ConvertSizeToPixels(
+          content_bounds_in_screen_.size(), display_.device_scale_factor()));
+  compositor_->UpdateSurface(content_bounds_in_pixels,
+                             display_.device_scale_factor(),
+                             display_.color_spaces());
 }
 
 void NativeWidgetMacNSWindowHost::DestroyCompositor() {
@@ -983,10 +988,14 @@ void NativeWidgetMacNSWindowHost::OnWindowDisplayChanged(
   bool display_id_changed = display_.id() != new_display.id();
   display_ = new_display;
   if (compositor_) {
-    compositor_->UpdateSurface(
-        ConvertSizeToPixel(display_.device_scale_factor(),
-                           content_bounds_in_screen_.size()),
-        display_.device_scale_factor(), display_.color_spaces());
+    // Mac device scale factor is always an integer so the result here is an
+    // integer pixel size.
+    gfx::Size content_bounds_in_pixels =
+        gfx::ToRoundedSize(gfx::ConvertSizeToPixels(
+            content_bounds_in_screen_.size(), display_.device_scale_factor()));
+    compositor_->UpdateSurface(content_bounds_in_pixels,
+                               display_.device_scale_factor(),
+                               display_.color_spaces());
   }
   if (display_id_changed) {
     display_link_ = ui::DisplayLinkMac::GetForDisplay(display_.id());
