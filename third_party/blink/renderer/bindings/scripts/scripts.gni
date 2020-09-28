@@ -287,8 +287,11 @@ template("idl_impl") {
       "--target-component",
       invoker.target_component,
       "--generate-impl",
-      rebase_path(idl_files_list, root_build_dir),
     ]
+    if (use_blink_v8_binding_new_idl_callback_function) {
+      args += [ "--generate-impl-skip-callback-function" ]
+    }
+    args += [ rebase_path(idl_files_list, root_build_dir) ]
 
     deps = [
       "//third_party/blink/renderer/bindings:interfaces_info",

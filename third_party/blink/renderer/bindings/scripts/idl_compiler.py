@@ -52,6 +52,9 @@ def parse_options():
         '--cache-directory',
         help='cache directory, defaults to output directory')
     parser.add_option('--generate-impl', action='store_true', default=False)
+    parser.add_option('--generate-impl-skip-callback-function',
+                      action='store_true',
+                      default=False)
     parser.add_option(
         '--read-idl-list-from-file', action='store_true', default=False)
     parser.add_option('--output-directory')
@@ -190,8 +193,9 @@ def main():
                                  options, input_filenames)
         generate_union_type_containers(CodeGeneratorUnionType, info_provider,
                                        options)
-        generate_callback_function_impl(CodeGeneratorCallbackFunction,
-                                        info_provider, options)
+        if not options.generate_impl_skip_callback_function:
+            generate_callback_function_impl(CodeGeneratorCallbackFunction,
+                                            info_provider, options)
     else:
         generate_bindings(CodeGeneratorV8, info_provider, options,
                           input_filenames)
