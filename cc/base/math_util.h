@@ -70,9 +70,9 @@ struct HomogeneousCoordinate {
     // However, w may be close to 0 and we lose precision on our geometry
     // calculations if we allow scaling to extremely large values.
     return gfx::PointF(base::ClampToRange(x() * inv_w, -kInfiniteCoordinate,
-                                          (float)kInfiniteCoordinate),
+                                          float{kInfiniteCoordinate}),
                        base::ClampToRange(y() * inv_w, -kInfiniteCoordinate,
-                                          (float)kInfiniteCoordinate));
+                                          float{kInfiniteCoordinate}));
   }
 
   gfx::Point3F CartesianPoint3d() const {
@@ -86,11 +86,11 @@ struct HomogeneousCoordinate {
     // However, w may be close to 0 and we lose precision on our geometry
     // calculations if we allow scaling to extremely large values.
     return gfx::Point3F(base::ClampToRange(x() * inv_w, -kInfiniteCoordinate,
-                                           (float)kInfiniteCoordinate),
+                                           float{kInfiniteCoordinate}),
                         base::ClampToRange(y() * inv_w, -kInfiniteCoordinate,
-                                           (float)kInfiniteCoordinate),
+                                           float{kInfiniteCoordinate}),
                         base::ClampToRange(z() * inv_w, -kInfiniteCoordinate,
-                                           (float)kInfiniteCoordinate));
+                                           float{kInfiniteCoordinate}));
   }
 
   SkScalar x() const { return vec[0]; }
