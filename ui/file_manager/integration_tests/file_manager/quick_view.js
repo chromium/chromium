@@ -1305,7 +1305,7 @@
     const size = await getQuickViewMetadataBoxField(appId, 'Dimensions');
     chrome.test.assertEq('378 x 272', size);
     const model = await getQuickViewMetadataBoxField(appId, 'Device model');
-    chrome.test.assertEq(model, 'FinePix S5000');
+    chrome.test.assertEq('FinePix S5000', model);
     const film = await getQuickViewMetadataBoxField(appId, 'Device settings');
     chrome.test.assertEq('f/2.8 0.004 5.7mm ISO200', film);
   };
@@ -1355,7 +1355,7 @@
     const size = await getQuickViewMetadataBoxField(appId, 'Dimensions');
     chrome.test.assertEq('4608 x 3456', size);
     const model = await getQuickViewMetadataBoxField(appId, 'Device model');
-    chrome.test.assertEq(model, 'E-M1');
+    chrome.test.assertEq('E-M1', model);
     const film = await getQuickViewMetadataBoxField(appId, 'Device settings');
     chrome.test.assertEq('f/8 0.002 12mm ISO200', film);
   };
@@ -2364,7 +2364,7 @@
       const result = await sendTestMessage(
           {name: 'dispatchTabKey', shift: query.shift || false});
       chrome.test.assertEq(
-          result, 'tabKeyDispatched', 'Tab key dispatch failure');
+          'tabKeyDispatched', result, 'Tab key dispatch failure');
 
       // Note: Allow 500ms between key events to filter out the focus
       // traversal problems noted in crbug.com/907380#c10.
@@ -2402,7 +2402,7 @@
       const result = await sendTestMessage(
           {name: 'dispatchTabKey', shift: query.shift || false});
       chrome.test.assertEq(
-          result, 'tabKeyDispatched', 'Tab key dispatch failure');
+          'tabKeyDispatched', result, 'Tab key dispatch failure');
 
       // Note: Allow 500ms between key events to filter out the focus
       // traversal problems noted in crbug.com/907380#c10.
@@ -2439,7 +2439,7 @@
       const result = await sendTestMessage(
           {name: 'dispatchTabKey', shift: query.shift || false});
       chrome.test.assertEq(
-          result, 'tabKeyDispatched', 'Tab key dispatch failure');
+          'tabKeyDispatched', result, 'Tab key dispatch failure');
 
       // Note: Allow 500ms between key events to filter out the focus
       // traversal problems noted in crbug.com/907380#c10.
@@ -2475,7 +2475,7 @@
       const result = await sendTestMessage(
           {name: 'dispatchTabKey', shift: query.shift || false});
       chrome.test.assertEq(
-          result, 'tabKeyDispatched', 'Tab key dispatch failure');
+          'tabKeyDispatched', result, 'Tab key dispatch failure');
 
       // Note: Allow 500ms between key events to filter out the focus
       // traversal problems noted in crbug.com/907380#c10.
@@ -2491,7 +2491,7 @@
       const result =
           await sendTestMessage({name: 'dispatchTabKey', shift: false});
       chrome.test.assertEq(
-          result, 'tabKeyDispatched', 'Tab key dispatch failure');
+          'tabKeyDispatched', result, 'Tab key dispatch failure');
 
       // Note: Allow 500ms between key events to filter out the focus
       // traversal problems noted in crbug.com/907380#c10.
@@ -2531,7 +2531,7 @@
       const result = await sendTestMessage(
           {name: 'dispatchTabKey', shift: query.shift || false});
       chrome.test.assertEq(
-          result, 'tabKeyDispatched', 'Tab key dispatch failure');
+          'tabKeyDispatched', result, 'Tab key dispatch failure');
 
       // Note: Allow 500ms between key events to filter out the focus
       // traversal problems noted in crbug.com/907380#c10.
@@ -2547,7 +2547,7 @@
       const result =
           await sendTestMessage({name: 'dispatchTabKey', shift: false});
       chrome.test.assertEq(
-          result, 'tabKeyDispatched', 'Tab key dispatch failure');
+          'tabKeyDispatched', result, 'Tab key dispatch failure');
 
       // Note: Allow 500ms between key events to filter out the focus
       // traversal problems noted in crbug.com/907380#c10.
@@ -2595,7 +2595,7 @@
       const result = await sendTestMessage(
           {name: 'dispatchTabKey', shift: query.shift || false});
       chrome.test.assertEq(
-          result, 'tabKeyDispatched', 'Tab key dispatch failure');
+          'tabKeyDispatched', result, 'Tab key dispatch failure');
 
       // Note: Allow 500ms between key events to filter out the focus
       // traversal problems noted in crbug.com/907380#c10.
@@ -3076,7 +3076,7 @@
     await repeatUntil(async () => {
       const result = await sendTestMessage({name: 'dispatchTabKey'});
       chrome.test.assertEq(
-          result, 'tabKeyDispatched', 'Tab key dispatch failure');
+          'tabKeyDispatched', result, 'Tab key dispatch failure');
 
       const element =
           await remoteCall.callRemoteTestUtil('getActiveElement', appId, []);
