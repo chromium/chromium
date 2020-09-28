@@ -163,7 +163,11 @@ const CGFloat kBubblePresentationDelay = 1;
   // The bottom toolbar and Discover feed header menu don't use the
   // isUserEngaged, so don't check if the user is engaged here.
   [self presentBottomToolbarTipBubble];
-  [self presentDiscoverFeedHeaderTipBubble];
+
+  // TODO(crbug.com/1132757): Reenable this once the DCHECKS for bubble size in
+  // [BubbleViewControllerPresenter frameForBubbleInRect:atAnchorPoint:] stop
+  // being hit.
+  // [self presentDiscoverFeedHeaderTipBubble];
 }
 
 - (void)presentLongPressBubble {
