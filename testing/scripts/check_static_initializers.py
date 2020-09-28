@@ -42,7 +42,6 @@ _CROS_SI_FILE_ALLOWLIST = {
         'native_message_host_chromeos.cc',  # TODO(crbug.com/537099): Remove.
         'protobuf_http_status.cc',  # TODO(crbug.com/537099): Remove.
         'rpc.pb.cc',  # TODO(crbug.com/537099): Remove.
-        'switch_access_menu_view.cc',  # TODO(crbug.com/537099): Remove.
     ],
     'nacl_helper_bootstrap': [],
 }
