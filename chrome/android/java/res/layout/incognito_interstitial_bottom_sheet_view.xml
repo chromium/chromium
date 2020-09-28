@@ -12,13 +12,14 @@
     android:paddingEnd="24dp"
     android:orientation="vertical">
 
-    <TextView
+    <org.chromium.ui.widget.TextViewWithLeading
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
         android:gravity="center_vertical"
         android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
-        android:text="@string/incognito_interstitial_message" />
+        android:text="@string/incognito_interstitial_message"
+        app:leading="@dimen/text_size_medium_leading" />
 
     <LinearLayout
         android:layout_width="match_parent"
