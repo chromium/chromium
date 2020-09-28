@@ -123,7 +123,7 @@ TEST_F(MockAppCacheStorageTest, CreateGroup) {
   // Should complete asyncly.
   MockAppCacheService service;
   MockAppCacheStorage* storage =
-      reinterpret_cast<MockAppCacheStorage*>(service.storage());
+      static_cast<MockAppCacheStorage*>(service.storage());
   MockStorageDelegate delegate;
   GURL manifest_url("http://blah/");
   service.storage()->LoadOrCreateGroup(manifest_url, &delegate);
@@ -169,7 +169,7 @@ TEST_F(MockAppCacheStorageTest, LoadGroupAndCache_FarHit) {
   // load should complete asyncly.
   MockAppCacheService service;
   MockAppCacheStorage* storage =
-      reinterpret_cast<MockAppCacheStorage*>(service.storage());
+      static_cast<MockAppCacheStorage*>(service.storage());
 
   // Setup some preconditions. Create a group and newest cache that
   // appears to be "stored" and "not currently in use".
@@ -220,7 +220,7 @@ TEST_F(MockAppCacheStorageTest, StoreNewGroup) {
   // Store a group and its newest cache. Should complete asyncly.
   MockAppCacheService service;
   MockAppCacheStorage* storage =
-      reinterpret_cast<MockAppCacheStorage*>(service.storage());
+      static_cast<MockAppCacheStorage*>(service.storage());
 
   // Setup some preconditions. Create a group and newest cache that
   // appears to be "unstored".
@@ -252,7 +252,7 @@ TEST_F(MockAppCacheStorageTest, StoreExistingGroup) {
   // Store a group and its newest cache. Should complete asyncly.
   MockAppCacheService service;
   MockAppCacheStorage* storage =
-      reinterpret_cast<MockAppCacheStorage*>(service.storage());
+      static_cast<MockAppCacheStorage*>(service.storage());
 
   // Setup some preconditions. Create a group and old complete cache
   // that appear to be "stored", and a newest unstored complete cache.
@@ -297,7 +297,7 @@ TEST_F(MockAppCacheStorageTest, StoreExistingGroupExistingCache) {
   // Store a group with updates to its existing newest complete cache.
   MockAppCacheService service;
   MockAppCacheStorage* storage =
-      reinterpret_cast<MockAppCacheStorage*>(service.storage());
+      static_cast<MockAppCacheStorage*>(service.storage());
 
   // Setup some preconditions. Create a group and a complete cache that
   // appear to be "stored".
@@ -339,7 +339,7 @@ TEST_F(MockAppCacheStorageTest, MakeGroupObsolete) {
   // Make a group obsolete, should complete asyncly.
   MockAppCacheService service;
   MockAppCacheStorage* storage =
-      reinterpret_cast<MockAppCacheStorage*>(service.storage());
+      static_cast<MockAppCacheStorage*>(service.storage());
 
   // Setup some preconditions. Create a group and newest cache that
   // appears to be "stored" and "currently in use".
@@ -384,7 +384,7 @@ TEST_F(MockAppCacheStorageTest, MarkEntryAsForeign) {
   // Should complete syncly.
   MockAppCacheService service;
   MockAppCacheStorage* storage =
-      reinterpret_cast<MockAppCacheStorage*>(service.storage());
+      static_cast<MockAppCacheStorage*>(service.storage());
 
   // Setup some preconditions. Create a cache with an entry.
   GURL entry_url("http://blah/entry");
@@ -404,7 +404,7 @@ TEST_F(MockAppCacheStorageTest, FindNoMainResponse) {
   // Should complete asyncly.
   MockAppCacheService service;
   MockAppCacheStorage* storage =
-      reinterpret_cast<MockAppCacheStorage*>(service.storage());
+      static_cast<MockAppCacheStorage*>(service.storage());
 
   // Conduct the test.
   MockStorageDelegate delegate;
@@ -429,7 +429,7 @@ TEST_F(MockAppCacheStorageTest, BasicFindMainResponse) {
   // Should complete asyncly.
   MockAppCacheService service;
   MockAppCacheStorage* storage =
-      reinterpret_cast<MockAppCacheStorage*>(service.storage());
+      static_cast<MockAppCacheStorage*>(service.storage());
 
   // Setup some preconditions. Create a complete cache with an entry.
   const int64_t kCacheId = storage->NewCacheId();
@@ -464,7 +464,7 @@ TEST_F(MockAppCacheStorageTest, BasicFindMainFallbackResponse) {
   // Should complete asyncly.
   MockAppCacheService service;
   MockAppCacheStorage* storage =
-      reinterpret_cast<MockAppCacheStorage*>(service.storage());
+      static_cast<MockAppCacheStorage*>(service.storage());
 
   // Setup some preconditions. Create a complete cache with a
   // fallback namespace and entry.
@@ -520,7 +520,7 @@ TEST_F(MockAppCacheStorageTest, FindMainResponseWithMultipleCandidates) {
   // Should complete asyncly.
   MockAppCacheService service;
   MockAppCacheStorage* storage =
-      reinterpret_cast<MockAppCacheStorage*>(service.storage());
+      static_cast<MockAppCacheStorage*>(service.storage());
 
   // Setup some preconditions. Create 2 complete caches with an entry
   // for the same url.
@@ -577,7 +577,7 @@ TEST_F(MockAppCacheStorageTest, FindMainResponseExclusions) {
   // Should complete asyncly.
   MockAppCacheService service;
   MockAppCacheStorage* storage =
-      reinterpret_cast<MockAppCacheStorage*>(service.storage());
+      static_cast<MockAppCacheStorage*>(service.storage());
 
   // Setup some preconditions. Create a complete cache with a
   // foreign entry and an online namespace.

@@ -691,7 +691,7 @@ class AppCacheRequestHandlerTest : public ::testing::Test {
   void OnBadMessage(const std::string& reason) { NOTREACHED(); }
 
   MockAppCacheStorage* mock_storage() {
-    return reinterpret_cast<MockAppCacheStorage*>(mock_service_->storage());
+    return static_cast<MockAppCacheStorage*>(mock_service_->storage());
   }
 
   void CreateRequestAndHandler(const GURL& url,
