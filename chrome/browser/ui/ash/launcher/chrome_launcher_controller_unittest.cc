@@ -575,7 +575,7 @@ class ChromeLauncherControllerTest
     sync_preferences::PrefServiceSyncable* pref_sync =
         profile()->GetTestingPrefService();
     sync_preferences::PrefModelAssociator* pref_sync_service =
-        reinterpret_cast<sync_preferences::PrefModelAssociator*>(
+        static_cast<sync_preferences::PrefModelAssociator*>(
             pref_sync->GetSyncableService(GetPreferencesModelType()));
     return pref_sync_service;
   }
