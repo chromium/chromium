@@ -53,20 +53,17 @@ def get_build_target_name_to_display(build_target: str,
         return chrome_names.shorten_build_target(build_target)
 
 
-def print_with_indent(indent: int, message: str,
-                      bullet_point: str = '') -> None:
-    indents = ' ' * indent
-    bullet_point_text = f'{bullet_point} ' if bullet_point else ''
-    print(f'{indents}{bullet_point_text}{message}')
-
-
 def is_allowed_dependency(build_target: str) -> bool:
     return any(build_target.startswith(p) for p in ALLOWED_PREFIXES)
 
 
-def print_class_nodes_grouped_by_target(
-        class_nodes: List[class_dependency.JavaClass], print_mode: PrintMode,
-        bullet_point: str, ignore_modularized: bool):
+def print_class_nodes(class_nodes: List[class_dependency.JavaClass],
+                      print_mode: PrintMode, class_name: str, direction: str):
+    ignore_modularized = direction == OUTBOUND and print_mode.ignore_modularized
+    bullet_point = '<-' if direction == INBOUND else '->'
+
+    print_backlog: List[Tuple[int, str]] = []
+
     # TODO(crbug.com/1124836): This is not quite correct because
     # sets considered equal can be converted to different strings. Fix this by
     # making JavaClass.build_targets return a List instead of a Set.
@@ -87,25 +84,30 @@ def print_class_nodes_grouped_by_target(
                 get_build_target_name_to_display(target, print_mode)
                 for target in class_node.build_targets
             ]
-            print_with_indent(4, f'[{", ".join(build_target_names)}]')
+            build_target_names_string = ", ".join(build_target_names)
+            print_backlog.append((4, f'[{build_target_names_string}]'))
             last_build_target = build_target
-        print_with_indent(
-            8, get_class_name_to_display(class_node.name, print_mode),
-            bullet_point)
+        display_name = get_class_name_to_display(class_node.name, print_mode)
+        print_backlog.append((8, f'{bullet_point} {display_name}'))
+
+    # Print header
     if ignore_modularized:
-        if suspect_dependencies:
-            print(f'{suspect_dependencies} dependencies above may need to be '
-                  'broken, ignored others.')
+        cleared = len(class_nodes) - suspect_dependencies
+        print(
+            f'{suspect_dependencies} outbound dependencies from {class_name} '
+            f'may need to be broken (omitted {cleared} cleared dependencies):')
+    else:
+        if direction == INBOUND:
+            print(
+                f'{len(class_nodes)} inbound dependencies into {class_name}:')
         else:
-            print('No suspect dependencies, ignored all.')
+            print(
+                f'{len(class_nodes)} outbound dependencies from {class_name}:')
 
-
-def print_class_nodes(class_nodes: List[class_dependency.JavaClass],
-                      print_mode: PrintMode, direction: str):
-    ignore_modularized = direction == OUTBOUND and print_mode.ignore_modularized
-    bullet_point = '<-' if direction == INBOUND else '->'
-    print_class_nodes_grouped_by_target(class_nodes, print_mode, bullet_point,
-                                        ignore_modularized)
+    # Print build targets and dependencies
+    for indent, message in print_backlog:
+        indents = ' ' * indent
+        print(f'{indents}{message}')
 
 
 def print_class_dependencies_for_key(
@@ -116,17 +118,12 @@ def print_class_dependencies_for_key(
     class_name = get_class_name_to_display(node.name, print_mode)
 
     if print_mode.inbound:
-        print(
-            f'{len(node.inbound)} inbound dependency(ies) into {class_name}:')
         print_class_nodes(graph.sorted_nodes_by_name(node.inbound), print_mode,
-                          INBOUND)
+                          class_name, INBOUND)
 
     if print_mode.outbound:
-        print(
-            f'{len(node.outbound)} outbound dependency(ies) from {class_name}:'
-        )
         print_class_nodes(graph.sorted_nodes_by_name(node.outbound),
-                          print_mode, OUTBOUND)
+                          print_mode, class_name, OUTBOUND)
 
 
 def main():
@@ -200,7 +197,6 @@ def main():
             fully_qualified_class_name = valid_keys[0]
             class_name = get_class_name_to_display(fully_qualified_class_name,
                                                    print_mode)
-            print(f'Printing class dependencies for {class_name}:')
             print_class_dependencies_for_key(class_graph,
                                              fully_qualified_class_name,
                                              print_mode)
