@@ -2,4 +2,6 @@ include_rules = [
   "+components/browser_ui/widget",
   "+components/keyed_service",
   "+components/leveldb_proto",
+  "+components/thin_webview/java",
+  "+content/public/android/java/src/org/chromium/content_public",
 ]

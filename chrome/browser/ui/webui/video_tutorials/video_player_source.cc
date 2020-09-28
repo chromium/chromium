@@ -27,7 +27,8 @@ content::WebUIDataSource* CreateVideoPlayerUntrustedDataSource() {
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::StyleSrc, "style-src 'self';");
   source->OverrideContentSecurityPolicy(
-      network::mojom::CSPDirectiveName::ScriptSrc, "script-src 'self';");
+      network::mojom::CSPDirectiveName::ScriptSrc,
+      "script-src chrome-untrusted://resources/ 'self';");
 
   return source;
 }
