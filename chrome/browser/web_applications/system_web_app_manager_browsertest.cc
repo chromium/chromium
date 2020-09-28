@@ -127,7 +127,7 @@ content::WebContents* SystemWebAppManagerBrowserTestBase::LaunchApp(
     const apps::AppLaunchParams& params,
     bool wait_for_load,
     Browser** out_browser) {
-  content::TestNavigationObserver navigation_observer(GetLaunchURL(params));
+  content::TestNavigationObserver navigation_observer(GetStartUrl(params));
   navigation_observer.StartWatchingNewWebContents();
 
   content::WebContents* web_contents = GetAppServiceProxy(browser()->profile())
@@ -169,13 +169,13 @@ SystemWebAppManagerBrowserTestBase::LaunchAppWithoutWaiting(
   return LaunchAppWithoutWaiting(LaunchParamsForApp(type), browser);
 }
 
-const GURL& SystemWebAppManagerBrowserTestBase::GetLaunchURL(
+GURL SystemWebAppManagerBrowserTestBase::GetStartUrl(
     const apps::AppLaunchParams& params) {
   return params.override_url.is_valid()
              ? params.override_url
              : WebAppProvider::Get(browser()->profile())
                    ->registrar()
-                   .GetAppLaunchURL(params.app_id);
+                   .GetAppStartUrl(params.app_id);
 }
 
 SystemWebAppManagerBrowserTest::SystemWebAppManagerBrowserTest(

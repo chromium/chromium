@@ -2017,7 +2017,7 @@ IN_PROC_BROWSER_TEST_F(WebAppInstallForceListPolicyTest, StartUpInstallation) {
       registrar.FindAppWithUrlInScope(policy_app_url_);
   if (!app_id)
     app_id = install_observer.AwaitNextInstall();
-  EXPECT_EQ(policy_app_url_, registrar.GetAppLaunchURL(*app_id));
+  EXPECT_EQ(policy_app_url_, registrar.GetAppStartUrl(*app_id));
 }
 
 // Fixture for tests that have two profiles with a different policy for each.

@@ -122,7 +122,7 @@ void WebAppControllerBrowserTest::SetUp() {
 content::WebContents* WebAppControllerBrowserTest::OpenApplication(
     const AppId& app_id) {
   ui_test_utils::UrlLoadObserver url_observer(
-      provider().registrar().GetAppLaunchURL(app_id),
+      provider().registrar().GetAppStartUrl(app_id),
       content::NotificationService::AllSources());
 
   apps::AppLaunchParams params(

@@ -75,7 +75,7 @@ class TwoClientWebAppsSyncTest
 
     const AppRegistrar& registrar = GetRegistrar(profile);
     DCHECK_EQ(base::UTF8ToUTF16(registrar.GetAppShortName(app_id)), info.title);
-    DCHECK_EQ(registrar.GetAppLaunchURL(app_id), info.start_url);
+    DCHECK_EQ(registrar.GetAppStartUrl(app_id), info.start_url);
 
     return app_id;
   }
@@ -118,7 +118,7 @@ IN_PROC_BROWSER_TEST_P(TwoClientWebAppsSyncTest, Basic) {
   EXPECT_EQ(WebAppInstallObserver(GetProfile(1)).AwaitNextInstall(), app_id);
   const AppRegistrar& registrar = GetRegistrar(GetProfile(1));
   EXPECT_EQ(base::UTF8ToUTF16(registrar.GetAppShortName(app_id)), info.title);
-  EXPECT_EQ(registrar.GetAppLaunchURL(app_id), info.start_url);
+  EXPECT_EQ(registrar.GetAppStartUrl(app_id), info.start_url);
   if (IsBookmarkAppsSync()) {
     EXPECT_EQ(base::UTF8ToUTF16(registrar.GetAppDescription(app_id)),
               info.description);
@@ -140,7 +140,7 @@ IN_PROC_BROWSER_TEST_P(TwoClientWebAppsSyncTest, Minimal) {
   EXPECT_EQ(WebAppInstallObserver(GetProfile(1)).AwaitNextInstall(), app_id);
   const AppRegistrar& registrar = GetRegistrar(GetProfile(1));
   EXPECT_EQ(base::UTF8ToUTF16(registrar.GetAppShortName(app_id)), info.title);
-  EXPECT_EQ(registrar.GetAppLaunchURL(app_id), info.start_url);
+  EXPECT_EQ(registrar.GetAppStartUrl(app_id), info.start_url);
 
   EXPECT_TRUE(AllProfilesHaveSameWebAppIds());
 }
@@ -160,7 +160,7 @@ IN_PROC_BROWSER_TEST_P(TwoClientWebAppsSyncTest, ThemeColor) {
   EXPECT_EQ(WebAppInstallObserver(GetProfile(1)).AwaitNextInstall(), app_id);
   const AppRegistrar& registrar = GetRegistrar(GetProfile(1));
   EXPECT_EQ(base::UTF8ToUTF16(registrar.GetAppShortName(app_id)), info.title);
-  EXPECT_EQ(registrar.GetAppLaunchURL(app_id), info.start_url);
+  EXPECT_EQ(registrar.GetAppStartUrl(app_id), info.start_url);
   EXPECT_EQ(registrar.GetAppThemeColor(app_id), info.theme_color);
 
   EXPECT_TRUE(AllProfilesHaveSameWebAppIds());
@@ -316,14 +316,14 @@ IN_PROC_BROWSER_TEST_P(TwoClientWebAppsSyncTest, SyncUsingStartUrlFallback) {
       embedded_test_server()->GetURL("/web_apps/different_start_url.html");
   AppId app_id = InstallApp(info, GetProfile(0));
   EXPECT_EQ(GetRegistrar(source_profile).GetAppShortName(app_id), "Test app");
-  EXPECT_EQ(GetRegistrar(source_profile).GetAppLaunchURL(app_id),
+  EXPECT_EQ(GetRegistrar(source_profile).GetAppStartUrl(app_id),
             info.start_url);
 
   // Wait for app to sync across.
   AppId synced_app_id = dest_install_observer.AwaitNextInstall();
   ASSERT_EQ(synced_app_id, app_id);
   EXPECT_EQ(GetRegistrar(dest_profile).GetAppShortName(app_id), "Test app");
-  EXPECT_EQ(GetRegistrar(dest_profile).GetAppLaunchURL(app_id), info.start_url);
+  EXPECT_EQ(GetRegistrar(dest_profile).GetAppStartUrl(app_id), info.start_url);
 }
 
 // Tests that we don't use the page title if there's no manifest.

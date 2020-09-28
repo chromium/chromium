@@ -43,7 +43,7 @@ class HostedAppBrowserController : public web_app::AppBrowserController,
   base::string16 GetTitle() const override;
   base::string16 GetAppShortName() const override;
   base::string16 GetFormattedUrlOrigin() const override;
-  GURL GetAppLaunchURL() const override;
+  GURL GetAppStartUrl() const override;
   bool IsUrlInAppScope(const GURL& url) const override;
   bool CanUninstall() const override;
   void Uninstall() override;

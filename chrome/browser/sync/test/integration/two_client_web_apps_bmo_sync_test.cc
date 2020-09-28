@@ -143,7 +143,7 @@ class TwoClientWebAppsBMOSyncTest : public SyncTest {
 
     const AppRegistrar& registrar = GetRegistrar(profile);
     EXPECT_EQ(base::UTF8ToUTF16(registrar.GetAppShortName(app_id)), info.title);
-    EXPECT_EQ(registrar.GetAppLaunchURL(app_id), info.start_url);
+    EXPECT_EQ(registrar.GetAppStartUrl(app_id), info.start_url);
 
     return app_id;
   }

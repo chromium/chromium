@@ -146,8 +146,8 @@ base::Optional<SkColor> WebAppBrowserController::GetBackgroundColor() const {
   return registrar().GetAppBackgroundColor(GetAppId());
 }
 
-GURL WebAppBrowserController::GetAppLaunchURL() const {
-  return registrar().GetAppLaunchURL(GetAppId());
+GURL WebAppBrowserController::GetAppStartUrl() const {
+  return registrar().GetAppStartUrl(GetAppId());
 }
 
 bool WebAppBrowserController::IsUrlInAppScope(const GURL& url) const {
@@ -195,7 +195,7 @@ base::string16 WebAppBrowserController::GetAppShortName() const {
 }
 
 base::string16 WebAppBrowserController::GetFormattedUrlOrigin() const {
-  return FormatUrlOrigin(GetAppLaunchURL());
+  return FormatUrlOrigin(GetAppStartUrl());
 }
 
 bool WebAppBrowserController::CanUninstall() const {
@@ -283,7 +283,7 @@ void WebAppBrowserController::PerformDigitalAssetLinkVerification(
   if (!apk_web_app_service || !apk_web_app_service->IsWebOnlyTwa(GetAppId()))
     return;
 
-  const std::string origin = GetAppLaunchURL().GetOrigin().spec();
+  const std::string origin = GetAppStartUrl().GetOrigin().spec();
   const base::Optional<std::string> package_name =
       apk_web_app_service->GetPackageNameForWebApp(GetAppId());
   const base::Optional<std::string> fingerprint =

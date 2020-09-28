@@ -87,7 +87,7 @@ base::Optional<SkColor> WebAppRegistrar::GetAppBackgroundColor(
   return web_app ? web_app->background_color() : base::nullopt;
 }
 
-const GURL& WebAppRegistrar::GetAppLaunchURL(const AppId& app_id) const {
+const GURL& WebAppRegistrar::GetAppStartUrl(const AppId& app_id) const {
   auto* web_app = GetAppById(app_id);
   return web_app ? web_app->start_url() : GURL::EmptyGURL();
 }

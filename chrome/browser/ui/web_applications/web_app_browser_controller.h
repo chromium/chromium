@@ -59,7 +59,7 @@ class WebAppBrowserController : public AppBrowserController,
   base::string16 GetTitle() const override;
   base::string16 GetAppShortName() const override;
   base::string16 GetFormattedUrlOrigin() const override;
-  GURL GetAppLaunchURL() const override;
+  GURL GetAppStartUrl() const override;
   bool IsUrlInAppScope(const GURL& url) const override;
   WebAppBrowserController* AsWebAppBrowserController() override;
   bool CanUninstall() const override;

@@ -149,7 +149,7 @@ IN_PROC_BROWSER_TEST_F(ExternalWebAppManagerBrowserTest,
 
   EXPECT_TRUE(registrar().IsInstalled(app_id));
   EXPECT_EQ(registrar().GetAppShortName(app_id), kAppName);
-  EXPECT_EQ(registrar().GetAppLaunchURL(app_id).spec(), kAppStartUrl);
+  EXPECT_EQ(registrar().GetAppStartUrl(app_id).spec(), kAppStartUrl);
   EXPECT_EQ(registrar().GetAppScope(app_id).spec(), kAppScope);
   // theme_color must be installed opaque.
   EXPECT_EQ(registrar().GetAppThemeColor(app_id),
@@ -201,7 +201,7 @@ IN_PROC_BROWSER_TEST_F(ExternalWebAppManagerBrowserTest,
   AppId app_id = GenerateAppIdFromURL(install_url);
   EXPECT_TRUE(registrar().IsInstalled(app_id));
   EXPECT_EQ(registrar().GetAppShortName(app_id), "Basic web app");
-  EXPECT_EQ(registrar().GetAppLaunchURL(app_id).spec(), install_url);
+  EXPECT_EQ(registrar().GetAppStartUrl(app_id).spec(), install_url);
   EXPECT_EQ(registrar().GetAppScope(app_id).spec(), scope);
 }
 
@@ -238,7 +238,7 @@ IN_PROC_BROWSER_TEST_F(ExternalWebAppManagerBrowserTest,
 
   EXPECT_TRUE(registrar().IsInstalled(app_id));
   EXPECT_EQ(registrar().GetAppShortName(app_id), kAppName);
-  EXPECT_EQ(registrar().GetAppLaunchURL(app_id).spec(), kAppStartUrl);
+  EXPECT_EQ(registrar().GetAppStartUrl(app_id).spec(), kAppStartUrl);
   EXPECT_EQ(registrar().GetAppScope(app_id).spec(), kAppScope);
   // theme_color must be installed opaque.
   EXPECT_EQ(registrar().GetAppThemeColor(app_id),
@@ -287,7 +287,7 @@ IN_PROC_BROWSER_TEST_F(ExternalWebAppManagerBrowserTest,
 
   EXPECT_TRUE(registrar().IsInstalled(app_id));
   EXPECT_EQ(registrar().GetAppShortName(app_id), kAppName);
-  EXPECT_EQ(registrar().GetAppLaunchURL(app_id).spec(), start_url);
+  EXPECT_EQ(registrar().GetAppStartUrl(app_id).spec(), start_url);
   EXPECT_EQ(registrar().GetAppScope(app_id).spec(), scope);
   // theme_color must be installed opaque.
   EXPECT_EQ(registrar().GetAppThemeColor(app_id),

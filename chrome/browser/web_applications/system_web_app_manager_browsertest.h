@@ -49,8 +49,8 @@ class SystemWebAppManagerBrowserTestBase : public InProcessBrowserTest {
   // Returns SystemAppType of mocked app, only valid if |install_mock| is true.
   SystemAppType GetMockAppType();
 
-  // Returns the launch URL for based on the given |params|.
-  const GURL& GetLaunchURL(const apps::AppLaunchParams& params);
+  // Returns the start URL based on the given |params|.
+  GURL GetStartUrl(const apps::AppLaunchParams& params);
 
   void WaitForTestSystemAppInstall();
 

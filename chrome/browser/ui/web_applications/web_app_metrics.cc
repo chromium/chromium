@@ -297,7 +297,7 @@ void WebAppMetrics::UpdateUkmData(WebContents* web_contents,
       provider->registrar().IsLocallyInstalled(tab_helper->GetAppId())) {
     // App is installed
     const AppId& app_id = tab_helper->GetAppId();
-    features.start_url = provider->registrar().GetAppLaunchURL(app_id);
+    features.start_url = provider->registrar().GetAppStartUrl(app_id);
     features.installed = true;
     features.install_source =
         GetLatestWebAppInstallSource(app_id, profile_->GetPrefs());

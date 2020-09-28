@@ -165,7 +165,7 @@ IN_PROC_BROWSER_TEST_P(CreateShortcutBrowserTest, IgnoreInvalidManifestData) {
       "/web_apps/invalid_start_url_manifest.html");
   NavigateToURLAndWait(browser(), url);
   AppId app_id = InstallShortcutAppForCurrentUrl();
-  EXPECT_EQ(registrar().GetAppLaunchURL(app_id), url);
+  EXPECT_EQ(registrar().GetAppStartUrl(app_id), url);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

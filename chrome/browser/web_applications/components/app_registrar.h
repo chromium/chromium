@@ -89,7 +89,7 @@ class AppRegistrar {
       const AppId& app_id) const = 0;
   virtual base::Optional<SkColor> GetAppBackgroundColor(
       const AppId& app_id) const = 0;
-  virtual const GURL& GetAppLaunchURL(const AppId& app_id) const = 0;
+  virtual const GURL& GetAppStartUrl(const AppId& app_id) const = 0;
 
   // TODO(crbug.com/910016): Replace uses of this with GetAppScope().
   virtual base::Optional<GURL> GetAppScopeInternal(

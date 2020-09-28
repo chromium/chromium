@@ -486,7 +486,7 @@ void CustomTabBarView::GoBackToApp() {
   // the history.
   if (!entry) {
     if (application_controller) {
-      GURL initial_url = application_controller->GetAppLaunchURL();
+      GURL initial_url = application_controller->GetAppStartUrl();
       content::NavigationController::LoadURLParams load(initial_url);
       load.should_clear_history_list = true;
       controller.LoadURLWithParams(load);

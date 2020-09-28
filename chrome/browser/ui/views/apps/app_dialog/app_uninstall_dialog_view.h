@@ -49,7 +49,7 @@ class AppUninstallDialogView : public apps::UninstallDialog::UiBase,
                       const std::string& app_id,
                       const std::string& app_name);
 
-  void InitializeCheckbox(const GURL& app_launch_url);
+  void InitializeCheckbox(const GURL& app_start_url);
 
   void InitializeViewForExtension(Profile* profile, const std::string& app_id);
   void InitializeViewForWebApp(Profile* profile, const std::string& app_id);

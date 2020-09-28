@@ -36,7 +36,7 @@ bool ManifestWebAppBrowserController::ShouldShowCustomTabBar() const {
     return false;
 
   // Show if the web_contents is not on a secure origin.
-  if (!blink::network_utils::IsOriginSecure(app_launch_url_))
+  if (!blink::network_utils::IsOriginSecure(app_start_url_))
     return true;
 
   // Show if web_contents is not currently in scope.
@@ -75,11 +75,11 @@ base::string16 ManifestWebAppBrowserController::GetAppShortName() const {
 }
 
 base::string16 ManifestWebAppBrowserController::GetFormattedUrlOrigin() const {
-  return FormatUrlOrigin(GetAppLaunchURL());
+  return FormatUrlOrigin(GetAppStartUrl());
 }
 
-GURL ManifestWebAppBrowserController::GetAppLaunchURL() const {
-  return app_launch_url_;
+GURL ManifestWebAppBrowserController::GetAppStartUrl() const {
+  return app_start_url_;
 }
 
 bool ManifestWebAppBrowserController::IsUrlInAppScope(const GURL& url) const {
@@ -88,7 +88,7 @@ bool ManifestWebAppBrowserController::IsUrlInAppScope(const GURL& url) const {
   // query, and fragment.
   const GURL scope_url = !manifest_scope_.is_empty()
                              ? manifest_scope_
-                             : GetAppLaunchURL().GetWithoutFilename();
+                             : GetAppStartUrl().GetWithoutFilename();
 
   return IsInScope(url, scope_url);
 }
@@ -99,7 +99,7 @@ void ManifestWebAppBrowserController::OnTabInserted(
   // manifest if this is the first web contents being loaded in this window.
   DCHECK(!browser()->tab_strip_model()->empty());
   if (browser()->tab_strip_model()->count() == 1) {
-    app_launch_url_ = contents->GetURL();
+    app_start_url_ = contents->GetURL();
     contents->GetManifest(
         base::BindOnce(&ManifestWebAppBrowserController::OnManifestLoaded,
                        weak_factory_.GetWeakPtr()));

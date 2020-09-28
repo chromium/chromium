@@ -158,7 +158,7 @@ IN_PROC_BROWSER_TEST_P(PendingAppManagerImplBrowserTest,
       registrar().FindAppWithUrlInScope(install_url);
   ASSERT_TRUE(opt_app_id.has_value());
   EXPECT_EQ(*opt_app_id, app_id);
-  EXPECT_EQ(registrar().GetAppLaunchURL(*opt_app_id), install_url);
+  EXPECT_EQ(registrar().GetAppStartUrl(*opt_app_id), install_url);
 }
 
 // Installing a placeholder app with shortcuts should succeed.
@@ -274,7 +274,7 @@ IN_PROC_BROWSER_TEST_P(PendingAppManagerImplBrowserTest,
   ASSERT_TRUE(app_id.has_value());
 
   // The installer falls back to installing a web app of the original URL.
-  EXPECT_EQ(url, registrar().GetAppLaunchURL(app_id.value()));
+  EXPECT_EQ(url, registrar().GetAppStartUrl(app_id.value()));
   EXPECT_NE(app_id,
             registrar().FindAppWithUrlInScope(GURL("chrome://settings")));
 }

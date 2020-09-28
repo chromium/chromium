@@ -737,7 +737,7 @@ TEST_F(InstallManagerBookmarkAppTest, InstallBookmarkAppFromSync) {
 
 TEST_F(InstallManagerBookmarkAppTest, GetAppDetails) {
   EXPECT_EQ(std::string(), app_registrar()->GetAppShortName("unknown"));
-  EXPECT_EQ(GURL(), app_registrar()->GetAppLaunchURL("unknown"));
+  EXPECT_EQ(GURL(), app_registrar()->GetAppStartUrl("unknown"));
   const base::Optional<SkColor> theme_color = SK_ColorBLUE;  // 0xAABBCCDD;
 
   auto web_app_info = std::make_unique<WebApplicationInfo>();
@@ -753,7 +753,7 @@ TEST_F(InstallManagerBookmarkAppTest, GetAppDetails) {
   EXPECT_EQ(kAppDescription,
             app_registrar()->GetAppDescription(extension->id()));
   EXPECT_EQ(theme_color, app_registrar()->GetAppThemeColor(extension->id()));
-  EXPECT_EQ(AppUrl(), app_registrar()->GetAppLaunchURL(extension->id()));
+  EXPECT_EQ(AppUrl(), app_registrar()->GetAppStartUrl(extension->id()));
 }
 
 }  // namespace extensions

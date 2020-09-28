@@ -59,7 +59,7 @@ class TestAppRegistrar : public AppRegistrar {
   base::Optional<SkColor> GetAppThemeColor(const AppId& app_id) const override;
   base::Optional<SkColor> GetAppBackgroundColor(
       const AppId& app_id) const override;
-  const GURL& GetAppLaunchURL(const AppId& app_id) const override;
+  const GURL& GetAppStartUrl(const AppId& app_id) const override;
   base::Optional<GURL> GetAppScopeInternal(const AppId& app_id) const override;
   DisplayMode GetAppDisplayMode(const AppId& app_id) const override;
   DisplayMode GetAppUserDisplayMode(const AppId& app_id) const override;

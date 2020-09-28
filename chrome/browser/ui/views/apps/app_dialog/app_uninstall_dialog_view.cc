@@ -191,16 +191,16 @@ void AppUninstallDialogView::InitializeView(Profile* profile,
   }
 }
 
-void AppUninstallDialogView::InitializeCheckbox(const GURL& app_launch_url) {
+void AppUninstallDialogView::InitializeCheckbox(const GURL& app_start_url) {
   std::vector<base::string16> replacements;
   replacements.push_back(url_formatter::FormatUrlForSecurityDisplay(
-      app_launch_url, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
+      app_start_url, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
 
   const bool is_google = google_util::IsGoogleHostname(
-      app_launch_url.host_piece(), google_util::ALLOW_SUBDOMAIN);
+      app_start_url.host_piece(), google_util::ALLOW_SUBDOMAIN);
   if (!is_google) {
     auto domain = net::registry_controlled_domains::GetDomainAndRegistry(
-        app_launch_url,
+        app_start_url,
         net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
     DCHECK(!domain.empty());
     domain[0] = base::ToUpperASCII(domain[0]);
@@ -291,10 +291,10 @@ void AppUninstallDialogView::InitializeViewForWebApp(
   auto* provider = web_app::WebAppProvider::Get(profile);
   DCHECK(provider);
 
-  GURL app_launch_url = provider->registrar().GetAppLaunchURL(app_id);
-  DCHECK(app_launch_url.is_valid());
+  GURL app_start_url = provider->registrar().GetAppStartUrl(app_id);
+  DCHECK(app_start_url.is_valid());
 
-  InitializeCheckbox(app_launch_url);
+  InitializeCheckbox(app_start_url);
 }
 
 #if defined(OS_CHROMEOS)

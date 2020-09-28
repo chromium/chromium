@@ -119,8 +119,8 @@ class AppBrowserController : public TabStripModelObserver,
   // example.com.au).
   virtual base::string16 GetFormattedUrlOrigin() const = 0;
 
-  // Gets the launch url for the app.
-  virtual GURL GetAppLaunchURL() const = 0;
+  // Gets the start_url for the app.
+  virtual GURL GetAppStartUrl() const = 0;
 
   // Determines whether the specified url is 'inside' the app |this| controls.
   virtual bool IsUrlInAppScope(const GURL& url) const = 0;

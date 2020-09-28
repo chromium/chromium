@@ -336,7 +336,7 @@ TEST_F(WebAppRegistrarTest, GetAppDataFields) {
   std::vector<DisplayMode> display_mode_override;
 
   EXPECT_EQ(std::string(), registrar().GetAppShortName(app_id));
-  EXPECT_EQ(GURL(), registrar().GetAppLaunchURL(app_id));
+  EXPECT_EQ(GURL(), registrar().GetAppStartUrl(app_id));
 
   auto web_app = std::make_unique<WebApp>(app_id);
   WebApp* web_app_ptr = web_app.get();
@@ -359,7 +359,7 @@ TEST_F(WebAppRegistrarTest, GetAppDataFields) {
   EXPECT_EQ(name, registrar().GetAppShortName(app_id));
   EXPECT_EQ(description, registrar().GetAppDescription(app_id));
   EXPECT_EQ(theme_color, registrar().GetAppThemeColor(app_id));
-  EXPECT_EQ(start_url, registrar().GetAppLaunchURL(app_id));
+  EXPECT_EQ(start_url, registrar().GetAppStartUrl(app_id));
   EXPECT_EQ(DisplayMode::kStandalone,
             registrar().GetAppUserDisplayMode(app_id));
 

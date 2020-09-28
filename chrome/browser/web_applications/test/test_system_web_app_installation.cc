@@ -378,7 +378,7 @@ AppId TestSystemWebAppInstallation::GetAppId() {
 }
 
 const GURL& TestSystemWebAppInstallation::GetAppUrl() {
-  return WebAppProvider::Get(profile_)->registrar().GetAppLaunchURL(GetAppId());
+  return WebAppProvider::Get(profile_)->registrar().GetAppStartUrl(GetAppId());
 }
 
 SystemAppType TestSystemWebAppInstallation::GetType() {

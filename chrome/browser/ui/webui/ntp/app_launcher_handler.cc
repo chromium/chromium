@@ -203,7 +203,7 @@ void AppLauncherHandler::CreateWebAppInfo(const web_app::AppId& app_id,
 
   base::string16 name = base::UTF8ToUTF16(registrar.GetAppShortName(app_id));
   NewTabUI::SetUrlTitleAndDirection(value, name,
-                                    registrar.GetAppLaunchURL(app_id));
+                                    registrar.GetAppStartUrl(app_id));
   NewTabUI::SetFullNameAndDirection(name, value);
 
   GetWebAppBasicInfo(app_id, registrar, value);
@@ -715,7 +715,7 @@ void AppLauncherHandler::HandleLaunchApp(const base::ListValue* args) {
   if (registrar.IsInstalled(extension_id) &&
       !IsYoutubeExtension(extension_id)) {
     type = extensions::Manifest::Type::TYPE_HOSTED_APP;
-    full_launch_url = registrar.GetAppLaunchURL(extension_id);
+    full_launch_url = registrar.GetAppStartUrl(extension_id);
     launch_container = web_app::ConvertDisplayModeToAppLaunchContainer(
         registrar.GetAppEffectiveDisplayMode(extension_id));
   } else {
@@ -998,7 +998,7 @@ void AppLauncherHandler::HandleShowAppInfo(const base::ListValue* args) {
       !IsYoutubeExtension(extension_id)) {
     chrome::ShowSiteSettings(
         chrome::FindBrowserWithWebContents(web_ui()->GetWebContents()),
-        web_app_provider_->registrar().GetAppLaunchURL(extension_id));
+        web_app_provider_->registrar().GetAppStartUrl(extension_id));
     return;
   }
 

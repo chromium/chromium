@@ -113,7 +113,7 @@ Browser* ReparentWebContentsIntoAppBrowser(content::WebContents* contents,
   if (registrar.IsInstalled(app_id)) {
     base::Optional<GURL> app_scope = registrar.GetAppScope(app_id);
     if (!app_scope)
-      app_scope = registrar.GetAppLaunchURL(app_id).GetWithoutFilename();
+      app_scope = registrar.GetAppStartUrl(app_id).GetWithoutFilename();
 
     PrunePreScopeNavigationHistory(*app_scope, contents);
   }

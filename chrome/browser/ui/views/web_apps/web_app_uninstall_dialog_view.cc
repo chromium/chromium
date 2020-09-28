@@ -63,9 +63,9 @@ WebAppUninstallDialogDelegateView::WebAppUninstallDialogDelegateView(
   auto* provider = web_app::WebAppProvider::Get(profile_);
   DCHECK(provider);
 
-  app_launch_url_ = provider->registrar().GetAppLaunchURL(app_id_);
-  DCHECK(!app_launch_url_.is_empty());
-  DCHECK(app_launch_url_.is_valid());
+  app_start_url_ = provider->registrar().GetAppStartUrl(app_id_);
+  DCHECK(!app_start_url_.is_empty());
+  DCHECK(app_start_url_.is_valid());
 
   gfx::Size image_size{kIconSizeInDip, kIconSizeInDip};
 
@@ -104,7 +104,7 @@ WebAppUninstallDialogDelegateView::WebAppUninstallDialogDelegateView(
   base::string16 checkbox_label = l10n_util::GetStringFUTF16(
       IDS_EXTENSION_UNINSTALL_PROMPT_REMOVE_DATA_CHECKBOX,
       url_formatter::FormatUrlForSecurityDisplay(
-          app_launch_url_, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
+          app_start_url_, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
 
   auto checkbox = std::make_unique<views::Checkbox>(checkbox_label);
   checkbox->SetMultiLine(true);
@@ -179,7 +179,7 @@ void WebAppUninstallDialogDelegateView::ClearWebAppSiteData() {
             return browser_context;
           },
           base::Unretained(profile_)),
-      url::Origin::Create(app_launch_url_), /*clear_cookies=*/true,
+      url::Origin::Create(app_start_url_), /*clear_cookies=*/true,
       /*clear_storage=*/true, /*clear_cache=*/true,
       /*avoid_closing_connections=*/false, base::DoNothing());
 }

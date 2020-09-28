@@ -131,7 +131,7 @@ content::WebContents* WebAppLaunchManager::OpenApplication(
       params.override_url.is_empty()
           ? os_integration_manager
                 .GetMatchingFileHandlerURL(params.app_id, params.launch_files)
-                .value_or(provider_->registrar().GetAppLaunchURL(params.app_id))
+                .value_or(provider_->registrar().GetAppStartUrl(params.app_id))
           : params.override_url;
 
   // Place new windows on the specified display.

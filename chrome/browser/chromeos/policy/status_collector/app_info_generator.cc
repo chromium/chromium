@@ -196,7 +196,7 @@ const em::AppInfo AppInfoGenerator::ConvertToAppInfo(
     info.set_app_name(update.Name());
   } else {
     const std::string launch_url = provider_->web_app_provider.registrar()
-                                       .GetAppLaunchURL(update.AppId())
+                                       .GetAppStartUrl(update.AppId())
                                        .GetOrigin()
                                        .spec();
     info.set_app_id(launch_url);

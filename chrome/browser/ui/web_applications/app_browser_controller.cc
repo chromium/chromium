@@ -205,13 +205,13 @@ bool AppBrowserController::ShouldShowCustomTabBar() const {
   if (!web_contents)
     return false;
 
-  GURL launch_url = GetAppLaunchURL();
-  base::StringPiece launch_scheme = launch_url.scheme_piece();
+  GURL start_url = GetAppStartUrl();
+  base::StringPiece start_url_scheme = start_url.scheme_piece();
 
-  bool is_internal_launch_scheme =
-      launch_scheme == extensions::kExtensionScheme ||
-      launch_scheme == content::kChromeUIScheme ||
-      launch_scheme == content::kChromeUIUntrustedScheme;
+  bool is_internal_start_url_scheme =
+      start_url_scheme == extensions::kExtensionScheme ||
+      start_url_scheme == content::kChromeUIScheme ||
+      start_url_scheme == content::kChromeUIUntrustedScheme;
 
   // The current page must be secure for us to hide the toolbar. However,
   // chrome:// launch URL apps can hide the toolbar,
@@ -220,7 +220,7 @@ bool AppBrowserController::ShouldShowCustomTabBar() const {
   // Note that the launch scheme may be insecure, but as long as the current
   // page's scheme is secure, we can hide the toolbar.
   base::StringPiece secure_page_scheme =
-      is_internal_launch_scheme ? launch_scheme : url::kHttpsScheme;
+      is_internal_start_url_scheme ? start_url_scheme : url::kHttpsScheme;
 
   auto should_show_toolbar_for_url = [&](const GURL& url) -> bool {
     // If the url is unset, it doesn't give a signal as to whether the toolbar
@@ -231,7 +231,7 @@ bool AppBrowserController::ShouldShowCustomTabBar() const {
 
     // Page URLs that are not within scope
     // (https://www.w3.org/TR/appmanifest/#dfn-within-scope) of the app
-    // corresponding to |launch_url| show the toolbar.
+    // corresponding to |start_url| show the toolbar.
     bool out_of_scope = !IsUrlInAppScope(url);
 
     if (url.scheme_piece() != secure_page_scheme) {
@@ -263,7 +263,7 @@ bool AppBrowserController::ShouldShowCustomTabBar() const {
 
   // Insecure external web sites show the toolbar.
   // Note: IsContentSecure is false until a navigation is committed.
-  if (!last_committed_url.is_empty() && !is_internal_launch_scheme &&
+  if (!last_committed_url.is_empty() && !is_internal_start_url_scheme &&
       !InstallableManager::IsContentSecure(web_contents)) {
     return true;
   }

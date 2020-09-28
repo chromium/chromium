@@ -144,7 +144,7 @@ base::string16 HostedAppBrowserController::GetTitle() const {
   return AppBrowserController::GetTitle();
 }
 
-GURL HostedAppBrowserController::GetAppLaunchURL() const {
+GURL HostedAppBrowserController::GetAppStartUrl() const {
   const Extension* extension = GetExtension();
   if (!extension)
     return GURL();
@@ -163,7 +163,7 @@ bool HostedAppBrowserController::IsUrlInAppScope(const GURL& url) const {
 
   // We don't have a scope, fall back to same origin check.
   if (!url_handlers)
-    return IsSameHostAndPort(GetAppLaunchURL(), url);
+    return IsSameHostAndPort(GetAppStartUrl(), url);
 
   return UrlHandlers::CanBookmarkAppHandleUrl(extension, url);
 }

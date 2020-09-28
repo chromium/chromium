@@ -142,7 +142,7 @@ base::Optional<SkColor> BookmarkAppRegistrar::GetAppBackgroundColor(
   return base::nullopt;
 }
 
-const GURL& BookmarkAppRegistrar::GetAppLaunchURL(
+const GURL& BookmarkAppRegistrar::GetAppStartUrl(
     const web_app::AppId& app_id) const {
   const Extension* extension = GetBookmarkAppDchecked(app_id);
   return extension ? AppLaunchInfo::GetLaunchWebURL(extension)

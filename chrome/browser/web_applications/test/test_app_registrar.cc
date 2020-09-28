@@ -104,7 +104,7 @@ base::Optional<SkColor> TestAppRegistrar::GetAppBackgroundColor(
   return base::nullopt;
 }
 
-const GURL& TestAppRegistrar::GetAppLaunchURL(const AppId& app_id) const {
+const GURL& TestAppRegistrar::GetAppStartUrl(const AppId& app_id) const {
   auto iterator = installed_apps_.find(app_id);
   if (iterator == installed_apps_.end())
     return GURL::EmptyGURL();
