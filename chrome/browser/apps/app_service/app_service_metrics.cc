@@ -222,6 +222,8 @@ void RecordAppLaunch(const std::string& app_id,
   else if (app_id == extension_misc::kGoogleKeepAppId)
     RecordDefaultAppLaunch(DefaultAppName::kKeep, launch_source);
 #if defined(OS_CHROMEOS)
+  else if (app_id == extension_misc::kGooglePhotosAppId)
+    RecordDefaultAppLaunch(DefaultAppName::kPhotos, launch_source);
   else if (app_id == arc::kPlayBooksAppId)
     RecordDefaultAppLaunch(DefaultAppName::kPlayBooks, launch_source);
   else if (app_id == arc::kPlayGamesAppId)
