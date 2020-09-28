@@ -757,7 +757,10 @@ const AXPosition AXPosition::AsValidDOMPosition(
       case AXPositionAdjustmentBehavior::kMoveRight:
         return CreateNextPosition().AsValidDOMPosition(adjustment_behavior);
       case AXPositionAdjustmentBehavior::kMoveLeft:
-        return CreatePreviousPosition().AsValidDOMPosition(adjustment_behavior);
+        const AXPosition result = CreatePreviousPosition();
+        if (result != *this)
+          return result.AsValidDOMPosition(adjustment_behavior);
+        return {};
     }
   }
 
