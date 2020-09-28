@@ -18,6 +18,7 @@
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkPaint.h"
+#include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -316,6 +317,20 @@ void Slider::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kSlider;
   node_data->SetValue(base::UTF8ToUTF16(
       base::StringPrintf("%d%%", static_cast<int>(value_ * 100 + 0.5))));
+  node_data->AddAction(ax::mojom::Action::kIncrement);
+  node_data->AddAction(ax::mojom::Action::kDecrement);
+}
+
+bool Slider::HandleAccessibleAction(const ui::AXActionData& action_data) {
+  if (action_data.action == ax::mojom::Action::kIncrement) {
+    SetValueInternal(value_ + keyboard_increment_, SliderChangeReason::kByUser);
+    return true;
+  } else if (action_data.action == ax::mojom::Action::kDecrement) {
+    SetValueInternal(value_ - keyboard_increment_, SliderChangeReason::kByUser);
+    return true;
+  } else {
+    return views::View::HandleAccessibleAction(action_data);
+  }
 }
 
 void Slider::OnPaint(gfx::Canvas* canvas) {
