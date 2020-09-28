@@ -1,0 +1,20 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module crosapi.mojom;
+
+// Interface for Chrome OS Account Manager.
+// Chrome OS Account Manager is the source of truth for accounts on Chrome OS -
+// including ARC, and Chrome content area. It supports Google accounts and
+// Microsoft Active Directory accounts, as of this writing.
+// This interface is implemented by ash-chrome, and is used by lacros-chrome to
+// query accounts residing in the Chrome OS Account Manager.
+// ARC++ uses components/arc/mojom/auth.mojom to talk to the Chrome OS Account
+// Manager.
+[Stable]
+interface AccountManager {
+  // Returns |true| if Chrome OS Account Manager has been fully initialized, and
+  // |false| otherwise.
+  IsInitialized@0() => (bool is_initialized);
+};
