@@ -153,8 +153,7 @@ void NavigationControllerImpl::Navigate(
     const JavaParamRef<jstring>& url,
     jboolean should_replace_current_entry,
     jboolean disable_intent_processing,
-    jboolean disable_network_error_auto_reload,
-    jboolean enable_auto_play) {
+    jboolean disable_network_error_auto_reload) {
   auto params = std::make_unique<content::NavigationController::LoadURLParams>(
       GURL(base::android::ConvertJavaStringToUTF8(env, url)));
   params->should_replace_current_entry = should_replace_current_entry;
@@ -167,8 +166,6 @@ void NavigationControllerImpl::Navigate(
                                 : ui::PAGE_TRANSITION_LINK;
   if (disable_network_error_auto_reload)
     params->navigation_ui_data = std::make_unique<NavigationUIDataImpl>(true);
-  if (enable_auto_play)
-    params->was_activated = content::mojom::WasActivatedOption::kYes;
 
   DoNavigate(std::move(params));
 }
@@ -241,9 +238,6 @@ void NavigationControllerImpl::Navigate(
     load_params->navigation_ui_data =
         std::make_unique<NavigationUIDataImpl>(true);
   }
-  if (params.enable_auto_play)
-    load_params->was_activated = content::mojom::WasActivatedOption::kYes;
-
   DoNavigate(std::move(load_params));
 }
 

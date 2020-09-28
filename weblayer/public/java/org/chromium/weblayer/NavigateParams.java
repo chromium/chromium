@@ -16,7 +16,6 @@ public class NavigateParams {
             new org.chromium.weblayer_private.interfaces.NavigateParams();
     private boolean mIntentProcessingDisabled;
     private boolean mNetworkErrorAutoReloadDisabled;
-    private boolean mAutoPlayEnabled;
 
     /**
      * A Builder class to help create NavigateParams.
@@ -83,21 +82,6 @@ public class NavigateParams {
             mParams.mNetworkErrorAutoReloadDisabled = true;
             return this;
         }
-
-        /**
-         * Enable auto-play for videos in this navigation. Auto-play is disabled by default.
-         *
-         * @since 86
-         */
-        @NonNull
-        public Builder enableAutoPlay() {
-            if (WebLayer.shouldPerformVersionChecks()
-                    && WebLayer.getSupportedMajorVersionInternal() < 86) {
-                throw new UnsupportedOperationException();
-            }
-            mParams.mAutoPlayEnabled = true;
-            return this;
-        }
     }
 
     org.chromium.weblayer_private.interfaces.NavigateParams toInterfaceParams() {
@@ -141,20 +125,5 @@ public class NavigateParams {
             throw new UnsupportedOperationException();
         }
         return mNetworkErrorAutoReloadDisabled;
-    }
-
-    /**
-     * Returns true if auto play for videos is enabled.
-     *
-     * @return Whether auto play for videos is enabled.
-     *
-     * @since 86
-     */
-    public boolean isAutoPlayEnabled() {
-        if (WebLayer.shouldPerformVersionChecks()
-                && WebLayer.getSupportedMajorVersionInternal() < 86) {
-            throw new UnsupportedOperationException();
-        }
-        return mAutoPlayEnabled;
     }
 }
