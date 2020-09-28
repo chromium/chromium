@@ -193,8 +193,7 @@ void KeyboardAccessTest::TestMenuKeyboardAccess(bool alternate_key_sequence,
 
   ui_test_utils::TabAddedWaiter tab_add(browser());
 
-  BrowserView* browser_view = reinterpret_cast<BrowserView*>(
-      browser()->window());
+  BrowserView* browser_view = static_cast<BrowserView*>(browser()->window());
   SendKeysMenuListener menu_listener(
       browser_view->toolbar_button_provider()->GetAppMenuButton(), browser(),
       false);
@@ -365,8 +364,7 @@ void KeyboardAccessTest::TestMenuKeyboardAccessAndDismiss() {
 
   int original_view_id = GetFocusedViewID();
 
-  BrowserView* browser_view = reinterpret_cast<BrowserView*>(
-      browser()->window());
+  BrowserView* browser_view = static_cast<BrowserView*>(browser()->window());
   SendKeysMenuListener menu_listener(
       browser_view->toolbar_button_provider()->GetAppMenuButton(), browser(),
       true);
