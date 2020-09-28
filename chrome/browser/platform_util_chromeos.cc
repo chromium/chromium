@@ -9,10 +9,11 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "chrome/browser/chromeos/file_manager/open_util.h"
-#include "chrome/browser/chromeos/guest_os/guest_os_external_protocol_handler.h"
 #include "chrome/browser/platform_util_internal.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_navigator.h"
+#include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/simple_message_box.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
@@ -27,6 +28,9 @@ using content::BrowserThread;
 namespace platform_util {
 
 namespace {
+
+const char kGmailComposeUrl[] =
+    "https://mail.google.com/mail/?extsrc=mailto&url=";
 
 void ShowWarningOnOpenOperationResult(Profile* profile,
                                       const base::FilePath& path,
@@ -97,7 +101,26 @@ void OpenItem(Profile* profile,
 
 void OpenExternal(Profile* profile, const GURL& url) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  guest_os::Launch(profile, url);
+
+  // This code should be obsolete since we have default handlers in ChromeOS
+  // which should handle this. However - there are two things which make it
+  // necessary to keep it in:
+  // a.) The user might have deleted the default handler in this session.
+  //     In this case we would need to have this in place.
+  // b.) There are several code paths which are not clear if they would call
+  //     this function directly and which would therefore break (e.g.
+  //     "Browser::EmailPageLocation" (to name only one).
+  // As such we should keep this code here.
+  NavigateParams params(profile, url, ui::PAGE_TRANSITION_LINK);
+  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+
+  if (url.SchemeIs("mailto")) {
+    std::string string_url = kGmailComposeUrl;
+    string_url.append(url.spec());
+    params.url = GURL(url);
+  }
+
+  Navigate(&params);
 }
 
 bool IsBrowserLockedFullscreen(const Browser* browser) {

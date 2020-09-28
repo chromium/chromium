@@ -2721,11 +2721,6 @@
     "expiry_milestone": 93
   },
   {
-    "name": "guest-os-external-protocol",
-    "owners": [ "joelhockey", "crostini-syd" ],
-    "expiry_milestone": 93
-  },
-  {
     "name": "h264-decoder-is-buffer-complete-frame",
     "owners": [ "jkardatzke", "mcasas" ],
     "expiry_milestone": 89

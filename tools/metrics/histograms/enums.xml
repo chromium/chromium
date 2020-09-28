@@ -42228,7 +42228,6 @@ from previous Chrome versions.
   <int value="-747919789" label="VideoToolboxVp9Decoding:enabled"/>
   <int value="-747463111" label="ContentSuggestionsNotifications:disabled"/>
   <int value="-747072690" label="NtpRepeatableQueries:disabled"/>
-  <int value="-746482855" label="GuestOsExternalProtocol:disabled"/>
   <int value="-746328467" label="ExpensiveBackgroundTimerThrottling:disabled"/>
   <int value="-745082968" label="SyncDeviceInfoInTransportMode:disabled"/>
   <int value="-744159181" label="disable-spdy-proxy-dev-auth-origin"/>
@@ -43262,7 +43261,6 @@ from previous Chrome versions.
   <int value="351005753" label="enable-experimental-accessibility-autoclick"/>
   <int value="352191859" label="disabled-new-style-notification"/>
   <int value="352937987" label="OverflowIconsForMediaControls:disabled"/>
-  <int value="354523543" label="GuestOsExternalProtocol:enabled"/>
   <int value="354631905" label="RecoverFromNeverSaveAndroid:disabled"/>
   <int value="357138275" label="enable-floating-virtual-keyboard:disabled"/>
   <int value="358399482" label="enable-high-dpi-fixed-position-compositing"/>
