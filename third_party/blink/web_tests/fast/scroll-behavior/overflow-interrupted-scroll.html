@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    #container {
+      width: 200px;
+      height: 200px;
+      overflow: scroll;
+    }
+
+    #content {
+      width: 7500px;
+      height: 7500px;
+      background-color: blue;
+    }
+  </style>
+  <script src="../../resources/testharness.js"></script>
+  <script src="../../resources/testharnessreport.js"></script>
+  <script src="resources/scroll-interruption-test.js"></script>
+  <script type="text/javascript">
+    function jsScroll(y) {
+      document.getElementById('container').scrollTo({top: y, behavior: 'smooth'});
+    }
+
+    function doTest() {
+      const targets = {y_min: 40, y_mid: 3500, y_max: 7000};
+      const innerPoint = {x: 100, y: 100};
+      var element = document.getElementById('container');
+      var scrollInterruptionTest = new SmoothScrollInterruptionTest(element,
+                                                                    innerPoint,
+                                                                    targets,
+                                                                    jsScroll);
+      scrollInterruptionTest.run();
+    }
+
+    window.addEventListener('load', doTest, false);
+  </script>
+</head>
+
+<body>
+  <p>Test that interrupting a smooth scroll on an overflow:scroll element works with both scroll behaviors and with input</p>
+  <div id="container">
+    <div id="content"></div>
+  </div>
+</body>
+</html>
