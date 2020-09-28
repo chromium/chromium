@@ -838,7 +838,7 @@ bool NGLineBreaker::BreakTextAtPreviousBreakOpportunity(
       item_result->shape_result->SnappedWidth().ClampNegativeToZero();
   item_result->can_break_after = true;
 
-  if (trailing_collapsible_space_.has_value() ||
+  if (trailing_collapsible_space_.has_value() &&
       trailing_collapsible_space_->item_result == item_result) {
     trailing_collapsible_space_.reset();
   }
