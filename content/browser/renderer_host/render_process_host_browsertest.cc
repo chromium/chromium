@@ -280,8 +280,8 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest,
   RenderProcessHost* rph =
       shell()->web_contents()->GetMainFrame()->GetProcess();
   // Make it believe it's a guest.
-  reinterpret_cast<RenderProcessHostImpl*>(rph)->
-      set_is_for_guests_only_for_testing(true);
+  static_cast<RenderProcessHostImpl*>(rph)->set_is_for_guests_only_for_testing(
+      true);
   EXPECT_EQ(1, RenderProcessHost::GetCurrentRenderProcessCountForTesting());
 
   // Navigate to a different page.
