@@ -7,7 +7,6 @@
 # bug for the expectation to the new bug.
 
 # https://crbug.com/1126079
-crbug.com/1126079 external/wpt/html/cross-origin-opener-policy/reporting/access-reporting/property.https.html [ Failure ]
 crbug.com/1126079 external/wpt/html/cross-origin-opener-policy/reporting/access-reporting/reporting-observer.html [ Failure ]
 crbug.com/1126079 external/wpt/html/cross-origin-opener-policy/reporting/access-reporting/access-from-coop-page-to-openee_coop-ro.https.html [ Pass CRASH ]
 
