@@ -8,12 +8,14 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/unified/feature_pod_button.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
 
@@ -24,12 +26,14 @@ constexpr base::TimeDelta kOneSecond = base::TimeDelta::FromSeconds(1);
 
 base::string16 RemainingTimeString(base::TimeDelta remaining_time) {
   if (remaining_time > kOneMinute) {
-    return base::ASCIIToUTF16(
-        base::NumberToString(remaining_time.InMinutes() + 1) + " min");
+    return l10n_util::GetStringFUTF16Int(
+        IDS_ASH_STATUS_TRAY_NEARBY_SHARE_REMAINING_MINUTES,
+        remaining_time.InMinutes() + 1);
   }
 
-  return base::ASCIIToUTF16(
-      base::NumberToString(remaining_time.InSeconds() + 1) + " sec");
+  return l10n_util::GetStringFUTF16Int(
+      IDS_ASH_STATUS_TRAY_NEARBY_SHARE_REMAINING_SECONDS,
+      static_cast<int>(remaining_time.InSeconds()) + 1);
 }
 
 }  // namespace
@@ -64,8 +68,12 @@ FeaturePodButton* NearbyShareFeaturePodController::CreateButton() {
                       session_controller->IsActiveUserSessionStarted() &&
                       session_controller->IsUserPrimary() &&
                       !session_controller->IsScreenLocked());
-  button_->SetLabel(base::ASCIIToUTF16("Nearby Share"));
-  button_->SetLabelTooltip(base::ASCIIToUTF16("Show Nearby Share Settings."));
+  button_->SetLabel(
+      l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_NEARBY_SHARE_BUTTON_LABEL));
+  button_->SetLabelTooltip(l10n_util::GetStringUTF16(
+      IDS_ASH_STATUS_TRAY_NEARBY_SHARE_SETTINGS_TOOLTIP));
+  button_->SetIconTooltip(l10n_util::GetStringUTF16(
+      IDS_ASH_STATUS_TRAY_NEARBY_SHARE_TOGGLE_TOOLTIP));
   bool enabled = nearby_share_delegate_->IsHighVisibilityOn();
   OnHighVisibilityEnabledChanged(enabled);
   return button_;
@@ -99,25 +107,18 @@ void NearbyShareFeaturePodController::OnHighVisibilityEnabledChanged(
 }
 
 void NearbyShareFeaturePodController::UpdateButton(bool enabled) {
-  // TODO(crrev/c/2401842): l10n strings
-
   button_->SetToggled(enabled);
   button_->SetVectorIcon(enabled ? kUnifiedMenuNearbyShareVisibleIcon
                                  : kUnifiedMenuNearbyShareNotVisibleIcon);
 
   if (enabled) {
-    button_->SetSubLabel(base::ASCIIToUTF16("On, ") +
-                         RemainingTimeString(RemainingHighVisibilityTime()));
+    button_->SetSubLabel(l10n_util::GetStringFUTF16(
+        IDS_ASH_STATUS_TRAY_NEARBY_SHARE_ON_STATE,
+        RemainingTimeString(RemainingHighVisibilityTime())));
   } else {
-    button_->SetSubLabel(base::ASCIIToUTF16("Off"));
+    button_->SetSubLabel(
+        l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_NEARBY_SHARE_OFF_STATE));
   }
-
-  base::string16 tooltip_state =
-      enabled ? base::ASCIIToUTF16("High visibility on.")
-              : base::ASCIIToUTF16("High visibility off");
-  button_->SetIconTooltip(
-      base::ASCIIToUTF16("Toggle Nearby Share high visibility.") +
-      tooltip_state);
 }
 
 base::TimeDelta NearbyShareFeaturePodController::RemainingHighVisibilityTime()
