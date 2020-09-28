@@ -1,6 +1,6 @@
     <style>
       #item {
-        align-items: flex-start;
+        align-items: center;
         cursor: pointer;
         display: flex;
         height: 30px;
@@ -9,6 +9,7 @@
       }
 
       :host-context([pdf-viewer-update-enabled]) #item {
+        align-items: flex-start;
         height: initial;
         padding: 5px 0;
       }
