@@ -14,6 +14,7 @@
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_constants.h"
+#include "chrome/browser/web_applications/external_web_app_manager.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/components/account_manager/account_manager.h"
@@ -126,6 +127,11 @@ class AccountManagerUIHandlerTest
       delete;
 
   void SetUpOnMainThread() override {
+    // Disable preinstalled app scan, it is not compatible with the testing
+    // profile we create here.
+    // TODO(crbug.com/1131834): Make it compatible.
+    web_app::ExternalWebAppManager::SkipStartupForTesting();
+
     user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
         std::make_unique<chromeos::FakeChromeUserManager>());
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
@@ -226,9 +232,8 @@ class AccountManagerUIHandlerTest
   std::unique_ptr<TestingAccountManagerUIHandler> handler_;
 };
 
-// TODO(https://crbug.com/1131834): Re-enable flaky test.
 IN_PROC_BROWSER_TEST_P(AccountManagerUIHandlerTest,
-                       DISABLED_OnGetAccountsNoSecondaryAccounts) {
+                       OnGetAccountsNoSecondaryAccounts) {
   const std::vector<AccountManager::Account> account_manager_accounts =
       GetAccountsFromAccountManager();
   // Only Primary account.
@@ -271,9 +276,8 @@ IN_PROC_BROWSER_TEST_P(AccountManagerUIHandlerTest,
   }
 }
 
-// TODO(https://crbug.com/1131819): Re-enable flaky test.
 IN_PROC_BROWSER_TEST_P(AccountManagerUIHandlerTest,
-                       DISABLED_OnGetAccountsWithSecondaryAccounts) {
+                       OnGetAccountsWithSecondaryAccounts) {
   UpsertAccount("secondary1@example.com");
   UpsertAccount("secondary2@example.com");
   const std::vector<AccountManager::Account> account_manager_accounts =
