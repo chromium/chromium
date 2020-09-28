@@ -206,7 +206,8 @@ void TabSearchPageHandler::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,
     const TabStripSelectionChange& selection) {
-  ScheduleDebounce();
+  if (!browser_tab_strip_tracker_.is_processing_initial_browsers())
+    ScheduleDebounce();
 }
 
 void TabSearchPageHandler::TabChangedAt(content::WebContents* contents,
@@ -229,8 +230,7 @@ void TabSearchPageHandler::ScheduleDebounce() {
 }
 
 void TabSearchPageHandler::NotifyTabsChanged() {
-  if (!browser_tab_strip_tracker_.is_processing_initial_browsers())
-    page_->TabsChanged();
+  page_->TabsChanged();
   debounce_timer_->Stop();
 }
 
