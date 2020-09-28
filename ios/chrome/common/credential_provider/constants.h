@@ -14,6 +14,9 @@ NSURL* CredentialProviderSharedArchivableStoreURL();
 // validated in the extension.
 NSString* AppGroupUserDefaultsCredentialProviderManagedUserID();
 
+// An array of deprecated keys to be removed if present.
+NSArray<NSString*>* UnusedUserDefaultsCredentialProviderKeys();
+
 // Key for the app group user defaults indicating if the credentials have been
 // synced with iOS via AuthenticationServices.
 extern NSString* const
@@ -21,7 +24,8 @@ extern NSString* const
 
 // Key for the app group user defaults indicating if the credentials have been
 // sync for the first time. The defaults contain a Bool indicating if the first
-// time sync have been completed.
+// time sync have been completed. This value might change to force credentials
+// to be sync once Chrome is updated.
 extern NSString* const kUserDefaultsCredentialProviderFirstTimeSyncCompleted;
 
 // Key for the app group user defaults indicating if the user has enabled and

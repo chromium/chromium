@@ -52,4 +52,61 @@ TEST_F(ArchivableCredentialPasswordFormTest, Creation) {
               credential.recordIdentifier);
 }
 
+// Tests the creation of a credential from a password form.
+TEST_F(ArchivableCredentialPasswordFormTest, AndroidCredentialCreation) {
+  PasswordForm form;
+  form.signon_realm = "android://hash@com.example.my.app";
+  form.password_element = base::ASCIIToUTF16("pwd");
+  form.password_value = base::ASCIIToUTF16("example");
+
+  ArchivableCredential* credentialOnlyRealm =
+      [[ArchivableCredential alloc] initWithPasswordForm:form
+                                                 favicon:nil
+                                    validationIdentifier:nil];
+
+  EXPECT_TRUE(credentialOnlyRealm);
+  EXPECT_NSEQ(@"android://hash@com.example.my.app",
+              credentialOnlyRealm.serviceName);
+  EXPECT_NSEQ(@"android://hash@com.example.my.app",
+              credentialOnlyRealm.serviceIdentifier);
+
+  form.app_display_name = "my.app";
+
+  ArchivableCredential* credentialRealmAndAppName =
+      [[ArchivableCredential alloc] initWithPasswordForm:form
+                                                 favicon:nil
+                                    validationIdentifier:nil];
+
+  EXPECT_NSEQ(@"my.app", credentialRealmAndAppName.serviceName);
+  EXPECT_NSEQ(@"android://hash@com.example.my.app",
+              credentialRealmAndAppName.serviceIdentifier);
+
+  form.affiliated_web_realm = "https://m.app.example.com";
+
+  ArchivableCredential* credentialAffiliatedRealm =
+      [[ArchivableCredential alloc] initWithPasswordForm:form
+                                                 favicon:nil
+                                    validationIdentifier:nil];
+
+  EXPECT_NSEQ(@"app.example.com", credentialAffiliatedRealm.serviceName);
+  EXPECT_NSEQ(@"https://m.app.example.com",
+              credentialAffiliatedRealm.serviceIdentifier);
+}
+
+// Tests the creation of blacklisted forms is not possible.
+TEST_F(ArchivableCredentialPasswordFormTest, BlacklistedCreation) {
+  PasswordForm form;
+  form.signon_realm = "android://hash@com.example.my.app";
+  form.password_element = base::ASCIIToUTF16("pwd");
+  form.password_value = base::ASCIIToUTF16("example");
+  form.blocked_by_user = true;
+
+  ArchivableCredential* credential =
+      [[ArchivableCredential alloc] initWithPasswordForm:form
+                                                 favicon:nil
+                                    validationIdentifier:nil];
+
+  EXPECT_FALSE(credential);
+}
+
 }  // namespace

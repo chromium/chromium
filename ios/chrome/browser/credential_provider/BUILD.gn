@@ -32,6 +32,7 @@ source_set("credential_provider") {
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/passwords",
     "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/sync",
     "//ios/chrome/common/app_group",
     "//ios/chrome/common/credential_provider",
     "//ios/public/provider/chrome/browser/signin",

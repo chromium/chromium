@@ -13,9 +13,14 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
+#include "components/password_manager/core/browser/android_affiliation/affiliated_match_helper.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_utils.h"
+#include "components/password_manager/core/browser/android_affiliation/android_affiliation_service.h"
+#include "components/password_manager/core/browser/password_manager_util.h"
+#include "components/password_manager/core/browser/password_store.h"
 #include "components/password_manager/core/browser/password_store_change.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/sync/driver/sync_service.h"
 #include "ios/chrome/browser/credential_provider/archivable_credential+password_form.h"
 #import "ios/chrome/browser/credential_provider/credential_provider_util.h"
 #include "ios/chrome/common/app_group/app_group_constants.h"
@@ -32,9 +37,11 @@
 namespace {
 
 using autofill::PasswordForm;
+using password_manager::AffiliatedMatchHelper;
 using password_manager::PasswordStore;
 using password_manager::PasswordStoreChange;
 using password_manager::PasswordStoreChangeList;
+using password_manager::AndroidAffiliationService;
 
 // ASCredentialIdentityStoreError enum to report UMA metrics. Must be in sync
 // with iOSCredentialIdentityStoreErrorForReporting in
@@ -121,31 +128,18 @@ void SyncASIdentityStore(ArchivableCredentialStore* credential_store) {
       getCredentialIdentityStoreStateWithCompletion:stateCompletion];
 }
 
-ArchivableCredential* CredentialFromForm(const PasswordForm& form,
-                                         NSString* validation_id) {
-  ArchivableCredential* credential =
-      [[ArchivableCredential alloc] initWithPasswordForm:form
-                                                 favicon:nil
-                                    validationIdentifier:validation_id];
-  if (!credential) {
-    // Verify that the credential is nil because it's an Android one or
-    // blacklisted.
-    DCHECK(password_manager::IsValidAndroidFacetURI(form.signon_realm) ||
-           form.blocked_by_user);
-  }
-  return credential;
-}
-
 }  // namespace
 
 CredentialProviderService::CredentialProviderService(
     scoped_refptr<PasswordStore> password_store,
     AuthenticationService* authentication_service,
     ArchivableCredentialStore* credential_store,
-    signin::IdentityManager* identity_manager)
+    signin::IdentityManager* identity_manager,
+    syncer::SyncService* sync_service)
     : password_store_(password_store),
       authentication_service_(authentication_service),
       identity_manager_(identity_manager),
+      sync_service_(sync_service),
       archivable_credential_store_(credential_store) {
   DCHECK(password_store_);
   password_store_->AddObserver(this);
@@ -157,14 +151,16 @@ CredentialProviderService::CredentialProviderService(
     identity_manager_->AddObserver(this);
   }
 
-  // TODO(crbug.com/1066803): Wait for things to settle down before
-  // syncs, and sync credentials after Sync finishes or some
-  // seconds in the future.
-  if (ShouldSyncASIdentityStore()) {
-    SyncASIdentityStore(credential_store);
+  bool is_sync_active = false;
+  if (sync_service_) {
+    sync_service_->AddObserver(this);
+    is_sync_active = sync_service_->IsSyncFeatureActive();
   }
-  if (ShouldSyncAllCredentials()) {
-    RequestSyncAllCredentials();
+
+  // If Sync is active, wait for the configuration to finish before syncing.
+  // This will wait for affiliated_match_helper to be available.
+  if (!is_sync_active) {
+    RequestSyncAllCredentialsIfNeeded();
   }
 }
 
@@ -175,21 +171,73 @@ void CredentialProviderService::Shutdown() {
   if (identity_manager_) {
     identity_manager_->RemoveObserver(this);
   }
-}
-
-void CredentialProviderService::OnPrimaryAccountSet(
-    const CoreAccountInfo& primary_account_info) {
-  RequestSyncAllCredentials();
-}
-
-void CredentialProviderService::OnPrimaryAccountCleared(
-    const CoreAccountInfo& previous_primary_account_info) {
-  RequestSyncAllCredentials();
+  if (sync_service_) {
+    sync_service_->RemoveObserver(this);
+  }
 }
 
 void CredentialProviderService::RequestSyncAllCredentials() {
   UpdateAccountValidationId();
   password_store_->GetAutofillableLogins(this);
+}
+
+void CredentialProviderService::RequestSyncAllCredentialsIfNeeded() {
+  if (ShouldSyncASIdentityStore()) {
+    SyncASIdentityStore(archivable_credential_store_);
+  }
+  if (ShouldSyncAllCredentials()) {
+    RequestSyncAllCredentials();
+  }
+}
+
+void CredentialProviderService::SyncAllCredentials(
+    std::vector<std::unique_ptr<PasswordForm>> forms) {
+  [archivable_credential_store_ removeAllCredentials];
+  AddCredentials(std::move(forms));
+  SyncStore(true);
+}
+
+void CredentialProviderService::SyncStore(bool set_first_time_sync_flag) {
+  __weak ArchivableCredentialStore* weak_archivable_credential_store =
+      archivable_credential_store_;
+  [archivable_credential_store_ saveDataWithCompletion:^(NSError* error) {
+    if (error) {
+      return;
+    }
+    if (set_first_time_sync_flag) {
+      NSUserDefaults* user_defaults = [NSUserDefaults standardUserDefaults];
+      for (NSString* key in UnusedUserDefaultsCredentialProviderKeys()) {
+        [user_defaults removeObjectForKey:key];
+      }
+      NSString* key = kUserDefaultsCredentialProviderFirstTimeSyncCompleted;
+      [user_defaults setBool:YES forKey:key];
+    }
+    if (weak_archivable_credential_store) {
+      SyncASIdentityStore(weak_archivable_credential_store);
+    }
+  }];
+}
+
+void CredentialProviderService::AddCredentials(
+    std::vector<std::unique_ptr<PasswordForm>> forms) {
+  for (const auto& form : forms) {
+    ArchivableCredential* credential = [[ArchivableCredential alloc]
+        initWithPasswordForm:*form
+                     favicon:nil
+        validationIdentifier:account_validation_id_];
+    DCHECK(credential);
+    [archivable_credential_store_ addCredential:credential];
+  }
+}
+
+void CredentialProviderService::RemoveCredentials(
+    std::vector<std::unique_ptr<PasswordForm>> forms) {
+  for (const auto& form : forms) {
+    NSString* recordID = RecordIdentifierForPasswordForm(*form);
+    DCHECK(recordID);
+    [archivable_credential_store_
+        removeCredentialWithRecordIdentifier:recordID];
+  }
 }
 
 void CredentialProviderService::UpdateAccountValidationId() {
@@ -204,69 +252,82 @@ void CredentialProviderService::UpdateAccountValidationId() {
          forKey:AppGroupUserDefaultsCredentialProviderManagedUserID()];
 }
 
-void CredentialProviderService::SyncStore(void (^completion)(NSError*)) const {
-  [archivable_credential_store_ saveDataWithCompletion:^(NSError* error) {
-    DCHECK(!error) << "An error occurred while saving to disk";
-    if (completion) {
-      completion(error);
-    }
-  }];
-}
-
 void CredentialProviderService::OnGetPasswordStoreResults(
     std::vector<std::unique_ptr<PasswordForm>> results) {
-  [archivable_credential_store_ removeAllCredentials];
-  for (const auto& form : results) {
-    ArchivableCredential* credential =
-        CredentialFromForm(*form, account_validation_id_);
-    if (credential) {
-      [archivable_credential_store_ addCredential:credential];
-    }
+  auto callback = base::BindOnce(&CredentialProviderService::SyncAllCredentials,
+                                 weak_factory_.GetWeakPtr());
+  AffiliatedMatchHelper* matcher = password_store_->affiliated_match_helper();
+  if (matcher) {
+    matcher->InjectAffiliationAndBrandingInformation(
+        std::move(results),
+        AndroidAffiliationService::StrategyOnCacheMiss::FETCH_OVER_NETWORK,
+        std::move(callback));
+  } else {
+    std::move(callback).Run(std::move(results));
   }
-  SyncStore(^(NSError* error) {
-    if (!error) {
-      NSUserDefaults* user_defaults = [NSUserDefaults standardUserDefaults];
-      NSString* key = kUserDefaultsCredentialProviderFirstTimeSyncCompleted;
-      [user_defaults setBool:YES forKey:key];
-      SyncASIdentityStore(archivable_credential_store_);
-    }
-  });
+}
+
+void CredentialProviderService::OnPrimaryAccountSet(
+    const CoreAccountInfo& primary_account_info) {
+  RequestSyncAllCredentials();
+}
+
+void CredentialProviderService::OnPrimaryAccountCleared(
+    const CoreAccountInfo& previous_primary_account_info) {
+  RequestSyncAllCredentials();
 }
 
 void CredentialProviderService::OnLoginsChanged(
     const PasswordStoreChangeList& changes) {
+  std::vector<std::unique_ptr<PasswordForm>> forms_to_add;
+  std::vector<std::unique_ptr<PasswordForm>> forms_to_remove;
   for (const PasswordStoreChange& change : changes) {
-    ArchivableCredential* credential =
-        CredentialFromForm(change.form(), account_validation_id_);
     if (change.form().blocked_by_user) {
       continue;
     }
     switch (change.type()) {
       case PasswordStoreChange::ADD:
-        [archivable_credential_store_ addCredential:credential];
+        forms_to_add.push_back(std::make_unique<PasswordForm>(change.form()));
         break;
       case PasswordStoreChange::UPDATE:
-        [archivable_credential_store_ updateCredential:credential];
+        forms_to_remove.push_back(
+            std::make_unique<PasswordForm>(change.form()));
+        forms_to_add.push_back(std::make_unique<PasswordForm>(change.form()));
         break;
       case PasswordStoreChange::REMOVE:
-        // Using the record identifier from the form, as the credential might
-        // not be valid anymore.
-        [archivable_credential_store_
-            removeCredentialWithRecordIdentifier:
-                RecordIdentifierForPasswordForm(change.form())];
+        forms_to_remove.push_back(
+            std::make_unique<PasswordForm>(change.form()));
         break;
-
       default:
         NOTREACHED();
         break;
     }
   }
-  SyncStore(^(NSError* error) {
-    if (!error) {
-      // TODO(crbug.com/1077747): Support ASCredentialIdentityStore incremental
-      // updates. Currently calling multiple methods on it to save and remove
-      // causes it to crash. This needs to be further investigated.
-      SyncASIdentityStore(archivable_credential_store_);
-    }
-  });
+
+  RemoveCredentials(std::move(forms_to_remove));
+
+  auto callback = base::BindOnce(
+      &CredentialProviderService::OnInjectedAffiliationAfterLoginsChanged,
+      weak_factory_.GetWeakPtr());
+
+  AffiliatedMatchHelper* matcher = password_store_->affiliated_match_helper();
+  if (matcher) {
+    matcher->InjectAffiliationAndBrandingInformation(
+        std::move(forms_to_add),
+        AndroidAffiliationService::StrategyOnCacheMiss::FETCH_OVER_NETWORK,
+        std::move(callback));
+  } else {
+    std::move(callback).Run(std::move(forms_to_add));
+  }
+}
+
+void CredentialProviderService::OnInjectedAffiliationAfterLoginsChanged(
+    std::vector<std::unique_ptr<PasswordForm>> forms) {
+  AddCredentials(std::move(forms));
+  SyncStore(false);
+}
+
+void CredentialProviderService::OnSyncConfigurationCompleted(
+    syncer::SyncService* sync) {
+  RequestSyncAllCredentialsIfNeeded();
 }

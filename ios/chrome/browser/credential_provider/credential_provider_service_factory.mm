@@ -11,6 +11,7 @@
 #include "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #include "ios/chrome/browser/signin/identity_manager_factory.h"
+#include "ios/chrome/browser/sync/profile_sync_service_factory.h"
 #import "ios/chrome/common/credential_provider/archivable_credential_store.h"
 #import "ios/chrome/common/credential_provider/constants.h"
 
@@ -39,6 +40,7 @@ CredentialProviderServiceFactory::CredentialProviderServiceFactory()
   DependsOn(IOSChromePasswordStoreFactory::GetInstance());
   DependsOn(AuthenticationServiceFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
+  DependsOn(ProfileSyncServiceFactory::GetInstance());
 }
 
 CredentialProviderServiceFactory::~CredentialProviderServiceFactory() = default;
@@ -58,7 +60,10 @@ CredentialProviderServiceFactory::BuildServiceInstanceFor(
           initWithFileURL:CredentialProviderSharedArchivableStoreURL()];
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForBrowserState(browser_state);
+  syncer::SyncService* sync_service =
+      ProfileSyncServiceFactory::GetForBrowserState(browser_state);
+
   return std::make_unique<CredentialProviderService>(
       password_store, authentication_service, credential_store,
-      identity_manager);
+      identity_manager, sync_service);
 }

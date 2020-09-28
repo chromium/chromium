@@ -90,6 +90,7 @@ void AffiliatedMatchHelper::GetAffiliatedWebRealms(
 
 void AffiliatedMatchHelper::InjectAffiliationAndBrandingInformation(
     std::vector<std::unique_ptr<PasswordForm>> forms,
+    AndroidAffiliationService::StrategyOnCacheMiss strategy_on_cache_miss,
     PasswordFormsCallback result_callback) {
   std::vector<PasswordForm*> android_credentials;
   for (const auto& form : forms) {
@@ -103,7 +104,7 @@ void AffiliatedMatchHelper::InjectAffiliationAndBrandingInformation(
   for (auto* form : android_credentials) {
     affiliation_service_->GetAffiliationsAndBranding(
         FacetURI::FromPotentiallyInvalidSpec(form->signon_realm),
-        AndroidAffiliationService::StrategyOnCacheMiss::FAIL,
+        strategy_on_cache_miss,
         base::BindOnce(&AffiliatedMatchHelper::
                            CompleteInjectAffiliationAndBrandingInformation,
                        weak_ptr_factory_.GetWeakPtr(), base::Unretained(form),

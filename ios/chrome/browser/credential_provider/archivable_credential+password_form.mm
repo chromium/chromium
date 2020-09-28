@@ -28,20 +28,52 @@ using base::SysUTF16ToNSString;
 - (instancetype)initWithPasswordForm:(const autofill::PasswordForm&)passwordForm
                              favicon:(NSString*)favicon
                 validationIdentifier:(NSString*)validationIdentifier {
-  if (passwordForm.url.is_empty() || passwordForm.blocked_by_user ||
-      password_manager::IsValidAndroidFacetURI(passwordForm.signon_realm)) {
+  if (passwordForm.blocked_by_user) {
     return nil;
   }
   std::string site_name =
       password_manager::GetShownOrigin(url::Origin::Create(passwordForm.url));
   NSString* keychainIdentifier =
       SysUTF8ToNSString(passwordForm.encrypted_password);
+
+  NSString* serviceIdentifier = SysUTF8ToNSString(passwordForm.url.spec());
+  NSString* serviceName = SysUTF8ToNSString(site_name);
+
+  if (password_manager::IsValidAndroidFacetURI(passwordForm.signon_realm)) {
+    NSString* webRealm = SysUTF8ToNSString(passwordForm.affiliated_web_realm);
+    url::Origin origin =
+        url::Origin::Create(GURL(passwordForm.affiliated_web_realm));
+    std::string shownOrigin = password_manager::GetShownOrigin(origin);
+
+    // Set serviceIdentifier:
+    if (webRealm.length) {
+      // Prefer webRealm.
+      serviceIdentifier = webRealm;
+    } else if (!serviceIdentifier.length) {
+      // Fallback to signon_realm.
+      serviceIdentifier = SysUTF8ToNSString(passwordForm.signon_realm);
+    }
+
+    // Set serviceName:
+    if (!shownOrigin.empty()) {
+      // Prefer shownOrigin to match non Android credentials.
+      serviceName = SysUTF8ToNSString(shownOrigin);
+    } else if (!passwordForm.app_display_name.empty()) {
+      serviceName = SysUTF8ToNSString(passwordForm.app_display_name);
+    } else if (!serviceName.length) {
+      // Fallback to serviceIdentifier.
+      serviceName = serviceIdentifier;
+    }
+  }
+
+  DCHECK(serviceIdentifier.length);
+
   return [self initWithFavicon:favicon
             keychainIdentifier:keychainIdentifier
                           rank:passwordForm.times_used
               recordIdentifier:RecordIdentifierForPasswordForm(passwordForm)
-             serviceIdentifier:SysUTF8ToNSString(passwordForm.url.spec())
-                   serviceName:SysUTF8ToNSString(site_name)
+             serviceIdentifier:serviceIdentifier
+                   serviceName:serviceName
                           user:SysUTF16ToNSString(passwordForm.username_value)
           validationIdentifier:validationIdentifier];
 }

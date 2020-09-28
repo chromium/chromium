@@ -63,7 +63,7 @@ class CredentialProviderServiceTest : public PlatformTest {
             chrome_browser_state_.get()));
 
     credential_provider_service_ = std::make_unique<CredentialProviderService>(
-        password_store_, auth_service_, credential_store_, nullptr);
+        password_store_, auth_service_, credential_store_, nullptr, nullptr);
   }
 
   void TearDown() override {
@@ -191,6 +191,23 @@ TEST_F(CredentialProviderServiceTest, AccountChange) {
         isEqualToString:credential_store_.credentials.firstObject
                             .validationIdentifier];
   }));
+}
+
+// Test that CredentialProviderService observes changes in the password store.
+TEST_F(CredentialProviderServiceTest, AndroidCredential) {
+  EXPECT_EQ(0u, credential_store_.credentials.count);
+
+  PasswordForm form;
+  form.url = GURL(form.signon_realm);
+  form.signon_realm = "android://hash@com.example.my.app";
+  form.password_element = base::ASCIIToUTF16("pwd");
+  form.password_value = base::ASCIIToUTF16("example");
+
+  password_store_->AddLogin(form);
+  task_environment_.RunUntilIdle();
+
+  // Expect the store to be populated with 1 credential.
+  ASSERT_EQ(1u, credential_store_.credentials.count);
 }
 
 }  // namespace

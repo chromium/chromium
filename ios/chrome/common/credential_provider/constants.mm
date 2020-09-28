@@ -57,11 +57,18 @@ NSString* AppGroupUserDefaultsCredentialProviderManagedUserID() {
       stringByAppendingString:kUserDefaultsCredentialProviderManagedUserID];
 }
 
+NSArray<NSString*>* UnusedUserDefaultsCredentialProviderKeys() {
+  return @[
+    @"UserDefaultsCredentialProviderASIdentityStoreSyncCompleted.V0",
+    @"UserDefaultsCredentialProviderFirstTimeSyncCompleted.V0"
+  ];
+}
+
 NSString* const kUserDefaultsCredentialProviderASIdentityStoreSyncCompleted =
-    @"UserDefaultsCredentialProviderASIdentityStoreSyncCompleted.V0";
+    @"UserDefaultsCredentialProviderASIdentityStoreSyncCompleted.V1";
 
 NSString* const kUserDefaultsCredentialProviderFirstTimeSyncCompleted =
-    @"UserDefaultsCredentialProviderFirstTimeSyncCompleted.V0";
+    @"UserDefaultsCredentialProviderFirstTimeSyncCompleted.V1";
 
 NSString* const kUserDefaultsCredentialProviderConsentVerified =
     @"UserDefaultsCredentialProviderConsentVerified";

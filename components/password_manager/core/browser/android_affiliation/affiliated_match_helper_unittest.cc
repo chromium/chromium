@@ -286,7 +286,7 @@ class AffiliatedMatchHelperTest : public testing::Test {
       std::vector<std::unique_ptr<PasswordForm>> forms) {
     expecting_result_callback_ = true;
     match_helper()->InjectAffiliationAndBrandingInformation(
-        std::move(forms),
+        std::move(forms), AndroidAffiliationService::StrategyOnCacheMiss::FAIL,
         base::BindOnce(&AffiliatedMatchHelperTest::OnFormsCallback,
                        base::Unretained(this)));
     RunUntilIdle();

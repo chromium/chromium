@@ -1213,7 +1213,8 @@ void PasswordStore::InjectAffiliationAndBrandingInformation(
     LoginsResult forms) {
   if (affiliated_match_helper_) {
     affiliated_match_helper_->InjectAffiliationAndBrandingInformation(
-        std::move(forms), std::move(callback));
+        std::move(forms), AndroidAffiliationService::StrategyOnCacheMiss::FAIL,
+        std::move(callback));
   } else {
     std::move(callback).Run(std::move(forms));
   }
