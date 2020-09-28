@@ -20,10 +20,10 @@ console.log('[PiexLoader] loaded');
 let PiexWasmModule;
 
 /**
- * |window| var Module defined in page <script src='piex/piex.js.wasm'>.
+ * Module defined by 'piex.js.wasm' script.
  * @type {!PiexWasmModule}
  */
-const PiexModule = /** @type {!PiexWasmModule} */ (window['Module']) || {};
+const PiexModule = /** @type {!PiexWasmModule} */ (globalThis['Module']) || {};
 
 /**
  * Set true if the Module.onAbort() handler is called.
@@ -162,7 +162,7 @@ function readSourceData(source) {
     }
 
     const url = /** @type {string} */ (source);
-    window.webkitResolveLocalFileSystemURL(url, readEntry, failure);
+    globalThis.webkitResolveLocalFileSystemURL(url, readEntry, failure);
   });
 }
 
