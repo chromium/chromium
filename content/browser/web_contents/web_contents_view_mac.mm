@@ -428,7 +428,7 @@ std::list<RenderWidgetHostViewMac*> WebContentsViewMac::GetChildViews() {
   std::list<RenderWidgetHostViewMac*> result;
   for (auto iter = child_views_.begin(); iter != child_views_.end();) {
     if (*iter) {
-      result.push_back(reinterpret_cast<RenderWidgetHostViewMac*>(iter->get()));
+      result.push_back(static_cast<RenderWidgetHostViewMac*>(iter->get()));
       iter++;
     } else {
       iter = child_views_.erase(iter);
