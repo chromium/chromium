@@ -411,7 +411,7 @@ bool RenderViewHostImpl::CreateRenderView(
   // initialized it) or may not (we have our own process or the old process
   // crashed) have been initialized. Calling Init multiple times will be
   // ignored, so this is safe.
-  if (!GetProcess()->Init())
+  if (!GetAgentSchedulingGroup().InitProcessAndMojos())
     return false;
   DCHECK(GetProcess()->IsInitializedAndNotDead());
   DCHECK(GetProcess()->GetBrowserContext());
@@ -622,6 +622,10 @@ void RenderViewHostImpl::DispatchRenderViewCreated() {
 
   delegate_->RenderViewCreated(this);
   has_notified_about_creation_ = true;
+}
+
+bool RenderViewHostImpl::InitProcessAndAgentSchedulingGroup() {
+  return GetAgentSchedulingGroup().InitProcessAndMojos();
 }
 
 void RenderViewHostImpl::ClosePage() {

@@ -53,10 +53,15 @@ AgentSchedulingGroupHost::MaybeAssociatedReceiver::MaybeAssociatedReceiver(
     AgentSchedulingGroupHost& host,
     bool should_associate) {
   if (should_associate) {
-    receiver_.emplace<AssociatedReceiver<mojom::AgentSchedulingGroupHost>>(
-        &host);
+    receiver_or_monostate_
+        .emplace<AssociatedReceiver<mojom::AgentSchedulingGroupHost>>(&host);
+    receiver_ = &absl::get<AssociatedReceiver<mojom::AgentSchedulingGroupHost>>(
+        receiver_or_monostate_);
   } else {
-    receiver_.emplace<Receiver<mojom::AgentSchedulingGroupHost>>(&host);
+    receiver_or_monostate_.emplace<Receiver<mojom::AgentSchedulingGroupHost>>(
+        &host);
+    receiver_ = &absl::get<Receiver<mojom::AgentSchedulingGroupHost>>(
+        receiver_or_monostate_);
   }
 }
 
@@ -65,16 +70,24 @@ AgentSchedulingGroupHost::MaybeAssociatedReceiver::~MaybeAssociatedReceiver() =
 
 PendingRemote<mojom::AgentSchedulingGroupHost>
 AgentSchedulingGroupHost::MaybeAssociatedReceiver::BindNewPipeAndPassRemote() {
-  return absl::get<Receiver<mojom::AgentSchedulingGroupHost>>(receiver_)
-      .BindNewPipeAndPassRemote();
+  return absl::get<Receiver<mojom::AgentSchedulingGroupHost>*>(receiver_)
+      ->BindNewPipeAndPassRemote();
 }
 
 PendingAssociatedRemote<mojom::AgentSchedulingGroupHost>
 AgentSchedulingGroupHost::MaybeAssociatedReceiver::
     BindNewEndpointAndPassRemote() {
-  return absl::get<AssociatedReceiver<mojom::AgentSchedulingGroupHost>>(
+  return absl::get<AssociatedReceiver<mojom::AgentSchedulingGroupHost>*>(
              receiver_)
-      .BindNewEndpointAndPassRemote();
+      ->BindNewEndpointAndPassRemote();
+}
+
+void AgentSchedulingGroupHost::MaybeAssociatedReceiver::reset() {
+  absl::visit([](auto* r) { r->reset(); }, receiver_);
+}
+
+bool AgentSchedulingGroupHost::MaybeAssociatedReceiver::is_bound() {
+  return absl::visit([](auto* r) { return r->is_bound(); }, receiver_);
 }
 
 // MaybeAssociatedRemote:
@@ -101,6 +114,14 @@ AgentSchedulingGroupHost::MaybeAssociatedRemote::
     BindNewEndpointAndPassReceiver() {
   return absl::get<AssociatedRemote<mojom::AgentSchedulingGroup>>(remote_)
       .BindNewEndpointAndPassReceiver();
+}
+
+void AgentSchedulingGroupHost::MaybeAssociatedRemote::reset() {
+  absl::visit([](auto& remote) { remote.reset(); }, remote_);
+}
+
+bool AgentSchedulingGroupHost::MaybeAssociatedRemote::is_bound() {
+  return absl::visit([](auto& remote) { return remote.is_bound(); }, remote_);
 }
 
 // AgentSchedulingGroupHost:
@@ -131,34 +152,66 @@ AgentSchedulingGroupHost::AgentSchedulingGroupHost(RenderProcessHost& process)
 AgentSchedulingGroupHost::AgentSchedulingGroupHost(RenderProcessHost& process,
                                                    bool should_associate)
     : process_(process),
+      should_associate_(should_associate),
       receiver_(*this, should_associate),
       mojo_remote_(should_associate) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (should_associate) {
-    process_.GetRendererInterface()->CreateAssociatedAgentSchedulingGroup(
-        receiver_.BindNewEndpointAndPassRemote(),
-        mojo_remote_.BindNewEndpointAndPassReceiver());
-  } else {
-    process_.GetRendererInterface()->CreateAgentSchedulingGroup(
-        receiver_.BindNewPipeAndPassRemote(),
-        mojo_remote_.BindNewPipeAndPassReceiver());
-  }
+  process_.AddObserver(this);
+  // We don't want to bind the mojo endpoints yet, as the process may not be
+  // fully initialized yet. They will be initialized the next time an API
+  // requiring an IPC is called.
 }
 
 // DO NOT USE |process_| HERE! At this point it (or at least parts of it) is no
 // longer valid.
 AgentSchedulingGroupHost::~AgentSchedulingGroupHost() = default;
 
+void AgentSchedulingGroupHost::RenderProcessExited(
+    RenderProcessHost* host,
+    const ChildProcessTerminationInfo& info) {
+  DCHECK_EQ(host, &process_);
+  ResetMojo();
+}
+
+void AgentSchedulingGroupHost::RenderProcessHostDestroyed(
+    RenderProcessHost* host) {
+  DCHECK_EQ(host, &process_);
+  process_.RemoveObserver(this);
+}
+
 RenderProcessHost* AgentSchedulingGroupHost::GetProcess() {
   return &process_;
 }
 
+bool AgentSchedulingGroupHost::InitProcessAndMojos() {
+  if (!process_.Init())
+    return false;
+
+  SetUpMojoIfNeeded();
+  return true;
+}
+
 ChannelProxy* AgentSchedulingGroupHost::GetChannel() {
+  // TODO(crbug.com/1111231): If the process is not initialized, it also implies
+  // that it is not Ready, meaning the channel we return here will not be valid.
+  // In that case we should return |nullptr|, but that causes certain tests to
+  // fail. This should be changed once those tests are fixed.
+  if (process_.IsInitializedAndNotDead())
+    SetUpMojoIfNeeded();
+
   return process_.GetChannel();
 }
 
 bool AgentSchedulingGroupHost::Send(IPC::Message* message) {
-  return process_.Send(message);
+  // Send takes ownership of the IPC message. Since there are flows where we
+  // don't call RenderProcessHost::Send, we have to make sure we delete the
+  // message appropriately to avoid leaks.
+  std::unique_ptr<IPC::Message> msg(message);
+
+  if (!process_.IsInitializedAndNotDead())
+    return false;
+
+  SetUpMojoIfNeeded();
+  return process_.Send(msg.release());
 }
 
 void AgentSchedulingGroupHost::AddRoute(int32_t routing_id,
@@ -171,18 +224,20 @@ void AgentSchedulingGroupHost::RemoveRoute(int32_t routing_id) {
 }
 
 mojom::RouteProvider* AgentSchedulingGroupHost::GetRemoteRouteProvider() {
+  // TODO(talp): Either expose `GetRemoteRouteProvider` on `RenderProcessHost`
+  // or change the `AgentSchedulingGroupHost` to take the impl.
   RenderProcessHostImpl& process =
       static_cast<RenderProcessHostImpl&>(process_);
   return process.GetRemoteRouteProvider();
 }
 
 void AgentSchedulingGroupHost::CreateFrame(mojom::CreateFrameParamsPtr params) {
+  SetUpMojoIfNeeded();
   process_.GetRendererInterface()->CreateFrame(std::move(params));
 }
 
 void AgentSchedulingGroupHost::CreateView(mojom::CreateViewParamsPtr params) {
-  // TODO(crbug.com/1111231): Ensure that the mojo endpoints are still connected
-  // (once crrev.com/c/2397057 is submitted).
+  SetUpMojoIfNeeded();
   process_.GetRendererInterface()->CreateView(std::move(params));
 }
 
@@ -210,6 +265,30 @@ void AgentSchedulingGroupHost::GetAssociatedInterface(
   // directly with the AgentSchedulingGroupHost interface.
   static_cast<RenderProcessHostImpl&>(process_).GetAssociatedInterface(
       name, std::move(receiver));
+}
+
+void AgentSchedulingGroupHost::ResetMojo() {
+  receiver_.reset();
+  mojo_remote_.reset();
+}
+
+void AgentSchedulingGroupHost::SetUpMojoIfNeeded() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK(process_.IsInitializedAndNotDead());
+
+  DCHECK_EQ(receiver_.is_bound(), mojo_remote_.is_bound());
+  if (receiver_.is_bound())
+    return;
+
+  if (should_associate_) {
+    process_.GetRendererInterface()->CreateAssociatedAgentSchedulingGroup(
+        receiver_.BindNewEndpointAndPassRemote(),
+        mojo_remote_.BindNewEndpointAndPassReceiver());
+  } else {
+    process_.GetRendererInterface()->CreateAgentSchedulingGroup(
+        receiver_.BindNewPipeAndPassRemote(),
+        mojo_remote_.BindNewPipeAndPassReceiver());
+  }
 }
 
 }  // namespace content

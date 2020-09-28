@@ -2488,7 +2488,7 @@ bool RenderFrameHostManager::InitRenderView(
     RenderFrameProxyHost* proxy) {
   // Ensure the renderer process is initialized before creating the
   // RenderView.
-  if (!render_view_host->GetProcess()->Init())
+  if (!render_view_host->InitProcessAndAgentSchedulingGroup())
     return false;
 
   // We may have initialized this RenderViewHost for another RenderFrameHost.

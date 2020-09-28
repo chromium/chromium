@@ -11,6 +11,7 @@
 #include "content/common/associated_interfaces.mojom.h"
 #include "content/common/content_export.h"
 #include "content/common/renderer.mojom-forward.h"
+#include "content/public/browser/render_process_host_observer.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -38,7 +39,8 @@ class SiteInstance;
 // An AgentSchedulingGroupHost is stored as (and owned by) UserData on the
 // RenderProcessHost.
 class CONTENT_EXPORT AgentSchedulingGroupHost
-    : public mojom::AgentSchedulingGroupHost,
+    : public RenderProcessHostObserver,
+      public mojom::AgentSchedulingGroupHost,
       public mojom::RouteProvider,
       public blink::mojom::AssociatedInterfaceProvider {
  public:
@@ -54,7 +56,17 @@ class CONTENT_EXPORT AgentSchedulingGroupHost
   explicit AgentSchedulingGroupHost(RenderProcessHost& process);
   ~AgentSchedulingGroupHost() override;
 
+  // RenderProcessHostObserver:
+  void RenderProcessExited(RenderProcessHost* host,
+                           const ChildProcessTerminationInfo& info) override;
+  void RenderProcessHostDestroyed(RenderProcessHost* host) override;
+
   RenderProcessHost* GetProcess();
+  // Ensure that the process this AgentSchedulingGroupHost belongs to is alive,
+  // that the renderer-side AgentSchedulingGroup exists, and that the
+  // mojom::AgentSchedulingGroup/Host interfaces are bound and connected.
+  // Returns |false| if any part of the initialization failed.
+  bool InitProcessAndMojos();
 
   // IPC and mojo messages to be forwarded to the RenderProcessHost, for now. In
   // the future they will be handled directly by the AgentSchedulingGroupHost.
@@ -91,13 +103,24 @@ class CONTENT_EXPORT AgentSchedulingGroupHost
     mojo::PendingAssociatedRemote<mojom::AgentSchedulingGroupHost>
     BindNewEndpointAndPassRemote() WARN_UNUSED_RESULT;
 
+    void reset();
+    bool is_bound();
+
    private:
+    // This will hold the actual receiver pointed to by |receiver_|.
     absl::variant<
         // This is required to make the variant default constructible. After the
         // ctor body finishes, the variant will never hold this alternative.
         absl::monostate,
         mojo::Receiver<mojom::AgentSchedulingGroupHost>,
         mojo::AssociatedReceiver<mojom::AgentSchedulingGroupHost>>
+        receiver_or_monostate_;
+
+    // View of |receiver_or_monostate_| that "strips out" the `monostate`,
+    // allowing for easier handling of the underlying remote. Should be declared
+    // after |receiver_or_monostate_| so that it is destroyed first.
+    absl::variant<mojo::Receiver<mojom::AgentSchedulingGroupHost>*,
+                  mojo::AssociatedReceiver<mojom::AgentSchedulingGroupHost>*>
         receiver_;
   };
 
@@ -110,6 +133,9 @@ class CONTENT_EXPORT AgentSchedulingGroupHost
     BindNewPipeAndPassReceiver() WARN_UNUSED_RESULT;
     mojo::PendingAssociatedReceiver<mojom::AgentSchedulingGroup>
     BindNewEndpointAndPassReceiver() WARN_UNUSED_RESULT;
+
+    void reset();
+    bool is_bound();
 
    private:
     absl::variant<mojo::Remote<mojom::AgentSchedulingGroup>,
@@ -137,8 +163,13 @@ class CONTENT_EXPORT AgentSchedulingGroupHost
       mojo::PendingAssociatedReceiver<blink::mojom::AssociatedInterface>
           receiver) override;
 
+  void ResetMojo();
+  void SetUpMojoIfNeeded();
+
   // The RenderProcessHost this AgentSchedulingGroup is assigned to.
   RenderProcessHost& process_;
+
+  const bool should_associate_;
 
   // Implementation of `mojom::AgentSchedulingGroupHost`, used for responding to
   // calls from the (renderer-side) `AgentSchedulingGroup`.

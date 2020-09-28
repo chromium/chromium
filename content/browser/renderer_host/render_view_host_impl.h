@@ -176,6 +176,8 @@ class CONTENT_EXPORT RenderViewHostImpl
   // https://crbug.com/763548.
   void DispatchRenderViewCreated();
 
+  bool InitProcessAndAgentSchedulingGroup();
+
   // Tells the renderer process to request a page-scale animation based on the
   // specified point/rect.
   void AnimateDoubleTapZoom(const gfx::Point& point, const gfx::Rect& rect);

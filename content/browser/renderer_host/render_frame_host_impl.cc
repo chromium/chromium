@@ -2107,7 +2107,7 @@ bool RenderFrameHostImpl::CreateRenderFrame(
   // initialized it) or may not (we have our own process or the old process
   // crashed) have been initialized. Calling Init multiple times will be
   // ignored, so this is safe.
-  if (!GetProcess()->Init())
+  if (!agent_scheduling_group().InitProcessAndMojos())
     return false;
 
   DCHECK(GetProcess()->IsInitializedAndNotDead());
