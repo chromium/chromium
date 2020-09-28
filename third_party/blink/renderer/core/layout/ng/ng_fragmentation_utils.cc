@@ -238,6 +238,8 @@ bool FinishFragmentation(NGBlockNode node,
   LayoutUnit previously_consumed_block_size;
   if (previous_break_token && !previous_break_token->IsBreakBefore())
     previously_consumed_block_size = previous_break_token->ConsumedBlockSize();
+  bool is_past_end =
+      previous_break_token && previous_break_token->IsAtBlockEnd();
 
   LayoutUnit fragments_total_block_size = builder->FragmentsTotalBlockSize();
   LayoutUnit desired_block_size =
@@ -246,7 +248,13 @@ bool FinishFragmentation(NGBlockNode node,
   LayoutUnit intrinsic_block_size = builder->IntrinsicBlockSize();
 
   LayoutUnit final_block_size = desired_block_size;
-  if (builder->FoundColumnSpanner()) {
+
+  if (builder->FoundColumnSpanner())
+    builder->SetDidBreakSelf();
+
+  if (is_past_end) {
+    final_block_size = intrinsic_block_size = LayoutUnit();
+  } else if (builder->FoundColumnSpanner()) {
     // There's a column spanner (or more) inside. This means that layout got
     // interrupted and thus hasn't reached the end of this block yet. We're
     // going to resume inside this block when done with the spanner(s). This is
@@ -267,7 +275,6 @@ bool FinishFragmentation(NGBlockNode node,
     // two fragments for #container after the spanner, each 40px tall.
     final_block_size = std::min(final_block_size, intrinsic_block_size) -
                        border_padding.block_end;
-    builder->SetDidBreakSelf();
   } else if (space_left != kIndefiniteSize && desired_block_size > space_left) {
     // We're taller than what we have room for. We don't want to use more than
     // |space_left|, but if the intrinsic block-size is larger than that, it
@@ -300,9 +307,14 @@ bool FinishFragmentation(NGBlockNode node,
   }
 
   LogicalBoxSides sides;
+  // If this isn't the first fragment, omit the block-start border.
   if (previously_consumed_block_size)
     sides.block_start = false;
-  if (builder->DidBreakSelf())
+  // If this isn't the last fragment with same-flow content, omit the block-end
+  // border. If something overflows the node, we'll keep on creating empty
+  // fragments to contain the overflow (which establishes a parallel flow), but
+  // those fragments should make no room (nor paint) block-end border/paddding.
+  if (builder->DidBreakSelf() || is_past_end)
     sides.block_end = false;
   builder->SetSidesToInclude(sides);
 
@@ -337,7 +349,7 @@ bool FinishFragmentation(NGBlockNode node,
     // TODO(mstensho): The spec actually says that we enter a parallel flow once
     // we're past the block-end *content edge*, but here we're checking against
     // the *border edge* instead. Does it matter?
-    if (previous_break_token && previous_break_token->IsAtBlockEnd()) {
+    if (is_past_end) {
       builder->SetIsAtBlockEnd();
       // We entered layout already at the end of the block (but with overflowing
       // children). So we should take up no more space on our own.
