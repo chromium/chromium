@@ -3985,9 +3985,9 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
 
       Si elle est définie sur "False", c'est le format 12 heures qui est utilisé.
 
-      Si elle n'est pas définie, le format de la langue actuelle est utilisé.
+      Si elle n'est pas définie, le format des paramètres régionaux actuels est utilisé.
 
-      Les sessions utilisateur se servent également du format par défaut de l'appareil. Toutefois, les utilisateurs peuvent modifier le format d'horloge dans leur compte.</translation>
+      Les sessions utilisateur suivent également le format par défaut de l'appareil. Toutefois, les utilisateurs peuvent modifier le format d'horloge dans leur compte.</translation>
 <translation id="6833064854262015312">Définissez cette règle sur "True" pour activer le mode Contraste élevé sur l'écran de connexion. Définissez-la sur "False" pour désactiver le mode Contraste élevé sur l'écran de connexion.
 
       Si vous définissez cette règle, les utilisateurs peuvent temporairement activer ou désactiver le mode Contraste élevé. Lorsque l'écran de connexion s'actualise ou qu'il reste inactif pendant une minute, il revient à son état d'origine.

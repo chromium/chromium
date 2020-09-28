@@ -564,7 +564,7 @@ permanentemente excluídos assim que esse usuário for removido. Os websites vis
 <translation id="6857811139397017780">Ativar <ph name="NETWORKSERVICE" /></translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{1 dígito restante}one{# dígito restante}other{# dígitos restantes}}</translation>
 <translation id="6878400149835617132">Atalho desativado</translation>
-<translation id="6886172995547742638">Seu <ph name="DEVICE_TYPE" /> pode ter baixo desempenho. Use um adaptador de energia USB-C certificado de <ph name="PREFERRED_MINIMUM_POWER" />W ou mais.</translation>
+<translation id="6886172995547742638">Seu <ph name="DEVICE_TYPE" /> pode ter baixo desempenho. Use um adaptador de energia USB-C certificado de <ph name="PREFERRED_MINIMUM_POWER" /> W ou mais.</translation>
 <translation id="6896758677409633944">Copiar</translation>
 <translation id="6910714959251846841">Esta atualização requer o powerwash do seu dispositivo. Saiba mais sobre a última atualização do <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="6919251195245069855">Não foi possível reconhecer seu cartão inteligente. Tente novamente.</translation>

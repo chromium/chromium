@@ -215,6 +215,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="7773960292263897147">Warning: Chromium cannot prevent extensions from recording your browsing history. To disable this extension in incognito mode, unselect this option.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> – Chromium Canary</translation>
 <translation id="7827169012280634081">Clear cookies and site data when you quit Chromium</translation>
+<translation id="7857220146454061152">To get future Chromium updates, you'll need OS X 10.11 or later. This computer is using OS X 10.10.</translation>
 <translation id="7867198900892795913">Chromium couldn't update to the latest version, so you're missing out on new features and security fixes.</translation>
 <translation id="7898472181347242998">To see if your device is up to date, go to <ph name="LINK_BEGIN" />Chromium OS Settings<ph name="LINK_END" /></translation>
 <translation id="7937630085815544518">You were signed in to Chromium as <ph name="USER_EMAIL_ADDRESS" />. Please use the same account to sign in again.</translation>

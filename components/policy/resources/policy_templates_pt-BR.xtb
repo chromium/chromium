@@ -4721,11 +4721,11 @@ Se esta política não for definida, o renderizador padrão será usado para tod
 <translation id="7763614521440615342">Mostrar sugestões de conteúdo na página "Nova guia"</translation>
 <translation id="7765753178910647492">Permite que você defina uma lista de recursos do <ph name="PRODUCT_OS_NAME" /> que serão desativados.
 
-      Desativar um desses recursos significa que o usuário não poderá acessá-los pela IU, onde serão exibidos como "desativado pelo administrador".
+      Desativar um desses recursos significa que o usuário não poderá acessá-lo pela IU, onde será exibido como "desativado pelo administrador".
 
       Se a política não for definida, todos os recursos do <ph name="PRODUCT_OS_NAME" /> ficarão ativados por padrão, e o usuário poderá usar qualquer um deles.
 
-      Observação: no momento, o recurso de digitalização está desativado por padrão por uma sinalização de recurso. Se o usuário ativá-lo pela sinalização de recurso, o recurso ainda estará desativado por esta política.</translation>
+      Observação: no momento, o recurso de digitalização está desativado por padrão por uma sinalização de recurso. Se o usuário ativá-lo pela sinalização, o recurso ainda pode estar desativado por esta política.</translation>
 <translation id="7765879851993224640">Permitir que o login do Smart Lock seja usado.</translation>
 <translation id="7774768074957326919">Usar configurações de proxy do sistema</translation>
 <translation id="777734450201217641">Ative atalhos de recursos de acessibilidade na tela de login.

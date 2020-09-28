@@ -70,6 +70,7 @@
 <translation id="1589090746204042747">এই সেশনে আপনার সব অ্যাক্টিভিটি অ্যাক্সেস করুন</translation>
 <translation id="1611993646327628135">চালু আছে</translation>
 <translation id="1632985212731562677">সেটিংস &gt; অ্যাক্সেসিবিলিটি বিকল্পে গিয়ে 'অ্যাক্সেস পাল্টান' ফিচারটি বন্ধ করা করতে পারেন।</translation>
+<translation id="1651447046299738444">মনে হচ্ছে, আপনার Chromebook-এ ব্লুটুথ বা ওয়াই-ফাই বন্ধ করা আছে। Phone Hub ব্যবহার করতে আপনার ইন্টারনেট কানেকশন চেক করুন।</translation>
 <translation id="1654477262762802994">ভয়েস কোয়েরি শুরু করুন</translation>
 <translation id="1667964833127753507">'নিউট্রাল কালার' মোড ওয়ালপেপার থেকে রং নিয়ে ব্যবহার করে না। এর পরিবর্তে নিউট্রাল টোনযুক্ত কিছু হালকা অথবা গাঢ় হিউ ব্যবহার করা হয়।</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> বাকি আছে</translation>
@@ -152,6 +153,7 @@
 <translation id="2435457462613246316">পাসওয়ার্ড দেখান</translation>
 <translation id="2473177541599297363">রেজোলিউশন কনফার্ম করুন</translation>
 <translation id="2475982808118771221">একটি ত্রুটি ঘটেছে</translation>
+<translation id="2479579251444854687">ওভারভিউ দেখতে তিন আঙুল ব্যবহার করে উপরের দিকে বা বন্ধ করতে নিচের দিকে সোয়াইপ করুন।</translation>
 <translation id="2482878487686419369">বিজ্ঞপ্তিগুলি</translation>
 <translation id="2484513351006226581">কীবোর্ড লে-আউট পরিবর্তন করতে <ph name="KEYBOARD_SHORTCUT" /> টিপুন।</translation>
 <translation id="2501920221385095727">স্টিকি কীজ</translation>
@@ -164,6 +166,7 @@
 <translation id="2595239820337756193">মাইলের হিসেবে ৫ হাজার</translation>
 <translation id="2617342710774726426">সিম কার্ড লক করা আছে</translation>
 <translation id="2621713457727696555">সুরক্ষিত</translation>
+<translation id="2640255526076764619">পূর্ববর্তী ডেস্কে পাল্টানোর টাচপ্যাড জেসচার পরিবর্তন করা হয়েছে। পূর্ববর্তী ডেস্কে পাল্টাতে চার আঙুল ব্যবহার করে বাঁদিকে সোয়াইপ করুন।</translation>
 <translation id="2653659639078652383">জমা দিন</translation>
 <translation id="2658778018866295321">ক্লিক করে ড্র্যাগ করুন</translation>
 <translation id="2700493154570097719">আপনার কীবোর্ড সেট করুন</translation>
@@ -342,6 +345,7 @@
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> বন্ধ আছে।</translation>
 <translation id="4421231901400348175">রিমোট সহায়কের মাধ্যমে <ph name="HELPER_NAME" />-এর সাথে আপনার স্ক্রিন নিয়ন্ত্রন ভাগ করুন৷</translation>
 <translation id="4430019312045809116">ভলিউম</translation>
+<translation id="4444978951615977024">ওহো! আপনার ইন্টারনেট কানেকশন চেক করুন</translation>
 <translation id="4450893287417543264">আর দেখতে চাই না</translation>
 <translation id="445864333228800152">শুভ সন্ধ্যা,</translation>
 <translation id="4458688154122353284">স্ক্রিন রেকর্ডিং বন্ধ করুন</translation>
@@ -351,6 +355,7 @@
 <translation id="4479639480957787382">ইথারনেট</translation>
 <translation id="4481530544597605423">বিযুক্ত করা ডিভাইসগুলি</translation>
 <translation id="4505050298327493054">অ্যাক্টিভ ডেস্কটপ।</translation>
+<translation id="4506458088675900627">ওভারভিউ টাচপ্যাড জেসচার পরিবর্তন করা হয়েছে</translation>
 <translation id="4513946894732546136">প্রতিক্রিয়া</translation>
 <translation id="4527045527269911712">ব্লুটুথ ডিভাইস "<ph name="DEVICE_NAME" />" যুক্ত করার অনুমতি চাইছে।</translation>
 <translation id="453661520163887813">সম্পূর্ণ হতে <ph name="TIME" /> বাকি</translation>
@@ -480,6 +485,7 @@
 <translation id="6018164090099858612">মিরর মোড থেকে প্রস্থান করছে</translation>
 <translation id="602001110135236999">বাঁ দিকে স্ক্রল করুন</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, সিগন্যাল: <ph name="SIGNAL_STRENGTH" />, আপনার অ্যাডমিনিস্ট্রেটর ম্যানেজ করে</translation>
+<translation id="6029337736376922061">পরবর্তী ডেস্কে পাল্টানোর টাচপ্যাড জেসচার পরিবর্তন করা হয়েছে। পরবর্তী ডেস্কে পাল্টাতে চার আঙুল ব্যবহার করে ডানদিকে সোয়াইপ করুন।</translation>
 <translation id="6030495522958826102">স্ক্রিনের নিচে বাঁদিকের কোণায় মেনু সরে গেছে।</translation>
 <translation id="6040143037577758943">বন্ধ</translation>
 <translation id="6043212731627905357">এই মনিটরটি আপনার <ph name="DEVICE_TYPE" /> এর সাথে তাল মেলাতে পারছে না (মনিটরটি সমর্থিত নয়)।</translation>

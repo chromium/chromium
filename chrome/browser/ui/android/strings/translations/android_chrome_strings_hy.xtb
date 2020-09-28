@@ -128,7 +128,7 @@
 <translation id="1993768208584545658"><ph name="SITE" />-ն ուզում է զուգակցվել</translation>
 <translation id="2000419248597011803">Ձեր կանխադրված որոնիչին է ուղարկում հասցեագոտու և որոնման դաշտի հարցումները, ինչպես նաև որոշ քուքիներ</translation>
 <translation id="2002537628803770967">Բանկային քարտեր ու հասցեներ Google Pay-ից</translation>
-<translation id="2010780124464321179">Չհաջողվեց ստեղծել տեքստի հղում։ Կիսվել հղումով էջում։</translation>
+<translation id="2010780124464321179">Չհաջողվեց ստեղծել տեքստի հղում։ Կիսվեք հղումով էջում։</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# ֆայլ}one{# ֆայլ}other{# ֆայլ}}</translation>
 <translation id="2017836877785168846">Մաքրում է պատմությունն ու հասցեագոտու ինքնալրացումները:</translation>
 <translation id="2021896219286479412">Լիաէկրան ռեժիմի կարգավորումներ</translation>
@@ -282,7 +282,7 @@
 <translation id="3207960819495026254">Էջանշված է</translation>
 <translation id="3208584281581115441">Ստուգել հիմա</translation>
 <translation id="3211426585530211793">Տարրը (<ph name="ITEM_TITLE" />) ջնջվեց</translation>
-<translation id="3211503082155944789">Չընթերցված էջեր՝ <ph name="READING_LIST_COUNT" /></translation>
+<translation id="3211503082155944789"><ph name="READING_LIST_COUNT" /> չկարդացված էջ</translation>
 <translation id="321773570071367578">Եթե մոռացել եք ձեր անցաբառը կամ ուզում եք փոխել այս կարգավորումը, <ph name="BEGIN_LINK" />վերակայեք համաժամացումը<ph name="END_LINK" /></translation>
 <translation id="3223655207402797071">Մուտք գործեք այս կայքում, ձեր Google հաշիվ և Chrome։ Համաժամացումը կարող եք ավելի ուշ միացնել։</translation>
 <translation id="3232754137068452469">Վեբ ծրագիր</translation>
@@ -656,7 +656,7 @@
 <translation id="5979084224081478209">Ստուգել գաղտնաբառերը</translation>
 <translation id="6000066717592683814">Օգտագործել Google-ը</translation>
 <translation id="6005538289190791541">Առաջարկվող գաղտնաբառ</translation>
-<translation id="6014293228235665243">Չընթերցված</translation>
+<translation id="6014293228235665243">Չկարդացված</translation>
 <translation id="6036057147555329831">Լրացուցիչ ICU մոդուլ</translation>
 <translation id="6039379616847168523">Անցնել հաջորդ ներդիր</translation>
 <translation id="6040143037577758943">Փակել</translation>
@@ -1016,7 +1016,7 @@
 <translation id="8555836665334561807">Wi-Fi-ի միջոցով</translation>
 <translation id="8558485628462305855">Լրացված իրականության ռեժիմում բովանդակությունը դիտելու համար թարմացրեք ARCore հավելվածը</translation>
 <translation id="8559990750235505898">Առաջարկել թարգմանել էջերը այլ լեզուներով</translation>
-<translation id="8560602726703398413">Ձեր ընթերցանության ցանկը հասանելի է էջանիշներում։</translation>
+<translation id="8560602726703398413">Գտեք ձեր ընթերցանության ցանկը էջանիշներում։</translation>
 <translation id="8561196567344536112">1. Անցեք կարգավորումներ\n2. Հպեք «Դիտարկիչի հավելված»\n3. Ընտրեք <ph name="APP_NAME" />-ը</translation>
 <translation id="8562452229998620586">Պահված գաղտնաբառերը կտեսնեք այստեղ:</translation>
 <translation id="8569404424186215731"><ph name="DATE" />-ից սկսած</translation>

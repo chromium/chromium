@@ -70,6 +70,7 @@
 <translation id="1589090746204042747">גישה לכל הפעילות שלך בסשן הזה</translation>
 <translation id="1611993646327628135">פועל</translation>
 <translation id="1632985212731562677">ניתן להשבית את התכונה 'גישה באמצעות מתג' דרך 'הגדרות' &gt; 'נגישות'.</translation>
+<translation id="1651447046299738444">‏נראה שהחיבור ל-Bluetooth או ל-Wi-Fi ב-Chromebook שלך כבוי. יש לבדוק את החיבור כדי להשתמש במרכז הטלפוני.</translation>
 <translation id="1654477262762802994">הפעלה של שאילתה קולית</translation>
 <translation id="1667964833127753507">במצב 'צבעים ניטרליים' לא נעשה שימוש בצבעים שנשלפו מהטפט, אלא בערכת גוונים ניטרליים, בהירים וכהים.</translation>
 <translation id="1677472565718498478">זמן נותר - <ph name="TIME" /></translation>
@@ -152,6 +153,7 @@
 <translation id="2435457462613246316">הצג סיסמה</translation>
 <translation id="2473177541599297363">אישור הרזולוציה</translation>
 <translation id="2475982808118771221">אירעה שגיאה</translation>
+<translation id="2479579251444854687">כדי לפתוח את הסקירה הכללית, יש להחליק למעלה עם שלוש אצבעות. כדי לסגור אותה, יש להחליק למטה באותו אופן.</translation>
 <translation id="2482878487686419369">התראות</translation>
 <translation id="2484513351006226581">צריך להקיש על <ph name="KEYBOARD_SHORTCUT" /> כדי להחליף פריסת מקלדת.</translation>
 <translation id="2501920221385095727">מקשים דביקים</translation>
@@ -164,6 +166,7 @@
 <translation id="2595239820337756193">כמה מיילים יש ב-5 קילומטרים</translation>
 <translation id="2617342710774726426">‏כרטיס ה-SIM נעול</translation>
 <translation id="2621713457727696555">מאובטחת</translation>
+<translation id="2640255526076764619">כדי לעבור לשולחן העבודה הווירטואלי הקודם באמצעות לוח המגע, צריך להשתמש בתנועה חדשה. יש להחליק ימינה עם ארבע אצבעות כדי לעבור לשולחן העבודה הווירטואלי הקודם.</translation>
 <translation id="2653659639078652383">שליחה</translation>
 <translation id="2658778018866295321">לחיצה וגרירה</translation>
 <translation id="2700493154570097719">בחירת מקלדת</translation>
@@ -308,7 +311,7 @@
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{מושבת לאפליקציה אחת}two{מושבת ל-2 אפליקציות}many{מושבת ל-# אפליקציות}other{מושבת ל-# אפליקציות}}</translation>
 <translation id="4072264167173457037">אות בינוני</translation>
 <translation id="4112140312785995938">הרצה לאחור</translation>
-<translation id="4114315158543974537">הפעלת המרכז הטלפוני</translation>
+<translation id="4114315158543974537">‏הפעלת Phone Hub</translation>
 <translation id="4129129681837227511">כדי להציג הודעות במסך הנעילה, יש לבטל את הנעילה כדי לשנות את ההגדרה</translation>
 <translation id="4146833061457621061">השמעת מוזיקה</translation>
 <translation id="4149156641122542261"><ph name="DEVICE_TYPE" /> מנוהל על ידי <ph name="DOMAIN" /></translation>
@@ -342,6 +345,7 @@
 <translation id="4412944820643904175">התכונה <ph name="FEATURE_NAME" /> מושבתת.</translation>
 <translation id="4421231901400348175">שיתוף השליטה במסך עם <ph name="HELPER_NAME" /> דרך סיוע מרחוק.</translation>
 <translation id="4430019312045809116">עוצמת קול</translation>
+<translation id="4444978951615977024">אופס! עליך לבדוק את החיבור</translation>
 <translation id="4450893287417543264">אין להציג שוב</translation>
 <translation id="445864333228800152">ערב טוב,</translation>
 <translation id="4458688154122353284">הפסקה של הקלטת המסך</translation>
@@ -351,6 +355,7 @@
 <translation id="4479639480957787382">אתרנט</translation>
 <translation id="4481530544597605423">מכשירים לא מותאמים</translation>
 <translation id="4505050298327493054">שולחן פעיל.</translation>
+<translation id="4506458088675900627">יש תנועה חדשה על לוח המגע למעבר לסקירה הכללית</translation>
 <translation id="4513946894732546136">משוב</translation>
 <translation id="4527045527269911712">‏מכשיר ה-Bluetooth ‏"<ph name="DEVICE_NAME" />" מבקש הרשאה לבצע התאמה.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> עד למילוי</translation>
@@ -441,7 +446,7 @@
 <translation id="5648021990716966815">שקע מיקרופון</translation>
 <translation id="5669267381087807207">מפעיל</translation>
 <translation id="5673434351075758678">מ"<ph name="FROM_LOCALE" />" ל"<ph name="TO_LOCALE" />" אחרי סנכרון ההגדרות.</translation>
-<translation id="5679050765726761783">מתאם מתח נמוך מחובר</translation>
+<translation id="5679050765726761783">המתאם שחיברת הוא בעל הספק נמוך</translation>
 <translation id="5682642926269496722">‏Google Assistant אינו זמין לחשבון המשתמש הנוכחי.</translation>
 <translation id="5689633613396158040">עם תאורת לילה, קל יותר להסתכל על המסך או לקרוא כשהתאורה מסביב עמומה. יש להקיש כדי לשנות את השעה שבה מופעלת 'תאורת לילה' או כדי לכבות אותה לגמרי.</translation>
 <translation id="5691772641933328258">טביעת האצבע לא זוהתה</translation>
@@ -480,6 +485,7 @@
 <translation id="6018164090099858612">יציאה ממצב שיקוף</translation>
 <translation id="602001110135236999">גלילה שמאלה</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />,‏ <ph name="CONNECTION_STATUS" />, עוצמת האות: <ph name="SIGNAL_STRENGTH" />, הרשת מנוהלת על ידי מנהל המערכת שלך</translation>
+<translation id="6029337736376922061">כדי לעבור לשולחן העבודה הווירטואלי הבא באמצעות לוח המגע, צריך להשתמש בתנועה חדשה. יש להחליק שמאלה עם ארבע אצבעות כדי לעבור לשולחן העבודה הווירטואלי הבא.</translation>
 <translation id="6030495522958826102">התפריט הועבר לפינה הימנית התחתונה של המסך.</translation>
 <translation id="6040143037577758943">סגור</translation>
 <translation id="6043212731627905357">אין כימיה בין הצג הזה למכשיר ה-<ph name="DEVICE_TYPE" /> שלך (המכשיר לא תומך בצג).</translation>
@@ -557,7 +563,7 @@
 <translation id="6857811139397017780">הפעל את <ph name="NETWORKSERVICE" /></translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{נשארה ספרה אחת}two{נשארו # ספרות}many{נשארו # ספרות}other{נשארו # ספרות}}</translation>
 <translation id="6878400149835617132">קיצור הדרך מושבת</translation>
-<translation id="6886172995547742638">‏ייתכן שהביצועים של <ph name="DEVICE_TYPE" /> ייפגעו. יש להשתמש במתאם מתח מאושר מסוג USB-C בהספק <ph name="PREFERRED_MINIMUM_POWER" /> ואט או יותר.</translation>
+<translation id="6886172995547742638">‏ייתכן שהביצועים של <ph name="DEVICE_TYPE" /> יהיו נמוכים יותר. יש להשתמש במתאם מתח מאושר בהספק של <ph name="PREFERRED_MINIMUM_POWER" /> ואט לפחות, או מסוג USB-C.</translation>
 <translation id="6896758677409633944">העתק</translation>
 <translation id="6910714959251846841">‏כדי להתקין את העדכון הזה צריך לבצע Powerwash של המכשיר. אפשר לקרוא מידע נוסף על העדכון האחרון של <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="6919251195245069855">לא ניתן היה לזהות את הכרטיס החכם שלך. יש לנסות שוב.</translation>

@@ -563,7 +563,7 @@
 <translation id="6857811139397017780">啟用 <ph name="NETWORKSERVICE" /></translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{剩餘一個位數}other{剩餘 # 個位數}}</translation>
 <translation id="6878400149835617132">已關閉快速鍵功能</translation>
-<translation id="6886172995547742638">你的 <ph name="DEVICE_TYPE" /> 可能會有效能低落的問題。請使用 <ph name="PREFERRED_MINIMUM_POWER" /> 瓦以上且符合標準的 USB-C 電源變壓器。</translation>
+<translation id="6886172995547742638">你的「<ph name="DEVICE_TYPE" />」可能會有效能低落的問題。請使用 <ph name="PREFERRED_MINIMUM_POWER" /> 瓦以上且符合標準的 USB-C 電源變壓器。</translation>
 <translation id="6896758677409633944">複製</translation>
 <translation id="6910714959251846841">必須對你的裝置執行 Powerwash 才能安裝這項更新。進一步瞭解最新的 <ph name="SYSTEM_APP_NAME" />更新內容。</translation>
 <translation id="6919251195245069855">無法辨識你的智慧型卡片，請再試一次。</translation>

@@ -3961,7 +3961,7 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
 <translation id="6821268164692776674"><ph name="CLOUD_PRINT_NAME" /> ve "Google Drive'a kaydet" hedefleri</translation>
 <translation id="6833023569065717572">Politikayı Doğru değerine ayarlarsanız cihazın oturum açma ekranında 24 saatlik saat biçimi kullanılır.
 
-      Politikayı Yanlış değerine ayarlarsanız cihazın oturum açma ekranında 12 saatlik saat biçimini kullanılır.
+      Politikayı Yanlış değerine ayarlarsanız cihazın oturum açma ekranında 12 saatlik saat biçimi kullanılır.
 
       Politika ayarlanmadan bırakılırsa cihaz mevcut yerel ayarın biçimini kullanır.
 

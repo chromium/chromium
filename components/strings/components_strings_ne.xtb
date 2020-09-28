@@ -513,6 +513,7 @@
 <translation id="3080254622891793721">ग्राफिक</translation>
 <translation id="3086579638707268289">वेबको तपाईंको क्रियाकलापको निगरानी गरिँदै छ</translation>
 <translation id="3087734570205094154">तल</translation>
+<translation id="3094457892697649331">तपाईंले एनोटेसनहरू सम्पादन गर्दा स्क्रिनमा यो कागजातको एउटा मात्र पृष्ठ देखिने छ।</translation>
 <translation id="3095940652251934233">वक्तव्य</translation>
 <translation id="3096100844101284527">पिकअप गर्ने ठेगाना थप्नुहोस्</translation>
 <translation id="3105172416063519923">सम्पत्ति ID:</translation>
@@ -743,6 +744,7 @@
 <translation id="4075941231477579656">Touch ID</translation>
 <translation id="4079302484614802869">प्रोक्सी विन्यासले .प्याक स्क्रिप्ट युआरएल प्रयोग गर्न सेट गरिएको छ, निश्चित प्रोक्सी सर्भरहरू होइन।</translation>
 <translation id="4082393374666368382">सेटिङहरू - व्यवस्थापन</translation>
+<translation id="4084120443451129199">खोज मोड, <ph name="KEYWORD_SUFFIX" /> खोज्न 'इन्टर' थिच्नुहोस्</translation>
 <translation id="4088981014127559358">सतह १ मा रहेको छविको Y सिफ्ट</translation>
 <translation id="4098354747657067197">अगाडि धोकेबाज साइट</translation>
 <translation id="4101413244023615925">पाठ र ग्राफिक</translation>
@@ -937,6 +939,7 @@
 <translation id="4809079943450490359">तपाईंको यन्त्रको एड्मिनबाट प्राप्त भएका निर्देशनहरू:</translation>
 <translation id="4813512666221746211">सञ्जाल त्रुटि</translation>
 <translation id="4816492930507672669">पृष्ठमा अटाउनुहोस्</translation>
+<translation id="4819347708020428563">एनोटेसनहरू पूर्वनिर्धारित भ्यूमा सम्पादन गर्ने हो?</translation>
 <translation id="484462545196658690">स्वतः</translation>
 <translation id="4850886885716139402">हेर्नुहोस्</translation>
 <translation id="4854362297993841467">डेलिभरीको यो विधि उपलब्ध छैन। फरक विधि चयन गर्ने प्रयास गर्नुहोस्।</translation>
@@ -1671,6 +1674,7 @@
 <translation id="7802523362929240268">साइट वैध छ</translation>
 <translation id="780301667611848630">भयो, धन्यवाद</translation>
 <translation id="7805768142964895445">स्थिति</translation>
+<translation id="7811322735445742657">तपाईंले एनोटेसनहरू सम्पादन गर्दा स्क्रिनमा यो कागजातको एउटा मात्र पृष्ठ देखिने छ। साथै, यो कागजात सुरुमा जतातिर फर्केको थियो त्यतैतिर घुमाइने छ।</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Chrome बाट फारम सुझाव हटाउने हो?</translation>
 <translation id="781440967107097262">क्लिपबोर्ड सेयर गर्ने हो?</translation>
@@ -1706,6 +1710,7 @@
 <translation id="7956713633345437162">मोबाइल बुकमार्कहरू</translation>
 <translation id="7961015016161918242">कहिल्यै पनि होइन</translation>
 <translation id="7966803981046576691">कार्य खाताको प्रकार</translation>
+<translation id="7976214039405368314">अत्यन्त धेरै पटक अनुरोध गरियो</translation>
 <translation id="7977538094055660992">आउटपुट यन्त्र</translation>
 <translation id="7977894662897852582">Edp</translation>
 <translation id="799149739215780103">बाइन्ड</translation>
@@ -1787,6 +1792,7 @@
 <translation id="8289355894181816810">यसको अर्थ के हो भनेर निश्चित हुन नसकेमा तपाईंको नेटवर्क प्रशासकलाई सम्पर्क गर्नुहोस् ।</translation>
 <translation id="8293206222192510085">बुकमार्क थप्नुहोस्</translation>
 <translation id="8294431847097064396">स्रोत</translation>
+<translation id="8297398969342264569">तपाईंले एनोटेसनहरू सम्पादन गर्दा यो कागजात सुरुमा जतातिर फर्केको थियो त्यतैतिर घुमाइने छ।</translation>
 <translation id="8298115750975731693">तपाईँले प्रयोग गरिरहनु भएको Wi-Fi (<ph name="WIFI_NAME" />) लाई <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> भ्रमण गर्ने आवश्यकता हुन सक्छ।</translation>
 <translation id="8303854710873047864">"<ph name="SECTION" />" नामक खण्ड देखाइएको छ</translation>
 <translation id="830498451218851433">आधा फोल्ड</translation>

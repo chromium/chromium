@@ -311,6 +311,7 @@
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{एका ॲपसाठी बंद}other{# ॲप्ससाठी बंद}}</translation>
 <translation id="4072264167173457037">मध्यम सिग्नल</translation>
 <translation id="4112140312785995938">मागे शोधा</translation>
+<translation id="4114315158543974537">फोन हब सुरू करा</translation>
 <translation id="4129129681837227511">तुमच्या लॉक स्क्रीनवर सूचना पाहाण्यासाठी, सेटिंग बदलण्याकरिता अनलॉक करा</translation>
 <translation id="4146833061457621061">म्युझिक प्ले करा</translation>
 <translation id="4149156641122542261"><ph name="DEVICE_TYPE" /> हे <ph name="DOMAIN" /> द्वारे व्यवस्थापित केले जाते</translation>
@@ -445,6 +446,7 @@
 <translation id="5648021990716966815">माइक जॅक</translation>
 <translation id="5669267381087807207">सक्रिय करत आहे</translation>
 <translation id="5673434351075758678">तुमच्या सेटिंग्ज सिंक केल्यानंतर "<ph name="FROM_LOCALE" />" पासून "<ph name="TO_LOCALE" />" पर्यंत.</translation>
+<translation id="5679050765726761783">कमी पॉवरचे अडॅप्टर कनेक्ट केले</translation>
 <translation id="5682642926269496722">सध्याच्या वापरकर्ता खात्यावर Google असिस्टंट उपलब्ध नाही.</translation>
 <translation id="5689633613396158040">रात्रीच्या प्रकाशामुळे तुमच्या स्क्रीनकडे पाहणे किंवा मंद प्रकाशात वाचणे आणखी सोपे होते. रात्रीचा प्रकाश कधी सुरू होईल किंवा पूर्ण बंद होईल हे बदलण्यासाठी टॅप करा.</translation>
 <translation id="5691772641933328258">फिंगरप्रिंट ओळखले नाही</translation>
@@ -561,6 +563,7 @@
 <translation id="6857811139397017780">सक्रिय करा<ph name="NETWORKSERVICE" /></translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{एक अंक शिल्लक आहे}other{# अंक शिल्लक आहेत}}</translation>
 <translation id="6878400149835617132">शॉर्टकट बंद केला आहे</translation>
+<translation id="6886172995547742638">तुमच्या <ph name="DEVICE_TYPE" /> चा परफॉर्मन्स कमी होऊ शकतो. प्रमाणित <ph name="PREFERRED_MINIMUM_POWER" />W किंवा त्यावरील USB-C पॉवर अडॅप्टर वापरा.</translation>
 <translation id="6896758677409633944">कॉपी करा</translation>
 <translation id="6910714959251846841">या अपडेटसाठी तुमचे डिव्हाइस Powerwash करणे आवश्यक आहे. <ph name="SYSTEM_APP_NAME" /> च्या नवीनतम अपडेटबाबत अधिक जाणून घ्या.</translation>
 <translation id="6919251195245069855">तुमचे स्मार्ट कार्ड ओळखू शकलो नाही. पुन्हा प्रयत्न करा.</translation>

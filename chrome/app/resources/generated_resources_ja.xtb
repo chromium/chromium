@@ -295,7 +295,7 @@
 <translation id="1330145147221172764">画面キーボードを有効にする</translation>
 <translation id="1331977651797684645">これは私です。</translation>
 <translation id="1333489022424033687">容量不足のため、<ph name="ORIGIN" /> の一部の機能が動作しない可能性があります。デバイスに保存された他のサイトのデータを削除してください</translation>
-<translation id="1334384124770871673">サイトでは通常、バーチャル リアリティや歩数計などの機能を利用する目的で、デバイスのモーション センサーを使用します。</translation>
+<translation id="1334384124770871673">多くのサイトは、バーチャル リアリティや歩数計などにデバイスのモーション センサーを使用します</translation>
 <translation id="133535873114485416">優先する入力</translation>
 <translation id="1335929031622236846">デバイスを登録する</translation>
 <translation id="1336902454946927954">指紋を認識できなかったため、セキュリティ キーがロックされています。ロックを解除するには PIN を入力してください。</translation>
@@ -642,7 +642,7 @@
 <translation id="1723824996674794290">新しいウィンドウ(&amp;N)</translation>
 <translation id="1725149567830788547">コントロールを表示(&amp;C)</translation>
 <translation id="1726100011689679555">ネームサーバー</translation>
-<translation id="1727662110063605623"><ph name="USB_DEVICE_NAME" /> を Parallels Desktop または Linux に接続する設定を開きます</translation>
+<translation id="1727662110063605623">[設定] を開いて <ph name="USB_DEVICE_NAME" /> を Parallels Desktop または Linux に接続します</translation>
 <translation id="1729533290416704613">この拡張機能では、アドレスバーからの検索時に表示されるページも制御されます。</translation>
 <translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />アプリを削除するには、まず [設定] &gt; [Google Play ストア] &gt; [Android 設定を管理] &gt; [アプリ] または [アプリケーション管理] に移動して、アンインストールするアプリをタップします（必要であれば左右にスワイプしてアプリを見つけます）。次に、[アンインストール] または [無効にする] をタップします。<ph name="END_PARAGRAPH1" /></translation>
 <translation id="1731911755844941020">リクエストを送信しています...</translation>
@@ -800,7 +800,7 @@
 <translation id="1901303067676059328">すべて選択(&amp;A)</translation>
 <translation id="1901396183631570154">Chrome では、次のパスワードを Google アカウントに保存できませんでした。ただし、このデバイスに保存することは可能です。</translation>
 <translation id="1905375423839394163">Chromebook デバイス名</translation>
-<translation id="1906181697255754968">サイトでは通常、作業内容の自動保存などの機能を使用する目的で、デバイスのファイルやフォルダにアクセスします。</translation>
+<translation id="1906181697255754968">多くのサイトは、作業内容を自動的に保存するためにデバイスのファイルやフォルダにアクセスします。</translation>
 <translation id="1906828677882361942">シリアルポートへのアクセスをどのサイトにも許可しない</translation>
 <translation id="1909880997794698664">このデバイスをキオスク モードに固定してもよろしいですか？</translation>
 <translation id="1910721550319506122">ようこそ！</translation>
@@ -863,7 +863,7 @@
 <translation id="197989455406964291">KDC でサポートされていない暗号化タイプです</translation>
 <translation id="1984417487208496350">保護なし（推奨されません）</translation>
 <translation id="1987317783729300807">アカウント</translation>
-<translation id="1988494864246143197">サイトでは通常、音声や動画、ビデオゲームを再生またはプレイできるようにする目的で Flash を使用します（Flash Player のサポートは 2020 年 12 月で終了します）。</translation>
+<translation id="1988494864246143197">多くのサイトは、音声や動画、ビデオゲームを再生またはプレイするために Flash を使用します（Flash Player のサポートは 2020 年 12 月で終了します）。</translation>
 <translation id="1989112275319619282">閲覧</translation>
 <translation id="1990512225220753005">このページではショートカットを表示しません</translation>
 <translation id="1992397118740194946">未設定</translation>
@@ -987,7 +987,7 @@
 <translation id="2143778271340628265">手動プロキシ設定</translation>
 <translation id="2144536955299248197">証明書ビューア: <ph name="CERTIFICATE_NAME" /></translation>
 <translation id="2144557304298909478">Linux Android アプリの開発</translation>
-<translation id="2146263598007866206">サイトでは、時間の節約のために関連する複数のファイルをまとめて自動的にダウンロードすることがあります。</translation>
+<translation id="2146263598007866206">時間節約のために、関連する複数のファイルをまとめて自動的にダウンロードするサイトもあります</translation>
 <translation id="2148219725039824548">共有フォルダのマウントエラー。指定された共有フォルダがネットワークで見つかりませんでした。</translation>
 <translation id="2148756636027685713">フォーマットが完了しました</translation>
 <translation id="2148892889047469596">タブをキャスト</translation>
@@ -1554,7 +1554,7 @@
 <translation id="2791952154587244007">エラーが発生しました。キオスク アプリケーションをこのデバイスで自動的に起動することはできません。</translation>
 <translation id="2792290659606763004">Android アプリを削除しますか？</translation>
 <translation id="2794233252405721443">サイトがブロックされています</translation>
-<translation id="2795716239552913152">サイトでは通常、ローカル ニュースや近くのお店といった情報を取得したり関連機能を利用したりする目的で位置情報を使用します。</translation>
+<translation id="2795716239552913152">多くのサイトは、ローカル ニュースや近くのお店の情報などを取得するためにユーザーの位置情報を使用します。</translation>
 <translation id="2796424461616874739">「<ph name="DEVICE_NAME" />」への接続中に、認証がタイムアウトになりました。</translation>
 <translation id="2796740370559399562">Cookie を引き続き許可する</translation>
 <translation id="2799223571221894425">再起動</translation>
@@ -2120,7 +2120,7 @@
 <translation id="348780365869651045">AppCache を待機しています...</translation>
 <translation id="3488065109653206955">一部有効</translation>
 <translation id="3491669675709357988">お子様のアカウントは、ファミリー リンクの保護者による使用制限が設定されていません。セットアップが完了すると、保護者による使用制限を設定できます。保護者による使用制限に関する情報は、「使い方・ヒント」アプリで確認できます。</translation>
-<translation id="3491678231052507920">サイトでは通常、VR セッションに参加する目的でバーチャル リアリティ デバイスとデータを使用します。</translation>
+<translation id="3491678231052507920">多くのサイトは、VR セッションに参加するためにバーチャル リアリティ デバイスとデータを使用します。</translation>
 <translation id="3492788708641132712">同期が機能していません。もう一度ログインしてみてください。</translation>
 <translation id="3493486281776271508">インターネット接続が必要です</translation>
 <translation id="3493881266323043047">有効期間</translation>
@@ -2719,7 +2719,7 @@
 <translation id="4157869833395312646">Microsoft SGC（Server Gated Cryptography）</translation>
 <translation id="4159681666905192102">これは <ph name="CUSTODIAN_EMAIL" /> と <ph name="SECOND_CUSTODIAN_EMAIL" /> によって管理されている子供向けのアカウントです。</translation>
 <translation id="4163560723127662357">不明なキーボード</translation>
-<translation id="4167686856635546851">サイトでは通常、ビデオゲームやウェブフォームなどのインタラクティブな機能を表示する目的で JavaScript を使用します。</translation>
+<translation id="4167686856635546851">多くのサイトは、インタラクティブなビデオゲームやウェブフォームなどを表示するために JavaScript を使用します。</translation>
 <translation id="4168015872538332605"><ph name="PRIMARY_EMAIL" /> に帰属する設定の一部を共有しています。これらの設定は、マルチログインを使用した場合にのみこのアカウントに適用されます。</translation>
 <translation id="4170256733935344210">QR コードをデバイスのカメラでスキャンするか、携帯通信会社から提供されたアクティベーション コードを入力してください</translation>
 <translation id="4170314459383239649">終了時に削除</translation>
@@ -2959,7 +2959,7 @@
 <translation id="4483049906298469269">デフォルト以外のネットワーク ゲートウェイに向けた ping が失敗しました</translation>
 <translation id="4487489714832036847">Chromebook では従来のソフトウェアではなくアプリを使用します。仕事効率化やエンタメなど、豊富なアプリが揃っています。</translation>
 <translation id="4488502501195719518">データをすべて消去しますか？</translation>
-<translation id="449232563137139956">サイトでは通常、オンライン ショップやニュース記事で使用する写真などのイラストを提供する目的で画像を表示します。</translation>
+<translation id="449232563137139956">多くのサイトは、オンライン ショップやニュース記事の写真や挿絵として使用するために画像を表示します。</translation>
 <translation id="4493468155686877504">推奨（<ph name="INSTALL_SIZE" />）</translation>
 <translation id="4495419450179050807">このページに表示しない</translation>
 <translation id="4496054781541092778"><ph name="PERMISSION" />を自動ブロック</translation>
@@ -3051,7 +3051,7 @@
 <translation id="4579453506923101210">接続済みスマートフォンの解除</translation>
 <translation id="4579581181964204535"><ph name="HOST_NAME" /> をキャストできません。</translation>
 <translation id="4581774856936278355">Linux の復元中にエラーが発生しました</translation>
-<translation id="4582297591746054421">サイトでは通常、コピーしたテキストの書式を保持するなどの機能を使用する目的でクリップボードを読み取ります。</translation>
+<translation id="4582297591746054421">多くのサイトは、コピーしたテキストの書式を保持するなどのためにクリップボードを読み取ります。</translation>
 <translation id="4582563038311694664">すべての設定をリセット</translation>
 <translation id="4585793705637313973">ページの編集</translation>
 <translation id="4586275095964870617">「<ph name="URL" />」を代替ブラウザで開けませんでした。システム管理者にお問い合わせください。</translation>
@@ -3161,7 +3161,7 @@
 <translation id="471880041731876836">このサイトへのアクセスが許可されていません</translation>
 <translation id="4720113199587244118">デバイスを追加</translation>
 <translation id="4720185134442950733">モバイルデータ ネットワーク</translation>
-<translation id="4722483286922621738">サイトでは通常、ネットワーク設定などのデータ転送機能を使用する目的で、シリアル デバイスに接続します。</translation>
+<translation id="4722483286922621738">多くのサイトは、ネットワークを設定するなど、データ転送機能を使用するためにシリアル デバイスに接続します。</translation>
 <translation id="4722735765955348426"><ph name="USERNAME" /> のパスワード</translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> が画面を共有しています。</translation>
 <translation id="4723140812774948886">次と交換</translation>
@@ -3254,7 +3254,7 @@
 <translation id="4849517651082200438">インストールしない</translation>
 <translation id="4850669014075537160">スクロール</translation>
 <translation id="4850886885716139402">表示</translation>
-<translation id="485088796993065002">サイトでは、音楽や動画などのメディアの音声を提供する目的で、音を鳴らすことがあります。</translation>
+<translation id="485088796993065002">音楽や動画などのメディアの音声を再生するサイトもあります。</translation>
 <translation id="4853020600495124913">新しいウィンドウで開く(&amp;N)</translation>
 <translation id="4854317507773910281">承認してもらう保護者のアカウントを選択</translation>
 <translation id="485480310608090163">その他の設定と権限</translation>
@@ -3286,7 +3286,7 @@
 <translation id="4881695831933465202">開く</translation>
 <translation id="4882312758060467256">このサイトへのアクセスが許可されています</translation>
 <translation id="4882831918239250449">検索、広告などのカスタマイズを目的とした閲覧履歴の使用方法を設定</translation>
-<translation id="4882919381756638075">サイトでは通常、ビデオチャットなどの通信機能を利用する目的でマイクを使用します。</translation>
+<translation id="4882919381756638075">多くのサイトは、ビデオチャットなどの通信機能にマイクを使用します。</translation>
 <translation id="4883436287898674711"><ph name="WEBSITE_1" /> の全サイト</translation>
 <translation id="48838266408104654">タスク マネージャ(&amp;T)</translation>
 <translation id="4884987973312178454">6 倍</translation>
@@ -3338,7 +3338,7 @@
 <translation id="4939805055470675027"><ph name="CARRIER_NAME" /> に接続できませんでした</translation>
 <translation id="4940364377601827259">保存できるプリンタが <ph name="PRINTER_COUNT" /> 件あります。</translation>
 <translation id="4940845626435830013">ディスクサイズを予約</translation>
-<translation id="4941074198479265146">サイトでは通常、音楽の制作や編集機能を使用する目的で MIDI デバイスに接続します。</translation>
+<translation id="4941074198479265146">多くのサイトは、音楽の制作や編集をするために MIDI デバイスに接続します。</translation>
 <translation id="4941246025622441835">エンタープライズ管理のためにデバイスを登録するときにこのデバイス利用申請を使用する:</translation>
 <translation id="4941627891654116707">フォントサイズ</translation>
 <translation id="494286511941020793">プロキシ設定ヘルプ</translation>
@@ -4362,7 +4362,7 @@
 <translation id="6181431612547969857">ダウンロードがブロックされました</translation>
 <translation id="6184099524311454384">タブを検索</translation>
 <translation id="6185132558746749656">デバイスの位置情報</translation>
-<translation id="6186394437969115158">サイトでは通常、コンテンツやサービスを無料で提供する目的で広告を表示します。ただし、一部のサイトについては、煩わしい広告や誤解を招く広告が表示されることがわかっています。</translation>
+<translation id="6186394437969115158">多くのサイトは、コンテンツやサービスを無料で提供する目的で広告を表示します。ただし、一部のサイトについては、煩わしい広告や誤解を招く広告が表示されることがわかっています。</translation>
 <translation id="6191293864534840972">ネームサーバーの形式が正しくありません</translation>
 <translation id="6195446518998936840">保護者による使用制限を設定するには、管理対象となるお子様用の Google アカウントが必要です。ファミリー リンク アプリを使用すると、利用時間の制限、ウェブサイトの許可やブロックなどの管理が可能です。</translation>
 <translation id="6195693561221576702">このデバイスはオフライン デモモードで設定できません。</translation>
@@ -4453,7 +4453,7 @@
 <translation id="628352644014831790">4秒</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> は一般的にダウンロードされているファイルではなく、危害を及ぼす可能性があります。</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{ネットワーク上の新しいプリンタ}other{ネットワーク上の新しいプリンタ}}</translation>
-<translation id="6289626062715012577">複数の言語に対応しているアプリやウェブサイトでは、次のリストの対応言語が最初に使用されます。言語の設定は Chrome ブラウザに同期されます。<ph name="BEGIN_LINK_LEARN_MORE" />詳細<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="6289626062715012577">複数の言語に対応しているアプリやウェブサイトでは、次のリストの最初にある対応言語が使用されます。言語の設定は Chrome ブラウザに同期されます。<ph name="BEGIN_LINK_LEARN_MORE" />詳細<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370">Linux を起動するため、<ph name="ORGANIZATION_NAME" /> がデータをバックアップし、この Chromebook を初期状態にリセットするよう求めています。</translation>
 <translation id="6291949900244949761">サイトから USB デバイスへのアクセス許可を求められたときに確認する（推奨）</translation>
 <translation id="6291953229176937411">Finder で表示(&amp;S)</translation>
@@ -5180,7 +5180,7 @@
 <translation id="7182791023900310535">パスワードを移動</translation>
 <translation id="7186088072322679094">ツールバーに残す</translation>
 <translation id="7187428571767585875">削除または変更されるレジストリ項目:</translation>
-<translation id="7187855807420906517">サイトから離れた後やオフラインになった後も、サイトでは通常、写真のアップロードやチャット メッセージの送信といったタスクを完了する目的で、同期を継続します。</translation>
+<translation id="7187855807420906517">サイトから離れた後や一時的にオフラインになってからオンラインに復帰した後、多くのサイトは、写真のアップロードやチャット メッセージの送信などのタスクを完了するために引き続き同期を行います。</translation>
 <translation id="7189234443051076392">デバイスに十分な空き容量があることを確認してください</translation>
 <translation id="7189451821249468368">このデバイスの登録に必要なアップグレード ライセンスを持っていません。さらに購入するには、販売担当者にお問い合わせください。このメッセージが間違って表示されていると思われる場合は、サポートにお問い合わせください。</translation>
 <translation id="7189965711416741966">指紋の登録が完了しました。</translation>
@@ -5360,7 +5360,7 @@
 <translation id="7407504355934009739">ほとんどのユーザーがこのサイトの通知をブロックしています</translation>
 <translation id="740810853557944681">プリント サーバーを追加</translation>
 <translation id="7409549334477097887">特大</translation>
-<translation id="7409735910987429903">サイトでは、ポップアップを送信して広告を表示したり、リダイレクトを使ってユーザーがアクセスするつもりのないウェブサイトを表示したりすることがあります。</translation>
+<translation id="7409735910987429903">ポップアップを送信して広告を表示したり、リダイレクトを使ってユーザーがアクセスするつもりのないウェブサイトを表示したりするサイトもあります</translation>
 <translation id="7410344089573941623"><ph name="HOST" /> がカメラやマイクへのアクセスを要求しているか確認する</translation>
 <translation id="741204030948306876">有効にする</translation>
 <translation id="7412226954991670867">GPU メモリ</translation>
@@ -5400,7 +5400,7 @@
 <translation id="7456847797759667638">場所を開く...</translation>
 <translation id="7457384018036134905">Chrome OS の設定で言語を管理する</translation>
 <translation id="7458168200501453431">Google 検索と同じスペルチェックを使用します。ブラウザに入力したテキストは Google に送信されます。</translation>
-<translation id="7459920164600044274">サイトでは通常、動画のストリーミングやアプリのインストールなどの機能を利用する目的で、プラグインを使用します。</translation>
+<translation id="7459920164600044274">多くのサイトは、動画のストリーミングやアプリのインストールなどにプラグインを使用します。</translation>
 <translation id="7460045493116006516">インストールした現在のテーマ</translation>
 <translation id="7461729991508684543">{NUM_DAYS,plural, =1{<ph name="DOMAIN" /> が、データをバックアップして、今日中にこの <ph name="DEVICE_TYPE" />を返却するよう求めています。<ph name="LINK_BEGIN" />詳細を表示<ph name="LINK_END" />}other{<ph name="DOMAIN" /> が、データをバックアップして、{NUM_DAYS} 日以内にこの <ph name="DEVICE_TYPE" />を返却するよう求めています。<ph name="LINK_BEGIN" />詳細を表示<ph name="LINK_END" />}}</translation>
 <translation id="7461924472993315131">固定</translation>
@@ -5492,7 +5492,7 @@
 <translation id="7569983096843329377">黒</translation>
 <translation id="7571643774869182231">更新に必要な空き容量がありません</translation>
 <translation id="7573172247376861652">バッテリー充電</translation>
-<translation id="7573594921350120855">サイトでは通常、ビデオチャットなどの通信機能を利用する目的でビデオカメラを使用します。</translation>
+<translation id="7573594921350120855">多くのサイトは、ビデオチャットなどの通信機能にビデオカメラを使用します。</translation>
 <translation id="7574650250151586813">テキストを入力するには、Daydream キーボード アプリを更新してください</translation>
 <translation id="7576690715254076113">部単位で印刷</translation>
 <translation id="7576976045740938453">デモモード アカウントで問題が発生しました。</translation>
@@ -5526,7 +5526,7 @@
 <translation id="7617366389578322136">「<ph name="DEVICE_NAME" />」に接続しています</translation>
 <translation id="7621382409404463535">デバイスの設定を保存できませんでした。</translation>
 <translation id="7622114377921274169">充電しています。</translation>
-<translation id="7622768823216805500">サイトでは通常、お支払い手続きの簡易化などのショッピング機能を使用する目的で支払いハンドラをインストールします。</translation>
+<translation id="7622768823216805500">多くのサイトは、お支払い手続きを簡易化するなど、ショッピングをより快適にするために支払いハンドラをインストールします。</translation>
 <translation id="7622903810087708234">パスワードの詳細</translation>
 <translation id="7624337243375417909">CapsLock オフ</translation>
 <translation id="7625568159987162309">すべてのサイトに保存されている権限とデータを表示</translation>
@@ -5571,7 +5571,7 @@
 <translation id="7665369617277396874">アカウントを追加</translation>
 <translation id="7668002322287525834">{NUM_WEEKS,plural, =1{<ph name="DEVICE_TYPE" />を {NUM_WEEKS} 週間以内に返却してください}other{<ph name="DEVICE_TYPE" />を {NUM_WEEKS} 週間以内に返却してください}}</translation>
 <translation id="7669825497510425694">{NUM_ATTEMPTS,plural, =1{PIN が正しくありません。あと 1 回試行できます。}other{PIN が正しくありません。あと # 回試行できます。}}</translation>
-<translation id="7670343634869448987">サイトが音を鳴らせるようにする（推奨）</translation>
+<translation id="7670343634869448987">サイトが音声を再生できるようにする（推奨）</translation>
 <translation id="7671130400130574146">システム タイトル バーと枠線の使用</translation>
 <translation id="767127784612208024">リセットを確定するにはタップしてください</translation>
 <translation id="767147716926917172">診断と使用状況のデータを Google に自動送信します</translation>
@@ -5839,7 +5839,7 @@
 <translation id="7947962633355574091">動画アドレスをコピー(&amp;C)</translation>
 <translation id="7950040156882184764">インターネット印刷プロトコル（HTTP）</translation>
 <translation id="7951265006188088697">Google Pay のお支払い方法を追加、管理するには、<ph name="BEGIN_LINK" />Google アカウント<ph name="END_LINK" />にアクセスしてください</translation>
-<translation id="7952708427581814389">サイトがクリップボード内のテキストや画像の読み取りを要求できるようにする</translation>
+<translation id="7952708427581814389">サイトがクリップボード内のテキストや画像へのアクセスを要求できるようにする</translation>
 <translation id="795282463722894016">復元が完了しました</translation>
 <translation id="7952904276017482715">ID「<ph name="EXPECTED_ID" />」が必要ですが、ID「<ph name="NEW_ID" />」が検出されました</translation>
 <translation id="7953955868932471628">ショートカットの管理</translation>
@@ -6273,7 +6273,7 @@
 <translation id="8470214316007448308">他のユーザー</translation>
 <translation id="8470513973197838199"><ph name="ORIGIN" /> 用に保存されているパスワード</translation>
 <translation id="8471256130228705232"><ph name="DOMAIN" /> により ADB デバッグが無効になりました。<ph name="DEVICE_TYPE" /> は 24 時間以内にリセットされます。必要なファイルがあればバックアップしてください。</translation>
-<translation id="8471525937465764768">サイトでは通常、ドキュメントの印刷やストレージ デバイスへの保存といった機能を使用する目的で、USB デバイスに接続します。</translation>
+<translation id="8471525937465764768">多くのサイトは、ドキュメントを印刷したりストレージ デバイスに保存するために USB デバイスに接続します。</translation>
 <translation id="8472623782143987204">ハードウェア式</translation>
 <translation id="8473863474539038330">住所やその他の情報</translation>
 <translation id="8475313423285172237">パソコン上の別のプログラムにより、Chrome の動作方法を変更する可能性のある拡張機能が追加されました。</translation>
@@ -6750,7 +6750,7 @@
 <translation id="9019956081903586892">スペルチェック辞書をダウンロードできませんでした</translation>
 <translation id="9020362265352758658">4 倍</translation>
 <translation id="9021662811137657072">ウイルスを検出しました</translation>
-<translation id="902236149563113779">サイトでは通常、ゲームや HUD のナビ表示などの AR 機能を使用する目的でカメラ位置を追跡します。</translation>
+<translation id="902236149563113779">多くのサイトは、ゲームや HUD のナビ表示などで AR 機能を使用するためにカメラ位置を追跡します。</translation>
 <translation id="9022847679183471841">このアカウントは既にこのパソコンで <ph name="AVATAR_NAME" /> によって使用されています。</translation>
 <translation id="9023009238991294202">このデバイスの他のユーザーもこのネットワークを使用できます。</translation>
 <translation id="9023015617655685412">このタブをブックマークに追加...</translation>
@@ -6962,7 +6962,7 @@
 <translation id="980731642137034229">操作メニューボタン</translation>
 <translation id="981121421437150478">オフライン</translation>
 <translation id="983511809958454316">この機能は VR ではサポートされていません</translation>
-<translation id="984136553749462603">サイトでは、著作権により保護されているコンテンツを再生する際に、デバイスの認証情報を要求することがあります。</translation>
+<translation id="984136553749462603">著作権により保護されているコンテンツを再生する際に、デバイスの認証情報を要求するサイトもあります。</translation>
 <translation id="984275831282074731">お支払い方法</translation>
 <translation id="98515147261107953">横</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>

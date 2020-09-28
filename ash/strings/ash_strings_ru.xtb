@@ -70,6 +70,7 @@
 <translation id="1589090746204042747">Получать доступ к данным о ваших действиях во время этого сеанса.</translation>
 <translation id="1611993646327628135">Включено</translation>
 <translation id="1632985212731562677">Функцию Switch Access можно отключить в разделе "Настройки &gt; Специальные возможности".</translation>
+<translation id="1651447046299738444">Включите Bluetooth и Wi-Fi на устройстве Chromebook. Это нужно для работы Phone Hub.</translation>
 <translation id="1654477262762802994">Произнесите запрос</translation>
 <translation id="1667964833127753507">В режиме нейтральных цветов не используются оттенки ваших обоев. Вместо них интерфейс будет окрашен в нейтральные светлые или темные цвета.</translation>
 <translation id="1677472565718498478">Ещё <ph name="TIME" /></translation>
@@ -152,6 +153,7 @@
 <translation id="2435457462613246316">Показать пароль</translation>
 <translation id="2473177541599297363">Разрешение экрана было изменено</translation>
 <translation id="2475982808118771221">Произошел сбой.</translation>
+<translation id="2479579251444854687">Проведите тремя пальцами вверх, чтобы открыть панель обзора, или вниз – чтобы закрыть ее.</translation>
 <translation id="2482878487686419369">Уведомления</translation>
 <translation id="2484513351006226581">Чтобы переключить раскладку клавиатуры, нажмите клавиши <ph name="KEYBOARD_SHORTCUT" />.</translation>
 <translation id="2501920221385095727">Залипание клавиш</translation>
@@ -164,6 +166,7 @@
 <translation id="2595239820337756193">5 миль в км</translation>
 <translation id="2617342710774726426">SIM-карта заблокирована</translation>
 <translation id="2621713457727696555">Защищена</translation>
+<translation id="2640255526076764619">Жест для перехода на предыдущий рабочий стол изменился. Проведите по сенсорной панели четырьмя пальцами влево.</translation>
 <translation id="2653659639078652383">Отправить</translation>
 <translation id="2658778018866295321">Перетаскивание</translation>
 <translation id="2700493154570097719">Выберите раскладку</translation>
@@ -342,6 +345,7 @@
 <translation id="4412944820643904175">Функция "<ph name="FEATURE_NAME" />" отключена</translation>
 <translation id="4421231901400348175">Доступ к экрану для <ph name="HELPER_NAME" /> с помощью удаленного помощника</translation>
 <translation id="4430019312045809116">Объем</translation>
+<translation id="4444978951615977024">Ошибка. Проверьте подключение.</translation>
 <translation id="4450893287417543264">Больше не показывать</translation>
 <translation id="445864333228800152">Добрый вечер!</translation>
 <translation id="4458688154122353284">Остановить запись с экрана</translation>
@@ -351,6 +355,7 @@
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Отключенные устройства</translation>
 <translation id="4505050298327493054">Активный рабочий стол.</translation>
+<translation id="4506458088675900627">Жест для просмотра всех открытых окон изменился</translation>
 <translation id="4513946894732546136">Отзыв</translation>
 <translation id="4527045527269911712">Устройству <ph name="DEVICE_NAME" /> требуется разрешение на подключение через Bluetooth.</translation>
 <translation id="453661520163887813">До полной зарядки <ph name="TIME" /></translation>
@@ -480,6 +485,7 @@
 <translation id="6018164090099858612">Выход из режима трансляции…</translation>
 <translation id="602001110135236999">Влево</translation>
 <translation id="6025324406281560198">Статус защиты – "<ph name="SECURITY_STATUS" />", статус подключения – "<ph name="CONNECTION_STATUS" />", уровень сигнала – <ph name="SIGNAL_STRENGTH" />, под управлением администратора</translation>
+<translation id="6029337736376922061">Жест для перехода на следующий рабочий стол изменился. Проведите по сенсорной панели четырьмя пальцами вправо.</translation>
 <translation id="6030495522958826102">Меню перемещено в левый нижний угол экрана.</translation>
 <translation id="6040143037577758943">Закрыть</translation>
 <translation id="6043212731627905357">Монитор не совместим с устройством <ph name="DEVICE_TYPE" />.</translation>
@@ -557,7 +563,7 @@
 <translation id="6857811139397017780">Активировать <ph name="NETWORKSERVICE" /></translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Осталась 1 цифра}one{Осталась # цифра}few{Осталось # цифры}many{Осталось # цифр}other{Осталось # цифры}}</translation>
 <translation id="6878400149835617132">Быстрые клавиши отключены</translation>
-<translation id="6886172995547742638">Не исключено, что <ph name="DEVICE_TYPE" /> будет работать неэффективно. Используйте сертифицированный адаптер питания USB-C на <ph name="PREFERRED_MINIMUM_POWER" /> Вт или выше.</translation>
+<translation id="6886172995547742638"><ph name="DEVICE_TYPE" /> может работать неэффективно. Используйте сертифицированный адаптер питания USB-C на <ph name="PREFERRED_MINIMUM_POWER" /> Вт или выше.</translation>
 <translation id="6896758677409633944">Копировать</translation>
 <translation id="6910714959251846841">Чтобы установить это обновление, необходимо сбросить настройки устройства до заводских. Подробнее о последнем обновлении <ph name="SYSTEM_APP_NAME" />…</translation>
 <translation id="6919251195245069855">Не удалось распознать смарт-карту. Повторите попытку.</translation>

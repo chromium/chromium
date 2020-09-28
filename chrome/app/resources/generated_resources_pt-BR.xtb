@@ -5183,7 +5183,7 @@ permanentemente excluídos assim que esse usuário for removido. Os websites vis
 <translation id="7182791023900310535">Mover sua senha</translation>
 <translation id="7186088072322679094">Manter na barra de ferramentas</translation>
 <translation id="7187428571767585875">Entradas de registro que devem ser removidas ou alteradas:</translation>
-<translation id="7187855807420906517">Depois que você sai ou fica offline, os sites geralmente continuam a sincronização para finalizar tarefas, como o upload de uma foto ou o envio de uma mensagem de chat</translation>
+<translation id="7187855807420906517">Depois que você sai ou fica off-line, os sites geralmente continuam a sincronização para finalizar tarefas, como o upload de uma foto ou o envio de uma mensagem de chat</translation>
 <translation id="7189234443051076392">Verifique se há espaço suficiente no seu dispositivo</translation>
 <translation id="7189451821249468368">Você não tem upgrades suficientes para registrar esse dispositivo. Fale com o departamento de vendas para adquirir mais. Se acredita que recebeu esta mensagem por engano, entre em contato com o suporte.</translation>
 <translation id="7189965711416741966">Impressão digital adicionada.</translation>
@@ -5842,7 +5842,7 @@ permanentemente excluídos assim que esse usuário for removido. Os websites vis
 <translation id="7947962633355574091">C&amp;opiar endereço do vídeo</translation>
 <translation id="7950040156882184764">Protocolo de impressão via Internet (HTTP)</translation>
 <translation id="7951265006188088697">Para adicionar ou gerenciar formas de pagamento do Google Pay, acesse sua <ph name="BEGIN_LINK" />Conta do Google<ph name="END_LINK" /></translation>
-<translation id="7952708427581814389">Os sites podem pedir para ver textos e imagens da área de transferência</translation>
+<translation id="7952708427581814389">Os sites podem pedir para acessar texto e imagens na sua área de transferência</translation>
 <translation id="795282463722894016">Restauração concluída</translation>
 <translation id="7952904276017482715">O código esperado era "<ph name="EXPECTED_ID" />", mas o instalado foi "<ph name="NEW_ID" />"</translation>
 <translation id="7953955868932471628">Gerenciar atalhos</translation>
@@ -6291,7 +6291,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8487678622945914333">Aproximar</translation>
 <translation id="8489156414266187072">As sugestões personalizadas são exibidas apenas na sua conta</translation>
 <translation id="8490896350101740396">Os aplicativos de quiosque "<ph name="UPDATED_APPS" />" a seguir foram atualizados. Reinicie o dispositivo para concluir o processo de atualização.</translation>
-<translation id="8492822722330266509">Os sites podem enviar pop-ups e usar redirecionamentos</translation>
+<translation id="8492822722330266509">Os sites podem exibir pop-ups e usar redirecionamentos</translation>
 <translation id="8493236660459102203">Microfone:</translation>
 <translation id="8496717697661868878">Executar este plug-in</translation>
 <translation id="8497219075884839166">Utilitários do Windows</translation>
@@ -6753,7 +6753,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="9019956081903586892">Não foi possível fazer o download do dicionário de verificação ortográfica</translation>
 <translation id="9020362265352758658">4x</translation>
 <translation id="9021662811137657072">Vírus detectado</translation>
-<translation id="902236149563113779">Os sites geralmente rastreiam a posição da câmera para recursos de RA, como jogos ou alertas de direções</translation>
+<translation id="902236149563113779">Os sites geralmente rastreiam a posição da câmera para recursos de RA, como jogos ou avisos de rotas</translation>
 <translation id="9022847679183471841">Essa conta já está sendo utilizada neste computador por <ph name="AVATAR_NAME" />.</translation>
 <translation id="9023009238991294202">Outros usuários deste dispositivo podem usar esta rede.</translation>
 <translation id="9023015617655685412">Adicionar esta guia aos favoritos...</translation>

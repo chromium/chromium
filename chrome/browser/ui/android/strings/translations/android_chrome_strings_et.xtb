@@ -752,7 +752,7 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="661266467055912436">Täiendab turvalisust teie ja kõigi teiste veebikasutajate jaoks.</translation>
 <translation id="6618554661997243500">Sageli külastatud saitide ja populaarsete lugude vaatamiseks puudutage avakuva nuppu</translation>
 <translation id="6627583120233659107">Muuda kausta</translation>
-<translation id="663674369910034433">Privaatsuse, turvalisuse ning andmete kogumisega seotud lisaseadete nägemiseks vaadake jaotist <ph name="BEGIN_LINK1" />Sünkroonimine<ph name="END_LINK1" /> ja <ph name="BEGIN_LINK2" />Google'i teenused<ph name="END_LINK2" />.</translation>
+<translation id="663674369910034433">Privaatsuse, turvalisuse ning andmete kogumisega seotud lisaseadete nägemiseks vaadake jaotisi <ph name="BEGIN_LINK1" />Sünkroonimine<ph name="END_LINK1" /> ja <ph name="BEGIN_LINK2" />Google'i teenused<ph name="END_LINK2" />.</translation>
 <translation id="6643016212128521049">Tühjenda</translation>
 <translation id="6643649862576733715">Sordi säästetud andmemahu alusel</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 ja veel <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" />\u2026 ja veel <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>

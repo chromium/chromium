@@ -564,7 +564,7 @@
 <translation id="6857811139397017780">Активирај <ph name="NETWORKSERVICE" /></translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Преостанува уште една цифра}one{Преостанува уште # цифра}other{Преостануваат уште # цифри}}</translation>
 <translation id="6878400149835617132">Кратенката е исклучена</translation>
-<translation id="6886172995547742638">Изведбата на вашиот <ph name="DEVICE_TYPE" /> може да биде послаба. Користете сертифициран адаптер за напојување USB-C од <ph name="PREFERRED_MINIMUM_POWER" /> W или повеќе.</translation>
+<translation id="6886172995547742638">Перформансите на вашиот <ph name="DEVICE_TYPE" /> може да бидат послаби. Користете сертифициран адаптер за напојување USB-C од <ph name="PREFERRED_MINIMUM_POWER" /> W или повеќе.</translation>
 <translation id="6896758677409633944">Копирај</translation>
 <translation id="6910714959251846841">За ажурирањево потребно е фабричко ресетирање на уредот. Дознајте повеќе за најновото ажурирање на <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="6919251195245069855">Не можевме да ја препознаеме вашата паметна картичка. Обидете се повторно.</translation>

@@ -657,7 +657,7 @@ Para alterar essa configuração, <ph name="BEGIN_LINK" />redefina a sincroniza�
 <translation id="5979084224081478209">Verificar senhas</translation>
 <translation id="6000066717592683814">Continuar usando o Google</translation>
 <translation id="6005538289190791541">Senha sugerida</translation>
-<translation id="6014293228235665243">Não lidos</translation>
+<translation id="6014293228235665243">Não lidas</translation>
 <translation id="6036057147555329831">ICU extra</translation>
 <translation id="6039379616847168523">Ir para a próxima guia</translation>
 <translation id="6040143037577758943">Fechar</translation>
@@ -687,7 +687,7 @@ Para alterar essa configuração, <ph name="BEGIN_LINK" />redefina a sincroniza�
 <translation id="6232535412751077445">Ao ativar o recurso "Não rastrear" uma solicitação é incluída no tráfego de navegação. O resultado depende da resposta de um site à solicitação e de como a solicitação é interpretada.
 
 Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que não têm qualquer relação com os sites que você costuma visitar. Mesmo assim, alguns websites ainda vão coletar e usar seus dados de navegação para, por exemplo, melhorar a segurança, gerar conteúdo, anúncios, recomendações e relatórios de estatística.</translation>
-<translation id="6243852395147506234">Pronto para o modo off-line</translation>
+<translation id="6243852395147506234">Prontas para o modo off-line</translation>
 <translation id="624789221780392884">Atualização pronta</translation>
 <translation id="6255999984061454636">Sugestões de conteúdo</translation>
 <translation id="6277522088822131679">Ocorreu um problema ao imprimir a página. Tente novamente.</translation>
@@ -1017,7 +1017,7 @@ Na navegação anônima, sua atividade ainda pode ser visível para os sites que
 <translation id="8555836665334561807">No Wi-Fi</translation>
 <translation id="8558485628462305855">Para ver conteúdo de realidade aumentada, atualize o ARCore</translation>
 <translation id="8559990750235505898">Oferecer para traduzir páginas em outros idiomas</translation>
-<translation id="8560602726703398413">Encontre sua lista de leitura nos favoritos</translation>
+<translation id="8560602726703398413">Encontre sua lista de leitura nos Favoritos</translation>
 <translation id="8561196567344536112">1. Acesse "Configurações".\n2. Toque em “App de navegação”.\n3. Selecione o app <ph name="APP_NAME" />.</translation>
 <translation id="8562452229998620586">As senhas salvas aparecerão aqui.</translation>
 <translation id="8569404424186215731">desde <ph name="DATE" /></translation>
@@ -1042,7 +1042,7 @@ Na navegação anônima, sua atividade ainda pode ser visível para os sites que
 <translation id="8748850008226585750">Conteúdo oculto</translation>
 <translation id="8788265440806329501">O histórico de navegação está fechado</translation>
 <translation id="8788968922598763114">Reabrir a última guia fechada</translation>
-<translation id="8798449543960971550">Leitura</translation>
+<translation id="8798449543960971550">Lidas</translation>
 <translation id="8812260976093120287">Em alguns websites, é possível pagar no seu dispositivo com os apps de pagamento compatíveis acima.</translation>
 <translation id="8820817407110198400">Favoritos</translation>
 <translation id="883806473910249246">Ocorreu um erro durante o download do conteúdo.</translation>

@@ -311,6 +311,7 @@
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{એક ઍપ માટે બંધ}one{# ઍપ માટે બંધ}other{# ઍપ માટે બંધ}}</translation>
 <translation id="4072264167173457037">મધ્યમ સિગ્નલ</translation>
 <translation id="4112140312785995938">પાછળ કરો</translation>
+<translation id="4114315158543974537">ફોન હબ ચાલુ કરો</translation>
 <translation id="4129129681837227511">તમારી લૉક સ્ક્રીન પર નોટિફિકેશન જોવા માટે, સેટિંગને બદલવા માટે અનલૉક કરો</translation>
 <translation id="4146833061457621061">મ્યુઝિક વગાડો</translation>
 <translation id="4149156641122542261"><ph name="DEVICE_TYPE" /> <ph name="DOMAIN" /> દ્વારા મેનેજ કરવામાં આવે છે</translation>
@@ -445,6 +446,7 @@
 <translation id="5648021990716966815">માઇક જેક</translation>
 <translation id="5669267381087807207">ચાલુ થાય છે</translation>
 <translation id="5673434351075758678">તમારી સેટિંગને સિંક કર્યા પછી "<ph name="FROM_LOCALE" />" થી "<ph name="TO_LOCALE" />"માં ફેરવો.</translation>
+<translation id="5679050765726761783">ઓછી ક્ષમતાવાળું પાવર અડૅપ્ટર કનેક્ટ કરેલું છે</translation>
 <translation id="5682642926269496722">હાલના વપરાશકર્તા એકાઉન્ટ માટે Google આસિસ્ટંટ ઉપલબ્ધ નથી.</translation>
 <translation id="5689633613396158040">રાત્રિ પ્રકાશથી તમે સરળતાથી તમારી સ્ક્રીનને જોઈ શકો છો અથવા ઓછા પ્રકાશમાં વાંચી શકો છો. રાત્રિ પ્રકાશ ચાલુ થવાનો સમય બદલવા અથવા તેને સંપૂર્ણપણે બંધ કરવા ટૅપ કરો.</translation>
 <translation id="5691772641933328258">ફિંગરપ્રિન્ટ ઓળખી શકાઈ નથી</translation>
@@ -561,6 +563,7 @@
 <translation id="6857811139397017780">સક્રિય કરો <ph name="NETWORKSERVICE" /></translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{એક અંક બાકી}one{# અંક બાકી}other{# અંક બાકી}}</translation>
 <translation id="6878400149835617132">શૉર્ટકટ બંધ કર્યો</translation>
+<translation id="6886172995547742638">તમારા <ph name="DEVICE_TYPE" />માં નબળું કાર્યપ્રદર્શન થઈ શકે છે. પ્રમાણિત <ph name="PREFERRED_MINIMUM_POWER" />W અથવા તેથી વધુના USB-C પાવર અડૅપ્ટરનો ઉપયોગ કરો.</translation>
 <translation id="6896758677409633944">કૉપિ કરો</translation>
 <translation id="6910714959251846841">આ અપડેટ માટે તમારા ઉપકરણને પાવરવોશ કરવું જરૂરી છે. નવીનતમ <ph name="SYSTEM_APP_NAME" /> અપડેટ વિશે વધુ જાણો.</translation>
 <translation id="6919251195245069855">તમારું સ્માર્ટ કાર્ડ ઓળખી શક્યાં નથી. ફરી પ્રયાસ કરો.</translation>

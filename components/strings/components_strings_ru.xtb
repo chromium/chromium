@@ -507,6 +507,7 @@
 <translation id="3080254622891793721">Изображения</translation>
 <translation id="3086579638707268289">Ваши действия в Интернете отслеживаются</translation>
 <translation id="3087734570205094154">Снизу</translation>
+<translation id="3094457892697649331">При изменении аннотаций документ вернется в одностраничный режим.</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3096100844101284527">Добавить адрес получения</translation>
 <translation id="3105172416063519923">Идентификатор объекта:</translation>
@@ -738,6 +739,7 @@
 <translation id="4075941231477579656">Touch ID</translation>
 <translation id="4079302484614802869">Конфигурация прокси-сервера предусматривает использование URL PAC-скриптов вместо фиксированных прокси-серверов.</translation>
 <translation id="4082393374666368382">Настройки – Управление</translation>
+<translation id="4084120443451129199">Режим поиска. Нажмите Ввод, чтобы выполнить поиск по запросу "<ph name="KEYWORD_SUFFIX" />".</translation>
 <translation id="4088981014127559358">Смещение изображений на лицевой стороне по оси Y</translation>
 <translation id="4098354747657067197">Осторожно, поддельный сайт!</translation>
 <translation id="4101413244023615925">Текст и изображения</translation>
@@ -929,6 +931,7 @@
 <translation id="4809079943450490359">Инструкции от администратора вашего устройства:</translation>
 <translation id="4813512666221746211">Ошибка сети</translation>
 <translation id="4816492930507672669">По размеру страницы</translation>
+<translation id="4819347708020428563">Изменить аннотации в режиме по умолчанию?</translation>
 <translation id="484462545196658690">Выбрать автоматически</translation>
 <translation id="4850886885716139402">Посмотреть</translation>
 <translation id="4854362297993841467">Этот способ доставки недоступен. Выберите другой.</translation>
@@ -1663,6 +1666,7 @@
 <translation id="7802523362929240268">Сайт безопасен</translation>
 <translation id="780301667611848630">Спасибо, не надо</translation>
 <translation id="7805768142964895445">Состояние</translation>
+<translation id="7811322735445742657">При изменении аннотаций документ вернется в одностраничный режим и изначальную ориентацию.</translation>
 <translation id="7812922009395017822">Мир</translation>
 <translation id="7813600968533626083">Удалить подсказку из Chrome?</translation>
 <translation id="781440967107097262">Предоставить доступ к буферу обмена?</translation>
@@ -1698,6 +1702,7 @@
 <translation id="7956713633345437162">Моб. закладки</translation>
 <translation id="7961015016161918242">Нет</translation>
 <translation id="7966803981046576691">Тип аккаунта, в котором выполняется задание</translation>
+<translation id="7976214039405368314">слишком много запросов</translation>
 <translation id="7977538094055660992">Устройство вывода</translation>
 <translation id="7977894662897852582">Edp</translation>
 <translation id="799149739215780103">Скрепление</translation>
@@ -1779,6 +1784,7 @@
 <translation id="8289355894181816810">Уточните информацию у администратора сети.</translation>
 <translation id="8293206222192510085">Добавление закладки</translation>
 <translation id="8294431847097064396">Источник</translation>
+<translation id="8297398969342264569">При изменении аннотаций документ вернется в изначальную ориентацию.</translation>
 <translation id="8298115750975731693">Возможно, вам нужно перейти на страницу <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> сети Wi-Fi (<ph name="WIFI_NAME" />).</translation>
 <translation id="8303854710873047864">Показан раздел "<ph name="SECTION" />".</translation>
 <translation id="830498451218851433">Фальцовка книжкой</translation>

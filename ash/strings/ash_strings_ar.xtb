@@ -564,7 +564,7 @@
 <translation id="6857811139397017780">تفعيل <ph name="NETWORKSERVICE" /></translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{يتبقى رقم واحد}zero{يتبقى # رقم}two{يتبقى رقمان}few{يتبقى # أرقام}many{يتبقى # رقمًا}other{يتبقى # رقم}}</translation>
 <translation id="6878400149835617132">تم إيقاف الاختصار</translation>
-<translation id="6886172995547742638">‏قد يواجه جهاز <ph name="DEVICE_TYPE" /> انخفاضًا في الأداء. يمكنك استخدام محوِّل طاقة متوافق بقدرة <ph name="PREFERRED_MINIMUM_POWER" /> واط أومحوِّل طاقة USB-C بقدرة أعلى.</translation>
+<translation id="6886172995547742638">‏قد يواجه جهاز <ph name="DEVICE_TYPE" /> انخفاضًا في الأداء. يمكنك استخدام محوِّل طاقة متوافق بقدرة <ph name="PREFERRED_MINIMUM_POWER" /> واط أو محوِّل طاقة USB-C بقدرة أعلى.</translation>
 <translation id="6896758677409633944">نسخ</translation>
 <translation id="6910714959251846841">‏يتطلَّب هذا التحديث إجراء عملية Powerwash لجهازك. مزيد من المعلومات حول آخر تحديث لتطبيق <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="6919251195245069855">لم يتم التعرُّف على البطاقة الذكية. يُرجى إعادة المحاولة.</translation>

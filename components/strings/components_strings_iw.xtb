@@ -513,6 +513,7 @@
 <translation id="3080254622891793721">גרפיקה</translation>
 <translation id="3086579638707268289">הפעילות שלך באינטרנט נמצאת במעקב</translation>
 <translation id="3087734570205094154">תחתית</translation>
+<translation id="3094457892697649331">המסמך הזה יחזור לתצוגת דף יחיד בזמן עריכת ההערות.</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3096100844101284527">הוספת כתובת לאיסוף</translation>
 <translation id="3105172416063519923">מזהה נכס:</translation>
@@ -746,6 +747,7 @@
 <translation id="4075941231477579656">Touch ID</translation>
 <translation id="4079302484614802869">‏תצורת ה-Proxy מוגדרת להשתמש בכתובת אתר של סקריפט מסוג ‎.Pac ולא בשרתי Proxy קבועים.</translation>
 <translation id="4082393374666368382">הגדרות - ניהול</translation>
+<translation id="4084120443451129199">‏מצב חיפוש, יש ללחוץ על Enter כדי לחפש ב-<ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="4088981014127559358">‏הזזה של תמונה בצד 1 על ציר Y</translation>
 <translation id="4098354747657067197">זהירות, אתר מטעה</translation>
 <translation id="4101413244023615925">טקסט וגרפיקה</translation>
@@ -943,6 +945,7 @@ Del</translation>
 <translation id="4809079943450490359">הוראות ממנהל המכשיר שלך:</translation>
 <translation id="4813512666221746211">שגיאת רשת</translation>
 <translation id="4816492930507672669">התאמה לדף</translation>
+<translation id="4819347708020428563">לערוך את ההערות בתצוגת ברירת מחדל?</translation>
 <translation id="484462545196658690">אוטומטי</translation>
 <translation id="4850886885716139402">הצגה</translation>
 <translation id="4854362297993841467">שיטת המסירה הזו אינה זמינה. עליך לבחור שיטה אחרת.</translation>
@@ -1678,6 +1681,7 @@ Del</translation>
 <translation id="7802523362929240268">האתר חוקי</translation>
 <translation id="780301667611848630">לא תודה</translation>
 <translation id="7805768142964895445">סטטוס</translation>
+<translation id="7811322735445742657">המסמך הזה יחזור לתצוגת דף יחיד ולמצב הסיבוב המקורי שלו בזמן עריכת ההערות.</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">‏האם להסיר מ-Chrome הצעות בשביל טפסים?</translation>
 <translation id="781440967107097262">לשתף את הלוח?</translation>
@@ -1713,6 +1717,7 @@ Del</translation>
 <translation id="7956713633345437162">סימניות לנייד</translation>
 <translation id="7961015016161918242">אף פעם</translation>
 <translation id="7966803981046576691">סוג חשבון של העבודה</translation>
+<translation id="7976214039405368314">יותר מדי בקשות</translation>
 <translation id="7977538094055660992">מכשיר פלט</translation>
 <translation id="7977894662897852582">Edp</translation>
 <translation id="799149739215780103">כריכה</translation>
@@ -1794,6 +1799,7 @@ Del</translation>
 <translation id="8289355894181816810">פנה אל מנהל הרשת אם אינך יודע מה זה אומר.</translation>
 <translation id="8293206222192510085">הוסף סימניה</translation>
 <translation id="8294431847097064396">מקור</translation>
+<translation id="8297398969342264569">המסמך הזה יחזור למצב הסיבוב המקורי שלו בזמן עריכת ההערות.</translation>
 <translation id="8298115750975731693">‏ייתכן שתידרש להיכנס ל-<ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> עבור רשת ה-Wi-Fi שבה אתה משתמש (<ph name="WIFI_NAME" />).</translation>
 <translation id="8303854710873047864">הקטע "<ph name="SECTION" />" מוצג</translation>
 <translation id="830498451218851433">קיפול באמצע</translation>

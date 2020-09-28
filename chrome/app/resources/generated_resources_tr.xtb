@@ -3161,7 +3161,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="471880041731876836">Bu siteyi ziyaret etmek için izniniz yok</translation>
 <translation id="4720113199587244118">Cihaz Ekle</translation>
 <translation id="4720185134442950733">Mobil veri ağı</translation>
-<translation id="4722483286922621738">Ağınızı ayarlama gibi veri aktarımı özelliklerin kullanılması için siteler genellikle seri cihazlara bağlanır</translation>
+<translation id="4722483286922621738">Ağınızı ayarlama gibi veri aktarımı özelliklerinin kullanılması için siteler genellikle seri cihazlara bağlanır</translation>
 <translation id="4722735765955348426"><ph name="USERNAME" /> için şifre</translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> ekranınızı paylaşıyor.</translation>
 <translation id="4723140812774948886">Sonraki ile değiştir</translation>
@@ -5077,7 +5077,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="7052237160939977163">Performans izleme verilerini gönder</translation>
 <translation id="7053983685419859001">Engelle</translation>
 <translation id="7055152154916055070">Yönlendirme engellendi:</translation>
-<translation id="7055451306017383754">Bir uygulama bu klasörü kullandığından paylaşılan geri alınamadı. Parallels Desktop kapatıldığında paylaşılan dosya geri alınacak.</translation>
+<translation id="7055451306017383754">Bir uygulama bu klasörü kullandığından paylaşım kaldırılamadı. Parallels Desktop kapatıldığında klasörün paylaşımı kaldırılacak.</translation>
 <translation id="7056526158851679338">&amp;Cihazları Denetle</translation>
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{Güvenlik kontrolü 1 dakika önce çalıştırıldı}other{Güvenlik kontrolü {NUM_MINS} dakika önce çalıştırıldı}}</translation>
 <translation id="7057767408836081338">Uygulama verileri alınamadı, yine de uygulamanın çalışması için uğraşılıyor...</translation>

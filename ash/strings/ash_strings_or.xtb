@@ -70,6 +70,7 @@
 <translation id="1589090746204042747">ଏହି ଅବଧିରେ ଆପଣଙ୍କର ସମସ୍ତ କାର୍ଯ୍ୟକଳାପ ଆକ୍ସେସ୍‌ କରନ୍ତୁ</translation>
 <translation id="1611993646327628135">ଚାଲୁ ଅଛି</translation>
 <translation id="1632985212731562677">ସେଟିଂସ୍ &gt; ଆକ୍ସେସିବିଲିଟୀରେ 'ସ୍ୱିଚ୍ ଆକ୍ସେସ୍' ସୁବିଧା ଅକ୍ଷମ କରାଯାଇପାରିବ।</translation>
+<translation id="1651447046299738444">ଆପଣଙ୍କ Chromebookରେ ବ୍ଲୁଟୁଥ୍ କିମ୍ବା ୱାଇ-ଫାଇ ବନ୍ଦ କରାଯାଇଥିବା ପରି ଜଣାପଡ଼ୁଛି। ଦୟାକରି ଫୋନ୍ ହବ୍ ବ୍ୟବହାର କରିବା ପାଇଁ ଆପଣଙ୍କ ସଂଯୋଗ ଯାଞ୍ଚ କରନ୍ତୁ।</translation>
 <translation id="1654477262762802994">ଏକ ଭିଡିଓ କ୍ବେରୀ ଆରମ୍ଭ କରନ୍ତୁ</translation>
 <translation id="1667964833127753507">ନ୍ୟୁଟ୍ରାଲ୍ କଲର ମୋଡ୍ ୱାଲପେପରରୁ ବାହାର କରାଯାଇଥିବା ରଙ୍ଗଗୁଡ଼ିକୁ ବ୍ୟବହାର କରେ ନାହିଁ, ତାହା ପରିବର୍ତ୍ତେ ନ୍ୟୁଟ୍ରାଲ୍ ଟୋନ୍ ଥିବା ଫିକା କିମ୍ବା ଗାଢ଼ା ରଙ୍ଗର ଏକ ସେଟ୍ ବ୍ୟବହାର କରେ।</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> ବାକି ଅଛି</translation>
@@ -152,6 +153,7 @@
 <translation id="2435457462613246316">ପାସୱାର୍ଡ ଦେଖାନ୍ତୁ</translation>
 <translation id="2473177541599297363">ରିଜୋଲ୍ୟୁସନ୍ ସୁନିଶ୍ଚିତ କରନ୍ତୁ</translation>
 <translation id="2475982808118771221">ଏକ ତ୍ରୁଟି ଦେଖାଦେଲା</translation>
+<translation id="2479579251444854687">ଓଭରଭିଉ ଖୋଲିବା ପାଇଁ ତିନି ଆଙ୍ଗୁଠିରେ ଉପରକୁ ଏବଂ ବନ୍ଦ କରିବା ପାଇଁ ତଳକୁ ସ୍ୱାଇପ୍ କରନ୍ତୁ।</translation>
 <translation id="2482878487686419369">ବିଜ୍ଞପ୍ତି</translation>
 <translation id="2484513351006226581">କୀ'ବୋର୍ଡ ଲେଆଉଟ୍‌କୁ ସ୍ଵିଚ୍ କରିବା ପାଇଁ <ph name="KEYBOARD_SHORTCUT" /> ଦବାନ୍ତୁ।</translation>
 <translation id="2501920221385095727">ଷ୍ଟିକି କୀ'ଗୁଡ଼ିକ</translation>
@@ -164,6 +166,7 @@
 <translation id="2595239820337756193">5K ମାଇଲରେ</translation>
 <translation id="2617342710774726426">SIM କାର୍ଡ ଲକ୍‍ ହୋଇଯାଇଛି।</translation>
 <translation id="2621713457727696555">ସୁରକ୍ଷିତ</translation>
+<translation id="2640255526076764619">ପୂର୍ବବର୍ତ୍ତୀ ଡେସ୍କକୁ ସ୍ୱିଚ୍ କରିବା ପାଇଁ ଟଚପ୍ୟାଡ୍ ଜେଶ୍ଚର୍ ବଦଳି ଯାଇଛି। ପୂର୍ବବର୍ତ୍ତୀ ଡେସ୍କକୁ ସ୍ୱିଚ୍ କରିବା ପାଇଁ ଚାରି ଆଙ୍ଗୁଠିରେ ବାମକୁ ସ୍ୱାଇପ୍ କରନ୍ତୁ।</translation>
 <translation id="2653659639078652383">ଉପସ୍ଥାପନ</translation>
 <translation id="2658778018866295321">କ୍ଲିକ୍ କରି ଡ୍ରାଗ୍ କରନ୍ତୁ</translation>
 <translation id="2700493154570097719">ନିଜର କୀ'ବୋର୍ଡକୁ ସେଟ୍ କରନ୍ତୁ</translation>
@@ -342,6 +345,7 @@
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> ବନ୍ଦ ଅଛି।</translation>
 <translation id="4421231901400348175">ଆପଣଙ୍କର ସ୍କ୍ରିନ୍‌ର ନିୟନ୍ତ୍ରଣ ରିମୋଟ୍‍ ସହାୟକ ମାଧ୍ୟମରେ <ph name="HELPER_NAME" />ସହିତ ସେୟାର୍‌ କରାଯାଉଛି।</translation>
 <translation id="4430019312045809116">ଭଲ୍ୟୁମ୍</translation>
+<translation id="4444978951615977024">ଓଃ ଓହୋଃ! ଆପଣଙ୍କର ସଂଯୋଗ ଯାଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="4450893287417543264">ଆଉ ଦେଖାନ୍ତୁ ନାହିଁ</translation>
 <translation id="445864333228800152">ଶୁଭ ସନ୍ଧ୍ୟା,</translation>
 <translation id="4458688154122353284">ସ୍କ୍ରିନ୍ ରେକର୍ଡିଂ ବନ୍ଦ କରନ୍ତୁ</translation>
@@ -351,6 +355,7 @@
 <translation id="4479639480957787382">ଇଥର୍‌ନେଟ୍‌</translation>
 <translation id="4481530544597605423">ଅନ୍‌ପେୟାର୍‌ ହୋ‍ଇଥିବା ଡିଭାଇସ୍‌ଗୁଡ଼ିକ</translation>
 <translation id="4505050298327493054">ସକ୍ରିୟ ଡେସ୍କ.</translation>
+<translation id="4506458088675900627">ଓଭରଭିଉ ଟଚପ୍ୟାଡ୍ ଜେଶ୍ଚର୍ ବଦଳି ଯାଇଛି</translation>
 <translation id="4513946894732546136">ମତାମତ</translation>
 <translation id="4527045527269911712">"<ph name="DEVICE_NAME" />" ବ୍ଲୁଟୁଥ୍ ଡିଭାଇସ୍ ପେୟାର୍ କରିବାକୁ ଅନୁମତି ଚାହୁଁଛି।</translation>
 <translation id="453661520163887813">ପୂର୍ଣ୍ଣ ଚାର୍ଜ ହେବାକୁ ଆଉ <ph name="TIME" /> ଅଛି</translation>
@@ -480,6 +485,7 @@
 <translation id="6018164090099858612">ମିରର୍‌ ମୋଡ୍‌ରୁ ପ୍ରସ୍ଥାନ କରୁଛି</translation>
 <translation id="602001110135236999">ବାମକୁ ସ୍କ୍ରୋଲ୍ କରନ୍ତୁ</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, ସିଗ୍‍ନାଲ୍‍ର କ୍ଷମତା <ph name="SIGNAL_STRENGTH" />, ଆପଣଙ୍କର ଆଡ୍‍ମିନିଷ୍ଟ୍ରେଟର୍‍ଙ୍କ ଦ୍ୱାରା ପରିଚାଳିତ</translation>
+<translation id="6029337736376922061">ପରବର୍ତ୍ତୀ ଡେସ୍କକୁ ସ୍ୱିଚ୍ କରିବା ପାଇଁ ଟଚପ୍ୟାଡ୍ ଜେଶ୍ଚର୍ ବଦଳି ଯାଇଛି। ପରବର୍ତ୍ତୀ ଡେସ୍କକୁ ସ୍ୱିଚ୍ କରିବା ପାଇଁ ଚାରି ଆଙ୍ଗୁଠିରେ ଡାହାଣକୁ ସ୍ୱାଇପ୍ କରନ୍ତୁ।</translation>
 <translation id="6030495522958826102">ସ୍କ୍ରିନର ନିମ୍ନ-ବାମ କୋଣକୁ ମେନୁ ମୁଭ୍ କରାଯାଇଛି।</translation>
 <translation id="6040143037577758943">ବନ୍ଦ</translation>
 <translation id="6043212731627905357">ଏହି ମନିଟର୍‌ ଆପଣଙ୍କର <ph name="DEVICE_TYPE" /> ସହ କାର୍ଯ୍ୟ କରୁନାହିଁ (ମନିଟର୍‌ ସମର୍ଥିତ ନୁହେଁ)।</translation>

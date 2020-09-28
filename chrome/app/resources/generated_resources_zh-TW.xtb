@@ -4360,7 +4360,7 @@
 <translation id="6181431612547969857">下載遭封鎖</translation>
 <translation id="6184099524311454384">搜尋分頁</translation>
 <translation id="6185132558746749656">裝置位置</translation>
-<translation id="6186394437969115158">網站通常會顯示廣告，以便提供免費的內容或服務。不過，部分網站已知會顯示干擾性或誤導性的廣告。</translation>
+<translation id="6186394437969115158">網站通常會顯示廣告，以便提供免費的內容或服務。不過，某些網站會顯示干擾性或誤導性的廣告。</translation>
 <translation id="6191293864534840972">名稱伺服器格式錯誤</translation>
 <translation id="6195446518998936840">如要設定家長監護功能，子女必須擁有你可協助管理的 Google 帳戶。透過 Family Link 應用程式，你可以設定裝置使用時間限制、核准/封鎖網站或執行更多操作。</translation>
 <translation id="6195693561221576702">這個裝置無法設為離線示範模式。</translation>
@@ -5178,7 +5178,7 @@
 <translation id="7182791023900310535">轉移你的密碼</translation>
 <translation id="7186088072322679094">固定在工具列中</translation>
 <translation id="7187428571767585875">系統將移除或變更下列登錄檔項目：</translation>
-<translation id="7187855807420906517">在你離開或離線後，網站通常會保持同步，以完成上傳相片或傳送聊天訊息等工作</translation>
+<translation id="7187855807420906517">在你離開或離線後，網站通常會繼續進行同步作業，以完成各項工作，例如上傳相片或傳送聊天訊息等等</translation>
 <translation id="7189234443051076392">確認你的裝置上有足夠空間</translation>
 <translation id="7189451821249468368">你的升級授權不足，無法註冊這個裝置。請與銷售人員聯絡以購買更多授權。如果你認為不應顯示這則訊息，請與支援小組聯絡。</translation>
 <translation id="7189965711416741966">指紋新增成功。</translation>
@@ -5524,7 +5524,7 @@
 <translation id="7617366389578322136">正在連線至「<ph name="DEVICE_NAME" />」</translation>
 <translation id="7621382409404463535">系統無法儲存裝置設定。</translation>
 <translation id="7622114377921274169">充電中。</translation>
-<translation id="7622768823216805500">網站通常會安裝付款處理常式，以便提供輕鬆結帳等購物功能</translation>
+<translation id="7622768823216805500">網站通常會安裝付款處理常式，以便提供相關的購物功能 (例如更方便的結帳方式)</translation>
 <translation id="7622903810087708234">密碼詳細資料</translation>
 <translation id="7624337243375417909">大寫鎖定模式已關閉</translation>
 <translation id="7625568159987162309">查看各網站的權限及儲存的資料</translation>
@@ -6747,7 +6747,7 @@
 <translation id="9019956081903586892">無法下載拼字檢查字典</translation>
 <translation id="9020362265352758658">4 倍</translation>
 <translation id="9021662811137657072">系統偵測到病毒</translation>
-<translation id="902236149563113779">網站通常會追蹤你的攝影機位置，以提供遊戲或面對方向等 AR 功能</translation>
+<translation id="902236149563113779">網站通常會追蹤你的攝影機位置，以提供遊戲或抬頭顯示導航等 AR 功能</translation>
 <translation id="9022847679183471841"><ph name="AVATAR_NAME" />目前已在這部電腦上使用這個帳戶。</translation>
 <translation id="9023009238991294202">這個裝置的其他使用者可以使用這個網路。</translation>
 <translation id="9023015617655685412">將此分頁加入書籤...</translation>

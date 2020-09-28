@@ -515,6 +515,7 @@
 <translation id="3080254622891793721">گرافک</translation>
 <translation id="3086579638707268289">ویب پر کی جانے والی آپ کی سرگرمی کو مانیٹر کیا جا رہا ہے</translation>
 <translation id="3087734570205094154">نیچے</translation>
+<translation id="3094457892697649331">آپ کے تشریحات میں ترمیم کرنے پر، یہ دستاویز واحد صفحے کے منظر پر واپس آ جائے گا۔</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3096100844101284527">پک اپ کا پتہ شامل کریں</translation>
 <translation id="3105172416063519923">‏اثاثہ ID:</translation>
@@ -749,6 +750,7 @@
 <translation id="4075941231477579656">‏ٹچ ID</translation>
 <translation id="4079302484614802869">‏پراکسی کنفیگریشن مقررہ پراکسی سرورز نہیں بلکہ ایک ‎.pac اسکرپٹ URL استعمال کرنے کیلئے سیٹ ہے۔</translation>
 <translation id="4082393374666368382">ترتیبات، نظم و نسق</translation>
+<translation id="4084120443451129199">‏'تلاش کریں' موڈ، <ph name="KEYWORD_SUFFIX" /> تلاش کرنے کیلئے Enter دبائیں</translation>
 <translation id="4088981014127559358">‏سائڈ 1 تصویر Y شفٹ</translation>
 <translation id="4098354747657067197">آگے پرفریب سائٹ ہے</translation>
 <translation id="4101413244023615925">ٹیکسٹ اور گرافک</translation>
@@ -944,6 +946,7 @@
 <translation id="4809079943450490359">آپ کے آلہ کے منتظم کی طرف سے ہدایات:</translation>
 <translation id="4813512666221746211">نیٹ ورک کی خرابی</translation>
 <translation id="4816492930507672669">صفحہ میں فٹ کریں</translation>
+<translation id="4819347708020428563">ڈیفالٹ منظر میں تشریحات میں ترمیم کریں؟</translation>
 <translation id="484462545196658690">خودکار</translation>
 <translation id="4850886885716139402">دیکھیں</translation>
 <translation id="4854362297993841467">ڈیلیوری کا یہ طریقہ دستیاب نہیں ہے۔ کوئی دوسرا طریقہ آزمائیں۔</translation>
@@ -1679,6 +1682,7 @@
 <translation id="7802523362929240268">سائٹ جائز ہے</translation>
 <translation id="780301667611848630">نہیں شکریہ</translation>
 <translation id="7805768142964895445">صورتحال</translation>
+<translation id="7811322735445742657">آپ کے تشریحات میں ترمیم کرنے پر، یہ دستاویز واحد صفحے کے منظر اور اپنے اصل گھماؤ پر واپس آ جائے گا۔</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">‏Chrome سے فارم کی تجویز ہٹائیں؟</translation>
 <translation id="781440967107097262">کلپ بورڈ کا اشتراک کریں؟</translation>
@@ -1714,6 +1718,7 @@
 <translation id="7956713633345437162">موبائل بُک مارکس</translation>
 <translation id="7961015016161918242">کبھی نہیں</translation>
 <translation id="7966803981046576691">جاب اکاؤنٹ کی قسم</translation>
+<translation id="7976214039405368314">بہت زیادہ درخواستیں</translation>
 <translation id="7977538094055660992">آؤٹ پٹ آلہ</translation>
 <translation id="7977894662897852582">Edp</translation>
 <translation id="799149739215780103">باندھیں</translation>
@@ -1795,6 +1800,7 @@
 <translation id="8289355894181816810">اگر آپ کو اس کا مطلب یقینی طور پر معلوم نہیں ہے تو نیٹ ورک کے منتظم سے رابطہ کریں۔</translation>
 <translation id="8293206222192510085">بُک مارک شامل کریں</translation>
 <translation id="8294431847097064396">ماخذ</translation>
+<translation id="8297398969342264569">آپ کے تشریحات میں ترمیم کرنے پر، یہ دستاویز اپنے اصل گھماؤ پر واپس آ جائے گا۔</translation>
 <translation id="8298115750975731693">‏آپ جو Wi-Fi استعمال کر رہے ہیں (<ph name="WIFI_NAME" />) وہ آپ سے <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> ملاحظہ کرنے کا تقاضہ کر سکتا ہے۔</translation>
 <translation id="8303854710873047864">"<ph name="SECTION" />" دکھایا گیا سیکشن</translation>
 <translation id="830498451218851433">آدھا فولڈ کریں</translation>

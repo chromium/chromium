@@ -282,7 +282,7 @@
 <translation id="3207960819495026254">ブックマークしました</translation>
 <translation id="3208584281581115441">今すぐ確認</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> を削除しました</translation>
-<translation id="3211503082155944789"><ph name="READING_LIST_COUNT" /> 件の未読ページ</translation>
+<translation id="3211503082155944789">未読のページ <ph name="READING_LIST_COUNT" /> 件</translation>
 <translation id="321773570071367578">パスフレーズを忘れた場合や、この設定を変更する場合は、<ph name="BEGIN_LINK" />同期をリセット<ph name="END_LINK" />します</translation>
 <translation id="3223655207402797071">このサイト、Google アカウント、Chrome にログインします。同期を後でオンにすることもできます。</translation>
 <translation id="3232754137068452469">ウェブアプリ</translation>
@@ -604,7 +604,7 @@
 <translation id="5683547024293500885">Chrome がアップデートを確認できません</translation>
 <translation id="5686790454216892815">ファイル名が長すぎます</translation>
 <translation id="5687809546194252819">再起動すると <ph name="APP_NAME" /> は<ph name="LANGUAGE" />を使用します。</translation>
-<translation id="5691211010013816086"><ph name="READING_LIST_COUNT" /> 件のページがあります</translation>
+<translation id="5691211010013816086">未読のページが <ph name="READING_LIST_COUNT" /> 件あります</translation>
 <translation id="569536719314091526">[その他のオプション] から、このページを任意の言語に翻訳できます</translation>
 <translation id="5696597120588531049">Chrome でデータ侵害や安全でないウェブサイトなどの脅威から保護できているか確認します</translation>
 <translation id="5697688514913266141">ファイルは <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" /> に保存されます。<ph name="BEGIN_LINK2" />編集<ph name="END_LINK2" /></translation>
@@ -893,7 +893,7 @@
 <translation id="7698359219371678927"><ph name="APP_NAME" /> でメールを作成</translation>
 <translation id="7702724591845223485">ログイン情報や他のデータを Chrome から消去するには、すべてのシークレット タブを閉じます。
 
-シークレット モードであっても、訪問先のウェブサイト、雇用主または学校、ご利用のインターネット サービス プロバイダにあなたのアクティビティが知られる可能性はあります。</translation>
+シークレット モードであっても、訪問先のウェブサイト、雇用主または学校、ご利用のインターネット サービス プロバイダには、あなたのアクティビティが知られる可能性があります。</translation>
 <translation id="7704317875155739195">検索語句や URL をオートコンプリートする</translation>
 <translation id="7725024127233776428">ブックマークしたページがここに表示されます</translation>
 <translation id="7732997068759397415">カンナダ語</translation>

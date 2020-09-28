@@ -70,6 +70,7 @@
 <translation id="1589090746204042747">اس سیشن کی اپنی ہر سرگرمی تک رسائی حاصل کریں</translation>
 <translation id="1611993646327628135">آن</translation>
 <translation id="1632985212731562677">سوئچ رسائی کو ترتیبات &gt; ایکسیسبیلٹی میں غیر فعال کیا جا سکتا ہے۔</translation>
+<translation id="1651447046299738444">‏ایسا لگتا ہے کہ آپ کے Chromebook پر آپ کا بلوٹوتھ یا Wi-Fi آف ہے۔ Phone Hub استعمال کرنے کیلئے، براہ کرم اپنا کنکشن چیک کریں۔</translation>
 <translation id="1654477262762802994">صوتی استفسار شروع کریں</translation>
 <translation id="1667964833127753507">نیوٹرل رنگ موڈ وال پیپر ایکسٹریکٹیڈ رنگوں کا استعمال نہیں کرتا ہے، ان کی جگہ نیوٹرل طور پر ٹون کی گئی لائٹ یا گہری ہیوز والے سیٹ کا استعمال کیا جا رہا ہے۔</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> باقی</translation>
@@ -152,6 +153,7 @@
 <translation id="2435457462613246316">پاس ورڈ دکھائیں</translation>
 <translation id="2473177541599297363">ریزولیوشن کی تصدیق کریں</translation>
 <translation id="2475982808118771221">ایک خرابی پیش آگئی</translation>
+<translation id="2479579251444854687">مجموعی جائزے کو کھولنے کیلئے تین انگلیوں سے اوپر اور بند کرنے کیلئے نیچے سوائپ کریں۔</translation>
 <translation id="2482878487686419369">اطلاعات</translation>
 <translation id="2484513351006226581">کی بورڈ کا لے آؤٹ سوئچ کرنے کے لیے <ph name="KEYBOARD_SHORTCUT" /> دبائیں۔</translation>
 <translation id="2501920221385095727">اسٹکی کلیدیں</translation>
@@ -164,6 +166,7 @@
 <translation id="2595239820337756193">میل میں 5 ہزار</translation>
 <translation id="2617342710774726426">‏SIM کارڈ مقفل ہے</translation>
 <translation id="2621713457727696555">محفوظ ہے</translation>
+<translation id="2640255526076764619">پچھلے ڈیسک پر سوئچ کرنے کیلئے ٹچ پیڈ اشارہ تبدیل ہو گیا ہے۔ پچھلے ڈیسک پر سوئچ کرنے کیلئے، چار انگلیوں سے بائیں سوائپ کریں۔</translation>
 <translation id="2653659639078652383">جمع کرائیں</translation>
 <translation id="2658778018866295321">کلک کریں اور گھسیٹیں</translation>
 <translation id="2700493154570097719">اپنا کی بورڈ سیٹ کریں</translation>
@@ -342,6 +345,7 @@
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> آف ہے۔</translation>
 <translation id="4421231901400348175">ریموٹ اسسٹنس کے ذریعے <ph name="HELPER_NAME" /> کے ساتھ آپ کی اسکرین کے کنٹرول کا اشتراک کیا جا رہا ہے۔</translation>
 <translation id="4430019312045809116">والیوم</translation>
+<translation id="4444978951615977024">افوہ! اپنا کنکشن چیک کریں</translation>
 <translation id="4450893287417543264">دوبارہ نہ دکھائیں</translation>
 <translation id="445864333228800152">شام بخیر،</translation>
 <translation id="4458688154122353284">اسکرین ریکارڈنگ روکیں</translation>
@@ -351,6 +355,7 @@
 <translation id="4479639480957787382">ایتھرنیٹ</translation>
 <translation id="4481530544597605423">جوڑا ختم کیے ہوئے آلات</translation>
 <translation id="4505050298327493054">فعال ڈیسک۔</translation>
+<translation id="4506458088675900627">مجموعی جائزے کے ٹچ پیڈ کا اشارہ تبدیل ہو گیا ہے</translation>
 <translation id="4513946894732546136">تاثرات</translation>
 <translation id="4527045527269911712">بلوٹوتھ آلہ "<ph name="DEVICE_NAME" />" جوڑا بنانے کی اجازت چاہتا ہے۔</translation>
 <translation id="453661520163887813">مکمل ہونے میں <ph name="TIME" /> باقی</translation>
@@ -480,6 +485,7 @@
 <translation id="6018164090099858612">مرر وضع سے باہر نکل رہے ہیں</translation>
 <translation id="602001110135236999">بائیں اسکرول کریں</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />، <ph name="CONNECTION_STATUS" />، سگنل کی مضبوطی <ph name="SIGNAL_STRENGTH" />، آپ کے منتظم کے زیر انتظام ہے</translation>
+<translation id="6029337736376922061">اگلے ڈیسک پر سوئچ کرنے کیلئے ٹچ پیڈ اشارہ تبدیل ہو گیا ہے۔ اگلے ڈیسک پر سوئچ کرنے کیلئے، چار انگلیوں سے دائیں سوائپ کریں۔</translation>
 <translation id="6030495522958826102">مینو کو اسکرین کو نچلے بائیں کونے میں منتقل کر دیا گیا۔</translation>
 <translation id="6040143037577758943">بند کریں</translation>
 <translation id="6043212731627905357">یہ مانیٹر آپ کے <ph name="DEVICE_TYPE" /> کے ساتھ ٹھیک طرح سے کام نہیں کر رہا (مانیٹر تعاون یافتہ نہیں ہے)۔</translation>

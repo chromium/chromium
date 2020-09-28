@@ -19,6 +19,7 @@
 <translation id="1126809382673880764">Does not protect you against dangerous websites, downloads and extensions. You’ll still get Safe Browsing protection, where available, in other Google services, like Gmail and Search.</translation>
 <translation id="1129510026454351943">Details: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1141800923049248244">{FILE_COUNT,plural, =1{1 download pending.}other{# downloads pending.}}</translation>
+<translation id="1142732900304639782">Don’t offer to translate these sites</translation>
 <translation id="1145536944570833626">Delete existing data.</translation>
 <translation id="1146678959555564648">Enter VR</translation>
 <translation id="1154704303112745282">Page unavailable offline: <ph name="VIOLATED_URL" /></translation>
@@ -41,6 +42,7 @@
 <translation id="1263231323834454256">Reading list</translation>
 <translation id="1266864766717917324">Couldn't share <ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">Tap to expand</translation>
+<translation id="1285310382777185058">Change language</translation>
 <translation id="1291207594882862231">Clear history, cookies, site data, cache…</translation>
 <translation id="129553762522093515">Recently closed</translation>
 <translation id="1298077576058087471">Save up to 60% data, read today's news</translation>
@@ -52,6 +54,7 @@
 <translation id="1327257854815634930">Navigation history is opened</translation>
 <translation id="1331212799747679585">Chrome can’t update. More options</translation>
 <translation id="1332501820983677155">Google Chrome feature shortcuts</translation>
+<translation id="133857033449832692">Downloading <ph name="LANG" />…</translation>
 <translation id="1347468774581902829">Manage activity</translation>
 <translation id="1360432990279830238">Sign out and turn off sync?</translation>
 <translation id="1373696734384179344">Insufficient memory to download the selected content.</translation>
@@ -111,6 +114,7 @@
 <translation id="1877026089748256423">Chrome is out of date</translation>
 <translation id="1883903952484604915">My files</translation>
 <translation id="189358972401248634">Other languages</translation>
+<translation id="1922362554271624559">Suggested languages</translation>
 <translation id="1925021887439448749">Enter custom web address</translation>
 <translation id="1928696683969751773">Updates</translation>
 <translation id="19288952978244135">Reopen Chrome.</translation>
@@ -199,6 +203,7 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="2496180316473517155">Browsing history</translation>
 <translation id="2497852260688568942">Sync is disabled by your administrator</translation>
 <translation id="250020030759455918">You'll see your <ph name="SITE_NAME" /> sign-in status, browsing data and site data in Chrome</translation>
+<translation id="2512164632052122970">Content languages</translation>
 <translation id="2513403576141822879">For more settings that relate to privacy, security and data collection, see <ph name="BEGIN_LINK" />Sync and Google services<ph name="END_LINK" /></translation>
 <translation id="2517472476991765520">Scan</translation>
 <translation id="2518590038762162553">In Lite mode, Chrome loads pages faster and uses up to 60 per cent less data. To optimise the pages that you visit, Chrome sends your web traffic to Google. <ph name="BEGIN_LINK" />Find out more<ph name="END_LINK" /></translation>
@@ -209,6 +214,7 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="2537178555904266562">Error syncing passwords</translation>
 <translation id="2546283357679194313">Cookies and site data</translation>
 <translation id="2567385386134582609">IMAGE</translation>
+<translation id="2571711316400087311">Offer to send pages in other languages to Google Translate</translation>
 <translation id="2581165646603367611">This will clear cookies, cache and other data of sites Chrome doesn't think is important.</translation>
 <translation id="2587052924345400782">Newer version is available</translation>
 <translation id="2593272815202181319">Monospace</translation>
@@ -222,6 +228,7 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="2689830683995595741">By using Chrome, you agree to the <ph name="BEGIN_LINK1" />Google Terms of Service<ph name="END_LINK1" />, and the <ph name="BEGIN_LINK2" />Google Chrome and Chrome OS Additional Terms of Service<ph name="END_LINK2" />. The <ph name="BEGIN_LINK3" />Privacy Notice for Google Accounts managed with Family Link<ph name="END_LINK3" /> also applies.</translation>
 <translation id="2707726405694321444">Refresh page</translation>
 <translation id="2709516037105925701">Auto-fill</translation>
+<translation id="2718846868787000099">To show content in your preferred languages, the sites that you visit can see your preferences</translation>
 <translation id="2723001399770238859">audio</translation>
 <translation id="2728754400939377704">Sort by site</translation>
 <translation id="2744248271121720757">Tap a word to search instantly or see related actions</translation>
@@ -348,6 +355,7 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="3714981814255182093">Open the Find Bar</translation>
 <translation id="3716182511346448902">This page uses too much memory, so Chrome paused it.</translation>
 <translation id="3721119614952978349">You and Google</translation>
+<translation id="3737319253362202215">Translation settings</translation>
 <translation id="3738139272394829648">Touch to Search</translation>
 <translation id="3739899004075612870">Bookmarked in <ph name="PRODUCT_NAME" /></translation>
 <translation id="3749259744154402564">Unsupported</translation>
@@ -495,6 +503,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="4842092870884894799">Showing password generation pop-up</translation>
 <translation id="4860895144060829044">Call</translation>
 <translation id="4864369630010738180">Signing in...</translation>
+<translation id="4865987431642283918">Default device language</translation>
 <translation id="4866368707455379617">Unable to install <ph name="MODULE" /> for Chrome</translation>
 <translation id="4875775213178255010">Content Suggestions</translation>
 <translation id="4878404682131129617">Establishing a tunnel via proxy server failed</translation>
@@ -569,6 +578,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="543338862236136125">Edit password</translation>
 <translation id="5433691172869980887">Username copied</translation>
 <translation id="543509235395288790">Downloading <ph name="COUNT" /> files (<ph name="MEGABYTES" />).</translation>
+<translation id="5441466871879044658">Translate into this language</translation>
 <translation id="5441522332038954058">Jump to the address bar</translation>
 <translation id="544776284582297024">To open tabs and visit different pages at the same time, tap the open tabs button</translation>
 <translation id="545042621069398927">Speeding up your download.</translation>
@@ -647,6 +657,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5937580074298050696"><ph name="AMOUNT" /> saved</translation>
 <translation id="5939518447894949180">Reset</translation>
 <translation id="5942872142862698679">Using Google for search</translation>
+<translation id="5951615825629292797">Language ready, restart <ph name="APP_NAME" /></translation>
 <translation id="5952764234151283551">Sends the URL of a page that you're trying to reach to Google</translation>
 <translation id="5956665950594638604">Open the Chrome Help Centre in a new tab</translation>
 <translation id="5957442310066583693">To see your top sites, tap the Home button</translation>
@@ -672,6 +683,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="6112702117600201073">Refreshing page</translation>
 <translation id="6122831415929794347">Turn off Safe Browsing?</translation>
 <translation id="6127379762771434464">Item removed</translation>
+<translation id="6137022273846704445"><ph name="APP_NAME" />’s language</translation>
 <translation id="6140709049082532940">Enhanced protection:</translation>
 <translation id="6140912465461743537">Country/Region</translation>
 <translation id="614940544461990577">Try:</translation>
@@ -831,6 +843,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="7290209999329137901">Rename unavailable</translation>
 <translation id="7291387454912369099">Assistant Triggered Checkout</translation>
 <translation id="7293171162284876153">To start sync, turn on 'Sync your Chrome data'.</translation>
+<translation id="7293429513719260019">Select language</translation>
 <translation id="729975465115245577">Your device doesn’t have an app to store the passwords file.</translation>
 <translation id="7302081693174882195">Details: Sorted by amount of data saved</translation>
 <translation id="7304873321153398381">Offline. Chrome can’t check your passwords.</translation>
@@ -921,6 +934,7 @@ In Incognito, your activity might still be visible to websites that you visit, y
 <translation id="7882131421121961860">No history found</translation>
 <translation id="7886917304091689118">Running in Chrome</translation>
 <translation id="789763218334337857">How to use Chrome</translation>
+<translation id="7919123827536834358">Automatically translate these languages</translation>
 <translation id="7925590027513907933">{FILE_COUNT,plural, =1{Downloading file.}other{Downloading # files.}}</translation>
 <translation id="7926975587469166629">Card nickname</translation>
 <translation id="7929962904089429003">Opening the menu</translation>
@@ -988,6 +1002,7 @@ In Incognito, your activity might still be visible to websites that you visit, y
 <translation id="8349013245300336738">Sort by amount of data used</translation>
 <translation id="8364299278605033898">See popular websites</translation>
 <translation id="8368027906805972958">Unknown or unsupported device (<ph name="DEVICE_ID" />)</translation>
+<translation id="8372925856448695381"><ph name="LANG" /> is ready.</translation>
 <translation id="8393700583063109961">Send message</translation>
 <translation id="8407396331882458341">1. Choose <ph name="APP_NAME" />\n2. Tap 'Always'</translation>
 <translation id="8413126021676339697">Show full history</translation>
@@ -1036,6 +1051,7 @@ In Incognito, your activity might still be visible to websites that you visit, y
 <translation id="8683039184091909753">image</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Signal Strength Level: # bar}other{Signal Strength Level: # bars}}</translation>
 <translation id="869891660844655955">Expiry date</translation>
+<translation id="8699120352855309748">Don’t offer to translate these languages</translation>
 <translation id="8712637175834984815">Got it</translation>
 <translation id="8725066075913043281">Try again</translation>
 <translation id="8748850008226585750">Contents hidden</translation>

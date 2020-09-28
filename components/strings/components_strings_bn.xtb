@@ -514,6 +514,7 @@
 <translation id="3080254622891793721">গ্রাফিক</translation>
 <translation id="3086579638707268289">ওয়েবে আপনার অ্যাক্টিভিটি নজরে রাখা হচ্ছে</translation>
 <translation id="3087734570205094154">নিচে</translation>
+<translation id="3094457892697649331">অ্যানোটেশন এডিট করার সময় এই ডকুমেন্ট আবার সিঙ্গেল পেজ ভিউ মোডে দেখা যাবে।</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3096100844101284527">পিক-আপের ঠিকানা যোগ করুন</translation>
 <translation id="3105172416063519923">সম্পদ আইডি:</translation>
@@ -747,6 +748,7 @@
 <translation id="4075941231477579656">টাচ আইডি</translation>
 <translation id="4079302484614802869">প্রক্সি কনফিগারেশনটি .pac স্ক্রিপ্ট URL-এ ব্যবহার করাতে সেট থাকে স্থির প্রক্সি সার্ভারগুলিতে নয়৷</translation>
 <translation id="4082393374666368382">সেটিংস - ম্যানেজমেন্ট</translation>
+<translation id="4084120443451129199">সার্চ মোড, <ph name="KEYWORD_SUFFIX" /> সার্চ করতে Enter বোতাম প্রেস করুন</translation>
 <translation id="4088981014127559358">সাইড 1 ছবি Y শিফ্ট</translation>
 <translation id="4098354747657067197">সামনে ধোঁকাবাজ সাইট</translation>
 <translation id="4101413244023615925">টেক্সট ও গ্রাফিক</translation>
@@ -942,6 +944,7 @@
 <translation id="4809079943450490359">আপনার ডিভাইস অ্যাডমিনিস্ট্রেটরের থেকে পাওয়া নির্দেশাবলী:</translation>
 <translation id="4813512666221746211">নেটওয়ার্ক  ত্রুটি</translation>
 <translation id="4816492930507672669">পৃষ্ঠাতে মানানসই</translation>
+<translation id="4819347708020428563">ডিফল্ট ভিউতে অ্যানোটেশন এডিট করবেন?</translation>
 <translation id="484462545196658690">অটো</translation>
 <translation id="4850886885716139402">দেখুন</translation>
 <translation id="4854362297993841467">এই পদ্ধতিতে ডেলিভারি করা যাবে না। অন্য পদ্ধতি ব্যবহার করুন।</translation>
@@ -1675,6 +1678,7 @@
 <translation id="7802523362929240268">সাইটটি বৈধ</translation>
 <translation id="780301667611848630">না থাক</translation>
 <translation id="7805768142964895445">স্থিতি</translation>
+<translation id="7811322735445742657">অ্যানোটেশন এডিট করার সময় এই ডকুমেন্ট সিঙ্গেল পেজ ভিউ মোডে এবং এর আসল রোটেশনে ফিরে যাবে।</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Chrome থেকে ফর্ম প্রস্তাবনা সরাবেন?</translation>
 <translation id="781440967107097262">ক্লিপবোর্ড শেয়ার করবেন?</translation>
@@ -1710,6 +1714,7 @@
 <translation id="7956713633345437162">মোবাইল বুকমার্ক</translation>
 <translation id="7961015016161918242">কখনই নয়</translation>
 <translation id="7966803981046576691">চাকরির অ্যাকাউন্টের ধরন</translation>
+<translation id="7976214039405368314">অত্যধিক অনুরোধ</translation>
 <translation id="7977538094055660992">আউটপুট ডিভাইস</translation>
 <translation id="7977894662897852582">Edp</translation>
 <translation id="799149739215780103">বাঁধাই</translation>
@@ -1791,6 +1796,7 @@
 <translation id="8289355894181816810">যদি আপনি এর অর্থের ব্যাপারে নিশ্চিত না হন তাহলে আপনার নেটওয়ার্ক প্রশাসকের সঙ্গে যোগাযোগ করুন৷</translation>
 <translation id="8293206222192510085">বুকমার্ক যুক্ত করুন</translation>
 <translation id="8294431847097064396">উৎস</translation>
+<translation id="8297398969342264569">অ্যানোটেশন এডিট করার সময় এই ডকুমেন্ট এর আসল রোটেশনে ফিরে যাবে।</translation>
 <translation id="8298115750975731693">আপনি যে (<ph name="WIFI_NAME" />) Wi-Fiটি ব্যবহার করছেন সেটির জন্য অপনাকে <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> তে যেতে হতে পারে৷</translation>
 <translation id="8303854710873047864">"<ph name="SECTION" />" বিভাগ দেখানো হয়েছে</translation>
 <translation id="830498451218851433">অর্ধেক ফোল্ড করুন</translation>

@@ -57,6 +57,7 @@
 <translation id="1056775291175587022">Aucun réseau</translation>
 <translation id="1056898198331236512">Avertissement</translation>
 <translation id="1058262162121953039">Clé PUK</translation>
+<translation id="1059944192885972544"><ph name="NUM" /> onglets trouvés pour « <ph name="SEARCH_TEXT" /> »</translation>
 <translation id="1060292118287751956">Détermine la fréquence à laquelle l'écran est actualisé</translation>
 <translation id="1061904396131502319">C'est bientôt le moment de prendre une pause</translation>
 <translation id="1067048845568873861">Créé</translation>
@@ -475,6 +476,7 @@
 <translation id="1537254971476575106">Loupe en mode plein écran</translation>
 <translation id="15373452373711364">Grand curseur</translation>
 <translation id="1540605929960647700">Activer le mode Démonstration</translation>
+<translation id="1541346352678737112">Aucun réseau trouvé</translation>
 <translation id="1542514202066550870">Cet onglet présente du contenu RV dans un casque.</translation>
 <translation id="1543284117603151572">Importé à partir d'Edge</translation>
 <translation id="1545177026077493356">Mode kiosque automatique</translation>
@@ -733,6 +735,7 @@
 <translation id="1826516787628120939">Vérification en cours…</translation>
 <translation id="1827738518074806965">Galerie d'art</translation>
 <translation id="1828378091493947763">Ce plugiciel n'est pas pris en charge sur cet appareil</translation>
+<translation id="1828879788654007962">{COUNT,plural, =0{&amp;Tout ouvrir}=1{&amp;Ouvrir le favori}one{&amp;Tout ouvrir ({COUNT})}other{&amp;Tout ouvrir ({COUNT})}}</translation>
 <translation id="1828901632669367785">Imprimer à l'aide de la boîte de dialogue système...</translation>
 <translation id="1829129547161959350">Pingouin</translation>
 <translation id="1829192082282182671">Z&amp;oom arrière</translation>
@@ -2109,6 +2112,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="3478685642445675458">Veuillez déverrouiller votre profil avant de supprimer une personne.</translation>
 <translation id="3479552764303398839">Pas maintenant</translation>
 <translation id="3479685872808224578">Impossible de détecter le serveur d'impression. Veuillez vérifier l'adresse, puis réessayez.</translation>
+<translation id="3480827850068960424"><ph name="NUM" /> onglets trouvés</translation>
 <translation id="3481268647794498892">Ouverture dans <ph name="ALTERNATIVE_BROWSER_NAME" /> dans <ph name="COUNTDOWN_SECONDS" /> secondes</translation>
 <translation id="3482719661246593752"><ph name="ORIGIN" /> peut consulter les fichiers suivants</translation>
 <translation id="3484273680291419129">Suppression du logiciel nuisible en cours…</translation>
@@ -2487,6 +2491,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="3894123633473837029">Inclure l'historique récent de l'Assistant dans Sherlog. Cela peut comprendre votre identité, votre position géographique et des données de débogage. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="3894427358181296146">Ajouter un dossier</translation>
 <translation id="3894770151966614831">Passer au compte Google?</translation>
+<translation id="3895076768659607631">&amp;Gérer les moteurs de recherche…</translation>
 <translation id="3895090224522145010">Nom d'utilisateur Kerberos</translation>
 <translation id="389589731200570180">Partager avec des invités</translation>
 <translation id="3898233949376129212">Langue de l'appareil</translation>
@@ -2878,6 +2883,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4392896746540753732">Modifier le fichier de configuration</translation>
 <translation id="4393691030048716353"><ph name="DOMAIN" /> a désactivé le débogage PDA. Après avoir redémarré votre <ph name="DEVICE_TYPE" />, vous ne pourrez plus télécharger d'applications d'une source tierce.</translation>
 <translation id="4394049700291259645">Désactiver</translation>
+<translation id="4396956294839002702">{COUNT,plural, =0{&amp;Tout ouvrir}=1{&amp;Ouvrir le favori}one{&amp;Tout ouvrir ({COUNT})}other{&amp;Tout ouvrir ({COUNT})}}</translation>
 <translation id="439817266247065935">Votre appareil ne s'est pas éteint correctement. Redémarrez Linux pour utiliser les applications Linux.</translation>
 <translation id="4400367121200150367">Les sites pour lesquels vos mots de passe ne seront jamais enregistrés s'afficheront ici</translation>
 <translation id="4400632832271803360">Maintenez la touche Lanceur d'applications enfoncée pour modifier la fonction des touches de la rangée supérieure</translation>
@@ -3142,6 +3148,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="469379815867856270">Puissance du signal</translation>
 <translation id="4694024090038830733">La configuration de l'imprimante relève de l'administrateur.</translation>
 <translation id="4694604912444486114">Singe</translation>
+<translation id="4697071790493980729">Aucun résultat</translation>
 <translation id="4697551882387947560">Lorsque la session de navigation se termine</translation>
 <translation id="4699172675775169585">Images et fichiers dans la mémoire cache</translation>
 <translation id="4699357559218762027">(lancement automatique)</translation>
@@ -3216,6 +3223,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4813136279048157860">Mes images</translation>
 <translation id="4813512666221746211">Erreur réseau</translation>
 <translation id="4814378367953456825">Entrez un nom pour cette empreinte digitale</translation>
+<translation id="4816336393325437908">{COUNT,plural, =1{1 favori supprimé}one{{COUNT} favori supprimé}other{{COUNT} favoris supprimés}}</translation>
 <translation id="4819607494758673676">Notifications de l'Assistant Google</translation>
 <translation id="4820236583224459650">Enregistrer comme ticket actif</translation>
 <translation id="4821935166599369261">&amp;Profilage activé</translation>
@@ -3318,6 +3326,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="49226369361073053">{0,plural, =0{Mettre à jour l'appareil maintenant}=1{Mettre à jour l'appareil d'ici 1 seconde}one{Mettre à jour l'appareil d'ici # seconde}other{Mettre à jour l'appareil d'ici # secondes}}</translation>
 <translation id="492299503953721473">Supprimer les applications Android</translation>
 <translation id="492363500327720082">Désinstallation de <ph name="APP_NAME" /> en cours…</translation>
+<translation id="4924002401726507608">Envoyer des commentaires</translation>
 <translation id="4924352752174756392">12x</translation>
 <translation id="4925320384394644410">Vos ports s'afficheront ici</translation>
 <translation id="4925542575807923399">L'administrateur pour ce compte l'a configuré de sorte qu'il doit être le premier compte à connecter lors de sessions de connexion multicompte.</translation>
@@ -4163,6 +4172,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="595959584676692139">Recharger la page pour utiliser cette extension</translation>
 <translation id="5963117322306686970">Pour regrouper des onglets, faites un clic droit sur un onglet</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (pointe : <ph name="NUM_KILOBYTES_LIVE" />)</translation>
+<translation id="5964113968897211042">{COUNT,plural, =0{Tout ouvrir dans une &amp;nouvelle fenêtre}=1{Ouvrir dans une &amp;nouvelle fenêtre}one{Tout ouvrir ({COUNT}) dans une &amp;nouvelle fenêtre}other{Tout ouvrir ({COUNT}) dans une &amp;nouvelle fenêtre}}</translation>
 <translation id="5965661248935608907">Elle définit également quelle page s'affiche lorsque vous cliquez sur le bouton Accueil ou que vous effectuez une recherche dans l'omnibox.</translation>
 <translation id="5969419185858894314"><ph name="ORIGIN" /> peut afficher les fichiers dans le dossier <ph name="FOLDERNAME" /></translation>
 <translation id="5971037678316050792">Gérer l'état et l'association de l'adaptateur Bluetooth</translation>
@@ -4351,6 +4361,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6176043333338857209">Le Bluetooth sera activé temporairement pour communiquer avec votre clé de sécurité</translation>
 <translation id="6178664161104547336">Sélectionner un certificat</translation>
 <translation id="6181431612547969857">Téléchargement bloqué</translation>
+<translation id="6184099524311454384">Rechercher des onglets</translation>
 <translation id="6185132558746749656">Position de l'appareil</translation>
 <translation id="6186394437969115158">Les sites affichent généralement des annonces afin de proposer des contenus ou des services gratuits. Toutefois, certains sites sont connus pour afficher des annonces intrusives ou trompeuses.</translation>
 <translation id="6191293864534840972">Le format des serveurs de nom est incorrect</translation>
@@ -4829,6 +4840,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6777817260680419853">Redirection bloquée</translation>
 <translation id="6778737459546443941">L'un de tes parents n'a pas encore donné son autorisation</translation>
 <translation id="677965093459947883">Très petit</translation>
+<translation id="6781005693196527806">&amp;Gérer les moteurs de recherche…</translation>
 <translation id="6781284683813954823">Lien du logo commémoratif</translation>
 <translation id="6781978626986383437">Sauvegarde Linux annulée</translation>
 <translation id="6782067259631821405">NIP incorrect</translation>
@@ -5046,6 +5058,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7022562585984256452">Votre page d'accueil a été définie.</translation>
 <translation id="7025082428878635038">Les gestes vous offrent une nouvelle façon de naviguer</translation>
 <translation id="7025190659207909717">Gestion des services de données mobiles</translation>
+<translation id="7027258625819743915">{COUNT,plural, =0{Tout ouvrir dans une fenêtre de &amp;navigation privée}=1{Ouvrir dans une fenêtre de &amp;navigation privée}one{Tout ouvrir ({COUNT}) dans une fenêtre de &amp;navigation privée}other{Tout ouvrir ({COUNT}) dans une fenêtre de &amp;navigation privée}}</translation>
 <translation id="7029307918966275733">Crostini n'est pas installé. Veuillez installer Crostini pour voir le générique.</translation>
 <translation id="7029809446516969842">Mots de passe</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> : connecté à un port série</translation>
@@ -5333,6 +5346,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7388209873137778229">Seuls les appareils pris en charge sont affichés.</translation>
 <translation id="7392118418926456391">Échec de l'analyse antivirus</translation>
 <translation id="7392915005464253525">&amp;Rouvrir la fenêtre fermée</translation>
+<translation id="7393073300870882456">{COUNT,plural, =1{1 élément copié}one{{COUNT} élément copié}other{{COUNT} éléments copiés}}</translation>
 <translation id="7396017167185131589">Les dossiers partagés s'afficheront ici</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" /> sera lancé au démarrage du système et continuera de s'exécuter en arrière-plan, même si toutes les fenêtres de <ph name="PRODUCT_NAME" /> sont fermées.</translation>
 <translation id="7399045143794278225">Personnaliser la synchronisation</translation>
@@ -5565,12 +5579,14 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />, dans <ph name="PAGE_TITLE" />.</translation>
 <translation id="7674416868315480713">Désactiver toutes les redirections de ports dans Linux</translation>
 <translation id="7674542105240814168">Accès à la position refusé</translation>
+<translation id="7676119992609591770"><ph name="NUM" /> onglet trouvé pour « <ph name="SEARCH_TEXT" /> »</translation>
 <translation id="7676867886086876795">Envoyez votre voix à Google pour autoriser la dictée dans n'importe quel champ de texte.</translation>
 <translation id="7678280409648629969">Les données de connexion seront stockées dans Chrome lorsque vous quitterez le mode de navigation privée. Cela vous permettra d'utiliser Touch ID avec ce site Web à nouveau plus tard.</translation>
 <translation id="7680416688940118410">Calibration de l'écran tactile</translation>
 <translation id="7681095912841365527">Le site peut utiliser le Bluetooth</translation>
 <translation id="7682634383739326341">Empêcher les sites de se connecter à des appareils branchés sur port USB</translation>
 <translation id="7683373461016844951">Pour continuer, cliquez sur OK, puis sur Ajouter une personne pour créer un nouveau profil pour votre adresse de courriel <ph name="DOMAIN" />.</translation>
+<translation id="7683593009096723900">{COUNT,plural, =0{Tout ouvrir dans une fenêtre de &amp;navigation privée}=1{Ouvrir dans une fenêtre de &amp;navigation privée}one{Tout ouvrir ({COUNT}) dans une fenêtre de &amp;navigation privée}other{Tout ouvrir ({COUNT}) dans une fenêtre de &amp;navigation privée}}</translation>
 <translation id="7684212569183643648">Élément installé par votre administrateur</translation>
 <translation id="7684559058815332124">Consulter la page de connexion au portail captif</translation>
 <translation id="7684718995427157417">Pour créer et tester vos applications, activez le pont de débogage Android (PDA). Prenez note que cette action permet d'installer des applications Android qui n'ont pas été vérifiées par Google. Pour désactiver cette fonctionnalité, vous devrez réinitialiser l'appareil.</translation>
@@ -5652,6 +5668,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7772773261844472235">Vérifiez l'état de votre Chromebook</translation>
 <translation id="7773726648746946405">Stockage de session</translation>
 <translation id="7774365994322694683">Oiseau</translation>
+<translation id="7774792847912242537">Trop de demandes.</translation>
 <translation id="7776156998370251340"><ph name="ORIGIN" /> sera en mesure d'afficher les fichiers dans le dossier <ph name="FOLDERNAME" /> jusqu'à ce que vous fermiez tous les onglets pour ce site</translation>
 <translation id="7776701556330691704">Aucune voix trouvée</translation>
 <translation id="7780252971640011240">Problèmes de connexion. Veuillez communiquer avec votre fournisseur de services pour obtenir de l'assistance.</translation>
@@ -5681,6 +5698,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7799299114731150374">Le fond d'écran a été défini</translation>
 <translation id="7800518121066352902">Rotation dans le sens c&amp;ontraire des aiguilles d'une montre</translation>
 <translation id="780301667611848630">Non merci</translation>
+<translation id="7804072833593604762">Onglet fermé</translation>
 <translation id="7805768142964895445">État</translation>
 <translation id="7807067443225230855">Recherche et Assistant Google</translation>
 <translation id="7807711621188256451">Toujours autoriser <ph name="HOST" /> à accéder à votre caméra</translation>
@@ -5834,6 +5852,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7963001036288347286">Accélération du pavé tactile</translation>
 <translation id="7963826112438303517">L'Assistant Google utilise ces enregistrements et vos commandes vocales pour créer et actualiser le modèle de votre voix, qui est stocké uniquement sur les appareils sur lesquels vous avez activé la fonction Voice Match. Vous pouvez la réenregistrer ou afficher votre activité vocale dans les paramètres de l'Assistant Google.</translation>
 <translation id="7966241909927244760">C&amp;opier l'adresse de l'image</translation>
+<translation id="7966571622054096916">{COUNT,plural, =1{1 élément dans la liste des favoris}one{{COUNT} élément dans la liste des favoris}other{{COUNT} éléments dans la liste des favoris}}</translation>
 <translation id="7968072247663421402">Options de fournisseur</translation>
 <translation id="7968198493605442410">Copier le lien en format texte</translation>
 <translation id="7968742106503422125">Accéder aux données que vous copiez et collez et les modifier</translation>
@@ -5956,6 +5975,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="80974698889265265">Les NIP ne correspondent pas</translation>
 <translation id="809792523045608178"><ph name="IDS_SHORT_PRODUCT_NAME" /> utilise les paramètres mandataires d'une extension</translation>
 <translation id="8097959162767603171">Votre administrateur doit tout d'abord accepter les conditions d'utilisation dans la liste d'appareils de la console d'administrateur de Chrome.</translation>
+<translation id="810068641062493918"><ph name="LANGUAGE" /> sélectionné. Appuyez simultanément sur le bouton de recherche et la barre d'espace pour désélectionner cette langue.</translation>
 <translation id="8101987792947961127">Réinitialisation « Powerwash » nécessaire au prochain démarrage</translation>
 <translation id="8102139037507939978">Supprimer les renseignements personnels du fichier system_logs.txt.</translation>
 <translation id="8102159139658438129">Accédez à <ph name="LINK_BEGIN" />Paramètres<ph name="LINK_END" /> pour afficher les options de votre téléphone connecté</translation>
@@ -5997,6 +6017,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8143951647992294073">Sélectionner <ph name="TOPIC_SOURCE" /> (<ph name="TOPIC_SOURCE_DESC" />)</translation>
 <translation id="8146177459103116374">Si vous êtes déjà enregistré sur ​​cet appareil, vous pouvez <ph name="LINK2_START" />vous connecter à l'aide de votre compte<ph name="LINK2_END" />.</translation>
 <translation id="8146793085009540321">Échec de la connexion. Veuillez communiquer avec votre administrateur ou essayer de nouveau.</translation>
+<translation id="8147900440966275470"><ph name="NUM" /> onglet trouvé</translation>
 <translation id="8148760431881541277">Limiter les connexions</translation>
 <translation id="8151579390896831136">Personnalisez votre profil, y compris son nom</translation>
 <translation id="8151638057146502721">Configurer</translation>
@@ -6321,6 +6342,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8557022314818157177">Continuez à toucher votre clé de sécurité jusqu'à ce que votre empreinte digitale soit capturée</translation>
 <translation id="855773602626431402">L'exécution hors carré de sable d'un plugiciel a été empêchée sur cette page.</translation>
 <translation id="8557930019681227453">Fichier de configuration</translation>
+<translation id="8560327176991673955">{COUNT,plural, =0{Tout ouvrir dans une &amp;nouvelle fenêtre}=1{Ouvrir dans une &amp;nouvelle fenêtre}one{Tout ouvrir ({COUNT}) dans une &amp;nouvelle fenêtre}other{Tout ouvrir ({COUNT}) dans une &amp;nouvelle fenêtre}}</translation>
 <translation id="8561206103590473338">Éléphant</translation>
 <translation id="8561853412914299728"><ph name="TAB_TITLE" /> <ph name="EMOJI_PLAYING" /></translation>
 <translation id="8565650234829130278">Tentative d'installation d'une version antérieure de l'application.</translation>
@@ -6641,6 +6663,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8912810933860534797">Activer l'analyse automatique</translation>
 <translation id="8915370057835397490">Chargement des suggestions en cours…</translation>
 <translation id="8916476537757519021">Sous-cadre de navigation privée : <ph name="SUBFRAME_SITE" /></translation>
+<translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> de <ph name="GIVEN_NAME" /></translation>
 <translation id="8922013791253848639">Toujours autoriser les annonces sur ce site</translation>
 <translation id="8923880975836399332">Turquoise foncé</translation>
 <translation id="8925458182817574960">Paramètre&amp;s</translation>
@@ -6779,6 +6802,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="9078316009970372699">Désactiver le partage de connexion instantané</translation>
 <translation id="9084064520949870008">Ouvrir dans une fenêtre</translation>
 <translation id="9085256200913095638">Dupliquer l'onglet sélectionné</translation>
+<translation id="9085776959277692427"><ph name="LANGUAGE" /> non sélectionné. Appuyez simultanément sur le bouton de recherche et la barre d'espace pour sélectionner une langue.</translation>
 <translation id="9087949559523851360">Ajouter un profil d'utilisateur restreint</translation>
 <translation id="9088234649737575428">Le plugiciel <ph name="PLUGIN_NAME" /> est bloqué par une politique de l'entreprise</translation>
 <translation id="9088446193279799727">Impossible de configurer Linux. Connectez-vous à Internet et réessayez.</translation>
