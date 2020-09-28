@@ -17,9 +17,9 @@ PASS Removes an animation after updating another animation's effect to one with 
 PASS Removes an animation after updating its effect to one with different properties
 PASS Removes an animation when another animation uses a shorthand
 PASS Removes an animation that uses a shorthand
-FAIL Removes an animation by another animation using logical properties assert_equals: expected "removed" but got "active"
-FAIL Removes an animation using logical properties assert_equals: expected "removed" but got "active"
-FAIL Removes an animation by another animation using logical properties after updating the context assert_equals: expected "removed" but got "active"
+PASS Removes an animation by another animation using logical properties
+PASS Removes an animation using logical properties
+PASS Removes an animation by another animation using logical properties after updating the context
 PASS Removes an animation after updating another animation's effect's target
 PASS Removes an animation after updating its effect's target
 PASS Removes an animation after updating another animation's effect to one with a different target

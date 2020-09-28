@@ -4448,9 +4448,6 @@ crbug.com/1045599 virtual/layout-ng-grid/fast/css-grid-layout/should-not-collaps
 crbug.com/1045599 virtual/layout-ng-grid/fast/css-grid-layout/swap-lines-if-start-is-further-endward-than-end-line.html [ Failure Crash ]
 crbug.com/1045599 virtual/layout-ng-grid/fast/css-grid-layout/vertical-align-do-not-effect-grid-items.html [ Failure Crash ]
 
-# [css-logical]
-crbug.com/865579 external/wpt/css/css-logical/animation-001.html [ Failure Pass ]
-
 # [css-animations]
 crbug.com/993365 external/wpt/css/css-transitions/Element-getAnimations.tentative.html [ Failure Pass ]
 

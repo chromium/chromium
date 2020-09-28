@@ -23,20 +23,16 @@ class StyleSheetContents;
 // StringKeyframe are expanded to shorthand and de-duplicated, with newer
 // properties replacing older ones. SVG attributes are similarly de-duplicated.
 //
-// TODO(smcgruer): By the spec, a StringKeyframe should not de-duplicate or
-// expand shorthand properties; that is done for computed keyframes.
 class CORE_EXPORT StringKeyframe : public Keyframe {
  public:
   StringKeyframe()
-      : css_property_map_(MakeGarbageCollected<MutableCSSPropertyValueSet>(
-            kHTMLStandardMode)),
-        presentation_attribute_map_(
+      : presentation_attribute_map_(
             MakeGarbageCollected<MutableCSSPropertyValueSet>(
                 kHTMLStandardMode)) {}
   StringKeyframe(const StringKeyframe& copy_from);
 
   MutableCSSPropertyValueSet::SetResult SetCSSPropertyValue(
-      const AtomicString& property_name,
+      const AtomicString& custom_property_name,
       const String& value,
       SecureContextMode,
       StyleSheetContents*);
@@ -46,6 +42,7 @@ class CORE_EXPORT StringKeyframe : public Keyframe {
       SecureContextMode,
       StyleSheetContents*);
   void SetCSSPropertyValue(const CSSProperty&, const CSSValue&);
+
   void SetPresentationAttributeValue(const CSSProperty&,
                                      const String& value,
                                      SecureContextMode,
@@ -53,13 +50,16 @@ class CORE_EXPORT StringKeyframe : public Keyframe {
   void SetSVGAttributeValue(const QualifiedName&, const String& value);
 
   const CSSValue& CssPropertyValue(const PropertyHandle& property) const {
+    EnsureCssPropertyMap();
     int index = -1;
-    if (property.IsCSSCustomProperty())
+    if (property.IsCSSCustomProperty()) {
       index =
           css_property_map_->FindPropertyIndex(property.CustomPropertyName());
-    else
+    } else {
+      DCHECK(!property.GetCSSProperty().IsShorthand());
       index = css_property_map_->FindPropertyIndex(
           property.GetCSSProperty().PropertyID());
+    }
     CHECK_GE(index, 0);
     return css_property_map_->PropertyAt(static_cast<unsigned>(index)).Value();
   }
@@ -85,6 +85,11 @@ class CORE_EXPORT StringKeyframe : public Keyframe {
                                        Element*) const override;
 
   Keyframe* Clone() const override;
+
+  bool HasLogicalProperty() { return has_logical_property_; }
+
+  bool SetLogicalPropertyResolutionContext(TextDirection text_direction,
+                                           WritingMode writing_mode);
 
   void Trace(Visitor*) const override;
 
@@ -160,21 +165,75 @@ class CORE_EXPORT StringKeyframe : public Keyframe {
     String value_;
   };
 
+  class PropertyResolver : public GarbageCollected<PropertyResolver> {
+   public:
+    // Custom properties must use this version of the constructor.
+    PropertyResolver(CSSPropertyID property_id, const CSSValue& css_value);
+
+    // Shorthand and logical properties must use this version of the
+    // constructor.
+    PropertyResolver(const CSSProperty& property,
+                     const MutableCSSPropertyValueSet* property_value_set,
+                     bool is_logical);
+
+    static PropertyResolver* CreateCustomVariableResolver(
+        const CSSValue& css_value);
+
+    const CSSValue* CssValue();
+
+    void AppendTo(MutableCSSPropertyValueSet* property_value_set,
+                  TextDirection text_direction,
+                  WritingMode writing_mode);
+
+    void SetProperty(MutableCSSPropertyValueSet* property_value_set,
+                     CSSPropertyID property_id,
+                     const CSSValue& value,
+                     TextDirection text_direction,
+                     WritingMode writing_mode);
+
+    static bool HasLowerPriority(PropertyResolver* first,
+                                 PropertyResolver* second);
+
+    // Helper methods for resolving longhand name collisions.
+    // Longhands take priority over shorthands.
+    // Physical properties take priority over logical.
+    // Two shorthands with overlapping longhand properties are sorted based
+    // on the number of longhand properties in their expansions.
+    bool IsLogical() { return is_logical_; }
+    bool IsShorthand() { return css_property_value_set_; }
+    unsigned ExpansionCount() {
+      return css_property_value_set_ ? css_property_value_set_->PropertyCount()
+                                     : 1;
+    }
+
+    void Trace(Visitor* visitor) const;
+
+   private:
+    CSSPropertyID property_id_ = CSSPropertyID::kInvalid;
+    Member<const CSSValue> css_value_ = nullptr;
+    Member<ImmutableCSSPropertyValueSet> css_property_value_set_ = nullptr;
+    bool is_logical_ = false;
+  };
+
  private:
   Keyframe::PropertySpecificKeyframe* CreatePropertySpecificKeyframe(
       const PropertyHandle&,
       EffectModel::CompositeOperation effect_composite,
       double offset) const override;
 
+  void InvalidateCssPropertyMap() { css_property_map_ = nullptr; }
+  void EnsureCssPropertyMap() const;
+
   bool IsStringKeyframe() const override { return true; }
 
-  // The unresolved property and their values. This is needed for correct
-  // implementation of KeyframeEffect.getKeyframes(). We use a single list for
-  // CSS, SVG properties. The only requirement for a property value to be
-  // in this list is that it parses correctly.
-  //
+  // Mapping of unresolved properties to a their resolvers. A resolver knows
+  // how to expand shorthands to their corresponding longhand property names,
+  // convert logical to physical property names and compare precedence for
+  // resolving longhand name collisions.  The resolver also knows how to
+  // create serialized text for a shorthand, which is required for getKeyframes
+  // calls.
   // See: https://drafts.csswg.org/web-animations/#keyframes-section
-  HeapHashMap<PropertyHandle, Member<const CSSValue>> input_properties_;
+  HeapHashMap<PropertyHandle, Member<PropertyResolver>> input_properties_;
 
   // The resolved properties are computed from unresolved ones applying these
   // steps:
@@ -182,17 +241,21 @@ class CORE_EXPORT StringKeyframe : public Keyframe {
   //      one (e.g., margin, margin-top)
   //  2. Expand shorthands to longhands
   //  3. Expand logical properties to physical ones
-  //
-  // See:
-  // https://drafts.csswg.org/web-animations/#calculating-computed-keyframes
-  //
-  // TODO(816956): AFAICT we don't do (1) at the moment rather we parse and feed
-  // values into the MutableCSSPropertyValueSet which keeps replacing values as
-  // they come in. I am not sure if it leads to the same conflict resolution
-  // that web-animation expects. This needs more investigation.
-  Member<MutableCSSPropertyValueSet> css_property_map_;
+  mutable Member<MutableCSSPropertyValueSet> css_property_map_;
   Member<MutableCSSPropertyValueSet> presentation_attribute_map_;
   HashMap<const QualifiedName*, String> svg_attribute_map_;
+
+  // If the keyframes contain one or more logical properties, these need to be
+  // remapped to physical properties when the writing mode or text direction
+  // changes.
+  bool has_logical_property_ = false;
+
+  // The following properties are required for mapping logical to physical
+  // property names. Though the same for all keyframes within the same model,
+  // we store the value here to facilitate lazy evaluation of the CSS
+  // properties.
+  TextDirection text_direction_ = TextDirection::kLtr;
+  WritingMode writing_mode_ = WritingMode::kHorizontalTb;
 };
 
 using CSSPropertySpecificKeyframe = StringKeyframe::CSSPropertySpecificKeyframe;

@@ -689,6 +689,18 @@ ActiveInterpolationsMap KeyframeEffect::InterpolationsForCommitStyles() {
   return results;
 }
 
+void KeyframeEffect::SetLogicalPropertyResolutionContext(
+    TextDirection text_direction,
+    WritingMode writing_mode) {
+  if (auto* model = DynamicTo<StringKeyframeEffectModel>(Model())) {
+    if (model->SetLogicalPropertyResolutionContext(text_direction,
+                                                   writing_mode)) {
+      ClearEffects();
+      InvalidateAndNotifyOwner();
+    }
+  }
+}
+
 void KeyframeEffect::CountAnimatedProperties() const {
   if (target_element_) {
     Document& document = target_element_->GetDocument();

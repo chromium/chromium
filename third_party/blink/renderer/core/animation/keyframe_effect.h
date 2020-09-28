@@ -142,6 +142,9 @@ class CORE_EXPORT KeyframeEffect final : public AnimationEffect {
   bool GetIgnoreCSSKeyframes() { return ignore_css_keyframes_; }
   void SetIgnoreCSSKeyframes() { ignore_css_keyframes_ = true; }
 
+  void SetLogicalPropertyResolutionContext(TextDirection text_direction,
+                                           WritingMode writing_mode);
+
  private:
   EffectModel::CompositeOperation CompositeInternal() const;
 

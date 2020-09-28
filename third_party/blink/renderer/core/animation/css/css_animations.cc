@@ -593,7 +593,7 @@ void CSSAnimations::CalculateAnimationUpdate(CSSAnimationUpdate& update,
                                              const ComputedStyle& style,
                                              const ComputedStyle* parent_style,
                                              StyleResolver* resolver) {
-  const ElementAnimations* element_animations =
+  ElementAnimations* element_animations =
       animating_element ? animating_element->GetElementAnimations() : nullptr;
 
   bool is_animation_style_change =
@@ -614,8 +614,22 @@ void CSSAnimations::CalculateAnimationUpdate(CSSAnimationUpdate& update,
   const ComputedStyle* old_style =
       animating_element ? animating_element->GetComputedStyle() : nullptr;
   bool logical_property_mapping_change =
-      old_style && (old_style->Direction() != style.Direction() ||
-                    old_style->GetWritingMode() != style.GetWritingMode());
+      !old_style || old_style->Direction() != style.Direction() ||
+      old_style->GetWritingMode() != style.GetWritingMode();
+
+  if (logical_property_mapping_change && element_animations) {
+    // Update computed keyframes for any running animations that depend on
+    // logical properties.
+    for (auto& entry : element_animations->Animations()) {
+      Animation* animation = entry.key;
+      if (auto* keyframe_effect =
+              DynamicTo<KeyframeEffect>(animation->effect())) {
+        keyframe_effect->SetLogicalPropertyResolutionContext(
+            style.Direction(), style.GetWritingMode());
+        animation->UpdateIfNecessary();
+      }
+    }
+  }
 
   const CSSAnimationData* animation_data = style.Animations();
   const CSSAnimations* css_animations =
