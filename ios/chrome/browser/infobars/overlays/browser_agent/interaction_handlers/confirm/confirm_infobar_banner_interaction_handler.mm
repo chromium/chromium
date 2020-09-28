@@ -26,7 +26,8 @@ ConfirmInfobarBannerInteractionHandler::
 
 void ConfirmInfobarBannerInteractionHandler::MainButtonTapped(
     InfoBarIOS* infobar) {
-  infobar->set_accepted(GetInfobarDelegate(infobar)->Accept());
+  // Confirm Infobars don't need to update badge status.
+  GetInfobarDelegate(infobar)->Accept();
 }
 
 void ConfirmInfobarBannerInteractionHandler::BannerVisibilityChanged(

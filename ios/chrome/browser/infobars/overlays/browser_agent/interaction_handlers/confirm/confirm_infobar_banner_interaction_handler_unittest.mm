@@ -52,13 +52,10 @@ class ConfirmInfobarBannerInteractionHandlerTest : public PlatformTest {
   InfoBarIOS* infobar_;
 };
 
-// Tests MainButtonTapped() calls Accept() on the mock delegate and resets
-// the infobar to be accepted.
+// Tests MainButtonTapped() calls Accept() on the mock delegate.
 TEST_F(ConfirmInfobarBannerInteractionHandlerTest, MainButton) {
-  ASSERT_FALSE(infobar_->accepted());
   EXPECT_CALL(mock_delegate(), Accept()).WillOnce(testing::Return(true));
   handler_.MainButtonTapped(infobar_);
-  EXPECT_TRUE(infobar_->accepted());
 }
 
 // Tests that BannerVisibilityChanged() InfobarDismissed() on the mock delegate.
