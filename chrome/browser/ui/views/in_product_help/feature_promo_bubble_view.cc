@@ -34,6 +34,7 @@
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/style/platform_style.h"
+#include "ui/views/style/typography.h"
 #include "ui/views/view_class_properties.h"
 
 namespace {
@@ -166,40 +167,45 @@ FeaturePromoBubbleView::FeaturePromoBubbleView(
       ThemeProperties::COLOR_FEATURE_PROMO_BUBBLE_BACKGROUND);
   const SkColor text_color = theme_provider->GetColor(
       ThemeProperties::COLOR_FEATURE_PROMO_BUBBLE_TEXT);
-  const int vertical_spacing = layout_provider->GetDistanceMetric(
+  const int text_vertical_spacing = layout_provider->GetDistanceMetric(
+      views::DISTANCE_RELATED_CONTROL_VERTICAL);
+  const int button_vertical_spacing = layout_provider->GetDistanceMetric(
       views::DISTANCE_UNRELATED_CONTROL_VERTICAL);
 
   auto box_layout = std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, kBubbleContentsInsets,
-      vertical_spacing);
+      text_vertical_spacing);
   box_layout->set_main_axis_alignment(
       views::BoxLayout::MainAxisAlignment::kCenter);
   box_layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kStretch);
   SetLayoutManager(std::move(box_layout));
 
+  ChromeTextContext body_label_context;
   if (params.title_string_specifier.has_value()) {
     auto* title_label = AddChildView(std::make_unique<views::Label>(
-        l10n_util::GetStringUTF16(params.title_string_specifier.value())));
+        l10n_util::GetStringUTF16(params.title_string_specifier.value()),
+        ChromeTextContext::CONTEXT_IPH_BUBBLE_TITLE));
     title_label->SetBackgroundColor(background_color);
     title_label->SetEnabledColor(text_color);
-    title_label->SetFontList(views::style::GetFont(
-        views::style::CONTEXT_DIALOG_TITLE, views::style::STYLE_PRIMARY));
+    title_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 
-    if (params.preferred_width.has_value()) {
+    if (params.preferred_width.has_value())
       title_label->SetMultiLine(true);
-      title_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    }
+
+    body_label_context = CONTEXT_IPH_BUBBLE_BODY_WITH_TITLE;
+  } else {
+    body_label_context = CONTEXT_IPH_BUBBLE_BODY_WITHOUT_TITLE;
   }
 
-  auto* body_label = AddChildView(std::make_unique<views::Label>(body_text));
+  auto* body_label = AddChildView(
+      std::make_unique<views::Label>(body_text, body_label_context));
   body_label->SetBackgroundColor(background_color);
   body_label->SetEnabledColor(text_color);
+  body_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 
-  if (params.preferred_width.has_value()) {
+  if (params.preferred_width.has_value())
     body_label->SetMultiLine(true);
-    body_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  }
 
   if (snoozable_) {
     auto* button_container = AddChildView(std::make_unique<views::View>());
@@ -209,6 +215,8 @@ FeaturePromoBubbleView::FeaturePromoBubbleView(
 
     button_layout->set_main_axis_alignment(
         views::BoxLayout::MainAxisAlignment::kEnd);
+    button_container->SetProperty(
+        views::kMarginsKey, gfx::Insets(button_vertical_spacing, 0, 0, 0));
 
     const base::string16 snooze_text =
         l10n_util::GetStringUTF16(IDS_PROMO_SNOOZE_BUTTON);

@@ -56,7 +56,16 @@ enum ChromeTextContext {
   // Status labels in the download shelf.  Usually 10pt.
   CONTEXT_DOWNLOAD_SHELF_STATUS,
 
-  // Button label in the IPH bubble.
+  // Title label in the IPH bubble. Usually 18pt.
+  CONTEXT_IPH_BUBBLE_TITLE,
+
+  // Body text label in the IPH bubble when a title exists. Usually 13pt.
+  CONTEXT_IPH_BUBBLE_BODY_WITH_TITLE,
+
+  // Body text label in the IPH bubble when no title exists. Usually 14pt.
+  CONTEXT_IPH_BUBBLE_BODY_WITHOUT_TITLE,
+
+  // Button label in the IPH bubble. Usually 13pt.
   CONTEXT_IPH_BUBBLE_BUTTON
 };
 
