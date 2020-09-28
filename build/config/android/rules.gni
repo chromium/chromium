@@ -979,6 +979,7 @@ if (enable_java_templates) {
                                "android_manifest",
                                "android_manifest_dep",
                                "custom_package",
+                               "mergeable_android_manifests",
                                "resource_overlay",
                                "recursive_resource_deps",
                              ])
@@ -989,6 +990,13 @@ if (enable_java_templates) {
       }
 
       possible_config_deps = _deps
+
+      # Always merge manifests from resources.
+      # * Might want to change this at some point for consistency and clarity,
+      #   but keeping for backwards-compatibility.
+      if (!defined(mergeable_android_manifests) && defined(android_manifest)) {
+        mergeable_android_manifests = [ android_manifest ]
+      }
     }
 
     prepare_resources(target_name) {
@@ -1121,9 +1129,14 @@ if (enable_java_templates) {
   #    }
   #  }
   template("java_group") {
+    _build_config_vars = [
+      "input_jars_paths",
+      "mergeable_android_manifests",
+      "proguard_configs",
+    ]
     forward_variables_from(invoker, [ "testonly" ])
     write_build_config("$target_name$build_config_target_suffix") {
-      forward_variables_from(invoker, [ "input_jars_paths" ])
+      forward_variables_from(invoker, _build_config_vars)
       type = "group"
       build_config = "$target_gen_dir/${invoker.target_name}.build_config"
       supports_android = true
@@ -1143,7 +1156,7 @@ if (enable_java_templates) {
       }
     }
     group(target_name) {
-      forward_variables_from(invoker, "*")
+      forward_variables_from(invoker, "*", _build_config_vars)
       if (!defined(deps)) {
         deps = []
       }
@@ -4219,10 +4232,7 @@ if (enable_java_templates) {
         args += [ "--ignore-resources" ]
       }
       inputs = [ invoker.aar_path ]
-      outputs = []
-      if (!_ignore_manifest) {
-        outputs += [ "${_output_path}/AndroidManifest.xml" ]
-      }
+      outputs = [ "${_output_path}/AndroidManifest.xml" ]
       if (!_strip_resources && _scanned_files.has_r_text_file) {
         # Certain packages, in particular Play Services have no R.txt even
         # though its presence is mandated by AAR spec. Such packages cause
@@ -4313,6 +4323,17 @@ if (enable_java_templates) {
       }
     } else if (defined(invoker.strip_drawables)) {
       not_needed(invoker, [ "strip_drawables" ])
+    }
+
+    if (_ignore_manifest) {
+      # Having this available can be useful for DFMs that depend on AARs. It
+      # provides a way to have manifest entries go into the base split while
+      # the code goes into a DFM.
+      java_group("${target_name}__ignored_manifest") {
+        forward_variables_from(invoker, [ "testonly" ])
+        deps = [ ":$_unpack_target_name" ]
+        mergeable_android_manifests = [ "${_output_path}/AndroidManifest.xml" ]
+      }
     }
 
     # Create the android_assets target for assets

@@ -505,11 +505,6 @@ template("write_build_config") {
           rebase_path(invoker.bundled_srcjars, root_build_dir)
       args += [ "--bundled-srcjars=$_rebased_bundled_srcjars" ]
     }
-    if (defined(invoker.input_jars_paths)) {
-      _rebased_input_jars_paths =
-          rebase_path(invoker.input_jars_paths, root_build_dir)
-      args += [ "--extra-classpath-jars=$_rebased_input_jars_paths" ]
-    }
     if (defined(invoker.proguard_enabled) && invoker.proguard_enabled) {
       args += [ "--proguard-enabled" ]
     }
@@ -517,6 +512,18 @@ template("write_build_config") {
       _rebased_proguard_mapping_path =
           rebase_path(invoker.proguard_mapping_path, root_build_dir)
       args += [ "--proguard-mapping-path=$_rebased_proguard_mapping_path" ]
+    }
+    if (defined(invoker.input_jars_paths)) {
+      _rebased_input_jars_paths =
+          rebase_path(invoker.input_jars_paths, root_build_dir)
+      args += [ "--extra-classpath-jars=$_rebased_input_jars_paths" ]
+    }
+    if (defined(invoker.mergeable_android_manifests)) {
+      _rebased_mergeable_android_manifests =
+          rebase_path(invoker.mergeable_android_manifests, root_build_dir)
+      args += [
+        "--mergeable-android-manifests=$_rebased_mergeable_android_manifests",
+      ]
     }
     if (defined(invoker.proguard_configs)) {
       _rebased_proguard_configs =
