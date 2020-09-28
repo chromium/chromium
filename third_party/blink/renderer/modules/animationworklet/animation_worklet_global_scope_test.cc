@@ -157,12 +157,11 @@ class AnimationWorkletGlobalScopeTest : public PageTestBase {
     DCHECK(isolate);
     ScriptState::Scope scope(script_state);
 
-    ScriptEvaluationResult result =
+    ClassicEvaluationResult result =
         global_scope->ScriptController()->EvaluateAndReturnValue(
             ScriptSourceCode(script), SanitizeScriptErrors::kSanitize);
-    DCHECK_EQ(result.GetResultType(),
-              ScriptEvaluationResult::ResultType::kSuccess);
-    return ToBoolean(isolate, result.GetSuccessValue(), ASSERT_NO_EXCEPTION);
+    DCHECK(!result.IsEmpty());
+    return ToBoolean(isolate, result.GetValue(), ASSERT_NO_EXCEPTION);
   }
 
   void RunConstructAndAnimateTestOnWorklet(

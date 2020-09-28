@@ -101,7 +101,7 @@ void ModuleScript::Trace(Visitor* visitor) const {
 }
 
 void ModuleScript::RunScript(LocalFrame* frame) {
-  // We need a HandleScope for the ScriptEvaluationResult that is created
+  // We need a HandleScope for the ModuleEvaluationResult that is created
   // in ::ExecuteModule(...).
   ScriptState::Scope scope(SettingsObject()->GetScriptState());
   DVLOG(1) << *this << "::RunScript()";
@@ -112,7 +112,7 @@ void ModuleScript::RunScript(LocalFrame* frame) {
 
 bool ModuleScript::RunScriptOnWorkerOrWorklet(
     WorkerOrWorkletGlobalScope& global_scope) {
-  // We need a HandleScope for the ScriptEvaluationResult that is created
+  // We need a HandleScope for the ModuleEvaluationResult that is created
   // in ::ExecuteModule(...).
   ScriptState::Scope scope(SettingsObject()->GetScriptState());
   DCHECK(global_scope.IsContextThread());
@@ -120,10 +120,9 @@ bool ModuleScript::RunScriptOnWorkerOrWorklet(
   // This |error| is always null because the second argument is |kReport|.
   // TODO(nhiroki): Catch an error when an evaluation error happens.
   // (https://crbug.com/680046)
-  ScriptEvaluationResult result = SettingsObject()->ExecuteModule(
+  ModuleEvaluationResult result = SettingsObject()->ExecuteModule(
       this, Modulator::CaptureEvalErrorFlag::kReport);
-
-  return result.GetResultType() == ScriptEvaluationResult::ResultType::kSuccess;
+  return result.IsSuccess();
 }
 
 std::pair<size_t, size_t> ModuleScript::GetClassicScriptSizes() const {

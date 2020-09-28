@@ -33,9 +33,9 @@
 
 #include "base/macros.h"
 #include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/classic_evaluation_result.h"
 #include "third_party/blink/renderer/bindings/core/v8/rejected_promises.h"
 #include "third_party/blink/renderer/bindings/core/v8/sanitize_script_errors.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_evaluation_result.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -96,7 +96,7 @@ class CORE_EXPORT WorkerOrWorkletScriptController final
 
   // https://html.spec.whatwg.org/C/#run-a-classic-script
   // Callers should enter ScriptState::Scope before calling this.
-  ScriptEvaluationResult EvaluateAndReturnValue(
+  ClassicEvaluationResult EvaluateAndReturnValue(
       const ScriptSourceCode&,
       SanitizeScriptErrors sanitize_script_errors,
       mojom::blink::V8CacheOptions = mojom::blink::V8CacheOptions::kDefault,

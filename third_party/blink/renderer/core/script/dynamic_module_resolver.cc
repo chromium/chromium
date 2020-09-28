@@ -153,94 +153,85 @@ void DynamicImportTreeClient::NotifyModuleTreeLoadFinished(
 
   // <spec step="7">Run the module script result, with the rethrow errors
   // boolean set to true.</spec>
-  ScriptEvaluationResult result = modulator_->ExecuteModule(
+  ModuleEvaluationResult result = modulator_->ExecuteModule(
       module_script, Modulator::CaptureEvalErrorFlag::kCapture);
 
-  switch (result.GetResultType()) {
-    case ScriptEvaluationResult::ResultType::kException:
-      // <spec step="8">If running the module script throws an exception,
-      // ...</spec> <spec step="8">... then perform
-      // FinishDynamicImport(referencingScriptOrModule, specifier,
-      // promiseCapability, the thrown exception completion).</spec>
-      //
-      // Note: "the thrown exception completion" is |error|.
-      //
-      // <spec
-      // href="https://tc39.github.io/proposal-dynamic-import/#sec-finishdynamicimport"
-      // step="1">If completion is an abrupt completion, then perform !
-      // Call(promiseCapability.[[Reject]], undefined, « completion.[[Value]]
-      // »).</spec>
-      promise_resolver_->Reject(result.GetExceptionForModule());
-      break;
-
-    case ScriptEvaluationResult::ResultType::kNotRun:
-    case ScriptEvaluationResult::ResultType::kAborted:
-      // Do nothing when script is disabled or after a script is aborted.
-      break;
-
-    case ScriptEvaluationResult::ResultType::kSuccess: {
-      // <spec step="9">Otherwise, perform
-      // FinishDynamicImport(referencingScriptOrModule, specifier,
-      // promiseCapability, NormalCompletion(undefined)).</spec>
-      //
-      // <spec
-      // href="https://tc39.github.io/proposal-dynamic-import/#sec-finishdynamicimport"
-      // step="2.1">Assert: completion is a normal completion and
-      // completion.[[Value]] is undefined.</spec>
-
-      if (base::FeatureList::IsEnabled(features::kTopLevelAwait)) {
-        ScriptPromise promise = result.GetPromise(script_state);
-        v8::Local<v8::Function> callback_success =
-            ModuleResolutionSuccessCallback::CreateFunction(
-                script_state, promise_resolver_, module_script);
-        v8::Local<v8::Function> callback_failure =
-            ModuleResolutionFailureCallback::CreateFunction(script_state,
-                                                            promise_resolver_);
-        promise.Then(callback_success, callback_failure);
-        return;
-      }
-
-      // <spec
-      // href="https://tc39.github.io/proposal-dynamic-import/#sec-finishdynamicimport"
-      // step="2.2">Let moduleRecord be !
-      // HostResolveImportedModule(referencingScriptOrModule, specifier).</spec>
-      //
-      // Note: We skip invocation of ModuleRecordResolver here. The
-      // result of HostResolveImportedModule is guaranteed to be
-      // |module_script|.
-      v8::Local<v8::Module> record = module_script->V8Module();
-      DCHECK(!record.IsEmpty());
-
-      // <spec
-      // href="https://tc39.github.io/proposal-dynamic-import/#sec-finishdynamicimport"
-      // step="2.3">Assert: Evaluate has already been invoked on moduleRecord
-      // and successfully completed.</spec>
-      //
-      // Because |error| is empty, we are sure that ExecuteModule() above was
-      // successfully completed.
-
-      // <spec
-      // href="https://tc39.github.io/proposal-dynamic-import/#sec-finishdynamicimport"
-      // step="2.4">Let namespace be GetModuleNamespace(moduleRecord).</spec>
-      v8::Local<v8::Value> module_namespace = ModuleRecord::V8Namespace(record);
-
-      // <spec
-      // href="https://tc39.github.io/proposal-dynamic-import/#sec-finishdynamicimport"
-      // step="2.5">If namespace is an abrupt completion, perform !
-      // Call(promiseCapability.[[Reject]], undefined, « namespace.[[Value]]
-      // »).</spec>
-      //
-      // Note: Blink's implementation never allows |module_namespace| to be
-      // an abrupt completion.
-
-      // <spec
-      // href="https://tc39.github.io/proposal-dynamic-import/#sec-finishdynamicimport"
-      // step="2.6">Otherwise, perform ! Call(promiseCapability.[[Resolve]],
-      // undefined, « namespace.[[Value]] »).</spec>
-      promise_resolver_->Resolve(module_namespace);
-      break;
-    }
+  // <spec step="8">If running the module script throws an exception, ...</spec>
+  if (result.IsException()) {
+    // <spec step="8">... then perform
+    // FinishDynamicImport(referencingScriptOrModule, specifier,
+    // promiseCapability, the thrown exception completion).</spec>
+    //
+    // Note: "the thrown exception completion" is |error|.
+    //
+    // <spec
+    // href="https://tc39.github.io/proposal-dynamic-import/#sec-finishdynamicimport"
+    // step="1">If completion is an abrupt completion, then perform !
+    // Call(promiseCapability.[[Reject]], undefined, « completion.[[Value]]
+    // »).</spec>
+    promise_resolver_->Reject(result.GetException());
+    return;
   }
+
+  // <spec step="9">Otherwise, perform
+  // FinishDynamicImport(referencingScriptOrModule, specifier,
+  // promiseCapability, NormalCompletion(undefined)).</spec>
+  //
+  // <spec
+  // href="https://tc39.github.io/proposal-dynamic-import/#sec-finishdynamicimport"
+  // step="2.1">Assert: completion is a normal completion and
+  // completion.[[Value]] is undefined.</spec>
+  DCHECK(result.IsSuccess());
+
+  if (base::FeatureList::IsEnabled(features::kTopLevelAwait)) {
+    ScriptPromise promise = result.GetPromise(script_state);
+    v8::Local<v8::Function> callback_success =
+        ModuleResolutionSuccessCallback::CreateFunction(
+            script_state, promise_resolver_, module_script);
+    v8::Local<v8::Function> callback_failure =
+        ModuleResolutionFailureCallback::CreateFunction(script_state,
+                                                        promise_resolver_);
+    promise.Then(callback_success, callback_failure);
+    return;
+  }
+
+  // <spec
+  // href="https://tc39.github.io/proposal-dynamic-import/#sec-finishdynamicimport"
+  // step="2.2">Let moduleRecord be !
+  // HostResolveImportedModule(referencingScriptOrModule, specifier).</spec>
+  //
+  // Note: We skip invocation of ModuleRecordResolver here. The
+  // result of HostResolveImportedModule is guaranteed to be |module_script|.
+  v8::Local<v8::Module> record = module_script->V8Module();
+  DCHECK(!record.IsEmpty());
+
+  // <spec
+  // href="https://tc39.github.io/proposal-dynamic-import/#sec-finishdynamicimport"
+  // step="2.3">Assert: Evaluate has already been invoked on moduleRecord and
+  // successfully completed.</spec>
+  //
+  // Because |error| is empty, we are sure that ExecuteModule() above was
+  // successfully completed.
+
+  // <spec
+  // href="https://tc39.github.io/proposal-dynamic-import/#sec-finishdynamicimport"
+  // step="2.4">Let namespace be GetModuleNamespace(moduleRecord).</spec>
+  v8::Local<v8::Value> module_namespace = ModuleRecord::V8Namespace(record);
+
+  // <spec
+  // href="https://tc39.github.io/proposal-dynamic-import/#sec-finishdynamicimport"
+  // step="2.5">If namespace is an abrupt completion, perform !
+  // Call(promiseCapability.[[Reject]], undefined, « namespace.[[Value]]
+  // »).</spec>
+  //
+  // Note: Blink's implementation never allows |module_namespace| to be
+  // an abrupt completion.
+
+  // <spec
+  // href="https://tc39.github.io/proposal-dynamic-import/#sec-finishdynamicimport"
+  // step="2.6">Otherwise, perform ! Call(promiseCapability.[[Resolve]],
+  // undefined, « namespace.[[Value]] »).</spec>
+  promise_resolver_->Resolve(module_namespace);
 }
 
 void DynamicImportTreeClient::Trace(Visitor* visitor) const {

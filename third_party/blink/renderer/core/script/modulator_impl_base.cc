@@ -337,7 +337,7 @@ void ModulatorImplBase::ProduceCacheModuleTree(
 
 // <specdef href="https://html.spec.whatwg.org/C/#run-a-module-script">
 // Spec with TLA: https://github.com/whatwg/html/pull/4352
-ScriptEvaluationResult ModulatorImplBase::ExecuteModule(
+ModuleEvaluationResult ModulatorImplBase::ExecuteModule(
     ModuleScript* module_script,
     CaptureEvalErrorFlag capture_error) {
   // <spec step="1">If rethrow errors is not given, let it be false.</spec>
@@ -348,9 +348,8 @@ ScriptEvaluationResult ModulatorImplBase::ExecuteModule(
 
   // <spec step="3">Check if we can run script with settings. If this returns
   // "do not run" then return NormalCompletion(empty).</spec>
-  if (IsScriptingDisabled()) {
-    return ScriptEvaluationResult::FromModuleNotRun();
-  }
+  if (IsScriptingDisabled())
+    return ModuleEvaluationResult::Empty();
 
   // <spec step="4">Prepare to run script given settings.</spec>
   //
@@ -362,7 +361,7 @@ ScriptEvaluationResult ModulatorImplBase::ExecuteModule(
   ScriptState::EscapableScope scope(script_state_);
 
   // Without TLA: <spec step="5">Let evaluationStatus be null.</spec>
-  ScriptEvaluationResult result = ScriptEvaluationResult::FromModuleNotRun();
+  ModuleEvaluationResult result = ModuleEvaluationResult::Empty();
 
   // <spec step="6">If script's error to rethrow is not null, ...</spec>
   if (module_script->HasErrorToRethrow()) {
@@ -372,7 +371,7 @@ ScriptEvaluationResult ModulatorImplBase::ExecuteModule(
     // With TLA:    <spec step="5">If script's error to rethrow is not null,
     //     then let valuationPromise be a promise rejected with script's error
     //     to rethrow.</spec>
-    result = ScriptEvaluationResult::FromModuleException(
+    result = ModuleEvaluationResult::FromException(
         module_script->CreateErrorToRethrow().V8Value());
   } else {
     // <spec step="7">Otherwise:</spec>
@@ -391,8 +390,7 @@ ScriptEvaluationResult ModulatorImplBase::ExecuteModule(
     // DOMException, [[Target]]: empty }.</spec>
 
     // [not specced] Store V8 code cache on successful evaluation.
-    if (result.GetResultType() ==
-        ScriptEvaluationResult::ResultType::kSuccess) {
+    if (result.IsSuccess()) {
       TaskRunner()->PostTask(
           FROM_HERE,
           WTF::Bind(&ModulatorImplBase::ProduceCacheModuleTreeTopLevel,
@@ -400,26 +398,27 @@ ScriptEvaluationResult ModulatorImplBase::ExecuteModule(
     }
   }
 
-  if (capture_error == CaptureEvalErrorFlag::kReport) {
-    if (base::FeatureList::IsEnabled(features::kTopLevelAwait)) {
+  if (base::FeatureList::IsEnabled(features::kTopLevelAwait)) {
+    if (capture_error == CaptureEvalErrorFlag::kReport) {
       // <spec step="7"> If report errors is true, then upon rejection of
       // evaluationPromise with reason, report the exception given by reason
       // for script.</spec>
       v8::Local<v8::Function> callback_failure =
           ModuleEvaluationRejectionCallback::CreateFunction(script_state_);
-      // Add a rejection handler to report back errors once the result
-      // promise is rejected.
+      // Add a rejection handler to report back errors once the result promise
+      // is rejected.
       result.GetPromise(script_state_)
           .Then(v8::Local<v8::Function>(), callback_failure);
-    } else {
-      // <spec step="8">If evaluationStatus is an abrupt completion,
-      // then:</spec>
-      if (result.GetResultType() ==
-          ScriptEvaluationResult::ResultType::kException) {
+    }
+  } else {
+    // <spec step="8">If evaluationStatus is an abrupt completion, then:</spec>
+    if (result.IsException()) {
+      // <spec step="8.1">If rethrow errors is true, rethrow the exception given
+      // by evaluationStatus.[[Value]].</spec>
+      if (capture_error == CaptureEvalErrorFlag::kReport) {
         // <spec step="8.2">Otherwise, report the exception given by
         // evaluationStatus.[[Value]] for script.</spec>
-        ModuleRecord::ReportException(script_state_,
-                                      result.GetExceptionForModule());
+        ModuleRecord::ReportException(script_state_, result.GetException());
       }
     }
   }

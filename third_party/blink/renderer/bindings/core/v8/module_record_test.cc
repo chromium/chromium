@@ -238,7 +238,7 @@ TEST_P(ModuleRecordTest, EvaluationErrorIsRemembered) {
   ASSERT_TRUE(ModuleRecord::Instantiate(scope.GetScriptState(), module_failure,
                                         js_url_f)
                   .IsEmpty());
-  ScriptEvaluationResult evaluation_result1 =
+  ModuleEvaluationResult evaluation_result1 =
       ModuleRecord::Evaluate(scope.GetScriptState(), module_failure, js_url_f);
 
   resolver->PrepareMockResolveResult(module_failure);
@@ -252,14 +252,12 @@ TEST_P(ModuleRecordTest, EvaluationErrorIsRemembered) {
   ASSERT_TRUE(
       ModuleRecord::Instantiate(scope.GetScriptState(), module, js_url_c)
           .IsEmpty());
-  ScriptEvaluationResult evaluation_result2 =
+  ModuleEvaluationResult evaluation_result2 =
       ModuleRecord::Evaluate(scope.GetScriptState(), module, js_url_f);
 
   if (base::FeatureList::IsEnabled(features::kTopLevelAwait)) {
-    EXPECT_EQ(evaluation_result1.GetResultType(),
-              ScriptEvaluationResult::ResultType::kSuccess);
-    EXPECT_EQ(evaluation_result2.GetResultType(),
-              ScriptEvaluationResult::ResultType::kSuccess);
+    EXPECT_TRUE(evaluation_result1.IsSuccess());
+    EXPECT_TRUE(evaluation_result2.IsSuccess());
 
     ScriptValue value1;
     ScriptValue value2;
@@ -275,12 +273,10 @@ TEST_P(ModuleRecordTest, EvaluationErrorIsRemembered) {
     EXPECT_FALSE(value2.IsEmpty());
     EXPECT_EQ(value1, value2);
   } else {
-    EXPECT_EQ(evaluation_result1.GetResultType(),
-              ScriptEvaluationResult::ResultType::kException);
-    EXPECT_EQ(evaluation_result2.GetResultType(),
-              ScriptEvaluationResult::ResultType::kException);
-    EXPECT_EQ(evaluation_result1.GetExceptionForModule(),
-              evaluation_result2.GetExceptionForModule());
+    EXPECT_TRUE(evaluation_result1.IsException());
+    EXPECT_TRUE(evaluation_result2.IsException());
+    EXPECT_EQ(evaluation_result1.GetException(),
+              evaluation_result2.GetException());
   }
 
   ASSERT_EQ(1u, resolver->ResolveCount());
@@ -304,9 +300,8 @@ TEST_P(ModuleRecordTest, Evaluate) {
       ModuleRecord::Instantiate(scope.GetScriptState(), module, js_url);
   ASSERT_TRUE(exception.IsEmpty());
 
-  EXPECT_EQ(ModuleRecord::Evaluate(scope.GetScriptState(), module, js_url)
-                .GetResultType(),
-            ScriptEvaluationResult::ResultType::kSuccess);
+  EXPECT_TRUE(ModuleRecord::Evaluate(scope.GetScriptState(), module, js_url)
+                  .IsSuccess());
   v8::Local<v8::Value> value =
       ClassicScript::CreateUnspecifiedScript(ScriptSourceCode("window.foo"))
           ->RunScriptAndReturnValue(&scope.GetFrame());
@@ -339,13 +334,12 @@ TEST_P(ModuleRecordTest, EvaluateCaptureError) {
       ModuleRecord::Instantiate(scope.GetScriptState(), module, js_url);
   ASSERT_TRUE(exception.IsEmpty());
 
-  ScriptEvaluationResult result =
+  ModuleEvaluationResult result =
       ModuleRecord::Evaluate(scope.GetScriptState(), module, js_url);
 
   v8::Local<v8::Value> value;
   if (base::FeatureList::IsEnabled(features::kTopLevelAwait)) {
-    ASSERT_EQ(result.GetResultType(),
-              ScriptEvaluationResult::ResultType::kSuccess);
+    ASSERT_TRUE(result.IsSuccess());
     ScriptValue script_value;
     result.GetPromise(scope.GetScriptState())
         .Then(v8::Local<v8::Function>(),
@@ -356,9 +350,8 @@ TEST_P(ModuleRecordTest, EvaluateCaptureError) {
     EXPECT_FALSE(script_value.IsEmpty());
     value = script_value.V8Value();
   } else {
-    ASSERT_EQ(result.GetResultType(),
-              ScriptEvaluationResult::ResultType::kException);
-    value = result.GetExceptionForModule();
+    ASSERT_TRUE(result.IsException());
+    value = result.GetException();
   }
   ASSERT_TRUE(value->IsString());
   EXPECT_EQ("bar", ToCoreString(v8::Local<v8::String>::Cast(value)));

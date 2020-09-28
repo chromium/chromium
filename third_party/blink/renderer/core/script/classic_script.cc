@@ -57,11 +57,11 @@ bool ClassicScript::RunScriptOnWorkerOrWorklet(
   DCHECK(global_scope.IsContextThread());
 
   ScriptState::Scope scope(global_scope.ScriptController()->GetScriptState());
-  ScriptEvaluationResult result =
+  ClassicEvaluationResult result =
       global_scope.ScriptController()->EvaluateAndReturnValue(
           GetScriptSourceCode(), sanitize_script_errors_,
           global_scope.GetV8CacheOptions());
-  return result.GetResultType() == ScriptEvaluationResult::ResultType::kSuccess;
+  return !result.IsEmpty();
 }
 
 std::pair<size_t, size_t> ClassicScript::GetClassicScriptSizes() const {
