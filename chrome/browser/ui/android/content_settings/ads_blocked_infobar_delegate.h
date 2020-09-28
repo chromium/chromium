@@ -8,7 +8,9 @@
 #include "base/macros.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 
-class InfoBarService;
+namespace infobars {
+class ContentInfoBarManager;
+}
 
 // This infobar appears when the user proceeds through Safe Browsing warning
 // interstitials to a site with deceptive embedded content. It tells the user
@@ -19,8 +21,8 @@ class InfoBarService;
 class AdsBlockedInfobarDelegate : public ConfirmInfoBarDelegate {
  public:
   // Creates a subresource filter infobar and delegate and adds the infobar to
-  // |infobar_service|.
-  static void Create(InfoBarService* infobar_service);
+  // |infobar_manager|.
+  static void Create(infobars::ContentInfoBarManager* infobar_manager);
 
   ~AdsBlockedInfobarDelegate() override;
 

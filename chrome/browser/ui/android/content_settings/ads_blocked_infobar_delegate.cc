@@ -9,10 +9,10 @@
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/android/android_theme_resources.h"
-#include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/subresource_filter/chrome_subresource_filter_client.h"
 #include "chrome/browser/ui/android/infobars/ads_blocked_infobar.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/subresource_filter/core/browser/subresource_filter_constants.h"
@@ -20,8 +20,9 @@
 #include "ui/base/l10n/l10n_util.h"
 
 // static
-void AdsBlockedInfobarDelegate::Create(InfoBarService* infobar_service) {
-  infobar_service->AddInfoBar(std::make_unique<AdsBlockedInfoBar>(
+void AdsBlockedInfobarDelegate::Create(
+    infobars::ContentInfoBarManager* infobar_manager) {
+  infobar_manager->AddInfoBar(std::make_unique<AdsBlockedInfoBar>(
       base::WrapUnique(new AdsBlockedInfobarDelegate())));
 }
 
@@ -78,7 +79,7 @@ base::string16 AdsBlockedInfobarDelegate::GetButtonLabel(
 
 bool AdsBlockedInfobarDelegate::Cancel() {
   auto* filter_client = ChromeSubresourceFilterClient::FromWebContents(
-      InfoBarService::WebContentsFromInfoBar(infobar()));
+      infobars::ContentInfoBarManager::WebContentsFromInfoBar(infobar()));
   filter_client->OnReloadRequested();
   return true;
 }

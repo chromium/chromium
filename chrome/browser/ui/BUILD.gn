@@ -603,6 +603,7 @@ static_library("ui") {
       "//chrome/browser/notifications/scheduler/public",
       "//chrome/browser/ui/webui/explore_sites_internals:mojo_bindings",
       "//components/browser_ui/util/android",
+      "//components/infobars/content",
       "//components/query_tiles",
       "//components/security_state/content/android",
     ]
