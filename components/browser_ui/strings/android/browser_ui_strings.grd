@@ -303,6 +303,15 @@
       <message name="IDS_ALL" desc="Generic label for a button to show all items or options, for example a button to view all bookmarks. [CHAR-LIMIT=20]">
         All
       </message>
+      <message name="IDS_JUST_ONCE" desc="Generic label for a user to select an option for just once">
+        Just once
+      </message>
+      <message name="IDS_DONT_ASK_AGAIN" desc="Generic label for a user to select to not be asked again">
+        Don’t ask again
+      </message>
+      <message name="IDS_ALWAYS" desc="Generic label for a user to select an always option">
+        Always
+      </message>
 
       <message name="IDS_ACCESSIBILITY_TOOLBAR_BTN_MENU" desc="Content description for the settings menu button.">
         More options

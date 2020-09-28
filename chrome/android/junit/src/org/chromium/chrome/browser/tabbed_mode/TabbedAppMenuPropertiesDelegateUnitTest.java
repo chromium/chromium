@@ -48,6 +48,9 @@ import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuDelegate;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
+import org.chromium.content.browser.ContentFeatureListImpl;
+import org.chromium.content.browser.ContentFeatureListImplJni;
+import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.WebContents;
 
@@ -93,6 +96,8 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     Profile.Natives mProfileJniMock;
     @Mock
     Profile mProfileMock;
+    @Mock
+    private ContentFeatureListImpl.Natives mContentFeatureListJniMock;
 
     private OneshotSupplierImpl<OverviewModeBehavior> mOverviewModeSupplier =
             new OneshotSupplierImpl<>();
@@ -116,6 +121,10 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         when(mProfileJniMock.fromWebContents(any(WebContents.class))).thenReturn(mProfileMock);
         jniMocker.mock(ManagedBrowserUtilsJni.TEST_HOOKS, mManagedBrowserUtilsJniMock);
         Profile.setLastUsedProfileForTesting(mProfile);
+        jniMocker.mock(ContentFeatureListImplJni.TEST_HOOKS, mContentFeatureListJniMock);
+        when(mContentFeatureListJniMock.isEnabled(
+                     ContentFeatureList.EXPERIMENTAL_ACCESSIBILITY_LABELS))
+                .thenReturn(false);
 
         mTabbedAppMenuPropertiesDelegate = Mockito.spy(new TabbedAppMenuPropertiesDelegate(
                 ContextUtils.getApplicationContext(), mActivityTabProvider,

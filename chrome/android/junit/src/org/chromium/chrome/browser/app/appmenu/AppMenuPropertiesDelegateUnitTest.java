@@ -16,6 +16,7 @@ import android.view.View;
 import android.widget.PopupMenu;
 
 import org.hamcrest.Matchers;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -28,9 +29,11 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.app.appmenu.AppMenuPropertiesDelegateImpl.MenuGroup;
@@ -41,12 +44,21 @@ import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.omaha.UpdateMenuItemHelper;
+import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
+import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.prefs.PrefService;
+import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.components.user_prefs.UserPrefsJni;
+import org.chromium.content.browser.ContentFeatureListImpl;
+import org.chromium.content.browser.ContentFeatureListImplJni;
+import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.WebContents;
 
@@ -60,6 +72,9 @@ import java.util.List;
 public class AppMenuPropertiesDelegateUnitTest {
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();
+
+    @Rule
+    public JniMocker mJniMocker = new JniMocker();
 
     @Mock
     private ActivityTabProvider mActivityTabProvider;
@@ -85,6 +100,14 @@ public class AppMenuPropertiesDelegateUnitTest {
     private OverviewModeBehavior mOverviewModeBehavior;
     @Mock
     private UpdateMenuItemHelper mUpdateMenuItemHelper;
+    @Mock
+    private ContentFeatureListImpl.Natives mContentFeatureListJniMock;
+    @Mock
+    private UserPrefs.Natives mUserPrefsJniMock;
+    @Mock
+    private Profile mProfile;
+    @Mock
+    private PrefService mPrefService;
 
     private OneshotSupplierImpl<OverviewModeBehavior> mOverviewModeSupplier =
             new OneshotSupplierImpl<>();
@@ -113,10 +136,21 @@ public class AppMenuPropertiesDelegateUnitTest {
         mMenuUiState = new UpdateMenuItemHelper.MenuUiState();
         doReturn(mMenuUiState).when(mUpdateMenuItemHelper).getUiState();
 
+        mJniMocker.mock(ContentFeatureListImplJni.TEST_HOOKS, mContentFeatureListJniMock);
+        mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsJniMock);
+        Profile.setLastUsedProfileForTesting(mProfile);
+        Mockito.when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefService);
+
         mAppMenuPropertiesDelegate = Mockito.spy(new AppMenuPropertiesDelegateImpl(
                 ContextUtils.getApplicationContext(), mActivityTabProvider,
                 mMultiWindowModeStateDispatcher, mTabModelSelector, mToolbarManager, mDecorView,
                 mOverviewModeSupplier, mBookmarkBridgeSupplier));
+    }
+
+    @After
+    public void tearDown() {
+        ThreadUtils.setThreadAssertsDisabledForTesting(false);
+        ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(false);
     }
 
     @Test
@@ -523,6 +557,58 @@ public class AppMenuPropertiesDelegateUnitTest {
         Integer[] expectedItems = {
                 R.id.new_tab_menu_id, R.id.new_incognito_tab_menu_id, R.id.preferences_id};
         assertMenuItemsAreEqual(menu, expectedItems);
+    }
+
+    @Test
+    public void testMenuItems_Accessibility() {
+        setUpMocksForPageMenu();
+        when(mTab.getUrlString()).thenReturn("https://google.com");
+        when(mTab.isNativePage()).thenReturn(false);
+        doReturn(false)
+                .when(mAppMenuPropertiesDelegate)
+                .shouldShowPaintPreview(anyBoolean(), any(Tab.class), anyBoolean());
+        doReturn(false)
+                .when(mAppMenuPropertiesDelegate)
+                .shouldShowTranslateMenuItem(any(Tab.class));
+        doReturn(new AppBannerManager.InstallStringPair(
+                         R.string.menu_add_to_homescreen, R.string.add))
+                .when(mAppMenuPropertiesDelegate)
+                .getAddToHomeScreenTitle(mTab);
+
+        // Ensure the get image descriptions option is shown as needed
+        when(mContentFeatureListJniMock.isEnabled(
+                     ContentFeatureList.EXPERIMENTAL_ACCESSIBILITY_LABELS))
+                .thenReturn(true);
+        when(mPrefService.getBoolean(Pref.ACCESSIBILITY_IMAGE_LABELS_ENABLED_ANDROID))
+                .thenReturn(false);
+
+        // Test specific setup
+        ThreadUtils.setThreadAssertsDisabledForTesting(true);
+        ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(true);
+
+        Menu menu = createTestMenu();
+        mAppMenuPropertiesDelegate.prepareMenu(menu, null);
+
+        Integer[] expectedItems = {R.id.icon_row_menu_id, R.id.new_tab_menu_id,
+                R.id.new_incognito_tab_menu_id, R.id.all_bookmarks_menu_id,
+                R.id.recent_tabs_menu_id, R.id.open_history_menu_id, R.id.downloads_menu_id,
+                R.id.share_row_menu_id, R.id.get_image_descriptions_id, R.id.find_in_page_id,
+                R.id.add_to_homescreen_id, R.id.request_desktop_site_row_menu_id,
+                R.id.preferences_id, R.id.help_id};
+
+        assertMenuItemsAreEqual(menu, expectedItems);
+
+        // Ensure the text of the menu item is correct
+        Assert.assertEquals(
+                "Get image descriptions", menu.findItem(R.id.get_image_descriptions_id).getTitle());
+
+        // Enable the feature and ensure text changes
+        when(mPrefService.getBoolean(Pref.ACCESSIBILITY_IMAGE_LABELS_ENABLED_ANDROID))
+                .thenReturn(true);
+
+        mAppMenuPropertiesDelegate.prepareMenu(menu, null);
+        Assert.assertEquals("Stop image descriptions",
+                menu.findItem(R.id.get_image_descriptions_id).getTitle());
     }
 
     private void setUpMocksForPageMenu() {

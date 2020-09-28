@@ -1191,6 +1191,18 @@ const char kAccessibilityImageLabelsEnabled[] =
 const char kAccessibilityImageLabelsOptInAccepted[] =
     "settings.a11y.enable_accessibility_image_labels_opt_in_accepted";
 
+#if defined(OS_ANDROID)
+// Whether the "Get Image Descriptions from Google" feature is enabled on
+// Android. We expose this only to mobile Android.
+const char kAccessibilityImageLabelsEnabledAndroid[] =
+    "settings.a11y.enable_accessibility_image_labels_android";
+
+// Whether the "Get Image Descriptions from Google" feature is enabled only
+// while on Wi-Fi, or if it can use mobile data. Exposed only to mobile Android.
+const char kAccessibilityImageLabelsOnlyOnWifi[] =
+    "settings.a11y.enable_accessibility_image_labels_only_on_wifi";
+#endif
+
 #if !defined(OS_CHROMEOS)
 // A boolean pref which determines whether focus highlighting is enabled.
 const char kAccessibilityFocusHighlightEnabled[] =

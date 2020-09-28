@@ -98,7 +98,7 @@ public class IdentityServicesProvider {
     }
 
     @NativeMethods
-    interface Natives {
+    public interface Natives {
         IdentityManager getIdentityManager(Profile profile);
         AccountTrackerService getAccountTrackerService(Profile profile);
         SigninManager getSigninManager(Profile profile);

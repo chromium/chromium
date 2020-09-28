@@ -21,6 +21,7 @@ import com.google.protobuf.ByteString;
 import com.google.protobuf.CodedOutputStream;
 import com.google.protobuf.ExtensionRegistryLite;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -31,6 +32,7 @@ import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 import org.robolectric.util.ReflectionHelpers;
 
+import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.feed.library.api.host.config.ApplicationInfo;
 import org.chromium.chrome.browser.feed.library.api.host.config.Configuration;
 import org.chromium.chrome.browser.feed.library.api.host.config.Configuration.ConfigKey;
@@ -57,6 +59,9 @@ import org.chromium.chrome.browser.feed.library.testing.host.stream.FakeTooltipS
 import org.chromium.chrome.browser.feed.library.testing.network.FakeNetworkClient;
 import org.chromium.chrome.browser.feed.library.testing.protocoladapter.FakeProtocolAdapter;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.signin.IdentityServicesProvider;
+import org.chromium.chrome.browser.signin.IdentityServicesProviderJni;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.feed.core.proto.libraries.api.internal.StreamDataProto.StreamToken;
 import org.chromium.components.feed.core.proto.wire.ActionTypeProto.ActionType;
@@ -79,6 +84,7 @@ import org.chromium.components.feed.core.proto.wire.SemanticPropertiesProto.Sema
 import org.chromium.components.feed.core.proto.wire.VersionProto.Version;
 import org.chromium.components.feed.core.proto.wire.VersionProto.Version.Architecture;
 import org.chromium.components.feed.core.proto.wire.VersionProto.Version.BuildType;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.testing.local.LocalRobolectricTestRunner;
 
 import java.io.IOException;
@@ -116,6 +122,12 @@ public class FeedRequestManagerImplTest {
     private SchedulerApi mScheduler;
     @Mock
     private ApplicationInfo mApplicationInfo;
+    @Mock
+    private IdentityServicesProvider.Natives mIdentityServicesProviderJniMock;
+    @Mock
+    private Profile mProfileMock;
+    @Mock
+    private IdentityManager mIdentifiyManagerMock;
 
     private Context mContext;
     private ExtensionRegistryLite mRegistry;
@@ -131,6 +143,9 @@ public class FeedRequestManagerImplTest {
     private RequiredConsumer<Result<Model>> mConsumer;
     private Result<Model> mConsumedResult = Result.failure();
     private HttpResponse mFailingResponse;
+
+    @Rule
+    public JniMocker jniMocker = new JniMocker();
 
     @Rule
     public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
@@ -166,10 +181,21 @@ public class FeedRequestManagerImplTest {
         when(mApplicationInfo.getArchitecture()).thenReturn(ApplicationInfo.Architecture.ARM);
         when(mApplicationInfo.getBuildType()).thenReturn(ApplicationInfo.BuildType.DEV);
         when(mApplicationInfo.getVersionString()).thenReturn(APP_VERSION_STRING);
+
+        Profile.setLastUsedProfileForTesting(mProfileMock);
+        jniMocker.mock(IdentityServicesProviderJni.TEST_HOOKS, mIdentityServicesProviderJniMock);
+        when(mIdentityServicesProviderJniMock.getIdentityManager(mProfileMock))
+                .thenReturn(mIdentifiyManagerMock);
+
         mRequestManager = new FeedRequestManagerImpl(mConfiguration, mFakeNetworkClient,
                 mFakeProtocolAdapter, feedExtensionRegistry, mScheduler, mFakeTaskQueue,
                 mTimingUtils, mFakeThreadUtils, mFakeActionReader, mContext, mApplicationInfo,
                 mFakeMainThreadRunner, mFakeBasicLoggingApi, mFakeTooltipSupportedApi);
+    }
+
+    @After
+    public void tearDown() {
+        Profile.setLastUsedProfileForTesting(null);
     }
 
     @Test

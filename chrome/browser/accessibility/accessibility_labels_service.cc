@@ -131,6 +131,14 @@ void AccessibilityLabelsService::RegisterProfilePrefs(
   registry->RegisterBooleanPref(
       prefs::kAccessibilityImageLabelsOptInAccepted, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+#if defined(OS_ANDROID)
+  registry->RegisterBooleanPref(
+      prefs::kAccessibilityImageLabelsEnabledAndroid, false,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterBooleanPref(
+      prefs::kAccessibilityImageLabelsOnlyOnWifi, true,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+#endif
 }
 
 // static
@@ -141,6 +149,12 @@ void AccessibilityLabelsService::InitOffTheRecordPrefs(
       prefs::kAccessibilityImageLabelsEnabled, false);
   off_the_record_profile->GetPrefs()->SetBoolean(
       prefs::kAccessibilityImageLabelsOptInAccepted, false);
+#if defined(OS_ANDROID)
+  off_the_record_profile->GetPrefs()->SetBoolean(
+      prefs::kAccessibilityImageLabelsEnabledAndroid, false);
+  off_the_record_profile->GetPrefs()->SetBoolean(
+      prefs::kAccessibilityImageLabelsOnlyOnWifi, true);
+#endif
 }
 
 void AccessibilityLabelsService::Init() {

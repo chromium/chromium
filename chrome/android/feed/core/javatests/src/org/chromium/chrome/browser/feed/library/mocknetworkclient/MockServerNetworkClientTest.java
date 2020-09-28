@@ -18,6 +18,7 @@ import android.net.Uri;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.CodedInputStream;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -30,6 +31,7 @@ import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Consumer;
+import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.feed.library.api.host.config.ApplicationInfo;
 import org.chromium.chrome.browser.feed.library.api.host.config.Configuration;
 import org.chromium.chrome.browser.feed.library.api.host.network.HttpRequest;
@@ -52,6 +54,9 @@ import org.chromium.chrome.browser.feed.library.feedrequestmanager.FeedRequestMa
 import org.chromium.chrome.browser.feed.library.testing.conformance.network.NetworkClientConformanceTest;
 import org.chromium.chrome.browser.feed.library.testing.host.logging.FakeBasicLoggingApi;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.signin.IdentityServicesProvider;
+import org.chromium.chrome.browser.signin.IdentityServicesProviderJni;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.feed.core.proto.libraries.api.internal.StreamDataProto.StreamToken;
 import org.chromium.components.feed.core.proto.wire.ConsistencyTokenProto.ConsistencyToken;
@@ -59,6 +64,7 @@ import org.chromium.components.feed.core.proto.wire.ResponseProto.Response;
 import org.chromium.components.feed.core.proto.wire.ResponseProto.Response.ResponseVersion;
 import org.chromium.components.feed.core.proto.wire.mockserver.MockServerProto.ConditionalResponse;
 import org.chromium.components.feed.core.proto.wire.mockserver.MockServerProto.MockServer;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.testing.local.LocalRobolectricTestRunner;
 
 import java.io.IOException;
@@ -87,12 +93,21 @@ public class MockServerNetworkClientTest extends NetworkClientConformanceTest {
     private SchedulerApi mScheduler;
     @Mock
     private TooltipSupportedApi mTooltipSupportedApi;
+    @Mock
+    private IdentityServicesProvider.Natives mIdentityServicesProviderJniMock;
+    @Mock
+    private Profile mProfileMock;
+    @Mock
+    private IdentityManager mIdentifiyManagerMock;
     @Captor
     private ArgumentCaptor<Response> mResponseCaptor;
     private ApplicationInfo mApplicationInfo;
     private Context mContext;
     private FakeBasicLoggingApi mBasicLoggingApi;
     private MainThreadRunner mMainThreadRunner;
+
+    @Rule
+    public JniMocker jniMocker = new JniMocker();
 
     @Rule
     public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
@@ -118,6 +133,16 @@ public class MockServerNetworkClientTest extends NetworkClientConformanceTest {
                 .thenReturn(Result.success(Collections.emptyList()));
 
         mBasicLoggingApi = new FakeBasicLoggingApi();
+
+        Profile.setLastUsedProfileForTesting(mProfileMock);
+        jniMocker.mock(IdentityServicesProviderJni.TEST_HOOKS, mIdentityServicesProviderJniMock);
+        when(mIdentityServicesProviderJniMock.getIdentityManager(mProfileMock))
+                .thenReturn(mIdentifiyManagerMock);
+    }
+
+    @After
+    public void tearDown() {
+        Profile.setLastUsedProfileForTesting(null);
     }
 
     @Test

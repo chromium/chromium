@@ -444,6 +444,14 @@ public final class ChromePreferenceKeys {
      */
     public static final String HOMEPAGE_LOCATION_POLICY = "Chrome.Policy.HomepageLocation";
 
+    /**
+     * Used for get image descriptions feature, track "Just once"/"Don't ask again" choice.
+     */
+    public static final String IMAGE_DESCRIPTIONS_JUST_ONCE_COUNT =
+            "Chrome.ImageDescriptions.JustOnceCount";
+    public static final String IMAGE_DESCRIPTIONS_DONT_ASK_AGAIN =
+            "Chrome.ImageDescriptions.DontAskAgain";
+
     public static final String INCOGNITO_SHORTCUT_ADDED = "incognito-shortcut-added";
 
     /**
@@ -800,6 +808,8 @@ public final class ChromePreferenceKeys {
                 FLAGS_FIELD_TRIAL_PARAM_CACHED.pattern(),
                 HOMEPAGE_LOCATION_POLICY,
                 HOMEPAGE_USE_CHROME_NTP,
+                IMAGE_DESCRIPTIONS_JUST_ONCE_COUNT,
+                IMAGE_DESCRIPTIONS_DONT_ASK_AGAIN,
                 PROMO_IS_DISMISSED.pattern(),
                 PROMO_TIMES_SEEN.pattern(),
                 SETTINGS_SAFETY_CHECK_LAST_RUN_TIMESTAMP,

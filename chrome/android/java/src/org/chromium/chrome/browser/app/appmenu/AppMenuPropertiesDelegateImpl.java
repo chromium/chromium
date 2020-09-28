@@ -43,6 +43,7 @@ import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.flags.StringCachedFieldTrialParameter;
+import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsController;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.omaha.UpdateMenuItemHelper;
@@ -384,6 +385,18 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
 
         menu.findItem(R.id.paint_preview_show_id)
                 .setVisible(shouldShowPaintPreview(isChromeScheme, currentTab, isIncognito));
+
+        // Enable image descriptions if the feature flag is enabled, and if a screen reader
+        // is currently running.
+        if (ImageDescriptionsController.getInstance().shouldShowImageDescriptionsMenuItem()) {
+            menu.findItem(R.id.get_image_descriptions_id).setVisible(true);
+            menu.findItem(R.id.get_image_descriptions_id)
+                    .setTitle(ImageDescriptionsController.getInstance().imageDescriptionsEnabled()
+                                    ? R.string.menu_stop_image_descriptions
+                                    : R.string.menu_get_image_descriptions);
+        } else {
+            menu.findItem(R.id.get_image_descriptions_id).setVisible(false);
+        }
 
         // Disable find in page on the native NTP.
         menu.findItem(R.id.find_in_page_id).setVisible(shouldShowFindInPage(currentTab));

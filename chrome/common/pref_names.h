@@ -175,6 +175,10 @@ extern const char kContextualSearchEnabledValue[];
 extern const char kShowInternalAccessibilityTree[];
 extern const char kAccessibilityImageLabelsEnabled[];
 extern const char kAccessibilityImageLabelsOptInAccepted[];
+#if defined(OS_ANDROID)
+extern const char kAccessibilityImageLabelsEnabledAndroid[];
+extern const char kAccessibilityImageLabelsOnlyOnWifi[];
+#endif
 #if !defined(OS_CHROMEOS)
 extern const char kAccessibilityFocusHighlightEnabled[];
 #endif

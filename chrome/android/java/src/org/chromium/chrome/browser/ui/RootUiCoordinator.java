@@ -46,6 +46,7 @@ import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.identity_disc.IdentityDiscController;
+import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsController;
 import org.chromium.chrome.browser.lifecycle.Destroyable;
 import org.chromium.chrome.browser.lifecycle.InflationObserver;
 import org.chromium.chrome.browser.metrics.UkmRecorder;
@@ -418,6 +419,9 @@ public class RootUiCoordinator
             Tab tab = mActivityTabProvider.get();
             PaintPreviewTabHelper paintPreviewTabHelper = PaintPreviewTabHelper.get(tab);
             paintPreviewTabHelper.showPaintPreviewDemo();
+        } else if (id == R.id.get_image_descriptions_id) {
+            ImageDescriptionsController.getInstance().onImageDescriptionsMenuItemSelected(
+                    mActivity, mActivity.getModalDialogManager());
         }
 
         return false;

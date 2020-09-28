@@ -2868,6 +2868,12 @@ In Incognito, your activity might still be visible to websites that you visit, y
       <message name="IDS_MENU_GROUP_TABS" desc="Menu item for grouping tabs. [CHAR-LIMIT=27]">
         Group tabs
       </message>
+      <message name="IDS_MENU_GET_IMAGE_DESCRIPTIONS" desc="Menu item to start getting alt text accessibility image labels/descriptions [CHAR-LIMIT=27]">
+        Get image descriptions
+      </message>
+      <message name="IDS_MENU_STOP_IMAGE_DESCRIPTIONS" desc="Menu item to stop getting alt text accessibility image labels/descriptions [CHAR-LIMIT=27]">
+        Stop image descriptions
+      </message>
 
       <!-- Bookmarks strings -->
       <message name="IDS_BOOKMARKS" desc="Title of the bookmarks page, which shows a list of the user's bookmarks. [CHAR-LIMIT=18]">
@@ -4159,6 +4165,20 @@ In Incognito, your activity might still be visible to websites that you visit, y
       </message>
       <message name="IDS_CHROME_REENGAGEMENT_NOTIFICATION_3_DESCRIPTION" desc="The title of a notification shown to suggest that users use Chrome.  Users probably have not opened Chrome in a while.  Promotes data savings and relevant news.">
         Save up to 60% data, read today's news
+      </message>
+
+      <!-- Get Image Descriptions -->
+      <message name="IDS_IMAGE_DESCRIPTIONS_DIALOG_HEADER" desc="Header for confirmation dialog to enable image descriptions.">
+        Get image descriptions?
+      </message>
+      <message name="IDS_IMAGE_DESCRIPTIONS_DIALOG_CONTENT" desc="Content for confirmation dialog to enable image descriptions.">
+        Images are sent to Google to improve descriptions for you.
+      </message>
+      <message name="IDS_IMAGE_DESCRIPTIONS_DIALOG_OPTION_ONLY_ON_WIFI" desc="Option for confirmation dialog to enable image descriptions.">
+        Only on Wi-Fi
+      </message>
+      <message name="IDS_IMAGE_DESCRIPTIONS_DIALOG_GET_DESCRIPTIONS_BUTTON" desc="Button for dialog to enable option to get image descriptions.">
+        Get descriptions
       </message>
     </messages>
   </release>

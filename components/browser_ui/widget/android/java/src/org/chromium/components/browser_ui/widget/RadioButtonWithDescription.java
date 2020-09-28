@@ -36,6 +36,11 @@ import java.util.List;
  * </p>
  *
  * <p>
+ * By default, R.attr.selectableItemBackground will be set as the background. If a different
+ * background is desired, use android:background to override.
+ * </p>
+ *
+ * <p>
  * The primary of the text and an optional description to be contained in the group may be set in
  * XML. Sample declaration in XML:
  * <pre> {@code
@@ -43,7 +48,6 @@ import java.util.List;
  *      android:id="@+id/system_default"
  *      android:layout_width="match_parent"
  *      android:layout_height="wrap_content"
- *      android:background="?attr/selectableItemBackground"
  *      app:primaryText="@string/feature_foo_option_one"
  *      app:descriptionText="@string/feature_foo_option_one_description" />
  * } </pre>
