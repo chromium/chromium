@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/style/computed_style_base_constants.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
+#include "third_party/blink/renderer/platform/text/writing_mode.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -788,12 +789,26 @@ void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems() {
     // TODO(dgrogan): This should probably apply to column flexboxes also,
     // but that's not what legacy does.
     if (child.IsTable() && !is_column_) {
+      const NGConstraintSpace* ortho_child_space = nullptr;
+      NGConstraintSpace child_space;
+      if (UNLIKELY(!IsParallelWritingMode(ConstraintSpace().GetWritingMode(),
+                                          child_style.GetWritingMode()))) {
+        // BuildSpaceForIntrinsicBlockSize sets an indefinite percentage block
+        // size for column flexboxes, which is maybe not what we want for
+        // calculating the intrinsic min/max content sizes of an orthogonal
+        // item, but because control flow only enters this block for row
+        // flexboxes, it doesn't matter. If/when we fix the proximate above
+        // TODO, this will need closer investigation.
+        child_space = BuildSpaceForIntrinsicBlockSize(child);
+        ortho_child_space = &child_space;
+      }
       MinMaxSizes table_intrinsic_widths =
           child
               .ComputeMinMaxSizes(
                   ConstraintSpace().GetWritingMode(),
                   MinMaxSizesInput(child_percentage_size_.block_size,
-                                   MinMaxSizesType::kContent))
+                                   MinMaxSizesType::kContent),
+                  ortho_child_space)
               .sizes;
 
       min_max_sizes_in_main_axis_direction.Encompass(
