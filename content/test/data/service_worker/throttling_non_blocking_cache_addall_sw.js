@@ -4,10 +4,11 @@
 
 self.addEventListener('install', evt => {
   evt.waitUntil(async function() {
-    return Promise.all([
-      fetch('./foo/1?block').then(r => r.blob()),
-      fetch('./foo/2?block').then(r => r.blob()),
-      fetch('./foo/3?block').then(r => r.blob()),
+    const c = await caches.open('bar');
+    return c.addAll([
+      './empty.js?1',
+      './empty.js?2',
+      './empty.js?3',
     ]);
   }());
 });

@@ -2967,6 +2967,7 @@ class ServiceWorkerThrottlingTest : public ServiceWorkerBrowserTest {
           "Connection: close\r\n"
           "Content-Length: 32\r\n"
           "Content-Type: text/html\r\n"
+          "Cache-Control: no-store\r\n"
           "\r\n"
           "<title>ERROR</title>Hello world.";
       std::move(send_).Run(kPageResponse, std::move(done_));
@@ -3024,6 +3025,45 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerThrottlingTest, ThrottleInstalling) {
   RegisterServiceWorkerAndWaitForState(
       "/service_worker/throttling_non_blocking_sw.js",
       "/service_worker/throttling_non_blocking",
+      ServiceWorkerVersion::ACTIVATED);
+
+  // If throttling worked correctly then there should only be 2 outstanding
+  // requests blocked by the test server.
+  EXPECT_EQ(2, GetBlockingResponseCount());
+
+  auto observer = base::MakeRefCounted<WorkerStateObserver>(
+      wrapper(), ServiceWorkerVersion::ACTIVATED);
+  observer->Init();
+
+  // Stop blocking the resources loaded by the first service worker.
+  StopBlocking();
+
+  // Verify that throttling correctly notes when resources can load and
+  // the first service worker fully activates.
+  observer->Wait();
+}
+
+IN_PROC_BROWSER_TEST_F(ServiceWorkerThrottlingTest,
+                       ThrottleInstallingWithCacheAddAll) {
+  // Register a service worker that loads 3 resources in its install
+  // handler via cache.addAll().  The test server will cause these loads
+  // to block which should trigger throttling on the third request.
+  RegisterServiceWorkerAndWaitForState(
+      "/service_worker/throttling_blocking_cache_addall_sw.js",
+      "/service_worker/throttling_blocking_cache_addall",
+      ServiceWorkerVersion::INSTALLING);
+
+  // Register a second service worker that also loads 3 resources in
+  // its install handler using cache.addAll().  The test server will not
+  // block these loads and the worker should progress to the activated state.
+  //
+  // This second service worker is used to wait for the first worker
+  // to potentially request its resources.  By the time the second worker
+  // activates the first worker should have requested its resources and
+  // triggered throttling.  This avoids the need for an arbitrary timeout.
+  RegisterServiceWorkerAndWaitForState(
+      "/service_worker/throttling_non_blocking_cache_addall_sw.js",
+      "/service_worker/throttling_non_blocking_cache_addall",
       ServiceWorkerVersion::ACTIVATED);
 
   // If throttling worked correctly then there should only be 2 outstanding
