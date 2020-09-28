@@ -16,7 +16,6 @@
 
 #include "base/check_op.h"
 #include "base/component_export.h"
-#include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
 #include "base/time/time.h"
@@ -56,7 +55,6 @@ class COMPONENT_EXPORT(NETWORK_CPP_BASE) DataElement {
                   : reinterpret_cast<const char*>(buf_.data());
   }
   const base::FilePath& path() const { return path_; }
-  const base::File& file() const { return file_; }
   const std::string& blob_uuid() const { return blob_uuid_; }
   uint64_t offset() const { return offset_; }
   uint64_t length() const { return length_; }
@@ -141,16 +139,6 @@ class COMPONENT_EXPORT(NETWORK_CPP_BASE) DataElement {
                           uint64_t length,
                           const base::Time& expected_modification_time);
 
-  // Sets TYPE_RAW_FILE data with range. |file| must be open for asynchronous
-  // reading on Windows. It's recommended it also be opened with
-  // File::FLAG_DELETE_ON_CLOSE, since there's often no way to wait on the
-  // consumer to close the file.
-  void SetToFileRange(base::File file,
-                      const base::FilePath& path,
-                      uint64_t offset,
-                      uint64_t length,
-                      const base::Time& expected_modification_time);
-
   // Sets TYPE_BLOB data with range.
   void SetToBlobRange(const std::string& blob_uuid,
                       uint64_t offset,
@@ -174,10 +162,6 @@ class COMPONENT_EXPORT(NETWORK_CPP_BASE) DataElement {
   void SetToReadOnceStream(mojo::PendingRemote<mojom::ChunkedDataPipeGetter>
                                chunked_data_pipe_getter);
 
-  // Takes ownership of the File, if this is of TYPE_RAW_FILE. The file is open
-  // for reading (asynchronous reading on Windows).
-  base::File ReleaseFile();
-
   // Takes ownership of the DataPipeGetter, if this is of TYPE_DATA_PIPE.
   mojo::PendingRemote<mojom::DataPipeGetter> ReleaseDataPipeGetter();
   mojo::PendingRemote<mojom::DataPipeGetter> CloneDataPipeGetter() const;
@@ -199,10 +183,8 @@ class COMPONENT_EXPORT(NETWORK_CPP_BASE) DataElement {
   std::vector<uint8_t> buf_;
   // For TYPE_BYTES.
   const uint8_t* bytes_;
-  // For TYPE_FILE and TYPE_RAW_FILE.
+  // For TYPE_FILE.
   base::FilePath path_;
-  // For TYPE_RAW_FILE.
-  base::File file_;
   // For TYPE_BLOB.
   std::string blob_uuid_;
   // For TYPE_DATA_PIPE.

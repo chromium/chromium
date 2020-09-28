@@ -44,13 +44,6 @@ class COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequestBody
                        uint64_t offset,
                        uint64_t length,
                        const base::Time& expected_modification_time);
-  // Appends the specified part of |file|. If |length| extends beyond the end of
-  // the file, it will be set to the end of the file.
-  void AppendRawFileRange(base::File file,
-                          const base::FilePath& file_path,
-                          uint64_t offset,
-                          uint64_t length,
-                          const base::Time& expected_modification_time);
 
   // Appends a blob. If the 2-parameter version is used, the resulting body can
   // be read by Blink, which is needed when the body is sent to Blink, e.g., for

@@ -27,8 +27,7 @@ bool StructTraits<
     network::DataElement>::Read(blink::mojom::FetchAPIDataElementDataView data,
                                 network::DataElement* out) {
   base::Optional<std::string> blob_uuid;
-  if (!data.ReadPath(&out->path_) || !data.ReadFile(&out->file_) ||
-      !data.ReadBlobUuid(&blob_uuid) ||
+  if (!data.ReadPath(&out->path_) || !data.ReadBlobUuid(&blob_uuid) ||
       !data.ReadExpectedModificationTime(&out->expected_modification_time_)) {
     return false;
   }

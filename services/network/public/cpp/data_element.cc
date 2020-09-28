@@ -41,19 +41,6 @@ void DataElement::SetToFilePathRange(
   expected_modification_time_ = expected_modification_time;
 }
 
-void DataElement::SetToFileRange(base::File file,
-                                 const base::FilePath& path,
-                                 uint64_t offset,
-                                 uint64_t length,
-                                 const base::Time& expected_modification_time) {
-  type_ = mojom::DataElementType::kRawFile;
-  file_ = std::move(file);
-  path_ = path;
-  offset_ = offset;
-  length_ = length;
-  expected_modification_time_ = expected_modification_time;
-}
-
 void DataElement::SetToBlobRange(const std::string& blob_uuid,
                                  uint64_t offset,
                                  uint64_t length) {
@@ -82,10 +69,6 @@ void DataElement::SetToReadOnceStream(
         chunked_data_pipe_getter) {
   type_ = mojom::DataElementType::kReadOnceStream;
   chunked_data_pipe_getter_ = std::move(chunked_data_pipe_getter);
-}
-
-base::File DataElement::ReleaseFile() {
-  return std::move(file_);
 }
 
 mojo::PendingRemote<mojom::DataPipeGetter>
@@ -134,10 +117,6 @@ void PrintTo(const DataElement& x, std::ostream* os) {
       *os << "TYPE_FILE, path: " << x.path().AsUTF8Unsafe()
           << ", expected_modification_time: " << x.expected_modification_time();
       break;
-    case mojom::DataElementType::kRawFile:
-      *os << "TYPE_RAW_FILE, path: " << x.path().AsUTF8Unsafe()
-          << ", expected_modification_time: " << x.expected_modification_time();
-      break;
     case mojom::DataElementType::kBlob:
       *os << "TYPE_BLOB, uuid: " << x.blob_uuid();
       break;
@@ -165,9 +144,6 @@ bool operator==(const DataElement& a, const DataElement& b) {
     case mojom::DataElementType::kBytes:
       return memcmp(a.bytes(), b.bytes(), b.length()) == 0;
     case mojom::DataElementType::kFile:
-      return a.path() == b.path() &&
-             a.expected_modification_time() == b.expected_modification_time();
-    case mojom::DataElementType::kRawFile:
       return a.path() == b.path() &&
              a.expected_modification_time() == b.expected_modification_time();
     case mojom::DataElementType::kBlob:

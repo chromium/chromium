@@ -266,10 +266,6 @@ bool StructTraits<network::mojom::DataElementDataView, network::DataElement>::
     network::debug::SetDeserializationCrashKeyString("data_element_path");
     return false;
   }
-  if (!data.ReadFile(&out->file_)) {
-    network::debug::SetDeserializationCrashKeyString("data_element_file");
-    return false;
-  }
   if (!data.ReadBlobUuid(&out->blob_uuid_)) {
     network::debug::SetDeserializationCrashKeyString("data_element_blob_uuid");
     return false;

@@ -163,7 +163,6 @@ bool StructTraits<blink::mojom::FetchAPIRequestBodyDataView,
       case network::mojom::DataElementType::kUnknown:
       case network::mojom::DataElementType::kChunkedDataPipe:
       case network::mojom::DataElementType::kReadOnceStream:
-      case network::mojom::DataElementType::kRawFile:
         NOTREACHED();
         return false;
     }

@@ -145,7 +145,6 @@ WebHTTPBody GetWebHTTPBodyForRequestBody(
         break;
       }
       case network::mojom::DataElementType::kUnknown:
-      case network::mojom::DataElementType::kRawFile:
       case network::mojom::DataElementType::kChunkedDataPipe:
       case network::mojom::DataElementType::kReadOnceStream:
         NOTREACHED();

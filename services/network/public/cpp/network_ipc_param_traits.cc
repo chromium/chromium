@@ -30,16 +30,6 @@ void ParamTraits<network::DataElement>::Write(base::Pickle* m,
       WriteParam(m, p.expected_modification_time());
       break;
     }
-    case network::mojom::DataElementType::kRawFile: {
-      WriteParam(
-          m, IPC::GetPlatformFileForTransit(p.file().GetPlatformFile(),
-                                            false /* close_source_handle */));
-      WriteParam(m, p.path());
-      WriteParam(m, p.offset());
-      WriteParam(m, p.length());
-      WriteParam(m, p.expected_modification_time());
-      break;
-    }
     case network::mojom::DataElementType::kBlob: {
       WriteParam(m, p.blob_uuid());
       WriteParam(m, p.offset());
@@ -94,27 +84,6 @@ bool ParamTraits<network::DataElement>::Read(const base::Pickle* m,
         return false;
       r->SetToFilePathRange(file_path, offset, length,
                             expected_modification_time);
-      return true;
-    }
-    case network::mojom::DataElementType::kRawFile: {
-      IPC::PlatformFileForTransit platform_file_for_transit;
-      if (!ReadParam(m, iter, &platform_file_for_transit))
-        return false;
-      base::File file = PlatformFileForTransitToFile(platform_file_for_transit);
-      base::FilePath file_path;
-      if (!ReadParam(m, iter, &file_path))
-        return false;
-      uint64_t offset;
-      if (!ReadParam(m, iter, &offset))
-        return false;
-      uint64_t length;
-      if (!ReadParam(m, iter, &length))
-        return false;
-      base::Time expected_modification_time;
-      if (!ReadParam(m, iter, &expected_modification_time))
-        return false;
-      r->SetToFileRange(std::move(file), file_path, offset, length,
-                        expected_modification_time);
       return true;
     }
     case network::mojom::DataElementType::kBlob: {

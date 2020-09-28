@@ -65,9 +65,6 @@ struct BLINK_COMMON_EXPORT
   static const base::FilePath& path(const network::DataElement& element) {
     return element.path_;
   }
-  static base::File file(const network::DataElement& element) {
-    return std::move(const_cast<network::DataElement&>(element).file_);
-  }
   static const std::string& blob_uuid(const network::DataElement& element) {
     return element.blob_uuid_;
   }

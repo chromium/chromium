@@ -431,7 +431,6 @@ void WriteResourceRequestBody(const network::ResourceRequestBody& request_body,
         WriteInteger(blink::WebHTTPBody::Element::kTypeBlob, obj);
         WriteStdString(element.blob_uuid(), obj);
         break;
-      case network::mojom::DataElementType::kRawFile:
       default:
         NOTREACHED();
         continue;
@@ -709,7 +708,6 @@ void WriteResourceRequestBody(const network::ResourceRequestBody& request_body,
       case network::mojom::DataElementType::kDataPipe:
         NOTIMPLEMENTED();
         break;
-      case network::mojom::DataElementType::kRawFile:
       case network::mojom::DataElementType::kChunkedDataPipe:
       case network::mojom::DataElementType::kReadOnceStream:
       case network::mojom::DataElementType::kUnknown:

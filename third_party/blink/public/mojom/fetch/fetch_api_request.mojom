@@ -4,7 +4,6 @@
 
 module blink.mojom;
 
-import "mojo/public/mojom/base/file.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
@@ -121,10 +120,8 @@ struct FetchAPIDataElement {
   network.mojom.DataElementType type;
   // For kBytes.
   array<uint8> buf;
-  // For kFile and kRawFile
+  // For kFile
   mojo_base.mojom.FilePath path;
-  // For kRawFile
-  mojo_base.mojom.File? file;
   // For kBlob
   string? blob_uuid;
   // For kDataPipe

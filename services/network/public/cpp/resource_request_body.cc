@@ -57,19 +57,6 @@ void ResourceRequestBody::AppendFileRange(
                                       expected_modification_time);
 }
 
-void ResourceRequestBody::AppendRawFileRange(
-    base::File file,
-    const base::FilePath& file_path,
-    uint64_t offset,
-    uint64_t length,
-    const base::Time& expected_modification_time) {
-  DCHECK(EnableToAppendElement());
-
-  elements_.push_back(DataElement());
-  elements_.back().SetToFileRange(std::move(file), file_path, offset, length,
-                                  expected_modification_time);
-}
-
 void ResourceRequestBody::AppendBlob(const std::string& uuid) {
   AppendBlob(uuid, std::numeric_limits<uint64_t>::max());
 }
