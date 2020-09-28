@@ -753,9 +753,7 @@ crbug.com/704294 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftest
 # These testcases are incorrect, mark them as failing until they're fixed in the testsuite.
 # https://lists.w3.org/Archives/Public/www-style/2016Jan/0275.html
 # https://lists.w3.org/Archives/Public/www-style/2016Jan/0276.html
-crbug.com/249112 external/wpt/css/css-flexbox/flex-minimum-height-flex-items-005.xht [ Failure ]
 crbug.com/249112 external/wpt/css/css-flexbox/flex-minimum-height-flex-items-007.xht [ Failure ]
-crbug.com/249112 external/wpt/css/css-flexbox/flex-minimum-width-flex-items-005.xht [ Failure ]
 crbug.com/249112 external/wpt/css/css-flexbox/flex-minimum-width-flex-items-007.xht [ Failure ]
 
 # These require css-align-3 positional keywords that Blink doesn't yet support for flexbox.
