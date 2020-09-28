@@ -51,13 +51,10 @@ import java.util.concurrent.TimeUnit;
 @JNINamespace("ui")
 public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPickerListener {
     private static final String TAG = "SelectFileDialog";
-    private static final String IMAGE_TYPE = "image/";
-    private static final String VIDEO_TYPE = "video/";
-    private static final String AUDIO_TYPE = "audio/";
-    private static final String ALL_IMAGE_TYPES = IMAGE_TYPE + "*";
-    private static final String ALL_VIDEO_TYPES = VIDEO_TYPE + "*";
-    private static final String ALL_AUDIO_TYPES = AUDIO_TYPE + "*";
-    private static final String ANY_TYPES = "*/*";
+    private static final String IMAGE_TYPE = "image";
+    private static final String VIDEO_TYPE = "video";
+    private static final String AUDIO_TYPE = "audio";
+    private static final String ALL_TYPES = "*/*";
 
     // Duration before temporary camera file is cleaned up, in milliseconds.
     private static final long DURATION_BEFORE_FILE_CLEAN_UP_IN_MILLIS = TimeUnit.HOURS.toMillis(1);
@@ -288,19 +285,18 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
         }
 
         ArrayList<Intent> extraIntents = new ArrayList<Intent>();
-        if (!noSpecificType()) {
-            // Create a chooser based on the accept type that was specified in the webpage. Note
-            // that if the web page specified multiple accept types, we will have built a generic
-            // chooser above.
+        if (acceptsSingleType()) {
+            // If one and only one category of accept type was specified (image, video, etc..),
+            // then update the intent to specifically target that request.
             if (shouldShowImageTypes()) {
                 if (camera != null) extraIntents.add(camera);
-                getContentIntent.setType(ALL_IMAGE_TYPES);
+                getContentIntent.setType(IMAGE_TYPE + "/*");
             } else if (shouldShowVideoTypes()) {
                 if (camcorder != null) extraIntents.add(camcorder);
-                getContentIntent.setType(ALL_VIDEO_TYPES);
+                getContentIntent.setType(VIDEO_TYPE + "/*");
             } else if (shouldShowAudioTypes()) {
                 if (soundRecorder != null) extraIntents.add(soundRecorder);
-                getContentIntent.setType(ALL_AUDIO_TYPES);
+                getContentIntent.setType(AUDIO_TYPE + "/*");
             }
 
             // If any types are specified, then only accept openable files, as coercing
@@ -309,8 +305,8 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
         }
 
         if (extraIntents.isEmpty()) {
-            // We couldn't resolve an accept type, so fallback to a generic chooser.
-            getContentIntent.setType(ANY_TYPES);
+            // We couldn't resolve a single accept type, so fallback to a generic chooser.
+            getContentIntent.setType(ALL_TYPES);
             if (camera != null) extraIntents.add(camera);
             if (camcorder != null) extraIntents.add(camcorder);
             if (soundRecorder != null) extraIntents.add(soundRecorder);
@@ -641,33 +637,77 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
         return SELECT_FILE_DIALOG_SCOPE_IMAGES;
     }
 
-    private boolean noSpecificType() {
+    /**
+     * Whether any of the mime-types in mFileTypes accepts the given type.
+     * If mFileTypes contains ALL_TYPES or is empty every type is accepted so always return true.
+     * @param superType The superType to look for, such as 'image' or 'video'.
+     *                  Note: This is string-matched on the prefix, so using generics as
+     *                  'image/*' or '*' will not work.
+     */
+    private boolean acceptsType(String superType) {
+        if (mFileTypes.isEmpty() || mFileTypes.contains(ALL_TYPES)) return true;
+        return countAcceptTypesFor(superType) > 0;
+    }
+
+    /**
+     * Whether all mime-types in mFileTypes accepts the given type.
+     * @param superType The superType to look for, such as 'image' or 'video'.
+     *                  Note: This is string-matched on the prefix, so using generics as
+     *                  'image/*' or '*' will not work.
+     */
+    private boolean acceptsOnlyType(String superType) {
+        return countAcceptTypesFor(superType) == mFileTypes.size();
+    }
+
+    /**
+     * Checks whether the list of accepted types effectively describes only a single
+     * type, which might be wildcard. For example:
+     *
+     * [image/jpeg]            -> true: Only one type is specified.
+     * [image/jpeg, image/gif] -> false: Contains two distinct types.
+     * [image/*, image/gif]    -> true: image/gif already part of image/*.
+     */
+    @VisibleForTesting
+    boolean acceptsSingleType() {
         // We use a single Intent to decide the type of the file chooser we display to the user,
         // which means we can only give it a single type. If there are multiple accept types
         // specified, we will fallback to a generic chooser (unless a capture parameter has been
         // specified, in which case we'll try to satisfy that first.
-        return mFileTypes.size() != 1 || mFileTypes.contains(ANY_TYPES);
+        if (mFileTypes.size() == 1) return !mFileTypes.contains(ALL_TYPES);
+        // Also return true when a generic subtype "type/*" and one or more specific subtypes
+        // "type/subtype" are listed but all still have the same supertype.
+        // Ie. treat ["image/png", "image/*"] as if it said just ["image/*"].
+        String superTypeFound = null;
+        boolean foundGenericSubtype = false;
+        for (String fileType : mFileTypes) {
+            int slash = fileType.indexOf('/');
+            if (slash == -1) return false;
+            String superType = fileType.substring(0, slash);
+            boolean genericSubtype = fileType.substring(slash + 1).equals("*");
+            if (superTypeFound == null) {
+                superTypeFound = superType;
+            } else if (!superTypeFound.equals(superType)) {
+                // More than one type.
+                return false;
+            }
+            if (genericSubtype) foundGenericSubtype = true;
+        }
+        return foundGenericSubtype;
     }
 
-    private boolean shouldShowTypes(String allTypes, String specificType) {
-        if (noSpecificType() || mFileTypes.contains(allTypes)) return true;
-        return countAcceptTypesFor(specificType) > 0;
+    @VisibleForTesting
+    boolean shouldShowImageTypes() {
+        return acceptsType(IMAGE_TYPE);
     }
 
-    private boolean shouldShowImageTypes() {
-        return shouldShowTypes(ALL_IMAGE_TYPES, IMAGE_TYPE);
+    @VisibleForTesting
+    boolean shouldShowVideoTypes() {
+        return acceptsType(VIDEO_TYPE);
     }
 
-    private boolean shouldShowVideoTypes() {
-        return shouldShowTypes(ALL_VIDEO_TYPES, VIDEO_TYPE);
-    }
-
-    private boolean shouldShowAudioTypes() {
-        return shouldShowTypes(ALL_AUDIO_TYPES, AUDIO_TYPE);
-    }
-
-    private boolean acceptsSpecificType(String type) {
-        return mFileTypes.size() == 1 && TextUtils.equals(mFileTypes.get(0), type);
+    @VisibleForTesting
+    boolean shouldShowAudioTypes() {
+        return acceptsType(AUDIO_TYPE);
     }
 
     /**
@@ -677,7 +717,7 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
      * See https://www.w3.org/TR/html-media-capture/ for further description.
      */
     private boolean captureImage() {
-        return mCapture && acceptsSpecificType(ALL_IMAGE_TYPES);
+        return mCapture && acceptsOnlyType(IMAGE_TYPE);
     }
 
     /**
@@ -685,7 +725,7 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
      * video capture.
      */
     private boolean captureVideo() {
-        return mCapture && acceptsSpecificType(ALL_VIDEO_TYPES);
+        return mCapture && acceptsOnlyType(VIDEO_TYPE);
     }
 
     /**
@@ -693,13 +733,14 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
      * audio capture.
      */
     private boolean captureAudio() {
-        return mCapture && acceptsSpecificType(ALL_AUDIO_TYPES);
+        return mCapture && acceptsOnlyType(AUDIO_TYPE);
     }
 
-    private int countAcceptTypesFor(String accept) {
+    private int countAcceptTypesFor(String superType) {
+        assert superType.indexOf('/') == -1;
         int count = 0;
         for (String type : mFileTypes) {
-            if (type.startsWith(accept)) {
+            if (type.startsWith(superType)) {
                 count++;
             }
         }
