@@ -4,6 +4,7 @@ specific_include_rules = {
     ],
     "web_bundle_subresource_loader.cc" : [
         "+components/web_package",
+        "+net/http/http_status_code.h",
     ],
     "web_bundle_subresource_loader_test.cc" : [
         "+components/web_package",

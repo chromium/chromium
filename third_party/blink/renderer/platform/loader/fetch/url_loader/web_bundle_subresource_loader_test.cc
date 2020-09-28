@@ -215,6 +215,28 @@ TEST_F(WebBundleSubresourceLoaderFactoryTest, ResourceNotFoundInBundle) {
       "https://example.com/no-such-resource is not found in the WebBundle.");
 }
 
+TEST_F(WebBundleSubresourceLoaderFactoryTest, RedirectResponseIsNotAllowed) {
+  web_package::test::WebBundleBuilder builder(kResourceUrl,
+                                              "" /* manifest_url */);
+  builder.AddExchange(kResourceUrl,
+                      {{":status", "301"}, {"location", kResourceUrl2}}, "");
+  builder.AddExchange(kResourceUrl2,
+                      {{":status", "200"}, {"content-type", "text/plain"}},
+                      "body");
+  WriteBundle(builder.CreateBundle());
+  FinishWritingBundle();
+
+  auto request = StartRequest(GURL(kResourceUrl));
+  request.client->RunUntilComplete();
+  RunUntilBundleError();
+
+  EXPECT_EQ(net::ERR_INVALID_WEB_BUNDLE,
+            request.client->completion_status().error_code);
+  EXPECT_EQ(last_bundle_error()->first,
+            WebBundleErrorType::kResponseParseError);
+  EXPECT_EQ(last_bundle_error()->second, "Invalid response code 301");
+}
+
 TEST_F(WebBundleSubresourceLoaderFactoryTest, StartRequestBeforeReadingBundle) {
   auto request = StartRequest(GURL(kResourceUrl));
 

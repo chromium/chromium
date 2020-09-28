@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/web_bundle_subresource_loader.h"
 
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/post_task.h"
 #include "components/web_package/web_bundle_parser.h"
 #include "components/web_package/web_bundle_utils.h"
@@ -12,6 +13,7 @@
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/data_pipe_drainer.h"
 #include "mojo/public/cpp/system/data_pipe_producer.h"
+#include "net/http/http_status_code.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
@@ -374,6 +376,16 @@ class WebBundleSubresourceLoaderFactory
       return;
     if (error) {
       RunErrorCallback(WebBundleErrorType::kResponseParseError, error->message);
+      loader->OnFail(net::ERR_INVALID_WEB_BUNDLE);
+      return;
+    }
+    // Currently we allow only net::HTTP_OK responses in bundles.
+    // TODO(crbug.com/990733): Revisit this once
+    // https://github.com/WICG/webpackage/issues/478 is resolved.
+    if (response->response_code != net::HTTP_OK) {
+      RunErrorCallback(WebBundleErrorType::kResponseParseError,
+                       "Invalid response code " +
+                           base::NumberToString(response->response_code));
       loader->OnFail(net::ERR_INVALID_WEB_BUNDLE);
       return;
     }
