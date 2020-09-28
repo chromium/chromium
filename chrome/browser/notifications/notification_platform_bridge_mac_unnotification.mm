@@ -12,9 +12,9 @@
 #include "chrome/browser/notifications/notification_platform_bridge_mac_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/cocoa/notifications/unnotification_builder_mac.h"
+#import "chrome/browser/ui/cocoa/notifications/unnotification_response_builder_mac.h"
 #include "ui/message_center/public/cpp/notification.h"
 
-@class NSNotification;
 @class UNMutableNotificationContent;
 @class UNUserNotificationCenter;
 
@@ -160,6 +160,9 @@ void NotificationPlatformBridgeMacUNNotification::RequestPermission() {
 - (void)userNotificationCenter:(UNUserNotificationCenter*)center
     didReceiveNotificationResponse:(UNNotificationResponse*)response
              withCompletionHandler:(void (^)(void))completionHandler {
+  NSDictionary* notificationResponse =
+      [UNNotificationResponseBuilder buildDictionary:response];
+  ProcessMacNotificationResponse(notificationResponse);
   completionHandler();
 }
 

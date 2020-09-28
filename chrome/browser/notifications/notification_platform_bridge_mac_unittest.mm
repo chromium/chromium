@@ -47,32 +47,6 @@ class NotificationPlatformBridgeMacTest : public BrowserWithTestWindowTest {
   }
 
  protected:
-  NSUserNotification* BuildNotification() {
-    base::scoped_nsobject<NotificationBuilder> builder(
-        [[NotificationBuilder alloc] initWithCloseLabel:@"Close"
-                                           optionsLabel:@"More"
-                                          settingsLabel:@"Settings"]);
-    [builder setTitle:@"Title"];
-    [builder setOrigin:@"https://www.miguel.com/"];
-    [builder setContextMessage:@""];
-    [builder setButtons:@"Button1" secondaryButton:@"Button2"];
-    [builder setTag:@"tag1"];
-    [builder setIcon:[NSImage imageNamed:@"NSApplicationIcon"]];
-    [builder setNotificationId:@"notification_id"];
-    [builder
-        setProfileId:base::SysUTF8ToNSString(
-                         NotificationPlatformBridge::GetProfileId(profile()))];
-    [builder setIncognito:profile()->IsOffTheRecord()];
-    [builder setCreatorPid:@(getpid())];
-    [builder setNotificationType:
-                 [NSNumber numberWithInteger:
-                               static_cast<int>(
-                                   NotificationHandler::Type::WEB_PERSISTENT)]];
-    [builder setShowSettingsButton:true];
-
-    return [builder buildUserNotification];
-  }
-
   static void StoreNotificationCount(int* out_notification_count,
                                      std::set<std::string> notifications,
                                      bool supports_synchronization) {
@@ -135,13 +109,6 @@ class NotificationPlatformBridgeMacTest : public BrowserWithTestWindowTest {
     return notification;
   }
 
-  NSMutableDictionary* BuildDefaultNotificationResponse() {
-    return [NSMutableDictionary
-        dictionaryWithDictionary:
-            [NotificationResponseBuilder
-                buildActivatedDictionary:BuildNotification()]];
-  }
-
   NSUserNotificationCenter* notification_center() {
     return notification_center_.get();
   }
@@ -152,76 +119,6 @@ class NotificationPlatformBridgeMacTest : public BrowserWithTestWindowTest {
   base::scoped_nsobject<StubNotificationCenter> notification_center_;
   base::scoped_nsobject<StubAlertDispatcher> alert_dispatcher_;
 };
-
-TEST_F(NotificationPlatformBridgeMacTest, TestNotificationVerifyValidResponse) {
-  NSDictionary* response = BuildDefaultNotificationResponse();
-  EXPECT_TRUE(NotificationPlatformBridgeMac::VerifyNotificationData(response));
-}
-
-TEST_F(NotificationPlatformBridgeMacTest, TestNotificationUnknownType) {
-  NSMutableDictionary* response = BuildDefaultNotificationResponse();
-  [response setValue:[NSNumber numberWithInt:210581]
-              forKey:notification_constants::kNotificationType];
-  EXPECT_FALSE(NotificationPlatformBridgeMac::VerifyNotificationData(response));
-}
-
-TEST_F(NotificationPlatformBridgeMacTest,
-       TestNotificationVerifyUnknownOperation) {
-  NSMutableDictionary* response = BuildDefaultNotificationResponse();
-  [response setValue:[NSNumber numberWithInt:40782]
-              forKey:notification_constants::kNotificationOperation];
-  EXPECT_FALSE(NotificationPlatformBridgeMac::VerifyNotificationData(response));
-}
-
-TEST_F(NotificationPlatformBridgeMacTest,
-       TestNotificationVerifyMissingOperation) {
-  NSMutableDictionary* response = BuildDefaultNotificationResponse();
-  [response removeObjectForKey:notification_constants::kNotificationOperation];
-  EXPECT_FALSE(NotificationPlatformBridgeMac::VerifyNotificationData(response));
-}
-
-TEST_F(NotificationPlatformBridgeMacTest, TestNotificationVerifyNoProfileId) {
-  NSMutableDictionary* response = BuildDefaultNotificationResponse();
-  [response removeObjectForKey:notification_constants::kNotificationProfileId];
-  EXPECT_FALSE(NotificationPlatformBridgeMac::VerifyNotificationData(response));
-}
-
-TEST_F(NotificationPlatformBridgeMacTest,
-       TestNotificationVerifyNoNotificationId) {
-  NSMutableDictionary* response = BuildDefaultNotificationResponse();
-  [response setValue:@"" forKey:notification_constants::kNotificationId];
-  EXPECT_FALSE(NotificationPlatformBridgeMac::VerifyNotificationData(response));
-}
-
-TEST_F(NotificationPlatformBridgeMacTest, TestNotificationVerifyInvalidButton) {
-  NSMutableDictionary* response = BuildDefaultNotificationResponse();
-  [response setValue:[NSNumber numberWithInt:-5]
-              forKey:notification_constants::kNotificationButtonIndex];
-  EXPECT_FALSE(NotificationPlatformBridgeMac::VerifyNotificationData(response));
-}
-
-TEST_F(NotificationPlatformBridgeMacTest,
-       TestNotificationVerifyMissingButtonIndex) {
-  NSMutableDictionary* response = BuildDefaultNotificationResponse();
-  [response
-      removeObjectForKey:notification_constants::kNotificationButtonIndex];
-  EXPECT_FALSE(NotificationPlatformBridgeMac::VerifyNotificationData(response));
-}
-
-TEST_F(NotificationPlatformBridgeMacTest, TestNotificationVerifyOrigin) {
-  NSMutableDictionary* response = BuildDefaultNotificationResponse();
-  [response setValue:@"invalidorigin"
-              forKey:notification_constants::kNotificationOrigin];
-  EXPECT_FALSE(NotificationPlatformBridgeMac::VerifyNotificationData(response));
-
-  // If however the origin is not present the response should be fine.
-  [response removeObjectForKey:notification_constants::kNotificationOrigin];
-  EXPECT_TRUE(NotificationPlatformBridgeMac::VerifyNotificationData(response));
-
-  // Empty origin should be fine.
-  [response setValue:@"" forKey:notification_constants::kNotificationOrigin];
-  EXPECT_TRUE(NotificationPlatformBridgeMac::VerifyNotificationData(response));
-}
 
 TEST_F(NotificationPlatformBridgeMacTest, TestDisplayNoButtons) {
   std::unique_ptr<Notification> notification =

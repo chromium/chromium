@@ -58,10 +58,13 @@ static_library("common") {
     "notification_constants_mac.h",
     "notification_constants_mac.mm",
     "notification_delivery.h",
+    "notification_operation.h",
     "notification_response_builder_mac.h",
     "notification_response_builder_mac.mm",
     "unnotification_builder_mac.h",
     "unnotification_builder_mac.mm",
+    "unnotification_response_builder_mac.h",
+    "unnotification_response_builder_mac.mm",
     "xpc_mach_port.h",
     "xpc_mach_port.mm",
   ]

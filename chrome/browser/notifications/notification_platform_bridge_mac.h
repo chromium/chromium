@@ -47,14 +47,6 @@ class NotificationPlatformBridgeMac : public NotificationPlatformBridge {
   void SetReadyCallback(NotificationBridgeReadyCallback callback) override;
   void DisplayServiceShutDown(Profile* profile) override;
 
-  // Processes a notification response generated from a user action
-  // (click close, etc.).
-  static void ProcessNotificationResponse(NSDictionary* response);
-
-  // Validates contents of the |response| dictionary as received from the system
-  // when a notification gets activated.
-  static bool VerifyNotificationData(NSDictionary* response) WARN_UNUSED_RESULT;
-
   // Returns if alerts are supported on this machine.
   static bool SupportsAlerts();
 

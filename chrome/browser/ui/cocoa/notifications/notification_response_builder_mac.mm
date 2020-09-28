@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "chrome/browser/ui/cocoa/notifications/notification_constants_mac.h"
+#include "chrome/browser/ui/cocoa/notifications/notification_operation.h"
 
 @implementation NotificationResponseBuilder
 
@@ -45,8 +46,8 @@
                 : notification.activationType;
   NotificationOperation operation =
       activationType == NSUserNotificationActivationTypeNone
-          ? NOTIFICATION_CLOSE
-          : NOTIFICATION_CLICK;
+          ? NotificationOperation::NOTIFICATION_CLOSE
+          : NotificationOperation::NOTIFICATION_CLICK;
   int buttonIndex = notification_constants::kNotificationInvalidButtonIndex;
 
   // Determine whether the user clicked on a button, and if they did, whether it
@@ -65,7 +66,7 @@
     // No developer actions, just the settings button.
     if (!multipleButtons) {
       DCHECK(settingsButtonRequired);
-      operation = NOTIFICATION_SETTINGS;
+      operation = NotificationOperation::NOTIFICATION_SETTINGS;
       buttonIndex = notification_constants::kNotificationInvalidButtonIndex;
     } else {
       // 0 based array containing.
@@ -76,8 +77,8 @@
           [notification valueForKey:@"_alternateActionIndex"];
       operation = settingsButtonRequired && (actionIndex.unsignedLongValue ==
                                              alternateButtons.count - 1)
-                      ? NOTIFICATION_SETTINGS
-                      : NOTIFICATION_CLICK;
+                      ? NotificationOperation::NOTIFICATION_SETTINGS
+                      : NotificationOperation::NOTIFICATION_CLICK;
       buttonIndex =
           settingsButtonRequired &&
                   (actionIndex.unsignedLongValue == alternateButtons.count - 1)
@@ -94,8 +95,8 @@
     notification_constants::kNotificationCreatorPid : creatorPid ? creatorPid
                                                                  : @0,
     notification_constants::kNotificationType : notificationType,
-    notification_constants::
-    kNotificationOperation : [NSNumber numberWithInt:operation],
+    notification_constants::kNotificationOperation :
+        [NSNumber numberWithInt:static_cast<int>(operation)],
     notification_constants::
     kNotificationButtonIndex : [NSNumber numberWithInt:buttonIndex],
   };
