@@ -4128,9 +4128,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Drive.PushNotificationInitiallyEnabled" enum="BooleanEnabled"
-    expires_after="M87">
-  <owner>slangley@chromium.org</owner>
-  <owner>weifangsun@chromium.org</owner>
+    expires_after="M91">
+  <owner>dats@chromium.org</owner>
+  <owner>austinct@chromium.org</owner>
   <summary>
     Tracks whether the push notification is initially enabled for Drive.
     Recorded when the first notification is processed. Notification is emulated
@@ -4139,9 +4139,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Drive.PushNotificationRegistered" enum="BooleanRegistered"
-    expires_after="M87">
-  <owner>slangley@chromium.org</owner>
-  <owner>weifangsun@chromium.org</owner>
+    expires_after="M91">
+  <owner>dats@chromium.org</owner>
+  <owner>austinct@chromium.org</owner>
   <summary>
     Tracks whether the push notification request is registered correctly for
     Drive. Recorded when the push notification manager is initialized.
