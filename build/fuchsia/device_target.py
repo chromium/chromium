@@ -164,7 +164,12 @@ class DeviceTarget(target.Target):
       return filecmp.cmp(tmp.name, os.path.join(SDK_ROOT, '.hash'), False)
 
   def _ProvisionDeviceIfNecessary(self):
-    pass
+    if self._Discover():
+      self._WaitUntilReady()
+    else:
+      raise Exception('Could not find device. If the device is connected '
+                      'to the host remotely, make sure that --host flag is '
+                      'set and that remote serving is set up.')
 
   def _Discover(self):
     """Queries mDNS for the IP address of a booted Fuchsia instance whose name
@@ -227,8 +232,6 @@ class DeviceTarget(target.Target):
       self._WaitUntilReady()
     else:
       self._ProvisionDeviceIfNecessary()
-      assert self._node_name
-      assert self._host
 
   def GetAmberRepo(self):
     if not self._amber_repo:
