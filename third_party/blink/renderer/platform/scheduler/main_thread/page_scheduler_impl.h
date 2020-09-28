@@ -236,8 +236,10 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
       MainThreadTaskQueue* task_queue,
       FrameOriginType frame_origin_type,
       base::sequence_manager::LazyNow* lazy_now);
-  // Returns the WakeUpBudgetPool to use for a frame with |frame_origin_type|.
-  WakeUpBudgetPool* GetWakeUpBudgetPool(FrameOriginType frame_origin_type);
+  // Returns the WakeUpBudgetPool to use for |task_queue| which belongs to a
+  // frame with |frame_origin_type|.
+  WakeUpBudgetPool* GetWakeUpBudgetPool(MainThreadTaskQueue* task_queue,
+                                        FrameOriginType frame_origin_type);
   // Initializes WakeUpBudgetPools, if not already initialized.
   void MaybeInitializeWakeUpBudgetPools(
       base::sequence_manager::LazyNow* lazy_now);
@@ -285,6 +287,13 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
   // be freezable.
   void DoFreezePage();
 
+  // Returns true if WakeUpBudgetPools were initialized.
+  bool HasWakeUpBudgetPools() const;
+
+  // Returns all WakeUpBudgetPools owned by this PageSchedulerImpl.
+  static constexpr int kNumWakeUpBudgetPools = 3;
+  std::array<WakeUpBudgetPool*, kNumWakeUpBudgetPools> AllWakeUpBudgetPools();
+
   TraceableVariableController tracing_controller_;
   HashSet<FrameSchedulerImpl*> frame_schedulers_;
   MainThreadSchedulerImpl* main_thread_scheduler_;
@@ -303,21 +312,31 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
   bool are_wake_ups_intensively_throttled_;
   bool keep_active_;
   bool had_recent_title_or_favicon_update_;
-  CPUTimeBudgetPool* cpu_time_budget_pool_;
-  // Throttles wake ups in throttleable TaskQueues of frames that have the same
-  // origin as the main frame.
+  CPUTimeBudgetPool* cpu_time_budget_pool_ = nullptr;
+
+  // Wake up budget pools for each throttling scenario:
   //
-  // This pool allows aligned wake ups and unaligned wake ups if there hasn't
-  // been a recent wake up.
-  WakeUpBudgetPool* same_origin_wake_up_budget_pool_;
-  // Throttles wake ups in throttleable TaskQueues of frames that are
-  // cross-origin with the main frame.
+  //                                  Same-origin frame    Cross-origin frame
+  // Normal throttling only           1                    1
+  // Normal and intensive throttling  2                    3
   //
-  // This pool only allows aligned wake ups. Because wake ups do not depend on
-  // recent wake ups like in |same_origin_wake_up_budget_pool_|, tasks cannot
-  // easily learn about tasks running in other queues in the same pool. This is
-  // important because this pool can have queues from different origins.
-  WakeUpBudgetPool* cross_origin_wake_up_budget_pool_;
+  // 1: This pool allows 1-second aligned wake ups.
+  WakeUpBudgetPool* normal_wake_up_budget_pool_ = nullptr;
+  // 2: This pool allows 1-second aligned wake ups if the page is not
+  //    intensively throttled of if there hasn't been a wake up in the last
+  //    minute. Otherwise, it allows 1-minute aligned wake ups.
+  WakeUpBudgetPool* same_origin_intensive_wake_up_budget_pool_ = nullptr;
+  // 3: This pool allows 1-second aligned wake ups if the page is not
+  //    intensively throttled. Otherwise, it allows 1-minute aligned wake ups.
+  //
+  //    Unlike |same_origin_intensive_wake_up_budget_pool_|, this pool does not
+  //    allow a 1-second aligned wake up when there hasn't been a wake up in the
+  //    last minute. This is to prevent frames from different origins from
+  //    learning about each other. Concretely, this means that
+  //    MaybeInitializeWakeUpBudgetPools() does not invoke
+  //    AllowUnalignedWakeUpIfNoRecentWakeUp() on this pool.
+  WakeUpBudgetPool* cross_origin_intensive_wake_up_budget_pool_ = nullptr;
+
   PageScheduler::Delegate* delegate_;
   CancelableClosureHolder do_throttle_cpu_time_callback_;
   CancelableClosureHolder do_intensively_throttle_wake_ups_callback_;

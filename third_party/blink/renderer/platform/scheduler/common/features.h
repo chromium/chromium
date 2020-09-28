@@ -181,10 +181,12 @@ const base::Feature kPrioritizeCompositingAfterInput{
 const base::Feature kHighPriorityDatabaseTaskType{
     "HighPriorityDatabaseTaskType", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// When features::kIntensiveWakeUpThrottling is enabled, wake ups from
-// throttleable TaskQueues are limited to 1 per
+// When features::kIntensiveWakeUpThrottling is enabled, wake ups from timers
+// with a high nesting level are limited to 1 per
 // GetIntensiveWakeUpThrottlingDurationBetweenWakeUp() in a page that has been
-// backgrounded for GetIntensiveWakeUpThrottlingGracePeriod().
+// backgrounded for GetIntensiveWakeUpThrottlingGracePeriod(). If
+// CanIntensivelyThrottleLowNestingLevel() is true, this policy is also applied
+// to timers with a non-zero delay and a low nesting level.
 //
 // Intensive wake up throttling is enforced in addition to other throttling
 // mechanisms:
@@ -192,7 +194,6 @@ const base::Feature kHighPriorityDatabaseTaskType{
 //  - 1% CPU time in a page that has been backgrounded for 10 seconds
 //
 // Feature tracking bug: https://crbug.com/1075553
-//
 //
 // Note that features::kIntensiveWakeUpThrottling should not be read from;
 // rather the provided accessors should be used, which also take into account
@@ -204,8 +205,13 @@ constexpr int kIntensiveWakeUpThrottling_DurationBetweenWakeUpsSeconds_Default =
 constexpr const char*
     kIntensiveWakeUpThrottling_DurationBetweenWakeUpsSeconds_Name =
         "duration_between_wake_ups_seconds";
-
 constexpr int kIntensiveWakeUpThrottling_GracePeriodSeconds_Default = 5 * 60;
+constexpr const char*
+    kIntensiveWakeUpThrottling_CanIntensivelyThrottleLowNestingLevel_Name =
+        "can_intensively_throttle_low_nesting_level";
+constexpr const bool
+    kIntensiveWakeUpThrottling_CanIntensivelyThrottleLowNestingLevel_Default =
+        false;
 
 // Exposed so that multiple tests can tinker with the policy override.
 PLATFORM_EXPORT void
@@ -224,6 +230,9 @@ PLATFORM_EXPORT base::TimeDelta GetIntensiveWakeUpThrottlingGracePeriod();
 // that updating the title or favicon has no effect on intensive throttling.
 PLATFORM_EXPORT base::TimeDelta
 GetTimeToInhibitIntensiveThrottlingOnTitleOrFaviconUpdate();
+// Whether timers with a non-zero delay and a low nesting level can be
+// intensively throttled.
+PLATFORM_EXPORT bool CanIntensivelyThrottleLowNestingLevel();
 
 // Per-agent scheduling experiments.
 constexpr base::Feature kPerAgentSchedulingExperiments{

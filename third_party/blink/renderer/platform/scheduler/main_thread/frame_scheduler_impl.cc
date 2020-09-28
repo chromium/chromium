@@ -376,9 +376,17 @@ QueueTraits FrameSchedulerImpl::CreateQueueTraitsForTaskType(TaskType type) {
       return ThrottleableTaskQueueTraits().SetPrioritisationType(
           QueueTraits::PrioritisationType::kBestEffort);
     case TaskType::kJavascriptTimerDelayedLowNesting:
+      return ThrottleableTaskQueueTraits()
+          .SetPrioritisationType(
+              QueueTraits::PrioritisationType::kJavaScriptTimer)
+          .SetCanBeIntensivelyThrottled(
+              IsIntensiveWakeUpThrottlingEnabled() &&
+              CanIntensivelyThrottleLowNestingLevel());
     case TaskType::kJavascriptTimerDelayedHighNesting:
-      return ThrottleableTaskQueueTraits().SetPrioritisationType(
-          QueueTraits::PrioritisationType::kJavaScriptTimer);
+      return ThrottleableTaskQueueTraits()
+          .SetPrioritisationType(
+              QueueTraits::PrioritisationType::kJavaScriptTimer)
+          .SetCanBeIntensivelyThrottled(IsIntensiveWakeUpThrottlingEnabled());
     case TaskType::kJavascriptTimerImmediate: {
       return DeferrableTaskQueueTraits()
           .SetPrioritisationType(

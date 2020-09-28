@@ -104,6 +104,7 @@ class PLATFORM_EXPORT MainThreadTaskQueue
     QueueTraits()
         : can_be_deferred(false),
           can_be_throttled(false),
+          can_be_intensively_throttled(false),
           can_be_paused(false),
           can_be_frozen(false),
           can_run_in_background(true),
@@ -150,6 +151,11 @@ class PLATFORM_EXPORT MainThreadTaskQueue
       return *this;
     }
 
+    QueueTraits SetCanBeIntensivelyThrottled(bool value) {
+      can_be_intensively_throttled = value;
+      return *this;
+    }
+
     QueueTraits SetCanBePaused(bool value) {
       can_be_paused = value;
       return *this;
@@ -183,6 +189,8 @@ class PLATFORM_EXPORT MainThreadTaskQueue
     bool operator==(const QueueTraits& other) const {
       return can_be_deferred == other.can_be_deferred &&
              can_be_throttled == other.can_be_throttled &&
+             can_be_intensively_throttled ==
+                 other.can_be_intensively_throttled &&
              can_be_paused == other.can_be_paused &&
              can_be_frozen == other.can_be_frozen &&
              can_run_in_background == other.can_run_in_background &&
@@ -201,6 +209,7 @@ class PLATFORM_EXPORT MainThreadTaskQueue
       int key = 1 << (offset++);
       key |= can_be_deferred << (offset++);
       key |= can_be_throttled << (offset++);
+      key |= can_be_intensively_throttled << (offset++);
       key |= can_be_paused << (offset++);
       key |= can_be_frozen << (offset++);
       key |= can_run_in_background << (offset++);
@@ -213,6 +222,7 @@ class PLATFORM_EXPORT MainThreadTaskQueue
 
     bool can_be_deferred : 1;
     bool can_be_throttled : 1;
+    bool can_be_intensively_throttled : 1;
     bool can_be_paused : 1;
     bool can_be_frozen : 1;
     bool can_run_in_background : 1;
@@ -340,6 +350,10 @@ class PLATFORM_EXPORT MainThreadTaskQueue
   bool CanBeDeferred() const { return queue_traits_.can_be_deferred; }
 
   bool CanBeThrottled() const { return queue_traits_.can_be_throttled; }
+
+  bool CanBeIntensivelyThrottled() const {
+    return queue_traits_.can_be_intensively_throttled;
+  }
 
   bool CanBePaused() const { return queue_traits_.can_be_paused; }
 

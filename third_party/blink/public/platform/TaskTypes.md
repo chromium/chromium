@@ -7,56 +7,65 @@ whether the task queue associated with this task type can be paused, throttled,
 frozen or deferred. All specified (in W3C, HTML, DOM, etc) task types are
 pausable. Some internal task queues are not.
 
-| Queue Type                        | Throttlable | Deferrable | Freezable | Pausable | Virtual time |
-|-----------------------------------|-------------|------------|-----------|----------|--------------|
-| DOMManipulation                   | No          | Yes        | Yes       | Yes      | Yes          |
-| UserInteraction                   | No          | No         | Yes       | Yes      | Yes          |
-| Networking                        | No          | Yes        | Yes       | Yes      | No           |
-| NetworkingWithURLLoaderAnnotation | No          | Yes        | Yes       | Yes      | No           |
-| NetworkingControl                 | No          | Yes        | Yes       | Yes      | No           |
-| HistoryTraversal                  | No          | Yes        | Yes       | Yes      | Yes          |
-| Embed                             | No          | Yes        | Yes       | Yes      | Yes          |
-| MediaElementEvent                 | No          | No         | Yes       | Yes      | Yes          |
-| CanvasBlobSerialization           | No          | Yes        | Yes       | Yes      | Yes          |
-| Microtask                         | No          | Yes        | Yes       | Yes      | Yes          |
-| JavascriptTimerDelayedLowNesting  | Yes         | Yes        | Yes       | Yes      | Yes          |
-| JavascriptTimerDelayedHighNesting | Yes         | Yes        | Yes       | Yes      | Yes          |
-| JavascriptTimerImmediate [1]      | No          | Yes        | Yes       | Yes      | Yes          |
-| RemoteEvent                       | No          | Yes        | Yes       | Yes      | Yes          |
-| WebSocket                         | No          | Yes        | Yes       | Yes      | Yes          |
-| PostedMessage                     | No          | No         | Yes       | Yes      | Yes          |
-| UnshippedPortMessage              | No          | Yes        | Yes       | Yes      | Yes          |
-| FileReading                       | No          | Yes        | Yes       | Yes      | Yes          |
-| DatabaseAccess                    | No          | No         | Yes       | Yes      | Yes          |
-| Presentation                      | No          | Yes        | Yes       | Yes      | Yes          |
-| Sensor                            | No          | Yes        | Yes       | Yes      | Yes          |
-| PerformanceTimeline               | No          | Yes        | Yes       | Yes      | Yes          |
-| WebGL                             | No          | Yes        | Yes       | Yes      | Yes          |
-| IdleTask                          | No          | Yes        | Yes       | Yes      | Yes          |
-| MiscPlatformAPI                   | No          | Yes        | Yes       | Yes      | Yes          |
-| WorkerAnimation                   | No          | No         | Yes       | Yes      | Yes          |
-| FontLoading                       | No          | Yes        | Yes       | Yes      | Yes          |
-| ApplicationLifeCycle              | No          | Yes        | Yes       | Yes      | Yes          |
-| BackgroundFetch                   | No          | Yes        | Yes       | Yes      | Yes          |
-| Permission                        | No          | Yes        | Yes       | Yes      | Yes          |
-| ServiceWorkerClientMessage        | No          | No         | Yes       | Yes      | Yes          |
-| WebLocks                          | No          | No         | No        | No       | Yes          |
-| InternalDefault                   | No          | Yes        | Yes       | Yes      | Yes          |
-| InternalLoading                   | No          | Yes        | Yes       | Yes      | No           |
-| InternalTest                      | No          | No         | No        | No       | Yes          |
-| InternalWebCrypto                 | No          | No         | Yes       | Yes      | Yes          |
-| InternalMedia                     | No          | No         | Yes       | Yes      | Yes          |
-| InternalMediaRealTime             | No          | No         | Yes       | Yes      | Yes          |
-| InternalIPC                       | No          | No         | No        | No       | Yes          |
-| InternalUserInteraction           | No          | No         | Yes       | Yes      | Yes          |
-| InternalInspector                 | No          | No         | No        | No       | No           |
-| InternalTranslation               | Yes         | Yes        | Yes       | Yes      | Yes          |
-| InternalIntersectionObserver      | No          | No         | Yes       | Yes      | Yes          |
-| InternalContentCapture            | Yes         | Yes        | Yes       | Yes      | Yes          |
-| InternalNavigationAssociated      | No          | No         | No        | No       | No           |
-| InternalFreezableIPC              | No          | No         | Yes       | No       | No           |
-| InternalContinueScriptLoading     | No          | No         | Yes       | Yes      | Yes          |
+| Queue Type                        | Throttlable | Throttlable (intensive) | Deferrable | Freezable | Pausable | Virtual time |
+|-----------------------------------|-------------|-------------------------|------------|-----------|----------|--------------|
+| DOMManipulation                   | No          | No                      |  Yes       | Yes       | Yes      | Yes          |
+| UserInteraction                   | No          | No                      |  No        | Yes       | Yes      | Yes          |
+| Networking                        | No          | No                      |  Yes       | Yes       | Yes      | No           |
+| NetworkingWithURLLoaderAnnotation | No          | No                      |  Yes       | Yes       | Yes      | No           |
+| NetworkingControl                 | No          | No                      |  Yes       | Yes       | Yes      | No           |
+| HistoryTraversal                  | No          | No                      |  Yes       | Yes       | Yes      | Yes          |
+| Embed                             | No          | No                      |  Yes       | Yes       | Yes      | Yes          |
+| MediaElementEvent                 | No          | No                      |  No        | Yes       | Yes      | Yes          |
+| CanvasBlobSerialization           | No          | No                      |  Yes       | Yes       | Yes      | Yes          |
+| Microtask                         | No          | No                      |  Yes       | Yes       | Yes      | Yes          |
+| JavascriptTimerDelayedLowNesting  | Yes         | No [^2]                 |  Yes       | Yes       | Yes      | Yes          |
+| JavascriptTimerDelayedHighNesting | Yes         | Yes [^3]                |  Yes       | Yes       | Yes      | Yes          |
+| JavascriptTimerImmediate          | No [^1]     | No                      |  Yes       | Yes       | Yes      | Yes          |
+| RemoteEvent                       | No          | No                      |  Yes       | Yes       | Yes      | Yes          |
+| WebSocket                         | No          | No                      |  Yes       | Yes       | Yes      | Yes          |
+| PostedMessage                     | No          | No                      |  No        | Yes       | Yes      | Yes          |
+| UnshippedPortMessage              | No          | No                      |  Yes       | Yes       | Yes      | Yes          |
+| FileReading                       | No          | No                      |  Yes       | Yes       | Yes      | Yes          |
+| DatabaseAccess                    | No          | No                      |  No        | Yes       | Yes      | Yes          |
+| Presentation                      | No          | No                      |  Yes       | Yes       | Yes      | Yes          |
+| Sensor                            | No          | No                      |  Yes       | Yes       | Yes      | Yes          |
+| PerformanceTimeline               | No          | No                      |  Yes       | Yes       | Yes      | Yes          |
+| WebGL                             | No          | No                      |  Yes       | Yes       | Yes      | Yes          |
+| IdleTask                          | No          | No                      |  Yes       | Yes       | Yes      | Yes          |
+| MiscPlatformAPI                   | No          | No                      |  Yes       | Yes       | Yes      | Yes          |
+| WorkerAnimation                   | No          | No                      |  No        | Yes       | Yes      | Yes          |
+| FontLoading                       | No          | No                      |  Yes       | Yes       | Yes      | Yes          |
+| ApplicationLifeCycle              | No          | No                      |  Yes       | Yes       | Yes      | Yes          |
+| BackgroundFetch                   | No          | No                      |  Yes       | Yes       | Yes      | Yes          |
+| Permission                        | No          | No                      |  Yes       | Yes       | Yes      | Yes          |
+| ServiceWorkerClientMessage        | No          | No                      |  No        | Yes       | Yes      | Yes          |
+| WebLocks                          | No          | No                      |  No        | No        | No       | Yes          |
+| InternalDefault                   | No          | No                      |  Yes       | Yes       | Yes      | Yes          |
+| InternalLoading                   | No          | No                      |  Yes       | Yes       | Yes      | No           |
+| InternalTest                      | No          | No                      |  No        | No        | No       | Yes          |
+| InternalWebCrypto                 | No          | No                      |  No        | Yes       | Yes      | Yes          |
+| InternalMedia                     | No          | No                      |  No        | Yes       | Yes      | Yes          |
+| InternalMediaRealTime             | No          | No                      |  No        | Yes       | Yes      | Yes          |
+| InternalIPC                       | No          | No                      |  No        | No        | No       | Yes          |
+| InternalUserInteraction           | No          | No                      |  No        | Yes       | Yes      | Yes          |
+| InternalInspector                 | No          | No                      |  No        | No        | No       | No           |
+| InternalTranslation               | Yes         | No                      |  Yes       | Yes       | Yes      | Yes          |
+| InternalIntersectionObserver      | No          | No                      |  No        | Yes       | Yes      | Yes          |
+| InternalContentCapture            | Yes         | No                      |  Yes       | Yes       | Yes      | Yes          |
+| InternalNavigationAssociated      | No          | No                      |  No        | No        | No       | No           |
+| InternalFreezableIPC              | No          | No                      |  No        | Yes       | No       | No           |
+| InternalContinueScriptLoading     | No          | No                      |  No        | Yes       | Yes      | Yes          |
 
 Internal Translation queue supports concept of it running only in the foreground. It is disabled if the page that owns it goes in background.
 
-[1] Assuming that the "OptOutZeroTimeoutTimersFromThrottling" feature is enabled.
+"Throttlable (Intensive)": Wake ups are limited to 1 per minute when the page
+has been backgrounded for 5 minutes. See
+[Chrome Platform Status entry](https://www.chromestatus.com/feature/4718288976216064).
+
+[^1] "Yes" if the "OptOutZeroTimeoutTimersFromThrottling" feature is disabled.
+
+[^2] "Yes" if the "IntensiveWakeUpThrottling" feature is enabled and the
+"can_intensively_throttle_low_nesting_level" param is "true".
+
+[^3] "No" if the "IntensiveWakeUpThrottling" feature is disabled.

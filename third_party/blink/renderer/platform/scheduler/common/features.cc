@@ -121,5 +121,23 @@ base::TimeDelta GetTimeToInhibitIntensiveThrottlingOnTitleOrFaviconUpdate() {
   return base::TimeDelta::FromSeconds(seconds);
 }
 
+bool CanIntensivelyThrottleLowNestingLevel() {
+  DCHECK(IsIntensiveWakeUpThrottlingEnabled());
+
+  static const base::FeatureParam<bool> kFeatureParam{
+      &features::kIntensiveWakeUpThrottling,
+      kIntensiveWakeUpThrottling_CanIntensivelyThrottleLowNestingLevel_Name,
+      kIntensiveWakeUpThrottling_CanIntensivelyThrottleLowNestingLevel_Default};
+
+  bool value =
+      kIntensiveWakeUpThrottling_CanIntensivelyThrottleLowNestingLevel_Default;
+  if (GetIntensiveWakeUpThrottlingPolicyOverride() ==
+      PolicyOverride::NO_OVERRIDE) {
+    value = kFeatureParam.Get();
+  }
+
+  return value;
+}
+
 }  // namespace scheduler
 }  // namespace blink

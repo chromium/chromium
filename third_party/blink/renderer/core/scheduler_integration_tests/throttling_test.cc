@@ -303,33 +303,41 @@ class IntensiveWakeUpThrottlingTest : public ThrottlingTestBase {
         {features::kStopInBackground});
   }
 
-  void TestNoIntensiveThrotlingOnTitleOrFaviconUpdate(
+  // Expect a console message every second, for |num_1hz_messages| seconds.
+  // Then, expect a console messages every minute.
+  void ExpectRepeatingTimerConsoleMessages(int num_1hz_messages) {
+    for (int i = 0; i < num_1hz_messages; ++i) {
+      ConsoleMessages().clear();
+      platform_->RunForPeriod(base::TimeDelta::FromSeconds(1));
+      EXPECT_EQ(FilteredConsoleMessages().size(), 1U);
+    }
+
+    constexpr int kNumIterations = 3;
+    for (int i = 0; i < kNumIterations; ++i) {
+      ConsoleMessages().clear();
+      platform_->RunForPeriod(base::TimeDelta::FromSeconds(30));
+      // Task shouldn't execute earlier than expected.
+      EXPECT_EQ(FilteredConsoleMessages().size(), 0U);
+      platform_->RunForPeriod(base::TimeDelta::FromSeconds(30));
+      EXPECT_EQ(FilteredConsoleMessages().size(), 1U);
+    }
+  }
+
+  void TestNoIntensiveThrottlingOnTitleOrFaviconUpdate(
       const String& console_message) {
     // The page does not attempt to run onTimer in the first 5 minutes.
     platform_->RunForPeriod(base::TimeDelta::FromMinutes(5));
     EXPECT_THAT(FilteredConsoleMessages(), ElementsAre());
 
-    // At 5 minutes, a timer fires to run the afterFiveMinutes() function.
-    // This function does not communicate in the background, so the intensive
-    // throttling policy applies and onTimer() can only run after 1 minute.
-    platform_->RunForPeriod(base::TimeDelta::FromMinutes(1));
-    EXPECT_THAT(FilteredConsoleMessages(), ElementsAre(console_message));
-
-    ConsoleMessages().clear();
-
-    // Beyond this point intensive background throttling will not apply anymore
-    // since the page is communicating in the background from onTimer().
-
-    constexpr auto kTimeUntilNextCheck = base::TimeDelta::FromSeconds(30);
-    platform_->RunForPeriod(kTimeUntilNextCheck);
-
-    // Tasks are not throttled beyond the default background throttling behavior
-    // nor do they get to run more often.
-    Vector<String> expected_ouput(
-        base::ClampFloor<wtf_size_t>(kTimeUntilNextCheck /
-                                     kDefaultThrottledWakeUpInterval),
-        console_message);
-    EXPECT_THAT(FilteredConsoleMessages(), expected_ouput);
+    // onTimer() communicates in background and re-posts itself. The background
+    // communication inhibits intensive wake up throttling for 3 seconds, which
+    // allows the re-posted task to run after |kDefaultThrottledWakeUpInterval|.
+    constexpr int kNumIterations = 3;
+    for (int i = 0; i < kNumIterations; ++i) {
+      platform_->RunForPeriod(kDefaultThrottledWakeUpInterval);
+      EXPECT_THAT(FilteredConsoleMessages(), ElementsAre(console_message));
+      ConsoleMessages().clear();
+    }
   }
 
  private:
@@ -362,30 +370,35 @@ constexpr char kCommunicateThroughFavisonScript[] =
     "  }"
     "</script>";
 
-// A script that schedules a timer with a long delay that is not aligned on the
-// intensive throttling wake up interval.
+// A script that schedules a timer task which logs to the console. The timer
+// task has a high nesting level and its timeout is not aligned on the intensive
+// wake up throttling interval.
 constexpr char kLongUnalignedTimerScriptTemplate[] =
     "<script>"
-    "  function onTimer() {"
+    "  function onTimerWithHighNestingLevel() {"
     "     console.log('%s');"
     "  }"
-    "  setTimeout(onTimer, 342 * 1000);"
+    "  function onTimerWithLowNestingLevel(nesting_level) {"
+    "    if (nesting_level == 4) {"
+    "      setTimeout(onTimerWithHighNestingLevel, 338 * 1000);"
+    "    } else {"
+    "      setTimeout(onTimerWithLowNestingLevel, 1000, nesting_level + 1);"
+    "    }"
+    "  }"
+    "  setTimeout(onTimerWithLowNestingLevel, 1000, 1);"
     "</script>";
 
 // A time delta that matches the delay in the above script.
 constexpr base::TimeDelta kLongUnalignedTimerDelay =
     base::TimeDelta::FromSeconds(342);
 
-// Use to build a web-page ready to test intensive javascript throttling.
-// The page will differ in its definition of the maybeCommunicateInBackground()
-// function which has to be defined in a script passed in |communicate_script|.
+// Builds a page that waits 5 minutes and then creates a timer that reschedules
+// itself 50 times with 10 ms delay. The timer task logs |console_message| to
+// the console and invokes maybeCommunicateInBackground(). The caller must
+// provide the definition of maybeCommunicateInBackground() via
+// |communicate_script|.
 String BuildRepeatingTimerPage(const char* console_message,
                                const char* communicate_script) {
-  // A template for a page that waits 5 minutes on load then creates a timer
-  // that reschedules itself 50 times with 10 ms delay. Contains the minimimal
-  // page structure to simulate background communication with the user via title
-  // or favicon update. Needs to be augmented with a definition for
-  // maybeCommunicateInBackground;
   constexpr char kRepeatingTimerPageTemplate[] =
       "<html>"
       "<head>"
@@ -404,7 +417,7 @@ String BuildRepeatingTimerPage(const char* console_message,
       "  }"
       "  setTimeout(afterFiveMinutes, 5 * 60 * 1000);"
       "</script>"
-      "%s"  // maybeCommunicateInBackground definition inserted here.
+      "%s"  // |communicate_script| inserted here
       "</body>"
       "</html>";
 
@@ -420,12 +433,10 @@ TEST_F(IntensiveWakeUpThrottlingTest, MainFrameTimer_ShortTimeout) {
   SimRequest main_resource("https://example.com/", "text/html");
   LoadURL("https://example.com/");
 
-  const String console_message = BuildTimerConsoleMessage();
-
   // Page does not communicate with the user. Normal intensive throttling
   // applies.
-  main_resource.Complete(BuildRepeatingTimerPage(console_message.Utf8().c_str(),
-                                                 kCommunicationNop));
+  main_resource.Complete(BuildRepeatingTimerPage(
+      BuildTimerConsoleMessage().Utf8().c_str(), kCommunicationNop));
 
   GetDocument().GetPage()->GetPageScheduler()->SetPageVisible(false);
 
@@ -433,19 +444,20 @@ TEST_F(IntensiveWakeUpThrottlingTest, MainFrameTimer_ShortTimeout) {
   platform_->RunForPeriod(base::TimeDelta::FromMinutes(5));
   EXPECT_THAT(FilteredConsoleMessages(), ElementsAre());
 
-  // After that, intensive throttling starts and there should be 1 wake up per
-  // minute.
-  platform_->RunForPeriod(base::TimeDelta::FromMinutes(1));
-  EXPECT_THAT(FilteredConsoleMessages(), ElementsAre(console_message));
-
-  // No tasks execute early.
-  platform_->RunForPeriod(base::TimeDelta::FromSeconds(30));
-  EXPECT_THAT(FilteredConsoleMessages(), ElementsAre(console_message));
-
-  // A minute after the last timer.
-  platform_->RunForPeriod(base::TimeDelta::FromSeconds(30));
-  EXPECT_THAT(FilteredConsoleMessages(),
-              ElementsAre(console_message, console_message));
+  // Expected execution:
+  //
+  // t = 5min 0s : afterFiveMinutes    nesting=1 (low)
+  // t = 5min 1s : onTimer             nesting=2 (low)     <
+  // t = 5min 2s : onTimer             nesting=3 (low)     < 4 seconds at 1 Hz
+  // t = 5min 3s : onTimer             nesting=4 (low)     <
+  // t = 5min 4s : onTimer             nesting=5 (high) ** <
+  // t = 6min    : onTimer             nesting=6 (high)
+  // t = 7min    : onTimer             nesting=7 (high)
+  // ...
+  //
+  // ** In a main frame, a task with high nesting level is 1-second aligned
+  //    when no task with high nesting level ran in the last minute.
+  ExpectRepeatingTimerConsoleMessages(4);
 }
 
 // Verify that a main frame timer that reposts itself with a 10 ms timeout runs
@@ -461,7 +473,7 @@ TEST_F(IntensiveWakeUpThrottlingTest, MainFrameTimer_ShortTimeout_TitleUpdate) {
 
   GetDocument().GetPage()->GetPageScheduler()->SetPageVisible(false);
 
-  TestNoIntensiveThrotlingOnTitleOrFaviconUpdate(console_message);
+  TestNoIntensiveThrottlingOnTitleOrFaviconUpdate(console_message);
 }
 
 // Verify that a main frame timer that reposts itself with a 10 ms timeout runs
@@ -478,7 +490,7 @@ TEST_F(IntensiveWakeUpThrottlingTest,
 
   GetDocument().GetPage()->GetPageScheduler()->SetPageVisible(false);
 
-  TestNoIntensiveThrotlingOnTitleOrFaviconUpdate(console_message);
+  TestNoIntensiveThrottlingOnTitleOrFaviconUpdate(console_message);
 }
 
 // Verify that a same-origin subframe timer that reposts itself with a 10 ms
@@ -492,9 +504,8 @@ TEST_F(IntensiveWakeUpThrottlingTest, SameOriginSubFrameTimer_ShortTimeout) {
   // possible to complete the iframe resource request before that.
   platform_->RunUntilIdle();
 
-  const String console_message = BuildTimerConsoleMessage();
   subframe_resource.Complete(BuildRepeatingTimerPage(
-      console_message.Utf8().c_str(), kCommunicationNop));
+      BuildTimerConsoleMessage().Utf8().c_str(), kCommunicationNop));
 
   GetDocument().GetPage()->GetPageScheduler()->SetPageVisible(false);
 
@@ -502,13 +513,20 @@ TEST_F(IntensiveWakeUpThrottlingTest, SameOriginSubFrameTimer_ShortTimeout) {
   platform_->RunForPeriod(base::TimeDelta::FromMinutes(5));
   EXPECT_THAT(FilteredConsoleMessages(), ElementsAre());
 
-  // After that, intensive throttling starts and there should be 1 wake up per
-  // minute.
-  platform_->RunForPeriod(base::TimeDelta::FromMinutes(1));
-  EXPECT_THAT(FilteredConsoleMessages(), ElementsAre(console_message));
-  platform_->RunForPeriod(base::TimeDelta::FromMinutes(1));
-  EXPECT_THAT(FilteredConsoleMessages(),
-              ElementsAre(console_message, console_message));
+  // Expected execution:
+  //
+  // t = 5min 0s : afterFiveMinutes    nesting=1 (low)
+  // t = 5min 1s : onTimer             nesting=2 (low)     <
+  // t = 5min 2s : onTimer             nesting=3 (low)     < 4 seconds at 1 Hz
+  // t = 5min 3s : onTimer             nesting=4 (low)     <
+  // t = 5min 4s : onTimer             nesting=5 (high) ** <
+  // t = 6min    : onTimer             nesting=6 (high)
+  // t = 7min    : onTimer             nesting=7 (high)
+  // ...
+  //
+  // ** In a same-origin frame, a task with high nesting level is 1-second
+  //    aligned when no task with high nesting level ran in the last minute.
+  ExpectRepeatingTimerConsoleMessages(4);
 }
 
 // Verify that a cross-origin subframe timer that reposts itself with a 10 ms
@@ -524,9 +542,8 @@ TEST_F(IntensiveWakeUpThrottlingTest, CrossOriginSubFrameTimer_ShortTimeout) {
   // possible to complete the iframe resource request before that.
   platform_->RunUntilIdle();
 
-  const String console_message = BuildTimerConsoleMessage();
   subframe_resource.Complete(BuildRepeatingTimerPage(
-      console_message.Utf8().c_str(), kCommunicationNop));
+      BuildTimerConsoleMessage().Utf8().c_str(), kCommunicationNop));
 
   GetDocument().GetPage()->GetPageScheduler()->SetPageVisible(false);
 
@@ -534,13 +551,17 @@ TEST_F(IntensiveWakeUpThrottlingTest, CrossOriginSubFrameTimer_ShortTimeout) {
   platform_->RunForPeriod(base::TimeDelta::FromMinutes(5));
   EXPECT_THAT(FilteredConsoleMessages(), ElementsAre());
 
-  // After that, intensive throttling starts and there should be 1 wake up per
-  // minute.
-  platform_->RunForPeriod(base::TimeDelta::FromMinutes(1));
-  EXPECT_THAT(FilteredConsoleMessages(), ElementsAre(console_message));
-  platform_->RunForPeriod(base::TimeDelta::FromMinutes(1));
-  EXPECT_THAT(FilteredConsoleMessages(),
-              ElementsAre(console_message, console_message));
+  // Expected execution:
+  //
+  // t = 5min 0s : afterFiveMinutes    nesting=1 (low)
+  // t = 5min 1s : onTimer             nesting=2 (low)  <
+  // t = 5min 2s : onTimer             nesting=3 (low)  < 3 seconds at 1 Hz
+  // t = 5min 3s : onTimer             nesting=4 (low)  <
+  // t = 6min    : onTimer             nesting=5 (high)
+  // t = 7min    : onTimer             nesting=6 (high)
+  // t = 8min    : onTimer             nesting=7 (high)
+  // ...
+  ExpectRepeatingTimerConsoleMessages(3);
 }
 
 // Verify that a main frame timer with a long timeout runs at the desired run

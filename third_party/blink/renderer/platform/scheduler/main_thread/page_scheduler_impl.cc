@@ -189,9 +189,6 @@ PageSchedulerImpl::PageSchedulerImpl(
       keep_active_(
           agent_group_scheduler.GetMainThreadScheduler().SchedulerKeepActive()),
       had_recent_title_or_favicon_update_(false),
-      cpu_time_budget_pool_(nullptr),
-      same_origin_wake_up_budget_pool_(nullptr),
-      cross_origin_wake_up_budget_pool_(nullptr),
       delegate_(delegate),
       delay_for_background_tab_freezing_(GetDelayForBackgroundTabFreezing()),
       freeze_on_network_idle_enabled_(base::FeatureList::IsEnabled(
@@ -226,10 +223,12 @@ PageSchedulerImpl::~PageSchedulerImpl() {
 
   if (cpu_time_budget_pool_)
     cpu_time_budget_pool_->Close();
-  if (same_origin_wake_up_budget_pool_)
-    same_origin_wake_up_budget_pool_->Close();
-  if (cross_origin_wake_up_budget_pool_)
-    cross_origin_wake_up_budget_pool_->Close();
+  if (HasWakeUpBudgetPools()) {
+    for (WakeUpBudgetPool* pool : AllWakeUpBudgetPools()) {
+      DCHECK(pool);
+      pool->Close();
+    }
+  }
 }
 
 // static
@@ -633,26 +632,30 @@ void PageSchedulerImpl::AddQueueToWakeUpBudgetPool(
     MainThreadTaskQueue* task_queue,
     FrameOriginType frame_origin_type,
     base::sequence_manager::LazyNow* lazy_now) {
-  GetWakeUpBudgetPool(frame_origin_type)->AddQueue(lazy_now->Now(), task_queue);
+  GetWakeUpBudgetPool(task_queue, frame_origin_type)
+      ->AddQueue(lazy_now->Now(), task_queue);
 }
 
 void PageSchedulerImpl::RemoveQueueFromWakeUpBudgetPool(
     MainThreadTaskQueue* task_queue,
     FrameOriginType frame_origin_type,
     base::sequence_manager::LazyNow* lazy_now) {
-  GetWakeUpBudgetPool(frame_origin_type)
+  GetWakeUpBudgetPool(task_queue, frame_origin_type)
       ->RemoveQueue(lazy_now->Now(), task_queue);
 }
 
 WakeUpBudgetPool* PageSchedulerImpl::GetWakeUpBudgetPool(
+    MainThreadTaskQueue* task_queue,
     FrameOriginType frame_origin_type) {
+  if (!task_queue->CanBeIntensivelyThrottled())
+    return normal_wake_up_budget_pool_;
+
   switch (frame_origin_type) {
     case FrameOriginType::kMainFrame:
     case FrameOriginType::kSameOriginToMainFrame:
-      return same_origin_wake_up_budget_pool_;
-      break;
+      return same_origin_intensive_wake_up_budget_pool_;
     case FrameOriginType::kCrossOriginToMainFrame:
-      return cross_origin_wake_up_budget_pool_;
+      return cross_origin_intensive_wake_up_budget_pool_;
     case FrameOriginType::kCount:
       NOTREACHED();
       return nullptr;
@@ -695,28 +698,29 @@ void PageSchedulerImpl::MaybeInitializeBackgroundCPUTimeBudgetPool(
 
 void PageSchedulerImpl::MaybeInitializeWakeUpBudgetPools(
     base::sequence_manager::LazyNow* lazy_now) {
-  DCHECK_EQ(!!same_origin_wake_up_budget_pool_,
-            !!cross_origin_wake_up_budget_pool_);
-  if (same_origin_wake_up_budget_pool_)
+  if (HasWakeUpBudgetPools())
     return;
 
-  same_origin_wake_up_budget_pool_ =
+  normal_wake_up_budget_pool_ =
       main_thread_scheduler_->task_queue_throttler()->CreateWakeUpBudgetPool(
-          "Page Wake Up Throttling - Same-Origin as Main Frame");
-  cross_origin_wake_up_budget_pool_ =
+          "Page - Normal Wake Up Throttling");
+  same_origin_intensive_wake_up_budget_pool_ =
       main_thread_scheduler_->task_queue_throttler()->CreateWakeUpBudgetPool(
-          "Page Wake Up Throttling - Cross-Origin to Main Frame");
+          "Page - Intensive Wake Up Throttling - Same-Origin as Main Frame");
+  cross_origin_intensive_wake_up_budget_pool_ =
+      main_thread_scheduler_->task_queue_throttler()->CreateWakeUpBudgetPool(
+          "Page - Intensive Wake Up Throttling - Cross-Origin to Main Frame");
 
   // The Wake Up Duration and Unaligned Wake Ups Allowance are constant and set
   // here. The Wake Up Interval is set in UpdateWakeUpBudgetPools(), based on
   // current state.
-  same_origin_wake_up_budget_pool_->SetWakeUpDuration(kThrottledWakeUpDuration);
-  if (IsIntensiveWakeUpThrottlingEnabled()) {
-    same_origin_wake_up_budget_pool_->AllowUnalignedWakeUpIfNoRecentWakeUp();
-  }
+  for (WakeUpBudgetPool* pool : AllWakeUpBudgetPools())
+    pool->SetWakeUpDuration(kThrottledWakeUpDuration);
 
-  cross_origin_wake_up_budget_pool_->SetWakeUpDuration(
-      kThrottledWakeUpDuration);
+  if (IsIntensiveWakeUpThrottlingEnabled()) {
+    same_origin_intensive_wake_up_budget_pool_
+        ->AllowUnalignedWakeUpIfNoRecentWakeUp();
+  }
 
   UpdateWakeUpBudgetPools(lazy_now);
 }
@@ -805,7 +809,7 @@ void PageSchedulerImpl::UpdateCPUTimeBudgetPool(
 }
 
 void PageSchedulerImpl::OnTitleOrFaviconUpdated() {
-  if (!same_origin_wake_up_budget_pool_)
+  if (!HasWakeUpBudgetPools())
     return;
 
   if (are_wake_ups_intensively_throttled_ &&
@@ -860,15 +864,12 @@ base::TimeDelta PageSchedulerImpl::GetIntensiveWakeUpThrottlingDuration(
 
 void PageSchedulerImpl::UpdateWakeUpBudgetPools(
     base::sequence_manager::LazyNow* lazy_now) {
-  DCHECK_EQ(!!same_origin_wake_up_budget_pool_,
-            !!cross_origin_wake_up_budget_pool_);
-
-  if (!same_origin_wake_up_budget_pool_)
+  if (!same_origin_intensive_wake_up_budget_pool_)
     return;
 
-  same_origin_wake_up_budget_pool_->SetWakeUpInterval(
+  same_origin_intensive_wake_up_budget_pool_->SetWakeUpInterval(
       lazy_now->Now(), GetIntensiveWakeUpThrottlingDuration(true));
-  cross_origin_wake_up_budget_pool_->SetWakeUpInterval(
+  cross_origin_intensive_wake_up_budget_pool_->SetWakeUpInterval(
       lazy_now->Now(), GetIntensiveWakeUpThrottlingDuration(false));
 }
 
@@ -1053,6 +1054,23 @@ WebScopedVirtualTimePauser PageSchedulerImpl::CreateWebScopedVirtualTimePauser(
     const String& name,
     WebScopedVirtualTimePauser::VirtualTaskDuration duration) {
   return WebScopedVirtualTimePauser(main_thread_scheduler_, duration, name);
+}
+
+bool PageSchedulerImpl::HasWakeUpBudgetPools() const {
+  // All WakeUpBudgetPools should be initialized together.
+  DCHECK_EQ(!!normal_wake_up_budget_pool_,
+            !!same_origin_intensive_wake_up_budget_pool_);
+  DCHECK_EQ(!!normal_wake_up_budget_pool_,
+            !!cross_origin_intensive_wake_up_budget_pool_);
+
+  return !!normal_wake_up_budget_pool_;
+}
+
+std::array<WakeUpBudgetPool*, PageSchedulerImpl::kNumWakeUpBudgetPools>
+PageSchedulerImpl::AllWakeUpBudgetPools() {
+  return {normal_wake_up_budget_pool_,
+          same_origin_intensive_wake_up_budget_pool_,
+          cross_origin_intensive_wake_up_budget_pool_};
 }
 
 // static
