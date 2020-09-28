@@ -438,6 +438,13 @@
        {}
       ]
      ],
+     "ellisize-rtl-text-crash.html": [
+      "88908877d668067c9c80fab1391f3c5f4e0dd53b",
+      [
+       null,
+       {}
+      ]
+     ],
      "overflow-wrap": {
       "overflow-wrap-break-word-long-crash.html": [
        "e318386ded5bd3d1d61cf876fe420c8f5ada799f",
@@ -454,6 +461,13 @@
        ]
       ]
      },
+     "removing-collapsible-spaces-before-float-crash.html": [
+      "92bba35e08bac555c849d51580812deda84681d3",
+      [
+       null,
+       {}
+      ]
+     ],
      "text-indent": {
       "text-indent-long-line-crash.html": [
        "9b5e07983784e63a0d6828323a56ad4e874fa6c3",
@@ -226926,8 +226940,8 @@
      "99c3a5dee91f693d834b6dfc89cefec387d1078d",
      []
     ],
-    "text-detection-api.tentative.idl": [
-     "8835c5fee9151163b7010fa656606261fe6411fc",
+    "text-detection-api.idl": [
+     "95b642749f73a63d62d5aa5320815aeb7091be4b",
      []
     ],
     "touch-events.idl": [
@@ -227036,6 +227050,10 @@
     ],
     "webrtc-identity.idl": [
      "2af476f4d77b06c50857aec57e91a680e71da129",
+     []
+    ],
+    "webrtc-insertable-streams.idl": [
+     "9216987f2796b1626a3c0b1dc1ac3ac2286f35b9",
      []
     ],
     "webrtc-stats.idl": [
@@ -227302,7 +227320,7 @@
     ]
    },
    "lint.ignore": [
-    "ae6c07b877cb8040d653b164438ce5408ae09136",
+    "38ec5e19221cb7a6c919be8084e81699a6343418",
     []
    ],
    "loading": {
@@ -393838,7 +393856,7 @@
      ]
     ],
     "idlharness.https.any.js": [
-     "c3683f8ceba49b79b2d195e49f01fcbd9301c6c3",
+     "33b5f88f75b8052f202394c4f53bcc2770631202",
      [
       "shape-detection/idlharness.https.any.html",
       {
@@ -415239,6 +415257,28 @@
      [
       null,
       {}
+     ]
+    ],
+    "idlharness.https.window.js": [
+     "86feb5277242a8ef8da5741bcb86e0f7cb2db2f9",
+     [
+      "webrtc-insertable-streams/idlharness.https.window.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/resources/WebIDLParser.js"
+        ],
+        [
+         "script",
+         "/resources/idlharness.js"
+        ],
+        [
+         "script",
+         "./RTCPeerConnection-helper.js"
+        ]
+       ]
+      }
      ]
     ]
    },
