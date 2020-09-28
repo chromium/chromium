@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/chrome_build.gni")
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/features.gni")
 import("//build/config/locales.gni")
@@ -164,23 +165,28 @@ if (!is_android && !is_mac) {
         "//chrome/app/version_assembly:chrome_exe_manifest",
         "//chrome/browser:active_use_util",
         "//chrome/browser:chrome_process_finder",
+        "//chrome/browser/policy:path_parser",
         "//chrome/chrome_elf",
         "//chrome/common:constants",
+        "//chrome/install_static:install_static_util",
         "//chrome/install_static:secondary_module",
         "//chrome/installer/util:constants",
         "//chrome/installer/util:did_run_support",
         "//components/browser_watcher:browser_watcher_client",
+        "//components/crash/core/app",
         "//components/crash/core/app:run_as_crashpad_handler",
         "//components/crash/core/common",
         "//components/flags_ui:switches",
         "//content:sandbox_helper_win",
         "//content/public/common:static_switches",
         "//crypto",
+        "//gpu/command_buffer/service",
         "//sandbox",
         "//sandbox/policy",
         "//third_party/breakpad:breakpad_handler",
         "//third_party/breakpad:breakpad_sender",
         "//third_party/crashpad/crashpad/util",
+        "//ui/gl",
       ]
       data_deps = [
         "//chrome/app/version_assembly:version_assembly_manifest",
@@ -338,6 +344,7 @@ if (is_win) {
       "//headless:headless_shell_browser_lib",
       "//net:net_resources",
       "//ppapi/buildflags",
+      "//sandbox/win:sandbox",
       "//third_party/cld_3/src/src:cld_3",
       "//third_party/wtl",
       "//ui/views",
@@ -938,7 +945,6 @@ if (is_win) {
     deps = [
       ":browser_dependencies",
       ":child_dependencies",
-      "//build:chromeos_buildflags",
       "//chrome/app:command_ids",
       "//chrome/common:buildflags",
       "//chrome/common/profiler",
@@ -1168,11 +1174,18 @@ if (is_win) {
 
 group("browser_dependencies") {
   public_deps = [
+    "//build:branding_buildflags",
+    "//build:chromeos_buildflags",
+    "//chrome/app:shutdown_signal_handlers",
     "//chrome/browser",
+    "//chrome/browser/policy:path_parser",
     "//chrome/common",
+    "//components/crash/core/app",
     "//components/gwp_asan/buildflags",
     "//components/heap_profiling/in_process",
+    "//components/startup_metric_utils/browser",
     "//components/sync",
+    "//components/upload_list:upload_list",
     "//services/tracing/public/cpp",
   ]
   if (enable_plugins) {
@@ -1188,6 +1201,23 @@ group("browser_dependencies") {
 
   if (enable_gwp_asan) {
     public_deps += [ "//components/gwp_asan/client" ]
+  }
+
+  if (enable_nacl) {
+    public_deps += [ "//components/nacl/browser" ]
+  }
+
+  if (chromeos_is_browser_only) {
+    public_deps += [ "//chromeos/lacros" ]
+  }
+
+  if (is_chromeos) {
+    public_deps += [
+      "//chrome/browser/chromeos",
+      "//chromeos",
+      "//chromeos/constants",
+      "//chromeos/memory",
+    ]
   }
 
   if (!is_component_build) {
@@ -1227,6 +1257,7 @@ group("child_dependencies") {
     "//services/tracing/public/cpp",
     "//third_party/blink/public:blink_devtools_frontend_resources",
     "//third_party/blink/public:blink_devtools_inspector_resources",
+    "//v8:v8_headers",
   ]
 
   if (enable_nacl) {
@@ -1499,6 +1530,8 @@ if (is_android) {
     ]
 
     deps = [
+      ":browser_dependencies",
+      ":child_dependencies",
       "//chrome/browser/ui",
       "//chrome/child",
       "//chrome/common",
@@ -1509,6 +1542,7 @@ if (is_android) {
       "//components/heap_profiling/in_process",
       "//components/minidump_uploader",
       "//components/safe_browsing:buildflags",
+      "//components/safe_browsing/android:safe_browsing_api_handler",
       "//components/safe_browsing/android:safe_browsing_mobile",
       "//components/services/heap_profiling",
       "//content/public/app",

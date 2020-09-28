@@ -86,7 +86,6 @@ no_check_targets = [
   "//chrome/test/data/nacl:*",  # 350 errors
   "//chrome/test/media_router:*",  # 5 errors
   "//chrome/test:*",  # 2682 errors
-  "//chrome:*",  # 7 errors
 
   "//clank/third_party/gvr_shim:*",  # 1 error
   "//extensions/browser/api/alarms:*",  # 2 errors

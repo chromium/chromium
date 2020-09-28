@@ -23,7 +23,7 @@
 #include "chrome/common/chrome_version.h"
 
 #if defined(HELPER_EXECUTABLE)
-#include "sandbox/mac/seatbelt_exec.h"
+#include "sandbox/mac/seatbelt_exec.h"  // nogncheck
 #endif  // defined(HELPER_EXECUTABLE)
 
 extern "C" {
