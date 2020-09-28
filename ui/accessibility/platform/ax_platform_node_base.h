@@ -283,7 +283,12 @@ class AX_EXPORT AXPlatformNodeBase : public AXPlatformNode {
   // e.g. aria-label and HTML title, is not returned.
   base::string16 GetInnerText() const;
 
-  virtual base::string16 GetValue() const;
+  // Returns the value of a control such as a text field, a slider, a <select>
+  // element, a date picker or an ARIA combo box. In order to minimize
+  // cross-process communication between the renderer and the browser, may
+  // compute the value from the control's inner text in the case of a text
+  // field.
+  base::string16 GetValueForControl() const;
 
   // Represents a non-static text node in IAccessibleHypertext (and ATK in the
   // future). This character is embedded in the response to
@@ -362,11 +367,6 @@ class AX_EXPORT AXPlatformNodeBase : public AXPlatformNode {
   bool IsDocument() const;
 
   bool IsSelectionItemSupported() const;
-
-  // Get the range value text, which might come from aria-valuetext or
-  // a floating-point value. This is different from the value string
-  // attribute used in input controls such as text boxes and combo boxes.
-  base::string16 GetRangeValueText() const;
 
   // Get the role description from the node data or from the image annotation
   // status.

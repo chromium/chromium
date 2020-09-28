@@ -432,7 +432,6 @@ class AX_EXPORT __declspec(uuid("26f5641a-246d-457b-a96d-07f3fae6acf2"))
 
   // AXPlatformNodeBase overrides.
   void Destroy() override;
-  base::string16 GetValue() const override;
   bool IsPlatformCheckable() const override;
 
   //

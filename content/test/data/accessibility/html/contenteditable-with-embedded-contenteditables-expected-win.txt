@@ -6,5 +6,5 @@ ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE ia2_hypertext='<obj0>' n_selections=0
 ++++ROLE_SYSTEM_WHITESPACE name='<newline>' ia2_hypertext='<newline>' n_selections=0
 ++++IA2_ROLE_PARAGRAPH value='But this one is.' FOCUSABLE IA2_STATE_EDITABLE IA2_STATE_MULTI_LINE ia2_hypertext='But this one is.' n_selections=0
 ++++++ROLE_SYSTEM_STATICTEXT name='But this one is.' IA2_STATE_EDITABLE ia2_hypertext='But this one is.' n_selections=0
-++++IA2_ROLE_PARAGRAPH value='So is this one.' IA2_STATE_EDITABLE ia2_hypertext='So is this one.' n_selections=0
+++++IA2_ROLE_PARAGRAPH IA2_STATE_EDITABLE ia2_hypertext='So is this one.' n_selections=0
 ++++++ROLE_SYSTEM_STATICTEXT name='So is this one.' IA2_STATE_EDITABLE ia2_hypertext='So is this one.' n_selections=0

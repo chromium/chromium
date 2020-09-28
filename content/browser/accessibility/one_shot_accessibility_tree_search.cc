@@ -21,18 +21,16 @@ namespace content {
 // attributes that might be relevant for a text search.
 void GetNodeStrings(BrowserAccessibility* node,
                     std::vector<base::string16>* strings) {
-  if (node->HasStringAttribute(ax::mojom::StringAttribute::kName))
-    strings->push_back(
-        node->GetString16Attribute(ax::mojom::StringAttribute::kName));
-  if (node->HasStringAttribute(ax::mojom::StringAttribute::kDescription))
-    strings->push_back(
-        node->GetString16Attribute(ax::mojom::StringAttribute::kDescription));
-  if (node->HasStringAttribute(ax::mojom::StringAttribute::kValue))
-    strings->push_back(
-        node->GetString16Attribute(ax::mojom::StringAttribute::kValue));
-  if (node->HasStringAttribute(ax::mojom::StringAttribute::kPlaceholder))
-    strings->push_back(
-        node->GetString16Attribute(ax::mojom::StringAttribute::kPlaceholder));
+  base::string16 value;
+  if (node->GetString16Attribute(ax::mojom::StringAttribute::kName, &value))
+    strings->push_back(value);
+  if (node->GetString16Attribute(ax::mojom::StringAttribute::kDescription,
+                                 &value)) {
+    strings->push_back(value);
+  }
+  value = node->GetValueForControl();
+  if (!value.empty())
+    strings->push_back(value);
 }
 
 OneShotAccessibilityTreeSearch::OneShotAccessibilityTreeSearch(

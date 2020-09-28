@@ -111,14 +111,14 @@ class CrossPlatformAccessibilityBrowserTest : public ContentBrowserTest {
                                           const std::string& name_or_value) {
     const std::string& name =
         node.GetStringAttribute(ax::mojom::StringAttribute::kName);
-    // Note that in the case of a text field, "BrowserAccessibility::GetValue"
-    // has the added functionality of computing the value of an ARIA text box
-    // from its inner text.
+    // Note that in the case of a text field,
+    // "BrowserAccessibility::GetValueForControl" has the added functionality
+    // of computing the value of an ARIA text box from its inner text.
     //
     // <div contenteditable="true" role="textbox">Hello world.</div>
     // Will expose no HTML value attribute, but some screen readers, such as
     // Jaws, VoiceOver and Talkback, require one to be computed.
-    const std::string& value = base::UTF16ToUTF8(node.GetValue());
+    const std::string& value = base::UTF16ToUTF8(node.GetValueForControl());
     if ((name == name_or_value || value == name_or_value)) {
       return &node;
     }
@@ -301,8 +301,7 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
                GetAttr(text, ax::mojom::StringAttribute::kHtmlTag).c_str());
   EXPECT_EQ(0, GetIntAttr(text, ax::mojom::IntAttribute::kTextSelStart));
   EXPECT_EQ(0, GetIntAttr(text, ax::mojom::IntAttribute::kTextSelEnd));
-  EXPECT_STREQ("Hello, world.",
-               GetAttr(text, ax::mojom::StringAttribute::kValue).c_str());
+  EXPECT_STREQ("Hello, world.", text->GetValueForControl().c_str());
 
   // TODO(dmazzoni): as soon as more accessibility code is cross-platform,
   // this code should test that the accessible info is dynamically updated
@@ -332,8 +331,7 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
                GetAttr(text, ax::mojom::StringAttribute::kHtmlTag).c_str());
   EXPECT_EQ(0, GetIntAttr(text, ax::mojom::IntAttribute::kTextSelStart));
   EXPECT_EQ(13, GetIntAttr(text, ax::mojom::IntAttribute::kTextSelEnd));
-  EXPECT_STREQ("Hello, world.",
-               GetAttr(text, ax::mojom::StringAttribute::kValue).c_str());
+  EXPECT_STREQ("Hello, world.", text->GetValueForControl().c_str());
 }
 
 IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,

@@ -676,18 +676,6 @@ base::string16 AXPlatformNodeBase::GetInnerText() const {
   return delegate_->GetInnerText();
 }
 
-base::string16 AXPlatformNodeBase::GetRangeValueText() const {
-  float fval;
-  base::string16 value =
-      GetString16Attribute(ax::mojom::StringAttribute::kValue);
-
-  if (value.empty() &&
-      GetFloatAttribute(ax::mojom::FloatAttribute::kValueForRange, &fval)) {
-    value = base::NumberToString16(fval);
-  }
-  return value;
-}
-
 base::string16
 AXPlatformNodeBase::GetRoleDescriptionFromImageAnnotationStatusOrFromAttribute()
     const {
@@ -961,25 +949,10 @@ bool AXPlatformNodeBase::IsVerticallyScrollable() const {
              GetIntAttribute(ax::mojom::IntAttribute::kScrollYMax);
 }
 
-base::string16 AXPlatformNodeBase::GetValue() const {
-  // Expose slider value.
-  if (GetData().IsRangeValueSupported())
-    return GetRangeValueText();
-
-  // On Windows, the value of a document should be its URL.
-  if (ui::IsDocument(GetData().role))
-    return base::UTF8ToUTF16(delegate_->GetTreeData().url);
-
-  base::string16 value =
-      GetString16Attribute(ax::mojom::StringAttribute::kValue);
-
-  // Some screen readers like Jaws and VoiceOver require a
-  // value to be set in text fields with rich content, even though the same
-  // information is available on the children.
-  if (value.empty() && IsRichTextField())
-    return GetInnerText();
-
-  return value;
+base::string16 AXPlatformNodeBase::GetValueForControl() const {
+  if (!delegate_)
+    return base::string16();
+  return delegate_->GetValueForControl();
 }
 
 void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
@@ -1206,10 +1179,10 @@ void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
     }
   }
 
-  // Expose slider value.
+  // Expose the value of a progress bar, slider, scroll bar or <select> element.
   if (GetData().IsRangeValueSupported() ||
       GetData().role == ax::mojom::Role::kComboBoxMenuButton) {
-    std::string value = base::UTF16ToUTF8(GetRangeValueText());
+    std::string value = base::UTF16ToUTF8(GetValueForControl());
     if (!value.empty())
       AddAttributeToList("valuetext", value, attributes);
   }

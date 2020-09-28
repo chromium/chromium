@@ -31,7 +31,6 @@
 #include "base/win/variant_vector.h"
 #include "skia/ext/skia_utils_win.h"
 #include "third_party/iaccessible2/ia2_api_all.h"
-#include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/accessibility_switches.h"
 #include "ui/accessibility/ax_action_data.h"
@@ -6498,7 +6497,7 @@ base::string16 AXPlatformNodeWin::ComputeUIAProperties() {
     StringAttributeToUIAAriaProperty(
         properties, ax::mojom::StringAttribute::kValue, "valuetext");
 
-    base::string16 value_now = GetRangeValueText();
+    base::string16 value_now = GetValueForControl();
     SanitizeStringAttributeForUIAAriaProperty(value_now, &value_now);
     if (!value_now.empty())
       properties.push_back(L"valuenow=" + value_now);
@@ -7275,20 +7274,6 @@ bool AXPlatformNodeWin::ShouldHideChildrenForUIA() const {
   }
 }
 
-base::string16 AXPlatformNodeWin::GetValue() const {
-  base::string16 value = AXPlatformNodeBase::GetValue();
-
-  // If this doesn't have a value and is linked then set its value to the URL
-  // attribute. This allows screen readers to read an empty link's
-  // destination.
-  // TODO(dougt): Look into ensuring that on click handlers correctly provide
-  // a value here.
-  if (value.empty() && (MSAAState() & STATE_SYSTEM_LINKED))
-    value = GetString16Attribute(ax::mojom::StringAttribute::kUrl);
-
-  return value;
-}
-
 bool AXPlatformNodeWin::IsPlatformCheckable() const {
   if (GetData().role == ax::mojom::Role::kToggleButton)
     return false;
@@ -7598,78 +7583,23 @@ base::Optional<PROPERTYID> AXPlatformNodeWin::MojoEventToUIAProperty(
 
 // static
 BSTR AXPlatformNodeWin::GetValueAttributeAsBstr(AXPlatformNodeWin* target) {
-  // GetValueAttributeAsBstr() has two sets of special cases depending on the
-  // node's role.
-  // The first set apply without regard for the nodes |value| attribute. That is
-  // the nodes value attribute isn't consider for the first set of special
-  // cases. For example, if the node role is ax::mojom::Role::kColorWell, we do
-  // not care at all about the node's ax::mojom::StringAttribute::kValue
-  // attribute. The second set of special cases only apply if the value
-  // attribute for the node is empty.  That is, if
-  // ax::mojom::StringAttribute::kValue is empty, we do something special.
-  base::string16 result;
-
-  //
-  // Color Well special case (Use ax::mojom::IntAttribute::kColorValue)
-  //
-  if (target->GetData().role == ax::mojom::Role::kColorWell) {
-    // static cast because SkColor is a 4-byte unsigned int
-    unsigned int color = static_cast<unsigned int>(
-        target->GetIntAttribute(ax::mojom::IntAttribute::kColorValue));
-
-    unsigned int red = SkColorGetR(color);
-    unsigned int green = SkColorGetG(color);
-    unsigned int blue = SkColorGetB(color);
-    base::string16 value_text;
-    value_text = base::NumberToString16(red * 100 / 255) + L"% red " +
-                 base::NumberToString16(green * 100 / 255) + L"% green " +
-                 base::NumberToString16(blue * 100 / 255) + L"% blue";
-    BSTR value = SysAllocString(value_text.c_str());
+  if (target->IsDocument()) {
+    base::string16 url =
+        base::UTF8ToUTF16(target->GetDelegate()->GetTreeData().url);
+    BSTR value = SysAllocString(url.c_str());
     DCHECK(value);
     return value;
   }
 
-  //
-  // Document special case (Use the document's URL)
-  //
-  if (target->GetData().role == ax::mojom::Role::kRootWebArea ||
-      target->GetData().role == ax::mojom::Role::kWebArea) {
-    result = base::UTF8ToUTF16(target->GetDelegate()->GetTreeData().url);
-    BSTR value = SysAllocString(result.c_str());
+  if (IsLink(target->GetData().role)) {
+    base::string16 url =
+        target->GetString16Attribute(ax::mojom::StringAttribute::kUrl);
+    BSTR value = SysAllocString(url.c_str());
     DCHECK(value);
     return value;
   }
 
-  //
-  // Links (Use ax::mojom::StringAttribute::kUrl)
-  //
-  if (target->GetData().role == ax::mojom::Role::kLink) {
-    result = target->GetString16Attribute(ax::mojom::StringAttribute::kUrl);
-    BSTR value = SysAllocString(result.c_str());
-    DCHECK(value);
-    return value;
-  }
-
-  // For range controls, e.g. sliders and spin buttons, |ax_attr_value| holds
-  // the aria-valuetext if present but not the inner text. The actual value,
-  // provided either via aria-valuenow or the actual control's value is held in
-  // |ax::mojom::FloatAttribute::kValueForRange|.
-  result = target->GetString16Attribute(ax::mojom::StringAttribute::kValue);
-  if (result.empty() && target->GetData().IsRangeValueSupported()) {
-    float fval;
-    if (target->GetFloatAttribute(ax::mojom::FloatAttribute::kValueForRange,
-                                  &fval)) {
-      result = base::NumberToString16(fval);
-      BSTR value = SysAllocString(result.c_str());
-      DCHECK(value);
-      return value;
-    }
-  }
-
-  if (result.empty() && target->IsRichTextField())
-    result = target->GetInnerText();
-
-  BSTR value = SysAllocString(result.c_str());
+  BSTR value = SysAllocString(target->GetValueForControl().c_str());
   DCHECK(value);
   return value;
 }

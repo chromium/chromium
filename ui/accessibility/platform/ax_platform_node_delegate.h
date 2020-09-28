@@ -86,6 +86,13 @@ class AX_EXPORT AXPlatformNodeDelegate {
   // e.g. aria-label and HTML title, is not returned.
   virtual base::string16 GetInnerText() const = 0;
 
+  // Returns the value of a control such as a text field, a slider, a <select>
+  // element, a date picker or an ARIA combo box. In order to minimize
+  // cross-process communication between the renderer and the browser, may
+  // compute the value from the control's inner text in the case of a text
+  // field.
+  virtual base::string16 GetValueForControl() const = 0;
+
   // Get the unignored selection from the tree
   virtual const AXTree::Selection GetUnignoredSelection() const = 0;
 

@@ -1697,10 +1697,9 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
 }
 
 - (NSNumber*)numberOfCharacters {
-  if (![self instanceActive])
-    return nil;
-  base::string16 value = _owner->GetValue();
-  return [NSNumber numberWithUnsignedInt:value.size()];
+  if ([self instanceActive] && _owner->IsTextField())
+    return @(int{_owner->GetValueForControl().size()});
+  return nil;
 }
 
 // The origin of this accessibility object in the page's document.
@@ -1832,11 +1831,14 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
 // TODO(nektar): Merge this method with
 // |BrowserAccessibilityAndroid::CommonEndLengths|.
 - (content::AXTextEdit)computeTextEdit {
+  if (!_owner->IsTextField())
+    return content::AXTextEdit();
+
   // Starting from macOS 10.11, if the user has edited some text we need to
   // dispatch the actual text that changed on the value changed notification.
   // We run this code on all macOS versions to get the highest test coverage.
   base::string16 oldValue = _oldValue;
-  base::string16 newValue = _owner->GetValue();
+  base::string16 newValue = _owner->GetValueForControl();
   _oldValue = newValue;
   if (oldValue.empty() && newValue.empty())
     return content::AXTextEdit();
@@ -2464,6 +2466,10 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
     }
     return [NSNumber numberWithInt:value];
   } else if (_owner->GetData().IsRangeValueSupported()) {
+    // Objects that support range values include progress bars, sliders, and
+    // steppers. Only the native value or aria-valuenow should be exposed, not
+    // the aria-valuetext. Aria-valuetext is exposed via
+    // "accessibilityValueDescription".
     float floatValue;
     if (_owner->GetFloatAttribute(ax::mojom::FloatAttribute::kValueForRange,
                                   &floatValue)) {
@@ -2480,7 +2486,7 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
                                       green / 255., blue / 255.];
   }
 
-  return base::SysUTF16ToNSString(_owner->GetValue());
+  return base::SysUTF16ToNSString(_owner->GetValueForControl());
 }
 
 - (NSNumber*)valueAutofillAvailable {
@@ -2501,18 +2507,25 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
 //}
 
 - (NSString*)valueDescription {
-  if (![self instanceActive])
+  if (![self instanceActive] || !_owner->GetData().IsRangeValueSupported())
     return nil;
-  if (_owner)
-    return base::SysUTF16ToNSString(_owner->GetValue());
-  return nil;
+
+  // This method is only for exposing aria-valuetext to VoiceOver if present.
+  // Blink places the value of aria-valuetext in
+  // ax::mojom::StringAttribute::kValue for objects that support range values,
+  // i.e., progress bars, sliders and steppers.
+  return base::SysUTF8ToNSString(
+      _owner->GetStringAttribute(ax::mojom::StringAttribute::kValue));
 }
 
 - (NSValue*)visibleCharacterRange {
-  if (![self instanceActive])
-    return nil;
-  base::string16 value = _owner->GetValue();
-  return [NSValue valueWithRange:NSMakeRange(0, value.size())];
+  if ([self instanceActive] && _owner->IsTextField() &&
+      !_owner->IsPasswordField()) {
+    return [NSValue
+        valueWithRange:NSMakeRange(0,
+                                   int{_owner->GetValueForControl().size()})];
+  }
+  return nil;
 }
 
 - (NSArray*)visibleCells {
@@ -2589,9 +2602,7 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
   if (![self instanceActive])
     return nil;
 
-  base::string16 innerText = _owner->GetValue();
-  if (innerText.empty())
-    innerText = _owner->GetInnerText();
+  base::string16 innerText = _owner->GetInnerText();
   if (NSMaxRange(range) > innerText.length())
     return nil;
 
@@ -2606,9 +2617,7 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
   if (![self instanceActive])
     return nil;
 
-  base::string16 innerText = _owner->GetValue();
-  if (innerText.empty())
-    innerText = _owner->GetInnerText();
+  base::string16 innerText = _owner->GetInnerText();
   if (NSMaxRange(range) > innerText.length())
     return nil;
 
@@ -2687,12 +2696,13 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
 
   if ([attribute
           isEqualToString:NSAccessibilityRangeForLineParameterizedAttribute]) {
+    if (!_owner->IsTextField())
+      return nil;
+
     int lineIndex = [(NSNumber*)parameter intValue];
     const std::vector<int> lineBreaks = _owner->GetLineStartOffsets();
-    base::string16 value = _owner->GetValue();
-    if (value.empty())
-      value = _owner->GetInnerText();
-    int valueLength = static_cast<int>(value.size());
+    base::string16 value = _owner->GetValueForControl();
+    int valueLength = int{value.size()};
 
     int lineCount = static_cast<int>(lineBreaks.size()) + 1;
     if (lineIndex < 0 || lineIndex >= lineCount)

@@ -805,17 +805,6 @@ gfx::RectF BrowserAccessibility::GetInlineTextRect(const int start_offset,
   return bounds;
 }
 
-base::string16 BrowserAccessibility::GetValue() const {
-  base::string16 value =
-      GetString16Attribute(ax::mojom::StringAttribute::kValue);
-  // Some screen readers like Jaws and VoiceOver require a value to be set in
-  // text fields with rich content, even though the same information is
-  // available on the children.
-  if (value.empty() && IsRichTextField())
-    return BrowserAccessibility::GetInnerText();
-  return value;
-}
-
 BrowserAccessibility* BrowserAccessibility::ApproximateHitTest(
     const gfx::Point& blink_screen_point) {
   // The best result found that's a child of this object.
@@ -1103,6 +1092,10 @@ base::string16 BrowserAccessibility::GetHypertext() const {
 
 base::string16 BrowserAccessibility::GetInnerText() const {
   return base::UTF8ToUTF16(node()->GetInnerText());
+}
+
+base::string16 BrowserAccessibility::GetValueForControl() const {
+  return base::UTF8ToUTF16(node()->GetValueForControl());
 }
 
 gfx::Rect BrowserAccessibility::RelativeToAbsoluteBounds(

@@ -466,4 +466,5 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
   EXPECT_NSEQ(@"AXRow", [row_nodes[1] role]);
   EXPECT_NSEQ(@"row2", [row_nodes[1] descriptionForAccessibility]);
 }
+
 }  // namespace content

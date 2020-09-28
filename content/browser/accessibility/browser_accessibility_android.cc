@@ -91,29 +91,6 @@ void BrowserAccessibilityAndroid::OnLocationChanged() {
   manager->FireLocationChanged(this);
 }
 
-base::string16 BrowserAccessibilityAndroid::GetValue() const {
-  base::string16 value = BrowserAccessibility::GetValue();
-
-  // Optionally replace entered password text with bullet characters
-  // based on a user preference.
-  if (IsPasswordField()) {
-    auto* manager =
-        static_cast<BrowserAccessibilityManagerAndroid*>(this->manager());
-    if (manager->ShouldRespectDisplayedPasswordText()) {
-      // In the Chrome accessibility tree, the value of a password node is
-      // unobscured. However, if ShouldRespectDisplayedPasswordText() returns
-      // true we should try to expose whatever's actually visually displayed,
-      // whether that's the actual password or dots or whatever. To do this
-      // we rely on the password field's shadow dom.
-      value = BrowserAccessibility::GetInnerText();
-    } else if (!manager->ShouldExposePasswordText()) {
-      value = base::string16(value.size(), ui::kSecurePasswordBullet);
-    }
-  }
-
-  return value;
-}
-
 bool BrowserAccessibilityAndroid::IsCheckable() const {
   return GetData().HasCheckedState();
 }
@@ -475,7 +452,7 @@ base::string16 BrowserAccessibilityAndroid::GetInnerText() const {
 
   // First, always return the |value| attribute if this is an
   // input field.
-  base::string16 value = GetValue();
+  base::string16 value = GetValueForControl();
   if (ShouldExposeValueAsName())
     return value;
 
@@ -520,6 +497,29 @@ base::string16 BrowserAccessibilityAndroid::GetInnerText() const {
   }
 
   return text;
+}
+
+base::string16 BrowserAccessibilityAndroid::GetValueForControl() const {
+  base::string16 value = BrowserAccessibility::GetValueForControl();
+
+  // Optionally replace entered password text with bullet characters
+  // based on a user preference.
+  if (IsPasswordField()) {
+    auto* manager =
+        static_cast<BrowserAccessibilityManagerAndroid*>(this->manager());
+    if (manager->ShouldRespectDisplayedPasswordText()) {
+      // In the Chrome accessibility tree, the value of a password node is
+      // unobscured. However, if ShouldRespectDisplayedPasswordText() returns
+      // true we should try to expose whatever's actually visually displayed,
+      // whether that's the actual password or dots or whatever. To do this
+      // we rely on the password field's shadow dom.
+      value = BrowserAccessibility::GetInnerText();
+    } else if (!manager->ShouldExposePasswordText()) {
+      value = base::string16(value.size(), ui::kSecurePasswordBullet);
+    }
+  }
+
+  return value;
 }
 
 base::string16 BrowserAccessibilityAndroid::GetHint() const {
@@ -1508,8 +1508,9 @@ int BrowserAccessibilityAndroid::GetSelectionEnd() const {
 }
 
 int BrowserAccessibilityAndroid::GetEditableTextLength() const {
-  base::string16 value = GetValue();
-  return value.length();
+  if (IsTextField())
+    return int{GetValueForControl().size()};
+  return 0;
 }
 
 int BrowserAccessibilityAndroid::AndroidInputType() const {
@@ -1807,7 +1808,7 @@ void BrowserAccessibilityAndroid::GetSuggestions(
 }
 
 bool BrowserAccessibilityAndroid::HasNonEmptyValue() const {
-  return IsTextField() && !GetValue().empty();
+  return IsTextField() && !GetValueForControl().empty();
 }
 
 bool BrowserAccessibilityAndroid::HasCharacterLocations() const {
@@ -1872,7 +1873,7 @@ bool BrowserAccessibilityAndroid::ShouldExposeValueAsName() const {
   if (IsTextField())
     return true;
 
-  if (GetValue().empty())
+  if (GetValueForControl().empty())
     return false;
 
   if (GetRole() == ax::mojom::Role::kPopUpButton)
@@ -1885,7 +1886,7 @@ void BrowserAccessibilityAndroid::OnDataChanged() {
   BrowserAccessibility::OnDataChanged();
 
   if (IsTextField()) {
-    base::string16 value = GetValue();
+    base::string16 value = GetValueForControl();
     if (value != new_value_) {
       old_value_ = new_value_;
       new_value_ = value;
