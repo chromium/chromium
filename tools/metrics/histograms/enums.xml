@@ -42763,6 +42763,8 @@ from previous Chrome versions.
   <int value="-179580377" label="CrossOriginOpenerPolicy:enabled"/>
   <int value="-178364053" label="TerminalSystemAppLegacySettings:enabled"/>
   <int value="-177974995" label="CrostiniShowMicSetting:disabled"/>
+  <int value="-177085741"
+      label="EnableEphemeralGuestProfilesOnDesktop:disabled"/>
   <int value="-175666252" label="Portals:disabled"/>
   <int value="-174829803" label="TabOutlinesInLowContrastThemes:enabled"/>
   <int value="-174706795"
@@ -44823,6 +44825,8 @@ from previous Chrome versions.
   <int value="1958387645" label="ScanCardsInWebPayments:enabled"/>
   <int value="1959148757" label="OffMainThreadFetch:enabled"/>
   <int value="1960169775" label="NewPhotoPicker:disabled"/>
+  <int value="1961068026"
+      label="EnableEphemeralGuestProfilesOnDesktop:enabled"/>
   <int value="1961425320" label="force-qtkit"/>
   <int value="1962485086" label="DesktopPWAsLocalUpdating:enabled"/>
   <int value="1963766060"
@@ -44950,6 +44954,7 @@ from previous Chrome versions.
       label="AutofillEnforceMinRequiredFieldsForUpload:enabled"/>
   <int value="2085186092" label="BulkPrinters:disabled"/>
   <int value="2085438501" label="ChromeHome:enabled"/>
+  <int value="2088446947" label="enable-ephemeral-guest-profiles-on-desktop"/>
   <int value="2089897928" label="enable-audio-focus"/>
   <int value="2091002949" label="RemoveNavigationHistory:disabled"/>
   <int value="2091943748"

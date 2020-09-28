@@ -4545,6 +4545,13 @@ const char kWebShareDescription[] =
     "platforms.";
 #endif  // defined(OS_WIN) || defined(OS_CHROMEOS)
 
+#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_MAC)
+const char kEnableEphemeralGuestProfilesOnDesktopName[] =
+    "Enable ephemeral Guest profiles on Desktop";
+const char kEnableEphemeralGuestProfilesOnDesktopDescription[] =
+    "Enables ephemeral Guest profiles on Windows, Linux, and Mac.";
+#endif  // defined(OS_WIN) || defined(OS_LINUX) || defined(OS_MAC)
+
 // Feature flags --------------------------------------------------------------
 
 #if defined(DCHECK_IS_CONFIGURABLE)

@@ -1443,6 +1443,11 @@
     "expiry_milestone": 76
   },
   {
+    "name": "enable-ephemeral-guest-profiles-on-desktop",
+    "owners": [ "rhalavati", "chrome-privacy-core@google.com" ],
+    "expiry_milestone": 92
+  },
+  {
     "name": "enable-ephemeral-tab",
     "owners": [ "donnd", "jinsukkim" ],
     "expiry_milestone": 90
