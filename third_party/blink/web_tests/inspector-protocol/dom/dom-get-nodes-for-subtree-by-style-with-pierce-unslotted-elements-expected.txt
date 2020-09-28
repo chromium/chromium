@@ -1,0 +1,65 @@
+Tests finding DOM nodes by computed styles on a page containing a custom element with unslotted nodes.
+Expected nodeIds length: 3
+Actual nodeIds length: 3
+Nodes:
+{
+    node : {
+        attributes : [
+            [0] : class
+            [1] : default-slot
+            [2] : name
+            [3] : my-slot
+        ]
+        backendNodeId : <number>
+        childNodeCount : 1
+        distributedNodes : [
+            [0] : {
+                backendNodeId : <number>
+                nodeName : SPAN
+                nodeType : 1
+            }
+        ]
+        localName : slot
+        nodeId : <number>
+        nodeName : SLOT
+        nodeType : 1
+        nodeValue : 
+    }
+}
+{
+    node : {
+        attributes : [
+            [0] : class
+            [1] : inserted-slot
+            [2] : slot
+            [3] : my-slot
+            [4] : style
+            [5] : display: grid;
+        ]
+        backendNodeId : <number>
+        childNodeCount : 1
+        localName : span
+        nodeId : <number>
+        nodeName : SPAN
+        nodeType : 1
+        nodeValue : 
+    }
+}
+{
+    node : {
+        attributes : [
+            [0] : class
+            [1] : grid-outside-shadow-dom
+            [2] : style
+            [3] : display: grid;
+        ]
+        backendNodeId : <number>
+        childNodeCount : 0
+        localName : div
+        nodeId : <number>
+        nodeName : DIV
+        nodeType : 1
+        nodeValue : 
+    }
+}
+

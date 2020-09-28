@@ -1,0 +1,56 @@
+Tests finding DOM nodes by computed styles on a page containing <details> elements.
+Expected nodeIds length: 3
+Actual nodeIds length: 3
+Nodes:
+{
+    node : {
+        attributes : [
+            [0] : class
+            [1] : in-summary
+            [2] : style
+            [3] : display: grid;
+        ]
+        backendNodeId : <number>
+        childNodeCount : 0
+        localName : div
+        nodeId : <number>
+        nodeName : DIV
+        nodeType : 1
+        nodeValue : 
+    }
+}
+{
+    node : {
+        attributes : [
+            [0] : class
+            [1] : in-details
+            [2] : style
+            [3] : display: grid;
+        ]
+        backendNodeId : <number>
+        childNodeCount : 0
+        localName : div
+        nodeId : <number>
+        nodeName : DIV
+        nodeType : 1
+        nodeValue : 
+    }
+}
+{
+    node : {
+        attributes : [
+            [0] : class
+            [1] : outside
+            [2] : style
+            [3] : display: grid;
+        ]
+        backendNodeId : <number>
+        childNodeCount : 0
+        localName : div
+        nodeId : <number>
+        nodeName : DIV
+        nodeType : 1
+        nodeValue : 
+    }
+}
+
