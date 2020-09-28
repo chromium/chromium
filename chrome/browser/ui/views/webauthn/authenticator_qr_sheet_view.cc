@@ -231,7 +231,7 @@ class AuthenticatorQRViewCentered : public views::View {
 AuthenticatorQRSheetView::AuthenticatorQRSheetView(
     std::unique_ptr<AuthenticatorQRSheetModel> sheet_model)
     : AuthenticatorRequestSheetView(std::move(sheet_model)),
-      qr_generator_key_(reinterpret_cast<AuthenticatorQRSheetModel*>(model())
+      qr_generator_key_(static_cast<AuthenticatorQRSheetModel*>(model())
                             ->dialog_model()
                             ->qr_generator_key()) {}
 
