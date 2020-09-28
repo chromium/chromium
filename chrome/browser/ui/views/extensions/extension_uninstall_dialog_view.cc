@@ -273,7 +273,7 @@ ExtensionUninstallDialogDelegateView::~ExtensionUninstallDialogDelegateView() {
   // can go away during dialog's lifetime (especially when uninstalling).
   views::View* anchor_view = GetAnchorView();
   if (anchor_view) {
-    reinterpret_cast<ToolbarActionView*>(anchor_view)
+    static_cast<ToolbarActionView*>(anchor_view)
         ->AnimateInkDrop(views::InkDropState::DEACTIVATED, nullptr);
   }
 }
