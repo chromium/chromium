@@ -336,8 +336,7 @@ WebInputEventResult RenderWidgetFullscreenPepper::ProcessInputEvent(
   // generates context menu events. Since we don't have a WebView, we need to
   // do the necessary translation ourselves.
   if (WebInputEvent::IsMouseEventType(event.GetType())) {
-    const WebMouseEvent& mouse_event =
-        reinterpret_cast<const WebMouseEvent&>(event);
+    const WebMouseEvent& mouse_event = static_cast<const WebMouseEvent&>(event);
     bool send_context_menu_event = false;
     // On Mac/Linux, we handle it on mouse down.
     // On Windows, we handle it on mouse up.
