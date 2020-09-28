@@ -152,7 +152,6 @@ public class FeedStreamSurface implements SurfaceActionsHandler, FeedActionsHand
         if (sStartupCalled) return;
         sStartupCalled = true;
         FeedServiceBridge.startup();
-        xSurfaceProcessScope();
         if (sSurfaces != null) {
             for (FeedStreamSurface surface : sSurfaces) {
                 surface.updateSurfaceOpenState();
@@ -933,6 +932,7 @@ public class FeedStreamSurface implements SurfaceActionsHandler, FeedActionsHand
         assert (mStreamContentVisible);
         // No feed content should exist.
         assert (mContentManager.getItemCount() == mHeaderCount);
+
         mOpened = true;
         FeedStreamSurfaceJni.get().surfaceOpened(mNativeFeedStreamSurface, FeedStreamSurface.this);
         mHybridListRenderer.onSurfaceOpened();
