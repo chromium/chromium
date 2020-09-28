@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.chrome.browser.video_tutorials.R;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -35,24 +36,21 @@ class VideoIPHView {
     }
 
     private void setTitle(String title) {
-        TextView view =
-                mCardView.findViewById(org.chromium.chrome.browser.video_tutorials.R.id.title);
+        TextView view = mCardView.findViewById(R.id.title);
         view.setText(title);
     }
 
     /** Called to set the video length text of an IPH. */
     private void setVideoLength(String videoLength) {
-        TextView view = mCardView.findViewById(
-                org.chromium.chrome.browser.video_tutorials.R.id.video_length);
+        TextView view = mCardView.findViewById(R.id.video_length);
         view.setText(videoLength);
     }
 
     private void setThumbnail(@Nullable Bitmap bitmap) {
-        ImageView view =
-                mCardView.findViewById(org.chromium.chrome.browser.video_tutorials.R.id.thumbnail);
+        ImageView view = mCardView.findViewById(R.id.thumbnail);
         if (bitmap == null) {
-            view.setImageDrawable(new ColorDrawable(view.getResources().getColor(
-                    org.chromium.chrome.browser.video_tutorials.R.color.image_loading_color)));
+            view.setImageDrawable(
+                    new ColorDrawable(view.getResources().getColor(R.color.image_loading_color)));
         } else {
             view.setImageBitmap(bitmap);
         }
@@ -63,8 +61,7 @@ class VideoIPHView {
     }
 
     private void setDismissListener(Runnable dismissListener) {
-        View closeButton = mCardView.findViewById(
-                org.chromium.chrome.browser.video_tutorials.R.id.close_button);
+        View closeButton = mCardView.findViewById(R.id.close_button);
         closeButton.setOnClickListener(view -> {
             mCardView.setVisibility(View.GONE);
             dismissListener.run();

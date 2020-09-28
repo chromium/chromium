@@ -21,8 +21,7 @@ class LanguageItemViewHolder {
     /** Builder method to create the language item view. */
     public static View buildView(ViewGroup parent) {
         return LayoutInflater.from(parent.getContext())
-                .inflate(org.chromium.chrome.browser.video_tutorials.R.layout.language_card, parent,
-                        false);
+                .inflate(R.layout.language_card, parent, false);
     }
 
     /** Binder method to bind the list view with the model properties. */

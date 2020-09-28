@@ -109,6 +109,15 @@ if (is_android) {
     # android_library target does not actually depend on this internal file.
     sources = [ "internal/android/java/src/org/chromium/chrome/browser/video_tutorials/VideoTutorialServiceFactory.java" ]
   }
+
+  android_library("test_support_java") {
+    sources = [ "android/java/src/org/chromium/chrome/browser/video_tutorials/test/TestVideoTutorialService.java" ]
+
+    deps = [
+      ":java",
+      "//base:base_java",
+    ]
+  }
 }
 
 group("unit_tests") {

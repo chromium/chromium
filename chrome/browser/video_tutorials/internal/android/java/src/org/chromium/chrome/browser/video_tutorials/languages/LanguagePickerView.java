@@ -45,7 +45,6 @@ class LanguagePickerView {
         LinearLayoutManager layoutManager =
                 new LinearLayoutManager(mView.getContext(), LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);
-
         SimpleRecyclerViewAdapter adapter = new SimpleRecyclerViewAdapter(mListModel);
         adapter.registerType(LanguageItemProperties.ITEM_VIEW_TYPE,
                 LanguageItemViewHolder::buildView, LanguageItemViewHolder::bindView);

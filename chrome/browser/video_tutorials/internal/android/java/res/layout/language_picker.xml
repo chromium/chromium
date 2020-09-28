@@ -23,6 +23,7 @@
         android:src="@drawable/btn_close" />
 
     <TextView
+        android:id="@+id/title_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="36dp"

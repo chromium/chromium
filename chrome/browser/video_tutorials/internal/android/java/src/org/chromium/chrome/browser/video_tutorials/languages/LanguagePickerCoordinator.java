@@ -5,18 +5,11 @@
 package org.chromium.chrome.browser.video_tutorials.languages;
 
 import android.content.Context;
-import android.content.res.Resources;
-import android.text.TextUtils;
 import android.view.View;
 
-import org.chromium.chrome.browser.video_tutorials.Language;
 import org.chromium.chrome.browser.video_tutorials.VideoTutorialService;
-import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  *  The top level coordinator for the language picker UI.
@@ -24,6 +17,7 @@ import java.util.List;
 public class LanguagePickerCoordinator {
     private final Context mContext;
     private final VideoTutorialService mVideoTutorialService;
+    private final LanguagePickerMediator mMediator;
     private final LanguagePickerView mView;
     private final PropertyModel mModel;
     private final ModelList mListModel;
@@ -39,6 +33,7 @@ public class LanguagePickerCoordinator {
         mModel = new PropertyModel(LanguagePickerProperties.ALL_KEYS);
         mListModel = new ModelList();
         mView = new LanguagePickerView(view, mModel, mListModel);
+        mMediator = new LanguagePickerMediator(mContext, mModel, mListModel, videoTutorialService);
     }
 
     /**
@@ -47,41 +42,11 @@ public class LanguagePickerCoordinator {
      * @param closeCallback The callback to be invoked when the close button is clicked.
      */
     public void showLanguagePicker(Runnable doneCallback, Runnable closeCallback) {
-        mModel.set(LanguagePickerProperties.CLOSE_CALLBACK, closeCallback);
-        mModel.set(LanguagePickerProperties.WATCH_CALLBACK, doneCallback);
-        populateList(mVideoTutorialService.getSupportedLanguages());
+        mMediator.showLanguagePicker(doneCallback, closeCallback);
     }
 
     /** @return A {@link View} representing this coordinator. */
     public View getView() {
         return mView.getView();
-    }
-
-    private void onLanguageSelected(String locale) {
-        mVideoTutorialService.setPreferredLocale(locale);
-        populateList(mVideoTutorialService.getSupportedLanguages());
-    }
-
-    private void populateList(List<Language> supportedLanguages) {
-        List<ListItem> listItems = new ArrayList<>();
-        for (Language locale : supportedLanguages) {
-            ListItem listItem = new ListItem(
-                    LanguageItemProperties.ITEM_VIEW_TYPE, buildListItemModelFromLocale(locale));
-            listItems.add(listItem);
-        }
-        mListModel.set(listItems);
-    }
-
-    private PropertyModel buildListItemModelFromLocale(Language language) {
-        Resources resources = mContext.getResources();
-        String preferredLocale = mVideoTutorialService.getPreferredLocale();
-        return new PropertyModel.Builder(LanguageItemProperties.ALL_KEYS)
-                .with(LanguageItemProperties.LOCALE, language.locale)
-                .with(LanguageItemProperties.NAME, language.name)
-                .with(LanguageItemProperties.NATIVE_NAME, language.nativeName)
-                .with(LanguageItemProperties.IS_SELECTED,
-                        TextUtils.equals(language.locale, preferredLocale))
-                .with(LanguageItemProperties.SELECTION_CALLBACK, this::onLanguageSelected)
-                .build();
     }
 }
