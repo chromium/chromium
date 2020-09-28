@@ -68,12 +68,13 @@ class UnitTestPrerenderManager;
 
 namespace {
 
-class DummyPrerenderHandleClient : public blink::mojom::PrerenderHandleClient {
+class DummyPrerenderProcessorClient
+    : public blink::mojom::PrerenderProcessorClient {
  public:
-  DummyPrerenderHandleClient() = default;
-  ~DummyPrerenderHandleClient() override = default;
+  DummyPrerenderProcessorClient() = default;
+  ~DummyPrerenderProcessorClient() override = default;
 
-  // blink::mojom::PrerenderHandleClient implementation
+  // blink::mojom::PrerenderProcessorClient implementation
   void OnPrerenderStart() override {}
   void OnPrerenderStopLoading() override {}
   void OnPrerenderDomContentLoaded() override {}
@@ -406,15 +407,16 @@ class PrerenderTest : public testing::Test {
     attributes->initiator_origin = url::Origin::Create(initiator_url);
     attributes->view_size = kDefaultViewSize;
 
-    mojo::PendingRemote<blink::mojom::PrerenderHandleClient> handle_client;
-    clients_.Add(std::make_unique<DummyPrerenderHandleClient>(),
-                 handle_client.InitWithNewPipeAndPassReceiver());
+    mojo::PendingRemote<blink::mojom::PrerenderProcessorClient>
+        processor_client;
+    clients_.Add(std::make_unique<DummyPrerenderProcessorClient>(),
+                 processor_client.InitWithNewPipeAndPassReceiver());
 
     // This could delete an existing prerender as a side-effect.
     base::Optional<int> prerender_id =
         prerender_link_manager()->OnStartPrerender(
             render_process_id, render_view_id, std::move(attributes),
-            std::move(handle_client));
+            std::move(processor_client));
 
     // Check if the new prerender request was added and running.
     return prerender_id && LastPrerenderIsRunning();
@@ -473,7 +475,7 @@ class PrerenderTest : public testing::Test {
         chrome_browser_net::NETWORK_PREDICTION_ALWAYS);
   }
 
-  void DisconnectAllPrerenderHandleClients() { clients_.Clear(); }
+  void DisconnectAllPrerenderProcessorClients() { clients_.Clear(); }
 
   const base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
@@ -486,7 +488,7 @@ class PrerenderTest : public testing::Test {
   std::unique_ptr<UnitTestPrerenderManager> prerender_manager_;
   std::unique_ptr<PrerenderLinkManager> prerender_link_manager_;
   base::HistogramTester histogram_tester_;
-  mojo::UniqueReceiverSet<blink::mojom::PrerenderHandleClient> clients_;
+  mojo::UniqueReceiverSet<blink::mojom::PrerenderProcessorClient> clients_;
 
   // Restore prerender mode after this test finishes running.
   test_utils::RestorePrerenderMode restore_prerender_mode_;
@@ -1599,7 +1601,7 @@ TEST_F(PrerenderTest, LinkManagerRendererDisconnect) {
 
   // Disconnect all clients. Spin the run loop to give the link manager
   // opportunity to detect disconnection.
-  DisconnectAllPrerenderHandleClients();
+  DisconnectAllPrerenderProcessorClients();
   base::RunLoop().RunUntilIdle();
 
   tick_clock()->Advance(prerender_manager()->config().abandon_time_to_live +

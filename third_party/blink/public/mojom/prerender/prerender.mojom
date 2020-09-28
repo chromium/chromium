@@ -9,14 +9,11 @@ import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
-// This interface is used to notify of events on prerendering from the browser
-// process to a renderer process that requested prerendering. This is created
-// per prerender request, for example, when a new <link rel=prerender> element
-// is added, when the element's href is changed, etc.
-//
-// TODO(https://crbug.com/1126305): Rename this interface to
-// PrerenderProcessorClient.
-interface PrerenderHandleClient {
+// This interface is used to notify of events about prerendering from the
+// browser process to a renderer process that requested prerendering. This is
+// created per prerender request, for example, when a new <link rel=prerender>
+// element is added, when the element's href is changed, etc.
+interface PrerenderProcessorClient {
   // Notifies that a prerender started.
   OnPrerenderStart();
 
@@ -52,16 +49,16 @@ struct PrerenderAttributes {
 // changed, etc.
 interface PrerenderProcessor {
   // Requests the browesr process to start prerendering with
-  // |prerender_attribute|. |prerender_handle_client| will be notified as the
+  // |prerender_attribute|. |prerender_processor_client| will be notified as the
   // prerendering makes progress. This must be called only one time before any
   // other functions.
   Start(PrerenderAttributes prerender_attribute,
-        pending_remote<PrerenderHandleClient> prerender_handle_client);
+        pending_remote<PrerenderProcessorClient> prerender_processor_client);
 
   // Cancels the ongoing prerendering. This is supposed to be called when the
   // <link rel=prerender> element is removed, the element's href is changed,
   // etc. This must be called after Start(). This does not trigger
-  // OnPrerenderStop() on PrerenderHandleClient.
+  // OnPrerenderStop() on PrerenderProcessorClient.
   Cancel();
 
   // Abandons the ongoing prerendering. This is supposed to be called when the

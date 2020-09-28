@@ -44,7 +44,8 @@ class PrerenderLinkManager : public KeyedService,
       int launcher_render_process_id,
       int launcher_render_view_id,
       blink::mojom::PrerenderAttributesPtr attributes,
-      mojo::PendingRemote<blink::mojom::PrerenderHandleClient> handle_client);
+      mojo::PendingRemote<blink::mojom::PrerenderProcessorClient>
+          processor_client);
 
   // Called when a <link rel=prerender ...> element has been explicitly removed
   // from a document.
@@ -66,13 +67,13 @@ class PrerenderLinkManager : public KeyedService,
 
   // Used to store state about a requested prerender.
   struct LinkPrerender {
-    LinkPrerender(
-        int launcher_render_process_id,
-        int launcher_render_view_id,
-        blink::mojom::PrerenderAttributesPtr attributes,
-        mojo::PendingRemote<blink::mojom::PrerenderHandleClient> handle_client,
-        base::TimeTicks creation_time,
-        PrerenderContents* deferred_launcher);
+    LinkPrerender(int launcher_render_process_id,
+                  int launcher_render_view_id,
+                  blink::mojom::PrerenderAttributesPtr attributes,
+                  mojo::PendingRemote<blink::mojom::PrerenderProcessorClient>
+                      processor_client,
+                  base::TimeTicks creation_time,
+                  PrerenderContents* deferred_launcher);
     ~LinkPrerender();
 
     LinkPrerender(const LinkPrerender& other) = delete;
@@ -88,7 +89,8 @@ class PrerenderLinkManager : public KeyedService,
     const gfx::Size size;
 
     // Notification interface back to the requestor of this prerender.
-    mojo::Remote<blink::mojom::PrerenderHandleClient> remote_handle_client;
+    mojo::Remote<blink::mojom::PrerenderProcessorClient>
+        remote_processor_client;
 
     // The time at which this Prerender was added to PrerenderLinkManager.
     const base::TimeTicks creation_time;

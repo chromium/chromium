@@ -71,12 +71,12 @@ PrerenderHandle* PrerenderHandle::Create(
       prerender_processor.BindNewPipeAndPassReceiver(
           context->GetTaskRunner(TaskType::kMiscPlatformAPI)));
 
-  mojo::PendingRemote<mojom::blink::PrerenderHandleClient>
-      prerender_handle_client;
-  auto receiver = prerender_handle_client.InitWithNewPipeAndPassReceiver();
+  mojo::PendingRemote<mojom::blink::PrerenderProcessorClient>
+      prerender_processor_client;
+  auto receiver = prerender_processor_client.InitWithNewPipeAndPassReceiver();
 
   prerender_processor->Start(std::move(attributes),
-                             std::move(prerender_handle_client));
+                             std::move(prerender_processor_client));
 
   return MakeGarbageCollected<PrerenderHandle>(PassKey(), context, client, url,
                                                std::move(prerender_processor),
@@ -89,7 +89,7 @@ PrerenderHandle::PrerenderHandle(
     PrerenderClient* client,
     const KURL& url,
     HeapMojoRemote<mojom::blink::PrerenderProcessor> remote_processor,
-    mojo::PendingReceiver<mojom::blink::PrerenderHandleClient> receiver)
+    mojo::PendingReceiver<mojom::blink::PrerenderProcessorClient> receiver)
     : ExecutionContextLifecycleObserver(context),
       url_(url),
       client_(client),

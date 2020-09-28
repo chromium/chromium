@@ -77,7 +77,7 @@ class MockPrerenderProcessor : public mojom::blink::PrerenderProcessor {
 
   // mojom::blink::PrerenderProcessor implementation
   void Start(mojom::blink::PrerenderAttributesPtr attributes,
-             mojo::PendingRemote<mojom::blink::PrerenderHandleClient> client)
+             mojo::PendingRemote<mojom::blink::PrerenderProcessorClient> client)
       override {
     attributes_ = std::move(attributes);
     client_.Bind(std::move(client));
@@ -118,7 +118,7 @@ class MockPrerenderProcessor : public mojom::blink::PrerenderProcessor {
 
  private:
   mojom::blink::PrerenderAttributesPtr attributes_;
-  mojo::Remote<mojom::blink::PrerenderHandleClient> client_;
+  mojo::Remote<mojom::blink::PrerenderProcessorClient> client_;
   mojo::Receiver<mojom::blink::PrerenderProcessor> receiver_{this};
 
   size_t cancel_count_ = 0;

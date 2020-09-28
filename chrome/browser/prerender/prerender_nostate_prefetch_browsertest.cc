@@ -407,7 +407,7 @@ class NoStatePrefetchBrowserTest
   }
 
   // Synchronization note: The IPCs used to communicate DOM events back to the
-  // referring web page (see blink::mojom::PrerenderHandleClient) may race w/
+  // referring web page (see blink::mojom::PrerenderProcessorClient) may race w/
   // the IPCs used here to inject script. The WaitFor* variants should be used
   // when an event was expected to happen or to happen soon.
 

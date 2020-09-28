@@ -52,7 +52,8 @@ PrerenderLinkManager::LinkPrerender::LinkPrerender(
     int launcher_render_process_id,
     int launcher_render_view_id,
     blink::mojom::PrerenderAttributesPtr attributes,
-    mojo::PendingRemote<blink::mojom::PrerenderHandleClient> handle_client,
+    mojo::PendingRemote<blink::mojom::PrerenderProcessorClient>
+        processor_client,
     base::TimeTicks creation_time,
     PrerenderContents* deferred_launcher)
     : launcher_render_process_id(launcher_render_process_id),
@@ -62,7 +63,7 @@ PrerenderLinkManager::LinkPrerender::LinkPrerender(
       referrer(content::Referrer(*attributes->referrer)),
       initiator_origin(attributes->initiator_origin),
       size(attributes->view_size),
-      remote_handle_client(std::move(handle_client)),
+      remote_processor_client(std::move(processor_client)),
       creation_time(creation_time),
       deferred_launcher(deferred_launcher),
       has_been_abandoned(false),
@@ -91,7 +92,8 @@ base::Optional<int> PrerenderLinkManager::OnStartPrerender(
     int launcher_render_process_id,
     int launcher_render_view_id,
     blink::mojom::PrerenderAttributesPtr attributes,
-    mojo::PendingRemote<blink::mojom::PrerenderHandleClient> handle_client) {
+    mojo::PendingRemote<blink::mojom::PrerenderProcessorClient>
+        processor_client) {
 // TODO(crbug.com/722453): Use a dedicated build flag for GuestView.
 #if !defined(OS_ANDROID) && !defined(OS_IOS) && !defined(OS_FUCHSIA)
   content::RenderViewHost* rvh = content::RenderViewHost::FromID(
@@ -118,13 +120,13 @@ base::Optional<int> PrerenderLinkManager::OnStartPrerender(
 
   auto prerender = std::make_unique<LinkPrerender>(
       launcher_render_process_id, launcher_render_view_id,
-      std::move(attributes), std::move(handle_client),
+      std::move(attributes), std::move(processor_client),
       manager_->GetCurrentTimeTicks(), prerender_contents);
 
   // Observe disconnect of the client and treat as equivalent to explicit
   // abandonment. Similar to above, the raw pointer to |this| is safe because
   // |prerender| is owned by |this|.
-  prerender->remote_handle_client.set_disconnect_handler(
+  prerender->remote_processor_client.set_disconnect_handler(
       base::BindOnce(&PrerenderLinkManager::OnAbandonPrerender,
                      base::Unretained(this), prerender->prerender_id));
 
@@ -290,7 +292,7 @@ void PrerenderLinkManager::StartPrerenders() {
       running_launcher_and_render_view_routes.insert(
           launcher_and_render_view_route);
     } else {
-      pending_prerender->remote_handle_client->OnPrerenderStop();
+      pending_prerender->remote_processor_client->OnPrerenderStop();
       prerenders_.erase(it);
     }
   }
@@ -354,7 +356,7 @@ void PrerenderLinkManager::OnPrerenderStart(PrerenderHandle* prerender_handle) {
   if (!prerender)
     return;
 
-  prerender->remote_handle_client->OnPrerenderStart();
+  prerender->remote_processor_client->OnPrerenderStart();
 }
 
 void PrerenderLinkManager::OnPrerenderStopLoading(
@@ -363,7 +365,7 @@ void PrerenderLinkManager::OnPrerenderStopLoading(
   if (!prerender)
     return;
 
-  prerender->remote_handle_client->OnPrerenderStopLoading();
+  prerender->remote_processor_client->OnPrerenderStopLoading();
 }
 
 void PrerenderLinkManager::OnPrerenderDomContentLoaded(
@@ -372,7 +374,7 @@ void PrerenderLinkManager::OnPrerenderDomContentLoaded(
   if (!prerender)
     return;
 
-  prerender->remote_handle_client->OnPrerenderDomContentLoaded();
+  prerender->remote_processor_client->OnPrerenderDomContentLoaded();
 }
 
 void PrerenderLinkManager::OnPrerenderStop(PrerenderHandle* prerender_handle) {
@@ -380,7 +382,7 @@ void PrerenderLinkManager::OnPrerenderStop(PrerenderHandle* prerender_handle) {
   if (!prerender)
     return;
 
-  prerender->remote_handle_client->OnPrerenderStop();
+  prerender->remote_processor_client->OnPrerenderStop();
 
   RemovePrerender(prerender);
   StartPrerenders();
