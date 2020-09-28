@@ -24,12 +24,21 @@ class RemoteDevice : public base::RefCountedThreadSafe<RemoteDevice> {
     kDefaultMtu = 20,
   };
 
+  enum class ConnectStatus {
+    kUndefined,
+    kGattClientManagerDestroyed,
+    kConnectPending,
+    kFailure,
+    kSuccess,
+  };
+
   using StatusCallback = base::OnceCallback<void(bool)>;
+  using ConnectCallback = base::OnceCallback<void(ConnectStatus)>;
 
   // Initiate a connection to this device. Callback will return |true| if
   // connected successfully, otherwise false. Only one pending call is allowed
   // at a time.
-  virtual void Connect(StatusCallback cb) = 0;
+  virtual void Connect(ConnectCallback cb) = 0;
 
   // Disconnect from this device. Callback will return |true| if disconnected
   // successfully, otherwise false. Only one pending call is allowed at a time.

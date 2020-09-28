@@ -121,7 +121,7 @@ class BluetoothDeviceCast : public BluetoothDevice {
   void DisconnectGatt() override;
 
   // Called back from connect requests generated from CreateGattConnectionImpl.
-  void OnConnect(bool success);
+  void OnConnect(chromecast::bluetooth::RemoteDevice::ConnectStatus status);
 
   // Called in response to GetServices
   void OnGetServices(

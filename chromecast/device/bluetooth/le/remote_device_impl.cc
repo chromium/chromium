@@ -69,22 +69,21 @@ RemoteDeviceImpl::RemoteDeviceImpl(
 
 RemoteDeviceImpl::~RemoteDeviceImpl() = default;
 
-void RemoteDeviceImpl::Connect(StatusCallback cb) {
+void RemoteDeviceImpl::Connect(ConnectCallback cb) {
   MAKE_SURE_IO_THREAD(Connect, BindToCurrentSequence(std::move(cb)));
   LOG(INFO) << "Connect(" << util::AddrLastByteString(addr_) << ")";
 
   if (!gatt_client_manager_) {
     LOG(ERROR) << __func__ << " failed: Destroyed";
-    EXEC_CB_AND_RET(cb, false);
+    EXEC_CB_AND_RET(cb, ConnectStatus::kGattClientManagerDestroyed);
   }
 
-  if (connect_pending_) {
+  if (connect_cb_) {
     LOG(ERROR) << __func__ << " failed: Connection pending";
-    EXEC_CB_AND_RET(cb, false);
+    EXEC_CB_AND_RET(cb, ConnectStatus::kConnectPending);
   }
 
   gatt_client_manager_->NotifyConnect(addr_);
-  connect_pending_ = true;
   connect_cb_ = std::move(cb);
   gatt_client_manager_->EnqueueConnectRequest(addr_, true);
 }
@@ -519,11 +518,9 @@ void RemoteDeviceImpl::OnReadRemoteRssiComplete(bool status, int rssi) {
 
 void RemoteDeviceImpl::ConnectComplete(bool success) {
   DCHECK(io_task_runner_->BelongsToCurrentThread());
-  if (connect_pending_) {
-    connect_pending_ = false;
-    if (connect_cb_) {
-      std::move(connect_cb_).Run(success);
-    }
+  if (connect_cb_) {
+    std::move(connect_cb_)
+        .Run(success ? ConnectStatus::kSuccess : ConnectStatus::kFailure);
   }
 }
 
