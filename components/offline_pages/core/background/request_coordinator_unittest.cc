@@ -187,7 +187,7 @@ class RequestCoordinatorTest : public testing::Test {
   }
   OfflinerStub* offliner() const { return offliner_; }
   SchedulerStub* scheduler_stub() const {
-    return reinterpret_cast<SchedulerStub*>(coordinator()->scheduler());
+    return static_cast<SchedulerStub*>(coordinator()->scheduler());
   }
   RequestQueue* queue() {
     return coordinator_taco_->request_coordinator()->queue_for_testing();
