@@ -15,12 +15,15 @@ source_set("browser") {
     "geolocation_updater_provider.mm",
     "overrides_provider.h",
     "overrides_provider.mm",
+    "text_zoom_provider.h",
+    "text_zoom_provider.mm",
   ]
   deps = [
     "//base",
     "//components/metrics",
     "//ios/public/provider/chrome/browser/mailto",
     "//ios/web/public",
+    "//ios/web/public/js_messaging",
     "//url",
   ]
   frameworks = [ "CoreLocation.framework" ]

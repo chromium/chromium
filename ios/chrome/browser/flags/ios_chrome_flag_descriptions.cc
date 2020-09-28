@@ -510,6 +510,11 @@ const char kWebPageTextAccessibilityDescription[] =
     "When enabled, text in web pages will respect the user's Dynamic Type "
     "setting.";
 
+const char kWebPageAlternativeTextZoomName[] =
+    "Use different method for zooming web pages";
+const char kWebPageAlternativeTextZoomDescription[] =
+    "When enabled, switches the method used to zoom web pages.";
+
 const char kWellKnownChangePasswordName[] =
     "Support for .well-known/change-password";
 const char kWellKnownChangePasswordDescription[] =

@@ -22,6 +22,8 @@
 #include "ios/chrome/browser/pref_names.h"
 #include "ios/chrome/browser/web/features.h"
 #include "ios/components/ui_util/dynamic_type_util.h"
+#include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
+#import "ios/public/provider/chrome/browser/text_zoom_provider.h"
 #include "ios/web/public/js_messaging/web_frame.h"
 #include "ios/web/public/js_messaging/web_frame_util.h"
 #include "ios/web/public/js_messaging/web_frames_manager.h"
@@ -138,12 +140,9 @@ void FontSizeTabHelper::SetPageFontSize(int size) {
     return;
   }
   tab_helper_has_zoomed_ = true;
-  std::vector<base::Value> parameters;
-  parameters.push_back(base::Value(size));
-  for (web::WebFrame* frame :
-       web_state_->GetWebFramesManager()->GetAllWebFrames()) {
-    frame->CallJavaScriptFunction("accessibility.adjustFontSize", parameters);
-  }
+
+  ios::GetChromeBrowserProvider()->GetTextZoomProvider()->SetPageFontSize(
+      web_state_, size);
 }
 
 void FontSizeTabHelper::UserZoom(Zoom zoom) {

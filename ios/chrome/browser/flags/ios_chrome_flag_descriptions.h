@@ -453,6 +453,11 @@ extern const char kWebPageDefaultZoomFromDynamicTypeDescription[];
 extern const char kWebPageTextAccessibilityName[];
 extern const char kWebPageTextAccessibilityDescription[];
 
+// Title and description for the flag to enable a different method of zooming
+// web pages.
+extern const char kWebPageAlternativeTextZoomName[];
+extern const char kWebPageAlternativeTextZoomDescription[];
+
 extern const char kWellKnownChangePasswordName[];
 extern const char kWellKnownChangePasswordDescription[];
 

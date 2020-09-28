@@ -57,6 +57,7 @@ source_set("web") {
     "//ios/components/ui_util",
     "//ios/components/webui:url_constants",
     "//ios/net",
+    "//ios/public/provider/chrome/browser:browser",
     "//ios/web",
     "//ios/web/common",
     "//ios/web/public/js_messaging",

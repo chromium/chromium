@@ -12,6 +12,9 @@ const base::Feature kWebPageTextAccessibility{"WebPageTextAccessibility",
 const base::Feature kWebPageDefaultZoomFromDynamicType{
     "WebPageDefaultZoomFromDynamicType", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kWebPageAlternativeTextZoom{
+    "WebPageAlternativeTextZoom", base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kMobileGoogleSRP{"MobileGoogleSRP",
                                      base::FEATURE_DISABLED_BY_DEFAULT};
 

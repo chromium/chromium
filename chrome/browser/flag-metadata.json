@@ -4620,13 +4620,18 @@
     "expiry_milestone": 89
   },
   {
+    "name": "webpage-alternative-text-zoom",
+    "owners": [ "rkgibson@google.com", "bling-flags@google.com" ],
+    "expiry_milestone": 86
+  },
+  {
     "name": "webpage-default-zoom-from-dynamic-type",
-    "owners": [ "rkgibson", "bling-flags" ],
+    "owners": [ "rkgibson@google.com", "bling-flags@google.com" ],
     "expiry_milestone": 87
   },
   {
     "name": "webpage-text-accessibility",
-    "owners": [ "rkgibson", "bling-flags" ],
+    "owners": [ "rkgibson@google.com", "bling-flags@google.com" ],
     "expiry_milestone": 86
   },
   {
