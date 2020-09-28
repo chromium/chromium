@@ -320,8 +320,7 @@ void SetPPTouchPoints(const WebTouchPoint* touches,
 
 void AppendTouchEvent(const WebInputEvent& event,
                       std::vector<InputEventData>* result_events) {
-  const WebTouchEvent& touch_event =
-      reinterpret_cast<const WebTouchEvent&>(event);
+  const WebTouchEvent& touch_event = static_cast<const WebTouchEvent&>(event);
 
   InputEventData result = GetEventWithCommonFieldsAndType(event);
 
