@@ -3606,6 +3606,8 @@ static_library("browser") {
       "renderer_context_menu/accessibility_labels_bubble_model.h",
       "renderer_context_menu/accessibility_labels_menu_observer.cc",
       "renderer_context_menu/accessibility_labels_menu_observer.h",
+      "renderer_context_menu/copy_link_to_text_menu_observer.cc",
+      "renderer_context_menu/copy_link_to_text_menu_observer.h",
       "renderer_context_menu/render_view_context_menu.cc",
       "renderer_context_menu/render_view_context_menu.h",
       "renderer_context_menu/spelling_bubble_model.cc",

@@ -55,6 +55,7 @@
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/renderer_context_menu/accessibility_labels_menu_observer.h"
 #include "chrome/browser/renderer_context_menu/context_menu_content_type_factory.h"
+#include "chrome/browser/renderer_context_menu/copy_link_to_text_menu_observer.h"
 #include "chrome/browser/renderer_context_menu/spelling_menu_observer.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -369,13 +370,14 @@ const std::map<int, int>& GetIdcToUmaMap(UmaEnumIdLookupType type) {
        {IDC_CONTENT_CONTEXT_SHARING_SHARED_CLIPBOARD_MULTIPLE_DEVICES, 109},
        {IDC_CONTENT_CONTEXT_GENERATE_QR_CODE, 110},
        {IDC_CONTENT_CLIPBOARD_HISTORY_MENU, 111},
+       {IDC_CONTENT_CONTEXT_COPYLINKTOTEXT, 112},
        // To add new items:
        //   - Add one more line above this comment block, using the UMA value
        //     from the line below this comment block.
        //   - Increment the UMA value in that latter line.
        //   - Add the new item to the RenderViewContextMenuItem enum in
        //     tools/metrics/histograms/enums.xml.
-       {0, 112}});
+       {0, 113}});
 
   // These UMA values are for the the ContextMenuOptionDesktop enum, used for
   // the ContextMenu.SelectedOptionDesktop histograms.
@@ -400,13 +402,14 @@ const std::map<int, int>& GetIdcToUmaMap(UmaEnumIdLookupType type) {
        {IDC_CONTENT_CONTEXT_CUT, 17},
        {IDC_CONTENT_CONTEXT_PASTE, 18},
        {IDC_CONTENT_CONTEXT_GOTOURL, 19},
+       {IDC_CONTENT_CONTEXT_COPYLINKTOTEXT, 20},
        // To add new items:
        //   - Add one more line above this comment block, using the UMA value
        //     from the line below this comment block.
        //   - Increment the UMA value in that latter line.
        //   - Add the new item to the ContextMenuOptionDesktop enum in
        //     tools/metrics/histograms/enums.xml.
-       {0, 20}});
+       {0, 21}});
 
   return *(type == UmaEnumIdLookupType::GeneralEnumId ? kGeneralMap
                                                       : kSpecificMap);
@@ -1573,8 +1576,12 @@ void RenderViewContextMenu::AppendCopyItem() {
 }
 
 void RenderViewContextMenu::AppendCopyLinkToTextItem() {
-  menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_COPYLINKTOTEXT,
-                                  IDS_CONTENT_CONTEXT_COPYLINKTOTEXT);
+  if (!copy_link_to_text_menu_observer_) {
+    copy_link_to_text_menu_observer_ =
+        std::make_unique<CopyLinkToTextMenuObserver>(this);
+    observers_.AddObserver(copy_link_to_text_menu_observer_.get());
+    copy_link_to_text_menu_observer_->InitMenu(params_);
+  }
 }
 
 void RenderViewContextMenu::AppendPrintItem() {

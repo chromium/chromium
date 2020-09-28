@@ -62161,6 +62161,7 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
       label="IDC_CONTENT_CONTEXT_SHARING_SHARED_CLIPBOARD_MULTIPLE_DEVICES"/>
   <int value="110" label="IDC_CONTENT_CONTEXT_GENERATE_QR_CODE"/>
   <int value="111" label="IDC_CONTENT_CLIPBOARD_HISTORY_MENU"/>
+  <int value="112" label="IDC_CONTENT_CONTEXT_COPYLINKTOTEXT"/>
 </enum>
 
 <enum name="ReopenTabPromoStepAtDismissal">
