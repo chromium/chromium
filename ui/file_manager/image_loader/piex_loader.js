@@ -107,12 +107,20 @@ function PiexLoaderResponse(data) {
 }
 
 /**
- * Resolves the file entry associated with DOM filesystem |url| and returns
- * the file content in an ArrayBuffer.
- * @param {string} url - DOM filesystem URL of the file.
- * @returns {!Promise<!ArrayBuffer>}
+ * Returns the source data.
+ *
+ * If the source is an ArrayBuffer, return it. Otherwise assume the source is
+ * is DOM file system URL: resolve the associated file system entry, and read
+ * and return its content in an ArrayBuffer.
+ *
+ * @param {string|!ArrayBuffer} source
+ * @return {!Promise<!ArrayBuffer>}
  */
-function readFromFileSystem(url) {
+function readSourceData(source) {
+  if (source instanceof ArrayBuffer) {
+    return Promise.resolve(source);
+  }
+
   return new Promise((resolve, reject) => {
     /**
      * Reject the Promise on fileEntry URL resolve or file read failures.
@@ -149,6 +157,7 @@ function readFromFileSystem(url) {
       }, failure);
     }
 
+    const url = /** @type {string} */ (source);
     window.webkitResolveLocalFileSystemURL(url, readEntry, failure);
   });
 }
@@ -474,14 +483,14 @@ function PiexLoader() {}
  * to reload the page. Callback |onPiexModuleFailed| is used to indicate that
  * the caller should initiate failure recovery steps.
  *
- * @param {string} url
+ * @param {string|!ArrayBuffer} source
  * @param {!function()} onPiexModuleFailed
  * @return {!Promise<!PiexLoaderResponse>}
  */
-PiexLoader.prototype.load = function(url, onPiexModuleFailed) {
+PiexLoader.prototype.load = function(source, onPiexModuleFailed) {
   let imageBuffer;
 
-  return readFromFileSystem(url)
+  return readSourceData(source)
       .then((buffer) => {
         if (piexModuleFailed() === true) {
           // Just reject here: handle in the .catch() clause below.
