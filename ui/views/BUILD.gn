@@ -13,12 +13,6 @@ import("//ui/views/features.gni")
 
 assert(toolkit_views)
 
-# Reset sources_assignment_filter for the BUILD.gn file to prevent
-# regression during the migration of Chromium away from the feature.
-# See docs/no_sources_assignment_filter.md for more information.
-# TODO(crbug.com/1018739): remove this when migration is done.
-set_sources_assignment_filter([])
-
 config("flags") {
   defines = [ "TOOLKIT_VIEWS=1" ]
 }

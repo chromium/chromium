@@ -12,8 +12,6 @@ import("//testing/test.gni")
 # dependencies are modified until a presubmit is written to automatically
 # check that the C++ includes match the build dependency graph.
 
-set_sources_assignment_filter([])
-
 # TODO(sorin): make the code build on Linux. https://crbug.com/1014320
 group("updater") {
   if (is_win) {

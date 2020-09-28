@@ -12,12 +12,6 @@ if (is_android) {
   import("//build/config/android/rules.gni")
 }
 
-# Reset sources_assignment_filter for the BUILD.gn file to prevent
-# regression during the migration of Chromium away from the feature.
-# See docs/no_sources_assignment_filter.md for more information.
-# TODO(crbug.com/1018739): remove this when migration is done.
-set_sources_assignment_filter([])
-
 # Several targets want to include this header file, and some of them are
 # child dependencies of "gfx". Therefore, we separate it out here so multiple
 # targets can all have a dependency for header checking purposes without

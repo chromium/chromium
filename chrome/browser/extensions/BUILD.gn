@@ -15,9 +15,6 @@ import("//rlz/buildflags/buildflags.gni")
 
 assert(enable_extensions)
 
-# See docs/no_sources_assignment_filter.md and https://crbug.com/1018739.
-set_sources_assignment_filter([])
-
 static_library("extensions") {
   sources = [
     "active_install_data.cc",

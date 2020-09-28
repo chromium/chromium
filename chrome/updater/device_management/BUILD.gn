@@ -8,8 +8,6 @@ import("//build/util/process_version.gni")
 import("//chrome/updater/branding.gni")
 import("//testing/test.gni")
 
-set_sources_assignment_filter([])
-
 source_set("device_management") {
   sources = [
     "dm_cached_policy_info.cc",

@@ -10,9 +10,6 @@ import("//chrome/test/base/js2gtest.gni")
 import("//testing/test.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 
-# Prevent Chromium source assignment filters from being inherited.
-set_sources_assignment_filter([])
-
 declare_args() {
   # Whether to compress the main Chromevox javascript files or load the
   # modules individually from source files.

@@ -52,12 +52,6 @@ if (is_win) {
 additional_modules_list_file =
     "$root_gen_dir/chrome/browser/internal/additional_modules_list.txt"
 
-# Reset sources_assignment_filter for the BUILD.gn file to prevent
-# regression during the migration of Chromium away from the feature.
-# See docs/no_sources_assignment_filter.md for more information.
-# TODO(crbug.com/1018739): remove this when migration is done.
-set_sources_assignment_filter([])
-
 if (is_win) {
   # This is in a separate config so the flags can be applied to dependents.
   # ldflags in GN aren't automatically inherited.

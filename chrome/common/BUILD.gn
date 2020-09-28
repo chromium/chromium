@@ -22,9 +22,6 @@ if (enable_pdf) {
   assert(enable_plugins, "PDF support requires plugins be enabled.")
 }
 
-# See docs/no_sources_assignment_filter.md and https://crbug.com/1018739.
-set_sources_assignment_filter([])
-
 grit("resources") {
   source = "common_resources.grd"
   defines = chrome_grit_defines
