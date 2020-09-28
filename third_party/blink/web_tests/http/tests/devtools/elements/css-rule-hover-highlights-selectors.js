@@ -97,12 +97,15 @@
 
   function drawHighlightProxy() {
     window._highlightsForTest = [];
-    var oldDrawHighlight = drawHighlight;
-    drawHighlight = proxy;
+    var oldDispatch = dispatch;
+    dispatch = proxy;
 
-    function proxy(highlight, context) {
-      window._highlightsForTest.push(highlight);
-      oldDrawHighlight(highlight, context);
+    function proxy(message) {
+      const functionName = message[0];
+      if (functionName === 'drawHighlight') {
+        window._highlightsForTest.push(message[1]);
+      }
+      oldDispatch(message);
     }
   }
 
