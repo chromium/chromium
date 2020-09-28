@@ -1203,6 +1203,8 @@ const FeatureEntry::FeatureVariation kOmniboxOnFocusSuggestionsVariations[] = {
      base::size(kOmniboxNTPZPSRemoteLocal), /* variation_id */ "t3317569"},
     {"Contextual Web", kOmniboxNTPZPSRemoteLocal,
      base::size(kOmniboxNTPZPSRemoteLocal), /* variation_id */ "t3317605"},
+    {"Trending Queries", kOmniboxNTPZPSRemoteLocal,
+     base::size(kOmniboxNTPZPSRemoteLocal), /* variation_id */ "t3317858"},
 #else   // !defined(OS_ANDROID)
     {"NTP Omnibox - Remote History, Local History", kNTPOmniboxZPSRemoteLocal,
      base::size(kNTPOmniboxZPSRemoteLocal), nullptr /* variation_id */},
