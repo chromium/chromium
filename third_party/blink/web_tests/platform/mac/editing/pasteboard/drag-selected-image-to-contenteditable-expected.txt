@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-FAIL drag-selected-image-to-contenteditable resources/testharness.js:1977:25)
+FAIL drag-selected-image-to-contenteditable resources/testharness.js:2001:25)
 	 expected <style>div, img { width: 200px; height: 100px; }</style><div contenteditable id="target">^<img id="image">|</div><img id="image">,
 	 but got  <style>div, img { width: 200px; height: 100px; }</style><div contenteditable id="target"></div>^<img id="image">|,
 	 sameupto <style>div, img { width: 200px; height: 100px; }</style><div contenteditable id="target">
