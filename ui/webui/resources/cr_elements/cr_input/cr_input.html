@@ -1,7 +1,6 @@
 <link rel="import" href="../../html/polymer.html">
 
 <link rel="import" href="../../html/assert.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-a11y-announcer/iron-a11y-announcer.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/paper-styles/color.html">
 <link rel="import" href="../hidden_style_css.html">
 <link rel="import" href="../shared_style_css.html">
@@ -145,13 +144,7 @@
       </div>
       <slot name="suffix"></slot>
     </div>
-    <!--
-      Note: role="alert" is not working as expected because screen readers
-      expect live regions to be in the DOM at time of document loading.
-      cr-input will automatically fire iron-announce for the error message.
-      Also aria-hidden="true" to avoid noise for screen reader users.
-    -->
-    <div id="error" aria-hidden="true">[[errorMessage]]</div>
+    <div id="error">[[displayErrorMessage_]]</div>
   </template>
   <script src="cr_input.js"></script>
 </dom-module>

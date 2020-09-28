@@ -240,7 +240,8 @@ suite('cr-input', function() {
     const originalLabelColor = getComputedStyle(label).color;
     const originalLineColor = getComputedStyle(underline).borderBottomColor;
 
-    assertEquals(crInput.errorMessage, errorLabel.textContent);
+    assertEquals('', errorLabel.textContent);
+    assertFalse(errorLabel.hasAttribute('role'));
     assertEquals('0', getComputedStyle(underline).opacity);
     assertEquals(0, underline.offsetWidth);
     assertEquals('hidden', getComputedStyle(errorLabel).visibility);
@@ -251,6 +252,8 @@ suite('cr-input', function() {
     crInput.invalid = true;
     Polymer.dom.flush();
     assertTrue(crInput.hasAttribute('invalid'));
+    assertEquals('alert', errorLabel.getAttribute('role'));
+    assertEquals(crInput.errorMessage, errorLabel.textContent);
     assertEquals('visible', getComputedStyle(errorLabel).visibility);
     assertTrue(originalLabelColor !== getComputedStyle(label).color);
     assertTrue(
@@ -391,22 +394,5 @@ suite('cr-input', function() {
     assertTrue(test_util.isChildVisible(crInput, '#inline-prefix', true));
     assertTrue(test_util.isChildVisible(crInput, '#suffix', true));
     assertTrue(test_util.isChildVisible(crInput, '#inline-suffix', true));
-  });
-
-  test('announce error message when invalid', async () => {
-    const errorMessagesAnnounced = [];
-    const handler = e => {
-      errorMessagesAnnounced.push(e.detail.text);
-    };
-    crInput.addEventListener('iron-announce', handler);
-    crInput.invalid = false;
-    crInput.errorMessage = '1';
-    crInput.errorMessage = '2';
-    crInput.invalid = true;
-    crInput.errorMessage = '3';
-    crInput.invalid = false;
-    crInput.errorMessage = '4';
-    assertDeepEquals(['2', '3'], errorMessagesAnnounced);
-    crInput.removeEventListener('iron-announce', handler);
   });
 });

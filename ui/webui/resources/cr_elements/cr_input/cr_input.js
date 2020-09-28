@@ -78,6 +78,12 @@ Polymer({
       observer: 'onInvalidOrErrorMessageChanged_',
     },
 
+    /** @private */
+    displayErrorMessage_: {
+      type: String,
+      value: '',
+    },
+
     /**
      * This is strictly used internally for styling, do not attempt to use
      * this to set focus.
@@ -230,14 +236,21 @@ Polymer({
     }
   },
 
-  /**
-   * Uses IronA11yAnnouncer to notify screen readers that an error is set.
-   * @private
-   */
+  /** @private */
   onInvalidOrErrorMessageChanged_() {
-    Polymer.IronA11yAnnouncer.requestAvailability();
+    this.displayErrorMessage_ = this.invalid ? this.errorMessage : '';
+
+    // On VoiceOver role="alert" is not consistently announced when its content
+    // changes. Adding and removing the |role| attribute every time there
+    // is an error, triggers VoiceOver to consistently announce.
+    const ERROR_ID = 'error';
+    const errorElement = this.$$(`#${ERROR_ID}`);
     if (this.invalid) {
-      this.fire('iron-announce', {text: this.errorMessage});
+      errorElement.setAttribute('role', 'alert');
+      this.inputElement.setAttribute('aria-errormessage', ERROR_ID);
+    } else {
+      errorElement.removeAttribute('role');
+      this.inputElement.removeAttribute('aria-errormessage');
     }
   },
 
