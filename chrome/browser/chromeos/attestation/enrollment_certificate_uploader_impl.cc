@@ -11,7 +11,6 @@
 #include "base/time/time.h"
 #include "chrome/browser/chromeos/attestation/attestation_ca_client.h"
 #include "chromeos/attestation/attestation_flow.h"
-#include "chromeos/attestation/attestation_flow_integrated.h"
 #include "chromeos/cryptohome/async_method_caller.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/dbus/cryptohome/cryptohome_client.h"
@@ -95,7 +94,11 @@ void EnrollmentCertificateUploaderImpl::Start() {
     cryptohome_client_ = CryptohomeClient::Get();
 
   if (!attestation_flow_) {
-    default_attestation_flow_ = std::make_unique<AttestationFlowIntegrated>();
+    std::unique_ptr<ServerProxy> attestation_ca_client(
+        new AttestationCAClient());
+    default_attestation_flow_.reset(new AttestationFlow(
+        cryptohome::AsyncMethodCaller::GetInstance(), cryptohome_client_,
+        std::move(attestation_ca_client)));
     attestation_flow_ = default_attestation_flow_.get();
   }
 
