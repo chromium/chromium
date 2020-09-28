@@ -226361,6 +226361,10 @@
     "input-events-exec-command-expected.txt": [
      "1e219ecd5bead581a7eca478bcefcdd72dc8c9be",
      []
+    ],
+    "input-events-get-target-ranges.js": [
+     "4d09c4da521fb57817ab70af9f67ef181dcb56cf",
+     []
     ]
    },
    "installedapp": {
@@ -271309,10 +271313,12 @@
       ]
      ],
      "required_csp-header-crlf.html": [
-      "87bda1bf502d25f20f8245bd4c89fa1bdedf8803",
+      "ae121899023a4d33e27c262d9b208abb97583a1b",
       [
        null,
-       {}
+       {
+        "timeout": "long"
+       }
       ]
      ],
      "required_csp-header.html": [
@@ -364746,7 +364752,7 @@
      ]
     ],
     "input-events-get-target-ranges-backspace.tentative.html": [
-     "50d5cb96e84a8400fd961d7221b551b536dbcc57",
+     "a67bc76364d9675f2048161544b26eee02bf1185",
      [
       null,
       {
@@ -364756,9 +364762,33 @@
      ]
     ],
     "input-events-get-target-ranges-forwarddelete.tentative.html": [
-     "03518d54e42e5aea5ed51635a4fb088d2428ef86",
+     "62a33c094000680bd5981f0e2e1cddb1a3c6c1f5",
      [
       null,
+      {
+       "testdriver": true,
+       "timeout": "long"
+      }
+     ]
+    ],
+    "input-events-get-target-ranges-non-collapsed-selection.tentative.html": [
+     "2e16d2a4c3acf5c2794ed312bafc75d003d52588",
+     [
+      "input-events/input-events-get-target-ranges-non-collapsed-selection.tentative.html?Backspace",
+      {
+       "testdriver": true,
+       "timeout": "long"
+      }
+     ],
+     [
+      "input-events/input-events-get-target-ranges-non-collapsed-selection.tentative.html?Delete",
+      {
+       "testdriver": true,
+       "timeout": "long"
+      }
+     ],
+     [
+      "input-events/input-events-get-target-ranges-non-collapsed-selection.tentative.html?TypingA",
       {
        "testdriver": true,
        "timeout": "long"
