@@ -5,10 +5,12 @@
 #include "chrome/updater/app/app_uninstall.h"
 
 #include "base/bind.h"
+#include "base/command_line.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "chrome/updater/app/app.h"
+#include "chrome/updater/constants.h"
 
 #if defined(OS_WIN)
 #include "chrome/updater/win/setup/uninstall.h"
@@ -31,9 +33,22 @@ class AppUninstall : public App {
 };
 
 void AppUninstall::FirstTaskRun() {
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock()}, base::BindOnce(&Uninstall, false),
-      base::BindOnce(&AppUninstall::Shutdown, this));
+#if defined(OS_MAC)
+  // TODO(crbug.com/1114719): Implement --uninstall=self for Win.
+  const std::string uninstall_switch_value =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          kUninstallSwitch);
+  if (!uninstall_switch_value.empty()) {
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock()}, base::BindOnce(&UninstallCandidate),
+        base::BindOnce(&AppUninstall::Shutdown, this));
+  } else
+#endif
+  {
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock()}, base::BindOnce(&Uninstall, false),
+        base::BindOnce(&AppUninstall::Shutdown, this));
+  }
 }
 
 scoped_refptr<App> MakeAppUninstall() {

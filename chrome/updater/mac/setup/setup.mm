@@ -8,6 +8,7 @@
 
 #include "base/at_exit.h"
 #include "base/command_line.h"
+#include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -15,6 +16,8 @@
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_nsobject.h"
 #include "base/path_service.h"
+#include "base/process/launch.h"
+#include "base/process/process.h"
 #include "base/strings/strcat.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
@@ -79,6 +82,12 @@ const base::FilePath GetUpdaterFolderPath() {
 
 const base::FilePath GetVersionedUpdaterFolderPath() {
   return GetUpdaterFolderPath().AppendASCII(UPDATER_VERSION_STRING);
+}
+
+const base::FilePath GetUpdaterExecutablePath(
+    const base::FilePath& updater_folder_path) {
+  return updater_folder_path.Append(GetUpdaterAppName())
+      .Append(GetUpdaterAppExecutablePath());
 }
 
 Launchd::Domain LaunchdDomain() {
@@ -286,7 +295,7 @@ bool RemoveUpdateControlJobFromLaunchd() {
   return RemoveServiceJobFromLaunchd(CopyControlLaunchdName());
 }
 
-bool DeleteInstallFolder(const base::FilePath& installed_path) {
+bool DeleteFolder(const base::FilePath& installed_path) {
   if (!base::DeletePathRecursively(installed_path)) {
     LOG(ERROR) << "Deleting " << installed_path << " failed";
     return false;
@@ -295,14 +304,18 @@ bool DeleteInstallFolder(const base::FilePath& installed_path) {
 }
 
 bool DeleteInstallFolder() {
-  return DeleteInstallFolder(GetUpdaterFolderPath());
+  return DeleteFolder(GetUpdaterFolderPath());
+}
+
+bool DeleteCandidateInstallFolder() {
+  return DeleteFolder(GetVersionedUpdaterFolderPath());
 }
 
 bool DeleteDataFolder() {
   base::FilePath data_path;
   if (!GetBaseDirectory(&data_path))
     return false;
-  return DeleteInstallFolder(data_path);
+  return DeleteFolder(data_path);
 }
 
 }  // namespace
@@ -332,19 +345,6 @@ int InstallCandidate() {
   return setup_exit_codes::kSuccess;
 }
 
-int UninstallCandidate() {
-  if (!RemoveUpdateWakeJobFromLaunchd())
-    return setup_exit_codes::kFailedToRemoveWakeJobFromLaunchd;
-
-  if (!DeleteInstallFolder(GetVersionedUpdaterFolderPath()))
-    return setup_exit_codes::kFailedToDeleteFolder;
-
-  if (!RemoveUpdateControlJobFromLaunchd())
-    return setup_exit_codes::kFailedToRemoveControlJobFromLaunchd;
-
-  return setup_exit_codes::kSuccess;
-}
-
 int PromoteCandidate() {
   const base::FilePath dest_path = GetVersionedUpdaterFolderPath();
   const base::FilePath updater_executable_path =
@@ -361,14 +361,57 @@ int PromoteCandidate() {
 }
 
 #pragma mark Uninstall
+int UninstallCandidate() {
+  if (!RemoveUpdateWakeJobFromLaunchd())
+    return setup_exit_codes::kFailedToRemoveWakeJobFromLaunchd;
+
+  if (!RemoveUpdateControlJobFromLaunchd())
+    return setup_exit_codes::kFailedToRemoveControlJobFromLaunchd;
+
+  if (!DeleteCandidateInstallFolder())
+    return setup_exit_codes::kFailedToDeleteFolder;
+
+  return setup_exit_codes::kSuccess;
+}
+
+void UninstallOtherVersions() {
+  base::FileEnumerator file_enumerator(GetUpdaterFolderPath(), true,
+                                       base::FileEnumerator::DIRECTORIES);
+  for (base::FilePath version_folder_path = file_enumerator.Next();
+       !version_folder_path.empty() &&
+       version_folder_path != GetVersionedUpdaterFolderPath();
+       version_folder_path = file_enumerator.Next()) {
+    const base::FilePath version_executable_path =
+        GetUpdaterExecutablePath(version_folder_path);
+
+    if (base::PathExists(version_executable_path)) {
+      base::CommandLine command_line(version_executable_path);
+      command_line.AppendSwitchASCII(kUninstallSwitch, "self");
+      command_line.AppendSwitch("--enable-logging");
+      command_line.AppendSwitchASCII("--vmodule", "*/chrome/updater/*=2");
+
+      int exit_code = -1;
+      std::string output;
+      base::GetAppOutputWithExitCode(command_line, &output, &exit_code);
+    } else {
+      VLOG(1) << base::CommandLine::ForCurrentProcess()->GetCommandLineString()
+              << " : Path doesn't exist: " << version_executable_path;
+    }
+  }
+}
+
 int Uninstall(bool is_machine) {
   ALLOW_UNUSED_LOCAL(is_machine);
+  VLOG(1) << base::CommandLine::ForCurrentProcess()->GetCommandLineString()
+          << " : " << __func__;
   const int exit = UninstallCandidate();
   if (exit != setup_exit_codes::kSuccess)
     return exit;
 
   if (!RemoveUpdateServiceJobFromLaunchd())
     return setup_exit_codes::kFailedToRemoveActiveUpdateServiceJobFromLaunchd;
+
+  UninstallOtherVersions();
 
   if (!DeleteDataFolder())
     return setup_exit_codes::kFailedToDeleteDataFolder;
