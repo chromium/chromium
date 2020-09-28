@@ -1052,6 +1052,7 @@ test("content_browsertests") {
     "../browser/renderer_host/input/interaction_mq_dynamic_browsertest.cc",
     "../browser/renderer_host/input/main_thread_event_queue_browsertest.cc",
     "../browser/renderer_host/input/mouse_latency_browsertest.cc",
+    "../browser/renderer_host/input/scroll_behavior_browsertest.cc",
     "../browser/renderer_host/input/scroll_latency_browsertest.cc",
     "../browser/renderer_host/input/synthetic_input_browsertest.cc",
     "../browser/renderer_host/input/touch_action_browsertest.cc",
