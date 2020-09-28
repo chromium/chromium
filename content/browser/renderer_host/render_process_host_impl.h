@@ -109,6 +109,7 @@ class GpuClient;
 
 namespace content {
 class AgentMetricsCollectorHost;
+class AgentSchedulingGroupHost;
 class CodeCacheHostImpl;
 class FileSystemManagerImpl;
 class InProcessChildThreadParams;
@@ -279,7 +280,8 @@ class CONTENT_EXPORT RenderProcessHostImpl
   void DumpProfilingData(base::OnceClosure callback) override;
 #endif
 
-  mojom::RouteProvider* GetRemoteRouteProvider();
+  mojom::RouteProvider* GetRemoteRouteProvider(
+      util::PassKey<AgentSchedulingGroupHost>);
 
   // IPC::Sender via RenderProcessHost.
   bool Send(IPC::Message* msg) override;

@@ -212,6 +212,10 @@ class CONTENT_EXPORT RenderFrameProxyHost
   friend class RouteMessageEventInterceptor;
   friend class OpenURLInterceptor;
 
+  // Helper to retrieve the |AgentSchedulingGroup| this proxy host is associated
+  // with.
+  AgentSchedulingGroupHost& GetAgentSchedulingGroup();
+
   // IPC::Listener
   void OnAssociatedInterfaceRequest(
       const std::string& interface_name,

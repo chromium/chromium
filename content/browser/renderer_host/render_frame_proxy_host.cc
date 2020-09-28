@@ -184,9 +184,7 @@ RenderWidgetHostView* RenderFrameProxyHost::GetRenderWidgetHostView() {
 }
 
 bool RenderFrameProxyHost::Send(IPC::Message* msg) {
-  return static_cast<SiteInstanceImpl*>(site_instance_.get())
-      ->GetAgentSchedulingGroup()
-      .Send(msg);
+  return GetAgentSchedulingGroup().Send(msg);
 }
 
 bool RenderFrameProxyHost::OnMessageReceived(const IPC::Message& msg) {
@@ -283,6 +281,11 @@ bool RenderFrameProxyHost::InitRenderFrameProxy() {
   return true;
 }
 
+AgentSchedulingGroupHost& RenderFrameProxyHost::GetAgentSchedulingGroup() {
+  return static_cast<SiteInstanceImpl*>(site_instance_.get())
+      ->GetAgentSchedulingGroup();
+}
+
 void RenderFrameProxyHost::OnAssociatedInterfaceRequest(
     const std::string& interface_name,
     mojo::ScopedInterfaceEndpointHandle handle) {
@@ -306,11 +309,9 @@ RenderFrameProxyHost::GetRemoteAssociatedInterfaces() {
   if (!remote_associated_interfaces_) {
     mojo::AssociatedRemote<blink::mojom::AssociatedInterfaceProvider>
         remote_interfaces;
-    IPC::ChannelProxy* channel = GetProcess()->GetChannel();
+    IPC::ChannelProxy* channel = GetAgentSchedulingGroup().GetChannel();
     if (channel) {
-      RenderProcessHostImpl* process =
-          static_cast<RenderProcessHostImpl*>(GetProcess());
-      process->GetRemoteRouteProvider()->GetRoute(
+      GetAgentSchedulingGroup().GetRemoteRouteProvider()->GetRoute(
           GetRoutingID(), remote_interfaces.BindNewEndpointAndPassReceiver());
     } else {
       // The channel may not be initialized in some tests environments. In this

@@ -7,6 +7,7 @@
 
 #include "base/feature_list.h"
 #include "base/supports_user_data.h"
+#include "base/util/type_safety/pass_key.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/common/agent_scheduling_group.mojom.h"
 #include "content/common/renderer.mojom.h"
@@ -27,6 +28,8 @@ using ::mojo::PendingReceiver;
 using ::mojo::PendingRemote;
 using ::mojo::Receiver;
 using ::mojo::Remote;
+
+using PassKey = ::util::PassKey<AgentSchedulingGroupHost>;
 
 static constexpr char kAgentGroupHostDataKey[] =
     "AgentSchedulingGroupHostUserDataKey";
@@ -224,11 +227,11 @@ void AgentSchedulingGroupHost::RemoveRoute(int32_t routing_id) {
 }
 
 mojom::RouteProvider* AgentSchedulingGroupHost::GetRemoteRouteProvider() {
-  // TODO(talp): Either expose `GetRemoteRouteProvider` on `RenderProcessHost`
-  // or change the `AgentSchedulingGroupHost` to take the impl.
+  // TODO(domfarolino): Remove `GetRemoteRouteProvider` from `RenderProcessHost`
+  // and make `AgentSchedulingGroupHost` a fully-fledged RouteProvider.
   RenderProcessHostImpl& process =
       static_cast<RenderProcessHostImpl&>(process_);
-  return process.GetRemoteRouteProvider();
+  return process.GetRemoteRouteProvider(PassKey());
 }
 
 void AgentSchedulingGroupHost::CreateFrame(mojom::CreateFrameParamsPtr params) {

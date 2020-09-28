@@ -2867,7 +2867,8 @@ void RenderProcessHostImpl::SetIsUsed() {
   is_unused_ = false;
 }
 
-mojom::RouteProvider* RenderProcessHostImpl::GetRemoteRouteProvider() {
+mojom::RouteProvider* RenderProcessHostImpl::GetRemoteRouteProvider(
+    util::PassKey<AgentSchedulingGroupHost>) {
   return remote_route_provider_.get();
 }
 
