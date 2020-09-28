@@ -208,13 +208,13 @@ class RenderWidgetHostViewAuraDevtoolsBrowserTest
 
  protected:
   aura::Window* window() {
-    return reinterpret_cast<content::RenderWidgetHostViewAura*>(
+    return static_cast<content::RenderWidgetHostViewAura*>(
                shell()->web_contents()->GetRenderWidgetHostView())
         ->window();
   }
 
   bool HasChildPopup() const {
-    return reinterpret_cast<content::RenderWidgetHostViewAura*>(
+    return static_cast<content::RenderWidgetHostViewAura*>(
                shell()->web_contents()->GetRenderWidgetHostView())
         ->popup_child_host_view_;
   }
