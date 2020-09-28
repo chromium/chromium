@@ -12,18 +12,18 @@ namespace ash {
 
 class PhoneHubInterstitialView;
 
+// Defines possible connection error states of the Phone Hub feature.
+enum class ErrorStatus {
+  kDisconnected,  // The connection to the phone has been interrupted.
+  kReconnecting,  // Attempts to resume the connection to the phone.
+};
+
 // An interstitial view represeting that the Phone Hub feature is not available
 // due to connection issues.
 class ASH_EXPORT ConnectionErrorView : public views::View,
                                        public views::ButtonListener {
  public:
   METADATA_HEADER(ConnectionErrorView);
-
-  // Defines possible connection error states of the Phone Hub feature.
-  enum class ErrorStatus {
-    kDisconnected,  // The connection to the phone has been interrupted.
-    kReconnecting,  // Attempts to resume the connection to the phone.
-  };
 
   explicit ConnectionErrorView(ErrorStatus error);
   ConnectionErrorView(const ConnectionErrorView&) = delete;
