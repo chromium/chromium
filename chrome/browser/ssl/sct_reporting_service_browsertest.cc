@@ -206,7 +206,7 @@ IN_PROC_BROWSER_TEST_F(SCTReportingServiceBrowserTest,
 
 // Tests that disabling Extended Reporting causes the cache to be cleared.
 IN_PROC_BROWSER_TEST_F(SCTReportingServiceBrowserTest,
-                       OptingOutClearsSCTAuditingCache) {
+                       DISABLED_OptingOutClearsSCTAuditingCache) {
   // Enable SCT auditing and enqueue a report.
   SetExtendedReportingEnabled(true);
 
@@ -231,7 +231,7 @@ IN_PROC_BROWSER_TEST_F(SCTReportingServiceBrowserTest,
 // Tests that reports are still sent for opted-in profiles after the network
 // service crashes and is restarted.
 IN_PROC_BROWSER_TEST_F(SCTReportingServiceBrowserTest,
-                       ReportsSentAfterNetworkServiceRestart) {
+                       DISABLED_ReportsSentAfterNetworkServiceRestart) {
   // This test is only applicable to out-of-process network service because it
   // tests what happens when the network service crashes and restarts.
   if (content::IsInProcessNetworkService()) {
