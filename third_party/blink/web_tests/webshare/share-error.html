@@ -63,4 +63,26 @@ share_test(mock => {
   });
 }, 'share consumes user activation');
 
+share_test(mock => {
+  mock.pushShareResult('the title', 'the message', 'https://example.com/',
+                       blink.mojom.ShareError.CANCELED);
+  return callWithKeyDown(async () => {
+    const data = {
+          title: 'the title',
+          text: 'the message',
+          url: 'https://example.com/'
+    };
+    const first = navigator.share(data);
+    await assertRejectsWithError(
+          navigator.share(data),
+          'InvalidStateError');
+    await assertRejectsWithError(
+          navigator.share(data),
+          'InvalidStateError');
+    return assertRejectsWithError(
+          first,
+          'AbortError');
+  } );
+}, 'only one share at a time');
+
 </script>

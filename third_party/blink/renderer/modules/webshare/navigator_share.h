@@ -56,7 +56,8 @@ class MODULES_EXPORT NavigatorShare final
   // |NavigatorShare| is not ExecutionContext-associated.
   HeapMojoRemote<blink::mojom::blink::ShareService> service_remote_{nullptr};
 
-  HeapHashSet<Member<ShareClientImpl>> clients_;
+  // Represents a user's current intent to share some data.
+  Member<ShareClientImpl> client_ = nullptr;
 };
 
 }  // namespace blink

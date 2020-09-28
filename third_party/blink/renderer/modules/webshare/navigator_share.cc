@@ -133,8 +133,10 @@ NavigatorShare::ShareClientImpl::ShareClientImpl(
                   {SchedulingPolicy::RecordMetricsForBackForwardCache()})) {}
 
 void NavigatorShare::ShareClientImpl::Callback(mojom::blink::ShareError error) {
-  if (navigator_)
-    navigator_->clients_.erase(this);
+  if (navigator_) {
+    DCHECK_EQ(navigator_->client_, this);
+    navigator_->client_ = nullptr;
+  }
 
   if (error == mojom::blink::ShareError::OK) {
     UseCounter::Count(ExecutionContext::From(resolver_->GetScriptState()),
@@ -173,7 +175,7 @@ NavigatorShare& NavigatorShare::From(Navigator& navigator) {
 
 void NavigatorShare::Trace(Visitor* visitor) const {
   visitor->Trace(service_remote_);
-  visitor->Trace(clients_);
+  visitor->Trace(client_);
   Supplement<Navigator>::Trace(visitor);
 }
 
@@ -213,6 +215,12 @@ ScriptPromise NavigatorShare::share(ScriptState* script_state,
           ? WebFeature::kWebSharePolicyAllow
           : WebFeature::kWebSharePolicyDisallow);
 
+  if (client_) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "A earlier share had not yet completed.");
+    return ScriptPromise();
+  }
+
   if (!LocalFrame::ConsumeTransientUserActivation(window->GetFrame())) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
@@ -238,10 +246,7 @@ ScriptPromise NavigatorShare::share(ScriptState* script_state,
 
   bool has_files = HasFiles(*data);
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ShareClientImpl* client =
-      MakeGarbageCollected<ShareClientImpl>(this, has_files, resolver);
-  clients_.insert(client);
-  ScriptPromise promise = resolver->Promise();
+  client_ = MakeGarbageCollected<ShareClientImpl>(this, has_files, resolver);
 
   WTF::Vector<mojom::blink::SharedFilePtr> files;
   uint64_t total_bytes = 0;
@@ -264,9 +269,9 @@ ScriptPromise NavigatorShare::share(ScriptState* script_state,
   service_remote_->Share(
       data->hasTitle() ? data->title() : g_empty_string,
       data->hasText() ? data->text() : g_empty_string, url, std::move(files),
-      WTF::Bind(&ShareClientImpl::Callback, WrapPersistent(client)));
+      WTF::Bind(&ShareClientImpl::Callback, WrapPersistent(client_.Get())));
 
-  return promise;
+  return resolver->Promise();
 }
 
 ScriptPromise NavigatorShare::share(ScriptState* script_state,
@@ -277,10 +282,10 @@ ScriptPromise NavigatorShare::share(ScriptState* script_state,
 }
 
 void NavigatorShare::OnConnectionError() {
-  for (auto& client : clients_) {
-    client->OnConnectionError();
+  if (client_) {
+    client_->OnConnectionError();
+    client_ = nullptr;
   }
-  clients_.clear();
   service_remote_.reset();
 }
 
