@@ -165,7 +165,7 @@ class PasswordCheckViewBinder {
             });
             setTintListForCompoundDrawables(button.getCompoundDrawablesRelative(),
                     view.getContext(), org.chromium.ui.R.color.default_text_color_inverse);
-            if (credential.hasScript()) {
+            if (credential.hasAutoChangeButton()) {
                 ButtonCompat button_with_script =
                         view.findViewById(R.id.credential_change_button_with_script);
                 button_with_script.setOnClickListener(unusedView -> {
@@ -179,7 +179,8 @@ class PasswordCheckViewBinder {
             ButtonCompat button = view.findViewById(R.id.credential_change_button);
             button.setVisibility(model.get(HAS_MANUAL_CHANGE_BUTTON) ? View.VISIBLE : View.GONE);
             TextView changeHint = view.findViewById(R.id.credential_change_hint);
-            changeHint.setVisibility(model.get(HAS_MANUAL_CHANGE_BUTTON) || credential.hasScript()
+            changeHint.setVisibility(
+                    model.get(HAS_MANUAL_CHANGE_BUTTON) || credential.hasAutoChangeButton()
                             ? View.GONE
                             : View.VISIBLE);
         } else if (propertyKey == FAVICON_OR_FALLBACK) {

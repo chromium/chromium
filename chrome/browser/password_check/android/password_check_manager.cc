@@ -224,7 +224,7 @@ CompromisedCredentialForUI PasswordCheckManager::MakeUICredential(
       credential.signon_realm);
 
   ui_credential.display_username = GetDisplayUsername(credential.username);
-  ui_credential.has_script =
+  ui_credential.has_auto_change_button =
       !credential.username.empty() && ShouldOfferAutomaticPasswordChange() &&
       password_script_fetcher_->IsScriptAvailable(
           url::Origin::Create(credential.url.GetOrigin()));

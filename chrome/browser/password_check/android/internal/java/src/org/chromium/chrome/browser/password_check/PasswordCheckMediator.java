@@ -274,7 +274,7 @@ class PasswordCheckMediator
 
     @Override
     public void onChangePasswordButtonClick(CompromisedCredential credential) {
-        PasswordCheckMetricsRecorder.recordUiUserAction(credential.hasScript()
+        PasswordCheckMetricsRecorder.recordUiUserAction(credential.hasAutoChangeButton()
                         ? PasswordCheckUserAction.CHANGE_PASSWORD_MANUALLY
                         : PasswordCheckUserAction.CHANGE_PASSWORD);
         mChangePasswordDelegate.launchAppOrCctWithChangePasswordUrl(credential);
@@ -282,7 +282,7 @@ class PasswordCheckMediator
 
     @Override
     public void onChangePasswordWithScriptButtonClick(CompromisedCredential credential) {
-        assert credential.hasScript();
+        assert credential.hasAutoChangeButton();
         PasswordCheckMetricsRecorder.recordUiUserAction(
                 PasswordCheckUserAction.CHANGE_PASSWORD_AUTOMATICALLY);
         mChangePasswordDelegate.launchCctWithScript(credential);
@@ -350,7 +350,7 @@ class PasswordCheckMediator
         mIconHelper.getLargeIcon(credential, (faviconOrFallback) -> {
             credentialModel.set(FAVICON_OR_FALLBACK, faviconOrFallback);
         });
-        return new ListItem(credential.hasScript()
+        return new ListItem(credential.hasAutoChangeButton()
                         ? PasswordCheckProperties.ItemType.COMPROMISED_CREDENTIAL_WITH_SCRIPT
                         : PasswordCheckProperties.ItemType.COMPROMISED_CREDENTIAL,
                 credentialModel);

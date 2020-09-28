@@ -738,7 +738,7 @@ public class PasswordCheckViewTest {
     }
 
     private MVCListAdapter.ListItem buildCredentialItem(CompromisedCredential credential) {
-        return new MVCListAdapter.ListItem(credential.hasScript()
+        return new MVCListAdapter.ListItem(credential.hasAutoChangeButton()
                         ? PasswordCheckProperties.ItemType.COMPROMISED_CREDENTIAL_WITH_SCRIPT
                         : PasswordCheckProperties.ItemType.COMPROMISED_CREDENTIAL,
                 new PropertyModel

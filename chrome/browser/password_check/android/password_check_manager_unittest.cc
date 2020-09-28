@@ -188,7 +188,7 @@ auto ExpectCompromisedCredentialForUI(
     const base::Optional<std::string>& package_name,
     const base::Optional<std::string>& change_password_url,
     InsecureCredentialTypeFlags insecure_type,
-    bool has_script) {
+    bool has_auto_change_button) {
   auto package_name_field_matcher =
       package_name.has_value()
           ? Field(&CompromisedCredentialForUI::package_name,
@@ -204,7 +204,8 @@ auto ExpectCompromisedCredentialForUI(
       Field(&CompromisedCredentialForUI::display_origin, display_origin),
       package_name_field_matcher, change_password_url_field_matcher,
       Field(&CompromisedCredentialForUI::insecure_type, insecure_type),
-      Field(&CompromisedCredentialForUI::has_script, has_script));
+      Field(&CompromisedCredentialForUI::has_auto_change_button,
+            has_auto_change_button));
 }
 
 }  // namespace
@@ -343,7 +344,7 @@ TEST_F(PasswordCheckManagerTest, CorrectlyCreatesUIStructForSiteCredential) {
           base::ASCIIToUTF16(kUsername1), base::ASCIIToUTF16("example.com"),
           base::nullopt, "https://example.com/",
           InsecureCredentialTypeFlags::kCredentialLeaked,
-          /*has_script=*/false)));
+          /*has_auto_change_button=*/false)));
 }
 
 TEST_F(PasswordCheckManagerTest, CorrectlyCreatesUIStructForAppCredentials) {
@@ -367,12 +368,12 @@ TEST_F(PasswordCheckManagerTest, CorrectlyCreatesUIStructForAppCredentials) {
               base::ASCIIToUTF16(kUsername1),
               base::ASCIIToUTF16("App (com.example.app)"), "com.example.app",
               base::nullopt, InsecureCredentialTypeFlags::kCredentialLeaked,
-              /*has_script=*/false),
+              /*has_auto_change_button=*/false),
           ExpectCompromisedCredentialForUI(
               base::ASCIIToUTF16(kUsername2), base::ASCIIToUTF16("Example App"),
               "com.example.app", base::nullopt,
               InsecureCredentialTypeFlags::kCredentialLeaked,
-              /*has_script=*/false)));
+              /*has_auto_change_button=*/false)));
 }
 
 TEST_F(PasswordCheckManagerTest, SetsTimestampOnSuccessfulCheck) {
@@ -422,7 +423,7 @@ TEST_F(PasswordCheckManagerTest,
           base::ASCIIToUTF16(kUsername1), base::ASCIIToUTF16("example.com"),
           base::nullopt, "https://example.com/",
           InsecureCredentialTypeFlags::kCredentialLeaked,
-          /*has_script=*/false)));
+          /*has_auto_change_button=*/false)));
 }
 
 TEST_F(PasswordCheckManagerTest,
@@ -449,7 +450,7 @@ TEST_F(PasswordCheckManagerTest,
           base::ASCIIToUTF16(kUsername1), base::ASCIIToUTF16("example.com"),
           base::nullopt, "https://example.com/",
           InsecureCredentialTypeFlags::kCredentialLeaked,
-          /*has_script=*/true)));
+          /*has_auto_change_button=*/true)));
 }
 
 TEST_F(PasswordCheckManagerTest,
@@ -476,7 +477,7 @@ TEST_F(PasswordCheckManagerTest,
           base::ASCIIToUTF16("No username"), base::ASCIIToUTF16("example.com"),
           base::nullopt, "https://example.com/",
           InsecureCredentialTypeFlags::kCredentialLeaked,
-          /*has_script=*/false)));
+          /*has_auto_change_button=*/false)));
 }
 
 TEST_F(PasswordCheckManagerTest, UpdatesProgressCorrectly) {
