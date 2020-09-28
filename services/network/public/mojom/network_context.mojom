@@ -12,11 +12,12 @@ import "mojo/public/mojom/base/unguessable_token.mojom";
 import "mojo/public/mojom/base/values.mojom";
 import "services/network/public/mojom/address_list.mojom";
 import "services/network/public/mojom/cert_verifier_service.mojom";
+import "services/network/public/mojom/client_security_state.mojom";
 import "services/network/public/mojom/cookie_access_observer.mojom";
 import "services/network/public/mojom/cookie_manager.mojom";
-import "services/network/public/mojom/default_credentials.mojom";
 import "services/network/public/mojom/cors_origin_pattern.mojom";
 import "services/network/public/mojom/cross_origin_embedder_policy.mojom";
+import "services/network/public/mojom/default_credentials.mojom";
 import "services/network/public/mojom/host_resolver.mojom";
 import "services/network/public/mojom/http_request_headers.mojom";
 import "services/network/public/mojom/ip_address.mojom";
@@ -570,37 +571,6 @@ struct URLLoaderFactoryOverride {
   // Specifies if we should accept unknown schemes for CORS-enabled requests
   // so that the |overriding_factory| can provide content for custom schemes.
   bool skip_cors_enabled_scheme_check = false;
-};
-
-// How to treat private network requests.
-//
-// Private network requests are any requests to a resource served by a
-// non-public IP address.
-//
-// See the CORS-RFC1918 spec for details: https://wicg.github.io/cors-rfc1918.
-enum PrivateNetworkRequestPolicy {
-  // Allow all requests.
-  kAllow,
-
-  // Forbid requests to more-private address spaces than that of the initiator,
-  // when the initiator is not in a secure context.
-  kBlockFromInsecureToMorePrivate,
-};
-
-struct ClientSecurityState {
-  // https://mikewest.github.io/corpp/#integration-html
-  // https://mikewest.github.io/corpp/#initialize-embedder-policy-for-global
-  CrossOriginEmbedderPolicy cross_origin_embedder_policy;
-
-  // Whether the initiator of the requests is in a web secure context.
-  // See: https://developer.mozilla.org/en-US/docs/Web/Security/Secure_Contexts
-  bool is_web_secure_context = false;
-
-  // The initiator's IP AddressSpace.
-  IPAddressSpace ip_address_space = kUnknown;
-
-  // The policy to apply to private network requests.
-  PrivateNetworkRequestPolicy private_network_request_policy = kAllow;
 };
 
 // Whether to forbid all Trust Tokens redemption and signing operations

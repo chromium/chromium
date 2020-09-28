@@ -1,0 +1,39 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module network.mojom;
+
+import "services/network/public/mojom/cross_origin_embedder_policy.mojom";
+import "services/network/public/mojom/ip_address_space.mojom";
+
+// How to treat private network requests.
+//
+// Private network requests are any requests to a resource served by a
+// non-public IP address.
+//
+// See the CORS-RFC1918 spec for details: https://wicg.github.io/cors-rfc1918.
+enum PrivateNetworkRequestPolicy {
+  // Allow all requests.
+  kAllow,
+
+  // Forbid requests to more-private address spaces than that of the initiator,
+  // when the initiator is not in a secure context.
+  kBlockFromInsecureToMorePrivate,
+};
+
+struct ClientSecurityState {
+  // See: https://html.spec.whatwg.org/multipage/origin.html#coep
+  CrossOriginEmbedderPolicy cross_origin_embedder_policy;
+
+  // Whether the initiator of the requests is in a web secure context.
+  // See: https://developer.mozilla.org/en-US/docs/Web/Security/Secure_Contexts
+  bool is_web_secure_context = false;
+
+  // The initiator's IP AddressSpace.
+  IPAddressSpace ip_address_space = kUnknown;
+
+  // The policy to apply to private network requests.
+  PrivateNetworkRequestPolicy private_network_request_policy = kAllow;
+};
+

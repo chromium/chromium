@@ -836,6 +836,7 @@ mojom("mojom_core") {
       "//cc/mojom",
       "//services/data_decoder/public/mojom:mojom_resource_snapshot_for_web_bundle",
       "//services/network/public/mojom:cookies_mojom",
+      "//services/network/public/mojom:url_loader_base",
       "//third_party/blink/public/mojom/frame",
       "//third_party/blink/public/mojom/tokens",
       "//ui/events/mojom",

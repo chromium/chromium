@@ -9,6 +9,7 @@ import "mojo/public/mojom/base/file.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
+import "services/network/public/mojom/client_security_state.mojom";
 import "services/network/public/mojom/cors.mojom";
 import "services/network/public/mojom/cookie_access_observer.mojom";
 import "services/network/public/mojom/chunked_data_pipe_getter.mojom";
@@ -92,6 +93,14 @@ struct TrustedUrlRequestParams {
   // a cookie. If this is set to non-null, the observer passed to
   // URLLoaderFactory will be ignored.
   pending_remote<CookieAccessObserver>? cookie_observer;
+
+  // Specifies the security state of the client, for cases when the
+  // URLLoaderFactory is shared among multiple clients.
+  //
+  // This field is only used if no ClientSecurityState was specified in the
+  // URLLoaderFactoryParams passed to the factory. Otherwise, the value from
+  // the factory params is used unconditionally.
+  ClientSecurityState? client_security_state;
 };
 
 // Typemapped to network::ResourceRequest.

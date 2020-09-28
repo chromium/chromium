@@ -23,6 +23,17 @@ mojo::PendingRemote<mojom::CookieAccessObserver> Clone(
   return new_remote;
 }
 
+// Returns true iff either holds true:
+//
+//  - both |lhs| and |rhs| are nullopt, or
+//  - neither is nullopt and they both contain equal values
+//
+bool OptionalTrustedParamsEqualsForTesting(
+    const base::Optional<ResourceRequest::TrustedParams>& lhs,
+    const base::Optional<ResourceRequest::TrustedParams>& rhs) {
+  return (!lhs && !rhs) || (lhs && rhs && lhs->EqualsForTesting(*rhs));
+}
+
 }  // namespace
 
 ResourceRequest::TrustedParams::TrustedParams() = default;
@@ -40,6 +51,7 @@ ResourceRequest::TrustedParams& ResourceRequest::TrustedParams::operator=(
   cookie_observer =
       Clone(&const_cast<mojo::PendingRemote<mojom::CookieAccessObserver>&>(
           other.cookie_observer));
+  client_security_state = other.client_security_state.Clone();
   return *this;
 }
 
@@ -47,7 +59,8 @@ bool ResourceRequest::TrustedParams::EqualsForTesting(
     const TrustedParams& trusted_params) const {
   return isolation_info.IsEqualForTesting(trusted_params.isolation_info) &&
          disable_secure_dns == trusted_params.disable_secure_dns &&
-         has_user_activation == trusted_params.has_user_activation;
+         has_user_activation == trusted_params.has_user_activation &&
+         client_security_state == trusted_params.client_security_state;
 }
 
 ResourceRequest::ResourceRequest() {}
@@ -55,14 +68,6 @@ ResourceRequest::ResourceRequest(const ResourceRequest& request) = default;
 ResourceRequest::~ResourceRequest() {}
 
 bool ResourceRequest::EqualsForTesting(const ResourceRequest& request) const {
-  if ((trusted_params && !request.trusted_params) ||
-      (!trusted_params && request.trusted_params)) {
-    return false;
-  }
-  if (trusted_params && request.trusted_params) {
-    if (!trusted_params->EqualsForTesting(*request.trusted_params))
-      return false;
-  }
   return method == request.method && url == request.url &&
          site_for_cookies.IsEquivalent(request.site_for_cookies) &&
          force_ignore_site_for_cookies ==
@@ -115,6 +120,8 @@ bool ResourceRequest::EqualsForTesting(const ResourceRequest& request) const {
              request.is_signed_exchange_prefetch_cache_enabled &&
          obey_origin_policy == request.obey_origin_policy &&
          recursive_prefetch_token == request.recursive_prefetch_token &&
+         OptionalTrustedParamsEqualsForTesting(trusted_params,
+                                               request.trusted_params) &&
          trust_token_params == request.trust_token_params;
 }
 

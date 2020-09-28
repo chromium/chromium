@@ -149,12 +149,16 @@ bool StructTraits<network::mojom::TrustedUrlRequestParamsDataView,
                   network::ResourceRequest::TrustedParams>::
     Read(network::mojom::TrustedUrlRequestParamsDataView data,
          network::ResourceRequest::TrustedParams* out) {
-  if (!data.ReadIsolationInfo(&out->isolation_info))
+  if (!data.ReadIsolationInfo(&out->isolation_info)) {
     return false;
+  }
   out->disable_secure_dns = data.disable_secure_dns();
   out->has_user_activation = data.has_user_activation();
   out->cookie_observer = data.TakeCookieObserver<
       mojo::PendingRemote<network::mojom::CookieAccessObserver>>();
+  if (!data.ReadClientSecurityState(&out->client_security_state)) {
+    return false;
+  }
   return true;
 }
 

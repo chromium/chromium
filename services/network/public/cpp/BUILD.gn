@@ -180,16 +180,31 @@ component("cookies_mojom_support") {
   defines = [ "IS_NETWORK_CPP_BASE_IMPL" ]
 }
 
+# This component is separate from cpp_base as it is a dependency of
+# //services/network/public/mojom:url_loader_base.
+component("cross_origin_embedder_policy") {
+  sources = [
+    "cross_origin_embedder_policy.cc",
+    "cross_origin_embedder_policy.h",
+    "cross_origin_embedder_policy_mojom_traits.cc",
+    "cross_origin_embedder_policy_mojom_traits.h",
+  ]
+
+  deps = [
+    "//base",
+    "//mojo/public/mojom/base",
+    "//services/network/public/mojom:url_loader_base_shared",
+  ]
+
+  defines = [ "IS_NETWORK_CPP_BASE_IMPL" ]
+}
+
 component("cpp_base") {
   output_name = "network_cpp_base"
 
   sources = [
     "cors/cors_error_status.cc",
     "cors/cors_error_status.h",
-    "cross_origin_embedder_policy.cc",
-    "cross_origin_embedder_policy.h",
-    "cross_origin_embedder_policy_mojom_traits.cc",
-    "cross_origin_embedder_policy_mojom_traits.h",
     "cross_origin_opener_policy.cc",
     "cross_origin_opener_policy.h",
     "cross_origin_opener_policy_mojom_traits.cc",
@@ -243,6 +258,7 @@ component("cpp_base") {
   public_deps = [
     ":cookies_mojom_support",
     ":crash_keys",
+    ":cross_origin_embedder_policy",
     ":ip_address_mojom_support",
     "//services/network/public/mojom:url_loader_base",
     "//third_party/webrtc_overrides:webrtc_component",

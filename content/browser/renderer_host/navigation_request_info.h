@@ -16,6 +16,7 @@
 #include "net/base/isolation_info.h"
 #include "net/http/http_request_headers.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/mojom/client_security_state.mojom-forward.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -25,23 +26,25 @@ namespace content {
 // ResourceDispatcherHost. It is initialized on the UI thread, and then passed
 // to the IO thread by a NavigationRequest object.
 struct CONTENT_EXPORT NavigationRequestInfo {
-  NavigationRequestInfo(mojom::CommonNavigationParamsPtr common_params,
-                        mojom::BeginNavigationParamsPtr begin_params,
-                        const net::IsolationInfo& isolation_info,
-                        bool is_main_frame,
-                        bool parent_is_main_frame,
-                        bool are_ancestors_secure,
-                        int frame_tree_node_id,
-                        bool is_for_guests_only,
-                        bool report_raw_headers,
-                        bool is_prerendering,
-                        bool upgrade_if_insecure,
-                        std::unique_ptr<network::PendingSharedURLLoaderFactory>
-                            blob_url_loader_factory,
-                        const base::UnguessableToken& devtools_navigation_token,
-                        const base::UnguessableToken& devtools_frame_token,
-                        bool obey_origin_policy,
-                        net::HttpRequestHeaders cors_exempt_headers);
+  NavigationRequestInfo(
+      mojom::CommonNavigationParamsPtr common_params,
+      mojom::BeginNavigationParamsPtr begin_params,
+      const net::IsolationInfo& isolation_info,
+      bool is_main_frame,
+      bool parent_is_main_frame,
+      bool are_ancestors_secure,
+      int frame_tree_node_id,
+      bool is_for_guests_only,
+      bool report_raw_headers,
+      bool is_prerendering,
+      bool upgrade_if_insecure,
+      std::unique_ptr<network::PendingSharedURLLoaderFactory>
+          blob_url_loader_factory,
+      const base::UnguessableToken& devtools_navigation_token,
+      const base::UnguessableToken& devtools_frame_token,
+      bool obey_origin_policy,
+      net::HttpRequestHeaders cors_exempt_headers,
+      network::mojom::ClientSecurityStatePtr client_security_state);
   NavigationRequestInfo(const NavigationRequestInfo& other) = delete;
   ~NavigationRequestInfo();
 
@@ -89,6 +92,10 @@ struct CONTENT_EXPORT NavigationRequestInfo {
   const bool obey_origin_policy;
 
   const net::HttpRequestHeaders cors_exempt_headers;
+
+  // Specifies the security state applying to the navigation. For iframes, this
+  // is the security state of their parent. Nullptr otherwise.
+  const network::mojom::ClientSecurityStatePtr client_security_state;
 };
 
 }  // namespace content
