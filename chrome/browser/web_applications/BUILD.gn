@@ -110,6 +110,7 @@ source_set("web_applications") {
     "//components/services/app_service/public/cpp:protocol_handling",
     "//components/sync",
     "//content/public/browser",
+    "//extensions/browser",
     "//skia",
   ]
 

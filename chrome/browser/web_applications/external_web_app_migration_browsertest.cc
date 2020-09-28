@@ -411,17 +411,8 @@ IN_PROC_BROWSER_TEST_F(ExternalWebAppMigrationBrowserTest,
     SyncExternalExtensions();
     EXPECT_FALSE(IsExtensionAppInstalled());
 
-    // The web app should *not* be installed, since the user chose to uninstall
-    // the extension app that it's replacing. Unfortunately, this doesn't
-    // currently work.
-    // TODO(alancutter): Fix this so that default web apps that are replacing
-    // extensions are only installed if the corresponding extension is still
-    // installed.
-    // SyncExternalWebApps(/*expect_install=*/false,
-    // /*expect_uninstall=*/false); EXPECT_FALSE(IsWebAppInstalled());
-
-    SyncExternalWebApps(/*expect_install=*/true, /*expect_uninstall=*/false);
-    EXPECT_TRUE(IsWebAppInstalled());
+    SyncExternalWebApps(/*expect_install=*/false, /*expect_uninstall=*/false);
+    EXPECT_FALSE(IsWebAppInstalled());
   }
 }
 

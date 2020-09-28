@@ -21,6 +21,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
+#include "base/stl_util.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -35,6 +36,9 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "content/public/browser/browser_thread.h"
+#include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extension_system.h"
 #include "url/gurl.h"
 
 #if defined(OS_CHROMEOS)
@@ -236,13 +240,40 @@ void ExternalWebAppManager::ParseConfigs(ConsumeParsedConfigs callback,
 
 void ExternalWebAppManager::PostProcessConfigs(ConsumeInstallOptions callback,
                                                ParsedConfigs parsed_configs) {
+  // Add hard coded configs.
   PreinstalledWebApps preinstalled_web_apps = GetPreinstalledWebApps();
   for (ExternalInstallOptions& options : preinstalled_web_apps.options)
     parsed_configs.options_list.push_back(std::move(options));
   parsed_configs.disabled_count += preinstalled_web_apps.disabled_count;
 
+  // Save this as we may remove apps due to user uninstall (not the same as
+  // being disabled).
+  int enabled_count = parsed_configs.options_list.size();
+
+  // Remove web apps whose replace target was uninstalled.
+  if (extensions::ExtensionSystem::Get(profile_)) {
+    auto* extension_prefs = extensions::ExtensionPrefs::Get(profile_);
+    auto* extension_registry = extensions::ExtensionRegistry::Get(profile_);
+
+    base::EraseIf(
+        parsed_configs.options_list,
+        [&](const ExternalInstallOptions& options) {
+          for (const AppId& app_id : options.uninstall_and_replace) {
+            if (extension_registry->GetInstalledExtension(app_id))
+              return false;
+          }
+
+          for (const AppId& app_id : options.uninstall_and_replace) {
+            if (extension_prefs->IsExternalExtensionUninstalled(app_id))
+              return true;
+          }
+
+          return false;
+        });
+  }
+
   base::UmaHistogramCounts100(ExternalWebAppManager::kHistogramEnabledCount,
-                              parsed_configs.options_list.size());
+                              enabled_count);
   base::UmaHistogramCounts100(ExternalWebAppManager::kHistogramDisabledCount,
                               parsed_configs.disabled_count);
   base::UmaHistogramCounts100(ExternalWebAppManager::kHistogramConfigErrorCount,
