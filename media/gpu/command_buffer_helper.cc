@@ -199,15 +199,6 @@ class CommandBufferHelperImpl
         ->is_passthrough_cmd_decoder();
   }
 
-  bool SupportsTextureRectangle() const override {
-    if (!stub_)
-      return false;
-    return stub_->decoder_context()
-        ->GetFeatureInfo()
-        ->feature_flags()
-        .arb_texture_rectangle;
-  }
-
  private:
   ~CommandBufferHelperImpl() override {
     DVLOG(1) << __func__;

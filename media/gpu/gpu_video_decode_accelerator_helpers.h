@@ -112,9 +112,6 @@ struct MEDIA_GPU_EXPORT GpuVideoDecodeGLClient {
 
   // Whether or not the command buffer is passthrough.
   bool is_passthrough = false;
-
-  // Whether or not ARB_texture_rectangle is present.
-  bool supports_arb_texture_rectangle = false;
 };
 
 // Convert vector of VDA::SupportedProfile to vector of

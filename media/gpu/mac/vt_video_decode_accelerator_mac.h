@@ -63,7 +63,6 @@ class VTVideoDecodeAccelerator : public VideoDecodeAccelerator,
       const base::WeakPtr<Client>& decode_client,
       const scoped_refptr<base::SingleThreadTaskRunner>& decode_task_runner)
       override;
-  bool SupportsSharedImagePictureBuffers() const override;
 
   // MemoryDumpProvider implementation.
   bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,

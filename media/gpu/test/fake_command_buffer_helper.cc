@@ -168,8 +168,4 @@ bool FakeCommandBufferHelper::IsPassthrough() const {
   return false;
 }
 
-bool FakeCommandBufferHelper::SupportsTextureRectangle() const {
-  return false;
-}
-
 }  // namespace media

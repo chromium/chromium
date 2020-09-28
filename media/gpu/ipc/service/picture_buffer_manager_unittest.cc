@@ -41,8 +41,7 @@ class PictureBufferManagerImplTest : public testing::Test {
 
   std::vector<PictureBuffer> CreateARGBPictureBuffers(uint32_t count) {
     return pbm_->CreatePictureBuffers(count, PIXEL_FORMAT_ARGB, 1,
-                                      gfx::Size(320, 240), GL_TEXTURE_2D,
-                                      false /* use_shared_image */);
+                                      gfx::Size(320, 240), GL_TEXTURE_2D);
   }
 
   PictureBuffer CreateARGBPictureBuffer() {

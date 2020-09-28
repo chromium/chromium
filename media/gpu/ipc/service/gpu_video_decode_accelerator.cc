@@ -191,10 +191,6 @@ GpuVideoDecodeAccelerator::GpuVideoDecodeAccelerator(
       base::BindRepeating(&CreateAbstractTexture, stub_->AsWeakPtr());
   gl_client_.is_passthrough =
       stub_->decoder_context()->GetFeatureInfo()->is_passthrough_cmd_decoder();
-  gl_client_.supports_arb_texture_rectangle = stub_->decoder_context()
-                                                  ->GetFeatureInfo()
-                                                  ->feature_flags()
-                                                  .arb_texture_rectangle;
 }
 
 GpuVideoDecodeAccelerator::~GpuVideoDecodeAccelerator() {
