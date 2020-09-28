@@ -387,7 +387,7 @@ class DeviceHandler extends cr.EventTarget {
         metrics.recordEnum(
             'Notification.UserAction',
             DeviceHandler.Notification.UserAction
-                .OPEN_EXTERNAL_STORAGE_PREFRENCES,
+                .OPEN_EXTERNAL_STORAGE_PREFERENCES,
             DeviceHandler.Notification.UserActionsForUMA);
       } else {
         this.openMediaDirectory_(null, devicePath, null);
@@ -668,7 +668,7 @@ console.assert(
  * @const
  */
 DeviceHandler.Notification.UserAction = {
-  OPEN_EXTERNAL_STORAGE_PREFRENCES: 'open_external_storage_preferences',
+  OPEN_EXTERNAL_STORAGE_PREFERENCES: 'open_external_storage_preferences',
   OPEM_MEDIA_DEVICE_NAVIGATION: 'open_media_device_navigation',
   OPEN_MEDIA_DEVICE_NAVIGATION_ARC: 'open_media_device_navigation_arc',
   OPEN_MEDIA_DEVICE_FAIL: 'open_media_device_fail',
@@ -683,7 +683,7 @@ DeviceHandler.Notification.UserAction = {
  * @const
  */
 DeviceHandler.Notification.UserActionsForUMA = Object.freeze([
-  DeviceHandler.Notification.UserAction.OPEN_EXTERNAL_STORAGE_PREFRENCES,
+  DeviceHandler.Notification.UserAction.OPEN_EXTERNAL_STORAGE_PREFERENCES,
   DeviceHandler.Notification.UserAction.OPEM_MEDIA_DEVICE_NAVIGATION,
   DeviceHandler.Notification.UserAction.OPEN_MEDIA_DEVICE_NAVIGATION_ARC,
   DeviceHandler.Notification.UserAction.OPEN_MEDIA_DEVICE_FAIL,
