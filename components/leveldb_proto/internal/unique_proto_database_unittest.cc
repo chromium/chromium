@@ -551,9 +551,7 @@ TEST_F(UniqueProtoDatabaseTest, TestDBRemoveKeys) {
         std::move(signal).Run();
       },
       run_update_entries.QuitClosure());
-  ProtoDatabaseImpl<TestProto>* wrapper =
-      reinterpret_cast<ProtoDatabaseImpl<TestProto>*>(db_.get());
-  wrapper->RemoveKeysForTesting(
+  db_->RemoveKeysForTesting(
       base::BindRepeating([](const std::string& str) { return true; }),
       kTestPrefix, std::move(expect_update_success));
   run_update_entries.Run();
