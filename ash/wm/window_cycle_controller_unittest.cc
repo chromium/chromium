@@ -123,6 +123,13 @@ class WindowCycleControllerTest : public AshTestBase {
         ->GetWindowCycleItemViewsForTesting();
   }
 
+  const aura::Window* GetTargetWindow() const {
+    return Shell::Get()
+        ->window_cycle_controller()
+        ->window_cycle_list()
+        ->GetTargetWindowForTesting();
+  }
+
   bool CycleViewExists() const {
     return Shell::Get()
         ->window_cycle_controller()
@@ -1131,8 +1138,7 @@ TEST_F(InteractiveWindowCycleControllerTest, KeysConfirmSelection) {
   EXPECT_TRUE(wm::IsActiveWindow(w1.get()));
 }
 
-// When a user taps on an item, it should cycle to it, complete cycling and
-// activate the tapped item.
+// When a user taps on an item, it should set the focus ring to that item.
 TEST_F(InteractiveWindowCycleControllerTest, TapSelect) {
   std::unique_ptr<Window> w0 = CreateTestWindow();
   std::unique_ptr<Window> w1 = CreateTestWindow();
@@ -1145,14 +1151,18 @@ TEST_F(InteractiveWindowCycleControllerTest, TapSelect) {
   controller->StartCycling();
   generator->GestureTapAt(
       GetWindowCycleItemViews()[2]->GetBoundsInScreen().CenterPoint());
-  EXPECT_TRUE(wm::IsActiveWindow(w0.get()));
+  EXPECT_TRUE(controller->IsCycling());
+  EXPECT_EQ(GetTargetWindow(), w0.get());
 
   // Start cycle and tap second item.
-  // Starting order of windows in cycle list is [0,2,1].
+  // Starting order of windows in cycle list is [2,1,0].
   controller->StartCycling();
   generator->GestureTapAt(
       GetWindowCycleItemViews()[1]->GetBoundsInScreen().CenterPoint());
-  EXPECT_TRUE(wm::IsActiveWindow(w2.get()));
+  EXPECT_TRUE(controller->IsCycling());
+  EXPECT_EQ(GetTargetWindow(), w1.get());
+  controller->CompleteCycling();
+  EXPECT_TRUE(wm::IsActiveWindow(w1.get()));
 }
 
 // When a user has the window cycle list open and clicks outside of it, it

@@ -153,13 +153,15 @@ class WindowCycleItemView : public WindowMiniView {
   void OnGestureEvent(ui::GestureEvent* event) override {
     switch (event->type()) {
       case ui::ET_GESTURE_TAP:
+      case ui::ET_GESTURE_DOUBLE_TAP:
+      case ui::ET_GESTURE_TAP_DOWN:
+      case ui::ET_GESTURE_TAP_UNCONFIRMED:
       case ui::ET_GESTURE_LONG_PRESS:
       case ui::ET_GESTURE_LONG_TAP:
       case ui::ET_GESTURE_TWO_FINGER_TAP: {
         WindowCycleController* controller =
             Shell::Get()->window_cycle_controller();
         controller->SetFocusedWindow(source_window());
-        controller->CompleteCycling();
         break;
       }
       default:
@@ -473,6 +475,10 @@ class WindowCycleView : public views::WidgetDelegateView,
 
   const views::View::Views& GetPreviewViewsForTesting() const {
     return mirror_container_->children();
+  }
+
+  const aura::Window* GetTargetWindowForTesting() const {
+    return target_window_;
   }
 
   // ui::ImplicitAnimationObserver:
@@ -807,6 +813,10 @@ int WindowCycleList::GetOffsettedWindowIndex(int offset) const {
 const views::View::Views& WindowCycleList::GetWindowCycleItemViewsForTesting()
     const {
   return cycle_view_->GetPreviewViewsForTesting();
+}
+
+const aura::Window* WindowCycleList::GetTargetWindowForTesting() const {
+  return cycle_view_->GetTargetWindowForTesting();
 }
 
 }  // namespace ash
