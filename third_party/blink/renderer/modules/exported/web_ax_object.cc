@@ -30,7 +30,6 @@
 
 #include "third_party/blink/public/web/web_ax_object.h"
 
-#include "third_party/blink/public/platform/web_float_rect.h"
 #include "third_party/blink/public/platform/web_rect.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
@@ -1504,7 +1503,7 @@ void WebAXObject::Dropeffects(
 }
 
 void WebAXObject::GetRelativeBounds(WebAXObject& offset_container,
-                                    WebFloatRect& bounds_in_container,
+                                    gfx::RectF& bounds_in_container,
                                     SkMatrix44& container_transform,
                                     bool* clips_children) const {
   if (IsDetached())
@@ -1519,7 +1518,7 @@ void WebAXObject::GetRelativeBounds(WebAXObject& offset_container,
   private_->GetRelativeBounds(&container, bounds, container_transform,
                               clips_children);
   offset_container = WebAXObject(container);
-  bounds_in_container = WebFloatRect(bounds);
+  bounds_in_container = gfx::RectF(bounds);
 }
 
 void WebAXObject::GetAllObjectsWithChangedBounds(

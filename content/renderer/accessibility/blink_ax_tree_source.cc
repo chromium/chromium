@@ -23,7 +23,6 @@
 #include "content/renderer/render_frame_impl.h"
 #include "content/renderer/render_frame_proxy.h"
 #include "content/renderer/render_view_impl.h"
-#include "third_party/blink/public/platform/web_float_rect.h"
 #include "third_party/blink/public/platform/web_rect.h"
 #include "third_party/blink/public/platform/web_size.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -56,7 +55,6 @@ using blink::WebAXObjectAttribute;
 using blink::WebAXObjectVectorAttribute;
 using blink::WebDocument;
 using blink::WebElement;
-using blink::WebFloatRect;
 using blink::WebFrame;
 using blink::WebLocalFrame;
 using blink::WebNode;
@@ -418,7 +416,7 @@ void BlinkAXTreeSource::PopulateAXRelativeBounds(WebAXObject obj,
                                                  ui::AXRelativeBounds* bounds,
                                                  bool* clips_children) const {
   WebAXObject offset_container;
-  WebFloatRect bounds_in_container;
+  gfx::RectF bounds_in_container;
   SkMatrix44 web_container_transform;
   obj.GetRelativeBounds(offset_container, bounds_in_container,
                         web_container_transform, clips_children);
@@ -1366,13 +1364,13 @@ void BlinkAXTreeSource::AddImageAnnotations(blink::WebAXObject& src,
   // Skip images that are too small to label. This also catches
   // unloaded images where the size is unknown.
   WebAXObject offset_container;
-  WebFloatRect bounds;
+  gfx::RectF bounds;
   SkMatrix44 container_transform;
   bool clips_children = false;
   src.GetRelativeBounds(offset_container, bounds, container_transform,
                         &clips_children);
-  if (bounds.width < kMinImageAnnotationWidth ||
-      bounds.height < kMinImageAnnotationHeight) {
+  if (bounds.width() < kMinImageAnnotationWidth ||
+      bounds.height() < kMinImageAnnotationHeight) {
     dst->SetImageAnnotationStatus(
         ax::mojom::ImageAnnotationStatus::kIneligibleForAnnotation);
     return;

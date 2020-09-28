@@ -41,7 +41,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
-#include "third_party/blink/public/platform/web_float_rect.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/public/platform/web_size.h"
 #include "third_party/blink/public/web/web_ax_object.h"
@@ -1018,16 +1017,16 @@ TEST_F(BlinkAXActionTargetTest, TestMethods) {
   EXPECT_TRUE(input_range_action_target->Focus());
   EXPECT_TRUE(input_range.IsFocused());
 
-  blink::WebFloatRect expected_bounds;
+  gfx::RectF expected_bounds;
   blink::WebAXObject offset_container;
   SkMatrix44 container_transform;
   input_checkbox.GetRelativeBounds(offset_container, expected_bounds,
                                    container_transform);
   gfx::Rect actual_bounds = input_checkbox_action_target->GetRelativeBounds();
-  EXPECT_EQ(static_cast<int>(expected_bounds.x), actual_bounds.x());
-  EXPECT_EQ(static_cast<int>(expected_bounds.y), actual_bounds.y());
-  EXPECT_EQ(static_cast<int>(expected_bounds.width), actual_bounds.width());
-  EXPECT_EQ(static_cast<int>(expected_bounds.height), actual_bounds.height());
+  EXPECT_EQ(static_cast<int>(expected_bounds.x()), actual_bounds.x());
+  EXPECT_EQ(static_cast<int>(expected_bounds.y()), actual_bounds.y());
+  EXPECT_EQ(static_cast<int>(expected_bounds.width()), actual_bounds.width());
+  EXPECT_EQ(static_cast<int>(expected_bounds.height()), actual_bounds.height());
 
   gfx::Point offset_to_set(500, 500);
   scroller_action_target->SetScrollOffset(gfx::Point(500, 500));

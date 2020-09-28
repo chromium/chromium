@@ -44,6 +44,7 @@ class SkMatrix44;
 
 namespace gfx {
 class Point;
+class RectF;
 }
 
 namespace ui {
@@ -58,7 +59,6 @@ class WebNode;
 class WebDocument;
 class WebString;
 class WebURL;
-struct WebFloatRect;
 struct WebRect;
 struct WebSize;
 
@@ -397,7 +397,7 @@ class WebAXObject {
   // If the container clips its children, for example with overflow:hidden
   // or similar, set |clips_children| to true.
   BLINK_EXPORT void GetRelativeBounds(WebAXObject& offset_container,
-                                      WebFloatRect& bounds_in_container,
+                                      gfx::RectF& bounds_in_container,
                                       SkMatrix44& container_transform,
                                       bool* clips_children = nullptr) const;
 
