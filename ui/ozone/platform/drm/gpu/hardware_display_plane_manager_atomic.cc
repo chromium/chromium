@@ -306,7 +306,6 @@ bool HardwareDisplayPlaneManagerAtomic::SetPlaneData(
                                   crtc_id, framebuffer_id,
                                   overlay.display_bounds, src_rect,
                                   overlay.plane_transform, fence_fd)) {
-    LOG(ERROR) << "Failed to set plane properties";
     return false;
   }
   return true;

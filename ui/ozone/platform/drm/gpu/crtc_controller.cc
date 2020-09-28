@@ -93,7 +93,6 @@ bool CrtcController::AssignOverlayPlanes(HardwareDisplayPlaneList* plane_list,
 
   if (!drm_->plane_manager()->AssignOverlayPlanes(plane_list, overlays,
                                                   crtc_)) {
-    PLOG(ERROR) << "Failed to assign overlay planes for crtc " << crtc_;
     return false;
   }
 

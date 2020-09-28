@@ -38,7 +38,8 @@ uint32_t OverlayTransformToDrmRotationPropertyValue(
 // TODO(https://crbug/880464): Remove this.
 bool IsRotationTransformSupported(gfx::OverlayTransform transform) {
   if ((transform == gfx::OVERLAY_TRANSFORM_ROTATE_90) ||
-      (transform == gfx::OVERLAY_TRANSFORM_ROTATE_270)) {
+      (transform == gfx::OVERLAY_TRANSFORM_ROTATE_270) ||
+      (transform == gfx::OVERLAY_TRANSFORM_FLIP_HORIZONTAL)) {
     return false;
   }
 
