@@ -232,9 +232,18 @@ const tests = [
 
   function testSidenavToggleButton() {
     const toolbar = createToolbar();
+    chrome.test.assertFalse(toolbar.sidenavCollapsed);
+
+    const toggleButton = toolbar.shadowRoot.querySelector('#sidenavToggle');
+    chrome.test.assertTrue(toggleButton.hasAttribute('aria-label'));
+    chrome.test.assertTrue(toggleButton.hasAttribute('title'));
+    chrome.test.assertEq('true', toggleButton.getAttribute('aria-expanded'));
+
+    toolbar.sidenavCollapsed = true;
+    chrome.test.assertEq('false', toggleButton.getAttribute('aria-expanded'));
+
     toolbar.addEventListener(
         'sidenav-toggle-click', () => chrome.test.succeed());
-    const toggleButton = toolbar.shadowRoot.querySelector('#sidenavToggle');
     toggleButton.click();
   },
 ];

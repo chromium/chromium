@@ -141,6 +141,7 @@ export class PDFViewerElement extends PDFViewerBaseElement {
 
       title_: String,
 
+      sidenavCollapsed_: Boolean,
       twoUpViewEnabled_: Boolean,
 
       isFormFieldFocused_: Boolean,

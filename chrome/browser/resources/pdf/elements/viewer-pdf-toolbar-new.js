@@ -76,6 +76,7 @@ export class ViewerPdfToolbarNewElement extends PolymerElement {
         observer: 'viewportZoomChanged_',
       },
 
+      sidenavCollapsed: Boolean,
       twoUpViewEnabled: Boolean,
 
       moreMenuOpen_: {
@@ -110,6 +111,9 @@ export class ViewerPdfToolbarNewElement extends PolymerElement {
 
   constructor() {
     super();
+
+    /** @type {boolean} */
+    this.sidenavCollapsed = false;
 
     /** @private {!FittingType} */
     this.fittingType_ = FittingType.FIT_TO_PAGE;
@@ -228,6 +232,11 @@ export class ViewerPdfToolbarNewElement extends PolymerElement {
    */
   getShowAnnotationsAriaChecked_(checked) {
     return checked ? 'true' : 'false';
+  }
+
+  /** @return {string} */
+  getAriaExpanded_() {
+    return this.sidenavCollapsed ? 'false' : 'true';
   }
 
   /** @private */

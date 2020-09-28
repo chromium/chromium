@@ -173,6 +173,7 @@
   <div id="start">
     <cr-icon-button id="sidenavToggle" iron-icon="cr20:menu"
         title="$i18n{menu}" aria-label="$i18n{menu}"
+        aria-expanded$="[[getAriaExpanded_(sidenavCollapsed)]]"
 <if expr="chromeos">
         disabled="[[annotationMode]]"
 </if>
