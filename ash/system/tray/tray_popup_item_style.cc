@@ -116,11 +116,6 @@ void TrayPopupItemStyle::SetupLabel(views::Label* label) const {
       label->SetFontList(base_font_list.Derive(0, gfx::Font::NORMAL,
                                                gfx::Font::Weight::NORMAL));
       break;
-    case FontStyle::HOLDING_SPACE_TITLE:
-      label->SetFontList(base_font_list.Derive(3, gfx::Font::NORMAL,
-                                               gfx::Font::Weight::NORMAL));
-      label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
-      break;
   }
 }
 

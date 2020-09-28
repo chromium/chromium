@@ -39,8 +39,8 @@ HoldingSpaceItemChipView::HoldingSpaceItemChipView(
   label_->SetElideBehavior(gfx::ELIDE_MIDDLE);
   layout->SetFlexForView(label_, 1);
 
-  TrayPopupItemStyle style(TrayPopupItemStyle::FontStyle::HOLDING_SPACE_TITLE);
-  style.SetupLabel(label_);
+  TrayPopupItemStyle(TrayPopupItemStyle::FontStyle::DETAILED_VIEW_LABEL)
+      .SetupLabel(label_);
 
   const auto* color_provider = AshColorProvider::Get();
   SetBackground(views::CreateRoundedRectBackground(

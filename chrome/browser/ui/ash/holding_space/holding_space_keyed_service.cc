@@ -43,6 +43,11 @@ HoldingSpaceKeyedService::HoldingSpaceKeyedService(Profile* profile,
       account_id_(account_id),
       holding_space_client_(profile),
       thumbnail_loader_(profile) {
+  // If true, store this as the first time holding space has been enabled.
+  PrefService* const prefs = profile_->GetPrefs();
+  if (prefs->FindPreference(kPrefPathFirstEnabledTime)->IsDefaultValue())
+    prefs->SetTime(kPrefPathFirstEnabledTime, base::Time::Now());
+
   // Model restoration is a multi-step process, currently consisting of a
   // restoration from persistence followed by a restoration of downloads. Once
   // all steps have indicated completion, `OnModelFullyRestored()` is invoked.

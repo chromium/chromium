@@ -49,8 +49,6 @@ class TrayPopupItemStyle {
     CLICKABLE_SYSTEM_INFO,
     // Sub text within a row (e.g. user name in user row).
     CAPTION,
-    // Labels in holding space bubble
-    HOLDING_SPACE_TITLE,
   };
 
   static constexpr double kInactiveIconAlpha = 0.54;

@@ -34,17 +34,18 @@ RecentFilesContainer::RecentFilesContainer(
       views::BoxLayout::Orientation::kVertical, kHoldingSpaceContainerPadding,
       kHoldingSpaceContainerChildSpacing));
 
-  auto setup_layered_child = [](views::View* child) {
-    child->SetPaintToLayer();
-    child->layer()->SetFillsBoundsOpaquely(false);
+  auto setup_label = [](views::Label* label) {
+    TrayPopupItemStyle(TrayPopupItemStyle::FontStyle::SUB_HEADER)
+        .SetupLabel(label);
+
+    label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
+    label->SetPaintToLayer();
+    label->layer()->SetFillsBoundsOpaquely(false);
   };
 
   auto* screenshots_label = AddChildView(std::make_unique<views::Label>(
       l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_SCREENSHOTS_TITLE)));
-  setup_layered_child(screenshots_label);
-  TrayPopupItemStyle style(TrayPopupItemStyle::FontStyle::HOLDING_SPACE_TITLE,
-                           true /* use_unified_theme */);
-  style.SetupLabel(screenshots_label);
+  setup_label(screenshots_label);
 
   screenshots_container_ = AddChildView(std::make_unique<views::View>());
   screenshots_container_
@@ -57,8 +58,7 @@ RecentFilesContainer::RecentFilesContainer(
 
   auto* downloads_label = AddChildView(std::make_unique<views::Label>(
       l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_DOWNLOADS_TITLE)));
-  setup_layered_child(downloads_label);
-  style.SetupLabel(downloads_label);
+  setup_label(downloads_label);
 
   downloads_container_ =
       AddChildView(std::make_unique<HoldingSpaceItemChipsContainer>());
