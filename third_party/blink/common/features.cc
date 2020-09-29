@@ -750,11 +750,6 @@ const base::Feature kReducedReferrerGranularity{
 const base::Feature kContentCaptureUserActivatedDelay = {
     "ContentCaptureUserActivatedDelay", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enable ReadableStream, WritableStream and TransformStream objects to be
-// transferred with postMessage().
-const base::Feature kTransferableStreams{"TransferableStreams",
-                                         base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Dispatches a fake fetch event to a service worker to check the offline
 // capability of the site before promoting installation.
 // See https://crbug.com/965802 for more details.

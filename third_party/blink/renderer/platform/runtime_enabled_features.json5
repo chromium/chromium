@@ -1870,7 +1870,7 @@
     },
     {
       name: "TransferableStreams",
-      status: "experimental",
+      status: "stable",
       origin_trial_feature_name: "RTCInsertableStreams",
       implied_by: ["RTCInsertableStreams"],
     },

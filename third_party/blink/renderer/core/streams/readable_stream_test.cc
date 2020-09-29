@@ -21,7 +21,6 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/string_resource.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "v8/include/v8.h"
 
@@ -354,8 +353,6 @@ TEST_F(ReadableStreamTest, LockAndDisturb) {
 }
 
 TEST_F(ReadableStreamTest, Serialize) {
-  ScopedTransferableStreamsForTest enabled(true);
-
   V8TestingScope scope;
   auto* script_state = scope.GetScriptState();
   auto* isolate = scope.GetIsolate();

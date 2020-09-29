@@ -303,8 +303,6 @@ BLINK_COMMON_EXPORT extern const base::Feature kReducedReferrerGranularity;
 BLINK_COMMON_EXPORT extern const base::Feature
     kContentCaptureUserActivatedDelay;
 
-BLINK_COMMON_EXPORT extern const base::Feature kTransferableStreams;
-
 BLINK_COMMON_EXPORT extern const base::Feature kCheckOfflineCapability;
 
 BLINK_COMMON_EXPORT extern const base::Feature

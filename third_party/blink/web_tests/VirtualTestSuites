@@ -111,7 +111,6 @@
     "prefix": "stable",
     "bases": ["fast/css3-text/css3-text-decoration/stable",
               "fast/dom/Window",
-              "http/tests/streams/transferable/enabled",
               "http/tests/navigation",
               "http/tests/origin_trials/feature-policy-reporting",
               "http/tests/sendbeacon",
