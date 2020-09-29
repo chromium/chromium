@@ -175,8 +175,11 @@ public class TabUiFeatureUtilities {
      * @return Whether the instant start is supported.
      */
     public static boolean supportInstantStart(boolean isTablet) {
+        // TODO(crbug.com/1076449): Support instant start when the stack tab switcher is
+        // enabled.
         return !DeviceClassManager.enableAccessibilityLayout()
-                && CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START) && !isTablet;
+                && CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START) && !isTablet
+                && !StartSurfaceConfiguration.isStartSurfaceStackTabSwitcherEnabled();
     }
 
     /**

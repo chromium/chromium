@@ -58,7 +58,7 @@ public abstract class TabModelSelectorBase implements TabModelSelector, Incognit
         mIncognitoTabModel = incognitoModel;
         mActiveModelIndex = getModelIndex(mStartIncognito);
         assert mActiveModelIndex != MODEL_NOT_FOUND;
-        mTabModelFilterProvider.init(mTabModelFilterFactory, mTabModels);
+        mTabModelFilterProvider = new TabModelFilterProvider(mTabModelFilterFactory, mTabModels);
         addObserver(mTabModelFilterProvider);
 
         TabModelObserver tabModelObserver = new TabModelObserver() {

@@ -15,40 +15,23 @@ import java.util.List;
  */
 public class TabModelFilterProvider extends EmptyTabModelSelectorObserver {
     private List<TabModelFilter> mTabModelFilterList = Collections.emptyList();
-    private final List<TabModelObserver> mPendingTabModelObserver = new ArrayList<>();
 
     TabModelFilterProvider() {}
 
-    public void init(TabModelFilterFactory tabModelFilterFactory, List<TabModel> tabModels) {
-        assert mTabModelFilterList.isEmpty();
-        assert tabModels.size() > 0;
-
+    TabModelFilterProvider(TabModelFilterFactory tabModelFilterFactory, List<TabModel> tabModels) {
         List<TabModelFilter> filters = new ArrayList<>();
         for (int i = 0; i < tabModels.size(); i++) {
             filters.add(tabModelFilterFactory.createTabModelFilter(tabModels.get(i)));
         }
 
         mTabModelFilterList = Collections.unmodifiableList(filters);
-        // Registers the pending observers.
-        for (TabModelObserver observer : mPendingTabModelObserver) {
-            for (TabModelFilter tabModelFilter : mTabModelFilterList) {
-                tabModelFilter.addObserver(observer);
-            }
-        }
-        mPendingTabModelObserver.clear();
     }
 
     /**
-     * This method adds {@link TabModelObserver} to both {@link TabModelFilter}s. Caches the
-     * observer until {@link TabModelFilter}s are created.
+     * This method adds {@link TabModelObserver} to both {@link TabModelFilter}s.
      * @param observer {@link TabModelObserver} to add.
      */
     public void addTabModelFilterObserver(TabModelObserver observer) {
-        if (mTabModelFilterList.isEmpty()) {
-            mPendingTabModelObserver.add(observer);
-            return;
-        }
-
         for (int i = 0; i < mTabModelFilterList.size(); i++) {
             mTabModelFilterList.get(i).addObserver(observer);
         }
@@ -59,11 +42,6 @@ public class TabModelFilterProvider extends EmptyTabModelSelectorObserver {
      * @param observer {@link TabModelObserver} to remove.
      */
     public void removeTabModelFilterObserver(TabModelObserver observer) {
-        if (mTabModelFilterList.isEmpty() && !mPendingTabModelObserver.isEmpty()) {
-            mPendingTabModelObserver.remove(observer);
-            return;
-        }
-
         for (int i = 0; i < mTabModelFilterList.size(); i++) {
             mTabModelFilterList.get(i).removeObserver(observer);
         }
@@ -105,7 +83,6 @@ public class TabModelFilterProvider extends EmptyTabModelSelectorObserver {
         for (int i = 0; i < mTabModelFilterList.size(); i++) {
             mTabModelFilterList.get(i).destroy();
         }
-        mPendingTabModelObserver.clear();
     }
 
     private void markTabStateInitialized() {

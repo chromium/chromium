@@ -64,10 +64,4 @@ public class MockTabModelSelector extends TabModelSelectorBase {
     public int getTotalTabCount() {
         throw new UnsupportedOperationException();
     }
-
-    @Override
-    public void selectModel(boolean incognito) {
-        super.selectModel(incognito);
-        ((MockTabModel) getModel(incognito)).setAsCurrentModelForTesting();
-    }
 }
