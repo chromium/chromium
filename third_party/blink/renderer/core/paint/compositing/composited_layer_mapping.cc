@@ -145,7 +145,7 @@ static WebPluginContainerImpl* GetPluginContainer(LayoutObject& layout_object) {
 // position offset for this composited layer.
 static bool UsesCompositedStickyPosition(PaintLayer& layer) {
   return layer.GetLayoutObject().StyleRef().HasStickyConstrainedPosition() &&
-         layer.AncestorOverflowLayer()->NeedsCompositedScrolling();
+         layer.AncestorScrollContainerLayer()->NeedsCompositedScrolling();
 }
 
 // Returns the sticky position offset that should be removed from a given layer
@@ -157,9 +157,10 @@ static FloatPoint StickyPositionOffsetForLayer(PaintLayer& layer) {
   if (!UsesCompositedStickyPosition(layer))
     return FloatPoint();
 
-  const StickyConstraintsMap& constraints_map = layer.AncestorOverflowLayer()
-                                                    ->GetScrollableArea()
-                                                    ->GetStickyConstraintsMap();
+  const StickyConstraintsMap& constraints_map =
+      layer.AncestorScrollContainerLayer()
+          ->GetScrollableArea()
+          ->GetStickyConstraintsMap();
   const StickyPositionScrollingConstraints& constraints =
       constraints_map.at(&layer);
 

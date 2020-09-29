@@ -588,7 +588,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateStickyTranslation() {
           CompositorElementIdNamespace::kStickyTranslation);
 
       auto* layer = box_model.Layer();
-      const auto* scroller_properties = layer->AncestorOverflowLayer()
+      const auto* scroller_properties = layer->AncestorScrollContainerLayer()
                                             ->GetLayoutObject()
                                             .FirstFragment()
                                             .PaintProperties();
@@ -601,8 +601,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateStickyTranslation() {
       // matches it. i.e.
       // if (scroller_properties && scroller_properties->Scroll()) {
       //   DCHECK_EQ(scroller_properties->Scroll(), context_.current.scroll);
-      // However there is a bug that AncestorOverflowLayer() may be computed
-      // incorrectly with clip escaping involved.
+      // However there is a bug that AncestorScrollContainerLayer() may be
+      // computed incorrectly with clip escaping involved.
       bool nearest_scroller_is_clip =
           scroller_properties &&
           scroller_properties->Scroll() == context_.current.scroll;
@@ -619,7 +619,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateStickyTranslation() {
               .ScrollNode() == context_.current.scroll;
       if (nearest_scroller_is_clip && translates_with_nearest_scroller) {
         const StickyPositionScrollingConstraints& layout_constraint =
-            layer->AncestorOverflowLayer()
+            layer->AncestorScrollContainerLayer()
                 ->GetScrollableArea()
                 ->GetStickyConstraintsMap()
                 .at(layer);
@@ -1946,7 +1946,8 @@ static MainThreadScrollingReasons GetMainThreadScrollingReasons(
       // the case where a non-scroll compositing trigger (e.g., transform)
       // requires compositing, even though a main thread reason is not needed.
       // CompositingReasonFinder::RequiresCompositingForScrollDependentPosition
-      // will need to be changed to not query PaintLayer::AncestorOverflowLayer.
+      // will need to be changed to not query
+      // PaintLayer::AncestorScrollContainerLayer.
     }
   }
   return reasons;

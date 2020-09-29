@@ -460,10 +460,10 @@ void LayoutBoxModelObject::StyleDidChange(StyleDifference diff,
 
         // Remove sticky constraints for this layer.
         if (Layer()) {
-          if (const PaintLayer* ancestor_overflow_layer =
-                  Layer()->AncestorOverflowLayer()) {
+          if (const PaintLayer* ancestor_scroll_container_layer =
+                  Layer()->AncestorScrollContainerLayer()) {
             if (PaintLayerScrollableArea* scrollable_area =
-                    ancestor_overflow_layer->GetScrollableArea())
+                    ancestor_scroll_container_layer->GetScrollableArea())
               scrollable_area->InvalidateStickyConstraintsFor(Layer());
           }
         }
@@ -538,10 +538,10 @@ void LayoutBoxModelObject::InvalidateStickyConstraints() {
   // This intentionally uses the stale ancestor overflow layer compositing input
   // as if we have saved constraints for this layer they were saved in the
   // previous frame.
-  if (const PaintLayer* ancestor_overflow_layer =
-          enclosing->AncestorOverflowLayer()) {
+  if (const PaintLayer* ancestor_scroll_container_layer =
+          enclosing->AncestorScrollContainerLayer()) {
     if (PaintLayerScrollableArea* ancestor_scrollable_area =
-            ancestor_overflow_layer->GetScrollableArea())
+            ancestor_scroll_container_layer->GetScrollableArea())
       ancestor_scrollable_area->InvalidateAllStickyConstraints();
   }
 }
@@ -959,7 +959,7 @@ void LayoutBoxModelObject::UpdateStickyPositionConstraints() const {
   skipped_containers_offset = location_container->LocalToAncestorPoint(
       PhysicalOffset(), containing_block, flags);
   LayoutBox& scroll_ancestor =
-      ToLayoutBox(Layer()->AncestorOverflowLayer()->GetLayoutObject());
+      ToLayoutBox(Layer()->AncestorScrollContainerLayer()->GetLayoutObject());
 
   LayoutUnit max_container_width =
       IsA<LayoutView>(containing_block)
@@ -1049,7 +1049,7 @@ void LayoutBoxModelObject::UpdateStickyPositionConstraints() const {
   constraints.nearest_sticky_layer_shifting_containing_block =
       FindFirstStickyBetween(
           containing_block,
-          &Layer()->AncestorOverflowLayer()->GetLayoutObject());
+          &Layer()->AncestorScrollContainerLayer()->GetLayoutObject());
 
   // We skip the right or top sticky offset if there is not enough space to
   // honor both the left/right or top/bottom offsets.
@@ -1108,7 +1108,7 @@ void LayoutBoxModelObject::UpdateStickyPositionConstraints() const {
     constraints.is_anchored_bottom = true;
   }
   PaintLayerScrollableArea* scrollable_area =
-      Layer()->AncestorOverflowLayer()->GetScrollableArea();
+      Layer()->AncestorScrollContainerLayer()->GetScrollableArea();
   scrollable_area->AddStickyConstraints(Layer(), constraints);
 }
 
@@ -1141,10 +1141,10 @@ bool LayoutBoxModelObject::IsSlowRepaintConstrainedObject() const {
 PhysicalRect LayoutBoxModelObject::ComputeStickyConstrainingRect() const {
   NOT_DESTROYED();
   LayoutBox* scroll_container_box =
-      Layer()->AncestorOverflowLayer()->GetLayoutBox();
+      Layer()->AncestorScrollContainerLayer()->GetLayoutBox();
   DCHECK(scroll_container_box);
   // That |scroll_container_box| is a scroll-container is ensured by
-  // Layer::AncestorOverflowLayer().
+  // Layer::AncestorScrollContainerLayer().
   DCHECK(scroll_container_box->IsScrollContainer());
   PhysicalRect constraining_rect;
   constraining_rect =
@@ -1166,15 +1166,17 @@ PhysicalOffset LayoutBoxModelObject::StickyPositionOffset() const {
   // TODO(chrishtr): StickyPositionOffset depends on compositing at present,
   // but there are callsites within Layout for it.
 
-  const PaintLayer* ancestor_overflow_layer = Layer()->AncestorOverflowLayer();
+  const PaintLayer* ancestor_scroll_container_layer =
+      Layer()->AncestorScrollContainerLayer();
   // TODO: Force compositing input update if we ask for offset before
   // compositing inputs have been computed?
-  if (!ancestor_overflow_layer || !ancestor_overflow_layer->GetScrollableArea())
+  if (!ancestor_scroll_container_layer ||
+      !ancestor_scroll_container_layer->GetScrollableArea()) {
     return PhysicalOffset();
+  }
 
-  auto* constraints =
-      ancestor_overflow_layer->GetScrollableArea()->GetStickyConstraints(
-          Layer());
+  auto* constraints = ancestor_scroll_container_layer->GetScrollableArea()
+                          ->GetStickyConstraints(Layer());
   if (!constraints)
     return PhysicalOffset();
 
@@ -1182,10 +1184,10 @@ PhysicalOffset LayoutBoxModelObject::StickyPositionOffset() const {
   // absolute coords (though it may be wrong with transforms).
   PhysicalRect constraining_rect = ComputeStickyConstrainingRect();
   constraining_rect.Move(PhysicalOffset::FromFloatPointRound(
-      ancestor_overflow_layer->GetScrollableArea()->ScrollPosition()));
+      ancestor_scroll_container_layer->GetScrollableArea()->ScrollPosition()));
   return constraints->ComputeStickyOffset(
-      constraining_rect,
-      ancestor_overflow_layer->GetScrollableArea()->GetStickyConstraintsMap());
+      constraining_rect, ancestor_scroll_container_layer->GetScrollableArea()
+                             ->GetStickyConstraintsMap());
 }
 
 PhysicalOffset LayoutBoxModelObject::AdjustedPositionRelativeTo(

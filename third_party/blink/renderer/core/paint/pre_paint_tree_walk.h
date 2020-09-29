@@ -44,8 +44,8 @@ class CORE_EXPORT PrePaintTreeWalk {
             parent_context_accessor,
         bool needs_tree_builder_context)
         : paint_invalidator_context(parent_context_accessor),
-          ancestor_overflow_paint_layer(
-              parent_context.ancestor_overflow_paint_layer),
+          ancestor_scroll_container_paint_layer(
+              parent_context.ancestor_scroll_container_paint_layer),
           inside_blocking_touch_event_handler(
               parent_context.inside_blocking_touch_event_handler),
           effective_allowed_touch_action_changed(
@@ -70,10 +70,9 @@ class CORE_EXPORT PrePaintTreeWalk {
     base::Optional<PaintPropertyTreeBuilderContext> tree_builder_context;
     PaintInvalidatorContext paint_invalidator_context;
 
-    // The ancestor in the PaintLayer tree which has overflow clip, or
-    // is the root layer. Note that it is tree ancestor, not containing
-    // block or stacking ancestor.
-    PaintLayer* ancestor_overflow_paint_layer = nullptr;
+    // The ancestor in the PaintLayer tree which is a scroll container. Note
+    // that it is tree ancestor, not containing block or stacking ancestor.
+    PaintLayer* ancestor_scroll_container_paint_layer = nullptr;
 
     // Whether there is a blocking touch event handler on any ancestor.
     bool inside_blocking_touch_event_handler = false;

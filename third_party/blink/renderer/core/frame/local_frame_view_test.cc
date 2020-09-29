@@ -169,7 +169,7 @@ TEST_F(LocalFrameViewTest,
   // Deliberately invalidate the ancestor overflow layer. This approximates
   // http://crbug.com/696173, in which the ancestor overflow layer can be null
   // during layout.
-  sticky->Layer()->UpdateAncestorOverflowLayer(nullptr);
+  sticky->Layer()->UpdateAncestorScrollContainerLayer(nullptr);
 
   // This call should not crash.
   GetDocument().View()->LayoutViewport()->SetScrollOffset(

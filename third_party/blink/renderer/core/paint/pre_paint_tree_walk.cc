@@ -263,8 +263,8 @@ void PrePaintTreeWalk::Walk(LocalFrameView& frame_view) {
     return context_storage_.back();
   };
 
-  // ancestor_overflow_paint_layer does not cross frame boundaries.
-  context().ancestor_overflow_paint_layer = nullptr;
+  // ancestor_scroll_container_paint_layer does not cross frame boundaries.
+  context().ancestor_scroll_container_paint_layer = nullptr;
   if (context().tree_builder_context) {
     PaintPropertyTreeBuilder::SetupContextForFrame(
         frame_view, *context().tree_builder_context);
@@ -374,8 +374,8 @@ void PrePaintTreeWalk::UpdateAuxiliaryObjectProperties(
     return;
 
   PaintLayer* paint_layer = ToLayoutBoxModelObject(object).Layer();
-  paint_layer->UpdateAncestorOverflowLayer(
-      context.ancestor_overflow_paint_layer);
+  paint_layer->UpdateAncestorScrollContainerLayer(
+      context.ancestor_scroll_container_paint_layer);
 
   if (object.StyleRef().HasStickyConstrainedPosition()) {
     paint_layer->GetLayoutObject().UpdateStickyPositionConstraints();
@@ -387,7 +387,7 @@ void PrePaintTreeWalk::UpdateAuxiliaryObjectProperties(
     paint_layer->UpdateLayerPosition();
   }
   if (paint_layer->IsRootLayer() || object.IsScrollContainer())
-    context.ancestor_overflow_paint_layer = paint_layer;
+    context.ancestor_scroll_container_paint_layer = paint_layer;
 }
 
 bool PrePaintTreeWalk::NeedsTreeBuilderContextUpdate(

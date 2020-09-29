@@ -843,8 +843,9 @@ class CORE_EXPORT PaintLayer : public DisplayItemClient {
     return needs_ancestor_dependent_compositing_inputs_update_;
   }
 
-  void UpdateAncestorOverflowLayer(const PaintLayer* ancestor_overflow_layer) {
-    ancestor_overflow_layer_ = ancestor_overflow_layer;
+  void UpdateAncestorScrollContainerLayer(
+      const PaintLayer* ancestor_scroll_container_layer) {
+    ancestor_scroll_container_layer_ = ancestor_scroll_container_layer;
   }
   void UpdateAncestorDependentCompositingInputs(
       const AncestorDependentCompositingInputs&);
@@ -874,8 +875,8 @@ class CORE_EXPORT PaintLayer : public DisplayItemClient {
   const LayoutBoxModelObject* ClippingContainer() const {
     return GetAncestorDependentCompositingInputs().clipping_container;
   }
-  const PaintLayer* AncestorOverflowLayer() const {
-    return ancestor_overflow_layer_;
+  const PaintLayer* AncestorScrollContainerLayer() const {
+    return ancestor_scroll_container_layer_;
   }
   const PaintLayer* AncestorScrollingLayer() const {
     return GetAncestorDependentCompositingInputs().ancestor_scrolling_layer;
@@ -1254,7 +1255,7 @@ class CORE_EXPORT PaintLayer : public DisplayItemClient {
   void UpdateTransform(const ComputedStyle* old_style,
                        const ComputedStyle& new_style);
 
-  void RemoveAncestorOverflowLayer(const PaintLayer* removed_layer);
+  void RemoveAncestorScrollContainerLayer(const PaintLayer* removed_layer);
 
   void UpdatePaginationRecursive(bool needs_pagination_update = false);
   void ClearPaginationRecursive();
@@ -1417,8 +1418,11 @@ class CORE_EXPORT PaintLayer : public DisplayItemClient {
   LayoutUnit static_inline_position_;
   LayoutUnit static_block_position_;
 
-  // The first ancestor having a non visible overflow.
-  const PaintLayer* ancestor_overflow_layer_;
+  // The first ancestor that is a scroll container. This is not a member of
+  // AncestorDependentCompositingInputs as it is needed when
+  // |needs_descendant_dependent_flags_update_| is true. In other words, it is
+  // accessed and used out of band with normal compositing inputs updating.
+  const PaintLayer* ancestor_scroll_container_layer_;
 
   mutable std::unique_ptr<AncestorDependentCompositingInputs>
       ancestor_dependent_compositing_inputs_;

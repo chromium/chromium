@@ -362,7 +362,7 @@ bool CompositingReasonFinder::RequiresCompositingForScrollDependentPosition(
   // Don't promote sticky position elements that cannot move with scrolls.
   if (!layer.SticksToScroller())
     return false;
-  return layer.AncestorOverflowLayer()->ScrollsOverflow();
+  return layer.AncestorScrollContainerLayer()->ScrollsOverflow();
 }
 
 }  // namespace blink

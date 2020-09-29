@@ -96,7 +96,7 @@ void CompositingInputsUpdater::ApplyAncestorInfoToSelfAndAncestorsRecursively(
   UpdateAncestorInfo(layer, update_type, info);
   if (layer != compositing_inputs_root_ &&
       (layer->IsRootLayer() || layer->GetLayoutObject().IsScrollContainer()))
-    info.last_overflow_clip_layer = layer;
+    info.last_scroll_container_layer = layer;
 }
 
 void CompositingInputsUpdater::UpdateSelfAndDescendantsRecursively(
@@ -106,27 +106,30 @@ void CompositingInputsUpdater::UpdateSelfAndDescendantsRecursively(
   LayoutBoxModelObject& layout_object = layer->GetLayoutObject();
   const ComputedStyle& style = layout_object.StyleRef();
 
-  const PaintLayer* previous_overflow_layer = layer->AncestorOverflowLayer();
-  layer->UpdateAncestorOverflowLayer(info.last_overflow_clip_layer);
-  if (info.last_overflow_clip_layer && layer->NeedsCompositingInputsUpdate() &&
+  const PaintLayer* previous_scroll_container_layer =
+      layer->AncestorScrollContainerLayer();
+  layer->UpdateAncestorScrollContainerLayer(info.last_scroll_container_layer);
+  if (info.last_scroll_container_layer &&
+      layer->NeedsCompositingInputsUpdate() &&
       style.HasStickyConstrainedPosition()) {
-    if (info.last_overflow_clip_layer != previous_overflow_layer) {
+    if (info.last_scroll_container_layer != previous_scroll_container_layer) {
       // Old ancestor scroller should no longer have these constraints.
-      DCHECK(!previous_overflow_layer ||
-             !previous_overflow_layer->GetScrollableArea() ||
-             !previous_overflow_layer->GetScrollableArea()
+      DCHECK(!previous_scroll_container_layer ||
+             !previous_scroll_container_layer->GetScrollableArea() ||
+             !previous_scroll_container_layer->GetScrollableArea()
                   ->GetStickyConstraintsMap()
                   .Contains(layer));
 
       // If our ancestor scroller has changed and the previous one was the
       // root layer, we are no longer viewport constrained.
-      if (previous_overflow_layer && previous_overflow_layer->IsRootLayer()) {
+      if (previous_scroll_container_layer &&
+          previous_scroll_container_layer->IsRootLayer()) {
         layout_object.View()->GetFrameView()->RemoveViewportConstrainedObject(
             layout_object, LocalFrameView::ViewportConstrainedType::kSticky);
       }
     }
 
-    if (info.last_overflow_clip_layer->IsRootLayer()) {
+    if (info.last_scroll_container_layer->IsRootLayer()) {
       layout_object.View()->GetFrameView()->AddViewportConstrainedObject(
           layout_object, LocalFrameView::ViewportConstrainedType::kSticky);
     }
@@ -149,7 +152,7 @@ void CompositingInputsUpdater::UpdateSelfAndDescendantsRecursively(
     UpdateAncestorInfo(layer, update_type, info);
   }
   if (layer->IsRootLayer() || layout_object.IsScrollContainer())
-    info.last_overflow_clip_layer = layer;
+    info.last_scroll_container_layer = layer;
 
   PaintLayerCompositor* compositor =
       layer->GetLayoutObject().View()->Compositor();

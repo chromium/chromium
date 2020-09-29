@@ -205,7 +205,7 @@ PaintLayer::PaintLayer(LayoutBoxModelObject& layout_object)
       last_(nullptr),
       static_inline_position_(0),
       static_block_position_(0),
-      ancestor_overflow_layer_(nullptr)
+      ancestor_scroll_container_layer_(nullptr)
 #if DCHECK_IS_ON()
       ,
       stacking_parent_(nullptr)
@@ -368,7 +368,7 @@ void PaintLayer::UpdateLayerPositionRecursive() {
 bool PaintLayer::SticksToScroller() const {
   if (!GetLayoutObject().StyleRef().HasStickyConstrainedPosition())
     return false;
-  return AncestorOverflowLayer()->GetScrollableArea();
+  return AncestorScrollContainerLayer()->GetScrollableArea();
 }
 
 bool PaintLayer::FixedToViewport() const {
@@ -1269,9 +1269,9 @@ void PaintLayer::AddChild(PaintLayer* child, PaintLayer* before_child) {
 
   child->parent_ = this;
 
-  // The ancestor overflow layer is calculated during compositing inputs update
-  // and should not be set yet.
-  CHECK(!child->AncestorOverflowLayer());
+  // The ancestor scroll container layer is calculated during compositing inputs
+  // update and should not be set yet.
+  CHECK(!child->AncestorScrollContainerLayer());
 
   SetNeedsCompositingInputsUpdate();
 
@@ -1339,9 +1339,12 @@ void PaintLayer::RemoveChild(PaintLayer* old_child) {
   old_child->SetNextSibling(nullptr);
   old_child->parent_ = nullptr;
 
-  // Remove any ancestor overflow layers which descended into the removed child.
-  if (old_child->AncestorOverflowLayer())
-    old_child->RemoveAncestorOverflowLayer(old_child->AncestorOverflowLayer());
+  // Remove any ancestor scroll container layers which descended into the
+  // removed child.
+  if (old_child->AncestorScrollContainerLayer()) {
+    old_child->RemoveAncestorScrollContainerLayer(
+        old_child->AncestorScrollContainerLayer());
+  }
 
   if (old_child->has_visible_content_ || old_child->has_visible_descendant_)
     MarkAncestorChainForFlagsUpdate();
@@ -3403,17 +3406,20 @@ PaintLayerResourceInfo& PaintLayer::EnsureResourceInfo() {
   return *rare_data.resource_info;
 }
 
-void PaintLayer::RemoveAncestorOverflowLayer(const PaintLayer* removed_layer) {
-  // If the current ancestor overflow layer does not match the removed layer
+void PaintLayer::RemoveAncestorScrollContainerLayer(
+    const PaintLayer* removed_layer) {
+  // If the current scroll container layer does not match the removed layer
   // the ancestor overflow layer has changed so we can stop searching.
-  if (AncestorOverflowLayer() && AncestorOverflowLayer() != removed_layer)
+  if (AncestorScrollContainerLayer() &&
+      AncestorScrollContainerLayer() != removed_layer) {
     return;
+  }
 
-  if (AncestorOverflowLayer()) {
-    // If the previous AncestorOverflowLayer is the root and this object is a
-    // sticky viewport constrained object, it is no longer known to be
+  if (AncestorScrollContainerLayer()) {
+    // If the previous AncestorScrollContainerLayer is the root and this object
+    // is a sticky viewport constrained object, it is no longer known to be
     // constrained by the root.
-    if (AncestorOverflowLayer()->IsRootLayer() &&
+    if (AncestorScrollContainerLayer()->IsRootLayer() &&
         GetLayoutObject().StyleRef().HasStickyConstrainedPosition()) {
       if (LocalFrameView* frame_view = GetLayoutObject().GetFrameView()) {
         frame_view->RemoveViewportConstrainedObject(
@@ -3423,17 +3429,17 @@ void PaintLayer::RemoveAncestorOverflowLayer(const PaintLayer* removed_layer) {
     }
 
     if (PaintLayerScrollableArea* ancestor_scrollable_area =
-            AncestorOverflowLayer()->GetScrollableArea()) {
+            AncestorScrollContainerLayer()->GetScrollableArea()) {
       // TODO(pdr): When CompositeAfterPaint is enabled, we will need to
       // invalidate the scroll paint property subtree for this so main thread
       // scroll reasons are recomputed.
       ancestor_scrollable_area->InvalidateStickyConstraintsFor(this);
     }
   }
-  UpdateAncestorOverflowLayer(nullptr);
+  UpdateAncestorScrollContainerLayer(nullptr);
   PaintLayer* current = first_;
   while (current) {
-    current->RemoveAncestorOverflowLayer(removed_layer);
+    current->RemoveAncestorScrollContainerLayer(removed_layer);
     current = current->NextSibling();
   }
 }

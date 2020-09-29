@@ -27,7 +27,7 @@ class CompositingInputsUpdaterTest : public RenderingTest {
 //
 // See http://crbug.com/467721#c14
 TEST_F(CompositingInputsUpdaterTest,
-       ChangingAncestorOverflowLayerAwayFromNonScrollableDoesNotCrash) {
+       ChangingAncestorScrollContainerLayerAwayFromNonScrollableDoesNotCrash) {
   // The setup for this test is quite complex. We need UpdateRecursive to
   // transition directly from a non-scrollable ancestor overflow layer to a
   // scrollable one.
@@ -64,7 +64,8 @@ TEST_F(CompositingInputsUpdaterTest,
   EXPECT_TRUE(
       outer_scroller->GetScrollableArea()->GetStickyConstraintsMap().Contains(
           sticky->Layer()));
-  EXPECT_EQ(sticky->Layer()->AncestorOverflowLayer(), outer_scroller->Layer());
+  EXPECT_EQ(sticky->Layer()->AncestorScrollContainerLayer(),
+            outer_scroller->Layer());
 
   // Now make the outer scroller non-scrollable (i.e. overflow: visible), and
   // the inner scroller into an actual scroller.
@@ -77,8 +78,10 @@ TEST_F(CompositingInputsUpdaterTest,
   // overflow no longer has a scrollable area.
   GetDocument().View()->UpdateLifecycleToLayoutClean(
       DocumentUpdateReason::kTest);
-  EXPECT_FALSE(sticky->Layer()->AncestorOverflowLayer()->GetScrollableArea());
-  EXPECT_EQ(sticky->Layer()->AncestorOverflowLayer(), outer_scroller->Layer());
+  EXPECT_FALSE(
+      sticky->Layer()->AncestorScrollContainerLayer()->GetScrollableArea());
+  EXPECT_EQ(sticky->Layer()->AncestorScrollContainerLayer(),
+            outer_scroller->Layer());
 
   UpdateAllLifecyclePhasesForTest();
 
@@ -92,7 +95,8 @@ TEST_F(CompositingInputsUpdaterTest,
   EXPECT_TRUE(
       inner_scroller->GetScrollableArea()->GetStickyConstraintsMap().Contains(
           sticky->Layer()));
-  EXPECT_EQ(sticky->Layer()->AncestorOverflowLayer(), inner_scroller->Layer());
+  EXPECT_EQ(sticky->Layer()->AncestorScrollContainerLayer(),
+            inner_scroller->Layer());
 }
 
 TEST_F(CompositingInputsUpdaterTest, UnclippedAndClippedRectsUnderScroll) {
