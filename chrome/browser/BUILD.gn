@@ -4026,6 +4026,8 @@ static_library("browser") {
       "apps/app_service/extension_apps_chromeos.h",
       "apps/app_service/file_utils.cc",
       "apps/app_service/file_utils.h",
+      "apps/app_service/intent_util.cc",
+      "apps/app_service/intent_util.h",
       "apps/app_service/lacros_apps.cc",
       "apps/app_service/lacros_apps.h",
       "apps/app_service/menu_util.cc",

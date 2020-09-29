@@ -4,6 +4,7 @@
 
 #include "chrome/browser/apps/app_service/file_utils.h"
 
+#include "base/files/file_path.h"
 #include "chrome/browser/chromeos/file_manager/app_id.h"
 #include "chrome/browser/chromeos/file_manager/fileapi_util.h"
 #include "storage/browser/file_system/file_system_context.h"
@@ -24,6 +25,19 @@ std::vector<storage::FileSystemURL> GetFileSystemURL(
     file_system_urls.push_back(file_system_context->CrackURL(file_url));
   }
   return file_system_urls;
+}
+
+std::vector<GURL> GetFileUrls(Profile* profile,
+                              const std::vector<base::FilePath>& file_paths) {
+  std::vector<GURL> file_urls;
+  for (auto& file_path : file_paths) {
+    GURL file_url;
+    if (file_manager::util::ConvertAbsoluteFilePathToFileSystemUrl(
+            profile, file_path, file_manager::kFileManagerAppId, &file_url)) {
+      file_urls.push_back(file_url);
+    }
+  }
+  return file_urls;
 }
 
 }  // namespace apps
