@@ -40,6 +40,7 @@ namespace mojom {
 class CreateNewWindowParams;
 class CreateNewWindowReply;
 class RenderMessageFilter;
+class RouteProvider;
 }
 
 // This class is a very simple mock of RenderThread. It simulates an IPC channel
@@ -68,6 +69,7 @@ class MockRenderThread : public RenderThread {
   void RemoveFilter(IPC::MessageFilter* filter) override;
   void AddObserver(RenderThreadObserver* observer) override;
   void RemoveObserver(RenderThreadObserver* observer) override;
+  mojom::RouteProvider* GetRemoteRouteProvider() override;
   void SetResourceDispatcherDelegate(
       ResourceDispatcherDelegate* delegate) override;
   void RecordAction(const base::UserMetricsAction& action) override;

@@ -769,14 +769,6 @@ IPC::MessageRouter* ChildThreadImpl::GetRouter() {
   return &router_;
 }
 
-mojom::RouteProvider* ChildThreadImpl::GetRemoteRouteProvider() {
-  if (!remote_route_provider_) {
-    DCHECK(channel_);
-    channel_->GetRemoteAssociatedInterface(&remote_route_provider_);
-  }
-  return remote_route_provider_.get();
-}
-
 bool ChildThreadImpl::OnMessageReceived(const IPC::Message& msg) {
   if (msg.routing_id() == MSG_ROUTING_CONTROL)
     return OnControlMessageReceived(msg);
@@ -787,17 +779,10 @@ bool ChildThreadImpl::OnMessageReceived(const IPC::Message& msg) {
 void ChildThreadImpl::OnAssociatedInterfaceRequest(
     const std::string& interface_name,
     mojo::ScopedInterfaceEndpointHandle handle) {
-  if (interface_name == mojom::RouteProvider::Name_) {
-    DCHECK(!route_provider_receiver_.is_bound());
-    route_provider_receiver_.Bind(
-        mojo::PendingAssociatedReceiver<mojom::RouteProvider>(
-            std::move(handle)),
-        ipc_task_runner_ ? ipc_task_runner_
-                         : base::ThreadTaskRunnerHandle::Get());
-  } else {
-    LOG(ERROR) << "Receiver for unknown Channel-associated interface: "
-               << interface_name;
-  }
+  // All associated interfaces are requested through RenderThreadImpl.
+  LOG(ERROR) << "Receiver for unknown Channel-associated interface: "
+             << interface_name;
+  NOTREACHED();
 }
 
 void ChildThreadImpl::ExposeInterfacesToBrowser(mojo::BinderMap binders) {
@@ -855,27 +840,18 @@ void ChildThreadImpl::EnsureConnected() {
   base::Process::TerminateCurrentProcessImmediately(0);
 }
 
-void ChildThreadImpl::GetRoute(
-    int32_t routing_id,
-    mojo::PendingAssociatedReceiver<blink::mojom::AssociatedInterfaceProvider>
-        receiver) {
-  associated_interface_provider_receivers_.Add(this, std::move(receiver),
-                                               routing_id);
+bool ChildThreadImpl::IsInBrowserProcess() const {
+  return static_cast<bool>(browser_process_io_runner_);
 }
 
 void ChildThreadImpl::GetAssociatedInterface(
+    int32_t routing_id,
     const std::string& name,
     mojo::PendingAssociatedReceiver<blink::mojom::AssociatedInterface>
         receiver) {
-  int32_t routing_id =
-      associated_interface_provider_receivers_.current_context();
   Listener* route = router_.GetRoute(routing_id);
   if (route)
     route->OnAssociatedInterfaceRequest(name, receiver.PassHandle());
-}
-
-bool ChildThreadImpl::IsInBrowserProcess() const {
-  return static_cast<bool>(browser_process_io_runner_);
 }
 
 }  // namespace content

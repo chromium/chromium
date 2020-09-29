@@ -11,6 +11,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
+#include "content/common/associated_interfaces.mojom.h"
 #include "content/common/frame_messages.h"
 #include "content/common/render_message_filter.mojom.h"
 #include "content/common/view_messages.h"
@@ -56,6 +57,18 @@ class MockRenderMessageFilterImpl : public mojom::RenderMessageFilter {
                          base::ThreadPriority thread_priority) override {}
 #endif
 };
+
+// Some tests require that a valid mojo::RouteProvider* be accessed to send
+// messages over. The RouteProvider does not need to be bound to any real
+// implementation, so we simply bind it to a pipe that we'll forget about, as to
+// drain all messages sent over the remote.
+mojom::RouteProvider* GetStaticRemoteRouteProvider() {
+  static mojo::Remote<mojom::RouteProvider> remote;
+  if (!remote) {
+    ignore_result(remote.BindNewPipeAndPassReceiver());
+  }
+  return remote.get();
+}
 
 }  // namespace
 
@@ -156,6 +169,10 @@ void MockRenderThread::AddObserver(RenderThreadObserver* observer) {
 
 void MockRenderThread::RemoveObserver(RenderThreadObserver* observer) {
   observers_.RemoveObserver(observer);
+}
+
+mojom::RouteProvider* MockRenderThread::GetRemoteRouteProvider() {
+  return GetStaticRemoteRouteProvider();
 }
 
 void MockRenderThread::SetResourceDispatcherDelegate(

@@ -64,12 +64,9 @@ namespace content {
 class InProcessChildThreadParams;
 
 // The main thread of a child process derives from this class.
-class CONTENT_EXPORT ChildThreadImpl
-    : public IPC::Listener,
-      virtual public ChildThread,
-      private base::FieldTrialList::Observer,
-      public mojom::RouteProvider,
-      public blink::mojom::AssociatedInterfaceProvider {
+class CONTENT_EXPORT ChildThreadImpl : public IPC::Listener,
+                                       virtual public ChildThread,
+                                       private base::FieldTrialList::Observer {
  public:
   struct CONTENT_EXPORT Options;
 
@@ -110,8 +107,6 @@ class CONTENT_EXPORT ChildThreadImpl
   IPC::SyncChannel* channel() { return channel_.get(); }
 
   IPC::MessageRouter* GetRouter();
-
-  mojom::RouteProvider* GetRemoteRouteProvider();
 
   IPC::SyncMessageFilter* sync_message_filter() const {
     return sync_message_filter_.get();
@@ -166,6 +161,12 @@ class CONTENT_EXPORT ChildThreadImpl
 
   bool IsInBrowserProcess() const;
 
+  void GetAssociatedInterface(
+      int32_t routing_id,
+      const std::string& name,
+      mojo::PendingAssociatedReceiver<blink::mojom::AssociatedInterface>
+          receiver);
+
  private:
   // TODO(crbug.com/1111231): This class is a friend so that it can call our
   // private mojo implementation methods, acting as a pass-through. This is only
@@ -195,30 +196,12 @@ class CONTENT_EXPORT ChildThreadImpl
 
   void EnsureConnected();
 
-  // mojom::RouteProvider:
-  void GetRoute(
-      int32_t routing_id,
-      mojo::PendingAssociatedReceiver<blink::mojom::AssociatedInterfaceProvider>
-          receiver) override;
-
-  // blink::mojom::AssociatedInterfaceProvider:
-  void GetAssociatedInterface(
-      const std::string& name,
-      mojo::PendingAssociatedReceiver<blink::mojom::AssociatedInterface>
-          receiver) override;
-
 #if defined(OS_WIN)
   const mojo::Remote<mojom::FontCacheWin>& GetFontCacheWin();
 #endif
 
   base::Thread mojo_ipc_thread_{"Mojo IPC"};
   std::unique_ptr<mojo::core::ScopedIPCSupport> mojo_ipc_support_;
-
-  mojo::AssociatedReceiver<mojom::RouteProvider> route_provider_receiver_{this};
-  mojo::AssociatedReceiverSet<blink::mojom::AssociatedInterfaceProvider,
-                              int32_t>
-      associated_interface_provider_receivers_;
-  mojo::AssociatedRemote<mojom::RouteProvider> remote_route_provider_;
 #if defined(OS_WIN)
   mutable mojo::Remote<mojom::FontCacheWin> font_cache_win_;
 #endif

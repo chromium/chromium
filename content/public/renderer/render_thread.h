@@ -35,13 +35,16 @@ namespace IPC {
 class MessageFilter;
 class SyncChannel;
 class SyncMessageFilter;
-}
+}  // namespace IPC
 
 namespace v8 {
 class Extension;
-}
+}  // namespace v8
 
 namespace content {
+namespace mojom {
+class RouteProvider;
+}  // namespace mojom
 
 class RenderThreadObserver;
 class ResourceDispatcherDelegate;
@@ -75,6 +78,8 @@ class CONTENT_EXPORT RenderThread : virtual public ChildThread {
   // Add/remove observers for the process.
   virtual void AddObserver(RenderThreadObserver* observer) = 0;
   virtual void RemoveObserver(RenderThreadObserver* observer) = 0;
+
+  virtual mojom::RouteProvider* GetRemoteRouteProvider() = 0;
 
   // Set the ResourceDispatcher delegate object for this process.
   virtual void SetResourceDispatcherDelegate(
