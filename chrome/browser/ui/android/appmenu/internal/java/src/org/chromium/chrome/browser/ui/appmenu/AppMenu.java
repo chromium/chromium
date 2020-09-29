@@ -504,21 +504,22 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuAdapter.OnCl
         if (availableScreenSpace < spaceForFullItems) {
             int spaceForItems = 0;
             int lastItem = 0;
-            for (; lastItem < heightList.size(); lastItem++) {
+            // App menu should show 1 full item at least.
+            do {
+                spaceForItems += heightList.get(lastItem++);
                 if (spaceForItems + heightList.get(lastItem) > availableScreenSpace) {
                     break;
                 }
-                spaceForItems += heightList.get(lastItem);
-            }
-            assert lastItem > 0;
+            } while (lastItem < heightList.size() - 1);
 
             int spaceForPartialItem = (int) (LAST_ITEM_SHOW_FRACTION * heightList.get(lastItem));
             // Determine which item needs hiding. We only show Partial of the last item, if there is
             // not enough screen space to partially show the last identified item, then partially
             // show the second to last item instead. We also do not show the partial divider line.
             assert menuItems.size() == heightList.size();
-            while (spaceForItems + spaceForPartialItem > availableScreenSpace
-                    || menuItems.get(lastItem).getItemId() == groupDividerResourceId) {
+            while (lastItem > 1
+                    && (spaceForItems + spaceForPartialItem > availableScreenSpace
+                            || menuItems.get(lastItem).getItemId() == groupDividerResourceId)) {
                 spaceForItems -= heightList.get(lastItem - 1);
                 spaceForPartialItem =
                         (int) (LAST_ITEM_SHOW_FRACTION * heightList.get(lastItem - 1));
