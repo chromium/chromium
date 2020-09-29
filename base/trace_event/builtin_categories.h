@@ -166,7 +166,6 @@
   X("WebCore")                                                           \
   X("webrtc")                                                            \
   X("xr")                                                                \
-  X(TRACE_DISABLED_BY_DEFAULT("agent_scheduling_group"))                 \
   X(TRACE_DISABLED_BY_DEFAULT("animation-worklet"))                      \
   X(TRACE_DISABLED_BY_DEFAULT("audio"))                                  \
   X(TRACE_DISABLED_BY_DEFAULT("audio-worklet"))                          \
